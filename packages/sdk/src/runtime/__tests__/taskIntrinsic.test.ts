@@ -177,7 +177,7 @@ describe("runTaskIntrinsic", () => {
     ).resolves.toEqual(largeValue);
   });
 
-  test("throws when a resolved ok effect is missing its result payload", async () => {
+  test("returns null when a resolved ok effect is missing its result payload", async () => {
     const { runDir, runId } = await createRun("run-undefined-result");
     const context = await buildContext(runDir, runId);
 
@@ -221,13 +221,14 @@ describe("runTaskIntrinsic", () => {
     });
 
     const replayCtx = await buildContext(runDir, runId);
+    // Missing result payload returns null gracefully instead of crashing
     await expect(
       runTaskIntrinsic({
         task: sampleTask,
         args: { value: 5 },
         context: replayCtx,
       })
-    ).rejects.toThrow(RunFailedError);
+    ).resolves.toBeNull();
   });
 
   test("returns success:false shell result without throwing", async () => {
