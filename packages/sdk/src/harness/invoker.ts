@@ -70,7 +70,7 @@ function quotePowerShellArg(value: string): string {
   return `'${value.replace(/'/g, "''")}'`;
 }
 
-function buildLaunchSpec(
+export function buildLaunchSpec(
   name: string,
   spec: HarnessCliSpec,
   cliPath: string | undefined,

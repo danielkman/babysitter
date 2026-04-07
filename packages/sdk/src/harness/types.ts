@@ -73,6 +73,26 @@ export interface CallerHarnessResult {
 // Invocation types
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Streaming output types (GAP-SUBOBS-001)
+// ---------------------------------------------------------------------------
+
+/** Callback invoked with each raw chunk from stdout or stderr. */
+export type StreamingOutputCallback = (chunk: string) => void;
+
+/** Callback invoked with each complete line and its source stream. */
+export type StreamingLineCallback = (line: string, source: "stdout" | "stderr") => void;
+
+/** Options for real-time streaming output capture from harness invocations. */
+export interface StreamingOutputOptions {
+  /** Called with each stdout chunk as it arrives. */
+  onStdout?: StreamingOutputCallback;
+  /** Called with each stderr chunk as it arrives. */
+  onStderr?: StreamingOutputCallback;
+  /** Called with each complete line (from either stream) as it becomes available. */
+  onLine?: StreamingLineCallback;
+}
+
 /** Options for programmatically invoking a harness CLI. */
 export interface HarnessInvokeOptions {
   /** The prompt to send to the harness. */
@@ -87,6 +107,8 @@ export interface HarnessInvokeOptions {
   rpc?: boolean;
   /** Additional environment variables passed to the child process. */
   env?: Record<string, string>;
+  /** Real-time streaming output callbacks (GAP-SUBOBS-001). */
+  streaming?: StreamingOutputOptions;
 }
 
 /** Result returned after a harness CLI invocation completes. */

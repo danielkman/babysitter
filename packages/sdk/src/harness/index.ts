@@ -12,6 +12,9 @@ export type {
   PiSessionOptions,
   PiPromptResult,
   PiSessionEvent,
+  StreamingOutputCallback,
+  StreamingLineCallback,
+  StreamingOutputOptions,
 } from "./types";
 
 export { HarnessCapability } from "./types";
@@ -40,7 +43,9 @@ export {
 
 export { discoverHarnesses, detectCallerHarness, checkCliAvailable, KNOWN_HARNESSES } from "./discovery";
 
-export { invokeHarness, buildHarnessArgs, HARNESS_CLI_MAP } from "./invoker";
+export { invokeHarness, buildHarnessArgs, buildLaunchSpec, HARNESS_CLI_MAP } from "./invoker";
+
+export { OutputStreamCollector, invokeHarnessStreaming } from "./streamingCapture";
 
 export {
   createAgenticToolDefinitions,
