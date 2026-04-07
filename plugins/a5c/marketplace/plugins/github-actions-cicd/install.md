@@ -1,6 +1,6 @@
 # GitHub Actions CI/CD — Install Instructions
 
-Set up babysitter-powered GitHub Actions workflows that trigger on issue comments, PR events, and other git events. Based on the [official GitHub Actions setup guide](https://github.com/a5c-ai/babysitter/blob/main/docs/github-actions-setup.md).
+Set up babysitter-powered GitHub Actions workflows that trigger on issue comments, PR events, and other git events. Based on the [official GitHub Actions setup guide](https://github.com/a5c-ai/babysitter/blob/main/docs/github-actions-setup-claude-code.md).
 
 ## Step 1: Interview the User
 
@@ -492,4 +492,4 @@ After creating the workflow files:
 
 ## Reference
 
-Full documentation: [https://github.com/a5c-ai/babysitter/blob/main/docs/github-actions-setup.md](https://github.com/a5c-ai/babysitter/blob/main/docs/github-actions-setup.md)
+Full documentation: [https://github.com/a5c-ai/babysitter/blob/main/docs/github-actions-setup-claude-code.md](https://github.com/a5c-ai/babysitter/blob/main/docs/github-actions-setup-claude-code.md)

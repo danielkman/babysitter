@@ -149,6 +149,8 @@ Use babysitter methodologies in prompts:
 
 ## Reference
 
-- [GitHub Actions Setup Guide](https://github.com/a5c-ai/babysitter/blob/main/docs/github-actions-setup.md)
+- [GitHub Actions Setup Guide (Claude Code)](https://github.com/a5c-ai/babysitter/blob/main/docs/github-actions-setup-claude-code.md)
+- [GitHub Actions Setup Guide (Codex)](https://github.com/a5c-ai/babysitter/blob/main/docs/github-actions-setup-codex.md)
+- [GitHub Actions Setup Guide (Gemini CLI)](https://github.com/a5c-ai/babysitter/blob/main/docs/github-actions-setup-gemini-cli.md)
 - [Claude Code Action](https://github.com/anthropics/claude-code-action)
 - [Claude Code Action Setup](https://github.com/anthropics/claude-code-action/blob/main/docs/setup.md)

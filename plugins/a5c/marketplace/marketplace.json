@@ -24,7 +24,7 @@
     },
     "github-actions-cicd": {
       "name": "github-actions-cicd",
-      "description": "Set up babysitter-powered GitHub Actions workflows with triggers on issue comments, PR events, labels, schedules, and manual dispatch. Based on docs/github-actions-setup.md.",
+      "description": "Set up babysitter-powered GitHub Actions workflows with triggers on issue comments, PR events, labels, schedules, and manual dispatch. Based on docs/github-actions-setup-claude-code.md.",
       "latestVersion": "1.0.0",
       "versions": ["1.0.0"],
       "packagePath": "plugins/github-actions-cicd",
