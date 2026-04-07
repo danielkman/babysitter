@@ -12,6 +12,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import * as childProcess from "node:child_process";
 import { Type, type TObject } from "@sinclair/typebox";
+import { getConfig, DEFAULTS, CONFIG_ENV_VARS, type BabysitterConfig } from "../config/defaults";
 
 // ---------------------------------------------------------------------------
 // Public types
@@ -72,11 +73,135 @@ export const AGENTIC_TOOL_NAMES: string[] = [
   "ast_edit",
   "render_mermaid",
   "notebook",
+  "config",
 ];
 
 const DEFAULT_BASH_TIMEOUT = 120_000;
 const DEFAULT_SEARCH_TIMEOUT = 30_000;
 const MAX_READ_LINES = 10_000;
+
+// ---------------------------------------------------------------------------
+// Run-scoped config state (GAP-TOOLS-033)
+// ---------------------------------------------------------------------------
+
+/** Extended config keys beyond BabysitterConfig. */
+const EXTENDED_CONFIG_KEYS: ReadonlySet<string> = new Set([
+  "model",
+  "provider",
+  "breakpoint.autoApproveAfterN",
+  "breakpoint.presentAlwaysApprove",
+]);
+
+/** All valid top-level BabysitterConfig key names. */
+const BABYSITTER_CONFIG_KEYS: ReadonlySet<string> = new Set([
+  "runsDir",
+  "maxIterations",
+  "qualityThreshold",
+  "timeout",
+  "logLevel",
+  "allowSecretLogs",
+  "hookTimeout",
+  "nodeTaskTimeout",
+  "clockStepMs",
+  "clockStartMs",
+  "layoutVersion",
+  "largeResultPreviewLimit",
+]);
+
+/** Expected types for standard BabysitterConfig keys. */
+const CONFIG_KEY_TYPES: Record<string, string> = {
+  runsDir: "string",
+  maxIterations: "number",
+  qualityThreshold: "number",
+  timeout: "number",
+  logLevel: "string",
+  allowSecretLogs: "boolean",
+  hookTimeout: "number",
+  nodeTaskTimeout: "number",
+  clockStepMs: "number",
+  clockStartMs: "number",
+  layoutVersion: "string",
+  largeResultPreviewLimit: "number",
+  model: "string",
+  provider: "string",
+};
+
+/** Valid log level values. */
+const VALID_LOG_LEVELS = new Set(["debug", "info", "warn", "error", "silent"]);
+
+/** Map of config key to its BABYSITTER_* env var name (for global scope set). */
+const CONFIG_KEY_TO_ENV: Record<string, string> = {
+  runsDir: CONFIG_ENV_VARS.RUNS_DIR,
+  maxIterations: CONFIG_ENV_VARS.MAX_ITERATIONS,
+  qualityThreshold: CONFIG_ENV_VARS.QUALITY_THRESHOLD,
+  timeout: CONFIG_ENV_VARS.TIMEOUT,
+  logLevel: CONFIG_ENV_VARS.LOG_LEVEL,
+  allowSecretLogs: CONFIG_ENV_VARS.ALLOW_SECRET_LOGS,
+  hookTimeout: CONFIG_ENV_VARS.HOOK_TIMEOUT,
+  nodeTaskTimeout: CONFIG_ENV_VARS.NODE_TASK_TIMEOUT,
+};
+
+/** Run-scoped overrides — cleared on reset. */
+const _runScopedConfig: Map<string, unknown> = new Map();
+
+/** Reset run-scoped config (exported for test isolation). */
+export function resetRunScopedConfig(): void {
+  _runScopedConfig.clear();
+}
+
+/**
+ * Check if a key is a valid config key (standard, extended, compression.*, or breakpoint.*).
+ */
+function isValidConfigKey(key: string): boolean {
+  if (BABYSITTER_CONFIG_KEYS.has(key)) return true;
+  if (EXTENDED_CONFIG_KEYS.has(key)) return true;
+  if (key.startsWith("compression.")) return true;
+  if (key.startsWith("breakpoint.")) return true;
+  return false;
+}
+
+/**
+ * Validate value type for a config key. Returns error message or null if valid.
+ */
+function validateConfigValue(key: string, value: unknown): string | null {
+  const expectedType = CONFIG_KEY_TYPES[key];
+  if (expectedType && typeof value !== expectedType) {
+    return `Expected '${key}' to be ${expectedType}, got ${typeof value}.`;
+  }
+  // Specific validation for logLevel
+  if (key === "logLevel" && typeof value === "string" && !VALID_LOG_LEVELS.has(value)) {
+    return `Invalid logLevel '${value}'. Must be one of: ${[...VALID_LOG_LEVELS].join(", ")}.`;
+  }
+  // Number keys should be positive
+  if (expectedType === "number" && typeof value === "number") {
+    if (key !== "clockStartMs" && value <= 0) {
+      return `'${key}' must be a positive number.`;
+    }
+  }
+  return null;
+}
+
+/**
+ * Get a single config value, merging defaults + env + run-scoped.
+ */
+function getConfigValue(key: string): unknown {
+  if (_runScopedConfig.has(key)) return _runScopedConfig.get(key);
+  if (BABYSITTER_CONFIG_KEYS.has(key)) {
+    const cfg = getConfig();
+    return cfg[key as keyof BabysitterConfig];
+  }
+  return undefined;
+}
+
+/**
+ * Get the default value for a key.
+ */
+function getConfigDefault(key: string): unknown {
+  if (BABYSITTER_CONFIG_KEYS.has(key)) {
+    return DEFAULTS[key as keyof BabysitterConfig];
+  }
+  return undefined;
+}
 
 /**
  * Resolve the ripgrep binary path.
@@ -1260,6 +1385,141 @@ export function createAgenticToolDefinitions(
           }
           default:
             return errorResult(`Unknown notebook action: ${action}`);
+        }
+      },
+    }),
+
+    // -----------------------------------------------------------------------
+    // config — runtime configuration tool (GAP-TOOLS-033)
+    // -----------------------------------------------------------------------
+    wrap({
+      name: "config",
+      label: "Runtime Config",
+      description:
+        "Read and modify babysitter configuration at runtime. " +
+        "Supports get/set/list/reset actions for standard config keys " +
+        "(maxIterations, timeout, logLevel, etc.), model/provider selection, " +
+        "and compression settings. Changes are run-scoped by default.",
+      parameters: Type.Object({
+        action: Type.Union([
+          Type.Literal("get"),
+          Type.Literal("set"),
+          Type.Literal("list"),
+          Type.Literal("reset"),
+        ], { description: "Action to perform: get, set, list, or reset" }),
+        key: Type.Optional(
+          Type.String({ description: "Config key path (dot notation for nested, e.g. 'compression.enabled')" }),
+        ),
+        value: Type.Optional(
+          Type.Unknown({ description: "New value for set action" }),
+        ),
+        scope: Type.Optional(
+          Type.Union([Type.Literal("run"), Type.Literal("global")], {
+            description: "Scope: 'run' (default, in-memory) or 'global' (env vars)",
+          }),
+        ),
+      }),
+      execute: (_toolCallId, params) => {
+        const action = params.action as string | undefined;
+        if (!action) {
+          return errorResult("'action' parameter is required (get, set, list, reset).");
+        }
+
+        const key = params.key as string | undefined;
+        const value = params.value;
+        const scope = (params.scope as string) ?? "run";
+
+        switch (action) {
+          case "get": {
+            if (!key) {
+              // Return full merged config
+              const cfg = getConfig();
+              const merged: Record<string, unknown> = { ...cfg };
+              // Add extended keys
+              for (const ek of EXTENDED_CONFIG_KEYS) {
+                merged[ek] = getConfigValue(ek);
+              }
+              // Add run-scoped overrides
+              for (const [k, v] of _runScopedConfig) {
+                merged[k] = v;
+              }
+              return jsonResult(merged);
+            }
+            if (!isValidConfigKey(key)) {
+              return errorResult(`Error: Unknown config key '${key}'.`);
+            }
+            return jsonResult({ key, value: getConfigValue(key) });
+          }
+
+          case "set": {
+            if (!key) {
+              return errorResult("Error: 'key' parameter is required for set action.");
+            }
+            if (value === undefined) {
+              return errorResult("Error: 'value' parameter is required for set action.");
+            }
+            if (!isValidConfigKey(key)) {
+              return errorResult(`Error: Unknown config key '${key}'.`);
+            }
+            // Type validation
+            const typeError = validateConfigValue(key, value);
+            if (typeError) {
+              return errorResult(`Error: ${typeError}`);
+            }
+
+            if (scope === "global") {
+              // Set env var for standard keys
+              const envKey = CONFIG_KEY_TO_ENV[key];
+              if (envKey) {
+                process.env[envKey] = String(value);
+              } else {
+                // For extended/compression keys, store as BABYSITTER_ env var
+                const envName = "BABYSITTER_" + key.replace(/\./g, "_").toUpperCase();
+                process.env[envName] = String(value);
+              }
+            }
+
+            // Always store in run-scoped map too
+            _runScopedConfig.set(key, value);
+            return ok(`Set '${key}' to ${JSON.stringify(value)} (scope: ${scope}).`);
+          }
+
+          case "list": {
+            const entries: Record<string, { current: unknown; default: unknown }> = {};
+            // Standard keys
+            for (const k of BABYSITTER_CONFIG_KEYS) {
+              entries[k] = {
+                current: getConfigValue(k),
+                default: getConfigDefault(k),
+              };
+            }
+            // Extended keys
+            for (const k of EXTENDED_CONFIG_KEYS) {
+              entries[k] = {
+                current: getConfigValue(k),
+                default: getConfigDefault(k),
+              };
+            }
+            // Include any run-scoped keys (compression.*, breakpoint.*) that have been set
+            for (const [k, v] of _runScopedConfig) {
+              if (!entries[k]) {
+                entries[k] = { current: v, default: undefined };
+              }
+            }
+            return jsonResult(entries);
+          }
+
+          case "reset": {
+            if (key) {
+              _runScopedConfig.delete(key);
+              return ok(`Reset '${key}' to default.`);
+            }
+            _runScopedConfig.clear();
+            return ok("Reset all config to defaults.");
+          }
+
+          default:
+            return errorResult(`Error: Unknown action '${action}'. Use get, set, list, or reset.`);
         }
       },
     }),
