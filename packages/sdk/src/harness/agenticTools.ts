@@ -77,6 +77,8 @@ export const AGENTIC_TOOL_NAMES: string[] = [
 ];
 
 const DEFAULT_BASH_TIMEOUT = 120_000;
+/** Maximum bytes to collect from a child process's stdout/stderr before truncating. */
+const MAX_SPAWN_OUTPUT_BYTES = 50 * 1024 * 1024; // 50 MiB
 const DEFAULT_SEARCH_TIMEOUT = 30_000;
 const MAX_READ_LINES = 10_000;
 
@@ -287,21 +289,48 @@ function spawnAsync(
 
     const stdoutChunks: Buffer[] = [];
     const stderrChunks: Buffer[] = [];
+    let stdoutBytes = 0;
+    let stderrBytes = 0;
+    let stdoutTruncated = false;
+    let stderrTruncated = false;
 
-    proc.stdout?.on("data", (chunk: Buffer) => stdoutChunks.push(chunk));
-    proc.stderr?.on("data", (chunk: Buffer) => stderrChunks.push(chunk));
+    proc.stdout?.on("data", (chunk: Buffer) => {
+      if (stdoutTruncated) return;
+      stdoutBytes += chunk.length;
+      if (stdoutBytes > MAX_SPAWN_OUTPUT_BYTES) {
+        stdoutTruncated = true;
+        return;
+      }
+      stdoutChunks.push(chunk);
+    });
+    proc.stderr?.on("data", (chunk: Buffer) => {
+      if (stderrTruncated) return;
+      stderrBytes += chunk.length;
+      if (stderrBytes > MAX_SPAWN_OUTPUT_BYTES) {
+        stderrTruncated = true;
+        return;
+      }
+      stderrChunks.push(chunk);
+    });
+
+    const concatSafe = (chunks: Buffer[], truncated: boolean, totalBytes: number): string => {
+      const text = Buffer.concat(chunks).toString("utf8");
+      return truncated
+        ? text + `\n... [truncated: ${totalBytes} bytes total, limit ${MAX_SPAWN_OUTPUT_BYTES}]`
+        : text;
+    };
 
     proc.on("close", (code) => {
       resolve({
-        stdout: Buffer.concat(stdoutChunks).toString("utf8"),
-        stderr: Buffer.concat(stderrChunks).toString("utf8"),
+        stdout: concatSafe(stdoutChunks, stdoutTruncated, stdoutBytes),
+        stderr: concatSafe(stderrChunks, stderrTruncated, stderrBytes),
         exitCode: code ?? 1,
       });
     });
 
     proc.on("error", (err) => {
       resolve({
-        stdout: Buffer.concat(stdoutChunks).toString("utf8"),
+        stdout: concatSafe(stdoutChunks, stdoutTruncated, stdoutBytes),
         stderr: err.message,
         exitCode: 1,
       });
