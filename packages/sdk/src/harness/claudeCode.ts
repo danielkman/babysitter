@@ -12,7 +12,8 @@
  */
 
 import * as path from "node:path";
-import { existsSync, readFileSync, appendFileSync, mkdirSync } from "node:fs";
+import { execSync } from "node:child_process";
+import { existsSync, readFileSync, appendFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { loadJournal, appendEvent } from "../storage/journal";
 import { readRunMetadata } from "../storage/runFiles";
 import { buildEffectIndex } from "../runtime/replay/effectIndex";
@@ -223,6 +224,87 @@ async function cleanupSession(filePath: string): Promise<void> {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Ancestor PID discovery — walks the process tree to find the Claude Code
+// process (claude / claude.exe) that spawned us. Works from both hooks
+// (child of Claude Code) and Bash tool calls (also a descendant).
+// ---------------------------------------------------------------------------
+
+/**
+ * Cached ancestor PID — the process tree doesn't change during a single
+ * process lifetime, so we only walk it once.
+ */
+let cachedAncestorPid: number | undefined;
+
+/**
+ * Walk the process tree upward to find the Claude Code ancestor process
+ * (claude / claude.exe). Returns the PID or undefined if not found.
+ */
+function findClaudeAncestorPid(): number | undefined {
+  if (cachedAncestorPid !== undefined) return cachedAncestorPid;
+
+  const isWin = process.platform === "win32";
+  let pid = process.pid;
+
+  for (let depth = 0; depth < 20; depth++) {
+    try {
+      let name = "";
+      let ppid = 0;
+
+      if (isWin) {
+        const out = execSync(
+          `wmic process where ProcessId=${pid} get ParentProcessId,Name /format:csv`,
+          { encoding: "utf8", stdio: ["pipe", "pipe", "pipe"], timeout: 3000 },
+        );
+        const lines = out.trim().split(/\r?\n/).filter((l: string) => l.includes(","));
+        if (lines.length < 2) break;
+        const parts = lines[1].split(",");
+        name = (parts[1] || "").toLowerCase();
+        ppid = parseInt(parts[2], 10);
+      } else {
+        // macOS / Linux: use ps
+        const out = execSync(
+          `ps -p ${pid} -o ppid=,comm=`,
+          { encoding: "utf8", stdio: ["pipe", "pipe", "pipe"], timeout: 3000 },
+        ).trim();
+        const match = out.match(/^\s*(\d+)\s+(.+)$/);
+        if (!match) break;
+        ppid = parseInt(match[1], 10);
+        name = path.basename(match[2]).toLowerCase();
+      }
+
+      // Strip common extensions
+      const baseName = name.replace(/\.exe$/, "");
+
+      if (baseName === "claude") {
+        cachedAncestorPid = pid;
+        return pid;
+      }
+
+      if (isNaN(ppid) || ppid <= 0 || ppid === pid) break;
+      pid = ppid;
+    } catch {
+      break;
+    }
+  }
+
+  return undefined;
+}
+
+/**
+ * Path to a file that maps a Claude Code process to its current session ID.
+ * Keyed by the ancestor harness PID for concurrent-session safety: two
+ * Claude Code instances in the same directory get separate files.
+ *
+ * Workaround for CLAUDE_ENV_FILE not being provided to hooks
+ * (anthropics/claude-code#15840).
+ */
+function getCurrentSessionIdFilePath(): string | undefined {
+  const ancestorPid = findClaudeAncestorPid();
+  if (!ancestorPid) return undefined;
+  return path.join(getGlobalStateDir(), `current-session-pid-${ancestorPid}`);
+}
+
 /**
  * Resolve the current session ID from environment, independent of the hook
  * payload. After `/clear`, the hook payload may carry a stale session ID while
@@ -244,6 +326,19 @@ function resolveCurrentSessionIdFromEnv(): string | undefined {
       // Non-fatal
     }
   }
+
+  // Fallback: read from PID-scoped file (workaround for CLAUDE_ENV_FILE not
+  // being provided to SessionStart hooks — anthropics/claude-code#15840)
+  try {
+    const filePath = getCurrentSessionIdFilePath();
+    if (filePath && existsSync(filePath)) {
+      const id = readFileSync(filePath, "utf-8").trim();
+      if (id) return id;
+    }
+  } catch {
+    // Non-fatal
+  }
+
   return undefined;
 }
 
@@ -844,10 +939,25 @@ async function handleSessionStartHookImpl(
         `[hook:run session-start] Failed to write to CLAUDE_ENV_FILE: ${envFile}\n`,
       );
     }
-  } else {
-    process.stderr.write(
-      `[hook:run session-start] CLAUDE_ENV_FILE not set — session ID will not be persisted to env file\n`,
-    );
+  }
+
+  // 2b. Write session ID to a PID-scoped fallback file. CLAUDE_ENV_FILE is
+  //     frequently unavailable (anthropics/claude-code#15840), so this ensures
+  //     downstream hooks and CLI calls (e.g. run:create from Bash tool) can
+  //     resolve the session ID by walking the process tree to the same ancestor.
+  const sessionIdFile = getCurrentSessionIdFilePath();
+  if (sessionIdFile) {
+    try {
+      mkdirSync(path.dirname(sessionIdFile), { recursive: true });
+      writeFileSync(sessionIdFile, sessionId + "\n");
+      if (!envFilePersisted) {
+        envFilePersisted = true; // count the file-based fallback as persisted
+      }
+    } catch {
+      process.stderr.write(
+        `[hook:run session-start] Failed to write session ID fallback file\n`,
+      );
+    }
   }
 
   // 3. Create baseline session state file so the stop hook can find it later.
@@ -1156,23 +1266,7 @@ export function createClaudeCodeAdapter(): HarnessAdapter {
 
     resolveSessionId(parsed: { sessionId?: string }): string | undefined {
       if (parsed.sessionId) return parsed.sessionId;
-
-      // Cross-harness standard (written by session-start hook to CLAUDE_ENV_FILE)
-      if (process.env.BABYSITTER_SESSION_ID) return process.env.BABYSITTER_SESSION_ID;
-
-      // Fallback: read BABYSITTER_SESSION_ID from CLAUDE_ENV_FILE directly
-      const envFile = process.env.CLAUDE_ENV_FILE;
-      if (envFile) {
-        try {
-          const content = readFileSync(envFile, "utf-8");
-          const match = content.match(/export BABYSITTER_SESSION_ID="([^"]+)"/);
-          if (match?.[1]) return match[1];
-        } catch {
-          // Non-fatal
-        }
-      }
-
-      return undefined;
+      return resolveCurrentSessionIdFromEnv();
     },
 
     resolveStateDir(args: { stateDir?: string; pluginRoot?: string }): string | undefined {
