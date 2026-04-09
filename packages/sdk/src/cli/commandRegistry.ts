@@ -19,7 +19,8 @@ export type CommandCategory =
   | "plugin"
   | "config"
   | "debug"
-  | "help";
+  | "help"
+  | "tui";
 
 export interface RunContext {
   hasRun?: boolean;
@@ -56,7 +57,8 @@ export const COMMAND_REGISTRY: CommandInfo[] = [
   { name: "harness:resume-run", description: "Resume an existing orchestration run", category: "harness", aliases: ["harness:resume"] },
   { name: "harness:yolo", description: "Create run in non-interactive mode", category: "harness" },
   { name: "harness:plan", description: "Create run, stop after planning phase", category: "harness" },
-  { name: "harness:observe", description: "Launch real-time observer dashboard", category: "harness" },
+  { name: "harness:observe", description: "Launch real-time observer dashboard", category: "harness", usage: "babysitter harness:observe [--workspace <dir>] [--tui]" },
+  { name: "tui:session", description: "Launch interactive session TUI (Ink-based)", category: "tui", usage: "babysitter tui:session [--run-id <id>] [--verbosity minimal|normal|verbose] [--workspace <dir>] [--harness <name>]" },
   { name: "harness:doctor", description: "Diagnose run health issues", category: "harness" },
   { name: "harness:retrospect", description: "Analyze past runs for insights", category: "harness" },
   { name: "harness:cleanup", description: "Clean up old runs and artifacts", category: "harness" },
