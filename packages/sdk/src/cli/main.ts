@@ -29,6 +29,7 @@ import {
   handleSessionLastMessage,
   handleSessionIterationMessage,
 } from "./commands/session";
+import { handleSessionHistory } from "./commands/sessionHistory";
 import { handleSkillDiscover, handleSkillFetchRemote, discoverSkillsInternal, discoverFromProcessFile } from "./commands/skill";
 import { handleMcpServe } from "./commands/mcpServe";
 import { handleHookLog } from "./commands/hookLog";
@@ -151,6 +152,7 @@ Other commands (agents should never call these directly unless explicitly instru
   babysitter harness:doctor [--run-id <id>] [--runs-dir <dir>] [--json] [--verbose]
   babysitter harness:contrib [--prompt <text>] [--harness <name>] [--workspace <dir>] [--model <model>] [--max-iterations <n>] [--runs-dir <dir>] [--json] [--verbose]
   babysitter harness:anycli --service <name> [--scope <scopes>] [--mcp] [--auth-file <path>] [--transport <type>] [--prompt <text>] [--workspace <dir>] [--json] [--verbose]
+  babysitter harness:session-history --session-id <id> --state-dir <dir> [--run-id <id>] [--json]
   babysitter harness:help [<topic>]
   babysitter harness:observe [--workspace <dir>]
   babysitter harness:user-install [--harness <name>] [--workspace <dir>] [--model <model>] [--runs-dir <dir>] [--json] [--verbose]
@@ -2440,6 +2442,7 @@ const VALID_COMMANDS = [
   "harness:doctor",
   "harness:contrib",
   "harness:anycli",
+  "harness:session-history",
   "harness:help",
   "harness:observe",
   "harness:user-install",
@@ -3349,6 +3352,14 @@ export function createBabysitterCli() {
             json: parsed.json,
             verbose: parsed.verbose,
             interactive: parsed.interactive,
+          });
+        }
+        if (parsed.command === "harness:session-history") {
+          return await handleSessionHistory({
+            sessionId: parsed.sessionId ?? "",
+            stateDir: parsed.stateDir ?? "",
+            json: parsed.json,
+            runId: parsed.runIdOverride,
           });
         }
         if (parsed.command === "harness:help") {

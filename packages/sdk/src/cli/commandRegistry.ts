@@ -62,6 +62,7 @@ export const COMMAND_REGISTRY: CommandInfo[] = [
   { name: "harness:doctor", description: "Diagnose run health issues", category: "harness" },
   { name: "harness:retrospect", description: "Analyze past runs for insights", category: "harness" },
   { name: "harness:cleanup", description: "Clean up old runs and artifacts", category: "harness" },
+  { name: "harness:session-history", description: "Browse session history (decisions, run summaries, context snapshots)", category: "harness", usage: "babysitter harness:session-history --session-id <id> --state-dir <dir> [--run-id <id>] [--json]" },
 
   // Plugin commands
   { name: "plugin:install", description: "Install a plugin", category: "plugin" },

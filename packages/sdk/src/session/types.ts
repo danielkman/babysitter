@@ -38,6 +38,63 @@ export interface SessionContext {
   sharedKnowledge: Record<string, string>;
 }
 
+// ---------------------------------------------------------------------------
+// GAP-SESSION-002: Session History types
+// ---------------------------------------------------------------------------
+
+/** A recorded decision made during a session. */
+export interface SessionDecision {
+  /** ISO timestamp when the decision was recorded */
+  timestamp: string;
+  /** What was decided */
+  description: string;
+  /** Why it was decided */
+  rationale?: string;
+  /** Run in which this decision was made */
+  runId?: string;
+}
+
+/** Summary of a completed run within a session. */
+export interface SessionRunSummary {
+  /** Run identifier */
+  runId: string;
+  /** Process that was executed */
+  processId: string;
+  /** Terminal status */
+  status: string;
+  /** ISO timestamp when the run started */
+  startedAt: string;
+  /** ISO timestamp when the run finished */
+  completedAt?: string;
+  /** Human-readable outcome */
+  outcome?: string;
+  /** Quality score (0-100) if available */
+  score?: number;
+}
+
+/** Point-in-time snapshot of session context. */
+export interface SessionContextSnapshot {
+  /** ISO timestamp when the snapshot was taken */
+  timestamp: string;
+  /** Run during which this snapshot was taken */
+  runId?: string;
+  /** Arbitrary context data */
+  snapshot: Record<string, unknown>;
+}
+
+/**
+ * Rich session history: extends SessionContext with accumulated
+ * decisions, run summaries, and context snapshots (GAP-SESSION-002).
+ */
+export interface SessionHistory extends SessionContext {
+  /** Accumulated decisions made during this session */
+  decisions: SessionDecision[];
+  /** Summaries of all runs that have executed in this session */
+  runSummaries: SessionRunSummary[];
+  /** Point-in-time context snapshots */
+  contextSnapshots: SessionContextSnapshot[];
+}
+
 /**
  * Complete session file content including state and prompt.
  */

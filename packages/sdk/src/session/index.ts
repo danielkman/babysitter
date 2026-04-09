@@ -8,6 +8,10 @@ export type {
   SessionState,
   SessionFile,
   SessionContext,
+  SessionDecision,
+  SessionRunSummary,
+  SessionContextSnapshot,
+  SessionHistory,
   SessionInitOptions,
   SessionAssociateOptions,
   SessionResumeOptions,
@@ -54,3 +58,12 @@ export {
   getSessionContext,
   updateSessionContext,
 } from './context';
+
+// History persistence (GAP-SESSION-002)
+export {
+  getSessionHistoryPath,
+  addDecision,
+  addRunSummary,
+  saveContextSnapshot,
+  getSessionHistory,
+} from './history';
