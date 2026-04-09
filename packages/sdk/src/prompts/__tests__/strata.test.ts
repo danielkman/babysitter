@@ -100,7 +100,7 @@ describe('GAP-PROMPT-001: Prompt Strata Model', () => {
 
     it('returns only runtime parts when stratum is runtime', () => {
       const parts = getPartsForStratum('runtime');
-      expect(parts.length).toBe(11);
+      expect(parts.length).toBe(12);
       expect(parts.every(p => p.stratum === 'runtime')).toBe(true);
     });
 

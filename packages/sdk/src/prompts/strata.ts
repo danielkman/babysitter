@@ -58,6 +58,7 @@ export const PART_STRATA_MAP: Record<string, StratumTaggedPart> = {
   renderResultsPosting: tagPart('renderResultsPosting', 'runtime', parts.renderResultsPosting),
   renderRunOverlapDetection: tagPart('renderRunOverlapDetection', 'runtime', parts.renderRunOverlapDetection),
   renderParallelPhaseDetection: tagPart('renderParallelPhaseDetection', 'runtime', parts.renderParallelPhaseDetection),
+  renderParallelDispatch: tagPart('renderParallelDispatch', 'runtime', parts.renderParallelDispatch),
 
   // ── Turn-local stratum ───────────────────────────────────────────────
   renderInterview: tagPart('renderInterview', 'turnLocal', parts.renderInterview),

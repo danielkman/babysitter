@@ -27,3 +27,4 @@ export { renderCriticalRules } from './criticalRules';
 export { renderSeeAlso } from './seeAlso';
 export { renderNonNegotiables } from './nonNegotiables';
 export { renderProjectInstructions } from './projectInstructions';
+export { renderParallelDispatch } from './parallelDispatch';

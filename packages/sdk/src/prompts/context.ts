@@ -361,3 +361,46 @@ export function createOhMyPiContext(
     ...overrides,
   } as PromptContext;
 }
+
+/**
+ * Create a PromptContext pre-configured for the internal (programmatic) harness.
+ *
+ * The internal harness is the SDK's built-in execution engine. It supports
+ * concurrent effect execution (GAP-PAR-001), async/background effects
+ * (GAP-PAR-002), and multi-harness parallel dispatch (GAP-PAR-003).
+ */
+export function createInternalContext(
+  overrides?: Partial<PromptContext>,
+): PromptContext {
+  return {
+    ...COMMON_DEFAULTS,
+    harness: 'internal',
+    harnessLabel: 'Internal (Programmatic)',
+    capabilities: [
+      'task-tool',
+      'breakpoint-routing',
+      'programmatic-session',
+      'concurrent-effects',
+      'background-effects',
+      'multi-harness-dispatch',
+    ],
+    pluginRootVar: '',
+    loopControlTerm: 'in-turn',
+    sessionBindingFlags: '',
+    hookDriven: false,
+    interactiveToolName: 'AskUserQuestion',
+    sessionEnvVars: 'BABYSITTER_SESSION_ID, OMP_SESSION_ID or PI_SESSION_ID (auto-resolved)',
+    resumeFlags: '--state-dir .a5c',
+    cliSetupSnippet: [
+      'Use the installed CLI alias:',
+      '',
+      '```bash',
+      'CLI="babysitter"',
+      '```',
+    ].join('\n'),
+    iterateFlags: '',
+    hasIntentFidelityChecks: false,
+    hasNonNegotiables: false,
+    ...overrides,
+  } as PromptContext;
+}

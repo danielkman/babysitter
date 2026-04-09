@@ -26,6 +26,12 @@ export enum HarnessCapability {
   Mcp = "mcp",
   /** Harness can accept a prompt without a TTY (headless mode). */
   HeadlessPrompt = "headless-prompt",
+  /** Harness supports concurrent effect execution (GAP-PAR-001). */
+  ConcurrentEffects = "concurrent-effects",
+  /** Harness supports async/background effects (GAP-PAR-002). */
+  BackgroundEffects = "background-effects",
+  /** Harness supports multi-harness parallel dispatch (GAP-PAR-003). */
+  MultiHarnessDispatch = "multi-harness-dispatch",
 }
 
 // ---------------------------------------------------------------------------
