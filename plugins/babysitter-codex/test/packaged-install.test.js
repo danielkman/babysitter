@@ -77,9 +77,16 @@ try {
   fs.mkdirSync(workspaceRoot, { recursive: true });
   fs.mkdirSync(userHome, { recursive: true });
   fs.mkdirSync(homePluginsRoot, { recursive: true });
+  // Seed process library at both legacy and current paths so the SDK's
+  // DEFAULT_PROCESS_LIBRARY_SUBPATH ("plugins/babysitter/skills/babysit/process")
+  // resolves correctly.
   copyTree(
     path.join(PROJECT_ROOT, '..', '..', 'library'),
     path.join(processLibraryRepoRoot, 'library'),
+  );
+  copyTree(
+    path.join(PROJECT_ROOT, '..', '..', 'library'),
+    path.join(processLibraryRepoRoot, 'plugins', 'babysitter', 'skills', 'babysit', 'process'),
   );
   run('git', ['init'], { cwd: processLibraryRepoRoot });
   run('git', ['config', 'gc.auto', '0'], { cwd: processLibraryRepoRoot });
@@ -174,7 +181,7 @@ try {
   const globalProcessLibraryState = readJson(path.join(userHome, '.a5c', 'active', 'process-library.json'));
   assert.strictEqual(
     path.resolve(globalProcessLibraryState.defaultBinding.dir),
-    path.resolve(path.join(userHome, '.a5c', 'process-library', 'babysitter-repo', 'library')),
+    path.resolve(path.join(userHome, '.a5c', 'process-library', 'babysitter-repo', 'plugins', 'babysitter', 'skills', 'babysit', 'process')),
   );
 
   assert.ok(!fs.existsSync(path.join(workspaceRoot, '.codex', 'hooks.json')), 'global install should not write workspace hooks');
