@@ -43,6 +43,44 @@ export type InkBox = React.ComponentType<Record<string, unknown> & { children?: 
 export type InkText = React.ComponentType<Record<string, unknown> & { children?: React.ReactNode }>;
 
 // ---------------------------------------------------------------------------
+// Run-detail placeholder (needs its own component so it can call useInput)
+// ---------------------------------------------------------------------------
+
+function RunDetailPlaceholder(): React.JSX.Element {
+  const { Box, Text, useInput } = useInk();
+  const { state: navState, dispatch: navDispatch } = useNavigation();
+
+  useInput((_input: string, key: { escape?: boolean }) => {
+    if (key.escape) {
+      navDispatch({ type: "GO_BACK" });
+    }
+  });
+
+  return React.createElement(
+    Box as React.ComponentType<Record<string, unknown>>,
+    { flexDirection: "column", height: "100%" },
+    React.createElement(
+      Box as React.ComponentType<Record<string, unknown>>,
+      { paddingX: 1, paddingY: 1 },
+      React.createElement(
+        Text as React.ComponentType<Record<string, unknown>>,
+        { color: "cyan", bold: true },
+        `Run Detail: ${navState.selectedRunId ?? "none"}`,
+      ),
+    ),
+    React.createElement(
+      Box as React.ComponentType<Record<string, unknown>>,
+      { paddingX: 1 },
+      React.createElement(
+        Text as React.ComponentType<Record<string, unknown>>,
+        { color: "#6b7280" },
+        "Run detail view coming soon. Press Escape to go back.",
+      ),
+    ),
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Inner App (rendered inside all providers)
 // ---------------------------------------------------------------------------
 
@@ -53,7 +91,7 @@ interface AppInnerProps {
 }
 
 function AppInner({ runsDir }: AppInnerProps): React.JSX.Element {
-  const { Box, Text, useInput } = useInk();
+  const { Text, useInput } = useInk();
   const { state: sessionState, dispatch: sessionDispatch } = useSession();
   const { state: navState } = useNavigation();
 
@@ -77,29 +115,7 @@ function AppInner({ runsDir }: AppInnerProps): React.JSX.Element {
       return React.createElement(SessionView, null);
 
     case "run-detail":
-      // Placeholder for future run-detail view; shows a simple message
-      return React.createElement(
-        Box as React.ComponentType<Record<string, unknown>>,
-        { flexDirection: "column", height: "100%" },
-        React.createElement(
-          Box as React.ComponentType<Record<string, unknown>>,
-          { paddingX: 1, paddingY: 1 },
-          React.createElement(
-            Text as React.ComponentType<Record<string, unknown>>,
-            { color: "cyan", bold: true },
-            `Run Detail: ${navState.selectedRunId ?? "none"}`,
-          ),
-        ),
-        React.createElement(
-          Box as React.ComponentType<Record<string, unknown>>,
-          { paddingX: 1 },
-          React.createElement(
-            Text as React.ComponentType<Record<string, unknown>>,
-            { color: "#6b7280" },
-            "Run detail view coming soon. Press Escape to go back.",
-          ),
-        ),
-      );
+      return React.createElement(RunDetailPlaceholder, null);
 
     default: {
       const _exhaustive: never = navState.currentView;

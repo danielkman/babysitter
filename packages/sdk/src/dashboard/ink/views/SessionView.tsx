@@ -10,7 +10,7 @@
  * Box/Text are obtained from InkContext via useInk() — no prop drilling.
  */
 
-import React from "react";
+import React, { useCallback } from "react";
 import { useInk } from "../contexts/InkContext.js";
 import type { InkKey } from "../contexts/InkContext.js";
 import { useNavigation } from "../hooks/useNavigation.js";
@@ -18,6 +18,7 @@ import { useSession } from "../hooks/useSession.js";
 import { StatusBar } from "../components/StatusBar.js";
 import { MessagePane } from "../components/MessagePane.js";
 import { PromptBar } from "../components/PromptBar.js";
+import type { TuiMessage } from "../types.js";
 
 // ---------------------------------------------------------------------------
 // Component
@@ -44,6 +45,21 @@ export function SessionView(): React.JSX.Element {
     },
   );
 
+  // Handle message submission from the PromptBar
+  const handleSubmit = useCallback(
+    (text: string) => {
+      const message: TuiMessage = {
+        id: `msg-${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        verbosity: "minimal",
+        content: { kind: "user", text },
+      };
+      sessionDispatch({ type: "APPEND_MESSAGE", message });
+      sessionDispatch({ type: "SET_INPUT_ACTIVE", active: false });
+    },
+    [sessionDispatch],
+  );
+
   return React.createElement(
     Box as React.ComponentType<Record<string, unknown>>,
     {
@@ -52,6 +68,6 @@ export function SessionView(): React.JSX.Element {
     },
     React.createElement(StatusBar, null),
     React.createElement(MessagePane, null),
-    React.createElement(PromptBar, null),
+    React.createElement(PromptBar, { onSubmit: handleSubmit }),
   );
 }

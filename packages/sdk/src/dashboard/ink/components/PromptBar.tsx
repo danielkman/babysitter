@@ -33,6 +33,30 @@ export interface PromptBarProps {
 }
 
 // ---------------------------------------------------------------------------
+// Slash commands
+// ---------------------------------------------------------------------------
+
+interface SlashCommand {
+  readonly name: string;
+  readonly description: string;
+}
+
+const SLASH_COMMANDS: readonly SlashCommand[] = [
+  { name: "/status", description: "Show run status" },
+  { name: "/refresh", description: "Refresh run data" },
+  { name: "/clear", description: "Clear messages" },
+  { name: "/back", description: "Go back to dashboard" },
+  { name: "/verbosity", description: "Cycle verbosity level" },
+  { name: "/help", description: "Show available commands" },
+];
+
+function getSlashHints(input: string): readonly SlashCommand[] {
+  if (!input.startsWith("/")) return [];
+  const prefix = input.toLowerCase();
+  return SLASH_COMMANDS.filter((cmd) => cmd.name.startsWith(prefix));
+}
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
@@ -71,7 +95,7 @@ export function PromptBar({
       } else if (key.escape) {
         setValue("");
         dispatch({ type: "SET_INPUT_BUFFER", text: "" });
-      } else if (key.backspace) {
+      } else if (key.backspace || key.delete) {
         setValue((prev) => prev.slice(0, -1));
         dispatch({ type: "SET_INPUT_BUFFER", text: value.slice(0, -1) });
       } else if (input && input.length > 0 && !key.return) {
@@ -93,6 +117,9 @@ export function PromptBar({
   const lineCount = countLines(value);
   const isEmpty = value.length === 0;
   const isActive = state.inputActive;
+
+  // Slash command hints
+  const slashHints = getSlashHints(value);
 
   // Display text: show placeholder when empty and not active
   const displayText = isEmpty && !isActive ? placeholder : value;
@@ -136,7 +163,33 @@ export function PromptBar({
     cursor,
   );
 
-  return React.createElement(
+  // Slash command hints row (shown above the prompt when typing a slash command)
+  const slashHintsRow =
+    slashHints.length > 0
+      ? React.createElement(
+          Box as React.ComponentType<Record<string, unknown>>,
+          { flexDirection: "row", paddingX: 2, gap: 2 },
+          ...slashHints.map((cmd) =>
+            React.createElement(
+              Box as React.ComponentType<Record<string, unknown>>,
+              { key: cmd.name, flexDirection: "row", gap: 1 },
+              React.createElement(
+                Text as React.ComponentType<Record<string, unknown>>,
+                { color: colors.primary, bold: true },
+                cmd.name,
+              ),
+              React.createElement(
+                Text as React.ComponentType<Record<string, unknown>>,
+                { color: colors.muted },
+                cmd.description,
+              ),
+            ),
+          ),
+        )
+      : null;
+
+  // Prompt input row
+  const promptRow = React.createElement(
     Box as React.ComponentType<Record<string, unknown>>,
     {
       flexDirection: "row",
@@ -152,5 +205,12 @@ export function PromptBar({
     promptGlyph,
     inputArea,
     lineHint,
+  );
+
+  return React.createElement(
+    Box as React.ComponentType<Record<string, unknown>>,
+    { flexDirection: "column" },
+    slashHintsRow,
+    promptRow,
   );
 }

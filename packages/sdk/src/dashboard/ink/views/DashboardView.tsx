@@ -68,6 +68,8 @@ export function DashboardView({
           onQuit?.();
         } else if (input === "r") {
           refresh();
+        } else if (input === "n") {
+          handleAction("new");
         } else if (input === "s" && runs.length > 0) {
           const run = runs[selectedIndex];
           if (run) {
@@ -99,6 +101,9 @@ export function DashboardView({
           if (runs.length > 0 && runs[clampedIndex]) {
             navDispatch({ type: "NAVIGATE_TO_SESSION", runId: runs[clampedIndex].runId });
           }
+          break;
+        case "new":
+          navDispatch({ type: "NAVIGATE_TO_SESSION", runId: `new-${Date.now()}` });
           break;
         case "refresh":
           refresh();
