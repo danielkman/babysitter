@@ -25,3 +25,9 @@ export type { RunListTableProps } from "./RunListTable.js";
 
 export { ActionMenu } from "./ActionMenu.js";
 export type { ActionMenuProps } from "./ActionMenu.js";
+
+export { StatusLine } from "./StatusLine.js";
+export type { StatusLineProps as InkStatusLineProps } from "./StatusLine.js";
+
+// Primitives
+export * from "./primitives/index.js";

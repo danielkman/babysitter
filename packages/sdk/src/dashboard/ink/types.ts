@@ -163,3 +163,63 @@ export interface TuiConfig {
   /** Directory containing runs. Defaults to ".a5c/runs". */
   readonly runsDir?: string;
 }
+
+// ---------------------------------------------------------------------------
+// Phase 1: Foundation Enhancement types
+// ---------------------------------------------------------------------------
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type EffectKind = "node" | "breakpoint" | "orchestrator_task" | "sleep" | (string & {});
+export type EffectStatus = "pending" | "resolved" | "failed";
+export type OrchestrationPhase = "planning" | "executing" | "verifying" | "waiting" | "complete" | "failed";
+
+export interface EffectSummary {
+  readonly effectId: string;
+  readonly kind: EffectKind;
+  readonly status: EffectStatus;
+  readonly title?: string;
+  readonly elapsedMs?: number;
+  readonly error?: string;
+}
+
+export interface TaskSummary {
+  readonly taskId: string;
+  readonly effectId: string;
+  readonly kind: EffectKind;
+  readonly title: string;
+  readonly status: EffectStatus;
+  readonly startedAt?: number | string;
+  readonly completedAt?: number | string;
+  readonly elapsedMs?: number;
+}
+
+export interface BreakpointState {
+  readonly breakpointId: string;
+  readonly title: string;
+  readonly approved: boolean | null;
+  readonly response?: string;
+  readonly feedback?: string;
+  readonly expert?: string | string[];
+  readonly tags?: string[];
+  readonly autoApproval?: { readonly recommended: boolean; readonly reason: string };
+}
+
+export interface TokenUsage {
+  readonly input: number;
+  readonly output: number;
+  readonly total: number;
+  readonly cacheRead?: number;
+  readonly cacheWrite?: number;
+}
+
+export interface OrchestrationStatus {
+  readonly runId: string;
+  readonly iteration: number;
+  readonly phase: OrchestrationPhase;
+  readonly totalEffects: number;
+  readonly pendingEffects: number;
+  readonly resolvedEffects: number;
+  readonly tokenUsage?: TokenUsage;
+  readonly cost?: number;
+  readonly elapsedMs: number;
+}

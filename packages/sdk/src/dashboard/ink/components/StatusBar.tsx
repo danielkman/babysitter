@@ -43,6 +43,21 @@ function truncateRunId(id: string): string {
   return id.slice(0, 12);
 }
 
+export function formatTokenCount(count: number): string {
+  if (count < 1000) return `${count}`;
+  if (count < 1_000_000) {
+    const k = count / 1000;
+    return `${k.toFixed(1)}k`;
+  }
+  const m = count / 1_000_000;
+  return `${m.toFixed(1)}M`;
+}
+
+export function formatCost(cost: number): string {
+  if (cost < 1) return `$${cost.toFixed(4)}`;
+  return `$${cost.toFixed(2)}`;
+}
+
 function statusToIndicator(status: RunStatus): string {
   switch (status) {
     case "running":

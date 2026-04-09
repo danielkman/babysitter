@@ -23,6 +23,14 @@ export type {
   Theme,
   ThemeColors,
   TuiConfig,
+  EffectKind,
+  EffectStatus,
+  EffectSummary,
+  TaskSummary,
+  BreakpointState,
+  OrchestrationPhase,
+  OrchestrationStatus,
+  TokenUsage,
 } from "./types.js";
 
 // Session actions (useful for consumers that dispatch externally)
