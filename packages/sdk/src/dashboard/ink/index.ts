@@ -148,6 +148,59 @@ export {
   statusToColor,
 } from "./components/StatusBar.js";
 
+// Phase 7: ScrollBox math
+export {
+  clampScrollOffset,
+  computeVisibleRange,
+  shouldAutoScroll,
+} from "./helpers.js";
+
+// Phase 7: Alternate screen mode
+export {
+  buildAlternateScreenEnter,
+  buildAlternateScreenLeave,
+} from "./helpers.js";
+
+// Phase 7: Terminal tab status
+export {
+  buildTabStatusSequence,
+  mapRunStatusToTabPreset,
+} from "./helpers.js";
+export type { TabStatusPreset } from "./helpers.js";
+
+// Phase 7: Paste detection
+export {
+  PASTE_START,
+  PASTE_END,
+  isPasteSequence,
+  detectBracketedPaste,
+  extractPasteContent,
+} from "./helpers.js";
+export type { PasteDetectionResult } from "./helpers.js";
+
+// Phase 7: Search highlighting
+export {
+  findMatches,
+  highlightText,
+  navigateMatch,
+} from "./helpers.js";
+export type { SearchMatch, SearchOptions } from "./helpers.js";
+
+// Phase 7: Diff helpers
+export {
+  classifyDiffLine,
+  parseDiffHunks,
+  formatDiffStats,
+} from "./helpers.js";
+export type { DiffLineKind, DiffHunk, DiffStats } from "./helpers.js";
+
+// Phase 7: Viewport-aware animation
+export {
+  shouldAnimateTick,
+  computeFrameIndex,
+} from "./helpers.js";
+export type { ViewportState } from "./helpers.js";
+
 // Chat context
 export type { ChatContextValue, ChatProviderProps } from "./contexts/ChatContext.js";
 

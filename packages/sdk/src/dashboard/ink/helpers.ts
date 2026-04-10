@@ -15,6 +15,7 @@ import type {
   OrchestrationStatus,
   TokenUsage,
   BreakpointState,
+  RunStatus,
 } from "./types.js";
 import type { TreeNode } from "./components/primitives/Tree.js";
 import type { RunSummary } from "./data/runScanner.js";
@@ -848,4 +849,331 @@ export function formatStatusSection(section: StatusSection): string[] {
     lines.push(`  ${entry.label.padEnd(maxLabel)}  ${entry.value}`);
   }
   return lines;
+}
+
+// ---------------------------------------------------------------------------
+// Phase 7: ScrollBox math
+// ---------------------------------------------------------------------------
+
+/**
+ * Clamp a scroll offset to valid bounds.
+ * @param offset  Current scroll offset (items from top)
+ * @param contentLength  Total number of items
+ * @param viewportHeight  Number of visible items
+ */
+export function clampScrollOffset(
+  offset: number,
+  contentLength: number,
+  viewportHeight: number,
+): number {
+  if (contentLength <= viewportHeight || viewportHeight <= 0) return 0;
+  const maxOffset = contentLength - viewportHeight;
+  return Math.max(0, Math.min(offset, maxOffset));
+}
+
+/**
+ * Compute the visible range [start, end) for a given scroll offset.
+ */
+export function computeVisibleRange(
+  offset: number,
+  contentLength: number,
+  viewportHeight: number,
+): { start: number; end: number } {
+  const clamped = clampScrollOffset(offset, contentLength, viewportHeight);
+  const end = Math.min(clamped + viewportHeight, contentLength);
+  return { start: clamped, end };
+}
+
+/**
+ * Determine whether auto-scroll (sticky scroll) should be active.
+ * Returns true when the scroll position is at or near the bottom.
+ * @param threshold  Number of items from the bottom to consider "near" (default 1)
+ */
+export function shouldAutoScroll(
+  offset: number,
+  contentLength: number,
+  viewportHeight: number,
+  threshold = 1,
+): boolean {
+  if (contentLength <= viewportHeight) return true;
+  const maxOffset = contentLength - viewportHeight;
+  return offset >= maxOffset - threshold;
+}
+
+// ---------------------------------------------------------------------------
+// Phase 7: Alternate screen mode
+// ---------------------------------------------------------------------------
+
+/** Build the CSI sequence to enter the alternate screen buffer. */
+export function buildAlternateScreenEnter(): string {
+  return "\x1b[?1049h";
+}
+
+/** Build the CSI sequence to leave the alternate screen buffer. */
+export function buildAlternateScreenLeave(): string {
+  return "\x1b[?1049l";
+}
+
+// ---------------------------------------------------------------------------
+// Phase 7: Terminal tab status
+// ---------------------------------------------------------------------------
+
+export type TabStatusPreset = "idle" | "busy" | "waiting";
+
+const TAB_STATUS_COLORS: Record<TabStatusPreset, string> = {
+  idle: "0;128;0",      // green
+  busy: "255;165;0",    // orange
+  waiting: "255;255;0", // yellow
+};
+
+/**
+ * Build an OSC sequence for setting terminal tab status color.
+ * Uses OSC 21337 (iTerm2 tab color protocol).
+ */
+export function buildTabStatusSequence(preset: TabStatusPreset): string {
+  const rgb = TAB_STATUS_COLORS[preset];
+  const [r, g, b] = rgb.split(";");
+  return `\x1b]6;1;bg;red;brightness;${r}\x07\x1b]6;1;bg;green;brightness;${g}\x07\x1b]6;1;bg;blue;brightness;${b}\x07`;
+}
+
+/**
+ * Map a RunStatus to a tab status preset.
+ */
+export function mapRunStatusToTabPreset(status: RunStatus): TabStatusPreset {
+  switch (status) {
+    case "running":
+      return "busy";
+    case "waiting_effect":
+      return "waiting";
+    case "idle":
+    case "complete":
+    case "failed":
+    default:
+      return "idle";
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Phase 7: Paste detection
+// ---------------------------------------------------------------------------
+
+/** Bracketed paste mode start sequence. */
+export const PASTE_START = "\x1b[200~";
+/** Bracketed paste mode end sequence. */
+export const PASTE_END = "\x1b[201~";
+
+/** Check if a string contains a bracketed paste sequence. */
+export function isPasteSequence(input: string): boolean {
+  return input.includes(PASTE_START);
+}
+
+export interface PasteDetectionResult {
+  readonly isPaste: boolean;
+  readonly content?: string;
+}
+
+/** Detect bracketed paste and extract content. */
+export function detectBracketedPaste(input: string): PasteDetectionResult {
+  if (!isPasteSequence(input)) {
+    return { isPaste: false };
+  }
+  const content = extractPasteContent(input);
+  return { isPaste: true, content };
+}
+
+/** Strip bracketed paste sequences and extract the pasted content. */
+export function extractPasteContent(input: string): string {
+  return input.replace(PASTE_START, "").replace(PASTE_END, "");
+}
+
+// ---------------------------------------------------------------------------
+// Phase 7: Search highlighting
+// ---------------------------------------------------------------------------
+
+export interface SearchMatch {
+  readonly start: number;
+  readonly end: number;
+}
+
+export interface SearchOptions {
+  readonly ignoreCase?: boolean;
+}
+
+/**
+ * Find all non-overlapping matches of a pattern in text.
+ */
+export function findMatches(
+  text: string,
+  pattern: string,
+  options?: SearchOptions,
+): SearchMatch[] {
+  if (!pattern || !text) return [];
+
+  const flags = options?.ignoreCase ? "gi" : "g";
+  const escaped = pattern.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const regex = new RegExp(escaped, flags);
+  const matches: SearchMatch[] = [];
+
+  let match: RegExpExecArray | null;
+  while ((match = regex.exec(text)) !== null) {
+    matches.push({ start: match.index, end: match.index + match[0].length });
+    // Prevent infinite loop on zero-length matches
+    if (match[0].length === 0) regex.lastIndex++;
+  }
+
+  return matches;
+}
+
+/**
+ * Wrap matched regions with marker strings.
+ */
+export function highlightText(
+  text: string,
+  matches: readonly SearchMatch[],
+  startMarker: string,
+  endMarker: string,
+): string {
+  if (matches.length === 0) return text;
+
+  const sorted = [...matches].sort((a, b) => a.start - b.start);
+  let result = "";
+  let lastEnd = 0;
+
+  for (const m of sorted) {
+    result += text.slice(lastEnd, m.start);
+    result += startMarker + text.slice(m.start, m.end) + endMarker;
+    lastEnd = m.end;
+  }
+  result += text.slice(lastEnd);
+
+  return result;
+}
+
+/**
+ * Navigate to the next or previous match index, wrapping around.
+ */
+export function navigateMatch(
+  currentIndex: number,
+  totalMatches: number,
+  direction: "next" | "prev",
+): number {
+  if (totalMatches <= 0) return 0;
+  if (totalMatches === 1) return 0;
+
+  if (direction === "next") {
+    return (currentIndex + 1) % totalMatches;
+  }
+  return (currentIndex - 1 + totalMatches) % totalMatches;
+}
+
+// ---------------------------------------------------------------------------
+// Phase 7: Diff helpers
+// ---------------------------------------------------------------------------
+
+export type DiffLineKind = "add" | "remove" | "context" | "hunk-header" | "header";
+
+/**
+ * Classify a single diff line by its prefix.
+ */
+export function classifyDiffLine(line: string): DiffLineKind {
+  if (line.startsWith("@@")) return "hunk-header";
+  if (line.startsWith("+++") || line.startsWith("---")) return "header";
+  if (line.startsWith("+")) return "add";
+  if (line.startsWith("-")) return "remove";
+  return "context";
+}
+
+export interface DiffHunk {
+  readonly header: string;
+  readonly lines: readonly string[];
+}
+
+/**
+ * Parse a unified diff into hunks.
+ */
+export function parseDiffHunks(diff: string): DiffHunk[] {
+  if (!diff.trim()) return [];
+
+  const allLines = diff.split("\n");
+  const hunks: DiffHunk[] = [];
+  let currentHeader: string | null = null;
+  let currentLines: string[] = [];
+
+  for (const line of allLines) {
+    if (line.startsWith("@@")) {
+      if (currentHeader !== null) {
+        hunks.push({ header: currentHeader, lines: currentLines });
+      }
+      currentHeader = line;
+      currentLines = [];
+    } else if (currentHeader !== null) {
+      // Skip file headers within a hunk
+      if (!line.startsWith("+++") && !line.startsWith("---")) {
+        currentLines.push(line);
+      }
+    }
+  }
+
+  if (currentHeader !== null) {
+    hunks.push({ header: currentHeader, lines: currentLines });
+  }
+
+  return hunks;
+}
+
+export interface DiffStats {
+  readonly additions: number;
+  readonly deletions: number;
+  readonly summary: string;
+}
+
+/**
+ * Count additions and deletions from diff lines.
+ */
+export function formatDiffStats(lines: readonly string[]): DiffStats {
+  let additions = 0;
+  let deletions = 0;
+
+  for (const line of lines) {
+    if (line.startsWith("+") && !line.startsWith("+++")) additions++;
+    if (line.startsWith("-") && !line.startsWith("---")) deletions++;
+  }
+
+  return {
+    additions,
+    deletions,
+    summary: `+${additions} -${deletions}`,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Phase 7: Viewport-aware animation
+// ---------------------------------------------------------------------------
+
+export interface ViewportState {
+  readonly visible: boolean;
+  readonly focused: boolean;
+}
+
+/**
+ * Determine if an animation tick should run based on viewport state.
+ */
+export function shouldAnimateTick(state: ViewportState): boolean {
+  return state.visible;
+}
+
+/**
+ * Compute the current animation frame index from elapsed time.
+ * @param elapsedMs  Time since animation start
+ * @param intervalMs  Duration per frame
+ * @param frameCount  Total frames in the cycle
+ */
+export function computeFrameIndex(
+  elapsedMs: number,
+  intervalMs: number,
+  frameCount: number,
+): number {
+  if (intervalMs <= 0 || frameCount <= 0 || elapsedMs <= 0) return 0;
+  const totalFrames = Math.floor(elapsedMs / intervalMs);
+  return totalFrames % frameCount;
 }
