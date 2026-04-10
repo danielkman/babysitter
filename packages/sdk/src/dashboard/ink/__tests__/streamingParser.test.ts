@@ -10,8 +10,10 @@ import { describe, it, expect } from "vitest";
 import {
   parseStreamingLine,
   formatTurnElapsed,
+  formatTokenSummary,
 } from "../helpers.js";
 import type { StreamingEvent } from "../helpers.js";
+import type { TokenUsage } from "../types.js";
 
 // ---------------------------------------------------------------------------
 // parseStreamingLine — tool events
@@ -205,5 +207,48 @@ describe("StreamingEvent type discrimination", () => {
     const event = parseStreamingLine(line) as StreamingEvent & { kind: "token_update" };
     expect(event.inputTokens).toBe(100);
     expect(event.outputTokens).toBe(50);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// formatTokenSummary
+// ---------------------------------------------------------------------------
+
+describe("formatTokenSummary", () => {
+  it("formats basic input/output counts", () => {
+    const usage: TokenUsage = { input: 1500, output: 300, total: 1800 };
+    const result = formatTokenSummary(usage);
+    expect(result).toContain("1.5k");
+    expect(result).toContain("300");
+  });
+
+  it("formats with cache read tokens", () => {
+    const usage: TokenUsage = { input: 2000, output: 500, total: 2500, cacheRead: 1000 };
+    const result = formatTokenSummary(usage);
+    expect(result).toContain("cache");
+  });
+
+  it("formats zero values", () => {
+    const usage: TokenUsage = { input: 0, output: 0, total: 0 };
+    const result = formatTokenSummary(usage);
+    expect(result).toContain("0");
+  });
+
+  it("formats large values (millions)", () => {
+    const usage: TokenUsage = { input: 1_500_000, output: 300_000, total: 1_800_000 };
+    const result = formatTokenSummary(usage);
+    expect(result).toContain("1.5M");
+  });
+
+  it("includes cache write when present", () => {
+    const usage: TokenUsage = { input: 1000, output: 200, total: 1200, cacheWrite: 500 };
+    const result = formatTokenSummary(usage);
+    expect(result).toContain("cache");
+  });
+
+  it("omits cache info when not present", () => {
+    const usage: TokenUsage = { input: 1000, output: 200, total: 1200 };
+    const result = formatTokenSummary(usage);
+    expect(result).not.toContain("cache");
   });
 });

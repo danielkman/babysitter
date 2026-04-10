@@ -15,7 +15,7 @@ import { useTheme } from "../hooks/useTheme.js";
 import { useInk } from "../contexts/InkContext.js";
 import { RunningIndicator } from "./RunningIndicator.js";
 import type { RunStatus } from "../types.js";
-import { truncateRunId, formatCost, formatElapsedClock, formatTurnElapsed } from "../helpers.js";
+import { truncateRunId, formatCost, formatElapsedClock, formatTurnElapsed, formatTokenSummary } from "../helpers.js";
 export { formatCost };
 
 // ---------------------------------------------------------------------------
@@ -163,13 +163,13 @@ export function StatusBar({
       ? React.createElement(
           Text as React.ComponentType<Record<string, unknown>>,
           { color: colors.muted },
-          `${formatTokenCount(tokenUsage.input)}in/${formatTokenCount(tokenUsage.output)}out`,
+          formatTokenSummary(tokenUsage),
         )
       : null,
     cost !== null && cost > 0
       ? React.createElement(
           Text as React.ComponentType<Record<string, unknown>>,
-          { color: colors.muted },
+          { color: colors.success },
           `$${cost.toFixed(4)}`,
         )
       : null,

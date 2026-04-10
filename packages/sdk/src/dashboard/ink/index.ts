@@ -133,6 +133,7 @@ export { formatKeyboardHelp } from "./helpers.js";
 export {
   parseStreamingLine,
   formatTurnElapsed,
+  formatTokenSummary,
 } from "./helpers.js";
 export type { StreamingEvent } from "./helpers.js";
 

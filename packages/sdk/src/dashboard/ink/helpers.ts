@@ -1387,3 +1387,39 @@ export function formatTurnElapsed(ms: number): string {
   if (minutes === 0) return `${seconds}s`;
   return `${minutes}m${seconds}s`;
 }
+
+// ---------------------------------------------------------------------------
+// Token summary formatting
+// ---------------------------------------------------------------------------
+
+/** Format a count to compact string: 300, 1.5k, 1.5M */
+function formatCompactCount(count: number): string {
+  if (count < 1000) return `${count}`;
+  if (count < 1_000_000) {
+    const k = count / 1000;
+    return `${k % 1 === 0 ? k.toFixed(0) : k.toFixed(1)}k`;
+  }
+  const m = count / 1_000_000;
+  return `${m % 1 === 0 ? m.toFixed(0) : m.toFixed(1)}M`;
+}
+
+/**
+ * Format a TokenUsage into a compact one-line summary.
+ * Example: "1.5kin/300out" or "2kin/500out(+1kcache)"
+ */
+export function formatTokenSummary(usage: TokenUsage): string {
+  const inStr = formatCompactCount(usage.input);
+  const outStr = formatCompactCount(usage.output);
+  let result = `${inStr}in/${outStr}out`;
+
+  const cacheRead = usage.cacheRead ?? 0;
+  const cacheWrite = usage.cacheWrite ?? 0;
+  if (cacheRead > 0 || cacheWrite > 0) {
+    const parts: string[] = [];
+    if (cacheRead > 0) parts.push(`${formatCompactCount(cacheRead)}r`);
+    if (cacheWrite > 0) parts.push(`${formatCompactCount(cacheWrite)}w`);
+    result += `(${parts.join("/")}cache)`;
+  }
+
+  return result;
+}
