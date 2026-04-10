@@ -590,7 +590,11 @@ export function SessionView(): React.JSX.Element {
       flexDirection: "column",
       height: "100%",
     },
-    React.createElement(StatusBar, null),
+    React.createElement(StatusBar, {
+      harness: chat.harness,
+      model: chat.model,
+      iteration: sessionState.iteration,
+    }),
     React.createElement(MessagePane, null),
     showEffects
       ? React.createElement(EffectsPanel as React.ComponentType<Record<string, unknown>>, { showPendingSummary: true, maxTreeItems: 10 })

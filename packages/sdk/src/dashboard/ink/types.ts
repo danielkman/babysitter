@@ -117,6 +117,8 @@ export interface SessionState {
   readonly cost: number | null;
   /** Active breakpoint awaiting user decision (null if none). */
   readonly breakpoint: BreakpointState | null;
+  /** Current iteration/turn number (incremented on each user message). */
+  readonly iteration: number;
 }
 
 // ---------------------------------------------------------------------------

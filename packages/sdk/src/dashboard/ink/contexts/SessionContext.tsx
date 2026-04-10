@@ -43,7 +43,8 @@ export type SessionAction =
   | { type: "UPDATE_TOKEN_USAGE"; tokenUsage: TokenUsage }
   | { type: "UPDATE_COST"; cost: number }
   | { type: "SET_BREAKPOINT"; breakpoint: BreakpointState }
-  | { type: "CLEAR_BREAKPOINT" };
+  | { type: "CLEAR_BREAKPOINT" }
+  | { type: "SET_ITERATION"; iteration: number };
 
 // ---------------------------------------------------------------------------
 // Reducer
@@ -99,7 +100,7 @@ function sessionReducer(
       };
 
     case "TURN_STARTED":
-      return { ...state, turnStartedAt: action.startedAt };
+      return { ...state, turnStartedAt: action.startedAt, iteration: state.iteration + 1 };
 
     case "TURN_FINISHED":
       return { ...state, turnStartedAt: null };
@@ -115,6 +116,9 @@ function sessionReducer(
 
     case "CLEAR_BREAKPOINT":
       return { ...state, breakpoint: null, inputActive: true };
+
+    case "SET_ITERATION":
+      return { ...state, iteration: action.iteration };
 
     default: {
       const _exhaustive: never = action;
@@ -139,6 +143,7 @@ const initialState: SessionState = {
   tokenUsage: null,
   cost: null,
   breakpoint: null,
+  iteration: 0,
 };
 
 // ---------------------------------------------------------------------------
