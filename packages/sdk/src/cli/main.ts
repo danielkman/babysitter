@@ -322,6 +322,14 @@ interface ParsedArgs {
   configPath?: string;
   foreground?: boolean;
   gracePeriodMs?: number;
+  // mcp:serve WebSocket flags
+  transport?: string;
+  port?: number;
+  host?: string;
+  authToken?: string;
+  wsPingInterval?: number;
+  wsGracePeriod?: number;
+  wsMaxMps?: number;
 }
 
 interface ActionSummary {
@@ -572,6 +580,34 @@ function parseArgs(argv: string[]): ParsedArgs {
     }
     if (arg === "--grace-period-ms") {
       parsed.gracePeriodMs = parseInt(expectFlagValue(rest, ++i, "--grace-period-ms"), 10);
+      continue;
+    }
+    if (arg === "--transport") {
+      parsed.transport = expectFlagValue(rest, ++i, "--transport");
+      continue;
+    }
+    if (arg === "--port") {
+      parsed.port = parseInt(expectFlagValue(rest, ++i, "--port"), 10);
+      continue;
+    }
+    if (arg === "--host") {
+      parsed.host = expectFlagValue(rest, ++i, "--host");
+      continue;
+    }
+    if (arg === "--auth-token") {
+      parsed.authToken = expectFlagValue(rest, ++i, "--auth-token");
+      continue;
+    }
+    if (arg === "--ws-ping-interval") {
+      parsed.wsPingInterval = parseInt(expectFlagValue(rest, ++i, "--ws-ping-interval"), 10);
+      continue;
+    }
+    if (arg === "--ws-grace-period") {
+      parsed.wsGracePeriod = parseInt(expectFlagValue(rest, ++i, "--ws-grace-period"), 10);
+      continue;
+    }
+    if (arg === "--ws-max-mps") {
+      parsed.wsMaxMps = parseInt(expectFlagValue(rest, ++i, "--ws-max-mps"), 10);
       continue;
     }
     if (arg === "--model") {
@@ -3436,7 +3472,18 @@ export function createBabysitterCli() {
           });
         }
         if (parsed.command === "mcp:serve") {
-          return await handleMcpServe({ json: parsed.json });
+          return await handleMcpServe({
+            json: parsed.json,
+            transport: parsed.transport,
+            port: parsed.port,
+            host: parsed.host,
+            authToken: parsed.authToken,
+            wsOptions: {
+              pingIntervalMs: parsed.wsPingInterval,
+              maxMessagesPerSecond: parsed.wsMaxMps,
+              sessionGracePeriodMs: parsed.wsGracePeriod,
+            },
+          });
         }
         if (parsed.command === "jsonl:interactive") {
           return await handleJsonlInteractive({ runsDir: parsed.runsDir });
