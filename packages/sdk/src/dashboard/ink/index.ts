@@ -206,6 +206,10 @@ export {
 } from "./helpers.js";
 export type { SearchMatch, SearchOptions } from "./helpers.js";
 
+// Markdown-lite parser for rich message rendering
+export { parseMarkdownLite } from "./helpers.js";
+export type { MarkdownSpan } from "./helpers.js";
+
 // Phase 7: Diff helpers
 export {
   classifyDiffLine,

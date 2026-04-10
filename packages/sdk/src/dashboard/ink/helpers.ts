@@ -1067,6 +1067,169 @@ export function navigateMatch(
 }
 
 // ---------------------------------------------------------------------------
+// Markdown-lite parser for TUI message rendering
+// ---------------------------------------------------------------------------
+
+export interface MarkdownSpan {
+  readonly text: string;
+  readonly style: "plain" | "bold" | "italic" | "code" | "codeBlock" | "blockquote" | "listItem";
+  readonly language?: string;
+}
+
+/**
+ * Parse basic markdown into styled spans for terminal rendering.
+ * Supports: **bold**, *italic*, `inline code`, ```code blocks```,
+ * > blockquotes, - / * / 1. list items.
+ *
+ * This is intentionally limited — no nested formatting, no links, no headers.
+ * The goal is readable terminal output, not full markdown compliance.
+ */
+export function parseMarkdownLite(input: string): MarkdownSpan[] {
+  if (!input) return [];
+
+  const spans: MarkdownSpan[] = [];
+  const lines = input.split("\n");
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
+
+    // Fenced code block: ```[language]
+    if (line.trimStart().startsWith("```")) {
+      const langMatch = line.trimStart().match(/^```(\w*)/);
+      const language = langMatch?.[1] || undefined;
+      const codeLines: string[] = [];
+      i++;
+      while (i < lines.length && !lines[i].trimStart().startsWith("```")) {
+        codeLines.push(lines[i]);
+        i++;
+      }
+      // Skip closing ```
+      if (i < lines.length) i++;
+
+      // Add newline before code block if there are preceding spans
+      if (spans.length > 0 && spans[spans.length - 1].style !== "codeBlock") {
+        const last = spans[spans.length - 1];
+        if (!last.text.endsWith("\n")) {
+          spans[spans.length - 1] = { ...last, text: last.text + "\n" };
+        }
+      }
+
+      spans.push({
+        text: codeLines.join("\n"),
+        style: "codeBlock",
+        language,
+      });
+      continue;
+    }
+
+    // Blockquote: > text
+    if (line.match(/^>\s?/)) {
+      if (i > 0 && spans.length > 0) {
+        const last = spans[spans.length - 1];
+        if (!last.text.endsWith("\n")) {
+          spans[spans.length - 1] = { ...last, text: last.text + "\n" };
+        }
+      }
+      spans.push({
+        text: line.replace(/^>\s?/, ""),
+        style: "blockquote",
+      });
+      i++;
+      continue;
+    }
+
+    // Bullet list: - item, * item
+    if (line.match(/^\s*[-*]\s+/)) {
+      if (i > 0 && spans.length > 0) {
+        const last = spans[spans.length - 1];
+        if (!last.text.endsWith("\n")) {
+          spans[spans.length - 1] = { ...last, text: last.text + "\n" };
+        }
+      }
+      spans.push({
+        text: line.replace(/^\s*[-*]\s+/, ""),
+        style: "listItem",
+      });
+      i++;
+      continue;
+    }
+
+    // Numbered list: 1. item, 2. item
+    if (line.match(/^\s*\d+\.\s+/)) {
+      if (i > 0 && spans.length > 0) {
+        const last = spans[spans.length - 1];
+        if (!last.text.endsWith("\n")) {
+          spans[spans.length - 1] = { ...last, text: last.text + "\n" };
+        }
+      }
+      spans.push({
+        text: line.replace(/^\s*\d+\.\s+/, ""),
+        style: "listItem",
+      });
+      i++;
+      continue;
+    }
+
+    // Regular line — parse inline formatting
+    const lineText = i > 0 ? "\n" + line : line;
+    parseInlineMarkdown(lineText, spans);
+    i++;
+  }
+
+  return spans;
+}
+
+/**
+ * Parse inline markdown (bold, italic, code) and append spans.
+ */
+function parseInlineMarkdown(text: string, spans: MarkdownSpan[]): void {
+  // Regex for inline patterns: **bold**, *italic*, `code`
+  // Order matters: ** before * to avoid conflicts
+  const inlineRegex = /(\*\*(.+?)\*\*|\*(.+?)\*|`([^`]+)`)/g;
+
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = inlineRegex.exec(text)) !== null) {
+    // Plain text before the match
+    if (match.index > lastIndex) {
+      appendPlain(spans, text.slice(lastIndex, match.index));
+    }
+
+    if (match[2] !== undefined) {
+      // **bold**
+      spans.push({ text: match[2], style: "bold" });
+    } else if (match[3] !== undefined) {
+      // *italic*
+      spans.push({ text: match[3], style: "italic" });
+    } else if (match[4] !== undefined) {
+      // `code`
+      spans.push({ text: match[4], style: "code" });
+    }
+
+    lastIndex = match.index + match[0].length;
+  }
+
+  // Remaining text after last match
+  if (lastIndex < text.length) {
+    appendPlain(spans, text.slice(lastIndex));
+  }
+}
+
+/** Merge adjacent plain spans or add a new one. */
+function appendPlain(spans: MarkdownSpan[], text: string): void {
+  if (spans.length > 0 && spans[spans.length - 1].style === "plain") {
+    spans[spans.length - 1] = {
+      ...spans[spans.length - 1],
+      text: spans[spans.length - 1].text + text,
+    };
+  } else {
+    spans.push({ text, style: "plain" });
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Phase 7: Diff helpers
 // ---------------------------------------------------------------------------
 

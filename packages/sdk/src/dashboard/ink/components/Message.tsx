@@ -23,7 +23,9 @@ import {
   formatToolOutput,
   formatShellOutput,
   formatTimestamp,
+  parseMarkdownLite,
 } from "../helpers.js";
+import type { MarkdownSpan } from "../helpers.js";
 import type { TuiMessage, RunStatus, ThemeColors } from "../types.js";
 
 // ---------------------------------------------------------------------------
@@ -84,6 +86,51 @@ function UserMessage({
   );
 }
 
+/** Render a single MarkdownSpan as an Ink Text element. */
+function renderSpan(
+  span: MarkdownSpan,
+  idx: number,
+  colors: ThemeColors,
+  Box: React.ComponentType<Record<string, unknown>>,
+  Text: React.ComponentType<Record<string, unknown>>,
+): React.JSX.Element {
+  switch (span.style) {
+    case "bold":
+      return React.createElement(Text, { key: `s-${idx}`, color: colors.foreground, bold: true, wrap: "wrap" }, span.text);
+    case "italic":
+      return React.createElement(Text, { key: `s-${idx}`, color: colors.foreground, italic: true, wrap: "wrap" }, span.text);
+    case "code":
+      return React.createElement(Text, { key: `s-${idx}`, color: colors.primary, dimColor: true, wrap: "wrap" }, span.text);
+    case "codeBlock": {
+      const langTag = span.language
+        ? React.createElement(Text, { key: `lang-${idx}`, color: colors.muted, dimColor: true }, `[${span.language}]\n`)
+        : null;
+      return React.createElement(
+        Box as React.ComponentType<Record<string, unknown>>,
+        { key: `cb-${idx}`, flexDirection: "column", paddingLeft: 1, marginY: 0 },
+        langTag,
+        React.createElement(Text, { color: colors.muted, wrap: "wrap" }, span.text),
+      );
+    }
+    case "blockquote":
+      return React.createElement(
+        Box as React.ComponentType<Record<string, unknown>>,
+        { key: `bq-${idx}`, flexDirection: "row", gap: 1 },
+        React.createElement(Text, { color: colors.muted, dimColor: true }, "│"),
+        React.createElement(Text, { color: colors.muted, italic: true, wrap: "wrap" }, span.text),
+      );
+    case "listItem":
+      return React.createElement(
+        Box as React.ComponentType<Record<string, unknown>>,
+        { key: `li-${idx}`, flexDirection: "row", gap: 1, paddingLeft: 1 },
+        React.createElement(Text, { color: colors.muted }, "•"),
+        React.createElement(Text, { color: colors.foreground, wrap: "wrap" }, span.text),
+      );
+    default:
+      return React.createElement(Text, { key: `s-${idx}`, color: colors.foreground, wrap: "wrap" }, span.text);
+  }
+}
+
 function AssistantMessage({
   text,
   streaming,
@@ -94,6 +141,24 @@ function AssistantMessage({
   colors: ReturnType<typeof useTheme>["colors"];
 }): React.JSX.Element {
   const { Box, Text } = useInk();
+
+  // Parse markdown for non-streaming messages (streaming may have incomplete markdown)
+  const spans = streaming ? null : parseMarkdownLite(text);
+
+  // If we have parsed spans, render them with formatting
+  if (spans && spans.length > 0) {
+    const renderedSpans = spans.map((span, idx) =>
+      renderSpan(span, idx, colors, Box as React.ComponentType<Record<string, unknown>>, Text as React.ComponentType<Record<string, unknown>>),
+    );
+
+    return React.createElement(
+      Box as React.ComponentType<Record<string, unknown>>,
+      { flexDirection: "column", gap: 0 },
+      ...renderedSpans,
+    );
+  }
+
+  // Fallback: plain text (for streaming or empty)
   return React.createElement(
     Box as React.ComponentType<Record<string, unknown>>,
     { flexDirection: "row", gap: 0 },
