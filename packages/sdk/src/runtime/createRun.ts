@@ -125,7 +125,7 @@ function normalizeEntrypoint(runDir: string, importPath: string, exportName?: st
   const entryImport = toRunRelativePosix(runDir, importPath);
   return {
     importPath: entryImport,
-    exportName: exportName ?? "process",
+    exportName: exportName,
   };
 }
 

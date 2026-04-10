@@ -64,7 +64,7 @@ function resolveEntrypoint(options: CreateRunDirOptions): RunEntrypointMetadata 
   if (options.entrypoint?.importPath) {
     return {
       importPath: options.entrypoint.importPath,
-      exportName: options.entrypoint.exportName ?? "process",
+      exportName: options.entrypoint.exportName,
     };
   }
   const importPath = options.processPath ?? "./process.js";

@@ -1103,8 +1103,10 @@ function defaultResultRef(effectId: string): string {
   return `tasks/${effectId}/result.json`;
 }
 
-function formatEntrypointSpecifier(entrypoint: { importPath: string; exportName: string }): string {
-  return `${entrypoint.importPath}#${entrypoint.exportName}`;
+function formatEntrypointSpecifier(entrypoint: { importPath: string; exportName?: string }): string {
+  return entrypoint.exportName
+    ? `${entrypoint.importPath}#${entrypoint.exportName}`
+    : entrypoint.importPath;
 }
 
 function parseEntrypointSpecifier(specifier: string): { importPath: string; exportName?: string } {

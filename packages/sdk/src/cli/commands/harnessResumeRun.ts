@@ -52,7 +52,7 @@ interface RunSummary {
   pendingEffects: Record<string, number>;
   totalEffects: number;
   resolvedEffects: number;
-  entrypoint: { importPath: string; exportName: string };
+  entrypoint: { importPath: string; exportName?: string };
 }
 
 // ---------------------------------------------------------------------------

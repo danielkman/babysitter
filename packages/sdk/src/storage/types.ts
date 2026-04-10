@@ -4,7 +4,7 @@ export type JsonRecord = Record<string, unknown>;
 
 export interface RunEntrypointMetadata {
   importPath: string;
-  exportName: string;
+  exportName?: string;
 }
 
 export interface RunMetadata extends JsonRecord {
