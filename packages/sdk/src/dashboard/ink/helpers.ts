@@ -14,6 +14,7 @@ import type {
   OrchestrationPhase,
   OrchestrationStatus,
   TokenUsage,
+  BreakpointState,
 } from "./types.js";
 import type { TreeNode } from "./components/primitives/Tree.js";
 
@@ -449,4 +450,189 @@ export function summarizePendingGroups(
   summaries.sort((a, b) => b.count - a.count);
 
   return summaries;
+}
+
+// ---------------------------------------------------------------------------
+// Phase 4: Breakpoint & Interaction UI helpers
+// ---------------------------------------------------------------------------
+
+// --- Slash Commands ---
+
+export interface SlashCommandDef {
+  readonly name: string;
+  readonly description: string;
+}
+
+/**
+ * Parse a slash command string into its command name and arguments.
+ * Returns null if the input is not a valid slash command.
+ */
+export function parseSlashCommand(input: string): { command: string; args: string } | null {
+  const trimmed = input.trim();
+  if (!trimmed.startsWith("/")) return null;
+
+  const match = trimmed.match(/^\/(\S+)(?:\s+(.*))?$/);
+  if (!match) return null;
+
+  const command = match[1].toLowerCase();
+  const args = (match[2] ?? "").trim();
+  return { command, args };
+}
+
+/**
+ * Check whether a command name is in the list of valid commands (case-insensitive).
+ */
+export function isValidSlashCommand(command: string, validCommands: string[]): boolean {
+  if (!command) return false;
+  const lower = command.toLowerCase();
+  return validCommands.some((c) => c.toLowerCase() === lower);
+}
+
+/**
+ * Return slash command definitions that match a partial input prefix.
+ * The partial must start with "/" to produce any results.
+ */
+export function getSlashCompletions(partial: string, commands: SlashCommandDef[]): SlashCommandDef[] {
+  if (!partial.startsWith("/")) return [];
+  const lower = partial.toLowerCase();
+  return commands.filter((cmd) => cmd.name.toLowerCase().startsWith(lower));
+}
+
+// --- Breakpoint Helpers ---
+
+/**
+ * Format a breakpoint into a human-readable prompt string.
+ */
+export function formatBreakpointPrompt(bp: BreakpointState): string {
+  let icon: string;
+  let status: string;
+  if (bp.approved === true) {
+    icon = "\u2713";
+    status = "Approved";
+  } else if (bp.approved === false) {
+    icon = "\u2717";
+    status = "Rejected";
+  } else {
+    icon = "\u23F8";
+    status = "Awaiting approval";
+  }
+
+  let result = `${icon} ${bp.title} - ${status}`;
+
+  if (bp.feedback) {
+    result += ` (feedback: ${bp.feedback})`;
+  }
+
+  if (bp.expert !== undefined) {
+    const expertStr = Array.isArray(bp.expert) ? bp.expert.join(", ") : bp.expert;
+    result += ` [expert: ${expertStr}]`;
+  }
+
+  if (bp.tags && bp.tags.length > 0) {
+    result += " " + bp.tags.map((t) => `#${t}`).join(" ");
+  }
+
+  if (bp.autoApproval?.recommended) {
+    result += " (auto-approve recommended)";
+  }
+
+  return result;
+}
+
+/**
+ * Map a breakpoint approved state to a theme color key.
+ */
+export function getBreakpointStatusColor(approved: boolean | null): string {
+  if (approved === null) return "warning";
+  if (approved) return "success";
+  return "error";
+}
+
+/**
+ * Generate the list of action options for a breakpoint.
+ * Approve and Reject are always first; conditional options follow.
+ */
+export function formatBreakpointOptions(bp: BreakpointState): string[] {
+  const options: string[] = ["Approve", "Reject"];
+
+  if (bp.autoApproval?.recommended) {
+    options.push("Always Approve");
+  }
+
+  if (bp.feedback) {
+    options.push("Approve with feedback");
+  }
+
+  return options;
+}
+
+// --- Input History ---
+
+export interface InputHistory {
+  readonly entries: string[];
+  readonly cursor: number;
+  readonly maxSize: number;
+}
+
+/**
+ * Create a new empty input history.
+ */
+export function createInputHistory(maxSize = 100): InputHistory {
+  return { entries: [], cursor: 0, maxSize };
+}
+
+/**
+ * Add an entry to the history, returning a new InputHistory.
+ * Skips empty/whitespace-only strings and consecutive duplicates.
+ * Trims to maxSize by dropping oldest entries.
+ */
+export function addToHistory(history: InputHistory, entry: string): InputHistory {
+  if (!entry.trim()) return history;
+
+  const lastEntry = history.entries.length > 0 ? history.entries[history.entries.length - 1] : undefined;
+  if (lastEntry === entry) {
+    return { ...history, cursor: history.entries.length };
+  }
+
+  let entries = [...history.entries, entry];
+  if (entries.length > history.maxSize) {
+    entries = entries.slice(entries.length - history.maxSize);
+  }
+
+  return { entries, cursor: entries.length, maxSize: history.maxSize };
+}
+
+/**
+ * Navigate through history in the given direction.
+ * Returns the new history state and the entry at the new cursor (or null if past end).
+ */
+export function navigateHistory(
+  history: InputHistory,
+  direction: "up" | "down",
+): { history: InputHistory; entry: string | null } {
+  if (history.entries.length === 0) {
+    return { history, entry: null };
+  }
+
+  if (direction === "up") {
+    const newCursor = Math.max(0, history.cursor - 1);
+    return {
+      history: { ...history, cursor: newCursor },
+      entry: history.entries[newCursor],
+    };
+  }
+
+  // direction === "down"
+  const newCursor = Math.min(history.entries.length, history.cursor + 1);
+  if (newCursor >= history.entries.length) {
+    return {
+      history: { ...history, cursor: newCursor },
+      entry: null,
+    };
+  }
+
+  return {
+    history: { ...history, cursor: newCursor },
+    entry: history.entries[newCursor],
+  };
 }

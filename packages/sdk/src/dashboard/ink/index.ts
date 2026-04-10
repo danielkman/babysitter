@@ -71,5 +71,21 @@ export {
 // Phase 3 types
 export type { PendingGroupSummary } from "./helpers.js";
 
+// Phase 4: Breakpoint & Interaction UI helpers
+export {
+  parseSlashCommand,
+  isValidSlashCommand,
+  getSlashCompletions,
+  formatBreakpointPrompt,
+  getBreakpointStatusColor,
+  formatBreakpointOptions,
+  createInputHistory,
+  addToHistory,
+  navigateHistory,
+} from "./helpers.js";
+
+// Phase 4 types
+export type { SlashCommandDef, InputHistory } from "./helpers.js";
+
 // Runtime entry point
 export { createTuiSession, type TuiSession } from "./render.js";
