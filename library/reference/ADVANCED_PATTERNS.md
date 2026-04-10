@@ -7,11 +7,12 @@
 
 ## Summary
 
-Added three new advanced patterns to the babysitter skill documentation:
+Added four new advanced patterns to the babysitter skill documentation:
 
 1. **Pattern 5:** Agent-based execution (LLM-powered tasks)
 2. **Pattern 6:** Skill-based execution (Claude Code skill invocation)
 3. **Pattern 7:** Complex iterative convergence with scoring
+4. **Pattern 8:** Smoke E2E verification gate (runtime reality check)
 
 These patterns demonstrate sophisticated orchestration capabilities beyond basic task execution.
 
@@ -569,12 +570,192 @@ All task kinds use the same `ctx.task()` API - the orchestrator routes based on 
 
 ---
 
+---
+
+## Pattern 8: Smoke E2E Verification Gate
+
+### Concept
+
+For processes that modify full-stack web applications (Next.js, Remix, Nuxt, SvelteKit, etc.), static verification is not enough. TypeScript compilation passes, unit tests pass, and the final verifier declares success — but the first real page load crashes because of stale dev servers, missing migrations, hardcoded UI stubs, broken click handlers, or dead code in type-safe layers.
+
+The Smoke E2E Gate is a phase that sits between Integration and Testing. It restarts the dev server, seeds a known admin user, runs a small set of Playwright tests that log in and visit every new route, and **hard-fails the run** if any smoke test fails. It is the runtime reality check that static verification cannot provide.
+
+### Motivation (from a real failure)
+
+A 12-phase Next.js + Prisma process declared itself complete at 96/100. Seven significant runtime bugs were found by the user in the first hour:
+
+- Stale Prisma client cached in a dev server running since Friday
+- Schema migration silently failed (`exit 1` accepted as "passed: false")
+- Hardcoded UI notifications that looked real but had no API wiring
+- "View Report" button with a click handler that set state but never navigated
+- Dead code in `pdf-renderer.ts` bypassed by an inline HTML builder in the route handler
+- Flagship feature gated on `severity === 'CRITICAL'` but axe maps `serious` → `MAJOR`, so zero issues ever qualified
+- Interactive viewer required a field that was never populated
+
+**All seven** would have been caught by a 30-second smoke suite that logs in and visits the new routes. None would have been caught by the pre-existing verification (TS compile + unit tests + file-existence grep).
+
+### TaskDef Structure
+
+```javascript
+import { defineTask } from '@a5c-ai/babysitter-sdk';
+
+export const smokeE2eTask = defineTask('smoke-e2e', (args, taskCtx) => ({
+  kind: 'agent',
+  title: 'Smoke E2E — runtime reality check',
+  agent: {
+    name: 'e2e-testing',
+    prompt: {
+      role: 'E2E Reality Tester — you verify the app ACTUALLY WORKS, not just compiles',
+      task: 'Run smoke E2E tests against a freshly-restarted dev server to catch runtime bugs that static checks miss',
+      context: {
+        projectDir: args.projectDir,
+        known_failure_modes: [
+          'Dev server has stale Prisma client cached from before schema changes',
+          'Migrations silently failed due to missing DATABASE_URL',
+          'Hardcoded UI stubs that look real but have no API wiring',
+          'Click handlers that set state but never fetch or navigate',
+          'Dead code in type-safe layers that are never reached at runtime'
+        ]
+      },
+      instructions: [
+        '1. Kill any running dev server: `pgrep -f "next dev.*<projectDir>" | xargs kill 2>/dev/null; sleep 2`',
+        '2. Restart dev server in background and wait for "Ready in" in the log (up to 30s)',
+        '3. Seed a SYSTEM_ADMIN test user with a known password',
+        '4. Create smoke spec directory `tests/e2e/smoke/` if it does not exist',
+        '5. Create or verify smoke specs covering (at minimum):',
+        '   - login page renders, accepts credentials, redirects to dashboard',
+        '   - dashboard loads without runtime error overlay',
+        '   - every new route from the plan loads without error',
+        '   - any new buttons have working click handlers (click → assert URL or DOM changed)',
+        '6. Run: `npx playwright test tests/e2e/smoke/ --project=chromium --reporter=json`',
+        '7. Parse the JSON result to count passed/failed tests',
+        '8. Return { passed, totalTests, failedTests, failures, artifacts }',
+        '9. DO NOT return passed:true unless every smoke test actually passed'
+      ],
+      outputFormat: 'JSON matching the output schema below'
+    },
+    outputSchema: {
+      type: 'object',
+      required: ['passed', 'totalTests', 'failedTests', 'failures', 'artifacts'],
+      properties: {
+        passed: { type: 'boolean' },
+        totalTests: { type: 'number' },
+        failedTests: { type: 'number' },
+        failures: { type: 'array' },
+        artifacts: { type: 'array' }
+      }
+    }
+  },
+  io: {
+    inputJsonPath: `tasks/${taskCtx.effectId}/input.json`,
+    outputJsonPath: `tasks/${taskCtx.effectId}/output.json`
+  },
+  labels: ['smoke', 'e2e', 'verification', 'runtime']
+}));
+```
+
+### Usage in Process
+
+Place the smoke phase **between Integration and Testing** phases, and **hard-fail the process** on any smoke failure. Do not let the run continue to declare success on a broken build.
+
+```javascript
+export async function process(inputs, ctx) {
+  // ... earlier phases: planning, schema, features, integration ...
+
+  // Phase 9.5: Smoke E2E — runtime reality check
+  ctx.log('info', 'Phase 9.5: Smoke E2E — runtime reality check');
+
+  const smokeResult = await ctx.task(smokeE2eTask, {
+    projectDir: inputs.projectDir,
+    features
+  });
+
+  if (!smokeResult.passed) {
+    throw new Error(
+      `Phase 9.5 Smoke E2E FAILED. ` +
+      `${smokeResult.failedTests}/${smokeResult.totalTests} tests failed. ` +
+      `Do not proceed until the app actually works when a user clicks. ` +
+      `Failures: ${JSON.stringify(smokeResult.failures)}`
+    );
+  }
+
+  // ... later phases: testing, security, final verification ...
+}
+```
+
+### Paired Final Verification Rules
+
+The Smoke E2E Gate is most effective when the Final Verification phase grades based on the smoke result, not on static signals. Replace "count passing unit tests" with:
+
+- If ANY smoke test failed: score is AT MOST 50 regardless of other metrics
+- If the smoke suite cannot run at all (dev server dead, etc): score is 0
+- If unit tests fail but smokes pass: score capped at 75
+- If both suites fully pass: score up to 95 (never 100 — there's always improvement)
+- TypeScript compilation, accessibility checks, etc. contribute at most a +5 bonus **only when smoke tests pass**
+
+### Minimum Viable Smoke Suite
+
+For a Next.js + Prisma project, a viable smoke suite is 3–5 tests:
+
+```typescript
+// tests/e2e/smoke/dashboard.spec.ts
+import { test, expect } from '@playwright/test';
+
+test('home redirects to login for unauthenticated users', async ({ page }) => {
+  await page.goto('http://localhost:3000/');
+  await expect(page).toHaveURL(/login/);
+});
+
+test('login page renders', async ({ page }) => {
+  await page.goto('http://localhost:3000/login');
+  await expect(page.locator('input[type="email"]')).toBeVisible();
+  await expect(page.locator('input[type="password"]')).toBeVisible();
+});
+
+test('authenticated dashboard loads without prisma error', async ({ page }) => {
+  await page.goto('http://localhost:3000/login');
+  await page.fill('input[type="email"]', process.env.SMOKE_USER_EMAIL!);
+  await page.fill('input[type="password"]', process.env.SMOKE_USER_PASSWORD!);
+  await page.click('button[type="submit"]');
+  await page.waitForURL(url => !url.pathname.includes('/login'), { timeout: 15000 });
+
+  const content = await page.content();
+  expect(content).not.toContain('Runtime TypeError');
+  expect(content).not.toContain('Cannot read properties of undefined');
+});
+```
+
+Add one smoke test per new top-level route introduced by the process. The goal is not coverage — it is "does the page render as an authenticated user without a red error overlay."
+
+### When to Use Smoke E2E Gate
+
+✅ **Good use cases:**
+- Full-stack web processes (Next.js, Remix, Nuxt, SvelteKit, Astro)
+- Any process that modifies both database schema and UI
+- Processes that claim to wire up new navigation routes
+- Refactors that span multiple layers (DB → API → UI)
+
+❌ **Avoid for:**
+- Pure library refactors with no runtime (unit tests are sufficient)
+- Static site generators where there is no interactive runtime
+- Processes where the user will manually verify — the gate adds overhead for solo dev work
+
+### Anti-patterns to avoid
+
+- **Stub smoke tests** marked `test.fixme` that require "auth/DB seeding": these provide the illusion of verification. Either the test actually runs or it doesn't count.
+- **`|| true` around migration steps**: swallowing exit codes lets broken schema state cascade into the smoke phase, producing confusing failures. Fail hard in Phase 2.
+- **Running smokes against a stale dev server**: the kill-restart-wait sequence is non-negotiable. Module caching in Node.js means regenerating Prisma client files on disk does nothing for a running process.
+- **Scoring >50 with any smoke failure**: don't let the verifier invent a high score when a real user's click would crash. Hard-cap the score.
+
+---
+
 ## Summary
 
-These three patterns extend babysitter's capabilities:
+These four patterns extend babysitter's capabilities:
 
 1. **Agent tasks** - LLM-powered work with structured I/O
 2. **Skill tasks** - Composable skill invocation
 3. **Iterative convergence** - Score-based improvement loops with safety mechanisms
+4. **Smoke E2E gate** - Runtime reality check that hard-fails on any failure
 
-All patterns use the same SDK API (`ctx.task()`), maintaining consistency while enabling sophisticated workflows.
+All patterns use the same SDK API (`ctx.task()`), maintaining consistency while enabling sophisticated workflows. The Smoke E2E Gate pattern pairs especially well with Iterative Convergence when used as the quality-gate for UI-heavy refinement loops.
