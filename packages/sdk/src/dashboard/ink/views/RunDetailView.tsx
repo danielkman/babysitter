@@ -17,6 +17,7 @@ import type { InkKey } from "../contexts/InkContext.js";
 import { useTheme } from "../hooks/useTheme.js";
 import { useNavigation } from "../hooks/useNavigation.js";
 import { useRunDetail } from "../hooks/useRunDetail.js";
+import { EffectsPanel } from "../components/EffectsPanel.js";
 import {
   formatEventTimeline,
   getEventIcon,
@@ -63,6 +64,7 @@ export function RunDetailView({ runsDir }: RunDetailViewProps): React.JSX.Elemen
 
   const [scrollOffset, setScrollOffset] = useState(0);
   const [showHelp, setShowHelp] = useState(false);
+  const [showEffects, setShowEffects] = useState(false);
 
   const eventCount = detail?.events.length ?? 0;
 
@@ -99,6 +101,8 @@ export function RunDetailView({ runsDir }: RunDetailViewProps): React.JSX.Elemen
         setScrollOffset(0);
       } else if (input === "G") {
         setScrollOffset(clampScrollOffset(eventCount, eventCount, EVENT_VIEWPORT));
+      } else if (input === "e") {
+        setShowEffects((prev) => !prev);
       }
     },
   );
@@ -397,6 +401,9 @@ export function RunDetailView({ runsDir }: RunDetailViewProps): React.JSX.Elemen
     { flexDirection: "column", height: "100%" },
     header,
     taskStatus,
+    showEffects
+      ? React.createElement(EffectsPanel as React.ComponentType<Record<string, unknown>>, { showPendingSummary: true, maxTreeItems: 15 })
+      : null,
     showHelp ? helpOverlay : timeline,
     actionBar,
   );

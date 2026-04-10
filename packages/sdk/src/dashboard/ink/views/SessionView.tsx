@@ -24,6 +24,7 @@ import { PromptBar } from "../components/PromptBar.js";
 import { SearchBar } from "../components/SearchBar.js";
 import type { SearchBarState } from "../components/SearchBar.js";
 import { BreakpointPanel } from "../components/BreakpointPanel.js";
+import { EffectsPanel } from "../components/EffectsPanel.js";
 import { parseStreamingLine, findMatches } from "../helpers.js";
 import { filterMessages } from "../components/MessagePane.js";
 import type { TuiMessage, VerbosityLevel } from "../types.js";
@@ -76,6 +77,8 @@ interface SlashResult {
   handled: boolean;
   /** When /search is handled, this carries the query to activate search. */
   searchQuery?: string;
+  /** When /effects is handled, signals to toggle the effects panel. */
+  toggleEffects?: boolean;
 }
 
 interface SlashCommandContext {
@@ -169,6 +172,11 @@ function processSlashCommand(
     return { handled: true };
   }
 
+  // /effects — toggle effects panel visibility
+  if (lower === "/effects") {
+    return { handled: true, toggleEffects: true };
+  }
+
   // /search [query] — activate search bar, optionally with initial query
   if (lower.startsWith("/search")) {
     const parts = text.trim().split(/\s+/);
@@ -257,6 +265,7 @@ export function SessionView(): React.JSX.Element {
   const chat = useChatContext();
   const pendingRef = useRef(false);
   const [searchActive, setSearchActive] = useState(false);
+  const [showEffects, setShowEffects] = useState(false);
   const [_searchState, setSearchState] = useState<SearchBarState>({
     query: "",
     matches: [],
@@ -318,6 +327,9 @@ export function SessionView(): React.JSX.Element {
           },
         );
         if (result.handled) {
+          if (result.toggleEffects) {
+            setShowEffects((prev) => !prev);
+          }
           if (result.searchQuery !== undefined) {
             setSearchActive(true);
             if (result.searchQuery) {
@@ -559,6 +571,9 @@ export function SessionView(): React.JSX.Element {
     },
     React.createElement(StatusBar, null),
     React.createElement(MessagePane, null),
+    showEffects
+      ? React.createElement(EffectsPanel as React.ComponentType<Record<string, unknown>>, { showPendingSummary: true, maxTreeItems: 10 })
+      : null,
     React.createElement(SearchBar, {
       text: searchCorpus,
       isActive: searchActive,
