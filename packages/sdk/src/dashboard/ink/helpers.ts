@@ -1177,3 +1177,66 @@ export function computeFrameIndex(
   const totalFrames = Math.floor(elapsedMs / intervalMs);
   return totalFrames % frameCount;
 }
+
+// ---------------------------------------------------------------------------
+// Run detail event formatting
+// ---------------------------------------------------------------------------
+
+const EVENT_TYPE_LABELS: Record<string, string> = {
+  RUN_CREATED: "Run Created",
+  EFFECT_REQUESTED: "Effect Requested",
+  EFFECT_RESOLVED: "Effect Resolved",
+  RUN_COMPLETED: "Run Completed",
+  RUN_FAILED: "Run Failed",
+};
+
+/** Map a journal event type string to a human-readable label. */
+export function formatEventType(type: string): string {
+  return EVENT_TYPE_LABELS[type] ?? type;
+}
+
+const EVENT_ICONS: Record<string, string> = {
+  RUN_CREATED: "\u25B6",    // ▶
+  EFFECT_REQUESTED: "\u25CB", // ○
+  EFFECT_RESOLVED: "\u25CF",  // ●
+  RUN_COMPLETED: "\u2713",   // ✓
+  RUN_FAILED: "\u2717",      // ✗
+};
+
+/** Return an icon glyph for a journal event type. */
+export function getEventIcon(type: string): string {
+  return EVENT_ICONS[type] ?? "\u00B7"; // · fallback
+}
+
+/** Return a theme color key for a journal event type. */
+export function getEventColor(type: string, colors: ThemeColors): string {
+  switch (type) {
+    case "RUN_CREATED":
+      return colors.primary;
+    case "EFFECT_REQUESTED":
+      return colors.warning;
+    case "EFFECT_RESOLVED":
+      return colors.success;
+    case "RUN_COMPLETED":
+      return colors.success;
+    case "RUN_FAILED":
+      return colors.error;
+    default:
+      return colors.muted;
+  }
+}
+
+/**
+ * Format a list of journal events into timeline display lines.
+ * Each line: "#seq  HH:MM:SS  icon Label"
+ */
+export function formatEventTimeline(
+  events: ReadonlyArray<{ type: string; recordedAt: string; seq: number }>,
+): string[] {
+  return events.map((e) => {
+    const label = formatEventType(e.type);
+    const icon = getEventIcon(e.type);
+    const time = formatTimestamp(e.recordedAt);
+    return `#${String(e.seq)}  ${time}  ${icon} ${label}`;
+  });
+}

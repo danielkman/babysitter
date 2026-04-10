@@ -43,6 +43,7 @@ export type { NavigationAction, NavigationState } from "./contexts/NavigationCon
 export type { UseSessionResult } from "./hooks/useSession.js";
 export type { UseClockResult } from "./hooks/useClock.js";
 export type { UseRunScannerResult } from "./hooks/useRunScanner.js";
+export type { UseRunDetailResult } from "./hooks/useRunDetail.js";
 
 // Data layer types
 export type { RunSummary, RunDetail } from "./data/runScanner.js";
@@ -67,6 +68,10 @@ export {
   aggregateOrchestrationStatus,
   groupPendingEffects,
   summarizePendingGroups,
+  formatEventType,
+  getEventIcon,
+  getEventColor,
+  formatEventTimeline,
 } from "./helpers.js";
 
 // StatusLine pure functions
