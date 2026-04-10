@@ -25,7 +25,7 @@ import { SearchBar } from "../components/SearchBar.js";
 import type { SearchBarState } from "../components/SearchBar.js";
 import { BreakpointPanel } from "../components/BreakpointPanel.js";
 import { EffectsPanel } from "../components/EffectsPanel.js";
-import { parseStreamingLine, findMatches } from "../helpers.js";
+import { parseStreamingLine, findMatches, formatKeyboardHelp } from "../helpers.js";
 import { filterMessages } from "../components/MessagePane.js";
 import type { TuiMessage, VerbosityLevel } from "../types.js";
 
@@ -266,6 +266,7 @@ export function SessionView(): React.JSX.Element {
   const pendingRef = useRef(false);
   const [searchActive, setSearchActive] = useState(false);
   const [showEffects, setShowEffects] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
   const [_searchState, setSearchState] = useState<SearchBarState>({
     query: "",
     matches: [],
@@ -289,7 +290,9 @@ export function SessionView(): React.JSX.Element {
   useInput(
     (input: string, key: InkKey) => {
       if (key.escape) {
-        if (searchActive) {
+        if (showHelp) {
+          setShowHelp(false);
+        } else if (searchActive) {
           setSearchActive(false);
           setSearchState({ query: "", matches: [], currentIndex: 0 });
         } else {
@@ -299,6 +302,10 @@ export function SessionView(): React.JSX.Element {
       }
       if (input === "f" && key.ctrl) {
         setSearchActive((prev) => !prev);
+        return;
+      }
+      if (input === "?") {
+        setShowHelp((prev) => !prev);
         return;
       }
     },
@@ -595,6 +602,29 @@ export function SessionView(): React.JSX.Element {
       model: chat.model,
       iteration: sessionState.iteration,
     }),
+    showHelp
+      ? React.createElement(
+          Box as React.ComponentType<Record<string, unknown>>,
+          { flexDirection: "column", paddingX: 2, paddingY: 1, borderStyle: "round", borderColor: "cyan" },
+          React.createElement(
+            Text as React.ComponentType<Record<string, unknown>>,
+            { color: "cyan", bold: true },
+            "Keyboard Shortcuts",
+          ),
+          ...formatKeyboardHelp("session").map((line, idx) =>
+            React.createElement(
+              Text as React.ComponentType<Record<string, unknown>>,
+              { key: `help-${idx}` },
+              line,
+            ),
+          ),
+          React.createElement(
+            Text as React.ComponentType<Record<string, unknown>>,
+            { color: "gray", dimColor: true },
+            "\n  Press ? or Esc to close",
+          ),
+        )
+      : null,
     React.createElement(MessagePane, null),
     showEffects
       ? React.createElement(EffectsPanel as React.ComponentType<Record<string, unknown>>, { showPendingSummary: true, maxTreeItems: 10 })

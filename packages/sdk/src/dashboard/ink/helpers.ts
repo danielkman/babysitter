@@ -1419,6 +1419,20 @@ const KEYBOARD_HELP: Record<string, ReadonlyArray<readonly [string, string]>> = 
     ["g/G", "Jump to top/bottom"],
     ["?", "Toggle this help"],
   ],
+  "session": [
+    ["Esc", "Go back to dashboard (when not typing)"],
+    ["Ctrl+F", "Toggle search bar"],
+    ["Enter", "Submit message"],
+    ["\u2191/\u2193", "Scroll messages / navigate history"],
+    ["PgUp/PgDn", "Scroll one page"],
+    ["g/G", "Jump to top/bottom of messages"],
+    ["Tab", "Complete slash command"],
+    ["/help", "Show available slash commands"],
+    ["/effects", "Toggle effects panel"],
+    ["/search", "Search messages"],
+    ["/verbosity", "Cycle verbosity level"],
+    ["?", "Toggle this help"],
+  ],
 };
 
 /**
