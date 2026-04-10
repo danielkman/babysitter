@@ -95,7 +95,7 @@ export function MessagePane(_props: MessagePaneProps): React.JSX.Element {
   const visible = filterMessages(state.messages, state.verbosity);
   const hasRun = state.runId !== null;
 
-  // Keyboard scroll handling
+  // Keyboard scroll handling — disabled while user is typing in the prompt
   useInput(
     (input: string, key: InkKey) => {
       if (visible.length === 0) return;
@@ -117,6 +117,7 @@ export function MessagePane(_props: MessagePaneProps): React.JSX.Element {
         setScrollOffset(0);
       }
     },
+    { isActive: !state.inputActive },
   );
 
   if (visible.length === 0) {

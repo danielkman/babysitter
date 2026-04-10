@@ -148,5 +148,8 @@ export {
   statusToColor,
 } from "./components/StatusBar.js";
 
+// Chat context
+export type { ChatContextValue, ChatProviderProps } from "./contexts/ChatContext.js";
+
 // Runtime entry point
 export { createTuiSession, type TuiSession } from "./render.js";

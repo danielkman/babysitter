@@ -19,6 +19,7 @@ import React from "react";
 import { InkProvider } from "./contexts/InkContext.js";
 import { SessionProvider } from "./contexts/SessionContext.js";
 import { NavigationProvider } from "./contexts/NavigationContext.js";
+import { ChatProvider } from "./contexts/ChatContext.js";
 import { useNavigation } from "./hooks/useNavigation.js";
 import { ThemeProvider, neonDarkTheme } from "./contexts/ThemeContext.js";
 import { ClockProvider } from "./contexts/ClockContext.js";
@@ -95,16 +96,18 @@ function AppInner({ runsDir }: AppInnerProps): React.JSX.Element {
   const { state: sessionState, dispatch: sessionDispatch } = useSession();
   const { state: navState } = useNavigation();
 
-  // 'v' key cycles verbosity at the app level (only in session view)
+  // 'v' key cycles verbosity at the app level (only in session view, not while typing)
+  const shortcutsActive = navState.currentView === "session" && !sessionState.inputActive;
   useInput(
     (input: string) => {
-      if (input === "v" && navState.currentView === "session") {
+      if (input === "v") {
         const current = sessionState.verbosity;
         const idx = VERBOSITY_CYCLE.indexOf(current);
         const next = VERBOSITY_CYCLE[(idx + 1) % VERBOSITY_CYCLE.length];
         sessionDispatch({ type: "SET_VERBOSITY", verbosity: next as VerbosityLevel });
       }
     },
+    { isActive: shortcutsActive },
   );
 
   switch (navState.currentView) {
@@ -138,6 +141,9 @@ export default function App({
   theme,
   initialView,
   runsDir = ".a5c/runs",
+  harness = "claude-code",
+  workspace,
+  model,
 }: TuiConfig): React.JSX.Element {
   const resolvedTheme: Theme = theme ?? neonDarkTheme;
 
@@ -149,11 +155,13 @@ export default function App({
   return (
     <NavigationProvider initialView={effectiveInitialView} initialRunId={runId}>
       <SessionProvider initialRunId={runId} initialVerbosity={verbosity}>
-        <ThemeProvider theme={resolvedTheme}>
-          <ClockProvider intervalMs={100}>
-            <AppInner runsDir={runsDir} />
-          </ClockProvider>
-        </ThemeProvider>
+        <ChatProvider harness={harness} workspace={workspace} model={model}>
+          <ThemeProvider theme={resolvedTheme}>
+            <ClockProvider intervalMs={100}>
+              <AppInner runsDir={runsDir} />
+            </ClockProvider>
+          </ThemeProvider>
+        </ChatProvider>
       </SessionProvider>
     </NavigationProvider>
   );

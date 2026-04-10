@@ -84,10 +84,13 @@ export function PromptBar({
     if (trimmed.length === 0) return;
     onSubmit?.(trimmed);
     dispatch({ type: "SET_INPUT_BUFFER", text: "" });
+    dispatch({ type: "SET_INPUT_ACTIVE", active: false });
     setValue("");
   }, [value, onSubmit, dispatch]);
 
-  // Wire Ink's useInput for keyboard handling
+  // Wire Ink's useInput for keyboard handling.
+  // The PromptBar is the primary input target in the session view — it's
+  // always active so keystrokes go here first and not to global shortcuts.
   useInput(
     (input: string, key: InkKey) => {
       if (key.return) {
@@ -95,6 +98,7 @@ export function PromptBar({
       } else if (key.escape) {
         setValue("");
         dispatch({ type: "SET_INPUT_BUFFER", text: "" });
+        dispatch({ type: "SET_INPUT_ACTIVE", active: false });
       } else if (key.backspace || key.delete) {
         setValue((prev) => prev.slice(0, -1));
         dispatch({ type: "SET_INPUT_BUFFER", text: value.slice(0, -1) });
