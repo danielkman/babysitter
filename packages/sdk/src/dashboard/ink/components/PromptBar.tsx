@@ -47,6 +47,8 @@ export const SLASH_COMMANDS: readonly SlashCommand[] = [
   { name: "/clear", description: "Clear messages" },
   { name: "/back", description: "Go back to dashboard" },
   { name: "/verbosity", description: "Cycle verbosity level" },
+  { name: "/harness", description: "Switch harness" },
+  { name: "/model", description: "Switch model" },
   { name: "/help", description: "Show available commands" },
 ];
 

@@ -29,8 +29,41 @@ import type { TuiMessage, VerbosityLevel } from "../types.js";
 
 const VERBOSITY_CYCLE: VerbosityLevel[] = ["minimal", "normal", "verbose"];
 
+/** Available harnesses for the /harness picker menu. */
+const HARNESS_OPTIONS = [
+  "internal",
+  "claude-code",
+  "codex",
+  "pi",
+  "oh-my-pi",
+  "gemini-cli",
+  "github-copilot",
+  "cursor",
+  "opencode",
+] as const;
+
+/** Models available per harness. */
+const HARNESS_MODELS: Record<string, readonly string[]> = {
+  "internal": ["claude-sonnet-4-6", "claude-opus-4-6", "claude-haiku-4-5-20251001"],
+  "claude-code": ["claude-sonnet-4-6", "claude-opus-4-6", "claude-haiku-4-5-20251001"],
+  "codex": ["o4-mini", "o3", "gpt-4.1"],
+  "pi": ["claude-sonnet-4-6", "claude-opus-4-6", "gpt-4.1", "o4-mini", "gemini-2.5-pro"],
+  "oh-my-pi": ["claude-sonnet-4-6", "claude-opus-4-6", "gpt-4.1", "o4-mini", "gemini-2.5-pro"],
+  "gemini-cli": ["gemini-2.5-pro", "gemini-2.5-flash"],
+  "github-copilot": ["gpt-4.1", "claude-sonnet-4-6"],
+  "cursor": ["claude-sonnet-4-6", "gpt-4.1"],
+  "opencode": ["claude-sonnet-4-6", "claude-opus-4-6", "gemini-2.5-pro"],
+};
+
 interface SlashResult {
   handled: boolean;
+}
+
+interface SlashCommandContext {
+  chatHarness: string;
+  chatModel: string | undefined;
+  setHarness: (name: string) => void;
+  setModel: (name: string | undefined) => void;
 }
 
 function processSlashCommand(
@@ -41,6 +74,7 @@ function processSlashCommand(
   }) => void,
   navDispatch: (action: { type: string; [key: string]: unknown }) => void,
   sessionState: { verbosity: VerbosityLevel; runId: string | null; status: string },
+  chatCtx?: SlashCommandContext,
 ): SlashResult {
   const lower = text.toLowerCase().trim();
 
@@ -85,12 +119,14 @@ function processSlashCommand(
 
   if (lower === "/help") {
     const helpText = [
-      "/clear    — Clear all messages",
-      "/back     — Go back to dashboard",
+      "/clear     — Clear all messages",
+      "/back      — Go back to dashboard",
       "/verbosity — Cycle verbosity level",
-      "/status   — Show current session status",
-      "/refresh  — Refresh run data",
-      "/help     — Show this help",
+      "/status    — Show current session status",
+      "/refresh   — Refresh run data",
+      "/harness   — Switch harness (e.g. /harness claude-code)",
+      "/model     — Switch model (e.g. /model claude-opus-4-6)",
+      "/help      — Show this help",
     ].join("\n");
     const msg: TuiMessage = {
       id: `sys-${Date.now()}`,
@@ -110,6 +146,73 @@ function processSlashCommand(
       content: { kind: "system", text: "Refreshing..." },
     };
     sessionDispatch({ type: "APPEND_MESSAGE", message: msg });
+    return { handled: true };
+  }
+
+  // /harness [name] — switch harness or show menu
+  if (lower.startsWith("/harness") && chatCtx) {
+    const parts = text.trim().split(/\s+/);
+    const name = parts[1];
+    if (name && HARNESS_OPTIONS.includes(name as typeof HARNESS_OPTIONS[number])) {
+      chatCtx.setHarness(name);
+      const models = HARNESS_MODELS[name] ?? [];
+      const modelList = models.length > 0 ? `\nAvailable models: ${models.join(", ")}` : "";
+      const msg: TuiMessage = {
+        id: `sys-${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        verbosity: "minimal",
+        content: { kind: "system", text: `Harness switched to: ${name}${modelList}` },
+      };
+      sessionDispatch({ type: "APPEND_MESSAGE", message: msg });
+    } else {
+      const current = chatCtx.chatHarness;
+      const list = HARNESS_OPTIONS.map(
+        (h) => `  ${h === current ? "* " : "  "}${h}`,
+      ).join("\n");
+      const msg: TuiMessage = {
+        id: `sys-${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        verbosity: "minimal",
+        content: {
+          kind: "system",
+          text: `Current harness: ${current}\n\nAvailable harnesses:\n${list}\n\nUsage: /harness <name>`,
+        },
+      };
+      sessionDispatch({ type: "APPEND_MESSAGE", message: msg });
+    }
+    return { handled: true };
+  }
+
+  // /model [name] — switch model or show menu
+  if (lower.startsWith("/model") && chatCtx) {
+    const parts = text.trim().split(/\s+/);
+    const name = parts[1];
+    if (name) {
+      chatCtx.setModel(name);
+      const msg: TuiMessage = {
+        id: `sys-${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        verbosity: "minimal",
+        content: { kind: "system", text: `Model switched to: ${name} (harness: ${chatCtx.chatHarness})` },
+      };
+      sessionDispatch({ type: "APPEND_MESSAGE", message: msg });
+    } else {
+      const models = HARNESS_MODELS[chatCtx.chatHarness] ?? [];
+      const currentModel = chatCtx.chatModel ?? "(default)";
+      const list = models.length > 0
+        ? models.map((m) => `  ${m === chatCtx.chatModel ? "* " : "  "}${m}`).join("\n")
+        : "  (no model list for this harness)";
+      const msg: TuiMessage = {
+        id: `sys-${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        verbosity: "minimal",
+        content: {
+          kind: "system",
+          text: `Current model: ${currentModel} (harness: ${chatCtx.chatHarness})\n\nAvailable models:\n${list}\n\nUsage: /model <name>`,
+        },
+      };
+      sessionDispatch({ type: "APPEND_MESSAGE", message: msg });
+    }
     return { handled: true };
   }
 
@@ -163,6 +266,12 @@ export function SessionView(): React.JSX.Element {
           sessionDispatch as (action: { type: string; [key: string]: unknown }) => void,
           navDispatch as (action: { type: string; [key: string]: unknown }) => void,
           sessionState,
+          {
+            chatHarness: chat.harness,
+            chatModel: chat.model,
+            setHarness: chat.setHarness,
+            setModel: chat.setModel,
+          },
         );
         if (result.handled) return;
       }

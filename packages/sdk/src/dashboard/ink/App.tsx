@@ -141,7 +141,7 @@ export default function App({
   theme,
   initialView,
   runsDir = ".a5c/runs",
-  harness = "claude-code",
+  harness = "internal",
   workspace,
   model,
 }: TuiConfig): React.JSX.Element {

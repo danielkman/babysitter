@@ -212,5 +212,9 @@ export type { EffectsContextValue, EffectsProviderProps } from "./contexts/Effec
 export { EffectsPanel } from "./components/EffectsPanel.js";
 export type { EffectsPanelProps } from "./components/EffectsPanel.js";
 
+// Breakpoint panel
+export { BreakpointPanel } from "./components/BreakpointPanel.js";
+export type { BreakpointPanelProps } from "./components/BreakpointPanel.js";
+
 // Runtime entry point
 export { createTuiSession, type TuiSession } from "./render.js";

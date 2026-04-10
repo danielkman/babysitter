@@ -162,7 +162,7 @@ export interface TuiConfig {
   readonly initialView?: ViewName;
   /** Directory containing runs. Defaults to ".a5c/runs". */
   readonly runsDir?: string;
-  /** Harness to use for chat invocations. Defaults to "claude-code". */
+  /** Harness to use for chat invocations. Defaults to "internal". */
   readonly harness?: string;
   /** Workspace directory for harness invocations. Defaults to cwd. */
   readonly workspace?: string;

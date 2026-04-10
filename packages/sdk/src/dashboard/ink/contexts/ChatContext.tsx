@@ -45,6 +45,12 @@ export interface ChatContextValue {
   loading: boolean;
   /** The configured harness name. */
   harness: string;
+  /** Switch harness at runtime. Clears conversation history. */
+  setHarness: (name: string) => void;
+  /** The configured model (if any). */
+  model: string | undefined;
+  /** Switch model at runtime. */
+  setModel: (name: string | undefined) => void;
   /** Cancel the current in-flight request (if any). */
   cancel: () => void;
   /** Conversation history. */
@@ -55,7 +61,7 @@ export interface ChatContextValue {
 
 export interface ChatProviderProps {
   children: ReactNode;
-  /** Harness to invoke. Defaults to "claude-code". */
+  /** Harness to invoke. Defaults to "internal". */
   harness?: string;
   /** Workspace directory. Defaults to cwd. */
   workspace?: string;
@@ -101,16 +107,27 @@ const ChatContext = createContext<ChatContextValue | null>(null);
 
 export function ChatProvider({
   children,
-  harness = "claude-code",
+  harness: initialHarness = "internal",
   workspace,
-  model,
+  model: initialModel,
 }: ChatProviderProps): React.JSX.Element {
   const [loading, setLoading] = React.useState(false);
   const [history, setHistory] = React.useState<ChatTurn[]>([]);
+  const [harness, setHarnessState] = React.useState(initialHarness);
+  const [model, setModelState] = React.useState<string | undefined>(initialModel);
   const abortRef = useRef<AbortController | null>(null);
   // Keep a ref to history so the sendMessage callback always sees current state
   const historyRef = useRef<ChatTurn[]>([]);
   historyRef.current = history;
+
+  const setHarness = useCallback((name: string) => {
+    setHarnessState(name);
+    setHistory([]); // Clear history when switching harness
+  }, []);
+
+  const setModel = useCallback((name: string | undefined) => {
+    setModelState(name);
+  }, []);
 
   const sendMessage = useCallback(
     async (text: string, callbacks?: StreamCallbacks): Promise<string> => {
@@ -190,8 +207,8 @@ export function ChatProvider({
   }, []);
 
   const value = React.useMemo(
-    () => ({ sendMessage, loading, harness, cancel, history, clearHistory }),
-    [sendMessage, loading, harness, cancel, history, clearHistory],
+    () => ({ sendMessage, loading, harness, setHarness, model, setModel, cancel, history, clearHistory }),
+    [sendMessage, loading, harness, setHarness, model, setModel, cancel, history, clearHistory],
   );
 
   return (
