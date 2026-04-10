@@ -32,6 +32,7 @@ import {
 import { handleSessionHistory } from "./commands/sessionHistory";
 import { handleSkillDiscover, handleSkillFetchRemote, discoverSkillsInternal, discoverFromProcessFile } from "./commands/skill";
 import { handleMcpServe } from "./commands/mcpServe";
+import { handleJsonlInteractive } from "./commands/jsonlInteractive";
 import { handleHookLog } from "./commands/hookLog";
 import { handleHookRun } from "./commands/hookRun";
 import { handleLog } from "./commands/log";
@@ -166,6 +167,7 @@ Other commands (agents should never call these directly unless explicitly instru
   babysitter instructions:orchestrate --harness <name> [--interactive|--no-interactive] [--json]
   babysitter instructions:breakpoint-handling --harness <name> [--interactive|--no-interactive] [--json]
   babysitter mcp:serve [--json]
+  babysitter jsonl:interactive [--runs-dir <dir>]
   babysitter breakpoint:approve-rule <pattern> [--action auto-approve|never-auto-approve] [--source <source>] [--note <note>] [--json]
   babysitter breakpoint:remove-rule <ruleId> [--json]
   babysitter breakpoint:list-rules [--json]
@@ -2482,6 +2484,7 @@ const VALID_COMMANDS = [
   "instructions:orchestrate",
   "instructions:breakpoint-handling",
   "mcp:serve",
+  "jsonl:interactive",
   "health",
   "configure",
   "tokens:stats",
@@ -3408,6 +3411,9 @@ export function createBabysitterCli() {
         }
         if (parsed.command === "mcp:serve") {
           return await handleMcpServe({ json: parsed.json });
+        }
+        if (parsed.command === "jsonl:interactive") {
+          return await handleJsonlInteractive({ runsDir: parsed.runsDir });
         }
         if (parsed.command === "health") {
           return await handleHealthCommand({
