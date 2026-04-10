@@ -11,7 +11,7 @@
  * Layout varies by view:
  *   dashboard → DashboardView (run list with navigation)
  *   session   → SessionView (StatusBar + MessagePane + PromptBar)
- *   run-detail → placeholder (future: detailed run inspector)
+ *   run-detail → RunDetailView (metadata, events, tasks, resume)
  */
 
 import React from "react";
@@ -30,6 +30,7 @@ import { MessagePane } from "./components/MessagePane.js";
 import { PromptBar } from "./components/PromptBar.js";
 import { DashboardView } from "./views/DashboardView.js";
 import { SessionView } from "./views/SessionView.js";
+import { RunDetailView } from "./views/RunDetailView.js";
 import type { TuiConfig, Theme, VerbosityLevel, ViewName } from "./types.js";
 
 // Re-export InkProvider so render.ts can reference it from the same require()
@@ -42,44 +43,6 @@ export { InkProvider };
 
 export type InkBox = React.ComponentType<Record<string, unknown> & { children?: React.ReactNode }>;
 export type InkText = React.ComponentType<Record<string, unknown> & { children?: React.ReactNode }>;
-
-// ---------------------------------------------------------------------------
-// Run-detail placeholder (needs its own component so it can call useInput)
-// ---------------------------------------------------------------------------
-
-function RunDetailPlaceholder(): React.JSX.Element {
-  const { Box, Text, useInput } = useInk();
-  const { state: navState, dispatch: navDispatch } = useNavigation();
-
-  useInput((_input: string, key: { escape?: boolean }) => {
-    if (key.escape) {
-      navDispatch({ type: "GO_BACK" });
-    }
-  });
-
-  return React.createElement(
-    Box as React.ComponentType<Record<string, unknown>>,
-    { flexDirection: "column", height: "100%" },
-    React.createElement(
-      Box as React.ComponentType<Record<string, unknown>>,
-      { paddingX: 1, paddingY: 1 },
-      React.createElement(
-        Text as React.ComponentType<Record<string, unknown>>,
-        { color: "cyan", bold: true },
-        `Run Detail: ${navState.selectedRunId ?? "none"}`,
-      ),
-    ),
-    React.createElement(
-      Box as React.ComponentType<Record<string, unknown>>,
-      { paddingX: 1 },
-      React.createElement(
-        Text as React.ComponentType<Record<string, unknown>>,
-        { color: "#6b7280" },
-        "Run detail view coming soon. Press Escape to go back.",
-      ),
-    ),
-  );
-}
 
 // ---------------------------------------------------------------------------
 // Inner App (rendered inside all providers)
@@ -118,7 +81,7 @@ function AppInner({ runsDir }: AppInnerProps): React.JSX.Element {
       return React.createElement(SessionView, null);
 
     case "run-detail":
-      return React.createElement(RunDetailPlaceholder, null);
+      return React.createElement(RunDetailView, { runsDir });
 
     default: {
       const _exhaustive: never = navState.currentView;

@@ -225,5 +225,9 @@ export type { EffectsPanelProps } from "./components/EffectsPanel.js";
 export { BreakpointPanel } from "./components/BreakpointPanel.js";
 export type { BreakpointPanelProps } from "./components/BreakpointPanel.js";
 
+// RunDetailView
+export { RunDetailView } from "./views/RunDetailView.js";
+export type { RunDetailViewProps } from "./views/RunDetailView.js";
+
 // Runtime entry point
 export { createTuiSession, type TuiSession } from "./render.js";
