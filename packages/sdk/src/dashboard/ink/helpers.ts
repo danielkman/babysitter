@@ -1266,3 +1266,124 @@ export function formatKeyboardHelp(view: string): string[] {
   if (!shortcuts) return [];
   return shortcuts.map(([key, desc]) => `  ${key.padEnd(12)} ${desc}`);
 }
+
+// ---------------------------------------------------------------------------
+// Streaming line parser
+// ---------------------------------------------------------------------------
+
+/** Discriminated union for events extracted from harness streaming output. */
+export type StreamingEvent =
+  | { readonly kind: "tool_start"; readonly toolName: string; readonly toolId: string }
+  | { readonly kind: "tool_end"; readonly toolName: string; readonly toolId: string }
+  | { readonly kind: "token_update"; readonly inputTokens: number; readonly outputTokens: number; readonly cacheReadTokens?: number; readonly cacheWriteTokens?: number }
+  | { readonly kind: "cost_update"; readonly cost: number }
+  | { readonly kind: "text"; readonly text: string };
+
+/**
+ * Attempt to parse a streaming output line as a structured event.
+ *
+ * Returns null for plain text, malformed JSON, or unrecognized event types.
+ * Never throws — safe for use in hot streaming callbacks.
+ */
+export function parseStreamingLine(line: string): StreamingEvent | null {
+  if (!line || !line.startsWith("{")) return null;
+
+  let parsed: Record<string, unknown>;
+  try {
+    parsed = JSON.parse(line) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) return null;
+
+  const type = parsed.type as string | undefined;
+  if (!type) return null;
+
+  // Tool use events
+  if (type === "tool_use") {
+    return {
+      kind: "tool_start",
+      toolName: (parsed.name as string) ?? "unknown",
+      toolId: (parsed.id as string) ?? "",
+    };
+  }
+
+  if (type === "content_block_start") {
+    const block = parsed.content_block as Record<string, unknown> | undefined;
+    if (block?.type === "tool_use") {
+      return {
+        kind: "tool_start",
+        toolName: (block.name as string) ?? "unknown",
+        toolId: (block.id as string) ?? "",
+      };
+    }
+  }
+
+  if (type === "content_block_stop") {
+    const block = parsed.content_block as Record<string, unknown> | undefined;
+    if (block?.type === "tool_use") {
+      return {
+        kind: "tool_end",
+        toolName: (block.name as string) ?? "unknown",
+        toolId: (block.id as string) ?? "",
+      };
+    }
+  }
+
+  // Text delta
+  if (type === "content_block_delta") {
+    const delta = parsed.delta as Record<string, unknown> | undefined;
+    if (delta?.type === "text_delta" && typeof delta.text === "string") {
+      return { kind: "text", text: delta.text };
+    }
+  }
+
+  // Token usage events
+  if (type === "message_delta" || type === "message_start") {
+    const usage = type === "message_start"
+      ? (parsed.message as Record<string, unknown> | undefined)?.usage as Record<string, unknown> | undefined
+      : parsed.usage as Record<string, unknown> | undefined;
+    if (usage) {
+      return {
+        kind: "token_update",
+        inputTokens: (usage.input_tokens as number) ?? 0,
+        outputTokens: (usage.output_tokens as number) ?? 0,
+        cacheReadTokens: usage.cache_read_input_tokens as number | undefined,
+        cacheWriteTokens: usage.cache_creation_input_tokens as number | undefined,
+      };
+    }
+  }
+
+  if (type === "usage") {
+    return {
+      kind: "token_update",
+      inputTokens: (parsed.input_tokens as number) ?? 0,
+      outputTokens: (parsed.output_tokens as number) ?? 0,
+      cacheReadTokens: parsed.cache_read_input_tokens as number | undefined,
+      cacheWriteTokens: parsed.cache_creation_input_tokens as number | undefined,
+    };
+  }
+
+  // Cost events
+  if (typeof parsed.cost === "number") {
+    return { kind: "cost_update", cost: parsed.cost };
+  }
+
+  return null;
+}
+
+// ---------------------------------------------------------------------------
+// Turn elapsed formatting
+// ---------------------------------------------------------------------------
+
+/**
+ * Format turn elapsed time in a compact form: "5s", "1m30s", "61m1s".
+ */
+export function formatTurnElapsed(ms: number): string {
+  const totalSeconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  if (minutes === 0) return `${seconds}s`;
+  return `${minutes}m${seconds}s`;
+}

@@ -19,6 +19,7 @@ import type {
   TuiMessage,
   RunStatus,
   VerbosityLevel,
+  TokenUsage,
 } from "../types.js";
 
 // ---------------------------------------------------------------------------
@@ -35,7 +36,11 @@ export type SessionAction =
   | { type: "SET_INPUT_BUFFER"; text: string }
   | { type: "SET_INPUT_ACTIVE"; active: boolean }
   | { type: "RUN_STARTED"; runId: string; startedAt: number }
-  | { type: "RUN_FINISHED"; status: Extract<RunStatus, "complete" | "failed"> };
+  | { type: "RUN_FINISHED"; status: Extract<RunStatus, "complete" | "failed"> }
+  | { type: "TURN_STARTED"; startedAt: number }
+  | { type: "TURN_FINISHED" }
+  | { type: "UPDATE_TOKEN_USAGE"; tokenUsage: TokenUsage }
+  | { type: "UPDATE_COST"; cost: number };
 
 // ---------------------------------------------------------------------------
 // Reducer
@@ -90,6 +95,18 @@ function sessionReducer(
         inputActive: false,
       };
 
+    case "TURN_STARTED":
+      return { ...state, turnStartedAt: action.startedAt };
+
+    case "TURN_FINISHED":
+      return { ...state, turnStartedAt: null };
+
+    case "UPDATE_TOKEN_USAGE":
+      return { ...state, tokenUsage: action.tokenUsage };
+
+    case "UPDATE_COST":
+      return { ...state, cost: action.cost };
+
     default: {
       const _exhaustive: never = action;
       return state;
@@ -109,6 +126,9 @@ const initialState: SessionState = {
   inputBuffer: "",
   inputActive: false,
   runStartedAt: null,
+  turnStartedAt: null,
+  tokenUsage: null,
+  cost: null,
 };
 
 // ---------------------------------------------------------------------------

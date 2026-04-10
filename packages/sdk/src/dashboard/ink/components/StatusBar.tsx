@@ -15,7 +15,7 @@ import { useTheme } from "../hooks/useTheme.js";
 import { useInk } from "../contexts/InkContext.js";
 import { RunningIndicator } from "./RunningIndicator.js";
 import type { RunStatus } from "../types.js";
-import { truncateRunId, formatCost, formatElapsedClock } from "../helpers.js";
+import { truncateRunId, formatCost, formatElapsedClock, formatTurnElapsed } from "../helpers.js";
 export { formatCost };
 
 // ---------------------------------------------------------------------------
@@ -97,13 +97,15 @@ export function StatusBar({
   const { colors } = useTheme();
   const { Box, Text } = useInk();
 
-  const { runId, status, runStartedAt } = state;
+  const { runId, status, runStartedAt, turnStartedAt, tokenUsage, cost } = state;
   const isActive = status === "running" || status === "waiting_effect";
   const hasRun = runId !== null;
 
   const now = Date.now();
   const elapsedMs = runStartedAt !== null ? now - runStartedAt : 0;
   const elapsedText = runStartedAt !== null ? formatElapsedClock(elapsedMs) : "--:--";
+  const turnMs = turnStartedAt !== null ? now - turnStartedAt : 0;
+  const turnText = turnStartedAt !== null ? formatTurnElapsed(turnMs) : null;
 
   const indicatorSymbol = statusToIndicator(status);
   const indicatorColor = statusToColor(status, colors);
@@ -153,10 +155,31 @@ export function StatusBar({
     ),
   );
 
-  // Right section: effects counts + elapsed + spinner
+  // Right section: token/cost + turn timer + effects counts + elapsed + spinner
   const rightSection = React.createElement(
     Box as React.ComponentType<Record<string, unknown>>,
     { flexDirection: "row", gap: 1 },
+    tokenUsage
+      ? React.createElement(
+          Text as React.ComponentType<Record<string, unknown>>,
+          { color: colors.muted },
+          `${formatTokenCount(tokenUsage.input)}in/${formatTokenCount(tokenUsage.output)}out`,
+        )
+      : null,
+    cost !== null && cost > 0
+      ? React.createElement(
+          Text as React.ComponentType<Record<string, unknown>>,
+          { color: colors.muted },
+          `$${cost.toFixed(4)}`,
+        )
+      : null,
+    turnText
+      ? React.createElement(
+          Text as React.ComponentType<Record<string, unknown>>,
+          { color: colors.primary },
+          `turn:${turnText}`,
+        )
+      : null,
     pendingEffects > 0
       ? React.createElement(
           Text as React.ComponentType<Record<string, unknown>>,

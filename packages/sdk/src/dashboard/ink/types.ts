@@ -109,6 +109,12 @@ export interface SessionState {
   readonly inputActive: boolean;
   /** Wall-clock ms at which the current run started (null if not running). */
   readonly runStartedAt: number | null;
+  /** Wall-clock ms at which the current turn (user message) started. */
+  readonly turnStartedAt: number | null;
+  /** Accumulated token usage for the current session. */
+  readonly tokenUsage: TokenUsage | null;
+  /** Accumulated cost for the current session. */
+  readonly cost: number | null;
 }
 
 // ---------------------------------------------------------------------------

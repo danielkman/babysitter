@@ -21,6 +21,7 @@ import { useChatContext } from "../contexts/ChatContext.js";
 import { StatusBar } from "../components/StatusBar.js";
 import { MessagePane } from "../components/MessagePane.js";
 import { PromptBar } from "../components/PromptBar.js";
+import { parseStreamingLine } from "../helpers.js";
 import type { TuiMessage, VerbosityLevel } from "../types.js";
 
 // ---------------------------------------------------------------------------
@@ -307,6 +308,7 @@ export function SessionView(): React.JSX.Element {
       };
       sessionDispatch({ type: "APPEND_MESSAGE", message: assistantMessage });
       sessionDispatch({ type: "SET_STATUS", status: "running" });
+      sessionDispatch({ type: "TURN_STARTED", startedAt: Date.now() });
 
       // 4. Invoke the harness with streaming callbacks
       if (pendingRef.current) return; // prevent double-fire
@@ -314,12 +316,60 @@ export function SessionView(): React.JSX.Element {
 
       // Accumulate streamed lines for the assistant message
       const lines: string[] = [];
+      // Track active tool calls for inline display
+      let toolCallCounter = 0;
 
       chat
         .sendMessage(text, {
           onLine: (line: string) => {
+            // Try to parse structured events from the streaming line
+            const event = parseStreamingLine(line);
+            if (event) {
+              if (event.kind === "tool_start") {
+                toolCallCounter++;
+                const toolMsg: TuiMessage = {
+                  id: `tool-${Date.now()}-${toolCallCounter}`,
+                  timestamp: new Date().toISOString(),
+                  verbosity: "normal",
+                  content: {
+                    kind: "tool_call",
+                    toolName: event.toolName,
+                    input: undefined,
+                  },
+                };
+                sessionDispatch({ type: "APPEND_MESSAGE", message: toolMsg });
+              } else if (event.kind === "token_update") {
+                sessionDispatch({
+                  type: "UPDATE_TOKEN_USAGE",
+                  tokenUsage: {
+                    input: event.inputTokens,
+                    output: event.outputTokens,
+                    total: event.inputTokens + event.outputTokens,
+                    cacheRead: event.cacheReadTokens,
+                    cacheWrite: event.cacheWriteTokens,
+                  },
+                });
+              } else if (event.kind === "cost_update") {
+                sessionDispatch({ type: "UPDATE_COST", cost: event.cost });
+              } else if (event.kind === "text") {
+                lines.push(event.text);
+                sessionDispatch({
+                  type: "UPDATE_MESSAGE",
+                  id: assistantId,
+                  patch: {
+                    content: {
+                      kind: "assistant",
+                      text: lines.join(""),
+                      streaming: true,
+                    },
+                  },
+                });
+              }
+              return;
+            }
+
+            // Plain text line — accumulate in assistant message
             lines.push(line);
-            // Update assistant message with accumulated output
             sessionDispatch({
               type: "UPDATE_MESSAGE",
               id: assistantId,
@@ -346,6 +396,7 @@ export function SessionView(): React.JSX.Element {
               },
             });
             sessionDispatch({ type: "SET_STATUS", status: "idle" });
+            sessionDispatch({ type: "TURN_FINISHED" });
           },
           onError: (errText: string) => {
             sessionDispatch({
@@ -359,6 +410,7 @@ export function SessionView(): React.JSX.Element {
               },
             });
             sessionDispatch({ type: "SET_STATUS", status: "idle" });
+            sessionDispatch({ type: "TURN_FINISHED" });
           },
         })
         .catch((err: unknown) => {
@@ -371,6 +423,7 @@ export function SessionView(): React.JSX.Element {
             },
           });
           sessionDispatch({ type: "SET_STATUS", status: "idle" });
+          sessionDispatch({ type: "TURN_FINISHED" });
         })
         .finally(() => {
           pendingRef.current = false;
