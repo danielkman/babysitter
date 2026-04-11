@@ -132,12 +132,13 @@ export { formatKeyboardHelp } from "./helpers.js";
 // Streaming line parser and turn timer
 export {
   parseStreamingLine,
+  createStreamingParser,
   formatTurnElapsed,
   formatTokenSummary,
   getHarnessStreamingFormat,
   HARNESS_STREAMING_FORMATS,
 } from "./helpers.js";
-export type { StreamingEvent, HarnessStreamingFormat } from "./helpers.js";
+export type { StreamingEvent, HarnessStreamingFormat, StreamingParser } from "./helpers.js";
 
 // Component helpers — RunListTable
 export {

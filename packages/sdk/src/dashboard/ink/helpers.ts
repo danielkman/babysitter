@@ -1566,6 +1566,11 @@ export function parseStreamingLine(line: string, format?: HarnessStreamingFormat
 
   if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) return null;
 
+  // Cost events (check before type guard — cost events may lack a type field)
+  if (typeof parsed.cost === "number") {
+    return { kind: "cost_update", cost: parsed.cost };
+  }
+
   const type = parsed.type as string | undefined;
   if (!type) return null;
 
@@ -1634,12 +1639,95 @@ export function parseStreamingLine(line: string, format?: HarnessStreamingFormat
     };
   }
 
-  // Cost events
-  if (typeof parsed.cost === "number") {
-    return { kind: "cost_update", cost: parsed.cost };
-  }
-
   return null;
+}
+
+// ---------------------------------------------------------------------------
+// Stateful streaming parser (tracks active blocks for tool_end detection)
+// ---------------------------------------------------------------------------
+
+/** Tracked content block info for stateful tool_end resolution. */
+interface TrackedBlock {
+  readonly type: string;
+  readonly name?: string;
+  readonly id?: string;
+}
+
+/** A stateful streaming parser that tracks content blocks by index. */
+export interface StreamingParser {
+  /** Parse a line, using tracked block state for tool_end resolution. */
+  parse(line: string): StreamingEvent | null;
+  /** Reset all tracked block state (e.g., between messages). */
+  reset(): void;
+}
+
+/**
+ * Create a stateful streaming parser that tracks content blocks by index.
+ *
+ * Unlike the stateless `parseStreamingLine`, this parser correctly resolves
+ * `tool_end` events from `content_block_stop` by tracking which blocks were
+ * started at each index.
+ */
+export function createStreamingParser(format?: HarnessStreamingFormat): StreamingParser {
+  const activeBlocks = new Map<number, TrackedBlock>();
+  const fmt = format ?? "anthropic-sse";
+
+  return {
+    parse(line: string): StreamingEvent | null {
+      // For non-anthropic formats, delegate directly
+      if (fmt !== "anthropic-sse") {
+        return parseStreamingLine(line, fmt);
+      }
+
+      if (!line || !line.startsWith("{")) return null;
+
+      let parsed: Record<string, unknown>;
+      try {
+        parsed = JSON.parse(line) as Record<string, unknown>;
+      } catch {
+        return null;
+      }
+      if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) return null;
+
+      const type = parsed.type as string | undefined;
+      const index = typeof parsed.index === "number" ? parsed.index : -1;
+
+      // Track content_block_start — store block info by index
+      if (type === "content_block_start" && index >= 0) {
+        const block = parsed.content_block as Record<string, unknown> | undefined;
+        if (block) {
+          activeBlocks.set(index, {
+            type: (block.type as string) ?? "unknown",
+            name: block.name as string | undefined,
+            id: block.id as string | undefined,
+          });
+        }
+      }
+
+      // Resolve content_block_stop via tracked state
+      if (type === "content_block_stop" && index >= 0) {
+        const tracked = activeBlocks.get(index);
+        if (tracked) {
+          activeBlocks.delete(index);
+          if (tracked.type === "tool_use") {
+            return {
+              kind: "tool_end",
+              toolName: tracked.name ?? "unknown",
+              toolId: tracked.id ?? "",
+            };
+          }
+          return null;
+        }
+      }
+
+      // Delegate everything else to stateless parser
+      return parseStreamingLine(line, fmt);
+    },
+
+    reset(): void {
+      activeBlocks.clear();
+    },
+  };
 }
 
 // ---------------------------------------------------------------------------

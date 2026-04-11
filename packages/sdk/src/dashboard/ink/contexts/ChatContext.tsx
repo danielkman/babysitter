@@ -30,8 +30,8 @@ export interface ChatTurn {
 
 /** Callbacks for streaming harness output. */
 export interface StreamCallbacks {
-  /** Called with each line of output as it arrives. */
-  onLine?: (line: string) => void;
+  /** Called with each line of output as it arrives. Source indicates stdout or stderr. */
+  onLine?: (line: string, source?: "stdout" | "stderr") => void;
   /** Called when the response is complete with the full output. */
   onComplete?: (output: string) => void;
   /** Called if the invocation fails. */
@@ -167,8 +167,8 @@ export function ChatProvider({
           model,
           timeout: 600_000, // 10 minutes
           streaming: {
-            onLine: (line: string, _stream: "stdout" | "stderr") => {
-              callbacks?.onLine?.(line);
+            onLine: (line: string, stream: "stdout" | "stderr") => {
+              callbacks?.onLine?.(line, stream);
             },
           },
         });
