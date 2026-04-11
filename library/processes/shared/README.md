@@ -935,6 +935,146 @@ export async function process(inputs, ctx) {
 
 ---
 
+### `cycle-aware-verification`
+
+Validates that fixes survive system execution cycles (cron jobs, watch-mode rebuilds, scheduled tasks, server restarts). Many bugs only manifest after the system completes its next cycle — a server that passes an immediate health check may crash on the next hot-reload. This module adds a temporal dimension to verification: baseline check, wait for cycle, re-check.
+
+The module also provides pre-flight analysis to scan files for dangerous patterns (e.g., `rm -rf`, `kill -9`) before changes are applied.
+
+The module exposes four surfaces:
+- **`createPreflightAnalysis(config)`** — factory that builds a shell task to grep for dangerous patterns in a target file.
+- **`cycleAwareVerificationTask`** — standalone `defineTask` descriptor (kind: `'shell'`) that performs baseline + cycle wait + post-cycle check in a single shell invocation.
+- **`createCycleAwareVerification(config)`** — factory that returns separate `baselineTask` and `postCycleTask` definitions for fine-grained manual control.
+- **`createPostCycleSurvivalCheck(config)`** — factory that builds a single post-cycle survival check task with baked-in URL, cycle interval, and expected status.
+
+**Import**
+
+```js
+import {
+  cycleAwareVerificationTask,
+  createCycleAwareVerification,
+  createPreflightAnalysis,
+  createPostCycleSurvivalCheck,
+} from './index.js';
+// or directly:
+import {
+  cycleAwareVerificationTask,
+  createCycleAwareVerification,
+  createPreflightAnalysis,
+  createPostCycleSurvivalCheck,
+} from './cycle-aware-verification.js';
+```
+
+**`cycleAwareVerificationTask` — standalone task**
+
+Expected args:
+
+| Field | Type | Required | Default | Description |
+|-------|------|----------|---------|-------------|
+| `url` | `string` | yes | — | Health check endpoint URL. |
+| `cycleIntervalMs` | `number` | no | `300000` | Cycle wait duration in milliseconds. |
+| `expectedStatus` | `number` | no | `200` | Expected HTTP status code. |
+| `timeout` | `number` | no | `10000` | Per-request timeout in milliseconds. |
+
+Output (JSON on stdout):
+
+```js
+{
+  passed:         boolean,  // true only when both baseline and post-cycle checks pass
+  baselineOk:     boolean,  // true when baseline HTTP status matches expected
+  postCycleOk:    boolean,  // true when post-cycle HTTP status matches expected
+  cycleIntervalMs?: number, // echoed back on success
+  error?:         string    // human-readable error message on failure
+}
+```
+
+**`createCycleAwareVerification(config)` — factory**
+
+```js
+function createCycleAwareVerification(config: {
+  healthCheck: { url: string, expectedStatus?: number, timeout?: number },
+  cycleIntervalMs?: number,
+  name?: string,
+}): { baselineTask: TaskDef, postCycleTask: TaskDef }
+```
+
+**`createPreflightAnalysis(config)` — factory**
+
+```js
+function createPreflightAnalysis(config?: {
+  patterns?: string[],  // default: ['rm -rf', 'rm -r ', 'rmdir', 'kill -9', 'pkill', 'killall']
+  name?: string,        // default: 'preflight-analysis'
+  timeout?: number,     // default: 10000
+}): TaskDef
+```
+
+Expected args: `{ filePath: string }` — the file to scan for dangerous patterns.
+
+**`createPostCycleSurvivalCheck(config)` — factory**
+
+```js
+function createPostCycleSurvivalCheck(config: {
+  url: string,
+  cycleIntervalMs?: number,  // default: 300000
+  name?: string,             // default: 'post-cycle-survival'
+  expectedStatus?: number,   // default: 200
+  timeout?: number,          // default: 10000
+}): TaskDef
+```
+
+**Usage — standalone task**
+
+```js
+import { cycleAwareVerificationTask } from '../shared/index.js';
+
+export async function process(inputs, ctx) {
+  const result = await ctx.task(cycleAwareVerificationTask, {
+    url: inputs.healthCheckUrl ?? 'http://localhost:3000/api/health',
+    cycleIntervalMs: 60000,
+    expectedStatus: 200,
+  });
+}
+```
+
+**Usage — factory approach (manual control)**
+
+```js
+import { createCycleAwareVerification } from '../shared/index.js';
+
+export async function process(inputs, ctx) {
+  const { baselineTask, postCycleTask } = createCycleAwareVerification({
+    healthCheck: { url: 'http://localhost:3000/api/health', timeout: 5000 },
+    cycleIntervalMs: 120000,
+    name: 'api-cycle-check',
+  });
+
+  const baseline = await ctx.task(baselineTask, {});
+  // ... apply fix or perform other work between checks ...
+  const postCycle = await ctx.task(postCycleTask, {});
+}
+```
+
+**Usage — pre-flight scan + post-cycle survival**
+
+```js
+import { createPreflightAnalysis, createPostCycleSurvivalCheck } from '../shared/index.js';
+
+export async function process(inputs, ctx) {
+  // Scan script for dangerous patterns before applying
+  const preflight = createPreflightAnalysis({ patterns: ['rm -rf', 'DROP TABLE'] });
+  const scan = await ctx.task(preflight, { filePath: inputs.scriptPath });
+
+  // After applying the fix, verify the server survives its next cycle
+  const survivalTask = createPostCycleSurvivalCheck({
+    url: 'http://localhost:8080/health',
+    cycleIntervalMs: 60000,
+  });
+  const survived = await ctx.task(survivalTask, {});
+}
+```
+
+---
+
 ## API Reference
 
 | Export | Module | Type | Description |
@@ -956,5 +1096,9 @@ export async function process(inputs, ctx) {
 | `executeTsCheck` | `ts-check` | `async function` | Convenience wrapper that runs the compilation check and returns a structured result with parsed errors |
 | `traceRuntimeCallPathsTask` | `runtime-call-tracer` | `TaskDef` | Standalone agent `defineTask` that greps for handlers, follows imports, and maps call paths for a list of feature areas |
 | `createCallPathTracer` | `runtime-call-tracer` | `function` | Factory that returns a pre-configured `defineTask` descriptor with baked-in `projectDir`, `maxDepth`, and `timeout` defaults |
+| `cycleAwareVerificationTask` | `cycle-aware-verification` | `TaskDef` | Standalone shell `defineTask` that performs baseline check, cycle wait, and post-cycle check in a single invocation |
+| `createCycleAwareVerification` | `cycle-aware-verification` | `function` | Factory that returns separate `baselineTask` and `postCycleTask` definitions for fine-grained cycle-aware verification |
+| `createPreflightAnalysis` | `cycle-aware-verification` | `function` | Factory that returns a shell `defineTask` to grep for dangerous patterns in a target file |
+| `createPostCycleSurvivalCheck` | `cycle-aware-verification` | `function` | Factory that returns a shell `defineTask` for post-cycle survival checking with baked-in URL and cycle interval |
 
 All exports are available from `./index.js` (the preferred import path) or from the individual module files.

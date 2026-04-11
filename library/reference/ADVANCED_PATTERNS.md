@@ -7,13 +7,14 @@
 
 ## Summary
 
-Added five advanced patterns to the babysitter skill documentation:
+Added six advanced patterns to the babysitter skill documentation:
 
 1. **Pattern 5:** Agent-based execution (LLM-powered tasks)
 2. **Pattern 6:** Skill-based execution (Claude Code skill invocation)
 3. **Pattern 7:** Complex iterative convergence with scoring
 4. **Pattern 8:** Smoke E2E verification gate (runtime reality check)
 5. **Pattern 9:** Runtime call-path tracing (confirm live paths before modifying code)
+6. **Pattern 10:** Cycle-aware multi-point verification (baseline + post-cycle health checks for patched scheduled components)
 
 These patterns demonstrate sophisticated orchestration capabilities beyond basic task execution.
 
@@ -1014,7 +1015,232 @@ export const fixPdfQualityTask = defineTask('fix-pdf-quality', (args, taskCtx) =
 
 ---
 
+## Pattern 10: Cycle-Aware Multi-Point Verification
+
+### Concept
+
+Health monitors, cron jobs, shell-script daemons, and systemd units all share a property that distinguishes them from web servers: **they execute on a schedule, not on demand.** When you patch such a component and then immediately run a health check, you are checking the state of the system *before your fix ran*, not after. The patched code has not executed yet.
+
+Single-snapshot verification — one `curl /health` right after applying a patch — is the runtime equivalent of checking your parachute while still on the ground. The parachute looks fine. You haven't jumped yet.
+
+### Motivation (from a real failure — see issue #123)
+
+A health-monitor shell script had a bug in its `check_service()` function. A process patched the script correctly and immediately issued a `curl http://localhost:3010/health` — which returned `{"status":"ok"}`. The process declared COMPLETED.
+
+The bug reappeared on the next cron cycle. Root cause: the server was running the **pre-fix** code that had been loaded into memory before the patch was applied. The health endpoint returned `ok` because it had been `ok` the whole time — the server had never restarted, never reloaded the script, and the 5-minute cron cycle hadn't fired since the patch landed.
+
+A second health check after one full cycle period would have failed immediately, revealing the problem before COMPLETED was declared.
+
+### Anti-Pattern: Single-Snapshot Verification
+
+Do not do this after patching a cyclic or deferred-execution component:
+
+```javascript
+// ANTI-PATTERN — proves nothing about the patched code
+const result = await ctx.task(healthCheckTask, { url: 'http://localhost:3010/health' });
+if (result.ok) {
+  return { status: 'COMPLETED' };  // BAD: checked pre-fix state, not post-fix execution
+}
+```
+
+This passes because the pre-fix server is healthy. The patched code has not executed yet. The next scheduled cycle will run the patched (or broken) code and the caller will never know.
+
+### The Solution: Multi-Point Verification with Cycle Awareness
+
+Verification must span at least one full execution cycle:
+
+1. **Pre-flight analysis** — detect dangerous patterns in the patch before applying it
+2. **Baseline health check** — confirm the server is healthy before the cycle fires
+3. **Wait for at least one full cycle period** — let the patched code execute
+4. **Post-cycle survival check** — confirm the server is still healthy after the patched code ran
+5. **Both checks must pass** to declare COMPLETED
+
+```
+Timeline:
+
+  T=0       T=baseline   T=baseline+cycleInterval   T=post-cycle
+  │         │            │                           │
+  [patch]   [check 1 ✓]  [patched code executes]    [check 2 ✓]
+                          ↑                           ↑
+                   first cron tick              COMPLETED gate
+                   since the fix
+```
+
+### Shared Component
+
+This pattern is encapsulated in `./shared/cycle-aware-verification.js`:
+
+```javascript
+import {
+  cycleAwareVerificationTask,
+  createCycleAwareVerification,
+  createPreflightAnalysis,
+  createPostCycleSurvivalCheck
+} from './shared/cycle-aware-verification.js';
+```
+
+#### Standalone usage — full multi-point verification in one task
+
+```javascript
+const result = await ctx.task(cycleAwareVerificationTask, {
+  url: 'http://localhost:3010/health',
+  cycleIntervalMs: 300000, // 5 minutes — the cron / daemon cycle period
+});
+// result: { baselinePassed, postCyclePassed, bothPassed, baselineResponse, postCycleResponse }
+```
+
+The task performs the baseline check, waits `cycleIntervalMs`, then performs the post-cycle check. If `bothPassed` is false, the process must not declare COMPLETED.
+
+#### Factory usage — separate baseline and post-cycle tasks
+
+When you need to interleave other work between the two checks (e.g., gather logs, run diagnostics), use the factory to get independent task definitions:
+
+```javascript
+const { baselineTask, postCycleTask } = createCycleAwareVerification({
+  healthCheck: { url: 'http://localhost:3010/health' },
+  cycleIntervalMs: 300000,
+});
+
+// Phase A: baseline
+const baseline = await ctx.task(baselineTask, {});
+
+// ... interleaved diagnostics ...
+
+// Phase B: post-cycle (waits internally for the remaining cycle duration)
+const postCycle = await ctx.task(postCycleTask, {
+  baselineTimestamp: baseline.timestamp,
+});
+
+if (!postCycle.passed) {
+  throw new Error('Post-cycle survival check failed — patched code crashed the server');
+}
+```
+
+#### Pre-flight analysis — check for dangerous patterns before applying the patch
+
+```javascript
+const preflight = createPreflightAnalysis();
+const analysis = await ctx.task(preflight, { filePath: '/path/to/health-monitor.sh' });
+// analysis: { dangerous: boolean, patterns: string[], recommendation: string }
+```
+
+Pre-flight looks for patterns that are likely to cause immediate failure on the next cycle:
+- Unguarded variable expansions (`$VAR` without `${VAR:-default}`)
+- Exit-code swallowing (`|| true`, `; true`)
+- Missing `set -e` or `set -o pipefail`
+- Hardcoded paths that differ between dev and prod
+
+### Usage in Process
+
+```javascript
+export async function process(inputs, ctx) {
+  // Phase 1: Pre-flight — detect dangerous patterns before patching
+  ctx.log('info', 'Phase 1: Pre-flight analysis for dangerous shell patterns');
+  const preflight = createPreflightAnalysis();
+  const preflightResult = await ctx.task(preflight, {
+    filePath: inputs.scriptPath,
+  });
+
+  if (preflightResult.dangerous) {
+    const approval = await ctx.breakpoint({
+      question: 'Pre-flight detected dangerous patterns. Review before proceeding?',
+      options: ['Proceed anyway', 'Abort'],
+      expert: 'owner',
+      tags: ['preflight', 'safety'],
+    });
+    if (!approval.approved || approval.option === 'Abort') {
+      return { ok: false, reason: 'Aborted at pre-flight', patterns: preflightResult.patterns };
+    }
+  }
+
+  // Phase 2: Apply the patch
+  const patch = await ctx.task(applyPatchTask, { ...inputs });
+
+  // Phase 3: Baseline health check (confirms server is healthy before cycle fires)
+  ctx.log('info', 'Phase 3: Baseline health check');
+  const { baselineTask, postCycleTask } = createCycleAwareVerification({
+    healthCheck: { url: inputs.healthUrl },
+    cycleIntervalMs: inputs.cycleIntervalMs ?? 300000,
+  });
+  const baseline = await ctx.task(baselineTask, {});
+
+  if (!baseline.passed) {
+    throw new Error('Baseline health check failed — server is unhealthy before the cycle fired');
+  }
+
+  // Phase 4: Post-cycle survival check (confirms patched code didn't crash the server)
+  ctx.log('info', `Phase 4: Waiting ${inputs.cycleIntervalMs ?? 300000}ms for one full cycle, then checking survival`);
+  const postCycle = await ctx.task(postCycleTask, {
+    baselineTimestamp: baseline.timestamp,
+  });
+
+  if (!postCycle.passed) {
+    throw new Error(
+      'Post-cycle survival check FAILED. The server did not survive the first execution of the patched code. ' +
+      `Response: ${JSON.stringify(postCycle.response)}`
+    );
+  }
+
+  return {
+    ok: true,
+    status: 'COMPLETED',
+    baselineResponse: baseline.response,
+    postCycleResponse: postCycle.response,
+  };
+}
+```
+
+### When to Use
+
+✅ **Good use cases:**
+- Patching shell scripts executed by cron, systemd timers, or watchdog daemons
+- Modifying health-monitor scripts that are read and executed on each cycle
+- Changing server startup scripts or init.d / systemd unit files
+- Fixing cron jobs where the fix only applies at the next scheduled tick
+- Any infra change where the patched code path is not triggered by the health endpoint itself
+
+❌ **Avoid for:**
+- Web server application code that is loaded once at startup — use Pattern 8 (Smoke E2E Gate) instead
+- Pure library refactors with no runtime cycle
+- Processes where the user manually restarts the service after patching (the restart makes single-snapshot verification valid)
+
+### Determining the Cycle Interval
+
+If the cycle interval is not provided in process inputs, the agent should infer it:
+
+```javascript
+// In the patch task's instructions or a separate discovery task:
+// 1. cat the crontab: `crontab -l` or `cat /etc/cron.d/<name>`
+// 2. Parse the cron expression to determine the repeat interval in ms
+// 3. For systemd timers: `systemctl show <name>.timer --property=OnUnitActiveSec`
+// 4. For sleep-loop daemons: grep for `sleep <n>` in the script body
+// 5. Default to 300000 (5 min) if none of the above yields a result
+```
+
+Pass the inferred value as `cycleIntervalMs` to `createCycleAwareVerification`.
+
+### Anti-Patterns to Avoid
+
+- **Checking the health endpoint before the cycle fires:** the server is still running pre-fix code. A passing check proves only that the server was healthy before your change, not that it survived it.
+- **Using `sleep 5 && curl /health`:** five seconds is never sufficient for a component with a 5-minute cycle period. Use the actual cycle interval.
+- **Treating a 200 response as proof of correctness:** the health endpoint may return 200 even while the monitored process is in a broken state. Ensure the endpoint checks the actual component you patched.
+- **Skipping the baseline:** without a baseline, a post-cycle failure is ambiguous — the server may have been unhealthy before the patch.
+
+---
+
 ## Known Anti-Patterns
+
+### Anti-Pattern: Single-Snapshot Verification After Cyclic Infra Fixes
+
+When patching a cron job, health-monitor script, systemd unit, or any component that executes on a schedule rather than on demand, a single health check immediately after the patch proves only that the server was alive before the patched code ran. It does not verify that the patched code executed without error.
+
+**The trap:** the server responds `{"status":"ok"}` because it is still running the pre-fix code that was loaded on the previous cycle. Your patch has not been exercised yet.
+
+**The fix:** use Pattern 10 (Cycle-Aware Multi-Point Verification) — baseline check before the cycle, wait for one full cycle period, post-cycle check after the patched code executes. Both must pass.
+
+See issue #123.
+
+---
 
 ### Anti-Pattern: Homegrown Retry Wrappers Around ctx.task()
 
@@ -1069,12 +1295,13 @@ See issue [#126](https://github.com/a5c-ai/babysitter/issues/126).
 
 ## Summary
 
-These five patterns extend babysitter's capabilities:
+These six patterns extend babysitter's capabilities:
 
 1. **Agent tasks** - LLM-powered work with structured I/O
 2. **Skill tasks** - Composable skill invocation
 3. **Iterative convergence** - Score-based improvement loops with safety mechanisms
 4. **Smoke E2E gate** - Runtime reality check that hard-fails on any failure
 5. **Runtime call-path tracing** - Confirm live execution paths before modifying any code
+6. **Cycle-aware multi-point verification** - Baseline + post-cycle health checks for patched scheduled components
 
-All patterns use the same SDK API (`ctx.task()`), maintaining consistency while enabling sophisticated workflows. The Smoke E2E Gate pattern pairs especially well with Iterative Convergence when used as the quality-gate for UI-heavy refinement loops. Runtime Call-Path Tracing should be run as the first planning step in any process that targets a specific existing feature — it prevents all downstream phases from wasting iterations on dead code.
+All patterns use the same SDK API (`ctx.task()`), maintaining consistency while enabling sophisticated workflows. The Smoke E2E Gate pattern pairs especially well with Iterative Convergence when used as the quality-gate for UI-heavy refinement loops. Runtime Call-Path Tracing should be run as the first planning step in any process that targets a specific existing feature — it prevents all downstream phases from wasting iterations on dead code. Cycle-Aware Multi-Point Verification must be used whenever a process patches any component whose fix only takes effect on the next scheduled execution cycle — a single immediate health check proves nothing about the patched code.

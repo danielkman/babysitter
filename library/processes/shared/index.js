@@ -15,4 +15,5 @@ export { deterministicGateTask, createDeterministicGate, executeDeterministicGat
 export { createForkSync, executeForkSync, createUpstreamSyncCheck, createCompatibilityTestSuite, createApiSurfaceSnapshot, createMigrationHelper } from './fork-contribution-sync.js';
 export { createPackageScaffold, executePackageScaffold, createLibraryPackage, createCliPackage, createNextAppPackage, createPluginPackage } from './monorepo-package-scaffold.js';
 export { traceRuntimeCallPathsTask, createCallPathTracer } from './runtime-call-tracer.js';
+export { cycleAwareVerificationTask, createCycleAwareVerification, createPreflightAnalysis, createPostCycleSurvivalCheck } from './cycle-aware-verification.js';
 
