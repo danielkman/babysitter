@@ -30,3 +30,13 @@ export { logPolicyDecision, readPolicyDecisionLog } from './logging';
 
 // Breakpoint bridge
 export { breakpointRulesToPolicies } from './bridge';
+
+// Decision trail (GAP-OBS-004)
+export {
+  buildDecisionTrailEntry,
+  summarizeDecisionTrail,
+  type DecisionTrailEntry,
+  type DecisionTrailOptions,
+  type DecisionTrailSummary,
+  type PolicyEvalRecord,
+} from './decisionTrail';

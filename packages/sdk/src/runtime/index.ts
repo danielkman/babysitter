@@ -39,3 +39,9 @@ export type {
 export { hashInvocationKey } from "./invocation";
 export { EffectRequestedError, EffectPendingError, EffectCancelledError, ParallelPendingError, RunFailedError } from "./exceptions";
 export { replaySchemaVersion } from "./constants";
+export {
+  applyStrategy,
+  type ParallelStrategyName,
+  type ParallelStrategyOptions,
+  type ParallelStrategyResult,
+} from "./parallelStrategies";

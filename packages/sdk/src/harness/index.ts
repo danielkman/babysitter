@@ -146,6 +146,17 @@ export {
 } from "./fallbackChains";
 
 export {
+  evaluatePolicy,
+  getPolicyByName,
+  getDefaultPolicy,
+  createPolicyEvaluator,
+  type SelectionPolicy,
+  type PolicyName,
+  type PolicyEvaluatorResult,
+  type PolicyEvaluatorOptions,
+} from "./selectionPolicies";
+
+export {
   getActiveMode,
   getActiveModeConfig,
   switchMode,
