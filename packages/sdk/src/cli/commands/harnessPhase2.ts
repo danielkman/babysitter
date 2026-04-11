@@ -256,9 +256,8 @@ export async function resolveEffect(
         return { status: "ok" as const, value: bashResult.output, stdout: bashResult.output };
       }
       return {
-        status: "error" as const,
-        error: new Error(`Shell command exited with code ${bashResult.exitCode ?? "null"}: ${bashResult.output}`),
-        value: { success: false, exitCode: bashResult.exitCode ?? 1, stdout: bashResult.output, stderr: "" },
+        status: "ok" as const,
+        value: { success: false, exitCode: bashResult.exitCode ?? 1, stdout: bashResult.output, stderr: "", error: `Shell command exited with code ${bashResult.exitCode ?? "null"}` },
         stdout: bashResult.output,
       };
     }
@@ -268,9 +267,8 @@ export async function resolveEffect(
       return { status: "ok" as const, value: shellResult.stdout, stdout: shellResult.stdout, stderr: shellResult.stderr };
     }
     return {
-      status: "error" as const,
-      error: new Error(`Shell command exited with code ${shellResult.exitCode}: ${shellResult.stderr}`),
-      value: { success: false, exitCode: shellResult.exitCode, stdout: shellResult.stdout, stderr: shellResult.stderr },
+      status: "ok" as const,
+      value: { success: false, exitCode: shellResult.exitCode, stdout: shellResult.stdout, stderr: shellResult.stderr, error: `Shell command exited with code ${shellResult.exitCode}` },
       stdout: shellResult.stdout,
       stderr: shellResult.stderr,
     };
