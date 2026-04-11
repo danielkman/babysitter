@@ -108,6 +108,30 @@ export {
 } from "./commandDiscovery";
 
 export {
+  selectHarness,
+  buildTaskRequirements,
+  enrichDiscoveryWithCapabilities,
+  type TaskRequirements,
+  type HarnessCandidate,
+  type RoutingResult,
+  type CandidateScore,
+  type ScoreBreakdown,
+} from "./capabilityRouter";
+
+export {
+  resolveHostCapabilities,
+  validateHostContract,
+  buildManifestFromDiscovery,
+  type HostCapabilityManifest,
+  type HostContractViolation,
+  type HostContractValidationResult,
+  type CommunicationProtocol,
+  type HostLifecycleSupport,
+  type HostLimits,
+  type ManifestRequirements,
+} from "./hostContract";
+
+export {
   getActiveMode,
   getActiveModeConfig,
   switchMode,
