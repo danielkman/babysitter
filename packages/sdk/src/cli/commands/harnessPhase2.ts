@@ -47,6 +47,7 @@ import {
   DIM,
   RESET,
   BOLD,
+  CYAN,
   YELLOW,
   DEFAULT_EFFECT_RETRY_CONFIG,
   PI_PARENT_PROMPT_TIMEOUT_MS,
@@ -116,7 +117,7 @@ function subscribeVerbosePiEvents(
   label: string,
   opts: { verbose: boolean; json: boolean; outputMode?: import("./harnessUtils").OutputMode },
 ): (() => void) | null {
-  if (!opts.verbose || opts.json || opts.outputMode === "tui") return null;
+  if (opts.json || opts.outputMode === "tui") return null;
 
   // We subscribe *after* the session is initialized.  If it isn't initialized
   // yet, the caller will call initialize() and this subscription will fire
@@ -125,29 +126,34 @@ function subscribeVerbosePiEvents(
     return session.subscribe((event: PiSessionEvent) => {
       const t = event.type;
 
+      // Tool and agent lifecycle events are shown by default for visibility
       if (t === "tool_execution_start") {
         const name = (event as { name?: string }).name ?? (event as { toolName?: string }).toolName ?? "unknown";
-        process.stderr.write(`${DIM}[${label} tool:start] ${name}${RESET}\n`);
+        process.stderr.write(`    ${DIM}tool ${CYAN}${name}${RESET}${DIM}...${RESET}\n`);
       } else if (t === "tool_execution_end") {
-        const name = (event as { name?: string }).name ?? (event as { toolName?: string }).toolName ?? "unknown";
-        process.stderr.write(`${DIM}[${label} tool:end] ${name}${RESET}\n`);
-      } else if (t === "turn_start") {
-        process.stderr.write(`${DIM}[${label} turn:start]${RESET}\n`);
-      } else if (t === "turn_end") {
-        process.stderr.write(`${DIM}[${label} turn:end]${RESET}\n`);
-      } else if (t === "message_start") {
-        const role = (event as { role?: string; message?: { role?: string } }).role
-          ?? (event as { message?: { role?: string } }).message?.role ?? "";
-        if (role) {
-          process.stderr.write(`${DIM}[${label} message:start] role=${role}${RESET}\n`);
-        }
+        // Silently complete — the start line already indicated the tool
       } else if (t === "agent_start") {
-        process.stderr.write(`${DIM}[${label} agent:start]${RESET}\n`);
+        const agentName = (event as { name?: string }).name ?? (event as { agentName?: string }).agentName;
+        const suffix = agentName ? ` ${CYAN}${agentName}${RESET}` : "";
+        process.stderr.write(`    ${DIM}subagent${RESET}${suffix}${DIM}...${RESET}\n`);
       } else if (t === "agent_end") {
-        process.stderr.write(`${DIM}[${label} agent:end]${RESET}\n`);
-      } else if (t === "text_delta") {
-        const text = (event as { text?: string }).text;
-        if (text) process.stderr.write(text);
+        // Silently complete
+      } else if (opts.verbose) {
+        // Verbose-only: turn lifecycle, message starts, and text streaming
+        if (t === "turn_start") {
+          process.stderr.write(`${DIM}[${label} turn:start]${RESET}\n`);
+        } else if (t === "turn_end") {
+          process.stderr.write(`${DIM}[${label} turn:end]${RESET}\n`);
+        } else if (t === "message_start") {
+          const role = (event as { role?: string; message?: { role?: string } }).role
+            ?? (event as { message?: { role?: string } }).message?.role ?? "";
+          if (role) {
+            process.stderr.write(`${DIM}[${label} message:start] role=${role}${RESET}\n`);
+          }
+        } else if (t === "text_delta") {
+          const text = (event as { text?: string }).text;
+          if (text) process.stderr.write(text);
+        }
       }
       // tool_execution_update and message_update are high-frequency streaming
       // events; skip them to avoid drowning stderr.
