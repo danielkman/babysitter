@@ -24,13 +24,13 @@ CLI="npx -y @a5c-ai/babysitter-sdk@$SDK_VERSION"
 Run the following command to get full orchestration instructions:
 
 ```bash
-$CLI instructions:babysit-skill --harness oh-my-pi --interactive
+babysitter instructions:babysit-skill --harness oh-my-pi --interactive
 ```
 
 For non-interactive mode:
 
 ```bash
-$CLI instructions:babysit-skill --harness oh-my-pi --no-interactive
+babysitter instructions:babysit-skill --harness oh-my-pi --no-interactive
 ```
 
 Follow the instructions returned by the command above to orchestrate the run.
