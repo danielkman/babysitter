@@ -1498,6 +1498,18 @@ export function getHarnessRpcSupport(harness: string): boolean {
 }
 
 /**
+ * Format a streaming line with source annotation.
+ *
+ * Stderr lines are prefixed with [stderr] for visual distinction.
+ * Stdout and undefined-source lines are returned unchanged.
+ */
+export function formatStreamLine(line: string, source?: "stdout" | "stderr"): string {
+  if (!line || source !== "stderr") return line;
+  if (line.startsWith("[stderr]")) return line;
+  return `[stderr] ${line}`;
+}
+
+/**
  * Attempt to parse a streaming output line as a structured event.
  *
  * Accepts an optional format parameter to handle different harness output

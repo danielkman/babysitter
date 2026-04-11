@@ -28,6 +28,7 @@ import { EffectsPanel } from "../components/EffectsPanel.js";
 import {
   createStreamingParser,
   getHarnessStreamingFormat,
+  formatStreamLine,
   findMatches,
   formatKeyboardHelp,
   TERMINAL_BELL,
@@ -422,7 +423,7 @@ export function SessionView(): React.JSX.Element {
 
       chat
         .sendMessage(text, {
-          onLine: (line: string) => {
+          onLine: (line: string, source?: "stdout" | "stderr") => {
             // Try to parse structured events from the streaming line
             const event = parser.parse(line);
             if (event) {
@@ -489,8 +490,8 @@ export function SessionView(): React.JSX.Element {
               return;
             }
 
-            // Plain text line — accumulate in assistant message
-            lines.push(line);
+            // Plain text line — accumulate in assistant message (stderr prefixed)
+            lines.push(formatStreamLine(line, source));
             sessionDispatch({
               type: "UPDATE_MESSAGE",
               id: assistantId,
