@@ -157,6 +157,17 @@ export interface BreakpointConfig {
   skipBreakpointsForKnownPatterns?: boolean;
   /** Categories or patterns that should always trigger a breakpoint */
   alwaysBreakOn?: string[];
+  /** GAP-SEC-005: Per-action-category posture overrides (keyed by ActionCategory) */
+  postureOverrides?: Partial<Record<'read' | 'write' | 'execute' | 'destroy' | 'network' | 'auth', Partial<{
+    name: string;
+    allowAutoApprove: boolean;
+    minConsecutiveApprovalsForAutoN: number;
+    requireExplicitRule: boolean;
+    requiredTags: string[];
+    requiredApproverLevel: string;
+  }>>>;
+  /** GAP-SEC-005: When true, all posture enforcement is disabled globally */
+  disablePostureEnforcement?: boolean;
 }
 
 /**

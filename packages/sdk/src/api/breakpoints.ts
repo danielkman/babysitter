@@ -13,6 +13,7 @@ import { withRunLock } from "../storage/lock";
 import { serializeAndWriteTaskResult } from "../tasks/serializer";
 import { readRules, addRule, removeRule } from "../breakpoints/rules";
 import { evaluateAutoApproval as evaluateAutoApprovalCore } from "../breakpoints/evaluator";
+import { callHook } from "../hooks/dispatcher";
 import { ok, fail, pathExists, buildBaseEffectMap } from "./utils";
 import type { BaseEffectInfo } from "./utils";
 import type { ApiResult } from "./runs";
@@ -282,6 +283,28 @@ export async function apiRespondToBreakpoint(
           resultRef,
         },
       });
+
+      // GAP-SEC-003: Fire on-permission-denied hook when breakpoint is denied
+      if (!input.approved) {
+        const td = await readTaskDefinition(input.runDir, input.effectId).catch(() => undefined);
+        const bpId = (td as Record<string, unknown> | undefined)?.breakpointId as string | undefined;
+        const kind = (td as Record<string, unknown> | undefined)?.kind as string | undefined;
+        callHook({
+          hookType: "on-permission-denied",
+          payload: {
+            hookType: "on-permission-denied" as const,
+            breakpointId: bpId ?? input.effectId,
+            title: (td as Record<string, unknown> | undefined)?.title as string | undefined,
+            kind: kind ?? "breakpoint",
+            runId: input.runDir.split("/").pop(),
+            effectId: input.effectId,
+            respondedBy: input.respondedBy,
+            feedback: input.feedback,
+            timestamp: new Date().toISOString(),
+          },
+          cwd: input.runDir,
+        }).catch(() => { /* fire-and-forget */ });
+      }
 
       return ok({ resultRef });
     });

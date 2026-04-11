@@ -25,6 +25,7 @@ export type {
   OnIterationStartPayload,
   OnIterationEndPayload,
   OnBreakpointPayload,
+  OnPermissionDeniedPayload,
   PreCommitPayload,
   PreBranchPayload,
   PostPlanningPayload,

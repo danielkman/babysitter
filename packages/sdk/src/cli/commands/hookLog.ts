@@ -36,6 +36,7 @@ const HOOK_EVENT_LABELS: Record<KnownHookType, string> = {
   "on-iteration-start": "ITERATION_START",
   "on-iteration-end": "ITERATION_END",
   "on-breakpoint": "BREAKPOINT",
+  "on-permission-denied": "PERMISSION_DENIED",
   "pre-commit": "PRE_COMMIT",
   "pre-branch": "PRE_BRANCH",
   "post-planning": "POST_PLANNING",
@@ -143,6 +144,13 @@ const FIELD_EXTRACTORS: Record<KnownHookType, FieldExtractor> = {
     ["runId", typeof p.runId === "string" ? p.runId : nestedStr(p, "context", "runId")],
     ["question", str(p, "question", "N/A")],
     ["reason", str(p, "reason", "N/A")],
+  ],
+
+  "on-permission-denied": (p) => [
+    ["breakpointId", str(p, "breakpointId")],
+    ["kind", str(p, "kind")],
+    ["runId", str(p, "runId", "N/A")],
+    ["respondedBy", str(p, "respondedBy", "N/A")],
   ],
 
   "pre-commit": (p) => [
