@@ -81,7 +81,7 @@ export interface Phase1Progress {
 
 export interface Phase2Progress {
   phase: "2";
-  status: "started" | "resuming" | "skipped-plan-only" | "run-created" | "bound" | "iteration" | "effect" | "completed" | "failed" | "process-error-recovery";
+  status: "started" | "resuming" | "skipped-plan-only" | "run-created" | "bound" | "iteration" | "iteration-start" | "effect-start" | "iteration-summary" | "effect" | "completed" | "failed" | "process-error-recovery";
   runId?: string;
   runDir?: string;
   harness?: string;
@@ -99,6 +99,9 @@ export interface Phase2Progress {
   processPath?: string;
   attempt?: number;
   maxAttempts?: number;
+  elapsedMs?: number;
+  effectsResolved?: number;
+  tokenEstimate?: number;
 }
 
 export type ProgressPayload = Phase1Progress | Phase2Progress;
@@ -315,11 +318,22 @@ export function emitProgress(
         } else {
           process.stderr.write(`${DIM}session bound via ${payload.harness}: ${payload.sessionId}${RESET}\n`);
         }
+      } else if (payload.status === "iteration-start") {
+        const elapsed = payload.elapsedMs != null ? ` [${formatElapsed(payload.elapsedMs)}]` : "";
+        process.stderr.write(`\n${DIM}-- iteration ${payload.iteration} starting...${elapsed} --${RESET}\n`);
       } else if (payload.status === "iteration") {
         process.stderr.write(`\n${DIM}-- iteration ${payload.iteration} --${RESET} status=${payload.runStatus} pending=${payload.pendingEffects}\n`);
+      } else if (payload.status === "effect-start") {
+        const label = payload.effectTitle ?? payload.effectId ?? "unknown";
+        const via = payload.effectHarness ? ` ${DIM}via ${payload.effectHarness}${RESET}` : "";
+        process.stderr.write(`  ${CYAN}▸${RESET} ${MAGENTA}${payload.effectKind}${RESET} ${label}${via}...\n`);
       } else if (payload.status === "effect") {
         const icon = payload.effectStatus === "ok" ? `${GREEN}✓${RESET}` : `${RED}✗${RESET}`;
         process.stderr.write(`  ${icon} ${MAGENTA}${payload.effectKind}${RESET} ${payload.effectTitle ?? payload.effectId}${payload.effectStatus === "error" ? ` ${RED}${payload.error}${RESET}` : ""}\n`);
+      } else if (payload.status === "iteration-summary") {
+        const elapsed = payload.elapsedMs != null ? formatElapsed(payload.elapsedMs) : "?";
+        const tokens = payload.tokenEstimate != null ? ` | ~${payload.tokenEstimate} tokens` : "";
+        process.stderr.write(`  ${DIM}${payload.effectsResolved ?? 0} effect(s) resolved in ${elapsed}${tokens}${RESET}\n`);
       } else if (payload.status === "completed") {
         process.stderr.write(`\n${GREEN}${BOLD}Run completed${RESET} ${DIM}(${payload.iteration} iterations)${RESET}\n`);
       } else if (payload.status === "failed") {
@@ -327,6 +341,40 @@ export function emitProgress(
       }
       break;
   }
+}
+
+// ── Progress Helpers ────────────────────────────────────────────────
+
+/** Format milliseconds as a human-readable elapsed duration. */
+export function formatElapsed(ms: number): string {
+  if (ms < 1000) return "<1s";
+  const totalSec = Math.floor(ms / 1000);
+  if (totalSec < 60) return `${totalSec}s`;
+  const min = Math.floor(totalSec / 60);
+  const sec = totalSec % 60;
+  return `${min}m ${sec}s`;
+}
+
+/**
+ * Create streaming output callbacks for real-time harness CLI output relay.
+ * Returns undefined for json/tui modes (those modes don't stream to stderr).
+ */
+export function createStreamingProgressCallbacks(
+  outputMode: OutputMode,
+  _harnessName: string,
+): import("../../harness/types").StreamingOutputOptions | undefined {
+  const mode = outputMode;
+  if (mode !== "cli") return undefined;
+
+  const MAX_LINE_LENGTH = 200;
+  return {
+    onLine: (line: string) => {
+      const trimmed = line.length > MAX_LINE_LENGTH
+        ? line.slice(0, MAX_LINE_LENGTH) + "..."
+        : line;
+      process.stderr.write(`${DIM}  | ${trimmed}${RESET}\n`);
+    },
+  };
 }
 
 // ── Compression ──────────────────────────────────────────────────────

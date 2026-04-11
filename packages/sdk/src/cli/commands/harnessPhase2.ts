@@ -69,6 +69,8 @@ import {
   isIgnorablePiPromptFailure,
   promptPiWithRetry,
   buildPiWorkerSessionOptions,
+  createStreamingProgressCallbacks,
+  resolveOutputMode,
   // Re-exports
   BabysitterRuntimeError,
   ErrorCategory,
@@ -175,6 +177,7 @@ export async function resolveEffect(
     model?: string;
     interactive?: boolean;
     compressionConfig?: CompressionConfig | null;
+    streaming?: import("../../harness/types").StreamingOutputOptions;
   },
   piSession?: PiSessionHandle | null,
   discovered?: HarnessDiscoveryResult[],
@@ -220,6 +223,7 @@ export async function resolveEffect(
       prompt: effectivePrompt,
       workspace: options.workspace,
       model: options.model,
+      streaming: options.streaming,
     });
 
     return {
@@ -453,6 +457,7 @@ async function resolveEffectWithRetry(
     interactive?: boolean;
     compressionConfig?: CompressionConfig | null;
     retryConfig?: Partial<EffectRetryConfig>;
+    streaming?: import("../../harness/types").StreamingOutputOptions;
   },
   piSession?: PiSessionHandle | null,
   discovered?: HarnessDiscoveryResult[],
@@ -850,9 +855,21 @@ export async function runOrchestrationPhase(args: {
     writeVerboseData("phase2 host bind result", state.sessionBound);
 
     let consecutiveProcessErrors = 0;
+    const runStartTime = Date.now();
 
     while (state.iteration < args.maxIterations) {
       state.iteration += 1;
+      emitProgress(
+        {
+          phase: "2",
+          status: "iteration-start",
+          iteration: state.iteration,
+          elapsedMs: Date.now() - runStartTime,
+        },
+        args.json,
+        args.verbose,
+        args.outputMode,
+      );
       const result = await orchestrateIterationWithProcessLoadRetry({
         runDir: state.runDir,
         writeVerbose,
@@ -882,8 +899,23 @@ export async function runOrchestrationPhase(args: {
           args.outputMode,
         );
 
+        const iterationStartTime = Date.now();
         for (const action of result.nextActions) {
           const taskHarness = resolveTaskHarness(action, args.selectedHarnessName, args.discovered);
+          emitProgress(
+            {
+              phase: "2",
+              status: "effect-start",
+              effectId: action.effectId,
+              effectKind: action.kind,
+              effectTitle: action.taskDef?.title,
+              effectHarness: taskHarness,
+              iteration: state.iteration,
+            },
+            args.json,
+            args.verbose,
+            args.outputMode,
+          );
           let workerSession: PiSessionHandle | null = null;
           let workerUnsub: (() => void) | null = null;
           if (action.kind === "shell" || isInternalHarness(taskHarness)) {
@@ -909,6 +941,10 @@ export async function runOrchestrationPhase(args: {
             workerUnsub = subscribeVerbosePiEvents(workerSession, `worker:${action.effectId.slice(-8)}`, args);
           }
           try {
+            const streamingCallbacks = createStreamingProgressCallbacks(
+              resolveOutputMode(args.json, args.outputMode),
+              taskHarness,
+            );
             const effectResult = await resolveEffectWithRetry(
               action,
               args.selectedHarnessName,
@@ -917,6 +953,7 @@ export async function runOrchestrationPhase(args: {
                 model: args.model,
                 interactive: args.interactive,
                 compressionConfig: args.compressionConfig,
+                streaming: streamingCallbacks,
               },
               workerSession,
               args.discovered,
@@ -965,6 +1002,18 @@ export async function runOrchestrationPhase(args: {
             await shutdownPiSession(workerSession);
           }
         }
+        emitProgress(
+          {
+            phase: "2",
+            status: "iteration-summary",
+            iteration: state.iteration,
+            effectsResolved: result.nextActions.length,
+            elapsedMs: Date.now() - iterationStartTime,
+          },
+          args.json,
+          args.verbose,
+          args.outputMode,
+        );
         continue;
       }
 
