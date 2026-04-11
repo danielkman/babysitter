@@ -132,6 +132,20 @@ export {
 } from "./hostContract";
 
 export {
+  resolveModelForTask,
+  type ModelSelectionResult,
+  type TaskDefInput,
+} from "./modelSelection";
+
+export {
+  createFallbackChain,
+  resolveFallbackHarness,
+  type FallbackChain,
+  type FallbackChainOptions,
+  type FallbackResolution,
+} from "./fallbackChains";
+
+export {
   getActiveMode,
   getActiveModeConfig,
   switchMode,
