@@ -36,6 +36,13 @@ import type { PolicyEngine, PolicyEvaluationContext } from "../../governance/typ
 import { logPolicyDecision } from "../../governance/logging";
 
 
+// Synchronous counter incremented at the start of requestNewEffect, BEFORE any
+// async I/O.  Allows orchestrateIteration to detect un-awaited ctx.task() calls
+// without waiting for disk writes to complete.
+let _newEffectRequestCount = 0;
+export function getNewEffectRequestCount(): number { return _newEffectRequestCount; }
+export function resetNewEffectRequestCount(): void { _newEffectRequestCount = 0; }
+
 export interface TaskIntrinsicContext {
   runId: string;
   runDir: string;
@@ -115,6 +122,7 @@ async function requestNewEffect<TArgs, TResult>(
   invocationHash: string,
   options: TaskIntrinsicInvokeOptions<TArgs, TResult>
 ): Promise<TResult> {
+  _newEffectRequestCount++;
   const effectId = nextUlid();
   const buildCtx = createTaskBuildContext({
     effectId,

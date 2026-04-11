@@ -91,6 +91,7 @@ const PROCESS_MODULE_LOAD_RETRY_DELAYS_MS = process.env.VITEST
  * — but repeated timeouts indicate a persistent infrastructure issue.
  */
 export const MAX_CONSECUTIVE_TIMEOUTS = 3;
+export const MAX_CONSECUTIVE_STALLS = 2;
 
 /**
  * Maximum number of consecutive process-error recoveries before the
@@ -251,21 +252,25 @@ export async function resolveEffect(
       const bashCommand = [command, ...shellArgs.map(shellQuoteArg)].join(" ");
       const bashResult = await piSession.executeBash(bashCommand);
       const ok = bashResult.exitCode === 0;
+      if (ok) {
+        return { status: "ok" as const, value: bashResult.output, stdout: bashResult.output };
+      }
       return {
-        status: "ok" as const,
-        value: ok
-          ? bashResult.output
-          : { success: false, exitCode: bashResult.exitCode ?? 1, stdout: bashResult.output, stderr: "", error: `Shell command exited with code ${bashResult.exitCode ?? "null"}: ${bashResult.output}` },
+        status: "error" as const,
+        error: new Error(`Shell command exited with code ${bashResult.exitCode ?? "null"}: ${bashResult.output}`),
+        value: { success: false, exitCode: bashResult.exitCode ?? 1, stdout: bashResult.output, stderr: "" },
         stdout: bashResult.output,
       };
     }
     const shellResult = await execShellEffect(command, shellArgs, cwd);
     const shellOk = shellResult.exitCode === 0;
+    if (shellOk) {
+      return { status: "ok" as const, value: shellResult.stdout, stdout: shellResult.stdout, stderr: shellResult.stderr };
+    }
     return {
-      status: "ok" as const,
-      value: shellOk
-        ? shellResult.stdout
-        : { success: false, exitCode: shellResult.exitCode, stdout: shellResult.stdout, stderr: shellResult.stderr, error: `Shell command exited with code ${shellResult.exitCode}: ${shellResult.stderr}` },
+      status: "error" as const,
+      error: new Error(`Shell command exited with code ${shellResult.exitCode}: ${shellResult.stderr}`),
+      value: { success: false, exitCode: shellResult.exitCode, stdout: shellResult.stdout, stderr: shellResult.stderr },
       stdout: shellResult.stdout,
       stderr: shellResult.stderr,
     };
@@ -2003,7 +2008,33 @@ export async function runOrchestrationPhase(args: {
       );
     },
   });
-  const mergedPhase2Tools: unknown[] = [...customTools, ...phase2AgenticTools];
+  // Wrap every tool's execute function so unhandled throws are converted to
+  // error tool-results instead of crashing the Pi session.  Without this, an
+  // async rejection inside a tool propagates as an unhandled rejection that
+  // kills the orchestration loop.
+  const wrapToolExecute = (rawTools: unknown[]): unknown[] =>
+    rawTools.map((tool) => {
+      const t = tool as Record<string, unknown>;
+      const originalExecute = t.execute;
+      if (typeof originalExecute !== "function") return tool;
+      return {
+        ...t,
+        execute: async (...args: unknown[]) => {
+          try {
+            return await (originalExecute as (...a: unknown[]) => Promise<unknown>)(...args);
+          } catch (err: unknown) {
+            const msg = err instanceof Error ? err.message : String(err);
+            writeVerbose(`[phase2 tool ${String(t.name)}] caught error: ${msg}`);
+            return formatToolResult(
+              { error: msg, toolName: String(t.name) },
+              `Tool error: ${msg}`,
+            );
+          }
+        },
+      };
+    });
+
+  const mergedPhase2Tools: unknown[] = wrapToolExecute([...customTools, ...phase2AgenticTools]);
 
   const tools = mergedPhase2Tools as Array<{
     name: string;
@@ -2212,6 +2243,7 @@ export async function runOrchestrationPhase(args: {
     }
 
     let consecutiveTimeouts = 0;
+    let consecutiveStalls = 0;
     while (state.iteration < args.maxIterations) {
       const terminal = ensureTerminalResult();
       if (terminal !== null) {
@@ -2269,15 +2301,22 @@ export async function runOrchestrationPhase(args: {
         break;
       }
 
-      // Reset consecutive timeout counter when progress is made.
+      // Reset consecutive counters when progress is made.
       if (orchestrationStateAdvanced(progressBeforeTurn)) {
         consecutiveTimeouts = 0;
+        consecutiveStalls = 0;
       } else {
-        throw new BabysitterRuntimeError(
-          "OrchestrationAgentStalled",
-          "The orchestration agent did not advance the run or resolve pending effects in this turn.",
-          { category: ErrorCategory.Runtime },
+        consecutiveStalls += 1;
+        writeVerbose(
+          `[phase2] Agent stall detected (${consecutiveStalls}/${MAX_CONSECUTIVE_STALLS} consecutive)`,
         );
+        if (consecutiveStalls >= MAX_CONSECUTIVE_STALLS) {
+          throw new BabysitterRuntimeError(
+            "OrchestrationAgentStalled",
+            `The orchestration agent did not advance the run or resolve pending effects for ${consecutiveStalls} consecutive turns.`,
+            { category: ErrorCategory.Runtime },
+          );
+        }
       }
     }
 
