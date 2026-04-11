@@ -134,8 +134,10 @@ export {
   parseStreamingLine,
   formatTurnElapsed,
   formatTokenSummary,
+  getHarnessStreamingFormat,
+  HARNESS_STREAMING_FORMATS,
 } from "./helpers.js";
-export type { StreamingEvent } from "./helpers.js";
+export type { StreamingEvent, HarnessStreamingFormat } from "./helpers.js";
 
 // Component helpers — RunListTable
 export {

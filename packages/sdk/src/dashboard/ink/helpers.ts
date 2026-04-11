@@ -1463,13 +1463,98 @@ export type StreamingEvent =
   | { readonly kind: "cost_update"; readonly cost: number }
   | { readonly kind: "text"; readonly text: string };
 
+/** Streaming output format identifier for each harness type. */
+export type HarnessStreamingFormat = "anthropic-sse" | "plain-text" | "codex-json" | "generic-json";
+
+/** Maps harness names to their expected streaming output format. */
+export const HARNESS_STREAMING_FORMATS: Record<string, HarnessStreamingFormat> = {
+  "claude-code": "anthropic-sse",
+  "internal": "anthropic-sse",
+  "codex": "codex-json",
+  "gemini-cli": "plain-text",
+  "cursor": "plain-text",
+  "github-copilot": "plain-text",
+  "opencode": "plain-text",
+  "oh-my-pi": "plain-text",
+  "pi": "plain-text",
+  "openclaw": "plain-text",
+};
+
+/** Look up the streaming format for a harness, defaulting to plain-text. */
+export function getHarnessStreamingFormat(harness: string): HarnessStreamingFormat {
+  return HARNESS_STREAMING_FORMATS[harness] ?? "plain-text";
+}
+
 /**
  * Attempt to parse a streaming output line as a structured event.
+ *
+ * Accepts an optional format parameter to handle different harness output
+ * formats. When omitted, defaults to "anthropic-sse" for backward compatibility.
  *
  * Returns null for plain text, malformed JSON, or unrecognized event types.
  * Never throws — safe for use in hot streaming callbacks.
  */
-export function parseStreamingLine(line: string): StreamingEvent | null {
+export function parseStreamingLine(line: string, format?: HarnessStreamingFormat): StreamingEvent | null {
+  const fmt = format ?? "anthropic-sse";
+
+  // Plain-text format: wrap every non-empty line as a text event
+  if (fmt === "plain-text") {
+    if (!line) return null;
+    return { kind: "text", text: line };
+  }
+
+  // Codex-json format: handle codex-specific event types first
+  if (fmt === "codex-json") {
+    if (!line || !line.startsWith("{")) return null;
+    let codexParsed: Record<string, unknown>;
+    try {
+      codexParsed = JSON.parse(line) as Record<string, unknown>;
+    } catch {
+      return null;
+    }
+    if (typeof codexParsed !== "object" || codexParsed === null || Array.isArray(codexParsed)) return null;
+    const codexType = codexParsed.type as string | undefined;
+    if (codexType === "message" && typeof codexParsed.content === "string") {
+      return { kind: "text", text: codexParsed.content };
+    }
+    if (codexType === "tool_result") {
+      return {
+        kind: "tool_end",
+        toolName: (codexParsed.name as string) ?? "unknown",
+        toolId: (codexParsed.id as string) ?? "",
+      };
+    }
+    // Fall through to anthropic-sse parsing for tool_use, usage, cost, etc.
+  }
+
+  // Generic-json format: try to extract text from common fields first
+  if (fmt === "generic-json") {
+    if (!line || !line.startsWith("{")) return null;
+    let genericParsed: Record<string, unknown>;
+    try {
+      genericParsed = JSON.parse(line) as Record<string, unknown>;
+    } catch {
+      return null;
+    }
+    if (typeof genericParsed !== "object" || genericParsed === null || Array.isArray(genericParsed)) return null;
+    // Check for text or content fields (common in various harness outputs)
+    if (typeof genericParsed.text === "string" && genericParsed.text) {
+      // But not if it's a recognized anthropic-sse type — let those through
+      const gType = genericParsed.type as string | undefined;
+      if (gType && !["content_block_start", "content_block_stop", "content_block_delta", "message_start", "message_delta", "usage", "tool_use"].includes(gType)) {
+        return { kind: "text", text: genericParsed.text };
+      }
+    }
+    if (typeof genericParsed.content === "string" && genericParsed.content) {
+      const gType = genericParsed.type as string | undefined;
+      if (gType && !["content_block_start", "content_block_stop", "content_block_delta", "message_start", "message_delta", "usage", "tool_use"].includes(gType)) {
+        return { kind: "text", text: genericParsed.content };
+      }
+    }
+    // Fall through to anthropic-sse parsing for recognized types
+  }
+
+  // anthropic-sse format (default): original implementation
   if (!line || !line.startsWith("{")) return null;
 
   let parsed: Record<string, unknown>;
