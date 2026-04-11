@@ -137,6 +137,8 @@ export {
   formatTokenSummary,
   getHarnessStreamingFormat,
   HARNESS_STREAMING_FORMATS,
+  getHarnessRpcSupport,
+  HARNESS_RPC_SUPPORT,
 } from "./helpers.js";
 export type { StreamingEvent, HarnessStreamingFormat, StreamingParser } from "./helpers.js";
 

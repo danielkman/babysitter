@@ -225,6 +225,15 @@ export function buildHarnessArgs(
     args.push(spec.workspaceFlag, options.workspace);
   }
 
+  // Structured JSON output mode (rpc) — only for harnesses that support it
+  if (options.rpc) {
+    if (name === "claude-code") {
+      args.push("--output-format", "streaming-json");
+    }
+    // codex already uses JSON events natively — no flag needed
+    // other harnesses: rpc flag silently ignored
+  }
+
   return args;
 }
 

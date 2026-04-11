@@ -149,6 +149,7 @@ export function ChatProvider({
               model?: string;
               timeout?: number;
               signal?: AbortSignal;
+              rpc?: boolean;
               streaming?: {
                 onLine?: (line: string, stream: "stdout" | "stderr") => void;
               };
@@ -162,12 +163,19 @@ export function ChatProvider({
           }>;
         };
 
+        // Dynamic require to avoid circular dep at top level
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const { getHarnessRpcSupport } = require("../helpers") as {
+          getHarnessRpcSupport: (name: string) => boolean;
+        };
+
         const result = await invokeHarnessStreaming(harness, {
           prompt,
           workspace: workspace ?? process.cwd(),
           model,
           timeout: 600_000, // 10 minutes
           signal: abortRef.current.signal,
+          rpc: getHarnessRpcSupport(harness),
           streaming: {
             onLine: (line: string, stream: "stdout" | "stderr") => {
               callbacks?.onLine?.(line, stream);

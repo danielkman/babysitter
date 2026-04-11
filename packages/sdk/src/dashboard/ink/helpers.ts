@@ -1485,6 +1485,18 @@ export function getHarnessStreamingFormat(harness: string): HarnessStreamingForm
   return HARNESS_STREAMING_FORMATS[harness] ?? "plain-text";
 }
 
+/** Maps harness names to whether they support structured JSON output (rpc mode). */
+export const HARNESS_RPC_SUPPORT: Record<string, boolean> = {
+  "claude-code": true,
+  "internal": true,
+  "codex": true,
+};
+
+/** Check if a harness supports structured JSON output mode. */
+export function getHarnessRpcSupport(harness: string): boolean {
+  return HARNESS_RPC_SUPPORT[harness] === true;
+}
+
 /**
  * Attempt to parse a streaming output line as a structured event.
  *
