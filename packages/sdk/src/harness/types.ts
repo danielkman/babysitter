@@ -115,6 +115,8 @@ export interface HarnessInvokeOptions {
   env?: Record<string, string>;
   /** Real-time streaming output callbacks (GAP-SUBOBS-001). */
   streaming?: StreamingOutputOptions;
+  /** AbortSignal to cancel the invocation and kill the child process. */
+  signal?: AbortSignal;
 }
 
 /** Result returned after a harness CLI invocation completes. */

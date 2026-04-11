@@ -148,6 +148,7 @@ export function ChatProvider({
               workspace?: string;
               model?: string;
               timeout?: number;
+              signal?: AbortSignal;
               streaming?: {
                 onLine?: (line: string, stream: "stdout" | "stderr") => void;
               };
@@ -166,6 +167,7 @@ export function ChatProvider({
           workspace: workspace ?? process.cwd(),
           model,
           timeout: 600_000, // 10 minutes
+          signal: abortRef.current.signal,
           streaming: {
             onLine: (line: string, stream: "stdout" | "stderr") => {
               callbacks?.onLine?.(line, stream);

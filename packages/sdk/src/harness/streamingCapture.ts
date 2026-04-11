@@ -181,10 +181,32 @@ export async function invokeHarnessStreaming(
       );
 
       let timedOut = false;
+      let aborted = false;
       const timer = setTimeout(() => {
         timedOut = true;
         child.kill("SIGTERM");
       }, timeoutMs);
+
+      // Wire abort signal to kill the child process
+      const abortSignal = options.signal;
+      let abortHandler: (() => void) | undefined;
+      if (abortSignal) {
+        if (abortSignal.aborted) {
+          // Already aborted — kill immediately
+          aborted = true;
+          child.kill("SIGTERM");
+        } else {
+          abortHandler = () => {
+            aborted = true;
+            child.kill("SIGTERM");
+            // Escalate to SIGKILL after 5 seconds if still alive
+            setTimeout(() => {
+              if (!child.killed) child.kill("SIGKILL");
+            }, 5000).unref();
+          };
+          abortSignal.addEventListener("abort", abortHandler);
+        }
+      }
 
       if (child.stdout) {
         child.stdout.on("data", (data: Buffer) => {
@@ -204,6 +226,7 @@ export async function invokeHarnessStreaming(
 
       child.on("error", (err: Error) => {
         clearTimeout(timer);
+        if (abortHandler && abortSignal) abortSignal.removeEventListener("abort", abortHandler);
         void cleanupPromptFile();
         stdoutCollector.flush();
         stderrCollector.flush();
@@ -223,6 +246,7 @@ export async function invokeHarnessStreaming(
 
       child.on("close", (code: number | null) => {
         clearTimeout(timer);
+        if (abortHandler && abortSignal) abortSignal.removeEventListener("abort", abortHandler);
         void cleanupPromptFile();
         stdoutCollector.flush();
         stderrCollector.flush();
@@ -236,10 +260,12 @@ export async function invokeHarnessStreaming(
 
         const finalOutput = timedOut
           ? `Process timed out after ${timeoutMs}ms\n${output}`.trim()
-          : output;
+          : aborted
+            ? `Process aborted\n${output}`.trim()
+            : output;
 
         resolve({
-          success: exitCode === 0 && !timedOut,
+          success: exitCode === 0 && !timedOut && !aborted,
           output: finalOutput,
           exitCode,
           duration,
