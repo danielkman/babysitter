@@ -128,4 +128,13 @@ export {
   renderGitSafety,
   renderPriorityLadder,
   renderRootCauseGuardrail,
+  renderPrPolicies,
+  renderBranchPolicies,
+  renderIssueLinking,
+  renderDraftPrProhibition,
+  renderLabelTaxonomy,
+  renderSingleChannelRule,
+  renderSourceQuoteCap,
+  renderAgentMentionProtocol,
+  renderHandoffConventions,
 } from './parts';

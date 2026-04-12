@@ -67,6 +67,15 @@ export const PART_STRATA_MAP: Record<string, StratumTaggedPart> = {
   renderGitSafety: tagPart('renderGitSafety', 'stable', parts.renderGitSafety, 20),
   renderPriorityLadder: tagPart('renderPriorityLadder', 'stable', parts.renderPriorityLadder, 22),
   renderRootCauseGuardrail: tagPart('renderRootCauseGuardrail', 'stable', parts.renderRootCauseGuardrail, 22),
+  renderBranchPolicies: tagPart('renderBranchPolicies', 'stable', parts.renderBranchPolicies, 23),
+  renderPrPolicies: tagPart('renderPrPolicies', 'stable', parts.renderPrPolicies, 23),
+  renderDraftPrProhibition: tagPart('renderDraftPrProhibition', 'stable', parts.renderDraftPrProhibition, 23),
+  renderIssueLinking: tagPart('renderIssueLinking', 'stable', parts.renderIssueLinking, 23),
+  renderLabelTaxonomy: tagPart('renderLabelTaxonomy', 'stable', parts.renderLabelTaxonomy, 23),
+  renderSingleChannelRule: tagPart('renderSingleChannelRule', 'stable', parts.renderSingleChannelRule, 24),
+  renderSourceQuoteCap: tagPart('renderSourceQuoteCap', 'stable', parts.renderSourceQuoteCap, 24),
+  renderAgentMentionProtocol: tagPart('renderAgentMentionProtocol', 'stable', parts.renderAgentMentionProtocol, 24),
+  renderHandoffConventions: tagPart('renderHandoffConventions', 'stable', parts.renderHandoffConventions, 24),
   renderSeeAlso: tagPart('renderSeeAlso', 'stable', parts.renderSeeAlso, 25),
 
   // ── Runtime stratum ──────────────────────────────────────────────────
