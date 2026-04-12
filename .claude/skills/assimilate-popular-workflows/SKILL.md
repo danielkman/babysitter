@@ -67,12 +67,31 @@ gh search code "description:" "filename:SKILL.md" --json repository,path,url --l
 gh search code "plugin.json" "skills" --json repository,path,url --limit 100
 ```
 
+### Topic-based discovery
+
+Search for repos tagged with relevant GitHub topics. These are high-signal candidates even without SKILL.md files:
+
+```bash
+# Search by topic tags (each is a separate query)
+for topic in claude-code claude-skills mcp agentic-workflow agent-skills skills agent-harness ai-agents; do
+  gh search repos --topic "$topic" --stars=">50" --sort stars --limit 50 --json fullName,stargazersCount,description
+done
+
+# Combined keyword + star searches for broader coverage
+gh search repos "agent skill" --stars=">50" --sort stars --limit 50 --json fullName,stargazersCount,description
+gh search repos "claude code skills" --stars=">100" --sort stars --limit 30 --json fullName,stargazersCount,description
+gh search repos "workflow automation skill" --stars=">100" --sort stars --limit 30 --json fullName,stargazersCount,description
+```
+
+Topic-tagged repos that lack SKILL.md files may still contain extractable processes or plugin ideas if they implement multi-step workflows, domain pipelines, or tool integrations. Classify and research them using the same Phase 2/3 pipeline.
+
 ### Filtering rules
 
 1. Drop any hit from `a5c-ai/babysitter` (this repo).
 2. Drop archived repos.
 3. Dedupe by `repository.nameWithOwner`.
 4. Group hits by repo -- one repo may contain many SKILL.md files.
+5. **Prefer repos with 50+ stars.** Lower-star repos may be included only if they contain exceptionally novel processes not found elsewhere. Use `gh search repos` with `--stars=">50"` to find higher-quality repos.
 
 ### Enrichment
 

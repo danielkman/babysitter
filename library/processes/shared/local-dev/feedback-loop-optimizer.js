@@ -1,11 +1,14 @@
 /**
  * @process processes/shared/local-dev/feedback-loop-optimizer
- * @description Audits the repo's feedback loop across five independent layers in parallel
- *   (pre-commit hygiene, CI workflows, coverage, monitoring/tracing, alerting/on-call),
- *   ranks gaps, then opens one small (1-3h) decoupled GitHub issue per gap (batched,
- *   dedup-against-existing). Never commits code — issues and PR comments only.
+ * @description Audits the repo's feedback loops across seven layers (pre-commit & commit
+ *   hygiene, testing/E2E, linting & formatting, coverage, CI workflows, monitoring/tracing,
+ *   alerting & on-call). First detects stack/tooling to calibrate suggestions, audits layers
+ *   in parallel, dedupes gaps against existing open/closed issues, then opens one small
+ *   (1-3h) decoupled GitHub issue per remaining gap using the standard issue template.
+ *   Never commits code — issues and PR comments only. Never edits .github/workflows directly;
+ *   proposes scripts/ or config files instead.
  * @inputs { repo?: string, focusLayers?: string[] }
- * @outputs { success, gapsFound, issuesOpened }
+ * @outputs { success, stack, gapsFound, issuesOpened }
  *
  * Source: https://raw.githubusercontent.com/a5c-ai/registry/main/prompts/development/feedback-loop-optimizer-agent.prompt.md
  */
@@ -15,59 +18,95 @@ import { defineTask } from '@a5c-ai/babysitter-sdk';
 const DEFAULT_LAYERS = [
   {
     id: 'pre-commit',
-    description: 'Pre-commit & hygiene: language-specific hooks (ruff/black for Python, eslint/prettier for JS/TS, go fmt, etc.), trailing-whitespace/EOF, EditorConfig consistency, lint-staged. Detect stack before suggesting specifics.',
+    description:
+      'Pre-commit & commit hygiene: pre-commit framework config + hooks (ruff/black/isort/bandit for Python; eslint/prettier/tsc --noEmit for JS/TS; trailing-whitespace, end-of-file fixer). Conventional commits / commit message guidelines.',
   },
   {
-    id: 'ci-workflows',
-    description: 'CI workflow completeness: distinct parallel jobs for lint, type-check, test, coverage, build. Recommend scripts under scripts/ — never edit .github/workflows/ directly, only propose via issue.',
+    id: 'testing',
+    description:
+      'Unit/integration baseline plus smoke/E2E: Playwright or Cypress (web), pytest+httpx/supertest/Dredd (API). Ensure tests run in CI and on PRs.',
+  },
+  {
+    id: 'lint-format',
+    description:
+      'Linting & formatting: ESLint + Prettier (JS/TS), Ruff/Flake8 + Black (Python), EditorConfig. Minimal recommended configs and autofix scripts.',
   },
   {
     id: 'coverage',
-    description: 'Coverage reporting: pytest-cov, nyc/istanbul, go -cover, with thresholds wired into CI. Prefer local reporting or free hosted (Codecov OSS tier, Coveralls).',
+    description:
+      'Coverage tooling + thresholds: pytest-cov (Python), nyc/istanbul (JS/TS), lcov reports. Prefer local reporting or free hosted tiers.',
+  },
+  {
+    id: 'ci-workflows',
+    description:
+      'CI workflows: distinct parallel jobs for lint, type-check, test, coverage; fail fast; caching; matrix. Gate merges on checks. Never edit .github/workflows directly — propose scripts/ or configs via issue.',
   },
   {
     id: 'monitoring',
-    description: 'Monitoring/tracing/logging: OpenTelemetry, Prometheus, Grafana, Loki, Tempo. Alternatives: self-hosted Sentry, Healthchecks.io.',
+    description:
+      'Monitoring/logging/tracing: OpenTelemetry, Prometheus, Grafana, Loki, Alertmanager. Error tracking: self-hosted Sentry or GlitchTip.',
   },
   {
     id: 'alerting-oncall',
-    description: 'Alerting & on-call: Alertmanager, Grafana OnCall, Healthchecks.io. Runbooks, paging escalation, SLO definitions.',
+    description:
+      'Alerts & on-call: Alertmanager or Grafana OnCall; Healthchecks.io for cron/heartbeat. Alert severity, ownership, runbooks, escalation policy.',
   },
 ];
 
+const detectStackTask = defineTask(
+  'feedback-loop-optimizer.detect-stack',
+  async ({ repo }, ctx) => {
+    return ctx.agent({
+      title: 'Detect repo stack and maturity',
+      prompt: [
+        'Inspect README, docs/**, package/build files, code layout, existing CI/workflow files,',
+        'and recent commit/PR history to infer: languages, frameworks, tooling, test setup, and maturity',
+        '(prototype vs scale). Honour existing conventions — do not impose unrelated stacks.',
+        `Repo: ${repo ?? '(current workspace)'}`,
+        'Return JSON: { stack: { languages: string[], frameworks: string[], tooling: string[] }, maturity: "prototype"|"growing"|"scale" }.',
+      ].join('\n'),
+    });
+  },
+  { kind: 'agent', title: 'Detect stack', labels: ['a5c', 'feedback-loop-optimizer'] },
+);
+
 const auditLayerTask = defineTask(
   'feedback-loop-optimizer.audit-layer',
-  async ({ layer, repo }, ctx) => {
+  async ({ layer, repo, stack, maturity }, ctx) => {
     return ctx.agent({
       title: `Audit feedback-loop layer: ${layer.id}`,
       prompt: [
         'You are the feedback-loop-optimizer-agent auditing ONE layer.',
         `Layer: ${layer.id}`,
         `Scope: ${layer.description}`,
-        'Detect language/tooling choices before suggesting specifics. Honour existing conventions.',
-        'Do NOT propose destructive migrations without a replacement plan.',
+        'Calibrate scope to repo maturity; propose highest-impact, low-coupling improvements first.',
+        'Prefer OSS/free tools and hosted-free tiers. Never commit code — issues/PR comments only.',
+        'If information is insufficient, propose a discovery task instead of guessing.',
+        `Stack: ${JSON.stringify(stack ?? {})}`,
+        `Maturity: ${maturity ?? 'unknown'}`,
         `Repo: ${repo ?? '(current workspace)'}`,
-        'Return JSON: { gaps: Array<{ title, body, severity: "high"|"medium"|"low", areaTag: string }> }.',
+        'Return JSON: { gaps: Array<{ title, summary, currentVsExpected, proposedChanges, acceptanceCriteria: string[], references: string[], severity: "high"|"medium"|"low", areaTag: string, effortHours: number }> }.',
       ].join('\n'),
     });
   },
   { kind: 'agent', title: 'Audit feedback-loop layer', labels: ['a5c', 'feedback-loop-optimizer'] },
 );
 
-const rankGapsTask = defineTask(
-  'feedback-loop-optimizer.rank-gaps',
+const dedupeGapsTask = defineTask(
+  'feedback-loop-optimizer.dedupe-gaps',
   async ({ gaps }, ctx) => {
     return ctx.agent({
-      title: `Rank ${gaps.length} gap(s) by impact/effort`,
+      title: `Dedupe ${gaps.length} gap(s) against existing issues`,
       prompt: [
-        'Rank each gap by impact (high/medium/low) vs effort (1-3h is the target size).',
-        'Drop gaps that are >3h unless trivially decomposable. Merge near-duplicates.',
+        'Search open and recently-closed issues (gh issue list) for matching tasks. For any gap already',
+        'tracked, keep a reference to the existing issue so we can comment/link instead of opening a new one.',
+        'Drop gaps that exceed 3h effort unless trivially decomposable; merge near-duplicates within the set.',
         `Gaps: ${JSON.stringify(gaps, null, 2)}`,
-        'Return JSON: { ranked: Array<{ title, body, severity, areaTag, effortHours }> }.',
+        'Return JSON: { unique: Array<same-shape>, duplicates: Array<{ gapTitle, existingIssue: string }> }.',
       ].join('\n'),
     });
   },
-  { kind: 'agent', title: 'Rank feedback-loop gaps', labels: ['a5c', 'feedback-loop-optimizer'] },
+  { kind: 'agent', title: 'Dedupe feedback-loop gaps', labels: ['a5c', 'feedback-loop-optimizer'] },
 );
 
 const openIssueTask = defineTask(
@@ -76,9 +115,14 @@ const openIssueTask = defineTask(
     return ctx.agent({
       title: `Open decoupled issue: ${gap.title}`,
       prompt: [
-        'Before opening, search existing open issues for a matching one; if found, comment/link instead.',
-        'Required labels: "feedback-loop-optimizer" plus areaTag (testing|ci|lint|coverage|monitoring|alerting|pre-commit).',
-        'Never commit code — issues and PR comments only (gh CLI).',
+        'Author one GitHub issue per decoupled task using the standard template:',
+        '  Title: "[Feedback] <Short task> — <Area>"',
+        '  Body sections: Summary (what/why), Current vs Expected, Proposed Changes',
+        '    (avoid editing .github/workflows directly — suggest scripts/ or config files),',
+        '    Acceptance Criteria (bullet list, testable), References (paths, PRs, docs).',
+        'Required labels: "feedback-loop-optimizer" plus specifics from:',
+        '  testing | e2e | lint | format | coverage | ci | monitoring | logging | tracing | alerts | oncall | docs | enhancement | bug | pre-commit.',
+        'Use gh CLI. Never commit code. Do not propose destructive migrations without a replacement plan.',
         `Gap: ${JSON.stringify(gap, null, 2)}`,
         'Return JSON: { opened?: string, dedupedTo?: string }.',
       ].join('\n'),
@@ -93,20 +137,32 @@ export async function process(inputs, ctx) {
     ? DEFAULT_LAYERS.filter((l) => focusLayers.includes(l.id))
     : DEFAULT_LAYERS;
 
-  // Audit all layers in parallel.
-  const audits = await ctx.parallel.map(layers, (layer) => ctx.task(auditLayerTask, { layer, repo }));
+  // Phase 1: stack detection calibrates every subsequent audit.
+  const detection = await ctx.task(detectStackTask, { repo });
+  const stack = detection?.stack ?? {};
+  const maturity = detection?.maturity ?? 'unknown';
+
+  // Phase 2: audit all layers in parallel.
+  const audits = await ctx.parallel.map(layers, (layer) =>
+    ctx.task(auditLayerTask, { layer, repo, stack, maturity }),
+  );
   const gaps = audits.flatMap((a) => (Array.isArray(a?.gaps) ? a.gaps : []));
 
   if (gaps.length === 0) {
-    return { success: true, gapsFound: 0, issuesOpened: [] };
+    return { success: true, stack, gapsFound: 0, issuesOpened: [] };
   }
 
-  const ranked = await ctx.task(rankGapsTask, { gaps });
-  const rankedList = Array.isArray(ranked?.ranked) ? ranked.ranked : [];
+  // Phase 3: dedup against existing issues + drop oversized gaps.
+  const deduped = await ctx.task(dedupeGapsTask, { gaps });
+  const unique = Array.isArray(deduped?.unique) ? deduped.unique : gaps;
 
-  // Batched issue creation — one gap per task, in parallel, dedup happens inside each.
-  const results = await ctx.parallel.map(rankedList, (gap) => ctx.task(openIssueTask, { gap }));
+  if (unique.length === 0) {
+    return { success: true, stack, gapsFound: 0, issuesOpened: [] };
+  }
+
+  // Phase 4: open one decoupled issue per remaining gap, in parallel.
+  const results = await ctx.parallel.map(unique, (gap) => ctx.task(openIssueTask, { gap }));
   const issuesOpened = results.map((r) => r?.opened).filter(Boolean);
 
-  return { success: true, gapsFound: rankedList.length, issuesOpened };
+  return { success: true, stack, gapsFound: unique.length, issuesOpened };
 }
