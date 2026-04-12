@@ -8,171 +8,382 @@
       "name": "basic-security",
       "description": "Install security processes, skills, agents and commands from the babysitter security-compliance library into your project. Includes post-install codebase security scan.",
       "latestVersion": "1.0.0",
-      "versions": ["1.0.0"],
+      "versions": [
+        "1.0.0"
+      ],
       "packagePath": "plugins/basic-security",
-      "tags": ["security", "compliance", "audit", "sast", "vulnerability-management"],
+      "tags": [
+        "security",
+        "compliance",
+        "audit",
+        "sast",
+        "vulnerability-management"
+      ],
       "author": "a5c-ai"
     },
     "sound-hooks": {
       "name": "sound-hooks",
       "description": "Play sound effects on Claude Code lifecycle events via hooks in .claude/settings.json — searches and downloads themed mp3 files for session start, tool use, errors, and notifications. Optional babysitter hooks integration.",
       "latestVersion": "1.0.0",
-      "versions": ["1.0.0"],
+      "versions": [
+        "1.0.0"
+      ],
       "packagePath": "plugins/sound-hooks",
-      "tags": ["hooks", "sound", "notifications", "ux", "claude-code"],
+      "tags": [
+        "hooks",
+        "sound",
+        "notifications",
+        "ux",
+        "claude-code"
+      ],
       "author": "a5c-ai"
     },
     "github-actions-cicd-claude-code": {
       "name": "github-actions-cicd-claude-code",
       "description": "Set up babysitter-powered GitHub Actions workflows for Claude Code using anthropics/claude-code-action@v1. Triggers on issue comments, PR events, labels, schedules, and manual dispatch.",
       "latestVersion": "1.0.0",
-      "versions": ["1.0.0"],
+      "versions": [
+        "1.0.0"
+      ],
       "packagePath": "plugins/github-actions-cicd-claude-code",
-      "tags": ["cicd", "github-actions", "automation", "devops", "workflows", "claude-code"],
+      "tags": [
+        "cicd",
+        "github-actions",
+        "automation",
+        "devops",
+        "workflows",
+        "claude-code"
+      ],
       "author": "a5c-ai"
     },
     "github-actions-cicd-codex": {
       "name": "github-actions-cicd-codex",
       "description": "Set up babysitter-powered GitHub Actions workflows for Codex using openai/codex-action@v1. Triggers on issue comments, PR events, labels, schedules, and manual dispatch.",
       "latestVersion": "1.0.0",
-      "versions": ["1.0.0"],
+      "versions": [
+        "1.0.0"
+      ],
       "packagePath": "plugins/github-actions-cicd-codex",
-      "tags": ["cicd", "github-actions", "automation", "devops", "workflows", "codex", "openai"],
+      "tags": [
+        "cicd",
+        "github-actions",
+        "automation",
+        "devops",
+        "workflows",
+        "codex",
+        "openai"
+      ],
       "author": "a5c-ai"
     },
     "github-actions-cicd-gemini-cli": {
       "name": "github-actions-cicd-gemini-cli",
       "description": "Set up babysitter-powered GitHub Actions workflows for Gemini CLI using google-github-actions/run-gemini-cli@v1. Supports API key, Vertex AI, and Workload Identity Federation auth.",
       "latestVersion": "1.0.0",
-      "versions": ["1.0.0"],
+      "versions": [
+        "1.0.0"
+      ],
       "packagePath": "plugins/github-actions-cicd-gemini-cli",
-      "tags": ["cicd", "github-actions", "automation", "devops", "workflows", "gemini-cli", "google"],
+      "tags": [
+        "cicd",
+        "github-actions",
+        "automation",
+        "devops",
+        "workflows",
+        "gemini-cli",
+        "google"
+      ],
       "author": "a5c-ai"
     },
     "github-actions-cicd-babysitter": {
       "name": "github-actions-cicd-babysitter",
       "description": "Set up babysitter-powered GitHub Actions workflows using the official harness-agnostic Babysitter Action (a5c-ai/babysitter@main). Supports pi, claude-code, codex, gemini-cli, and more through a single action with multi-provider credential handling.",
       "latestVersion": "1.0.0",
-      "versions": ["1.0.0"],
+      "versions": [
+        "1.0.0"
+      ],
       "packagePath": "plugins/github-actions-cicd-babysitter",
-      "tags": ["cicd", "github-actions", "automation", "devops", "workflows", "harness-agnostic", "multi-provider"],
+      "tags": [
+        "cicd",
+        "github-actions",
+        "automation",
+        "devops",
+        "workflows",
+        "harness-agnostic",
+        "multi-provider"
+      ],
       "author": "a5c-ai"
     },
     "rate-limit-handler": {
       "name": "rate-limit-handler",
       "description": "Automatically retry Claude Code sessions on Anthropic subscription rate limits. Uses claude-auto-retry to detect rate limit messages, parse reset times, wait for cooldown, and send a continuation message via tmux.",
       "latestVersion": "2.0.0",
-      "versions": ["1.0.0", "2.0.0"],
+      "versions": [
+        "1.0.0",
+        "2.0.0"
+      ],
       "packagePath": "plugins/rate-limit-handler",
-      "tags": ["rate-limit", "retry", "auto-retry", "tmux", "resilience", "claude-code"],
+      "tags": [
+        "rate-limit",
+        "retry",
+        "auto-retry",
+        "tmux",
+        "resilience",
+        "claude-code"
+      ],
       "author": "a5c-ai"
     },
     "project-deployment": {
       "name": "project-deployment",
       "description": "Set up deployment infrastructure, CI/CD pipelines, and cloud provisioning. Supports Terraform+K8s+Helm on AWS/GCP/Azure, Vercel/Cloudflare+Supabase, Docker containers, and serverless. Copies relevant devops-sre-platform processes from the library.",
       "latestVersion": "1.0.0",
-      "versions": ["1.0.0"],
+      "versions": [
+        "1.0.0"
+      ],
       "packagePath": "plugins/project-deployment",
-      "tags": ["deployment", "cicd", "terraform", "kubernetes", "helm", "aws", "gcp", "azure", "vercel", "cloudflare", "docker", "serverless", "infrastructure"],
+      "tags": [
+        "deployment",
+        "cicd",
+        "terraform",
+        "kubernetes",
+        "helm",
+        "aws",
+        "gcp",
+        "azure",
+        "vercel",
+        "cloudflare",
+        "docker",
+        "serverless",
+        "infrastructure"
+      ],
       "author": "a5c-ai"
     },
     "testing-suite": {
       "name": "testing-suite",
       "description": "Set up comprehensive testing infrastructure — unit, integration, Storybook component tests in browser, E2E, visual regression, and coverage enforcement in CI/CD. Flexible framework selection based on stack. Copies QA testing processes from the library.",
       "latestVersion": "1.0.0",
-      "versions": ["1.0.0"],
+      "versions": [
+        "1.0.0"
+      ],
       "packagePath": "plugins/testing-suite",
-      "tags": ["testing", "unit-tests", "integration-tests", "e2e", "storybook", "coverage", "playwright", "vitest", "tdd", "quality"],
+      "tags": [
+        "testing",
+        "unit-tests",
+        "integration-tests",
+        "e2e",
+        "storybook",
+        "coverage",
+        "playwright",
+        "vitest",
+        "tdd",
+        "quality"
+      ],
       "author": "a5c-ai"
     },
     "themes": {
       "name": "themes",
       "description": "Apply any theme to your project — sound effects, design system, conversational personality, and decorative assets. No predefined list: name any movie, game, art style, mood, character, or concept and the installer interviews you, researches the theme, then searches, downloads, and generates all resources. Includes all sound-hooks functionality plus CLAUDE.md integration for themed speech patterns and visual design tokens. Assets stored in .a5c/themes/ with symlink switching.",
       "latestVersion": "1.0.0",
-      "versions": ["1.0.0"],
+      "versions": [
+        "1.0.0"
+      ],
       "packagePath": "plugins/themes",
-      "tags": ["themes", "design-system", "sounds", "hooks", "ux", "branding", "conversational-style", "assets", "claude-code"],
+      "tags": [
+        "themes",
+        "design-system",
+        "sounds",
+        "hooks",
+        "ux",
+        "branding",
+        "conversational-style",
+        "assets",
+        "claude-code"
+      ],
       "author": "a5c-ai"
     },
     "agentsh": {
       "name": "agentsh",
       "description": "Install and integrate agentsh sandbox enforcement for AI agent sessions. Intercepts all Bash tool calls via hooks, routing them through agentsh exec for policy-based command control, file protection, and network filtering. Auto-detects current harness (Claude Code, Codex, Gemini CLI) and installs appropriate hooks. Includes default sandbox policy, session lifecycle management, and platform detection.",
       "latestVersion": "1.0.0",
-      "versions": ["1.0.0"],
+      "versions": [
+        "1.0.0"
+      ],
       "packagePath": "plugins/agentsh",
-      "tags": ["security", "sandbox", "agentsh", "hooks", "bash-wrapper", "command-control", "network-filter", "file-protection", "policy"],
+      "tags": [
+        "security",
+        "sandbox",
+        "agentsh",
+        "hooks",
+        "bash-wrapper",
+        "command-control",
+        "network-filter",
+        "file-protection",
+        "policy"
+      ],
       "author": "a5c-ai"
     },
     "dev-browser": {
       "name": "dev-browser",
       "description": "Install dev-browser for sandboxed browser automation in AI agent sessions. Adds the skill with full Playwright API reference, pre-approves Bash permissions, and configures CLAUDE.md. Supports headless mode, persistent named pages, AI-optimized DOM snapshots, and screenshots.",
       "latestVersion": "1.0.0",
-      "versions": ["1.0.0"],
+      "versions": [
+        "1.0.0"
+      ],
       "packagePath": "plugins/dev-browser",
-      "tags": ["browser", "automation", "playwright", "screenshots", "scraping", "testing", "web", "sandbox", "skill"],
+      "tags": [
+        "browser",
+        "automation",
+        "playwright",
+        "screenshots",
+        "scraping",
+        "testing",
+        "web",
+        "sandbox",
+        "skill"
+      ],
       "author": "a5c-ai"
     },
     "qmd": {
       "name": "qmd",
       "description": "Install qmd on-device hybrid search engine for markdown files. Combines BM25, vector semantic search, and LLM re-ranking running locally with GGUF models. Sets up MCP server integration, indexes project collections, installs skill and CLAUDE.md config.",
       "latestVersion": "1.0.0",
-      "versions": ["1.0.0"],
+      "versions": [
+        "1.0.0"
+      ],
       "packagePath": "plugins/qmd",
-      "tags": ["search", "documentation", "markdown", "vector-search", "embeddings", "mcp", "knowledge-base", "local", "rag"],
+      "tags": [
+        "search",
+        "documentation",
+        "markdown",
+        "vector-search",
+        "embeddings",
+        "mcp",
+        "knowledge-base",
+        "local",
+        "rag"
+      ],
       "author": "a5c-ai"
     },
     "claude-mem": {
       "name": "claude-mem",
       "description": "Install claude-mem persistent memory for Claude Code sessions. Automatically captures session context via lifecycle hooks, compresses observations with AI, and provides cross-session knowledge retrieval via MCP search tools and web UI. Token-efficient 3-layer search workflow.",
       "latestVersion": "1.0.0",
-      "versions": ["1.0.0"],
+      "versions": [
+        "1.0.0"
+      ],
       "packagePath": "plugins/claude-mem",
-      "tags": ["memory", "persistence", "context", "sessions", "mcp", "hooks", "search", "observations", "claude-code"],
+      "tags": [
+        "memory",
+        "persistence",
+        "context",
+        "sessions",
+        "mcp",
+        "hooks",
+        "search",
+        "observations",
+        "claude-code"
+      ],
       "author": "a5c-ai"
     },
     "status-line": {
       "name": "status-line",
       "description": "Add a babysitter run indicator to the Claude Code status line. Displays the current run ID when a session is associated with a babysitter run. Uses a lightweight shell script that reads session state from YAML frontmatter.",
       "latestVersion": "1.1.0",
-      "versions": ["1.0.0", "1.1.0"],
+      "versions": [
+        "1.0.0",
+        "1.1.0"
+      ],
       "packagePath": "plugins/status-line",
-      "tags": ["status-line", "ux", "claude-code", "session", "run-indicator", "observability"],
+      "tags": [
+        "status-line",
+        "ux",
+        "claude-code",
+        "session",
+        "run-indicator",
+        "observability"
+      ],
       "author": "a5c-ai"
     },
     "prompt-master": {
       "name": "prompt-master",
       "description": "Install the prompt-master skill for generating optimized prompts across 30+ AI tools. Supports automatic tool detection, 12 prompt templates, 35 anti-pattern diagnostics, and prompt decompiler mode. Optional UserPromptSubmit hook auto-detects prompt-generation requests. Optional profile integration recommends prompt-master in new babysitter processes.",
       "latestVersion": "1.0.0",
-      "versions": ["1.0.0"],
+      "versions": [
+        "1.0.0"
+      ],
       "packagePath": "plugins/prompt-master",
-      "tags": ["skill", "prompts", "prompt-engineering", "multi-tool", "hooks", "claude-code", "cursor", "midjourney", "chatgpt"],
+      "tags": [
+        "skill",
+        "prompts",
+        "prompt-engineering",
+        "multi-tool",
+        "hooks",
+        "claude-code",
+        "cursor",
+        "midjourney",
+        "chatgpt"
+      ],
       "author": "a5c-ai"
     },
     "welcome": {
       "name": "welcome",
       "description": "Add a contextual welcome screen to every Claude Code session. Interviews you about your role and preferences, researches the project's tech stack and conventions, then generates a tailored /welcome skill and session-start hook that shows project status, recent activity, and suggested next actions.",
       "latestVersion": "1.0.0",
-      "versions": ["1.0.0"],
+      "versions": [
+        "1.0.0"
+      ],
       "packagePath": "plugins/welcome",
-      "tags": ["skill", "hooks", "session-start", "dashboard", "onboarding", "ux", "project-status", "claude-code"],
+      "tags": [
+        "skill",
+        "hooks",
+        "session-start",
+        "dashboard",
+        "onboarding",
+        "ux",
+        "project-status",
+        "claude-code"
+      ],
       "author": "a5c-ai"
     },
     "llm-wiki": {
       "name": "llm-wiki",
       "description": "Set up a structured LLM Wiki knowledge base using Karpathy's three-layer pattern (raw sources, wiki pages, schema). Interviews you about domain, scope, and preferences, then creates the wiki directory, schema, skills (/wiki-ingest, /wiki-query, /wiki-lint), and agent instruction integration. Supports project-scoped and global wikis with optional qmd semantic search.",
       "latestVersion": "1.0.0",
-      "versions": ["1.0.0"],
+      "versions": [
+        "1.0.0"
+      ],
       "packagePath": "plugins/llm-wiki",
-      "tags": ["wiki", "knowledge-base", "documentation", "ingest", "schema", "search", "skills", "claude-code"],
+      "tags": [
+        "wiki",
+        "knowledge-base",
+        "documentation",
+        "ingest",
+        "schema",
+        "search",
+        "skills",
+        "claude-code"
+      ],
       "author": "a5c-ai"
     },
     "mempalace": {
       "name": "mempalace",
       "description": "Install MemPalace AI memory system — mine projects and conversations into a searchable palace backed by ChromaDB. 19 MCP tools, auto-save hooks, 5 guided skills. Stores everything verbatim, makes it findable. Local only, no cloud.",
       "latestVersion": "3.0.14",
-      "versions": ["3.0.14"],
+      "versions": [
+        "3.0.14"
+      ],
       "packagePath": "plugins/mempalace",
-      "tags": ["memory", "persistence", "chromadb", "mcp", "search", "mining", "conversations", "palace", "local", "rag"],
+      "tags": [
+        "memory",
+        "persistence",
+        "chromadb",
+        "mcp",
+        "search",
+        "mining",
+        "conversations",
+        "palace",
+        "local",
+        "rag"
+      ],
       "author": "milla-jovovich",
       "repository": "https://github.com/milla-jovovich/mempalace"
     },
@@ -180,11 +391,41 @@
       "name": "ctx",
       "description": "Install ctx intelligent skill and agent recommendation system. Maintains a knowledge graph of 1,450+ skills and 427 agents, scans repos to detect tech stacks, recommends relevant skills per session, monitors context mid-session, and converts large skills into micro-skill pipelines. Includes lifecycle hooks and staleness tracking.",
       "latestVersion": "1.0.0",
-      "versions": ["1.0.0"],
+      "versions": [
+        "1.0.0"
+      ],
       "packagePath": "plugins/ctx",
-      "tags": ["skills", "agents", "discovery", "recommendations", "knowledge-graph", "context", "micro-skills", "hooks", "claude-code"],
+      "tags": [
+        "skills",
+        "agents",
+        "discovery",
+        "recommendations",
+        "knowledge-graph",
+        "context",
+        "micro-skills",
+        "hooks",
+        "claude-code"
+      ],
       "author": "stevesolun",
       "repository": "https://github.com/stevesolun/ctx"
+    },
+    "graphify": {
+      "name": "graphify",
+      "description": "Install safishamsi/graphify -- an AI coding assistant skill that turns any folder of code, docs, papers, images, or videos into a queryable knowledge graph. Supports Claude Code, Codex, OpenCode, Cursor, Gemini CLI, Copilot CLI, Aider, OpenClaw, Factory Droid, and Trae.",
+      "latestVersion": "1.0.0",
+      "versions": [
+        "1.0.0"
+      ],
+      "packagePath": "plugins/graphify",
+      "tags": [
+        "knowledge-graph",
+        "graphrag",
+        "skill",
+        "code-understanding",
+        "documentation",
+        "multimodal"
+      ],
+      "author": "safishamsi"
     }
   }
 }
