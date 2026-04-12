@@ -24,3 +24,4 @@ export * as dashboard from "./dashboard";
 export * from "./api";
 export * from "./daemon";
 export * from "./observability";
+export * as governance from "./governance";
