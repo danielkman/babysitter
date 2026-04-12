@@ -85,6 +85,15 @@ gh search repos "workflow automation skill" --stars=">100" --sort stars --limit 
 
 Topic-tagged repos that lack SKILL.md files may still contain extractable processes or plugin ideas if they implement multi-step workflows, domain pipelines, or tool integrations. Classify and research them using the same Phase 2/3 pipeline.
 
+### Marketplace/registry discovery
+
+Browse public skill and plugin registries for high-download or featured entries. These surface popular repos that may not appear in GitHub search:
+
+- **ClawHub Skills**: https://clawhub.ai/skills?sort=downloads -- browse top skills by download count. Each skill links to a GitHub repo. Extract repo URLs and cross-reference with the tracked set.
+- **ClawHub Plugins**: https://clawhub.ai/plugins -- browse plugins by popularity. Each plugin links to a GitHub repo. Extract repo URLs and cross-reference.
+
+Use a browser tool or `curl` to fetch these pages and extract GitHub repo links. For each new repo found, enrich and classify using the standard pipeline.
+
 ### Filtering rules
 
 1. Drop any hit from `a5c-ai/babysitter` (this repo).
@@ -231,9 +240,13 @@ Each process must:
 - Include `@placement` tag indicating the target library path (e.g. `@placement specializations/security-compliance/k8s-audit`)
 - Honour the source repo's license in the JSDoc header
 
-## Phase 5 -- Maintain the master index
+## Phase 5 -- Maintain indexes and history
 
-Keep `docs/reference-repos/README.md` as a top-level index:
+Maintain three files in `docs/reference-repos/` alongside the per-repo research directories:
+
+### `README.md` -- Master index of tracked repos
+
+The main index of all repos with extractable value. Only repos that have research docs with at least one extractable process or plugin idea belong here.
 
 ```markdown
 # Reference Repos
@@ -242,14 +255,13 @@ Keep `docs/reference-repos/README.md` as a top-level index:
 
 Last refreshed: YYYY-MM-DD
 Total repos tracked: N
-Skipped (internal-maintenance): K
 
 ## By Archetype
 
 ### Mega Skill Packs
 | Repo | Stars | Skills | Extraction Priority |
 |------|-------|--------|---------------------|
-| [org/name](index.md link) | N | M | High |
+| [org/name](org/name/index.md) | N | M | High |
 
 ### Methodology Repos
 ...
@@ -262,13 +274,39 @@ Skipped (internal-maintenance): K
 
 ### Utilities with Skills
 ...
-
-## Recently Assimilated Processes
-
-| Process | Source Repo | Status |
-|---------|------------ |--------|
-| [name](.a5c/processes/assimilated/file.cjs) | org/repo | Draft |
 ```
+
+### `backlog.md` -- Candidate repos to investigate
+
+Repos discovered during Phase 1 that haven't been investigated yet. Append new candidates here during discovery; remove them once classified and either tracked (moved to README.md) or rejected (moved to processed.md).
+
+```markdown
+# Candidate Backlog
+
+| Repo | Stars | Source | Notes | Added |
+|------|-------|--------|-------|-------|
+| org/name | N | gh-search / clawhub / topic:X | Brief note on why it's a candidate | YYYY-MM-DD |
+```
+
+### `processed.md` -- History of all evaluated repos
+
+Every repo that has been investigated goes here, regardless of outcome. This prevents re-processing the same repo in future discovery runs. Include the classification result and reason for skipping (if skipped).
+
+```markdown
+# Processed Repos
+
+| Repo | Stars | Archetype | Outcome | Date |
+|------|-------|-----------|---------|------|
+| org/name | N | mega-skill-pack | Tracked -- 3 processes, 2 plugins | YYYY-MM-DD |
+| org/other | M | internal-maintenance | Skipped -- no transferable value | YYYY-MM-DD |
+| org/another | K | not-a-skill | Skipped -- generic docs, no agent context | YYYY-MM-DD |
+```
+
+### Cleanup rules
+
+- **Do NOT keep research directories for skipped repos with no extractable value.** If a repo is classified as `internal-maintenance`, `other-harness`, `not-a-skill`, or otherwise has zero extractable processes and zero plugin ideas, record it in `processed.md` only. Do not create a directory under `docs/reference-repos/`.
+- **Only create research docs** (`index.md`, `extractable-value.md`, or `research.md`) for repos that have at least one extractable process or plugin idea.
+- When re-running discovery, check `processed.md` first to skip already-evaluated repos.
 
 ## Notes
 
@@ -281,7 +319,7 @@ Skipped (internal-maintenance): K
 - **Memory systems are always plugins, never processes.** Memory management (tiered storage, decay, reflection, promotion) belongs in the Context & Memory plugin category. Do not place memory-related workflows in the process library -- they are plugin-internal logic installed via `install.md`.
 - The `internal-maintenance` archetype is the most common. Expect 60-70% of hits to be skipped.
 - Rate-limit awareness: `gh search code` is throttled at 30 req/min. Split searches by language qualifier if hitting caps.
-- When a repo has already been researched (directory exists under `docs/reference-repos/`), update in-place rather than recreating. Compare `pushedAt` dates to decide if re-investigation is needed.
+- When a repo appears in `processed.md`, skip it unless explicitly asked to re-evaluate. For tracked repos (directory exists under `docs/reference-repos/`), compare `pushedAt` dates to decide if re-investigation is needed -- update in-place rather than recreating.
 - For very large skill packs (20+ skills), sample the most-starred or most-recently-updated skills rather than researching all of them in a single pass.
 - After completing research, suggest the user run `/babysitter:contrib` for any upstream-worthy process candidates.
 - See `references/classification-heuristics.md` for detailed archetype classification examples and edge cases.
