@@ -87,3 +87,24 @@ export {
   postureToPolicyRules,
   allPosturesToPolicies,
 } from './postureBridge';
+
+// Sandbox policy (GAP-SEC-002)
+export {
+  evaluateSandboxAccess,
+  matchesPattern,
+  composeSandboxPolicies,
+  attenuateSandboxPolicy,
+  type SandboxOperationKind,
+  type SandboxRule,
+  type SandboxPolicy,
+  type SandboxDecision,
+  type SandboxOperation,
+} from './sandboxPolicy';
+
+// Sandbox bridge (GAP-SEC-002)
+export {
+  sandboxDecisionToInteraction,
+  buildSandboxEvent,
+  inheritSandboxPolicy,
+  type SandboxEvent,
+} from './sandboxBridge';
