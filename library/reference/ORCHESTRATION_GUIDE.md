@@ -393,3 +393,78 @@ The hook-driven orchestration architecture:
 - ✅ **Clean separation** (decision vs execution)
 
 This makes orchestration behavior fully customizable while keeping the skill implementation simple.
+
+## a5c Collaboration Primitives
+
+These primitives come from `a5c-ai/action/default-prompt.md` and are implemented as
+reusable processes under `library/processes/shared/a5c-protocol/` and personas under
+`library/specializations/collaboration/a5c-personas/`.
+
+### Agent Mention Protocol (`@agent-name`)
+
+Tag another agent with `@agent-name` in a **new** comment, commit message, or code
+comment. Editing an existing comment does **not** trigger the mentioned agent.
+
+Language-specific in-code comment syntax:
+
+| Language family | Syntax |
+|---|---|
+| JS / TS / Java / C / C++ / Go / Rust / Swift / Kotlin | `// @agent-name: <instruction>` |
+| Python / Ruby / Shell / YAML / TOML / R | `# @agent-name: <instruction>` |
+| CSS / JSONC / block style | `/* @agent-name: <instruction> */` |
+| HTML / XML / Markdown-HTML | `<!-- @agent-name: <instruction> -->` |
+| SQL / Haskell / Lua | `-- @agent-name: <instruction>` |
+
+Implementation: [processes/shared/a5c-protocol/agent-mention-protocol.js](../processes/shared/a5c-protocol/agent-mention-protocol.js).
+
+### Six Activation Methods
+
+Agents can be triggered by: **mention** (commit/comment/code), **event** (GitHub
+webhook), **label** (applied issue/PR label), **branch** (push to a watched branch),
+**file-path** (changes under watched paths), and **schedule** (cron). The activation
+method is part of the agent's context so it can tailor its first action.
+
+### Progressive Updates Discipline
+
+1. Run the **abort-if-irrelevant** gate first (see below).
+2. Check out the working branch off `a5c/main`.
+3. Write an initial plan file at `docs/dev/{agent-name}/{task-name}-{timestamp}.md`.
+4. Commit the plan as the **first commit** on the branch.
+5. Open a **draft PR** back to `a5c/main`.
+6. Execute in small commits; update the plan doc as you go; push regularly.
+7. Rebase onto latest `a5c/main`; mark PR ready-for-review; @-mention
+   `@validator-agent` in a new comment.
+
+Implementation: [processes/shared/a5c-protocol/progressive-updates.js](../processes/shared/a5c-protocol/progressive-updates.js).
+
+### Follow-up URI Convention
+
+List remaining follow-ups at the bottom of PR bodies using:
+
+```
+follow ups: [agent name](https://app.a5c.ai/follow-ups/<agent-name>/<description>)
+```
+
+### Mention-Cleanup Phase
+
+After an agent is triggered by an in-code `@agent-name` mention and completes the
+work, it must remove the original mention from the source (preserving surrounding
+comment structure) and replace it with a short resolution note. This prevents the
+same mention from re-triggering on subsequent scans. PR/issue comment mentions are
+cleaned up by posting a reply — never by editing the original.
+
+### Abort-If-Irrelevant Gate
+
+At the start of every run, abort (and delete the working branch if one was created)
+if: the referenced issue is closed, the referenced PR is merged/closed, another
+agent has already completed the same task, or the task is otherwise no longer
+relevant. Log the reason and exit cleanly — no empty PRs.
+
+### Primary Branch Rule + Git Identity
+
+- Primary branch is **`a5c/main`**. Never commit or push directly to it — always
+  branch and open a PR.
+- **Rebase-before-complete**: rebase onto the latest `a5c/main` before marking a PR
+  ready-for-review.
+- Configure agent git identity per run: `user.name = <agent-name>`,
+  `user.email = a5c-agent@a5c.ai`.
