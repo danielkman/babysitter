@@ -79,3 +79,20 @@ HIGH - Contains well-documented Microsoft/Azure ecosystem processes that are dir
   - Placement: specializations/shared/
   - Why codify: Demonstrates scalable approach to managing large skill collections with cross-cutting concerns
   - Sketch: Language detection -> Service categorization -> Symlink creation -> Multi-agent compatibility
+
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| Azure Architecture Review | NEW | Well-Architected Framework review with 44 cloud patterns and architecture styles | - | specializations/devops-sre-platform/azure-architecture-review.js |
+| Frontend Design Review | NEW | UI/UX design review with accessibility audit and performance recommendations | - | specializations/frontend/frontend-design-review.js |
+| MCP Development Workflow | NEW | End-to-end MCP server development from requirements to deployment | - | specializations/shared/mcp-development-workflow.js |
+| Well-Architected Framework Assessment | NEW | Systematic cloud architecture validation using 5 pillars (cost, operational excellence, performance, reliability, security) | - | specializations/devops-sre-platform/well-architected-framework-assessment.js |
+| Multi-Language Skill Organization | NEW | Scalable approach to managing large skill collections with cross-cutting concerns | - | specializations/shared/multi-language-skill-organization.js |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| Azure Development Suite | NEW | Comprehensive Azure development with CLI, deployment pipelines, and monitoring | - | plugins/a5c/marketplace/plugins/azure-development-suite/ |
+| Cloud Architecture Framework | NEW | Cloud architecture best practices with Well-Architected assessments and design patterns | - | plugins/a5c/marketplace/plugins/cloud-architecture-framework/ |

@@ -91,3 +91,18 @@ Automated health monitoring process for multi-source data pipelines. Extracted f
 - **Source-aware price normalization:** ESPN uses American odds (-150/+130), Polymarket uses 0-1 decimals, Kalshi uses 0-100 integers. Normalization to implied probability must happen before any cross-source comparison.
 - **Nightly health checks with threshold-based classification:** The OK/Degraded/Down trichotomy (using a 3-second latency threshold) is more useful than binary up/down for services that gracefully degrade.
 - **Sport-aware entity search:** When bridging ESPN schedules to prediction markets, map through sport codes (e.g., NBA -> `KXNBA` for Kalshi, NBA -> series_id for Polymarket) rather than free-text search. Structured mapping eliminates false matches.
+
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| Sports Betting Edge Analysis Pipeline | NEW | Multi-phase betting opportunity evaluation with de-vigging and Kelly criterion | - | specializations/business/sports-betting-edge-analysis.js |
+| Upstream API Health Monitor | NEW | Automated health monitoring for multi-source data pipelines with structured reporting | - | specializations/shared/upstream-api-health-monitor.js |
+| De-Vigging and Odds Normalization | NEW | Sports betting odds conversion and fair probability extraction | - | specializations/shared/devigging-odds-normalization.js |
+| Cross-Platform Arbitrage Detection | NEW | Price comparison across prediction markets and sportsbooks for arbitrage opportunities | - | specializations/shared/cross-platform-arbitrage-detection.js |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| Sports Data Integration | NEW | Zero-API-key sports data access across 14+ sports with betting analytics and market integration | - | plugins/a5c/marketplace/plugins/sports-data-integration/ |

@@ -40,6 +40,19 @@ The formalized skill schema (`schema/skill.schema.json`) is the closest thing to
   - Configs/hooks it would create: `.a5c/commands/browse-skills.md`, `.a5c/commands/install-skill.md`, registry config in `.a5c/registries.json`
   - Source evidence: The repo's search index schema and category taxonomy with 78+ categories
 
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| N/A | N/A | No transferable processes identified after filtering skill-related patterns | - | N/A |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| Marketplace Security Gate | NEW | Security scanning for plugin installation with dangerous pattern detection | - | plugins/a5c/marketplace/plugins/marketplace-security-gate/ |
+| Skill Registry Browser | NEW | Browsing and installing skills from public registries with search and caching | - | plugins/a5c/marketplace/plugins/skill-registry-browser/ |
+
 ## Implicit Procedural Knowledge
 
 (No transferable implicit procedures after filtering skill-related patterns.)

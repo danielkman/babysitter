@@ -95,3 +95,20 @@ HIGH - Contains alternative harness patterns and sophisticated agent template sy
   - Placement: specializations/business-architecture/
   - Why codify: Framework for organizing agent capabilities that aligns with business needs rather than technical categorization
   - Sketch: Business function analysis → Domain boundary definition → Agent responsibility mapping → Cross-domain coordination → Business workflow integration
+
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| SOUL Agent Specification | NEW | Structured agent template creation using SOUL.md format with identity and operational rules | - | methodologies/soul-agent-specification/ |
+| Business-Domain Agent Organization | NEW | Systematic agent organization by business function rather than technical capability | - | specializations/business/business-domain-agent-organization.js |
+| Agent Deployment Automation | NEW | Automated agent deployment with web-based configuration and monitoring tools | - | specializations/shared/agent-deployment-automation.js |
+| Alternative Agent Specification Methodology | NEW | Identity-driven agent structuring as alternative to procedural skills approach | - | methodologies/alternative-agent-specification/ |
+| Cross-Platform Agent Ecosystem Design | NEW | Complete agent ecosystem building with templates, deployment, and management infrastructure | - | methodologies/cross-platform-agent-ecosystem/ |
+| Business-Domain Agent Architecture | NEW | Agent capability organization aligned with business functions and workflow integration | - | specializations/business/business-domain-agent-architecture.js |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| Agent Template Management | NEW | Systematic agent template creation, organization, and deployment with registry system | - | plugins/a5c/marketplace/plugins/agent-template-management/ |

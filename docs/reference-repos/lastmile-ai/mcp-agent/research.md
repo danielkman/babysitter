@@ -61,3 +61,18 @@ VERY HIGH - Contains production-ready agent architecture patterns directly appli
   - Placement: methodologies/agent-orchestration/
   - Why codify: Provides systematic approach to building complex agent workflows from proven patterns
   - Sketch: Pattern analysis → Composition strategy → Integration design → Coordination implementation → Quality validation
+
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| MCP Agent Lifecycle Management | NEW | Systematic MCP server connection management and agent coordination throughout execution | - | specializations/shared/mcp-agent-lifecycle-management.js |
+| Parallel Agent Orchestration | NEW | Coordinating multiple agents in map-reduce and parallel execution patterns | - | specializations/shared/parallel-agent-orchestration.js |
+| Agent Pattern Composition | NEW | Methodology for systematically combining multiple agent patterns into coherent workflows | - | methodologies/agent-pattern-composition/ |
+| Durable Workflow Execution | NEW | Production-ready agent deployment with Temporal-based persistence and recovery | - | specializations/shared/durable-workflow-execution.js |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| N/A | N/A | No babysitter marketplace plugins identified - harness integration is plugin FOR mcp-agent | - | N/A |
