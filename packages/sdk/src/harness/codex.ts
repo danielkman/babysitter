@@ -198,9 +198,11 @@ async function handleCodexSessionStartHookImpl(
     return 0;
   }
 
-  // Codex auto-injects CODEX_THREAD_ID into all hooks — no env file write needed.
-  // Persist PID-scoped marker so descendant processes can resolve the session
-  // ID even in environments where CODEX_THREAD_ID isn't propagated.
+  // Codex passes session_id to hooks via the stdin JSON payload only — there is
+  // no env-var injection equivalent to Claude Code's CLAUDE_ENV_FILE. Persist a
+  // PID-scoped marker so subsequent hooks (Stop, UserPromptSubmit) and any
+  // descendant processes can resolve the session ID by walking up to the
+  // common Codex CLI ancestor PID.
   try {
     writeSessionMarker("codex", sessionId);
   } catch {
@@ -369,6 +371,11 @@ export function createCodexAdapter(): HarnessAdapter {
     },
 
     async bindSession(opts: SessionBindOptions): Promise<SessionBindResult> {
+      // Delegates to the Claude adapter intentionally: bindSessionImpl only
+      // manages the generic session-state file (<stateDir>/<sessionId>.md),
+      // which has identical format/semantics across both harnesses. It does
+      // NOT touch CLAUDE_ENV_FILE, so it is safe to reuse for codex. We
+      // override only the returned `harness` field below.
       const stateDir = resolveCodexStateDir({
         stateDir: opts.stateDir,
         pluginRoot: opts.pluginRoot,

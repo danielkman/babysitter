@@ -83,9 +83,10 @@ Verify the active shared process-library binding:
 babysitter process-library:active --json
 ```
 
-On native Windows, Codex currently does not execute hooks. The plugin still
-installs correctly, but the lifecycle hooks will not fire until Codex enables
-Windows hook execution.
+On native Windows, Codex hooks require **Codex CLI >= 0.119.0** (released
+2026-04-10, [openai/codex#17268](https://github.com/openai/codex/pull/17268)).
+Older Codex versions silently skipped hook execution on Windows. If hooks do
+not fire after install, run `codex --version` and upgrade if needed.
 
 ## License
 
