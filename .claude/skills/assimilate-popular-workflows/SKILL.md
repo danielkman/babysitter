@@ -44,6 +44,7 @@ When identifying plugin ideas, think about what could be distributed as an insta
 | Quality Assurance & Testing | Test frameworks, coverage gates, linting configs, pre-commit hooks | testing-suite |
 | Workflow Automation | Rate limit handling, auto-retry logic, lifecycle event hooks | rate-limit-handler |
 | Theming & Environment | Sound hooks, design systems, conversational personality, themed assets | themes, sound-hooks |
+| Harness Integration | Alternative harness adapters, TUI improvements, orchestration frameworks | opencode-adapter, workflow-orchestration |
 
 ## When to use
 
@@ -125,6 +126,7 @@ For each repo, shallow-clone into `.a5c/tmp/skill-discovery/` and investigate th
 | `internal-maintenance` | Skills exist only for the repo's own CI/dev workflow | **Skip** -- not transferable |
 | `other-harness` | Skill is specific to a non-Claude harness (Codex, Cursor, etc.) or focused on harness invocation/CLI orchestration | **Skip** -- not transferable to babysitter processes |
 | `claude-plugin` | A Claude Code plugin with skills as part of its offering | Investigate plugin structure, extractable integrations |
+| `harness-framework` | Alternative AI coding harness/framework (OpenCode, Antigravity, etc.) or Claude Code orchestration/TUI improvements | Extract for harness assimilation (new adapter + plugin) and/or TUI/orchestration improvements |
 | `domain-skill-pack` | Skills focused on a specific domain (e.g., data science, DevOps) | Extract domain processes and patterns |
 | `utility-with-skill` | A tool/library that ships a SKILL.md for usage guidance | Extract the usage pattern as a potential shared process |
 | `not-a-skill` | Repo uses SKILL.md as generic docs, no Claude Code connection | **Skip** -- no frontmatter, no agent context |
@@ -138,6 +140,7 @@ Read the repo's top-level README, plugin.json (if present), directory structure,
 - **internal-maintenance**: SKILL.md references only internal paths, CI pipelines, repo-specific tooling
 - **other-harness**: Skill is for Codex, Cursor, or another non-Claude harness; or focuses on CLI orchestration / harness invocation patterns
 - **claude-plugin**: `.claude-plugin/plugin.json` or `plugin.json` with skill registrations
+- **harness-framework**: CLI executable for AI interaction (like `opencode`, `antigravity`), or Claude Code orchestration/TUI/hook improvements (workflow automation, delegation frameworks, status line enhancements)
 - **domain-skill-pack**: Skills all relate to one domain; directory structure groups by topic
 - **utility-with-skill**: Repo is primarily a library/tool; SKILL.md is usage documentation
 
@@ -174,6 +177,8 @@ Look beyond methodologies -- domain-specific skills (DevOps, security, frontend,
 often contain multi-step processes extractable as specializations/<domain>/ entries.
 A "kubernetes-specialist" skill may encode a k8s deployment audit process.
 A "debugging-wizard" may encode a systematic debugging process.
+For harness-framework repos, assess: TUI/orchestration improvements for our internal agent harness,
+CLI patterns for new harness adapter creation, and workflow automation patterns.
 Assess each skill for procedural content, not just methodology content.>
 
 ## Extraction Priority
@@ -207,6 +212,17 @@ that an AI agent executes to set up capabilities in a user's project>
   - Processes it would copy: <which process library entries>
   - Configs/hooks it would create: <ESLint rules, git hooks, CI/CD templates, etc.>
   - Source evidence: <what in the repo inspires this plugin idea>
+
+## Harness Integration Ideas
+<For harness-framework repos: ideas for new harness adapters and TUI improvements>
+- **Harness Adapter**: New harness integration (like plugins/babysitter-codex for Codex)
+  - Adapter implementation: <what would go in packages/sdk/src/harness/adapters/>
+  - Plugin structure: <what would go in plugins/babysitter-[harness]/>
+  - CLI integration: <command patterns, flag mapping, capability detection>
+- **TUI/Orchestration Improvement**: Enhancement to our internal agent harness
+  - Current limitation: <what our harness lacks that this repo provides>
+  - Integration approach: <how to incorporate the improvement>
+  - Implementation scope: <where in our codebase this would go>
 
 ## Implicit Procedural Knowledge
 <Procedures that are described narratively in SKILL.md files but should be
