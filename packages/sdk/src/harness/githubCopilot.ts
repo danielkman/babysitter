@@ -32,7 +32,7 @@
  */
 
 import * as path from "node:path";
-import { existsSync, mkdirSync, appendFileSync, readFileSync, writeFileSync, renameSync } from "node:fs";
+import { existsSync, mkdirSync, appendFileSync, readFileSync } from "node:fs";
 import { appendEvent } from "../storage/journal";
 import {
   readSessionFile,
@@ -60,9 +60,12 @@ import { getGlobalLogDir, getGlobalStateDir } from "../config";
 import { readSessionMarker, writeSessionMarker } from "./sessionMarker";
 
 /**
- * Atomically set BABYSITTER_SESSION_ID in a Copilot env file. Strips any prior
- * `export BABYSITTER_SESSION_ID=...` lines so the file doesn't accumulate
- * stale values across session rotation.
+ * Append BABYSITTER_SESSION_ID to a Copilot env file. Append-only matches the
+ * harness's shell-sourcing semantics: the file is sourced in order and the
+ * last export wins. Resolvers use a last-match regex, mirroring that.
+ *
+ * Do NOT rewrite or rename-swap the file: the harness may retain a cached
+ * handle to the original inode, and rewriting breaks the sourcing contract.
  *
  * Local duplicate of the claudeCode helper — kept local rather than shared to
  * allow per-harness divergence. Exported for targeted testing.
@@ -71,22 +74,7 @@ export function setBabysitterSessionIdInCopilotEnvFile(
   envFile: string,
   sessionId: string,
 ): void {
-  let existing = "";
-  try {
-    existing = readFileSync(envFile, "utf-8");
-  } catch {
-    // new file
-  }
-  const stripped = existing
-    .split(/\r?\n/)
-    .filter((line) => !/^export BABYSITTER_SESSION_ID=/.test(line))
-    .join("\n");
-  const trimmed =
-    stripped.length && !stripped.endsWith("\n") ? stripped + "\n" : stripped;
-  const next = `${trimmed}export BABYSITTER_SESSION_ID="${sessionId}"\n`;
-  const tmp = `${envFile}.tmp-${process.pid}`;
-  writeFileSync(tmp, next);
-  renameSync(tmp, envFile);
+  appendFileSync(envFile, `export BABYSITTER_SESSION_ID="${sessionId}"\n`);
 }
 
 // ---------------------------------------------------------------------------
@@ -500,8 +488,8 @@ async function handleSessionStartHookImpl(
   }
 
   // 3. Persist BABYSITTER_SESSION_ID to env file (COPILOT_ENV_FILE or CLAUDE_ENV_FILE).
-  //    Use the strip-and-append helper so repeated session-start invocations
-  //    don't accumulate stale lines.
+  //    Append-only: the harness sources the file in order before each tool call
+  //    and the last export wins. The resolver uses a last-match regex.
   const envFile = process.env.COPILOT_ENV_FILE || process.env.CLAUDE_ENV_FILE;
   if (envFile) {
     try {
