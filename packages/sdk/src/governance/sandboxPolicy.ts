@@ -106,7 +106,7 @@ export function evaluateSandboxAccess(
 
   if (matching.length === 0) {
     return {
-      action: policy.defaultAction as 'allow' | 'block' | 'prompt',
+      action: policy.defaultAction,
       reason: `No matching rule; default action: ${policy.defaultAction}`,
     };
   }
