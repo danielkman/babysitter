@@ -44,9 +44,21 @@ Unified AI provider abstraction:
 ### Harness Integration Ideas
 
 #### Harness Adapter for OpenCode Successor (Crush)
-- **Adapter implementation**: `createCrushAdapter` in `packages/sdk/src/harness/adapters/`
-- **Plugin structure**: `plugins/babysitter-crush/` for Charm Crush integration
+
+**Capability Assessment for Babysitter Integration:**
+
+| Capability | Status | Details |
+|------------|---------|---------|
+| **Custom Tools/MCP** | ⚠️ LIMITED | MCP-extensible architecture but limited custom tool execution beyond MCP servers |
+| **Stop Hooks** | ❌ NOT SUPPORTED | No interruption hooks or lifecycle callbacks documented for stopping agent mid-conversation |
+| **Plugin System** | ⚠️ LIMITED | Proposed Caddy-style compile-time plugin system (not runtime). Plugins are Go modules included at build-time via `xcrush` |
+
+**Integration Viability:** POOR - Crush lacks runtime plugin system and critical stop-hook capability. Build-time plugin architecture incompatible with babysitter's dynamic orchestration needs.
+
+- **Adapter implementation**: `createCrushAdapter` in `packages/sdk/src/harness/adapters/` (if technical limitations can be overcome)
+- **Plugin structure**: `plugins/babysitter-crush/` for Charm Crush integration  
 - **CLI integration**: Terminal UI patterns, session management, multi-provider support
+- **Major limitation**: **Requires custom conversation pause/resume mechanism** due to lack of native stop hooks
 
 #### TUI/Orchestration Improvements
 - **Current limitation**: Our harness lacks sophisticated terminal UI and session management

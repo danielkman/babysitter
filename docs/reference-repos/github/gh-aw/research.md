@@ -72,9 +72,21 @@ VERY HIGH - Contains official GitHub workflow orchestration patterns that are di
 ## Harness Integration Ideas
 
 ### Harness Adapter for GitHub Agentic Workflows
+
+**Capability Assessment for Babysitter Integration:**
+
+| Capability | Status | Details |
+|------------|---------|---------|
+| **Custom Tools/MCP** | ✅ EXCELLENT | Comprehensive tool suite: bash execution, GitHub API, MCP servers, Playwright, memory systems, QMD search. Custom MCP server integration via stdio/Docker/HTTP |
+| **Stop Hooks** | ❌ NOT SUPPORTED | Tool timeouts exist but **no lifecycle/interruption mechanisms documented**. No shutdown callbacks, graceful termination, or pause/resume functionality |
+| **Plugin System** | ✅ SUPPORTED | MCP-based extension system with server registration, tool whitelisting, environment injection. Microsoft APM (Agent Package Manager) for cross-agent dependencies |
+
+**Integration Viability:** PARTIAL - Excellent tool ecosystem and MCP integration but **completely lacks stop hooks** needed for babysitter's orchestration interruption model.
+
 - **Adapter implementation**: `createGhAwAdapter` in `packages/sdk/src/harness/adapters/`
 - **Plugin structure**: `plugins/babysitter-gh-aw/` for GitHub Agentic Workflows integration
 - **CLI integration**: `gh aw` command patterns, workflow execution, agent session management
+- **Major limitation**: **No interruption mechanisms** - would require custom workflow pause/resume implementation
 
 ### TUI/Orchestration Improvement: Agentic Workflow Patterns
 - **Current limitation**: Our harness lacks natural language workflow definition and GitHub Actions integration

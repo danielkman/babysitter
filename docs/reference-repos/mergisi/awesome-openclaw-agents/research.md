@@ -23,10 +23,21 @@ HIGH - Contains alternative harness patterns and sophisticated agent template sy
 
 ## Harness Integration Ideas
 - **OpenClaw Harness Adapter**: New harness integration for OpenClaw platform similar to existing babysitter adapters
+
+**Capability Assessment for Babysitter Integration:**
+
+| Capability | Status | Details |
+|------------|---------|---------|
+| **Custom Tools/MCP** | ✅ SUPPORTED | Plugin SDK with tool execution hooks, `before_tool_call`/`after_tool_call` interceptors |
+| **Stop Hooks** | ❌ NOT SUPPORTED | 13 event types including `command:stop` but **no mid-conversation interruption hooks**. Events: command lifecycle, session management, message flow, but no turn-level stopping |
+| **Plugin System** | ✅ SUPPORTED | Comprehensive Plugin SDK with 28 hooks, npm packages with `openclaw.hooks` declaration, SOUL.md + AGENTS.md + TOOLS.md manifest system |
+
+**Integration Viability:** PARTIAL - Strong plugin system and tool execution but **lacks critical stop-hook capability** for babysitter's orchestration loop interruption needs.
+
   - Adapter implementation: OpenClaw CLI detection, SOUL.md format support, crewclaw.com API integration
   - Plugin structure: plugins/babysitter-openclaw/ with hooks, commands, and skills
   - CLI integration: OpenClaw command patterns, deployment workflows, agent template management
-  - Current limitation: No OpenClaw support in babysitter harness adapter system
+  - Current limitation: No OpenClaw support in babysitter harness adapter system + **no stop hooks for conversation interruption**
   - Integration approach: Create adapter for OpenClaw CLI with SOUL.md conversion to babysitter format
   - Implementation scope: packages/sdk/src/harness/adapters/openclawAdapter.ts and plugin structure
 

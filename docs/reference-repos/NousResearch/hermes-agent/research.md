@@ -30,7 +30,18 @@ The research-paper-writing skill (authored by Orchestra Research, shipped in her
 The software-development skills (TDD, code review, debugging, plans, subagent-driven-development) overlap significantly with babysitter's existing methodologies/ and the superpowers skills. No new methodology to extract.
 
 ### Harness Integration: hermes-agent adapter
-Harness assimilation opportunity — create a plugin FOR hermes-agent that integrates babysitter orchestration into the hermes ecosystem. Hermes already has a rich tool ecosystem, messaging gateway, and skill creator. A babysitter-hermes adapter plugin would enable hermes users to access babysitter's process library and deterministic orchestration capabilities within their existing hermes workflows.
+
+**Capability Assessment for Babysitter Integration:**
+
+| Capability | Status | Details |
+|------------|---------|---------|
+| **Custom Tools/MCP** | ✅ SUPPORTED | Python-based plugin system with `ctx.register_tool()`. Custom handlers follow `def my_handler(args: dict, **kwargs) -> str` pattern |
+| **Stop Hooks** | ❌ NOT SUPPORTED | 6 lifecycle hooks available (`pre_tool_call`, `post_tool_call`, `pre_llm_call`, `post_llm_call`, `on_session_start`, `on_session_end`) but **no interruption hooks to stop agent mid-conversation** |
+| **Plugin System** | ✅ SUPPORTED | Robust plugin.yaml manifest system with tool/hook registration, environment variable prompting, CLI subcommand registration, plugin marketplace support |
+
+**Integration Viability:** PARTIAL - Hermes has excellent plugin infrastructure and tool execution but **lacks critical stop-hook capability** needed for babysitter's orchestration loop where the harness must be interrupted between iterations for feedback.
+
+**Harness assimilation opportunity** — Create a plugin FOR hermes-agent that integrates babysitter orchestration into the hermes ecosystem. However, integration would require developing a custom mechanism to pause/resume hermes conversations since native stop hooks don't exist.
 
 ## Classification
 - **Archetype**: Full agent framework with skills ecosystem

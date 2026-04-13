@@ -38,11 +38,22 @@ VERY HIGH - Contains production-ready agent architecture patterns directly appli
 
 ## Harness Integration Ideas
 - **MCP Agent Framework Adapter**: Harness assimilation opportunity — create a plugin FOR mcp-agent that integrates babysitter orchestration capabilities into the MCP agent framework ecosystem
+
+**Capability Assessment for Babysitter Integration:**
+
+| Capability | Status | Details |
+|------------|---------|---------|
+| **Custom Tools/MCP** | ✅ EXCELLENT | Full MCP protocol support (Tools, Resources, Prompts, Notifications, OAuth, Sampling). Custom Python functions alongside MCP servers |
+| **Stop Hooks** | ⚠️ LIMITED | Async context managers for lifecycle control (`async with agent:`) but **no explicit interruption hooks documented** for mid-execution stopping |
+| **Plugin System** | ⚠️ LIMITED | YAML-based agent specifications (`load_agent_specs_from_file`), MCP servers as pluggable components, but no traditional plugin manifest system |
+
+**Integration Viability:** MODERATE - Excellent MCP integration but **lacks explicit stop hooks**. Python async patterns might allow custom interruption mechanisms.
+
   - Adapter implementation: `createMcpAgentAdapter` in `packages/sdk/src/harness/adapters/`
   - Plugin structure: `plugins/babysitter-mcp-agent/` enabling mcp-agent users to access babysitter processes
   - Integration approach: Bridge babysitter's deterministic orchestration with mcp-agent's pattern-based workflow system
-  - Current limitation: No babysitter integration available for mcp-agent framework users
-  - Implementation scope: Python-to-TypeScript bridge, MCP protocol integration, workflow pattern mapping
+  - Current limitation: No babysitter integration available + **no explicit stop hooks for conversation interruption**
+  - Implementation scope: Python-to-TypeScript bridge, MCP protocol integration, workflow pattern mapping, custom async interruption mechanism
 
 ## Implicit Procedural Knowledge
 - **Agent Pattern Composition**: Methodology for systematically combining multiple agent patterns into coherent workflows

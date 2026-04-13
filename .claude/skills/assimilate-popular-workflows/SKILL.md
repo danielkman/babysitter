@@ -152,6 +152,13 @@ Read the repo's top-level README, plugin.json (if present), directory structure,
 
 For each non-skipped repo, produce a single `research.md` file containing overview, assessment, and extractable value.
 
+**Harness Capability Verification**: For repos classified as `harness-framework`, verify three critical capabilities for babysitter integration:
+1. **Custom Tools/MCP**: Can execute custom tools, MCP servers, or bash commands
+2. **Stop Hooks**: Has stop-hooks or end-turn hooks to interrupt agent conversation for feedback
+3. **Plugin System**: Plugin/extension system with manifests and optionally marketplace
+
+Use WebSearch/WebFetch to research the harness documentation and verify these capabilities. Stop hooks are CRITICAL - without them, babysitter's orchestration loop cannot function (harness must be interruptible between iterations for feedback).
+
 ### Directory layout
 
 - **GitHub-sourced repos**: `docs/reference-repos/[org]/[repo-name]/research.md`
@@ -224,9 +231,17 @@ that an AI agent executes to set up capabilities in a user's project>
   - Plugin structure: <what would go in plugins/babysitter-[harness]/>
   - CLI integration: <command patterns, flag mapping, capability detection>
 - **Harness Assimilation**: Plugin FOR the target harness that integrates babysitter (NOT a babysitter marketplace plugin)
+  - **Capability Assessment**: Verify the harness supports babysitter's orchestration requirements:
+    | Capability | Status | Details |
+    |------------|---------|---------|
+    | **Custom Tools/MCP** | ✅/⚠️/❌ | Can the harness execute custom tools, MCP servers, or bash commands? |
+    | **Stop Hooks** | ✅/⚠️/❌ | Does it have stop-hooks or end-turn hooks to interrupt agent conversation for feedback? |
+    | **Plugin System** | ✅/⚠️/❌ | Plugin/extension system with manifests and optionally marketplace? |
+  - **Integration Viability**: EXCELLENT/GOOD/PARTIAL/POOR based on capabilities (stop hooks are CRITICAL)
   - Target harness plugin: <plugin that goes into the other harness to bring babysitter capabilities>
   - Babysitter integration: <how the other harness would invoke babysitter processes>
   - Capability bridge: <what babysitter features would be accessible from the target harness>
+  - Major limitations: <any critical missing capabilities that would prevent full integration>
 - **TUI/Orchestration Improvement**: Enhancement to our internal agent harness
   - Current limitation: <what our harness lacks that this repo provides>
   - Integration approach: <how to incorporate the improvement>
