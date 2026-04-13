@@ -143,6 +143,23 @@ A plugin that tracks work items discovered during babysitter runs (bugs found, T
 
 **Value**: During long orchestration runs, agents frequently encounter side issues but have no structured way to track them. They either fix them inline (scope creep) or forget them.
 
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| Compaction-Resilient Multi-Session Workflow | NEW | Long-horizon work management across AI sessions with persistent state | - | specializations/shared/compaction-resilient-workflow.js |
+| Epic Decomposition with Dependency Graph | NEW | Large feature decomposition into dependency-aware task graphs | - | specializations/shared/epic-decomposition-dependency-graph.js |
+| Reusable Workflow Templates (Molecule Pattern) | NEW | Meta-process for creating, managing, and instantiating reusable workflow templates | - | specializations/shared/reusable-workflow-templates.js |
+| Session Handoff Protocol | NEW | Clean session cycling with state persistence and context recovery | - | specializations/shared/session-handoff-protocol.js |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| Persistent Task Memory | UPGRADE | Graph-based persistent task tracker beyond existing context/memory solutions | plugins/a5c/marketplace/plugins/claude-mem/ | plugins/a5c/marketplace/plugins/persistent-task-memory/ |
+| Workflow Template Library | NEW | Parameterized process template system with variable slots and instantiation | - | plugins/a5c/marketplace/plugins/workflow-template-library/ |
+| Side-Quest Discovery Tracker | NEW | Work item discovery tracking with blocker/deferrable classification during runs | - | plugins/a5c/marketplace/plugins/side-quest-discovery-tracker/ |
+
 ## Implicit Procedural Knowledge
 
 ### Compaction-Survival Note Format

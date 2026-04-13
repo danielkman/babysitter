@@ -63,6 +63,19 @@ None. Memory systems are plugins, not processes.
 - **install.md description:** Lightweight plugin that installs `vault_health.py` as a periodic health check for Obsidian vaults. Reports: contradictions count, orphan notes, stale claims, gap analysis, structural issues. Could be wired into babysitter hooks for automated vault quality monitoring.
 - **Source:** `scripts/vault_health.py`
 
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| N/A | N/A | No multi-step processes identified - memory systems are plugins, not processes | - | N/A |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| Obsidian Second Brain Integration | UPGRADE | Comprehensive Obsidian vault management beyond existing basic integrations | plugins/a5c/marketplace/plugins/claude-mem/ | plugins/a5c/marketplace/plugins/obsidian-second-brain/ |
+| Vault Health Monitor | NEW | Periodic health checks for Obsidian vaults with automated quality monitoring | - | plugins/a5c/marketplace/plugins/vault-health-monitor/ |
+
 ## Implicit Procedural Knowledge
 
 - **Never-create-in-isolation pattern:** Every data write must propagate to all related entities. When creating a project note, also update the kanban board and daily note. This is a reusable principle for any process that generates artifacts -- always update all related indexes/boards/logs.

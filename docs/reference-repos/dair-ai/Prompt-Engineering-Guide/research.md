@@ -76,3 +76,21 @@ VERY HIGH - Contains authoritative prompt engineering methodologies that are dir
   - Placement: specializations/shared/
   - Why codify: Systematic approach to LLM evaluation that's reusable across different models and use cases
   - Sketch: Task definition -> Prompting technique selection -> Capability testing -> Performance measurement -> Limitation identification -> Recommendation generation
+
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| Prompt Engineering Methodology | NEW | Comprehensive systematic approach to designing, optimizing, and validating LLM prompts | - | methodologies/prompt-engineering/ |
+| Prompt Reliability Testing | NEW | Process for ensuring prompt robustness across different inputs and contexts | - | specializations/shared/prompt-reliability-testing.js |
+| Adversarial Prompt Evaluation | NEW | Systematic approach to testing prompt security and adversarial resistance | - | specializations/shared/adversarial-prompt-evaluation.js |
+| Educational Progression Methodology | NEW | Structured approach to teaching complex technical concepts with progressive complexity | - | methodologies/educational-progression/ |
+| Prompt Optimization Lifecycle | NEW | End-to-end prompt development from concept to production deployment | - | methodologies/prompt-optimization-lifecycle/ |
+| LLM Capability Assessment | NEW | Systematic evaluation of LLM capabilities and limitations for specific use cases | - | specializations/shared/llm-capability-assessment.js |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| Prompt Engineering Suite | NEW | Comprehensive prompt development and validation environment with testing frameworks | - | plugins/a5c/marketplace/plugins/prompt-engineering-suite/ |
+| LLM Evaluation Framework | NEW | Systematic LLM prompt testing and optimization with automated reporting | - | plugins/a5c/marketplace/plugins/llm-evaluation-framework/ |

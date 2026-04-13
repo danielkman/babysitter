@@ -56,6 +56,23 @@ HIGH extractable value. Browser automation is foundational for many processes. T
 - **Category**: Tools Integration
 - **install.md**: Configures agent-browser's Electron skill for desktop app automation. Supports controlling VS Code, Slack, Discord, Figma, Notion, Spotify via accessibility tree. Enables processes that span IDE + browser + messaging workflows.
 
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| Exploratory QA / Dogfooding Process | NEW | Systematic exploratory testing with accessibility snapshots and core user flow exercise | - | specializations/shared/exploratory-qa-dogfooding.js |
+| Web Data Extraction Pipeline | NEW | Structured data extraction from websites with accessibility tree navigation | - | specializations/shared/web-data-extraction.js |
+| Cross-Browser Form Testing | NEW | Automated form testing with test case generation and validation verification | - | specializations/shared/cross-browser-form-testing.js |
+| Accessibility-Tree Navigation | NEW | Web interaction via accessibility snapshots and element refs instead of CSS selectors | - | specializations/shared/accessibility-tree-navigation.js |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| Browser Automation Integration | UPGRADE | Native browser automation beyond existing dev-browser plugin | plugins/a5c/marketplace/plugins/dev-browser/ | plugins/a5c/marketplace/plugins/browser-automation-integration/ |
+| Visual Regression Testing | NEW | Screenshot-based visual regression testing with baseline comparison | - | plugins/a5c/marketplace/plugins/visual-regression-testing/ |
+| Electron App Automation | NEW | Desktop app automation for VS Code, Slack, Discord, Figma via accessibility tree | - | plugins/a5c/marketplace/plugins/electron-app-automation/ |
+
 ## Implicit Procedural Knowledge
 
 - **Accessibility-tree-based interaction**: Using accessibility snapshots with element refs instead of CSS selectors is more robust for agent interaction. This pattern should inform how babysitter tasks interact with web UIs.

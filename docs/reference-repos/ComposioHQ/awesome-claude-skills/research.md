@@ -89,3 +89,23 @@ VERY HIGH - Contains the largest collection of systematic procedural skills with
   - Placement: methodologies/knowledge-extraction/
   - Why codify: Core methodology for converting implicit knowledge into explicit procedures that agents can execute reliably
   - Sketch: Domain analysis → Workflow identification → Procedure decomposition → Resource bundling → Testing and validation → Documentation and maintenance
+
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| MCP Server Development | NEW | Systematic MCP server building with agent-centric design principles | - | specializations/shared/mcp-server-development.js |
+| Skill Creation Methodology | NEW | Structured approach to creating effective skills with domain expertise | - | methodologies/skill-creation-methodology/ |
+| Document Processing Automation | NEW | Multi-format document processing workflows (PDF, DOCX, PPTX, XLSX) | - | specializations/shared/document-processing-automation.js |
+| Business Workflow Automation | NEW | AI agent integration patterns for business tools and services | - | specializations/business/business-workflow-automation.js |
+| Agent-Centric Tool Design | NEW | Methodology for designing AI agent tools optimized for limited context | - | methodologies/agent-centric-tool-design/ |
+| Multi-Service Integration Orchestration | NEW | Systematic approach to integrating agents with multiple external services | - | specializations/shared/multi-service-integration-orchestration.js |
+| Procedural Knowledge Extraction | NEW | Transform domain expertise into systematic, reproducible agent workflows | - | methodologies/procedural-knowledge-extraction/ |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| Composio Integration Suite | NEW | Comprehensive integration environment with 500+ app connections and MCP development tools | - | plugins/a5c/marketplace/plugins/composio-integration-suite/ |
+| Document Automation Suite | NEW | Multi-format document processing with AI-driven workflows and format converters | - | plugins/a5c/marketplace/plugins/document-automation-suite/ |
+| Skill Development Framework | NEW | Skill creation and management with systematic design patterns and testing frameworks | - | plugins/a5c/marketplace/plugins/skill-development-framework/ |

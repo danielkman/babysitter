@@ -24,6 +24,21 @@ MEDIUM VALUE. While the specific design language (Nothing) is niche, the skill d
 ## Plugin Ideas
 - **Design System Encoder plugin**: A babysitter marketplace plugin that helps encode arbitrary design systems (Material, Fluent, Ant, custom) into agent-consumable skill format. Install.md would guide through extracting design tokens, hierarchy rules, and decision tables from existing design documentation.
 
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| Design System Application Process | NEW | Multi-step design process with hierarchy validation and font budget constraints | - | specializations/frontend/design-system-application.js |
+| Design-System-as-Skill Template | NEW | Template for encoding design systems with philosophy, craft rules, and decision tables | - | specializations/shared/design-system-as-skill-template.js |
+| Three-Layer Visual Hierarchy | NEW | Prescribed type scales and spacing system with squint test validation | - | specializations/frontend/three-layer-visual-hierarchy.js |
+| Font Budget Constraint System | NEW | Enforceable constraints (max 2 families, 3 sizes, 2 weights) for visual coherence | - | specializations/frontend/font-budget-constraint-system.js |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| Design System Encoder | NEW | Encode arbitrary design systems into agent-consumable skill format with tokens and rules | - | plugins/a5c/marketplace/plugins/design-system-encoder/ |
+
 ## Patterns
 - **Three-layer visual hierarchy**: Every screen has exactly three layers of importance (primary/secondary/tertiary) with prescribed type scales and spacing. A squint test validates the hierarchy. Reusable across any UI design skill.
 - **Font budget constraint**: Maximum 2 families, 3 sizes, 2 weights per screen. "Every additional size/weight costs visual coherence." Concrete, enforceable constraint.
