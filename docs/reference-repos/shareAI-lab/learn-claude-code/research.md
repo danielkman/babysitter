@@ -52,3 +52,23 @@ None specific -- methodology content, not tool integration.
 - "Context is precious. Isolate noisy subtasks. Truncate verbose outputs. Protect clarity" -- context hygiene
 - The agent loop distilled to its simplest form
 - "The model does the reasoning. The harness gives the model a working environment" -- fundamental harness philosophy
+
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| Agent Design Thinking Methodology | NEW | Purpose → Domain → Capabilities → Knowledge → Context analysis methodology | - | methodologies/agent-design-thinking/ |
+| Agent Build Loop Process | NEW | Core agent loop: context + capabilities → decide → act or respond | - | specializations/shared/agent-build-loop.js |
+| MCP Server Development Process | NEW | Process for building MCP servers from scratch with structured workflow | - | specializations/shared/mcp-server-development.js |
+| Code Review Workflow | EXISTING | Structured code review process | specializations/shared/code-review.js | specializations/shared/code-review-workflow.js |
+| Capability Minimalism Process | NEW | Start with 3-5 capabilities, add more only when agent consistently fails | - | specializations/shared/capability-minimalism.js |
+| Lazy Knowledge Loading | NEW | Make knowledge available, not mandatory; load when relevant, not upfront | - | specializations/shared/lazy-knowledge-loading.js |
+| Context Hygiene Process | NEW | Context management: isolate noisy subtasks, truncate verbose outputs, protect clarity | - | specializations/shared/context-hygiene.js |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| Agent Design Assistant | NEW | Educational agent design methodology with capability minimalism and context hygiene principles | - | plugins/a5c/marketplace/plugins/agent-design-assistant/ |
+| MCP Development Suite | NEW | MCP server development toolkit with structured workflow and educational patterns | - | plugins/a5c/marketplace/plugins/mcp-development-suite/ |
+| Educational Harness Framework | NEW | Simplified harness architecture patterns for learning and documentation | - | plugins/a5c/marketplace/plugins/educational-harness-framework/ |

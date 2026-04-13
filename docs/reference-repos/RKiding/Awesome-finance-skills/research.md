@@ -40,3 +40,18 @@ A collection of finance-specific SKILL.md-based agent skills for stock analysis,
 ### SKIP
 - Individual SKILL.md files (skill-management pattern, not babysitter-native)
 - The skill-creator meta-skill (SDK-covered primitive)
+
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| Financial Analysis Workflow | NEW | Plan→Write→Edit→Chart pipeline for structured financial report generation | - | specializations/business/finance/financial-analysis-workflow.js |
+| Signal Tracking Methodology | NEW | Investment signal state-machine process through strengthen/weaken/falsify states | - | specializations/business/finance/signal-tracking-methodology.js |
+| Multi-Source Aggregation Pattern | NEW | Aggregating 10+ sources with deduplication and ranking for comprehensive research | - | specializations/shared/multi-source-aggregation-pattern.js |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| Finance Data Connector | NEW | Financial data access via alphaear-stock and alphaear-news APIs with key configuration | - | plugins/a5c/marketplace/plugins/finance-data-connector/ |
+| Sentiment Analysis Integration | NEW | FinBERT scoring as babysitter task kind for sentiment-aware decision gates | - | plugins/a5c/marketplace/plugins/sentiment-analysis-integration/ |

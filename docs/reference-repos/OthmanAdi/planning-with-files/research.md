@@ -78,3 +78,19 @@ A babysitter plugin that automatically creates and maintains task_plan.md / find
 A babysitter plugin that enables seamless session recovery after context window clears. Detects previous session state from IDE-specific stores and plan files, generates a catchup report showing what happened since last sync.
 
 **install.md**: Installs a `session-start` hook that checks for existing plan files and IDE session data. If found, generates a catchup report and injects it into the new session context. Works across Claude Code, Codex, Cursor, and Gemini CLI session stores.
+
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| Persistent File-Based Planning | NEW | Cross-domain planning using filesystem as working memory with markdown state files | - | specializations/shared/persistent-file-based-planning.js |
+| Three-File Planning Pattern | NEW | Task organization via task_plan.md, findings.md, and progress.md with hook-driven updates | - | specializations/shared/three-file-planning-pattern.js |
+| Phase-Based Task Decomposition | NEW | Complex task breakdown into sequential phases with status tracking and acceptance criteria | - | specializations/shared/phase-based-task-decomposition.js |
+| Session Recovery from File State | NEW | Context window recovery using persistent markdown files and IDE session stores | - | specializations/shared/session-recovery-file-state.js |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| Plan Persistence Integration | UPGRADE | Human-readable plan files alongside babysitter's internal journal | plugins/a5c/marketplace/plugins/claude-mem/ | plugins/a5c/marketplace/plugins/plan-persistence-integration/ |
+| Session Recovery Enhancement | UPGRADE | Enhanced session recovery across multiple IDE platforms | plugins/a5c/marketplace/plugins/claude-mem/ | plugins/a5c/marketplace/plugins/session-recovery-enhancement/ |

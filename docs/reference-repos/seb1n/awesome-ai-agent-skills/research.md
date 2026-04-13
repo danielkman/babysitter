@@ -102,3 +102,23 @@ N/A - This is not a harness framework repository.
   - Placement: specializations/shared/process-extraction
   - Why codify: Enables extraction of procedural knowledge from narrative skill descriptions
   - Sketch: Analyze skill content → Identify procedural steps → Extract workflow → Classify domain → Package as process
+
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| Systematic Code Refactoring | NEW | 6-phase refactoring workflow with smell identification, pattern selection, and verification | - | specializations/shared/systematic-refactoring.js |
+| Security Dependency Scanning | NEW | Systematic process for identifying and addressing security vulnerabilities in dependencies | - | specializations/security-compliance/dependency-scanning.js |
+| Data Cleaning and Validation | NEW | Structured approach to data quality assessment and improvement | - | specializations/data-science-ml/data-cleaning.js |
+| Context Engineering Methodology | NEW | Process for optimizing AI prompt context and information injection | - | specializations/shared/context-engineering.js |
+| Code Smell Detection Strategy | NEW | Systematic approach to identifying code quality issues across languages | - | specializations/shared/code-quality-assessment.js |
+| Multi-Domain Skill Template | NEW | Standardized approach to creating systematic skill definitions | - | specializations/shared/skill-creation.js |
+| Domain-Specific Process Extraction | NEW | Method for identifying transferable procedures within domain-specific skills | - | specializations/shared/process-extraction.js |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| Code Quality Suite | NEW | Systematic code improvement processes including refactoring, security scanning, and quality gates | - | plugins/a5c/marketplace/plugins/code-quality-suite/ |
+| Data Engineering Toolkit | NEW | Data quality and processing workflows for data science projects | - | plugins/a5c/marketplace/plugins/data-engineering-toolkit/ |
+| Productivity Automation | NEW | Workflow automation and organization processes for general productivity | - | plugins/a5c/marketplace/plugins/productivity-automation/ |

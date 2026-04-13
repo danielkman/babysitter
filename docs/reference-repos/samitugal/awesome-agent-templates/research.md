@@ -47,3 +47,18 @@ Provides foundational agent template patterns with community validation.
 
 ## Research Methodology Notes
 Template collection discovered through agent marketplace analysis. Repository demonstrates community-driven approach to agent template curation.
+
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| Template Standardization Process | NEW | Consistent agent template format with structured patterns and documentation standards | - | specializations/shared/template-standardization-process.js |
+| Community Curation Process | NEW | Open-source validation and contribution workflow for agent template curation | - | specializations/shared/community-curation-process.js |
+| Reusable Pattern Development | NEW | Foundational agent structure patterns designed for adaptation and extension | - | specializations/shared/reusable-pattern-development.js |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| Agent Template Generator | NEW | Generate standardized agent templates with community validation patterns | - | plugins/a5c/marketplace/plugins/agent-template-generator/ |
+| Template Quality Enforcer | NEW | Validate agent templates against standardization criteria and documentation requirements | - | plugins/a5c/marketplace/plugins/template-quality-enforcer/ |

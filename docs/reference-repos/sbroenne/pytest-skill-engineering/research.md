@@ -77,3 +77,20 @@ The real LLM testing and AI-powered analysis represent innovative approaches to 
 
 ## Research Methodology Notes
 Testing framework discovered through skill engineering ecosystem analysis. Repository demonstrates cutting-edge approach to AI skill validation with real model endpoints and automated feedback systems.
+
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| Real LLM Testing Process | NEW | Validation with actual LLM endpoints for authentic AI skill testing | - | specializations/shared/real-llm-testing-process.js |
+| AI-Powered Analysis Process | NEW | Automated feedback and improvement suggestions using AI result analysis | - | specializations/shared/ai-powered-analysis-process.js |
+| Multi-Component Testing Process | NEW | Comprehensive AI system testing covering MCP tools, prompts, agents, and instructions | - | specializations/shared/multi-component-testing-process.js |
+| Skill Engineering QA Process | NEW | Systematic validation for AI skill development with quality assurance framework | - | specializations/shared/skill-engineering-qa-process.js |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| AI Skill Testing Framework | NEW | Pytest-based testing framework for MCP tools, prompts, agents with real LLM validation | - | plugins/a5c/marketplace/plugins/ai-skill-testing-framework/ |
+| Real LLM Validation Suite | NEW | Live model endpoint testing with authentic validation of AI skill implementations | - | plugins/a5c/marketplace/plugins/real-llm-validation-suite/ |
+| AI-Powered Test Analysis | NEW | Automated test result analysis with AI-generated feedback and improvement recommendations | - | plugins/a5c/marketplace/plugins/ai-powered-test-analysis/ |
