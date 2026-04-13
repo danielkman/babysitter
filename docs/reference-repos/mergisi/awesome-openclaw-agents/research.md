@@ -60,12 +60,6 @@ HIGH - Contains alternative harness patterns and sophisticated agent template sy
   - Complexity: complex
 
 ## Plugin Ideas
-- **openclaw-integration-suite**: Plugin for integrating OpenClaw harness with babysitter orchestration
-  - What install.md would do: Install OpenClaw CLI, set up SOUL.md conversion, configure crewclaw.com integration, create agent template management
-  - Processes it would copy: soul-agent-specification, agent-deployment-automation
-  - Configs/hooks it would create: OpenClaw adapter configuration, SOUL.md templates, deployment automation, agent template registry
-  - Source evidence: Complete OpenClaw ecosystem with 196 agent templates and professional deployment infrastructure
-
 - **agent-template-management**: Plugin for systematic agent template creation, organization, and deployment
   - What install.md would do: Install template management tools, set up agent specification frameworks, configure deployment pipelines, create template registry
   - Processes it would copy: soul-agent-specification, business-domain-agent-organization

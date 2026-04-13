@@ -36,12 +36,13 @@ VERY HIGH - Contains production-ready agent architecture patterns directly appli
   - Outputs: Parallel execution plans, result aggregation, coordination monitoring
   - Complexity: complex
 
-## Plugin Ideas
-- **mcp-agent-integration**: Plugin for integrating MCP agent framework patterns with babysitter orchestration
-  - What install.md would do: Install mcp-agent dependencies, configure agent patterns, set up MCP coordination, create workflow templates
-  - Processes it would copy: mcp-agent-lifecycle-management, parallel-agent-orchestration
-  - Configs/hooks it would create: MCP server configurations, agent pattern templates, coordination frameworks
-  - Source evidence: Comprehensive agent framework with proven patterns and production-ready infrastructure
+## Harness Integration Ideas
+- **MCP Agent Framework Adapter**: Harness assimilation opportunity — create a plugin FOR mcp-agent that integrates babysitter orchestration capabilities into the MCP agent framework ecosystem
+  - Adapter implementation: `createMcpAgentAdapter` in `packages/sdk/src/harness/adapters/`
+  - Plugin structure: `plugins/babysitter-mcp-agent/` enabling mcp-agent users to access babysitter processes
+  - Integration approach: Bridge babysitter's deterministic orchestration with mcp-agent's pattern-based workflow system
+  - Current limitation: No babysitter integration available for mcp-agent framework users
+  - Implementation scope: Python-to-TypeScript bridge, MCP protocol integration, workflow pattern mapping
 
 ## Implicit Procedural Knowledge
 - **Agent Pattern Composition**: Methodology for systematically combining multiple agent patterns into coherent workflows
