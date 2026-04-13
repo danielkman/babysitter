@@ -1,6 +1,11 @@
 /**
- * setBabysitterSessionIdInEnvFile must strip prior BABYSITTER_SESSION_ID
- * lines and append the new one atomically — preserving unrelated exports.
+ * setBabysitterSessionIdInEnvFile must append a new BABYSITTER_SESSION_ID
+ * export to CLAUDE_ENV_FILE. Append-only matches Claude Code's shell-sourcing
+ * semantics: the file is sourced before each Bash tool call and the last
+ * export wins. The resolver uses a global last-match regex.
+ *
+ * Do NOT rewrite or rename-swap the file: Claude Code may retain a cached
+ * handle or inode reference, and rewriting breaks the env-sourcing contract.
  */
 
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
@@ -24,27 +29,30 @@ afterEach(async () => {
 });
 
 describe("setBabysitterSessionIdInEnvFile", () => {
-  it("strips prior BABYSITTER_SESSION_ID lines, preserves unrelated ones, appends new", () => {
+  it("appends new BABYSITTER_SESSION_ID, preserving prior contents unchanged", () => {
     const envPath = path.join(tmpDir, "claude.env");
-    writeFileSyncAsync(
-      envPath,
-      [
-        `export PATH_ADDITION="/foo/bin"`,
-        `export BABYSITTER_SESSION_ID="OLD"`,
-        `export SOMETHING="value"`,
-        ``,
-      ].join("\n"),
-    );
+    const prior = [
+      `export PATH_ADDITION="/foo/bin"`,
+      `export BABYSITTER_SESSION_ID="OLD"`,
+      `export SOMETHING="value"`,
+      ``,
+    ].join("\n");
+    writeFileSyncAsync(envPath, prior);
 
     setBabysitterSessionIdInEnvFile(envPath, "NEW");
 
     const after = readFileSync(envPath, "utf-8");
-    const matches = [...after.matchAll(/^export BABYSITTER_SESSION_ID=.*$/gm)];
-    expect(matches).toHaveLength(1);
-    expect(after).toMatch(/export BABYSITTER_SESSION_ID="NEW"/);
+    // File starts with the prior contents verbatim — append semantics preserve
+    // file identity (no rewrite, no rename-swap).
+    expect(after.startsWith(prior)).toBe(true);
+    // The new export is appended.
+    expect(after).toMatch(/export BABYSITTER_SESSION_ID="NEW"\n$/);
+    // Unrelated exports are untouched.
     expect(after).toContain(`export PATH_ADDITION="/foo/bin"`);
     expect(after).toContain(`export SOMETHING="value"`);
-    expect(after).not.toContain(`BABYSITTER_SESSION_ID="OLD"`);
+    // Prior BABYSITTER_SESSION_ID stays — the resolver picks the last match.
+    const matches = [...after.matchAll(/^export BABYSITTER_SESSION_ID=.*$/gm)];
+    expect(matches).toHaveLength(2);
   });
 
   it("creates a new file when target doesn't exist", () => {

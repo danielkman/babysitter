@@ -12,8 +12,8 @@
  */
 
 import * as path from "node:path";
-import { existsSync, readFileSync, appendFileSync, mkdirSync, writeFileSync, renameSync } from "node:fs";
-import { readSessionMarker, findHarnessAncestorPid } from "./sessionMarker";
+import { existsSync, readFileSync, appendFileSync, mkdirSync, writeFileSync } from "node:fs";
+import { readSessionMarker, findHarnessAncestorPid, getSessionMarkerPath } from "./sessionMarker";
 import { isProcessAlive } from "../utils/processLiveness";
 import { loadJournal, appendEvent } from "../storage/journal";
 import { readRunMetadata } from "../storage/runFiles";
@@ -253,7 +253,10 @@ function findClaudeAncestorPid(): number | undefined {
 function getCurrentSessionIdFilePath(): string | undefined {
   const ancestorPid = findClaudeAncestorPid();
   if (!ancestorPid) return undefined;
-  return path.join(getGlobalStateDir(), `current-session-pid-${ancestorPid}`);
+  // Use the shared sessionMarker path helper so writer and reader agree.
+  // The reader (readSessionMarker("claude-code")) resolves to the slugged
+  // filename `current-session-claude-code-pid-<pid>`.
+  return getSessionMarkerPath("claude-code", ancestorPid);
 }
 
 /**
@@ -397,22 +400,13 @@ export function setBabysitterSessionIdInEnvFile(
   envFile: string,
   sessionId: string,
 ): void {
-  let existing = "";
-  try {
-    existing = readFileSync(envFile, "utf-8");
-  } catch {
-    // new file
-  }
-  const stripped = existing
-    .split(/\r?\n/)
-    .filter((line) => !/^export BABYSITTER_SESSION_ID=/.test(line))
-    .join("\n");
-  const trimmed =
-    stripped.length && !stripped.endsWith("\n") ? stripped + "\n" : stripped;
-  const next = `${trimmed}export BABYSITTER_SESSION_ID="${sessionId}"\n`;
-  const tmp = `${envFile}.tmp-${process.pid}`;
-  writeFileSync(tmp, next);
-  renameSync(tmp, envFile);
+  // Append-only. Claude Code reads CLAUDE_ENV_FILE before each Bash tool call
+  // and sources it in order, so the last export wins. The resolver uses a
+  // global last-match regex, mirroring that shell-sourcing semantics.
+  // Rename-swap breaks this contract because Claude Code may have the old
+  // inode open (or retain a cached path handle), and appendFileSync preserves
+  // the file identity the harness originally opened.
+  appendFileSync(envFile, `export BABYSITTER_SESSION_ID="${sessionId}"\n`);
 }
 
 // ---------------------------------------------------------------------------
