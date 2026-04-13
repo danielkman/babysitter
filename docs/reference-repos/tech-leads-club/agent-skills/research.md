@@ -71,11 +71,11 @@ Extremely high value -- the largest and most well-organized skill collection in 
 
 | Extractable Process | Library Status | Action | Existing Path | Target Placement |
 |-------------------|----------------|--------|---------------|------------------|
-| Domain-Driven Architecture Analysis | UPGRADE | DDD strategic design with subdomain identification and bounded context mapping | library/specializations/architecture/ | specializations/architecture/domain-driven-analysis.js |
+| Domain-Driven Architecture Analysis | NEW | DDD strategic design with subdomain identification and bounded context mapping | - | specializations/architecture/domain-driven-analysis.js |
 | Technical Document Generation | NEW | Structured generation of ADRs, RFCs, and design docs based on scope/audience | - | specializations/shared/technical-document-generation.js |
 | Go-to-Market Execution | NEW | End-to-end GTM process for technical founders with metrics tracking | - | specializations/business/gtm-execution.js |
-| Web Performance Audit | UPGRADE | Core Web Vitals and Lighthouse-based performance optimization | library/specializations/frontend/ | specializations/frontend/web-performance-audit.js |
-| Security Threat Modeling | UPGRADE | Threat model creation with ownership mapping and remediation | library/specializations/security-compliance/ | specializations/security-compliance/threat-modeling.js |
+| Web Performance Audit | NEW | Core Web Vitals and Lighthouse-based performance optimization | - | specializations/frontend/web-performance-audit.js |
+| Security Threat Modeling | NEW | Threat model creation with ownership mapping and remediation | - | specializations/security-compliance/threat-modeling.js |
 | Legacy Migration Planning | NEW | Phased legacy system migration with boundary analysis | - | specializations/architecture/legacy-migration-planning.js |
 | Cloud Deployment Orchestration | NEW | Multi-platform cloud deployment with AWS/Cloudflare/Vercel patterns | - | specializations/devops-sre-platform/cloud-deployment-orchestration.js |
 | Design System Implementation | NEW | Figma to code implementation with frontend blueprint generation | - | specializations/frontend/design-system-implementation.js |
@@ -84,7 +84,7 @@ Extremely high value -- the largest and most well-organized skill collection in 
 | Nx Monorepo Management | NEW | Nx workspace task orchestration and CI/CD optimization | - | specializations/devops-sre-platform/nx-monorepo-management.js |
 | Skill Architecture Meta-Process | NEW | Meta-skill for creating new domain-specific skills | - | methodologies/skill-architecture/ |
 | Sales Motion Design | NEW | Engineering-rigor approach to B2B sales process design | - | specializations/business/sales-motion-design.js |
-| React Native Development Process | NEW | Cross-platform mobile development with React Native patterns | - | specializations/business/react-native-development.js |
+| React Native Development Process | NEW | Cross-platform mobile development with React Native patterns | - | specializations/mobile/react-native-development.js |
 
 ## Plugin Marketplace Mapping
 

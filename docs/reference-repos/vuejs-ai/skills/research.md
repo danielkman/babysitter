@@ -48,12 +48,12 @@ Strong domain specialization candidate. The 8 skills form a cohesive Vue.js ecos
 
 | Extractable Process | Library Status | Action | Existing Path | Target Placement |
 |-------------------|----------------|--------|---------------|------------------|
-| Vue.js Project Quality Audit | UPGRADE | Comprehensive Vue 3 project audit with Composition API and ecosystem patterns | library/specializations/frontend/ | specializations/frontend/vue-project-quality-audit.js |
+| Vue.js Project Quality Audit | NEW | Comprehensive Vue 3 project audit with Composition API and ecosystem patterns | - | specializations/frontend/vue-project-quality-audit.js |
 | Vue.js Composable Design | NEW | Reusable Vue composable design with reactivity and TypeScript patterns | - | specializations/frontend/vue-composable-design.js |
 | Vue Debugging Methodology | NEW | Structured Vue.js debugging guide with reactive system troubleshooting | - | specializations/frontend/vue-debugging-methodology.js |
 | Vue Router Best Practices Implementation | NEW | Vue Router configuration and navigation patterns for SPAs | - | specializations/frontend/vue-router-implementation.js |
 | Pinia State Management Patterns | NEW | Vue state management with Pinia store design and optimization | - | specializations/frontend/pinia-state-management.js |
-| Vue Testing Strategy | UPGRADE | Vue component testing with Vue Test Utils and ecosystem testing patterns | library/specializations/frontend/ | specializations/frontend/vue-testing-strategy.js |
+| Vue Testing Strategy | NEW | Vue component testing with Vue Test Utils and ecosystem testing patterns | - | specializations/frontend/vue-testing-strategy.js |
 | Vue Component Architecture Planning | NEW | Component boundary planning and architecture confirmation process | - | specializations/frontend/vue-component-architecture-planning.js |
 | Cross-Referencing Skill Composition | NEW | Conditional skill loading based on project detection and architecture | - | specializations/shared/cross-referencing-skill-composition.js |
 
@@ -61,4 +61,5 @@ Strong domain specialization candidate. The 8 skills form a cohesive Vue.js ecos
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
+| Framework Detection | NEW | Auto-detect frontend framework and load appropriate domain skills | - | plugins/a5c/marketplace/plugins/framework-detection/ |
 | Vue DevTools Integration | NEW | Vue browser development tools API integration for debugging and profiling | - | plugins/a5c/marketplace/plugins/vue-devtools-integration/ |

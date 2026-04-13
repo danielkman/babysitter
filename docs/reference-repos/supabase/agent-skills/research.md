@@ -70,10 +70,10 @@ None directly extractable. The skills are instruction sets (reference material f
 
 | Extractable Process | Library Status | Action | Existing Path | Target Placement |
 |-------------------|----------------|--------|---------------|------------------|
-| Database Performance Audit Framework | NEW | 8-category prioritized database performance audit methodology | - | specializations/data-science-ml/database-performance-audit.js |
-| Postgres Best Practices Decision Tree | NEW | Systematic Postgres optimization checklist and decision framework | - | specializations/data-science-ml/postgres-best-practices.js |
+| Database Performance Audit Framework | NEW | 8-category prioritized database performance audit methodology | - | specializations/devops-sre-platform/database-performance-audit.js |
+| Postgres Best Practices Decision Tree | NEW | Systematic Postgres optimization checklist and decision framework | - | specializations/devops-sre-platform/postgres-best-practices.js |
 | Auth Troubleshooting Workflow | NEW | Systematic authentication debugging process (login/logout/sessions/JWT) | - | specializations/security-compliance/auth-troubleshooting.js |
-| Schema Design Review Process | NEW | Database schema design review with RLS and security considerations | - | specializations/data-science-ml/schema-design-review.js |
+| Schema Design Review Process | NEW | Database schema design review with RLS and security considerations | - | specializations/backend/schema-design-review.js |
 | Migration Review Workflow | NEW | Pre-commit migration review with performance and security checks | - | specializations/shared/migration-review-workflow.js |
 
 ## Plugin Marketplace Mapping

@@ -143,20 +143,19 @@ The architectural principles and orchestration patterns here could significantly
 
 | Extractable Process | Library Status | Action | Existing Path | Target Placement |
 |-------------------|----------------|--------|---------------|------------------|
-| Multi-Perspective Review Processes | UPGRADE | Enhanced parallel expert analysis | library/specializations/ai-agents-conversational/ | specializations/shared/multi-perspective-review.js |
+| Multi-Perspective Review Processes | NEW | Parallel expert analysis with perspective coordination | - | specializations/shared/multi-perspective-review.js |
 | Progressive Skill Disclosure | NEW | Token-efficient knowledge loading | - | specializations/shared/progressive-disclosure.js |
-| Agent Handoff Protocols | UPGRADE | Structured workflow transitions | library/specializations/ai-agents-conversational/ | specializations/shared/agent-handoff-protocols.js |
+| Agent Handoff Protocols | NEW | Structured workflow transitions between specialized agents | - | specializations/shared/agent-handoff-protocols.js |
 | Context-Driven Development | NEW | Vision → spec → implementation methodology | - | methodologies/context-driven-development/ |
 | Track-Based Organization | NEW | Semantic work unit management | - | specializations/shared/track-based-organization.js |
 | Multi-Layer Quality Evaluation | NEW | Static, semantic, statistical analysis framework | - | specializations/shared/multi-layer-evaluation.js |
 | Plugin Composition Strategies | NEW | Modular system assembly patterns | - | specializations/shared/plugin-composition.js |
-| Agent Team Coordination | UPGRADE | Multi-agent parallel coordination | library/specializations/ai-agents-conversational/ | specializations/shared/agent-team-coordination.js |
+| Agent Team Coordination | NEW | Multi-agent parallel coordination patterns | - | specializations/shared/agent-team-coordination.js |
 
 ## Plugin Marketplace Mapping
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Multi-Agent Orchestration Suite | NEW | Comprehensive agent coordination framework | - | plugins/a5c/marketplace/plugins/multi-agent-orchestration-suite/ |
 | Progressive Disclosure Engine | NEW | Token-efficient knowledge loading system | - | plugins/a5c/marketplace/plugins/progressive-disclosure-engine/ |
 | Context-Driven Development | NEW | Vision-to-implementation workflow automation | - | plugins/a5c/marketplace/plugins/context-driven-development/ |
 | Multi-Layer Quality Framework | NEW | Comprehensive quality evaluation with statistical rigor | - | plugins/a5c/marketplace/plugins/multi-layer-quality-framework/ |
