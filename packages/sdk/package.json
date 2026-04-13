@@ -30,6 +30,7 @@
     "@mariozechner/pi-coding-agent": "*",
     "@modelcontextprotocol/sdk": "^1.12.1",
     "@sinclair/typebox": "^0.34.48",
+    "zod": "^4.0.0",
     "fs-extra": "^11.2.0",
     "ink": "^4.4.1",
     "ink-spinner": "^5.0.0",
