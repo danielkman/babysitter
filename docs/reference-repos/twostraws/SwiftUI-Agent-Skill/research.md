@@ -30,9 +30,18 @@ Low-to-moderate extractable value for babysitter. Very domain-specific (iOS/Swif
 - **Placement**: `specializations/shared/swiftui-code-quality-review.js`
 - **Description**: Quality gate process for SwiftUI projects focused on LLM-generated code: deprecated API detection -> accessibility/VoiceOver audit -> performance review (state management, layout) -> navigation pattern check -> animation safety review. Generates structured findings with severity levels.
 
-## Plugin Ideas
+## Library Mapping
 
-None identified. The skill is purely instructional (SKILL.md knowledge) with no tool integration surface.
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| SwiftUI Code Quality Review | NEW | Quality gate process for SwiftUI focused on LLM-specific mistakes | - | specializations/mobile/swiftui-code-quality-review.js |
+| LLM-Mistake-Targeted Review | NEW | Review framework focused on what AI gets wrong rather than general best practices | - | specializations/shared/llm-mistake-targeted-review.js |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| N/A | N/A | No valid plugin ideas - purely instructional content with no tool integration surface | - | N/A |
 
 ## Implicit Procedural Knowledge
 

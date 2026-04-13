@@ -63,12 +63,6 @@ VERY HIGH - Contains sophisticated business domain processes directly transferab
   - Complexity: complex
 
 ## Plugin Ideas
-- **business-domain-suite**: Plugin for installing complete business function skill sets with domain-specific automation
-  - What install.md would do: Interview user about business domain needs, install relevant skill packages, configure Python automation tools, set up documentation frameworks
-  - Processes it would copy: All domain-specific processes based on user selection
-  - Configs/hooks it would create: Business domain templates, automation scripts, documentation standards, reporting dashboards
-  - Source evidence: Comprehensive business domain organization with 540 skills across 9 professional domains
-
 - **enterprise-automation-framework**: Plugin for business process automation with Python tools and professional workflows
   - What install.md would do: Install Python automation environment, set up business process templates, configure reporting tools, create workflow orchestration
   - Processes it would copy: marketing-campaign-orchestration, engineering-team-automation, product-management-workflow
@@ -93,3 +87,21 @@ VERY HIGH - Contains sophisticated business domain processes directly transferab
   - Placement: methodologies/quality-management/
   - Why codify: Systematic approach to maintaining consistent quality in large professional skill collections
   - Sketch: Quality criteria definition → Assessment framework → Continuous improvement → Version management → Professional standards maintenance
+
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| C-Level Strategic Leadership | NEW | Systematic executive decision-making and strategic planning processes | - | specializations/business/c-level-strategic-leadership.js |
+| Marketing Campaign Orchestration | NEW | Comprehensive marketing automation with content and analytics workflows | - | specializations/business/marketing-campaign-orchestration.js |
+| Product Management Workflow | NEW | RICE prioritization, OKRs, user stories, UX research methodology | - | specializations/business/product-management-workflow.js |
+| Engineering Team Automation | NEW | Professional engineering workflows with accessibility and security testing | - | specializations/software-engineering/engineering-team-automation.js |
+| Regulatory Compliance Management | NEW | ISO, FDA, GDPR compliance frameworks and audit procedures | - | specializations/business/regulatory-compliance-management.js |
+| Business Domain Organization | NEW | Framework for organizing procedural knowledge by business function | - | methodologies/business-domain-organization/business-domain-organization.js |
+| Enterprise Quality Management | NEW | Professional-grade skill quality management across large collections | - | methodologies/enterprise-quality-management/enterprise-quality-management.js |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| Enterprise Automation Framework | NEW | Business process automation with Python tools and workflow orchestration | - | plugins/a5c/marketplace/plugins/enterprise-automation/ |

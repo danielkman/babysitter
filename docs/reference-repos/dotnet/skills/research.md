@@ -57,13 +57,7 @@ HIGH - Contains official .NET team processes that are directly transferable:
   - Complexity: complex
 
 ## Plugin Ideas
-- **dotnet-development-suite**: Comprehensive .NET development environment setup
-  - What install.md would do: Detect .NET project type, install relevant skills from the 11 plugin categories, configure MSBuild settings, set up diagnostic tools
-  - Processes it would copy: dotnet-pinvoke-debugging, msbuild-performance-optimization, ef-migration-workflow
-  - Configs/hooks it would create: MSBuild Directory.Build.props, NuGet.config, diagnostic configurations
-  - Source evidence: 11 specialized .NET plugins covering entire development lifecycle
-
-- **dotnet-upgrade-assistant**: Plugin for systematic .NET framework upgrades
+- **dotnet-framework-upgrade**: Plugin for systematic .NET framework upgrades
   - What install.md would do: Analyze current project, create upgrade plan, install upgrade processes, set up compatibility testing
   - Processes it would copy: dotnet-framework-upgrade, compatibility-analysis, dependency-migration
   - Configs/hooks it would create: Upgrade checklists, compatibility test suites, rollback procedures
@@ -101,4 +95,4 @@ HIGH - Contains official .NET team processes that are directly transferable:
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| N/A | N/A | No valid plugin ideas - processes cover the extractable value | - | N/A |
+| .NET Framework Upgrade | NEW | Systematic .NET framework upgrade setup with processes and tooling | - | plugins/a5c/marketplace/plugins/dotnet-framework-upgrade/ |

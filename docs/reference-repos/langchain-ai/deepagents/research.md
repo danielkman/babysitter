@@ -49,9 +49,9 @@ Framework discovered through harness architecture search. Repository demonstrate
 
 | Extractable Process | Library Status | Action | Existing Path | Target Placement |
 |-------------------|----------------|--------|---------------|------------------|
-| LangGraph-Based Agent Architecture | UPGRADE | Enhanced graph-based workflow coordination for agent harnesses | library/specializations/ai-agents-conversational/ | specializations/shared/langgraph-agent-architecture.js |
+| LangGraph-Based Agent Architecture | NEW | Graph-based workflow coordination for agent harnesses | - | specializations/shared/langgraph-agent-architecture.js |
 | Graph-Based Planning | NEW | LangGraph workflow coordination and structured planning tools | - | specializations/shared/graph-based-planning.js |
-| Subagent Spawning Patterns | UPGRADE | Hierarchical agent delegation and coordination strategies | library/specializations/ai-agents-conversational/ | specializations/shared/subagent-spawning-patterns.js |
+| Subagent Spawning Patterns | NEW | Hierarchical agent delegation and coordination strategies | - | specializations/shared/subagent-spawning-patterns.js |
 | Persistent Filesystem Backend | NEW | File-based state management for agent workflows | - | specializations/shared/persistent-filesystem-backend.js |
 | Complex Task Workflow Execution | NEW | Multi-step workflow execution with state persistence | - | specializations/shared/complex-task-workflow-execution.js |
 | LangChain Integration Patterns | NEW | LangChain framework integration for agent harnesses | - | specializations/ai-agents-conversational/langchain-integration-patterns.js |

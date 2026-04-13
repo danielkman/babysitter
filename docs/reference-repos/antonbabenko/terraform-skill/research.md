@@ -43,5 +43,19 @@
   - Skills: terraform module scaffolding, testing strategy advisor, CI/CD workflow generator
   - Would complement existing devops process library
 
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| Terraform Module Development Workflow | NEW | Testing strategy, scaffolding, CI/CD, security scanning for Terraform modules | - | specializations/devops-sre-platform/terraform-module-development.js |
+| IaC Quality Convergence | NEW | Static analysis to E2E testing pipeline with compliance automation | - | specializations/devops-sre-platform/iac-quality-convergence.js |
+| Terraform Testing Strategy | NEW | Native tests vs Terratest decision framework with implementation patterns | - | specializations/devops-sre-platform/terraform-testing-strategy.js |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| Terraform IaC Toolkit | NEW | Terraform module scaffolding with testing strategy and CI/CD generation | - | plugins/a5c/marketplace/plugins/terraform-iac-toolkit/ |
+
 ### SKIP
 - Skill management (how they distribute via marketplace) -- SDK-covered

@@ -40,5 +40,21 @@ Already structured as a plugin with marketplace install support. Could be assimi
 - Already has both Claude and Codex plugin manifests (cross-harness)
 - GitHub Action wrapper pattern is interesting for CI integration
 
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| Generator/Validator Pattern | NEW | Config generation paired with validation methodology | - | specializations/shared/generator-validator-pattern.js |
+| Kubernetes Safety Debugging | NEW | Safety-first K8s debugging with confirmation gates and snapshots | - | specializations/devops-sre-platform/k8s-safety-debugging.js |
+| Infrastructure Config Generation | NEW | Production-ready config scaffolding for Terraform, Helm, Docker, CI | - | specializations/devops-sre-platform/infrastructure-config-generation.js |
+| DevOps Validation Pipeline | NEW | Linting and security validation for generated infrastructure configs | - | specializations/devops-sre-platform/devops-validation-pipeline.js |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| DevOps Config Generator | NEW | Infrastructure config generation and validation with safety gates | - | plugins/a5c/marketplace/plugins/devops-config-generator/ |
+| K8s Safety Toolkit | NEW | Safe Kubernetes debugging and management with confirmation gates | - | plugins/a5c/marketplace/plugins/k8s-safety-toolkit/ |
+
 ## Classification Rationale
-Domain-specific (DevOps), so `specializations/devops/`. The generator/validator pair pattern could also inform a shared methodology. Despite lower star count, the content quality and structural patterns are novel and well-executed.
+Domain-specific (DevOps), so `specializations/devops-sre-platform/`. The generator/validator pair pattern could also inform a shared methodology. Despite lower star count, the content quality and structural patterns are novel and well-executed.

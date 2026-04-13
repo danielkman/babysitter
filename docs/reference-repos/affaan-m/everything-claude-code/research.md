@@ -6,7 +6,7 @@
 - **Last pushed:** 2026-04-12
 - **Description:** The agent harness performance optimization system. Skills, instincts, memory, security, and research-first development for Claude Code, Codex, Opencode, Cursor and beyond.
 
-## Archetype: Harness Framework (performance optimization system for AI agent harnesses)
+## Archetype: mega-skill-pack
 
 ## Structure
 - `skills/` — 181 skill directories spanning many domains
@@ -66,23 +66,20 @@ The selective install architecture (`install-plan.js` / `install-apply.js`) with
 - Skill management/discovery — SDK-covered primitives
 - Observer/dashboard — Babysitter has its own
 
-## Harness Integration Ideas
+## Library Mapping
 
-### Multi-Harness Architecture for Babysitter
-- **Harness Adapter**: Universal optimization framework (like plugins/babysitter-codex)
-- **Adapter implementation**: Multi-harness optimization layer in `packages/sdk/src/harness/optimizers/`
-- **Plugin structure**: Performance optimization plugin for `plugins/babysitter-performance/`
-- **CLI integration**: Token optimization, memory persistence, security scanning integration
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| Healthcare HIPAA Compliance | NEW | Multi-stage PHI compliance verification workflow | - | specializations/healthcare/hipaa-compliance-validation.js |
+| DeFi Security Audit | NEW | Automated market maker security analysis process | - | specializations/finance/defi-security-audit.js |
+| Logistics Exception Management | NEW | Supply chain disruption handling and recovery workflow | - | specializations/logistics/exception-management.js |
+| Continuous Learning Methodology | NEW | Auto-pattern extraction from agent sessions | - | specializations/shared/continuous-learning.js |
+| Verification Loop Pattern | NEW | Checkpoint vs continuous evaluation framework | - | specializations/shared/verification-loop.js |
+| Multi-Language Testing Pipeline | NEW | Cross-language testing methodology (Go, Python, Rust, C++, C#, Kotlin) | - | specializations/shared/multi-language-testing.js |
 
-### TUI/Orchestration Improvements
-- **Current limitation**: No cross-session memory persistence or performance optimization
-- **Integration approach**: Adapt memory hooks, token optimization, and AgentShield security patterns
-- **Implementation scope**: `packages/sdk/src/memory/`, `packages/sdk/src/performance/`, `packages/sdk/src/security/`
+## Plugin Marketplace Mapping
 
-### Security Framework Integration
-- **Current limitation**: Limited security scanning for agent processes
-- **Integration approach**: Integrate AgentShield patterns for process security validation
-- **Implementation scope**: New security validation layer for babysitter processes
-
-## Classification Rationale
-While containing 181 skills, this is primarily a harness framework providing performance optimization, security, and memory persistence across multiple AI coding tools. The multi-harness architecture and production-ready optimization patterns represent significant value for enhancing our internal agent harness capabilities. Individual skills should be cherry-picked based on domain value, but the core harness optimization patterns are the primary extraction target.
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| Healthcare Compliance Suite | NEW | HIPAA/PHI compliance setup with validation processes | - | plugins/a5c/marketplace/plugins/healthcare-compliance/ |
+| Multi-Language Security Scanning | UPGRADE | Enhance existing security with language-specific scanners | basic-security | plugins/a5c/marketplace/plugins/multi-language-security/ |

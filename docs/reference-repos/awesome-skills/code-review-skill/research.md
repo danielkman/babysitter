@@ -36,5 +36,20 @@ install.md-driven plugin that provides:
 - Language-specific reference files as context
 - Hook into `pre-commit` or PR review workflows
 
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| 4-Phase Code Review Process | NEW | Structured time-boxed review methodology with severity labeling | - | specializations/shared/code-review-excellence.js |
+| Language-Specific Review Framework | NEW | Modular review guides for 11 languages/frameworks with anti-patterns | - | specializations/shared/language-specific-review.js |
+| Educational Feedback Technique | NEW | Question-based code review methodology emphasizing learning over judgment | - | specializations/shared/educational-feedback.js |
+| Cross-Cutting Review Process | NEW | Architecture, performance, and security review checklists | - | specializations/shared/cross-cutting-review.js |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| Code Review Excellence | NEW | Multi-language code review setup with phased methodology and hooks | - | plugins/a5c/marketplace/plugins/code-review-excellence/ |
+
 ## Classification Rationale
 This is a cross-domain specialization (not a full dev methodology). The review process is applicable to any language/framework, so it fits in `specializations/shared/`. The language-specific guides are modular reference material.

@@ -72,6 +72,21 @@ Comprehensive collection of Agent Skills for optimizing web projects based on Go
   - WCAG compliance level configuration (A, AA, AAA)
 - **Integration surface**: hooks (`pre-commit`, `post-planning`), commands (`quality:audit`, `quality:report`), breakpoint rules (block deploy if scores below threshold)
 
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| Web Quality Audit Process | NEW | Multi-step web quality audit workflow with performance, accessibility, SEO, and best practices checks | - | specializations/frontend/web-quality-audit.js |
+| Core Web Vitals Optimization | NEW | LCP, INP, CLS optimization methodology with framework-specific patterns | - | specializations/frontend/core-web-vitals-optimization.js |
+| WCAG Accessibility Audit | NEW | WCAG 2.2 compliance checking with screen reader and keyboard navigation validation | - | specializations/frontend/wcag-accessibility-audit.js |
+| Web Performance Analysis | NEW | Critical rendering path, JS bundling, and resource optimization analysis | - | specializations/frontend/web-performance-analysis.js |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| Web Quality Audit | NEW | Lighthouse/CWV audit integration with configurable thresholds and CI/CD hooks | - | plugins/a5c/marketplace/plugins/web-quality-audit/ |
+
 ## Skipped
 
 - Individual skill content (SKILL.md bodies) are instruction sets, not processes -- they provide guidelines but not orchestratable workflows

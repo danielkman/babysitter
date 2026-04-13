@@ -35,9 +35,20 @@ pm-toolkit/              (shared skills)
 
 4. **assumption-testing** - Alberto Savoia pretotyping methodology for new products. Structured experiment design with risk categorization across 8 dimensions (Value, Usability, Viability, Feasibility, Go-to-Market, Strategy, Team, plus more). **Placement: specializations/business/product-management/assumption-testing**
 
-### Plugin Ideas
+## Library Mapping
 
-None - pure methodology content. The command-chaining pattern (e.g., /discover chains brainstorm-ideas -> identify-assumptions -> prioritize-assumptions -> brainstorm-experiments) is interesting as a process composition pattern but maps naturally to babysitter process definitions rather than plugins.
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| Product Discovery (Teresa Torres OST) | NEW | Opportunity Solution Tree methodology with assumption testing | - | specializations/business/product-discovery.js |
+| Product Strategy Framework | NEW | North-star metrics, competitive analysis, roadmap prioritization | - | specializations/business/product-strategy.js |
+| Go-to-Market Methodology | NEW | Launch planning with positioning, messaging, channel strategy | - | specializations/business/go-to-market.js |
+| Assumption Testing (Savoia Pretotyping) | NEW | Alberto Savoia pretotyping methodology for new products | - | specializations/business/assumption-testing.js |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| N/A | N/A | No valid plugin ideas - pure methodology content that maps to babysitter processes | - | N/A |
 
 ### SKIP
 
