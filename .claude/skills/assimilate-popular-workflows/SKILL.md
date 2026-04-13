@@ -223,6 +223,29 @@ that an AI agent executes to set up capabilities in a user's project>
   - Processes it would copy: <which process library entries>
   - Configs/hooks it would create: <ESLint rules, git hooks, CI/CD templates, etc.>
   - Source evidence: <what in the repo inspires this plugin idea>
+  - Marketplace placement: <plugins/a5c/marketplace/plugins/[category]/[plugin-name]/>
+
+## Plugin Marketplace Mapping
+
+<Check existing marketplace plugins before proposing new ones. Map plugin ideas against current plugins/a5c/marketplace/plugins/ structure>
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| Security Toolkit | UPGRADE | Enhance existing with new scanning processes | plugins/a5c/marketplace/plugins/basic-security/ | plugins/a5c/marketplace/plugins/security-toolkit/ |
+| Testing Suite | NEW | Comprehensive testing framework | - | plugins/a5c/marketplace/plugins/testing-suite/ |
+
+**Example existing plugins** (from plugins/a5c/marketplace/plugins/):
+- `basic-security`, `agentsh`, `container-security` - Security tools and sandboxing
+- `claude-mem` - Memory and context management
+- `dev-browser` - Browser automation and tools integration
+- `ctx` - Developer experience enhancements  
+- `github-actions-cicd-*` - CI/CD integration templates
+- `argocd-gitops`, `devcontainer` - DevOps and infrastructure
+- `api-contract`, `changelog-enforcer` - Quality assurance tools
+- `autorelease`, `changesets` - Workflow automation
+- `contribution-graph`, `community-health` - Project health and metrics
+
+**Plugin naming pattern**: `[descriptive-name]` - no category prefixes, direct plugin names
 
 ## Harness Integration Ideas
 <For harness-framework repos: ideas for new harness adapters and TUI improvements>
@@ -301,12 +324,25 @@ For each extractable process identified in Phase 3 research documents:
    ```markdown
    ## Library Mapping
    
-   | Extractable Process | Library Status | Action | Existing Path |
-   |-------------------|----------------|--------|---------------|
-   | Systematic Debugging | UPGRADE | Enhance with new error categorization patterns | methodologies/cc10x/cc10x-debug.js |
-   | TDD Workflow | VARIANT | Could generalize atdd-tdd with pure TDD variant | methodologies/atdd-tdd/atdd-tdd.js |
-   | Research Pipeline | NEW | Novel 23-stage autonomous research methodology | - |
+   | Extractable Process | Library Status | Action | Existing Path | Target Placement |
+   |-------------------|----------------|--------|---------------|------------------|
+   | Superpowers Debugging | UPGRADE | Enhance with new TDD integration patterns | methodologies/superpowers/superpowers-workflow.js | methodologies/superpowers/ (enhancement) |
+   | TDD Workflow | VARIANT | Could generalize atdd-tdd with pure TDD variant | methodologies/atdd-tdd/atdd-tdd.js | methodologies/pure-tdd/ (new variant) |
+   | Research Pipeline | NEW | Novel 23-stage autonomous research methodology | - | specializations/shared/autonomous-research.js |
+   | Security Audit | NEW | K8s security scanning process | - | specializations/security-compliance/k8s-security-audit.js |
    ```
+   
+   **Library placement rules for Target Placement:**
+   - **methodologies/[name]/**: Full generic dev methodologies only (agile, tdd, scrum, kanban)
+   - **specializations/shared/**: Cross-domain reusable patterns (audit-pipeline, research-methodology) 
+   - **specializations/[domain]/**: Domain-specific processes:
+     - `security-compliance/` - Security, compliance, auditing, scanning
+     - `devops-sre-platform/` - Infrastructure, deployment, monitoring, platform
+     - `data-science-ml/` - Data processing, ML workflows, analytics
+     - `frontend/` - UI/UX, component architecture, design systems
+     - `backend/` - API design, microservices, database, performance
+     - `mobile/` - iOS, Android, cross-platform mobile development
+     - `ai-agents-conversational/` - Agent development, LLM integration patterns
 
 ### Re-extraction Strategy
 
@@ -319,23 +355,23 @@ When a repository offers improvements to existing processes:
 
 Example upgrade documentation:
 ```markdown
-### Upgrade Analysis: cc10x-debug.js ← obra/superpowers debugging methodology
+### Upgrade Analysis: superpowers-workflow.js ← obra/superpowers debugging enhancements
 
-**Current implementation**: Basic debugging workflow with error reproduction and hypothesis testing
+**Current implementation**: Agent development methodology with TDD, debugging, and planning frameworks
 
 **Repository insights**: 
 - Binary search debugging strategy
-- Systematic error categorization (syntax/logic/integration/environment)
+- Systematic error categorization (syntax/logic/integration/environment)  
 - Rubber duck debugging integration
 - Prevention-focused root cause analysis
 
 **Proposed enhancements**:
-- Add binary search phase for large codebases
-- Implement error taxonomy classification
-- Add prevention analysis step
-- Integrate debugging strategy selection logic
+- Add binary search phase for large codebase debugging
+- Implement error taxonomy classification within superpowers workflow
+- Enhance debugging strategy selection logic
+- Integrate prevention analysis into superpowers methodology
 
-**Backward compatibility**: Existing inputs/outputs preserved, new optional strategies added
+**Backward compatibility**: Existing superpowers methodology preserved, enhanced with new debugging patterns
 ```
 
 ## Phase 5 -- Process Codification
