@@ -350,7 +350,11 @@ Every repo that has been investigated goes here, regardless of outcome. This pre
 
 - **Do NOT keep research directories for skipped repos with no extractable value.** If a repo is classified as `internal-maintenance`, `other-harness`, `not-a-skill`, or otherwise has zero extractable processes and zero plugin ideas, record it in `processed.md` only. Do not create a directory under `docs/reference-repos/`.
 - **Only create `research.md`** for repos that have at least one extractable process or plugin idea. Each repo gets exactly one file (`research.md`), not separate index/extractable-value files.
-- When re-running discovery, check `processed.md` first to skip already-evaluated repos.
+- **CRITICAL: Check for duplicates before processing.** Before investigating ANY repository:
+  1. Check `processed.md` - skip if already evaluated
+  2. Check `README.md` - skip if already tracked  
+  3. Check existing `docs/reference-repos/[org]/[repo]/` directories
+  4. Remove duplicates from `backlog.md` when found
 - **License must be verified.** Every `research.md` must include the license field. During enrichment, extract `license.spdx_id` from the GitHub API. If the license is not MIT, BSD, or Apache-2.0, skip the repo and record it in `processed.md` with the reason.
 
 ## Notes
