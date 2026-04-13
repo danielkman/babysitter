@@ -53,23 +53,8 @@ HIGH - Contains sophisticated domain expert personas with unique approach to kno
   - Complexity: complex
 
 ## Plugin Ideas
-- **domain-expert-personas**: Plugin for installing specialized expert personalities with domain-specific knowledge and communication styles
-  - What install.md would do: Install agent personality frameworks, configure domain expertise systems, set up conversational patterns, create personality consistency tools
-  - Processes it would copy: domain-expert-persona-design
-  - Configs/hooks it would create: Personality templates, domain knowledge bases, conversational style guides, expertise frameworks
-  - Source evidence: 206 specialized agent personalities with sophisticated domain expertise and Claude Code integration
 
-- **academic-research-suite**: Plugin for academic research workflows with disciplinary expertise and scholarly methods
-  - What install.md would do: Install academic frameworks, set up research methodologies, configure disciplinary tools, create scholarly templates
-  - Processes it would copy: academic-domain-expertise
-  - Configs/hooks it would create: Research templates, methodological frameworks, citation tools, scholarly writing guides
-  - Source evidence: Comprehensive academic agent collection with deep disciplinary knowledge and research methodologies
-
-- **business-domain-experts**: Plugin for business function expertise across multiple domains with personality-driven consultation
-  - What install.md would do: Install business domain frameworks, set up expert consultation systems, configure functional workflows, create strategic templates
-  - Processes it would copy: business-function-expertise
-  - Configs/hooks it would create: Business templates, strategic frameworks, consultation patterns, domain expertise guides
-  - Source evidence: Extensive business domain coverage with specialized expert personas and proven workflows
+None - this repository contains expert personas and role-based content which are not valid babysitter marketplace plugin concepts.
 
 ## Implicit Procedural Knowledge
 - **Personality-Driven Expertise Delivery**: Methodology for embedding domain knowledge within consistent agent personalities for enhanced user experience
@@ -95,7 +80,7 @@ HIGH - Contains sophisticated domain expert personas with unique approach to kno
 | Extractable Process | Library Status | Action | Existing Path | Target Placement |
 |-------------------|----------------|--------|---------------|------------------|
 | Domain Expert Persona Design | NEW | Systematic AI personality creation with domain expertise | - | methodologies/persona-engineering/ |
-| Academic Domain Expertise | VARIANT | Could enhance existing conversational AI patterns | library/specializations/ai-agents-conversational/ | specializations/academic-research/ |
+| Academic Domain Expertise | NEW | Academic research methodologies with disciplinary frameworks | - | specializations/academic-research/ |
 | Creative Design Workflows | NEW | Expert design processes across creative domains | - | specializations/creative-design/ |
 | Business Function Expertise | NEW | Specialized business domain knowledge systems | - | specializations/business-functions/ |
 | Personality-Driven Expertise Delivery | NEW | Domain knowledge embedded in consistent personas | - | methodologies/personality-driven-ai/ |
@@ -106,6 +91,4 @@ HIGH - Contains sophisticated domain expert personas with unique approach to kno
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Domain Expert Personas | NEW | Install specialized expert personalities with domain knowledge | - | plugins/a5c/marketplace/plugins/domain-expert-personas/ |
-| Academic Research Suite | NEW | Academic research workflows with disciplinary expertise | - | plugins/a5c/marketplace/plugins/academic-research-suite/ |
-| Business Domain Experts | NEW | Business function expertise with personality-driven consultation | - | plugins/a5c/marketplace/plugins/business-domain-experts/ |
+| N/A | N/A | No valid plugin ideas - expert personas and role-based content are not valid marketplace plugins | - | N/A |

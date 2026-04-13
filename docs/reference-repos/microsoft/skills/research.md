@@ -61,7 +61,7 @@ HIGH - Contains well-documented Microsoft/Azure ecosystem processes that are dir
   - Configs/hooks it would create: Azure DevOps pipelines, ARM/Bicep templates, monitoring alerts
   - Source evidence: 132 Azure/Microsoft skills organized by service and language
 
-- **cloud-architecture-advisor**: Plugin for cloud architecture best practices
+- **cloud-architecture**: Plugin for cloud architecture best practices
   - What install.md would do: Install architecture review processes, configure Well-Architected assessments, set up design pattern library
   - Processes it would copy: azure-architecture-review, cloud-design-patterns, performance-antipatterns
   - Configs/hooks it would create: Architecture review templates, assessment checklists, pattern catalogs

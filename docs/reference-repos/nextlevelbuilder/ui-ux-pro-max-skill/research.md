@@ -51,7 +51,7 @@ docs/                 # Documentation
 
 ## Processes
 
-### 1. UI/UX Design System Generation (specializations/domains/design/ui-ux-design-system-generation)
+### 1. UI/UX Design System Generation (specializations/frontend/ui-ux-design-system-generation)
 
 A process that takes a product description and generates a complete, tailored design system through multi-domain parallel search and reasoning.
 
@@ -65,7 +65,7 @@ A process that takes a product description and generates a complete, tailored de
 
 **Key insight from repo:** The multi-domain parallel search pattern (5 independent CSV searches merged by a reasoning engine) is a strong fit for babysitter's `ctx.parallel.all()`.
 
-### 2. UI/UX Audit and Quality Gate (specializations/domains/design/ui-ux-audit)
+### 2. UI/UX Audit and Quality Gate (specializations/frontend/ui-ux-audit)
 
 A process that audits an existing UI implementation against design best practices, accessibility standards, and anti-patterns.
 
@@ -100,3 +100,19 @@ A babysitter plugin that adds a `pre-commit` hook checking UI code against desig
 - Responsive breakpoint coverage
 
 **install.md**: Installs pre-commit hook that runs design linting on changed `.tsx`/`.vue`/`.svelte` files.
+
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| UI/UX Design System Generation | NEW | Multi-domain parallel search with reasoning engine for complete design system generation | - | specializations/frontend/ui-ux-design-system-generation.js |
+| UI/UX Audit and Quality Gate | NEW | Design system validation with accessibility compliance and anti-pattern checking | - | specializations/frontend/ui-ux-audit.js |
+| Multi-Domain Parallel Search Pattern | NEW | Parallel knowledge base searches with reasoning engine merge | - | specializations/shared/multi-domain-parallel-search.js |
+| Design Intelligence Knowledge Query | NEW | CSV-based design knowledge lookup and recommendation system | - | specializations/frontend/design-intelligence-query.js |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| Design Intelligence Knowledge Base | NEW | CSV knowledge bases for UI/UX design decisions with searchable data | - | plugins/a5c/marketplace/plugins/design-intelligence/ |
+| Design System Linter | NEW | Pre-commit hook for UI code validation against design system rules | - | plugins/a5c/marketplace/plugins/design-system-linter/ |
