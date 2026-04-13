@@ -38,6 +38,19 @@ None -- OMNI is a tool, not a workflow. Its value is entirely in plugin patterns
 - **Category**: Developer Experience & UX
 - **install.md**: Adds `babysitter compression:stats` enhancement showing per-tool token savings over time. Tracks raw vs filtered output sizes, calculates cost savings, provides `diff` visualization comparing raw output to filtered version. Persists metrics in SQLite for historical analysis.
 
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| N/A | N/A | No multi-step processes identified - OMNI is a tool, not a workflow | - | N/A |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| Smart Output Filter | NEW | Hook-based output filter with TOML registry and RewindStore for lossless compression | - | plugins/a5c/marketplace/plugins/smart-output-filter/ |
+| Token Savings Dashboard | NEW | Compression stats enhancement with per-tool metrics and cost visualization | - | plugins/a5c/marketplace/plugins/token-savings-dashboard/ |
+
 ## Implicit Procedural Knowledge
 
 - **TOML filter registry pattern**: Each dev tool gets its own TOML file defining capture patterns, confidence scores, and output templates. This is a clean, extensible pattern for babysitter's compression layer -- currently babysitter uses a density-filter engine with FNV-1a dedup, but OMNI's approach of tool-specific semantic filtering could complement it.

@@ -34,6 +34,18 @@ None -- PIM integration is a plugin concern, not a process.
 - **Category**: Tools Integration
 - **install.md**: Installs Swift CLI tools for Calendar, Reminders, Contacts, and Mail access on macOS. Wraps them in an MCP server for agent integration. Supports per-domain enable/disable (calendar, reminders, contacts, mail independently), batch operations, and multi-agent isolation via per-call config overrides. Requires macOS 13.0+, Swift 5.9+, and granting Privacy & Security permissions.
 
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| N/A | N/A | No multi-step processes identified - PIM integration is a plugin concern, not a process | - | N/A |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| Apple PIM Integration | NEW | macOS Calendar/Reminders/Contacts/Mail integration with per-domain controls | - | plugins/a5c/marketplace/plugins/apple-pim-integration/ |
+
 ## Implicit Procedural Knowledge
 
 - **Dual-platform plugin architecture**: Same native CLI tools, different integration layers (MCP for Claude Code, native tool registration for OpenClaw). This pattern allows a single babysitter plugin to support multiple harnesses with minimal duplication.

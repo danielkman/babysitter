@@ -32,6 +32,18 @@ None.
 - **Category**: Context & Memory
 - **install.md**: Installs a session-level toggle that instructs the AI to respond in terse, fragment-based style for token savings. Also algorithmically compresses older conversation history by stripping articles, filler words, and shortening synonyms. Tracks cumulative token savings.
 
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| N/A | N/A | No multi-step processes identified - terse mode is prompt engineering technique | - | N/A |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| Terse Mode Toggle | POTENTIAL OVERLAP | Session-level terse response mode with conversation compression | babysitter compression system | plugins/a5c/marketplace/plugins/terse-mode-toggle/ |
+
 ## Implicit Procedural Knowledge
 
 - **Dual-layer token reduction**: Combining output mode (prompt engineering for terse responses) with input compression (algorithmic trimming of history) addresses both sides of the token cost equation. Simple but effective for cost-sensitive environments.

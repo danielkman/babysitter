@@ -32,6 +32,18 @@ None -- sandboxing is a plugin concern, not a process.
 - **Category**: Security & Sandboxing
 - **install.md**: Installs a WebAssembly-based sandboxed execution environment for agent tool calls. Each tool runs in its own WASM container with capability-based permissions (filesystem paths, network hosts, environment variables). Ships with pre-built sandboxed variants of common tools: curl, fetch, ffmpeg, fs operations, HTTP server, graphviz, opencv, pandoc. Prevents agents from accessing filesystem/network outside defined boundaries.
 
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| N/A | N/A | No multi-step processes identified - sandboxing is a plugin concern, not a process | - | N/A |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| WASM Sandbox Environment | UPGRADE | WebAssembly-based sandboxing beyond existing Docker/chroot approaches | plugins/a5c/marketplace/plugins/basic-security/ | plugins/a5c/marketplace/plugins/wasm-sandbox-environment/ |
+
 ## Implicit Procedural Knowledge
 
 - **WASM sandboxing for agent tools**: Using WebAssembly as the isolation boundary for agent-executed code. Each tool gets its own WASM container with defined capabilities. This is more granular than OS-level sandboxing (Docker/chroot) and more portable.
