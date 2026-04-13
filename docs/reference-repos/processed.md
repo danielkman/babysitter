@@ -37,3 +37,9 @@ This file tracks repositories that have already been reviewed/processed so we do
 | opencode-ai/opencode | ❌ Skipped | 11,982 stars - Archived, moved to charmbracelet/crush | 2026-04-13 |
 | charmbracelet/crush | ✅ Tracked | 22,930 stars - Terminal AI harness (successor to OpenCode) | 2026-04-13 |
 | aden-hive/hive | ✅ Tracked | 10,188 stars - Multi-agent production harness | 2026-04-13 |
+| vercel-labs/skills | ❌ Skipped | 13,936 stars - Unknown license | 2026-04-13 |
+| openai/openai-cookbook | ❌ Skipped | 72,711 stars - internal-maintenance | 2026-04-13 |
+| langchain-ai/langchain-academy | ❌ Skipped | 2,543 stars - Unknown license | 2026-04-13 |
+| modelcontextprotocol/servers | ✅ Tracked | 83,628 stars - MCP server reference implementations with comprehensive development patterns | 2026-04-13 |
+| crewAIInc/crewAI-examples | ❌ Skipped | 5,849 stars - Unknown license | 2026-04-13 |
+| Shubhamsaboo/awesome-llm-apps | ✅ Tracked | 105,284 stars - 20+ domain skills + self-improving agent framework | 2026-04-13 |
