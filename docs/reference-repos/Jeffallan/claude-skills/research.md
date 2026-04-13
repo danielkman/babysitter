@@ -141,3 +141,28 @@ Several skills contain procedural knowledge embedded in their constraints and re
 6. **EARS format for requirements** (feature-forge, spec-miner): The Easy Approach to Requirements Syntax (When/While/Where templates) is a concrete, teachable format for expressing requirements that could be standardized across babysitter requirements-related processes.
 
 7. **Pre-mortem inversion** (the-fool): "What would guarantee this fails?" + checking if those conditions exist. This is a standalone analysis technique that could be injected as a validation step into any planning process.
+
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| Legacy Modernization | NEW | 5-phase migration with strangler fig pattern and metric-gated rollback | - | specializations/shared/legacy-modernization.js |
+| Chaos Experiment Design | NEW | Structured experiment design with safety mechanisms and progressive blast radius | - | specializations/devops-sre-platform/chaos-experiment-design.js |
+| Security Audit Process | NEW | 5-phase audit with authorization gates and automated scanning integration | - | specializations/security-compliance/security-audit-process.js |
+| Pre-mortem Analysis | NEW | Structured failure anticipation with consequence chains and mitigation design | - | specializations/shared/pre-mortem-analysis.js |
+| Requirements Elicitation | NEW | EARS-format requirements gathering with PM/Dev perspective switching | - | specializations/shared/requirements-elicitation.js |
+| Codebase Reverse Engineering | NEW | Systematic codebase archaeology with EARS documentation and uncertainty flagging | - | specializations/shared/codebase-reverse-engineering.js |
+| SLO Definition Process | NEW | SLI identification to multi-window burn rate alerting with toil automation | - | specializations/devops-sre-platform/slo-definition-process.js |
+| Cloud Migration Planning | NEW | 6Rs framework with pre-cutover validation and DR testing | - | specializations/devops-sre-platform/cloud-migration-planning.js |
+| Microservices Decomposition | NEW | DDD-based bounded context identification with validation checkpoints | - | specializations/devops-sre-platform/microservices-decomposition.js |
+| Kubernetes Deployment Review | NEW | Security-first deployment validation with RBAC and NetworkPolicy checks | - | specializations/devops-sre-platform/kubernetes-deployment-review.js |
+| Terraform Module Development | NEW | Module design with error recovery for state drift and dependency ordering | - | specializations/devops-sre-platform/terraform-module-development.js |
+| Assumption Validation | NEW | Interactive assumption surfacing with tier classification and reasoning graphs | - | specializations/shared/assumption-validation.js |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| Chaos Engineering Toolkit | NEW | Litmus Chaos/toxiproxy integration with experiment orchestration and safety gates | - | plugins/a5c/marketplace/plugins/chaos-engineering-toolkit/ |
+| Security Audit Automation | UPGRADE | Enhanced security scanning with tool integration and automated finding classification | basic-security | plugins/a5c/marketplace/plugins/security-audit-automation/ |
+| Legacy Modernization Framework | NEW | Strangler fig migration orchestration with characterization testing and metric-gated rollback | - | plugins/a5c/marketplace/plugins/legacy-modernization-framework/ |

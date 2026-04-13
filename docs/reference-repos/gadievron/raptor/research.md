@@ -111,6 +111,26 @@ Could be codified as a process with mode selection and shared context building.
 **Source:** `.claude/commands/codeql.md`
 **install.md description:** Installs CodeQL database creation and query execution integration. Provides commands for building CodeQL databases, running security queries, and interpreting results with SARIF output parsing.
 
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| Exploitability Validation Pipeline | NEW | 9-stage LLM + mechanical pipeline with stage typing and conditional execution | - | specializations/security-compliance/exploitability-validation.js |
+| OSS Forensics Investigation Process | NEW | 8-phase parallel evidence collection with specialized investigators | - | specializations/security-compliance/oss-forensics-investigation.js |
+| Adversarial Code Understanding | NEW | 4-mode security-focused code comprehension (Map/Trace/Hunt/Teach) | - | specializations/security-compliance/adversarial-code-understanding.js |
+| Stage Typing Pattern | NEW | LLM reasoning vs mechanical computation stage classification framework | - | specializations/shared/stage-typing-pattern.js |
+| Parallel Evidence Collection | NEW | Parallel specialist agents with sequential synthesis orchestration pattern | - | specializations/shared/parallel-evidence-collection.js |
+| Self-Review Quality Gate | NEW | Explicit self-review stage before final output as quality assurance | - | specializations/shared/self-review-quality-gate.js |
+| Iterative Hypothesis Refinement | NEW | Bounded loops for hypothesis formation and validation with configurable limits | - | specializations/shared/iterative-hypothesis-refinement.js |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| Crash Analysis Toolkit | NEW | Function tracing, gcov coverage, line execution checking, rr-debugger integration | - | plugins/a5c/marketplace/plugins/crash-analysis-toolkit/ |
+| AFL Fuzzing Integration | NEW | American Fuzzy Lop fuzzing with corpus management and harness generation | - | plugins/a5c/marketplace/plugins/afl-fuzzing-integration/ |
+| CodeQL Security Analysis | NEW | CodeQL database creation and query execution with SARIF output parsing | - | plugins/a5c/marketplace/plugins/codeql-security-analysis/ |
+
 ## Implicit Procedural Knowledge
 
 - **Stage typing:** Classifying pipeline stages as "LLM reasoning" vs "mechanical computation" is a powerful pattern for process design. Maps directly to different babysitter task kinds (orchestrator_task vs node).

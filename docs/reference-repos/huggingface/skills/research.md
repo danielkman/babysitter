@@ -64,12 +64,6 @@ HIGH - Contains official Hugging Face workflows that are directly transferable:
   - Complexity: moderate
 
 ## Plugin Ideas
-- **ml-development-suite**: Comprehensive ML development environment with Hugging Face ecosystem integration
-  - What install.md would do: Detect ML project type, install relevant HF skills, configure Hub authentication, set up training infrastructure, create evaluation pipelines
-  - Processes it would copy: ml-model-training-pipeline, dataset-preparation-workflow, model-evaluation-pipeline
-  - Configs/hooks it would create: HF CLI configuration, training job templates, evaluation scripts, deployment configs
-  - Source evidence: 11 specialized ML skills covering complete pipeline from data to deployment
-
 - **gradio-app-builder**: Plugin for rapid ML application prototyping and deployment
   - What install.md would do: Set up Gradio development environment, create app templates, configure deployment pipelines, install UI components
   - Processes it would copy: gradio-app-development, ml-model-integration
@@ -88,3 +82,22 @@ HIGH - Contains official Hugging Face workflows that are directly transferable:
   - Placement: specializations/data-science-ml/
   - Why codify: Systematic approach to ML infrastructure planning that's reusable across cloud providers
   - Sketch: Model size analysis -> Training duration estimation -> Hardware requirements mapping -> Cost calculation -> Optimization recommendations
+
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| ML Model Training Pipeline | NEW | TRL training methods (SFT, DPO, GRPO) with infrastructure management | - | specializations/data-science-ml/ml-model-training-pipeline.js |
+| Dataset Preparation Workflow | NEW | Systematic dataset preparation and validation for ML training | - | specializations/data-science-ml/dataset-preparation-workflow.js |
+| Gradio App Development | NEW | End-to-end interactive ML application development process | - | specializations/data-science-ml/gradio-app-development.js |
+| Model Evaluation Pipeline | NEW | Systematic ML model evaluation and benchmarking methodology | - | specializations/data-science-ml/model-evaluation-pipeline.js |
+| TRL Training Method Selection | NEW | Decision framework for choosing SFT vs DPO vs GRPO training methods | - | specializations/data-science-ml/trl-training-method-selection.js |
+| ML Infrastructure Cost Estimation | NEW | Training cost estimation and optimization for cloud ML infrastructure | - | specializations/data-science-ml/ml-infrastructure-cost-estimation.js |
+| Computer Vision Training Pipeline | NEW | Specialized training pipeline for computer vision models | - | specializations/data-science-ml/computer-vision-training-pipeline.js |
+| Research Paper Publishing Process | NEW | ML research paper publishing and model documentation workflow | - | specializations/data-science-ml/research-paper-publishing.js |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| Gradio App Builder | NEW | Rapid ML application prototyping with templates and deployment automation | - | plugins/a5c/marketplace/plugins/gradio-app-builder/ |

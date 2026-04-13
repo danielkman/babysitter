@@ -64,6 +64,24 @@
   - Binary analysis toolchain integration
   - Forensics toolkit
 
+## Library Mapping
+
+| Extractable Process | Library Status | Action | Existing Path | Target Placement |
+|-------------------|----------------|--------|---------------|------------------|
+| CTF Challenge Solving Orchestration | NEW | Challenge analysis, classification, delegation to specialists, and writeup generation | - | specializations/security-compliance/ctf-challenge-solving.js |
+| Web Security Audit Workflow | NEW | Systematic web vulnerability scanning with SQLi, XSS, SSTI, SSRF coverage | - | specializations/security-compliance/web-security-audit.js |
+| Binary Analysis Workflow | NEW | Reverse engineering pipeline with anti-debug detection and symbolic execution | - | specializations/security-compliance/binary-analysis.js |
+| Forensics Investigation Process | NEW | Disk/memory forensics, steganography, and network capture analysis workflow | - | specializations/security-compliance/forensics-investigation.js |
+| Cryptographic Attack Methodology | NEW | RSA, AES, ECC attack patterns with lattice and PRNG analysis | - | specializations/security-compliance/cryptographic-attack-methodology.js |
+| OSINT Investigation Process | NEW | Geolocation, social media, and DNS reconnaissance methodology | - | specializations/security-compliance/osint-investigation.js |
+
+## Plugin Marketplace Mapping
+
+| Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
+|-------------|-------------------|--------|-----------------|------------------|
+| CTF Security Toolkit | NEW | Comprehensive CTF toolchain with challenge solving orchestration | - | plugins/a5c/marketplace/plugins/ctf-security-toolkit/ |
+| Binary Analysis Suite | UPGRADE | Enhanced binary analysis with reverse engineering and symbolic execution tools | basic-security | plugins/a5c/marketplace/plugins/binary-analysis-suite/ |
+
 ### SKIP
 - Individual technique encyclopedias (these are reference knowledge, not processes)
 - Tool installation scripts (environment setup, not orchestration)

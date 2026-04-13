@@ -59,12 +59,6 @@ VERY HIGH - Contains authoritative AI agent methodologies that are directly tran
   - Complexity: complex
 
 ## Plugin Ideas
-- **agentic-development-suite**: Comprehensive AI agent development environment with Microsoft's methodologies
-  - What install.md would do: Install agent development frameworks, set up testing environments, configure monitoring tools, create agent templates based on design principles
-  - Processes it would copy: agentic-design-methodology, multi-agent-coordination, agent-trustworthiness-framework
-  - Configs/hooks it would create: Agent templates, testing frameworks, monitoring dashboards, safety checklists
-  - Source evidence: 16-lesson comprehensive curriculum with hands-on code samples and production deployment guidance
-
 - **multi-agent-orchestration**: Plugin for building and managing multi-agent systems
   - What install.md would do: Install coordination frameworks, set up communication protocols, configure agent discovery, create orchestration templates
   - Processes it would copy: multi-agent-coordination, agent-memory-management
@@ -89,9 +83,9 @@ VERY HIGH - Contains authoritative AI agent methodologies that are directly tran
 | Extractable Process | Library Status | Action | Existing Path | Target Placement |
 |-------------------|----------------|--------|---------------|------------------|
 | Agentic Design Methodology | NEW | Human-centric AI agent design with UX principles | - | methodologies/agentic-design/ |
-| Multi-Agent Coordination | UPGRADE | Enhanced coordination patterns | library/specializations/ai-agents-conversational/ | specializations/shared/multi-agent-coordination.js |
+| Multi-Agent Coordination | NEW | Multi-agent coordination patterns and communication protocols | - | specializations/shared/multi-agent-coordination.js |
 | Agent Trustworthiness Framework | NEW | Building trustworthy and safe AI agents | - | specializations/shared/agent-trustworthiness.js |
-| Agent Memory Management | UPGRADE | Advanced memory systems | library/specializations/ai-agents-conversational/ | specializations/shared/agent-memory-management.js |
+| Agent Memory Management | NEW | Agent memory architecture and storage strategies | - | specializations/shared/agent-memory-management.js |
 | Agent Production Deployment | NEW | Systematic agent deployment in production | - | specializations/devops-sre-platform/agent-production-deployment.js |
 | Agent Development Lifecycle | NEW | Complete agent development from concept to production | - | methodologies/agentic-design/agent-development-lifecycle.js |
 | Human-Centric Agent Design | NEW | Human empowerment-focused agent development | - | methodologies/agentic-design/human-centric-design.js |
@@ -100,5 +94,4 @@ VERY HIGH - Contains authoritative AI agent methodologies that are directly tran
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Agentic Development Suite | NEW | Comprehensive AI agent development environment | - | plugins/a5c/marketplace/plugins/agentic-development-suite/ |
-| Multi-Agent Orchestration | NEW | Building and managing multi-agent systems | - | plugins/a5c/marketplace/plugins/multi-agent-orchestration/ |
+| Multi-Agent Orchestration | NEW | Building and managing multi-agent systems with coordination frameworks | - | plugins/a5c/marketplace/plugins/multi-agent-orchestration/ |
