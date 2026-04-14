@@ -88,7 +88,7 @@ function getHomePluginRoot() {
   if (process.env.BABYSITTER_CODEX_PLUGIN_DIR) {
     return path.resolve(process.env.BABYSITTER_CODEX_PLUGIN_DIR, PLUGIN_NAME);
   }
-  return path.join(getCodexHome(), 'plugins', PLUGIN_NAME);
+  return path.join(getUserHome(), '.agents', 'plugins', PLUGIN_NAME);
 }
 
 function getHomeMarketplacePath() {

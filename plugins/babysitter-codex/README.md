@@ -10,9 +10,10 @@ This package ships a real Codex plugin bundle:
 - `hooks/`
 
 It still uses the Babysitter SDK CLI and the shared `~/.a5c` process-library
-state. The installer registers the plugin bundle and also materializes the
-active Codex `skills/`, `hooks/`, and `hooks.json` surface at the selected
-scope so Codex can execute the Babysitter commands and hook scripts directly.
+state. Global install writes the plugin bundle to `~/.agents/plugins/babysitter`
+and updates `~/.agents/plugins/marketplace.json` so Codex can load the plugin
+through its marketplace surface. Workspace install continues to materialize a
+workspace-local Codex surface for team setup.
 
 ## Installation
 
@@ -67,13 +68,10 @@ Verify the installed plugin bundle:
 
 ```bash
 npm ls -g @a5c-ai/babysitter-codex --depth=0
-test -f ~/.codex/plugins/babysitter/.codex-plugin/plugin.json
-test -f ~/.codex/plugins/babysitter/hooks.json
-test -f ~/.codex/plugins/babysitter/hooks/babysitter-stop-hook.sh
-test -f ~/.codex/plugins/babysitter/skills/babysit/SKILL.md
-test -f ~/.codex/hooks.json
-test -f ~/.codex/hooks/babysitter-stop-hook.sh
-test -f ~/.codex/skills/babysit/SKILL.md
+test -f ~/.agents/plugins/babysitter/.codex-plugin/plugin.json
+test -f ~/.agents/plugins/babysitter/hooks.json
+test -f ~/.agents/plugins/babysitter/hooks/babysitter-stop-hook.sh
+test -f ~/.agents/plugins/babysitter/skills/babysit/SKILL.md
 test -f ~/.agents/plugins/marketplace.json
 ```
 

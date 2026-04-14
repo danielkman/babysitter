@@ -64,7 +64,7 @@ try {
   const codexHome = path.join(tmpRoot, 'codex-home');
   const workspaceRoot = path.join(tmpRoot, 'workspace');
   const userHome = path.join(tmpRoot, 'home');
-  const homePluginsRoot = path.join(codexHome, 'plugins');
+  const homePluginsRoot = path.join(userHome, '.agents', 'plugins');
   const homeMarketplacePath = path.join(userHome, '.agents', 'plugins', 'marketplace.json');
   // Use the monorepo itself as the process library source — the default
   // subpath is "library/" which matches the monorepo layout.
@@ -109,13 +109,8 @@ try {
   ].forEach((relativePath) => assertExists(installedPluginRoot, relativePath));
   for (const skillName of listModeSkillNames(PROJECT_ROOT)) {
     assertExists(installedPluginRoot, path.join('skills', skillName, 'SKILL.md'));
-    assertExists(codexHome, path.join('skills', skillName, 'SKILL.md'));
   }
 
-  assert.ok(fs.existsSync(path.join(codexHome, 'skills', 'babysit', 'SKILL.md')), 'global install should install Codex skills');
-  assert.ok(fs.existsSync(path.join(codexHome, 'hooks.json')), 'global install should install hooks.json');
-  assert.ok(fs.existsSync(path.join(codexHome, 'hooks', 'babysitter-stop-hook.sh')), 'global install should install global hook scripts');
-  assert.ok(!fs.existsSync(path.join(codexHome, 'prompts', 'call.md')), 'global install should not restore deprecated prompt aliases');
   assert.ok(fs.existsSync(path.join(installedPluginRoot, '.codex-plugin', 'plugin.json')), 'installed plugin should carry a plugin manifest');
   assert.ok(fs.existsSync(path.join(installedPluginRoot, '.app.json')), 'installed plugin should carry app manifest');
   assert.ok(fs.existsSync(path.join(installedPluginRoot, 'assets', 'icon.svg')), 'installed plugin should carry composer icon asset');
@@ -145,10 +140,6 @@ try {
   assert.strictEqual(pluginHooks.hooks.SessionStart[0].hooks[0].command, './hooks/babysitter-session-start.sh');
   assert.strictEqual(pluginHooks.hooks.UserPromptSubmit[0].hooks[0].command, './hooks/user-prompt-submit.sh');
   assert.strictEqual(pluginHooks.hooks.Stop[0].hooks[0].command, './hooks/babysitter-stop-hook.sh');
-  const globalHooks = readJson(path.join(codexHome, 'hooks.json'));
-  assert.strictEqual(globalHooks.hooks.SessionStart[0].hooks[0].command, './hooks/babysitter-session-start.sh');
-  assert.strictEqual(globalHooks.hooks.UserPromptSubmit[0].hooks[0].command, './hooks/user-prompt-submit.sh');
-  assert.strictEqual(globalHooks.hooks.Stop[0].hooks[0].command, './hooks/babysitter-stop-hook.sh');
 
   assert.ok(fs.existsSync(homeMarketplacePath));
   const homeMarketplace = readJson(homeMarketplacePath);
@@ -163,6 +154,10 @@ try {
     `process-library bound dir should exist: ${globalProcessLibraryState.defaultBinding.dir}`,
   );
 
+  assert.ok(!fs.existsSync(path.join(codexHome, 'skills')), 'global install should not materialize legacy Codex skills');
+  assert.ok(!fs.existsSync(path.join(codexHome, 'hooks.json')), 'global install should not materialize legacy Codex hooks config');
+  assert.ok(!fs.existsSync(path.join(codexHome, 'hooks')), 'global install should not materialize legacy Codex hook scripts');
+  assert.ok(!fs.existsSync(path.join(codexHome, 'prompts')), 'global install should not restore deprecated prompt aliases');
   assert.ok(!fs.existsSync(path.join(workspaceRoot, '.codex', 'hooks.json')), 'global install should not write workspace hooks');
   assert.ok(!fs.existsSync(path.join(workspaceRoot, '.codex', 'config.toml')), 'global install should not write workspace config');
   assert.ok(!fs.existsSync(path.join(workspaceRoot, 'plugins', INSTALLED_PLUGIN_NAME)), 'global install should not install workspace plugin files');
@@ -213,7 +208,7 @@ try {
   assert.strictEqual(path.resolve(profileJson.codexConfigPath), path.resolve(path.join(workspaceRoot, '.codex', 'config.toml')));
   assert.strictEqual(String(profileJson.processLibraryLookupCommand || ''), 'babysitter process-library:active --json');
 
-  console.log('  ok packed install installs a real plugin bundle, registers marketplace entries, and avoids the old fake ~/.codex skill/hook surface');
+  console.log('  ok packed install installs the plugin under ~/.agents/plugins, registers marketplace entries, and avoids the old ~/.codex skill/hook surface');
   console.log('\nPackaged install tests passed!');
 } catch (err) {
   console.error('\nTest failed:', err.message);
