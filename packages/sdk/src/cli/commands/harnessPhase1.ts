@@ -1000,7 +1000,7 @@ async function searchProcessLibrary(
     libraryRoot,
     query: trimmedQuery,
     matches: [],
-    instructions: `To search the process library, please use your run_shell_command tool to run 'rg' (ripgrep) inside the library directory: ${libraryRoot}. For example: run_shell_command({ command: "rg 'your-pattern'", dir_path: "${libraryRoot.replace(/\\/g, '\\\\')}" })`,
+    instructions: `To search the process library, please use your run_shell_command tool to run 'rg' (ripgrep) inside the library directory: ${libraryRoot.replace(/\\/g, '\\\\')}. For example: run_shell_command({ command: "rg 'your-pattern'", dir_path: "${libraryRoot.replace(/\\/g, '\\\\')}" })`,
   };
 }
 
