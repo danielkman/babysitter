@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;700&display=swap');
+
+:root {
+  --ifm-color-primary: #0f766e;
+  --ifm-color-primary-dark: #0d6962;
+  --ifm-color-primary-darker: #0c635d;
+  --ifm-color-primary-darkest: #0a524d;
+  --ifm-color-primary-light: #118379;
+  --ifm-color-primary-lighter: #12897e;
+  --ifm-color-primary-lightest: #15a091;
+  --ifm-background-color: #eef4ef;
+  --ifm-code-font-size: 95%;
+  --ifm-font-family-base: 'Space Grotesk', sans-serif;
+  --ifm-font-family-monospace: 'IBM Plex Mono', monospace;
+  --ifm-heading-font-family: 'Space Grotesk', sans-serif;
+  --ifm-navbar-background-color: rgba(245, 247, 244, 0.82);
+  --ifm-navbar-link-hover-color: #c2410c;
+  --ifm-footer-background-color: #0f172a;
+  --docusaurus-highlighted-code-line-bg: rgba(15, 118, 110, 0.14);
+}
+
+[data-theme='dark'] {
+  --ifm-background-color: #0f172a;
+  --ifm-font-color-base: #e2e8f0;
+  --ifm-color-primary: #2dd4bf;
+  --ifm-navbar-background-color: rgba(15, 23, 42, 0.82);
+  --ifm-card-background-color: #111827;
+}
+
+.navbar {
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.navbar__title,
+.footer__title {
+  letter-spacing: -0.04em;
+}
+
+.button--secondary {
+  background: #fff7ed;
+  border: 1px solid rgba(194, 65, 12, 0.18);
+  color: #9a3412;
+}
+
+.button--secondary:hover {
+  background: #ffedd5;
+  color: #7c2d12;
+}
+
+.theme-doc-markdown header h1 {
+  letter-spacing: -0.04em;
+}
+
+.theme-doc-sidebar-container {
+  border-right-color: rgba(15, 23, 42, 0.08);
+}
