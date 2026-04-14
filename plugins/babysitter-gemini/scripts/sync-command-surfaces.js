@@ -35,15 +35,12 @@ function renderTomlCommand(markdown) {
   const description = parsed.data.description || '';
   const body = parsed.body.trim();
 
-  // Simple TOML escaping for description
-  const escapedDescription = description.replace(/"/g, '\\"');
-  
-  // Use JSON.stringify to handle all escaping for the prompt basic string.
-  // TOML basic strings are compatible with JSON string escaping rules for the most part.
+  // Use JSON.stringify for everything. TOML basic strings are JSON strings.
+  const descriptionValue = JSON.stringify(description);
   const promptValue = JSON.stringify(body);
   
   return [
-    `description = "${escapedDescription}"`,
+    `description = ${descriptionValue}`,
     '',
     `prompt = ${promptValue}`,
     '',
