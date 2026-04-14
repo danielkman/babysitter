@@ -18,7 +18,7 @@ import type {
   SessionBindResult,
   HookHandlerArgs,
 } from "./types";
-import { readSessionMarker } from "./sessionMarker";
+import { readSessionMarker } from "../utils/sessionMarker";
 
 export function createCustomAdapter(): HarnessAdapter {
   return {

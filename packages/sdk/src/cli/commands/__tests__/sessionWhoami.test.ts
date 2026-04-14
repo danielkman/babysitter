@@ -10,7 +10,7 @@ import {
   writeSessionMarker,
   __resetCacheForTests,
   __setAncestorResolverForTests,
-} from "../../../harness/sessionMarker";
+} from "../../../utils/sessionMarker";
 import { runSessionWhoami } from "../sessionWhoami";
 
 let tmpDir: string;

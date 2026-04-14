@@ -23,6 +23,7 @@ import {
   readdirSync,
   unlinkSync,
   statSync,
+  appendFileSync,
 } from "node:fs";
 import { getGlobalStateDir } from "../config";
 import { isProcessAlive } from "../utils/processLiveness";
@@ -220,16 +221,37 @@ export function findHarnessAncestorPid(processNames: string[]): AncestorInfo | u
   let pid = process.pid;
   let found: AncestorInfo | undefined;
 
-  for (let depth = 0; depth < 20; depth++) {
+  const logFile = path.join(getGlobalStateDir(), "..", "logs", "ancestor-walk.log");
+  const log = (msg: string) => {
+    try {
+      appendFileSync(logFile, `[${new Date().toISOString()}] [PID=${process.pid}] ${msg}\n`);
+    } catch { /* ignore */ }
+  };
+
+  log(`Starting walk for ${processNamesKey} from PID ${pid}`);
+
+  for (let depth = 0; depth < 100; depth++) {
     const info = getParentInfo(pid);
-    if (!info) break;
-    const base = normalizeProcName(info.name || "");
-    if (targets.includes(base)) {
-      found = { pid, startTime: info.startTime };
+    if (!info) {
+      log(`No parent info for PID ${pid} at depth ${depth}`);
       break;
     }
-    if (!Number.isFinite(info.ppid) || info.ppid <= 0 || info.ppid === pid) break;
+    const base = normalizeProcName(info.name || "");
+    log(`Depth ${depth}: PID ${pid} -> Parent ${info.ppid} (${info.name})`);
+    if (targets.includes(base)) {
+      log(`MATCH at depth ${depth}: ${info.name} (PID ${pid})`);
+      found = { pid, startTime: info.startTime };
+    }
+    if (!Number.isFinite(info.ppid) || info.ppid <= 0 || info.ppid === pid) {
+      log(`Terminal PID ${info.ppid} at depth ${depth}`);
+      break;
+    }
     pid = info.ppid;
+  }
+
+  // Final check: if we found a match, make sure it's still alive.
+  if (found && !isProcessAlive(found.pid)) {
+    found = undefined;
   }
 
   ancestorCache = { info: found, resolvedAt: now, processNamesKey };
@@ -387,7 +409,7 @@ export function deriveProcessNames(harness: string): string[] {
       return ["cursor"];
     case "gemini-cli":
     case "gemini":
-      return ["gemini"];
+      return ["gemini", "node"];
     case "github-copilot":
       return ["copilot", "gh"];
     case "pi":

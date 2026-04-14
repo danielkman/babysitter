@@ -34,7 +34,8 @@ import {
   isCodexPluginInstalled,
   runPackageBinaryViaNpx,
 } from "./installSupport";
-import { readSessionMarker, writeSessionMarker } from "./sessionMarker";
+import { readSessionMarker, writeSessionMarker } from "../utils/sessionMarker";
+import { resolveAmbientSessionId } from "../session/discovery";
 
 function resolveCodexPluginRoot(
   args: { pluginRoot?: string } = {},
@@ -54,29 +55,7 @@ function resolveCodexStateDir(args: {
 
 function resolveCodexSessionId(parsed: { sessionId?: string }): string | undefined {
   if (parsed.sessionId) return parsed.sessionId;
-
-  const trustEnv = process.env.BABYSITTER_TRUST_ENV_SESSION === "1";
-
-  // Legacy escape hatch: env-var-first (pre-fix behavior).
-  if (trustEnv) {
-    if (process.env.BABYSITTER_SESSION_ID) return process.env.BABYSITTER_SESSION_ID;
-    if (process.env.CODEX_THREAD_ID) return process.env.CODEX_THREAD_ID;
-    if (process.env.CODEX_SESSION_ID) return process.env.CODEX_SESSION_ID;
-    return undefined;
-  }
-
-  // 1. PID-scoped marker (authoritative per live Codex ancestor PID)
-  const fromMarker = readSessionMarker("codex");
-  if (fromMarker) return fromMarker;
-
-  // 2. Codex-native env vars (auto-injected by Codex CLI into all hooks)
-  if (process.env.CODEX_THREAD_ID) return process.env.CODEX_THREAD_ID;
-  if (process.env.CODEX_SESSION_ID) return process.env.CODEX_SESSION_ID;
-
-  // 3. Cross-harness standard (potentially stale)
-  if (process.env.BABYSITTER_SESSION_ID) return process.env.BABYSITTER_SESSION_ID;
-
-  return undefined;
+  return resolveAmbientSessionId("codex");
 }
 
 function readStdin(): Promise<string> {

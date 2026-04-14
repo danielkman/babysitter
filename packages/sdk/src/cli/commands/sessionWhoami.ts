@@ -13,7 +13,7 @@ import {
   getSessionMarkerPath,
   deriveProcessNames,
   readSessionMarker,
-} from "../../harness/sessionMarker";
+} from "../../utils/sessionMarker";
 import { isProcessAlive } from "../../utils/processLiveness";
 import { getAdapterByName } from "../../harness";
 

@@ -7,6 +7,7 @@ import { writeFileAtomic } from "./atomic";
 import { nextUlid } from "./ulids";
 import { getClockIsoString } from "./clock";
 import { warnIfICloudDrivePath } from "./icloudWarning";
+import { resolveAmbientSessionId } from "../session/discovery";
 
 function formatSeq(seq: number) {
   return seq.toString().padStart(6, "0");
@@ -35,9 +36,16 @@ export async function appendEvent(opts: AppendEventOptions): Promise<AppendEvent
   const filename = `${formatSeq(seq)}.${ulid}.json`;
   const recordedAt = getClockIsoString();
   const runHarness = await readRunHarness(opts.runDir);
-  const eventData = runHarness && opts.event.harness === undefined
-    ? { harness: runHarness, ...opts.event }
-    : opts.event;
+  const sessionId = resolveAmbientSessionId(runHarness);
+
+  const eventData: JsonRecord = { ...opts.event };
+  if (runHarness && eventData.harness === undefined) {
+    eventData.harness = runHarness;
+  }
+  if (sessionId && eventData.sessionId === undefined) {
+    eventData.sessionId = sessionId;
+  }
+
   const eventPayload: JsonRecord = {
     type: opts.eventType,
     recordedAt,

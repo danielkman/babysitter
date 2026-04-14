@@ -25,7 +25,7 @@ import {
   installCliViaNpm,
   runPackageBinaryViaNpx,
 } from "./installSupport";
-import { writeSessionMarker, resolveSessionIdWithMarker } from "./sessionMarker";
+import { writeSessionMarker, resolveSessionIdWithMarker } from "../utils/sessionMarker";
 
 function resolvePiPluginRoot(
   args: { pluginRoot?: string } = {},

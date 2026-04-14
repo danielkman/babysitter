@@ -22,7 +22,7 @@ import {
 } from "../session";
 import type { SessionState } from "../session";
 import { installCliViaNpm, runPackageBinaryViaNpx } from "./installSupport";
-import { writeSessionMarker, resolveSessionIdWithMarker } from "./sessionMarker";
+import { writeSessionMarker, resolveSessionIdWithMarker } from "../utils/sessionMarker";
 
 function resolveOhMyPiPluginRoot(
   args: { pluginRoot?: string } = {},

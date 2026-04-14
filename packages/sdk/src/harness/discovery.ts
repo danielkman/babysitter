@@ -71,7 +71,7 @@ export const KNOWN_HARNESSES: readonly HarnessSpec[] = [
   {
     name: "gemini-cli",
     cli: "gemini",
-    callerEnvVars: ["GEMINI_SESSION_ID", "GEMINI_PROJECT_DIR", "GEMINI_CWD"],
+    callerEnvVars: ["GEMINI_CLI", "GEMINI_SESSION_ID", "GEMINI_PROJECT_DIR", "GEMINI_CWD"],
     capabilities: [Cap.SessionBinding, Cap.HeadlessPrompt, Cap.StopHook],
   },
   {

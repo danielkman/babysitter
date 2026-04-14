@@ -9,7 +9,7 @@ import {
   findHarnessAncestorPid,
   __resetCacheForTests,
   __setAncestorResolverForTests,
-} from "../sessionMarker";
+} from "../../utils/sessionMarker";
 
 let tmpDir: string;
 let savedGlobalStateDir: string | undefined;

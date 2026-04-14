@@ -57,7 +57,7 @@ import type { PromptContext } from "../prompts/types";
 import { createGithubCopilotContext } from "../prompts/context";
 import { installCliViaNpm } from "./installSupport";
 import { getGlobalLogDir, normalizeSessionStateDir } from "../config";
-import { readSessionMarker, writeSessionMarker } from "./sessionMarker";
+import { readSessionMarker, writeSessionMarker } from "../utils/sessionMarker";
 
 /**
  * Append BABYSITTER_SESSION_ID to a Copilot env file. Append-only matches the

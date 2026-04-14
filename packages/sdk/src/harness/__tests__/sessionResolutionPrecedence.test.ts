@@ -19,7 +19,7 @@ import {
   __resetCacheForTests,
   __setAncestorResolverForTests,
   getSessionMarkerPath,
-} from "../sessionMarker";
+} from "../../utils/sessionMarker";
 import { createCodexAdapter } from "../codex";
 import { createGeminiCliAdapter } from "../geminiCli";
 import { createGithubCopilotAdapter } from "../githubCopilot";

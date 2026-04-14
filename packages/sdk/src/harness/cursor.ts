@@ -68,7 +68,7 @@ import { HarnessCapability } from "./types";
 import type { PromptContext } from "../prompts/types";
 import { createCursorContext } from "../prompts/context";
 import { getGlobalLogDir, normalizeSessionStateDir } from "../config";
-import { readSessionMarker, writeSessionMarker } from "./sessionMarker";
+import { readSessionMarker, writeSessionMarker } from "../utils/sessionMarker";
 
 // ---------------------------------------------------------------------------
 // Constants

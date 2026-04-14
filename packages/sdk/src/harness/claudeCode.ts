@@ -13,7 +13,7 @@
 
 import * as path from "node:path";
 import { existsSync, readFileSync, appendFileSync, mkdirSync, writeFileSync } from "node:fs";
-import { readSessionMarker, findHarnessAncestorPid, getSessionMarkerPath } from "./sessionMarker";
+import { readSessionMarker, findHarnessAncestorPid, getSessionMarkerPath } from "../utils/sessionMarker";
 import { isProcessAlive } from "../utils/processLiveness";
 import { loadJournal, appendEvent } from "../storage/journal";
 import { readRunMetadata } from "../storage/runFiles";

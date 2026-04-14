@@ -59,6 +59,12 @@ export {
   updateSessionContext,
 } from './context';
 
+// Discovery (autodiscovery from markers + env)
+export {
+  HARNESS_ENV_VARS,
+  resolveAmbientSessionId,
+} from './discovery';
+
 // History persistence (GAP-SESSION-002)
 export {
   getSessionHistoryPath,

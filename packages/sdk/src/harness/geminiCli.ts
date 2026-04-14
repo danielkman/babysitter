@@ -64,7 +64,8 @@ import {
 import type { PromptContext } from "../prompts/types";
 import { createGeminiCliContext } from "../prompts/context";
 import { getGlobalLogDir, normalizeSessionStateDir } from "../config";
-import { readSessionMarker, writeSessionMarker } from "./sessionMarker";
+import { readSessionMarker, writeSessionMarker } from "../utils/sessionMarker";
+import { resolveAmbientSessionId } from "../session/discovery";
 
 // ---------------------------------------------------------------------------
 // Session ID resolver (shared by all call sites)
@@ -82,19 +83,7 @@ import { readSessionMarker, writeSessionMarker } from "./sessionMarker";
  * env-var-first precedence.
  */
 function resolveGeminiSessionIdFromEnv(): string | undefined {
-  const trustEnv = process.env.BABYSITTER_TRUST_ENV_SESSION === "1";
-  if (trustEnv) {
-    return (
-      process.env.BABYSITTER_SESSION_ID ||
-      process.env.GEMINI_SESSION_ID ||
-      undefined
-    );
-  }
-  const fromMarker = readSessionMarker("gemini-cli");
-  if (fromMarker) return fromMarker;
-  if (process.env.GEMINI_SESSION_ID) return process.env.GEMINI_SESSION_ID;
-  if (process.env.BABYSITTER_SESSION_ID) return process.env.BABYSITTER_SESSION_ID;
-  return undefined;
+  return resolveAmbientSessionId("gemini-cli");
 }
 
 // ---------------------------------------------------------------------------
@@ -909,6 +898,7 @@ export function createGeminiCliAdapter(): HarnessAdapter {
     isActive(): boolean {
       return !!(
         process.env.BABYSITTER_SESSION_ID ||
+        process.env.GEMINI_CLI ||
         process.env.GEMINI_SESSION_ID ||
         process.env.GEMINI_PROJECT_DIR ||
         process.env.GEMINI_CWD

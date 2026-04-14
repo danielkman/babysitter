@@ -12,7 +12,7 @@ import {
   __resetCacheForTests,
   __setAncestorResolverForTests,
   getSessionMarkerPath,
-} from "../sessionMarker";
+} from "../../utils/sessionMarker";
 import { resolveSessionIdDetailed } from "../claudeCode";
 
 let tmpDir: string;
