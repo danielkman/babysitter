@@ -21,9 +21,11 @@
     "hooks/",
     "hooks.json",
     "skills/",
+    ".app.json",
     "bin/",
     "scripts/",
-    "babysitter.lock.json"
+    "plugin.lock.json",
+    "README.md"
   ],
   "keywords": [
     "babysitter",

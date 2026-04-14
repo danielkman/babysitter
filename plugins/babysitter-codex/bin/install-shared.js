@@ -63,7 +63,9 @@ const PLUGIN_BUNDLE_ENTRIES = [
   'hooks',
   'hooks.json',
   'skills',
-  'babysitter.lock.json',
+  '.app.json',
+  'plugin.lock.json',
+  'README.md',
 ];
 
 function getCodexHome() {

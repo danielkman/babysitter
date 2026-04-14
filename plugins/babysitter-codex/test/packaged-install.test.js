@@ -129,7 +129,9 @@ try {
     'hooks',
     'hooks.json',
     'skills',
-    'babysitter.lock.json',
+    '.app.json',
+    'plugin.lock.json',
+    'README.md',
   ].forEach((relativePath) => assertExists(installedPluginRoot, relativePath));
   for (const skillName of listModeSkillNames(PROJECT_ROOT)) {
     assertExists(installedPluginRoot, path.join('skills', skillName, 'SKILL.md'));
@@ -137,7 +139,8 @@ try {
 
   assert.ok(fs.existsSync(path.join(installedPluginRoot, '.codex-plugin', 'plugin.json')), 'installed plugin should carry a plugin manifest');
   assert.ok(fs.existsSync(path.join(installedPluginRoot, 'assets', 'icon.svg')), 'installed plugin should carry composer icon asset');
-  assert.ok(fs.existsSync(path.join(installedPluginRoot, 'assets', 'logo.svg')), 'installed plugin should carry logo asset');
+  assert.ok(fs.existsSync(path.join(installedPluginRoot, 'assets', 'logo.png')), 'installed plugin should carry logo asset');
+  assert.ok(fs.existsSync(path.join(installedPluginRoot, 'README.md')), 'installed plugin should carry a README');
   assert.ok(fs.existsSync(path.join(installedPluginRoot, 'hooks', 'babysitter-stop-hook.sh')), 'installed plugin should carry hook scripts');
   assert.ok(fs.existsSync(path.join(installedPluginRoot, 'skills', 'babysit', 'SKILL.md')), 'installed plugin should carry the core skill');
   assert.ok(!fs.existsSync(path.join(installedPluginRoot, 'bin')), 'installed plugin should not ship installer binaries');
