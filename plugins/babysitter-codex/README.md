@@ -51,9 +51,9 @@ The process library is fetched and bound through the SDK CLI in
 
 After `install --workspace`, the important files are:
 
-- `plugins/babysitter/.codex-plugin/plugin.json`
-- `plugins/babysitter/skills/babysit/SKILL.md`
-- `plugins/babysitter/hooks.json`
+- `.agents/plugins/babysitter/.codex-plugin/plugin.json`
+- `.agents/plugins/babysitter/skills/babysit/SKILL.md`
+- `.agents/plugins/babysitter/hooks.json`
 - `.codex/skills/`
 - `.codex/hooks/`
 - `.codex/hooks.json`

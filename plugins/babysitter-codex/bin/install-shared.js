@@ -7,6 +7,7 @@ const { spawnSync } = require('child_process');
 
 const PLUGIN_NAME = 'babysitter';
 const PLUGIN_CATEGORY = 'Coding';
+const LEGACY_MARKETPLACE_PLUGIN_NAMES = ['babysitter-codex'];
 const LEGACY_SKILL_NAMES = [
   'babysit',
   'babysitter-codex',
@@ -316,12 +317,14 @@ function ensureExecutable(filePath) {
 }
 
 function normalizeMarketplaceSourcePath(marketplacePath, pluginSourcePath) {
-  let next = pluginSourcePath;
-  if (path.isAbsolute(next)) {
-    next = path.relative(path.dirname(marketplacePath), next);
-  }
+  let next = path.relative(path.dirname(marketplacePath), pluginSourcePath);
   next = String(next || '').replace(/\\/g, '/');
-  if (!next.startsWith('./') && !next.startsWith('../')) {
+  if (!next || next === '.' || next.startsWith('../')) {
+    throw new Error(
+      `Plugin source path must live under ${path.dirname(marketplacePath)} so Codex can load it via a ./-prefixed marketplace entry.`,
+    );
+  }
+  if (!next.startsWith('./')) {
     next = `./${next}`;
   }
   return next;
@@ -347,15 +350,15 @@ function ensureMarketplaceEntry(marketplacePath, pluginSourcePath) {
     },
     category: PLUGIN_CATEGORY,
   };
-  const existingIndex = Array.isArray(marketplace.plugins)
-    ? marketplace.plugins.findIndex((entry) => entry && entry.name === PLUGIN_NAME)
-    : -1;
   if (!Array.isArray(marketplace.plugins)) {
     marketplace.plugins = [nextEntry];
-  } else if (existingIndex >= 0) {
-    marketplace.plugins[existingIndex] = nextEntry;
   } else {
-    marketplace.plugins.push(nextEntry);
+    const sanitized = marketplace.plugins.filter((entry) => (
+      entry &&
+      entry.name !== PLUGIN_NAME &&
+      !LEGACY_MARKETPLACE_PLUGIN_NAMES.includes(entry.name)
+    ));
+    marketplace.plugins = [...sanitized, nextEntry];
   }
   writeJson(marketplacePath, marketplace);
   return nextEntry;
@@ -369,7 +372,11 @@ function removeMarketplaceEntry(marketplacePath) {
   if (!Array.isArray(marketplace.plugins)) {
     return;
   }
-  marketplace.plugins = marketplace.plugins.filter((entry) => entry && entry.name !== PLUGIN_NAME);
+  marketplace.plugins = marketplace.plugins.filter((entry) => (
+    entry &&
+    entry.name !== PLUGIN_NAME &&
+    !LEGACY_MARKETPLACE_PLUGIN_NAMES.includes(entry.name)
+  ));
   writeJson(marketplacePath, marketplace);
 }
 

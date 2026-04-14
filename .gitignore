@@ -72,3 +72,4 @@ e2e-artifacts/ci-run-*/
 .tmp-restore-library-files.txt
 tmp/
 tmp-*.mjs
+plugins/babysitter-gemini/.babysitter-install-attempted
