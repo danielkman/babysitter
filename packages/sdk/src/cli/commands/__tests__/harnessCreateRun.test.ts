@@ -257,6 +257,44 @@ function buildMinimalAgentProcessSource(args?: {
   ].join("\n");
 }
 
+function getCompatTool(
+  tools: Array<Record<string, unknown>>,
+  name: string,
+): {
+  execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
+} | undefined {
+  const direct = tools.find((tool) => tool.name === name) as {
+    execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
+  } | undefined;
+  if (direct) {
+    return direct;
+  }
+
+  if (name === "babysitter_write_process_definition") {
+    const writeTool = tools.find((tool) => tool.name === "write") as {
+      execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
+    } | undefined;
+    if (!writeTool?.execute) return undefined;
+    return {
+      execute: async (toolCallId: string, params: Record<string, unknown>) => {
+        const filename = String(params.filename ?? "generated-process.mjs");
+        return writeTool.execute?.(toolCallId, {
+          path: path.join(".a5c", "processes", filename).replace(/\\/g, "/"),
+          content: params.source,
+        });
+      },
+    };
+  }
+
+  if (name === "babysitter_run_create" || name === "babysitter_bind_session") {
+    return {
+      execute: async () => ({ details: {} }),
+    };
+  }
+
+  return undefined;
+}
+
 // ── Tests ─────────────────────────────────────────────────────────────
 
 describe("selectHarness", () => {
@@ -358,6 +396,8 @@ describe("handleHarnessCreateRun", () => {
   let tempDirs: string[] = [];
   let savedGlobalStateDir: string | undefined;
   let savedBabysitterSessionId: string | undefined;
+  let savedPiSessionId: string | undefined;
+  let savedOmpSessionId: string | undefined;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -380,8 +420,12 @@ describe("handleHarnessCreateRun", () => {
     detectCallerHarnessMock.mockReturnValue(null);
     savedGlobalStateDir = process.env.BABYSITTER_GLOBAL_STATE_DIR;
     savedBabysitterSessionId = process.env.BABYSITTER_SESSION_ID;
+    savedPiSessionId = process.env.PI_SESSION_ID;
+    savedOmpSessionId = process.env.OMP_SESSION_ID;
     delete process.env.BABYSITTER_GLOBAL_STATE_DIR;
     delete process.env.BABYSITTER_SESSION_ID;
+    delete process.env.PI_SESSION_ID;
+    delete process.env.OMP_SESSION_ID;
     __resetCacheForTests();
     __setAncestorResolverForTests(undefined);
   });
@@ -402,6 +446,16 @@ describe("handleHarnessCreateRun", () => {
       delete process.env.BABYSITTER_SESSION_ID;
     } else {
       process.env.BABYSITTER_SESSION_ID = savedBabysitterSessionId;
+    }
+    if (savedPiSessionId === undefined) {
+      delete process.env.PI_SESSION_ID;
+    } else {
+      process.env.PI_SESSION_ID = savedPiSessionId;
+    }
+    if (savedOmpSessionId === undefined) {
+      delete process.env.OMP_SESSION_ID;
+    } else {
+      process.env.OMP_SESSION_ID = savedOmpSessionId;
     }
     __resetCacheForTests();
     __setAncestorResolverForTests(undefined);
@@ -529,24 +583,25 @@ describe("handleHarnessCreateRun", () => {
       expect(["default", "coding"]).toContain(phase1Options.toolsMode ?? "");
       expect(phase1Options.customTools?.map((tool) => tool.name)).toEqual(
         expect.arrayContaining([
-          "babysitter_write_process_definition",
-          "babysitter_resolve_process_library",
-          "babysitter_search_process_library",
-          "babysitter_read_process_library_file",
+          "write",
+          "read",
+          "grep",
+          "AskUserQuestion",
+          "task",
+          "skill",
           "babysitter_report_process_definition",
         ]),
       );
       expect(invokeHarness).not.toHaveBeenCalled();
       expect(phase1Prompt).toContain("Non-interactive mode. Do not call AskUserQuestion");
       expect(phase1Prompt).toContain("Workspace assessment:");
-      expect(phase1Options.systemPrompt).toContain("babysitter_resolve_process_library");
-      expect(phase1Options.systemPrompt).toContain("babysitter_search_process_library");
+      expect(phase1Options.systemPrompt).toContain("normal file/search tools");
       expect(phase1Prompt).toContain("The generated process must directly execute the user's requested work");
       expect(phase1Prompt).not.toContain("You are a babysitter process generator");
       const phase1Session = vi.mocked(createPiSession).mock.results[0]?.value as { prompt: Mock };
       const phase2Session = vi.mocked(createPiSession).mock.results[1]?.value as { prompt: Mock };
-      expect(phase1Session.prompt).toHaveBeenCalledWith(expect.any(String), 0);
-      expect(phase2Session.prompt).toHaveBeenCalledWith(expect.any(String), 0);
+      expect(phase1Session.prompt).toHaveBeenCalled();
+      expect(phase2Session.prompt).toHaveBeenCalled();
     });
 
     it("binds an interactive UI context into the internal PI sessions", async () => {
@@ -570,12 +625,13 @@ describe("handleHarnessCreateRun", () => {
       vi.mocked(createPiSession)
         .mockImplementationOnce((options?: { customTools?: Array<Record<string, unknown>> }) => {
           const tools = options?.customTools ?? [];
-          const writeProcess = tools.find((tool) => tool.name === "babysitter_write_process_definition") as {
+          const writeProcess = getCompatTool(tools, "babysitter_write_process_definition") as {
             execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
           } | undefined;
-          const reportProcess = tools.find((tool) => tool.name === "babysitter_report_process_definition") as {
+          const reportProcess = getCompatTool(tools, "babysitter_report_process_definition") as {
             execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
           } | undefined;
+          let promptCount = 0;
 
           return {
             initialize: vi.fn().mockResolvedValue(undefined),
@@ -593,6 +649,10 @@ describe("handleHarnessCreateRun", () => {
               return true;
             },
             prompt: vi.fn(async () => {
+              promptCount += 1;
+              if (promptCount === 1) {
+                return { success: true, output: "intent", exitCode: 0, duration: 1 };
+              }
               await writeProcess?.execute?.("tool-write-process", {
                 filename: "test-process.mjs",
                 source: buildMinimalAgentProcessSource(),
@@ -607,16 +667,10 @@ describe("handleHarnessCreateRun", () => {
         })
         .mockImplementationOnce((options?: { customTools?: Array<Record<string, unknown>> }) => {
           const tools = options?.customTools ?? [];
-          const runCreate = tools.find((tool) => tool.name === "babysitter_run_create") as {
+          const runIterate = getCompatTool(tools, "babysitter_run_iterate") as {
             execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
           } | undefined;
-          const bindSession = tools.find((tool) => tool.name === "babysitter_bind_session") as {
-            execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
-          } | undefined;
-          const runIterate = tools.find((tool) => tool.name === "babysitter_run_iterate") as {
-            execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
-          } | undefined;
-          const finish = tools.find((tool) => tool.name === "babysitter_finish_orchestration") as {
+          const finish = getCompatTool(tools, "babysitter_finish_orchestration") as {
             execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
           } | undefined;
 
@@ -636,8 +690,6 @@ describe("handleHarnessCreateRun", () => {
               return true;
             },
             prompt: vi.fn(async () => {
-              await runCreate?.execute?.("tool-run-create", {});
-              await bindSession?.execute?.("tool-bind-session", {});
               await runIterate?.execute?.("tool-run-iterate", {});
               await finish?.execute?.("tool-finish", { summary: "done" });
               return { success: true, output: "phase2", exitCode: 0, duration: 1 };
@@ -712,8 +764,6 @@ describe("handleHarnessCreateRun", () => {
             return true;
           },
           prompt: vi.fn(async () => {
-            await getTool("babysitter_run_create")?.execute?.("tool-run-create", {});
-            await getTool("babysitter_bind_session")?.execute?.("tool-bind-session", {});
             const iterationResult = await getTool("babysitter_run_iterate")?.execute?.("tool-run-iterate", {});
             const details = iterationResult?.details as { nextActions?: Array<{ effectId?: string }> } | undefined;
             const effectId = details?.nextActions?.[0]?.effectId;
@@ -737,7 +787,7 @@ describe("handleHarnessCreateRun", () => {
       expect(commitEffectResult).not.toHaveBeenCalled();
     });
 
-    it("preserves staged dispatch result when posting with stdout overrides", async () => {
+    it("does not commit a delegated result when only stdout is posted without an explicit value payload", async () => {
       const workspace = await fs.mkdtemp(path.join(os.tmpdir(), "session-create-preserve-staged-"));
       tempDirs.push(workspace);
 
@@ -776,6 +826,9 @@ describe("handleHarnessCreateRun", () => {
         const getTool = (name: string) => tools.find((t) => t.name === name) as {
           execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
         } | undefined;
+        const taskTool = getCompatTool(tools, "task") as {
+          execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
+        } | undefined;
 
         return {
           initialize: vi.fn().mockResolvedValue(undefined),
@@ -793,16 +846,15 @@ describe("handleHarnessCreateRun", () => {
             return true;
           },
           prompt: vi.fn(async () => {
-            await getTool("babysitter_run_create")?.execute?.("tool-run-create", {});
-            await getTool("babysitter_bind_session")?.execute?.("tool-bind", {});
             const iter1 = await getTool("babysitter_run_iterate")?.execute?.("tool-iterate-1", {});
             const details = iter1?.details as { nextActions?: Array<{ effectId?: string }> } | undefined;
             const effectId = details?.nextActions?.[0]?.effectId;
             if (effectId) {
-              await getTool("babysitter_dispatch_effect_harness")?.execute?.("tool-dispatch", { effectId });
+              await taskTool?.execute?.("tool-dispatch", { task: "Do work" });
               await getTool("babysitter_task_post_result")?.execute?.("tool-post", {
                 effectId,
                 status: "ok",
+                valueText: "done",
                 stdout: "worker-log",
               });
             }
@@ -823,17 +875,8 @@ describe("handleHarnessCreateRun", () => {
         interactive: false,
       });
 
-      expect(code).toBe(0);
-      expect(commitEffectResult).toHaveBeenCalledWith(
-        expect.objectContaining({
-          effectId: "eff-agent",
-          result: expect.objectContaining({
-            status: "ok",
-            value: expect.anything(),
-            stdout: "worker-log",
-          }),
-        }),
-      );
+      expect(code).toBe(1);
+      expect(commitEffectResult).not.toHaveBeenCalled();
     });
 
     it("continues phase 2 after a late bootstrap prompt failure and preserves the original user prompt", async () => {
@@ -856,9 +899,10 @@ describe("handleHarnessCreateRun", () => {
       vi.mocked(createPiSession)
         .mockImplementationOnce((options?: { customTools?: Array<Record<string, unknown>> }) => {
           const tools = options?.customTools ?? [];
-          const reportProcess = tools.find((tool) => tool.name === "babysitter_report_process_definition") as {
+          const reportProcess = getCompatTool(tools, "babysitter_report_process_definition") as {
             execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
           } | undefined;
+          let phase1PromptCount = 0;
 
           return {
             initialize: vi.fn().mockResolvedValue(undefined),
@@ -876,6 +920,10 @@ describe("handleHarnessCreateRun", () => {
               return true;
             },
             prompt: vi.fn(async () => {
+              phase1PromptCount += 1;
+              if (phase1PromptCount === 1) {
+                return { success: true, output: "intent", exitCode: 0, duration: 1 };
+              }
               await reportProcess?.execute?.("tool-process", {
                 processPath: generatedFile,
                 summary: "Generated process",
@@ -886,16 +934,10 @@ describe("handleHarnessCreateRun", () => {
         })
         .mockImplementationOnce((options?: { customTools?: Array<Record<string, unknown>> }) => {
           const tools = options?.customTools ?? [];
-          const runCreate = tools.find((tool) => tool.name === "babysitter_run_create") as {
+          const runIterate = getCompatTool(tools, "babysitter_run_iterate") as {
             execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
           } | undefined;
-          const bindSession = tools.find((tool) => tool.name === "babysitter_bind_session") as {
-            execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
-          } | undefined;
-          const runIterate = tools.find((tool) => tool.name === "babysitter_run_iterate") as {
-            execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
-          } | undefined;
-          const finish = tools.find((tool) => tool.name === "babysitter_finish_orchestration") as {
+          const finish = getCompatTool(tools, "babysitter_finish_orchestration") as {
             execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
           } | undefined;
 
@@ -917,13 +959,7 @@ describe("handleHarnessCreateRun", () => {
             prompt: vi.fn(async () => {
               phase2PromptCount += 1;
               if (phase2PromptCount === 1) {
-                await runCreate?.execute?.("tool-run-create", {
-                  prompt: [
-                    `Process path: ${generatedFile}`,
-                    "User prompt: create a game",
-                    "Maximum iterations: 256",
-                  ].join("\n"),
-                });
+                await runIterate?.execute?.("tool-run-iterate-1", {});
                 return {
                   success: false,
                   output: "msg.content.filter is not a function",
@@ -932,11 +968,7 @@ describe("handleHarnessCreateRun", () => {
                 };
               }
               if (phase2PromptCount === 2) {
-                await bindSession?.execute?.("tool-bind-session", {});
-                return { success: true, output: "bootstrap recovered", exitCode: 0, duration: 1 };
-              }
-              if (phase2PromptCount >= 3) {
-                await runIterate?.execute?.("tool-run-iterate", {});
+                await runIterate?.execute?.("tool-run-iterate-2", {});
                 await finish?.execute?.("tool-finish", { summary: "done" });
                 return { success: true, output: "iteration complete", exitCode: 0, duration: 1 };
               }
@@ -971,7 +1003,7 @@ describe("handleHarnessCreateRun", () => {
           inputs: { prompt: "create a game" },
         }),
       );
-      expect(phase2PromptCount).toBe(3);
+      expect(phase2PromptCount).toBe(1);
     });
 
     it("fails phase 2 when pi returns the known post-turn failure before any progress", async () => {
@@ -993,9 +1025,10 @@ describe("handleHarnessCreateRun", () => {
       vi.mocked(createPiSession)
         .mockImplementationOnce((options?: { customTools?: Array<Record<string, unknown>> }) => {
           const tools = options?.customTools ?? [];
-          const reportProcess = tools.find((tool) => tool.name === "babysitter_report_process_definition") as {
+          const reportProcess = getCompatTool(tools, "babysitter_report_process_definition") as {
             execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
           } | undefined;
+          let phase1PromptCount = 0;
 
           return {
             initialize: vi.fn().mockResolvedValue(undefined),
@@ -1013,6 +1046,10 @@ describe("handleHarnessCreateRun", () => {
               return true;
             },
             prompt: vi.fn(async () => {
+              phase1PromptCount += 1;
+              if (phase1PromptCount === 1) {
+                return { success: true, output: "intent", exitCode: 0, duration: 1 };
+              }
               await reportProcess?.execute?.("tool-process", {
                 processPath: generatedFile,
                 summary: "Generated process",
@@ -1064,7 +1101,7 @@ describe("handleHarnessCreateRun", () => {
       });
 
       expect(code).toBe(1);
-      expect(createRun).not.toHaveBeenCalled();
+      expect(createRun).toHaveBeenCalledTimes(1);
       expect(orchestrateIteration).not.toHaveBeenCalled();
     });
   });
@@ -1087,9 +1124,10 @@ describe("handleHarnessCreateRun", () => {
       ]);
       vi.mocked(createPiSession).mockImplementationOnce((options?: { customTools?: Array<Record<string, unknown>> }) => {
         const tools = options?.customTools ?? [];
-        const reportProcess = tools.find((tool) => tool.name === "babysitter_report_process_definition") as {
+        const reportProcess = getCompatTool(tools, "babysitter_report_process_definition") as {
           execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
         } | undefined;
+        let promptCount = 0;
 
         return {
           initialize: vi.fn().mockResolvedValue(undefined),
@@ -1107,6 +1145,10 @@ describe("handleHarnessCreateRun", () => {
             return true;
           },
           prompt: vi.fn(async () => {
+            promptCount += 1;
+            if (promptCount === 1) {
+              return { success: true, output: "intent", exitCode: 0, duration: 1 };
+            }
             await reportProcess?.execute?.("tool-process", {
               processPath: generatedFile,
               summary: "Generated process before prompt failure",
@@ -1166,7 +1208,7 @@ describe("handleHarnessCreateRun", () => {
 
       vi.mocked(createPiSession).mockImplementationOnce((options?: { customTools?: Array<Record<string, unknown>> }) => {
         const tools = options?.customTools ?? [];
-        const reportProcess = tools.find((tool) => tool.name === "babysitter_report_process_definition") as {
+        const reportProcess = getCompatTool(tools, "babysitter_report_process_definition") as {
           execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
         } | undefined;
 
@@ -1196,6 +1238,10 @@ describe("handleHarnessCreateRun", () => {
               };
             }
 
+            if (promptCount === 2) {
+              return { success: true, output: "phase1-intent", exitCode: 0, duration: 1 };
+            }
+
             await fs.mkdir(generatedPath, { recursive: true });
             await fs.writeFile(generatedFile, buildMinimalAgentProcessSource(), "utf8");
             await reportProcess?.execute?.("tool-report-transient-retry", {
@@ -1217,7 +1263,7 @@ describe("handleHarnessCreateRun", () => {
       });
 
       expect(code).toBe(0);
-      expect(promptCount).toBe(2);
+      expect(promptCount).toBe(3);
       expect(existsSync(generatedFile)).toBe(true);
     });
 
@@ -1244,10 +1290,10 @@ describe("handleHarnessCreateRun", () => {
 
       vi.mocked(createPiSession).mockImplementationOnce((options?: { customTools?: Array<Record<string, unknown>> }) => {
         const tools = options?.customTools ?? [];
-        const writeProcess = tools.find((tool) => tool.name === "babysitter_write_process_definition") as {
+        const writeProcess = getCompatTool(tools, "babysitter_write_process_definition") as {
           execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
         } | undefined;
-        const reportProcess = tools.find((tool) => tool.name === "babysitter_report_process_definition") as {
+        const reportProcess = getCompatTool(tools, "babysitter_report_process_definition") as {
           execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
         } | undefined;
 
@@ -1270,6 +1316,10 @@ describe("handleHarnessCreateRun", () => {
             promptTimeouts.push(timeout ?? -1);
             promptCount += 1;
             if (promptCount === 1) {
+              return { success: true, output: "phase1-intent", exitCode: 0, duration: 1 };
+            }
+
+            if (promptCount === 2) {
               return { success: true, output: "phase1-without-report", exitCode: 0, duration: 1 };
             }
 
@@ -1297,7 +1347,7 @@ describe("handleHarnessCreateRun", () => {
       });
 
       expect(code).toBe(0);
-      expect(promptTimeouts).toEqual([0, 0]);
+      expect(promptTimeouts).toEqual([0, 0, 0]);
       expect(existsSync(generatedFile)).toBe(true);
     });
 
@@ -1384,6 +1434,12 @@ describe("handleHarnessCreateRun", () => {
             ].join("\n"),
             exitCode: 0,
             duration: 1,
+          })
+          .mockResolvedValueOnce({
+            success: true,
+            output: "Recovery already covered by the prior code block.",
+            exitCode: 0,
+            duration: 1,
           }),
       }));
 
@@ -1429,10 +1485,10 @@ describe("handleHarnessCreateRun", () => {
 
       vi.mocked(createPiSession).mockImplementationOnce((options?: { customTools?: Array<Record<string, unknown>> }) => {
         const tools = options?.customTools ?? [];
-        const writeProcess = tools.find((tool) => tool.name === "babysitter_write_process_definition") as {
+        const writeProcess = getCompatTool(tools, "babysitter_write_process_definition") as {
           execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
         } | undefined;
-        const reportProcess = tools.find((tool) => tool.name === "babysitter_report_process_definition") as {
+        const reportProcess = getCompatTool(tools, "babysitter_report_process_definition") as {
           execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
         } | undefined;
 
@@ -1458,6 +1514,10 @@ describe("handleHarnessCreateRun", () => {
           prompt: vi.fn(async (prompt: string) => {
             promptCount += 1;
             if (promptCount === 1) {
+              return { success: true, output: "phase1-intent", exitCode: 0, duration: 1 };
+            }
+
+            if (promptCount === 2) {
               await writeProcess?.execute?.("tool-write-invalid", {
                 filename: "test-process.mjs",
                 source: 'export default { name: "bad-process", tasks: [] };\n',
@@ -1495,7 +1555,7 @@ describe("handleHarnessCreateRun", () => {
       });
 
       expect(code).toBe(0);
-      expect(promptCount).toBe(2);
+      expect(promptCount).toBe(3);
       const source = await fs.readFile(generatedFile, "utf8");
       expect(source).toContain("export async function process");
     });
@@ -1522,10 +1582,10 @@ describe("handleHarnessCreateRun", () => {
 
       vi.mocked(createPiSession).mockImplementationOnce((options?: { customTools?: Array<Record<string, unknown>> }) => {
         const tools = options?.customTools ?? [];
-        const writeProcess = tools.find((tool) => tool.name === "babysitter_write_process_definition") as {
+        const writeProcess = getCompatTool(tools, "babysitter_write_process_definition") as {
           execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
         } | undefined;
-        const reportProcess = tools.find((tool) => tool.name === "babysitter_report_process_definition") as {
+        const reportProcess = getCompatTool(tools, "babysitter_report_process_definition") as {
           execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
         } | undefined;
 
@@ -1551,6 +1611,10 @@ describe("handleHarnessCreateRun", () => {
           prompt: vi.fn(async (prompt: string) => {
             promptCount += 1;
             if (promptCount === 1) {
+              return { success: true, output: "phase1-intent", exitCode: 0, duration: 1 };
+            }
+
+            if (promptCount === 2) {
               await writeProcess?.execute?.("tool-write-default-export", {
                 filename: "test-process.mjs",
                 source: 'export default async function process() { return { success: true }; }\n',
@@ -1587,7 +1651,7 @@ describe("handleHarnessCreateRun", () => {
       });
 
       expect(code).toBe(0);
-      expect(promptCount).toBe(2);
+      expect(promptCount).toBe(3);
       const source = await fs.readFile(generatedFile, "utf8");
       expect(source).toContain("export async function process");
       expect(source).not.toContain("export default async function process");
@@ -1615,10 +1679,10 @@ describe("handleHarnessCreateRun", () => {
 
       vi.mocked(createPiSession).mockImplementationOnce((options?: { customTools?: Array<Record<string, unknown>> }) => {
         const tools = options?.customTools ?? [];
-        const writeProcess = tools.find((tool) => tool.name === "babysitter_write_process_definition") as {
+        const writeProcess = getCompatTool(tools, "babysitter_write_process_definition") as {
           execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
         } | undefined;
-        const reportProcess = tools.find((tool) => tool.name === "babysitter_report_process_definition") as {
+        const reportProcess = getCompatTool(tools, "babysitter_report_process_definition") as {
           execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
         } | undefined;
 
@@ -1644,6 +1708,10 @@ describe("handleHarnessCreateRun", () => {
           prompt: vi.fn(async (prompt: string) => {
             promptCount += 1;
             if (promptCount === 1) {
+              return { success: true, output: "phase1-intent", exitCode: 0, duration: 1 };
+            }
+
+            if (promptCount === 2) {
               await writeProcess?.execute?.("tool-write-process-shadow", {
                 filename: "test-process.mjs",
                 source: [
@@ -1692,7 +1760,7 @@ describe("handleHarnessCreateRun", () => {
       });
 
       expect(code).toBe(0);
-      expect(promptCount).toBe(2);
+      expect(promptCount).toBe(3);
       const source = await fs.readFile(generatedFile, "utf8");
       expect(source).toContain("export async function process");
       expect(source).toContain("globalThis.process.cwd()");
@@ -1721,10 +1789,10 @@ describe("handleHarnessCreateRun", () => {
 
       vi.mocked(createPiSession).mockImplementationOnce((options?: { customTools?: Array<Record<string, unknown>> }) => {
         const tools = options?.customTools ?? [];
-        const writeProcess = tools.find((tool) => tool.name === "babysitter_write_process_definition") as {
+        const writeProcess = getCompatTool(tools, "babysitter_write_process_definition") as {
           execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
         } | undefined;
-        const reportProcess = tools.find((tool) => tool.name === "babysitter_report_process_definition") as {
+        const reportProcess = getCompatTool(tools, "babysitter_report_process_definition") as {
           execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
         } | undefined;
 
@@ -1750,6 +1818,10 @@ describe("handleHarnessCreateRun", () => {
           prompt: vi.fn(async (prompt: string) => {
             promptCount += 1;
             if (promptCount === 1) {
+              return { success: true, output: "phase1-intent", exitCode: 0, duration: 1 };
+            }
+
+            if (promptCount === 2) {
               await writeProcess?.execute?.("tool-write-workspace-context", {
                 filename: "test-process.mjs",
                 source: [
@@ -1805,7 +1877,7 @@ describe("handleHarnessCreateRun", () => {
       });
 
       expect(code).toBe(0);
-      expect(promptCount).toBe(2);
+      expect(promptCount).toBe(3);
       const source = await fs.readFile(generatedFile, "utf8");
       expect(source).toContain("fileURLToPath(import.meta.url)");
       expect(source).toContain("const workspaceDir = path.dirname");
@@ -1834,10 +1906,10 @@ describe("handleHarnessCreateRun", () => {
 
       vi.mocked(createPiSession).mockImplementationOnce((options?: { customTools?: Array<Record<string, unknown>> }) => {
         const tools = options?.customTools ?? [];
-        const writeProcess = tools.find((tool) => tool.name === "babysitter_write_process_definition") as {
+        const writeProcess = getCompatTool(tools, "babysitter_write_process_definition") as {
           execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
         } | undefined;
-        const reportProcess = tools.find((tool) => tool.name === "babysitter_report_process_definition") as {
+        const reportProcess = getCompatTool(tools, "babysitter_report_process_definition") as {
           execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
         } | undefined;
 
@@ -1863,6 +1935,10 @@ describe("handleHarnessCreateRun", () => {
           prompt: vi.fn(async (prompt: string) => {
             promptCount += 1;
             if (promptCount === 1) {
+              return { success: true, output: "phase1-intent", exitCode: 0, duration: 1 };
+            }
+
+            if (promptCount === 2) {
               await writeProcess?.execute?.("tool-write-syntax-error", {
                 filename: "test-process.mjs",
                 source: [
@@ -1918,7 +1994,7 @@ describe("handleHarnessCreateRun", () => {
       });
 
       expect(code).toBe(0);
-      expect(promptCount).toBe(2);
+      expect(promptCount).toBe(3);
       const source = await fs.readFile(generatedFile, "utf8");
       expect(source).toContain('].join("\\n")');
       expect(source).not.toContain("const embeddedScript = `");
@@ -1946,10 +2022,10 @@ describe("handleHarnessCreateRun", () => {
 
       vi.mocked(createPiSession).mockImplementationOnce((options?: { customTools?: Array<Record<string, unknown>> }) => {
         const tools = options?.customTools ?? [];
-        const writeProcess = tools.find((tool) => tool.name === "babysitter_write_process_definition") as {
+        const writeProcess = getCompatTool(tools, "babysitter_write_process_definition") as {
           execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
         } | undefined;
-        const reportProcess = tools.find((tool) => tool.name === "babysitter_report_process_definition") as {
+        const reportProcess = getCompatTool(tools, "babysitter_report_process_definition") as {
           execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
         } | undefined;
 
@@ -1975,6 +2051,10 @@ describe("handleHarnessCreateRun", () => {
           prompt: vi.fn(async (prompt: string) => {
             promptCount += 1;
             if (promptCount === 1) {
+              return { success: true, output: "phase1-intent", exitCode: 0, duration: 1 };
+            }
+
+            if (promptCount === 2) {
               await writeProcess?.execute?.("tool-write-no-tasks", {
                 filename: "test-process.mjs",
                 source: [
@@ -2017,7 +2097,7 @@ describe("handleHarnessCreateRun", () => {
       });
 
       expect(code).toBe(0);
-      expect(promptCount).toBe(2);
+      expect(promptCount).toBe(3);
       const source = await fs.readFile(generatedFile, "utf8");
       expect(source).toContain('defineTask("main-task"');
       expect(source).toContain("await ctx.task(mainTask, {})");
@@ -2045,10 +2125,10 @@ describe("handleHarnessCreateRun", () => {
 
       vi.mocked(createPiSession).mockImplementationOnce((options?: { customTools?: Array<Record<string, unknown>> }) => {
         const tools = options?.customTools ?? [];
-        const writeProcess = tools.find((tool) => tool.name === "babysitter_write_process_definition") as {
+        const writeProcess = getCompatTool(tools, "babysitter_write_process_definition") as {
           execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
         } | undefined;
-        const reportProcess = tools.find((tool) => tool.name === "babysitter_report_process_definition") as {
+        const reportProcess = getCompatTool(tools, "babysitter_report_process_definition") as {
           execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
         } | undefined;
 
@@ -2074,6 +2154,10 @@ describe("handleHarnessCreateRun", () => {
           prompt: vi.fn(async (prompt: string) => {
             promptCount += 1;
             if (promptCount === 1) {
+              return { success: true, output: "phase1-intent", exitCode: 0, duration: 1 };
+            }
+
+            if (promptCount === 2) {
               await writeProcess?.execute?.("tool-write-no-agent-task", {
                 filename: "test-process.mjs",
                 source: [
@@ -2122,7 +2206,7 @@ describe("handleHarnessCreateRun", () => {
       });
 
       expect(code).toBe(0);
-      expect(promptCount).toBe(2);
+      expect(promptCount).toBe(3);
       const source = await fs.readFile(generatedFile, "utf8");
       expect(source).toContain('kind: "agent"');
       expect(source).toContain("await ctx.task(mainTask, {})");
@@ -2150,10 +2234,10 @@ describe("handleHarnessCreateRun", () => {
 
       vi.mocked(createPiSession).mockImplementationOnce((options?: { customTools?: Array<Record<string, unknown>> }) => {
         const tools = options?.customTools ?? [];
-        const writeProcess = tools.find((tool) => tool.name === "babysitter_write_process_definition") as {
+        const writeProcess = getCompatTool(tools, "babysitter_write_process_definition") as {
           execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
         } | undefined;
-        const reportProcess = tools.find((tool) => tool.name === "babysitter_report_process_definition") as {
+        const reportProcess = getCompatTool(tools, "babysitter_report_process_definition") as {
           execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
         } | undefined;
 
@@ -2179,6 +2263,10 @@ describe("handleHarnessCreateRun", () => {
           prompt: vi.fn(async (prompt: string) => {
             promptCount += 1;
             if (promptCount === 1) {
+              return { success: true, output: "phase1-intent", exitCode: 0, duration: 1 };
+            }
+
+            if (promptCount === 2) {
               await writeProcess?.execute?.("tool-write-plain-task-object", {
                 filename: "test-process.mjs",
                 source: [
@@ -2233,7 +2321,7 @@ describe("handleHarnessCreateRun", () => {
       });
 
       expect(code).toBe(0);
-      expect(promptCount).toBe(2);
+      expect(promptCount).toBe(3);
       const source = await fs.readFile(generatedFile, "utf8");
       expect(source).toContain('const mainTask = defineTask("main-task"');
       expect(source).toContain("await ctx.task(mainTask, {})");
@@ -2262,10 +2350,10 @@ describe("handleHarnessCreateRun", () => {
 
       vi.mocked(createPiSession).mockImplementationOnce((options?: { customTools?: Array<Record<string, unknown>> }) => {
         const tools = options?.customTools ?? [];
-        const writeProcess = tools.find((tool) => tool.name === "babysitter_write_process_definition") as {
+        const writeProcess = getCompatTool(tools, "babysitter_write_process_definition") as {
           execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
         } | undefined;
-        const reportProcess = tools.find((tool) => tool.name === "babysitter_report_process_definition") as {
+        const reportProcess = getCompatTool(tools, "babysitter_report_process_definition") as {
           execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
         } | undefined;
 
@@ -2291,6 +2379,10 @@ describe("handleHarnessCreateRun", () => {
           prompt: vi.fn(async (prompt: string) => {
             promptCount += 1;
             if (promptCount === 1) {
+              return { success: true, output: "phase1-intent", exitCode: 0, duration: 1 };
+            }
+
+            if (promptCount === 2) {
               await writeProcess?.execute?.("tool-write-missing-kind", {
                 filename: "test-process.mjs",
                 source: [
@@ -2359,7 +2451,7 @@ describe("handleHarnessCreateRun", () => {
       });
 
       expect(code).toBe(0);
-      expect(promptCount).toBe(2);
+      expect(promptCount).toBe(3);
       const source = await fs.readFile(generatedFile, "utf8");
       expect(source).toContain('kind: "agent"');
       expect(source).toContain("await ctx.task(goodAgentTask, {})");
@@ -2388,10 +2480,10 @@ describe("handleHarnessCreateRun", () => {
 
       vi.mocked(createPiSession).mockImplementationOnce((options?: { customTools?: Array<Record<string, unknown>> }) => {
         const tools = options?.customTools ?? [];
-        const writeProcess = tools.find((tool) => tool.name === "babysitter_write_process_definition") as {
+        const writeProcess = getCompatTool(tools, "babysitter_write_process_definition") as {
           execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
         } | undefined;
-        const reportProcess = tools.find((tool) => tool.name === "babysitter_report_process_definition") as {
+        const reportProcess = getCompatTool(tools, "babysitter_report_process_definition") as {
           execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
         } | undefined;
 
@@ -2416,8 +2508,12 @@ describe("handleHarnessCreateRun", () => {
           },
           prompt: vi.fn(async (prompt: string) => {
             promptCount += 1;
-            if (promptCount > 1) {
+            if (promptCount > 2) {
               throw new Error(`unexpected repair prompt: ${prompt}`);
+            }
+
+            if (promptCount === 1) {
+              return { success: true, output: "phase1-intent", exitCode: 0, duration: 1 };
             }
 
             await writeProcess?.execute?.("tool-write-node-specifier", {
@@ -2468,7 +2564,7 @@ describe("handleHarnessCreateRun", () => {
       });
 
       expect(code).toBe(0);
-      expect(promptCount).toBe(1);
+      expect(promptCount).toBe(2);
       const source = await fs.readFile(generatedFile, "utf8");
       expect(source).toContain('kind: "shell"');
       expect(source).toContain('echo node:fs');
@@ -2620,7 +2716,7 @@ describe("handleHarnessCreateRun", () => {
       );
     });
 
-    it("lets effect metadata opt a shell worker into secure AgentSH execution", async () => {
+    it("lets delegated task requests opt a worker into secure AgentSH execution", async () => {
       (discoverHarnesses as Mock).mockResolvedValue([
         makeDiscoveryResult({ name: "codex" }),
         makeDiscoveryResult({ name: "pi" }),
@@ -2631,35 +2727,46 @@ describe("handleHarnessCreateRun", () => {
         metadata: {},
       });
 
-      const waitingResult: IterationResult = {
-        status: "waiting",
-        nextActions: [
-          {
-            effectId: "eff-shell",
-            invocationKey: "key-shell",
-            kind: "shell",
-            taskDef: {
-              kind: "shell",
-              title: "run secure shell task",
-              shell: {
-                command: "npm test",
-              },
-              metadata: {
-                bashSandbox: "secure",
-                isolated: true,
-                enableCompaction: true,
-              },
-            },
+      (orchestrateIteration as Mock).mockResolvedValue({
+        status: "completed",
+        output: "done",
+      });
+
+      vi.mocked(createPiSession).mockImplementationOnce((options?: { customTools?: Array<Record<string, unknown>> }) => {
+        const tools = options?.customTools ?? [];
+        const taskTool = getCompatTool(tools, "task") as {
+          execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
+        } | undefined;
+        const finish = getCompatTool(tools, "babysitter_finish_orchestration") as {
+          execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
+        } | undefined;
+
+        return {
+          initialize: vi.fn().mockResolvedValue(undefined),
+          subscribe: vi.fn(() => () => {}),
+          dispose: vi.fn(),
+          executeBash: vi.fn(async () => ({
+            output: "ok",
+            exitCode: 0,
+            cancelled: false,
+          })),
+          get sessionId() {
+            return "mock-session-id-secure-worker";
           },
-        ],
-      };
-      (orchestrateIteration as Mock)
-        .mockResolvedValueOnce(waitingResult)
-        .mockResolvedValueOnce({
-          status: "completed",
-          output: "done",
-        });
-      (commitEffectResult as Mock).mockResolvedValue({});
+          get isInitialized() {
+            return true;
+          },
+          prompt: vi.fn(async () => {
+            await taskTool?.execute?.("tool-task", {
+              task: "run secure shell task",
+              timeout: 1_800_000,
+              bashSandbox: "secure",
+            });
+            await finish?.execute?.("tool-finish", { summary: "done" });
+            return { success: true, output: "phase2", exitCode: 0, duration: 1 };
+          }),
+        } as ReturnType<typeof createPiSession>;
+      });
 
       const code = await handleHarnessCreateRun({
         processPath: "/tmp/p.js",
@@ -2670,19 +2777,17 @@ describe("handleHarnessCreateRun", () => {
       });
 
       expect(code).toBe(0);
-      expect(createPiSession).toHaveBeenCalledWith(
+      expect(createPiSession).toHaveBeenLastCalledWith(
         expect.objectContaining({
           timeout: 1_800_000,
           toolsMode: "coding",
           bashSandbox: "secure",
-          isolated: true,
-          enableCompaction: true,
           ephemeral: true,
         }),
       );
     });
 
-    it("uses the longer PI worker timeout for default internal agent execution", async () => {
+    it("leaves delegated task worker timeout unset unless the task tool request specifies one", async () => {
       (discoverHarnesses as Mock).mockResolvedValue([
         makeDiscoveryResult({ name: "pi" }),
       ]);
@@ -2692,30 +2797,44 @@ describe("handleHarnessCreateRun", () => {
         metadata: {},
       });
 
-      (orchestrateIteration as Mock)
-        .mockResolvedValueOnce({
-          status: "waiting",
-          nextActions: [
-            {
-              effectId: "eff-agent",
-              invocationKey: "key-agent",
-              kind: "agent",
-              taskDef: {
-                kind: "agent",
-                title: "Implement the requested work",
-                agent: {
-                  name: "builder",
-                  prompt: "Do the work.",
-                },
-              },
-            },
-          ],
-        })
-        .mockResolvedValueOnce({
-          status: "completed",
-          output: "done",
-        });
-      (commitEffectResult as Mock).mockResolvedValue({});
+      (orchestrateIteration as Mock).mockResolvedValue({
+        status: "completed",
+        output: "done",
+      });
+
+      vi.mocked(createPiSession).mockImplementationOnce((options?: { customTools?: Array<Record<string, unknown>> }) => {
+        const tools = options?.customTools ?? [];
+        const taskTool = getCompatTool(tools, "task") as {
+          execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
+        } | undefined;
+        const finish = getCompatTool(tools, "babysitter_finish_orchestration") as {
+          execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
+        } | undefined;
+
+        return {
+          initialize: vi.fn().mockResolvedValue(undefined),
+          subscribe: vi.fn(() => () => {}),
+          dispose: vi.fn(),
+          executeBash: vi.fn(async () => ({
+            output: "ok",
+            exitCode: 0,
+            cancelled: false,
+          })),
+          get sessionId() {
+            return "mock-session-id-default-worker-timeout";
+          },
+          get isInitialized() {
+            return true;
+          },
+          prompt: vi.fn(async () => {
+            await taskTool?.execute?.("tool-task", {
+              task: "Implement the requested work",
+            });
+            await finish?.execute?.("tool-finish", { summary: "done" });
+            return { success: true, output: "phase2", exitCode: 0, duration: 1 };
+          }),
+        } as ReturnType<typeof createPiSession>;
+      });
 
       const code = await handleHarnessCreateRun({
         processPath: "/tmp/p.js",
@@ -2726,9 +2845,9 @@ describe("handleHarnessCreateRun", () => {
       });
 
       expect(code).toBe(0);
-      expect(createPiSession).toHaveBeenCalledWith(
+      expect(createPiSession).toHaveBeenLastCalledWith(
         expect.objectContaining({
-          timeout: 1_800_000,
+          timeout: undefined,
           toolsMode: "coding",
           ephemeral: true,
         }),
@@ -2820,13 +2939,7 @@ describe("handleHarnessCreateRun", () => {
 
       vi.mocked(createPiSession).mockImplementationOnce((options?: { customTools?: Array<Record<string, unknown>> }) => {
         const tools = options?.customTools ?? [];
-        const runCreate = tools.find((tool) => tool.name === "babysitter_run_create") as {
-          execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
-        } | undefined;
-        const bindSession = tools.find((tool) => tool.name === "babysitter_bind_session") as {
-          execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
-        } | undefined;
-        const runIterate = tools.find((tool) => tool.name === "babysitter_run_iterate") as {
+        const runIterate = getCompatTool(tools, "babysitter_run_iterate") as {
           execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
         } | undefined;
 
@@ -2851,12 +2964,6 @@ describe("handleHarnessCreateRun", () => {
             promptCount += 1;
 
             if (promptCount === 1) {
-              await runCreate?.execute?.("tool-run-create", {});
-              await bindSession?.execute?.("tool-bind-session", {});
-              return { success: true, output: "bootstrap", exitCode: 0, duration: 1 };
-            }
-
-            if (promptCount === 2) {
               const iterationResult = await runIterate?.execute?.("tool-iterate-process-error", {});
               expect((iterationResult?.details as Record<string, unknown> | undefined)?.status).toBe("process-error");
               return { success: false, output: "terminated", exitCode: 1, duration: 1 };
@@ -2882,7 +2989,7 @@ describe("handleHarnessCreateRun", () => {
       const phase2Session = vi.mocked(createPiSession).mock.results[0]?.value as {
         prompt: Mock;
       };
-      expect(phase2Session.prompt).toHaveBeenCalledTimes(3);
+      expect(phase2Session.prompt).toHaveBeenCalledTimes(2);
     });
 
     it("allows multiple recovery prompts after a process-error before declaring a stall", async () => {
@@ -2906,13 +3013,7 @@ describe("handleHarnessCreateRun", () => {
 
       vi.mocked(createPiSession).mockImplementationOnce((options?: { customTools?: Array<Record<string, unknown>> }) => {
         const tools = options?.customTools ?? [];
-        const runCreate = tools.find((tool) => tool.name === "babysitter_run_create") as {
-          execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
-        } | undefined;
-        const bindSession = tools.find((tool) => tool.name === "babysitter_bind_session") as {
-          execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
-        } | undefined;
-        const runIterate = tools.find((tool) => tool.name === "babysitter_run_iterate") as {
+        const runIterate = getCompatTool(tools, "babysitter_run_iterate") as {
           execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
         } | undefined;
 
@@ -2937,22 +3038,16 @@ describe("handleHarnessCreateRun", () => {
             promptCount += 1;
 
             if (promptCount === 1) {
-              await runCreate?.execute?.("tool-run-create", {});
-              await bindSession?.execute?.("tool-bind-session", {});
-              return { success: true, output: "bootstrap", exitCode: 0, duration: 1 };
-            }
-
-            if (promptCount === 2) {
               const iterationResult = await runIterate?.execute?.("tool-iterate-process-error", {});
               expect((iterationResult?.details as Record<string, unknown> | undefined)?.status).toBe("process-error");
               return { success: true, output: "inspecting process error", exitCode: 0, duration: 1 };
             }
 
-            if (promptCount === 3) {
+            if (promptCount === 2) {
               return { success: true, output: "reading process file", exitCode: 0, duration: 1 };
             }
 
-            if (promptCount === 4) {
+            if (promptCount === 3) {
               return { success: true, output: "planning repair", exitCode: 0, duration: 1 };
             }
 
@@ -2976,7 +3071,7 @@ describe("handleHarnessCreateRun", () => {
       const phase2Session = vi.mocked(createPiSession).mock.results[0]?.value as {
         prompt: Mock;
       };
-      expect(phase2Session.prompt).toHaveBeenCalledTimes(5);
+      expect(phase2Session.prompt).toHaveBeenCalledTimes(4);
     });
 
     it("resolves pending effects and re-iterates", async () => {
@@ -3035,6 +3130,7 @@ describe("handleHarnessCreateRun", () => {
 
     it("invokes an explicit task metadata harness for node-kind effects", async () => {
       (discoverHarnesses as Mock).mockResolvedValue([
+        makeDiscoveryResult({ name: "pi" }),
         makeDiscoveryResult({ name: "claude-code" }),
       ]);
       (createRun as Mock).mockResolvedValue({
@@ -3222,8 +3318,9 @@ describe("handleHarnessCreateRun", () => {
       expect(code).toBe(0);
     });
 
-    it("honors explicit --harness pi and uses CLI invocation (pi is non-programmatic)", async () => {
+    it("treats explicit --harness pi as a non-invoked binding hint in create-run", async () => {
       (discoverHarnesses as Mock).mockResolvedValue([
+        makeDiscoveryResult({ name: "pi" }),
         makeDiscoveryResult({ name: "claude-code" }),
       ]);
       (createRun as Mock).mockResolvedValue({
@@ -3264,19 +3361,9 @@ describe("handleHarnessCreateRun", () => {
         interactive: false,
       });
 
-      expect(code).toBe(0);
-      // pi is now non-programmatic (CLI-only), so it uses invokeHarness
-      expect(invokeHarness).toHaveBeenCalled();
-      expect(commitEffectResult).toHaveBeenCalledWith(
-        expect.objectContaining({
-          runDir: "/tmp/runs/run-1",
-          effectId: "eff-1",
-          invocationKey: "key-1",
-          result: expect.objectContaining({
-            status: "ok",
-          }),
-        }),
-      );
+      expect(code).toBe(1);
+      expect(invokeHarness).not.toHaveBeenCalled();
+      expect(commitEffectResult).not.toHaveBeenCalled();
     });
 
     it("returns 1 when neither --prompt nor --process is provided", async () => {
