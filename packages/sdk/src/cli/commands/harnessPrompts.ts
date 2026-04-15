@@ -136,20 +136,20 @@ export async function buildProcessDefinitionSystemPrompt(
   const composedInstructions = composeProcessCreatePrompt(piCtx);
 
   return [
-    "You are the babysitter harness:create-run phase 1 agent.",
-    "Your job is to turn the user's intent into a concrete babysitter process definition before any run is created or bound.",
+    "You are the babysitter harness:create-run PhasePlanProcess agent.",
+    "Your job is to turn the user's intent into a concrete babysitter process definition and establish the run context for the later orchestration phase.",
     "",
     "Rules:",
     "- This phase is unbound. Do not create a run, bind a session, iterate a run, or post task results.",
     "- In interactive mode, AskUserQuestion is the only in-loop way to ask the user for clarification. If you need missing requirements, call AskUserQuestion instead of asking in plain text.",
     "- Use the AskUserQuestion tool when clarification is useful. Ask focused, high-signal questions in batches when possible.",
     "- Whenever you call AskUserQuestion, set a generous timeout and a recommended option when safe so the turn can recover cleanly instead of stalling forever.",
-    "- Before authoring the process in any mode, resolve the active shared process-library and conduct a real search against it. In this built-in PI path, use `babysitter_resolve_process_library`, `babysitter_search_process_library`, and `babysitter_read_process_library_file`; those tools are the internal `harness:create-run` harness surface for process-library work. Outside this built-in path, use `babysitter process-library:active --json`, then search the returned `binding.dir`. Do not skip this process-library search step.",
-    "- Treat `binding.dir` as the active process-library root that must be searched first. If you need the cloned repo root itself for adjacent material, use `defaultSpec.cloneDir`. Treat `reference/` under the active root or `defaultSpec.referenceRoot` as the canonical reference area.",
+    "- Before authoring the process in any mode, conduct a real search against the active shared process-library using the normal file/search tools (`read`, `find`, `grep`, `bash`). Do not skip this process-library search step.",
+    "- Treat the active process-library root provided in the prompt context as the first place to search. If you need adjacent material, inspect the cloned repo root or reference area using the normal file/search tools.",
     "- Research the workspace before finalizing the process. Use your available read/search/bash/write tools as needed.",
     "- Treat the provided workspace as the only relevant filesystem root unless the user explicitly points you somewhere else.",
     "- You may inspect local babysitter process references when they materially improve the process design. Prefer project `.a5c/processes/`, the active process-library root returned in `binding.dir`, the cloned repo root returned in `defaultSpec.cloneDir` when you need adjacent reference material, local plugin paths such as `plugins/babysitter/skills/babysit/process/`, repository `library/` materials, and local babysitter discover/profile CLI commands when available.",
-    "- Use babysitter_write_process_definition to write the final JavaScript process file to the exact output path provided below.",
+    "- Use the normal file tools to write the final JavaScript process file to the exact output path provided below.",
     "- The module must export a named `async function process(inputs, ctx)`.",
     "- The process must orchestrate the work through babysitter tasks instead of doing the main implementation directly in `process(inputs, ctx)`.",
     "- Define at least one task with `defineTask(...)`, and invoke tasks from `process(inputs, ctx)` via `await ctx.task(...)`.",
@@ -158,22 +158,20 @@ export async function buildProcessDefinitionSystemPrompt(
     "- If the process needs the workspace root, do not assume `ctx.workspaceDir` or `ctx.cwd` exists in runtime context. Resolve it from the module location using `import.meta.url`, for example with `path.dirname(fileURLToPath(import.meta.url))`.",
     "- Keep the generated module syntactically valid ESM. If you embed HTML/CSS/JS asset contents inside the process source, do not use raw nested template literals; prefer arrays joined with \"\\n\", String.raw, or escaped inner backticks and \\${...} sequences.",
     "- The generated process must directly execute the user's requested work. Do not generate a meta-process that writes another babysitter process unless the user explicitly asked for process authoring.",
-    "- After the file is written through babysitter_write_process_definition, call babysitter_report_process_definition exactly once with the final path and a concise summary.",
+    "- After the file is written, call babysitter_report_process_definition exactly once with the final path and a concise summary.",
+    "- babysitter_report_process_definition creates the babysitter run and binds the session when possible. Do not try to create or bind the run yourself in this phase.",
     "- Do not claim completion in plain text without calling babysitter_report_process_definition.",
     "- If different tasks should run on different harnesses, encode that in the process definition rather than leaving it implicit.",
     "",
     "Process Library Activation:",
-    "- You MUST call `babysitter_resolve_process_library` to bootstrap and resolve the active process-library root before authoring the process. This is non-optional.",
-    "- After resolving, read `binding.dir` as the active process-library root to search. Treat `specializations/**/**/**`, `methodologies/`, `contrib/`, and `reference/` as paths relative to `binding.dir`.",
-    "- If the cloned repo root is needed for adjacent reference material, use `defaultSpec.cloneDir`.",
-    "- Use `babysitter_search_process_library` and `babysitter_read_process_library_file` to search the library. Do not skip the search step.",
+    "- The active process-library root is already available in the prompt context. Search it with the normal file/search tools before authoring the process.",
     "",
     "--- Shared Process Creation Instructions ---",
     "",
     composedInstructions,
     "",
     `Process output directory: ${outputDir}`,
-    'Choose a descriptive kebab-case filename for your process (e.g. "user-auth-tdd.mjs", "data-pipeline-setup.js"). Pass it as the `filename` parameter to babysitter_write_process_definition.',
+    'Choose a descriptive kebab-case filename for your process (e.g. "user-auth-tdd.mjs", "data-pipeline-setup.js"), write it with the normal file tools, and then report the final path.',
     ...formatSharedContext(context),
   ].join("\n");
 }
@@ -233,9 +231,9 @@ export function buildProcessDefinitionUserPrompt(
   }
 
   lines.push(
-    "Before writing the process, you MUST resolve and search the active process-library. Use babysitter_resolve_process_library, then babysitter_search_process_library to find relevant patterns.",
+    "Before writing the process, you MUST search the active process-library with the normal file/search tools to find relevant patterns.",
     "The generated process must directly execute the user's requested work rather than write another babysitter process.",
-    "Use babysitter_write_process_definition to write the file now, then call babysitter_report_process_definition exactly once.",
+    "Use the normal file tools to write the file now, then call babysitter_report_process_definition exactly once.",
   );
 
   return lines.join("\n");
@@ -250,16 +248,14 @@ export function buildOrchestrationSystemPrompt(
   const composedInstructions = composeOrchestrationPrompt(piCtx);
 
   return [
-    "You are the babysitter harness:create-run phase 2 orchestration agent.",
+    "You are the babysitter harness:create-run PhaseOrchestration agent.",
     "Your job is to run the babysitter orchestration loop through tools, not by narrating what should happen.",
-    "Follow the babysit workflow directly: run one iteration, inspect the returned effects, perform the requested effects through the babysitter effect tools and available coding tools, post the results, and repeat until the run reaches a terminal state.",
+    "Follow the babysit workflow directly: run one iteration, inspect the returned effects, perform the requested effects through `bash`, `task`, `skill`, and the available coding tools, post the results, and repeat until the run reaches a terminal state.",
     "",
     "Rules:",
     `- Treat ${selectedHarnessName} as the target harness binding for this orchestration session.`,
     "- You have your built-in coding tools (bash/read/write/edit/search) plus the custom babysitter tools below. Use them to do the orchestration work itself.",
     "- AskUserQuestion is the in-loop user interaction tool for this phase. In interactive mode, use it instead of asking the user in plain text.",
-    "- Call babysitter_run_create to create the run if it does not already exist.",
-    "- Immediately call babysitter_bind_session after run creation and before the first orchestration iteration.",
     "- Work in bounded turns. In each turn, call babysitter_run_iterate at most once unless the prompt explicitly tells you otherwise.",
     "- Do not rely on a hidden host-side effect executor. Perform or dispatch each effect intentionally based on the effect payload you received from babysitter_run_iterate.",
     "- Shell and legacy node effects are first-class pending effects. Do not skip them, narrate them, or assume the host will run them for you.",
@@ -299,6 +295,7 @@ export function buildOrchestrationBootstrapPrompt(
 export function buildOrchestrationTurnPrompt(args: {
   processPath: string;
   userPrompt?: string;
+  planningConversationSummary?: string;
   maxIterations: number;
   currentIteration: number;
   runId?: string;
@@ -318,6 +315,9 @@ export function buildOrchestrationTurnPrompt(args: {
     "",
     `Process path: ${args.processPath}`,
     `User prompt: ${args.userPrompt ?? ""}`,
+    args.planningConversationSummary
+      ? `Planning conversation summary:\n${args.planningConversationSummary}`
+      : undefined,
     `Maximum iterations: ${args.maxIterations}`,
     `Current completed iterations: ${args.currentIteration}`,
     `Run id: ${args.runId ?? "(not created)"}`,
@@ -361,8 +361,7 @@ export function buildOrchestrationTurnPrompt(args: {
     lines.push("Resolve every listed pending effect and post its result in this turn. Do not call babysitter_run_iterate again after posting them.");
     lines.push("Handling rules:");
     lines.push("- For `shell` effects, execute the requested command intentionally, capture the outcome, then call babysitter_task_post_result with explicit status/stdout/stderr/value fields.");
-    lines.push("- For legacy `node` effects, execute the requested work intentionally through the available tools or a delegated worker, capture the outcome, then call babysitter_task_post_result yourself.");
-    lines.push("- For `agent` or `orchestrator_task` effects, prefer babysitter_dispatch_effect_harness unless direct coding-tool execution is clearly better for the requested effect.");
+    lines.push("- For legacy `node`, `agent`, or `orchestrator_task` effects, use the `task` tool or `skill` tool when delegation helps, or execute the work directly with the available coding tools, then call babysitter_task_post_result yourself.");
     lines.push("- If a delegated worker or tool call exposes a `timeout`, set a generous value for substantive work and retry with a longer timeout or narrower scope before giving up.");
     lines.push("- For `breakpoint` effects, use AskUserQuestion in interactive mode with explicit approval options or choose the best option non-interactively, then post the result.");
   } else {
@@ -374,5 +373,5 @@ export function buildOrchestrationTurnPrompt(args: {
 
   lines.push("");
   lines.push("End with a short plain-text summary of what changed in this turn.");
-  return lines.join("\n");
+  return lines.filter((line): line is string => typeof line === "string").join("\n");
 }

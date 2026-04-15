@@ -1,9 +1,10 @@
 /**
  * harness:create-run command handler.
  *
- * Drives a full babysitter session lifecycle through two agentic phases:
- *   Phase 1 - Unbound interview / intent / process-definition
- *   Phase 2 - Bound orchestration loop with hook-style continuation semantics
+ * Drives a full babysitter session lifecycle through three conceptual phases:
+ *   PhaseUnderstandIntent - clarify intent and inspect the workspace
+ *   PhasePlanProcess - author the process and establish the run
+ *   PhaseOrchestration - drive the bound orchestration loop
  *
  * Both phases are driven through a Pi agent session and LLM-callable tools.
  * Interactive user input is exposed through an AskUserQuestion tool instead of
@@ -29,7 +30,7 @@ import {
   emitProgress,
   discoverHarnesses,
 } from "./harnessUtils";
-import { getProcessOutputDir, runProcessDefinitionPhase } from "./harnessPhase1";
+import { getProcessOutputDir, runPlanProcessPhase } from "./harnessPhase1";
 import { runOrchestrationPhase } from "./harnessPhase2";
 
 // ── Re-exports for backward compatibility ────────────────────────────
@@ -95,15 +96,19 @@ export async function handleHarnessCreateRun(
     });
 
     let processPath = providedProcessPath;
+    let planningConversationSummary: string | undefined;
     if (processPath) {
       emitProgress({ phase: "1", status: "skipped", processPath }, json, verbose, mode);
     } else {
       const workDir = workspace ?? process.cwd();
-      processPath = await runProcessDefinitionPhase({
+      const planReport = await runPlanProcessPhase({
         prompt: prompt!,
         outputDir: getProcessOutputDir(workDir),
         workspace: workDir,
         model,
+        runsDir,
+        maxIterations,
+        createRunOnReport: !parsed.planOnly,
         interactive,
         rl,
         json,
@@ -113,6 +118,11 @@ export async function handleHarnessCreateRun(
         selectedHarnessName,
         outputMode: mode,
       });
+      processPath = planReport.processPath;
+      planningConversationSummary = planReport.conversationSummary;
+      parsed.existingRunId ??= planReport.runId;
+      parsed.existingRunDir ??= planReport.runDir;
+      parsed.existingSessionBound ??= planReport.sessionBound;
     }
 
     if (parsed.planOnly) {
@@ -143,6 +153,8 @@ export async function handleHarnessCreateRun(
       promptContext,
       existingRunId: parsed.existingRunId,
       existingRunDir: parsed.existingRunDir,
+      existingSessionBound: parsed.existingSessionBound,
+      planningConversationSummary,
       outputMode: mode,
     });
   } finally {

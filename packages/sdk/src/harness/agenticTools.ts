@@ -40,10 +40,14 @@ export interface CustomToolDefinition {
 export interface AgenticToolOptions {
   /** Root workspace directory — all file paths are resolved relative to this. */
   workspace: string;
-  /** Whether the session is interactive (enables ask tool). */
+  /** Whether the session is interactive. */
   interactive: boolean;
-  /** Handler for the ask tool — delegates to the host's question UI. */
+  /** Handler for the AskUserQuestion tool — delegates to the host's question UI. */
   askUserQuestionHandler?: (...args: unknown[]) => Promise<unknown>;
+  /** Handler for the Task tool — delegates work to a fresh subagent/harness context. */
+  taskHandler?: (...args: unknown[]) => Promise<unknown>;
+  /** Handler for the Skill tool — loads skill instructions and performs work with them. */
+  skillHandler?: (...args: unknown[]) => Promise<unknown>;
   /** Optional callback fired before each tool execution. */
   onToolUse?: (toolName: string, params: unknown) => void;
   /** Callback fired when a background process completes. */
@@ -75,7 +79,9 @@ export const AGENTIC_TOOL_NAMES: string[] = [
   "ssh",
   "browser",
   "fetch",
-  "ask",
+  "AskUserQuestion",
+  "task",
+  "skill",
   "calc",
   "ast_grep",
   "ast_edit",
@@ -1024,10 +1030,10 @@ export function createAgenticToolDefinitions(
     // USER INTERACTION
     // -----------------------------------------------------------------
     wrap({
-      name: "ask",
+      name: "AskUserQuestion",
       label: "Ask User Question",
       description:
-        "Ask the user one or more structured questions. Delegates to the injected askUserQuestionHandler.",
+        "Ask the user one or more structured questions. Delegates to the injected askUserQuestionHandler, which may auto-resolve answers in non-interactive mode.",
       promptSnippet:
         "Ask the user focused clarification questions when you need missing requirements.",
       parameters: Type.Object({
@@ -1066,9 +1072,9 @@ export function createAgenticToolDefinitions(
         _toolCallId: string,
         params: Record<string, unknown>,
       ): Promise<ToolResult> => {
-        if (!options.interactive || !options.askUserQuestionHandler) {
+        if (!options.askUserQuestionHandler) {
           return errorResult(
-            "Not in interactive mode or no askUserQuestionHandler provided.",
+            "No askUserQuestionHandler provided.",
           );
         }
         const mode = (params.mode as string) ?? "structured";
@@ -1115,6 +1121,97 @@ export function createAgenticToolDefinitions(
           })),
         };
         const response = await options.askUserQuestionHandler(mapped);
+        return jsonResult(response);
+      },
+    }),
+
+    wrap({
+      name: "task",
+      label: "Task",
+      description:
+        "Delegate a bounded task to a fresh worker context. The host decides whether to use an internal worker session or another harness.",
+      promptSnippet:
+        "Use this for substantial delegated work that should run in a fresh context.",
+      parameters: Type.Object({
+        task: Type.String({ description: "Task prompt for the delegated worker" }),
+        harness: Type.Optional(Type.String({ description: "Preferred harness name" })),
+        model: Type.Optional(Type.String({ description: "Preferred model" })),
+        timeout: Type.Optional(Type.Number({ description: "Timeout in ms for the delegated task" })),
+        toolsMode: Type.Optional(Type.Union([
+          Type.Literal("default"),
+          Type.Literal("coding"),
+          Type.Literal("readonly"),
+        ])),
+        thinkingLevel: Type.Optional(Type.Union([
+          Type.Literal("none"),
+          Type.Literal("low"),
+          Type.Literal("medium"),
+          Type.Literal("high"),
+        ])),
+        bashSandbox: Type.Optional(Type.Union([
+          Type.Literal("auto"),
+          Type.Literal("secure"),
+          Type.Literal("local"),
+        ])),
+        skills: Type.Optional(Type.Array(Type.String(), {
+          description: "Skill names or skill file paths to load into the delegated worker context",
+        })),
+        subagentName: Type.Optional(Type.String({ description: "Preferred subagent/agent directory name" })),
+      }),
+      execute: async (
+        _toolCallId: string,
+        params: Record<string, unknown>,
+      ): Promise<ToolResult> => {
+        if (!options.taskHandler) {
+          return errorResult("No taskHandler provided.");
+        }
+        const response = await options.taskHandler(params);
+        return jsonResult(response);
+      },
+    }),
+
+    wrap({
+      name: "skill",
+      label: "Skill",
+      description:
+        "Load one or more skill instructions into a fresh worker context and execute a bounded task with them.",
+      promptSnippet:
+        "Use this when a local skill should guide delegated execution.",
+      parameters: Type.Object({
+        task: Type.String({ description: "Task prompt to execute with the loaded skill instructions" }),
+        skills: Type.Array(Type.String(), {
+          minItems: 1,
+          description: "Skill names or SKILL.md file paths to load",
+        }),
+        harness: Type.Optional(Type.String({ description: "Preferred harness name" })),
+        model: Type.Optional(Type.String({ description: "Preferred model" })),
+        timeout: Type.Optional(Type.Number({ description: "Timeout in ms for the delegated task" })),
+        toolsMode: Type.Optional(Type.Union([
+          Type.Literal("default"),
+          Type.Literal("coding"),
+          Type.Literal("readonly"),
+        ])),
+        thinkingLevel: Type.Optional(Type.Union([
+          Type.Literal("none"),
+          Type.Literal("low"),
+          Type.Literal("medium"),
+          Type.Literal("high"),
+        ])),
+        bashSandbox: Type.Optional(Type.Union([
+          Type.Literal("auto"),
+          Type.Literal("secure"),
+          Type.Literal("local"),
+        ])),
+        subagentName: Type.Optional(Type.String({ description: "Preferred subagent/agent directory name" })),
+      }),
+      execute: async (
+        _toolCallId: string,
+        params: Record<string, unknown>,
+      ): Promise<ToolResult> => {
+        if (!options.skillHandler) {
+          return errorResult("No skillHandler provided.");
+        }
+        const response = await options.skillHandler(params);
         return jsonResult(response);
       },
     }),

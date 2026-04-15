@@ -1,20 +1,22 @@
 /**
- * Phase 1: Process definition — interview + process creation.
+ * PhasePlanProcess: PhaseUnderstandIntent + process definition authoring.
  *
- * Drives an agentic Pi session (or headless external harness) to author a
- * babysitter process definition file from a user prompt.
+ * Drives an agentic Pi session (or headless external harness) to understand
+ * the request, author a babysitter process definition, and optionally
+ * establish the run for PhaseOrchestration.
  */
 
 import * as path from "node:path";
 import * as readline from "node:readline";
 import { execFile } from "node:child_process";
-import { promises as fs } from "node:fs";
+import { existsSync, promises as fs, readFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 import { Type } from "@sinclair/typebox";
 import { invokeHarness } from "../../harness/invoker";
 import { createAgenticToolDefinitions } from "../../harness/agenticTools";
+import { getAdapterByName } from "../../harness";
+import { createRun } from "../../runtime/createRun";
 import { resetGlobalTaskRegistry } from "../../tasks/registry";
-import { ensureActiveProcessLibrary } from "../../processLibrary/active";
 import {
   buildProcessDefinitionSystemPrompt,
   buildProcessDefinitionUserPrompt,
@@ -24,21 +26,18 @@ import {
   type ProcessDefinitionReport,
   type ToolResultShape,
   type ExternalWorkspaceAssessment,
-  type AskUserQuestionToolContext,
   type CompressionConfig,
   type PiSessionOptions,
   type AskUserQuestionRequest,
+  type SessionBindResult,
   type HarnessPromptContext as SessionCreatePromptContext,
   // Constants
   DIM,
   RESET,
   GREEN,
   CYAN,
-  PROCESS_LIBRARY_READ_MAX_CHARS,
-  ASK_USER_QUESTION_SCHEMA,
   PI_PARENT_PROMPT_TIMEOUT_MS,
   // Functions
-  truncateForVerboseLog,
   writeVerboseLine,
   writeVerboseBlock,
   emitProgress,
@@ -117,6 +116,212 @@ function normalizeReportedPath(candidate: string, workspace?: string): string {
     return path.resolve(trimmed);
   }
   return path.resolve(workspace ?? process.cwd(), trimmed);
+}
+
+function buildPhaseConversationSummary(outputs: string[]): string {
+  const trimmedOutputs = outputs
+    .map((output) => output.replace(/\s+/g, " ").trim())
+    .filter((output) => output.length > 0);
+  if (trimmedOutputs.length === 0) {
+    return "";
+  }
+  const joined = trimmedOutputs.slice(-3).join("\n\n---\n\n");
+  return joined.length > 4_000 ? `${joined.slice(0, 3_997)}...` : joined;
+}
+
+async function createRunAndMaybeBindFromProcessDefinition(args: {
+  processPath: string;
+  prompt: string;
+  runsDir: string;
+  selectedHarnessName: string;
+  maxIterations: number;
+  interactive: boolean;
+  verbose: boolean;
+  json: boolean;
+  phaseSession: PiSessionHandle | null;
+}): Promise<{
+  runId: string;
+  runDir: string;
+  sessionBound?: SessionBindResult;
+}> {
+  const processId = path.basename(args.processPath, path.extname(args.processPath));
+  const created = await createRun({
+    runsDir: args.runsDir,
+    harness: args.selectedHarnessName,
+    process: {
+      processId,
+      importPath: path.resolve(args.processPath),
+    },
+    prompt: args.prompt,
+    inputs: args.prompt ? { prompt: args.prompt } : undefined,
+    ...(args.interactive === false ? { metadata: { nonInteractive: true } } : {}),
+  });
+
+  const adapter = getAdapterByName(args.selectedHarnessName);
+  if (!adapter) {
+    return { runId: created.runId, runDir: created.runDir };
+  }
+
+  let sessionId = adapter.resolveSessionId({});
+  if (!sessionId && args.selectedHarnessName === "internal") {
+    sessionId = args.phaseSession?.sessionId;
+  }
+  if (!sessionId) {
+    return { runId: created.runId, runDir: created.runDir };
+  }
+
+  const pluginRoot = adapter.resolvePluginRoot({});
+  const stateDir = adapter.resolveStateDir({ pluginRoot });
+  const sessionBound = await adapter.bindSession({
+    sessionId,
+    runId: created.runId,
+    runDir: created.runDir,
+    pluginRoot,
+    stateDir,
+    runsDir: args.runsDir,
+    maxIterations: args.maxIterations,
+    prompt: args.prompt,
+    verbose: args.verbose,
+    json: args.json,
+  });
+
+  return {
+    runId: created.runId,
+    runDir: created.runDir,
+    sessionBound,
+  };
+}
+
+function resolveSkillFileCandidates(workspace: string, skillRef: string): string[] {
+  const trimmed = skillRef.trim();
+  if (!trimmed) {
+    return [];
+  }
+
+  const candidates = new Set<string>();
+  const add = (candidate: string): void => {
+    if (!candidate) return;
+    candidates.add(path.resolve(workspace, candidate));
+  };
+
+  if (path.isAbsolute(trimmed)) {
+    candidates.add(path.resolve(trimmed));
+  } else {
+    add(trimmed);
+  }
+
+  if (/SKILL\.md$/i.test(trimmed)) {
+    add(trimmed);
+  } else {
+    add(path.join(trimmed, "SKILL.md"));
+    add(path.join(".a5c", "skills", trimmed, "SKILL.md"));
+    add(path.join(".codex", "skills", trimmed, "SKILL.md"));
+    const parts = trimmed.split(":").filter(Boolean);
+    if (parts.length >= 2) {
+      const [pluginName, ...skillParts] = parts;
+      add(path.join("plugins", pluginName, "skills", ...skillParts, "SKILL.md"));
+    }
+  }
+
+  return Array.from(candidates);
+}
+
+function loadSkillInstructions(workspace: string, skillRefs: string[] | undefined): string[] {
+  if (!skillRefs?.length) {
+    return [];
+  }
+
+  const instructions: string[] = [];
+  for (const skillRef of skillRefs) {
+    const candidates = resolveSkillFileCandidates(workspace, skillRef);
+    for (const candidate of candidates) {
+      if (!existsSync(candidate)) {
+        continue;
+      }
+      try {
+        instructions.push(readFileSync(candidate, "utf8"));
+        break;
+      } catch {
+        // Ignore unreadable skill files and continue searching.
+      }
+    }
+  }
+  return instructions;
+}
+
+export async function runDelegatedHarnessTask(args: {
+  task: string;
+  workspace?: string;
+  model?: string;
+  harness?: string;
+  timeout?: number;
+  toolsMode?: PiSessionOptions["toolsMode"];
+  thinkingLevel?: PiSessionOptions["thinkingLevel"] | "none";
+  bashSandbox?: PiSessionOptions["bashSandbox"];
+  skills?: string[];
+  customTools?: unknown[];
+}): Promise<{
+  success: boolean;
+  output: string;
+  harness: string;
+}> {
+  const workspace = path.resolve(args.workspace ?? process.cwd());
+  const skillInstructions = loadSkillInstructions(workspace, args.skills);
+  const prompt = skillInstructions.length > 0
+    ? [
+        "Follow the loaded skill instructions below while performing the task.",
+        "",
+        ...skillInstructions,
+        "",
+        "--- Task ---",
+        args.task,
+      ].join("\n")
+    : args.task;
+
+  const harnessName = args.harness?.trim() || "internal";
+  if (harnessName === "internal" || harnessName === "oh-my-pi") {
+    const session = createPiSession({
+      workspace,
+      model: args.model,
+      timeout: args.timeout,
+      toolsMode: args.toolsMode ?? "coding",
+      customTools: args.customTools,
+      ephemeral: true,
+      ...(args.bashSandbox ? { bashSandbox: args.bashSandbox } : {}),
+      ...(args.thinkingLevel && args.thinkingLevel !== "none"
+        ? { thinkingLevel: args.thinkingLevel }
+        : {}),
+      ...(skillInstructions.length > 0 ? { appendSystemPrompt: [skillInstructions.join("\n\n---\n\n")] } : {}),
+    });
+    try {
+      await session.initialize();
+      const result = await promptPiWithRetry({
+        session,
+        message: prompt,
+        timeout: args.timeout ?? PI_PARENT_PROMPT_TIMEOUT_MS,
+        label: "delegated-task",
+      });
+      return {
+        success: result.success,
+        output: result.output,
+        harness: harnessName,
+      };
+    } finally {
+      session.dispose();
+    }
+  }
+
+  const result = await invokeHarness(harnessName, {
+    prompt,
+    workspace,
+    model: args.model,
+    timeout: args.timeout,
+  });
+  return {
+    success: result.success,
+    output: result.output,
+    harness: harnessName,
+  };
 }
 
 function extractMentionedProcessPaths(text: string, workspace?: string): string[] {
@@ -939,112 +1144,6 @@ async function validateProcessExport(filePath: string): Promise<void> {
   }
 }
 
-// ── Process Library ──────────────────────────────────────────────────
-
-type ProcessLibraryToolScope = "binding" | "clone" | "reference";
-
-function isPathWithinRoot(root: string, candidate: string): boolean {
-  const relative = path.relative(root, candidate);
-  return relative === "" || (!relative.startsWith("..") && !path.isAbsolute(relative));
-}
-
-async function resolvePhase1ProcessLibraryRoot(
-  scope: ProcessLibraryToolScope = "binding",
-): Promise<{
-  scope: ProcessLibraryToolScope;
-  root: string;
-  active: Awaited<ReturnType<typeof ensureActiveProcessLibrary>>;
-}> {
-  const active = await ensureActiveProcessLibrary();
-  const bindingRoot = active.binding?.dir;
-  if (!bindingRoot) {
-    throw new BabysitterRuntimeError(
-      "ProcessLibraryNotResolved",
-      "No active process library binding is available.",
-      { category: ErrorCategory.Runtime },
-    );
-  }
-
-  const root =
-    scope === "clone"
-      ? active.defaultSpec.cloneDir
-      : scope === "reference"
-        ? active.defaultSpec.referenceRoot
-        : bindingRoot;
-
-  return {
-    scope,
-    root,
-    active,
-  };
-}
-
-async function searchProcessLibrary(
-  query: string,
-  scope: ProcessLibraryToolScope = "binding",
-): Promise<{
-  scope: ProcessLibraryToolScope;
-  root: string;
-  libraryRoot: string;
-  query: string;
-  instructions: string;
-  matches: Array<unknown>;
-}> {
-  const trimmedQuery = query.trim();
-  const { root } = await resolvePhase1ProcessLibraryRoot(scope);
-  const libraryRoot = path.join(root, "library");
-
-  return {
-    scope,
-    root,
-    libraryRoot,
-    query: trimmedQuery,
-    matches: [],
-    instructions: `To search the process library, please use your run_shell_command tool to run 'rg' (ripgrep) inside the library directory: ${libraryRoot.replace(/\\/g, '\\\\')}. For example: run_shell_command({ command: "rg 'your-pattern'", dir_path: "${libraryRoot.replace(/\\/g, '\\\\')}" })`,
-  };
-}
-
-async function readProcessLibraryFile(
-  relativePath: string,
-  scope: ProcessLibraryToolScope = "binding",
-): Promise<{
-  scope: ProcessLibraryToolScope;
-  root: string;
-  relativePath: string;
-  absolutePath: string;
-  content: string;
-  truncated: boolean;
-}> {
-  const trimmedPath = relativePath.trim();
-  if (!trimmedPath) {
-    throw new BabysitterRuntimeError(
-      "ProcessLibraryReadPathMissing",
-      "Process-library file path must not be empty.",
-      { category: ErrorCategory.Validation },
-    );
-  }
-
-  const { root } = await resolvePhase1ProcessLibraryRoot(scope);
-  const absolutePath = path.resolve(root, trimmedPath);
-  if (!isPathWithinRoot(root, absolutePath)) {
-    throw new BabysitterRuntimeError(
-      "ProcessLibraryReadPathOutsideRoot",
-      `Process-library file must stay under ${root}.`,
-      { category: ErrorCategory.Validation },
-    );
-  }
-
-  const content = await fs.readFile(absolutePath, "utf8");
-  return {
-    scope,
-    root,
-    relativePath: trimmedPath,
-    absolutePath,
-    content: content.slice(0, PROCESS_LIBRARY_READ_MAX_CHARS),
-    truncated: content.length > PROCESS_LIBRARY_READ_MAX_CHARS,
-  };
-}
-
 // ── Agent Prompt Building ────────────────────────────────────────────
 
 export function buildAgentPrompt(taskDef: Record<string, unknown>): string {
@@ -1226,15 +1325,6 @@ async function recoverProcessDefinitionFromOutputs(args: {
   return null;
 }
 
-function normalizeProcessDefinitionSource(source: string): string {
-  const trimmed = source.trim();
-  const fenced = trimmed.match(/^```(?:javascript|js|ts)?\s*\r?\n([\s\S]*?)\r?\n```$/i);
-  if (fenced?.[1]) {
-    return fenced[1];
-  }
-  return source;
-}
-
 async function recoverReportedProcessDefinition(args: {
   state: { report?: ProcessDefinitionReport };
   outputDir: string;
@@ -1261,7 +1351,7 @@ async function recoverReportedProcessDefinition(args: {
 
 function writeVerboseProcessDefinitionRecovery(json: boolean): void {
   if (!json) {
-    process.stderr.write(`${DIM}Phase 1 recovery: the agent did not report the process file, retrying with an explicit write-and-report instruction...${RESET}\n`);
+    process.stderr.write(`${DIM}PhasePlanProcess recovery: the agent did not report the process file, retrying with an explicit write-and-report instruction...${RESET}\n`);
   }
 }
 
@@ -1416,7 +1506,7 @@ function buildInternalProcessConformancePrompt(args: {
     "- Shell tasks must use `kind: \"shell\"` with `shell: { command: \"...\" }`.",
     "- Do not introduce `kind: \"node\"` task definitions in generated or repaired processes. If logic would have been a node task, convert it to an `agent` or `skill` task instead.",
     "- The exported `process(inputs, ctx)` function must call tasks with `await ctx.task(definedTask, args)`.",
-    "- Use `babysitter_write_process_definition` with the `filename` parameter to rewrite the process file in the output directory.",
+    "- Use the normal file tools to rewrite the process file at the target path in the output directory.",
     "- After rewriting the file, call `babysitter_report_process_definition` exactly once with the same path.",
     "- Do not answer with plain text only.",
   ].join("\n");
@@ -1592,18 +1682,21 @@ async function _runExternalProcessDefinitionPhase(args: {
     args.outputMode,
   );
   if (!args.json && args.outputMode !== "tui") {
-    process.stderr.write(`${GREEN}Phase 1 complete:${RESET} process=${CYAN}${report.processPath}${RESET}\n`);
+    process.stderr.write(`${GREEN}PhasePlanProcess complete:${RESET} process=${CYAN}${report.processPath}${RESET}\n`);
   }
   return report.processPath;
 }
 
 // ── Main Phase 1 Entry Point ─────────────────────────────────────────
 
-export async function runProcessDefinitionPhase(args: {
+export async function runPlanProcessPhase(args: {
   prompt: string;
   outputDir: string;
   workspace?: string;
   model?: string;
+  runsDir: string;
+  maxIterations: number;
+  createRunOnReport?: boolean;
   interactive: boolean;
   rl: readline.Interface | null;
   json: boolean;
@@ -1612,7 +1705,7 @@ export async function runProcessDefinitionPhase(args: {
   promptContext: SessionCreatePromptContext;
   selectedHarnessName: string;
   outputMode?: import("./harnessUtils").OutputMode;
-}): Promise<string> {
+}): Promise<ProcessDefinitionReport> {
   const state: { report?: ProcessDefinitionReport } = {};
   const phaseOutputs: string[] = [];
   let session: PiSessionHandle | null = null;
@@ -1625,192 +1718,53 @@ export async function runProcessDefinitionPhase(args: {
   const writeVerboseData = (label: string, value: unknown, maxChars?: number): void => {
     writeVerboseBlock(args.verbose, args.json, label, value, maxChars, args.outputMode);
   };
+  let mergedCustomTools: unknown[] = [];
   const customTools: unknown[] = [
-    {
-      name: "babysitter_write_process_definition",
-      label: "Write Process Definition",
-      description: "Write the final JavaScript process file to the process output directory with a descriptive filename.",
-      parameters: Type.Object({
-        source: Type.String(),
-        filename: Type.String(),
-      }),
-      execute: async (
-        _toolCallId: string,
-        params: { source: string; filename: string },
-      ): Promise<ToolResultShape> => {
-        const filename = params.filename;
-        if (!/\.m?js$/.test(filename)) {
-          throw new BabysitterRuntimeError(
-            "ProcessDefinitionInvalidFilename",
-            `Filename must end in .js or .mjs, got: ${filename}`,
-            { category: ErrorCategory.Validation },
-          );
-        }
-        if (/[/\\]/.test(filename) || filename.includes("..")) {
-          throw new BabysitterRuntimeError(
-            "ProcessDefinitionInvalidFilename",
-            `Filename must be a simple name without path separators or '..', got: ${filename}`,
-            { category: ErrorCategory.Validation },
-          );
-        }
-        const resolvedDir = path.resolve(args.outputDir);
-        const resolvedPath = path.join(resolvedDir, filename);
-
-        const normalizedSource = normalizeProcessDefinitionSource(params.source);
-        writeVerboseData("phase1 tool babysitter_write_process_definition", {
-          processPath: resolvedPath,
-          sourcePreview: truncateForVerboseLog(normalizedSource, 600),
-        });
-        await fs.mkdir(resolvedDir, { recursive: true });
-        await fs.writeFile(resolvedPath, normalizedSource, "utf8");
-        return formatToolResult(
-          { processPath: resolvedPath },
-          "Process definition written.",
-        );
-      },
-    },
-    {
-      name: "babysitter_resolve_process_library",
-      label: "Resolve Process Library",
-      description:
-        "Resolve the active shared process-library binding, bootstrapping it if needed, and return the active roots that phase 1 must inspect.",
-      parameters: Type.Object({}),
-      execute: async (): Promise<ToolResultShape> => {
-        const active = await ensureActiveProcessLibrary();
-        writeVerboseData("phase1 tool babysitter_resolve_process_library", active, 1200);
-        return formatToolResult(
-          active,
-          "Active shared process library resolved.",
-        );
-      },
-    },
-    {
-      name: "babysitter_search_process_library",
-      label: "Search Process Library",
-      description:
-        "Retrieve the active shared process library root path and instructions on how to search it. Use this before authoring a process.",
-      parameters: Type.Object({
-        query: Type.String(),
-        scope: Type.Optional(Type.Union([
-          Type.Literal("binding"),
-          Type.Literal("clone"),
-          Type.Literal("reference"),
-        ])),
-        limit: Type.Optional(Type.Number({ minimum: 1, maximum: 40 })),
-      }),
-      execute: async (
-        _toolCallId: string,
-        params: {
-          query: string;
-          scope?: ProcessLibraryToolScope;
-          limit?: number;
-        },
-      ): Promise<ToolResultShape> => {
-        writeVerboseData("phase1 tool babysitter_search_process_library request", params);
-        const result = await searchProcessLibrary(
-          params.query,
-          params.scope ?? "binding",
-        );
-        writeVerboseData("phase1 tool babysitter_search_process_library result", result, 2000);
-        return formatToolResult(
-          result,
-          "Process-library search completed.",
-        );
-      },
-    },
-    {
-      name: "babysitter_read_process_library_file",
-      label: "Read Process Library File",
-      description:
-        "Read a specific file from the active shared process library after you identify it via search.",
-      parameters: Type.Object({
-        relativePath: Type.String(),
-        scope: Type.Optional(Type.Union([
-          Type.Literal("binding"),
-          Type.Literal("clone"),
-          Type.Literal("reference"),
-        ])),
-      }),
-      execute: async (
-        _toolCallId: string,
-        params: {
-          relativePath: string;
-          scope?: ProcessLibraryToolScope;
-        },
-      ): Promise<ToolResultShape> => {
-        writeVerboseData("phase1 tool babysitter_read_process_library_file request", params);
-        const result = await readProcessLibraryFile(
-          params.relativePath,
-          params.scope ?? "binding",
-        );
-        writeVerboseData(
-          "phase1 tool babysitter_read_process_library_file result",
-          {
-            ...result,
-            contentPreview: truncateForVerboseLog(result.content, 1200),
-          },
-          2000,
-        );
-        return formatToolResult(
-          result,
-          "Process-library file read completed.",
-        );
-      },
-    },
-    {
-      name: "AskUserQuestion",
-      label: "Ask User Question",
-      description: "Ask the user one to four structured clarification questions and receive structured answers.",
-      promptSnippet: "Ask the user focused clarification questions when you need missing requirements.",
-      parameters: ASK_USER_QUESTION_SCHEMA,
-      execute: async (
-        _toolCallId: string,
-        params: AskUserQuestionRequest,
-        _signal?: AbortSignal,
-        _onUpdate?: unknown,
-        toolContext?: AskUserQuestionToolContext,
-      ): Promise<ToolResultShape> => {
-        writeVerboseData("phase1 tool AskUserQuestion request", params);
-        const response = await askUserQuestionViaTool(
-          params,
-          args.interactive,
-          args.rl,
-          toolContext,
-        );
-        writeVerboseData("phase1 tool AskUserQuestion response", response);
-        emitProgress(
-          {
-            phase: "1",
-            status: "interview",
-            answer: JSON.stringify(response.answers),
-          },
-          args.json,
-          args.verbose,
-          args.outputMode,
-        );
-        return formatToolResult(response, "AskUserQuestion completed.");
-      },
-    },
     {
       name: "babysitter_report_process_definition",
       label: "Report Process Definition",
-      description: "Report that the process-definition phase is complete after the process file has been written.",
+      description: "Report that the process definition is ready after writing it with the normal file tools. This also creates the run and binds the current session when possible.",
       parameters: Type.Object({
         processPath: Type.String(),
         summary: Type.Optional(Type.String()),
       }),
-      execute: (
+      execute: async (
         _toolCallId: string,
         params: { processPath: string; summary?: string },
-      ): ToolResultShape => {
+      ): Promise<ToolResultShape> => {
         writeVerboseData("phase1 tool babysitter_report_process_definition", params);
+        const normalizedProcessPath = normalizeReportedPath(
+          params.processPath,
+          args.workspace ?? process.cwd(),
+        );
+        const resolvedOutputDir = path.resolve(args.outputDir);
+        if (!normalizedProcessPath.startsWith(`${resolvedOutputDir}${path.sep}`) && normalizedProcessPath !== resolvedOutputDir) {
+          throw new BabysitterRuntimeError(
+            "ProcessDefinitionInvalidPath",
+            `Reported process path must stay within ${resolvedOutputDir}, got ${normalizedProcessPath}`,
+            { category: ErrorCategory.Validation },
+          );
+        }
+        await fs.access(normalizedProcessPath);
+        const runState = args.createRunOnReport === false
+          ? undefined
+          : await createRunAndMaybeBindFromProcessDefinition({
+            processPath: normalizedProcessPath,
+            prompt: args.prompt,
+            runsDir: args.runsDir,
+            selectedHarnessName: args.selectedHarnessName,
+            maxIterations: args.maxIterations,
+            interactive: args.interactive,
+            verbose: args.verbose,
+            json: args.json,
+            phaseSession: session,
+          });
         state.report = {
-          processPath: params.processPath,
+          processPath: normalizedProcessPath,
           summary: params.summary,
+          ...runState,
+          conversationSummary: buildPhaseConversationSummary(phaseOutputs),
         };
-        // Phase 1 is complete as soon as the process file is written and reported.
-        // Abort the live turn so the host can validate the file instead of waiting
-        // for PI to continue streaming after completion.
         setTimeout(() => {
           if (session?.isStreaming) {
             void session.abort().catch(() => {});
@@ -1825,15 +1779,54 @@ export async function runProcessDefinitionPhase(args: {
     workspace: args.workspace ?? process.cwd(),
     interactive: args.interactive ?? false,
     askUserQuestionHandler: async (params: unknown) => {
-      return askUserQuestionViaTool(
+      const response = await askUserQuestionViaTool(
         params as AskUserQuestionRequest,
         args.interactive,
         args.rl,
         undefined,
       );
+      writeVerboseData("phase1 tool AskUserQuestion response", response);
+      emitProgress(
+        {
+          phase: "1",
+          status: "interview",
+          answer: JSON.stringify(response.answers),
+        },
+        args.json,
+        args.verbose,
+        args.outputMode,
+      );
+      return response;
+    },
+    taskHandler: async (params: unknown) => {
+      writeVerboseData("phase1 tool task request", params);
+      return runDelegatedHarnessTask({
+        ...(params as Record<string, unknown>),
+        task: String((params as Record<string, unknown>).task ?? ""),
+        workspace: args.workspace,
+        model: typeof (params as Record<string, unknown>).model === "string"
+          ? String((params as Record<string, unknown>).model)
+          : args.model,
+        customTools: mergedCustomTools,
+      });
+    },
+    skillHandler: async (params: unknown) => {
+      writeVerboseData("phase1 tool skill request", params);
+      return runDelegatedHarnessTask({
+        ...(params as Record<string, unknown>),
+        task: String((params as Record<string, unknown>).task ?? ""),
+        workspace: args.workspace,
+        model: typeof (params as Record<string, unknown>).model === "string"
+          ? String((params as Record<string, unknown>).model)
+          : args.model,
+        skills: Array.isArray((params as Record<string, unknown>).skills)
+          ? (params as Record<string, unknown>).skills as string[]
+          : undefined,
+        customTools: mergedCustomTools,
+      });
     },
   });
-  const mergedCustomTools: unknown[] = [...customTools, ...agenticTools];
+  mergedCustomTools = [...customTools, ...agenticTools];
 
   emitProgress(
     { phase: "1", status: "started", harness: "internal (agentic)" },
@@ -1860,7 +1853,15 @@ export async function runProcessDefinitionPhase(args: {
     args.promptContext,
     args.interactive,
   );
-  const initialMetaPrompt = buildProcessDefinitionUserPrompt(
+  const intentPrompt = [
+    "PhaseUnderstandIntent.",
+    "Inspect the workspace and clarify the user's intent before authoring the process.",
+    "If material requirements are missing and interactive mode is available, call AskUserQuestion.",
+    "Do not write the process file yet and do not call babysitter_report_process_definition in this step.",
+    "",
+    `User request: ${args.prompt}`,
+  ].join("\n");
+  const planProcessPrompt = buildProcessDefinitionUserPrompt(
     args.prompt,
     args.outputDir,
     {
@@ -1870,7 +1871,8 @@ export async function runProcessDefinitionPhase(args: {
     },
   );
   writeVerboseData("phase1 system prompt", processDefinitionSystemPrompt);
-  writeVerboseData("phase1 initial prompt", initialMetaPrompt);
+  writeVerboseData("phaseUnderstandIntent prompt", intentPrompt);
+  writeVerboseData("phasePlanProcess prompt", planProcessPrompt);
   const phase1ToolsMode: PiSessionOptions["toolsMode"] =
     workspaceAssessment.kind === "empty"
       ? "default"
@@ -1892,7 +1894,7 @@ export async function runProcessDefinitionPhase(args: {
     await session.initialize();
     let unsubscribe: (() => void) | null = null;
     if (!args.json && args.outputMode !== "tui") {
-      process.stderr.write(`${DIM}Phase 1 agent is defining the process...${RESET}\n`);
+      process.stderr.write(`${DIM}PhaseUnderstandIntent agent is analyzing the request...${RESET}\n`);
       unsubscribe = session.subscribe((event: PiSessionEvent) => {
         if (event.type === "text_delta") {
           const text = (event as { text?: string }).text;
@@ -1901,11 +1903,17 @@ export async function runProcessDefinitionPhase(args: {
       });
     }
 
-    const result = await promptPiWithRetry({
+    emitProgress(
+      { phase: "1", status: "intent", answer: "Analyzing the user request and relevant workspace context." },
+      args.json,
+      args.verbose,
+      args.outputMode,
+    );
+    const intentResult = await promptPiWithRetry({
       session,
-      message: initialMetaPrompt,
+      message: intentPrompt,
       timeout: PI_PARENT_PROMPT_TIMEOUT_MS,
-      label: "phase1 initial",
+      label: "phaseUnderstandIntent",
       writeVerbose,
       writeVerboseData,
     }).catch((err: unknown) => {
@@ -1913,7 +1921,37 @@ export async function runProcessDefinitionPhase(args: {
         err instanceof BabysitterRuntimeError &&
         (err.name === "PiTimeoutError" || (err.message ?? "").includes("timed out"));
       if (isTimeout) {
-        writeVerbose("[phase1] Pi prompt timed out, converting to failure result");
+        writeVerbose("[phaseUnderstandIntent] Pi prompt timed out, converting to failure result");
+        return { success: false as const, output: `Pi prompt timed out: ${err instanceof Error ? err.message : String(err)}` };
+      }
+      throw err;
+    });
+    phaseOutputs.push(intentResult.output);
+    writeVerboseData("phaseUnderstandIntent output", intentResult.output);
+
+    emitProgress(
+      { phase: "1", status: "planning", answer: "Authoring the process definition and preparing the run." },
+      args.json,
+      args.verbose,
+      args.outputMode,
+    );
+    if (!args.json && args.outputMode !== "tui") {
+      process.stderr.write(`${DIM}PhasePlanProcess agent is authoring the process...${RESET}\n`);
+    }
+
+    const result = await promptPiWithRetry({
+      session,
+      message: planProcessPrompt,
+      timeout: PI_PARENT_PROMPT_TIMEOUT_MS,
+      label: "phasePlanProcess",
+      writeVerbose,
+      writeVerboseData,
+    }).catch((err: unknown) => {
+      const isTimeout =
+        err instanceof BabysitterRuntimeError &&
+        (err.name === "PiTimeoutError" || (err.message ?? "").includes("timed out"));
+      if (isTimeout) {
+        writeVerbose("[phasePlanProcess] Pi prompt timed out, converting to failure result");
         return { success: false as const, output: `Pi prompt timed out: ${err instanceof Error ? err.message : String(err)}` };
       }
       throw err;
@@ -1951,7 +1989,7 @@ export async function runProcessDefinitionPhase(args: {
       writeVerboseProcessDefinitionRecovery(args.json);
       const recoveryPrompt = [
         "Recovery step:",
-        `- Write the process file now to the output directory ${args.outputDir} using babysitter_write_process_definition with a descriptive filename.`,
+        `- Write the process file now to the output directory ${args.outputDir} using the normal file tools with a descriptive filename.`,
         "- Then call babysitter_report_process_definition exactly once.",
         "- Do not just describe the process in plain text.",
       ].join("\n");
@@ -2014,7 +2052,7 @@ export async function runProcessDefinitionPhase(args: {
     if (!state.report?.processPath) {
       const finalRecoveryPrompt = [
         "Final recovery step:",
-        `- Write the process file to the output directory ${args.outputDir} using babysitter_write_process_definition with a descriptive filename.`,
+        `- Write the process file to the output directory ${args.outputDir} using the normal file tools with a descriptive filename.`,
         "- If you already wrote it, do not rewrite unnecessarily.",
         "- Call babysitter_report_process_definition exactly once after the file exists.",
         "- Do not answer with plain text only.",
@@ -2139,6 +2177,25 @@ export async function runProcessDefinitionPhase(args: {
       }
     }
 
+    if (args.createRunOnReport !== false && (!state.report.runId || !state.report.runDir)) {
+      const runState = await createRunAndMaybeBindFromProcessDefinition({
+        processPath: state.report.processPath,
+        prompt: args.prompt,
+        runsDir: args.runsDir,
+        selectedHarnessName: args.selectedHarnessName,
+        maxIterations: args.maxIterations,
+        interactive: args.interactive,
+        verbose: args.verbose,
+        json: args.json,
+        phaseSession: session,
+      });
+      state.report = {
+        ...state.report,
+        ...runState,
+        conversationSummary: state.report.conversationSummary ?? buildPhaseConversationSummary(phaseOutputs),
+      };
+    }
+
     emitProgress(
       {
         phase: "1",
@@ -2151,7 +2208,7 @@ export async function runProcessDefinitionPhase(args: {
       args.outputMode,
     );
 
-    return state.report.processPath;
+    return state.report;
   } catch (error: unknown) {
     writeVerboseData(
       "phase1 error",
@@ -2179,3 +2236,6 @@ export async function runProcessDefinitionPhase(args: {
     session.dispose();
   }
 }
+
+/** @deprecated Use runPlanProcessPhase instead */
+export const runProcessDefinitionPhase = runPlanProcessPhase;

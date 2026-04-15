@@ -63,6 +63,7 @@ export interface HarnessCreateRunArgs {
   interactive?: boolean;
   existingRunId?: string;
   existingRunDir?: string;
+  existingSessionBound?: SessionBindResult;
   planOnly?: boolean;
   outputMode?: OutputMode;
 }
@@ -72,7 +73,7 @@ export type SessionCreateArgs = HarnessCreateRunArgs;
 
 export interface Phase1Progress {
   phase: "1";
-  status: "started" | "skipped" | "completed" | "failed" | "interview";
+  status: "started" | "skipped" | "completed" | "failed" | "interview" | "intent" | "planning";
   harness?: string;
   processPath?: string;
   error?: string;
@@ -114,6 +115,10 @@ export interface ToolResultShape {
 export interface ProcessDefinitionReport {
   processPath: string;
   summary?: string;
+  runId?: string;
+  runDir?: string;
+  sessionBound?: SessionBindResult;
+  conversationSummary?: string;
 }
 
 export interface OrchestrationFinishReport {
@@ -295,20 +300,24 @@ export function emitProgress(
   switch (payload.phase) {
     case "1":
       if (payload.status === "skipped") {
-        process.stderr.write(`${DIM}Phase 1 skipped (--process provided)${RESET}\n`);
+        process.stderr.write(`${DIM}PhasePlanProcess skipped (--process provided)${RESET}\n`);
       } else if (payload.status === "started") {
-        process.stderr.write(`\n${BOLD}Phase 1${RESET} ${DIM}Interview / process definition via ${payload.harness}...${RESET}\n`);
+        process.stderr.write(`\n${BOLD}PhasePlanProcess${RESET} ${DIM}Process planning via ${payload.harness}...${RESET}\n`);
       } else if (payload.status === "completed") {
-        process.stderr.write(`${GREEN}Phase 1 complete${RESET} ${DIM}${payload.processPath}${RESET}\n`);
+        process.stderr.write(`${GREEN}PhasePlanProcess complete${RESET} ${DIM}${payload.processPath}${RESET}\n`);
       } else if (payload.status === "failed") {
-        process.stderr.write(`${RED}Phase 1 failed:${RESET} ${payload.error}\n`);
+        process.stderr.write(`${RED}PhasePlanProcess failed:${RESET} ${payload.error}\n`);
+      } else if (payload.status === "intent") {
+        process.stderr.write(`${DIM}PhaseUnderstandIntent: ${payload.answer}${RESET}\n`);
+      } else if (payload.status === "planning") {
+        process.stderr.write(`${DIM}PhasePlanProcess: ${payload.answer}${RESET}\n`);
       } else if (payload.status === "interview") {
         process.stderr.write(`${DIM}Interview answers: ${payload.answer}${RESET}\n`);
       }
       break;
     case "2":
       if (payload.status === "started") {
-        process.stderr.write(`\n${BOLD}Phase 2${RESET} ${DIM}Bound orchestration loop${RESET}\n`);
+        process.stderr.write(`\n${BOLD}PhaseOrchestration${RESET} ${DIM}Bound orchestration loop${RESET}\n`);
       } else if (payload.status === "run-created") {
         process.stderr.write(`${GREEN}Run created${RESET} runId=${CYAN}${payload.runId}${RESET}\n`);
         if (verbose) process.stderr.write(`  ${DIM}runDir: ${payload.runDir}${RESET}\n`);

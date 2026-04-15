@@ -1,5 +1,5 @@
 /**
- * TDD RED-phase tests for the ask tool enhancements (GAP-TOOLS-038).
+ * Tests for the common AskUserQuestion tool.
  *
  * Tests the new `mode` parameter being added to the ask agentic tool:
  *   - mode: 'simple' | 'structured' (default: 'structured')
@@ -8,8 +8,6 @@
  * When mode='simple': accepts a single `question` string, returns plain text.
  * When mode='structured': current behavior preserved (questions[] array).
  *
- * These tests are expected to FAIL against the current implementation
- * since the simple mode feature does not exist yet.
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -32,10 +30,10 @@ function getAskTool(
   const tools = createAgenticToolDefinitions({
     workspace: TEST_WORKSPACE,
     interactive,
-    askUserQuestionHandler: interactive ? handler : undefined,
+    askUserQuestionHandler: handler,
   });
-  const tool = tools.find((t) => t.name === "ask");
-  if (!tool) throw new Error("ask tool not found in agentic tool definitions");
+  const tool = tools.find((t) => t.name === "AskUserQuestion");
+  if (!tool) throw new Error("AskUserQuestion tool not found in agentic tool definitions");
   return { tool, handler };
 }
 
@@ -59,7 +57,7 @@ beforeEach(() => {
 // 1. mode parameter
 // ---------------------------------------------------------------------------
 
-describe("ask tool -- mode parameter", () => {
+describe("AskUserQuestion tool -- mode parameter", () => {
   it("should default to structured mode with questions[] (backward compat)", async () => {
     mockHandler.mockResolvedValue({
       answers: [{ id: "q1", answer: "TypeScript" }],
@@ -137,7 +135,7 @@ describe("ask tool -- mode parameter", () => {
 // 2. Simple mode behavior
 // ---------------------------------------------------------------------------
 
-describe("ask tool -- simple mode behavior", () => {
+describe("AskUserQuestion tool -- simple mode behavior", () => {
   it("should map single question to questions[] internally when calling handler", async () => {
     mockHandler.mockResolvedValue({
       answers: [{ id: "_simple", answer: "yes" }],
@@ -206,7 +204,7 @@ describe("ask tool -- simple mode behavior", () => {
 // 3. Structured mode behavior
 // ---------------------------------------------------------------------------
 
-describe("ask tool -- structured mode behavior", () => {
+describe("AskUserQuestion tool -- structured mode behavior", () => {
   it("should error when questions[] is missing in structured mode", async () => {
     const { tool } = getAskTool(true, mockHandler);
 
@@ -277,7 +275,7 @@ describe("ask tool -- structured mode behavior", () => {
 // 4. Backward compatibility
 // ---------------------------------------------------------------------------
 
-describe("ask tool -- backward compatibility", () => {
+describe("AskUserQuestion tool -- backward compatibility", () => {
   it("should work unchanged with questions[] and no mode param", async () => {
     const handlerResponse = {
       answers: [{ id: "q1", answer: "confirmed" }],
@@ -297,15 +295,35 @@ describe("ask tool -- backward compatibility", () => {
     expect(parsed.answers[0].answer).toBe("confirmed");
   });
 
-  it("should return error when not in interactive mode", async () => {
-    const { tool } = getAskTool(false);
+  it("still delegates to the handler in non-interactive mode", async () => {
+    mockHandler.mockResolvedValue({
+      answers: [{ id: "q1", answer: "auto-selected" }],
+    });
+    const { tool, handler } = getAskTool(false, mockHandler);
 
     const result = await tool.execute("call-13", {
       questions: [{ id: "q1", question: "Hello?" }],
     });
 
+    expect(handler).toHaveBeenCalledTimes(1);
+    const parsed = JSON.parse(getResultText(result));
+    expect(parsed.answers[0].answer).toBe("auto-selected");
+  });
+
+  it("returns an error when no handler is configured", async () => {
+    const tools = createAgenticToolDefinitions({
+      workspace: TEST_WORKSPACE,
+      interactive: false,
+    });
+    const tool = tools.find((entry) => entry.name === "AskUserQuestion");
+    if (!tool) throw new Error("AskUserQuestion tool not found in agentic tool definitions");
+
+    const result = await tool.execute("call-13b", {
+      questions: [{ id: "q1", question: "Hello?" }],
+    });
+
     const text = getResultText(result);
-    expect(text).toMatch(/not in interactive mode/i);
+    expect(text).toMatch(/no askuserquestionhandler provided/i);
   });
 
   it("should handle multiple questions correctly", async () => {

@@ -1,9 +1,8 @@
 /**
- * Phase 2: Bound orchestration loop.
+ * PhaseOrchestration: bound orchestration loop.
  *
- * Drives the babysitter run orchestration — creating the run, binding to a
- * harness session, iterating effects, and resolving them through PI workers
- * or external harness CLIs.
+ * Drives the babysitter run orchestration by iterating effects and resolving
+ * them through the common tool surface plus direct SDK state transitions.
  */
 
 import * as path from "node:path";
@@ -18,7 +17,6 @@ import { orchestrateIteration } from "../../runtime/orchestrateIteration";
 import { commitEffectResult } from "../../runtime/commitEffectResult";
 import {
   buildOrchestrationSystemPrompt,
-  buildOrchestrationBootstrapPrompt,
   buildOrchestrationTurnPrompt,
 } from "./harnessPrompts";
 import { createPiContext } from "../../prompts/context";
@@ -27,13 +25,12 @@ import {
   buildAgentPrompt,
   coerceAgentResultValue,
   execShellEffect,
+  runDelegatedHarnessTask,
 } from "./harnessPhase1";
 import {
   // Types
   type OrchestrationState,
   type ToolResultShape,
-  type AskUserQuestionToolContext,
-  type DelegationConfig,
   type EffectRetryConfig,
   type ResolveEffectResult,
   type CompressionConfig,
@@ -53,7 +50,6 @@ import {
   DEFAULT_EFFECT_RETRY_CONFIG,
   PI_PARENT_PROMPT_TIMEOUT_MS,
   PI_WORKER_TIMEOUT_MS,
-  ASK_USER_QUESTION_SCHEMA,
   // Functions
   writeVerboseLine,
   writeVerboseBlock,
@@ -65,7 +61,6 @@ import {
   isInternalHarness,
   shouldUseExternalHarness,
   shellQuoteArg,
-  readStringMetadata,
   isProcessModuleLoadFailure,
   isIgnorablePiPromptFailure,
   promptPiWithRetry,
@@ -908,10 +903,15 @@ export async function runOrchestrationPhase(args: {
   promptContext: SessionCreatePromptContext;
   existingRunId?: string;
   existingRunDir?: string;
+  existingSessionBound?: import("../../harness/types").SessionBindResult;
+  planningConversationSummary?: string;
   outputMode?: import("./harnessUtils").OutputMode;
 }): Promise<number> {
   const processId = path.basename(args.processPath, path.extname(args.processPath));
   const state: OrchestrationState = {
+    runId: args.existingRunId,
+    runDir: args.existingRunDir,
+    sessionBound: args.existingSessionBound,
     iteration: 0,
     pendingActions: new Map(),
     pendingEffectResults: new Map(),
@@ -1480,154 +1480,6 @@ export async function runOrchestrationPhase(args: {
 
   const customTools: unknown[] = [
     {
-      name: "AskUserQuestion",
-      label: "Ask User Question",
-      description: "Ask the user one to four structured questions and receive structured answers.",
-      promptSnippet: "Use this for breakpoint approvals and required user clarification.",
-      parameters: ASK_USER_QUESTION_SCHEMA,
-      execute: async (
-        _toolCallId: string,
-        params: AskUserQuestionRequest,
-        _signal?: AbortSignal,
-        _onUpdate?: unknown,
-        toolContext?: AskUserQuestionToolContext,
-      ): Promise<ToolResultShape> => {
-        writeVerboseData("phase2 tool AskUserQuestion request", params);
-        const response = await askUserQuestionViaTool(
-          params,
-          args.interactive,
-          args.rl,
-          toolContext,
-        );
-        state.lastAskUserQuestionResponse = response;
-        writeVerboseData("phase2 tool AskUserQuestion response", response);
-        return formatToolResult(response, "AskUserQuestion completed.");
-      },
-    },
-    {
-      name: "babysitter_run_create",
-      label: "Babysitter Run Create",
-      description: "Create the babysitter run for the current process definition.",
-      parameters: Type.Object({
-        prompt: Type.Optional(Type.String()),
-      }),
-      execute: async (
-        _toolCallId: string,
-        params: { prompt?: string },
-      ): Promise<ToolResultShape> => {
-        writeVerboseData("phase2 tool babysitter_run_create request", params);
-        if (state.runId && state.runDir) {
-          writeVerboseData("phase2 tool babysitter_run_create result", { runId: state.runId, runDir: state.runDir });
-          return formatToolResult({ runId: state.runId, runDir: state.runDir }, "Run already exists.");
-        }
-        const effectivePrompt = args.prompt ?? params.prompt;
-        const result = await createRun({
-          runsDir: args.runsDir,
-          harness: args.selectedHarnessName,
-          process: {
-            processId,
-            importPath: path.resolve(args.processPath),
-          },
-          prompt: effectivePrompt,
-          inputs: effectivePrompt
-            ? { prompt: effectivePrompt }
-            : undefined,
-          ...(args.interactive === false ? { metadata: { nonInteractive: true } } : {}),
-        });
-        state.runId = result.runId;
-        state.runDir = result.runDir;
-        emitProgress(
-          {
-            phase: "2",
-            status: "run-created",
-            runId: result.runId,
-            runDir: result.runDir,
-          },
-          args.json,
-          args.verbose,
-          args.outputMode,
-        );
-        writeVerboseData("phase2 tool babysitter_run_create result", result);
-        return formatToolResult(result, "Run created.");
-      },
-    },
-    {
-      name: "babysitter_bind_session",
-      label: "Babysitter Bind Session",
-      description: "Bind the orchestration run to the current harness session.",
-      parameters: Type.Object({}),
-      execute: async (): Promise<ToolResultShape> => {
-        writeVerbose("[phase2 tool babysitter_bind_session request]");
-        if (!state.runId || !state.runDir) {
-          throw new BabysitterRuntimeError(
-            "RunNotCreated",
-            "Create the run before binding the orchestration session.",
-            { category: ErrorCategory.Validation },
-          );
-        }
-        if (state.sessionBound) {
-          return formatToolResult(state.sessionBound, "Session is already bound.");
-        }
-        const adapter = getAdapterByName(args.selectedHarnessName);
-        if (!adapter) {
-          throw new BabysitterRuntimeError(
-            "HarnessAdapterMissing",
-            `No harness adapter is registered for ${args.selectedHarnessName}.`,
-            { category: ErrorCategory.Configuration },
-          );
-        }
-        const sessionId = resolveHarnessSessionIdForBinding(
-          args,
-          adapter,
-          orchestrationSession,
-        );
-        if (!sessionId) {
-          throw new BabysitterRuntimeError(
-            "MissingHarnessSessionId",
-            `Cannot resolve a session ID for harness ${args.selectedHarnessName}.`,
-            { category: ErrorCategory.Configuration },
-          );
-        }
-        const pluginRoot = adapter.resolvePluginRoot({});
-        const stateDir = adapter.resolveStateDir({ pluginRoot });
-        state.sessionBound = await adapter.bindSession({
-          sessionId,
-          runId: state.runId,
-          runDir: state.runDir,
-          pluginRoot,
-          stateDir,
-          runsDir: args.runsDir,
-          maxIterations: args.maxIterations,
-          prompt: args.prompt ?? "",
-          verbose: args.verbose,
-          json: args.json,
-        });
-        if (state.sessionBound.fatal) {
-          throw new BabysitterRuntimeError(
-            "SessionBindFatal",
-            state.sessionBound.error ?? "Session binding failed fatally.",
-            { category: ErrorCategory.External },
-          );
-        }
-        emitProgress(
-          {
-            phase: "2",
-            status: "bound",
-            runId: state.runId,
-            runDir: state.runDir,
-            harness: state.sessionBound.harness,
-            sessionId: state.sessionBound.sessionId,
-            error: state.sessionBound.error,
-          },
-          args.json,
-          args.verbose,
-          args.outputMode,
-        );
-        writeVerboseData("phase2 tool babysitter_bind_session result", state.sessionBound);
-        return formatToolResult(state.sessionBound, "Session bound.");
-      },
-    },
-    {
       name: "babysitter_run_iterate",
       label: "Babysitter Run Iterate",
       description: "Run the next orchestration iteration and return pending effects or a terminal result.",
@@ -1774,308 +1626,6 @@ export async function runOrchestrationPhase(args: {
             ? "Process error — fix the process code and retry iteration."
             : "Iteration completed.",
         );
-      },
-    },
-    {
-      name: "babysitter_run_shell_effect",
-      label: "Babysitter Run Shell Effect",
-      description: "Run a pending shell effect through an internal PI worker session that respects task metadata, and stage the result for task posting.",
-      parameters: Type.Object({
-        effectId: Type.String(),
-      }),
-      execute: async (
-        _toolCallId: string,
-        params: { effectId: string },
-      ): Promise<ToolResultShape> => {
-        writeVerboseData("phase2 tool babysitter_run_shell_effect request", params);
-        const action = state.pendingActions.get(params.effectId);
-        if (!action) {
-          throw new BabysitterRuntimeError(
-            "PendingEffectNotFound",
-            `No pending effect found for ${params.effectId}.`,
-            { category: ErrorCategory.Validation },
-          );
-        }
-        if (action.kind !== "shell") {
-          return formatToolResult(
-            {
-              effectId: params.effectId,
-              kind: action.kind,
-              message: "Use babysitter_dispatch_effect_harness for non-shell effects.",
-            },
-            "This tool is only for shell effects.",
-          );
-        }
-
-        const workerSessionOptions = buildPiWorkerSessionOptions({
-          action,
-          workspace: args.workspace,
-          model: args.model,
-          customTools: phase2AgenticTools,
-        });
-        writeVerboseData("phase2 worker session options", workerSessionOptions);
-        const workerSession = registerPiSession(createPiSession(workerSessionOptions));
-        const shellLabel = `shell-worker:${params.effectId.slice(-8)}`;
-        let shellUnsub = subscribeVerbosePiEvents(workerSession, shellLabel, args);
-        const piSessionFactory = () => {
-          const s = registerPiSession(createPiSession(buildPiWorkerSessionOptions({
-            action,
-            workspace: args.workspace,
-            model: args.model,
-            customTools: phase2AgenticTools,
-          })));
-          shellUnsub?.();
-          shellUnsub = subscribeVerbosePiEvents(s, shellLabel, args);
-          return s;
-        };
-        try {
-          const effectResult = await resolveEffectWithRetry(
-            action,
-            "pi",
-            {
-              workspace: args.workspace,
-              model: args.model,
-              interactive: false,
-              compressionConfig: args.compressionConfig,
-            },
-            workerSession,
-            args.discovered,
-            null,
-            args.json,
-            piSessionFactory,
-            shutdownPiSession,
-          );
-          state.pendingEffectResults.set(params.effectId, effectResult);
-          writeVerboseData("phase2 tool babysitter_run_shell_effect result", {
-            effectId: params.effectId,
-            effectResult,
-          });
-          return formatToolResult(
-            { effectId: params.effectId, effectResult },
-            "Shell effect executed on the internal PI worker and staged for task posting.",
-          );
-        } finally {
-          shellUnsub?.();
-          await shutdownPiSession(workerSession);
-        }
-      },
-    },
-    {
-      name: "babysitter_dispatch_effect_harness",
-      label: "Babysitter Dispatch Effect Harness",
-      description: "Dispatch a pending non-shell effect through an internal or external harness wrapper and stage the result for task posting.",
-      parameters: Type.Object({
-        effectId: Type.String(),
-        harness: Type.Optional(Type.String()),
-        model: Type.Optional(Type.String()),
-        timeout: Type.Optional(Type.Number()),
-        skills: Type.Optional(Type.Array(Type.String())),
-        subagentName: Type.Optional(Type.String()),
-        toolsMode: Type.Optional(Type.Union([
-          Type.Literal("default"),
-          Type.Literal("coding"),
-          Type.Literal("readonly"),
-        ])),
-        thinkingLevel: Type.Optional(Type.Union([
-          Type.Literal("none"),
-          Type.Literal("low"),
-          Type.Literal("medium"),
-          Type.Literal("high"),
-        ])),
-        bashSandbox: Type.Optional(Type.Union([
-          Type.Literal("auto"),
-          Type.Literal("secure"),
-          Type.Literal("local"),
-        ])),
-      }),
-      execute: async (
-        _toolCallId: string,
-        params: {
-          effectId: string;
-          harness?: string;
-          model?: string;
-          timeout?: number;
-          skills?: string[];
-          subagentName?: string;
-          toolsMode?: "default" | "coding" | "readonly";
-          thinkingLevel?: "none" | "low" | "medium" | "high";
-          bashSandbox?: "auto" | "secure" | "local";
-        },
-      ): Promise<ToolResultShape> => {
-        writeVerboseData("phase2 tool babysitter_dispatch_effect_harness request", params);
-        const action = state.pendingActions.get(params.effectId);
-        if (!action) {
-          throw new BabysitterRuntimeError(
-            "PendingEffectNotFound",
-            `No pending effect found for ${params.effectId}.`,
-            { category: ErrorCategory.Validation },
-          );
-        }
-        if (action.kind === "breakpoint") {
-          return formatToolResult(
-            {
-              effectId: params.effectId,
-              kind: action.kind,
-              message: "Use AskUserQuestion followed by babysitter_task_post_result for breakpoint effects.",
-            },
-            "Breakpoint effects require explicit AskUserQuestion handling.",
-          );
-        }
-        const requestedHarness = typeof params.harness === "string" && params.harness.trim().length > 0
-          ? params.harness.trim()
-          : undefined;
-
-        // Build delegation config from tool params, falling back to task metadata
-        const taskMetadata = action.taskDef?.metadata as Record<string, unknown> | undefined;
-        const delegationConfig: DelegationConfig = {
-          model: params.model ?? readStringMetadata(taskMetadata, "model"),
-          timeout: params.timeout ?? (typeof taskMetadata?.timeout === "number" ? taskMetadata.timeout : undefined),
-          toolsMode: params.toolsMode
-            ?? readStringMetadata(taskMetadata, "toolsMode") as DelegationConfig["toolsMode"],
-          thinkingLevel: params.thinkingLevel
-            ?? readStringMetadata(taskMetadata, "thinkingLevel") as DelegationConfig["thinkingLevel"],
-          bashSandbox: params.bashSandbox
-            ?? readStringMetadata(taskMetadata, "bashSandbox") as DelegationConfig["bashSandbox"],
-          skills: params.skills ?? (Array.isArray(taskMetadata?.skills) ? taskMetadata.skills as string[] : undefined),
-          subagentName: params.subagentName ?? readStringMetadata(taskMetadata, "subagentName"),
-        };
-
-        // Effective model for invokeHarness calls (delegationConfig > args.model)
-        const effectiveModel = delegationConfig.model ?? args.model;
-
-        if (action.kind === "shell") {
-          const workerSessionOptions = buildPiWorkerSessionOptions({
-            action,
-            workspace: args.workspace,
-            model: args.model,
-            customTools: phase2AgenticTools,
-            delegationConfig,
-          });
-          writeVerboseData("phase2 worker session options", workerSessionOptions);
-          const workerSession = registerPiSession(createPiSession(workerSessionOptions));
-          const dispShellLabel = `dispatch-shell:${params.effectId.slice(-8)}`;
-          let dispShellUnsub = subscribeVerbosePiEvents(workerSession, dispShellLabel, args);
-          const shellPiSessionFactory = () => {
-            const s = registerPiSession(createPiSession(buildPiWorkerSessionOptions({
-              action,
-              workspace: args.workspace,
-              model: args.model,
-              customTools: phase2AgenticTools,
-              delegationConfig,
-            })));
-            dispShellUnsub?.();
-            dispShellUnsub = subscribeVerbosePiEvents(s, dispShellLabel, args);
-            return s;
-          };
-          try {
-            const effectResult = await resolveEffectWithRetry(
-              action,
-              requestedHarness ?? "pi",
-              {
-                workspace: args.workspace,
-                model: effectiveModel,
-                interactive: false,
-                compressionConfig: args.compressionConfig,
-              },
-              workerSession,
-              args.discovered,
-              null,
-              args.json,
-              shellPiSessionFactory,
-              shutdownPiSession,
-            );
-            state.pendingEffectResults.set(params.effectId, effectResult);
-            writeVerboseData("phase2 tool babysitter_dispatch_effect_harness result", {
-              effectId: params.effectId,
-              selectedHarness: "pi",
-              effectResult,
-            });
-            return formatToolResult(
-              { effectId: params.effectId, selectedHarness: "pi", effectResult },
-              "Shell effect executed on the internal PI worker and staged for task posting.",
-            );
-          } finally {
-            dispShellUnsub?.();
-            await shutdownPiSession(workerSession);
-          }
-        }
-
-        const taskHarness = requestedHarness ?? resolveTaskHarness(action, args.selectedHarnessName, args.discovered);
-        writeVerboseData("phase2 effect execution plan", {
-          effectId: params.effectId,
-          kind: action.kind,
-          title: action.taskDef?.title,
-          resolvedHarness: taskHarness,
-          selectedHarness: args.selectedHarnessName,
-          metadata: (action.taskDef?.metadata as Record<string, unknown> | undefined) ?? undefined,
-          delegationConfig,
-        });
-        let workerSession: PiSessionHandle | null = null;
-        let dispatchUnsub: (() => void) | null = null;
-        const dispatchLabel = `dispatch:${params.effectId.slice(-8)}`;
-        const dispatchPiSessionFactory = isInternalHarness(taskHarness)
-          ? () => {
-              const s = registerPiSession(createPiSession(buildPiWorkerSessionOptions({
-                action,
-                workspace: args.workspace,
-                model: args.model,
-                customTools: phase2AgenticTools,
-                delegationConfig,
-              })));
-              dispatchUnsub?.();
-              dispatchUnsub = subscribeVerbosePiEvents(s, dispatchLabel, args);
-              return s;
-            }
-          : undefined;
-        if (isInternalHarness(taskHarness)) {
-          workerSession = registerPiSession(createPiSession(buildPiWorkerSessionOptions({
-            action,
-            workspace: args.workspace,
-            model: args.model,
-            customTools: phase2AgenticTools,
-            delegationConfig,
-          })));
-          dispatchUnsub = subscribeVerbosePiEvents(workerSession, dispatchLabel, args);
-          writeVerboseData("phase2 worker session options", buildPiWorkerSessionOptions({
-            action,
-            workspace: args.workspace,
-            model: args.model,
-            customTools: phase2AgenticTools,
-            delegationConfig,
-          }));
-        }
-
-        try {
-          const effectResult = await resolveEffectWithRetry(
-            action,
-            taskHarness,
-            {
-              workspace: args.workspace,
-              model: effectiveModel,
-              interactive: false,
-              compressionConfig: args.compressionConfig,
-            },
-            workerSession,
-            args.discovered,
-            null,
-            args.json,
-            dispatchPiSessionFactory,
-            shutdownPiSession,
-          );
-          state.pendingEffectResults.set(params.effectId, effectResult);
-          writeVerboseData("phase2 tool babysitter_dispatch_effect_harness result", {
-            effectId: params.effectId,
-            selectedHarness: taskHarness,
-            effectResult,
-          });
-          return formatToolResult(
-            { effectId: params.effectId, selectedHarness: taskHarness, effectResult },
-            "Effect dispatched through the selected harness and staged for task posting.",
-          );
-        } finally {
-          dispatchUnsub?.();
-          await shutdownPiSession(workerSession);
-        }
       },
     },
     {
@@ -2286,6 +1836,28 @@ export async function runOrchestrationPhase(args: {
         params: { summary?: string },
       ): ToolResultShape => {
         writeVerboseData("phase2 tool babysitter_finish_orchestration", params);
+        if (state.pendingActions.size > 0) {
+          return formatToolResult(
+            {
+              complete: false,
+              nextStep: "Resolve and post all pending effects before finishing orchestration.",
+              pendingEffects: describePendingActions(),
+            },
+            "The run is not complete yet. Resolve the pending effects first.",
+          );
+        }
+        if (state.lastIterationResult?.status !== "completed" && state.lastIterationResult?.status !== "failed") {
+          return formatToolResult(
+            {
+              complete: false,
+              nextStep: state.lastIterationResult?.status === "process-error"
+                ? "Fix the process error and call babysitter_run_iterate again."
+                : "Keep iterating the run until it reaches a terminal state.",
+              lastIterationResult: state.lastIterationResult,
+            },
+            "The run is not in a terminal state yet.",
+          );
+        }
         state.finished = { summary: params.summary };
         return formatToolResult(state.finished, "Orchestration finish recorded.");
       },
@@ -2296,12 +1868,46 @@ export async function runOrchestrationPhase(args: {
     workspace: args.workspace ?? process.cwd(),
     interactive: args.interactive ?? false,
     askUserQuestionHandler: async (params: unknown) => {
-      return askUserQuestionViaTool(
+      const response = await askUserQuestionViaTool(
         params as AskUserQuestionRequest,
         args.interactive,
         args.rl,
         undefined,
       );
+      state.lastAskUserQuestionResponse = response;
+      writeVerboseData("phase2 tool AskUserQuestion response", response);
+      return response;
+    },
+    taskHandler: async (params: unknown) => {
+      writeVerboseData("phase2 tool task request", params);
+      const delegated = await runDelegatedHarnessTask({
+        ...(params as Record<string, unknown>),
+        task: String((params as Record<string, unknown>).task ?? ""),
+        workspace: args.workspace,
+        model: typeof (params as Record<string, unknown>).model === "string"
+          ? String((params as Record<string, unknown>).model)
+          : args.model,
+        customTools: customTools,
+      });
+      writeVerboseData("phase2 tool task result", delegated);
+      return delegated;
+    },
+    skillHandler: async (params: unknown) => {
+      writeVerboseData("phase2 tool skill request", params);
+      const delegated = await runDelegatedHarnessTask({
+        ...(params as Record<string, unknown>),
+        task: String((params as Record<string, unknown>).task ?? ""),
+        workspace: args.workspace,
+        model: typeof (params as Record<string, unknown>).model === "string"
+          ? String((params as Record<string, unknown>).model)
+          : args.model,
+        skills: Array.isArray((params as Record<string, unknown>).skills)
+          ? (params as Record<string, unknown>).skills as string[]
+          : undefined,
+        customTools: customTools,
+      });
+      writeVerboseData("phase2 tool skill result", delegated);
+      return delegated;
     },
   });
   // Wrap every tool's execute function so unhandled throws are converted to
@@ -2441,56 +2047,83 @@ export async function runOrchestrationPhase(args: {
     );
   };
 
-  const completeBootstrapAgentically = async (): Promise<void> => {
-    const bootstrapPrompts = [
-      {
-        label: "phase2 bootstrap",
-        message: buildOrchestrationBootstrapPrompt(
-          path.resolve(args.processPath),
-          args.prompt,
-          args.maxIterations,
-        ),
-      },
-      {
-        label: "phase2 bootstrap recovery",
-        message: [
-          "Complete the babysitter orchestration bootstrap.",
-          "",
-          `Process path: ${path.resolve(args.processPath)}`,
-          `User prompt: ${args.prompt ?? ""}`,
-          `Maximum iterations: ${args.maxIterations}`,
-          `Run id: ${state.runId ?? "(not created)"}`,
-          `Run dir: ${state.runDir ?? "(not created)"}`,
-          `Session bound: ${state.sessionBound ? "yes" : "no"}`,
-          "",
-          !state.runId || !state.runDir
-            ? "Create the run now."
-            : "Do not create another run.",
-          !state.sessionBound
-            ? "Bind the session now."
-            : "The session is already bound.",
-          "Do not iterate the run yet.",
-          "End with a short plain-text summary.",
-        ].join("\n"),
-      },
-    ] as const;
-
-    for (const attempt of bootstrapPrompts) {
-      const bootstrapSnapshot = captureOrchestrationProgressSnapshot();
-      await promptOrchestrationAgent(attempt.message, { label: attempt.label });
-      if (state.runId && state.runDir && state.sessionBound) {
-        return;
-      }
-      if (!orchestrationStateAdvanced(bootstrapSnapshot)) {
-        break;
-      }
+  const ensureBoundRunContext = async (): Promise<void> => {
+    if (!state.runId || !state.runDir) {
+      const created = await createRun({
+        runsDir: args.runsDir,
+        harness: args.selectedHarnessName,
+        process: {
+          processId,
+          importPath: path.resolve(args.processPath),
+        },
+        prompt: args.prompt,
+        inputs: args.prompt ? { prompt: args.prompt } : undefined,
+        ...(args.interactive === false ? { metadata: { nonInteractive: true } } : {}),
+      });
+      state.runId = created.runId;
+      state.runDir = created.runDir;
+      emitProgress(
+        {
+          phase: "2",
+          status: "run-created",
+          runId: created.runId,
+          runDir: created.runDir,
+        },
+        args.json,
+        args.verbose,
+        args.outputMode,
+      );
+      writeVerboseData("phase2 host run_create result", created);
     }
 
-    throw new BabysitterRuntimeError(
-      "OrchestrationBootstrapIncomplete",
-      "The orchestration agent did not create and bind the run during bootstrap.",
-      { category: ErrorCategory.Runtime },
+    if (state.sessionBound) {
+      return;
+    }
+
+    const adapter = getAdapterByName(args.selectedHarnessName);
+    if (!adapter) {
+      return;
+    }
+    const sessionId = resolveHarnessSessionIdForBinding(args, adapter, orchestrationSession);
+    if (!sessionId || !state.runId || !state.runDir) {
+      return;
+    }
+    const pluginRoot = adapter.resolvePluginRoot({});
+    const stateDir = adapter.resolveStateDir({ pluginRoot });
+    state.sessionBound = await adapter.bindSession({
+      sessionId,
+      runId: state.runId,
+      runDir: state.runDir,
+      pluginRoot,
+      stateDir,
+      runsDir: args.runsDir,
+      maxIterations: args.maxIterations,
+      prompt: args.prompt ?? "",
+      verbose: args.verbose,
+      json: args.json,
+    });
+    if (state.sessionBound.fatal) {
+      throw new BabysitterRuntimeError(
+        "SessionBindFatal",
+        state.sessionBound.error ?? "Session binding failed fatally.",
+        { category: ErrorCategory.External },
+      );
+    }
+    emitProgress(
+      {
+        phase: "2",
+        status: "bound",
+        runId: state.runId,
+        runDir: state.runDir,
+        harness: state.sessionBound.harness,
+        sessionId: state.sessionBound.sessionId,
+        error: state.sessionBound.error,
+      },
+      args.json,
+      args.verbose,
+      args.outputMode,
     );
+    writeVerboseData("phase2 host bind result", state.sessionBound);
   };
 
   orchestrationSession = registerPiSession(createPiSession({
@@ -2534,12 +2167,12 @@ export async function runOrchestrationPhase(args: {
       unsubscribe = subscribeVerbosePiEvents(orchestrationSession, "orchestrator", args);
     }
 
-    await completeBootstrapAgentically();
+    await ensureBoundRunContext();
 
     if (!state.runId || !state.runDir) {
       throw new BabysitterRuntimeError(
         "RunNotCreated",
-        "The orchestration session could not establish a run after bootstrap.",
+        "The orchestration session could not establish a run before iteration.",
         { category: ErrorCategory.Runtime },
       );
     }
@@ -2559,6 +2192,7 @@ export async function runOrchestrationPhase(args: {
           buildOrchestrationTurnPrompt({
             processPath: path.resolve(args.processPath),
             userPrompt: args.prompt,
+            planningConversationSummary: args.planningConversationSummary,
             maxIterations: args.maxIterations,
             currentIteration: state.iteration,
             runId: state.runId,

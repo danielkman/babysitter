@@ -59,10 +59,11 @@ vi.mock("../../../interaction", async () => {
 
 vi.mock("../../../harness/piWrapper", () => {
   let sessionCounter = 0;
-  const createPiSession = vi.fn((options?: { customTools?: Array<Record<string, unknown>> }) => {
+  const createPiSession = vi.fn((options?: { customTools?: Array<Record<string, unknown>>; workspace?: string }) => {
     sessionCounter += 1;
     const sessionId = `mock-session-id-${sessionCounter}`;
     const tools = options?.customTools ?? [];
+    let promptCount = 0;
     const getTool = (name: string) => tools.find((tool) => tool.name === name) as {
       execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
     } | undefined;
@@ -83,34 +84,34 @@ vi.mock("../../../harness/piWrapper", () => {
         return true;
       },
         prompt: vi.fn(async () => {
+          promptCount += 1;
           const reportProcess = getTool("babysitter_report_process_definition");
           if (reportProcess?.execute) {
-            const writeProcess = getTool("babysitter_write_process_definition");
+            if (promptCount === 1) {
+              return { success: true, output: "phaseUnderstandIntent", exitCode: 0, duration: 1 };
+            }
+            const writeProcess = getTool("write");
             if (writeProcess?.execute) {
               await writeProcess.execute("tool-write", {
-                source: 'function defineTask(id, build) { return { id, build }; }\nconst t = defineTask("t", () => ({ kind: "agent", agent: { name: "a", prompt: { task: "x" }, outputSchema: { type: "object" } } }));\nexport async function process(inputs, ctx) { return await ctx.task(t, {}); }',
-                filename: "generated-process.mjs",
+                path: ".a5c/processes/generated-process.mjs",
+                content: 'function defineTask(id, build) { return { id, build }; }\nconst t = defineTask("t", () => ({ kind: "agent", agent: { name: "a", prompt: { task: "x" }, outputSchema: { type: "object" } } }));\nexport async function process(inputs, ctx) { return await ctx.task(t, {}); }',
               });
             }
+            const resolvedProcessPath = path.resolve(options?.workspace ?? process.cwd(), ".a5c/processes/generated-process.mjs");
             await reportProcess.execute("tool-process", {
-            processPath: "/tmp/.a5c/processes/generated-process.mjs",
-            summary: "Generated process",
-          });
-          return { success: true, output: "phase1", exitCode: 0, duration: 1 };
-        }
+              processPath: resolvedProcessPath,
+              summary: "Generated process",
+            });
+            return { success: true, output: "phasePlanProcess", exitCode: 0, duration: 1 };
+          }
 
-        const runCreate = getTool("babysitter_run_create");
-        const bindSession = getTool("babysitter_bind_session");
         const runIterate = getTool("babysitter_run_iterate");
-        const runShellEffect = getTool("babysitter_run_shell_effect");
-        const dispatchEffectHarness = getTool("babysitter_dispatch_effect_harness");
         const taskPost = getTool("babysitter_task_post_result");
+        const taskTool = getTool("task");
+        const askTool = getTool("AskUserQuestion");
         const finish = getTool("babysitter_finish_orchestration");
 
-        if (runCreate?.execute) {
-          await runCreate.execute("tool-run-create", {});
-          await bindSession?.execute?.("tool-bind", {});
-
+        if (runIterate?.execute) {
           while (true) {
             const iterationResult = await runIterate?.execute?.("tool-iterate", {});
             const details = iterationResult?.details as Record<string, unknown> | undefined;
@@ -120,13 +121,36 @@ vi.mock("../../../harness/piWrapper", () => {
               for (const action of nextActions) {
                 const effectId = String(action.effectId);
                 if (action.kind === "breakpoint") {
+                  await askTool?.execute?.("tool-ask-breakpoint", {
+                    mode: "structured",
+                    questions: [{
+                      id: "decision",
+                      question: "Approve?",
+                      options: [{ label: "Approve" }, { label: "Reject" }],
+                      recommended: 0,
+                    }],
+                  });
                   await taskPost?.execute?.("tool-post-breakpoint", { effectId });
-                } else if (action.kind === "shell") {
-                  await runShellEffect?.execute?.("tool-run-shell", { effectId });
-                  await taskPost?.execute?.("tool-post-shell", { effectId });
+                } else if (action.kind === "shell" || action.kind === "sleep") {
+                  await taskPost?.execute?.("tool-post-shell", {
+                    effectId,
+                    status: "ok",
+                    valueText: "ok",
+                    stdout: "ok",
+                  });
                 } else {
-                  await dispatchEffectHarness?.execute?.("tool-dispatch-effect", { effectId });
-                  await taskPost?.execute?.("tool-post-effect", { effectId });
+                  const taskResult = await taskTool?.execute?.("tool-task-effect", {
+                    task: String(action.taskDef?.title ?? action.taskId ?? effectId),
+                    harness: action.taskDef?.metadata?.harness,
+                  });
+                  const taskDetails = taskResult?.details as Record<string, unknown> | undefined;
+                  await taskPost?.execute?.("tool-post-effect", {
+                    effectId,
+                    status: taskDetails?.success === false ? "error" : "ok",
+                    valueText: typeof taskDetails?.output === "string" ? taskDetails.output : "done",
+                    error: taskDetails?.success === false ? String(taskDetails.output ?? "failed") : undefined,
+                    stdout: typeof taskDetails?.output === "string" ? taskDetails.output : undefined,
+                  });
                 }
               }
               continue;
