@@ -13,6 +13,14 @@ actual explicit selection via task:post. An empty response is NOT approval.
 CRITICAL RULE: If a run is broken/failed/at unknown state, one way to recover is
 to remove last bad entries in the journal and rebuild the state.
 
+CRITICAL RULE: If the process reaches a dead-end, loops uselessly, or keeps
+emitting shell/tasks that always fail, do not keep replaying the same broken
+iteration forever. Inspect the process file, journal, and task artifacts, then
+repair the run so it can continue. This may require editing the process file
+itself and/or correcting run artifacts such as journal entries, task
+definitions, or task result files so the next `run:iterate` can make forward
+progress.
+
 CRITICAL RULE: When creating processes, search for available skills and subagents
 before thinking about the exact orchestration. Prefer processes that close the
 widest loop in the quality gates.
