@@ -31,6 +31,17 @@ let ancestorCache: AncestorCacheEntry | undefined;
 type WindowsStrategy = "powershell" | "wmic" | "tasklist-incapable";
 let cachedWindowsStrategy: WindowsStrategy | undefined;
 
+export const SESSION_PID_MARKER_ENV_VAR = "BABYSITTER_ENABLE_SESSION_PID_MARKERS";
+
+export function isSessionPidMarkerEnabled(): boolean {
+  const raw = process.env[SESSION_PID_MARKER_ENV_VAR];
+  if (!raw) {
+    return false;
+  }
+  const normalized = raw.trim().toLowerCase();
+  return normalized === "1" || normalized === "true";
+}
+
 export function __resetCacheForTests(): void {
   ancestorCache = undefined;
   cachedWindowsStrategy = undefined;
@@ -57,6 +68,33 @@ function sanitizeHarnessSlug(harness: string): string {
 export function getSessionMarkerPath(harness: string, ancestorPid: number): string {
   const slug = sanitizeHarnessSlug(harness) || "harness";
   return path.join(getGlobalStateDir(), `current-session-${slug}-pid-${ancestorPid}`);
+}
+
+function parseHarnessPidOverride(): number | undefined {
+  const raw = process.env.BABYSITTER_HARNESS_PID;
+  if (!raw) {
+    return undefined;
+  }
+  const parsed = parseInt(raw, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : undefined;
+}
+
+export function hasSessionMarkerCandidate(harness: string): boolean {
+  if (!isSessionPidMarkerEnabled()) {
+    return false;
+  }
+  const overridePid = parseHarnessPidOverride();
+  if (overridePid) {
+    return existsSync(getSessionMarkerPath(harness, overridePid));
+  }
+
+  const slug = sanitizeHarnessSlug(harness) || "harness";
+  const markerPrefix = `current-session-${slug}-pid-`;
+  try {
+    return readdirSync(getGlobalStateDir()).some((entry) => entry.startsWith(markerPrefix));
+  } catch {
+    return false;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -141,25 +179,25 @@ function parseWindowsViaWmic(pid: number): ParentInfo | undefined {
 }
 
 function parseWindows(pid: number): ParentInfo | undefined {
-  if (cachedWindowsStrategy === "wmic") {
-    const info = parseWindowsViaWmic(pid);
-    if (info) return info;
-  } else if (cachedWindowsStrategy === "powershell") {
+  if (cachedWindowsStrategy === "powershell") {
     const info = parseWindowsViaPowershell(pid);
+    if (info) return info;
+  } else if (cachedWindowsStrategy === "wmic") {
+    const info = parseWindowsViaWmic(pid);
     if (info) return info;
   } else if (cachedWindowsStrategy === "tasklist-incapable") {
     return undefined;
   }
 
-  const wmicInfo = parseWindowsViaWmic(pid);
-  if (wmicInfo) {
-    cachedWindowsStrategy = "wmic";
-    return wmicInfo;
-  }
   const psInfo = parseWindowsViaPowershell(pid);
   if (psInfo) {
     cachedWindowsStrategy = "powershell";
     return psInfo;
+  }
+  const wmicInfo = parseWindowsViaWmic(pid);
+  if (wmicInfo) {
+    cachedWindowsStrategy = "wmic";
+    return wmicInfo;
   }
   cachedWindowsStrategy = "tasklist-incapable";
   return undefined;
@@ -176,12 +214,10 @@ function normalizeProcName(name: string): string {
 
 export function findHarnessAncestorPid(processNames: string[]): AncestorInfo | undefined {
   if (ancestorResolverOverride) return ancestorResolverOverride(processNames);
-  
-  if (process.env.BABYSITTER_HARNESS_PID) {
-    const overridePid = parseInt(process.env.BABYSITTER_HARNESS_PID, 10);
-    if (Number.isFinite(overridePid) && overridePid > 0) {
-      return { pid: overridePid };
-    }
+
+  const overridePid = parseHarnessPidOverride();
+  if (overridePid) {
+    return { pid: overridePid };
   }
 
   const processNamesKey = processNames.join("|");
@@ -242,6 +278,9 @@ function atomicWriteString(target: string, content: string): void {
 }
 
 export function writeSessionMarker(harness: string, sessionId: string): string | undefined {
+  if (!isSessionPidMarkerEnabled()) {
+    return undefined;
+  }
   const info = findHarnessAncestorPid(deriveProcessNames(harness));
   if (!info) return undefined;
   const target = getSessionMarkerPath(harness, info.pid);
@@ -254,6 +293,9 @@ const MARKER_FILENAME_RE = /^current-session-.+-pid-(\d+)$/;
 const MARKER_RECENCY_GRACE_MS = 60_000;
 
 export function cleanupDeadSessionMarkers(): number {
+  if (!isSessionPidMarkerEnabled()) {
+    return 0;
+  }
   const dir = getGlobalStateDir();
   let entries: string[];
   try {
@@ -285,6 +327,12 @@ export function cleanupDeadSessionMarkers(): number {
 }
 
 export function readSessionMarker(harness: string): string | undefined {
+  if (!isSessionPidMarkerEnabled()) {
+    return undefined;
+  }
+  if (!ancestorResolverOverride && !hasSessionMarkerCandidate(harness)) {
+    return undefined;
+  }
   const info = findHarnessAncestorPid(deriveProcessNames(harness));
   if (!info) return undefined;
   if (!isProcessAlive(info.pid)) return undefined;

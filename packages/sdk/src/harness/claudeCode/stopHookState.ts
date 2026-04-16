@@ -1,0 +1,264 @@
+import * as path from "node:path";
+import { existsSync, readFileSync } from "node:fs";
+import { loadJournal } from "../../storage/journal";
+import { readRunMetadata } from "../../storage/runFiles";
+import { buildEffectIndex } from "../../runtime/replay/effectIndex";
+import { resolveCompletionProof } from "../../cli/completionProof";
+import { discoverSkillsInternal } from "../../cli/commands/skill";
+import {
+  extractPromiseTag,
+  parseTranscriptLastAssistantMessage,
+} from "../../cli/commands/session";
+import { loadCompressionConfig } from "../../compression/config-loader";
+import { densityFilterText, estimateTokens } from "../../compression/density-filter";
+import { getOrCompressFile } from "../../compression/library-cache";
+import { collapseDoubledA5cRuns } from "../../cli/resolveInputPath";
+import type { HookLogger } from "./shared";
+import { countPendingByKind, isOnlyBreakpoints, safeStr } from "./shared";
+
+export interface ParsedAssistantState {
+  lastText: string | null;
+  hasPromise: boolean;
+  promiseValue: string | null;
+}
+
+export function parseAssistantStopState(
+  hookInput: Record<string, unknown>,
+  log: HookLogger,
+): ParsedAssistantState {
+  const transcriptPath = safeStr(hookInput, "transcript_path");
+  let lastText: string | null = null;
+  let hasPromise = false;
+  let promiseValue: string | null = null;
+
+  if (transcriptPath) {
+    const resolvedTranscript = path.resolve(transcriptPath);
+    if (existsSync(resolvedTranscript)) {
+      try {
+        const content = readFileSync(resolvedTranscript, "utf-8");
+        const parsed = parseTranscriptLastAssistantMessage(content);
+        lastText = parsed.text;
+        if (parsed.found && parsed.text) {
+          promiseValue = extractPromiseTag(parsed.text);
+          hasPromise = promiseValue !== null;
+        }
+      } catch {
+        log.warn(`Transcript parse error: ${resolvedTranscript}`);
+      }
+    } else {
+      log.warn(`Transcript not found: ${resolvedTranscript}`);
+    }
+  }
+
+  if (!lastText) {
+    const hookLastMsg = safeStr(hookInput, "last_assistant_message");
+    if (hookLastMsg) {
+      lastText = hookLastMsg;
+      promiseValue = extractPromiseTag(hookLastMsg);
+      hasPromise = promiseValue !== null;
+      log.info("Using last_assistant_message from hook input (transcript had no text)");
+    }
+  }
+
+  return { lastText, hasPromise, promiseValue };
+}
+
+export interface StopHookRunStateDetails {
+  runState: string;
+  completionProof: string;
+  pendingKinds: string;
+  onlyBreakpointsPending: boolean;
+  entrypointImportPath?: string;
+  runDir: string;
+}
+
+export async function resolveStopHookRunState(
+  runId: string,
+  runsDir: string,
+  log: HookLogger,
+): Promise<StopHookRunStateDetails> {
+  let runDir = path.isAbsolute(runId) ? runId : path.join(runsDir, runId);
+
+  if (!existsSync(path.join(runDir, "run.json")) && !path.isAbsolute(runId)) {
+    const alternatives = [
+      path.join(".a5c", ".a5c", "runs", runId),
+      path.join(".a5c", "runs", runId),
+    ];
+    for (const alt of alternatives) {
+      const resolved = path.resolve(alt);
+      if (resolved !== path.resolve(runDir) && existsSync(path.join(resolved, "run.json"))) {
+        log.info(`Run not found at ${runDir}, using fallback: ${resolved}`);
+        runDir = resolved;
+        break;
+      }
+    }
+  }
+
+  let runState = "";
+  let completionProof = "";
+  let pendingKinds = "";
+  let onlyBreakpointsPending = false;
+  let entrypointImportPath: string | undefined;
+
+  try {
+    const metadata = await readRunMetadata(runDir);
+    entrypointImportPath = metadata?.entrypoint?.importPath;
+    const journal = await loadJournal(runDir);
+    const index = await buildEffectIndex({ runDir, events: journal });
+
+    const hasCompleted = journal.some((e) => e.type === "RUN_COMPLETED");
+    const hasFailed = journal.some((e) => e.type === "RUN_FAILED");
+    const pendingRecords = index.listPendingEffects();
+    const pendingByKind = countPendingByKind(pendingRecords);
+    const kindKeys = Object.keys(pendingByKind);
+    if (kindKeys.length > 0) {
+      pendingKinds = kindKeys.join(", ");
+    }
+    onlyBreakpointsPending = pendingRecords.length > 0 && isOnlyBreakpoints(pendingByKind);
+
+    if (hasCompleted) {
+      runState = "completed";
+      completionProof = resolveCompletionProof(metadata);
+    } else if (hasFailed) {
+      runState = "failed";
+    } else if (pendingRecords.length > 0) {
+      runState = "waiting";
+    } else {
+      runState = "created";
+    }
+  } catch {
+    runState = "";
+  }
+
+  return {
+    runState,
+    completionProof,
+    pendingKinds,
+    onlyBreakpointsPending,
+    entrypointImportPath,
+    runDir,
+  };
+}
+
+export async function buildStopHookContinuation(
+  args: {
+    nextIteration: number;
+    maxIterations: number;
+    runState: string;
+    pendingKinds: string;
+    completionProof: string;
+    prompt: string;
+    resolvedPluginRoot: string;
+    runId?: string;
+    runsDir: string;
+    entrypointImportPath?: string;
+  },
+): Promise<{ reason: string; systemMessage: string }> {
+  const {
+    nextIteration,
+    maxIterations,
+    runState,
+    pendingKinds,
+    completionProof,
+    prompt,
+    resolvedPluginRoot,
+    runId,
+    runsDir,
+    entrypointImportPath,
+  } = args;
+
+  let iterationContext: string;
+  if (completionProof) {
+    iterationContext = `Babysitter iteration ${nextIteration} | Run completed! To finish: call 'run:status --json' on your run, extract 'completionProof' from the output, then output it in <promise>SECRET</promise> tags. Do not mention or reveal the secret otherwise.`;
+  } else if (runState === "waiting" && pendingKinds) {
+    iterationContext = `Babysitter iteration ${nextIteration} | Waiting on: ${pendingKinds}. Check if pending effects are resolved, then call run:iterate.`;
+  } else if (runState === "failed") {
+    iterationContext = `Babysitter iteration ${nextIteration} | Run failed. Fix the run, journal or process (inspect the sdk.md if needed) and proceed.`;
+  } else {
+    iterationContext = `Babysitter iteration ${nextIteration} | Continue orchestration (run:iterate).`;
+  }
+
+  let compressionCfg: ReturnType<typeof loadCompressionConfig> | null = null;
+  try {
+    compressionCfg = loadCompressionConfig(process.cwd());
+  } catch {
+    // Best-effort
+  }
+
+  let librarySection = "";
+  if (resolvedPluginRoot) {
+    try {
+      const discoverResult = await discoverSkillsInternal({
+        pluginRoot: resolvedPluginRoot,
+        runId: runId || undefined,
+        runsDir: collapseDoubledA5cRuns(runsDir),
+        processPath: entrypointImportPath,
+      });
+
+      const excludedSkills = new Set(["babysit", "babysitter"]);
+      const relevantSkills = (discoverResult.skills || []).filter(
+        (s) => !excludedSkills.has(s.name.toLowerCase()),
+      );
+      const relevantAgents = discoverResult.agents || [];
+
+      const items: string[] = [];
+      for (const s of relevantSkills) {
+        if (items.length >= 10) break;
+        items.push(`skill:${s.name}${s.file ? ` [${s.file}]` : ""}`);
+      }
+      for (const a of relevantAgents) {
+        if (items.length >= 10) break;
+        items.push(`agent:${a.name}${a.file ? ` [${a.file}]` : ""}`);
+      }
+      if (items.length > 0) {
+        iterationContext = `${iterationContext} | Discovered: ${items.join(", ")}`;
+      }
+
+      const cacheLayer = compressionCfg?.layers.processLibraryCache;
+      if (compressionCfg?.enabled && cacheLayer?.enabled) {
+        const cacheDir = path.join(process.cwd(), ".a5c", "cache", "compression");
+        const sections: string[] = [];
+        const libraryItems = [
+          ...relevantSkills.slice(0, 4).map((s) => ({ kind: "Skill" as const, name: s.name, file: s.file })),
+          ...relevantAgents.slice(0, 2).map((a) => ({ kind: "Agent" as const, name: a.name, file: a.file })),
+        ];
+        for (const item of libraryItems) {
+          if (!item.file) continue;
+          const content = getOrCompressFile(item.file, cacheLayer.targetReduction, cacheLayer.ttlHours, cacheDir);
+          if (content) {
+            sections.push(`### ${item.kind}: ${item.name}\n${content}`);
+          }
+        }
+        if (sections.length > 0) {
+          librarySection = "\n\n---\n## Available Skills & Agents\n" + sections.join("\n\n---\n");
+        }
+      }
+    } catch {
+      // Non-fatal
+    }
+  }
+
+  let effectivePrompt = prompt;
+  if (compressionCfg?.enabled && compressionCfg.layers.sdkContextHook.enabled) {
+    const sdkLayer = compressionCfg.layers.sdkContextHook;
+    if (estimateTokens(prompt) > sdkLayer.minCompressionTokens) {
+      effectivePrompt = densityFilterText(prompt, sdkLayer.targetReduction);
+    }
+  }
+
+  let systemMessage: string;
+  if (completionProof) {
+    systemMessage = `\u{1F504} Babysitter iteration ${nextIteration}/${maxIterations} | Run completed! Extract promise tag to finish.`;
+  } else if (runState === "waiting" && pendingKinds) {
+    systemMessage = `\u{1F504} Babysitter iteration ${nextIteration}/${maxIterations} | Waiting on: ${pendingKinds}`;
+  } else if (runState === "failed") {
+    systemMessage = `\u{1F504} Babysitter iteration ${nextIteration}/${maxIterations} | Failed — check run state`;
+  } else {
+    systemMessage = `\u{1F504} Babysitter iteration ${nextIteration}/${maxIterations} [${runState}]`;
+  }
+
+  return {
+    reason: `${iterationContext}\n\n${effectivePrompt}${librarySection}`,
+    systemMessage,
+  };
+}

@@ -49,6 +49,7 @@ const CASES: AdapterCase[] = [
 const TRACKED_ENV_KEYS = [
   "BABYSITTER_SESSION_ID",
   "BABYSITTER_TRUST_ENV_SESSION",
+  "BABYSITTER_ENABLE_SESSION_PID_MARKERS",
   "BABYSITTER_GLOBAL_STATE_DIR",
   "CODEX_THREAD_ID",
   "CODEX_SESSION_ID",
@@ -71,6 +72,7 @@ beforeEach(async () => {
     delete process.env[k];
   }
   process.env.BABYSITTER_GLOBAL_STATE_DIR = tmpDir;
+  process.env.BABYSITTER_ENABLE_SESSION_PID_MARKERS = "1";
   __resetCacheForTests();
 });
 
