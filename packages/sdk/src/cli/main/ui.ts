@@ -146,7 +146,17 @@ export function outputError(error: Error, options: { json: boolean; verbose?: bo
 }
 
 export async function readCliVersion(): Promise<string> {
-  const packagePath = path.join(__dirname, "..", "..", "package.json");
-  const raw = await fs.readFile(packagePath, "utf8");
-  return (JSON.parse(raw) as { version?: string }).version ?? "unknown";
+  const candidatePaths = [
+    path.join(__dirname, "..", "..", "package.json"),
+    path.join(__dirname, "..", "..", "..", "package.json"),
+  ];
+  for (const packagePath of candidatePaths) {
+    try {
+      const raw = await fs.readFile(packagePath, "utf8");
+      return (JSON.parse(raw) as { version?: string }).version ?? "unknown";
+    } catch {
+      // try the next candidate
+    }
+  }
+  return "unknown";
 }

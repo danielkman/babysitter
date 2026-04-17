@@ -82,14 +82,20 @@ export interface HealthCheckResult {
  * Reads the CLI version from package.json
  */
 async function readCliVersion(): Promise<string> {
-  try {
-    const packagePath = path.join(__dirname, "..", "..", "..", "package.json");
-    const raw = await fs.readFile(packagePath, "utf8");
-    const parsed = JSON.parse(raw) as { version?: string };
-    return parsed.version ?? "unknown";
-  } catch {
-    return "unknown";
+  const candidatePaths = [
+    path.join(__dirname, "..", "..", "..", "package.json"),
+    path.join(__dirname, "..", "..", "..", "..", "package.json"),
+  ];
+  for (const packagePath of candidatePaths) {
+    try {
+      const raw = await fs.readFile(packagePath, "utf8");
+      const parsed = JSON.parse(raw) as { version?: string };
+      return parsed.version ?? "unknown";
+    } catch {
+      // try the next candidate
+    }
   }
+  return "unknown";
 }
 
 /**

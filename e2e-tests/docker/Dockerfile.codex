@@ -49,7 +49,9 @@ RUN mkdir -p /tmp/babysitter-process-library-source/library && \
     git add . && \
     git commit -qm "seed process library"
 RUN BABYSITTER_PROCESS_LIBRARY_REPO=/tmp/babysitter-process-library-source npm install -g /app/plugins/babysitter-codex && \
-    BABYSITTER_PROCESS_LIBRARY_REPO=/tmp/babysitter-process-library-source babysitter-codex install --global
+    BABYSITTER_PROCESS_LIBRARY_REPO=/tmp/babysitter-process-library-source \
+    BABYSITTER_PACKAGE_ROOT=/app/plugins/babysitter-codex \
+    node /app/plugins/babysitter-codex/scripts/team-install.js --workspace /home/codex
 
 WORKDIR /workspace
 
