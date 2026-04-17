@@ -14,13 +14,14 @@ const HOOK = `${PLUGIN_DIR}/hooks/babysitter-stop-hook.sh`;
 // Claude session state now lives in the global Babysitter state dir so all
 // harness entrypoints (hooks, CLI, Bash tool calls) resolve the same files.
 const STATE_DIR = "/home/claude/.a5c/state";
+const TEST_RUNS_DIR = "/tmp/hook-test-runs";
 const LOG_DIR = "/tmp/hook-test-logs";
-const HOOK_ENV = `CLAUDE_PLUGIN_ROOT=${PLUGIN_DIR} BABYSITTER_STATE_DIR=${STATE_DIR} BABYSITTER_LOG_DIR=${LOG_DIR} CLI=babysitter`;
+const HOOK_ENV = `CLAUDE_PLUGIN_ROOT=${PLUGIN_DIR} BABYSITTER_STATE_DIR=${STATE_DIR} BABYSITTER_RUNS_DIR=${TEST_RUNS_DIR} BABYSITTER_LOG_DIR=${LOG_DIR} CLI=babysitter`;
 
 beforeAll(() => {
   buildImage(ROOT);
   startContainer();
-  dockerExec(`mkdir -p ${STATE_DIR} ${LOG_DIR}`);
+  dockerExec(`mkdir -p ${STATE_DIR} ${LOG_DIR} ${TEST_RUNS_DIR}`);
 }, 300_000);
 
 afterAll(() => {
@@ -29,7 +30,7 @@ afterAll(() => {
 
 afterEach(() => {
   dockerExec(
-    `rm -rf ${STATE_DIR}/* ${LOG_DIR}/* /tmp/hook-test-run-* /tmp/hook-transcript-* /tmp/hook-input-* 2>/dev/null || true`,
+    `rm -rf ${STATE_DIR}/* ${LOG_DIR}/* ${TEST_RUNS_DIR}/* /tmp/hook-test-run-* /tmp/hook-transcript-* /tmp/hook-input-* 2>/dev/null || true`,
   );
 });
 
@@ -118,7 +119,7 @@ function createMockRun(
   runId: string,
   events: Array<{ type: string; data: Record<string, unknown> }>,
 ): string {
-  const runDir = `/tmp/hook-test-run-${runId}-${Date.now()}`;
+  const runDir = `${TEST_RUNS_DIR}/${runId}`;
   dockerExec(`mkdir -p ${runDir}/journal ${runDir}/state ${runDir}/tasks`);
 
   const runJson = JSON.stringify({ runId, processId: "test-process" });
@@ -143,7 +144,7 @@ function createMockRun(
     );
   }
 
-  return runDir;
+  return runId;
 }
 
 /** Assert the hook allowed exit (exit 0, no "block" decision). */
@@ -186,12 +187,12 @@ describe("Stop hook core lifecycle", () => {
     const transcriptFile = "/tmp/hook-transcript-active.jsonl";
 
     // Create a mock run so the session has an associated run
-    const runDir = createMockRun("active-run", [
+    const runId = createMockRun("active-run", [
       { type: "RUN_CREATED", data: { runId: "active-run", processId: "test" } },
     ]);
 
     dockerExec(
-      `babysitter session:init --session-id ${sid} --state-dir ${STATE_DIR} --prompt "test orchestration" --run-id ${runDir} --json`,
+      `babysitter session:init --session-id ${sid} --state-dir ${STATE_DIR} --prompt "test orchestration" --run-id ${runId} --json`,
     );
     createTranscript(transcriptFile, "some assistant output here");
 
@@ -228,12 +229,12 @@ describe("Stop hook core lifecycle", () => {
     const transcriptFile = "/tmp/hook-transcript-iter.jsonl";
 
     // Create a mock run so the session has an associated run
-    const runDir = createMockRun("iter-run", [
+    const runId = createMockRun("iter-run", [
       { type: "RUN_CREATED", data: { runId: "iter-run", processId: "test" } },
     ]);
 
     dockerExec(
-      `babysitter session:init --session-id ${sid} --state-dir ${STATE_DIR} --prompt "counting test" --run-id ${runDir} --json`,
+      `babysitter session:init --session-id ${sid} --state-dir ${STATE_DIR} --prompt "counting test" --run-id ${runId} --json`,
     );
     createTranscript(transcriptFile, "iteration output");
 
@@ -415,13 +416,13 @@ describe("Stop hook run state handling", () => {
   test("blocks exit and tells agent to extract proof when run is completed but no promise tag", () => {
     const sid = "nopromise-" + Date.now();
     const transcriptFile = "/tmp/hook-transcript-nopromise.jsonl";
-    const runDir = createMockRun("nopromise", [
+    const runId = createMockRun("nopromise", [
       { type: "RUN_CREATED", data: {} },
       { type: "RUN_COMPLETED", data: { outputRef: "state/output.json" } },
     ]);
 
     dockerExec(
-      `babysitter session:init --session-id ${sid} --state-dir ${STATE_DIR} --prompt "promise test" --run-id ${runDir} --json`,
+      `babysitter session:init --session-id ${sid} --state-dir ${STATE_DIR} --prompt "promise test" --run-id ${runId} --json`,
     );
     createTranscript(transcriptFile, "I think I am done, no proof though!");
 
@@ -439,13 +440,13 @@ describe("Stop hook run state handling", () => {
   test("blocks exit when completed run has wrong promise value", () => {
     const sid = "wrongpromise-" + Date.now();
     const transcriptFile = "/tmp/hook-transcript-wrongpromise.jsonl";
-    const runDir = createMockRun("wrongpromise", [
+    const runId = createMockRun("wrongpromise", [
       { type: "RUN_CREATED", data: {} },
       { type: "RUN_COMPLETED", data: { outputRef: "state/output.json" } },
     ]);
 
     dockerExec(
-      `babysitter session:init --session-id ${sid} --state-dir ${STATE_DIR} --prompt "wrong promise test" --run-id ${runDir} --json`,
+      `babysitter session:init --session-id ${sid} --state-dir ${STATE_DIR} --prompt "wrong promise test" --run-id ${runId} --json`,
     );
     createTranscript(transcriptFile, "Done! <promise>wrong-secret-value</promise>");
 
@@ -460,7 +461,7 @@ describe("Stop hook run state handling", () => {
   test("blocks exit and reports waiting effects when run has pending tasks", () => {
     const sid = "waiting-" + Date.now();
     const transcriptFile = "/tmp/hook-transcript-waiting.jsonl";
-    const runDir = createMockRun("waiting", [
+    const runId = createMockRun("waiting", [
       { type: "RUN_CREATED", data: {} },
       {
         type: "EFFECT_REQUESTED",
@@ -477,7 +478,7 @@ describe("Stop hook run state handling", () => {
     ]);
 
     dockerExec(
-      `babysitter session:init --session-id ${sid} --state-dir ${STATE_DIR} --prompt "waiting test" --run-id ${runDir} --json`,
+      `babysitter session:init --session-id ${sid} --state-dir ${STATE_DIR} --prompt "waiting test" --run-id ${runId} --json`,
     );
     createTranscript(transcriptFile, "working on the task");
 
@@ -494,13 +495,13 @@ describe("Stop hook run state handling", () => {
   test("blocks exit and reports failure when run is failed", () => {
     const sid = "failed-" + Date.now();
     const transcriptFile = "/tmp/hook-transcript-failed.jsonl";
-    const runDir = createMockRun("failed", [
+    const runId = createMockRun("failed", [
       { type: "RUN_CREATED", data: {} },
       { type: "RUN_FAILED", data: { reason: "process crashed" } },
     ]);
 
     dockerExec(
-      `babysitter session:init --session-id ${sid} --state-dir ${STATE_DIR} --prompt "failed test" --run-id ${runDir} --json`,
+      `babysitter session:init --session-id ${sid} --state-dir ${STATE_DIR} --prompt "failed test" --run-id ${runId} --json`,
     );
     createTranscript(transcriptFile, "something went wrong");
 
@@ -513,18 +514,18 @@ describe("Stop hook run state handling", () => {
     expect(String(parsed!.systemMessage)).toContain("Failed");
   });
 
-  test("allows exit when run directory is misconfigured (empty state) but preserves session file for recovery", () => {
+  test("fails loudly when run directory is misconfigured but preserves session file for recovery", () => {
     const sid = "badrun-" + Date.now();
     const transcriptFile = "/tmp/hook-transcript-badrun.jsonl";
 
     dockerExec(
-      `babysitter session:init --session-id ${sid} --state-dir ${STATE_DIR} --prompt "bad run test" --run-id /nonexistent/run/dir --json`,
+      `babysitter session:init --session-id ${sid} --state-dir ${STATE_DIR} --prompt "bad run test" --run-id missing-run-${Date.now()} --json`,
     );
     createTranscript(transcriptFile, "some output");
 
     const result = runHook(sid, transcriptFile);
 
-    assertAllowsExit(result);
+    expect(result.exitCode).toBe(1);
     // Session file is intentionally preserved when run state is unknown
     // so that doctor/session:associate can re-bind and recover.
     const stateOut = dockerExec(

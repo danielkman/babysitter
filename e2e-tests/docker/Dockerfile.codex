@@ -23,20 +23,23 @@ WORKDIR /app
 
 COPY package.json package-lock.json* ./
 COPY packages/sdk/package.json ./packages/sdk/
+COPY packages/babysitter-harness/package.json ./packages/babysitter-harness/
 COPY plugins/babysitter-codex/package.json ./plugins/babysitter-codex/
+COPY scripts/patch-webpackbar-progress-plugin.cjs ./scripts/
 
 RUN npm install --include=dev
 
 COPY . .
 
-RUN npm run build:sdk
+RUN npm run build:sdk && \
+    npm run build --workspace=@a5c-ai/babysitter-harness
 
 RUN mkdir -p /workspace && chown -R codex:codex /app /home/codex /workspace
 
 USER codex
 
 RUN npm install -g @openai/codex@latest
-RUN npm install -g /app/packages/sdk
+RUN npm install -g /app/packages/sdk /app/packages/babysitter-harness
 RUN mkdir -p /tmp/babysitter-process-library-source/library && \
     cp -R /app/library/. /tmp/babysitter-process-library-source/library/ && \
     cd /tmp/babysitter-process-library-source && \

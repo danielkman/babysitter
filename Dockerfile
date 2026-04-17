@@ -36,6 +36,7 @@ WORKDIR /app
 # Copy package files first for better caching
 COPY package.json package-lock.json* ./
 COPY packages/sdk/package.json ./packages/sdk/
+COPY packages/babysitter-harness/package.json ./packages/babysitter-harness/
 COPY scripts/patch-webpackbar-progress-plugin.cjs ./scripts/
 
 # Install all dependencies (including dev for build)
@@ -44,14 +45,15 @@ RUN npm install --include=dev
 # Copy the rest of the application
 COPY . .
 
-# Build the SDK
-RUN npm run build:sdk
+# Build the SDK and harness CLI
+RUN npm run build:sdk && \
+    npm run build --workspace=@a5c-ai/babysitter-harness
 
 # Clean up dev dependencies after build
 ENV NODE_ENV=production
 
-# Install the SDK globally so 'babysitter' CLI is available
-RUN npm install -g ./packages/sdk
+# Install the SDK and harness CLI globally
+RUN npm install -g ./packages/sdk ./packages/babysitter-harness
 
 # Read plugin version from plugin.json (single source of truth)
 RUN PLUGIN_VERSION=$(node -e "console.log(JSON.parse(require('fs').readFileSync('plugins/babysitter/plugin.json','utf8')).version)") && \

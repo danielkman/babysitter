@@ -244,10 +244,9 @@ describe("Babysitter SDK integration (gemini-cli)", () => {
     expect(health).toBeDefined();
   });
 
-  test("babysitter harness:discover finds gemini-cli adapter", () => {
+  test("babysitter-harness discover finds gemini-cli adapter", () => {
     // The adapter should be known even if gemini CLI is not installed
-    const out = dockerExec("babysitter harness:discover --json").trim();
-    const result = JSON.parse(out);
+    const out = dockerExec("babysitter-harness discover --json").trim();
     // The discover output lists known harnesses; gemini-cli should appear
     expect(out).toContain("gemini");
   });

@@ -8,22 +8,21 @@ import {
 import path from "path";
 
 /**
- * Extract the last JSON array from multi-line CLI output.
- * Finds the last `[...]` block across multiple lines.
+ * Extract the last JSON object from multi-line CLI output.
  */
-function parseLastJsonArray(output: string): unknown[] {
+function parseLastJsonObject(output: string): Record<string, unknown> {
   const trimmed = output.trim();
-  const lastBracket = trimmed.lastIndexOf("]");
-  if (lastBracket === -1) throw new SyntaxError("No JSON array found in output");
+  const lastBrace = trimmed.lastIndexOf("}");
+  if (lastBrace === -1) throw new SyntaxError("No JSON object found in output");
   let depth = 0;
-  for (let i = lastBracket; i >= 0; i--) {
-    if (trimmed[i] === "]") depth++;
-    if (trimmed[i] === "[") depth--;
+  for (let i = lastBrace; i >= 0; i--) {
+    if (trimmed[i] === "}") depth++;
+    if (trimmed[i] === "{") depth--;
     if (depth === 0) {
-      return JSON.parse(trimmed.slice(i, lastBracket + 1)) as unknown[];
+      return JSON.parse(trimmed.slice(i, lastBrace + 1)) as Record<string, unknown>;
     }
   }
-  throw new SyntaxError("Unmatched brackets in output");
+  throw new SyntaxError("Unmatched braces in output");
 }
 
 const ROOT = path.resolve(__dirname, "../..");
@@ -42,15 +41,16 @@ afterAll(() => {
 // ============================================================================
 
 describe("Harness discovery", () => {
-  test("babysitter harness:discover --json returns valid JSON array", () => {
-    const out = dockerExec("babysitter harness:discover --json").trim();
-    const results = parseLastJsonArray(out);
-    expect(Array.isArray(results)).toBe(true);
+  test("babysitter-harness discover --json returns valid JSON payload", () => {
+    const out = dockerExec("babysitter-harness discover --json").trim();
+    const results = parseLastJsonObject(out);
+    expect(Array.isArray(results.installed)).toBe(true);
   });
 
   test("each discovered harness has required fields", () => {
-    const out = dockerExec("babysitter harness:discover --json").trim();
-    const results = parseLastJsonArray(out) as Array<Record<string, unknown>>;
+    const out = dockerExec("babysitter-harness discover --json").trim();
+    const payload = parseLastJsonObject(out);
+    const results = payload.installed as Array<Record<string, unknown>>;
     expect(results.length).toBeGreaterThan(0);
 
     for (const harness of results) {
@@ -65,12 +65,12 @@ describe("Harness discovery", () => {
     }
   });
 
-  test("harness:list --json returns same structure as harness:discover", () => {
-    const discoverOut = dockerExec("babysitter harness:discover --json").trim();
-    const discoverResults = parseLastJsonArray(discoverOut) as Array<Record<string, unknown>>;
+  test("list --json returns same structure as discover", () => {
+    const discoverOut = dockerExec("babysitter-harness discover --json").trim();
+    const discoverResults = parseLastJsonObject(discoverOut).installed as Array<Record<string, unknown>>;
 
-    const listOut = dockerExec("babysitter harness:list --json").trim();
-    const listResults = parseLastJsonArray(listOut) as Array<Record<string, unknown>>;
+    const listOut = dockerExec("babysitter-harness list --json").trim();
+    const listResults = parseLastJsonObject(listOut).installed as Array<Record<string, unknown>>;
 
     expect(Array.isArray(listResults)).toBe(true);
     expect(listResults.length).toBe(discoverResults.length);
@@ -82,8 +82,8 @@ describe("Harness discovery", () => {
   });
 
   test("discovered harnesses include known built-in harnesses", () => {
-    const out = dockerExec("babysitter harness:discover --json").trim();
-    const results = parseLastJsonArray(out) as Array<Record<string, unknown>>;
+    const out = dockerExec("babysitter-harness discover --json").trim();
+    const results = parseLastJsonObject(out).installed as Array<Record<string, unknown>>;
     const names = results.map((h) => h.name);
 
     // At minimum, the pi harness should be present (verified in pi-harness tests)
@@ -91,8 +91,8 @@ describe("Harness discovery", () => {
   });
 
   test("discovery results include oh-my-pi harness", () => {
-    const out = dockerExec("babysitter harness:discover --json").trim();
-    const results = parseLastJsonArray(out) as Array<Record<string, unknown>>;
+    const out = dockerExec("babysitter-harness discover --json").trim();
+    const results = parseLastJsonObject(out).installed as Array<Record<string, unknown>>;
     const names = results.map((h) => h.name);
 
     // oh-my-pi should appear in results even if not installed
@@ -104,8 +104,8 @@ describe("Harness discovery", () => {
   });
 
   test("each discovered harness has configFound field", () => {
-    const out = dockerExec("babysitter harness:discover --json").trim();
-    const results = parseLastJsonArray(out) as Array<Record<string, unknown>>;
+    const out = dockerExec("babysitter-harness discover --json").trim();
+    const results = parseLastJsonObject(out).installed as Array<Record<string, unknown>>;
     expect(results.length).toBeGreaterThan(0);
 
     for (const harness of results) {
