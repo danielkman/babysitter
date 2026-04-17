@@ -504,7 +504,7 @@ babysitter session:cleanup             # apply
 unset BABYSITTER_SESSION_ID
 
 # 3. Re-bind a run explicitly if needed
-babysitter session:resume --session-id <fresh-id> --run-id <runId> --runs-dir .a5c/runs
+babysitter session:resume --session-id <fresh-id> --state-dir ~/.a5c --run-id <runId> --runs-dir .a5c/runs
 
 # 4. Start a fresh Claude Code session (closes and reopens the session)
 ```
