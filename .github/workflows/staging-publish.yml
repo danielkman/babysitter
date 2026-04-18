@@ -155,6 +155,11 @@ jobs:
           # Workaround: npm ci on Windows-generated lockfile may miss linux optional deps
           npm install --no-save @rollup/rollup-linux-x64-gnu 2>/dev/null || true
 
+      - name: Prepare artifacts directory
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/logs
+
       - name: Set staging prerelease version
         id: version
         run: |
