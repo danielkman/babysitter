@@ -67,6 +67,16 @@ jobs:
           set -euo pipefail
           npm run test:sdk 2>&1 | tee artifacts/logs/sdk-tests.log
 
+      - name: Build hooks-proxy
+        run: |
+          set -euo pipefail
+          npm run build:hooks-proxy 2>&1 | tee artifacts/logs/hooks-proxy-build.log
+
+      - name: Hooks-proxy unit tests
+        run: |
+          set -euo pipefail
+          npm run test:hooks-proxy 2>&1 | tee artifacts/logs/hooks-proxy-tests.log
+
       - name: babysitter-codex package tests
         run: |
           set -euo pipefail
@@ -304,6 +314,16 @@ jobs:
           set -euo pipefail
           npm run build:sdk
 
+      - name: Build hooks-proxy
+        run: |
+          set -euo pipefail
+          npm run build:hooks-proxy 2>&1 | tee artifacts/logs/hooks-proxy-build.log
+
+      - name: Hooks-proxy unit tests
+        run: |
+          set -euo pipefail
+          npm run test:hooks-proxy 2>&1 | tee artifacts/logs/hooks-proxy-tests.log
+
       - name: Publish SDK to npm (staging tag)
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -494,6 +514,16 @@ jobs:
           set -euo pipefail
           npm run deploy:staging
         working-directory: plugins/babysitter-paperclip
+
+      - name: Publish hooks-proxy packages (staging)
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+          for pkg in @a5c/hooks-proxy-core @a5c/hooks-proxy-cli @a5c/hooks-proxy-adapter-claude @a5c/hooks-proxy-adapter-codex @a5c/hooks-proxy-adapter-gemini @a5c/hooks-proxy-adapter-copilot @a5c/hooks-proxy-adapter-cursor @a5c/hooks-proxy-adapter-pi @a5c/hooks-proxy-adapter-oh-my-pi @a5c/hooks-proxy-adapter-opencode @a5c/hooks-proxy-adapter-openclaw; do
+            echo "Publishing $pkg..."
+            npm publish --workspace=$pkg --access public --tag staging || echo "::warning::Failed to publish $pkg"
+          done
 
       - name: Inject SDK dependency into metapackage for publish
         run: |

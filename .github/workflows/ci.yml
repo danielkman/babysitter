@@ -60,6 +60,16 @@ jobs:
           set -euo pipefail
           npm run test:sdk 2>&1 | tee artifacts/test-logs/unit-tests.log
 
+      - name: Build hooks-proxy
+        run: |
+          set -euo pipefail
+          npm run build:hooks-proxy 2>&1 | tee artifacts/test-logs/hooks-proxy-build.log
+
+      - name: Hooks-proxy unit tests
+        run: |
+          set -euo pipefail
+          npm run test:hooks-proxy 2>&1 | tee artifacts/test-logs/hooks-proxy-tests.log
+
       - name: babysitter-github plugin validation
         run: |
           set -euo pipefail
