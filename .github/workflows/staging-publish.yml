@@ -317,12 +317,12 @@ jobs:
       - name: Build hooks-proxy
         run: |
           set -euo pipefail
-          npm run build:hooks-proxy 2>&1 | tee artifacts/logs/hooks-proxy-build.log
+          npm run build:hooks-proxy
 
       - name: Hooks-proxy unit tests
         run: |
           set -euo pipefail
-          npm run test:hooks-proxy 2>&1 | tee artifacts/logs/hooks-proxy-tests.log
+          npm run test:hooks-proxy
 
       - name: Publish SDK to npm (staging tag)
         env:
