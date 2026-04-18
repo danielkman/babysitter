@@ -168,10 +168,10 @@ describe("Hook scripts (gemini-cli)", () => {
 });
 
 describe("Commands (gemini-cli)", () => {
-  test("commands directory exists with markdown files", () => {
+  test("commands directory exists with TOML files", () => {
     dockerExec(`test -d ${GEMINI_CLI_EXTENSION_DIR}/commands`);
     const count = dockerExec(
-      `ls ${GEMINI_CLI_EXTENSION_DIR}/commands/*.md 2>/dev/null | wc -l`,
+      `ls ${GEMINI_CLI_EXTENSION_DIR}/commands/*.toml 2>/dev/null | wc -l`,
     ).trim();
     expect(parseInt(count, 10)).toBeGreaterThan(0);
   });
@@ -189,9 +189,9 @@ describe("Commands (gemini-cli)", () => {
     }
   });
 
-  test("command files have YAML frontmatter with description", () => {
+  test("command files have TOML description and prompt fields", () => {
     const files = dockerExec(
-      `ls ${GEMINI_CLI_EXTENSION_DIR}/commands/*.md`,
+      `ls ${GEMINI_CLI_EXTENSION_DIR}/commands/*.toml`,
     )
       .trim()
       .split("\n")
@@ -199,10 +199,9 @@ describe("Commands (gemini-cli)", () => {
     expect(files.length).toBeGreaterThan(0);
 
     for (const file of files) {
-      const head = dockerExec(`head -1 ${file}`).trim();
-      expect(head).toBe("---");
       const content = dockerExec(`cat ${file}`);
-      expect(content).toContain("description:");
+      expect(content).toContain('description = ');
+      expect(content).toContain('prompt = ');
     }
   });
 });
