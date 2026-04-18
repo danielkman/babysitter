@@ -164,7 +164,7 @@ async function executeHandler(
  *
  * Usage:
  * ```typescript
- * import { createHooksEngine } from '@a5c/hooks-proxy-core';
+ * import { createHooksEngine } from '@a5c-ai/hooks-proxy-core';
  *
  * const engine = createHooksEngine({
  *   adapter: 'pi',
@@ -352,6 +352,11 @@ export function createHooksEngine(config: ProgrammaticEngineConfig): HooksEngine
       // Override sessionId if explicitly provided
       if (input.sessionId) {
         event.execution.sessionId = input.sessionId;
+      }
+
+      // Inject adapter capabilities into execution metadata
+      if (config.capabilities) {
+        event.execution.metadata['AGENT_CAPABILITIES_JSON'] = JSON.stringify(config.capabilities);
       }
 
       return engine.processNormalizedEvent(event);

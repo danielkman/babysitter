@@ -211,6 +211,39 @@ describe('materializeExecContext', () => {
     expect(result.env['NORMAL_VAR']).toBe('should-appear');
   });
 
+  it('injects AGENT_CAPABILITIES_JSON when capabilities are provided', async () => {
+    const session = createMockSession();
+    const store = createMockSessionStore(session);
+    const capabilities = createMockCapabilities();
+
+    const result = await materializeExecContext({
+      sessionId: 'test-session-001',
+      sessionStore: store,
+      capabilities,
+      tempDir: tmpDir,
+    });
+
+    expect(result.env['AGENT_CAPABILITIES_JSON']).toBeDefined();
+    const parsed = JSON.parse(result.env['AGENT_CAPABILITIES_JSON']);
+    expect(parsed.name).toBe('claude');
+    expect(parsed.supportsBlock).toBe(true);
+    expect(parsed.envPersistenceMode).toBe('native_env_file');
+    expect(parsed.toolInterceptionScope).toBe('all');
+  });
+
+  it('does not inject AGENT_CAPABILITIES_JSON when capabilities are omitted', async () => {
+    const session = createMockSession();
+    const store = createMockSessionStore(session);
+
+    const result = await materializeExecContext({
+      sessionId: 'test-session-001',
+      sessionStore: store,
+      tempDir: tmpDir,
+    });
+
+    expect(result.env['AGENT_CAPABILITIES_JSON']).toBeUndefined();
+  });
+
   it('generates context file and temp env file', async () => {
     const session = createMockSession();
     const store = createMockSessionStore(session);

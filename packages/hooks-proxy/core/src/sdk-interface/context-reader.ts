@@ -1,3 +1,5 @@
+import type { AdapterCapabilities } from '../types/adapter';
+
 /**
  * Execution context variables that hooks-proxy injects into subprocess
  * environments. Used by hook handler scripts and SDK adapters to access
@@ -10,6 +12,8 @@ export interface ExecutionContextFromEnv {
   workspaceRoot: string | null;
   transcriptPath: string | null;
   contextFile: string | null;
+  /** Parsed adapter capabilities from AGENT_CAPABILITIES_JSON. */
+  capabilities: AdapterCapabilities | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -22,6 +26,7 @@ const ENV_ADAPTER = 'AGENT_ADAPTER';
 const ENV_WORKSPACE_ROOT = 'AGENT_WORKSPACE_ROOT';
 const ENV_TRANSCRIPT_PATH = 'AGENT_TRANSCRIPT_PATH';
 const ENV_CONTEXT_FILE = 'AGENT_CONTEXT_FILE';
+const ENV_CAPABILITIES_JSON = 'AGENT_CAPABILITIES_JSON';
 
 // ---------------------------------------------------------------------------
 // Public API
@@ -34,6 +39,17 @@ const ENV_CONTEXT_FILE = 'AGENT_CONTEXT_FILE';
 export function readExecutionContext(
   env: Record<string, string | undefined> = process.env,
 ): ExecutionContextFromEnv {
+  const capJson = env[ENV_CAPABILITIES_JSON];
+  let capabilities: AdapterCapabilities | null = null;
+  if (capJson) {
+    try {
+      capabilities = JSON.parse(capJson) as AdapterCapabilities;
+    } catch {
+      // Malformed JSON — treat as absent
+      capabilities = null;
+    }
+  }
+
   return {
     sessionId: env[ENV_SESSION_ID] ?? null,
     turnId: env[ENV_TURN_ID] ?? null,
@@ -41,6 +57,7 @@ export function readExecutionContext(
     workspaceRoot: env[ENV_WORKSPACE_ROOT] ?? null,
     transcriptPath: env[ENV_TRANSCRIPT_PATH] ?? null,
     contextFile: env[ENV_CONTEXT_FILE] ?? null,
+    capabilities,
   };
 }
 

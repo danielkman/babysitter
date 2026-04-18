@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { renderCursorOutput, isFieldSupportedForEvent } from '../renderer';
-import { createDiagnostics } from '@a5c/hooks-proxy-core';
-import type { MergedExecutionResult } from '@a5c/hooks-proxy-core';
+import { createDiagnostics } from '@a5c-ai/hooks-proxy-core';
+import type { MergedExecutionResult } from '@a5c-ai/hooks-proxy-core';
 
 function makeMergedResult(overrides: Partial<MergedExecutionResult> = {}): MergedExecutionResult {
   return {

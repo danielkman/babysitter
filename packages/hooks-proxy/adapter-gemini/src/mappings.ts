@@ -1,4 +1,4 @@
-import type { PhaseMapping } from '@a5c/hooks-proxy-core';
+import type { PhaseMapping } from '@a5c-ai/hooks-proxy-core';
 
 /**
  * Gemini CLI native event name to canonical phase mappings.

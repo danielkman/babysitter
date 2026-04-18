@@ -3,6 +3,7 @@ import type { UnifiedHookEvent } from '../types/event';
 import type { UnifiedHookResult } from '../types/result';
 import type { HandlerRef, HookPlanEntry } from '../types/plan';
 import type { CanonicalPhase } from '../types/lifecycle';
+import type { AdapterCapabilities } from '../types/adapter';
 import { HandlerError, HandlerTimeoutError } from './errors';
 import { evaluateWhen } from './plan-resolver';
 
@@ -32,6 +33,8 @@ export interface RunPlanOptions {
   phasePolicies?: Record<string, ErrorPolicy>;
   /** Timeout in milliseconds per handler. */
   handlerTimeoutMs?: number;
+  /** Adapter capabilities to inject as AGENT_CAPABILITIES_JSON into handler subprocess env. */
+  capabilities?: AdapterCapabilities;
 }
 
 /**
@@ -87,7 +90,7 @@ function errorResult(err: unknown): UnifiedHookResult {
  * These are injected into the child process environment so handlers
  * can access session/execution context without parsing stdin.
  */
-function buildExecContextEnv(event: UnifiedHookEvent): Record<string, string> {
+function buildExecContextEnv(event: UnifiedHookEvent, capabilities?: AdapterCapabilities): Record<string, string> {
   const ctx: Record<string, string> = {};
 
   if (event.execution.sessionId) ctx['AGENT_SESSION_ID'] = event.execution.sessionId;
@@ -95,6 +98,11 @@ function buildExecContextEnv(event: UnifiedHookEvent): Record<string, string> {
   if (event.execution.adapter) ctx['AGENT_ADAPTER'] = event.execution.adapter;
   if (event.execution.cwd) ctx['AGENT_WORKSPACE_ROOT'] = event.execution.cwd;
   if (event.execution.transcriptPath) ctx['AGENT_TRANSCRIPT_PATH'] = event.execution.transcriptPath;
+
+  // Inject adapter capabilities as JSON for downstream consumers
+  if (capabilities) {
+    ctx['AGENT_CAPABILITIES_JSON'] = JSON.stringify(capabilities);
+  }
 
   // Merge persisted env from the session store
   if (event.execution.persistedEnv) {
@@ -119,9 +127,10 @@ function runShellHandler(
   command: string,
   event: UnifiedHookEvent,
   timeoutMs?: number,
+  capabilities?: AdapterCapabilities,
 ): Promise<UnifiedHookResult> {
   return new Promise((resolve, reject) => {
-    const execContextEnv = buildExecContextEnv(event);
+    const execContextEnv = buildExecContextEnv(event, capabilities);
 
     const child = exec(
       command,
@@ -192,8 +201,9 @@ export async function runHandler(
   event: UnifiedHookEvent,
   handler: HandlerRef,
   timeoutMs?: number,
+  capabilities?: AdapterCapabilities,
 ): Promise<UnifiedHookResult> {
-  return runShellHandler(handler.source, event, timeoutMs);
+  return runShellHandler(handler.source, event, timeoutMs, capabilities);
 }
 
 /**
@@ -226,7 +236,7 @@ export async function runPlan(
     const timeout = entry.timeoutMs ?? options?.handlerTimeoutMs;
 
     try {
-      const result = await runHandler(event, entry.handler, timeout);
+      const result = await runHandler(event, entry.handler, timeout, options?.capabilities);
       results.push(result);
     } catch (err) {
       const shouldFailOpen = resolveFailOpen(policy, event.phase);

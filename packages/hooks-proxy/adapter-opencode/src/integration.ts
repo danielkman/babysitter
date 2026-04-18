@@ -6,7 +6,7 @@
  *
  * Usage:
  * ```typescript
- * import { createConfiguredEngine } from '@a5c/hooks-proxy-adapter-opencode';
+ * import { createConfiguredEngine } from '@a5c-ai/hooks-proxy-adapter-opencode';
  *
  * const engine = createConfiguredEngine();
  *
@@ -27,7 +27,7 @@
  * ```
  */
 
-import { createHooksEngine, type HooksEngine } from '@a5c/hooks-proxy-core';
+import { createHooksEngine, type HooksEngine } from '@a5c-ai/hooks-proxy-core';
 import { createAdapter } from './adapter';
 import { OPENCODE_PHASE_MAPPINGS } from './mappings';
 

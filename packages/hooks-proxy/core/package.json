@@ -1,18 +1,22 @@
 {
-  "name": "@a5c/hooks-proxy-core",
-  "version": "0.0.1",
+  "name": "@a5c-ai/hooks-proxy-core",
+  "version": "5.0.0",
   "description": "Canonical schemas, types, session store, and merge engine for the hooks-proxy system",
   "license": "UNLICENSED",
   "type": "commonjs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "publishConfig": { "access": "public" },
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/a5c-ai/babysitter.git",
     "directory": "packages/hooks-proxy/core"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "clean": "rimraf dist",

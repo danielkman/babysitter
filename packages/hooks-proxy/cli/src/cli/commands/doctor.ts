@@ -6,8 +6,8 @@
  */
 
 import type { CommandModule } from 'yargs';
-import type { AdapterCapabilities, PhaseMapping } from '@a5c/hooks-proxy-core';
-import { getDefaultSessionDir, getSessionFilePath } from '@a5c/hooks-proxy-core';
+import type { AdapterCapabilities, PhaseMapping } from '@a5c-ai/hooks-proxy-core';
+import { getDefaultSessionDir, getSessionFilePath } from '@a5c-ai/hooks-proxy-core';
 import { loadAdapter, KNOWN_ADAPTERS } from '../adapter-loader';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -114,7 +114,7 @@ function buildCapabilityProfile(mappings: PhaseMapping[]): CapabilityProfile {
 
 function analyzeAdapter(name: string): AdapterReport {
   const warnings: string[] = [];
-  const packageName = `@a5c/hooks-proxy-adapter-${name}`;
+  const packageName = `@a5c-ai/hooks-proxy-adapter-${name}`;
 
   try {
     const loaded = loadAdapter(name);

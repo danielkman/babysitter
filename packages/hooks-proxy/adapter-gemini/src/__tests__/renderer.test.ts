@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import type { UnifiedHookResult } from '@a5c/hooks-proxy-core';
+import type { UnifiedHookResult } from '@a5c-ai/hooks-proxy-core';
 import { renderGeminiOutput, emitOutput, logToStderr } from '../renderer';
 
 describe('renderGeminiOutput', () => {

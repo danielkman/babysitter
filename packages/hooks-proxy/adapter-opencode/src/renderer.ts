@@ -1,4 +1,4 @@
-import type { UnifiedHookResult } from '@a5c/hooks-proxy-core';
+import type { UnifiedHookResult } from '@a5c-ai/hooks-proxy-core';
 
 /**
  * OpenCode native hook output formats.

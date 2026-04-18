@@ -1,4 +1,4 @@
-import type { UnifiedHookEvent, UnifiedExecutionContext } from '@a5c/hooks-proxy-core';
+import type { UnifiedHookEvent, UnifiedExecutionContext } from '@a5c-ai/hooks-proxy-core';
 import { CLAUDE_PHASE_MAPPINGS, getClaudePhaseMapping } from './mappings';
 
 /**

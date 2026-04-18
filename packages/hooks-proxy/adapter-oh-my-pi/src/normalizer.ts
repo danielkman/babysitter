@@ -1,4 +1,4 @@
-import { normalizeEvent, type UnifiedHookEvent, type NormalizeOptions } from '@a5c/hooks-proxy-core';
+import { normalizeEvent, type UnifiedHookEvent, type NormalizeOptions } from '@a5c-ai/hooks-proxy-core';
 import { OH_MY_PI_PHASE_MAPPINGS } from './mappings';
 
 /** The adapter identifier used in all normalized events. */

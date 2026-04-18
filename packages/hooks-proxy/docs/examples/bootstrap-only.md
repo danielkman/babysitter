@@ -24,7 +24,7 @@ In `.claude/settings.json`:
     "SessionStart": [
       {
         "type": "command",
-        "command": "npx -y @a5c/hooks-proxy invoke --adapter claude --bootstrap-only"
+        "command": "npx -y @a5c-ai/hooks-proxy invoke --adapter claude --bootstrap-only"
       }
     ]
   }
@@ -39,7 +39,7 @@ Or use the dedicated bootstrap command:
     "SessionStart": [
       {
         "type": "command",
-        "command": "npx -y @a5c/hooks-proxy bootstrap --adapter claude"
+        "command": "npx -y @a5c-ai/hooks-proxy bootstrap --adapter claude"
       }
     ]
   }
@@ -51,7 +51,7 @@ Or use the dedicated bootstrap command:
 ## Codex Setup
 
 ```bash
-npx -y @a5c/hooks-proxy invoke --adapter codex --bootstrap-only
+npx -y @a5c-ai/hooks-proxy invoke --adapter codex --bootstrap-only
 ```
 
 ---
@@ -93,7 +93,7 @@ Once bootstrap is working, add handlers by switching to a registry:
     "SessionStart": [
       {
         "type": "command",
-        "command": "npx -y @a5c/hooks-proxy invoke --adapter claude"
+        "command": "npx -y @a5c-ai/hooks-proxy invoke --adapter claude"
       }
     ]
   }

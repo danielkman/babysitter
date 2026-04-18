@@ -6,7 +6,7 @@
  *
  * Usage:
  * ```typescript
- * import { createConfiguredEngine } from '@a5c/hooks-proxy-adapter-oh-my-pi';
+ * import { createConfiguredEngine } from '@a5c-ai/hooks-proxy-adapter-oh-my-pi';
  *
  * const engine = createConfiguredEngine();
  *
@@ -27,7 +27,7 @@
  * ```
  */
 
-import { createHooksEngine, type HooksEngine } from '@a5c/hooks-proxy-core';
+import { createHooksEngine, type HooksEngine } from '@a5c-ai/hooks-proxy-core';
 import { createAdapter } from './adapter';
 import { OH_MY_PI_PHASE_MAPPINGS } from './mappings';
 

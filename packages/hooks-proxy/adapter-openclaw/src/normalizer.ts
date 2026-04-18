@@ -1,4 +1,4 @@
-import type { UnifiedHookEvent, UnifiedExecutionContext } from '@a5c/hooks-proxy-core';
+import type { UnifiedHookEvent, UnifiedExecutionContext } from '@a5c-ai/hooks-proxy-core';
 import { getOpenClawPhaseMapping, classifyHookOrigin } from './mappings';
 import type { OpenClawHookOrigin } from './mappings';
 

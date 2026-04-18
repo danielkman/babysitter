@@ -26,7 +26,7 @@ import {
   propagateEnv,
   type SessionState,
   type MergedExecutionResult,
-} from '@a5c/hooks-proxy-core';
+} from '@a5c-ai/hooks-proxy-core';
 import { loadAdapter } from '../adapter-loader';
 import { readStdin } from '../stdin';
 
@@ -186,7 +186,7 @@ export const invokeCommand: CommandModule<object, InvokeArgs> = {
     // 7. Run plan and merge
     let merged: MergedExecutionResult;
     if (plan.length > 0) {
-      const results = await runPlan(event, plan);
+      const results = await runPlan(event, plan, { capabilities: loaded.capabilities });
       merged = mergeResults(results);
     } else {
       // No handlers: produce a noop result

@@ -326,12 +326,77 @@ describe('readExecutionContext', () => {
     expect(ctx.workspaceRoot).toBeNull();
     expect(ctx.transcriptPath).toBeNull();
     expect(ctx.contextFile).toBeNull();
+    expect(ctx.capabilities).toBeNull();
   });
 
   it('handles partial env', () => {
     const ctx = readExecutionContext({ AGENT_SESSION_ID: 's' });
     expect(ctx.sessionId).toBe('s');
     expect(ctx.adapter).toBeNull();
+  });
+
+  it('parses AGENT_CAPABILITIES_JSON when present', () => {
+    const capabilities = {
+      name: 'claude',
+      family: 'shell-hook',
+      sessionIdQuality: 'native',
+      supportsOrderedFanout: true,
+      supportsNativeAdditionalContext: true,
+      supportsBlock: true,
+      supportsAsk: true,
+      supportsToolInputMutation: true,
+      supportsToolResultMutation: true,
+      supportsPersistedEnv: true,
+      envPersistenceMode: 'native_env_file',
+      toolInterceptionScope: 'all',
+    };
+    const env = {
+      AGENT_SESSION_ID: 'sess-1',
+      AGENT_CAPABILITIES_JSON: JSON.stringify(capabilities),
+    };
+    const ctx = readExecutionContext(env);
+    expect(ctx.capabilities).toEqual(capabilities);
+    expect(ctx.capabilities!.name).toBe('claude');
+    expect(ctx.capabilities!.supportsBlock).toBe(true);
+    expect(ctx.capabilities!.envPersistenceMode).toBe('native_env_file');
+  });
+
+  it('returns null capabilities for malformed AGENT_CAPABILITIES_JSON', () => {
+    const env = {
+      AGENT_SESSION_ID: 'sess-1',
+      AGENT_CAPABILITIES_JSON: 'not valid json{{{',
+    };
+    const ctx = readExecutionContext(env);
+    expect(ctx.capabilities).toBeNull();
+    // Other fields should still be parsed correctly
+    expect(ctx.sessionId).toBe('sess-1');
+  });
+
+  it('round-trips capabilities through serialize and parse', () => {
+    const original = {
+      name: 'codex',
+      family: 'shell-hook' as const,
+      sessionIdQuality: 'derived' as const,
+      supportsOrderedFanout: false,
+      supportsNativeAdditionalContext: false,
+      supportsBlock: false,
+      supportsAsk: false,
+      supportsToolInputMutation: false,
+      supportsToolResultMutation: false,
+      supportsPersistedEnv: true,
+      envPersistenceMode: 'wrapper_only' as const,
+      toolInterceptionScope: 'shell_only' as const,
+      notes: ['experimental'],
+    };
+    const serialized = JSON.stringify(original);
+    const env = { AGENT_CAPABILITIES_JSON: serialized };
+    const ctx = readExecutionContext(env);
+
+    expect(ctx.capabilities).toEqual(original);
+    expect(ctx.capabilities!.name).toBe('codex');
+    expect(ctx.capabilities!.supportsBlock).toBe(false);
+    expect(ctx.capabilities!.envPersistenceMode).toBe('wrapper_only');
+    expect(ctx.capabilities!.notes).toEqual(['experimental']);
   });
 });
 

@@ -1,4 +1,4 @@
-import type { PhaseMapping } from '@a5c/hooks-proxy-core';
+import type { PhaseMapping } from '@a5c-ai/hooks-proxy-core';
 
 /**
  * Copilot native hook names mapped to canonical lifecycle phases.

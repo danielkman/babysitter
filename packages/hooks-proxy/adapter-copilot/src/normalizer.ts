@@ -1,5 +1,5 @@
-import type { UnifiedHookEvent } from '@a5c/hooks-proxy-core';
-import { normalizeEvent } from '@a5c/hooks-proxy-core';
+import type { UnifiedHookEvent } from '@a5c-ai/hooks-proxy-core';
+import { normalizeEvent } from '@a5c-ai/hooks-proxy-core';
 import { COPILOT_PHASE_MAPPINGS } from './mappings';
 import { resolveSyntheticSessionId } from './session-resolver';
 

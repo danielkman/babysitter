@@ -14,8 +14,8 @@ vi.mock('../cli/adapter-loader', () => ({
   KNOWN_ADAPTERS: ['claude', 'codex', 'copilot'] as const,
 }));
 
-// Mock @a5c/hooks-proxy-core
-vi.mock('@a5c/hooks-proxy-core', () => ({
+// Mock @a5c-ai/hooks-proxy-core
+vi.mock('@a5c-ai/hooks-proxy-core', () => ({
   normalizeEvent: vi.fn((opts: Record<string, unknown>) => ({
     version: 'a5c.hooks.v1',
     adapter: opts.adapter,
@@ -81,7 +81,7 @@ import {
   adaptOutput,
   propagateEnv,
   materializeExecContext,
-} from '@a5c/hooks-proxy-core';
+} from '@a5c-ai/hooks-proxy-core';
 
 const mockLoadAdapter = vi.mocked(loadAdapter);
 const mockNormalizeEvent = vi.mocked(normalizeEvent);

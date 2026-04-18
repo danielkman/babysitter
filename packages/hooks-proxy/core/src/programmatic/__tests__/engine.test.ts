@@ -681,6 +681,36 @@ describe('createHooksEngine', () => {
   });
 
   // -----------------------------------------------------------------------
+  // Capabilities propagation
+  // -----------------------------------------------------------------------
+
+  describe('capabilities propagation', () => {
+    it('should inject AGENT_CAPABILITIES_JSON into event execution metadata', async () => {
+      let capturedMetadata: Record<string, unknown> = {};
+
+      engine.registerHandler(createTestHandler({
+        handler: async (event) => {
+          capturedMetadata = { ...event.execution.metadata };
+          return { decision: 'noop' };
+        },
+      }));
+
+      await engine.processEvent({
+        nativeEventName: 'session_start',
+        payload: {},
+      });
+
+      expect(capturedMetadata['AGENT_CAPABILITIES_JSON']).toBeDefined();
+      const parsed = JSON.parse(capturedMetadata['AGENT_CAPABILITIES_JSON'] as string);
+      expect(parsed.name).toBe('test-adapter');
+      expect(parsed.family).toBe('in-process');
+      expect(parsed.supportsBlock).toBe(true);
+      expect(parsed.supportsToolInputMutation).toBe(true);
+      expect(parsed.envPersistenceMode).toBe('runtime_hook');
+    });
+  });
+
+  // -----------------------------------------------------------------------
   // Execution time tracking
   // -----------------------------------------------------------------------
 

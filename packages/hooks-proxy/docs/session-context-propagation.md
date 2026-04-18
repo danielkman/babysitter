@@ -231,6 +231,26 @@ When multiple handlers execute during fan-out, their context outputs are merged:
 - `AGENT_*` -- reserved for proxy internals
 - Plugin-specific keys should use a namespace: `PLUGIN_X_*`
 
+### Capabilities Propagation
+
+The proxy injects `AGENT_CAPABILITIES_JSON` into handler subprocess environments and materialized exec contexts. This contains the full `AdapterCapabilities` object serialized as JSON, allowing downstream consumers to inspect what the originating harness supports:
+
+```typescript
+import { readExecutionContext } from '@a5c-ai/hooks-proxy-core';
+
+const ctx = readExecutionContext();
+if (ctx.capabilities) {
+  console.log(ctx.capabilities.supportsBlock);       // true/false
+  console.log(ctx.capabilities.envPersistenceMode);  // 'native_env_file' | 'runtime_hook' | ...
+  console.log(ctx.capabilities.toolInterceptionScope); // 'all' | 'shell_only' | ...
+}
+```
+
+The variable is set in three places:
+1. **Shell handler subprocess env** (`runner.ts`) -- injected alongside other `AGENT_*` vars
+2. **Materialized exec context** (`materialize.ts`) -- available for `exec` wrapper commands
+3. **Programmatic engine event metadata** (`engine.ts`) -- accessible as `event.execution.metadata['AGENT_CAPABILITIES_JSON']`
+
 ---
 
 ## Diagnostics

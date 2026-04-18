@@ -1,18 +1,22 @@
 {
-  "name": "@a5c/hooks-proxy-adapter-opencode",
-  "version": "0.0.1",
+  "name": "@a5c-ai/hooks-proxy-adapter-opencode",
+  "version": "5.0.0",
   "description": "OpenCode harness adapter for the hooks-proxy system",
   "license": "UNLICENSED",
   "type": "commonjs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "publishConfig": { "access": "public" },
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/a5c-ai/babysitter.git",
     "directory": "packages/hooks-proxy/adapter-opencode"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "clean": "rimraf dist",
@@ -21,7 +25,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@a5c/hooks-proxy-core": "0.0.1"
+    "@a5c-ai/hooks-proxy-core": "5.0.0"
   },
   "devDependencies": {
     "typescript": "^5.7.0",

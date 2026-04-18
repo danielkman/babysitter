@@ -5,7 +5,7 @@
  */
 
 import type { CommandModule } from 'yargs';
-import { loadSession } from '@a5c/hooks-proxy-core';
+import { loadSession } from '@a5c-ai/hooks-proxy-core';
 
 interface ShowSessionArgs {
   'session-id': string;

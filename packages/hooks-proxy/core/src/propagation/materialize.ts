@@ -14,7 +14,7 @@ import { generateTempEnvFile } from './env-file';
 export async function materializeExecContext(
   options: MaterializeOptions,
 ): Promise<ExecMaterialization> {
-  const { sessionId, sessionStore, envAllowlist, tempDir } = options;
+  const { sessionId, sessionStore, envAllowlist, tempDir, capabilities } = options;
 
   const session = await sessionStore.loadSession(sessionId);
 
@@ -65,6 +65,11 @@ export async function materializeExecContext(
         env[key] = value;
       }
     }
+  }
+
+  // Inject adapter capabilities as JSON for downstream consumers
+  if (capabilities) {
+    env['AGENT_CAPABILITIES_JSON'] = JSON.stringify(capabilities);
   }
 
   // Write context file with session state summary

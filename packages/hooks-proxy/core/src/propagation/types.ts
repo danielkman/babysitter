@@ -24,6 +24,8 @@ export interface MaterializeOptions {
   envAllowlist?: string[];
   /** Directory for temp file generation. */
   tempDir?: string;
+  /** Adapter capabilities to inject as AGENT_CAPABILITIES_JSON. */
+  capabilities?: AdapterCapabilities;
 }
 
 /**

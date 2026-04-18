@@ -14,7 +14,7 @@ import type { CommandModule } from 'yargs';
 import {
   loadSession,
   materializeExecContext,
-} from '@a5c/hooks-proxy-core';
+} from '@a5c-ai/hooks-proxy-core';
 
 interface ExecArgs {
   'session-id': string;

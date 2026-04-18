@@ -20,7 +20,7 @@ Its responsibilities:
 
 ```
 packages/hooks-proxy/
-├── core/          @a5c/hooks-proxy-core     — types, session, merge, normalizer, propagation, diagnostics, API
+├── core/          @a5c-ai/hooks-proxy-core     — types, session, merge, normalizer, propagation, diagnostics, API
 ├── adapter-claude/                          — shell-hook family
 ├── adapter-codex/                           — shell-hook family
 ├── adapter-copilot/                         — shell-hook family
@@ -92,7 +92,7 @@ resolveHookPlan({ phase, handlers })
 runPlan(event, plan, options)
   for each HookPlanEntry (ordered):
     runHandler(event, handler)
-      shell command → exec(), event JSON on stdin + env vars (AGENT_SESSION_ID, AGENT_ADAPTER, etc.)
+      shell command → exec(), event JSON on stdin + env vars (AGENT_SESSION_ID, AGENT_ADAPTER, AGENT_CAPABILITIES_JSON, etc.)
       stdout parsed as JSON result
     on error → apply ErrorPolicy for this phase
   → UnifiedHookResult[]
@@ -313,6 +313,24 @@ Adapter `envPersistenceMode` values map to adapters as follows:
 | `wrapper_only` | codex, cursor |
 | `runtime_hook` | pi, oh-my-pi, opencode, openclaw |
 | `none` | (observer-only or custom) |
+
+---
+
+## 7b. Injected Environment Variables
+
+The proxy injects these `AGENT_*` environment variables into handler subprocess environments and materialized exec contexts:
+
+| Variable | Source | Description |
+|---|---|---|
+| `AGENT_SESSION_ID` | Session | Current session identifier |
+| `AGENT_TURN_ID` | Session metadata | Current turn identifier |
+| `AGENT_ADAPTER` | Session | Adapter name (e.g. `claude`, `codex`) |
+| `AGENT_WORKSPACE_ROOT` | Session metadata / cwd | Working directory root |
+| `AGENT_TRANSCRIPT_PATH` | Session | Path to transcript file |
+| `AGENT_CONTEXT_FILE` | Materialization | Path to temp JSON context file |
+| `AGENT_CAPABILITIES_JSON` | Adapter | JSON-serialized `AdapterCapabilities` of the originating harness |
+
+`AGENT_CAPABILITIES_JSON` contains the full `AdapterCapabilities` object for the active adapter, serialized as JSON. Downstream consumers (SDK adapters, hook handlers, exec wrappers) can parse this to determine what the originating harness supports -- blocking, mutation, env persistence mode, tool interception scope, etc. Parsed via `readExecutionContext()` from `sdk-interface/context-reader.ts`.
 
 ---
 

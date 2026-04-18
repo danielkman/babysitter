@@ -1,4 +1,4 @@
-import type { AdapterCapabilities } from '@a5c/hooks-proxy-core';
+import type { AdapterCapabilities } from '@a5c-ai/hooks-proxy-core';
 
 /**
  * Creates the Gemini CLI adapter capability descriptor.

@@ -12,7 +12,7 @@ import {
   normalizeEvent,
   loadSession,
   saveSession,
-} from '@a5c/hooks-proxy-core';
+} from '@a5c-ai/hooks-proxy-core';
 import { loadAdapter } from '../adapter-loader';
 
 interface BootstrapArgs {

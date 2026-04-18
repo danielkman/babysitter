@@ -2,7 +2,7 @@
  * Dynamic adapter resolution.
  *
  * Attempts to load a harness adapter package by convention:
- *   @a5c/hooks-proxy-adapter-<name>
+ *   @a5c-ai/hooks-proxy-adapter-<name>
  *
  * Each adapter package is expected to export:
  *   - createAdapter(): AdapterCapabilities
@@ -12,8 +12,8 @@
  *   - session resolver
  */
 
-import type { AdapterCapabilities, PhaseMapping } from '@a5c/hooks-proxy-core';
-import { detectHarness } from '@a5c/hooks-proxy-core';
+import type { AdapterCapabilities, PhaseMapping } from '@a5c-ai/hooks-proxy-core';
+import { detectHarness } from '@a5c-ai/hooks-proxy-core';
 
 export interface LoadedAdapter {
   capabilities: AdapterCapabilities;
@@ -46,7 +46,7 @@ export function loadAdapter(adapterName: string): LoadedAdapter {
     adapterName = detected.adapter;
   }
 
-  const packageName = `@a5c/hooks-proxy-adapter-${adapterName}`;
+  const packageName = `@a5c-ai/hooks-proxy-adapter-${adapterName}`;
 
   let mod: Record<string, unknown>;
   try {

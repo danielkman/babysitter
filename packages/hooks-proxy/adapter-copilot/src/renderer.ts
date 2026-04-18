@@ -1,4 +1,4 @@
-import type { MergedExecutionResult } from '@a5c/hooks-proxy-core';
+import type { MergedExecutionResult } from '@a5c-ai/hooks-proxy-core';
 import { getMappingByNativeHook } from './mappings';
 
 /**
