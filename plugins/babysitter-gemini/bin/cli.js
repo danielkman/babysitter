@@ -233,9 +233,8 @@ function install() {
 
     console.log('[babysitter] Extension linked.');
   } else {
-    console.error('[babysitter] Error: Gemini CLI is not installed or not in PATH.');
-    process.exitCode = 1;
-    return;
+    console.log('[babysitter] Gemini CLI is not installed or not in PATH. Installing extension bundle directly.');
+    installWithoutGeminiCli(true);
   }
 
   installSdk();

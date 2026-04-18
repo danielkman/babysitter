@@ -94,8 +94,8 @@ describe("Paperclip plugin structural tests", () => {
 });
 
 describe("Paperclip plugin babysitter CLI integration", () => {
-  test("babysitter-harness discover returns JSON list of harnesses", () => {
-    const raw = dockerExec("babysitter-harness discover --json").trim();
+  test("babysitter harness:discover returns JSON list of harnesses", () => {
+    const raw = dockerExec("babysitter harness:discover --json").trim();
     const result = JSON.parse(raw);
     const harnesses = result.installed;
     expect(Array.isArray(harnesses)).toBe(true);
