@@ -29,6 +29,8 @@ import { createOpenCodeAdapter } from "./opencode/adapter";
 import { OPENCODE_DISCOVERY_SPEC } from "./opencode/discovery";
 import { createOpenClawAdapter } from "./openclaw/adapter";
 import { OPENCLAW_DISCOVERY_SPEC } from "./openclaw/discovery";
+import { createUnifiedAdapter } from "./unified/adapter";
+import { UNIFIED_DISCOVERY_SPEC } from "./unified/discovery";
 import { createCustomAdapter } from "./customAdapter";
 
 export type { SessionResolutionDetails } from "./claudeCode/shared";
@@ -90,6 +92,11 @@ const HARNESS_REGISTRY: readonly HarnessRegistryEntry[] = [
     discoverySpec: GITHUB_COPILOT_DISCOVERY_SPEC,
   },
   {
+    name: "unified",
+    adapterFactory: createUnifiedAdapter,
+    discoverySpec: UNIFIED_DISCOVERY_SPEC,
+  },
+  {
     name: "custom",
     adapterFactory: createCustomAdapter,
   },
@@ -109,6 +116,8 @@ export const KNOWN_HARNESSES: readonly HarnessSpec[] = [
   OH_MY_PI_DISCOVERY_SPEC,
   OPENCLAW_DISCOVERY_SPEC,
   PI_DISCOVERY_SPEC,
+  // Unified is last — lowest priority in discovery and caller detection.
+  UNIFIED_DISCOVERY_SPEC,
 ];
 
 function createKnownAdapters(): HarnessAdapter[] {

@@ -22,6 +22,7 @@ export { createOpenClawAdapter } from "./openclaw";
 export { createOpenCodeAdapter } from "./opencode";
 export { createNullAdapter } from "./nullAdapter";
 export { createCustomAdapter } from "./customAdapter";
+export { createUnifiedAdapter } from "./unified";
 export {
   createPromptContextForHarness,
   detectAdapter,

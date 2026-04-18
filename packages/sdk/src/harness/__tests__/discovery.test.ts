@@ -135,8 +135,8 @@ afterEach(() => {
 // ---------------------------------------------------------------------------
 
 describe("KNOWN_HARNESSES", () => {
-  it("contains exactly 9 harness specs", () => {
-    expect(KNOWN_HARNESSES).toHaveLength(9);
+  it("contains exactly 10 harness specs", () => {
+    expect(KNOWN_HARNESSES).toHaveLength(10);
   });
 
   it("includes all expected harness names", () => {
@@ -149,6 +149,7 @@ describe("KNOWN_HARNESSES", () => {
     expect(names).toContain("cursor");
     expect(names).toContain("opencode");
     expect(names).toContain("github-copilot");
+    expect(names).toContain("unified");
   });
 });
 
@@ -242,12 +243,12 @@ describe("checkCliAvailable", () => {
 // ---------------------------------------------------------------------------
 
 describe("discoverHarnesses", () => {
-  it("returns results for all 9 known harnesses", async () => {
+  it("returns results for all 10 known harnesses", async () => {
     stubExecFile({});
 
     const results = await discoverHarnesses();
 
-    expect(results).toHaveLength(9);
+    expect(results).toHaveLength(10);
     const names = results.map((r) => r.name);
     expect(names).toContain("claude-code");
     expect(names).toContain("codex");
@@ -256,6 +257,7 @@ describe("discoverHarnesses", () => {
     expect(names).toContain("gemini-cli");
     expect(names).toContain("cursor");
     expect(names).toContain("opencode");
+    expect(names).toContain("unified");
   });
 
   it("returns results sorted alphabetically by name", async () => {
