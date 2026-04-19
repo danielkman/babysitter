@@ -1,26 +1,22 @@
 /**
  * Harness invoker module.
  *
- * Provides functions to programmatically invoke harness CLIs (claude, codex,
- * pi, gemini, cursor, opencode) as child processes. Each harness has its own
- * flag mapping; this module abstracts those differences behind a uniform API.
+ * External harnesses are routed through agent-mux exclusively.
+ * Only Pi and the "internal" programmatic harness use direct invocation
+ * (Pi via CLI subprocess, internal via piWrapper).
  */
 
-import { execFile, spawn } from "node:child_process";
-import { promises as fs } from "node:fs";
-import * as os from "node:os";
-import * as path from "node:path";
+import { execFile } from "node:child_process";
 import {
   BabysitterRuntimeError,
   checkCliAvailable,
   ErrorCategory,
 } from "@a5c-ai/babysitter-sdk";
-import type { HarnessInvokeOptions, HarnessInvokeResult, StreamingOutputOptions } from "./types";
+import type { HarnessInvokeOptions, HarnessInvokeResult } from "./types";
 import { createPiSession } from "./piWrapper";
 import {
   buildLaunchSpec,
   type HarnessCliSpec,
-  type LaunchSpec,
 } from "./invoker/launch";
 import {
   cancelRunningProcess,
@@ -32,28 +28,17 @@ import { hasAmuxAdapter } from "./amux/amuxHarnessMap";
 import { invokeViaAgentMux } from "./amux/amuxBridge";
 
 // ---------------------------------------------------------------------------
-// CLI mapping
+// CLI mapping — Pi only (external harnesses use agent-mux adapters)
 // ---------------------------------------------------------------------------
 
 /**
  * Mapping from harness identifier to CLI command and flag details.
+ *
+ * Only Pi retains a direct CLI mapping. All other (external) harnesses are
+ * routed through agent-mux adapters via {@link invokeViaAgentMux}.
  */
 export const HARNESS_CLI_MAP: Readonly<Record<string, HarnessCliSpec>> = {
-  "claude-code": { cli: "claude", supportsModel: true, promptStyle: "flag" },
-  codex: {
-    cli: "codex",
-    workspaceFlag: "-C",
-    supportsModel: true,
-    promptStyle: "positional",
-    baseArgs: ["exec", "--dangerously-bypass-approvals-and-sandbox", "--skip-git-repo-check"],
-  },
   pi: { cli: "pi", workspaceFlag: "--workspace", supportsModel: true, promptStyle: "flag" },
-  "oh-my-pi": { cli: "omp", workspaceFlag: "--workspace", supportsModel: true, promptStyle: "flag" },
-  "gemini-cli": { cli: "gemini", supportsModel: true, promptStyle: "flag" },
-  "github-copilot": { cli: "copilot", supportsModel: true, promptStyle: "flag" },
-  cursor: { cli: "cursor", supportsModel: true, promptStyle: "positional", baseArgs: ["agent"], workspaceFlag: "--workspace" },
-  openclaw: { cli: "openclaw", workspaceFlag: undefined, supportsModel: false, promptStyle: "flag", baseArgs: [] },
-  opencode: { cli: "opencode", supportsModel: true, promptStyle: "positional", baseArgs: ["run"] },
 } as const;
 
 const PROGRAMMATIC_ONLY_HARNESSES = ["internal"] as const;
@@ -64,14 +49,15 @@ const SUPPORTED_HARNESS_NAMES = [
 export { buildLaunchSpec, cancelRunningProcess };
 
 // ---------------------------------------------------------------------------
-// Arg builder (pure function)
+// Arg builder (pure function) — Pi / direct-invoke path only
 // ---------------------------------------------------------------------------
 
 /**
  * Builds CLI argument array for a given harness and invocation options.
  *
  * This is a pure function with no side-effects, suitable for unit testing the
- * flag mapping logic in isolation.
+ * flag mapping logic in isolation. Only used for harnesses in
+ * {@link HARNESS_CLI_MAP} (currently Pi).
  *
  * @throws {BabysitterRuntimeError} if `name` is not a known harness.
  */
@@ -95,7 +81,7 @@ export function buildHarnessArgs(
   const args: string[] = [...(spec.baseArgs ?? [])];
 
   if ((spec.promptStyle ?? "flag") === "positional") {
-    args.push(name === "codex" ? "-" : options.prompt);
+    args.push(options.prompt);
   } else {
     args.push("--prompt", options.prompt);
   }
@@ -106,15 +92,6 @@ export function buildHarnessArgs(
 
   if (options.workspace && spec.workspaceFlag) {
     args.push(spec.workspaceFlag, options.workspace);
-  }
-
-  // Structured JSON output mode (rpc) — only for harnesses that support it
-  if (options.rpc) {
-    if (name === "claude-code") {
-      args.push("--output-format", "streaming-json");
-    }
-    // codex already uses JSON events natively — no flag needed
-    // other harnesses: rpc flag silently ignored
   }
 
   return args;

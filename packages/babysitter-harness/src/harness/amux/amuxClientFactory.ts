@@ -14,9 +14,9 @@ let cachedClient: AmuxClient | null = null;
 export async function getAmuxClient(): Promise<AmuxClient> {
   if (cachedClient) return cachedClient;
 
-  // Direct import — @a5c-ai/agent-mux-core is a real dependency
-  const { AgentMuxClient } = await import("@a5c-ai/agent-mux");
-  const client = new AgentMuxClient({
+  // Direct import — @a5c-ai/agent-mux is a real dependency
+  const { createClient } = await import("@a5c-ai/agent-mux");
+  const client = createClient({
     stream: true,
     debug: false,
   });
