@@ -149,14 +149,23 @@ export async function invokeHarness(
     return invokeHarnessDirect(name, options);
   }
 
-  // Try agent-mux first for external harnesses
-  const amuxClient = await getAmuxClient();
-  if (amuxClient && hasAmuxAdapter(name)) {
-    return invokeViaAgentMux(amuxClient, name, options);
+  // External harnesses go through agent-mux
+  if (!hasAmuxAdapter(name)) {
+    throw new BabysitterRuntimeError(
+      `No agent-mux adapter for harness "${name}"`,
+      ErrorCategory.Configuration,
+    );
   }
 
-  // Fallback to direct CLI invocation
-  return invokeHarnessDirect(name, options);
+  const amuxClient = await getAmuxClient();
+  if (!amuxClient) {
+    throw new BabysitterRuntimeError(
+      "@agent-mux/core is required for external harness invocation. Install it: npm i @agent-mux/core",
+      ErrorCategory.Configuration,
+    );
+  }
+
+  return invokeViaAgentMux(amuxClient, name, options);
 }
 
 /**
