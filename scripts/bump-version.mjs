@@ -87,6 +87,7 @@ const workspaceManifestPaths = [
   "packages/sdk/package.json",
   "packages/babysitter/package.json",
   "packages/babysitter-harness/package.json",
+  "packages/unified-plugins/package.json",
   "packages/hooks-proxy/core/package.json",
   "packages/hooks-proxy/cli/package.json",
   "packages/hooks-proxy/adapter-claude/package.json",

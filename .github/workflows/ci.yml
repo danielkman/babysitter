@@ -70,6 +70,16 @@ jobs:
           set -euo pipefail
           npm run test:hooks-proxy 2>&1 | tee artifacts/test-logs/hooks-proxy-tests.log
 
+      - name: Build unified-plugins
+        run: |
+          set -euo pipefail
+          npm run build --workspace=@a5c-ai/unified-plugins 2>&1 | tee artifacts/test-logs/unified-plugins-build.log
+
+      - name: unified-plugins tests
+        run: |
+          set -euo pipefail
+          npm run test --workspace=@a5c-ai/unified-plugins 2>&1 | tee artifacts/test-logs/unified-plugins-tests.log
+
       - name: babysitter-github plugin validation
         run: |
           set -euo pipefail

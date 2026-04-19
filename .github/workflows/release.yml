@@ -72,6 +72,12 @@ jobs:
           set -euo pipefail
           npm run test:hooks-proxy 2>&1 | tee artifacts/logs/hooks-proxy-tests.log
 
+      - name: Build and test unified-plugins
+        run: |
+          set -euo pipefail
+          npm run build --workspace=@a5c-ai/unified-plugins 2>&1 | tee artifacts/logs/unified-plugins-build.log
+          npm run test --workspace=@a5c-ai/unified-plugins 2>&1 | tee artifacts/logs/unified-plugins-tests.log
+
       - name: babysitter-codex package tests
         run: |
           set -euo pipefail
@@ -181,7 +187,7 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add package.json packages/sdk/package.json packages/babysitter/package.json packages/babysitter-harness/package.json packages/hooks-proxy/core/package.json packages/hooks-proxy/cli/package.json packages/hooks-proxy/adapter-claude/package.json packages/hooks-proxy/adapter-codex/package.json packages/hooks-proxy/adapter-gemini/package.json packages/hooks-proxy/adapter-copilot/package.json packages/hooks-proxy/adapter-cursor/package.json packages/hooks-proxy/adapter-pi/package.json packages/hooks-proxy/adapter-oh-my-pi/package.json packages/hooks-proxy/adapter-opencode/package.json packages/hooks-proxy/adapter-openclaw/package.json package-lock.json CHANGELOG.md plugins/babysitter/.claude-plugin/plugin.json plugins/babysitter/plugin.json plugins/babysitter/versions.json plugins/babysitter-codex/package.json plugins/babysitter-codex/versions.json plugins/babysitter-gemini/package.json plugins/babysitter-gemini/plugin.json plugins/babysitter-gemini/gemini-extension.json plugins/babysitter-gemini/versions.json plugins/babysitter-pi/package.json plugins/babysitter-pi/versions.json plugins/babysitter-omp/package.json plugins/babysitter-omp/versions.json plugins/babysitter-opencode/package.json plugins/babysitter-opencode/plugin.json plugins/babysitter-opencode/versions.json plugins/babysitter-openclaw/package.json plugins/babysitter-openclaw/plugin.json plugins/babysitter-openclaw/openclaw.plugin.json plugins/babysitter-openclaw/versions.json plugins/babysitter-github/plugin.json plugins/babysitter-github/versions.json plugins/babysitter-github/package.json plugins/babysitter-cursor/plugin.json plugins/babysitter-cursor/versions.json plugins/babysitter-cursor/package.json plugins/babysitter-paperclip/package.json plugins/babysitter-paperclip/versions.json .claude-plugin/marketplace.json
+          git add package.json packages/sdk/package.json packages/babysitter/package.json packages/babysitter-harness/package.json packages/unified-plugins/package.json packages/hooks-proxy/core/package.json packages/hooks-proxy/cli/package.json packages/hooks-proxy/adapter-claude/package.json packages/hooks-proxy/adapter-codex/package.json packages/hooks-proxy/adapter-gemini/package.json packages/hooks-proxy/adapter-copilot/package.json packages/hooks-proxy/adapter-cursor/package.json packages/hooks-proxy/adapter-pi/package.json packages/hooks-proxy/adapter-oh-my-pi/package.json packages/hooks-proxy/adapter-opencode/package.json packages/hooks-proxy/adapter-openclaw/package.json package-lock.json CHANGELOG.md plugins/babysitter/.claude-plugin/plugin.json plugins/babysitter/plugin.json plugins/babysitter/versions.json plugins/babysitter-codex/package.json plugins/babysitter-codex/versions.json plugins/babysitter-gemini/package.json plugins/babysitter-gemini/plugin.json plugins/babysitter-gemini/gemini-extension.json plugins/babysitter-gemini/versions.json plugins/babysitter-pi/package.json plugins/babysitter-pi/versions.json plugins/babysitter-omp/package.json plugins/babysitter-omp/versions.json plugins/babysitter-opencode/package.json plugins/babysitter-opencode/plugin.json plugins/babysitter-opencode/versions.json plugins/babysitter-openclaw/package.json plugins/babysitter-openclaw/plugin.json plugins/babysitter-openclaw/openclaw.plugin.json plugins/babysitter-openclaw/versions.json plugins/babysitter-github/plugin.json plugins/babysitter-github/versions.json plugins/babysitter-github/package.json plugins/babysitter-cursor/plugin.json plugins/babysitter-cursor/versions.json plugins/babysitter-cursor/package.json plugins/babysitter-paperclip/package.json plugins/babysitter-paperclip/versions.json .claude-plugin/marketplace.json
           if git diff --cached --quiet; then
             echo "No version changes detected."
           else
@@ -202,6 +208,11 @@ jobs:
           set -euo pipefail
           npm run build:sdk
 
+      - name: Build unified-plugins
+        run: |
+          set -euo pipefail
+          npm run build --workspace=@a5c-ai/unified-plugins
+
       - name: Build hooks-proxy
         run: |
           set -euo pipefail
@@ -216,6 +227,7 @@ jobs:
         run: |
           set -euo pipefail
           npm pack --workspace=@a5c-ai/babysitter-sdk --pack-destination artifacts/release
+          npm pack --workspace=@a5c-ai/unified-plugins --pack-destination artifacts/release
           (cd packages/babysitter && npm pack --pack-destination ../../artifacts/release)
           (cd plugins/babysitter-codex && npm pack --pack-destination ../../artifacts/release)
           (cd plugins/babysitter-github && npm pack --pack-destination ../../artifacts/release)
@@ -244,6 +256,13 @@ jobs:
         run: |
           set -euo pipefail
           npm publish --workspace=@a5c-ai/babysitter-sdk --access public
+
+      - name: Publish unified-plugins to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+          npm publish --workspace=@a5c-ai/unified-plugins --access public
 
       - name: Inject SDK dependency into codex package for publish
         run: |
