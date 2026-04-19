@@ -105,14 +105,14 @@ describe('hooks.json', () => {
     assert.ok(Array.isArray(hooksJson.hooks.SessionStart), 'must have SessionStart array');
     assert.ok(hooksJson.hooks.SessionStart.length > 0, 'SessionStart must not be empty');
     const hookCmd = hooksJson.hooks.SessionStart[0].hooks[0].command;
-    assert.ok(hookCmd.includes('babysitter-session-start.sh'), 'SessionStart must reference session-start hook');
+    assert.ok(hookCmd.includes('babysitter-proxied-session-start.sh'), 'SessionStart must reference proxied session-start hook');
   });
 
   it('declares Stop hook', () => {
     assert.ok(Array.isArray(hooksJson.hooks.Stop), 'must have Stop array');
     assert.ok(hooksJson.hooks.Stop.length > 0, 'Stop must not be empty');
     const hookCmd = hooksJson.hooks.Stop[0].hooks[0].command;
-    assert.ok(hookCmd.includes('babysitter-stop-hook.sh'), 'Stop must reference stop hook');
+    assert.ok(hookCmd.includes('babysitter-proxied-stop-hook.sh'), 'Stop must reference proxied stop hook');
   });
 });
 
@@ -179,7 +179,7 @@ describe('command files', () => {
 });
 
 describe('hook scripts', () => {
-  const hookScripts = ['babysitter-session-start.sh', 'babysitter-stop-hook.sh'];
+  const hookScripts = ['babysitter-proxied-session-start.sh', 'babysitter-proxied-stop-hook.sh'];
 
   for (const script of hookScripts) {
     it(`hooks/${script} exists`, () => {

@@ -6,8 +6,8 @@
   "license": "MIT",
   "harness": "gemini-cli",
   "hooks": {
-    "SessionStart": "hooks/session-start.sh",
-    "AfterAgent": "hooks/after-agent.sh"
+    "SessionStart": "hooks/babysitter-proxied-session-start.sh",
+    "AfterAgent": "hooks/babysitter-proxied-after-agent.sh"
   },
   "commands": [
     "commands/assimilate.toml",

@@ -49,8 +49,8 @@ function testJsSyntax() {
 
 function testShellSyntax() {
   const shellScripts = [
-    'session-start.sh',
-    'after-agent.sh',
+    'babysitter-proxied-session-start.sh',
+    'babysitter-proxied-after-agent.sh',
   ];
 
   for (const script of shellScripts) {
@@ -99,8 +99,8 @@ function testHooksJson() {
     throw new Error('SessionStart hook has no entries');
   }
   const ssCmd = sessionStartHook.hooks[0].command || '';
-  if (!ssCmd.includes('session-start.sh')) {
-    throw new Error(`SessionStart hook command does not reference session-start.sh: ${ssCmd}`);
+  if (!ssCmd.includes('babysitter-proxied-session-start.sh')) {
+    throw new Error(`SessionStart hook command does not reference babysitter-proxied-session-start.sh: ${ssCmd}`);
   }
   console.log('  ok hooks.json: SessionStart hook registered');
 
@@ -113,8 +113,8 @@ function testHooksJson() {
     throw new Error('AfterAgent hook has no entries');
   }
   const aaCmd = afterAgentHook.hooks[0].command || '';
-  if (!aaCmd.includes('after-agent.sh')) {
-    throw new Error(`AfterAgent hook command does not reference after-agent.sh: ${aaCmd}`);
+  if (!aaCmd.includes('babysitter-proxied-after-agent.sh')) {
+    throw new Error(`AfterAgent hook command does not reference babysitter-proxied-after-agent.sh: ${aaCmd}`);
   }
   console.log('  ok hooks.json: AfterAgent hook registered');
 }

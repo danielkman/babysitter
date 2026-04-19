@@ -4,25 +4,25 @@
     "sessionStart": [
       {
         "type": "command",
-        "bash": "./hooks/session-start.sh",
-        "powershell": "./hooks/session-start.ps1",
+        "bash": "bash \"./hooks/babysitter-proxied-session-start.sh\"",
+        "powershell": "powershell -NoProfile -ExecutionPolicy Bypass -File \"./hooks/babysitter-proxied-session-start.ps1\"",
         "timeoutSec": 30
       }
     ],
     "sessionEnd": [
       {
         "type": "command",
-        "bash": "./hooks/session-end.sh",
-        "powershell": "./hooks/session-end.ps1",
+        "bash": "bash \"./hooks/babysitter-proxied-session-end.sh\"",
+        "powershell": "powershell -NoProfile -ExecutionPolicy Bypass -File \"./hooks/babysitter-proxied-session-end.ps1\"",
         "timeoutSec": 30
       }
     ],
     "userPromptSubmitted": [
       {
         "type": "command",
-        "bash": "./hooks/user-prompt-submitted.sh",
-        "powershell": "./hooks/user-prompt-submitted.ps1",
-        "timeoutSec": 30
+        "bash": "bash \"./hooks/babysitter-proxied-user-prompt-submitted.sh\"",
+        "powershell": "powershell -NoProfile -ExecutionPolicy Bypass -File \"./hooks/babysitter-proxied-user-prompt-submitted.ps1\"",
+        "timeoutSec": 15
       }
     ]
   }

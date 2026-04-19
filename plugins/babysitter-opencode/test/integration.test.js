@@ -82,11 +82,11 @@ test("plugin.json has required fields", () => {
 console.log("\n2. Hook files existence and JS validity:");
 
 const hookJsFiles = [
-  "hooks/session-created.js",
-  "hooks/session-idle.js",
-  "hooks/shell-env.js",
-  "hooks/tool-execute-before.js",
-  "hooks/tool-execute-after.js",
+  "hooks/babysitter-proxied-session-created.js",
+  "hooks/babysitter-proxied-session-idle.js",
+  "hooks/babysitter-proxied-shell-env.js",
+  "hooks/babysitter-proxied-tool-execute-before.js",
+  "hooks/babysitter-proxied-tool-execute-after.js",
 ];
 
 for (const hookFile of hookJsFiles) {

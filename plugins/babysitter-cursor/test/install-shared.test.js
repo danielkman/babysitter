@@ -62,11 +62,11 @@ function testCursorPluginUsesCursorSpecificHooksManifest() {
   assert.strictEqual(getManagedHooksConfigPath(packageRoot), hooksPath);
   assert.strictEqual(
     hooksConfig.hooks.sessionStart[0].bash,
-    'bash "./hooks/session-start.sh"',
+    'bash "./hooks/babysitter-proxied-session-start.sh"',
   );
   assert.strictEqual(
     hooksConfig.hooks.stop[0].powershell,
-    'powershell -NoProfile -ExecutionPolicy Bypass -File "./hooks/stop-hook.ps1"',
+    'powershell -NoProfile -ExecutionPolicy Bypass -File "./hooks/babysitter-proxied-stop-hook.ps1"',
   );
 }
 

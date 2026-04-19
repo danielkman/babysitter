@@ -106,7 +106,13 @@ HOOK_SCRIPTS=$(node -e "
     const h = JSON.parse(require('fs').readFileSync(hooksPath,'utf8'));
     for (const matchers of Object.values(h.hooks || {})) {
       for (const m of matchers) {
-        if (m.bash) console.log(m.bash.replace(/^\\.\\//,''));
+        if (m.bash) {
+          // Extract script path from command string (e.g., 'bash \"./hooks/foo.sh\"' -> 'hooks/foo.sh')
+          const cmd = m.bash;
+          const match = cmd.match(/[\"']([^\"']+)[\"']/);
+          const scriptPath = match ? match[1] : cmd;
+          console.log(scriptPath.replace(/^\\.\\//,''));
+        }
       }
     }
   } else {
