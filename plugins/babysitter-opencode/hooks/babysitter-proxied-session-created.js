@@ -1,13 +1,11 @@
 #!/usr/bin/env node
 /**
  * Unified Session Created Hook for OpenCode
- * Mirrors session-created.js but routes through hooks-proxy when available,
- * falling back to direct SDK.
- * NOT YET ACTIVE — parallel to existing hook scripts
+ * Routes through hooks-proxy for all hook execution.
  *
  * Fires when an OpenCode session is created. Ensures the babysitter SDK CLI
- * is installed, then delegates to `babysitter hook:run --hook-type session-start`
- * to create baseline session state.
+ * and hooks-proxy are installed, then delegates to
+ * `babysitter hook:run --hook-type session-start` via hooks-proxy.
  *
  * OpenCode plugin protocol:
  *   - Receives event context as JSON via process.argv or stdin
@@ -28,6 +26,8 @@ const GLOBAL_ROOT = process.env.BABYSITTER_GLOBAL_STATE_DIR || path.join(os.home
 const STATE_DIR = process.env.BABYSITTER_STATE_DIR || path.join(GLOBAL_ROOT, "state");
 const LOG_DIR = process.env.BABYSITTER_LOG_DIR || path.join(GLOBAL_ROOT, "logs");
 const LOG_FILE = path.join(LOG_DIR, "babysitter-session-created-hook.log");
+const SDK_MARKER = path.join(PLUGIN_ROOT, ".babysitter-install-attempted");
+const PROXY_MARKER = path.join(PLUGIN_ROOT, ".hooks-proxy-install-attempted");
 
 // ---------------------------------------------------------------------------
 // Logging
@@ -58,36 +58,34 @@ function getSdkVersion() {
   }
 }
 
-function hasBabysitterCli() {
+function getInstalledVersion(cmd) {
   try {
-    execSync("babysitter --version", { stdio: "pipe", timeout: 10000 });
-    return true;
+    return execSync(`${cmd} --version`, { stdio: "pipe", timeout: 10000 }).toString().trim();
   } catch {
-    return false;
+    return null;
   }
 }
 
-function installSdk(version) {
-  const marker = path.join(PLUGIN_ROOT, ".babysitter-install-attempted");
+function installPackage(npmPkg, version, marker) {
   if (existsSync(marker)) return;
 
   try {
-    execSync(`npm i -g "@a5c-ai/babysitter-sdk@${version}" --loglevel=error`, {
+    execSync(`npm i -g "${npmPkg}@${version}" --loglevel=error`, {
       stdio: "pipe",
       timeout: 120000,
     });
-    blog(`Installed SDK globally (${version})`);
+    blog(`Installed ${npmPkg} globally (${version})`);
   } catch {
     // Try user-local prefix
     try {
       const prefix = path.join(process.env.HOME || process.env.USERPROFILE || "~", ".local");
-      execSync(`npm i -g "@a5c-ai/babysitter-sdk@${version}" --prefix "${prefix}" --loglevel=error`, {
+      execSync(`npm i -g "${npmPkg}@${version}" --prefix "${prefix}" --loglevel=error`, {
         stdio: "pipe",
         timeout: 120000,
       });
-      blog(`Installed SDK to user prefix (${version})`);
+      blog(`Installed ${npmPkg} to user prefix (${version})`);
     } catch {
-      blog("SDK installation failed");
+      blog(`${npmPkg} installation failed`);
     }
   }
 
@@ -95,7 +93,7 @@ function installSdk(version) {
 }
 
 // ---------------------------------------------------------------------------
-// Hooks-proxy resolution
+// Hooks-proxy resolution & install
 // ---------------------------------------------------------------------------
 
 function resolveHooksProxy() {
@@ -123,54 +121,24 @@ function resolveHooksProxy() {
 
 function runViaProxy(proxy, hookType, inputJson) {
   const handler = `babysitter hook:run --harness unified --hook-type ${hookType} --plugin-root ${PLUGIN_ROOT} --state-dir ${STATE_DIR} --json`;
-  try {
-    const result = execSync(`"${proxy}" invoke --adapter opencode --handler "${handler}" --json`, {
-      input: inputJson,
-      stdio: ["pipe", "pipe", "pipe"],
-      timeout: 30000,
-      env: { ...process.env, BABYSITTER_STATE_DIR: STATE_DIR },
-    });
-    return result.toString("utf8").trim();
-  } catch (err) {
-    blog(`hooks-proxy failed: ${err.message}`);
-    return null; // Signal fallback needed
-  }
+  const result = execSync(`"${proxy}" invoke --adapter opencode --handler "${handler}" --json`, {
+    input: inputJson,
+    stdio: ["pipe", "pipe", "pipe"],
+    timeout: 30000,
+    env: { ...process.env, BABYSITTER_STATE_DIR: STATE_DIR },
+  });
+  return result.toString("utf8").trim();
 }
 
-function runBabysitterHook(hookType, inputJson) {
-  const sdkVersion = getSdkVersion();
-  const args = [
-    "hook:run",
-    "--hook-type", hookType,
-    "--harness", "opencode",
-    "--plugin-root", PLUGIN_ROOT,
-    "--state-dir", STATE_DIR,
-    "--json",
-  ];
-
-  try {
-    const result = execSync(`babysitter ${args.join(" ")}`, {
-      input: inputJson,
-      stdio: ["pipe", "pipe", "pipe"],
-      timeout: 30000,
-      env: { ...process.env, BABYSITTER_STATE_DIR: STATE_DIR },
-    });
-    return result.toString("utf8").trim();
-  } catch (err) {
-    // Fall back to npx
-    try {
-      const result = execSync(`npx -y "@a5c-ai/babysitter-sdk@${sdkVersion}" ${args.join(" ")}`, {
-        input: inputJson,
-        stdio: ["pipe", "pipe", "pipe"],
-        timeout: 60000,
-        env: { ...process.env, BABYSITTER_STATE_DIR: STATE_DIR },
-      });
-      return result.toString("utf8").trim();
-    } catch (npxErr) {
-      blog(`Hook execution failed: ${npxErr.message}`);
-      return "{}";
-    }
-  }
+function runViaNpxProxy(version, hookType, inputJson) {
+  const handler = `babysitter hook:run --harness unified --hook-type ${hookType} --plugin-root ${PLUGIN_ROOT} --state-dir ${STATE_DIR} --json`;
+  const result = execSync(`npx -y "@a5c-ai/hooks-proxy-cli@${version}" invoke --adapter opencode --handler "${handler}" --json`, {
+    input: inputJson,
+    stdio: ["pipe", "pipe", "pipe"],
+    timeout: 60000,
+    env: { ...process.env, BABYSITTER_STATE_DIR: STATE_DIR },
+  });
+  return result.toString("utf8").trim();
 }
 
 // ---------------------------------------------------------------------------
@@ -191,10 +159,22 @@ function main() {
 
   const sdkVersion = getSdkVersion();
 
-  // Ensure SDK is installed
-  if (!hasBabysitterCli()) {
-    blog("SDK CLI not found, attempting install");
-    installSdk(sdkVersion);
+  // Ensure SDK is installed with version sync
+  const currentSdkVersion = getInstalledVersion("babysitter");
+  if (!currentSdkVersion || currentSdkVersion !== sdkVersion) {
+    blog(`SDK needs install/upgrade: installed=${currentSdkVersion || "none"}, required=${sdkVersion}`);
+    installPackage("@a5c-ai/babysitter-sdk", sdkVersion, SDK_MARKER);
+  } else {
+    blog(`SDK version OK: ${currentSdkVersion}`);
+  }
+
+  // Ensure hooks-proxy is installed with version sync
+  const currentProxyVersion = getInstalledVersion("a5c-hooks-proxy");
+  if (!currentProxyVersion || currentProxyVersion !== sdkVersion) {
+    blog(`hooks-proxy needs install/upgrade: installed=${currentProxyVersion || "none"}, required=${sdkVersion}`);
+    installPackage("@a5c-ai/hooks-proxy-cli", sdkVersion, PROXY_MARKER);
+  } else {
+    blog(`hooks-proxy version OK: ${currentProxyVersion}`);
   }
 
   // Build hook input
@@ -207,20 +187,21 @@ function main() {
 
   blog(`Hook input: ${hookInput}`);
 
-  // Try hooks-proxy first, fall back to direct SDK
+  // Route through hooks-proxy (install or npx fallback)
   const proxy = resolveHooksProxy();
   let result;
 
-  if (proxy) {
-    blog(`Using hooks-proxy: ${proxy}`);
-    result = runViaProxy(proxy, "session-start", hookInput);
-    if (result === null) {
-      blog("hooks-proxy failed, falling back to direct SDK");
-      result = runBabysitterHook("session-start", hookInput);
+  try {
+    if (proxy) {
+      blog(`Using hooks-proxy: ${proxy}`);
+      result = runViaProxy(proxy, "session-start", hookInput);
+    } else {
+      blog("hooks-proxy not found after install, using npx fallback");
+      result = runViaNpxProxy(sdkVersion, "session-start", hookInput);
     }
-  } else {
-    blog("No hooks-proxy available, using SDK directly");
-    result = runBabysitterHook("session-start", hookInput);
+  } catch (err) {
+    blog(`Hook execution failed: ${err.message}`);
+    result = "{}";
   }
 
   blog(`Hook result: ${result}`);

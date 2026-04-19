@@ -1,17 +1,14 @@
 #!/usr/bin/env node
 /**
  * Unified Session Idle Hook for OpenCode
- * Mirrors session-idle.js but routes through hooks-proxy when available,
- * falling back to direct SDK.
- * NOT YET ACTIVE — parallel to existing hook scripts
+ * Routes through hooks-proxy for all hook execution.
  *
  * Fires when the OpenCode agent goes idle. Checks if the current babysitter
  * run has pending effects that need attention. Since OpenCode does NOT have a
  * blocking stop hook, this is fire-and-forget -- it outputs context about
  * pending effects so the agent can decide whether to continue iterating.
  *
- * Delegates to `babysitter hook:run --hook-type stop` (which handles the
- * run-state inspection and iteration tracking).
+ * Delegates to `babysitter hook:run --hook-type stop` via hooks-proxy.
  *
  * OpenCode plugin protocol:
  *   - Receives event context as JSON via stdin
@@ -22,7 +19,7 @@
 "use strict";
 
 const { execSync } = require("child_process");
-const { readFileSync, mkdirSync, appendFileSync, existsSync } = require("fs");
+const { readFileSync, mkdirSync, appendFileSync, existsSync, writeFileSync } = require("fs");
 const os = require("os");
 const path = require("path");
 
@@ -31,6 +28,7 @@ const GLOBAL_ROOT = process.env.BABYSITTER_GLOBAL_STATE_DIR || path.join(os.home
 const STATE_DIR = process.env.BABYSITTER_STATE_DIR || path.join(GLOBAL_ROOT, "state");
 const LOG_DIR = process.env.BABYSITTER_LOG_DIR || path.join(GLOBAL_ROOT, "logs");
 const LOG_FILE = path.join(LOG_DIR, "babysitter-session-idle-hook.log");
+const PROXY_MARKER = path.join(PLUGIN_ROOT, ".hooks-proxy-install-attempted");
 
 function ensureDir(dir) {
   try { mkdirSync(dir, { recursive: true }); } catch { /* best-effort */ }
@@ -70,55 +68,51 @@ function resolveHooksProxy() {
   return null;
 }
 
-function runViaProxy(proxy, hookType, inputJson) {
-  const handler = `babysitter hook:run --harness unified --hook-type ${hookType} --plugin-root ${PLUGIN_ROOT} --state-dir ${STATE_DIR} --json`;
-  try {
-    const result = execSync(`"${proxy}" invoke --adapter opencode --handler "${handler}" --json`, {
-      input: inputJson,
-      stdio: ["pipe", "pipe", "pipe"],
-      timeout: 30000,
-      env: { ...process.env, BABYSITTER_STATE_DIR: STATE_DIR },
-    });
-    return result.toString("utf8").trim();
-  } catch (err) {
-    blog(`hooks-proxy failed: ${err.message}`);
-    return null;
-  }
-}
-
-function runBabysitterHook(hookType, inputJson) {
-  const sdkVersion = getSdkVersion();
-  const args = [
-    "hook:run",
-    "--hook-type", hookType,
-    "--harness", "opencode",
-    "--plugin-root", PLUGIN_ROOT,
-    "--state-dir", STATE_DIR,
-    "--json",
-  ];
+function installHooksProxy(version) {
+  if (existsSync(PROXY_MARKER)) return;
 
   try {
-    const result = execSync(`babysitter ${args.join(" ")}`, {
-      input: inputJson,
-      stdio: ["pipe", "pipe", "pipe"],
-      timeout: 30000,
-      env: { ...process.env, BABYSITTER_STATE_DIR: STATE_DIR },
+    execSync(`npm i -g "@a5c-ai/hooks-proxy-cli@${version}" --loglevel=error`, {
+      stdio: "pipe",
+      timeout: 120000,
     });
-    return result.toString("utf8").trim();
+    blog(`Installed hooks-proxy globally (${version})`);
   } catch {
     try {
-      const result = execSync(`npx -y "@a5c-ai/babysitter-sdk@${sdkVersion}" ${args.join(" ")}`, {
-        input: inputJson,
-        stdio: ["pipe", "pipe", "pipe"],
-        timeout: 60000,
-        env: { ...process.env, BABYSITTER_STATE_DIR: STATE_DIR },
+      const prefix = path.join(process.env.HOME || process.env.USERPROFILE || "~", ".local");
+      execSync(`npm i -g "@a5c-ai/hooks-proxy-cli@${version}" --prefix "${prefix}" --loglevel=error`, {
+        stdio: "pipe",
+        timeout: 120000,
       });
-      return result.toString("utf8").trim();
-    } catch (err) {
-      blog(`Hook execution failed: ${err.message}`);
-      return "{}";
+      blog(`Installed hooks-proxy to user prefix (${version})`);
+    } catch {
+      blog("hooks-proxy installation failed");
     }
   }
+
+  try { writeFileSync(PROXY_MARKER, version); } catch { /* best-effort */ }
+}
+
+function runViaProxy(proxy, hookType, inputJson) {
+  const handler = `babysitter hook:run --harness unified --hook-type ${hookType} --plugin-root ${PLUGIN_ROOT} --state-dir ${STATE_DIR} --json`;
+  const result = execSync(`"${proxy}" invoke --adapter opencode --handler "${handler}" --json`, {
+    input: inputJson,
+    stdio: ["pipe", "pipe", "pipe"],
+    timeout: 30000,
+    env: { ...process.env, BABYSITTER_STATE_DIR: STATE_DIR },
+  });
+  return result.toString("utf8").trim();
+}
+
+function runViaNpxProxy(version, hookType, inputJson) {
+  const handler = `babysitter hook:run --harness unified --hook-type ${hookType} --plugin-root ${PLUGIN_ROOT} --state-dir ${STATE_DIR} --json`;
+  const result = execSync(`npx -y "@a5c-ai/hooks-proxy-cli@${version}" invoke --adapter opencode --handler "${handler}" --json`, {
+    input: inputJson,
+    stdio: ["pipe", "pipe", "pipe"],
+    timeout: 60000,
+    env: { ...process.env, BABYSITTER_STATE_DIR: STATE_DIR },
+  });
+  return result.toString("utf8").trim();
 }
 
 function main() {
@@ -134,6 +128,15 @@ function main() {
     return;
   }
 
+  const sdkVersion = getSdkVersion();
+
+  // Ensure hooks-proxy is installed
+  let proxy = resolveHooksProxy();
+  if (!proxy) {
+    installHooksProxy(sdkVersion);
+    proxy = resolveHooksProxy();
+  }
+
   const hookInput = JSON.stringify({
     session_id: sessionId,
     cwd: process.cwd(),
@@ -143,20 +146,18 @@ function main() {
 
   blog(`Checking run status for session ${sessionId}`);
 
-  // Try hooks-proxy first, fall back to direct SDK
-  const proxy = resolveHooksProxy();
   let result;
-
-  if (proxy) {
-    blog(`Using hooks-proxy: ${proxy}`);
-    result = runViaProxy(proxy, "stop", hookInput);
-    if (result === null) {
-      blog("hooks-proxy failed, falling back to direct SDK");
-      result = runBabysitterHook("stop", hookInput);
+  try {
+    if (proxy) {
+      blog(`Using hooks-proxy: ${proxy}`);
+      result = runViaProxy(proxy, "stop", hookInput);
+    } else {
+      blog("hooks-proxy not found after install, using npx fallback");
+      result = runViaNpxProxy(sdkVersion, "stop", hookInput);
     }
-  } else {
-    blog("No hooks-proxy available, using SDK directly");
-    result = runBabysitterHook("stop", hookInput);
+  } catch (err) {
+    blog(`Hook execution failed: ${err.message}`);
+    result = "{}";
   }
 
   blog(`Hook result: ${result}`);

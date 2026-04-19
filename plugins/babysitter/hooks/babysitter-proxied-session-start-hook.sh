@@ -1,13 +1,12 @@
 #!/bin/bash
-# Unified Session Start Hook - mirrors babysitter-session-start-hook.sh
-# but routes through hooks-proxy when available, falling back to direct SDK.
-# NOT YET ACTIVE — parallel to existing hook scripts
+# Unified Session Start Hook - routes through hooks-proxy for all hook execution.
 #
-# Ensures the babysitter CLI is installed (from versions.json sdkVersion),
-# then delegates to the TypeScript handler via hooks-proxy or directly.
+# Ensures the babysitter CLI and hooks-proxy are installed (from versions.json
+# sdkVersion), then delegates to the TypeScript handler via hooks-proxy.
 
 PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "$0")/.." && pwd)}"
-MARKER_FILE="${PLUGIN_ROOT}/.babysitter-install-attempted"
+SDK_MARKER_FILE="${PLUGIN_ROOT}/.babysitter-install-attempted"
+PROXY_MARKER_FILE="${PLUGIN_ROOT}/.hooks-proxy-install-attempted"
 
 GLOBAL_ROOT="${BABYSITTER_GLOBAL_STATE_DIR:-$HOME/.a5c}"
 LOG_DIR="${BABYSITTER_LOG_DIR:-${GLOBAL_ROOT}/logs}"
@@ -29,10 +28,13 @@ blog() {
 blog "Unified hook script invoked"
 blog "PLUGIN_ROOT=$PLUGIN_ROOT"
 
-# Get required SDK version from versions.json
+# Get required SDK version from versions.json (used for both SDK and hooks-proxy)
 SDK_VERSION=$(node -e "try{console.log(JSON.parse(require('fs').readFileSync('${PLUGIN_ROOT}/versions.json','utf8')).sdkVersion||'latest')}catch{console.log('latest')}" 2>/dev/null || echo "latest")
 
-# Function to install/upgrade SDK
+# ---------------------------------------------------------------------------
+# SDK install/upgrade
+# ---------------------------------------------------------------------------
+
 install_sdk() {
   local target_version="$1"
   # Try global install first, fall back to user-local if permissions fail
@@ -51,24 +53,24 @@ install_sdk() {
 }
 
 # Check if babysitter CLI exists and if version matches
-NEEDS_INSTALL=false
+NEEDS_SDK_INSTALL=false
 if command -v babysitter &>/dev/null; then
   CURRENT_VERSION=$(babysitter --version 2>/dev/null || echo "unknown")
   if [ "$CURRENT_VERSION" != "$SDK_VERSION" ]; then
     blog "SDK version mismatch: installed=${CURRENT_VERSION}, required=${SDK_VERSION}"
-    NEEDS_INSTALL=true
+    NEEDS_SDK_INSTALL=true
   else
     blog "SDK version OK: ${CURRENT_VERSION}"
   fi
 else
   blog "SDK CLI not found, will install"
-  NEEDS_INSTALL=true
+  NEEDS_SDK_INSTALL=true
 fi
 
 # Install/upgrade if needed (only attempt once per plugin version)
-if [ "$NEEDS_INSTALL" = true ] && [ ! -f "$MARKER_FILE" ]; then
+if [ "$NEEDS_SDK_INSTALL" = true ] && [ ! -f "$SDK_MARKER_FILE" ]; then
   install_sdk "$SDK_VERSION"
-  echo "$SDK_VERSION" > "$MARKER_FILE" 2>/dev/null
+  echo "$SDK_VERSION" > "$SDK_MARKER_FILE" 2>/dev/null
 fi
 
 # If still not available after install attempt, try npx as last resort
@@ -78,14 +80,55 @@ if ! command -v babysitter &>/dev/null; then
   export -f babysitter
 fi
 
-# Capture stdin to a temp file so the CLI receives a clean EOF
-# (piping /dev/stdin directly can keep the Node.js event loop alive)
-INPUT_FILE=$(mktemp 2>/dev/null || echo "/tmp/hook-session-start-$$.json")
-cat > "$INPUT_FILE"
+# ---------------------------------------------------------------------------
+# Hooks-proxy install/upgrade (same pattern as SDK)
+# ---------------------------------------------------------------------------
 
-blog "Hook input received ($(wc -c < "$INPUT_FILE") bytes)"
+install_hooks_proxy() {
+  local target_version="$1"
+  if npm i -g "@a5c-ai/hooks-proxy-cli@${target_version}" --loglevel=error 2>/dev/null; then
+    blog "Installed hooks-proxy globally (${target_version})"
+    return 0
+  else
+    if npm i -g "@a5c-ai/hooks-proxy-cli@${target_version}" --prefix "$HOME/.local" --loglevel=error 2>/dev/null; then
+      export PATH="$HOME/.local/bin:$PATH"
+      blog "Installed hooks-proxy to user prefix (${target_version})"
+      return 0
+    fi
+  fi
+  return 1
+}
 
-# Resolve hooks-proxy binary
+NEEDS_PROXY_INSTALL=false
+if command -v a5c-hooks-proxy &>/dev/null; then
+  PROXY_VERSION=$(a5c-hooks-proxy --version 2>/dev/null || echo "unknown")
+  if [ "$PROXY_VERSION" != "$SDK_VERSION" ]; then
+    blog "hooks-proxy version mismatch: installed=${PROXY_VERSION}, required=${SDK_VERSION}"
+    NEEDS_PROXY_INSTALL=true
+  else
+    blog "hooks-proxy version OK: ${PROXY_VERSION}"
+  fi
+elif [ -f "$HOME/.local/bin/a5c-hooks-proxy" ]; then
+  export PATH="$HOME/.local/bin:$PATH"
+  PROXY_VERSION=$(a5c-hooks-proxy --version 2>/dev/null || echo "unknown")
+  if [ "$PROXY_VERSION" != "$SDK_VERSION" ]; then
+    blog "hooks-proxy version mismatch: installed=${PROXY_VERSION}, required=${SDK_VERSION}"
+    NEEDS_PROXY_INSTALL=true
+  else
+    blog "hooks-proxy version OK: ${PROXY_VERSION}"
+  fi
+else
+  blog "hooks-proxy not found, will install"
+  NEEDS_PROXY_INSTALL=true
+fi
+
+# Install/upgrade if needed (only attempt once per plugin version)
+if [ "$NEEDS_PROXY_INSTALL" = true ] && [ ! -f "$PROXY_MARKER_FILE" ]; then
+  install_hooks_proxy "$SDK_VERSION"
+  echo "$SDK_VERSION" > "$PROXY_MARKER_FILE" 2>/dev/null
+fi
+
+# Resolve hooks-proxy binary (npx fallback if still not found)
 PROXY=""
 if command -v a5c-hooks-proxy &>/dev/null; then
   PROXY="a5c-hooks-proxy"
@@ -93,27 +136,29 @@ elif [ -f "$HOME/.local/bin/a5c-hooks-proxy" ]; then
   PROXY="$HOME/.local/bin/a5c-hooks-proxy"
 fi
 
+if [ -z "$PROXY" ]; then
+  blog "hooks-proxy not found after install, using npx fallback"
+  PROXY="npx -y @a5c-ai/hooks-proxy-cli@${SDK_VERSION} "
+fi
+
+# ---------------------------------------------------------------------------
+# Capture stdin and delegate to hooks-proxy
+# ---------------------------------------------------------------------------
+
+INPUT_FILE=$(mktemp 2>/dev/null || echo "/tmp/hook-session-start-$$.json")
+cat > "$INPUT_FILE"
+
+blog "Hook input received ($(wc -c < "$INPUT_FILE") bytes)"
+
 STDERR_LOG="$LOG_DIR/babysitter-session-start-hook-stderr.log"
 
-if [ -n "$PROXY" ]; then
-  blog "Using hooks-proxy: $PROXY"
-  # Route through hooks-proxy with claude adapter
-  RESULT=$($PROXY invoke \
-    --adapter claude \
-    --handler "babysitter hook:run --harness unified --hook-type session-start --plugin-root $PLUGIN_ROOT --verbose --json" \
-    --json \
-    < "$INPUT_FILE" 2>"$STDERR_LOG") || {
-    blog "hooks-proxy failed (exit=$?), falling back to direct SDK"
-    # Fallback to direct SDK if hooks-proxy fails
-    RESULT=$(babysitter hook:run --hook-type session-start --harness claude-code --plugin-root "$PLUGIN_ROOT" --verbose --json < "$INPUT_FILE" 2>"$STDERR_LOG")
-  }
-  EXIT_CODE=$?
-else
-  blog "No hooks-proxy available, using SDK directly"
-  # No hooks-proxy — fall back to original direct SDK invocation
-  RESULT=$(babysitter hook:run --hook-type session-start --harness claude-code --plugin-root "$PLUGIN_ROOT" --verbose --json < "$INPUT_FILE" 2>"$STDERR_LOG")
-  EXIT_CODE=$?
-fi
+blog "Using hooks-proxy: $PROXY"
+RESULT=$($PROXY invoke \
+  --adapter claude \
+  --handler "babysitter hook:run --harness unified --hook-type session-start --plugin-root $PLUGIN_ROOT --verbose --json" \
+  --json \
+  < "$INPUT_FILE" 2>"$STDERR_LOG")
+EXIT_CODE=$?
 
 blog "CLI exit code=$EXIT_CODE"
 

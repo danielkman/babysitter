@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 /**
  * Unified Shell Environment Hook for OpenCode
- * Mirrors shell-env.js but routes through hooks-proxy when available,
- * falling back to direct env var injection.
- * NOT YET ACTIVE — parallel to existing hook scripts
+ * Routes through hooks-proxy when available for consistency,
+ * but primarily performs direct env var injection.
  *
  * Fires when OpenCode initializes a shell environment. Injects babysitter
  * environment variables (BABYSITTER_SESSION_ID, BABYSITTER_STATE_DIR, etc.)
@@ -20,7 +19,7 @@
 
 "use strict";
 
-const { readFileSync, mkdirSync, appendFileSync, existsSync } = require("fs");
+const { readFileSync, mkdirSync, appendFileSync, existsSync, writeFileSync } = require("fs");
 const { execSync } = require("child_process");
 const os = require("os");
 const path = require("path");
@@ -32,6 +31,7 @@ const STATE_DIR = process.env.BABYSITTER_STATE_DIR || path.join(GLOBAL_ROOT, "st
 const RUNS_DIR = process.env.BABYSITTER_RUNS_DIR || path.join(GLOBAL_ROOT, "runs");
 const LOG_DIR = process.env.BABYSITTER_LOG_DIR || path.join(GLOBAL_ROOT, "logs");
 const LOG_FILE = path.join(LOG_DIR, "babysitter-shell-env-hook.log");
+const PROXY_MARKER = path.join(PLUGIN_ROOT, ".hooks-proxy-install-attempted");
 
 function ensureDir(dir) {
   try { mkdirSync(dir, { recursive: true }); } catch { /* best-effort */ }
@@ -71,6 +71,31 @@ function resolveHooksProxy() {
   return null;
 }
 
+function installHooksProxy(version) {
+  if (existsSync(PROXY_MARKER)) return;
+
+  try {
+    execSync(`npm i -g "@a5c-ai/hooks-proxy-cli@${version}" --loglevel=error`, {
+      stdio: "pipe",
+      timeout: 120000,
+    });
+    blog(`Installed hooks-proxy globally (${version})`);
+  } catch {
+    try {
+      const prefix = path.join(process.env.HOME || process.env.USERPROFILE || "~", ".local");
+      execSync(`npm i -g "@a5c-ai/hooks-proxy-cli@${version}" --prefix "${prefix}" --loglevel=error`, {
+        stdio: "pipe",
+        timeout: 120000,
+      });
+      blog(`Installed hooks-proxy to user prefix (${version})`);
+    } catch {
+      blog("hooks-proxy installation failed");
+    }
+  }
+
+  try { writeFileSync(PROXY_MARKER, version); } catch { /* best-effort */ }
+}
+
 function main() {
   blog("Unified shell-env hook invoked");
 
@@ -80,6 +105,12 @@ function main() {
     || crypto.randomUUID();
 
   const sdkVersion = getSdkVersion();
+
+  // Ensure hooks-proxy is installed (for other hooks to use)
+  const proxy = resolveHooksProxy();
+  if (!proxy) {
+    installHooksProxy(sdkVersion);
+  }
 
   // Build env vars to inject
   const env = {
@@ -104,9 +135,9 @@ function main() {
   // Note: shell-env is purely env injection — hooks-proxy routing is logged
   // but the output is always the same env vars object. The proxy can
   // potentially enrich env vars in the future.
-  const proxy = resolveHooksProxy();
-  if (proxy) {
-    blog(`hooks-proxy available: ${proxy} (env injection is direct)`);
+  const resolvedProxy = resolveHooksProxy();
+  if (resolvedProxy) {
+    blog(`hooks-proxy available: ${resolvedProxy} (env injection is direct)`);
   }
 
   blog(`Injecting env: ${JSON.stringify(env)}`);

@@ -1,7 +1,5 @@
 # Unified Stop Hook for Cursor IDE/CLI (PowerShell)
-# Mirrors stop-hook.ps1 but routes through hooks-proxy when available,
-# falling back to direct SDK.
-# NOT YET ACTIVE — parallel to existing hook scripts
+# Routes through hooks-proxy for all hook execution.
 #
 # Drives the orchestration loop by checking run state on session stop.
 #
@@ -16,6 +14,7 @@ $ErrorActionPreference = "Stop"
 $PluginRoot = if ($env:CURSOR_PLUGIN_ROOT) { $env:CURSOR_PLUGIN_ROOT } else { Split-Path -Parent $PSScriptRoot }
 $GlobalRoot = if ($env:BABYSITTER_GLOBAL_STATE_DIR) { $env:BABYSITTER_GLOBAL_STATE_DIR } else { Join-Path $HOME ".a5c" }
 $StateDir = if ($env:BABYSITTER_STATE_DIR) { $env:BABYSITTER_STATE_DIR } else { Join-Path $GlobalRoot "state" }
+$ProxyMarkerFile = Join-Path $PluginRoot ".hooks-proxy-install-attempted"
 
 $env:CURSOR_PLUGIN_ROOT = $PluginRoot
 $env:BABYSITTER_STATE_DIR = $StateDir
@@ -37,29 +36,39 @@ Write-Blog "Unified hook script invoked"
 Write-Blog "PLUGIN_ROOT=$PluginRoot"
 Write-Blog "STATE_DIR=$StateDir"
 
-# Resolve babysitter CLI
-$useFallback = $false
-if (-not (Get-Command babysitter -ErrorAction SilentlyContinue)) {
-    $localBin = Join-Path $env:USERPROFILE ".local\bin\babysitter.cmd"
-    if (Test-Path $localBin) {
-        $env:PATH = "$(Split-Path $localBin);$env:PATH"
-    } else {
-        $versionsFile = Join-Path $PluginRoot "versions.json"
-        try {
-            $script:SdkVersion = (Get-Content $versionsFile -Raw | ConvertFrom-Json).sdkVersion
-            if (-not $script:SdkVersion) { $script:SdkVersion = "latest" }
-        } catch {
-            $script:SdkVersion = "latest"
-        }
-        $useFallback = $true
-    }
+# Get required version from versions.json (used for hooks-proxy)
+$versionsFile = Join-Path $PluginRoot "versions.json"
+try {
+    $SdkVersion = (Get-Content $versionsFile -Raw | ConvertFrom-Json).sdkVersion
+    if (-not $SdkVersion) { $SdkVersion = "latest" }
+} catch {
+    $SdkVersion = "latest"
 }
 
-# Capture stdin
-$InputFile = [System.IO.Path]::GetTempFileName()
-$input | Out-File -FilePath $InputFile -Encoding utf8
+# ---------------------------------------------------------------------------
+# Hooks-proxy install (same pattern as SDK install in session-start)
+# ---------------------------------------------------------------------------
 
-Write-Blog "Hook input received"
+function Install-HooksProxy {
+    param([string]$TargetVersion)
+    try {
+        & npm i -g "@a5c-ai/hooks-proxy-cli@$TargetVersion" --loglevel=error 2>$null
+        if ($LASTEXITCODE -eq 0) {
+            Write-Blog "Installed hooks-proxy globally ($TargetVersion)"
+            return $true
+        }
+    } catch {}
+    try {
+        $prefix = Join-Path $env:USERPROFILE ".local"
+        & npm i -g "@a5c-ai/hooks-proxy-cli@$TargetVersion" --prefix $prefix --loglevel=error 2>$null
+        if ($LASTEXITCODE -eq 0) {
+            $env:PATH = "$prefix\bin;$env:PATH"
+            Write-Blog "Installed hooks-proxy to user prefix ($TargetVersion)"
+            return $true
+        }
+    } catch {}
+    return $false
+}
 
 # Resolve hooks-proxy binary
 $Proxy = $null
@@ -72,30 +81,40 @@ if (Get-Command a5c-hooks-proxy -ErrorAction SilentlyContinue) {
     }
 }
 
+# Install if not found (only attempt once per plugin version)
+if (-not $Proxy -and -not (Test-Path $ProxyMarkerFile)) {
+    Write-Blog "hooks-proxy not found, attempting install"
+    Install-HooksProxy $SdkVersion | Out-Null
+    Set-Content -Path $ProxyMarkerFile -Value $SdkVersion -ErrorAction SilentlyContinue
+    # Re-resolve after install
+    if (Get-Command a5c-hooks-proxy -ErrorAction SilentlyContinue) {
+        $Proxy = "a5c-hooks-proxy"
+    } else {
+        $localProxy = Join-Path $env:USERPROFILE ".local\bin\a5c-hooks-proxy.exe"
+        if (Test-Path $localProxy) {
+            $Proxy = $localProxy
+        }
+    }
+}
+
+# ---------------------------------------------------------------------------
+# Capture stdin and delegate to hooks-proxy
+# ---------------------------------------------------------------------------
+
+$InputFile = [System.IO.Path]::GetTempFileName()
+$input | Out-File -FilePath $InputFile -Encoding utf8
+
+Write-Blog "Hook input received"
+
 $stderrLog = Join-Path $LogDir "babysitter-stop-hook-stderr.log"
 
 if ($Proxy) {
     Write-Blog "Using hooks-proxy: $Proxy"
-    try {
-        # Route through hooks-proxy with cursor adapter
-        $Result = Get-Content $InputFile | & $Proxy invoke --adapter cursor --handler "babysitter hook:run --harness unified --hook-type stop --plugin-root $PluginRoot --state-dir $StateDir --json" --json 2>$stderrLog
-        $ExitCode = $LASTEXITCODE
-    } catch {
-        Write-Blog "hooks-proxy failed, falling back to direct SDK"
-        if ($useFallback) {
-            $Result = Get-Content $InputFile | & npx -y "@a5c-ai/babysitter-sdk@$script:SdkVersion" hook:run --hook-type stop --harness cursor --plugin-root $PluginRoot --state-dir $StateDir --json 2>$stderrLog
-        } else {
-            $Result = Get-Content $InputFile | & babysitter hook:run --hook-type stop --harness cursor --plugin-root $PluginRoot --state-dir $StateDir --json 2>$stderrLog
-        }
-        $ExitCode = $LASTEXITCODE
-    }
+    $Result = Get-Content $InputFile | & $Proxy invoke --adapter cursor --handler "babysitter hook:run --harness unified --hook-type stop --plugin-root $PluginRoot --state-dir $StateDir --json" --json 2>$stderrLog
+    $ExitCode = $LASTEXITCODE
 } else {
-    Write-Blog "No hooks-proxy available, using SDK directly"
-    if ($useFallback) {
-        $Result = Get-Content $InputFile | & npx -y "@a5c-ai/babysitter-sdk@$script:SdkVersion" hook:run --hook-type stop --harness cursor --plugin-root $PluginRoot --state-dir $StateDir --json 2>$stderrLog
-    } else {
-        $Result = Get-Content $InputFile | & babysitter hook:run --hook-type stop --harness cursor --plugin-root $PluginRoot --state-dir $StateDir --json 2>$stderrLog
-    }
+    Write-Blog "hooks-proxy not found after install, using npx fallback"
+    $Result = Get-Content $InputFile | & npx -y "@a5c-ai/hooks-proxy-cli@$SdkVersion" invoke --adapter cursor --handler "babysitter hook:run --harness unified --hook-type stop --plugin-root $PluginRoot --state-dir $StateDir --json" --json 2>$stderrLog
     $ExitCode = $LASTEXITCODE
 }
 

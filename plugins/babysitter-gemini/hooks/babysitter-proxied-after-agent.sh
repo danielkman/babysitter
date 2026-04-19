@@ -1,8 +1,6 @@
 #!/bin/bash
 # Unified AfterAgent Hook for Gemini CLI
-# Mirrors after-agent.sh but routes through hooks-proxy when available,
-# falling back to direct SDK.
-# NOT YET ACTIVE — parallel to existing hook scripts
+# Routes through hooks-proxy for all hook execution.
 #
 # This is the CORE orchestration loop driver for Gemini CLI.
 # Fires after every agent turn. Checks if a babysitter run is bound to this
@@ -25,15 +23,12 @@
 set -uo pipefail
 
 EXTENSION_PATH="${GEMINI_EXTENSION_PATH:-$(cd "$(dirname "$0")/.." && pwd)}"
+PROXY_MARKER_FILE="${EXTENSION_PATH}/.hooks-proxy-install-attempted"
 GLOBAL_ROOT="${BABYSITTER_GLOBAL_STATE_DIR:-$HOME/.a5c}"
 STATE_DIR="${BABYSITTER_STATE_DIR:-${GLOBAL_ROOT}/state}"
 
-
-
-if ! command -v babysitter &>/dev/null; then
-  # No CLI available — exit 0 (no-op, proceed with original command)
-  exit 0
-fi
+# Get required version from versions.json (used for hooks-proxy)
+SDK_VERSION=$(node -e "try{console.log(JSON.parse(require('fs').readFileSync('${EXTENSION_PATH}/versions.json','utf8')).sdkVersion||'latest')}catch{console.log('latest')}" 2>/dev/null || echo "latest")
 
 LOG_DIR="${BABYSITTER_LOG_DIR:-${GLOBAL_ROOT}/logs}"
 LOG_FILE="$LOG_DIR/babysitter-after-agent-hook.log"
@@ -52,10 +47,53 @@ blog() {
 
 blog "Unified AfterAgent hook invoked"
 
-blog "babysitter CLI resolved"
+# ---------------------------------------------------------------------------
+# Hooks-proxy install (same pattern as SDK install in session-start)
+# ---------------------------------------------------------------------------
+
+install_hooks_proxy() {
+  local target_version="$1"
+  if npm i -g "@a5c-ai/hooks-proxy-cli@${target_version}" --loglevel=error 2>/dev/null; then
+    blog "Installed hooks-proxy globally (${target_version})"
+    return 0
+  else
+    if npm i -g "@a5c-ai/hooks-proxy-cli@${target_version}" --prefix "$HOME/.local" --loglevel=error 2>/dev/null; then
+      export PATH="$HOME/.local/bin:$PATH"
+      blog "Installed hooks-proxy to user prefix (${target_version})"
+      return 0
+    fi
+  fi
+  return 1
+}
+
+# Resolve hooks-proxy binary
+PROXY=""
+if command -v a5c-hooks-proxy &>/dev/null; then
+  PROXY="a5c-hooks-proxy"
+elif [ -f "$HOME/.local/bin/a5c-hooks-proxy" ]; then
+  PROXY="$HOME/.local/bin/a5c-hooks-proxy"
+fi
+
+# Install if not found (only attempt once per plugin version)
+if [ -z "$PROXY" ] && [ ! -f "$PROXY_MARKER_FILE" ]; then
+  blog "hooks-proxy not found, attempting install"
+  install_hooks_proxy "$SDK_VERSION"
+  echo "$SDK_VERSION" > "$PROXY_MARKER_FILE" 2>/dev/null
+  if command -v a5c-hooks-proxy &>/dev/null; then
+    PROXY="a5c-hooks-proxy"
+  elif [ -f "$HOME/.local/bin/a5c-hooks-proxy" ]; then
+    PROXY="$HOME/.local/bin/a5c-hooks-proxy"
+  fi
+fi
+
+# npx fallback if still not found
+if [ -z "$PROXY" ]; then
+  blog "hooks-proxy not found after install, using npx fallback"
+  PROXY="npx -y @a5c-ai/hooks-proxy-cli@${SDK_VERSION} "
+fi
 
 # ---------------------------------------------------------------------------
-# Capture stdin (prevents keeping event loop alive)
+# Capture stdin and delegate to hooks-proxy
 # ---------------------------------------------------------------------------
 
 INPUT_FILE=$(mktemp 2>/dev/null || echo "/tmp/bsitter-after-agent-$$.json")
@@ -64,53 +102,15 @@ cat > "$INPUT_FILE"
 INPUT_SIZE=$(wc -c < "$INPUT_FILE" 2>/dev/null || echo "?")
 blog "Hook input received ($INPUT_SIZE bytes)"
 
-# ---------------------------------------------------------------------------
-# Resolve hooks-proxy binary
-# ---------------------------------------------------------------------------
-
-PROXY=""
-if command -v a5c-hooks-proxy &>/dev/null; then
-  PROXY="a5c-hooks-proxy"
-elif [ -f "$HOME/.local/bin/a5c-hooks-proxy" ]; then
-  PROXY="$HOME/.local/bin/a5c-hooks-proxy"
-fi
-
 STDERR_LOG="$LOG_DIR/babysitter-after-agent-hook-stderr.log"
 
-# ---------------------------------------------------------------------------
-# Delegate to hooks-proxy or SDK CLI
-# The gemini-cli adapter reads AfterAgent input format and outputs the
-# appropriate block/approve decision.
-# ---------------------------------------------------------------------------
-
-if [ -n "$PROXY" ]; then
-  blog "Using hooks-proxy: $PROXY"
-  # Route through hooks-proxy with gemini adapter
-  RESULT=$($PROXY invoke \
-    --adapter gemini \
-    --handler "babysitter hook:run --harness unified --hook-type stop --plugin-root ${EXTENSION_PATH} --state-dir ${STATE_DIR} --json" \
-    --json \
-    < "$INPUT_FILE" 2>>"$STDERR_LOG") || {
-    blog "hooks-proxy failed (exit=$?), falling back to direct SDK"
-    # Fallback to direct SDK if hooks-proxy fails
-    RESULT=$(babysitter hook:run \
-      --hook-type stop \
-      --harness gemini-cli \
-      --plugin-root "$EXTENSION_PATH" \
-      --state-dir "${STATE_DIR}" \
-      --json < "$INPUT_FILE" 2>>"$STDERR_LOG")
-  }
-  EXIT_CODE=$?
-else
-  blog "No hooks-proxy available, using SDK directly"
-  RESULT=$(babysitter hook:run \
-    --hook-type stop \
-    --harness gemini-cli \
-    --plugin-root "$EXTENSION_PATH" \
-    --state-dir "${STATE_DIR}" \
-    --json < "$INPUT_FILE" 2>>"$STDERR_LOG")
-  EXIT_CODE=$?
-fi
+blog "Using hooks-proxy: $PROXY"
+RESULT=$($PROXY invoke \
+  --adapter gemini \
+  --handler "babysitter hook:run --harness unified --hook-type stop --plugin-root ${EXTENSION_PATH} --state-dir ${STATE_DIR} --json" \
+  --json \
+  < "$INPUT_FILE" 2>>"$STDERR_LOG")
+EXIT_CODE=$?
 
 blog "CLI exit code=$EXIT_CODE result_len=$(echo -n "$RESULT" | wc -c)"
 
