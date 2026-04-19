@@ -1,59 +1,41 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import {
   getAmuxClient,
   isAmuxAvailable,
   _resetAmuxClientCache,
 } from "../amuxClientFactory";
 
-// ---------------------------------------------------------------------------
-// Reset cached client between tests
-// ---------------------------------------------------------------------------
-
 beforeEach(() => {
   _resetAmuxClientCache();
 });
 
-afterEach(() => {
-  vi.restoreAllMocks();
-});
-
-// ---------------------------------------------------------------------------
-// Tests
-// ---------------------------------------------------------------------------
-
 describe("getAmuxClient", () => {
-  it("returns null when @agent-mux/core is not installed", async () => {
+  it("returns a client instance (@a5c-ai/agent-mux is a real dependency)", async () => {
     const client = await getAmuxClient();
-    // In the test environment @agent-mux/core is not installed,
-    // so the dynamic import should fail and return null.
-    expect(client).toBeNull();
+    expect(client).not.toBeNull();
+    expect(client).toBeDefined();
   });
 
-  it("caches the null result across calls", async () => {
+  it("caches the client across calls", async () => {
     const first = await getAmuxClient();
     const second = await getAmuxClient();
-    expect(first).toBeNull();
-    expect(second).toBeNull();
-    // Both should be the same cached null
     expect(first).toBe(second);
   });
 });
 
 describe("isAmuxAvailable", () => {
-  it("returns false when @agent-mux/core is not installed", async () => {
+  it("returns true (@a5c-ai/agent-mux is installed)", async () => {
     const available = await isAmuxAvailable();
-    expect(available).toBe(false);
+    expect(available).toBe(true);
   });
 });
 
 describe("_resetAmuxClientCache", () => {
-  it("allows re-evaluation after reset", async () => {
-    // First call caches null
-    await getAmuxClient();
-    // Reset
+  it("allows re-creation after reset", async () => {
+    const first = await getAmuxClient();
     _resetAmuxClientCache();
-    // Next call should re-attempt the import (and still fail)
-    const client = await getAmuxClient();
-    expect(client).toBeNull();
+    const second = await getAmuxClient();
+    expect(first).not.toBe(second);
+    expect(second).not.toBeNull();
   });
 });
