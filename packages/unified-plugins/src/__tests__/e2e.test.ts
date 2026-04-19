@@ -23,7 +23,7 @@ describe('e2e: sample plugin compilation', () => {
     expect(result.manifest!.name).toBe('sample-plugin');
   });
 
-  it('should accept hooks-proxy sentinel without requiring handler files', () => {
+  it('should accept boolean true hook values without requiring handler files', () => {
     const result = validate(SAMPLE_PLUGIN_DIR);
     expect(result.valid).toBe(true);
     const hookErrors = result.diagnostics.filter(
@@ -160,7 +160,7 @@ describe('e2e: sample plugin compilation', () => {
       const sessionStart = fs.readFileSync(
         path.join(result.outputDir, 'hooks/sample-plugin-proxied-session-start.js'), 'utf-8'
       );
-      expect(sessionStart).toContain('hooks-proxy');
+      expect(sessionStart).toContain('a5c-hooks-proxy');
       expect(sessionStart).toContain('--adapter pi');
     });
 

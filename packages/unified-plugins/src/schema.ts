@@ -38,7 +38,7 @@ export const A5C_PLUGIN_SCHEMA = {
     keywords: { type: 'array', items: { type: 'string' } },
     hooks: {
       type: 'object',
-      additionalProperties: { type: ['string', 'null'] },
+      additionalProperties: { type: ['string', 'boolean', 'null'] },
     },
     commands: {
       oneOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' } }],
@@ -235,11 +235,11 @@ export function validate(data: unknown): { valid: boolean; diagnostics: Diagnost
       });
     } else {
       for (const [key, value] of Object.entries(manifest.hooks)) {
-        if (!isString(value) && value !== null) {
+        if (!isString(value) && typeof value !== 'boolean' && value !== null) {
           diagnostics.push({
             level: 'error',
             category: 'validation',
-            message: `Hook '${key}' must be a string or null`,
+            message: `Hook '${key}' must be a string, boolean, or null`,
           });
         }
       }

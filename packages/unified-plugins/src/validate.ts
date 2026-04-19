@@ -54,17 +54,16 @@ export function validate(sourceDir: string): ValidateResult {
 
   // Verify referenced files exist
   if (manifest.hooks) {
-    for (const [hookName, handlerPath] of Object.entries(manifest.hooks)) {
-      if (handlerPath === null) continue;
-      // "hooks-proxy" is a sentinel: compiler generates the hook script
-      if (handlerPath === 'hooks-proxy') continue;
+    for (const [hookName, handlerValue] of Object.entries(manifest.hooks)) {
+      if (handlerValue === null || handlerValue === true) continue;
+      if (typeof handlerValue !== 'string') continue;
 
-      const fullPath = path.join(sourceDir, handlerPath);
+      const fullPath = path.join(sourceDir, handlerValue);
       if (!fs.existsSync(fullPath)) {
         diagnostics.push({
           level: 'error',
           category: 'validation',
-          message: `Hook handler file not found: ${handlerPath}`,
+          message: `Hook handler file not found: ${handlerValue}`,
           component: `hooks.${hookName}`,
           source: fullPath,
         });

@@ -9,175 +9,56 @@
     "url": "https://github.com/a5c-ai/babysitter"
   },
   "keywords": [
-    "orchestration",
-    "workflow",
-    "automation",
-    "event-sourced",
-    "hooks",
-    "TDD",
-    "quality-convergence",
-    "agent",
-    "LLM"
+    "orchestration", "workflow", "automation", "event-sourced",
+    "hooks", "TDD", "quality-convergence", "agent", "LLM"
   ],
   "hooks": {
-    "SessionStart": "hooks-proxy",
-    "Stop": "hooks-proxy",
-    "UserPromptSubmit": "hooks-proxy",
-    "PreToolUse": "hooks-proxy",
-    "PostToolUse": "hooks-proxy",
-    "SubagentStop": "hooks-proxy",
-    "Notification": "hooks-proxy",
-    "PreCompact": "hooks-proxy",
-    "AfterAgent": "hooks-proxy",
-    "SessionEnd": "hooks-proxy",
-    "SessionIdle": "hooks-proxy",
-    "ShellEnv": "hooks-proxy",
-    "BeforePromptBuild": "hooks-proxy",
-    "BeforeProviderRequest": "hooks-proxy"
+    "SessionStart": true,
+    "Stop": true,
+    "UserPromptSubmit": true,
+    "PreToolUse": true,
+    "PostToolUse": true,
+    "SubagentStop": true,
+    "Notification": true,
+    "PreCompact": true,
+    "AfterAgent": true,
+    "SessionEnd": true,
+    "SessionIdle": true,
+    "ShellEnv": true,
+    "BeforePromptBuild": true,
+    "BeforeProviderRequest": true
   },
-  "commands": "../babysitter/commands",
+  "commands": "commands",
   "skills": [
-    { "name": "babysit", "file": "../babysitter/skills/babysit/SKILL.md" }
+    { "name": "babysit", "file": "skills/babysit/SKILL.md" }
   ],
   "include": [
     "versions.json"
   ],
   "targets": {
-    "claude-code": {
-      "hooks": {
-        "AfterAgent": null,
-        "SessionEnd": null,
-        "SessionIdle": null,
-        "ShellEnv": null,
-        "BeforePromptBuild": null,
-        "BeforeProviderRequest": null
-      }
-    },
     "codex": {
-      "npmPackageName": "@a5c-ai/babysitter-codex",
-      "hooks": {
-        "PreToolUse": null,
-        "PostToolUse": null,
-        "SubagentStop": null,
-        "Notification": null,
-        "PreCompact": null,
-        "AfterAgent": null,
-        "SessionEnd": null,
-        "SessionIdle": null,
-        "ShellEnv": null,
-        "BeforePromptBuild": null,
-        "BeforeProviderRequest": null
-      }
-    },
-    "cursor": {
-      "hooks": {
-        "UserPromptSubmit": null,
-        "PreToolUse": null,
-        "PostToolUse": null,
-        "SubagentStop": null,
-        "Notification": null,
-        "PreCompact": null,
-        "AfterAgent": null,
-        "SessionEnd": null,
-        "SessionIdle": null,
-        "ShellEnv": null,
-        "BeforePromptBuild": null,
-        "BeforeProviderRequest": null
-      }
+      "npmPackageName": "@a5c-ai/babysitter-codex"
     },
     "gemini": {
-      "hooks": {
-        "Stop": null,
-        "UserPromptSubmit": null,
-        "PreToolUse": null,
-        "PostToolUse": null,
-        "SubagentStop": null,
-        "Notification": null,
-        "PreCompact": null,
-        "SessionEnd": null,
-        "SessionIdle": null,
-        "ShellEnv": null,
-        "BeforeProviderRequest": null
-      },
       "extraFiles": {
         "GEMINI.md": "file:per-harness/gemini/GEMINI.md"
       }
     },
     "github-copilot": {
-      "hooks": {
-        "Stop": null,
-        "PreToolUse": null,
-        "PostToolUse": null,
-        "SubagentStop": null,
-        "Notification": null,
-        "PreCompact": null,
-        "AfterAgent": null,
-        "SessionIdle": null,
-        "ShellEnv": null,
-        "BeforePromptBuild": null,
-        "BeforeProviderRequest": null
-      },
       "extraFiles": {
         "AGENTS.md": "file:per-harness/github/AGENTS.md"
       }
     },
     "pi": {
       "npmPackageName": "@a5c-ai/babysitter-pi",
-      "hooks": {
-        "PostToolUse": null,
-        "SubagentStop": null,
-        "Notification": null,
-        "PreCompact": null,
-        "AfterAgent": null,
-        "SessionEnd": null,
-        "SessionIdle": null,
-        "ShellEnv": null
-      },
       "extraFiles": {
         "AGENTS.md": "file:per-harness/pi/AGENTS.md"
       }
     },
     "oh-my-pi": {
       "npmPackageName": "@a5c-ai/babysitter-omp",
-      "hooks": {
-        "PostToolUse": null,
-        "SubagentStop": null,
-        "Notification": null,
-        "PreCompact": null,
-        "AfterAgent": null,
-        "SessionEnd": null,
-        "SessionIdle": null,
-        "ShellEnv": null
-      },
       "extraFiles": {
         "AGENTS.md": "file:per-harness/omp/AGENTS.md"
-      }
-    },
-    "opencode": {
-      "hooks": {
-        "Stop": null,
-        "UserPromptSubmit": null,
-        "SubagentStop": null,
-        "Notification": null,
-        "PreCompact": null,
-        "AfterAgent": null,
-        "SessionEnd": null,
-        "BeforePromptBuild": null,
-        "BeforeProviderRequest": null
-      }
-    },
-    "openclaw": {
-      "hooks": {
-        "Stop": null,
-        "UserPromptSubmit": null,
-        "PreToolUse": null,
-        "PostToolUse": null,
-        "SubagentStop": null,
-        "Notification": null,
-        "PreCompact": null,
-        "SessionIdle": null,
-        "ShellEnv": null,
-        "BeforeProviderRequest": null
       }
     }
   }

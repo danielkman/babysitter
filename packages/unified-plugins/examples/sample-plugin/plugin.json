@@ -10,10 +10,10 @@
   },
   "keywords": ["sample", "demo"],
   "hooks": {
-    "SessionStart": "hooks-proxy",
-    "Stop": "hooks-proxy",
-    "UserPromptSubmit": "hooks-proxy",
-    "PreToolUse": "hooks-proxy"
+    "SessionStart": true,
+    "Stop": true,
+    "UserPromptSubmit": true,
+    "PreToolUse": true
   },
   "commands": "commands",
   "skills": [
@@ -25,9 +25,8 @@
   ],
   "targets": {
     "gemini": {
-      "contextFileName": "GEMINI.md",
       "extraFiles": {
-        "GEMINI.md": "This plugin provides greeting functionality for Gemini CLI."
+        "GEMINI.md": "file:per-harness/gemini/GEMINI.md"
       }
     }
   }

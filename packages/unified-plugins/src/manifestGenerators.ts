@@ -29,12 +29,11 @@ export function generateClaudeCodeManifest(manifest: A5cPluginManifest): string 
     pluginJson.keywords = manifest.keywords;
   }
 
-  // Hooks as file paths
   if (manifest.hooks) {
-    const hooksObj: Record<string, string> = {};
-    for (const [canonicalHook, handlerPath] of Object.entries(manifest.hooks)) {
-      if (handlerPath) {
-        hooksObj[canonicalHook] = handlerPath;
+    const hooksObj: Record<string, string | boolean> = {};
+    for (const [canonicalHook, handlerValue] of Object.entries(manifest.hooks)) {
+      if (handlerValue) {
+        hooksObj[canonicalHook] = handlerValue;
       }
     }
     pluginJson.hooks = hooksObj;
@@ -125,10 +124,10 @@ export function generateGeminiManifest(manifest: A5cPluginManifest): string {
   };
 
   if (manifest.hooks) {
-    const hooksObj: Record<string, string> = {};
-    for (const [canonicalHook, handlerPath] of Object.entries(manifest.hooks)) {
-      if (handlerPath) {
-        hooksObj[canonicalHook] = handlerPath;
+    const hooksObj: Record<string, string | boolean> = {};
+    for (const [canonicalHook, handlerValue] of Object.entries(manifest.hooks)) {
+      if (handlerValue) {
+        hooksObj[canonicalHook] = handlerValue;
       }
     }
     pluginJson.hooks = hooksObj;

@@ -16,8 +16,8 @@ export interface A5cPluginManifest {
   homepage?: string;
   keywords?: string[];
 
-  // Components
-  hooks?: Record<string, string | null>;
+  // Components — hook values: true = compiler-generated, string = custom handler path, null = disabled
+  hooks?: Record<string, string | boolean | null>;
   commands?: string[] | string;
   skills?: Array<{
     name: string;
@@ -45,7 +45,7 @@ export interface TargetOverride {
   npmPackageName?: string;
   type?: 'typescript-build';
   skills?: 'derive-from-commands' | Array<{ name: string; file: string }>;
-  hooks?: Record<string, string | null>;
+  hooks?: Record<string, string | boolean | null>;
   commands?: string[] | string;
   extensionManifest?: {
     contextFileName?: string;
