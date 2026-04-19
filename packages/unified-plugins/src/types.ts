@@ -59,6 +59,10 @@ export interface TargetOverride {
     settings?: unknown[];
   };
   extraFiles?: Record<string, string>;
+  // Pattern for hook output filenames: {{name}}-proxied-{{slug}}-hook.sh
+  hookFilePattern?: string;
+  // Rich harness-specific manifest (e.g. codex interface metadata)
+  harnessManifest?: Record<string, unknown>;
   [key: string]: unknown;
 }
 

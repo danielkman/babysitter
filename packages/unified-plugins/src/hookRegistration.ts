@@ -5,33 +5,55 @@
 import type { A5cPluginManifest, TargetProfile } from './types.js';
 import { slugify } from './utils.js';
 
-function resolveCommand(
+function resolveHookPath(
+  handlerValue: string | boolean,
+  hookSlug: string,
+  pluginName: string,
+  hookFilePattern?: string
+): string | null {
+  if (typeof handlerValue !== 'string' || handlerValue === 'proxy') return null;
+  if (hookFilePattern) {
+    return 'hooks/' + hookFilePattern
+      .replace(/\{\{name\}\}/g, pluginName)
+      .replace(/\{\{slug\}\}/g, hookSlug);
+  }
+  return handlerValue;
+}
+
+function resolveCmd(
   handlerValue: string | boolean,
   hookSlug: string,
   adapter: string,
-  rootRef: string
+  rootRef: string,
+  pluginName: string,
+  pattern?: string
 ): string {
   if (handlerValue === 'proxy') {
     return `a5c-hooks-proxy invoke --adapter ${adapter} --json`;
   }
-  if (typeof handlerValue === 'string') {
-    return `HOOK_TYPE=${hookSlug} ADAPTER_NAME=${adapter} PLUGIN_ROOT=${rootRef} bash ${rootRef}/${handlerValue}`;
-  }
+  const p = resolveHookPath(handlerValue, hookSlug, pluginName, pattern);
+  if (p) return `HOOK_TYPE=${hookSlug} ADAPTER_NAME=${adapter} PLUGIN_ROOT=${rootRef} bash ${rootRef}/${p}`;
   return `echo '{}'`;
 }
 
-function resolvePsCommand(
+function resolvePsCmd(
   handlerValue: string | boolean,
   hookSlug: string,
-  adapter: string
+  adapter: string,
+  pluginName: string,
+  pattern?: string
 ): string {
   if (handlerValue === 'proxy') {
     return `a5c-hooks-proxy invoke --adapter ${adapter} --json`;
   }
-  if (typeof handlerValue === 'string') {
-    return `$env:HOOK_TYPE='${hookSlug}'; $env:ADAPTER_NAME='${adapter}'; & "./${handlerValue.replace(/\.sh$/, '.ps1')}"`;
-  }
+  const p = resolveHookPath(handlerValue, hookSlug, pluginName, pattern);
+  if (p) return `$env:HOOK_TYPE='${hookSlug}'; $env:ADAPTER_NAME='${adapter}'; & "./${p.replace(/\.sh$/, '.ps1')}"`;
   return `Write-Output '{}'`;
+}
+
+function getPattern(manifest: A5cPluginManifest, targetName: string): string | undefined {
+  const val = manifest.targets?.[targetName]?.hookFilePattern;
+  return typeof val === 'string' ? val : undefined;
 }
 
 function iterateHooks(
@@ -56,10 +78,11 @@ export function generateClaudeCodeHooksJson(
   const rootRef = targetProfile.pluginRootEnvVar
     ? `\${${targetProfile.pluginRootEnvVar}}`
     : '$(cd "$(dirname "$0")/.." && pwd)';
+  const pat = getPattern(manifest, targetProfile.name);
 
   iterateHooks(manifest, targetProfile, (canonical, native, handler) => {
     const slug = slugify(canonical);
-    const cmd = resolveCommand(handler, slug, targetProfile.adapterName, rootRef);
+    const cmd = resolveCmd(handler, slug, targetProfile.adapterName, rootRef, manifest.name, pat);
     const entry: Record<string, unknown> = {
       hooks: [{ type: 'command', command: cmd }],
     };
@@ -77,10 +100,11 @@ export function generateCodexHooksJson(
   targetProfile: TargetProfile
 ): string {
   const hooks: Record<string, unknown> = {};
+  const pat = getPattern(manifest, targetProfile.name);
 
   iterateHooks(manifest, targetProfile, (canonical, native, handler) => {
     const slug = slugify(canonical);
-    const cmd = resolveCommand(handler, slug, targetProfile.adapterName, '.');
+    const cmd = resolveCmd(handler, slug, targetProfile.adapterName, '.', manifest.name, pat);
     hooks[native] = [{ matcher: '.*', hooks: [{ type: 'command', command: cmd }] }];
   });
 
@@ -92,11 +116,12 @@ export function generateCursorHooksJson(
   targetProfile: TargetProfile
 ): string {
   const hooks: Record<string, unknown> = {};
+  const pat = getPattern(manifest, targetProfile.name);
 
   iterateHooks(manifest, targetProfile, (canonical, native, handler) => {
     const slug = slugify(canonical);
-    const bash = resolveCommand(handler, slug, targetProfile.adapterName, '.');
-    const ps = resolvePsCommand(handler, slug, targetProfile.adapterName);
+    const bash = resolveCmd(handler, slug, targetProfile.adapterName, '.', manifest.name, pat);
+    const ps = resolvePsCmd(handler, slug, targetProfile.adapterName, manifest.name, pat);
     const entry: Record<string, unknown> = { type: 'command', bash, powershell: ps, timeoutSec: 30 };
     if (canonical === 'Stop') entry.loop_limit = null;
     hooks[native] = [entry];
@@ -113,10 +138,11 @@ export function generateGeminiHooksJson(
   const rootRef = targetProfile.pluginRootEnvVar
     ? `\${${targetProfile.pluginRootEnvVar}}`
     : '${extensionPath}';
+  const pat = getPattern(manifest, targetProfile.name);
 
   iterateHooks(manifest, targetProfile, (canonical, native, handler) => {
     const slug = slugify(canonical);
-    const cmd = resolveCommand(handler, slug, targetProfile.adapterName, rootRef);
+    const cmd = resolveCmd(handler, slug, targetProfile.adapterName, rootRef, manifest.name, pat);
     hooks[native] = [{
       hooks: [{
         name: `${manifest.name}-${slug}`,
@@ -139,11 +165,12 @@ export function generateGithubCopilotHooksJson(
   targetProfile: TargetProfile
 ): string {
   const hooks: Record<string, unknown> = {};
+  const pat = getPattern(manifest, targetProfile.name);
 
   iterateHooks(manifest, targetProfile, (canonical, native, handler) => {
     const slug = slugify(canonical);
-    const bash = resolveCommand(handler, slug, targetProfile.adapterName, '.');
-    const ps = resolvePsCommand(handler, slug, targetProfile.adapterName);
+    const bash = resolveCmd(handler, slug, targetProfile.adapterName, '.', manifest.name, pat);
+    const ps = resolvePsCmd(handler, slug, targetProfile.adapterName, manifest.name, pat);
     hooks[native] = [{ type: 'command', bash, powershell: ps, timeoutSec: 30 }];
   });
 
@@ -155,24 +182,29 @@ export function generateOpenCodeHooksJson(
   targetProfile: TargetProfile
 ): string {
   const hooks: Record<string, unknown> = {};
+  const pat = getPattern(manifest, targetProfile.name);
 
   iterateHooks(manifest, targetProfile, (canonical, native, handler) => {
     const slug = slugify(canonical);
-    let script: string;
     if (handler === 'proxy') {
-      script = `a5c-hooks-proxy invoke --adapter ${targetProfile.adapterName} --json`;
-    } else if (typeof handler === 'string') {
-      script = handler.replace(/\.sh$/, '.js');
+      hooks[native] = [{
+        type: 'command',
+        script: `a5c-hooks-proxy invoke --adapter ${targetProfile.adapterName} --json`,
+        env: { HOOK_TYPE: slug, ADAPTER_NAME: targetProfile.adapterName },
+        description: `${manifest.name} ${canonical} hook`,
+        timeoutMs: canonical === 'ShellEnv' ? 5000 : 30000,
+      }];
     } else {
-      script = 'echo {}';
+      const p = resolveHookPath(handler, slug, manifest.name, pat);
+      const script = p ? p.replace(/\.sh$/, '.js') : 'echo {}';
+      hooks[native] = [{
+        type: 'command',
+        script,
+        env: { HOOK_TYPE: slug, ADAPTER_NAME: targetProfile.adapterName },
+        description: `${manifest.name} ${canonical} hook`,
+        timeoutMs: canonical === 'ShellEnv' ? 5000 : 30000,
+      }];
     }
-    hooks[native] = [{
-      type: 'command',
-      script,
-      env: { HOOK_TYPE: slug, ADAPTER_NAME: targetProfile.adapterName },
-      description: `${manifest.name} ${canonical} hook`,
-      timeoutMs: canonical === 'ShellEnv' ? 5000 : 30000,
-    }];
   });
 
   return JSON.stringify({
@@ -187,10 +219,11 @@ export function generateOpenClawHooksJson(
   targetProfile: TargetProfile
 ): string {
   const hooks: Record<string, unknown> = {};
+  const pat = getPattern(manifest, targetProfile.name);
 
   iterateHooks(manifest, targetProfile, (canonical, native, handler) => {
     const slug = slugify(canonical);
-    const cmd = resolveCommand(handler, slug, targetProfile.adapterName, '.');
+    const cmd = resolveCmd(handler, slug, targetProfile.adapterName, '.', manifest.name, pat);
     hooks[native] = [{ matcher: '*', hooks: [{ type: 'command', command: cmd }] }];
   });
 

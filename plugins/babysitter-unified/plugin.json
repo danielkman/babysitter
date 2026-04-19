@@ -36,19 +36,59 @@
     "versions.json",
     "hooks/"
   ],
-  "hookConfig": {
-    "proxyAdapter": true
-  },
   "targets": {
+    "claude-code": {
+      "hookFilePattern": "{{name}}-proxied-{{slug}}-hook.sh",
+      "hookConfig": {
+        "matchers": {
+          "PreToolUse": "Bash"
+        }
+      }
+    },
     "codex": {
-      "npmPackageName": "@a5c-ai/babysitter-codex"
+      "npmPackageName": "@a5c-ai/babysitter-codex",
+      "hookFilePattern": "{{name}}-proxied-{{slug}}.sh",
+      "harnessManifest": {
+        "skills": "./skills/",
+        "hooks": "./hooks.json",
+        "apps": "./.app.json",
+        "interface": {
+          "displayName": "Babysitter",
+          "shortDescription": "Run Babysitter orchestration flows from Codex",
+          "longDescription": "Babysitter adds orchestration entrypoints such as $call, $plan, and $resume, plus Codex lifecycle hooks that keep runs and workspace state in sync.",
+          "developerName": "a5c.ai",
+          "category": "Coding",
+          "capabilities": ["Interactive", "Read", "Write"],
+          "websiteURL": "https://github.com/a5c-ai/babysitter",
+          "privacyPolicyURL": "https://github.com/a5c-ai/babysitter",
+          "termsOfServiceURL": "https://github.com/a5c-ai/babysitter",
+          "defaultPrompt": [
+            "Use Babysitter to start a new orchestration run",
+            "Plan a Babysitter workflow before executing it",
+            "Resume the latest Babysitter run in this workspace"
+          ],
+          "brandColor": "#0F766E",
+          "composerIcon": "./assets/icon.svg",
+          "logo": "./assets/logo.png"
+        }
+      }
+    },
+    "cursor": {
+      "hookFilePattern": "{{name}}-proxied-{{slug}}-hook.sh",
+      "harnessManifest": {
+        "skills": "skills/",
+        "commands": "commands/",
+        "hooks": "hooks/hooks-cursor.json"
+      }
     },
     "gemini": {
+      "hookFilePattern": "{{name}}-proxied-{{slug}}-hook.sh",
       "extraFiles": {
         "GEMINI.md": "file:per-harness/gemini/GEMINI.md"
       }
     },
     "github-copilot": {
+      "hookFilePattern": "{{name}}-proxied-{{slug}}-hook.sh",
       "extraFiles": {
         "AGENTS.md": "file:per-harness/github/AGENTS.md"
       }

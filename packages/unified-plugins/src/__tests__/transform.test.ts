@@ -1,24 +1,60 @@
-// Tests for transformation stage
+// Tests for hook registration generation
 
 import { describe, it, expect } from 'vitest';
-import { generateBashHookScript } from '../hookTemplates';
+import { generateClaudeCodeHooksJson, generateCodexHooksJson } from '../hookRegistration';
 import { CLAUDE_CODE_PROFILE } from '../targets/claude-code';
+import { CODEX_PROFILE } from '../targets/codex';
+import type { A5cPluginManifest } from '../types';
 
-describe('generateBashHookScript', () => {
-  it('should generate a bash hook script with correct placeholders', () => {
-    const script = generateBashHookScript('SessionStart', 'SessionStart', CLAUDE_CODE_PROFILE);
+const MANIFEST: A5cPluginManifest = {
+  name: 'test-plugin',
+  version: '1.0.0',
+  description: 'Test',
+  author: 'Test',
+  license: 'MIT',
+  hooks: {
+    SessionStart: 'hooks/session-start.sh',
+    Stop: 'hooks/stop.sh',
+    PreToolUse: true,
+  },
+};
 
-    expect(script).toContain('#!/bin/bash');
-    expect(script).toContain('Unified Session Start Hook for Claude Code');
-    expect(script).toContain('--adapter claude');
-    expect(script).toContain('--hook-type session-start');
-    expect(script).toContain('CLAUDE_PLUGIN_ROOT');
+describe('generateClaudeCodeHooksJson', () => {
+  it('should generate hooks.json with ADAPTER_NAME and HOOK_TYPE env vars', () => {
+    const json = generateClaudeCodeHooksJson(MANIFEST, CLAUDE_CODE_PROFILE);
+    const parsed = JSON.parse(json);
+
+    expect(parsed.hooks.SessionStart).toBeDefined();
+    const cmd = parsed.hooks.SessionStart[0].hooks[0].command;
+    expect(cmd).toContain('ADAPTER_NAME=claude');
+    expect(cmd).toContain('HOOK_TYPE=session-start');
+    expect(cmd).toContain('hooks/session-start.sh');
+    expect(cmd).toContain('CLAUDE_PLUGIN_ROOT');
   });
 
-  it('should handle different hook types', () => {
-    const script = generateBashHookScript('PreToolUse', 'PreToolUse', CLAUDE_CODE_PROFILE);
+  it('should use hookFilePattern from target override when present', () => {
+    const manifest: A5cPluginManifest = {
+      ...MANIFEST,
+      targets: {
+        'claude-code': {
+          hookFilePattern: '{{name}}-proxied-{{slug}}-hook.sh',
+        },
+      },
+    };
+    const json = generateClaudeCodeHooksJson(manifest, CLAUDE_CODE_PROFILE);
+    const parsed = JSON.parse(json);
+    const cmd = parsed.hooks.SessionStart[0].hooks[0].command;
+    expect(cmd).toContain('hooks/test-plugin-proxied-session-start-hook.sh');
+  });
+});
 
-    expect(script).toContain('Unified Pre Tool Use Hook for Claude Code');
-    expect(script).toContain('--hook-type pre-tool-use');
+describe('generateCodexHooksJson', () => {
+  it('should generate codex format with matcher', () => {
+    const json = generateCodexHooksJson(MANIFEST, CODEX_PROFILE);
+    const parsed = JSON.parse(json);
+
+    expect(parsed.hooks.SessionStart[0].matcher).toBe('.*');
+    const cmd = parsed.hooks.SessionStart[0].hooks[0].command;
+    expect(cmd).toContain('ADAPTER_NAME=codex');
   });
 });

@@ -317,6 +317,30 @@ try {
 `;
 }
 
+function generateHarnessManifest(
+  manifest: A5cPluginManifest,
+  targetProfile: TargetProfile
+): string {
+  const override = manifest.targets?.[targetProfile.name];
+  const base: Record<string, unknown> = {
+    name: manifest.name,
+    version: manifest.version,
+    description: manifest.description,
+    author: manifest.author,
+    license: manifest.license,
+  };
+
+  if (manifest.repository) base.repository = manifest.repository;
+  if (manifest.keywords) base.keywords = manifest.keywords;
+
+  // Merge harnessManifest from target override (rich metadata like interface, branding)
+  if (override?.harnessManifest) {
+    Object.assign(base, override.harnessManifest);
+  }
+
+  return JSON.stringify(base, null, 2);
+}
+
 function generateInstallShared(
   manifest: A5cPluginManifest,
   _targetProfile: TargetProfile
@@ -450,13 +474,13 @@ function generateManifests(
     case 'codex': {
       const codexPkg = generateCodexManifest(manifest);
       files.push({ path: 'package.json', content: codexPkg });
-      files.push({ path: '.codex-plugin/plugin.json', content: generateClaudeCodeManifest(manifest) });
+      files.push({ path: '.codex-plugin/plugin.json', content: generateHarnessManifest(manifest, targetProfile) });
       break;
     }
     case 'cursor': {
       const cursorManifest = generateCursorManifest(manifest);
       files.push({ path: 'plugin.json', content: cursorManifest });
-      files.push({ path: '.cursor-plugin/plugin.json', content: cursorManifest });
+      files.push({ path: '.cursor-plugin/plugin.json', content: generateHarnessManifest(manifest, targetProfile) });
       break;
     }
     case 'gemini':
