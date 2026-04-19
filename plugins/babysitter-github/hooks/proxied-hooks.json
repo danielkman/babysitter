@@ -1,0 +1,29 @@
+{
+  "_comment": "NOT ACTIVE — Alternative hook registration using per-hook unified scripts with hooks-proxy support. To activate, update the harness plugin configuration to reference these scripts.",
+  "hooks": {
+    "sessionStart": [
+      {
+        "type": "command",
+        "bash": "bash \"./hooks/babysitter-proxied-session-start.sh\"",
+        "powershell": "powershell -NoProfile -ExecutionPolicy Bypass -File \"./hooks/babysitter-proxied-session-start.ps1\"",
+        "timeoutSec": 30
+      }
+    ],
+    "sessionEnd": [
+      {
+        "type": "command",
+        "bash": "bash \"./hooks/babysitter-proxied-session-end.sh\"",
+        "powershell": "powershell -NoProfile -ExecutionPolicy Bypass -File \"./hooks/babysitter-proxied-session-end.ps1\"",
+        "timeoutSec": 30
+      }
+    ],
+    "userPromptSubmitted": [
+      {
+        "type": "command",
+        "bash": "bash \"./hooks/babysitter-proxied-user-prompt-submitted.sh\"",
+        "powershell": "powershell -NoProfile -ExecutionPolicy Bypass -File \"./hooks/babysitter-proxied-user-prompt-submitted.ps1\"",
+        "timeoutSec": 15
+      }
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "_comment": "NOT ACTIVE — Alternative hooks.json using per-hook unified scripts with hooks-proxy support. To activate, replace hooks.json with this file.",
+  "description": "Babysitter plugin hooks for Gemini CLI — session initialization and AfterAgent continuation loop (proxied via a5c-hooks-proxy)",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "name": "babysitter-proxied-session-start",
+            "type": "command",
+            "command": "bash \"${extensionPath}/hooks/babysitter-proxied-session-start.sh\"",
+            "timeout": 30000,
+            "description": "Initializes a Babysitter session state file so the AfterAgent hook can track orchestration progress (proxied via a5c-hooks-proxy)"
+          }
+        ]
+      }
+    ],
+    "AfterAgent": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "name": "babysitter-proxied-after-agent",
+            "type": "command",
+            "command": "bash \"${extensionPath}/hooks/babysitter-proxied-after-agent.sh\"",
+            "timeout": 30000,
+            "description": "Babysitter orchestration loop driver — blocks session exit to continue iterating until the run is complete (proxied via a5c-hooks-proxy)"
+          }
+        ]
+      }
+    ]
+  }
+}
