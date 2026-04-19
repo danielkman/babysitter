@@ -302,6 +302,26 @@ jobs:
             const paperclipPkg = JSON.parse(fs.readFileSync(paperclipPkgPath, 'utf8'));
             paperclipPkg.version = '${STAGING_VERSION_PAPERCLIP}';
             fs.writeFileSync(paperclipPkgPath, JSON.stringify(paperclipPkg, null, 2) + '\n');
+            for (const path of [
+              'packages/hooks-proxy/core/package.json',
+              'packages/hooks-proxy/cli/package.json',
+              'packages/hooks-proxy/adapter-claude/package.json',
+              'packages/hooks-proxy/adapter-codex/package.json',
+              'packages/hooks-proxy/adapter-gemini/package.json',
+              'packages/hooks-proxy/adapter-copilot/package.json',
+              'packages/hooks-proxy/adapter-cursor/package.json',
+              'packages/hooks-proxy/adapter-pi/package.json',
+              'packages/hooks-proxy/adapter-oh-my-pi/package.json',
+              'packages/hooks-proxy/adapter-opencode/package.json',
+              'packages/hooks-proxy/adapter-openclaw/package.json'
+            ]) {
+              const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+              data.version = '${STAGING_VERSION_SDK}';
+              if (data.dependencies?.['@a5c-ai/hooks-proxy-core']) {
+                data.dependencies['@a5c-ai/hooks-proxy-core'] = '${STAGING_VERSION_SDK}';
+              }
+              fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+            }
           "
           # Write sdkVersion into versions.json (separate from plugin.json to avoid
           # Claude Code's plugin validator rejecting unrecognized keys)
