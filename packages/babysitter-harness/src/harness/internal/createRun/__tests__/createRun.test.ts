@@ -386,7 +386,7 @@ describe("handleHarnessCreateRun", () => {
     detectCallerHarnessMock.mockReturnValue(null);
     savedGlobalStateDir = process.env.BABYSITTER_GLOBAL_STATE_DIR;
     savedStateDir = process.env.BABYSITTER_STATE_DIR;
-    savedBabysitterSessionId = process.env.BABYSITTER_SESSION_ID;
+    savedBabysitterSessionId = process.env.AGENT_SESSION_ID;
     savedHarnessPid = process.env.BABYSITTER_HARNESS_PID;
     savedTrustEnvSession = process.env.BABYSITTER_TRUST_ENV_SESSION;
     savedPidMarkerFlag = process.env.BABYSITTER_ENABLE_SESSION_PID_MARKERS;
@@ -399,7 +399,7 @@ describe("handleHarnessCreateRun", () => {
     tempDirs.push(isolatedGlobalStateDir);
     process.env.BABYSITTER_GLOBAL_STATE_DIR = isolatedGlobalStateDir;
     process.env.BABYSITTER_STATE_DIR = isolatedGlobalStateDir;
-    delete process.env.BABYSITTER_SESSION_ID;
+    delete process.env.AGENT_SESSION_ID;
     delete process.env.BABYSITTER_HARNESS_PID;
     delete process.env.BABYSITTER_TRUST_ENV_SESSION;
     delete process.env.BABYSITTER_ENABLE_SESSION_PID_MARKERS;
@@ -427,9 +427,9 @@ describe("handleHarnessCreateRun", () => {
       process.env.BABYSITTER_STATE_DIR = savedStateDir;
     }
     if (savedBabysitterSessionId === undefined) {
-      delete process.env.BABYSITTER_SESSION_ID;
+      delete process.env.AGENT_SESSION_ID;
     } else {
-      process.env.BABYSITTER_SESSION_ID = savedBabysitterSessionId;
+      process.env.AGENT_SESSION_ID = savedBabysitterSessionId;
     }
     if (savedHarnessPid === undefined) {
       delete process.env.BABYSITTER_HARNESS_PID;
@@ -2624,13 +2624,13 @@ describe("handleHarnessCreateRun", () => {
       expect(code).toBe(1);
     });
 
-    it("binds claude-code orchestration to BABYSITTER_SESSION_ID when pid markers are disabled", async () => {
+    it("binds claude-code orchestration to AGENT_SESSION_ID when pid markers are disabled", async () => {
       const globalStateRoot = await fs.mkdtemp(path.join(os.tmpdir(), "harness-create-run-claude-state-"));
       tempDirs.push(globalStateRoot);
       process.env.BABYSITTER_GLOBAL_STATE_DIR = globalStateRoot;
       process.env.BABYSITTER_STATE_DIR = globalStateRoot;
       process.env.BABYSITTER_HARNESS_PID = String(process.pid);
-      process.env.BABYSITTER_SESSION_ID = "leaked-session-from-old-shell";
+      process.env.AGENT_SESSION_ID = "leaked-session-from-old-shell";
       __resetCacheForTests();
       __setAncestorResolverForTests(() => ({ pid: process.pid }));
 
@@ -2675,7 +2675,7 @@ describe("handleHarnessCreateRun", () => {
       process.env.BABYSITTER_GLOBAL_STATE_DIR = globalStateRoot;
       process.env.BABYSITTER_STATE_DIR = globalStateRoot;
       process.env.BABYSITTER_HARNESS_PID = String(process.pid);
-      process.env.BABYSITTER_SESSION_ID = "leaked-session-from-old-shell";
+      process.env.AGENT_SESSION_ID = "leaked-session-from-old-shell";
       __resetCacheForTests();
       __setAncestorResolverForTests(() => ({ pid: process.pid }));
 

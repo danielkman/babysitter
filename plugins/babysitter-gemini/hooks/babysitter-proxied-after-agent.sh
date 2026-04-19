@@ -107,7 +107,7 @@ STDERR_LOG="$LOG_DIR/babysitter-after-agent-hook-stderr.log"
 blog "Using hooks-proxy: $PROXY"
 RESULT=$($PROXY invoke \
   --adapter gemini \
-  --handler "babysitter hook:run --harness unified --hook-type stop --plugin-root ${EXTENSION_PATH} --state-dir ${STATE_DIR} --json" \
+  --handler "babysitter hook:run --harness unified --hook-type stop --state-dir ${STATE_DIR} --json" \
   --json \
   < "$INPUT_FILE" 2>>"$STDERR_LOG")
 EXIT_CODE=$?

@@ -120,7 +120,7 @@ function resolveHooksProxy() {
 // ---------------------------------------------------------------------------
 
 function runViaProxy(proxy, hookType, inputJson) {
-  const handler = `babysitter hook:run --harness unified --hook-type ${hookType} --plugin-root ${PLUGIN_ROOT} --state-dir ${STATE_DIR} --json`;
+  const handler = `babysitter hook:run --harness unified --hook-type ${hookType} --state-dir ${STATE_DIR} --json`;
   const result = execSync(`"${proxy}" invoke --adapter opencode --handler "${handler}" --json`, {
     input: inputJson,
     stdio: ["pipe", "pipe", "pipe"],
@@ -131,7 +131,7 @@ function runViaProxy(proxy, hookType, inputJson) {
 }
 
 function runViaNpxProxy(version, hookType, inputJson) {
-  const handler = `babysitter hook:run --harness unified --hook-type ${hookType} --plugin-root ${PLUGIN_ROOT} --state-dir ${STATE_DIR} --json`;
+  const handler = `babysitter hook:run --harness unified --hook-type ${hookType} --state-dir ${STATE_DIR} --json`;
   const result = execSync(`npx -y "@a5c-ai/hooks-proxy-cli@${version}" invoke --adapter opencode --handler "${handler}" --json`, {
     input: inputJson,
     stdio: ["pipe", "pipe", "pipe"],
@@ -151,11 +151,11 @@ function main() {
 
   // Generate a session ID if OpenCode doesn't provide one
   const sessionId = process.env.OPENCODE_SESSION_ID
-    || process.env.BABYSITTER_SESSION_ID
+    || process.env.AGENT_SESSION_ID
     || crypto.randomUUID();
 
   // Set env var so downstream hooks can pick it up
-  process.env.BABYSITTER_SESSION_ID = sessionId;
+  process.env.AGENT_SESSION_ID = sessionId;
 
   const sdkVersion = getSdkVersion();
 

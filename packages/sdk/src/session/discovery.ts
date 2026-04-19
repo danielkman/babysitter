@@ -33,14 +33,14 @@ export const HARNESS_ENV_VARS: Record<string, string[]> = {
  *
  * Precedence matches the standard adapter resolution:
  *   1. Harness-native env vars (e.g. GEMINI_SESSION_ID)
- *   2. AGENT_SESSION_ID (preferred) / BABYSITTER_SESSION_ID (deprecated fallback)
+ *   2. AGENT_SESSION_ID
  *   3. PID-scoped marker for the given harness (fallback only)
  *
  * If AGENT_TRUST_ENV_SESSION=1 (or BABYSITTER_TRUST_ENV_SESSION=1) is set, env vars are preferred over markers.
  */
 export function resolveAmbientSessionId(harness?: string): string | undefined {
   if (!harness) {
-    return process.env.AGENT_SESSION_ID || process.env.BABYSITTER_SESSION_ID;
+    return process.env.AGENT_SESSION_ID;
   }
 
   const envVars = HARNESS_ENV_VARS[harness] || [];

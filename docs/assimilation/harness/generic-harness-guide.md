@@ -203,7 +203,7 @@ function onSessionStart(sessionId, pluginRoot):
         return
 
     // Persist session ID for use by the stop interceptor
-    setEnv("BABYSITTER_SESSION_ID", sessionId)
+    setEnv("AGENT_SESSION_ID", sessionId)
     setEnv("BABYSITTER_PLUGIN_ROOT", pluginRoot)
 ```
 

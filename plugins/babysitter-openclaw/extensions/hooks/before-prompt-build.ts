@@ -57,7 +57,6 @@ export async function beforePromptBuildHandler(
       "hook:run",
       "--hook-type", "user-prompt-submit",
       "--harness", "openclaw",
-      "--plugin-root", PLUGIN_ROOT,
       "--state-dir", stateDir,
       "--json",
     ];

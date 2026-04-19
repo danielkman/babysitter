@@ -74,11 +74,6 @@ export async function handleClaudeCodeSessionStartHook(
     }
   }
 
-  const pluginRoot = args.pluginRoot
-    || process.env.CLAUDE_PLUGIN_ROOT
-    || process.env.AGENT_PLUGIN_ROOT
-    || "";
-  const _resolvedPluginRoot = pluginRoot ? path.resolve(pluginRoot) : "";
   const stateDir = normalizeSessionStateDir(
     args.stateDir ?? process.env.BABYSITTER_STATE_DIR,
   );

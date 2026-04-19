@@ -19,14 +19,14 @@ export const HARNESS_ENV_VARS: Record<string, string[]> = {
  *
  * Precedence:
  *   1. Harness-native env vars (Pi / oh-my-pi)
- *   2. BABYSITTER_SESSION_ID
+ *   2. AGENT_SESSION_ID
  *   3. PID-scoped marker for the given harness (fallback only)
  *
  * External harness session discovery is delegated to agent-mux.
  */
 export function resolveAmbientSessionId(harness?: string): string | undefined {
   if (!harness) {
-    return process.env.BABYSITTER_SESSION_ID;
+    return process.env.AGENT_SESSION_ID;
   }
 
   const envVars = HARNESS_ENV_VARS[harness] || [];

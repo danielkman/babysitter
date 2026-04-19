@@ -25,7 +25,7 @@ describe("babysitter run:create CLI", () => {
   let errorSpy: ReturnType<typeof vi.spyOn>;
   const sessionEnvKeys = [
     "AGENT_SESSION_ID",
-    "BABYSITTER_SESSION_ID",
+    "AGENT_SESSION_ID",
     "AGENT_ENABLE_SESSION_PID_MARKERS",
     "BABYSITTER_ENABLE_SESSION_PID_MARKERS",
     "BABYSITTER_GLOBAL_STATE_DIR",
@@ -43,7 +43,7 @@ describe("babysitter run:create CLI", () => {
     logSpy = vi.spyOn(console, "log").mockImplementation(() => undefined);
     errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
     savedSessionEnv = {
-      BABYSITTER_SESSION_ID: process.env.BABYSITTER_SESSION_ID,
+      AGENT_SESSION_ID: process.env.AGENT_SESSION_ID,
       BABYSITTER_ENABLE_SESSION_PID_MARKERS: process.env.BABYSITTER_ENABLE_SESSION_PID_MARKERS,
       BABYSITTER_GLOBAL_STATE_DIR: process.env.BABYSITTER_GLOBAL_STATE_DIR,
       BABYSITTER_TRUST_ENV_SESSION: process.env.BABYSITTER_TRUST_ENV_SESSION,
@@ -145,14 +145,14 @@ describe("babysitter run:create CLI", () => {
     });
   });
 
-  it("binds claude-code runs to BABYSITTER_SESSION_ID when pid markers are disabled", async () => {
+  it("binds claude-code runs to AGENT_SESSION_ID when pid markers are disabled", async () => {
     const entryFile = await writeEntrypoint("processes/claude-session.mjs", `export async function process() { return true; }\n`);
     const globalStateRoot = await fs.mkdtemp(path.join(os.tmpdir(), "cli-run-create-claude-state-"));
     const currentSessionId = "current-claude-session";
     const leakedSessionId = "leaked-background-shell-session";
 
     process.env.BABYSITTER_GLOBAL_STATE_DIR = globalStateRoot;
-    process.env.BABYSITTER_SESSION_ID = leakedSessionId;
+    process.env.AGENT_SESSION_ID = leakedSessionId;
     __resetCacheForTests();
     __setAncestorResolverForTests(() => ({ pid: process.pid }));
 
@@ -189,7 +189,7 @@ describe("babysitter run:create CLI", () => {
     await fs.rm(globalStateRoot, { recursive: true, force: true });
   });
 
-  it("binds claude-code runs to the pid marker before leaked BABYSITTER_SESSION_ID when enabled", async () => {
+  it("binds claude-code runs to the pid marker before leaked AGENT_SESSION_ID when enabled", async () => {
     const entryFile = await writeEntrypoint("processes/claude-session-marker.mjs", `export async function process() { return true; }\n`);
     const globalStateRoot = await fs.mkdtemp(path.join(os.tmpdir(), "cli-run-create-claude-marker-state-"));
     const currentSessionId = "current-claude-session";
@@ -197,7 +197,7 @@ describe("babysitter run:create CLI", () => {
 
     process.env.BABYSITTER_ENABLE_SESSION_PID_MARKERS = "1";
     process.env.BABYSITTER_GLOBAL_STATE_DIR = globalStateRoot;
-    process.env.BABYSITTER_SESSION_ID = leakedSessionId;
+    process.env.AGENT_SESSION_ID = leakedSessionId;
     __resetCacheForTests();
     __setAncestorResolverForTests(() => ({ pid: process.pid }));
 

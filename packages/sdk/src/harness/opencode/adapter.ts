@@ -150,7 +150,6 @@ export function createOpenCodeAdapter(): HarnessAdapter {
     isActive(): boolean {
       return !!(
         process.env.AGENT_SESSION_ID ||
-        process.env.BABYSITTER_SESSION_ID ||
         process.env.OPENCODE_CONFIG ||
         process.env.ACCOMPLISH_TASK_ID
       );

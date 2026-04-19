@@ -1,5 +1,5 @@
 /**
- * CLAUDE_ENV_FILE with multiple BABYSITTER_SESSION_ID lines: must return the
+ * CLAUDE_ENV_FILE with multiple AGENT_SESSION_ID lines: must return the
  * LAST match (representing the most recently appended value).
  */
 
@@ -17,12 +17,12 @@ beforeEach(async () => {
   tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "claude-envfile-last-"));
   saved = {
     BABYSITTER_GLOBAL_STATE_DIR: process.env.BABYSITTER_GLOBAL_STATE_DIR,
-    BABYSITTER_SESSION_ID: process.env.BABYSITTER_SESSION_ID,
+    AGENT_SESSION_ID: process.env.AGENT_SESSION_ID,
     CLAUDE_ENV_FILE: process.env.CLAUDE_ENV_FILE,
     BABYSITTER_TRUST_ENV_SESSION: process.env.BABYSITTER_TRUST_ENV_SESSION,
   };
   process.env.BABYSITTER_GLOBAL_STATE_DIR = tmpDir;
-  delete process.env.BABYSITTER_SESSION_ID;
+  delete process.env.AGENT_SESSION_ID;
   delete process.env.BABYSITTER_TRUST_ENV_SESSION;
   __setAncestorResolverForTests(() => undefined); // no marker
   __resetCacheForTests();
@@ -43,15 +43,15 @@ afterEach(async () => {
 });
 
 describe("CLAUDE_ENV_FILE LAST match precedence", () => {
-  it("returns the last BABYSITTER_SESSION_ID line when multiple are present", () => {
+  it("returns the last AGENT_SESSION_ID line when multiple are present", () => {
     const envPath = path.join(tmpDir, "claude.env");
     writeFileSyncAsync(
       envPath,
       [
         `export SOMETHING_ELSE="hello"`,
-        `export BABYSITTER_SESSION_ID="OLD-ONE"`,
+        `export AGENT_SESSION_ID="OLD-ONE"`,
         `export OTHER="value"`,
-        `export BABYSITTER_SESSION_ID="NEWEST-ONE"`,
+        `export AGENT_SESSION_ID="NEWEST-ONE"`,
         ``,
       ].join("\n"),
     );

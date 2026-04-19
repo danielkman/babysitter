@@ -172,7 +172,7 @@ STDERR_LOG="$LOG_DIR/babysitter-session-start-hook-stderr.log"
 blog "Using hooks-proxy: $PROXY"
 RESULT=$($PROXY invoke \
   --adapter gemini \
-  --handler "babysitter hook:run --harness unified --hook-type session-start --plugin-root ${EXTENSION_PATH} --state-dir ${STATE_DIR} --verbose --json" \
+  --handler "babysitter hook:run --harness unified --hook-type session-start --state-dir ${STATE_DIR} --verbose --json" \
   --json \
   < "$INPUT_FILE" 2>"$STDERR_LOG")
 EXIT_CODE=$?

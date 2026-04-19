@@ -20,7 +20,7 @@ module.exports = {
   rules: {
     "max-lines": [
       "warn",
-      { "max": 500, "skipBlankLines": false, "skipComments": false }
+      { "max": 400, "skipBlankLines": false, "skipComments": false }
     ],
     "@typescript-eslint/no-unused-vars": [
       "error",

@@ -16,7 +16,7 @@ export function createClaudeCodeContext(
     sessionBindingFlags: '',
     hookDriven: true,
     interactiveToolName: 'AskUserQuestion tool',
-    sessionEnvVars: 'PID-scoped session marker (authoritative); CLAUDE_ENV_FILE and AGENT_SESSION_ID/BABYSITTER_SESSION_ID are fallbacks',
+    sessionEnvVars: 'PID-scoped session marker (authoritative); CLAUDE_ENV_FILE and AGENT_SESSION_ID are fallbacks',
     resumeFlags: '',
     cliSetupSnippet: createClaudeCodeCliSetupSnippet(),
     sdkVersionExpr: '$SDK_VERSION',

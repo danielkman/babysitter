@@ -20,7 +20,6 @@ const mode = process.argv[2] || 'build';
 
 for (const pkg of packages) {
   const dir = path.resolve(__dirname, '..', pkg);
-  if (mode === 'lint' && !['packages/hooks-proxy/core', 'packages/hooks-proxy/cli'].includes(pkg)) continue;
   const cmd = mode === 'test' ? 'npx vitest run' : mode === 'lint' ? 'npx eslint "src/**/*.ts" --max-warnings=0' : 'npx tsc -p tsconfig.json';
   console.log(`\n=== ${pkg} (${mode}) ===`);
   try {

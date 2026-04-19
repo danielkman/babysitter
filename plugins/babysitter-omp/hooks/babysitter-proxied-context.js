@@ -95,7 +95,7 @@ function installHooksProxy(version) {
 }
 
 function main() {
-  const sessionId = process.env.BABYSITTER_SESSION_ID
+  const sessionId = process.env.AGENT_SESSION_ID
     || process.env.OMP_SESSION_ID
     || process.env.PI_SESSION_ID
     || "";
@@ -132,7 +132,7 @@ function main() {
     proxy = resolveHooksProxy();
   }
 
-  const handler = `babysitter hook:run --harness unified --hook-type user-prompt-submit --plugin-root ${PLUGIN_ROOT} --state-dir ${STATE_DIR} --json`;
+  const handler = `babysitter hook:run --harness unified --hook-type user-prompt-submit --state-dir ${STATE_DIR} --json`;
 
   try {
     let result;

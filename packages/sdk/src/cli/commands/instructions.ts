@@ -157,7 +157,7 @@ async function tryResolveProcessLibraryRoot(): Promise<{
  *
  * The definitive signal is now the PID-scoped session marker written by the
  * session-start hook; absence of the marker (even when env vars like
- * GEMINI_SESSION_ID / CODEX_SESSION_ID / AGENT_SESSION_ID / BABYSITTER_SESSION_ID are present)
+ * GEMINI_SESSION_ID / CODEX_SESSION_ID / AGENT_SESSION_ID are present)
  * usually means hooks did not fire. Env-var-only resolution is a fallback
  * path that may bind to stale IDs inherited from ancestor shells, so it
  * cannot be trusted as proof that hooks are active. The hook writes the

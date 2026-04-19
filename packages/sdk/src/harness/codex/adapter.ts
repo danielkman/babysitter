@@ -25,7 +25,6 @@ export function createCodexAdapter(): HarnessAdapter {
     isActive(): boolean {
       return !!(
         process.env.AGENT_SESSION_ID ||
-        process.env.BABYSITTER_SESSION_ID ||
         process.env.CODEX_THREAD_ID ||
         process.env.CODEX_SESSION_ID ||
         process.env.CODEX_PLUGIN_ROOT

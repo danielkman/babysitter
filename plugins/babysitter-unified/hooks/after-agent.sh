@@ -26,7 +26,7 @@ cat > "$INPUT_FILE"
 STDERR_LOG="$LOG_DIR/hook-after-agent-stderr.log"
 RESULT=$($PROXY invoke \
   --adapter "$ADAPTER_NAME" \
-  --handler "babysitter hook:run --harness unified --hook-type after-agent --plugin-root $PLUGIN_ROOT --json" \
+  --handler "babysitter hook:run --harness unified --hook-type after-agent --json" \
   --json \
   < "$INPUT_FILE" 2>"$STDERR_LOG")
 EXIT_CODE=$?

@@ -101,7 +101,7 @@ STDERR_LOG="$LOG_DIR/babysitter-session-end-hook-stderr.log"
 blog "Using hooks-proxy: $PROXY"
 $PROXY invoke \
   --adapter copilot \
-  --handler "babysitter hook:run --harness unified --hook-type session-end --plugin-root ${PLUGIN_ROOT} --json" \
+  --handler "babysitter hook:run --harness unified --hook-type session-end --json" \
   --json \
   < "$INPUT_FILE" 2>"$STDERR_LOG" || true
 

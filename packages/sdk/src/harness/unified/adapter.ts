@@ -14,7 +14,7 @@
  * - AGENT_SESSION_ID               — session identifier (hooks-proxy convention)
  * - AGENT_CAPABILITIES_JSON        — JSON-serialised proxy capabilities
  * - AGENT_HOOKS_PROXY_PATH         — custom path to the hooks-proxy binary
- * - BABYSITTER_SESSION_ID          — cross-harness session ID fallback
+ * - AGENT_SESSION_ID               — session ID (from hooks-proxy)
  */
 
 import * as path from "node:path";
@@ -74,11 +74,7 @@ export function createUnifiedAdapter(): HarnessAdapter {
 
     resolveSessionId(parsed: { sessionId?: string }): string | undefined {
       if (parsed.sessionId) return parsed.sessionId;
-      // Hooks-proxy convention
       if (process.env.AGENT_SESSION_ID) return process.env.AGENT_SESSION_ID;
-      // Cross-harness fallback
-      if (process.env.BABYSITTER_SESSION_ID)
-        return process.env.BABYSITTER_SESSION_ID;
       return undefined;
     },
 
@@ -100,8 +96,7 @@ export function createUnifiedAdapter(): HarnessAdapter {
 
     getMissingSessionIdHint(): string {
       return (
-        "Set AGENT_SESSION_ID (hooks-proxy convention), pass --session-id " +
-        "explicitly, or set BABYSITTER_SESSION_ID."
+        "Set AGENT_SESSION_ID (hooks-proxy convention) or pass --session-id explicitly."
       );
     },
 
@@ -130,8 +125,7 @@ export function createUnifiedAdapter(): HarnessAdapter {
     bindSession(opts: SessionBindOptions): Promise<SessionBindResult> {
       const sessionId =
         opts.sessionId ||
-        process.env.AGENT_SESSION_ID ||
-        process.env.BABYSITTER_SESSION_ID;
+        process.env.AGENT_SESSION_ID;
 
       if (!sessionId) {
         return Promise.resolve({
@@ -139,7 +133,7 @@ export function createUnifiedAdapter(): HarnessAdapter {
           sessionId: "",
           error:
             "Unified adapter requires a session ID. " +
-            "Set AGENT_SESSION_ID, BABYSITTER_SESSION_ID, or pass --session-id.",
+            "Set AGENT_SESSION_ID or pass --session-id.",
           fatal: false,
         });
       }

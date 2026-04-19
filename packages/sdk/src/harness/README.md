@@ -12,7 +12,7 @@ invocation and TUI orchestration now live in `@a5c-ai/babysitter-harness`.
 
 All harness adapters MUST resolve the active session ID using the following
 precedence, from highest to lowest authority. Violations cause cross-session
-bleed when a parent shell has a stale `AGENT_SESSION_ID`/`BABYSITTER_SESSION_ID` export or when
+bleed when a parent shell has a stale `AGENT_SESSION_ID` export or when
 harness-native env files accumulate shadowed lines -- see #130, #100, #107, #75.
 
 ### Precedence (highest to lowest)
@@ -26,7 +26,7 @@ harness-native env files accumulate shadowed lines -- see #130, #100, #107, #75.
    stale shadowed rebinds left behind by naive writers.
 3. **Harness-native env var** -- any harness-specific variable set in the
    current process environment (e.g. `CLAUDE_SESSION_ID`).
-4. **`AGENT_SESSION_ID`** (preferred) / **`BABYSITTER_SESSION_ID`** (deprecated fallback) -- the generic, inheritable fallback. Lowest
+4. **`AGENT_SESSION_ID`** -- the generic, inheritable fallback. Lowest
    precedence because it is trivially inherited by child shells and survives
    long past the session it referred to.
 
@@ -60,7 +60,7 @@ Canonical keys currently in use: `claude-code`, `codex`, `cursor`, `gemini-cli`,
 
 For CI workflows that deliberately export `AGENT_SESSION_ID` and need the
 legacy env-first precedence, set `AGENT_TRUST_ENV_SESSION=1` (or `BABYSITTER_TRUST_ENV_SESSION=1`). When this
-variable is truthy, the resolution order inverts: `AGENT_SESSION_ID`/`BABYSITTER_SESSION_ID` is
+variable is truthy, the resolution order inverts: `AGENT_SESSION_ID` is
 consulted first, and the PID marker / harness-native sources are only used as
 fallbacks.
 

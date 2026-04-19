@@ -149,7 +149,7 @@ export async function invokeHarness(
  * @throws {BabysitterRuntimeError} if the harness is unknown or the CLI is
  *   not installed.
  */
-export async function invokeHarnessDirect(
+async function invokeHarnessDirect(
   name: string,
   options: HarnessInvokeOptions,
 ): Promise<HarnessInvokeResult> {

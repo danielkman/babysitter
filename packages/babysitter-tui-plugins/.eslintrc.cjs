@@ -1,3 +1,4 @@
+/* eslint-env node */
 module.exports = {
   root: true,
   env: {
@@ -9,22 +10,24 @@ module.exports = {
     ecmaVersion: 2022,
     sourceType: "module",
     project: ["./tsconfig.json"],
-    allowAutomaticSingleRunInference: true,
+    ecmaFeatures: {
+      jsx: true
+    }
   },
-  ignorePatterns: ["src/**/__tests__/**"],
   plugins: ["@typescript-eslint"],
   extends: [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended-type-checked"
   ],
+  ignorePatterns: ["node_modules/**", "dist/**", "src/**/__tests__/**"],
   rules: {
     "max-lines": [
       "warn",
-      { "max": 400, "skipBlankLines": false, "skipComments": false }
+      { max: 400, skipBlankLines: false, skipComments: false }
     ],
     "@typescript-eslint/no-unused-vars": [
       "error",
-      { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
+      { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }
     ]
   }
 };

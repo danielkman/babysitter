@@ -23,7 +23,7 @@
       {
         "type": "command",
         "script": "hooks/babysitter-proxied-shell-env.js",
-        "description": "Inject BABYSITTER_SESSION_ID and other env vars into shell (proxied via a5c-hooks-proxy)",
+        "description": "Inject AGENT_SESSION_ID and other env vars into shell (proxied via a5c-hooks-proxy)",
         "timeoutMs": 5000
       }
     ],

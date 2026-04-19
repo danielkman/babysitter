@@ -23,7 +23,7 @@ export function createInternalContext(
     sessionBindingFlags: '',
     hookDriven: false,
     interactiveToolName: 'AskUserQuestion',
-    sessionEnvVars: 'PID-scoped session marker (authoritative); OMP_SESSION_ID / PI_SESSION_ID and AGENT_SESSION_ID/BABYSITTER_SESSION_ID are fallbacks',
+    sessionEnvVars: 'PID-scoped session marker (authoritative); OMP_SESSION_ID / PI_SESSION_ID and AGENT_SESSION_ID are fallbacks',
     resumeFlags: '',
     cliSetupSnippet: createInternalCliSetupSnippet(),
     iterateFlags: '',

@@ -4,7 +4,7 @@
  * Covers:
  *   - createOpenClawAdapter() returns valid adapter with correct name
  *   - isActive() detection via env vars (OPENCLAW_SHELL, OPENCLAW_HOME)
- *   - resolveSessionId() resolution chain (explicit > BABYSITTER_SESSION_ID > OPENCLAW_SHELL > undefined)
+ *   - resolveSessionId() resolution chain (explicit > AGENT_SESSION_ID > OPENCLAW_SHELL > undefined)
  *   - resolveStateDir() resolution (explicit arg vs global default)
  *   - resolvePluginRoot() always returns undefined
  *   - bindSession() state file creation and re-entrant run prevention
@@ -47,7 +47,7 @@ const ENV_KEYS = [
   "OPENCLAW_SHELL",
   "OPENCLAW_HOME",
   "AGENT_SESSION_ID",
-  "BABYSITTER_SESSION_ID",
+  "AGENT_SESSION_ID",
   "BABYSITTER_STATE_DIR",
   "BABYSITTER_GLOBAL_STATE_DIR",
   "BABYSITTER_LOG_DIR",

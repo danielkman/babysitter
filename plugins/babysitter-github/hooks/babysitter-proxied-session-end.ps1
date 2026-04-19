@@ -100,10 +100,10 @@ $stderrLog = Join-Path $LogDir "babysitter-session-end-hook-stderr.log"
 try {
     if ($Proxy) {
         Write-Blog "Using hooks-proxy: $Proxy"
-        Get-Content $InputFile | & $Proxy invoke --adapter copilot --handler "babysitter hook:run --harness unified --hook-type session-end --plugin-root $PluginRoot --json" --json 2>$stderrLog | Out-Null
+        Get-Content $InputFile | & $Proxy invoke --adapter copilot --handler "babysitter hook:run --harness unified --hook-type session-end --json" --json 2>$stderrLog | Out-Null
     } else {
         Write-Blog "hooks-proxy not found after install, using npx fallback"
-        Get-Content $InputFile | & npx -y "@a5c-ai/hooks-proxy-cli@$SdkVersion" invoke --adapter copilot --handler "babysitter hook:run --harness unified --hook-type session-end --plugin-root $PluginRoot --json" --json 2>$stderrLog | Out-Null
+        Get-Content $InputFile | & npx -y "@a5c-ai/hooks-proxy-cli@$SdkVersion" invoke --adapter copilot --handler "babysitter hook:run --harness unified --hook-type session-end --json" --json 2>$stderrLog | Out-Null
     }
 } catch {
     Write-Blog "Hook error: $_"

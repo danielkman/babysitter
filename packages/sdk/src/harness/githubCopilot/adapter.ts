@@ -170,7 +170,6 @@ export function createGithubCopilotAdapter(): HarnessAdapter {
     isActive(): boolean {
       return !!(
         process.env.AGENT_SESSION_ID ||
-        process.env.BABYSITTER_SESSION_ID ||
         process.env.COPILOT_HOME ||
         process.env.COPILOT_GITHUB_TOKEN
       );

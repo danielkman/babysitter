@@ -131,7 +131,7 @@ plugin registers hooks for the following OpenCode events:
 |----------------|-----------------|---------|
 | `session.created` | `session-start` | Initialize session state |
 | `session.idle` | `stop` | Check for pending effects |
-| `shell.env` | -- | Inject env vars (BABYSITTER_SESSION_ID) |
+| `shell.env` | -- | Inject env vars (AGENT_SESSION_ID) |
 | `tool.execute.before` | `pre-tool-use` | Pre-tool-use awareness |
 | `tool.execute.after` | `post-tool-use` | Post-tool-use awareness |
 
@@ -147,7 +147,7 @@ the agent runs the full orchestration loop within a single turn by calling
 The `shell.env` hook self-injects these variables since OpenCode does not
 natively provide them:
 
-- `BABYSITTER_SESSION_ID` -- Unique session identifier
+- `AGENT_SESSION_ID` -- Unique session identifier
 - `OPENCODE_SESSION_ID` -- Alias for session ID
 - `BABYSITTER_STATE_DIR` -- State directory path
 - `BABYSITTER_RUNS_DIR` -- Runs directory path

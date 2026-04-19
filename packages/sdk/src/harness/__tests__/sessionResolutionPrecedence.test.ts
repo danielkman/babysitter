@@ -6,7 +6,7 @@
  * PID-scoped marker only as a fallback when those ambient bindings are
  * unavailable. Harness-native per-session env vars (CODEX_THREAD_ID,
  * GEMINI_SESSION_ID, COPILOT_SESSION_ID, PI_SESSION_ID, OMP_SESSION_ID)
- * should win over the cross-harness BABYSITTER_SESSION_ID.
+ * should win over the cross-harness AGENT_SESSION_ID.
  *
  * Legacy escape hatch BABYSITTER_TRUST_ENV_SESSION=1 restores env-var-first
  * precedence.
@@ -32,7 +32,7 @@ import type { HarnessAdapter } from "../types";
 
 interface AdapterCase {
   harness: string;
-  envVarName?: string;  // harness-native env var (not BABYSITTER_SESSION_ID)
+  envVarName?: string;  // harness-native env var (not AGENT_SESSION_ID)
   adapter: () => HarnessAdapter;
 }
 
@@ -48,7 +48,7 @@ const CASES: AdapterCase[] = [
 
 const TRACKED_ENV_KEYS = [
   "AGENT_SESSION_ID",
-  "BABYSITTER_SESSION_ID",
+  "AGENT_SESSION_ID",
   "AGENT_TRUST_ENV_SESSION",
   "BABYSITTER_TRUST_ENV_SESSION",
   "AGENT_ENABLE_SESSION_PID_MARKERS",
@@ -115,7 +115,7 @@ describe("adapter session-id resolution precedence", () => {
       });
 
       if (c.envVarName) {
-        it("Case B: no native env, BABYSITTER_SESSION_ID wins over pid marker", () => {
+        it("Case B: no native env, AGENT_SESSION_ID wins over pid marker", () => {
           __setAncestorResolverForTests(() => ({ pid: process.pid }));
           seedMarker(c.harness, process.pid, "MARKER-B");
           process.env.AGENT_SESSION_ID = "FALLBACK-B";
@@ -123,7 +123,7 @@ describe("adapter session-id resolution precedence", () => {
           expect(adapter.resolveSessionId?.({})).toBe("FALLBACK-B");
         });
 
-        it("Case C: no marker, harness-native env var wins over stale BABYSITTER_SESSION_ID", () => {
+        it("Case C: no marker, harness-native env var wins over stale AGENT_SESSION_ID", () => {
           __setAncestorResolverForTests(() => undefined);
           process.env[c.envVarName!] = "NATIVE-B";
           process.env.AGENT_SESSION_ID = "STALE";
@@ -145,12 +145,12 @@ describe("adapter session-id resolution precedence", () => {
           process.env.AGENT_SESSION_ID = "TRUSTED-ENV";
           process.env.AGENT_TRUST_ENV_SESSION = "1";
           const adapter = c.adapter();
-          // In legacy order, BABYSITTER_SESSION_ID takes precedence over
+          // In legacy order, AGENT_SESSION_ID takes precedence over
           // harness-native env.
           expect(adapter.resolveSessionId?.({})).toBe("TRUSTED-ENV");
         });
       } else {
-        it("Case B (no native env var): BABYSITTER_SESSION_ID beats pid marker", () => {
+        it("Case B (no native env var): AGENT_SESSION_ID beats pid marker", () => {
           __setAncestorResolverForTests(() => ({ pid: process.pid }));
           seedMarker(c.harness, process.pid, "MARKER-B");
           process.env.AGENT_SESSION_ID = "FALLBACK-B";

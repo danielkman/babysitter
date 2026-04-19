@@ -19,6 +19,7 @@
   "scripts": {
     "build": "tsc --build",
     "clean": "rimraf dist",
+    "lint": "eslint \"src/**/*.ts\" --max-warnings=0",
     "test": "vitest run"
   },
   "peerDependencies": {

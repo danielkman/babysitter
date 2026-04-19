@@ -52,7 +52,6 @@ export async function sessionEndHandler(context: Record<string, unknown>): Promi
       "hook:run",
       "--hook-type", "stop",
       "--harness", "openclaw",
-      "--plugin-root", PLUGIN_ROOT,
       "--state-dir", stateDir,
     ];
 

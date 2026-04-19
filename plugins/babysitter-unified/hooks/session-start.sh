@@ -86,7 +86,7 @@ STDERR_LOG="$LOG_DIR/hook-session-start-stderr.log"
 blog "Using proxy: $PROXY"
 RESULT=$($PROXY invoke \
   --adapter "$ADAPTER_NAME" \
-  --handler "babysitter hook:run --harness unified --hook-type session-start --plugin-root $PLUGIN_ROOT --verbose --json" \
+  --handler "babysitter hook:run --harness unified --hook-type session-start --verbose --json" \
   --json \
   < "$INPUT_FILE" 2>"$STDERR_LOG")
 EXIT_CODE=$?

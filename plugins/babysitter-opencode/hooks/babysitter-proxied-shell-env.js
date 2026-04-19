@@ -5,7 +5,7 @@
  * but primarily performs direct env var injection.
  *
  * Fires when OpenCode initializes a shell environment. Injects babysitter
- * environment variables (BABYSITTER_SESSION_ID, BABYSITTER_STATE_DIR, etc.)
+ * environment variables (AGENT_SESSION_ID, BABYSITTER_STATE_DIR, etc.)
  * so that subprocesses and other hooks can discover the active session.
  *
  * This is critical for OpenCode because it does NOT natively inject
@@ -100,7 +100,7 @@ function main() {
   blog("Unified shell-env hook invoked");
 
   // Resolve or generate session ID
-  const sessionId = process.env.BABYSITTER_SESSION_ID
+  const sessionId = process.env.AGENT_SESSION_ID
     || process.env.OPENCODE_SESSION_ID
     || crypto.randomUUID();
 
@@ -114,7 +114,7 @@ function main() {
 
   // Build env vars to inject
   const env = {
-    BABYSITTER_SESSION_ID: sessionId,
+    AGENT_SESSION_ID: sessionId,
     OPENCODE_SESSION_ID: sessionId,
     BABYSITTER_STATE_DIR: STATE_DIR,
     BABYSITTER_RUNS_DIR: RUNS_DIR,

@@ -131,7 +131,6 @@ export function createOhMyPiAdapter(): HarnessAdapter {
     isActive(): boolean {
       return !!(
         process.env.AGENT_SESSION_ID ||
-        process.env.BABYSITTER_SESSION_ID ||
         process.env.OMP_SESSION_ID ||
         process.env.OMP_PLUGIN_ROOT
       );
@@ -179,7 +178,7 @@ export function createOhMyPiAdapter(): HarnessAdapter {
 
     handleSessionStartHook(_args: HookHandlerArgs): Promise<number> {
       const sessionId =
-        process.env.OMP_SESSION_ID || process.env.AGENT_SESSION_ID || process.env.BABYSITTER_SESSION_ID;
+        process.env.OMP_SESSION_ID || process.env.AGENT_SESSION_ID;
       if (sessionId) {
         try {
           writeSessionMarker("oh-my-pi", sessionId);

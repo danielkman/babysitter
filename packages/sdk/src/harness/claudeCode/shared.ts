@@ -214,8 +214,7 @@ export function resolveSessionIdDetailed(explicit?: string): SessionResolutionDe
     return ancestorDetails;
   };
 
-  const agentSessionId =
-    process.env.AGENT_SESSION_ID || process.env.BABYSITTER_SESSION_ID;
+  const agentSessionId = process.env.AGENT_SESSION_ID;
 
   if (trustEnv && agentSessionId) {
     return {
@@ -240,21 +239,11 @@ export function resolveSessionIdDetailed(explicit?: string): SessionResolutionDe
   if (envFile) {
     try {
       const content = readFileSync(envFile, "utf-8");
-      // Check AGENT_SESSION_ID first, then BABYSITTER_SESSION_ID as fallback
       const agentMatches = [...content.matchAll(/export AGENT_SESSION_ID="([^"]+)"/g)];
       const agentLast = agentMatches.at(-1)?.[1];
       if (agentLast) {
         return {
           sessionId: agentLast,
-          resolvedFrom: "env-file",
-          ...getAncestorDetails(),
-        };
-      }
-      const babysitterMatches = [...content.matchAll(/export BABYSITTER_SESSION_ID="([^"]+)"/g)];
-      const babysitterLast = babysitterMatches.at(-1)?.[1];
-      if (babysitterLast) {
-        return {
-          sessionId: babysitterLast,
           resolvedFrom: "env-file",
           ...getAncestorDetails(),
         };
@@ -268,7 +257,7 @@ export function resolveSessionIdDetailed(explicit?: string): SessionResolutionDe
     const stateFile = path.join(getGlobalStateDir(), `${agentSessionId}.md`);
     if (!existsSync(stateFile)) {
       log.warn(
-        `AGENT_SESSION_ID/BABYSITTER_SESSION_ID=${agentSessionId} is set but no matching state file at ${stateFile} — likely stale from a prior Claude Code session. Run 'babysitter session:cleanup' or 'unset AGENT_SESSION_ID'.`,
+        `AGENT_SESSION_ID=${agentSessionId} is set but no matching state file at ${stateFile} — likely stale from a prior Claude Code session. Run 'babysitter session:cleanup' or 'unset AGENT_SESSION_ID'.`,
       );
     }
     return {
@@ -291,5 +280,5 @@ export function setBabysitterSessionIdInEnvFile(
   envFile: string,
   sessionId: string,
 ): void {
-  appendFileSync(envFile, `export AGENT_SESSION_ID="${sessionId}"\nexport BABYSITTER_SESSION_ID="${sessionId}"\n`);
+  appendFileSync(envFile, `export AGENT_SESSION_ID="${sessionId}"\n`);
 }

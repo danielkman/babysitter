@@ -36,7 +36,7 @@ CRITICAL RULE: Never fallback to simpler execution if the user activated this
 skill. Persist in executing the orchestration itself -- you must create a valid
 process js file, create a run (with `--harness {{harness}}` to bind the session
 authoritatively via the PID-scoped session marker -- the run stays bound to the
-correct session even when shells inherit stale `AGENT_SESSION_ID`/`BABYSITTER_SESSION_ID` env vars
+correct session even when shells inherit stale `AGENT_SESSION_ID` env vars
 from ancestor processes), then iterate the run until it is completed.
 
 {{#hookDriven}}
@@ -65,7 +65,7 @@ Not for simple tasks, and even if things get complicated.
 Persist in executing the orchestration itself.
 
 NOTE: CI pipelines and legacy workflows that deliberately export
-`AGENT_SESSION_ID` (or `BABYSITTER_SESSION_ID`) to bind a run across a pre-launched shell can opt into
+`AGENT_SESSION_ID` to bind a run across a pre-launched shell can opt into
 the old env-var-first behavior by setting `AGENT_TRUST_ENV_SESSION=1`. This
 is an escape hatch only -- interactive sessions should rely on the PID-scoped
 session marker written by the session-start hook.

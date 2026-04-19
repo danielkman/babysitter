@@ -39,9 +39,6 @@ export function resolveOpenCodeSessionId(parsed: {
   if (process.env.AGENT_SESSION_ID) {
     return process.env.AGENT_SESSION_ID;
   }
-  if (process.env.BABYSITTER_SESSION_ID) {
-    return process.env.BABYSITTER_SESSION_ID;
-  }
   if (process.env.OPENCODE_SESSION_ID) {
     return process.env.OPENCODE_SESSION_ID;
   }
@@ -78,7 +75,6 @@ export async function handleOpenCodeStopHook(
   const sessionId =
     safeStr(hookInput, "session_id") ||
     process.env.AGENT_SESSION_ID ||
-    process.env.BABYSITTER_SESSION_ID ||
     process.env.OPENCODE_SESSION_ID ||
     "";
 
@@ -219,7 +215,6 @@ export async function handleOpenCodeSessionStartHook(
   const sessionId =
     safeStr(hookInput, "session_id") ||
     process.env.AGENT_SESSION_ID ||
-    process.env.BABYSITTER_SESSION_ID ||
     process.env.OPENCODE_SESSION_ID ||
     "";
 

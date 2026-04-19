@@ -73,7 +73,7 @@ STDERR_LOG="$LOG_DIR/babysitter-user-prompt-submit-hook-stderr.log"
 
 RESULT=$($PROXY invoke \
   --adapter codex \
-  --handler "babysitter hook:run --harness unified --hook-type user-prompt-submit --plugin-root ${CODEX_PLUGIN_ROOT} --state-dir ${BABYSITTER_STATE_DIR}" \
+  --handler "babysitter hook:run --harness unified --hook-type user-prompt-submit --state-dir ${BABYSITTER_STATE_DIR}" \
   --json \
   < "$INPUT_FILE" 2>"$STDERR_LOG")
 EXIT_CODE=$?

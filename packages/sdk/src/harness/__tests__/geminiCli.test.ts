@@ -83,7 +83,7 @@ beforeEach(async () => {
   await fs.mkdir(stateDir, { recursive: true });
   process.env.BABYSITTER_GLOBAL_STATE_DIR = tmpDir;
   delete process.env.AGENT_SESSION_ID;
-  delete process.env.BABYSITTER_SESSION_ID;
+  delete process.env.AGENT_SESSION_ID;
   delete process.env.AGENT_TRUST_ENV_SESSION;
   delete process.env.BABYSITTER_TRUST_ENV_SESSION;
   delete process.env.AGENT_ENABLE_SESSION_PID_MARKERS;
@@ -126,7 +126,7 @@ afterEach(async () => {
   delete process.env.BABYSITTER_STATE_DIR;
   delete process.env.BABYSITTER_GLOBAL_STATE_DIR;
   delete process.env.AGENT_SESSION_ID;
-  delete process.env.BABYSITTER_SESSION_ID;
+  delete process.env.AGENT_SESSION_ID;
   delete process.env.AGENT_TRUST_ENV_SESSION;
   delete process.env.BABYSITTER_TRUST_ENV_SESSION;
   delete process.env.AGENT_ENABLE_SESSION_PID_MARKERS;

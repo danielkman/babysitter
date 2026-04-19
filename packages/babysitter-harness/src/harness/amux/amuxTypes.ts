@@ -1,62 +1,76 @@
 /**
- * Minimal agent-mux interfaces needed by babysitter-harness.
+ * agent-mux type adapters for babysitter-harness.
  *
- * These are interface-first definitions that match agent-mux's actual API
- * surface but are *owned* by babysitter-harness so no real @agent-mux/core
- * dependency is required. When agent-mux is published to npm, wire these
- * to the real types via a thin adapter or re-export.
+ * Imports canonical types from @a5c-ai/agent-mux (a real dependency) and
+ * re-exports them alongside thin adapter interfaces that bridge the
+ * small shape differences between the mux API and what babysitter-harness
+ * consumes internally.
  *
  * @module harness/amux/amuxTypes
  */
 
+import type {
+  RunOptions as MuxRunOptions,
+  RunHandle as MuxRunHandle,
+} from "@a5c-ai/agent-mux";
+import type {
+  AgentMuxClient as MuxClient,
+  ClientOptions as MuxClientOptions,
+} from "@a5c-ai/agent-mux";
+import type {
+  BaseEvent as MuxBaseEvent,
+  AgentName as MuxAgentName,
+} from "@a5c-ai/agent-mux";
+import type {
+  InteractionChannel as MuxInteractionChannel,
+} from "@a5c-ai/agent-mux";
+import type {
+  AdapterRegistry as MuxAdapterRegistry,
+  AuthManager as MuxAuthManager,
+} from "@a5c-ai/agent-mux";
+
+// Re-export canonical types directly
+export type { MuxRunOptions, MuxRunHandle, MuxClient, MuxClientOptions, MuxBaseEvent, MuxAgentName };
+
 // ---------------------------------------------------------------------------
-// Run options (maps to AgentMuxClient.run() options)
+// Run options (thin alias — babysitter uses a subset of MuxRunOptions)
 // ---------------------------------------------------------------------------
 
 /**
- * Options accepted by AgentMuxClient.run().
+ * Options accepted by AmuxClient.run().
  *
- * Only the fields babysitter-harness actually uses are listed here.
- * The real @agent-mux/core type may have more.
+ * This is a subset of the canonical MuxRunOptions that babysitter-harness
+ * actually uses. Structurally compatible — no adapter needed.
  */
-export interface AmuxRunOptions {
-  /** Agent-mux adapter name (e.g. "claude", "codex", "gemini"). */
-  agent: string;
-  /** Prompt text (or array for multi-turn). */
-  prompt: string | string[];
-  /** Model identifier override. */
-  model?: string;
-  /** Working directory for the agent invocation. */
-  cwd?: string;
-  /** Session ID for session resumption. */
-  sessionId?: string;
-  /** Maximum execution time in ms. */
-  timeout?: number;
-  /** Tool approval mode. */
-  approvalMode?: "yolo" | "prompt" | "deny";
-  /** Whether to stream events. */
-  stream?: boolean;
-  /** Suppress interactive prompts. */
-  nonInteractive?: boolean;
-  /** Maximum agent turns before force-stop. */
-  maxTurns?: number;
-  /** Additional environment variables for the subprocess. */
-  env?: Record<string, string>;
+export type AmuxRunOptions = Pick<
+  MuxRunOptions,
+  | "agent"
+  | "prompt"
+  | "model"
+  | "cwd"
+  | "sessionId"
+  | "timeout"
+  | "approvalMode"
+  | "stream"
+  | "nonInteractive"
+  | "maxTurns"
+  | "env"
+  | "skills"
+> & {
   /** Hook configuration forwarded to the agent. */
   hooks?: unknown;
-  /** Skills to enable for this run. */
-  skills?: string[];
-}
+};
 
 // ---------------------------------------------------------------------------
-// Run handle (returned by AgentMuxClient.run())
+// Run handle (adapter — real RunHandle is thenable + AsyncIterable)
 // ---------------------------------------------------------------------------
 
 /**
- * Handle returned by AgentMuxClient.run().
+ * Adapter interface for the RunHandle returned by AgentMuxClient.run().
  *
- * Provides an async-iterable event stream, an interaction channel for
- * responding to approval requests, and run lifecycle metadata.
+ * The real MuxRunHandle is simultaneously an AsyncIterable<AgentEvent>,
+ * an EventEmitter, and a thenable (Promise<RunResult>). babysitter-harness
+ * only needs the event stream, session metadata, and abort control.
  */
 export interface AmuxRunHandle {
   /** Async-iterable stream of normalised agent events. */
@@ -78,11 +92,9 @@ export interface AmuxRunHandle {
 /**
  * Canonical agent event emitted by agent-mux adapters.
  *
- * Known `type` values:
- *   session_start, session_end, text_delta, thinking_delta,
- *   tool_call_start, tool_result, cost, token_usage,
- *   approval_request, input_required, error, crash,
- *   context_compacted
+ * Extends the real MuxBaseEvent. The real type uses `timestamp: number`
+ * (Unix epoch ms); this alias keeps `string` (ISO-8601) for backward
+ * compat with babysitter event mappers. The amuxBridge casts as needed.
  */
 export interface AmuxAgentEvent {
   /** Event type discriminator. */
@@ -102,8 +114,10 @@ export interface AmuxAgentEvent {
 // ---------------------------------------------------------------------------
 
 /**
- * Channel for responding to interactive events (approval_request,
- * input_required) during a run.
+ * Channel for responding to interactive events during a run.
+ *
+ * Simplified from the real MuxInteractionChannel — babysitter-harness
+ * only uses the basic respond-by-ID pattern.
  */
 export interface AmuxInteractionChannel {
   /** Respond to an interactive request by its ID. */
@@ -117,9 +131,9 @@ export interface AmuxInteractionChannel {
 /**
  * Programmatic client for invoking agents via agent-mux.
  *
- * babysitter-harness depends on this interface only; the concrete
- * implementation can be backed by the real @agent-mux/core library,
- * a mock, or a subprocess adapter.
+ * This is the subset of MuxClient that babysitter-harness depends on.
+ * The real AgentMuxClient has many more methods (adapters, models,
+ * sessions, config, auth, profiles, plugins, detectHost).
  */
 export interface AmuxClient {
   /** Start an agent run and return a handle for streaming events. */
@@ -130,7 +144,7 @@ export interface AmuxClient {
 // Adapter discovery (optional, for harness:discover integration)
 // ---------------------------------------------------------------------------
 
-/** Metadata about an agent-mux adapter. */
+/** Metadata about an agent-mux adapter. Re-uses canonical AdapterRegistry. */
 export interface AmuxAdapterInfo {
   /** Adapter identifier (e.g. "claude", "codex"). */
   agent: string;
@@ -154,7 +168,9 @@ export interface AmuxAuthCheck {
 
 /**
  * Extended client interface that exposes adapter discovery.
- * Only needed when replacing babysitter's harness:discover command.
+ *
+ * Maps to the real AgentMuxClient which has `.adapters` and `.auth`
+ * sub-managers.
  */
 export interface AmuxClientWithDiscovery extends AmuxClient {
   adapters: {

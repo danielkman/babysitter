@@ -31,7 +31,7 @@ beforeEach(async () => {
   savedPidMarkerFlag = process.env.AGENT_ENABLE_SESSION_PID_MARKERS;
   process.env.BABYSITTER_GLOBAL_STATE_DIR = tmpDir;
   delete process.env.AGENT_SESSION_ID;
-  delete process.env.BABYSITTER_SESSION_ID;
+  delete process.env.AGENT_SESSION_ID;
   delete process.env.CLAUDE_ENV_FILE;
   delete process.env.AGENT_TRUST_ENV_SESSION;
   delete process.env.BABYSITTER_TRUST_ENV_SESSION;
@@ -45,7 +45,7 @@ afterEach(async () => {
   else process.env.BABYSITTER_GLOBAL_STATE_DIR = savedGlobalStateDir;
   if (savedSessionId === undefined) delete process.env.AGENT_SESSION_ID;
   else process.env.AGENT_SESSION_ID = savedSessionId;
-  delete process.env.BABYSITTER_SESSION_ID;
+  delete process.env.AGENT_SESSION_ID;
   if (savedEnvFile === undefined) delete process.env.CLAUDE_ENV_FILE;
   else process.env.CLAUDE_ENV_FILE = savedEnvFile;
   if (savedTrustEnv === undefined) delete process.env.AGENT_TRUST_ENV_SESSION;
@@ -81,7 +81,7 @@ describe("resolveSessionIdDetailed precedence", () => {
     // Inject ancestor = our pid so marker lookup hits.
     __setAncestorResolverForTests(() => ({ pid: process.pid }));
     seedMarker(process.pid, "MARKER-ID");
-    seedEnvFile(`export BABYSITTER_SESSION_ID="ENV-FILE-ID"\n`);
+    seedEnvFile(`export AGENT_SESSION_ID="ENV-FILE-ID"\n`);
     process.env.AGENT_SESSION_ID = "STALE-ENV-ID";
 
     const r = resolveSessionIdDetailed();
@@ -95,7 +95,7 @@ describe("resolveSessionIdDetailed precedence", () => {
     process.env.AGENT_ENABLE_SESSION_PID_MARKERS = "1";
     __setAncestorResolverForTests(() => ({ pid: process.pid }));
     seedMarker(process.pid, "MARKER-ID");
-    seedEnvFile(`export BABYSITTER_SESSION_ID="ENV-FILE-ID"\n`);
+    seedEnvFile(`export AGENT_SESSION_ID="ENV-FILE-ID"\n`);
     process.env.AGENT_SESSION_ID = "STALE-ENV-ID";
 
     const r = resolveSessionIdDetailed();
@@ -115,7 +115,7 @@ describe("resolveSessionIdDetailed precedence", () => {
 
   it("falls back to env-file when marker and env-var are missing", () => {
     __setAncestorResolverForTests(() => undefined);
-    seedEnvFile(`export BABYSITTER_SESSION_ID="ENV-FILE-ID"\n`);
+    seedEnvFile(`export AGENT_SESSION_ID="ENV-FILE-ID"\n`);
 
     const r = resolveSessionIdDetailed();
     expect(r.sessionId).toBe("ENV-FILE-ID");

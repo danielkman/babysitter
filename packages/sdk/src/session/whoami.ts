@@ -37,7 +37,7 @@ function resolveClaudeCode(): SessionWhoamiResult {
     details.ancestorPid !== null
       ? getSessionMarkerPath("claude-code", details.ancestorPid)
       : null;
-  const envVar = process.env.AGENT_SESSION_ID || process.env.BABYSITTER_SESSION_ID;
+  const envVar = process.env.AGENT_SESSION_ID;
   const envVarPresent = Boolean(envVar);
   let envVarMatches: boolean | null;
   if (!envVarPresent) {
@@ -81,7 +81,7 @@ function resolveGenericHarness(harness: string): SessionWhoamiResult {
   const harnessEnvSessionId = getHarnessCallerEnvVars(harness)
     .map((key) => process.env[key])
     .find((value): value is string => Boolean(value));
-  const babysitterEnvSessionId = process.env.AGENT_SESSION_ID || process.env.BABYSITTER_SESSION_ID;
+  const babysitterEnvSessionId = process.env.AGENT_SESSION_ID;
 
   let resolvedFrom: SessionWhoamiResult["resolvedFrom"] = "none";
   let finalSessionId = sessionId ?? markerSessionId;

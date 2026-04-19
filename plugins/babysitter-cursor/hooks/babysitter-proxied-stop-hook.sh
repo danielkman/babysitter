@@ -100,7 +100,7 @@ STDERR_LOG="$LOG_DIR/babysitter-stop-hook-stderr.log"
 blog "Using hooks-proxy: $PROXY"
 RESULT=$($PROXY invoke \
   --adapter cursor \
-  --handler "babysitter hook:run --harness unified --hook-type stop --plugin-root ${CURSOR_PLUGIN_ROOT} --state-dir ${BABYSITTER_STATE_DIR} --json" \
+  --handler "babysitter hook:run --harness unified --hook-type stop --state-dir ${BABYSITTER_STATE_DIR} --json" \
   --json \
   < "$INPUT_FILE" 2>"$STDERR_LOG")
 EXIT_CODE=$?

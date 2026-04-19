@@ -40,7 +40,7 @@ export function createCustomAdapter(): HarnessAdapter {
         process.env.AGENT_TRUST_ENV_SESSION === "1" ||
         process.env.BABYSITTER_TRUST_ENV_SESSION === "1";
       const agentSessionId =
-        process.env.AGENT_SESSION_ID || process.env.BABYSITTER_SESSION_ID;
+        process.env.AGENT_SESSION_ID;
       if (trustEnv) {
         if (agentSessionId) return agentSessionId;
         return undefined;

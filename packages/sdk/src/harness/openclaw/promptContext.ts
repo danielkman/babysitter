@@ -16,7 +16,7 @@ export function createOpenClawContext(
     sessionBindingFlags: '',
     hookDriven: false,
     interactiveToolName: 'AskUserQuestion tool',
-    sessionEnvVars: 'PID-scoped session marker (authoritative); OPENCLAW_SHELL gateway injection and AGENT_SESSION_ID/BABYSITTER_SESSION_ID are fallbacks',
+    sessionEnvVars: 'PID-scoped session marker (authoritative); OPENCLAW_SHELL gateway injection and AGENT_SESSION_ID are fallbacks',
     resumeFlags: '',
     cliSetupSnippet: createDefaultCliSetupSnippet(),
     iterateFlags: '',

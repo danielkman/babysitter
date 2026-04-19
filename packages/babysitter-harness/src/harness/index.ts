@@ -31,7 +31,7 @@ export {
   resetAdapter,
 } from "@a5c-ai/babysitter-sdk";
 export { createAgenticToolDefinitions, type AgenticToolOptions, type CustomToolDefinition, AGENTIC_TOOL_NAMES, stripHtmlTags, extractTextFromHtml, filterByRelevance, parseSearchResults } from "./agenticTools";
-export { invokeHarness, invokeHarnessDirect, buildHarnessArgs, HARNESS_CLI_MAP } from "./invoker";
+export { invokeHarness, buildHarnessArgs, HARNESS_CLI_MAP } from "./invoker";
 export { buildLaunchSpec } from "./invoker/launch";
 export { createPiSession, PiSessionHandle, type PiEventListener } from "./piWrapper";
 export * as amux from "./amux";

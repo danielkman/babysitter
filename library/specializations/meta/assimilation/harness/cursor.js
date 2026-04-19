@@ -89,7 +89,7 @@ export async function process(inputs, ctx) {
   //      --sandbox enabled|disabled, --approve-mcps, --api-key, --trust.
   //   7. Session model: Cursor has UUID-based session IDs, session listing
   //      (agent ls), session resume (--resume/--continue). No auto-set env var
-  //      for session ID detection — BABYSITTER_SESSION_ID used as cross-harness fallback if set externally.
+  //      for session ID detection — AGENT_SESSION_ID used as cross-harness fallback if set externally.
   //   8. Plugin manifest and marketplace — verify from official docs:
   //      .cursor-plugin/plugin.json manifest format (skills/hooks as path
   //      strings not arrays/objects, no contextFileName field), Cursor

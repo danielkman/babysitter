@@ -91,7 +91,7 @@ STDERR_LOG="$LOG_DIR/babysitter-stop-hook-stderr.log"
 blog "Using hooks-proxy: $PROXY"
 RESULT=$($PROXY invoke \
   --adapter openclaw \
-  --handler "babysitter hook:run --harness unified --hook-type stop --plugin-root ${OPENCLAW_PLUGIN_ROOT} --state-dir ${BABYSITTER_STATE_DIR}" \
+  --handler "babysitter hook:run --harness unified --hook-type stop --state-dir ${BABYSITTER_STATE_DIR}" \
   --json \
   < "$INPUT_FILE" 2>"$STDERR_LOG")
 EXIT_CODE=$?

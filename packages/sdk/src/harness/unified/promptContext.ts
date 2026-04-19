@@ -56,7 +56,7 @@ export function createUnifiedContext(
       hookDriven: false,
       interactiveToolName: "",
       sessionEnvVars:
-        "AGENT_SESSION_ID (hooks-proxy convention); BABYSITTER_SESSION_ID (fallback)",
+        "AGENT_SESSION_ID (hooks-proxy convention)",
       resumeFlags: "",
       cliSetupSnippet: createDefaultCliSetupSnippet(),
       iterateFlags: "",

@@ -3,7 +3,7 @@
  *
  * Covers:
  *   - isActive() responds to AGENT_UNIFIED_ADAPTER
- *   - resolveSessionId() precedence: explicit > AGENT_SESSION_ID > BABYSITTER_SESSION_ID
+ *   - resolveSessionId() precedence: explicit > AGENT_SESSION_ID > AGENT_SESSION_ID
  *   - getCapabilities() with and without AGENT_CAPABILITIES_JSON
  *   - autoResolvesSessionId() depends on AGENT_SESSION_ID presence
  *   - bindSession() with and without session ID
@@ -23,7 +23,7 @@ const ENV_KEYS = [
   "AGENT_CAPABILITIES_JSON",
   "AGENT_PLUGIN_ROOT",
   "AGENT_HOOKS_PROXY_PATH",
-  "BABYSITTER_SESSION_ID",
+  "AGENT_SESSION_ID",
   "BABYSITTER_STATE_DIR",
   "CLAUDE_ENV_FILE",
   "CODEX_THREAD_ID",
@@ -103,8 +103,8 @@ describe("createUnifiedAdapter", () => {
     expect(adapter.resolveSessionId({})).toBe("agent-session-42");
   });
 
-  it("resolveSessionId() falls back to BABYSITTER_SESSION_ID", () => {
-    process.env.BABYSITTER_SESSION_ID = "bab-session-99";
+  it("resolveSessionId() falls back to AGENT_SESSION_ID", () => {
+    process.env.AGENT_SESSION_ID = "bab-session-99";
     const adapter = createUnifiedAdapter();
     expect(adapter.resolveSessionId({})).toBe("bab-session-99");
   });
@@ -114,9 +114,9 @@ describe("createUnifiedAdapter", () => {
     expect(adapter.resolveSessionId({})).toBeUndefined();
   });
 
-  it("resolveSessionId() prefers AGENT_SESSION_ID over BABYSITTER_SESSION_ID", () => {
+  it("resolveSessionId() prefers AGENT_SESSION_ID over AGENT_SESSION_ID", () => {
     process.env.AGENT_SESSION_ID = "agent-wins";
-    process.env.BABYSITTER_SESSION_ID = "bab-loses";
+    process.env.AGENT_SESSION_ID = "bab-loses";
     const adapter = createUnifiedAdapter();
     expect(adapter.resolveSessionId({})).toBe("agent-wins");
   });

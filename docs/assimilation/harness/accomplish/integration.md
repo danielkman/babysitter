@@ -78,7 +78,7 @@ Accomplish spawns OpenCode with its data directory as the working context. OpenC
 
 - `session.created` -- initializes babysitter session state
 - `session.idle` -- handles iteration orchestration
-- `shell.env` -- injects `BABYSITTER_SESSION_ID` and other env vars
+- `shell.env` -- injects `AGENT_SESSION_ID` and other env vars
 - `tool.execute.before` / `tool.execute.after` -- pre/post tool hooks
 
 ### Hook lifecycle within Accomplish
@@ -160,7 +160,7 @@ Once the plugin is installed, the `/babysitter` skill is available in Accomplish
 | `OPENCODE_CONFIG` | OpenCode | Path to OpenCode configuration file |
 | `OPENCODE_CONFIG_DIR` | Accomplish/OpenCode | OpenCode config directory; when set, its parent is treated as the Accomplish data directory |
 | `BABYSITTER_STATE_DIR` | User/Plugin | Override for babysitter state directory (default: `.a5c`) |
-| `BABYSITTER_SESSION_ID` | Plugin (shell.env hook) | Session ID injected by the babysitter plugin for cross-harness session tracking |
+| `AGENT_SESSION_ID` | Plugin (shell.env hook) | Session ID injected by the babysitter plugin for cross-harness session tracking |
 | `OPENCODE_PLUGIN_ROOT` | Plugin (shell.env hook) | Plugin root directory for babysitter plugin discovery |
 
 ---

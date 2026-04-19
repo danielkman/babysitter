@@ -363,13 +363,13 @@ Mark as FAIL if:
 - Parse the output and inspect the `resolvedFrom` field. Classify as follows:
   - `resolvedFrom: "pid-marker"` → mark as PASS ("Session ID derives from the live Claude Code ancestor process -- authoritative").
   - `resolvedFrom: "env-file"` → mark as PASS with a note ("CLAUDE_ENV_FILE was used; typically healthy").
-  - `resolvedFrom: "env-var"` → mark as WARN ("`BABYSITTER_SESSION_ID` is set without a corroborating PID marker. Likely stale from a prior Claude Code session -- see GitHub issue #130").
-    - Remediation: run `babysitter session:cleanup` and start a fresh Claude Code session, or `unset BABYSITTER_SESSION_ID` before invoking babysitter.
+  - `resolvedFrom: "env-var"` → mark as WARN ("`AGENT_SESSION_ID` is set without a corroborating PID marker. Likely stale from a prior Claude Code session -- see GitHub issue #130").
+    - Remediation: run `babysitter session:cleanup` and start a fresh Claude Code session, or `unset AGENT_SESSION_ID` before invoking babysitter.
   - `resolvedFrom: "none"` → mark as ERROR ("No session ID resolvable. Either no session-start hook fired, or the ancestor walk failed").
 
 **Env-var shadow check:**
 - Independently inspect `envVarPresent` and `envVarMatches` in the output.
-- If `envVarPresent && !envVarMatches`, mark as WARN ("`BABYSITTER_SESSION_ID` in env does not match the resolved session ID; a stale value is shadowing the authoritative one. Unset the env var").
+- If `envVarPresent && !envVarMatches`, mark as WARN ("`AGENT_SESSION_ID` in env does not match the resolved session ID; a stale value is shadowing the authoritative one. Unset the env var").
 
 ---
 
@@ -391,7 +391,7 @@ Mark as FAIL if:
 
 - Enumerate files in `~/.a5c/` matching the pattern `current-session-*-pid-*`.
 - Count markers per harness (derived from the filename).
-- If more than one live marker exists for the same harness, mark as INFO ("Multiple live Claude Code / harness sessions detected; ensure each shell scopes `BABYSITTER_SESSION_ID` appropriately -- the PID marker handles this automatically").
+- If more than one live marker exists for the same harness, mark as INFO ("Multiple live Claude Code / harness sessions detected; ensure each shell scopes `AGENT_SESSION_ID` appropriately -- the PID marker handles this automatically").
 - Otherwise mark as PASS.
 
 ---
@@ -502,7 +502,7 @@ babysitter session:cleanup --dry-run   # preview
 babysitter session:cleanup             # apply
 
 # 2. Unset a stale env var
-unset BABYSITTER_SESSION_ID
+unset AGENT_SESSION_ID
 
 # 3. Re-bind a run explicitly if needed
 babysitter session:resume --session-id <fresh-id> --state-dir ~/.a5c --run-id <runId> --runs-dir .a5c/runs

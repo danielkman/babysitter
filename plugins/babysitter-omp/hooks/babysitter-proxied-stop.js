@@ -92,7 +92,7 @@ function installHooksProxy(version) {
 }
 
 function runViaProxy(proxy, hookType, inputJson) {
-  const handler = `babysitter hook:run --harness unified --hook-type ${hookType} --plugin-root ${PLUGIN_ROOT} --state-dir ${STATE_DIR} --json`;
+  const handler = `babysitter hook:run --harness unified --hook-type ${hookType} --state-dir ${STATE_DIR} --json`;
   const result = execSync(`"${proxy}" invoke --adapter oh-my-pi --handler "${handler}" --json`, {
     input: inputJson,
     stdio: ["pipe", "pipe", "pipe"],
@@ -103,7 +103,7 @@ function runViaProxy(proxy, hookType, inputJson) {
 }
 
 function runViaNpxProxy(version, hookType, inputJson) {
-  const handler = `babysitter hook:run --harness unified --hook-type ${hookType} --plugin-root ${PLUGIN_ROOT} --state-dir ${STATE_DIR} --json`;
+  const handler = `babysitter hook:run --harness unified --hook-type ${hookType} --state-dir ${STATE_DIR} --json`;
   const result = execSync(`npx -y "@a5c-ai/hooks-proxy-cli@${version}" invoke --adapter oh-my-pi --handler "${handler}" --json`, {
     input: inputJson,
     stdio: ["pipe", "pipe", "pipe"],
@@ -116,7 +116,7 @@ function runViaNpxProxy(version, hookType, inputJson) {
 function main() {
   blog("Unified stop hook invoked");
 
-  const sessionId = process.env.BABYSITTER_SESSION_ID
+  const sessionId = process.env.AGENT_SESSION_ID
     || process.env.OMP_SESSION_ID
     || process.env.PI_SESSION_ID
     || "";

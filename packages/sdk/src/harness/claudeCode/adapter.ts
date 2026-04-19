@@ -39,7 +39,7 @@ export function createClaudeCodeAdapter(): HarnessAdapter {
     name: "claude-code",
 
     isActive(): boolean {
-      if (process.env.AGENT_SESSION_ID || process.env.BABYSITTER_SESSION_ID || process.env.CLAUDE_ENV_FILE) return true;
+      if (process.env.AGENT_SESSION_ID || process.env.CLAUDE_ENV_FILE) return true;
       const markerPath = getCurrentSessionIdFilePath();
       return !!(markerPath && existsSync(markerPath));
     },

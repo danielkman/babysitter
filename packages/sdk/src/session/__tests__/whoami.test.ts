@@ -30,7 +30,7 @@ beforeEach(async () => {
   process.env.BABYSITTER_GLOBAL_STATE_DIR = tmpDir;
   process.env.BABYSITTER_STATE_DIR = tmpDir;
   delete process.env.AGENT_SESSION_ID;
-  delete process.env.BABYSITTER_SESSION_ID;
+  delete process.env.AGENT_SESSION_ID;
   delete process.env.BABYSITTER_HARNESS_PID;
   delete process.env.CLAUDE_ENV_FILE;
   delete process.env.AGENT_TRUST_ENV_SESSION;
@@ -51,7 +51,7 @@ afterEach(async () => {
   restore("BABYSITTER_GLOBAL_STATE_DIR", savedGlobalStateDir);
   restore("BABYSITTER_STATE_DIR", savedStateDir);
   restore("AGENT_SESSION_ID", savedSessionEnv);
-  delete process.env.BABYSITTER_SESSION_ID;
+  delete process.env.AGENT_SESSION_ID;
   restore("BABYSITTER_HARNESS_PID", savedHarnessPid);
   restore("CLAUDE_ENV_FILE", savedClaudeEnvFile);
   restore("AGENT_TRUST_ENV_SESSION", savedTrustEnv);

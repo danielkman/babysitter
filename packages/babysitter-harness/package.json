@@ -16,6 +16,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "clean": "rimraf dist",
+    "lint": "eslint \"src/**/*.ts\" --max-warnings=0",
     "test": "vitest run"
   },
   "dependencies": {

@@ -52,7 +52,6 @@ export async function sessionStartHandler(context: Record<string, unknown>): Pro
       "hook:run",
       "--hook-type", "session-start",
       "--harness", "openclaw",
-      "--plugin-root", PLUGIN_ROOT,
       "--state-dir", stateDir,
     ];
 

@@ -346,7 +346,7 @@ check_environment_variables() {
     local env_vars=(
         "BABYSITTER_RUNS_DIR"
         "CLAUDE_PLUGIN_ROOT"
-        "BABYSITTER_SESSION_ID"
+        "AGENT_SESSION_ID"
     )
 
     log_verbose "Checking environment variables"

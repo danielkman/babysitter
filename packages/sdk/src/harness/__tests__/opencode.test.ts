@@ -4,7 +4,7 @@
  * Covers:
  *   - createOpenCodeAdapter() returns valid adapter with correct name
  *   - isActive() detection via env vars (OPENCODE_SESSION_ID, OPENCODE_PROJECT_DIR)
- *   - resolveSessionId() from parsed args and env (BABYSITTER_SESSION_ID, OPENCODE_SESSION_ID)
+ *   - resolveSessionId() from parsed args and env (AGENT_SESSION_ID, OPENCODE_SESSION_ID)
  *   - getCapabilities() returns [HeadlessPrompt]
  *   - autoResolvesSessionId() returns false
  *   - supportsHookType() returns correct values for supported/unsupported hook types
@@ -27,7 +27,7 @@ const ENV_KEYS = [
   "OPENCODE_CONFIG",
   "OPENCODE_PLUGIN_ROOT",
   "AGENT_SESSION_ID",
-  "BABYSITTER_SESSION_ID",
+  "AGENT_SESSION_ID",
   "BABYSITTER_STATE_DIR",
   "BABYSITTER_GLOBAL_STATE_DIR",
   "BABYSITTER_LOG_DIR",

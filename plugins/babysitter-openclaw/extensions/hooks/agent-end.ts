@@ -53,7 +53,6 @@ export async function agentEndHandler(context: Record<string, unknown>): Promise
     "hook:run",
     "--hook-type", "stop",
     "--harness", "openclaw",
-    "--plugin-root", PLUGIN_ROOT,
     "--state-dir", stateDir,
     "--json",
   ];
