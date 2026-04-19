@@ -397,6 +397,36 @@ export async function resolveActiveProcessLibrary(
   };
 }
 
+/**
+ * Resolve the active process library directory path, returning null if none is
+ * bound and no default clone exists on disk.  This is a lightweight helper for
+ * call-sites that only need the directory (e.g. compression pre-warming, skill
+ * discovery) without triggering a clone/update.
+ */
+export async function getActiveProcessLibraryPath(
+  options: ResolveActiveProcessLibraryOptions = {},
+): Promise<string | null> {
+  try {
+    const resolved = await resolveActiveProcessLibrary(options);
+    if (resolved.binding?.dir) {
+      const dir = path.resolve(resolved.binding.dir);
+      if (await pathExists(dir)) {
+        return dir;
+      }
+    }
+  } catch {
+    // Fall through to default spec check.
+  }
+
+  // Check whether the default clone dir exists even without an explicit binding.
+  const spec = getDefaultProcessLibrarySpec({ stateDir: options.stateDir });
+  if (await pathExists(spec.processRoot)) {
+    return spec.processRoot;
+  }
+
+  return null;
+}
+
 export async function ensureActiveProcessLibrary(
   options: EnsureActiveProcessLibraryOptions = {}
 ): Promise<EnsureActiveProcessLibraryResult> {

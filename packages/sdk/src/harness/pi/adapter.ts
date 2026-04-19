@@ -145,6 +145,7 @@ export function createPiAdapter(): HarnessAdapter {
 
     isActive(): boolean {
       return !!(
+        process.env.AGENT_SESSION_ID ||
         process.env.BABYSITTER_SESSION_ID ||
         process.env.PI_SESSION_ID ||
         process.env.PI_PLUGIN_ROOT
@@ -193,7 +194,7 @@ export function createPiAdapter(): HarnessAdapter {
 
     handleSessionStartHook(_args: HookHandlerArgs): Promise<number> {
       const sessionId =
-        process.env.PI_SESSION_ID || process.env.BABYSITTER_SESSION_ID;
+        process.env.PI_SESSION_ID || process.env.AGENT_SESSION_ID || process.env.BABYSITTER_SESSION_ID;
       if (sessionId) {
         try {
           writeSessionMarker("pi", sessionId);

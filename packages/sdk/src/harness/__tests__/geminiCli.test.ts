@@ -82,6 +82,13 @@ beforeEach(async () => {
   stateDir = path.join(tmpDir, "state");
   await fs.mkdir(stateDir, { recursive: true });
   process.env.BABYSITTER_GLOBAL_STATE_DIR = tmpDir;
+  delete process.env.AGENT_SESSION_ID;
+  delete process.env.BABYSITTER_SESSION_ID;
+  delete process.env.AGENT_TRUST_ENV_SESSION;
+  delete process.env.BABYSITTER_TRUST_ENV_SESSION;
+  delete process.env.AGENT_ENABLE_SESSION_PID_MARKERS;
+  delete process.env.BABYSITTER_ENABLE_SESSION_PID_MARKERS;
+  delete process.env.GEMINI_CLI;
 
   stdoutChunks = [];
   stderrChunks = [];
@@ -112,11 +119,18 @@ afterEach(async () => {
   delete process.env.GEMINI_SESSION_ID;
   delete process.env.GEMINI_PROJECT_DIR;
   delete process.env.GEMINI_CWD;
+  delete process.env.GEMINI_CLI;
   delete process.env.GEMINI_EXTENSION_PATH;
   delete process.env.BABYSITTER_EXTENSION_PATH;
   delete process.env.BABYSITTER_LOG_DIR;
   delete process.env.BABYSITTER_STATE_DIR;
   delete process.env.BABYSITTER_GLOBAL_STATE_DIR;
+  delete process.env.AGENT_SESSION_ID;
+  delete process.env.BABYSITTER_SESSION_ID;
+  delete process.env.AGENT_TRUST_ENV_SESSION;
+  delete process.env.BABYSITTER_TRUST_ENV_SESSION;
+  delete process.env.AGENT_ENABLE_SESSION_PID_MARKERS;
+  delete process.env.BABYSITTER_ENABLE_SESSION_PID_MARKERS;
   try {
     await fs.rm(tmpDir, { recursive: true, force: true });
   } catch {
@@ -664,7 +678,7 @@ describe("Gemini CLI getPromptContext", () => {
   it("returns context with sessionEnvVars listing Gemini env vars", () => {
     const adapter = createGeminiCliAdapter();
     const ctx = adapter.getPromptContext!();
-    expect(ctx.sessionEnvVars).toContain("BABYSITTER_SESSION_ID");
+    expect(ctx.sessionEnvVars).toContain("AGENT_SESSION_ID");
     expect(ctx.sessionEnvVars).toContain("GEMINI_SESSION_ID");
   });
 

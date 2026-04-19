@@ -16,7 +16,7 @@ export function createCursorContext(
     sessionBindingFlags: '',
     hookDriven: true,
     interactiveToolName: 'AskUserQuestion tool',
-    sessionEnvVars: 'conversation_id from hook stdin (authoritative per-request); PID-scoped session marker; BABYSITTER_SESSION_ID fallback',
+    sessionEnvVars: 'conversation_id from hook stdin (authoritative per-request); PID-scoped session marker; AGENT_SESSION_ID/BABYSITTER_SESSION_ID fallback',
     resumeFlags: '',
     cliSetupSnippet: createDefaultCliSetupSnippet(),
     iterateFlags: '',

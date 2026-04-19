@@ -19,8 +19,9 @@ let savedPidMarkerFlag: string | undefined;
 beforeEach(async () => {
   tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "session-marker-test-"));
   savedGlobalStateDir = process.env.BABYSITTER_GLOBAL_STATE_DIR;
-  savedPidMarkerFlag = process.env.BABYSITTER_ENABLE_SESSION_PID_MARKERS;
+  savedPidMarkerFlag = process.env.AGENT_ENABLE_SESSION_PID_MARKERS;
   process.env.BABYSITTER_GLOBAL_STATE_DIR = tmpDir;
+  delete process.env.AGENT_ENABLE_SESSION_PID_MARKERS;
   delete process.env.BABYSITTER_ENABLE_SESSION_PID_MARKERS;
   __resetCacheForTests();
 });
@@ -32,10 +33,11 @@ afterEach(async () => {
     process.env.BABYSITTER_GLOBAL_STATE_DIR = savedGlobalStateDir;
   }
   if (savedPidMarkerFlag === undefined) {
-    delete process.env.BABYSITTER_ENABLE_SESSION_PID_MARKERS;
+    delete process.env.AGENT_ENABLE_SESSION_PID_MARKERS;
   } else {
-    process.env.BABYSITTER_ENABLE_SESSION_PID_MARKERS = savedPidMarkerFlag;
+    process.env.AGENT_ENABLE_SESSION_PID_MARKERS = savedPidMarkerFlag;
   }
+  delete process.env.BABYSITTER_ENABLE_SESSION_PID_MARKERS;
   __resetCacheForTests();
   try {
     await fs.rm(tmpDir, { recursive: true, force: true });
@@ -74,7 +76,7 @@ describe("write/read round-trip with injected ancestor", () => {
   });
 
   it("round-trips a session id when ancestor resolver returns self", () => {
-    process.env.BABYSITTER_ENABLE_SESSION_PID_MARKERS = "1";
+    process.env.AGENT_ENABLE_SESSION_PID_MARKERS = "1";
     __setAncestorResolverForTests(() => ({ pid: process.pid }));
 
     const written = writeSessionMarker("claude-code", "sess-123");
@@ -85,21 +87,21 @@ describe("write/read round-trip with injected ancestor", () => {
   });
 
   it("writeSessionMarker returns undefined when ancestor cannot be found", () => {
-    process.env.BABYSITTER_ENABLE_SESSION_PID_MARKERS = "1";
+    process.env.AGENT_ENABLE_SESSION_PID_MARKERS = "1";
     __setAncestorResolverForTests(() => undefined);
     expect(writeSessionMarker("claude-code", "ignored")).toBeUndefined();
     expect(readSessionMarker("claude-code")).toBeUndefined();
   });
 
   it("readSessionMarker returns undefined when ancestor is dead", () => {
-    process.env.BABYSITTER_ENABLE_SESSION_PID_MARKERS = "1";
+    process.env.AGENT_ENABLE_SESSION_PID_MARKERS = "1";
     // 999999 is almost certainly not a live process.
     __setAncestorResolverForTests(() => ({ pid: 999999 }));
     expect(readSessionMarker("claude-code")).toBeUndefined();
   });
 
   it("two different harnesses produce two different marker files", () => {
-    process.env.BABYSITTER_ENABLE_SESSION_PID_MARKERS = "1";
+    process.env.AGENT_ENABLE_SESSION_PID_MARKERS = "1";
     __setAncestorResolverForTests(() => ({ pid: process.pid }));
     writeSessionMarker("claude-code", "claude-session");
     writeSessionMarker("codex", "codex-session");

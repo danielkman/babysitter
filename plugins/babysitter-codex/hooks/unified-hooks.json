@@ -1,0 +1,38 @@
+{
+  "_comment": "NOT ACTIVE — Alternative hooks.json using per-hook unified scripts with hooks-proxy support. To activate, replace hooks.json with this file.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./hooks/unified-session-start.sh"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./hooks/unified-user-prompt-submit.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./hooks/unified-stop-hook.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

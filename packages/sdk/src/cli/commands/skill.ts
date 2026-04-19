@@ -26,6 +26,7 @@ import {
   fetchRemoteSkillSources,
   fetchRemoteSkillsBySource,
 } from './skill/remoteDiscovery';
+import { getActiveProcessLibraryPath } from '../../processLibrary/active';
 import type {
   AgentMetadata,
   DiscoverSkillsResult,
@@ -52,6 +53,7 @@ export {
 
 export async function discoverSkillsInternal(options: {
   pluginRoot: string;
+  libraryPath?: string;
   runId?: string;
   cacheTtl?: number;
   runsDir?: string;
@@ -61,6 +63,7 @@ export async function discoverSkillsInternal(options: {
 }): Promise<DiscoverSkillsResult> {
   const {
     pluginRoot,
+    libraryPath,
     runId = '',
     cacheTtl = DEFAULT_CACHE_TTL,
     runsDir = '.a5c/runs',
@@ -91,6 +94,7 @@ export async function discoverSkillsInternal(options: {
 
   const processRoot = await resolveDiscoveryProcessRoot({
     pluginRoot,
+    libraryPath,
     runId,
   });
   const specializationsDir = path.join(processRoot, 'specializations');
@@ -257,8 +261,10 @@ export async function handleSkillDiscover(args: SkillCommandArgs): Promise<numbe
     return 1;
   }
 
+  const libraryPath = await getActiveProcessLibraryPath();
   const result = await discoverSkillsInternal({
     pluginRoot,
+    libraryPath: libraryPath || undefined,
     runId,
     cacheTtl,
     runsDir,

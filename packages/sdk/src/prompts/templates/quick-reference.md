@@ -8,7 +8,7 @@ $CLI run:create --process-id <id> --entry <path>#<export> --inputs <file> \
 
 `--harness` binds the run to the current session via the **PID-scoped session
 marker** (authoritative) written by the session-start hook. The harness env
-file and `BABYSITTER_SESSION_ID` env var are only consulted as fallbacks, so
+file and `AGENT_SESSION_ID`/`BABYSITTER_SESSION_ID` env var are only consulted as fallbacks, so
 runs stay bound to the correct session even when env vars are stale or
 inherited across shells. Verify with `babysitter session:whoami --json`.
 

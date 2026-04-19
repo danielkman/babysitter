@@ -16,7 +16,7 @@ export function createOpenCodeContext(
     sessionBindingFlags: '',
     hookDriven: false,
     interactiveToolName: '',
-    sessionEnvVars: 'PID-scoped session marker (authoritative); shell.env-injected session ID and BABYSITTER_SESSION_ID are fallbacks',
+    sessionEnvVars: 'PID-scoped session marker (authoritative); shell.env-injected session ID and AGENT_SESSION_ID/BABYSITTER_SESSION_ID are fallbacks',
     resumeFlags: '',
     cliSetupSnippet: createDefaultCliSetupSnippet(),
     iterateFlags: '',

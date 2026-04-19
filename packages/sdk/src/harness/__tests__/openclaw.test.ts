@@ -46,6 +46,7 @@ async function makeTmpDir(): Promise<string> {
 const ENV_KEYS = [
   "OPENCLAW_SHELL",
   "OPENCLAW_HOME",
+  "AGENT_SESSION_ID",
   "BABYSITTER_SESSION_ID",
   "BABYSITTER_STATE_DIR",
   "BABYSITTER_GLOBAL_STATE_DIR",
@@ -170,7 +171,7 @@ describe("OpenClaw isActive()", () => {
 
 describe("OpenClaw resolveSessionId()", () => {
   it("returns explicit sessionId when passed (highest priority)", () => {
-    process.env.BABYSITTER_SESSION_ID = "env-session";
+    process.env.AGENT_SESSION_ID = "env-session";
     process.env.OPENCLAW_SHELL = "shell-session";
     const adapter = createOpenClawAdapter();
     expect(adapter.resolveSessionId({ sessionId: "explicit-id" })).toBe(
@@ -178,20 +179,20 @@ describe("OpenClaw resolveSessionId()", () => {
     );
   });
 
-  it("returns BABYSITTER_SESSION_ID when no explicit arg", () => {
-    process.env.BABYSITTER_SESSION_ID = "babysitter-session-abc";
+  it("returns AGENT_SESSION_ID when no explicit arg", () => {
+    process.env.AGENT_SESSION_ID = "babysitter-session-abc";
     const adapter = createOpenClawAdapter();
     expect(adapter.resolveSessionId({})).toBe("babysitter-session-abc");
   });
 
-  it("returns OPENCLAW_SHELL as fallback when no explicit arg or BABYSITTER_SESSION_ID", () => {
+  it("returns OPENCLAW_SHELL as fallback when no explicit arg or AGENT_SESSION_ID", () => {
     process.env.OPENCLAW_SHELL = "agent:a1:general:shell:s1";
     const adapter = createOpenClawAdapter();
     expect(adapter.resolveSessionId({})).toBe("agent:a1:general:shell:s1");
   });
 
-  it("prefers BABYSITTER_SESSION_ID over OPENCLAW_SHELL", () => {
-    process.env.BABYSITTER_SESSION_ID = "babysitter-wins";
+  it("prefers AGENT_SESSION_ID over OPENCLAW_SHELL", () => {
+    process.env.AGENT_SESSION_ID = "babysitter-wins";
     process.env.OPENCLAW_SHELL = "openclaw-loses";
     const adapter = createOpenClawAdapter();
     expect(adapter.resolveSessionId({})).toBe("babysitter-wins");
@@ -358,7 +359,7 @@ describe("OpenClaw handleSessionStartHook()", () => {
   });
 
   it("creates baseline session state file when session ID is available", async () => {
-    process.env.BABYSITTER_SESSION_ID = "test-session-123";
+    process.env.AGENT_SESSION_ID = "test-session-123";
     process.env.BABYSITTER_LOG_DIR = path.join(tmpDir, "logs");
     const adapter = createOpenClawAdapter();
     const result = await adapter.handleSessionStartHook({
@@ -376,7 +377,7 @@ describe("OpenClaw handleSessionStartHook()", () => {
     expect(content.state.runId).toBe("");
   });
 
-  it("uses OPENCLAW_SHELL as session ID when BABYSITTER_SESSION_ID is absent", async () => {
+  it("uses OPENCLAW_SHELL as session ID when AGENT_SESSION_ID is absent", async () => {
     // Use a filename-safe session ID to avoid Windows path issues with colons
     process.env.OPENCLAW_SHELL = "agent-a1-general-shell-s1";
     process.env.BABYSITTER_LOG_DIR = path.join(tmpDir, "logs");
@@ -394,7 +395,7 @@ describe("OpenClaw handleSessionStartHook()", () => {
 
   it("does not overwrite existing session state", async () => {
     const sessionId = "existing-session";
-    process.env.BABYSITTER_SESSION_ID = sessionId;
+    process.env.AGENT_SESSION_ID = sessionId;
     process.env.BABYSITTER_LOG_DIR = path.join(tmpDir, "logs");
 
     // Pre-create a session file

@@ -191,12 +191,16 @@ export function createCursorAdapter(): HarnessAdapter {
 
     resolveSessionId(parsed: { sessionId?: string }): string | undefined {
       if (parsed.sessionId) return parsed.sessionId;
-      const trustEnv = process.env.BABYSITTER_TRUST_ENV_SESSION === "1";
+      const trustEnv =
+        process.env.AGENT_TRUST_ENV_SESSION === "1" ||
+        process.env.BABYSITTER_TRUST_ENV_SESSION === "1";
+      const agentSessionId =
+        process.env.AGENT_SESSION_ID || process.env.BABYSITTER_SESSION_ID;
       if (trustEnv) {
-        if (process.env.BABYSITTER_SESSION_ID) return process.env.BABYSITTER_SESSION_ID;
+        if (agentSessionId) return agentSessionId;
         return undefined;
       }
-      if (process.env.BABYSITTER_SESSION_ID) return process.env.BABYSITTER_SESSION_ID;
+      if (agentSessionId) return agentSessionId;
       const fromMarker = readSessionMarker("cursor");
       if (fromMarker) return fromMarker;
       return undefined;

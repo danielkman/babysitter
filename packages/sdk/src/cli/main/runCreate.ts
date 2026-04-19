@@ -12,6 +12,7 @@ import {
   getSessionResolutionDetails,
 } from "../../harness";
 import { discoverFromProcessFile, discoverSkillsInternal } from "../commands/skill";
+import { getActiveProcessLibraryPath } from "../../processLibrary/active";
 import { collapseDoubledA5cRuns, resolveRunDir } from "./args";
 import {
   formatEntrypointSpecifier,
@@ -151,7 +152,7 @@ export async function handleRunCreate(parsed: ParsedArgs): Promise<number> {
       : {
           harness: parsed.harness ?? adapter.name,
           sessionId: "",
-          error: adapter.getMissingSessionIdHint?.() ?? "No session ID provided. Use --session-id or set BABYSITTER_SESSION_ID.",
+          error: adapter.getMissingSessionIdHint?.() ?? "No session ID provided. Use --session-id or set AGENT_SESSION_ID.",
         };
   } else if (parsed.sessionId !== undefined && parsed.harness) {
     sessionBound = { harness: parsed.harness, sessionId: "", error: `Unsupported harness: ${parsed.harness}` };
@@ -167,8 +168,10 @@ export async function handleRunCreate(parsed: ParsedArgs): Promise<number> {
         discoveredSkills = processDiscovery.skills;
         discoveredAgents = processDiscovery.agents;
       } else {
+        const libraryPath = await getActiveProcessLibraryPath();
         const discoverResult = await discoverSkillsInternal({
           pluginRoot: discoverPluginRoot,
+          libraryPath: libraryPath || undefined,
           runId: result.runId,
           runsDir: parsed.runsDir,
           processPath: absoluteImportPath,

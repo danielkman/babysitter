@@ -4,6 +4,7 @@ import { z } from "zod";
 import { runHealthCheck } from "../../cli/commands/health";
 import { configureShow } from "../../cli/commands/configure";
 import { discoverSkillsInternal } from "../../cli/commands/skill";
+import { getActiveProcessLibraryPath } from "../../processLibrary/active";
 import { toolResult, toolError } from "../util/errors";
 
 export function registerDiscoveryTools(server: McpServer): void {
@@ -32,9 +33,11 @@ export function registerDiscoveryTools(server: McpServer): void {
     async (args) => {
       try {
         const pluginRoot = path.resolve(args.pluginRoot);
+        const libraryPath = await getActiveProcessLibraryPath();
 
         const result = await discoverSkillsInternal({
           pluginRoot,
+          libraryPath: libraryPath || undefined,
           runId: args.runId,
           runsDir: args.runsDir,
           includeRemote: args.includeRemote,

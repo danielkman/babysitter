@@ -152,6 +152,7 @@ export function createGeminiCliAdapter(): HarnessAdapter {
 
     isActive(): boolean {
       return !!(
+        process.env.AGENT_SESSION_ID ||
         process.env.BABYSITTER_SESSION_ID ||
         process.env.GEMINI_CLI ||
         process.env.GEMINI_SESSION_ID ||

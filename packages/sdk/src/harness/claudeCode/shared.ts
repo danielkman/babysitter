@@ -183,7 +183,9 @@ export function resolveSessionIdDetailed(explicit?: string): SessionResolutionDe
     };
   }
 
-  const trustEnv = process.env.BABYSITTER_TRUST_ENV_SESSION === "1";
+  const trustEnv =
+    process.env.AGENT_TRUST_ENV_SESSION === "1" ||
+    process.env.BABYSITTER_TRUST_ENV_SESSION === "1";
   const log = createHookLogger("babysitter-session-resolution");
   let ancestorDetails: Pick<SessionResolutionDetails, "ancestorPid" | "ancestorAlive"> | undefined;
 
@@ -212,9 +214,12 @@ export function resolveSessionIdDetailed(explicit?: string): SessionResolutionDe
     return ancestorDetails;
   };
 
-  if (trustEnv && process.env.BABYSITTER_SESSION_ID) {
+  const agentSessionId =
+    process.env.AGENT_SESSION_ID || process.env.BABYSITTER_SESSION_ID;
+
+  if (trustEnv && agentSessionId) {
     return {
-      sessionId: process.env.BABYSITTER_SESSION_ID,
+      sessionId: agentSessionId,
       resolvedFrom: "env-var",
       ...getAncestorDetails(),
     };
@@ -235,11 +240,21 @@ export function resolveSessionIdDetailed(explicit?: string): SessionResolutionDe
   if (envFile) {
     try {
       const content = readFileSync(envFile, "utf-8");
-      const matches = [...content.matchAll(/export BABYSITTER_SESSION_ID="([^"]+)"/g)];
-      const last = matches.at(-1)?.[1];
-      if (last) {
+      // Check AGENT_SESSION_ID first, then BABYSITTER_SESSION_ID as fallback
+      const agentMatches = [...content.matchAll(/export AGENT_SESSION_ID="([^"]+)"/g)];
+      const agentLast = agentMatches.at(-1)?.[1];
+      if (agentLast) {
         return {
-          sessionId: last,
+          sessionId: agentLast,
+          resolvedFrom: "env-file",
+          ...getAncestorDetails(),
+        };
+      }
+      const babysitterMatches = [...content.matchAll(/export BABYSITTER_SESSION_ID="([^"]+)"/g)];
+      const babysitterLast = babysitterMatches.at(-1)?.[1];
+      if (babysitterLast) {
+        return {
+          sessionId: babysitterLast,
           resolvedFrom: "env-file",
           ...getAncestorDetails(),
         };
@@ -249,16 +264,15 @@ export function resolveSessionIdDetailed(explicit?: string): SessionResolutionDe
     }
   }
 
-  const envVar = process.env.BABYSITTER_SESSION_ID;
-  if (envVar) {
-    const stateFile = path.join(getGlobalStateDir(), `${envVar}.md`);
+  if (agentSessionId) {
+    const stateFile = path.join(getGlobalStateDir(), `${agentSessionId}.md`);
     if (!existsSync(stateFile)) {
       log.warn(
-        `BABYSITTER_SESSION_ID=${envVar} is set but no matching state file at ${stateFile} — likely stale from a prior Claude Code session. Run 'babysitter session:cleanup' or 'unset BABYSITTER_SESSION_ID'.`,
+        `AGENT_SESSION_ID/BABYSITTER_SESSION_ID=${agentSessionId} is set but no matching state file at ${stateFile} — likely stale from a prior Claude Code session. Run 'babysitter session:cleanup' or 'unset AGENT_SESSION_ID'.`,
       );
     }
     return {
-      sessionId: envVar,
+      sessionId: agentSessionId,
       resolvedFrom: "env-var",
       ...getAncestorDetails(),
     };
@@ -277,5 +291,5 @@ export function setBabysitterSessionIdInEnvFile(
   envFile: string,
   sessionId: string,
 ): void {
-  appendFileSync(envFile, `export BABYSITTER_SESSION_ID="${sessionId}"\n`);
+  appendFileSync(envFile, `export AGENT_SESSION_ID="${sessionId}"\nexport BABYSITTER_SESSION_ID="${sessionId}"\n`);
 }

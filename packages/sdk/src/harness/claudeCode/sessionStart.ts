@@ -9,6 +9,7 @@ import {
   findLibraryFiles,
   getOrCompressFile,
 } from "../../compression/library-cache";
+import { getActiveProcessLibraryPath } from "../../processLibrary/active";
 import type { HookHandlerArgs } from "../types";
 import {
   getCurrentSessionIdFilePath,
@@ -73,7 +74,10 @@ export async function handleClaudeCodeSessionStartHook(
     }
   }
 
-  const pluginRoot = args.pluginRoot || process.env.CLAUDE_PLUGIN_ROOT || "";
+  const pluginRoot = args.pluginRoot
+    || process.env.CLAUDE_PLUGIN_ROOT
+    || process.env.AGENT_PLUGIN_ROOT
+    || "";
   const resolvedPluginRoot = pluginRoot ? path.resolve(pluginRoot) : "";
   const stateDir = normalizeSessionStateDir(
     args.stateDir ?? process.env.BABYSITTER_STATE_DIR,
@@ -112,13 +116,14 @@ export async function handleClaudeCodeSessionStartHook(
     );
   }
 
-  if (resolvedPluginRoot) {
-    try {
-      const compressionCfg = loadCompressionConfig(process.cwd());
-      const cacheLayer = compressionCfg.layers.processLibraryCache;
-      if (compressionCfg.enabled && cacheLayer.enabled) {
+  try {
+    const compressionCfg = loadCompressionConfig(process.cwd());
+    const cacheLayer = compressionCfg.layers.processLibraryCache;
+    if (compressionCfg.enabled && cacheLayer.enabled) {
+      const libraryRoot = await getActiveProcessLibraryPath();
+      if (libraryRoot) {
         const cacheDir = path.join(process.cwd(), ".a5c", "cache", "compression");
-        const libraryFiles = findLibraryFiles(resolvedPluginRoot);
+        const libraryFiles = findLibraryFiles(libraryRoot);
         for (const file of libraryFiles) {
           getOrCompressFile(file, cacheLayer.targetReduction, cacheLayer.ttlHours, cacheDir);
         }
@@ -128,9 +133,9 @@ export async function handleClaudeCodeSessionStartHook(
           );
         }
       }
-    } catch {
-      // Best-effort
     }
+  } catch {
+    // Best-effort
   }
 
   if (verbose) {

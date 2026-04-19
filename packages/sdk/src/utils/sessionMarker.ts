@@ -31,10 +31,14 @@ let ancestorCache: AncestorCacheEntry | undefined;
 type WindowsStrategy = "powershell" | "wmic" | "tasklist-incapable";
 let cachedWindowsStrategy: WindowsStrategy | undefined;
 
-export const SESSION_PID_MARKER_ENV_VAR = "BABYSITTER_ENABLE_SESSION_PID_MARKERS";
+export const SESSION_PID_MARKER_ENV_VAR = "AGENT_ENABLE_SESSION_PID_MARKERS";
+
+/** @deprecated Use AGENT_ENABLE_SESSION_PID_MARKERS instead. */
+export const SESSION_PID_MARKER_ENV_VAR_DEPRECATED = "BABYSITTER_ENABLE_SESSION_PID_MARKERS";
 
 export function isSessionPidMarkerEnabled(): boolean {
-  const raw = process.env[SESSION_PID_MARKER_ENV_VAR];
+  const raw = process.env[SESSION_PID_MARKER_ENV_VAR]
+    ?? process.env[SESSION_PID_MARKER_ENV_VAR_DEPRECATED];
   if (!raw) {
     return false;
   }
@@ -352,9 +356,13 @@ export function resolveSessionIdWithMarker(
   harnessEnvVars: readonly string[] = [],
 ): string | undefined {
   if (parsed.sessionId) return parsed.sessionId;
-  const trustEnv = process.env.BABYSITTER_TRUST_ENV_SESSION === "1";
+  const trustEnv =
+    process.env.AGENT_TRUST_ENV_SESSION === "1" ||
+    process.env.BABYSITTER_TRUST_ENV_SESSION === "1";
+  const agentSessionId =
+    process.env.AGENT_SESSION_ID || process.env.BABYSITTER_SESSION_ID;
   if (trustEnv) {
-    if (process.env.BABYSITTER_SESSION_ID) return process.env.BABYSITTER_SESSION_ID;
+    if (agentSessionId) return agentSessionId;
     for (const key of harnessEnvVars) {
       const v = process.env[key];
       if (v) return v;
@@ -365,7 +373,7 @@ export function resolveSessionIdWithMarker(
     const v = process.env[key];
     if (v) return v;
   }
-  if (process.env.BABYSITTER_SESSION_ID) return process.env.BABYSITTER_SESSION_ID;
+  if (agentSessionId) return agentSessionId;
   const fromMarker = readSessionMarker(harness);
   if (fromMarker) return fromMarker;
   return undefined;

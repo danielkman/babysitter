@@ -24,6 +24,7 @@ export interface HookRunCommandArgs {
   hookType: string;
   /** Which host tool is invoking the hook. Auto-detected from caller env, falls back to "claude-code". */
   harness: string;
+  /** @deprecated Resolved from environment automatically (CLAUDE_PLUGIN_ROOT, CODEX_PLUGIN_ROOT, etc.). Accepted for backward compatibility. */
   pluginRoot?: string;
   stateDir?: string;
   runsDir?: string;

@@ -12,6 +12,7 @@ import {
 import { loadCompressionConfig } from "../../compression/config-loader";
 import { densityFilterText, estimateTokens } from "../../compression/density-filter";
 import { getOrCompressFile } from "../../compression/library-cache";
+import { getActiveProcessLibraryPath } from "../../processLibrary/active";
 import { collapseDoubledA5cRuns } from "../../cli/resolveInputPath";
 import type { HookLogger } from "./shared";
 import { countPendingByKind, isOnlyBreakpoints, safeStr } from "./shared";
@@ -232,8 +233,10 @@ export async function buildStopHookContinuation(
   let librarySection = "";
   if (resolvedPluginRoot) {
     try {
+      const libraryPath = await getActiveProcessLibraryPath();
       const discoverResult = await discoverSkillsInternal({
         pluginRoot: resolvedPluginRoot,
+        libraryPath: libraryPath || undefined,
         runId: runId || undefined,
         runsDir: collapseDoubledA5cRuns(runsDir),
         processPath: entrypointImportPath,

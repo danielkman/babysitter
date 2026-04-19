@@ -84,6 +84,8 @@ function resolveSessionIdInternal(parsed: {
   sessionId?: string;
 }): string | undefined {
   if (parsed.sessionId) return parsed.sessionId;
+  if (process.env.AGENT_SESSION_ID)
+    return process.env.AGENT_SESSION_ID;
   if (process.env.BABYSITTER_SESSION_ID)
     return process.env.BABYSITTER_SESSION_ID;
   if (process.env.OPENCLAW_SHELL) return process.env.OPENCLAW_SHELL;
@@ -102,7 +104,7 @@ async function handleSessionStartHookImpl(
   log.info("handleSessionStartHook started (openclaw)");
 
   const sessionId =
-    process.env.BABYSITTER_SESSION_ID || process.env.OPENCLAW_SHELL || "";
+    process.env.AGENT_SESSION_ID || process.env.BABYSITTER_SESSION_ID || process.env.OPENCLAW_SHELL || "";
 
   if (!sessionId) {
     log.info("No session ID — skipping state file creation");

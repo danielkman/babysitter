@@ -122,6 +122,7 @@ export interface SessionBindResult {
 // ---------------------------------------------------------------------------
 
 export interface HookHandlerArgs {
+  /** @deprecated Resolved from environment automatically (CLAUDE_PLUGIN_ROOT, CODEX_PLUGIN_ROOT, etc.). Accepted for backward compatibility. */
   pluginRoot?: string;
   stateDir?: string;
   runsDir?: string;

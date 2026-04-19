@@ -34,7 +34,7 @@ export function setBabysitterSessionIdInCopilotEnvFile(
   envFile: string,
   sessionId: string,
 ): void {
-  appendFileSync(envFile, `export BABYSITTER_SESSION_ID="${sessionId}"\n`);
+  appendFileSync(envFile, `export AGENT_SESSION_ID="${sessionId}"\nexport BABYSITTER_SESSION_ID="${sessionId}"\n`);
 }
 
 async function appendSessionEndEvent(
@@ -82,15 +82,26 @@ export function resolveGithubCopilotSessionId(parsed: {
     return parsed.sessionId;
   }
 
-  const trustEnv = process.env.BABYSITTER_TRUST_ENV_SESSION === "1";
+  const trustEnv =
+    process.env.AGENT_TRUST_ENV_SESSION === "1" ||
+    process.env.BABYSITTER_TRUST_ENV_SESSION === "1";
+  const agentSessionId =
+    process.env.AGENT_SESSION_ID || process.env.BABYSITTER_SESSION_ID;
   if (trustEnv) {
-    if (process.env.BABYSITTER_SESSION_ID) {
-      return process.env.BABYSITTER_SESSION_ID;
+    if (agentSessionId) {
+      return agentSessionId;
     }
     const trustedEnvFile = process.env.COPILOT_ENV_FILE || process.env.CLAUDE_ENV_FILE;
     if (trustedEnvFile) {
       try {
         const content = readFileSync(trustedEnvFile, "utf-8");
+        // Check AGENT_SESSION_ID first, then BABYSITTER_SESSION_ID as fallback
+        const agentMatch = content.match(
+          /(?:^|\n)\s*(?:export\s+)?AGENT_SESSION_ID="([^"]+)"/,
+        );
+        if (agentMatch?.[1]) {
+          return agentMatch[1];
+        }
         const match = content.match(
           /(?:^|\n)\s*(?:export\s+)?BABYSITTER_SESSION_ID="([^"]+)"/,
         );
@@ -111,6 +122,14 @@ export function resolveGithubCopilotSessionId(parsed: {
   if (envFile) {
     try {
       const content = readFileSync(envFile, "utf-8");
+      // Check AGENT_SESSION_ID first, then BABYSITTER_SESSION_ID as fallback
+      const agentMatches = [
+        ...content.matchAll(/export AGENT_SESSION_ID="([^"]+)"/g),
+      ];
+      const agentLast = agentMatches.at(-1)?.[1];
+      if (agentLast) {
+        return agentLast;
+      }
       const matches = [
         ...content.matchAll(/export BABYSITTER_SESSION_ID="([^"]+)"/g),
       ];
@@ -126,8 +145,8 @@ export function resolveGithubCopilotSessionId(parsed: {
   if (process.env.COPILOT_SESSION_ID) {
     return process.env.COPILOT_SESSION_ID;
   }
-  if (process.env.BABYSITTER_SESSION_ID) {
-    return process.env.BABYSITTER_SESSION_ID;
+  if (agentSessionId) {
+    return agentSessionId;
   }
 
   return readSessionMarker(HARNESS_NAME) ?? undefined;

@@ -282,6 +282,7 @@ describe("Claude Code session-start hook (issue #107 regressions)", () => {
 
     // Verify session ID was appended to env file
     const envContent = await fs.readFile(envFilePath, "utf8");
+    expect(envContent).toContain(`AGENT_SESSION_ID="${sessionId}"`);
     expect(envContent).toContain(`BABYSITTER_SESSION_ID="${sessionId}"`);
 
     // Verify session state file was created

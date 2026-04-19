@@ -374,8 +374,13 @@ export function resolveStaticProcessRoot(options: {
 
 export async function resolveDiscoveryProcessRoot(options: {
   pluginRoot: string;
+  libraryPath?: string;
   runId?: string;
 }): Promise<string> {
+  if (options.libraryPath) {
+    return path.resolve(options.libraryPath);
+  }
+
   try {
     const active = await resolveActiveProcessLibrary({
       stateDir: path.resolve(process.cwd(), '.a5c'),

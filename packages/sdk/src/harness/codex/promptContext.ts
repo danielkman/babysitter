@@ -17,7 +17,7 @@ export function createCodexContext(
     hookDriven: true,
     interactiveToolName: 'AskUserQuestion tool',
     sessionEnvVars:
-      'PID-scoped session marker (authoritative); CODEX_THREAD_ID/CODEX_SESSION_ID and BABYSITTER_SESSION_ID are fallbacks',
+      'PID-scoped session marker (authoritative); CODEX_THREAD_ID/CODEX_SESSION_ID and AGENT_SESSION_ID/BABYSITTER_SESSION_ID are fallbacks',
     resumeFlags: '',
     cliSetupSnippet: createDefaultCliSetupSnippet(),
     iterateFlags: '',

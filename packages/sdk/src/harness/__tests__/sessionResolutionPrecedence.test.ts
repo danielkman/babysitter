@@ -47,8 +47,11 @@ const CASES: AdapterCase[] = [
 ];
 
 const TRACKED_ENV_KEYS = [
+  "AGENT_SESSION_ID",
   "BABYSITTER_SESSION_ID",
+  "AGENT_TRUST_ENV_SESSION",
   "BABYSITTER_TRUST_ENV_SESSION",
+  "AGENT_ENABLE_SESSION_PID_MARKERS",
   "BABYSITTER_ENABLE_SESSION_PID_MARKERS",
   "BABYSITTER_GLOBAL_STATE_DIR",
   "CODEX_THREAD_ID",
@@ -72,7 +75,7 @@ beforeEach(async () => {
     delete process.env[k];
   }
   process.env.BABYSITTER_GLOBAL_STATE_DIR = tmpDir;
-  process.env.BABYSITTER_ENABLE_SESSION_PID_MARKERS = "1";
+  process.env.AGENT_ENABLE_SESSION_PID_MARKERS = "1";
   __resetCacheForTests();
 });
 
@@ -105,7 +108,7 @@ describe("adapter session-id resolution precedence", () => {
         if (c.envVarName) {
           process.env[c.envVarName] = "NATIVE-A";
         } else {
-          process.env.BABYSITTER_SESSION_ID = "ENV-A";
+          process.env.AGENT_SESSION_ID = "ENV-A";
         }
         const adapter = c.adapter();
         expect(adapter.resolveSessionId?.({})).toBe(c.envVarName ? "NATIVE-A" : "ENV-A");
@@ -115,7 +118,7 @@ describe("adapter session-id resolution precedence", () => {
         it("Case B: no native env, BABYSITTER_SESSION_ID wins over pid marker", () => {
           __setAncestorResolverForTests(() => ({ pid: process.pid }));
           seedMarker(c.harness, process.pid, "MARKER-B");
-          process.env.BABYSITTER_SESSION_ID = "FALLBACK-B";
+          process.env.AGENT_SESSION_ID = "FALLBACK-B";
           const adapter = c.adapter();
           expect(adapter.resolveSessionId?.({})).toBe("FALLBACK-B");
         });
@@ -123,7 +126,7 @@ describe("adapter session-id resolution precedence", () => {
         it("Case C: no marker, harness-native env var wins over stale BABYSITTER_SESSION_ID", () => {
           __setAncestorResolverForTests(() => undefined);
           process.env[c.envVarName!] = "NATIVE-B";
-          process.env.BABYSITTER_SESSION_ID = "STALE";
+          process.env.AGENT_SESSION_ID = "STALE";
           const adapter = c.adapter();
           expect(adapter.resolveSessionId?.({})).toBe("NATIVE-B");
         });
@@ -139,8 +142,8 @@ describe("adapter session-id resolution precedence", () => {
           __setAncestorResolverForTests(() => ({ pid: process.pid }));
           seedMarker(c.harness, process.pid, "MARKER-IGNORED");
           process.env[c.envVarName!] = "NATIVE-C";
-          process.env.BABYSITTER_SESSION_ID = "TRUSTED-ENV";
-          process.env.BABYSITTER_TRUST_ENV_SESSION = "1";
+          process.env.AGENT_SESSION_ID = "TRUSTED-ENV";
+          process.env.AGENT_TRUST_ENV_SESSION = "1";
           const adapter = c.adapter();
           // In legacy order, BABYSITTER_SESSION_ID takes precedence over
           // harness-native env.
@@ -150,7 +153,7 @@ describe("adapter session-id resolution precedence", () => {
         it("Case B (no native env var): BABYSITTER_SESSION_ID beats pid marker", () => {
           __setAncestorResolverForTests(() => ({ pid: process.pid }));
           seedMarker(c.harness, process.pid, "MARKER-B");
-          process.env.BABYSITTER_SESSION_ID = "FALLBACK-B";
+          process.env.AGENT_SESSION_ID = "FALLBACK-B";
           const adapter = c.adapter();
           expect(adapter.resolveSessionId?.({})).toBe("FALLBACK-B");
         });
@@ -165,8 +168,8 @@ describe("adapter session-id resolution precedence", () => {
         it("Case D: BABYSITTER_TRUST_ENV_SESSION=1 preserves env-var fallback", () => {
           __setAncestorResolverForTests(() => ({ pid: process.pid }));
           seedMarker(c.harness, process.pid, "MARKER-IGNORED");
-          process.env.BABYSITTER_SESSION_ID = "TRUSTED-ENV";
-          process.env.BABYSITTER_TRUST_ENV_SESSION = "1";
+          process.env.AGENT_SESSION_ID = "TRUSTED-ENV";
+          process.env.AGENT_TRUST_ENV_SESSION = "1";
           const adapter = c.adapter();
           expect(adapter.resolveSessionId?.({})).toBe("TRUSTED-ENV");
         });

@@ -24,9 +24,12 @@ describe("babysitter run:create CLI", () => {
   let logSpy: ReturnType<typeof vi.spyOn>;
   let errorSpy: ReturnType<typeof vi.spyOn>;
   const sessionEnvKeys = [
+    "AGENT_SESSION_ID",
     "BABYSITTER_SESSION_ID",
+    "AGENT_ENABLE_SESSION_PID_MARKERS",
     "BABYSITTER_ENABLE_SESSION_PID_MARKERS",
     "BABYSITTER_GLOBAL_STATE_DIR",
+    "AGENT_TRUST_ENV_SESSION",
     "BABYSITTER_TRUST_ENV_SESSION",
     "CLAUDE_ENV_FILE",
     "CODEX_THREAD_ID",

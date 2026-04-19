@@ -149,6 +149,7 @@ export function createOpenCodeAdapter(): HarnessAdapter {
 
     isActive(): boolean {
       return !!(
+        process.env.AGENT_SESSION_ID ||
         process.env.BABYSITTER_SESSION_ID ||
         process.env.OPENCODE_CONFIG ||
         process.env.ACCOMPLISH_TASK_ID
@@ -163,7 +164,7 @@ export function createOpenCodeAdapter(): HarnessAdapter {
       return (
         "OpenCode does not auto-inject session IDs. Use --session-id explicitly, " +
         "or ensure the babysitter plugin's shell.env hook is configured to set " +
-        "BABYSITTER_SESSION_ID."
+        "AGENT_SESSION_ID."
       );
     },
 

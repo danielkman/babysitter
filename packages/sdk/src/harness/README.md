@@ -12,7 +12,7 @@ invocation and TUI orchestration now live in `@a5c-ai/babysitter-harness`.
 
 All harness adapters MUST resolve the active session ID using the following
 precedence, from highest to lowest authority. Violations cause cross-session
-bleed when a parent shell has a stale `BABYSITTER_SESSION_ID` export or when
+bleed when a parent shell has a stale `AGENT_SESSION_ID`/`BABYSITTER_SESSION_ID` export or when
 harness-native env files accumulate shadowed lines -- see #130, #100, #107, #75.
 
 ### Precedence (highest to lowest)
@@ -26,7 +26,7 @@ harness-native env files accumulate shadowed lines -- see #130, #100, #107, #75.
    stale shadowed rebinds left behind by naive writers.
 3. **Harness-native env var** -- any harness-specific variable set in the
    current process environment (e.g. `CLAUDE_SESSION_ID`).
-4. **`BABYSITTER_SESSION_ID`** -- the generic, inheritable fallback. Lowest
+4. **`AGENT_SESSION_ID`** (preferred) / **`BABYSITTER_SESSION_ID`** (deprecated fallback) -- the generic, inheritable fallback. Lowest
    precedence because it is trivially inherited by child shells and survives
    long past the session it referred to.
 
@@ -56,11 +56,11 @@ The `<harness-key>` passed to `writeSessionMarker` and related helpers MUST be:
 Canonical keys currently in use: `claude-code`, `codex`, `cursor`, `gemini-cli`,
 `github-copilot`, `oh-my-pi`, `pi`, `opencode`.
 
-### `BABYSITTER_TRUST_ENV_SESSION=1` escape hatch
+### `AGENT_TRUST_ENV_SESSION=1` escape hatch
 
-For CI workflows that deliberately export `BABYSITTER_SESSION_ID` and need the
-legacy env-first precedence, set `BABYSITTER_TRUST_ENV_SESSION=1`. When this
-variable is truthy, the resolution order inverts: `BABYSITTER_SESSION_ID` is
+For CI workflows that deliberately export `AGENT_SESSION_ID` and need the
+legacy env-first precedence, set `AGENT_TRUST_ENV_SESSION=1` (or `BABYSITTER_TRUST_ENV_SESSION=1`). When this
+variable is truthy, the resolution order inverts: `AGENT_SESSION_ID`/`BABYSITTER_SESSION_ID` is
 consulted first, and the PID marker / harness-native sources are only used as
 fallbacks.
 
@@ -71,7 +71,7 @@ class of bugs.
 ### Debugging
 
 Use `babysitter session:whoami` to print the resolved session ID along with
-which source (marker / env file / env var / `BABYSITTER_SESSION_ID`) won the
+which source (marker / env file / env var / `AGENT_SESSION_ID`) won the
 precedence resolution, plus the live ancestor PID if applicable. The
 `/babysitter:doctor` command exposes four session-binding provenance and
 liveness checks built on the same resolver.

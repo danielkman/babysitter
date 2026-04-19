@@ -5,6 +5,7 @@ import { buildEffectIndex } from "../../../runtime/replay/effectIndex";
 import type { EffectRecord } from "../../../runtime/types";
 import { loadJournal } from "../../../storage/journal";
 import { readRunMetadata } from "../../../storage/runFiles";
+import { getActiveProcessLibraryPath } from "../../../processLibrary/active";
 
 export interface SessionIterationMessageArgs {
   runId?: string;
@@ -104,8 +105,10 @@ export async function handleSessionIterationMessage(
   let skillContext: string | null = null;
   if (args.pluginRoot) {
     try {
+      const libraryPath = await getActiveProcessLibraryPath();
       const discoverResult = await discoverSkillsInternal({
         pluginRoot: args.pluginRoot,
+        libraryPath: libraryPath || undefined,
         runId: args.runId,
         runsDir: args.runsDir,
         processPath: entrypointImportPath,

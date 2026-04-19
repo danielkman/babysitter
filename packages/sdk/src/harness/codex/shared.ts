@@ -6,7 +6,9 @@ import { resolveSessionIdWithMarker } from "../../utils/sessionMarker";
 export function resolveCodexPluginRoot(
   args: { pluginRoot?: string } = {},
 ): string | undefined {
-  const root = args.pluginRoot || process.env.CODEX_PLUGIN_ROOT;
+  const root = args.pluginRoot
+    || process.env.CODEX_PLUGIN_ROOT
+    || process.env.AGENT_PLUGIN_ROOT;
   return root ? path.resolve(root) : undefined;
 }
 

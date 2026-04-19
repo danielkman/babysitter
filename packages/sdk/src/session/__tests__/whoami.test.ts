@@ -22,17 +22,20 @@ beforeEach(async () => {
   tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "session-whoami-test-"));
   savedGlobalStateDir = process.env.BABYSITTER_GLOBAL_STATE_DIR;
   savedStateDir = process.env.BABYSITTER_STATE_DIR;
-  savedSessionEnv = process.env.BABYSITTER_SESSION_ID;
+  savedSessionEnv = process.env.AGENT_SESSION_ID;
   savedHarnessPid = process.env.BABYSITTER_HARNESS_PID;
   savedClaudeEnvFile = process.env.CLAUDE_ENV_FILE;
-  savedTrustEnv = process.env.BABYSITTER_TRUST_ENV_SESSION;
-  savedPidMarkerFlag = process.env.BABYSITTER_ENABLE_SESSION_PID_MARKERS;
+  savedTrustEnv = process.env.AGENT_TRUST_ENV_SESSION;
+  savedPidMarkerFlag = process.env.AGENT_ENABLE_SESSION_PID_MARKERS;
   process.env.BABYSITTER_GLOBAL_STATE_DIR = tmpDir;
   process.env.BABYSITTER_STATE_DIR = tmpDir;
+  delete process.env.AGENT_SESSION_ID;
   delete process.env.BABYSITTER_SESSION_ID;
   delete process.env.BABYSITTER_HARNESS_PID;
   delete process.env.CLAUDE_ENV_FILE;
+  delete process.env.AGENT_TRUST_ENV_SESSION;
   delete process.env.BABYSITTER_TRUST_ENV_SESSION;
+  delete process.env.AGENT_ENABLE_SESSION_PID_MARKERS;
   delete process.env.BABYSITTER_ENABLE_SESSION_PID_MARKERS;
   __resetCacheForTests();
 });
@@ -47,11 +50,14 @@ afterEach(async () => {
   };
   restore("BABYSITTER_GLOBAL_STATE_DIR", savedGlobalStateDir);
   restore("BABYSITTER_STATE_DIR", savedStateDir);
-  restore("BABYSITTER_SESSION_ID", savedSessionEnv);
+  restore("AGENT_SESSION_ID", savedSessionEnv);
+  delete process.env.BABYSITTER_SESSION_ID;
   restore("BABYSITTER_HARNESS_PID", savedHarnessPid);
   restore("CLAUDE_ENV_FILE", savedClaudeEnvFile);
-  restore("BABYSITTER_TRUST_ENV_SESSION", savedTrustEnv);
-  restore("BABYSITTER_ENABLE_SESSION_PID_MARKERS", savedPidMarkerFlag);
+  restore("AGENT_TRUST_ENV_SESSION", savedTrustEnv);
+  delete process.env.BABYSITTER_TRUST_ENV_SESSION;
+  restore("AGENT_ENABLE_SESSION_PID_MARKERS", savedPidMarkerFlag);
+  delete process.env.BABYSITTER_ENABLE_SESSION_PID_MARKERS;
   __resetCacheForTests();
   __setAncestorResolverForTests(undefined);
   try {
@@ -63,11 +69,11 @@ afterEach(async () => {
 
 describe("runSessionWhoami", () => {
   it("reports pid-marker provenance when the env session is stale", () => {
-    process.env.BABYSITTER_ENABLE_SESSION_PID_MARKERS = "1";
+    process.env.AGENT_ENABLE_SESSION_PID_MARKERS = "1";
     process.env.BABYSITTER_HARNESS_PID = String(process.pid);
     __setAncestorResolverForTests(() => ({ pid: process.pid }));
     writeSessionMarker("claude-code", "SESS-FROM-MARKER");
-    process.env.BABYSITTER_SESSION_ID = "SESS-FROM-ENV";
+    process.env.AGENT_SESSION_ID = "SESS-FROM-ENV";
 
     const result = runSessionWhoami({ harness: "claude-code" });
     expect(result.harness).toBe("claude-code");
@@ -81,7 +87,7 @@ describe("runSessionWhoami", () => {
   });
 
   it("falls back to the pid marker when no env session is present", () => {
-    process.env.BABYSITTER_ENABLE_SESSION_PID_MARKERS = "1";
+    process.env.AGENT_ENABLE_SESSION_PID_MARKERS = "1";
     process.env.BABYSITTER_HARNESS_PID = String(process.pid);
     __setAncestorResolverForTests(() => ({ pid: process.pid }));
     writeSessionMarker("claude-code", "SESS-FROM-MARKER");

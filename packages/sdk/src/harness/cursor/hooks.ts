@@ -112,6 +112,7 @@ export async function handleCursorStopHook(
 
   const sessionId =
     safeStr(hookInput as Record<string, unknown>, "conversation_id") ||
+    process.env.AGENT_SESSION_ID ||
     process.env.BABYSITTER_SESSION_ID ||
     "";
 
@@ -369,6 +370,7 @@ export async function handleCursorSessionStartHook(
   const hookInput = parseHookInput(rawInput) as CursorSessionStartHookInput;
   const sessionId =
     safeStr(hookInput as Record<string, unknown>, "conversation_id") ||
+    process.env.AGENT_SESSION_ID ||
     process.env.BABYSITTER_SESSION_ID ||
     "";
 
