@@ -27,6 +27,9 @@ import {
   trackChild,
   untrackChild,
 } from "./invoker/processControl";
+import { getAmuxClient } from "./amux/amuxClientFactory";
+import { hasAmuxAdapter } from "./amux/amuxHarnessMap";
+import { invokeViaAgentMux } from "./amux/amuxBridge";
 
 // ---------------------------------------------------------------------------
 // CLI mapping
@@ -125,7 +128,42 @@ export function buildHarnessArgs(
 const DEFAULT_TIMEOUT_MS = 900_000;
 
 /**
- * Invokes a harness CLI as a child process and returns the result.
+ * Invokes a harness CLI and returns the result.
+ *
+ * The function first attempts to route through agent-mux (if @agent-mux/core
+ * is installed and the harness has an amux adapter mapping). When agent-mux
+ * is unavailable, it falls back to direct child-process invocation.
+ *
+ * Pi / internal harnesses always use piWrapper directly and are never
+ * routed through agent-mux.
+ *
+ * @throws {BabysitterRuntimeError} if the harness is unknown or the CLI is
+ *   not installed.
+ */
+export async function invokeHarness(
+  name: string,
+  options: HarnessInvokeOptions,
+): Promise<HarnessInvokeResult> {
+  // Pi / internal always use piWrapper directly
+  if (name === "pi" || name === "internal") {
+    return invokeHarnessDirect(name, options);
+  }
+
+  // Try agent-mux first for external harnesses
+  const amuxClient = await getAmuxClient();
+  if (amuxClient && hasAmuxAdapter(name)) {
+    return invokeViaAgentMux(amuxClient, name, options);
+  }
+
+  // Fallback to direct CLI invocation
+  return invokeHarnessDirect(name, options);
+}
+
+/**
+ * Direct child-process invocation of a harness CLI.
+ *
+ * This is the original invokeHarness implementation, preserved as the
+ * fallback path when agent-mux is not available.
  *
  * Steps:
  *   1. Validate that `name` is a known harness.
@@ -139,7 +177,7 @@ const DEFAULT_TIMEOUT_MS = 900_000;
  * @throws {BabysitterRuntimeError} if the harness is unknown or the CLI is
  *   not installed.
  */
-export async function invokeHarness(
+export async function invokeHarnessDirect(
   name: string,
   options: HarnessInvokeOptions,
 ): Promise<HarnessInvokeResult> {

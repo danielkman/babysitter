@@ -43,3 +43,9 @@ export {
   type AmuxBridgeResult,
   type AmuxEventCallback,
 } from "./amuxBridge";
+
+export {
+  getAmuxClient,
+  isAmuxAvailable,
+  _resetAmuxClientCache,
+} from "./amuxClientFactory";
