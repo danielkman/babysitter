@@ -1,65 +1,111 @@
-// CLI bin script templates for targets without marketplace distribution
+// CLI bin script templates for targets with npm distribution
 
 import type { A5cPluginManifest, TargetProfile } from './types.js';
+
+function getExt(targetProfile: TargetProfile): string {
+  return (targetProfile.name === 'pi' || targetProfile.name === 'oh-my-pi' || targetProfile.name === 'openclaw') ? '.cjs' : '.js';
+}
+
+function getNpmPkg(manifest: A5cPluginManifest, targetProfile: TargetProfile): string {
+  const override = manifest.targets?.[targetProfile.name]?.npmPackageName;
+  return (typeof override === 'string' ? override : null) || targetProfile.npmPackageName || `@a5c-ai/${manifest.name}-${targetProfile.name}`;
+}
+
+function getCliName(manifest: A5cPluginManifest, targetProfile: TargetProfile): string {
+  const pkg = getNpmPkg(manifest, targetProfile);
+  return pkg.split('/').pop() || `${manifest.name}-${targetProfile.name}`;
+}
 
 export function generateCliBinScript(
   manifest: A5cPluginManifest,
   targetProfile: TargetProfile
 ): string {
-  const cliName = `${manifest.name}-${targetProfile.name}`;
+  const cliName = getCliName(manifest, targetProfile);
+  const ext = getExt(targetProfile);
 
   return `#!/usr/bin/env node
 'use strict';
 
-var path = require('path');
-var spawnSync = require('child_process').spawnSync;
-var PACKAGE_ROOT = path.resolve(__dirname, '..');
+const path = require('path');
+const { spawnSync } = require('child_process');
+
+const PACKAGE_ROOT = path.resolve(__dirname, '..');
 
 function printUsage() {
-  console.error('Usage:\\n  ${cliName} install [--global]\\n  ${cliName} install --workspace [path]\\n  ${cliName} uninstall');
+  console.error([
+    'Usage:',
+    '  ${cliName} install [--global]',
+    '  ${cliName} install --workspace [path]',
+    '  ${cliName} uninstall',
+  ].join('\\n'));
 }
 
-function runNodeScript(scriptPath, args, extraEnv) {
-  var result = spawnSync(process.execPath, [scriptPath].concat(args), {
-    cwd: process.cwd(), stdio: 'inherit',
-    env: Object.assign({}, process.env, extraEnv || {}),
+function parseInstallArgs(argv) {
+  let scope = 'global';
+  let workspace = null;
+  const passthrough = [];
+
+  for (let i = 0; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg === '--global') {
+      scope = 'global';
+      continue;
+    }
+    if (arg === '--workspace') {
+      scope = 'workspace';
+      const next = argv[i + 1];
+      if (next && !next.startsWith('-')) {
+        workspace = path.resolve(next);
+        i += 1;
+      } else {
+        workspace = process.cwd();
+      }
+      continue;
+    }
+    passthrough.push(arg);
+  }
+
+  return { scope, workspace, passthrough };
+}
+
+function runNodeScript(scriptPath, args, extraEnv = {}) {
+  const result = spawnSync(process.execPath, [scriptPath, ...args], {
+    cwd: process.cwd(),
+    stdio: 'inherit',
+    env: { ...process.env, ...extraEnv },
   });
-  process.exitCode = result.status || 1;
+  process.exitCode = result.status ?? 1;
 }
 
 function main() {
-  var args = process.argv.slice(2);
-  var command = args[0];
-  var rest = args.slice(1);
-
-  if (!command || command === '--help' || command === '-h') {
+  const [command, ...rest] = process.argv.slice(2);
+  if (!command || command === '--help' || command === '-h' || command === 'help') {
     printUsage();
     process.exitCode = command ? 0 : 1;
     return;
   }
 
   if (command === 'install') {
-    var scope = 'global';
-    var workspace = null;
-    for (var i = 0; i < rest.length; i++) {
-      if (rest[i] === '--global') scope = 'global';
-      else if (rest[i] === '--workspace') {
-        scope = 'workspace';
-        if (rest[i + 1] && !rest[i + 1].startsWith('-')) { workspace = path.resolve(rest[++i]); }
-        else { workspace = process.cwd(); }
+    const parsed = parseInstallArgs(rest);
+    if (parsed.scope === 'workspace') {
+      const args = [];
+      if (parsed.workspace) {
+        args.push('--workspace', parsed.workspace);
       }
+      args.push(...parsed.passthrough);
+      runNodeScript(
+        path.join(PACKAGE_ROOT, 'scripts', 'team-install${ext}'),
+        args,
+        { BABYSITTER_PACKAGE_ROOT: PACKAGE_ROOT },
+      );
+      return;
     }
-    if (scope === 'workspace') {
-      var wsArgs = workspace ? ['--workspace', workspace] : [];
-      runNodeScript(path.join(PACKAGE_ROOT, 'scripts', 'team-install.js'), wsArgs, { PLUGIN_PACKAGE_ROOT: PACKAGE_ROOT });
-    } else {
-      runNodeScript(path.join(PACKAGE_ROOT, 'bin', 'install.js'), []);
-    }
+    runNodeScript(path.join(PACKAGE_ROOT, 'bin', 'install${ext}'), parsed.passthrough);
     return;
   }
 
   if (command === 'uninstall') {
-    runNodeScript(path.join(PACKAGE_ROOT, 'bin', 'uninstall.js'), rest);
+    runNodeScript(path.join(PACKAGE_ROOT, 'bin', 'uninstall${ext}'), rest);
     return;
   }
 
@@ -73,28 +119,32 @@ main();
 
 export function generateInstallScript(
   _manifest: A5cPluginManifest,
-  targetProfile: TargetProfile
+  _targetProfile: TargetProfile
 ): string {
-  if (targetProfile.name === 'gemini') {
-    return generateGeminiInstallScript();
-  }
   return `#!/usr/bin/env node
 'use strict';
 
-var path = require('path');
-var shared = require('./install-shared');
-var PACKAGE_ROOT = path.resolve(__dirname, '..');
+const path = require('path');
+const shared = require('./install-shared');
+
+const PACKAGE_ROOT = path.resolve(__dirname, '..');
 
 function main() {
-  var pluginHome = shared.getPluginHome('global');
-  var marketplacePath = shared.getMarketplacePath();
+  const pluginRoot = shared.getHomePluginRoot();
+  const marketplacePath = shared.getHomeMarketplacePath();
 
-  console.log('[' + shared.PLUGIN_NAME + '] Installing to ' + pluginHome);
-  shared.copyDir(PACKAGE_ROOT, pluginHome);
-  shared.ensureMarketplaceEntry(marketplacePath, pluginHome);
-  shared.runPostInstall(pluginHome);
-  console.log('[' + shared.PLUGIN_NAME + '] Installation complete!');
-  console.log('[' + shared.PLUGIN_NAME + '] Restart your IDE/CLI to pick up the plugin.');
+  console.log(\`[\${shared.PLUGIN_NAME}] Installing plugin to \${pluginRoot}\`);
+
+  try {
+    shared.copyPluginBundle(PACKAGE_ROOT, pluginRoot);
+    shared.ensureMarketplaceEntry(marketplacePath, pluginRoot);
+    shared.runPostInstall && shared.runPostInstall(pluginRoot);
+    console.log(\`[\${shared.PLUGIN_NAME}] Installation complete!\`);
+    console.log(\`[\${shared.PLUGIN_NAME}] Restart your IDE/CLI to pick up the plugin.\`);
+  } catch (err) {
+    console.error(\`[\${shared.PLUGIN_NAME}] Failed to install: \${err.message}\`);
+    process.exitCode = 1;
+  }
 }
 
 main();
@@ -105,23 +155,19 @@ function generateGeminiInstallScript(): string {
   return `#!/usr/bin/env node
 'use strict';
 
-var path = require('path');
-var spawnSync = require('child_process').spawnSync;
-var PACKAGE_ROOT = path.resolve(__dirname, '..');
+const path = require('path');
+const { spawnSync } = require('child_process');
+const PACKAGE_ROOT = path.resolve(__dirname, '..');
 
 function main() {
   console.log('[babysitter-gemini] Installing extension...');
-
-  // Try gemini extensions install first
-  var result = spawnSync('gemini', ['extensions', 'install', PACKAGE_ROOT], {
+  const result = spawnSync('gemini', ['extensions', 'install', PACKAGE_ROOT], {
     stdio: 'inherit', timeout: 60000
   });
-
   if (result.status === 0) {
     console.log('[babysitter-gemini] Extension installed via Gemini CLI.');
   } else {
-    // Fallback: link directly
-    var linkResult = spawnSync('gemini', ['extensions', 'link', PACKAGE_ROOT], {
+    const linkResult = spawnSync('gemini', ['extensions', 'link', PACKAGE_ROOT], {
       stdio: 'inherit', timeout: 60000
     });
     if (linkResult.status === 0) {
@@ -143,21 +189,29 @@ export function generateUninstallScript(
   return `#!/usr/bin/env node
 'use strict';
 
-var fs = require('fs');
-var shared = require('./install-shared');
+const path = require('path');
+const fs = require('fs');
+const shared = require('./install-shared');
 
 function main() {
-  var pluginHome = shared.getPluginHome('global');
+  const pluginRoot = shared.getHomePluginRoot();
 
-  if (!fs.existsSync(pluginHome)) {
-    console.log('[' + shared.PLUGIN_NAME + '] Not installed at ' + pluginHome);
+  if (!fs.existsSync(pluginRoot)) {
+    console.log(\`[\${shared.PLUGIN_NAME}] Plugin not installed at \${pluginRoot}\`);
     return;
   }
 
-  fs.rmSync(pluginHome, { recursive: true, force: true });
-  console.log('[' + shared.PLUGIN_NAME + '] Uninstalled from ' + pluginHome);
+  try {
+    fs.rmSync(pluginRoot, { recursive: true, force: true });
+    console.log(\`[\${shared.PLUGIN_NAME}] Uninstalled from \${pluginRoot}\`);
+  } catch (err) {
+    console.error(\`[\${shared.PLUGIN_NAME}] Failed to uninstall: \${err.message}\`);
+    process.exitCode = 1;
+  }
 }
 
 main();
 `;
 }
+
+export { generateGeminiInstallScript };

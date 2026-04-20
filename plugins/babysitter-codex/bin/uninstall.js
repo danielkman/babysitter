@@ -1,40 +1,25 @@
 #!/usr/bin/env node
 'use strict';
 
+const path = require('path');
 const fs = require('fs');
-const {
-  getCodexHome,
-  getHomeMarketplacePath,
-  getHomePluginRoot,
-  removeLegacyCodexSurface,
-  removeMarketplaceEntry,
-} = require('./install-shared');
+const shared = require('./install-shared');
 
 function main() {
-  const codexHome = getCodexHome();
-  const pluginRoot = getHomePluginRoot();
-  const marketplacePath = getHomeMarketplacePath();
-  let removedPlugin = false;
+  const pluginRoot = shared.getHomePluginRoot();
 
-  if (fs.existsSync(pluginRoot)) {
-    try {
-      fs.rmSync(pluginRoot, { recursive: true, force: true });
-      console.log(`[babysitter] Removed ${pluginRoot}`);
-      removedPlugin = true;
-    } catch (err) {
-      console.warn(`[babysitter] Warning: Could not remove plugin directory ${pluginRoot}: ${err.message}`);
-    }
-  }
-
-  removeMarketplaceEntry(marketplacePath);
-  removeLegacyCodexSurface(codexHome);
-
-  if (!removedPlugin) {
-    console.log('[babysitter] Plugin directory not found, legacy Codex surface cleaned if present.');
+  if (!fs.existsSync(pluginRoot)) {
+    console.log(`[${shared.PLUGIN_NAME}] Plugin not installed at ${pluginRoot}`);
     return;
   }
 
-  console.log('[babysitter] Restart Codex to complete uninstallation.');
+  try {
+    fs.rmSync(pluginRoot, { recursive: true, force: true });
+    console.log(`[${shared.PLUGIN_NAME}] Uninstalled from ${pluginRoot}`);
+  } catch (err) {
+    console.error(`[${shared.PLUGIN_NAME}] Failed to uninstall: ${err.message}`);
+    process.exitCode = 1;
+  }
 }
 
 main();

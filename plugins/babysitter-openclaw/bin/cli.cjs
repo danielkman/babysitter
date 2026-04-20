@@ -11,41 +11,43 @@ function printUsage() {
     'Usage:',
     '  babysitter-openclaw install [--global]',
     '  babysitter-openclaw install --workspace [path]',
-    '  babysitter-openclaw uninstall [--global]',
-    '  babysitter-openclaw uninstall --workspace [path]',
-    '  babysitter-openclaw version',
-    '  babysitter-openclaw help',
+    '  babysitter-openclaw uninstall',
   ].join('\n'));
 }
 
-function parseArgs(argv) {
+function parseInstallArgs(argv) {
+  let scope = 'global';
   let workspace = null;
+  const passthrough = [];
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
+    if (arg === '--global') {
+      scope = 'global';
+      continue;
+    }
     if (arg === '--workspace') {
+      scope = 'workspace';
       const next = argv[i + 1];
-      workspace = next && !next.startsWith('-') ? path.resolve(next) : process.cwd();
       if (next && !next.startsWith('-')) {
+        workspace = path.resolve(next);
         i += 1;
+      } else {
+        workspace = process.cwd();
       }
       continue;
     }
-    if (arg === '--global') {
-      workspace = null;
-      continue;
-    }
-    throw new Error(`unknown argument: ${arg}`);
+    passthrough.push(arg);
   }
 
-  return { workspace };
+  return { scope, workspace, passthrough };
 }
 
-function runNodeScript(scriptPath, args) {
+function runNodeScript(scriptPath, args, extraEnv = {}) {
   const result = spawnSync(process.execPath, [scriptPath, ...args], {
     cwd: process.cwd(),
     stdio: 'inherit',
-    env: process.env,
+    env: { ...process.env, ...extraEnv },
   });
   process.exitCode = result.status ?? 1;
 }
@@ -58,23 +60,32 @@ function main() {
     return;
   }
 
-  if (command === 'version' || command === '--version' || command === '-v') {
-    const fs = require('fs');
-    const pkg = JSON.parse(fs.readFileSync(path.join(PACKAGE_ROOT, 'package.json'), 'utf8'));
-    console.log(`${pkg.name}@${pkg.version}`);
+  if (command === 'install') {
+    const parsed = parseInstallArgs(rest);
+    if (parsed.scope === 'workspace') {
+      const args = [];
+      if (parsed.workspace) {
+        args.push('--workspace', parsed.workspace);
+      }
+      args.push(...parsed.passthrough);
+      runNodeScript(
+        path.join(PACKAGE_ROOT, 'scripts', 'team-install.cjs'),
+        args,
+        { BABYSITTER_PACKAGE_ROOT: PACKAGE_ROOT },
+      );
+      return;
+    }
+    runNodeScript(path.join(PACKAGE_ROOT, 'bin', 'install.cjs'), parsed.passthrough);
     return;
   }
 
-  if (command !== 'install' && command !== 'uninstall') {
-    console.error(`[babysitter] Unknown command: ${command}`);
-    printUsage();
-    process.exitCode = 1;
+  if (command === 'uninstall') {
+    runNodeScript(path.join(PACKAGE_ROOT, 'bin', 'uninstall.cjs'), rest);
     return;
   }
 
-  const parsed = parseArgs(rest);
-  const args = parsed.workspace ? ['--workspace', parsed.workspace] : ['--global'];
-  runNodeScript(path.join(PACKAGE_ROOT, 'bin', `${command}.cjs`), args);
+  printUsage();
+  process.exitCode = 1;
 }
 
 main();

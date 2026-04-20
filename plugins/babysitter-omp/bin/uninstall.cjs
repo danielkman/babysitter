@@ -1,20 +1,25 @@
 #!/usr/bin/env node
 'use strict';
 
-const fs = require('fs');
 const path = require('path');
-const { spawnSync } = require('child_process');
-
-const PACKAGE_ROOT = path.resolve(__dirname, '..');
-const PACKAGE_JSON = JSON.parse(fs.readFileSync(path.join(PACKAGE_ROOT, 'package.json'), 'utf8'));
+const fs = require('fs');
+const shared = require('./install-shared');
 
 function main() {
-  const result = spawnSync('omp', ['plugin', 'uninstall', PACKAGE_JSON.name], {
-    cwd: process.cwd(),
-    stdio: 'inherit',
-    env: process.env,
-  });
-  process.exitCode = result.status ?? 1;
+  const pluginRoot = shared.getHomePluginRoot();
+
+  if (!fs.existsSync(pluginRoot)) {
+    console.log(`[${shared.PLUGIN_NAME}] Plugin not installed at ${pluginRoot}`);
+    return;
+  }
+
+  try {
+    fs.rmSync(pluginRoot, { recursive: true, force: true });
+    console.log(`[${shared.PLUGIN_NAME}] Uninstalled from ${pluginRoot}`);
+  } catch (err) {
+    console.error(`[${shared.PLUGIN_NAME}] Failed to uninstall: ${err.message}`);
+    process.exitCode = 1;
+  }
 }
 
 main();

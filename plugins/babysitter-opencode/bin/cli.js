@@ -1,145 +1,55 @@
 #!/usr/bin/env node
 'use strict';
 
-/**
- * Babysitter OpenCode CLI shim.
- *
- * Provides `babysitter-opencode` command for plugin management tasks
- * (install, uninstall, sync, doctor). Delegates heavy lifting to the
- * SDK CLI with opencode-specific flags.
- */
-
 const path = require('path');
 const { spawnSync } = require('child_process');
 
 const PACKAGE_ROOT = path.resolve(__dirname, '..');
 
 function printUsage() {
-  console.log([
-    'babysitter-opencode - Babysitter plugin for OpenCode',
-    '',
+  console.error([
     'Usage:',
-    '  babysitter-opencode install [--global]            Install plugin globally',
-    '  babysitter-opencode install --workspace [path]    Install into workspace',
-    '  babysitter-opencode uninstall [--global]          Uninstall plugin globally',
-    '  babysitter-opencode uninstall --workspace [path]  Uninstall from workspace',
-    '  babysitter-opencode sync                          Sync command surfaces',
-    '  babysitter-opencode doctor                        Check installation health',
-    '  babysitter-opencode version                       Show version',
-    '  babysitter-opencode help                          Show this help',
+    '  babysitter-opencode install [--global]',
+    '  babysitter-opencode install --workspace [path]',
+    '  babysitter-opencode uninstall',
   ].join('\n'));
 }
 
-function parseArgs(argv) {
+function parseInstallArgs(argv) {
+  let scope = 'global';
   let workspace = null;
+  const passthrough = [];
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
+    if (arg === '--global') {
+      scope = 'global';
+      continue;
+    }
     if (arg === '--workspace') {
+      scope = 'workspace';
       const next = argv[i + 1];
-      workspace = next && !next.startsWith('-') ? path.resolve(next) : process.cwd();
       if (next && !next.startsWith('-')) {
+        workspace = path.resolve(next);
         i += 1;
+      } else {
+        workspace = process.cwd();
       }
       continue;
     }
-    if (arg === '--global') {
-      workspace = null;
-      continue;
-    }
-    throw new Error(`unknown argument: ${arg}`);
+    passthrough.push(arg);
   }
 
-  return { workspace };
+  return { scope, workspace, passthrough };
 }
 
-function runNodeScript(scriptPath, args) {
+function runNodeScript(scriptPath, args, extraEnv = {}) {
   const result = spawnSync(process.execPath, [scriptPath, ...args], {
     cwd: process.cwd(),
     stdio: 'inherit',
-    env: process.env,
+    env: { ...process.env, ...extraEnv },
   });
   process.exitCode = result.status ?? 1;
-}
-
-function runDoctor(workspace) {
-  const fs = require('fs');
-  const { getOpenCodeHome, getHomePluginRoot } = require('./install-shared.cjs');
-
-  const ws = workspace || process.cwd();
-  const openCodeHome = getOpenCodeHome(ws);
-  const pluginRoot = getHomePluginRoot(ws);
-  let ok = true;
-
-  console.log('[babysitter] OpenCode plugin health check');
-  console.log(`  Workspace:   ${ws}`);
-  console.log(`  OpenCode:    ${openCodeHome}`);
-  console.log(`  Plugin root: ${pluginRoot}`);
-  console.log('');
-
-  // Check plugin directory
-  if (fs.existsSync(pluginRoot)) {
-    console.log('  [ok] Plugin directory exists');
-  } else {
-    console.log('  [FAIL] Plugin directory missing');
-    ok = false;
-  }
-
-  // Check index.js
-  const indexPath = path.join(pluginRoot, 'index.js');
-  if (fs.existsSync(indexPath)) {
-    console.log('  [ok] index.js entry point exists');
-  } else {
-    console.log('  [FAIL] index.js entry point missing');
-    ok = false;
-  }
-
-  // Check plugin.json
-  const pluginJsonPath = path.join(pluginRoot, 'plugin.json');
-  if (fs.existsSync(pluginJsonPath)) {
-    console.log('  [ok] plugin.json exists');
-  } else {
-    console.log('  [FAIL] plugin.json missing');
-    ok = false;
-  }
-
-  // Check hooks
-  const hooksDir = path.join(pluginRoot, 'hooks');
-  if (fs.existsSync(hooksDir)) {
-    const hooks = fs.readdirSync(hooksDir).filter((f) => f.endsWith('.js'));
-    console.log(`  [ok] hooks/ directory (${hooks.length} scripts)`);
-  } else {
-    console.log('  [FAIL] hooks/ directory missing');
-    ok = false;
-  }
-
-  // Check skills
-  const skillPath = path.join(pluginRoot, 'skills', 'babysit', 'SKILL.md');
-  if (fs.existsSync(skillPath)) {
-    console.log('  [ok] skills/babysit/SKILL.md exists');
-  } else {
-    console.log('  [WARN] skills/babysit/SKILL.md missing');
-  }
-
-  // Check babysitter CLI availability
-  const { spawnSync: spawn } = require('child_process');
-  const cliCheck = spawn('babysitter', ['--version'], {
-    stdio: ['ignore', 'pipe', 'pipe'],
-    encoding: 'utf8',
-  });
-  if (cliCheck.status === 0) {
-    console.log(`  [ok] babysitter CLI: ${(cliCheck.stdout || '').trim()}`);
-  } else {
-    console.log('  [WARN] babysitter CLI not found in PATH');
-  }
-
-  console.log('');
-  if (ok) {
-    console.log('  All checks passed.');
-  } else {
-    console.log('  Some checks failed. Run "babysitter-opencode install" to fix.');
-    process.exitCode = 1;
-  }
 }
 
 function main() {
@@ -150,45 +60,32 @@ function main() {
     return;
   }
 
-  switch (command) {
-    case 'install':
-    case 'uninstall': {
-      const parsed = parseArgs(rest);
-      const args = parsed.workspace ? ['--workspace', parsed.workspace] : ['--global'];
-      runNodeScript(path.join(PACKAGE_ROOT, 'bin', `${command}.cjs`), args);
-      break;
-    }
-    case 'sync': {
-      const syncScript = path.join(PACKAGE_ROOT, 'scripts', 'sync-command-surfaces.js');
-      const fs = require('fs');
-      if (fs.existsSync(syncScript)) {
-        runNodeScript(syncScript, rest);
-      } else {
-        console.error('[babysitter] sync-command-surfaces.js not found');
-        process.exitCode = 1;
+  if (command === 'install') {
+    const parsed = parseInstallArgs(rest);
+    if (parsed.scope === 'workspace') {
+      const args = [];
+      if (parsed.workspace) {
+        args.push('--workspace', parsed.workspace);
       }
-      break;
+      args.push(...parsed.passthrough);
+      runNodeScript(
+        path.join(PACKAGE_ROOT, 'scripts', 'team-install.js'),
+        args,
+        { BABYSITTER_PACKAGE_ROOT: PACKAGE_ROOT },
+      );
+      return;
     }
-    case 'doctor': {
-      const parsed = parseArgs(rest);
-      runDoctor(parsed.workspace);
-      break;
-    }
-    case 'version': {
-      try {
-        const pkg = require(path.join(PACKAGE_ROOT, 'package.json'));
-        console.log(pkg.version);
-      } catch {
-        console.log('unknown');
-      }
-      break;
-    }
-    default:
-      console.error(`Unknown command: ${command}`);
-      printUsage();
-      process.exitCode = 1;
-      break;
+    runNodeScript(path.join(PACKAGE_ROOT, 'bin', 'install.js'), parsed.passthrough);
+    return;
   }
+
+  if (command === 'uninstall') {
+    runNodeScript(path.join(PACKAGE_ROOT, 'bin', 'uninstall.js'), rest);
+    return;
+  }
+
+  printUsage();
+  process.exitCode = 1;
 }
 
 main();

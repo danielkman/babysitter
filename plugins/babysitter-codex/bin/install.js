@@ -2,44 +2,24 @@
 'use strict';
 
 const path = require('path');
-const {
-  copyPluginBundle,
-  ensureGlobalProcessLibrary,
-  ensureMarketplaceEntry,
-  getCodexHome,
-  getHomeMarketplacePath,
-  getHomePluginRoot,
-  mergeCodexConfigFile,
-  warnWindowsHooks,
-} = require('./install-shared');
+const shared = require('./install-shared');
 
 const PACKAGE_ROOT = path.resolve(__dirname, '..');
 
 function main() {
-  const codexHome = getCodexHome();
-  const pluginRoot = getHomePluginRoot();
-  const marketplacePath = getHomeMarketplacePath();
+  const pluginRoot = shared.getHomePluginRoot();
+  const marketplacePath = shared.getHomeMarketplacePath();
 
-  console.log(`[babysitter] Installing plugin to ${pluginRoot}`);
+  console.log(`[${shared.PLUGIN_NAME}] Installing plugin to ${pluginRoot}`);
 
   try {
-    copyPluginBundle(PACKAGE_ROOT, pluginRoot);
-    ensureMarketplaceEntry(marketplacePath, pluginRoot);
-    mergeCodexConfigFile(path.join(codexHome, 'config.toml'));
-
-    const active = ensureGlobalProcessLibrary(PACKAGE_ROOT);
-    console.log(`[babysitter]   marketplace: ${marketplacePath}`);
-    console.log(`[babysitter]   process library: ${active.binding?.dir}`);
-    if (active.defaultSpec?.cloneDir) {
-      console.log(`[babysitter]   process library clone: ${active.defaultSpec.cloneDir}`);
-    }
-    console.log(`[babysitter]   process library state: ${active.stateFile}`);
-    warnWindowsHooks();
-    console.log('[babysitter] Installation complete!');
-    console.log('[babysitter] Restart Codex to pick up the installed plugin and config changes, then run Codex and install Babysitter from `/plugins`.');
-    console.log('[babysitter] If Codex was already open, start a new thread after install before expecting `babysitter:*` skills such as `$babysitter:babysit` or `$babysitter:call` to appear.');
+    shared.copyPluginBundle(PACKAGE_ROOT, pluginRoot);
+    shared.ensureMarketplaceEntry(marketplacePath, pluginRoot);
+    shared.runPostInstall && shared.runPostInstall(pluginRoot);
+    console.log(`[${shared.PLUGIN_NAME}] Installation complete!`);
+    console.log(`[${shared.PLUGIN_NAME}] Restart your IDE/CLI to pick up the plugin.`);
   } catch (err) {
-    console.error(`[babysitter] Failed to install plugin: ${err.message}`);
+    console.error(`[${shared.PLUGIN_NAME}] Failed to install: ${err.message}`);
     process.exitCode = 1;
   }
 }

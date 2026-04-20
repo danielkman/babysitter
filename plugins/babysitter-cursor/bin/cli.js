@@ -23,16 +23,10 @@ function parseInstallArgs(argv) {
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
     if (arg === '--global') {
-      if (scope === 'workspace') {
-        throw new Error('install accepts either --global or --workspace, not both');
-      }
       scope = 'global';
       continue;
     }
     if (arg === '--workspace') {
-      if (scope === 'global' && workspace !== null) {
-        throw new Error('install accepts either --global or --workspace, not both');
-      }
       scope = 'workspace';
       const next = argv[i + 1];
       if (next && !next.startsWith('-')) {
@@ -46,21 +40,14 @@ function parseInstallArgs(argv) {
     passthrough.push(arg);
   }
 
-  return {
-    scope,
-    workspace,
-    passthrough,
-  };
+  return { scope, workspace, passthrough };
 }
 
 function runNodeScript(scriptPath, args, extraEnv = {}) {
   const result = spawnSync(process.execPath, [scriptPath, ...args], {
     cwd: process.cwd(),
     stdio: 'inherit',
-    env: {
-      ...process.env,
-      ...extraEnv,
-    },
+    env: { ...process.env, ...extraEnv },
   });
   process.exitCode = result.status ?? 1;
 }
