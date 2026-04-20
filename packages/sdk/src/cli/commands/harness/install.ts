@@ -77,7 +77,7 @@ export async function handleHarnessInstall(args: HarnessInstallCommandArgs): Pro
  * own plugin packaging, not general CLI installation. This delegates to the
  * babysitter plugin system rather than per-adapter install logic.
  */
-export async function handleHarnessInstallPlugin(args: HarnessInstallCommandArgs): Promise<number> {
+export function handleHarnessInstallPlugin(args: HarnessInstallCommandArgs): number {
   const harnessName = requireHarnessName(args.harnessName, "harness:install-plugin");
   const result: HarnessInstallResult = {
     harness: harnessName,

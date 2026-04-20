@@ -1,5 +1,4 @@
 /** Shared stop-hook handler: common 9-step sequence for ALL stop hooks. */
-
 import * as path from "node:path";
 import {
   getSessionFilePath,
@@ -60,7 +59,6 @@ export interface StopHookCommonOptions {
   useDetailedRunState?: boolean;
   resolveStateDir: (args: HookHandlerArgs) => string;
 }
-
 function resolveSessionIdFromInput(
   hookInput: Record<string, unknown>,
   fields: string[],
@@ -79,7 +77,6 @@ function resolveSessionIdFromInput(
   }
   return "";
 }
-
 export async function handleStopHookCommon(
   args: HookHandlerArgs,
   options: StopHookCommonOptions,
@@ -87,7 +84,6 @@ export async function handleStopHookCommon(
   const { verbose } = args;
   const log = createHookLogger(options.logLabel ?? `babysitter-${options.harness}-stop-hook`);
   log.info(`handleStopHook started (${options.harness})`);
-
   // Read stdin
   let rawInput: string;
   if (args.stdinPayload !== undefined) {
@@ -109,17 +105,14 @@ export async function handleStopHookCommon(
       }
     }
   }
-
   const hookInput = parseHookInput(rawInput);
   log.info("Hook input received");
-
   // Get sessionId
   const sessionId = resolveSessionIdFromInput(
     hookInput,
     options.sessionIdFields,
     options.resolveSessionIdFallback,
   );
-
   if (!sessionId) {
     log.info("No session ID — allowing exit");
     if (verbose) {
@@ -128,7 +121,6 @@ export async function handleStopHookCommon(
     process.stdout.write("{}\n");
     return makeExit(log, 0, "no_session_id");
   }
-
   log.setContext("session", sessionId);
   const pluginRoot = args.pluginRoot
     || resolvePluginRootFromEnv(options.pluginRootEnvVars ?? [])
@@ -143,12 +135,10 @@ export async function handleStopHookCommon(
     process.stdout.write("{}\n");
     return makeExit(log, 0, "no_state_dir");
   }
-
   const runsDir = path.resolve(args.runsDir || ".a5c/runs");
   let activeSessionId = sessionId;
   let filePath = getSessionFilePath(stateDir, activeSessionId);
   log.info(`Checking session file at: ${filePath}`);
-
   // Load session state (with env fallback retry)
   let sessionFile;
   try {
@@ -186,10 +176,8 @@ export async function handleStopHookCommon(
     process.stdout.write("{}\n");
     return makeExit(log, 0, "session_read_error");
   }
-
   const { state } = sessionFile;
   const prompt = sessionFile.prompt ?? "";
-
   // Check max iterations
   if (state.maxIterations > 0 && state.iteration >= state.maxIterations) {
     if (verbose) {
@@ -212,14 +200,12 @@ export async function handleStopHookCommon(
     process.stdout.write("{}\n");
     return makeExit(log, 0, "max_iterations_reached", { sessionId: activeSessionId, filePath, state, prompt, resolvedPluginRoot, runsDir });
   }
-
   // Check iteration speed
   const now = getCurrentTimestamp();
   const updatedTimes =
     state.iteration >= 5
       ? updateIterationTimes(state.iterationTimes, state.lastIterationAt, now)
       : state.iterationTimes;
-
   if (isIterationTooFast(updatedTimes)) {
     if (verbose) {
       const avg = updatedTimes.reduce((a, b) => a + b, 0) / updatedTimes.length;
