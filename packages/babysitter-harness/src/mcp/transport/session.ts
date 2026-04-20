@@ -1,4 +1,6 @@
 /**
+ * Status: NOT INTEGRATED YET
+ * Moved from @a5c-ai/babysitter-sdk.
  * GAP-REMOTE-003: WebSocket Session Manager.
  *
  * Tracks active sessions with unique IDs, supports reconnection by session ID.

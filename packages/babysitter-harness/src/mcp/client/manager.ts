@@ -1,4 +1,6 @@
 /**
+ * Status: NOT INTEGRATED YET
+ * Moved from @a5c-ai/babysitter-sdk.
  * GAP-REMOTE-006: MCP Client Manager.
  *
  * Manages named MCP server connections with connect/disconnect lifecycle,

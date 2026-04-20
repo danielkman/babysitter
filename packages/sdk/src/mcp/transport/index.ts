@@ -1,7 +1,1 @@
-export { createWebSocketTransport, authenticateUpgrade, WebSocketConnectionTransport } from "./websocket";
-export { WebSocketSessionManager } from "./session";
-export type { WebSocketServerTransport } from "./websocket";
-export type {
-  WebSocketTransportOptions,
-  WebSocketSession,
-} from "./types";
+// WebSocket transport moved to @a5c-ai/babysitter-harness (GAP-REMOTE-003)

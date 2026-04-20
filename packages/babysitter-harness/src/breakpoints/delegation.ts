@@ -1,4 +1,6 @@
 /**
+ * Status: NOT INTEGRATED YET
+ * Moved from @a5c-ai/babysitter-sdk.
  * GAP-BRK-002: Breakpoint Delegation to External Systems.
  *
  * Routes breakpoint approvals to external systems via webhooks.
@@ -8,8 +10,8 @@
 import { promises as fs } from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
-import { writeFileAtomic } from "../storage/atomic";
-import { parsePattern, matchPattern } from "./patterns";
+import { writeFileAtomic } from "@a5c-ai/babysitter-sdk/dist/storage/atomic";
+import { parsePattern, matchPattern } from "@a5c-ai/babysitter-sdk";
 import type {
   DelegationRule,
   DelegationRulesFile,

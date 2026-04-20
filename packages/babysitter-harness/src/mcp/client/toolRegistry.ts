@@ -1,4 +1,6 @@
 /**
+ * Status: NOT INTEGRATED YET
+ * Moved from @a5c-ai/babysitter-sdk.
  * GAP-TOOLS-025: MCP Tool Registry.
  *
  * Maintains a cached index of tools across all connected MCP servers.

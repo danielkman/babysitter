@@ -1,4 +1,6 @@
 /**
+ * Status: NOT INTEGRATED YET
+ * Moved from @a5c-ai/babysitter-sdk.
  * Per-effect cost aggregation (GAP-SUBOBS-003).
  */
 import type { EffectIndex } from "@a5c-ai/babysitter-sdk";

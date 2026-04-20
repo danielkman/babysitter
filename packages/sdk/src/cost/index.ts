@@ -57,8 +57,4 @@ export {
   resolveClaudeCodeSessionDir,
 } from "./collector";
 
-export {
-  computeEffectCosts,
-  type EffectCostSummary,
-  type EffectCostResult,
-} from "./effectCost";
+// effectCost moved to @a5c-ai/babysitter-harness (GAP-SUBOBS-003)

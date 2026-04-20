@@ -49,6 +49,6 @@ export {
   densityFilterText,
   estimateTokens,
 } from "./compression/density-filter";
-export * as compaction from "./compression/compaction";
-export * as mcpClient from "./mcp/client";
-export * as mcpChannels from "./mcp/channels";
+// compaction moved to @a5c-ai/babysitter-harness (GAP-PERF-002)
+// mcpClient moved to @a5c-ai/babysitter-harness (GAP-REMOTE-006)
+// mcpChannels moved to @a5c-ai/babysitter-harness (interactive feature)

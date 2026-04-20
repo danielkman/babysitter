@@ -14,7 +14,38 @@
 import type { BreakpointRule, AutoApprovalResult, ActionCategory, ApprovalPosture } from "./types";
 import type { BreakpointConfig } from "../profiles/types";
 import { parsePattern, matchPattern } from "./patterns";
-import { getPostureForCategory, resolvePostureFromBreakpointId } from "./postures";
+
+// ---------------------------------------------------------------------------
+// Inlined posture helpers (canonical implementation moved to babysitter-harness)
+// ---------------------------------------------------------------------------
+
+const DEFAULT_POSTURES: Record<ActionCategory, ApprovalPosture> = {
+  read: { name: 'permissive', allowAutoApprove: true, minConsecutiveApprovalsForAutoN: 0, requireExplicitRule: false, requiredApproverLevel: 'any' },
+  write: { name: 'cautious', allowAutoApprove: true, minConsecutiveApprovalsForAutoN: 3, requireExplicitRule: false, requiredApproverLevel: 'any' },
+  execute: { name: 'guarded', allowAutoApprove: true, minConsecutiveApprovalsForAutoN: 5, requireExplicitRule: true, requiredApproverLevel: 'any' },
+  destroy: { name: 'locked', allowAutoApprove: false, minConsecutiveApprovalsForAutoN: -1, requireExplicitRule: true, requiredApproverLevel: 'owner' },
+  network: { name: 'cautious', allowAutoApprove: true, minConsecutiveApprovalsForAutoN: 3, requireExplicitRule: false, requiredApproverLevel: 'any' },
+  auth: { name: 'locked', allowAutoApprove: false, minConsecutiveApprovalsForAutoN: -1, requireExplicitRule: true, requiredApproverLevel: 'owner' },
+};
+
+const PREFIX_TO_CATEGORY: Record<string, ActionCategory> = {
+  'read': 'read', 'write': 'write', 'exec': 'execute', 'execute': 'execute',
+  'destroy': 'destroy', 'delete': 'destroy', 'net': 'network', 'network': 'network',
+  'auth': 'auth', 'cred': 'auth',
+};
+
+function getPostureForCategory(category: ActionCategory, overrides?: Partial<ApprovalPosture>): ApprovalPosture {
+  const base = DEFAULT_POSTURES[category];
+  if (!overrides) return base;
+  return { ...base, ...overrides };
+}
+
+function resolvePostureFromBreakpointId(breakpointId: string): ActionCategory | undefined {
+  const dotIndex = breakpointId.indexOf('.');
+  if (dotIndex === -1) return undefined;
+  const prefix = breakpointId.substring(0, dotIndex);
+  return PREFIX_TO_CATEGORY[prefix];
+}
 
 export interface EvaluateAutoApprovalOptions {
   breakpointId: string;

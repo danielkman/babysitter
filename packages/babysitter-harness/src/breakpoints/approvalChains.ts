@@ -1,4 +1,6 @@
 /**
+ * Status: NOT INTEGRATED YET
+ * Moved from @a5c-ai/babysitter-sdk.
  * GAP-BRK-001: Breakpoint Approval Chains.
  *
  * Multi-stage approval chains for breakpoints. Define approval

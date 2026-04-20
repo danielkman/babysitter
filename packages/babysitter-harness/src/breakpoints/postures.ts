@@ -1,4 +1,6 @@
 /**
+ * Status: NOT INTEGRATED YET
+ * Moved from @a5c-ai/babysitter-sdk.
  * GAP-SEC-005: Approval Posture Model
  *
  * Defines the canonical safety ladder for action categories and provides
@@ -7,11 +9,11 @@
  * @module breakpoints/postures
  */
 
-import type { ActionCategory, ApprovalPosture } from './types';
+import type { ActionCategory, ApprovalPosture } from '@a5c-ai/babysitter-sdk';
 
 /**
  * Default postures per action category.
- * The canonical safety ladder: read (permissive) → write/network → execute → destroy/auth (locked).
+ * The canonical safety ladder: read (permissive) -> write/network -> execute -> destroy/auth (locked).
  */
 export const DEFAULT_POSTURES: Record<ActionCategory, ApprovalPosture> = {
   read: {

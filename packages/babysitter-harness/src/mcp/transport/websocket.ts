@@ -1,4 +1,6 @@
 /**
+ * Status: NOT INTEGRATED YET
+ * Moved from @a5c-ai/babysitter-sdk.
  * GAP-REMOTE-003: WebSocket server transport for MCP.
  *
  * Creates a WebSocket server where each connection gets its own MCP Transport,

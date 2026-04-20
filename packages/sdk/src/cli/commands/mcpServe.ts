@@ -6,7 +6,19 @@
 
 import { createBabysitterMcpServer } from "../../mcp";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { createWebSocketTransport } from "../../mcp/transport";
+
+// WebSocket transport moved to @a5c-ai/babysitter-harness (GAP-REMOTE-003)
+// Dynamically imported at runtime if websocket transport is requested.
+async function loadWebSocketTransport() {
+  try {
+    const mod = await import("@a5c-ai/babysitter-harness/dist/mcp/transport/websocket");
+    return mod.createWebSocketTransport;
+  } catch {
+    throw new Error(
+      "WebSocket transport requires @a5c-ai/babysitter-harness. Install it or use stdio transport.",
+    );
+  }
+}
 
 function installShutdownHandlers(shutdownFn: () => Promise<void>): void {
   process.on("SIGINT", () => void shutdownFn());
@@ -28,6 +40,7 @@ export async function handleMcpServe(args: {
   const transportType = args.transport ?? "stdio";
 
   if (transportType === "ws" || transportType === "websocket") {
+    const createWebSocketTransport = await loadWebSocketTransport();
     const wsTransport = await createWebSocketTransport({
       port: args.port ?? 9600,
       host: args.host ?? "127.0.0.1",
@@ -38,7 +51,8 @@ export async function handleMcpServe(args: {
     });
 
     // Each new WebSocket connection gets its own McpServer instance
-    wsTransport.onconnection = (connectionTransport) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    wsTransport.onconnection = (connectionTransport: any) => {
       const server = createBabysitterMcpServer();
       void server.connect(connectionTransport);
     };

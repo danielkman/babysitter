@@ -1,10 +1,7 @@
 export { createBabysitterMcpServer } from "./server";
-export { createWebSocketTransport, authenticateUpgrade, WebSocketSessionManager } from "./transport";
-export type { WebSocketServerTransport, WebSocketTransportOptions, WebSocketSession } from "./transport";
 
-// MCP Client (GAP-REMOTE-006, GAP-TOOLS-025)
-export * as mcpClient from "./client";
-
+// MCP Client moved to @a5c-ai/babysitter-harness (GAP-REMOTE-006, GAP-TOOLS-025)
+// MCP WebSocket transport moved to @a5c-ai/babysitter-harness (GAP-REMOTE-003)
 // MCP Channels moved to @a5c-ai/babysitter-harness (interactive feature)
 
 /**
