@@ -7,22 +7,42 @@ import * as os from "node:os";
 import { existsSync } from "node:fs";
 import { HarnessCapability as Cap } from "../types";
 import type {
-  HookHandlerArgs,
   HarnessInstallOptions,
   HarnessInstallResult,
   SessionBindOptions,
   SessionBindResult,
 } from "../types";
 import type { PromptContext } from "../../prompts/types";
+import { normalizeSessionStateDir } from "../../config";
 import { BaseHarnessAdapter } from "../BaseAdapter";
-import {
-  handleOpenCodeSessionStartHook,
-  handleOpenCodeStopHook,
-  resolveOpenCodeSessionId,
-  resolveOpenCodeStateDir,
-} from "../hooks/opencodeHooks";
 import { createOpenCodeContext } from "../hooks/promptContexts";
 import { bindSession } from "../hooks/sessionBinding";
+
+// ---------------------------------------------------------------------------
+// Utilities (previously in opencodeHooks.ts)
+// ---------------------------------------------------------------------------
+
+export function resolveOpenCodeStateDir(args: {
+  stateDir?: string;
+  pluginRoot?: string;
+}): string {
+  return normalizeSessionStateDir(args.stateDir ?? process.env.BABYSITTER_STATE_DIR);
+}
+
+export function resolveOpenCodeSessionId(parsed: {
+  sessionId?: string;
+}): string | undefined {
+  if (parsed.sessionId) {
+    return parsed.sessionId;
+  }
+  if (process.env.AGENT_SESSION_ID) {
+    return process.env.AGENT_SESSION_ID;
+  }
+  if (process.env.OPENCODE_SESSION_ID) {
+    return process.env.OPENCODE_SESSION_ID;
+  }
+  return undefined;
+}
 
 function getAccomplishDataDirs(): string[] {
   const dirs: string[] = [];
@@ -52,6 +72,10 @@ function getAccomplishDataDirs(): string[] {
 
   return dirs;
 }
+
+// ---------------------------------------------------------------------------
+// Adapter class
+// ---------------------------------------------------------------------------
 
 class OpenCodeAdapter extends BaseHarnessAdapter {
   constructor() {
@@ -137,14 +161,6 @@ class OpenCodeAdapter extends BaseHarnessAdapter {
     });
   }
 
-  override handleStopHook(args: HookHandlerArgs): Promise<number> {
-    return handleOpenCodeStopHook(args);
-  }
-
-  override handleSessionStartHook(args: HookHandlerArgs): Promise<number> {
-    return handleOpenCodeSessionStartHook(args);
-  }
-
   installPlugin(_options: HarnessInstallOptions): Promise<HarnessInstallResult> {
     return Promise.resolve({
       harness: "opencode",
@@ -156,6 +172,8 @@ class OpenCodeAdapter extends BaseHarnessAdapter {
   override getPromptContext(opts?: { interactive?: boolean | undefined }): PromptContext {
     return createOpenCodeContext(opts);
   }
+
+  // handleStopHook and handleSessionStartHook use BaseAdapter defaults
 }
 
 export function createOpenCodeAdapter(): OpenCodeAdapter {

@@ -2,23 +2,57 @@
  * Codex harness adapter.
  *
  * Extends BaseHarnessAdapter with Codex-specific behavior:
- * - Stop hook delegation to Claude Code's handler
- * - Session start with marker writes
  * - Codex-specific session/plugin root resolution
+ * - Session binding with auto-release
  */
 
+import * as path from "node:path";
 import { HarnessCapability as Cap } from "../types";
 import type {
-  HookHandlerArgs,
   SessionBindOptions,
   SessionBindResult,
 } from "../types";
 import type { PromptContext } from "../../prompts/types";
+import { normalizeSessionStateDir } from "../../config";
+import { resolveSessionIdWithMarker } from "../../utils/sessionMarker";
 import { BaseHarnessAdapter } from "../BaseAdapter";
-import { createClaudeCodeAdapter } from "./claude-code";
-import { handleCodexStopHook, handleCodexSessionStartHook, resolveCodexPluginRoot, resolveCodexSessionId, resolveCodexStateDir } from "../hooks/codexHooks";
 import { bindSession } from "../hooks/sessionBinding";
 import { createCodexContext } from "../hooks/promptContexts";
+
+// ---------------------------------------------------------------------------
+// Shared utilities (previously in codexHooks.ts)
+// ---------------------------------------------------------------------------
+
+export function resolveCodexPluginRoot(
+  args: { pluginRoot?: string } = {},
+): string | undefined {
+  const root = args.pluginRoot
+    || process.env.CODEX_PLUGIN_ROOT
+    || process.env.AGENT_PLUGIN_ROOT;
+  return root ? path.resolve(root) : undefined;
+}
+
+export function resolveCodexStateDir(args: {
+  stateDir?: string;
+  pluginRoot?: string;
+}): string {
+  return normalizeSessionStateDir(
+    args.stateDir ?? process.env.BABYSITTER_STATE_DIR,
+  );
+}
+
+export function resolveCodexSessionId(parsed: {
+  sessionId?: string;
+}): string | undefined {
+  return resolveSessionIdWithMarker("codex", parsed, [
+    "CODEX_THREAD_ID",
+    "CODEX_SESSION_ID",
+  ]);
+}
+
+// ---------------------------------------------------------------------------
+// Adapter class
+// ---------------------------------------------------------------------------
 
 class CodexAdapter extends BaseHarnessAdapter {
   constructor() {
@@ -77,18 +111,11 @@ class CodexAdapter extends BaseHarnessAdapter {
     });
   }
 
-  override handleStopHook(args: HookHandlerArgs): Promise<number> {
-    const claude = createClaudeCodeAdapter();
-    return handleCodexStopHook(args, claude);
-  }
-
-  override handleSessionStartHook(args: HookHandlerArgs): Promise<number> {
-    return handleCodexSessionStartHook(args);
-  }
-
   override getPromptContext(opts?: { interactive?: boolean | undefined }): PromptContext {
     return createCodexContext(opts);
   }
+
+  // handleStopHook and handleSessionStartHook use BaseAdapter defaults
 }
 
 export function createCodexAdapter(): CodexAdapter {

@@ -145,19 +145,40 @@ export async function handleStopHookCommon(
   }
 
   const runsDir = path.resolve(args.runsDir || ".a5c/runs");
-  const filePath = getSessionFilePath(stateDir, sessionId);
+  let activeSessionId = sessionId;
+  let filePath = getSessionFilePath(stateDir, activeSessionId);
   log.info(`Checking session file at: ${filePath}`);
 
-  // Load session state
+  // Load session state (with env fallback retry)
   let sessionFile;
   try {
     if (!(await sessionFileExists(filePath))) {
-      log.info(`No active loop found for session ${sessionId} — allowing exit`);
-      if (verbose) {
-        process.stderr.write(`[hook:run stop] No active loop for session ${sessionId}\n`);
+      // Retry with AGENT_SESSION_ID if the input session is stale
+      const envSessionId = process.env.AGENT_SESSION_ID;
+      if (envSessionId && envSessionId !== activeSessionId) {
+        log.info(`Payload session ${activeSessionId} is stale; env session is ${envSessionId} — retrying lookup`);
+        const retryPath = getSessionFilePath(stateDir, envSessionId);
+        if (await sessionFileExists(retryPath)) {
+          filePath = retryPath;
+          activeSessionId = envSessionId;
+          log.setContext("session", activeSessionId);
+          log.info(`Found session file for env session: ${filePath}`);
+        } else {
+          log.info(`No active loop found for session ${activeSessionId} or env session ${envSessionId} — allowing exit`);
+          if (verbose) {
+            process.stderr.write(`[hook:run stop] No active loop for session ${activeSessionId} or ${envSessionId}\n`);
+          }
+          process.stdout.write("{}\n");
+          return makeExit(log, 0, "no_session_file");
+        }
+      } else {
+        log.info(`No active loop found for session ${activeSessionId} — allowing exit`);
+        if (verbose) {
+          process.stderr.write(`[hook:run stop] No active loop for session ${activeSessionId}\n`);
+        }
+        process.stdout.write("{}\n");
+        return makeExit(log, 0, "no_session_file");
       }
-      process.stdout.write("{}\n");
-      return makeExit(log, 0, "no_session_file");
     }
     sessionFile = await readSessionFile(filePath);
   } catch {
@@ -178,7 +199,7 @@ export async function handleStopHookCommon(
     if (runId) {
       const eventDir = state.runDir?.trim() || path.join(runsDir, runId);
       await appendStopHookEvent(eventDir, {
-        sessionId,
+        sessionId: activeSessionId,
         iteration: state.iteration,
         decision: "approve",
         reason: "max_iterations_reached",
@@ -189,7 +210,7 @@ export async function handleStopHookCommon(
     }
     await cleanupSession(filePath);
     process.stdout.write("{}\n");
-    return makeExit(log, 0, "max_iterations_reached", { sessionId, filePath, state, prompt, resolvedPluginRoot, runsDir });
+    return makeExit(log, 0, "max_iterations_reached", { sessionId: activeSessionId, filePath, state, prompt, resolvedPluginRoot, runsDir });
   }
 
   // Check iteration speed
@@ -208,7 +229,7 @@ export async function handleStopHookCommon(
     if (runId) {
       const eventDir = state.runDir?.trim() || path.join(runsDir, runId);
       await appendStopHookEvent(eventDir, {
-        sessionId,
+        sessionId: activeSessionId,
         iteration: state.iteration,
         decision: "approve",
         reason: "iteration_too_fast",
@@ -219,7 +240,7 @@ export async function handleStopHookCommon(
     }
     await cleanupSession(filePath);
     process.stdout.write("{}\n");
-    return makeExit(log, 0, "iteration_too_fast", { sessionId, filePath, state, prompt, resolvedPluginRoot, runsDir });
+    return makeExit(log, 0, "iteration_too_fast", { sessionId: activeSessionId, filePath, state, prompt, resolvedPluginRoot, runsDir });
   }
 
   // Extract promise from response
@@ -250,11 +271,11 @@ export async function handleStopHookCommon(
   if (!runId) {
     log.info("No run associated with session — allowing exit");
     if (verbose) {
-      process.stderr.write(`[hook:run stop] No run for session ${sessionId}\n`);
+      process.stderr.write(`[hook:run stop] No run for session ${activeSessionId}\n`);
     }
     await cleanupSession(filePath);
     process.stdout.write("{}\n");
-    return makeExit(log, 0, "no_run_id", { sessionId, filePath, state, prompt, resolvedPluginRoot, runsDir });
+    return makeExit(log, 0, "no_run_id", { sessionId: activeSessionId, filePath, state, prompt, resolvedPluginRoot, runsDir });
   }
 
   // Resolve run state
@@ -295,7 +316,7 @@ export async function handleStopHookCommon(
     log.error(errorMessage);
     process.stderr.write(`[hook:run stop] ${errorMessage}\n`);
     await appendStopHookEvent(runEventDir, {
-      sessionId,
+      sessionId: activeSessionId,
       iteration: state.iteration,
       decision: "approve",
       reason: "run_state_unknown",
@@ -304,7 +325,7 @@ export async function handleStopHookCommon(
       hasPromise,
     }, options.harness);
     process.stdout.write("{}\n");
-    return makeExit(log, options.useDetailedRunState ? 1 : 0, "run_state_unknown", { sessionId, filePath, state, prompt, resolvedPluginRoot, runsDir });
+    return makeExit(log, options.useDetailedRunState ? 1 : 0, "run_state_unknown", { sessionId: activeSessionId, filePath, state, prompt, resolvedPluginRoot, runsDir });
   }
 
   if (runState === "waiting" && onlyBreakpointsPending) {
@@ -313,7 +334,7 @@ export async function handleStopHookCommon(
       process.stderr.write("[hook:run stop] Run waiting on breakpoint(s) — allowing exit\n");
     }
     await appendStopHookEvent(runEventDir, {
-      sessionId,
+      sessionId: activeSessionId,
       iteration: state.iteration,
       decision: "approve",
       reason: "breakpoint_waiting",
@@ -322,7 +343,7 @@ export async function handleStopHookCommon(
       hasPromise,
     }, options.harness);
     process.stdout.write("{}\n");
-    return makeExit(log, 0, "breakpoint_waiting", { sessionId, filePath, state, prompt, resolvedPluginRoot, runsDir });
+    return makeExit(log, 0, "breakpoint_waiting", { sessionId: activeSessionId, filePath, state, prompt, resolvedPluginRoot, runsDir });
   }
 
   if (hasPromise && completionProof && promiseValue === completionProof) {
@@ -331,7 +352,7 @@ export async function handleStopHookCommon(
       process.stderr.write("[hook:run stop] Valid promise tag detected - run complete\n");
     }
     await appendStopHookEvent(runEventDir, {
-      sessionId,
+      sessionId: activeSessionId,
       iteration: state.iteration,
       decision: "approve",
       reason: "completion_proof_matched",
@@ -341,7 +362,7 @@ export async function handleStopHookCommon(
     }, options.harness);
     await cleanupSession(filePath);
     process.stdout.write("{}\n");
-    return makeExit(log, 0, "completion_proof_matched", { sessionId, filePath, state, prompt, resolvedPluginRoot, runsDir });
+    return makeExit(log, 0, "completion_proof_matched", { sessionId: activeSessionId, filePath, state, prompt, resolvedPluginRoot, runsDir });
   }
 
   // Should continue → update session and return
@@ -363,7 +384,7 @@ export async function handleStopHookCommon(
   }
 
   await appendStopHookEvent(runEventDir, {
-    sessionId,
+    sessionId: activeSessionId,
     iteration: state.iteration,
     decision: "block",
     reason: "continue_loop",
@@ -372,7 +393,7 @@ export async function handleStopHookCommon(
     hasPromise,
   }, options.harness);
 
-  return { shouldContinue: true, exitCode: 0, sessionId, filePath, state: updatedState,
+  return { shouldContinue: true, exitCode: 0, sessionId: activeSessionId, filePath, state: updatedState,
     prompt, runStateDetails, runStateSummary, hasPromise, promiseValue, resolvedPluginRoot,
     runsDir, updatedTimes, nextIteration, log };
 }

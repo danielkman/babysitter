@@ -32,6 +32,9 @@ import {
   type ProxyCapabilities,
 } from "./capabilities";
 import { createUnifiedContext } from "./promptContext";
+import { handleStopHookCommon } from "../hooks/stopHookHandler";
+import { buildStopHookContinuation } from "../hooks/stopHookContinuation";
+import { initializeSessionState } from "../hooks/utils";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -144,20 +147,61 @@ export function createUnifiedAdapter(): HarnessAdapter {
       });
     },
 
-    // ── Hook handlers (minimal; hooks-proxy does the real work) ───────
+    // ── Hook handlers (shared orchestration logic) ─────────────────────
 
-    handleStopHook(_args: HookHandlerArgs): Promise<number> {
-      // When running through hooks-proxy, the proxy handles the stop
-      // lifecycle.  If called directly, approve (allow exit).
-      process.stdout.write('{"decision":"approve"}\n');
-      return Promise.resolve(0);
+    async handleStopHook(args: HookHandlerArgs): Promise<number> {
+      // Use the shared stop hook handler — works for all harnesses
+      const common = await handleStopHookCommon(args, {
+        harness: "unified",
+        sessionIdFields: ["session_id"],
+        useDetailedRunState: true,
+        pluginRootEnvVars: ["AGENT_PLUGIN_ROOT"],
+        resolveStateDir: (a) =>
+          normalizeSessionStateDir(
+            a.stateDir ?? process.env.BABYSITTER_STATE_DIR,
+          ),
+      });
+      if (!common.shouldContinue) {
+        if (!common.exitReason || common.exitReason === "stdin_error") {
+          // Already wrote output in handleStopHookCommon
+        }
+        return common.exitCode;
+      }
+      const { reason, systemMessage } = await buildStopHookContinuation({
+        nextIteration: common.nextIteration,
+        maxIterations: common.state.maxIterations,
+        runState: common.runStateDetails?.runState ?? "",
+        pendingKinds: common.runStateDetails?.pendingKinds ?? "",
+        completionProof: common.runStateDetails?.completionProof ?? "",
+        prompt: common.prompt,
+        resolvedPluginRoot: common.resolvedPluginRoot,
+        runId: common.state.runId ?? undefined,
+        runsDir: common.runsDir,
+        entrypointImportPath: common.runStateDetails?.entrypointImportPath,
+      });
+      process.stdout.write(
+        JSON.stringify({ decision: "block", reason, systemMessage }) + "\n",
+      );
+      return 0;
     },
 
-    handleSessionStartHook(_args: HookHandlerArgs): Promise<number> {
-      // Hooks-proxy handles session bootstrapping.
-      // If called directly, nothing to do.
+    async handleSessionStartHook(args: HookHandlerArgs): Promise<number> {
+      // Initialize session state
+      const sessionId = process.env.AGENT_SESSION_ID;
+      if (!sessionId) {
+        process.stdout.write("{}\n");
+        return 0;
+      }
+      const stateDir = normalizeSessionStateDir(
+        args.stateDir ?? process.env.BABYSITTER_STATE_DIR,
+      );
+      if (stateDir) {
+        await initializeSessionState(sessionId, stateDir, {
+          verbose: args.verbose,
+        });
+      }
       process.stdout.write("{}\n");
-      return Promise.resolve(0);
+      return 0;
     },
 
     findHookDispatcherPath(_startCwd: string): string | null {

@@ -21,13 +21,13 @@ import {
   __setAncestorResolverForTests,
   getSessionMarkerPath,
 } from "../../utils/sessionMarker";
-import { createCodexAdapter } from "../codex";
-import { createGeminiCliAdapter } from "../geminiCli";
-import { createGithubCopilotAdapter } from "../githubCopilot";
-import { createPiAdapter } from "../pi";
-import { createOhMyPiAdapter } from "../ohMyPi";
+import { createCodexAdapter } from "../adapters/codex";
+import { createGeminiCliAdapter } from "../adapters/gemini-cli";
+import { createGithubCopilotAdapter } from "../adapters/github-copilot";
+import { createPiAdapter } from "../adapters/pi";
+import { createOhMyPiAdapter } from "../adapters/oh-my-pi";
 import { createCustomAdapter } from "../customAdapter";
-import { createCursorAdapter } from "../cursor";
+import { createCursorAdapter } from "../adapters/cursor";
 import type { HarnessAdapter } from "../types";
 
 interface AdapterCase {

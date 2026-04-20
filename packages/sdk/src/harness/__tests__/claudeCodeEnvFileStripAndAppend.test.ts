@@ -12,7 +12,7 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { promises as fs, writeFileSync as writeFileSyncAsync, readFileSync } from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
-import { setBabysitterSessionIdInEnvFile } from "../claudeCode";
+import { setBabysitterSessionIdInEnvFile } from "../adapters/claude-code";
 
 let tmpDir: string;
 

@@ -7,9 +7,9 @@
  * - Session-start hook with compression pre-warming
  */
 
+import { appendFileSync } from "node:fs";
 import { HarnessCapability as Cap } from "../types";
 import type {
-  HookHandlerArgs,
   SessionBindOptions,
   SessionBindResult,
 } from "../types";
@@ -18,22 +18,74 @@ import {
   createClaudeCodeCliSetupSnippet,
   createPromptContext,
 } from "../../prompts/contextShared";
+import { normalizeSessionStateDir } from "../../config";
 import { BaseHarnessAdapter } from "../BaseAdapter";
-import { handleClaudeCodeStopHook } from "../hooks/claudeCodeHooks";
-import { handleClaudeCodeSessionStartHook } from "../hooks/claudeCodeHooks";
-import { bindClaudeCodeSession } from "../hooks/claudeCodeHooks";
-import {
-  resolveCurrentSessionIdFromEnv,
-  type SessionResolutionDetails,
-  resolveSessionIdDetailed,
-  __resolveCurrentSessionIdFromEnvForTests,
-} from "../hooks/claudeCodeHooks";
+import { bindSession } from "../hooks/sessionBinding";
 
-export {
-  __resolveCurrentSessionIdFromEnvForTests,
-  type SessionResolutionDetails,
-  resolveSessionIdDetailed,
-};
+// ---------------------------------------------------------------------------
+// Session ID resolution (previously in claudeCodeHooks.ts)
+// ---------------------------------------------------------------------------
+
+/**
+ * Resolve the current session ID from environment.
+ * hooks-proxy handles session ID propagation via AGENT_SESSION_ID.
+ */
+export function resolveCurrentSessionIdFromEnv(): string | undefined {
+  return process.env.AGENT_SESSION_ID;
+}
+
+export interface SessionResolutionDetails {
+  sessionId?: string;
+  resolvedFrom: "env-var" | "explicit" | "none";
+  /** @deprecated PID-marker logic removed. Always null. */
+  ancestorPid: number | null;
+  /** @deprecated PID-marker logic removed. Always null. */
+  ancestorAlive: boolean | null;
+}
+
+/**
+ * Resolve session ID with detailed provenance.
+ */
+export function resolveSessionIdDetailed(explicit?: string): SessionResolutionDetails {
+  if (explicit) {
+    return {
+      sessionId: explicit,
+      resolvedFrom: "explicit",
+      ancestorPid: null,
+      ancestorAlive: null,
+    };
+  }
+
+  const agentSessionId = process.env.AGENT_SESSION_ID;
+  if (agentSessionId) {
+    return {
+      sessionId: agentSessionId,
+      resolvedFrom: "env-var",
+      ancestorPid: null,
+      ancestorAlive: null,
+    };
+  }
+
+  return {
+    sessionId: undefined,
+    resolvedFrom: "none",
+    ancestorPid: null,
+    ancestorAlive: null,
+  };
+}
+
+export const __resolveCurrentSessionIdFromEnvForTests = resolveCurrentSessionIdFromEnv;
+
+export function setBabysitterSessionIdInEnvFile(
+  envFile: string,
+  sessionId: string,
+): void {
+  appendFileSync(envFile, `export AGENT_SESSION_ID="${sessionId}"\n`);
+}
+
+// ---------------------------------------------------------------------------
+// Adapter class
+// ---------------------------------------------------------------------------
 
 class ClaudeCodeAdapter extends BaseHarnessAdapter {
   constructor() {
@@ -85,16 +137,19 @@ class ClaudeCodeAdapter extends BaseHarnessAdapter {
   }
 
   override bindSession(opts: SessionBindOptions): Promise<SessionBindResult> {
-    return bindClaudeCodeSession(opts);
+    const stateDir = normalizeSessionStateDir(
+      opts.stateDir ?? process.env.BABYSITTER_STATE_DIR,
+    );
+    return bindSession({
+      harness: "claude-code",
+      stateDir,
+      opts,
+      autoReleaseStale: true,
+    });
   }
 
-  override handleStopHook(args: HookHandlerArgs): Promise<number> {
-    return handleClaudeCodeStopHook(args);
-  }
-
-  override handleSessionStartHook(args: HookHandlerArgs): Promise<number> {
-    return handleClaudeCodeSessionStartHook(args);
-  }
+  // handleStopHook and handleSessionStartHook use BaseAdapter defaults
+  // (shared stop-hook handler with detailed run state resolution)
 }
 
 export function createClaudeCodeAdapter(): ClaudeCodeAdapter {

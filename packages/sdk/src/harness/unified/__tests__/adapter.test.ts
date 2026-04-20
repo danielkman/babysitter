@@ -276,7 +276,8 @@ describe("createUnifiedAdapter", () => {
     // Suppress stdout in test
     const writeSpy = vi.spyOn(process.stdout, "write").mockReturnValue(true);
     const adapter = createUnifiedAdapter();
-    const code = await adapter.handleStopHook({ json: false });
+    // Provide empty stdin payload so the handler doesn't block on stdin
+    const code = await adapter.handleStopHook({ json: false, stdinPayload: "{}" });
     expect(code).toBe(0);
     writeSpy.mockRestore();
   });

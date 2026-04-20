@@ -8,11 +8,11 @@
 import type { PromptContext } from "../prompts/types";
 import type { HarnessAdapter, HarnessSpec } from "./types";
 import { HarnessCapability as Cap } from "./types";
-import { createClaudeCodeAdapter } from "./adapters/claude-code";
 import {
+  createClaudeCodeAdapter,
   resolveSessionIdDetailed as resolveClaudeCodeSessionDetails,
   type SessionResolutionDetails,
-} from "./hooks/claudeCodeHooks";
+} from "./adapters/claude-code";
 import { createCodexAdapter } from "./adapters/codex";
 import { createGeminiCliAdapter } from "./adapters/gemini-cli";
 import { createPiAdapter } from "./adapters/pi";
@@ -101,7 +101,7 @@ export const OPENCLAW_DISCOVERY_SPEC: HarnessSpec = {
   configPaths: [".openclaw"],
 };
 
-export type { SessionResolutionDetails } from "./hooks/claudeCodeHooks";
+export type { SessionResolutionDetails } from "./adapters/claude-code";
 
 interface HarnessRegistryEntry {
   name: string;

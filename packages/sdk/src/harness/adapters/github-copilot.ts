@@ -3,25 +3,102 @@
  */
 
 import * as path from "node:path";
+import { appendFileSync, readFileSync } from "node:fs";
 import { HarnessCapability as Cap } from "../types";
 import type {
-  HookHandlerArgs,
   SessionBindOptions,
   SessionBindResult,
 } from "../types";
 import type { PromptContext } from "../../prompts/types";
+import { normalizeSessionStateDir } from "../../config";
 import { BaseHarnessAdapter } from "../BaseAdapter";
-import {
-  handleGithubCopilotSessionEndHook,
-  handleGithubCopilotSessionStartHook,
-  resolveGithubCopilotSessionId,
-  resolveGithubCopilotStateDir,
-  setBabysitterSessionIdInCopilotEnvFile,
-} from "../hooks/githubCopilotHooks";
 import { createGithubCopilotContext } from "../hooks/promptContexts";
 import { bindSession } from "../hooks/sessionBinding";
+import { readSessionMarker } from "../../utils/sessionMarker";
 
-export { setBabysitterSessionIdInCopilotEnvFile };
+// ---------------------------------------------------------------------------
+// Utilities (previously in githubCopilotHooks.ts)
+// ---------------------------------------------------------------------------
+
+export function setBabysitterSessionIdInCopilotEnvFile(
+  envFile: string,
+  sessionId: string,
+): void {
+  appendFileSync(envFile, `export AGENT_SESSION_ID="${sessionId}"\n`);
+}
+
+export function resolveGithubCopilotStateDir(args: {
+  stateDir?: string;
+  pluginRoot?: string;
+}): string {
+  return normalizeSessionStateDir(args.stateDir ?? process.env.BABYSITTER_STATE_DIR);
+}
+
+export function resolveGithubCopilotSessionId(parsed: {
+  sessionId?: string;
+}): string | undefined {
+  if (parsed.sessionId) {
+    return parsed.sessionId;
+  }
+
+  const trustEnv =
+    process.env.AGENT_TRUST_ENV_SESSION === "1" ||
+    process.env.BABYSITTER_TRUST_ENV_SESSION === "1";
+  const agentSessionId =
+    process.env.AGENT_SESSION_ID;
+  if (trustEnv) {
+    if (agentSessionId) {
+      return agentSessionId;
+    }
+    const trustedEnvFile = process.env.COPILOT_ENV_FILE || process.env.CLAUDE_ENV_FILE;
+    if (trustedEnvFile) {
+      try {
+        const content = readFileSync(trustedEnvFile, "utf-8");
+        const agentMatch = content.match(
+          /(?:^|\n)\s*(?:export\s+)?AGENT_SESSION_ID="([^"]+)"/,
+        );
+        if (agentMatch?.[1]) {
+          return agentMatch[1];
+        }
+      } catch {
+        // Fall through
+      }
+    }
+    if (process.env.COPILOT_SESSION_ID) {
+      return process.env.COPILOT_SESSION_ID;
+    }
+    return undefined;
+  }
+
+  const envFile = process.env.COPILOT_ENV_FILE || process.env.CLAUDE_ENV_FILE;
+  if (envFile) {
+    try {
+      const content = readFileSync(envFile, "utf-8");
+      const agentMatches = [
+        ...content.matchAll(/export AGENT_SESSION_ID="([^"]+)"/g),
+      ];
+      const agentLast = agentMatches.at(-1)?.[1];
+      if (agentLast) {
+        return agentLast;
+      }
+    } catch {
+      // Fall through
+    }
+  }
+
+  if (process.env.COPILOT_SESSION_ID) {
+    return process.env.COPILOT_SESSION_ID;
+  }
+  if (agentSessionId) {
+    return agentSessionId;
+  }
+
+  return readSessionMarker("github-copilot") ?? undefined;
+}
+
+// ---------------------------------------------------------------------------
+// Adapter class
+// ---------------------------------------------------------------------------
 
 class GithubCopilotAdapter extends BaseHarnessAdapter {
   constructor() {
@@ -88,17 +165,11 @@ class GithubCopilotAdapter extends BaseHarnessAdapter {
     });
   }
 
-  override handleStopHook(args: HookHandlerArgs): Promise<number> {
-    return handleGithubCopilotSessionEndHook(args);
-  }
-
-  override handleSessionStartHook(args: HookHandlerArgs): Promise<number> {
-    return handleGithubCopilotSessionStartHook(args);
-  }
-
   override getPromptContext(opts?: { interactive?: boolean | undefined }): PromptContext {
     return createGithubCopilotContext(opts);
   }
+
+  // handleStopHook and handleSessionStartHook use BaseAdapter defaults
 }
 
 export function createGithubCopilotAdapter(): GithubCopilotAdapter {

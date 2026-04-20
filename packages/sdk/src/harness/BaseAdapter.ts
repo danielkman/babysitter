@@ -21,6 +21,9 @@ import type {
   SessionBindResult,
 } from "./types";
 import { bindSession } from "./hooks/sessionBinding";
+import { handleStopHookCommon } from "./hooks/stopHookHandler";
+import { buildStopHookContinuation } from "./hooks/stopHookContinuation";
+import { initializeSessionState, readStdin, parseHookInput, safeStr } from "./hooks/utils";
 
 // ---------------------------------------------------------------------------
 // Adapter configuration interface
@@ -144,14 +147,74 @@ export abstract class BaseHarnessAdapter implements HarnessAdapter {
     });
   }
 
-  handleStopHook(_args: HookHandlerArgs): Promise<number> {
-    process.stdout.write("{}\n");
-    return Promise.resolve(0);
+  async handleStopHook(args: HookHandlerArgs): Promise<number> {
+    const common = await handleStopHookCommon(args, {
+      harness: this.config.name,
+      sessionIdFields: ["session_id", "conversation_id"],
+      useDetailedRunState: true,
+      pluginRootEnvVars: this.config.pluginRootEnvVars,
+      resolveStateDir: (a) =>
+        normalizeSessionStateDir(
+          a.stateDir ?? process.env.BABYSITTER_STATE_DIR,
+        ),
+    });
+    if (!common.shouldContinue) {
+      return common.exitCode;
+    }
+    const { reason, systemMessage } = await buildStopHookContinuation({
+      nextIteration: common.nextIteration,
+      maxIterations: common.state.maxIterations,
+      runState: common.runStateDetails?.runState ?? "",
+      pendingKinds: common.runStateDetails?.pendingKinds ?? "",
+      completionProof: common.runStateDetails?.completionProof ?? "",
+      prompt: common.prompt,
+      resolvedPluginRoot: common.resolvedPluginRoot,
+      runId: common.state.runId ?? undefined,
+      runsDir: common.runsDir,
+      entrypointImportPath: common.runStateDetails?.entrypointImportPath,
+    });
+    process.stdout.write(
+      JSON.stringify({ decision: "block", reason, systemMessage }) + "\n",
+    );
+    return 0;
   }
 
-  handleSessionStartHook(_args: HookHandlerArgs): Promise<number> {
+  async handleSessionStartHook(args: HookHandlerArgs): Promise<number> {
+    let rawInput: string;
+    try {
+      rawInput = await readStdin();
+    } catch {
+      process.stdout.write("{}\n");
+      return 0;
+    } finally {
+      if (typeof process.stdin.unref === "function") {
+        process.stdin.unref();
+      }
+    }
+
+    const hookInput = parseHookInput(rawInput);
+    const sessionId =
+      safeStr(hookInput, "session_id") ||
+      safeStr(hookInput, "conversation_id") ||
+      process.env.AGENT_SESSION_ID ||
+      "";
+
+    if (!sessionId) {
+      process.stdout.write("{}\n");
+      return 0;
+    }
+
+    const stateDir = normalizeSessionStateDir(
+      args.stateDir ?? process.env.BABYSITTER_STATE_DIR,
+    );
+    if (stateDir) {
+      await initializeSessionState(sessionId, stateDir, {
+        verbose: args.verbose,
+      });
+    }
+
     process.stdout.write("{}\n");
-    return Promise.resolve(0);
+    return 0;
   }
 
   findHookDispatcherPath(_startCwd: string): string | null {

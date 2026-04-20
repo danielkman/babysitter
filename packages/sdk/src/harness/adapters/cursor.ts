@@ -2,8 +2,6 @@
  * Cursor harness adapter.
  *
  * Extends BaseHarnessAdapter with Cursor-specific behavior:
- * - Stop hook with followup_message pattern
- * - Session start with marker
  * - Custom bindSession (inline, not shared helper)
  * - Hook dispatcher path resolution
  * - Supported hook types enumeration
@@ -13,17 +11,12 @@ import * as path from "node:path";
 import { existsSync } from "node:fs";
 import { HarnessCapability as Cap } from "../types";
 import type {
-  HookHandlerArgs,
   SessionBindOptions,
   SessionBindResult,
 } from "../types";
 import type { PromptContext } from "../../prompts/types";
+import { normalizeSessionStateDir } from "../../config";
 import { BaseHarnessAdapter } from "../BaseAdapter";
-import {
-  handleCursorStopHook,
-  handleCursorSessionStartHook,
-  resolveCursorStateDir,
-} from "../hooks/cursorHooks";
 import { createCursorContext } from "../hooks/promptContexts";
 import { readSessionMarker } from "../../utils/sessionMarker";
 import {
@@ -37,6 +30,15 @@ import {
   updateSessionState,
   writeSessionFile,
 } from "../../session/write";
+
+export function resolveCursorStateDir(args: {
+  stateDir?: string;
+  pluginRoot?: string;
+}): string {
+  return normalizeSessionStateDir(
+    args.stateDir ?? process.env.BABYSITTER_STATE_DIR,
+  );
+}
 
 class CursorAdapter extends BaseHarnessAdapter {
   constructor() {
@@ -172,14 +174,6 @@ class CursorAdapter extends BaseHarnessAdapter {
     return { harness: "cursor", sessionId, stateFile: filePath };
   }
 
-  override handleStopHook(args: HookHandlerArgs): Promise<number> {
-    return handleCursorStopHook(args);
-  }
-
-  override handleSessionStartHook(args: HookHandlerArgs): Promise<number> {
-    return handleCursorSessionStartHook(args);
-  }
-
   override findHookDispatcherPath(_startCwd: string): string | null {
     const pluginRoot = process.env.CURSOR_PLUGIN_ROOT;
     if (pluginRoot) {
@@ -196,6 +190,8 @@ class CursorAdapter extends BaseHarnessAdapter {
   override getPromptContext(opts?: { interactive?: boolean | undefined }): PromptContext {
     return createCursorContext(opts);
   }
+
+  // handleStopHook and handleSessionStartHook use BaseAdapter defaults
 }
 
 export function createCursorAdapter(): CursorAdapter {

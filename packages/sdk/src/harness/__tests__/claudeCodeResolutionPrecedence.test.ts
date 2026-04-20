@@ -7,7 +7,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { resolveSessionIdDetailed } from "../claudeCode";
+import { resolveSessionIdDetailed } from "../adapters/claude-code";
 
 let savedSessionId: string | undefined;
 

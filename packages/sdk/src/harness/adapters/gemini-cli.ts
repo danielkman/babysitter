@@ -5,20 +5,26 @@
 import * as path from "node:path";
 import { HarnessCapability as Cap } from "../types";
 import type {
-  HookHandlerArgs,
   SessionBindOptions,
   SessionBindResult,
 } from "../types";
 import type { PromptContext } from "../../prompts/types";
+import { normalizeSessionStateDir } from "../../config";
+import { resolveSessionIdWithMarker } from "../../utils/sessionMarker";
 import { BaseHarnessAdapter } from "../BaseAdapter";
-import {
-  handleGeminiAfterAgentHook,
-  handleGeminiSessionStartHook,
-  resolveGeminiCliStateDir,
-  resolveGeminiSessionIdFromEnv,
-} from "../hooks/geminiCliHooks";
 import { createGeminiCliContext } from "../hooks/promptContexts";
 import { bindSession } from "../hooks/sessionBinding";
+
+export function resolveGeminiSessionIdFromEnv(): string | undefined {
+  return resolveSessionIdWithMarker("gemini-cli", {}, ["GEMINI_SESSION_ID"]);
+}
+
+export function resolveGeminiCliStateDir(args: {
+  stateDir?: string;
+  pluginRoot?: string;
+}): string {
+  return normalizeSessionStateDir(args.stateDir ?? process.env.BABYSITTER_STATE_DIR);
+}
 
 class GeminiCliAdapter extends BaseHarnessAdapter {
   constructor() {
@@ -70,17 +76,11 @@ class GeminiCliAdapter extends BaseHarnessAdapter {
     });
   }
 
-  override handleStopHook(args: HookHandlerArgs): Promise<number> {
-    return handleGeminiAfterAgentHook(args);
-  }
-
-  override handleSessionStartHook(args: HookHandlerArgs): Promise<number> {
-    return handleGeminiSessionStartHook(args);
-  }
-
   override getPromptContext(opts?: { interactive?: boolean | undefined }): PromptContext {
     return createGeminiCliContext(opts);
   }
+
+  // handleStopHook and handleSessionStartHook use BaseAdapter defaults
 }
 
 export function createGeminiCliAdapter(): GeminiCliAdapter {

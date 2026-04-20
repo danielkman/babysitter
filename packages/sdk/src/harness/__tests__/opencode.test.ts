@@ -15,7 +15,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { createOpenCodeAdapter } from "../opencode";
+import { createOpenCodeAdapter } from "../adapters/opencode";
 import { HarnessCapability } from "../types";
 
 // ---------------------------------------------------------------------------

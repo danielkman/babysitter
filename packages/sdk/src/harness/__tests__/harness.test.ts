@@ -15,13 +15,13 @@ import * as os from "node:os";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { writeFileSync } from "node:fs";
 import { Readable } from "node:stream";
-import { createClaudeCodeAdapter } from "../claudeCode";
+import { createClaudeCodeAdapter } from "../adapters/claude-code";
 import { writeSessionFile } from "../../session/write";
 import { getSessionFilePath, readSessionFile, sessionFileExists } from "../../session/parse";
 import { appendEvent } from "../../storage/journal";
-import { createCodexAdapter } from "../codex";
-import { createPiAdapter } from "../pi";
-import { createOhMyPiAdapter } from "../ohMyPi";
+import { createCodexAdapter } from "../adapters/codex";
+import { createPiAdapter } from "../adapters/pi";
+import { createOhMyPiAdapter } from "../adapters/oh-my-pi";
 import { createNullAdapter } from "../nullAdapter";
 import {
   detectAdapter,
