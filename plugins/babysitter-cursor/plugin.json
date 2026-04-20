@@ -17,6 +17,8 @@
     "automation",
     "event-sourced",
     "hooks",
+    "TDD",
+    "quality-convergence",
     "agent",
     "LLM",
     "cursor"
