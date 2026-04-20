@@ -252,7 +252,7 @@ Opens a web-based dashboard showing:
 - Journal events as they happen
 - Orchestration state visualization
 
-**Runtime path:** This command uses `babysitter-harness observe` to launch the observer from a local Babysitter workspace when available, or from an installed observer binary.
+**Built by the community:** This tool was created by [@yoavmayer](https://github.com/yoavmayer) as an observability solution for watching babysitter and agent activity. It launches the `@yoavmayer/babysitter-observer-dashboard` package.
 
 **Technical:** Runs a local server and opens your browser. Blocking process — runs until stopped.
 

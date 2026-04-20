@@ -1,6 +1,6 @@
 import * as path from "node:path";
-import { existsSync, promises as fs } from "node:fs";
-import { spawn, spawnSync } from "node:child_process";
+import { promises as fs } from "node:fs";
+import { spawn } from "node:child_process";
 import {
   BabysitterRuntimeError,
   ErrorCategory,
@@ -69,110 +69,18 @@ export async function readCliVersion(): Promise<string> {
   return "unknown";
 }
 
-export interface ObserverLaunchTarget {
-  command: string;
-  args: string[];
-  cwd?: string;
-  shell: boolean;
-  source: "workspace" | "binary";
-}
-
-export function findObserverWorkspaceRoot(startDir: string): string | undefined {
-  let current = path.resolve(startDir);
-  for (;;) {
-    const candidate = path.join(current, "packages", "observer-dashboard", "package.json");
-    try {
-      if (existsSync(candidate)) {
-        return current;
-      }
-    } catch {
-      // Keep walking up.
-    }
-    const parent = path.dirname(current);
-    if (parent === current) {
-      return undefined;
-    }
-    current = parent;
-  }
-}
-
-function commandExists(command: string): boolean {
-  const locator = process.platform === "win32" ? "where" : "which";
-  const result = spawnSync(locator, [command], { stdio: "ignore", shell: false });
-  return result.status === 0;
-}
-
-export function resolveObserverLaunchTarget(options: {
-  workspace?: string;
-  cwd?: string;
-  packageRoot?: string;
-  hasCommand?: (command: string) => boolean;
-} = {}): ObserverLaunchTarget | undefined {
-  const cwd = path.resolve(options.cwd ?? process.cwd());
-  const packageRoot = path.resolve(options.packageRoot ?? path.resolve(__dirname, "..", ".."));
-  const searchRoots = [
-    options.workspace ? path.resolve(options.workspace) : undefined,
-    cwd,
-    packageRoot,
-  ].filter((value, index, values): value is string => Boolean(value) && values.indexOf(value) === index);
-
-  for (const root of searchRoots) {
-    const repoRoot = findObserverWorkspaceRoot(root);
-    if (repoRoot) {
-      return {
-        command: "npm",
-        args: [
-          "run",
-          "dev:cli",
-          "--workspace=@a5c-ai/babysitter-observer-dashboard",
-          "--",
-          "--dev",
-        ],
-        cwd: repoRoot,
-        shell: true,
-        source: "workspace",
-      };
-    }
-  }
-
-  const hasCommand = options.hasCommand ?? commandExists;
-  if (hasCommand("babysitter-observer-dashboard")) {
-    return {
-      command: "babysitter-observer-dashboard",
-      args: [],
-      shell: false,
-      source: "binary",
-    };
-  }
-
-  return undefined;
-}
-
 export async function launchObserver(workspace?: string): Promise<number> {
-  const watchDir = path.resolve(workspace ?? process.cwd());
+  const watchDir = workspace ?? path.resolve(process.cwd(), "..");
   const colors = supportsColors();
   const bold = colors ? "\x1b[1m" : "";
   const dim = colors ? "\x1b[2m" : "";
   const reset = colors ? "\x1b[0m" : "";
-  const target = resolveObserverLaunchTarget({ workspace, cwd: process.cwd() });
-
-  if (!target) {
-    process.stderr.write(`${bold}Unable to launch the observer dashboard.${reset}\n`);
-    process.stderr.write("No local observer workspace or installed `babysitter-observer-dashboard` binary was found.\n");
-    process.stderr.write("Try running this from a babysitter repository checkout, or use `babysitter-harness observe --tui`.\n");
-    return 1;
-  }
-
   process.stderr.write(`${bold}Launching babysitter observer dashboard...${reset}\n`);
   process.stderr.write(`${dim}Watching: ${watchDir}${reset}\n\n`);
-  if (target.source === "workspace") {
-    process.stderr.write(`${dim}Using local observer workspace.${reset}\n\n`);
-  }
 
-  const child = spawn(target.command, [...target.args, "--watch-dir", watchDir], {
+  const child = spawn("npx", ["-y", "@a5c-ai/babysitter-observer-dashboard@latest", "--watch-dir", watchDir], {
     stdio: "inherit",
-    cwd: target.cwd,
-    shell: target.shell,
+    shell: true,
   });
 
   return await new Promise<number>((resolve) => {

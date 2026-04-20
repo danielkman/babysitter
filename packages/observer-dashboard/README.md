@@ -50,35 +50,57 @@ Babysitter Observer Dashboard is a real-time browser-based monitoring UI for [ba
 
 ## Quick Start
 
-### Option 1: Launch through the harness CLI
+### Option 1: Run directly with npx
 
 ```bash
-babysitter-harness observe --workspace .
+npx -y @a5c-ai/babysitter-observer-dashboard@latest
 ```
 
-If the harness CLI is not installed globally:
+### Option 2: Install globally
 
 ```bash
-npx -y @a5c-ai/babysitter-harness@latest observe --workspace .
+npm install -g @a5c-ai/babysitter-observer-dashboard@latest
+babysitter-observer-dashboard
 ```
 
-### Option 2: Run the observer workspace from a Babysitter repo checkout
+### Option 3: Add as a dev dependency
 
 ```bash
-npm run dev:cli --workspace=@a5c-ai/babysitter-observer-dashboard -- --dev --watch-dir .
+npm install --save-dev @a5c-ai/babysitter-observer-dashboard
 ```
 
-### Option 3: Use an existing observer binary on your PATH
+Then add a script to your `package.json`:
+
+```json
+{
+  "scripts": {
+    "observe": "babysitter-observer-dashboard --watch-dir ."
+  }
+}
+```
+
+Or run it directly with npx without adding a script:
 
 ```bash
-babysitter-observer-dashboard --watch-dir .
+npx babysitter-observer-dashboard --watch-dir .
 ```
 
-The dashboard opens at [http://localhost:4800](http://localhost:4800) by default.
+The dashboard opens at [http://localhost:4800](http://localhost:4800) by default, and the CLI prints the exact local URL when it starts.
 
 ### Updating
 
-The observer currently ships through the Babysitter repo and harness CLI flow rather than a standalone published npm package. Update by pulling the latest repository changes or by updating `@a5c-ai/babysitter-harness`.
+The CLI checks for newer versions on startup and shows a notice when an update is available:
+
+```
+  Update available: 0.10.1 → 0.11.0
+  Run: npm i -g @a5c-ai/babysitter-observer-dashboard@latest
+```
+
+To update, run the command shown in the notice. If you use `npx`, pass `@latest` to ensure you always get the newest version:
+
+```bash
+npx -y @a5c-ai/babysitter-observer-dashboard@latest
+```
 
 ## CLI Reference
 
@@ -367,13 +389,35 @@ If you see `Error: listen EADDRINUSE :::4800`, another process is using the defa
 babysitter-observer-dashboard --port 4801
 ```
 
-### Observer binary not found
+### Permission errors on global install
 
-If `babysitter-observer-dashboard` is not on your PATH, use one of the supported entrypoints above instead:
+On macOS/Linux, global npm installs may require elevated permissions. If you see `EACCES` or permission-denied errors, try one of these approaches:
 
-- `babysitter-harness observe --workspace .`
-- `npx -y @a5c-ai/babysitter-harness@latest observe --workspace .`
-- `npm run dev:cli --workspace=@a5c-ai/babysitter-observer-dashboard -- --dev --watch-dir .`
+**Recommended: use npx instead (no global install needed):**
+
+```bash
+npx -y @a5c-ai/babysitter-observer-dashboard@latest
+```
+
+**Alternative: configure npm to use a user-writable directory:**
+
+```bash
+mkdir -p ~/.npm-global
+npm config set prefix "~/.npm-global"
+export PATH=~/.npm-global/bin:$PATH
+```
+
+Then retry the global install:
+
+```bash
+npm install -g @a5c-ai/babysitter-observer-dashboard@latest
+```
+
+**Alternative: use sudo (not recommended):**
+
+```bash
+sudo npm install -g @a5c-ai/babysitter-observer-dashboard@latest
+```
 
 ### No runs appearing in the dashboard
 
