@@ -101,7 +101,7 @@ describe('e2e: sample plugin compilation', () => {
 
       expect(result.status).not.toBe('error');
       expect(result.emittedFiles).toContain('plugin.json');
-      expect(result.emittedFiles).toContain('hooks.json');
+      expect(result.emittedFiles).toContain('hooks/hooks.json');
 
       const pluginJson = JSON.parse(
         fs.readFileSync(path.join(result.outputDir, 'plugin.json'), 'utf-8')

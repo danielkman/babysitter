@@ -184,6 +184,7 @@ function isIgnoredFile(f) {
     f === 'hooks/proxied-hooks.json' ||
     f === 'hooks/hooks.json' ||
     f === 'proxied-hooks.json' ||
+    f === 'versions.json' ||
     f.endsWith('.legacy') ||
     f.endsWith('.legacy.ts') ||
     f.includes('sync-command')

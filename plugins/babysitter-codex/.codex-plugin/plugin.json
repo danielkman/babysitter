@@ -18,7 +18,7 @@
     "skills"
   ],
   "skills": "./skills/",
-  "hooks": "./hooks.json",
+  "hooks": "./hooks/hooks.json",
   "apps": "./.app.json",
   "interface": {
     "displayName": "Babysitter",

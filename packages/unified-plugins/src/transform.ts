@@ -325,11 +325,11 @@ function generateHookRegistrationFile(
   switch (targetProfile.hookRegistrationFormat) {
     case 'claude-code':
       content = generateClaudeCodeHooksJson(manifest, targetProfile);
-      filePath = 'hooks.json';
+      filePath = 'hooks/hooks.json';
       break;
     case 'codex':
       content = generateCodexHooksJson(manifest, targetProfile);
-      filePath = 'hooks.json';
+      filePath = 'hooks/hooks.json';
       break;
     case 'cursor':
       content = generateCursorHooksJson(manifest, targetProfile);
@@ -341,7 +341,7 @@ function generateHookRegistrationFile(
       break;
     case 'github-copilot':
       content = generateGithubCopilotHooksJson(manifest, targetProfile);
-      filePath = 'hooks.json';
+      filePath = 'hooks/hooks.json';
       break;
     case 'opencode':
       content = generateOpenCodeHooksJson(manifest, targetProfile);
@@ -349,7 +349,7 @@ function generateHookRegistrationFile(
       break;
     case 'openclaw':
       content = generateOpenClawHooksJson(manifest, targetProfile);
-      filePath = 'hooks.json';
+      filePath = 'hooks/hooks.json';
       break;
     default:
       return null;
