@@ -1,5 +1,7 @@
 // Compiler pipeline orchestrator
 
+import * as fs from 'fs';
+import * as path from 'path';
 import type { CompilationResult } from './types.js';
 import { validate } from './validate.js';
 import { resolve } from './resolve.js';
@@ -7,19 +9,19 @@ import { transform } from './transform.js';
 import { emit } from './emit.js';
 import { verify } from './verify.js';
 import { getAllTargets } from './targets/index.js';
-import { generateOrUpdateMarketplace } from './marketplaceGenerator.js';
+import { generateMarketplaceJson } from './marketplaceGenerator.js';
 
 export interface CompileOptions {
   source: string;
   target: string;
   output: string;
+  outputBaseDir?: string;
   dryRun?: boolean;
   verifyOutput?: boolean;
-  marketplacePath?: string;
 }
 
 export function compile(options: CompileOptions): CompilationResult {
-  const { source, target, output, dryRun = false, verifyOutput = false, marketplacePath } = options;
+  const { source, target, output, outputBaseDir, dryRun = false, verifyOutput = false } = options;
 
   // Stage 1: VALIDATE
   const validateResult = validate(source);
@@ -95,13 +97,17 @@ export function compile(options: CompileOptions): CompilationResult {
     };
   }
 
-  // Update marketplace if requested
-  if (marketplacePath && !dryRun) {
-    generateOrUpdateMarketplace(
+  // Generate marketplace manifest if target has a marketplace path
+  if (resolveResult.targetProfile.marketplacePath && !dryRun && outputBaseDir) {
+    const marketplaceContent = generateMarketplaceJson(
       resolveResult.effectiveManifest,
-      output,
-      marketplacePath
+      resolveResult.targetProfile,
+      output
     );
+    const marketplaceFullPath = path.join(outputBaseDir, resolveResult.targetProfile.marketplacePath);
+    fs.mkdirSync(path.dirname(marketplaceFullPath), { recursive: true });
+    fs.writeFileSync(marketplaceFullPath, marketplaceContent);
+    emitResult.emittedFiles.push(resolveResult.targetProfile.marketplacePath);
   }
 
   // Stage 5: VERIFY (optional)
@@ -129,7 +135,7 @@ export function compile(options: CompileOptions): CompilationResult {
 export function compileAll(
   source: string,
   outputBaseDir: string,
-  options: { dryRun?: boolean; verifyOutput?: boolean; marketplacePath?: string } = {}
+  options: { dryRun?: boolean; verifyOutput?: boolean } = {}
 ): CompilationResult[] {
   const targets = getAllTargets();
   const results: CompilationResult[] = [];
@@ -139,6 +145,7 @@ export function compileAll(
       source,
       target,
       output: `${outputBaseDir}/${target}`,
+      outputBaseDir,
       ...options,
     });
     results.push(result);

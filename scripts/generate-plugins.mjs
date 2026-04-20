@@ -123,6 +123,34 @@ if (compareDir) {
     }
   }
 
+  // Compare marketplace files
+  const MARKETPLACE_MAP = {
+    '.claude-plugin/marketplace.json': '.claude-plugin/marketplace.json',
+    '.agents/plugins/marketplace.json': '.agents/plugins/marketplace.json',
+  };
+
+  console.log('\n[compare] Marketplace files:');
+  for (const [genRel, origRel] of Object.entries(MARKETPLACE_MAP)) {
+    const genPath = join(outputDir, genRel);
+    const origPath = join(compareDir, origRel);
+    if (!existsSync(genPath)) {
+      console.log(`  ${origRel}: NOT GENERATED`);
+      continue;
+    }
+    if (!existsSync(origPath)) {
+      console.log(`  ${origRel}: GENERATED (no original to compare)`);
+      continue;
+    }
+    const genContent = readFileSync(genPath, 'utf-8');
+    const origContent = readFileSync(origPath, 'utf-8');
+    if (genContent === origContent) {
+      console.log(`  ${origRel}: MATCH`);
+    } else {
+      console.log(`  ${origRel}: DIFFERENT`);
+      totalGaps++;
+    }
+  }
+
   console.log(`\n[compare] Total gaps: ${totalGaps}`);
   process.exit(totalGaps > 0 ? 1 : 0);
 }

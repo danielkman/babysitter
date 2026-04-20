@@ -116,7 +116,6 @@ function runCompile(parsed: Record<string, string | boolean>) {
   const verifyOutput = parsed.verify as boolean;
   const jsonOutput = parsed.json as boolean;
   const verbose = parsed.verbose as boolean;
-  const marketplacePath = parsed.marketplace as string | undefined;
 
   if (!target || !output) {
     console.error('Error: --target and --output are required');
@@ -124,7 +123,7 @@ function runCompile(parsed: Record<string, string | boolean>) {
   }
 
   if (target === 'all') {
-    const results = compileAll(source, output, { dryRun, verifyOutput, marketplacePath });
+    const results = compileAll(source, output, { dryRun, verifyOutput });
 
     if (jsonOutput) {
       console.log(JSON.stringify(results, null, 2));
@@ -155,7 +154,6 @@ function runCompile(parsed: Record<string, string | boolean>) {
       output,
       dryRun,
       verifyOutput,
-      marketplacePath,
     });
 
     if (jsonOutput) {

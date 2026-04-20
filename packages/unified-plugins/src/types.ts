@@ -163,6 +163,7 @@ export interface TargetProfile {
   adapterFamily: AdapterFamily;
   distribution: DistributionModel;
   pluginRootEnvVarForExtension?: string;
+  marketplacePath?: string;
 }
 
 export interface FrontmatterData {

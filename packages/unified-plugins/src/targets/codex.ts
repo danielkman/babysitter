@@ -21,4 +21,5 @@ export const CODEX_PROFILE: TargetProfile = {
   npmPackageName: '@a5c-ai/babysitter-codex',
   adapterFamily: 'shell-hook',
   distribution: 'npm-cli',
+  marketplacePath: '.agents/plugins/marketplace.json',
 };

@@ -25,4 +25,5 @@ export const CLAUDE_CODE_PROFILE: TargetProfile = {
   npmPublishable: false,
   adapterFamily: 'shell-hook',
   distribution: 'marketplace',
+  marketplacePath: '.claude-plugin/marketplace.json',
 };
