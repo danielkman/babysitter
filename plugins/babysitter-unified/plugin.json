@@ -72,6 +72,7 @@
         }
       },
       "extraFiles": {
+        "skills/babysit/SKILL.md": "file:per-harness/codex/babysit-SKILL.md",
         "assets/icon.svg": "file:per-harness/codex/assets/icon.svg",
         "assets/logo.png": "file:per-harness/codex/assets/logo.png",
         "assets/logo.svg": "file:per-harness/codex/assets/logo.svg"
@@ -82,38 +83,47 @@
         "skills": "skills/",
         "commands": "commands/",
         "hooks": "hooks/hooks-cursor.json"
+      },
+      "extraFiles": {
+        "skills/babysit/SKILL.md": "file:per-harness/cursor/babysit-SKILL.md"
       }
     },
     "gemini": {
       "extraFiles": {
-        "GEMINI.md": "file:per-harness/gemini/GEMINI.md"
+        "GEMINI.md": "file:per-harness/gemini/GEMINI.md",
+        "skills/babysit/SKILL.md": "file:per-harness/gemini/babysit-SKILL.md"
       }
     },
     "github-copilot": {
       "extraFiles": {
-        "AGENTS.md": "file:per-harness/github/AGENTS.md"
+        "AGENTS.md": "file:per-harness/github/AGENTS.md",
+        "skills/babysit/SKILL.md": "file:per-harness/github/babysit-SKILL.md"
       }
     },
     "pi": {
       "npmPackageName": "@a5c-ai/babysitter-pi",
       "extraFiles": {
-        "AGENTS.md": "file:per-harness/pi/AGENTS.md"
+        "AGENTS.md": "file:per-harness/pi/AGENTS.md",
+        "skills/babysit/SKILL.md": "file:per-harness/pi/babysit-SKILL.md"
       }
     },
     "oh-my-pi": {
       "npmPackageName": "@a5c-ai/babysitter-omp",
       "extraFiles": {
-        "AGENTS.md": "file:per-harness/omp/AGENTS.md"
+        "AGENTS.md": "file:per-harness/omp/AGENTS.md",
+        "skills/babysit/SKILL.md": "file:per-harness/omp/babysit-SKILL.md"
       }
     },
     "opencode": {
       "extraFiles": {
+        "skills/babysit/SKILL.md": "file:per-harness/opencode/babysit-SKILL.md",
         "commands/status.md": "file:per-harness/opencode/status-command.md",
         "skills/accomplish-status/SKILL.md": "file:per-harness/opencode/accomplish-status-skill/SKILL.md"
       }
     },
     "openclaw": {
       "extraFiles": {
+        "skills/babysit/SKILL.md": "file:per-harness/openclaw/babysit-SKILL.md",
         "commands/babysit.md": "file:per-harness/openclaw/babysit-command.md"
       }
     }

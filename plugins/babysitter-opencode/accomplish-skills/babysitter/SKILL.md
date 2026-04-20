@@ -1,39 +1,12 @@
 ---
 name: babysitter
-description: Orchestrate complex multi-step tasks with deterministic, event-sourced process execution using Babysitter. Use when asked to babysit, orchestrate a run, or manage a multi-phase workflow.
-command: /babysitter
+description: Orchestrate complex, multi-step workflows with event-sourced state management, hook-based extensibility, and human-in-the-loop approval
+command: /babysit
 verified: true
 ---
 
 # babysitter
 
-Orchestrate `.a5c/runs/<runId>/` through iterative execution.
+Orchestrate complex, multi-step workflows with event-sourced state management, hook-based extensibility, and human-in-the-loop approval
 
-## Dependencies
-
-### Babysitter SDK and CLI
-
-Read the SDK version from `versions.json` to ensure version compatibility:
-
-```bash
-SDK_VERSION=$(node -e "try{const fs=require('fs');const probes=['./plugins/babysitter-opencode/versions.json','./node_modules/@a5c-ai/babysitter-opencode/versions.json'];for(const probe of probes){if(fs.existsSync(probe)){console.log(JSON.parse(fs.readFileSync(probe,'utf8')).sdkVersion||'latest');process.exit(0)}}console.log('latest')}catch{console.log('latest')}")
-npm i -g @a5c-ai/babysitter-sdk@$SDK_VERSION
-
-CLI="npx -y @a5c-ai/babysitter-sdk@$SDK_VERSION"
-```
-
-## Instructions
-
-Run the following command to get full orchestration instructions:
-
-```bash
-babysitter instructions:babysit-skill --harness opencode --interactive
-```
-
-For non-interactive mode:
-
-```bash
-babysitter instructions:babysit-skill --harness opencode --no-interactive
-```
-
-Follow the instructions returned by the command above to orchestrate the run.
+(This is a specialized accomplish-mode variant for OpenCode's accomplish workflow.)
