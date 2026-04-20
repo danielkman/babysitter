@@ -258,18 +258,7 @@ export async function handleGithubCopilotSessionStartHook(
     // Non-fatal
   }
 
-  const envFile = process.env.COPILOT_ENV_FILE || process.env.CLAUDE_ENV_FILE;
-  if (envFile) {
-    try {
-      setBabysitterSessionIdInCopilotEnvFile(envFile, sessionId);
-    } catch {
-      if (verbose) {
-        process.stderr.write(
-          `[hook:run session-start] Failed to write to env file: ${envFile}\n`,
-        );
-      }
-    }
-  }
+  // hooks-proxy handles env file writes via native_env_file propagation backend
 
   const stateDir = resolveGithubCopilotStateDir(args);
   log.info(`Resolved stateDir: ${stateDir}`);

@@ -14,7 +14,6 @@ import {
   parseHookInput,
   readStdin,
   safeStr,
-  setBabysitterSessionIdInEnvFile,
   type ClaudeCodeSessionStartHookInput,
 } from "./shared";
 
@@ -49,16 +48,8 @@ export async function handleClaudeCodeSessionStartHook(
     return 0;
   }
 
-  let envFilePersisted = false;
-  const envFile = process.env.CLAUDE_ENV_FILE;
-  if (envFile) {
-    try {
-      setBabysitterSessionIdInEnvFile(envFile, sessionId);
-      envFilePersisted = true;
-    } catch {
-      // Non-fatal
-    }
-  }
+  // hooks-proxy handles CLAUDE_ENV_FILE writes via native_env_file propagation backend
+  const envFilePersisted = !!process.env.CLAUDE_ENV_FILE;
 
   const stateDir = normalizeSessionStateDir(
     args.stateDir ?? process.env.BABYSITTER_STATE_DIR,

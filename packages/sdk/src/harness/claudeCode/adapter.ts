@@ -15,7 +15,6 @@ import {
   resolveCurrentSessionIdFromEnv,
   type SessionResolutionDetails,
   resolveSessionIdDetailed,
-  setBabysitterSessionIdInEnvFile,
 } from "./shared";
 import {
   bindClaudeCodeSession,
@@ -27,7 +26,6 @@ export {
   __resolveCurrentSessionIdFromEnvForTests,
   type SessionResolutionDetails,
   resolveSessionIdDetailed,
-  setBabysitterSessionIdInEnvFile,
 };
 
 export function createClaudeCodeAdapter(): HarnessAdapter {
