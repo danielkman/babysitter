@@ -17,7 +17,7 @@ import {
 import { generateProgrammaticExtension } from './proxiedHookTemplates.js';
 import { generateCliBinScript, generateInstallScript, generateUninstallScript } from './binTemplates.js';
 import { generateInstallInstructions } from './installInstructions.js';
-import { generateHarnessManifest, generateInstallShared, generateTeamInstall, generateOpenClawNativeHooksSection, generateOpenCodeAccomplishSkill } from './transformHelpers.js';
+import { generateHarnessManifest, generateInstallShared, generateTeamInstall, generateOpenClawNativeHooksSection, generateOpenCodeAccomplishSkill, generateGeminiPostinstall, generateGeminiPreuninstall } from './transformHelpers.js';
 import { getCommandPaths } from './transform.js';
 
 export function generateManifests(
@@ -128,13 +128,17 @@ export function generateManifests(
   ) {
     const npmPkg = targetProfile.npmPackageName || `@a5c-ai/${manifest.name}-${targetProfile.name}`;
     const authorStr = typeof manifest.author === 'string' ? manifest.author : manifest.author.name;
-    const isEsm = targetProfile.name === 'pi' || targetProfile.name === 'oh-my-pi';
+    const isEsm = targetProfile.name === 'pi' || targetProfile.name === 'oh-my-pi' || targetProfile.name === 'openclaw';
     const ext = isEsm ? '.cjs' : '.js';
     const pkgJson: Record<string, unknown> = {
       name: npmPkg,
       version: manifest.version,
       description: manifest.description,
-      scripts: { deploy: 'npm publish --access public', 'deploy:staging': 'npm publish --access public --tag staging' },
+      scripts: {
+        deploy: 'npm publish --access public',
+        'deploy:staging': 'npm publish --access public --tag staging',
+        ...(targetProfile.name === 'gemini' ? { postinstall: 'node bin/postinstall.js', preuninstall: 'node bin/preuninstall.js' } : {}),
+      },
       bin: { [`${manifest.name}-${targetProfile.name}`]: `bin/cli${ext}` },
       files: ['bin/', 'hooks/', 'hooks.json', 'skills/', 'commands/', 'README.md', 'versions.json', 'plugin.json', 'package.json'],
       keywords: [manifest.name, targetProfile.name, 'orchestration'],
@@ -269,13 +273,19 @@ export function generateExtraFiles(
 
   // Generate CLI bin scripts for npm-cli distribution targets
   if (targetProfile.distribution === 'npm-cli' || targetProfile.distribution === 'both') {
-    const isEsm = targetProfile.name === 'pi' || targetProfile.name === 'oh-my-pi';
+    const isEsm = targetProfile.name === 'pi' || targetProfile.name === 'oh-my-pi' || targetProfile.name === 'openclaw';
     const ext = isEsm ? '.cjs' : '.js';
     files.push({ path: `bin/cli${ext}`, content: generateCliBinScript(manifest, targetProfile), executable: true });
     files.push({ path: `bin/install${ext}`, content: generateInstallScript(manifest, targetProfile), executable: true });
     files.push({ path: `bin/uninstall${ext}`, content: generateUninstallScript(manifest, targetProfile), executable: true });
     files.push({ path: `bin/install-shared${ext}`, content: generateInstallShared(manifest, targetProfile) });
     files.push({ path: `scripts/team-install${ext}`, content: generateTeamInstall(manifest, targetProfile), executable: true });
+  }
+
+  // Gemini: npm lifecycle scripts
+  if (targetProfile.name === 'gemini') {
+    files.push({ path: 'bin/postinstall.js', content: generateGeminiPostinstall(), executable: true });
+    files.push({ path: 'bin/preuninstall.js', content: generateGeminiPreuninstall(), executable: true });
   }
 
   // Generate installation instructions for all targets

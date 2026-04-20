@@ -1,46 +1,90 @@
 #!/usr/bin/env node
+'use strict';
+
 /**
  * Babysitter OpenCode Plugin Uninstaller
  *
- * Removes the babysitter plugin from the OpenCode plugins directory.
+ * Removes the babysitter plugin from the OpenCode plugins directory
+ * and cleans up hooks config and marketplace entries.
+ *
+ * Usage:
+ *   node uninstall.cjs                     # Uninstall from cwd workspace
+ *   node uninstall.cjs --workspace /path   # Uninstall from specified workspace
+ *   node uninstall.cjs --global            # Global uninstall
  */
 
-"use strict";
+const fs = require('fs');
+const path = require('path');
+const {
+  getHomeMarketplacePath,
+  getHomePluginRoot,
+  getOpenCodeHome,
+  removeManagedHooks,
+  removeMarketplaceEntry,
+} = require('./install-shared.cjs');
 
-const fs = require("fs");
-const path = require("path");
-
-const WORKSPACE = process.env.OPENCODE_WORKSPACE || process.cwd();
-const TARGET_DIR = path.join(WORKSPACE, ".opencode", "plugins", "babysitter");
-
-function removeRecursive(dir) {
-  if (!fs.existsSync(dir)) return;
-  fs.rmSync(dir, { recursive: true, force: true });
+function parseArgs(argv) {
+  let workspace = process.env.OPENCODE_WORKSPACE || process.cwd();
+  for (let i = 2; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg === '--workspace') {
+      const next = argv[i + 1];
+      workspace = next && !next.startsWith('-') ? path.resolve(argv[++i]) : process.cwd();
+      continue;
+    }
+    if (arg === '--global') {
+      workspace = null;
+      continue;
+    }
+    throw new Error(`unknown argument: ${arg}`);
+  }
+  return { workspace };
 }
 
 function main() {
-  console.log(`Uninstalling babysitter plugin from OpenCode...`);
-  console.log(`  Target: ${TARGET_DIR}`);
+  const { workspace } = parseArgs(process.argv);
+  const openCodeHome = getOpenCodeHome(workspace);
+  const pluginRoot = getHomePluginRoot(workspace);
+  const marketplacePath = getHomeMarketplacePath(workspace);
+  let removedPlugin = false;
 
-  if (!fs.existsSync(TARGET_DIR)) {
-    console.log("  Plugin not installed -- nothing to remove.");
-    return;
+  console.log(`[babysitter] Uninstalling OpenCode plugin from ${pluginRoot}`);
+
+  // 1. Remove plugin directory
+  if (fs.existsSync(pluginRoot)) {
+    try {
+      fs.rmSync(pluginRoot, { recursive: true, force: true });
+      console.log(`[babysitter]   Removed ${pluginRoot}`);
+      removedPlugin = true;
+    } catch (err) {
+      console.warn(`[babysitter]   Warning: Could not remove plugin directory: ${err.message}`);
+    }
   }
 
-  removeRecursive(TARGET_DIR);
-  console.log("  Removed babysitter plugin directory.");
+  // 2. Remove marketplace entry
+  removeMarketplaceEntry(marketplacePath);
+  console.log('[babysitter]   Cleaned marketplace entry');
 
-  // Clean up empty parent directories
-  const pluginsDir = path.join(WORKSPACE, ".opencode", "plugins");
+  // 3. Remove managed hooks from OpenCode config
+  removeManagedHooks(openCodeHome);
+  console.log('[babysitter]   Cleaned hooks config');
+
+  // 4. Clean up empty parent directories
+  const pluginsDir = path.dirname(pluginRoot);
   try {
     const remaining = fs.readdirSync(pluginsDir);
     if (remaining.length === 0) {
       fs.rmdirSync(pluginsDir);
-      console.log("  Removed empty .opencode/plugins/ directory.");
+      console.log('[babysitter]   Removed empty plugins/ directory');
     }
   } catch { /* best-effort */ }
 
-  console.log("\nBabysitter plugin uninstalled. Restart OpenCode to complete removal.");
+  if (!removedPlugin) {
+    console.log('[babysitter] Plugin directory not found; config and hooks cleaned if present.');
+    return;
+  }
+
+  console.log('[babysitter] Uninstallation complete. Restart OpenCode to finish removal.');
 }
 
 main();

@@ -12,7 +12,7 @@ export const GEMINI_PROFILE: TargetProfile = {
     ['AfterAgent', 'AfterAgent'],
   ]),
   commandFormat: 'toml',
-  skillHandling: 'none',
+  skillHandling: 'native',
   manifestFormat: 'multiple', // plugin.json + gemini-extension.json
   hookRegistrationFormat: 'gemini',
   scriptVariants: ['bash'],

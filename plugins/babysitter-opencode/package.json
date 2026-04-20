@@ -12,7 +12,7 @@
     "deploy:staging": "npm publish --access public --tag staging"
   },
   "bin": {
-    "babysitter-opencode": "bin/cli.cjs"
+    "babysitter-opencode": "bin/cli.js"
   },
   "files": [
     "bin/",

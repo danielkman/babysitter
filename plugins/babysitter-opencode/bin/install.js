@@ -1,110 +1,146 @@
 #!/usr/bin/env node
+'use strict';
+
 /**
  * Babysitter OpenCode Plugin Installer
  *
- * Copies plugin files into the OpenCode plugins directory:
- *   .opencode/plugins/babysitter/
+ * Copies the babysitter plugin bundle into the OpenCode plugins directory:
+ *   <workspace>/.opencode/plugins/babysitter/
  *
- * OpenCode discovers plugins as JS/TS modules in .opencode/plugins/.
- * This installer creates the necessary directory structure and copies
- * hook scripts, skills, and an index.js entry point.
+ * Registers hooks in OpenCode config, creates the index.js entry point
+ * for plugin discovery, and bootstraps the global process library.
+ *
+ * Usage:
+ *   node install.cjs                     # Install into cwd workspace
+ *   node install.cjs --workspace /path   # Install into specified workspace
+ *   node install.cjs --global            # Global install (user home)
+ *   node install.cjs --accomplish        # Install only to Accomplish AI data dir
  */
 
-"use strict";
+const path = require('path');
+const {
+  copyPluginBundle,
+  ensureGlobalProcessLibrary,
+  ensureMarketplaceEntry,
+  getAccomplishOpenCodeHome,
+  getHomeMarketplacePath,
+  getHomePluginRoot,
+  getOpenCodeHome,
+  installAccomplishSurface,
+  installOpenCodeSurface,
+  isAccomplishInstalled,
+  writeIndexJs,
+} = require('./install-shared.cjs');
 
-const fs = require("fs");
-const path = require("path");
+const PACKAGE_ROOT = path.resolve(__dirname, '..');
 
-const PLUGIN_ROOT = path.resolve(__dirname, "..");
-const WORKSPACE = process.env.OPENCODE_WORKSPACE || process.cwd();
-const TARGET_DIR = path.join(WORKSPACE, ".opencode", "plugins", "babysitter");
-
-function copyRecursive(src, dest) {
-  const stat = fs.statSync(src);
-  if (stat.isDirectory()) {
-    fs.mkdirSync(dest, { recursive: true });
-    for (const entry of fs.readdirSync(src)) {
-      copyRecursive(path.join(src, entry), path.join(dest, entry));
+function parseArgs(argv) {
+  let workspace = process.env.OPENCODE_WORKSPACE || process.cwd();
+  let accomplish = false;
+  for (let i = 2; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg === '--workspace') {
+      const next = argv[i + 1];
+      workspace = next && !next.startsWith('-') ? path.resolve(argv[++i]) : process.cwd();
+      continue;
     }
-  } else {
-    fs.mkdirSync(path.dirname(dest), { recursive: true });
-    fs.copyFileSync(src, dest);
+    if (arg === '--global') {
+      workspace = null;
+      continue;
+    }
+    if (arg === '--accomplish') {
+      accomplish = true;
+      continue;
+    }
+    throw new Error(`unknown argument: ${arg}`);
+  }
+  return { workspace, accomplish };
+}
+
+function installStandardOpenCode(workspace) {
+  const openCodeHome = getOpenCodeHome(workspace);
+  const pluginRoot = getHomePluginRoot(workspace);
+  const marketplacePath = getHomeMarketplacePath(workspace);
+
+  console.log(`[babysitter] Installing OpenCode plugin to ${pluginRoot}`);
+
+  // 1. Copy plugin bundle
+  copyPluginBundle(PACKAGE_ROOT, pluginRoot);
+  console.log('[babysitter]   Copied plugin bundle');
+
+  // 2. Write index.js entry point for OpenCode plugin discovery
+  writeIndexJs(pluginRoot);
+  console.log('[babysitter]   Created index.js entry point');
+
+  // 3. Register in marketplace
+  ensureMarketplaceEntry(marketplacePath, pluginRoot);
+  console.log(`[babysitter]   Marketplace: ${marketplacePath}`);
+
+  // 4. Install OpenCode surfaces (skills, hooks config)
+  installOpenCodeSurface(PACKAGE_ROOT, openCodeHome);
+  console.log('[babysitter]   Installed hooks and skills');
+
+  // 5. Bootstrap global process library
+  try {
+    const active = ensureGlobalProcessLibrary(PACKAGE_ROOT);
+    console.log(`[babysitter]   Process library: ${active.binding?.dir || '(default)'}`);
+    if (active.defaultSpec?.cloneDir) {
+      console.log(`[babysitter]   Process library clone: ${active.defaultSpec.cloneDir}`);
+    }
+    console.log(`[babysitter]   Process library state: ${active.stateFile}`);
+  } catch (err) {
+    console.warn(`[babysitter]   Warning: Could not bootstrap process library: ${err.message}`);
+    console.warn('[babysitter]   Run "babysitter process-library:clone" manually if needed.');
   }
 }
 
+function installToAccomplish() {
+  const accomplishHome = getAccomplishOpenCodeHome();
+  console.log(`[babysitter] Installing plugin to Accomplish AI: ${accomplishHome}`);
+
+  installAccomplishSurface(PACKAGE_ROOT, accomplishHome);
+
+  console.log('[babysitter]   Copied plugin bundle to Accomplish');
+  console.log('[babysitter]   Created index.js entry point for Accomplish');
+  console.log('[babysitter]   Installed hooks and skills for Accomplish');
+  console.log('[babysitter] Accomplish AI installation complete.');
+  console.log('[babysitter] Restart Accomplish to pick up the installed plugin.');
+}
+
 function main() {
-  console.log(`Installing babysitter plugin for OpenCode...`);
-  console.log(`  Source: ${PLUGIN_ROOT}`);
-  console.log(`  Target: ${TARGET_DIR}`);
+  const { workspace, accomplish } = parseArgs(process.argv);
 
-  // Create target directory
-  fs.mkdirSync(TARGET_DIR, { recursive: true });
-
-  // Copy hooks
-  const hooksDir = path.join(PLUGIN_ROOT, "hooks");
-  if (fs.existsSync(hooksDir)) {
-    copyRecursive(hooksDir, path.join(TARGET_DIR, "hooks"));
-    console.log("  Copied hooks/");
-  }
-
-  // Copy skills
-  const skillsDir = path.join(PLUGIN_ROOT, "skills");
-  if (fs.existsSync(skillsDir)) {
-    copyRecursive(skillsDir, path.join(TARGET_DIR, "skills"));
-    console.log("  Copied skills/");
-  }
-
-  // Copy commands
-  const commandsDir = path.join(PLUGIN_ROOT, "commands");
-  if (fs.existsSync(commandsDir)) {
-    copyRecursive(commandsDir, path.join(TARGET_DIR, "commands"));
-    console.log("  Copied commands/");
-  }
-
-  // Copy plugin.json and versions.json
-  for (const file of ["plugin.json", "versions.json"]) {
-    const src = path.join(PLUGIN_ROOT, file);
-    if (fs.existsSync(src)) {
-      fs.copyFileSync(src, path.join(TARGET_DIR, file));
-      console.log(`  Copied ${file}`);
+  try {
+    // If --accomplish is used without --global/--workspace, install only to Accomplish
+    if (accomplish && workspace !== null) {
+      installToAccomplish();
+      return;
     }
+
+    // Standard OpenCode install
+    installStandardOpenCode(workspace);
+
+    // Auto-detect Accomplish and install there too (unless --accomplish was explicit)
+    if (!accomplish) {
+      try {
+        if (isAccomplishInstalled()) {
+          console.log('[babysitter] Detected Accomplish AI installation.');
+          installToAccomplish();
+        }
+      } catch (err) {
+        console.warn(`[babysitter]   Warning: Accomplish AI detection failed: ${err.message}`);
+      }
+    } else {
+      // --accomplish combined with --global: install to both
+      installToAccomplish();
+    }
+
+    console.log('[babysitter] Installation complete!');
+    console.log('[babysitter] Restart OpenCode to pick up the installed plugin.');
+  } catch (err) {
+    console.error(`[babysitter] Failed to install plugin: ${err.message}`);
+    process.exitCode = 1;
   }
-
-  // Create index.js entry point for OpenCode plugin discovery
-  const indexContent = `#!/usr/bin/env node
-/**
- * Babysitter plugin entry point for OpenCode.
- *
- * OpenCode discovers plugins by looking for JS/TS modules in
- * .opencode/plugins/. This file registers the babysitter hooks
- * with the OpenCode plugin system.
- */
-
-"use strict";
-
-const path = require("path");
-
-const PLUGIN_DIR = __dirname;
-
-module.exports = {
-  name: "babysitter",
-  version: require(path.join(PLUGIN_DIR, "plugin.json")).version,
-
-  hooks: {
-    "session.created": require(path.join(PLUGIN_DIR, "hooks", "session-created.js")),
-    "session.idle": require(path.join(PLUGIN_DIR, "hooks", "session-idle.js")),
-    "shell.env": require(path.join(PLUGIN_DIR, "hooks", "shell-env.js")),
-    "tool.execute.before": require(path.join(PLUGIN_DIR, "hooks", "tool-execute-before.js")),
-    "tool.execute.after": require(path.join(PLUGIN_DIR, "hooks", "tool-execute-after.js")),
-  },
-};
-`;
-
-  fs.writeFileSync(path.join(TARGET_DIR, "index.js"), indexContent);
-  console.log("  Created index.js");
-
-  console.log(`\nBabysitter plugin installed to ${TARGET_DIR}`);
-  console.log("Restart OpenCode to activate the plugin.");
 }
 
 main();

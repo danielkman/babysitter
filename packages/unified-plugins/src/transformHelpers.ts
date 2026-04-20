@@ -230,3 +230,44 @@ ${manifest.description}
 (This is a specialized accomplish-mode variant for OpenCode's accomplish workflow.)
 `;
 }
+
+export function generateGeminiPostinstall(): string {
+  return `#!/usr/bin/env node
+'use strict';
+var path = require('path');
+var spawnSync = require('child_process').spawnSync;
+var fs = require('fs');
+
+var PACKAGE_ROOT = path.resolve(__dirname, '..');
+var extDir = path.join(require('os').homedir(), '.gemini', 'extensions', 'babysitter');
+
+if (!process.env.npm_config_global) process.exit(0);
+try { if (fs.lstatSync(extDir).isSymbolicLink()) process.exit(0); } catch {}
+
+try {
+  var result = spawnSync('gemini', ['extensions', 'install', PACKAGE_ROOT], { stdio: 'inherit', timeout: 60000 });
+  if (result.status === 0) process.exit(0);
+} catch {}
+
+console.log('[babysitter-gemini] Gemini CLI not found. Run: babysitter-gemini install');
+`;
+}
+
+export function generateGeminiPreuninstall(): string {
+  return `#!/usr/bin/env node
+'use strict';
+var path = require('path');
+var spawnSync = require('child_process').spawnSync;
+var fs = require('fs');
+
+var extDir = path.join(require('os').homedir(), '.gemini', 'extensions', 'babysitter');
+
+try { if (!fs.existsSync(extDir) || fs.lstatSync(extDir).isSymbolicLink()) process.exit(0); } catch {}
+
+try {
+  spawnSync('gemini', ['extensions', 'uninstall', 'babysitter'], { stdio: 'inherit', timeout: 30000 });
+} catch {
+  try { fs.rmSync(extDir, { recursive: true, force: true }); } catch {}
+}
+`;
+}
