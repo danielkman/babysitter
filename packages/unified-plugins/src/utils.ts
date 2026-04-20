@@ -121,12 +121,11 @@ export function generateToml(obj: Record<string, string>): string {
   for (const [key, value] of Object.entries(obj)) {
     if (value === '') continue;
 
-    // Escape quotes in value
-    const escaped = value.replace(/"/g, '\\"');
+    const escaped = value.replace(/\r/g, '').replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
     lines.push(`${key} = "${escaped}"`);
   }
 
-  return lines.join('\n\n');
+  return lines.join('\n\n') + '\n';
 }
 
 /**
