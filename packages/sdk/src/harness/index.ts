@@ -11,18 +11,20 @@ export type {
 
 export { HarnessCapability } from "./types";
 
-export { createClaudeCodeAdapter } from "./claudeCode";
-export { createCodexAdapter } from "./codex";
-export { createGeminiCliAdapter } from "./geminiCli";
-export { createCursorAdapter } from "./cursor";
-export { createGithubCopilotAdapter } from "./githubCopilot";
-export { createPiAdapter } from "./pi";
-export { createOhMyPiAdapter } from "./ohMyPi";
-export { createOpenClawAdapter } from "./openclaw";
-export { createOpenCodeAdapter } from "./opencode";
+export { createClaudeCodeAdapter } from "./adapters/claude-code";
+export { createCodexAdapter } from "./adapters/codex";
+export { createGeminiCliAdapter } from "./adapters/gemini-cli";
+export { createCursorAdapter } from "./adapters/cursor";
+export { createGithubCopilotAdapter } from "./adapters/github-copilot";
+export { createPiAdapter } from "./adapters/pi";
+export { createOhMyPiAdapter } from "./adapters/oh-my-pi";
+export { createOpenClawAdapter } from "./adapters/openclaw";
+export { createOpenCodeAdapter } from "./adapters/opencode";
 export { createNullAdapter } from "./nullAdapter";
 export { createCustomAdapter } from "./customAdapter";
 export { createUnifiedAdapter } from "./unified";
+export { BaseHarnessAdapter } from "./BaseAdapter";
+export type { AdapterConfig } from "./BaseAdapter";
 export {
   createPromptContextForHarness,
   detectAdapter,

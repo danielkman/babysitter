@@ -1,1 +1,1 @@
-export { createOpenClawAdapter } from "./adapter";
+export { createOpenClawAdapter } from "../adapters/openclaw";

@@ -1,1 +1,1 @@
-export { createCursorAdapter } from "./adapter";
+export { createCursorAdapter } from "../adapters/cursor";

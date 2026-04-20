@@ -1,6 +1,6 @@
-export { createClaudeCodeAdapter } from "./adapter";
+export { createClaudeCodeAdapter } from "../adapters/claude-code";
 export {
   __resolveCurrentSessionIdFromEnvForTests,
   type SessionResolutionDetails,
   resolveSessionIdDetailed,
-} from "./adapter";
+} from "../adapters/claude-code";

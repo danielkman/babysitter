@@ -1,2 +1,2 @@
-export { createGithubCopilotAdapter } from "./adapter";
-export { setBabysitterSessionIdInCopilotEnvFile } from "./adapter";
+export { createGithubCopilotAdapter } from "../adapters/github-copilot";
+export { setBabysitterSessionIdInCopilotEnvFile } from "../adapters/github-copilot";

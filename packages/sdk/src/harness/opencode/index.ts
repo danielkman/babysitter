@@ -1,1 +1,1 @@
-export { createOpenCodeAdapter } from "./adapter";
+export { createOpenCodeAdapter } from "../adapters/opencode";

@@ -8,21 +8,21 @@
 import type { PromptContext } from "../prompts/types";
 import type { HarnessAdapter, HarnessSpec } from "./types";
 import { HarnessCapability as Cap } from "./types";
-import { createClaudeCodeAdapter } from "./claudeCode/adapter";
+import { createClaudeCodeAdapter } from "./adapters/claude-code";
 import { CLAUDE_CODE_DISCOVERY_SPEC } from "./claudeCode/discovery";
 import {
   resolveSessionIdDetailed as resolveClaudeCodeSessionDetails,
   type SessionResolutionDetails,
 } from "./claudeCode/shared";
-import { createCodexAdapter } from "./codex/adapter";
-import { createGeminiCliAdapter } from "./geminiCli/adapter";
-import { createPiAdapter } from "./pi/adapter";
+import { createCodexAdapter } from "./adapters/codex";
+import { createGeminiCliAdapter } from "./adapters/gemini-cli";
+import { createPiAdapter } from "./adapters/pi";
 import { PI_DISCOVERY_SPEC } from "./pi/discovery";
-import { createOhMyPiAdapter } from "./ohMyPi/adapter";
-import { createCursorAdapter } from "./cursor/adapter";
-import { createGithubCopilotAdapter } from "./githubCopilot/adapter";
-import { createOpenCodeAdapter } from "./opencode/adapter";
-import { createOpenClawAdapter } from "./openclaw/adapter";
+import { createOhMyPiAdapter } from "./adapters/oh-my-pi";
+import { createCursorAdapter } from "./adapters/cursor";
+import { createGithubCopilotAdapter } from "./adapters/github-copilot";
+import { createOpenCodeAdapter } from "./adapters/opencode";
+import { createOpenClawAdapter } from "./adapters/openclaw";
 import { createUnifiedAdapter } from "./unified/adapter";
 import { UNIFIED_DISCOVERY_SPEC } from "./unified/discovery";
 import { createCustomAdapter } from "./customAdapter";

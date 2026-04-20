@@ -1,1 +1,1 @@
-export { createGeminiCliAdapter } from "./adapter";
+export { createGeminiCliAdapter } from "../adapters/gemini-cli";

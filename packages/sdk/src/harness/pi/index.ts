@@ -1,1 +1,1 @@
-export { createPiAdapter } from "./adapter";
+export { createPiAdapter } from "../adapters/pi";
