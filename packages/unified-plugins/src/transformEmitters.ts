@@ -17,7 +17,8 @@ import {
 import { generateProgrammaticExtension } from './proxiedHookTemplates.js';
 import { generateCliBinScript, generateInstallScript, generateUninstallScript } from './binTemplates.js';
 import { generateInstallInstructions } from './installInstructions.js';
-import { generateHarnessManifest, generateInstallShared, generateTeamInstall, generateOpenClawNativeHooksSection, generateOpenCodeAccomplishSkill, generateGeminiPostinstall, generateGeminiPreuninstall } from './transformHelpers.js';
+import { generateHarnessManifest, generateTeamInstall, generateOpenClawNativeHooksSection, generateOpenCodeAccomplishSkill, generateGeminiPostinstall, generateGeminiPreuninstall } from './transformHelpers.js';
+import { generateInstallShared } from './installSharedGenerator.js';
 import { getCommandPaths } from './transform.js';
 
 export function generateManifests(
@@ -341,7 +342,7 @@ export function generateExtraFiles(
     files.push({ path: `bin/cli${ext}`, content: generateCliBinScript(manifest, targetProfile), executable: true });
     files.push({ path: `bin/install${ext}`, content: generateInstallScript(manifest, targetProfile), executable: true });
     files.push({ path: `bin/uninstall${ext}`, content: generateUninstallScript(manifest, targetProfile), executable: true });
-    files.push({ path: `bin/install-shared${ext}`, content: generateInstallShared(manifest, targetProfile) });
+    files.push({ path: `bin/install-shared${ext}`, content: generateInstallShared(manifest, targetProfile, sourceDir) });
     files.push({ path: `scripts/team-install${ext}`, content: generateTeamInstall(manifest, targetProfile), executable: true });
   }
 
@@ -395,6 +396,5 @@ export function generateExtraFiles(
       files.push({ path: `accomplish-skills/${manifest.name}/SKILL.md`, content: accomplishSkill });
     }
   }
-
   return files;
 }

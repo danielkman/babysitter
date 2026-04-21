@@ -1,11 +1,71 @@
-'use strict';
+// Generator for install-shared.js — the shared install infrastructure
+// Produces the common utility functions with target-specific values
+// populated from the manifest and target profile.
+
+import * as fs from 'fs';
+import * as path from 'path';
+import type { A5cPluginManifest, TargetProfile } from './types.js';
+
+function getHomeDirCode(targetProfile: TargetProfile): string {
+  switch (targetProfile.name) {
+    case 'codex': return `path.join(os.homedir(), '.codex')`;
+    case 'cursor': return `path.join(os.homedir(), '.cursor')`;
+    case 'github-copilot': return `path.join(os.homedir(), '.copilot')`;
+    case 'opencode': return `path.join(os.homedir(), '.opencode')`;
+    case 'openclaw': return `path.join(os.homedir(), '.openclaw')`;
+    default: return `path.join(os.homedir(), '.a5c')`;
+  }
+}
+
+function getPluginsDirCode(targetProfile: TargetProfile): string {
+  switch (targetProfile.name) {
+    case 'codex': return `path.join(os.homedir(), '.agents', 'plugins')`;
+    default: return `path.join(getHarnessHome(), 'plugins')`;
+  }
+}
+
+function getMarketplacePathCode(targetProfile: TargetProfile): string {
+  switch (targetProfile.name) {
+    case 'codex': return `path.join(os.homedir(), '.agents', 'plugins', 'marketplace.json')`;
+    default: return `path.join(getHarnessHome(), 'plugins', 'marketplace.json')`;
+  }
+}
+
+export function generateInstallShared(
+  manifest: A5cPluginManifest,
+  targetProfile: TargetProfile,
+  sourceDir?: string
+): string {
+  const pluginName = manifest.name;
+  const authorName = typeof manifest.author === 'string' ? manifest.author : manifest.author.name;
+  const homeDirCode = getHomeDirCode(targetProfile);
+  const pluginsDirCode = getPluginsDirCode(targetProfile);
+  const marketplacePathCode = getMarketplacePathCode(targetProfile);
+
+  // Check for per-harness surface file
+  let surfaceCode = '';
+  if (sourceDir) {
+    // Look for per-harness install-shared surface in extraFiles
+    const override = manifest.targets?.[targetProfile.name];
+    const isEsm = targetProfile.name === 'pi' || targetProfile.name === 'oh-my-pi' || targetProfile.name === 'openclaw';
+    const ext = isEsm ? '.cjs' : '.js';
+    const surfaceRef = override?.extraFiles?.[`bin/install-shared${ext}`];
+    if (typeof surfaceRef === 'string' && surfaceRef.startsWith('file:')) {
+      const surfacePath = path.join(sourceDir, surfaceRef.slice(5));
+      if (fs.existsSync(surfacePath)) {
+        surfaceCode = fs.readFileSync(surfacePath, 'utf-8');
+      }
+    }
+  }
+
+  const base = `'use strict';
 
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { spawnSync } = require('child_process');
 
-const PLUGIN_NAME = "babysitter";
+const PLUGIN_NAME = ${JSON.stringify(pluginName)};
 const PLUGIN_CATEGORY = 'Coding';
 
 function getUserHome() {
@@ -17,16 +77,16 @@ function getGlobalStateDir() {
 }
 
 function getHarnessHome() {
-  return path.join(os.homedir(), '.a5c');
+  return ${homeDirCode};
 }
 
 function getHomePluginRoot(scope) {
   if (scope === 'workspace') return path.join(process.cwd(), '.a5c', 'plugins', PLUGIN_NAME);
-  return path.join(path.join(getHarnessHome(), 'plugins'), PLUGIN_NAME);
+  return path.join(${pluginsDirCode}, PLUGIN_NAME);
 }
 
 function getHomeMarketplacePath() {
-  return path.join(getHarnessHome(), 'plugins', 'marketplace.json');
+  return ${marketplacePathCode};
 }
 
 function writeFileIfChanged(filePath, contents) {
@@ -80,7 +140,7 @@ function readJson(filePath) {
 
 function writeJson(filePath, value) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
-  fs.writeFileSync(filePath, JSON.stringify(value, null, 2) + '\n');
+  fs.writeFileSync(filePath, JSON.stringify(value, null, 2) + '\\n');
 }
 
 function ensureExecutable(filePath) {
@@ -91,14 +151,14 @@ function ensureExecutable(filePath) {
 
 function normalizeMarketplaceSourcePath(source, marketplacePath) {
   if (typeof source === 'string') {
-    return path.relative(path.dirname(marketplacePath), source).replace(/\\/g, '/');
+    return path.relative(path.dirname(marketplacePath), source).replace(/\\\\/g, '/');
   }
   return source;
 }
 
 function ensureMarketplaceEntry(marketplacePath, pluginRoot) {
   let marketplace = readJson(marketplacePath) || {
-    name: "a5c.ai",
+    name: ${JSON.stringify(authorName)},
     plugins: [],
   };
   if (!Array.isArray(marketplace.plugins)) marketplace.plugins = [];
@@ -107,9 +167,9 @@ function ensureMarketplaceEntry(marketplacePath, pluginRoot) {
   const entry = {
     name: PLUGIN_NAME,
     source: relSource,
-    description: "Orchestrate complex, multi-step workflows with event-sourced state management, hook-based extensibility, and human-in-the-loop approval",
-    version: "5.0.0",
-    author: { name: "a5c.ai" },
+    description: ${JSON.stringify(manifest.description)},
+    version: ${JSON.stringify(manifest.version)},
+    author: { name: ${JSON.stringify(authorName)} },
   };
   if (idx >= 0) marketplace.plugins[idx] = entry;
   else marketplace.plugins.push(entry);
@@ -131,7 +191,7 @@ function resolveBabysitterCommand(packageRoot) {
   const versionsPath = path.join(packageRoot, 'versions.json');
   const versions = readJson(versionsPath) || {};
   const ver = versions.sdkVersion || 'latest';
-  return `npx -y @a5c-ai/babysitter-sdk@${ver}`;
+  return \`npx -y @a5c-ai/babysitter-sdk@\${ver}\`;
 }
 
 function runBabysitterCli(packageRoot, cliArgs, options = {}) {
@@ -192,7 +252,9 @@ function runPostInstall(pluginRoot) {
     });
   }
 }
+`;
 
+  const exports = `
 module.exports = {
   PLUGIN_NAME,
   PLUGIN_CATEGORY,
@@ -216,3 +278,11 @@ module.exports = {
   warnWindowsHooks,
   runPostInstall,
 };
+`;
+
+  if (surfaceCode) {
+    return base + '\n// --- Target-specific surface ---\n\n' + surfaceCode + '\n' + exports;
+  }
+
+  return base + exports;
+}
