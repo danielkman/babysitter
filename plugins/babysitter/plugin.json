@@ -38,10 +38,5 @@
       "name": "babysit",
       "file": "skills/babysit/SKILL.md"
     }
-  ],
-  "hookConfig": {
-    "matchers": {
-      "PreToolUse": "Bash"
-    }
-  }
+  ]
 }
