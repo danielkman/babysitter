@@ -50,7 +50,7 @@ function resolveCmd(
   if (p) {
     const scriptRef = rootRef.startsWith('$') || rootRef.startsWith('\\$')
       ? `${rootRef}/${p}` : `./${p}`;
-    return `npx -y ${proxyPkg} invoke --adapter ${adapter} --handler "bash ${scriptRef}" --json`;
+    return `npx ${proxyPkg} invoke --adapter ${adapter} --handler "bash ${scriptRef}" --json`;
   }
   return `echo '{}'`;
 }
@@ -158,8 +158,8 @@ export function generateCursorHooksJson(
     const slug = slugify(canonical);
     const p = resolveHookPath(handler, slug, manifest.name, native, pat);
     const adapter = targetProfile.adapterName;
-    const bashCmd = p ? `npx -y ${sdk.proxyPackage} invoke --adapter ${adapter} --handler "bash ./${p}" --json` : `echo '{}'`;
-    const psCmd = p ? `npx -y ${sdk.proxyPackage} invoke --adapter ${adapter} --handler "bash ./${p}" --json` : `Write-Output '{}'`;
+    const bashCmd = p ? `npx ${sdk.proxyPackage} invoke --adapter ${adapter} --handler "bash ./${p}" --json` : `echo '{}'`;
+    const psCmd = p ? `npx ${sdk.proxyPackage} invoke --adapter ${adapter} --handler "bash ./${p}" --json` : `Write-Output '{}'`;
     const entry: Record<string, unknown> = { type: 'command', bash: bashCmd, powershell: psCmd, timeoutSec: 30 };
     if (canonical === 'Stop') {
       entry.loop_limit = null;
@@ -214,8 +214,8 @@ export function generateGithubCopilotHooksJson(
     const slug = slugify(canonical);
     const p = resolveHookPath(handler, slug, manifest.name, native, pat);
     const adapter = targetProfile.adapterName;
-    const bashCmd = p ? `npx -y ${sdk.proxyPackage} invoke --adapter ${adapter} --handler "bash ./${p}" --json` : `echo '{}'`;
-    const psCmd = p ? `npx -y ${sdk.proxyPackage} invoke --adapter ${adapter} --handler "bash ./${p}" --json` : `Write-Output '{}'`;
+    const bashCmd = p ? `npx ${sdk.proxyPackage} invoke --adapter ${adapter} --handler "bash ./${p}" --json` : `echo '{}'`;
+    const psCmd = p ? `npx ${sdk.proxyPackage} invoke --adapter ${adapter} --handler "bash ./${p}" --json` : `Write-Output '{}'`;
     const timeout = canonical === 'UserPromptSubmit' ? 15 : 30;
     hooks[native] = [{ type: 'command', bash: bashCmd, powershell: psCmd, timeoutSec: timeout }];
   });
@@ -237,7 +237,7 @@ export function generateOpenCodeHooksJson(
     if (handler === 'proxy') {
       hooks[native] = [{
         type: 'command',
-        script: `npx -y ${sdk.proxyPackage} invoke --adapter ${adapter} --json`,
+        script: `npx ${sdk.proxyPackage} invoke --adapter ${adapter} --json`,
         description: `${manifest.name} ${canonical} hook`,
         timeoutMs: canonical === 'ShellEnv' ? 5000 : 30000,
       }];
@@ -252,7 +252,7 @@ export function generateOpenCodeHooksJson(
       }
       hooks[native] = [{
         type: 'command',
-        script: `npx -y ${sdk.proxyPackage} invoke --adapter ${adapter} --handler "node ./${handlerScript}" --json`,
+        script: `npx ${sdk.proxyPackage} invoke --adapter ${adapter} --handler "node ./${handlerScript}" --json`,
         description: `${manifest.name} ${canonical} hook`,
         timeoutMs: canonical === 'ShellEnv' ? 5000 : 30000,
       }];

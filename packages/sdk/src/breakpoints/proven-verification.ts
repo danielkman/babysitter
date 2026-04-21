@@ -110,7 +110,7 @@ export async function verifyBreakpointResult(
     }
 
     const verificationResult = await verifyAnswer(
-      result as Parameters<typeof verifyAnswer>[0],
+      result,
       effectiveConfig.trustedKeysDir,
     );
 
