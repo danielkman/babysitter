@@ -17,7 +17,7 @@
     "packages/hooks-proxy/adapter-openclaw"
   ],
   "scripts": {
-    "postinstall": "node ./scripts/patch-webpackbar-progress-plugin.cjs",
+    "postinstall": "node ./scripts/patch-webpackbar-progress-plugin.cjs && node ./scripts/patch-agent-mux-exports.cjs",
     "check:library-syntax": "node ./scripts/validate-library-js-syntax.cjs",
     "verify:metadata": "node ./scripts/check-package-metadata.cjs",
     "sync:sdk-command-templates": "node ./scripts/sync-sdk-command-templates.cjs",
@@ -72,5 +72,8 @@
     "@radix-ui/react-tooltip": {
       "@types/react": "18.2.79"
     }
+  },
+  "dependencies": {
+    "@a5c-ai/agent-mux": "^0.4.9"
   }
 }
