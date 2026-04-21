@@ -19,6 +19,7 @@ import { generateCliBinScript, generateInstallScript, generateUninstallScript } 
 import { generateInstallInstructions } from './installInstructions.js';
 import { generateHarnessManifest, generateTeamInstall, generateOpenClawNativeHooksSection, generateOpenCodeAccomplishSkill, generateGeminiPostinstall, generateGeminiPreuninstall } from './transformHelpers.js';
 import { generateInstallShared } from './installSharedGenerator.js';
+import { resolveSdkConfig } from './sdkConfig.js';
 import { getCommandPaths } from './transform.js';
 
 export function generateManifests(
@@ -31,6 +32,7 @@ export function generateManifests(
 
   // Filter manifest hooks to only those supported by this target
   // and resolve handler paths through hookFilePattern
+  const sdkCfg = resolveSdkConfig(manifest);
   const filteredManifest = { ...manifest };
   if (manifest.hooks) {
     const hookFilePattern = manifest.targets?.[targetProfile.name]?.hookFilePattern
@@ -171,7 +173,7 @@ export function generateManifests(
     !files.some(f => f.path === 'package.json')
   ) {
     const overrideNpmPkg = manifest.targets?.[targetProfile.name]?.npmPackageName;
-    const npmPkg = (typeof overrideNpmPkg === 'string' ? overrideNpmPkg : null) || targetProfile.npmPackageName || `@a5c-ai/${manifest.name}-${targetProfile.name}`;
+    const npmPkg = (typeof overrideNpmPkg === 'string' ? overrideNpmPkg : null) || targetProfile.npmPackageName || `${sdkCfg.scope}/${manifest.name}-${targetProfile.name}`;
     const isEsm = targetProfile.name === 'pi' || targetProfile.name === 'oh-my-pi' || targetProfile.name === 'openclaw';
     const ext = isEsm ? '.cjs' : '.js';
     const scripts: Record<string, string> = {
@@ -197,7 +199,7 @@ export function generateManifests(
       author: manifest.author,
       license: manifest.license,
       publishConfig: { access: 'public' },
-      dependencies: { '@a5c-ai/babysitter-sdk': manifest.version },
+      dependencies: { [sdkCfg.package]: manifest.version },
     };
     if (isEsm) pkgJson.type = 'module';
     if (manifest.repository) pkgJson.repository = manifest.repository;
@@ -382,14 +384,12 @@ export function generateExtraFiles(
       }
     }
   }
-
   if (manifest.postInstall) {
     const postInstallPath = path.join(sourceDir, manifest.postInstall);
     if (fs.existsSync(postInstallPath)) {
       files.push({ path: 'scripts/post-install.js', content: fs.readFileSync(postInstallPath, 'utf-8'), executable: true });
     }
   }
-
   if (targetProfile.name === 'opencode') {
     const accomplishSkill = generateOpenCodeAccomplishSkill(manifest);
     if (accomplishSkill) {

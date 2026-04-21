@@ -1,4 +1,5 @@
 // CLI bin script templates for targets with npm distribution
+import { resolveSdkConfig } from './sdkConfig.js';
 
 import type { A5cPluginManifest, TargetProfile } from './types.js';
 
@@ -8,7 +9,10 @@ function getExt(targetProfile: TargetProfile): string {
 
 function getNpmPkg(manifest: A5cPluginManifest, targetProfile: TargetProfile): string {
   const override = manifest.targets?.[targetProfile.name]?.npmPackageName;
-  return (typeof override === 'string' ? override : null) || targetProfile.npmPackageName || `@a5c-ai/${manifest.name}-${targetProfile.name}`;
+  if (typeof override === 'string') return override;
+  if (targetProfile.npmPackageName) return targetProfile.npmPackageName;
+  const sdk = resolveSdkConfig(manifest);
+  return `${sdk.scope}/${manifest.name}-${targetProfile.name}`;
 }
 
 function getCliName(manifest: A5cPluginManifest, targetProfile: TargetProfile): string {
@@ -151,7 +155,8 @@ main();
 `;
 }
 
-function generateGeminiInstallScript(): string {
+function generateGeminiInstallScript(manifest: A5cPluginManifest): string {
+  const cliName = getNpmPkg(manifest, { name: 'gemini' } as TargetProfile).split('/').pop() || 'plugin-gemini';
   return `#!/usr/bin/env node
 'use strict';
 
@@ -160,20 +165,20 @@ const { spawnSync } = require('child_process');
 const PACKAGE_ROOT = path.resolve(__dirname, '..');
 
 function main() {
-  console.log('[babysitter-gemini] Installing extension...');
+  console.log('[${cliName}] Installing extension...');
   const result = spawnSync('gemini', ['extensions', 'install', PACKAGE_ROOT], {
     stdio: 'inherit', timeout: 60000
   });
   if (result.status === 0) {
-    console.log('[babysitter-gemini] Extension installed via Gemini CLI.');
+    console.log('[${cliName}] Extension installed via Gemini CLI.');
   } else {
     const linkResult = spawnSync('gemini', ['extensions', 'link', PACKAGE_ROOT], {
       stdio: 'inherit', timeout: 60000
     });
     if (linkResult.status === 0) {
-      console.log('[babysitter-gemini] Extension linked via Gemini CLI.');
+      console.log('[${cliName}] Extension linked via Gemini CLI.');
     } else {
-      console.error('[babysitter-gemini] Gemini CLI not available. Install manually: gemini extensions install ' + PACKAGE_ROOT);
+      console.error('[${cliName}] Gemini CLI not available. Install manually: gemini extensions install ' + PACKAGE_ROOT);
     }
   }
 }
@@ -214,4 +219,4 @@ main();
 `;
 }
 
-export { generateGeminiInstallScript };
+export { generateGeminiInstallScript as _generateGeminiInstallScript };

@@ -1,5 +1,6 @@
 // Manifest generators for all targets
 
+import { resolveSdkConfig } from './sdkConfig.js';
 import type { A5cPluginManifest } from './types.js';
 
 // Extended manifest type for resolved manifests that may have been enriched
@@ -50,7 +51,7 @@ export function generateClaudeCodeManifest(manifest: A5cPluginManifest): string 
 
 export function generateCodexManifest(manifest: ResolvedManifest): string {
   const packageJson: Record<string, unknown> = {
-    name: manifest.npmPackageName || `@a5c-ai/${manifest.name}-codex`,
+    name: manifest.npmPackageName || (() => { const s = resolveSdkConfig(manifest); return `${s.scope}/${manifest.name}-codex`; })(),
     version: manifest.version,
     description: manifest.description,
     scripts: {
@@ -170,7 +171,7 @@ export function generateGithubCopilotManifest(manifest: A5cPluginManifest): stri
 
 export function generatePiManifest(manifest: ResolvedManifest): string {
   const packageJson: Record<string, unknown> = {
-    name: manifest.npmPackageName || `@a5c-ai/${manifest.name}-pi`,
+    name: manifest.npmPackageName || (() => { const s = resolveSdkConfig(manifest); return `${s.scope}/${manifest.name}-pi`; })(),
     version: manifest.version,
     type: 'module',
     description: `${manifest.description} — Pi Coding Agent`,
@@ -213,7 +214,7 @@ export function generatePiManifest(manifest: ResolvedManifest): string {
 
 export function generateOhMyPiManifest(manifest: ResolvedManifest): string {
   const packageJson: Record<string, unknown> = {
-    name: manifest.npmPackageName || `@a5c-ai/${manifest.name}-omp`,
+    name: manifest.npmPackageName || (() => { const s = resolveSdkConfig(manifest); return `${s.scope}/${manifest.name}-omp`; })(),
     version: manifest.version,
     type: 'module',
     description: `${manifest.description} — oh-my-pi`,

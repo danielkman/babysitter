@@ -20,7 +20,6 @@ export const PI_PROFILE: TargetProfile = {
   hookRegistrationFormat: null,
   scriptVariants: ['javascript'],
   npmPublishable: true,
-  npmPackageName: '@a5c-ai/babysitter-pi',
   adapterFamily: 'programmatic',
   distribution: 'npm-cli',
   pluginRootEnvVarForExtension: 'PI_PLUGIN_ROOT',

@@ -3,6 +3,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import type { A5cPluginManifest, TargetProfile } from './types.js';
+import { resolveSdkConfig } from './sdkConfig.js';
 
 export function generateInstallInstructions(
   manifest: A5cPluginManifest,
@@ -29,7 +30,8 @@ function renderTemplate(
   manifest: A5cPluginManifest,
   targetProfile: TargetProfile
 ): string {
-  const npmPkg = targetProfile.npmPackageName || `@a5c-ai/${manifest.name}-${targetProfile.name}`;
+  const sdk = resolveSdkConfig(manifest);
+  const npmPkg = targetProfile.npmPackageName || `${sdk.scope}/${manifest.name}-${targetProfile.name}`;
   const cliName = `${manifest.name}-${targetProfile.name}`;
 
   const skillNames = manifest.skills
@@ -54,13 +56,13 @@ function renderTemplate(
   let installInstructions: string;
   switch (targetProfile.distribution) {
     case 'marketplace':
-      installInstructions = generateMarketplaceBlock(targetProfile);
+      installInstructions = generateMarketplaceBlock(targetProfile, sdk.cli);
       break;
     case 'npm-cli':
       installInstructions = generateNpmCliBlock(targetProfile, npmPkg, cliName);
       break;
     case 'both':
-      installInstructions = `### Option 1: Marketplace (Recommended)\n\n${generateMarketplaceBlock(targetProfile)}\n\n### Option 2: npm Install\n\n${generateNpmCliBlock(targetProfile, npmPkg, cliName)}`;
+      installInstructions = `### Option 1: Marketplace (Recommended)\n\n${generateMarketplaceBlock(targetProfile, sdk.cli)}\n\n### Option 2: npm Install\n\n${generateNpmCliBlock(targetProfile, npmPkg, cliName)}`;
       break;
   }
 
@@ -68,7 +70,7 @@ function renderTemplate(
   if (targetProfile.npmPublishable) {
     verifyCommands += `npm ls -g ${npmPkg} --depth=0\n`;
   }
-  verifyCommands += `babysitter harness:discover --json | grep ${targetProfile.adapterName}`;
+  verifyCommands += `${sdk.cli} harness:discover --json | grep ${targetProfile.adapterName}`;
 
   let result = template;
   result = result.replace(/\{\{name\}\}/g, manifest.name);
@@ -98,8 +100,8 @@ function getCommandNames(manifest: A5cPluginManifest): string[] {
   return manifest.commands.map(c => c.replace(/\.md$/, ''));
 }
 
-function generateMarketplaceBlock(targetProfile: TargetProfile): string {
-  return `\`\`\`bash\nbabysitter harness:install-plugin ${targetProfile.name}\n\`\`\``;
+function generateMarketplaceBlock(targetProfile: TargetProfile, sdkCli: string): string {
+  return `\`\`\`bash\n${sdkCli} harness:install-plugin ${targetProfile.name}\n\`\`\``;
 }
 
 function generateNpmCliBlock(
@@ -126,7 +128,8 @@ function renderDefault(
   manifest: A5cPluginManifest,
   targetProfile: TargetProfile
 ): string {
-  const npmPkg = targetProfile.npmPackageName || `@a5c-ai/${manifest.name}-${targetProfile.name}`;
+  const sdk = resolveSdkConfig(manifest);
+  const npmPkg = targetProfile.npmPackageName || `${sdk.scope}/${manifest.name}-${targetProfile.name}`;
   const cliName = `${manifest.name}-${targetProfile.name}`;
   const sections: string[] = [];
 
@@ -136,10 +139,10 @@ function renderDefault(
   sections.push('');
   sections.push('## Prerequisites');
   sections.push('');
-  sections.push('Install the Babysitter SDK CLI:');
+  sections.push('Install the SDK CLI:');
   sections.push('');
   sections.push('```bash');
-  sections.push('npm install -g @a5c-ai/babysitter-sdk');
+  sections.push(`npm install -g ${sdk.package}`);
   sections.push('```');
   sections.push('');
   sections.push('## Installation');
@@ -147,7 +150,7 @@ function renderDefault(
 
   switch (targetProfile.distribution) {
     case 'marketplace':
-      sections.push(generateMarketplaceBlock(targetProfile));
+      sections.push(generateMarketplaceBlock(targetProfile, sdk.cli));
       break;
     case 'npm-cli':
       sections.push(generateNpmCliBlock(targetProfile, npmPkg, cliName));
@@ -155,7 +158,7 @@ function renderDefault(
     case 'both':
       sections.push('### Option 1: Marketplace (Recommended)');
       sections.push('');
-      sections.push(generateMarketplaceBlock(targetProfile));
+      sections.push(generateMarketplaceBlock(targetProfile, sdk.cli));
       sections.push('');
       sections.push('### Option 2: npm Install');
       sections.push('');
@@ -179,7 +182,7 @@ function renderDefault(
   if (targetProfile.npmPublishable) {
     sections.push(`npm ls -g ${npmPkg} --depth=0`);
   }
-  sections.push(`babysitter harness:discover --json | grep ${targetProfile.adapterName}`);
+  sections.push(`${sdk.cli} harness:discover --json | grep ${targetProfile.adapterName}`);
   sections.push('```');
 
   return sections.join('\n');

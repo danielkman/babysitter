@@ -18,7 +18,6 @@ export const CODEX_PROFILE: TargetProfile = {
   hookRegistrationFormat: 'codex',
   scriptVariants: ['bash'],
   npmPublishable: true,
-  npmPackageName: '@a5c-ai/babysitter-codex',
   adapterFamily: 'shell-hook',
   distribution: 'npm-cli',
   marketplacePath: '.agents/plugins/marketplace.json',

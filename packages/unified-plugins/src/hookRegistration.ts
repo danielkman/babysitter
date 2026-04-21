@@ -4,6 +4,7 @@
 
 import type { A5cPluginManifest, TargetProfile } from './types.js';
 import { slugify } from './utils.js';
+import { resolveSdkConfig } from './sdkConfig.js';
 
 function applyPattern(
   pattern: string,
@@ -39,6 +40,7 @@ function resolveCmd(
   rootRef: string,
   pluginName: string,
   nativeHook: string,
+  proxyPkg: string,
   pattern?: string
 ): string {
   if (handlerValue === 'proxy') {
@@ -48,7 +50,7 @@ function resolveCmd(
   if (p) {
     const scriptRef = rootRef.startsWith('$') || rootRef.startsWith('\\$')
       ? `${rootRef}/${p}` : `./${p}`;
-    return `npx -y @a5c-ai/hooks-proxy-cli invoke --adapter ${adapter} --handler "bash ${scriptRef}" --json`;
+    return `npx -y ${proxyPkg} invoke --adapter ${adapter} --handler "bash ${scriptRef}" --json`;
   }
   return `echo '{}'`;
 }
@@ -110,10 +112,11 @@ export function generateClaudeCodeHooksJson(
     ? `\${${targetProfile.pluginRootEnvVar}}`
     : '$(cd "$(dirname "$0")/.." && pwd)';
   const pat = getPattern(manifest, targetProfile.name);
+  const sdk = resolveSdkConfig(manifest);
 
   iterateHooks(manifest, targetProfile, (canonical, native, handler) => {
     const slug = slugify(canonical);
-    const cmd = resolveCmd(handler, slug, targetProfile.adapterName, rootRef, manifest.name, native, pat);
+    const cmd = resolveCmd(handler, slug, targetProfile.adapterName, rootRef, manifest.name, native, sdk.proxyPackage, pat);
     const entry: Record<string, unknown> = {
       hooks: [{ type: 'command', command: cmd }],
     };
@@ -132,10 +135,11 @@ export function generateCodexHooksJson(
 ): string {
   const hooks: Record<string, unknown> = {};
   const pat = getPattern(manifest, targetProfile.name);
+  const sdk = resolveSdkConfig(manifest);
 
   iterateHooks(manifest, targetProfile, (canonical, native, handler) => {
     const slug = slugify(canonical);
-    const cmd = resolveCmd(handler, slug, targetProfile.adapterName, '.', manifest.name, native, pat);
+    const cmd = resolveCmd(handler, slug, targetProfile.adapterName, '.', manifest.name, native, sdk.proxyPackage, pat);
     hooks[native] = [{ matcher: '.*', hooks: [{ type: 'command', command: cmd }] }];
   });
 
@@ -148,13 +152,14 @@ export function generateCursorHooksJson(
 ): string {
   const hooks: Record<string, unknown> = {};
   const pat = getPattern(manifest, targetProfile.name);
+  const sdk = resolveSdkConfig(manifest);
 
   iterateHooks(manifest, targetProfile, (canonical, native, handler) => {
     const slug = slugify(canonical);
     const p = resolveHookPath(handler, slug, manifest.name, native, pat);
     const adapter = targetProfile.adapterName;
-    const bashCmd = p ? `npx -y @a5c-ai/hooks-proxy-cli invoke --adapter ${adapter} --handler "bash ./${p}" --json` : `echo '{}'`;
-    const psCmd = p ? `npx -y @a5c-ai/hooks-proxy-cli invoke --adapter ${adapter} --handler "bash ./${p}" --json` : `Write-Output '{}'`;
+    const bashCmd = p ? `npx -y ${sdk.proxyPackage} invoke --adapter ${adapter} --handler "bash ./${p}" --json` : `echo '{}'`;
+    const psCmd = p ? `npx -y ${sdk.proxyPackage} invoke --adapter ${adapter} --handler "bash ./${p}" --json` : `Write-Output '{}'`;
     const entry: Record<string, unknown> = { type: 'command', bash: bashCmd, powershell: psCmd, timeoutSec: 30 };
     if (canonical === 'Stop') {
       entry.loop_limit = null;
@@ -175,10 +180,11 @@ export function generateGeminiHooksJson(
     ? `\${${targetProfile.pluginRootEnvVar}}`
     : '${extensionPath}';
   const pat = getPattern(manifest, targetProfile.name);
+  const sdk = resolveSdkConfig(manifest);
 
   iterateHooks(manifest, targetProfile, (canonical, native, handler) => {
     const slug = slugify(canonical);
-    const cmd = resolveCmd(handler, slug, targetProfile.adapterName, rootRef, manifest.name, native, pat);
+    const cmd = resolveCmd(handler, slug, targetProfile.adapterName, rootRef, manifest.name, native, sdk.proxyPackage, pat);
     hooks[native] = [{
       hooks: [{
         name: `${manifest.name}-${slug}`,
@@ -202,13 +208,14 @@ export function generateGithubCopilotHooksJson(
 ): string {
   const hooks: Record<string, unknown> = {};
   const pat = getPattern(manifest, targetProfile.name);
+  const sdk = resolveSdkConfig(manifest);
 
   iterateHooks(manifest, targetProfile, (canonical, native, handler) => {
     const slug = slugify(canonical);
     const p = resolveHookPath(handler, slug, manifest.name, native, pat);
     const adapter = targetProfile.adapterName;
-    const bashCmd = p ? `npx -y @a5c-ai/hooks-proxy-cli invoke --adapter ${adapter} --handler "bash ./${p}" --json` : `echo '{}'`;
-    const psCmd = p ? `npx -y @a5c-ai/hooks-proxy-cli invoke --adapter ${adapter} --handler "bash ./${p}" --json` : `Write-Output '{}'`;
+    const bashCmd = p ? `npx -y ${sdk.proxyPackage} invoke --adapter ${adapter} --handler "bash ./${p}" --json` : `echo '{}'`;
+    const psCmd = p ? `npx -y ${sdk.proxyPackage} invoke --adapter ${adapter} --handler "bash ./${p}" --json` : `Write-Output '{}'`;
     const timeout = canonical === 'UserPromptSubmit' ? 15 : 30;
     hooks[native] = [{ type: 'command', bash: bashCmd, powershell: psCmd, timeoutSec: timeout }];
   });
@@ -222,6 +229,7 @@ export function generateOpenCodeHooksJson(
 ): string {
   const hooks: Record<string, unknown> = {};
   const pat = getPattern(manifest, targetProfile.name);
+  const sdk = resolveSdkConfig(manifest);
 
   iterateHooks(manifest, targetProfile, (canonical, native, handler) => {
     const slug = slugify(canonical);
@@ -229,7 +237,7 @@ export function generateOpenCodeHooksJson(
     if (handler === 'proxy') {
       hooks[native] = [{
         type: 'command',
-        script: `npx -y @a5c-ai/hooks-proxy-cli invoke --adapter ${adapter} --json`,
+        script: `npx -y ${sdk.proxyPackage} invoke --adapter ${adapter} --json`,
         description: `${manifest.name} ${canonical} hook`,
         timeoutMs: canonical === 'ShellEnv' ? 5000 : 30000,
       }];
@@ -244,7 +252,7 @@ export function generateOpenCodeHooksJson(
       }
       hooks[native] = [{
         type: 'command',
-        script: `npx -y @a5c-ai/hooks-proxy-cli invoke --adapter ${adapter} --handler "node ./${handlerScript}" --json`,
+        script: `npx -y ${sdk.proxyPackage} invoke --adapter ${adapter} --handler "node ./${handlerScript}" --json`,
         description: `${manifest.name} ${canonical} hook`,
         timeoutMs: canonical === 'ShellEnv' ? 5000 : 30000,
       }];
@@ -264,10 +272,11 @@ export function generateOpenClawHooksJson(
 ): string {
   const hooks: Record<string, unknown> = {};
   const pat = getPattern(manifest, targetProfile.name);
+  const sdk = resolveSdkConfig(manifest);
 
   iterateHooks(manifest, targetProfile, (canonical, native, handler) => {
     const slug = slugify(canonical);
-    const cmd = resolveCmd(handler, slug, targetProfile.adapterName, '.', manifest.name, native, pat);
+    const cmd = resolveCmd(handler, slug, targetProfile.adapterName, '.', manifest.name, native, sdk.proxyPackage, pat);
     hooks[native] = [{ matcher: '*', hooks: [{ type: 'command', command: cmd }] }];
   });
 

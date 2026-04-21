@@ -35,6 +35,14 @@ export interface A5cPluginManifest {
   // Target-Specific Overrides
   targets?: Record<string, TargetOverride>;
 
+  // SDK infrastructure — defaults to babysitter SDK if not specified
+  sdk?: {
+    package?: string;      // e.g. @a5c-ai/babysitter-sdk
+    cli?: string;          // e.g. babysitter
+    proxyPackage?: string; // e.g. @a5c-ai/hooks-proxy-cli
+    scope?: string;        // e.g. @a5c-ai
+  };
+
   // Global hook file naming pattern — applies to all targets unless overridden
   // Supports {{name}}, {{slug}} (canonical), {{native}} (target-native name)
   hookFilePattern?: string;

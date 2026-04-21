@@ -5,7 +5,7 @@ import type { Diagnostic } from './types.js';
 
 export const A5C_PLUGIN_SCHEMA = {
   $schema: 'https://json-schema.org/draft/2020-12/schema',
-  $id: 'https://a5c.ai/schemas/plugin.json',
+  $id: 'https://unified-plugins.dev/schemas/plugin.json',
   title: 'Unified Plugin Format Manifest',
   type: 'object',
   required: ['name', 'version', 'description', 'author', 'license'],

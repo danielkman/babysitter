@@ -20,7 +20,6 @@ export const OH_MY_PI_PROFILE: TargetProfile = {
   hookRegistrationFormat: null,
   scriptVariants: ['javascript'],
   npmPublishable: true,
-  npmPackageName: '@a5c-ai/babysitter-omp',
   adapterFamily: 'programmatic',
   distribution: 'npm-cli',
   pluginRootEnvVarForExtension: 'OMP_PLUGIN_ROOT',

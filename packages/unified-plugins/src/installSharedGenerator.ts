@@ -1,4 +1,5 @@
 // Generator for install-shared.js — the shared install infrastructure
+import { resolveSdkConfig } from './sdkConfig.js';
 // Produces the common utility functions with target-specific values
 // populated from the manifest and target profile.
 
@@ -37,6 +38,7 @@ export function generateInstallShared(
   sourceDir?: string
 ): string {
   const pluginName = manifest.name;
+  const sdk = resolveSdkConfig(manifest);
   const authorName = typeof manifest.author === 'string' ? manifest.author : manifest.author.name;
   const homeDirCode = getHomeDirCode(targetProfile);
   const pluginsDirCode = getPluginsDirCode(targetProfile);
@@ -185,13 +187,13 @@ function removeMarketplaceEntry(marketplacePath) {
 
 function resolveBabysitterCommand(packageRoot) {
   try {
-    const result = spawnSync('babysitter', ['--version'], { stdio: 'pipe', timeout: 10000 });
-    if (result.status === 0) return 'babysitter';
+    const result = spawnSync('${sdk.cli}', ['--version'], { stdio: 'pipe', timeout: 10000 });
+    if (result.status === 0) return '${sdk.cli}';
   } catch {}
   const versionsPath = path.join(packageRoot, 'versions.json');
   const versions = readJson(versionsPath) || {};
   const ver = versions.sdkVersion || 'latest';
-  return \`npx -y @a5c-ai/babysitter-sdk@\${ver}\`;
+  return \`npx -y ${sdk.package}@\${ver}\`;
 }
 
 function runBabysitterCli(packageRoot, cliArgs, options = {}) {
@@ -216,7 +218,7 @@ function ensureGlobalProcessLibrary(packageRoot) {
   const defaultSpec = readJson(path.join(stateDir, 'process-library-defaults.json'));
   const cloneDir = defaultSpec && defaultSpec.cloneDir
     ? defaultSpec.cloneDir
-    : path.join(stateDir, 'process-library', 'babysitter-repo');
+    : path.join(stateDir, 'process-library', '${pluginName}-repo');
   runBabysitterCli(packageRoot, [
     'process-library:clone',
     '--dir', cloneDir,
