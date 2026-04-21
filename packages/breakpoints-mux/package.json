@@ -35,6 +35,9 @@
       "default": "./dist/config.js"
     }
   },
+  "bin": {
+    "breakpoints-mux": "./dist/cli/index.js"
+  },
   "files": [
     "dist"
   ],
@@ -50,6 +53,7 @@
   "dependencies": {
     "@octokit/auth-app": "^7.1.4",
     "@octokit/rest": "^21.1.1",
+    "commander": "^12.1.0",
     "jsonwebtoken": "^9.0.2",
     "zod": "^3.23.0"
   },
