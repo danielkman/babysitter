@@ -51,6 +51,8 @@ export async function executeHarnessInfraCommand(parsed: ParsedArgs): Promise<nu
       return handleCompressOutput({ args: parsed.compressOutputArgs ?? [] });
     case "discover":
     case "list":
+    case "harness:discover":
+    case "harness:list":
       return await handleHarnessDiscover(parsed);
     case "harness:install":
       return await handleHarnessInstall({

@@ -50,6 +50,8 @@ export const HARNESS_RUNTIME_COMMANDS = [
 export const HARNESS_DISCOVERY_COMMANDS = [
   "discover",
   "list",
+  "harness:discover",
+  "harness:list",
 ] as const;
 
 export const HARNESS_INSTALL_COMMANDS = [
