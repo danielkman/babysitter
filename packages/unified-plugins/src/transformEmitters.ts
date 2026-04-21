@@ -97,9 +97,11 @@ export function generateManifests(
       break;
     }
     case 'gemini':
+      {
+        const commandPaths = getCommandPaths(sourceDir, manifest);
       files.push({
         path: 'plugin.json',
-        content: generateGeminiManifest(filteredManifest),
+        content: generateGeminiManifest(filteredManifest, commandPaths),
       });
       files.push({
         path: 'gemini-extension.json',
@@ -115,6 +117,7 @@ export function generateManifests(
           2
         ) + '\n',
       });
+      }
       break;
     case 'github-copilot': {
       const copilotManifest = generateGithubCopilotManifest(filteredManifest);

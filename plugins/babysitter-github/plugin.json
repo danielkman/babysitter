@@ -2,7 +2,9 @@
   "name": "babysitter",
   "version": "5.0.0",
   "description": "Orchestrate complex, multi-step workflows with event-sourced state management, hook-based extensibility, and human-in-the-loop approval",
-  "author": "a5c.ai",
+  "author": {
+    "name": "a5c.ai"
+  },
   "license": "MIT",
   "skills": "skills/",
   "hooks": "hooks/hooks.json",

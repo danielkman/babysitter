@@ -129,6 +129,42 @@ describe('e2e: sample plugin compilation', () => {
       expect(result.emittedFiles).toContain('bin/uninstall.js');
     });
 
+    it('gemini: should emit TOML command references in plugin.json', () => {
+      const result = compile({
+        source: SAMPLE_PLUGIN_DIR,
+        target: 'gemini',
+        output: path.join(tmpDir, 'gemini-test'),
+      });
+
+      expect(result.status).not.toBe('error');
+      const pluginJson = JSON.parse(
+        fs.readFileSync(path.join(result.outputDir, 'plugin.json'), 'utf-8')
+      );
+      expect(pluginJson.commands).toEqual([
+        'commands/help.toml',
+        'commands/status.toml',
+      ]);
+    });
+
+    it('github-copilot: should emit author as an object', () => {
+      const result = compile({
+        source: SAMPLE_PLUGIN_DIR,
+        target: 'github-copilot',
+        output: path.join(tmpDir, 'github-test'),
+      });
+
+      expect(result.status).not.toBe('error');
+      const pluginJson = JSON.parse(
+        fs.readFileSync(path.join(result.outputDir, 'plugin.json'), 'utf-8')
+      );
+      expect(pluginJson.author).toEqual({ name: 'a5c.ai' });
+
+      const githubPluginJson = JSON.parse(
+        fs.readFileSync(path.join(result.outputDir, '.github/plugin.json'), 'utf-8')
+      );
+      expect(githubPluginJson.author).toEqual({ name: 'a5c.ai' });
+    });
+
     it('pi: should emit extensions with command registration', () => {
       const result = compile({
         source: SAMPLE_PLUGIN_DIR,

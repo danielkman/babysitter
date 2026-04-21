@@ -9,10 +9,14 @@ type ResolvedManifest = A5cPluginManifest & {
   npmPackageName?: string;
 };
 
-export function generateClaudeCodeManifest(manifest: A5cPluginManifest): string {
-  const author = typeof manifest.author === 'string'
+function normalizeAuthorObject(manifest: A5cPluginManifest): { name: string; email?: string } {
+  return typeof manifest.author === 'string'
     ? { name: manifest.author }
     : manifest.author;
+}
+
+export function generateClaudeCodeManifest(manifest: A5cPluginManifest): string {
+  const author = normalizeAuthorObject(manifest);
   const pluginJson: Record<string, unknown> = {
     name: manifest.name,
     version: manifest.version,
@@ -112,7 +116,10 @@ export function generateCursorManifest(manifest: A5cPluginManifest): string {
   return JSON.stringify(pluginJson, null, 2) + '\n';
 }
 
-export function generateGeminiManifest(manifest: A5cPluginManifest): string {
+export function generateGeminiManifest(
+  manifest: A5cPluginManifest,
+  commandPaths: string[] = []
+): string {
   const pluginJson: Record<string, unknown> = {
     name: manifest.name,
     version: manifest.version,
@@ -121,7 +128,7 @@ export function generateGeminiManifest(manifest: A5cPluginManifest): string {
     license: manifest.license,
     harness: 'gemini-cli',
     hooks: {},
-    commands: [],
+    commands: commandPaths.map((cmdPath) => `commands/${cmdPath.split(/[\\/]/).pop()?.replace(/\.md$/, '.toml')}`),
     skills: [],
     contextFileName: 'GEMINI.md',
     extensionManifest: 'gemini-extension.json',
@@ -153,7 +160,7 @@ export function generateGithubCopilotManifest(manifest: A5cPluginManifest): stri
     name: manifest.name,
     version: manifest.version,
     description: manifest.description,
-    author: manifest.author,
+    author: normalizeAuthorObject(manifest),
     license: manifest.license,
     skills: 'skills/',
     hooks: 'hooks/hooks.json',
