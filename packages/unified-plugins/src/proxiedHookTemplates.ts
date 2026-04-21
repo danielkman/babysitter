@@ -46,9 +46,9 @@ const path = require("path");
 const crypto = require("crypto");
 
 const PLUGIN_ROOT = process.env.${pluginRootEnvVar} || path.resolve(__dirname, "..");
-const GLOBAL_ROOT = process.env.BABYSITTER_GLOBAL_STATE_DIR || path.join(os.homedir(), ".a5c");
-const STATE_DIR = process.env.BABYSITTER_STATE_DIR || path.join(GLOBAL_ROOT, "state");
-const LOG_DIR = process.env.BABYSITTER_LOG_DIR || path.join(GLOBAL_ROOT, "logs");
+const GLOBAL_ROOT = process.env.${sdk.envPrefix}_GLOBAL_STATE_DIR || path.join(os.homedir(), "${sdk.stateDir}");
+const STATE_DIR = process.env.${sdk.envPrefix}_STATE_DIR || path.join(GLOBAL_ROOT, "state");
+const LOG_DIR = process.env.${sdk.envPrefix}_LOG_DIR || path.join(GLOBAL_ROOT, "logs");
 const LOG_FILE = path.join(LOG_DIR, "${manifest.name}-${adapterName}-${hookType}-hook.log");
 const SDK_MARKER = path.join(PLUGIN_ROOT, ".${manifest.name}-install-attempted");
 const PROXY_MARKER = path.join(PLUGIN_ROOT, ".hooks-proxy-install-attempted");
@@ -119,7 +119,7 @@ function runViaProxy(proxy, hookType, inputJson) {
     input: inputJson,
     stdio: ["pipe", "pipe", "pipe"],
     timeout: 30000,
-    env: Object.assign({}, process.env, { BABYSITTER_STATE_DIR: STATE_DIR }),
+    env: Object.assign({}, process.env, { ${sdk.envPrefix}_STATE_DIR: STATE_DIR }),
   });
   return result.toString("utf8").trim();
 }
@@ -130,7 +130,7 @@ function runViaNpxProxy(version, hookType, inputJson) {
     input: inputJson,
     stdio: ["pipe", "pipe", "pipe"],
     timeout: 60000,
-    env: Object.assign({}, process.env, { BABYSITTER_STATE_DIR: STATE_DIR }),
+    env: Object.assign({}, process.env, { ${sdk.envPrefix}_STATE_DIR: STATE_DIR }),
   });
   return result.toString("utf8").trim();
 }

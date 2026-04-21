@@ -100,7 +100,7 @@ function main() {
       runNodeScript(
         path.join(PACKAGE_ROOT, 'scripts', 'team-install${ext}'),
         args,
-        { BABYSITTER_PACKAGE_ROOT: PACKAGE_ROOT },
+        { PLUGIN_PACKAGE_ROOT: PACKAGE_ROOT },
       );
       return;
     }

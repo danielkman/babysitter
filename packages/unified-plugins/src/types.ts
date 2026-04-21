@@ -41,6 +41,8 @@ export interface A5cPluginManifest {
     cli?: string;          // e.g. babysitter
     proxyPackage?: string; // e.g. @a5c-ai/hooks-proxy-cli
     scope?: string;        // e.g. @a5c-ai
+    envPrefix?: string;    // e.g. BABYSITTER (for env vars like BABYSITTER_STATE_DIR)
+    stateDir?: string;     // e.g. .a5c (global state directory name)
   };
 
   // Global hook file naming pattern — applies to all targets unless overridden

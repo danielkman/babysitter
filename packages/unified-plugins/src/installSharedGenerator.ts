@@ -7,14 +7,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 import type { A5cPluginManifest, TargetProfile } from './types.js';
 
-function getHomeDirCode(targetProfile: TargetProfile): string {
+function getHomeDirCode(targetProfile: TargetProfile, stateDir: string): string {
   switch (targetProfile.name) {
     case 'codex': return `path.join(os.homedir(), '.codex')`;
     case 'cursor': return `path.join(os.homedir(), '.cursor')`;
     case 'github-copilot': return `path.join(os.homedir(), '.copilot')`;
     case 'opencode': return `path.join(os.homedir(), '.opencode')`;
     case 'openclaw': return `path.join(os.homedir(), '.openclaw')`;
-    default: return `path.join(os.homedir(), '.a5c')`;
+    default: return `path.join(os.homedir(), '${stateDir}')`;
   }
 }
 
@@ -40,7 +40,7 @@ export function generateInstallShared(
   const pluginName = manifest.name;
   const sdk = resolveSdkConfig(manifest);
   const authorName = typeof manifest.author === 'string' ? manifest.author : manifest.author.name;
-  const homeDirCode = getHomeDirCode(targetProfile);
+  const homeDirCode = getHomeDirCode(targetProfile, sdk.stateDir);
   const pluginsDirCode = getPluginsDirCode(targetProfile);
   const marketplacePathCode = getMarketplacePathCode(targetProfile);
 
@@ -75,7 +75,7 @@ function getUserHome() {
 }
 
 function getGlobalStateDir() {
-  return process.env.BABYSITTER_GLOBAL_STATE_DIR || path.join(getUserHome(), '.a5c');
+  return process.env.${sdk.envPrefix}_GLOBAL_STATE_DIR || path.join(getUserHome(), '${sdk.stateDir}');
 }
 
 function getHarnessHome() {
@@ -83,7 +83,7 @@ function getHarnessHome() {
 }
 
 function getHomePluginRoot(scope) {
-  if (scope === 'workspace') return path.join(process.cwd(), '.a5c', 'plugins', PLUGIN_NAME);
+  if (scope === 'workspace') return path.join(process.cwd(), '${sdk.stateDir}', 'plugins', PLUGIN_NAME);
   return path.join(${pluginsDirCode}, PLUGIN_NAME);
 }
 
@@ -185,7 +185,7 @@ function removeMarketplaceEntry(marketplacePath) {
   writeJson(marketplacePath, marketplace);
 }
 
-function resolveBabysitterCommand(packageRoot) {
+function resolveCliCommand(packageRoot) {
   try {
     const result = spawnSync('${sdk.cli}', ['--version'], { stdio: 'pipe', timeout: 10000 });
     if (result.status === 0) return '${sdk.cli}';
@@ -196,8 +196,8 @@ function resolveBabysitterCommand(packageRoot) {
   return \`npx -y ${sdk.package}@\${ver}\`;
 }
 
-function runBabysitterCli(packageRoot, cliArgs, options = {}) {
-  const cmd = resolveBabysitterCommand(packageRoot);
+function runCli(packageRoot, cliArgs, options = {}) {
+  const cmd = resolveCliCommand(packageRoot);
   const parts = cmd.split(' ');
   const result = spawnSync(parts[0], [...parts.slice(1), ...cliArgs], {
     stdio: options.stdio || 'inherit',
@@ -219,13 +219,13 @@ function ensureGlobalProcessLibrary(packageRoot) {
   const cloneDir = defaultSpec && defaultSpec.cloneDir
     ? defaultSpec.cloneDir
     : path.join(stateDir, 'process-library', '${pluginName}-repo');
-  runBabysitterCli(packageRoot, [
+  runCli(packageRoot, [
     'process-library:clone',
     '--dir', cloneDir,
     '--state-dir', stateDir,
     '--json',
   ], { stdio: 'pipe' });
-  runBabysitterCli(packageRoot, [
+  runCli(packageRoot, [
     'process-library:use',
     '--dir', cloneDir,
     '--state-dir', stateDir,
@@ -274,8 +274,8 @@ module.exports = {
   normalizeMarketplaceSourcePath,
   ensureMarketplaceEntry,
   removeMarketplaceEntry,
-  resolveBabysitterCommand,
-  runBabysitterCli,
+  resolveCliCommand,
+  runCli,
   ensureGlobalProcessLibrary,
   warnWindowsHooks,
   runPostInstall,

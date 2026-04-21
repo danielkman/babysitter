@@ -326,6 +326,7 @@ export function generateExtraFiles(
   _diagnostics: Diagnostic[]
 ): TransformedFile[] {
   const files: TransformedFile[] = [];
+  const sdkCfg = resolveSdkConfig(manifest);
 
   // Generate programmatic extensions (Pi, oh-my-pi, and other programmatic targets)
   if (targetProfile.adapterFamily === 'programmatic') {
@@ -363,9 +364,8 @@ export function generateExtraFiles(
   // .gitignore
   files.push({
     path: '.gitignore',
-    content: 'node_modules/\ndist/\n.a5c/runs/\n.a5c/logs/\n.a5c/processes/\n.a5c/artifacts/\n.a5c/session.json\n.a5c/current-run.json\n.a5c/observer.json\n.a5c/index/\n.a5c/team/\n.a5c/config/rules.local.json\n*.sqlite\n*.sqlite-shm\n*.sqlite-wal\n*.log\n.DS_Store\n',
+    content: `node_modules/\ndist/\n${sdkCfg.stateDir}/runs/\n${sdkCfg.stateDir}/logs/\n${sdkCfg.stateDir}/processes/\n${sdkCfg.stateDir}/artifacts/\n${sdkCfg.stateDir}/session.json\n${sdkCfg.stateDir}/current-run.json\n${sdkCfg.stateDir}/observer.json\n${sdkCfg.stateDir}/index/\n${sdkCfg.stateDir}/team/\n${sdkCfg.stateDir}/config/rules.local.json\n*.sqlite\n*.sqlite-shm\n*.sqlite-wal\n*.log\n.DS_Store\n`,
   });
-
   // Emit target-override extraFiles
   const targetOverride = manifest.targets?.[targetProfile.name];
   if (targetOverride?.extraFiles) {
