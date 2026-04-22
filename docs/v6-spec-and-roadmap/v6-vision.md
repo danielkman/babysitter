@@ -2,110 +2,68 @@
 
 → [Documentation Index](README.md) | Previous: [Current State](current-state.md) | Next: [Package Specifications](package-specs.md)
 
-## Architectural Principles
+## Vision Statement
 
-### Core Design Principles
+The V6 vision is disciplined evolution, not architectural maximalism. The goal is to make the Babysitter stack easier to change, validate, and reason about by extracting only what is proven, documenting what is deferred, and refusing to treat speculative structure as progress.
 
-1. **Layered Architecture** - Clear separation between runtime, platform, and application layers
-   - **Rationale**: Enables independent evolution and testing of each layer while maintaining clear dependencies
-   - **Trade-offs**: Additional complexity in layer coordination vs. improved maintainability and testability
-   - **Enforcement**: Dependency injection at layer boundaries, interface-based contracts
+## Core Principles
 
-2. **Plugin-First Design** - Extensibility via meta-plugins and built-in plugins → [Plugin Ecosystem](plugin-ecosystem.md)
-   - **Rationale**: Supports diverse use cases without bloating core functionality
-   - **Trade-offs**: Plugin coordination complexity vs. modularity and customization capabilities  
-   - **Enforcement**: Plugin isolation mechanisms, standardized plugin lifecycle, dependency resolution
+1. Current repository reality outranks future architecture diagrams.
+2. Staged extraction outranks upfront decomposition.
+3. Validation and rollback outrank elegance.
+4. Explicit non-goals outrank ambiguous ambition.
+5. Adversarial findings are design constraints, not side commentary.
 
-3. **Selective Deployment** - Each package can be deployed independently
-   - **Rationale**: Minimizes bundle sizes and enables tailored deployments for specific use cases
-   - **Trade-offs**: Package coordination overhead vs. deployment flexibility and resource optimization
-   - **Enforcement**: Explicit dependency declarations, semantic versioning, API compatibility matrices
+## What V6 Optimizes For
 
-4. **Filesystem Boundary** - Runtime layer filesystem-free, platform layer handles persistence
-   - **Rationale**: Enables pure in-memory testing and deterministic behavior in runtime layer
-   - **Trade-offs**: Layer coordination complexity vs. testability and stateless runtime benefits
-   - **Enforcement**: Interface segregation, dependency injection for persistence concerns
+V6 optimizes for:
 
-### Integration and Quality Principles
+- clearer ownership boundaries,
+- safer incremental change,
+- fewer speculative package commitments,
+- documentation that constrains decisions instead of inflating them,
+- compatibility with existing CLI, harness, and plugin workflows.
 
-5. **Agent-Mux Compatibility** - Maintain existing agent-mux integration patterns
-   - **Rationale**: Preserves existing tooling and workflows while enabling new capabilities
-   - **Trade-offs**: Legacy compatibility constraints vs. ecosystem continuity
-   - **Enforcement**: Protocol compliance testing, adapter pattern implementation
+## What V6 Does Not Optimize For
 
-6. **Functional Isolation** - Clear boundaries between distinct system capabilities
-   - **Rationale**: Prevents feature coupling and enables independent development and testing
-   - **Trade-offs**: Interface definition overhead vs. maintainability and team autonomy
-   - **Enforcement**: Domain-driven design, capability-based decomposition, interface contracts
+V6 does not currently optimize for:
 
-7. **Event-Driven Coordination** - Structured protocols for inter-layer communication
-   - **Rationale**: Enables loose coupling and supports async/reactive patterns
-   - **Trade-offs**: Event flow complexity vs. decoupling and scalability benefits
-   - **Enforcement**: Event schema definitions, protocol versioning, event sourcing patterns
+- achieving the most modular diagram possible,
+- maximizing package count,
+- promising broad isolation or governance features before they exist,
+- locking the repo into a distributed architecture story.
 
-8. **Resource Efficiency** - Optimized bundle sizes and memory usage patterns → [Performance Considerations](performance-docs.md)
-   - **Rationale**: Supports deployment in resource-constrained environments and improves performance
-   - **Trade-offs**: Optimization complexity vs. runtime efficiency and user experience
-   - **Enforcement**: Bundle analysis tools, memory profiling, performance benchmarks
+## Decision Filters
 
-9. **Distributed Human-AI Coordination** - Serverless infrastructure for bridging AI agents and human decision-makers
-   - **Rationale**: Enables AI agents to escalate complex decisions to humans while maintaining cryptographic trust and auditability
-   - **Trade-offs**: Coordination complexity vs. decision quality and trust establishment
-   - **Enforcement**: Cryptographic signing, git-native coordination protocols, pluggable backend architecture
+When choosing between "keep in place" and "extract," V6 uses these filters:
 
-### Architectural Decision Framework
+1. Is the seam already visible in code and tests?
+2. Does extraction reduce coupling or only rename it?
+3. Can the change be validated with current repository commands?
+4. Is rollback cheap and credible?
+5. Would the same goal be met by better internal boundaries instead of a new package?
 
-**Decision Criteria for Principle Trade-offs**:
-- Performance impact vs. architectural clarity
-- Development velocity vs. long-term maintainability  
-- Bundle size vs. feature completeness
-- Backward compatibility vs. architectural improvements
+If the answer set is weak, the work should stay internal or deferred.
 
-**Principle Violation Detection**:
-- Automated dependency analysis for layer violations
-- Bundle size monitoring for efficiency violations → [Testing Framework](testing-framework.md)
-- Interface compatibility checking for isolation violations
-- Event flow analysis for coordination pattern violations
+## Deferred Future Concepts
 
-## Package Hierarchy
+Deeper layered vocabulary may still be useful for thinking:
 
-```
-Infrastructure Layer (Dispatch/Mux)
-├── @a5c-ai/agent-mux (unchanged)
-├── @a5c-ai/hooks-mux (renamed from hooks-proxy)
-└── @a5c-ai/agent-plugins-mux (renamed from unified-plugins)
+- runtime,
+- platform,
+- orchestration,
+- application packages.
 
-Runtime Layer (Engine)
-└── @a5c-ai/agent-runtime
+But in V6 these are planning concepts, not automatic implementation commitments.
 
-Platform Layer (Persistence + Plugins)
-├── @a5c-ai/agent-platform
-└── @a5c-ai/agent-platform-meta-plugins
+## Success Condition For The Vision
 
-Orchestration Layer (Domain-Specific)
-├── @a5c-ai/agent-platform-orchestration-plugin
-├── @a5c-ai/babysitter-sdk (unchanged)
-├── @a5c-ai/babysitter-agent (renamed from babysitter-harness)
-└── @a5c-ai/breakpoints-mux
+This vision succeeds if the repository reaches a state where:
 
-Supporting Packages
-├── @a5c-ai/catalog (unchanged)
-├── @a5c-ai/observer-dashboard (unchanged)
-└── @a5c-ai/babysitter-tui-plugins (unchanged)
-```
-
-## Architectural Layers
-
-**Infrastructure Layer**: Handles cross-harness dispatch, hook normalization, and plugin compilation. Remains unchanged to maintain compatibility.
-
-**Runtime Layer**: New pure computation layer with @agent-core integration. Zero filesystem dependencies enable deterministic testing and in-memory operation.
-
-**Platform Layer**: Manages persistence, plugin systems, and tool ecosystems. Provides the foundation for extensible capabilities.
-
-**Orchestration Layer**: Domain-specific orchestration logic built on the platform foundation. Includes babysitter SDK, complete agent solutions, and distributed human-AI coordination via breakpoints-mux for escalating complex decisions to human responders with cryptographic trust verification.
-
-**Supporting Packages**: Unchanged catalog, dashboard, and TUI components that integrate with the new architecture.
+- documentation is coherent and realistic,
+- at least one small structural improvement is validated end to end,
+- future architectural moves are constrained by evidence rather than enthusiasm.
 
 ---
 
-**Related Documents**: [Package Specifications](package-specs.md) | [Implementation Roadmap](implementation/) | [Security Architecture](security-architecture.md)
+**Related Documents**: [System Overview](system-overview.md) | [V6 Architecture Specification](v6-architecture-specification.md) | [V6 Implementation Roadmap](v6-implementation-roadmap.md)

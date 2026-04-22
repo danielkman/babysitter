@@ -1,80 +1,84 @@
-# a5c.ai Universal Harness Stack V6 Architecture Documentation
+# a5c.ai V6 Spec And Roadmap
 
-## Overview
+This directory documents a pragmatic V6 evolution for the Babysitter stack. The intent is not to describe the biggest possible modular future. The intent is to define the smallest architecture change that is worth shipping, can be validated against the current repository, and leaves room for later extraction if the seams prove real.
 
-This directory contains the modular architecture documentation for the a5c.ai Universal Harness Stack V6 refactoring. The documentation is organized into focused modules for better navigation and maintainability.
+## Current Position
 
-## Document Structure
+The repository already contains the important building blocks:
 
-### Core Architecture
-- **[System Overview](system-overview.md)** - Stack capabilities, boundaries, and ecosystem positioning
-- **[Current State Analysis](current-state.md)** - Existing architecture and identified pain points  
-- **[V6 Architecture Vision](v6-vision.md)** - Target architecture and design principles
-- **[Agent-Mux Integration](agent-mux-integration.md)** - Agent-mux repository unification strategy
-- **[Package Specifications](package-specs.md)** - Detailed package breakdown and responsibilities
+- `packages/sdk` is the stable center of gravity.
+- `packages/babysitter` and `packages/babysitter-harness` provide the CLI and harness runtime.
+- `plugins/` contains the real harness integrations and their packaging constraints.
+- The adversarial reviews show that a broad "split everything into many packages" plan is not yet justified.
 
-### Specialized Topics
-- **[Security Architecture](security-architecture.md)** - Threat modeling, security boundaries, and frameworks
-- **[Plugin Ecosystem](plugin-ecosystem.md)** - Plugin governance, lifecycle, and marketplace standards
-- **[Testing Framework](testing-framework.md)** - Testing strategy, validation, and quality gates
-- **[Performance & Documentation](performance-docs.md)** - Performance targets and documentation requirements
-- **[Adversarial Improvements](adversarial-improvements.md)** - Critical vulnerabilities addressed and realistic constraints
+V6 therefore treats adversarial analysis as a design input, not an appendix.
 
-### Critical Adversarial Analysis
-- **[Deep Adversarial Analysis](adversarial-analysis-deep.md)** - Comprehensive identification of fundamental architectural flaws and impossibilities
-- **[V6 Architecture Specification Analysis](adversarial-v6-architecture-specification-analysis.md)** - **Core architectural impossibility syndrome and distributed system delusion assessment**
-- **[Performance & Documentation Analysis](adversarial-performance-docs-analysis.md)** - **Performance target impossibility syndrome and documentation complexity explosion assessment**
-- **[Security Architecture Analysis](adversarial-security-architecture-analysis.md)** - **Distributed security impossibility syndrome and attack surface explosion assessment**
-- **[Testing Framework Analysis](adversarial-testing-framework-analysis.md)** - **Testing complexity explosion syndrome and validation impossibility assessment**
-- **[Architecture Analysis](adversarial-architecture-analysis.md)** - Critical review of V6 specification revealing distributed complexity syndrome
-- **[Plugin Ecosystem Analysis](adversarial-plugin-ecosystem-analysis.md)** - Marketplace infrastructure delusion and governance impossibilities exposed
-- **[Implementation Roadmap Analysis](adversarial-roadmap-analysis.md)** - Timeline physics violations and resource requirement fantasy assessment
-- **[Success Metrics Analysis](adversarial-success-metrics-analysis.md)** - Measurement theater exposure and achievability impossibilities
-- **[Agent-Mux Integration Analysis](adversarial-agent-mux-analysis.md)** - Multi-platform repository consolidation impossibility and build system incompatibilities
-- **[Package Specifications Analysis](adversarial-package-specs-analysis.md)** - Interface complexity explosion and filesystem boundary contradictions
-- **[Architecture Comparison Analysis](adversarial-comparison-analysis.md)** - Selective bias exposure and trade-off minimization in architectural comparisons
-- **[Dependencies & Resources Analysis](adversarial-resources-analysis.md)** - Resource planning void and specification inadequacy assessment
-- **[Current State Analysis](adversarial-current-state-analysis.md)** - Problem amplification bias and monolithic benefit omission exposure
-- **[System Overview Analysis](adversarial-system-overview-analysis.md)** - Universal platform delusion and capability declaration fantasy assessment
-- **[V6 Vision Analysis](adversarial-v6-vision-analysis.md)** - **Vision delusion syndrome and layer coordination impossibilities exposed**
-- **[Foundation Layer Analysis](adversarial-foundation-layer-analysis.md)** - **Implementation impossibility cascade and runtime extraction fantasy assessment**
-- **[Platform Layer Analysis](adversarial-platform-layer-analysis.md)** - **Plugin architecture impossibility and meta-framework delusion exposed**
-- **[Application Layer Analysis](adversarial-application-layer-analysis.md)** - **Business logic plugin impossibility and integration cascade failure assessment**
-- **[Optimization & Polish Analysis](adversarial-optimization-polish-analysis.md)** - **Performance optimization impossibility and polish paradox syndrome exposed**
-- **[Risk Mitigation Analysis](adversarial-risk-mitigation-analysis.md)** - **Risk assessment delusion and mitigation impossibility syndrome exposed**
-- **[Improvements Critique Analysis](adversarial-improvements-critique-analysis.md)** - **Meta-impossibility syndrome: impossible solutions to impossible problems exposed**
-- **[Unified Impossibility Synthesis](adversarial-unified-impossibility-synthesis.md)** - **Grand Unified Theory of V6 Architectural Impossibility - mathematical proof of universal impossibility**
-- **[Meta-Analysis Synthesis](adversarial-meta-analysis.md)** - **Complete mathematical impossibility assessment and compound failure mode analysis**
+## What V6 Is
 
-### Implementation
-- **[Implementation Roadmap](implementation/)** - Phase-based implementation strategy
-  - [Foundation Layer](implementation/foundation-layer.md)
-  - [Platform Layer](implementation/platform-layer.md) 
-  - [Application Layer](implementation/application-layer.md)
-  - [Optimization & Polish](implementation/optimization-polish.md)
-  - [Operational Readiness](implementation/operational-readiness.md)
-- **[Risk Mitigation](implementation/risk-mitigation.md)** - Risk assessment and mitigation strategies
-- **[Success Metrics](implementation/success-metrics.md)** - Validation criteria and measurement
+V6 is a staged architecture program with three goals:
 
-### Reference
-- **[Architecture Comparison](architecture-comparison.md)** - Before/after architectural comparison
-- **[Dependencies & Resources](dependencies-resources.md)** - Resource requirements and external dependencies
+1. Reduce accidental coupling in the current stack where there is already a proven seam.
+2. Improve naming, documentation, and validation so future extractions are deliberate instead of aspirational.
+3. Ship changes in slices that can be rolled back without destabilizing the existing toolchain.
+
+## What V6 Is Not
+
+V6 does not currently commit to:
+
+- a full package explosion across runtime, platform, governance, memory, cost, and observability,
+- a distributed or remotely coordinated plugin architecture as a first move,
+- speculative security or isolation guarantees that are not backed by implementation and validation artifacts,
+- performance claims without a measurement method and fallback plan.
+
+## Reading Order
+
+Start here:
+
+1. [System Overview](system-overview.md)
+2. [V6 Vision](v6-vision.md)
+3. [V6 Architecture Specification](v6-architecture-specification.md)
+4. [V6 Implementation Roadmap](v6-implementation-roadmap.md)
+5. [Package Specifications](package-specs.md)
+
+Use these as constraints:
+
+- [Adversarial Improvements](adversarial-improvements.md)
+- [Adversarial Unified Impossibility Synthesis](adversarial-unified-impossibility-synthesis.md)
+- [Adversarial V6 Architecture Specification Analysis](adversarial-v6-architecture-specification-analysis.md)
+
+## Document Map
+
+Core planning documents:
+
+- [System Overview](system-overview.md) - current system boundaries and ecosystem position
+- [Current State Analysis](current-state.md) - repository reality and pain points
+- [V6 Vision](v6-vision.md) - principles, non-goals, and decision filters
+- [V6 Architecture Specification](v6-architecture-specification.md) - normative architecture for the next executable stage
+- [V6 Implementation Roadmap](v6-implementation-roadmap.md) - gated rollout plan with entry, exit, and kill criteria
+- [Package Specifications](package-specs.md) - bounded package responsibilities and extraction triggers
+
+Supporting modules:
+
+- [Agent-Mux Integration](agent-mux-integration.md)
+- [Performance & Documentation](performance-docs.md)
+- [Testing Framework](testing-framework.md)
+- [Security Architecture](security-architecture.md)
+- [Plugin Ecosystem](plugin-ecosystem.md)
+
+## Maturity Standard
+
+Each major V6 document should answer five questions clearly:
+
+1. What is normative now?
+2. What is deferred?
+3. What has been invalidated by adversarial review?
+4. How will the claim be measured or validated?
+5. What is the rollback path if the change fails?
+
+If a section cannot answer those questions, it is design exploration rather than specification.
 
 ## Status
 
-**Current Status**: Draft  
-**Version**: 6.0.0  
-**Last Updated**: April 2026
-
-## How to Navigate
-
-1. Start with [System Overview](system-overview.md) for the big picture
-2. Review [Current State Analysis](current-state.md) to understand existing challenges  
-3. Explore [V6 Architecture Vision](v6-vision.md) for the target state
-4. **For a reality-based perspective**, read the [Critical Adversarial Analysis](#critical-adversarial-analysis) documents to understand fundamental architectural challenges and implementation risks
-5. Dive into specific areas of interest using the specialized topic modules
-6. Consult [Implementation Roadmap](implementation/) for execution strategy (and [Roadmap Analysis](adversarial-roadmap-analysis.md) for timeline reality check)
-
-## Cross-References
-
-This modular documentation uses consistent cross-referencing. When you see links like `→ [Topic](file.md)`, they point to related concepts in other modules. All modules are designed to be read independently while maintaining coherent relationships.
+- Status: In revision
+- Version: 6.0.0 draft
+- Last updated: April 2026

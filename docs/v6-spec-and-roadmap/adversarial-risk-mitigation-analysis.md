@@ -1,7 +1,7 @@
 # Adversarial Analysis: Risk Mitigation Strategy
 ## **Risk Assessment Delusion and Mitigation Impossibility Syndrome**
 
-→ [Implementation Index](../README.md#implementation) | [Risk Mitigation](implementation/risk-mitigation.md) | [Optimization Analysis](adversarial-optimization-polish-analysis.md)
+→ [Implementation Index](README.md) | [Risk Mitigation](implementation/risk-mitigation.md) | [Optimization Analysis](adversarial-optimization-polish-analysis.md)
 
 ## Executive Summary
 

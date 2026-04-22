@@ -1,7 +1,7 @@
 # Adversarial Analysis: Application Layer Implementation
 ## **Business Logic Plugin Impossibility and Integration Cascade Failure**
 
-→ [Implementation Index](../README.md#implementation) | [Application Layer](implementation/application-layer.md) | [Platform Analysis](adversarial-platform-layer-analysis.md)
+→ [Implementation Index](README.md) | [Application Layer](implementation/application-layer.md) | [Platform Analysis](adversarial-platform-layer-analysis.md)
 
 ## Executive Summary
 

@@ -1,7 +1,7 @@
 # Adversarial Analysis: Optimization & Polish Implementation
 ## **Performance Optimization Impossibility and Polish Paradox Syndrome**
 
-→ [Implementation Index](../README.md#implementation) | [Optimization & Polish](implementation/optimization-polish.md) | [Application Analysis](adversarial-application-layer-analysis.md)
+→ [Implementation Index](README.md) | [Optimization & Polish](implementation/optimization-polish.md) | [Application Analysis](adversarial-application-layer-analysis.md)
 
 ## Executive Summary
 

@@ -1,429 +1,152 @@
 # Package Specifications
 
-→ [Documentation Index](README.md) | Previous: [V6 Vision](v6-vision.md) | Next: [Plugin Ecosystem](plugin-ecosystem.md)
+→ [Documentation Index](README.md) | Previous: [V6 Vision](v6-vision.md)
 
-## @a5c-ai/agent-runtime
+## Purpose
 
-**Purpose**: Low-level, programmatic agentic engine with zero filesystem dependencies.
+This document defines package responsibilities for the current V6 stage. It intentionally avoids large speculative API surfaces. A package appears here in one of three states:
 
-**Responsibilities**:
-- Agent-core integration for model communication and agentic loop functionality
-- Extendable programmatic hooks system (in-memory)
-- Model provider/configuration management
-- Tool use coordination (async/background/parallel)
-- Steering and cancellation
-- Context compaction hooks with fallback implementation
-- In-memory session management and hooks (fork, edit, append)
-- Structured event-driven protocol for consumers (with hook acknowledgments)
+- Current: exists now and is part of the executable plan.
+- Candidate: may be extracted or renamed if a decision record justifies it.
+- Deferred: useful vocabulary, but not a committed deliverable.
 
-**Key Characteristics**:
-- **Zero filesystem access** - All state management in-memory → [Testing Framework](testing-framework.md)
-- **Pure programmatic interface** - No CLI, no file I/O
-- **Event-driven architecture** - Structured protocol for consumers
-- **Hook ecosystem ready** - Provides foundation for upper layers
+## 1. Current Packages
 
-**Complete API Surface**:
-```typescript
-// Core engine with enhanced configuration
-export interface AgentRuntimeEngine {
-  createSession(options: SessionOptions): RuntimeSession;
-  configureModel(config: ModelConfig): Promise<void>;
-  registerHook(type: HookType, handler: HookHandler): HookRegistration;
-  unregisterHook(registration: HookRegistration): void;
-  getMetrics(): RuntimeMetrics;
-}
+### `@a5c-ai/babysitter-sdk`
 
-// Enhanced session management with lifecycle
-export interface RuntimeSession {
-  readonly id: string;
-  readonly status: SessionStatus;
-  
-  // Core interaction
-  prompt(message: string, options?: PromptOptions): Promise<AgentResponse>;
-  useTool(tool: ToolDefinition, args: unknown): Promise<ToolResult>;
-  
-  // Session control
-  fork(options?: ForkOptions): RuntimeSession;
-  merge(session: RuntimeSession): Promise<MergeResult>;
-  steer(direction: SteerDirection): void;
-  cancel(reason?: string): void;
-  pause(): void;
-  resume(): void;
-  
-  // State management (in-memory only)
-  getContext(): SessionContext;
-  updateContext(updates: Partial<SessionContext>): void;
-  
-  // Event handling
-  on(event: SessionEventType, handler: SessionEventHandler): void;
-  off(event: SessionEventType, handler: SessionEventHandler): void;
-  emit(event: SessionEvent): void;
-}
+- State: Current
+- Role: primary orchestration core and most stable architectural anchor
+- Responsibilities:
+- event-sourced run model,
+- task definitions and replay,
+- storage, CLI commands, hooks, process-library integration, profiles, plugins, compression, harness abstractions.
+- Constraints:
+- changes here have broad blast radius,
+- extraction from the SDK requires strong evidence and explicit compatibility planning.
 
-// Event-driven architecture with structured protocols
-export interface RuntimeEvent {
-  id: string;
-  type: EventType;
-  source: EventSource;
-  payload: unknown;
-  timestamp: number;
-  sessionId: string;
-  correlationId?: string;
-  metadata?: EventMetadata;
-}
+### `@a5c-ai/babysitter`
 
-// Layer boundary enforcement
-export interface LayerBoundary {
-  validateAccess(operation: LayerOperation): Promise<AccessResult>;
-  enforceConstraints(context: ExecutionContext): Promise<ConstraintResult>;
-  auditAccess(operation: LayerOperation, result: AccessResult): void;
-}
+- State: Current
+- Role: primary CLI package surface
+- Responsibilities:
+- user-facing CLI packaging,
+- command routing and operational distribution of SDK-backed functionality.
+- Constraints:
+- must preserve install and operational expectations for existing users.
 
-// Hook ecosystem with validation
-export interface HookHandler {
-  handle(event: HookEvent): Promise<HookResult>;
-  validate?(event: HookEvent): Promise<ValidationResult>;
-  cleanup?(): Promise<void>;
-}
+### `@a5c-ai/babysitter-harness`
 
-export interface HookRegistration {
-  id: string;
-  type: HookType;
-  handler: HookHandler;
-  options: HookOptions;
-  unregister(): void;
-}
-```
+- State: Current
+- Role: harness runtime and orchestration-facing execution layer
+- Responsibilities:
+- harness invocation flows,
+- session/runtime integration,
+- orchestration runtime behaviors that are not yet proven as standalone packages.
+- Constraints:
+- still contains multiple concerns,
+- should be improved by internal seam clarification before broad extraction.
 
-**Boundary Enforcement Mechanisms**:
-```typescript
-// Filesystem boundary validation
-export class FilesystemBoundaryValidator implements LayerBoundary {
-  async validateAccess(operation: LayerOperation): Promise<AccessResult> {
-    if (operation.type === 'filesystem') {
-      return { allowed: false, reason: 'Runtime layer cannot access filesystem' };
-    }
-    return { allowed: true };
-  }
-}
+### `plugins/*`
 
-// Plugin isolation enforcement
-export class PluginIsolationValidator implements LayerBoundary {
-  async validateAccess(operation: LayerOperation): Promise<AccessResult> {
-    const allowedResources = operation.context.plugin?.allowedResources || [];
-    if (!allowedResources.includes(operation.resource)) {
-      return { allowed: false, reason: 'Resource not in plugin allowlist' };
-    }
-    return { allowed: true };
-  }
-}
-```
+- State: Current
+- Role: real integration and packaging boundaries
+- Responsibilities:
+- harness-specific hooks, commands, skills, manifests, and packaging outputs.
+- Constraints:
+- plugin manifests are a practical source of truth for compatibility,
+- compiler changes must be checked against actual generated plugin metadata, not just intended schema.
 
-## @a5c-ai/agent-platform
+## 2. Candidate Boundaries
 
-**Purpose**: Plugin system and persistent session management layer.
+These are plausible extraction or rename candidates, but not yet committed deliverables.
 
-**Responsibilities**:
-- Plugin system infrastructure and marketplace support → [Plugin Ecosystem](plugin-ecosystem.md)
-- Persistent session management (filesystem-based)
-- Configuration persistence and env variable management
-- Basic "coding tools" (grep, bash, read) - replaceable via plugins
-- Basic orchestration tools (skill, task, background tasks, scheduling)
-- MCP client integration and configuration
-- Claude Code protocol support (hooks, plugins, skills, subagents)
-- JSON event protocol support
-- hooks-mux format hooks (direct integration)
-- `.a5c` and `~/.a5c` root management
-- `AGENT_ENV_FILE` mechanism for subprocess environment sourcing
-- Agent-mux protocol exposure for UIs/CLIs/tools
+### Hook Multiplexing / Plugin Compilation Utilities
 
-**Key Characteristics**:
-- **Filesystem-based persistence** - Session state, configuration
-- **Extensibility layer** - Plugin and meta-plugin foundation
-- **Tool ecosystem** - Replaceable tool definitions
-- **Multi-protocol support** - Claude Code, MCP, JSON events
-- **Environment integration** - Subprocess and shell environment
+- State: Candidate
+- Why it might be worth doing:
+- the concepts already exist in repo history and surrounding docs,
+- packaging and cross-harness compilation are real concerns with observable outputs.
+- Extraction trigger:
+- the subsystem can be tested and versioned with limited coupling.
+- Do not extract if:
+- the move mostly renames concepts without reducing risk or complexity.
 
-**Enhanced API Surface**:
-```typescript
-// Platform core with plugin system
-export interface AgentPlatform {
-  // Plugin management
-  installPlugin(plugin: PluginManifest): Promise<PluginInstance>;
-  uninstallPlugin(pluginId: string): Promise<UninstallResult>;
-  listPlugins(filter?: PluginFilter): Promise<PluginInfo[]>;
-  getPlugin(pluginId: string): Promise<PluginInstance | null>;
-  
-  // Session persistence
-  createSession(config: SessionConfig): Promise<PlatformSession>;
-  loadSession(sessionId: string): Promise<PlatformSession>;
-  saveSession(session: PlatformSession): Promise<void>;
-  deleteSession(sessionId: string): Promise<void>;
-  
-  // Configuration management
-  getConfig(key: string, scope?: ConfigScope): Promise<unknown>;
-  setConfig(key: string, value: unknown, scope?: ConfigScope): Promise<void>;
-  
-  // Event system integration
-  subscribe(pattern: string, handler: PlatformEventHandler): Subscription;
-  publish(event: PlatformEvent): Promise<void>;
-}
+### Internal Harness Runtime Seams
 
-// Plugin system architecture
-export interface PluginInstance {
-  readonly manifest: PluginManifest;
-  readonly status: PluginStatus;
-  readonly permissions: PluginPermissions;
-  
-  start(): Promise<void>;
-  stop(): Promise<void>;
-  restart(): Promise<void>;
-  
-  invoke(method: string, args: unknown[]): Promise<unknown>;
-  getMetrics(): PluginMetrics;
-  
-  // Security isolation
-  getSecurityContext(): SecurityContext;
-  validateOperation(operation: PluginOperation): Promise<ValidationResult>;
-}
+- State: Candidate
+- Why it might be worth doing:
+- `babysitter-harness` likely contains modules with cleaner ownership than the package boundary suggests.
+- Extraction trigger:
+- a subsystem has isolated tests, narrow dependencies, and clear consumers.
+- Do not extract if:
+- the seam requires widespread interface invention to stand alone.
 
-// Session persistence with recovery
-export interface PlatformSession extends RuntimeSession {
-  // Persistent state management
-  save(): Promise<void>;
-  load(): Promise<void>;
-  checkpoint(name: string): Promise<Checkpoint>;
-  restore(checkpoint: Checkpoint): Promise<void>;
-  
-  // File system integration (controlled)
-  readFile(path: string): Promise<string>;
-  writeFile(path: string, content: string): Promise<void>;
-  listFiles(pattern: string): Promise<string[]>;
-  
-  // Plugin interaction
-  loadPlugin(pluginId: string): Promise<PluginInstance>;
-  callPlugin(pluginId: string, method: string, args: unknown[]): Promise<unknown>;
-}
+### Packaging / Manifest Validation Layer
 
-// Plugin marketplace integration
-export interface PluginMarketplace {
-  search(query: PluginSearchQuery): Promise<PluginSearchResult[]>;
-  getDetails(pluginId: string): Promise<PluginDetails>;
-  download(pluginId: string, version?: string): Promise<PluginPackage>;
-  install(package: PluginPackage): Promise<PluginInstance>;
-  
-  // Security and governance
-  validatePlugin(package: PluginPackage): Promise<SecurityValidation>;
-  checkUpdates(installedPlugins: PluginInfo[]): Promise<UpdateInfo[]>;
-}
-```
+- State: Candidate
+- Why it might be worth doing:
+- packaging regressions have immediate user-visible consequences,
+- manifest generation rules are concrete and measurable.
+- Extraction trigger:
+- validation logic becomes cohesive enough to own separately.
+- Do not extract if:
+- a small internal module or compiler correction is sufficient.
 
-**Plugin Isolation Architecture**:
-```typescript
-// Plugin security sandbox
-export class PluginSandbox {
-  private permissions: PluginPermissions;
-  private resourceMonitor: ResourceMonitor;
-  
-  constructor(permissions: PluginPermissions) {
-    this.permissions = permissions;
-    this.resourceMonitor = new ResourceMonitor(permissions.resourceLimits);
-  }
-  
-  async execute<T>(plugin: PluginInstance, operation: () => Promise<T>): Promise<T> {
-    // Enforce resource limits
-    this.resourceMonitor.startMonitoring();
-    
-    try {
-      // Validate permissions before execution
-      await this.validatePermissions(operation);
-      
-      // Execute in isolated context
-      return await this.isolatedExecution(operation);
-    } finally {
-      this.resourceMonitor.stopMonitoring();
-    }
-  }
-  
-  private async validatePermissions(operation: any): Promise<void> {
-    // Permission validation logic
-  }
-  
-  private async isolatedExecution<T>(operation: () => Promise<T>): Promise<T> {
-    // Isolated execution with security boundaries
-    return operation();
-  }
-}
-```
+## 3. Deferred Package Vocabulary
 
-**Integration Points**:
-- Uses `@a5c-ai/agent-runtime` for core engine functionality
-- Integrates with `@a5c-ai/agent-mux` for agent dispatch  
-- Integrates with `@a5c-ai/hooks-mux` for hook normalization
-- Supports `@a5c-ai/agent-plugins-mux` for plugin compilation
+The following names may be useful as future concepts, but they are not current package commitments:
 
-## @a5c-ai/agent-platform-meta-plugins
+- `@a5c-ai/agent-runtime`
+- `@a5c-ai/agent-platform`
+- `@a5c-ai/agent-platform-meta-plugins`
+- `@a5c-ai/agent-platform-orchestration-plugin`
+- `@a5c-ai/babysitter-agent`
 
-**Purpose**: Meta-plugin framework for extending agent-platform capabilities.
+For now, they should be treated as directional language only. Any one of them needs a decision record, validation plan, and migration story before it becomes normative.
 
-**Responsibilities**:
-- Meta-plugin architecture and registration
-- Hook type extension system (sinks and pipeline processing)
-- Session context management and propagation
-- Dynamic plugin loading and lifecycle management
-- Network hooks and remote hook definitions
-- Skill/subagent-defined hooks (dynamically attached)
-- Context variable and per-session toggle system
+## 4. Responsibility Rules
 
-**Plugin Categories**:
-- **Governance Plugins** - Policy engines, security rules, authority chains → [Security Architecture](security-architecture.md)
-- **Memory Plugins** - Long-term memory, team memory, project memory
-- **Cost Plugins** - Tracking, monitoring, budgeting with hook registration
-- **Routing Plugins** - Model/provider routing and fallback chains
-- **Integration Plugins** - CI/CD, messaging platforms, external services
+All package changes proposed under V6 should follow these rules:
 
-## @a5c-ai/agent-platform-orchestration-plugin
+1. Prefer internal module boundaries before creating a new package.
+2. Prefer compatibility shims over forced flag days.
+3. Prefer narrow responsibility tables over large imagined API contracts.
+4. Prefer plugin/install validation over abstract packaging diagrams.
+5. Prefer one proven seam over many hypothetical ones.
 
-**Purpose**: Babysitter SDK integration plugin for orchestration workflows.
+## 5. Package Specification Template
 
-**Responsibilities**:
-- Babysitter SDK run lifecycle native orchestration integration
-- Hook-based orchestration event handling
-- Agent-mux-tools integration for inner-agent dispatch
-- Orchestration-specific session management
-- Process library integration
-- Breakpoint and approval workflow management
+Any future package spec should fit this template:
 
-**Integration**:
-- Extends `@a5c-ai/agent-platform` via meta-plugin system
-- Integrates `@a5c-ai/babysitter-sdk` functionality
-- Provides orchestration-specific hooks and events
+- State
+- Role
+- Responsibilities
+- Dependencies
+- Consumers
+- Validation method
+- Rollback method
+- Extraction or rename trigger
 
-## @a5c-ai/babysitter-agent
+If a package cannot be described that way in one page, it is not ready.
 
-**Purpose**: Complete babysitter orchestration solution.
+## 6. Validation Expectations
 
-**Responsibilities**:
-- Programmatic usage of `agent-platform` + `orchestration-plugin`
-- Built-in plugin ecosystem for comprehensive orchestration
-- Governance system (policies, authorities, sandboxing)
-- Memory management (long-term, project, team)
-- Session management with continuity and history
-- Cost monitoring, budgeting, and tracking
-- Model/sub-agent selection and routing
-- Daemon infrastructure and observability
+For package-level changes, the default validation set is:
 
-**Built-in Plugin Suite**:
-- **Governance Plugin** - Complete policy engine with sandbox support
-- **Memory Plugin** - Multi-layered memory system
-- **Session Plugin** - Advanced session management with persistence
-- **Cost Plugin** - Comprehensive cost tracking and budgeting
-- **Observability Plugin** - Monitoring, logging, and observability
-- **Security Plugin** - Authority chains, mandates, permissions
+- build or test commands for the touched package,
+- install or packaging checks if the package ships externally,
+- manifest validation if plugin compilation is involved,
+- compatibility notes if naming changes are introduced.
 
-## @a5c-ai/breakpoints-mux
+## 7. Invalidated Spec Style
 
-**Purpose**: Serverless breakpoint multiplexing system with pluggable backends and cryptographic signing.
+The following spec patterns are explicitly rejected for the current V6 stage:
 
-**Responsibilities**:
-- **Multi-Backend Breakpoint Routing** - Git-native, server, and GitHub Issues backends
-- **Cryptographic Trust System** - Ed25519 key management and signature verification
-- **Model Context Protocol Integration** - 5 specialized MCP tools for AI agents
-- **Harness Integration** - Direct babysitter-harness interaction provider
-- **Serverless Coordination** - Zero-infrastructure git-native backend using `.breakpoints/` directories
-- **Proven Breakpoints** - Cryptographic signing and verification of human decisions
-- **Backend Factory System** - Pluggable backend registration and resolution
-- **Domain/Tag-based Routing** - Sophisticated routing configuration with JSON-based rules
-
-**Key Architectural Innovations**:
-- **Zero-Infrastructure Design** - Git-native backend requires no servers or databases
-- **Cryptographic Trust Chains** - Distributed trust model using git-tracked public keys
-- **Working Plugin Architecture** - Demonstrates successful extensibility patterns for V6
-- **Real Implementation** - Production-ready code with comprehensive test coverage
-
-**Complete API Surface**:
-```typescript
-// Core backend interface
-export interface BreakpointBackend {
-  readonly name: string;
-  submitBreakpoint(params: SubmitBreakpointParams): Promise<Breakpoint>;
-  getBreakpoint(id: string): Promise<Breakpoint>;
-  waitForAnswer(id: string, options?: WaitForAnswerOptions): Promise<BreakpointWaitResult>;
-  listPendingBreakpoints(responderId?: string): Promise<Breakpoint[]>;
-  answerBreakpoint(id: string, answer: SubmitAnswerParams): Promise<BreakpointAnswer>;
-  cancelBreakpoint(id: string): Promise<void>;
-}
-
-// Cryptographic signing system
-export interface ProvenBreakpointAnswer extends BreakpointAnswer {
-  signature: string;
-  publicKeyFingerprint: string;
-  signedAt: string;
-  signedFields: string[];
-}
-
-// MCP server integration  
-export interface BreakpointMcpServer {
-  askBreakpoint(params: AskBreakpointParams): Promise<BreakpointWaitResult>;
-  checkBreakpointStatus(id: string): Promise<Breakpoint>;
-  listBreakpoints(responderId?: string): Promise<Breakpoint[]>;
-  answerBreakpoint(id: string, params: AnswerParams): Promise<BreakpointAnswer>;
-  verifyBreakpointAnswer(id: string): Promise<ProvenVerificationResult>;
-}
-
-// Harness interaction provider
-export interface BreakpointMuxInteractionProvider {
-  handleBreakpoint(payload: unknown, options: BreakpointOptions): Promise<BreakpointResult>;
-}
-```
-
-**Built-in Backend Implementations**:
-- **Git-Native Backend** - Filesystem-based coordination using `.breakpoints/` directories
-- **Extension Support** - AEQ server and GitHub Issues backends via external packages
-- **Backend Factory** - Runtime registration and configuration-driven selection
-
-**Security Model**:
-- **Ed25519 Key Pairs** - Generate, store, and rotate cryptographic keys
-- **Git-based Trust** - Public keys committed and reviewed via standard git processes  
-- **Signature Verification** - Cryptographic validation of breakpoint answers
-- **Key Rotation** - Secure key lifecycle management with expiration timestamps
-
-**Integration Points**:
-- **babysitter-harness** - Direct interaction provider for ProcessContext.breakpoint()
-- **babysitter-sdk** - Optional peer dependency with graceful fallback
-- **MCP Protocol** - Standard Model Context Protocol server implementation
-- **Git Repositories** - Native integration with existing git workflows
-
-## Package Dependencies
-
-```mermaid
-graph TD
-    A[agent-runtime] --> B[agent-platform]
-    B --> C[agent-platform-meta-plugins]
-    B --> D[agent-platform-orchestration-plugin]
-    C --> E[babysitter-agent]
-    D --> E
-    F[babysitter-sdk] --> D
-    G[agent-mux] -.-> B
-    H[hooks-mux] -.-> B
-    I[agent-plugins-mux] -.-> B
-    J[breakpoints-mux] -.-> D
-    J -.-> F
-```
-
-## Bundle Size Targets
-
-| Package | Target Size | Rationale |
-|---------|-------------|-----------|
-| `agent-runtime` | < 2MB | Core engine must be lightweight |
-| `agent-platform` | < 5MB | Platform features with plugin system |
-| `meta-plugins` | < 3MB | Extension framework |
-| `orchestration-plugin` | < 4MB | Babysitter integration |
-| `babysitter-agent` | < 10MB | Complete solution with all plugins |
-| `breakpoints-mux` | < 2MB | Serverless coordination with minimal overhead |
-
-→ [Performance Considerations](performance-docs.md)
+- multi-page invented API blocks for packages that do not exist,
+- broad claims of plugin isolation or governance enforcement without implementation evidence,
+- dependency graphs that imply committed packages without migration sequencing,
+- package lists that obscure which items are real versus hypothetical.
 
 ---
 
-**Related Documents**: [V6 Vision](v6-vision.md) | [Plugin Ecosystem](plugin-ecosystem.md) | [Implementation Roadmap](implementation/)
+Related documents: [V6 Architecture Specification](v6-architecture-specification.md), [V6 Implementation Roadmap](v6-implementation-roadmap.md), [Adversarial Improvements](adversarial-improvements.md)

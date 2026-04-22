@@ -1,7 +1,7 @@
 # Adversarial Analysis: Platform Layer Implementation
 ## **Plugin Architecture Impossibility and Meta-Framework Delusion**
 
-→ [Implementation Index](../README.md#implementation) | [Platform Layer](implementation/platform-layer.md) | [Foundation Analysis](adversarial-foundation-layer-analysis.md)
+→ [Implementation Index](README.md) | [Platform Layer](implementation/platform-layer.md) | [Foundation Analysis](adversarial-foundation-layer-analysis.md)
 
 ## Executive Summary
 

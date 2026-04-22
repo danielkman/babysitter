@@ -1,7 +1,7 @@
 # Adversarial Analysis: Foundation Layer Implementation
 ## **Implementation Impossibility Cascade and Runtime Extraction Fantasy**
 
-→ [Implementation Index](../README.md#implementation) | [Foundation Layer](implementation/foundation-layer.md) | [Vision Analysis](adversarial-v6-vision-analysis.md)
+→ [Implementation Index](README.md) | [Foundation Layer](implementation/foundation-layer.md) | [Vision Analysis](adversarial-v6-vision-analysis.md)
 
 ## Executive Summary
 

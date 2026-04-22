@@ -2,59 +2,62 @@
 
 → [Documentation Index](README.md) | Next: [Current State Analysis](current-state.md)
 
-## Full Stack Scope and Capabilities
+## Purpose
 
-The a5c.ai Universal Harness Stack provides a comprehensive platform for building, deploying, and managing AI agent applications across multiple harnesses and execution environments. The V6 architecture establishes a modular, extensible foundation that supports the complete agent lifecycle from development to production.
+This document describes the current Babysitter system and the bounded scope of V6. It is not a promise of a future fully decomposed platform. It is a grounding document for what exists now, what V6 is trying to improve, and what remains intentionally out of scope.
 
-**End-to-End Feature Capabilities**:
-- **Multi-Harness Support**: Claude Code, Copilot CLI, Gemini CLI, Cursor, Pi, and custom harnesses
-- **Agent Orchestration**: Deterministic, event-sourced orchestration with replay capabilities  
-- **Session Management**: Persistent sessions with context, history, and memory across interactions
-- **Plugin Ecosystem**: Extensible plugin system with meta-plugin framework for custom functionality → [Plugin Ecosystem](plugin-ecosystem.md)
-- **Distributed Human-AI Coordination**: Serverless breakpoint multiplexing for escalating decisions to human responders with cryptographic verification
-- **Governance & Security**: Policy engines, authority chains, sandbox execution, and mandate enforcement → [Security Architecture](security-architecture.md)
-- **Cost Management**: Token tracking, budgeting, and cost optimization across providers
-- **Observability**: Real-time monitoring, health checks, and diagnostic capabilities
-- **Development Tools**: Process libraries, skill management, and agent development frameworks
+## Current System Shape
 
-## System Boundaries and Integration Points
+The repository currently works as a monorepo with a strong operational center:
 
-**Core System Boundaries**:
-- **Agent Runtime**: Model communication, agentic loops, in-memory session management → [V6 Architecture Vision](v6-vision.md)
-- **Agent Platform**: Persistence, plugin system, tool ecosystems, protocol adaptation
-- **Orchestration Layer**: Babysitter SDK integration, process orchestration, workflow management
-- **Application Layer**: Complete solutions with governance, memory, cost tracking, and observability
+- `packages/sdk` contains the core orchestration model, storage, task system, replay, CLI infrastructure, hooks, harness abstractions, profiles, plugin management, and process-library support.
+- `packages/babysitter` exposes the primary CLI package.
+- `packages/babysitter-harness` provides the harness runtime layer and operational orchestration support.
+- `plugins/*` packages encode real harness-specific integration, packaging, and manifest constraints.
 
-**External Integration Points**:
-- **Model Providers**: OpenAI, Anthropic, local models, custom endpoints
-- **Development Environments**: VS Code, JetBrains, command-line interfaces
-- **Human Coordination Systems**: Git repositories (.breakpoints/ directories), GitHub Issues, AEQ servers, custom backends
-- **CI/CD Systems**: GitHub Actions, custom pipelines, deployment orchestration
-- **Monitoring Systems**: Prometheus, custom metrics, webhook integrations
-- **Storage Systems**: Local filesystem, cloud storage, database backends
+This means V6 begins from a working but tightly coupled system, not from a clean-slate layered platform.
 
-## Capability Matrix by Layer
+## What The System Must Continue To Do
 
-| Capability | Runtime | Platform | Orchestration | Application |
-|------------|---------|----------|---------------|-------------|
-| Model Communication | ✓ | ✓ | ✓ | ✓ |
-| Session Persistence | - | ✓ | ✓ | ✓ |
-| Plugin System | - | ✓ | ✓ | ✓ |
-| Human Coordination | - | - | ✓ | ✓ |
-| Governance & Security | - | Plugin | ✓ | ✓ |
-| Cost Tracking | - | Plugin | ✓ | ✓ |
-| Process Orchestration | - | Basic | ✓ | ✓ |
-| Memory Management | Basic | Plugin | ✓ | ✓ |
-| Observability | Events | Plugin | ✓ | ✓ |
+Any V6 change must preserve the repository's core operational capabilities:
 
-## Relationship to a5c.ai Ecosystem
+- multi-harness orchestration,
+- event-sourced run execution and replay,
+- plugin discovery, installation, and packaging,
+- session and harness integration,
+- process-library and workflow execution,
+- CLI-driven developer and automation workflows.
 
-The Universal Harness Stack serves as the foundational platform for the broader a5c.ai ecosystem, providing:
-- **Agent Development Foundation**: Core abstractions for building AI agents
-- **Deployment Platform**: Production-ready orchestration and management → [Operational Readiness](implementation/operational-readiness.md)
-- **Integration Hub**: Connecting multiple harnesses, tools, and services
-- **Innovation Platform**: Extensible architecture for new capabilities and workflows
+## V6 Scope In System Terms
+
+V6 is a maturity program around this existing system. Its near-term goals are:
+
+- document the real boundaries that already exist,
+- reduce ambiguity around candidate seams,
+- make packaging and validation failures easier to catch,
+- create a decision framework for future extraction rather than assuming extraction is always correct.
+
+## Explicit Non-Scope
+
+The current V6 stage does not require:
+
+- conversion of the system into many new top-level packages,
+- a fully formalized runtime/platform/application split,
+- new distributed coordination infrastructure as a baseline expectation,
+- broad new governance or security subsystems described as if already committed.
+
+## External Integration Reality
+
+The system integrates with external model providers, local CLIs, development environments, and filesystem-backed operational workflows. V6 must respect those realities. Claims about isolation, performance, and deployment flexibility are only mature when they are tied to implementation and verification in that environment.
+
+## Architectural Reading Rule
+
+Use the rest of the V6 documents with this framing:
+
+- current repo reality first,
+- small validated change second,
+- broader future architecture only as deferred exploration.
 
 ---
 
-**Related Documents**: [Current State Analysis](current-state.md) | [V6 Vision](v6-vision.md) | [Package Specifications](package-specs.md)
+**Related Documents**: [V6 Vision](v6-vision.md) | [V6 Architecture Specification](v6-architecture-specification.md) | [Package Specifications](package-specs.md)
