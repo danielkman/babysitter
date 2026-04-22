@@ -67,6 +67,14 @@ function main() {
       return;
     }
     const parsed = parseInstallArgs(rest);
+    if (parsed.passthrough.includes('--cloud-agent')) {
+      const args = [...parsed.passthrough];
+      if (parsed.workspace) {
+        args.push('--workspace', parsed.workspace);
+      }
+      runNodeScript(path.join(PACKAGE_ROOT, 'bin', 'install.js'), args);
+      return;
+    }
     if (parsed.scope === 'workspace') {
       const args = [];
       if (parsed.workspace) {

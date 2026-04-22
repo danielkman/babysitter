@@ -6,7 +6,57 @@ const shared = require('./install-shared');
 
 const PACKAGE_ROOT = path.resolve(__dirname, '..');
 
+function parseArgs(argv) {
+  let workspace = null;
+  let cloudAgent = false;
+
+  for (let i = 0; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg === '--cloud-agent') {
+      cloudAgent = true;
+      continue;
+    }
+    if (arg === '--workspace') {
+      const next = argv[i + 1];
+      if (next && !next.startsWith('-')) {
+        workspace = path.resolve(next);
+        i += 1;
+      } else {
+        workspace = process.cwd();
+      }
+    }
+  }
+
+  return { cloudAgent, workspace };
+}
+
 function main() {
+  const options = parseArgs(process.argv.slice(2));
+
+  if (options.cloudAgent) {
+    if (!options.workspace) {
+      console.error(`[${shared.PLUGIN_NAME}] Failed to install: --cloud-agent requires --workspace <path>.`);
+      process.exitCode = 1;
+      return;
+    }
+
+    try {
+      const installResult = shared.installCloudAgentSurface(PACKAGE_ROOT, options.workspace);
+      shared.ensureGlobalProcessLibrary(PACKAGE_ROOT);
+      console.log(`[${shared.PLUGIN_NAME}] Installed cloud-agent support into ${options.workspace}`);
+      if (installResult.setupWorkflow && installResult.setupWorkflow.examplePath) {
+        console.log(
+          `[${shared.PLUGIN_NAME}] Existing copilot setup workflow preserved; merge candidate written to ${installResult.setupWorkflow.examplePath}`,
+        );
+      }
+      return;
+    } catch (err) {
+      console.error(`[${shared.PLUGIN_NAME}] Failed to install cloud-agent support: ${err.message}`);
+      process.exitCode = 1;
+      return;
+    }
+  }
+
   const pluginRoot = shared.getHomePluginRoot();
   const marketplacePath = shared.getHomeMarketplacePath();
 

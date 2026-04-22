@@ -69,7 +69,10 @@ function main() {
 
   assert(fs.existsSync(pluginBundleRoot), 'expected mirrored plugin bundle to be installed for cloud agent');
   assert(fs.existsSync(path.join(pluginBundleRoot, 'hooks.json')), 'expected hooks.json in mirrored plugin bundle');
-  assert(fs.existsSync(path.join(pluginBundleRoot, 'hooks', 'session-start.sh')), 'expected hook scripts in mirrored plugin bundle');
+  assert(
+    fs.existsSync(path.join(pluginBundleRoot, 'hooks', 'babysitter-proxied-session-start.sh')),
+    'expected proxied hook scripts in mirrored plugin bundle',
+  );
   assert(fs.existsSync(cloudSkillPath), 'expected babysitter cloud skill to be installed');
   assert(read(cloudSkillPath).includes('name: babysitter-babysit'), 'expected cloud skill frontmatter to be namespaced');
 
