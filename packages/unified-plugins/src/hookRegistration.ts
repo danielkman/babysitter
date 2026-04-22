@@ -208,14 +208,12 @@ export function generateGithubCopilotHooksJson(
 ): string {
   const hooks: Record<string, unknown> = {};
   const pat = getPattern(manifest, targetProfile.name);
-  const sdk = resolveSdkConfig(manifest);
 
   iterateHooks(manifest, targetProfile, (canonical, native, handler) => {
     const slug = slugify(canonical);
     const p = resolveHookPath(handler, slug, manifest.name, native, pat);
-    const adapter = targetProfile.adapterName;
-    const bashCmd = p ? `npx -y ${sdk.proxyPackage} invoke --adapter ${adapter} --handler "bash ./${p}" --json` : `echo '{}'`;
-    const psCmd = p ? `npx -y ${sdk.proxyPackage} invoke --adapter ${adapter} --handler "bash ./${p}" --json` : `Write-Output '{}'`;
+    const bashCmd = p ? `./${p}` : `echo '{}'`;
+    const psCmd = p ? `./${p.replace(/\.sh$/, '.ps1')}` : `Write-Output '{}'`;
     const timeout = canonical === 'UserPromptSubmit' ? 15 : 30;
     hooks[native] = [{ type: 'command', bash: bashCmd, powershell: psCmd, timeoutSec: timeout }];
   });

@@ -7,7 +7,7 @@
   },
   "license": "MIT",
   "skills": "skills/",
-  "hooks": "hooks/hooks.json",
+  "hooks": "hooks.json",
   "commands": "commands/",
   "agents": "AGENTS.md",
   "repository": {

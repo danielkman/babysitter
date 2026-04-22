@@ -345,7 +345,7 @@ function generateHookRegistrationFile(
       break;
     case 'github-copilot':
       content = generateGithubCopilotHooksJson(manifest, targetProfile);
-      filePath = 'hooks/hooks.json';
+      filePath = 'hooks.json';
       break;
     case 'opencode':
       content = generateOpenCodeHooksJson(manifest, targetProfile);

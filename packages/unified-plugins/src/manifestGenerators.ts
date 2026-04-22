@@ -163,7 +163,7 @@ export function generateGithubCopilotManifest(manifest: A5cPluginManifest): stri
     author: normalizeAuthorObject(manifest),
     license: manifest.license,
     skills: 'skills/',
-    hooks: 'hooks/hooks.json',
+    hooks: 'hooks.json',
     commands: 'commands/',
     agents: 'AGENTS.md',
   };

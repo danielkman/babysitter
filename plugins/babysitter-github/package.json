@@ -16,12 +16,13 @@
   },
   "files": [
     "bin/",
-    "hooks/",
+    "hooks.json",
     "hooks/",
     "skills/",
     "commands/",
     "scripts/",
     "plugin.json",
+    "AGENTS.md",
     "README.md",
     "versions.json",
     "package.json"

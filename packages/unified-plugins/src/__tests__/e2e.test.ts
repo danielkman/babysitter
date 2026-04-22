@@ -155,15 +155,18 @@ describe('e2e: sample plugin compilation', () => {
       });
 
       expect(result.status).not.toBe('error');
+      expect(result.emittedFiles).toContain('hooks.json');
       const pluginJson = JSON.parse(
         fs.readFileSync(path.join(result.outputDir, 'plugin.json'), 'utf-8')
       );
       expect(pluginJson.author).toEqual({ name: 'a5c.ai' });
+      expect(pluginJson.hooks).toBe('hooks.json');
 
       const githubPluginJson = JSON.parse(
         fs.readFileSync(path.join(result.outputDir, '.github/plugin.json'), 'utf-8')
       );
       expect(githubPluginJson.author).toEqual({ name: 'a5c.ai' });
+      expect(githubPluginJson.hooks).toBe('hooks.json');
     });
 
     it('pi: should emit extensions with command registration', () => {

@@ -193,13 +193,18 @@ export function generateManifests(
       scripts.preuninstall = `node bin/uninstall${ext}`;
     }
     scripts['team:install'] = `node scripts/team-install${ext}`;
+    const packageFiles = ['bin/', 'hooks/', 'skills/', 'commands/', 'scripts/', 'plugin.json', 'README.md', 'versions.json', 'package.json'];
+    if (targetProfile.name === 'github-copilot') {
+      packageFiles.splice(2, 0, 'hooks.json');
+      packageFiles.push('AGENTS.md');
+    }
     const pkgJson: Record<string, unknown> = {
       name: npmPkg,
       version: manifest.version,
       description: manifest.description,
       scripts,
       bin: { [`${manifest.name}-${targetProfile.name}`]: `bin/cli${ext}` },
-      files: ['bin/', 'hooks/', 'hooks/', 'skills/', 'commands/', 'scripts/', 'plugin.json', 'README.md', 'versions.json', 'package.json'],
+      files: packageFiles,
       keywords: [manifest.name, targetProfile.name, 'orchestration'],
       author: manifest.author,
       license: manifest.license,

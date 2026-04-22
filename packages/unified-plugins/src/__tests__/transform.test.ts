@@ -1,9 +1,10 @@
 // Tests for hook registration generation
 
 import { describe, it, expect } from 'vitest';
-import { generateClaudeCodeHooksJson, generateCodexHooksJson } from '../hookRegistration';
+import { generateClaudeCodeHooksJson, generateCodexHooksJson, generateGithubCopilotHooksJson } from '../hookRegistration';
 import { CLAUDE_CODE_PROFILE } from '../targets/claude-code';
 import { CODEX_PROFILE } from '../targets/codex';
+import { GITHUB_COPILOT_PROFILE } from '../targets/github-copilot';
 import type { A5cPluginManifest } from '../types';
 
 const MANIFEST: A5cPluginManifest = {
@@ -67,5 +68,15 @@ describe('generateCodexHooksJson', () => {
     const cmd = parsed.hooks.SessionStart[0].hooks[0].command;
     expect(cmd).toContain('hooks/session-start.sh');
     expect(cmd).not.toContain('ADAPTER_NAME');
+  });
+});
+
+describe('generateGithubCopilotHooksJson', () => {
+  it('should generate root-relative bash and powershell hook paths', () => {
+    const json = generateGithubCopilotHooksJson(MANIFEST, GITHUB_COPILOT_PROFILE);
+    const parsed = JSON.parse(json);
+
+    expect(parsed.hooks.sessionStart[0].bash).toBe('./hooks/session-start.sh');
+    expect(parsed.hooks.sessionStart[0].powershell).toBe('./hooks/session-start.ps1');
   });
 });

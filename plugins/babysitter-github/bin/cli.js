@@ -18,6 +18,7 @@ function printUsage() {
 function parseInstallArgs(argv) {
   let scope = 'global';
   let workspace = null;
+  let cloudAgent = false;
   const passthrough = [];
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -37,10 +38,15 @@ function parseInstallArgs(argv) {
       }
       continue;
     }
+    if (arg === '--cloud-agent') {
+      cloudAgent = true;
+      passthrough.push(arg);
+      continue;
+    }
     passthrough.push(arg);
   }
 
-  return { scope, workspace, passthrough };
+  return { scope, workspace, cloudAgent, passthrough };
 }
 
 function runNodeScript(scriptPath, args, extraEnv = {}) {
@@ -62,6 +68,14 @@ function main() {
 
   if (command === 'install') {
     const parsed = parseInstallArgs(rest);
+    if (parsed.cloudAgent) {
+      const args = [...parsed.passthrough];
+      if (parsed.workspace) {
+        args.push('--workspace', parsed.workspace);
+      }
+      runNodeScript(path.join(PACKAGE_ROOT, 'bin', 'install.js'), args);
+      return;
+    }
     if (parsed.scope === 'workspace') {
       const args = [];
       if (parsed.workspace) {
