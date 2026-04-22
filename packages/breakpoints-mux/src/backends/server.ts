@@ -21,7 +21,7 @@ import type {
   BreakpointWaitResult,
   ResponderProfile,
 } from "../types.js";
-import { DEFAULT_POLL_INTERVAL_MS, DEFAULT_TIMEOUT_MS } from "../config.js";
+import { DEFAULT_POLL_INTERVAL_MS, DEFAULT_TIMEOUT_MS } from "../types.js";
 
 const API_BASE_PATH = "/api/v1";
 
