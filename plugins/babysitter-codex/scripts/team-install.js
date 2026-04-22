@@ -12,7 +12,7 @@ for (var i = 0; i < process.argv.length; i++) {
 }
 
 var src = process.env.PLUGIN_PACKAGE_ROOT || path.resolve(__dirname, '..');
-var dest = shared.getHomePluginRoot('workspace');
+var dest = shared.getWorkspacePluginRoot(workspace);
 console.log('[babysitter] Team install to ' + dest);
 
 shared.copyPluginBundle(src, dest);

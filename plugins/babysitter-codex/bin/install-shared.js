@@ -279,6 +279,14 @@ function getHomeMarketplacePath() {
   return path.join(getUserHome(), '.agents', 'plugins', 'marketplace.json');
 }
 
+function getWorkspacePluginRoot(workspaceRoot) {
+  return path.join(path.resolve(workspaceRoot), '.agents', 'plugins', PLUGIN_NAME);
+}
+
+function getWorkspaceMarketplacePath(workspaceRoot) {
+  return path.join(path.resolve(workspaceRoot), '.agents', 'plugins', 'marketplace.json');
+}
+
 function renderCodexConfigToml() {
   return [
     'approval_policy = "on-request"',
@@ -698,21 +706,23 @@ function installCodexSurface(packageRoot, codexHome) {
 }
 
 function harnessTeamInstall(packageRoot, pluginRoot, workspace) {
-  var marketplacePath = path.join(workspace, '.agents', 'plugins', 'marketplace.json');
-  var codexHome = path.join(workspace, '.codex');
+  var workspaceRoot = path.resolve(workspace);
+  var resolvedPluginRoot = pluginRoot ? path.resolve(pluginRoot) : getWorkspacePluginRoot(workspaceRoot);
+  var marketplacePath = getWorkspaceMarketplacePath(workspaceRoot);
+  var codexHome = path.join(workspaceRoot, '.codex');
   var codexConfigPath = path.join(codexHome, 'config.toml');
-  var teamDir = path.join(workspace, '.a5c', 'team');
+  var teamDir = path.join(workspaceRoot, '.a5c', 'team');
 
   var processLibraryState = ensureGlobalProcessLibrary(packageRoot);
-  ensureMarketplaceEntry(marketplacePath, pluginRoot);
+  ensureMarketplaceEntry(marketplacePath, resolvedPluginRoot);
   mergeCodexConfigFile(codexConfigPath);
   installCodexSurface(packageRoot, codexHome);
   warnWindowsHooks();
 
   writeJson(path.join(teamDir, 'install.json'), {
     packageRoot: packageRoot,
-    workspaceRoot: workspace,
-    pluginRoot: pluginRoot,
+    workspaceRoot: workspaceRoot,
+    pluginRoot: resolvedPluginRoot,
     marketplacePath: marketplacePath,
     codexConfigPath: codexConfigPath,
     processLibraryCloneDir: (processLibraryState.defaultSpec && processLibraryState.defaultSpec.cloneDir)
@@ -721,7 +731,7 @@ function harnessTeamInstall(packageRoot, pluginRoot, workspace) {
       || path.join(getGlobalStateDir(), 'active', 'process-library.json'),
   });
   writeJson(path.join(teamDir, 'profile.json'), {
-    pluginRoot: pluginRoot,
+    pluginRoot: resolvedPluginRoot,
     marketplacePath: marketplacePath,
     codexConfigPath: codexConfigPath,
     processLibraryLookupCommand: 'babysitter process-library:active --json',
@@ -768,6 +778,8 @@ module.exports = {
   getCodexHome,
   getHomePluginRoot,
   getHomeMarketplacePath,
+  getWorkspacePluginRoot,
+  getWorkspaceMarketplacePath,
   renderCodexConfigToml,
   copyRecursive,
   copyPluginBundle,

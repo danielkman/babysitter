@@ -210,7 +210,7 @@ try {
       USERPROFILE: userHome,
     },
   });
-  assert.ok(teamInstallOutput.includes('[team-install] complete'));
+  assert.ok(teamInstallOutput.includes('[babysitter] Team install complete.'));
 
   assert.ok(fs.existsSync(path.join(workspaceRoot, '.codex', 'config.toml')));
   assert.ok(fs.existsSync(path.join(workspaceRoot, '.codex', 'hooks.json')));
