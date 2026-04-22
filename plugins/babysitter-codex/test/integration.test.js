@@ -50,9 +50,9 @@ function testCommandBackedSkills() {
 // Test: Shell hook scripts have valid syntax
 function testShellSyntax() {
   const shellScripts = [
-    'babysitter-session-start.sh',
-    'babysitter-stop-hook.sh',
-    'user-prompt-submit.sh',
+    'babysitter-proxied-session-start.sh',
+    'babysitter-proxied-stop.sh',
+    'babysitter-proxied-user-prompt-submit.sh',
   ];
 
   for (const script of shellScripts) {

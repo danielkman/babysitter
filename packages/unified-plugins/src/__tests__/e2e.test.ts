@@ -124,6 +124,7 @@ describe('e2e: sample plugin compilation', () => {
 
       expect(result.status).not.toBe('error');
       expect(result.emittedFiles).toContain('package.json');
+      expect(result.emittedFiles).toContain('hooks.json');
       expect(result.emittedFiles).toContain('bin/cli.js');
       expect(result.emittedFiles).toContain('bin/install.js');
       expect(result.emittedFiles).toContain('bin/uninstall.js');

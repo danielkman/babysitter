@@ -333,7 +333,7 @@ function generateHookRegistrationFile(
       break;
     case 'codex':
       content = generateCodexHooksJson(manifest, targetProfile);
-      filePath = 'hooks/hooks.json';
+      filePath = 'hooks.json';
       break;
     case 'cursor':
       content = generateCursorHooksJson(manifest, targetProfile);
@@ -361,4 +361,3 @@ function generateHookRegistrationFile(
 
   return { path: filePath, content };
 }
-

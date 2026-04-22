@@ -74,7 +74,7 @@ Verify the installed plugin bundle:
 npm ls -g @a5c-ai/babysitter-codex --depth=0
 test -f ~/.agents/plugins/babysitter/.codex-plugin/plugin.json
 test -f ~/.agents/plugins/babysitter/hooks.json
-test -f ~/.agents/plugins/babysitter/hooks/babysitter-stop-hook.sh
+test -f ~/.agents/plugins/babysitter/hooks/babysitter-proxied-stop.sh
 test -f ~/.agents/plugins/babysitter/skills/babysit/SKILL.md
 test -f ~/.agents/plugins/marketplace.json
 ```

@@ -237,6 +237,11 @@ const LEGACY_HOOK_SCRIPT_NAMES = [
   'babysitter-stop-hook.sh',
   'user-prompt-submit.sh',
 ];
+const MANAGED_HOOK_SCRIPT_NAMES = [
+  'babysitter-proxied-session-start.sh',
+  'babysitter-proxied-stop.sh',
+  'babysitter-proxied-user-prompt-submit.sh',
+];
 const DEFAULT_MARKETPLACE = {
   name: 'local-plugins',
   interface: {
@@ -454,13 +459,60 @@ function runBabysitterCli(packageRoot, cliArgs, options = {}) {
 }
 
 function ensureGlobalProcessLibrary(packageRoot) {
-  return JSON.parse(
+  const stateDir = getGlobalStateDir();
+  const activeFile = path.join(stateDir, 'active', 'process-library.json');
+  const current = readJson(activeFile);
+  if (current && current.defaultBinding && current.defaultBinding.dir) {
+    return {
+      stateFile: activeFile,
+      binding: current.defaultBinding,
+      defaultSpec: {
+        stateDir,
+        repo: current.defaultBinding.repoUrl,
+        cloneDir: current.defaultBinding.dir,
+      },
+    };
+  }
+
+  const cloneDir = path.join(stateDir, 'process-library', `${PLUGIN_NAME}-repo`);
+  runBabysitterCli(
+    packageRoot,
+    [
+      'process-library:clone',
+      '--dir', cloneDir,
+      '--state-dir', stateDir,
+      '--json',
+    ],
+    { cwd: packageRoot },
+  );
+  runBabysitterCli(
+    packageRoot,
+    [
+      'process-library:use',
+      '--dir', cloneDir,
+      '--state-dir', stateDir,
+      '--json',
+    ],
+    { cwd: packageRoot },
+  );
+
+  const active = JSON.parse(
     runBabysitterCli(
       packageRoot,
-      ['process-library:active', '--state-dir', getGlobalStateDir(), '--json'],
+      ['process-library:active', '--state-dir', stateDir, '--json'],
       { cwd: packageRoot },
     ),
   );
+
+  return {
+    stateFile: active.stateFile || activeFile,
+    binding: active.binding || active.defaultBinding || { dir: cloneDir },
+    defaultSpec: active.defaultSpec || {
+      stateDir,
+      repo: process.env.BABYSITTER_PROCESS_LIBRARY_REPO || null,
+      cloneDir,
+    },
+  };
 }
 
 function getMarketplaceRootDir(marketplacePath) {
@@ -629,7 +681,7 @@ function installManagedHooks(packageRoot, codexHome) {
   const targetRoot = path.join(codexHome, 'hooks');
   fs.mkdirSync(targetRoot, { recursive: true });
 
-  for (const scriptName of LEGACY_HOOK_SCRIPT_NAMES) {
+  for (const scriptName of MANAGED_HOOK_SCRIPT_NAMES) {
     const sourcePath = path.join(sourceRoot, scriptName);
     const targetPath = path.join(targetRoot, scriptName);
     copyRecursive(sourcePath, targetPath);
@@ -675,6 +727,7 @@ module.exports = {
   LEGACY_SKILL_NAMES,
   LEGACY_PROMPT_NAMES,
   LEGACY_HOOK_SCRIPT_NAMES,
+  MANAGED_HOOK_SCRIPT_NAMES,
   DEFAULT_MARKETPLACE,
   PLUGIN_BUNDLE_ENTRIES,
   getCodexHome,

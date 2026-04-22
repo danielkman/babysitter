@@ -142,7 +142,7 @@ try {
   assert.ok(fs.existsSync(path.join(installedPluginRoot, 'assets', 'icon.svg')), 'installed plugin should carry composer icon asset');
   assert.ok(fs.existsSync(path.join(installedPluginRoot, 'assets', 'logo.png')), 'installed plugin should carry logo asset');
   assert.ok(fs.existsSync(path.join(installedPluginRoot, 'README.md')), 'installed plugin should carry a README');
-  assert.ok(fs.existsSync(path.join(installedPluginRoot, 'hooks', 'babysitter-stop-hook.sh')), 'installed plugin should carry hook scripts');
+  assert.ok(fs.existsSync(path.join(installedPluginRoot, 'hooks', 'babysitter-proxied-stop.sh')), 'installed plugin should carry hook scripts');
   assert.ok(fs.existsSync(path.join(installedPluginRoot, 'skills', 'babysit', 'SKILL.md')), 'installed plugin should carry the core skill');
   assert.ok(!fs.existsSync(path.join(installedPluginRoot, 'bin')), 'installed plugin should not ship installer binaries');
 
@@ -164,9 +164,18 @@ try {
   assert.ok(homeConfig.includes('max_threads = 4'));
 
   const pluginHooks = readJson(path.join(installedPluginRoot, 'hooks.json'));
-  assert.strictEqual(pluginHooks.hooks.SessionStart[0].hooks[0].command, './hooks/babysitter-proxied-session-start.sh');
-  assert.strictEqual(pluginHooks.hooks.UserPromptSubmit[0].hooks[0].command, './hooks/babysitter-proxied-user-prompt-submit.sh');
-  assert.strictEqual(pluginHooks.hooks.Stop[0].hooks[0].command, './hooks/babysitter-proxied-stop-hook.sh');
+  assert.strictEqual(
+    pluginHooks.hooks.SessionStart[0].hooks[0].command,
+    'npx -y @a5c-ai/hooks-proxy-cli invoke --adapter codex --handler "bash ./hooks/babysitter-proxied-session-start.sh" --json',
+  );
+  assert.strictEqual(
+    pluginHooks.hooks.UserPromptSubmit[0].hooks[0].command,
+    'npx -y @a5c-ai/hooks-proxy-cli invoke --adapter codex --handler "bash ./hooks/babysitter-proxied-user-prompt-submit.sh" --json',
+  );
+  assert.strictEqual(
+    pluginHooks.hooks.Stop[0].hooks[0].command,
+    'npx -y @a5c-ai/hooks-proxy-cli invoke --adapter codex --handler "bash ./hooks/babysitter-proxied-stop.sh" --json',
+  );
 
   assert.ok(fs.existsSync(homeMarketplacePath));
   const homeMarketplace = readJson(homeMarketplacePath);
@@ -205,7 +214,7 @@ try {
 
   assert.ok(fs.existsSync(path.join(workspaceRoot, '.codex', 'config.toml')));
   assert.ok(fs.existsSync(path.join(workspaceRoot, '.codex', 'hooks.json')));
-  assert.ok(fs.existsSync(path.join(workspaceRoot, '.codex', 'hooks', 'babysitter-stop-hook.sh')));
+  assert.ok(fs.existsSync(path.join(workspaceRoot, '.codex', 'hooks', 'babysitter-proxied-stop.sh')));
   assert.ok(fs.existsSync(path.join(workspaceRoot, '.codex', 'skills', 'call', 'SKILL.md')));
   assert.ok(fs.existsSync(path.join(workspaceRoot, '.agents', 'plugins', INSTALLED_PLUGIN_NAME, '.codex-plugin', 'plugin.json')));
   assert.ok(fs.existsSync(path.join(workspaceRoot, '.agents', 'plugins', INSTALLED_PLUGIN_NAME, 'skills', 'babysit', 'SKILL.md')));
