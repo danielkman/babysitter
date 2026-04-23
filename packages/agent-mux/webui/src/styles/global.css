@@ -370,6 +370,118 @@ button:disabled {
   padding-right: 0.35rem;
 }
 
+.agent-flow-view {
+  display: grid;
+  gap: 0.9rem;
+  max-height: 58vh;
+  overflow: auto;
+  padding-right: 0.35rem;
+}
+
+.view-toggle {
+  display: inline-flex;
+  gap: 0.5rem;
+  padding: 0.35rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface-strong) 84%, transparent);
+  border: 1px solid var(--border);
+  width: fit-content;
+}
+
+.view-toggle button {
+  background: transparent;
+  color: var(--muted);
+  border: 0;
+  padding: 0.55rem 0.95rem;
+}
+
+.view-toggle button.active {
+  background: var(--primary-soft);
+  color: var(--text);
+}
+
+.view-toggle button:hover {
+  background: var(--primary-soft);
+  color: var(--text);
+}
+
+.flow-lane {
+  display: grid;
+  gap: 0.8rem;
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface-strong) 88%, transparent);
+}
+
+.flow-lane-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.flow-lane-title,
+.flow-segment-title {
+  font-weight: 700;
+}
+
+.flow-lane-subtitle {
+  color: var(--muted);
+  font-size: 0.88rem;
+  word-break: break-all;
+}
+
+.flow-track {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding-bottom: 0.2rem;
+}
+
+.flow-segment {
+  min-width: 10rem;
+  padding: 0.9rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  display: grid;
+  gap: 0.45rem;
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+}
+
+.flow-segment p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+.segment-user {
+  border-color: rgba(37, 99, 235, 0.28);
+  background: color-mix(in srgb, #2563eb 10%, var(--surface-strong));
+}
+
+.segment-assistant {
+  border-color: rgba(15, 118, 110, 0.28);
+  background: color-mix(in srgb, var(--primary) 10%, var(--surface-strong));
+}
+
+.segment-thinking {
+  border-color: rgba(180, 83, 9, 0.28);
+  background: color-mix(in srgb, #b45309 10%, var(--surface-strong));
+}
+
+.segment-tool {
+  border-color: rgba(92, 74, 53, 0.26);
+  background: color-mix(in srgb, var(--bg-accent) 42%, var(--surface-strong));
+}
+
+.segment-system,
+.segment-lifecycle {
+  border-style: dashed;
+}
+
 .message {
   padding: 1rem;
 }

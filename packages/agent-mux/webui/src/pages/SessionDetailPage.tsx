@@ -5,6 +5,12 @@ import { useShallow } from 'zustand/react/shallow';
 import { useGateway } from '@a5c-ai/agent-mux-ui';
 
 import { useGatewayFetch } from '../providers/GatewayProvider.js';
+import {
+  buildAgentFlowLanes,
+  buildNativeAgentFlowLane,
+  type NativeSessionMessage,
+  type SessionCost,
+} from './SessionDetailFlow.js';
 
 type SessionTranscriptNode =
   | { kind: 'user'; text: string; runId: string }
@@ -12,33 +18,8 @@ type SessionTranscriptNode =
   | { kind: 'thinking'; text: string; runId: string }
   | { kind: 'tool'; text: string; runId: string; label: string };
 
-type NativeSessionMessage = {
-  role?: string;
-  content?: string;
-  thinking?: string;
-  toolCalls?: Array<{
-    toolCallId?: string;
-    toolName?: string;
-    input?: unknown;
-    output?: unknown;
-    durationMs?: number;
-  }>;
-  toolResult?: {
-    toolCallId?: string;
-    toolName?: string;
-    output?: unknown;
-  };
-};
-
-type SessionCost = {
-  totalUsd?: number;
-  inputTokens?: number;
-  outputTokens?: number;
-  thinkingTokens?: number;
-  cachedTokens?: number;
-};
-
 type SessionControlPlane = 'self-managed' | 'external-host' | 'mcp-mediated';
+type AgentFlowViewMode = 'transcript' | 'agent-flow';
 
 function formatUsd(totalUsd: number | null): string {
   if (totalUsd == null || !Number.isFinite(totalUsd)) {
@@ -122,6 +103,17 @@ function accumulateEventCost(
   }
 
   return found ? totals : null;
+}
+
+function formatFlowTime(value: number): string {
+  if (!Number.isFinite(value)) {
+    return 'unknown';
+  }
+  return new Date(value).toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
 }
 
 function buildTranscript(
@@ -298,6 +290,9 @@ export function SessionDetailPage(): JSX.Element {
   const [error, setError] = useState<string | null>(null);
   const [nativeMessages, setNativeMessages] = useState<NativeSessionMessage[]>([]);
   const [loadingNativeTranscript, setLoadingNativeTranscript] = useState(false);
+  const [viewMode, setViewMode] = useState<AgentFlowViewMode>(() =>
+    searchParams.get('view') === 'flow' ? 'agent-flow' : 'transcript',
+  );
 
   const transportCandidates = useMemo(
     () => [
@@ -345,6 +340,12 @@ export function SessionDetailPage(): JSX.Element {
   const canCompose = status !== 'active' || transport === 'persistent';
   const eventTranscript = useMemo(() => buildTranscript(runs, eventBuffers), [eventBuffers, runs]);
   const nativeTranscript = useMemo(() => buildNativeTranscript(sessionId, nativeMessages), [nativeMessages, sessionId]);
+  const eventFlowLanes = useMemo(() => buildAgentFlowLanes(runs, eventBuffers), [eventBuffers, runs]);
+  const nativeFlowLane = useMemo(
+    () => buildNativeAgentFlowLane(sessionId, nativeMessages, resolvedAgent, status),
+    [nativeMessages, resolvedAgent, sessionId, status],
+  );
+  const flowLanes = eventFlowLanes.length > 0 ? eventFlowLanes : nativeFlowLane ? [nativeFlowLane] : [];
   const eventCost = useMemo(
     () => accumulateEventCost(runs.map((run) => String(run.runId ?? '')), eventBuffers),
     [eventBuffers, runs],
@@ -512,35 +513,94 @@ export function SessionDetailPage(): JSX.Element {
           </div>
         </header>
 
-        <div className="transcript">
-          {transcript.map((node, index) => (
-            <article
-              key={`${node.runId}-${index}`}
-              className={`message ${
-                node.kind === 'assistant'
-                  ? 'agent-message'
-                  : node.kind === 'user'
-                    ? 'user-message'
-                    : node.kind === 'thinking'
-                      ? 'thinking-message'
-                      : 'tool-message'
-              }`}
-            >
-              <div className="message-meta">
-                {node.kind === 'assistant'
-                  ? 'assistant'
-                  : node.kind === 'user'
-                    ? 'user'
-                    : node.kind === 'thinking'
-                      ? 'thinking'
-                      : node.label}
-              </div>
-              <pre>{node.text}</pre>
-            </article>
-          ))}
-          {transcript.length === 0 && loadingNativeTranscript ? <p className="muted-copy">Loading session transcript…</p> : null}
-          {transcript.length === 0 && !loadingNativeTranscript ? <p className="muted-copy">No session transcript has been indexed yet.</p> : null}
+        <div className="view-toggle" role="tablist" aria-label="Session detail view">
+          <button
+            type="button"
+            className={viewMode === 'transcript' ? 'active' : ''}
+            onClick={() => setViewMode('transcript')}
+            aria-pressed={viewMode === 'transcript'}
+          >
+            Transcript
+          </button>
+          <button
+            type="button"
+            className={viewMode === 'agent-flow' ? 'active' : ''}
+            onClick={() => setViewMode('agent-flow')}
+            aria-pressed={viewMode === 'agent-flow'}
+          >
+            Agent Flow
+          </button>
         </div>
+
+        {viewMode === 'transcript' ? (
+          <div className="transcript">
+            {transcript.map((node, index) => (
+              <article
+                key={`${node.runId}-${index}`}
+                className={`message ${
+                  node.kind === 'assistant'
+                    ? 'agent-message'
+                    : node.kind === 'user'
+                      ? 'user-message'
+                      : node.kind === 'thinking'
+                        ? 'thinking-message'
+                        : 'tool-message'
+                }`}
+              >
+                <div className="message-meta">
+                  {node.kind === 'assistant'
+                    ? 'assistant'
+                    : node.kind === 'user'
+                      ? 'user'
+                      : node.kind === 'thinking'
+                        ? 'thinking'
+                        : node.label}
+                </div>
+                <pre>{node.text}</pre>
+              </article>
+            ))}
+            {transcript.length === 0 && loadingNativeTranscript ? <p className="muted-copy">Loading session transcript…</p> : null}
+            {transcript.length === 0 && !loadingNativeTranscript ? <p className="muted-copy">No session transcript has been indexed yet.</p> : null}
+          </div>
+        ) : (
+          <div className="agent-flow-view">
+            {flowLanes.map((lane) => (
+              <article key={lane.runId} className="flow-lane">
+                <div className="flow-lane-header">
+                  <div>
+                    <div className="flow-lane-title">{lane.agent}</div>
+                    <div className="flow-lane-subtitle">
+                      {lane.startedAt > 0 ? `${formatFlowTime(lane.startedAt)} · ` : ''}
+                      {lane.runId}
+                    </div>
+                  </div>
+                  <div className="chip-row">
+                    <span className={`status-badge status-${lane.status}`}>{lane.status}</span>
+                    <span className="meta-chip">{lane.segmentCount} phases</span>
+                    {lane.toolCount > 0 ? <span className="meta-chip">{lane.toolCount} tools</span> : null}
+                    {lane.totalUsd != null ? <span className="meta-chip">{formatUsd(lane.totalUsd)}</span> : null}
+                  </div>
+                </div>
+                <div className="flow-track" aria-label={`Agent flow for ${lane.runId}`}>
+                  {lane.segments.map((segment) => (
+                    <article
+                      key={segment.id}
+                      className={`flow-segment segment-${segment.kind}`}
+                      style={{ flexGrow: segment.weight }}
+                    >
+                      <div className="flow-segment-title">{segment.title}</div>
+                      <p>{segment.detail}</p>
+                    </article>
+                  ))}
+                </div>
+              </article>
+            ))}
+            {flowLanes.length === 0 && loadingNativeTranscript ? <p className="muted-copy">Loading agent flow…</p> : null}
+            {flowLanes.length === 0 && !loadingNativeTranscript ? (
+              <p className="muted-copy">No structured execution flow has been indexed yet.</p>
+            ) : null}
+          </div>
+        )}
 
         <form className="composer" onSubmit={handleSend}>
           <label className="field">
