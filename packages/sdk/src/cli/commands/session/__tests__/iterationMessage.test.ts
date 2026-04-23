@@ -99,4 +99,44 @@ describe("handleSessionIterationMessage", () => {
     expect(output.runState).toBe("completed");
     expect(output.completionProof).toBeTruthy();
   });
+
+  it("keeps waiting state when pending work exists after a completion event", async () => {
+    const runDir = await createRun("run-premature-complete");
+    const taskDir = path.join(runDir, "tasks", "effect-2");
+    await fs.mkdir(taskDir, { recursive: true });
+    await fs.writeFile(path.join(taskDir, "task.json"), JSON.stringify({ kind: "agent" }), "utf8");
+    await fs.writeFile(path.join(taskDir, "inputs.json"), JSON.stringify({ ok: true }), "utf8");
+    await appendEvent({
+      runDir,
+      eventType: "RUN_COMPLETED",
+      event: { outputRef: "state/output.json" },
+    });
+    await appendEvent({
+      runDir,
+      eventType: "EFFECT_REQUESTED",
+      event: {
+        effectId: "effect-2",
+        invocationKey: "effect-2:inv",
+        stepId: "step-2",
+        taskId: "task/agent",
+        kind: "agent",
+        label: "follow-up",
+        taskDefRef: "tasks/effect-2/task.json",
+        inputsRef: "tasks/effect-2/inputs.json",
+      },
+    });
+
+    const exitCode = await handleSessionIterationMessage({
+      runId: "run-premature-complete",
+      iteration: 4,
+      runsDir: runsRoot,
+      json: true,
+    });
+
+    expect(exitCode).toBe(0);
+    const output = JSON.parse(String(logSpy.mock.calls.at(-1)?.[0] ?? "{}"));
+    expect(output.runState).toBe("waiting");
+    expect(output.pendingKinds).toBe("agent");
+    expect(output.completionProof).toBeNull();
+  });
 });

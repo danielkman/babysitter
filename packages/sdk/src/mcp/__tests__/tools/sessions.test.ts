@@ -290,6 +290,28 @@ describe("session_resume", () => {
     expect(data.error).toContain("already completed");
   });
 
+  it("treats a run with pending work after RUN_COMPLETED as waiting", async () => {
+    mockedGetSessionFilePath.mockReturnValue("/tmp/s/sess-11b.md");
+    mockedWriteSessionFile.mockResolvedValue(undefined);
+    mockedLoadJournal.mockResolvedValue([
+      { seq: 1, type: "RUN_CREATED", recordedAt: "t1", data: {}, checksum: "a" },
+      { seq: 2, type: "RUN_COMPLETED", recordedAt: "t2", data: {}, checksum: "b" },
+      { seq: 3, type: "EFFECT_REQUESTED", recordedAt: "t3", data: { effectId: "e1" }, checksum: "c" },
+    ] as Awaited<ReturnType<typeof loadJournal>>);
+
+    const handler = getToolHandler(server, "session_resume");
+    const result = await handler({
+      sessionId: "sess-11b",
+      stateDir: "/tmp/s",
+      runId: "run-not-done",
+      runsDir: "/tmp/runs",
+    });
+
+    expect(result.isError).toBeUndefined();
+    const data = parseResult(result) as { runState: string };
+    expect(data.runState).toBe("waiting");
+  });
+
   it("returns error when run not found", async () => {
     mockedGetSessionFilePath.mockReturnValue("/tmp/s/sess-12.md");
     mockedLoadJournal.mockRejectedValue(new Error("ENOENT"));

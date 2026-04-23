@@ -1,6 +1,8 @@
 import { promises as fs } from 'node:fs';
 import * as path from 'node:path';
 import { getGlobalStateDir } from '../../../config';
+import { loadJournal } from '../../../storage/journal';
+import { countPendingEffectsFromJournal, deriveObservedRunState } from '../../../runtime/runLifecycleState';
 import {
   SessionError,
   SessionState,
@@ -71,21 +73,8 @@ export async function handleSessionResume(args: SessionResumeArgs): Promise<numb
       await fs.readFile(path.join(runDir, 'run.json'), 'utf8'),
     ) as Record<string, unknown>;
     processId = (typeof runJson.processId === 'string' ? runJson.processId : undefined) ?? 'unknown';
-
-    const journalFiles = await fs.readdir(path.join(runDir, 'journal'));
-    const lastFile = journalFiles.filter((file) => file.endsWith('.json')).sort().pop();
-    if (lastFile) {
-      const lastEvent = JSON.parse(
-        await fs.readFile(path.join(runDir, 'journal', lastFile), 'utf8'),
-      ) as Record<string, unknown>;
-      if (lastEvent.type === 'RUN_COMPLETED') {
-        runState = 'completed';
-      } else if (lastEvent.type === 'RUN_FAILED') {
-        runState = 'failed';
-      } else {
-        runState = 'waiting';
-      }
-    }
+    const journal = await loadJournal(runDir);
+    runState = deriveObservedRunState(journal, countPendingEffectsFromJournal(journal));
   } catch {
     runState = 'unknown';
   }

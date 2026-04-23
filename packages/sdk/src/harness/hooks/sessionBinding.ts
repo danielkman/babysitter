@@ -10,6 +10,11 @@
 import * as path from "node:path";
 import { loadJournal } from "../../storage/journal";
 import {
+  countPendingEffectsFromJournal,
+  deriveObservedRunState,
+  isTerminalRunState,
+} from "../../runtime/runLifecycleState";
+import {
   getSessionFilePath,
   readSessionFile,
   sessionFileExists,
@@ -62,9 +67,9 @@ export async function bindSession(
           if (existing.state.runDir) {
             try {
               const journal = await loadJournal(existing.state.runDir);
-              const hasCompleted = journal.some((e) => e.type === "RUN_COMPLETED");
-              const hasFailed = journal.some((e) => e.type === "RUN_FAILED");
-              isTerminal = hasCompleted || hasFailed;
+              isTerminal = isTerminalRunState(
+                deriveObservedRunState(journal, countPendingEffectsFromJournal(journal)),
+              );
             } catch {
               // Safe default
             }
@@ -72,9 +77,9 @@ export async function bindSession(
             try {
               const oldRunDir = path.join(runsDir, oldRunId);
               const journal = await loadJournal(oldRunDir);
-              const hasCompleted = journal.some((e) => e.type === "RUN_COMPLETED");
-              const hasFailed = journal.some((e) => e.type === "RUN_FAILED");
-              isTerminal = hasCompleted || hasFailed;
+              isTerminal = isTerminalRunState(
+                deriveObservedRunState(journal, countPendingEffectsFromJournal(journal)),
+              );
             } catch {
               // Safe default
             }

@@ -3,6 +3,7 @@ import { existsSync } from "node:fs";
 import { loadJournal } from "../../storage/journal";
 import { readRunMetadata } from "../../storage/runFiles";
 import { buildEffectIndex } from "../../runtime/replay/effectIndex";
+import { deriveObservedRunState } from "../../runtime/runLifecycleState";
 import { resolveCompletionProof } from "../../cli/completionProof";
 import { countPendingByKind, isOnlyBreakpoints } from "./utils";
 
@@ -45,33 +46,32 @@ export async function resolveHookRunState(args: {
     const metadata = await readRunMetadata(runDir);
     const journal = await loadJournal(runDir);
     const index = await buildEffectIndex({ runDir, events: journal });
-    const hasCompleted = journal.some((event) => event.type === "RUN_COMPLETED");
-    const hasFailed = journal.some((event) => event.type === "RUN_FAILED");
     const pendingRecords = index.listPendingEffects();
+    const runState = deriveObservedRunState(journal, pendingRecords.length);
     const pendingByKind = countPendingByKind(pendingRecords);
     const pendingKinds = Object.keys(pendingByKind).join(", ");
     const onlyBreakpointsPending =
       pendingRecords.length > 0 && isOnlyBreakpoints(pendingByKind);
 
-    if (hasCompleted) {
+    if (runState === "completed") {
       return {
-        runState: "completed",
+        runState,
         completionProof: resolveCompletionProof(metadata),
         pendingKinds,
         onlyBreakpointsPending,
       };
     }
-    if (hasFailed) {
+    if (runState === "failed") {
       return {
-        runState: "failed",
+        runState,
         completionProof: "",
         pendingKinds,
         onlyBreakpointsPending,
       };
     }
-    if (pendingRecords.length > 0) {
+    if (runState === "waiting") {
       return {
-        runState: "waiting",
+        runState,
         completionProof: "",
         pendingKinds,
         onlyBreakpointsPending,
@@ -79,7 +79,7 @@ export async function resolveHookRunState(args: {
     }
 
     return {
-      runState: "created",
+      runState,
       completionProof: "",
       pendingKinds,
       onlyBreakpointsPending,

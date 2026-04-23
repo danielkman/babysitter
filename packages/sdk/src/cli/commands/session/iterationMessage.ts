@@ -2,6 +2,7 @@ import * as path from "node:path";
 import { resolveCompletionProof } from "../../completionProof";
 import { discoverSkillsInternal } from "../skill";
 import { buildEffectIndex } from "../../../runtime/replay/effectIndex";
+import { deriveObservedRunState } from "../../../runtime/runLifecycleState";
 import type { EffectRecord } from "../../../runtime/types";
 import { loadJournal } from "../../../storage/journal";
 import { readRunMetadata } from "../../../storage/runFiles";
@@ -60,27 +61,15 @@ export async function handleSessionIterationMessage(
       entrypointImportPath = metadata?.entrypoint?.importPath;
       const journal = await loadJournal(runDir);
       const index = await buildEffectIndex({ runDir, events: journal });
-      const hasCompleted = journal.some((event) => event.type === "RUN_COMPLETED");
-      const hasFailed = journal.some((event) => event.type === "RUN_FAILED");
-      if (hasCompleted) {
+      const pendingRecords = index.listPendingEffects();
+      runState = deriveObservedRunState(journal, pendingRecords.length);
+      if (runState === "completed") {
         completionProof = resolveCompletionProof(metadata);
       }
-
-      const pendingRecords = index.listPendingEffects();
       const pendingByKind = countPendingByKind(pendingRecords);
       const kindKeys = Object.keys(pendingByKind);
       if (kindKeys.length > 0) {
         pendingKinds = kindKeys.join(", ");
-      }
-
-      if (completionProof) {
-        runState = "completed";
-      } else if (hasFailed) {
-        runState = "failed";
-      } else if (pendingRecords.length > 0) {
-        runState = "waiting";
-      } else {
-        runState = "created";
       }
     } catch {
       runState = null;

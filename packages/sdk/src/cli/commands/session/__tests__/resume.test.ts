@@ -2,6 +2,7 @@ import { promises as fs } from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { appendEvent } from "../../../../storage/journal";
 import { handleSessionResume } from "../resume";
 
 describe("handleSessionResume", () => {
@@ -61,6 +62,42 @@ describe("handleSessionResume", () => {
 
     expect(result).toBe(0);
 
+    const content = await fs.readFile(path.join(stateDir, `${sessionId}.md`), "utf8");
+    expect(content).toContain(`run_id: "${runId}"`);
+  });
+
+  it("does not treat a run as completed when pending work exists after RUN_COMPLETED", async () => {
+    const runId = "existing-run-with-pending";
+    const runDir = path.join(runsDir, runId);
+    await fs.mkdir(path.join(runDir, "journal"), { recursive: true });
+    await fs.writeFile(
+      path.join(runDir, "run.json"),
+      JSON.stringify({ processId: "test-process" }),
+      "utf8",
+    );
+    await appendEvent({ runDir, eventType: "RUN_CREATED", event: { runId } });
+    await appendEvent({ runDir, eventType: "RUN_COMPLETED", event: { outputRef: "state/output.json" } });
+    await appendEvent({
+      runDir,
+      eventType: "EFFECT_REQUESTED",
+      event: {
+        effectId: "effect-1",
+        invocationKey: "effect-1:inv",
+        stepId: "step-1",
+        taskId: "task/agent",
+        kind: "agent",
+      },
+    });
+
+    const result = await handleSessionResume({
+      sessionId,
+      runId,
+      stateDir,
+      runsDir,
+      json: true,
+    });
+
+    expect(result).toBe(0);
     const content = await fs.readFile(path.join(stateDir, `${sessionId}.md`), "utf8");
     expect(content).toContain(`run_id: "${runId}"`);
   });

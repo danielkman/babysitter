@@ -481,6 +481,27 @@ describe("bindSession stale session handling", () => {
     });
   }
 
+  async function createRunWithPrematureCompletion(runId: string) {
+    const runDir = path.join(runsDir, runId);
+    await fs.mkdir(runDir, { recursive: true });
+    await appendEvent({
+      runDir,
+      event: { reason: "test" },
+      eventType: "RUN_COMPLETED",
+    });
+    await appendEvent({
+      runDir,
+      event: {
+        effectId: "effect-1",
+        invocationKey: "effect-1:inv",
+        stepId: "step-1",
+        taskId: "task/agent",
+        kind: "agent",
+      },
+      eventType: "EFFECT_REQUESTED",
+    });
+  }
+
   it("auto-releases stale terminal session (completed run) and binds new run", async () => {
     const sessionId = "test-session";
     const oldRunId = "old-run-completed";
@@ -573,6 +594,34 @@ describe("bindSession stale session handling", () => {
     expect(result.fatal).toBe(true);
 
     // Session file should still be bound to old run
+    const session = await readSessionFile(filePath);
+    expect(session.state.runId).toBe(oldRunId);
+  });
+
+  it("does not auto-release a session when completion is followed by pending work", async () => {
+    const sessionId = "test-session";
+    const oldRunId = "old-run-premature-complete";
+    const newRunId = "new-run";
+
+    const filePath = getSessionFilePath(stateDir, sessionId);
+    await writeSessionFile(filePath, makeSessionState(oldRunId), "old prompt");
+    await createRunWithPrematureCompletion(oldRunId);
+
+    const adapter = createClaudeCodeAdapter();
+    const result = await adapter.bindSession({
+      sessionId,
+      runId: newRunId,
+      runDir: path.join(runsDir, newRunId),
+      stateDir,
+      runsDir,
+      prompt: "new prompt",
+      verbose: false,
+      json: false,
+    });
+
+    expect(result.error).toContain(`Session bound to active run: ${oldRunId}`);
+    expect(result.fatal).toBe(true);
+
     const session = await readSessionFile(filePath);
     expect(session.state.runId).toBe(oldRunId);
   });

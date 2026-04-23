@@ -10,6 +10,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { loadJournal } from "../../storage/journal";
 import { readRunMetadata } from "../../storage/runFiles";
 import { buildEffectIndex } from "../../runtime/replay/effectIndex";
+import { deriveObservedRunState } from "../../runtime/runLifecycleState";
 import { resolveCompletionProof } from "../../cli/completionProof";
 import { discoverSkillsInternal } from "../../cli/commands/skill";
 import {
@@ -164,10 +165,8 @@ export async function resolveStopHookRunState(
     entrypointImportPath = metadata?.entrypoint?.importPath;
     const journal = await loadJournal(runDir);
     const index = await buildEffectIndex({ runDir, events: journal });
-
-    const hasCompleted = journal.some((e) => e.type === "RUN_COMPLETED");
-    const hasFailed = journal.some((e) => e.type === "RUN_FAILED");
     const pendingRecords = index.listPendingEffects();
+    runState = deriveObservedRunState(journal, pendingRecords.length);
     const pendingByKind = countPendingByKind(pendingRecords);
     const kindKeys = Object.keys(pendingByKind);
     if (kindKeys.length > 0) {
@@ -175,15 +174,8 @@ export async function resolveStopHookRunState(
     }
     onlyBreakpointsPending = pendingRecords.length > 0 && isOnlyBreakpoints(pendingByKind);
 
-    if (hasCompleted) {
-      runState = "completed";
+    if (runState === "completed") {
       completionProof = resolveCompletionProof(metadata);
-    } else if (hasFailed) {
-      runState = "failed";
-    } else if (pendingRecords.length > 0) {
-      runState = "waiting";
-    } else {
-      runState = "created";
     }
   } catch {
     runState = "";
