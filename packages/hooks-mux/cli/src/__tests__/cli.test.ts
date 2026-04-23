@@ -92,6 +92,7 @@ const mockLoadSession = vi.mocked(loadSession);
 const mockSaveSession = vi.mocked(saveSession);
 const mockDeleteSession = vi.mocked(deleteSession);
 const mockAdaptOutput = vi.mocked(adaptOutput);
+let homeDirBeforeTests: string | undefined;
 
 // Helper: capture stdout
 function captureStdout(): { getOutput: () => string; restore: () => void } {
@@ -160,6 +161,16 @@ describe('CLI Commands', () => {
     vi.clearAllMocks();
     setupDefaultAdapterMock();
     process.exitCode = undefined;
+    homeDirBeforeTests = process.env.HOME;
+  });
+
+  afterEach(() => {
+    if (homeDirBeforeTests === undefined) {
+      delete process.env.HOME;
+    } else {
+      process.env.HOME = homeDirBeforeTests;
+    }
+    delete process.env.A5C_LOGGING_HOOKS_LEVEL;
   });
 
   describe('invoke', () => {
@@ -186,6 +197,64 @@ describe('CLI Commands', () => {
         expect(output).toContain('noop');
       } finally {
         stdout.restore();
+      }
+    });
+
+    it('writes default info logs to ~/.a5c/logs/hooks/hooks-mux.log', async () => {
+      const { invokeCommand } = await import('../cli/commands/invoke');
+      const stdout = captureStdout();
+      const tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), 'hooks-mux-home-'));
+      process.env.HOME = tmpHome;
+
+      try {
+        await (invokeCommand.handler as Function)({
+          adapter: 'claude',
+          'bootstrap-only': false,
+          json: true,
+          _: [],
+          $0: 'a5c-hooks-mux',
+        });
+
+        await new Promise((resolve) => setTimeout(resolve, 0));
+
+        const logPath = path.join(tmpHome, '.a5c', 'logs', 'hooks', 'hooks-mux.log');
+        const contents = fs.readFileSync(logPath, 'utf8');
+        expect(contents).toContain('"command":"invoke"');
+        expect(contents).toContain('"msg":"invoke started"');
+        expect(contents).toContain('"msg":"invoke completed"');
+        expect(contents).not.toContain('"level":"debug"');
+      } finally {
+        stdout.restore();
+        fs.rmSync(tmpHome, { recursive: true, force: true });
+      }
+    });
+
+    it('writes debug logs when A5C_LOGGING_HOOKS_LEVEL=debug', async () => {
+      const { invokeCommand } = await import('../cli/commands/invoke');
+      const stdout = captureStdout();
+      const tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), 'hooks-mux-home-debug-'));
+      process.env.HOME = tmpHome;
+      process.env.A5C_LOGGING_HOOKS_LEVEL = 'debug';
+
+      try {
+        await (invokeCommand.handler as Function)({
+          adapter: 'claude',
+          'bootstrap-only': false,
+          json: true,
+          _: [],
+          $0: 'a5c-hooks-mux',
+        });
+
+        await new Promise((resolve) => setTimeout(resolve, 0));
+
+        const logPath = path.join(tmpHome, '.a5c', 'logs', 'hooks', 'hooks-mux.log');
+        const contents = fs.readFileSync(logPath, 'utf8');
+        expect(contents).toContain('"level":"debug"');
+        expect(contents).toContain('"msg":"stdin parsed"');
+        expect(contents).toContain('"msg":"plan executed"');
+      } finally {
+        stdout.restore();
+        fs.rmSync(tmpHome, { recursive: true, force: true });
       }
     });
 

@@ -14,6 +14,7 @@ import {
   saveSession,
 } from '@a5c-ai/hooks-mux-core';
 import { loadAdapter } from '../adapter-loader';
+import { createHooksLogger } from '../hooks-logger';
 
 interface BootstrapArgs {
   adapter: string;
@@ -41,6 +42,7 @@ export const bootstrapCommand: CommandModule<object, BootstrapArgs> = {
         describe: 'Output JSON format',
       }),
   handler: async (args) => {
+    const logger = createHooksLogger('bootstrap');
     const loaded = loadAdapter(args.adapter);
     const env = process.env as Record<string, string>;
 
@@ -75,6 +77,11 @@ export const bootstrapCommand: CommandModule<object, BootstrapArgs> = {
     }
 
     await saveSession(session);
+    await logger.info('bootstrap completed', {
+      adapter: args.adapter,
+      sessionId,
+      createdAt: session.createdAt,
+    });
 
     const output = {
       status: 'bootstrapped',

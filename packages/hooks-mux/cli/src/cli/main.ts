@@ -2,6 +2,7 @@
 
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
+import { createHooksLogger } from './hooks-logger';
 import { invokeCommand } from './commands/invoke';
 import { execCommand } from './commands/exec';
 import { bootstrapCommand } from './commands/bootstrap';
@@ -26,7 +27,11 @@ export async function main(argv: string[] = process.argv): Promise<void> {
 }
 
 if (require.main === module) {
+  const logger = createHooksLogger('main');
   main().catch((err: unknown) => {
+    void logger.error('cli main failed', {
+      error: err instanceof Error ? err.message : String(err),
+    });
     console.error(err);
     process.exit(1);
   });

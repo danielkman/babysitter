@@ -28,6 +28,7 @@ import {
   type MergedExecutionResult,
 } from '@a5c-ai/hooks-mux-core';
 import { loadAdapter } from '../adapter-loader';
+import { createHooksLogger } from '../hooks-logger';
 import { readStdin } from '../stdin';
 
 interface InvokeArgs {
@@ -111,8 +112,15 @@ export const invokeCommand: CommandModule<object, InvokeArgs> = {
         describe: 'Output JSON format',
       }),
   handler: async (args) => {
+    const logger = createHooksLogger('invoke');
+
     // 1. Load adapter
     const loaded = loadAdapter(args.adapter);
+    await logger.info('invoke started', {
+      adapter: args.adapter,
+      bootstrapOnly: Boolean(args['bootstrap-only']),
+      handlerCount: args.handler?.length ?? 0,
+    });
 
     // 2. Read stdin
     const rawStdin = await readStdin();
@@ -126,6 +134,11 @@ export const invokeCommand: CommandModule<object, InvokeArgs> = {
     const rawEventName = env['HOOKS_PROXY_EVENT_NAME']
       ?? (stdinData?.['event_name'] as string | undefined)
       ?? 'unknown';
+    await logger.debug('stdin parsed', {
+      rawEventName,
+      stdinBytes: rawStdin.length,
+      stdinJson: Boolean(stdinData),
+    });
 
     // 3. Normalize event
     const event = normalizeEvent({
@@ -138,6 +151,10 @@ export const invokeCommand: CommandModule<object, InvokeArgs> = {
 
     // 4. Resolve session
     const sessionId = resolveSessionId(args['session-id'], stdinData, env);
+    await logger.debug('session resolved', {
+      sessionId,
+      explicitSessionId: args['session-id'] ?? null,
+    });
     let session: SessionState | null = null;
     if (sessionId) {
       session = await loadSession(sessionId);
@@ -170,6 +187,10 @@ export const invokeCommand: CommandModule<object, InvokeArgs> = {
       if (session) {
         await saveSession(session);
       }
+      await logger.info('bootstrap-only invoke completed', {
+        adapter: args.adapter,
+        sessionId,
+      });
       if (args.json) {
         process.stdout.write(JSON.stringify({ status: 'bootstrapped', sessionId }, null, 2) + '\n');
       }
@@ -192,6 +213,12 @@ export const invokeCommand: CommandModule<object, InvokeArgs> = {
       // No handlers: produce a noop result
       merged = mergeResults([{ decision: 'noop' }]);
     }
+    await logger.debug('plan executed', {
+      phase: event.phase,
+      planLength: plan.length,
+      decision: merged.decision,
+      degradedFields: merged.diagnostics.degradedFields,
+    });
 
     // 8. Persist session updates
     if (session && sessionId) {
@@ -224,6 +251,13 @@ export const invokeCommand: CommandModule<object, InvokeArgs> = {
       capabilities: loaded.capabilities,
     });
 
+    await logger.info('invoke completed', {
+      adapter: args.adapter,
+      phase: event.phase,
+      sessionId,
+      decision: merged.decision,
+      degradedFields: adapted.degradedFields,
+    });
     process.stdout.write(JSON.stringify(adapted.output, null, args.json ? 2 : 0) + '\n');
   },
 };
