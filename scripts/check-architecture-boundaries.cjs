@@ -21,6 +21,7 @@ const packageFamilies = {
     "@a5c-ai/agent-mux-gateway",
     "@a5c-ai/agent-mux-observability",
     "@a5c-ai/agent-mux-harness-mock",
+    "@a5c-ai/transport-mux",
   ],
   "dispatch-surfaces": [
     "@a5c-ai/agent-mux-ui",
@@ -54,7 +55,6 @@ const packageFamilies = {
     "@a5c-ai/babysitter-observer-dashboard",
     "@a5c-ai/babysitter-tui-plugins",
     "@a5c-ai/kanban",
-    "@a5c-ai/transport-mux",
     "process-library-catalog",
   ],
   "distribution-bundles": [
