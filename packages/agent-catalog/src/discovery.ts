@@ -167,6 +167,10 @@ function libraryRoot(): string {
   return path.join(repoRoot(), "library");
 }
 
+function packagedSnapshotPath(): string {
+  return path.join(packageRoot(), "dist", "discovery-snapshot.json");
+}
+
 function normalizePath(value: string): string {
   return value.replace(/\\/g, "/");
 }
@@ -241,6 +245,10 @@ function listFilesRecursively(dirPath: string, predicate: (filePath: string) => 
   };
   walk(dirPath);
   return results.sort((left, right) => normalizePath(left).localeCompare(normalizePath(right)));
+}
+
+function fileExists(filePath: string): boolean {
+  return safeStat(filePath)?.isFile() ?? false;
 }
 
 function parseFrontmatter(content: string): { frontmatter: Record<string, unknown>; content: string } {
@@ -511,8 +519,7 @@ function assignStableIds<T extends object>(
     .map((item, index) => ({ ...item, id: index + 1 }));
 }
 
-function buildSnapshot(): CatalogDiscoverySnapshot {
-  const libraryDir = libraryRoot();
+function buildSnapshotFromLibrary(libraryDir: string): CatalogDiscoverySnapshot {
   const methodologiesDir = path.join(libraryDir, "methodologies");
   const specializationsDir = path.join(libraryDir, "specializations");
   const domainsDir = path.join(specializationsDir, "domains");
@@ -741,6 +748,33 @@ function buildSnapshot(): CatalogDiscoverySnapshot {
     domains: finalizedDomains,
     specializations: finalizedSpecializations,
   };
+}
+
+function loadPackagedSnapshot(snapshotPath: string): CatalogDiscoverySnapshot {
+  try {
+    return JSON.parse(readFile(snapshotPath)) as CatalogDiscoverySnapshot;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(
+      `Failed to load packaged discovery snapshot at ${snapshotPath}: ${message}`,
+    );
+  }
+}
+
+function buildSnapshot(): CatalogDiscoverySnapshot {
+  const libraryDir = libraryRoot();
+  if (isDirectory(libraryDir)) {
+    return buildSnapshotFromLibrary(libraryDir);
+  }
+
+  const snapshotPath = packagedSnapshotPath();
+  if (fileExists(snapshotPath)) {
+    return loadPackagedSnapshot(snapshotPath);
+  }
+
+  throw new Error(
+    `Discovery assets unavailable for @a5c-ai/agent-catalog. Expected either repo library at ${libraryDir} or packaged snapshot at ${snapshotPath}.`,
+  );
 }
 
 export function clearCatalogDiscoveryCache(): void {
