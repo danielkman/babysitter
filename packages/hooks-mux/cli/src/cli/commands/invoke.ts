@@ -5,13 +5,13 @@
  *
  * Pipeline:
  *   1. Read stdin when adapter expects it
- *   2. Normalize event via core normalizeEvent
+ *   2. Normalize event via adapter normalizer when available, else core normalizeEvent
  *   3. Resolve/load session context via core session store
  *   4. Run handler or fan-out plan via core runPlan
  *   5. Merge results via core mergeResults
  *   6. Persist session store
  *   7. Apply propagation backend
- *   8. Emit adapter-native output
+ *   8. Emit adapter-native output via adapter renderer when available
  */
 
 import type { CommandModule } from 'yargs';
@@ -26,6 +26,7 @@ import {
   propagateEnv,
   type SessionState,
   type MergedExecutionResult,
+  type UnifiedHookEvent,
 } from '@a5c-ai/hooks-mux-core';
 import { loadAdapter } from '../adapter-loader';
 import { createHooksLogger } from '../hooks-logger';
@@ -37,6 +38,11 @@ interface InvokeArgs {
   'bootstrap-only'?: boolean;
   'session-id'?: string;
   json?: boolean;
+}
+
+interface RenderedOutput {
+  output: Record<string, unknown>;
+  degradedFields: string[];
 }
 
 /**
@@ -57,15 +63,65 @@ function tryParseJson(raw: string): unknown | undefined {
  */
 function resolveSessionId(
   explicitSessionId: string | undefined,
+  normalizedSessionId: string | null | undefined,
   stdinData: Record<string, unknown> | undefined,
   env: Record<string, string>,
 ): string | null {
   if (explicitSessionId) return explicitSessionId;
   if (env['AGENT_SESSION_ID']) return env['AGENT_SESSION_ID'];
+  if (normalizedSessionId) return normalizedSessionId;
   if (stdinData && typeof stdinData['session_id'] === 'string') {
     return stdinData['session_id'] as string;
   }
   return null;
+}
+
+function renderOutput(
+  args: InvokeArgs,
+  loaded: ReturnType<typeof loadAdapter>,
+  merged: MergedExecutionResult,
+  rawEventName: string,
+  stdinPayload: unknown,
+  event: UnifiedHookEvent,
+): RenderedOutput {
+  if (!loaded.renderer) {
+    return adaptOutput({
+      adapter: args.adapter,
+      mergedResult: merged,
+      nativeInput: stdinPayload,
+      capabilities: loaded.capabilities,
+    });
+  }
+
+  const rendered = loaded.renderer(merged, rawEventName, event);
+  if (rendered && typeof rendered === 'object' && !Array.isArray(rendered) && 'output' in rendered) {
+    const adapterRendered = rendered as {
+      output?: unknown;
+      degradedFields?: unknown;
+      droppedFields?: unknown;
+    };
+
+    return {
+      output: (
+        adapterRendered.output
+        && typeof adapterRendered.output === 'object'
+        && !Array.isArray(adapterRendered.output)
+      )
+        ? adapterRendered.output as Record<string, unknown>
+        : {},
+      degradedFields: [
+        ...(Array.isArray(adapterRendered.degradedFields) ? adapterRendered.degradedFields : []),
+        ...(Array.isArray(adapterRendered.droppedFields) ? adapterRendered.droppedFields : []),
+      ].filter((value): value is string => typeof value === 'string'),
+    };
+  }
+
+  return {
+    output: (rendered && typeof rendered === 'object' && !Array.isArray(rendered))
+      ? rendered as Record<string, unknown>
+      : {},
+    degradedFields: [],
+  };
 }
 
 /**
@@ -141,16 +197,18 @@ export const invokeCommand: CommandModule<object, InvokeArgs> = {
     });
 
     // 3. Normalize event
-    const event = normalizeEvent({
-      adapter: args.adapter,
-      rawEventName,
-      stdinPayload,
-      env,
-      adapterMappings: loaded.phaseMappings,
-    });
+    const event = loaded.normalizer
+      ? loaded.normalizer(rawEventName, rawStdin, env)
+      : normalizeEvent({
+        adapter: args.adapter,
+        rawEventName,
+        stdinPayload,
+        env,
+        adapterMappings: loaded.phaseMappings,
+      });
 
     // 4. Resolve session
-    const sessionId = resolveSessionId(args['session-id'], stdinData, env);
+    const sessionId = resolveSessionId(args['session-id'], event.execution.sessionId, stdinData, env);
     await logger.debug('session resolved', {
       sessionId,
       explicitSessionId: args['session-id'] ?? null,
@@ -244,12 +302,7 @@ export const invokeCommand: CommandModule<object, InvokeArgs> = {
     }
 
     // 10. Emit adapter-native output
-    const adapted = adaptOutput({
-      adapter: args.adapter,
-      mergedResult: merged,
-      nativeInput: stdinPayload,
-      capabilities: loaded.capabilities,
-    });
+    const adapted = renderOutput(args, loaded, merged, rawEventName, stdinPayload, event);
 
     await logger.info('invoke completed', {
       adapter: args.adapter,

@@ -7,19 +7,64 @@
  * Each adapter package is expected to export:
  *   - createAdapter(): AdapterCapabilities
  *   - phase mappings (e.g. CLAUDE_PHASE_MAPPINGS / equivalent)
- *   - normalizer function
- *   - renderer function
+ *   - optional normalizeForInvoke() hook for CLI-native normalization
+ *   - optional renderForInvoke() hook for CLI-native output rendering
  *   - session resolver
  */
 
-import type { AdapterCapabilities, PhaseMapping } from '@a5c-ai/hooks-mux-core';
+import type {
+  AdapterCapabilities,
+  MergedExecutionResult,
+  PhaseMapping,
+  UnifiedHookEvent,
+} from '@a5c-ai/hooks-mux-core';
 import { detectHarness } from '@a5c-ai/hooks-mux-core';
+
+export type AdapterNormalizer = (
+  nativeEventName: string,
+  stdinPayload: unknown,
+  env?: Record<string, string>,
+) => UnifiedHookEvent;
+
+export type AdapterRenderer = (
+  mergedResult: MergedExecutionResult,
+  nativeEventName: string,
+  event?: UnifiedHookEvent,
+) => unknown;
+
+export type AdapterSessionResolver = (
+  stdinData: Record<string, unknown>,
+  env?: Record<string, string>,
+  explicitSessionId?: string,
+) => string | null | { sessionId: string | null };
 
 export interface LoadedAdapter {
   capabilities: AdapterCapabilities;
   phaseMappings: PhaseMapping[];
+  normalizer?: AdapterNormalizer;
+  renderer?: AdapterRenderer;
+  sessionResolver?: AdapterSessionResolver;
   /** Raw module exports for adapter-specific functions. */
   module: Record<string, unknown>;
+}
+
+function isFunction<T extends Function>(value: unknown): value is T {
+  return typeof value === 'function';
+}
+
+function resolveNormalizer(mod: Record<string, unknown>): AdapterNormalizer | undefined {
+  const candidate = mod['normalizeForInvoke'];
+  return isFunction<AdapterNormalizer>(candidate) ? candidate : undefined;
+}
+
+function resolveRenderer(mod: Record<string, unknown>): AdapterRenderer | undefined {
+  const candidate = mod['renderForInvoke'];
+  return isFunction<AdapterRenderer>(candidate) ? candidate : undefined;
+}
+
+function resolveSessionResolver(mod: Record<string, unknown>): AdapterSessionResolver | undefined {
+  const candidate = mod['resolveSessionId'];
+  return isFunction<AdapterSessionResolver>(candidate) ? candidate : undefined;
 }
 
 /**
@@ -82,7 +127,14 @@ export function loadAdapter(adapterName: string): LoadedAdapter {
     }
   }
 
-  return { capabilities, phaseMappings, module: mod };
+  return {
+    capabilities,
+    phaseMappings,
+    normalizer: resolveNormalizer(mod),
+    renderer: resolveRenderer(mod),
+    sessionResolver: resolveSessionResolver(mod),
+    module: mod,
+  };
 }
 
 /**
