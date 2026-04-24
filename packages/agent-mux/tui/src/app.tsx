@@ -5,7 +5,12 @@ import type { AgentMuxClient, AgentEvent, DeferredPromptTarget, RunHandle } from
 import { createRegistry, createContext, loadPlugins, type Registry } from './registry.js';
 import type { TuiPlugin, TuiViewProps, EventRenderer } from './plugin.js';
 import { EventStream } from './event-stream.js';
-import { PromptInput } from './prompt-input.js';
+import {
+  PromptInput,
+  createEmptyPromptInputState,
+  insertPromptInput,
+  type PromptInputState,
+} from './prompt-input.js';
 import { CommandPalette, type PaletteAction } from './command-palette.js';
 import { ModelPicker, type ModelOption } from './model-picker.js';
 import { loadHistory, appendHistory } from './prompt-history-store.js';
@@ -134,6 +139,7 @@ export function App({
   const [activeId, setActiveId] = useState<string>(initialViewId);
   const [promptMode, setPromptMode] = useState<boolean>(false);
   const [chatPromptDismissed, setChatPromptDismissed] = useState<boolean>(false);
+  const [chatPromptState, setChatPromptState] = useState<PromptInputState>(() => createEmptyPromptInputState());
   const [pendingResume, setPendingResume] = useState<
     { agent: string; sessionId: string } | null
   >(null);
@@ -233,8 +239,27 @@ export function App({
     return { registry: r, stream: s };
   }, [client, plugins]);
 
+  const active = registry.views.find((v) => v.id === activeId) ?? registry.views[0];
+
   useInput((input, key) => {
     if (promptMode || filterMode || paletteMode || modelPickerMode || profilePickerMode || agentPickerMode) return; // child input owns keys while open
+    if (active?.id === 'chat' && chatPromptDismissed) {
+      if (key.escape) {
+        setChatPromptDismissed(false);
+        setChatPromptState(createEmptyPromptInputState());
+        const fallbackView = registry.views.find((view) => view.id !== 'chat');
+        if (fallbackView) {
+          setActiveId(fallbackView.id);
+        }
+        return;
+      }
+      if (input && !key.ctrl && !key.meta) {
+        setChatPromptState((current) => insertPromptInput(current, input));
+        setChatPromptDismissed(false);
+        setPromptMode(true);
+        return;
+      }
+    }
     if (input === 'q' || (key.ctrl && input === 'c')) {
       exit();
       return;
@@ -310,7 +335,6 @@ export function App({
     }
   });
 
-  const active = registry.views.find((v) => v.id === activeId) ?? registry.views[0];
   const navLines = useMemo(
     () =>
       packSegments(
@@ -323,11 +347,9 @@ export function App({
       ),
     [active?.id, registry.views, viewport.width],
   );
-
   // Chat view has an always-on inline prompt. Auto-focus when entering chat
-  // and no modal is open. Esc inside PromptInput flips promptMode off, which
-  // re-enables global hotkeys; any hotkey that switches away from chat also
-  // clears it. This is the simplest model that keeps global navigation working.
+  // and no modal is open. The draft itself lives at the app level so Esc can
+  // temporarily dismiss the composer without losing the current prompt.
   useEffect(() => {
     if (
       !disableChatAutoPrompt &&
@@ -741,6 +763,8 @@ export function App({
             label="> "
             labelColor={EXEC_MODE_COLORS[execMode]}
             onSubmit={handlePromptSubmit}
+            initialState={chatPromptState}
+            onStateChange={setChatPromptState}
             onCancel={() => {
               setPromptMode(false);
               if (active?.id === 'chat') {

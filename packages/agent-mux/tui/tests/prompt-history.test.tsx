@@ -1,7 +1,15 @@
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render } from 'ink-testing-library';
-import { PromptInput } from '../src/prompt-input.js';
+import {
+  PromptInput,
+  createPromptInputState,
+  deletePromptInput,
+  getPromptInputDisplay,
+  getPromptInputValue,
+  insertPromptInput,
+  insertPromptLineBreak,
+} from '../src/prompt-input.js';
 
 const flush = () => new Promise((r) => setTimeout(r, 30));
 const hist = ['first', 'second', 'third'];
@@ -57,5 +65,27 @@ describe('PromptInput history recall', () => {
     await flush();
     rerender(rer(props));
     expect(lastFrame()).toContain('hi');
+  });
+
+  it('condenses pasted multiline blocks while keeping the submitted payload', () => {
+    const state = insertPromptInput(createPromptInputState('before '), 'alpha\nbeta\ngamma');
+    expect(getPromptInputDisplay(state)).toContain('[Pasted Text: 3 lines]');
+    expect(getPromptInputValue(state)).toBe('before alpha\nbeta\ngamma');
+
+    const afterDelete = deletePromptInput(state);
+    expect(getPromptInputValue(afterDelete)).toBe('before ');
+    expect(getPromptInputDisplay(afterDelete)).toBe('before ');
+  });
+
+  it('renders dropped file paths as filenames with icons while preserving the raw path', () => {
+    const state = insertPromptInput(createPromptInputState(), '/tmp/screenshots/final-report.png ');
+    expect(getPromptInputValue(state)).toBe('/tmp/screenshots/final-report.png ');
+    expect(getPromptInputDisplay(state)).toBe('🖼 final-report.png ');
+  });
+
+  it('supports explicit multiline drafts via line-break insertion', () => {
+    const state = insertPromptLineBreak(createPromptInputState('hello'));
+    expect(getPromptInputValue(state)).toBe('hello\n');
+    expect(getPromptInputDisplay(state)).toBe('hello\n');
   });
 });
