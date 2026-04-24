@@ -25,9 +25,10 @@ This installs the `@a5c-ai/babysitter-openclaw` npm package and registers it wit
 
 ```bash
 npm install -g @a5c-ai/babysitter-openclaw
+babysitter-openclaw install --global
 ```
 
-The `postinstall` script registers the plugin globally. To install into a specific workspace:
+To install into a specific workspace:
 
 ```bash
 npx @a5c-ai/babysitter-openclaw install --workspace /path/to/repo
@@ -42,6 +43,7 @@ babysitter harness:discover --json
 ### Removal
 
 ```bash
+babysitter-openclaw uninstall
 npm uninstall -g @a5c-ai/babysitter-openclaw
 ```
 
@@ -240,8 +242,8 @@ plugins/babysitter-openclaw/
 |-- commands/                 # Mirrored command documentation (markdown)
 |-- bin/
 |   |-- cli.cjs               # Standalone CLI entrypoint
-|   |-- install.cjs           # Global postinstall script
-|   `-- uninstall.cjs         # Global preuninstall script
+|   |-- install.cjs           # Global install helper
+|   `-- uninstall.cjs         # Global uninstall helper
 `-- scripts/
     |-- setup.sh              # Setup helper
     `-- sync-command-docs.cjs # Regenerate mirrored command docs

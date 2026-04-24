@@ -194,6 +194,30 @@ function testPluginJson() {
   console.log(`  ok plugin.json: valid (harness=gemini-cli, ${plugin.commands.length} commands)`);
 }
 
+function testPackageJsonScripts() {
+  const packageFile = path.join(PROJECT_ROOT, 'package.json');
+  if (!fs.existsSync(packageFile)) {
+    throw new Error('package.json not found');
+  }
+
+  const pkg = JSON.parse(fs.readFileSync(packageFile, 'utf8'));
+  const scripts = pkg.scripts || {};
+
+  if (!scripts['plugin:install']) {
+    throw new Error('package.json missing "plugin:install" script');
+  }
+  if (!scripts['plugin:uninstall']) {
+    throw new Error('package.json missing "plugin:uninstall" script');
+  }
+  if (scripts.postinstall) {
+    throw new Error('package.json should not define "postinstall"');
+  }
+  if (scripts.preuninstall) {
+    throw new Error('package.json should not define "preuninstall"');
+  }
+  console.log('  ok package.json: explicit install scripts are present without npm lifecycle hooks');
+}
+
 // ---------------------------------------------------------------------------
 // Test: versions.json is valid and has sdkVersion
 // ---------------------------------------------------------------------------
@@ -316,6 +340,7 @@ try {
   testHooksJson();
   testGeminiExtensionJson();
   testPluginJson();
+  testPackageJsonScripts();
   testVersionsJson();
   testGeminiMd();
   testCommandFiles();

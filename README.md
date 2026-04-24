@@ -130,6 +130,7 @@ Via the GitHub Copilot CLI marketplace, or:
 
 ```bash
 npm install -g @a5c-ai/babysitter-github
+babysitter-github install
 ```
 
 [Plugin README](plugins/babysitter-github/README.md)

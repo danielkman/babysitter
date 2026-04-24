@@ -147,6 +147,23 @@ describe('e2e: sample plugin compilation', () => {
       ]);
     });
 
+    it('gemini: should emit explicit package install scripts without npm lifecycle hooks', () => {
+      const result = compile({
+        source: SAMPLE_PLUGIN_DIR,
+        target: 'gemini',
+        output: path.join(tmpDir, 'gemini-package-test'),
+      });
+
+      expect(result.status).not.toBe('error');
+      const packageJson = JSON.parse(
+        fs.readFileSync(path.join(result.outputDir, 'package.json'), 'utf-8')
+      );
+      expect(packageJson.scripts['plugin:install']).toBe('node bin/install.js --global');
+      expect(packageJson.scripts['plugin:uninstall']).toBe('node bin/uninstall.js --global');
+      expect(packageJson.scripts.postinstall).toBeUndefined();
+      expect(packageJson.scripts.preuninstall).toBeUndefined();
+    });
+
     it('github-copilot: should emit author as an object', () => {
       const result = compile({
         source: SAMPLE_PLUGIN_DIR,
@@ -193,6 +210,23 @@ describe('e2e: sample plugin compilation', () => {
       expect(uninstallScript).toContain("typeof shared.deregisterCopilotPlugin === 'function'");
       expect(uninstallScript).toContain("typeof shared.removeManagedHooks === 'function'");
       expect(uninstallScript).toContain("typeof shared.removeMarketplaceEntry === 'function'");
+    });
+
+    it('github-copilot: should emit explicit package install scripts without npm lifecycle hooks', () => {
+      const result = compile({
+        source: SAMPLE_PLUGIN_DIR,
+        target: 'github-copilot',
+        output: path.join(tmpDir, 'github-package-test'),
+      });
+
+      expect(result.status).not.toBe('error');
+      const packageJson = JSON.parse(
+        fs.readFileSync(path.join(result.outputDir, 'package.json'), 'utf-8')
+      );
+      expect(packageJson.scripts['plugin:install']).toBe('node bin/install.js --global');
+      expect(packageJson.scripts['plugin:uninstall']).toBe('node bin/uninstall.js --global');
+      expect(packageJson.scripts.postinstall).toBeUndefined();
+      expect(packageJson.scripts.preuninstall).toBeUndefined();
     });
 
     it('pi: should emit extensions with command registration', () => {

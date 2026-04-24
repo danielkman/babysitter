@@ -5,8 +5,8 @@
   "scripts": {
     "deploy": "npm publish --access public",
     "deploy:staging": "npm publish --access public --tag staging",
-    "postinstall": "node bin/postinstall.js",
-    "preuninstall": "node bin/preuninstall.js",
+    "plugin:install": "node bin/install.js --global",
+    "plugin:uninstall": "node bin/uninstall.js --global",
     "team:install": "node scripts/team-install.js",
     "test": "node test/integration.test.js"
   },

@@ -219,6 +219,28 @@ else
   fail "package.json $PKG_CHECK"
 fi
 
+PKG_SCRIPT_CHECK=$(node -e "
+  const pkg = JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'));
+  const scripts = pkg.scripts || {};
+  if (!scripts['plugin:install']) {
+    console.log('MISSING:plugin:install');
+  } else if (!scripts['plugin:uninstall']) {
+    console.log('MISSING:plugin:uninstall');
+  } else if (scripts.postinstall) {
+    console.log('UNEXPECTED:postinstall');
+  } else if (scripts.preuninstall) {
+    console.log('UNEXPECTED:preuninstall');
+  } else {
+    console.log('OK');
+  }
+" "$PLUGIN_DIR/package.json" 2>/dev/null)
+
+if [[ "$PKG_SCRIPT_CHECK" == "OK" ]]; then
+  pass "package.json exposes explicit install scripts without npm lifecycle hooks"
+else
+  fail "package.json $PKG_SCRIPT_CHECK"
+fi
+
 # ---------------------------------------------------------------------------
 # Test 8: plugin.json has required fields
 # ---------------------------------------------------------------------------

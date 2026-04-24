@@ -74,6 +74,13 @@ describe('package.json', () => {
     assert.ok(pkg.scripts['test:integration'], 'must have test:integration script');
     assert.ok(pkg.scripts['test:packaged-install'], 'must have test:packaged-install script');
   });
+
+  it('uses explicit install scripts instead of npm lifecycle hooks', () => {
+    assert.ok(pkg.scripts['plugin:install'], 'must have plugin:install script');
+    assert.ok(pkg.scripts['plugin:uninstall'], 'must have plugin:uninstall script');
+    assert.strictEqual(pkg.scripts.postinstall, undefined, 'postinstall script should not be defined');
+    assert.strictEqual(pkg.scripts.preuninstall, undefined, 'preuninstall script should not be defined');
+  });
 });
 
 describe('openclaw.plugin.json', () => {

@@ -312,8 +312,8 @@ export function generateOpenClawPackageManifest(manifest: ResolvedManifest): str
       openclaw: '*',
     },
     scripts: {
-      postinstall: 'node bin/install.cjs --global',
-      preuninstall: 'node bin/uninstall.cjs --global',
+      'plugin:install': 'node bin/install.cjs --global',
+      'plugin:uninstall': 'node bin/uninstall.cjs --global',
       test: 'node --test test/integration.test.js',
       'test:integration': 'node --test test/integration.test.js',
       'test:packaged-install': 'node test/packaged-install.test.cjs',

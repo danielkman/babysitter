@@ -23,8 +23,6 @@ import {
   generateTeamInstall,
   generateOpenClawNativeHooksSection,
   generateOpenCodeAccomplishSkill,
-  generateGeminiPostinstall,
-  generateGeminiPreuninstall,
   resolveExtraFiles,
 } from './transformHelpers.js';
 import { generateInstallShared } from './installSharedGenerator.js';
@@ -209,9 +207,9 @@ export function generateManifests(
       deploy: 'npm publish --access public',
       'deploy:staging': 'npm publish --access public --tag staging',
     };
-    if (targetProfile.name === 'gemini') {
-      scripts.postinstall = 'node bin/postinstall.js';
-      scripts.preuninstall = 'node bin/preuninstall.js';
+    if (targetProfile.name === 'gemini' || targetProfile.name === 'github-copilot') {
+      scripts['plugin:install'] = `node bin/install${ext} --global`;
+      scripts['plugin:uninstall'] = `node bin/uninstall${ext} --global`;
     } else if (targetProfile.name !== 'pi' && targetProfile.name !== 'oh-my-pi') {
       scripts.postinstall = `node bin/install${ext}`;
       scripts.preuninstall = `node bin/uninstall${ext}`;
@@ -396,12 +394,6 @@ export function generateExtraFiles(
       files.push({ path: 'bin/uninstall.cjs', content: generateCjsWrapper('uninstall'), executable: true });
       files.push({ path: 'bin/install-shared.cjs', content: generateCjsWrapper('install-shared', true) });
     }
-  }
-
-  // Gemini: npm lifecycle scripts
-  if (targetProfile.name === 'gemini') {
-    files.push({ path: 'bin/postinstall.js', content: generateGeminiPostinstall(manifest.name), executable: true });
-    files.push({ path: 'bin/preuninstall.js', content: generateGeminiPreuninstall(manifest.name), executable: true });
   }
 
   // Generate installation instructions for all targets
