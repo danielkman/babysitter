@@ -13,6 +13,25 @@ interface Row {
   fullPath: string;
 }
 
+function findProjectRoot(startDir = process.cwd()) {
+  const path = require('node:path');
+  const fs = require('node:fs');
+  let current = path.resolve(startDir);
+  while (true) {
+    if (
+      fs.existsSync(path.join(current, '.git')) ||
+      fs.existsSync(path.join(current, '.a5c')) ||
+      fs.existsSync(path.join(current, '.claude.json')) ||
+      fs.existsSync(path.join(current, '.claude'))
+    ) {
+      return current;
+    }
+    const parent = path.dirname(current);
+    if (parent === current) return startDir;
+    current = parent;
+  }
+}
+
 function buildRegistry(): Record<string, { global: string; project: string }> {
   const HOME = os.homedir() || '.';
   return {
@@ -20,6 +39,8 @@ function buildRegistry(): Record<string, { global: string; project: string }> {
     codex: { global: path.join(HOME, '.codex', 'agents'), project: path.join('.codex', 'agents') },
     cursor: { global: path.join(HOME, '.cursor', 'agents'), project: path.join('.cursor', 'agents') },
     opencode: { global: path.join(HOME, '.opencode', 'agents'), project: path.join('.opencode', 'agents') },
+    gemini: { global: path.join(HOME, '.gemini', 'agents'), project: path.join('.gemini', 'agents') },
+    copilot: { global: path.join(HOME, '.copilot', 'agents'), project: path.join('.github', 'agents') },
   };
 }
 
@@ -38,7 +59,7 @@ function scan(): Row[] {
     for (const name of readDir(paths.global)) {
       all.push({ agent, scope: 'global', name, dir: paths.global, fullPath: path.join(paths.global, name) });
     }
-    const proj = path.isAbsolute(paths.project) ? paths.project : path.join(process.cwd(), paths.project);
+    const proj = path.isAbsolute(paths.project) ? paths.project : path.join(findProjectRoot(), paths.project);
     for (const name of readDir(proj)) {
       all.push({ agent, scope: 'project', name, dir: proj, fullPath: path.join(proj, name) });
     }
@@ -57,7 +78,8 @@ function copyPath(src: string, dst: string): void {
   }
 }
 
-const AGENT_NAMES = ['claude', 'codex', 'cursor', 'opencode'] as const;
+// Only expose harnesses with explicit on-disk sub-agent conventions that match `amux agent`.
+const AGENT_NAMES = ['claude', 'codex', 'cursor', 'opencode', 'gemini', 'copilot'] as const;
 
 function AgentsView({ active }: TuiViewProps) {
   const [rows, setRows] = useState<Row[]>([]);
@@ -91,7 +113,7 @@ function AgentsView({ active }: TuiViewProps) {
         setStatus(`Unknown agent: ${agent}`);
         return;
       }
-      const proj = path.isAbsolute(dirs.project) ? dirs.project : path.join(process.cwd(), dirs.project);
+      const proj = path.isAbsolute(dirs.project) ? dirs.project : path.join(findProjectRoot(), dirs.project);
       const dst = path.join(proj, path.basename(abs));
       if (fs.existsSync(dst)) {
         setStatus(`Already exists: ${dst} (use CLI with --force)`);
@@ -153,13 +175,11 @@ function AgentsView({ active }: TuiViewProps) {
     else if (input === 'a') { setAddMode('agent'); setAddAgentIdx(0); }
   }, { isActive: active });
 
-  if (rows.length === 0) {
-    return <Text dimColor>No sub-agents installed. Use `amux agent add` to install.</Text>;
-  }
   return (
     <Box flexDirection="column">
       <Text bold>Sub-agents</Text>
       <Text dimColor>j/k or arrows: move · d: delete · r: refresh · (amux agent &lt;list|add|remove|where&gt;)</Text>
+      {rows.length === 0 ? <Text dimColor>No sub-agents installed. Use `amux agent add` to install.</Text> : null}
       {rows.slice(0, 40).map((r, i) => {
         const sel = i === cursor;
         return (

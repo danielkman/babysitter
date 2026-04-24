@@ -17,6 +17,8 @@ const HOME = os.homedir() || '.';
  * References:
  *  - Claude: https://code.claude.com/docs/en/sub-agents (`.claude/agents/`)
  *  - Codex:  https://developers.openai.com/codex/subagents (`.codex/agents/`)
+ *  - Gemini: https://geminicli.com/docs/core/subagents/ (`.gemini/agents/`)
+ *  - Copilot CLI: https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/create-custom-agents-for-cli
  */
 const REGISTRY: Record<string, SubagentPaths> = {
   claude: {
@@ -38,6 +40,14 @@ const REGISTRY: Record<string, SubagentPaths> = {
   opencode: {
     global: path.join(HOME, '.opencode', 'agents'),
     project: path.join('.opencode', 'agents'),
+  },
+  gemini: {
+    global: path.join(HOME, '.gemini', 'agents'),
+    project: path.join('.gemini', 'agents'),
+  },
+  copilot: {
+    global: path.join(HOME, '.copilot', 'agents'),
+    project: path.join('.github', 'agents'),
   },
 };
 
