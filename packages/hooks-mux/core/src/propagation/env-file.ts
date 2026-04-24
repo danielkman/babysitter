@@ -44,7 +44,21 @@ function ensureCleanupRegistered(): void {
 // ---------------------------------------------------------------------------
 
 /**
- * Generate a temporary env file containing KEY=VALUE export lines.
+ * Build shell-safe export lines for an env file consumed via `source`.
+ *
+ * Exporting is required when the sourcing shell may spawn downstream child
+ * processes that need to inherit the persisted values.
+ */
+export function buildExportEnvFileLines(
+  env: Record<string, string>,
+): string[] {
+  return Object.entries(env).map(
+    ([key, value]) => `export ${key}=${escapeShellValue(value)}`,
+  );
+}
+
+/**
+ * Generate a temporary env file containing exported KEY=VALUE lines.
  *
  * @param env - Environment variables to write.
  * @param dir - Directory for the temp file; defaults to os.tmpdir().
@@ -62,9 +76,7 @@ export async function generateTempEnvFile(
   const filename = `a5c-env-${process.pid}-${Date.now()}.env`;
   const filePath = path.join(targetDir, filename);
 
-  const lines = Object.entries(env).map(
-    ([key, value]) => `export ${key}=${escapeShellValue(value)}`,
-  );
+  const lines = buildExportEnvFileLines(env);
   const content = lines.join('\n') + '\n';
 
   const tmpPath = `${filePath}.tmp`;

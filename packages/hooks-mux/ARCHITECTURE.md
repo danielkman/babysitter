@@ -300,7 +300,7 @@ Most restrictive wins across all handler results.
 
 | Mode | Constant | Mechanism |
 |---|---|---|
-| A | `native_env_file` | Append `KEY="value"` lines to `options.nativeEnvFilePath` (harness-provided path, e.g. `CLAUDE_ENV_FILE`). Shell-safe escaping applied. |
+| A | `native_env_file` | Append `export KEY="value"` lines to `options.nativeEnvFilePath` (harness-provided path, e.g. `CLAUDE_ENV_FILE`). Shell-safe escaping applied. |
 | B | `runtime_hook` | No file I/O. Env vars are returned in the hook result and the runtime injects them. Caller responsibility. |
 | C | `wrapper_only` | Write a temp env file (via `generateTempEnvFile`) for subprocess wrapping. No native harness file path required. |
 | D | `none` | Persist to session store only (`saveSession`). No downstream injection into the harness process. |

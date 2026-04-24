@@ -92,8 +92,8 @@ The harness natively supports writing environment exports to a file that is sour
 
 ```
 # The proxy appends to CLAUDE_ENV_FILE:
-export MY_VAR=value
-export ANOTHER_VAR=other
+export MY_VAR="value"
+export ANOTHER_VAR="other"
 ```
 
 ### Mode B: Runtime Hook

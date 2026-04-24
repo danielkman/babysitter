@@ -1,12 +1,12 @@
 import * as fs from 'fs';
 import type { PropagationBackend, PropagationOptions } from './types';
-import { generateTempEnvFile, escapeShellValue } from './env-file';
+import { buildExportEnvFileLines, generateTempEnvFile } from './env-file';
 
 /**
  * Propagate environment variables via the specified backend mode.
  *
  * Four propagation modes per spec section 14.2:
- * - Mode A: native_env_file -- append KEY=VALUE to a harness-provided env file path
+ * - Mode A: native_env_file -- append exported KEY=VALUE lines to a harness-provided env file path
  * - Mode B: runtime_hook -- return env vars for the runtime to inject (no-op write; env passed back)
  * - Mode C: wrapper_only -- materialize env file for subprocess wrapping
  * - Mode D: none -- session-store only, no downstream injection
@@ -38,7 +38,7 @@ export async function propagateEnv(
 }
 
 /**
- * Mode A: Append KEY=VALUE lines to a harness-provided env file.
+ * Mode A: Append exported KEY=VALUE lines to a harness-provided env file.
  */
 async function propagateNativeEnvFile(
   env: Record<string, string>,
@@ -50,9 +50,7 @@ async function propagateNativeEnvFile(
     );
   }
 
-  const lines = Object.entries(env).map(
-    ([key, value]) => `${key}=${escapeShellValue(value)}`,
-  );
+  const lines = buildExportEnvFileLines(env);
   const content = '\n' + lines.join('\n') + '\n';
 
   await fs.promises.appendFile(options.nativeEnvFilePath, content, 'utf-8');
@@ -84,5 +82,3 @@ async function propagateNone(
     }
   }
 }
-
-// escapeShellValue is now imported from ./env-file to avoid duplication.

@@ -5,6 +5,7 @@
  * real adapter resolution, real session store, and real handler subprocesses.
  */
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { execFileSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import {
@@ -120,8 +121,7 @@ describe('invoke — full CLI pipeline (e2e)', { timeout: 30000 }, () => {
 
     // Verify CLAUDE_ENV_FILE was written to
     const envFileContent = await fs.promises.readFile(envFilePath, 'utf-8');
-    expect(envFileContent).toContain('MY_CUSTOM_VAR');
-    expect(envFileContent).toContain('hello_world');
+    expect(envFileContent).toContain('export MY_CUSTOM_VAR="hello_world"');
 
     // Verify session was updated with persistedEnv
     const sessionData = await readSessionFile(sessionDir, sessionId);
@@ -129,6 +129,56 @@ describe('invoke — full CLI pipeline (e2e)', { timeout: 30000 }, () => {
     const session = sessionData!['session'] as Record<string, unknown>;
     const persistedEnv = session['persistedEnv'] as Record<string, string>;
     expect(persistedEnv['MY_CUSTOM_VAR']).toBe('hello_world');
+  });
+
+  it('exports persisted env through CLAUDE_ENV_FILE to downstream child processes', async () => {
+    const sessionId = 'e2e-child-inherit-sess';
+    const handlerCmd = await writeHandlerScript(tmpRoot, 'child-inherit-handler', `
+      process.stdout.write(JSON.stringify({
+        decision: 'allow',
+        persistEnv: { DOWNSTREAM_VISIBLE: 'yes' }
+      }));
+    `);
+
+    const stdinPayload = JSON.stringify({
+      session_id: sessionId,
+      event_name: 'SessionStart',
+    });
+
+    const result = await runCli(
+      [
+        'invoke',
+        '--adapter', 'claude',
+        '--handler', handlerCmd,
+        '--session-id', sessionId,
+      ],
+      {
+        stdin: stdinPayload,
+        env: {
+          ...baseEnv(),
+          HOOKS_PROXY_EVENT_NAME: 'SessionStart',
+        },
+      },
+    );
+
+    expect(result.exitCode).toBe(0);
+
+    const stdout = execFileSync(
+      'bash',
+      [
+        '-lc',
+        'source "$CLAUDE_ENV_FILE" && node -e \'process.stdout.write(process.env.DOWNSTREAM_VISIBLE ?? "")\'',
+      ],
+      {
+        env: {
+          ...process.env,
+          CLAUDE_ENV_FILE: envFilePath,
+        },
+        encoding: 'utf-8',
+      },
+    );
+
+    expect(stdout).toBe('yes');
   });
 
   it('tool.before deny decision from handler', async () => {

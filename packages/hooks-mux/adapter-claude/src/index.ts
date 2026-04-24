@@ -11,7 +11,7 @@ export type {
   ClaudeUserPromptSubmitPayload,
   ClaudeSubagentStopPayload,
 } from './normalizer';
-export { renderClaudeOutput, buildEnvFileLines } from './renderer';
+export { renderClaudeOutput } from './renderer';
 export { renderClaudeOutput as renderForInvoke } from './renderer';
 export type {
   ClaudePreToolUseOutput,

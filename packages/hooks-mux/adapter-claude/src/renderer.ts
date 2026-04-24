@@ -173,31 +173,3 @@ function renderGenericOutput(result: UnifiedHookResult): Record<string, unknown>
 
   return output;
 }
-
-/**
- * Build env-file content lines for CLAUDE_ENV_FILE persistence.
- *
- * Claude Code supports appending KEY=VALUE export lines to the file
- * pointed to by the CLAUDE_ENV_FILE environment variable.
- *
- * @param persistEnv - Key-value pairs to persist.
- * @returns Array of export lines (e.g. 'export KEY="value"').
- */
-export function buildEnvFileLines(persistEnv: Record<string, string>): string[] {
-  return Object.entries(persistEnv).map(
-    ([key, value]) => `export ${key}=${escapeEnvValue(value)}`,
-  );
-}
-
-/**
- * Escape a value for safe inclusion in a shell env-file export line.
- */
-function escapeEnvValue(value: string): string {
-  const escaped = value
-    .replace(/\\/g, '\\\\')
-    .replace(/"/g, '\\"')
-    .replace(/\n/g, '\\n')
-    .replace(/\$/g, '\\$')
-    .replace(/`/g, '\\`');
-  return `"${escaped}"`;
-}

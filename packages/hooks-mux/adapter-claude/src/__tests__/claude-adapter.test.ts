@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { createAdapter } from '../adapter';
 import { CLAUDE_PHASE_MAPPINGS, getClaudePhaseMapping, getSupportedPhases } from '../mappings';
 import { normalizeClaude, parseStdin, buildPayload, isStopHookRecursion } from '../normalizer';
-import { renderClaudeOutput, buildEnvFileLines } from '../renderer';
+import { renderClaudeOutput } from '../renderer';
 import { resolveSessionId } from '../session-resolver';
 import * as fixtures from './fixtures/claude-payloads';
 
@@ -449,31 +449,6 @@ describe('renderClaudeOutput', () => {
       );
       expect(output).toEqual({ additionalContext: 'Some context.' });
     });
-  });
-});
-
-describe('buildEnvFileLines', () => {
-  it('builds export lines for env vars', () => {
-    const lines = buildEnvFileLines({
-      AGENT_SESSION_ID: 'sess_123',
-      MY_VAR: 'hello world',
-    });
-
-    expect(lines).toHaveLength(2);
-    expect(lines[0]).toBe('export AGENT_SESSION_ID="sess_123"');
-    expect(lines[1]).toBe('export MY_VAR="hello world"');
-  });
-
-  it('escapes special characters', () => {
-    const lines = buildEnvFileLines({
-      TRICKY: 'has "quotes" and $vars and `backticks`',
-    });
-
-    expect(lines[0]).toBe('export TRICKY="has \\"quotes\\" and \\$vars and \\`backticks\\`"');
-  });
-
-  it('returns empty array for empty input', () => {
-    expect(buildEnvFileLines({})).toEqual([]);
   });
 });
 

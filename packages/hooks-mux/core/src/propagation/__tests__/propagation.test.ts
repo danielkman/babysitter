@@ -2,8 +2,9 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import { spawnSync } from 'child_process';
 import { materializeExecContext } from '../materialize';
-import { generateTempEnvFile } from '../env-file';
+import { buildExportEnvFileLines, generateTempEnvFile } from '../env-file';
 import { adaptOutput } from '../adapt-output';
 import { propagateEnv } from '../propagation-backends';
 import type { SessionStore } from '../types';
@@ -271,6 +272,28 @@ describe('materializeExecContext', () => {
 // ---------------------------------------------------------------------------
 
 describe('generateTempEnvFile', () => {
+  it('builds exported lines for native env-file persistence', () => {
+    expect(buildExportEnvFileLines({
+      AGENT_SESSION_ID: 'sess_123',
+      MY_VAR: 'hello world',
+    })).toEqual([
+      'export AGENT_SESSION_ID="sess_123"',
+      'export MY_VAR="hello world"',
+    ]);
+  });
+
+  it('escapes special characters in exported lines', () => {
+    expect(buildExportEnvFileLines({
+      TRICKY: 'has "quotes" and $vars and `backticks`',
+    })).toEqual([
+      'export TRICKY="has \\"quotes\\" and \\$vars and \\`backticks\\`"',
+    ]);
+  });
+
+  it('returns no lines for empty input', () => {
+    expect(buildExportEnvFileLines({})).toEqual([]);
+  });
+
   it('writes KEY=VALUE export lines', async () => {
     const filePath = await generateTempEnvFile(
       { FOO: 'bar', BAZ: 'qux' },
@@ -399,17 +422,45 @@ describe('adaptOutput', () => {
 
 describe('propagateEnv', () => {
   describe('native_env_file (Mode A)', () => {
-    it('appends KEY=VALUE lines to the native env file', async () => {
+    it('appends exported KEY=VALUE lines to the native env file', async () => {
       const envFilePath = path.join(tmpDir, 'harness.env');
-      await fs.promises.writeFile(envFilePath, 'EXISTING="value"\n', 'utf-8');
+      await fs.promises.writeFile(envFilePath, 'export EXISTING="value"\n', 'utf-8');
 
       await propagateEnv('native_env_file', { NEW_KEY: 'new_value' }, {
         nativeEnvFilePath: envFilePath,
       });
 
       const content = await fs.promises.readFile(envFilePath, 'utf-8');
-      expect(content).toContain('EXISTING="value"');
-      expect(content).toContain('NEW_KEY="new_value"');
+      expect(content).toContain('export EXISTING="value"');
+      expect(content).toContain('export NEW_KEY="new_value"');
+    });
+
+    it('exports persisted values to downstream child processes after sourcing', async () => {
+      const envFilePath = path.join(tmpDir, 'harness.env');
+      await fs.promises.writeFile(envFilePath, '', 'utf-8');
+
+      await propagateEnv('native_env_file', { CHILD_VISIBLE: 'from_file' }, {
+        nativeEnvFilePath: envFilePath,
+      });
+
+      const child = spawnSync(
+        'bash',
+        [
+          '-lc',
+          'source "$CLAUDE_ENV_FILE" && node -e \'process.stdout.write(process.env.CHILD_VISIBLE ?? "")\'',
+        ],
+        {
+          cwd: tmpDir,
+          env: {
+            ...process.env,
+            CLAUDE_ENV_FILE: envFilePath,
+          },
+          encoding: 'utf-8',
+        },
+      );
+
+      expect(child.status).toBe(0);
+      expect(child.stdout).toBe('from_file');
     });
 
     it('throws when nativeEnvFilePath is not provided', async () => {
