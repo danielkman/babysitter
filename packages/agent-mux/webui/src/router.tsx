@@ -1,5 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { Navigate, NavLink, Route, Routes, useLocation, useNavigate } from 'react-router-dom-v6';
+import { useGateway } from '@a5c-ai/agent-mux-ui';
+import { useStore } from 'zustand';
+import { useShallow } from 'zustand/react/shallow';
 
 import { HomePage } from './pages/HomePage.js';
 import { LoginPage } from './pages/LoginPage.js';
@@ -14,6 +17,7 @@ import { PairDevicePage } from './pages/PairDevicePage.js';
 import { useGatewayAuth } from './providers/GatewayProvider.js';
 import { useThemeMode } from './providers/ThemeProvider.js';
 import { CommandPalette } from './shell/CommandPalette.js';
+import { buildRecentSessionActions } from './shell/navigation.js';
 import { Sidebar } from './shell/Sidebar.js';
 import { TopBar } from './shell/TopBar.js';
 import { bindGlobalHotkeys } from './web-only/keyboard.js';
@@ -37,9 +41,21 @@ function RequireAuth(props: { children: React.ReactNode }): JSX.Element {
 function AppChrome(): JSX.Element {
   const navigate = useNavigate();
   const location = useLocation();
+  const { store } = useGateway();
   const { logout } = useGatewayAuth();
   const { mode, toggle } = useThemeMode();
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const sessions = useStore(store, useShallow((state) => Object.values(state.sessions.byId)));
+
+  const recentSessionActions = useMemo(
+    () =>
+      buildRecentSessionActions(sessions).map((action) => ({
+        id: action.id,
+        label: action.label,
+        run: () => navigate(action.to),
+      })),
+    [navigate, sessions],
+  );
 
   const actions = useMemo(
     () => [
@@ -50,8 +66,9 @@ function AppChrome(): JSX.Element {
       { id: 'pair', label: 'Pair device', run: () => navigate('/pair-device') },
       { id: 'theme', label: `Switch to ${mode === 'light' ? 'dark' : 'light'} theme`, run: () => toggle() },
       { id: 'logout', label: 'Forget token', run: () => logout() },
+      ...recentSessionActions,
     ],
-    [logout, mode, navigate, toggle],
+    [logout, mode, navigate, recentSessionActions, toggle],
   );
 
   React.useEffect(() => bindGlobalHotkeys({ openPalette: () => setPaletteOpen(true) }), []);
@@ -68,6 +85,7 @@ function AppChrome(): JSX.Element {
             <Route path="/sessions" element={<SessionsPage />} />
             <Route path="/sessions/new" element={<NewRunPage />} />
             <Route path="/sessions/pending/:runId" element={<SessionPendingPage />} />
+            <Route path="/runs/:runId" element={<SessionPendingPage />} />
             <Route path="/sessions/:sessionId" element={<SessionDetailPage />} />
             <Route path="/sessions/:agent/:sessionId" element={<LegacySessionRouteRedirect />} />
             <Route path="/inbox" element={<HookInboxPage />} />
