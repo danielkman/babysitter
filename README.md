@@ -197,6 +197,28 @@ During process execution, the internal harness can **delegate tasks to any disco
 
 ---
 
+## Runtime Package Builds
+
+For the core runtime chain (`@a5c-ai/babysitter-sdk`, `@a5c-ai/agent-mux`, `@a5c-ai/agent-core`, `@a5c-ai/babysitter-agent`), use the shared workspace entrypoint from a fresh checkout:
+
+```bash
+npm ci
+npm run build:runtime
+```
+
+`build:runtime` is the supported root entrypoint for release and CI validation. It builds the runtime graph in workspace order: SDK -> agent-mux SDK surface -> agent-core -> babysitter-agent.
+
+Package-local validation is also supported:
+
+```bash
+npm run build --workspace=@a5c-ai/agent-core
+npm run build --workspace=@a5c-ai/babysitter-agent
+```
+
+Those package-local builds now use `tsc --build` project references where the runtime packages are owned in this workspace, and they explicitly bootstrap the `@a5c-ai/agent-mux` SDK chain through the root runtime scripts. Fresh-checkout validation no longer assumes prebuilt upstream `dist/` artifacts.
+
+---
+
 ## First Steps
 
 After installation, set up your environment:
