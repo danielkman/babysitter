@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { createProxyConfig, readProxyConfigFromEnv, validateProxyConfig } from '../src/config.js';
+import { createProxyConfig, createProxyProcessEnv, readProxyConfigFromEnv, validateProxyConfig } from '../src/config.js';
 
 describe('transport-mux config', () => {
   afterEach(() => {
@@ -54,5 +54,29 @@ describe('transport-mux config', () => {
     );
 
     expect(errors).toEqual([]);
+  });
+
+  it('projects process env for the amux-proxy runtime', () => {
+    const env = createProxyProcessEnv(
+      {
+        targetProvider: 'bedrock',
+        targetModel: 'bedrock/anthropic.claude-sonnet-4',
+        exposedTransport: 'anthropic',
+        port: 4317,
+      },
+      {
+        authToken: 'test-token',
+        logLevel: 'debug',
+      },
+    );
+
+    expect(env).toMatchObject({
+      AMUX_PROXY_TARGET_PROVIDER: 'bedrock',
+      AMUX_PROXY_TARGET_MODEL: 'bedrock/anthropic.claude-sonnet-4',
+      AMUX_PROXY_EXPOSED_TRANSPORT: 'anthropic',
+      AMUX_PROXY_PORT: '4317',
+      AMUX_PROXY_AUTH_TOKEN: 'test-token',
+      AMUX_PROXY_LOG_LEVEL: 'debug',
+    });
   });
 });

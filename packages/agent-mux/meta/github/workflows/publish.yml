@@ -1,126 +1,14 @@
-name: "Release: Auto-bump & Publish All"
+name: "Archived: amux-proxy publish"
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
-    inputs:
-      bump:
-        description: "Version bump type"
-        required: false
-        default: "patch"
-        type: choice
-        options: [patch, minor, major]
-
-permissions:
-  contents: write
-  id-token: write
-  packages: write
 
 jobs:
-  release:
+  archived_notice:
     runs-on: ubuntu-latest
-    # Skip version-bump commits to prevent infinite loop
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
     steps:
-      - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-          registry-url: "https://registry.npmjs.org"
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build
-
-      - name: Test
-        run: npm test
-
-      # --- Auto-bump version ---
-      - name: Bump version
-        id: bump
+      - name: Historical archive only
         run: |
-          set -euo pipefail
-          BUMP="${{ github.event.inputs.bump || 'patch' }}"
-
-          # Read current version from core (source of truth)
-          CURRENT=$(node -e "console.log(JSON.parse(require('fs').readFileSync('packages/core/package.json','utf8')).version)")
-          echo "Current version: $CURRENT"
-
-          # Compute next version
-          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
-          case "$BUMP" in
-            major) MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0 ;;
-            minor) MINOR=$((MINOR + 1)); PATCH=0 ;;
-            patch) PATCH=$((PATCH + 1)) ;;
-          esac
-          NEXT="${MAJOR}.${MINOR}.${PATCH}"
-          echo "Next version: $NEXT"
-          echo "version=$NEXT" >> "$GITHUB_OUTPUT"
-
-          # Bump all packages
-          bash scripts/bump-version.sh "$NEXT"
-
-      - name: Commit version bump
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git diff --cached --quiet && echo "No version change" && exit 0
-          git commit -m "chore: bump all packages to v${{ steps.bump.outputs.version }} [skip ci]"
-          git push origin main
-
-      # --- Publish npm packages ---
-      - name: Rebuild with new version
-        run: npm run build
-
-      - name: Publish npm packages
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_CONFIG_PROVENANCE: "true"
-        run: |
-          set -euo pipefail
-          for pkg in core observability adapters cli agent-mux harness-mock gateway; do
-            echo "::group::Publish @a5c-ai/agent-mux-$pkg"
-            (cd "packages/$pkg" && npm publish --access public --provenance) || echo "::warning::$pkg publish failed (may already exist)"
-            echo "::endgroup::"
-          done
-
-      # --- Publish Python package ---
-      - name: Publish amux-proxy to PyPI
-        run: |
-          python -m venv .venv
-          . .venv/bin/activate
-          pip install build
-          cd packages/amux-proxy
-          python -m build
-        working-directory: .
-
-      - uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          packages-dir: packages/amux-proxy/dist/
-          skip-existing: true
-
-      # --- Publish Docker image ---
-      - uses: docker/setup-buildx-action@v3
-      - uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/build-push-action@v5
-        with:
-          context: packages/amux-proxy
-          push: true
-          tags: ghcr.io/a5c-ai/amux-proxy:v${{ steps.bump.outputs.version }},ghcr.io/a5c-ai/amux-proxy:latest
-          platforms: linux/amd64
+          echo "Historical archive only."
+          echo "Active transport/proxy release owner: @a5c-ai/transport-mux."
+          echo "Use the repo root release.yml and staging-publish.yml workflows instead."

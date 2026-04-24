@@ -1,10 +1,10 @@
 {
   "name": "@a5c-ai/transport-mux",
   "version": "0.4.9",
-  "private": true,
+  "private": false,
   "type": "module",
   "license": "MIT",
-  "description": "TypeScript transport runtime seam for agent-mux launcher proxying",
+  "description": "Transport/proxy runtime surface for agent-mux launcher bridging and amux-proxy release ownership",
   "author": "a5c-ai",
   "homepage": "https://github.com/a5c-ai/babysitter#readme",
   "repository": {
@@ -28,6 +28,9 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "bin": {
+    "amux-proxy": "./dist/bin/amux-proxy.js"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -56,6 +59,9 @@
     "README.md",
     "LICENSE"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "clean": "rm -rf dist",
     "build": "tsc --build && tsc --emitDeclarationOnly --declarationMap false -p tsconfig.json",

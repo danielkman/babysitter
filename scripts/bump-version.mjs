@@ -175,6 +175,10 @@ const updateLockVersion = (path, version, agentMuxVersion) => {
       version: agentMuxVersion,
       dependencies: { "@a5c-ai/agent-mux-ui": agentMuxVersion }
     },
+    "packages/transport-mux": {
+      version: agentMuxVersion,
+      dependencies: { "@a5c-ai/agent-mux-core": agentMuxVersion }
+    },
     "packages/kanban": {
       version,
       dependencies: { "@a5c-ai/agent-mux-ui": agentMuxVersion }
@@ -238,6 +242,7 @@ const agentMuxManifestPaths = [
   "packages/agent-mux/watch-watchos-app/package.json",
   "packages/agent-mux/watch-wearos-app/package.json",
   "packages/agent-mux/webui/package.json",
+  "packages/transport-mux/package.json",
 ];
 
 const pluginPackageManifestPaths = [
@@ -351,6 +356,7 @@ for (const path of [
   "packages/agent-mux/tui/package.json",
   "packages/agent-mux/ui/package.json",
   "packages/agent-mux/webui/package.json",
+  "packages/transport-mux/package.json",
   "packages/kanban/package.json",
 ]) {
   syncDependencyVersion(path, "@a5c-ai/agent-mux", newAgentMuxVersion);
@@ -360,6 +366,7 @@ for (const path of [
   syncDependencyVersion(path, "@a5c-ai/agent-mux-gateway", newAgentMuxVersion);
   syncDependencyVersion(path, "@a5c-ai/agent-mux-observability", newAgentMuxVersion);
   syncDependencyVersion(path, "@a5c-ai/agent-mux-ui", newAgentMuxVersion);
+  syncDependencyVersion(path, "@a5c-ai/transport-mux", newAgentMuxVersion);
 }
 
 for (const path of [

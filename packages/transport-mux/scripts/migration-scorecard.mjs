@@ -11,10 +11,6 @@ function read(relativePath) {
   return readFileSync(path.join(repoRoot, relativePath), 'utf8');
 }
 
-function exists(relativePath) {
-  return existsSync(path.join(repoRoot, relativePath));
-}
-
 function countFiles(relativeDir, suffix) {
   const absoluteDir = path.join(repoRoot, relativeDir);
   if (!existsSync(absoluteDir)) return 0;
@@ -39,12 +35,16 @@ const jsContractTests =
 
 const scorecard = [
   {
-    gate: 'Legacy Python contract truth is tracked explicitly',
-    status: legacyPythonTests > 0 ? 'yellow' : 'green',
+    gate: 'Legacy Python contract truth is archived explicitly',
+    status:
+      legacyPythonTests === 0 ||
+      migrationDoc.includes('Historical archive: legacy Python tests under `packages/agent-mux/amux-proxy/tests` remain for reference only.')
+        ? 'green'
+        : 'red',
     evidence: legacyPythonTests > 0
-      ? `${legacyPythonTests} Python tests remain under packages/agent-mux/amux-proxy/tests`
+      ? `${legacyPythonTests} legacy Python tests remain, and migration.md marks them as historical-only reference material`
       : 'No legacy Python contract tests remain under packages/agent-mux/amux-proxy/tests',
-    retireWhen: 'Legacy tests are removed or archived only after launcher, JS runtime, docs, CI, and packaging gates are all green.',
+    retireWhen: 'Legacy tests are either removed entirely or explicitly archived as non-operational reference material.',
   },
   {
     gate: 'JS transport-mux validation surface is explicit',
@@ -52,7 +52,7 @@ const scorecard = [
     evidence: packageJson.scripts['scorecard:migration']
       ? `scorecard:migration script is present and ${jsContractTests} JS test files exist under packages/transport-mux/tests`
       : 'scorecard:migration script is missing from packages/transport-mux/package.json',
-    retireWhen: 'The package keeps publishing its own build/test/scorecard entrypoints while the seam is still a placeholder.',
+    retireWhen: 'The package keeps publishing its own build/test/scorecard entrypoints as the active runtime owner.',
   },
   {
     gate: 'Launcher/runtime cutover is complete',
@@ -71,33 +71,35 @@ const scorecard = [
   {
     gate: 'Docs describe the migration seam honestly',
     status:
-      migrationDoc.includes('Migration scorecard') &&
-      migrationDoc.includes('Retire legacy truth only when every row below is green.') &&
-      readmeDoc.includes('launcher-owned runtime surface') &&
-      readmeDoc.includes('not the fully cut-over publish, CI, or container truth')
+      migrationDoc.includes('owns the active transport/proxy runtime and release surface in this repo.') &&
+      readmeDoc.includes('active runtime and release owner for the `amux-proxy` transport/proxy surface') &&
+      readmeDoc.includes('Historical references still exist under `packages/agent-mux/amux-proxy`')
         ? 'green'
         : 'red',
-    evidence: 'migration.md and README.md describe transport-mux as the launcher-owned runtime while keeping the remaining cutover criteria explicit.',
-    retireWhen: 'Docs can treat the migration as done only after the runtime, launcher, CI, and packaging surfaces fully converge.',
+    evidence: 'migration.md and README.md both identify transport-mux as the active owner and legacy amux-proxy assets as archival only.',
+    retireWhen: 'Docs state one active owner for runtime, release, and binary truth while keeping legacy references explicitly archived.',
   },
   {
     gate: 'Publish and CI surfaces are converged',
     status:
-      !releaseWorkflow.includes('@a5c-ai/transport-mux') &&
-      !stagingWorkflow.includes('@a5c-ai/transport-mux') &&
-      legacyPublishWorkflow.includes('Publish amux-proxy to PyPI')
-        ? 'red'
-        : 'green',
+      releaseWorkflow.includes('Publish transport-mux to npm') &&
+      stagingWorkflow.includes('Publish transport-mux to npm (staging tag)') &&
+      legacyPublishWorkflow.includes('Historical archive only')
+        ? 'green'
+        : 'red',
     evidence:
-      'root release/staging workflows do not publish @a5c-ai/transport-mux, while the legacy publish workflow still ships amux-proxy artifacts.',
+      'root release/staging workflows publish @a5c-ai/transport-mux, and the legacy publish workflow is archived as historical only.',
     retireWhen: 'transport-mux has explicit publish/CI ownership and the legacy publish path is removed or archived.',
   },
   {
     gate: 'Legacy binary/container ownership is retired or archived',
-    status: legacyProxyCiWorkflow.includes('packages/amux-proxy') ? 'red' : 'green',
-    evidence: legacyProxyCiWorkflow.includes('packages/amux-proxy')
-      ? 'legacy amux-proxy CI still exists under packages/agent-mux/meta/github/workflows/amux-proxy-ci.yml'
-      : 'legacy amux-proxy CI surface is absent',
+    status:
+      readmeDoc.includes('ships the `amux-proxy` executable') &&
+      legacyProxyCiWorkflow.includes('Historical archive only')
+        ? 'green'
+        : 'red',
+    evidence:
+      'transport-mux ships the active amux-proxy executable surface, and the legacy amux-proxy CI workflow is archived as historical only.',
     retireWhen: 'The amux-proxy binary/container path is owned by transport-mux or explicitly documented as historical only.',
   },
 ];

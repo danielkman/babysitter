@@ -92,6 +92,13 @@ jobs:
           set -euo pipefail
           npm run test:agent-mux 2>&1 | tee artifacts/logs/agent-mux-tests.log
 
+      - name: Validate transport-mux runtime owner
+        run: |
+          set -euo pipefail
+          npm run build --workspace=@a5c-ai/transport-mux 2>&1 | tee artifacts/logs/transport-mux-build.log
+          npm run test --workspace=@a5c-ai/transport-mux 2>&1 | tee artifacts/logs/transport-mux-tests.log
+          npm run scorecard:migration --workspace=@a5c-ai/transport-mux 2>&1 | tee artifacts/logs/transport-mux-scorecard.log
+
       - name: Build and test agent-plugins-mux
         run: |
           set -euo pipefail
@@ -306,14 +313,15 @@ jobs:
               'packages/agent-mux/ui/package.json',
               'packages/agent-mux/watch-watchos-app/package.json',
               'packages/agent-mux/watch-wearos-app/package.json',
-              'packages/agent-mux/webui/package.json'
+              'packages/agent-mux/webui/package.json',
+              'packages/transport-mux/package.json'
             ];
             for (const pkgPath of agentMuxPackagePaths) {
               const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
               pkg.version = '${STAGING_VERSION_AGENT_MUX}';
               for (const field of ['dependencies', 'peerDependencies', 'optionalDependencies', 'devDependencies']) {
                 if (!pkg[field]) continue;
-                for (const depName of ['@a5c-ai/agent-mux', '@a5c-ai/agent-mux-adapters', '@a5c-ai/agent-mux-cli', '@a5c-ai/agent-mux-core', '@a5c-ai/agent-mux-gateway', '@a5c-ai/agent-mux-observability', '@a5c-ai/agent-mux-ui']) {
+                for (const depName of ['@a5c-ai/agent-mux', '@a5c-ai/agent-mux-adapters', '@a5c-ai/agent-mux-cli', '@a5c-ai/agent-mux-core', '@a5c-ai/agent-mux-gateway', '@a5c-ai/agent-mux-observability', '@a5c-ai/agent-mux-ui', '@a5c-ai/transport-mux']) {
                   if (pkg[field][depName]) {
                     pkg[field][depName] = pkg[field][depName].startsWith('^')
                       ? '^${STAGING_VERSION_AGENT_MUX}'
@@ -469,6 +477,11 @@ jobs:
           set -euo pipefail
           npm run test:agent-mux
 
+      - name: Build transport-mux runtime
+        run: |
+          set -euo pipefail
+          npm run build --workspace=@a5c-ai/transport-mux
+
       - name: Build and test kanban
         run: |
           set -euo pipefail
@@ -520,6 +533,13 @@ jobs:
             echo "Publishing $pkg..."
             npm publish --workspace=$pkg --access public --tag staging
           done
+
+      - name: Publish transport-mux to npm (staging tag)
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+          npm publish --workspace=@a5c-ai/transport-mux --access public --tag staging
 
       - name: Inject SDK dependency into codex package for publish
         run: |

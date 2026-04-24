@@ -2,11 +2,11 @@
 
 ## Current status
 
-`packages/transport-mux` now owns the executable JS runtime surface used by `amux launch` when proxy translation is required. This document remains because publication, CI, and legacy binary/container ownership have not converged on this package yet.
+`packages/transport-mux` owns the active transport/proxy runtime and release surface in this repo. The root CI, release, and staging workflows now validate and publish this package, and `amux launch` resolves proxy runtime behavior through `@a5c-ai/transport-mux`.
 
 ## Why this file exists
 
-The repo already paid the cost of extraction before it had runtime ownership. Now that the runtime boundary is real, this file exists to prevent docs and package metadata from overstating the remaining cutover work.
+This file records the cutover state and the remaining historical references so operators can see one active owner and one archive story.
 
 ## What would need to stay stable once cutover begins
 
@@ -26,71 +26,71 @@ npm run test --workspace=@a5c-ai/transport-mux
 npm run scorecard:migration --workspace=@a5c-ai/transport-mux
 ```
 
-Those checks do different jobs:
+Those checks now verify the active owner end to end:
 
-- `build` and `test` validate the executable TypeScript runtime workspace and its JS contract tests.
-- `scorecard:migration` ties that result back to the remaining legacy Python contract, publish/CI, and packaging surfaces.
+- `build` and `test` validate the publishable TypeScript runtime package, including the in-process launcher runtime and executable surface.
+- `scorecard:migration` ties that result back to launcher ownership, docs, CI, packaging, and archived legacy references.
 
-Passing the workspace checks alone does not prove that the package is ready to publish or that the launcher/runtime path has converged on this seam.
+Historical archive: legacy Python tests under `packages/agent-mux/amux-proxy/tests` remain for reference only.
 
 ## Migration scorecard
 
-Retire legacy truth only when every row below is green.
+The active release/runtime owner is now `@a5c-ai/transport-mux`, and every row below should stay green.
 
 | Surface | Current validation truth | Green means | Current status |
 | --- | --- | --- | --- |
-| Legacy Python contract truth | `packages/agent-mux/amux-proxy/tests/*.py` still pins the historical `amux-proxy` behavior. | The legacy tree is removed or clearly archived because launcher, JS runtime, docs, CI, and packaging all converge on `packages/transport-mux`. | Yellow: legacy Python tests still exist and remain part of the migration story. |
-| JS package contract truth | `npm run build`, `npm run test`, and `npm run scorecard:migration` under `@a5c-ai/transport-mux`. | The package owns both the executable runtime surface and the scorecard proving how it replaced the legacy seam. | Green for explicit validation coverage, but not proof of cutover by itself. |
-| Launcher/runtime ownership | `packages/agent-mux/cli/src/commands/launch.ts`, `packages/agent-mux/core/src/provider-resolver.ts`, and `packages/agent-mux/adapters/src/translate-for-harness.ts`. | The launcher path resolves into the runtime exported from `packages/transport-mux` rather than an independent proxy path. | Green: `launch.ts` now starts the `transport-mux` runtime directly while provider resolution and harness translation stay upstream. |
-| Docs honesty | `packages/transport-mux/README.md`, `packages/transport-mux/architecture.md`, and this file. | Operators can tell, from docs alone, whether `transport-mux` is the launcher-owned runtime and what still blocks full cutover. | Green: docs describe the runtime as active for launcher integration while keeping publish/CI and legacy retirement debt explicit. |
-| Publish + CI ownership | Root release/staging workflows plus legacy `packages/agent-mux/meta/github/workflows/*`. | Release and staging workflows intentionally publish `@a5c-ai/transport-mux`, and legacy `amux-proxy` publish/CI paths are removed or archived. | Red: root workflows do not publish `@a5c-ai/transport-mux`, while legacy `amux-proxy` publish/CI workflows still exist. |
-| Binary/container ownership | Legacy `amux-proxy` package/container surfaces and any future package-local executable surface. | The `amux-proxy` binary/container path is either owned here or explicitly marked historical-only everywhere else. | Red: legacy binary/container ownership still lives outside this package. |
+| Legacy Python contract truth | Historical reference tests remain under `packages/agent-mux/amux-proxy/tests/*.py`. | The legacy tree is clearly marked historical-only and no longer defines runtime or release truth. | Green: legacy Python tests are archived as reference only. |
+| JS package contract truth | `npm run build`, `npm run test`, and `npm run scorecard:migration` under `@a5c-ai/transport-mux`. | The package owns both the executable runtime surface and the scorecard proving how it replaced the legacy seam. | Green: the active runtime package validates itself directly. |
+| Launcher/runtime ownership | `packages/agent-mux/cli/src/commands/launch.ts`, `packages/agent-mux/core/src/provider-resolver.ts`, and `packages/agent-mux/adapters/src/translate-for-harness.ts`. | The launcher path resolves into the runtime exported from `packages/transport-mux` rather than an independent proxy path. | Green: `launch.ts` uses the exported runtime surface from `@a5c-ai/transport-mux`. |
+| Docs honesty | `packages/transport-mux/README.md`, `packages/transport-mux/architecture.md`, and this file. | Operators can tell, from docs alone, that `transport-mux` is the active owner and `amux-proxy` legacy assets are archival only. | Green: docs identify one active owner and one historical archive. |
+| Publish + CI ownership | Root CI/release/staging workflows plus legacy `packages/agent-mux/meta/github/workflows/*`. | CI validates `@a5c-ai/transport-mux`, release and staging publish it, and legacy `amux-proxy` publish/CI paths are archived. | Green: root workflows now validate/publish `@a5c-ai/transport-mux`, and legacy publish/CI files are historical-only. |
+| Binary/container ownership | `packages/transport-mux` executable surface plus archived legacy metadata. | The `amux-proxy` binary is owned here and every legacy binary/container reference is explicitly historical only. | Green: `transport-mux` now ships the `amux-proxy` executable and legacy workflow metadata is archived. |
 
-The scorecard exists to make the split validation surface explicit: JS package tests can pass while migration completion remains red because launcher, publish, or legacy-runtime retirement work is still outstanding.
+The scorecard exists to keep the convergence explicit: if any future change re-splits runtime, publish, or legacy archive truth, this document should go red again.
 
 ## Publication and cutover prerequisites
 
-Do not publish or cut over this package until every item below is true.
+The cutover is complete. Keep the assertions below true.
 
-### 1. The package exports a real runtime surface
+### 1. The package exports the active runtime surface
 
 - `packages/transport-mux/src/` exports the real server/config/runtime modules described by the tests and architecture docs.
-- the package entrypoint is more than runtime metadata and exposes the launcher-owned runtime surface directly.
-- the `amux-proxy` executable exists here if this package is meant to own that binary.
+- the package entrypoint advertises an active runtime rather than placeholder metadata.
+- the `amux-proxy` executable lives here and is the active install target.
 
-### 2. Docs describe the seam honestly
+### 2. Docs describe the active owner honestly
 
-- `packages/transport-mux/README.md` describes this workspace as the launcher-owned runtime and explicitly names the remaining cutover debt.
-- `packages/transport-mux/architecture.md` reflects the current launcher/runtime relationship while still separating shipped behavior from future work.
-- this file is used as a backlog for remaining work, not as closure proof.
+- `packages/transport-mux/README.md` describes this workspace as the active runtime/release owner.
+- `packages/transport-mux/architecture.md` remains the design reference for the runtime now owned here.
+- this file records the historical archive state and the scorecard assertions that must stay true.
 
 ### 3. Launcher/runtime ownership is proven
 
-- `packages/agent-mux/cli/src/commands/launch.ts` actually resolves into the runtime surface exported by this package.
+- `packages/agent-mux/cli/src/commands/launch.ts` resolves into the runtime surface exported by this package.
 - `packages/agent-mux/core/src/provider-resolver.ts` and `packages/agent-mux/adapters/src/translate-for-harness.ts` stay aligned with that runtime.
 - operators no longer have to infer whether runtime truth lives in `packages/transport-mux` or elsewhere.
 
-### 4. Publish and CI surfaces are converged
+### 4. Publish and CI surfaces stay converged
 
 - release workflows intentionally publish `@a5c-ai/transport-mux` from this package.
 - staging workflows do the same for prerelease publication.
-- CI treats this package as an active runtime package only after the executable surface exists.
+- CI validates this package as an active runtime package, including tests and scorecard coverage.
 
-### 5. Legacy surfaces are retired or clearly archived
+### 5. Legacy surfaces stay retired or clearly archived
 
 - legacy `amux-proxy` package/container surfaces are either removed from the active operational path or explicitly marked historical.
 - operators are not asked to infer whether the container, package, and launcher truth live in different places.
 
-## Current blockers
+## Historical references that remain
 
-- publish and staging workflows still do not treat `@a5c-ai/transport-mux` as the release owner.
-- legacy package and container assets still exist under `packages/agent-mux/amux-proxy` and `packages/agent-mux/meta/github/workflows`.
-- the JS runtime now owns launcher execution, but the package still does not ship the historical `amux-proxy` executable surface itself.
+- legacy Python tests remain under `packages/agent-mux/amux-proxy/tests` as historical reference material.
+- archived workflow files remain under `packages/agent-mux/meta/github/workflows` so prior release history is still inspectable.
+- architecture notes still describe how the old split worked so future refactors can explain the migration path.
 
 ## Done criteria
 
-Only treat this migration as complete once the runtime surface exists here, the launcher path uses it, the scorecard is green end to end, and the publish/CI/docs surfaces stop splitting operational truth.
+Treat this migration as complete only while the runtime surface stays here, the launcher path uses it, the scorecard stays green end to end, and legacy references remain explicitly archival.
 
 ## Main risk
 
-The real failure mode is still operational drift: package metadata, launcher docs, release surfaces, and implementation state silently describing different runtime truths. This backlog exists to keep those surfaces honest until the seam is executable.
+The failure mode is still operational drift: package metadata, launcher docs, release surfaces, and legacy archive files silently describing different runtime truths. This document exists to keep those surfaces honest.

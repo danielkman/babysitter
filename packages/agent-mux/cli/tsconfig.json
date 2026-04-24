@@ -8,6 +8,7 @@
   "references": [
     { "path": "../core" },
     { "path": "../adapters" },
-    { "path": "../gateway" }
+    { "path": "../gateway" },
+    { "path": "../../transport-mux" }
   ]
 }
