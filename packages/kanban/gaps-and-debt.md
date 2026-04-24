@@ -66,7 +66,26 @@ Preferred direction:
 - treat Task Tags as a separate feature family from issue labels
 - define shared types in `packages/agent-mux/core` only where reuse is required
 - own the first CRUD/API/settings/editor experience in `packages/kanban`
-- implement against the feature spec in [`specs/task-tags-spec.md`](/var/tmp/vibe-kanban/worktrees/5566-full-task-tags-f/babysitter/packages/kanban/specs/task-tags-spec.md)
+- implement against the feature spec in [`specs/task-tags-spec.md`](./specs/task-tags-spec.md)
+
+### 1b. Dispatch Context Labels
+
+The kanban surface also needs a separate feature family for `Dispatch Context Labels`: reusable labels attached to a task/issue that add structured context to the dispatched agent.
+
+Current gap:
+
+- shared issue/project labels exist, but they are categorization metadata rather than execution context
+- Task Tags exist only as a separate spec for reusable `@` snippets and should not absorb dispatch-context semantics
+- there is no shared type seam for dispatch-context label definitions or attachments
+- there is no local storage/API contract for reusable definitions plus issue/task attachments
+- there is no audit surface that can show which dispatch-context labels affected a dispatch
+
+Preferred direction:
+
+- define shared types and normalization in `packages/agent-mux/core`
+- keep first-phase persistence and CRUD in `packages/kanban`
+- make dispatch-context label projection inspectable before and after agent start
+- implement against [`specs/dispatch-context-labels-spec.md`](./specs/dispatch-context-labels-spec.md)
 
 ### 2. Actual kanban board mechanics
 
@@ -175,8 +194,9 @@ These are additions that should exist beyond Vibe Kanban parity because this pac
 
 ## Recommended Sequencing
 
-1. Land Task Tags shared type, package-local CRUD, and authoring-surface parity from [`specs/task-tags-spec.md`](/var/tmp/vibe-kanban/worktrees/5566-full-task-tags-f/babysitter/packages/kanban/specs/task-tags-spec.md).
-2. Mature shared `agent-mux` capabilities so issue/project/workspace data becomes a real shared system of record.
-3. Deepen board authoring, movement, and review workflows on top of the existing shared board model.
-4. Connect issue-driven workspace provisioning and richer workspace runtime surfaces.
-5. Add Babysitter-native observability overlays that strengthen execution without replacing the board-first product model.
+1. Land Dispatch Context Labels shared type, package-local CRUD, and dispatch/audit seams from [`specs/dispatch-context-labels-spec.md`](./specs/dispatch-context-labels-spec.md).
+2. Land Task Tags shared type, package-local CRUD, and authoring-surface parity from [`specs/task-tags-spec.md`](./specs/task-tags-spec.md).
+3. Mature shared `agent-mux` capabilities so issue/project/workspace data becomes a real shared system of record.
+4. Deepen board authoring, movement, and review workflows on top of the existing shared board model.
+5. Connect issue-driven workspace provisioning and richer workspace runtime surfaces.
+6. Add Babysitter-native observability overlays that strengthen execution without replacing the board-first product model.

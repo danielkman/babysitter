@@ -54,10 +54,29 @@ That spec defines reusable snippet tags as a separate feature from issue labels 
 - implementation slices and acceptance criteria
 - CI/release contracts through the existing `kanban` workflow and central release pipelines
 
+## Dispatch Context Labels Specification
+
+Structured planning for `Dispatch Context Labels` now lives in [specs/dispatch-context-labels-spec.md](./specs/dispatch-context-labels-spec.md), with backlog decomposition in [specs/dispatch-context-labels-subtasks.md](./specs/dispatch-context-labels-subtasks.md).
+
+This feature is intentionally separate from both Task Tags and issue labels:
+
+- issue labels continue to categorize board/project work
+- Task Tags continue to insert reusable freeform snippets with `@`
+- Dispatch Context Labels carry structured task/issue context into dispatched-agent execution
+- default agent settings still choose the executor/profile rather than the work-item context
+
+The specification captures:
+
+- shared type ownership between `packages/agent-mux/core` and `packages/kanban`
+- first-phase package-local storage/API ownership in `packages/kanban`
+- dispatch-time projection and post-dispatch auditability expectations
+- CI/release contracts tied to the existing `kanban` package and repo workflows
+
 ## Remaining Gaps
 
 The package still has meaningful product gaps, but they are now downstream of the target model rather than evidence that the package should be treated as observability-first:
 
+- Dispatch Context Labels are now specified but not yet shipped
 - full Task Tags feature implementation is specified but not yet shipped
 - deeper review and diff workflows
 - richer preview and runtime surfaces per workspace

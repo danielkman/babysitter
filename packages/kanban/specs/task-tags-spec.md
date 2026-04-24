@@ -33,6 +33,19 @@ For `packages/kanban`, parity means preserving those semantics while fitting the
 
 ## Product Definition
 
+### Relationship to Dispatch Context Labels
+
+Task Tags are freeform snippet helpers.
+
+Dispatch Context Labels are a separate feature family specified in [`dispatch-context-labels-spec.md`](./dispatch-context-labels-spec.md).
+
+The distinction is normative:
+
+- Task Tags insert editable snippet text into descriptions and follow-ups.
+- Dispatch Context Labels attach structured execution context to a task/issue and project that context into the dispatched agent flow.
+- Task Tags must not become hidden dispatch metadata.
+- Dispatch Context Labels must not be implemented as plain `@` snippet expansion.
+
 ### What a Task Tag is
 
 A `Task Tag` is a reusable snippet definition that can be expanded into freeform text authoring surfaces. It is intended for prompt scaffolds such as:
