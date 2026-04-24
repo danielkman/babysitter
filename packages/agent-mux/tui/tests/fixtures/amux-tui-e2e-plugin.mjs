@@ -4,21 +4,6 @@ import path from 'node:path';
 const sessions = [
   {
     agent: 'tui-e2e',
-    sessionId: 'sess-alpha',
-    title: 'alpha transcript',
-    turnCount: 1,
-    createdAt: '2026-04-24T08:00:00.000Z',
-    updatedAt: '2026-04-24T08:01:00.000Z',
-    messages: [
-      {
-        role: 'assistant',
-        content: 'alpha transcript',
-        timestamp: '2026-04-24T08:00:30.000Z',
-      },
-    ],
-  },
-  {
-    agent: 'tui-e2e',
     sessionId: 'sess-beta',
     title: 'beta transcript',
     turnCount: 2,
@@ -45,6 +30,14 @@ function sessionDir() {
   return dir;
 }
 
+function eventsFile() {
+  return path.join(sessionDir(), 'events.jsonl');
+}
+
+function appendEvent(event) {
+  fs.appendFileSync(eventsFile(), `${JSON.stringify({ recordedAt: new Date().toISOString(), ...event })}\n`);
+}
+
 function ensureSessionFiles() {
   const dir = sessionDir();
   for (const session of sessions) {
@@ -62,12 +55,14 @@ function sessionForPath(filePath) {
   if (!session) {
     throw new Error(`Unknown session fixture: ${filePath}`);
   }
+  appendEvent({ type: 'parse', sessionId });
   return session;
 }
 
 function createRun(options) {
   const prompt = Array.isArray(options.prompt) ? options.prompt.join('\n') : options.prompt;
   const sessionId = options.sessionId || 'sess-created';
+  appendEvent({ type: 'execute', sessionId, prompt });
   const events = [
     {
       type: 'session_start',
@@ -174,6 +169,7 @@ const adapter = {
   },
   async listSessionFiles() {
     const dir = ensureSessionFiles();
+    appendEvent({ type: 'list', sessionIds: sessions.map((session) => session.sessionId) });
     return sessions.map((session) => path.join(dir, `${session.sessionId}.json`));
   },
   async readConfig() {

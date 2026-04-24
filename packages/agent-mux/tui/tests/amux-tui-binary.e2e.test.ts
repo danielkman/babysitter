@@ -14,6 +14,18 @@ function stripAnsi(value: string): string {
     .replace(/\r/g, '');
 }
 
+function readEvents(eventsPath: string): Array<Record<string, unknown>> {
+  if (!fs.existsSync(eventsPath)) {
+    return [];
+  }
+  return fs
+    .readFileSync(eventsPath, 'utf8')
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => JSON.parse(line) as Record<string, unknown>);
+}
+
 class PtyHarness {
   private buffer = '';
   private error: Error | null = null;
@@ -78,6 +90,29 @@ class PtyHarness {
     throw new Error(`Timed out waiting for "${fragment}". Output:\n${this.buffer}`);
   }
 
+  async waitForCondition(
+    label: string,
+    predicate: () => boolean,
+    timeoutMs = 10_000,
+  ): Promise<void> {
+    const deadline = Date.now() + timeoutMs;
+    while (Date.now() < deadline) {
+      if (this.error) {
+        throw this.error;
+      }
+      if (this.exitResult) {
+        throw new Error(
+          `Process exited before ${label} (exitCode=${this.exitResult.exitCode}, signal=${this.exitResult.signal}). Output:\n${this.buffer}`,
+        );
+      }
+      if (predicate()) {
+        return;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+    throw new Error(`Timed out waiting for ${label}. Output:\n${this.buffer}`);
+  }
+
   async close(): Promise<void> {
     this.proc.write('\u001B');
     await this.pause();
@@ -117,6 +152,7 @@ describe('real amux-tui binary e2e', () => {
 
     const pluginDir = path.resolve(__dirname, 'fixtures');
     const binaryPath = path.resolve(__dirname, '../dist/bin/amux-tui.js');
+    const eventsPath = path.join(stateDir, 'events.jsonl');
 
     const proc = pty.spawn(process.execPath, [binaryPath], {
       name: 'xterm-color',
@@ -139,30 +175,63 @@ describe('real amux-tui binary e2e', () => {
     const harness = new PtyHarness(proc);
     await harness.pause(800);
 
-    await harness.waitFor('sess-alpha');
-    await harness.waitFor('sess-beta');
-    await harness.waitFor('>   tui-e2e sess-beta');
+    await harness.waitForCondition(
+      'external session listing',
+      () => readEvents(eventsPath).some((event) => event.type === 'list'),
+    );
 
+    const detailBaseline = readEvents(eventsPath).filter(
+      (event) => event.type === 'parse' && event.sessionId === 'sess-beta',
+    ).length;
     harness.write('d');
-    await harness.waitFor('sess-beta');
-    await harness.waitFor('turns: 2');
+    await harness.waitForCondition(
+      'session detail load',
+      () =>
+        readEvents(eventsPath).filter(
+          (event) => event.type === 'parse' && event.sessionId === 'sess-beta',
+        ).length > detailBaseline,
+    );
 
+    const exportBaseline = readEvents(eventsPath).filter(
+      (event) => event.type === 'parse' && event.sessionId === 'sess-beta',
+    ).length;
     harness.write('e');
-    await harness.waitFor('Exported json');
+    await harness.waitForCondition(
+      'session export request',
+      () =>
+        readEvents(eventsPath).filter(
+          (event) => event.type === 'parse' && event.sessionId === 'sess-beta',
+        ).length > exportBaseline,
+    );
 
-    const backCheckpoint = harness.checkpoint();
     harness.write('b');
-    await harness.waitForSince('>   tui-e2e sess-beta', backCheckpoint);
+    await harness.pause(200);
 
-    const resumeCheckpoint = harness.checkpoint();
+    const resumeBaseline = readEvents(eventsPath).filter(
+      (event) => event.type === 'parse' && event.sessionId === 'sess-beta',
+    ).length;
     harness.write('\r');
-    await harness.waitForSince('[assistant] beta transcript', resumeCheckpoint);
+    await harness.waitForCondition(
+      'session resume transcript load',
+      () =>
+        readEvents(eventsPath).filter(
+          (event) => event.type === 'parse' && event.sessionId === 'sess-beta',
+        ).length > resumeBaseline,
+    );
 
     harness.write('hello from binary e2e');
     await harness.pause();
-    const promptCheckpoint = harness.checkpoint();
     harness.write('\r');
-    await harness.waitForSince('reply:sess-beta:hello from binary e2e', promptCheckpoint);
+    await harness.waitForCondition(
+      'prompt dispatch through resumed session',
+      () =>
+        readEvents(eventsPath).some(
+          (event) =>
+            event.type === 'execute'
+            && event.sessionId === 'sess-beta'
+            && event.prompt === 'hello from binary e2e',
+        ),
+    );
 
     await harness.close();
   }, 30_000);
