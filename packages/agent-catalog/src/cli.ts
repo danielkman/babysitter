@@ -266,7 +266,7 @@ function sourceNodesForClaim(claimNodeId: string): GraphNode[] {
 
   return stringArray(claimNode?.evidenceIds)
     .map((evidenceId) => getNodeById(`evidence:${evidenceId}`))
-    .filter((node): node is GraphNode => Boolean(node) && node.kind === "EvidenceSource");
+    .filter((node): node is GraphNode => node?.kind === "EvidenceSource");
 }
 
 function toCliEvidenceClaimRow(node: GraphNode): CliEvidenceClaimRow {
