@@ -17,8 +17,13 @@ function countFiles(relativeDir, suffix) {
   return readdirSync(absoluteDir).filter((entry) => entry.endsWith(suffix)).length;
 }
 
+function containsAll(doc, snippets) {
+  return snippets.every((snippet) => doc.includes(snippet));
+}
+
 const migrationDoc = read('packages/transport-mux/migration.md');
 const readmeDoc = read('packages/transport-mux/README.md');
+const architectureDoc = read('packages/transport-mux/architecture.md');
 const packageJson = JSON.parse(read('packages/transport-mux/package.json'));
 const packageEntrypoint = read('packages/transport-mux/src/index.ts');
 const launchCommand = read('packages/agent-mux/cli/src/commands/launch.ts');
@@ -32,6 +37,48 @@ const jsContractTests =
   countFiles('packages/transport-mux/tests', '.ts') +
   countFiles('packages/transport-mux/tests/transports', '.ts') +
   countFiles('packages/transport-mux/tests/e2e', '.ts');
+
+const docsHonestyChecks = [
+  {
+    name: 'README marks transport-mux as the active runtime/release owner',
+    ok: containsAll(readmeDoc, [
+      'active runtime and release owner',
+      'transport/proxy surface',
+    ]),
+  },
+  {
+    name: 'README archives legacy amux-proxy references explicitly',
+    ok: containsAll(readmeDoc, [
+      'Historical references still exist under `packages/agent-mux/amux-proxy`',
+      'archival only',
+    ]),
+  },
+  {
+    name: 'migration.md says transport-mux owns the active runtime/release surface',
+    ok: containsAll(migrationDoc, [
+      'owns the active transport/proxy runtime and release surface in this repo',
+      '`@a5c-ai/transport-mux`',
+    ]),
+  },
+  {
+    name: 'migration.md keeps legacy amux-proxy assets historical-only',
+    ok: containsAll(migrationDoc, [
+      'Historical archive: legacy Python tests under `packages/agent-mux/amux-proxy/tests` remain for reference only.',
+      'historical reference material',
+    ]),
+  },
+  {
+    name: 'architecture.md places launch/runtime control in transport-mux',
+    ok: containsAll(architectureDoc, [
+      '`launch.ts` starts the `transport-mux` runtime',
+      '`transport-mux` boots the protocol codec and provider adapter implied by that config.',
+    ]),
+  },
+];
+
+const docsHonestyFailures = docsHonestyChecks
+  .filter((check) => !check.ok)
+  .map((check) => check.name);
 
 const scorecard = [
   {
@@ -70,13 +117,11 @@ const scorecard = [
   },
   {
     gate: 'Docs describe the migration seam honestly',
-    status:
-      migrationDoc.includes('owns the active transport/proxy runtime and release surface in this repo.') &&
-      readmeDoc.includes('active runtime and release owner for the `amux-proxy` transport/proxy surface') &&
-      readmeDoc.includes('Historical references still exist under `packages/agent-mux/amux-proxy`')
-        ? 'green'
-        : 'red',
-    evidence: 'migration.md and README.md both identify transport-mux as the active owner and legacy amux-proxy assets as archival only.',
+    status: docsHonestyFailures.length === 0 ? 'green' : 'red',
+    evidence:
+      docsHonestyFailures.length === 0
+        ? 'README.md, architecture.md, and migration.md agree that transport-mux is the active owner and legacy amux-proxy assets are archival only.'
+        : `Docs drift detected: ${docsHonestyFailures.join('; ')}.`,
     retireWhen: 'Docs state one active owner for runtime, release, and binary truth while keeping legacy references explicitly archived.',
   },
   {
