@@ -1,5 +1,5 @@
 name: 'Babysitter'
-description: 'Run babysitter-orchestrated AI workflows via harness:yolo. Harness-agnostic: supports pi, claude-code, codex, gemini-cli, and more.'
+description: 'Run babysitter-orchestrated AI workflows via babysitter-agent yolo. Harness-agnostic: supports pi, claude-code, codex, gemini-cli, and more.'
 author: 'a5c-ai'
 
 branding:
@@ -102,14 +102,26 @@ runs:
       with:
         node-version: '22'
 
-    - name: Install Babysitter SDK
+    - name: Build Babysitter Agent Runtime
       shell: bash
-      run: npm install -g @a5c-ai/babysitter-sdk
+      env:
+        ACTION_ROOT: ${{ github.action_path }}
+      run: |
+        set -euo pipefail
+        cd "$ACTION_ROOT"
+        npm ci
+        # Workaround: npm ci may miss linux optional deps needed by bundled builds.
+        npm install --no-save @rollup/rollup-linux-x64-gnu 2>/dev/null || true
+        npm run build:sdk
+        npm run build:agent-mux
+        npm run build --workspace=@a5c-ai/agent-core
+        npm run build --workspace=@a5c-ai/babysitter-agent
 
     - name: Run Babysitter
       id: babysitter
       shell: bash
       env:
+        ACTION_ROOT: ${{ github.action_path }}
         # Action inputs as env vars (for safe shell access without eval)
         INPUT_PROMPT: ${{ inputs.prompt }}
         INPUT_HARNESS: ${{ inputs.harness }}
@@ -176,30 +188,41 @@ runs:
 
         # Always use JSON output for CI parsing
         ARGS+=(--json)
+        CLI=(node "$ACTION_ROOT/packages/babysitter-agent/dist/cli/main.js" yolo)
 
         echo "::group::Babysitter Command"
-        echo "babysitter harness:yolo ${ARGS[*]}"
+        echo "${CLI[*]} ${ARGS[*]}"
         echo "::endgroup::"
 
         # Execute and capture output
         OUTPUT_FILE=$(mktemp)
-        babysitter harness:yolo "${ARGS[@]}" 2>&1 | tee "$OUTPUT_FILE" || true
-
-        # Parse outputs from JSON lines
-        RUN_ID=$(grep -o '"runId":"[^"]*"' "$OUTPUT_FILE" | head -1 | cut -d'"' -f4 || echo "")
-        RUN_DIR=$(grep -o '"runDir":"[^"]*"' "$OUTPUT_FILE" | head -1 | cut -d'"' -f4 || echo "")
-        STATUS="unknown"
-
-        # Check for explicit status
-        if grep -q '"status":"failed"' "$OUTPUT_FILE" 2>/dev/null; then
-          STATUS="failed"
-        elif grep -q '"status":"completed"' "$OUTPUT_FILE" 2>/dev/null; then
-          STATUS="completed"
-        elif grep -q '"completionProof"' "$OUTPUT_FILE" 2>/dev/null; then
-          STATUS="completed"
+        if "${CLI[@]}" "${ARGS[@]}" 2>&1 | tee "$OUTPUT_FILE"; then
+          COMMAND_EXIT=0
+        else
+          COMMAND_EXIT=$?
         fi
 
-        ITERATIONS=$(grep -c '"iteration":' "$OUTPUT_FILE" 2>/dev/null || echo "0")
+        # The agent emits a stream of JSON documents in --json mode. Slurp the
+        # full stream so outputs remain stable even when fields appear in later
+        # progress events.
+        RUN_ID=$(jq -rs 'map(select(type == "object" and .runId? != null) | .runId) | first // ""' "$OUTPUT_FILE")
+        RUN_DIR=$(jq -rs 'map(select(type == "object" and .runDir? != null) | .runDir) | first // ""' "$OUTPUT_FILE")
+        STATUS=$(jq -rs '
+          [ .[]
+            | select(type == "object" and .phase? == "2" and .status? != null)
+            | .status
+          ] as $statuses
+          | if ($statuses | index("failed")) then "failed"
+            elif ($statuses | index("completed")) then "completed"
+            else "unknown"
+            end
+        ' "$OUTPUT_FILE")
+        ITERATIONS=$(jq -rs '
+          [ .[]
+            | select(type == "object" and .phase? == "2" and .iteration? != null)
+            | .iteration
+          ] | max // 0
+        ' "$OUTPUT_FILE")
 
         echo "run-id=$RUN_ID" >> "$GITHUB_OUTPUT"
         echo "run-dir=$RUN_DIR" >> "$GITHUB_OUTPUT"
@@ -212,6 +235,10 @@ runs:
         if [ "$STATUS" = "failed" ]; then
           echo "::error::Babysitter run failed"
           exit 1
+        fi
+        if [ "$COMMAND_EXIT" -ne 0 ]; then
+          echo "::error::babysitter-agent exited with code $COMMAND_EXIT"
+          exit "$COMMAND_EXIT"
         fi
 
     - name: Upload Run Artifacts

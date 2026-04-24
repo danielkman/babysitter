@@ -383,7 +383,7 @@ After creating the workflow files:
 1. Commit and push the `.github/workflows/` changes
 2. Test by creating an issue with `@babysitter` in the body
 3. Verify the workflow triggers in the Actions tab
-4. Check that babysitter SDK installs and runs correctly in the logs
+4. Check that the babysitter-agent runtime builds and runs correctly in the logs
 
 ## Reference
 

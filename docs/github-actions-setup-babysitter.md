@@ -4,7 +4,7 @@ This guide explains how to use the official [Babysitter GitHub Action](https://g
 
 ## Overview
 
-The Babysitter action is **harness-agnostic** — it supports multiple AI harnesses (pi, claude-code, codex, gemini-cli, and more) through a single action interface. It installs the Babysitter SDK, resolves credentials for the selected provider, and runs `babysitter harness:yolo` to execute deterministic, event-sourced orchestration with quality gates, iterative refinement, and multi-step process management.
+The Babysitter action is **harness-agnostic** — it supports multiple AI harnesses (pi, claude-code, codex, gemini-cli, and more) through a single action interface. It builds the local `babysitter-agent` runtime from the action repository, resolves credentials for the selected provider, and runs `babysitter-agent yolo` to execute deterministic, event-sourced orchestration with quality gates, iterative refinement, and multi-step process management.
 
 Unlike harness-specific actions (`anthropics/claude-code-action`, `openai/codex-action`, `google-github-actions/run-gemini-cli`), this action lets you switch harnesses with a single input change while keeping the same workflow structure.
 
@@ -488,9 +488,9 @@ The prompt input supports GitHub context variables via shell expansion. Common v
 
 ## Troubleshooting
 
-### Babysitter SDK Not Found
+### Babysitter Agent Runtime Build Failed
 
-The action installs the SDK automatically. If it fails, check Node.js availability:
+The action builds `babysitter-agent` from the action repository. If it fails, check Node.js availability:
 
 ```yaml
 - uses: actions/setup-node@v4
@@ -529,6 +529,7 @@ Enable verbose mode for debugging:
 
 ### Babysitter
 - [Babysitter Repository](https://github.com/a5c-ai/babysitter)
+- [Babysitter Agent Runtime](https://github.com/a5c-ai/babysitter/tree/main/packages/babysitter-agent)
 - [Babysitter SDK](https://www.npmjs.com/package/@a5c-ai/babysitter-sdk)
 
 ### Harness-Specific Actions
