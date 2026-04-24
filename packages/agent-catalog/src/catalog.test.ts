@@ -81,6 +81,22 @@ describe("agent-catalog graph-backed ontology", () => {
     expect(lookupHarnessImage("codex")?.image).toContain("codex");
   });
 
+  it("exposes richer ontology list/detail projections for UI consumers", async () => {
+    const { getUiAgentOntologyEntry, getUiAgentOntologyList } = await import("./sdk");
+    const list = getUiAgentOntologyList();
+    const codexPost119 = getUiAgentOntologyEntry("codex--ge-0-119-0");
+
+    expect(list.length).toBe(AGENT_CATALOG.agents.length);
+    expect(list.find((entry) => entry.slug === "codex--ge-0-0-0-lt-0-119-0")).toBeDefined();
+    expect(codexPost119).toBeDefined();
+    expect(codexPost119?.capabilityMatrix.find((entry) => entry.capabilityId === "runtime-hooks")?.versionRange).toBe(
+      ">=0.119.0",
+    );
+    expect(codexPost119?.lifecycleSemantics[0]?.runtimeHookMode).toContain("windows-support");
+    expect(codexPost119?.sessionSemantics.length).toBeGreaterThan(0);
+    expect(codexPost119?.evidenceSummary.partialCount).toBeGreaterThan(0);
+  });
+
   it("keeps provider catalog scoped to model providers rather than harness vendors", () => {
     const providerIds = AGENT_CATALOG.providers.map((provider) => provider.providerId);
     expect(providerIds).not.toContain("cursor");

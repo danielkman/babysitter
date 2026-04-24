@@ -210,6 +210,9 @@ export interface SessionNuance {
   sessionDirStrategy: string;
   envSignals: string[];
   resumeSemantics: string;
+  stateFilePatterns: string[];
+  pidMarkerPolicy: string;
+  metadataFields: HostMetadataField[];
   evidenceIds: string[];
 }
 
@@ -219,7 +222,10 @@ export interface LifecycleNuance {
   versionRange: string;
   runtimeHookMode: string;
   stopHookMode: string;
+  backgroundTaskMode: string;
+  checkpointMode: string;
   pluginContextMode: string;
+  platformNuances: string[];
   evidenceIds: string[];
 }
 
@@ -238,7 +244,11 @@ export interface AgentVersion {
   agentId: string;
   aliases: string[];
   versionRange: string;
+  releaseChannel: string;
+  since: string | null;
+  until: string | null;
   runtimeFamily?: string;
+  osSupport: string[];
   displayName: string;
   summary: string;
   sourcePackage: string;
@@ -370,6 +380,56 @@ export interface UiAgentCard {
   filePath: string;
   directory: string;
   metadata: Record<string, unknown>;
+}
+
+export interface AgentVersionReference {
+  id: string;
+  slug: string;
+  agentId: string;
+  name: string;
+  versionRange: string;
+}
+
+export interface AgentOntologyEvidenceSummary {
+  evidenceCount: number;
+  claimCount: number;
+  corroboratedCount: number;
+  partialCount: number;
+  inferredCount: number;
+  unresolvedGapCount: number;
+}
+
+export interface AgentOntologyListItem extends AgentVersionReference {
+  aliases: string[];
+  runtimeFamily?: string;
+  releaseChannel: string;
+  since: string | null;
+  until: string | null;
+  osSupport: string[];
+  description: string;
+  sourcePackage: string;
+  providers: ModelProviderVersion[];
+  models: ModelVersion[];
+  transports: TransportDescriptor[];
+  modalities: ModalityDescriptor[];
+  capabilities: CapabilityDescriptor[];
+  hooks: HookDescriptor[];
+  pluginTargets: PluginTargetDescriptor[];
+  sessionSemantics: SessionNuance[];
+  lifecycleSemantics: LifecycleNuance[];
+  evidenceSummary: AgentOntologyEvidenceSummary;
+  filePath: string;
+  directory: string;
+}
+
+export interface AgentOntologyDetail extends AgentOntologyListItem {
+  capabilityMatrix: CapabilityAssertion[];
+  evidence: EvidenceRecord[];
+  claims: ClaimRecord[];
+  supersedes: AgentVersionReference[];
+  supersededBy: AgentVersionReference[];
+  schemaVersion: string;
+  generatedAt: string;
 }
 
 export interface AgentCatalog {
