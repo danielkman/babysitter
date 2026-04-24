@@ -1,6 +1,7 @@
 import type { JsonRecord, RunMetadata } from "../storage/types";
 import type { DefinedTask, TaskDef, TaskInvokeOptions } from "../tasks/types";
 import type { StateCacheJournalHead } from "./replay/stateCache";
+import type { RuntimeGovernanceConfig } from "./policy";
 
 export type { DefinedTask, TaskBuildContext, TaskDef, TaskInvokeOptions } from "../tasks/types";
 export type { StateCacheJournalHead } from "./replay/stateCache";
@@ -135,6 +136,7 @@ export interface CreateRunOptions {
   };
   lockOwner?: string;
   logger?: ProcessLogger;
+  governance?: RuntimeGovernanceConfig;
 }
 
 export interface CreateRunResult {

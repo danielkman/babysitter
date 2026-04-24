@@ -10,5 +10,13 @@ export type {
   PolicyDecisionLog,
   PolicyEngine,
   PolicyDecisionReporter,
+  RuntimeGovernanceConfig,
 } from "./types";
 export { isStatefulRule } from "./types";
+export { createPolicyEngine, matchCondition } from "./engine";
+export {
+  createPolicyDecisionReporter,
+  logPolicyDecision,
+  readPolicyDecisionLog,
+  resolvePolicyDecisionLogDir,
+} from "./logging";

@@ -10,14 +10,12 @@ import { runTaskIntrinsic } from "../intrinsics/task";
 import { buildTaskContext, createTestRun } from "./testHelpers";
 
 /**
- * RED tests for GAP-SEC-001 integration:
+ * Regression tests for GAP-SEC-001 integration:
  * Governance policy must be enforced at effect-dispatch time (before EFFECT_REQUESTED is written)
  * and every evaluation must be audit-logged.
- *
- * These tests are expected to FAIL until the policy engine is wired into the runtime.
  */
 
-describe("GAP-SEC-001 governance enforcement (RED)", () => {
+describe("GAP-SEC-001 governance enforcement", () => {
   let tmpRoot: string;
   let entries: PolicyDecisionLog[];
 

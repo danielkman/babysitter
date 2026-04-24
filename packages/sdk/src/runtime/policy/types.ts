@@ -60,3 +60,8 @@ export interface PolicyEngine {
 }
 
 export type PolicyDecisionReporter = (entry: PolicyDecisionLog) => void | Promise<void>;
+
+export interface RuntimeGovernanceConfig {
+  policyRules?: PolicyRule[];
+  auditLogDir?: string;
+}

@@ -44,6 +44,7 @@ export async function createRun(options: CreateRunOptions): Promise<CreateRunRes
 
   const extraMetadata = {
     ...options.metadata,
+    ...(options.governance ? { governance: options.governance } : {}),
     completionProof,
   };
   const { metadata } = await createRunDir({
