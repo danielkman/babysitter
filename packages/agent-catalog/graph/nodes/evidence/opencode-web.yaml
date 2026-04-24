@@ -49,10 +49,13 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: medium
+    provenanceKind: vendor-documentation
+    evidenceStrength: corroborated
     status: current
     evidenceIds:
       - web-opencode-tui
       - web-opencode-providers
+    unresolvedGaps: []
   - id: claim:web-opencode-commands
     kind: Claim
     claimId: web-opencode-commands
@@ -60,9 +63,42 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: medium
+    provenanceKind: vendor-inference
+    evidenceStrength: partial
     status: current
     evidenceIds:
       - web-opencode-commands
+    unresolvedGaps:
+      - OpenCode commands are the closest public analogue to reusable skills, but the shared skills capability remains a local normalization.
+  - id: claim:web-opencode-stdin-injection
+    kind: Claim
+    claimId: web-opencode-stdin-injection
+    statement: OpenCode's public docs describe interactive command-driven terminal workflows, but non-interactive stdin injection remains an inferred capability rather than an explicitly documented contract.
+    subjectKind: catalog
+    subjectId: graph:agent-catalog
+    confidence: low
+    provenanceKind: vendor-inference
+    evidenceStrength: inferred
+    status: current
+    evidenceIds:
+      - web-opencode-tui
+      - web-opencode-commands
+    unresolvedGaps:
+      - The public docs do not publish a dedicated headless or piped-input mode for OpenCode.
+  - id: claim:web-opencode-image-input
+    kind: Claim
+    claimId: web-opencode-image-input
+    statement: OpenCode public docs establish a rich terminal coding surface, but image-input support is still an ontology-level inference rather than a documented first-party capability contract.
+    subjectKind: catalog
+    subjectId: graph:agent-catalog
+    confidence: low
+    provenanceKind: vendor-inference
+    evidenceStrength: inferred
+    status: current
+    evidenceIds:
+      - web-opencode-tui
+    unresolvedGaps:
+      - No first-party OpenCode doc in the current evidence set explicitly documents image attachments or image-aware prompts.
   - id: claim:web-opencode-plugins
     kind: Claim
     claimId: web-opencode-plugins
@@ -70,9 +106,13 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: medium
+    provenanceKind: vendor-documentation
+    evidenceStrength: partial
     status: current
     evidenceIds:
       - web-opencode-plugins
+    unresolvedGaps:
+      - Plugin-driven extensibility is documented, but stronger corroboration is still needed for exact runtime-hook and stop-hook semantics.
   - id: claim:web-opencode-session-storage
     kind: Claim
     claimId: web-opencode-session-storage
@@ -80,6 +120,10 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: low
+    provenanceKind: vendor-inference
+    evidenceStrength: inferred
     status: current
     evidenceIds:
       - web-opencode-windows-wsl
+    unresolvedGaps:
+      - Session persistence is inferred from storage documentation rather than an explicit resume or continue feature contract.

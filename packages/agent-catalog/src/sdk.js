@@ -4,6 +4,8 @@ exports.getCatalogGraphSnapshot = getCatalogGraphSnapshot;
 exports.getCatalogGraphDocument = getCatalogGraphDocument;
 exports.getCatalogOntologySchema = getCatalogOntologySchema;
 exports.getAgentCatalog = getAgentCatalog;
+exports.listOntologyClaims = listOntologyClaims;
+exports.getCapabilitySupportAssertions = getCapabilitySupportAssertions;
 exports.listAgentVersions = listAgentVersions;
 exports.getAgentVersions = getAgentVersions;
 exports.listOntologyNodesByKind = listOntologyNodesByKind;
@@ -65,6 +67,12 @@ function getCatalogOntologySchema() {
 }
 function getAgentCatalog() {
     return clone(data_1.AGENT_CATALOG);
+}
+function listOntologyClaims() {
+    return clone(data_1.CLAIMS);
+}
+function getCapabilitySupportAssertions() {
+    return clone(data_1.CAPABILITY_ASSERTIONS);
 }
 function listAgentVersions() {
     return clone(data_1.AGENT_CATALOG.agents);

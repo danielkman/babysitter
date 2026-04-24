@@ -87,6 +87,40 @@ export interface EvidenceRecord {
   capturedAt: string;
 }
 
+export type ClaimConfidence = "high" | "medium" | "low";
+
+export type ClaimProvenanceKind = "repo-observation" | "vendor-documentation" | "vendor-inference";
+
+export type ClaimEvidenceStrength = "corroborated" | "partial" | "inferred";
+
+export interface ClaimRecord {
+  claimId: string;
+  statement: string;
+  subjectKind: string;
+  subjectId: string;
+  confidence: ClaimConfidence;
+  status: string;
+  provenanceKind: ClaimProvenanceKind;
+  evidenceStrength: ClaimEvidenceStrength;
+  evidenceIds: string[];
+  unresolvedGaps: string[];
+}
+
+export interface CapabilityAssertion {
+  supportId: string;
+  capabilityId: string;
+  subjectKind: string;
+  subjectId: string;
+  versionRange: string;
+  supportLevel: string;
+  notes?: string;
+  evidenceIds: string[];
+  hasVendorEvidence: boolean;
+  evidenceStrength: ClaimEvidenceStrength;
+  unresolvedGaps: string[];
+  supportingClaims: ClaimRecord[];
+}
+
 export interface OntologyEvidenceShardDescriptor {
   entryKind: "evidence-sources" | "claims";
   group: string;
@@ -342,6 +376,7 @@ export interface AgentCatalog {
   schemaVersion: string;
   generatedAt: string;
   evidence: EvidenceRecord[];
+  claims: ClaimRecord[];
   providers: ModelProviderVersion[];
   models: ModelVersion[];
   transports: TransportDescriptor[];
@@ -352,5 +387,6 @@ export interface AgentCatalog {
   lifecycleNuances: LifecycleNuance[];
   processes: ProcessDescriptor[];
   agents: AgentVersion[];
+  capabilityAssertions: CapabilityAssertion[];
   graph: GraphEdge[];
 }

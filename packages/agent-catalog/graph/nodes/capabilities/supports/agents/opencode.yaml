@@ -50,6 +50,8 @@ nodes:
     evidenceRefs:
       - repo-sdk-fallback
       - repo-target-index
+      - web-opencode-tui
+      - web-opencode-commands
   - id: capabilitySupport:opencode:ge-0-0-0:image-input
     kind: CapabilitySupport
     supportId: capabilitySupport:opencode:ge-0-0-0:image-input
@@ -62,6 +64,7 @@ nodes:
     evidenceRefs:
       - repo-sdk-fallback
       - repo-target-index
+      - web-opencode-tui
   - id: capabilitySupport:opencode:ge-0-0-0:runtime-hooks
     kind: CapabilitySupport
     supportId: capabilitySupport:opencode:ge-0-0-0:runtime-hooks

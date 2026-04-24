@@ -47,6 +47,7 @@ nodes:
     notes: Public operator docs are thin for non-interactive prompting, so this row keeps the local fallback metadata as the main source of truth.
     evidenceRefs:
       - repo-sdk-fallback
+      - web-omp-readme
   - id: capabilitySupport:omp:ge-0-0-0:image-input
     kind: CapabilitySupport
     supportId: capabilitySupport:omp:ge-0-0-0:image-input

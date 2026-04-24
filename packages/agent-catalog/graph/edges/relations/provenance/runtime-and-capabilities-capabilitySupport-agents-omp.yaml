@@ -44,6 +44,12 @@ edges:
     to: claim:repo-sdk-fallback
     evidenceRefs:
       - repo-sdk-fallback
+  - id: edge:capabilitySupport:omp:ge-0-0-0:stdin-injection:claim:web-omp-stdin-injection
+    relation: supported_by_claim
+    from: capabilitySupport:omp:ge-0-0-0:stdin-injection
+    to: claim:web-omp-stdin-injection
+    evidenceRefs:
+      - web-omp-readme
   - id: edge:capabilitySupport:omp:ge-0-0-0:image-input:claim:repo-sdk-fallback
     relation: supported_by_claim
     from: capabilitySupport:omp:ge-0-0-0:image-input

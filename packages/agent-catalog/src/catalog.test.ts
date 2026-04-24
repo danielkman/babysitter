@@ -4,6 +4,7 @@ import {
   getCatalogGraphDocument,
   getCatalogGraphSnapshot,
   getCatalogOntologySchema,
+  getCapabilitySupportAssertions,
   getFallbackHarnessMetadata,
   getHostDetectionRules,
   getHookNameMap,
@@ -13,6 +14,7 @@ import {
   getOntologyEvidenceSnapshot,
   getUiAgentCards,
   listOntologyNodesByKind,
+  listOntologyClaims,
   lookupHarnessImage,
   listAgentVersions,
 } from "./index";
@@ -96,6 +98,19 @@ describe("agent-catalog graph-backed ontology", () => {
     expect(evidence.claims).toHaveLength(listOntologyNodesByKind("Claim").length);
   });
 
+  it("records claim provenance, evidence strength, and unresolved gaps explicitly", () => {
+    const claims = new Map(listOntologyClaims().map((claim) => [claim.claimId, claim]));
+
+    expect(claims.get("repo-sdk-fallback")?.provenanceKind).toBe("repo-observation");
+    expect(claims.get("repo-sdk-fallback")?.evidenceStrength).toBe("corroborated");
+    expect(claims.get("repo-sdk-fallback")?.unresolvedGaps).toEqual([]);
+
+    expect(claims.get("web-codex-session-resume")?.evidenceStrength).toBe("corroborated");
+    expect(claims.get("web-codex-image-input")?.provenanceKind).toBe("vendor-inference");
+    expect(claims.get("web-codex-image-input")?.evidenceStrength).toBe("inferred");
+    expect(claims.get("web-codex-image-input")?.unresolvedGaps.length).toBeGreaterThan(0);
+  });
+
   it("includes babysitter-agent as a distinct non-harness runtime agent and records richer Claude web evidence", () => {
     const babysitterAgent = listAgentVersions().find((agent) => agent.agentId === "babysitter-agent");
     expect(babysitterAgent).toBeDefined();
@@ -141,5 +156,39 @@ describe("agent-catalog graph-backed ontology", () => {
     expect(cursorHooks?.evidenceRefs).toContain("web-cursor-hooks");
     expect(opencodeHooks?.evidenceRefs).toContain("web-opencode-plugins");
     expect(ompResume?.evidenceRefs).toContain("web-omp-session-resume");
+  });
+
+  it("summarizes external capability assertions by corroboration strength and unresolved gaps", () => {
+    const graph = getCatalogGraphSnapshot();
+    const nodeById = new Map(graph.nodes.map((node) => [node.id, node]));
+    const assertions = getCapabilitySupportAssertions();
+    const externalAgentIds = new Set(["claude", "codex", "gemini", "copilot", "cursor", "opencode", "omp"]);
+    const externalAssertions = assertions.filter((assertion) => {
+      const subject = nodeById.get(assertion.subjectId);
+      return subject?.kind === "AgentVersion" && externalAgentIds.has(String(subject.agentId));
+    });
+
+    expect(externalAssertions.length).toBeGreaterThan(20);
+
+    for (const assertion of externalAssertions) {
+      const vendorClaims = assertion.supportingClaims.filter((claim) => claim.provenanceKind !== "repo-observation");
+      expect(assertion.hasVendorEvidence).toBe(true);
+      expect(vendorClaims.length).toBeGreaterThan(0);
+
+      if (assertion.evidenceStrength === "corroborated") {
+        expect(
+          vendorClaims.some((claim) => claim.evidenceStrength === "corroborated" && claim.evidenceIds.length >= 2),
+        ).toBe(true);
+      } else {
+        expect(assertion.unresolvedGaps.length).toBeGreaterThan(0);
+      }
+    }
+
+    const assertionsById = new Map(assertions.map((assertion) => [assertion.supportId, assertion]));
+    expect(assertionsById.get("capabilitySupport:claude:ge-0-0-0:runtime-hooks")?.evidenceStrength).toBe("corroborated");
+    expect(assertionsById.get("capabilitySupport:codex:ge-0-119-0:runtime-hooks")?.evidenceStrength).toBe("partial");
+    expect(assertionsById.get("capabilitySupport:codex:ge-0-119-0:image-input")?.evidenceStrength).toBe("inferred");
+    expect(assertionsById.get("capabilitySupport:omp:ge-0-0-0:session-resume")?.evidenceStrength).toBe("partial");
+    expect(assertionsById.get("capabilitySupport:omp:ge-0-0-0:session-resume")?.unresolvedGaps.length).toBeGreaterThan(0);
   });
 });

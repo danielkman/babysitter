@@ -58,6 +58,13 @@ edges:
     to: claim:repo-target-index
     evidenceRefs:
       - repo-target-index
+  - id: edge:capabilitySupport:opencode:ge-0-0-0:stdin-injection:claim:web-opencode-stdin-injection
+    relation: supported_by_claim
+    from: capabilitySupport:opencode:ge-0-0-0:stdin-injection
+    to: claim:web-opencode-stdin-injection
+    evidenceRefs:
+      - web-opencode-tui
+      - web-opencode-commands
   - id: edge:capabilitySupport:opencode:ge-0-0-0:image-input:claim:repo-sdk-fallback
     relation: supported_by_claim
     from: capabilitySupport:opencode:ge-0-0-0:image-input
@@ -70,6 +77,12 @@ edges:
     to: claim:repo-target-index
     evidenceRefs:
       - repo-target-index
+  - id: edge:capabilitySupport:opencode:ge-0-0-0:image-input:claim:web-opencode-image-input
+    relation: supported_by_claim
+    from: capabilitySupport:opencode:ge-0-0-0:image-input
+    to: claim:web-opencode-image-input
+    evidenceRefs:
+      - web-opencode-tui
   - id: edge:capabilitySupport:opencode:ge-0-0-0:runtime-hooks:claim:repo-sdk-fallback
     relation: supported_by_claim
     from: capabilitySupport:opencode:ge-0-0-0:runtime-hooks

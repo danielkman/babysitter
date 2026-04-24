@@ -89,10 +89,13 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: medium
+    provenanceKind: vendor-documentation
+    evidenceStrength: corroborated
     status: current
     evidenceIds:
       - web-github-copilot-cli-overview
       - web-github-copilot-cli-getting-started
+    unresolvedGaps: []
   - id: claim:web-github-copilot-cli-skills
     kind: Claim
     claimId: web-github-copilot-cli-skills
@@ -100,10 +103,13 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: medium
+    provenanceKind: vendor-documentation
+    evidenceStrength: corroborated
     status: current
     evidenceIds:
       - web-github-copilot-cli-plugins
       - web-github-copilot-cli-plugin-reference
+    unresolvedGaps: []
   - id: claim:web-github-copilot-cli-hooks
     kind: Claim
     claimId: web-github-copilot-cli-hooks
@@ -111,10 +117,13 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: medium
+    provenanceKind: vendor-documentation
+    evidenceStrength: corroborated
     status: current
     evidenceIds:
       - web-github-copilot-cli-hooks
       - web-github-copilot-hooks-config
+    unresolvedGaps: []
   - id: claim:web-github-copilot-cli-mcp
     kind: Claim
     claimId: web-github-copilot-cli-mcp
@@ -122,10 +131,13 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: medium
+    provenanceKind: vendor-documentation
+    evidenceStrength: corroborated
     status: current
     evidenceIds:
       - web-github-copilot-cli-mcp
       - web-github-copilot-mcp
+    unresolvedGaps: []
   - id: claim:web-github-copilot-cli-session-resume
     kind: Claim
     claimId: web-github-copilot-cli-session-resume
@@ -133,10 +145,14 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: medium
+    provenanceKind: vendor-inference
+    evidenceStrength: partial
     status: current
     evidenceIds:
       - web-github-copilot-cli-config-dir
       - web-github-copilot-cli-getting-started
+    unresolvedGaps:
+      - GitHub documents persisted local state, but an explicit CLI resume contract is still inferred from storage-oriented docs.
   - id: claim:web-github-copilot-custom-instructions
     kind: Claim
     claimId: web-github-copilot-custom-instructions
@@ -144,9 +160,13 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: medium
+    provenanceKind: vendor-inference
+    evidenceStrength: partial
     status: current
     evidenceIds:
       - web-github-copilot-custom-instructions
+    unresolvedGaps:
+      - Persistent custom instructions are adjacent to skills, but the reusable-skill equivalence remains an ontology-level inference.
   - id: claim:web-github-copilot-image-input
     kind: Claim
     claimId: web-github-copilot-image-input
@@ -154,6 +174,10 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: low
+    provenanceKind: vendor-inference
+    evidenceStrength: inferred
     status: current
     evidenceIds:
       - web-github-copilot-sdk-image-input
+    unresolvedGaps:
+      - Public image-input evidence is SDK-scoped and does not fully corroborate the same capability for Copilot CLI.

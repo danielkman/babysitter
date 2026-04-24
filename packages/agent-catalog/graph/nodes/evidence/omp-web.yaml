@@ -49,9 +49,27 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: medium
+    provenanceKind: vendor-documentation
+    evidenceStrength: partial
     status: current
     evidenceIds:
       - web-omp-readme
+    unresolvedGaps:
+      - The current evidence is a single README source rather than a multi-page product documentation set.
+  - id: claim:web-omp-stdin-injection
+    kind: Claim
+    claimId: web-omp-stdin-injection
+    statement: Oh-My-Pi publicly documents an interactive terminal agent surface, but non-interactive stdin injection is still inferred rather than described as a dedicated operator workflow.
+    subjectKind: catalog
+    subjectId: graph:agent-catalog
+    confidence: low
+    provenanceKind: vendor-inference
+    evidenceStrength: inferred
+    status: current
+    evidenceIds:
+      - web-omp-readme
+    unresolvedGaps:
+      - The current Oh-My-Pi public docs do not explicitly document piped or headless prompt injection.
   - id: claim:web-omp-skills
     kind: Claim
     claimId: web-omp-skills
@@ -59,9 +77,13 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: medium
+    provenanceKind: vendor-documentation
+    evidenceStrength: partial
     status: current
     evidenceIds:
       - web-omp-skills
+    unresolvedGaps:
+      - The skills claim currently relies on one first-party document.
   - id: claim:web-omp-hooks
     kind: Claim
     claimId: web-omp-hooks
@@ -69,9 +91,13 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: medium
+    provenanceKind: vendor-documentation
+    evidenceStrength: partial
     status: current
     evidenceIds:
       - web-omp-hooks
+    unresolvedGaps:
+      - The hook subsystem is documented, but stronger corroboration is still needed for normalized lifecycle mapping and default runtime behavior.
   - id: claim:web-omp-session-resume
     kind: Claim
     claimId: web-omp-session-resume
@@ -79,6 +105,10 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: medium
+    provenanceKind: vendor-documentation
+    evidenceStrength: partial
     status: current
     evidenceIds:
       - web-omp-session-resume
+    unresolvedGaps:
+      - The operator-visible session flows are documented on one page, without an additional source corroborating normalized resume semantics.

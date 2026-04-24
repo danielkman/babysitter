@@ -12,10 +12,13 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "high",
+      "provenanceKind": "repo-observation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "repo-agent-catalog-package"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:repo-agent-mux-model-catalog",
@@ -25,10 +28,13 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "high",
+      "provenanceKind": "repo-observation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "repo-agent-mux-model-catalog"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:repo-babysitter-agent-cli",
@@ -38,11 +44,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "high",
+      "provenanceKind": "repo-observation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "repo-babysitter-agent-package",
         "repo-babysitter-agent-cli"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:repo-babysitter-agent-package",
@@ -52,10 +61,13 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "high",
+      "provenanceKind": "repo-observation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "repo-babysitter-agent-package"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:repo-process-catalog",
@@ -65,10 +77,13 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "high",
+      "provenanceKind": "repo-observation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "repo-process-catalog"
-      ]
+      ],
+      "unresolvedGaps": []
     }
   ]
 }

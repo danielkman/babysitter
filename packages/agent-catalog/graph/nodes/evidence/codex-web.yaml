@@ -57,10 +57,13 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: medium
+    provenanceKind: vendor-documentation
+    evidenceStrength: corroborated
     status: current
     evidenceIds:
       - web-codex-cli
       - web-codex-cli-features
+    unresolvedGaps: []
   - id: claim:web-codex-skills
     kind: Claim
     claimId: web-codex-skills
@@ -68,9 +71,13 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: medium
+    provenanceKind: vendor-documentation
+    evidenceStrength: partial
     status: current
     evidenceIds:
       - web-codex-skills
+    unresolvedGaps:
+      - The public Codex skills documentation is currently a single-source vendor page.
   - id: claim:web-codex-hooks
     kind: Claim
     claimId: web-codex-hooks
@@ -78,9 +85,13 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: medium
+    provenanceKind: vendor-documentation
+    evidenceStrength: partial
     status: current
     evidenceIds:
       - web-codex-hooks
+    unresolvedGaps:
+      - The vendor docs confirm hooks exist, but exact normalized lifecycle mapping still depends on local ontology interpretation.
   - id: claim:web-codex-stdin-injection
     kind: Claim
     claimId: web-codex-stdin-injection
@@ -88,10 +99,13 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: medium
+    provenanceKind: vendor-documentation
+    evidenceStrength: corroborated
     status: current
     evidenceIds:
       - web-codex-noninteractive
       - web-codex-cli-reference
+    unresolvedGaps: []
   - id: claim:web-codex-image-input
     kind: Claim
     claimId: web-codex-image-input
@@ -99,10 +113,14 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: low
+    provenanceKind: vendor-inference
+    evidenceStrength: inferred
     status: current
     evidenceIds:
       - web-codex-cli-features
       - web-codex-cli
+    unresolvedGaps:
+      - Codex documents multimodal workflows broadly, but it does not publish a dedicated CLI image-input capability contract.
   - id: claim:web-codex-session-resume
     kind: Claim
     claimId: web-codex-session-resume
@@ -110,7 +128,10 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: medium
+    provenanceKind: vendor-documentation
+    evidenceStrength: corroborated
     status: current
     evidenceIds:
       - web-codex-cli-features
       - web-codex-cli-reference
+    unresolvedGaps: []

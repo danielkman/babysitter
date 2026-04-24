@@ -12,10 +12,13 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "high",
+      "provenanceKind": "repo-observation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "repo-agent-mux-host"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:repo-sdk-fallback",
@@ -25,10 +28,13 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "high",
+      "provenanceKind": "repo-observation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "repo-sdk-fallback"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:repo-transport-mux-architecture",
@@ -38,10 +44,13 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "high",
+      "provenanceKind": "repo-observation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "repo-transport-mux-architecture"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:repo-transport-mux-migration",
@@ -51,10 +60,13 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "high",
+      "provenanceKind": "repo-observation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "repo-transport-mux-migration"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:repo-transport-mux-readme",
@@ -64,10 +76,13 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "high",
+      "provenanceKind": "repo-observation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "repo-transport-mux-readme"
-      ]
+      ],
+      "unresolvedGaps": []
     }
   ]
 }

@@ -73,10 +73,13 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: medium
+    provenanceKind: vendor-documentation
+    evidenceStrength: corroborated
     status: current
     evidenceIds:
       - web-gemini-cli-index
       - web-gemini-cli-reference
+    unresolvedGaps: []
   - id: claim:web-gemini-cli-skills
     kind: Claim
     claimId: web-gemini-cli-skills
@@ -84,9 +87,13 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: medium
+    provenanceKind: vendor-documentation
+    evidenceStrength: partial
     status: current
     evidenceIds:
       - web-gemini-cli-skills
+    unresolvedGaps:
+      - The skills claim currently rests on one official page rather than multiple corroborating sources.
   - id: claim:web-gemini-cli-hooks
     kind: Claim
     claimId: web-gemini-cli-hooks
@@ -94,10 +101,13 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: medium
+    provenanceKind: vendor-documentation
+    evidenceStrength: corroborated
     status: current
     evidenceIds:
       - web-gemini-cli-hooks
       - web-gemini-cli-index
+    unresolvedGaps: []
   - id: claim:web-gemini-cli-stdin-injection
     kind: Claim
     claimId: web-gemini-cli-stdin-injection
@@ -105,10 +115,13 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: medium
+    provenanceKind: vendor-documentation
+    evidenceStrength: corroborated
     status: current
     evidenceIds:
       - web-gemini-cli-headless
       - web-gemini-cli-reference
+    unresolvedGaps: []
   - id: claim:web-gemini-cli-image-input
     kind: Claim
     claimId: web-gemini-cli-image-input
@@ -116,10 +129,14 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: low
+    provenanceKind: vendor-inference
+    evidenceStrength: inferred
     status: current
     evidenceIds:
       - web-gemini-cli-index
       - web-gemini-cli-changelog
+    unresolvedGaps:
+      - The public evidence mixes general multimodal support with changelog notes instead of a dedicated CLI image-input contract.
   - id: claim:web-gemini-cli-session-resume
     kind: Claim
     claimId: web-gemini-cli-session-resume
@@ -127,7 +144,10 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: medium
+    provenanceKind: vendor-documentation
+    evidenceStrength: corroborated
     status: current
     evidenceIds:
       - web-gemini-cli-session-management
       - web-gemini-cli-checkpointing
+    unresolvedGaps: []

@@ -30,6 +30,12 @@
 
 - repo-backed claims come from SDK fallback metadata, hooks-mux discovery, agent-mux host detection, agent-plugins-mux targets, transport-mux protocol/provider docs, and existing catalog/process surfaces
 - web-backed claims are limited to first-party vendor docs already referenced by the graph evidence nodes
+- every `Claim` now carries explicit provenance semantics:
+  - `provenanceKind`: `repo-observation`, `vendor-documentation`, or `vendor-inference`
+  - `evidenceStrength`: `corroborated`, `partial`, or `inferred`
+  - `unresolvedGaps`: required markers for any vendor claim that is not fully corroborated
+- capability-support quality is derived from `supported_by_claim` edges rather than raw evidence IDs alone, so externally asserted capabilities can be separated into strongly corroborated support versus weaker vendor-doc inference
+- corroborated external capability assertions are expected to include at least one corroborated vendor claim backed by multiple first-party evidence sources; weaker assertions must keep explicit gap markers
 - `packages/agent-catalog/evidence/ontology-evidence/` is a derived directory export of evidence-source and claim nodes for easier external consumption
 - `manifest.json` lists the shard files; SDK consumers can assemble them through `getOntologyEvidenceSnapshot()`
 - the shard files are grouped into small batches by evidence domain so the derived export does not regress back into a single monolith

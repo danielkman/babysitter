@@ -1,9 +1,11 @@
 import {
   AGENT_CATALOG,
+  CAPABILITY_ASSERTIONS,
   FALLBACK_METADATA,
   GRAPH_DOCUMENT,
   HARNESS_IMAGES,
   HOST_DETECTION_RULES,
+  CLAIMS,
   HOOKS,
   HOOKS_MUX_DETECTION_RULES,
   HOST_METADATA_FIELDS,
@@ -15,7 +17,9 @@ import { getCatalogGraph, listGraphNodes, listRelationshipsByRelation } from "./
 import type {
   AgentCatalog,
   AgentVersion,
+  CapabilityAssertion,
   CatalogGraph,
+  ClaimRecord,
   GraphNode,
   HarnessFallbackMetadata,
   HarnessImageEntry,
@@ -78,6 +82,14 @@ export function getCatalogOntologySchema(): OntologySchema {
 
 export function getAgentCatalog(): AgentCatalog {
   return clone(AGENT_CATALOG);
+}
+
+export function listOntologyClaims(): ClaimRecord[] {
+  return clone(CLAIMS);
+}
+
+export function getCapabilitySupportAssertions(): CapabilityAssertion[] {
+  return clone(CAPABILITY_ASSERTIONS);
 }
 
 export function listAgentVersions(): AgentVersion[] {

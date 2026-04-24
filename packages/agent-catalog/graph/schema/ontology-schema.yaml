@@ -253,8 +253,11 @@ nodeKinds:
       - subjectKind
       - subjectId
       - confidence
+      - provenanceKind
+      - evidenceStrength
       - status
       - evidenceIds
+      - unresolvedGaps
 edgeKinds:
   has_schema:
     from:

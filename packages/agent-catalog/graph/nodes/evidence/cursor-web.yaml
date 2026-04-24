@@ -81,11 +81,14 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: medium
+    provenanceKind: vendor-documentation
+    evidenceStrength: corroborated
     status: current
     evidenceIds:
       - web-cursor-agent-overview
       - web-cursor-cli-overview
       - web-cursor-cli-using
+    unresolvedGaps: []
   - id: claim:web-cursor-rules
     kind: Claim
     claimId: web-cursor-rules
@@ -93,9 +96,13 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: medium
+    provenanceKind: vendor-inference
+    evidenceStrength: partial
     status: current
     evidenceIds:
       - web-cursor-rules
+    unresolvedGaps:
+      - Cursor rules are the closest public analogue to reusable skills, but the exact skill-equivalence remains a local normalization choice.
   - id: claim:web-cursor-hooks
     kind: Claim
     claimId: web-cursor-hooks
@@ -103,11 +110,15 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: medium
+    provenanceKind: vendor-documentation
+    evidenceStrength: partial
     status: current
     evidenceIds:
       - web-cursor-hooks
       - repo-target-cursor
       - repo-target-index
+    unresolvedGaps:
+      - The docs confirm hooks exist, but the normalized hook-name mapping still depends on local target metadata.
   - id: claim:web-cursor-stdin-injection
     kind: Claim
     claimId: web-cursor-stdin-injection
@@ -115,10 +126,13 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: medium
+    provenanceKind: vendor-documentation
+    evidenceStrength: corroborated
     status: current
     evidenceIds:
       - web-cursor-cli-headless
       - web-cursor-cli-using
+    unresolvedGaps: []
   - id: claim:web-cursor-image-input
     kind: Claim
     claimId: web-cursor-image-input
@@ -126,9 +140,13 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: low
+    provenanceKind: vendor-inference
+    evidenceStrength: inferred
     status: current
     evidenceIds:
       - web-cursor-agent-overview
+    unresolvedGaps:
+      - Cursor documents image-aware reads broadly, but it does not publish a standalone capability contract for normalized image-input semantics.
   - id: claim:web-cursor-session-resume
     kind: Claim
     claimId: web-cursor-session-resume
@@ -136,7 +154,11 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: medium
+    provenanceKind: vendor-inference
+    evidenceStrength: partial
     status: current
     evidenceIds:
       - web-cursor-agent-overview
       - web-cursor-cli-shell-mode
+    unresolvedGaps:
+      - The current evidence supports checkpoint restoration and persistent context, but a dedicated CLI resume command contract is not explicitly documented.

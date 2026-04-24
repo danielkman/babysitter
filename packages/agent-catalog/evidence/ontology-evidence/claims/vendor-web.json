@@ -12,9 +12,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "partial",
       "status": "current",
       "evidenceIds": [
         "web-anthropic-claude-code"
+      ],
+      "unresolvedGaps": [
+        "Anthropic's overview page is a single-source product description rather than a capability-by-capability corroboration set."
       ]
     },
     {
@@ -25,9 +30,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "partial",
       "status": "current",
       "evidenceIds": [
         "web-anthropic-claude-code-autonomy"
+      ],
+      "unresolvedGaps": [
+        "The autonomy announcement bundles several features together, so individual capability boundaries still need stronger per-feature corroboration."
       ]
     },
     {
@@ -38,11 +48,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "web-anthropic-claude-code-auto-mode",
         "web-anthropic-claude-code-sandboxing"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:web-claude-code-commands-and-skills",
@@ -52,13 +65,16 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "web-claude-code-commands",
         "web-claude-code-skills",
         "web-claude-code-claude-directory",
         "web-claude-code-features-overview"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:web-claude-code-core-agentic",
@@ -68,12 +84,15 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "web-claude-code-overview",
         "web-claude-code-quickstart",
         "web-claude-code-interactive-mode"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:web-claude-code-hooks",
@@ -83,11 +102,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "web-claude-code-hooks",
         "web-claude-code-hooks-guide"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:web-claude-code-image-input",
@@ -97,10 +119,15 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "low",
+      "provenanceKind": "vendor-inference",
+      "evidenceStrength": "inferred",
       "status": "current",
       "evidenceIds": [
         "web-claude-platform-vision",
         "web-claude-code-overview"
+      ],
+      "unresolvedGaps": [
+        "Claude Code does not currently publish a dedicated image-input capability page, so this capability is inferred from broader Claude multimodal documentation."
       ]
     },
     {
@@ -111,12 +138,15 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "web-claude-code-mcp",
         "web-claude-code-tools-reference",
         "web-claude-code-features-overview"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:web-claude-code-parallel-work",
@@ -126,11 +156,16 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-inference",
+      "evidenceStrength": "partial",
       "status": "current",
       "evidenceIds": [
         "web-claude-code-agent-teams",
         "web-claude-code-subagents",
         "web-claude-code-quickstart"
+      ],
+      "unresolvedGaps": [
+        "The docs support parallel task decomposition, but they do not fully specify scheduler-level guarantees for parallel execution as a normalized capability."
       ]
     },
     {
@@ -141,12 +176,15 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "web-claude-code-checkpointing",
         "web-claude-code-headless",
         "web-claude-code-cli-reference"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:web-claude-code-stdin-injection",
@@ -156,11 +194,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "web-claude-code-headless",
         "web-claude-code-cli-reference"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:web-claude-code-stop-hook",
@@ -170,11 +211,16 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "partial",
       "status": "current",
       "evidenceIds": [
         "web-claude-code-hooks",
         "repo-target-claude",
         "repo-target-index"
+      ],
+      "unresolvedGaps": [
+        "The stop-phase hook exists in vendor docs, but the normalized stop-hook capability still depends on local target mapping."
       ]
     },
     {
@@ -185,12 +231,15 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "web-claude-code-subagents",
         "web-claude-code-features-overview",
         "web-claude-code-claude-directory"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:web-claude-code-tool-approval",
@@ -200,12 +249,15 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "web-claude-code-permissions",
         "web-claude-code-permission-modes",
         "web-anthropic-claude-code-auto-mode"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:web-codex-core-agentic",
@@ -215,11 +267,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "web-codex-cli",
         "web-codex-cli-features"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:web-codex-hooks",
@@ -229,9 +284,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "partial",
       "status": "current",
       "evidenceIds": [
         "web-codex-hooks"
+      ],
+      "unresolvedGaps": [
+        "The vendor docs confirm hooks exist, but exact normalized lifecycle mapping still depends on local ontology interpretation."
       ]
     },
     {
@@ -242,10 +302,15 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "low",
+      "provenanceKind": "vendor-inference",
+      "evidenceStrength": "inferred",
       "status": "current",
       "evidenceIds": [
         "web-codex-cli-features",
         "web-codex-cli"
+      ],
+      "unresolvedGaps": [
+        "Codex documents multimodal workflows broadly, but it does not publish a dedicated CLI image-input capability contract."
       ]
     },
     {
@@ -256,11 +321,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "web-codex-cli-features",
         "web-codex-cli-reference"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:web-codex-skills",
@@ -270,9 +338,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "partial",
       "status": "current",
       "evidenceIds": [
         "web-codex-skills"
+      ],
+      "unresolvedGaps": [
+        "The public Codex skills documentation is currently a single-source vendor page."
       ]
     },
     {
@@ -283,11 +356,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "web-codex-noninteractive",
         "web-codex-cli-reference"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:web-cursor-core-agentic",
@@ -297,12 +373,15 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "web-cursor-agent-overview",
         "web-cursor-cli-overview",
         "web-cursor-cli-using"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:web-cursor-hooks",
@@ -312,11 +391,16 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "partial",
       "status": "current",
       "evidenceIds": [
         "web-cursor-hooks",
         "repo-target-cursor",
         "repo-target-index"
+      ],
+      "unresolvedGaps": [
+        "The docs confirm hooks exist, but the normalized hook-name mapping still depends on local target metadata."
       ]
     },
     {
@@ -327,9 +411,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "low",
+      "provenanceKind": "vendor-inference",
+      "evidenceStrength": "inferred",
       "status": "current",
       "evidenceIds": [
         "web-cursor-agent-overview"
+      ],
+      "unresolvedGaps": [
+        "Cursor documents image-aware reads broadly, but it does not publish a standalone capability contract for normalized image-input semantics."
       ]
     },
     {
@@ -340,9 +429,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-inference",
+      "evidenceStrength": "partial",
       "status": "current",
       "evidenceIds": [
         "web-cursor-rules"
+      ],
+      "unresolvedGaps": [
+        "Cursor rules are the closest public analogue to reusable skills, but the exact skill-equivalence remains a local normalization choice."
       ]
     },
     {
@@ -353,10 +447,15 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-inference",
+      "evidenceStrength": "partial",
       "status": "current",
       "evidenceIds": [
         "web-cursor-agent-overview",
         "web-cursor-cli-shell-mode"
+      ],
+      "unresolvedGaps": [
+        "The current evidence supports checkpoint restoration and persistent context, but a dedicated CLI resume command contract is not explicitly documented."
       ]
     },
     {
@@ -367,11 +466,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "web-cursor-cli-headless",
         "web-cursor-cli-using"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:web-gemini-cli-core-agentic",
@@ -381,11 +483,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "web-gemini-cli-index",
         "web-gemini-cli-reference"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:web-gemini-cli-hooks",
@@ -395,11 +500,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "web-gemini-cli-hooks",
         "web-gemini-cli-index"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:web-gemini-cli-image-input",
@@ -409,10 +517,15 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "low",
+      "provenanceKind": "vendor-inference",
+      "evidenceStrength": "inferred",
       "status": "current",
       "evidenceIds": [
         "web-gemini-cli-index",
         "web-gemini-cli-changelog"
+      ],
+      "unresolvedGaps": [
+        "The public evidence mixes general multimodal support with changelog notes instead of a dedicated CLI image-input contract."
       ]
     },
     {
@@ -423,11 +536,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "web-gemini-cli-session-management",
         "web-gemini-cli-checkpointing"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:web-gemini-cli-skills",
@@ -437,9 +553,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "partial",
       "status": "current",
       "evidenceIds": [
         "web-gemini-cli-skills"
+      ],
+      "unresolvedGaps": [
+        "The skills claim currently rests on one official page rather than multiple corroborating sources."
       ]
     },
     {
@@ -450,11 +571,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "web-gemini-cli-headless",
         "web-gemini-cli-reference"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:web-gemini-hooks",
@@ -464,9 +588,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "partial",
       "status": "current",
       "evidenceIds": [
         "web-gemini-hooks"
+      ],
+      "unresolvedGaps": [
+        "This claim depends on one first-party repository page and still relies on local normalization for exact hook-name mapping."
       ]
     },
     {
@@ -477,9 +606,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "partial",
       "status": "current",
       "evidenceIds": [
         "web-github-copilot-agent"
+      ],
+      "unresolvedGaps": [
+        "The agent workflow page is broad product documentation and does not fully separate CLI-native capabilities from wider Copilot surfaces."
       ]
     },
     {
@@ -490,11 +624,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "web-github-copilot-cli-overview",
         "web-github-copilot-cli-getting-started"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:web-github-copilot-cli-hooks",
@@ -504,11 +641,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "web-github-copilot-cli-hooks",
         "web-github-copilot-hooks-config"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:web-github-copilot-cli-mcp",
@@ -518,11 +658,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "web-github-copilot-cli-mcp",
         "web-github-copilot-mcp"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:web-github-copilot-cli-session-resume",
@@ -532,10 +675,15 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-inference",
+      "evidenceStrength": "partial",
       "status": "current",
       "evidenceIds": [
         "web-github-copilot-cli-config-dir",
         "web-github-copilot-cli-getting-started"
+      ],
+      "unresolvedGaps": [
+        "GitHub documents persisted local state, but an explicit CLI resume contract is still inferred from storage-oriented docs."
       ]
     },
     {
@@ -546,11 +694,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "web-github-copilot-cli-plugins",
         "web-github-copilot-cli-plugin-reference"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:web-github-copilot-custom-instructions",
@@ -560,9 +711,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-inference",
+      "evidenceStrength": "partial",
       "status": "current",
       "evidenceIds": [
         "web-github-copilot-custom-instructions"
+      ],
+      "unresolvedGaps": [
+        "Persistent custom instructions are adjacent to skills, but the reusable-skill equivalence remains an ontology-level inference."
       ]
     },
     {
@@ -573,9 +729,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "low",
+      "provenanceKind": "vendor-inference",
+      "evidenceStrength": "inferred",
       "status": "current",
       "evidenceIds": [
         "web-github-copilot-sdk-image-input"
+      ],
+      "unresolvedGaps": [
+        "Public image-input evidence is SDK-scoped and does not fully corroborate the same capability for Copilot CLI."
       ]
     },
     {
@@ -586,9 +747,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "partial",
       "status": "current",
       "evidenceIds": [
         "web-github-copilot-mcp"
+      ],
+      "unresolvedGaps": [
+        "The linked GitHub MCP documentation confirms support, but broader cloud-agent claims still need cleaner separation from CLI-specific behavior."
       ]
     },
     {
@@ -599,9 +765,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "partial",
       "status": "current",
       "evidenceIds": [
         "web-omp-readme"
+      ],
+      "unresolvedGaps": [
+        "The current evidence is a single README source rather than a multi-page product documentation set."
       ]
     },
     {
@@ -612,9 +783,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "partial",
       "status": "current",
       "evidenceIds": [
         "web-omp-hooks"
+      ],
+      "unresolvedGaps": [
+        "The hook subsystem is documented, but stronger corroboration is still needed for normalized lifecycle mapping and default runtime behavior."
       ]
     },
     {
@@ -625,9 +801,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "partial",
       "status": "current",
       "evidenceIds": [
         "web-omp-session-resume"
+      ],
+      "unresolvedGaps": [
+        "The operator-visible session flows are documented on one page, without an additional source corroborating normalized resume semantics."
       ]
     },
     {
@@ -638,9 +819,32 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "partial",
       "status": "current",
       "evidenceIds": [
         "web-omp-skills"
+      ],
+      "unresolvedGaps": [
+        "The skills claim currently relies on one first-party document."
+      ]
+    },
+    {
+      "id": "claim:web-omp-stdin-injection",
+      "kind": "Claim",
+      "claimId": "web-omp-stdin-injection",
+      "statement": "Oh-My-Pi publicly documents an interactive terminal agent surface, but non-interactive stdin injection is still inferred rather than described as a dedicated operator workflow.",
+      "subjectKind": "catalog",
+      "subjectId": "graph:agent-catalog",
+      "confidence": "low",
+      "provenanceKind": "vendor-inference",
+      "evidenceStrength": "inferred",
+      "status": "current",
+      "evidenceIds": [
+        "web-omp-readme"
+      ],
+      "unresolvedGaps": [
+        "The current Oh-My-Pi public docs do not explicitly document piped or headless prompt injection."
       ]
     },
     {
@@ -651,9 +855,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "partial",
       "status": "current",
       "evidenceIds": [
         "web-openai-codex-skills"
+      ],
+      "unresolvedGaps": [
+        "The Codex skills page is a single official source and does not by itself corroborate every local skill-normalization assumption."
       ]
     },
     {
@@ -664,9 +873,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-inference",
+      "evidenceStrength": "partial",
       "status": "current",
       "evidenceIds": [
         "web-opencode-commands"
+      ],
+      "unresolvedGaps": [
+        "OpenCode commands are the closest public analogue to reusable skills, but the shared skills capability remains a local normalization."
       ]
     },
     {
@@ -677,10 +891,31 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "web-opencode-tui",
         "web-opencode-providers"
+      ],
+      "unresolvedGaps": []
+    },
+    {
+      "id": "claim:web-opencode-image-input",
+      "kind": "Claim",
+      "claimId": "web-opencode-image-input",
+      "statement": "OpenCode public docs establish a rich terminal coding surface, but image-input support is still an ontology-level inference rather than a documented first-party capability contract.",
+      "subjectKind": "catalog",
+      "subjectId": "graph:agent-catalog",
+      "confidence": "low",
+      "provenanceKind": "vendor-inference",
+      "evidenceStrength": "inferred",
+      "status": "current",
+      "evidenceIds": [
+        "web-opencode-tui"
+      ],
+      "unresolvedGaps": [
+        "No first-party OpenCode doc in the current evidence set explicitly documents image attachments or image-aware prompts."
       ]
     },
     {
@@ -691,9 +926,14 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "medium",
+      "provenanceKind": "vendor-documentation",
+      "evidenceStrength": "partial",
       "status": "current",
       "evidenceIds": [
         "web-opencode-plugins"
+      ],
+      "unresolvedGaps": [
+        "Plugin-driven extensibility is documented, but stronger corroboration is still needed for exact runtime-hook and stop-hook semantics."
       ]
     },
     {
@@ -704,9 +944,33 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "low",
+      "provenanceKind": "vendor-inference",
+      "evidenceStrength": "inferred",
       "status": "current",
       "evidenceIds": [
         "web-opencode-windows-wsl"
+      ],
+      "unresolvedGaps": [
+        "Session persistence is inferred from storage documentation rather than an explicit resume or continue feature contract."
+      ]
+    },
+    {
+      "id": "claim:web-opencode-stdin-injection",
+      "kind": "Claim",
+      "claimId": "web-opencode-stdin-injection",
+      "statement": "OpenCode's public docs describe interactive command-driven terminal workflows, but non-interactive stdin injection remains an inferred capability rather than an explicitly documented contract.",
+      "subjectKind": "catalog",
+      "subjectId": "graph:agent-catalog",
+      "confidence": "low",
+      "provenanceKind": "vendor-inference",
+      "evidenceStrength": "inferred",
+      "status": "current",
+      "evidenceIds": [
+        "web-opencode-tui",
+        "web-opencode-commands"
+      ],
+      "unresolvedGaps": [
+        "The public docs do not publish a dedicated headless or piped-input mode for OpenCode."
       ]
     }
   ]

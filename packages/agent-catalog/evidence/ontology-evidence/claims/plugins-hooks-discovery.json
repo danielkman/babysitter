@@ -12,10 +12,13 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "high",
+      "provenanceKind": "repo-observation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "repo-codex-windows-hooks"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:repo-hooks-detector",
@@ -25,10 +28,13 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "high",
+      "provenanceKind": "repo-observation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "repo-hooks-detector"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:repo-target-claude",
@@ -38,10 +44,13 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "high",
+      "provenanceKind": "repo-observation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "repo-target-claude"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:repo-target-codex",
@@ -51,10 +60,13 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "high",
+      "provenanceKind": "repo-observation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "repo-target-codex"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:repo-target-copilot",
@@ -64,10 +76,13 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "high",
+      "provenanceKind": "repo-observation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "repo-target-copilot"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:repo-target-cursor",
@@ -77,10 +92,13 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "high",
+      "provenanceKind": "repo-observation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "repo-target-cursor"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:repo-target-gemini",
@@ -90,10 +108,13 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "high",
+      "provenanceKind": "repo-observation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "repo-target-gemini"
-      ]
+      ],
+      "unresolvedGaps": []
     },
     {
       "id": "claim:repo-target-index",
@@ -103,10 +124,13 @@
       "subjectKind": "catalog",
       "subjectId": "graph:agent-catalog",
       "confidence": "high",
+      "provenanceKind": "repo-observation",
+      "evidenceStrength": "corroborated",
       "status": "current",
       "evidenceIds": [
         "repo-target-index"
-      ]
+      ],
+      "unresolvedGaps": []
     }
   ]
 }

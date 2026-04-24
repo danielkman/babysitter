@@ -41,9 +41,12 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: high
+    provenanceKind: repo-observation
+    evidenceStrength: corroborated
     status: current
     evidenceIds:
       - repo-babysitter-agent-package
+    unresolvedGaps: []
   - id: claim:repo-babysitter-agent-cli
     kind: Claim
     claimId: repo-babysitter-agent-cli
@@ -51,10 +54,13 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: high
+    provenanceKind: repo-observation
+    evidenceStrength: corroborated
     status: current
     evidenceIds:
       - repo-babysitter-agent-package
       - repo-babysitter-agent-cli
+    unresolvedGaps: []
   - id: claim:web-anthropic-claude-code-safety
     kind: Claim
     claimId: web-anthropic-claude-code-safety
@@ -62,7 +68,10 @@ nodes:
     subjectKind: catalog
     subjectId: graph:agent-catalog
     confidence: medium
+    provenanceKind: vendor-documentation
+    evidenceStrength: corroborated
     status: current
     evidenceIds:
       - web-anthropic-claude-code-auto-mode
       - web-anthropic-claude-code-sandboxing
+    unresolvedGaps: []

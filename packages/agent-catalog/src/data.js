@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AGENT_CATALOG = exports.PLUGIN_TARGETS = exports.HARNESS_IMAGES = exports.FALLBACK_METADATA = exports.HOOKS_MUX_DETECTION_RULES = exports.HOST_METADATA_FIELDS = exports.HOST_SIGNAL_MAP = exports.HOST_DETECTION_RULES = exports.AGENTS = exports.PROCESSES = exports.LIFECYCLE_NUANCES = exports.SESSION_NUANCES = exports.HOOKS = exports.MODALITIES = exports.CAPABILITIES = exports.TRANSPORTS = exports.MODELS = exports.PROVIDERS = exports.EVIDENCE = exports.ONTOLOGY_SCHEMA = exports.GRAPH_DOCUMENT = void 0;
+exports.AGENT_CATALOG = exports.CAPABILITY_ASSERTIONS = exports.PLUGIN_TARGETS = exports.HARNESS_IMAGES = exports.FALLBACK_METADATA = exports.HOOKS_MUX_DETECTION_RULES = exports.HOST_METADATA_FIELDS = exports.HOST_SIGNAL_MAP = exports.HOST_DETECTION_RULES = exports.AGENTS = exports.PROCESSES = exports.LIFECYCLE_NUANCES = exports.SESSION_NUANCES = exports.HOOKS = exports.MODALITIES = exports.CAPABILITIES = exports.TRANSPORTS = exports.MODELS = exports.PROVIDERS = exports.CLAIMS = exports.EVIDENCE = exports.ONTOLOGY_SCHEMA = exports.GRAPH_DOCUMENT = void 0;
 const graph_1 = require("./graph");
 const FALLBACK_SESSION_DIR = ".a5c/runs";
 function valueAsString(value) {
@@ -17,6 +17,34 @@ function stringArray(value) {
 }
 function nodeEvidenceIds(node) {
     return stringArray(node.evidenceRefs);
+}
+function claimConfidence(value) {
+    const normalized = valueAsString(value);
+    return normalized === "high" || normalized === "medium" ? normalized : "low";
+}
+function claimProvenanceKind(value) {
+    const normalized = valueAsString(value);
+    if (normalized === "repo-observation" || normalized === "vendor-documentation") {
+        return normalized;
+    }
+    return "vendor-inference";
+}
+function claimEvidenceStrength(value) {
+    const normalized = valueAsString(value);
+    if (normalized === "corroborated" || normalized === "partial") {
+        return normalized;
+    }
+    return "inferred";
+}
+function evidenceStrengthRank(strength) {
+    if (strength === "corroborated")
+        return 3;
+    if (strength === "partial")
+        return 2;
+    return 1;
+}
+function uniqueStrings(values) {
+    return Array.from(new Set(values));
 }
 function toModelProviderVersion(node) {
     const product = (0, graph_1.getNodeById)(`provider:${valueAsString(node.providerId)}`);
@@ -200,6 +228,46 @@ function toEvidenceRecord(node) {
         capturedAt: valueAsString(node.capturedAt),
     };
 }
+function toClaimRecord(node) {
+    return {
+        claimId: valueAsString(node.claimId),
+        statement: valueAsString(node.statement),
+        subjectKind: valueAsString(node.subjectKind),
+        subjectId: valueAsString(node.subjectId),
+        confidence: claimConfidence(node.confidence),
+        status: valueAsString(node.status),
+        provenanceKind: claimProvenanceKind(node.provenanceKind),
+        evidenceStrength: claimEvidenceStrength(node.evidenceStrength),
+        evidenceIds: stringArray(node.evidenceIds),
+        unresolvedGaps: stringArray(node.unresolvedGaps),
+    };
+}
+function buildCapabilityAssertions() {
+    return (0, graph_1.listNodesByKind)("CapabilitySupport").map((node) => {
+        const supportingClaims = (0, graph_1.listOutgoingTargets)(node.id, "supported_by_claim")
+            .filter((claim) => claim.kind === "Claim")
+            .map(toClaimRecord);
+        const vendorClaims = supportingClaims.filter((claim) => claim.provenanceKind !== "repo-observation");
+        const primaryClaims = vendorClaims.length > 0 ? vendorClaims : supportingClaims;
+        const evidenceStrength = primaryClaims.reduce((strongest, claim) => evidenceStrengthRank(claim.evidenceStrength) > evidenceStrengthRank(strongest)
+            ? claim.evidenceStrength
+            : strongest, "inferred");
+        return {
+            supportId: valueAsString(node.supportId),
+            capabilityId: valueAsString(node.capabilityId),
+            subjectKind: valueAsString(node.subjectKind),
+            subjectId: valueAsString(node.subjectId),
+            versionRange: valueAsString(node.versionRange),
+            supportLevel: valueAsString(node.supportLevel),
+            notes: valueAsString(node.notes) || undefined,
+            evidenceIds: nodeEvidenceIds(node),
+            hasVendorEvidence: vendorClaims.length > 0,
+            evidenceStrength,
+            unresolvedGaps: uniqueStrings(primaryClaims.flatMap((claim) => claim.unresolvedGaps)),
+            supportingClaims,
+        };
+    });
+}
 function buildHookDetectionRules() {
     return (0, graph_1.listNodesByKind)("DiscoverySignal")
         .filter((node) => valueAsString(node.scope) === "hooks-mux")
@@ -371,6 +439,7 @@ const GRAPH = (0, graph_1.getCatalogGraph)();
 exports.GRAPH_DOCUMENT = (0, graph_1.getGraphDocument)();
 exports.ONTOLOGY_SCHEMA = (0, graph_1.getOntologySchema)();
 exports.EVIDENCE = (0, graph_1.listNodesByKind)("EvidenceSource").map(toEvidenceRecord);
+exports.CLAIMS = (0, graph_1.listNodesByKind)("Claim").map(toClaimRecord);
 exports.PROVIDERS = (0, graph_1.listNodesByKind)("ModelProviderVersion").map(toModelProviderVersion);
 exports.MODELS = (0, graph_1.listNodesByKind)("ModelVersion").map(toModelVersion);
 exports.TRANSPORTS = (0, graph_1.listNodesByKind)("TransportRuntime")
@@ -392,10 +461,12 @@ exports.HOOKS_MUX_DETECTION_RULES = buildHookDetectionRules();
 exports.FALLBACK_METADATA = buildFallbackMetadata();
 exports.HARNESS_IMAGES = buildHarnessImages();
 exports.PLUGIN_TARGETS = buildPluginTargetDescriptors();
+exports.CAPABILITY_ASSERTIONS = buildCapabilityAssertions();
 exports.AGENT_CATALOG = {
     schemaVersion: exports.GRAPH_DOCUMENT.schemaVersion,
     generatedAt: exports.GRAPH_DOCUMENT.generatedAt,
     evidence: exports.EVIDENCE,
+    claims: exports.CLAIMS,
     providers: exports.PROVIDERS,
     models: exports.MODELS,
     transports: exports.TRANSPORTS,
@@ -406,6 +477,7 @@ exports.AGENT_CATALOG = {
     lifecycleNuances: exports.LIFECYCLE_NUANCES,
     processes: exports.PROCESSES,
     agents: exports.AGENTS,
+    capabilityAssertions: exports.CAPABILITY_ASSERTIONS,
     graph: GRAPH.edges.map((edge) => ({
         edgeId: edge.id,
         from: edge.from,
