@@ -31,7 +31,7 @@ These workspaces are part of the active monorepo and ship code or operational be
 | --- | --- | --- |
 | `packages/agent-core` | Internal harness support package | `.github/workflows/ci.yml` job `test` |
 | `packages/babysitter-agent` | Internal harness runtime CLI | `.github/workflows/ci.yml` job `test` |
-| `packages/agent-catalog` | Authoritative metadata catalog consumed by SDK, agent-mux, hooks-mux, plugin compiler, and catalog UI | `.github/workflows/ci.yml` job `workspace-coverage` |
+| `packages/agent-catalog` | private, non-release workspace package for the metadata catalog consumed by SDK, agent-mux, hooks-mux, plugin compiler, and catalog UI | `.github/workflows/ci.yml` job `workspace-coverage` |
 | `packages/catalog` | Internal Next.js catalog UI | `.github/workflows/ci.yml` job `workspace-coverage` |
 | `packages/babysitter-tui-plugins` | Internal TUI plugin package for babysitter observability | `.github/workflows/ci.yml` job `workspace-coverage` |
 | `packages/transport-mux` | Internal placeholder seam with explicit migration scorecard | `.github/workflows/ci.yml` job `workspace-coverage` (`build` + `scorecard:migration`) |

@@ -190,8 +190,8 @@ jobs:
           - @a5c-ai/agent-mux-* -> test + release/staging publish
           - @a5c-ai/babysitter + harness plugin packages -> test + release/staging publish paths
 
-          Internal-only active workspaces validated in this job:
-          - @a5c-ai/agent-catalog
+          Internal-only, non-release workspaces validated in this job:
+          - @a5c-ai/agent-catalog (private workspace package)
           - process-library-catalog
           - @a5c-ai/babysitter-tui-plugins
           - @a5c-ai/transport-mux (build + migration scorecard)
