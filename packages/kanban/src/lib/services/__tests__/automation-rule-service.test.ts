@@ -2,10 +2,14 @@ import { promises as fs } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { AppError } from "../../error-handler";
 import { AutomationRuleService } from "../automation-rule-service";
-import { BacklogQueryService } from "../backlog-query-service";
+
+vi.mock("../backlog-query-service", () => ({
+  BacklogQueryService: class BacklogQueryService {},
+}));
 
 const tempDirs: string[] = [];
 
@@ -29,39 +33,134 @@ function createBacklogOverview() {
 }
 
 function createService(backlogFilePath: string) {
-  const realBacklogQueryService = new BacklogQueryService({
-    backlogFilePath,
-    now: () => "2026-04-24T12:00:00.000Z",
-    reviewService: {
-      listReviews: async () => ({
-        generatedAt: "2026-04-24T12:00:00.000Z",
-        artifacts: [],
-        queue: [],
-        summary: {
-          total: 0,
-          issueCount: 0,
-          workspaceCount: 0,
-          pendingCount: 0,
-          changesRequestedCount: 0,
-          approvedCount: 0,
-          openCommentCount: 0,
-        },
-      }),
-    } as never,
-    runQueryService: {
-      listProjects: async () => ({
-        recentCompletionWindowMs: 14400000,
-        projects: [],
-      }),
-    } as never,
-  });
-
   return new AutomationRuleService({
     backlogFilePath,
     now: () => "2026-04-24T12:00:00.000Z",
     backlogQueryService: {
       getOverview: async () => createBacklogOverview(),
-      createIssue: (...args) => realBacklogQueryService.createIssue(...args),
+      createIssue: async (input: {
+        projectId: string;
+        title: string;
+        summary?: string;
+        description?: string;
+        status?: string;
+        priority?: string;
+        labelIds?: readonly string[];
+        assigneeIds?: readonly string[];
+        acceptanceCriteria?: readonly string[];
+        decomposition?: readonly { title: string; kind: string; status: string }[];
+        source?: Record<string, unknown>;
+        metadata?: Record<string, unknown>;
+      }) => {
+        const raw = await fs.readFile(backlogFilePath, "utf8").catch(() => "{}");
+        const storage = JSON.parse(raw) as {
+          projects?: Array<{
+            id: string;
+            key: string;
+            name: string;
+            issueIds?: string[];
+            labels?: Array<{ id: string; name: string }>;
+            assignees?: Array<{ id: string; displayName: string; email?: string }>;
+            statuses?: Array<{ id: string; name: string }>;
+            repositories?: unknown[];
+          }>;
+          issues?: Array<{ id: string; key: string }>;
+          automationRules?: unknown[];
+          automationExecutions?: unknown[];
+        };
+
+        const seededProjects =
+          storage.projects && storage.projects.length > 0
+            ? storage.projects
+            : [
+                {
+                  id: "kanban-app",
+                  key: "KANBAN",
+                  name: "Kanban App",
+                  issueIds: [],
+                  labels: [{ id: "label-debt", name: "debt" }],
+                  assignees: [],
+                  statuses: [],
+                  repositories: [],
+                },
+              ];
+        const project = seededProjects.find((candidate) => candidate.id === input.projectId);
+        if (!project) {
+          throw new AppError(`Project ${input.projectId} not found.`, "NOT_FOUND", 404);
+        }
+
+        const nextNumber = String((storage.issues?.length ?? 0) + 1).padStart(3, "0");
+        const issueKey = `${project.key}-AUTO-${nextNumber}`;
+        const issue = {
+          id: issueKey,
+          key: issueKey,
+          projectId: input.projectId,
+          title: input.title,
+          summary: input.summary,
+          description: input.description,
+          status: input.status ?? "backlog",
+          priority: input.priority ?? "medium",
+          labels: (input.labelIds ?? []).map((labelId) => ({ id: labelId, name: labelId })),
+          assignees: (input.assigneeIds ?? []).map((assigneeId) => ({
+            id: assigneeId,
+            displayName: assigneeId,
+          })),
+          dependencies: [],
+          acceptanceCriteria: (input.acceptanceCriteria ?? []).map((title, index) => ({
+            id: `${issueKey}-ac-${index + 1}`,
+            title,
+            satisfied: false,
+          })),
+          decomposition: (input.decomposition ?? []).map((item, index) => ({
+            id: `${issueKey}-decomp-${index + 1}`,
+            title: item.title,
+            kind: item.kind,
+            status: item.status,
+          })),
+          childIssueIds: [],
+          createdAt: "2026-04-24T12:00:00.000Z",
+          updatedAt: "2026-04-24T12:00:00.000Z",
+          source: input.source,
+          metadata: input.metadata,
+          dispatch: {
+            readiness: input.status === "ready" ? "ready" : "needs-triage",
+            blockedReasons: [],
+            runIds: [],
+            sessionIds: [],
+          },
+        };
+
+        await fs.writeFile(
+          backlogFilePath,
+          JSON.stringify(
+            {
+              ...storage,
+              projects: seededProjects.map((candidate) =>
+                candidate.id === project.id
+                  ? {
+                      ...candidate,
+                      issueIds: [...(candidate.issueIds ?? []), issue.id],
+                    }
+                  : candidate,
+              ),
+              issues: [...(storage.issues ?? []), issue],
+            },
+            null,
+            2,
+          ),
+          "utf8",
+        );
+
+        return {
+          overview: {
+            snapshot: {
+              projects: seededProjects,
+              issues: [...(storage.issues ?? []), issue],
+            },
+          },
+          issue,
+        } as never;
+      },
     },
   });
 }
@@ -381,6 +480,16 @@ describe("AutomationRuleService", () => {
     ).rejects.toMatchObject({
       code: "AUTOMATION_ROUTING_FAILED",
       status: 409,
+    });
+
+    const persisted = JSON.parse(await fs.readFile(backlogFilePath, "utf8")) as {
+      automationExecutions: Array<{ status: string; reason?: string; triggerType: string }>;
+    };
+
+    expect(persisted.automationExecutions[0]).toMatchObject({
+      status: "rejected",
+      triggerType: "timer",
+      reason: expect.stringContaining("Automation routing failed"),
     });
   });
 });

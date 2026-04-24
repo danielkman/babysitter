@@ -78,6 +78,8 @@ export type AutomationRuleRecord = AutomationRule & {
   readonly allowedActions: readonly AutomationRuleAction[];
   readonly isEnabled: boolean;
   readonly triggerType: AutomationTriggerType;
+  readonly executionSummary: AutomationRuleExecutionSummary;
+  readonly recentExecutions: readonly AutomationExecutionRecord[];
 };
 
 export interface AutomationRuleTargetOption {
@@ -93,6 +95,20 @@ export interface AutomationRuleCollectionSummary {
   readonly visibleCount: number;
   readonly stateCounts: Readonly<Record<AutomationRuleLifecycleState, number>>;
   readonly triggerCounts: Readonly<Record<AutomationTriggerType, number>>;
+  readonly executionCount: number;
+  readonly failureCount: number;
+  readonly failingCount: number;
+}
+
+export interface AutomationRuleExecutionSummary {
+  readonly totalCount: number;
+  readonly createdCount: number;
+  readonly coalescedCount: number;
+  readonly rejectedCount: number;
+  readonly latestStatus?: AutomationExecutionRecord['status'];
+  readonly lastTriggeredAt?: string;
+  readonly lastFailureAt?: string;
+  readonly isFailing: boolean;
 }
 
 export interface AutomationRuleCollectionResponse {
@@ -475,6 +491,7 @@ function readAllowedActions(state: AutomationRuleLifecycleState): readonly Autom
 function summarizeRules(
   allRules: readonly AutomationRule[],
   visibleRules: readonly AutomationRule[],
+  executionIndex: ReadonlyMap<string, readonly AutomationExecutionRecord[]>,
 ): AutomationRuleCollectionSummary {
   const stateCounts: Record<AutomationRuleLifecycleState, number> = {
     draft: 0,
@@ -493,11 +510,26 @@ function summarizeRules(
     triggerCounts[rule.trigger.type] += 1;
   }
 
+  let executionCount = 0;
+  let failureCount = 0;
+  let failingCount = 0;
+  for (const rule of allRules) {
+    const summary = summarizeExecutions(rule, executionIndex.get(rule.id) ?? []);
+    executionCount += summary.totalCount;
+    failureCount += summary.rejectedCount;
+    if (summary.isFailing) {
+      failingCount += 1;
+    }
+  }
+
   return {
     totalCount: allRules.length,
     visibleCount: visibleRules.length,
     stateCounts,
     triggerCounts,
+    executionCount,
+    failureCount,
+    failingCount,
   };
 }
 
@@ -537,12 +569,101 @@ function ruleMatchesQuery(rule: AutomationRule, query: AutomationRuleQuery): boo
   return true;
 }
 
-function toRuleRecord(rule: AutomationRule): AutomationRuleRecord {
+function compareExecutionDescending(
+  left: AutomationExecutionRecord,
+  right: AutomationExecutionRecord,
+): number {
+  return (
+    Date.parse(right.triggeredAt) - Date.parse(left.triggeredAt) ||
+    right.id.localeCompare(left.id)
+  );
+}
+
+function buildExecutionIndex(
+  executions: readonly AutomationExecutionRecord[] | undefined,
+): ReadonlyMap<string, readonly AutomationExecutionRecord[]> {
+  const index = new Map<string, AutomationExecutionRecord[]>();
+  for (const execution of executions ?? []) {
+    const records = index.get(execution.ruleId) ?? [];
+    records.push(execution);
+    index.set(execution.ruleId, records);
+  }
+
+  for (const records of index.values()) {
+    records.sort(compareExecutionDescending);
+  }
+
+  return index;
+}
+
+function summarizeExecutions(
+  rule: AutomationRule,
+  executions: readonly AutomationExecutionRecord[],
+): AutomationRuleExecutionSummary {
+  const latestExecution = executions[0];
+  const lastFailure = executions.find((execution) => execution.status === 'rejected');
+
+  const createdCount = executions.filter((execution) => execution.status === 'created').length;
+  const coalescedCount = executions.filter((execution) => execution.status === 'coalesced').length;
+  const rejectedCount = executions.filter((execution) => execution.status === 'rejected').length;
+
+  return {
+    totalCount: executions.length,
+    createdCount,
+    coalescedCount,
+    rejectedCount,
+    latestStatus: latestExecution?.status,
+    lastTriggeredAt: latestExecution?.triggeredAt,
+    lastFailureAt: lastFailure?.triggeredAt,
+    isFailing: rule.state === 'active' && latestExecution?.status === 'rejected',
+  };
+}
+
+function buildExecutionRecord(input: {
+  readonly id: string;
+  readonly rule: AutomationRule;
+  readonly status: AutomationExecutionRecord['status'];
+  readonly triggeredAt: string;
+  readonly triggeredBy: string;
+  readonly reason?: string;
+  readonly issue?: KanbanIssue;
+  readonly inputs?: Readonly<Record<string, unknown>>;
+  readonly metadata?: Readonly<Record<string, unknown>>;
+  readonly deliveryId?: string;
+}): AutomationExecutionRecord {
+  return {
+    id: input.id,
+    ruleId: input.rule.id,
+    ruleName: input.rule.name,
+    triggerType: input.rule.trigger.type,
+    status: input.status,
+    triggeredAt: input.triggeredAt,
+    triggeredBy: input.triggeredBy,
+    source: input.rule.source,
+    projectId: input.rule.routing.issue.projectId,
+    boardProjectId: input.rule.routing.board.boardProjectId,
+    issueId: input.issue?.id,
+    issueKey: input.issue?.key,
+    issueSource: input.issue?.source,
+    stateAtExecution: input.rule.state,
+    reason: input.reason,
+    deliveryId: input.deliveryId,
+    inputs: input.inputs,
+    metadata: input.metadata,
+  };
+}
+
+function toRuleRecord(
+  rule: AutomationRule,
+  executions: readonly AutomationExecutionRecord[] = [],
+): AutomationRuleRecord {
   return {
     ...rule,
     allowedActions: readAllowedActions(rule.state),
     isEnabled: rule.state === 'active',
     triggerType: rule.trigger.type,
+    executionSummary: summarizeExecutions(rule, executions),
+    recentExecutions: executions.slice(0, 5),
   };
 }
 
@@ -649,6 +770,35 @@ export class AutomationRuleService {
     });
   }
 
+  private async persistExecution(
+    storage: KanbanStoragePayload,
+    rule: AutomationRule,
+    execution: AutomationExecutionRecord,
+    triggeredAt: string,
+    triggeredBy: string,
+  ): Promise<void> {
+    const audit = {
+      ...rule.audit,
+      lastTriggeredAt: triggeredAt,
+      lastTriggeredBy: triggeredBy,
+      updatedAt: this.deps.now(),
+      updatedBy: triggeredBy,
+    };
+
+    await writeKanbanStorageFile(this.deps, {
+      ...storage,
+      automationRules: (storage.automationRules ?? []).map((candidate) =>
+        candidate.id === rule.id
+          ? {
+              ...candidate,
+              audit,
+            }
+          : candidate,
+      ),
+      automationExecutions: [...(storage.automationExecutions ?? []), execution],
+    });
+  }
+
   private readExistingRule(
     rules: readonly AutomationRule[],
     ruleId: string,
@@ -664,12 +814,13 @@ export class AutomationRuleService {
     const storage = await this.readStorage();
     const allRules = [...(storage.automationRules ?? [])];
     const visibleRules = allRules.filter((rule) => ruleMatchesQuery(rule, query));
+    const executionIndex = buildExecutionIndex(storage.automationExecutions);
     const targetOptions = await this.listTargetOptions();
 
     return {
       generatedAt: this.deps.now(),
-      rules: visibleRules.map(toRuleRecord),
-      summary: summarizeRules(allRules, visibleRules),
+      rules: visibleRules.map((rule) => toRuleRecord(rule, executionIndex.get(rule.id) ?? [])),
+      summary: summarizeRules(allRules, visibleRules, executionIndex),
       availableStates: AUTOMATION_RULE_STATES,
       availableTriggerTypes: AUTOMATION_TRIGGER_TYPES,
       targetOptions,
@@ -679,9 +830,10 @@ export class AutomationRuleService {
   async getRule(ruleId: string): Promise<AutomationRuleDetailResponse> {
     const storage = await this.readStorage();
     const rule = this.readExistingRule(storage.automationRules ?? [], ruleId);
+    const executionIndex = buildExecutionIndex(storage.automationExecutions);
     return {
       generatedAt: this.deps.now(),
-      rule: toRuleRecord(rule),
+      rule: toRuleRecord(rule, executionIndex.get(rule.id) ?? []),
       targetOptions: await this.listTargetOptions(),
     };
   }
@@ -828,16 +980,6 @@ export class AutomationRuleService {
   ): Promise<MaterializeAutomationEventResponse> {
     const storage = await this.readStorage();
     const existingRule = this.readExistingRule(storage.automationRules ?? [], ruleId);
-    if (existingRule.state !== 'active') {
-      throw new AppError(
-        `Automation rule ${ruleId} is ${existingRule.state} and cannot materialize work.`,
-        'AUTOMATION_RULE_NOT_ACTIVE',
-        409,
-      );
-    }
-
-    assertRoutingMatchesTarget(existingRule.target, existingRule.routing);
-    await this.assertMaterializationTargetExists(existingRule.target);
 
     const triggeredAt =
       body.triggeredAt === undefined
@@ -853,6 +995,54 @@ export class AutomationRuleService {
     const triggerEventSource =
       triggerEvent.sourceEvent ??
       (existingRule.trigger.type === 'webhook' ? existingRule.trigger.sourceEvent : undefined);
+    const baseExecutionMetadata = {
+      ...(executionMetadata ?? {}),
+      triggerEventId: triggerEvent.id,
+      triggerEventSummary: triggerEvent.summary,
+      triggerEventSource,
+      triggerEventReceivedAt: triggerEvent.receivedAt,
+      triggerEventMetadata: triggerEvent.metadata,
+    };
+
+    const rejectExecution = async (
+      message: string,
+      code: string,
+      status = 409,
+    ): Promise<never> => {
+      const latestStorage = await this.readStorage();
+      const latestRule = this.readExistingRule(latestStorage.automationRules ?? [], ruleId);
+      const execution = buildExecutionRecord({
+        id: executionId,
+        rule: latestRule,
+        status: 'rejected',
+        triggeredAt,
+        triggeredBy,
+        reason: message,
+        inputs: triggerEvent.payload,
+        metadata: baseExecutionMetadata,
+        deliveryId: triggerEvent.id,
+      });
+
+      await this.persistExecution(latestStorage, latestRule, execution, triggeredAt, triggeredBy);
+      throw new AppError(message, code, status);
+    };
+
+    if (existingRule.state !== 'active') {
+      await rejectExecution(
+        `Automation rule ${ruleId} is ${existingRule.state} and cannot materialize work.`,
+        'AUTOMATION_RULE_NOT_ACTIVE',
+      );
+    }
+
+    try {
+      assertRoutingMatchesTarget(existingRule.target, existingRule.routing);
+      await this.assertMaterializationTargetExists(existingRule.target);
+    } catch (error) {
+      if (error instanceof AppError) {
+        await rejectExecution(error.message, error.code, error.status);
+      }
+      throw error;
+    }
 
     const source: KanbanIssueSource = {
       kind: existingRule.template.issueSource?.kind ?? 'run-derived',
@@ -892,51 +1082,42 @@ export class AutomationRuleService {
         metadata: existingRule.template.metadata,
       }));
     } catch (error) {
-      if (error instanceof AppError && error.code === 'NOT_FOUND') {
-        throw new AppError(
-          `Automation routing failed: ${error.message}`,
-          'AUTOMATION_ROUTING_FAILED',
-          409,
+      if (error instanceof AppError) {
+        const reason =
+          error.code === 'NOT_FOUND'
+            ? `Automation routing failed: ${error.message}`
+            : error.message;
+        await rejectExecution(
+          reason,
+          error.code === 'NOT_FOUND' ? 'AUTOMATION_ROUTING_FAILED' : error.code,
+          error.code === 'NOT_FOUND' ? 409 : error.status,
         );
       }
       throw error;
     }
 
     const refreshedStorage = await this.readStorage();
-    const execution: AutomationExecutionRecord = {
+    const latestRule = this.readExistingRule(refreshedStorage.automationRules ?? [], ruleId);
+    const execution = buildExecutionRecord({
       id: executionId,
-      ruleId: existingRule.id,
-      ruleName: existingRule.name,
-      triggerType: existingRule.trigger.type,
+      rule: latestRule,
       status: 'created',
       triggeredAt,
       triggeredBy,
-      source: existingRule.source,
-      projectId: existingRule.routing.issue.projectId,
-      boardProjectId: existingRule.routing.board.boardProjectId,
-      issueId: issue.id,
-      issueKey: issue.key,
-      issueSource: issue.source,
-      stateAtExecution: existingRule.state,
+      issue,
       inputs: triggerEvent.payload,
-      metadata: {
-        ...(executionMetadata ?? {}),
-        triggerEventId: triggerEvent.id,
-        triggerEventSummary: triggerEvent.summary,
-        triggerEventSource,
-        triggerEventReceivedAt: triggerEvent.receivedAt,
-        triggerEventMetadata: triggerEvent.metadata,
-      },
-    };
+      metadata: baseExecutionMetadata,
+      deliveryId: triggerEvent.id,
+    });
     const audit = {
-      ...existingRule.audit,
+      ...latestRule.audit,
       lastTriggeredAt: triggeredAt,
       lastTriggeredBy: triggeredBy,
       updatedAt: this.deps.now(),
       updatedBy: triggeredBy,
     };
     const nextRules = (refreshedStorage.automationRules ?? []).map((candidate) =>
-      candidate.id === existingRule.id
+      candidate.id === latestRule.id
         ? {
             ...candidate,
             audit,
@@ -949,13 +1130,17 @@ export class AutomationRuleService {
       automationRules: nextRules,
       automationExecutions: [...(refreshedStorage.automationExecutions ?? []), execution],
     });
+    const executionIndex = buildExecutionIndex([
+      ...(refreshedStorage.automationExecutions ?? []),
+      execution,
+    ]);
 
     return {
       generatedAt: this.deps.now(),
       rule: toRuleRecord({
-        ...existingRule,
+        ...latestRule,
         audit,
-      }),
+      }, executionIndex.get(latestRule.id) ?? [execution]),
       execution,
       issue,
     };

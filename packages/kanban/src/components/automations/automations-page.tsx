@@ -1,9 +1,24 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRightLeft, Clock3, Pause, Play, Power, RefreshCw, Siren, Webhook } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowRightLeft,
+  CheckCircle2,
+  Clock3,
+  ExternalLink,
+  Pause,
+  Play,
+  Power,
+  RefreshCw,
+  Siren,
+  Webhook,
+  XCircle,
+} from "lucide-react";
 
 import type {
+  AutomationExecutionRecord,
   AutomationRuleSourceMetadata,
   AutomationTaskTemplate,
   AutomationTarget,
@@ -40,6 +55,9 @@ const EMPTY_SUMMARY = {
     timer: 0,
     webhook: 0,
   },
+  executionCount: 0,
+  failureCount: 0,
+  failingCount: 0,
 } as const;
 
 const PRIORITY_OPTIONS: readonly AutomationPriority[] = ["critical", "high", "medium", "low"];
@@ -146,6 +164,10 @@ function stateVariant(state: AutomationRuleRecord["state"]): "default" | "succes
   }
 }
 
+function titleCase(value: string): string {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
 function triggerBadge(triggerType: AutomationTriggerType) {
   if (triggerType === "timer") {
     return {
@@ -160,6 +182,60 @@ function triggerBadge(triggerType: AutomationTriggerType) {
     icon: <Webhook className="h-3.5 w-3.5" />,
     variant: "warning" as const,
   };
+}
+
+function executionStatusVariant(
+  status: AutomationExecutionRecord["status"],
+): "success" | "warning" | "error" {
+  switch (status) {
+    case "created":
+      return "success";
+    case "coalesced":
+      return "warning";
+    case "rejected":
+      return "error";
+  }
+}
+
+function executionStatusIcon(status: AutomationExecutionRecord["status"]) {
+  switch (status) {
+    case "created":
+      return <CheckCircle2 className="h-3.5 w-3.5" />;
+    case "coalesced":
+      return <AlertTriangle className="h-3.5 w-3.5" />;
+    case "rejected":
+      return <XCircle className="h-3.5 w-3.5" />;
+  }
+}
+
+function readExecutionMetadataString(
+  execution: AutomationExecutionRecord,
+  key: string,
+): string | undefined {
+  const value = execution.metadata?.[key];
+  return typeof value === "string" && value.trim() ? value.trim() : undefined;
+}
+
+function readExecutionSummaryLabel(execution: AutomationExecutionRecord): string {
+  return (
+    readExecutionMetadataString(execution, "triggerEventSummary") ??
+    readExecutionMetadataString(execution, "eventName") ??
+    execution.reason ??
+    (execution.status === "created" ? "Created work item" : `${titleCase(execution.status)} delivery`)
+  );
+}
+
+function buildBoardHref(execution: AutomationExecutionRecord): string {
+  const params = new URLSearchParams({
+    projectId: execution.boardProjectId,
+  });
+  if (execution.issueId) {
+    params.set("issueId", execution.issueId);
+  }
+  if (execution.issueKey) {
+    params.set("issueKey", execution.issueKey);
+  }
+  return `/?${params.toString()}`;
 }
 
 function readTriggerSummary(rule: AutomationRuleRecord): string {
@@ -417,12 +493,14 @@ export function AutomationsPage() {
             </div>
           </div>
 
-          <div className="mt-5 grid gap-3 md:grid-cols-5">
+          <div className="mt-5 grid gap-3 md:grid-cols-7">
             <SummaryTile label="Visible rules" value={String(summary.visibleCount)} tone="info" />
             <SummaryTile label="Active" value={String(summary.stateCounts.active)} tone="success" />
             <SummaryTile label="Paused" value={String(summary.stateCounts.paused)} tone="warning" />
+            <SummaryTile label="Failing" value={String(summary.failingCount)} tone="error" />
             <SummaryTile label="Timers" value={String(summary.triggerCounts.timer)} tone="info" />
             <SummaryTile label="Webhooks" value={String(summary.triggerCounts.webhook)} tone="warning" />
+            <SummaryTile label="Failures" value={String(summary.failureCount)} tone="error" />
           </div>
         </section>
 
@@ -718,6 +796,9 @@ export function AutomationsPage() {
                           <div className="flex flex-wrap items-center gap-2">
                             <h2 className="text-xl font-semibold tracking-tight">{rule.name}</h2>
                             <Badge variant={stateVariant(rule.state)}>{rule.state}</Badge>
+                            {rule.executionSummary.isFailing ? (
+                              <Badge variant="error">failing</Badge>
+                            ) : null}
                             <Badge variant={trigger.variant} className="gap-1">
                               {trigger.icon}
                               {trigger.label}
@@ -760,10 +841,12 @@ export function AutomationsPage() {
                         title="Operational state"
                         icon={<Siren className="h-4 w-4" />}
                         lines={[
+                          `State: ${rule.executionSummary.isFailing ? `${rule.state} · failing` : rule.state}`,
                           `Allowed actions: ${rule.allowedActions.join(", ")}`,
                           `Created: ${formatTimestamp(rule.audit.createdAt)}`,
                           `Updated: ${formatTimestamp(rule.audit.updatedAt)}`,
                           `Last triggered: ${formatTimestamp(rule.audit.lastTriggeredAt)}`,
+                          `Last failure: ${formatTimestamp(rule.executionSummary.lastFailureAt)}`,
                         ]}
                       />
 
@@ -788,6 +871,8 @@ export function AutomationsPage() {
                           `Path: ${rule.source.path ?? "n/a"}`,
                         ]}
                       />
+
+                      <ExecutionHistoryBlock rule={rule} />
                     </CardContent>
                   </Card>
                 );
@@ -800,7 +885,11 @@ export function AutomationsPage() {
   );
 }
 
-function SummaryTile(props: { label: string; value: string; tone: "info" | "success" | "warning" }) {
+function SummaryTile(props: {
+  label: string;
+  value: string;
+  tone: "info" | "success" | "warning" | "error";
+}) {
   return (
     <div
       className={cn(
@@ -808,6 +897,7 @@ function SummaryTile(props: { label: string; value: string; tone: "info" | "succ
         props.tone === "success" && "border-success/20 bg-success/10",
         props.tone === "warning" && "border-warning/20 bg-warning/10",
         props.tone === "info" && "border-info/20 bg-info/10",
+        props.tone === "error" && "border-error/20 bg-error/10",
       )}
     >
       <p className="text-xs font-semibold uppercase tracking-[0.22em] text-foreground-muted">{props.label}</p>
@@ -839,6 +929,83 @@ function DetailBlock(props: { title: string; lines: readonly string[]; icon?: Re
           <p key={line}>{line}</p>
         ))}
       </div>
+    </div>
+  );
+}
+
+function ExecutionHistoryBlock(props: { rule: AutomationRuleRecord }) {
+  return (
+    <div className="lg:col-span-2 rounded-2xl border border-border/70 bg-background-secondary/45 p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-foreground-muted">
+          <Siren className="h-4 w-4" />
+          Recent deliveries
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Badge variant="default">{props.rule.executionSummary.totalCount} total</Badge>
+          <Badge variant="success">{props.rule.executionSummary.createdCount} created</Badge>
+          <Badge variant="warning">{props.rule.executionSummary.coalescedCount} coalesced</Badge>
+          <Badge variant="error">{props.rule.executionSummary.rejectedCount} rejected</Badge>
+        </div>
+      </div>
+
+      {props.rule.recentExecutions.length === 0 ? (
+        <p className="mt-3 text-sm text-foreground-muted">No deliveries have been recorded for this rule yet.</p>
+      ) : (
+        <div className="mt-4 grid gap-3">
+          {props.rule.recentExecutions.map((execution) => (
+            <div
+              key={execution.id}
+              className="rounded-2xl border border-border bg-card/80 p-4"
+            >
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge
+                      variant={executionStatusVariant(execution.status)}
+                      className="gap-1"
+                    >
+                      {executionStatusIcon(execution.status)}
+                      {execution.status}
+                    </Badge>
+                    <Badge
+                      variant={execution.triggerType === "timer" ? "info" : "warning"}
+                      className="gap-1"
+                    >
+                      {execution.triggerType === "timer" ? <Clock3 className="h-3.5 w-3.5" /> : <Webhook className="h-3.5 w-3.5" />}
+                      {execution.triggerType}
+                    </Badge>
+                    <span className="text-xs text-foreground-muted">{formatTimestamp(execution.triggeredAt)}</span>
+                  </div>
+                  <p className="mt-2 text-sm font-medium text-foreground">
+                    {readExecutionSummaryLabel(execution)}
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-3 text-xs text-foreground-muted">
+                    <span>Actor: {execution.triggeredBy}</span>
+                    {execution.deliveryId ? <span>Delivery: {execution.deliveryId}</span> : null}
+                    {readExecutionMetadataString(execution, "triggerEventSource") ? (
+                      <span>Event: {readExecutionMetadataString(execution, "triggerEventSource")}</span>
+                    ) : null}
+                  </div>
+                </div>
+
+                {execution.issueId ? (
+                  <Button asChild variant="outline">
+                    <Link href={buildBoardHref(execution)}>
+                      {execution.issueKey ?? execution.issueId}
+                      <ExternalLink className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                ) : null}
+              </div>
+
+              {execution.reason ? (
+                <p className="mt-3 text-sm text-foreground-muted">{execution.reason}</p>
+              ) : null}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

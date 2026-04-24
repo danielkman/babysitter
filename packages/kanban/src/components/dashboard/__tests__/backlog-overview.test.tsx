@@ -3,6 +3,10 @@ import { vi } from "vitest";
 
 import { BacklogOverview } from "../backlog-overview";
 
+vi.mock("next/navigation", () => ({
+  useSearchParams: () => new URLSearchParams(),
+}));
+
 vi.mock("@/hooks/use-backlog", () => ({
   useBacklog: () => ({
     snapshot: {

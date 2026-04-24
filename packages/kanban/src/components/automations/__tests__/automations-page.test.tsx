@@ -4,6 +4,12 @@ import { screen, waitFor } from "@testing-library/react";
 import { render, setupUser } from "@/test/test-utils";
 import { AutomationsPage } from "../automations-page";
 
+vi.mock("next/link", () => ({
+  default: ({ href, children }: { href: string; children: unknown }) => (
+    <a href={href}>{children}</a>
+  ),
+}));
+
 const initialCollection = {
   generatedAt: "2026-04-24T12:00:00.000Z",
   rules: [
@@ -24,11 +30,46 @@ const initialCollection = {
         mutateBoardDirectly: false,
       },
       source: { kind: "manual", provider: "ops" },
-      audit: { createdAt: "2026-04-24T12:00:00.000Z", updatedAt: "2026-04-24T12:30:00.000Z" },
+      audit: {
+        createdAt: "2026-04-24T12:00:00.000Z",
+        updatedAt: "2026-04-24T12:30:00.000Z",
+        lastTriggeredAt: "2026-04-24T12:45:00.000Z",
+      },
       trigger: { type: "timer", cron: "0 9 * * 1-5", timezone: "UTC" },
       allowedActions: ["pause", "disable", "delete"],
       isEnabled: true,
       triggerType: "timer",
+      executionSummary: {
+        totalCount: 1,
+        createdCount: 0,
+        coalescedCount: 0,
+        rejectedCount: 1,
+        latestStatus: "rejected",
+        lastTriggeredAt: "2026-04-24T12:45:00.000Z",
+        lastFailureAt: "2026-04-24T12:45:00.000Z",
+        isFailing: true,
+      },
+      recentExecutions: [
+        {
+          id: "automation-execution-timer-1",
+          ruleId: "automation-timer-1",
+          ruleName: "Daily digest",
+          triggerType: "timer",
+          status: "rejected",
+          triggeredAt: "2026-04-24T12:45:00.000Z",
+          triggeredBy: "automation-daemon",
+          source: { kind: "manual", provider: "ops" },
+          projectId: "kanban-app",
+          boardProjectId: "kanban-app",
+          stateAtExecution: "active",
+          deliveryId: "evt-100",
+          reason: "Automation routing failed: Project kanban-app not found.",
+          metadata: {
+            triggerEventSource: "digest.ready",
+            triggerEventSummary: "Daily digest fired",
+          },
+        },
+      ],
     },
     {
       id: "automation-webhook-1",
@@ -46,7 +87,10 @@ const initialCollection = {
         mutateBoardDirectly: false,
       },
       source: { kind: "external-system", provider: "github", externalId: "issue.created" },
-      audit: { createdAt: "2026-04-24T12:00:00.000Z" },
+      audit: {
+        createdAt: "2026-04-24T12:00:00.000Z",
+        lastTriggeredAt: "2026-04-24T12:40:00.000Z",
+      },
       trigger: {
         type: "webhook",
         port: 4100,
@@ -58,6 +102,38 @@ const initialCollection = {
       allowedActions: ["resume", "disable", "delete"],
       isEnabled: false,
       triggerType: "webhook",
+      executionSummary: {
+        totalCount: 1,
+        createdCount: 1,
+        coalescedCount: 0,
+        rejectedCount: 0,
+        latestStatus: "created",
+        lastTriggeredAt: "2026-04-24T12:40:00.000Z",
+        isFailing: false,
+      },
+      recentExecutions: [
+        {
+          id: "automation-execution-webhook-1",
+          ruleId: "automation-webhook-1",
+          ruleName: "GitHub issue webhook",
+          triggerType: "webhook",
+          status: "created",
+          triggeredAt: "2026-04-24T12:40:00.000Z",
+          triggeredBy: "webhook:github",
+          source: { kind: "external-system", provider: "github", externalId: "issue.created" },
+          projectId: "kanban-app",
+          boardProjectId: "kanban-app",
+          issueId: "KANBAN-AUTO-201",
+          issueKey: "KANBAN-AUTO-201",
+          stateAtExecution: "paused",
+          deliveryId: "gh-201",
+          reason: "Created issue KANBAN-AUTO-201 from webhook delivery gh-201.",
+          metadata: {
+            triggerEventSource: "github.issue.created",
+            triggerEventSummary: "GitHub issue opened",
+          },
+        },
+      ],
     },
   ],
   summary: {
@@ -65,6 +141,9 @@ const initialCollection = {
     visibleCount: 2,
     stateCounts: { draft: 0, active: 1, paused: 1, disabled: 0, archived: 0 },
     triggerCounts: { timer: 1, webhook: 1 },
+    executionCount: 2,
+    failureCount: 1,
+    failingCount: 1,
   },
   availableStates: ["draft", "active", "paused", "disabled", "archived"],
   availableTriggerTypes: ["timer", "webhook"],
@@ -104,6 +183,11 @@ describe("AutomationsPage", () => {
     expect(screen.getAllByText("Board target: kanban-app").length).toBeGreaterThan(0);
     expect(screen.getByText("Allowed actions: pause, disable, delete")).toBeInTheDocument();
     expect(screen.getByText("POST /github/issues · :4100 · event github.issue.created")).toBeInTheDocument();
+    expect(screen.getByText("failing")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /KANBAN-AUTO-201/i })).toHaveAttribute(
+      "href",
+      "/?projectId=kanban-app&issueId=KANBAN-AUTO-201&issueKey=KANBAN-AUTO-201",
+    );
   });
 
   it("creates a webhook rule using the existing API contract", async () => {

@@ -27,7 +27,8 @@ import {
   Users,
   Workflow,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 import { useBacklog } from "@/hooks/use-backlog";
 import { useReviews } from "@/hooks/use-reviews";
@@ -884,6 +885,7 @@ function RepositoryLifecyclePanel({
 }
 
 export function BacklogOverview() {
+  const searchParams = useSearchParams();
   const {
     snapshot,
     board,
@@ -901,6 +903,22 @@ export function BacklogOverview() {
     refresh,
   } = useBacklog();
   const issueReviews = useReviews({ targetType: "issue" });
+  const focusedIssueId = searchParams.get("issueId");
+  const focusedIssueKey = searchParams.get("issueKey");
+
+  useEffect(() => {
+    const issueAnchor = focusedIssueId
+      ? document.getElementById(`kanban-issue-${focusedIssueId}`)
+      : focusedIssueKey
+        ? document.querySelector<HTMLElement>(`[data-testid="kanban-card-${focusedIssueKey}"]`)
+        : null;
+
+    if (!issueAnchor) {
+      return;
+    }
+
+    issueAnchor.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [focusedIssueId, focusedIssueKey]);
 
   if (loading && !snapshot) {
     return (
@@ -1180,7 +1198,12 @@ export function BacklogOverview() {
                         {cards.map((card) => (
                           <article
                             key={card.issueId}
-                            className={`rounded-2xl border p-4 ${issueTone(card)}`}
+                            id={`kanban-issue-${card.issueId}`}
+                            className={`rounded-2xl border p-4 ${issueTone(card)} ${
+                              focusedIssueId === card.issueId || focusedIssueKey === card.issueKey
+                                ? "ring-2 ring-primary/50 ring-offset-2 ring-offset-background"
+                                : ""
+                            }`}
                             data-testid={`kanban-card-${card.issueKey}`}
                           >
                             <div className="flex flex-wrap items-center gap-2">
