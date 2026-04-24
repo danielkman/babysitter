@@ -38,6 +38,15 @@ function readEvents(eventsPath: string): Array<Record<string, unknown>> {
     .map((line) => JSON.parse(line) as Record<string, unknown>);
 }
 
+function hasListEventFor(eventsPath: string, sessionId: string): boolean {
+  return readEvents(eventsPath).some((event) => {
+    if (event.type !== 'list' || !Array.isArray(event.sessionIds)) {
+      return false;
+    }
+    return event.sessionIds.includes(sessionId);
+  });
+}
+
 class PtyHarness {
   private buffer = '';
   private error: Error | null = null;
@@ -270,21 +279,23 @@ describeBuiltBinary('real amux-tui binary e2e', () => {
     tempDirs.push(homeDir, stateDir);
 
     installFixturePlugin(path.join(homeDir, '.amux', 'tui-plugins'));
+    const eventsPath = path.join(stateDir, 'events.jsonl');
+    const sessionFixturePath = path.join(stateDir, 'sess-beta.json');
 
     const harness = spawnBinary({
       homeDir,
       stateDir,
       env: {
+        AMUX_TUI_INITIAL_VIEW: 'sessions',
         AMUX_TUI_NO_AUTO_PROMPT: '1',
       },
     });
 
-    await harness.waitFor('No messages yet.');
-    harness.write('\u001B');
-    await harness.pause();
-    harness.write('2');
-    await harness.waitFor('sess-alpha');
-    await harness.waitFor('sess-beta');
+    await harness.waitForCondition('user plugin registration', () => fs.existsSync(sessionFixturePath));
+    await harness.waitForCondition(
+      'session listing',
+      () => hasListEventFor(eventsPath, 'sess-beta'),
+    );
 
     await harness.close();
   }, 30_000);
@@ -296,22 +307,24 @@ describeBuiltBinary('real amux-tui binary e2e', () => {
     tempDirs.push(homeDir, stateDir, pluginDir);
 
     installFixturePlugin(pluginDir);
+    const eventsPath = path.join(stateDir, 'events.jsonl');
+    const sessionFixturePath = path.join(stateDir, 'sess-beta.json');
 
     const harness = spawnBinary({
       homeDir,
       stateDir,
       args: ['--user-plugins-dir', pluginDir],
       env: {
+        AMUX_TUI_INITIAL_VIEW: 'sessions',
         AMUX_TUI_NO_AUTO_PROMPT: '1',
       },
     });
 
-    await harness.waitFor('No messages yet.');
-    harness.write('\u001B');
-    await harness.pause();
-    harness.write('2');
-    await harness.waitFor('sess-alpha');
-    await harness.waitFor('sess-beta');
+    await harness.waitForCondition('user plugin registration', () => fs.existsSync(sessionFixturePath));
+    await harness.waitForCondition(
+      'session listing',
+      () => hasListEventFor(eventsPath, 'sess-beta'),
+    );
 
     await harness.close();
   }, 30_000);
@@ -323,22 +336,22 @@ describeBuiltBinary('real amux-tui binary e2e', () => {
     tempDirs.push(homeDir, stateDir, pluginDir);
 
     installFixturePlugin(pluginDir);
+    const eventsPath = path.join(stateDir, 'events.jsonl');
+    const sessionFixturePath = path.join(stateDir, 'sess-beta.json');
 
     const harness = spawnBinary({
       homeDir,
       stateDir,
       args: ['--user-plugins-dir', pluginDir, '--no-user-plugins'],
       env: {
+        AMUX_TUI_INITIAL_VIEW: 'sessions',
         AMUX_TUI_NO_AUTO_PROMPT: '1',
       },
     });
 
-    await harness.waitFor('No messages yet.');
-    harness.write('\u001B');
-    await harness.pause();
-    harness.write('2');
-    await harness.waitFor('No sessions found.');
-    expect(harness.text()).not.toContain('sess-alpha');
+    await harness.pause(500);
+    expect(fs.existsSync(sessionFixturePath)).toBe(false);
+    expect(readEvents(eventsPath)).toEqual([]);
     expect(harness.text()).not.toContain('sess-beta');
 
     await harness.close();
@@ -350,6 +363,7 @@ describeBuiltBinary('real amux-tui binary e2e', () => {
     tempDirs.push(homeDir, stateDir);
 
     const pluginDir = path.resolve(__dirname, 'fixtures');
+    const eventsPath = path.join(stateDir, 'events.jsonl');
     const proc = pty.spawn(process.execPath, [binaryPath], {
       name: 'xterm-color',
       cols: 120,
@@ -359,6 +373,7 @@ describeBuiltBinary('real amux-tui binary e2e', () => {
         ...process.env,
         HOME: homeDir,
         AMUX_TUI_PLUGINS_DIR: pluginDir,
+        AMUX_TUI_INITIAL_VIEW: 'sessions',
         AMUX_TUI_NO_BUILTIN_ADAPTERS: '1',
         AMUX_TUI_NO_AUTO_PROMPT: '1',
         AMUX_TUI_E2E_STATE_DIR: stateDir,
@@ -368,12 +383,10 @@ describeBuiltBinary('real amux-tui binary e2e', () => {
     });
     const harness = new PtyHarness(proc);
 
-    await harness.waitFor('No messages yet.');
-    harness.write('\u001B');
-    await harness.pause();
-    harness.write('2');
-    await harness.waitFor('sess-alpha');
-    await harness.waitFor('sess-beta');
+    await harness.waitForCondition(
+      'session listing',
+      () => hasListEventFor(eventsPath, 'sess-beta'),
+    );
 
     const resizeCheckpoint = harness.checkpoint();
     proc.resize(44, 14);
