@@ -7,6 +7,7 @@ import { loadJournal } from "../../storage/journal";
 import { readRunMetadata, readRunInputs } from "../../storage/runFiles";
 import { DEFAULT_LAYOUT_VERSION } from "../../storage/paths";
 import * as ulids from "../../storage/ulids";
+import * as runtimeHooks from "../hooks/runtime";
 
 let tmpRoot: string;
 
@@ -141,6 +142,49 @@ describe("createRun", () => {
 
     const journal = await loadJournal(result.runDir);
     expect(journal[0].data.harness).toBe("codex");
+  });
+
+  test("persists nested run metadata, stamps it on RUN_CREATED, and can skip run-start hooks", async () => {
+    const hookSpy = vi.spyOn(runtimeHooks, "callRuntimeHook").mockResolvedValue(undefined);
+    const entryFile = path.join(tmpRoot, "processes", "nested.mjs");
+    await fs.mkdir(path.dirname(entryFile), { recursive: true });
+    await fs.writeFile(entryFile, "export async function process() { return 'nested'; }");
+
+    const result = await createRun({
+      runsDir: tmpRoot,
+      process: {
+        processId: "ci/nested",
+        importPath: entryFile,
+        exportName: "process",
+      },
+      nested: {
+        parentRunId: "run-parent",
+        parentEffectId: "effect-parent",
+        parentInvocationKey: "invoke-parent",
+        sessionId: "session-parent",
+        shareSession: true,
+        skipRunStartHook: true,
+      },
+    });
+
+    const metadata = await readRunMetadata(result.runDir);
+    expect(metadata.nested).toEqual({
+      parentRunId: "run-parent",
+      parentEffectId: "effect-parent",
+      parentInvocationKey: "invoke-parent",
+      sessionId: "session-parent",
+      shareSession: true,
+    });
+
+    const journal = await loadJournal(result.runDir);
+    expect(journal[0].data.nested).toEqual({
+      parentRunId: "run-parent",
+      parentEffectId: "effect-parent",
+      parentInvocationKey: "invoke-parent",
+      sessionId: "session-parent",
+      shareSession: true,
+    });
+    expect(hookSpy).not.toHaveBeenCalled();
   });
 
   test("omits prompt from RUN_CREATED event and run.json when not provided", async () => {

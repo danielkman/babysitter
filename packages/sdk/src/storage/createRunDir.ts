@@ -62,6 +62,7 @@ export async function createRunDir(options: CreateRunDirOptions) {
     request: options.request,
     processId: options.processId ?? options.request ?? options.runId,
     ...(options.harness !== undefined ? { harness: options.harness } : {}),
+    ...(options.nested ? { nested: options.nested } : {}),
     entrypoint,
     processPath: entrypoint.importPath,
     processRevision: options.processRevision,

@@ -1,3 +1,4 @@
+import * as path from "node:path";
 import * as readline from "node:readline";
 import {
 
@@ -9,15 +10,22 @@ import {
 export { readProcessFileFingerprint } from "./effectsHelpers";
 import { getAdapterByName } from "../../../";
 import type { StreamingOutputOptions } from "../../../types";
-import { orchestrateIteration } from "@a5c-ai/babysitter-sdk";
+import {
+  commitEffectResult,
+  createRun,
+  orchestrateIteration,
+} from "@a5c-ai/babysitter-sdk";
 import {
   BOLD,
   DEFAULT_EFFECT_RETRY_CONFIG,
   PI_WORKER_TIMEOUT_MS,
   AgentCoreSessionHandle,
   YELLOW,
+  buildPiWorkerSessionOptions,
+  createAgentCoreSession,
   createApprovalAskUserQuestion,
   createAskUserQuestionResponse,
+  emitAmuxEvent,
   isInternalHarness,
   isProcessModuleLoadFailure,
   promptPiWithRetry,
@@ -68,6 +76,13 @@ export async function resolveEffect(
     interactive?: boolean;
     compressionConfig?: CompressionConfig | null;
     streaming?: StreamingOutputOptions;
+    runsDir?: string;
+    runId?: string;
+    runDir?: string;
+    sessionId?: string;
+    maxIterations?: number;
+    verbose?: boolean;
+    outputMode?: "cli" | "json" | "tui" | "amux-events";
   },
   piSession?: AgentCoreSessionHandle | null,
   discovered?: HarnessDiscoveryResult[],
@@ -208,8 +223,299 @@ export async function resolveEffect(
     }
     return invokeAgentHarness(action, taskHarness, prompt, options);
   }
+  if (kind === "subprocess") {
+    return invokeSubprocessEffect(
+      action,
+      discovered ? resolveTaskHarness(action, harnessName, discovered) : harnessName,
+      options,
+      discovered,
+      rl,
+      json,
+      askUserQuestionHandler,
+    );
+  }
   const fallbackPrompt = action.taskDef?.title ?? `Handle effect ${action.effectId} (kind: ${kind})`;
   return invokePromptEffect(action, harnessName, fallbackPrompt, options, undefined);
+}
+
+function parseSubprocessSpec(
+  action: EffectAction,
+  workspace?: string,
+): {
+  processPath: string;
+  exportName?: string;
+  processId: string;
+  prompt?: string;
+  inputs?: unknown;
+  inputSchema?: Record<string, unknown>;
+  outputSchema?: Record<string, unknown>;
+  harness?: string;
+  model?: string;
+  maxIterations?: number;
+  shareSession: boolean;
+  metadata?: Record<string, unknown>;
+} {
+  const subprocess = action.taskDef?.subprocess;
+  if (!subprocess || typeof subprocess.processPath !== "string" || !subprocess.processPath.trim()) {
+    throw new Error(`Subprocess effect ${action.effectId} is missing subprocess.processPath`);
+  }
+
+  const resolvedProcessPath = path.isAbsolute(subprocess.processPath)
+    ? path.resolve(subprocess.processPath)
+    : path.resolve(workspace ?? process.cwd(), subprocess.processPath);
+  const processId = typeof subprocess.processId === "string" && subprocess.processId.trim()
+    ? subprocess.processId.trim()
+    : path.basename(resolvedProcessPath, path.extname(resolvedProcessPath));
+
+  return {
+    processPath: resolvedProcessPath,
+    exportName: typeof subprocess.exportName === "string" ? subprocess.exportName : undefined,
+    processId,
+    prompt: typeof subprocess.prompt === "string" ? subprocess.prompt : undefined,
+    inputs: subprocess.inputs,
+    inputSchema: isPlainRecord(subprocess.inputSchema) ? subprocess.inputSchema : undefined,
+    outputSchema: isPlainRecord(subprocess.outputSchema) ? subprocess.outputSchema : undefined,
+    harness: typeof subprocess.harness === "string" ? subprocess.harness : undefined,
+    model: typeof subprocess.model === "string" ? subprocess.model : undefined,
+    maxIterations: typeof subprocess.maxIterations === "number" ? subprocess.maxIterations : undefined,
+    shareSession: subprocess.shareSession !== false,
+    metadata: subprocess.metadata,
+  };
+}
+
+function isPlainRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function summarizeSubprocessValue(value: unknown): string {
+  if (typeof value === "string") {
+    return value.length > 240 ? `${value.slice(0, 237)}...` : value;
+  }
+  if (value instanceof Error) {
+    return value.message;
+  }
+  try {
+    const serialized = JSON.stringify(value);
+    return serialized.length > 240 ? `${serialized.slice(0, 237)}...` : serialized;
+  } catch {
+    return String(value);
+  }
+}
+
+async function disposeWorkerSession(session: AgentCoreSessionHandle | null | undefined): Promise<void> {
+  if (!session) {
+    return;
+  }
+  const maybeAbort = session as unknown as { abort?: () => Promise<void> };
+  if (typeof maybeAbort.abort === "function") {
+    await maybeAbort.abort().catch(() => undefined);
+  }
+  session.dispose();
+}
+
+async function invokeSubprocessEffect(
+  action: EffectAction,
+  harnessName: string,
+  options: {
+    workspace?: string;
+    model?: string;
+    interactive?: boolean;
+    compressionConfig?: CompressionConfig | null;
+    streaming?: StreamingOutputOptions;
+    runsDir?: string;
+    runId?: string;
+    runDir?: string;
+    sessionId?: string;
+    maxIterations?: number;
+    verbose?: boolean;
+    outputMode?: "cli" | "json" | "tui" | "amux-events";
+  },
+  discovered?: HarnessDiscoveryResult[],
+  rl?: readline.Interface | null,
+  json?: boolean,
+  askUserQuestionHandler?: ((params: unknown) => Promise<unknown>) | null,
+): Promise<ResolveEffectResult> {
+  if (!options.runsDir || !options.runId) {
+    return {
+      status: "error",
+      error: new Error("Subprocess effects require runsDir and parent runId in the harness resolver."),
+    };
+  }
+
+  const spec = parseSubprocessSpec(action, options.workspace);
+  const childHarness = spec.harness ?? harnessName;
+  const childModel = spec.model ?? options.model;
+  const maxIterations = spec.maxIterations ?? options.maxIterations ?? 256;
+  const childPrompt = spec.prompt ?? action.taskDef?.title ?? `Run subprocess ${spec.processId}`;
+
+  const childRun = await createRun({
+    runsDir: options.runsDir,
+    harness: childHarness,
+    process: {
+      processId: spec.processId,
+      importPath: spec.processPath,
+      ...(spec.exportName ? { exportName: spec.exportName } : {}),
+    },
+    prompt: spec.prompt,
+    inputs: spec.inputs,
+    inputSchema: spec.inputSchema,
+    outputSchema: spec.outputSchema,
+    metadata: spec.metadata,
+    nested: {
+      parentRunId: options.runId,
+      parentEffectId: action.effectId,
+      parentInvocationKey: action.invocationKey,
+      ...(spec.shareSession && options.sessionId ? { sessionId: options.sessionId } : {}),
+      shareSession: spec.shareSession,
+      skipRunStartHook: true,
+    },
+  });
+
+  emitAmuxEvent(
+    {
+      type: "subagent_spawn",
+      runId: options.runId,
+      agent: "babysitter",
+      timestamp: new Date().toISOString(),
+      subagentId: childRun.runId,
+      agentName: "babysitter",
+      prompt: childPrompt,
+    },
+    Boolean(json),
+    options.outputMode,
+  );
+
+  for (let iteration = 0; iteration < maxIterations; iteration += 1) {
+    const iterationResult = await orchestrateIterationWithProcessLoadRetry({ runDir: childRun.runDir });
+    if (iterationResult.status === "waiting") {
+      for (const childAction of iterationResult.nextActions) {
+        const effectiveHarness = discovered
+          ? resolveTaskHarness(childAction, childHarness, discovered)
+          : childHarness;
+        let workerSession: AgentCoreSessionHandle | null = null;
+        let workerSessionFactory: (() => AgentCoreSessionHandle) | undefined;
+        if (childAction.kind === "shell" || isInternalHarness(effectiveHarness)) {
+          const createWorkerSession = () => createAgentCoreSession(buildPiWorkerSessionOptions({
+            action: childAction,
+            workspace: options.workspace,
+            model: childModel,
+          }));
+          workerSession = createWorkerSession();
+          workerSessionFactory = createWorkerSession;
+        }
+        try {
+          const childEffectResult = await resolveEffectWithRetry(
+            childAction,
+            childHarness,
+            {
+              workspace: options.workspace,
+              model: childModel,
+              interactive: options.interactive,
+              compressionConfig: options.compressionConfig,
+              streaming: options.streaming,
+              runsDir: options.runsDir,
+              runId: childRun.runId,
+              runDir: childRun.runDir,
+              sessionId: spec.shareSession ? options.sessionId : undefined,
+              maxIterations,
+              verbose: options.verbose,
+              outputMode: options.outputMode,
+            },
+            workerSession,
+            discovered,
+            rl,
+            json,
+            workerSessionFactory,
+            disposeWorkerSession,
+            askUserQuestionHandler,
+          );
+          await commitEffectResult({
+            runDir: childRun.runDir,
+            effectId: childAction.effectId,
+            invocationKey: childAction.invocationKey,
+            result: {
+              status: childEffectResult.status,
+              value: childEffectResult.value,
+              error: childEffectResult.error,
+              stdout: childEffectResult.stdout,
+              stderr: childEffectResult.stderr,
+              startedAt: new Date().toISOString(),
+              finishedAt: new Date().toISOString(),
+            },
+          });
+        } finally {
+          await disposeWorkerSession(workerSession);
+        }
+      }
+      continue;
+    }
+
+    if (iterationResult.status === "completed") {
+      emitAmuxEvent(
+        {
+          type: "subagent_result",
+          runId: options.runId,
+          agent: "babysitter",
+          timestamp: new Date().toISOString(),
+          subagentId: childRun.runId,
+          agentName: "babysitter",
+          summary: summarizeSubprocessValue(iterationResult.output),
+        },
+        Boolean(json),
+        options.outputMode,
+      );
+      return {
+        status: "ok",
+        value: {
+          runId: childRun.runId,
+          runDir: childRun.runDir,
+          output: iterationResult.output,
+        },
+      };
+    }
+
+    const message = iterationResult.error instanceof Error
+      ? iterationResult.error.message
+      : summarizeSubprocessValue(iterationResult.error);
+    emitAmuxEvent(
+      {
+        type: "subagent_error",
+        runId: options.runId,
+        agent: "babysitter",
+        timestamp: new Date().toISOString(),
+        subagentId: childRun.runId,
+        agentName: "babysitter",
+        error: message,
+      },
+      Boolean(json),
+      options.outputMode,
+    );
+    return {
+      status: "error",
+      error: new Error(`Nested run ${childRun.runId} failed: ${message}`),
+      stderr: message,
+    };
+  }
+
+  const timeoutMessage = `Nested run ${childRun.runId} reached max iterations (${maxIterations}) without completion.`;
+  emitAmuxEvent(
+    {
+      type: "subagent_error",
+      runId: options.runId,
+      agent: "babysitter",
+      timestamp: new Date().toISOString(),
+      subagentId: childRun.runId,
+      agentName: "babysitter",
+      error: timeoutMessage,
+    },
+    Boolean(json),
+    options.outputMode,
+  );
+  return {
+    status: "error",
+    error: new Error(timeoutMessage),
+    stderr: timeoutMessage,
+  };
 }
 
 export async function resolveEffectWithRetry(
@@ -222,6 +528,13 @@ export async function resolveEffectWithRetry(
     compressionConfig?: CompressionConfig | null;
     retryConfig?: Partial<EffectRetryConfig>;
     streaming?: StreamingOutputOptions;
+    runsDir?: string;
+    runId?: string;
+    runDir?: string;
+    sessionId?: string;
+    maxIterations?: number;
+    verbose?: boolean;
+    outputMode?: "cli" | "json" | "tui" | "amux-events";
   },
   piSession?: AgentCoreSessionHandle | null,
   discovered?: HarnessDiscoveryResult[],
@@ -324,7 +637,10 @@ export async function orchestrateIterationWithProcessLoadRetry(args: {
   let attempt = 0;
   for (;;) {
     try {
-      return await orchestrateIteration({ runDir: args.runDir });
+      return await orchestrateIteration({
+        runDir: args.runDir,
+        subprocessSupport: "babysitter-agent",
+      });
     } catch (error: unknown) {
       if (
         !isProcessModuleLoadFailure(error) ||
@@ -360,4 +676,3 @@ export async function orchestrateIterationWithProcessLoadRetry(args: {
     }
   }
 }
-

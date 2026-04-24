@@ -170,6 +170,18 @@ export function emitProgress(
   }
 }
 
+export function emitAmuxEvent(
+  event: Record<string, unknown>,
+  json: boolean,
+  outputMode?: OutputMode,
+): void {
+  const mode = resolveOutputMode(json, outputMode);
+  if (mode !== "amux-events") {
+    return;
+  }
+  process.stdout.write(JSON.stringify(event) + "\n");
+}
+
 export function formatElapsed(ms: number): string {
   if (ms < 1000) return "<1s";
   const totalSec = Math.floor(ms / 1000);

@@ -16,6 +16,7 @@ export interface CreateReplayEngineOptions {
   now?: () => Date;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   logger?: (...args: any[]) => void;
+  subprocessSupport?: "disabled" | "babysitter-agent";
 }
 
 export interface ReplayEngine {
@@ -76,6 +77,7 @@ export async function createReplayEngine(options: CreateReplayEngineOptions): Pr
     logger: options.logger,
     recordedLogSeqs,
     nonInteractive: Boolean(metadata.nonInteractive),
+    subprocessSupport: options.subprocessSupport,
   });
 
   return {

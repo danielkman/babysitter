@@ -146,7 +146,10 @@ export async function apiIterate(
       return fail("RUN_NOT_FOUND", `Run directory not found: ${input.runDir}`);
     }
 
-    const result = await orchestrateIteration({ runDir: input.runDir });
+    const result = await orchestrateIteration({
+      runDir: input.runDir,
+      subprocessSupport: "babysitter-agent",
+    });
 
     const output: ApiIterateOutput = { status: result.status };
     if (result.metadata !== undefined) {

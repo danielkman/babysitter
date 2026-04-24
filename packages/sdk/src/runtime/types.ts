@@ -125,6 +125,14 @@ export interface CreateRunOptions {
   processRevision?: string;
   layoutVersion?: string;
   metadata?: JsonRecord;
+  nested?: {
+    parentRunId: string;
+    parentEffectId?: string;
+    parentInvocationKey?: string;
+    sessionId?: string;
+    shareSession?: boolean;
+    skipRunStartHook?: boolean;
+  };
   lockOwner?: string;
   logger?: ProcessLogger;
 }
@@ -133,6 +141,27 @@ export interface CreateRunResult {
   runId: string;
   runDir: string;
   metadata: RunMetadata;
+}
+
+export interface SubprocessInvocation {
+  processPath: string;
+  exportName?: string;
+  processId?: string;
+  prompt?: string;
+  inputs?: unknown;
+  inputSchema?: Record<string, unknown>;
+  outputSchema?: Record<string, unknown>;
+  harness?: string;
+  model?: string;
+  maxIterations?: number;
+  shareSession?: boolean;
+  metadata?: JsonRecord;
+}
+
+export interface SubprocessResult {
+  runId: string;
+  runDir: string;
+  output: unknown;
 }
 
 export interface ParallelHelpers {
@@ -153,6 +182,10 @@ export interface ProcessContext {
     payload: TArgs,
     options?: { label?: string }
   ): Promise<TResult>;
+  subprocess(
+    invocation: SubprocessInvocation,
+    options?: TaskInvokeOptions,
+  ): Promise<SubprocessResult>;
   hook(
     hookType: string,
     payload: Record<string, unknown>,
@@ -172,6 +205,8 @@ export interface OrchestrateOptions {
   now?: Date | (() => Date);
   context?: Record<string, unknown>;
   logger?: ProcessLogger;
+  /** Internal-only gate for subprocess effects resolved by babysitter-agent. */
+  subprocessSupport?: "disabled" | "babysitter-agent";
 }
 
 export interface IterationMetadata {

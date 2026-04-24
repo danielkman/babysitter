@@ -21,6 +21,15 @@ export async function createRun(options: CreateRunOptions): Promise<CreateRunRes
   const providedProof =
     typeof options.metadata?.completionProof === "string" ? options.metadata.completionProof : undefined;
   const completionProof = providedProof ?? crypto.randomBytes(16).toString("hex");
+  const nestedMetadata = options.nested
+    ? {
+        parentRunId: options.nested.parentRunId,
+        ...(options.nested.parentEffectId ? { parentEffectId: options.nested.parentEffectId } : {}),
+        ...(options.nested.parentInvocationKey ? { parentInvocationKey: options.nested.parentInvocationKey } : {}),
+        ...(options.nested.sessionId ? { sessionId: options.nested.sessionId } : {}),
+        ...(options.nested.shareSession !== undefined ? { shareSession: options.nested.shareSession } : {}),
+      }
+    : undefined;
   // Validate inputs against inputSchema if both are provided
   if (options.inputSchema && options.inputs !== undefined) {
     const validation = validateAgainstSchema(options.inputs, options.inputSchema);
@@ -42,6 +51,7 @@ export async function createRun(options: CreateRunOptions): Promise<CreateRunRes
     request: requestId,
     processId: options.process.processId,
     harness: options.harness,
+    nested: nestedMetadata,
     processRevision: options.processRevision,
     layoutVersion: options.layoutVersion,
     inputs: options.inputs,
@@ -64,6 +74,9 @@ export async function createRun(options: CreateRunOptions): Promise<CreateRunRes
     };
     if (metadata.harness) {
       eventPayload.harness = metadata.harness;
+    }
+    if (metadata.nested) {
+      eventPayload.nested = metadata.nested;
     }
     if (metadata.processRevision) {
       eventPayload.processRevision = metadata.processRevision;
@@ -94,19 +107,21 @@ export async function createRun(options: CreateRunOptions): Promise<CreateRunRes
   // runDir is like: /path/to/project/.a5c/runs/<runId>
   // So we need 3 levels up: runs -> .a5c -> project
   const projectRoot = path.dirname(path.dirname(path.dirname(runDir)));
-  await callRuntimeHook(
-    "on-run-start",
-    {
-      runId,
-      processId: metadata.processId,
-      entry: entryString,
-      inputs: options.inputs,
-    },
-    {
-      cwd: projectRoot,
-      logger: options.logger,
-    }
-  );
+  if (!options.nested?.skipRunStartHook) {
+    await callRuntimeHook(
+      "on-run-start",
+      {
+        runId,
+        processId: metadata.processId,
+        entry: entryString,
+        inputs: options.inputs,
+      },
+      {
+        cwd: projectRoot,
+        logger: options.logger,
+      }
+    );
+  }
 
   return {
     runId,

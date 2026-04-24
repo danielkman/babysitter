@@ -165,7 +165,14 @@ async function loadProcessFunction(options: OrchestrateOptions, defaults: Entryp
 }
 
 async function initializeReplayEngine(options: OrchestrateOptions, nowFn: () => Date, iterationStartedAt: number): Promise<ReplayEngine> {
-  try { return await createReplayEngine({ runDir: options.runDir, now: nowFn, logger: options.logger }); }
+  try {
+    return await createReplayEngine({
+      runDir: options.runDir,
+      now: nowFn,
+      logger: options.logger,
+      subprocessSupport: options.subprocessSupport,
+    });
+  }
   catch (error) {
     emitRuntimeMetric(options.logger, "replay.iteration", { duration_ms: Date.now() - iterationStartedAt, status: "failed", runDir: options.runDir, phase: "initialize", error: error instanceof Error ? error.message : String(error) });
     throw error;

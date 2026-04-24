@@ -1,7 +1,7 @@
 import { JsonRecord } from "../storage/types";
 
 // Known task kinds (custom kinds are also allowed as any string)
-export type KnownTaskKind = "node" | "breakpoint" | "orchestrator_task" | "sleep";
+export type KnownTaskKind = "node" | "breakpoint" | "orchestrator_task" | "sleep" | "subprocess";
 
 // TaskKind accepts any string (including custom task kinds)
 export type TaskKind = string;
@@ -36,6 +36,21 @@ export interface SleepTaskOptions {
   targetEpochMs: number;
 }
 
+export interface SubprocessTaskOptions {
+  processPath: string;
+  exportName?: string;
+  processId?: string;
+  prompt?: string;
+  inputs?: unknown;
+  inputSchema?: Record<string, unknown>;
+  outputSchema?: Record<string, unknown>;
+  harness?: string;
+  model?: string;
+  maxIterations?: number;
+  shareSession?: boolean;
+  metadata?: JsonRecord;
+}
+
 export interface EffectExecutionHints {
   /** Preferred harness CLI (e.g., 'pi', 'claude-code'). Only used by internal harness. */
   harness?: string;
@@ -57,6 +72,7 @@ export interface TaskDef {
   breakpoint?: BreakpointTaskOptions;
   orchestratorTask?: OrchestratorTaskOptions;
   sleep?: SleepTaskOptions;
+  subprocess?: SubprocessTaskOptions;
   [key: string]: unknown;
 }
 

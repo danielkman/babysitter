@@ -49,6 +49,7 @@ export interface TaskIntrinsicContext {
   replayCursor: ReplayCursor;
   now: () => Date;
   logger?: ProcessLogger;
+  subprocessSupport?: "disabled" | "babysitter-agent";
   policyEngine?: PolicyEngine;
   reportPolicyDecision?: PolicyDecisionReporter;
 }

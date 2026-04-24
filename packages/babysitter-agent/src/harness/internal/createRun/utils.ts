@@ -231,6 +231,7 @@ export {
   writeVerboseLine,
   writeVerboseBlock,
   emitProgress,
+  emitAmuxEvent,
   formatElapsed,
   createStreamingProgressCallbacks,
   loadSessionCompressionConfig,

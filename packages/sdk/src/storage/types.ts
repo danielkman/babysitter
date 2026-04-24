@@ -12,6 +12,13 @@ export interface RunMetadata extends JsonRecord {
   request: string;
   processId: string;
   harness?: string;
+  nested?: {
+    parentRunId: string;
+    parentEffectId?: string;
+    parentInvocationKey?: string;
+    sessionId?: string;
+    shareSession?: boolean;
+  };
   entrypoint: RunEntrypointMetadata;
   processPath?: string;
   processRevision?: string;
@@ -29,6 +36,13 @@ export interface CreateRunDirOptions {
   request: string;
   processId?: string;
   harness?: string;
+  nested?: {
+    parentRunId: string;
+    parentEffectId?: string;
+    parentInvocationKey?: string;
+    sessionId?: string;
+    shareSession?: boolean;
+  };
   entrypoint?: {
     importPath: string;
     exportName?: string;
