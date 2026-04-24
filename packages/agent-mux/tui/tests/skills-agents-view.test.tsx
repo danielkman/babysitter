@@ -9,6 +9,15 @@ import AgentsPlugin from '../src/plugins/agents-view.js';
 import { EventStream } from '../src/event-stream.js';
 import type { TuiPlugin } from '../src/plugin.js';
 
+const SUPPORTED_SUBAGENT_AGENTS = [
+  { agent: 'claude', projectDir: ['.claude', 'agents'] },
+  { agent: 'codex', projectDir: ['.codex', 'agents'] },
+  { agent: 'cursor', projectDir: ['.cursor', 'agents'] },
+  { agent: 'opencode', projectDir: ['.opencode', 'agents'] },
+  { agent: 'gemini', projectDir: ['.gemini', 'agents'] },
+  { agent: 'copilot', projectDir: ['.github', 'agents'] },
+] as const;
+
 function extract(plugin: TuiPlugin) {
   const views: { component: React.ComponentType<unknown> }[] = [];
   plugin.register({
@@ -83,9 +92,12 @@ describe('skills-view', () => {
 });
 
 describe('agents-view', () => {
-  it('lists installed project sub-agents', async () => {
-    fs.mkdirSync(path.join(tmp, '.claude', 'agents'), { recursive: true });
-    fs.writeFileSync(path.join(tmp, '.claude', 'agents', 'bar.md'), 'x');
+  it('lists installed project sub-agents across the supported harness matrix', async () => {
+    for (const entry of SUPPORTED_SUBAGENT_AGENTS) {
+      const dir = path.join(tmp, ...entry.projectDir);
+      fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(path.join(dir, `${entry.agent}.md`), entry.agent);
+    }
     const View = extract(AgentsPlugin);
     const stream = new EventStream();
     const { lastFrame, rerender } = render(<View client={{} as never} active={true} eventStream={stream} emit={() => {}} />);
@@ -93,8 +105,10 @@ describe('agents-view', () => {
     rerender(<View client={{} as never} active={true} eventStream={stream} emit={() => {}} />);
     const f = lastFrame() ?? '';
     expect(f).toContain('Sub-agents');
-    expect(f).toContain('claude');
-    expect(f).toContain('bar.md');
+    for (const entry of SUPPORTED_SUBAGENT_AGENTS) {
+      expect(f).toContain(entry.agent);
+      expect(f).toContain(`${entry.agent}.md`);
+    }
   });
 
   it('deletes selected sub-agent on d + y', async () => {
@@ -111,5 +125,36 @@ describe('agents-view', () => {
     stdin.write('y');
     await new Promise((r) => setTimeout(r, 20));
     expect(fs.existsSync(file)).toBe(false);
+  });
+
+  it('supports add flow for each supported harness and keeps claude-code as a non-picker alias', async () => {
+    const View = extract(AgentsPlugin);
+    const stream = new EventStream();
+    const { stdin, lastFrame, rerender } = render(<View client={{} as never} active={true} eventStream={stream} emit={() => {}} />);
+    await new Promise((r) => setTimeout(r, 20));
+    rerender(<View client={{} as never} active={true} eventStream={stream} emit={() => {}} />);
+
+    stdin.write('a');
+    await new Promise((r) => setTimeout(r, 20));
+    const picker = lastFrame() ?? '';
+    for (const entry of SUPPORTED_SUBAGENT_AGENTS) expect(picker).toContain(entry.agent);
+    expect(picker).not.toContain('claude-code');
+
+    for (const [index, entry] of SUPPORTED_SUBAGENT_AGENTS.entries()) {
+      const source = path.join(tmp, `${entry.agent}-source.md`);
+      fs.writeFileSync(source, entry.agent);
+
+      stdin.write('a');
+      await new Promise((r) => setTimeout(r, 20));
+      for (let i = 0; i < index; i += 1) stdin.write('l');
+      stdin.write('\r');
+      await new Promise((r) => setTimeout(r, 20));
+      stdin.write(source);
+      stdin.write('\r');
+      await new Promise((r) => setTimeout(r, 30));
+
+      expect(fs.existsSync(path.join(tmp, ...entry.projectDir, path.basename(source)))).toBe(true);
+      rerender(<View client={{} as never} active={true} eventStream={stream} emit={() => {}} />);
+    }
   });
 });

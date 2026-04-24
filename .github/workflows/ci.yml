@@ -291,6 +291,11 @@ jobs:
           set -euo pipefail
           npm run build:cli --workspace=@a5c-ai/kanban 2>&1 | tee artifacts/kanban-logs/build-cli.log
 
+      - name: Verify release contract
+        run: |
+          set -euo pipefail
+          npm run verify:release --workspace=@a5c-ai/kanban 2>&1 | tee artifacts/kanban-logs/verify-release.log
+
       - name: Unit tests
         run: |
           set -euo pipefail

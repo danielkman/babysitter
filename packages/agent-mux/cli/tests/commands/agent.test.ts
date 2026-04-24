@@ -37,6 +37,8 @@ describe('agent command', () => {
     const code = await agentCommand(client, args('agents', []));
     expect(code).toBe(ExitCode.SUCCESS);
     expect(out).toHaveBeenCalledWith(expect.stringContaining('claude'));
+    expect(out).toHaveBeenCalledWith(expect.stringContaining('gemini'));
+    expect(out).toHaveBeenCalledWith(expect.stringContaining('copilot'));
   });
 
   it('rejects unknown agent', async () => {
@@ -115,5 +117,19 @@ describe('agent command', () => {
     const out = writes.join('');
     expect(out).toContain('global');
     expect(out).toContain('project');
+  });
+
+  it('add copies into the gemini and copilot project agent directories', async () => {
+    vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
+
+    const geminiSrc = path.join(tmp, 'gemini-agent.md');
+    fs.writeFileSync(geminiSrc, 'gemini');
+    expect(await agentCommand(client, args('add', ['gemini', geminiSrc], { project: true }))).toBe(ExitCode.SUCCESS);
+    expect(fs.existsSync(path.join(tmp, '.gemini', 'agents', 'gemini-agent.md'))).toBe(true);
+
+    const copilotSrc = path.join(tmp, 'copilot-agent.agent.md');
+    fs.writeFileSync(copilotSrc, 'copilot');
+    expect(await agentCommand(client, args('add', ['copilot', copilotSrc], { project: true }))).toBe(ExitCode.SUCCESS);
+    expect(fs.existsSync(path.join(tmp, '.github', 'agents', 'copilot-agent.agent.md'))).toBe(true);
   });
 });

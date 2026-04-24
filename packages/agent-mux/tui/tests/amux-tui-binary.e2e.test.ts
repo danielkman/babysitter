@@ -1,4 +1,4 @@
-import { afterEach, describe, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -6,6 +6,18 @@ import { fileURLToPath } from 'node:url';
 import * as pty from 'node-pty';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const binaryPath = path.resolve(__dirname, '../dist/bin/amux-tui.js');
+const fixturePluginPath = path.resolve(__dirname, 'fixtures/amux-tui-e2e-plugin.mjs');
+const agentMuxCoreDistPath = path.resolve(__dirname, '../../../../node_modules/@a5c-ai/agent-mux-core/dist/index.js');
+const agentMuxCliBootstrapDistPath = path.resolve(__dirname, '../../../../node_modules/@a5c-ai/agent-mux-cli/dist/bootstrap.js');
+const observabilityDistPath = path.resolve(__dirname, '../../../../node_modules/@a5c-ai/agent-mux-observability/dist/index.js');
+const describeBuiltBinary =
+  fs.existsSync(binaryPath) &&
+  fs.existsSync(agentMuxCoreDistPath) &&
+  fs.existsSync(agentMuxCliBootstrapDistPath) &&
+  fs.existsSync(observabilityDistPath)
+    ? describe
+    : describe.skip;
 
 function stripAnsi(value: string): string {
   return value
@@ -132,7 +144,36 @@ class PtyHarness {
   }
 }
 
-describe('real amux-tui binary e2e', () => {
+function installFixturePlugin(targetDir: string): void {
+  fs.mkdirSync(targetDir, { recursive: true });
+  fs.copyFileSync(fixturePluginPath, path.join(targetDir, path.basename(fixturePluginPath)));
+}
+
+function spawnBinary(options: {
+  homeDir: string;
+  stateDir: string;
+  args?: string[];
+  env?: NodeJS.ProcessEnv;
+}): PtyHarness {
+  const proc = pty.spawn(process.execPath, [binaryPath, ...(options.args ?? [])], {
+    name: 'xterm-color',
+    cols: 120,
+    rows: 40,
+    cwd: path.resolve(__dirname, '..'),
+    env: {
+      ...process.env,
+      HOME: options.homeDir,
+      AMUX_TUI_E2E_STATE_DIR: options.stateDir,
+      AMUX_TUI_NO_BUILTIN_ADAPTERS: '1',
+      FORCE_COLOR: '0',
+      NO_COLOR: '1',
+      ...(options.env ?? {}),
+    },
+  });
+  return new PtyHarness(proc);
+}
+
+describeBuiltBinary('real amux-tui binary e2e', () => {
   const tempDirs: string[] = [];
 
   afterEach(() => {
@@ -150,29 +191,17 @@ describe('real amux-tui binary e2e', () => {
     tempDirs.push(homeDir, stateDir);
 
     const pluginDir = path.resolve(__dirname, 'fixtures');
-    const binaryPath = path.resolve(__dirname, '../dist/bin/amux-tui.js');
     const eventsPath = path.join(stateDir, 'events.jsonl');
-
-    const proc = pty.spawn(process.execPath, [binaryPath], {
-      name: 'xterm-color',
-      cols: 120,
-      rows: 40,
-      cwd: path.resolve(__dirname, '..'),
+    const harness = spawnBinary({
+      homeDir,
+      stateDir,
       env: {
-        ...process.env,
-        HOME: homeDir,
         AMUX_TUI_PLUGINS_DIR: pluginDir,
-        AMUX_TUI_NO_BUILTIN_ADAPTERS: '1',
         AMUX_TUI_INITIAL_VIEW: 'sessions',
-        AMUX_TUI_E2E_STATE_DIR: stateDir,
         AMUX_LOG_FILE: path.join(stateDir, 'amux.log'),
         AMUX_LOG_LEVEL: 'error',
-        FORCE_COLOR: '0',
-        NO_COLOR: '1',
       },
     });
-    const harness = new PtyHarness(proc);
-    await harness.pause(800);
 
     await harness.waitForCondition(
       'external session listing',
@@ -231,6 +260,112 @@ describe('real amux-tui binary e2e', () => {
             && event.prompt === 'hello from binary e2e',
         ),
     );
+
+    await harness.close();
+  }, 30_000);
+
+  it('discovers user plugins from ~/.amux/tui-plugins by default', async () => {
+    const homeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'amux-tui-home-'));
+    const stateDir = fs.mkdtempSync(path.join(os.tmpdir(), 'amux-tui-state-'));
+    tempDirs.push(homeDir, stateDir);
+
+    installFixturePlugin(path.join(homeDir, '.amux', 'tui-plugins'));
+
+    const harness = spawnBinary({ homeDir, stateDir });
+
+    await harness.waitFor('No messages yet.');
+    harness.write('\u001B');
+    await harness.pause();
+    harness.write('2');
+    await harness.waitFor('sess-alpha');
+    await harness.waitFor('sess-beta');
+
+    await harness.close();
+  }, 30_000);
+
+  it('honors --user-plugins-dir for binary-level plugin discovery', async () => {
+    const homeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'amux-tui-home-'));
+    const stateDir = fs.mkdtempSync(path.join(os.tmpdir(), 'amux-tui-state-'));
+    const pluginDir = fs.mkdtempSync(path.join(os.tmpdir(), 'amux-tui-plugins-'));
+    tempDirs.push(homeDir, stateDir, pluginDir);
+
+    installFixturePlugin(pluginDir);
+
+    const harness = spawnBinary({
+      homeDir,
+      stateDir,
+      args: ['--user-plugins-dir', pluginDir],
+    });
+
+    await harness.waitFor('No messages yet.');
+    harness.write('\u001B');
+    await harness.pause();
+    harness.write('2');
+    await harness.waitFor('sess-alpha');
+    await harness.waitFor('sess-beta');
+
+    await harness.close();
+  }, 30_000);
+
+  it('honors --no-user-plugins even when a plugin directory is configured', async () => {
+    const homeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'amux-tui-home-'));
+    const stateDir = fs.mkdtempSync(path.join(os.tmpdir(), 'amux-tui-state-'));
+    const pluginDir = fs.mkdtempSync(path.join(os.tmpdir(), 'amux-tui-plugins-'));
+    tempDirs.push(homeDir, stateDir, pluginDir);
+
+    installFixturePlugin(pluginDir);
+
+    const harness = spawnBinary({
+      homeDir,
+      stateDir,
+      args: ['--user-plugins-dir', pluginDir, '--no-user-plugins'],
+    });
+
+    await harness.waitFor('No messages yet.');
+    harness.write('\u001B');
+    await harness.pause();
+    harness.write('2');
+    await harness.waitFor('No sessions found.');
+    expect(harness.text()).not.toContain('sess-alpha');
+    expect(harness.text()).not.toContain('sess-beta');
+
+    await harness.close();
+  }, 30_000);
+
+  it('reflows the sessions view after a live terminal resize', async () => {
+    const homeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'amux-tui-home-'));
+    const stateDir = fs.mkdtempSync(path.join(os.tmpdir(), 'amux-tui-state-'));
+    tempDirs.push(homeDir, stateDir);
+
+    const pluginDir = path.resolve(__dirname, 'fixtures');
+    const proc = pty.spawn(process.execPath, [binaryPath], {
+      name: 'xterm-color',
+      cols: 120,
+      rows: 40,
+      cwd: path.resolve(__dirname, '..'),
+      env: {
+        ...process.env,
+        HOME: homeDir,
+        AMUX_TUI_PLUGINS_DIR: pluginDir,
+        AMUX_TUI_NO_BUILTIN_ADAPTERS: '1',
+        AMUX_TUI_E2E_STATE_DIR: stateDir,
+        FORCE_COLOR: '0',
+        NO_COLOR: '1',
+      },
+    });
+    const harness = new PtyHarness(proc);
+
+    await harness.waitFor('No messages yet.');
+    harness.write('\u001B');
+    await harness.pause();
+    harness.write('2');
+    await harness.waitFor('sess-alpha');
+    await harness.waitFor('sess-beta');
+
+    const resizeCheckpoint = harness.checkpoint();
+    proc.resize(44, 14);
+    await harness.waitForSince('Enter resume · d details · D diff · R refresh', resizeCheckpoint);
+    await harness.waitForSince('sess-beta', resizeCheckpoint);
 
     await harness.close();
   }, 30_000);

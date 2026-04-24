@@ -5,11 +5,7 @@ import { createClient } from '@a5c-ai/agent-mux-core';
 import { registerBuiltInAdapters } from '@a5c-ai/agent-mux-cli/bootstrap';
 import { reconfigureLogger } from '@a5c-ai/agent-mux-observability';
 import { App, builtinPlugins, defaultExternalPluginsDir, loadExternalPlugins } from '../index.js';
-
-function userPluginsDisabled(): boolean {
-  const value = process.env.AMUX_TUI_NO_USER_PLUGINS;
-  return value === '1' || value === 'true';
-}
+import { runWithArgs } from './runtime.js';
 
 function builtInAdaptersDisabled(): boolean {
   const value = process.env.AMUX_TUI_NO_BUILTIN_ADAPTERS;
@@ -41,34 +37,40 @@ function configureLoggingFromEnv(): void {
   });
 }
 
-async function main() {
+const invokedAsScript = (() => {
+  try {
+    const argv1 = process.argv[1];
+    if (!argv1) return false;
+    return /amux-tui(\.js|\.tsx?)?$/.test(argv1);
+  } catch {
+    return false;
+  }
+})();
+
+if (invokedAsScript) {
   configureLoggingFromEnv();
-  const client = createClient();
-  if (!builtInAdaptersDisabled()) {
-    registerBuiltInAdapters(client);
-  }
-
-  const plugins = [...builtinPlugins];
-  if (!userPluginsDisabled()) {
-    try {
-      const external = await loadExternalPlugins(defaultExternalPluginsDir());
-      plugins.push(...external.plugins);
-      for (const error of external.errors) {
-        process.stderr.write(`amux-tui: failed to load plugin from ${error.source}: ${error.error}\n`);
+  void runWithArgs(process.argv.slice(2), {
+    builtinPlugins,
+    createClient,
+    defaultExternalPluginsDir,
+    loadExternalPlugins,
+    registerBuiltInAdapters: (client) => {
+      if (!builtInAdaptersDisabled()) {
+        registerBuiltInAdapters(client);
       }
-    } catch (error) {
-      process.stderr.write(`amux-tui: external plugin discovery failed: ${(error as Error).message}\n`);
-    }
-  }
-
-  render(
-    <App
-      client={client}
-      plugins={plugins}
-      initialViewId={initialViewId()}
-      disableChatAutoPrompt={chatAutoPromptDisabled()}
-    />,
-  );
+    },
+    renderApp: ({ client, plugins }) => {
+      render(
+        React.createElement(App, {
+          client,
+          plugins,
+          initialViewId: initialViewId(),
+          disableChatAutoPrompt: chatAutoPromptDisabled(),
+        }),
+      );
+    },
+  }).catch((error: unknown) => {
+    process.stderr.write(`amux-tui: ${(error as Error).message}\n`);
+    process.exitCode = 1;
+  });
 }
-
-void main();
