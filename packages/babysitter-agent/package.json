@@ -6,6 +6,84 @@
   "type": "commonjs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./anycli": {
+      "types": "./dist/anycli/index.d.ts",
+      "require": "./dist/anycli/index.js",
+      "default": "./dist/anycli/index.js"
+    },
+    "./api": {
+      "types": "./dist/api/index.d.ts",
+      "require": "./dist/api/index.js",
+      "default": "./dist/api/index.js"
+    },
+    "./cli": {
+      "types": "./dist/cli/main.d.ts",
+      "require": "./dist/cli/main.js",
+      "default": "./dist/cli/main.js"
+    },
+    "./cost": {
+      "types": "./dist/cost/index.d.ts",
+      "require": "./dist/cost/index.js",
+      "default": "./dist/cost/index.js"
+    },
+    "./daemon": {
+      "types": "./dist/daemon/index.d.ts",
+      "require": "./dist/daemon/index.js",
+      "default": "./dist/daemon/index.js"
+    },
+    "./governance": {
+      "types": "./dist/governance/index.d.ts",
+      "require": "./dist/governance/index.js",
+      "default": "./dist/governance/index.js"
+    },
+    "./harness": {
+      "types": "./dist/harness/index.d.ts",
+      "require": "./dist/harness/index.js",
+      "default": "./dist/harness/index.js"
+    },
+    "./interaction": {
+      "types": "./dist/interaction/index.d.ts",
+      "require": "./dist/interaction/index.js",
+      "default": "./dist/interaction/index.js"
+    },
+    "./observability": {
+      "types": "./dist/observability/index.d.ts",
+      "require": "./dist/observability/index.js",
+      "default": "./dist/observability/index.js"
+    },
+    "./runtime": {
+      "types": "./dist/runtime/index.d.ts",
+      "require": "./dist/runtime/index.js",
+      "default": "./dist/runtime/index.js"
+    },
+    "./seams": {
+      "types": "./dist/seams/index.d.ts",
+      "require": "./dist/seams/index.js",
+      "default": "./dist/seams/index.js"
+    },
+    "./session": {
+      "types": "./dist/session/index.d.ts",
+      "require": "./dist/session/index.js",
+      "default": "./dist/session/index.js"
+    },
+    "./storage": {
+      "types": "./dist/storage/index.d.ts",
+      "require": "./dist/storage/index.js",
+      "default": "./dist/storage/index.js"
+    },
+    "./tasks": {
+      "types": "./dist/tasks/index.d.ts",
+      "require": "./dist/tasks/index.js",
+      "default": "./dist/tasks/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "bin": {
     "babysitter-agent": "dist/cli/main.js"
   },
@@ -17,7 +95,8 @@
     "build": "tsc -p tsconfig.json",
     "clean": "rimraf dist",
     "lint": "eslint \"src/**/*.ts\" --max-warnings=0",
-    "test": "vitest run --config vitest.config.ts"
+    "test": "vitest run --config vitest.config.ts",
+    "test:seams": "vitest run --config vitest.config.ts src/seams/contract.test.ts"
   },
   "dependencies": {
     "@a5c-ai/agent-core": "0.1.0",

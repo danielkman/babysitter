@@ -60,6 +60,19 @@ The monolithic structure creates significant challenges:
 - Bug isolation is complex across domain boundaries
 - Performance optimization requires whole-system analysis
 
+## Executable Seam Clarification Gate
+
+V6 does not treat this monolith as ready for broad extraction yet. The first required slice is an internal seam contract inside `@a5c-ai/babysitter-agent`, not an immediate package split.
+
+That seam contract lives at `packages/babysitter-agent/src/seams/contract.ts` and assigns each current top-level runtime domain to an owned slice:
+
+- `runtime-foundation`: runtime, session, storage, tasks, prompts, compression
+- `governance-control`: governance, breakpoints
+- `integration-bridges`: harness, mcp, api, anycli
+- `operator-surfaces`: cli, daemon, interaction, observability, cost
+
+The contract is only useful if it stays executable. Changes to `packages/babysitter-agent/src` should therefore keep the seam manifest, package subpath exports, and seam validation tests aligned before any broader extraction is proposed.
+
 ---
 
 **Related Documents**: [System Overview](system-overview.md) | [V6 Vision](v6-vision.md) | [Package Specifications](package-specs.md)
