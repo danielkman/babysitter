@@ -6,6 +6,7 @@ const GLOBAL_KEYS: { key: string; desc: string }[] = [
   { key: 'p', desc: 'open prompt input' },
   { key: '/', desc: 'set global event filter (substring or `type:<prefix>`)' },
   { key: ':', desc: 'open command palette (also Ctrl-K)' },
+  { key: 'l', desc: 'open logs / observability view (`e` exports full buffered stream)' },
   { key: 'm', desc: 'pick model for next run' },
   { key: 'N', desc: 'pick active agent (harness) for next run' },
   { key: 'P', desc: 'pick run-options profile' },
@@ -25,7 +26,7 @@ const GLOBAL_KEYS: { key: string; desc: string }[] = [
 function HelpView({ client }: TuiViewProps) {
   let agentList: string[] = [];
   try {
-    agentList = client.adapters.list().map((a) => a.agent);
+    agentList = client.adapters.list().map((a: { agent: string }) => a.agent);
   } catch {
     agentList = [];
   }
@@ -48,6 +49,7 @@ function HelpView({ client }: TuiViewProps) {
       <Text bold>Tips</Text>
       <Text dimColor>· Filter syntax: `type:tool` matches all events whose type contains "tool".</Text>
       <Text dimColor>· In Sessions view, press `d` to inspect a session and export it.</Text>
+      <Text dimColor>· In Logs, metrics summarize the full buffered stream; the filter only narrows visible rows.</Text>
       <Text dimColor>· Set AMUX_TUI_COST_ALERT=&quot;1,5,10&quot; to get cost crossing alerts.</Text>
     </Box>
   );

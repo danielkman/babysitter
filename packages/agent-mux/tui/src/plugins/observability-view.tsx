@@ -5,10 +5,93 @@ import path from 'node:path';
 import type { AgentEvent } from '@a5c-ai/agent-mux';
 import { definePlugin, type TuiViewProps } from '../plugin.js';
 
-function ObservabilityView({ eventStream, filter }: TuiViewProps) {
+export interface ObservabilityMetrics {
+  tokens: number;
+  input: number;
+  output: number;
+  cost: number;
+  latency: number;
+  errors: number;
+  tools: number;
+}
+
+export function summarizeObservabilityEvents(events: readonly AgentEvent[]): ObservabilityMetrics {
+  let totalInputTokens = 0;
+  let totalOutputTokens = 0;
+  let totalCost = 0;
+  let startTime: number | null = null;
+  let endTime: number | null = null;
+  let errorCount = 0;
+  let toolCallCount = 0;
+
+  for (const ev of events) {
+    if (typeof ev.timestamp === 'number') {
+      startTime = startTime === null ? ev.timestamp : Math.min(startTime, ev.timestamp);
+      endTime = endTime === null ? ev.timestamp : Math.max(endTime, ev.timestamp);
+    }
+
+    if (ev.type === 'cost') {
+      totalCost += Number(ev.cost.totalUsd ?? 0);
+      continue;
+    }
+
+    if (ev.type === 'token_usage') {
+      totalInputTokens += Number(ev.inputTokens ?? 0);
+      totalOutputTokens += Number(ev.outputTokens ?? 0);
+      continue;
+    }
+
+    if (ev.type === 'tool_call_start' || ev.type === 'mcp_tool_call_start') {
+      toolCallCount++;
+      continue;
+    }
+
+    if (ev.type === 'error' || ev.type.endsWith('_error')) {
+      errorCount++;
+    }
+  }
+
+  return {
+    tokens: totalInputTokens + totalOutputTokens,
+    input: totalInputTokens,
+    output: totalOutputTokens,
+    cost: totalCost,
+    latency: startTime === null || endTime === null ? 0 : endTime - startTime,
+    errors: errorCount,
+    tools: toolCallCount,
+  };
+}
+
+export function filterObservabilityEvents(events: readonly AgentEvent[], filter?: string): AgentEvent[] {
+  if (!filter) {
+    return [...events];
+  }
+  const normalized = filter.toLowerCase();
+  if (normalized.startsWith('type:')) {
+    const typeFilter = normalized.slice(5);
+    return events.filter((ev) => ev.type.toLowerCase().includes(typeFilter));
+  }
+  return events.filter((ev) => JSON.stringify(ev).toLowerCase().includes(normalized));
+}
+
+export function exportObservabilityEvents(
+  events: readonly AgentEvent[],
+  options: {
+    cwd?: string;
+    now?: () => number;
+    writeFileSync?: typeof fs.writeFileSync;
+  } = {},
+): string {
+  const fileName = `session-log-${(options.now ?? Date.now)()}.json`;
+  const fullPath = path.resolve(options.cwd ?? process.cwd(), fileName);
+  (options.writeFileSync ?? fs.writeFileSync)(fullPath, JSON.stringify(events, null, 2), 'utf8');
+  return fullPath;
+}
+
+export function ObservabilityView({ eventStream, filter }: TuiViewProps) {
   const [events, setEvents] = useState<AgentEvent[]>(() => [...eventStream.snapshot()]);
   const [exportPath, setExportPath] = useState<string | null>(null);
-  
+
   useEffect(() => {
     const offPush = eventStream.subscribe((ev) => {
       setEvents((prev) => [...prev, ev]);
@@ -24,59 +107,15 @@ function ObservabilityView({ eventStream, filter }: TuiViewProps) {
 
   useInput((input) => {
     if (input === 'e') {
-      const logData = JSON.stringify(events, null, 2);
-      const fileName = `session-log-${Date.now()}.json`;
-      const fullPath = path.resolve(process.cwd(), fileName);
-      fs.writeFileSync(fullPath, logData);
+      const fullPath = exportObservabilityEvents(events);
       setExportPath(fullPath);
       setTimeout(() => setExportPath(null), 5000);
     }
   });
 
-  // Metrics calculation
-  const metrics = useMemo(() => {
-    let totalInputTokens = 0;
-    let totalOutputTokens = 0;
-    let totalCost = 0;
-    let startTime = events[0]?.timestamp || 0;
-    let endTime = events[events.length - 1]?.timestamp || 0;
-    let errorCount = 0;
-    let toolCallCount = 0;
+  const metrics = useMemo(() => summarizeObservabilityEvents(events), [events]);
 
-    for (const ev of events) {
-      if (ev.type === 'cost' && ev.cost) {
-        totalCost = ev.cost.totalUsd || totalCost;
-      }
-      if (ev.type === 'token_usage') {
-        totalInputTokens = ev.inputTokens || totalInputTokens;
-        totalOutputTokens = ev.outputTokens || totalOutputTokens;
-      }
-      if (ev.type.endsWith('_error')) {
-        errorCount++;
-      }
-      if (ev.type === 'tool_call_start') {
-        toolCallCount++;
-      }
-    }
-
-    return {
-      tokens: totalInputTokens + totalOutputTokens,
-      input: totalInputTokens,
-      output: totalOutputTokens,
-      cost: totalCost,
-      latency: endTime - startTime,
-      errors: errorCount,
-      tools: toolCallCount,
-    };
-  }, [events]);
-
-  const filteredLogs = useMemo(() => {
-    return events.filter((ev) => {
-      if (!filter) return true;
-      const f = filter.toLowerCase();
-      return JSON.stringify(ev).toLowerCase().includes(f);
-    });
-  }, [events, filter]);
+  const filteredLogs = useMemo(() => filterObservabilityEvents(events, filter), [events, filter]);
 
   return (
     <Box flexDirection="column" paddingX={1}>
@@ -103,6 +142,9 @@ function ObservabilityView({ eventStream, filter }: TuiViewProps) {
         <Box marginBottom={1}>
           <Text bold underline>LOG STREAM</Text>
         </Box>
+        {filteredLogs.length === 0 && filter ? (
+          <Text dimColor>No events match filter `{filter}`.</Text>
+        ) : null}
         {filteredLogs.slice(-50).map((ev, i) => (
           <Box key={i}>
             <Text dimColor>[{new Date(ev.timestamp).toISOString().split('T')[1].split('Z')[0]}] </Text>

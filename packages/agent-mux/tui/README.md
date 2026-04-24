@@ -78,6 +78,12 @@ The built-in plugins (`text-delta`, `thinking-delta`, `tool-call`,
 `tool-error`, `cost`, `chat-view`, `sessions-view`, `fallback`) are all
 implemented through these same extension points — use them as references.
 
+The logs / observability view is part of the supported built-in surface. Press
+`l` to open it. The metrics header aggregates the full buffered `EventStream`,
+the global `/` filter only narrows the visible log rows, and pressing `e`
+exports the full buffered stream to `session-log-<timestamp>.json` in the
+current working directory.
+
 ## View hotkeys
 
 | Key | View       | Purpose                                       |
@@ -93,6 +99,7 @@ implemented through these same extension points — use them as references.
 | `9` | help       | keybindings + tips                            |
 | `0` | mcp        | registered MCP servers                        |
 | `-` | doctor     | capability matrix / diagnostics               |
+| `l` | logs       | observability metrics + filtered log stream   |
 | `a` | auth       | auth status per adapter                       |
 | `c` | config     | config view                                   |
 | `k` | skills     | installed skills (d: delete, r: refresh)      |
@@ -101,3 +108,17 @@ implemented through these same extension points — use them as references.
 
 Global: `p` prompt, `/` filter, `:` / Ctrl-K palette, `m` model picker,
 `P` profile picker, `i` interrupt, `y`/`n` approval, `q` quit.
+
+## Logs / Observability View
+
+The `logs` view is a built-in tab registered as `builtin:observability-view`.
+
+- Hotkey: `l`
+- Purpose: show aggregated tokens, cost, latency, error count, and tool-call
+  count for the buffered event stream.
+- Filtering: the global `/` filter applies to the log rows in this view,
+  including `type:<prefix>` filters. Metrics continue to reflect the full
+  buffered stream so you can inspect a subset without losing session totals.
+- Export: press `e` while the view is active to write the full buffered event
+  stream as pretty-printed JSON to `session-log-<timestamp>.json` in the
+  current working directory.

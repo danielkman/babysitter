@@ -34,8 +34,10 @@ describe('help-view', () => {
     const f = lastFrame() ?? '';
     expect(f).toContain('Keybindings');
     expect(f).toContain('open prompt input');
+    expect(f).toContain('open logs / observability view');
     expect(f).toContain('claude-code');
     expect(f).toContain('codex');
+    expect(f).toContain('metrics summarize the full buffered stream');
     expect(f).toContain('AMUX_TUI_COST_ALERT');
   });
 });
