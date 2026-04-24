@@ -18,6 +18,10 @@ If you are new to the stack, read these in order:
 
 Then branch into the area you are actually changing.
 
+Before proposing a new seam, run the active validation cue for the first executable V6 slice:
+
+- `npm run verify:v6:seams`
+
 ## If You Need To Change Orchestration
 
 Read:
@@ -128,6 +132,7 @@ Use this rule of thumb:
 - If a document describes a future package or layer, check whether V6 marks it as deferred.
 - Treat installable plugin bundles as real compatibility surfaces even when the unified plugin source exists.
 - Use package names and paths when discussing ownership; use architecture terms only when they map to a real current seam.
+- Treat validation commands as part of the architecture surface. If a seam has no repo path and no active validation cue, it is still design exploration.
 
 ---
 

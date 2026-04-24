@@ -16,6 +16,8 @@ The current stack has one strong center and several supporting seams:
 - `@a5c-ai/hooks-mux`, `@a5c-ai/agent-plugins-mux`, and `@a5c-ai/breakpoints-mux` are focused support subsystems that normalize hooks, compile plugins, and route human approvals.
 - `plugins/babysitter-unified/` is the canonical plugin source, while per-harness plugin bundles remain the user-installable outputs.
 
+This is a unified executable stack with explicit package families, not a promise that every family must become its own larger platform.
+
 ## End-To-End Shape
 
 ```mermaid
@@ -46,6 +48,8 @@ flowchart TD
 ```
 
 ## Responsibility Map
+
+The architecture is easiest to reason about as five package families that meet at the orchestration core.
 
 ### 1. Orchestration Core
 
@@ -113,6 +117,28 @@ Owned primarily by:
 
 These packages are consumers of the orchestration and dispatch layers. They are not the architectural center of V6, but they are part of the stack and need coherent ownership boundaries.
 
+## Package Family Map
+
+| Family | Primary paths | What it owns now | What it does not imply |
+|---|---|---|---|
+| Orchestration core | `packages/sdk`, `packages/babysitter`, `packages/babysitter-agent` | Run lifecycle, replay, storage, task dispatch, CLI/runtime surfaces | A future forced split into many more top-level runtime packages |
+| Dispatch family | `packages/agent-mux/*` | Harness invocation, adapter normalization, gateway, shared interaction contracts | Replacement of Babysitter orchestration |
+| Support mux family | `packages/hooks-mux/*`, `packages/agent-plugins-mux`, `packages/breakpoints-mux` | Hook normalization, bundle compilation, human approval routing | A formal "platform layer" that already has independent product boundaries |
+| Distribution surfaces | `plugins/babysitter-unified`, `plugins/babysitter-*` | Canonical plugin authoring plus harness-specific installable outputs | One single bundle format with no compatibility constraints |
+| User surfaces | `packages/agent-mux/ui`, `packages/agent-mux/webui`, `packages/agent-mux/tui`, `docs-site/`, `packages/catalog` | Human-facing interaction, visualization, docs, and operator surfaces | Ownership of orchestration semantics |
+
+## Operational Path Through The Stack
+
+The end-to-end diagram above is the shape. The live execution narrative is:
+
+1. A concrete harness installs or loads a plugin bundle under `plugins/babysitter-*`.
+2. Those bundles are compiled from `plugins/babysitter-unified/` by `packages/agent-plugins-mux`, with `packages/hooks-mux/*` normalizing hook behavior where the harness model requires it.
+3. The installed bundle reaches the operational runtime in `packages/babysitter` and `packages/babysitter-agent`.
+4. That runtime delegates the core orchestration work to `packages/sdk`, which owns run directories, journal/state replay, effect requests, process-library binding, and workflow execution.
+5. When a workflow requires a reusable process, the runtime reaches into `library/` or project-local `.a5c/processes/`.
+6. When a workflow requires human approval routing, `packages/breakpoints-mux` handles that concern as a distinct subsystem instead of burying it inside generic hook language.
+7. When the system needs adapter-level dispatch or richer interaction surfaces, `packages/agent-mux/*` carries that responsibility without changing the orchestration center of gravity.
+
 ## Integration Contracts That Matter
 
 ### Babysitter ↔ Harnesses
@@ -134,6 +160,14 @@ The unified plugin is the authoring source. Per-harness bundles are the compatib
 
 Breakpoint routing is a distinct concern. `breakpoints-mux` should be discussed as a supporting subsystem for approvals rather than folded into generic hook or session language.
 
+### V6 ↔ Validation
+
+The current executable seam contract is validated at the repo level through:
+
+- `npm run verify:v6:seams`
+
+That command matters because V6 is supposed to promote real seams with active checks, not only naming changes in design docs.
+
 ## What Is Normative Now
 
 - The monorepo already contains Babysitter, agent-mux, hooks-mux, agent-plugins-mux, and breakpoints-mux.
@@ -141,12 +175,22 @@ Breakpoint routing is a distinct concern. `breakpoints-mux` should be discussed 
 - agent-mux is already integrated as repo content, workspace packages, and documentation.
 - Unified plugin authoring coexists with per-harness plugin bundles.
 - Metaplugins are a current capability-layer concept over plugin and hook surfaces, with `agent-plugins-mux` serving as the concrete bundle compiler for legacy non-Babysitter agents.
+- `npm run verify:v6:seams` is the active repo validation cue for the first executable V6 seam contract.
 
 ## What Is Deferred
 
 - Any forced rename from current packages into a new runtime/platform/application stack.
 - Any claim that the mux support packages must become a larger formal platform before their current seams are proven.
 - Any architectural story that assumes remote, distributed, or strongly isolated plugin execution by default.
+- Any claim that documented placeholder seams such as `packages/transport-mux` are already cut over into the active runtime.
+
+## Validation And Honesty Cues
+
+When a section in this document makes a structural claim, check it against three concrete surfaces:
+
+- **Repo paths**: the relevant package or plugin directory must already exist.
+- **Validation commands**: the claim should connect to active checks such as `npm run verify:v6:seams` and, when broader package-boundary honesty matters, `npm run test:architecture`.
+- **Placeholder docs**: if a seam is still aspirational, its docs should say so explicitly, as `packages/transport-mux/README.md` and `packages/transport-mux/architecture.md` currently do.
 
 ## Reading Rule
 
