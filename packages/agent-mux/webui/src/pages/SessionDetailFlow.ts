@@ -5,7 +5,7 @@ export {
   buildNativeTranscript,
   buildNativeAgentFlowLane,
   accumulateEventCost,
-} from '../../../ui/src/session-flow.js';
+} from '@a5c-ai/agent-mux-ui/session-flow';
 
 export type {
   NativeSessionMessage,
@@ -19,4 +19,4 @@ export type {
   SessionFlowTimelineItem,
   SessionFlowFileRecord,
   SessionFlowModel,
-} from '../../../ui/src/session-flow.js';
+} from '@a5c-ai/agent-mux-ui/session-flow';

@@ -38,7 +38,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "vite build && tsc --build && tsc --emitDeclarationOnly --declarationMap false -p tsconfig.json",
+    "build": "npm run build --workspace=@a5c-ai/agent-mux-ui && vite build && tsc --build && tsc --emitDeclarationOnly --declarationMap false -p tsconfig.json",
     "dev": "vite",
     "prepublishOnly": "npm run build"
   },

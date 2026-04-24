@@ -8,9 +8,6 @@ export default {
     alias: {
       '@': path.resolve(__dirname, 'packages/catalog/src'),
       '@a5c-ai/agent-catalog': path.resolve(__dirname, 'packages/agent-catalog/src/index.ts'),
-      '@a5c-ai/agent-mux-ui': path.resolve(__dirname, 'packages/agent-mux/ui/src/index.ts'),
-      '@a5c-ai/agent-mux-ui/gateway': path.resolve(__dirname, 'packages/agent-mux/ui/src/gateway.ts'),
-      '@a5c-ai/agent-mux-ui/session-flow': path.resolve(__dirname, 'packages/agent-mux/ui/src/session-flow.ts'),
       'next/server': path.resolve(__dirname, 'test-shims/next-server.ts'),
     },
   },
