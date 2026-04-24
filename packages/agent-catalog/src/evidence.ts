@@ -2,6 +2,9 @@ import fs from "node:fs";
 import path from "node:path";
 import { getCatalogGraph } from "./graph";
 import type {
+  ClaimConfidence,
+  ClaimEvidenceStrength,
+  ClaimProvenanceKind,
   ClaimRecord,
   EvidenceRecord,
   GraphNode,
@@ -58,6 +61,27 @@ function valueAsString(value: unknown): string {
 
 function stringArray(value: unknown): string[] {
   return Array.isArray(value) ? value.filter((entry): entry is string => typeof entry === "string") : [];
+}
+
+function claimConfidence(value: unknown): ClaimConfidence {
+  const normalized = valueAsString(value);
+  return normalized === "high" || normalized === "medium" ? normalized : "low";
+}
+
+function claimProvenanceKind(value: unknown): ClaimProvenanceKind {
+  const normalized = valueAsString(value);
+  if (normalized === "repo-observation" || normalized === "vendor-documentation") {
+    return normalized;
+  }
+  return "vendor-inference";
+}
+
+function claimEvidenceStrength(value: unknown): ClaimEvidenceStrength {
+  const normalized = valueAsString(value);
+  if (normalized === "corroborated" || normalized === "partial") {
+    return normalized;
+  }
+  return "inferred";
 }
 
 function loadManifest(): OntologyEvidenceManifest {
@@ -130,9 +154,12 @@ function toClaimRecord(node: GraphNode): ClaimRecord {
     statement: valueAsString(node.statement),
     subjectKind: valueAsString(node.subjectKind),
     subjectId: valueAsString(node.subjectId),
-    confidence: valueAsString(node.confidence),
+    confidence: claimConfidence(node.confidence),
     status: valueAsString(node.status),
+    provenanceKind: claimProvenanceKind(node.provenanceKind),
+    evidenceStrength: claimEvidenceStrength(node.evidenceStrength),
     evidenceIds: stringArray(node.evidenceIds),
+    unresolvedGaps: stringArray(node.unresolvedGaps),
   };
 }
 

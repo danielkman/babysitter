@@ -348,16 +348,6 @@ export interface CiSurfaceDescriptor {
   evidenceIds: string[];
 }
 
-export interface ClaimRecord {
-  claimId: string;
-  statement: string;
-  subjectKind: string;
-  subjectId: string;
-  confidence: string;
-  status: string;
-  evidenceIds: string[];
-}
-
 export interface AgentVersion {
   agentId: string;
   aliases: string[];
