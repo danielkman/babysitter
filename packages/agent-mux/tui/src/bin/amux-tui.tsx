@@ -10,9 +10,16 @@ function userPluginsDisabled(): boolean {
   return value === '1' || value === 'true';
 }
 
+function builtInAdaptersDisabled(): boolean {
+  const value = process.env.AMUX_TUI_NO_BUILTIN_ADAPTERS;
+  return value === '1' || value === 'true';
+}
+
 async function main() {
   const client = createClient();
-  registerBuiltInAdapters(client);
+  if (!builtInAdaptersDisabled()) {
+    registerBuiltInAdapters(client);
+  }
 
   const plugins = [...builtinPlugins];
   if (!userPluginsDisabled()) {
