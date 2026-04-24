@@ -243,6 +243,7 @@ describe('real amux-tui binary e2e', () => {
 
     const pluginDir = path.resolve(__dirname, 'fixtures');
     const binaryPath = path.resolve(__dirname, '../dist/bin/amux-tui.js');
+    const eventsPath = path.join(stateDir, 'events.jsonl');
 
     const proc = pty.spawn(process.execPath, [binaryPath], {
       name: 'xterm-color',
@@ -253,18 +254,23 @@ describe('real amux-tui binary e2e', () => {
         ...process.env,
         HOME: homeDir,
         AMUX_TUI_PLUGINS_DIR: pluginDir,
+        AMUX_TUI_NO_BUILTIN_ADAPTERS: '1',
+        AMUX_TUI_INITIAL_VIEW: 'sessions',
         AMUX_TUI_E2E_STATE_DIR: stateDir,
+        AMUX_TUI_NO_AUTO_PROMPT: '1',
+        AMUX_LOG_FILE: path.join(stateDir, 'amux.log'),
+        AMUX_LOG_LEVEL: 'error',
         FORCE_COLOR: '0',
         NO_COLOR: '1',
       },
     });
     const harness = new PtyHarness(proc);
+    await harness.pause(800);
 
-    await harness.waitFor('No messages yet.');
-    harness.write('\u001B');
-    await harness.pause();
-    harness.write('2');
-    await harness.waitFor('sess-alpha');
+    await harness.waitForCondition(
+      'external session listing',
+      () => readEvents(eventsPath).some((event) => event.type === 'list'),
+    );
     await harness.waitFor('sess-beta');
 
     const resizeCheckpoint = harness.checkpoint();
