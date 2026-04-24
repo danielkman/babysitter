@@ -18,7 +18,6 @@ describe('ThemeProvider', () => {
     // Reset DOM state between tests since ThemeProvider reads from the DOM
     document.documentElement.removeAttribute('data-theme');
     document.documentElement.className = '';
-    localStorage.removeItem('observer-theme');
     localStorage.removeItem('kanban-theme');
   });
 
@@ -90,7 +89,6 @@ describe('ThemeProvider', () => {
     );
     fireEvent.click(screen.getByText('Toggle'));
     expect(localStorage.getItem('kanban-theme')).toBe('light');
-    expect(localStorage.getItem('observer-theme')).toBeNull();
   });
 });
 

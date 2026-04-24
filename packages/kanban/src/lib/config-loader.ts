@@ -1,7 +1,6 @@
 import { promises as fs } from "fs";
 import path from "path";
 import os from "os";
-import { existsSync } from "fs";
 
 /** Return true when err represents a "file/directory not found" filesystem error. */
 export function isNotFoundError(err: unknown): boolean {
@@ -30,14 +29,10 @@ export interface KanbanConfig {
 export type ObserverConfig = KanbanConfig;
 
 const DEFAULT_REGISTRY_PATH = path.join(os.homedir(), ".a5c", "kanban.json");
-const LEGACY_REGISTRY_PATH = path.join(os.homedir(), ".a5c", "observer.json");
 
 function getRegistryPath(): string {
   if (process.env.KANBAN_REGISTRY) {
     return process.env.KANBAN_REGISTRY;
-  }
-  if (process.env.OBSERVER_REGISTRY) {
-    return process.env.OBSERVER_REGISTRY;
   }
   return DEFAULT_REGISTRY_PATH;
 }
@@ -137,17 +132,6 @@ async function loadRegistry(): Promise<RegistryData> {
     if (primary) {
       return primary;
     }
-    if (
-      !process.env.KANBAN_REGISTRY &&
-      !process.env.OBSERVER_REGISTRY &&
-      registryPath === DEFAULT_REGISTRY_PATH &&
-      existsSync(LEGACY_REGISTRY_PATH)
-    ) {
-      const legacy = await loadRegistryFile(LEGACY_REGISTRY_PATH);
-      if (legacy) {
-        return legacy;
-      }
-    }
     return { sources: [] };
   } catch (err) {
     if (!isNotFoundError(err)) {
@@ -161,7 +145,7 @@ function getDefaultSources(): WatchSource[] {
   const sources: WatchSource[] = [];
 
   // CLI flag via KANBAN_WATCH_DIR (set by src/cli.ts — defaults to user's cwd)
-  const cliWatchDir = process.env.KANBAN_WATCH_DIR || process.env.OBSERVER_WATCH_DIR;
+  const cliWatchDir = process.env.KANBAN_WATCH_DIR;
   if (cliWatchDir) {
     sources.push({ path: cliWatchDir, depth: 3, label: "cli" });
   }
@@ -213,21 +197,15 @@ export async function getConfig(): Promise<KanbanConfig> {
   });
 
   // Priority: registry file > env vars > defaults
-  const envPollInterval =
-    process.env.KANBAN_POLL_INTERVAL ||
-    process.env.OBSERVER_POLL_INTERVAL ||
-    process.env.POLL_INTERVAL;
-  const envTheme =
-    process.env.KANBAN_DEFAULT_THEME ||
-    process.env.OBSERVER_DEFAULT_THEME ||
-    process.env.THEME;
-  const envStaleThreshold = process.env.KANBAN_STALE_THRESHOLD_MS || process.env.OBSERVER_STALE_THRESHOLD_MS;
-  const envRecentWindow = process.env.KANBAN_RECENT_WINDOW_MS || process.env.OBSERVER_RECENT_WINDOW_MS;
-  const envRetentionDays = process.env.KANBAN_RETENTION_DAYS || process.env.OBSERVER_RETENTION_DAYS;
+  const envPollInterval = process.env.KANBAN_POLL_INTERVAL || process.env.POLL_INTERVAL;
+  const envTheme = process.env.KANBAN_DEFAULT_THEME || process.env.THEME;
+  const envStaleThreshold = process.env.KANBAN_STALE_THRESHOLD_MS;
+  const envRecentWindow = process.env.KANBAN_RECENT_WINDOW_MS;
+  const envRetentionDays = process.env.KANBAN_RETENTION_DAYS;
 
   cachedConfig = {
     sources,
-    port: parseInt(process.env.KANBAN_PORT || process.env.OBSERVER_PORT || process.env.PORT || "4800", 10),
+    port: parseInt(process.env.KANBAN_PORT || process.env.PORT || "4800", 10),
     pollInterval: registry.pollInterval ?? (envPollInterval ? parseInt(envPollInterval, 10) : 2000),
     theme: registry.theme ?? ((envTheme === "dark" || envTheme === "light" ? envTheme : "dark") as "dark" | "light"),
     staleThresholdMs: registry.staleThresholdMs ?? (envStaleThreshold ? parseInt(envStaleThreshold, 10) : 3600000),

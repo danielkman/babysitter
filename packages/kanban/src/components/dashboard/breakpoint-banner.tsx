@@ -15,7 +15,6 @@ const RESOLVED_DISPLAY_MS = 20000; // 20 seconds
 const STALENESS_THRESHOLD_MS = 120000; // 2 minutes — if a breakpoint has been shown
                                         // continuously for this long, show a hint
 const DISMISSED_KEY = "kanban:dismissed-breakpoints";
-const LEGACY_DISMISSED_KEY = "observer:dismissed-breakpoints";
 
 /** Inline approve button for a single breakpoint in the dashboard banner. */
 function BreakpointBannerItem({ bp, stale, onDismiss }: { bp: BreakpointRunInfo; stale: boolean; onDismiss?: () => void }) {
@@ -136,7 +135,7 @@ export function BreakpointBanner({ breakpointRuns }: BreakpointBannerProps) {
 
   useLayoutEffect(() => {
     try {
-      const raw = localStorage.getItem(DISMISSED_KEY) ?? localStorage.getItem(LEGACY_DISMISSED_KEY);
+      const raw = localStorage.getItem(DISMISSED_KEY);
       if (raw) {
         setDismissedIds(new Set(JSON.parse(raw) as string[]));
       }

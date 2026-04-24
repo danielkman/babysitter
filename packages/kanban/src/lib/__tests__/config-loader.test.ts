@@ -20,18 +20,13 @@ describe('config-loader', () => {
     process.env = { ...originalEnv };
     delete process.env.KANBAN_REGISTRY;
     delete process.env.KANBAN_WATCH_DIR;
-    delete process.env.OBSERVER_REGISTRY;
-    delete process.env.OBSERVER_WATCH_DIR;
     delete process.env.WATCH_DIR;
     delete process.env.WATCH_DIRS;
     delete process.env.KANBAN_PORT;
-    delete process.env.OBSERVER_PORT;
     delete process.env.PORT;
     delete process.env.KANBAN_POLL_INTERVAL;
-    delete process.env.OBSERVER_POLL_INTERVAL;
     delete process.env.POLL_INTERVAL;
     delete process.env.KANBAN_DEFAULT_THEME;
-    delete process.env.OBSERVER_DEFAULT_THEME;
     delete process.env.THEME;
     invalidateConfigCache();
   });
@@ -91,17 +86,6 @@ describe('config-loader', () => {
       const config = await getConfig();
 
       expect(config.sources[0].path).toBe('/custom/watch/dir');
-      expect(config.sources[0].label).toBe('cli');
-    });
-
-    it('falls back to OBSERVER_WATCH_DIR for legacy installs', async () => {
-      mockReadFile.mockRejectedValue(new Error('ENOENT'));
-      process.env.OBSERVER_WATCH_DIR = '/legacy/watch/dir';
-      invalidateConfigCache();
-
-      const config = await getConfig();
-
-      expect(config.sources[0].path).toBe('/legacy/watch/dir');
       expect(config.sources[0].label).toBe('cli');
     });
 

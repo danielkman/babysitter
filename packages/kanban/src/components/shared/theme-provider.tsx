@@ -35,7 +35,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       document.documentElement.dataset.compendiumTheme = next === "light" ? "vellum" : "void";
       document.documentElement.className = next;
       localStorage.setItem("kanban-theme", next);
-      localStorage.removeItem("observer-theme");
       return next;
     });
   }, []);

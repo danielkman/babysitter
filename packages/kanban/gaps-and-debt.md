@@ -139,11 +139,6 @@ These are additions that should exist beyond Vibe Kanban parity because this pac
 
 ## Technical Debt
 
-### Identity drift from observer-dashboard bootstrap
-
-- package-facing naming, docs, comments, and persistence keys were normalized in `KANBAN-DEBT-001`
-- legacy observer env vars, config files, and localStorage keys are still read as compatibility fallbacks
-
 ### Partial design-system adoption
 
 - shell, forms, and branding now use Compendium in key places

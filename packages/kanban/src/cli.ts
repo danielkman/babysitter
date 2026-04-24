@@ -238,7 +238,7 @@ function main(): void {
   }
 
   // Determine the Next.js command — use local binary for global installs
-  const port = opts.port || process.env.KANBAN_PORT || process.env.OBSERVER_PORT || "4800";
+  const port = opts.port || process.env.KANBAN_PORT || "4800";
   const nextBin = findNextBin();
   const nextCmd = opts.dev
     ? `"${nextBin}" dev --port ${port}`
