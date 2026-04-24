@@ -9,6 +9,7 @@ import { PromptInput } from './prompt-input.js';
 import { CommandPalette, type PaletteAction } from './command-palette.js';
 import { ModelPicker, type ModelOption } from './model-picker.js';
 import { loadHistory, appendHistory } from './prompt-history-store.js';
+import { resolveSessionDispatchPlan } from './session-dispatch.js';
 
 export interface AppProps {
   client: AgentMuxClient;
@@ -404,13 +405,15 @@ export function App({ client, plugins, defaultAgent = 'claude' }: AppProps) {
         ? ((await client.profiles.apply(currentProfile)) as Partial<{ agent: string; model: string }>)
         : {};
       const selectedAgent = currentModel?.agent ?? currentAgent ?? baseOpts.agent ?? defaultAgent;
-      // TODO: cross-harness resume/fork — if the user picked a different
-      // agent than the session's origin we'd need a transcript-export /
-      // re-import path. For now, refuse explicitly.
-      if (pendingResume && pendingResume.agent !== selectedAgent && (currentModel || currentAgent)) {
-        setStatus(`Cannot resume ${pendingResume.agent} session with ${selectedAgent}: cross-harness resume not implemented yet.`);
-        return;
-      }
+      const explicitHarnessSelection = Boolean(currentModel || currentAgent);
+      const requestedAgent =
+        pendingResume && !explicitHarnessSelection ? pendingResume.agent : selectedAgent;
+      const sessionPlan = await resolveSessionDispatchPlan({
+        sessions: client.sessions,
+        pendingResume,
+        requestedAgent,
+        prompt,
+      });
       const runOpts: {
         agent: string;
         prompt: string;
@@ -418,10 +421,10 @@ export function App({ client, plugins, defaultAgent = 'claude' }: AppProps) {
         model?: string;
         approvalMode?: 'yolo' | 'prompt' | 'deny';
       } = {
-        agent: pendingResume?.agent ?? selectedAgent,
-        prompt,
+        agent: sessionPlan.agent,
+        prompt: sessionPlan.prompt,
       };
-      if (pendingResume) runOpts.sessionId = pendingResume.sessionId;
+      if (sessionPlan.sessionId) runOpts.sessionId = sessionPlan.sessionId;
       if (currentModel) runOpts.model = currentModel.modelId;
       else if (baseOpts.model) runOpts.model = baseOpts.model;
       // Map TUI execMode → SDK approvalMode. "planning" has no SDK analogue
@@ -434,6 +437,11 @@ export function App({ client, plugins, defaultAgent = 'claude' }: AppProps) {
         runOpts.approvalMode = 'prompt';
         setStatus('Planning mode: adapters do not expose a plan-only flag — running with prompt approvals.');
       } else runOpts.approvalMode = 'prompt';
+      if (sessionPlan.migration) {
+        setStatus(
+          `Forking ${sessionPlan.migration.sourceAgent}/${sessionPlan.migration.sourceSessionId} into ${sessionPlan.agent} via transcript import…`,
+        );
+      }
       const resumedAgent = runOpts.agent;
       let resumedSessionId = runOpts.sessionId;
       const handle = client.run(runOpts as never);
