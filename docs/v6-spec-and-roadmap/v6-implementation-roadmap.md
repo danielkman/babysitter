@@ -98,6 +98,23 @@ Ship one small architecture improvement that proves the V6 method works.
 - compatibility notes are written,
 - the slice reduces ambiguity or coupling in a way that can be demonstrated.
 
+### Selected Slice
+
+The currently selected first executable slice is documented in [ADR-001: Babysitter-Agent Seam Contract As The First Executable V6 Slice](decisions/ADR-001-babysitter-agent-seam-contract.md).
+
+Current validation command:
+
+```bash
+npm run verify:v6:seams
+```
+
+Why this slice was selected:
+
+- it already exists in code,
+- it stays within one package boundary,
+- rollback is cheap,
+- it converts V6 seam language into an executable validation gate.
+
 ### Kill Criteria
 
 - the slice forces unrelated packages to move together,
@@ -206,6 +223,8 @@ The roadmap is overreaching if it starts requiring:
 3. Select the smallest executable slice with real payoff.
 4. Validate it through repository commands and plugin/runtime behavior.
 5. Reassess whether a second slice is justified.
+
+For the current revision, steps 3 and 4 are anchored by ADR-001 and `npm run verify:v6:seams`; the next open question is whether any second slice is earned.
 
 ---
 
