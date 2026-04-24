@@ -2,6 +2,8 @@
  * Real Claude Code hook payload fixtures for each event type.
  *
  * These represent the stdin JSON that Claude Code passes to hook subprocesses.
+ * Claude does not include the native hook event name in this payload; callers
+ * must pass it separately (for example via `invoke --native-event <ClaudeHook>`).
  */
 
 export const SESSION_START_STARTUP = {

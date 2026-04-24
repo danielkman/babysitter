@@ -77,18 +77,20 @@ In `.claude/settings.json`:
     "SessionStart": [
       {
         "type": "command",
-        "command": "npx -y @a5c-ai/hooks-mux invoke --adapter claude"
+        "command": "npx -y @a5c-ai/hooks-mux invoke --adapter claude --native-event SessionStart"
       }
     ],
     "PreToolUse": [
       {
         "type": "command",
-        "command": "npx -y @a5c-ai/hooks-mux invoke --adapter claude"
+        "command": "npx -y @a5c-ai/hooks-mux invoke --adapter claude --native-event PreToolUse"
       }
     ]
   }
 }
 ```
+
+For Claude, pass the native hook name explicitly with `--native-event`. Claude's stdin payloads do not carry `event_name`, so this command shape is the supported contract.
 
 ---
 
@@ -223,8 +225,8 @@ The proxy emits structured diagnostics during fan-out. Check handler order and m
 
 ```bash
 # Enable debug logging
-AGENT_HOOKS_LOG_LEVEL=debug npx -y @a5c-ai/hooks-mux invoke --adapter claude
+AGENT_HOOKS_LOG_LEVEL=debug npx -y @a5c-ai/hooks-mux invoke --adapter claude --native-event SessionStart
 
 # Enable trace file
-AGENT_HOOKS_TRACE_FILE=./trace.jsonl npx -y @a5c-ai/hooks-mux invoke --adapter claude
+AGENT_HOOKS_TRACE_FILE=./trace.jsonl npx -y @a5c-ai/hooks-mux invoke --adapter claude --native-event SessionStart
 ```

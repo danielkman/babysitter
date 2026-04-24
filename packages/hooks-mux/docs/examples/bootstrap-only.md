@@ -24,7 +24,7 @@ In `.claude/settings.json`:
     "SessionStart": [
       {
         "type": "command",
-        "command": "npx -y @a5c-ai/hooks-mux invoke --adapter claude --bootstrap-only"
+        "command": "npx -y @a5c-ai/hooks-mux invoke --adapter claude --native-event SessionStart --bootstrap-only"
       }
     ]
   }
@@ -93,7 +93,7 @@ Once bootstrap is working, add handlers by switching to a registry:
     "SessionStart": [
       {
         "type": "command",
-        "command": "npx -y @a5c-ai/hooks-mux invoke --adapter claude"
+        "command": "npx -y @a5c-ai/hooks-mux invoke --adapter claude --native-event SessionStart"
       }
     ]
   }

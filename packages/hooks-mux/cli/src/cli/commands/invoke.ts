@@ -36,6 +36,7 @@ interface InvokeArgs {
   adapter: string;
   handler?: string[];
   'bootstrap-only'?: boolean;
+  'native-event'?: string;
   'session-id'?: string;
   json?: boolean;
 }
@@ -56,6 +57,84 @@ function tryParseJson(raw: string): unknown | undefined {
   } catch {
     return undefined;
   }
+}
+
+interface RawEventResolution {
+  rawEventName: string;
+  source: 'cli' | 'env' | 'stdin' | 'claude-heuristic' | 'default';
+}
+
+function inferClaudeNativeEventName(
+  stdinData: Record<string, unknown> | undefined,
+): string | undefined {
+  if (!stdinData) {
+    return undefined;
+  }
+
+  if (
+    typeof stdinData['tool_name'] === 'string'
+    || typeof stdinData['tool_call_id'] === 'string'
+    || stdinData['tool_input'] !== undefined
+  ) {
+    return stdinData['tool_response'] !== undefined ? 'PostToolUse' : 'PreToolUse';
+  }
+
+  if (
+    stdinData['stop_hook_active'] !== undefined
+    || typeof stdinData['last_assistant_message'] === 'string'
+    || typeof stdinData['reason'] === 'string'
+  ) {
+    return 'Stop';
+  }
+
+  if (
+    typeof stdinData['source'] === 'string'
+    || stdinData['initial_prompt'] !== undefined
+  ) {
+    return 'SessionStart';
+  }
+
+  if (stdinData['prompt'] !== undefined) {
+    return 'UserPromptSubmit';
+  }
+
+  if (stdinData['agent_type'] !== undefined) {
+    return 'SubagentStop';
+  }
+
+  if (stdinData['title'] !== undefined || stdinData['message'] !== undefined) {
+    return 'Notification';
+  }
+
+  return undefined;
+}
+
+function resolveRawEventName(
+  explicitNativeEvent: string | undefined,
+  adapterName: string,
+  stdinData: Record<string, unknown> | undefined,
+  env: Record<string, string>,
+): RawEventResolution {
+  if (explicitNativeEvent) {
+    return { rawEventName: explicitNativeEvent, source: 'cli' };
+  }
+
+  if (env['HOOKS_PROXY_EVENT_NAME']) {
+    return { rawEventName: env['HOOKS_PROXY_EVENT_NAME'], source: 'env' };
+  }
+
+  if (typeof stdinData?.['event_name'] === 'string') {
+    return { rawEventName: stdinData['event_name'], source: 'stdin' };
+  }
+
+  if (adapterName === 'claude') {
+    const inferred = inferClaudeNativeEventName(stdinData);
+    if (inferred) {
+      return { rawEventName: inferred, source: 'claude-heuristic' };
+    }
+  }
+
+  return { rawEventName: 'unknown', source: 'default' };
 }
 
 /**
@@ -158,6 +237,10 @@ export const invokeCommand: CommandModule<object, InvokeArgs> = {
         default: false,
         describe: 'Only bootstrap session context, skip handler execution',
       })
+      .option('native-event', {
+        type: 'string',
+        describe: 'Explicit native hook event name (for Claude: SessionStart, PreToolUse, PostToolUse, Stop, etc.)',
+      })
       .option('session-id', {
         type: 'string',
         describe: 'Explicit session ID override',
@@ -187,11 +270,16 @@ export const invokeCommand: CommandModule<object, InvokeArgs> = {
 
     // Determine raw event name from env or stdin
     const env = process.env as Record<string, string>;
-    const rawEventName = env['HOOKS_PROXY_EVENT_NAME']
-      ?? (stdinData?.['event_name'] as string | undefined)
-      ?? 'unknown';
+    const rawEvent = resolveRawEventName(
+      args['native-event'],
+      loaded.capabilities.name,
+      stdinData,
+      env,
+    );
+    const { rawEventName } = rawEvent;
     await logger.debug('stdin parsed', {
       rawEventName,
+      rawEventNameSource: rawEvent.source,
       stdinBytes: rawStdin.length,
       stdinJson: Boolean(stdinData),
     });

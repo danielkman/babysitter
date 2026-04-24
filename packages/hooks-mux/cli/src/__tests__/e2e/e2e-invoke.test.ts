@@ -48,27 +48,33 @@ describe('invoke — full CLI pipeline (e2e)', { timeout: 30000 }, () => {
     return JSON.parse(stdout.trim()) as Record<string, unknown>;
   }
 
+  function claudeInvokeArgs(
+    nativeEventName: string,
+    extraArgs: string[] = [],
+  ): string[] {
+    return [
+      'invoke',
+      '--adapter', 'claude',
+      '--native-event', nativeEventName,
+      ...extraArgs,
+    ];
+  }
+
   it('session-start bootstrap-only creates session file', async () => {
     const sessionId = 'e2e-bootstrap-sess-1';
     const stdinPayload = JSON.stringify({
       session_id: sessionId,
-      event_name: 'SessionStart',
       source: 'startup',
     });
 
     const result = await runCli(
-      [
-        'invoke',
-        '--adapter', 'claude',
+      claudeInvokeArgs('SessionStart', [
         '--bootstrap-only',
         '--json',
-      ],
+      ]),
       {
         stdin: stdinPayload,
-        env: {
-          ...baseEnv(),
-          HOOKS_PROXY_EVENT_NAME: 'SessionStart',
-        },
+        env: baseEnv(),
       },
     );
 
@@ -98,22 +104,16 @@ describe('invoke — full CLI pipeline (e2e)', { timeout: 30000 }, () => {
 
     const stdinPayload = JSON.stringify({
       session_id: sessionId,
-      event_name: 'SessionStart',
     });
 
     const result = await runCli(
-      [
-        'invoke',
-        '--adapter', 'claude',
+      claudeInvokeArgs('SessionStart', [
         '--handler', handlerCmd,
         '--session-id', sessionId,
-      ],
+      ]),
       {
         stdin: stdinPayload,
-        env: {
-          ...baseEnv(),
-          HOOKS_PROXY_EVENT_NAME: 'SessionStart',
-        },
+        env: baseEnv(),
       },
     );
 
@@ -142,22 +142,16 @@ describe('invoke — full CLI pipeline (e2e)', { timeout: 30000 }, () => {
 
     const stdinPayload = JSON.stringify({
       session_id: sessionId,
-      event_name: 'SessionStart',
     });
 
     const result = await runCli(
-      [
-        'invoke',
-        '--adapter', 'claude',
+      claudeInvokeArgs('SessionStart', [
         '--handler', handlerCmd,
         '--session-id', sessionId,
-      ],
+      ]),
       {
         stdin: stdinPayload,
-        env: {
-          ...baseEnv(),
-          HOOKS_PROXY_EVENT_NAME: 'SessionStart',
-        },
+        env: baseEnv(),
       },
     );
 
@@ -192,24 +186,18 @@ describe('invoke — full CLI pipeline (e2e)', { timeout: 30000 }, () => {
 
     const stdinPayload = JSON.stringify({
       session_id: sessionId,
-      event_name: 'PreToolUse',
       tool_name: 'Bash',
       tool_input: { command: 'rm -rf /' },
     });
 
     const result = await runCli(
-      [
-        'invoke',
-        '--adapter', 'claude',
+      claudeInvokeArgs('PreToolUse', [
         '--handler', handlerCmd,
         '--session-id', sessionId,
-      ],
+      ]),
       {
         stdin: stdinPayload,
-        env: {
-          ...baseEnv(),
-          HOOKS_PROXY_EVENT_NAME: 'PreToolUse',
-        },
+        env: baseEnv(),
       },
     );
 
@@ -238,23 +226,17 @@ describe('invoke — full CLI pipeline (e2e)', { timeout: 30000 }, () => {
 
     const stdinPayload = JSON.stringify({
       session_id: sessionId,
-      event_name: 'SessionStart',
     });
 
     const result = await runCli(
-      [
-        'invoke',
-        '--adapter', 'claude',
+      claudeInvokeArgs('SessionStart', [
         '--handler', handler1,
         '--handler', handler2,
         '--session-id', sessionId,
-      ],
+      ]),
       {
         stdin: stdinPayload,
-        env: {
-          ...baseEnv(),
-          HOOKS_PROXY_EVENT_NAME: 'SessionStart',
-        },
+        env: baseEnv(),
       },
     );
 
@@ -286,22 +268,16 @@ describe('invoke — full CLI pipeline (e2e)', { timeout: 30000 }, () => {
 
     const stdinPayload = JSON.stringify({
       session_id: sessionId,
-      event_name: 'SessionStart',
     });
 
     const result = await runCli(
-      [
-        'invoke',
-        '--adapter', 'claude',
+      claudeInvokeArgs('SessionStart', [
         '--handler', handlerCmd,
         '--session-id', sessionId,
-      ],
+      ]),
       {
         stdin: stdinPayload,
-        env: {
-          ...baseEnv(),
-          HOOKS_PROXY_EVENT_NAME: 'SessionStart',
-        },
+        env: baseEnv(),
       },
     );
 
@@ -315,20 +291,13 @@ describe('invoke — full CLI pipeline (e2e)', { timeout: 30000 }, () => {
 
   it('invoke with no handlers produces noop output', async () => {
     const stdinPayload = JSON.stringify({
-      event_name: 'SessionStart',
     });
 
     const result = await runCli(
-      [
-        'invoke',
-        '--adapter', 'claude',
-      ],
+      claudeInvokeArgs('SessionStart'),
       {
         stdin: stdinPayload,
-        env: {
-          ...baseEnv(),
-          HOOKS_PROXY_EVENT_NAME: 'SessionStart',
-        },
+        env: baseEnv(),
       },
     );
 
@@ -342,23 +311,17 @@ describe('invoke — full CLI pipeline (e2e)', { timeout: 30000 }, () => {
     const explicitId = 'e2e-explicit-id';
     const stdinPayload = JSON.stringify({
       session_id: 'stdin-id-should-be-ignored',
-      event_name: 'SessionStart',
     });
 
     const result = await runCli(
-      [
-        'invoke',
-        '--adapter', 'claude',
+      claudeInvokeArgs('SessionStart', [
         '--bootstrap-only',
         '--session-id', explicitId,
         '--json',
-      ],
+      ]),
       {
         stdin: stdinPayload,
-        env: {
-          ...baseEnv(),
-          HOOKS_PROXY_EVENT_NAME: 'SessionStart',
-        },
+        env: baseEnv(),
       },
     );
 
@@ -377,22 +340,16 @@ describe('invoke — full CLI pipeline (e2e)', { timeout: 30000 }, () => {
     `);
 
     const stdinPayload = JSON.stringify({
-      event_name: 'SessionStart',
     });
 
     // session.start phase defaults to fail-open, so this should not crash the CLI
     const result = await runCli(
-      [
-        'invoke',
-        '--adapter', 'claude',
+      claudeInvokeArgs('SessionStart', [
         '--handler', handlerCmd,
-      ],
+      ]),
       {
         stdin: stdinPayload,
-        env: {
-          ...baseEnv(),
-          HOOKS_PROXY_EVENT_NAME: 'SessionStart',
-        },
+        env: baseEnv(),
       },
     );
 
@@ -412,22 +369,16 @@ describe('invoke — full CLI pipeline (e2e)', { timeout: 30000 }, () => {
 
     const stdinPayload = JSON.stringify({
       session_id: sessionId,
-      event_name: 'SessionStart',
     });
 
     const result = await runCli(
-      [
-        'invoke',
-        '--adapter', 'claude',
+      claudeInvokeArgs('SessionStart', [
         '--handler', handlerCmd,
         '--session-id', sessionId,
-      ],
+      ]),
       {
         stdin: stdinPayload,
-        env: {
-          ...baseEnv(),
-          HOOKS_PROXY_EVENT_NAME: 'SessionStart',
-        },
+        env: baseEnv(),
       },
     );
 
@@ -439,6 +390,83 @@ describe('invoke — full CLI pipeline (e2e)', { timeout: 30000 }, () => {
     const contextVars = session['contextVars'] as Record<string, string>;
     expect(contextVars['myKey']).toBe('myValue');
     expect(contextVars['anotherKey']).toBe('anotherValue');
+  });
+
+  it('Claude invoke resolves canonical phases from --native-event without env fallback', async () => {
+    const handlerCmd = await writeHandlerScript(tmpRoot, 'phase-echo-handler', `
+      const chunks = [];
+      process.stdin.on('data', (chunk) => chunks.push(Buffer.from(chunk)));
+      process.stdin.on('end', () => {
+        const event = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+        process.stdout.write(JSON.stringify({
+          decision: 'allow',
+          additionalContext: JSON.stringify({
+            phase: event.phase,
+            rawEventName: event.rawEventName,
+          }),
+        }));
+      });
+    `);
+
+    const cases = [
+      {
+        nativeEventName: 'SessionStart',
+        expectedPhase: 'session.start',
+        stdin: {
+          session_id: 'e2e-phase-session-start',
+          source: 'startup',
+        },
+      },
+      {
+        nativeEventName: 'PreToolUse',
+        expectedPhase: 'tool.before',
+        stdin: {
+          session_id: 'e2e-phase-pre-tool',
+          tool_name: 'Bash',
+          tool_input: { command: 'npm test' },
+        },
+      },
+      {
+        nativeEventName: 'PostToolUse',
+        expectedPhase: 'tool.after',
+        stdin: {
+          session_id: 'e2e-phase-post-tool',
+          tool_name: 'Bash',
+          tool_input: { command: 'npm test' },
+          tool_response: 'ok',
+        },
+      },
+      {
+        nativeEventName: 'Stop',
+        expectedPhase: 'turn.stop',
+        stdin: {
+          session_id: 'e2e-phase-stop',
+          reason: 'end_turn',
+          last_assistant_message: 'Done.',
+        },
+      },
+    ] as const;
+
+    for (const testCase of cases) {
+      const result = await runCli(
+        claudeInvokeArgs(testCase.nativeEventName, [
+          '--handler', handlerCmd,
+        ]),
+        {
+          stdin: JSON.stringify(testCase.stdin),
+          env: baseEnv(),
+        },
+      );
+
+      expect(result.exitCode).toBe(0);
+
+      const output = parseOutput(result.stdout);
+      const normalized = JSON.parse(String(output.additionalContext));
+      expect(normalized).toEqual({
+        phase: testCase.expectedPhase,
+        rawEventName: testCase.nativeEventName,
+      });
+    }
   });
 
   it('Claude invoke passes normalized payload shape to portable handlers', async () => {
@@ -473,17 +501,12 @@ describe('invoke — full CLI pipeline (e2e)', { timeout: 30000 }, () => {
     });
 
     const result = await runCli(
-      [
-        'invoke',
-        '--adapter', 'claude',
+      claudeInvokeArgs('PreToolUse', [
         '--handler', handlerCmd,
-      ],
+      ]),
       {
         stdin: stdinPayload,
-        env: {
-          ...baseEnv(),
-          HOOKS_PROXY_EVENT_NAME: 'PreToolUse',
-        },
+        env: baseEnv(),
       },
     );
 
@@ -516,21 +539,16 @@ describe('invoke — full CLI pipeline (e2e)', { timeout: 30000 }, () => {
     `);
 
     const result = await runCli(
-      [
-        'invoke',
-        '--adapter', 'claude',
+      claudeInvokeArgs('PreToolUse', [
         '--handler', handlerCmd,
-      ],
+      ]),
       {
         stdin: JSON.stringify({
           session_id: 'e2e-pretool-renderer',
           tool_name: 'Bash',
           tool_input: { command: 'npm test' },
         }),
-        env: {
-          ...baseEnv(),
-          HOOKS_PROXY_EVENT_NAME: 'PreToolUse',
-        },
+        env: baseEnv(),
       },
     );
 
@@ -552,11 +570,9 @@ describe('invoke — full CLI pipeline (e2e)', { timeout: 30000 }, () => {
     `);
 
     const result = await runCli(
-      [
-        'invoke',
-        '--adapter', 'claude',
+      claudeInvokeArgs('PostToolUse', [
         '--handler', handlerCmd,
-      ],
+      ]),
       {
         stdin: JSON.stringify({
           session_id: 'e2e-posttool-renderer',
@@ -564,10 +580,7 @@ describe('invoke — full CLI pipeline (e2e)', { timeout: 30000 }, () => {
           tool_input: { command: 'npm test' },
           tool_response: 'ok',
         }),
-        env: {
-          ...baseEnv(),
-          HOOKS_PROXY_EVENT_NAME: 'PostToolUse',
-        },
+        env: baseEnv(),
       },
     );
 
@@ -589,21 +602,16 @@ describe('invoke — full CLI pipeline (e2e)', { timeout: 30000 }, () => {
     `);
 
     const result = await runCli(
-      [
-        'invoke',
-        '--adapter', 'claude',
+      claudeInvokeArgs('Stop', [
         '--handler', handlerCmd,
-      ],
+      ]),
       {
         stdin: JSON.stringify({
           session_id: 'e2e-stop-renderer',
           reason: 'end_turn',
           last_assistant_message: 'Done.',
         }),
-        env: {
-          ...baseEnv(),
-          HOOKS_PROXY_EVENT_NAME: 'Stop',
-        },
+        env: baseEnv(),
       },
     );
 
@@ -625,21 +633,16 @@ describe('invoke — full CLI pipeline (e2e)', { timeout: 30000 }, () => {
     `);
 
     const result = await runCli(
-      [
-        'invoke',
-        '--adapter', 'claude',
+      claudeInvokeArgs('Stop', [
         '--handler', handlerCmd,
-      ],
+      ]),
       {
         stdin: JSON.stringify({
           session_id: 'e2e-stop-recursion',
           reason: 'end_turn',
           stop_hook_active: true,
         }),
-        env: {
-          ...baseEnv(),
-          HOOKS_PROXY_EVENT_NAME: 'Stop',
-        },
+        env: baseEnv(),
       },
     );
 

@@ -265,7 +265,7 @@ The proxy emits structured diagnostics for every hook execution, including:
 Enable JSONL trace files for full execution traces:
 
 ```bash
-AGENT_HOOKS_TRACE_FILE=./hooks-trace.jsonl a5c-hooks-mux invoke --adapter claude
+AGENT_HOOKS_TRACE_FILE=./hooks-trace.jsonl a5c-hooks-mux invoke --adapter claude --native-event SessionStart
 ```
 
 ---

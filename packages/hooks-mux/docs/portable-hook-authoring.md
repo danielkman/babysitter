@@ -196,7 +196,7 @@ export async function handler(event: UnifiedHookEvent): Promise<UnifiedHookResul
 ### Via CLI Arguments
 
 ```bash
-a5c-hooks-mux invoke --adapter claude --handler ./my-handler.js:handler
+a5c-hooks-mux invoke --adapter claude --native-event PreToolUse --handler ./my-handler.js:handler
 ```
 
 ### Via Handler Registry

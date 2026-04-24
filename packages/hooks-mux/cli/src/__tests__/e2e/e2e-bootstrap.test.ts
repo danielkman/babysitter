@@ -139,13 +139,13 @@ describe('bootstrap — session initialization (e2e)', { timeout: 30000 }, () =>
     `);
     const stdinPayload = JSON.stringify({
       session_id: sessionId,
-      event_name: 'SessionStart',
     });
 
     const invokeResult = await runCli(
       [
         'invoke',
         '--adapter', 'claude',
+        '--native-event', 'SessionStart',
         '--handler', handlerCmd,
         '--session-id', sessionId,
       ],
@@ -153,7 +153,6 @@ describe('bootstrap — session initialization (e2e)', { timeout: 30000 }, () =>
         stdin: stdinPayload,
         env: {
           ...baseEnv(),
-          HOOKS_PROXY_EVENT_NAME: 'SessionStart',
           CLAUDE_ENV_FILE: envFilePath,
         },
       },

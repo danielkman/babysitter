@@ -33,30 +33,32 @@ Add to `.claude/settings.json`:
     "SessionStart": [
       {
         "type": "command",
-        "command": "npx -y @a5c-ai/hooks-mux invoke --adapter claude"
+        "command": "npx -y @a5c-ai/hooks-mux invoke --adapter claude --native-event SessionStart"
       }
     ],
     "PreToolUse": [
       {
         "type": "command",
-        "command": "npx -y @a5c-ai/hooks-mux invoke --adapter claude"
+        "command": "npx -y @a5c-ai/hooks-mux invoke --adapter claude --native-event PreToolUse"
       }
     ],
     "PostToolUse": [
       {
         "type": "command",
-        "command": "npx -y @a5c-ai/hooks-mux invoke --adapter claude"
+        "command": "npx -y @a5c-ai/hooks-mux invoke --adapter claude --native-event PostToolUse"
       }
     ],
     "Stop": [
       {
         "type": "command",
-        "command": "npx -y @a5c-ai/hooks-mux invoke --adapter claude"
+        "command": "npx -y @a5c-ai/hooks-mux invoke --adapter claude --native-event Stop"
       }
     ]
   }
 }
 ```
+
+Claude does not include a native `event_name` field in its stdin payloads, so the supported contract is to pass the Claude hook name explicitly with `--native-event`. The CLI still accepts `HOOKS_PROXY_EVENT_NAME` and stdin `event_name` for compatibility, and can infer common Claude payload shapes as a last resort, but docs and tests use the explicit flag.
 
 ### Bootstrap-only mode
 
@@ -68,7 +70,7 @@ To initialize session context without running any hook logic:
     "SessionStart": [
       {
         "type": "command",
-        "command": "npx -y @a5c-ai/hooks-mux invoke --adapter claude --bootstrap-only"
+        "command": "npx -y @a5c-ai/hooks-mux invoke --adapter claude --native-event SessionStart --bootstrap-only"
       }
     ]
   }
