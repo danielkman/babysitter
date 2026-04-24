@@ -19,6 +19,65 @@ const mockProjects = [
   createMockProjectSummary({ projectName: 'my-project', totalRuns: 5, activeRuns: 1 }),
   createMockProjectSummary({ projectName: 'other-project', totalRuns: 3, activeRuns: 0 }),
 ];
+const mockBacklogOverview = {
+  snapshot: {
+    generatedAt: new Date().toISOString(),
+    projects: [
+      {
+        id: 'kanban-app',
+        key: 'KANBAN',
+        name: 'Kanban App',
+        issueIds: ['KANBAN-GAP-001'],
+        labels: [],
+        assignees: [],
+        statuses: [],
+        metrics: {
+          totalIssues: 1,
+          readyIssues: 0,
+          blockedIssues: 0,
+          dispatchedIssues: 0,
+          completedIssues: 0,
+          needsDecompositionIssues: 1,
+          inProgressIssues: 1,
+        },
+      },
+    ],
+    issues: [
+      {
+        id: 'KANBAN-GAP-001',
+        key: 'KANBAN-GAP-001',
+        projectId: 'kanban-app',
+        title: 'Add a first-class issue and project model to the kanban app',
+        status: 'in-progress',
+        priority: 'high',
+        labels: [],
+        assignees: [],
+        dependencies: [],
+        acceptanceCriteria: [],
+        decomposition: [],
+        childIssueIds: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        dispatch: {
+          readiness: 'needs-decomposition',
+          blockedReasons: [],
+          runIds: [],
+          sessionIds: [],
+        },
+      },
+    ],
+  },
+  summary: {
+    projectCount: 1,
+    issueCount: 1,
+    readyCount: 0,
+    blockedCount: 0,
+    dispatchedCount: 0,
+    completedCount: 0,
+    needsDecompositionCount: 1,
+    inProgressCount: 1,
+  },
+};
 
 export const handlers = [
   // GET /api/runs — returns run list (supports ?mode=projects)
@@ -106,5 +165,9 @@ export const handlers = [
         },
       ],
     });
+  }),
+
+  http.get('/api/backlog', () => {
+    return HttpResponse.json(mockBacklogOverview);
   }),
 ];

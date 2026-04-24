@@ -4,6 +4,7 @@ import { Button, LogoWordmark } from "@a5c-ai/compendium";
 import { useRunDashboard } from "@/hooks/use-run-dashboard";
 import { useGatewayAuth } from "@/components/agent-mux/gateway-provider";
 import { BreakpointBanner } from "@/components/dashboard/breakpoint-banner";
+import { BacklogOverview } from "@/components/dashboard/backlog-overview";
 import { CatchUpBanner } from "@/components/dashboard/catch-up-banner";
 import { ExecutiveSummaryBanner } from "@/components/dashboard/executive-summary-banner";
 import { KpiGrid } from "@/components/dashboard/kpi-grid";
@@ -92,6 +93,8 @@ export default function DashboardPage() {
             </div>
           </article>
         </section>
+
+        <BacklogOverview />
 
         {/* Global Search */}
         <GlobalSearch />

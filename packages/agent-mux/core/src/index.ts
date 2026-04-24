@@ -256,6 +256,34 @@ export type {
   DiffOperation,
 } from './session-types.js';
 
+// Kanban/project backlog types
+export type {
+  KanbanPriority,
+  KanbanIssueStatus,
+  KanbanDispatchReadiness,
+  KanbanDependencyType,
+  KanbanDecompositionStatus,
+  KanbanDecompositionKind,
+  KanbanLabel,
+  KanbanAssignee,
+  KanbanAcceptanceCriterion,
+  KanbanIssueDependency,
+  KanbanDecompositionItem,
+  KanbanIssueDispatchState,
+  KanbanIssueSource,
+  KanbanIssue,
+  KanbanStatusDefinition,
+  KanbanProjectMetrics,
+  LinkedRunSummary,
+  KanbanProject,
+  KanbanBacklogSnapshot,
+} from './kanban.js';
+export {
+  normalizeKanbanIssue,
+  computeKanbanProjectMetrics,
+  buildKanbanBacklogSnapshot,
+} from './kanban.js';
+
 // Auth types (canonical from dedicated module)
 export type {
   AuthMethod,

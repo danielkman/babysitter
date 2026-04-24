@@ -61,6 +61,7 @@
     "test:perf": "npx playwright test e2e/tests/performance.spec.ts"
   },
   "dependencies": {
+    "@a5c-ai/agent-mux-core": "0.4.9",
     "@a5c-ai/agent-mux-ui": "0.4.9",
     "@a5c-ai/compendium": "^0.1.0",
     "@radix-ui/react-accordion": "^1.1.2",
