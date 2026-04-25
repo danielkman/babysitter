@@ -8,22 +8,19 @@ const __dirname = path.dirname(__filename);
 const packageRoot = path.resolve(__dirname, '..');
 
 const REQUIRED_PACKED_PATHS = [
-  'package/package.json',
-  'package/README.md',
-  'package/LICENSE',
-  'package/next.config.mjs',
-  'package/postcss.config.mjs',
-  'package/tsconfig.json',
-  'package/src/cli.ts',
-  'package/dist/cli.js',
-  'package/.next/BUILD_ID',
-  'package/.next/package.json',
+  'package.json',
+  'README.md',
+  'LICENSE',
+  'next.config.mjs',
+  'postcss.config.mjs',
+  'tsconfig.json',
+  'src/cli.ts',
+  'dist/cli.js',
+  '.next/BUILD_ID',
+  '.next/package.json',
 ];
 
-const REQUIRED_PACKED_PREFIXES = [
-  'package/.next/server/',
-  'package/.next/static/',
-];
+const REQUIRED_PACKED_PREFIXES = ['.next/server/', '.next/static/'];
 
 const REQUIRED_BUILD_PATHS = [
   'dist/cli.js',
@@ -50,10 +47,14 @@ function readStringRecord(value) {
   return isRecord(value) ? value : {};
 }
 
+function normalizePackPath(value) {
+  return typeof value === 'string' ? value.replace(/^package\//, '') : '';
+}
+
 export function verifyKanbanRelease({ packageRoot, manifest, packEntries }) {
   const scripts = readStringRecord(manifest.scripts);
   const bin = readStringRecord(manifest.bin);
-  const packedPaths = new Set(packEntries.map((entry) => entry.path));
+  const packedPaths = new Set(packEntries.map((entry) => normalizePackPath(entry.path)));
 
   expect(manifest.name === '@a5c-ai/kanban', 'packages/kanban/package.json name must stay @a5c-ai/kanban');
   expect(manifest.private === false, 'packages/kanban/package.json private must stay false');
@@ -89,7 +90,7 @@ export function verifyKanbanRelease({ packageRoot, manifest, packEntries }) {
   }
 
   for (const packedPrefix of REQUIRED_PACKED_PREFIXES) {
-    const hasMatch = packEntries.some((entry) => entry.path.startsWith(packedPrefix));
+    const hasMatch = packEntries.some((entry) => normalizePackPath(entry.path).startsWith(packedPrefix));
     expect(hasMatch, `npm pack output is missing files under ${packedPrefix}`);
   }
 }

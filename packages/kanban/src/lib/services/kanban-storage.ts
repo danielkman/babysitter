@@ -14,6 +14,7 @@ import type {
   KanbanPermissionGrant,
   KanbanProject,
   KanbanProjectSettings,
+  KanbanTaskTag,
   KanbanTeam,
 } from '@a5c-ai/agent-mux-core/kanban';
 
@@ -36,9 +37,12 @@ export type StoredKanbanIssue = Omit<KanbanIssue, 'dispatch' | 'collaborators' |
   readonly dispatch?: Partial<KanbanIssue['dispatch']>;
 };
 
+export type StoredKanbanTaskTag = KanbanTaskTag;
+
 export interface KanbanStoragePayload {
   projects?: readonly StoredKanbanProject[];
   issues?: readonly StoredKanbanIssue[];
+  taskTags?: readonly StoredKanbanTaskTag[];
   automationRules?: readonly AutomationRule[];
   automationExecutions?: readonly AutomationExecutionRecord[];
 }

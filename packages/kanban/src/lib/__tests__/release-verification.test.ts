@@ -21,18 +21,18 @@ const baseManifest = {
 };
 
 const basePackEntries = [
-  { path: 'package/package.json' },
-  { path: 'package/README.md' },
-  { path: 'package/LICENSE' },
-  { path: 'package/next.config.mjs' },
-  { path: 'package/postcss.config.mjs' },
-  { path: 'package/tsconfig.json' },
-  { path: 'package/src/cli.ts' },
-  { path: 'package/dist/cli.js' },
-  { path: 'package/.next/BUILD_ID' },
-  { path: 'package/.next/package.json' },
-  { path: 'package/.next/server/app.js' },
-  { path: 'package/.next/static/chunks/app.js' },
+  { path: 'package.json' },
+  { path: 'README.md' },
+  { path: 'LICENSE' },
+  { path: 'next.config.mjs' },
+  { path: 'postcss.config.mjs' },
+  { path: 'tsconfig.json' },
+  { path: 'src/cli.ts' },
+  { path: 'dist/cli.js' },
+  { path: '.next/BUILD_ID' },
+  { path: '.next/package.json' },
+  { path: '.next/server/app.js' },
+  { path: '.next/static/chunks/app.js' },
 ];
 
 function withPackageRoot(run: (packageRoot: string) => void): void {
@@ -106,9 +106,21 @@ describe('verifyKanbanRelease', () => {
         verifyKanbanRelease({
           packageRoot,
           manifest: baseManifest,
-          packEntries: basePackEntries.filter((entry) => entry.path !== 'package/.next/BUILD_ID'),
+          packEntries: basePackEntries.filter((entry) => entry.path !== '.next/BUILD_ID'),
         })
-      ).toThrow(/package\/\.next\/BUILD_ID/);
+      ).toThrow(/\.next\/BUILD_ID/);
+    });
+  });
+
+  it('accepts npm pack entries that still include the tarball package prefix', () => {
+    withPackageRoot((packageRoot) => {
+      expect(() =>
+        verifyKanbanRelease({
+          packageRoot,
+          manifest: baseManifest,
+          packEntries: basePackEntries.map((entry) => ({ path: `package/${entry.path}` })),
+        })
+      ).not.toThrow();
     });
   });
 });

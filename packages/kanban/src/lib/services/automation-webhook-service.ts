@@ -7,14 +7,14 @@ import type {
   AutomationExecutionStatus,
   AutomationRule,
   WebhookAutomationRule,
-} from "../../../../agent-mux/core/src/automation.js";
+} from "@a5c-ai/agent-mux-core/automation";
 import type {
   KanbanAcceptanceCriterion,
   KanbanAssignee,
   KanbanDecompositionItem,
   KanbanIssueSource,
   KanbanLabel,
-} from "../../../../agent-mux/core/src/kanban.js";
+} from "@a5c-ai/agent-mux-core/kanban";
 
 import { AppError } from "../error-handler";
 import {

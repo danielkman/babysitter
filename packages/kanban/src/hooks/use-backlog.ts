@@ -10,8 +10,9 @@ import type {
   KanbanCollaboratorRole,
   KanbanPermissionGrant,
   KanbanProjectSettings,
+  KanbanTaskTag,
   KanbanWorkflowState,
-} from "../../../agent-mux/core/src/kanban.js";
+} from "@a5c-ai/agent-mux-core/kanban";
 
 import { useSmartPolling } from "./use-smart-polling";
 
@@ -30,6 +31,71 @@ export interface BacklogOverviewResponse {
   snapshot: KanbanBacklogSnapshot;
   board: KanbanBoardSnapshot;
   summary: BacklogOverviewSummary;
+}
+
+export interface TaskTagListResponse {
+  taskTags: readonly KanbanTaskTag[];
+}
+
+export interface TaskTagInput {
+  key: string;
+  label: string;
+  content: string;
+  description?: string;
+  order?: number;
+}
+
+export interface TaskTagUpdateInput {
+  key?: string;
+  label?: string;
+  content?: string;
+  description?: string;
+  order?: number;
+}
+
+export async function loadTaskTags(): Promise<readonly KanbanTaskTag[]> {
+  const result = await resilientFetch<TaskTagListResponse>("/api/task-tags");
+  if (!result.ok) {
+    throw new Error(result.error.message);
+  }
+  return result.data.taskTags;
+}
+
+export async function createTaskTag(input: TaskTagInput): Promise<TaskTagListResponse> {
+  const result = await resilientFetch<TaskTagListResponse>("/api/task-tags", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  if (!result.ok) {
+    throw new Error(result.error.message);
+  }
+  return result.data;
+}
+
+export async function updateTaskTag(
+  taskTagId: string,
+  input: TaskTagUpdateInput,
+): Promise<TaskTagListResponse> {
+  const result = await resilientFetch<TaskTagListResponse>(`/api/task-tags/${taskTagId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  if (!result.ok) {
+    throw new Error(result.error.message);
+  }
+  return result.data;
+}
+
+export async function deleteTaskTag(taskTagId: string): Promise<TaskTagListResponse> {
+  const result = await resilientFetch<TaskTagListResponse>(`/api/task-tags/${taskTagId}`, {
+    method: "DELETE",
+  });
+  if (!result.ok) {
+    throw new Error(result.error.message);
+  }
+  return result.data;
 }
 
 export function useBacklog(interval = 15000) {
