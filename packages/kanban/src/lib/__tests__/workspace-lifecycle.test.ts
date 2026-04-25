@@ -62,6 +62,8 @@ function createDeps(overrides: Partial<WorkspaceLifecycleDeps> = {}): WorkspaceL
       [`${taskPath}::branch --show-current`]: { stdout: "vk/task\n", stderr: "" },
       [`${mainPath}::rev-parse HEAD`]: { stdout: "abc123\n", stderr: "" },
       [`${taskPath}::rev-parse HEAD`]: { stdout: "def456\n", stderr: "" },
+      [`${taskPath}::rev-parse --abbrev-ref --symbolic-full-name @{upstream}`]: { stdout: "origin/vk/task\n", stderr: "" },
+      [`${taskPath}::rev-list --left-right --count HEAD...@{upstream}`]: { stdout: "2 1\n", stderr: "" },
       [`${mainPath}::worktree add ${taskPath} vk/task`]: { stdout: "prepared\n", stderr: "" },
       [`${mainPath}::worktree remove --force ${taskPath}`]: { stdout: "removed\n", stderr: "" },
       [`${mainPath}::worktree prune`]: { stdout: "pruned\n", stderr: "" },
@@ -147,6 +149,10 @@ describe("WorkspaceLifecycleService", () => {
     expect(result.workspaces[0]?.sessions.active).toBe(1);
     expect(result.workspaces[0]?.git.branch).toBe("vk/task");
     expect(result.workspaces[0]?.git.dirty).toBe(true);
+    expect(result.workspaces[0]?.git.trackingBranch).toBe("origin/vk/task");
+    expect(result.workspaces[0]?.git.ahead).toBe(2);
+    expect(result.workspaces[0]?.git.behind).toBe(1);
+    expect(result.workspaces[0]?.git.uncommittedCount).toBe(1);
     expect(result.workspaces[0]?.rebase?.status).toBe("rebase-needed");
     expect(result.workspaces[0]?.actions.canRebaseStart).toBe(true);
   });
@@ -326,5 +332,67 @@ describe("WorkspaceLifecycleService", () => {
     expect(inventory.workspaces[0]?.rebase?.status).toBe("ready-for-review");
     expect(inventory.workspaces[0]?.rebase?.lastAction).toBe("manual-resolve");
     expect(inventory.workspaces[0]?.rebase?.followUpInstructions[0]).toContain("review");
+  });
+
+  it("surfaces missing repo metadata and persists workspace notes", async () => {
+    const orphanPath = repoPath("repo", "scratch", "orphan");
+    let registry = JSON.stringify({
+      version: 1,
+      workspaces: {
+        [orphanPath]: {
+          path: orphanPath,
+          name: "orphan",
+          notes: "Reconnect the runtime before retrying.",
+          notesUpdatedAt: "2026-04-24T10:00:00.000Z",
+        },
+      },
+    });
+
+    const baseDeps = createDeps();
+    const deps = createDeps({
+      readFile: vi.fn(async () => registry),
+      writeFile: vi.fn(async (_path, contents) => {
+        registry = String(contents);
+      }),
+      stat: vi.fn(async (targetPath: string) => {
+        if (
+          targetPath === orphanPath ||
+          targetPath === repoPath("repo", "packages", "kanban") ||
+          targetPath === repoPath("repo", "main") ||
+          targetPath === repoPath("repo", "worktrees", "task")
+        ) {
+          return {} as never;
+        }
+        throw Object.assign(new Error("ENOENT"), { code: "ENOENT" });
+      }),
+      execGit: vi.fn(async (args, cwd) => {
+        if (cwd === orphanPath) {
+          throw new Error("not a git repository");
+        }
+        return baseDeps.execGit(args, cwd);
+      }),
+      discoverAllRunDirs: async () => [],
+    });
+
+    const service = new WorkspaceLifecycleService(deps);
+    const inventory = await service.listWorkspaces();
+    const orphan = inventory.workspaces.find((workspace) => workspace.path === orphanPath);
+
+    expect(orphan?.git.root).toBeNull();
+    expect(orphan?.git.branch).toBeNull();
+    expect(orphan?.notes.value).toBe("Reconnect the runtime before retrying.");
+    expect(orphan?.links.editorHref).toBe(`vscode://file${orphanPath}`);
+
+    await service.applyAction({
+      action: "notes-save",
+      workspacePath: orphanPath,
+      note: "Runtime reconnected. Retry rebase after sync.",
+      sessions: [],
+    });
+
+    const refreshed = await service.listWorkspaces();
+    const updated = refreshed.workspaces.find((workspace) => workspace.path === orphanPath);
+    expect(updated?.notes.value).toBe("Runtime reconnected. Retry rebase after sync.");
+    expect(updated?.notes.updatedAt).toBe("2026-04-24T12:00:00.000Z");
   });
 });

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { render, screen, waitFor } from "@/test/test-utils";
+import { render, screen, setupUser, waitFor, within } from "@/test/test-utils";
 
 import { getWorkspaceOwnershipLabel, loadInventory, runWorkspaceAction, WorkspacesPageContent } from "../workspaces-page";
 
@@ -141,11 +141,22 @@ describe("workspaces-page helpers", () => {
             git: {
               root: "/repo/main",
               commonDir: "/repo/main/.git",
+              trackingBranch: "origin/vk/task",
               branch: "vk/task",
               head: "abc123",
+              ahead: 2,
+              behind: 1,
               dirty: true,
+              uncommittedCount: 3,
               isWorktree: true,
               isPrimary: false,
+            },
+            notes: {
+              value: "",
+              updatedAt: null,
+            },
+            links: {
+              editorHref: "vscode://file/repo/worktrees/task",
             },
             sessions: { total: 1, active: 1, items: [] },
             runs: { total: 1, active: 1, items: [] },
@@ -183,13 +194,21 @@ describe("workspaces-page helpers", () => {
     render(<WorkspacesPageContent isAuthenticated sessions={[]} />);
 
     await waitFor(() => {
-      expect(screen.getByText("Resolve conflicts before returning to review or merge")).toBeInTheDocument();
+      expect(screen.getByText("Rebase workflow")).toBeInTheDocument();
     });
 
+    const sidebar = screen.getByLabelText("Workspace details for task");
+    expect(within(sidebar).getAllByRole("heading", { level: 3 }).map((heading) => heading.textContent)).toEqual([
+      "Git summary",
+      "Terminal",
+      "Notes",
+      "Quick actions",
+    ]);
+    expect(screen.getByText("Resolve conflicts before returning to review or merge")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Auto-resolve" })).toBeEnabled();
     expect(screen.getByRole("button", { name: "Open in editor" })).toBeEnabled();
     expect(screen.getByRole("button", { name: "Mark resolved" })).toBeEnabled();
-    expect(screen.getByRole("button", { name: "Abort" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Abort rebase" })).toBeEnabled();
     expect(screen.getByText(/Open in editor for manual fixes/)).toBeInTheDocument();
   });
 
@@ -209,11 +228,22 @@ describe("workspaces-page helpers", () => {
             git: {
               root: "/repo/main",
               commonDir: "/repo/main/.git",
+              trackingBranch: "origin/vk/task",
               branch: "vk/task",
               head: "abc123",
+              ahead: 0,
+              behind: 0,
               dirty: false,
+              uncommittedCount: 0,
               isWorktree: true,
               isPrimary: false,
+            },
+            notes: {
+              value: "Ready for merge after validation.",
+              updatedAt: "2026-04-24T13:00:00.000Z",
+            },
+            links: {
+              editorHref: "vscode://file/repo/worktrees/task",
             },
             sessions: { total: 0, active: 0, items: [] },
             runs: { total: 0, active: 0, items: [] },
@@ -250,5 +280,135 @@ describe("workspaces-page helpers", () => {
       expect(screen.getByText("Ready for merge")).toBeInTheDocument();
     });
     expect(screen.getByText(/Continue the workspace through merge readiness/)).toBeInTheDocument();
+  });
+
+  it("renders missing metadata, disconnected runtime, and empty notes states", async () => {
+    vi.mocked(fetch).mockResolvedValue(
+      new Response(JSON.stringify({
+        summary: { total: 1, active: 0, idle: 1, archived: 0, missing: 0 },
+        workspaces: [
+          {
+            path: "/repo/worktrees/orphan",
+            name: "orphan",
+            status: "idle",
+            missing: false,
+            archivedAt: null,
+            cleanedAt: null,
+            lastActivityAt: "2026-04-24T12:00:00.000Z",
+            git: {
+              root: null,
+              commonDir: null,
+              trackingBranch: null,
+              branch: null,
+              head: null,
+              ahead: null,
+              behind: null,
+              dirty: null,
+              uncommittedCount: null,
+              isWorktree: false,
+              isPrimary: false,
+            },
+            notes: {
+              value: "",
+              updatedAt: null,
+            },
+            links: {
+              editorHref: "vscode://file/repo/worktrees/orphan",
+            },
+            sessions: { total: 0, active: 0, items: [] },
+            runs: { total: 0, active: 0, items: [] },
+            actions: {
+              canArchive: true,
+              canCleanup: false,
+              canRecover: false,
+              canRebaseStart: false,
+              canRebaseAutoResolve: false,
+              canRebaseOpenInEditor: false,
+              canRebaseMarkResolved: false,
+              canRebaseAbort: false,
+            },
+          },
+        ],
+      }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      }),
+    );
+
+    render(<WorkspacesPageContent isAuthenticated sessions={[]} />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Repository metadata unavailable")).toBeInTheDocument();
+    });
+
+    expect(screen.getByText("Runtime disconnected")).toBeInTheDocument();
+    expect(screen.getByText("No workspace notes yet")).toBeInTheDocument();
+  });
+
+  it("surfaces editor action failures inside quick actions", async () => {
+    const user = setupUser();
+    vi.stubGlobal("open", vi.fn(() => null));
+
+    vi.mocked(fetch).mockResolvedValue(
+      new Response(JSON.stringify({
+        summary: { total: 1, active: 0, idle: 1, archived: 0, missing: 0 },
+        workspaces: [
+          {
+            path: "/repo/worktrees/task",
+            name: "task",
+            status: "idle",
+            missing: false,
+            archivedAt: null,
+            cleanedAt: null,
+            lastActivityAt: "2026-04-24T12:00:00.000Z",
+            git: {
+              root: "/repo/main",
+              commonDir: "/repo/main/.git",
+              trackingBranch: "origin/vk/task",
+              branch: "vk/task",
+              head: "abc123",
+              ahead: 0,
+              behind: 0,
+              dirty: false,
+              uncommittedCount: 0,
+              isWorktree: true,
+              isPrimary: false,
+            },
+            notes: {
+              value: "",
+              updatedAt: null,
+            },
+            links: {
+              editorHref: "vscode://file/repo/worktrees/task",
+            },
+            sessions: { total: 0, active: 0, items: [] },
+            runs: { total: 0, active: 0, items: [] },
+            actions: {
+              canArchive: true,
+              canCleanup: false,
+              canRecover: false,
+              canRebaseStart: false,
+              canRebaseAutoResolve: false,
+              canRebaseOpenInEditor: false,
+              canRebaseMarkResolved: false,
+              canRebaseAbort: false,
+            },
+          },
+        ],
+      }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      }),
+    );
+
+    render(<WorkspacesPageContent isAuthenticated sessions={[]} />);
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Open in editor" })).toBeEnabled();
+    });
+
+    await user.click(screen.getByRole("button", { name: "Open in editor" }));
+
+    expect(await screen.findByText(/Editor action failed for \/repo\/worktrees\/task/)).toBeInTheDocument();
   });
 });

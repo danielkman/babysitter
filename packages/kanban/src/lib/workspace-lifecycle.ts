@@ -21,6 +21,7 @@ type WorkspaceAction =
   | "archive"
   | "cleanup"
   | "recover"
+  | "notes-save"
   | "rebase-start"
   | "rebase-auto-resolve"
   | "rebase-open-in-editor"
@@ -50,11 +51,22 @@ export interface WorkspaceInventoryItem {
   git: {
     root: string | null;
     commonDir: string | null;
+    trackingBranch: string | null;
     branch: string | null;
     head: string | null;
+    ahead: number | null;
+    behind: number | null;
     dirty: boolean | null;
+    uncommittedCount: number | null;
     isWorktree: boolean;
     isPrimary: boolean;
+  };
+  notes: {
+    value: string;
+    updatedAt: string | null;
+  };
+  links: {
+    editorHref: string | null;
   };
   sessions: {
     total: number;
@@ -107,9 +119,12 @@ interface WorkspaceRegistryEntry {
   name?: string;
   gitRoot?: string | null;
   commonDir?: string | null;
+  trackingBranch?: string | null;
   branch?: string | null;
   archivedAt?: string | null;
   cleanedAt?: string | null;
+  notes?: string | null;
+  notesUpdatedAt?: string | null;
   rebase?: WorkspaceRebaseSurface | null;
 }
 
@@ -130,14 +145,20 @@ interface MutableWorkspaceRecord {
   name: string;
   gitRoot: string | null;
   commonDir: string | null;
+  trackingBranch: string | null;
   branch: string | null;
   head: string | null;
+  ahead: number | null;
+  behind: number | null;
   dirty: boolean | null;
+  uncommittedCount: number | null;
   isWorktree: boolean;
   isPrimary: boolean;
   missing: boolean;
   archivedAt: string | null;
   cleanedAt: string | null;
+  notes: string;
+  notesUpdatedAt: string | null;
   lastActivityAtMs: number | null;
   rebase?: WorkspaceRebaseSurface;
   sessions: WorkspaceSessionSnapshot[];
@@ -327,6 +348,32 @@ function stripRefPrefix(branch: string | null): string | null {
   return branch.replace(/^refs\/heads\//, "");
 }
 
+function parseAheadBehind(stdout: string | null): { ahead: number | null; behind: number | null } {
+  if (!stdout) {
+    return { ahead: null, behind: null };
+  }
+
+  const [aheadRaw, behindRaw] = stdout.trim().split(/\s+/);
+  const ahead = Number.parseInt(aheadRaw ?? "", 10);
+  const behind = Number.parseInt(behindRaw ?? "", 10);
+
+  return {
+    ahead: Number.isFinite(ahead) ? ahead : null,
+    behind: Number.isFinite(behind) ? behind : null,
+  };
+}
+
+function countStatusEntries(stdout: string | null): number | null {
+  if (stdout == null) {
+    return null;
+  }
+
+  return stdout
+    .split("\n")
+    .map((line) => line.trimEnd())
+    .filter((line) => line.length > 0).length;
+}
+
 function isActiveRunStatus(status: Run["status"]): boolean {
   return status === "pending" || status === "waiting";
 }
@@ -424,14 +471,20 @@ function ensureWorkspaceRecord(
     name: path.basename(normalizedPath),
     gitRoot: null,
     commonDir: null,
+    trackingBranch: null,
     branch: null,
     head: null,
+    ahead: null,
+    behind: null,
     dirty: null,
+    uncommittedCount: null,
     isWorktree: false,
     isPrimary: false,
     missing: false,
     archivedAt: null,
     cleanedAt: null,
+    notes: "",
+    notesUpdatedAt: null,
     lastActivityAtMs: null,
     rebase: undefined,
     sessions: [],
@@ -514,10 +567,19 @@ export class WorkspaceLifecycleService {
       record.name = entry.name ?? record.name;
       record.gitRoot = entry.gitRoot ?? record.gitRoot;
       record.commonDir = entry.commonDir ?? record.commonDir;
+      record.trackingBranch = entry.trackingBranch ?? record.trackingBranch;
       record.branch = entry.branch ?? record.branch;
       record.archivedAt = entry.archivedAt ?? null;
       record.cleanedAt = entry.cleanedAt ?? null;
+      record.notes = entry.notes ?? "";
+      record.notesUpdatedAt = entry.notesUpdatedAt ?? null;
       record.rebase = normalizeRebaseSurface(entry.rebase, record.path) ?? record.rebase;
+      if (entry.notesUpdatedAt) {
+        const updatedAt = Date.parse(entry.notesUpdatedAt);
+        if (Number.isFinite(updatedAt)) {
+          record.lastActivityAtMs = Math.max(record.lastActivityAtMs ?? 0, updatedAt);
+        }
+      }
       if (typeof entry.rebase?.persistedAt === "number") {
         record.lastActivityAtMs = Math.max(record.lastActivityAtMs ?? 0, entry.rebase.persistedAt);
       }
@@ -563,9 +625,21 @@ export class WorkspaceLifecycleService {
       if (!record.head) {
         record.head = await tryGit(this.deps, record.path, ["rev-parse", "HEAD"]);
       }
+      if (!record.trackingBranch) {
+        record.trackingBranch = stripRefPrefix(
+          await tryGit(this.deps, record.path, ["rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{upstream}"]),
+        );
+      }
 
       const gitStatus = await tryGit(this.deps, record.path, ["status", "--porcelain"]);
-      record.dirty = gitStatus == null ? null : gitStatus.length > 0;
+      record.uncommittedCount = countStatusEntries(gitStatus);
+      record.dirty = record.uncommittedCount == null ? null : record.uncommittedCount > 0;
+
+      if (record.branch && record.trackingBranch) {
+        const syncCounts = parseAheadBehind(await tryGit(this.deps, record.path, ["rev-list", "--left-right", "--count", "HEAD...@{upstream}"]));
+        record.ahead = syncCounts.ahead;
+        record.behind = syncCounts.behind;
+      }
     }
 
     const discoveredRuns = await this.deps.discoverAllRunDirs();
@@ -608,11 +682,22 @@ export class WorkspaceLifecycleService {
           git: {
             root: record.gitRoot,
             commonDir: record.commonDir,
+            trackingBranch: record.trackingBranch,
             branch: record.branch,
             head: record.head,
+            ahead: record.ahead,
+            behind: record.behind,
             dirty: record.dirty,
+            uncommittedCount: record.uncommittedCount,
             isWorktree: record.isWorktree,
             isPrimary: record.isPrimary,
+          },
+          notes: {
+            value: record.notes,
+            updatedAt: record.notesUpdatedAt,
+          },
+          links: {
+            editorHref: record.missing ? null : buildEditorHref(record.path),
           },
           sessions: {
             total: record.sessions.length,
@@ -675,6 +760,7 @@ export class WorkspaceLifecycleService {
     input: {
       action: WorkspaceAction;
       workspacePath: string;
+      note?: string;
       sessions?: WorkspaceSessionSnapshot[];
     },
   ): Promise<WorkspaceActionResult> {
@@ -687,9 +773,12 @@ export class WorkspaceLifecycleService {
       name: workspace?.name ?? path.basename(workspacePath),
       gitRoot: workspace?.git.root ?? null,
       commonDir: workspace?.git.commonDir ?? null,
+      trackingBranch: workspace?.git.trackingBranch ?? null,
       branch: workspace?.git.branch ?? null,
       archivedAt: workspace?.archivedAt ?? null,
       cleanedAt: workspace?.cleanedAt ?? null,
+      notes: workspace?.notes.value ?? "",
+      notesUpdatedAt: workspace?.notes.updatedAt ?? null,
       rebase: workspace?.rebase ?? null,
     };
 
@@ -730,6 +819,21 @@ export class WorkspaceLifecycleService {
         workspacePath,
         action: input.action,
         message: `Removed git worktree ${workspacePath}.`,
+      };
+    }
+
+    if (input.action === "notes-save") {
+      const nextNote = typeof input.note === "string" ? input.note : "";
+      const hasContent = nextNote.trim().length > 0;
+      entry.notes = hasContent ? nextNote : "";
+      entry.notesUpdatedAt = hasContent ? now : null;
+      registry.workspaces[workspacePath] = entry;
+      await writeRegistry(this.deps, registry);
+      return {
+        ok: true,
+        workspacePath,
+        action: input.action,
+        message: hasContent ? `Saved workspace notes for ${workspacePath}.` : `Cleared workspace notes for ${workspacePath}.`,
       };
     }
 

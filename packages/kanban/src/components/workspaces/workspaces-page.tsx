@@ -10,7 +10,7 @@ import { ReviewPanel } from "@/components/review/review-panel";
 import { cn } from "@/lib/cn";
 import { useReviews } from "@/hooks/use-reviews";
 import type { WorkspaceInventoryItem, WorkspaceInventoryResponse, WorkspaceSessionSnapshot } from "@/lib/workspace-lifecycle";
-import { WorkspaceRuntimePanel } from "@/components/workspaces/workspace-runtime-panel";
+import { WorkspaceDetailsSidebar, type WorkspaceSidebarFeedback } from "@/components/workspaces/workspace-details-sidebar";
 
 function formatTimestamp(value: string | null): string {
   if (!value) {
@@ -54,6 +54,7 @@ export async function runWorkspaceAction(
     | "archive"
     | "cleanup"
     | "recover"
+    | "notes-save"
     | "rebase-start"
     | "rebase-auto-resolve"
     | "rebase-open-in-editor"
@@ -61,11 +62,12 @@ export async function runWorkspaceAction(
     | "rebase-abort",
   workspacePath: string,
   sessions: WorkspaceSessionSnapshot[],
+  note?: string,
 ): Promise<WorkspaceInventoryResponse> {
   const response = await fetch("/api/workspaces", {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ action, workspacePath, sessions }),
+    body: JSON.stringify({ action, workspacePath, sessions, note }),
   });
 
   if (!response.ok) {
@@ -120,6 +122,8 @@ export function WorkspacesPageContent(props: {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [pendingAction, setPendingAction] = useState<string | null>(null);
+  const [pendingNotePath, setPendingNotePath] = useState<string | null>(null);
+  const [feedbackByWorkspacePath, setFeedbackByWorkspacePath] = useState<Record<string, WorkspaceSidebarFeedback | null>>({});
   const [isPending, startTransition] = useTransition();
   const workspaceReviews = useReviews({ targetType: "workspace" });
 
@@ -197,11 +201,48 @@ export function WorkspacesPageContent(props: {
     });
   }
 
+  function setWorkspaceFeedback(workspacePath: string, feedback: WorkspaceSidebarFeedback | null) {
+    setFeedbackByWorkspacePath((current) => ({
+      ...current,
+      [workspacePath]: feedback,
+    }));
+  }
+
+  function openEditorForWorkspace(
+    workspace: Pick<WorkspaceInventoryItem, "path" | "links">,
+    href: string | null,
+    successMessage: string,
+  ): boolean {
+    if (typeof window === "undefined") {
+      return false;
+    }
+    if (!href) {
+      setWorkspaceFeedback(workspace.path, {
+        tone: "error",
+        message: `Editor action failed for ${workspace.path}: no editor link is available.`,
+      });
+      return false;
+    }
+
+    const opened = window.open(href, "_blank", "noopener,noreferrer");
+    if (!opened) {
+      setWorkspaceFeedback(workspace.path, {
+        tone: "error",
+        message: `Editor action failed for ${workspace.path}. The link may have been blocked by the browser or the editor handler is unavailable.`,
+      });
+      return false;
+    }
+
+    setWorkspaceFeedback(workspace.path, { tone: "success", message: successMessage });
+    return true;
+  }
+
   function handleAction(
     action:
       | "archive"
       | "cleanup"
       | "recover"
+      | "notes-save"
       | "rebase-start"
       | "rebase-auto-resolve"
       | "rebase-open-in-editor"
@@ -227,21 +268,56 @@ export function WorkspacesPageContent(props: {
     const actionKey = `${action}:${workspace.path}`;
     setPendingAction(actionKey);
     setError(null);
+    setWorkspaceFeedback(workspace.path, null);
 
     startTransition(() => {
       void runWorkspaceAction(action, workspace.path, props.sessions)
         .then((payload) => {
           setInventory(payload);
+          const nextWorkspace = payload.workspaces.find((item) => item.path === workspace.path);
+          const resultMessage = (payload as WorkspaceInventoryResponse & { result?: { message?: string } }).result?.message ?? `Updated ${workspace.path}.`;
           if (action === "rebase-open-in-editor" && typeof window !== "undefined") {
-            const nextWorkspace = payload.workspaces.find((item) => item.path === workspace.path);
             const editorHref = nextWorkspace?.rebase?.editorHref;
-            if (editorHref) {
-              window.open(editorHref, "_blank", "noopener,noreferrer");
+            if (!openEditorForWorkspace(
+              {
+                path: workspace.path,
+                links: { editorHref: editorHref ?? nextWorkspace?.links.editorHref ?? workspace.links.editorHref },
+              },
+              editorHref ?? nextWorkspace?.links.editorHref ?? workspace.links.editorHref,
+              resultMessage,
+            )) {
+              return;
             }
           }
+          setWorkspaceFeedback(workspace.path, { tone: "success", message: resultMessage });
         })
-        .catch((cause) => setError(cause instanceof Error ? cause.message : String(cause)))
+        .catch((cause) => {
+          const message = cause instanceof Error ? cause.message : String(cause);
+          setError(message);
+          setWorkspaceFeedback(workspace.path, { tone: "error", message });
+        })
         .finally(() => setPendingAction(null));
+    });
+  }
+
+  function handleNoteSave(workspace: WorkspaceInventoryItem, note: string) {
+    setPendingNotePath(workspace.path);
+    setError(null);
+    setWorkspaceFeedback(workspace.path, null);
+
+    startTransition(() => {
+      void runWorkspaceAction("notes-save", workspace.path, props.sessions, note)
+        .then((payload) => {
+          setInventory(payload);
+          const resultMessage = (payload as WorkspaceInventoryResponse & { result?: { message?: string } }).result?.message ?? `Updated notes for ${workspace.path}.`;
+          setWorkspaceFeedback(workspace.path, { tone: "success", message: resultMessage });
+        })
+        .catch((cause) => {
+          const message = cause instanceof Error ? cause.message : String(cause);
+          setError(message);
+          setWorkspaceFeedback(workspace.path, { tone: "error", message });
+        })
+        .finally(() => setPendingNotePath(null));
     });
   }
 
@@ -301,6 +377,12 @@ export function WorkspacesPageContent(props: {
           reviewByPath={liveReviewByPath}
           pendingAction={pendingAction}
           onAction={handleAction}
+          onOpenInEditor={(workspace, href) =>
+            openEditorForWorkspace(workspace, href, `Opened ${workspace.path} in the configured editor.`)
+          }
+          onSaveNote={handleNoteSave}
+          pendingNotePath={pendingNotePath}
+          feedbackByWorkspacePath={feedbackByWorkspacePath}
         />
         <WorkspaceColumn
           title="Idle workspaces"
@@ -310,6 +392,12 @@ export function WorkspacesPageContent(props: {
           reviewByPath={liveReviewByPath}
           pendingAction={pendingAction}
           onAction={handleAction}
+          onOpenInEditor={(workspace, href) =>
+            openEditorForWorkspace(workspace, href, `Opened ${workspace.path} in the configured editor.`)
+          }
+          onSaveNote={handleNoteSave}
+          pendingNotePath={pendingNotePath}
+          feedbackByWorkspacePath={feedbackByWorkspacePath}
         />
         <WorkspaceColumn
           title="Archived workspaces"
@@ -319,6 +407,12 @@ export function WorkspacesPageContent(props: {
           reviewByPath={liveReviewByPath}
           pendingAction={pendingAction}
           onAction={handleAction}
+          onOpenInEditor={(workspace, href) =>
+            openEditorForWorkspace(workspace, href, `Opened ${workspace.path} in the configured editor.`)
+          }
+          onSaveNote={handleNoteSave}
+          pendingNotePath={pendingNotePath}
+          feedbackByWorkspacePath={feedbackByWorkspacePath}
         />
         <WorkspaceColumn
           title="Recovery queue"
@@ -328,6 +422,12 @@ export function WorkspacesPageContent(props: {
           reviewByPath={liveReviewByPath}
           pendingAction={pendingAction}
           onAction={handleAction}
+          onOpenInEditor={(workspace, href) =>
+            openEditorForWorkspace(workspace, href, `Opened ${workspace.path} in the configured editor.`)
+          }
+          onSaveNote={handleNoteSave}
+          pendingNotePath={pendingNotePath}
+          feedbackByWorkspacePath={feedbackByWorkspacePath}
         />
       </div>
 
@@ -379,6 +479,7 @@ function WorkspaceColumn(props: {
       | "archive"
       | "cleanup"
       | "recover"
+      | "notes-save"
       | "rebase-start"
       | "rebase-auto-resolve"
       | "rebase-open-in-editor"
@@ -386,6 +487,10 @@ function WorkspaceColumn(props: {
       | "rebase-abort",
     workspace: WorkspaceInventoryItem,
   ) => void;
+  onOpenInEditor: (workspace: WorkspaceInventoryItem, href: string | null) => void;
+  onSaveNote: (workspace: WorkspaceInventoryItem, note: string) => void;
+  pendingNotePath: string | null;
+  feedbackByWorkspacePath: Record<string, WorkspaceSidebarFeedback | null>;
 }) {
   const Icon = props.icon;
 
@@ -406,16 +511,10 @@ function WorkspaceColumn(props: {
           const archiveKey = `archive:${workspace.path}`;
           const cleanupKey = `cleanup:${workspace.path}`;
           const recoverKey = `recover:${workspace.path}`;
-          const rebaseStartKey = `rebase-start:${workspace.path}`;
-          const rebaseAutoResolveKey = `rebase-auto-resolve:${workspace.path}`;
-          const rebaseOpenEditorKey = `rebase-open-in-editor:${workspace.path}`;
-          const rebaseMarkResolvedKey = `rebase-mark-resolved:${workspace.path}`;
-          const rebaseAbortKey = `rebase-abort:${workspace.path}`;
           const runtimeSession =
             workspace.sessions.items.find((session) => session.status === "active" && session.runtime) ??
             workspace.sessions.items.find((session) => session.runtime);
           const review = props.reviewByPath.get(workspace.path) ?? workspace.review;
-          const rebase = workspace.rebase;
 
           return (
             <article key={workspace.path} className="rounded-2xl border border-border bg-background/70 p-4">
@@ -442,9 +541,9 @@ function WorkspaceColumn(props: {
                         {workspace.git.branch}
                       </span>
                     ) : null}
-                    {rebase ? (
-                      <span className={cn("rounded-full border px-2 py-0.5 text-xs", rebaseTone(rebase.status))}>
-                        {rebaseLabel(rebase.status)}
+                    {workspace.rebase ? (
+                      <span className={cn("rounded-full border px-2 py-0.5 text-xs", rebaseTone(workspace.rebase.status))}>
+                        {rebaseLabel(workspace.rebase.status)}
                       </span>
                     ) : null}
                     {review ? (
@@ -512,107 +611,19 @@ function WorkspaceColumn(props: {
                 {workspace.cleanedAt ? ` · cleaned ${formatTimestamp(workspace.cleanedAt)}` : ""}
               </p>
 
-              {rebase ? (
-                <section className={cn("mt-4 rounded-2xl border p-4", rebaseTone(rebase.status))}>
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.16em]">Rebase workflow</p>
-                      <h3 className="mt-1 text-sm font-semibold">
-                        {rebase.status === "rebase-needed"
-                          ? "Rebase required before this workspace can move forward"
-                          : rebase.status === "rebase-conflicts"
-                            ? "Resolve conflicts before returning to review or merge"
-                            : `Ready for ${rebase.readyFor}`}
-                      </h3>
-                      <p className="mt-1 text-xs">
-                        Attempt {rebase.attemptCount} · target `{rebase.targetBranch ?? "main"}`
-                      </p>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {workspace.actions.canRebaseStart ? (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => props.onAction("rebase-start", workspace)}
-                          disabled={props.pendingAction === rebaseStartKey}
-                        >
-                          {rebase.attemptCount > 0 ? "Retry rebase" : "Start rebase"}
-                        </Button>
-                      ) : null}
-                      {workspace.actions.canRebaseAutoResolve ? (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => props.onAction("rebase-auto-resolve", workspace)}
-                          disabled={props.pendingAction === rebaseAutoResolveKey}
-                        >
-                          Auto-resolve
-                        </Button>
-                      ) : null}
-                      {workspace.actions.canRebaseOpenInEditor ? (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => props.onAction("rebase-open-in-editor", workspace)}
-                          disabled={props.pendingAction === rebaseOpenEditorKey}
-                        >
-                          Open in editor
-                        </Button>
-                      ) : null}
-                      {workspace.actions.canRebaseMarkResolved ? (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => props.onAction("rebase-mark-resolved", workspace)}
-                          disabled={props.pendingAction === rebaseMarkResolvedKey}
-                        >
-                          Mark resolved
-                        </Button>
-                      ) : null}
-                      {workspace.actions.canRebaseAbort ? (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => props.onAction("rebase-abort", workspace)}
-                          disabled={props.pendingAction === rebaseAbortKey}
-                        >
-                          Abort
-                        </Button>
-                      ) : null}
-                    </div>
-                  </div>
-
-                  <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                    <MiniStat label="Unresolved" value={String(rebase.unresolvedFiles.length)} />
-                    <MiniStat label="Resolved" value={String(rebase.resolvedFiles.length)} />
-                  </div>
-
-                  {rebase.followUpInstructions.length > 0 ? (
-                    <ul className="mt-3 grid gap-2 text-sm">
-                      {rebase.followUpInstructions.map((instruction) => (
-                        <li key={instruction} className="rounded-xl border border-current/10 bg-background/60 px-3 py-2">
-                          {instruction}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : null}
-
-                  {rebase.unresolvedFiles.length > 0 ? (
-                    <p className="mt-3 text-xs font-mono text-foreground-muted">
-                      Conflicts: {rebase.unresolvedFiles.join(", ")}
-                    </p>
-                  ) : null}
-                </section>
-              ) : null}
-
-              {runtimeSession?.runtime ? (
-                <WorkspaceRuntimePanel
-                  className="mt-5 border-border/70 bg-card/70"
-                  runtime={runtimeSession.runtime}
-                  rebase={workspace.rebase}
-                  sessionId={runtimeSession.sessionId}
+              <div className="mt-5">
+                <WorkspaceDetailsSidebar
+                  workspace={workspace}
+                  runtime={runtimeSession?.runtime}
+                  sessionId={runtimeSession?.sessionId}
+                  pendingAction={props.pendingAction}
+                  notesSaving={props.pendingNotePath === workspace.path}
+                  feedback={props.feedbackByWorkspacePath[workspace.path] ?? null}
+                  onAction={props.onAction}
+                  onOpenInEditor={props.onOpenInEditor}
+                  onSaveNote={props.onSaveNote}
                 />
-              ) : null}
+              </div>
             </article>
           );
         })}

@@ -91,6 +91,7 @@ export async function POST(request: Request) {
       body.action === "archive" ||
       body.action === "cleanup" ||
       body.action === "recover" ||
+      body.action === "notes-save" ||
       body.action === "rebase-start" ||
       body.action === "rebase-auto-resolve" ||
       body.action === "rebase-open-in-editor" ||
@@ -105,6 +106,7 @@ export async function POST(request: Request) {
       const result = await service.applyAction({
         action: body.action,
         workspacePath,
+        note: typeof body.note === "string" ? body.note : undefined,
         sessions,
       });
       const payload = await service.listWorkspaces({ sessions, reviewByWorkspacePath });
