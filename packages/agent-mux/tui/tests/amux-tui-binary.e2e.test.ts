@@ -387,10 +387,28 @@ describeBuiltBinary('real amux-tui binary e2e', () => {
       'session listing',
       () => hasListEventFor(eventsPath, 'sess-beta'),
     );
+    await harness.waitForCondition(
+      'visible session output',
+      () => harness.text().includes('sess-beta'),
+    );
 
+    const resizeCheckpoint = harness.checkpoint();
     proc.resize(44, 14);
-    await harness.pause(500);
+    await harness.waitForCondition(
+      'reflowed sessions hint',
+      () => {
+        const output = harness.text().slice(resizeCheckpoint);
+        return (output.includes('Enter resume') && output.includes('refresh'))
+          || (harness.text().includes('Enter resume') && harness.text().includes('refresh'));
+      },
+    );
+    await harness.waitForCondition(
+      'session remains visible after resize',
+      () => harness.text().includes('sess-beta'),
+    );
     expect(harness.text()).toContain('sess-beta');
+    expect(harness.text()).toContain('Enter resume');
+    expect(harness.text()).toContain('refresh');
     expect(harness.text()).not.toContain('Process exited before');
 
     await harness.close();
