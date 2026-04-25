@@ -23,9 +23,9 @@ function initialViewId(): string | undefined {
 }
 
 function configureLoggingFromEnv(): void {
-  const logLevel = process.env.AMUX_LOG_LEVEL;
-  const logFile = process.env.AMUX_LOG_FILE;
-  if (!logLevel && !logFile) {
+  const logLevel = process.env.AMUX_LOG_LEVEL?.trim();
+  const logFile = process.env.AMUX_LOG_FILE?.trim();
+  if (!logFile) {
     return;
   }
   if (!process.env.AMUX_OBSERVABILITY_MODE) {
