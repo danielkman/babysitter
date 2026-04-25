@@ -17,6 +17,8 @@ const baseManifest = {
   scripts: {
     build: 'npm run build --workspace=@a5c-ai/agent-mux-observability && npm run build --workspace=@a5c-ai/agent-mux-core && npm run build --workspace=@a5c-ai/agent-mux-ui && next build',
     prepublishOnly: 'npm run build && npm run build:cli && npm run verify:release',
+    'test:dispatch-context-labels':
+      'npm run build --workspace=@a5c-ai/agent-catalog && npm run build --workspace=@a5c-ai/agent-mux-observability && npm run build --workspace=@a5c-ai/agent-mux-core && vitest run src/lib/services/__tests__/dispatch-context-label-service.test.ts src/lib/services/__tests__/backlog-query-service.test.ts src/hooks/__tests__/use-backlog.test.ts src/app/settings/__tests__/page.test.tsx src/lib/__tests__/release-verification.test.ts',
   },
 };
 
@@ -24,6 +26,8 @@ const basePackEntries = [
   { path: 'package.json' },
   { path: 'README.md' },
   { path: 'LICENSE' },
+  { path: 'specs/dispatch-context-labels-spec.md' },
+  { path: 'specs/dispatch-context-labels-subtasks.md' },
   { path: 'next.config.mjs' },
   { path: 'postcss.config.mjs' },
   { path: 'tsconfig.json' },
@@ -109,6 +113,38 @@ describe('verifyKanbanRelease', () => {
           packEntries: basePackEntries.filter((entry) => entry.path !== '.next/BUILD_ID'),
         })
       ).toThrow(/\.next\/BUILD_ID/);
+    });
+  });
+
+  it('fails when dispatch context label specs fall out of the package tarball', () => {
+    withPackageRoot((packageRoot) => {
+      expect(() =>
+        verifyKanbanRelease({
+          packageRoot,
+          manifest: baseManifest,
+          packEntries: basePackEntries.filter(
+            (entry) => entry.path !== 'specs/dispatch-context-labels-spec.md',
+          ),
+        })
+      ).toThrow(/dispatch-context-labels-spec\.md/);
+    });
+  });
+
+  it('fails when the package-local dispatch context verification suite is removed', () => {
+    withPackageRoot((packageRoot) => {
+      const manifest = {
+        ...baseManifest,
+        scripts: { ...baseManifest.scripts },
+      } as Record<string, unknown>;
+      delete (manifest.scripts as Record<string, string>)['test:dispatch-context-labels'];
+
+      expect(() =>
+        verifyKanbanRelease({
+          packageRoot,
+          manifest,
+          packEntries: basePackEntries,
+        })
+      ).toThrow(/test:dispatch-context-labels/);
     });
   });
 

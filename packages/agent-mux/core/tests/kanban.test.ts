@@ -5,11 +5,16 @@ import {
   buildKanbanBacklogSnapshot,
   computeKanbanProjectMetrics,
   evaluateKanbanIssueMove,
+  normalizeKanbanDispatchContextLabel,
+  normalizeKanbanDispatchContextLabelKey,
+  normalizeKanbanDispatchContextLabels,
   normalizeKanbanIssue,
   normalizeKanbanTaskTag,
   normalizeKanbanTaskTagKey,
   normalizeKanbanTaskTags,
+  renderDispatchContextLabels,
   type KanbanLabel,
+  type KanbanDispatchContextLabelDefinition,
   type KanbanIssue,
   type KanbanTaskTag,
 } from '../src/kanban.js';
@@ -36,10 +41,27 @@ function makeIssue(overrides: Partial<KanbanIssue> = {}): KanbanIssue {
       blockedReasons: [],
       runIds: [],
       sessionIds: [],
+      contextLabels: [],
+      contextLabelProjections: [],
     },
     description: overrides.description,
     summary: overrides.summary,
     source: overrides.source,
+  };
+}
+
+function makeDispatchContextLabel(
+  overrides: Partial<KanbanDispatchContextLabelDefinition> = {},
+): KanbanDispatchContextLabelDefinition {
+  return {
+    id: overrides.id ?? 'dispatch-context-label-1',
+    key: overrides.key ?? 'tests_first',
+    label: overrides.label ?? 'Tests First',
+    instruction: overrides.instruction ?? 'Write or update tests before implementation changes.',
+    description: overrides.description,
+    order: overrides.order ?? 0,
+    createdAt: overrides.createdAt ?? '2026-04-24T00:00:00.000Z',
+    updatedAt: overrides.updatedAt ?? '2026-04-24T00:00:00.000Z',
   };
 }
 
@@ -61,6 +83,91 @@ describe('normalizeKanbanTaskTagKey', () => {
   it('converts lookup keys to deterministic snake_case', () => {
     expect(normalizeKanbanTaskTagKey('  Code Review Checklist  ')).toBe('code_review_checklist');
     expect(normalizeKanbanTaskTagKey('deploy---validation')).toBe('deploy_validation');
+  });
+});
+
+describe('normalizeKanbanDispatchContextLabelKey', () => {
+  it('converts dispatch context label keys to deterministic snake_case', () => {
+    expect(normalizeKanbanDispatchContextLabelKey('  Strict API Contract  ')).toBe(
+      'strict_api_contract',
+    );
+    expect(normalizeKanbanDispatchContextLabelKey('no-schema---changes')).toBe(
+      'no_schema_changes',
+    );
+  });
+});
+
+describe('normalizeKanbanDispatchContextLabel', () => {
+  it('normalizes label definitions and preserves deterministic instruction payloads', () => {
+    expect(
+      normalizeKanbanDispatchContextLabel({
+        id: 'dispatch-context-label-1',
+        label: ' Strict API Contract ',
+        key: 'Strict API Contract',
+        instruction: '\nDo not change exported request or response shapes.\r\n',
+        description: '  Preserve published contract  ',
+        order: -4.2,
+        createdAt: '2026-04-24T00:00:00.000Z',
+        updatedAt: '2026-04-24T00:00:00.000Z',
+      }),
+    ).toEqual({
+      id: 'dispatch-context-label-1',
+      label: 'Strict API Contract',
+      key: 'strict_api_contract',
+      instruction: 'Do not change exported request or response shapes.',
+      description: 'Preserve published contract',
+      order: 0,
+      createdAt: '2026-04-24T00:00:00.000Z',
+      updatedAt: '2026-04-24T00:00:00.000Z',
+    });
+  });
+});
+
+describe('normalizeKanbanDispatchContextLabels', () => {
+  it('sorts definitions deterministically by order with stable tie breakers', () => {
+    const normalized = normalizeKanbanDispatchContextLabels([
+      makeDispatchContextLabel({ id: 'c', key: 'z_last', label: 'Z Last', order: 2 }),
+      makeDispatchContextLabel({ id: 'b', key: 'alpha', label: 'Alpha', order: 1 }),
+      makeDispatchContextLabel({ id: 'a', key: 'beta', label: 'Beta', order: 1 }),
+      makeDispatchContextLabel({ id: 'd', key: 'alpha', label: 'Alpha', order: 1 }),
+    ]);
+
+    expect(normalized.map((label) => label.id)).toEqual(['b', 'd', 'a', 'c']);
+  });
+});
+
+describe('renderDispatchContextLabels', () => {
+  it('renders attached labels in definition order and ignores missing refs', () => {
+    const definitions = normalizeKanbanDispatchContextLabels([
+      makeDispatchContextLabel({
+        id: 'dispatch-context-label-2',
+        key: 'preserve_migrations',
+        label: 'Preserve Migrations',
+        instruction: 'Do not rewrite historical migration files.',
+        order: 2,
+      }),
+      makeDispatchContextLabel({
+        id: 'dispatch-context-label-1',
+        key: 'tests_first',
+        label: 'Tests First',
+        instruction: 'Write or update tests before implementation changes.',
+        order: 1,
+      }),
+    ]);
+
+    expect(
+      renderDispatchContextLabels(definitions, [
+        { labelId: 'missing' },
+        { labelId: 'dispatch-context-label-2' },
+        { labelId: 'dispatch-context-label-1' },
+        { labelId: 'dispatch-context-label-2' },
+      ]),
+    ).toBe(
+      [
+        '- [tests_first] Write or update tests before implementation changes.',
+        '- [preserve_migrations] Do not rewrite historical migration files.',
+      ].join('\n'),
+    );
   });
 });
 
@@ -158,6 +265,68 @@ describe('normalizeKanbanIssue', () => {
     expect(issue.dispatch.blockedReasons).toContain('decomposition incomplete');
   });
 
+  it('projects attached dispatch context labels into inspectable issue dispatch state', () => {
+    const issue = normalizeKanbanIssue(
+      {
+        ...makeIssue(),
+        dispatch: {
+          readiness: 'ready',
+          blockedReasons: [],
+          runIds: [],
+          sessionIds: [],
+          contextLabels: [
+            { labelId: 'dispatch-context-label-2' },
+            { labelId: 'dispatch-context-label-1' },
+            { labelId: 'dispatch-context-label-2' },
+          ],
+        },
+      },
+      new Map(),
+      new Map(),
+      normalizeKanbanDispatchContextLabels([
+        makeDispatchContextLabel({
+          id: 'dispatch-context-label-2',
+          key: 'preserve_migrations',
+          label: 'Preserve Migrations',
+          instruction: 'Do not rewrite historical migration files.',
+          order: 2,
+        }),
+        makeDispatchContextLabel({
+          id: 'dispatch-context-label-1',
+          key: 'tests_first',
+          label: 'Tests First',
+          instruction: 'Write or update tests before implementation changes.',
+          order: 1,
+        }),
+      ]),
+    );
+
+    expect(issue.dispatch.contextLabels).toEqual([
+      { labelId: 'dispatch-context-label-2' },
+      { labelId: 'dispatch-context-label-1' },
+    ]);
+    expect(issue.dispatch.contextLabelProjections).toEqual([
+      {
+        labelId: 'dispatch-context-label-1',
+        key: 'tests_first',
+        label: 'Tests First',
+        instruction: 'Write or update tests before implementation changes.',
+      },
+      {
+        labelId: 'dispatch-context-label-2',
+        key: 'preserve_migrations',
+        label: 'Preserve Migrations',
+        instruction: 'Do not rewrite historical migration files.',
+      },
+    ]);
+    expect(issue.dispatch.renderedContext).toBe(
+      [
+        '- [tests_first] Write or update tests before implementation changes.',
+        '- [preserve_migrations] Do not rewrite historical migration files.',
+      ].join('\n'),
+    );
+  });
+
   it('marks blocked-by dependencies as blocked until the dependency is done', () => {
     const dependency = makeIssue({ id: 'dep-1', key: 'KANBAN-0', status: 'in-progress' });
     const issue = normalizeKanbanIssue(
@@ -210,12 +379,29 @@ describe('buildKanbanBacklogSnapshot', () => {
           statuses: [],
         },
       ],
+      dispatchContextLabels: [
+        makeDispatchContextLabel({
+          id: 'dispatch-context-label-1',
+          key: 'tests_first',
+          label: 'Tests First',
+          instruction: 'Write or update tests before implementation changes.',
+          order: 1,
+        }),
+      ],
       issues: [
         {
           ...makeIssue({
             id: 'parent',
             key: 'KANBAN-1',
             childIssueIds: ['child'],
+            dispatch: {
+              readiness: 'ready',
+              blockedReasons: [],
+              runIds: [],
+              sessionIds: [],
+              contextLabels: [{ labelId: 'dispatch-context-label-1' }],
+              contextLabelProjections: [],
+            },
           }),
         },
         {
@@ -231,8 +417,12 @@ describe('buildKanbanBacklogSnapshot', () => {
 
     expect(snapshot.projects[0]?.issueIds).toEqual(['parent', 'child']);
     expect(snapshot.projects[0]?.metrics.totalIssues).toBe(2);
+    expect(snapshot.dispatchContextLabels.map((label) => label.key)).toEqual(['tests_first']);
     expect(snapshot.issues.find((issue) => issue.id === 'parent')?.dispatch.readiness).toBe(
       'ready',
+    );
+    expect(snapshot.issues.find((issue) => issue.id === 'parent')?.dispatch.renderedContext).toBe(
+      '- [tests_first] Write or update tests before implementation changes.',
     );
   });
 });

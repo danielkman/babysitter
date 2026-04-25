@@ -372,6 +372,11 @@ jobs:
           set -euo pipefail
           npm run verify:release --workspace=@a5c-ai/kanban 2>&1 | tee artifacts/kanban-logs/verify-release.log
 
+      - name: Dispatch Context Labels verification
+        run: |
+          set -euo pipefail
+          npm run test:dispatch-context-labels --workspace=@a5c-ai/kanban 2>&1 | tee artifacts/kanban-logs/dispatch-context-labels.log
+
       - name: Unit tests
         run: |
           set -euo pipefail

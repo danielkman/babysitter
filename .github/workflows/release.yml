@@ -275,6 +275,7 @@ jobs:
           npm run build:kanban
           npm run build:cli --workspace=@a5c-ai/kanban
           npm run verify:release --workspace=@a5c-ai/kanban
+          npm run test:dispatch-context-labels --workspace=@a5c-ai/kanban
           npm run test:kanban
 
       - name: Build and test observer-dashboard

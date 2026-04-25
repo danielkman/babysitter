@@ -1,17 +1,21 @@
-import type React from "react";
+import { describe, expect, it, vi } from "vitest";
 
-import { render, screen } from "@/test/test-utils";
+import { render, screen, within } from "@/test/test-utils";
 
 import SettingsPage from "../page";
 
-vi.mock("@a5c-ai/compendium", () => ({
-  LogoWordmark: () => <div data-testid="logo-wordmark" />,
+vi.mock("next/link", () => ({
+  default: ({ href, children }: { href: string; children: unknown }) => <a href={href}>{children}</a>,
 }));
 
-vi.mock("next/link", () => ({
-  default: ({ children, href }: { children: React.ReactNode; href: string }) => (
-    <a href={href}>{children}</a>
-  ),
+vi.mock("@a5c-ai/compendium", () => ({
+  LogoWordmark: (props: Record<string, unknown>) => <div {...props}>Babysitter</div>,
+}));
+
+vi.mock("lucide-react", () => ({
+  Activity: () => <svg aria-hidden="true" />,
+  ShieldCheck: () => <svg aria-hidden="true" />,
+  Users: () => <svg aria-hidden="true" />,
 }));
 
 vi.mock("@/components/agent-mux/gateway-provider", () => ({
@@ -28,13 +32,7 @@ vi.mock("@/hooks/use-backlog", () => ({
       projects: [
         {
           id: "kanban-app",
-          key: "KANBAN",
-          name: "Kanban App",
-          issueIds: [],
-          labels: [],
-          assignees: [],
           team: {
-            id: "team-kanban",
             name: "Kanban Core",
             members: [
               { id: "tal", displayName: "Tal Muskal", email: "tal@a5c.ai", role: "owner" },
@@ -43,42 +41,52 @@ vi.mock("@/hooks/use-backlog", () => ({
             settings: {
               visibility: "team",
               defaultRole: "contributor",
-              allowSelfAssign: true,
             },
           },
           settings: {
-            reviewRequiredForDone: true,
-            activityScope: "all-board-entities",
             workspaceProvisioning: "owners-maintainers",
           },
           permissions: [
             {
               action: "manage-project-settings",
-              roles: ["owner", "maintainer"],
               description: "Elevated roles only.",
+              roles: ["owner", "maintainer"],
             },
           ],
           activity: [
             {
               id: "activity-1",
-              entityType: "project",
-              entityId: "kanban-app",
-              action: "updated-project-collaboration",
+              actor: { displayName: "Tal Muskal" },
+              createdAt: "2026-04-24T12:00:00.000Z",
               summary: "Updated shared team settings, roster, and permission policy.",
-              actor: { kind: "human", id: "tal", displayName: "Tal Muskal", role: "owner" },
-              createdAt: "2026-04-24T14:00:00.000Z",
             },
           ],
-          statuses: [],
-          repositories: [],
-          metrics: {
-            totalIssues: 0,
-            readyIssues: 0,
-            blockedIssues: 0,
-            dispatchedIssues: 0,
-            completedIssues: 0,
-            needsDecompositionIssues: 0,
-            inProgressIssues: 0,
+        },
+      ],
+      dispatchContextLabels: [
+        {
+          id: "dispatch-context-label-1",
+          key: "tests_first",
+          label: "Tests First",
+          description: "Keep verification ahead of implementation.",
+          instruction: "Write or update deterministic verification before editing runtime code.",
+        },
+      ],
+      issues: [
+        {
+          id: "issue-1",
+          key: "KANBAN-GAP-004",
+          dispatch: {
+            contextLabels: [{ labelId: "dispatch-context-label-1" }],
+            renderedContext: "Tests First: Write or update deterministic verification before editing runtime code.",
+          },
+        },
+        {
+          id: "issue-2",
+          key: "KANBAN-GAP-099",
+          dispatch: {
+            contextLabels: [],
+            renderedContext: "",
           },
         },
       ],
@@ -87,18 +95,51 @@ vi.mock("@/hooks/use-backlog", () => ({
 }));
 
 vi.mock("@/lib/agent-mux-ui", () => ({
-  useConnection: () => ({ status: "disconnected", error: null }),
-  useGateway: () => ({ store: { getState: () => ({ agents: { items: [] }, sessions: { byId: {} }, runs: { byId: {} } }) } }),
+  useConnection: () => ({
+    status: "disconnected",
+    error: null,
+  }),
+  useGateway: () => ({
+    store: {
+      getState: () => ({
+        agents: { items: [] },
+        sessions: { byId: {} },
+        runs: { byId: {} },
+      }),
+      subscribe: () => () => undefined,
+    },
+  }),
 }));
 
 describe("SettingsPage", () => {
-  it("renders collaboration and permission summaries from the backlog model", () => {
+  it("renders collaboration settings from the backlog snapshot", () => {
     render(<SettingsPage />);
 
-    expect(screen.getByTestId("collaboration-settings")).toBeInTheDocument();
-    expect(screen.getByText("Team and collaboration")).toBeInTheDocument();
-    expect(screen.getByText("Kanban Core (2 members)")).toBeInTheDocument();
-    expect(screen.getByText("manage-project-settings")).toBeInTheDocument();
-    expect(screen.getByText("Updated shared team settings, roster, and permission policy.")).toBeInTheDocument();
+    const collaborationSection = screen.getByTestId("collaboration-settings");
+    expect(within(collaborationSection).getByText("Team and collaboration")).toBeInTheDocument();
+    expect(within(collaborationSection).getByText("Kanban Core (2 members)")).toBeInTheDocument();
+    expect(within(collaborationSection).getByText("owners-maintainers")).toBeInTheDocument();
+    expect(within(collaborationSection).getByText("manage-project-settings")).toBeInTheDocument();
+    expect(
+      within(collaborationSection).getByText(
+        "Updated shared team settings, roster, and permission policy.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("renders dispatch context label definitions and attached issue projections", () => {
+    render(<SettingsPage />);
+
+    const dispatchSection = screen.getByTestId("dispatch-context-label-settings");
+    expect(within(dispatchSection).getByText("Dispatch Context Labels")).toBeInTheDocument();
+    expect(within(dispatchSection).getByText("Tests First")).toBeInTheDocument();
+    expect(within(dispatchSection).getByText("tests_first")).toBeInTheDocument();
+    expect(within(dispatchSection).getByText("1 issue")).toBeInTheDocument();
+    expect(
+      within(dispatchSection).getByText(
+        "Write or update deterministic verification before editing runtime code.",
+      ),
+    ).toBeInTheDocument();
+    expect(within(dispatchSection).getByText("KANBAN-GAP-004")).toBeInTheDocument();
   });
 });

@@ -72,6 +72,28 @@ export type KanbanReviewCommentSide = 'base' | 'head';
 
 export type KanbanTaskTagScopeKind = 'global' | 'project' | 'workspace';
 
+export interface KanbanDispatchContextLabelDefinition {
+  readonly id: string;
+  readonly key: string;
+  readonly label: string;
+  readonly instruction: string;
+  readonly description?: string;
+  readonly order: number;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+}
+
+export interface KanbanDispatchContextLabelRef {
+  readonly labelId: string;
+}
+
+export interface KanbanDispatchContextLabelProjection {
+  readonly labelId: string;
+  readonly key: string;
+  readonly label: string;
+  readonly instruction: string;
+}
+
 export interface KanbanLabel {
   readonly id: string;
   readonly name: string;
@@ -174,6 +196,9 @@ export interface KanbanIssueDispatchState {
   readonly blockedReasons: readonly string[];
   readonly runIds: readonly string[];
   readonly sessionIds: readonly string[];
+  readonly contextLabels: readonly KanbanDispatchContextLabelRef[];
+  readonly contextLabelProjections: readonly KanbanDispatchContextLabelProjection[];
+  readonly renderedContext?: string;
   readonly lastDispatchedAt?: string;
 }
 
@@ -427,6 +452,7 @@ export interface KanbanBacklogSnapshot {
   readonly generatedAt: string;
   readonly projects: readonly KanbanProject[];
   readonly issues: readonly KanbanIssue[];
+  readonly dispatchContextLabels: readonly KanbanDispatchContextLabelDefinition[];
 }
 
 export interface KanbanBoardPolicyHook {
@@ -665,6 +691,94 @@ export function normalizeKanbanTaskTagKey(value: string): string {
     .replace(/[^a-z0-9]+/g, '_')
     .replace(/^_+|_+$/g, '')
     .replace(/_+/g, '_');
+}
+
+export function normalizeKanbanDispatchContextLabelKey(value: string): string {
+  return normalizeKanbanTaskTagKey(value);
+}
+
+function compareKanbanDispatchContextLabels(
+  left: KanbanDispatchContextLabelDefinition,
+  right: KanbanDispatchContextLabelDefinition,
+): number {
+  return (
+    left.order - right.order ||
+    left.label.localeCompare(right.label) ||
+    left.key.localeCompare(right.key) ||
+    left.id.localeCompare(right.id)
+  );
+}
+
+export function normalizeKanbanDispatchContextLabel(
+  label: Omit<KanbanDispatchContextLabelDefinition, 'key' | 'instruction' | 'order'> & {
+    readonly key?: string;
+    readonly instruction: string;
+    readonly order?: number;
+  },
+): KanbanDispatchContextLabelDefinition {
+  const normalizedLabel = label.label.trim();
+  const normalizedKey = normalizeKanbanDispatchContextLabelKey(label.key ?? normalizedLabel);
+  return {
+    ...label,
+    label: normalizedLabel,
+    key: normalizedKey || normalizeKanbanDispatchContextLabelKey(label.id),
+    instruction: label.instruction.replace(/\r\n?/g, '\n').trim(),
+    description: label.description?.trim() || undefined,
+    order:
+      typeof label.order === 'number' && Number.isFinite(label.order)
+        ? Math.max(0, Math.floor(label.order))
+        : 0,
+  };
+}
+
+export function normalizeKanbanDispatchContextLabels(
+  labels: readonly (Omit<KanbanDispatchContextLabelDefinition, 'key' | 'instruction' | 'order'> & {
+    readonly key?: string;
+    readonly instruction: string;
+    readonly order?: number;
+  })[],
+): KanbanDispatchContextLabelDefinition[] {
+  return labels
+    .map((label) => normalizeKanbanDispatchContextLabel(label))
+    .sort(compareKanbanDispatchContextLabels);
+}
+
+export function normalizeKanbanDispatchContextLabelRefs(
+  refs: readonly (KanbanDispatchContextLabelRef | { readonly labelId?: string })[],
+): KanbanDispatchContextLabelRef[] {
+  return Array.from(
+    new Set(
+      refs
+        .map((ref) => ref.labelId?.trim() || '')
+        .filter(Boolean),
+    ),
+  ).map((labelId) => ({ labelId }));
+}
+
+export function projectDispatchContextLabels(
+  definitions: readonly KanbanDispatchContextLabelDefinition[],
+  refs: readonly KanbanDispatchContextLabelRef[],
+): KanbanDispatchContextLabelProjection[] {
+  const definitionMap = new Map(definitions.map((definition) => [definition.id, definition]));
+  return normalizeKanbanDispatchContextLabelRefs(refs)
+    .map((ref) => definitionMap.get(ref.labelId))
+    .filter((definition): definition is KanbanDispatchContextLabelDefinition => Boolean(definition))
+    .sort(compareKanbanDispatchContextLabels)
+    .map((definition) => ({
+      labelId: definition.id,
+      key: definition.key,
+      label: definition.label,
+      instruction: definition.instruction,
+    }));
+}
+
+export function renderDispatchContextLabels(
+  definitions: readonly KanbanDispatchContextLabelDefinition[],
+  refs: readonly KanbanDispatchContextLabelRef[],
+): string {
+  return projectDispatchContextLabels(definitions, refs)
+    .map((projection) => `- [${projection.key}] ${projection.instruction}`)
+    .join('\n');
 }
 
 function normalizeKanbanTaskTagScope(
@@ -1133,6 +1247,7 @@ export function normalizeKanbanIssue(
   },
   issuesById: ReadonlyMap<string, KanbanIssue>,
   repositoryMap: ReadonlyMap<string, KanbanRepositoryContext> = new Map(),
+  dispatchContextLabels: readonly KanbanDispatchContextLabelDefinition[] = [],
 ): KanbanIssue {
   const labels = uniqueById(issue.labels);
   const assignees = uniqueById(issue.assignees);
@@ -1142,6 +1257,9 @@ export function normalizeKanbanIssue(
   const childIssueIds = Array.from(new Set(issue.childIssueIds));
   const readiness = resolveReadiness({ ...issue, childIssueIds, decomposition }, issuesById);
   const blockedReasons = resolveBlockedReasons({ ...issue, childIssueIds, decomposition }, issuesById);
+  const contextLabels = normalizeKanbanDispatchContextLabelRefs(issue.dispatch?.contextLabels ?? []);
+  const contextLabelProjections = projectDispatchContextLabels(dispatchContextLabels, contextLabels);
+  const renderedContext = renderDispatchContextLabels(dispatchContextLabels, contextLabels) || undefined;
 
   return {
     ...issue,
@@ -1157,6 +1275,9 @@ export function normalizeKanbanIssue(
       blockedReasons,
       runIds: Array.from(new Set(issue.dispatch?.runIds ?? [])),
       sessionIds: Array.from(new Set(issue.dispatch?.sessionIds ?? [])),
+      contextLabels,
+      contextLabelProjections,
+      renderedContext,
       lastDispatchedAt: issue.dispatch?.lastDispatchedAt,
     },
     repositoryLifecycle: normalizeIssueRepositoryLifecycle(issue.repositoryLifecycle, repositoryMap),
@@ -1359,7 +1480,15 @@ export function buildKanbanBacklogSnapshot(input: {
     readonly activity?: readonly KanbanActivityEntry[];
     readonly dispatch?: Partial<KanbanIssueDispatchState>;
   })[];
+  readonly dispatchContextLabels?: readonly (Omit<KanbanDispatchContextLabelDefinition, 'key' | 'instruction' | 'order'> & {
+    readonly key?: string;
+    readonly instruction: string;
+    readonly order?: number;
+  })[];
 }): KanbanBacklogSnapshot {
+  const normalizedDispatchContextLabels = normalizeKanbanDispatchContextLabels(
+    input.dispatchContextLabels ?? [],
+  );
   const issueSeedMap = new Map<string, KanbanIssue>();
   for (const issue of input.issues) {
     issueSeedMap.set(issue.id, {
@@ -1371,6 +1500,8 @@ export function buildKanbanBacklogSnapshot(input: {
         blockedReasons: [],
         runIds: [],
         sessionIds: [],
+        contextLabels: [],
+        contextLabelProjections: [],
       },
     });
   }
@@ -1391,7 +1522,12 @@ export function buildKanbanBacklogSnapshot(input: {
   );
 
   const normalizedIssues = input.issues.map((issue) =>
-    normalizeKanbanIssue(issue, issueSeedMap, repositoryMapByProject.get(issue.projectId)),
+    normalizeKanbanIssue(
+      issue,
+      issueSeedMap,
+      repositoryMapByProject.get(issue.projectId),
+      normalizedDispatchContextLabels,
+    ),
   );
   const normalizedIssueMap = new Map(normalizedIssues.map((issue) => [issue.id, issue]));
 
@@ -1421,6 +1557,7 @@ export function buildKanbanBacklogSnapshot(input: {
     generatedAt: input.generatedAt ?? new Date().toISOString(),
     projects: projectsWithMetrics,
     issues: normalizedIssues,
+    dispatchContextLabels: normalizedDispatchContextLabels,
   };
 }
 

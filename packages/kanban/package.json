@@ -61,6 +61,7 @@
     "prepublishOnly": "npm run build && npm run build:cli && npm run verify:release",
     "pretest": "node scripts/ensure-local-deps.mjs",
     "test": "vitest run",
+    "test:dispatch-context-labels": "npm run build --workspace=@a5c-ai/agent-catalog && npm run build --workspace=@a5c-ai/agent-mux-observability && npm run build --workspace=@a5c-ai/agent-mux-core && vitest run src/lib/services/__tests__/dispatch-context-label-service.test.ts src/lib/services/__tests__/backlog-query-service.test.ts src/hooks/__tests__/use-backlog.test.ts src/app/settings/__tests__/page.test.tsx src/lib/__tests__/release-verification.test.ts",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "npx playwright test",

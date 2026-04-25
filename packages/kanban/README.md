@@ -71,6 +71,7 @@ The specification captures:
 - first-phase package-local storage/API ownership in `packages/kanban`
 - dispatch-time projection and post-dispatch auditability expectations
 - CI/release contracts tied to the existing `kanban` package and repo workflows
+- package-local verification through `test:dispatch-context-labels` and `verify:release`
 
 ## Remaining Gaps
 

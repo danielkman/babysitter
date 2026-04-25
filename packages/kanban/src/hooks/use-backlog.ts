@@ -8,6 +8,7 @@ import type {
   KanbanBacklogSnapshot,
   KanbanBoardSnapshot,
   KanbanCollaboratorRole,
+  KanbanDispatchContextLabelDefinition,
   KanbanPermissionGrant,
   KanbanProjectSettings,
   KanbanTaskTag,
@@ -49,6 +50,26 @@ export interface TaskTagUpdateInput {
   key?: string;
   label?: string;
   content?: string;
+  description?: string;
+  order?: number;
+}
+
+export interface DispatchContextLabelListResponse {
+  dispatchContextLabels: readonly KanbanDispatchContextLabelDefinition[];
+}
+
+export interface DispatchContextLabelInput {
+  key: string;
+  label: string;
+  instruction: string;
+  description?: string;
+  order?: number;
+}
+
+export interface DispatchContextLabelUpdateInput {
+  key?: string;
+  label?: string;
+  instruction?: string;
   description?: string;
   order?: number;
 }
@@ -98,6 +119,63 @@ export async function deleteTaskTag(taskTagId: string): Promise<TaskTagListRespo
   return result.data;
 }
 
+export async function loadDispatchContextLabels(): Promise<
+  readonly KanbanDispatchContextLabelDefinition[]
+> {
+  const result = await resilientFetch<DispatchContextLabelListResponse>("/api/dispatch-context-labels");
+  if (!result.ok) {
+    throw new Error(result.error.message);
+  }
+  return result.data.dispatchContextLabels;
+}
+
+export async function createDispatchContextLabel(
+  input: DispatchContextLabelInput,
+): Promise<DispatchContextLabelListResponse> {
+  const result = await resilientFetch<DispatchContextLabelListResponse>("/api/dispatch-context-labels", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  if (!result.ok) {
+    throw new Error(result.error.message);
+  }
+  return result.data;
+}
+
+export async function updateDispatchContextLabel(
+  dispatchContextLabelId: string,
+  input: DispatchContextLabelUpdateInput,
+): Promise<DispatchContextLabelListResponse> {
+  const result = await resilientFetch<DispatchContextLabelListResponse>(
+    `/api/dispatch-context-labels/${dispatchContextLabelId}`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    },
+  );
+  if (!result.ok) {
+    throw new Error(result.error.message);
+  }
+  return result.data;
+}
+
+export async function deleteDispatchContextLabel(
+  dispatchContextLabelId: string,
+): Promise<DispatchContextLabelListResponse> {
+  const result = await resilientFetch<DispatchContextLabelListResponse>(
+    `/api/dispatch-context-labels/${dispatchContextLabelId}`,
+    {
+      method: "DELETE",
+    },
+  );
+  if (!result.ok) {
+    throw new Error(result.error.message);
+  }
+  return result.data;
+}
+
 export interface CreateBacklogIssueResponse {
   overview: BacklogOverviewResponse;
   issue: {
@@ -106,7 +184,6 @@ export interface CreateBacklogIssueResponse {
     title: string;
   };
 }
-
 export function useBacklog(interval = 15000) {
   const [movingIssueId, setMovingIssueId] = useState<string | null>(null);
   const [mutatingIssueId, setMutatingIssueId] = useState<string | null>(null);

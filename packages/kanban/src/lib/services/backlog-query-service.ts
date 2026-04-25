@@ -4,7 +4,9 @@ import {
   createKanbanIssuePullRequest,
   evaluateKanbanIssueMove,
   linkKanbanIssueRepository,
+  normalizeKanbanDispatchContextLabels,
   upsertKanbanProjectRepository,
+  renderDispatchContextLabels,
   updateKanbanProjectRepositorySettings,
   summarizeKanbanReviewArtifact,
   type KanbanActivityEntry,
@@ -12,6 +14,7 @@ import {
   type KanbanCollaboratorRole,
   type KanbanBoardSnapshot,
   type KanbanBacklogSnapshot,
+  type KanbanDispatchContextLabelDefinition,
   type KanbanIssue,
   type KanbanPermissionGrant,
   type KanbanProject,
@@ -81,12 +84,47 @@ export interface CreateBacklogIssueResult {
 
 type BacklogSeedProject = StoredKanbanProject;
 type BacklogSeedIssue = StoredKanbanIssue;
+type BacklogSeedDispatchContextLabel = KanbanDispatchContextLabelDefinition;
 
 const debtLabel = {
   id: 'label-debt',
   name: 'debt',
   description: 'Work tracked to close parity or structural debt.',
 };
+
+const defaultDispatchContextLabels: readonly BacklogSeedDispatchContextLabel[] = [
+  {
+    id: 'dispatch-context-label-tests-first',
+    key: 'tests_first',
+    label: 'Tests First',
+    instruction: 'Write or update deterministic verification before implementation changes.',
+    description: 'Keep delivery anchored to reproducible checks instead of post-hoc inspection.',
+    order: 0,
+    createdAt: '2026-04-24T00:00:00.000Z',
+    updatedAt: '2026-04-24T00:00:00.000Z',
+  },
+  {
+    id: 'dispatch-context-label-preserve-release-contract',
+    key: 'preserve_release_contract',
+    label: 'Preserve Release Contract',
+    instruction:
+      'Do not regress published package assets, files[] entries, verify:release, or CI/release/staging publish compatibility.',
+    description: 'Use for work that touches package surfaces or published artifacts.',
+    order: 1,
+    createdAt: '2026-04-24T00:00:00.000Z',
+    updatedAt: '2026-04-24T00:00:00.000Z',
+  },
+  {
+    id: 'dispatch-context-label-ui-copy-review',
+    key: 'ui_copy_review',
+    label: 'UI Copy Review',
+    instruction: 'Keep labels, prompts, and reviewer-facing text inspectable before and after dispatch.',
+    description: 'Use when dispatch context needs to stay visible in UI and audit surfaces.',
+    order: 2,
+    createdAt: '2026-04-24T00:00:00.000Z',
+    updatedAt: '2026-04-24T00:00:00.000Z',
+  },
+];
 
 const defaultCollaborators: readonly KanbanCollaborator[] = [
   {
@@ -741,6 +779,22 @@ const defaultIssues: readonly BacklogSeedIssue[] = [
     childIssueIds: [],
     createdAt: '2026-04-24T00:00:00.000Z',
     updatedAt: '2026-04-24T00:00:00.000Z',
+    dispatch: {
+      readiness: 'ready',
+      blockedReasons: [],
+      runIds: ['run-kanban-gap-004'],
+      sessionIds: ['session-kanban-gap-004'],
+      contextLabels: [
+        { labelId: 'dispatch-context-label-tests-first' },
+        { labelId: 'dispatch-context-label-preserve-release-contract' },
+      ],
+      contextLabelProjections: [],
+      renderedContext: renderDispatchContextLabels(defaultDispatchContextLabels, [
+        { labelId: 'dispatch-context-label-tests-first' },
+        { labelId: 'dispatch-context-label-preserve-release-contract' },
+      ]),
+      lastDispatchedAt: '2026-04-24T00:00:00.000Z',
+    },
     source: { kind: 'seed', path: SOURCE_PATH, externalId: 'KANBAN-GAP-004' },
   },
   {
@@ -996,6 +1050,7 @@ function buildHydratedOverview(input: {
   readonly generatedAt?: string;
   readonly projects: readonly BacklogSeedProject[];
   readonly issues: readonly BacklogSeedIssue[];
+  readonly dispatchContextLabels: readonly BacklogSeedDispatchContextLabel[];
   readonly runSummaries: readonly LinkedRunSummary[];
   readonly reviewSnapshot: KanbanReviewSnapshot;
 }): BacklogOverview {
@@ -1003,6 +1058,7 @@ function buildHydratedOverview(input: {
     generatedAt: input.generatedAt,
     projects: input.projects,
     issues: input.issues,
+    dispatchContextLabels: input.dispatchContextLabels,
   });
   const hydratedSnapshot = attachReviewSummaries(
     attachRunSummaries(snapshot, input.runSummaries),
@@ -1025,11 +1081,16 @@ export class BacklogQueryService {
   private async readSeedPayload(): Promise<{
     projects: readonly BacklogSeedProject[];
     issues: readonly BacklogSeedIssue[];
+    dispatchContextLabels: readonly BacklogSeedDispatchContextLabel[];
   }> {
     const backlogFile = await readKanbanStorageFile(this.deps);
     return {
       projects: backlogFile?.projects?.length ? backlogFile.projects : defaultProjects,
       issues: backlogFile?.issues?.length ? backlogFile.issues : defaultIssues,
+      dispatchContextLabels:
+        backlogFile?.dispatchContextLabels?.length
+          ? normalizeKanbanDispatchContextLabels(backlogFile.dispatchContextLabels)
+          : defaultDispatchContextLabels,
     };
   }
 
@@ -1049,10 +1110,12 @@ export class BacklogQueryService {
   private async buildOverviewFromPayload(payload: {
     projects: readonly BacklogSeedProject[];
     issues: readonly BacklogSeedIssue[];
+    dispatchContextLabels: readonly BacklogSeedDispatchContextLabel[];
   }): Promise<BacklogOverview> {
     return buildHydratedOverview({
       projects: payload.projects,
       issues: payload.issues,
+      dispatchContextLabels: payload.dispatchContextLabels,
       runSummaries: await this.listRunSummaries(),
       reviewSnapshot: await this.deps.reviewService.listReviews({ targetType: 'issue' }),
       generatedAt: this.deps.now(),
@@ -1062,12 +1125,14 @@ export class BacklogQueryService {
   private async persistPayload(payload: {
     projects: readonly BacklogSeedProject[];
     issues: readonly BacklogSeedIssue[];
+    dispatchContextLabels: readonly BacklogSeedDispatchContextLabel[];
   }): Promise<BacklogOverview> {
     const existingPayload = (await readKanbanStorageFile(this.deps)) ?? {};
     await writeKanbanStorageFile(this.deps, {
       ...existingPayload,
       projects: payload.projects,
       issues: payload.issues,
+      dispatchContextLabels: payload.dispatchContextLabels,
     });
     return this.buildOverviewFromPayload(payload);
   }
@@ -1093,8 +1158,8 @@ export class BacklogQueryService {
   }
 
   async getOverview(): Promise<BacklogOverview> {
-    const { projects, issues } = await this.readSeedPayload();
-    return this.buildOverviewFromPayload({ projects, issues });
+    const { projects, issues, dispatchContextLabels } = await this.readSeedPayload();
+    return this.buildOverviewFromPayload({ projects, issues, dispatchContextLabels });
   }
 
   async createIssue(input: CreateBacklogIssueInput): Promise<CreateBacklogIssueResult> {
@@ -1144,6 +1209,14 @@ export class BacklogQueryService {
       parentIssueId: parentIssue?.id,
       createdAt,
       updatedAt: createdAt,
+      dispatch: {
+        readiness: 'ready',
+        blockedReasons: [],
+        runIds: [],
+        sessionIds: [],
+        contextLabels: [],
+        contextLabelProjections: [],
+      },
       source: input.source,
       metadata: input.metadata,
       activity: parentIssue
@@ -1206,6 +1279,7 @@ export class BacklogQueryService {
     const overview = await this.persistPayload({
       projects: nextProjects,
       issues: nextIssues,
+      dispatchContextLabels: payload.dispatchContextLabels,
     });
     const createdIssue = overview.snapshot.issues.find((candidate) => candidate.id === issue.id);
     if (!createdIssue) {
@@ -1264,6 +1338,7 @@ export class BacklogQueryService {
     return this.persistPayload({
       projects: payload.projects,
       issues: nextIssues,
+      dispatchContextLabels: payload.dispatchContextLabels,
     });
   }
 
@@ -1325,6 +1400,7 @@ export class BacklogQueryService {
     return this.persistPayload({
       projects: nextProjects,
       issues: nextIssues,
+      dispatchContextLabels: payload.dispatchContextLabels,
     });
   }
 
@@ -1351,6 +1427,7 @@ export class BacklogQueryService {
     return this.persistPayload({
       projects: nextProjects,
       issues: payload.issues,
+      dispatchContextLabels: payload.dispatchContextLabels,
     });
   }
 
@@ -1439,6 +1516,7 @@ export class BacklogQueryService {
     return this.persistPayload({
       projects: nextProjects,
       issues: payload.issues,
+      dispatchContextLabels: payload.dispatchContextLabels,
     });
   }
 
@@ -1511,6 +1589,7 @@ export class BacklogQueryService {
     return this.persistPayload({
       projects: nextProjects,
       issues: nextIssues,
+      dispatchContextLabels: payload.dispatchContextLabels,
     });
   }
 
@@ -1655,6 +1734,7 @@ export class BacklogQueryService {
     return this.persistPayload({
       projects: payload.projects,
       issues: nextIssues,
+      dispatchContextLabels: payload.dispatchContextLabels,
     });
   }
 }

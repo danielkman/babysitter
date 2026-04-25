@@ -11,6 +11,8 @@ const REQUIRED_PACKED_PATHS = [
   'package.json',
   'README.md',
   'LICENSE',
+  'specs/dispatch-context-labels-spec.md',
+  'specs/dispatch-context-labels-subtasks.md',
   'next.config.mjs',
   'postcss.config.mjs',
   'tsconfig.json',
@@ -70,6 +72,12 @@ export function verifyKanbanRelease({ packageRoot, manifest, packEntries }) {
   expect(
     scripts.prepublishOnly === 'npm run build && npm run build:cli && npm run verify:release',
     'packages/kanban/package.json prepublishOnly must build the package and run verify:release'
+  );
+  expect(
+    typeof scripts['test:dispatch-context-labels'] === 'string' &&
+      scripts['test:dispatch-context-labels'].includes('dispatch-context-label-service.test.ts') &&
+      scripts['test:dispatch-context-labels'].includes('release-verification.test.ts'),
+    'packages/kanban/package.json test:dispatch-context-labels must enforce storage, UI, and release-surface verification'
   );
 
   for (const relativePath of REQUIRED_BUILD_PATHS) {

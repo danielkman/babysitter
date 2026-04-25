@@ -190,6 +190,7 @@ These are additions that should exist beyond Vibe Kanban parity because this pac
 ### Publish and release maturation
 
 - CI and publish coverage now include `@a5c-ai/kanban`
+- Dispatch Context Labels now have package-local storage/UI/projection verification plus explicit CI, release, and staging-publish coverage
 - package-specific release verification is still relatively new and should be watched through a few releases
 
 ## Recommended Sequencing

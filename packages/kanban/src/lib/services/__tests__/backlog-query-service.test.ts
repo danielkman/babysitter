@@ -71,8 +71,20 @@ describe("BacklogQueryService", () => {
     expect(overview.summary.projectCount).toBe(1);
     expect(overview.summary.issueCount).toBeGreaterThanOrEqual(7);
     expect(overview.summary.needsDecompositionCount).toBeGreaterThanOrEqual(1);
+    expect(overview.snapshot.dispatchContextLabels.map((label) => label.key)).toEqual([
+      "tests_first",
+      "preserve_release_contract",
+      "ui_copy_review",
+    ]);
     expect(overview.snapshot.projects[0]?.linkedRunSummary?.activeRuns).toBe(2);
     expect(overview.snapshot.issues.find((issue) => issue.id === "KANBAN-GAP-004")?.review?.decision).toBe("pending");
+    expect(overview.snapshot.issues.find((issue) => issue.id === "KANBAN-GAP-004")?.dispatch.contextLabels).toEqual([
+      { labelId: "dispatch-context-label-tests-first" },
+      { labelId: "dispatch-context-label-preserve-release-contract" },
+    ]);
+    expect(
+      overview.snapshot.issues.find((issue) => issue.id === "KANBAN-GAP-004")?.dispatch.renderedContext,
+    ).toContain("preserve_release_contract");
     expect(overview.board.projects[0]?.columns.find((column) => column.id === "todo")?.issueCount).toBeGreaterThan(0);
     expect(overview.snapshot.issues.find((issue) => issue.key === "KANBAN-DEBT-003")).toMatchObject({
       childIssueIds: ["KANBAN-GAP-001", "KANBAN-GAP-002", "KANBAN-GAP-003"],

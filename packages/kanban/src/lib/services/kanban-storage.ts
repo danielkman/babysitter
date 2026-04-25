@@ -10,6 +10,7 @@ import type {
 import type {
   KanbanActivityEntry,
   KanbanCollaborator,
+  KanbanDispatchContextLabelDefinition,
   KanbanIssue,
   KanbanPermissionGrant,
   KanbanProject,
@@ -38,11 +39,13 @@ export type StoredKanbanIssue = Omit<KanbanIssue, 'dispatch' | 'collaborators' |
 };
 
 export type StoredKanbanTaskTag = KanbanTaskTag;
+export type StoredKanbanDispatchContextLabel = KanbanDispatchContextLabelDefinition;
 
 export interface KanbanStoragePayload {
   projects?: readonly StoredKanbanProject[];
   issues?: readonly StoredKanbanIssue[];
   taskTags?: readonly StoredKanbanTaskTag[];
+  dispatchContextLabels?: readonly StoredKanbanDispatchContextLabel[];
   automationRules?: readonly AutomationRule[];
   automationExecutions?: readonly AutomationExecutionRecord[];
 }
