@@ -74,6 +74,11 @@ export interface DispatchContextLabelUpdateInput {
   order?: number;
 }
 
+export interface UpdateIssueDispatchContextLabelsInput {
+  issueId: string;
+  dispatchContextLabelIds: string[];
+}
+
 export async function loadTaskTags(): Promise<readonly KanbanTaskTag[]> {
   const result = await resilientFetch<TaskTagListResponse>("/api/task-tags");
   if (!result.ok) {
@@ -170,6 +175,23 @@ export async function deleteDispatchContextLabel(
       method: "DELETE",
     },
   );
+  if (!result.ok) {
+    throw new Error(result.error.message);
+  }
+  return result.data;
+}
+
+export async function postIssueDispatchContextLabels(
+  input: UpdateIssueDispatchContextLabelsInput,
+): Promise<BacklogOverviewResponse> {
+  const result = await resilientFetch<BacklogOverviewResponse>("/api/backlog", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      action: "update-issue-dispatch-context-labels",
+      ...input,
+    }),
+  });
   if (!result.ok) {
     throw new Error(result.error.message);
   }
@@ -300,6 +322,15 @@ export function useBacklog(interval = 15000) {
     await mutateBacklog<BacklogOverviewResponse>({ action: "update-issue-collaboration", ...input }, input.issueId);
   }
 
+  async function updateIssueDispatchContextLabels(
+    input: UpdateIssueDispatchContextLabelsInput,
+  ): Promise<void> {
+    await mutateBacklog<BacklogOverviewResponse>(
+      { action: "update-issue-dispatch-context-labels", ...input },
+      input.issueId,
+    );
+  }
+
   async function createIssue(input: {
     projectId: string;
     title: string;
@@ -350,6 +381,7 @@ export function useBacklog(interval = 15000) {
     createIssue,
     updateProjectCollaboration,
     updateIssueCollaboration,
+    updateIssueDispatchContextLabels,
     createSubIssue,
     linkChildIssue,
     movingIssueId,

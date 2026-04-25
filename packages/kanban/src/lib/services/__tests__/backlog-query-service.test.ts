@@ -525,6 +525,196 @@ describe("BacklogQueryService", () => {
     expect(issue?.activity[0]?.action).toBe("updated-issue-collaboration");
   });
 
+  it("persists issue dispatch context label attachments through the backlog file", async () => {
+    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "kanban-backlog-"));
+    tempDirs.push(tempDir);
+    const backlogFilePath = path.join(tempDir, "kanban-backlog.json");
+
+    const service = new BacklogQueryService({
+      backlogFilePath,
+      now: () => "2026-04-24T15:00:00.000Z",
+      runQueryService: {
+        listProjects: vi.fn().mockResolvedValue({
+          recentCompletionWindowMs: 14400000,
+          projects: [],
+        }),
+      } as never,
+      reviewService: {
+        listReviews: vi.fn().mockResolvedValue({
+          generatedAt: "2026-04-24T15:00:00.000Z",
+          artifacts: [],
+          queue: [],
+          summary: {
+            total: 0,
+            issueCount: 0,
+            workspaceCount: 0,
+            pendingCount: 0,
+            changesRequestedCount: 0,
+            approvedCount: 0,
+            openCommentCount: 0,
+          },
+        }),
+      } as never,
+    });
+
+    const overview = await service.updateIssueDispatchContextLabels({
+      issueId: "KANBAN-GAP-007",
+      dispatchContextLabelIds: [
+        "dispatch-context-label-ui-copy-review",
+        "dispatch-context-label-tests-first",
+        "dispatch-context-label-ui-copy-review",
+      ],
+    });
+
+    const issue = overview.snapshot.issues.find((candidate) => candidate.id === "KANBAN-GAP-007");
+    expect(issue?.dispatch.contextLabels).toEqual([
+      { labelId: "dispatch-context-label-ui-copy-review" },
+      { labelId: "dispatch-context-label-tests-first" },
+    ]);
+    expect(issue?.dispatch.contextLabelProjections.map((projection) => projection.key)).toEqual([
+      "tests_first",
+      "ui_copy_review",
+    ]);
+    expect(issue?.dispatch.renderedContext).toContain("[tests_first]");
+    expect(issue?.dispatch.renderedContext).toContain("[ui_copy_review]");
+
+    const persisted = JSON.parse(await fs.readFile(backlogFilePath, "utf8")) as {
+      issues: Array<{
+        id: string;
+        dispatch?: {
+          contextLabels?: Array<{ labelId: string }>;
+          renderedContext?: string;
+          contextLabelProjections?: unknown[];
+        };
+      }>;
+    };
+    expect(persisted.issues.find((candidate) => candidate.id === "KANBAN-GAP-007")?.dispatch).toEqual(
+      expect.objectContaining({
+        contextLabels: [
+          { labelId: "dispatch-context-label-ui-copy-review" },
+          { labelId: "dispatch-context-label-tests-first" },
+        ],
+      }),
+    );
+    expect(
+      persisted.issues.find((candidate) => candidate.id === "KANBAN-GAP-007")?.dispatch,
+    ).not.toHaveProperty("renderedContext");
+    expect(
+      persisted.issues.find((candidate) => candidate.id === "KANBAN-GAP-007")?.dispatch,
+    ).not.toHaveProperty("contextLabelProjections");
+  });
+
+  it("rejects unknown issue dispatch context label attachments and tolerates stale stored refs", async () => {
+    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "kanban-backlog-"));
+    tempDirs.push(tempDir);
+    const backlogFilePath = path.join(tempDir, "kanban-backlog.json");
+
+    await fs.writeFile(
+      backlogFilePath,
+      JSON.stringify(
+        {
+          projects: [
+            {
+              id: "kanban-app",
+              key: "KANBAN",
+              name: "Kanban App",
+              issueIds: ["issue-1"],
+              labels: [],
+              assignees: [],
+              statuses: [],
+              repositories: [],
+            },
+          ],
+          dispatchContextLabels: [
+            {
+              id: "dispatch-context-label-tests-first",
+              key: "tests_first",
+              label: "Tests First",
+              instruction: "Write tests first.",
+              order: 0,
+              createdAt: "2026-04-24T12:00:00.000Z",
+              updatedAt: "2026-04-24T12:00:00.000Z",
+            },
+          ],
+          issues: [
+            {
+              id: "issue-1",
+              key: "KANBAN-AUTO-001",
+              projectId: "kanban-app",
+              title: "Backfill stale dispatch state",
+              status: "ready",
+              priority: "medium",
+              labels: [],
+              assignees: [],
+              dependencies: [],
+              acceptanceCriteria: [],
+              decomposition: [],
+              childIssueIds: [],
+              createdAt: "2026-04-24T12:00:00.000Z",
+              updatedAt: "2026-04-24T12:00:00.000Z",
+              dispatch: {
+                readiness: "ready",
+                blockedReasons: [],
+                runIds: [],
+                sessionIds: [],
+                contextLabels: [
+                  { labelId: "dispatch-context-label-tests-first" },
+                  { labelId: "dispatch-context-label-missing" },
+                ],
+                renderedContext: "stale",
+              },
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+
+    const service = new BacklogQueryService({
+      backlogFilePath,
+      now: () => "2026-04-24T15:00:00.000Z",
+      runQueryService: {
+        listProjects: vi.fn().mockResolvedValue({
+          recentCompletionWindowMs: 14400000,
+          projects: [],
+        }),
+      } as never,
+      reviewService: {
+        listReviews: vi.fn().mockResolvedValue({
+          generatedAt: "2026-04-24T15:00:00.000Z",
+          artifacts: [],
+          queue: [],
+          summary: {
+            total: 0,
+            issueCount: 0,
+            workspaceCount: 0,
+            pendingCount: 0,
+            changesRequestedCount: 0,
+            approvedCount: 0,
+            openCommentCount: 0,
+          },
+        }),
+      } as never,
+    });
+
+    const overview = await service.getOverview();
+    expect(overview.snapshot.issues[0]?.dispatch.contextLabels).toEqual([
+      { labelId: "dispatch-context-label-tests-first" },
+    ]);
+    expect(overview.snapshot.issues[0]?.dispatch.renderedContext).toBe(
+      "- [tests_first] Write tests first.",
+    );
+
+    await expect(
+      service.updateIssueDispatchContextLabels({
+        issueId: "issue-1",
+        dispatchContextLabelIds: ["dispatch-context-label-missing"],
+      }),
+    ).rejects.toMatchObject({ code: "BAD_REQUEST", status: 400 });
+  });
+
   it("rejects moves that violate board policy", async () => {
     const service = new BacklogQueryService({
       reviewService: {

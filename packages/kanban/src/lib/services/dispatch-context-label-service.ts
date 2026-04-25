@@ -4,6 +4,7 @@ import {
   normalizeKanbanDispatchContextLabel,
   normalizeKanbanDispatchContextLabelKey,
   normalizeKanbanDispatchContextLabels,
+  normalizeKanbanDispatchContextLabelRefs,
   type KanbanDispatchContextLabelDefinition,
 } from "@a5c-ai/agent-mux-core/kanban";
 
@@ -255,11 +256,28 @@ export class DispatchContextLabelService {
       );
     }
 
+    const nextDispatchContextLabels = dispatchContextLabels.filter(
+      (label) => label.id !== dispatchContextLabelId,
+    );
+
+    await writeKanbanStorageFile(this.deps, {
+      ...storage,
+      issues: storage.issues?.map((issue) => ({
+        ...issue,
+        dispatch: issue.dispatch
+          ? {
+              ...issue.dispatch,
+              contextLabels: normalizeKanbanDispatchContextLabelRefs(
+                issue.dispatch.contextLabels ?? [],
+              ).filter((ref) => ref.labelId !== dispatchContextLabelId),
+            }
+          : issue.dispatch,
+      })),
+      dispatchContextLabels: normalizeKanbanDispatchContextLabels(nextDispatchContextLabels),
+    });
+
     return {
-      dispatchContextLabels: await this.writeStorage(
-        storage,
-        dispatchContextLabels.filter((label) => label.id !== dispatchContextLabelId),
-      ),
+      dispatchContextLabels: normalizeKanbanDispatchContextLabels(nextDispatchContextLabels),
     };
   }
 }

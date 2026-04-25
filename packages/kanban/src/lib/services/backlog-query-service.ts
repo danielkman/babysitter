@@ -3,10 +3,10 @@ import {
   buildKanbanBacklogSnapshot,
   createKanbanIssuePullRequest,
   evaluateKanbanIssueMove,
+  normalizeKanbanDispatchContextLabelRefs,
   linkKanbanIssueRepository,
   normalizeKanbanDispatchContextLabels,
   upsertKanbanProjectRepository,
-  renderDispatchContextLabels,
   updateKanbanProjectRepositorySettings,
   summarizeKanbanReviewArtifact,
   type KanbanActivityEntry,
@@ -303,6 +303,83 @@ function resolveCollaboratorsById(
   return ids
     .map((id) => roster.get(id))
     .filter((member): member is KanbanCollaborator => Boolean(member));
+}
+
+function normalizeStoredIssueDispatchContextLabelRefs(
+  refs: readonly { readonly labelId?: string }[] | undefined,
+  dispatchContextLabels: readonly BacklogSeedDispatchContextLabel[],
+): KanbanIssue['dispatch']['contextLabels'] {
+  const knownLabelIds = new Set(dispatchContextLabels.map((label) => label.id));
+  return normalizeKanbanDispatchContextLabelRefs(refs ?? []).filter((ref) =>
+    knownLabelIds.has(ref.labelId),
+  );
+}
+
+function sanitizeStoredIssue(
+  issue: BacklogSeedIssue,
+  dispatchContextLabels: readonly BacklogSeedDispatchContextLabel[],
+): BacklogSeedIssue {
+  if (!issue.dispatch) {
+    return issue;
+  }
+
+  return {
+    ...issue,
+    dispatch: {
+      ...issue.dispatch,
+      contextLabels: normalizeStoredIssueDispatchContextLabelRefs(
+        issue.dispatch.contextLabels,
+        dispatchContextLabels,
+      ),
+    },
+  };
+}
+
+function resolveDispatchContextLabelRefs(
+  dispatchContextLabels: readonly BacklogSeedDispatchContextLabel[],
+  dispatchContextLabelIds: readonly string[],
+): KanbanIssue['dispatch']['contextLabels'] {
+  const refs = normalizeKanbanDispatchContextLabelRefs(
+    dispatchContextLabelIds.map((labelId) => ({ labelId })),
+  );
+  const definitionMap = new Map(dispatchContextLabels.map((label) => [label.id, label]));
+  const missingLabelIds = refs
+    .map((ref) => ref.labelId)
+    .filter((labelId) => !definitionMap.has(labelId));
+
+  if (missingLabelIds.length > 0) {
+    throw new AppError(
+      `Dispatch Context Label definitions not found: ${missingLabelIds.join(', ')}.`,
+      'BAD_REQUEST',
+      400,
+    );
+  }
+
+  return refs;
+}
+
+function stripDerivedDispatchState(
+  issue: BacklogSeedIssue,
+  dispatchContextLabels: readonly BacklogSeedDispatchContextLabel[],
+): BacklogSeedIssue {
+  if (!issue.dispatch) {
+    return issue;
+  }
+
+  return {
+    ...issue,
+    dispatch: {
+      readiness: issue.dispatch.readiness,
+      blockedReasons: issue.dispatch.blockedReasons ?? [],
+      runIds: issue.dispatch.runIds ?? [],
+      sessionIds: issue.dispatch.sessionIds ?? [],
+      contextLabels: normalizeStoredIssueDispatchContextLabelRefs(
+        issue.dispatch.contextLabels,
+        dispatchContextLabels,
+      ),
+      lastDispatchedAt: issue.dispatch.lastDispatchedAt,
+    },
+  };
 }
 
 function nextPullRequestNumber(issues: readonly BacklogSeedIssue[]): number {
@@ -788,11 +865,6 @@ const defaultIssues: readonly BacklogSeedIssue[] = [
         { labelId: 'dispatch-context-label-tests-first' },
         { labelId: 'dispatch-context-label-preserve-release-contract' },
       ],
-      contextLabelProjections: [],
-      renderedContext: renderDispatchContextLabels(defaultDispatchContextLabels, [
-        { labelId: 'dispatch-context-label-tests-first' },
-        { labelId: 'dispatch-context-label-preserve-release-contract' },
-      ]),
       lastDispatchedAt: '2026-04-24T00:00:00.000Z',
     },
     source: { kind: 'seed', path: SOURCE_PATH, externalId: 'KANBAN-GAP-004' },
@@ -1084,13 +1156,17 @@ export class BacklogQueryService {
     dispatchContextLabels: readonly BacklogSeedDispatchContextLabel[];
   }> {
     const backlogFile = await readKanbanStorageFile(this.deps);
+    const dispatchContextLabels =
+      backlogFile?.dispatchContextLabels?.length
+        ? normalizeKanbanDispatchContextLabels(backlogFile.dispatchContextLabels)
+        : defaultDispatchContextLabels;
+
     return {
       projects: backlogFile?.projects?.length ? backlogFile.projects : defaultProjects,
-      issues: backlogFile?.issues?.length ? backlogFile.issues : defaultIssues,
-      dispatchContextLabels:
-        backlogFile?.dispatchContextLabels?.length
-          ? normalizeKanbanDispatchContextLabels(backlogFile.dispatchContextLabels)
-          : defaultDispatchContextLabels,
+      issues: (backlogFile?.issues?.length ? backlogFile.issues : defaultIssues).map((issue) =>
+        sanitizeStoredIssue(issue, dispatchContextLabels),
+      ),
+      dispatchContextLabels,
     };
   }
 
@@ -1128,13 +1204,24 @@ export class BacklogQueryService {
     dispatchContextLabels: readonly BacklogSeedDispatchContextLabel[];
   }): Promise<BacklogOverview> {
     const existingPayload = (await readKanbanStorageFile(this.deps)) ?? {};
+    const normalizedDispatchContextLabels = normalizeKanbanDispatchContextLabels(
+      payload.dispatchContextLabels,
+    );
     await writeKanbanStorageFile(this.deps, {
       ...existingPayload,
       projects: payload.projects,
-      issues: payload.issues,
-      dispatchContextLabels: payload.dispatchContextLabels,
+      issues: payload.issues.map((issue) =>
+        stripDerivedDispatchState(issue, normalizedDispatchContextLabels),
+      ),
+      dispatchContextLabels: normalizedDispatchContextLabels,
     });
-    return this.buildOverviewFromPayload(payload);
+    return this.buildOverviewFromPayload({
+      ...payload,
+      issues: payload.issues.map((issue) =>
+        stripDerivedDispatchState(issue, normalizedDispatchContextLabels),
+      ),
+      dispatchContextLabels: normalizedDispatchContextLabels,
+    });
   }
 
   private findIssue(payload: {
@@ -1593,6 +1680,55 @@ export class BacklogQueryService {
     });
   }
 
+  async updateIssueDispatchContextLabels(input: {
+    readonly issueId: string;
+    readonly dispatchContextLabelIds: readonly string[];
+  }): Promise<BacklogOverview> {
+    const payload = await this.readSeedPayload();
+    const issue = this.findIssue(payload, input.issueId);
+    const contextLabels = resolveDispatchContextLabelRefs(
+      payload.dispatchContextLabels,
+      input.dispatchContextLabelIds,
+    );
+    const updatedAt = this.deps.now();
+
+    const nextIssues = payload.issues.map((candidate) =>
+      candidate.id === issue.id
+        ? {
+            ...candidate,
+            dispatch: {
+              ...candidate.dispatch,
+              contextLabels,
+            },
+            updatedAt,
+            activity: [
+              buildActivityEntry(
+                `activity-issue-dispatch-context-${updatedAt}`,
+                'issue',
+                candidate.id,
+                'updated-issue-dispatch-context-labels',
+                `Set ${contextLabels.length} dispatch context label attachment${contextLabels.length === 1 ? '' : 's'} on ${candidate.key}.`,
+                {
+                  kind: 'human',
+                  id: 'tal',
+                  displayName: 'Tal Muskal',
+                  role: 'owner',
+                },
+                updatedAt,
+              ),
+              ...(candidate.activity ?? []),
+            ],
+          }
+        : candidate,
+    );
+
+    return this.persistPayload({
+      projects: payload.projects,
+      issues: nextIssues,
+      dispatchContextLabels: payload.dispatchContextLabels,
+    });
+  }
+
   async linkChildIssue(input: {
     readonly parentIssueId: string;
     readonly childIssueId: string;
@@ -1680,6 +1816,7 @@ export class BacklogQueryService {
     return this.persistPayload({
       projects: payload.projects,
       issues: nextIssues,
+      dispatchContextLabels: payload.dispatchContextLabels,
     });
   }
 

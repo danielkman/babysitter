@@ -226,6 +226,25 @@ export async function POST(request: Request) {
               : [],
         });
         break;
+      case 'update-issue-dispatch-context-labels':
+        if (typeof body.issueId !== 'string') {
+          throw new AppError('issueId is required.', 'BAD_REQUEST', 400);
+        }
+        if (
+          !Array.isArray(body.dispatchContextLabelIds) ||
+          !body.dispatchContextLabelIds.every((id) => typeof id === 'string')
+        ) {
+          throw new AppError(
+            'dispatchContextLabelIds must be an array of strings.',
+            'BAD_REQUEST',
+            400,
+          );
+        }
+        overview = await service.updateIssueDispatchContextLabels({
+          issueId: body.issueId,
+          dispatchContextLabelIds: body.dispatchContextLabelIds as string[],
+        });
+        break;
       case 'create-sub-issue':
         if (typeof body.parentIssueId !== 'string' || typeof body.title !== 'string') {
           throw new AppError('parentIssueId and title are required.', 'BAD_REQUEST', 400);

@@ -7,9 +7,21 @@ import {
   deleteTaskTag,
   loadDispatchContextLabels,
   loadTaskTags,
+  postIssueDispatchContextLabels,
   updateDispatchContextLabel,
   updateTaskTag,
 } from "../use-backlog";
+
+const refreshMock = vi.fn().mockResolvedValue(undefined);
+
+vi.mock("../use-smart-polling", () => ({
+  useSmartPolling: vi.fn(() => ({
+    data: undefined,
+    loading: false,
+    error: null,
+    refresh: refreshMock,
+  })),
+}));
 
 function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -20,6 +32,7 @@ function jsonResponse(body: unknown, status = 200): Response {
 
 describe("task tag backlog helpers", () => {
   beforeEach(() => {
+    refreshMock.mockClear();
     vi.stubGlobal("fetch", vi.fn());
   });
 
@@ -98,6 +111,7 @@ describe("task tag backlog helpers", () => {
 
 describe("dispatch context label backlog helpers", () => {
   beforeEach(() => {
+    refreshMock.mockClear();
     vi.stubGlobal("fetch", vi.fn());
   });
 
@@ -171,5 +185,47 @@ describe("dispatch context label backlog helpers", () => {
     const [url, init] = vi.mocked(fetch).mock.calls[0];
     expect(url).toBe("/api/dispatch-context-labels/dispatch-context-label-1");
     expect(init?.method).toBe("DELETE");
+  });
+
+  it("posts issue dispatch context label attachments through the backlog API", async () => {
+    vi.mocked(fetch).mockResolvedValueOnce(
+      jsonResponse({
+        snapshot: { projects: [], issues: [], dispatchContextLabels: [] },
+        board: { projects: [] },
+        summary: {
+          projectCount: 0,
+          issueCount: 0,
+          readyCount: 0,
+          blockedCount: 0,
+          dispatchedCount: 0,
+          completedCount: 0,
+          needsDecompositionCount: 0,
+          inProgressCount: 0,
+        },
+      }),
+    );
+
+    await postIssueDispatchContextLabels({
+      issueId: "KANBAN-GAP-004",
+      dispatchContextLabelIds: [
+        "dispatch-context-label-tests-first",
+        "dispatch-context-label-preserve-release-contract",
+      ],
+    });
+
+    const [url, init] = vi.mocked(fetch).mock.calls[0];
+    expect(url).toBe("/api/backlog");
+    expect(init?.method).toBe("POST");
+    expect(init?.body).toBe(
+      JSON.stringify({
+        action: "update-issue-dispatch-context-labels",
+        issueId: "KANBAN-GAP-004",
+        dispatchContextLabelIds: [
+          "dispatch-context-label-tests-first",
+          "dispatch-context-label-preserve-release-contract",
+        ],
+      }),
+    );
+    expect(refreshMock).not.toHaveBeenCalled();
   });
 });

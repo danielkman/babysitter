@@ -183,4 +183,76 @@ describe("DispatchContextLabelService", () => {
     };
     expect(persisted.dispatchContextLabels).toEqual([]);
   });
+
+  it("removes deleted definition refs from stored issues", async () => {
+    const backlogFilePath = await createTempBacklogFile();
+    await fs.writeFile(
+      backlogFilePath,
+      JSON.stringify(
+        {
+          dispatchContextLabels: [
+            {
+              id: "dispatch-context-label-1",
+              key: "tests_first",
+              label: "Tests First",
+              instruction: "Write tests first.",
+              order: 0,
+              createdAt: "2026-04-24T12:00:00.000Z",
+              updatedAt: "2026-04-24T12:00:00.000Z",
+            },
+            {
+              id: "dispatch-context-label-2",
+              key: "ui_copy_review",
+              label: "UI Copy Review",
+              instruction: "Review visible copy.",
+              order: 1,
+              createdAt: "2026-04-24T12:00:00.000Z",
+              updatedAt: "2026-04-24T12:00:00.000Z",
+            },
+          ],
+          issues: [
+            {
+              id: "issue-1",
+              key: "KANBAN-AUTO-001",
+              projectId: "kanban-app",
+              title: "Keep refs in sync",
+              status: "ready",
+              priority: "medium",
+              labels: [],
+              assignees: [],
+              dependencies: [],
+              acceptanceCriteria: [],
+              decomposition: [],
+              childIssueIds: [],
+              createdAt: "2026-04-24T12:00:00.000Z",
+              updatedAt: "2026-04-24T12:00:00.000Z",
+              dispatch: {
+                readiness: "ready",
+                blockedReasons: [],
+                runIds: [],
+                sessionIds: [],
+                contextLabels: [
+                  { labelId: "dispatch-context-label-1" },
+                  { labelId: "dispatch-context-label-2" },
+                ],
+              },
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+
+    const service = createService(backlogFilePath);
+    await service.deleteDispatchContextLabel("dispatch-context-label-1");
+
+    const persisted = JSON.parse(await fs.readFile(backlogFilePath, "utf8")) as {
+      issues: Array<{ dispatch?: { contextLabels?: Array<{ labelId: string }> } }>;
+    };
+    expect(persisted.issues[0]?.dispatch?.contextLabels).toEqual([
+      { labelId: "dispatch-context-label-2" },
+    ]);
+  });
 });

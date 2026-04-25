@@ -11,6 +11,7 @@ import type {
   KanbanActivityEntry,
   KanbanCollaborator,
   KanbanDispatchContextLabelDefinition,
+  KanbanDispatchContextLabelRef,
   KanbanIssue,
   KanbanPermissionGrant,
   KanbanProject,
@@ -32,10 +33,17 @@ export type StoredKanbanProject = Omit<
   readonly activity?: readonly KanbanActivityEntry[];
 };
 
+export type StoredKanbanIssueDispatchState = Omit<
+  Partial<KanbanIssue['dispatch']>,
+  'contextLabels' | 'contextLabelProjections' | 'renderedContext'
+> & {
+  readonly contextLabels?: readonly KanbanDispatchContextLabelRef[];
+};
+
 export type StoredKanbanIssue = Omit<KanbanIssue, 'dispatch' | 'collaborators' | 'activity'> & {
   readonly collaborators?: readonly KanbanCollaborator[];
   readonly activity?: readonly KanbanActivityEntry[];
-  readonly dispatch?: Partial<KanbanIssue['dispatch']>;
+  readonly dispatch?: StoredKanbanIssueDispatchState;
 };
 
 export type StoredKanbanTaskTag = KanbanTaskTag;
