@@ -227,6 +227,32 @@ export async function POST(request: Request) {
               : [],
         });
         break;
+      case 'update-issue-detail':
+        if (typeof body.issueId !== 'string') {
+          throw new AppError('issueId is required.', 'BAD_REQUEST', 400);
+        }
+        overview = await service.updateIssueDetail({
+          issueId: body.issueId,
+          expectedUpdatedAt:
+            typeof body.expectedUpdatedAt === 'string' ? body.expectedUpdatedAt : undefined,
+          description: typeof body.description === 'string' ? body.description : undefined,
+          priority:
+            body.priority === 'critical' ||
+            body.priority === 'high' ||
+            body.priority === 'medium' ||
+            body.priority === 'low'
+              ? body.priority
+              : undefined,
+          assigneeIds:
+            Array.isArray(body.assigneeIds) && body.assigneeIds.every((id) => typeof id === 'string')
+              ? (body.assigneeIds as string[])
+              : undefined,
+          labelIds:
+            Array.isArray(body.labelIds) && body.labelIds.every((id) => typeof id === 'string')
+              ? (body.labelIds as string[])
+              : undefined,
+        });
+        break;
       case 'update-issue-dispatch-context-labels':
         if (typeof body.issueId !== 'string') {
           throw new AppError('issueId is required.', 'BAD_REQUEST', 400);

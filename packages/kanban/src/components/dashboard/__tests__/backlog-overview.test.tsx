@@ -10,6 +10,7 @@ const updateRepositorySettingsMock = vi.fn();
 const createPullRequestMock = vi.fn();
 const updateProjectCollaborationMock = vi.fn();
 const updateIssueCollaborationMock = vi.fn();
+const updateIssueDetailMock = vi.fn();
 const createIssueMock = vi.fn();
 const createSubIssueMock = vi.fn();
 const linkChildIssueMock = vi.fn();
@@ -38,7 +39,10 @@ function buildBacklogState() {
           key: "KANBAN",
           name: "Kanban App",
           issueIds: ["KANBAN-GAP-007", "KANBAN-GAP-008", "KANBAN-GAP-009"],
-          labels: [],
+          labels: [
+            { id: "label-ui", name: "ui" },
+            { id: "label-parity", name: "parity" },
+          ],
           assignees: [],
           team: {
             id: "team-kanban",
@@ -96,9 +100,10 @@ function buildBacklogState() {
           projectId: "kanban-app",
           title: "Add team and collaboration primitives",
           summary: "Collaboration gap",
+          description: "# Current state\n- [ ] Capture parity behavior",
           status: "backlog",
           priority: "medium",
-          labels: [],
+          labels: [{ id: "label-parity", name: "parity" }],
           assignees: [{ id: "tal", displayName: "Tal Muskal", email: "tal@a5c.ai" }],
           collaborators: [
             { id: "tal", displayName: "Tal Muskal", email: "tal@a5c.ai", role: "owner" },
@@ -309,6 +314,7 @@ function buildBacklogState() {
     createIssue: createIssueMock,
     updateProjectCollaboration: updateProjectCollaborationMock,
     updateIssueCollaboration: updateIssueCollaborationMock,
+    updateIssueDetail: updateIssueDetailMock,
     createSubIssue: createSubIssueMock,
     linkChildIssue: linkChildIssueMock,
     movingIssueId: null,
@@ -352,6 +358,7 @@ describe("BacklogOverview", () => {
     linkChildIssueMock.mockReset();
     updateProjectCollaborationMock.mockReset();
     updateIssueCollaborationMock.mockReset();
+    updateIssueDetailMock.mockReset();
     refreshMock.mockReset();
     backlogState = buildBacklogState();
   });
@@ -488,11 +495,116 @@ describe("BacklogOverview", () => {
 
     render(<BacklogOverview />);
 
+    expect(screen.getByTestId("issue-detail-panel")).toBeInTheDocument();
+    expect(screen.getByTestId("issue-description-editor")).toHaveValue(
+      "# Current state\n- [ ] Capture parity behavior",
+    );
+    expect(screen.getByText("parity")).toBeInTheDocument();
     expect(screen.getByTestId("issue-relationship-panel")).toBeInTheDocument();
     expect(screen.getByTestId("child-nav-KANBAN-GAP-008")).toBeInTheDocument();
     expect(screen.getByTestId("create-sub-issue-form")).toBeInTheDocument();
     expect(screen.getByTestId("link-child-issue-form")).toBeInTheDocument();
     expect(screen.getByRole("option", { name: /KANBAN-GAP-009/i })).toBeInTheDocument();
+  });
+
+  it("keeps the issue detail panel beside list view when an issue is opened from list context", () => {
+    localStorage.setItem("kanban:backlog-presentation", JSON.stringify("list"));
+    searchParams = new URLSearchParams("issueId=KANBAN-GAP-007&issueKey=KANBAN-GAP-007");
+
+    render(<BacklogOverview />);
+
+    expect(screen.getByTestId("kanban-list")).toBeInTheDocument();
+    expect(screen.getByTestId("issue-detail-panel")).toBeInTheDocument();
+  });
+
+  it("preserves unsaved description edits across close and reopen", async () => {
+    const user = setupUser();
+    searchParams = new URLSearchParams("issueId=KANBAN-GAP-007&issueKey=KANBAN-GAP-007");
+
+    const view = render(<BacklogOverview />);
+    await user.type(screen.getByTestId("issue-description-editor"), "\nDraft survives");
+
+    searchParams = new URLSearchParams();
+    view.rerender(<BacklogOverview />);
+    expect(screen.queryByTestId("issue-detail-panel")).not.toBeInTheDocument();
+
+    searchParams = new URLSearchParams("issueId=KANBAN-GAP-007&issueKey=KANBAN-GAP-007");
+    view.rerender(<BacklogOverview />);
+
+    expect(screen.getByTestId("issue-description-editor")).toHaveValue(
+      "# Current state\n- [ ] Capture parity behavior\nDraft survives",
+    );
+  });
+
+  it("surfaces stale-data recovery when the focused issue reloads underneath a local draft", async () => {
+    const user = setupUser();
+    searchParams = new URLSearchParams("issueId=KANBAN-GAP-007&issueKey=KANBAN-GAP-007");
+
+    const view = render(<BacklogOverview />);
+    await user.type(screen.getByTestId("issue-description-editor"), "\nPending local edit");
+
+    backlogState = {
+      ...backlogState,
+      snapshot: {
+        ...backlogState.snapshot,
+        issues: backlogState.snapshot.issues.map((issue) =>
+          issue.id === "KANBAN-GAP-007"
+            ? {
+                ...issue,
+                description: "# Server version\n- [ ] Remote update",
+                updatedAt: "2026-04-24T15:00:00.000Z",
+              }
+            : issue,
+        ),
+      },
+    };
+    view.rerender(<BacklogOverview />);
+
+    expect(
+      screen.getByText(
+        "Server state changed while unsaved edits were still open. Reset to the latest version or keep your local draft and retry after refreshing.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId("issue-description-editor")).toHaveValue(
+      "# Current state\n- [ ] Capture parity behavior\nPending local edit",
+    );
+  });
+
+  it("keeps description drafts recoverable after autosave failure", async () => {
+    const user = setupUser();
+    searchParams = new URLSearchParams("issueId=KANBAN-GAP-007&issueKey=KANBAN-GAP-007");
+    updateIssueDetailMock.mockRejectedValue(new Error("Network write failed"));
+
+    render(<BacklogOverview />);
+    await user.type(screen.getByTestId("issue-description-editor"), "\nRetry this write");
+
+    await waitFor(() => {
+      expect(updateIssueDetailMock).toHaveBeenCalled();
+    });
+
+    expect(screen.getByText("Network write failed")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Retry save" })).toBeInTheDocument();
+    expect(screen.getByTestId("issue-description-editor")).toHaveValue(
+      "# Current state\n- [ ] Capture parity behavior\nRetry this write",
+    );
+  });
+
+  it("renders empty assignee and tag states for issues and projects without assignments", () => {
+    searchParams = new URLSearchParams("issueId=KANBAN-GAP-008&issueKey=KANBAN-GAP-008");
+    backlogState = {
+      ...buildBacklogState(),
+      snapshot: {
+        ...buildBacklogState().snapshot,
+        projects: buildBacklogState().snapshot.projects.map((project) =>
+          project.id === "kanban-app" ? { ...project, labels: [] } : project,
+        ),
+      },
+    };
+
+    render(<BacklogOverview />);
+
+    expect(screen.getByTestId("issue-assignee-empty")).toBeInTheDocument();
+    expect(screen.getByTestId("issue-tags-empty")).toBeInTheDocument();
   });
 
   it("navigates back to the parent issue from the child issue panel", async () => {

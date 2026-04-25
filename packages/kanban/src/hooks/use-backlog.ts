@@ -206,6 +206,14 @@ export interface CreateBacklogIssueResponse {
     title: string;
   };
 }
+export interface UpdateIssueDetailInput {
+  issueId: string;
+  expectedUpdatedAt?: string;
+  description?: string;
+  priority?: "critical" | "high" | "medium" | "low";
+  assigneeIds?: string[];
+  labelIds?: string[];
+}
 export function useBacklog(interval = 15000) {
   const [movingIssueId, setMovingIssueId] = useState<string | null>(null);
   const [mutatingIssueId, setMutatingIssueId] = useState<string | null>(null);
@@ -368,6 +376,15 @@ export function useBacklog(interval = 15000) {
     await mutateBacklog({ action: "link-child-issue", ...input }, input.parentIssueId);
   }
 
+  async function updateIssueDetail(
+    input: UpdateIssueDetailInput,
+  ): Promise<BacklogOverviewResponse> {
+    return mutateBacklog<BacklogOverviewResponse>(
+      { action: "update-issue-detail", ...input },
+      input.issueId,
+    );
+  }
+
   return {
     snapshot: data?.snapshot,
     board: data?.board,
@@ -385,6 +402,7 @@ export function useBacklog(interval = 15000) {
     updateIssueDispatchContextLabels,
     createSubIssue,
     linkChildIssue,
+    updateIssueDetail,
     movingIssueId,
     mutatingIssueId,
     creatingIssue,

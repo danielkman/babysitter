@@ -585,6 +585,136 @@ describe("BacklogQueryService", () => {
     expect(issue?.activity[0]?.action).toBe("updated-issue-collaboration");
   });
 
+  it("persists issue detail updates for description, priority, assignees, and labels", async () => {
+    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "kanban-backlog-"));
+    tempDirs.push(tempDir);
+    const backlogFilePath = path.join(tempDir, "kanban-backlog.json");
+
+    const service = new BacklogQueryService({
+      backlogFilePath,
+      now: () => "2026-04-24T14:30:00.000Z",
+      runQueryService: {
+        listProjects: vi.fn().mockResolvedValue({
+          recentCompletionWindowMs: 14400000,
+          projects: [],
+        }),
+      } as never,
+      reviewService: {
+        listReviews: vi.fn().mockResolvedValue({
+          generatedAt: "2026-04-24T14:30:00.000Z",
+          artifacts: [],
+          queue: [],
+          summary: {
+            total: 0,
+            issueCount: 0,
+            workspaceCount: 0,
+            pendingCount: 0,
+            changesRequestedCount: 0,
+            approvedCount: 0,
+            openCommentCount: 0,
+          },
+        }),
+      } as never,
+    });
+
+    await service.updateProjectCollaboration({
+      projectId: "kanban-app",
+      members: [
+        { id: "tal", displayName: "Tal Muskal", email: "tal@a5c.ai", role: "owner" },
+        { id: "qa", displayName: "QA Lead", email: "qa@a5c.ai", role: "maintainer" },
+      ],
+    });
+
+    const baseline = await service.getOverview();
+    const issue = baseline.snapshot.issues.find((candidate) => candidate.id === "KANBAN-GAP-007");
+    expect(issue).toBeTruthy();
+
+    const overview = await service.updateIssueDetail({
+      issueId: "KANBAN-GAP-007",
+      expectedUpdatedAt: issue?.updatedAt,
+      description: "# Authoring parity\n- [ ] Autosave description",
+      priority: "high",
+      assigneeIds: ["qa"],
+      labelIds: ["label-debt"],
+    });
+
+    const updated = overview.snapshot.issues.find((candidate) => candidate.id === "KANBAN-GAP-007");
+    expect(updated?.description).toBe("# Authoring parity\n- [ ] Autosave description");
+    expect(updated?.priority).toBe("high");
+    expect(updated?.assignees.map((assignee) => assignee.id)).toEqual(["qa"]);
+    expect(updated?.labels.map((label) => label.id)).toEqual(["label-debt"]);
+    expect(updated?.activity[0]?.action).toBe("updated-issue-detail");
+
+    const persisted = JSON.parse(await fs.readFile(backlogFilePath, "utf8")) as {
+      issues: Array<{
+        id: string;
+        description?: string;
+        priority: string;
+        assignees: Array<{ id: string }>;
+        labels: Array<{ id: string }>;
+      }>;
+    };
+    expect(
+      persisted.issues.find((candidate) => candidate.id === "KANBAN-GAP-007"),
+    ).toMatchObject({
+      description: "# Authoring parity\n- [ ] Autosave description",
+      priority: "high",
+      assignees: [{ id: "qa" }],
+      labels: [{ id: "label-debt" }],
+    });
+  });
+
+  it("rejects stale issue detail saves when the caller is behind the latest snapshot", async () => {
+    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "kanban-backlog-"));
+    tempDirs.push(tempDir);
+    const backlogFilePath = path.join(tempDir, "kanban-backlog.json");
+
+    const service = new BacklogQueryService({
+      backlogFilePath,
+      now: () => "2026-04-24T15:00:00.000Z",
+      runQueryService: {
+        listProjects: vi.fn().mockResolvedValue({
+          recentCompletionWindowMs: 14400000,
+          projects: [],
+        }),
+      } as never,
+      reviewService: {
+        listReviews: vi.fn().mockResolvedValue({
+          generatedAt: "2026-04-24T15:00:00.000Z",
+          artifacts: [],
+          queue: [],
+          summary: {
+            total: 0,
+            issueCount: 0,
+            workspaceCount: 0,
+            pendingCount: 0,
+            changesRequestedCount: 0,
+            approvedCount: 0,
+            openCommentCount: 0,
+          },
+        }),
+      } as never,
+    });
+
+    const baseline = await service.getOverview();
+    const issue = baseline.snapshot.issues.find((candidate) => candidate.id === "KANBAN-GAP-007");
+    expect(issue).toBeTruthy();
+
+    await service.updateIssueDetail({
+      issueId: "KANBAN-GAP-007",
+      expectedUpdatedAt: issue?.updatedAt,
+      description: "Fresh server change",
+    });
+
+    await expect(
+      service.updateIssueDetail({
+        issueId: "KANBAN-GAP-007",
+        expectedUpdatedAt: issue?.updatedAt,
+        description: "Client is stale",
+      }),
+    ).rejects.toMatchObject({ code: "STALE_WRITE", status: 409 });
+  });
+
   it("persists issue dispatch context label attachments through the backlog file", async () => {
     const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "kanban-backlog-"));
     tempDirs.push(tempDir);

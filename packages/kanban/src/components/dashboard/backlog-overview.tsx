@@ -28,11 +28,12 @@ import {
   ShieldCheck,
   TimerReset,
   Trash2,
+  Tag,
   UserRoundPlus,
   Users,
   Workflow,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { useBacklog } from "@/hooks/use-backlog";
@@ -184,11 +185,28 @@ interface CreateIssueDraft {
 }
 
 type AutosaveStatus = "idle" | "saving" | "saved" | "partial";
+type IssueDetailField = "description" | "priority" | "assignees" | "labels";
+type IssueFieldSaveStatus = "idle" | "saving" | "saved" | "error";
 
 interface CreateModeState {
   source: CreateEntrySource;
   workflowState: KanbanWorkflowState;
 }
+
+interface IssueDetailDraft {
+  description: string;
+  priority: KanbanIssue["priority"];
+  assigneeIds: string[];
+  labelIds: string[];
+  baseUpdatedAt: string;
+}
+
+interface IssueFieldState {
+  status: IssueFieldSaveStatus;
+  message: string | null;
+}
+
+type IssueFieldStateMap = Record<IssueDetailField, IssueFieldState>;
 
 function createEmptyDraft(workflowState: KanbanWorkflowState = "todo"): CreateIssueDraft {
   return {
@@ -224,6 +242,59 @@ function autosaveCopy(status: AutosaveStatus): string {
     default:
       return "Draft is empty.";
   }
+}
+
+function createIssueDetailDraft(issue: KanbanIssue): IssueDetailDraft {
+  return {
+    description: issue.description ?? "",
+    priority: issue.priority,
+    assigneeIds: issue.assignees.map((assignee) => assignee.id),
+    labelIds: issue.labels.map((label) => label.id),
+    baseUpdatedAt: issue.updatedAt,
+  };
+}
+
+function createIssueFieldStateMap(): IssueFieldStateMap {
+  return {
+    description: { status: "idle", message: null },
+    priority: { status: "idle", message: null },
+    assignees: { status: "idle", message: null },
+    labels: { status: "idle", message: null },
+  };
+}
+
+function arraysEqual(left: readonly string[], right: readonly string[]): boolean {
+  return left.length === right.length && left.every((value, index) => value === right[index]);
+}
+
+function isIssueFieldDirty(
+  field: IssueDetailField,
+  draft: IssueDetailDraft,
+  issue: KanbanIssue,
+): boolean {
+  switch (field) {
+    case "description":
+      return draft.description !== (issue.description ?? "");
+    case "priority":
+      return draft.priority !== issue.priority;
+    case "assignees":
+      return !arraysEqual(draft.assigneeIds, issue.assignees.map((assignee) => assignee.id));
+    case "labels":
+      return !arraysEqual(draft.labelIds, issue.labels.map((label) => label.id));
+  }
+}
+
+function isIssueDraftDirty(draft: IssueDetailDraft, issue: KanbanIssue): boolean {
+  return (
+    isIssueFieldDirty("description", draft, issue) ||
+    isIssueFieldDirty("priority", draft, issue) ||
+    isIssueFieldDirty("assignees", draft, issue) ||
+    isIssueFieldDirty("labels", draft, issue)
+  );
+}
+
+function toggleId(values: readonly string[], id: string): string[] {
+  return values.includes(id) ? values.filter((value) => value !== id) : [...values, id];
 }
 
 interface CreateIssuePanelProps {
@@ -392,11 +463,19 @@ function CreateIssuePanel({
   );
 }
 
-function renderListCard(card: KanbanBoardCard) {
+function renderListCard(
+  card: KanbanBoardCard,
+  issue: KanbanIssue | undefined,
+  focused: boolean,
+  onOpen: (issue: KanbanIssue) => void,
+) {
   return (
     <article
       key={`list-${card.issueId}`}
-      className={`rounded-2xl border p-4 ${issueTone(card)}`}
+      id={`kanban-issue-${card.issueId}`}
+      className={`rounded-2xl border p-4 ${issueTone(card)} ${
+        focused ? "ring-2 ring-primary/50 ring-offset-2 ring-offset-background" : ""
+      }`}
       data-testid={`kanban-list-card-${card.issueKey}`}
     >
       <div className="flex flex-wrap items-center gap-2">
@@ -408,7 +487,14 @@ function renderListCard(card: KanbanBoardCard) {
           {card.priority}
         </span>
       </div>
-      <div className="mt-2 text-base font-semibold">{card.title}</div>
+      <button
+        type="button"
+        onClick={() => issue && onOpen(issue)}
+        className="mt-2 text-left text-base font-semibold underline-offset-4 hover:underline"
+        data-testid={`open-list-issue-${card.issueKey}`}
+      >
+        {card.title}
+      </button>
       {card.summary ? <p className="mt-2 text-sm leading-6 opacity-90">{card.summary}</p> : null}
     </article>
   );
@@ -1258,7 +1344,7 @@ function RepositoryLifecyclePanel({
   );
 }
 
-interface IssueRelationshipPanelProps {
+interface IssueDetailPanelProps {
   issue: KanbanIssue;
   card?: KanbanBoardCard;
   project: KanbanProject;
@@ -1269,8 +1355,21 @@ interface IssueRelationshipPanelProps {
     issueId: string;
     message: string;
   } | null;
+  draft: IssueDetailDraft;
+  fieldStates: IssueFieldStateMap;
+  priorityEditing: boolean;
+  assigneeEditing: boolean;
+  labelEditing: boolean;
   onFocusIssue: (issue: KanbanIssue) => void;
   onClose: () => void;
+  onChangeDraft: (updater: (current: IssueDetailDraft) => IssueDetailDraft) => void;
+  onResetDraft: () => void;
+  onRetryDescriptionSave: () => void;
+  onSaveField: (field: IssueDetailField) => void;
+  onSetPriorityEditing: (editing: boolean) => void;
+  onSetAssigneeEditing: (editing: boolean) => void;
+  onSetLabelEditing: (editing: boolean) => void;
+  onResetField: (field: Exclude<IssueDetailField, "description">) => void;
   onCreateSubIssue: (input: {
     parentIssueId: string;
     title: string;
@@ -1281,7 +1380,7 @@ interface IssueRelationshipPanelProps {
   onLinkChildIssue: (input: { parentIssueId: string; childIssueId: string }) => Promise<void>;
 }
 
-function IssueRelationshipPanel({
+function IssueDetailPanel({
   issue,
   card,
   project,
@@ -1289,11 +1388,24 @@ function IssueRelationshipPanel({
   loading,
   mutating,
   mutationError,
+  draft,
+  fieldStates,
+  priorityEditing,
+  assigneeEditing,
+  labelEditing,
   onFocusIssue,
   onClose,
+  onChangeDraft,
+  onResetDraft,
+  onRetryDescriptionSave,
+  onSaveField,
+  onSetPriorityEditing,
+  onSetAssigneeEditing,
+  onSetLabelEditing,
+  onResetField,
   onCreateSubIssue,
   onLinkChildIssue,
-}: IssueRelationshipPanelProps) {
+}: IssueDetailPanelProps) {
   const issueById = new Map(issues.map((candidate) => [candidate.id, candidate] as const));
   const parentIssue = issue.parentIssueId ? issueById.get(issue.parentIssueId) : undefined;
   const childIssues = issue.childIssueIds
@@ -1329,6 +1441,11 @@ function IssueRelationshipPanel({
   const [selectedChildIssueId, setSelectedChildIssueId] = useState<string>(
     linkableIssues[0]?.id ?? "",
   );
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const availableLabels = project.labels;
+  const detailDirty = isIssueDraftDirty(draft, issue);
+  const detailStale = detailDirty && draft.baseUpdatedAt !== issue.updatedAt;
+  const relationshipError = mutationError?.issueId === issue.id ? mutationError.message : null;
 
   useEffect(() => {
     setSelectedChildIssueId((current) =>
@@ -1338,17 +1455,79 @@ function IssueRelationshipPanel({
     );
   }, [linkableIssues]);
 
-  const relationshipError = mutationError?.issueId === issue.id ? mutationError.message : null;
+  function insertDescriptionSnippet(snippet: string) {
+    const textarea = textareaRef.current;
+    if (!textarea) {
+      onChangeDraft((current) => ({
+        ...current,
+        description: current.description ? `${current.description}\n${snippet}` : snippet,
+      }));
+      return;
+    }
+
+    const start = textarea.selectionStart ?? textarea.value.length;
+    const end = textarea.selectionEnd ?? textarea.value.length;
+    const before = textarea.value.slice(0, start);
+    const after = textarea.value.slice(end);
+    onChangeDraft((current) => ({
+      ...current,
+      description: `${before}${snippet}${after}`,
+    }));
+
+    requestAnimationFrame(() => {
+      textarea.focus();
+      const cursor = start + snippet.length;
+      textarea.setSelectionRange(cursor, cursor);
+    });
+  }
+
+  function renderDescriptionPreview(value: string) {
+    if (!value.trim()) {
+      return <p className="text-sm text-foreground-muted">No description authored yet.</p>;
+    }
+
+    return (
+      <div className="space-y-2 text-sm leading-6 text-foreground">
+        {value.split("\n").map((line, index) => {
+          const trimmed = line.trim();
+          if (!trimmed) {
+            return <div key={`description-preview-${index}`} className="h-2" />;
+          }
+          if (trimmed.startsWith("# ")) {
+            return (
+              <div key={`description-preview-${index}`} className="text-lg font-semibold text-foreground">
+                {trimmed.slice(2)}
+              </div>
+            );
+          }
+          if (trimmed.startsWith("- [ ] ")) {
+            return (
+              <div key={`description-preview-${index}`} className="flex items-start gap-2">
+                <span className="mt-1 h-4 w-4 rounded border border-border" />
+                <span>{trimmed.slice(6)}</span>
+              </div>
+            );
+          }
+          if (trimmed.startsWith("- ")) {
+            return (
+              <div key={`description-preview-${index}`} className="flex items-start gap-2">
+                <span className="mt-1.5 h-2 w-2 rounded-full bg-foreground-muted" />
+                <span>{trimmed.slice(2)}</span>
+              </div>
+            );
+          }
+          return <p key={`description-preview-${index}`}>{trimmed}</p>;
+        })}
+      </div>
+    );
+  }
 
   return (
-    <section
-      className="mb-6 rounded-3xl border border-border bg-card p-6 shadow-lg"
-      data-testid="issue-relationship-panel"
-    >
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="max-w-4xl">
+    <aside className="rounded-3xl border border-border bg-card p-5 shadow-lg" data-testid="issue-detail-panel">
+      <div className="flex items-start justify-between gap-3">
+        <div>
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">
-            Issue Relationship
+            Issue detail
           </p>
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <h3 className="text-2xl font-semibold tracking-tight text-foreground">{issue.key}</h3>
@@ -1372,12 +1551,9 @@ function IssueRelationshipPanel({
             </span>
             {card ? (
               <span className="rounded-full border border-border px-2.5 py-1">
-                Board lane {stateLabel(card.workflowState)}
+                {stateLabel(card.workflowState)} context
               </span>
             ) : null}
-            <span className="rounded-full border border-border px-2.5 py-1">
-              Team {project.team.name}
-            </span>
           </div>
         </div>
 
@@ -1390,257 +1566,663 @@ function IssueRelationshipPanel({
         </button>
       </div>
 
-      <div className="mt-6 grid gap-4 xl:grid-cols-2">
-        <article
-          className="rounded-2xl border border-border bg-background/80 p-4"
-          data-testid="parent-relationship-section"
-        >
-          <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-            <ArrowLeft className="h-4 w-4" />
-            Parent issue
+      {detailStale ? (
+        <div className="mt-4 rounded-2xl border border-warning/30 bg-warning-muted px-4 py-3 text-sm text-warning">
+          Server state changed while unsaved edits were still open. Reset to the latest version or
+          keep your local draft and retry after refreshing.
+        </div>
+      ) : null}
+
+      {relationshipError ? (
+        <div className="mt-4 rounded-2xl border border-error/30 bg-error-muted px-4 py-3 text-sm text-error">
+          {relationshipError}
+        </div>
+      ) : null}
+
+      <section className="mt-5 rounded-2xl border border-border bg-background/80 p-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div className="text-sm font-semibold text-foreground">Description</div>
+            <div className="mt-1 text-xs text-foreground-muted">
+              The panel now behaves like an authoring surface, not a static summary.
+            </div>
           </div>
-          {loading ? (
-            <div
-              className="mt-3 rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted"
-              data-testid="parent-relationship-loading"
+          <div className="flex flex-wrap gap-2">
+            <span
+              className={`rounded-full border px-2.5 py-1 text-xs ${
+                fieldStates.description.status === "error"
+                  ? "border-error/25 bg-error-muted text-error"
+                  : fieldStates.description.status === "saving"
+                    ? "border-warning/25 bg-warning-muted text-warning"
+                    : fieldStates.description.status === "saved"
+                      ? "border-success/25 bg-success-muted text-success"
+                      : "border-border text-foreground-muted"
+              }`}
             >
-              Refreshing parent relationship state…
-            </div>
-          ) : relationshipError ? (
-            <div
-              className="mt-3 rounded-2xl border border-error/25 bg-error-muted p-3 text-sm text-error"
-              data-testid="parent-relationship-error"
+              {fieldStates.description.status === "saving"
+                ? "Autosaving"
+                : fieldStates.description.status === "saved"
+                  ? "Saved"
+                  : fieldStates.description.status === "error"
+                    ? "Recovery needed"
+                    : detailDirty
+                      ? "Local draft"
+                      : "In sync"}
+            </span>
+            {detailDirty ? (
+              <button
+                type="button"
+                onClick={onResetDraft}
+                className="inline-flex h-9 items-center justify-center rounded-xl border border-border px-3 text-xs font-semibold text-foreground-muted"
+              >
+                Reset draft
+              </button>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => insertDescriptionSnippet("# ")}
+            className="inline-flex h-9 items-center justify-center rounded-xl border border-border px-3 text-xs font-semibold text-foreground"
+          >
+            Heading
+          </button>
+          <button
+            type="button"
+            onClick={() => insertDescriptionSnippet("- ")}
+            className="inline-flex h-9 items-center justify-center rounded-xl border border-border px-3 text-xs font-semibold text-foreground"
+          >
+            Bullet
+          </button>
+          <button
+            type="button"
+            onClick={() => insertDescriptionSnippet("- [ ] ")}
+            className="inline-flex h-9 items-center justify-center rounded-xl border border-border px-3 text-xs font-semibold text-foreground"
+          >
+            Checklist
+          </button>
+          <button
+            type="button"
+            onClick={() => insertDescriptionSnippet("```\n\n```")}
+            className="inline-flex h-9 items-center justify-center rounded-xl border border-border px-3 text-xs font-semibold text-foreground"
+          >
+            Code
+          </button>
+          {fieldStates.description.status === "error" ? (
+            <button
+              type="button"
+              onClick={onRetryDescriptionSave}
+              className="inline-flex h-9 items-center justify-center rounded-xl border border-error/30 bg-error-muted px-3 text-xs font-semibold text-error"
             >
-              {relationshipError}
+              Retry save
+            </button>
+          ) : null}
+        </div>
+
+        <div className="mt-4 grid gap-3 xl:grid-cols-2">
+          <label className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+            Editor
+            <textarea
+              ref={textareaRef}
+              value={draft.description}
+              onChange={(event) =>
+                onChangeDraft((current) => ({
+                  ...current,
+                  description: event.target.value,
+                }))
+              }
+              placeholder="Describe the work, add checklists, and capture recovery notes."
+              className="mt-2 min-h-40 w-full rounded-2xl border border-border bg-card px-3 py-3 text-sm text-foreground"
+              data-testid="issue-description-editor"
+            />
+          </label>
+
+          <div className="rounded-2xl border border-border bg-card p-4" data-testid="issue-description-preview">
+            <div className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+              Preview
             </div>
-          ) : parentIssue ? (
-            <div className="mt-3 rounded-2xl border border-border bg-card p-4">
-              <div className="flex flex-wrap items-center gap-2">
+            <div className="mt-3">{renderDescriptionPreview(draft.description)}</div>
+          </div>
+        </div>
+
+        {fieldStates.description.message ? (
+          <div
+            className={`mt-3 rounded-2xl border px-4 py-3 text-sm ${
+              fieldStates.description.status === "error"
+                ? "border-error/30 bg-error-muted text-error"
+                : "border-success/30 bg-success-muted text-success"
+            }`}
+          >
+            {fieldStates.description.message}
+          </div>
+        ) : null}
+      </section>
+
+      <div className="mt-5 grid gap-4">
+        <article className="rounded-2xl border border-border bg-background/80 p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <div className="text-sm font-semibold text-foreground">Priority</div>
+              <div className="mt-1 text-xs text-foreground-muted">
+                Field-level save keeps rank changes separate from editor autosave.
+              </div>
+            </div>
+            <div className="flex gap-2">
+              {!priorityEditing ? (
                 <button
                   type="button"
-                  onClick={() => onFocusIssue(parentIssue)}
-                  className="text-sm font-semibold text-foreground underline-offset-4 hover:underline"
-                  data-testid={`back-to-parent-${parentIssue.key}`}
+                  onClick={() => onSetPriorityEditing(true)}
+                  className="inline-flex h-9 items-center justify-center rounded-xl border border-border px-3 text-xs font-semibold text-foreground"
                 >
-                  Back to {parentIssue.key}
+                  Edit
                 </button>
-                <span className={`rounded-full border px-2.5 py-1 text-xs ${issueStatusTone(parentIssue.status)}`}>
-                  {issueStatusLabel(parentIssue.status)}
-                </span>
-              </div>
-              <div className="mt-2 text-sm text-foreground">{parentIssue.title}</div>
-              <div className="mt-2 text-xs text-foreground-muted">
-                Parent readiness: {parentIssue.dispatch.readiness}
-              </div>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => onSaveField("priority")}
+                    disabled={!isIssueFieldDirty("priority", draft, issue) || fieldStates.priority.status === "saving"}
+                    className="inline-flex h-9 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 px-3 text-xs font-semibold text-primary disabled:opacity-50"
+                  >
+                    {fieldStates.priority.status === "saving" ? "Saving…" : "Save"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onResetField("priority");
+                      onSetPriorityEditing(false);
+                    }}
+                    className="inline-flex h-9 items-center justify-center rounded-xl border border-border px-3 text-xs font-semibold text-foreground-muted"
+                  >
+                    Cancel
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="mt-3 rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted">
+              Loading priority controls…
+            </div>
+          ) : priorityEditing ? (
+            <div className="mt-3">
+              <select
+                aria-label="Issue priority"
+                value={draft.priority}
+                onChange={(event) =>
+                  onChangeDraft((current) => ({
+                    ...current,
+                    priority: event.target.value as KanbanIssue["priority"],
+                  }))
+                }
+                className="h-11 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground"
+              >
+                <option value="critical">Critical</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+              </select>
             </div>
           ) : (
-            <div
-              className="mt-3 rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted"
-              data-testid="parent-relationship-empty"
-            >
-              No parent issue linked.
+            <div className="mt-3 rounded-2xl border border-border bg-card px-4 py-3 text-sm text-foreground">
+              {issue.priority}
             </div>
           )}
+
+          {fieldStates.priority.message ? (
+            <div
+              className={`mt-3 rounded-2xl border px-4 py-3 text-sm ${
+                fieldStates.priority.status === "error"
+                  ? "border-error/30 bg-error-muted text-error"
+                  : "border-success/30 bg-success-muted text-success"
+              }`}
+            >
+              {fieldStates.priority.message}
+            </div>
+          ) : null}
         </article>
 
-        <article
-          className="rounded-2xl border border-border bg-background/80 p-4"
-          data-testid="child-relationship-section"
-        >
-          <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-            <Workflow className="h-4 w-4" />
-            Child issues
+        <article className="rounded-2xl border border-border bg-background/80 p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <div className="text-sm font-semibold text-foreground">Assignees</div>
+              <div className="mt-1 text-xs text-foreground-muted">
+                Empty, loading, edit, and error states stay explicit.
+              </div>
+            </div>
+            <div className="flex gap-2">
+              {!assigneeEditing ? (
+                <button
+                  type="button"
+                  onClick={() => onSetAssigneeEditing(true)}
+                  className="inline-flex h-9 items-center justify-center rounded-xl border border-border px-3 text-xs font-semibold text-foreground"
+                >
+                  Edit
+                </button>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => onSaveField("assignees")}
+                    disabled={!isIssueFieldDirty("assignees", draft, issue) || fieldStates.assignees.status === "saving"}
+                    className="inline-flex h-9 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 px-3 text-xs font-semibold text-primary disabled:opacity-50"
+                  >
+                    {fieldStates.assignees.status === "saving" ? "Saving…" : "Save"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onResetField("assignees");
+                      onSetAssigneeEditing(false);
+                    }}
+                    className="inline-flex h-9 items-center justify-center rounded-xl border border-border px-3 text-xs font-semibold text-foreground-muted"
+                  >
+                    Cancel
+                  </button>
+                </>
+              )}
+            </div>
           </div>
+
           {loading ? (
-            <div
-              className="mt-3 rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted"
-              data-testid="child-relationship-loading"
-            >
-              Refreshing child relationship state…
+            <div className="mt-3 rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted">
+              Loading assignee options…
             </div>
-          ) : relationshipError ? (
-            <div
-              className="mt-3 rounded-2xl border border-error/25 bg-error-muted p-3 text-sm text-error"
-              data-testid="child-relationship-error"
-            >
-              {relationshipError}
+          ) : assigneeEditing ? (
+            <div className="mt-3 space-y-2" data-testid="issue-assignee-edit">
+              {project.team.members.map((member) => (
+                <label key={`issue-assignee-${member.id}`} className="flex items-center gap-2 text-sm text-foreground-muted">
+                  <input
+                    type="checkbox"
+                    checked={draft.assigneeIds.includes(member.id)}
+                    onChange={() =>
+                      onChangeDraft((current) => ({
+                        ...current,
+                        assigneeIds: toggleId(current.assigneeIds, member.id),
+                      }))
+                    }
+                  />
+                  <span>{member.displayName}</span>
+                </label>
+              ))}
             </div>
-          ) : childIssues.length > 0 ? (
-            <div className="mt-3 space-y-3">
-              {childIssues.map((childIssue) => (
-                <div key={childIssue.id} className="rounded-2xl border border-border bg-card p-4">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => onFocusIssue(childIssue)}
-                      className="text-sm font-semibold text-foreground underline-offset-4 hover:underline"
-                      data-testid={`child-nav-${childIssue.key}`}
-                    >
-                      {childIssue.key}
-                    </button>
-                    <span className={`rounded-full border px-2.5 py-1 text-xs ${issueStatusTone(childIssue.status)}`}>
-                      {issueStatusLabel(childIssue.status)}
-                    </span>
-                    <span className="rounded-full border border-border px-2.5 py-1 text-xs text-foreground-muted">
-                      {childIssue.dispatch.readiness}
-                    </span>
-                  </div>
-                  <div className="mt-2 text-sm text-foreground">{childIssue.title}</div>
-                </div>
+          ) : issue.assignees.length > 0 ? (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {issue.assignees.map((assignee) => (
+                <span
+                  key={`issue-assignee-chip-${assignee.id}`}
+                  className="rounded-full border border-border px-2.5 py-1 text-xs text-foreground-muted"
+                >
+                  {assignee.displayName}
+                </span>
               ))}
             </div>
           ) : (
-            <div
-              className="mt-3 rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted"
-              data-testid="child-relationship-empty"
-            >
-              No child issues linked yet.
+            <div className="mt-3 rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted" data-testid="issue-assignee-empty">
+              No assignees yet.
             </div>
           )}
 
-          <form
-            className="mt-4 grid gap-3 rounded-2xl border border-border bg-card p-4"
-            onSubmit={(event) => {
-              event.preventDefault();
-              if (!childTitle.trim()) {
-                return;
-              }
-              void onCreateSubIssue({
-                parentIssueId: issue.id,
-                title: childTitle,
-                summary: childSummary || undefined,
-                priority: childPriority,
-                status: childStatus,
-              })
-                .then(() => {
-                  setChildTitle("");
-                  setChildSummary("");
-                  setChildPriority("medium");
-                  setChildStatus("backlog");
-                })
-                .catch(() => undefined);
-            }}
-            data-testid="create-sub-issue-form"
-          >
-            <div className="text-sm font-semibold text-foreground">Create sub-issue</div>
-            <input
-              aria-label="Sub-issue title"
-              value={childTitle}
-              onChange={(event) => setChildTitle(event.target.value)}
-              placeholder="Break out a child issue"
-              className="h-11 rounded-xl border border-border bg-background px-3 text-sm text-foreground"
-            />
-            <textarea
-              aria-label="Sub-issue summary"
-              value={childSummary}
-              onChange={(event) => setChildSummary(event.target.value)}
-              placeholder="Optional context for the child issue"
-              className="min-h-24 rounded-xl border border-border bg-background px-3 py-3 text-sm text-foreground"
-            />
-            <div className="grid gap-3 md:grid-cols-2">
-              <label className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
-                Priority
-                <select
-                  aria-label="Sub-issue priority"
-                  value={childPriority}
-                  onChange={(event) =>
-                    setChildPriority(
-                      event.target.value as "critical" | "high" | "medium" | "low",
-                    )
-                  }
-                  className="mt-2 h-11 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground"
-                >
-                  <option value="critical">Critical</option>
-                  <option value="high">High</option>
-                  <option value="medium">Medium</option>
-                  <option value="low">Low</option>
-                </select>
-              </label>
-              <label className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
-                Initial status
-                <select
-                  aria-label="Sub-issue status"
-                  value={childStatus}
-                  onChange={(event) =>
-                    setChildStatus(
-                      event.target.value as
-                        | "backlog"
-                        | "ready"
-                        | "in-progress"
-                        | "blocked"
-                        | "review"
-                        | "done",
-                    )
-                  }
-                  className="mt-2 h-11 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground"
-                >
-                  <option value="backlog">Backlog</option>
-                  <option value="ready">Ready</option>
-                  <option value="in-progress">In Progress</option>
-                  <option value="blocked">Blocked</option>
-                  <option value="review">Review</option>
-                  <option value="done">Done</option>
-                </select>
-              </label>
-            </div>
-            <button
-              type="submit"
-              disabled={mutating}
-              className="inline-flex h-11 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 px-4 text-sm font-semibold text-primary disabled:opacity-50"
+          {fieldStates.assignees.message ? (
+            <div
+              className={`mt-3 rounded-2xl border px-4 py-3 text-sm ${
+                fieldStates.assignees.status === "error"
+                  ? "border-error/30 bg-error-muted text-error"
+                  : "border-success/30 bg-success-muted text-success"
+              }`}
             >
-              Create child issue
-            </button>
-          </form>
+              {fieldStates.assignees.message}
+            </div>
+          ) : null}
+        </article>
 
-          <form
-            className="mt-4 rounded-2xl border border-border bg-card p-4"
-            onSubmit={(event) => {
-              event.preventDefault();
-              if (!selectedChildIssueId) {
-                return;
-              }
-              void onLinkChildIssue({
-                parentIssueId: issue.id,
-                childIssueId: selectedChildIssueId,
-              }).catch(() => undefined);
-            }}
-            data-testid="link-child-issue-form"
-          >
-            <div className="text-sm font-semibold text-foreground">Link existing child issue</div>
-            {linkableIssues.length > 0 ? (
-              <>
-                <select
-                  aria-label="Existing child issue"
-                  value={selectedChildIssueId}
-                  onChange={(event) => setSelectedChildIssueId(event.target.value)}
-                  className="mt-3 h-11 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground"
-                >
-                  {linkableIssues.map((candidate) => (
-                    <option key={candidate.id} value={candidate.id}>
-                      {candidate.key} - {candidate.title}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  type="submit"
-                  disabled={mutating}
-                  className="mt-3 inline-flex h-11 items-center justify-center rounded-xl border border-border bg-background px-4 text-sm font-semibold text-foreground disabled:opacity-50"
-                >
-                  Link child issue
-                </button>
-              </>
-            ) : (
-              <div
-                className="mt-3 rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted"
-                data-testid="link-child-issue-empty"
-              >
-                No unparented sibling issues are available to link here.
+        <article className="rounded-2xl border border-border bg-background/80 p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <div className="text-sm font-semibold text-foreground">Tags</div>
+              <div className="mt-1 text-xs text-foreground-muted">
+                Shared project labels now behave like editable issue tags from the side panel.
               </div>
-            )}
-          </form>
+            </div>
+            {availableLabels.length > 0 ? (
+              <div className="flex gap-2">
+                {!labelEditing ? (
+                  <button
+                    type="button"
+                    onClick={() => onSetLabelEditing(true)}
+                    className="inline-flex h-9 items-center justify-center rounded-xl border border-border px-3 text-xs font-semibold text-foreground"
+                  >
+                    Edit
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => onSaveField("labels")}
+                      disabled={!isIssueFieldDirty("labels", draft, issue) || fieldStates.labels.status === "saving"}
+                      className="inline-flex h-9 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 px-3 text-xs font-semibold text-primary disabled:opacity-50"
+                    >
+                      {fieldStates.labels.status === "saving" ? "Saving…" : "Save"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onResetField("labels");
+                        onSetLabelEditing(false);
+                      }}
+                      className="inline-flex h-9 items-center justify-center rounded-xl border border-border px-3 text-xs font-semibold text-foreground-muted"
+                    >
+                      Cancel
+                    </button>
+                  </>
+                )}
+              </div>
+            ) : null}
+          </div>
+
+          {loading ? (
+            <div className="mt-3 rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted">
+              Loading tag controls…
+            </div>
+          ) : availableLabels.length === 0 ? (
+            <div className="mt-3 rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted" data-testid="issue-tags-empty">
+              No project tags configured yet.
+            </div>
+          ) : labelEditing ? (
+            <div className="mt-3 space-y-2" data-testid="issue-tags-edit">
+              {availableLabels.map((label) => (
+                <label key={`issue-label-${label.id}`} className="flex items-center gap-2 text-sm text-foreground-muted">
+                  <input
+                    type="checkbox"
+                    checked={draft.labelIds.includes(label.id)}
+                    onChange={() =>
+                      onChangeDraft((current) => ({
+                        ...current,
+                        labelIds: toggleId(current.labelIds, label.id),
+                      }))
+                    }
+                  />
+                  <span>{label.name}</span>
+                </label>
+              ))}
+            </div>
+          ) : issue.labels.length > 0 ? (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {issue.labels.map((label) => (
+                <span
+                  key={`issue-label-chip-${label.id}`}
+                  className="inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-1 text-xs text-foreground-muted"
+                >
+                  <Tag className="h-3.5 w-3.5" />
+                  {label.name}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-3 rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted">
+              No tags applied to this issue.
+            </div>
+          )}
+
+          {fieldStates.labels.message ? (
+            <div
+              className={`mt-3 rounded-2xl border px-4 py-3 text-sm ${
+                fieldStates.labels.status === "error"
+                  ? "border-error/30 bg-error-muted text-error"
+                  : "border-success/30 bg-success-muted text-success"
+              }`}
+            >
+              {fieldStates.labels.message}
+            </div>
+          ) : null}
         </article>
       </div>
-    </section>
+
+      <section className="mt-5 rounded-2xl border border-border bg-background/80 p-4" data-testid="issue-relationship-panel">
+        <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+          <Workflow className="h-4 w-4" />
+          Parent and child issue flow
+        </div>
+        <div className="mt-4 grid gap-4 xl:grid-cols-2">
+          <article className="rounded-2xl border border-border bg-card p-4" data-testid="parent-relationship-section">
+            <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+              <ArrowLeft className="h-4 w-4" />
+              Parent issue
+            </div>
+            {loading ? (
+              <div
+                className="mt-3 rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted"
+                data-testid="parent-relationship-loading"
+              >
+                Refreshing parent relationship state…
+              </div>
+            ) : relationshipError ? (
+              <div
+                className="mt-3 rounded-2xl border border-error/25 bg-error-muted p-3 text-sm text-error"
+                data-testid="parent-relationship-error"
+              >
+                {relationshipError}
+              </div>
+            ) : parentIssue ? (
+              <div className="mt-3 rounded-2xl border border-border bg-background p-4">
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => onFocusIssue(parentIssue)}
+                    className="text-sm font-semibold text-foreground underline-offset-4 hover:underline"
+                    data-testid={`back-to-parent-${parentIssue.key}`}
+                  >
+                    Back to {parentIssue.key}
+                  </button>
+                  <span className={`rounded-full border px-2.5 py-1 text-xs ${issueStatusTone(parentIssue.status)}`}>
+                    {issueStatusLabel(parentIssue.status)}
+                  </span>
+                </div>
+                <div className="mt-2 text-sm text-foreground">{parentIssue.title}</div>
+                <div className="mt-2 text-xs text-foreground-muted">
+                  Parent readiness: {parentIssue.dispatch.readiness}
+                </div>
+              </div>
+            ) : (
+              <div className="mt-3 rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted" data-testid="parent-relationship-empty">
+                No parent issue linked.
+              </div>
+            )}
+          </article>
+
+          <article className="rounded-2xl border border-border bg-card p-4" data-testid="child-relationship-section">
+            <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+              <Workflow className="h-4 w-4" />
+              Child issues
+            </div>
+            {loading ? (
+              <div
+                className="mt-3 rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted"
+                data-testid="child-relationship-loading"
+              >
+                Refreshing child relationship state…
+              </div>
+            ) : relationshipError ? (
+              <div
+                className="mt-3 rounded-2xl border border-error/25 bg-error-muted p-3 text-sm text-error"
+                data-testid="child-relationship-error"
+              >
+                {relationshipError}
+              </div>
+            ) : childIssues.length > 0 ? (
+              <div className="mt-3 space-y-3">
+                {childIssues.map((childIssue) => (
+                  <div key={childIssue.id} className="rounded-2xl border border-border bg-background p-4">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => onFocusIssue(childIssue)}
+                        className="text-sm font-semibold text-foreground underline-offset-4 hover:underline"
+                        data-testid={`child-nav-${childIssue.key}`}
+                      >
+                        {childIssue.key}
+                      </button>
+                      <span className={`rounded-full border px-2.5 py-1 text-xs ${issueStatusTone(childIssue.status)}`}>
+                        {issueStatusLabel(childIssue.status)}
+                      </span>
+                      <span className="rounded-full border border-border px-2.5 py-1 text-xs text-foreground-muted">
+                        {childIssue.dispatch.readiness}
+                      </span>
+                    </div>
+                    <div className="mt-2 text-sm text-foreground">{childIssue.title}</div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="mt-3 rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted" data-testid="child-relationship-empty">
+                No child issues linked yet.
+              </div>
+            )}
+
+            <form
+              className="mt-4 grid gap-3 rounded-2xl border border-border bg-background p-4"
+              onSubmit={(event) => {
+                event.preventDefault();
+                if (!childTitle.trim()) {
+                  return;
+                }
+                void onCreateSubIssue({
+                  parentIssueId: issue.id,
+                  title: childTitle,
+                  summary: childSummary || undefined,
+                  priority: childPriority,
+                  status: childStatus,
+                })
+                  .then(() => {
+                    setChildTitle("");
+                    setChildSummary("");
+                    setChildPriority("medium");
+                    setChildStatus("backlog");
+                  })
+                  .catch(() => undefined);
+              }}
+              data-testid="create-sub-issue-form"
+            >
+              <div className="text-sm font-semibold text-foreground">Create sub-issue</div>
+              <input
+                aria-label="Sub-issue title"
+                value={childTitle}
+                onChange={(event) => setChildTitle(event.target.value)}
+                placeholder="Break out a child issue"
+                className="h-11 rounded-xl border border-border bg-card px-3 text-sm text-foreground"
+              />
+              <textarea
+                aria-label="Sub-issue summary"
+                value={childSummary}
+                onChange={(event) => setChildSummary(event.target.value)}
+                placeholder="Optional context for the child issue"
+                className="min-h-24 rounded-xl border border-border bg-card px-3 py-3 text-sm text-foreground"
+              />
+              <div className="grid gap-3 md:grid-cols-2">
+                <label className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+                  Priority
+                  <select
+                    aria-label="Sub-issue priority"
+                    value={childPriority}
+                    onChange={(event) =>
+                      setChildPriority(
+                        event.target.value as "critical" | "high" | "medium" | "low",
+                      )
+                    }
+                    className="mt-2 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground"
+                  >
+                    <option value="critical">Critical</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                  </select>
+                </label>
+                <label className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+                  Initial status
+                  <select
+                    aria-label="Sub-issue status"
+                    value={childStatus}
+                    onChange={(event) =>
+                      setChildStatus(
+                        event.target.value as
+                          | "backlog"
+                          | "ready"
+                          | "in-progress"
+                          | "blocked"
+                          | "review"
+                          | "done",
+                      )
+                    }
+                    className="mt-2 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground"
+                  >
+                    <option value="backlog">Backlog</option>
+                    <option value="ready">Ready</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="blocked">Blocked</option>
+                    <option value="review">Review</option>
+                    <option value="done">Done</option>
+                  </select>
+                </label>
+              </div>
+              <button
+                type="submit"
+                disabled={mutating}
+                className="inline-flex h-11 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 px-4 text-sm font-semibold text-primary disabled:opacity-50"
+              >
+                Create child issue
+              </button>
+            </form>
+
+            <form
+              className="mt-4 rounded-2xl border border-border bg-background p-4"
+              onSubmit={(event) => {
+                event.preventDefault();
+                if (!selectedChildIssueId) {
+                  return;
+                }
+                void onLinkChildIssue({
+                  parentIssueId: issue.id,
+                  childIssueId: selectedChildIssueId,
+                }).catch(() => undefined);
+              }}
+              data-testid="link-child-issue-form"
+            >
+              <div className="text-sm font-semibold text-foreground">Link existing child issue</div>
+              {linkableIssues.length > 0 ? (
+                <>
+                  <select
+                    aria-label="Existing child issue"
+                    value={selectedChildIssueId}
+                    onChange={(event) => setSelectedChildIssueId(event.target.value)}
+                    className="mt-3 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground"
+                  >
+                    {linkableIssues.map((candidate) => (
+                      <option key={candidate.id} value={candidate.id}>
+                        {candidate.key} - {candidate.title}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="submit"
+                    disabled={mutating}
+                    className="mt-3 inline-flex h-11 items-center justify-center rounded-xl border border-border bg-card px-4 text-sm font-semibold text-foreground disabled:opacity-50"
+                  >
+                    Link child issue
+                  </button>
+                </>
+              ) : (
+                <div className="mt-3 rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted" data-testid="link-child-issue-empty">
+                  No unparented sibling issues are available to link here.
+                </div>
+              )}
+            </form>
+          </article>
+        </div>
+      </section>
+    </aside>
   );
 }
 
@@ -1662,6 +2244,7 @@ export function BacklogOverview() {
     updateIssueCollaboration,
     createSubIssue,
     linkChildIssue,
+    updateIssueDetail,
     movingIssueId,
     mutatingIssueId,
     creatingIssue,
@@ -1684,6 +2267,17 @@ export function BacklogOverview() {
   const [createError, setCreateError] = useState<string | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
   const [createNotice, setCreateNotice] = useState<string | null>(null);
+  const [issueDrafts, setIssueDrafts] = usePersistedState<Record<string, IssueDetailDraft>>(
+    "issue-detail-drafts",
+    {},
+  );
+  const [issueFieldStates, setIssueFieldStates] = useState<IssueFieldStateMap>(
+    createIssueFieldStateMap(),
+  );
+  const [priorityEditing, setPriorityEditing] = useState(false);
+  const [assigneeEditing, setAssigneeEditing] = useState(false);
+  const [labelEditing, setLabelEditing] = useState(false);
+  const previousFocusedIssueIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     const issueAnchor = focusedIssueId
@@ -1765,6 +2359,9 @@ export function BacklogOverview() {
   const focusedIssueCard = focusedIssue
     ? primaryBoard?.cards.find((candidate) => candidate.issueId === focusedIssue.id)
     : undefined;
+  const focusedIssueDraft = focusedIssue
+    ? issueDrafts[focusedIssue.id] ?? createIssueDetailDraft(focusedIssue)
+    : null;
   const targetModelIssue =
     snapshot.issues.find((issue) => issue.key === "KANBAN-GAP-004") ??
     snapshot.issues.find((issue) => issue.key === "KANBAN-DEBT-003");
@@ -1777,7 +2374,66 @@ export function BacklogOverview() {
     workflowOrder.flatMap((state) => findCardsForCell(primaryBoard, swimlane.id, state)),
   );
 
+  useEffect(() => {
+    const nextFocusedIssueId = focusedIssue?.id ?? null;
+    if (previousFocusedIssueIdRef.current === nextFocusedIssueId) {
+      return;
+    }
+    previousFocusedIssueIdRef.current = nextFocusedIssueId;
+    setIssueFieldStates(createIssueFieldStateMap());
+    setPriorityEditing(false);
+    setAssigneeEditing(false);
+    setLabelEditing(false);
+  }, [focusedIssue?.id]);
+
+  useEffect(() => {
+    if (!focusedIssue) {
+      return;
+    }
+
+    setIssueDrafts((current) => {
+      const existing = current[focusedIssue.id];
+      const nextDraft = createIssueDetailDraft(focusedIssue);
+      if (!existing) {
+        return {
+          ...current,
+          [focusedIssue.id]: nextDraft,
+        };
+      }
+      if (!isIssueDraftDirty(existing, focusedIssue)) {
+        return {
+          ...current,
+          [focusedIssue.id]: nextDraft,
+        };
+      }
+      return current;
+    });
+  }, [focusedIssue, setIssueDrafts]);
+
+  useEffect(() => {
+    if (!focusedIssue || !focusedIssueDraft) {
+      return;
+    }
+    if (
+      !isIssueFieldDirty("description", focusedIssueDraft, focusedIssue) ||
+      focusedIssueDraft.baseUpdatedAt !== focusedIssue.updatedAt
+    ) {
+      return;
+    }
+
+    setIssueFieldStates((current) => ({
+      ...current,
+      description: { status: "saving", message: null },
+    }));
+    const timeout = window.setTimeout(() => {
+      void saveIssueField("description");
+    }, 450);
+
+    return () => window.clearTimeout(timeout);
+  }, [focusedIssue, focusedIssueDraft]);
+
   function openCreateMode(source: CreateEntrySource, workflowState: KanbanWorkflowState = "todo") {
+    clearFocusedIssue();
     setCreateMode({ source, workflowState });
     setDraft(createEmptyDraft(workflowState));
     setCreateError(null);
@@ -1792,6 +2448,112 @@ export function BacklogOverview() {
     setCreateError(null);
     setValidationError(null);
     setAutosaveStatus("idle");
+  }
+
+  function updateFocusedIssueDraft(updater: (current: IssueDetailDraft) => IssueDetailDraft) {
+    if (!focusedIssue) {
+      return;
+    }
+    setIssueDrafts((current) => {
+      const base = current[focusedIssue.id] ?? createIssueDetailDraft(focusedIssue);
+      return {
+        ...current,
+        [focusedIssue.id]: updater(base),
+      };
+    });
+  }
+
+  function resetIssueField(field: Exclude<IssueDetailField, "description">) {
+    if (!focusedIssue) {
+      return;
+    }
+    const baseline = createIssueDetailDraft(focusedIssue);
+    updateFocusedIssueDraft((current) => ({
+      ...current,
+      priority: field === "priority" ? baseline.priority : current.priority,
+      assigneeIds: field === "assignees" ? baseline.assigneeIds : current.assigneeIds,
+      labelIds: field === "labels" ? baseline.labelIds : current.labelIds,
+    }));
+    setIssueFieldStates((current) => ({
+      ...current,
+      [field]: { status: "idle", message: null },
+    }));
+  }
+
+  function resetFocusedIssueDraft() {
+    if (!focusedIssue) {
+      return;
+    }
+    setIssueDrafts((current) => ({
+      ...current,
+      [focusedIssue.id]: createIssueDetailDraft(focusedIssue),
+    }));
+    setIssueFieldStates(createIssueFieldStateMap());
+  }
+
+  async function saveIssueField(field: IssueDetailField) {
+    if (!focusedIssue || !focusedIssueDraft) {
+      return;
+    }
+
+    const patch =
+      field === "description"
+        ? { description: focusedIssueDraft.description }
+        : field === "priority"
+          ? { priority: focusedIssueDraft.priority }
+          : field === "assignees"
+            ? { assigneeIds: focusedIssueDraft.assigneeIds }
+            : { labelIds: focusedIssueDraft.labelIds };
+
+    setIssueFieldStates((current) => ({
+      ...current,
+      [field]: { status: "saving", message: null },
+    }));
+
+    try {
+      const overview = await updateIssueDetail({
+        issueId: focusedIssue.id,
+        expectedUpdatedAt: focusedIssueDraft.baseUpdatedAt,
+        ...patch,
+      });
+      const nextIssue = overview.snapshot.issues.find((candidate) => candidate.id === focusedIssue.id);
+      if (nextIssue) {
+        setIssueDrafts((current) => ({
+          ...current,
+          [focusedIssue.id]: createIssueDetailDraft(nextIssue),
+        }));
+      }
+      setIssueFieldStates((current) => ({
+        ...current,
+        [field]: {
+          status: "saved",
+          message:
+            field === "description"
+              ? "Description saved."
+              : field === "priority"
+                ? "Priority saved."
+                : field === "assignees"
+                  ? "Assignees saved."
+                  : "Tags saved.",
+        },
+      }));
+      if (field === "priority") setPriorityEditing(false);
+      if (field === "assignees") setAssigneeEditing(false);
+      if (field === "labels") setLabelEditing(false);
+    } catch (cause) {
+      setIssueFieldStates((current) => ({
+        ...current,
+        [field]: {
+          status: "error",
+          message:
+            cause instanceof Error
+              ? cause.message
+              : field === "description"
+                ? "Description save failed."
+                : "Field save failed.",
+        },
+      }));
+    }
   }
 
   async function handleCreateIssue() {
@@ -1830,6 +2592,7 @@ export function BacklogOverview() {
   }
 
   const setFocusedIssue = (issue: KanbanIssue) => {
+    closeCreateMode();
     const params = new URLSearchParams(searchParams.toString());
     params.set("issueId", issue.id);
     params.set("issueKey", issue.key);
@@ -1843,6 +2606,8 @@ export function BacklogOverview() {
     const query = params.toString();
     router.push(query ? `/?${query}` : "/");
   };
+
+  const activeSidePanel = focusedIssue ? "issue" : createMode ? "create" : null;
 
   return (
     <section
@@ -1918,22 +2683,6 @@ export function BacklogOverview() {
           <div className="text-sm text-error/80">{summary.completedCount} completed</div>
         </div>
       </div>
-
-      {focusedIssue ? (
-        <IssueRelationshipPanel
-          issue={focusedIssue}
-          card={focusedIssueCard}
-          project={primaryProject}
-          issues={snapshot.issues.filter((issue) => issue.projectId === primaryProject.id)}
-          loading={loading}
-          mutating={mutatingIssueId === focusedIssue.id}
-          mutationError={mutationError}
-          onFocusIssue={setFocusedIssue}
-          onClose={clearFocusedIssue}
-          onCreateSubIssue={createSubIssue}
-          onLinkChildIssue={linkChildIssue}
-        />
-      ) : null}
 
       {targetModelIssue ? (
         <div className="mt-5 rounded-2xl border border-border bg-background p-4">
@@ -2085,7 +2834,7 @@ export function BacklogOverview() {
 
       <div
         className={`mt-6 grid gap-5 ${
-          createMode ? "xl:grid-cols-[minmax(0,1.55fr)_minmax(320px,380px)]" : "grid-cols-1"
+          activeSidePanel ? "xl:grid-cols-[minmax(0,1.55fr)_minmax(320px,430px)]" : "grid-cols-1"
         }`}
       >
         <div className="space-y-5">
@@ -2332,12 +3081,46 @@ export function BacklogOverview() {
                   </span>
                 </div>
               </div>
-              {boardCards.map((card) => renderListCard(card))}
+              {boardCards.map((card) =>
+                renderListCard(
+                  card,
+                  issueById.get(card.issueId),
+                  focusedIssueId === card.issueId || focusedIssueKey === card.issueKey,
+                  setFocusedIssue,
+                ),
+              )}
             </div>
           )}
         </div>
 
-        {createMode ? (
+        {focusedIssue && focusedIssueDraft ? (
+          <IssueDetailPanel
+            issue={focusedIssue}
+            card={focusedIssueCard}
+            project={primaryProject}
+            issues={snapshot.issues.filter((candidate) => candidate.projectId === primaryProject.id)}
+            loading={loading}
+            mutating={mutatingIssueId === focusedIssue.id}
+            mutationError={mutationError}
+            draft={focusedIssueDraft}
+            fieldStates={issueFieldStates}
+            priorityEditing={priorityEditing}
+            assigneeEditing={assigneeEditing}
+            labelEditing={labelEditing}
+            onFocusIssue={setFocusedIssue}
+            onClose={clearFocusedIssue}
+            onChangeDraft={updateFocusedIssueDraft}
+            onResetDraft={resetFocusedIssueDraft}
+            onRetryDescriptionSave={() => void saveIssueField("description")}
+            onSaveField={(field) => void saveIssueField(field)}
+            onSetPriorityEditing={setPriorityEditing}
+            onSetAssigneeEditing={setAssigneeEditing}
+            onSetLabelEditing={setLabelEditing}
+            onResetField={resetIssueField}
+            onCreateSubIssue={createSubIssue}
+            onLinkChildIssue={linkChildIssue}
+          />
+        ) : createMode ? (
           <CreateIssuePanel
             draft={draft}
             autosaveStatus={autosaveStatus}

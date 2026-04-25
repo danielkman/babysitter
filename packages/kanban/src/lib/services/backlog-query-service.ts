@@ -3,9 +3,7 @@ import {
   buildKanbanBacklogSnapshot,
   createKanbanIssuePullRequest,
   evaluateKanbanIssueMove,
-  normalizeKanbanDispatchContextLabelRefs,
   linkKanbanIssueRepository,
-  normalizeKanbanDispatchContextLabels,
   upsertKanbanProjectRepository,
   updateKanbanProjectRepositorySettings,
   summarizeKanbanReviewArtifact,
@@ -49,6 +47,56 @@ import {
 const SOURCE_PATH = 'packages/kanban/gaps-and-debt.md';
 const PROJECT_ID = 'kanban-app';
 
+function normalizeDispatchContextLabelKey(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+    .replace(/_+/g, '_');
+}
+
+function normalizeDispatchContextLabels(
+  labels: readonly BacklogSeedDispatchContextLabel[],
+): BacklogSeedDispatchContextLabel[] {
+  return labels
+    .map((label) => {
+      const normalizedLabel = label.label.trim();
+      const normalizedKey = normalizeDispatchContextLabelKey(label.key ?? normalizedLabel);
+
+      return {
+        ...label,
+        label: normalizedLabel,
+        key: normalizedKey || normalizeDispatchContextLabelKey(label.id),
+        instruction: label.instruction.replace(/\r\n?/g, '\n').trim(),
+        description: label.description?.trim() || undefined,
+        order:
+          typeof label.order === 'number' && Number.isFinite(label.order)
+            ? Math.max(0, Math.floor(label.order))
+            : 0,
+      };
+    })
+    .sort(
+      (left, right) =>
+        left.order - right.order ||
+        left.label.localeCompare(right.label) ||
+        left.key.localeCompare(right.key) ||
+        left.id.localeCompare(right.id),
+    );
+}
+
+function normalizeDispatchContextLabelRefs(
+  refs: readonly { readonly labelId?: string }[],
+): KanbanIssue['dispatch']['contextLabels'] {
+  return Array.from(
+    new Set(
+      refs
+        .map((ref) => ref.labelId?.trim() || '')
+        .filter(Boolean),
+    ),
+  ).map((labelId) => ({ labelId }));
+}
+
 export interface BacklogOverviewSummary {
   projectCount: number;
   issueCount: number;
@@ -85,6 +133,15 @@ export interface CreateBacklogIssueInput {
 export interface CreateBacklogIssueResult {
   readonly overview: BacklogOverview;
   readonly issue: KanbanIssue;
+}
+
+export interface UpdateIssueDetailInput {
+  readonly issueId: string;
+  readonly expectedUpdatedAt?: string;
+  readonly description?: string;
+  readonly priority?: KanbanIssue['priority'];
+  readonly assigneeIds?: readonly string[];
+  readonly labelIds?: readonly string[];
 }
 
 type BacklogSeedProject = StoredKanbanProject;
@@ -422,6 +479,10 @@ function appendUniqueIssueId(issueIds: readonly string[], issueId: string): stri
   return issueIds.includes(issueId) ? [...issueIds] : [...issueIds, issueId];
 }
 
+function arrayEquals(left: readonly string[], right: readonly string[]): boolean {
+  return left.length === right.length && left.every((value, index) => value === right[index]);
+}
+
 function wouldCreateParentChildCycle(
   issues: readonly BacklogSeedIssue[],
   parentIssueId: string,
@@ -455,7 +516,7 @@ function normalizeStoredIssueDispatchContextLabelRefs(
   dispatchContextLabels: readonly BacklogSeedDispatchContextLabel[],
 ): KanbanIssue['dispatch']['contextLabels'] {
   const knownLabelIds = new Set(dispatchContextLabels.map((label) => label.id));
-  return normalizeKanbanDispatchContextLabelRefs(refs ?? []).filter((ref) =>
+  return normalizeDispatchContextLabelRefs(refs ?? []).filter((ref) =>
     knownLabelIds.has(ref.labelId),
   );
 }
@@ -484,7 +545,7 @@ function resolveDispatchContextLabelRefs(
   dispatchContextLabels: readonly BacklogSeedDispatchContextLabel[],
   dispatchContextLabelIds: readonly string[],
 ): KanbanIssue['dispatch']['contextLabels'] {
-  const refs = normalizeKanbanDispatchContextLabelRefs(
+  const refs = normalizeDispatchContextLabelRefs(
     dispatchContextLabelIds.map((labelId) => ({ labelId })),
   );
   const definitionMap = new Map(dispatchContextLabels.map((label) => [label.id, label]));
@@ -1337,7 +1398,7 @@ export class BacklogQueryService {
     const backlogFile = await readKanbanStorageFile(this.deps);
     const dispatchContextLabels =
       backlogFile?.dispatchContextLabels?.length
-        ? normalizeKanbanDispatchContextLabels(backlogFile.dispatchContextLabels)
+        ? normalizeDispatchContextLabels(backlogFile.dispatchContextLabels)
         : defaultDispatchContextLabels;
 
     return {
@@ -1383,7 +1444,7 @@ export class BacklogQueryService {
     dispatchContextLabels: readonly BacklogSeedDispatchContextLabel[];
   }): Promise<BacklogOverview> {
     const existingPayload = (await readKanbanStorageFile(this.deps)) ?? {};
-    const normalizedDispatchContextLabels = normalizeKanbanDispatchContextLabels(
+    const normalizedDispatchContextLabels = normalizeDispatchContextLabels(
       payload.dispatchContextLabels,
     );
     await writeKanbanStorageFile(this.deps, {
@@ -1921,6 +1982,118 @@ export class BacklogQueryService {
 
     return this.persistPayload({
       projects: payload.projects,
+      issues: nextIssues,
+      dispatchContextLabels: payload.dispatchContextLabels,
+    });
+  }
+
+  async updateIssueDetail(input: UpdateIssueDetailInput): Promise<BacklogOverview> {
+    const payload = await this.readSeedPayload();
+    const issue = this.findIssue(payload, input.issueId);
+    const project = this.findProject(payload, issue.projectId);
+
+    if (input.expectedUpdatedAt && issue.updatedAt !== input.expectedUpdatedAt) {
+      throw new AppError(
+        `Issue ${issue.key} changed since this draft was loaded. Reload the latest issue state before saving again.`,
+        'STALE_WRITE',
+        409,
+      );
+    }
+
+    const nextDescription =
+      input.description !== undefined ? input.description.trim() || undefined : issue.description;
+    const nextPriority = input.priority ?? issue.priority;
+    const nextLabels =
+      input.labelIds !== undefined ? readProjectLabels(project, input.labelIds) : issue.labels;
+    const nextAssignees =
+      input.assigneeIds !== undefined ? readProjectAssignees(project, input.assigneeIds) : issue.assignees;
+
+    const changedFields: string[] = [];
+    if ((issue.description ?? '') !== (nextDescription ?? '')) {
+      changedFields.push('description');
+    }
+    if (issue.priority !== nextPriority) {
+      changedFields.push('priority');
+    }
+    if (!arrayEquals(issue.labels.map((label) => label.id), nextLabels.map((label) => label.id))) {
+      changedFields.push('tags');
+    }
+    if (
+      !arrayEquals(
+        issue.assignees.map((assignee) => assignee.id),
+        nextAssignees.map((assignee) => assignee.id),
+      )
+    ) {
+      changedFields.push('assignees');
+    }
+
+    if (changedFields.length === 0) {
+      return this.buildOverviewFromPayload(payload);
+    }
+
+    const updatedAt = this.deps.now();
+    const summary =
+      changedFields.length === 1
+        ? `Updated ${changedFields[0]} for ${issue.key}.`
+        : `Updated ${changedFields.slice(0, -1).join(', ')} and ${changedFields.at(-1)} for ${issue.key}.`;
+
+    const nextIssues = payload.issues.map((candidate) =>
+      candidate.id === input.issueId
+        ? {
+            ...candidate,
+            description: nextDescription,
+            priority: nextPriority,
+            labels: nextLabels,
+            assignees: nextAssignees,
+            updatedAt,
+            activity: [
+              buildActivityEntry(
+                `activity-issue-detail-${updatedAt}`,
+                'issue',
+                candidate.id,
+                'updated-issue-detail',
+                summary,
+                {
+                  kind: 'human',
+                  id: 'tal',
+                  displayName: 'Tal Muskal',
+                  role: 'owner',
+                },
+                updatedAt,
+              ),
+              ...(candidate.activity ?? []),
+            ],
+          }
+        : candidate,
+    );
+
+    const nextProjects = payload.projects.map((candidate) =>
+      candidate.id === project.id
+        ? {
+            ...candidate,
+            activity: [
+              buildActivityEntry(
+                `activity-project-issue-detail-${updatedAt}`,
+                'project',
+                candidate.id,
+                'updated-issue-detail',
+                `Updated issue detail fields on ${issue.key}.`,
+                {
+                  kind: 'human',
+                  id: 'tal',
+                  displayName: 'Tal Muskal',
+                  role: 'owner',
+                },
+                updatedAt,
+              ),
+              ...(candidate.activity ?? []),
+            ],
+          }
+        : candidate,
+    );
+
+    return this.persistPayload({
+      projects: nextProjects,
       issues: nextIssues,
       dispatchContextLabels: payload.dispatchContextLabels,
     });
