@@ -10,11 +10,12 @@ export const SUPPORTED_TRANSPORTS = [
 ] as const;
 
 export type SupportedTransport = (typeof SUPPORTED_TRANSPORTS)[number];
+export type TransportId = string;
 
 export interface ProxyConfig {
   targetProvider: string;
   targetModel: string;
-  exposedTransport: SupportedTransport | string;
+  exposedTransport: TransportId;
   authToken?: string;
   apiBase?: string;
   host: string;
@@ -29,7 +30,7 @@ export interface CompletionRequestMessage {
 
 export interface CompletionRequest {
   model: string;
-  transport: SupportedTransport | string;
+  transport: TransportId;
   messages: CompletionRequestMessage[];
   input?: string;
   raw: unknown;

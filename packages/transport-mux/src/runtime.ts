@@ -6,13 +6,13 @@ import type {
   CompletionEngine,
   ProxyConfig,
   RunningProxyServer,
-  SupportedTransport,
+  TransportId,
 } from './types.js';
 
 export interface StartTransportMuxRuntimeOptions {
   targetProvider: string;
   targetModel: string;
-  exposedTransport: SupportedTransport | string;
+  exposedTransport: TransportId;
   authToken?: string;
   apiBase?: string;
   host?: string;
@@ -29,7 +29,7 @@ export interface TransportMuxRuntime extends RunningProxyServer {
 
 export function applyTransportMuxToHarnessEnv(
   env: Record<string, string>,
-  transport: SupportedTransport | string,
+  transport: TransportId,
   proxyUrl: string,
   authToken: string,
 ): Record<string, string> {

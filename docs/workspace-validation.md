@@ -34,10 +34,8 @@ These workspaces are part of the active monorepo and ship code or operational be
 | `packages/agent-catalog` | private, non-release workspace package for the metadata catalog consumed by SDK, agent-mux, hooks-mux, plugin compiler, and catalog UI | `.github/workflows/ci.yml` job `workspace-coverage` |
 | `packages/catalog` | Internal Next.js catalog UI | `.github/workflows/ci.yml` job `workspace-coverage` |
 | `packages/babysitter-tui-plugins` | Internal TUI plugin package for babysitter observability | `.github/workflows/ci.yml` job `workspace-coverage` |
-| `packages/transport-mux` | Internal placeholder seam with explicit migration scorecard | `.github/workflows/ci.yml` job `workspace-coverage` (`build` + `scorecard:migration`) |
+| `packages/transport-mux` | Internal transport/proxy runtime workspace with package-local QA commands | `.github/workflows/ci.yml` job `workspace-coverage` (`build` + `lint` + `typecheck` + `test` + `scorecard:migration`) |
 
 ## Explicit exclusions
 
-There are currently no active npm workspaces that are entirely unvalidated, but one active placeholder surface remains intentionally out of band:
-
-- `packages/transport-mux` `test` script is intentionally excluded from CI for now. The placeholder test suite currently imports non-existent source `.js` modules, so running `npm run test --workspace=@a5c-ai/transport-mux` fails before it can validate the seam. CI still runs `build` and `scorecard:migration` so the placeholder package cannot drift silently, and the exclusion is now explicit in both this document and the workflow logs.
+There are currently no active npm workspaces that are intentionally excluded from validation. `packages/transport-mux` now participates in the workspace-coverage job through its package-local `lint`, `typecheck`, and `test` commands alongside `build` and `scorecard:migration`.

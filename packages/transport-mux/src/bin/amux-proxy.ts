@@ -12,7 +12,8 @@ import { startProxyServer } from '../server.js';
 function readPackageVersion(): string {
   const __filename = fileURLToPath(import.meta.url);
   const packageJsonPath = path.resolve(path.dirname(__filename), '../../package.json');
-  return JSON.parse(readFileSync(packageJsonPath, 'utf8')).version;
+  const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8')) as { version?: unknown };
+  return typeof packageJson.version === 'string' ? packageJson.version : '0.0.0';
 }
 
 async function main(): Promise<void> {

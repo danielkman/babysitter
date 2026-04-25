@@ -96,7 +96,7 @@ function usageShape(result: CompletionResult) {
 
 async function readJsonBody(req: Request): Promise<Record<string, unknown>> {
   try {
-    const body = await req.json();
+    const body: unknown = await req.json();
     if (!body || typeof body !== 'object') {
       return {};
     }
@@ -362,14 +362,24 @@ export function createTransportMuxApp({ config, completionEngine }: CreateTransp
   return app;
 }
 
-async function nodeRequestBody(req: http.IncomingMessage): Promise<Uint8Array | undefined> {
+async function nodeRequestBody(req: http.IncomingMessage): Promise<Buffer | undefined> {
   if (req.method === 'GET' || req.method === 'HEAD') {
     return undefined;
   }
 
   const chunks: Buffer[] = [];
   for await (const chunk of req) {
-    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    if (Buffer.isBuffer(chunk)) {
+      chunks.push(chunk);
+      continue;
+    }
+    if (chunk instanceof Uint8Array) {
+      chunks.push(Buffer.from(chunk));
+      continue;
+    }
+    if (typeof chunk === 'string') {
+      chunks.push(Buffer.from(chunk));
+    }
   }
   return Buffer.concat(chunks);
 }
@@ -395,22 +405,22 @@ export async function startProxyServer(
 ): Promise<RunningProxyServer> {
   const app = createTransportMuxApp({ config, completionEngine });
 
-  const server = http.createServer(async (req, res) => {
-    try {
+  const server = http.createServer((req, res) => {
+    void (async () => {
       const url = new URL(req.url ?? '/', `http://${config.host}:${config.port}`);
       const body = await nodeRequestBody(req);
       const request = new Request(url, {
         method: req.method,
         headers: new Headers(req.headers as Record<string, string>),
-        body: body == null ? undefined : Buffer.from(body),
+        body: body == null ? undefined : new Blob([new Uint8Array(body)]),
       });
       const response = await app.fetch(request);
       await writeNodeResponse(res, response);
-    } catch (error) {
+    })().catch((error: unknown) => {
       res.statusCode = 500;
       res.setHeader('content-type', 'application/json');
       res.end(JSON.stringify({ error: error instanceof Error ? error.message : String(error) }));
-    }
+    });
   });
 
   await new Promise<void>((resolve, reject) => {
