@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { WorkspaceRuntimeSurface } from "@a5c-ai/agent-mux-core";
+import type { KanbanReviewArtifact, KanbanReviewComment, KanbanReviewSummary } from "@a5c-ai/agent-mux-core";
 
 import { normalizeError } from "@/lib/error-handler";
 import { ReviewService } from "@/lib/review-service";
@@ -49,19 +50,28 @@ function readSessions(body: unknown): WorkspaceSessionSnapshot[] {
   });
 }
 
+function buildReviewByWorkspacePath(
+  artifacts: readonly KanbanReviewArtifact[],
+): ReadonlyMap<string, KanbanReviewSummary> {
+  return new Map<string, KanbanReviewSummary>(
+    artifacts.map((artifact: KanbanReviewArtifact) => [
+      artifact.targetId,
+      {
+        decision: artifact.decision,
+        queueState: artifact.queueState,
+        commentCount: artifact.comments.length,
+        openCommentCount: artifact.comments.filter((comment: KanbanReviewComment) => comment.status === "open").length,
+        latestActivityAt: artifact.updatedAt,
+      },
+    ]),
+  );
+}
+
 export async function GET() {
   try {
     const reviews = await reviewService.listReviews({ targetType: "workspace" });
     const payload = await service.listWorkspaces({
-      reviewByWorkspacePath: new Map(
-        reviews.artifacts.map((artifact) => [artifact.targetId, {
-          decision: artifact.decision,
-          queueState: artifact.queueState,
-          commentCount: artifact.comments.length,
-          openCommentCount: artifact.comments.filter((comment) => comment.status === "open").length,
-          latestActivityAt: artifact.updatedAt,
-        }]),
-      ),
+      reviewByWorkspacePath: buildReviewByWorkspacePath(reviews.artifacts),
     });
     return NextResponse.json(payload, { headers: NO_CACHE_HEADERS });
   } catch (error) {
@@ -75,17 +85,18 @@ export async function POST(request: Request) {
     const body = (await request.json()) as Record<string, unknown>;
     const sessions = readSessions(body);
     const reviews = await reviewService.listReviews({ targetType: "workspace" });
-    const reviewByWorkspacePath = new Map(
-      reviews.artifacts.map((artifact) => [artifact.targetId, {
-        decision: artifact.decision,
-        queueState: artifact.queueState,
-        commentCount: artifact.comments.length,
-        openCommentCount: artifact.comments.filter((comment) => comment.status === "open").length,
-        latestActivityAt: artifact.updatedAt,
-      }]),
-    );
+    const reviewByWorkspacePath = buildReviewByWorkspacePath(reviews.artifacts);
 
-    if (body.action === "archive" || body.action === "cleanup" || body.action === "recover") {
+    if (
+      body.action === "archive" ||
+      body.action === "cleanup" ||
+      body.action === "recover" ||
+      body.action === "rebase-start" ||
+      body.action === "rebase-auto-resolve" ||
+      body.action === "rebase-open-in-editor" ||
+      body.action === "rebase-mark-resolved" ||
+      body.action === "rebase-abort"
+    ) {
       const workspacePath = typeof body.workspacePath === "string" ? body.workspacePath : "";
       if (!workspacePath) {
         return NextResponse.json({ error: "workspacePath is required", code: "BAD_REQUEST" }, { status: 400 });

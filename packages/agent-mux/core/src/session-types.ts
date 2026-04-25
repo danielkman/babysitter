@@ -127,12 +127,42 @@ export interface WorkspaceDevServerSurface {
   readonly logs: readonly WorkspaceRuntimeLogLine[];
 }
 
+export type WorkspaceRebaseStatus =
+  | 'idle'
+  | 'rebase-needed'
+  | 'rebase-conflicts'
+  | 'ready-for-review'
+  | 'ready-for-merge';
+
+export type WorkspaceRebaseLastAction =
+  | 'start'
+  | 'auto-resolve'
+  | 'open-in-editor'
+  | 'manual-resolve'
+  | 'abort';
+
+export interface WorkspaceRebaseSurface {
+  readonly status: WorkspaceRebaseStatus;
+  readonly branch?: string;
+  readonly targetBranch?: string;
+  readonly attemptCount: number;
+  readonly unresolvedFiles: readonly string[];
+  readonly resolvedFiles: readonly string[];
+  readonly followUpInstructions: readonly string[];
+  readonly manualResolutionSuggested: boolean;
+  readonly readyFor: 'review' | 'merge';
+  readonly editorHref?: string;
+  readonly lastAction?: WorkspaceRebaseLastAction;
+  readonly persistedAt?: number;
+}
+
 export interface WorkspaceRuntimeSurface {
   readonly workspacePath?: string;
   readonly updatedAt: number;
   readonly preview: WorkspacePreviewSurface;
   readonly terminal: WorkspaceTerminalSurface;
   readonly devServer: WorkspaceDevServerSurface;
+  readonly rebase?: WorkspaceRebaseSurface;
 }
 
 // ---------------------------------------------------------------------------

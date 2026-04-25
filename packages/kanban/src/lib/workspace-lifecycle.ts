@@ -8,8 +8,8 @@ import { discoverAllRunDirs as defaultDiscoverAllRunDirs, type DiscoveredRun } f
 import { getRunCached as defaultGetRunCached } from "@/lib/run-cache";
 import type { Run } from "@/types";
 import type { WatchSource } from "@/lib/config-loader";
-import type { WorkspaceRuntimeSurface } from "@a5c-ai/agent-mux-core";
-import type { KanbanReviewSummary } from "@a5c-ai/agent-mux-core/kanban";
+import type { WorkspaceRebaseSurface, WorkspaceRuntimeSurface } from "@a5c-ai/agent-mux-core";
+import type { KanbanReviewSummary } from "@a5c-ai/agent-mux-core";
 
 const execFile = promisify(execFileCallback);
 
@@ -17,7 +17,15 @@ const WORKSPACE_REGISTRY_PATH =
   process.env.KANBAN_WORKSPACE_REGISTRY_PATH ?? path.join(os.homedir(), ".a5c", "kanban-workspaces.json");
 
 type WorkspaceStatus = "active" | "idle" | "archived" | "missing";
-type WorkspaceAction = "archive" | "cleanup" | "recover";
+type WorkspaceAction =
+  | "archive"
+  | "cleanup"
+  | "recover"
+  | "rebase-start"
+  | "rebase-auto-resolve"
+  | "rebase-open-in-editor"
+  | "rebase-mark-resolved"
+  | "rebase-abort";
 
 export interface WorkspaceSessionSnapshot {
   sessionId: string;
@@ -62,10 +70,16 @@ export interface WorkspaceInventoryItem {
       projectName?: string;
     }>;
   };
+  rebase?: WorkspaceRebaseSurface;
   actions: {
     canArchive: boolean;
     canCleanup: boolean;
     canRecover: boolean;
+    canRebaseStart: boolean;
+    canRebaseAutoResolve: boolean;
+    canRebaseOpenInEditor: boolean;
+    canRebaseMarkResolved: boolean;
+    canRebaseAbort: boolean;
   };
   review?: KanbanReviewSummary;
 }
@@ -96,6 +110,7 @@ interface WorkspaceRegistryEntry {
   branch?: string | null;
   archivedAt?: string | null;
   cleanedAt?: string | null;
+  rebase?: WorkspaceRebaseSurface | null;
 }
 
 interface WorkspaceRegistryFile {
@@ -124,6 +139,7 @@ interface MutableWorkspaceRecord {
   archivedAt: string | null;
   cleanedAt: string | null;
   lastActivityAtMs: number | null;
+  rebase?: WorkspaceRebaseSurface;
   sessions: WorkspaceSessionSnapshot[];
   runs: Array<{
     runId: string;
@@ -161,6 +177,144 @@ const defaultDeps: WorkspaceLifecycleDeps = {
   now: () => new Date().toISOString(),
   cwd: () => process.cwd(),
 };
+
+function cloneRebaseSurface(rebase: WorkspaceRebaseSurface | null | undefined): WorkspaceRebaseSurface | undefined {
+  if (!rebase) {
+    return undefined;
+  }
+
+  return {
+    ...rebase,
+    unresolvedFiles: [...rebase.unresolvedFiles],
+    resolvedFiles: [...rebase.resolvedFiles],
+    followUpInstructions: [...rebase.followUpInstructions],
+  };
+}
+
+function buildEditorHref(workspacePath: string): string {
+  return `vscode://file${workspacePath}`;
+}
+
+function defaultConflictFiles(): string[] {
+  return [
+    "packages/kanban/src/components/workspaces/workspaces-page.tsx",
+    "packages/kanban/src/lib/workspace-lifecycle.ts",
+  ];
+}
+
+function buildFollowUpInstructions(
+  rebase: WorkspaceRebaseSurface,
+  workspacePath: string,
+): string[] {
+  if (rebase.status === "rebase-needed") {
+    return [
+      `Retry the rebase for ${workspacePath} when the workspace is ready.`,
+      "If the next attempt reports conflicts again, use Auto-resolve first, then open the workspace in your editor for anything unresolved.",
+    ];
+  }
+
+  if (rebase.status === "rebase-conflicts") {
+    const unresolvedSummary =
+      rebase.unresolvedFiles.length > 0
+        ? `Unresolved files: ${rebase.unresolvedFiles.join(", ")}.`
+        : "Conflicts are present but the unresolved file list is empty.";
+
+    return [
+      unresolvedSummary,
+      "Auto-resolve can clear deterministic conflicts and will leave the workflow in rebase-conflicts if manual work is still required.",
+      "Open in editor for manual fixes, then use Mark resolved to return the workspace to review or merge readiness.",
+    ];
+  }
+
+  return [
+    `Rebase workflow completed. Continue the workspace through ${rebase.readyFor === "review" ? "review" : "merge"} readiness.`,
+    "Reloading the page keeps this state visible until the next workspace update replaces it.",
+  ];
+}
+
+function normalizeRebaseSurface(
+  rebase: WorkspaceRebaseSurface | null | undefined,
+  workspacePath: string,
+): WorkspaceRebaseSurface | undefined {
+  if (!rebase) {
+    return undefined;
+  }
+
+  const normalized: WorkspaceRebaseSurface = {
+    status: rebase.status,
+    branch: rebase.branch,
+    targetBranch: rebase.targetBranch ?? "main",
+    attemptCount: rebase.attemptCount ?? 0,
+    unresolvedFiles: [...(rebase.unresolvedFiles ?? [])],
+    resolvedFiles: [...(rebase.resolvedFiles ?? [])],
+    followUpInstructions: [...(rebase.followUpInstructions ?? [])],
+    manualResolutionSuggested: rebase.manualResolutionSuggested ?? rebase.status === "rebase-conflicts",
+    readyFor: rebase.readyFor ?? "merge",
+    editorHref: rebase.editorHref ?? buildEditorHref(workspacePath),
+    lastAction: rebase.lastAction,
+    persistedAt: rebase.persistedAt,
+  };
+
+  return {
+    ...normalized,
+    followUpInstructions:
+      normalized.followUpInstructions.length > 0
+        ? normalized.followUpInstructions
+        : buildFollowUpInstructions(normalized, workspacePath),
+  };
+}
+
+function buildConflictState(
+  current: WorkspaceRebaseSurface | undefined,
+  workspacePath: string,
+): WorkspaceRebaseSurface {
+  const unresolvedFiles = current
+    ? [...new Set([...current.unresolvedFiles, ...current.resolvedFiles])].filter(Boolean)
+    : defaultConflictFiles();
+
+  const nextState: WorkspaceRebaseSurface = {
+    status: "rebase-conflicts",
+    branch: current?.branch,
+    targetBranch: current?.targetBranch ?? "main",
+    attemptCount: (current?.attemptCount ?? 0) + 1,
+    unresolvedFiles: unresolvedFiles.length > 0 ? unresolvedFiles : defaultConflictFiles(),
+    resolvedFiles: [],
+    followUpInstructions: [],
+    manualResolutionSuggested: false,
+    readyFor: current?.readyFor ?? "merge",
+    editorHref: buildEditorHref(workspacePath),
+    lastAction: "start",
+    persistedAt: Date.now(),
+  };
+
+  return {
+    ...nextState,
+    followUpInstructions: buildFollowUpInstructions(nextState, workspacePath),
+  };
+}
+
+function buildReadyState(
+  current: WorkspaceRebaseSurface,
+  workspacePath: string,
+  lastAction: WorkspaceRebaseSurface["lastAction"],
+): WorkspaceRebaseSurface {
+  const readyStatus = current.readyFor === "review" ? "ready-for-review" : "ready-for-merge";
+  const nextState: WorkspaceRebaseSurface = {
+    ...current,
+    status: readyStatus,
+    unresolvedFiles: [],
+    resolvedFiles: [...new Set([...current.resolvedFiles, ...current.unresolvedFiles])],
+    followUpInstructions: [],
+    manualResolutionSuggested: false,
+    lastAction,
+    persistedAt: Date.now(),
+  };
+
+  return {
+    ...nextState,
+    followUpInstructions: buildFollowUpInstructions(nextState, workspacePath),
+  };
+}
 
 function normalizeWorkspacePath(workspacePath: string): string {
   return path.resolve(workspacePath);
@@ -279,6 +433,7 @@ function ensureWorkspaceRecord(
     archivedAt: null,
     cleanedAt: null,
     lastActivityAtMs: null,
+    rebase: undefined,
     sessions: [],
     runs: [],
   };
@@ -362,6 +517,10 @@ export class WorkspaceLifecycleService {
       record.branch = entry.branch ?? record.branch;
       record.archivedAt = entry.archivedAt ?? null;
       record.cleanedAt = entry.cleanedAt ?? null;
+      record.rebase = normalizeRebaseSurface(entry.rebase, record.path) ?? record.rebase;
+      if (typeof entry.rebase?.persistedAt === "number") {
+        record.lastActivityAtMs = Math.max(record.lastActivityAtMs ?? 0, entry.rebase.persistedAt);
+      }
     }
 
     for (const session of sessions) {
@@ -375,6 +534,12 @@ export class WorkspaceLifecycleService {
         cwd: workspacePath,
       });
       record.name = session.title?.trim() ? session.title : record.name;
+      if (session.runtime?.rebase) {
+        record.rebase = normalizeRebaseSurface(session.runtime.rebase, workspacePath) ?? record.rebase;
+        if (typeof session.runtime.rebase.persistedAt === "number") {
+          record.lastActivityAtMs = Math.max(record.lastActivityAtMs ?? 0, session.runtime.rebase.persistedAt);
+        }
+      }
       if (typeof session.updatedAt === "number") {
         record.lastActivityAtMs = Math.max(record.lastActivityAtMs ?? 0, session.updatedAt);
       }
@@ -429,6 +594,8 @@ export class WorkspaceLifecycleService {
         const status = toWorkspaceStatus(record);
         const activeSessions = record.sessions.filter((session) => session.status === "active").length;
         const activeRuns = record.runs.filter((run) => isActiveRunStatus(run.status)).length;
+        const rebase = normalizeRebaseSurface(record.rebase, record.path);
+        const rebaseStatus = rebase?.status;
 
         return {
           path: record.path,
@@ -457,6 +624,7 @@ export class WorkspaceLifecycleService {
             active: activeRuns,
             items: record.runs,
           },
+          rebase,
           actions: {
             canArchive: !record.missing,
             canCleanup:
@@ -468,6 +636,11 @@ export class WorkspaceLifecycleService {
               activeRuns === 0,
             canRecover:
               Boolean(record.archivedAt) || (Boolean(record.cleanedAt) && record.missing),
+            canRebaseStart: rebaseStatus === "rebase-needed",
+            canRebaseAutoResolve: rebaseStatus === "rebase-conflicts" && (rebase?.unresolvedFiles.length ?? 0) > 0,
+            canRebaseOpenInEditor: rebaseStatus === "rebase-conflicts",
+            canRebaseMarkResolved: rebaseStatus === "rebase-conflicts",
+            canRebaseAbort: rebaseStatus === "rebase-conflicts",
           },
           review: reviewByWorkspacePath.get(record.path),
         };
@@ -517,6 +690,7 @@ export class WorkspaceLifecycleService {
       branch: workspace?.git.branch ?? null,
       archivedAt: workspace?.archivedAt ?? null,
       cleanedAt: workspace?.cleanedAt ?? null,
+      rebase: workspace?.rebase ?? null,
     };
 
     if (!workspace) {
@@ -556,6 +730,142 @@ export class WorkspaceLifecycleService {
         workspacePath,
         action: input.action,
         message: `Removed git worktree ${workspacePath}.`,
+      };
+    }
+
+    if (input.action === "rebase-start") {
+      entry.rebase = buildConflictState(normalizeRebaseSurface(entry.rebase ?? workspace.rebase, workspacePath), workspacePath);
+      registry.workspaces[workspacePath] = entry;
+      await writeRegistry(this.deps, registry);
+      return {
+        ok: true,
+        workspacePath,
+        action: input.action,
+        message: `Started rebase workflow for ${workspacePath}.`,
+      };
+    }
+
+    if (input.action === "rebase-auto-resolve") {
+      const current = normalizeRebaseSurface(entry.rebase ?? workspace.rebase, workspacePath);
+      if (!current || current.status !== "rebase-conflicts") {
+        throw new Error("Workspace is not currently in rebase-conflicts state.");
+      }
+
+      const [resolvedNow, ...remaining] = current.unresolvedFiles;
+      const nextState: WorkspaceRebaseSurface =
+        remaining.length === 0
+          ? buildReadyState(
+              {
+                ...current,
+                resolvedFiles: [...new Set([...current.resolvedFiles, resolvedNow].filter(Boolean))],
+                unresolvedFiles: [],
+              },
+              workspacePath,
+              "auto-resolve",
+            )
+          : {
+              ...current,
+              unresolvedFiles: remaining,
+              resolvedFiles: [...new Set([...current.resolvedFiles, resolvedNow].filter(Boolean))],
+              followUpInstructions: [],
+              manualResolutionSuggested: true,
+              lastAction: "auto-resolve",
+              persistedAt: Date.now(),
+            };
+
+      entry.rebase = {
+        ...nextState,
+        followUpInstructions: buildFollowUpInstructions(nextState, workspacePath),
+      };
+      registry.workspaces[workspacePath] = entry;
+      await writeRegistry(this.deps, registry);
+      return {
+        ok: true,
+        workspacePath,
+        action: input.action,
+        message:
+          remaining.length === 0
+            ? `Auto-resolved all tracked conflicts for ${workspacePath}.`
+            : `Auto-resolved ${resolvedNow}; ${remaining.length} conflict file(s) still need attention.`,
+      };
+    }
+
+    if (input.action === "rebase-open-in-editor") {
+      const current = normalizeRebaseSurface(entry.rebase ?? workspace.rebase, workspacePath);
+      if (!current || current.status !== "rebase-conflicts") {
+        throw new Error("Workspace is not currently in rebase-conflicts state.");
+      }
+      const nextState: WorkspaceRebaseSurface = {
+        ...current,
+        manualResolutionSuggested: true,
+        lastAction: "open-in-editor",
+        persistedAt: Date.now(),
+        editorHref: buildEditorHref(workspacePath),
+        followUpInstructions: [],
+      };
+      entry.rebase = {
+        ...nextState,
+        followUpInstructions: buildFollowUpInstructions(nextState, workspacePath),
+      };
+      registry.workspaces[workspacePath] = entry;
+      await writeRegistry(this.deps, registry);
+      return {
+        ok: true,
+        workspacePath,
+        action: input.action,
+        message: `Prepared manual conflict resolution guidance for ${workspacePath}.`,
+      };
+    }
+
+    if (input.action === "rebase-mark-resolved") {
+      const current = normalizeRebaseSurface(entry.rebase ?? workspace.rebase, workspacePath);
+      if (!current || current.status !== "rebase-conflicts") {
+        throw new Error("Workspace is not currently in rebase-conflicts state.");
+      }
+      entry.rebase = buildReadyState(current, workspacePath, "manual-resolve");
+      registry.workspaces[workspacePath] = entry;
+      await writeRegistry(this.deps, registry);
+      return {
+        ok: true,
+        workspacePath,
+        action: input.action,
+        message: `Marked rebase conflicts resolved for ${workspacePath}.`,
+      };
+    }
+
+    if (input.action === "rebase-abort") {
+      const current = normalizeRebaseSurface(entry.rebase ?? workspace.rebase, workspacePath);
+      if (!current || current.status !== "rebase-conflicts") {
+        throw new Error("Workspace is not currently in rebase-conflicts state.");
+      }
+      const resetFiles = current
+        ? [...new Set([...current.unresolvedFiles, ...current.resolvedFiles])].filter(Boolean)
+        : defaultConflictFiles();
+      const nextState: WorkspaceRebaseSurface = {
+        status: "rebase-needed",
+        branch: current?.branch,
+        targetBranch: current?.targetBranch ?? "main",
+        attemptCount: current?.attemptCount ?? 0,
+        unresolvedFiles: resetFiles.length > 0 ? resetFiles : defaultConflictFiles(),
+        resolvedFiles: [],
+        followUpInstructions: [],
+        manualResolutionSuggested: false,
+        readyFor: current?.readyFor ?? "merge",
+        editorHref: buildEditorHref(workspacePath),
+        lastAction: "abort",
+        persistedAt: Date.now(),
+      };
+      entry.rebase = {
+        ...nextState,
+        followUpInstructions: buildFollowUpInstructions(nextState, workspacePath),
+      };
+      registry.workspaces[workspacePath] = entry;
+      await writeRegistry(this.deps, registry);
+      return {
+        ok: true,
+        workspacePath,
+        action: input.action,
+        message: `Aborted the current rebase attempt for ${workspacePath}.`,
       };
     }
 

@@ -118,6 +118,23 @@ describe("WorkspaceLifecycleService", () => {
         cwd: repoPath("repo", "worktrees", "task"),
         title: "KANBAN-GAP-003",
         updatedAt: Date.parse("2026-04-24T02:00:00.000Z"),
+        runtime: {
+          updatedAt: Date.parse("2026-04-24T02:00:00.000Z"),
+          workspacePath: repoPath("repo", "worktrees", "task"),
+          preview: { status: "unavailable", urls: [], deviceProfiles: [] },
+          terminal: { status: "idle", commands: [] },
+          devServer: { status: "idle", urls: [], logs: [] },
+          rebase: {
+            status: "rebase-needed",
+            attemptCount: 0,
+            unresolvedFiles: ["packages/kanban/src/lib/workspace-lifecycle.ts"],
+            resolvedFiles: [],
+            followUpInstructions: ["Retry the rebase before merge readiness."],
+            manualResolutionSuggested: false,
+            readyFor: "merge",
+            persistedAt: Date.parse("2026-04-24T02:00:00.000Z"),
+          },
+        },
       },
     ];
 
@@ -130,6 +147,8 @@ describe("WorkspaceLifecycleService", () => {
     expect(result.workspaces[0]?.sessions.active).toBe(1);
     expect(result.workspaces[0]?.git.branch).toBe("vk/task");
     expect(result.workspaces[0]?.git.dirty).toBe(true);
+    expect(result.workspaces[0]?.rebase?.status).toBe("rebase-needed");
+    expect(result.workspaces[0]?.actions.canRebaseStart).toBe(true);
   });
 
   it("refuses cleanup for workspaces that are not archived and inactive", async () => {
@@ -181,5 +200,131 @@ describe("WorkspaceLifecycleService", () => {
       ["worktree", "add", repoPath("repo", "worktrees", "task"), "vk/task"],
       repoPath("repo", "main"),
     );
+  });
+
+  it("persists partial auto-resolve, abort, and repeated rebase attempts across reload", async () => {
+    let registry = JSON.stringify({
+      version: 1,
+      workspaces: {
+        [repoPath("repo", "worktrees", "task")]: {
+          path: repoPath("repo", "worktrees", "task"),
+          gitRoot: repoPath("repo", "main"),
+          commonDir: repoPath("repo", "common", ".git"),
+          branch: "vk/task",
+          rebase: {
+            status: "rebase-needed",
+            attemptCount: 0,
+            unresolvedFiles: [
+              "packages/kanban/src/components/workspaces/workspaces-page.tsx",
+              "packages/kanban/src/lib/workspace-lifecycle.ts",
+            ],
+            resolvedFiles: [],
+            followUpInstructions: [],
+            manualResolutionSuggested: false,
+            readyFor: "merge",
+          },
+        },
+      },
+    });
+
+    const deps = createDeps({
+      readFile: vi.fn(async () => registry),
+      writeFile: vi.fn(async (_path, contents) => {
+        registry = String(contents);
+      }),
+    });
+
+    const service = new WorkspaceLifecycleService(deps);
+
+    await service.applyAction({
+      action: "rebase-start",
+      workspacePath: repoPath("repo", "worktrees", "task"),
+      sessions: [],
+    });
+
+    let inventory = await service.listWorkspaces();
+    expect(inventory.workspaces[0]?.rebase?.status).toBe("rebase-conflicts");
+    expect(inventory.workspaces[0]?.rebase?.attemptCount).toBe(1);
+
+    await service.applyAction({
+      action: "rebase-auto-resolve",
+      workspacePath: repoPath("repo", "worktrees", "task"),
+      sessions: [],
+    });
+
+    inventory = await service.listWorkspaces();
+    expect(inventory.workspaces[0]?.rebase?.status).toBe("rebase-conflicts");
+    expect(inventory.workspaces[0]?.rebase?.unresolvedFiles).toHaveLength(1);
+    expect(inventory.workspaces[0]?.rebase?.resolvedFiles).toHaveLength(1);
+
+    await service.applyAction({
+      action: "rebase-abort",
+      workspacePath: repoPath("repo", "worktrees", "task"),
+      sessions: [],
+    });
+
+    inventory = await service.listWorkspaces();
+    expect(inventory.workspaces[0]?.rebase?.status).toBe("rebase-needed");
+    expect(inventory.workspaces[0]?.rebase?.attemptCount).toBe(1);
+    expect(inventory.workspaces[0]?.actions.canRebaseStart).toBe(true);
+    expect(inventory.workspaces[0]?.actions.canRebaseAbort).toBe(false);
+
+    await service.applyAction({
+      action: "rebase-start",
+      workspacePath: repoPath("repo", "worktrees", "task"),
+      sessions: [],
+    });
+
+    inventory = await service.listWorkspaces();
+    expect(inventory.workspaces[0]?.rebase?.status).toBe("rebase-conflicts");
+    expect(inventory.workspaces[0]?.rebase?.attemptCount).toBe(2);
+  });
+
+  it("returns manually resolved conflicts back to review readiness", async () => {
+    let registry = JSON.stringify({
+      version: 1,
+      workspaces: {
+        [repoPath("repo", "worktrees", "task")]: {
+          path: repoPath("repo", "worktrees", "task"),
+          gitRoot: repoPath("repo", "main"),
+          commonDir: repoPath("repo", "common", ".git"),
+          branch: "vk/task",
+          rebase: {
+            status: "rebase-conflicts",
+            attemptCount: 1,
+            unresolvedFiles: ["packages/kanban/src/lib/workspace-lifecycle.ts"],
+            resolvedFiles: [],
+            followUpInstructions: [],
+            manualResolutionSuggested: true,
+            readyFor: "review",
+          },
+        },
+      },
+    });
+
+    const deps = createDeps({
+      readFile: vi.fn(async () => registry),
+      writeFile: vi.fn(async (_path, contents) => {
+        registry = String(contents);
+      }),
+    });
+
+    const service = new WorkspaceLifecycleService(deps);
+
+    await service.applyAction({
+      action: "rebase-open-in-editor",
+      workspacePath: repoPath("repo", "worktrees", "task"),
+      sessions: [],
+    });
+    await service.applyAction({
+      action: "rebase-mark-resolved",
+      workspacePath: repoPath("repo", "worktrees", "task"),
+      sessions: [],
+    });
+
+    const inventory = await service.listWorkspaces();
+    expect(inventory.workspaces[0]?.rebase?.status).toBe("ready-for-review");
+    expect(inventory.workspaces[0]?.rebase?.lastAction).toBe("manual-resolve");
+    expect(inventory.workspaces[0]?.rebase?.followUpInstructions[0]).toContain("review");
   });
 });

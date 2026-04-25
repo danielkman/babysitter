@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { WorkspaceRuntimeDeviceProfile, WorkspaceRuntimeSurface } from "@a5c-ai/agent-mux-core";
-import { ExternalLink, Laptop2, Logs, Radar, Smartphone, TabletSmartphone, TerminalSquare } from "lucide-react";
+import { ExternalLink, GitBranch, Laptop2, Logs, Radar, Smartphone, TabletSmartphone, TerminalSquare } from "lucide-react";
 
 import { cn } from "@/lib/cn";
 import { Button } from "@/components/ui/button";
@@ -52,10 +52,13 @@ function previewHeight(device: WorkspaceRuntimeDeviceProfile): number {
 
 export function WorkspaceRuntimePanel(props: {
   runtime: WorkspaceRuntimeSurface;
+  rebase?: WorkspaceRuntimeSurface["rebase"];
   sessionId?: string;
   className?: string;
 }) {
-  const defaultTab = props.runtime.preview.primaryUrl ? "preview" : props.runtime.terminal.commands.length > 0 ? "terminal" : "dev-server";
+  const defaultTab = props.rebase && props.rebase.status === "rebase-conflicts"
+    ? "rebase"
+    : props.runtime.preview.primaryUrl ? "preview" : props.runtime.terminal.commands.length > 0 ? "terminal" : "dev-server";
   const devices = props.runtime.preview.deviceProfiles;
   const [deviceId, setDeviceId] = useState<WorkspaceRuntimeDeviceProfile["id"]>(devices[0]?.id ?? "desktop");
 
@@ -85,6 +88,7 @@ export function WorkspaceRuntimePanel(props: {
           <TabsTrigger value="preview">Preview</TabsTrigger>
           <TabsTrigger value="terminal">Terminal</TabsTrigger>
           <TabsTrigger value="dev-server">Dev server</TabsTrigger>
+          <TabsTrigger value="rebase">Rebase</TabsTrigger>
           <TabsTrigger value="inspect">Inspect</TabsTrigger>
         </TabsList>
 
@@ -255,12 +259,60 @@ export function WorkspaceRuntimePanel(props: {
           </div>
         </TabsContent>
 
+        <TabsContent value="rebase" className="space-y-4">
+          {props.rebase ? (
+            <article className="rounded-2xl border border-border bg-background/70 p-4">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className={cn("rounded-full border px-2 py-0.5 text-xs uppercase", statusClass(
+                  props.rebase.status === "rebase-conflicts"
+                    ? "failed"
+                    : props.rebase.status === "rebase-needed"
+                      ? "starting"
+                      : "ready",
+                ))}>
+                  {props.rebase.status.replace(/-/g, " ")}
+                </span>
+                <span className="rounded-full border border-border px-2 py-0.5 text-xs text-foreground-muted">
+                  Attempt {props.rebase.attemptCount}
+                </span>
+                <span className="rounded-full border border-border px-2 py-0.5 text-xs text-foreground-muted">
+                  Ready for {props.rebase.readyFor}
+                </span>
+              </div>
+
+              <div className="mt-4 grid gap-3 md:grid-cols-2">
+                <InspectCard icon={GitBranch} label="Target branch" value={props.rebase.targetBranch ?? "main"} />
+                <InspectCard icon={GitBranch} label="Unresolved" value={String(props.rebase.unresolvedFiles.length)} />
+              </div>
+
+              {props.rebase.followUpInstructions.length > 0 ? (
+                <div className="mt-4 grid gap-2 text-sm text-foreground-muted">
+                  {props.rebase.followUpInstructions.map((instruction) => (
+                    <div key={instruction} className="rounded-xl border border-border bg-card/70 px-3 py-2">
+                      {instruction}
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+
+              {props.rebase.unresolvedFiles.length > 0 ? (
+                <pre className="mt-4 whitespace-pre-wrap break-words rounded-2xl bg-slate-950 px-4 py-3 text-xs leading-6 text-slate-100">
+                  {props.rebase.unresolvedFiles.join("\n")}
+                </pre>
+              ) : null}
+            </article>
+          ) : (
+            <EmptyRuntimeState text="No rebase workflow state has been detected for this workspace yet." />
+          )}
+        </TabsContent>
+
         <TabsContent value="inspect" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <InspectCard icon={Radar} label="Workspace" value={props.runtime.workspacePath ?? "unavailable"} mono />
             <InspectCard icon={Logs} label="Commands" value={String(props.runtime.terminal.commands.length)} />
             <InspectCard icon={TerminalSquare} label="Terminal" value={props.runtime.terminal.status} />
             <InspectCard icon={ExternalLink} label="Preview origin" value={props.runtime.preview.primaryUrl ?? "unavailable"} />
+            <InspectCard icon={GitBranch} label="Rebase" value={props.rebase?.status ?? "unavailable"} />
           </div>
           <article className="rounded-2xl border border-border bg-background/70 p-4 text-sm text-foreground-muted">
             The inspect surface keeps the workspace path, preview origin, terminal activity, and dev-server status

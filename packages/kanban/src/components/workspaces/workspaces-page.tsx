@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import type { KanbanReviewArtifact, KanbanReviewComment, KanbanReviewSummary } from "@a5c-ai/agent-mux-core";
 import { AlertTriangle, Archive, FolderGit2, RefreshCw, RotateCcw, Trash2, Wrench } from "lucide-react";
 import { useEffect, useMemo, useState, useTransition } from "react";
 
@@ -49,7 +50,15 @@ export async function loadInventory(sessions: WorkspaceSessionSnapshot[]): Promi
 }
 
 export async function runWorkspaceAction(
-  action: "archive" | "cleanup" | "recover",
+  action:
+    | "archive"
+    | "cleanup"
+    | "recover"
+    | "rebase-start"
+    | "rebase-auto-resolve"
+    | "rebase-open-in-editor"
+    | "rebase-mark-resolved"
+    | "rebase-abort",
   workspacePath: string,
   sessions: WorkspaceSessionSnapshot[],
 ): Promise<WorkspaceInventoryResponse> {
@@ -66,6 +75,41 @@ export async function runWorkspaceAction(
 
   const payload = (await response.json()) as WorkspaceInventoryResponse;
   return payload;
+}
+
+function rebaseTone(status: NonNullable<WorkspaceInventoryItem["rebase"]>["status"]): string {
+  switch (status) {
+    case "ready-for-review":
+    case "ready-for-merge":
+      return "border-success/20 bg-success/10 text-success";
+    case "rebase-needed":
+      return "border-warning/20 bg-warning/10 text-warning";
+    case "rebase-conflicts":
+      return "border-error/20 bg-error/10 text-error";
+    default:
+      return "border-border text-foreground-muted";
+  }
+}
+
+function rebaseLabel(status: NonNullable<WorkspaceInventoryItem["rebase"]>["status"]): string {
+  return status.replace(/-/g, " ");
+}
+
+function buildReviewByPath(
+  artifacts: readonly KanbanReviewArtifact[],
+): ReadonlyMap<string, KanbanReviewSummary> {
+  return new Map<string, KanbanReviewSummary>(
+    artifacts.map((artifact: KanbanReviewArtifact) => [
+      artifact.targetId,
+      {
+        decision: artifact.decision,
+        queueState: artifact.queueState,
+        commentCount: artifact.comments.length,
+        openCommentCount: artifact.comments.filter((comment: KanbanReviewComment) => comment.status === "open").length,
+        latestActivityAt: artifact.updatedAt,
+      },
+    ]),
+  );
 }
 
 export function WorkspacesPageContent(props: {
@@ -138,19 +182,7 @@ export function WorkspacesPageContent(props: {
     missing: 0,
   };
   const liveReviewByPath = useMemo(
-    () =>
-      new Map(
-        workspaceReviews.artifacts.map((artifact) => [
-          artifact.targetId,
-          {
-            decision: artifact.decision,
-            queueState: artifact.queueState,
-            commentCount: artifact.comments.length,
-            openCommentCount: artifact.comments.filter((comment) => comment.status === "open").length,
-            latestActivityAt: artifact.updatedAt,
-          },
-        ]),
-      ),
+    () => buildReviewByPath(workspaceReviews.artifacts),
     [workspaceReviews.artifacts],
   );
 
@@ -165,15 +197,30 @@ export function WorkspacesPageContent(props: {
     });
   }
 
-  function handleAction(action: "archive" | "cleanup" | "recover", workspace: WorkspaceInventoryItem) {
+  function handleAction(
+    action:
+      | "archive"
+      | "cleanup"
+      | "recover"
+      | "rebase-start"
+      | "rebase-auto-resolve"
+      | "rebase-open-in-editor"
+      | "rebase-mark-resolved"
+      | "rebase-abort",
+    workspace: WorkspaceInventoryItem,
+  ) {
     const confirmationMessage =
       action === "cleanup"
         ? `Remove the git worktree at ${workspace.path}? This should only be used for archived, inactive workspaces.`
         : action === "archive"
           ? `Archive ${workspace.path} in the kanban workspace inventory?`
-          : `Recover ${workspace.path} back into the active inventory?`;
+          : action === "recover"
+            ? `Recover ${workspace.path} back into the active inventory?`
+            : action === "rebase-abort"
+              ? `Abort the current rebase workflow for ${workspace.path}?`
+              : null;
 
-    if (typeof window !== "undefined" && !window.confirm(confirmationMessage)) {
+    if (confirmationMessage && typeof window !== "undefined" && !window.confirm(confirmationMessage)) {
       return;
     }
 
@@ -183,7 +230,16 @@ export function WorkspacesPageContent(props: {
 
     startTransition(() => {
       void runWorkspaceAction(action, workspace.path, props.sessions)
-        .then((payload) => setInventory(payload))
+        .then((payload) => {
+          setInventory(payload);
+          if (action === "rebase-open-in-editor" && typeof window !== "undefined") {
+            const nextWorkspace = payload.workspaces.find((item) => item.path === workspace.path);
+            const editorHref = nextWorkspace?.rebase?.editorHref;
+            if (editorHref) {
+              window.open(editorHref, "_blank", "noopener,noreferrer");
+            }
+          }
+        })
         .catch((cause) => setError(cause instanceof Error ? cause.message : String(cause)))
         .finally(() => setPendingAction(null));
     });
@@ -318,7 +374,18 @@ function WorkspaceColumn(props: {
     NonNullable<WorkspaceInventoryItem["review"]>
   >;
   pendingAction: string | null;
-  onAction: (action: "archive" | "cleanup" | "recover", workspace: WorkspaceInventoryItem) => void;
+  onAction: (
+    action:
+      | "archive"
+      | "cleanup"
+      | "recover"
+      | "rebase-start"
+      | "rebase-auto-resolve"
+      | "rebase-open-in-editor"
+      | "rebase-mark-resolved"
+      | "rebase-abort",
+    workspace: WorkspaceInventoryItem,
+  ) => void;
 }) {
   const Icon = props.icon;
 
@@ -339,10 +406,16 @@ function WorkspaceColumn(props: {
           const archiveKey = `archive:${workspace.path}`;
           const cleanupKey = `cleanup:${workspace.path}`;
           const recoverKey = `recover:${workspace.path}`;
+          const rebaseStartKey = `rebase-start:${workspace.path}`;
+          const rebaseAutoResolveKey = `rebase-auto-resolve:${workspace.path}`;
+          const rebaseOpenEditorKey = `rebase-open-in-editor:${workspace.path}`;
+          const rebaseMarkResolvedKey = `rebase-mark-resolved:${workspace.path}`;
+          const rebaseAbortKey = `rebase-abort:${workspace.path}`;
           const runtimeSession =
             workspace.sessions.items.find((session) => session.status === "active" && session.runtime) ??
             workspace.sessions.items.find((session) => session.runtime);
           const review = props.reviewByPath.get(workspace.path) ?? workspace.review;
+          const rebase = workspace.rebase;
 
           return (
             <article key={workspace.path} className="rounded-2xl border border-border bg-background/70 p-4">
@@ -367,6 +440,11 @@ function WorkspaceColumn(props: {
                     {workspace.git.branch ? (
                       <span className="rounded-full border border-info/20 bg-info/10 px-2 py-0.5 text-xs text-info">
                         {workspace.git.branch}
+                      </span>
+                    ) : null}
+                    {rebase ? (
+                      <span className={cn("rounded-full border px-2 py-0.5 text-xs", rebaseTone(rebase.status))}>
+                        {rebaseLabel(rebase.status)}
                       </span>
                     ) : null}
                     {review ? (
@@ -434,10 +512,104 @@ function WorkspaceColumn(props: {
                 {workspace.cleanedAt ? ` · cleaned ${formatTimestamp(workspace.cleanedAt)}` : ""}
               </p>
 
+              {rebase ? (
+                <section className={cn("mt-4 rounded-2xl border p-4", rebaseTone(rebase.status))}>
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em]">Rebase workflow</p>
+                      <h3 className="mt-1 text-sm font-semibold">
+                        {rebase.status === "rebase-needed"
+                          ? "Rebase required before this workspace can move forward"
+                          : rebase.status === "rebase-conflicts"
+                            ? "Resolve conflicts before returning to review or merge"
+                            : `Ready for ${rebase.readyFor}`}
+                      </h3>
+                      <p className="mt-1 text-xs">
+                        Attempt {rebase.attemptCount} · target `{rebase.targetBranch ?? "main"}`
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {workspace.actions.canRebaseStart ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => props.onAction("rebase-start", workspace)}
+                          disabled={props.pendingAction === rebaseStartKey}
+                        >
+                          {rebase.attemptCount > 0 ? "Retry rebase" : "Start rebase"}
+                        </Button>
+                      ) : null}
+                      {workspace.actions.canRebaseAutoResolve ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => props.onAction("rebase-auto-resolve", workspace)}
+                          disabled={props.pendingAction === rebaseAutoResolveKey}
+                        >
+                          Auto-resolve
+                        </Button>
+                      ) : null}
+                      {workspace.actions.canRebaseOpenInEditor ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => props.onAction("rebase-open-in-editor", workspace)}
+                          disabled={props.pendingAction === rebaseOpenEditorKey}
+                        >
+                          Open in editor
+                        </Button>
+                      ) : null}
+                      {workspace.actions.canRebaseMarkResolved ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => props.onAction("rebase-mark-resolved", workspace)}
+                          disabled={props.pendingAction === rebaseMarkResolvedKey}
+                        >
+                          Mark resolved
+                        </Button>
+                      ) : null}
+                      {workspace.actions.canRebaseAbort ? (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => props.onAction("rebase-abort", workspace)}
+                          disabled={props.pendingAction === rebaseAbortKey}
+                        >
+                          Abort
+                        </Button>
+                      ) : null}
+                    </div>
+                  </div>
+
+                  <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                    <MiniStat label="Unresolved" value={String(rebase.unresolvedFiles.length)} />
+                    <MiniStat label="Resolved" value={String(rebase.resolvedFiles.length)} />
+                  </div>
+
+                  {rebase.followUpInstructions.length > 0 ? (
+                    <ul className="mt-3 grid gap-2 text-sm">
+                      {rebase.followUpInstructions.map((instruction) => (
+                        <li key={instruction} className="rounded-xl border border-current/10 bg-background/60 px-3 py-2">
+                          {instruction}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+
+                  {rebase.unresolvedFiles.length > 0 ? (
+                    <p className="mt-3 text-xs font-mono text-foreground-muted">
+                      Conflicts: {rebase.unresolvedFiles.join(", ")}
+                    </p>
+                  ) : null}
+                </section>
+              ) : null}
+
               {runtimeSession?.runtime ? (
                 <WorkspaceRuntimePanel
                   className="mt-5 border-border/70 bg-card/70"
                   runtime={runtimeSession.runtime}
+                  rebase={workspace.rebase}
                   sessionId={runtimeSession.sessionId}
                 />
               ) : null}
