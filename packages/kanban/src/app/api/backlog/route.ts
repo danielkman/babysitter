@@ -226,6 +226,43 @@ export async function POST(request: Request) {
               : [],
         });
         break;
+      case 'create-sub-issue':
+        if (typeof body.parentIssueId !== 'string' || typeof body.title !== 'string') {
+          throw new AppError('parentIssueId and title are required.', 'BAD_REQUEST', 400);
+        }
+        overview = (
+          await service.createIssue({
+            parentIssueId: body.parentIssueId,
+            title: body.title,
+            summary: typeof body.summary === 'string' ? body.summary : undefined,
+            priority:
+              body.priority === 'critical' ||
+              body.priority === 'high' ||
+              body.priority === 'medium' ||
+              body.priority === 'low'
+                ? body.priority
+                : undefined,
+            status:
+              body.status === 'backlog' ||
+              body.status === 'ready' ||
+              body.status === 'in-progress' ||
+              body.status === 'blocked' ||
+              body.status === 'review' ||
+              body.status === 'done'
+                ? body.status
+                : undefined,
+          })
+        ).overview;
+        break;
+      case 'link-child-issue':
+        if (typeof body.parentIssueId !== 'string' || typeof body.childIssueId !== 'string') {
+          throw new AppError('parentIssueId and childIssueId are required.', 'BAD_REQUEST', 400);
+        }
+        overview = await service.linkChildIssue({
+          parentIssueId: body.parentIssueId,
+          childIssueId: body.childIssueId,
+        });
+        break;
       default:
         throw new AppError('Unsupported backlog action.', 'BAD_REQUEST', 400);
     }

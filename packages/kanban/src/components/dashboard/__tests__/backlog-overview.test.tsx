@@ -10,17 +10,26 @@ const updateRepositorySettingsMock = vi.fn();
 const createPullRequestMock = vi.fn();
 const updateProjectCollaborationMock = vi.fn();
 const updateIssueCollaborationMock = vi.fn();
-const refreshMock = vi.fn();
 const createIssueMock = vi.fn();
+const createSubIssueMock = vi.fn();
+const linkChildIssueMock = vi.fn();
+const refreshMock = vi.fn();
+const push = vi.fn();
 
 let creatingIssueState = false;
+let searchParams = new URLSearchParams();
 
 vi.mock("next/navigation", () => ({
-  useSearchParams: () => new URLSearchParams(),
+  useRouter: () => ({ push, replace: vi.fn(), back: vi.fn(), prefetch: vi.fn() }),
+  useSearchParams: () => searchParams,
 }));
 
-vi.mock("@/hooks/use-backlog", () => ({
-  useBacklog: () => ({
+vi.mock("@/components/review/review-panel", () => ({
+  ReviewPanel: () => null,
+}));
+
+function buildBacklogState() {
+  return {
     snapshot: {
       generatedAt: "2026-04-24T14:00:00.000Z",
       projects: [
@@ -28,7 +37,7 @@ vi.mock("@/hooks/use-backlog", () => ({
           id: "kanban-app",
           key: "KANBAN",
           name: "Kanban App",
-          issueIds: ["KANBAN-GAP-007"],
+          issueIds: ["KANBAN-GAP-007", "KANBAN-GAP-008", "KANBAN-GAP-009"],
           labels: [],
           assignees: [],
           team: {
@@ -70,13 +79,13 @@ vi.mock("@/hooks/use-backlog", () => ({
           statuses: [],
           repositories: [],
           metrics: {
-            totalIssues: 1,
-            readyIssues: 1,
+            totalIssues: 3,
+            readyIssues: 2,
             blockedIssues: 0,
             dispatchedIssues: 0,
             completedIssues: 0,
-            needsDecompositionIssues: 0,
-            inProgressIssues: 0,
+            needsDecompositionIssues: 1,
+            inProgressIssues: 1,
           },
         },
       ],
@@ -98,12 +107,12 @@ vi.mock("@/hooks/use-backlog", () => ({
           dependencies: [],
           acceptanceCriteria: [],
           decomposition: [],
-          childIssueIds: [],
+          childIssueIds: ["KANBAN-GAP-008"],
           createdAt: "2026-04-24T14:00:00.000Z",
           updatedAt: "2026-04-24T14:00:00.000Z",
           dispatch: {
-            readiness: "ready",
-            blockedReasons: [],
+            readiness: "needs-decomposition",
+            blockedReasons: ["child issues still open"],
             runIds: [],
             sessionIds: [],
           },
@@ -119,6 +128,57 @@ vi.mock("@/hooks/use-backlog", () => ({
             },
           ],
         },
+        {
+          id: "KANBAN-GAP-008",
+          key: "KANBAN-GAP-008",
+          projectId: "kanban-app",
+          title: "Add parent-child issue panel",
+          summary: "Relationship panel",
+          status: "in-progress",
+          priority: "high",
+          labels: [],
+          assignees: [],
+          collaborators: [],
+          dependencies: [],
+          acceptanceCriteria: [],
+          decomposition: [],
+          childIssueIds: [],
+          parentIssueId: "KANBAN-GAP-007",
+          createdAt: "2026-04-24T14:00:00.000Z",
+          updatedAt: "2026-04-24T14:00:00.000Z",
+          dispatch: {
+            readiness: "ready",
+            blockedReasons: [],
+            runIds: [],
+            sessionIds: [],
+          },
+          activity: [],
+        },
+        {
+          id: "KANBAN-GAP-009",
+          key: "KANBAN-GAP-009",
+          projectId: "kanban-app",
+          title: "Link existing issue into hierarchy",
+          summary: "Available child issue",
+          status: "ready",
+          priority: "medium",
+          labels: [],
+          assignees: [],
+          collaborators: [],
+          dependencies: [],
+          acceptanceCriteria: [],
+          decomposition: [],
+          childIssueIds: [],
+          createdAt: "2026-04-24T14:00:00.000Z",
+          updatedAt: "2026-04-24T14:00:00.000Z",
+          dispatch: {
+            readiness: "ready",
+            blockedReasons: [],
+            runIds: [],
+            sessionIds: [],
+          },
+          activity: [],
+        },
       ],
     },
     board: {
@@ -130,14 +190,31 @@ vi.mock("@/hooks/use-backlog", () => ({
           projectName: "Kanban App",
           generatedAt: "2026-04-24T14:00:00.000Z",
           columns: [
-            { id: "todo", name: "Todo", issueIds: ["KANBAN-GAP-007"], issueCount: 1, isOverLimit: false },
-            { id: "in-progress", name: "In Progress", issueIds: [], issueCount: 0, wipLimit: 3, isOverLimit: false },
+            {
+              id: "todo",
+              name: "Todo",
+              issueIds: ["KANBAN-GAP-007", "KANBAN-GAP-009"],
+              issueCount: 2,
+              isOverLimit: false,
+            },
+            {
+              id: "in-progress",
+              name: "In Progress",
+              issueIds: ["KANBAN-GAP-008"],
+              issueCount: 1,
+              wipLimit: 3,
+              isOverLimit: false,
+            },
             { id: "review", name: "Review", issueIds: [], issueCount: 0, wipLimit: 3, isOverLimit: false },
             { id: "done", name: "Done", issueIds: [], issueCount: 0, isOverLimit: false },
           ],
           swimlanes: [
             { id: "expedite", name: "Expedite", issueIds: [] },
-            { id: "standard", name: "Standard", issueIds: ["KANBAN-GAP-007"] },
+            {
+              id: "standard",
+              name: "Standard",
+              issueIds: ["KANBAN-GAP-007", "KANBAN-GAP-008", "KANBAN-GAP-009"],
+            },
             { id: "blocked", name: "Blocked", issueIds: [] },
           ],
           cards: [
@@ -150,16 +227,60 @@ vi.mock("@/hooks/use-backlog", () => ({
               workflowState: "todo",
               swimlaneId: "standard",
               priority: "medium",
-              readiness: "ready",
+              readiness: "needs-decomposition",
               blocked: false,
               blockedReasons: [],
               labelNames: [],
               assigneeNames: ["Tal Muskal"],
               collaboratorNames: ["Tal Muskal", "QA Lead"],
               dependencyCount: 0,
-              childCount: 0,
+              childCount: 1,
               activityCount: 1,
               latestActivityAt: "2026-04-24T14:00:00.000Z",
+              acceptanceProgress: { satisfied: 0, total: 0 },
+              moveTargets: [{ state: "in-progress", allowed: true, signals: [] }],
+              policySignals: [],
+            },
+            {
+              issueId: "KANBAN-GAP-008",
+              issueKey: "KANBAN-GAP-008",
+              projectId: "kanban-app",
+              title: "Add parent-child issue panel",
+              summary: "Relationship panel",
+              workflowState: "in-progress",
+              swimlaneId: "standard",
+              priority: "high",
+              readiness: "ready",
+              blocked: false,
+              blockedReasons: [],
+              labelNames: [],
+              assigneeNames: [],
+              collaboratorNames: [],
+              dependencyCount: 0,
+              childCount: 0,
+              activityCount: 0,
+              acceptanceProgress: { satisfied: 0, total: 0 },
+              moveTargets: [{ state: "review", allowed: true, signals: [] }],
+              policySignals: [],
+            },
+            {
+              issueId: "KANBAN-GAP-009",
+              issueKey: "KANBAN-GAP-009",
+              projectId: "kanban-app",
+              title: "Link existing issue into hierarchy",
+              summary: "Available child issue",
+              workflowState: "todo",
+              swimlaneId: "standard",
+              priority: "medium",
+              readiness: "ready",
+              blocked: false,
+              blockedReasons: [],
+              labelNames: [],
+              assigneeNames: [],
+              collaboratorNames: [],
+              dependencyCount: 0,
+              childCount: 0,
+              activityCount: 0,
               acceptanceProgress: { satisfied: 0, total: 0 },
               moveTargets: [{ state: "in-progress", allowed: true, signals: [] }],
               policySignals: [],
@@ -171,13 +292,13 @@ vi.mock("@/hooks/use-backlog", () => ({
     },
     summary: {
       projectCount: 1,
-      issueCount: 1,
-      readyCount: 1,
+      issueCount: 3,
+      readyCount: 2,
       blockedCount: 0,
       dispatchedCount: 0,
       completedCount: 0,
-      needsDecompositionCount: 0,
-      inProgressCount: 0,
+      needsDecompositionCount: 1,
+      inProgressCount: 1,
     },
     loading: false,
     error: undefined,
@@ -188,11 +309,20 @@ vi.mock("@/hooks/use-backlog", () => ({
     createIssue: createIssueMock,
     updateProjectCollaboration: updateProjectCollaborationMock,
     updateIssueCollaboration: updateIssueCollaborationMock,
+    createSubIssue: createSubIssueMock,
+    linkChildIssue: linkChildIssueMock,
     movingIssueId: null,
     mutatingIssueId: null,
     creatingIssue: creatingIssueState,
+    mutationError: null,
     refresh: refreshMock,
-  }),
+  };
+}
+
+let backlogState = buildBacklogState();
+
+vi.mock("@/hooks/use-backlog", () => ({
+  useBacklog: () => backlogState,
 }));
 
 vi.mock("@/hooks/use-reviews", () => ({
@@ -211,14 +341,19 @@ describe("BacklogOverview", () => {
   beforeEach(() => {
     localStorage.clear();
     creatingIssueState = false;
+    searchParams = new URLSearchParams();
+    push.mockReset();
     moveIssueMock.mockReset();
     linkRepositoryMock.mockReset();
     updateRepositorySettingsMock.mockReset();
     createPullRequestMock.mockReset();
+    createIssueMock.mockReset();
+    createSubIssueMock.mockReset();
+    linkChildIssueMock.mockReset();
     updateProjectCollaborationMock.mockReset();
     updateIssueCollaborationMock.mockReset();
-    createIssueMock.mockReset();
     refreshMock.mockReset();
+    backlogState = buildBacklogState();
   });
 
   it("renders collaboration settings, permission policy, and issue activity", () => {
@@ -226,7 +361,7 @@ describe("BacklogOverview", () => {
 
     expect(screen.getByText("Shared collaboration state now lives beside the board model")).toBeInTheDocument();
     expect(screen.getByText("Permission matrix")).toBeInTheDocument();
-    expect(screen.getByText("Issue activity")).toBeInTheDocument();
+    expect(screen.getAllByText("Issue activity").length).toBeGreaterThan(0);
     expect(screen.getByText("Updated shared team settings, roster, and permission policy.")).toBeInTheDocument();
     expect(screen.getByText("Set 1 assignees and 2 collaborators for KANBAN-GAP-007.")).toBeInTheDocument();
   });
@@ -238,8 +373,7 @@ describe("BacklogOverview", () => {
     await user.click(screen.getByTestId("board-header-create"));
     expect(screen.getByText("Draft is empty.")).toBeInTheDocument();
 
-    const title = screen.getByLabelText("Issue title");
-    await user.type(title, "Draft that should be cleared");
+    await user.type(screen.getByLabelText("Issue title"), "Draft that should be cleared");
 
     expect(screen.getByTestId("create-issue-panel")).toBeInTheDocument();
     await waitFor(() => {
@@ -331,11 +465,72 @@ describe("BacklogOverview", () => {
   it("shows the explicit loading state when issue creation is already in flight", async () => {
     const user = setupUser();
     creatingIssueState = true;
+    backlogState = buildBacklogState();
 
     render(<BacklogOverview />);
 
     await user.click(screen.getByTestId("board-header-create"));
 
     expect(screen.getByRole("button", { name: "Creating issue…" })).toBeDisabled();
+  });
+
+  it("opens the focused issue panel from the board card", async () => {
+    const user = setupUser();
+    render(<BacklogOverview />);
+
+    await user.click(screen.getByTestId("open-issue-KANBAN-GAP-007"));
+
+    expect(push).toHaveBeenCalledWith("/?issueId=KANBAN-GAP-007&issueKey=KANBAN-GAP-007");
+  });
+
+  it("renders parent and child relationship controls for the focused issue", () => {
+    searchParams = new URLSearchParams("issueId=KANBAN-GAP-007&issueKey=KANBAN-GAP-007");
+
+    render(<BacklogOverview />);
+
+    expect(screen.getByTestId("issue-relationship-panel")).toBeInTheDocument();
+    expect(screen.getByTestId("child-nav-KANBAN-GAP-008")).toBeInTheDocument();
+    expect(screen.getByTestId("create-sub-issue-form")).toBeInTheDocument();
+    expect(screen.getByTestId("link-child-issue-form")).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: /KANBAN-GAP-009/i })).toBeInTheDocument();
+  });
+
+  it("navigates back to the parent issue from the child issue panel", async () => {
+    const user = setupUser();
+    searchParams = new URLSearchParams("issueId=KANBAN-GAP-008&issueKey=KANBAN-GAP-008");
+
+    render(<BacklogOverview />);
+    await user.click(screen.getByTestId("back-to-parent-KANBAN-GAP-007"));
+
+    expect(push).toHaveBeenCalledWith("/?issueId=KANBAN-GAP-007&issueKey=KANBAN-GAP-007");
+  });
+
+  it("shows loading and error states inside relationship sections", () => {
+    searchParams = new URLSearchParams("issueId=KANBAN-GAP-007&issueKey=KANBAN-GAP-007");
+    backlogState = {
+      ...buildBacklogState(),
+      loading: true,
+      mutationError: {
+        issueId: "KANBAN-GAP-007",
+        message: "Linking this child would create a parent-child cycle.",
+      },
+    };
+
+    const { rerender } = render(<BacklogOverview />);
+    expect(screen.getByTestId("parent-relationship-loading")).toBeInTheDocument();
+    expect(screen.getByTestId("child-relationship-loading")).toBeInTheDocument();
+
+    backlogState = {
+      ...backlogState,
+      loading: false,
+    };
+    rerender(<BacklogOverview />);
+
+    expect(screen.getByTestId("parent-relationship-error")).toHaveTextContent(
+      "Linking this child would create a parent-child cycle.",
+    );
+    expect(screen.getByTestId("child-relationship-error")).toHaveTextContent(
+      "Linking this child would create a parent-child cycle.",
+    );
   });
 });

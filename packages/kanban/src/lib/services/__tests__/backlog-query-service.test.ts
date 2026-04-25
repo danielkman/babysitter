@@ -216,6 +216,126 @@ describe("BacklogQueryService", () => {
     ).toBe("automation");
   });
 
+  it("creates a sub-issue and keeps the parent relationship in sync", async () => {
+    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "kanban-backlog-"));
+    tempDirs.push(tempDir);
+    const backlogFilePath = path.join(tempDir, "kanban-backlog.json");
+
+    const service = new BacklogQueryService({
+      backlogFilePath,
+      now: () => "2026-04-24T12:00:00.000Z",
+      reviewService: {
+        listReviews: vi.fn().mockResolvedValue({
+          generatedAt: "2026-04-24T12:00:00.000Z",
+          artifacts: [],
+          queue: [],
+          summary: {
+            total: 0,
+            issueCount: 0,
+            workspaceCount: 0,
+            pendingCount: 0,
+            changesRequestedCount: 0,
+            approvedCount: 0,
+            openCommentCount: 0,
+          },
+        }),
+      } as never,
+      runQueryService: {
+        listProjects: vi.fn().mockResolvedValue({
+          recentCompletionWindowMs: 14400000,
+          projects: [],
+        }),
+      } as never,
+    });
+
+    const parent = await service.createIssue({
+      projectId: "kanban-app",
+      title: "Parent relationship shell",
+      status: "ready",
+      priority: "medium",
+    });
+
+    const completedChild = await service.createIssue({
+      parentIssueId: parent.issue.id,
+      title: "Ship the first child",
+      status: "done",
+      priority: "medium",
+    });
+
+    expect(completedChild.issue.parentIssueId).toBe(parent.issue.id);
+    expect(
+      completedChild.overview.snapshot.issues.find((issue) => issue.id === parent.issue.id)?.dispatch.readiness,
+    ).toBe("ready");
+
+    const created = await service.createIssue({
+      parentIssueId: parent.issue.id,
+      title: "Author parent-child relationship panel states",
+      summary: "Relationship UX parity slice",
+      status: "ready",
+      priority: "high",
+    });
+
+    expect(created.issue.parentIssueId).toBe(parent.issue.id);
+    expect(
+      created.overview.snapshot.issues.find((issue) => issue.id === parent.issue.id)?.childIssueIds,
+    ).toContain(created.issue.id);
+    expect(
+      created.overview.snapshot.issues.find((issue) => issue.id === parent.issue.id)?.dispatch.readiness,
+    ).toBe("needs-decomposition");
+  });
+
+  it("links an existing child issue and rejects hierarchy cycles", async () => {
+    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "kanban-backlog-"));
+    tempDirs.push(tempDir);
+    const backlogFilePath = path.join(tempDir, "kanban-backlog.json");
+
+    const service = new BacklogQueryService({
+      backlogFilePath,
+      now: () => "2026-04-24T12:00:00.000Z",
+      reviewService: {
+        listReviews: vi.fn().mockResolvedValue({
+          generatedAt: "2026-04-24T12:00:00.000Z",
+          artifacts: [],
+          queue: [],
+          summary: {
+            total: 0,
+            issueCount: 0,
+            workspaceCount: 0,
+            pendingCount: 0,
+            changesRequestedCount: 0,
+            approvedCount: 0,
+            openCommentCount: 0,
+          },
+        }),
+      } as never,
+      runQueryService: {
+        listProjects: vi.fn().mockResolvedValue({
+          recentCompletionWindowMs: 14400000,
+          projects: [],
+        }),
+      } as never,
+    });
+
+    const linked = await service.linkChildIssue({
+      parentIssueId: "KANBAN-GAP-007",
+      childIssueId: "KANBAN-GAP-004",
+    });
+
+    expect(
+      linked.snapshot.issues.find((issue) => issue.id === "KANBAN-GAP-004")?.parentIssueId,
+    ).toBe("KANBAN-GAP-007");
+    expect(
+      linked.snapshot.issues.find((issue) => issue.id === "KANBAN-GAP-007")?.childIssueIds,
+    ).toContain("KANBAN-GAP-004");
+
+    await expect(
+      service.linkChildIssue({
+        parentIssueId: "KANBAN-GAP-001-A",
+        childIssueId: "KANBAN-GAP-001",
+      }),
+    ).rejects.toMatchObject({ code: "BAD_REQUEST", status: 400 });
+  });
+
   it("links a repository and creates a pull request through persisted backlog data", async () => {
     const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "kanban-backlog-"));
     tempDirs.push(tempDir);

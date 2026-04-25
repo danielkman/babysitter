@@ -111,6 +111,10 @@ export function useBacklog(interval = 15000) {
   const [movingIssueId, setMovingIssueId] = useState<string | null>(null);
   const [mutatingIssueId, setMutatingIssueId] = useState<string | null>(null);
   const [creatingIssue, setCreatingIssue] = useState(false);
+  const [mutationError, setMutationError] = useState<{
+    issueId: string;
+    message: string;
+  } | null>(null);
   const { data, loading, error, refresh } = useSmartPolling<BacklogOverviewResponse>(
     "/api/backlog",
     {
@@ -121,6 +125,7 @@ export function useBacklog(interval = 15000) {
 
   async function mutateBacklog<T>(body: Record<string, unknown>, issueId: string): Promise<T> {
     setMutatingIssueId(issueId);
+    setMutationError(null);
     try {
       const result = await resilientFetch<T>("/api/backlog", {
         method: "POST",
@@ -129,11 +134,24 @@ export function useBacklog(interval = 15000) {
       });
 
       if (!result.ok) {
-        throw new Error(result.error.message);
+        const nextError = {
+          issueId,
+          message: result.error.message,
+        };
+        setMutationError(nextError);
+        throw new Error(nextError.message);
       }
 
       await refresh();
       return result.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        setMutationError({
+          issueId,
+          message: error.message,
+        });
+      }
+      throw error;
     } finally {
       setMutatingIssueId(null);
     }
@@ -224,6 +242,23 @@ export function useBacklog(interval = 15000) {
     }
   }
 
+  async function createSubIssue(input: {
+    parentIssueId: string;
+    title: string;
+    summary?: string;
+    priority?: "critical" | "high" | "medium" | "low";
+    status?: "backlog" | "ready" | "in-progress" | "blocked" | "review" | "done";
+  }): Promise<void> {
+    await mutateBacklog({ action: "create-sub-issue", ...input }, input.parentIssueId);
+  }
+
+  async function linkChildIssue(input: {
+    parentIssueId: string;
+    childIssueId: string;
+  }): Promise<void> {
+    await mutateBacklog({ action: "link-child-issue", ...input }, input.parentIssueId);
+  }
+
   return {
     snapshot: data?.snapshot,
     board: data?.board,
@@ -238,8 +273,11 @@ export function useBacklog(interval = 15000) {
     createIssue,
     updateProjectCollaboration,
     updateIssueCollaboration,
+    createSubIssue,
+    linkChildIssue,
     movingIssueId,
     mutatingIssueId,
     creatingIssue,
+    mutationError,
   };
 }

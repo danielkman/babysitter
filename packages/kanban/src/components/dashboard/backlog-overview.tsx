@@ -3,6 +3,7 @@
 import type {
   KanbanBoardCard,
   KanbanCollaboratorRole,
+  KanbanIssue,
   KanbanPermissionGrant,
   KanbanProject,
   KanbanProjectBoard,
@@ -12,6 +13,7 @@ import type {
 import {
   Activity,
   AlertCircle,
+  ArrowLeft,
   ArrowRight,
   CheckCircle2,
   FolderGit2,
@@ -30,7 +32,7 @@ import {
   Workflow,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { useBacklog } from "@/hooks/use-backlog";
 import { usePersistedState } from "@/hooks/use-persisted-state";
@@ -382,6 +384,51 @@ function renderListCard(card: KanbanBoardCard) {
       {card.summary ? <p className="mt-2 text-sm leading-6 opacity-90">{card.summary}</p> : null}
     </article>
   );
+}
+
+function issueStatusLabel(status: KanbanIssue["status"]): string {
+  return status
+    .split("-")
+    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+    .join(" ");
+}
+
+function issueStatusTone(status: KanbanIssue["status"]): string {
+  switch (status) {
+    case "done":
+      return "border-success/25 bg-success-muted text-success";
+    case "review":
+      return "border-primary/25 bg-primary/10 text-primary";
+    case "in-progress":
+      return "border-warning/25 bg-warning-muted text-warning";
+    case "blocked":
+      return "border-error/25 bg-error-muted text-error";
+    default:
+      return "border-border bg-background text-foreground-muted";
+  }
+}
+
+function collectDescendantIssueIds(
+  issue: KanbanIssue,
+  issueById: ReadonlyMap<string, KanbanIssue>,
+): Set<string> {
+  const descendants = new Set<string>();
+  const pending = [...issue.childIssueIds];
+
+  while (pending.length > 0) {
+    const childIssueId = pending.shift();
+    if (!childIssueId || descendants.has(childIssueId)) {
+      continue;
+    }
+
+    descendants.add(childIssueId);
+    const childIssue = issueById.get(childIssueId);
+    if (childIssue) {
+      pending.push(...childIssue.childIssueIds);
+    }
+  }
+
+  return descendants;
 }
 
 interface ProjectCollaborationPanelProps {
@@ -1128,7 +1175,394 @@ function RepositoryLifecyclePanel({
   );
 }
 
+interface IssueRelationshipPanelProps {
+  issue: KanbanIssue;
+  card?: KanbanBoardCard;
+  project: KanbanProject;
+  issues: readonly KanbanIssue[];
+  loading: boolean;
+  mutating: boolean;
+  mutationError?: {
+    issueId: string;
+    message: string;
+  } | null;
+  onFocusIssue: (issue: KanbanIssue) => void;
+  onClose: () => void;
+  onCreateSubIssue: (input: {
+    parentIssueId: string;
+    title: string;
+    summary?: string;
+    priority?: "critical" | "high" | "medium" | "low";
+    status?: "backlog" | "ready" | "in-progress" | "blocked" | "review" | "done";
+  }) => Promise<void>;
+  onLinkChildIssue: (input: { parentIssueId: string; childIssueId: string }) => Promise<void>;
+}
+
+function IssueRelationshipPanel({
+  issue,
+  card,
+  project,
+  issues,
+  loading,
+  mutating,
+  mutationError,
+  onFocusIssue,
+  onClose,
+  onCreateSubIssue,
+  onLinkChildIssue,
+}: IssueRelationshipPanelProps) {
+  const issueById = new Map(issues.map((candidate) => [candidate.id, candidate] as const));
+  const parentIssue = issue.parentIssueId ? issueById.get(issue.parentIssueId) : undefined;
+  const childIssues = issue.childIssueIds
+    .map((childIssueId) => issueById.get(childIssueId))
+    .filter((candidate): candidate is KanbanIssue => Boolean(candidate));
+  const descendants = collectDescendantIssueIds(issue, issueById);
+  const ancestors = new Set<string>();
+  let currentParentId = issue.parentIssueId;
+
+  while (currentParentId) {
+    ancestors.add(currentParentId);
+    currentParentId = issueById.get(currentParentId)?.parentIssueId;
+  }
+
+  const linkableIssues = issues.filter(
+    (candidate) =>
+      candidate.projectId === issue.projectId &&
+      candidate.id !== issue.id &&
+      !issue.childIssueIds.includes(candidate.id) &&
+      !descendants.has(candidate.id) &&
+      !ancestors.has(candidate.id) &&
+      !candidate.parentIssueId,
+  );
+
+  const [childTitle, setChildTitle] = useState("");
+  const [childSummary, setChildSummary] = useState("");
+  const [childPriority, setChildPriority] = useState<"critical" | "high" | "medium" | "low">(
+    "medium",
+  );
+  const [childStatus, setChildStatus] = useState<
+    "backlog" | "ready" | "in-progress" | "blocked" | "review" | "done"
+  >("backlog");
+  const [selectedChildIssueId, setSelectedChildIssueId] = useState<string>(
+    linkableIssues[0]?.id ?? "",
+  );
+
+  useEffect(() => {
+    setSelectedChildIssueId((current) =>
+      current && linkableIssues.some((candidate) => candidate.id === current)
+        ? current
+        : (linkableIssues[0]?.id ?? ""),
+    );
+  }, [linkableIssues]);
+
+  const relationshipError = mutationError?.issueId === issue.id ? mutationError.message : null;
+
+  return (
+    <section
+      className="mb-6 rounded-3xl border border-border bg-card p-6 shadow-lg"
+      data-testid="issue-relationship-panel"
+    >
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="max-w-4xl">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">
+            Issue Relationship
+          </p>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <h3 className="text-2xl font-semibold tracking-tight text-foreground">{issue.key}</h3>
+            <span className={`rounded-full border px-2.5 py-1 text-xs ${issueStatusTone(issue.status)}`}>
+              {issueStatusLabel(issue.status)}
+            </span>
+            <span className="rounded-full border border-border px-2.5 py-1 text-xs text-foreground-muted">
+              {issue.dispatch.readiness}
+            </span>
+          </div>
+          <p className="mt-2 text-base font-semibold text-foreground">{issue.title}</p>
+          {issue.summary ? (
+            <p className="mt-2 text-sm leading-6 text-foreground-muted">{issue.summary}</p>
+          ) : null}
+          <div className="mt-3 flex flex-wrap gap-2 text-xs text-foreground-muted">
+            <span className="rounded-full border border-border px-2.5 py-1">
+              {issue.childIssueIds.length} child issues
+            </span>
+            <span className="rounded-full border border-border px-2.5 py-1">
+              {issue.dependencies.length} dependencies
+            </span>
+            {card ? (
+              <span className="rounded-full border border-border px-2.5 py-1">
+                Board lane {stateLabel(card.workflowState)}
+              </span>
+            ) : null}
+            <span className="rounded-full border border-border px-2.5 py-1">
+              Team {project.team.name}
+            </span>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={onClose}
+          className="inline-flex h-11 items-center justify-center rounded-xl border border-border px-4 text-sm font-semibold text-foreground-muted"
+        >
+          Close issue
+        </button>
+      </div>
+
+      <div className="mt-6 grid gap-4 xl:grid-cols-2">
+        <article
+          className="rounded-2xl border border-border bg-background/80 p-4"
+          data-testid="parent-relationship-section"
+        >
+          <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+            <ArrowLeft className="h-4 w-4" />
+            Parent issue
+          </div>
+          {loading ? (
+            <div
+              className="mt-3 rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted"
+              data-testid="parent-relationship-loading"
+            >
+              Refreshing parent relationship state…
+            </div>
+          ) : relationshipError ? (
+            <div
+              className="mt-3 rounded-2xl border border-error/25 bg-error-muted p-3 text-sm text-error"
+              data-testid="parent-relationship-error"
+            >
+              {relationshipError}
+            </div>
+          ) : parentIssue ? (
+            <div className="mt-3 rounded-2xl border border-border bg-card p-4">
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => onFocusIssue(parentIssue)}
+                  className="text-sm font-semibold text-foreground underline-offset-4 hover:underline"
+                  data-testid={`back-to-parent-${parentIssue.key}`}
+                >
+                  Back to {parentIssue.key}
+                </button>
+                <span className={`rounded-full border px-2.5 py-1 text-xs ${issueStatusTone(parentIssue.status)}`}>
+                  {issueStatusLabel(parentIssue.status)}
+                </span>
+              </div>
+              <div className="mt-2 text-sm text-foreground">{parentIssue.title}</div>
+              <div className="mt-2 text-xs text-foreground-muted">
+                Parent readiness: {parentIssue.dispatch.readiness}
+              </div>
+            </div>
+          ) : (
+            <div
+              className="mt-3 rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted"
+              data-testid="parent-relationship-empty"
+            >
+              No parent issue linked.
+            </div>
+          )}
+        </article>
+
+        <article
+          className="rounded-2xl border border-border bg-background/80 p-4"
+          data-testid="child-relationship-section"
+        >
+          <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+            <Workflow className="h-4 w-4" />
+            Child issues
+          </div>
+          {loading ? (
+            <div
+              className="mt-3 rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted"
+              data-testid="child-relationship-loading"
+            >
+              Refreshing child relationship state…
+            </div>
+          ) : relationshipError ? (
+            <div
+              className="mt-3 rounded-2xl border border-error/25 bg-error-muted p-3 text-sm text-error"
+              data-testid="child-relationship-error"
+            >
+              {relationshipError}
+            </div>
+          ) : childIssues.length > 0 ? (
+            <div className="mt-3 space-y-3">
+              {childIssues.map((childIssue) => (
+                <div key={childIssue.id} className="rounded-2xl border border-border bg-card p-4">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => onFocusIssue(childIssue)}
+                      className="text-sm font-semibold text-foreground underline-offset-4 hover:underline"
+                      data-testid={`child-nav-${childIssue.key}`}
+                    >
+                      {childIssue.key}
+                    </button>
+                    <span className={`rounded-full border px-2.5 py-1 text-xs ${issueStatusTone(childIssue.status)}`}>
+                      {issueStatusLabel(childIssue.status)}
+                    </span>
+                    <span className="rounded-full border border-border px-2.5 py-1 text-xs text-foreground-muted">
+                      {childIssue.dispatch.readiness}
+                    </span>
+                  </div>
+                  <div className="mt-2 text-sm text-foreground">{childIssue.title}</div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div
+              className="mt-3 rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted"
+              data-testid="child-relationship-empty"
+            >
+              No child issues linked yet.
+            </div>
+          )}
+
+          <form
+            className="mt-4 grid gap-3 rounded-2xl border border-border bg-card p-4"
+            onSubmit={(event) => {
+              event.preventDefault();
+              if (!childTitle.trim()) {
+                return;
+              }
+              void onCreateSubIssue({
+                parentIssueId: issue.id,
+                title: childTitle,
+                summary: childSummary || undefined,
+                priority: childPriority,
+                status: childStatus,
+              })
+                .then(() => {
+                  setChildTitle("");
+                  setChildSummary("");
+                  setChildPriority("medium");
+                  setChildStatus("backlog");
+                })
+                .catch(() => undefined);
+            }}
+            data-testid="create-sub-issue-form"
+          >
+            <div className="text-sm font-semibold text-foreground">Create sub-issue</div>
+            <input
+              aria-label="Sub-issue title"
+              value={childTitle}
+              onChange={(event) => setChildTitle(event.target.value)}
+              placeholder="Break out a child issue"
+              className="h-11 rounded-xl border border-border bg-background px-3 text-sm text-foreground"
+            />
+            <textarea
+              aria-label="Sub-issue summary"
+              value={childSummary}
+              onChange={(event) => setChildSummary(event.target.value)}
+              placeholder="Optional context for the child issue"
+              className="min-h-24 rounded-xl border border-border bg-background px-3 py-3 text-sm text-foreground"
+            />
+            <div className="grid gap-3 md:grid-cols-2">
+              <label className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+                Priority
+                <select
+                  aria-label="Sub-issue priority"
+                  value={childPriority}
+                  onChange={(event) =>
+                    setChildPriority(
+                      event.target.value as "critical" | "high" | "medium" | "low",
+                    )
+                  }
+                  className="mt-2 h-11 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground"
+                >
+                  <option value="critical">Critical</option>
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                </select>
+              </label>
+              <label className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+                Initial status
+                <select
+                  aria-label="Sub-issue status"
+                  value={childStatus}
+                  onChange={(event) =>
+                    setChildStatus(
+                      event.target.value as
+                        | "backlog"
+                        | "ready"
+                        | "in-progress"
+                        | "blocked"
+                        | "review"
+                        | "done",
+                    )
+                  }
+                  className="mt-2 h-11 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground"
+                >
+                  <option value="backlog">Backlog</option>
+                  <option value="ready">Ready</option>
+                  <option value="in-progress">In Progress</option>
+                  <option value="blocked">Blocked</option>
+                  <option value="review">Review</option>
+                  <option value="done">Done</option>
+                </select>
+              </label>
+            </div>
+            <button
+              type="submit"
+              disabled={mutating}
+              className="inline-flex h-11 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 px-4 text-sm font-semibold text-primary disabled:opacity-50"
+            >
+              Create child issue
+            </button>
+          </form>
+
+          <form
+            className="mt-4 rounded-2xl border border-border bg-card p-4"
+            onSubmit={(event) => {
+              event.preventDefault();
+              if (!selectedChildIssueId) {
+                return;
+              }
+              void onLinkChildIssue({
+                parentIssueId: issue.id,
+                childIssueId: selectedChildIssueId,
+              }).catch(() => undefined);
+            }}
+            data-testid="link-child-issue-form"
+          >
+            <div className="text-sm font-semibold text-foreground">Link existing child issue</div>
+            {linkableIssues.length > 0 ? (
+              <>
+                <select
+                  aria-label="Existing child issue"
+                  value={selectedChildIssueId}
+                  onChange={(event) => setSelectedChildIssueId(event.target.value)}
+                  className="mt-3 h-11 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground"
+                >
+                  {linkableIssues.map((candidate) => (
+                    <option key={candidate.id} value={candidate.id}>
+                      {candidate.key} - {candidate.title}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="submit"
+                  disabled={mutating}
+                  className="mt-3 inline-flex h-11 items-center justify-center rounded-xl border border-border bg-background px-4 text-sm font-semibold text-foreground disabled:opacity-50"
+                >
+                  Link child issue
+                </button>
+              </>
+            ) : (
+              <div
+                className="mt-3 rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted"
+                data-testid="link-child-issue-empty"
+              >
+                No unparented sibling issues are available to link here.
+              </div>
+            )}
+          </form>
+        </article>
+      </div>
+    </section>
+  );
+}
+
 export function BacklogOverview() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const {
     snapshot,
@@ -1143,9 +1577,12 @@ export function BacklogOverview() {
     createIssue,
     updateProjectCollaboration,
     updateIssueCollaboration,
+    createSubIssue,
+    linkChildIssue,
     movingIssueId,
     mutatingIssueId,
     creatingIssue,
+    mutationError,
     refresh,
   } = useBacklog();
   const issueReviews = useReviews({ targetType: "issue" });
@@ -1176,7 +1613,9 @@ export function BacklogOverview() {
       return;
     }
 
-    issueAnchor.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (typeof issueAnchor.scrollIntoView === "function") {
+      issueAnchor.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
   }, [focusedIssueId, focusedIssueKey]);
 
   useEffect(() => {
@@ -1236,6 +1675,13 @@ export function BacklogOverview() {
 
   const primaryProject = snapshot.projects[0];
   const primaryBoard = board.projects.find((candidate) => candidate.projectId === primaryProject?.id);
+  const issueById = new Map(snapshot.issues.map((issue) => [issue.id, issue] as const));
+  const focusedIssue =
+    (focusedIssueId ? issueById.get(focusedIssueId) : undefined) ??
+    (focusedIssueKey ? snapshot.issues.find((issue) => issue.key === focusedIssueKey) : undefined);
+  const focusedIssueCard = focusedIssue
+    ? primaryBoard?.cards.find((candidate) => candidate.issueId === focusedIssue.id)
+    : undefined;
   const targetModelIssue =
     snapshot.issues.find((issue) => issue.key === "KANBAN-GAP-004") ??
     snapshot.issues.find((issue) => issue.key === "KANBAN-DEBT-003");
@@ -1299,6 +1745,21 @@ export function BacklogOverview() {
       setAutosaveStatus("partial");
     }
   }
+
+  const setFocusedIssue = (issue: KanbanIssue) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("issueId", issue.id);
+    params.set("issueKey", issue.key);
+    router.push(`/?${params.toString()}`);
+  };
+
+  const clearFocusedIssue = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("issueId");
+    params.delete("issueKey");
+    const query = params.toString();
+    router.push(query ? `/?${query}` : "/");
+  };
 
   return (
     <section
@@ -1374,6 +1835,22 @@ export function BacklogOverview() {
           <div className="text-sm text-error/80">{summary.completedCount} completed</div>
         </div>
       </div>
+
+      {focusedIssue ? (
+        <IssueRelationshipPanel
+          issue={focusedIssue}
+          card={focusedIssueCard}
+          project={primaryProject}
+          issues={snapshot.issues.filter((issue) => issue.projectId === primaryProject.id)}
+          loading={loading}
+          mutating={mutatingIssueId === focusedIssue.id}
+          mutationError={mutationError}
+          onFocusIssue={setFocusedIssue}
+          onClose={clearFocusedIssue}
+          onCreateSubIssue={createSubIssue}
+          onLinkChildIssue={linkChildIssue}
+        />
+      ) : null}
 
       {targetModelIssue ? (
         <div className="mt-5 rounded-2xl border border-border bg-background p-4">
@@ -1555,7 +2032,6 @@ export function BacklogOverview() {
                       {workflowOrder.map((state) => {
                         const column = primaryBoard.columns.find((candidate) => candidate.id === state);
                         const cards = findCardsForCell(primaryBoard, swimlane.id, state);
-
                         if (!column) {
                           return null;
                         }
@@ -1604,121 +2080,150 @@ export function BacklogOverview() {
                                 </div>
                               ) : null}
 
-                              {cards.map((card) => (
-                                <article
-                                  key={card.issueId}
-                                  id={`kanban-issue-${card.issueId}`}
-                                  className={`rounded-2xl border p-4 ${issueTone(card)} ${
-                                    focusedIssueId === card.issueId || focusedIssueKey === card.issueKey
-                                      ? "ring-2 ring-primary/50 ring-offset-2 ring-offset-background"
-                                      : ""
-                                  }`}
-                                  data-testid={`kanban-card-${card.issueKey}`}
-                                >
-                                  <div className="flex flex-wrap items-center gap-2">
-                                    <span className="text-xs font-semibold uppercase tracking-[0.18em]">
-                                      {card.issueKey}
-                                    </span>
-                                    <span className="rounded-full border border-current/20 px-2 py-0.5 text-xs">
-                                      {card.priority}
-                                    </span>
-                                    <span className="rounded-full border border-current/20 px-2 py-0.5 text-xs">
-                                      {card.readiness}
-                                    </span>
-                                  </div>
+                              {cards.map((card) => {
+                                const issue = issueById.get(card.issueId);
+                                const parentIssue = issue?.parentIssueId
+                                  ? issueById.get(issue.parentIssueId)
+                                  : undefined;
 
-                                  <div className="mt-2 text-base font-semibold">{card.title}</div>
-                                  {card.summary ? (
-                                    <p className="mt-2 text-sm leading-6 opacity-90">{card.summary}</p>
-                                  ) : null}
-
-                                  {card.review ? (
-                                    <div className="mt-3 flex flex-wrap gap-2 text-xs opacity-90">
-                                      <span className="rounded-full border border-current/20 px-2 py-0.5">
-                                        Review {card.review.decision}
+                                return (
+                                  <article
+                                    key={card.issueId}
+                                    id={`kanban-issue-${card.issueId}`}
+                                    className={`rounded-2xl border p-4 ${issueTone(card)} ${
+                                      focusedIssueId === card.issueId || focusedIssueKey === card.issueKey
+                                        ? "ring-2 ring-primary/50 ring-offset-2 ring-offset-background"
+                                        : ""
+                                    }`}
+                                    data-testid={`kanban-card-${card.issueKey}`}
+                                  >
+                                    <div className="flex flex-wrap items-center gap-2">
+                                      <span className="text-xs font-semibold uppercase tracking-[0.18em]">
+                                        {card.issueKey}
                                       </span>
-                                      <span className="rounded-full border border-current/20 px-2 py-0.5">
-                                        {card.review.openCommentCount} open comments
+                                      <span className="rounded-full border border-current/20 px-2 py-0.5 text-xs">
+                                        {card.priority}
+                                      </span>
+                                      <span className="rounded-full border border-current/20 px-2 py-0.5 text-xs">
+                                        {card.readiness}
                                       </span>
                                     </div>
-                                  ) : null}
 
-                                  <div className="mt-3 flex flex-wrap items-center gap-3 text-xs opacity-80">
-                                    <span className="inline-flex items-center gap-1">
-                                      <GitBranch className="h-3.5 w-3.5" />
-                                      {card.dependencyCount} dependencies
-                                    </span>
-                                    <span className="inline-flex items-center gap-1">
-                                      <Workflow className="h-3.5 w-3.5" />
-                                      {card.childCount} child issues
-                                    </span>
-                                    <span className="inline-flex items-center gap-1">
-                                      <CheckCircle2 className="h-3.5 w-3.5" />
-                                      {card.acceptanceProgress.satisfied}/{card.acceptanceProgress.total} accepted
-                                    </span>
-                                  </div>
+                                    <button
+                                      type="button"
+                                      onClick={() => issue && setFocusedIssue(issue)}
+                                      className="mt-2 text-left text-base font-semibold underline-offset-4 hover:underline"
+                                      data-testid={`open-issue-${card.issueKey}`}
+                                    >
+                                      {card.title}
+                                    </button>
 
-                                  {card.policySignals.length > 0 ? (
-                                    <div className="mt-3 space-y-2">
-                                      {card.policySignals.map((signal, index) => (
-                                        <div
-                                          key={`${card.issueId}-${signal.hookId}-${index}`}
-                                          className="rounded-xl border border-current/15 bg-card/70 px-3 py-2 text-xs"
+                                    {card.summary ? (
+                                      <p className="mt-2 text-sm leading-6 opacity-90">{card.summary}</p>
+                                    ) : null}
+
+                                    {parentIssue ? (
+                                      <div className="mt-3 text-xs text-foreground-muted">
+                                        Parent{" "}
+                                        <button
+                                          type="button"
+                                          onClick={() => setFocusedIssue(parentIssue)}
+                                          className="font-semibold text-foreground underline-offset-4 hover:underline"
+                                          data-testid={`open-parent-${card.issueKey}`}
                                         >
-                                          {signal.message}
-                                        </div>
+                                          {parentIssue.key}
+                                        </button>
+                                      </div>
+                                    ) : null}
+
+                                    {card.review ? (
+                                      <div className="mt-3 flex flex-wrap gap-2 text-xs opacity-90">
+                                        <span className="rounded-full border border-current/20 px-2 py-0.5">
+                                          Review {card.review.decision}
+                                        </span>
+                                        <span className="rounded-full border border-current/20 px-2 py-0.5">
+                                          {card.review.openCommentCount} open comments
+                                        </span>
+                                      </div>
+                                    ) : null}
+
+                                    <div className="mt-3 flex flex-wrap items-center gap-3 text-xs opacity-80">
+                                      <span className="inline-flex items-center gap-1">
+                                        <GitBranch className="h-3.5 w-3.5" />
+                                        {card.dependencyCount} dependencies
+                                      </span>
+                                      <span className="inline-flex items-center gap-1">
+                                        <Workflow className="h-3.5 w-3.5" />
+                                        {card.childCount} child issues
+                                      </span>
+                                      <span className="inline-flex items-center gap-1">
+                                        <CheckCircle2 className="h-3.5 w-3.5" />
+                                        {card.acceptanceProgress.satisfied}/{card.acceptanceProgress.total} accepted
+                                      </span>
+                                    </div>
+
+                                    {card.policySignals.length > 0 ? (
+                                      <div className="mt-3 space-y-2">
+                                        {card.policySignals.map((signal, index) => (
+                                          <div
+                                            key={`${card.issueId}-${signal.hookId}-${index}`}
+                                            className="rounded-xl border border-current/15 bg-card/70 px-3 py-2 text-xs"
+                                          >
+                                            {signal.message}
+                                          </div>
+                                        ))}
+                                      </div>
+                                    ) : null}
+
+                                    <div className="mt-4 flex flex-wrap gap-2">
+                                      {card.moveTargets.map((target) => (
+                                        <button
+                                          key={`${card.issueId}-${target.state}`}
+                                          disabled={!target.allowed || movingIssueId === card.issueId}
+                                          onClick={() => void moveIssue(card.issueId, target.state)}
+                                          className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-border-hover bg-transparent px-3 text-xs font-medium italic tracking-[0.04em] text-foreground transition-all duration-200 hover:bg-card hover:border-primary/30 hover:shadow-sm disabled:pointer-events-none disabled:opacity-50 font-serif"
+                                          data-testid={`move-${card.issueKey}-${target.state}`}
+                                        >
+                                          <ArrowRight className="h-3.5 w-3.5" />
+                                          {stateLabel(target.state)}
+                                        </button>
                                       ))}
                                     </div>
-                                  ) : null}
 
-                                  <div className="mt-4 flex flex-wrap gap-2">
-                                    {card.moveTargets.map((target) => (
-                                      <button
-                                        key={`${card.issueId}-${target.state}`}
-                                        disabled={!target.allowed || movingIssueId === card.issueId}
-                                        onClick={() => void moveIssue(card.issueId, target.state)}
-                                        className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-border-hover bg-transparent px-3 text-xs font-medium italic tracking-[0.04em] text-foreground transition-all duration-200 hover:bg-card hover:border-primary/30 hover:shadow-sm disabled:pointer-events-none disabled:opacity-50 font-serif"
-                                        data-testid={`move-${card.issueKey}-${target.state}`}
-                                      >
-                                        <ArrowRight className="h-3.5 w-3.5" />
-                                        {stateLabel(target.state)}
-                                      </button>
-                                    ))}
-                                  </div>
+                                    {card.moveTargets.some((target) => target.signals.length > 0) ? (
+                                      <div className="mt-3 space-y-2">
+                                        {card.moveTargets.flatMap((target) =>
+                                          target.signals.map((signal, index) => (
+                                            <div
+                                              key={`${card.issueId}-${target.state}-${signal.hookId}-${index}`}
+                                              className="rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground-muted"
+                                            >
+                                              {stateLabel(target.state)}: {signal.message}
+                                            </div>
+                                          )),
+                                        )}
+                                      </div>
+                                    ) : null}
 
-                                  {card.moveTargets.some((target) => target.signals.length > 0) ? (
-                                    <div className="mt-3 space-y-2">
-                                      {card.moveTargets.flatMap((target) =>
-                                        target.signals.map((signal, index) => (
-                                          <div
-                                            key={`${card.issueId}-${target.state}-${signal.hookId}-${index}`}
-                                            className="rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground-muted"
-                                          >
-                                            {stateLabel(target.state)}: {signal.message}
-                                          </div>
-                                        )),
-                                      )}
-                                    </div>
-                                  ) : null}
-
-                                  <RepositoryLifecyclePanel
-                                    card={card}
-                                    mutating={movingIssueId === card.issueId || mutatingIssueId === card.issueId}
-                                    onLinkRepository={linkRepository}
-                                    onUpdateRepositorySettings={updateRepositorySettings}
-                                    onCreatePullRequest={createPullRequest}
-                                  />
-                                  <IssueCollaborationPanel
-                                    card={card}
-                                    project={primaryProject}
-                                    activityEntries={
-                                      snapshot.issues.find((issue) => issue.id === card.issueId)?.activity ?? []
-                                    }
-                                    mutating={movingIssueId === card.issueId || mutatingIssueId === card.issueId}
-                                    onSave={updateIssueCollaboration}
-                                  />
-                                </article>
-                              ))}
+                                    <RepositoryLifecyclePanel
+                                      card={card}
+                                      mutating={movingIssueId === card.issueId || mutatingIssueId === card.issueId}
+                                      onLinkRepository={linkRepository}
+                                      onUpdateRepositorySettings={updateRepositorySettings}
+                                      onCreatePullRequest={createPullRequest}
+                                    />
+                                    <IssueCollaborationPanel
+                                      card={card}
+                                      project={primaryProject}
+                                      activityEntries={
+                                        snapshot.issues.find((candidate) => candidate.id === card.issueId)?.activity ?? []
+                                      }
+                                      mutating={movingIssueId === card.issueId || mutatingIssueId === card.issueId}
+                                      onSave={updateIssueCollaboration}
+                                    />
+                                  </article>
+                                );
+                              })}
                             </div>
                           </div>
                         );

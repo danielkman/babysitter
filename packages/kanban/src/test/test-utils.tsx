@@ -1,16 +1,6 @@
-import React, { type ReactElement } from 'react';
+import type { ReactElement, ComponentType } from 'react';
 import { render, type RenderOptions } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-
-/**
- * Minimal test wrapper that provides the contexts needed by most components.
- * We avoid importing the real Providers tree because it depends on hooks that
- * fire network requests (polling, SSE) which would interfere with tests.
- * Individual tests that need a specific provider can compose their own wrapper.
- */
-function TestWrapper({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
-}
 
 /**
  * Custom render that wraps the component in TestWrapper.
@@ -18,10 +8,10 @@ function TestWrapper({ children }: { children: React.ReactNode }) {
  */
 function customRender(
   ui: ReactElement,
-  options?: Omit<RenderOptions, 'wrapper'> & { wrapper?: React.ComponentType },
+  options?: Omit<RenderOptions, 'wrapper'> & { wrapper?: ComponentType },
 ) {
-  const Wrapper = options?.wrapper ?? TestWrapper;
-  return render(ui, { wrapper: Wrapper, ...options });
+  const { wrapper, ...rest } = options ?? {};
+  return render(ui, wrapper ? { wrapper, ...rest } : rest);
 }
 
 // Re-export everything from testing-library

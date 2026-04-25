@@ -6,5 +6,5 @@ export {
   useRun,
   useHookRequests,
   useConnection,
-} from "@a5c-ai/agent-mux-ui/gateway";
-export type { AgentRecord } from "@a5c-ai/agent-mux-ui/gateway";
+} from "../../../agent-mux/ui/src/gateway.ts";
+export type { AgentRecord } from "../../../agent-mux/ui/src/gateway.ts";

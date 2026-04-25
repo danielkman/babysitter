@@ -59,7 +59,8 @@ export interface BacklogOverview {
 }
 
 export interface CreateBacklogIssueInput {
-  readonly projectId: string;
+  readonly projectId?: string;
+  readonly parentIssueId?: string;
   readonly title: string;
   readonly summary?: string;
   readonly description?: string;
@@ -232,6 +233,28 @@ function buildActivityEntry(
     actor,
     createdAt,
   };
+}
+
+function appendUniqueIssueId(issueIds: readonly string[], issueId: string): string[] {
+  return issueIds.includes(issueId) ? [...issueIds] : [...issueIds, issueId];
+}
+
+function wouldCreateParentChildCycle(
+  issues: readonly BacklogSeedIssue[],
+  parentIssueId: string,
+  childIssueId: string,
+): boolean {
+  let currentIssueId: string | undefined = parentIssueId;
+
+  while (currentIssueId) {
+    if (currentIssueId === childIssueId) {
+      return true;
+    }
+
+    currentIssueId = issues.find((candidate) => candidate.id === currentIssueId)?.parentIssueId;
+  }
+
+  return false;
 }
 
 function resolveCollaboratorsById(
@@ -1076,10 +1099,20 @@ export class BacklogQueryService {
 
   async createIssue(input: CreateBacklogIssueInput): Promise<CreateBacklogIssueResult> {
     const payload = await this.readSeedPayload();
-    const project = this.findProject(payload, input.projectId);
+    const parentIssue = input.parentIssueId
+      ? this.findIssue(payload, input.parentIssueId)
+      : undefined;
+    const projectId = input.projectId ?? parentIssue?.projectId;
+    if (!projectId) {
+      throw new AppError('projectId is required.', 'BAD_REQUEST', 400);
+    }
+    const project = this.findProject(payload, projectId);
 
     if (!input.title.trim()) {
       throw new AppError('title is required.', 'BAD_REQUEST', 400);
+    }
+    if (parentIssue && parentIssue.projectId !== project.id) {
+      throw new AppError('Sub-issues must stay in the same project as the parent.', 'BAD_REQUEST', 400);
     }
 
     const key = nextAutomationIssueKey(project, payload.issues);
@@ -1108,21 +1141,68 @@ export class BacklogQueryService {
         status: item.status,
       })),
       childIssueIds: [],
+      parentIssueId: parentIssue?.id,
       createdAt,
       updatedAt: createdAt,
       source: input.source,
       metadata: input.metadata,
+      activity: parentIssue
+        ? [
+            buildActivityEntry(
+              `activity-created-sub-issue-${createdAt}`,
+              'issue',
+              key,
+              'created-sub-issue',
+              `Created sub-issue ${key} under ${parentIssue.key}.`,
+              {
+                kind: 'human',
+                id: 'tal',
+                displayName: 'Tal Muskal',
+                role: 'owner',
+              },
+              createdAt,
+            ),
+          ]
+        : [],
     };
 
     const nextProjects = payload.projects.map((candidate) =>
       candidate.id === project.id
         ? {
             ...candidate,
-            issueIds: [...candidate.issueIds, issue.id],
+            issueIds: appendUniqueIssueId(candidate.issueIds, issue.id),
           }
         : candidate,
     );
-    const nextIssues = [...payload.issues, issue];
+    const nextIssues = [
+      ...payload.issues.map((candidate) =>
+        candidate.id === parentIssue?.id
+          ? {
+              ...candidate,
+              childIssueIds: appendUniqueIssueId(candidate.childIssueIds, issue.id),
+              updatedAt: createdAt,
+              activity: [
+                buildActivityEntry(
+                  `activity-linked-child-${createdAt}`,
+                  'issue',
+                  candidate.id,
+                  'linked-child-issue',
+                  `Linked child issue ${issue.key}.`,
+                  {
+                    kind: 'human',
+                    id: 'tal',
+                    displayName: 'Tal Muskal',
+                    role: 'owner',
+                  },
+                  createdAt,
+                ),
+                ...(candidate.activity ?? []),
+              ],
+            }
+          : candidate,
+      ),
+      issue,
+    ];
     const overview = await this.persistPayload({
       projects: nextProjects,
       issues: nextIssues,
@@ -1430,6 +1510,96 @@ export class BacklogQueryService {
 
     return this.persistPayload({
       projects: nextProjects,
+      issues: nextIssues,
+    });
+  }
+
+  async linkChildIssue(input: {
+    readonly parentIssueId: string;
+    readonly childIssueId: string;
+  }): Promise<BacklogOverview> {
+    if (input.parentIssueId === input.childIssueId) {
+      throw new AppError('An issue cannot be its own child.', 'BAD_REQUEST', 400);
+    }
+
+    const payload = await this.readSeedPayload();
+    const parentIssue = this.findIssue(payload, input.parentIssueId);
+    const childIssue = this.findIssue(payload, input.childIssueId);
+
+    if (parentIssue.projectId !== childIssue.projectId) {
+      throw new AppError('Parent and child issues must belong to the same project.', 'BAD_REQUEST', 400);
+    }
+    if (parentIssue.childIssueIds.includes(childIssue.id)) {
+      return this.buildOverviewFromPayload(payload);
+    }
+    if (childIssue.parentIssueId && childIssue.parentIssueId !== parentIssue.id) {
+      throw new AppError(
+        `Issue ${childIssue.key} is already linked to parent ${childIssue.parentIssueId}.`,
+        'BAD_REQUEST',
+        400,
+      );
+    }
+    if (wouldCreateParentChildCycle(payload.issues, parentIssue.id, childIssue.id)) {
+      throw new AppError('Linking this child would create a parent-child cycle.', 'BAD_REQUEST', 400);
+    }
+
+    const updatedAt = this.deps.now();
+    const nextIssues = payload.issues.map((candidate) => {
+      if (candidate.id === parentIssue.id) {
+        return {
+          ...candidate,
+          childIssueIds: appendUniqueIssueId(candidate.childIssueIds, childIssue.id),
+          updatedAt,
+          activity: [
+            buildActivityEntry(
+              `activity-linked-child-${updatedAt}`,
+              'issue',
+              candidate.id,
+              'linked-child-issue',
+              `Linked child issue ${childIssue.key}.`,
+              {
+                kind: 'human',
+                id: 'tal',
+                displayName: 'Tal Muskal',
+                role: 'owner',
+              },
+              updatedAt,
+            ),
+            ...(candidate.activity ?? []),
+          ],
+        };
+      }
+
+      if (candidate.id === childIssue.id) {
+        return {
+          ...candidate,
+          parentIssueId: parentIssue.id,
+          updatedAt,
+          activity: [
+            buildActivityEntry(
+              `activity-linked-parent-${updatedAt}`,
+              'issue',
+              candidate.id,
+              'linked-parent-issue',
+              `Linked parent issue ${parentIssue.key}.`,
+              {
+                kind: 'human',
+                id: 'tal',
+                displayName: 'Tal Muskal',
+                role: 'owner',
+              },
+              updatedAt,
+            ),
+            ...(candidate.activity ?? []),
+          ],
+        };
+      }
+
+      return candidate;
+    });
+
+    return this.persistPayload({
+      projects: payload.projects,
       issues: nextIssues,
     });
   }
