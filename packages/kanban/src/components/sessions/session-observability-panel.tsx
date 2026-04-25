@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Tabs, type TabItem } from "@a5c-ai/compendium";
 import { buildSessionFlowModel } from "@a5c-ai/agent-mux-ui/session-flow";
+import type { WorkspaceRuntimeSurface } from "@a5c-ai/agent-mux-core";
 import { AlertTriangle, ArrowUpRight, CheckCircle2, Hand, TerminalSquare } from "lucide-react";
 
 import { buildRunArtifactShortcuts } from "@/lib/babysitter-overlays";
@@ -11,6 +12,23 @@ import { buildRunArtifactShortcuts } from "@/lib/babysitter-overlays";
 interface EventBuffer {
   events: Array<Record<string, unknown>>;
 }
+
+type ActionLink = {
+  key: string;
+  label: string;
+  href: string;
+  external?: boolean;
+};
+
+type RunActionContext = {
+  runId: string;
+  runHref: string;
+  workspaceHref?: string;
+  runtimeHref?: string;
+  breakpointHref?: string;
+  failedTaskHref?: string;
+  fileHref: (path: string) => string | null;
+};
 
 function formatFlowTime(value: number | null): string {
   if (value == null || !Number.isFinite(value) || value <= 0) {
@@ -23,10 +41,91 @@ function formatFlowTime(value: number | null): string {
   });
 }
 
+function readRuntime(value: unknown): WorkspaceRuntimeSurface | null {
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+  return value as WorkspaceRuntimeSurface;
+}
+
+function isAbsolutePath(value: string): boolean {
+  return value.startsWith("/") || value.startsWith("\\\\") || /^[a-zA-Z]:[\\/]/.test(value);
+}
+
+function joinWorkspacePath(workspacePath: string, filePath: string): string {
+  const separator = workspacePath.includes("\\") ? "\\" : "/";
+  const base = workspacePath.replace(/[\\/]+$/, "");
+  const relative = filePath.replace(/^[./\\\/]+/, "");
+  return `${base}${separator}${relative}`;
+}
+
+function resolveAbsoluteFilePath(workspacePath: string | null, filePath: string): string | null {
+  if (!filePath.trim()) {
+    return null;
+  }
+  if (isAbsolutePath(filePath)) {
+    return filePath;
+  }
+  if (!workspacePath) {
+    return null;
+  }
+  return joinWorkspacePath(workspacePath, filePath);
+}
+
+function buildEditorHref(path: string): string {
+  return `vscode://file${path}`;
+}
+
+function pickRuntimeHref(runtime: WorkspaceRuntimeSurface | null): string | null {
+  if (typeof runtime?.preview?.primaryUrl === "string" && runtime.preview.primaryUrl.length > 0) {
+    return runtime.preview.primaryUrl;
+  }
+  if (typeof runtime?.devServer?.primaryUrl === "string" && runtime.devServer.primaryUrl.length > 0) {
+    return runtime.devServer.primaryUrl;
+  }
+  return null;
+}
+
+function actionLinkClassName(action: ActionLink): string {
+  return [
+    "inline-flex items-center gap-1 rounded-full border border-border px-2 py-1 text-xs",
+    action.external ? "text-foreground-muted hover:text-foreground" : "text-primary",
+  ].join(" ");
+}
+
+function ActionLinks(props: { actions: ActionLink[] }): JSX.Element | null {
+  if (props.actions.length === 0) {
+    return null;
+  }
+  return (
+    <div className="mt-3 flex flex-wrap gap-2 text-xs">
+      {props.actions.map((action) =>
+        action.external ? (
+          <a
+            key={action.key}
+            href={action.href}
+            target="_blank"
+            rel="noreferrer"
+            className={actionLinkClassName(action)}
+          >
+            {action.label}
+          </a>
+        ) : (
+          <Link key={action.key} href={action.href} className={actionLinkClassName(action)}>
+            {action.label}
+          </Link>
+        ),
+      )}
+    </div>
+  );
+}
+
 export function SessionObservabilityPanel(props: {
   sessionId: string;
   runs: Array<Record<string, unknown>>;
   eventBuffers: Record<string, EventBuffer | undefined>;
+  workspacePath?: string | null;
+  runtime?: WorkspaceRuntimeSurface | null;
 }) {
   const [viewMode, setViewMode] = useState<"flow" | "timeline" | "transcript" | "files">("flow");
   const flowModel = useMemo(
@@ -34,6 +133,81 @@ export function SessionObservabilityPanel(props: {
     [props.eventBuffers, props.runs],
   );
   const shortcuts = buildRunArtifactShortcuts(props.runs);
+  const fallbackRuntimeHref = pickRuntimeHref(props.runtime ?? null);
+  const runActionContexts = useMemo(() => {
+    const shortcutByRunId = new Map(shortcuts.map((shortcut) => [shortcut.runId, shortcut] as const));
+    const entries = props.runs.map((run) => {
+      const runId = String(run.runId ?? "");
+      const shortcut = shortcutByRunId.get(runId);
+      const runWorkspacePath =
+        typeof run.cwd === "string" && run.cwd.length > 0
+          ? run.cwd
+          : props.workspacePath ?? null;
+      const runRuntime = readRuntime(run.runtime) ?? props.runtime ?? null;
+      const runRuntimeHref = pickRuntimeHref(runRuntime) ?? fallbackRuntimeHref;
+      const fileHref = (filePath: string): string | null => {
+        const absoluteFilePath = resolveAbsoluteFilePath(runWorkspacePath, filePath);
+        return absoluteFilePath ? buildEditorHref(absoluteFilePath) : null;
+      };
+      return [
+        runId,
+        {
+          runId,
+          runHref: `/runs/${encodeURIComponent(runId)}`,
+          workspaceHref: runWorkspacePath ? buildEditorHref(runWorkspacePath) : undefined,
+          runtimeHref: runRuntimeHref ?? undefined,
+          breakpointHref: shortcut?.breakpointEffectId ? `/runs/${encodeURIComponent(runId)}?effectId=${encodeURIComponent(shortcut.breakpointEffectId)}` : undefined,
+          failedTaskHref: shortcut?.errorEffectId ? `/runs/${encodeURIComponent(runId)}?effectId=${encodeURIComponent(shortcut.errorEffectId)}` : undefined,
+          fileHref,
+        } satisfies RunActionContext,
+      ] as const;
+    });
+    return new Map(entries);
+  }, [fallbackRuntimeHref, props.runs, props.runtime, props.workspacePath, shortcuts]);
+
+  const buildEntryActions = (runId: string, filePaths: string[], options?: { includeFailures?: boolean }): ActionLink[] => {
+    const context = runActionContexts.get(runId);
+    if (!context) {
+      return [];
+    }
+    const actions: ActionLink[] = [
+      { key: `${runId}:run`, label: "Open run detail", href: context.runHref },
+    ];
+    if (options?.includeFailures && context.breakpointHref) {
+      actions.push({ key: `${runId}:breakpoint`, label: "Review breakpoint", href: context.breakpointHref });
+    }
+    if (options?.includeFailures && context.failedTaskHref) {
+      actions.push({ key: `${runId}:failed`, label: "Open failed task", href: context.failedTaskHref });
+    }
+    const resolvedFile = filePaths
+      .map((path) => ({ path, href: context.fileHref(path) }))
+      .find((entry) => entry.href != null);
+    if (resolvedFile?.href) {
+      actions.push({
+        key: `${runId}:file:${resolvedFile.path}`,
+        label: "Open file",
+        href: resolvedFile.href,
+        external: true,
+      });
+    }
+    if (context.workspaceHref) {
+      actions.push({
+        key: `${runId}:workspace`,
+        label: "Open workspace",
+        href: context.workspaceHref,
+        external: true,
+      });
+    }
+    if (context.runtimeHref) {
+      actions.push({
+        key: `${runId}:runtime`,
+        label: "Open runtime",
+        href: context.runtimeHref,
+        external: true,
+      });
+    }
+    return actions;
+  };
 
   const tabItems: TabItem[] = [
     {
@@ -79,6 +253,7 @@ export function SessionObservabilityPanel(props: {
                       <span>{segment.status}</span>
                       {segment.filePaths.length > 0 ? <span>{segment.filePaths.length} files</span> : null}
                     </div>
+                    <ActionLinks actions={buildEntryActions(lane.runId, segment.filePaths, { includeFailures: true })} />
                   </article>
                 ))}
               </div>
@@ -116,6 +291,7 @@ export function SessionObservabilityPanel(props: {
               <pre className="mt-3 whitespace-pre-wrap break-words text-sm leading-6 text-foreground-secondary">
                 {item.detail}
               </pre>
+              <ActionLinks actions={buildEntryActions(item.runId, item.filePaths, { includeFailures: true })} />
             </article>
           ))}
           {flowModel.timeline.length === 0 ? (
@@ -146,6 +322,7 @@ export function SessionObservabilityPanel(props: {
               <pre className="mt-3 whitespace-pre-wrap break-words text-sm leading-6 text-foreground-secondary">
                 {node.text}
               </pre>
+              <ActionLinks actions={buildEntryActions(node.runId, node.filePaths, { includeFailures: true })} />
             </article>
           ))}
           {flowModel.transcript.length === 0 ? (
@@ -176,6 +353,7 @@ export function SessionObservabilityPanel(props: {
                 <span>{file.runIds.length} runs</span>
                 {file.tools.length > 0 ? <span>{file.tools.length} tools</span> : null}
               </div>
+              <ActionLinks actions={buildEntryActions(file.runIds[0] ?? "", [file.path], { includeFailures: true })} />
             </article>
           ))}
           {flowModel.files.length === 0 ? (

@@ -1,8 +1,8 @@
 /** @vitest-environment jsdom */
 
 import React from 'react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 
 import { SessionDetailPage } from './SessionDetailPage.js';
@@ -146,6 +146,10 @@ describe('SessionDetailPage realtime routing', () => {
     mockBuildNativeAgentFlowLane.mockReset();
     mockAccumulateEventCost.mockReset();
     mockAccumulateEventCost.mockReturnValue({ totalUsd: 0.25, inputTokens: 10, outputTokens: 5 });
+  });
+
+  afterEach(() => {
+    cleanup();
   });
 
   it('falls back to native transcript data and shows pending realtime flow across tabs', async () => {
@@ -348,14 +352,14 @@ describe('SessionDetailPage realtime routing', () => {
     const user = userEvent.setup();
     render(<SessionDetailPage />);
 
-    await user.click(screen.getByRole('tab', { name: 'Transcript' }));
+    await user.click(screen.getAllByRole('tab', { name: 'Transcript' })[0]!);
     expect(screen.getByText('Event transcript wins')).toBeTruthy();
     expect(screen.queryByText('Native fallback should stay hidden')).toBeNull();
 
-    await user.click(screen.getByRole('tab', { name: 'Timeline' }));
+    await user.click(screen.getAllByRole('tab', { name: 'Timeline' })[0]!);
     expect(screen.getByText('Event timeline wins')).toBeTruthy();
 
-    await user.click(screen.getByRole('tab', { name: 'Files' }));
+    await user.click(screen.getAllByRole('tab', { name: 'Files' })[0]!);
     expect(screen.getByText('src/event.ts')).toBeTruthy();
 
     await waitFor(() => {
@@ -363,5 +367,139 @@ describe('SessionDetailPage realtime routing', () => {
         mockFetchGateway.mock.calls.some(([path]) => String(path).endsWith('/full')),
       ).toBe(false);
     });
+  });
+
+  it('renders actionable deep links for realtime flow, transcript, timeline, and files', async () => {
+    const client = {
+      subscribeSession: vi.fn(() => () => {}),
+    };
+    const store = createMockStore(
+      createSessionState({
+        session: {
+          cwd: '/repo/worktrees/task-1',
+          runtime: {
+            preview: { primaryUrl: 'http://localhost:3000' },
+          },
+        },
+        runs: [
+          {
+            runId: 'run-1',
+            sessionId: 'session-1',
+            agent: 'claude',
+            processId: 'flow-process',
+            status: 'running',
+            startedAt: 1_000,
+            cwd: '/repo/worktrees/task-1',
+            runtime: {
+              preview: { primaryUrl: 'http://localhost:3000' },
+            },
+          },
+        ],
+      }),
+    );
+    mockUseGateway.mockReturnValue({ client, store });
+    mockFetchGateway.mockImplementation(async () => okJson({}));
+    mockBuildSessionFlowModel.mockReturnValue({
+      lanes: [
+        {
+          runId: 'run-1',
+          laneKey: 'run-1',
+          agent: 'claude',
+          status: 'running',
+          startedAt: 1_000,
+          lastEventAt: 1_100,
+          segmentCount: 1,
+          toolCount: 1,
+          totalUsd: 0.2,
+          segments: [
+            {
+              id: 'event-segment-1',
+              kind: 'tool',
+              title: 'ApplyPatch',
+              detail: 'Event timeline wins',
+              weight: 1,
+              startedAt: 1_000,
+              endedAt: null,
+              status: 'running',
+              filePaths: ['src/event.ts'],
+            },
+          ],
+        },
+      ],
+      transcript: [
+        {
+          id: 'event-transcript-1',
+          kind: 'assistant',
+          label: 'Assistant',
+          text: 'Event transcript wins',
+          runId: 'run-1',
+          timestamp: 1_100,
+          filePaths: ['src/event.ts'],
+        },
+      ],
+      timeline: [
+        {
+          id: 'event-timeline-1',
+          runId: 'run-1',
+          laneKey: 'run-1',
+          kind: 'tool',
+          title: 'ApplyPatch',
+          detail: 'Event timeline wins',
+          timestamp: 1_100,
+          status: 'running',
+          filePaths: ['src/event.ts'],
+        },
+      ],
+      files: [
+        {
+          path: 'src/event.ts',
+          reads: 1,
+          writes: 1,
+          touches: 2,
+          lastEventAt: 1_100,
+          runIds: ['run-1'],
+          tools: ['ApplyPatch'],
+        },
+      ],
+      summary: {
+        totalRuns: 1,
+        totalSegments: 1,
+        totalTools: 1,
+        pendingTools: 1,
+        fileCount: 1,
+        totalUsd: 0.2,
+      },
+    });
+    mockBuildNativeTranscript.mockReturnValue([]);
+    mockBuildNativeAgentFlowLane.mockReturnValue(null);
+
+    const user = userEvent.setup();
+    render(<SessionDetailPage />);
+
+    expect(await screen.findByText('Event timeline wins')).toBeTruthy();
+    expect(screen.getAllByRole('link', { name: 'Open run detail' }).some((link) => link.getAttribute('href') === '/runs/run-1')).toBe(true);
+    expect(screen.getAllByRole('link', { name: 'Open file' }).some((link) => link.getAttribute('href') ===
+      'vscode://file/repo/worktrees/task-1/src/event.ts',
+    )).toBe(true);
+    expect(screen.getAllByRole('link', { name: 'Open workspace' }).some((link) => link.getAttribute('href') ===
+      'vscode://file/repo/worktrees/task-1',
+    )).toBe(true);
+    expect(screen.getAllByRole('link', { name: 'Open runtime' }).some((link) => link.getAttribute('href') === 'http://localhost:3000')).toBe(true);
+
+    await user.click(screen.getAllByRole('tab', { name: 'Transcript' })[0]!);
+    expect(screen.getByText('Event transcript wins')).toBeTruthy();
+    expect(screen.getAllByRole('link', { name: 'Open file' }).some((link) => link.getAttribute('href') ===
+      'vscode://file/repo/worktrees/task-1/src/event.ts',
+    )).toBe(true);
+
+    await user.click(screen.getAllByRole('tab', { name: 'Timeline' })[0]!);
+    expect(screen.getByText('Event timeline wins')).toBeTruthy();
+    expect(screen.getAllByRole('link', { name: 'Open run detail' }).some((link) => link.getAttribute('href') === '/runs/run-1')).toBe(true);
+
+    await user.click(screen.getAllByRole('tab', { name: 'Files' })[0]!);
+    expect(screen.getByText('src/event.ts')).toBeTruthy();
+    expect(screen.getAllByRole('link', { name: 'Open workspace' }).some((link) => link.getAttribute('href') ===
+      'vscode://file/repo/worktrees/task-1',
+    )).toBe(true);
   });
 });

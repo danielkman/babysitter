@@ -581,6 +581,8 @@ export function WorkspaceDetailShell(props: WorkspaceDetailShellProps) {
               sessionId={props.activeSession.sessionId}
               runs={props.runs}
               eventBuffers={props.eventBuffers}
+              workspacePath={props.workspace.path}
+              runtime={runtime}
             />
           ) : (
             <EmptyWorkspaceState

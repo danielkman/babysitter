@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo } from "react";
 import { useStore } from "zustand";
+import type { WorkspaceRuntimeSurface } from "@a5c-ai/agent-mux-core";
 
 import { useGatewayAuth } from "@/components/agent-mux/gateway-provider";
 import { SessionObservabilityPanel } from "@/components/sessions/session-observability-panel";
@@ -66,6 +67,10 @@ function AuthenticatedRunRealtimeExecutionPanel(props: { run: Run }) {
     () => ({ [props.run.runId]: eventBuffer }),
     [eventBuffer, props.run.runId],
   );
+  const runtimeSource = useMemo<Record<string, unknown>>(
+    () => (runs[0] as Record<string, unknown>) ?? {},
+    [runs],
+  );
 
   return (
     <div data-testid="run-realtime-panel">
@@ -73,7 +78,16 @@ function AuthenticatedRunRealtimeExecutionPanel(props: { run: Run }) {
         sessionId={props.run.sessionId ?? props.run.runId}
         runs={runs}
         eventBuffers={eventBuffers}
+        workspacePath={typeof runtimeSource.cwd === "string" ? runtimeSource.cwd : undefined}
+        runtime={readRuntime(runtimeSource.runtime)}
       />
     </div>
   );
+}
+
+function readRuntime(value: unknown): WorkspaceRuntimeSurface | null {
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+  return value as WorkspaceRuntimeSurface;
 }

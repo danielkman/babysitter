@@ -493,6 +493,8 @@ export function SessionWorkspaceShell(props: SessionWorkspaceShellProps) {
             sessionId={props.sessionId}
             runs={props.runs}
             eventBuffers={props.eventBuffers}
+            workspacePath={props.workspacePath}
+            runtime={props.runtime}
           />
         </WorkspacePanelFrame>
       );

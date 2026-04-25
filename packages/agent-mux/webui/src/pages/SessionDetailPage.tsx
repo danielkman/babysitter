@@ -3,6 +3,7 @@ import { useParams, useSearchParams } from 'react-router-dom-v6';
 import { useStore } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
 import { useGateway } from '@a5c-ai/agent-mux-ui';
+import type { WorkspaceRuntimeSurface } from '@a5c-ai/agent-mux-core';
 import { Button, Field, Tabs, Textarea, type TabItem } from '@a5c-ai/compendium';
 
 import { useGatewayFetch } from '../providers/GatewayProvider.js';
@@ -18,6 +19,20 @@ import {
 
 type SessionControlPlane = 'self-managed' | 'external-host' | 'mcp-mediated';
 type AgentFlowViewMode = 'transcript' | 'agent-flow' | 'timeline' | 'files';
+type ActionLink = {
+  key: string;
+  label: string;
+  href: string;
+  external?: boolean;
+};
+
+type RunActionContext = {
+  runId: string;
+  runHref: string;
+  workspaceHref?: string;
+  runtimeHref?: string;
+  fileHref: (path: string) => string | null;
+};
 
 function formatUsd(totalUsd: number | null): string {
   if (totalUsd == null || !Number.isFinite(totalUsd)) {
@@ -138,6 +153,72 @@ function resolveInitialView(searchParams: URLSearchParams): AgentFlowViewMode {
   return 'agent-flow';
 }
 
+function readRuntime(value: unknown): WorkspaceRuntimeSurface | null {
+  if (!value || typeof value !== 'object') {
+    return null;
+  }
+  return value as WorkspaceRuntimeSurface;
+}
+
+function isAbsolutePath(value: string): boolean {
+  return value.startsWith('/') || value.startsWith('\\\\') || /^[a-zA-Z]:[\\/]/.test(value);
+}
+
+function joinWorkspacePath(workspacePath: string, filePath: string): string {
+  const separator = workspacePath.includes('\\') ? '\\' : '/';
+  const base = workspacePath.replace(/[\\/]+$/, '');
+  const relative = filePath.replace(/^[./\\\/]+/, '');
+  return `${base}${separator}${relative}`;
+}
+
+function resolveAbsoluteFilePath(workspacePath: string | null, filePath: string): string | null {
+  if (!filePath.trim()) {
+    return null;
+  }
+  if (isAbsolutePath(filePath)) {
+    return filePath;
+  }
+  if (!workspacePath) {
+    return null;
+  }
+  return joinWorkspacePath(workspacePath, filePath);
+}
+
+function buildEditorHref(path: string): string {
+  return `vscode://file${path}`;
+}
+
+function pickRuntimeHref(runtime: WorkspaceRuntimeSurface | null): string | null {
+  if (typeof runtime?.preview?.primaryUrl === 'string' && runtime.preview.primaryUrl.length > 0) {
+    return runtime.preview.primaryUrl;
+  }
+  if (typeof runtime?.devServer?.primaryUrl === 'string' && runtime.devServer.primaryUrl.length > 0) {
+    return runtime.devServer.primaryUrl;
+  }
+  return null;
+}
+
+function ActionLinks(props: { actions: ActionLink[] }): JSX.Element | null {
+  if (props.actions.length === 0) {
+    return null;
+  }
+  return (
+    <div className="item-actions">
+      {props.actions.map((action) =>
+        action.external ? (
+          <a key={action.key} className="ghost-link action-link" href={action.href} target="_blank" rel="noreferrer">
+            {action.label}
+          </a>
+        ) : (
+          <a key={action.key} className="ghost-link action-link" href={action.href}>
+            {action.label}
+          </a>
+        ),
+      )}
+    </div>
+  );
+}
+
 export function SessionDetailPage(): JSX.Element {
   const params = useParams<{ sessionId: string }>();
   const [searchParams] = useSearchParams();
@@ -207,6 +288,74 @@ export function SessionDetailPage(): JSX.Element {
         ? String(runs.find((run) => run.status === 'running')?.runId)
         : null;
   const canCompose = status !== 'active' || transport === 'persistent';
+  const workspacePath =
+    typeof session?.cwd === 'string' && session.cwd.length > 0
+      ? session.cwd
+      : null;
+  const runtime = readRuntime(session?.runtime);
+  const runtimeHref = pickRuntimeHref(runtime);
+  const runActionContexts = useMemo(() => {
+    const entries = runs.map((run) => {
+      const runId = String(run.runId ?? '');
+      const runWorkspacePath =
+        typeof run.cwd === 'string' && run.cwd.length > 0
+          ? run.cwd
+          : workspacePath;
+      const runRuntime = readRuntime(run.runtime) ?? runtime;
+      const runRuntimeHref = pickRuntimeHref(runRuntime) ?? runtimeHref;
+      const fileHref = (filePath: string): string | null => {
+        const absoluteFilePath = resolveAbsoluteFilePath(runWorkspacePath, filePath);
+        return absoluteFilePath ? buildEditorHref(absoluteFilePath) : null;
+      };
+      return [
+        runId,
+        {
+          runId,
+          runHref: `/runs/${encodeURIComponent(runId)}`,
+          workspaceHref: runWorkspacePath ? buildEditorHref(runWorkspacePath) : undefined,
+          runtimeHref: runRuntimeHref ?? undefined,
+          fileHref,
+        } satisfies RunActionContext,
+      ] as const;
+    });
+    return new Map(entries);
+  }, [runs, runtime, runtimeHref, workspacePath]);
+
+  const buildEntryActions = (runId: string, filePaths: string[]): ActionLink[] => {
+    const context = runActionContexts.get(runId);
+    if (!context) {
+      return [];
+    }
+    const actions: ActionLink[] = [
+      { key: `${runId}:run`, label: 'Open run detail', href: context.runHref },
+    ];
+    const fileHref = filePaths.map((path) => ({ path, href: context.fileHref(path) })).find((entry) => entry.href != null);
+    if (fileHref?.href) {
+      actions.push({
+        key: `${runId}:file:${fileHref.path}`,
+        label: 'Open file',
+        href: fileHref.href,
+        external: true,
+      });
+    }
+    if (context.workspaceHref) {
+      actions.push({
+        key: `${runId}:workspace`,
+        label: 'Open workspace',
+        href: context.workspaceHref,
+        external: true,
+      });
+    }
+    if (context.runtimeHref) {
+      actions.push({
+        key: `${runId}:runtime`,
+        label: 'Open runtime',
+        href: context.runtimeHref,
+        external: true,
+      });
+    }
+    return actions;
+  };
 
   const eventFlowModel = useMemo(() => buildSessionFlowModel(runs, eventBuffers), [eventBuffers, runs]);
   const nativeTranscript = useMemo(() => buildNativeTranscript(sessionId, nativeMessages), [nativeMessages, sessionId]);
@@ -411,6 +560,7 @@ export function SessionDetailPage(): JSX.Element {
                       {formatDuration(segment.startedAt, segment.endedAt) ? <span>{formatDuration(segment.startedAt, segment.endedAt)}</span> : null}
                       {segment.filePaths.length > 0 ? <span>{segment.filePaths.length} file refs</span> : null}
                     </div>
+                    <ActionLinks actions={buildEntryActions(lane.runId, segment.filePaths)} />
                   </article>
                 ))}
               </div>
@@ -445,6 +595,7 @@ export function SessionDetailPage(): JSX.Element {
                 </div>
               </div>
               <pre>{item.detail}</pre>
+              <ActionLinks actions={buildEntryActions(item.runId, item.filePaths)} />
             </article>
           ))}
           {timeline.length === 0 && loadingNativeTranscript ? <p className="muted-copy">Loading timeline…</p> : null}
@@ -478,6 +629,7 @@ export function SessionDetailPage(): JSX.Element {
                 {node.timestamp != null ? <span className="message-time"> · {formatFlowTime(node.timestamp)}</span> : null}
               </div>
               <pre>{node.text}</pre>
+              <ActionLinks actions={buildEntryActions(node.runId, node.filePaths)} />
             </article>
           ))}
           {transcript.length === 0 && loadingNativeTranscript ? <p className="muted-copy">Loading session transcript…</p> : null}
@@ -505,6 +657,7 @@ export function SessionDetailPage(): JSX.Element {
                 Runs: {file.runIds.join(', ')}
                 {file.tools.length > 0 ? ` · Tools: ${file.tools.join(', ')}` : ''}
               </p>
+              <ActionLinks actions={buildEntryActions(file.runIds[0] ?? '', [file.path])} />
             </article>
           ))}
           {files.length === 0 && loadingNativeTranscript ? <p className="muted-copy">Loading file attention…</p> : null}

@@ -13,6 +13,7 @@ const testingLibraryDom = path.resolve(
 );
 const agentMuxCore = path.resolve(__dirname, '../agent-mux/core/src/index.ts');
 const agentMuxCoreKanban = path.resolve(__dirname, '../agent-mux/core/src/kanban.ts');
+const agentMuxUiSessionFlow = path.resolve(__dirname, '../agent-mux/ui/src/session-flow.ts');
 
 export default defineConfig({
   oxc: {
@@ -53,6 +54,7 @@ export default defineConfig({
     alias: {
       '@a5c-ai/agent-mux-core/kanban': agentMuxCoreKanban,
       '@a5c-ai/agent-mux-core': agentMuxCore,
+      '@a5c-ai/agent-mux-ui/session-flow': agentMuxUiSessionFlow,
       '@testing-library/react': testingLibraryReact,
       '@testing-library/dom': testingLibraryDom,
       '@': path.resolve(__dirname, './src'),

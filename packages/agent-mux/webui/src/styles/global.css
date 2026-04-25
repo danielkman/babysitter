@@ -306,6 +306,19 @@ img {
   margin-top: 12px;
 }
 
+.item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.action-link {
+  min-height: 34px;
+  padding: 6px 12px;
+  font-size: 0.88rem;
+}
+
 .ghost-link {
   display: inline-flex;
   align-items: center;

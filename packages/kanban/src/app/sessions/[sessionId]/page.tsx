@@ -288,6 +288,8 @@ function SessionDetailContent() {
         sessionId={sessionId}
         runs={runs as Array<Record<string, unknown>>}
         eventBuffers={eventBuffers}
+        workspacePath={workspacePath}
+        runtime={runtime}
       />
 
       <DispatchContextAuditPanel
