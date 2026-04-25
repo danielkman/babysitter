@@ -24,6 +24,7 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react'],
   },
+  turbopack: {},
   webpack: (config) => {
     config.resolve = config.resolve ?? {};
     config.resolve.extensionAlias = {
