@@ -1,4 +1,7 @@
 import * as http from 'node:http';
+import { randomUUID } from 'node:crypto';
+import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 
 import { Hono } from 'hono';
 
@@ -6,10 +9,25 @@ import type {
   CompletionEngine,
   CompletionRequest,
   CompletionResult,
+  CompletionStreamEvent,
   CreateTransportMuxAppOptions,
   ProxyConfig,
   RunningProxyServer,
 } from './types.js';
+
+const STREAMING_TRANSPORTS = new Set<ProxyConfig['exposedTransport']>([
+  'anthropic',
+  'openai-chat',
+  'openai-responses',
+  'google',
+  'passthrough',
+]);
+
+interface CompletionExecutionPlan {
+  body: Record<string, unknown>;
+  request: CompletionRequest;
+  streamRequested: boolean;
+}
 
 function isAuthorized(req: Request, authToken?: string): boolean {
   if (!authToken) {
@@ -106,8 +124,26 @@ async function readJsonBody(req: Request): Promise<Record<string, unknown>> {
   }
 }
 
-async function buildCompletionRequest(req: Request, transport: ProxyConfig['exposedTransport']): Promise<CompletionRequest> {
-  const body = await readJsonBody(req);
+function isStreamingRequestedByBody(body: Record<string, unknown>): boolean {
+  return body.stream === true;
+}
+
+function createErrorResponse(message: string, status = 400): Response {
+  return new Response(JSON.stringify({ error: { message } }), {
+    status,
+    headers: { 'content-type': 'application/json' },
+  });
+}
+
+function supportsStreaming(transport: ProxyConfig['exposedTransport']): boolean {
+  return STREAMING_TRANSPORTS.has(transport);
+}
+
+function buildCompletionRequest(
+  body: Record<string, unknown>,
+  transport: ProxyConfig['exposedTransport'],
+  stream: boolean,
+): CompletionRequest {
   const messages =
     transport === 'google' || transport === 'vertex-native'
       ? normalizeMessages(body.contents)
@@ -132,8 +168,31 @@ async function buildCompletionRequest(req: Request, transport: ProxyConfig['expo
         : 'mock-model',
     transport,
     messages,
+    stream,
     input: transport === 'openai-responses' ? normalizeInput(body.input) : undefined,
     raw: body,
+  };
+}
+
+async function createExecutionPlan(
+  req: Request,
+  transport: ProxyConfig['exposedTransport'],
+  options: { forceStreaming?: boolean } = {},
+): Promise<CompletionExecutionPlan | Response> {
+  const body = await readJsonBody(req.clone());
+  const bodyRequestedStream = isStreamingRequestedByBody(body);
+
+  if (transport === 'google' && bodyRequestedStream && !options.forceStreaming) {
+    return createErrorResponse(
+      'Google streaming requires the dedicated :streamGenerateContent route.',
+    );
+  }
+
+  const streamRequested = options.forceStreaming === true || bodyRequestedStream;
+  return {
+    body,
+    request: buildCompletionRequest(body, transport, streamRequested),
+    streamRequested,
   };
 }
 
@@ -164,14 +223,306 @@ async function proxyUpstream(req: Request, config: ProxyConfig, forwardedPath?: 
   return fetch(upstreamUrl, init);
 }
 
-async function resolveCompletion(req: Request, config: ProxyConfig, completionEngine?: CompletionEngine): Promise<CompletionResult | Response> {
+function encodeSseChunk(prefix: string, payload: unknown): string {
+  return `${prefix}${JSON.stringify(payload)}\n\n`;
+}
+
+function anthropicStreamResponse(
+  stream: AsyncIterable<CompletionStreamEvent>,
+  config: ProxyConfig,
+): Response {
+  const encoder = new TextEncoder();
+  const messageId = `msg_${randomUUID()}`;
+
+  return new Response(
+    new ReadableStream({
+      async start(controller) {
+        controller.enqueue(
+          encoder.encode(
+            encodeSseChunk(
+              'event: message_start\ndata: ',
+              {
+                type: 'message_start',
+                message: {
+                  id: messageId,
+                  type: 'message',
+                  role: 'assistant',
+                  content: [],
+                  model: config.targetModel,
+                },
+              },
+            ),
+          ),
+        );
+        controller.enqueue(
+          encoder.encode(
+            encodeSseChunk(
+              'event: content_block_start\ndata: ',
+              {
+                type: 'content_block_start',
+                index: 0,
+                content_block: { type: 'text', text: '' },
+              },
+            ),
+          ),
+        );
+
+        for await (const event of stream) {
+          if (event.type === 'text-delta' && event.text) {
+            controller.enqueue(
+              encoder.encode(
+                encodeSseChunk(
+                  'event: content_block_delta\ndata: ',
+                  {
+                    type: 'content_block_delta',
+                    index: 0,
+                    delta: { type: 'text_delta', text: event.text },
+                  },
+                ),
+              ),
+            );
+          }
+        }
+
+        controller.enqueue(
+          encoder.encode(
+            encodeSseChunk(
+              'event: content_block_stop\ndata: ',
+              { type: 'content_block_stop', index: 0 },
+            ),
+          ),
+        );
+        controller.enqueue(
+          encoder.encode(
+            encodeSseChunk('event: message_stop\ndata: ', { type: 'message_stop' }),
+          ),
+        );
+        controller.close();
+      },
+    }),
+    { headers: { 'content-type': 'text/event-stream; charset=utf-8', 'cache-control': 'no-cache' } },
+  );
+}
+
+function openAiChatStreamResponse(
+  stream: AsyncIterable<CompletionStreamEvent>,
+  config: ProxyConfig,
+): Response {
+  const encoder = new TextEncoder();
+  const responseId = `chatcmpl_${randomUUID()}`;
+  const created = Math.floor(Date.now() / 1000);
+
+  return new Response(
+    new ReadableStream({
+      async start(controller) {
+        controller.enqueue(
+          encoder.encode(
+            encodeSseChunk('data: ', {
+              id: responseId,
+              object: 'chat.completion.chunk',
+              created,
+              model: config.targetModel,
+              choices: [{ index: 0, delta: { role: 'assistant' }, finish_reason: null }],
+            }),
+          ),
+        );
+
+        let finishReason: string | null = 'stop';
+        for await (const event of stream) {
+          if (event.type === 'text-delta' && event.text) {
+            controller.enqueue(
+              encoder.encode(
+                encodeSseChunk('data: ', {
+                  id: responseId,
+                  object: 'chat.completion.chunk',
+                  created,
+                  model: config.targetModel,
+                  choices: [{ index: 0, delta: { content: event.text }, finish_reason: null }],
+                }),
+              ),
+            );
+            continue;
+          }
+
+          if (event.type === 'done' && event.finishReason) {
+            finishReason = event.finishReason;
+          }
+        }
+
+        controller.enqueue(
+          encoder.encode(
+            encodeSseChunk('data: ', {
+              id: responseId,
+              object: 'chat.completion.chunk',
+              created,
+              model: config.targetModel,
+              choices: [{ index: 0, delta: {}, finish_reason: finishReason }],
+            }),
+          ),
+        );
+        controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+        controller.close();
+      },
+    }),
+    { headers: { 'content-type': 'text/event-stream; charset=utf-8', 'cache-control': 'no-cache' } },
+  );
+}
+
+function openAiResponsesStreamResponse(
+  stream: AsyncIterable<CompletionStreamEvent>,
+  _config: ProxyConfig,
+): Response {
+  const encoder = new TextEncoder();
+  const responseId = `resp_${randomUUID()}`;
+
+  return new Response(
+    new ReadableStream({
+      async start(controller) {
+        controller.enqueue(
+          encoder.encode(
+            encodeSseChunk('event: response.created\ndata: ', {
+              type: 'response.created',
+              response: { id: responseId, status: 'in_progress' },
+            }),
+          ),
+        );
+        controller.enqueue(
+          encoder.encode(
+            encodeSseChunk('event: response.output_item.added\ndata: ', {
+              type: 'response.output_item.added',
+              output_index: 0,
+              item: { type: 'message', role: 'assistant' },
+            }),
+          ),
+        );
+        controller.enqueue(
+          encoder.encode(
+            encodeSseChunk('event: response.content_part.added\ndata: ', {
+              type: 'response.content_part.added',
+              output_index: 0,
+              content_index: 0,
+              part: { type: 'output_text', text: '' },
+            }),
+          ),
+        );
+
+        for await (const event of stream) {
+          if (event.type === 'text-delta' && event.text) {
+            controller.enqueue(
+              encoder.encode(
+                encodeSseChunk('event: response.output_text.delta\ndata: ', {
+                  type: 'response.output_text.delta',
+                  output_index: 0,
+                  content_index: 0,
+                  delta: event.text,
+                }),
+              ),
+            );
+          }
+        }
+
+        controller.enqueue(
+          encoder.encode(
+            encodeSseChunk('event: response.output_text.done\ndata: ', {
+              type: 'response.output_text.done',
+              output_index: 0,
+              content_index: 0,
+            }),
+          ),
+        );
+        controller.enqueue(
+          encoder.encode(
+            encodeSseChunk('event: response.completed\ndata: ', {
+              type: 'response.completed',
+              response: { id: responseId, status: 'completed' },
+            }),
+          ),
+        );
+        controller.close();
+      },
+    }),
+    { headers: { 'content-type': 'text/event-stream; charset=utf-8', 'cache-control': 'no-cache' } },
+  );
+}
+
+function googleStreamResponse(stream: AsyncIterable<CompletionStreamEvent>): Response {
+  const encoder = new TextEncoder();
+
+  return new Response(
+    new ReadableStream({
+      async start(controller) {
+        for await (const event of stream) {
+          if (event.type !== 'text-delta' || !event.text) {
+            continue;
+          }
+
+          controller.enqueue(
+            encoder.encode(
+              `${JSON.stringify({
+                candidates: [{ content: { parts: [{ text: event.text }], role: 'model' } }],
+              })}\n`,
+            ),
+          );
+        }
+        controller.close();
+      },
+    }),
+    { headers: { 'content-type': 'application/x-ndjson; charset=utf-8', 'cache-control': 'no-cache' } },
+  );
+}
+
+function renderStreamResponse(
+  transport: ProxyConfig['exposedTransport'],
+  stream: AsyncIterable<CompletionStreamEvent>,
+  config: ProxyConfig,
+): Response {
+  switch (transport) {
+    case 'anthropic':
+      return anthropicStreamResponse(stream, config);
+    case 'openai-chat':
+      return openAiChatStreamResponse(stream, config);
+    case 'openai-responses':
+      return openAiResponsesStreamResponse(stream, config);
+    case 'google':
+      return googleStreamResponse(stream);
+    default:
+      return createErrorResponse(`Streaming is not supported for ${transport}.`);
+  }
+}
+
+async function resolveCompletion(
+  req: Request,
+  config: ProxyConfig,
+  completionEngine: CompletionEngine | undefined,
+  plan: CompletionExecutionPlan,
+  options: { forceStreaming?: boolean } = {},
+): Promise<CompletionResult | Response> {
+  if (plan.streamRequested) {
+    if (!config.stream) {
+      return createErrorResponse('Streaming was requested but is disabled by proxy configuration.');
+    }
+    if (!supportsStreaming(config.exposedTransport)) {
+      return createErrorResponse(`Streaming is not supported for ${config.exposedTransport}.`);
+    }
+    if (!completionEngine) {
+      return proxyUpstream(req, config, options.forceStreaming ? new URL(req.url).pathname : undefined);
+    }
+    if (!completionEngine.stream) {
+      return createErrorResponse(
+        `Streaming was requested for ${config.exposedTransport}, but the configured completion engine cannot stream.`,
+        501,
+      );
+    }
+
+    return renderStreamResponse(config.exposedTransport, completionEngine.stream(plan.request), config);
+  }
+
   if (!completionEngine) {
     return proxyUpstream(req, config);
   }
 
-  const completionRequest = await buildCompletionRequest(req, config.exposedTransport);
-  completionRequest.model = config.targetModel;
-  return completionEngine.complete(completionRequest);
+  plan.request.model = config.targetModel;
+  return completionEngine.complete(plan.request);
 }
 
 function anthropicResponse(result: CompletionResult, config: ProxyConfig) {
@@ -299,7 +650,12 @@ export function createTransportMuxApp({ config, completionEngine }: CreateTransp
   });
 
   app.post('/v1/messages', async (c) => {
-    const result = await resolveCompletion(c.req.raw, config, completionEngine);
+    const plan = await createExecutionPlan(c.req.raw, 'anthropic');
+    if (plan instanceof Response) {
+      return plan;
+    }
+    plan.request.model = config.targetModel;
+    const result = await resolveCompletion(c.req.raw, config, completionEngine, plan);
     if (result instanceof Response) {
       return result;
     }
@@ -307,7 +663,12 @@ export function createTransportMuxApp({ config, completionEngine }: CreateTransp
   });
 
   app.post('/v1/chat/completions', async (c) => {
-    const result = await resolveCompletion(c.req.raw, config, completionEngine);
+    const plan = await createExecutionPlan(c.req.raw, 'openai-chat');
+    if (plan instanceof Response) {
+      return plan;
+    }
+    plan.request.model = config.targetModel;
+    const result = await resolveCompletion(c.req.raw, config, completionEngine, plan);
     if (result instanceof Response) {
       return result;
     }
@@ -315,7 +676,12 @@ export function createTransportMuxApp({ config, completionEngine }: CreateTransp
   });
 
   app.post('/v1/responses', async (c) => {
-    const result = await resolveCompletion(c.req.raw, config, completionEngine);
+    const plan = await createExecutionPlan(c.req.raw, 'openai-responses');
+    if (plan instanceof Response) {
+      return plan;
+    }
+    plan.request.model = config.targetModel;
+    const result = await resolveCompletion(c.req.raw, config, completionEngine, plan);
     if (result instanceof Response) {
       return result;
     }
@@ -323,7 +689,13 @@ export function createTransportMuxApp({ config, completionEngine }: CreateTransp
   });
 
   app.post('/v1beta/models/*', async (c) => {
-    const result = await resolveCompletion(c.req.raw, config, completionEngine);
+    const forceStreaming = c.req.path.endsWith(':streamGenerateContent');
+    const plan = await createExecutionPlan(c.req.raw, 'google', { forceStreaming });
+    if (plan instanceof Response) {
+      return plan;
+    }
+    plan.request.model = config.targetModel;
+    const result = await resolveCompletion(c.req.raw, config, completionEngine, plan, { forceStreaming });
     if (result instanceof Response) {
       return result;
     }
@@ -331,7 +703,12 @@ export function createTransportMuxApp({ config, completionEngine }: CreateTransp
   });
 
   app.post('/v1/projects/*', async (c) => {
-    const result = await resolveCompletion(c.req.raw, config, completionEngine);
+    const plan = await createExecutionPlan(c.req.raw, 'vertex-native');
+    if (plan instanceof Response) {
+      return plan;
+    }
+    plan.request.model = config.targetModel;
+    const result = await resolveCompletion(c.req.raw, config, completionEngine, plan);
     if (result instanceof Response) {
       return result;
     }
@@ -339,7 +716,12 @@ export function createTransportMuxApp({ config, completionEngine }: CreateTransp
   });
 
   app.post('/converse', async (c) => {
-    const result = await resolveCompletion(c.req.raw, config, completionEngine);
+    const plan = await createExecutionPlan(c.req.raw, 'bedrock-converse');
+    if (plan instanceof Response) {
+      return plan;
+    }
+    plan.request.model = config.targetModel;
+    const result = await resolveCompletion(c.req.raw, config, completionEngine, plan);
     if (result instanceof Response) {
       return result;
     }
@@ -347,7 +729,12 @@ export function createTransportMuxApp({ config, completionEngine }: CreateTransp
   });
 
   app.post('/models/chat/completions', async (c) => {
-    const result = await resolveCompletion(c.req.raw, config, completionEngine);
+    const plan = await createExecutionPlan(c.req.raw, 'azure-foundry');
+    if (plan instanceof Response) {
+      return plan;
+    }
+    plan.request.model = config.targetModel;
+    const result = await resolveCompletion(c.req.raw, config, completionEngine, plan);
     if (result instanceof Response) {
       return result;
     }
@@ -395,8 +782,10 @@ async function writeNodeResponse(res: http.ServerResponse, response: Response): 
     return;
   }
 
-  const buffer = Buffer.from(await response.arrayBuffer());
-  res.end(buffer);
+  await pipeline(
+    Readable.fromWeb(response.body as Parameters<typeof Readable.fromWeb>[0]),
+    res,
+  );
 }
 
 export async function startProxyServer(

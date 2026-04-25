@@ -51,4 +51,67 @@ describe('openai chat transport', () => {
 
     expect(response.status).toBe(401);
   });
+
+  it('streams openai chat chunks when requested', async () => {
+    const engine = createMockCompletionEngine({ text: 'Chunked reply' });
+    const app = createTestApp(
+      {
+        targetProvider: 'anthropic',
+        targetModel: 'anthropic/claude',
+        exposedTransport: 'openai-chat',
+      },
+      engine,
+    );
+
+    const response = await app.request('/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        authorization: 'Bearer test-token',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o',
+        stream: true,
+        messages: [{ role: 'user', content: 'hello' }],
+      }),
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toContain('text/event-stream');
+    const body = await response.text();
+    expect(body).toContain('"object":"chat.completion.chunk"');
+    expect(body).toContain('"content":"Chunked reply"');
+    expect(body).toContain('data: [DONE]');
+    expect(engine.requests[0]?.stream).toBe(true);
+  });
+
+  it('rejects stream requests when proxy streaming is disabled', async () => {
+    const app = createTestApp(
+      {
+        targetProvider: 'anthropic',
+        targetModel: 'anthropic/claude',
+        exposedTransport: 'openai-chat',
+        stream: false,
+      },
+      createMockCompletionEngine({ text: 'Test reply' }),
+    );
+
+    const response = await app.request('/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        authorization: 'Bearer test-token',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o',
+        stream: true,
+        messages: [{ role: 'user', content: 'hello' }],
+      }),
+    });
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({
+      error: { message: 'Streaming was requested but is disabled by proxy configuration.' },
+    });
+  });
 });

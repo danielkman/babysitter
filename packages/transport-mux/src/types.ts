@@ -32,6 +32,7 @@ export interface CompletionRequest {
   model: string;
   transport: TransportId;
   messages: CompletionRequestMessage[];
+  stream: boolean;
   input?: string;
   raw: unknown;
 }
@@ -51,8 +52,22 @@ export interface CompletionResult {
   usage: CompletionUsage;
 }
 
+export interface CompletionTextDeltaEvent {
+  type: 'text-delta';
+  text: string;
+}
+
+export interface CompletionDoneEvent {
+  type: 'done';
+  finishReason?: string;
+  usage?: CompletionUsage;
+}
+
+export type CompletionStreamEvent = CompletionTextDeltaEvent | CompletionDoneEvent;
+
 export interface CompletionEngine {
   complete(request: CompletionRequest): Promise<CompletionResult>;
+  stream?(request: CompletionRequest): AsyncIterable<CompletionStreamEvent>;
 }
 
 export interface CreateTransportMuxAppOptions {

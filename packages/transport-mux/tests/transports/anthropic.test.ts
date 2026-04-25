@@ -47,6 +47,33 @@ describe('anthropic transport', () => {
     expect(response.status).toBe(200);
   });
 
+  it('streams anthropic events when requested', async () => {
+    const engine = createMockCompletionEngine({ text: 'Streaming hello' });
+    const app = createTestApp({}, engine);
+
+    const response = await app.request('/v1/messages', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': 'test-token',
+      },
+      body: JSON.stringify({
+        model: 'claude',
+        stream: true,
+        messages: [{ role: 'user', content: 'hi' }],
+      }),
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toContain('text/event-stream');
+    const body = await response.text();
+    expect(body).toContain('event: message_start');
+    expect(body).toContain('event: content_block_delta');
+    expect(body).toContain('Streaming hello');
+    expect(body).toContain('event: message_stop');
+    expect(engine.requests[0]?.stream).toBe(true);
+  });
+
   it('rejects missing auth', async () => {
     const app = createTestApp({}, createMockCompletionEngine());
     const response = await app.request('/v1/messages', {
