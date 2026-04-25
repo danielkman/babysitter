@@ -93,7 +93,13 @@ export interface CustomToolDefinition {
 
 export interface AgentCoreToolOptions {
   workspace: string;
+  /**
+   * Enables host interaction on the tool surface. When `false`,
+   * `AskUserQuestion` returns an unavailable error and never invokes the
+   * injected handler.
+   */
   interactive: boolean;
+  /** Only consulted when `interactive` is `true`. */
   askUserQuestionHandler?: (...args: unknown[]) => Promise<unknown>;
   taskHandler?: (...args: unknown[]) => Promise<unknown>;
   skillHandler?: (...args: unknown[]) => Promise<unknown>;

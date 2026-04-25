@@ -252,6 +252,100 @@ describe("agent-core tools", () => {
     expect(getText(result)).not.toContain("test/gamma.ts");
   });
 
+  it("disables AskUserQuestion in non-interactive mode for simple and structured calls", async () => {
+    const workspace = mkdtempSync(path.join(os.tmpdir(), "agent-core-ask-non-interactive-"));
+    const askUserQuestionHandler = vi.fn(async () => ({ answers: [{ answer: "should not happen" }] }));
+    const askTool = getToolDefinitions(workspace, {
+      interactive: false,
+      askUserQuestionHandler,
+    }).find((tool) => tool.name === "AskUserQuestion");
+
+    if (!askTool) {
+      throw new Error("Expected AskUserQuestion tool to be registered");
+    }
+
+    const simpleResult = await askTool.execute("ask-simple", {
+      mode: "simple",
+      question: "What should happen?",
+    });
+    const structuredResult = await askTool.execute("ask-structured", {
+      mode: "structured",
+      questions: [
+        {
+          id: "choice",
+          question: "Pick one",
+          options: [{ label: "A" }, { label: "B" }],
+        },
+      ],
+    });
+
+    expect(getText(simpleResult)).toBe("Error: AskUserQuestion is unavailable when interactive=false.");
+    expect(getText(structuredResult)).toBe("Error: AskUserQuestion is unavailable when interactive=false.");
+    expect(askUserQuestionHandler).not.toHaveBeenCalled();
+  });
+
+  it("delegates AskUserQuestion in interactive mode for simple and structured calls", async () => {
+    const workspace = mkdtempSync(path.join(os.tmpdir(), "agent-core-ask-interactive-"));
+    const askUserQuestionHandler = vi.fn()
+      .mockResolvedValueOnce({ answers: [{ answer: "Ship it" }] })
+      .mockResolvedValueOnce({ answers: [{ id: "choice", answer: "B" }] });
+    const askTool = getToolDefinitions(workspace, {
+      interactive: true,
+      askUserQuestionHandler,
+    }).find((tool) => tool.name === "AskUserQuestion");
+
+    if (!askTool) {
+      throw new Error("Expected AskUserQuestion tool to be registered");
+    }
+
+    const simpleResult = await askTool.execute("ask-simple", {
+      mode: "simple",
+      question: "What should happen?",
+    });
+    const structuredResult = await askTool.execute("ask-structured", {
+      mode: "structured",
+      questions: [
+        {
+          id: "choice",
+          question: "Pick one",
+          options: [{ label: "A" }, { label: "B" }],
+          multi: false,
+          recommended: 1,
+        },
+      ],
+    });
+
+    expect(getText(simpleResult)).toBe("Ship it");
+    expect(JSON.parse(getText(structuredResult))).toEqual({
+      answers: [{ id: "choice", answer: "B" }],
+    });
+    expect(askUserQuestionHandler).toHaveBeenNthCalledWith(1, {
+      questions: [
+        {
+          id: "_simple",
+          text: "What should happen?",
+          options: undefined,
+          allowMultiple: false,
+          recommendedIndex: undefined,
+        },
+      ],
+    });
+    expect(askUserQuestionHandler).toHaveBeenNthCalledWith(2, {
+      questions: [
+        {
+          id: "choice",
+          text: "Pick one",
+          options: [
+            { value: "A", label: "A" },
+            { value: "B", label: "B" },
+          ],
+          allowMultiple: false,
+          recommendedIndex: 1,
+        },
+      ],
+    });
+  });
+
   it("caps ast_edit rewrites to the requested file limit", async () => {
     const workspace = mkdtempSync(path.join(os.tmpdir(), "agent-core-ast-edit-limit-"));
     const srcDir = path.join(workspace, "src");

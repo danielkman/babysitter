@@ -39,6 +39,17 @@ Background tasks created through `createAgentCoreToolDefinitions()` are scoped t
 
 Call `disposeAgentCoreToolDefinitions(definitions)` when the owning run or session ends. That teardown kills any still-running background tasks and releases retained task records, including captured stdout/stderr for completed tasks. If you pass a custom `backgroundRegistry` in the tool options, that registry is caller-owned and you should dispose it yourself.
 
+## Interactive tool contract
+
+`AgentCoreToolOptions.interactive` also gates the delegation tool surface. When
+`interactive: false`, the `AskUserQuestion` tool is unavailable even if
+`askUserQuestionHandler` is injected. Both simple and structured
+`AskUserQuestion` calls return `Error: AskUserQuestion is unavailable when
+interactive=false.` and agent-core never invokes the handler.
+
+Host integrations that inject `askUserQuestionHandler` should only expect calls
+when `interactive: true`.
+
 ## Local Build
 
 From the repo root, run:

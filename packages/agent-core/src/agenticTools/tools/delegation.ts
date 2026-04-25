@@ -2,6 +2,9 @@ import { Type } from "@sinclair/typebox";
 import type { AgenticToolOptions, CustomToolDefinition } from "../types";
 import { errorResult, jsonResult, ok } from "../shared/results";
 
+const ASK_USER_QUESTION_UNAVAILABLE_MESSAGE =
+  "AskUserQuestion is unavailable when interactive=false.";
+
 export function createDelegationTools(options: AgenticToolOptions): CustomToolDefinition[] {
   return [
     {
@@ -30,6 +33,10 @@ export function createDelegationTools(options: AgenticToolOptions): CustomToolDe
         )),
       }),
       execute: async (_toolCallId, params) => {
+        if (!options.interactive) {
+          return errorResult(ASK_USER_QUESTION_UNAVAILABLE_MESSAGE);
+        }
+
         if (!options.askUserQuestionHandler) {
           return errorResult("No askUserQuestionHandler provided.");
         }
