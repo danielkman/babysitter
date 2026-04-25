@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useStore } from 'zustand';
+import { useShallow } from 'zustand/react/shallow';
 
 import { CostMeter } from '../components/CostMeter.js';
 import { InputBar } from '../components/InputBar.js';
@@ -16,10 +17,13 @@ import type { GatewayStoreState } from '../store/index.js';
 export function SessionDetailScreen(props: { sessionId: string }): JSX.Element {
   const { store } = useGateway();
   const session = useSession(props.sessionId);
-  const runs = useStore(store, (state: GatewayStoreState) =>
-    Object.values(state.runs.byId)
-      .filter((run) => run.sessionId === props.sessionId)
-      .sort((left, right) => Number(right.startedAt ?? 0) - Number(left.startedAt ?? 0)),
+  const runs = useStore(
+    store,
+    useShallow((state: GatewayStoreState) =>
+      Object.values(state.runs.byId)
+        .filter((run) => run.sessionId === props.sessionId)
+        .sort((left, right) => Number(right.startedAt ?? 0) - Number(left.startedAt ?? 0)),
+    ),
   );
   const eventBuffers = useStore(store, (state: GatewayStoreState) => state.events.byRunId);
   const [viewMode, setViewMode] = useState<SessionFlowViewMode>('flow');

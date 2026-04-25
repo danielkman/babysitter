@@ -1,6 +1,13 @@
 import { EventEmitter } from 'node:events';
 
-import { vi } from 'vitest';
+import { cleanup } from '@testing-library/react';
+import { afterEach, vi } from 'vitest';
+
+afterEach(() => {
+  if (typeof document !== 'undefined') {
+    cleanup();
+  }
+});
 
 vi.doMock('ink-testing-library', async () => {
   const { render: inkRender } = await import('ink');
