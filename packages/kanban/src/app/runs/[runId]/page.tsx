@@ -7,6 +7,7 @@ import { useBacklog } from "@/hooks/use-backlog";
 import { useKeyboard } from "@/hooks/use-keyboard";
 import { OutcomeBanner } from "@/components/shared/outcome-banner";
 import { MetricsRow } from "@/components/shared/metrics-row";
+import { RunRealtimeExecutionPanel } from "@/components/runs/run-realtime-execution-panel";
 import { useNotificationContext } from "@/components/notifications/notification-provider";
 import { cn } from "@/lib/cn";
 import { Loader2, X, ArrowLeft } from "lucide-react";
@@ -85,6 +86,7 @@ export default function RunDetailPage({ params }: { params: { runId: string } })
   const [selectedEffectId, setSelectedEffectId] = useState<string | null>(null);
   const [showDetail, setShowDetail] = useState(false);
   const [showEventStream, setShowEventStream] = useState(true);
+  const [activityView, setActivityView] = useState<"events" | "realtime">("events");
   const [activeTab, setActiveTab] = useState("agent");
   const requestedEffectId = searchParams.get("effectId");
 
@@ -289,10 +291,53 @@ export default function RunDetailPage({ params }: { params: { runId: string } })
         {/* Event Stream - Right panel */}
         {showEventStream && (
           <div className={cn(
-            "transition-panel bg-card/50 backdrop-blur-sm",
+            "transition-panel bg-card/50 backdrop-blur-sm overflow-hidden flex flex-col",
             showDetail ? "lg:w-[35%]" : "lg:w-[40%]",
           )}>
-            <EventStream events={run.events} onEventClick={handleEventClick} />
+            <div className="flex items-center justify-between gap-3 border-b border-border bg-background-secondary/40 px-3 py-3">
+              <div>
+                <h3 className="text-xs font-medium uppercase tracking-wider text-foreground-muted">Activity</h3>
+                <p className="mt-1 text-xs text-foreground-muted">
+                  Keep the event stream open or switch into the reconstructed execution view.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 rounded-full border border-border bg-background/80 p-1">
+                <button
+                  type="button"
+                  data-testid="run-activity-events-tab"
+                  onClick={() => setActivityView("events")}
+                  className={cn(
+                    "rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
+                    activityView === "events"
+                      ? "bg-primary text-primary-foreground"
+                      : "text-foreground-muted hover:text-foreground",
+                  )}
+                >
+                  Event stream
+                </button>
+                <button
+                  type="button"
+                  data-testid="run-activity-realtime-tab"
+                  onClick={() => setActivityView("realtime")}
+                  className={cn(
+                    "rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
+                    activityView === "realtime"
+                      ? "bg-primary text-primary-foreground"
+                      : "text-foreground-muted hover:text-foreground",
+                  )}
+                >
+                  Realtime
+                </button>
+              </div>
+            </div>
+
+            <div className="min-h-0 flex-1 overflow-auto p-3">
+              {activityView === "events" ? (
+                <EventStream events={run.events} onEventClick={handleEventClick} />
+              ) : (
+                <RunRealtimeExecutionPanel run={run} />
+              )}
+            </div>
           </div>
         )}
       </div>
