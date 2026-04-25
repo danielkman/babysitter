@@ -68,4 +68,48 @@ describe("ReviewService", () => {
     };
     expect(persisted.artifacts.find((candidate) => candidate.id === artifact!.id)?.comments).toHaveLength(2);
   });
+
+  it("creates and links PR lifecycle state on workspace review artifacts", async () => {
+    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "kanban-review-"));
+    tempDirs.push(tempDir);
+    const reviewFilePath = path.join(tempDir, "review-artifacts.json");
+
+    const service = new ReviewService({
+      reviewFilePath,
+      now: () => "2026-04-25T10:00:00.000Z",
+      cwd: () => "/repo/worktrees/vk-parity-09",
+    });
+
+    const seeded = await service.listReviews({ targetType: "workspace" });
+    const artifact = seeded.artifacts[0];
+    expect(artifact).toBeTruthy();
+
+    const created = await service.applyAction({
+      action: "create-pull-request",
+      artifactId: artifact!.id,
+      title: "Add PR lifecycle parity to the workspace sidebar",
+      reviewers: "kanban-maintainers, qa",
+      branchName: "vk/parity-09",
+      baseBranch: "main",
+    });
+
+    const createdArtifact = created.artifacts.find((candidate) => candidate.id === artifact!.id);
+    expect(createdArtifact?.linkedPullRequest?.title).toBe("Add PR lifecycle parity to the workspace sidebar");
+    expect(createdArtifact?.linkedPullRequest?.reviewStatus).toBe("pending");
+    expect(createdArtifact?.linkedPullRequest?.ciGates).toHaveLength(2);
+
+    const linked = await service.applyAction({
+      action: "link-pull-request",
+      artifactId: artifact!.id,
+      number: 712,
+      title: "VK-PARITY-09 workspace lifecycle follow-up",
+      branchName: "vk/parity-09",
+      baseBranch: "main",
+    });
+
+    const linkedArtifact = linked.artifacts.find((candidate) => candidate.id === artifact!.id);
+    expect(linkedArtifact?.linkedPullRequest?.number).toBe(712);
+    expect(linkedArtifact?.linkedPullRequest?.mergeStatus).toBe("blocked");
+    expect(linkedArtifact?.linkedPullRequest?.publishStatus).toBe("not-ready");
+  });
 });

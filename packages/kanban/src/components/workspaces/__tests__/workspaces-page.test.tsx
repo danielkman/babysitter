@@ -5,6 +5,7 @@ import { getWorkspaceOwnershipLabel, loadInventory, runWorkspaceAction, Workspac
 
 let workspaceReviewArtifacts: Array<Record<string, unknown>> = [];
 const mockUseBacklog = vi.fn(() => ({ snapshot: null }));
+const workspaceReviewActionMock = vi.fn();
 
 vi.mock("next/link", () => ({
   default: ({ href, children, ...props }: { href?: string; children?: unknown; [key: string]: unknown }) => (
@@ -22,7 +23,7 @@ vi.mock("@/hooks/use-reviews", () => ({
     queue: [],
     summary: { pendingCount: 0, changesRequestedCount: 0 },
     pendingArtifactId: null,
-    actOnReview: vi.fn().mockResolvedValue(undefined),
+    actOnReview: workspaceReviewActionMock,
   }),
 }));
 
@@ -49,6 +50,7 @@ describe("workspaces-page helpers", () => {
     workspaceReviewArtifacts = [];
     mockUseBacklog.mockReturnValue({ snapshot: null });
     window.localStorage.clear();
+    workspaceReviewActionMock.mockResolvedValue(undefined);
   });
 
   it("describes session-backed ownership when the gateway is connected", () => {
@@ -224,6 +226,7 @@ describe("workspaces-page helpers", () => {
       "Git summary",
       "Terminal",
       "Notes",
+      "PR lifecycle",
       "Quick actions",
     ]);
     expect(screen.getByText("Resolve conflicts before returning to review or merge")).toBeInTheDocument();
@@ -403,6 +406,121 @@ describe("workspaces-page helpers", () => {
     expect(screen.getByText(/GitHub PR #612 is partially linked/)).toBeInTheDocument();
     expect(screen.getAllByText("expired auth").length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText(/Reconnect GitHub before linked review actions can continue/).length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("submits PR creation from the workspace sidebar and shows mapped review comments", async () => {
+    const user = setupUser();
+
+    workspaceReviewArtifacts = [
+      {
+        id: "workspace-review-2",
+        targetType: "workspace",
+        targetId: "/repo/worktrees/task",
+        targetLabel: "task",
+        title: "Workspace review",
+        decision: "pending",
+        queueState: "in-review",
+        diff: [],
+        comments: [
+          {
+            id: "comment-1",
+            author: { kind: "agent", name: "workspace-reviewer" },
+            body: "Carry the CI and merge chips into the workspace sidebar.",
+            createdAt: "2026-04-24T12:00:00.000Z",
+            status: "open",
+            anchor: {
+              fileId: "file-1",
+              filePath: "packages/kanban/src/components/workspaces/workspace-details-sidebar.tsx",
+              hunkId: "hunk-1",
+              side: "head",
+              line: 120,
+            },
+          },
+        ],
+        updatedAt: "2026-04-24T12:00:00.000Z",
+        integration: {
+          provider: "github",
+          status: "connected",
+          linkState: "unlinked",
+          guidance: "Create a linked PR from the active workspace.",
+          prerequisites: [],
+          actions: {
+            canCreatePullRequest: true,
+            canManagePullRequest: true,
+            canApproveFromReview: true,
+          },
+        },
+      },
+    ];
+
+    vi.mocked(fetch).mockResolvedValue(
+      new Response(JSON.stringify({
+        summary: { total: 1, active: 1, idle: 0, archived: 0, missing: 0 },
+        workspaces: [
+          {
+            path: "/repo/worktrees/task",
+            name: "task",
+            status: "active",
+            missing: false,
+            archivedAt: null,
+            cleanedAt: null,
+            lastActivityAt: "2026-04-24T12:00:00.000Z",
+            git: {
+              root: "/repo/main",
+              commonDir: "/repo/main/.git",
+              trackingBranch: "origin/vk/task",
+              branch: "vk/task",
+              head: "abc123",
+              ahead: 0,
+              behind: 0,
+              dirty: false,
+              uncommittedCount: 0,
+              isWorktree: true,
+              isPrimary: false,
+            },
+            notes: {
+              value: "",
+              updatedAt: null,
+            },
+            links: {
+              editorHref: "vscode://file/repo/worktrees/task",
+            },
+            sessions: { total: 0, active: 0, items: [] },
+            runs: { total: 0, active: 0, items: [] },
+            actions: {
+              canArchive: true,
+              canCleanup: false,
+              canRecover: false,
+              canRebaseStart: false,
+              canRebaseAutoResolve: false,
+              canRebaseOpenInEditor: false,
+              canRebaseMarkResolved: false,
+              canRebaseAbort: false,
+            },
+          },
+        ],
+      }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      }),
+    );
+
+    render(<WorkspacesPageContent isAuthenticated sessions={[]} />);
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Create PR" })).toBeInTheDocument();
+    });
+
+    expect(screen.getByText("Carry the CI and merge chips into the workspace sidebar.")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Create PR" }));
+
+    expect(workspaceReviewActionMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "create-pull-request",
+        artifactId: "workspace-review-2",
+      }),
+    );
   });
 
   it("renders missing metadata, disconnected runtime, and empty notes states", async () => {

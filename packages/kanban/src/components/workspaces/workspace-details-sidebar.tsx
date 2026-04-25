@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { WorkspaceRuntimeSurface } from "@a5c-ai/agent-mux-core";
-import { AlertCircle, ArrowUpDown, ExternalLink, FileText, GitBranch, Loader2, Terminal, Wrench } from "lucide-react";
+import type { KanbanIntegrationProvider, KanbanReviewArtifact } from "@a5c-ai/agent-mux-core/kanban";
+import { AlertCircle, ArrowUpDown, ExternalLink, FileText, GitBranch, Loader2, MessageSquareText, Terminal, Wrench } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
@@ -48,6 +49,23 @@ function statusTone(status: "success" | "warning" | "error" | "neutral"): string
   return "border-border text-foreground-muted";
 }
 
+function lifecycleTone(status: string): string {
+  if (status === "approved" || status === "ready" || status === "passing" || status === "published" || status === "merged") {
+    return "border-success/20 bg-success/10 text-success";
+  }
+  if (status === "pending" || status === "in-review") {
+    return "border-warning/20 bg-warning/10 text-warning";
+  }
+  if (status === "changes-requested" || status === "blocked" || status === "failing" || status === "failed") {
+    return "border-error/20 bg-error/10 text-error";
+  }
+  return "border-border text-foreground-muted";
+}
+
+function providerLabel(provider: KanbanIntegrationProvider): string {
+  return provider === "azure-repos" ? "Azure Repos" : "GitHub";
+}
+
 function latestCommand(runtime: WorkspaceRuntimeSurface | undefined) {
   if (!runtime) {
     return null;
@@ -58,16 +76,40 @@ function latestCommand(runtime: WorkspaceRuntimeSurface | undefined) {
 export function WorkspaceDetailsSidebar(props: {
   workspace: WorkspaceInventoryItem;
   runtime?: WorkspaceRuntimeSurface;
+  reviewArtifact?: KanbanReviewArtifact | null;
   sessionId?: string;
   pendingAction: string | null;
   notesSaving: boolean;
+  reviewPending: boolean;
   feedback?: WorkspaceSidebarFeedback | null;
   onAction: (action: WorkspaceSidebarAction, workspace: WorkspaceInventoryItem) => void;
   onOpenInEditor: (workspace: WorkspaceInventoryItem, href: string | null) => void;
   onSaveNote: (workspace: WorkspaceInventoryItem, note: string) => void;
+  onCreatePullRequest: (
+    workspace: WorkspaceInventoryItem,
+    input: {
+      provider: KanbanIntegrationProvider;
+      title: string;
+      reviewers?: string;
+      branchName?: string;
+      baseBranch?: string;
+    },
+  ) => void;
+  onLinkPullRequest: (
+    workspace: WorkspaceInventoryItem,
+    input: {
+      provider: KanbanIntegrationProvider;
+      number: number;
+      title: string;
+      branchName?: string;
+      baseBranch?: string;
+    },
+  ) => void;
 }) {
   const [draftNote, setDraftNote] = useState(props.workspace.notes.value);
   const lastCommand = useMemo(() => latestCommand(props.runtime), [props.runtime]);
+  const linkedPullRequest = props.reviewArtifact?.linkedPullRequest;
+  const integration = props.reviewArtifact?.integration;
   const previewUrl = props.runtime?.preview.primaryUrl ?? props.runtime?.devServer.primaryUrl ?? null;
   const repoName = props.workspace.git.root?.split("/").filter(Boolean).at(-1) ?? "Unavailable";
   const gitMetadataMissing = !props.workspace.git.root || !props.workspace.git.branch;
@@ -76,13 +118,53 @@ export function WorkspaceDetailsSidebar(props: {
     props.workspace.git.ahead == null || props.workspace.git.behind == null
       ? "No upstream tracking"
       : `${props.workspace.git.ahead} ahead / ${props.workspace.git.behind} behind`;
+  const [provider, setProvider] = useState<KanbanIntegrationProvider>(
+    integration?.provider ?? linkedPullRequest?.provider ?? "github",
+  );
+  const [branchName, setBranchName] = useState(
+    linkedPullRequest?.branchName ?? props.workspace.git.branch ?? props.workspace.name,
+  );
+  const [baseBranch, setBaseBranch] = useState(
+    linkedPullRequest?.baseBranch ?? props.workspace.git.trackingBranch?.split("/").at(-1) ?? "main",
+  );
+  const [pullRequestTitle, setPullRequestTitle] = useState(
+    linkedPullRequest?.title ?? `${props.workspace.name}: ${props.workspace.git.branch ?? "workspace"} lifecycle`,
+  );
+  const [reviewers, setReviewers] = useState("kanban-maintainers");
+  const [linkedNumber, setLinkedNumber] = useState(
+    linkedPullRequest?.number ? String(linkedPullRequest.number) : "",
+  );
+  const [linkedTitle, setLinkedTitle] = useState(linkedPullRequest?.title ?? "");
+  const recentComments = useMemo(
+    () => [...(props.reviewArtifact?.comments ?? [])].slice(-2).reverse(),
+    [props.reviewArtifact?.comments],
+  );
 
   useEffect(() => {
     setDraftNote(props.workspace.notes.value);
   }, [props.workspace.notes.value, props.workspace.path]);
 
+  useEffect(() => {
+    setProvider(integration?.provider ?? linkedPullRequest?.provider ?? "github");
+    setBranchName(linkedPullRequest?.branchName ?? props.workspace.git.branch ?? props.workspace.name);
+    setBaseBranch(linkedPullRequest?.baseBranch ?? props.workspace.git.trackingBranch?.split("/").at(-1) ?? "main");
+    setPullRequestTitle(linkedPullRequest?.title ?? `${props.workspace.name}: ${props.workspace.git.branch ?? "workspace"} lifecycle`);
+    setLinkedNumber(linkedPullRequest?.number ? String(linkedPullRequest.number) : "");
+    setLinkedTitle(linkedPullRequest?.title ?? "");
+  }, [
+    integration?.provider,
+    linkedPullRequest?.baseBranch,
+    linkedPullRequest?.branchName,
+    linkedPullRequest?.number,
+    linkedPullRequest?.provider,
+    linkedPullRequest?.title,
+    props.workspace.git.branch,
+    props.workspace.git.trackingBranch,
+    props.workspace.name,
+  ]);
+
   const actionKey = (action: WorkspaceSidebarAction) => `${action}:${props.workspace.path}`;
-  const quickActionBusy = props.pendingAction != null;
+  const quickActionBusy = props.pendingAction != null || props.reviewPending;
 
   return (
     <aside className="rounded-[28px] border border-border bg-card p-4 shadow-lg" aria-label={`Workspace details for ${props.workspace.name}`}>
@@ -210,6 +292,235 @@ export function WorkspaceDetailsSidebar(props: {
               <Button type="button" size="sm" variant="ghost" disabled={props.notesSaving || draftNote.length === 0} onClick={() => props.onSaveNote(props.workspace, "")}>
                 Clear
               </Button>
+            </div>
+          </div>
+        </SidebarSection>
+
+        <SidebarSection title="PR lifecycle" icon={MessageSquareText}>
+          <div className="space-y-3">
+            {linkedPullRequest ? (
+              <div className="rounded-2xl border border-border bg-card/80 px-3 py-3">
+                <div className="flex flex-wrap items-center gap-2 text-xs">
+                  <span className="rounded-full border border-border px-2 py-0.5 text-foreground-muted">
+                    {providerLabel(linkedPullRequest.provider)} PR {linkedPullRequest.number ? `#${linkedPullRequest.number}` : ""}
+                  </span>
+                  <span className={cn("rounded-full border px-2 py-0.5", lifecycleTone(linkedPullRequest.status))}>
+                    {linkedPullRequest.status}
+                  </span>
+                  <span className="rounded-full border border-border px-2 py-0.5 text-foreground-muted">
+                    {linkedPullRequest.linkState === "partially-linked" ? "partially linked" : linkedPullRequest.linkState}
+                  </span>
+                </div>
+                <h4 className="mt-2 text-sm font-semibold">{linkedPullRequest.title}</h4>
+                <div className="mt-3 flex flex-wrap gap-2 text-xs">
+                  {linkedPullRequest.reviewStatus ? (
+                    <span className={cn("rounded-full border px-2 py-0.5", lifecycleTone(linkedPullRequest.reviewStatus))}>
+                      Review {linkedPullRequest.reviewStatus}
+                    </span>
+                  ) : null}
+                  {linkedPullRequest.mergeStatus ? (
+                    <span className={cn("rounded-full border px-2 py-0.5", lifecycleTone(linkedPullRequest.mergeStatus))}>
+                      Merge {linkedPullRequest.mergeStatus}
+                    </span>
+                  ) : null}
+                  {linkedPullRequest.publishStatus ? (
+                    <span className={cn("rounded-full border px-2 py-0.5", lifecycleTone(linkedPullRequest.publishStatus))}>
+                      Publish {linkedPullRequest.publishStatus}
+                    </span>
+                  ) : null}
+                </div>
+                {linkedPullRequest.ciGates?.length ? (
+                  <div className="mt-3 flex flex-wrap gap-2 text-xs">
+                    {linkedPullRequest.ciGates.map((gate) => (
+                      <span key={`${props.workspace.path}-${gate.id}`} className={cn("rounded-full border px-2 py-0.5", lifecycleTone(gate.status))}>
+                        {gate.name}: {gate.status}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
+                <p className="mt-3 text-xs text-foreground-muted">
+                  {integration?.guidance ?? linkedPullRequest.guidance ?? "No linked PR guidance available."}
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {linkedPullRequest.url ? (
+                    <Button asChild type="button" size="sm" variant="outline">
+                      <a href={linkedPullRequest.url} target="_blank" rel="noreferrer">
+                        Open PR
+                        <ExternalLink className="ml-2 h-4 w-4" />
+                      </a>
+                    </Button>
+                  ) : null}
+                </div>
+              </div>
+            ) : (
+              <SectionState
+                tone="neutral"
+                title="No linked PR yet"
+                body="Create a linked PR from this workspace or attach an existing one so review, CI, merge, and publish state stay attached to the worktree."
+              />
+            )}
+
+            {integration ? (
+              <div className="rounded-2xl border border-border bg-background/70 px-3 py-3">
+                <div className="flex flex-wrap items-center gap-2 text-xs">
+                  <span className="rounded-full border border-border px-2 py-0.5 text-foreground-muted">
+                    {providerLabel(integration.provider)}
+                  </span>
+                  <span className={cn("rounded-full border px-2 py-0.5", lifecycleTone(integration.status))}>
+                    {integration.status.replace(/-/g, " ")}
+                  </span>
+                </div>
+                <p className="mt-2 text-xs text-foreground-muted">{integration.guidance}</p>
+                {integration.actions.reason ? (
+                  <div className="mt-3 rounded-xl border border-warning/20 bg-warning/10 px-3 py-2 text-xs text-warning">
+                    {integration.actions.reason}
+                  </div>
+                ) : null}
+                {integration.missingScopes?.length ? (
+                  <div className="mt-2 rounded-xl border border-warning/20 bg-warning/10 px-3 py-2 text-xs text-warning">
+                    Missing scopes: {integration.missingScopes.join(", ")}
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+
+            {!linkedPullRequest ? (
+              <>
+                <form
+                  className="grid gap-3"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    props.onCreatePullRequest(props.workspace, {
+                      provider,
+                      title: pullRequestTitle,
+                      reviewers,
+                      branchName,
+                      baseBranch,
+                    });
+                  }}
+                >
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <label className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+                      Provider
+                      <select
+                        value={provider}
+                        onChange={(event) => setProvider(event.target.value === "azure-repos" ? "azure-repos" : "github")}
+                        className="mt-2 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground"
+                      >
+                        <option value="github">GitHub</option>
+                        <option value="azure-repos">Azure Repos</option>
+                      </select>
+                    </label>
+                    <label className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+                      Branch
+                      <input
+                        value={branchName}
+                        onChange={(event) => setBranchName(event.target.value)}
+                        className="mt-2 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground"
+                      />
+                    </label>
+                    <label className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+                      Base branch
+                      <input
+                        value={baseBranch}
+                        onChange={(event) => setBaseBranch(event.target.value)}
+                        className="mt-2 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground"
+                      />
+                    </label>
+                    <label className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+                      Reviewers
+                      <input
+                        value={reviewers}
+                        onChange={(event) => setReviewers(event.target.value)}
+                        className="mt-2 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground"
+                      />
+                    </label>
+                  </div>
+                  <label className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+                    PR title
+                    <input
+                      value={pullRequestTitle}
+                      onChange={(event) => setPullRequestTitle(event.target.value)}
+                      className="mt-2 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground"
+                    />
+                  </label>
+                  <Button
+                    type="submit"
+                    size="sm"
+                    disabled={quickActionBusy || (integration ? !integration.actions.canCreatePullRequest : false)}
+                  >
+                    Create PR
+                  </Button>
+                </form>
+
+                <form
+                  className="grid gap-3 rounded-2xl border border-border bg-background/70 px-3 py-3"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    props.onLinkPullRequest(props.workspace, {
+                      provider,
+                      number: Number(linkedNumber),
+                      title: linkedTitle,
+                      branchName,
+                      baseBranch,
+                    });
+                  }}
+                >
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground-muted">
+                    Link existing PR
+                  </p>
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <label className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+                      PR number
+                      <input
+                        type="number"
+                        min={1}
+                        value={linkedNumber}
+                        onChange={(event) => setLinkedNumber(event.target.value)}
+                        className="mt-2 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground"
+                      />
+                    </label>
+                    <label className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+                      PR title
+                      <input
+                        value={linkedTitle}
+                        onChange={(event) => setLinkedTitle(event.target.value)}
+                        className="mt-2 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground"
+                      />
+                    </label>
+                  </div>
+                  <Button
+                    type="submit"
+                    size="sm"
+                    variant="outline"
+                    disabled={quickActionBusy || (integration ? !integration.actions.canManagePullRequest : false)}
+                  >
+                    Link PR
+                  </Button>
+                </form>
+              </>
+            ) : null}
+
+            <div className="rounded-2xl border border-border bg-background/70 px-3 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground-muted">Review feedback</p>
+              {recentComments.length > 0 ? (
+                <div className="mt-3 space-y-2">
+                  {recentComments.map((comment) => (
+                    <div key={`${props.workspace.path}-${comment.id}`} className="rounded-xl border border-border bg-card/80 px-3 py-2">
+                      <div className="flex flex-wrap items-center gap-2 text-[11px] text-foreground-muted">
+                        <span>{comment.author.name}</span>
+                        <span>{comment.anchor.filePath}</span>
+                        <span>{comment.anchor.side}:{comment.anchor.line}</span>
+                      </div>
+                      <p className="mt-1 text-sm text-foreground">{comment.body}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-2 text-xs text-foreground-muted">
+                  No review comments have been mapped back to this workspace yet.
+                </p>
+              )}
             </div>
           </div>
         </SidebarSection>

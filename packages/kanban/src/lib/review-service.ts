@@ -4,10 +4,16 @@ import path from "node:path";
 
 import {
   summarizeKanbanReviewArtifact,
+  type KanbanCiGate,
+  type KanbanIntegrationProvider,
+  type KanbanMergeStatus,
+  type KanbanPublishStatus,
+  type KanbanPullRequestStatus,
   type KanbanReviewArtifact,
   type KanbanReviewComment,
   type KanbanReviewCommentAnchor,
   type KanbanReviewFeedbackSource,
+  type KanbanReviewStatus,
   type KanbanReviewSnapshot,
 } from "@a5c-ai/agent-mux-core/kanban";
 
@@ -43,6 +49,31 @@ export type ReviewActionInput =
       anchor: KanbanReviewCommentAnchor;
       authorName?: string;
       feedbackSource?: KanbanReviewFeedbackSource;
+    }
+  | {
+      action: "create-pull-request";
+      artifactId: string;
+      provider?: KanbanIntegrationProvider;
+      title: string;
+      reviewers?: string;
+      branchName?: string;
+      baseBranch?: string;
+      url?: string;
+    }
+  | {
+      action: "link-pull-request";
+      artifactId: string;
+      provider?: KanbanIntegrationProvider;
+      number: number;
+      title: string;
+      status?: KanbanPullRequestStatus;
+      reviewStatus?: KanbanReviewStatus;
+      mergeStatus?: KanbanMergeStatus;
+      publishStatus?: KanbanPublishStatus;
+      ciGates?: readonly KanbanCiGate[];
+      branchName?: string;
+      baseBranch?: string;
+      url?: string;
     };
 
 const defaultDeps: ReviewServiceDeps = {
@@ -53,6 +84,56 @@ const defaultDeps: ReviewServiceDeps = {
   now: () => new Date().toISOString(),
   cwd: () => process.cwd(),
 };
+
+function parseReviewerList(value: string): string[] {
+  return value
+    .split(",")
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+}
+
+function nextPullRequestNumber(artifacts: readonly KanbanReviewArtifact[]): number {
+  return (
+    Math.max(0, ...artifacts.map((artifact) => artifact.linkedPullRequest?.number ?? 0)) + 1
+  );
+}
+
+function defaultBranchName(artifact: KanbanReviewArtifact): string {
+  return artifact.branch?.trim() || `review/${artifact.targetLabel.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+}
+
+function cloneCiGates(gates: readonly KanbanCiGate[] | undefined): KanbanCiGate[] {
+  return (gates ?? []).map((gate) => ({ ...gate }));
+}
+
+function defaultCiGates(provider: string, status: KanbanCiGate["status"]): KanbanCiGate[] {
+  return [
+    {
+      id: `ci-${provider.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-build`,
+      name: "Build",
+      provider,
+      required: true,
+      status,
+      summary: status === "passing" ? "Build completed successfully." : "Build is waiting for the next run.",
+    },
+    {
+      id: `ci-${provider.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-tests`,
+      name: "Tests",
+      provider,
+      required: true,
+      status,
+      summary: status === "passing" ? "Tests completed successfully." : "Tests are waiting for the next run.",
+    },
+  ];
+}
+
+function linkStateForArtifact(artifact: KanbanReviewArtifact): "linked" | "partially-linked" {
+  return artifact.integration?.status === "connected" ? "linked" : "partially-linked";
+}
+
+function integrationStatusForArtifact(artifact: KanbanReviewArtifact) {
+  return artifact.integration?.status ?? artifact.linkedPullRequest?.integrationStatus ?? "connected";
+}
 
 function buildDefaultArtifacts(workspacePath: string): KanbanReviewArtifact[] {
   return [
@@ -147,6 +228,33 @@ function buildDefaultArtifacts(workspacePath: string): KanbanReviewArtifact[] {
       decision: "changes-requested",
       queueState: "in-review",
       updatedAt: "2026-04-24T12:05:00.000Z",
+      integration: {
+        provider: "github",
+        status: "connected",
+        linkState: "linked",
+        guidance: "Linked PR state stays synchronized with the shared review artifact for this workspace.",
+        prerequisites: [],
+        actions: {
+          canCreatePullRequest: true,
+          canManagePullRequest: true,
+          canApproveFromReview: true,
+        },
+      },
+      linkedPullRequest: {
+        provider: "github",
+        status: "changes-requested",
+        linkState: "linked",
+        title: "Workspace review handoff",
+        number: 604,
+        branchName: path.basename(workspacePath),
+        baseBranch: "main",
+        reviewStatus: "changes-requested",
+        mergeStatus: "blocked",
+        publishStatus: "not-ready",
+        ciGates: defaultCiGates("GitHub Actions", "pending"),
+        integrationStatus: "connected",
+        guidance: "Resolve the open review note, re-run CI, and then continue through merge readiness.",
+      },
       diff: [
         {
           id: "workspace-diff-page",
@@ -333,6 +441,12 @@ export class ReviewService {
         ...artifact,
         comments: [...artifact.comments],
         diff: [...artifact.diff],
+        linkedPullRequest: artifact.linkedPullRequest
+          ? {
+              ...artifact.linkedPullRequest,
+              ciGates: cloneCiGates(artifact.linkedPullRequest.ciGates),
+            }
+          : undefined,
       }));
     }
 
@@ -372,7 +486,7 @@ export class ReviewService {
         queueState: "in-review",
         updatedAt: now,
       };
-    } else {
+    } else if (input.action === "add-comment") {
       const body = input.body.trim();
       if (!body) {
         throw new Error("Comment body is required.");
@@ -394,6 +508,110 @@ export class ReviewService {
           }),
         ],
       };
+    } else {
+      const provider = input.provider ?? artifact.integration?.provider ?? artifact.linkedPullRequest?.provider ?? "github";
+      const integrationStatus = integrationStatusForArtifact(artifact);
+      const linkState = linkStateForArtifact(artifact);
+      const baseBranch = input.baseBranch?.trim() || artifact.linkedPullRequest?.baseBranch || "main";
+      const branchName =
+        input.branchName?.trim() || artifact.linkedPullRequest?.branchName || artifact.branch || defaultBranchName(artifact);
+
+      if (input.action === "create-pull-request") {
+        if (artifact.integration && !artifact.integration.actions.canCreatePullRequest) {
+          throw new Error(artifact.integration.actions.reason ?? artifact.integration.guidance);
+        }
+
+        const title = input.title.trim();
+        if (!title) {
+          throw new Error("PR title is required.");
+        }
+
+        const reviewers = parseReviewerList(input.reviewers ?? "");
+        updatedArtifact = {
+          ...artifact,
+          decision: artifact.decision === "approved" ? "pending" : artifact.decision,
+          queueState: reviewers.length > 0 ? "in-review" : artifact.queueState === "completed" ? "queued" : artifact.queueState,
+          updatedAt: now,
+          linkedPullRequest: {
+            provider,
+            status: reviewers.length > 0 ? "in-review" : "open",
+            linkState,
+            title,
+            number: nextPullRequestNumber(artifacts),
+            url: input.url?.trim() || artifact.linkedPullRequest?.url,
+            branchName,
+            baseBranch,
+            reviewStatus: reviewers.length > 0 ? "pending" : "unlinked",
+            mergeStatus: "blocked",
+            publishStatus: "not-ready",
+            ciGates: defaultCiGates(provider === "azure-repos" ? "Azure Pipelines" : "GitHub Actions", "pending"),
+            integrationStatus,
+            guidance:
+              artifact.integration?.guidance ??
+              "Linked PR created. Keep review comments and CI state synchronized from the shared review surface.",
+          },
+        };
+      } else {
+        if (artifact.integration && !artifact.integration.actions.canManagePullRequest) {
+          throw new Error(artifact.integration.actions.reason ?? artifact.integration.guidance);
+        }
+
+        const title = input.title.trim();
+        if (!title) {
+          throw new Error("Linked PR title is required.");
+        }
+        if (!Number.isFinite(input.number) || input.number <= 0) {
+          throw new Error("Linked PR number must be a positive integer.");
+        }
+
+        const status = input.status ?? "in-review";
+        const reviewStatus =
+          input.reviewStatus ??
+          (status === "approved"
+            ? "approved"
+            : status === "changes-requested"
+              ? "changes-requested"
+              : status === "open" || status === "draft"
+                ? "unlinked"
+                : "pending");
+        const mergeStatus = input.mergeStatus ?? (status === "merged" ? "merged" : "blocked");
+        const publishStatus = input.publishStatus ?? (status === "merged" ? "ready" : "not-ready");
+
+        updatedArtifact = {
+          ...artifact,
+          decision:
+            reviewStatus === "approved"
+              ? "approved"
+              : reviewStatus === "changes-requested"
+                ? "changes-requested"
+                : "pending",
+          queueState: reviewStatus === "approved" || status === "merged" ? "completed" : "in-review",
+          updatedAt: now,
+          linkedPullRequest: {
+            provider,
+            status,
+            linkState,
+            title,
+            number: Math.floor(input.number),
+            url: input.url?.trim() || artifact.linkedPullRequest?.url,
+            branchName,
+            baseBranch,
+            reviewStatus,
+            mergeStatus,
+            publishStatus,
+            ciGates:
+              input.ciGates && input.ciGates.length > 0
+                ? cloneCiGates(input.ciGates)
+                : artifact.linkedPullRequest?.ciGates && artifact.linkedPullRequest.ciGates.length > 0
+                  ? cloneCiGates(artifact.linkedPullRequest.ciGates)
+                  : defaultCiGates(provider === "azure-repos" ? "Azure Pipelines" : "GitHub Actions", "passing"),
+            integrationStatus,
+            guidance:
+              artifact.integration?.guidance ??
+              "Linked PR imported into the shared review surface. Review notes now map back to the active work item.",
+          },
+        };
+      }
     }
 
     const nextArtifacts = artifacts.map((candidate, candidateIndex) =>

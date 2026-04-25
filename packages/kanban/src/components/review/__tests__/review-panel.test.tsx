@@ -35,6 +35,13 @@ const artifact = {
     linkState: "partially-linked" as const,
     title: "Add linked PR parity indicators",
     number: 612,
+    reviewStatus: "pending" as const,
+    mergeStatus: "blocked" as const,
+    publishStatus: "not-ready" as const,
+    ciGates: [
+      { id: "ci-build", name: "Build", required: true, status: "passing" as const },
+      { id: "ci-tests", name: "Tests", required: true, status: "pending" as const },
+    ],
     integrationStatus: "missing-scopes" as const,
     guidance: "The PR is linked but review actions are disabled until scopes are restored.",
   },
@@ -129,6 +136,9 @@ describe("ReviewPanel", () => {
 
     expect(screen.getByText(/GitHub PR #612/)).toBeInTheDocument();
     expect(screen.getByText("partially linked")).toBeInTheDocument();
+    expect(screen.getByText("Review pending")).toBeInTheDocument();
+    expect(screen.getByText("Merge blocked")).toBeInTheDocument();
+    expect(screen.getByText("Build: passing")).toBeInTheDocument();
     expect(screen.getByText("GitHub scopes are incomplete for review actions.")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /request changes/i })).toBeDisabled();
     expect(screen.getByRole("button", { name: /approve/i })).toBeDisabled();

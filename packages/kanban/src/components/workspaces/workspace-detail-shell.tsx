@@ -9,6 +9,7 @@ import { SessionObservabilityPanel } from "@/components/sessions/session-observa
 import { Button } from "@/components/ui/button";
 import { useKeyboard } from "@/hooks/use-keyboard";
 import { usePersistedState } from "@/hooks/use-persisted-state";
+import type { KanbanIntegrationProvider, KanbanReviewArtifact } from "@a5c-ai/agent-mux-core/kanban";
 import {
   DEFAULT_WORKSPACE_PANEL_SIZES,
   DESKTOP_LAYOUT_BREAKPOINT,
@@ -57,12 +58,34 @@ type WorkspaceDetailShellProps = {
   error: string | null;
   pendingAction: string | null;
   notesSaving: boolean;
+  reviewArtifact?: KanbanReviewArtifact | null;
+  reviewPending: boolean;
   feedback?: WorkspaceSidebarFeedback | null;
   onPromptChange: (value: string) => void;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   onAction: (action: WorkspaceSidebarAction, workspace: WorkspaceInventoryItem) => void;
   onOpenInEditor: (workspace: WorkspaceInventoryItem, href: string | null) => void;
   onSaveNote: (workspace: WorkspaceInventoryItem, note: string) => void;
+  onCreatePullRequest: (
+    workspace: WorkspaceInventoryItem,
+    input: {
+      provider: KanbanIntegrationProvider;
+      title: string;
+      reviewers?: string;
+      branchName?: string;
+      baseBranch?: string;
+    },
+  ) => void;
+  onLinkPullRequest: (
+    workspace: WorkspaceInventoryItem,
+    input: {
+      provider: KanbanIntegrationProvider;
+      number: number;
+      title: string;
+      branchName?: string;
+      baseBranch?: string;
+    },
+  ) => void;
 };
 
 type PanelDefinition = {
@@ -430,13 +453,17 @@ export function WorkspaceDetailShell(props: WorkspaceDetailShellProps) {
             <WorkspaceDetailsSidebar
               workspace={props.workspace}
               runtime={runtime}
+              reviewArtifact={props.reviewArtifact}
               sessionId={props.activeSession?.sessionId}
               pendingAction={props.pendingAction}
               notesSaving={props.notesSaving}
+              reviewPending={props.reviewPending}
               feedback={props.feedback}
               onAction={props.onAction}
               onOpenInEditor={props.onOpenInEditor}
               onSaveNote={props.onSaveNote}
+              onCreatePullRequest={props.onCreatePullRequest}
+              onLinkPullRequest={props.onLinkPullRequest}
             />
           </div>
         </WorkspacePanelFrame>

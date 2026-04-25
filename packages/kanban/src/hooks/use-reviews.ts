@@ -5,9 +5,15 @@ import { useMemo, useState } from "react";
 import { resilientFetch } from "@/lib/fetcher";
 
 import type {
+  KanbanCiGate,
+  KanbanIntegrationProvider,
+  KanbanMergeStatus,
+  KanbanPublishStatus,
+  KanbanPullRequestStatus,
   KanbanReviewArtifact,
   KanbanReviewCommentAnchor,
   KanbanReviewFeedbackSource,
+  KanbanReviewStatus,
   KanbanReviewSnapshot,
   KanbanReviewTargetType,
 } from "@a5c-ai/agent-mux-core/kanban";
@@ -46,6 +52,31 @@ export async function submitReviewAction(input:
       anchor: KanbanReviewCommentAnchor;
       authorName?: string;
       feedbackSource?: KanbanReviewFeedbackSource;
+    }
+  | {
+      action: "create-pull-request";
+      artifactId: string;
+      provider?: KanbanIntegrationProvider;
+      title: string;
+      reviewers?: string;
+      branchName?: string;
+      baseBranch?: string;
+      url?: string;
+    }
+  | {
+      action: "link-pull-request";
+      artifactId: string;
+      provider?: KanbanIntegrationProvider;
+      number: number;
+      title: string;
+      status?: KanbanPullRequestStatus;
+      reviewStatus?: KanbanReviewStatus;
+      mergeStatus?: KanbanMergeStatus;
+      publishStatus?: KanbanPublishStatus;
+      ciGates?: readonly KanbanCiGate[];
+      branchName?: string;
+      baseBranch?: string;
+      url?: string;
     },
 ): Promise<KanbanReviewSnapshot> {
   const result = await resilientFetch<KanbanReviewSnapshot>("/api/reviews", {
@@ -88,6 +119,31 @@ export function useReviews(query: ReviewQuery = {}, interval = 15000) {
         anchor: KanbanReviewCommentAnchor;
         authorName?: string;
         feedbackSource?: KanbanReviewFeedbackSource;
+      }
+    | {
+        action: "create-pull-request";
+        artifactId: string;
+        provider?: KanbanIntegrationProvider;
+        title: string;
+        reviewers?: string;
+        branchName?: string;
+        baseBranch?: string;
+        url?: string;
+      }
+    | {
+        action: "link-pull-request";
+        artifactId: string;
+        provider?: KanbanIntegrationProvider;
+        number: number;
+        title: string;
+        status?: KanbanPullRequestStatus;
+        reviewStatus?: KanbanReviewStatus;
+        mergeStatus?: KanbanMergeStatus;
+        publishStatus?: KanbanPublishStatus;
+        ciGates?: readonly KanbanCiGate[];
+        branchName?: string;
+        baseBranch?: string;
+        url?: string;
       },
   ): Promise<KanbanReviewSnapshot> {
     setPendingArtifactId(input.artifactId);

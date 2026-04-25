@@ -71,6 +71,27 @@ function providerLabel(provider: KanbanLinkedPullRequestSummary["provider"]): st
   return provider === "azure-repos" ? "Azure Repos" : "GitHub";
 }
 
+function lifecycleTone(status: string): string {
+  switch (status) {
+    case "approved":
+    case "ready":
+    case "passing":
+    case "published":
+    case "merged":
+      return "border-success/20 bg-success/10 text-success";
+    case "pending":
+    case "in-review":
+      return "border-warning/20 bg-warning/10 text-warning";
+    case "changes-requested":
+    case "blocked":
+    case "failing":
+    case "failed":
+      return "border-error/20 bg-error/10 text-error";
+    default:
+      return "border-border text-foreground-muted";
+  }
+}
+
 function lineNumbers(line: KanbanDiffLine): string {
   const left = typeof line.oldLineNumber === "number" ? String(line.oldLineNumber) : "";
   const right = typeof line.newLineNumber === "number" ? String(line.newLineNumber) : "";
@@ -129,6 +150,14 @@ function buildFeedbackContext(artifact: KanbanReviewArtifact): Array<{
   href: string;
 }> {
   const context = new Map<string, { id: string; label: string; href: string }>();
+
+  if (artifact.targetType === "issue") {
+    context.set(`issue:${artifact.targetId}`, {
+      id: `issue:${artifact.targetId}`,
+      label: "Issue",
+      href: `/?issueId=${encodeURIComponent(artifact.targetId)}&issueKey=${encodeURIComponent(artifact.targetLabel)}`,
+    });
+  }
 
   if (artifact.targetType === "workspace") {
     context.set(`workspace:${artifact.targetId}`, {
@@ -370,9 +399,37 @@ export function ReviewPanel(props: {
                     {linkedPullRequest?.title ? (
                       <p className="mt-2 text-sm text-foreground">{linkedPullRequest.title}</p>
                     ) : null}
+                    {linkedPullRequest ? (
+                      <div className="mt-3 flex flex-wrap gap-2 text-xs">
+                        {linkedPullRequest.reviewStatus ? (
+                          <span className={cn("rounded-full border px-2 py-0.5", lifecycleTone(linkedPullRequest.reviewStatus))}>
+                            Review {linkedPullRequest.reviewStatus}
+                          </span>
+                        ) : null}
+                        {linkedPullRequest.mergeStatus ? (
+                          <span className={cn("rounded-full border px-2 py-0.5", lifecycleTone(linkedPullRequest.mergeStatus))}>
+                            Merge {linkedPullRequest.mergeStatus}
+                          </span>
+                        ) : null}
+                        {linkedPullRequest.publishStatus ? (
+                          <span className={cn("rounded-full border px-2 py-0.5", lifecycleTone(linkedPullRequest.publishStatus))}>
+                            Publish {linkedPullRequest.publishStatus}
+                          </span>
+                        ) : null}
+                      </div>
+                    ) : null}
                     <p className="mt-2 text-sm leading-6 text-foreground-muted">
                       {integration?.guidance ?? linkedPullRequest?.guidance ?? "No linked PR guidance available."}
                     </p>
+                    {linkedPullRequest?.ciGates?.length ? (
+                      <div className="mt-3 flex flex-wrap gap-2 text-xs">
+                        {linkedPullRequest.ciGates.map((gate) => (
+                          <span key={`${selectedArtifact.id}-${gate.id}`} className={cn("rounded-full border px-2 py-0.5", lifecycleTone(gate.status))}>
+                            {gate.name}: {gate.status}
+                          </span>
+                        ))}
+                      </div>
+                    ) : null}
                     {integration?.actions.reason ? (
                       <div className="mt-3 rounded-xl border border-warning/20 bg-warning/10 px-3 py-2 text-sm text-warning">
                         {integration.actions.reason}

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import type {
   KanbanLinkedPullRequestSummary,
   KanbanRepositoryIntegrationState,
@@ -299,6 +300,7 @@ export function WorkspacesPageContent(props: {
   eventBuffers?: Record<string, { events: Record<string, unknown>[] } | undefined>;
   onSendPrompt?: (input: { sessionId: string; prompt: string; agent?: string }) => Promise<void>;
 }) {
+  const searchParams = useSearchParams();
   const [inventory, setInventory] = useState<WorkspaceInventoryResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -312,6 +314,7 @@ export function WorkspacesPageContent(props: {
   const [isPending, startTransition] = useTransition();
   const { snapshot } = useBacklog();
   const workspaceReviews = useReviews({ targetType: "workspace" });
+  const selectedWorkspacePath = props.selectedWorkspacePath ?? searchParams.get("workspace")?.trim() || null;
 
   const sessionFingerprint = useMemo(
     () =>
@@ -393,10 +396,10 @@ export function WorkspacesPageContent(props: {
   }, [props.sessions, snapshot]);
   const selectedWorkspace = useMemo(
     () =>
-      props.selectedWorkspacePath
-        ? (inventory?.workspaces.find((workspace) => workspace.path === props.selectedWorkspacePath) ?? null)
+      selectedWorkspacePath
+        ? (inventory?.workspaces.find((workspace) => workspace.path === selectedWorkspacePath) ?? null)
         : null,
-    [inventory?.workspaces, props.selectedWorkspacePath],
+    [inventory?.workspaces, selectedWorkspacePath],
   );
   const workspaceSessions = useMemo(() => {
     if (!selectedWorkspace) {
@@ -455,6 +458,20 @@ export function WorkspacesPageContent(props: {
     () => accumulateEventCost(selectedRunIds, selectedEventBuffers),
     [selectedEventBuffers, selectedRunIds],
   );
+
+  useEffect(() => {
+    if (!selectedWorkspacePath) {
+      return;
+    }
+
+    const cards = Array.from(document.querySelectorAll<HTMLElement>("[data-workspace-path]"));
+    const card = cards.find((candidate) => candidate.getAttribute("data-workspace-path") === selectedWorkspacePath);
+    if (!card || typeof card.scrollIntoView !== "function") {
+      return;
+    }
+
+    card.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [selectedWorkspacePath, inventory?.workspaces.length]);
 
   function refreshInventory() {
     startTransition(() => {
@@ -587,6 +604,86 @@ export function WorkspacesPageContent(props: {
     });
   }
 
+  function handleCreatePullRequest(
+    workspace: WorkspaceInventoryItem,
+    reviewArtifact: KanbanReviewArtifact | undefined,
+    input: {
+      provider: KanbanLinkedPullRequestSummary["provider"];
+      title: string;
+      reviewers?: string;
+      branchName?: string;
+      baseBranch?: string;
+    },
+  ) {
+    if (!reviewArtifact) {
+      const message = `Workspace review artifact not found for ${workspace.path}.`;
+      setError(message);
+      setWorkspaceFeedback(workspace.path, { tone: "error", message });
+      return;
+    }
+
+    setError(null);
+    setWorkspaceFeedback(workspace.path, null);
+    startTransition(() => {
+      void workspaceReviews.actOnReview({
+        action: "create-pull-request",
+        artifactId: reviewArtifact.id,
+        ...input,
+      })
+        .then(() => {
+          setWorkspaceFeedback(workspace.path, {
+            tone: "success",
+            message: `Created linked PR for ${workspace.path}.`,
+          });
+        })
+        .catch((cause) => {
+          const message = cause instanceof Error ? cause.message : String(cause);
+          setError(message);
+          setWorkspaceFeedback(workspace.path, { tone: "error", message });
+        });
+    });
+  }
+
+  function handleLinkPullRequest(
+    workspace: WorkspaceInventoryItem,
+    reviewArtifact: KanbanReviewArtifact | undefined,
+    input: {
+      provider: KanbanLinkedPullRequestSummary["provider"];
+      number: number;
+      title: string;
+      branchName?: string;
+      baseBranch?: string;
+    },
+  ) {
+    if (!reviewArtifact) {
+      const message = `Workspace review artifact not found for ${workspace.path}.`;
+      setError(message);
+      setWorkspaceFeedback(workspace.path, { tone: "error", message });
+      return;
+    }
+
+    setError(null);
+    setWorkspaceFeedback(workspace.path, null);
+    startTransition(() => {
+      void workspaceReviews.actOnReview({
+        action: "link-pull-request",
+        artifactId: reviewArtifact.id,
+        ...input,
+      })
+        .then(() => {
+          setWorkspaceFeedback(workspace.path, {
+            tone: "success",
+            message: `Linked PR #${input.number} to ${workspace.path}.`,
+          });
+        })
+        .catch((cause) => {
+          const message = cause instanceof Error ? cause.message : String(cause);
+          setError(message);
+          setWorkspaceFeedback(workspace.path, { tone: "error", message });
+        });
+    });
+  }
+
   async function handleSessionSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!selectedSessionId || !prompt.trim() || !props.onSendPrompt) {
@@ -610,7 +707,10 @@ export function WorkspacesPageContent(props: {
     }
   }
 
-  if (props.selectedWorkspacePath) {
+  if (selectedWorkspacePath) {
+    const selectedReviewArtifact =
+      selectedWorkspace != null ? (liveArtifactByPath.get(selectedWorkspace.path) ?? undefined) : undefined;
+
     if (loading) {
       return (
         <div className="mx-auto flex w-full max-w-[1600px] flex-1 flex-col gap-6 px-6 py-6">
@@ -664,6 +764,14 @@ export function WorkspacesPageContent(props: {
           openEditorForWorkspace(workspace, href, `Opened ${workspace.path} in the configured editor.`)
         }
         onSaveNote={handleNoteSave}
+        reviewArtifact={selectedReviewArtifact}
+        reviewPending={workspaceReviews.pendingArtifactId === selectedReviewArtifact?.id}
+        onCreatePullRequest={(workspace, input) =>
+          handleCreatePullRequest(workspace, selectedReviewArtifact, input)
+        }
+        onLinkPullRequest={(workspace, input) =>
+          handleLinkPullRequest(workspace, selectedReviewArtifact, input)
+        }
       />
     );
   }
@@ -731,6 +839,10 @@ export function WorkspacesPageContent(props: {
           onSaveNote={handleNoteSave}
           pendingNotePath={pendingNotePath}
           feedbackByWorkspacePath={feedbackByWorkspacePath}
+          selectedWorkspacePath={selectedWorkspacePath}
+          reviewPendingArtifactId={workspaceReviews.pendingArtifactId}
+          onCreatePullRequest={handleCreatePullRequest}
+          onLinkPullRequest={handleLinkPullRequest}
         />
         <WorkspaceColumn
           title="Idle workspaces"
@@ -747,6 +859,10 @@ export function WorkspacesPageContent(props: {
           onSaveNote={handleNoteSave}
           pendingNotePath={pendingNotePath}
           feedbackByWorkspacePath={feedbackByWorkspacePath}
+          selectedWorkspacePath={selectedWorkspacePath}
+          reviewPendingArtifactId={workspaceReviews.pendingArtifactId}
+          onCreatePullRequest={handleCreatePullRequest}
+          onLinkPullRequest={handleLinkPullRequest}
         />
         <WorkspaceColumn
           title="Archived workspaces"
@@ -763,6 +879,10 @@ export function WorkspacesPageContent(props: {
           onSaveNote={handleNoteSave}
           pendingNotePath={pendingNotePath}
           feedbackByWorkspacePath={feedbackByWorkspacePath}
+          selectedWorkspacePath={selectedWorkspacePath}
+          reviewPendingArtifactId={workspaceReviews.pendingArtifactId}
+          onCreatePullRequest={handleCreatePullRequest}
+          onLinkPullRequest={handleLinkPullRequest}
         />
         <WorkspaceColumn
           title="Recovery queue"
@@ -779,6 +899,10 @@ export function WorkspacesPageContent(props: {
           onSaveNote={handleNoteSave}
           pendingNotePath={pendingNotePath}
           feedbackByWorkspacePath={feedbackByWorkspacePath}
+          selectedWorkspacePath={selectedWorkspacePath}
+          reviewPendingArtifactId={workspaceReviews.pendingArtifactId}
+          onCreatePullRequest={handleCreatePullRequest}
+          onLinkPullRequest={handleLinkPullRequest}
         />
       </div>
 
@@ -843,6 +967,30 @@ function WorkspaceColumn(props: {
   onSaveNote: (workspace: WorkspaceInventoryItem, note: string) => void;
   pendingNotePath: string | null;
   feedbackByWorkspacePath: Record<string, WorkspaceSidebarFeedback | null>;
+  selectedWorkspacePath: string | null;
+  reviewPendingArtifactId: string | null;
+  onCreatePullRequest: (
+    workspace: WorkspaceInventoryItem,
+    reviewArtifact: KanbanReviewArtifact | undefined,
+    input: {
+      provider: KanbanLinkedPullRequestSummary["provider"];
+      title: string;
+      reviewers?: string;
+      branchName?: string;
+      baseBranch?: string;
+    },
+  ) => void;
+  onLinkPullRequest: (
+    workspace: WorkspaceInventoryItem,
+    reviewArtifact: KanbanReviewArtifact | undefined,
+    input: {
+      provider: KanbanLinkedPullRequestSummary["provider"];
+      number: number;
+      title: string;
+      branchName?: string;
+      baseBranch?: string;
+    },
+  ) => void;
 }) {
   const Icon = props.icon;
 
@@ -870,9 +1018,17 @@ function WorkspaceColumn(props: {
           const reviewArtifact = props.artifactByPath.get(workspace.path);
           const linkedPullRequest = reviewArtifact?.linkedPullRequest;
           const integration = reviewArtifact?.integration;
+          const isSelected = props.selectedWorkspacePath === workspace.path;
 
           return (
-            <article key={workspace.path} className="rounded-2xl border border-border bg-background/70 p-4">
+            <article
+              key={workspace.path}
+              data-workspace-path={workspace.path}
+              className={cn(
+                "rounded-2xl border bg-background/70 p-4",
+                isSelected ? "border-primary/40 ring-1 ring-primary/20" : "border-border",
+              )}
+            >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
@@ -1017,13 +1173,21 @@ function WorkspaceColumn(props: {
                 <WorkspaceDetailsSidebar
                   workspace={workspace}
                   runtime={runtimeSession?.runtime}
+                  reviewArtifact={reviewArtifact}
                   sessionId={runtimeSession?.sessionId}
                   pendingAction={props.pendingAction}
                   notesSaving={props.pendingNotePath === workspace.path}
+                  reviewPending={props.reviewPendingArtifactId === reviewArtifact?.id}
                   feedback={props.feedbackByWorkspacePath[workspace.path] ?? null}
                   onAction={props.onAction}
                   onOpenInEditor={props.onOpenInEditor}
                   onSaveNote={props.onSaveNote}
+                  onCreatePullRequest={(targetWorkspace, input) =>
+                    props.onCreatePullRequest(targetWorkspace, reviewArtifact, input)
+                  }
+                  onLinkPullRequest={(targetWorkspace, input) =>
+                    props.onLinkPullRequest(targetWorkspace, reviewArtifact, input)
+                  }
                 />
               </div>
             </article>

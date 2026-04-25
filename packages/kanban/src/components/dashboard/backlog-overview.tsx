@@ -12,6 +12,7 @@ import type {
   KanbanProjectBoard,
   KanbanPullRequestReviewLink,
   KanbanTaskTag,
+  KanbanReviewArtifact,
   KanbanWorkflowState,
 } from "@a5c-ai/agent-mux-core/kanban";
 import {
@@ -1482,6 +1483,7 @@ function RepositoryLifecyclePanel({
 interface IssueDetailPanelProps {
   issue: KanbanIssue;
   card?: KanbanBoardCard;
+  reviewArtifact?: KanbanReviewArtifact;
   project: KanbanProject;
   issues: readonly KanbanIssue[];
   dispatchContextLabels: readonly KanbanDispatchContextLabelDefinition[];
@@ -1524,6 +1526,7 @@ interface IssueDetailPanelProps {
 function IssueDetailPanel({
   issue,
   card,
+  reviewArtifact,
   project,
   issues,
   dispatchContextLabels,
@@ -1590,6 +1593,9 @@ function IssueDetailPanel({
   const detailDirty = isIssueDraftDirty(draft, issue);
   const detailStale = detailDirty && draft.baseUpdatedAt !== issue.updatedAt;
   const relationshipError = mutationError?.issueId === issue.id ? mutationError.message : null;
+  const linkedPullRequest = reviewArtifact?.linkedPullRequest;
+  const ciGates = linkedPullRequest?.ciGates ?? card?.repositoryLifecycle?.ciGates ?? [];
+  const recentReviewComments = [...(reviewArtifact?.comments ?? [])].slice(-2).reverse();
 
   useEffect(() => {
     setSelectedChildIssueId((current) =>
@@ -1845,6 +1851,78 @@ function IssueDetailPanel({
       </section>
 
       <div className="mt-5 grid gap-4">
+        {reviewArtifact || card?.repositoryLifecycle ? (
+          <article className="rounded-2xl border border-border bg-background/80 p-4">
+            <div>
+              <div className="text-sm font-semibold text-foreground">Review and PR context</div>
+              <div className="mt-1 text-xs text-foreground-muted">
+                Shared review output and linked PR state stay visible on the active issue, not only in the queue panel.
+              </div>
+            </div>
+
+            <div className="mt-3 flex flex-wrap gap-2 text-xs">
+              {reviewArtifact ? (
+                <span className={`rounded-full border px-2.5 py-1 ${lifecycleTone(reviewArtifact.decision)}`}>
+                  Review {reviewArtifact.decision}
+                </span>
+              ) : null}
+              <span className={`rounded-full border px-2.5 py-1 ${lifecycleTone(linkedPullRequest?.reviewStatus ?? card?.repositoryLifecycle?.reviewStatus ?? "unlinked")}`}>
+                PR review {linkedPullRequest?.reviewStatus ?? card?.repositoryLifecycle?.reviewStatus ?? "unlinked"}
+              </span>
+              <span className={`rounded-full border px-2.5 py-1 ${lifecycleTone(linkedPullRequest?.mergeStatus ?? card?.repositoryLifecycle?.mergeStatus ?? "not-ready")}`}>
+                Merge {linkedPullRequest?.mergeStatus ?? card?.repositoryLifecycle?.mergeStatus ?? "not-ready"}
+              </span>
+              <span className={`rounded-full border px-2.5 py-1 ${lifecycleTone(linkedPullRequest?.publishStatus ?? card?.repositoryLifecycle?.publishStatus ?? "not-ready")}`}>
+                Publish {linkedPullRequest?.publishStatus ?? card?.repositoryLifecycle?.publishStatus ?? "not-ready"}
+              </span>
+            </div>
+
+            {linkedPullRequest?.title || card?.repositoryLifecycle?.pullRequest?.title ? (
+              <div className="mt-3 rounded-2xl border border-border bg-card px-4 py-3">
+                <div className="text-sm font-medium text-foreground">
+                  {linkedPullRequest?.title ?? card?.repositoryLifecycle?.pullRequest?.title}
+                </div>
+                <div className="mt-1 text-xs text-foreground-muted">
+                  {linkedPullRequest
+                    ? `${providerLabel(linkedPullRequest.provider)} PR ${linkedPullRequest.number ? `#${linkedPullRequest.number}` : ""}`
+                    : card?.repositoryLifecycle?.pullRequest
+                      ? `PR #${card.repositoryLifecycle.pullRequest.number}`
+                      : "Linked PR"}
+                </div>
+              </div>
+            ) : null}
+
+            {ciGates.length > 0 ? (
+              <div className="mt-3 flex flex-wrap gap-2 text-xs">
+                {ciGates.map((gate) => (
+                  <span key={`issue-detail-${gate.id}`} className={`rounded-full border px-2.5 py-1 ${lifecycleTone(gate.status)}`}>
+                    {gate.name}: {lifecycleLabel(gate.status)}
+                  </span>
+                ))}
+              </div>
+            ) : null}
+
+            {recentReviewComments.length > 0 ? (
+              <div className="mt-3 space-y-2">
+                {recentReviewComments.map((comment) => (
+                  <div key={`issue-review-${comment.id}`} className="rounded-xl border border-border bg-card px-3 py-2">
+                    <div className="flex flex-wrap items-center gap-2 text-[11px] text-foreground-muted">
+                      <span>{comment.author.name}</span>
+                      <span>{comment.anchor.filePath}</span>
+                      <span>{comment.anchor.side}:{comment.anchor.line}</span>
+                    </div>
+                    <p className="mt-1 text-sm text-foreground">{comment.body}</p>
+                  </div>
+                ))}
+              </div>
+            ) : reviewArtifact ? (
+              <div className="mt-3 rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted">
+                No review comments have been mapped back to this issue yet.
+              </div>
+            ) : null}
+          </article>
+        ) : null}
+
         <article className="rounded-2xl border border-border bg-background/80 p-4">
           <div className="flex items-center justify-between gap-3">
             <div>
@@ -2412,6 +2490,10 @@ export function BacklogOverview() {
     refresh,
   } = useBacklog();
   const issueReviews = useReviews({ targetType: "issue" });
+  const issueArtifactById = useMemo(
+    () => new Map(issueReviews.artifacts.map((artifact) => [artifact.targetId, artifact] as const)),
+    [issueReviews.artifacts],
+  );
   const focusedIssueId = searchParams.get("issueId");
   const focusedIssueKey = searchParams.get("issueKey");
   const [presentation, setPresentation] = usePersistedState<BoardPresentation>(
@@ -3257,6 +3339,7 @@ export function BacklogOverview() {
           <IssueDetailPanel
             issue={focusedIssue}
             card={focusedIssueCard}
+            reviewArtifact={issueArtifactById.get(focusedIssue.id)}
             project={primaryProject}
             issues={snapshot.issues.filter((candidate) => candidate.projectId === primaryProject.id)}
             dispatchContextLabels={snapshot.dispatchContextLabels ?? []}

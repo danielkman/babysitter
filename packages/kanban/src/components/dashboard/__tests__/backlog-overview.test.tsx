@@ -20,6 +20,7 @@ const push = vi.fn();
 
 let creatingIssueState = false;
 let searchParams = new URLSearchParams();
+let issueReviewArtifacts: Array<Record<string, unknown>> = [];
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push, replace: vi.fn(), back: vi.fn(), prefetch: vi.fn() }),
@@ -403,7 +404,7 @@ vi.mock("@/hooks/use-reviews", () => ({
   useReviews: () => ({
     loading: false,
     error: undefined,
-    artifacts: [],
+    artifacts: issueReviewArtifacts,
     queue: [],
     summary: { pendingCount: 0, changesRequestedCount: 0 },
     pendingArtifactId: null,
@@ -416,6 +417,7 @@ describe("BacklogOverview", () => {
     localStorage.clear();
     creatingIssueState = false;
     searchParams = new URLSearchParams();
+    issueReviewArtifacts = [];
     push.mockReset();
     moveIssueMock.mockReset();
     linkRepositoryMock.mockReset();
@@ -814,5 +816,57 @@ describe("BacklogOverview", () => {
     expect(screen.getByText("Missing scopes: code:write")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Create PR" })).toBeDisabled();
     expect(screen.getByText(/Linked PR creation is disabled until Azure Repos setup issues are resolved/)).toBeInTheDocument();
+  });
+
+  it("surfaces linked review output on the focused issue detail panel", () => {
+    searchParams = new URLSearchParams("issueId=KANBAN-GAP-007&issueKey=KANBAN-GAP-007");
+    issueReviewArtifacts = [
+      {
+        id: "issue-review-1",
+        targetType: "issue",
+        targetId: "KANBAN-GAP-007",
+        targetLabel: "KANBAN-GAP-007",
+        title: "Issue review",
+        decision: "changes-requested",
+        queueState: "in-review",
+        updatedAt: "2026-04-24T14:00:00.000Z",
+        linkedPullRequest: {
+          provider: "github",
+          status: "in-review",
+          linkState: "linked",
+          title: "Add team and collaboration primitives",
+          number: 712,
+          reviewStatus: "changes-requested",
+          mergeStatus: "blocked",
+          publishStatus: "not-ready",
+          ciGates: [{ id: "ci-tests", name: "Tests", required: true, status: "pending" }],
+          integrationStatus: "connected",
+        },
+        diff: [],
+        comments: [
+          {
+            id: "comment-1",
+            author: { kind: "agent", name: "reviewer" },
+            body: "Map this review output directly onto the active issue.",
+            createdAt: "2026-04-24T14:00:00.000Z",
+            status: "open",
+            anchor: {
+              fileId: "file-1",
+              filePath: "packages/kanban/src/components/dashboard/backlog-overview.tsx",
+              hunkId: "hunk-1",
+              side: "head",
+              line: 1500,
+            },
+          },
+        ],
+      },
+    ];
+
+    render(<BacklogOverview />);
+
+    expect(screen.getByText("Review and PR context")).toBeInTheDocument();
+    expect(screen.getByText("PR review changes-requested")).toBeInTheDocument();
+    expect(screen.getByText("Tests: pending")).toBeInTheDocument();
+    expect(screen.getByText("Map this review output directly onto the active issue.")).toBeInTheDocument();
   });
 });

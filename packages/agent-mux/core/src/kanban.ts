@@ -367,6 +367,12 @@ export interface KanbanLinkedPullRequestSummary {
   readonly title: string;
   readonly number?: number;
   readonly url?: string;
+  readonly branchName?: string;
+  readonly baseBranch?: string;
+  readonly reviewStatus?: KanbanReviewStatus;
+  readonly mergeStatus?: KanbanMergeStatus;
+  readonly publishStatus?: KanbanPublishStatus;
+  readonly ciGates?: readonly KanbanCiGate[];
   readonly integrationStatus: KanbanIntegrationStatus;
   readonly guidance?: string;
 }
