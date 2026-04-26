@@ -228,6 +228,10 @@ describeBuiltBinary('real amux-tui binary e2e', () => {
           (event) => event.type === 'parse' && event.sessionId === 'sess-beta',
         ).length > detailBaseline,
     );
+    await harness.waitForCondition(
+      'session detail view ready',
+      () => harness.text().includes('e: export json') || harness.text().includes('e json'),
+    );
 
     const exportBaseline = readEvents(eventsPath).filter(
       (event) => event.type === 'parse' && event.sessionId === 'sess-beta',
