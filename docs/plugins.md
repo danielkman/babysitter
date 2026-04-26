@@ -154,10 +154,10 @@ babysitter plugin:add-marketplace \
 babysitter plugin:list-plugins --marketplace-name babysitter --global
 
 # Install a plugin (starts the AI-driven interview)
-babysitter plugin:install testing-suite --marketplace-name babysitter --global
+babysitter plugin:install testing-suite --global
 
 # Reconfigure later
-babysitter plugin:configure testing-suite --marketplace-name babysitter --project
+babysitter plugin:configure testing-suite --project
 
 # Remove it
 babysitter plugin:uninstall testing-suite --global
@@ -178,11 +178,13 @@ babysitter plugin:list-plugins --marketplace-name <name> --global
 **Plugin lifecycle:**
 
 ```bash
-babysitter plugin:install <name> --marketplace-name <mp> --global
-babysitter plugin:update <name> --marketplace-name <mp> --global
-babysitter plugin:configure <name> --marketplace-name <mp> --global
+babysitter plugin:install <name> [--marketplace-name <mp>] --global
+babysitter plugin:update <name> [--marketplace-name <mp>] --global
+babysitter plugin:configure <name> [--marketplace-name <mp>] --global
 babysitter plugin:uninstall <name> --global
 ```
+
+For `plugin:install`, `plugin:update`, and `plugin:configure`, `--marketplace-name` is optional when the selected scope has a single configured marketplace and the CLI can auto-resolve it.
 
 **Registry management:**
 
