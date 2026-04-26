@@ -3,7 +3,7 @@
   "version": "0.4.9",
   "type": "module",
   "license": "MIT",
-  "description": "Browser app for agent-mux gateway control and monitoring",
+  "description": "Browser app for agent-mux gateway control, monitoring, and realtime session-detail flow inspection",
   "author": "a5c-ai",
   "homepage": "https://github.com/a5c-ai/babysitter#readme",
   "repository": {
@@ -17,6 +17,9 @@
   "keywords": [
     "agent-mux",
     "webui",
+    "session-flow",
+    "timeline",
+    "realtime",
     "vite",
     "react-native-web",
     "gateway"

@@ -38,10 +38,27 @@ That contract keeps the package name honest without pretending the rest of the s
 - Workspace lifecycle inventory and recovery/archive/cleanup controls
 - Run dashboard with live updates from Babysitter watcher state
 - Session browser and new-session flow backed by agent-mux
+- Reconstructed session execution views with flow, timeline, transcript, and file-attention tabs
 - Gateway login and token persistence for local agent-mux access
 - Inbox and hook approval surfaces backed by agent-mux UI primitives
 - Compendium-based shell, forms, buttons, and branding primitives
 - Settings page for runtime and gateway visibility
+
+## Realtime Session Execution View
+
+`@a5c-ai/kanban` now ships the shared reconstructed execution view in two places:
+
+- session pages at `sessions/[sessionId]`, where session review sits alongside prompt input, runtime links, and execution-context overlays
+- the run detail activity panel at `runs/[runId]`, where users can switch from the raw event stream into the same realtime flow view
+
+That view is projected from live `agent-mux` event buffers through `@a5c-ai/agent-mux-ui/session-flow`, and exposes:
+
+- flow lanes grouped by run/agent
+- chronological timeline entries across the selected session or run
+- reconstructed transcript turns
+- file-attention summaries and shortcuts into the workspace/runtime when available
+
+This package owns where the view appears in the kanban product. The reusable projection/model logic still belongs in `agent-mux-ui`.
 
 ## Task Tags Specification
 
@@ -124,8 +141,23 @@ The app should use the Compendium design system for user-facing controls and sha
 ## Scope Boundaries
 
 - `packages/kanban` owns the Next.js shell and Babysitter-specific workflow presentation
-- `packages/agent-mux` owns deep gateway, session, transport, and shared kanban primitives
+- `packages/agent-mux` owns deep gateway, session, transport, shared kanban primitives, and the reusable `session-flow` projection seam
 - missing transport or session features should be added to `agent-mux`, then consumed here
+
+## Release Verification
+
+Use the existing release checks to confirm the documented surface still matches what ships:
+
+```bash
+npm run build --workspace=@a5c-ai/kanban
+npm run build:cli --workspace=@a5c-ai/kanban
+npm run build:mcp-server --workspace=@a5c-ai/kanban
+npm run verify:release --workspace=@a5c-ai/kanban
+npm run verify:metadata
+npm pack --json --dry-run --workspace=@a5c-ai/kanban
+```
+
+Release reviewers should be able to infer from this README that the package now includes the reconstructed session execution view on session pages and in run activity, without reading the implementation.
 
 ## Gap Map
 

@@ -1,7 +1,7 @@
 {
   "name": "@a5c-ai/kanban",
   "version": "1.0.0",
-  "description": "Board-, issue-, and workspace-first kanban surface for Babysitter orchestration",
+  "description": "Board-, issue-, and workspace-first kanban surface with reconstructed session and run execution views",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -30,7 +30,10 @@
     "review",
     "nextjs",
     "sse",
-    "real-time"
+    "real-time",
+    "session-flow",
+    "timeline",
+    "transcript"
   ],
   "engines": {
     "node": ">=20.0.0"
