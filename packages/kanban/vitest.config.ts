@@ -11,8 +11,10 @@ const testingLibraryDom = path.resolve(
   __dirname,
   '../../node_modules/@testing-library/dom/dist/@testing-library/dom.esm.js',
 );
+const agentCatalog = path.resolve(__dirname, '../agent-catalog/src/index.ts');
 const agentMuxCore = path.resolve(__dirname, '../agent-mux/core/src/index.ts');
 const agentMuxCoreKanban = path.resolve(__dirname, '../agent-mux/core/src/kanban.ts');
+const agentMuxObservability = path.resolve(__dirname, '../agent-mux/observability/src/index.ts');
 const agentMuxUiSessionFlow = path.resolve(__dirname, '../agent-mux/ui/src/session-flow.ts');
 
 export default defineConfig({
@@ -52,8 +54,10 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      '@a5c-ai/agent-catalog': agentCatalog,
       '@a5c-ai/agent-mux-core/kanban': agentMuxCoreKanban,
       '@a5c-ai/agent-mux-core': agentMuxCore,
+      '@a5c-ai/agent-mux-observability': agentMuxObservability,
       '@a5c-ai/agent-mux-ui/session-flow': agentMuxUiSessionFlow,
       '@testing-library/react': testingLibraryReact,
       '@testing-library/dom': testingLibraryDom,

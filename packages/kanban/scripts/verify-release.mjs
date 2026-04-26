@@ -17,7 +17,9 @@ const REQUIRED_PACKED_PATHS = [
   'postcss.config.mjs',
   'tsconfig.json',
   'src/cli.ts',
+  'src/mcp/cli.ts',
   'dist/cli.js',
+  'dist/mcp-server.js',
   '.next/BUILD_ID',
   '.next/package.json',
 ];
@@ -26,6 +28,7 @@ const REQUIRED_PACKED_PREFIXES = ['.next/server/', '.next/static/'];
 
 const REQUIRED_BUILD_PATHS = [
   'dist/cli.js',
+  'dist/mcp-server.js',
   '.next/BUILD_ID',
   '.next/package.json',
 ];
@@ -66,11 +69,15 @@ export function verifyKanbanRelease({ packageRoot, manifest, packEntries }) {
   );
   expect(bin.kanban === './dist/cli.js', 'packages/kanban/package.json bin.kanban must point to ./dist/cli.js');
   expect(
+    bin['kanban-mcp-server'] === './dist/mcp-server.js',
+    'packages/kanban/package.json bin.kanban-mcp-server must point to ./dist/mcp-server.js'
+  );
+  expect(
     scripts.build === 'npm run build --workspace=@a5c-ai/agent-mux-observability && npm run build --workspace=@a5c-ai/agent-mux-core && npm run build --workspace=@a5c-ai/agent-mux-ui && next build',
     'packages/kanban/package.json build must stay scoped to kanban and its direct workspace dependencies'
   );
   expect(
-    scripts.prepublishOnly === 'npm run build && npm run build:cli && npm run verify:release',
+    scripts.prepublishOnly === 'npm run build && npm run build:cli && npm run build:mcp-server && npm run verify:release',
     'packages/kanban/package.json prepublishOnly must build the package and run verify:release'
   );
   expect(
