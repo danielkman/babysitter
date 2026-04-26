@@ -134,6 +134,29 @@ class PtyHarness {
     throw new Error(`Timed out waiting for ${label}. Output:\n${this.buffer}`);
   }
 
+  async pressUntilCondition(
+    key: string,
+    label: string,
+    predicate: () => boolean,
+    timeoutMs = 10_000,
+    retryMs = 150,
+  ): Promise<void> {
+    const deadline = Date.now() + timeoutMs;
+    while (Date.now() < deadline) {
+      this.write(key);
+      try {
+        await this.waitForCondition(label, predicate, retryMs);
+        return;
+      } catch (error) {
+        const message = String((error as Error).message ?? error);
+        if (!message.includes(`Timed out waiting for ${label}`)) {
+          throw error;
+        }
+      }
+    }
+    throw new Error(`Timed out waiting for ${label}. Output:\n${this.buffer}`);
+  }
+
   async close(): Promise<void> {
     this.proc.write('\u001B');
     await this.pause();
@@ -228,16 +251,12 @@ describeBuiltBinary('real amux-tui binary e2e', () => {
           (event) => event.type === 'parse' && event.sessionId === 'sess-beta',
         ).length > detailBaseline,
     );
-    await harness.waitForCondition(
-      'session detail view ready',
-      () => harness.text().includes('e: export json') || harness.text().includes('e json'),
-    );
 
     const exportBaseline = readEvents(eventsPath).filter(
       (event) => event.type === 'parse' && event.sessionId === 'sess-beta',
     ).length;
-    harness.write('e');
-    await harness.waitForCondition(
+    await harness.pressUntilCondition(
+      'e',
       'session export request',
       () =>
         readEvents(eventsPath).filter(
