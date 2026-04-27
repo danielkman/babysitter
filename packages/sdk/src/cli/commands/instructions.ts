@@ -30,15 +30,30 @@ import {
   getAdapterByName,
   KNOWN_HARNESSES,
 } from "../../harness/registry";
+import {
+  detectCallerHarness,
+  detectCallerHarnessViaHooksMux,
+} from "../../harness/discovery";
 import { getSessionFilePath } from "../../session/parse";
+import {
+  createDefaultCliSetupSnippet,
+  createPromptContext,
+} from "../../prompts/contextShared";
 
 export interface InstructionsCommandArgs {
   subcommand: "babysit-skill" | "process-create" | "orchestrate" | "breakpoint-handling";
-  harness: string;
+  harness?: string;
   interactive: boolean | undefined;
   json: boolean;
   showStrata?: boolean;
 }
+
+type ResolvedInstructionsHarness = {
+  harness: string;
+  source: "explicit" | "caller" | "hooks-mux" | "fallback";
+  warnings: string[];
+  evidence: string[];
+};
 
 type ComposerEntry = {
   fn: (ctx: PromptContext) => string;
@@ -115,6 +130,10 @@ const COMPOSERS: Record<InstructionsCommandArgs["subcommand"], ComposerEntry> = 
 function resolveContextFactory(
   harness: string,
 ): ((overrides?: Partial<PromptContext>) => PromptContext) | undefined {
+  if (harness === "custom") {
+    return (overrides?: Partial<PromptContext>) =>
+      createPessimisticPromptContext(overrides);
+  }
   if (!getAdapterByName(harness)?.getPromptContext) {
     return undefined;
   }
@@ -124,6 +143,72 @@ function resolveContextFactory(
       throw new Error(`Harness "${harness}" does not provide a prompt context.`);
     }
     return context;
+  };
+}
+
+function createPessimisticPromptContext(
+  overrides?: Partial<PromptContext>,
+): PromptContext {
+  return createPromptContext(
+    {
+      harness: "custom",
+      harnessLabel: "Custom Harness",
+      capabilities: ["task-tool", "breakpoint-routing"],
+      pluginRootVar: "",
+      loopControlTerm: "in-turn",
+      sessionBindingFlags: "",
+      hookDriven: false,
+      interactiveToolName: "",
+      sessionEnvVars: "`--session-id`, `AGENT_SESSION_ID`, or the PID-scoped session marker fallback",
+      resumeFlags: "",
+      cliSetupSnippet: createDefaultCliSetupSnippet(),
+      iterateFlags: "",
+      hasIntentFidelityChecks: false,
+      hasNonNegotiables: false,
+    },
+    overrides,
+  );
+}
+
+function resolveInstructionsHarness(
+  harness: string | undefined,
+): ResolvedInstructionsHarness {
+  if (harness) {
+    return {
+      harness,
+      source: "explicit",
+      warnings: [],
+      evidence: [],
+    };
+  }
+
+  const caller = detectCallerHarness();
+  if (caller) {
+    return {
+      harness: caller.name,
+      source: "caller",
+      warnings: [],
+      evidence: caller.matchedEnvVars,
+    };
+  }
+
+  const hooksMuxCaller = detectCallerHarnessViaHooksMux();
+  if (hooksMuxCaller) {
+    return {
+      harness: hooksMuxCaller.name,
+      source: "hooks-mux",
+      warnings: [],
+      evidence: hooksMuxCaller.matchedEnvVars,
+    };
+  }
+
+  return {
+    harness: "custom",
+    source: "fallback",
+    warnings: [
+      "Host discovery failed for `instructions:*`; using the pessimistic custom-harness prompt context.",
+    ],
+    evidence: [],
   };
 }
 
@@ -183,19 +268,20 @@ function detectHooksActive(harness: string): boolean {
 export async function handleInstructionsCommand(
   args: InstructionsCommandArgs,
 ): Promise<number> {
-  const factory = resolveContextFactory(args.harness);
+  const resolvedHarness = resolveInstructionsHarness(args.harness);
+  const factory = resolveContextFactory(resolvedHarness.harness);
   if (!factory) {
     const known = KNOWN_HARNESSES.map((spec) => spec.name).join(", ");
     if (args.json) {
       console.log(
         JSON.stringify({
           error: "unknown_harness",
-          message: `Unknown harness "${args.harness}". Known harnesses: ${known}`,
+          message: `Unknown harness "${resolvedHarness.harness}". Known harnesses: ${known}`,
         }),
       );
     } else {
       console.error(
-        `[instructions] Unknown harness "${args.harness}". Known harnesses: ${known}`,
+        `[instructions] Unknown harness "${resolvedHarness.harness}". Known harnesses: ${known}`,
       );
     }
     return 1;
@@ -225,7 +311,7 @@ export async function handleInstructionsCommand(
   // Detect whether hooks are actually active in this session.
   // If the session-start hook never ran (no breadcrumb file), override
   // hookDriven to false so the agent drives the loop in-turn.
-  const hooksActive = detectHooksActive(args.harness);
+  const hooksActive = detectHooksActive(resolvedHarness.harness);
   const hookOverride: Partial<PromptContext> = {};
   if (!hooksActive) {
     hookOverride.hookDriven = false;
@@ -259,11 +345,14 @@ export async function handleInstructionsCommand(
     console.log(
       JSON.stringify(
         {
-          harness: args.harness,
+          harness: resolvedHarness.harness,
+          harnessSource: resolvedHarness.source,
+          discoveryEvidence: resolvedHarness.evidence,
           interactive: args.interactive,
           promptType: composer.promptType,
           hookDriven: ctx.hookDriven,
           hooksDetected: hooksActive,
+          warnings: resolvedHarness.warnings,
           executionContext,
           capabilityFlags,
           suggestedProcesses: processPathsForCapabilities(capabilityFlags),
@@ -275,6 +364,9 @@ export async function handleInstructionsCommand(
       ),
     );
   } else {
+    for (const warning of resolvedHarness.warnings) {
+      console.error(`[instructions] Warning: ${warning}`);
+    }
     if (!hooksActive && ctx.hookDriven !== false) {
       // Context factory defaulted hookDriven to true, but we overrode it.
       // This is a no-op because the override already happened, but it

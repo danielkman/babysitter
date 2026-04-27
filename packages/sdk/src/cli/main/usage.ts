@@ -27,7 +27,7 @@ function coreAgentUsage(commandName: string): string {
   ${commandName} profile:write --user|--project --input <file> [--dir <dir>] [--json]
   ${commandName} profile:merge --user|--project --input <file> [--dir <dir>] [--json]
   ${commandName} profile:render --user|--project [--dir <dir>] [--json]
-  ${commandName} instructions:babysit-skill --harness <name> [--interactive|--no-interactive] [--json]
+  ${commandName} instructions:babysit-skill [--harness <name>] [--interactive|--no-interactive] [--json]
   ${commandName} harness:install <name> [--workspace <dir>] [--json] [--dry-run] [--verbose]
   ${commandName} harness:install-plugin <name> [--workspace <dir>] [--json] [--dry-run] [--verbose]`;
 }
@@ -68,9 +68,9 @@ function coreHumanUsage(commandName: string): string {
   ${commandName} compression:reset [--json]
   ${commandName} harness:install <name> [--workspace <dir>] [--json] [--dry-run] [--verbose]
   ${commandName} harness:install-plugin <name> [--workspace <dir>] [--json] [--dry-run] [--verbose]
-  ${commandName} instructions:process-create --harness <name> [--interactive|--no-interactive] [--json]
-  ${commandName} instructions:orchestrate --harness <name> [--interactive|--no-interactive] [--json]
-  ${commandName} instructions:breakpoint-handling --harness <name> [--interactive|--no-interactive] [--json]
+  ${commandName} instructions:process-create [--harness <name>] [--interactive|--no-interactive] [--json]
+  ${commandName} instructions:orchestrate [--harness <name>] [--interactive|--no-interactive] [--json]
+  ${commandName} instructions:breakpoint-handling [--harness <name>] [--interactive|--no-interactive] [--json]
   ${commandName} breakpoint:approve-rule <pattern> [--action auto-approve|never-auto-approve] [--source <source>] [--note <note>] [--json]
   ${commandName} breakpoint:remove-rule <ruleId> [--json]
   ${commandName} breakpoint:list-rules [--json]

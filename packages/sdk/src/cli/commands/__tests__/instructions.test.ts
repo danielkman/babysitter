@@ -6,6 +6,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { createBabysitterCli } from "../../main";
 import { handleInstructionsCommand } from "../instructions";
 import type { InstructionsCommandArgs } from "../instructions";
 
@@ -28,8 +29,33 @@ beforeEach(() => {
   for (const key of Object.keys(process.env)) {
     if (
       key === "CI" ||
+      key === "OPENAI_API_KEY" ||
       key.startsWith("GITHUB_") ||
-      key.startsWith("BABYSITTER_")
+      key.startsWith("BABYSITTER_") ||
+      key === "CLAUDE_ENV_FILE" ||
+      key === "CLAUDE_PLUGIN_ROOT" ||
+      key === "CODEX_THREAD_ID" ||
+      key === "CODEX_SESSION_ID" ||
+      key === "CODEX_PLUGIN_ROOT" ||
+      key === "GEMINI_SESSION_ID" ||
+      key === "GEMINI_CWD" ||
+      key === "GEMINI_PROJECT_DIR" ||
+      key === "GEMINI_EXTENSION_PATH" ||
+      key === "COPILOT_SESSION_ID" ||
+      key === "COPILOT_HOME" ||
+      key === "COPILOT_GITHUB_TOKEN" ||
+      key === "CURSOR_PROJECT_DIR" ||
+      key === "CURSOR_VERSION" ||
+      key === "PI_SESSION_ID" ||
+      key === "PI_PLUGIN_ROOT" ||
+      key === "OMP_SESSION_ID" ||
+      key === "OMP_PLUGIN_ROOT" ||
+      key === "OPENCODE_SESSION_ID" ||
+      key === "OPENCODE_CONFIG" ||
+      key === "ACCOMPLISH_TASK_ID" ||
+      key === "OPENCLAW_SHELL" ||
+      key === "OPENCLAW_HOME" ||
+      key === "AGENT_SESSION_ID"
     ) {
       delete process.env[key];
     }
@@ -155,6 +181,67 @@ describe("handleInstructionsCommand — executionContext / capabilityFlags emiss
     const code = await handleInstructionsCommand(makeArgs({ json: false }));
     expect(code).toBe(0);
     expect(stdoutOutput).toMatch(/Active context capabilities: `?\w/);
+  });
+});
+
+describe("handleInstructionsCommand — automatic harness resolution", () => {
+  it("detects codex from SDK caller discovery when harness is omitted", async () => {
+    process.env.CODEX_THREAD_ID = "thread-123";
+
+    const code = await handleInstructionsCommand(
+      makeArgs({ harness: undefined, json: true }),
+    );
+    expect(code).toBe(0);
+
+    const payload = JSON.parse(stdoutOutput);
+    expect(payload.harness).toBe("codex");
+    expect(payload.harnessSource).toBe("caller");
+    expect(payload.discoveryEvidence).toContain("CODEX_THREAD_ID");
+    expect(payload.warnings).toEqual([]);
+  });
+
+  it("detects codex from hooks-mux style discovery when SDK caller discovery misses", async () => {
+    process.env.OPENAI_API_KEY = "sk-test";
+
+    const code = await handleInstructionsCommand(
+      makeArgs({ harness: undefined, json: true }),
+    );
+    expect(code).toBe(0);
+
+    const payload = JSON.parse(stdoutOutput);
+    expect(payload.harness).toBe("codex");
+    expect(payload.harnessSource).toBe("hooks-mux");
+    expect(payload.discoveryEvidence).toContain("OPENAI_API_KEY");
+    expect(payload.warnings).toEqual([]);
+  });
+
+  it("falls back to pessimistic custom context with warning when discovery fails", async () => {
+    const code = await handleInstructionsCommand(
+      makeArgs({ harness: undefined, json: true }),
+    );
+    expect(code).toBe(0);
+
+    const payload = JSON.parse(stdoutOutput);
+    expect(payload.harness).toBe("custom");
+    expect(payload.harnessSource).toBe("fallback");
+    expect(payload.warnings).toEqual([
+      "Host discovery failed for `instructions:*`; using the pessimistic custom-harness prompt context.",
+    ]);
+    expect(payload.hookDriven).toBe(false);
+  });
+});
+
+describe("instructions CLI dispatch", () => {
+  it("no longer requires --harness at the CLI boundary", async () => {
+    process.env.CODEX_THREAD_ID = "thread-456";
+    const cli = createBabysitterCli();
+
+    const code = await cli.run(["instructions:babysit-skill", "--json"]);
+    expect(code).toBe(0);
+
+    const payload = JSON.parse(stdoutOutput);
+    expect(payload.harness).toBe("codex");
+    expect(payload.harnessSource).toBe("caller");
   });
 });
 

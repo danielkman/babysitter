@@ -232,15 +232,6 @@ async function executeSupportCommand(parsed: ParsedArgs): Promise<number | undef
     return await handleProcessLibraryCommand(args);
   }
   if (parsed.command?.startsWith("instructions:")) {
-    if (!parsed.harness) {
-      const message = "instructions commands require --harness <name>";
-      if (parsed.json) {
-        console.log(JSON.stringify({ error: "missing_flag", message }));
-      } else {
-        console.error(`[instructions] ${message}`);
-      }
-      return 1;
-    }
     const args: InstructionsCommandArgs = {
       subcommand: parsed.command.split(":")[1] as InstructionsCommandArgs["subcommand"],
       harness: parsed.harness,

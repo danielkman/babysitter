@@ -18,15 +18,45 @@ import { execFile } from "node:child_process";
 import { promises as fs } from "node:fs";
 import * as path from "node:path";
 import * as os from "node:os";
+import {
+  getHooksMuxDetectionRules,
+  type HooksMuxDetectionRule,
+} from "@a5c-ai/agent-catalog";
 import type {
   CallerHarnessResult,
   HarnessDiscoveryResult,
   HarnessSpec,
+  HarnessCapability,
 } from "./types";
 import { getHarnessDiscoverySpec, KNOWN_HARNESSES } from "./registry";
 import { discoverHarnessesViaAmux } from "./install";
 
 export { KNOWN_HARNESSES } from "./registry";
+
+const HOOKS_MUX_ADAPTER_TO_HARNESS: Readonly<Record<string, string>> = {
+  claude: "claude-code",
+  codex: "codex",
+  gemini: "gemini-cli",
+  copilot: "github-copilot",
+  cursor: "cursor",
+  pi: "pi",
+  "oh-my-pi": "oh-my-pi",
+  opencode: "opencode",
+  openclaw: "openclaw",
+};
+
+export interface HooksMuxCallerHarnessResult {
+  /** Normalized babysitter harness identifier. */
+  name: string;
+  /** Original hooks-mux adapter identifier. */
+  sourceAdapter: string;
+  /** Environment variable names that matched the hooks-mux rule. */
+  matchedEnvVars: string[];
+  /** Capabilities advertised by the normalized harness. */
+  capabilities: HarnessCapability[];
+  /** Detection confidence from hooks-mux rules. */
+  confidence: "high" | "medium" | "low";
+}
 
 /**
  * Checks whether a harness config directory exists in cwd or home.
@@ -179,6 +209,59 @@ export function detectCallerHarness(): CallerHarnessResult | null {
     }
   }
   return null;
+}
+
+/**
+ * Detect the active caller harness using hooks-mux style discovery rules.
+ *
+ * This mirrors hooks-mux environment-based detection, but normalizes the
+ * adapter name back to babysitter's harness identifiers so SDK command
+ * surfaces can reuse the result without depending on hooks-mux packages.
+ */
+export function detectCallerHarnessViaHooksMux(
+  env: Record<string, string | undefined> = process.env,
+): HooksMuxCallerHarnessResult | null {
+  const detectionRules: HooksMuxDetectionRule[] = getHooksMuxDetectionRules();
+  let bestMatch: HooksMuxCallerHarnessResult | null = null;
+
+  for (const rule of detectionRules) {
+    const normalizedName = HOOKS_MUX_ADAPTER_TO_HARNESS[rule.adapter];
+    if (!normalizedName) {
+      continue;
+    }
+
+    if (rule.absentSignals?.some((signal) => env[signal])) {
+      continue;
+    }
+
+    const matchedEnvVars = rule.signals.filter((signal) => {
+      const value = env[signal];
+      return value != null && value !== "";
+    });
+
+    if (matchedEnvVars.length === 0) {
+      continue;
+    }
+
+    const capabilities = getHarnessDiscoverySpec(normalizedName)?.capabilities ?? [];
+    const match: HooksMuxCallerHarnessResult = {
+      name: normalizedName,
+      sourceAdapter: rule.adapter,
+      matchedEnvVars,
+      capabilities,
+      confidence: rule.confidence,
+    };
+
+    if (match.confidence === "high") {
+      return match;
+    }
+
+    if (!bestMatch) {
+      bestMatch = match;
+    }
+  }
+
+  return bestMatch;
 }
 
 // ---------------------------------------------------------------------------
