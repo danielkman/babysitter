@@ -38,4 +38,12 @@ describe('gateway token stores', () => {
     store.close();
     await fs.rm(tempDir, { recursive: true, force: true });
   });
+
+  it('supports creating seeded plaintext bootstrap tokens', async () => {
+    const store = new MemoryTokenStore();
+    const issued = await store.create({ name: 'bootstrap-admin', plaintext: 'seeded-token-value' });
+
+    expect(issued.plaintext).toBe('seeded-token-value');
+    expect((await store.verify('seeded-token-value'))?.id).toBe(issued.id);
+  });
 });

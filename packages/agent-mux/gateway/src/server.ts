@@ -5,6 +5,11 @@ import { WebSocketServer } from 'ws';
 import type { Attachment } from '@a5c-ai/agent-mux-core';
 import { resolveWorkspaceDefaultCwd, WorkspaceService } from '@a5c-ai/agent-mux-core';
 
+import {
+  BootstrapAuthService,
+  MemoryBootstrapAuthStore,
+  SqliteBootstrapAuthStore,
+} from './auth/bootstrap.js';
 import { authenticateBearerToken } from './auth/middleware.js';
 import { MemoryTokenStore, SqliteTokenStore, type TokenStore, type TokenRecord } from './auth/tokens.js';
 import { createGatewayRunClient, listRunnableGatewayAgents, listRunnableGatewayAgentNames } from './builtin-adapters.js';
@@ -72,6 +77,13 @@ function resolveTokenStore(config: GatewayConfig): TokenStore {
   return new SqliteTokenStore(config.tokenDbPath);
 }
 
+function resolveBootstrapAuthStore(config: GatewayConfig) {
+  if (config.tokenStoreKind === 'memory') {
+    return new MemoryBootstrapAuthStore();
+  }
+  return new SqliteBootstrapAuthStore(config.tokenDbPath);
+}
+
 function sanitizeAttachments(value: unknown): Attachment[] | undefined {
   if (!Array.isArray(value)) {
     return undefined;
@@ -104,6 +116,12 @@ export function createGatewayServer(
 ): GatewayServer {
   const gatewayClient = config.client ?? createGatewayRunClient();
   const tokenStore = resolveTokenStore(config);
+  const bootstrapAuthStore = resolveBootstrapAuthStore(config);
+  const bootstrapAuth = new BootstrapAuthService(
+    config.bootstrapAuth,
+    bootstrapAuthStore,
+    tokenStore,
+  );
   const runManager = new RunManager(config, logger);
   const workspaceService = new WorkspaceService();
   const webuiRoot = config.enableWebui ? resolveWebuiRoot(config.webuiRoot) : null;
@@ -177,6 +195,25 @@ export function createGatewayServer(
     }
     const revoked = await tokenStore.revoke(context.req.param('id'));
     return context.json({ revoked });
+  });
+
+  app.post('/api/v1/bootstrap/login', async (context) => {
+    const bootstrapState = await bootstrapAuth.describe();
+    if (!bootstrapState.enabled) {
+      return context.json({ error: 'bootstrap_auth_disabled' }, 404);
+    }
+
+    const body = await context.req.json<Record<string, unknown>>();
+    const issuedToken = await bootstrapAuth.login({
+      username: typeof body['username'] === 'string' ? body['username'] : '',
+      password: typeof body['password'] === 'string' ? body['password'] : '',
+      clientName: typeof body['clientName'] === 'string' ? body['clientName'] : null,
+      ttlMs: typeof body['ttlMs'] === 'number' ? body['ttlMs'] : null,
+    });
+    if (!issuedToken) {
+      return context.json({ error: 'invalid_bootstrap_credentials' }, 401);
+    }
+    return context.json({ issuedToken }, 201);
   });
 
   app.get('/api/v1/runs', async (context) => {
@@ -543,6 +580,7 @@ export function createGatewayServer(
     },
     async start() {
       if (started) return;
+      await bootstrapAuth.initialize();
       await new Promise<void>((resolve, reject) => {
         server.once('error', reject);
         server.listen(config.port, config.host, () => {
@@ -576,6 +614,7 @@ export function createGatewayServer(
       });
       const closeableStore = tokenStore as TokenStore & { close?: () => void };
       closeableStore.close?.();
+      bootstrapAuthStore.close?.();
       started = false;
     },
   };

@@ -92,6 +92,34 @@ export function buildGatewayManifests(config: CloudConfig, plan: ComponentPlan, 
                 env: [
                   { name: "AMUX_GATEWAY_TOKEN_DB_PATH", value: "/var/lib/amux-gateway/tokens.db" },
                   { name: "AMUX_GATEWAY_EVENT_LOG_DIR", value: "/var/lib/amux-gateway/events" },
+                  { name: "AMUX_GATEWAY_BOOTSTRAP_AUTH_MODE", value: config.auth.mode },
+                  {
+                    name: "AMUX_GATEWAY_BOOTSTRAP_ADMIN_USERNAME",
+                    valueFrom: {
+                      secretKeyRef: {
+                        name: auth.secretName,
+                        key: "ADMIN_USERNAME",
+                      },
+                    },
+                  },
+                  {
+                    name: "AMUX_GATEWAY_BOOTSTRAP_ADMIN_PASSWORD",
+                    valueFrom: {
+                      secretKeyRef: {
+                        name: auth.secretName,
+                        key: "ADMIN_PASSWORD",
+                      },
+                    },
+                  },
+                  {
+                    name: "AMUX_GATEWAY_BOOTSTRAP_TOKEN_SEED",
+                    valueFrom: {
+                      secretKeyRef: {
+                        name: auth.secretName,
+                        key: "ADMIN_TOKEN_SEED",
+                      },
+                    },
+                  },
                   { name: "CLOUD_BOOTSTRAP_AUTH_SECRET", value: auth.secretName },
                   { name: "CLOUD_BOOTSTRAP_ADMIN_USERNAME", value: auth.username },
                   { name: "CLOUD_BOOTSTRAP_AUTH_MODE", value: config.auth.mode },
@@ -138,4 +166,3 @@ export function buildGatewayManifests(config: CloudConfig, plan: ComponentPlan, 
     },
   ];
 }
-

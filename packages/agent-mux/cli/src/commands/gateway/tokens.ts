@@ -1,7 +1,7 @@
 import * as os from 'node:os';
 import { createRequire } from 'node:module';
 
-import { MemoryTokenStore, SqliteTokenStore, resolveGatewayConfig, type GatewayConfig } from '@a5c-ai/agent-mux-gateway';
+import { MemoryTokenStore, SqliteTokenStore, resolveGatewayConfig, resolveGatewayEnvConfig, type GatewayConfig } from '@a5c-ai/agent-mux-gateway';
 
 import type { ParsedArgs } from '../../parse-args.js';
 import { flagBool, flagNum, flagStr } from '../../parse-args.js';
@@ -27,7 +27,16 @@ function renderQr(url: string, token: string): void {
 export async function gatewayTokensCommand(args: ParsedArgs): Promise<number> {
   const jsonMode = flagBool(args.flags, 'json') === true;
   const configPath = flagStr(args.flags, 'config') ?? DEFAULT_GATEWAY_CONFIG_PATH;
-  const config = resolveGatewayConfig(await loadGatewayConfig(configPath));
+  const fileConfig = await loadGatewayConfig(configPath);
+  const envConfig = resolveGatewayEnvConfig();
+  const config = resolveGatewayConfig({
+    ...envConfig,
+    ...fileConfig,
+    bootstrapAuth: {
+      ...(envConfig.bootstrapAuth ?? {}),
+      ...(fileConfig.bootstrapAuth ?? {}),
+    },
+  });
   const store = resolveTokenStore(config);
   const sub = args.positionals[0];
 

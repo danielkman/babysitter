@@ -2,6 +2,7 @@ import {
   DEFAULT_GATEWAY_CONFIG,
   GatewayConfig,
   GatewayRunClient,
+  resolveGatewayEnvConfig,
   resolveGatewayConfig,
 } from './config.js';
 import {
@@ -16,6 +17,7 @@ import type { RunEntry, RunOwner, RunStartInput, RunStatus } from './runs/types.
 export type { GatewayConfig } from './config.js';
 export {
   DEFAULT_GATEWAY_CONFIG,
+  resolveGatewayEnvConfig,
   resolveGatewayConfig,
 } from './config.js';
 export type { GatewayRunClient } from './config.js';
@@ -23,6 +25,7 @@ export type { GatewayLogger } from './logging.js';
 export { createGatewayLogger } from './logging.js';
 export type { TokenStore, TokenRecord, TokenIssueResult } from './auth/tokens.js';
 export { MemoryTokenStore, SqliteTokenStore } from './auth/tokens.js';
+export type { BootstrapAuthMode, BootstrapAuthConfig } from './auth/bootstrap.js';
 export { encodeFrame, decodeFrame, gatewayFrameSchema } from './protocol/frames.js';
 export { GATEWAY_CLOSE_CODES, GatewayProtocolError } from './protocol/errors.js';
 export type * from './protocol/v1.js';

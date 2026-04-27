@@ -2,7 +2,7 @@ import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
 
-import { createGateway, resolveGatewayConfig, type GatewayConfig } from '@a5c-ai/agent-mux-gateway';
+import { createGateway, resolveGatewayConfig, resolveGatewayEnvConfig, type GatewayConfig } from '@a5c-ai/agent-mux-gateway';
 import YAML from 'yaml';
 
 import type { ParsedArgs } from '../../parse-args.js';
@@ -31,12 +31,20 @@ export async function serveGatewayCommand(args: ParsedArgs): Promise<number> {
   const jsonMode = flagBool(args.flags, 'json') === true;
   const configPath = flagStr(args.flags, 'config') ?? DEFAULT_GATEWAY_CONFIG_PATH;
   const fileConfig = await loadGatewayConfig(configPath);
+  const envConfig = resolveGatewayEnvConfig();
   const config = resolveGatewayConfig({
+    ...envConfig,
     ...fileConfig,
-    host: flagStr(args.flags, 'host') ?? fileConfig.host,
-    port: flagNum(args.flags, 'port') ?? fileConfig.port,
-    webuiRoot: flagStr(args.flags, 'webui') ?? fileConfig.webuiRoot,
-    enableWebui: flagBool(args.flags, 'no-webui') === true ? false : (fileConfig.enableWebui ?? true),
+    host: flagStr(args.flags, 'host') ?? fileConfig.host ?? envConfig.host,
+    port: flagNum(args.flags, 'port') ?? fileConfig.port ?? envConfig.port,
+    webuiRoot: flagStr(args.flags, 'webui') ?? fileConfig.webuiRoot ?? envConfig.webuiRoot,
+    enableWebui: flagBool(args.flags, 'no-webui') === true
+      ? false
+      : (fileConfig.enableWebui ?? envConfig.enableWebui ?? true),
+    bootstrapAuth: {
+      ...(envConfig.bootstrapAuth ?? {}),
+      ...(fileConfig.bootstrapAuth ?? {}),
+    },
   });
   const gateway = createGateway(config);
   await gateway.start();

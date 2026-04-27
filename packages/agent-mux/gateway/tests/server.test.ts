@@ -40,6 +40,75 @@ describe('gateway server', () => {
     await gateway.stop();
   });
 
+  it('accepts bootstrap admin login and returns a bearer token for follow-up api use', async () => {
+    const gateway = createGateway({
+      host: '127.0.0.1',
+      port: 0,
+      tokenStoreKind: 'memory',
+      bootstrapAuth: {
+        mode: 'bootstrap-admin',
+        adminUsername: 'admin',
+        adminPassword: 'secret-password',
+        tokenSeed: null,
+        bootstrapTokenName: 'bootstrap-admin',
+      },
+    });
+
+    await gateway.start();
+    const port = gateway.server.address.port;
+
+    const login = await fetch(`http://127.0.0.1:${port}/api/v1/bootstrap/login`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: 'admin',
+        password: 'secret-password',
+        clientName: 'kanban-browser',
+      }),
+    });
+    expect(login.status).toBe(201);
+    const loginBody = await login.json() as { issuedToken?: { plaintext?: string } };
+    expect(loginBody.issuedToken?.plaintext).toBeTruthy();
+
+    const authorized = await fetch(`http://127.0.0.1:${port}/api/v1/tokens`, {
+      headers: {
+        Authorization: `Bearer ${loginBody.issuedToken!.plaintext!}`,
+      },
+    });
+    expect(authorized.status).toBe(200);
+
+    await gateway.stop();
+  });
+
+  it('seeds a bootstrap bearer token from startup config', async () => {
+    const gateway = createGateway({
+      host: '127.0.0.1',
+      port: 0,
+      tokenStoreKind: 'memory',
+      bootstrapAuth: {
+        mode: 'bootstrap-admin',
+        adminUsername: 'admin',
+        adminPassword: 'secret-password',
+        tokenSeed: 'startup-seeded-token',
+        bootstrapTokenName: 'bootstrap-admin',
+      },
+    });
+
+    await gateway.start();
+    const port = gateway.server.address.port;
+
+    const authorized = await fetch(`http://127.0.0.1:${port}/api/v1/tokens`, {
+      headers: {
+        Authorization: 'Bearer startup-seeded-token',
+      },
+    });
+    expect(authorized.status).toBe(200);
+
+    await gateway.stop();
+  });
+
   it('closes unauthenticated websocket clients and accepts auth frames', async () => {
     const tokenStore = new MemoryTokenStore();
     const token = await tokenStore.create({ name: 'ws-client' });

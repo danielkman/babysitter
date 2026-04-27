@@ -25,3 +25,6 @@ export async function verifyTokenHash(hash: string, plaintext: string): Promise<
     return false;
   }
 }
+
+export const hashSecret = hashToken;
+export const verifySecretHash = verifyTokenHash;

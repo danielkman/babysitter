@@ -52,5 +52,7 @@ describe("cloud deployment plan", () => {
     expect(rendered.content).toContain("BABYSITTER_AGENT_AMUX_INVOCATION_MODE");
     expect(rendered.content).toContain("KANBAN_GATEWAY_PROXY_URL");
     expect(rendered.content).toContain("KANBAN_GATEWAY_AUTH_MODE");
+    expect(rendered.content).toContain("AMUX_GATEWAY_BOOTSTRAP_ADMIN_PASSWORD");
+    expect(rendered.content).toContain("secretKeyRef");
   });
 });

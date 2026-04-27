@@ -28,6 +28,7 @@ export interface TokenIssueResult {
 export interface TokenCreateInput {
   name: string;
   ttlMs?: number | null;
+  plaintext?: string | null;
 }
 
 export interface TokenStore {
@@ -69,7 +70,9 @@ export class MemoryTokenStore implements TokenStore {
   private readonly records = new Map<string, StoredTokenRecord>();
 
   async create(input: TokenCreateInput): Promise<TokenIssueResult> {
-    const plaintext = issuePlaintextToken();
+    const plaintext = input.plaintext && input.plaintext.trim().length > 0
+      ? input.plaintext
+      : issuePlaintextToken();
     const createdAt = now();
     const record: StoredTokenRecord = {
       id: randomUUID(),
@@ -142,7 +145,9 @@ export class SqliteTokenStore implements TokenStore {
   }
 
   async create(input: TokenCreateInput): Promise<TokenIssueResult> {
-    const plaintext = issuePlaintextToken();
+    const plaintext = input.plaintext && input.plaintext.trim().length > 0
+      ? input.plaintext
+      : issuePlaintextToken();
     const createdAt = now();
     const record: StoredTokenRecord = {
       id: randomUUID(),
