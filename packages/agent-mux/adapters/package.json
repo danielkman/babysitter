@@ -5,7 +5,7 @@
   "license": "MIT",
   "description": "Built-in agent adapters for agent-mux",
   "author": "a5c-ai",
-  "homepage": "https://github.com/a5c-ai/babysitter#readme",
+  "homepage": "https://github.com/a5c-ai/babysitter/tree/main/packages/agent-mux/adapters#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/a5c-ai/babysitter.git",

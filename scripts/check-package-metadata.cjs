@@ -4,6 +4,9 @@ const fs = require('fs');
 const path = require('path');
 
 const repoRoot = path.resolve(__dirname, '..');
+const DOCS_SURFACE_PATH = 'docs/generated/package-plugin-docs-coverage.json';
+const BUGS_URL = 'https://github.com/a5c-ai/babysitter/issues';
+const REPOSITORY_URL = 'git+https://github.com/a5c-ai/babysitter.git';
 
 function fail(message) {
   console.error(`Metadata verification failed: ${message}`);
@@ -25,9 +28,146 @@ function expectEqual(actual, expected, label) {
   }
 }
 
+function expectDeepEqual(actual, expected, label) {
+  const actualJson = JSON.stringify(actual);
+  const expectedJson = JSON.stringify(expected);
+  if (actualJson !== expectedJson) {
+    fail(`${label} expected ${expectedJson} but found ${actualJson}`);
+  }
+}
+
 function expectPublicPackage(manifest, label) {
   if (manifest.private !== undefined && manifest.private !== false) {
     fail(`${label} private expected undefined or false but found ${JSON.stringify(manifest.private)}`);
+  }
+}
+
+function normalizePath(value) {
+  return value.replace(/\\/g, '/').replace(/^\.\//, '').replace(/\/+$/, '');
+}
+
+function isPublicStatus(status) {
+  return typeof status === 'string' && status.startsWith('Public');
+}
+
+function isInternalStatus(status) {
+  return typeof status === 'string' && status.startsWith('Internal');
+}
+
+function packageExists(surfacePath) {
+  return fs.existsSync(path.join(repoRoot, surfacePath, 'package.json'));
+}
+
+function createCanonicalMetadata(surfacePath) {
+  return {
+    repository: {
+      type: 'git',
+      url: REPOSITORY_URL,
+      directory: surfacePath,
+    },
+    homepage: `https://github.com/a5c-ai/babysitter/tree/main/${surfacePath}#readme`,
+    bugs: {
+      url: BUGS_URL,
+    },
+  };
+}
+
+function coversFileEntry(files, relativePath) {
+  const target = normalizePath(relativePath);
+  const targetRoot = target.split('/')[0];
+  return files.some((entry) => {
+    const normalized = normalizePath(entry).replace(/\/\*.*$/, '').replace(/\*.*$/, '');
+    if (!normalized) {
+      return false;
+    }
+    if (normalized === target) {
+      return true;
+    }
+    if (target.startsWith(`${normalized}/`)) {
+      return true;
+    }
+    return normalized === targetRoot;
+  });
+}
+
+function addSurfacePath(target, value) {
+  if (typeof value !== 'string') {
+    return;
+  }
+  const normalized = normalizePath(value);
+  if (!normalized || normalized === 'package.json') {
+    return;
+  }
+  target.add(normalized);
+}
+
+function collectExportPaths(target, exportsField) {
+  if (!exportsField || typeof exportsField !== 'object') {
+    return;
+  }
+  for (const value of Object.values(exportsField)) {
+    if (typeof value === 'string') {
+      addSurfacePath(target, value);
+      continue;
+    }
+    if (value && typeof value === 'object') {
+      collectExportPaths(target, value);
+    }
+  }
+}
+
+function collectManifestSurfacePaths(manifest) {
+  const surfacePaths = new Set();
+  addSurfacePath(surfacePaths, manifest.main);
+  addSurfacePath(surfacePaths, manifest.module);
+  addSurfacePath(surfacePaths, manifest.types);
+
+  if (manifest.bin && typeof manifest.bin === 'object') {
+    for (const value of Object.values(manifest.bin)) {
+      addSurfacePath(surfacePaths, value);
+    }
+  }
+
+  collectExportPaths(surfacePaths, manifest.exports);
+  return [...surfacePaths];
+}
+
+function shouldCheckExplicitFile(entry) {
+  const normalized = normalizePath(entry);
+  if (!normalized || normalized.includes('*') || normalized.endsWith('/')) {
+    return false;
+  }
+  const root = normalized.split('/')[0];
+  if (root === 'dist' || root === 'dist-types' || root === '.next') {
+    return false;
+  }
+  return normalized.includes('.');
+}
+
+function listManagedPackageJsons() {
+  const managed = [];
+  for (const topLevel of ['packages', 'plugins']) {
+    walkPackageJsons(path.join(repoRoot, topLevel), managed);
+  }
+  return managed;
+}
+
+function walkPackageJsons(dirPath, output) {
+  if (!fs.existsSync(dirPath)) {
+    return;
+  }
+  for (const entry of fs.readdirSync(dirPath, { withFileTypes: true })) {
+    if (entry.name.startsWith('.')) {
+      continue;
+    }
+    const fullPath = path.join(dirPath, entry.name);
+    if (entry.isDirectory()) {
+      walkPackageJsons(fullPath, output);
+      continue;
+    }
+    if (entry.isFile() && entry.name === 'package.json') {
+      output.push(fullPath);
+    }
   }
 }
 
@@ -35,65 +175,25 @@ const rootManifest = readJson('package.json');
 expectEqual(rootManifest.private, true, 'package.json private');
 expectEqual(rootManifest.license, 'MIT', 'package.json license');
 
-const publicWorkspacePackages = [
-  'packages/sdk/package.json',
-  'packages/babysitter/package.json',
-  'packages/babysitter-agent/package.json',
-  'packages/agent-plugins-mux/package.json',
-  'packages/kanban/package.json',
-  'packages/observer-dashboard/package.json',
-  'packages/breakpoints-mux/package.json',
-  'packages/agent-mux/observability/package.json',
-  'packages/agent-mux/core/package.json',
-  'packages/agent-mux/adapters/package.json',
-  'packages/agent-mux/harness-mock/package.json',
-  'packages/agent-mux/ui/package.json',
-  'packages/agent-mux/gateway/package.json',
-  'packages/agent-mux/cli/package.json',
-  'packages/agent-mux/webui/package.json',
-  'packages/agent-mux/sdk/package.json',
-  'packages/agent-mux/tui/package.json',
-];
+const docsCoverage = readJson(DOCS_SURFACE_PATH);
+const publicSurfaceEntries = docsCoverage.surfaces.filter((entry) => isPublicStatus(entry.status) && packageExists(entry.surface));
+const internalSurfaceEntries = docsCoverage.surfaces.filter((entry) => isInternalStatus(entry.status) && packageExists(entry.surface));
+const publicSurfacePaths = new Set(publicSurfaceEntries.map((entry) => entry.surface));
 
-const publicHooksMuxPackages = [
-  'packages/hooks-mux/core/package.json',
-  'packages/hooks-mux/cli/package.json',
-  'packages/hooks-mux/adapter-claude/package.json',
-  'packages/hooks-mux/adapter-codex/package.json',
-  'packages/hooks-mux/adapter-gemini/package.json',
-  'packages/hooks-mux/adapter-copilot/package.json',
-  'packages/hooks-mux/adapter-cursor/package.json',
-  'packages/hooks-mux/adapter-pi/package.json',
-  'packages/hooks-mux/adapter-oh-my-pi/package.json',
-  'packages/hooks-mux/adapter-opencode/package.json',
-  'packages/hooks-mux/adapter-openclaw/package.json',
-];
-
-const publicPluginPackages = [
-  'plugins/babysitter-codex/package.json',
-  'plugins/babysitter-cursor/package.json',
-  'plugins/babysitter-github/package.json',
-  'plugins/babysitter-gemini/package.json',
-  'plugins/babysitter-omp/package.json',
-  'plugins/babysitter-opencode/package.json',
-  'plugins/babysitter-openclaw/package.json',
-  'plugins/babysitter-paperclip/package.json',
-  'plugins/babysitter-pi/package.json',
-];
-
-for (const relativePath of [
-  ...publicWorkspacePackages,
-  ...publicHooksMuxPackages,
-  ...publicPluginPackages,
-]) {
+for (const entry of publicSurfaceEntries) {
+  const packageDir = entry.surface;
+  const relativePath = path.join(packageDir, 'package.json');
   const manifest = readJson(relativePath);
-  const packageDir = path.dirname(relativePath);
   const readmeRelativePath = path.join(packageDir, 'README.md');
   const readmeFullPath = path.join(repoRoot, readmeRelativePath);
+  const canonical = createCanonicalMetadata(packageDir);
 
   expectPublicPackage(manifest, `${relativePath}`);
   expectEqual(manifest.license, 'MIT', `${relativePath} license`);
   expectEqual(manifest.publishConfig && manifest.publishConfig.access, 'public', `${relativePath} publishConfig.access`);
+  expectDeepEqual(manifest.repository, canonical.repository, `${relativePath} repository`);
+  expectEqual(manifest.homepage, canonical.homepage, `${relativePath} homepage`);
+  expectDeepEqual(manifest.bugs, canonical.bugs, `${relativePath} bugs`);
 
   if (!fs.existsSync(readmeFullPath)) {
     fail(`${relativePath} is public but ${readmeRelativePath} is missing`);
@@ -107,16 +207,45 @@ for (const relativePath of [
     fail(`${relativePath} must include README.md in files for publish-surface parity`);
   }
 
+  for (const surfacedPath of collectManifestSurfacePaths(manifest)) {
+    if (!coversFileEntry(manifest.files, surfacedPath)) {
+      fail(`${relativePath} entrypoint path ${JSON.stringify(surfacedPath)} is not covered by files`);
+    }
+  }
+
   for (const entry of manifest.files) {
     if (typeof entry !== 'string') {
       continue;
     }
-    if (entry.toLowerCase().endsWith('.md')) {
-      const docPath = path.join(repoRoot, packageDir, entry);
-      if (!fs.existsSync(docPath)) {
-        fail(`${relativePath} references missing documentation file ${path.join(packageDir, entry)}`);
-      }
+    if (!shouldCheckExplicitFile(entry)) {
+      continue;
     }
+    const filePath = path.join(repoRoot, packageDir, entry);
+    if (!fs.existsSync(filePath)) {
+      fail(`${relativePath} references missing publish-surface file ${path.join(packageDir, entry)}`);
+    }
+  }
+}
+
+for (const entry of internalSurfaceEntries) {
+  const relativePath = path.join(entry.surface, 'package.json');
+  const manifest = readJson(relativePath);
+  if (manifest.private !== true) {
+    fail(`${relativePath} is internal-only in ${DOCS_SURFACE_PATH} but private is ${JSON.stringify(manifest.private)}`);
+  }
+}
+
+for (const packageJsonPath of listManagedPackageJsons()) {
+  const relativePath = normalizePath(path.relative(repoRoot, packageJsonPath));
+  const packageDir = path.dirname(relativePath);
+  const manifest = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+  const managedByNamespace = typeof manifest.name === 'string' && manifest.name.startsWith('@a5c-ai/');
+  if (!managedByNamespace) {
+    continue;
+  }
+  const looksPublic = manifest.private !== true || (manifest.publishConfig && manifest.publishConfig.access === 'public');
+  if (looksPublic && !publicSurfacePaths.has(packageDir)) {
+    fail(`${relativePath} looks public but is not listed as a public surface in ${DOCS_SURFACE_PATH}`);
   }
 }
 

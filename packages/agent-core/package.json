@@ -2,6 +2,7 @@
   "name": "@a5c-ai/agent-core",
   "version": "0.1.0",
   "description": "Built-in agent-core runtime and tool surface for Babysitter.",
+  "private": true,
   "license": "UNLICENSED",
   "type": "commonjs",
   "main": "dist/index.js",

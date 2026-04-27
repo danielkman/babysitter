@@ -5,7 +5,7 @@
   "license": "MIT",
   "description": "Shared UI foundation and session-flow projection surface for browser and React Native agent-mux apps",
   "author": "a5c-ai",
-  "homepage": "https://github.com/a5c-ai/babysitter#readme",
+  "homepage": "https://github.com/a5c-ai/babysitter/tree/main/packages/agent-mux/ui#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/a5c-ai/babysitter.git",

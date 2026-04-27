@@ -12,7 +12,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/a5c-ai/babysitter.git"
+    "url": "git+https://github.com/a5c-ai/babysitter.git",
+    "directory": "packages/observer-dashboard"
   },
   "homepage": "https://github.com/a5c-ai/babysitter/tree/main/packages/observer-dashboard#readme",
   "bugs": {

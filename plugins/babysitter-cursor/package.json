@@ -42,7 +42,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/a5c-ai/babysitter"
+    "url": "git+https://github.com/a5c-ai/babysitter.git",
+    "directory": "plugins/babysitter-cursor"
   },
-  "homepage": "https://github.com/a5c-ai/babysitter/tree/main/plugins/babysitter-cursor#readme"
+  "homepage": "https://github.com/a5c-ai/babysitter/tree/main/plugins/babysitter-cursor#readme",
+  "bugs": {
+    "url": "https://github.com/a5c-ai/babysitter/issues"
+  }
 }

@@ -5,7 +5,7 @@
   "license": "MIT",
   "description": "Mock harness simulator for testing agent-mux adapters — simulates claude-code, codex, and other CLI harnesses",
   "author": "a5c-ai",
-  "homepage": "https://github.com/a5c-ai/babysitter#readme",
+  "homepage": "https://github.com/a5c-ai/babysitter/tree/main/packages/agent-mux/harness-mock#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/a5c-ai/babysitter.git",

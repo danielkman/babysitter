@@ -5,7 +5,7 @@
   "license": "MIT",
   "description": "Gateway package for remote and browser-facing agent-mux surfaces",
   "author": "a5c-ai",
-  "homepage": "https://github.com/a5c-ai/babysitter#readme",
+  "homepage": "https://github.com/a5c-ai/babysitter/tree/main/packages/agent-mux/gateway#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/a5c-ai/babysitter.git",

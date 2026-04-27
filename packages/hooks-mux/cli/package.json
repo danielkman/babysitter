@@ -14,8 +14,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/a5c-ai/babysitter.git",
+    "url": "git+https://github.com/a5c-ai/babysitter.git",
     "directory": "packages/hooks-mux/cli"
+  },
+  "homepage": "https://github.com/a5c-ai/babysitter/tree/main/packages/hooks-mux/cli#readme",
+  "bugs": {
+    "url": "https://github.com/a5c-ai/babysitter/issues"
   },
   "files": [
     "dist",

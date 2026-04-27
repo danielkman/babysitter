@@ -41,7 +41,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/a5c-ai/babysitter"
+    "url": "git+https://github.com/a5c-ai/babysitter.git",
+    "directory": "plugins/babysitter-opencode"
   },
-  "homepage": "https://github.com/a5c-ai/babysitter/tree/main/plugins/babysitter-opencode#readme"
+  "homepage": "https://github.com/a5c-ai/babysitter/tree/main/plugins/babysitter-opencode#readme",
+  "bugs": {
+    "url": "https://github.com/a5c-ai/babysitter/issues"
+  }
 }

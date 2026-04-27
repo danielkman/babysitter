@@ -2,6 +2,7 @@
   "name": "@a5c-ai/babysitter-tui-plugins",
   "version": "5.0.0",
   "description": "Babysitter TUI plugins for agent-mux",
+  "private": true,
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

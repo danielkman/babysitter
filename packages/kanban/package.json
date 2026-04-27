@@ -13,7 +13,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/a5c-ai/babysitter.git"
+    "url": "git+https://github.com/a5c-ai/babysitter.git",
+    "directory": "packages/kanban"
   },
   "homepage": "https://github.com/a5c-ai/babysitter/tree/main/packages/kanban#readme",
   "bugs": {
