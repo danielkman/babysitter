@@ -10,6 +10,7 @@ const WORKSPACE = "/workspace/codex-full-run";
 const CODEX_HOME = process.env.CODEX_HOME || path.join(HOME, ".codex");
 const HOOKS_DIR = path.join(CODEX_HOME, "hooks");
 const SKILL_DIR = path.join(CODEX_HOME, "skills", "babysit");
+const RUNS_DIR = path.join(WORKSPACE, ".a5c", "runs");
 const PROCESS_PATH = path.join(WORKSPACE, "ci-codex-process.js");
 const AGENTS_PATH = path.join(WORKSPACE, "AGENTS.md");
 const WORKSPACE_CONFIG_PATH = path.join(WORKSPACE, ".codex", "config.toml");
@@ -658,6 +659,8 @@ function main() {
     path.join(WORKSPACE, ".codex"),
     "--state-dir",
     path.join(WORKSPACE, ".a5c"),
+    "--runs-dir",
+    RUNS_DIR,
   ], {
     env: {
       CODEX_SESSION_ID: sessionId,
@@ -669,8 +672,10 @@ function main() {
   if (!runId) {
     fail("Could not resolve runId from run:create output", { created });
   }
-
-  const runDir = path.join(WORKSPACE, ".a5c", "runs", runId);
+  const runDir = created.runDir;
+  if (!runDir) {
+    fail("Could not resolve runDir from run:create output", { created });
+  }
   let turns = 0;
   const maxTurns = 16;
   let lastHookDecision = null;
@@ -697,7 +702,7 @@ function main() {
         last_assistant_message: `<promise>${completionProof}</promise>`,
       });
       const hookOutput = runHook(
-        ["--hook-type", "stop", "--harness", "codex", "--plugin-root", path.join(WORKSPACE, ".codex"), "--state-dir", path.join(WORKSPACE, ".a5c"), "--runs-dir", path.join(WORKSPACE, ".a5c", "runs")],
+        ["--hook-type", "stop", "--harness", "codex", "--plugin-root", path.join(WORKSPACE, ".codex"), "--state-dir", path.join(WORKSPACE, ".a5c"), "--runs-dir", RUNS_DIR],
         hookPayload,
       );
       if (hookOutput.decision) {
@@ -708,7 +713,7 @@ function main() {
     }
 
     const continueOutput = runHook(
-      ["--hook-type", "stop", "--harness", "codex", "--plugin-root", path.join(WORKSPACE, ".codex"), "--state-dir", path.join(WORKSPACE, ".a5c"), "--runs-dir", path.join(WORKSPACE, ".a5c", "runs")],
+      ["--hook-type", "stop", "--harness", "codex", "--plugin-root", path.join(WORKSPACE, ".codex"), "--state-dir", path.join(WORKSPACE, ".a5c"), "--runs-dir", RUNS_DIR],
       JSON.stringify({ session_id: sessionId }),
     );
     if (continueOutput.decision !== "block") {
