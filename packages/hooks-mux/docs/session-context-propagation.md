@@ -100,7 +100,7 @@ export ANOTHER_VAR="other"
 
 The harness runtime natively supports injecting environment variables into all shell execution.
 
-**Used by:** Codex, Pi, Oh-My-Pi
+**Used by:** Pi, Oh-My-Pi, OpenCode, OpenClaw
 
 The adapter communicates persisted env back through the hook result format, and the runtime injects them into subsequent tool processes.
 
@@ -108,7 +108,7 @@ The adapter communicates persisted env back through the hook result format, and 
 
 No native env injection. The proxy wraps commands to inject environment.
 
-**Used by:** Gemini, Copilot, OpenCode, OpenClaw
+**Used by:** Codex, Gemini, Copilot, Cursor
 
 Use the `exec` command to wrap downstream commands:
 
@@ -122,7 +122,7 @@ This loads the session state, materializes persisted env into the subprocess env
 
 No downstream execution injection exists. Context is durable only inside proxy-managed hooks or explicit `exec` wrappers.
 
-**Used by:** Cursor
+**Used by:** Custom observer-only adapters
 
 ---
 

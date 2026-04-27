@@ -681,6 +681,10 @@ interface AdapterCapabilities {
 }
 ```
 
+`notes` is the machine-readable source of truth for experimental, lossy, or setup-sensitive
+adapter caveats. Diagnostics such as `doctor` should surface these notes directly, and prose
+docs must not contradict them.
+
 ---
 
 ## 17. Adapter Requirements by Harness
@@ -1173,5 +1177,4 @@ The most important engineering choices are:
 * adapter capability profiles that admit native vs emulated vs lossy behavior
 
 If these are implemented cleanly, portable hooks become realistic across the shell-hook family, and the same core can later power programmatic adapters for richer runtimes.
-
 

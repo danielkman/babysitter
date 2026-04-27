@@ -6,6 +6,8 @@ import type { AdapterCapabilities } from '@a5c-ai/hooks-mux-core';
  * Codex CLI is a shell-hook adapter with experimental status.
  * Tool interception is partial (Bash-only), and env propagation
  * is wrapper-based only -- there is no native env file mechanism.
+ * The notes array is the authoritative machine-readable caveat surface
+ * for doctor output and doc parity checks.
  *
  * Spec section 17.2.
  */

@@ -122,7 +122,7 @@ invoke calls on the same session unless you explicitly override with `--session-
 **Adapter package:** `@a5c-ai/hooks-mux-adapter-codex`
 **Family:** Shell-hook
 **Session ID:** Native
-**Env persistence:** Runtime hook
+**Env persistence:** Wrapper only
 
 ### Setup
 
@@ -132,6 +132,11 @@ Configure in your Codex hooks configuration:
 npx -y @a5c-ai/hooks-mux invoke --adapter codex
 ```
 
+Codex does not provide native downstream env injection. If handlers persist env that later
+commands need, run those commands through `a5c-hooks-mux exec --session-id "$AGENT_SESSION_ID" -- ...`.
+Prefer a single `hooks-mux` registration per Codex hook event and let the mux handle fan-out,
+because Codex can launch multiple matching native hooks concurrently.
+
 ### Capabilities
 
 | Feature | Support |
@@ -140,9 +145,17 @@ npx -y @a5c-ai/hooks-mux invoke --adapter codex
 | Blocking (deny/ask) | Yes |
 | Additional context | No (emulated) |
 | Tool interception | Shell only |
-| Env persistence | Runtime hook |
+| Env persistence | Wrapper only |
 | Tool input mutation | No |
 | Tool result mutation | No |
+
+### Notes
+
+- Treat `a5c-hooks-mux doctor --adapter codex` as the authoritative capability/diagnostic view for Codex's experimental and lossy behavior
+- Env persistence is `wrapper_only`; downstream commands only see persisted env when launched through `a5c-hooks-mux exec`
+- tool interception is bash-only; coverage is incomplete
+- multiple matching hooks can launch concurrently; prefer a single mux registration per event
+- many parsed output fields currently fail open
 
 ---
 
