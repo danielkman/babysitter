@@ -15,4 +15,3 @@ export declare function GatewayProvider(props: {
 export declare function useGatewayAuth(): GatewayAuthContextValue;
 export declare function useGatewayFetch(): (pathname: string, init?: RequestInit) => Promise<Response>;
 export {};
-//# sourceMappingURL=GatewayProvider.d.ts.map

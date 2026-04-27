@@ -4,6 +4,7 @@
 
 import { EventEmitter } from 'node:events';
 import WebSocket, { WebSocketServer } from 'ws';
+import type { RawData } from 'ws';
 import type {
   FileOperation,
   HarnessScenario,
@@ -367,16 +368,30 @@ export class WebSocketServerMock extends EventEmitter implements WebSocketServer
     });
   }
 
-  private decodeMessage(data: Buffer | ArrayBuffer | Uint8Array | string, isBinary: boolean): unknown {
+  private decodeMessage(data: RawData, isBinary: boolean): unknown {
+    const normalized = this.normalizeRawData(data);
     if (isBinary) {
-      return Buffer.isBuffer(data) ? data : Buffer.from(data as ArrayBuffer | Uint8Array);
+      return normalized;
     }
-    const text = typeof data === 'string' ? data : Buffer.from(data as ArrayBuffer | Uint8Array).toString('utf8');
+    const text = typeof normalized === 'string' ? normalized : normalized.toString('utf8');
     try {
       return JSON.parse(text);
     } catch {
       return text;
     }
+  }
+
+  private normalizeRawData(data: RawData): Buffer | string {
+    if (typeof data === 'string') {
+      return data;
+    }
+    if (Buffer.isBuffer(data)) {
+      return data;
+    }
+    if (Array.isArray(data)) {
+      return Buffer.concat(data);
+    }
+    return Buffer.from(new Uint8Array(data));
   }
 
   private closeConnection(connection: MockConnectionState, code: number, reason: string): void {

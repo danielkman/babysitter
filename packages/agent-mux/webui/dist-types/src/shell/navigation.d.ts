@@ -12,4 +12,3 @@ export type SessionPaletteAction = {
 };
 export declare function buildRecentSessionActions(sessions: SessionPaletteRecord[], limit?: number): SessionPaletteAction[];
 export {};
-//# sourceMappingURL=navigation.d.ts.map

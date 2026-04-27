@@ -171,16 +171,16 @@ export function WorkspacesPage(): JSX.Element {
                   {workspace.status} · {workspace.mode} · {workspace.sessions.length} session{workspace.sessions.length === 1 ? '' : 's'}
                 </p>
                 <div className="actions">
-                  <Button variant="secondary" disabled={submitting} onClick={() => void runAction(workspace.id, 'archive')}>
+                  <Button variant="default" disabled={submitting} onClick={() => void runAction(workspace.id, 'archive')}>
                     Archive
                   </Button>
-                  <Button variant="secondary" disabled={submitting} onClick={() => void runAction(workspace.id, 'cleanup')}>
+                  <Button variant="default" disabled={submitting} onClick={() => void runAction(workspace.id, 'cleanup')}>
                     Cleanup
                   </Button>
-                  <Button variant="secondary" disabled={submitting} onClick={() => void runAction(workspace.id, 'recover')}>
+                  <Button variant="default" disabled={submitting} onClick={() => void runAction(workspace.id, 'recover')}>
                     Recover
                   </Button>
-                  <Button variant="secondary" disabled={submitting} onClick={() => void runAction(workspace.id, 'delete')}>
+                  <Button variant="default" disabled={submitting} onClick={() => void runAction(workspace.id, 'delete')}>
                     Delete
                   </Button>
                 </div>
