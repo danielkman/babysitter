@@ -22,6 +22,8 @@ export interface WorkspaceSidebarFeedback {
   message: string;
 }
 
+type WorkspaceRunSummary = WorkspaceInventoryItem["runs"]["items"][number];
+
 function formatTimestamp(value: string | null | undefined): string {
   if (!value) {
     return "Unavailable";
@@ -73,11 +75,33 @@ function latestCommand(runtime: WorkspaceRuntimeSurface | undefined) {
   return [...runtime.terminal.commands].sort((left, right) => right.startedAt - left.startedAt)[0] ?? null;
 }
 
+function sortWorkspaceRuns(runs: readonly WorkspaceRunSummary[]): WorkspaceRunSummary[] {
+  return [...runs].sort((left, right) => {
+    const leftTime = typeof left.updatedAt === "number" ? left.updatedAt : typeof left.startedAt === "number" ? left.startedAt : 0;
+    const rightTime = typeof right.updatedAt === "number" ? right.updatedAt : typeof right.startedAt === "number" ? right.startedAt : 0;
+    return rightTime - leftTime;
+  });
+}
+
+function runtimeTone(status: string | undefined): "success" | "warning" | "error" | "neutral" {
+  if (status === "active" || status === "running" || status === "ready" || status === "completed") {
+    return "success";
+  }
+  if (status === "starting" || status === "pending" || status === "queued") {
+    return "warning";
+  }
+  if (status === "inactive" || status === "failed" || status === "error" || status === "blocked") {
+    return "error";
+  }
+  return "neutral";
+}
+
 export function WorkspaceDetailsSidebar(props: {
   workspace: WorkspaceInventoryItem;
   runtime?: WorkspaceRuntimeSurface;
   reviewArtifact?: KanbanReviewArtifact | null;
   sessionId?: string;
+  sessionStatus?: string;
   pendingAction: string | null;
   notesSaving: boolean;
   reviewPending: boolean;
@@ -117,6 +141,14 @@ export function WorkspaceDetailsSidebar(props: {
   const gitMetadataMissing = !props.workspace.git.root || !props.workspace.git.branch;
   const changeCount = props.workspace.git.uncommittedCount;
   const editorHref = props.workspace.links?.editorHref ?? null;
+  const selectedSession =
+    props.workspace.sessions.items.find((session) => session.sessionId === props.sessionId)
+    ?? (props.sessionId == null ? props.workspace.sessions.items[0] ?? null : null);
+  const recentRuns = useMemo(
+    () => sortWorkspaceRuns(props.workspace.runs.items ?? []).slice(0, 3),
+    [props.workspace.runs.items],
+  );
+  const latestRun = recentRuns[0] ?? null;
   const syncSummary =
     props.workspace.git.ahead == null || props.workspace.git.behind == null
       ? "No upstream tracking"
@@ -182,6 +214,91 @@ export function WorkspaceDetailsSidebar(props: {
       </div>
 
       <div className="mt-4 space-y-4">
+        <SidebarSection title="Workspace status" icon={AlertCircle}>
+          <div className="space-y-3" data-testid="workspace-status-panel">
+            {selectedSession ? (
+              <div className="rounded-2xl border border-border bg-card/80 px-3 py-3">
+                <div className="flex flex-wrap items-center gap-2 text-xs">
+                  <span className={cn("rounded-full border px-2 py-0.5", statusTone(runtimeTone(props.sessionStatus ?? selectedSession.status)))}>
+                    {props.sessionStatus ?? selectedSession.status}
+                  </span>
+                  <span className="rounded-full border border-border px-2 py-0.5 text-foreground-muted">
+                    {selectedSession.agent}
+                  </span>
+                </div>
+                <p className="mt-2 text-sm font-semibold text-foreground">
+                  {selectedSession.title ?? selectedSession.sessionId}
+                </p>
+                <p className="mt-1 text-xs text-foreground-muted">
+                  Session {selectedSession.sessionId}
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <Button asChild type="button" size="sm" variant="outline">
+                    <Link href={`/sessions/${selectedSession.sessionId}`}>Open session</Link>
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <SectionState
+                tone="neutral"
+                title="No active session selected"
+                body="Select a workspace session to keep runtime and process status aligned with the conversation surface."
+              />
+            )}
+
+            {props.runtime ? (
+              <div className="grid gap-3 sm:grid-cols-2">
+                <ValueRow label="Runtime updated" value={formatRuntimeTimestamp(props.runtime.updatedAt)} />
+                <ValueRow label="Terminal" value={`${props.runtime.terminal.status} · ${props.runtime.terminal.commands.length} command${props.runtime.terminal.commands.length === 1 ? "" : "s"}`} />
+                <ValueRow label="Dev server" value={props.runtime.devServer.status} />
+                <ValueRow label="Preview" value={previewUrl ? "Available" : "Unavailable"} />
+              </div>
+            ) : (
+              <SectionState
+                tone="error"
+                title="Runtime disconnected"
+                body="Runtime, terminal, and dev-server status are unavailable until a workspace session starts publishing again."
+              />
+            )}
+
+            {latestRun ? (
+              <div className="rounded-2xl border border-border bg-card/80 px-3 py-3">
+                <div className="flex flex-wrap items-center gap-2 text-xs">
+                  <span className="rounded-full border border-border px-2 py-0.5 text-foreground-muted">
+                    Recent runs
+                  </span>
+                  <span className={cn("rounded-full border px-2 py-0.5", lifecycleTone(latestRun.status))}>
+                    {latestRun.status}
+                  </span>
+                </div>
+                <div className="mt-3 grid gap-2">
+                  {recentRuns.map((run) => (
+                    <Link
+                      key={`${props.workspace.path}:${run.runId}`}
+                      href={`/runs/${encodeURIComponent(run.runId)}`}
+                      data-testid={`workspace-status-run-${run.runId}`}
+                      className="rounded-xl border border-border bg-background/70 px-3 py-2 transition-colors hover:border-primary/30"
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <span className="font-mono text-xs text-primary">{run.runId}</span>
+                        <span className={cn("rounded-full border px-2 py-0.5 text-[11px]", lifecycleTone(run.status))}>
+                          {run.status}
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <SectionState
+                tone="neutral"
+                title="No workspace runs yet"
+                body="Run and process status will appear here once this workspace session starts publishing executions."
+              />
+            )}
+          </div>
+        </SidebarSection>
+
         <SidebarSection title="Git summary" icon={GitBranch}>
           {gitMetadataMissing ? (
             <SectionState

@@ -11,6 +11,30 @@ vi.mock("next/link", () => ({
   ),
 }));
 
+vi.mock("@radix-ui/react-dialog", () => ({
+  Root: ({ children }: { children?: unknown }) => <>{children}</>,
+  Trigger: ({ children }: { children?: unknown }) => <>{children}</>,
+  Portal: ({ children }: { children?: unknown }) => <>{children}</>,
+  Overlay: ({ children, ...props }: { children?: unknown; [key: string]: unknown }) => (
+    <div {...props}>{children}</div>
+  ),
+  Content: ({ children, ...props }: { children?: unknown; [key: string]: unknown }) => (
+    <div {...props}>{children}</div>
+  ),
+}));
+
+vi.mock("@/components/ui/button", () => ({
+  Button: ({
+    children,
+    asChild,
+    ...props
+  }: {
+    children?: unknown;
+    asChild?: boolean;
+    [key: string]: unknown;
+  }) => (asChild ? <>{children}</> : <button {...props}>{children}</button>),
+}));
+
 vi.mock("@/components/sessions/session-conversation-surface", () => ({
   SessionConversationSurface: ({ sessionId }: { sessionId: string }) => (
     <div data-testid="session-conversation-surface">conversation {sessionId}</div>

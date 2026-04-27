@@ -1311,6 +1311,7 @@ function WorkspaceColumn(props: {
                   runtime={runtimeSession?.runtime}
                   reviewArtifact={reviewArtifact}
                   sessionId={runtimeSession?.sessionId}
+                  sessionStatus={runtimeSession?.status}
                   pendingAction={props.pendingAction}
                   notesSaving={props.pendingNotePath === workspace.path}
                   reviewPending={props.reviewPendingArtifactId === reviewArtifact?.id}

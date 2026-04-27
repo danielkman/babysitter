@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import type { Attachment } from "@a5c-ai/agent-mux-core";
-import { ChevronLeft, ExternalLink, GripVertical, LayoutDashboard, MessagesSquare, PanelLeft, PanelRight, Search, TerminalSquare, Workflow, X } from "lucide-react";
+import { ChevronLeft, ExternalLink, GripVertical, LayoutDashboard, MessagesSquare, PanelLeft, PanelRight, Search, Workflow, X } from "lucide-react";
 
 import { SessionConversationSurface } from "@/components/sessions/session-conversation-surface";
 import { SessionObservabilityPanel } from "@/components/sessions/session-observability-panel";
@@ -119,10 +119,6 @@ function nextActivePanel(
 ): WorkspacePanelKey {
   const visiblePanels = getVisiblePanels(visibility);
   return visiblePanels.includes(current) ? current : visiblePanels[0];
-}
-
-function formatRunStatus(run: Record<string, unknown>): string {
-  return typeof run.status === "string" && run.status.length > 0 ? run.status : "unknown";
 }
 
 function formatSessionUpdatedAt(value: number | undefined): string {
@@ -462,6 +458,7 @@ export function WorkspaceDetailShell(props: WorkspaceDetailShellProps) {
               runtime={runtime}
               reviewArtifact={props.reviewArtifact}
               sessionId={props.activeSession?.sessionId}
+              sessionStatus={props.activeSession?.status}
               pendingAction={props.pendingAction}
               notesSaving={props.notesSaving}
               reviewPending={props.reviewPending}
@@ -542,51 +539,22 @@ export function WorkspaceDetailShell(props: WorkspaceDetailShellProps) {
       <WorkspacePanelFrame
         panelKey="details"
         title="Runtime"
-        subtitle="Preview, shell, run history, and workspace-linked activity"
+        subtitle="Preview, shell, logs, and workspace-linked runtime activity"
       >
-        <div className="grid gap-4">
-          {runtime ? (
-            <WorkspaceRuntimePanel
-              runtime={runtime}
-              rebase={props.workspace.rebase}
-              sessionId={props.activeSession?.sessionId}
-              sessionStatus={props.activeSession?.status ?? "inactive"}
-              className="border-0 bg-transparent p-0 shadow-none"
-            />
-          ) : (
-            <EmptyWorkspaceState
-              title="Runtime details unavailable"
-              body="No selected session in this workspace is currently publishing preview, terminal, or dev-server surfaces."
-            />
-          )}
-
-          <div className="rounded-2xl border border-border bg-background/65 p-4">
-            <div className="flex items-center gap-2">
-              <TerminalSquare className="h-4 w-4 text-primary" />
-              <div className="text-sm font-medium text-foreground">Workspace runs</div>
-            </div>
-            <div className="mt-4 grid gap-3">
-              {props.runs.map((run) => (
-                <article key={String(run.runId)} className="rounded-2xl border border-border bg-card/80 p-3">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Link href={`/runs/${String(run.runId)}`} className="font-mono text-sm text-primary">
-                      {String(run.runId)}
-                    </Link>
-                    <span className="rounded-full border border-border px-2 py-0.5 text-xs text-foreground-muted">
-                      {formatRunStatus(run)}
-                    </span>
-                  </div>
-                </article>
-              ))}
-              {props.runs.length === 0 ? (
-                <EmptyWorkspaceState
-                  title="No runs recorded"
-                  body="Runs will appear here once the selected session starts or resumes work inside this workspace."
-                />
-              ) : null}
-            </div>
-          </div>
-        </div>
+        {runtime ? (
+          <WorkspaceRuntimePanel
+            runtime={runtime}
+            rebase={props.workspace.rebase}
+            sessionId={props.activeSession?.sessionId}
+            sessionStatus={props.activeSession?.status ?? "inactive"}
+            className="border-0 bg-transparent p-0 shadow-none"
+          />
+        ) : (
+          <EmptyWorkspaceState
+            title="Runtime details unavailable"
+            body="No selected session in this workspace is currently publishing preview, terminal, or dev-server surfaces."
+          />
+        )}
       </WorkspacePanelFrame>
     );
   };

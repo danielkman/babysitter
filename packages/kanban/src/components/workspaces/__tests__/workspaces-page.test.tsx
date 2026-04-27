@@ -92,6 +92,12 @@ vi.mock("@/components/sessions/session-observability-panel", () => ({
   ),
 }));
 
+vi.mock("@/components/sessions/session-conversation-surface", () => ({
+  SessionConversationSurface: ({ sessionId }: { sessionId: string }) => (
+    <div data-testid="session-conversation-surface">conversation {sessionId}</div>
+  ),
+}));
+
 vi.mock("@/components/workspaces/workspace-runtime-panel", () => ({
   WorkspaceRuntimePanel: ({
     sessionId,
@@ -484,6 +490,7 @@ describe("workspaces-page helpers", () => {
     expect(screen.getByText("review")).toBeInTheDocument();
     expect(screen.getByText("recovery")).toBeInTheDocument();
     expect(container.querySelector('[data-workspace-path="/repo/worktrees/clean"]')).toBeNull();
+    expect(screen.getAllByText("Open shell")).toHaveLength(2);
     expect(screen.getByText("Review pending")).toBeInTheDocument();
     expect(screen.getByText("Recovery required")).toBeInTheDocument();
   });
@@ -594,6 +601,7 @@ describe("workspaces-page helpers", () => {
 
     const sidebar = screen.getByLabelText("Workspace details for task");
     expect(within(sidebar).getAllByRole("heading", { level: 3 }).map((heading) => heading.textContent)).toEqual([
+      "Workspace status",
       "Git summary",
       "Terminal",
       "Notes",
@@ -955,7 +963,7 @@ describe("workspaces-page helpers", () => {
       expect(screen.getByText("Repository metadata unavailable")).toBeInTheDocument();
     });
 
-    expect(screen.getByText("Runtime disconnected")).toBeInTheDocument();
+    expect(screen.getAllByText("Runtime disconnected")).toHaveLength(2);
     expect(screen.getByText("No workspace notes yet")).toBeInTheDocument();
   });
 
