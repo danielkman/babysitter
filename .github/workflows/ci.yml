@@ -250,6 +250,7 @@ jobs:
           - @a5c-ai/agent-plugins-mux -> test + release/staging publish
           - @a5c-ai/kanban -> kanban + release/staging publish
           - @a5c-ai/babysitter-observer-dashboard -> observer-dashboard + release/staging publish
+          - @a5c-ai/cloud -> workspace-coverage + release/staging publish + deploy-hook paths
           - @a5c-ai/hooks-mux-* -> test + release/staging publish
           - @a5c-ai/agent-mux-* -> test + release/staging publish
           - @a5c-ai/babysitter + harness plugin packages -> test + release/staging publish paths
@@ -278,6 +279,14 @@ jobs:
           npm run typecheck --workspace=@a5c-ai/transport-mux 2>&1 | tee artifacts/workspace-coverage-logs/transport-mux-typecheck.log
           npm run test --workspace=@a5c-ai/transport-mux 2>&1 | tee artifacts/workspace-coverage-logs/transport-mux-test.log
           npm run scorecard:migration --workspace=@a5c-ai/transport-mux 2>&1 | tee artifacts/workspace-coverage-logs/transport-mux-scorecard.log
+
+      - name: Validate cloud deployment workspace QA surface
+        run: |
+          set -euo pipefail
+          npm run build:cloud 2>&1 | tee artifacts/workspace-coverage-logs/cloud-build.log
+          npm run test:cloud 2>&1 | tee artifacts/workspace-coverage-logs/cloud-test.log
+          npm run coverage:cloud 2>&1 | tee artifacts/workspace-coverage-logs/cloud-coverage.log
+          npm run verify:cloud-release 2>&1 | tee artifacts/workspace-coverage-logs/cloud-release.log
 
       - name: Upload workspace coverage logs
         if: always()

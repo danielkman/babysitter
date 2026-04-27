@@ -62,10 +62,13 @@
     "build": "npm exec --yes --package=typescript --package=@types/node -- tsc --build && npm exec --yes --package=typescript --package=@types/node -- tsc --emitDeclarationOnly --declarationMap false -p tsconfig.json",
     "clean": "rimraf dist tsconfig.tsbuildinfo",
     "test": "npm exec --yes --package=vitest -- vitest run --config vitest.config.ts",
-    "test:coverage": "npm exec --yes --package=vitest -- vitest run --config vitest.config.ts --coverage"
+    "test:coverage": "npm exec --yes --package=vitest -- vitest run --config vitest.config.ts --coverage",
+    "verify:release": "node ./scripts/verify-release.mjs",
+    "prepublishOnly": "npm run build && npm run test && npm run verify:release"
   },
   "devDependencies": {
     "@types/node": "^20.11.30",
+    "@vitest/coverage-v8": "^4.0.18",
     "rimraf": "^5.0.5",
     "typescript": "^5.4.2",
     "vitest": "^4.0.18"

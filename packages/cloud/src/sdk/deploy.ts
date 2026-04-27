@@ -30,10 +30,10 @@ function execCommand(
     });
     let stdout = "";
     let stderr = "";
-    child.stdout.on("data", (chunk: ChunkLike | string) => {
+    child.stdout.on("data", (chunk: Buffer | string) => {
       stdout += chunk.toString();
     });
-    child.stderr.on("data", (chunk: ChunkLike | string) => {
+    child.stderr.on("data", (chunk: Buffer | string) => {
       stderr += chunk.toString();
     });
     child.on("error", reject);

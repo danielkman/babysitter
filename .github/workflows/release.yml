@@ -129,6 +129,14 @@ jobs:
           npm run test --workspace=@a5c-ai/transport-mux 2>&1 | tee artifacts/logs/transport-mux-tests.log
           npm run scorecard:migration --workspace=@a5c-ai/transport-mux 2>&1 | tee artifacts/logs/transport-mux-scorecard.log
 
+      - name: Validate cloud deployment workspace
+        run: |
+          set -euo pipefail
+          npm run build:cloud 2>&1 | tee artifacts/logs/cloud-build.log
+          npm run test:cloud 2>&1 | tee artifacts/logs/cloud-tests.log
+          npm run coverage:cloud 2>&1 | tee artifacts/logs/cloud-coverage.log
+          npm run verify:cloud-release 2>&1 | tee artifacts/logs/cloud-release.log
+
       - name: Build and test agent-plugins-mux
         run: |
           set -euo pipefail
@@ -258,7 +266,7 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add package.json packages/sdk/package.json packages/babysitter/package.json packages/babysitter-agent/package.json packages/agent-plugins-mux/package.json packages/kanban/package.json packages/observer-dashboard/package.json packages/breakpoints-mux/package.json packages/hooks-mux/core/package.json packages/hooks-mux/cli/package.json packages/hooks-mux/adapter-claude/package.json packages/hooks-mux/adapter-codex/package.json packages/hooks-mux/adapter-gemini/package.json packages/hooks-mux/adapter-copilot/package.json packages/hooks-mux/adapter-cursor/package.json packages/hooks-mux/adapter-pi/package.json packages/hooks-mux/adapter-oh-my-pi/package.json packages/hooks-mux/adapter-opencode/package.json packages/hooks-mux/adapter-openclaw/package.json packages/agent-mux/adapters/package.json packages/agent-mux/cli/package.json packages/agent-mux/core/package.json packages/agent-mux/gateway/package.json packages/agent-mux/harness-mock/package.json packages/agent-mux/mobile-android-app/package.json packages/agent-mux/mobile-ios-app/package.json packages/agent-mux/observability/package.json packages/agent-mux/sdk/package.json packages/agent-mux/tui/package.json packages/agent-mux/tv-androidtv-app/package.json packages/agent-mux/tv-appletv-app/package.json packages/agent-mux/ui/package.json packages/agent-mux/watch-watchos-app/package.json packages/agent-mux/watch-wearos-app/package.json packages/agent-mux/webui/package.json packages/transport-mux/package.json package-lock.json CHANGELOG.md plugins/babysitter/.claude-plugin/plugin.json plugins/babysitter/plugin.json plugins/babysitter/versions.json plugins/babysitter-codex/package.json plugins/babysitter-codex/versions.json plugins/babysitter-gemini/package.json plugins/babysitter-gemini/plugin.json plugins/babysitter-gemini/gemini-extension.json plugins/babysitter-gemini/versions.json plugins/babysitter-pi/package.json plugins/babysitter-pi/versions.json plugins/babysitter-omp/package.json plugins/babysitter-omp/versions.json plugins/babysitter-opencode/package.json plugins/babysitter-opencode/plugin.json plugins/babysitter-opencode/versions.json plugins/babysitter-openclaw/package.json plugins/babysitter-openclaw/plugin.json plugins/babysitter-openclaw/openclaw.plugin.json plugins/babysitter-openclaw/versions.json plugins/babysitter-github/plugin.json plugins/babysitter-github/versions.json plugins/babysitter-github/package.json plugins/babysitter-cursor/plugin.json plugins/babysitter-cursor/versions.json plugins/babysitter-cursor/package.json plugins/babysitter-paperclip/package.json plugins/babysitter-paperclip/versions.json .claude-plugin/marketplace.json
+          git add package.json packages/sdk/package.json packages/babysitter/package.json packages/babysitter-agent/package.json packages/agent-plugins-mux/package.json packages/kanban/package.json packages/observer-dashboard/package.json packages/cloud/package.json packages/breakpoints-mux/package.json packages/hooks-mux/core/package.json packages/hooks-mux/cli/package.json packages/hooks-mux/adapter-claude/package.json packages/hooks-mux/adapter-codex/package.json packages/hooks-mux/adapter-gemini/package.json packages/hooks-mux/adapter-copilot/package.json packages/hooks-mux/adapter-cursor/package.json packages/hooks-mux/adapter-pi/package.json packages/hooks-mux/adapter-oh-my-pi/package.json packages/hooks-mux/adapter-opencode/package.json packages/hooks-mux/adapter-openclaw/package.json packages/agent-mux/adapters/package.json packages/agent-mux/cli/package.json packages/agent-mux/core/package.json packages/agent-mux/gateway/package.json packages/agent-mux/harness-mock/package.json packages/agent-mux/mobile-android-app/package.json packages/agent-mux/mobile-ios-app/package.json packages/agent-mux/observability/package.json packages/agent-mux/sdk/package.json packages/agent-mux/tui/package.json packages/agent-mux/tv-androidtv-app/package.json packages/agent-mux/tv-appletv-app/package.json packages/agent-mux/ui/package.json packages/agent-mux/watch-watchos-app/package.json packages/agent-mux/watch-wearos-app/package.json packages/agent-mux/webui/package.json packages/transport-mux/package.json package-lock.json CHANGELOG.md plugins/babysitter/.claude-plugin/plugin.json plugins/babysitter/plugin.json plugins/babysitter/versions.json plugins/babysitter-codex/package.json plugins/babysitter-codex/versions.json plugins/babysitter-gemini/package.json plugins/babysitter-gemini/plugin.json plugins/babysitter-gemini/gemini-extension.json plugins/babysitter-gemini/versions.json plugins/babysitter-pi/package.json plugins/babysitter-pi/versions.json plugins/babysitter-omp/package.json plugins/babysitter-omp/versions.json plugins/babysitter-opencode/package.json plugins/babysitter-opencode/plugin.json plugins/babysitter-opencode/versions.json plugins/babysitter-openclaw/package.json plugins/babysitter-openclaw/plugin.json plugins/babysitter-openclaw/openclaw.plugin.json plugins/babysitter-openclaw/versions.json plugins/babysitter-github/plugin.json plugins/babysitter-github/versions.json plugins/babysitter-github/package.json plugins/babysitter-cursor/plugin.json plugins/babysitter-cursor/versions.json plugins/babysitter-cursor/package.json plugins/babysitter-paperclip/package.json plugins/babysitter-paperclip/versions.json .claude-plugin/marketplace.json
           if git diff --cached --quiet; then
             echo "No version changes detected."
           else
@@ -350,6 +358,13 @@ jobs:
           set -euo pipefail
           npm run build --workspace=@a5c-ai/transport-mux
 
+      - name: Build and verify cloud package
+        run: |
+          set -euo pipefail
+          npm run build:cloud
+          npm run test:cloud
+          npm run verify:cloud-release
+
       - name: Pack npm artifacts
         run: |
           set -euo pipefail
@@ -357,6 +372,7 @@ jobs:
           npm pack --workspace=@a5c-ai/agent-plugins-mux --pack-destination artifacts/release
           npm pack --workspace=@a5c-ai/kanban --pack-destination artifacts/release
           npm pack --workspace=@a5c-ai/babysitter-observer-dashboard --pack-destination artifacts/release
+          npm pack --workspace=@a5c-ai/cloud --pack-destination artifacts/release
           npm pack --workspace=@a5c-ai/breakpoints-mux --pack-destination artifacts/release
           npm pack --workspace=@a5c-ai/agent-mux-observability --pack-destination artifacts/release
           npm pack --workspace=@a5c-ai/agent-mux-core --pack-destination artifacts/release
@@ -419,6 +435,13 @@ jobs:
           set -euo pipefail
           npm publish --workspace=@a5c-ai/babysitter-observer-dashboard --access public
 
+      - name: Publish cloud to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+          npm publish --workspace=@a5c-ai/cloud --access public
+
       - name: Publish breakpoints-mux to npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -442,6 +465,25 @@ jobs:
         run: |
           set -euo pipefail
           npm publish --workspace=@a5c-ai/transport-mux --access public
+
+      - name: Run cloud production deploy hook
+        if: ${{ vars.A5C_CLOUD_PROD_DEPLOY_ENABLED == 'true' }}
+        env:
+          A5C_CLOUD_ENVIRONMENT: prod
+          A5C_CLOUD_RELEASE_TAG: ${{ steps.bump.outputs.version }}
+          A5C_CLOUD_TARGET_TYPE: ${{ vars.A5C_CLOUD_PROD_TARGET_TYPE }}
+          A5C_CLOUD_KUBE_CONTEXT: ${{ vars.A5C_CLOUD_PROD_KUBE_CONTEXT }}
+          A5C_CLOUD_NAMESPACE: ${{ vars.A5C_CLOUD_PROD_NAMESPACE }}
+          A5C_CLOUD_INGRESS_HOSTS: ${{ vars.A5C_CLOUD_PROD_INGRESS_HOSTS }}
+          A5C_CLOUD_IMAGE_REGISTRY: ${{ vars.A5C_CLOUD_IMAGE_REGISTRY }}
+          A5C_CLOUD_REGION: ${{ vars.A5C_CLOUD_PROD_REGION }}
+          A5C_CLOUD_CLUSTER_NAME: ${{ vars.A5C_CLOUD_PROD_CLUSTER_NAME }}
+          A5C_CLOUD_PROJECT_ID: ${{ vars.A5C_CLOUD_PROD_PROJECT_ID }}
+          A5C_CLOUD_RESOURCE_GROUP: ${{ vars.A5C_CLOUD_PROD_RESOURCE_GROUP }}
+          A5C_CLOUD_SUBSCRIPTION_ID: ${{ vars.A5C_CLOUD_PROD_SUBSCRIPTION_ID }}
+        run: |
+          set -euo pipefail
+          npm run deploy:cloud:prod
 
       - name: Inject SDK dependency into codex package for publish
         run: |

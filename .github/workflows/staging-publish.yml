@@ -119,6 +119,14 @@ jobs:
           npm run test --workspace=@a5c-ai/transport-mux 2>&1 | tee artifacts/logs/transport-mux-tests.log
           npm run scorecard:migration --workspace=@a5c-ai/transport-mux 2>&1 | tee artifacts/logs/transport-mux-scorecard.log
 
+      - name: Validate cloud deployment workspace
+        run: |
+          set -euo pipefail
+          npm run build:cloud 2>&1 | tee artifacts/logs/cloud-build.log
+          npm run test:cloud 2>&1 | tee artifacts/logs/cloud-tests.log
+          npm run coverage:cloud 2>&1 | tee artifacts/logs/cloud-coverage.log
+          npm run verify:cloud-release 2>&1 | tee artifacts/logs/cloud-release.log
+
       - name: Build and test agent-plugins-mux
         run: |
           set -euo pipefail
@@ -307,7 +315,8 @@ jobs:
               'packages/sdk/package.json',
               'packages/babysitter/package.json',
               'packages/kanban/package.json',
-              'packages/observer-dashboard/package.json'
+              'packages/observer-dashboard/package.json',
+              'packages/cloud/package.json'
             ];
             for (const p of pkgs) {
               const data = JSON.parse(fs.readFileSync(p, 'utf8'));
@@ -523,6 +532,13 @@ jobs:
           set -euo pipefail
           npm run build --workspace=@a5c-ai/transport-mux
 
+      - name: Build and verify cloud package
+        run: |
+          set -euo pipefail
+          npm run build:cloud
+          npm run test:cloud
+          npm run verify:cloud-release
+
       - name: Build and test kanban
         run: |
           set -euo pipefail
@@ -567,6 +583,13 @@ jobs:
           set -euo pipefail
           npm publish --workspace=@a5c-ai/babysitter-observer-dashboard --access public --tag staging
 
+      - name: Publish cloud to npm (staging tag)
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+          npm publish --workspace=@a5c-ai/cloud --access public --tag staging
+
       - name: Publish agent-mux packages (staging)
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -583,6 +606,25 @@ jobs:
         run: |
           set -euo pipefail
           npm publish --workspace=@a5c-ai/transport-mux --access public --tag staging
+
+      - name: Run cloud staging deploy hook
+        if: ${{ vars.A5C_CLOUD_STAGING_DEPLOY_ENABLED == 'true' }}
+        env:
+          A5C_CLOUD_ENVIRONMENT: staging
+          A5C_CLOUD_RELEASE_TAG: ${{ steps.version.outputs.staging_version_sdk }}
+          A5C_CLOUD_TARGET_TYPE: ${{ vars.A5C_CLOUD_STAGING_TARGET_TYPE }}
+          A5C_CLOUD_KUBE_CONTEXT: ${{ vars.A5C_CLOUD_STAGING_KUBE_CONTEXT }}
+          A5C_CLOUD_NAMESPACE: ${{ vars.A5C_CLOUD_STAGING_NAMESPACE }}
+          A5C_CLOUD_INGRESS_HOSTS: ${{ vars.A5C_CLOUD_STAGING_INGRESS_HOSTS }}
+          A5C_CLOUD_IMAGE_REGISTRY: ${{ vars.A5C_CLOUD_IMAGE_REGISTRY }}
+          A5C_CLOUD_REGION: ${{ vars.A5C_CLOUD_STAGING_REGION }}
+          A5C_CLOUD_CLUSTER_NAME: ${{ vars.A5C_CLOUD_STAGING_CLUSTER_NAME }}
+          A5C_CLOUD_PROJECT_ID: ${{ vars.A5C_CLOUD_STAGING_PROJECT_ID }}
+          A5C_CLOUD_RESOURCE_GROUP: ${{ vars.A5C_CLOUD_STAGING_RESOURCE_GROUP }}
+          A5C_CLOUD_SUBSCRIPTION_ID: ${{ vars.A5C_CLOUD_STAGING_SUBSCRIPTION_ID }}
+        run: |
+          set -euo pipefail
+          npm run deploy:cloud:staging
 
       - name: Inject SDK dependency into codex package for publish
         run: |
