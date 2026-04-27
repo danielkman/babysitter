@@ -1,5 +1,13 @@
 # @a5c-ai/agent-mux-tui
 
+## Unreleased
+
+### Documentation
+
+- Add planning artifacts for proposed `kanban` and `workspaces` TUI views,
+  including spec, backlog decomposition, design note, and package publish-surface
+  metadata updates for `specs/`.
+
 ## 0.4.1
 
 ### Patch Changes

@@ -20,6 +20,19 @@ agent-mux prerequisites built in dependency order and its tests executed from
 the repo root. Use `npm run build:local --workspace=@a5c-ai/agent-mux-tui`
 when you only want the package-local TypeScript compile.
 
+## Planned kanban/workspaces surface
+
+The package now carries planning artifacts for a proposed `kanban` and
+`workspaces` expansion of the TUI surface.
+
+- Spec: [`specs/kanban-workspaces-spec.md`](specs/kanban-workspaces-spec.md)
+- Backlog decomposition: [`specs/kanban-workspaces-subtasks.md`](specs/kanban-workspaces-subtasks.md)
+- Cross-package design note:
+  [`../../docs/agent-mux/archive/design/20-tui-kanban-workspaces.md`](../../docs/agent-mux/archive/design/20-tui-kanban-workspaces.md)
+
+These documents are proposal-stage material only. They do not mean the runtime
+surface exists yet.
+
 ## Writing a plugin
 
 ```ts
