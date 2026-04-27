@@ -75,7 +75,7 @@ const config = {
             { to: '/', label: 'Home', position: 'left' },
             {
               type: 'docSidebar',
-              sidebarId: 'tutorialSidebar',
+              sidebarId: 'docsSidebar',
               label: 'Docs',
               position: 'left'
             },
@@ -90,12 +90,14 @@ const config = {
             { to: '/', label: 'Home', position: 'left' },
             {
               type: 'docSidebar',
-              sidebarId: 'tutorialSidebar',
+              sidebarId: 'docsSidebar',
               label: 'Docs',
               position: 'left'
             },
             { to: '/docs/user-guide/', label: 'User Guide', position: 'left' },
+            { to: '/docs/assimilation/', label: 'Integrations', position: 'left' },
             { to: '/docs/plugins', label: 'Plugins', position: 'left' },
+            { to: '/docs/agent-mux/', label: 'Agent Mux', position: 'left' },
             {
               href: 'https://github.com/a5c-ai/babysitter',
               label: 'GitHub',
@@ -133,15 +135,28 @@ const config = {
             {
               title: 'Start Here',
               items: [
-                { label: 'Quickstart', to: '/docs/user-guide/getting-started/quickstart' },
-                { label: 'CLI Reference', to: '/docs/user-guide/reference/cli-reference' }
+                { label: 'User Guide', to: '/docs/user-guide/' },
+                { label: 'Getting Started', to: '/docs/user-guide/getting-started/' },
+                { label: 'Tutorials', to: '/docs/user-guide/tutorials/' },
+                { label: 'Core Reference', to: '/docs/reference/' }
               ]
             },
             {
-              title: 'Deep Dives',
+              title: 'Integrate & Extend',
               items: [
-                { label: 'Process Library', to: '/docs/user-guide/features/process-library' },
-                { label: 'GitHub Actions Setup', to: '/docs/github-actions-setup-babysitter' }
+                { label: 'Harness Integration', to: '/docs/assimilation/harness/' },
+                { label: 'GitHub Actions', to: '/docs/github-actions-setup-babysitter' },
+                { label: 'Plugins', to: '/docs/plugins' },
+                { label: 'Agent Mux', to: '/docs/agent-mux/' }
+              ]
+            },
+            {
+              title: 'Maintain & Plan',
+              items: [
+                { label: 'Release Pipeline', to: '/docs/release-pipeline' },
+                { label: 'Workspace Validation', to: '/docs/workspace-validation' },
+                { label: 'Contributor Reference', to: '/docs/agent-reference/' },
+                { label: 'V6 Roadmap', to: '/docs/v6-spec-and-roadmap/' }
               ]
             },
             {

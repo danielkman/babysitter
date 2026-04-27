@@ -18,9 +18,17 @@ const repoCommandValidationPrefixes = [
 ];
 
 const publishedDocsExcludePatterns = [
+  "assets/**",
+  "generated/**",
   "reference-repos/**",
   "retrospectives/**",
   "harness-features-backlog/**",
+  "user-guide/generated/**",
+  "user-guide/01-discovery-analysis.md",
+  "user-guide/02-audience-personas.md",
+  "user-guide/03-information-architecture.md",
+  "user-guide/BEST-PRACTICES.md",
+  "user-guide/SUMMARY.md",
   "agent-mux/research/**",
   "agent-mux/superpowers/plans/**",
   "reference/COMMANDS_AND_HOOKS_VERIFICATION_2026-01-20.md",
@@ -64,11 +72,23 @@ const historicalDocFiles = [
 
 const publishedLandingPages = [
   "docs/user-guide/index.md",
+  "docs/user-guide/getting-started/README.md",
+  "docs/user-guide/tutorials/index.md",
+  "docs/user-guide/features/index.md",
+  "docs/user-guide/reference/index.md",
   "docs/agent-mux/README.md",
+  "docs/agent-mux/tutorials/README.md",
+  "docs/agent-mux/reference/README.md",
+  "docs/agent-mux/archive/README.md",
   "docs/assimilation/index.md",
+  "docs/assimilation/harness/index.md",
   "docs/plugins.md",
   "docs/reference/index.md",
+  "docs/agent-reference/README.md",
   "docs/v6-spec-and-roadmap/README.md",
+  "docs/v6-spec-and-roadmap/implementation/index.md",
+  "docs/v6-spec-and-roadmap/decisions/index.md",
+  "docs/articles/index.md",
 ];
 
 const requiredPublishedFrontmatterDocs = [

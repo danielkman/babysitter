@@ -1,3 +1,10 @@
+---
+title: Getting Started
+description: Install Babysitter, configure your environment, and understand your first run.
+last_updated: 2026-04-27
+category: landing
+---
+
 # Getting Started with Babysitter
 
 **Welcome to Babysitter!** This guide will help you go from zero to running your first AI-orchestrated development workflow in just a few minutes.

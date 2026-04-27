@@ -1,18 +1,28 @@
-# agent-mux tutorials
+---
+title: Agent Mux Tutorials
+description: Task-oriented walkthroughs for using @a5c-ai/agent-mux without treating the API reference as a tutorial.
+last_updated: 2026-04-27
+category: landing
+---
 
-This directory contains task-oriented guides for using `@a5c-ai/agent-mux`.
+# Agent Mux Tutorials
 
-Tutorials are intentionally non-normative: if a workflow description here disagrees with `../reference/`, the reference docs win.
+Use these guides when you want to accomplish a concrete `@a5c-ai/agent-mux` task and do not need the full normative reference first.
 
-## Tutorials
+## Audience
 
-- [Getting Started](getting-started.md)
-- [Cost Tracking](cost-tracking.md)
-- [Docker Mode](docker-mode.md)
-- [Hooks](hooks.md)
-- [Kubernetes Mode](k8s-mode.md)
-- [Mock Harness](mock-harness.md)
-- [Multi-Agent](multi-agent.md)
-- [Plugins](plugins.md)
-- [Remote Bootstrap](remote-bootstrap.md)
-- [Sessions](sessions.md)
+- Package users learning the common workflows
+- Integrators validating sessions, hooks, plugins, or remote execution modes
+- Contributors writing examples that must stay clearly non-normative
+
+## Usage Rule
+
+Tutorials explain workflows. They do not override the canonical contract in [Agent Mux Reference](../reference/README.md).
+
+## Suggested Path
+
+1. [Getting Started](./getting-started.md)
+2. [Sessions](./sessions.md)
+3. [Hooks](./hooks.md)
+4. [Plugins](./plugins.md)
+5. Pick an environment-specific guide such as Docker, Kubernetes, mock harness, or remote bootstrap.
