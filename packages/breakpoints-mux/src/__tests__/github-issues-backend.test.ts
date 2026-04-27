@@ -1,5 +1,26 @@
-import { describe, it, expect } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { Mock } from "vitest";
 import { GitHubIssuesBackend } from "../backends/github-issues.js";
+
+function okResponse(body: unknown): Response {
+  return {
+    ok: true,
+    status: 200,
+    json: async () => body,
+    text: async () => JSON.stringify(body),
+    headers: new Headers(),
+  } as Response;
+}
+
+function errorResponse(status: number, body: string): Response {
+  return {
+    ok: false,
+    status,
+    json: async () => ({ message: body }),
+    text: async () => body,
+    headers: new Headers(),
+  } as Response;
+}
 
 describe("GitHubIssuesBackend", () => {
   const backend = new GitHubIssuesBackend({
@@ -37,5 +58,55 @@ describe("GitHubIssuesBackend", () => {
         sign: true,
       }),
     ).rejects.toThrow(/does not support answer signing/i);
+  });
+});
+
+describe("GitHubIssuesBackend cancelBreakpoint()", () => {
+  let originalFetch: typeof globalThis.fetch;
+
+  beforeEach(() => {
+    originalFetch = globalThis.fetch;
+  });
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+    vi.restoreAllMocks();
+  });
+
+  it("closes the GitHub issue with a PATCH to state=closed", async () => {
+    const backend = new GitHubIssuesBackend({
+      owner: "acme",
+      repo: "widgets",
+    });
+    backend.setToken("test-token");
+    globalThis.fetch = vi.fn<typeof globalThis.fetch>().mockResolvedValue(okResponse({})) as typeof globalThis.fetch;
+
+    await backend.cancelBreakpoint("gh-42");
+
+    expect(globalThis.fetch).toHaveBeenCalledTimes(1);
+    const [url, init] = (globalThis.fetch as Mock).mock.calls[0] as [string, RequestInit];
+    expect(url).toBe("https://api.github.com/repos/acme/widgets/issues/42");
+    expect(init.method).toBe("PATCH");
+    expect(init.headers).toMatchObject({
+      Authorization: "Bearer test-token",
+      Accept: "application/vnd.github+json",
+      "Content-Type": "application/json",
+      "X-GitHub-Api-Version": "2022-11-28",
+    });
+    expect(JSON.parse(init.body as string)).toEqual({ state: "closed" });
+  });
+
+  it("surfaces GitHub API errors from the cancel request", async () => {
+    const backend = new GitHubIssuesBackend({
+      owner: "acme",
+      repo: "widgets",
+    });
+    backend.setToken("test-token");
+    globalThis.fetch = vi.fn<typeof globalThis.fetch>()
+      .mockResolvedValue(errorResponse(500, "server exploded")) as typeof globalThis.fetch;
+
+    await expect(backend.cancelBreakpoint("gh-42")).rejects.toThrow(
+      "GitHub API error (500): server exploded",
+    );
   });
 });

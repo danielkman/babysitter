@@ -48,6 +48,10 @@ async function importBackendResolver() {
   return import("../mcp/backend-resolver.js");
 }
 
+async function importCancelBreakpoint() {
+  return import("../mcp/tools/cancel-breakpoint.js");
+}
+
 async function importMcpServer() {
   return import("../mcp/server.js");
 }
@@ -767,7 +771,34 @@ describe("MCP Server Tools", () => {
   });
 
   // ──────────────────────────────────────────────────────────────────────────
-  // Section 4: answer_breakpoint tool handler
+  // Section 4: cancel_breakpoint tool handler
+  // ──────────────────────────────────────────────────────────────────────────
+
+  describe("handleCancelBreakpoint", () => {
+    it("calls backend.cancelBreakpoint with breakpointId", async () => {
+      const { handleCancelBreakpoint } = await importCancelBreakpoint();
+
+      await handleCancelBreakpoint({
+        breakpointId: "bp-001",
+      }, mockBackend);
+
+      expect(mockBackend.cancelBreakpoint).toHaveBeenCalledTimes(1);
+      expect(mockBackend.cancelBreakpoint).toHaveBeenCalledWith("bp-001");
+    });
+
+    it("rejects empty breakpointId", async () => {
+      const { handleCancelBreakpoint } = await importCancelBreakpoint();
+
+      await expect(
+        handleCancelBreakpoint({
+          breakpointId: "",
+        }, mockBackend),
+      ).rejects.toThrow("breakpointId");
+    });
+  });
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // Section 5: answer_breakpoint tool handler
   // ──────────────────────────────────────────────────────────────────────────
 
   describe("handleAnswerBreakpoint", () => {
@@ -946,7 +977,7 @@ describe("MCP Server Tools", () => {
   });
 
   // ──────────────────────────────────────────────────────────────────────────
-  // Section 5: verify_breakpoint_answer tool handler
+  // Section 6: verify_breakpoint_answer tool handler
   // ──────────────────────────────────────────────────────────────────────────
 
   describe("handleVerifyBreakpointAnswer", () => {
@@ -1110,7 +1141,7 @@ describe("MCP Server Tools", () => {
   });
 
   // ──────────────────────────────────────────────────────────────────────────
-  // Section 7: Tool Descriptions and Metadata
+  // Section 8: Tool Descriptions and Metadata
   // ──────────────────────────────────────────────────────────────────────────
 
   describe("Tool Descriptions and Metadata", () => {
@@ -1148,6 +1179,19 @@ describe("MCP Server Tools", () => {
       expect(listBreakpointsParams).toHaveProperty("responderId");
     });
 
+    it("cancel_breakpoint description mentions cancel", async () => {
+      const { cancelBreakpointDescription } = await importCancelBreakpoint();
+      expect(cancelBreakpointDescription.toLowerCase()).toContain("cancel");
+    });
+
+    it("cancel_breakpoint exports param schema with breakpointId", async () => {
+      const { cancelBreakpointParams } = await importCancelBreakpoint();
+      expect(cancelBreakpointParams).toBeDefined();
+      expect(cancelBreakpointParams).toHaveProperty("breakpointId");
+      expect(cancelBreakpointParams).toHaveProperty("backend");
+      expect(cancelBreakpointParams).toHaveProperty("breakpointsDir");
+    });
+
     it("answer_breakpoint description mentions answer", async () => {
       const { answerBreakpointDescription } = await importAnswerBreakpoint();
       expect(answerBreakpointDescription.toLowerCase()).toContain("answer");
@@ -1176,7 +1220,7 @@ describe("MCP Server Tools", () => {
   });
 
   // ──────────────────────────────────────────────────────────────────────────
-  // Section 8: Backend Resolution from MCP tool params
+  // Section 9: Backend Resolution from MCP tool params
   // ──────────────────────────────────────────────────────────────────────────
 
   describe("Backend Resolution from MCP tool params", () => {
@@ -1264,6 +1308,17 @@ describe("MCP Server Tools", () => {
       expect(mockBackend.listPendingBreakpoints).toHaveBeenCalled();
     });
 
+    it("cancel_breakpoint accepts backend param", async () => {
+      const { handleCancelBreakpoint } = await importCancelBreakpoint();
+
+      await handleCancelBreakpoint({
+        breakpointId: "bp-001",
+        backend: "git-native",
+      }, mockBackend);
+
+      expect(mockBackend.cancelBreakpoint).toHaveBeenCalledWith("bp-001");
+    });
+
     it("answer_breakpoint accepts backend param", async () => {
       const { handleAnswerBreakpoint } = await importAnswerBreakpoint();
 
@@ -1280,7 +1335,7 @@ describe("MCP Server Tools", () => {
   });
 
   // ──────────────────────────────────────────────────────────────────────────
-  // Section 9: Input Validation Edge Cases
+  // Section 10: Input Validation Edge Cases
   // ──────────────────────────────────────────────────────────────────────────
 
   describe("Input Validation Edge Cases", () => {
@@ -1297,6 +1352,14 @@ describe("MCP Server Tools", () => {
 
       await expect(
         handleCheckBreakpointStatus({} as { breakpointId: string }, mockBackend),
+      ).rejects.toThrow();
+    });
+
+    it("cancel_breakpoint rejects missing breakpointId", async () => {
+      const { handleCancelBreakpoint } = await importCancelBreakpoint();
+
+      await expect(
+        handleCancelBreakpoint({} as { breakpointId: string }, mockBackend),
       ).rejects.toThrow();
     });
 
