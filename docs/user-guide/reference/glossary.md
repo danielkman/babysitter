@@ -546,7 +546,7 @@ A high-level structured approach or pattern for software development. Methodolog
 
 | Methodology | Description | Source |
 |-------------|-------------|--------|
-| **TDD Quality Convergence** | Test-first development with iterative quality improvement | [tdd-quality-convergence.js](../../../library/tdd-quality-convergence.js) |
+| **TDD Quality Convergence** | Test-first development with iterative quality improvement | `library/tdd-quality-convergence.js` |
 | **GSD (Get Stuff Done)** | Rapid, pragmatic 8-phase execution | [gsd/](../../../library/methodologies/gsd/README.md) |
 | **Spec-Kit** | Specification-driven development with governance | [spec-kit/](../../../library/methodologies/spec-kit/README.md) |
 | **ATDD/TDD** | Acceptance test-driven and test-driven development | [atdd-tdd/](../../../library/methodologies/atdd-tdd/README.md) |

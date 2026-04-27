@@ -33,7 +33,7 @@ npm run lint:hooks-mux
 - SDK command registry: [`packages/sdk/src/cli/main/program.ts`](../../packages/sdk/src/cli/main/program.ts)
 - SDK config and runs resolution: [`packages/sdk/src/config/`](../../packages/sdk/src/config)
 - Harness runtime CLI: [`packages/babysitter-agent/src/cli/main.ts`](../../packages/babysitter-agent/src/cli/main.ts)
-- Metapackage shim: [`packages/babysitter/bin/babysitter.js`](../../packages/babysitter/bin/babysitter.js)
+- Metapackage shim: `packages/babysitter/bin/babysitter.js`
 - Catalog app: [`packages/catalog/src/app/page.tsx`](../../packages/catalog/src/app/page.tsx)
 
 ## Repo Conventions
