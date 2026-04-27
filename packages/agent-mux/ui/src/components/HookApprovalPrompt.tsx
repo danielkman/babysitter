@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 
-import { classifyTool, type AgentName } from '@a5c-ai/agent-mux-core';
+import { classifyTool, type AgentName } from '@a5c-ai/agent-mux-core/browser';
 
 import { Button } from './primitives/Button.js';
 import { Card } from './primitives/Card.js';

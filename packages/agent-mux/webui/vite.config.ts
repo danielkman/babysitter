@@ -10,6 +10,8 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
+      '@a5c-ai/agent-catalog': path.resolve(rootDir, '..', '..', 'agent-catalog', 'src', 'index.ts'),
+      '@a5c-ai/agent-mux-core/browser': path.resolve(rootDir, '..', 'core', 'src', 'browser.ts'),
       '@a5c-ai/agent-mux-core': path.resolve(rootDir, '..', 'core', 'src', 'index.ts'),
       '@a5c-ai/agent-mux-ui/session-flow': path.resolve(rootDir, '..', 'ui', 'src', 'session-flow.ts'),
       '@a5c-ai/agent-mux-ui': path.resolve(rootDir, '..', 'ui', 'src', 'index.ts'),

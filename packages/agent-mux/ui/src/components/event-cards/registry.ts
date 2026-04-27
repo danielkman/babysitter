@@ -1,4 +1,4 @@
-import { classifyTool, type AgentName, type ToolClassification } from '@a5c-ai/agent-mux-core';
+import { classifyTool, type AgentName, type ToolClassification } from '@a5c-ai/agent-mux-core/browser';
 
 import type { ReactNode } from 'react';
 
