@@ -23,3 +23,16 @@ Run this workspace command before landing changes that affect graph data, genera
 ```bash
 npm run ci:test --workspace=@a5c-ai/agent-catalog
 ```
+
+## CI contract matrix
+
+`npm run test:agent-catalog-contracts` is the enforced downstream compatibility matrix for `@a5c-ai/agent-catalog` in CI. It currently covers these consumer surfaces:
+
+- Package export and packaged-asset contract: `packages/agent-catalog/src/catalog.test.ts`, `packages/agent-catalog/src/discovery.contract.test.ts`, `packages/agent-catalog/src/sdk.contract.test.ts`, `packages/agent-catalog/src/discovery.packaged.test.ts`
+- Catalog API integration: `packages/catalog/src/app/api/agents/route.contract.test.ts`, `packages/catalog/src/app/api/agents/[slug]/route.contract.test.ts`, `packages/catalog/src/app/api/catalog-integration.contract.test.ts`
+- SDK fallback metadata integration: `packages/sdk/src/harness/amuxFallbackMetadata.contract.test.ts`
+- Hooks-mux discovery integration: `packages/hooks-mux/core/src/discovery/__tests__/detector.contract.test.ts`
+- Agent-mux integration: `packages/agent-mux/core/tests/host-detection.contract.test.ts`, `packages/agent-mux/core/tests/invocation.contract.test.ts`
+- Agent-plugins-mux integration: `packages/agent-plugins-mux/src/__tests__/targets.contract.test.ts`
+
+If a new consumer family or route starts importing `@a5c-ai/agent-catalog`, update this matrix and add its contract test to `test:agent-catalog-contracts` in the same change.

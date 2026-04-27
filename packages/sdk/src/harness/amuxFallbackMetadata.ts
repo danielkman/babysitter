@@ -1,3 +1,4 @@
+import { listFallbackHarnessMetadata as listCatalogFallbackHarnessMetadata } from "@a5c-ai/agent-catalog";
 import { resolveRunsDir } from "../config";
 import type { AmuxAdapterMetadata } from "./amuxMetadata";
 
@@ -177,20 +178,8 @@ const LOCAL_FALLBACK_METADATA: Record<string, AmuxAdapterMetadata> = {
 
 function buildStaticFallbackMetadata(): Record<string, AmuxAdapterMetadata> {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment
-    const mod = require("@a5c-ai/agent-catalog") as {
-      listFallbackHarnessMetadata?: () => Record<string, {
-        adapterName: string;
-        hostEnvSignals: readonly string[];
-        capabilities: AmuxAdapterMetadata["capabilities"];
-        sessionDir: string;
-      }>;
-    };
-    if (typeof mod.listFallbackHarnessMetadata !== "function") {
-      return LOCAL_FALLBACK_METADATA;
-    }
     return Object.fromEntries(
-      Object.values(mod.listFallbackHarnessMetadata()).map((metadata) => [
+      Object.values(listCatalogFallbackHarnessMetadata()).map((metadata) => [
         metadata.adapterName,
         {
           name: metadata.adapterName,
