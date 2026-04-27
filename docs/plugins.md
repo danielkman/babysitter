@@ -43,6 +43,25 @@ Plugins can be stored globally (`~/.a5c/`) or per-project (`<project>/.a5c/`). B
 
 ---
 
+<!-- supported-harness-plugins:start -->
+## Supported harness plugin packages
+
+Use this table when you need the canonical entrypoint for a specific Babysitter harness/plugin package rather than the broader plugin-system explanation.
+
+| Surface | Canonical docs home | Status note |
+| --- | --- | --- |
+| `plugins/babysitter` | [plugins/babysitter/README.md](../plugins/babysitter/README.md) | Canonical Claude Code plugin surface. This repo plugin is discoverable from the docs-site plugin landing page and the root README install guide. |
+| `plugins/babysitter-codex` | [plugins/babysitter-codex/README.md](../plugins/babysitter-codex/README.md) | README is the canonical package-level contract. |
+| `plugins/babysitter-cursor` | [plugins/babysitter-cursor/README.md](../plugins/babysitter-cursor/README.md) | README is the canonical package-level contract. |
+| `plugins/babysitter-gemini` | [plugins/babysitter-gemini/README.md](../plugins/babysitter-gemini/README.md) | README is the canonical package-level contract. |
+| `plugins/babysitter-github` | [plugins/babysitter-github/README.md](../plugins/babysitter-github/README.md) | README is the canonical package-level contract. |
+| `plugins/babysitter-omp` | [plugins/babysitter-omp/README.md](../plugins/babysitter-omp/README.md) | README is the canonical package-level contract. |
+| `plugins/babysitter-openclaw` | [plugins/babysitter-openclaw/README.md](../plugins/babysitter-openclaw/README.md) | README is the canonical package-level contract. |
+| `plugins/babysitter-opencode` | [plugins/babysitter-opencode/README.md](../plugins/babysitter-opencode/README.md) | README is the canonical package-level contract. |
+| `plugins/babysitter-paperclip` | [plugins/babysitter-paperclip/README.md](../plugins/babysitter-paperclip/README.md) | README is the canonical package-level contract. |
+| `plugins/babysitter-pi` | [plugins/babysitter-pi/README.md](../plugins/babysitter-pi/README.md) | README is the canonical package-level contract. |
+<!-- supported-harness-plugins:end -->
+
 ## How a Plugin Install Actually Works
 
 Here's what happens when you run `babysitter plugin:install testing-suite`:

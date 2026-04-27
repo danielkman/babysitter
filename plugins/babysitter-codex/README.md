@@ -15,6 +15,12 @@ and updates `~/.agents/plugins/marketplace.json` so Codex can load the plugin
 through its marketplace surface. Workspace install continues to materialize a
 workspace-local Codex surface for team setup.
 
+<!-- docs-status:start -->
+> Status: Public harness plugin package.
+> Canonical docs home: [Package and Plugin Docs Map](../../docs/package-and-plugin-map.md).
+> This README is the canonical Codex plugin install/runtime contract; use [Plugins Overview](../../docs/plugins.md) for the repo-wide plugin index.
+<!-- docs-status:end -->
+
 ## Installation
 
 Install the SDK CLI first:

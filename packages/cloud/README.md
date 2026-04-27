@@ -13,6 +13,12 @@ This package implements the spec in [SPEC.md](./SPEC.md) with:
 
 Current scope deliberately excludes the separately tracked upstream dependency tickets referenced in the spec.
 
+<!-- docs-status:start -->
+> Status: Public package.
+> Canonical docs home: [Package and Plugin Docs Map](../../docs/package-and-plugin-map.md).
+> This README is the canonical package contract until a dedicated docs-site guide exists.
+<!-- docs-status:end -->
+
 ## Package scripts
 
 ```bash

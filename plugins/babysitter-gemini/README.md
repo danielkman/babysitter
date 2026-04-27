@@ -14,6 +14,12 @@ It uses the Babysitter SDK CLI and the shared `~/.a5c` process-library state.
 The extension registers the hooks and commands so Gemini CLI can drive the
 Babysitter orchestration loop from within the agent session.
 
+<!-- docs-status:start -->
+> Status: Public harness plugin package.
+> Canonical docs home: [Package and Plugin Docs Map](../../docs/package-and-plugin-map.md).
+> This README is the canonical Gemini plugin install/runtime contract; use [Plugins Overview](../../docs/plugins.md) for the repo-wide plugin index.
+<!-- docs-status:end -->
+
 ## Installation
 
 Install the SDK CLI first:

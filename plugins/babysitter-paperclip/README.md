@@ -5,6 +5,12 @@ deterministic, event-sourced orchestration with Paperclip's multi-agent
 platform, providing run lifecycle management, breakpoint approval workflows,
 and real-time observability through Paperclip's UI slot system.
 
+<!-- docs-status:start -->
+> Status: Public harness plugin package.
+> Canonical docs home: [Package and Plugin Docs Map](../../docs/package-and-plugin-map.md).
+> This README is the canonical Paperclip plugin contract; use [Plugins Overview](../../docs/plugins.md) for the repo-wide plugin index.
+<!-- docs-status:end -->
+
 ## Installation
 
 Install the Babysitter SDK CLI globally:

@@ -2,6 +2,12 @@
 
 Built-in programmatic runtime and agentic tool surface for Babysitter.
 
+<!-- docs-status:start -->
+> Status: Internal-only workspace package.
+> Canonical docs home: [Package and Plugin Docs Map](../../docs/package-and-plugin-map.md).
+> This README defines the current package contract for repo-internal runtime consumers.
+<!-- docs-status:end -->
+
 ## Session options contract
 
 `createAgentCoreSession()` now reflects the agent-mux-backed runtime surface.

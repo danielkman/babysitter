@@ -2,6 +2,12 @@
 
 Optional CLI package for Babysitter agent runtime commands.
 
+<!-- docs-status:start -->
+> Status: Public advanced/runtime package.
+> Canonical docs home: [Package and Plugin Docs Map](../../docs/package-and-plugin-map.md).
+> This README is the canonical runtime CLI contract for operator-facing `babysitter-agent` workflows.
+<!-- docs-status:end -->
+
 ## Installation
 
 ```bash

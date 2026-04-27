@@ -10,6 +10,12 @@ Babysitter SDK CLI and the shared `~/.a5c` process-library state. The
 installer registers the plugin bundle and materializes the active skills and
 hooks so Cursor can execute Babysitter commands and hook scripts directly.
 
+<!-- docs-status:start -->
+> Status: Public harness plugin package.
+> Canonical docs home: [Package and Plugin Docs Map](../../docs/package-and-plugin-map.md).
+> This README is the canonical Cursor plugin install/runtime contract; use [Plugins Overview](../../docs/plugins.md) for the repo-wide plugin index.
+<!-- docs-status:end -->
+
 ## Prerequisites
 
 - **Node.js 22+**

@@ -2,6 +2,12 @@
 
 `transport-mux` is an internal-only placeholder seam for the future JS transport/proxy runtime. The workspace keeps launcher-facing runtime modules here so `agent-mux` can integrate against a stable package boundary, but this package is not the active runtime or release owner yet and should not be treated as a publishable npm artifact.
 
+<!-- docs-status:start -->
+> Status: Internal-only placeholder workspace.
+> Canonical docs home: [Package and Plugin Docs Map](../../docs/package-and-plugin-map.md).
+> This README defines the placeholder-seam contract and should not be read as a productized public offering.
+<!-- docs-status:end -->
+
 ## Current status
 
 This workspace currently carries source, tests, and package entrypoints that local workspace consumers import during development. While that seam is useful for local integration, the package remains private and its metadata intentionally does not describe a shippable npm artifact surface.

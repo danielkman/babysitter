@@ -4,6 +4,12 @@
 
 This workspace is active and supported for monorepo development, but it is **not** a public npm package and it is **not** owned by the central `release.yml` or `staging-publish.yml` publish workflows. Its lifecycle contract is enforced through workspace CI instead.
 
+<!-- docs-status:start -->
+> Status: Internal-only workspace application.
+> Canonical docs home: [Package and Plugin Docs Map](../../docs/package-and-plugin-map.md).
+> This README is the canonical internal contract for the monorepo catalog UI/API surface.
+<!-- docs-status:end -->
+
 ## Ownership policy
 
 - The package stays `private: true` and should be treated as an internal operator/developer surface.

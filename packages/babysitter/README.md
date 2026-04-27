@@ -2,6 +2,12 @@
 
 Metapackage for installing all babysitter npm packages.
 
+<!-- docs-status:start -->
+> Status: Public metapackage.
+> Canonical docs home: [Package and Plugin Docs Map](../../docs/package-and-plugin-map.md).
+> This README remains the canonical package contract for the metapackage install surface.
+<!-- docs-status:end -->
+
 ## Installation
 
 ```bash

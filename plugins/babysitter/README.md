@@ -4,6 +4,12 @@ Babysitter is the Claude Code plugin for SDK-backed orchestration with
 event-sourced runs, stop-hook continuation, native hook dispatch, and human
 approval gates.
 
+<!-- docs-status:start -->
+> Status: Public harness plugin surface for Claude Code.
+> Canonical docs home: [Package and Plugin Docs Map](../../docs/package-and-plugin-map.md).
+> This README is the canonical Claude Code plugin contract; use [Plugins Overview](../../docs/plugins.md) for repo-level plugin discovery.
+<!-- docs-status:end -->
+
 ## Active Orchestration Contract
 
 Claude Code is the canonical hook-driven harness:

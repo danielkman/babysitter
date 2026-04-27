@@ -3,6 +3,12 @@
 This directory is the unified parent for all content migrated from the former
 `agent-mux` standalone repository.
 
+<!-- docs-status:start -->
+> Status: Public package family.
+> Canonical docs home: [Package and Plugin Docs Map](../../docs/package-and-plugin-map.md).
+> Use this README as the canonical family entrypoint for the agent-mux workspace tree.
+<!-- docs-status:end -->
+
 ## Packages
 
 - `core/`, `adapters/`, `cli/`, `sdk/`, `gateway/`, `harness-mock/`, `observability/`

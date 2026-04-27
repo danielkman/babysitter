@@ -8,6 +8,12 @@ This is a thin Pi package:
 - `extensions/index.ts` adds lightweight slash-command aliases that forward to those skills
 - the SDK remains responsible for orchestration, runs, tasks, and state
 
+<!-- docs-status:start -->
+> Status: Public harness plugin package.
+> Canonical docs home: [Package and Plugin Docs Map](../../docs/package-and-plugin-map.md).
+> This README is the canonical Pi package contract; use [Plugins Overview](../../docs/plugins.md) for the repo-wide plugin index.
+<!-- docs-status:end -->
+
 ## Installation
 
 Recommended:

@@ -6,6 +6,11 @@
 
 Real-time observability dashboard for [babysitter](https://github.com/a5c-ai/babysitter) orchestration runs.
 
+<!-- docs-status:start -->
+> Status: Public package.
+> Canonical docs home: [Package and Plugin Docs Map](../../docs/package-and-plugin-map.md).
+> This README is the canonical operator guide for the observer dashboard package.
+<!-- docs-status:end -->
 
 ## What is Babysitter Observer Dashboard?
 

@@ -8,6 +8,11 @@ last_updated: 2026-04-26
 
 This document is the repo-level source of truth for which npm workspaces are active, which ones are release-critical, and which workflow path validates them.
 
+<!-- docs-discovery-note:start -->
+For canonical documentation homes and public/internal positioning, use [Package and Plugin Docs Map](./package-and-plugin-map.md).
+This file remains the validation-contract ledger, not the primary package/plugin discovery index.
+<!-- docs-discovery-note:end -->
+
 If a workspace stays active, it must meet one of these conditions:
 
 - it is validated in `.github/workflows/ci.yml`
@@ -29,6 +34,14 @@ These workspaces ship public packages or release-facing operational behavior. Th
 | `packages/agent-mux/*` | Published agent-mux packages | `.github/workflows/ci.yml` job `test`, plus `release.yml` and `staging-publish.yml` |
 | `packages/babysitter` and `plugins/babysitter-*` | Published metapackage and harness plugin packages | `.github/workflows/ci.yml` job `test`, plus `release.yml` and `staging-publish.yml` |
 
+## Public advanced/runtime packages
+
+These packages are publicly installable, but their canonical docs live primarily in package READMEs and the package/plugin docs map rather than the end-user getting-started flow.
+
+| Workspace | Role | Validation path |
+| --- | --- | --- |
+| `packages/babysitter-agent` | Public runtime CLI for headless/orchestrated/operator workflows; not the default first-stop end-user entrypoint | `.github/workflows/ci.yml` job `test`, plus `release.yml` and `staging-publish.yml` runtime build/test validation |
+
 ## Internal-only active workspaces
 
 These workspaces are part of the active monorepo and ship code or operational behavior inside the repo, but they are not current public publish targets.
@@ -36,7 +49,6 @@ These workspaces are part of the active monorepo and ship code or operational be
 | Workspace | Role | Validation path |
 | --- | --- | --- |
 | `packages/agent-core` | Internal harness support package | `.github/workflows/ci.yml` job `test`, plus `release.yml` and `staging-publish.yml` |
-| `packages/babysitter-agent` | Internal harness runtime CLI | `.github/workflows/ci.yml` job `test` |
 | `packages/agent-catalog` | private, non-release workspace package for the metadata catalog consumed by SDK, agent-mux, hooks-mux, plugin compiler, and catalog UI; downstream compatibility is lockstep within this repo rather than external semver | `.github/workflows/ci.yml` job `workspace-coverage` (`npm run ci:test --workspace=@a5c-ai/agent-catalog`) |
 | `packages/catalog` | internal-only Next.js catalog UI and API surface for browsing process-library and graph-backed discovery data inside the monorepo | `.github/workflows/ci.yml` job `workspace-coverage` (`npm run ci:test --workspace=process-library-catalog`) |
 | `packages/babysitter-tui-plugins` | Internal TUI plugin package for babysitter observability | `.github/workflows/ci.yml` job `workspace-coverage` |

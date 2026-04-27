@@ -6,6 +6,12 @@
 
 Board-, issue-, and workspace-first kanban surface for Babysitter orchestration.
 
+<!-- docs-status:start -->
+> Status: Public package.
+> Canonical docs home: [Package and Plugin Docs Map](../../docs/package-and-plugin-map.md).
+> This README is the canonical product/package overview for the kanban surface.
+<!-- docs-status:end -->
+
 ## What It Is
 
 `@a5c-ai/kanban` is a single Next.js app under `packages/kanban` that combines:

@@ -11,6 +11,12 @@ This package provides full Babysitter integration through OpenClaw's programmati
 
 The SDK (`@a5c-ai/babysitter-sdk`) remains the single source of truth for orchestration, runs, tasks, replay, and state. This plugin is a thin adapter layer.
 
+<!-- docs-status:start -->
+> Status: Public harness plugin package.
+> Canonical docs home: [Package and Plugin Docs Map](../../docs/package-and-plugin-map.md).
+> This README is the canonical OpenClaw plugin contract; use [Plugins Overview](../../docs/plugins.md) for the repo-wide plugin index.
+<!-- docs-status:end -->
+
 ## Installation
 
 ### Primary: Babysitter Harness Install

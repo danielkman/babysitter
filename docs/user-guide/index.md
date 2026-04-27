@@ -164,6 +164,7 @@ Technical specifications and lookup resources.
 |-----------|-------------|
 | [Slash Commands](./reference/slash-commands.md) | **Core modes** (call, yolo, forever, plan) and utility commands for Claude Code |
 | [CLI Reference](./reference/cli-reference.md) | Complete command-line interface documentation |
+| [Package & Plugin Map](../package-and-plugin-map.md) | Canonical public/internal docs map for active packages, apps, and harness plugins |
 | [Configuration](./reference/configuration.md) | Environment variables and config file options |
 | [Error Catalog](./reference/error-catalog.md) | All error codes with solutions |
 | [Glossary](./reference/glossary.md) | Terminology and definitions |

@@ -2,6 +2,12 @@
 
 A universal hooks proxy system that normalizes lifecycle hooks across multiple AI coding harnesses (Claude Code, Codex, Gemini CLI, Cursor, GitHub Copilot, Pi, oh-my-pi, OpenCode, OpenClaw) into a single canonical event model.
 
+<!-- docs-status:start -->
+> Status: Public package family.
+> Canonical docs home: [Package and Plugin Docs Map](../../docs/package-and-plugin-map.md).
+> Use this README as the canonical family entrypoint for hooks-mux packages and adapters.
+<!-- docs-status:end -->
+
 ## Packages
 
 | Package | Description |

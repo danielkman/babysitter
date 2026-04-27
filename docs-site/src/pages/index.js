@@ -20,6 +20,12 @@ const defaultPathways = [
       'Jump straight into the command surface: runs, tasks, sessions, plugins, harnesses, and process-library controls.'
   },
   {
+    title: 'Know The Surfaces',
+    href: '/docs/package-and-plugin-map',
+    description:
+      'See which packages and plugins are public, advanced/operator-facing, or internal-only, then jump to the canonical docs home for each one.'
+  },
+  {
     title: 'Design Better Processes',
     href: '/docs/user-guide/features/process-definitions',
     description:

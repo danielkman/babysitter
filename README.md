@@ -561,6 +561,11 @@ Toggle any layer with `babysitter compression:toggle <layer> <on|off>` or set in
 
 ## Documentation
 
+<!-- docs-surface-map:start -->
+### Package and Plugin Surface Map
+- [Package and Plugin Docs Map](docs/package-and-plugin-map.md) - canonical public/internal status, docs entrypoints, and coverage notes for active packages and plugins
+<!-- docs-surface-map:end -->
+
 ### Getting Started
 - [Quickstart Guide](docs/user-guide/getting-started/quickstart.md)
 - [Beginner Tutorial: REST API](docs/user-guide/tutorials/beginner-rest-api.md)

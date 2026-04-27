@@ -6,6 +6,12 @@ This package ships an OpenCode plugin bundle that provides event-sourced
 orchestration, hook-based extensibility, and human-in-the-loop approval for
 complex multi-step workflows -- powered by the Babysitter SDK.
 
+<!-- docs-status:start -->
+> Status: Public harness plugin package.
+> Canonical docs home: [Package and Plugin Docs Map](../../docs/package-and-plugin-map.md).
+> This README is the canonical OpenCode plugin contract; use [Plugins Overview](../../docs/plugins.md) for the repo-wide plugin index.
+<!-- docs-status:end -->
+
 ## Plugin Structure
 
 ```
