@@ -147,6 +147,17 @@ function createMockAdapter(
   } as unknown as AgentAdapter;
 }
 
+function createLegacyInstalledPlugin(
+  overrides: Partial<AdapterInstalledPlugin> = {},
+): AdapterInstalledPlugin {
+  return {
+    pluginId: 'plugin',
+    name: 'Plugin',
+    version: '1.0.0',
+    ...overrides,
+  } as AdapterInstalledPlugin;
+}
+
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
@@ -228,10 +239,22 @@ describe('PluginManagerImpl', () => {
   // ── list() ─────────────────────────────────────────────────────────
 
   describe('list()', () => {
-    it('delegates to adapter.listPlugins()', async () => {
+    it('normalizes installed plugins and sorts them by installedAt descending', async () => {
       const mockPlugins: AdapterInstalledPlugin[] = [
-        { pluginId: 'plugin-a', name: 'Plugin A', version: '1.0.0', enabled: true },
-        { pluginId: 'plugin-b', name: 'Plugin B', version: '2.0.0', enabled: false },
+        createLegacyInstalledPlugin({
+          pluginId: 'plugin-a',
+          name: 'Plugin A',
+          version: '1.0.0',
+          installedAt: '2024-01-01T00:00:00.000Z' as unknown as Date,
+        }),
+        createLegacyInstalledPlugin({
+          pluginId: 'plugin-b',
+          name: 'Plugin B',
+          version: '2.0.0',
+          enabled: false,
+          format: 'skill-file',
+          installedAt: new Date('2024-02-01T00:00:00.000Z'),
+        }),
       ];
       const listPlugins = vi.fn().mockResolvedValue(mockPlugins);
       const adapter = createMockAdapter('opencode', true, { listPlugins });
@@ -241,8 +264,20 @@ describe('PluginManagerImpl', () => {
 
       expect(listPlugins).toHaveBeenCalledOnce();
       expect(result).toHaveLength(2);
-      expect(result[0].pluginId).toBe('plugin-a');
-      expect(result[1].pluginId).toBe('plugin-b');
+      expect(result[0]).toMatchObject({
+        pluginId: 'plugin-b',
+        agent: 'opencode',
+        format: 'skill-file',
+        enabled: false,
+      });
+      expect(result[0].installedAt).toBeInstanceOf(Date);
+      expect(result[1]).toMatchObject({
+        pluginId: 'plugin-a',
+        agent: 'opencode',
+        format: 'npm-package',
+        enabled: true,
+      });
+      expect(result[1].installedAt).toBeInstanceOf(Date);
     });
 
     it('returns empty array when adapter has no listPlugins', async () => {
@@ -258,13 +293,12 @@ describe('PluginManagerImpl', () => {
   // ── install() ──────────────────────────────────────────────────────
 
   describe('install()', () => {
-    it('delegates to adapter.installPlugin()', async () => {
-      const installed: AdapterInstalledPlugin = {
+    it('normalizes the installed plugin returned by the adapter', async () => {
+      const installed: AdapterInstalledPlugin = createLegacyInstalledPlugin({
         pluginId: 'my-plugin',
         name: 'My Plugin',
         version: '1.0.0',
-        enabled: true,
-      };
+      });
       const installPlugin = vi.fn().mockResolvedValue(installed);
       const adapter = createMockAdapter('opencode', true, { installPlugin });
       registry.register(adapter);
@@ -272,8 +306,14 @@ describe('PluginManagerImpl', () => {
       const result = await manager.install('opencode', 'my-plugin', { version: '1.0.0' });
 
       expect(installPlugin).toHaveBeenCalledWith('my-plugin', { version: '1.0.0' });
-      expect(result.pluginId).toBe('my-plugin');
-      expect(result.version).toBe('1.0.0');
+      expect(result).toMatchObject({
+        pluginId: 'my-plugin',
+        version: '1.0.0',
+        agent: 'opencode',
+        format: 'npm-package',
+        enabled: true,
+      });
+      expect(result.installedAt).toBeInstanceOf(Date);
     });
 
     it('throws PLUGIN_ERROR when adapter has no installPlugin', async () => {
@@ -316,21 +356,47 @@ describe('PluginManagerImpl', () => {
   // ── update() ───────────────────────────────────────────────────────
 
   describe('update()', () => {
-    it('delegates to adapter.installPlugin() for update', async () => {
-      const updated: AdapterInstalledPlugin = {
+    it('updates an installed plugin and returns a normalized result', async () => {
+      const listPlugins = vi.fn().mockResolvedValue([
+        createLegacyInstalledPlugin({
+          pluginId: 'my-plugin',
+          name: 'My Plugin',
+          version: '1.0.0',
+          installedAt: new Date('2024-01-01T00:00:00.000Z'),
+        }),
+      ]);
+      const updated: AdapterInstalledPlugin = createLegacyInstalledPlugin({
         pluginId: 'my-plugin',
         name: 'My Plugin',
         version: '2.0.0',
-        enabled: true,
-      };
+      });
       const installPlugin = vi.fn().mockResolvedValue(updated);
-      const adapter = createMockAdapter('opencode', true, { installPlugin });
+      const adapter = createMockAdapter('opencode', true, { listPlugins, installPlugin });
       registry.register(adapter);
 
       const result = await manager.update('opencode', 'my-plugin');
 
       expect(installPlugin).toHaveBeenCalledWith('my-plugin');
-      expect(result.version).toBe('2.0.0');
+      expect(result).toMatchObject({
+        pluginId: 'my-plugin',
+        version: '2.0.0',
+        agent: 'opencode',
+        format: 'npm-package',
+      });
+    });
+
+    it('throws PLUGIN_ERROR when the plugin is not currently installed', async () => {
+      const listPlugins = vi.fn().mockResolvedValue([]);
+      const installPlugin = vi.fn();
+      const adapter = createMockAdapter('opencode', true, { listPlugins, installPlugin });
+      registry.register(adapter);
+
+      await expect(
+        manager.update('opencode', 'missing-plugin'),
+      ).rejects.toMatchObject({
+        code: 'PLUGIN_ERROR',
+      });
+      expect(installPlugin).not.toHaveBeenCalled();
     });
   });
 
@@ -339,13 +405,23 @@ describe('PluginManagerImpl', () => {
   describe('updateAll()', () => {
     it('updates all installed plugins', async () => {
       const plugins: AdapterInstalledPlugin[] = [
-        { pluginId: 'a', name: 'A', version: '1.0.0', enabled: true },
-        { pluginId: 'b', name: 'B', version: '1.0.0', enabled: true },
+        createLegacyInstalledPlugin({
+          pluginId: 'a',
+          name: 'A',
+          version: '1.0.0',
+          installedAt: new Date('2024-01-01T00:00:00.000Z'),
+        }),
+        createLegacyInstalledPlugin({
+          pluginId: 'b',
+          name: 'B',
+          version: '1.0.0',
+          installedAt: new Date('2024-02-01T00:00:00.000Z'),
+        }),
       ];
       const listPlugins = vi.fn().mockResolvedValue(plugins);
       const installPlugin = vi.fn()
-        .mockResolvedValueOnce({ pluginId: 'a', name: 'A', version: '2.0.0', enabled: true })
-        .mockResolvedValueOnce({ pluginId: 'b', name: 'B', version: '2.0.0', enabled: true });
+        .mockResolvedValueOnce(createLegacyInstalledPlugin({ pluginId: 'a', name: 'A', version: '2.0.0' }))
+        .mockResolvedValueOnce(createLegacyInstalledPlugin({ pluginId: 'b', name: 'B', version: '2.0.0' }));
 
       const adapter = createMockAdapter('opencode', true, {
         listPlugins,
@@ -356,8 +432,8 @@ describe('PluginManagerImpl', () => {
       const result = await manager.updateAll('opencode');
 
       expect(result).toHaveLength(2);
-      expect(result[0].version).toBe('2.0.0');
-      expect(result[1].version).toBe('2.0.0');
+      expect(result[0]).toMatchObject({ pluginId: 'b', version: '2.0.0', agent: 'opencode' });
+      expect(result[1]).toMatchObject({ pluginId: 'a', version: '2.0.0', agent: 'opencode' });
     });
 
     it('returns empty array when no plugins are installed', async () => {
@@ -367,6 +443,26 @@ describe('PluginManagerImpl', () => {
 
       const result = await manager.updateAll('opencode');
       expect(result).toEqual([]);
+    });
+
+    it('throws PLUGIN_ERROR with failed plugin ids when any update fails', async () => {
+      const listPlugins = vi.fn().mockResolvedValue([
+        createLegacyInstalledPlugin({ pluginId: 'a', name: 'A', version: '1.0.0' }),
+        createLegacyInstalledPlugin({ pluginId: 'b', name: 'B', version: '1.0.0' }),
+      ]);
+      const installPlugin = vi.fn()
+        .mockResolvedValueOnce(createLegacyInstalledPlugin({ pluginId: 'a', name: 'A', version: '2.0.0' }))
+        .mockRejectedValueOnce(new Error('registry unavailable'));
+
+      registry.register(
+        createMockAdapter('opencode', true, { listPlugins, installPlugin }),
+      );
+
+      const promise = manager.updateAll('opencode');
+      await expect(promise).rejects.toMatchObject({
+        code: 'PLUGIN_ERROR',
+      });
+      await expect(promise).rejects.toThrow(/b/);
     });
   });
 
@@ -393,6 +489,11 @@ describe('PluginManagerImpl', () => {
       expect(results).toHaveLength(2);
       expect(results.map((r) => r.pluginId)).toContain('plugin-a');
       expect(results.map((r) => r.pluginId)).toContain('plugin-b');
+      expect(results[0]).toMatchObject({
+        agents: [expect.any(String)],
+        formats: [expect.any(String)],
+        registry: expect.any(String),
+      });
     });
 
     it('deduplicates results by pluginId', async () => {
@@ -476,6 +577,19 @@ describe('PluginManagerImpl', () => {
       expect(results).toHaveLength(1);
       expect(results[0].pluginId).toBe('b');
     });
+
+    it('throws PLUGIN_ERROR when all searched registries fail', async () => {
+      registry.register(
+        createMockAdapter('opencode', true, { searchPlugins: vi.fn().mockRejectedValue(new Error('network')) }),
+      );
+      registry.register(
+        createMockAdapter('pi', true, { searchPlugins: vi.fn().mockRejectedValue(new Error('timeout')) }),
+      );
+
+      await expect(manager.search('test')).rejects.toMatchObject({
+        code: 'PLUGIN_ERROR',
+      });
+    });
   });
 
   // ── browse() ───────────────────────────────────────────────────────
@@ -514,11 +628,30 @@ describe('PluginManagerImpl', () => {
       );
 
       const detail = await manager.info('my-plugin', 'opencode');
-      expect(detail.pluginId).toBe('my-plugin');
+      expect(detail).toMatchObject({
+        pluginId: 'my-plugin',
+        agents: ['opencode'],
+        formats: ['npm-package'],
+        registry: 'npm',
+      });
+      expect(detail.versions).toEqual(['1.0.0']);
     });
 
     it('throws PLUGIN_ERROR when plugin not found', async () => {
       const searchFn = vi.fn().mockResolvedValue([]);
+      registry.register(
+        createMockAdapter('opencode', true, { searchPlugins: searchFn }),
+      );
+
+      await expect(
+        manager.info('nonexistent', 'opencode'),
+      ).rejects.toMatchObject({
+        code: 'PLUGIN_ERROR',
+      });
+    });
+
+    it('throws PLUGIN_ERROR when the scoped registry lookup fails', async () => {
+      const searchFn = vi.fn().mockRejectedValue(new Error('registry offline'));
       registry.register(
         createMockAdapter('opencode', true, { searchPlugins: searchFn }),
       );
@@ -551,6 +684,19 @@ describe('PluginManagerImpl', () => {
       const searchFn = vi.fn().mockResolvedValue([]);
       registry.register(
         createMockAdapter('opencode', true, { searchPlugins: searchFn }),
+      );
+
+      await expect(manager.info('nonexistent')).rejects.toMatchObject({
+        code: 'PLUGIN_ERROR',
+      });
+    });
+
+    it('throws PLUGIN_ERROR when every registry lookup fails', async () => {
+      registry.register(
+        createMockAdapter('opencode', true, { searchPlugins: vi.fn().mockRejectedValue(new Error('network')) }),
+      );
+      registry.register(
+        createMockAdapter('pi', true, { searchPlugins: vi.fn().mockRejectedValue(new Error('timeout')) }),
       );
 
       await expect(manager.info('nonexistent')).rejects.toMatchObject({
