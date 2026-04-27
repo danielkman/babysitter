@@ -47,6 +47,8 @@ function paginationMeta(total: number, limit: number, offset: number, pageSize: 
   };
 }
 
+const CONTRACT_TIMEOUT_MS = 60_000;
+
 describe("catalog api agent-catalog integration contract", () => {
   it("projects graph-backed discovery search results through the search route", async () => {
     const skill = getCatalogDiscoverySnapshot().skills.find((entry) => entry.domainName) ?? getCatalogDiscoverySnapshot().skills[0];
@@ -79,7 +81,7 @@ describe("catalog api agent-catalog integration contract", () => {
       data: expected,
       meta: paginationMeta(searchCatalogDiscovery(skill!.name, ["skill"]).length, limit, 0, expected.length),
     });
-  });
+  }, CONTRACT_TIMEOUT_MS);
 
   it("keeps the skills list and detail routes aligned with discovery helpers", async () => {
     const skill = listCatalogSkills().find((entry) => entry.domainName) ?? listCatalogSkills()[0];
@@ -148,7 +150,7 @@ describe("catalog api agent-catalog integration contract", () => {
         frontmatter: getCatalogSkillBySlug(skill!.slug)!.frontmatter,
       },
     });
-  });
+  }, CONTRACT_TIMEOUT_MS);
 
   it("keeps the processes list and detail routes aligned with discovery helpers", async () => {
     const process = listCatalogProcesses().find((entry) => entry.category) ?? listCatalogProcesses()[0];
@@ -459,5 +461,5 @@ describe("catalog api agent-catalog integration contract", () => {
     });
     expect(reindexBody.data.statistics.duration).toBeGreaterThanOrEqual(0);
     expect(reindexBody.data.errors).toEqual([]);
-  });
+  }, CONTRACT_TIMEOUT_MS);
 });

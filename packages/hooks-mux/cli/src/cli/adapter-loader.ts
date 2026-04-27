@@ -12,6 +12,8 @@
  *   - session resolver
  */
 
+import * as fs from 'fs';
+import * as path from 'path';
 import type {
   AdapterCapabilities,
   MergedExecutionResult,
@@ -67,6 +69,19 @@ function resolveSessionResolver(mod: Record<string, unknown>): AdapterSessionRes
   return isFunction<AdapterSessionResolver>(candidate) ? candidate : undefined;
 }
 
+function loadWorkspaceAdapter(adapterName: string): Record<string, unknown> | null {
+  const packageDir = path.resolve(__dirname, '..', '..');
+  const workspacePackageDir = path.resolve(packageDir, '..', `adapter-${adapterName}`);
+  const distEntry = path.join(workspacePackageDir, 'dist', 'index.js');
+
+  if (!fs.existsSync(distEntry)) {
+    return null;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  return require(workspacePackageDir) as Record<string, unknown>;
+}
+
 /**
  * Attempt to load an adapter package by name.
  *
@@ -98,11 +113,15 @@ export function loadAdapter(adapterName: string): LoadedAdapter {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     mod = require(packageName) as Record<string, unknown>;
   } catch (err) {
-    throw new Error(
-      `Failed to load adapter "${adapterName}" (package: ${packageName}): ${
-        err instanceof Error ? err.message : String(err)
-      }`,
-    );
+    const workspaceAdapter = loadWorkspaceAdapter(adapterName);
+    if (!workspaceAdapter) {
+      throw new Error(
+        `Failed to load adapter "${adapterName}" (package: ${packageName}): ${
+          err instanceof Error ? err.message : String(err)
+        }`,
+      );
+    }
+    mod = workspaceAdapter;
   }
 
   // Extract createAdapter function

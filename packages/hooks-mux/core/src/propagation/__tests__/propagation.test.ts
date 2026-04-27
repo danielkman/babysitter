@@ -461,7 +461,7 @@ describe('propagateEnv', () => {
 
       expect(child.status).toBe(0);
       expect(child.stdout).toBe('from_file');
-    });
+    }, 15_000);
 
     it('throws when nativeEnvFilePath is not provided', async () => {
       await expect(

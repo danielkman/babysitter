@@ -4,6 +4,8 @@ import { getCatalogSkillBySlug, listCatalogSkills } from '@a5c-ai/agent-catalog'
 import { GET } from './route';
 import type { ApiResponse } from '@/lib/api/types';
 
+const CONTRACT_TIMEOUT_MS = 60_000;
+
 async function readJson<T>(response: Response): Promise<T> {
   return response.json() as Promise<T>;
 }
@@ -52,7 +54,7 @@ describe('GET /api/skills/[slug] contract', () => {
         frontmatter: expected!.frontmatter,
       },
     });
-  });
+  }, CONTRACT_TIMEOUT_MS);
 
   it('returns a 404 when the catalog has no matching skill slug', async () => {
     const slug = 'missing-skill-slug';

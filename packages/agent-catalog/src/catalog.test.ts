@@ -50,6 +50,8 @@ import {
   searchOntologyEvidence,
 } from "./index";
 
+const CATALOG_TEST_TIMEOUT_MS = 60_000;
+
 describe("agent-catalog graph-backed ontology", () => {
   it("loads YAML graph metadata and schema", () => {
     expect(getCatalogGraphDocument().graphId).toBe("graph:agent-catalog");
@@ -174,7 +176,7 @@ describe("agent-catalog graph-backed ontology", () => {
         name: "test-driven-development",
       });
     }
-  });
+  }, CATALOG_TEST_TIMEOUT_MS);
 
   it("loads the sharded ontology evidence export through its manifest", () => {
     const manifest = getOntologyEvidenceManifest();

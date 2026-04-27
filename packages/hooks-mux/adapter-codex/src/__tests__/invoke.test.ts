@@ -84,7 +84,17 @@ async function readSessionFile(
 async function writeHandlerScript(tmpRoot: string, name: string, body: string): Promise<string> {
   const scriptPath = path.join(tmpRoot, `${name}.js`);
   await fs.promises.writeFile(scriptPath, body, 'utf-8');
-  return `node ${JSON.stringify(scriptPath)}`;
+
+  const adapterPkgDir = path.resolve(__dirname, '..', '..');
+  const launcherDir = path.join(adapterPkgDir, '.e2e-tmp-handlers', path.basename(tmpRoot));
+  await fs.promises.mkdir(launcherDir, { recursive: true });
+
+  const launcherPath = path.join(launcherDir, `${name}-launcher-${process.pid}.js`);
+  const scriptPathForward = scriptPath.replace(/\\/g, '/');
+  await fs.promises.writeFile(launcherPath, `require("${scriptPathForward}");`, 'utf-8');
+
+  const relativeLauncher = path.relative(adapterPkgDir, launcherPath).replace(/\\/g, '/');
+  return `node ${relativeLauncher}`;
 }
 
 describe('Codex invoke integration through CLI loader', () => {

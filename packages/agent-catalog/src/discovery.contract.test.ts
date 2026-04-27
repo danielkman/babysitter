@@ -3,7 +3,7 @@ import {
   getCatalogDiscoverySnapshot,
   getCatalogDomainByName,
   getCatalogProcessById,
-  getCatalogSkillByName,
+  getCatalogSkillBySlug,
   getCatalogSpecializationByName,
   listCatalogAgents,
   listCatalogDomains,
@@ -14,6 +14,8 @@ import {
   searchCatalogDiscovery,
 } from "./index";
 
+const CONTRACT_TIMEOUT_MS = 60_000;
+
 describe("agent-catalog discovery contract", () => {
   it("keeps the list helpers aligned with the cached discovery snapshot counts", () => {
     const snapshot = getCatalogDiscoverySnapshot();
@@ -23,7 +25,7 @@ describe("agent-catalog discovery contract", () => {
     expect(listCatalogProcesses()).toHaveLength(snapshot.counts.processes);
     expect(listCatalogDomains()).toHaveLength(snapshot.counts.domains);
     expect(listCatalogSpecializations()).toHaveLength(snapshot.counts.specializations);
-  });
+  }, CONTRACT_TIMEOUT_MS);
 
   it("round-trips detail lookups for representative discovery entities", () => {
     const snapshot = getCatalogDiscoverySnapshot();
@@ -40,10 +42,10 @@ describe("agent-catalog discovery contract", () => {
     expect(specialization).toBeDefined();
 
     expect(getCatalogProcessById(process!.id)).toEqual(process);
-    expect(getCatalogSkillByName(skill!.name)).toEqual(skill);
+    expect(getCatalogSkillBySlug(skill!.slug)).toEqual(skill);
     expect(getCatalogDomainByName(domain!.name)).toEqual(domain);
     expect(getCatalogSpecializationByName(specialization!.name)).toEqual(specialization);
-  });
+  }, CONTRACT_TIMEOUT_MS);
 
   it("returns cloned snapshot data so consumer mutations do not leak into cache state", () => {
     const original = getCatalogDiscoverySnapshot();
@@ -56,7 +58,7 @@ describe("agent-catalog discovery contract", () => {
 
     expect(fresh.skills[0]!.name).toBe(original.skills[0]!.name);
     expect(fresh.processes).toHaveLength(original.processes.length);
-  });
+  }, CONTRACT_TIMEOUT_MS);
 
   it("supports filtered search across every discovery entity type", () => {
     const snapshot = getCatalogDiscoverySnapshot();

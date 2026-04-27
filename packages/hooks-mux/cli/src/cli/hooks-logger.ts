@@ -22,6 +22,20 @@ const LOG_LEVELS: Record<HooksLogLevel, number> = {
 const LOG_LEVEL_ENV = 'A5C_LOGGING_HOOKS_LEVEL';
 const LOG_FILE_NAME = 'hooks-mux.log';
 
+function resolveHomeDir(): string {
+  const envHome = process.env.HOME?.trim();
+  if (envHome) {
+    return envHome;
+  }
+
+  const userProfile = process.env.USERPROFILE?.trim();
+  if (userProfile) {
+    return userProfile;
+  }
+
+  return os.homedir();
+}
+
 function parseLogLevel(value: string | undefined): HooksLogLevel {
   switch ((value ?? '').trim().toLowerCase()) {
     case 'debug':
@@ -36,7 +50,7 @@ function parseLogLevel(value: string | undefined): HooksLogLevel {
 }
 
 export function getHooksLogDir(): string {
-  return path.join(os.homedir(), '.a5c', 'logs', 'hooks');
+  return path.join(resolveHomeDir(), '.a5c', 'logs', 'hooks');
 }
 
 export function getHooksLogPath(): string {

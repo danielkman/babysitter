@@ -20,6 +20,28 @@ const packages = [
 
 const mode = process.argv[2] || 'build';
 
+function runScript(dir, pkg, scriptName, label = scriptName) {
+  console.log(`\n=== ${pkg} (${label}) ===`);
+  try {
+    execSync(`npm run ${scriptName}`, { cwd: dir, stdio: 'inherit' });
+  } catch {
+    process.exit(1);
+  }
+}
+
+if (mode === 'test') {
+  for (const pkg of packages) {
+    if (!pkg.startsWith('packages/hooks-mux/')) {
+      continue;
+    }
+    const dir = path.resolve(__dirname, '..', pkg);
+    const manifest = JSON.parse(fs.readFileSync(path.join(dir, 'package.json'), 'utf8'));
+    if (manifest.scripts?.build) {
+      runScript(dir, pkg, 'build', 'build');
+    }
+  }
+}
+
 for (const pkg of packages) {
   const dir = path.resolve(__dirname, '..', pkg);
   const manifest = JSON.parse(fs.readFileSync(path.join(dir, 'package.json'), 'utf8'));
@@ -28,10 +50,5 @@ for (const pkg of packages) {
     console.log(`\n=== ${pkg} (${mode}) skipped: no ${scriptName} script ===`);
     continue;
   }
-  console.log(`\n=== ${pkg} (${mode}) ===`);
-  try {
-    execSync(`npm run ${scriptName}`, { cwd: dir, stdio: 'inherit' });
-  } catch {
-    process.exit(1);
-  }
+  runScript(dir, pkg, scriptName);
 }
