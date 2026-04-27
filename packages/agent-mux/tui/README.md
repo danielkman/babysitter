@@ -20,6 +20,10 @@ agent-mux prerequisites built in dependency order and its tests executed from
 the repo root. Use `npm run build:local --workspace=@a5c-ai/agent-mux-tui`
 when you only want the package-local TypeScript compile.
 
+Run `npm run verify:release --workspace=@a5c-ai/agent-mux-tui` after a build to
+confirm the packed package surface still includes the README-linked kanban/workspaces
+planning artifacts.
+
 ## Kanban/workspaces surface
 
 The package now ships first-phase `kanban` and `workspaces` views backed by the

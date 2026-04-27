@@ -58,8 +58,9 @@
     "build:local": "tsc --build && tsc --emitDeclarationOnly --declarationMap false -p tsconfig.json",
     "start": "node ./dist/bin/amux-tui.js",
     "dev": "npm run build && npm start",
-    "prepublishOnly": "npm run build",
-    "test": "cd ../../.. && node scripts/agent-mux-build.cjs test packages/agent-mux/tui"
+    "test": "cd ../../.. && node scripts/agent-mux-build.cjs test packages/agent-mux/tui",
+    "verify:release": "node ./scripts/verify-release.mjs",
+    "prepublishOnly": "npm run build && npm run verify:release"
   },
   "dependencies": {
     "@a5c-ai/agent-mux": "0.4.9",

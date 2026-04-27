@@ -8,6 +8,12 @@
   including spec, backlog decomposition, design note, and package publish-surface
   metadata updates for `specs/`.
 
+### Tooling
+
+- Add package-local release verification for `@a5c-ai/agent-mux-tui` so README-linked
+  kanban/workspaces specs stay in the packed tarball and CI/release workflows
+  exercise that contract explicitly.
+
 ## 0.4.1
 
 ### Patch Changes
