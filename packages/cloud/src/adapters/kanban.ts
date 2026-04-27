@@ -24,10 +24,17 @@ export function buildKanbanPlan(config: CloudConfig, releaseTag: string, gateway
   };
 }
 
-export function buildKanbanManifests(config: CloudConfig, plan: ComponentPlan, gatewayInternalUrl: string): readonly KubernetesManifest[] {
+export function buildKanbanManifests(
+  config: CloudConfig,
+  plan: ComponentPlan,
+  gatewayInternalUrl: string,
+  gatewayPublicUrl?: string,
+): readonly KubernetesManifest[] {
   if (!plan.enabled) {
     return [];
   }
+
+  const browserGatewayUrl = gatewayPublicUrl ?? gatewayInternalUrl;
 
   return [
     {
@@ -66,8 +73,11 @@ export function buildKanbanManifests(config: CloudConfig, plan: ComponentPlan, g
                 ports: [{ containerPort: plan.port, name: "http" }],
                 env: [
                   { name: "KANBAN_PORT", value: String(plan.port) },
-                  { name: "KANBAN_DEFAULT_GATEWAY_URL", value: gatewayInternalUrl },
-                  { name: "NEXT_PUBLIC_GATEWAY_URL", value: gatewayInternalUrl },
+                  { name: "KANBAN_DEFAULT_GATEWAY_URL", value: browserGatewayUrl },
+                  { name: "KANBAN_GATEWAY_PROXY_URL", value: gatewayInternalUrl },
+                  { name: "KANBAN_GATEWAY_AUTH_MODE", value: config.auth.mode },
+                  { name: "KANBAN_BOOTSTRAP_ADMIN_USERNAME", value: config.auth.adminUsername },
+                  { name: "NEXT_PUBLIC_GATEWAY_URL", value: browserGatewayUrl },
                 ],
               },
             ],
@@ -97,4 +107,3 @@ export function buildKanbanManifests(config: CloudConfig, plan: ComponentPlan, g
     },
   ];
 }
-

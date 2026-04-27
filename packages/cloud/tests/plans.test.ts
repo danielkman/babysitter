@@ -50,6 +50,7 @@ describe("cloud deployment plan", () => {
     expect(rendered.content).toContain("kind: Deployment");
     expect(rendered.content).toContain("name: babysitter-agent");
     expect(rendered.content).toContain("BABYSITTER_AGENT_AMUX_INVOCATION_MODE");
+    expect(rendered.content).toContain("KANBAN_GATEWAY_PROXY_URL");
+    expect(rendered.content).toContain("KANBAN_GATEWAY_AUTH_MODE");
   });
 });
-

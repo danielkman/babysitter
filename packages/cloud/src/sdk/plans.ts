@@ -80,7 +80,8 @@ export function buildDeploymentPlan(config: CloudConfig): DeploymentPlan {
   const releaseTag = config.releaseTag ?? defaultReleaseTagForEnvironment(config.environment);
   const auth = bootstrapAuth(config);
   const providers = configureProviders(config);
-  const gateway = buildGatewayPlan(config, releaseTag, gatewayPublicUrl(config));
+  const gatewayPublic = gatewayPublicUrl(config);
+  const gateway = buildGatewayPlan(config, releaseTag, gatewayPublic);
   const kanban = buildKanbanPlan(config, releaseTag, gateway.serviceName, kanbanPublicUrl(config));
   const babysitterAgent = buildBabysitterAgentPlan(config, releaseTag);
 
@@ -89,7 +90,7 @@ export function buildDeploymentPlan(config: CloudConfig): DeploymentPlan {
     ...auth.manifests,
     ...providers.manifests,
     ...buildGatewayManifests(config, gateway, auth),
-    ...buildKanbanManifests(config, kanban, gateway.internalUrl),
+    ...buildKanbanManifests(config, kanban, gateway.internalUrl, gatewayPublic),
     ...buildBabysitterAgentManifests(config, babysitterAgent, gateway.internalUrl, providers),
   ];
 
@@ -149,4 +150,3 @@ export function buildDeploymentPlan(config: CloudConfig): DeploymentPlan {
     ],
   };
 }
-

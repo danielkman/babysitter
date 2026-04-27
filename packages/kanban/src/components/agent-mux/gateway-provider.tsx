@@ -3,16 +3,31 @@
 import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { GatewayClient, GatewayProvider as UiGatewayProvider, useGateway, type AgentRecord } from "@/lib/agent-mux-ui";
 import { loadGatewayBootstrapSnapshot } from "@/components/agent-mux/gateway-snapshot";
+import {
+  DEFAULT_BOOTSTRAP_LOGIN_PATH,
+  extractBootstrapToken,
+  gatewayProxyPath,
+  type PublicGatewayRuntimeConfig,
+  sanitizeGatewayUrl,
+} from "@/lib/gateway-runtime-config";
 
 type SavedGatewayAuth = {
   gatewayUrl: string;
   token: string;
 };
 
+type GatewayBootstrapLoginInput = {
+  gatewayUrl?: string;
+  username: string;
+  password: string;
+};
+
 type GatewayAuthContextValue = {
   auth: SavedGatewayAuth | null;
   isAuthenticated: boolean;
+  runtimeConfig: PublicGatewayRuntimeConfig | null;
   login(input: SavedGatewayAuth): Promise<void>;
+  bootstrapLogin(input: GatewayBootstrapLoginInput): Promise<void>;
   logout(): void;
 };
 
@@ -21,10 +36,6 @@ const SNAPSHOT_POLL_INTERVAL_MS = 15_000;
 const GatewayAuthContext = createContext<GatewayAuthContextValue | null>(null);
 const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
-
-function sanitizeGatewayUrl(url: string): string {
-  return url.replace(/\/+$/, "");
-}
 
 function toSocketUrl(gatewayUrl: string): string {
   if (gatewayUrl.startsWith("https://")) return `wss://${gatewayUrl.slice("https://".length)}`;
@@ -83,11 +94,12 @@ async function fetchAuthorized<T>(
   pathname: string,
   init?: RequestInit,
 ): Promise<T> {
-  const response = await fetch(`${sanitizeGatewayUrl(gatewayUrl)}${pathname}`, {
+  const response = await fetch(gatewayProxyPath(pathname), {
     ...init,
     headers: {
       authorization: `Bearer ${token}`,
       "content-type": "application/json",
+      "x-kanban-gateway-url": sanitizeGatewayUrl(gatewayUrl),
       ...(init?.headers ?? {}),
     },
   });
@@ -97,6 +109,49 @@ async function fetchAuthorized<T>(
   }
 
   return (await response.json()) as T;
+}
+
+async function loadRuntimeConfig(): Promise<PublicGatewayRuntimeConfig> {
+  const response = await fetch("/api/gateway/config", { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(`Gateway config request failed: ${response.status}`);
+  }
+  return (await response.json()) as PublicGatewayRuntimeConfig;
+}
+
+async function requestBootstrapToken(input: {
+  gatewayUrl: string;
+  username: string;
+  password: string;
+  bootstrapLoginPath: string;
+}): Promise<string> {
+  const response = await fetch(gatewayProxyPath(input.bootstrapLoginPath), {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-kanban-gateway-url": input.gatewayUrl,
+    },
+    body: JSON.stringify({
+      username: input.username.trim(),
+      password: input.password,
+      clientName: "kanban-browser",
+    }),
+  });
+
+  const payload = (await response.json().catch(() => null)) as unknown;
+  if (!response.ok) {
+    if (payload && typeof payload === "object" && typeof (payload as { error?: unknown }).error === "string") {
+      throw new Error((payload as { error: string }).error);
+    }
+    throw new Error(`Bootstrap login failed: ${response.status}`);
+  }
+
+  const token = extractBootstrapToken(payload);
+  if (!token) {
+    throw new Error("Bootstrap login succeeded but no gateway token was returned");
+  }
+
+  return token;
 }
 
 function GatewayBootstrap(props: { gatewayUrl: string; token: string; children: React.ReactNode }) {
@@ -250,6 +305,7 @@ function GatewayBootstrap(props: { gatewayUrl: string; token: string; children: 
 
 export function GatewayProvider(props: { children: React.ReactNode }) {
   const [auth, setAuth] = useState<SavedGatewayAuth | null>(() => readStoredAuth());
+  const [runtimeConfig, setRuntimeConfig] = useState<PublicGatewayRuntimeConfig | null>(null);
 
   useIsomorphicLayoutEffect(() => {
     const stored = readStoredAuth();
@@ -259,25 +315,64 @@ export function GatewayProvider(props: { children: React.ReactNode }) {
     setAuth((current) => current ?? stored);
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    void loadRuntimeConfig()
+      .then((config) => {
+        if (!cancelled) {
+          setRuntimeConfig(config);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setRuntimeConfig(null);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  async function login(input: SavedGatewayAuth): Promise<void> {
+    const nextAuth = {
+      gatewayUrl: sanitizeGatewayUrl(
+        input.gatewayUrl || runtimeConfig?.defaultGatewayUrl || defaultGatewayUrl(),
+      ),
+      token: input.token.trim(),
+    };
+    await validateAuth(nextAuth);
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextAuth));
+    setAuth(nextAuth);
+  }
+
+  async function bootstrapLogin(input: GatewayBootstrapLoginInput): Promise<void> {
+    const gatewayUrl = sanitizeGatewayUrl(
+      input.gatewayUrl || runtimeConfig?.defaultGatewayUrl || defaultGatewayUrl(),
+    );
+    const token = await requestBootstrapToken({
+      gatewayUrl,
+      username: input.username,
+      password: input.password,
+      bootstrapLoginPath: runtimeConfig?.bootstrapLoginPath ?? DEFAULT_BOOTSTRAP_LOGIN_PATH,
+    });
+    await login({ gatewayUrl, token });
+  }
+
   const value = useMemo<GatewayAuthContextValue>(
     () => ({
       auth,
       isAuthenticated: auth !== null,
-      async login(input) {
-        const nextAuth = {
-          gatewayUrl: sanitizeGatewayUrl(input.gatewayUrl || defaultGatewayUrl()),
-          token: input.token.trim(),
-        };
-        await validateAuth(nextAuth);
-        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextAuth));
-        setAuth(nextAuth);
-      },
+      runtimeConfig,
+      login,
+      bootstrapLogin,
       logout() {
         window.localStorage.removeItem(STORAGE_KEY);
         setAuth(null);
       },
     }),
-    [auth],
+    [auth, runtimeConfig],
   );
 
   const client = useMemo(() => {
@@ -321,10 +416,11 @@ export function useGatewayFetch(): (pathname: string, init?: RequestInit) => Pro
       if (!auth) {
         throw new Error("Gateway auth is required");
       }
-      return await fetch(`${sanitizeGatewayUrl(auth.gatewayUrl)}${pathname}`, {
+      return await fetch(gatewayProxyPath(pathname), {
         ...init,
         headers: {
           authorization: `Bearer ${auth.token}`,
+          "x-kanban-gateway-url": auth.gatewayUrl,
           ...(init?.headers ?? {}),
         },
       });

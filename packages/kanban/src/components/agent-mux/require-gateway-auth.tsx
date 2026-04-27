@@ -23,7 +23,7 @@ export function RequireGatewayAuth(props: { children: React.ReactNode; title?: s
         </h1>
         <p className="mt-3 text-sm leading-6 text-foreground-muted">
           {props.body ??
-            "This surface wraps live agent-mux sessions and hooks. Save a gateway URL and bearer token in settings, then come back here."}
+            "This surface wraps live agent-mux sessions and hooks. Connect through the gateway login flow, then come back here."}
         </p>
         <div className="mt-6 flex gap-3">
           <Button asChild variant="primary">

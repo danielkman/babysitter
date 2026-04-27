@@ -706,7 +706,7 @@ export default function SettingsPage() {
         <h2 className="text-xl font-semibold tracking-tight">Gateway auth</h2>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <SettingCard label="Gateway URL" value={auth?.gatewayUrl ?? "not connected"} />
-          <SettingCard label="Saved token" value={auth ? "configured" : "missing"} />
+          <SettingCard label="Saved access" value={auth ? "configured" : "missing"} />
         </div>
         <div className="mt-4 flex gap-3">
           <Button asChild variant="primary">
@@ -716,7 +716,7 @@ export default function SettingsPage() {
           </Button>
           {isAuthenticated ? (
             <Button onClick={logout} variant="ghost" type="button">
-              Forget token
+              Forget access
             </Button>
           ) : null}
         </div>
