@@ -60,11 +60,11 @@ export function resolveProvidersFilePath(options: ProviderProfilesFileOptions = 
 }
 
 function normalizeProvidersFile(file: ProvidersFile | null | undefined): ProvidersFile {
+  const base = file ?? { version: 1, profiles: {} };
   return {
-    version: 1,
-    profiles: {},
-    ...(file ?? {}),
-    profiles: { ...(file?.profiles ?? {}) },
+    ...base,
+    version: base.version ?? 1,
+    profiles: { ...(base.profiles ?? {}) },
   };
 }
 
