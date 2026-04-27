@@ -20,6 +20,7 @@ import {
   AlertCircle,
   ArrowLeft,
   ArrowRight,
+  ArrowUpDown,
   CheckCircle2,
   FolderGit2,
   GitBranch,
@@ -28,6 +29,7 @@ import {
   ListTodo,
   Plus,
   RefreshCw,
+  Search,
   Settings,
   ShieldAlert,
   ShieldCheck,
@@ -210,6 +212,7 @@ async function loadIssueWorkspaceInventory(): Promise<WorkspaceInventoryResponse
 
 type BoardPresentation = "board" | "list";
 type CreateEntrySource = "header" | "column";
+type PlanningSortMode = "board-order" | "priority" | "activity" | "title";
 
 interface CreateIssueDraft {
   title: string;
@@ -246,6 +249,12 @@ interface IssueWorkspaceInventoryState {
   error: string | null;
 }
 
+interface BacklogOverviewProps {
+  projectId?: string;
+  routeBasePath?: string;
+  forcedPresentation?: BoardPresentation;
+}
+
 type IssueFieldStateMap = Record<IssueDetailField, IssueFieldState>;
 
 function createEmptyDraft(workflowState: KanbanWorkflowState = "todo"): CreateIssueDraft {
@@ -268,6 +277,44 @@ function workflowStateToIssueStatus(state: KanbanWorkflowState): "backlog" | "in
     case "todo":
     default:
       return "backlog";
+  }
+}
+
+function normalizeSearchValue(value: string): string {
+  return value.trim().toLowerCase();
+}
+
+function buildCardSearchDocument(card: KanbanBoardCard, issue: KanbanIssue | undefined): string {
+  return [
+    card.issueKey,
+    card.title,
+    card.summary ?? "",
+    card.priority,
+    card.readiness,
+    ...card.labelNames,
+    ...card.assigneeNames,
+    ...card.collaboratorNames,
+    ...(issue?.dispatch.contextLabelProjections ?? []).flatMap((projection) => [
+      projection.key,
+      projection.label,
+      projection.instruction,
+    ]),
+  ]
+    .join(" ")
+    .toLowerCase();
+}
+
+function priorityRank(priority: KanbanBoardCard["priority"]): number {
+  switch (priority) {
+    case "critical":
+      return 0;
+    case "high":
+      return 1;
+    case "medium":
+      return 2;
+    case "low":
+    default:
+      return 3;
   }
 }
 
@@ -517,6 +564,11 @@ function renderListCard(
   issue: KanbanIssue | undefined,
   focused: boolean,
   onOpen: (issue: KanbanIssue) => void,
+  selected: boolean,
+  onToggleSelected: (issueId: string) => void,
+  onMoveIssue: (issueId: string, state: KanbanWorkflowState) => void,
+  movingIssueId: string | null,
+  showPolicySignals: boolean,
 ) {
   return (
     <article
@@ -528,12 +580,24 @@ function renderListCard(
       data-testid={`kanban-list-card-${card.issueKey}`}
     >
       <div className="flex flex-wrap items-center gap-2">
+        <label className="inline-flex items-center gap-2 text-xs text-foreground-muted">
+          <input
+            type="checkbox"
+            checked={selected}
+            onChange={() => onToggleSelected(card.issueId)}
+            className="h-4 w-4 rounded border border-border"
+            aria-label={`Select ${card.issueKey}`}
+          />
+        </label>
         <span className="text-xs font-semibold uppercase tracking-[0.18em]">{card.issueKey}</span>
         <span className="rounded-full border border-current/20 px-2 py-0.5 text-xs">
           {stateLabel(card.workflowState)}
         </span>
         <span className="rounded-full border border-current/20 px-2 py-0.5 text-xs">
           {card.priority}
+        </span>
+        <span className="rounded-full border border-current/20 px-2 py-0.5 text-xs">
+          {card.readiness}
         </span>
       </div>
       <button
@@ -545,6 +609,48 @@ function renderListCard(
         {card.title}
       </button>
       {card.summary ? <p className="mt-2 text-sm leading-6 opacity-90">{card.summary}</p> : null}
+      <div className="mt-3 flex flex-wrap items-center gap-3 text-xs opacity-80">
+        <span className="inline-flex items-center gap-1">
+          <GitBranch className="h-3.5 w-3.5" />
+          {card.dependencyCount} dependencies
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <Workflow className="h-3.5 w-3.5" />
+          {card.childCount} child issues
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <CheckCircle2 className="h-3.5 w-3.5" />
+          {card.acceptanceProgress.satisfied}/{card.acceptanceProgress.total} accepted
+        </span>
+      </div>
+      <div className="mt-4 flex flex-wrap gap-2">
+        {card.moveTargets.map((target) => (
+          <button
+            key={`${card.issueId}-${target.state}`}
+            disabled={!target.allowed || movingIssueId === card.issueId}
+            onClick={() => onMoveIssue(card.issueId, target.state)}
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-border-hover bg-transparent px-3 text-xs font-medium italic tracking-[0.04em] text-foreground transition-all duration-200 hover:bg-card hover:border-primary/30 hover:shadow-sm disabled:pointer-events-none disabled:opacity-50 font-serif"
+            data-testid={`move-list-${card.issueKey}-${target.state}`}
+          >
+            <ArrowRight className="h-3.5 w-3.5" />
+            {stateLabel(target.state)}
+          </button>
+        ))}
+      </div>
+      {showPolicySignals && card.moveTargets.some((target) => target.signals.length > 0) ? (
+        <div className="mt-3 space-y-2">
+          {card.moveTargets.flatMap((target) =>
+            target.signals.map((signal, index) => (
+              <div
+                key={`${card.issueId}-${target.state}-${signal.hookId}-${index}`}
+                className="rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground-muted"
+              >
+                {stateLabel(target.state)}: {signal.message}
+              </div>
+            )),
+          )}
+        </div>
+      ) : null}
     </article>
   );
 }
@@ -2684,7 +2790,11 @@ function IssueDetailPanel({
   );
 }
 
-export function BacklogOverview() {
+export function BacklogOverview({
+  projectId: requestedProjectId,
+  routeBasePath,
+  forcedPresentation,
+}: BacklogOverviewProps = {}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { taskTags } = useTaskTags();
@@ -2720,10 +2830,45 @@ export function BacklogOverview() {
   );
   const focusedIssueId = searchParams.get("issueId");
   const focusedIssueKey = searchParams.get("issueKey");
-  const [presentation, setPresentation] = usePersistedState<BoardPresentation>(
+  const [persistedPresentation, setPersistedPresentation] = usePersistedState<BoardPresentation>(
     "backlog-presentation",
     "board",
   );
+  const presentation = forcedPresentation ?? persistedPresentation;
+  const [searchTerm, setSearchTerm] = usePersistedState(
+    `kanban-search-${requestedProjectId ?? "default"}`,
+    "",
+  );
+  const [workflowFilter, setWorkflowFilter] = usePersistedState<
+    KanbanWorkflowState | "all"
+  >(`kanban-workflow-filter-${requestedProjectId ?? "default"}`, "all");
+  const [readinessFilter, setReadinessFilter] = usePersistedState<
+    KanbanBoardCard["readiness"] | "all"
+  >(`kanban-readiness-filter-${requestedProjectId ?? "default"}`, "all");
+  const [assigneeFilter, setAssigneeFilter] = usePersistedState(
+    `kanban-assignee-filter-${requestedProjectId ?? "default"}`,
+    "all",
+  );
+  const [tagFilter, setTagFilter] = usePersistedState(
+    `kanban-tag-filter-${requestedProjectId ?? "default"}`,
+    "all",
+  );
+  const [sortMode, setSortMode] = usePersistedState<PlanningSortMode>(
+    `kanban-sort-mode-${requestedProjectId ?? "default"}`,
+    "board-order",
+  );
+  const [showEmptySwimlanes, setShowEmptySwimlanes] = usePersistedState(
+    `kanban-show-empty-swimlanes-${requestedProjectId ?? "default"}`,
+    false,
+  );
+  const [showPolicySignals, setShowPolicySignals] = usePersistedState(
+    `kanban-show-policy-signals-${requestedProjectId ?? "default"}`,
+    true,
+  );
+  const [selectedIssueIds, setSelectedIssueIds] = useState<string[]>([]);
+  const [bulkTargetState, setBulkTargetState] = useState<KanbanWorkflowState>("in-progress");
+  const [bulkPending, setBulkPending] = useState<null | "move" | "workspace">(null);
+  const [bulkNotice, setBulkNotice] = useState<string | null>(null);
   const [createMode, setCreateMode] = useState<CreateModeState | null>(null);
   const [draft, setDraft] = usePersistedState<CreateIssueDraft>(
     "board-create-draft",
@@ -2791,7 +2936,10 @@ export function BacklogOverview() {
     return () => window.clearTimeout(timeout);
   }, [createMode, draft.title, draft.summary, draft.priority, draft.workflowState]);
 
-  const primaryProject = snapshot?.projects[0];
+  const primaryProject =
+    (requestedProjectId
+      ? snapshot?.projects.find((candidate) => candidate.id === requestedProjectId)
+      : undefined) ?? snapshot?.projects[0];
   const primaryBoard = primaryProject
     ? board?.projects.find((candidate) => candidate.projectId === primaryProject.id)
     : undefined;
@@ -2809,6 +2957,7 @@ export function BacklogOverview() {
   const targetModelIssue =
     snapshot?.issues.find((issue) => issue.key === "KANBAN-GAP-004") ??
     snapshot?.issues.find((issue) => issue.key === "KANBAN-DEBT-003");
+  const normalizedSearchTerm = normalizeSearchValue(searchTerm);
 
   useEffect(() => {
     const nextFocusedIssueId = focusedIssue?.id ?? null;
@@ -2930,13 +3079,76 @@ export function BacklogOverview() {
     );
   }
 
+  const boardCards = primaryBoard
+    ? primaryBoard.swimlanes.flatMap((swimlane) =>
+        workflowOrder.flatMap((state) => findCardsForCell(primaryBoard, swimlane.id, state)),
+      )
+    : [];
+  const boardIndexByIssueId = new Map(boardCards.map((card, index) => [card.issueId, index] as const));
+  const visibleCards = boardCards
+    .filter((card) => {
+      const issue = issueById.get(card.issueId);
+      if (!issue) {
+        return false;
+      }
+      if (workflowFilter !== "all" && card.workflowState !== workflowFilter) {
+        return false;
+      }
+      if (readinessFilter !== "all" && card.readiness !== readinessFilter) {
+        return false;
+      }
+      if (assigneeFilter !== "all" && !issue.assignees.some((assignee) => assignee.id === assigneeFilter)) {
+        return false;
+      }
+      if (tagFilter !== "all" && !issue.labels.some((label) => label.id === tagFilter)) {
+        return false;
+      }
+      if (normalizedSearchTerm.length > 0 && !buildCardSearchDocument(card, issue).includes(normalizedSearchTerm)) {
+        return false;
+      }
+      return true;
+    })
+    .slice()
+    .sort((left, right) => {
+      if (sortMode === "priority") {
+        return (
+          priorityRank(left.priority) - priorityRank(right.priority) ||
+          (boardIndexByIssueId.get(left.issueId) ?? 0) - (boardIndexByIssueId.get(right.issueId) ?? 0)
+        );
+      }
+      if (sortMode === "activity") {
+        return (
+          Date.parse(right.latestActivityAt ?? "") - Date.parse(left.latestActivityAt ?? "") ||
+          (boardIndexByIssueId.get(left.issueId) ?? 0) - (boardIndexByIssueId.get(right.issueId) ?? 0)
+        );
+      }
+      if (sortMode === "title") {
+        return left.title.localeCompare(right.title) || left.issueKey.localeCompare(right.issueKey);
+      }
+      return (boardIndexByIssueId.get(left.issueId) ?? 0) - (boardIndexByIssueId.get(right.issueId) ?? 0);
+    });
+  const visibleCardIds = new Set(visibleCards.map((card) => card.issueId));
+  const visibleIssueIdsKey = visibleCards.map((card) => card.issueId).join("|");
+  const selectedCards = visibleCards.filter((card) => selectedIssueIds.includes(card.issueId));
+  const allVisibleSelected = visibleCards.length > 0 && visibleCards.every((card) => selectedIssueIds.includes(card.issueId));
+  const selectableAssignees = primaryProject?.team.members ?? [];
+  const selectableTags = primaryProject?.labels ?? [];
+
+  const currentSurfacePath = routeBasePath ? `${routeBasePath}/${presentation}` : "/";
+  const bulkTargetOptions = workflowOrder.filter((state) =>
+    selectedCards.every((card) => card.moveTargets.some((target) => target.state === state)),
+  );
+
+  useEffect(() => {
+    setSelectedIssueIds((current) => {
+      const next = current.filter((issueId) => visibleCardIds.has(issueId));
+      return next.length === current.length ? current : next;
+    });
+  }, [visibleIssueIdsKey]);
+
   if (!primaryProject || !primaryBoard) {
     return null;
   }
-
-  const boardCards = primaryBoard.swimlanes.flatMap((swimlane) =>
-    workflowOrder.flatMap((state) => findCardsForCell(primaryBoard, swimlane.id, state)),
-  );
 
   function openCreateMode(source: CreateEntrySource, workflowState: KanbanWorkflowState = "todo") {
     clearFocusedIssue();
@@ -3097,12 +3309,104 @@ export function BacklogOverview() {
     }
   }
 
+  const navigateToPresentation = (nextPresentation: BoardPresentation) => {
+    if (routeBasePath) {
+      const params = new URLSearchParams(searchParams.toString());
+      const query = params.toString();
+      router.push(query ? `${routeBasePath}/${nextPresentation}?${query}` : `${routeBasePath}/${nextPresentation}`);
+      return;
+    }
+    setPersistedPresentation(nextPresentation);
+  };
+
+  const toggleIssueSelection = (issueId: string) => {
+    setSelectedIssueIds((current) =>
+      current.includes(issueId)
+        ? current.filter((candidate) => candidate !== issueId)
+        : [...current, issueId],
+    );
+  };
+
+  const toggleSelectAllVisible = () => {
+    setSelectedIssueIds((current) =>
+      allVisibleSelected
+        ? current.filter((issueId) => !visibleCardIds.has(issueId))
+        : Array.from(new Set([...current, ...visibleCards.map((card) => card.issueId)])),
+    );
+  };
+
+  const handleMoveIssue = (issueId: string, toState: KanbanWorkflowState) => {
+    void moveIssue(issueId, toState);
+  };
+
+  async function handleBulkMove() {
+    if (selectedCards.length === 0) {
+      return;
+    }
+
+    setBulkPending("move");
+    setBulkNotice(null);
+
+    let moved = 0;
+    let blocked = 0;
+    try {
+      for (const card of selectedCards) {
+        const target = card.moveTargets.find((candidate) => candidate.state === bulkTargetState);
+        if (!target?.allowed) {
+          blocked += 1;
+          continue;
+        }
+        await moveIssue(card.issueId, bulkTargetState);
+        moved += 1;
+      }
+      setSelectedIssueIds([]);
+      setBulkNotice(
+        blocked > 0
+          ? `Moved ${moved} issue${moved === 1 ? "" : "s"} to ${stateLabel(bulkTargetState)}. ${blocked} stayed put because policy checks blocked the transition.`
+          : `Moved ${moved} issue${moved === 1 ? "" : "s"} to ${stateLabel(bulkTargetState)}.`,
+      );
+    } finally {
+      setBulkPending(null);
+    }
+  }
+
+  async function handleBulkWorkspaceProvision() {
+    if (selectedCards.length === 0) {
+      return;
+    }
+
+    setBulkPending("workspace");
+    setBulkNotice(null);
+
+    let created = 0;
+    let skipped = 0;
+    try {
+      for (const card of selectedCards) {
+        const issue = issueById.get(card.issueId);
+        if (!issue || (issue.workspaceLinks?.length ?? 0) > 0) {
+          skipped += 1;
+          continue;
+        }
+        await createIssueWorkspace(card.issueId);
+        created += 1;
+      }
+      setSelectedIssueIds([]);
+      setBulkNotice(
+        skipped > 0
+          ? `Provisioned ${created} workspace${created === 1 ? "" : "s"}. ${skipped} issue${skipped === 1 ? "" : "s"} already had a linked workspace.`
+          : `Provisioned ${created} workspace${created === 1 ? "" : "s"} from the current selection.`,
+      );
+    } finally {
+      setBulkPending(null);
+    }
+  }
+
   const setFocusedIssue = (issue: KanbanIssue) => {
     closeCreateMode();
     const params = new URLSearchParams(searchParams.toString());
     params.set("issueId", issue.id);
     params.set("issueKey", issue.key);
-    router.push(`/?${params.toString()}`);
+    router.push(`${currentSurfacePath}?${params.toString()}`);
   };
 
   const clearFocusedIssue = () => {
@@ -3110,7 +3414,7 @@ export function BacklogOverview() {
     params.delete("issueId");
     params.delete("issueKey");
     const query = params.toString();
-    router.push(query ? `/?${query}` : "/");
+    router.push(query ? `${currentSurfacePath}?${query}` : currentSurfacePath);
   };
 
   const refreshWorkspaceInventory = () => {
@@ -3318,13 +3622,13 @@ export function BacklogOverview() {
             Planning surface
           </p>
           <h3 className="mt-1 text-lg font-semibold text-foreground">
-            Create issues from the board without leaving context
+            Project routes, filters, and bulk actions now shape the same board state
           </h3>
         </div>
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
-            onClick={() => setPresentation("board")}
+            onClick={() => navigateToPresentation("board")}
             className={`inline-flex h-11 items-center gap-2 rounded-xl border px-3 text-sm font-semibold ${
               presentation === "board"
                 ? "border-primary/30 bg-primary/10 text-primary"
@@ -3336,7 +3640,7 @@ export function BacklogOverview() {
           </button>
           <button
             type="button"
-            onClick={() => setPresentation("list")}
+            onClick={() => navigateToPresentation("list")}
             className={`inline-flex h-11 items-center gap-2 rounded-xl border px-3 text-sm font-semibold ${
               presentation === "list"
                 ? "border-primary/30 bg-primary/10 text-primary"
@@ -3358,9 +3662,193 @@ export function BacklogOverview() {
         </div>
       </div>
 
+      <div className="mt-4 rounded-3xl border border-border bg-background/70 p-4">
+        <div className="grid gap-3 xl:grid-cols-[minmax(0,1.5fr)_repeat(4,minmax(0,180px))]">
+          <label className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+            Search
+            <div className="mt-2 flex h-11 items-center gap-2 rounded-xl border border-border bg-card px-3">
+              <Search className="h-4 w-4 text-foreground-muted" />
+              <input
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                placeholder="Search key, title, summary, tags, or assignees"
+                className="w-full bg-transparent text-sm text-foreground outline-none"
+                aria-label="Planning search"
+              />
+            </div>
+          </label>
+          <label className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+            Workflow
+            <select
+              value={workflowFilter}
+              onChange={(event) => setWorkflowFilter(event.target.value as KanbanWorkflowState | "all")}
+              className="mt-2 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground"
+              aria-label="Workflow filter"
+            >
+              <option value="all">All columns</option>
+              {workflowOrder.map((state) => (
+                <option key={state} value={state}>
+                  {stateLabel(state)}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+            Readiness
+            <select
+              value={readinessFilter}
+              onChange={(event) => setReadinessFilter(event.target.value as KanbanBoardCard["readiness"] | "all")}
+              className="mt-2 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground"
+              aria-label="Readiness filter"
+            >
+              <option value="all">All readiness</option>
+              <option value="needs-decomposition">Needs decomposition</option>
+              <option value="ready">Ready</option>
+              <option value="blocked">Blocked</option>
+              <option value="dispatched">Dispatched</option>
+              <option value="completed">Completed</option>
+            </select>
+          </label>
+          <label className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+            Assignee
+            <select
+              value={assigneeFilter}
+              onChange={(event) => setAssigneeFilter(event.target.value)}
+              className="mt-2 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground"
+              aria-label="Assignee filter"
+            >
+              <option value="all">All assignees</option>
+              {selectableAssignees.map((assignee) => (
+                <option key={assignee.id} value={assignee.id}>
+                  {assignee.displayName}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+            Tag
+            <select
+              value={tagFilter}
+              onChange={(event) => setTagFilter(event.target.value)}
+              className="mt-2 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground"
+              aria-label="Tag filter"
+            >
+              <option value="all">All tags</option>
+              {selectableTags.map((label) => (
+                <option key={label.id} value={label.id}>
+                  {label.name}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <label className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+            Sort
+            <div className="mt-2 flex items-center gap-2 rounded-xl border border-border bg-card px-3">
+              <ArrowUpDown className="h-4 w-4 text-foreground-muted" />
+              <select
+                value={sortMode}
+                onChange={(event) => setSortMode(event.target.value as PlanningSortMode)}
+                className="h-11 bg-transparent pr-2 text-sm text-foreground outline-none"
+                aria-label="Sort cards"
+              >
+                <option value="board-order">Board order</option>
+                <option value="priority">Priority</option>
+                <option value="activity">Recent activity</option>
+                <option value="title">Title</option>
+              </select>
+            </div>
+          </label>
+
+          <label className="mt-7 inline-flex items-center gap-2 text-sm text-foreground-muted">
+            <input
+              type="checkbox"
+              checked={showEmptySwimlanes}
+              onChange={(event) => setShowEmptySwimlanes(event.target.checked)}
+              className="h-4 w-4 rounded border border-border"
+            />
+            Show empty swimlanes
+          </label>
+
+          <label className="mt-7 inline-flex items-center gap-2 text-sm text-foreground-muted">
+            <input
+              type="checkbox"
+              checked={showPolicySignals}
+              onChange={(event) => setShowPolicySignals(event.target.checked)}
+              className="h-4 w-4 rounded border border-border"
+            />
+            Show policy feedback
+          </label>
+
+          <div className="mt-7 rounded-full border border-border px-3 py-2 text-xs text-foreground-muted">
+            {visibleCards.length} visible of {boardCards.length} issues
+          </div>
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3">
+          <label className="inline-flex items-center gap-2 text-sm text-foreground">
+            <input
+              type="checkbox"
+              checked={allVisibleSelected}
+              onChange={toggleSelectAllVisible}
+              className="h-4 w-4 rounded border border-border"
+              aria-label="Select visible issues"
+            />
+            Select visible
+          </label>
+          <span className="text-sm text-foreground-muted">
+            {selectedCards.length} selected
+          </span>
+          <select
+            value={bulkTargetState}
+            onChange={(event) => setBulkTargetState(event.target.value as KanbanWorkflowState)}
+            className="h-11 rounded-xl border border-border bg-background px-3 text-sm text-foreground"
+            aria-label="Bulk move target"
+          >
+            {workflowOrder.map((state) => (
+              <option key={state} value={state} disabled={!bulkTargetOptions.includes(state)}>
+                Move to {stateLabel(state)}
+              </option>
+            ))}
+          </select>
+          <button
+            type="button"
+            onClick={() => void handleBulkMove()}
+            disabled={selectedCards.length === 0 || bulkPending !== null || !bulkTargetOptions.includes(bulkTargetState)}
+            className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-background px-4 text-sm font-semibold text-foreground disabled:opacity-50"
+          >
+            Move selected
+          </button>
+          <button
+            type="button"
+            onClick={() => void handleBulkWorkspaceProvision()}
+            disabled={selectedCards.length === 0 || bulkPending !== null}
+            className="inline-flex h-11 items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-4 text-sm font-semibold text-primary disabled:opacity-50"
+          >
+            Create workspaces
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedIssueIds([])}
+            disabled={selectedCards.length === 0 || bulkPending !== null}
+            className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-background px-4 text-sm font-semibold text-foreground-muted disabled:opacity-50"
+          >
+            Clear selection
+          </button>
+        </div>
+      </div>
+
       {createNotice ? (
         <div className="mt-4 rounded-2xl border border-success/30 bg-success-muted px-4 py-3 text-sm text-success">
           {createNotice}
+        </div>
+      ) : null}
+
+      {bulkNotice ? (
+        <div className="mt-4 rounded-2xl border border-primary/20 bg-primary/10 px-4 py-3 text-sm text-primary">
+          {bulkNotice}
         </div>
       ) : null}
 
@@ -3370,10 +3858,18 @@ export function BacklogOverview() {
         }`}
       >
         <div className="space-y-5">
+          {visibleCards.length === 0 ? (
+            <div className="rounded-3xl border border-dashed border-border bg-background/70 p-6 text-sm text-foreground-muted">
+              No issues match the current planning filters. Adjust search, workflow, readiness, assignee, or tag filters to widen the board.
+            </div>
+          ) : null}
           {presentation === "board" ? (
             <div className="space-y-5" data-testid="kanban-board">
               {primaryBoard.swimlanes
-                .filter((swimlane) => swimlane.issueIds.length > 0)
+                .filter((swimlane) => {
+                  const visibleCount = visibleCards.filter((card) => card.swimlaneId === swimlane.id).length;
+                  return showEmptySwimlanes || visibleCount > 0;
+                })
                 .map((swimlane) => (
                   <section
                     key={swimlane.id}
@@ -3388,14 +3884,16 @@ export function BacklogOverview() {
                         <h3 className="mt-1 text-lg font-semibold text-foreground">{swimlane.name}</h3>
                       </div>
                       <span className="rounded-full border border-border px-3 py-1 text-xs text-foreground-muted">
-                        {swimlane.issueIds.length} cards
+                        {visibleCards.filter((card) => card.swimlaneId === swimlane.id).length} visible
                       </span>
                     </div>
 
                     <div className="grid gap-4 xl:grid-cols-4">
                       {workflowOrder.map((state) => {
                         const column = primaryBoard.columns.find((candidate) => candidate.id === state);
-                        const cards = findCardsForCell(primaryBoard, swimlane.id, state);
+                        const cards = visibleCards.filter(
+                          (card) => card.swimlaneId === swimlane.id && card.workflowState === state,
+                        );
                         if (!column) {
                           return null;
                         }
@@ -3412,7 +3910,7 @@ export function BacklogOverview() {
                                   {stateLabel(state)}
                                 </div>
                                 <div className="mt-1 text-xs text-foreground-muted">
-                                  {cards.length} cards in this lane
+                                  {cards.length} visible in this lane
                                 </div>
                               </div>
                               <div className="text-right text-xs text-foreground-muted">
@@ -3462,6 +3960,15 @@ export function BacklogOverview() {
                                     data-testid={`kanban-card-${card.issueKey}`}
                                   >
                                     <div className="flex flex-wrap items-center gap-2">
+                                      <label className="inline-flex items-center gap-2 text-xs text-foreground-muted">
+                                        <input
+                                          type="checkbox"
+                                          checked={selectedIssueIds.includes(card.issueId)}
+                                          onChange={() => toggleIssueSelection(card.issueId)}
+                                          className="h-4 w-4 rounded border border-border"
+                                          aria-label={`Select ${card.issueKey}`}
+                                        />
+                                      </label>
                                       <span className="text-xs font-semibold uppercase tracking-[0.18em]">
                                         {card.issueKey}
                                       </span>
@@ -3526,7 +4033,7 @@ export function BacklogOverview() {
                                       </span>
                                     </div>
 
-                                    {card.policySignals.length > 0 ? (
+                                    {showPolicySignals && card.policySignals.length > 0 ? (
                                       <div className="mt-3 space-y-2">
                                         {card.policySignals.map((signal, index) => (
                                           <div
@@ -3544,7 +4051,7 @@ export function BacklogOverview() {
                                         <button
                                           key={`${card.issueId}-${target.state}`}
                                           disabled={!target.allowed || movingIssueId === card.issueId}
-                                          onClick={() => void moveIssue(card.issueId, target.state)}
+                                          onClick={() => handleMoveIssue(card.issueId, target.state)}
                                           className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-border-hover bg-transparent px-3 text-xs font-medium italic tracking-[0.04em] text-foreground transition-all duration-200 hover:bg-card hover:border-primary/30 hover:shadow-sm disabled:pointer-events-none disabled:opacity-50 font-serif"
                                           data-testid={`move-${card.issueKey}-${target.state}`}
                                         >
@@ -3554,7 +4061,7 @@ export function BacklogOverview() {
                                       ))}
                                     </div>
 
-                                    {card.moveTargets.some((target) => target.signals.length > 0) ? (
+                                    {showPolicySignals && card.moveTargets.some((target) => target.signals.length > 0) ? (
                                       <div className="mt-3 space-y-2">
                                         {card.moveTargets.flatMap((target) =>
                                           target.signals.map((signal, index) => (
@@ -3609,16 +4116,21 @@ export function BacklogOverview() {
                     </h3>
                   </div>
                   <span className="rounded-full border border-border px-3 py-1 text-xs text-foreground-muted">
-                    {boardCards.length} cards
+                    {visibleCards.length} cards
                   </span>
                 </div>
               </div>
-              {boardCards.map((card) =>
+              {visibleCards.map((card) =>
                 renderListCard(
                   card,
                   issueById.get(card.issueId),
                   focusedIssueId === card.issueId || focusedIssueKey === card.issueKey,
                   setFocusedIssue,
+                  selectedIssueIds.includes(card.issueId),
+                  toggleIssueSelection,
+                  handleMoveIssue,
+                  movingIssueId,
+                  showPolicySignals,
                 ),
               )}
             </div>

@@ -166,7 +166,7 @@ export function BabysitterOverlayPanel() {
                             <ArrowUpRight className="h-3 w-3" />
                           </Link>
                         ) : null}
-                        <Link href="/" className="inline-flex items-center gap-1 text-primary">
+                        <Link href="/projects" className="inline-flex items-center gap-1 text-primary">
                           Board
                           <ArrowUpRight className="h-3 w-3" />
                         </Link>

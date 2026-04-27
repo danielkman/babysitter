@@ -1111,4 +1111,61 @@ describe("BacklogOverview", () => {
     expect(screen.getByText("Tests: Pending")).toBeInTheDocument();
     expect(screen.getByText("Map this review output directly onto the active issue.")).toBeInTheDocument();
   });
+
+  it("uses project-scoped routes for presentation toggles and focused issue navigation", async () => {
+    const user = setupUser();
+
+    render(
+      <BacklogOverview
+        projectId="kanban-app"
+        routeBasePath="/projects/kanban-app"
+        forcedPresentation="board"
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "List view" }));
+    expect(push).toHaveBeenCalledWith("/projects/kanban-app/list");
+
+    push.mockReset();
+    await user.click(screen.getByTestId("open-issue-KANBAN-GAP-007"));
+    expect(push).toHaveBeenCalledWith(
+      "/projects/kanban-app/board?issueId=KANBAN-GAP-007&issueKey=KANBAN-GAP-007",
+    );
+  });
+
+  it("filters cards by assignee and applies bulk move to the visible selection", async () => {
+    const user = setupUser();
+    render(<BacklogOverview />);
+
+    await user.selectOptions(screen.getByLabelText("Assignee filter"), "tal");
+
+    expect(screen.getByTestId("kanban-card-KANBAN-GAP-007")).toBeInTheDocument();
+    expect(screen.queryByTestId("kanban-card-KANBAN-GAP-008")).not.toBeInTheDocument();
+
+    await user.click(screen.getByLabelText("Select visible issues"));
+    await user.click(screen.getByRole("button", { name: "Move selected" }));
+
+    expect(moveIssueMock).toHaveBeenCalledWith("KANBAN-GAP-007", "in-progress");
+    expect(screen.getByText(/Moved 1 issue to In Progress\./)).toBeInTheDocument();
+  });
+
+  it("keeps selection and move controls available in list view parity mode", async () => {
+    const user = setupUser();
+
+    render(
+      <BacklogOverview
+        projectId="kanban-app"
+        routeBasePath="/projects/kanban-app"
+        forcedPresentation="list"
+      />,
+    );
+
+    expect(screen.getByTestId("kanban-list")).toBeInTheDocument();
+
+    await user.click(screen.getByLabelText("Select KANBAN-GAP-007"));
+    expect(screen.getByText("1 selected")).toBeInTheDocument();
+
+    await user.click(screen.getByTestId("move-list-KANBAN-GAP-007-in-progress"));
+    expect(moveIssueMock).toHaveBeenCalledWith("KANBAN-GAP-007", "in-progress");
+  });
 });

@@ -488,7 +488,7 @@ export function AutomationsPage() {
                 Refresh rules
               </Button>
               <Button asChild variant="ghost">
-                <a href="/">Back to board</a>
+                <a href="/projects">Back to board</a>
               </Button>
             </div>
           </div>

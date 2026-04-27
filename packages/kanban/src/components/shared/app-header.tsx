@@ -35,7 +35,7 @@ export function AppHeader() {
       <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur-md">
         <div className="mx-auto flex max-w-[1600px] flex-col gap-3 px-4 py-3 sm:px-6">
           <div className="flex flex-wrap items-center gap-3">
-            <Link href="/" className="flex min-w-0 items-center gap-3">
+            <Link href="/projects" className="flex min-w-0 items-center gap-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10 text-primary shadow-sm">
                 <Columns3 className="h-5 w-5" />
               </div>

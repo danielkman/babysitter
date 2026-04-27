@@ -104,7 +104,7 @@ export const PipelineView = memo(function PipelineView({ run, selectedEffectId, 
       <div className="shrink-0 sticky top-0 z-20 border-b border-border p-4 pb-3 bg-card/95 backdrop-blur-sm">
         {/* Breadcrumb navigation — prominent for easy back-navigation */}
         <nav data-testid="pipeline-breadcrumb" className="flex items-center gap-1.5 mb-2 text-sm">
-          <Link href="/" className="text-foreground-muted hover:text-primary transition-colors font-semibold">
+          <Link href="/projects" className="text-foreground-muted hover:text-primary transition-colors font-semibold">
             Projects
           </Link>
           <ChevronRight className="h-3.5 w-3.5 text-foreground-muted/50" />
