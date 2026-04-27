@@ -22,20 +22,21 @@ when you only want the package-local TypeScript compile.
 
 ## Kanban/workspaces surface
 
-The package now ships a first-phase `kanban` view and still carries planning
-artifacts for the broader `workspaces` expansion of the TUI surface.
+The package now ships first-phase `kanban` and `workspaces` views backed by the
+shared kanban/workspace control plane.
 
 - Runtime today: `kanban` view (list-first issue browsing, issue detail,
   keyboard-driven backlog actions through an injected control plane)
-- Still planned: dedicated `workspaces` view
+- Runtime today: `workspaces` view (workspace inventory, linked issue/session/run
+  context, and lifecycle actions routed through the injected control plane)
 
 - Spec: [`specs/kanban-workspaces-spec.md`](specs/kanban-workspaces-spec.md)
 - Backlog decomposition: [`specs/kanban-workspaces-subtasks.md`](specs/kanban-workspaces-subtasks.md)
 - Cross-package design note:
   [`../../docs/agent-mux/archive/design/20-tui-kanban-workspaces.md`](../../docs/agent-mux/archive/design/20-tui-kanban-workspaces.md)
 
-The planning documents remain proposal-stage material for the unfinished
-`workspaces` half of the feature.
+The planning documents remain useful design references for follow-on expansion
+of both surfaces.
 
 ## Writing a plugin
 
@@ -113,6 +114,7 @@ current working directory.
 | `6` | profiles   | run-options profiles                          |
 | `7` | plugins    | native plugins per adapter                    |
 | `8` | kanban     | backlog/board browsing + issue actions        |
+| `W` | workspaces | workspace lifecycle inventory + actions       |
 | `9` | help       | keybindings + tips                            |
 | `0` | mcp        | registered MCP servers                        |
 | `-` | doctor     | capability matrix / diagnostics               |

@@ -39,6 +39,7 @@ describe('help-view', () => {
     expect(compact).toContain(
       '1-9 switch to numeric view (1 chat, 2 sessions, 3 cost, 4 adapters, 5 models, 6 profiles, 7 plugins, 8 kanban, 9 help)',
     );
+    expect(compact).toContain('W workspaces view (archive/recover/cleanup/rebase lifecycle)');
     expect(f).toContain('open logs / observability view');
     expect(f).toContain('claude-code');
     expect(f).toContain('codex');

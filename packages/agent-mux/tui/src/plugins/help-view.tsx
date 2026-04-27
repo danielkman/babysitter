@@ -13,6 +13,7 @@ const GLOBAL_KEYS: { key: string; desc: string }[] = [
   { key: 'i', desc: 'interrupt current run' },
   { key: 'y / n', desc: 'approve / deny pending tool request' },
   { key: '1-9', desc: 'switch to numeric view (1 chat, 2 sessions, 3 cost, 4 adapters, 5 models, 6 profiles, 7 plugins, 8 kanban, 9 help)' },
+  { key: 'W', desc: 'workspaces view (archive/recover/cleanup/rebase lifecycle)' },
   { key: 'C', desc: 'config view' },
   { key: 'A', desc: 'auth view' },
   { key: 'K', desc: 'skills view (a: add · d: delete · r: refresh)' },

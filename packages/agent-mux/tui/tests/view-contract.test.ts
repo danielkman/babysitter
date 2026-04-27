@@ -16,6 +16,7 @@ const expectedHotkeyViews = [
   { hotkey: '7', id: 'plugins', title: 'Plugins' },
   { hotkey: '8', id: 'kanban', title: 'Kanban' },
   { hotkey: '9', id: 'help', title: 'Help' },
+  { hotkey: 'W', id: 'workspaces', title: 'Workspaces' },
   { hotkey: '0', id: 'mcp', title: 'MCP' },
   { hotkey: '-', id: 'doctor', title: 'Doctor' },
   { hotkey: 'l', id: 'logs', title: 'Logs' },
@@ -66,6 +67,7 @@ describe('builtin TUI view contract', () => {
     expect(sortContractRows(actualHotkeyViews)).toEqual(expectedHotkeyViews);
     expect(registry.views.some((view) => view.id === 'runs')).toBe(false);
     expect(registry.views.some((view) => view.id === 'kanban')).toBe(true);
+    expect(registry.views.some((view) => view.id === 'workspaces')).toBe(true);
   });
 
   it('documents the same built-in view hotkeys in the package README', () => {
