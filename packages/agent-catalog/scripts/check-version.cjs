@@ -39,9 +39,8 @@ const requiredScripts = [
   "test",
   "validate:evidence:freshness",
   "ci:evidence",
+  "policy:check",
   "ci:test",
-  "ci:staging",
-  "ci:prod",
   "version:check",
 ];
 const missingScripts = requiredScripts.filter((name) => !packageJson.scripts || !packageJson.scripts[name]);

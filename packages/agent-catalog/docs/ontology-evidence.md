@@ -65,6 +65,6 @@ The package runtime uses the same resolver internally, so monorepo source usage 
 3. Run `npm run generate:evidence --workspace=@a5c-ai/agent-catalog`.
 4. Run `npm run validate:graph --workspace=@a5c-ai/agent-catalog`.
 5. Run `npm run validate:evidence:freshness --workspace=@a5c-ai/agent-catalog`.
-6. Before shipping, run `npm run ci:test --workspace=@a5c-ai/agent-catalog`.
+6. Before landing a change, run `npm run ci:test --workspace=@a5c-ai/agent-catalog`.
 
 `validate:evidence:freshness` fails when vendor-backed evidence is stale, missing review metadata, no longer reachable, or no longer meets the corroboration/gap rules for vendor claims. For offline local work, set `AGENT_CATALOG_SKIP_VENDOR_WEB_CHECK=1` to skip the remote HTTP reachability pass; CI should not use that escape hatch.

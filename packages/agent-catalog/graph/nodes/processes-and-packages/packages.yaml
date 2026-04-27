@@ -13,6 +13,7 @@ nodes:
       - sdk
       - cli
       - ui
+      - internal-workspace-package
     sourceOfTruthRole: graph-source-of-truth
     evidenceRefs:
       - repo-agent-catalog-package

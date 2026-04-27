@@ -11,23 +11,19 @@ nodes:
       - test
       - validate:evidence:freshness
       - ci:evidence
+      - policy:check
       - ci:test
-      - ci:staging
-      - ci:prod
       - version:check
-    publishStrategy: workspace-package
+    publishStrategy: internal-workspace
     releaseChannels:
-      - test
-      - staging
-      - prod
+      - ci
     validationCommands:
-      - npm run build --workspace=@a5c-ai/agent-catalog
-      - npm run ci:evidence --workspace=@a5c-ai/agent-catalog
-      - npm run test --workspace=@a5c-ai/agent-catalog
+      - npm run ci:test --workspace=@a5c-ai/agent-catalog
       - npm run version:check --workspace=@a5c-ai/agent-catalog
     artifactExpectations:
       - dist/**
       - graph/**
+      - evidence/**
     evidenceRefs:
       - repo-agent-catalog-package
   - id: ci:@a5c-ai/catalog

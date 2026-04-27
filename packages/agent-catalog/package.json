@@ -2,7 +2,7 @@
   "name": "@a5c-ai/agent-catalog",
   "version": "0.1.0",
   "private": true,
-  "description": "Shared ontology and discovery catalog for harness agents, model providers, transports, hooks, capabilities, and process evidence.",
+  "description": "Internal-only workspace package for the shared agent ontology, discovery catalog, and evidence graph consumed across the monorepo.",
   "license": "UNLICENSED",
   "type": "commonjs",
   "main": "dist/index.js",
@@ -22,6 +22,7 @@
     "./docs/*": "./docs/*"
   },
   "files": [
+    "README.md",
     "dist",
     "graph",
     "docs",
@@ -37,9 +38,8 @@
     "clean": "rimraf dist",
     "test": "npm run check:src-artifacts && npm run generate:evidence && npm run validate:graph && cd ../.. && npm run test:agent-catalog-contracts",
     "ci:evidence": "npm run validate:evidence:freshness",
-    "ci:test": "npm run clean && npm run build && npm run ci:evidence && npm run test",
-    "ci:staging": "npm run ci:test && npm run version:check",
-    "ci:prod": "npm run ci:staging",
+    "policy:check": "node ./scripts/check-lifecycle-policy.cjs",
+    "ci:test": "npm run clean && npm run build && npm run ci:evidence && npm run test && npm run policy:check",
     "version:check": "node ./scripts/check-version.cjs"
   },
   "dependencies": {
