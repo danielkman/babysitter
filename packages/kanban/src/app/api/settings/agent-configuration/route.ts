@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { createClient, validateProfileData, type AgentName } from "@a5c-ai/agent-mux-core";
+import type { AgentName } from "@a5c-ai/agent-mux-core";
 
 import {
   loadSettingsSectionStorage,
@@ -9,9 +9,13 @@ import {
 
 export const dynamic = "force-dynamic";
 
-const client = createClient();
+async function loadAgentMuxCore() {
+  return await import("@a5c-ai/agent-mux-core");
+}
 
 async function buildResponse() {
+  const { createClient } = await loadAgentMuxCore();
+  const client = createClient();
   const storage = await loadSettingsSectionStorage();
   return {
     agents: client.adapters.list().map((adapter) => {
@@ -43,6 +47,8 @@ export async function GET() {
 
 export async function POST(request: Request) {
   const body = (await request.json()) as Record<string, unknown>;
+  const { createClient, validateProfileData } = await loadAgentMuxCore();
+  const client = createClient();
   if (typeof body.agent !== "string" || !body.agent.trim()) {
     return NextResponse.json({ error: "agent is required" }, { status: 400 });
   }

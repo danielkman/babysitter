@@ -11,14 +11,17 @@ import type {
 import { AppError, normalizeError } from '@/lib/error-handler';
 import { ensureInitialized } from '@/lib/server-init';
 import { BacklogQueryService } from '@/lib/services/backlog-query-service';
-import { WorkspaceLifecycleService } from '@/lib/workspace-lifecycle';
 
 export const dynamic = 'force-dynamic';
 
 const NO_CACHE_HEADERS = { 'Cache-Control': 'no-cache, no-store' };
 
 const service = new BacklogQueryService();
-const workspaceService = new WorkspaceLifecycleService();
+
+async function loadWorkspaceService() {
+  const { WorkspaceLifecycleService } = await import('@/lib/workspace-lifecycle');
+  return new WorkspaceLifecycleService();
+}
 
 function isWorkflowState(value: unknown): value is KanbanWorkflowState {
   return value === 'todo' || value === 'in-progress' || value === 'review' || value === 'done';
@@ -315,6 +318,7 @@ export async function POST(request: Request) {
         if (typeof body.issueId !== 'string') {
           throw new AppError('issueId is required.', 'BAD_REQUEST', 400);
         }
+        const workspaceService = await loadWorkspaceService();
         const current = await service.getOverview();
         const issue = current.snapshot.issues.find((candidate) => candidate.id === body.issueId);
         if (!issue) {
@@ -337,6 +341,7 @@ export async function POST(request: Request) {
         if (typeof body.issueId !== 'string' || typeof body.workspacePath !== 'string') {
           throw new AppError('issueId and workspacePath are required.', 'BAD_REQUEST', 400);
         }
+        const workspaceService = await loadWorkspaceService();
         const inventory = await workspaceService.listWorkspaces();
         const workspace = inventory.workspaces.find((candidate) => candidate.path === body.workspacePath);
         if (!workspace) {

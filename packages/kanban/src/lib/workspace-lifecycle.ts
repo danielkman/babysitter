@@ -8,13 +8,12 @@ import { discoverAllRunDirs as defaultDiscoverAllRunDirs, type DiscoveredRun } f
 import { getRunCached as defaultGetRunCached } from "@/lib/run-cache";
 import type { Run } from "@/types";
 import type { WatchSource } from "@/lib/config-loader";
-import {
-  resolveWorkspaceDefaultCwd,
+import type {
+  WorkspaceRebaseSurface,
+  WorkspaceRuntimeSurface,
   WorkspaceService,
-  type WorkspaceRebaseSurface,
-  type WorkspaceRuntimeSurface,
-  type WorkspaceSessionBinding,
-  type WorkspaceSummary as ManagedWorkspaceSummary,
+  WorkspaceSessionBinding,
+  WorkspaceSummary as ManagedWorkspaceSummary,
 } from "@a5c-ai/agent-mux-core";
 import type { KanbanReviewSummary } from "@a5c-ai/agent-mux-core";
 
@@ -224,6 +223,15 @@ const defaultDeps: WorkspaceLifecycleDeps = {
   now: () => new Date().toISOString(),
   cwd: () => process.cwd(),
 };
+
+const importAgentMuxCore = new Function(
+  "specifier",
+  "return import(specifier)",
+) as (specifier: string) => Promise<typeof import("@a5c-ai/agent-mux-core")>;
+
+async function loadAgentMuxCore() {
+  return await importAgentMuxCore("@a5c-ai/agent-mux-core");
+}
 
 function cloneRebaseSurface(rebase: WorkspaceRebaseSurface | null | undefined): WorkspaceRebaseSurface | undefined {
   if (!rebase) {
@@ -568,20 +576,42 @@ function matchesManagedWorkspacePath(workspace: ManagedWorkspaceSummary, targetP
   );
 }
 
-function toManagedWorkspacePath(workspace: ManagedWorkspaceSummary): string {
+function toManagedWorkspacePath(
+  workspace: ManagedWorkspaceSummary,
+  resolveWorkspaceDefaultCwd: (workspace: ManagedWorkspaceSummary) => string,
+): string {
   return resolveWorkspaceDefaultCwd(workspace);
 }
 
 export class WorkspaceLifecycleService {
   private deps: WorkspaceLifecycleDeps;
-  private sharedWorkspaceService: Pick<
-    WorkspaceService,
-    "listWorkspaces" | "createWorkspace" | "archiveWorkspace" | "cleanupWorkspace" | "recoverWorkspace" | "resolveWorkspace"
-  >;
+  private workspaceCorePromise:
+    | Promise<{
+        resolveWorkspaceDefaultCwd: (workspace: ManagedWorkspaceSummary) => string;
+        sharedWorkspaceService: Pick<
+          WorkspaceService,
+          "listWorkspaces" | "createWorkspace" | "archiveWorkspace" | "cleanupWorkspace" | "recoverWorkspace" | "resolveWorkspace"
+        >;
+      }>
+    | null = null;
 
   constructor(deps?: Partial<WorkspaceLifecycleDeps>) {
     this.deps = { ...defaultDeps, ...deps };
-    this.sharedWorkspaceService = deps?.workspaceService ?? new WorkspaceService();
+  }
+
+  private async getWorkspaceCore() {
+    if (!this.workspaceCorePromise) {
+      this.workspaceCorePromise = loadAgentMuxCore().then((agentMuxCore) => ({
+        resolveWorkspaceDefaultCwd: agentMuxCore.resolveWorkspaceDefaultCwd as (
+          workspace: ManagedWorkspaceSummary,
+        ) => string,
+        sharedWorkspaceService:
+          this.deps.workspaceService ??
+          new agentMuxCore.WorkspaceService(),
+      }));
+    }
+
+    return await this.workspaceCorePromise;
   }
 
   async listWorkspaces(input: {
@@ -589,6 +619,7 @@ export class WorkspaceLifecycleService {
     reviewByWorkspacePath?: ReadonlyMap<string, KanbanReviewSummary>;
     linkedIssuesByWorkspacePath?: ReadonlyMap<string, readonly WorkspaceIssueLink[]>;
   } = {}): Promise<WorkspaceInventoryResponse> {
+    const { resolveWorkspaceDefaultCwd, sharedWorkspaceService } = await this.getWorkspaceCore();
     const sessions = input.sessions ?? [];
     const reviewByWorkspacePath = input.reviewByWorkspacePath ?? new Map<string, KanbanReviewSummary>();
     const linkedIssuesByWorkspacePath =
@@ -598,7 +629,7 @@ export class WorkspaceLifecycleService {
     let managedWorkspaces: ManagedWorkspaceSummary[] = [];
 
     try {
-      managedWorkspaces = (await this.sharedWorkspaceService.listWorkspaces({
+      managedWorkspaces = (await sharedWorkspaceService.listWorkspaces({
         liveSessions: toSharedSessionBindings(sessions),
       })).workspaces as ManagedWorkspaceSummary[];
     } catch {
@@ -608,7 +639,9 @@ export class WorkspaceLifecycleService {
     const seedPaths = new Set<string>([
       normalizeWorkspacePath(this.deps.cwd()),
       ...Object.keys(registry.workspaces).map(normalizeWorkspacePath),
-      ...managedWorkspaces.map((workspace) => normalizeWorkspacePath(toManagedWorkspacePath(workspace))),
+      ...managedWorkspaces.map((workspace) =>
+        normalizeWorkspacePath(toManagedWorkspacePath(workspace, resolveWorkspaceDefaultCwd)),
+      ),
       ...sessions.flatMap((session) => (session.cwd ? [normalizeWorkspacePath(session.cwd)] : [])),
     ]);
 
@@ -669,7 +702,9 @@ export class WorkspaceLifecycleService {
     }
 
     for (const workspace of managedWorkspaces) {
-      const workspacePath = normalizeWorkspacePath(toManagedWorkspacePath(workspace));
+      const workspacePath = normalizeWorkspacePath(
+        toManagedWorkspacePath(workspace, resolveWorkspaceDefaultCwd),
+      );
       const record = ensureWorkspaceRecord(records, workspacePath);
       const primaryRepo =
         workspace.repos.find((repo: ManagedWorkspaceSummary["repos"][number]) => normalizeWorkspacePath(repo.targetPath) === workspacePath) ??
@@ -712,7 +747,7 @@ export class WorkspaceLifecycleService {
       }
       const managedWorkspace = managedWorkspaces.find((workspace) => matchesManagedWorkspacePath(workspace, session.cwd!));
       const workspacePath = managedWorkspace
-        ? normalizeWorkspacePath(toManagedWorkspacePath(managedWorkspace))
+        ? normalizeWorkspacePath(toManagedWorkspacePath(managedWorkspace, resolveWorkspaceDefaultCwd))
         : normalizeWorkspacePath(session.cwd);
       const record = ensureWorkspaceRecord(records, workspacePath);
       if (record.sessions.some((candidate) => candidate.sessionId === session.sessionId && candidate.agent === session.agent)) {
@@ -890,6 +925,7 @@ export class WorkspaceLifecycleService {
     issueKey: string;
     issueTitle: string;
   }): Promise<WorkspaceProvisionResult> {
+    const { resolveWorkspaceDefaultCwd, sharedWorkspaceService } = await this.getWorkspaceCore();
     const seedPath = normalizeWorkspacePath(this.deps.cwd());
     const cluster = await collectGitCluster(this.deps, seedPath);
     const sourcePath = cluster.gitRoot ?? seedPath;
@@ -897,7 +933,7 @@ export class WorkspaceLifecycleService {
     const requestedBranchName = `vk/${slugBase}`;
 
     try {
-      const created = await this.sharedWorkspaceService.createWorkspace({
+      const created = await sharedWorkspaceService.createWorkspace({
         name: input.issueKey,
         repos: [{ path: sourcePath }],
         mode: "worktree",
@@ -993,6 +1029,7 @@ export class WorkspaceLifecycleService {
       sessions?: WorkspaceSessionSnapshot[];
     },
   ): Promise<WorkspaceActionResult> {
+    const { resolveWorkspaceDefaultCwd, sharedWorkspaceService } = await this.getWorkspaceCore();
     const workspacePath = normalizeWorkspacePath(input.workspacePath);
     const registry = await readRegistry(this.deps);
     const inventory = await this.listWorkspaces({ sessions: input.sessions });
@@ -1019,14 +1056,14 @@ export class WorkspaceLifecycleService {
 
     if (input.action === "archive" || input.action === "cleanup" || input.action === "recover") {
       try {
-        const managedWorkspace = await this.sharedWorkspaceService.resolveWorkspace(workspacePath);
+        const managedWorkspace = await sharedWorkspaceService.resolveWorkspace(workspacePath);
         if (managedWorkspace) {
           const updated =
             input.action === "archive"
-              ? await this.sharedWorkspaceService.archiveWorkspace(workspacePath)
+              ? await sharedWorkspaceService.archiveWorkspace(workspacePath)
               : input.action === "cleanup"
-                ? await this.sharedWorkspaceService.cleanupWorkspace(workspacePath)
-                : await this.sharedWorkspaceService.recoverWorkspace(workspacePath);
+                ? await sharedWorkspaceService.cleanupWorkspace(workspacePath)
+                : await sharedWorkspaceService.recoverWorkspace(workspacePath);
           const managedPath = normalizeWorkspacePath(resolveWorkspaceDefaultCwd(updated));
           const nextEntry = {
             ...(registry.workspaces[managedPath] ?? entry),

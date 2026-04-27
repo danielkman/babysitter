@@ -11,6 +11,7 @@ const REQUIRED_PACKED_PATHS = [
   'package.json',
   'README.md',
   'LICENSE',
+  'specs/task-tags-spec.md',
   'specs/dispatch-context-labels-spec.md',
   'specs/dispatch-context-labels-subtasks.md',
   'next.config.mjs',
@@ -38,6 +39,12 @@ const REQUIRED_BUILD_DIRECTORIES = [
   '.next/static',
 ];
 
+const REQUIRED_README_SPEC_LINKS = [
+  './specs/task-tags-spec.md',
+  './specs/dispatch-context-labels-spec.md',
+  './specs/dispatch-context-labels-subtasks.md',
+];
+
 function expect(condition, message) {
   if (!condition) {
     throw new Error(message);
@@ -60,6 +67,7 @@ export function verifyKanbanRelease({ packageRoot, manifest, packEntries }) {
   const scripts = readStringRecord(manifest.scripts);
   const bin = readStringRecord(manifest.bin);
   const packedPaths = new Set(packEntries.map((entry) => normalizePackPath(entry.path)));
+  const readme = fs.readFileSync(path.join(packageRoot, 'README.md'), 'utf8');
 
   expect(manifest.name === '@a5c-ai/kanban', 'packages/kanban/package.json name must stay @a5c-ai/kanban');
   expect(manifest.private === false, 'packages/kanban/package.json private must stay false');
@@ -73,11 +81,17 @@ export function verifyKanbanRelease({ packageRoot, manifest, packEntries }) {
     'packages/kanban/package.json bin.kanban-mcp-server must point to ./dist/mcp-server.js'
   );
   expect(
-    scripts.build === 'npm run build --workspace=@a5c-ai/agent-mux-observability && npm run build --workspace=@a5c-ai/agent-mux-core && npm run build --workspace=@a5c-ai/agent-mux-ui && next build',
-    'packages/kanban/package.json build must stay scoped to kanban and its direct workspace dependencies'
+    scripts.build === 'npm run build --workspace=@a5c-ai/agent-catalog && npm run build --workspace=@a5c-ai/agent-mux-observability && npm run build --workspace=@a5c-ai/agent-mux-core && npm run build --workspace=@a5c-ai/agent-mux-ui && next build',
+    'packages/kanban/package.json build must stay scoped to kanban and the workspace dependency chain required by agent-mux'
   );
   expect(
-    scripts.prepublishOnly === 'npm run build && npm run build:cli && npm run build:mcp-server && npm run verify:release',
+    typeof scripts['build:cli'] === 'string' &&
+      scripts['build:cli'].includes("outfile:'dist/cli.js'") &&
+      scripts['build:cli'].includes("outfile:'dist/mcp-server.js'"),
+    'packages/kanban/package.json build:cli must build both the kanban CLI and the kanban MCP server binaries'
+  );
+  expect(
+    scripts.prepublishOnly === 'npm run build && npm run build:cli && npm run verify:release',
     'packages/kanban/package.json prepublishOnly must build the package and run verify:release'
   );
   expect(
@@ -107,6 +121,10 @@ export function verifyKanbanRelease({ packageRoot, manifest, packEntries }) {
   for (const packedPrefix of REQUIRED_PACKED_PREFIXES) {
     const hasMatch = packEntries.some((entry) => normalizePackPath(entry.path).startsWith(packedPrefix));
     expect(hasMatch, `npm pack output is missing files under ${packedPrefix}`);
+  }
+
+  for (const specLink of REQUIRED_README_SPEC_LINKS) {
+    expect(readme.includes(specLink), `packages/kanban/README.md must keep linking ${specLink}`);
   }
 }
 

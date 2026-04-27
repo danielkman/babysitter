@@ -5,14 +5,18 @@ import type { KanbanReviewArtifact, KanbanReviewComment, KanbanReviewSummary } f
 import { normalizeError } from "@/lib/error-handler";
 import { ReviewService } from "@/lib/review-service";
 import { BacklogQueryService } from "@/lib/services/backlog-query-service";
-import { WorkspaceLifecycleService, type WorkspaceSessionSnapshot } from "@/lib/workspace-lifecycle";
+import type { WorkspaceLifecycleService, WorkspaceSessionSnapshot } from "@/lib/workspace-lifecycle";
 
 export const dynamic = "force-dynamic";
 
 const NO_CACHE_HEADERS = { "Cache-Control": "no-cache, no-store" };
-const service = new WorkspaceLifecycleService();
 const reviewService = new ReviewService();
 const backlogService = new BacklogQueryService();
+
+async function createWorkspaceService(): Promise<WorkspaceLifecycleService> {
+  const { WorkspaceLifecycleService } = await import("@/lib/workspace-lifecycle");
+  return new WorkspaceLifecycleService();
+}
 
 function readRuntime(value: unknown): WorkspaceRuntimeSurface | undefined {
   if (!value || typeof value !== "object") {
@@ -98,6 +102,7 @@ async function buildLinkedIssuesByWorkspacePath() {
 
 export async function GET() {
   try {
+    const service = await createWorkspaceService();
     const reviews = await reviewService.listReviews({ targetType: "workspace" });
     const linkedIssuesByWorkspacePath = await buildLinkedIssuesByWorkspacePath();
     const payload = await service.listWorkspaces({
@@ -113,6 +118,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const service = await createWorkspaceService();
     const body = (await request.json()) as Record<string, unknown>;
     const sessions = readSessions(body);
     const reviews = await reviewService.listReviews({ targetType: "workspace" });

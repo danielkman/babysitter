@@ -95,7 +95,6 @@ The specification captures:
 The package still has meaningful product gaps, but they are now downstream of the target model rather than evidence that the package should be treated as observability-first:
 
 - Dispatch Context Labels are now specified but not yet shipped
-- full Task Tags feature implementation is specified but not yet shipped
 - deeper review and diff workflows
 - richer preview and runtime surfaces per workspace
 - repository and pull-request lifecycle controls
@@ -151,7 +150,6 @@ Use the existing release checks to confirm the documented surface still matches 
 ```bash
 npm run build --workspace=@a5c-ai/kanban
 npm run build:cli --workspace=@a5c-ai/kanban
-npm run build:mcp-server --workspace=@a5c-ai/kanban
 npm run verify:release --workspace=@a5c-ai/kanban
 npm run verify:metadata
 npm pack --json --dry-run --workspace=@a5c-ai/kanban
