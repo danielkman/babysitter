@@ -169,4 +169,4 @@ That keeps the plugin story aligned with the repo's executable surfaces and make
 
 ---
 
-**Related Documents**: [Package Specifications](package-specs.md) | [Security Architecture](security-architecture.md) | [Testing Framework](testing-framework.md) | [Plugins Overview](../plugins.md)
+**Related Documents**: [Package Specifications](package-specs.md) | [Security Architecture](security-architecture.md) | [Testing Framework](testing-framework.md) | [Plugins Overview](/plugins)
