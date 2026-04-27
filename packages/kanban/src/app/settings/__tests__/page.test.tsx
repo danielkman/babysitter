@@ -1,7 +1,7 @@
 import type React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { render, screen, setupUser, waitFor, within } from "@/test/test-utils";
+import { act, render, screen, setupUser, waitFor, within } from "@/test/test-utils";
 
 import SettingsPage from "../page";
 
@@ -13,6 +13,8 @@ const createDispatchContextLabelMock = vi.fn();
 const updateDispatchContextLabelMock = vi.fn();
 const deleteDispatchContextLabelMock = vi.fn();
 const refreshMock = vi.fn();
+const updateProjectCollaborationMock = vi.fn();
+const updateRepositorySettingsMock = vi.fn();
 
 let snapshot = {
   projects: [
@@ -27,11 +29,27 @@ let snapshot = {
         settings: {
           visibility: "team",
           defaultRole: "contributor",
+          allowSelfAssign: true,
         },
       },
       settings: {
+        reviewRequiredForDone: true,
+        activityScope: "project-and-issues",
         workspaceProvisioning: "owners-maintainers",
       },
+      repositories: [
+        {
+          id: "repo-github-a5c-ai-babysitter",
+          fullName: "a5c-ai/babysitter",
+          settings: {
+            baseBranch: "main",
+            ciProvider: "GitHub Actions",
+            publishTarget: "npm",
+            autoMerge: false,
+            requiredApprovals: 1,
+          },
+        },
+      ],
       integrations: [
         {
           provider: "github",
@@ -100,6 +118,9 @@ let snapshot = {
     {
       id: "issue-1",
       key: "KANBAN-GAP-004",
+      repositoryLifecycle: {
+        repositoryId: "repo-github-a5c-ai-babysitter",
+      },
       dispatch: {
         contextLabels: [{ labelId: "dispatch-context-label-1" }],
         renderedContext:
@@ -158,6 +179,11 @@ vi.mock("@/components/ui/button", async () => {
 
 vi.mock("lucide-react", () => ({
   Activity: () => <svg aria-hidden="true" />,
+  AlertTriangle: () => <svg aria-hidden="true" />,
+  Boxes: () => <svg aria-hidden="true" />,
+  Cpu: () => <svg aria-hidden="true" />,
+  Network: () => <svg aria-hidden="true" />,
+  ServerCog: () => <svg aria-hidden="true" />,
   ShieldCheck: () => <svg aria-hidden="true" />,
   Users: () => <svg aria-hidden="true" />,
 }));
@@ -174,6 +200,10 @@ vi.mock("@/hooks/use-backlog", () => ({
   useBacklog: () => ({
     snapshot,
     refresh: refreshMock,
+    loading: false,
+    error: null,
+    updateProjectCollaboration: updateProjectCollaborationMock,
+    updateRepositorySettings: updateRepositorySettingsMock,
   }),
   loadTaskTags: (...args: unknown[]) => loadTaskTagsMock(...args),
   createTaskTag: (...args: unknown[]) => createTaskTagMock(...args),
@@ -203,6 +233,7 @@ vi.mock("@/lib/agent-mux-ui", () => ({
 
 describe("SettingsPage", () => {
   beforeEach(() => {
+    vi.restoreAllMocks();
     loadTaskTagsMock.mockReset();
     createTaskTagMock.mockReset();
     updateTaskTagMock.mockReset();
@@ -211,6 +242,130 @@ describe("SettingsPage", () => {
     updateDispatchContextLabelMock.mockReset();
     deleteDispatchContextLabelMock.mockReset();
     refreshMock.mockReset();
+    updateProjectCollaborationMock.mockReset();
+    updateRepositorySettingsMock.mockReset();
+
+    snapshot = {
+      projects: [
+        {
+          id: "kanban-app",
+          team: {
+            name: "Kanban Core",
+            members: [
+              { id: "tal", displayName: "Tal Muskal", email: "tal@a5c.ai", role: "owner" },
+              { id: "qa", displayName: "QA Lead", email: "qa@a5c.ai", role: "maintainer" },
+            ],
+            settings: {
+              visibility: "team",
+              defaultRole: "contributor",
+              allowSelfAssign: true,
+            },
+          },
+          settings: {
+            reviewRequiredForDone: true,
+            activityScope: "project-and-issues",
+            workspaceProvisioning: "owners-maintainers",
+          },
+          repositories: [
+            {
+              id: "repo-github-a5c-ai-babysitter",
+              fullName: "a5c-ai/babysitter",
+              settings: {
+                baseBranch: "main",
+                ciProvider: "GitHub Actions",
+                publishTarget: "npm",
+                autoMerge: false,
+                requiredApprovals: 1,
+              },
+            },
+          ],
+          integrations: [
+            {
+              provider: "github",
+              label: "GitHub",
+              status: "connected",
+              accountLabel: "a5c-ai",
+              guidance: "GitHub is ready for linked PR flows.",
+              prerequisites: [{ key: "github-auth", label: "GitHub auth", satisfied: true }],
+              actions: {
+                canCreatePullRequest: true,
+                canManagePullRequest: true,
+                canApproveFromReview: true,
+              },
+            },
+            {
+              provider: "azure-repos",
+              label: "Azure Repos",
+              status: "partial-setup",
+              accountLabel: "Boards Platform",
+              guidance: "Complete Azure project binding before linked PR actions can be enabled.",
+              missingScopes: ["code:write"],
+              prerequisites: [
+                { key: "azure-auth", label: "Azure auth", satisfied: true },
+                {
+                  key: "azure-project",
+                  label: "Default project selected",
+                  satisfied: false,
+                  guidance: "Pick the project that owns the target repo.",
+                },
+              ],
+              actions: {
+                canCreatePullRequest: false,
+                canManagePullRequest: false,
+                canApproveFromReview: false,
+                reason: "Azure Repos setup is incomplete.",
+              },
+            },
+          ],
+          permissions: [
+            {
+              action: "manage-project-settings",
+              description: "Elevated roles only.",
+              roles: ["owner", "maintainer"],
+            },
+          ],
+          activity: [
+            {
+              id: "activity-1",
+              actor: { displayName: "Tal Muskal" },
+              createdAt: "2026-04-24T12:00:00.000Z",
+              summary: "Updated shared team settings, roster, and permission policy.",
+            },
+          ],
+        },
+      ],
+      dispatchContextLabels: [
+        {
+          id: "dispatch-context-label-1",
+          key: "tests_first",
+          label: "Tests First",
+          description: "Keep verification ahead of implementation.",
+          instruction: "Write or update deterministic verification before editing runtime code.",
+        },
+      ],
+      issues: [
+        {
+          id: "issue-1",
+          key: "KANBAN-GAP-004",
+          repositoryLifecycle: {
+            repositoryId: "repo-github-a5c-ai-babysitter",
+          },
+          dispatch: {
+            contextLabels: [{ labelId: "dispatch-context-label-1" }],
+            renderedContext:
+              "Tests First: Write or update deterministic verification before editing runtime code.",
+          },
+        },
+        {
+          id: "issue-2",
+          key: "KANBAN-GAP-099",
+          dispatch: {
+            contextLabels: [],
+            renderedContext: "",
+          },
+        },
+      ],
+    };
 
     loadTaskTagsMock.mockResolvedValue([
       {
@@ -238,38 +393,44 @@ describe("SettingsPage", () => {
     updateDispatchContextLabelMock.mockResolvedValue({ dispatchContextLabels: [] });
     deleteDispatchContextLabelMock.mockResolvedValue({ dispatchContextLabels: [] });
     refreshMock.mockResolvedValue(undefined);
+    updateProjectCollaborationMock.mockResolvedValue(undefined);
+    updateRepositorySettingsMock.mockResolvedValue(undefined);
   });
 
-  it("renders collaboration settings from the backlog snapshot", () => {
+  it("renders the section nav and organization settings from the backlog snapshot", async () => {
+    const user = setupUser();
     render(<SettingsPage />);
 
-    const collaborationSection = screen.getByTestId("collaboration-settings");
-    expect(within(collaborationSection).getByText("Team and collaboration")).toBeInTheDocument();
-    expect(within(collaborationSection).getByText("Kanban Core (2 members)")).toBeInTheDocument();
-    expect(within(collaborationSection).getByText("owners-maintainers")).toBeInTheDocument();
-    expect(within(collaborationSection).getByText("manage-project-settings")).toBeInTheDocument();
-    expect(
-      within(collaborationSection).getByText(
-        "Updated shared team settings, roster, and permission policy.",
-      ),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("settings-nav-repositories-projects")).toBeInTheDocument();
+    expect(screen.getByTestId("settings-nav-organization")).toBeInTheDocument();
+    expect(screen.getByTestId("settings-nav-remote-project")).toBeInTheDocument();
+    expect(screen.getByTestId("settings-nav-agent-configuration")).toBeInTheDocument();
+    expect(screen.getByTestId("settings-nav-mcp-servers")).toBeInTheDocument();
+
+    await user.click(screen.getByTestId("settings-nav-organization"));
+
+    const organizationSection = screen.getByTestId("organization-settings");
+    expect(within(organizationSection).getByText("Organization settings")).toBeInTheDocument();
+    expect(within(organizationSection).getByText("Kanban Core (2 members)")).toBeInTheDocument();
+    expect(within(organizationSection).getByText("owners-maintainers")).toBeInTheDocument();
+    expect(within(organizationSection).getByText("manage-project-settings")).toBeInTheDocument();
   });
 
-  it("renders integration setup guidance and blocked action states", () => {
+  it("renders remote-project guidance and blocked action states", async () => {
+    const user = setupUser();
     render(<SettingsPage />);
 
-    const integrationSection = screen.getByTestId("integration-settings");
-    expect(within(integrationSection).getByText("Repository integrations")).toBeInTheDocument();
-    expect(within(integrationSection).getByText("GitHub")).toBeInTheDocument();
-    expect(within(integrationSection).getByText("Azure Repos")).toBeInTheDocument();
-    expect(within(integrationSection).getByText("partial setup")).toBeInTheDocument();
-    expect(within(integrationSection).getByText("Missing scopes: code:write")).toBeInTheDocument();
-    expect(
-      within(integrationSection).getByText(/Blocked actions: create linked PRs/),
-    ).toBeInTheDocument();
-    expect(
-      within(integrationSection).getByText("Pick the project that owns the target repo."),
-    ).toBeInTheDocument();
+    await user.click(screen.getByTestId("settings-nav-remote-project"));
+
+    const remoteSection = screen.getByTestId("remote-project-settings");
+    expect(within(remoteSection).getByText("Remote-project settings")).toBeInTheDocument();
+    expect(within(remoteSection).getByText("GitHub")).toBeInTheDocument();
+    expect(within(remoteSection).getByText("Azure Repos")).toBeInTheDocument();
+    expect(within(remoteSection).getByText("partial setup")).toBeInTheDocument();
+    expect(within(remoteSection).getByText("Missing scopes: code:write")).toBeInTheDocument();
+    expect(within(remoteSection).getByText(/Blocked actions: create linked PRs/)).toBeInTheDocument();
+    expect(within(remoteSection).getByText("Pick the project that owns the target repo.")).toBeInTheDocument();
+    expect(screen.getByTestId("missing-host-context")).toBeInTheDocument();
   });
 
   it("loads and renders reusable Task Tags in deterministic order", async () => {
@@ -562,5 +723,174 @@ describe("SettingsPage", () => {
     );
     expect(refreshMock).toHaveBeenCalled();
     expect(screen.getByText("Deleted Dispatch Context Label definition.")).toBeInTheDocument();
+  });
+
+  it("blocks section switching when repositories/projects drafts are dirty", async () => {
+    const user = setupUser();
+    render(<SettingsPage />);
+
+    const baseBranchInput = screen.getByLabelText("Base branch");
+    await user.clear(baseBranchInput);
+    await user.type(baseBranchInput, "release/next");
+    await user.click(screen.getByTestId("settings-nav-organization"));
+
+    expect(screen.getByTestId("settings-dirty-switch-guard")).toBeInTheDocument();
+    expect(screen.getByTestId("repositories-projects-settings")).toBeInTheDocument();
+
+    await user.click(
+      within(screen.getByTestId("settings-dirty-switch-guard")).getByRole("button", {
+        name: "Discard changes",
+      }),
+    );
+    expect(screen.getByTestId("organization-settings")).toBeInTheDocument();
+  });
+
+  it("renders explicit missing project and organization context states", async () => {
+    const user = setupUser();
+    snapshot.projects = [];
+    render(<SettingsPage />);
+
+    expect(screen.getByText("Project context is missing")).toBeInTheDocument();
+
+    await user.click(screen.getByTestId("settings-nav-organization"));
+    expect(screen.getByText("Organization context is missing")).toBeInTheDocument();
+
+    await user.click(screen.getByTestId("settings-nav-remote-project"));
+    expect(screen.getByText("Project context is missing")).toBeInTheDocument();
+  });
+
+  it("shows section-specific loading for agent configuration", async () => {
+    const user = setupUser();
+    let resolveAgentFetch: ((value: Response) => void) | null = null;
+    vi.spyOn(globalThis, "fetch").mockImplementation((input: RequestInfo | URL) => {
+      const url = typeof input === "string" ? input : input.toString();
+      if (url.includes("/api/settings/agent-configuration")) {
+        return new Promise<Response>((resolve) => {
+          resolveAgentFetch = resolve;
+        });
+      }
+      return Promise.resolve(new Response("Not Found", { status: 404 }));
+    });
+
+    render(<SettingsPage />);
+    await user.click(screen.getByTestId("settings-nav-agent-configuration"));
+
+    expect(screen.getByText("Loading agent configuration…")).toBeInTheDocument();
+    await act(async () => {
+      resolveAgentFetch?.(
+        new Response(JSON.stringify({ agents: [] }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      );
+    });
+  });
+
+  it("preserves the agent draft when configuration validation fails", async () => {
+    const user = setupUser();
+    let resolveAgentGet: ((value: Response) => void) | null = null;
+    vi.spyOn(globalThis, "fetch").mockImplementation((input: RequestInfo | URL, init?: RequestInit) => {
+      const url = typeof input === "string" ? input : input.toString();
+      if (url.includes("/api/settings/agent-configuration") && (!init || init.method === "GET")) {
+        return new Promise<Response>((resolve) => {
+          resolveAgentGet = resolve;
+        });
+      }
+      if (url.includes("/api/settings/agent-configuration") && init?.method === "POST") {
+        return Promise.resolve(
+          new Response(JSON.stringify({ error: 'Model "bad-model" not found for agent "codex"' }), {
+            status: 400,
+            headers: { "Content-Type": "application/json" },
+          }),
+        );
+      }
+      return Promise.resolve(new Response("Not Found", { status: 404 }));
+    });
+
+    render(<SettingsPage />);
+    await user.click(screen.getByTestId("settings-nav-agent-configuration"));
+    expect(screen.getByText("Loading agent configuration…")).toBeInTheDocument();
+    await waitFor(() => expect(resolveAgentGet).not.toBeNull(), { timeout: 5000 });
+    await act(async () => {
+      resolveAgentGet?.(
+        new Response(
+          JSON.stringify({
+            agents: [
+              {
+                agent: "codex",
+                displayName: "Codex",
+                configuredModel: "",
+                configuredProvider: "",
+                approvalMode: "prompt",
+                maxTokens: "",
+                availableModels: [{ modelId: "gpt-5.4", provider: "openai", isDefault: true }],
+                defaultModel: "gpt-5.4",
+              },
+            ],
+          }),
+          { status: 200, headers: { "Content-Type": "application/json" } },
+        ),
+      );
+    });
+    await waitFor(() => expect(screen.getByLabelText("Model")).toBeInTheDocument(), {
+      timeout: 5000,
+    });
+
+    const modelInput = screen.getByLabelText("Model");
+    await user.clear(modelInput);
+    await user.type(modelInput, "bad-model");
+    await user.click(screen.getByRole("button", { name: "Save agent configuration" }));
+
+    expect(await screen.findByText('Model "bad-model" not found for agent "codex"')).toBeInTheDocument();
+    expect(screen.getByDisplayValue("bad-model")).toBeInTheDocument();
+  });
+
+  it("preserves the MCP draft when validation fails", async () => {
+    const user = setupUser();
+    let resolveMcpGet: ((value: Response) => void) | null = null;
+    vi.spyOn(globalThis, "fetch").mockImplementation((input: RequestInfo | URL, init?: RequestInit) => {
+      const url = typeof input === "string" ? input : input.toString();
+      if (url.includes("/api/settings/mcp-servers") && (!init || init.method === "GET")) {
+        return new Promise<Response>((resolve) => {
+          resolveMcpGet = resolve;
+        });
+      }
+      if (url.includes("/api/settings/mcp-servers") && init?.method === "POST") {
+        return Promise.resolve(
+          new Response(JSON.stringify({ error: 'mcpServers[0].command is required for stdio transport' }), {
+            status: 400,
+            headers: { "Content-Type": "application/json" },
+          }),
+        );
+      }
+      return Promise.resolve(new Response("Not Found", { status: 404 }));
+    });
+
+    render(<SettingsPage />);
+    await user.click(screen.getByTestId("settings-nav-mcp-servers"));
+    expect(screen.getByText("Loading MCP server settings…")).toBeInTheDocument();
+    await waitFor(() => expect(resolveMcpGet).not.toBeNull(), { timeout: 5000 });
+    await act(async () => {
+      resolveMcpGet?.(
+        new Response(
+          JSON.stringify({
+            agents: [{ agent: "codex", displayName: "Codex", servers: [] }],
+          }),
+          { status: 200, headers: { "Content-Type": "application/json" } },
+        ),
+      );
+    });
+    await waitFor(() => expect(screen.getByText("MCP definitions for codex")).toBeInTheDocument(), {
+      timeout: 5000,
+    });
+
+    await user.click(screen.getByRole("button", { name: "Add server" }));
+    await user.type(screen.getByLabelText("Name"), "local_tools");
+    await user.click(screen.getByRole("button", { name: "Save MCP servers" }));
+
+    expect(
+      await screen.findByText("mcpServers[0].command is required for stdio transport"),
+    ).toBeInTheDocument();
+    expect(screen.getByDisplayValue("local_tools")).toBeInTheDocument();
   });
 });

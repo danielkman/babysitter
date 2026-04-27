@@ -3,10 +3,13 @@
 import { useEffect, useState, type FormEvent } from "react";
 import type {
   KanbanIntegrationConnection,
+  KanbanPermissionGrant,
+  KanbanProjectSettings,
   KanbanTaskTag,
+  KanbanCollaboratorRole,
 } from "@a5c-ai/agent-mux-core/kanban";
 import { LogoWordmark } from "@a5c-ai/compendium";
-import { Activity, ShieldCheck, Users } from "lucide-react";
+import { Activity, AlertTriangle, Boxes, Cpu, Network, ServerCog, ShieldCheck, Users } from "lucide-react";
 import Link from "next/link";
 import { useStore } from "zustand";
 
@@ -22,6 +25,7 @@ import {
   updateTaskTag,
   useBacklog,
 } from "@/hooks/use-backlog";
+import { resilientFetch } from "@/lib/fetcher";
 import { useConnection, useGateway } from "@/lib/agent-mux-ui";
 
 interface DispatchContextLabelFormState {
@@ -40,16 +44,649 @@ function createEmptyDispatchContextLabelForm(): DispatchContextLabelFormState {
   };
 }
 
+type SettingsSectionId =
+  | "repositories-projects"
+  | "organization"
+  | "remote-project"
+  | "agent-configuration"
+  | "mcp-servers";
+
+interface SettingsSectionDefinition {
+  id: SettingsSectionId;
+  title: string;
+  summary: string;
+  icon: typeof Boxes;
+}
+
+interface AgentConfigurationItem {
+  agent: string;
+  displayName: string;
+  configuredModel: string;
+  configuredProvider: string;
+  approvalMode: "yolo" | "prompt" | "deny";
+  maxTokens: string;
+  availableModels: Array<{
+    modelId: string;
+    provider?: string;
+    isDefault: boolean;
+    deprecated?: boolean;
+    successorModelId?: string;
+  }>;
+  defaultModel: string;
+}
+
+interface AgentConfigurationResponse {
+  agents: AgentConfigurationItem[];
+}
+
+interface AgentConfigurationSaveInput {
+  agent: string;
+  model: string;
+  provider: string;
+  approvalMode: "yolo" | "prompt" | "deny";
+  maxTokens: string;
+}
+
+interface McpServerDraft {
+  name: string;
+  transport: "stdio" | "sse" | "streamable-http";
+  command: string;
+  url: string;
+  argsText: string;
+  envText: string;
+}
+
+interface McpServerItem {
+  agent: string;
+  displayName: string;
+  servers: McpServerDraft[];
+}
+
+interface McpServerResponse {
+  agents: McpServerItem[];
+}
+
+interface RemoteSectionState<T> {
+  status: "idle" | "loading" | "ready" | "error";
+  data: T | null;
+  error: string | null;
+}
+
+interface RepositorySettingsDraft {
+  id: string;
+  fullName: string;
+  linkedIssueId: string | null;
+  baseBranch: string;
+  ciProvider: string;
+  publishTarget: string;
+  autoMerge: boolean;
+  requiredApprovals: number;
+}
+
+interface RepositoriesProjectsDraft {
+  reviewRequiredForDone: boolean;
+  activityScope: KanbanProjectSettings["activityScope"];
+  workspaceProvisioning: KanbanProjectSettings["workspaceProvisioning"];
+  repositories: RepositorySettingsDraft[];
+}
+
+interface OrganizationDraft {
+  teamName: string;
+  visibility: "private" | "team" | "workspace-shared";
+  defaultRole: KanbanCollaboratorRole;
+  allowSelfAssign: boolean;
+}
+
+const SETTINGS_SECTIONS: readonly SettingsSectionDefinition[] = [
+  {
+    id: "repositories-projects",
+    title: "Repositories & Projects",
+    summary: "Project policy, linked repositories, task tags, and dispatch-context definitions.",
+    icon: Boxes,
+  },
+  {
+    id: "organization",
+    title: "Organization",
+    summary: "Team, visibility, default roles, and shared permission context.",
+    icon: Users,
+  },
+  {
+    id: "remote-project",
+    title: "Remote Projects",
+    summary: "Host/org/project binding state and blocked-action guidance per provider.",
+    icon: Network,
+  },
+  {
+    id: "agent-configuration",
+    title: "Agent Configuration",
+    summary: "Default model/provider settings with validation-aware save behavior.",
+    icon: Cpu,
+  },
+  {
+    id: "mcp-servers",
+    title: "MCP Servers",
+    summary: "Per-agent MCP transport definitions with draft preservation and validation.",
+    icon: ServerCog,
+  },
+];
+
+function createEmptyRemoteState<T>(): RemoteSectionState<T> {
+  return {
+    status: "idle",
+    data: null,
+    error: null,
+  };
+}
+
+function extractApiErrorMessage(message: string): string {
+  const trimmed = message.trim();
+  if (!trimmed.startsWith("{")) {
+    return message;
+  }
+
+  try {
+    const parsed = JSON.parse(trimmed) as { error?: unknown };
+    return typeof parsed.error === "string" && parsed.error.length > 0 ? parsed.error : message;
+  } catch {
+    return message;
+  }
+}
+
+function normalizeAgentConfigurationItem(item: AgentConfigurationItem): AgentConfigurationItem {
+  return {
+    ...item,
+    configuredModel: item.configuredModel ?? "",
+    configuredProvider: item.configuredProvider ?? "",
+    maxTokens: item.maxTokens ?? "",
+  };
+}
+
+function normalizeMcpServerDraft(draft: McpServerDraft): McpServerDraft {
+  return {
+    name: draft.name.trim(),
+    transport: draft.transport,
+    command: draft.command.trim(),
+    url: draft.url.trim(),
+    argsText: draft.argsText.trim(),
+    envText: draft.envText.trim(),
+  };
+}
+
+function sortRepositoryDrafts(repositories: readonly RepositorySettingsDraft[]): RepositorySettingsDraft[] {
+  return [...repositories].sort((left, right) => left.fullName.localeCompare(right.fullName));
+}
+
+function createRepositoriesProjectsDraft(
+  project: NonNullable<ReturnType<typeof useBacklog>["snapshot"]>["projects"][number] | undefined,
+  issues: NonNullable<ReturnType<typeof useBacklog>["snapshot"]>["issues"],
+): RepositoriesProjectsDraft | null {
+  if (!project) {
+    return null;
+  }
+
+  return {
+    reviewRequiredForDone: project.settings.reviewRequiredForDone,
+    activityScope: project.settings.activityScope,
+    workspaceProvisioning: project.settings.workspaceProvisioning,
+    repositories: sortRepositoryDrafts(
+      project.repositories.map((repository) => ({
+        id: repository.id,
+        fullName: repository.fullName,
+        linkedIssueId:
+          issues.find((issue) => issue.repositoryLifecycle?.repositoryId === repository.id)?.id ?? null,
+        baseBranch: repository.settings.baseBranch,
+        ciProvider: repository.settings.ciProvider ?? "",
+        publishTarget: repository.settings.publishTarget ?? "",
+        autoMerge: repository.settings.autoMerge,
+        requiredApprovals: repository.settings.requiredApprovals,
+      })),
+    ),
+  };
+}
+
+function createOrganizationDraft(
+  project: NonNullable<ReturnType<typeof useBacklog>["snapshot"]>["projects"][number] | undefined,
+): OrganizationDraft | null {
+  if (!project) {
+    return null;
+  }
+
+  return {
+    teamName: project.team.name,
+    visibility: project.team.settings.visibility,
+    defaultRole: project.team.settings.defaultRole,
+    allowSelfAssign: project.team.settings.allowSelfAssign,
+  };
+}
+
+async function loadAgentConfigurationSection(): Promise<AgentConfigurationResponse> {
+  const result = await resilientFetch<AgentConfigurationResponse>("/api/settings/agent-configuration");
+  if (!result.ok) {
+    throw new Error(extractApiErrorMessage(result.error.message));
+  }
+  return {
+    agents: result.data.agents.map(normalizeAgentConfigurationItem),
+  };
+}
+
+async function saveAgentConfiguration(input: AgentConfigurationSaveInput): Promise<AgentConfigurationResponse> {
+  const result = await resilientFetch<AgentConfigurationResponse>("/api/settings/agent-configuration", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  if (!result.ok) {
+    throw new Error(extractApiErrorMessage(result.error.message));
+  }
+  return {
+    agents: result.data.agents.map(normalizeAgentConfigurationItem),
+  };
+}
+
+async function loadMcpServerSection(): Promise<McpServerResponse> {
+  const result = await resilientFetch<McpServerResponse>("/api/settings/mcp-servers");
+  if (!result.ok) {
+    throw new Error(extractApiErrorMessage(result.error.message));
+  }
+  return {
+    agents: result.data.agents.map((item) => ({
+      ...item,
+      servers: item.servers.map(normalizeMcpServerDraft),
+    })),
+  };
+}
+
+async function saveMcpServerSection(input: {
+  agent: string;
+  servers: McpServerDraft[];
+}): Promise<McpServerResponse> {
+  const result = await resilientFetch<McpServerResponse>("/api/settings/mcp-servers", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      agent: input.agent,
+      servers: input.servers.map(normalizeMcpServerDraft),
+    }),
+  });
+  if (!result.ok) {
+    throw new Error(extractApiErrorMessage(result.error.message));
+  }
+  return {
+    agents: result.data.agents.map((item) => ({
+      ...item,
+      servers: item.servers.map(normalizeMcpServerDraft),
+    })),
+  };
+}
+
+function isDirty<T>(baseline: T | null, draft: T | null): boolean {
+  return JSON.stringify(baseline) !== JSON.stringify(draft);
+}
+
 export default function SettingsPage() {
   const { auth, logout, isAuthenticated } = useGatewayAuth();
-  const { snapshot, refresh } = useBacklog();
-  const connection = isAuthenticated ? <SettingsConnected /> : null;
+  const {
+    snapshot,
+    refresh,
+    loading: backlogLoading,
+    error: backlogError,
+    updateProjectCollaboration,
+    updateRepositorySettings,
+  } = useBacklog();
   const project = snapshot?.projects[0];
   const dispatchContextLabels = snapshot?.dispatchContextLabels ?? [];
   const issues = snapshot?.issues ?? [];
+  const [selectedSection, setSelectedSection] = useState<SettingsSectionId>("repositories-projects");
+  const [pendingSection, setPendingSection] = useState<SettingsSectionId | null>(null);
+  const [selectedRepositoryId, setSelectedRepositoryId] = useState<string | null>(null);
+  const [repoProjectBaseline, setRepoProjectBaseline] = useState<RepositoriesProjectsDraft | null>(null);
+  const [repoProjectDraft, setRepoProjectDraft] = useState<RepositoriesProjectsDraft | null>(null);
+  const [organizationBaseline, setOrganizationBaseline] = useState<OrganizationDraft | null>(null);
+  const [organizationDraft, setOrganizationDraft] = useState<OrganizationDraft | null>(null);
+  const [repoProjectSaving, setRepoProjectSaving] = useState(false);
+  const [organizationSaving, setOrganizationSaving] = useState(false);
+  const [repoProjectNotice, setRepoProjectNotice] = useState<string | null>(null);
+  const [organizationNotice, setOrganizationNotice] = useState<string | null>(null);
+  const [repoProjectError, setRepoProjectError] = useState<string | null>(null);
+  const [organizationError, setOrganizationError] = useState<string | null>(null);
+
+  const [agentSection, setAgentSection] =
+    useState<RemoteSectionState<AgentConfigurationResponse>>(createEmptyRemoteState());
+  const [agentBaselineById, setAgentBaselineById] = useState<Record<string, AgentConfigurationItem>>({});
+  const [agentDraftById, setAgentDraftById] = useState<Record<string, AgentConfigurationItem>>({});
+  const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
+  const [agentSaving, setAgentSaving] = useState(false);
+  const [agentError, setAgentError] = useState<string | null>(null);
+  const [agentNotice, setAgentNotice] = useState<string | null>(null);
+
+  const [mcpSection, setMcpSection] =
+    useState<RemoteSectionState<McpServerResponse>>(createEmptyRemoteState());
+  const [mcpBaselineByAgent, setMcpBaselineByAgent] = useState<Record<string, McpServerDraft[]>>({});
+  const [mcpDraftByAgent, setMcpDraftByAgent] = useState<Record<string, McpServerDraft[]>>({});
+  const [selectedMcpAgentId, setSelectedMcpAgentId] = useState<string | null>(null);
+  const [mcpSaving, setMcpSaving] = useState(false);
+  const [mcpError, setMcpError] = useState<string | null>(null);
+  const [mcpNotice, setMcpNotice] = useState<string | null>(null);
+  const selectedRepository =
+    repoProjectDraft?.repositories.find((repository) => repository.id === selectedRepositoryId) ??
+    repoProjectDraft?.repositories[0] ??
+    null;
+
+  useEffect(() => {
+    const nextDraft = createRepositoriesProjectsDraft(project, issues);
+    if (
+      !isDirty(repoProjectBaseline, repoProjectDraft) &&
+      isDirty(repoProjectBaseline, nextDraft)
+    ) {
+      setRepoProjectBaseline(nextDraft);
+      setRepoProjectDraft(nextDraft);
+    } else if (repoProjectBaseline === null) {
+      setRepoProjectBaseline(nextDraft);
+      setRepoProjectDraft(nextDraft);
+    }
+  }, [issues, project, repoProjectBaseline, repoProjectDraft]);
+
+  useEffect(() => {
+    const nextDraft = createOrganizationDraft(project);
+    if (
+      !isDirty(organizationBaseline, organizationDraft) &&
+      isDirty(organizationBaseline, nextDraft)
+    ) {
+      setOrganizationBaseline(nextDraft);
+      setOrganizationDraft(nextDraft);
+    } else if (organizationBaseline === null) {
+      setOrganizationBaseline(nextDraft);
+      setOrganizationDraft(nextDraft);
+    }
+  }, [organizationBaseline, organizationDraft, project]);
+
+  useEffect(() => {
+    if (repoProjectDraft?.repositories.length && !selectedRepositoryId) {
+      setSelectedRepositoryId(repoProjectDraft.repositories[0]!.id);
+    }
+    if (
+      selectedRepositoryId &&
+      repoProjectDraft?.repositories.every((repository) => repository.id !== selectedRepositoryId)
+    ) {
+      setSelectedRepositoryId(repoProjectDraft.repositories[0]?.id ?? null);
+    }
+  }, [repoProjectDraft, selectedRepositoryId]);
+
+  useEffect(() => {
+    if (selectedSection !== "agent-configuration" || agentSection.status !== "idle") {
+      return;
+    }
+
+    setAgentSection({ status: "loading", data: null, error: null });
+    void loadAgentConfigurationSection()
+      .then((data) => {
+        setAgentSection({ status: "ready", data, error: null });
+        const nextBaseline = Object.fromEntries(data.agents.map((agent) => [agent.agent, agent]));
+        setAgentBaselineById(nextBaseline);
+        setAgentDraftById(nextBaseline);
+        setSelectedAgentId((current) => current ?? data.agents[0]?.agent ?? null);
+      })
+      .catch((error) => {
+        setAgentSection({
+          status: "error",
+          data: null,
+          error: error instanceof Error ? error.message : "Failed to load agent configuration.",
+        });
+      });
+  }, [agentSection.status, selectedSection]);
+
+  useEffect(() => {
+    if (selectedSection !== "mcp-servers" || mcpSection.status !== "idle") {
+      return;
+    }
+
+    setMcpSection({ status: "loading", data: null, error: null });
+    void loadMcpServerSection()
+      .then((data) => {
+        setMcpSection({ status: "ready", data, error: null });
+        const nextBaseline = Object.fromEntries(
+          data.agents.map((agent) => [agent.agent, agent.servers.map(normalizeMcpServerDraft)]),
+        );
+        setMcpBaselineByAgent(nextBaseline);
+        setMcpDraftByAgent(nextBaseline);
+        setSelectedMcpAgentId((current) => current ?? data.agents[0]?.agent ?? null);
+      })
+      .catch((error) => {
+        setMcpSection({
+          status: "error",
+          data: null,
+          error: error instanceof Error ? error.message : "Failed to load MCP servers.",
+        });
+      });
+  }, [mcpSection.status, selectedSection]);
+
+  const repoProjectDirty = isDirty(repoProjectBaseline, repoProjectDraft);
+  const organizationDirty = isDirty(organizationBaseline, organizationDraft);
+  const agentDirty = JSON.stringify(agentBaselineById) !== JSON.stringify(agentDraftById);
+  const mcpDirty = JSON.stringify(mcpBaselineByAgent) !== JSON.stringify(mcpDraftByAgent);
+  const activeSectionDirty =
+    (selectedSection === "repositories-projects" && repoProjectDirty) ||
+    (selectedSection === "organization" && organizationDirty) ||
+    (selectedSection === "agent-configuration" && agentDirty) ||
+    (selectedSection === "mcp-servers" && mcpDirty);
+
+  function requestSectionChange(nextSection: SettingsSectionId) {
+    if (nextSection === selectedSection) {
+      return;
+    }
+    if (activeSectionDirty) {
+      setPendingSection(nextSection);
+      return;
+    }
+    setSelectedSection(nextSection);
+    setPendingSection(null);
+  }
+
+  function discardPendingSectionDrafts() {
+    if (selectedSection === "repositories-projects") {
+      setRepoProjectDraft(repoProjectBaseline);
+      setRepoProjectError(null);
+      setRepoProjectNotice(null);
+    }
+    if (selectedSection === "organization") {
+      setOrganizationDraft(organizationBaseline);
+      setOrganizationError(null);
+      setOrganizationNotice(null);
+    }
+    if (selectedSection === "agent-configuration") {
+      setAgentDraftById(agentBaselineById);
+      setAgentError(null);
+      setAgentNotice(null);
+    }
+    if (selectedSection === "mcp-servers") {
+      setMcpDraftByAgent(mcpBaselineByAgent);
+      setMcpError(null);
+      setMcpNotice(null);
+    }
+    if (pendingSection) {
+      setSelectedSection(pendingSection);
+      setPendingSection(null);
+    }
+  }
+
+  async function handleSaveRepositoriesProjects() {
+    if (!project || !repoProjectDraft || !repoProjectBaseline) {
+      return;
+    }
+
+    setRepoProjectSaving(true);
+    setRepoProjectError(null);
+    setRepoProjectNotice(null);
+    try {
+      if (
+        repoProjectDraft.reviewRequiredForDone !== repoProjectBaseline.reviewRequiredForDone ||
+        repoProjectDraft.activityScope !== repoProjectBaseline.activityScope ||
+        repoProjectDraft.workspaceProvisioning !== repoProjectBaseline.workspaceProvisioning
+      ) {
+        await updateProjectCollaboration({
+          projectId: project.id,
+          teamName: project.team.name,
+          visibility: project.team.settings.visibility,
+          defaultRole: project.team.settings.defaultRole,
+          allowSelfAssign: project.team.settings.allowSelfAssign,
+          reviewRequiredForDone: repoProjectDraft.reviewRequiredForDone,
+          activityScope: repoProjectDraft.activityScope,
+          workspaceProvisioning: repoProjectDraft.workspaceProvisioning,
+          members: project.team.members.map((member) => ({
+            id: member.id,
+            displayName: member.displayName,
+            email: member.email,
+            role: member.role,
+          })),
+          permissions: project.permissions.map((permission) => ({
+            action: permission.action,
+            description: permission.description,
+            roles: [...permission.roles],
+          })),
+        });
+      }
+
+      for (const repository of repoProjectDraft.repositories) {
+        const baseline = repoProjectBaseline.repositories.find((candidate) => candidate.id === repository.id);
+        if (!baseline) {
+          continue;
+        }
+        if (JSON.stringify(repository) === JSON.stringify(baseline)) {
+          continue;
+        }
+        if (!repository.linkedIssueId) {
+          throw new Error(
+            `Repository ${repository.fullName} is missing the linked issue/work item context required for persistence.`,
+          );
+        }
+        await updateRepositorySettings({
+          issueId: repository.linkedIssueId,
+          baseBranch: repository.baseBranch,
+          ciProvider: repository.ciProvider || undefined,
+          publishTarget: repository.publishTarget || undefined,
+          autoMerge: repository.autoMerge,
+          requiredApprovals: repository.requiredApprovals,
+        });
+      }
+
+      await refresh();
+      setRepoProjectBaseline(repoProjectDraft);
+      setRepoProjectDraft(repoProjectDraft);
+      setRepoProjectNotice("Saved repositories/projects settings.");
+    } catch (error) {
+      setRepoProjectError(
+        error instanceof Error ? error.message : "Failed to save repositories/projects settings.",
+      );
+    } finally {
+      setRepoProjectSaving(false);
+    }
+  }
+
+  async function handleSaveOrganization() {
+    if (!project || !organizationDraft) {
+      return;
+    }
+
+    setOrganizationSaving(true);
+    setOrganizationError(null);
+    setOrganizationNotice(null);
+    try {
+      await updateProjectCollaboration({
+        projectId: project.id,
+        teamName: organizationDraft.teamName,
+        visibility: organizationDraft.visibility,
+        defaultRole: organizationDraft.defaultRole,
+        allowSelfAssign: organizationDraft.allowSelfAssign,
+        reviewRequiredForDone: project.settings.reviewRequiredForDone,
+        activityScope: project.settings.activityScope,
+        workspaceProvisioning: project.settings.workspaceProvisioning,
+        members: project.team.members.map((member) => ({
+          id: member.id,
+          displayName: member.displayName,
+          email: member.email,
+          role: member.role,
+        })),
+        permissions: project.permissions.map((permission) => ({
+          action: permission.action,
+          description: permission.description,
+          roles: [...permission.roles],
+        })),
+      });
+      await refresh();
+      setOrganizationBaseline(organizationDraft);
+      setOrganizationDraft(organizationDraft);
+      setOrganizationNotice("Saved organization settings.");
+    } catch (error) {
+      setOrganizationError(
+        error instanceof Error ? error.message : "Failed to save organization settings.",
+      );
+    } finally {
+      setOrganizationSaving(false);
+    }
+  }
+
+  async function handleSaveAgentConfiguration() {
+    if (!selectedAgentId || !agentDraftById[selectedAgentId]) {
+      return;
+    }
+
+    const draft = agentDraftById[selectedAgentId]!;
+    setAgentSaving(true);
+    setAgentError(null);
+    setAgentNotice(null);
+    try {
+      const response = await saveAgentConfiguration({
+        agent: selectedAgentId,
+        model: draft.configuredModel,
+        provider: draft.configuredProvider,
+        approvalMode: draft.approvalMode,
+        maxTokens: draft.maxTokens,
+      });
+      const nextBaseline = Object.fromEntries(response.agents.map((agent) => [agent.agent, agent]));
+      setAgentSection({ status: "ready", data: response, error: null });
+      setAgentBaselineById(nextBaseline);
+      setAgentDraftById(nextBaseline);
+      setAgentNotice(`Saved agent configuration for ${selectedAgentId}.`);
+    } catch (error) {
+      setAgentError(
+        error instanceof Error ? error.message : "Failed to save agent configuration.",
+      );
+    } finally {
+      setAgentSaving(false);
+    }
+  }
+
+  async function handleSaveMcpServers() {
+    if (!selectedMcpAgentId) {
+      return;
+    }
+
+    setMcpSaving(true);
+    setMcpError(null);
+    setMcpNotice(null);
+    try {
+      const response = await saveMcpServerSection({
+        agent: selectedMcpAgentId,
+        servers: mcpDraftByAgent[selectedMcpAgentId] ?? [],
+      });
+      const nextBaseline = Object.fromEntries(
+        response.agents.map((agent) => [agent.agent, agent.servers.map(normalizeMcpServerDraft)]),
+      );
+      setMcpSection({ status: "ready", data: response, error: null });
+      setMcpBaselineByAgent(nextBaseline);
+      setMcpDraftByAgent(nextBaseline);
+      setMcpNotice(`Saved MCP server settings for ${selectedMcpAgentId}.`);
+    } catch (error) {
+      setMcpError(error instanceof Error ? error.message : "Failed to save MCP servers.");
+    } finally {
+      setMcpSaving(false);
+    }
+  }
+
+  const connection = isAuthenticated ? <SettingsConnected /> : null;
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 px-6 py-6">
+    <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-6 py-6">
       <section className="rounded-3xl border border-border bg-card p-6 shadow-lg">
         <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">
           Settings
@@ -57,12 +694,11 @@ export default function SettingsPage() {
         <div className="mt-2">
           <LogoWordmark className="h-6 w-auto" />
         </div>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight">
-          Gateway and runtime status
-        </h1>
-        <p className="mt-2 text-sm leading-6 text-foreground-muted">
-          The kanban app does not own deep integrations. It points at a running agent-mux
-          gateway and observes Babysitter runs from the filesystem watcher and cached run parser.
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight">Sectioned settings parity</h1>
+        <p className="mt-2 max-w-4xl text-sm leading-6 text-foreground-muted">
+          The local kanban settings surface now treats repositories/projects, organization,
+          remote-project bindings, agent configuration, and MCP servers as explicit navigable
+          sections with coordinated page-level state.
         </p>
       </section>
 
@@ -86,143 +722,1140 @@ export default function SettingsPage() {
         </div>
       </section>
 
-      {project?.integrations?.length ? (
-        <section
-          className="rounded-3xl border border-border bg-card p-6 shadow-lg"
-          data-testid="integration-settings"
-        >
-          <h2 className="text-xl font-semibold tracking-tight">Repository integrations</h2>
-          <p className="mt-2 text-sm leading-6 text-foreground-muted">
-            GitHub and Azure Repos setup lives beside the board so missing auth, scopes, and
-            project binding are visible before linked PR actions fail in workspace or review
-            flows.
-          </p>
-          <div className="mt-4 grid gap-4 xl:grid-cols-2">
-            {project.integrations.map((integration) => (
-              <IntegrationCard key={integration.provider} integration={integration} />
-            ))}
+      <div className="grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)]">
+        <aside className="rounded-3xl border border-border bg-card p-4 shadow-lg">
+          <div className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground-muted">
+            Settings sections
           </div>
-        </section>
-      ) : null}
-
-      {project ? (
-        <section
-          className="rounded-3xl border border-border bg-card p-6 shadow-lg"
-          data-testid="collaboration-settings"
-        >
-          <h2 className="text-xl font-semibold tracking-tight">Team and collaboration</h2>
-          <p className="mt-2 text-sm leading-6 text-foreground-muted">
-            Collaboration is now modeled explicitly in shared kanban primitives: team roster,
-            project policy, activity scope, and role-based permissions all live alongside the
-            board.
-          </p>
-          <div className="mt-4 grid gap-3 lg:grid-cols-3">
-            <SettingCard
-              label="Team"
-              value={`${project.team.name} (${project.team.members.length} members)`}
-            />
-            <SettingCard
-              label="Visibility"
-              value={`${project.team.settings.visibility} / default ${project.team.settings.defaultRole}`}
-            />
-            <SettingCard
-              label="Workspace policy"
-              value={project.settings.workspaceProvisioning}
-            />
-          </div>
-
-          <div className="mt-5 grid gap-4 xl:grid-cols-2">
-            <div className="rounded-2xl border border-border bg-background/60 p-4">
-              <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                <Users className="h-4 w-4" />
-                Team roster
-              </div>
-              <div className="mt-3 space-y-2">
-                {project.team.members.map((member) => (
-                  <div
-                    key={member.id}
-                    className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card px-3 py-2 text-sm"
-                  >
-                    <div>
-                      <div className="font-medium text-foreground">
-                        {member.displayName}
-                      </div>
-                      <div className="text-xs text-foreground-muted">
-                        {member.email ?? member.id}
-                      </div>
-                    </div>
-                    <span className="rounded-full border border-border px-2.5 py-1 text-xs text-foreground-muted">
-                      {member.role}
-                    </span>
+          <div className="mt-4 space-y-2">
+            {SETTINGS_SECTIONS.map((section) => {
+              const Icon = section.icon;
+              const active = section.id === selectedSection;
+              return (
+                <button
+                  key={section.id}
+                  type="button"
+                  data-testid={`settings-nav-${section.id}`}
+                  onClick={() => requestSectionChange(section.id)}
+                  className={[
+                    "w-full rounded-2xl border px-4 py-3 text-left transition",
+                    active
+                      ? "border-primary/30 bg-primary/10"
+                      : "border-border bg-background/60 hover:bg-background",
+                  ].join(" ")}
+                >
+                  <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <Icon className="h-4 w-4" />
+                    {section.title}
                   </div>
-                ))}
-              </div>
-            </div>
+                  <div className="mt-1 text-xs leading-5 text-foreground-muted">
+                    {section.summary}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </aside>
 
-            <div className="rounded-2xl border border-border bg-background/60 p-4">
-              <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                <ShieldCheck className="h-4 w-4" />
-                Permission policy
+        <div className="space-y-6">
+          {pendingSection ? (
+            <section
+              className="rounded-3xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm"
+              data-testid="settings-dirty-switch-guard"
+            >
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="mt-0.5 h-4 w-4 text-amber-500" />
+                <div className="flex-1">
+                  <div className="font-semibold text-foreground">Unsaved changes are still open.</div>
+                  <div className="mt-1 text-foreground-muted">
+                    Switching sections now would drop the current draft. Discard the draft or stay
+                    on the current section.
+                  </div>
+                </div>
               </div>
-              <div className="mt-3 space-y-2">
-                {project.permissions.map((permission) => (
-                  <div
-                    key={permission.action}
-                    className="rounded-xl border border-border bg-card px-3 py-3 text-sm"
-                  >
-                    <div className="font-medium text-foreground">{permission.action}</div>
-                    <div className="mt-1 text-xs text-foreground-muted">
-                      {permission.description}
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Button type="button" variant="primary" onClick={discardPendingSectionDrafts}>
+                  Discard changes
+                </Button>
+                <Button type="button" variant="ghost" onClick={() => setPendingSection(null)}>
+                  Keep editing
+                </Button>
+              </div>
+            </section>
+          ) : null}
+
+          {selectedSection === "repositories-projects" ? (
+            <section className="space-y-6" data-testid="repositories-projects-settings">
+              <section className="rounded-3xl border border-border bg-card p-6 shadow-lg">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div className="max-w-3xl">
+                    <h2 className="text-xl font-semibold tracking-tight">Repositories and projects</h2>
+                    <p className="mt-2 text-sm leading-6 text-foreground-muted">
+                      Shared project policy and linked repository defaults live here, alongside the
+                      reusable authoring surfaces that stay tied to project execution context.
+                    </p>
+                  </div>
+                  <div className="grid min-w-[220px] gap-3 sm:grid-cols-2">
+                    <SettingCard label="Projects" value={String(snapshot?.projects.length ?? 0)} />
+                    <SettingCard
+                      label="Linked repos"
+                      value={String(repoProjectDraft?.repositories.length ?? 0)}
+                    />
+                  </div>
+                </div>
+
+                {backlogLoading ? (
+                  <SectionLoadingState text="Loading repositories and project settings…" />
+                ) : backlogError ? (
+                  <SectionErrorState
+                    title="Failed to load project settings"
+                    message={backlogError}
+                  />
+                ) : !repoProjectDraft || !project ? (
+                  <SectionEmptyState
+                    title="Project context is missing"
+                    message="No local kanban project snapshot is available yet, so repository and project settings cannot be edited."
+                  />
+                ) : (
+                  <div className="mt-5 space-y-5">
+                    {repoProjectError ? (
+                      <SectionErrorBanner message={repoProjectError} />
+                    ) : null}
+                    {repoProjectNotice ? (
+                      <SectionNoticeBanner message={repoProjectNotice} />
+                    ) : null}
+
+                    <div className="grid gap-5 xl:grid-cols-[minmax(0,340px)_minmax(0,1fr)]">
+                      <div className="rounded-2xl border border-border bg-background/60 p-4">
+                        <div className="text-sm font-semibold text-foreground">Project policy</div>
+                        <div className="mt-4 grid gap-4">
+                          <ToggleRow
+                            label="Review required before done"
+                            checked={repoProjectDraft.reviewRequiredForDone}
+                            onChange={(checked) =>
+                              setRepoProjectDraft((current) =>
+                                current ? { ...current, reviewRequiredForDone: checked } : current,
+                              )
+                            }
+                          />
+                          <SelectRow
+                            label="Activity scope"
+                            value={repoProjectDraft.activityScope}
+                            onChange={(value) =>
+                              setRepoProjectDraft((current) =>
+                                current
+                                  ? {
+                                      ...current,
+                                      activityScope: value as KanbanProjectSettings["activityScope"],
+                                    }
+                                  : current,
+                              )
+                            }
+                            options={[
+                              { value: "project-and-issues", label: "Project and issues" },
+                              { value: "all-board-entities", label: "All board entities" },
+                            ]}
+                          />
+                          <SelectRow
+                            label="Workspace provisioning"
+                            value={repoProjectDraft.workspaceProvisioning}
+                            onChange={(value) =>
+                              setRepoProjectDraft((current) =>
+                                current
+                                  ? {
+                                      ...current,
+                                      workspaceProvisioning:
+                                        value as KanbanProjectSettings["workspaceProvisioning"],
+                                    }
+                                  : current,
+                              )
+                            }
+                            options={[
+                              { value: "owners-maintainers", label: "Owners and maintainers" },
+                              { value: "contributors-and-up", label: "Contributors and up" },
+                            ]}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="rounded-2xl border border-border bg-background/60 p-4">
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                          <div>
+                            <div className="text-sm font-semibold text-foreground">
+                              Repository defaults
+                            </div>
+                            <div className="mt-1 text-xs text-foreground-muted">
+                              Each repository persists through the existing issue-linked mutation
+                              seam, so missing work-item context is called out explicitly.
+                            </div>
+                          </div>
+                          <select
+                            aria-label="Repository selector"
+                            value={selectedRepositoryId ?? ""}
+                            onChange={(event) => setSelectedRepositoryId(event.target.value)}
+                            className="h-10 rounded-xl border border-border bg-card px-3 text-sm text-foreground"
+                          >
+                            {repoProjectDraft.repositories.map((repository) => (
+                              <option key={repository.id} value={repository.id}>
+                                {repository.fullName}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        {repoProjectDraft.repositories.length === 0 ? (
+                          <div className="mt-4 rounded-2xl border border-dashed border-border bg-card px-4 py-4 text-sm text-foreground-muted">
+                            No linked repositories exist yet.
+                          </div>
+                        ) : (
+                          selectedRepository ? (
+                            <div key={selectedRepository.id} className="mt-4 grid gap-4">
+                              {!selectedRepository.linkedIssueId ? (
+                                <div
+                                  className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-foreground"
+                                  data-testid="missing-project-context"
+                                >
+                                  This repository is visible in the snapshot, but there is no
+                                  linked issue/work item available to persist repository settings
+                                  through the current kanban API seam.
+                                </div>
+                              ) : null}
+
+                              <TextInputRow
+                                label="Base branch"
+                                value={selectedRepository.baseBranch}
+                                onChange={(value) =>
+                                  setRepoProjectDraft((current) =>
+                                    current
+                                      ? {
+                                          ...current,
+                                          repositories: current.repositories.map((candidate) =>
+                                            candidate.id === selectedRepository.id
+                                              ? { ...candidate, baseBranch: value }
+                                              : candidate,
+                                          ),
+                                        }
+                                      : current,
+                                  )
+                                }
+                              />
+                              <div className="grid gap-4 sm:grid-cols-2">
+                                <TextInputRow
+                                  label="CI provider"
+                                  value={selectedRepository.ciProvider}
+                                  onChange={(value) =>
+                                    setRepoProjectDraft((current) =>
+                                      current
+                                        ? {
+                                            ...current,
+                                            repositories: current.repositories.map((candidate) =>
+                                              candidate.id === selectedRepository.id
+                                                ? { ...candidate, ciProvider: value }
+                                                : candidate,
+                                            ),
+                                          }
+                                        : current,
+                                    )
+                                  }
+                                />
+                                <TextInputRow
+                                  label="Publish target"
+                                  value={selectedRepository.publishTarget}
+                                  onChange={(value) =>
+                                    setRepoProjectDraft((current) =>
+                                      current
+                                        ? {
+                                            ...current,
+                                            repositories: current.repositories.map((candidate) =>
+                                              candidate.id === selectedRepository.id
+                                                ? { ...candidate, publishTarget: value }
+                                                : candidate,
+                                            ),
+                                          }
+                                        : current,
+                                    )
+                                  }
+                                />
+                              </div>
+                              <div className="grid gap-4 sm:grid-cols-2">
+                                <ToggleRow
+                                  label="Auto merge"
+                                  checked={selectedRepository.autoMerge}
+                                  onChange={(checked) =>
+                                    setRepoProjectDraft((current) =>
+                                      current
+                                        ? {
+                                            ...current,
+                                            repositories: current.repositories.map((candidate) =>
+                                              candidate.id === selectedRepository.id
+                                                ? { ...candidate, autoMerge: checked }
+                                                : candidate,
+                                            ),
+                                          }
+                                        : current,
+                                    )
+                                  }
+                                />
+                                <NumberInputRow
+                                  label="Required approvals"
+                                  value={selectedRepository.requiredApprovals}
+                                  min={0}
+                                  onChange={(value) =>
+                                    setRepoProjectDraft((current) =>
+                                      current
+                                        ? {
+                                            ...current,
+                                            repositories: current.repositories.map((candidate) =>
+                                              candidate.id === selectedRepository.id
+                                                ? {
+                                                    ...candidate,
+                                                    requiredApprovals: Math.max(0, value),
+                                                  }
+                                                : candidate,
+                                            ),
+                                          }
+                                        : current,
+                                    )
+                                  }
+                                />
+                              </div>
+                            </div>
+                          ) : null
+                        )}
+                      </div>
                     </div>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {permission.roles.map((role) => (
-                        <span
-                          key={`${permission.action}-${role}`}
-                          className="rounded-full border border-border px-2.5 py-1 text-xs text-foreground-muted"
+
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        type="button"
+                        variant="primary"
+                        onClick={() => void handleSaveRepositoriesProjects()}
+                        disabled={repoProjectSaving || !repoProjectDirty}
+                      >
+                        {repoProjectSaving ? "Saving…" : "Save repositories/projects"}
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={() => {
+                          setRepoProjectDraft(repoProjectBaseline);
+                          setRepoProjectError(null);
+                          setRepoProjectNotice(null);
+                        }}
+                        disabled={!repoProjectDirty || repoProjectSaving}
+                      >
+                        Discard changes
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </section>
+
+              <TaskTagSettings />
+
+              <DispatchContextLabelSettings
+                dispatchContextLabels={dispatchContextLabels}
+                issues={issues}
+                onRefresh={refresh}
+              />
+            </section>
+          ) : null}
+
+          {selectedSection === "organization" ? (
+            <section
+              className="rounded-3xl border border-border bg-card p-6 shadow-lg"
+              data-testid="organization-settings"
+            >
+              <h2 className="text-xl font-semibold tracking-tight">Organization settings</h2>
+              <p className="mt-2 text-sm leading-6 text-foreground-muted">
+                Team identity, visibility, default role, and roster policy are treated as a
+                separate organization section instead of being buried in the default settings body.
+              </p>
+
+              {backlogLoading ? (
+                <SectionLoadingState text="Loading organization settings…" />
+              ) : backlogError ? (
+                <SectionErrorState
+                  title="Failed to load organization settings"
+                  message={backlogError}
+                />
+              ) : !project || !organizationDraft ? (
+                <SectionEmptyState
+                  title="Organization context is missing"
+                  message="No project/team data is available in the local backlog snapshot."
+                />
+              ) : (
+                <>
+                  <div className="mt-4 grid gap-3 lg:grid-cols-3">
+                    <SettingCard
+                      label="Team"
+                      value={`${project.team.name} (${project.team.members.length} members)`}
+                    />
+                    <SettingCard
+                      label="Visibility"
+                      value={`${project.team.settings.visibility} / default ${project.team.settings.defaultRole}`}
+                    />
+                    <SettingCard
+                      label="Workspace policy"
+                      value={project.settings.workspaceProvisioning}
+                    />
+                  </div>
+
+                  {organizationError ? (
+                    <SectionErrorBanner message={organizationError} />
+                  ) : null}
+                  {organizationNotice ? (
+                    <SectionNoticeBanner message={organizationNotice} />
+                  ) : null}
+
+                  <div className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,360px)_minmax(0,1fr)]">
+                    <div className="rounded-2xl border border-border bg-background/60 p-4">
+                      <div className="text-sm font-semibold text-foreground">Organization policy</div>
+                      <div className="mt-4 grid gap-4">
+                        <TextInputRow
+                          label="Team name"
+                          value={organizationDraft.teamName}
+                          onChange={(value) =>
+                            setOrganizationDraft((current) =>
+                              current ? { ...current, teamName: value } : current,
+                            )
+                          }
+                        />
+                        <SelectRow
+                          label="Visibility"
+                          value={organizationDraft.visibility}
+                          onChange={(value) =>
+                            setOrganizationDraft((current) =>
+                              current
+                                ? {
+                                    ...current,
+                                    visibility: value as OrganizationDraft["visibility"],
+                                  }
+                                : current,
+                            )
+                          }
+                          options={[
+                            { value: "private", label: "Private" },
+                            { value: "team", label: "Team" },
+                            { value: "workspace-shared", label: "Workspace shared" },
+                          ]}
+                        />
+                        <SelectRow
+                          label="Default role"
+                          value={organizationDraft.defaultRole}
+                          onChange={(value) =>
+                            setOrganizationDraft((current) =>
+                              current
+                                ? {
+                                    ...current,
+                                    defaultRole: value as KanbanCollaboratorRole,
+                                  }
+                                : current,
+                            )
+                          }
+                          options={[
+                            { value: "owner", label: "Owner" },
+                            { value: "maintainer", label: "Maintainer" },
+                            { value: "contributor", label: "Contributor" },
+                            { value: "viewer", label: "Viewer" },
+                          ]}
+                        />
+                        <ToggleRow
+                          label="Allow self assign"
+                          checked={organizationDraft.allowSelfAssign}
+                          onChange={(checked) =>
+                            setOrganizationDraft((current) =>
+                              current ? { ...current, allowSelfAssign: checked } : current,
+                            )
+                          }
+                        />
+                      </div>
+
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        <Button
+                          type="button"
+                          variant="primary"
+                          onClick={() => void handleSaveOrganization()}
+                          disabled={!organizationDirty || organizationSaving}
                         >
-                          {role}
-                        </span>
+                          {organizationSaving ? "Saving…" : "Save organization"}
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          onClick={() => {
+                            setOrganizationDraft(organizationBaseline);
+                            setOrganizationError(null);
+                            setOrganizationNotice(null);
+                          }}
+                          disabled={!organizationDirty || organizationSaving}
+                        >
+                          Discard changes
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="rounded-2xl border border-border bg-background/60 p-4">
+                        <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                          <Users className="h-4 w-4" />
+                          Team roster
+                        </div>
+                        <div className="mt-3 space-y-2">
+                          {project.team.members.map((member) => (
+                            <div
+                              key={member.id}
+                              className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card px-3 py-2 text-sm"
+                            >
+                              <div>
+                                <div className="font-medium text-foreground">{member.displayName}</div>
+                                <div className="text-xs text-foreground-muted">
+                                  {member.email ?? member.id}
+                                </div>
+                              </div>
+                              <span className="rounded-full border border-border px-2.5 py-1 text-xs text-foreground-muted">
+                                {member.role}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="rounded-2xl border border-border bg-background/60 p-4">
+                        <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                          <ShieldCheck className="h-4 w-4" />
+                          Permission policy
+                        </div>
+                        <div className="mt-3 space-y-2">
+                          {project.permissions.map((permission) => (
+                            <div
+                              key={permission.action}
+                              className="rounded-xl border border-border bg-card px-3 py-3 text-sm"
+                            >
+                              <div className="font-medium text-foreground">{permission.action}</div>
+                              <div className="mt-1 text-xs text-foreground-muted">
+                                {permission.description}
+                              </div>
+                              <div className="mt-2 flex flex-wrap gap-2">
+                                {permission.roles.map((role) => (
+                                  <span
+                                    key={`${permission.action}-${role}`}
+                                    className="rounded-full border border-border px-2.5 py-1 text-xs text-foreground-muted"
+                                  >
+                                    {role}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+            </section>
+          ) : null}
+
+          {selectedSection === "remote-project" ? (
+            <section
+              className="rounded-3xl border border-border bg-card p-6 shadow-lg"
+              data-testid="remote-project-settings"
+            >
+              <h2 className="text-xl font-semibold tracking-tight">Remote-project settings</h2>
+              <p className="mt-2 text-sm leading-6 text-foreground-muted">
+                Remote host, organization, and project binding state is surfaced explicitly so
+                linked PR and review failures are explainable before operators leave the page.
+              </p>
+              {backlogLoading ? (
+                <SectionLoadingState text="Loading remote-project settings…" />
+              ) : backlogError ? (
+                <SectionErrorState
+                  title="Failed to load remote-project settings"
+                  message={backlogError}
+                />
+              ) : !project ? (
+                <SectionEmptyState
+                  title="Project context is missing"
+                  message="Remote-project bindings depend on a loaded project snapshot."
+                />
+              ) : project.integrations.length === 0 ? (
+                <SectionEmptyState
+                  title="Host context is missing"
+                  message="No remote host integrations are configured for this project yet."
+                />
+              ) : (
+                <div className="mt-4 space-y-4">
+                  {project.integrations.some((integration) =>
+                    integration.prerequisites.some((prerequisite) => !prerequisite.satisfied),
+                  ) ? (
+                    <div
+                      className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-foreground"
+                      data-testid="missing-host-context"
+                    >
+                      One or more remote hosts are missing organization or project binding
+                      prerequisites. Fix those prerequisites before relying on linked PR actions.
+                    </div>
+                  ) : null}
+                  <div className="grid gap-4 xl:grid-cols-2">
+                    {project.integrations.map((integration) => (
+                      <IntegrationCard key={integration.provider} integration={integration} />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </section>
+          ) : null}
+
+          {selectedSection === "agent-configuration" ? (
+            <section
+              className="rounded-3xl border border-border bg-card p-6 shadow-lg"
+              data-testid="agent-configuration-settings"
+            >
+              <h2 className="text-xl font-semibold tracking-tight">Agent configuration</h2>
+              <p className="mt-2 text-sm leading-6 text-foreground-muted">
+                Default model, provider, approval mode, and token limits are validated and saved as
+                a distinct section with its own loading and retry behavior.
+              </p>
+              {agentSection.status === "loading" || agentSection.status === "idle" ? (
+                <SectionLoadingState text="Loading agent configuration…" />
+              ) : agentSection.status === "error" ? (
+                <SectionErrorState
+                  title="Failed to load agent configuration"
+                  message={agentSection.error ?? "Unknown error"}
+                />
+              ) : !agentSection.data || agentSection.data.agents.length === 0 ? (
+                <SectionEmptyState
+                  title="No agent configuration is available"
+                  message="No agent definitions were returned for this settings surface."
+                />
+              ) : (
+                <>
+                  {agentError ? <SectionErrorBanner message={agentError} /> : null}
+                  {agentNotice ? <SectionNoticeBanner message={agentNotice} /> : null}
+                  <div className="mt-5 grid gap-5 xl:grid-cols-[220px_minmax(0,1fr)]">
+                    <div className="space-y-2">
+                      {agentSection.data.agents.map((agent) => (
+                        <button
+                          key={agent.agent}
+                          type="button"
+                          onClick={() => setSelectedAgentId(agent.agent)}
+                          className={[
+                            "w-full rounded-2xl border px-4 py-3 text-left",
+                            selectedAgentId === agent.agent
+                              ? "border-primary/30 bg-primary/10"
+                              : "border-border bg-background/60",
+                          ].join(" ")}
+                        >
+                          <div className="text-sm font-semibold text-foreground">
+                            {agent.displayName}
+                          </div>
+                          <div className="mt-1 text-xs text-foreground-muted">
+                            default {agent.defaultModel || "unconfigured"}
+                          </div>
+                        </button>
                       ))}
                     </div>
+                    {selectedAgentId && agentDraftById[selectedAgentId] ? (
+                      <div className="rounded-2xl border border-border bg-background/60 p-4">
+                        <div className="grid gap-4">
+                          <TextInputRow
+                            label="Model"
+                            value={agentDraftById[selectedAgentId]!.configuredModel}
+                            onChange={(value) =>
+                              setAgentDraftById((current) => ({
+                                ...current,
+                                [selectedAgentId]: {
+                                  ...current[selectedAgentId]!,
+                                  configuredModel: value,
+                                },
+                              }))
+                            }
+                            listId={`agent-models-${selectedAgentId}`}
+                          />
+                          <datalist id={`agent-models-${selectedAgentId}`}>
+                            {agentDraftById[selectedAgentId]!.availableModels.map((model) => (
+                              <option key={model.modelId} value={model.modelId} />
+                            ))}
+                          </datalist>
+                          <TextInputRow
+                            label="Provider"
+                            value={agentDraftById[selectedAgentId]!.configuredProvider}
+                            onChange={(value) =>
+                              setAgentDraftById((current) => ({
+                                ...current,
+                                [selectedAgentId]: {
+                                  ...current[selectedAgentId]!,
+                                  configuredProvider: value,
+                                },
+                              }))
+                            }
+                          />
+                          <SelectRow
+                            label="Approval mode"
+                            value={agentDraftById[selectedAgentId]!.approvalMode}
+                            onChange={(value) =>
+                              setAgentDraftById((current) => ({
+                                ...current,
+                                [selectedAgentId]: {
+                                  ...current[selectedAgentId]!,
+                                  approvalMode: value as "yolo" | "prompt" | "deny",
+                                },
+                              }))
+                            }
+                            options={[
+                              { value: "prompt", label: "Prompt" },
+                              { value: "yolo", label: "Yolo" },
+                              { value: "deny", label: "Deny" },
+                            ]}
+                          />
+                          <TextInputRow
+                            label="Max tokens"
+                            value={agentDraftById[selectedAgentId]!.maxTokens}
+                            onChange={(value) =>
+                              setAgentDraftById((current) => ({
+                                ...current,
+                                [selectedAgentId]: {
+                                  ...current[selectedAgentId]!,
+                                  maxTokens: value,
+                                },
+                              }))
+                            }
+                          />
+                        </div>
+                        <div className="mt-4 rounded-2xl border border-border bg-card px-4 py-3 text-xs text-foreground-muted">
+                          Known models:{" "}
+                          {agentDraftById[selectedAgentId]!.availableModels
+                            .map((model) =>
+                              model.deprecated && model.successorModelId
+                                ? `${model.modelId} -> ${model.successorModelId}`
+                                : model.modelId,
+                            )
+                            .join(", ")}
+                        </div>
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          <Button
+                            type="button"
+                            variant="primary"
+                            onClick={() => void handleSaveAgentConfiguration()}
+                            disabled={!agentDirty || agentSaving}
+                          >
+                            {agentSaving ? "Saving…" : "Save agent configuration"}
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={() => {
+                              setAgentDraftById(agentBaselineById);
+                              setAgentError(null);
+                              setAgentNotice(null);
+                            }}
+                            disabled={!agentDirty || agentSaving}
+                          >
+                            Discard changes
+                          </Button>
+                        </div>
+                      </div>
+                    ) : null}
                   </div>
-                ))}
-              </div>
-            </div>
-          </div>
+                </>
+              )}
+            </section>
+          ) : null}
 
-          <div className="mt-5 rounded-2xl border border-border bg-background/60 p-4">
-            <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-              <Activity className="h-4 w-4" />
-              Recent activity
-            </div>
-            <div className="mt-3 space-y-2">
-              {project.activity.slice(0, 4).map((entry) => (
-                <div
-                  key={entry.id}
-                  className="rounded-xl border border-border bg-card px-3 py-3 text-sm"
-                >
-                  <div className="flex items-center justify-between gap-3 text-xs text-foreground-muted">
-                    <span>{entry.actor.displayName}</span>
-                    <span>{new Date(entry.createdAt).toLocaleString()}</span>
+          {selectedSection === "mcp-servers" ? (
+            <section
+              className="rounded-3xl border border-border bg-card p-6 shadow-lg"
+              data-testid="mcp-server-settings"
+            >
+              <h2 className="text-xl font-semibold tracking-tight">MCP server settings</h2>
+              <p className="mt-2 text-sm leading-6 text-foreground-muted">
+                Per-agent MCP transport definitions are edited as structured drafts so invalid
+                entries fail safely without wiping the current form state.
+              </p>
+              {mcpSection.status === "loading" || mcpSection.status === "idle" ? (
+                <SectionLoadingState text="Loading MCP server settings…" />
+              ) : mcpSection.status === "error" ? (
+                <SectionErrorState
+                  title="Failed to load MCP server settings"
+                  message={mcpSection.error ?? "Unknown error"}
+                />
+              ) : !mcpSection.data || mcpSection.data.agents.length === 0 ? (
+                <SectionEmptyState
+                  title="No MCP server settings are available"
+                  message="No agents were returned for the MCP settings section."
+                />
+              ) : (
+                <>
+                  {mcpError ? <SectionErrorBanner message={mcpError} /> : null}
+                  {mcpNotice ? <SectionNoticeBanner message={mcpNotice} /> : null}
+                  <div className="mt-5 grid gap-5 xl:grid-cols-[220px_minmax(0,1fr)]">
+                    <div className="space-y-2">
+                      {mcpSection.data.agents.map((agent) => (
+                        <button
+                          key={agent.agent}
+                          type="button"
+                          onClick={() => setSelectedMcpAgentId(agent.agent)}
+                          className={[
+                            "w-full rounded-2xl border px-4 py-3 text-left",
+                            selectedMcpAgentId === agent.agent
+                              ? "border-primary/30 bg-primary/10"
+                              : "border-border bg-background/60",
+                          ].join(" ")}
+                        >
+                          <div className="text-sm font-semibold text-foreground">
+                            {agent.displayName}
+                          </div>
+                          <div className="mt-1 text-xs text-foreground-muted">
+                            {(mcpDraftByAgent[agent.agent] ?? []).length} server(s)
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+
+                    {selectedMcpAgentId ? (
+                      <div className="rounded-2xl border border-border bg-background/60 p-4">
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                          <div className="text-sm font-semibold text-foreground">
+                            MCP definitions for {selectedMcpAgentId}
+                          </div>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={() =>
+                              setMcpDraftByAgent((current) => ({
+                                ...current,
+                                [selectedMcpAgentId]: [
+                                  ...(current[selectedMcpAgentId] ?? []),
+                                  {
+                                    name: "",
+                                    transport: "stdio",
+                                    command: "",
+                                    url: "",
+                                    argsText: "",
+                                    envText: "",
+                                  },
+                                ],
+                              }))
+                            }
+                          >
+                            Add server
+                          </Button>
+                        </div>
+
+                        {(mcpDraftByAgent[selectedMcpAgentId] ?? []).length === 0 ? (
+                          <div className="mt-4 rounded-2xl border border-dashed border-border bg-card px-4 py-4 text-sm text-foreground-muted">
+                            No MCP servers configured for this agent yet.
+                          </div>
+                        ) : (
+                          <div className="mt-4 space-y-4">
+                            {(mcpDraftByAgent[selectedMcpAgentId] ?? []).map((server, index) => (
+                              <div
+                                key={`${selectedMcpAgentId}-${index}`}
+                                className="rounded-2xl border border-border bg-card p-4"
+                              >
+                                <div className="grid gap-4">
+                                  <div className="grid gap-4 sm:grid-cols-2">
+                                    <TextInputRow
+                                      label="Name"
+                                      value={server.name}
+                                      onChange={(value) =>
+                                        setMcpDraftByAgent((current) => ({
+                                          ...current,
+                                          [selectedMcpAgentId]: (current[selectedMcpAgentId] ?? []).map(
+                                            (candidate, candidateIndex) =>
+                                              candidateIndex === index
+                                                ? { ...candidate, name: value }
+                                                : candidate,
+                                          ),
+                                        }))
+                                      }
+                                    />
+                                    <SelectRow
+                                      label="Transport"
+                                      value={server.transport}
+                                      onChange={(value) =>
+                                        setMcpDraftByAgent((current) => ({
+                                          ...current,
+                                          [selectedMcpAgentId]: (current[selectedMcpAgentId] ?? []).map(
+                                            (candidate, candidateIndex) =>
+                                              candidateIndex === index
+                                                ? {
+                                                    ...candidate,
+                                                    transport: value as McpServerDraft["transport"],
+                                                  }
+                                                : candidate,
+                                          ),
+                                        }))
+                                      }
+                                      options={[
+                                        { value: "stdio", label: "stdio" },
+                                        { value: "sse", label: "sse" },
+                                        { value: "streamable-http", label: "streamable-http" },
+                                      ]}
+                                    />
+                                  </div>
+                                  {server.transport === "stdio" ? (
+                                    <TextInputRow
+                                      label="Command"
+                                      value={server.command}
+                                      onChange={(value) =>
+                                        setMcpDraftByAgent((current) => ({
+                                          ...current,
+                                          [selectedMcpAgentId]: (current[selectedMcpAgentId] ?? []).map(
+                                            (candidate, candidateIndex) =>
+                                              candidateIndex === index
+                                                ? { ...candidate, command: value }
+                                                : candidate,
+                                          ),
+                                        }))
+                                      }
+                                    />
+                                  ) : (
+                                    <TextInputRow
+                                      label="URL"
+                                      value={server.url}
+                                      onChange={(value) =>
+                                        setMcpDraftByAgent((current) => ({
+                                          ...current,
+                                          [selectedMcpAgentId]: (current[selectedMcpAgentId] ?? []).map(
+                                            (candidate, candidateIndex) =>
+                                              candidateIndex === index
+                                                ? { ...candidate, url: value }
+                                                : candidate,
+                                          ),
+                                        }))
+                                      }
+                                    />
+                                  )}
+                                  <TextAreaRow
+                                    label="Args"
+                                    value={server.argsText}
+                                    onChange={(value) =>
+                                      setMcpDraftByAgent((current) => ({
+                                        ...current,
+                                        [selectedMcpAgentId]: (current[selectedMcpAgentId] ?? []).map(
+                                          (candidate, candidateIndex) =>
+                                            candidateIndex === index
+                                              ? { ...candidate, argsText: value }
+                                              : candidate,
+                                        ),
+                                      }))
+                                    }
+                                    placeholder="One argument per line"
+                                  />
+                                  <TextAreaRow
+                                    label="Environment"
+                                    value={server.envText}
+                                    onChange={(value) =>
+                                      setMcpDraftByAgent((current) => ({
+                                        ...current,
+                                        [selectedMcpAgentId]: (current[selectedMcpAgentId] ?? []).map(
+                                          (candidate, candidateIndex) =>
+                                            candidateIndex === index
+                                              ? { ...candidate, envText: value }
+                                              : candidate,
+                                        ),
+                                      }))
+                                    }
+                                    placeholder="KEY=value"
+                                  />
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    onClick={() =>
+                                      setMcpDraftByAgent((current) => ({
+                                        ...current,
+                                        [selectedMcpAgentId]: (current[selectedMcpAgentId] ?? []).filter(
+                                          (_, candidateIndex) => candidateIndex !== index,
+                                        ),
+                                      }))
+                                    }
+                                  >
+                                    Remove server
+                                  </Button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          <Button
+                            type="button"
+                            variant="primary"
+                            onClick={() => void handleSaveMcpServers()}
+                            disabled={!mcpDirty || mcpSaving}
+                          >
+                            {mcpSaving ? "Saving…" : "Save MCP servers"}
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={() => {
+                              setMcpDraftByAgent(mcpBaselineByAgent);
+                              setMcpError(null);
+                              setMcpNotice(null);
+                            }}
+                            disabled={!mcpDirty || mcpSaving}
+                          >
+                            Discard changes
+                          </Button>
+                        </div>
+                      </div>
+                    ) : null}
                   </div>
-                  <div className="mt-1 text-foreground">{entry.summary}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      ) : null}
+                </>
+              )}
+            </section>
+          ) : null}
 
-      <TaskTagSettings />
-
-      <DispatchContextLabelSettings
-        dispatchContextLabels={dispatchContextLabels}
-        issues={issues}
-        onRefresh={refresh}
-      />
-
-      {connection}
+          {connection}
+        </div>
+      </div>
     </div>
+  );
+}
+
+function SectionLoadingState(props: { text: string }) {
+  return (
+    <div className="mt-5 rounded-2xl border border-border bg-background/60 px-4 py-4 text-sm text-foreground-muted">
+      {props.text}
+    </div>
+  );
+}
+
+function SectionEmptyState(props: { title: string; message: string }) {
+  return (
+    <div className="mt-5 rounded-2xl border border-dashed border-border bg-background/40 px-4 py-4">
+      <div className="font-medium text-foreground">{props.title}</div>
+      <div className="mt-1 text-sm text-foreground-muted">{props.message}</div>
+    </div>
+  );
+}
+
+function SectionErrorState(props: { title: string; message: string }) {
+  return (
+    <div className="mt-5 rounded-2xl border border-error/25 bg-error-muted px-4 py-4">
+      <div className="font-medium text-error">{props.title}</div>
+      <div className="mt-1 text-sm text-error">{props.message}</div>
+    </div>
+  );
+}
+
+function SectionErrorBanner(props: { message: string }) {
+  return (
+    <div className="mt-4 rounded-2xl border border-error/25 bg-error-muted px-4 py-3 text-sm text-error">
+      {props.message}
+    </div>
+  );
+}
+
+function SectionNoticeBanner(props: { message: string }) {
+  return (
+    <div className="mt-4 rounded-2xl border border-green-500/25 bg-green-500/10 px-4 py-3 text-sm text-green-700 dark:text-green-300">
+      {props.message}
+    </div>
+  );
+}
+
+function TextInputRow(props: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  listId?: string;
+}) {
+  return (
+    <label className="block text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+      {props.label}
+      <input
+        value={props.value}
+        onChange={(event) => props.onChange(event.target.value)}
+        list={props.listId}
+        className="mt-2 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground"
+      />
+    </label>
+  );
+}
+
+function TextAreaRow(props: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+}) {
+  return (
+    <label className="block text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+      {props.label}
+      <textarea
+        value={props.value}
+        onChange={(event) => props.onChange(event.target.value)}
+        placeholder={props.placeholder}
+        className="mt-2 min-h-24 w-full rounded-xl border border-border bg-card px-3 py-2 text-sm text-foreground"
+      />
+    </label>
+  );
+}
+
+function NumberInputRow(props: {
+  label: string;
+  value: number;
+  min?: number;
+  onChange: (value: number) => void;
+}) {
+  return (
+    <label className="block text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+      {props.label}
+      <input
+        type="number"
+        min={props.min}
+        value={props.value}
+        onChange={(event) => props.onChange(Number.parseInt(event.target.value, 10) || 0)}
+        className="mt-2 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground"
+      />
+    </label>
+  );
+}
+
+function SelectRow(props: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: Array<{ value: string; label: string }>;
+}) {
+  return (
+    <label className="block text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+      {props.label}
+      <select
+        value={props.value}
+        onChange={(event) => props.onChange(event.target.value)}
+        className="mt-2 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground"
+      >
+        {props.options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+function ToggleRow(props: {
+  label: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}) {
+  return (
+    <label className="flex items-center justify-between gap-4 rounded-2xl border border-border bg-card px-4 py-3 text-sm">
+      <span className="font-medium text-foreground">{props.label}</span>
+      <input
+        type="checkbox"
+        checked={props.checked}
+        onChange={(event) => props.onChange(event.target.checked)}
+        className="h-4 w-4"
+      />
+    </label>
   );
 }
 
