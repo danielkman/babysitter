@@ -688,11 +688,11 @@ function trackCompletionStream(
   };
 }
 
-function trackCompletionOutcome(
-  result: CompletionResult | Response,
+function trackCompletionOutcome<T extends CompletionResult | Response>(
+  result: T,
   metrics: MetricsTracker,
   options: { countSuccessResponse?: boolean } = {},
-): CompletionResult | Response {
+): T {
   if (result instanceof Response) {
     if (result.status >= 400) {
       metrics.recordError();
