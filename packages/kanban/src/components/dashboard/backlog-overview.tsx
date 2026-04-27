@@ -188,6 +188,18 @@ function workspaceShellHref(workspacePath: string): string {
   return `/workspaces?workspace=${encodeURIComponent(workspacePath)}`;
 }
 
+function issuePageHref(issueId: string): string {
+  return `/issues/${encodeURIComponent(issueId)}`;
+}
+
+function projectIssueHref(projectId: string, issueId: string): string {
+  return `/projects/${encodeURIComponent(projectId)}/issues/${encodeURIComponent(issueId)}`;
+}
+
+function projectIssueCreateHref(projectId: string): string {
+  return `/projects/${encodeURIComponent(projectId)}/issues/new`;
+}
+
 function workspaceLifecycleTone(status: string): string {
   switch (status) {
     case "active":
@@ -217,12 +229,18 @@ type PlanningSortMode = "board-order" | "priority" | "activity" | "title";
 interface CreateIssueDraft {
   title: string;
   summary: string;
+  description: string;
   workflowState: KanbanWorkflowState;
+  status: KanbanIssue["status"];
   priority: "critical" | "high" | "medium" | "low";
+  assigneeIds: string[];
+  labelIds: string[];
+  dependencies: IssueDependencyDraft[];
+  acceptanceCriteria: IssueAcceptanceCriterionDraft[];
 }
 
 type AutosaveStatus = "idle" | "saving" | "saved" | "partial";
-type IssueDetailField = "description" | "priority" | "assignees" | "labels";
+type IssueDetailField = "metadata" | "description" | "priority" | "assignees" | "labels";
 type IssueFieldSaveStatus = "idle" | "saving" | "saved" | "error";
 
 interface CreateModeState {
@@ -230,11 +248,28 @@ interface CreateModeState {
   workflowState: KanbanWorkflowState;
 }
 
+interface IssueDependencyDraft {
+  issueId: string;
+  type: "blocks" | "blocked-by" | "related";
+}
+
+interface IssueAcceptanceCriterionDraft {
+  id?: string;
+  title: string;
+  satisfied: boolean;
+  notes: string;
+}
+
 interface IssueDetailDraft {
+  title: string;
+  summary: string;
   description: string;
+  status: KanbanIssue["status"];
   priority: KanbanIssue["priority"];
   assigneeIds: string[];
   labelIds: string[];
+  dependencies: IssueDependencyDraft[];
+  acceptanceCriteria: IssueAcceptanceCriterionDraft[];
   baseUpdatedAt: string;
 }
 
@@ -253,6 +288,10 @@ interface BacklogOverviewProps {
   projectId?: string;
   routeBasePath?: string;
   forcedPresentation?: BoardPresentation;
+  routeMode?: "board" | "issue" | "create";
+  initialIssueId?: string;
+  initialIssueKey?: string;
+  initialProjectId?: string;
 }
 
 type IssueFieldStateMap = Record<IssueDetailField, IssueFieldState>;
@@ -261,8 +300,14 @@ function createEmptyDraft(workflowState: KanbanWorkflowState = "todo"): CreateIs
   return {
     title: "",
     summary: "",
+    description: "",
     workflowState,
+    status: workflowStateToIssueStatus(workflowState),
     priority: workflowState === "in-progress" || workflowState === "review" ? "high" : "medium",
+    assigneeIds: [],
+    labelIds: [],
+    dependencies: [],
+    acceptanceCriteria: [],
   };
 }
 
@@ -333,16 +378,30 @@ function autosaveCopy(status: AutosaveStatus): string {
 
 function createIssueDetailDraft(issue: KanbanIssue): IssueDetailDraft {
   return {
+    title: issue.title,
+    summary: issue.summary ?? "",
     description: issue.description ?? "",
+    status: issue.status,
     priority: issue.priority,
     assigneeIds: issue.assignees.map((assignee) => assignee.id),
     labelIds: issue.labels.map((label) => label.id),
+    dependencies: issue.dependencies.map((dependency) => ({
+      issueId: dependency.issueId,
+      type: dependency.type,
+    })),
+    acceptanceCriteria: issue.acceptanceCriteria.map((criterion) => ({
+      id: criterion.id,
+      title: criterion.title,
+      satisfied: criterion.satisfied,
+      notes: criterion.notes ?? "",
+    })),
     baseUpdatedAt: issue.updatedAt,
   };
 }
 
 function createIssueFieldStateMap(): IssueFieldStateMap {
   return {
+    metadata: { status: "idle", message: null },
     description: { status: "idle", message: null },
     priority: { status: "idle", message: null },
     assignees: { status: "idle", message: null },
@@ -354,12 +413,63 @@ function arraysEqual(left: readonly string[], right: readonly string[]): boolean
   return left.length === right.length && left.every((value, index) => value === right[index]);
 }
 
+function dependenciesEqual(
+  left: readonly IssueDependencyDraft[],
+  right: readonly IssueDependencyDraft[],
+): boolean {
+  return (
+    left.length === right.length &&
+    left.every(
+      (value, index) =>
+        value.issueId === right[index]?.issueId && value.type === right[index]?.type,
+    )
+  );
+}
+
+function acceptanceCriteriaEqual(
+  left: readonly IssueAcceptanceCriterionDraft[],
+  right: readonly IssueAcceptanceCriterionDraft[],
+): boolean {
+  return (
+    left.length === right.length &&
+    left.every(
+      (value, index) =>
+        value.id === right[index]?.id &&
+        value.title === right[index]?.title &&
+        value.satisfied === right[index]?.satisfied &&
+        value.notes === right[index]?.notes,
+    )
+  );
+}
+
 function isIssueFieldDirty(
   field: IssueDetailField,
   draft: IssueDetailDraft,
   issue: KanbanIssue,
 ): boolean {
   switch (field) {
+    case "metadata":
+      return (
+        draft.title !== issue.title ||
+        draft.summary !== (issue.summary ?? "") ||
+        draft.status !== issue.status ||
+        !dependenciesEqual(
+          draft.dependencies,
+          issue.dependencies.map((dependency) => ({
+            issueId: dependency.issueId,
+            type: dependency.type,
+          })),
+        ) ||
+        !acceptanceCriteriaEqual(
+          draft.acceptanceCriteria,
+          issue.acceptanceCriteria.map((criterion) => ({
+            id: criterion.id,
+            title: criterion.title,
+            satisfied: criterion.satisfied,
+            notes: criterion.notes ?? "",
+          })),
+        )
+      );
     case "description":
       return draft.description !== (issue.description ?? "");
     case "priority":
@@ -373,6 +483,7 @@ function isIssueFieldDirty(
 
 function isIssueDraftDirty(draft: IssueDetailDraft, issue: KanbanIssue): boolean {
   return (
+    isIssueFieldDirty("metadata", draft, issue) ||
     isIssueFieldDirty("description", draft, issue) ||
     isIssueFieldDirty("priority", draft, issue) ||
     isIssueFieldDirty("assignees", draft, issue) ||
@@ -386,6 +497,8 @@ function toggleId(values: readonly string[], id: string): string[] {
 
 interface CreateIssuePanelProps {
   draft: CreateIssueDraft;
+  project: KanbanProject;
+  issues: readonly KanbanIssue[];
   taskTags: readonly KanbanTaskTag[];
   autosaveStatus: AutosaveStatus;
   creatingIssue: boolean;
@@ -398,6 +511,8 @@ interface CreateIssuePanelProps {
 
 function CreateIssuePanel({
   draft,
+  project,
+  issues,
   taskTags,
   autosaveStatus,
   creatingIssue,
@@ -407,6 +522,22 @@ function CreateIssuePanel({
   onClose,
   onSubmit,
 }: CreateIssuePanelProps) {
+  const dependencyOptions = issues.filter((issue) => issue.projectId === project.id);
+  const [selectedDependencyIssueId, setSelectedDependencyIssueId] = useState<string>(
+    dependencyOptions[0]?.id ?? "",
+  );
+  const [selectedDependencyType, setSelectedDependencyType] = useState<
+    "blocks" | "blocked-by" | "related"
+  >("blocked-by");
+
+  useEffect(() => {
+    setSelectedDependencyIssueId((current) =>
+      current && dependencyOptions.some((candidate) => candidate.id === current)
+        ? current
+        : (dependencyOptions[0]?.id ?? ""),
+    );
+  }, [dependencyOptions]);
+
   return (
     <aside
       className="rounded-3xl border border-primary/20 bg-background p-5 shadow-lg"
@@ -439,6 +570,9 @@ function CreateIssuePanel({
       <div className="mt-3 flex flex-wrap gap-2 text-xs text-foreground-muted">
         <span className="rounded-full border border-border px-2.5 py-1">
           Target column {stateLabel(draft.workflowState)}
+        </span>
+        <span className="rounded-full border border-border px-2.5 py-1">
+          Status {issueStatusLabel(draft.status)}
         </span>
         <span className="rounded-full border border-border px-2.5 py-1">
           Priority {draft.priority}
@@ -491,7 +625,23 @@ function CreateIssuePanel({
           />
         </label>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <label className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+          Description
+          <textarea
+            aria-label="Issue description"
+            value={draft.description}
+            onChange={(event) =>
+              onChange((current) => ({
+                ...current,
+                description: event.target.value,
+              }))
+            }
+            placeholder="Describe the implementation, rollout, and acceptance notes."
+            className="mt-2 min-h-28 w-full rounded-xl border border-border bg-card px-3 py-2 text-sm text-foreground"
+          />
+        </label>
+
+        <div className="grid gap-4 sm:grid-cols-3">
           <label className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
             Target column
             <select
@@ -501,6 +651,7 @@ function CreateIssuePanel({
                 onChange((current) => ({
                   ...current,
                   workflowState: event.target.value as KanbanWorkflowState,
+                  status: workflowStateToIssueStatus(event.target.value as KanbanWorkflowState),
                 }))
               }
               className="mt-2 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground"
@@ -510,6 +661,28 @@ function CreateIssuePanel({
                   {stateLabel(state)}
                 </option>
               ))}
+            </select>
+          </label>
+
+          <label className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+            Status
+            <select
+              aria-label="Issue status"
+              value={draft.status}
+              onChange={(event) =>
+                onChange((current) => ({
+                  ...current,
+                  status: event.target.value as KanbanIssue["status"],
+                }))
+              }
+              className="mt-2 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground"
+            >
+              <option value="backlog">Backlog</option>
+              <option value="ready">Ready</option>
+              <option value="in-progress">In Progress</option>
+              <option value="blocked">Blocked</option>
+              <option value="review">Review</option>
+              <option value="done">Done</option>
             </select>
           </label>
 
@@ -532,6 +705,326 @@ function CreateIssuePanel({
               <option value="low">Low</option>
             </select>
           </label>
+        </div>
+
+        <div className="grid gap-4 xl:grid-cols-2">
+          <div className="rounded-2xl border border-border bg-card p-4">
+            <div className="text-sm font-semibold text-foreground">Assignees</div>
+            <div className="mt-3 space-y-2">
+              {project.team.members.length > 0 ? (
+                project.team.members.map((member) => (
+                  <label
+                    key={`create-issue-assignee-${member.id}`}
+                    className="flex items-center gap-2 text-sm text-foreground-muted"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={draft.assigneeIds.includes(member.id)}
+                      onChange={() =>
+                        onChange((current) => ({
+                          ...current,
+                          assigneeIds: toggleId(current.assigneeIds, member.id),
+                        }))
+                      }
+                    />
+                    <span>{member.displayName}</span>
+                  </label>
+                ))
+              ) : (
+                <div className="rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted">
+                  No assignees are configured for this project yet.
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-border bg-card p-4">
+            <div className="text-sm font-semibold text-foreground">Tags</div>
+            <div className="mt-3 space-y-2">
+              {project.labels.length > 0 ? (
+                project.labels.map((label) => (
+                  <label
+                    key={`create-issue-label-${label.id}`}
+                    className="flex items-center gap-2 text-sm text-foreground-muted"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={draft.labelIds.includes(label.id)}
+                      onChange={() =>
+                        onChange((current) => ({
+                          ...current,
+                          labelIds: toggleId(current.labelIds, label.id),
+                        }))
+                      }
+                    />
+                    <span>{label.name}</span>
+                  </label>
+                ))
+              ) : (
+                <div className="rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted">
+                  No project tags are available yet.
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="grid gap-4 xl:grid-cols-2">
+          <div className="rounded-2xl border border-border bg-card p-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <div className="text-sm font-semibold text-foreground">Dependencies</div>
+                <div className="mt-1 text-xs text-foreground-muted">
+                  Link existing issues while authoring instead of patching them later.
+                </div>
+              </div>
+            </div>
+
+            {dependencyOptions.length > 0 ? (
+              <>
+                <div className="mt-3 grid gap-3 sm:grid-cols-[minmax(0,1fr)_160px_auto]">
+                  <select
+                    aria-label="Dependency issue"
+                    value={selectedDependencyIssueId}
+                    onChange={(event) => setSelectedDependencyIssueId(event.target.value)}
+                    className="h-10 rounded-xl border border-border bg-background px-3 text-sm text-foreground"
+                  >
+                    {dependencyOptions.map((issue) => (
+                      <option key={`create-dependency-${issue.id}`} value={issue.id}>
+                        {issue.key}: {issue.title}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    aria-label="Dependency type"
+                    value={selectedDependencyType}
+                    onChange={(event) =>
+                      setSelectedDependencyType(
+                        event.target.value as "blocks" | "blocked-by" | "related",
+                      )
+                    }
+                    className="h-10 rounded-xl border border-border bg-background px-3 text-sm text-foreground"
+                  >
+                    <option value="blocked-by">Blocked by</option>
+                    <option value="blocks">Blocks</option>
+                    <option value="related">Related</option>
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!selectedDependencyIssueId) {
+                        return;
+                      }
+                      onChange((current) => {
+                        const nextDependency = {
+                          issueId: selectedDependencyIssueId,
+                          type: selectedDependencyType,
+                        } as const;
+                        if (
+                          current.dependencies.some(
+                            (candidate) =>
+                              candidate.issueId === nextDependency.issueId &&
+                              candidate.type === nextDependency.type,
+                          )
+                        ) {
+                          return current;
+                        }
+                        return {
+                          ...current,
+                          dependencies: [...current.dependencies, nextDependency],
+                        };
+                      });
+                    }}
+                    className="inline-flex h-10 items-center justify-center rounded-xl border border-border px-3 text-sm font-semibold text-foreground"
+                  >
+                    Add
+                  </button>
+                </div>
+
+                <div className="mt-3 space-y-3">
+                  {draft.dependencies.length > 0 ? (
+                    draft.dependencies.map((dependency, index) => {
+                      const dependencyIssue = dependencyOptions.find(
+                        (candidate) => candidate.id === dependency.issueId,
+                      );
+                      return (
+                        <div
+                          key={`create-dependency-draft-${dependency.issueId}-${index}`}
+                          className="rounded-2xl border border-border bg-background p-3"
+                        >
+                          <div className="text-sm font-semibold text-foreground">
+                            {dependencyIssue?.key ?? dependency.issueId}
+                          </div>
+                          <div className="mt-1 text-sm text-foreground-muted">
+                            {dependencyIssue?.title ?? "Linked dependency"}
+                          </div>
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            <select
+                              value={dependency.type}
+                              onChange={(event) =>
+                                onChange((current) => ({
+                                  ...current,
+                                  dependencies: current.dependencies.map(
+                                    (candidate, candidateIndex) =>
+                                      candidateIndex === index
+                                        ? {
+                                            ...candidate,
+                                            type: event.target.value as
+                                              | "blocks"
+                                              | "blocked-by"
+                                              | "related",
+                                          }
+                                        : candidate,
+                                  ),
+                                }))
+                              }
+                              className="h-9 rounded-xl border border-border bg-card px-3 text-sm text-foreground"
+                            >
+                              <option value="blocked-by">Blocked by</option>
+                              <option value="blocks">Blocks</option>
+                              <option value="related">Related</option>
+                            </select>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                onChange((current) => ({
+                                  ...current,
+                                  dependencies: current.dependencies.filter(
+                                    (_, candidateIndex) => candidateIndex !== index,
+                                  ),
+                                }))
+                              }
+                              className="inline-flex h-9 items-center justify-center rounded-xl border border-border px-3 text-xs font-semibold text-foreground-muted"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted">
+                      No dependencies configured.
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <div className="mt-3 rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted">
+                No same-project issues are available to link as dependencies yet.
+              </div>
+            )}
+          </div>
+
+          <div className="rounded-2xl border border-border bg-card p-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <div className="text-sm font-semibold text-foreground">Acceptance criteria</div>
+                <div className="mt-1 text-xs text-foreground-muted">
+                  Author criteria up front so issue readiness is explicit from creation time.
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() =>
+                  onChange((current) => ({
+                    ...current,
+                    acceptanceCriteria: [
+                      ...current.acceptanceCriteria,
+                      { title: "", satisfied: false, notes: "" },
+                    ],
+                  }))
+                }
+                className="inline-flex h-9 items-center justify-center rounded-xl border border-border px-3 text-xs font-semibold text-foreground"
+              >
+                Add criterion
+              </button>
+            </div>
+
+            <div className="mt-3 space-y-3">
+              {draft.acceptanceCriteria.length > 0 ? (
+                draft.acceptanceCriteria.map((criterion, index) => (
+                  <div
+                    key={`create-criterion-draft-${criterion.id ?? index}`}
+                    className="rounded-2xl border border-border bg-background p-3"
+                  >
+                    <label className="flex items-center gap-2 text-sm text-foreground-muted">
+                      <input
+                        type="checkbox"
+                        checked={criterion.satisfied}
+                        onChange={(event) =>
+                          onChange((current) => ({
+                            ...current,
+                            acceptanceCriteria: current.acceptanceCriteria.map(
+                              (candidate, candidateIndex) =>
+                                candidateIndex === index
+                                  ? { ...candidate, satisfied: event.target.checked }
+                                  : candidate,
+                            ),
+                          }))
+                        }
+                      />
+                      Satisfied
+                    </label>
+                    <input
+                      aria-label={`Acceptance criterion ${index + 1} title`}
+                      value={criterion.title}
+                      onChange={(event) =>
+                        onChange((current) => ({
+                          ...current,
+                          acceptanceCriteria: current.acceptanceCriteria.map(
+                            (candidate, candidateIndex) =>
+                              candidateIndex === index
+                                ? { ...candidate, title: event.target.value }
+                                : candidate,
+                          ),
+                        }))
+                      }
+                      placeholder="Describe the acceptance condition"
+                      className="mt-3 h-10 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground"
+                    />
+                    <input
+                      aria-label={`Acceptance criterion ${index + 1} notes`}
+                      value={criterion.notes}
+                      onChange={(event) =>
+                        onChange((current) => ({
+                          ...current,
+                          acceptanceCriteria: current.acceptanceCriteria.map(
+                            (candidate, candidateIndex) =>
+                              candidateIndex === index
+                                ? { ...candidate, notes: event.target.value }
+                                : candidate,
+                          ),
+                        }))
+                      }
+                      placeholder="Optional note"
+                      className="mt-2 h-10 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground"
+                    />
+                    <div className="mt-2 flex justify-end">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          onChange((current) => ({
+                            ...current,
+                            acceptanceCriteria: current.acceptanceCriteria.filter(
+                              (_, candidateIndex) => candidateIndex !== index,
+                            ),
+                          }))
+                        }
+                        className="inline-flex h-9 items-center justify-center rounded-xl border border-border px-3 text-xs font-semibold text-foreground-muted"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted">
+                  No acceptance criteria authored yet.
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         {validationError ? (
@@ -1641,6 +2134,7 @@ interface IssueDetailPanelProps {
   assigneeEditing: boolean;
   labelEditing: boolean;
   onFocusIssue: (issue: KanbanIssue) => void;
+  onOpenDedicatedPage: (issue: KanbanIssue) => void;
   onClose: () => void;
   onChangeDraft: (updater: (current: IssueDetailDraft) => IssueDetailDraft) => void;
   onResetDraft: () => void;
@@ -1686,6 +2180,7 @@ function IssueDetailPanel({
   assigneeEditing,
   labelEditing,
   onFocusIssue,
+  onOpenDedicatedPage,
   onClose,
   onChangeDraft,
   onResetDraft,
@@ -1727,6 +2222,9 @@ function IssueDetailPanel({
       !ancestors.has(candidate.id) &&
       !candidate.parentIssueId,
   );
+  const dependencyOptions = issues.filter(
+    (candidate) => candidate.projectId === issue.projectId && candidate.id !== issue.id,
+  );
 
   const [childTitle, setChildTitle] = useState("");
   const [childSummary, setChildSummary] = useState("");
@@ -1738,6 +2236,12 @@ function IssueDetailPanel({
   >("backlog");
   const [selectedChildIssueId, setSelectedChildIssueId] = useState<string>(
     linkableIssues[0]?.id ?? "",
+  );
+  const [selectedDependencyIssueId, setSelectedDependencyIssueId] = useState<string>(
+    dependencyOptions[0]?.id ?? "",
+  );
+  const [selectedDependencyType, setSelectedDependencyType] = useState<"blocks" | "blocked-by" | "related">(
+    "blocked-by",
   );
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const availableLabels = project.labels;
@@ -1776,6 +2280,14 @@ function IssueDetailPanel({
         : (availableWorkspaceTargets[0]?.path ?? ""),
     );
   }, [availableWorkspaceTargets]);
+
+  useEffect(() => {
+    setSelectedDependencyIssueId((current) =>
+      current && dependencyOptions.some((candidate) => candidate.id === current)
+        ? current
+        : (dependencyOptions[0]?.id ?? ""),
+    );
+  }, [dependencyOptions]);
 
   function insertDescriptionSnippet(snippet: string) {
     const textarea = textareaRef.current;
@@ -1881,6 +2393,13 @@ function IssueDetailPanel({
 
         <button
           type="button"
+          onClick={() => onOpenDedicatedPage(issue)}
+          className="inline-flex h-11 items-center justify-center rounded-xl border border-border px-4 text-sm font-semibold text-foreground-muted"
+        >
+          Open page
+        </button>
+        <button
+          type="button"
           onClick={onClose}
           className="inline-flex h-11 items-center justify-center rounded-xl border border-border px-4 text-sm font-semibold text-foreground-muted"
         >
@@ -1900,6 +2419,344 @@ function IssueDetailPanel({
           {relationshipError}
         </div>
       ) : null}
+
+      <section className="mt-5 rounded-2xl border border-border bg-background/80 p-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div className="text-sm font-semibold text-foreground">Issue profile</div>
+            <div className="mt-1 text-xs text-foreground-muted">
+              Shared issue metadata now edits through the same mutation-backed flow as the board.
+            </div>
+          </div>
+          <div className="flex gap-2">
+            {isIssueFieldDirty("metadata", draft, issue) ? (
+              <button
+                type="button"
+                onClick={() => onResetField("metadata")}
+                className="inline-flex h-9 items-center justify-center rounded-xl border border-border px-3 text-xs font-semibold text-foreground-muted"
+              >
+                Reset
+              </button>
+            ) : null}
+            <button
+              type="button"
+              onClick={() => onSaveField("metadata")}
+              disabled={!isIssueFieldDirty("metadata", draft, issue) || fieldStates.metadata.status === "saving"}
+              className="inline-flex h-9 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 px-3 text-xs font-semibold text-primary disabled:opacity-50"
+            >
+              {fieldStates.metadata.status === "saving" ? "Saving…" : "Save profile"}
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-4 grid gap-4 xl:grid-cols-2">
+          <label className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+            Title
+            <input
+              value={draft.title}
+              onChange={(event) =>
+                onChangeDraft((current) => ({
+                  ...current,
+                  title: event.target.value,
+                }))
+              }
+              className="mt-2 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground"
+            />
+          </label>
+
+          <label className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+            Status
+            <select
+              value={draft.status}
+              onChange={(event) =>
+                onChangeDraft((current) => ({
+                  ...current,
+                  status: event.target.value as KanbanIssue["status"],
+                }))
+              }
+              className="mt-2 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground"
+            >
+              <option value="backlog">Backlog</option>
+              <option value="ready">Ready</option>
+              <option value="in-progress">In Progress</option>
+              <option value="blocked">Blocked</option>
+              <option value="review">Review</option>
+              <option value="done">Done</option>
+            </select>
+          </label>
+        </div>
+
+        <label className="mt-4 block text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+          Summary
+          <TaskTagAutocompleteTextarea
+            taskTags={taskTags}
+            value={draft.summary}
+            onValueChange={(summary) =>
+              onChangeDraft((current) => ({
+                ...current,
+                summary,
+              }))
+            }
+            className="mt-2"
+            renderTextarea={(props) => (
+              <textarea
+                {...props}
+                className="min-h-24 w-full rounded-2xl border border-border bg-card px-3 py-3 text-sm text-foreground"
+              />
+            )}
+          />
+        </label>
+
+        <div className="mt-4 grid gap-4 xl:grid-cols-2">
+          <div className="rounded-2xl border border-border bg-card p-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <div className="text-sm font-semibold text-foreground">Dependencies</div>
+                <div className="mt-1 text-xs text-foreground-muted">
+                  Link blockers and related work directly from the detail surface.
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-3 flex flex-wrap gap-2">
+              <select
+                value={selectedDependencyIssueId}
+                onChange={(event) => setSelectedDependencyIssueId(event.target.value)}
+                className="h-10 min-w-[180px] flex-1 rounded-xl border border-border bg-background px-3 text-sm text-foreground"
+              >
+                {dependencyOptions.map((candidate) => (
+                  <option key={`dependency-option-${candidate.id}`} value={candidate.id}>
+                    {candidate.key} · {candidate.title}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={selectedDependencyType}
+                onChange={(event) =>
+                  setSelectedDependencyType(event.target.value as "blocks" | "blocked-by" | "related")
+                }
+                className="h-10 rounded-xl border border-border bg-background px-3 text-sm text-foreground"
+              >
+                <option value="blocked-by">Blocked by</option>
+                <option value="blocks">Blocks</option>
+                <option value="related">Related</option>
+              </select>
+              <button
+                type="button"
+                onClick={() => {
+                  if (!selectedDependencyIssueId) {
+                    return;
+                  }
+                  onChangeDraft((current) => {
+                    if (
+                      current.dependencies.some(
+                        (dependency) =>
+                          dependency.issueId === selectedDependencyIssueId &&
+                          dependency.type === selectedDependencyType,
+                      )
+                    ) {
+                      return current;
+                    }
+                    return {
+                      ...current,
+                      dependencies: [
+                        ...current.dependencies,
+                        {
+                          issueId: selectedDependencyIssueId,
+                          type: selectedDependencyType,
+                        },
+                      ],
+                    };
+                  });
+                }}
+                className="inline-flex h-10 items-center justify-center rounded-xl border border-border px-3 text-xs font-semibold text-foreground"
+              >
+                Add
+              </button>
+            </div>
+
+            <div className="mt-3 space-y-2">
+              {draft.dependencies.length > 0 ? (
+                draft.dependencies.map((dependency, index) => {
+                  const dependencyIssue = issueById.get(dependency.issueId);
+                  return (
+                    <div
+                      key={`dependency-draft-${dependency.issueId}-${dependency.type}-${index}`}
+                      className="rounded-2xl border border-border bg-background px-3 py-3"
+                    >
+                      <div className="flex flex-wrap items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => dependencyIssue && onFocusIssue(dependencyIssue)}
+                          className="text-sm font-semibold text-foreground underline-offset-4 hover:underline"
+                        >
+                          {dependencyIssue?.key ?? dependency.issueId}
+                        </button>
+                        <span className="text-sm text-foreground-muted">
+                          {dependencyIssue?.title ?? "Linked dependency"}
+                        </span>
+                      </div>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        <select
+                          value={dependency.type}
+                          onChange={(event) =>
+                            onChangeDraft((current) => ({
+                              ...current,
+                              dependencies: current.dependencies.map((candidate, candidateIndex) =>
+                                candidateIndex === index
+                                  ? {
+                                      ...candidate,
+                                      type: event.target.value as "blocks" | "blocked-by" | "related",
+                                    }
+                                  : candidate,
+                              ),
+                            }))
+                          }
+                          className="h-9 rounded-xl border border-border bg-card px-3 text-sm text-foreground"
+                        >
+                          <option value="blocked-by">Blocked by</option>
+                          <option value="blocks">Blocks</option>
+                          <option value="related">Related</option>
+                        </select>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            onChangeDraft((current) => ({
+                              ...current,
+                              dependencies: current.dependencies.filter((_, candidateIndex) => candidateIndex !== index),
+                            }))
+                          }
+                          className="inline-flex h-9 items-center justify-center rounded-xl border border-border px-3 text-xs font-semibold text-foreground-muted"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted">
+                  No dependencies configured.
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-border bg-card p-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <div className="text-sm font-semibold text-foreground">Acceptance criteria</div>
+                <div className="mt-1 text-xs text-foreground-muted">
+                  Criteria now stay editable instead of living only in seeded snapshots.
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() =>
+                  onChangeDraft((current) => ({
+                    ...current,
+                    acceptanceCriteria: [
+                      ...current.acceptanceCriteria,
+                      { title: "", satisfied: false, notes: "" },
+                    ],
+                  }))
+                }
+                className="inline-flex h-9 items-center justify-center rounded-xl border border-border px-3 text-xs font-semibold text-foreground"
+              >
+                Add criterion
+              </button>
+            </div>
+
+            <div className="mt-3 space-y-3">
+              {draft.acceptanceCriteria.length > 0 ? (
+                draft.acceptanceCriteria.map((criterion, index) => (
+                  <div key={`criterion-draft-${criterion.id ?? index}`} className="rounded-2xl border border-border bg-background p-3">
+                    <label className="flex items-center gap-2 text-sm text-foreground-muted">
+                      <input
+                        type="checkbox"
+                        checked={criterion.satisfied}
+                        onChange={(event) =>
+                          onChangeDraft((current) => ({
+                            ...current,
+                            acceptanceCriteria: current.acceptanceCriteria.map((candidate, candidateIndex) =>
+                              candidateIndex === index
+                                ? { ...candidate, satisfied: event.target.checked }
+                                : candidate,
+                            ),
+                          }))
+                        }
+                      />
+                      Satisfied
+                    </label>
+                    <input
+                      value={criterion.title}
+                      onChange={(event) =>
+                        onChangeDraft((current) => ({
+                          ...current,
+                          acceptanceCriteria: current.acceptanceCriteria.map((candidate, candidateIndex) =>
+                            candidateIndex === index
+                              ? { ...candidate, title: event.target.value }
+                              : candidate,
+                          ),
+                        }))
+                      }
+                      placeholder="Describe the acceptance condition"
+                      className="mt-3 h-10 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground"
+                    />
+                    <input
+                      value={criterion.notes}
+                      onChange={(event) =>
+                        onChangeDraft((current) => ({
+                          ...current,
+                          acceptanceCriteria: current.acceptanceCriteria.map((candidate, candidateIndex) =>
+                            candidateIndex === index
+                              ? { ...candidate, notes: event.target.value }
+                              : candidate,
+                          ),
+                        }))
+                      }
+                      placeholder="Optional note"
+                      className="mt-2 h-10 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground"
+                    />
+                    <div className="mt-2 flex justify-end">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          onChangeDraft((current) => ({
+                            ...current,
+                            acceptanceCriteria: current.acceptanceCriteria.filter(
+                              (_, candidateIndex) => candidateIndex !== index,
+                            ),
+                          }))
+                        }
+                        className="inline-flex h-9 items-center justify-center rounded-xl border border-border px-3 text-xs font-semibold text-foreground-muted"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted">
+                  No acceptance criteria authored yet.
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {fieldStates.metadata.message ? (
+          <div
+            className={`mt-3 rounded-2xl border px-4 py-3 text-sm ${
+              fieldStates.metadata.status === "error"
+                ? "border-error/30 bg-error-muted text-error"
+                : "border-success/30 bg-success-muted text-success"
+            }`}
+          >
+            {fieldStates.metadata.message}
+          </div>
+        ) : null}
+      </section>
 
       <section className="mt-5 rounded-2xl border border-border bg-background/80 p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -2794,6 +3651,10 @@ export function BacklogOverview({
   projectId: requestedProjectId,
   routeBasePath,
   forcedPresentation,
+  routeMode = "board",
+  initialIssueId,
+  initialIssueKey,
+  initialProjectId,
 }: BacklogOverviewProps = {}) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -2828,48 +3689,44 @@ export function BacklogOverview({
     () => new Map(issueReviews.artifacts.map((artifact) => [artifact.targetId, artifact] as const)),
     [issueReviews.artifacts],
   );
-  const focusedIssueId = searchParams.get("issueId");
-  const focusedIssueKey = searchParams.get("issueKey");
+  const focusedIssueId =
+    routeMode === "board" ? searchParams.get("issueId") : (initialIssueId ?? null);
+  const focusedIssueKey =
+    routeMode === "board" ? searchParams.get("issueKey") : (initialIssueKey ?? null);
+  const stateScopeKey = requestedProjectId ?? initialProjectId ?? "default";
   const [persistedPresentation, setPersistedPresentation] = usePersistedState<BoardPresentation>(
     "backlog-presentation",
     "board",
   );
   const presentation = forcedPresentation ?? persistedPresentation;
-  const [searchTerm, setSearchTerm] = usePersistedState(
-    `kanban-search-${requestedProjectId ?? "default"}`,
-    "",
-  );
+  const [searchTerm, setSearchTerm] = usePersistedState(`kanban-search-${stateScopeKey}`, "");
   const [workflowFilter, setWorkflowFilter] = usePersistedState<
     KanbanWorkflowState | "all"
-  >(`kanban-workflow-filter-${requestedProjectId ?? "default"}`, "all");
+  >(`kanban-workflow-filter-${stateScopeKey}`, "all");
   const [readinessFilter, setReadinessFilter] = usePersistedState<
     KanbanBoardCard["readiness"] | "all"
-  >(`kanban-readiness-filter-${requestedProjectId ?? "default"}`, "all");
-  const [assigneeFilter, setAssigneeFilter] = usePersistedState(
-    `kanban-assignee-filter-${requestedProjectId ?? "default"}`,
-    "all",
-  );
-  const [tagFilter, setTagFilter] = usePersistedState(
-    `kanban-tag-filter-${requestedProjectId ?? "default"}`,
-    "all",
-  );
+  >(`kanban-readiness-filter-${stateScopeKey}`, "all");
+  const [assigneeFilter, setAssigneeFilter] = usePersistedState(`kanban-assignee-filter-${stateScopeKey}`, "all");
+  const [tagFilter, setTagFilter] = usePersistedState(`kanban-tag-filter-${stateScopeKey}`, "all");
   const [sortMode, setSortMode] = usePersistedState<PlanningSortMode>(
-    `kanban-sort-mode-${requestedProjectId ?? "default"}`,
+    `kanban-sort-mode-${stateScopeKey}`,
     "board-order",
   );
   const [showEmptySwimlanes, setShowEmptySwimlanes] = usePersistedState(
-    `kanban-show-empty-swimlanes-${requestedProjectId ?? "default"}`,
+    `kanban-show-empty-swimlanes-${stateScopeKey}`,
     false,
   );
   const [showPolicySignals, setShowPolicySignals] = usePersistedState(
-    `kanban-show-policy-signals-${requestedProjectId ?? "default"}`,
+    `kanban-show-policy-signals-${stateScopeKey}`,
     true,
   );
   const [selectedIssueIds, setSelectedIssueIds] = useState<string[]>([]);
   const [bulkTargetState, setBulkTargetState] = useState<KanbanWorkflowState>("in-progress");
   const [bulkPending, setBulkPending] = useState<null | "move" | "workspace">(null);
   const [bulkNotice, setBulkNotice] = useState<string | null>(null);
-  const [createMode, setCreateMode] = useState<CreateModeState | null>(null);
+  const [createMode, setCreateMode] = useState<CreateModeState | null>(
+    routeMode === "create" ? { source: "header", workflowState: "todo" } : null,
+  );
   const [draft, setDraft] = usePersistedState<CreateIssueDraft>(
     "board-create-draft",
     createEmptyDraft(),
@@ -2920,8 +3777,14 @@ export function BacklogOverview({
     const isPristineDraft =
       draft.title === baselineDraft.title &&
       draft.summary === baselineDraft.summary &&
+      draft.description === baselineDraft.description &&
       draft.workflowState === baselineDraft.workflowState &&
-      draft.priority === baselineDraft.priority;
+      draft.status === baselineDraft.status &&
+      draft.priority === baselineDraft.priority &&
+      arraysEqual(draft.assigneeIds, baselineDraft.assigneeIds) &&
+      arraysEqual(draft.labelIds, baselineDraft.labelIds) &&
+      dependenciesEqual(draft.dependencies, baselineDraft.dependencies) &&
+      acceptanceCriteriaEqual(draft.acceptanceCriteria, baselineDraft.acceptanceCriteria);
 
     if (isPristineDraft) {
       setAutosaveStatus("idle");
@@ -2934,19 +3797,38 @@ export function BacklogOverview({
     }, 250);
 
     return () => window.clearTimeout(timeout);
-  }, [createMode, draft.title, draft.summary, draft.priority, draft.workflowState]);
+  }, [
+    createMode,
+    draft.acceptanceCriteria,
+    draft.assigneeIds,
+    draft.dependencies,
+    draft.description,
+    draft.labelIds,
+    draft.priority,
+    draft.status,
+    draft.summary,
+    draft.title,
+    draft.workflowState,
+  ]);
 
-  const primaryProject =
-    (requestedProjectId
-      ? snapshot?.projects.find((candidate) => candidate.id === requestedProjectId)
-      : undefined) ?? snapshot?.projects[0];
-  const primaryBoard = primaryProject
-    ? board?.projects.find((candidate) => candidate.projectId === primaryProject.id)
-    : undefined;
   const issueById = new Map((snapshot?.issues ?? []).map((issue) => [issue.id, issue] as const));
   const focusedIssue =
     (focusedIssueId ? issueById.get(focusedIssueId) : undefined) ??
     (focusedIssueKey ? snapshot?.issues.find((issue) => issue.key === focusedIssueKey) : undefined);
+  const primaryProject =
+    (requestedProjectId
+      ? snapshot?.projects.find((candidate) => candidate.id === requestedProjectId)
+      : undefined) ??
+    (initialProjectId
+      ? snapshot?.projects.find((candidate) => candidate.id === initialProjectId)
+      : undefined) ??
+    (focusedIssue
+      ? snapshot?.projects.find((candidate) => candidate.id === focusedIssue.projectId)
+      : undefined) ??
+    snapshot?.projects[0];
+  const primaryBoard = primaryProject
+    ? board?.projects.find((candidate) => candidate.projectId === primaryProject.id)
+    : undefined;
   const focusedIssueCard =
     focusedIssue && primaryBoard
       ? primaryBoard.cards.find((candidate) => candidate.issueId === focusedIssue.id)
@@ -3150,6 +4032,139 @@ export function BacklogOverview({
     return null;
   }
 
+  if (routeMode === "create") {
+    return (
+      <section className="mb-6 space-y-4" data-testid="issue-create-route">
+        <div className="rounded-3xl border border-border bg-card p-6 shadow-lg">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">
+                Issue authoring
+              </p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-tight text-foreground">
+                Create a first-class issue
+              </h2>
+              <p className="mt-3 text-sm leading-6 text-foreground-muted">
+                This route uses the same shared mutation-backed create flow as the board while giving
+                issue authoring its own stable URL.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={clearFocusedIssue}
+              className="inline-flex h-11 items-center justify-center rounded-xl border border-border px-4 text-sm font-semibold text-foreground-muted"
+            >
+              Back to board
+            </button>
+          </div>
+        </div>
+        {createMode ? (
+          <CreateIssuePanel
+            draft={draft}
+            project={primaryProject}
+            issues={snapshot.issues.filter((candidate) => candidate.projectId === primaryProject.id)}
+            taskTags={taskTags}
+            autosaveStatus={autosaveStatus}
+            creatingIssue={creatingIssue}
+            error={createError}
+            validationError={validationError}
+            onChange={(updater) => {
+              setValidationError(null);
+              setCreateError(null);
+              setDraft((current) => updater(current));
+            }}
+            onClose={clearFocusedIssue}
+            onSubmit={() => void handleCreateIssue()}
+          />
+        ) : null}
+      </section>
+    );
+  }
+
+  if (routeMode === "issue") {
+    if (!focusedIssue || !focusedIssueDraft) {
+      return (
+        <section className="mb-6 rounded-3xl border border-error/25 bg-error-muted p-6 text-sm text-error shadow-lg">
+          Issue not found in the current backlog snapshot.
+        </section>
+      );
+    }
+
+    return (
+      <section className="mb-6 space-y-4" data-testid="issue-detail-route">
+        <div className="rounded-3xl border border-border bg-card p-6 shadow-lg">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">
+                Issue detail
+              </p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-tight text-foreground">
+                {focusedIssue.key}
+              </h2>
+              <p className="mt-3 text-sm leading-6 text-foreground-muted">
+                Dedicated issue routes now sit beside the board so issue authoring and maintenance can
+                happen on stable deep links instead of only inside the home-page side panel.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => router.push(projectIssueCreateHref(focusedIssue.projectId))}
+                className="inline-flex h-11 items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-4 text-sm font-semibold text-primary"
+              >
+                <Plus className="h-4 w-4" />
+                New issue
+              </button>
+              <button
+                type="button"
+                onClick={clearFocusedIssue}
+                className="inline-flex h-11 items-center justify-center rounded-xl border border-border px-4 text-sm font-semibold text-foreground-muted"
+              >
+                Back to board
+              </button>
+            </div>
+          </div>
+        </div>
+        <IssueDetailPanel
+          issue={focusedIssue}
+          card={focusedIssueCard}
+          reviewArtifact={issueArtifactById.get(focusedIssue.id)}
+          project={primaryProject}
+          issues={snapshot.issues.filter((candidate) => candidate.projectId === primaryProject.id)}
+          dispatchContextLabels={snapshot.dispatchContextLabels ?? []}
+          taskTags={taskTags}
+          loading={loading}
+          mutating={mutatingIssueId === focusedIssue.id}
+          mutationError={mutationError}
+          draft={focusedIssueDraft}
+          fieldStates={issueFieldStates}
+          priorityEditing={priorityEditing}
+          assigneeEditing={assigneeEditing}
+          labelEditing={labelEditing}
+          onFocusIssue={setFocusedIssue}
+          onOpenDedicatedPage={(issue) => router.push(projectIssueHref(issue.projectId, issue.id))}
+          onClose={clearFocusedIssue}
+          onChangeDraft={updateFocusedIssueDraft}
+          onResetDraft={resetFocusedIssueDraft}
+          onRetryDescriptionSave={() => void saveIssueField("description")}
+          onSaveField={(field) => void saveIssueField(field)}
+          onSetPriorityEditing={setPriorityEditing}
+          onSetAssigneeEditing={setAssigneeEditing}
+          onSetLabelEditing={setLabelEditing}
+          onResetField={resetIssueField}
+          onCreateSubIssue={createSubIssue}
+          onLinkChildIssue={linkChildIssue}
+          onSaveDispatchContextLabels={updateIssueDispatchContextLabels}
+          workspaceInventory={workspaceInventory}
+          onRefreshWorkspaceInventory={refreshWorkspaceInventory}
+          onCreateIssueWorkspace={createIssueWorkspace}
+          onLinkIssueWorkspace={linkIssueWorkspace}
+          onOpenWorkspacePath={openWorkspacePath}
+        />
+      </section>
+    );
+  }
+
   function openCreateMode(source: CreateEntrySource, workflowState: KanbanWorkflowState = "todo") {
     clearFocusedIssue();
     setCreateMode({ source, workflowState });
@@ -3188,9 +4203,15 @@ export function BacklogOverview({
     const baseline = createIssueDetailDraft(focusedIssue);
     updateFocusedIssueDraft((current) => ({
       ...current,
+      title: field === "metadata" ? baseline.title : current.title,
+      summary: field === "metadata" ? baseline.summary : current.summary,
+      status: field === "metadata" ? baseline.status : current.status,
       priority: field === "priority" ? baseline.priority : current.priority,
       assigneeIds: field === "assignees" ? baseline.assigneeIds : current.assigneeIds,
       labelIds: field === "labels" ? baseline.labelIds : current.labelIds,
+      dependencies: field === "metadata" ? baseline.dependencies : current.dependencies,
+      acceptanceCriteria:
+        field === "metadata" ? baseline.acceptanceCriteria : current.acceptanceCriteria,
     }));
     setIssueFieldStates((current) => ({
       ...current,
@@ -3215,7 +4236,20 @@ export function BacklogOverview({
     }
 
     const patch =
-      field === "description"
+      field === "metadata"
+        ? {
+            title: focusedIssueDraft.title,
+            summary: focusedIssueDraft.summary,
+            status: focusedIssueDraft.status,
+            dependencies: focusedIssueDraft.dependencies,
+            acceptanceCriteria: focusedIssueDraft.acceptanceCriteria.map((criterion) => ({
+              id: criterion.id,
+              title: criterion.title,
+              satisfied: criterion.satisfied,
+              notes: criterion.notes.trim() || undefined,
+            })),
+          }
+        : field === "description"
         ? { description: focusedIssueDraft.description }
         : field === "priority"
           ? { priority: focusedIssueDraft.priority }
@@ -3246,7 +4280,9 @@ export function BacklogOverview({
         [field]: {
           status: "saved",
           message:
-            field === "description"
+            field === "metadata"
+              ? "Issue profile saved."
+              : field === "description"
               ? "Description saved."
               : field === "priority"
                 ? "Priority saved."
@@ -3266,7 +4302,9 @@ export function BacklogOverview({
           message:
             cause instanceof Error
               ? cause.message
-              : field === "description"
+              : field === "metadata"
+                ? "Issue profile save failed."
+                : field === "description"
                 ? "Description save failed."
                 : "Field save failed.",
         },
@@ -3289,17 +4327,32 @@ export function BacklogOverview({
 
     try {
       const created = await createIssue({
-        projectId: primaryProject.id,
+        projectId: requestedProjectId ?? initialProjectId ?? primaryProject.id,
         title: draft.title.trim(),
         summary: draft.summary.trim() || undefined,
+        description: draft.description.trim() || undefined,
+        status: draft.status,
+        assigneeIds: draft.assigneeIds,
+        labelIds: draft.labelIds,
+        dependencies: draft.dependencies,
+        acceptanceCriteria: draft.acceptanceCriteria.map((criterion) => ({
+          id: criterion.id,
+          title: criterion.title,
+          satisfied: criterion.satisfied,
+          notes: criterion.notes.trim() || undefined,
+        })),
         priority: draft.priority,
-        status: workflowStateToIssueStatus(draft.workflowState),
         metadata: {
           createSource: createMode.source,
           createWorkflowState: draft.workflowState,
-          createMode: "board",
+          createMode: routeMode === "create" ? "route" : "board",
         },
       });
+
+      if (routeMode === "create") {
+        router.push(projectIssueHref(created.issue.projectId, created.issue.id));
+        return;
+      }
 
       setCreateNotice(`Created ${created.issue.key} from ${createMode.source === "column" ? "column header" : "board header"} create mode.`);
       closeCreateMode();
@@ -3402,6 +4455,10 @@ export function BacklogOverview({
   }
 
   const setFocusedIssue = (issue: KanbanIssue) => {
+    if (routeMode === "issue") {
+      router.push(projectIssueHref(issue.projectId, issue.id));
+      return;
+    }
     closeCreateMode();
     const params = new URLSearchParams(searchParams.toString());
     params.set("issueId", issue.id);
@@ -3410,6 +4467,10 @@ export function BacklogOverview({
   };
 
   const clearFocusedIssue = () => {
+    if (routeMode === "issue" || routeMode === "create") {
+      router.push("/");
+      return;
+    }
     const params = new URLSearchParams(searchParams.toString());
     params.delete("issueId");
     params.delete("issueKey");
@@ -4155,6 +5216,7 @@ export function BacklogOverview({
             assigneeEditing={assigneeEditing}
             labelEditing={labelEditing}
             onFocusIssue={setFocusedIssue}
+            onOpenDedicatedPage={(issue) => router.push(projectIssueHref(issue.projectId, issue.id))}
             onClose={clearFocusedIssue}
             onChangeDraft={updateFocusedIssueDraft}
             onResetDraft={resetFocusedIssueDraft}
@@ -4176,6 +5238,8 @@ export function BacklogOverview({
         ) : createMode ? (
           <CreateIssuePanel
             draft={draft}
+            project={primaryProject}
+            issues={snapshot.issues.filter((candidate) => candidate.projectId === primaryProject.id)}
             taskTags={taskTags}
             autosaveStatus={autosaveStatus}
             creatingIssue={creatingIssue}

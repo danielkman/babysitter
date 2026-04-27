@@ -142,6 +142,7 @@ export async function POST(request: Request) {
             body.status === 'backlog' ||
             body.status === 'ready' ||
             body.status === 'in-progress' ||
+            body.status === 'blocked' ||
             body.status === 'review' ||
             body.status === 'done'
               ? body.status
@@ -152,6 +153,56 @@ export async function POST(request: Request) {
             body.priority === 'medium' ||
             body.priority === 'low'
               ? body.priority
+              : undefined,
+          labelIds:
+            Array.isArray(body.labelIds) && body.labelIds.every((id) => typeof id === 'string')
+              ? (body.labelIds as string[])
+              : undefined,
+          assigneeIds:
+            Array.isArray(body.assigneeIds) && body.assigneeIds.every((id) => typeof id === 'string')
+              ? (body.assigneeIds as string[])
+              : undefined,
+          dependencies:
+            Array.isArray(body.dependencies)
+              ? body.dependencies
+                  .map((dependency) => {
+                    if (!dependency || typeof dependency !== 'object') return null;
+                    const entry = dependency as Record<string, unknown>;
+                    if (typeof entry.issueId !== 'string') {
+                      return null;
+                    }
+                    return {
+                      issueId: entry.issueId,
+                      type:
+                        entry.type === 'blocks' || entry.type === 'related' || entry.type === 'blocked-by'
+                          ? entry.type
+                          : undefined,
+                    };
+                  })
+                  .filter(Boolean) as { issueId: string; type?: 'blocks' | 'blocked-by' | 'related' }[]
+              : undefined,
+          acceptanceCriteria:
+            Array.isArray(body.acceptanceCriteria)
+              ? body.acceptanceCriteria
+                  .map((criterion) => {
+                    if (!criterion || typeof criterion !== 'object') return null;
+                    const entry = criterion as Record<string, unknown>;
+                    if (typeof entry.title !== 'string') {
+                      return null;
+                    }
+                    return {
+                      id: typeof entry.id === 'string' ? entry.id : undefined,
+                      title: entry.title,
+                      satisfied: typeof entry.satisfied === 'boolean' ? entry.satisfied : undefined,
+                      notes: typeof entry.notes === 'string' ? entry.notes : undefined,
+                    };
+                  })
+                  .filter(Boolean) as {
+                    id?: string;
+                    title: string;
+                    satisfied?: boolean;
+                    notes?: string;
+                  }[]
               : undefined,
           metadata:
             body.metadata && typeof body.metadata === 'object'
@@ -240,7 +291,18 @@ export async function POST(request: Request) {
           issueId: body.issueId,
           expectedUpdatedAt:
             typeof body.expectedUpdatedAt === 'string' ? body.expectedUpdatedAt : undefined,
+          title: typeof body.title === 'string' ? body.title : undefined,
+          summary: typeof body.summary === 'string' ? body.summary : undefined,
           description: typeof body.description === 'string' ? body.description : undefined,
+          status:
+            body.status === 'backlog' ||
+            body.status === 'ready' ||
+            body.status === 'in-progress' ||
+            body.status === 'blocked' ||
+            body.status === 'review' ||
+            body.status === 'done'
+              ? body.status
+              : undefined,
           priority:
             body.priority === 'critical' ||
             body.priority === 'high' ||
@@ -255,6 +317,48 @@ export async function POST(request: Request) {
           labelIds:
             Array.isArray(body.labelIds) && body.labelIds.every((id) => typeof id === 'string')
               ? (body.labelIds as string[])
+              : undefined,
+          dependencies:
+            Array.isArray(body.dependencies)
+              ? body.dependencies
+                  .map((dependency) => {
+                    if (!dependency || typeof dependency !== 'object') return null;
+                    const entry = dependency as Record<string, unknown>;
+                    if (typeof entry.issueId !== 'string') {
+                      return null;
+                    }
+                    return {
+                      issueId: entry.issueId,
+                      type:
+                        entry.type === 'blocks' || entry.type === 'related' || entry.type === 'blocked-by'
+                          ? entry.type
+                          : undefined,
+                    };
+                  })
+                  .filter(Boolean) as { issueId: string; type?: 'blocks' | 'blocked-by' | 'related' }[]
+              : undefined,
+          acceptanceCriteria:
+            Array.isArray(body.acceptanceCriteria)
+              ? body.acceptanceCriteria
+                  .map((criterion) => {
+                    if (!criterion || typeof criterion !== 'object') return null;
+                    const entry = criterion as Record<string, unknown>;
+                    if (typeof entry.title !== 'string') {
+                      return null;
+                    }
+                    return {
+                      id: typeof entry.id === 'string' ? entry.id : undefined,
+                      title: entry.title,
+                      satisfied: typeof entry.satisfied === 'boolean' ? entry.satisfied : undefined,
+                      notes: typeof entry.notes === 'string' ? entry.notes : undefined,
+                    };
+                  })
+                  .filter(Boolean) as {
+                  id?: string;
+                  title: string;
+                  satisfied?: boolean;
+                  notes?: string;
+                }[]
               : undefined,
         });
         break;

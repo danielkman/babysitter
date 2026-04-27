@@ -1196,7 +1196,7 @@ function WorkspaceColumn(props: {
                   {(workspace.issues ?? []).map((issue) => (
                     <Link
                       key={`${workspace.path}-${issue.issueId}`}
-                      href={`/?issueId=${encodeURIComponent(issue.issueId)}&issueKey=${encodeURIComponent(issue.issueKey)}`}
+                      href={`/issues/${encodeURIComponent(issue.issueId)}`}
                       className="rounded-full border border-border px-2.5 py-1 text-xs text-primary"
                     >
                       {issue.issueKey}

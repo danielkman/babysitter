@@ -15,7 +15,6 @@ import {
   type KanbanBacklogSummary,
   type KanbanCollaborator,
   type KanbanCollaboratorRole,
-  type KanbanIssueCreateInput,
   type KanbanIssueCreateResult,
   type KanbanDispatchContextLabelDefinition,
   type KanbanIssue,
@@ -32,7 +31,6 @@ import {
   type KanbanRepositorySettings,
   type KanbanReviewSnapshot,
   type KanbanTeamSettings,
-  type KanbanIssueUpdateInput,
   type KanbanWorkflowState,
   type KanbanIssueWorkspaceLinkInput,
   type LinkedRunSummary,
@@ -108,11 +106,54 @@ export type BacklogOverviewSummary = KanbanBacklogSummary;
 
 export type BacklogOverview = KanbanBacklogOverview;
 
-export type CreateBacklogIssueInput = KanbanIssueCreateInput;
+export interface CreateBacklogIssueInput {
+  readonly projectId?: string;
+  readonly parentIssueId?: string;
+  readonly title: string;
+  readonly summary?: string;
+  readonly description?: string;
+  readonly status?: KanbanIssue['status'];
+  readonly priority?: KanbanIssue['priority'];
+  readonly labelIds?: readonly string[];
+  readonly assigneeIds?: readonly string[];
+  readonly dependencies?: readonly {
+    readonly issueId: string;
+    readonly type?: KanbanIssue['dependencies'][number]['type'];
+  }[];
+  readonly acceptanceCriteria?: readonly {
+    readonly id?: string;
+    readonly title: string;
+    readonly satisfied?: boolean;
+    readonly notes?: string;
+  }[];
+  readonly decomposition?: readonly Pick<KanbanIssue['decomposition'][number], 'title' | 'kind' | 'status'>[];
+  readonly source?: KanbanIssue['source'];
+  readonly metadata?: Readonly<Record<string, unknown>>;
+}
 
 export type CreateBacklogIssueResult = KanbanIssueCreateResult;
 
-export type UpdateIssueDetailInput = KanbanIssueUpdateInput;
+export interface UpdateIssueDetailInput {
+  readonly issueId: string;
+  readonly expectedUpdatedAt?: string;
+  readonly title?: string;
+  readonly summary?: string;
+  readonly description?: string;
+  readonly status?: KanbanIssue['status'];
+  readonly priority?: KanbanIssue['priority'];
+  readonly assigneeIds?: readonly string[];
+  readonly labelIds?: readonly string[];
+  readonly dependencies?: readonly {
+    readonly issueId: string;
+    readonly type?: KanbanIssue['dependencies'][number]['type'];
+  }[];
+  readonly acceptanceCriteria?: readonly {
+    readonly id?: string;
+    readonly title: string;
+    readonly satisfied?: boolean;
+    readonly notes?: string;
+  }[];
+}
 
 export type LinkIssueWorkspaceInput = KanbanIssueWorkspaceLinkInput;
 
@@ -455,6 +496,35 @@ function arrayEquals(left: readonly string[], right: readonly string[]): boolean
   return left.length === right.length && left.every((value, index) => value === right[index]);
 }
 
+function issueDependencyEquals(
+  left: readonly BacklogSeedIssue['dependencies'][number][],
+  right: readonly BacklogSeedIssue['dependencies'][number][],
+): boolean {
+  return (
+    left.length === right.length &&
+    left.every(
+      (value, index) =>
+        value.issueId === right[index]?.issueId && value.type === right[index]?.type,
+    )
+  );
+}
+
+function acceptanceCriteriaEquals(
+  left: readonly BacklogSeedIssue['acceptanceCriteria'][number][],
+  right: readonly BacklogSeedIssue['acceptanceCriteria'][number][],
+): boolean {
+  return (
+    left.length === right.length &&
+    left.every(
+      (value, index) =>
+        value.id === right[index]?.id &&
+        value.title === right[index]?.title &&
+        value.satisfied === right[index]?.satisfied &&
+        value.notes === right[index]?.notes,
+    )
+  );
+}
+
 function normalizeWorkspacePath(value: string): string {
   return path.resolve(value);
 }
@@ -620,6 +690,107 @@ function readProjectAssignees(
       );
     }
     return assignee;
+  });
+}
+
+function normalizeDependencyType(
+  type: KanbanIssue['dependencies'][number]['type'] | undefined,
+): KanbanIssue['dependencies'][number]['type'] {
+  if (type === 'blocks' || type === 'related') {
+    return type;
+  }
+  return 'blocked-by';
+}
+
+function normalizeIssueDependencies(
+  payload: { issues: readonly BacklogSeedIssue[] },
+  issue: Pick<BacklogSeedIssue, 'id' | 'key' | 'projectId'>,
+  dependencies: readonly {
+    readonly issueId: string;
+    readonly type?: KanbanIssue['dependencies'][number]['type'];
+  }[],
+): BacklogSeedIssue['dependencies'] {
+  const seen = new Set<string>();
+
+  return dependencies.map((dependency) => {
+    const issueId = dependency.issueId.trim();
+    const type = normalizeDependencyType(dependency.type);
+
+    if (!issueId) {
+      throw new AppError('Dependency issueId is required.', 'BAD_REQUEST', 400);
+    }
+    if (issueId === issue.id) {
+      throw new AppError(`Issue ${issue.key} cannot depend on itself.`, 'BAD_REQUEST', 400);
+    }
+
+    const target = payload.issues.find((candidate) => candidate.id === issueId);
+    if (!target) {
+      throw new AppError(`Dependency issue ${issueId} not found.`, 'BAD_REQUEST', 400);
+    }
+    if (target.projectId !== issue.projectId) {
+      throw new AppError(
+        `Dependency issue ${issueId} must belong to project ${issue.projectId}.`,
+        'BAD_REQUEST',
+        400,
+      );
+    }
+
+    const dedupeKey = `${type}:${issueId}`;
+    if (seen.has(dedupeKey)) {
+      return null;
+    }
+    seen.add(dedupeKey);
+
+    return {
+      issueId,
+      type,
+    };
+  }).filter((dependency): dependency is BacklogSeedIssue['dependencies'][number] => Boolean(dependency));
+}
+
+function normalizeAcceptanceCriteria(
+  issue: Pick<BacklogSeedIssue, 'key' | 'acceptanceCriteria'>,
+  acceptanceCriteria: readonly {
+    readonly id?: string;
+    readonly title: string;
+    readonly satisfied?: boolean;
+    readonly notes?: string;
+  }[],
+): BacklogSeedIssue['acceptanceCriteria'] {
+  const unavailableIds = new Set(issue.acceptanceCriteria.map((criterion) => criterion.id));
+  const assignedIds = new Set<string>();
+  let nextSequence = 1;
+
+  function nextCriterionId(): string {
+    while (unavailableIds.has(`${issue.key}-ac-${nextSequence}`) || assignedIds.has(`${issue.key}-ac-${nextSequence}`)) {
+      nextSequence += 1;
+    }
+    const id = `${issue.key}-ac-${nextSequence}`;
+    assignedIds.add(id);
+    nextSequence += 1;
+    return id;
+  }
+
+  return acceptanceCriteria.map((criterion) => {
+    const title = criterion.title.trim();
+    if (!title) {
+      throw new AppError('Acceptance criterion title is required.', 'BAD_REQUEST', 400);
+    }
+
+    const explicitId = criterion.id?.trim();
+    if (explicitId) {
+      if (assignedIds.has(explicitId)) {
+        throw new AppError(`Duplicate acceptance criterion id ${explicitId}.`, 'BAD_REQUEST', 400);
+      }
+      assignedIds.add(explicitId);
+    }
+
+    return {
+      id: explicitId || nextCriterionId(),
+      title,
+      satisfied: Boolean(criterion.satisfied),
+      notes: criterion.notes?.trim() || undefined,
+    };
   });
 }
 
@@ -1482,8 +1653,17 @@ export class BacklogQueryService {
       throw new AppError('Sub-issues must stay in the same project as the parent.', 'BAD_REQUEST', 400);
     }
 
-    const key = nextAutomationIssueKey(project, payload.issues);
+    const key = nextAutomationIssueKey({ key: project.key }, payload.issues);
     const createdAt = this.deps.now();
+    const dependencies = normalizeIssueDependencies(
+      payload,
+      {
+        id: key,
+        key,
+        projectId: project.id,
+      },
+      input.dependencies ?? [],
+    );
     const issue: BacklogSeedIssue = {
       id: key,
       key,
@@ -1495,12 +1675,11 @@ export class BacklogQueryService {
       priority: input.priority ?? 'medium',
       labels: readProjectLabels(project, input.labelIds ?? []),
       assignees: readProjectAssignees(project, input.assigneeIds ?? []),
-      dependencies: [],
-      acceptanceCriteria: (input.acceptanceCriteria ?? []).map((title, index) => ({
-        id: `${key}-ac-${index + 1}`,
-        title,
-        satisfied: false,
-      })),
+      dependencies,
+      acceptanceCriteria: normalizeAcceptanceCriteria(
+        { key, acceptanceCriteria: [] },
+        input.acceptanceCriteria ?? [],
+      ),
       decomposition: (input.decomposition ?? []).map((item, index) => ({
         id: `${key}-decomp-${index + 1}`,
         title: item.title,
@@ -1966,6 +2145,13 @@ export class BacklogQueryService {
     const payload = await this.readSeedPayload();
     const issue = this.findIssue(payload, input.issueId);
     const project = this.findProject(payload, issue.projectId);
+    const currentOverview = await this.buildOverviewFromPayload(payload);
+    const currentProject = currentOverview.snapshot.projects.find(
+      (candidate) => candidate.id === issue.projectId,
+    );
+    if (!currentProject) {
+      throw new AppError(`Project ${issue.projectId} not found.`, 'NOT_FOUND', 404);
+    }
 
     if (input.expectedUpdatedAt && issue.updatedAt !== input.expectedUpdatedAt) {
       throw new AppError(
@@ -1975,17 +2161,128 @@ export class BacklogQueryService {
       );
     }
 
+    const nextTitle =
+      input.title !== undefined ? input.title.trim() : issue.title;
+    if (!nextTitle) {
+      throw new AppError('Issue title is required.', 'BAD_REQUEST', 400);
+    }
+    const nextSummary =
+      input.summary !== undefined ? input.summary.trim() || undefined : issue.summary;
     const nextDescription =
       input.description !== undefined ? input.description.trim() || undefined : issue.description;
+    const nextStatus = input.status ?? issue.status;
     const nextPriority = input.priority ?? issue.priority;
     const nextLabels =
       input.labelIds !== undefined ? readProjectLabels(project, input.labelIds) : issue.labels;
     const nextAssignees =
       input.assigneeIds !== undefined ? readProjectAssignees(project, input.assigneeIds) : issue.assignees;
+    const nextDependencies =
+      input.dependencies !== undefined
+        ? normalizeIssueDependencies(payload, {
+            id: issue.id,
+            key: issue.key,
+            projectId: issue.projectId,
+          }, input.dependencies)
+        : issue.dependencies;
+    const nextAcceptanceCriteria =
+      input.acceptanceCriteria !== undefined
+        ? normalizeAcceptanceCriteria(
+            {
+              key: issue.key,
+              acceptanceCriteria: issue.acceptanceCriteria,
+            },
+            input.acceptanceCriteria,
+          )
+        : issue.acceptanceCriteria;
+
+    if (
+      nextStatus !== issue.status &&
+      (nextStatus === 'in-progress' || nextStatus === 'review' || nextStatus === 'done')
+    ) {
+      const evaluation = evaluateKanbanIssueMove({
+        project: currentProject,
+        issues: currentOverview.snapshot.issues,
+        issueId: issue.id,
+        toState: nextStatus === 'in-progress' ? 'in-progress' : nextStatus === 'review' ? 'review' : 'done',
+      });
+      if (!evaluation.allowed) {
+        throw new AppError(
+          evaluation.signals.map((signal) => signal.message).join(' '),
+          'KANBAN_POLICY_VIOLATION',
+          409,
+        );
+      }
+    }
+
+    const candidateSnapshot = buildKanbanBacklogSnapshot({
+      projects: payload.projects,
+      issues: payload.issues.map((candidate) =>
+        candidate.id === issue.id
+          ? {
+              ...candidate,
+              title: nextTitle,
+              summary: nextSummary,
+              description: nextDescription,
+              status: nextStatus,
+              priority: nextPriority,
+              labels: nextLabels,
+              assignees: nextAssignees,
+              dependencies: nextDependencies,
+              acceptanceCriteria: nextAcceptanceCriteria,
+            }
+          : candidate,
+      ),
+      dispatchContextLabels: payload.dispatchContextLabels,
+      generatedAt: this.deps.now(),
+    });
+    const candidateIssue = candidateSnapshot.issues.find((candidate) => candidate.id === issue.id);
+    if (!candidateIssue) {
+      throw new AppError(`Issue ${issue.key} could not be evaluated.`, 'INTERNAL_ERROR', 500);
+    }
+    if (
+      nextStatus === 'in-progress' &&
+      candidateIssue.dispatch.readiness !== 'ready' &&
+      candidateIssue.dispatch.readiness !== 'dispatched'
+    ) {
+      throw new AppError(
+        `${issue.key} is ${candidateIssue.dispatch.readiness} and cannot start active work yet.`,
+        'KANBAN_POLICY_VIOLATION',
+        409,
+      );
+    }
+    if (
+      (nextStatus === 'review' || nextStatus === 'done') &&
+      (candidateIssue.status === 'blocked' || candidateIssue.dispatch.readiness === 'blocked')
+    ) {
+      throw new AppError(
+        `${issue.key} is blocked and cannot advance until the blocking reasons clear.`,
+        'KANBAN_POLICY_VIOLATION',
+        409,
+      );
+    }
+    if (
+      nextStatus === 'done' &&
+      candidateIssue.acceptanceCriteria.some((criterion) => !criterion.satisfied)
+    ) {
+      throw new AppError(
+        `${issue.key} has acceptance checks remaining and cannot move to done yet.`,
+        'KANBAN_POLICY_VIOLATION',
+        409,
+      );
+    }
 
     const changedFields: string[] = [];
+    if (issue.title !== nextTitle) {
+      changedFields.push('title');
+    }
+    if ((issue.summary ?? '') !== (nextSummary ?? '')) {
+      changedFields.push('summary');
+    }
     if ((issue.description ?? '') !== (nextDescription ?? '')) {
       changedFields.push('description');
+    }
+    if (issue.status !== nextStatus) {
+      changedFields.push('status');
     }
     if (issue.priority !== nextPriority) {
       changedFields.push('priority');
@@ -2000,6 +2297,12 @@ export class BacklogQueryService {
       )
     ) {
       changedFields.push('assignees');
+    }
+    if (!issueDependencyEquals(issue.dependencies, nextDependencies)) {
+      changedFields.push('dependencies');
+    }
+    if (!acceptanceCriteriaEquals(issue.acceptanceCriteria, nextAcceptanceCriteria)) {
+      changedFields.push('acceptance criteria');
     }
 
     if (changedFields.length === 0) {
@@ -2016,10 +2319,15 @@ export class BacklogQueryService {
       candidate.id === input.issueId
         ? {
             ...candidate,
+            title: nextTitle,
+            summary: nextSummary,
             description: nextDescription,
+            status: nextStatus,
             priority: nextPriority,
             labels: nextLabels,
             assignees: nextAssignees,
+            dependencies: nextDependencies,
+            acceptanceCriteria: nextAcceptanceCriteria,
             updatedAt,
             activity: [
               buildActivityEntry(

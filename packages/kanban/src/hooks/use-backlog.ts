@@ -207,6 +207,7 @@ export interface CreateBacklogIssueResponse {
   overview: BacklogOverviewResponse;
   issue: {
     id: string;
+    projectId: string;
     key: string;
     title: string;
   };
@@ -214,10 +215,23 @@ export interface CreateBacklogIssueResponse {
 export interface UpdateIssueDetailInput {
   issueId: string;
   expectedUpdatedAt?: string;
+  title?: string;
+  summary?: string;
   description?: string;
+  status?: "backlog" | "ready" | "in-progress" | "blocked" | "review" | "done";
   priority?: "critical" | "high" | "medium" | "low";
   assigneeIds?: string[];
   labelIds?: string[];
+  dependencies?: Array<{
+    issueId: string;
+    type?: "blocks" | "blocked-by" | "related";
+  }>;
+  acceptanceCriteria?: Array<{
+    id?: string;
+    title: string;
+    satisfied?: boolean;
+    notes?: string;
+  }>;
 }
 export function useBacklog(interval = 15000) {
   const [movingIssueId, setMovingIssueId] = useState<string | null>(null);
@@ -349,8 +363,21 @@ export function useBacklog(interval = 15000) {
     projectId: string;
     title: string;
     summary?: string;
-    status?: "backlog" | "ready" | "in-progress" | "review" | "done";
+    description?: string;
+    status?: "backlog" | "ready" | "in-progress" | "blocked" | "review" | "done";
     priority?: "critical" | "high" | "medium" | "low";
+    labelIds?: string[];
+    assigneeIds?: string[];
+    dependencies?: Array<{
+      issueId: string;
+      type?: "blocks" | "blocked-by" | "related";
+    }>;
+    acceptanceCriteria?: Array<{
+      id?: string;
+      title: string;
+      satisfied?: boolean;
+      notes?: string;
+    }>;
     metadata?: Record<string, unknown>;
   }): Promise<CreateBacklogIssueResponse> {
     setCreatingIssue(true);

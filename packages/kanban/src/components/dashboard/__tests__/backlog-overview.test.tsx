@@ -603,23 +603,52 @@ describe("BacklogOverview", () => {
 
     await user.type(screen.getByLabelText("Issue title"), "List-view create");
     await user.type(screen.getByLabelText("Issue summary"), "Keep panel beside alternate surface");
+    await user.type(
+      screen.getByLabelText("Issue description"),
+      "Persist authoring details through the shared mutation path.",
+    );
     await user.selectOptions(screen.getByLabelText("Target column"), "in-progress");
+    await user.selectOptions(screen.getByLabelText("Issue status"), "blocked");
     await user.selectOptions(screen.getByLabelText("Priority"), "high");
+    await user.click(screen.getByRole("checkbox", { name: "QA Lead" }));
+    await user.click(screen.getByRole("checkbox", { name: "parity" }));
+    await user.click(screen.getByRole("button", { name: "Add criterion" }));
+    await user.type(
+      screen.getByLabelText("Acceptance criterion 1 title"),
+      "Shared authoring flow saves the full issue profile.",
+    );
+    await user.type(
+      screen.getByLabelText("Acceptance criterion 1 notes"),
+      "Verify create and edit routes stay aligned.",
+    );
     await user.click(within(panel).getByRole("button", { name: "Create issue" }));
 
     await waitFor(() => {
-      expect(createIssueMock).toHaveBeenCalledWith({
-        projectId: "kanban-app",
-        title: "List-view create",
-        summary: "Keep panel beside alternate surface",
-        priority: "high",
-        status: "in-progress",
-        metadata: {
-          createSource: "header",
-          createWorkflowState: "in-progress",
-          createMode: "board",
-        },
-      });
+      expect(createIssueMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          projectId: "kanban-app",
+          title: "List-view create",
+          summary: "Keep panel beside alternate surface",
+          description: "Persist authoring details through the shared mutation path.",
+          priority: "high",
+          status: "blocked",
+          assigneeIds: ["qa"],
+          labelIds: ["label-parity"],
+          acceptanceCriteria: [
+            {
+              id: undefined,
+              title: "Shared authoring flow saves the full issue profile.",
+              satisfied: false,
+              notes: "Verify create and edit routes stay aligned.",
+            },
+          ],
+          metadata: {
+            createSource: "header",
+            createWorkflowState: "in-progress",
+            createMode: "board",
+          },
+        }),
+      );
     });
 
     expect(screen.getByText("Created KANBAN-AUTO-101 from board header create mode.")).toBeInTheDocument();
@@ -675,6 +704,36 @@ describe("BacklogOverview", () => {
     await user.click(screen.getByTestId("open-issue-KANBAN-GAP-007"));
 
     expect(push).toHaveBeenCalledWith("/?issueId=KANBAN-GAP-007&issueKey=KANBAN-GAP-007");
+  });
+
+  it("renders the dedicated issue route mode for a focused issue", () => {
+    render(<BacklogOverview routeMode="issue" initialIssueId="KANBAN-GAP-007" />);
+
+    expect(screen.getByTestId("issue-detail-route")).toBeInTheDocument();
+    expect(screen.getByText(/Dedicated issue routes now sit beside the board/)).toBeInTheDocument();
+  });
+
+  it("renders the dedicated create route mode and redirects to the created issue", async () => {
+    const user = setupUser();
+    createIssueMock.mockResolvedValue({
+      issue: {
+        id: "KANBAN-AUTO-201",
+        projectId: "kanban-app",
+        key: "KANBAN-AUTO-201",
+        title: "Create route issue",
+      },
+      overview: backlogState,
+    });
+
+    render(<BacklogOverview routeMode="create" initialProjectId="kanban-app" />);
+
+    expect(screen.getByTestId("issue-create-route")).toBeInTheDocument();
+    await user.type(screen.getByLabelText("Issue title"), "Create route issue");
+    await user.click(screen.getByRole("button", { name: "Create issue" }));
+
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith("/projects/kanban-app/issues/KANBAN-AUTO-201");
+    });
   });
 
   it("renders parent and child relationship controls for the focused issue", () => {

@@ -1076,7 +1076,9 @@ export class AutomationRuleService {
         priority: existingRule.template.priority,
         labelIds: existingRule.template.labelIds,
         assigneeIds: existingRule.template.assigneeIds,
-        acceptanceCriteria: existingRule.template.acceptanceCriteria,
+        acceptanceCriteria: existingRule.template.acceptanceCriteria?.map((title: string) => ({
+          title,
+        })),
         decomposition: existingRule.template.decomposition,
         source,
         metadata: existingRule.template.metadata,

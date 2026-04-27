@@ -47,7 +47,11 @@ function createService(backlogFilePath: string) {
         priority?: string;
         labelIds?: readonly string[];
         assigneeIds?: readonly string[];
-        acceptanceCriteria?: readonly string[];
+        acceptanceCriteria?: readonly {
+          title: string;
+          satisfied?: boolean;
+          notes?: string;
+        }[];
         decomposition?: readonly { title: string; kind: string; status: string }[];
         source?: Record<string, unknown>;
         metadata?: Record<string, unknown>;
@@ -106,10 +110,11 @@ function createService(backlogFilePath: string) {
             displayName: assigneeId,
           })),
           dependencies: [],
-          acceptanceCriteria: (input.acceptanceCriteria ?? []).map((title, index) => ({
+          acceptanceCriteria: (input.acceptanceCriteria ?? []).map((criterion, index) => ({
             id: `${issueKey}-ac-${index + 1}`,
-            title,
-            satisfied: false,
+            title: criterion.title,
+            satisfied: criterion.satisfied ?? false,
+            notes: criterion.notes,
           })),
           decomposition: (input.decomposition ?? []).map((item, index) => ({
             id: `${issueKey}-decomp-${index + 1}`,

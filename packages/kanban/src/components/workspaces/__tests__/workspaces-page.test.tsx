@@ -1301,7 +1301,7 @@ describe("workspaces-page helpers", () => {
     expect(screen.getByTestId("workspace-session-select")).toHaveValue("session-1");
     expect(screen.getByTestId("workspace-issue-link-KANBAN-GAP-007")).toHaveAttribute(
       "href",
-      "/?issueId=KANBAN-GAP-007&issueKey=KANBAN-GAP-007",
+      "/issues/KANBAN-GAP-007",
     );
     expect(screen.getByText("observability session-1")).toBeInTheDocument();
     expect(screen.getByText("runtime session-1")).toBeInTheDocument();

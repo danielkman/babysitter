@@ -215,13 +215,29 @@ describe("BacklogQueryService", () => {
       } as never,
     });
 
+    await service.updateProjectCollaboration({
+      projectId: "kanban-app",
+      members: [
+        { id: "tal", displayName: "Tal Muskal", email: "tal@a5c.ai", role: "owner" },
+        { id: "qa", displayName: "QA Lead", email: "qa@a5c.ai", role: "maintainer" },
+      ],
+    });
+
     const created = await service.createIssue({
       projectId: "kanban-app",
       title: "Materialize webhook triage follow-up",
+      description: "Persist the shared issue authoring model instead of relying on seeded only data.",
       status: "ready",
       priority: "high",
       labelIds: ["label-debt"],
-      acceptanceCriteria: ["Webhook payload is triaged"],
+      assigneeIds: ["qa"],
+      dependencies: [{ issueId: "KANBAN-GAP-001", type: "blocked-by" }],
+      acceptanceCriteria: [
+        {
+          title: "Webhook payload is triaged",
+          notes: "Cover both signature validation and malformed payloads.",
+        },
+      ],
       decomposition: [
         {
           title: "Inspect the payload",
@@ -247,8 +263,19 @@ describe("BacklogQueryService", () => {
     expect(created.issue.key).toMatch(/^KANBAN-AUTO-\d{3}$/);
     expect(created.issue.projectId).toBe("kanban-app");
     expect(created.issue.status).toBe("ready");
-    expect(created.issue.dispatch.readiness).toBe("needs-decomposition");
+    expect(created.issue.description).toContain("shared issue authoring model");
+    expect(created.issue.dispatch.readiness).toBe("blocked");
     expect(created.issue.labels.map((label) => label.id)).toEqual(["label-debt"]);
+    expect(created.issue.assignees.map((assignee) => assignee.id)).toEqual(["qa"]);
+    expect(created.issue.dependencies).toEqual([{ issueId: "KANBAN-GAP-001", type: "blocked-by" }]);
+    expect(created.issue.acceptanceCriteria).toEqual([
+      {
+        id: expect.stringMatching(/^KANBAN-AUTO-\d{3}-ac-1$/),
+        title: "Webhook payload is triaged",
+        satisfied: false,
+        notes: "Cover both signature validation and malformed payloads.",
+      },
+    ]);
     expect(created.issue.source?.metadata).toMatchObject({
       automationRuleId: "automation-1",
       triggerEventId: "evt-webhook-1",
@@ -258,14 +285,23 @@ describe("BacklogQueryService", () => {
 
     const persisted = JSON.parse(await fs.readFile(backlogFilePath, "utf8")) as {
       projects: Array<{ issueIds: string[] }>;
-      issues: Array<{ key: string; metadata?: { template?: string } }>;
+      issues: Array<{
+        key: string;
+        description?: string;
+        assignees?: Array<{ id: string }>;
+        dependencies?: Array<{ issueId: string; type: string }>;
+        metadata?: { template?: string };
+      }>;
     };
     expect(
       persisted.projects[0]?.issueIds.some((issueId) => issueId.startsWith("KANBAN-AUTO-")),
     ).toBe(true);
-    expect(
-      persisted.issues.find((issue) => issue.key === created.issue.key)?.metadata?.template,
-    ).toBe("automation");
+    expect(persisted.issues.find((issue) => issue.key === created.issue.key)).toMatchObject({
+      description: "Persist the shared issue authoring model instead of relying on seeded only data.",
+      assignees: [{ id: "qa" }],
+      dependencies: [{ issueId: "KANBAN-GAP-001", type: "blocked-by" }],
+      metadata: { template: "automation" },
+    });
   });
 
   it("creates a sub-issue and keeps the parent relationship in sync", async () => {
@@ -617,7 +653,7 @@ describe("BacklogQueryService", () => {
     expect(issue?.activity[0]?.action).toBe("updated-issue-collaboration");
   });
 
-  it("persists issue detail updates for description, priority, assignees, and labels", async () => {
+  it("persists expanded issue detail updates for core fields, dependencies, and acceptance criteria", async () => {
     const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "kanban-backlog-"));
     tempDirs.push(tempDir);
     const backlogFilePath = path.join(tempDir, "kanban-backlog.json");
@@ -664,35 +700,76 @@ describe("BacklogQueryService", () => {
     const overview = await service.updateIssueDetail({
       issueId: "KANBAN-GAP-007",
       expectedUpdatedAt: issue?.updatedAt,
+      title: "Land first-class issue authoring",
+      summary: "Shared create and detail flows should edit the same persisted issue model.",
       description: "# Authoring parity\n- [ ] Autosave description",
+      status: "blocked",
       priority: "high",
       assigneeIds: ["qa"],
       labelIds: ["label-debt"],
+      dependencies: [{ issueId: "KANBAN-GAP-001", type: "blocked-by" }],
+      acceptanceCriteria: [
+        { id: "KANBAN-GAP-007-ac-1", title: "Expose first-class issue surfaces.", satisfied: true },
+        {
+          title: "Support shared mutation-backed edits for issue metadata.",
+          satisfied: false,
+          notes: "Pending dedicated issue page form wiring.",
+        },
+      ],
     });
 
     const updated = overview.snapshot.issues.find((candidate) => candidate.id === "KANBAN-GAP-007");
+    expect(updated?.title).toBe("Land first-class issue authoring");
+    expect(updated?.summary).toBe("Shared create and detail flows should edit the same persisted issue model.");
     expect(updated?.description).toBe("# Authoring parity\n- [ ] Autosave description");
+    expect(updated?.status).toBe("blocked");
     expect(updated?.priority).toBe("high");
     expect(updated?.assignees.map((assignee) => assignee.id)).toEqual(["qa"]);
     expect(updated?.labels.map((label) => label.id)).toEqual(["label-debt"]);
+    expect(updated?.dependencies).toEqual([{ issueId: "KANBAN-GAP-001", type: "blocked-by" }]);
+    expect(updated?.acceptanceCriteria).toMatchObject([
+      { id: "KANBAN-GAP-007-ac-1", title: "Expose first-class issue surfaces.", satisfied: true },
+      {
+        title: "Support shared mutation-backed edits for issue metadata.",
+        satisfied: false,
+        notes: "Pending dedicated issue page form wiring.",
+      },
+    ]);
     expect(updated?.activity[0]?.action).toBe("updated-issue-detail");
 
     const persisted = JSON.parse(await fs.readFile(backlogFilePath, "utf8")) as {
       issues: Array<{
         id: string;
+        title: string;
+        summary?: string;
         description?: string;
+        status: string;
         priority: string;
         assignees: Array<{ id: string }>;
         labels: Array<{ id: string }>;
+        dependencies: Array<{ issueId: string; type: string }>;
+        acceptanceCriteria: Array<{ id: string; title: string; satisfied: boolean; notes?: string }>;
       }>;
     };
     expect(
       persisted.issues.find((candidate) => candidate.id === "KANBAN-GAP-007"),
     ).toMatchObject({
+      title: "Land first-class issue authoring",
+      summary: "Shared create and detail flows should edit the same persisted issue model.",
       description: "# Authoring parity\n- [ ] Autosave description",
+      status: "blocked",
       priority: "high",
       assignees: [{ id: "qa" }],
       labels: [{ id: "label-debt" }],
+      dependencies: [{ issueId: "KANBAN-GAP-001", type: "blocked-by" }],
+      acceptanceCriteria: [
+        { id: "KANBAN-GAP-007-ac-1", title: "Expose first-class issue surfaces.", satisfied: true },
+        {
+          title: "Support shared mutation-backed edits for issue metadata.",
+          satisfied: false,
+          notes: "Pending dedicated issue page form wiring.",
+        },
+      ],
     });
   });
 

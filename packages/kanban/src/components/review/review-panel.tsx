@@ -155,7 +155,7 @@ function buildFeedbackContext(artifact: KanbanReviewArtifact): Array<{
     context.set(`issue:${artifact.targetId}`, {
       id: `issue:${artifact.targetId}`,
       label: "Issue",
-      href: `/?issueId=${encodeURIComponent(artifact.targetId)}&issueKey=${encodeURIComponent(artifact.targetLabel)}`,
+      href: `/issues/${encodeURIComponent(artifact.targetId)}`,
     });
   }
 
