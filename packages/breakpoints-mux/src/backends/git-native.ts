@@ -9,6 +9,7 @@ import type {
 import type {
   Breakpoint,
   BreakpointAnswer,
+  BreakpointPublicAnswer,
   BreakpointWaitResult,
   ProvenBreakpointAnswer,
   ProvenVerificationResult,
@@ -19,12 +20,14 @@ import {
   DEFAULT_TIMEOUT_MS,
   BREAKPOINTS_DIR,
   BreakpointSchema,
-  BreakpointAnswerSchema,
+  BreakpointPublicAnswerSchema,
   ProvenBreakpointAnswerSchema,
+  isProvenBreakpointAnswer,
 } from "../types.js";
-import { signAnswerWithKeyRecord } from "../proven/sign.js";
+import { signAnswer, signAnswerWithKeyRecord } from "../proven/sign.js";
 import { verifyAnswer as verifyProvenAnswer } from "../proven/verify.js";
 import type { PrivateKeyRecord } from "../proven/types.js";
+import { selectBreakpointAnswer as selectPublicBreakpointAnswer } from "../backend.js";
 
 export interface GitNativeBackendOptions {
   /** Path to the .breakpoints directory. Defaults to `.breakpoints` in cwd. */
@@ -82,13 +85,31 @@ export class GitNativeBackend implements BreakpointBackend {
   /**
    * Load a proven answer file for a breakpoint, if it exists.
    */
-  private async loadProvenAnswer(id: string): Promise<ProvenBreakpointAnswer | null> {
+  private async loadProvenAnswer(id: string) {
     try {
       const raw = await fs.readFile(this.provenPath(id), "utf-8");
       return ProvenBreakpointAnswerSchema.parse(JSON.parse(raw));
     } catch {
       return null;
     }
+  }
+
+  private async loadStoredAnswer(id: string): Promise<BreakpointPublicAnswer | null> {
+    try {
+      const raw = await fs.readFile(this.answerPath(id), "utf-8");
+      return BreakpointPublicAnswerSchema.parse(JSON.parse(raw));
+    } catch {
+      return null;
+    }
+  }
+
+  private async loadPublicAnswer(id: string): Promise<BreakpointPublicAnswer | null> {
+    const [storedAnswer, provenAnswer] = await Promise.all([
+      this.loadStoredAnswer(id),
+      this.loadProvenAnswer(id),
+    ]);
+
+    return provenAnswer ?? storedAnswer;
   }
 
   async submitBreakpoint(params: SubmitBreakpointParams): Promise<Breakpoint> {
@@ -128,24 +149,22 @@ export class GitNativeBackend implements BreakpointBackend {
     const raw = await fs.readFile(this.breakpointPath(id), "utf-8");
     const breakpoint = BreakpointSchema.parse(JSON.parse(raw));
 
-    // Check for answer file
-    try {
-      const answerRaw = await fs.readFile(this.answerPath(id), "utf-8");
-      const answer = BreakpointAnswerSchema.parse(JSON.parse(answerRaw));
-      if (!breakpoint.answers.some((a) => a.id === answer.id)) {
+    const answer = await this.loadPublicAnswer(id);
+    if (answer) {
+      const existingIndex = breakpoint.answers.findIndex((candidate) => candidate.id === answer.id);
+      if (existingIndex === -1) {
         breakpoint.answers.push(answer);
+      } else {
+        breakpoint.answers[existingIndex] = answer;
       }
       if (breakpoint.status === "pending" || breakpoint.status === "claimed") {
         breakpoint.status = "answered";
       }
-    } catch (err) {
-      if ((err as NodeJS.ErrnoException).code !== "ENOENT") throw err;
     }
 
-    // Check for proven file and attach verification metadata
-    const provenAnswer = await this.loadProvenAnswer(id);
-    if (provenAnswer && breakpoint.answers.length > 0) {
-      const verification = await this.verifyProvenFile(id, provenAnswer);
+    const selectedAnswer = selectPublicBreakpointAnswer(breakpoint);
+    if (selectedAnswer && isProvenBreakpointAnswer(selectedAnswer)) {
+      const verification = await this.verifyProvenFile(selectedAnswer);
       // Attach verification result as metadata on the breakpoint
       (breakpoint as Breakpoint & { provenVerification?: ProvenVerificationResult })
         .provenVerification = verification;
@@ -169,7 +188,7 @@ export class GitNativeBackend implements BreakpointBackend {
         return {
           answered: false,
           breakpoint,
-          allAnswers: [],
+          allAnswers: breakpoint.answers,
           resolution: "aborted",
           elapsedMs: Date.now() - startTime,
         };
@@ -179,12 +198,13 @@ export class GitNativeBackend implements BreakpointBackend {
       try {
         await fs.access(this.answerPath(id));
         const breakpoint = await this.getBreakpoint(id);
-        const answer = breakpoint.answers[0];
+        const answer = selectPublicBreakpointAnswer(breakpoint);
         return {
           answered: true,
           breakpoint: { ...breakpoint, status: "answered" },
           answer,
           allAnswers: breakpoint.answers,
+          resolution: "answered",
           elapsedMs: Date.now() - startTime,
         };
       } catch {
@@ -197,7 +217,7 @@ export class GitNativeBackend implements BreakpointBackend {
         return {
           answered: false,
           breakpoint,
-          allAnswers: [],
+          allAnswers: breakpoint.answers,
           resolution: "cancelled",
           elapsedMs: Date.now() - startTime,
         };
@@ -207,7 +227,7 @@ export class GitNativeBackend implements BreakpointBackend {
         return {
           answered: false,
           breakpoint,
-          allAnswers: [],
+          allAnswers: breakpoint.answers,
           resolution: "timeout",
           elapsedMs: Date.now() - startTime,
         };
@@ -276,7 +296,7 @@ export class GitNativeBackend implements BreakpointBackend {
   async answerBreakpoint(
     id: string,
     answer: SubmitAnswerParams,
-  ): Promise<BreakpointAnswer> {
+  ): Promise<BreakpointPublicAnswer> {
     // Verify breakpoint exists
     await this.getBreakpoint(id);
 
@@ -299,27 +319,48 @@ export class GitNativeBackend implements BreakpointBackend {
         : undefined,
     };
 
-    BreakpointAnswerSchema.parse(breakpointAnswer);
+    if (answer.sign === false && answer.keyFingerprint) {
+      throw new Error("keyFingerprint cannot be used when sign=false");
+    }
+
+    let publicAnswer: BreakpointPublicAnswer = breakpointAnswer;
+
+    if (answer.keyFingerprint) {
+      publicAnswer = await signAnswer(breakpointAnswer, answer.keyFingerprint, this.breakpointsDir);
+    } else if (answer.sign === true) {
+      const signingKey = await this.loadSigningKey();
+      if (!signingKey) {
+        throw new Error("answer_breakpoint.sign requested, but no signing key is configured");
+      }
+      publicAnswer = signAnswerWithKeyRecord(breakpointAnswer, signingKey);
+    } else if (answer.sign !== false) {
+      const signingKey = await this.loadSigningKey();
+      if (signingKey) {
+        publicAnswer = signAnswerWithKeyRecord(breakpointAnswer, signingKey);
+      }
+    }
+
+    BreakpointPublicAnswerSchema.parse(publicAnswer);
 
     await fs.writeFile(
       this.answerPath(id),
-      JSON.stringify(breakpointAnswer, null, 2) + "\n",
+      JSON.stringify(publicAnswer, null, 2) + "\n",
       "utf-8",
     );
 
-    // Sign the answer if a signing key is configured
-    const signingKey = await this.loadSigningKey();
-    if (signingKey) {
-      const provenAnswer = signAnswerWithKeyRecord(breakpointAnswer, signingKey);
+    if (isProvenBreakpointAnswer(publicAnswer)) {
       await fs.writeFile(
         this.provenPath(id),
-        JSON.stringify(provenAnswer, null, 2) + "\n",
+        JSON.stringify(publicAnswer, null, 2) + "\n",
         "utf-8",
       );
+    } else {
+      await fs.rm(this.provenPath(id), { force: true });
     }
 
     // Update the breakpoint status
-    const breakpoint = await this.getBreakpoint(id);
+    const breakpoint = await this.getBreakpoint(id) as Breakpoint & { provenVerification?: ProvenVerificationResult };
+    delete breakpoint.provenVerification;
     breakpoint.status = "answered";
     breakpoint.updatedAt = now;
     await fs.writeFile(
@@ -328,11 +369,12 @@ export class GitNativeBackend implements BreakpointBackend {
       "utf-8",
     );
 
-    return breakpointAnswer;
+    return publicAnswer;
   }
 
   async cancelBreakpoint(id: string): Promise<void> {
-    const breakpoint = await this.getBreakpoint(id);
+    const breakpoint = await this.getBreakpoint(id) as Breakpoint & { provenVerification?: ProvenVerificationResult };
+    delete breakpoint.provenVerification;
     breakpoint.status = "cancelled";
     breakpoint.updatedAt = new Date().toISOString();
 
@@ -344,7 +386,8 @@ export class GitNativeBackend implements BreakpointBackend {
   }
 
   async claimBreakpoint(id: string, responderId: string): Promise<Breakpoint> {
-    const breakpoint = await this.getBreakpoint(id);
+    const breakpoint = await this.getBreakpoint(id) as Breakpoint & { provenVerification?: ProvenVerificationResult };
+    delete breakpoint.provenVerification;
     breakpoint.status = "claimed";
     breakpoint.claimedByResponderId = responderId;
     breakpoint.updatedAt = new Date().toISOString();
@@ -359,30 +402,27 @@ export class GitNativeBackend implements BreakpointBackend {
   }
 
   /**
-   * Verify a proven answer file against trusted public keys.
-   * Loads the .proven.json for the given breakpoint and verifies its signature.
+   * Verify the selected public answer against trusted public keys.
    */
   async verifyAnswer(id: string): Promise<ProvenVerificationResult> {
-    const provenAnswer = await this.loadProvenAnswer(id);
-    if (!provenAnswer) {
+    const breakpoint = await this.getBreakpoint(id);
+    const answer = selectPublicBreakpointAnswer(breakpoint);
+    if (!answer || !isProvenBreakpointAnswer(answer)) {
       return {
         valid: false,
-        reason: "No proven answer file found",
+        reason: "No signed answer found",
         verifiedAt: new Date().toISOString(),
       };
     }
 
-    return this.verifyProvenFile(id, provenAnswer);
+    return this.verifyProvenFile(answer);
   }
 
   /**
    * Verify a loaded ProvenBreakpointAnswer against trusted keys in the
    * breakpoints directory.
    */
-  private async verifyProvenFile(
-    _id: string,
-    provenAnswer: ProvenBreakpointAnswer,
-  ): Promise<ProvenVerificationResult> {
+  private async verifyProvenFile(provenAnswer: ProvenBreakpointAnswer): Promise<ProvenVerificationResult> {
     // The proven/verify module's loadTrustedPublicKeys uses baseDir/.keys/trusted/
     // Our breakpointsDir IS the .breakpoints directory, so we pass it as baseDir.
     return verifyProvenAnswer(provenAnswer, this.breakpointsDir);

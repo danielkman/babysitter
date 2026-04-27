@@ -22,6 +22,7 @@ import type {
   ResponderProfile,
 } from "../types.js";
 import { DEFAULT_POLL_INTERVAL_MS, DEFAULT_TIMEOUT_MS } from "../types.js";
+import { unsupportedBackendFeatureMessage as unsupportedFeatureMessage } from "../backend.js";
 
 const API_BASE_PATH = "/api/v1";
 
@@ -253,6 +254,13 @@ export class ServerBreakpointBackend implements BreakpointBackend {
   }
 
   async submitBreakpoint(params: SubmitBreakpointParams): Promise<Breakpoint> {
+    if (params.proven) {
+      throw new ServerBackendError(
+        unsupportedFeatureMessage(this.name, "ask_breakpoint.proven"),
+        400,
+      );
+    }
+
     const projectId = params.projectId ?? this.projectId;
     const repoId = params.repoId ?? this.repoId;
 
@@ -414,6 +422,13 @@ export class ServerBreakpointBackend implements BreakpointBackend {
   }
 
   async answerBreakpoint(id: string, answer: SubmitAnswerParams): Promise<BreakpointAnswer> {
+    if (answer.sign || answer.keyFingerprint) {
+      throw new ServerBackendError(
+        unsupportedFeatureMessage(this.name, "answer signing"),
+        400,
+      );
+    }
+
     const body = {
       expertId: answer.responderId,
       expertName: answer.responderName,

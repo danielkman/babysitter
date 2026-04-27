@@ -1,5 +1,11 @@
 import { z } from "zod";
+import {
+  selectBreakpointAnswer,
+  supportsProvenAnswers,
+  unsupportedBackendFeatureMessage,
+} from "../../backend.js";
 import type { BreakpointBackend, SubmitBreakpointParams } from "../../backend.js";
+import { isProvenBreakpointAnswer } from "../../types.js";
 import type { BreakpointWaitResult } from "../../types.js";
 import { DEFAULT_TIMEOUT_MS } from "../../types.js";
 
@@ -120,13 +126,25 @@ export async function handleAskBreakpoint(
       presentToUser: false,
       breakpointId: params.breakpointId,
     },
+    proven: params.proven,
   };
+
+  if (params.proven && !supportsProvenAnswers(backend.name)) {
+    throw new Error(unsupportedBackendFeatureMessage(backend.name, "ask_breakpoint.proven"));
+  }
 
   const breakpoint = await backend.submitBreakpoint(submitParams);
 
   const waitResult = await backend.waitForAnswer(breakpoint.id, {
     timeoutMs,
   });
+
+  if (params.proven && waitResult.answered) {
+    const answer = waitResult.answer ?? selectBreakpointAnswer(waitResult.breakpoint);
+    if (!answer || !isProvenBreakpointAnswer(answer)) {
+      throw new Error(`Breakpoint ${breakpoint.id} required a signed answer, but the returned answer was unsigned.`);
+    }
+  }
 
   return waitResult;
 }

@@ -1,6 +1,12 @@
 import { z } from "zod";
+import {
+  selectBreakpointAnswer,
+  supportsProvenAnswers,
+  unsupportedBackendFeatureMessage,
+} from "../../backend.js";
 import type { BreakpointBackend } from "../../backend.js";
-import type { ProvenBreakpointAnswer, ProvenVerificationResult } from "../../types.js";
+import { isProvenBreakpointAnswer } from "../../types.js";
+import type { ProvenVerificationResult } from "../../types.js";
 import { verifyAnswer } from "../../proven/verify.js";
 
 // ── Tool Description ────────────────────────────────────────────────────
@@ -27,19 +33,6 @@ export interface VerifyBreakpointAnswerParams {
   breakpointsDir?: string;
 }
 
-// ── Helper: check if an answer is a proven answer ───────────────────────
-
-function isProvenAnswer(answer: unknown): answer is ProvenBreakpointAnswer {
-  if (!answer || typeof answer !== "object") return false;
-  const obj = answer as Record<string, unknown>;
-  return (
-    typeof obj.signature === "string" &&
-    typeof obj.publicKeyFingerprint === "string" &&
-    typeof obj.signedAt === "string" &&
-    Array.isArray(obj.signedFields)
-  );
-}
-
 // ── Handler ─────────────────────────────────────────────────────────────
 
 export async function handleVerifyBreakpointAnswer(
@@ -56,9 +49,18 @@ export async function handleVerifyBreakpointAnswer(
     throw new Error("No answers found for this breakpoint");
   }
 
-  const answer = breakpoint.answers[0];
+  const answer = selectBreakpointAnswer(breakpoint);
+  if (!answer) {
+    if (breakpoint.selectedAnswer) {
+      throw new Error(`Selected answer ${breakpoint.selectedAnswer} was not found on breakpoint ${breakpoint.id}`);
+    }
+    throw new Error("No answers found for this breakpoint");
+  }
 
-  if (!isProvenAnswer(answer)) {
+  if (!isProvenBreakpointAnswer(answer)) {
+    if (!supportsProvenAnswers(backend.name)) {
+      throw new Error(unsupportedBackendFeatureMessage(backend.name, "signed answers"));
+    }
     throw new Error("Answer is not signed/proven -- no cryptographic signature found");
   }
 

@@ -150,6 +150,35 @@ export const BreakpointAnswerSchema = z.object({
 });
 export type BreakpointAnswer = z.infer<typeof BreakpointAnswerSchema>;
 
+// ── Proven Breakpoint Types ──────────────────────────────────────────────
+
+export const ProvenBreakpointAnswerSchema = BreakpointAnswerSchema.extend({
+  signature: z.string().min(1),
+  publicKeyFingerprint: z.string().min(1),
+  signedAt: z.string().datetime(),
+  signedFields: z.array(z.string()),
+});
+export type ProvenBreakpointAnswer = z.infer<typeof ProvenBreakpointAnswerSchema>;
+
+export const BreakpointPublicAnswerSchema = z.union([
+  ProvenBreakpointAnswerSchema,
+  BreakpointAnswerSchema,
+]);
+export type BreakpointPublicAnswer = z.infer<typeof BreakpointPublicAnswerSchema>;
+
+export function isProvenBreakpointAnswer(answer: unknown): answer is ProvenBreakpointAnswer {
+  return ProvenBreakpointAnswerSchema.safeParse(answer).success;
+}
+
+export const ProvenVerificationResultSchema = z.object({
+  valid: z.boolean(),
+  publicKeyFingerprint: z.string().optional(),
+  responderName: z.string().optional(),
+  reason: z.string().optional(),
+  verifiedAt: z.string().datetime(),
+});
+export type ProvenVerificationResult = z.infer<typeof ProvenVerificationResultSchema>;
+
 // ── Breakpoint ───────────────────────────────────────────────────────────
 
 export const BreakpointSubmitterSchema = z.object({
@@ -167,7 +196,7 @@ export const BreakpointSchema = z.object({
   context: BreakpointContextSchema,
   status: BreakpointStatusSchema,
   routing: BreakpointRoutingSchema,
-  answers: z.array(BreakpointAnswerSchema),
+  answers: z.array(BreakpointPublicAnswerSchema),
   selectedAnswer: z.string().optional(),
   projectId: z.string().optional(),
   repoId: z.string().optional(),
@@ -185,31 +214,12 @@ export type Breakpoint = z.infer<typeof BreakpointSchema>;
 export const BreakpointWaitResultSchema = z.object({
   answered: z.boolean(),
   breakpoint: BreakpointSchema,
-  answer: BreakpointAnswerSchema.optional(),
-  allAnswers: z.array(BreakpointAnswerSchema),
+  answer: BreakpointPublicAnswerSchema.optional(),
+  allAnswers: z.array(BreakpointPublicAnswerSchema),
   resolution: z.string().optional(),
   elapsedMs: z.number().nonnegative(),
 });
 export type BreakpointWaitResult = z.infer<typeof BreakpointWaitResultSchema>;
-
-// ── Proven Breakpoint Types ──────────────────────────────────────────────
-
-export const ProvenBreakpointAnswerSchema = BreakpointAnswerSchema.extend({
-  signature: z.string().min(1),
-  publicKeyFingerprint: z.string().min(1),
-  signedAt: z.string().datetime(),
-  signedFields: z.array(z.string()),
-});
-export type ProvenBreakpointAnswer = z.infer<typeof ProvenBreakpointAnswerSchema>;
-
-export const ProvenVerificationResultSchema = z.object({
-  valid: z.boolean(),
-  publicKeyFingerprint: z.string().optional(),
-  responderName: z.string().optional(),
-  reason: z.string().optional(),
-  verifiedAt: z.string().datetime(),
-});
-export type ProvenVerificationResult = z.infer<typeof ProvenVerificationResultSchema>;
 
 // ── ExpertiseArea ────────────────────────────────────────────────────────
 

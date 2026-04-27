@@ -147,7 +147,7 @@ describe("GitNativeBackend -- Proven Breakpoint Integration", () => {
       const backend = new GitNativeBackend({ breakpointsDir, signingKeyPath });
 
       const bp = await backend.submitBreakpoint(makeSubmitParams());
-      const answer = await backend.answerBreakpoint(bp.id, {
+      await backend.answerBreakpoint(bp.id, {
         responderId: "tal",
         responderName: "Tal M",
         text: "Yes, use connection pooling.",
@@ -232,6 +232,72 @@ describe("GitNativeBackend -- Proven Breakpoint Integration", () => {
       expect(proven.approved).toBe(true);
       expect(proven.confidence).toBe(95);
       expect(proven.references).toEqual(["https://redis.io"]);
+    });
+
+    it("should return the signed answer object from answerBreakpoint", async () => {
+      const { signingKeyPath } = await setupSigningKey(breakpointsDir);
+      const backend = new GitNativeBackend({ breakpointsDir, signingKeyPath });
+
+      const bp = await backend.submitBreakpoint(makeSubmitParams());
+      const answer = await backend.answerBreakpoint(bp.id, {
+        responderId: "tal",
+        responderName: "Tal M",
+        text: "Yes, use connection pooling.",
+      });
+
+      expect(ProvenBreakpointAnswerSchema.safeParse(answer).success).toBe(true);
+    });
+
+    it("should round-trip the signed answer through getBreakpoint and waitForAnswer", async () => {
+      const { signingKeyPath } = await setupSigningKey(breakpointsDir);
+      const backend = new GitNativeBackend({ breakpointsDir, signingKeyPath });
+
+      const bp = await backend.submitBreakpoint(makeSubmitParams());
+      const answer = await backend.answerBreakpoint(bp.id, {
+        responderId: "tal",
+        responderName: "Tal M",
+        text: "Yes, use connection pooling.",
+      });
+
+      const retrieved = await backend.getBreakpoint(bp.id);
+      const waitResult = await backend.waitForAnswer(bp.id, { timeoutMs: 100 });
+
+      expect(ProvenBreakpointAnswerSchema.safeParse(retrieved.answers[0]).success).toBe(true);
+      expect(waitResult.answer).toEqual(answer);
+      expect(waitResult.allAnswers[0]).toEqual(answer);
+    });
+
+    it("should honor sign=false by leaving the public answer unsigned", async () => {
+      const { signingKeyPath } = await setupSigningKey(breakpointsDir);
+      const backend = new GitNativeBackend({ breakpointsDir, signingKeyPath });
+
+      const bp = await backend.submitBreakpoint(makeSubmitParams());
+      const answer = await backend.answerBreakpoint(bp.id, {
+        responderId: "tal",
+        responderName: "Tal M",
+        text: "Unsigned by request.",
+        sign: false,
+      });
+
+      expect(ProvenBreakpointAnswerSchema.safeParse(answer).success).toBe(false);
+      expect(await fileExists(path.join(breakpointsDir, `${bp.id}.proven.json`))).toBe(false);
+    });
+
+    it("should honor keyFingerprint by signing with the requested private key", async () => {
+      const { fingerprint } = await setupSigningKey(breakpointsDir);
+      const backend = new GitNativeBackend({ breakpointsDir });
+
+      const bp = await backend.submitBreakpoint(makeSubmitParams());
+      const answer = await backend.answerBreakpoint(bp.id, {
+        responderId: "tal",
+        responderName: "Tal M",
+        text: "Signed with explicit key.",
+        sign: true,
+        keyFingerprint: fingerprint,
+      });
+
+      expect(ProvenBreakpointAnswerSchema.safeParse(answer).success).toBe(true);
+      expect((answer as ProvenBreakpointAnswer).publicKeyFingerprint).toBe(fingerprint);
     });
   });
 
@@ -451,7 +517,7 @@ describe("GitNativeBackend -- Proven Breakpoint Integration", () => {
   // ── verifyAnswer() Method ──────────────────────────────────────────────
 
   describe("verifyAnswer() method", () => {
-    it("should return valid: false with reason when no proven file exists", async () => {
+    it("should return valid: false with reason when no signed answer exists", async () => {
       const backend = new GitNativeBackend({ breakpointsDir });
 
       const bp = await backend.submitBreakpoint(makeSubmitParams());
@@ -464,7 +530,7 @@ describe("GitNativeBackend -- Proven Breakpoint Integration", () => {
       const result = await backend.verifyAnswer(bp.id);
 
       expect(result.valid).toBe(false);
-      expect(result.reason).toMatch(/no proven/i);
+      expect(result.reason).toMatch(/no signed/i);
       expect(result.verifiedAt).toBeDefined();
     });
 
@@ -546,6 +612,7 @@ describe("GitNativeBackend -- Proven Breakpoint Integration", () => {
         approved: true,
         confidence: 85,
       });
+      expect(ProvenBreakpointAnswerSchema.safeParse(answer).success).toBe(true);
 
       // 3. Verify .proven.json was created
       const provenPath = path.join(breakpointsDir, `${bp.id}.proven.json`);
@@ -561,6 +628,7 @@ describe("GitNativeBackend -- Proven Breakpoint Integration", () => {
       const retrieved = await backend.getBreakpoint(bp.id);
       expect(retrieved.status).toBe("answered");
       expect(retrieved.answers.length).toBeGreaterThanOrEqual(1);
+      expect(ProvenBreakpointAnswerSchema.safeParse(retrieved.answers[0]).success).toBe(true);
 
       const provenVerification = (retrieved as typeof retrieved & {
         provenVerification?: ProvenVerificationResult;
@@ -681,7 +749,7 @@ describe("GitNativeBackend -- Proven Breakpoint Integration", () => {
       const result = await backend.verifyAnswer(bp.id);
 
       expect(result.valid).toBe(false);
-      expect(result.reason).toMatch(/no proven/i);
+      expect(result.reason).toMatch(/no signed/i);
     });
 
     it("should handle concurrent answer-and-verify", async () => {

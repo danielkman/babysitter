@@ -7,6 +7,7 @@ import type {
   SubmitAnswerParams,
   ListRespondersParams,
 } from "../backend.js";
+import { unsupportedBackendFeatureMessage } from "../backend.js";
 
 import type {
   Breakpoint,
@@ -320,6 +321,10 @@ export class GitHubIssuesBackend implements BreakpointBackend {
   }
 
   async submitBreakpoint(params: SubmitBreakpointParams): Promise<Breakpoint> {
+    if (params.proven) {
+      throw new Error(unsupportedBackendFeatureMessage(this.name, "ask_breakpoint.proven"));
+    }
+
     const breakpointId = generateBreakpointId();
     const urgency = params.context.urgency;
     const issueLabels = [...this.labels];
@@ -555,6 +560,10 @@ export class GitHubIssuesBackend implements BreakpointBackend {
     id: string,
     answer: SubmitAnswerParams,
   ): Promise<BreakpointAnswer> {
+    if (answer.sign || answer.keyFingerprint) {
+      throw new Error(unsupportedBackendFeatureMessage(this.name, "answer signing"));
+    }
+
     const issueNumber = this.resolveIssueNumber(id);
 
     const metadataLines: string[] = [];

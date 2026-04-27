@@ -233,6 +233,12 @@ describe("ServerBreakpointBackend", () => {
         .rejects
         .toThrow("repoId is required");
     });
+
+    it("should reject proven requests until signed answers are supported", async () => {
+      await expect(
+        backend.submitBreakpoint(makeSubmitParams({ proven: true })),
+      ).rejects.toThrow(/does not support ask_breakpoint\.proven/i);
+    });
   });
 
   // ── getBreakpoint ──────────────────────────────────────────────────
@@ -511,6 +517,12 @@ describe("ServerBreakpointBackend", () => {
 
       const body = JSON.parse(((globalThis.fetch as Mock).mock.calls[0][1] as { body: string }).body);
       expect(body.confidence).toBe(80);
+    });
+
+    it("should reject answer signing requests until signed answers are supported", async () => {
+      await expect(
+        backend.answerBreakpoint("q-001", makeAnswerParams({ sign: true })),
+      ).rejects.toThrow(/does not support answer signing/i);
     });
   });
 

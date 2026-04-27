@@ -1,4 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { promises as fs } from "node:fs";
+import * as os from "node:os";
+import * as path from "node:path";
 import type {
   Breakpoint,
   BreakpointAnswer,
@@ -39,6 +42,10 @@ async function importAnswerBreakpoint() {
 
 async function importVerifyAnswer() {
   return import("../mcp/tools/verify-answer.js");
+}
+
+async function importBackendResolver() {
+  return import("../mcp/backend-resolver.js");
 }
 
 async function importMcpServer() {
@@ -369,6 +376,63 @@ describe("MCP Server Tools", () => {
 
       const callArgs = (mockBackend.submitBreakpoint as ReturnType<typeof vi.fn>).mock.calls[0][0] as SubmitBreakpointParams;
       expect(callArgs.routing.breakpointId).toBe("my-canonical-bp-id");
+    });
+
+    it("passes proven=true through submitBreakpoint params", async () => {
+      const { handleAskBreakpoint } = await importAskBreakpoint();
+      const gitBackend = createMockBackend({ name: "git-native" });
+      const provenAnswer = makeProvenAnswer();
+      (gitBackend.waitForAnswer as ReturnType<typeof vi.fn>).mockResolvedValue(
+        makeWaitResult({
+          answer: provenAnswer,
+          allAnswers: [provenAnswer],
+          breakpoint: makeBreakpoint({
+            status: "answered",
+            answers: [provenAnswer],
+          }),
+        }),
+      );
+
+      await handleAskBreakpoint({
+        question: "Need a signed answer",
+        proven: true,
+      }, gitBackend);
+
+      const callArgs = (gitBackend.submitBreakpoint as ReturnType<typeof vi.fn>).mock.calls[0][0] as SubmitBreakpointParams;
+      expect(callArgs.proven).toBe(true);
+    });
+
+    it("enforces that proven answers are actually signed", async () => {
+      const { handleAskBreakpoint } = await importAskBreakpoint();
+      const unsignedAnswer = makeAnswer();
+      const waitResult = makeWaitResult({
+        answered: true,
+        answer: unsignedAnswer,
+        allAnswers: [unsignedAnswer],
+      });
+      const gitBackend = createMockBackend({ name: "git-native" });
+      (gitBackend.waitForAnswer as ReturnType<typeof vi.fn>).mockResolvedValue(waitResult);
+
+      await expect(
+        handleAskBreakpoint({
+          question: "Need a signed answer",
+          proven: true,
+        }, gitBackend),
+      ).rejects.toThrow(/required a signed answer/i);
+    });
+
+    it("rejects ask_breakpoint.proven on unsupported backends", async () => {
+      const { handleAskBreakpoint } = await importAskBreakpoint();
+      const serverBackend = createMockBackend({ name: "server" });
+
+      await expect(
+        handleAskBreakpoint({
+          question: "Need a signed answer",
+          proven: true,
+        }, serverBackend),
+      ).rejects.toThrow(/Backend "server" does not support ask_breakpoint\.proven/);
+
+      expect(serverBackend.submitBreakpoint).not.toHaveBeenCalled();
     });
 
     it("handles timeout resolution from waitForAnswer", async () => {
@@ -831,6 +895,23 @@ describe("MCP Server Tools", () => {
       expect(params.references).toEqual(["https://example.com/doc", "src/main.ts"]);
     });
 
+    it("passes sign and keyFingerprint through to the backend", async () => {
+      const { handleAnswerBreakpoint } = await importAnswerBreakpoint();
+
+      await handleAnswerBreakpoint({
+        breakpointId: "bp-001",
+        text: "Signed answer",
+        responderId: "tal",
+        responderName: "Tal M",
+        sign: true,
+        keyFingerprint: "fingerprint-123",
+      }, mockBackend);
+
+      const [, params] = (mockBackend.answerBreakpoint as ReturnType<typeof vi.fn>).mock.calls[0];
+      expect(params.sign).toBe(true);
+      expect(params.keyFingerprint).toBe("fingerprint-123");
+    });
+
     it("propagates backend errors for nonexistent breakpoint", async () => {
       const { handleAnswerBreakpoint } = await importAnswerBreakpoint();
       (mockBackend.answerBreakpoint as ReturnType<typeof vi.fn>).mockRejectedValue(
@@ -969,6 +1050,23 @@ describe("MCP Server Tools", () => {
       ).rejects.toThrow(/not.*signed|not.*proven/i);
     });
 
+    it("verifies the selectedAnswer instead of the first answer", async () => {
+      const { handleVerifyBreakpointAnswer } = await importVerifyAnswer();
+      const firstAnswer = makeProvenAnswer({ id: "answer-1" });
+      const selectedUnsignedAnswer = makeAnswer({ id: "answer-2", text: "Selected but unsigned" });
+      const bp = makeBreakpoint({
+        id: "bp-selected",
+        status: "answered",
+        selectedAnswer: "answer-2",
+        answers: [firstAnswer, selectedUnsignedAnswer],
+      });
+      (mockBackend.getBreakpoint as ReturnType<typeof vi.fn>).mockResolvedValue(bp);
+
+      await expect(
+        handleVerifyBreakpointAnswer({ breakpointId: "bp-selected" }, mockBackend),
+      ).rejects.toThrow(/not.*signed|not.*proven/i);
+    });
+
     it("passes breakpointsDir to verification for trusted key lookup", async () => {
       const { handleVerifyBreakpointAnswer } = await importVerifyAnswer();
       const provenAnswer = makeProvenAnswer();
@@ -1082,6 +1180,47 @@ describe("MCP Server Tools", () => {
   // ──────────────────────────────────────────────────────────────────────────
 
   describe("Backend Resolution from MCP tool params", () => {
+    it("explicit backend override wins over env override", async () => {
+      const { resolveBreakpointBackend } = await importBackendResolver();
+      const configRoot = await fs.mkdtemp(path.join(os.tmpdir(), "bmux-routing-"));
+      const originalEnv = process.env.BMUX_BACKEND;
+
+      await fs.writeFile(
+        path.join(configRoot, "routing.json"),
+        JSON.stringify({
+          defaultBackend: "git-native",
+          routes: [
+            {
+              backend: "server-route",
+              backendConfig: {
+                type: "server",
+                url: "http://localhost:3847",
+              },
+            },
+          ],
+        }),
+        "utf-8",
+      );
+
+      process.env.BMUX_BACKEND = "git-native";
+      try {
+        const resolved = resolveBreakpointBackend({
+          explicitBackend: "server",
+          configRoot,
+        });
+
+        expect(resolved.backend.name).toBe("server");
+        expect(resolved.source).toBe("explicit-override");
+      } finally {
+        if (originalEnv === undefined) {
+          delete process.env.BMUX_BACKEND;
+        } else {
+          process.env.BMUX_BACKEND = originalEnv;
+        }
+        await fs.rm(configRoot, { recursive: true, force: true });
+      }
+    });
+
     it("handler accepts backend param without error", async () => {
       const { handleAskBreakpoint } = await importAskBreakpoint();
 

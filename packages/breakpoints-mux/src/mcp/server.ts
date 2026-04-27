@@ -57,12 +57,13 @@ function resolveToolBackend(params?: {
   domain?: string;
   tags?: string[];
 }): BreakpointBackend {
-  // If an explicit breakpointsDir is provided, use git-native directly
-  if (params?.breakpointsDir) {
+  if (!params?.backend && params?.breakpointsDir) {
     return createDefaultBackend({ breakpointsDir: params.breakpointsDir });
   }
 
   const { backend } = resolveBreakpointBackend({
+    explicitBackend: params?.backend,
+    breakpointsDir: params?.breakpointsDir,
     domain: params?.domain,
     tags: params?.tags,
   });

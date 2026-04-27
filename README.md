@@ -242,6 +242,8 @@ npm run build --workspace=@a5c-ai/babysitter-agent
 
 Those package-local builds now use `tsc --build` project references where the runtime packages are owned in this workspace, and they explicitly bootstrap the `@a5c-ai/agent-mux` SDK chain through the root runtime scripts. Fresh-checkout validation no longer assumes prebuilt upstream `dist/` artifacts.
 
+`@a5c-ai/agent-catalog` is the internal ontology and discovery data-plane package consumed by SDK, agent-mux, hooks-mux, plugin tooling, and the catalog UI. It ships graph, evidence, and package-doc assets for workspace consumers, with its package-level contract documented in [`packages/agent-catalog/README.md`](packages/agent-catalog/README.md) and [`packages/agent-catalog/docs/ontology-evidence.md`](packages/agent-catalog/docs/ontology-evidence.md). Its validation path is `npm run ci:test --workspace=@a5c-ai/agent-catalog` rather than the central publish workflows.
+
 ### CLI Walkthrough Verification
 
 The published CLI walkthrough at `docs/cli-examples.md` is verified against the real repo surfaces, not a separate docs-only harness. From a fresh checkout, use:
@@ -578,6 +580,7 @@ Toggle any layer with `babysitter compression:toggle <layer> <on|off>` or set in
 - [Troubleshooting](docs/user-guide/reference/troubleshooting.md)
 - [Security](docs/user-guide/reference/security.md)
 - [CLI Reference](docs/user-guide/reference/cli-reference.md)
+- [Agent Catalog Package Contract](packages/agent-catalog/README.md)
 
 ---
 

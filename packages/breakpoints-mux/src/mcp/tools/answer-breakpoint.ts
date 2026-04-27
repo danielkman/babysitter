@@ -1,6 +1,6 @@
 import { z } from "zod";
 import type { BreakpointBackend, SubmitAnswerParams } from "../../backend.js";
-import type { BreakpointAnswer } from "../../types.js";
+import type { BreakpointPublicAnswer } from "../../types.js";
 
 // ── Tool Description ────────────────────────────────────────────────────
 
@@ -55,7 +55,7 @@ export interface AnswerBreakpointParams {
 export async function handleAnswerBreakpoint(
   params: AnswerBreakpointParams,
   backend: BreakpointBackend,
-): Promise<BreakpointAnswer> {
+): Promise<BreakpointPublicAnswer> {
   if (!params.breakpointId || params.breakpointId.length === 0) {
     throw new Error("breakpointId is required and must be non-empty");
   }
@@ -76,6 +76,8 @@ export async function handleAnswerBreakpoint(
     approved: params.approved,
     confidence: params.confidence,
     references: params.references,
+    sign: params.sign,
+    keyFingerprint: params.keyFingerprint,
   };
 
   const answer = await backend.answerBreakpoint(params.breakpointId, answerParams);

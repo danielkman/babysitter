@@ -24,6 +24,10 @@ export interface BackendResolveContext {
   domain?: string;
   /** Tags on the breakpoint. */
   tags?: string[];
+  /** Explicit backend override from the MCP tool params. */
+  explicitBackend?: string;
+  /** Explicit git-native breakpoints directory override from the MCP tool params. */
+  breakpointsDir?: string;
   /** Explicit config root override. */
   configRoot?: string;
 }
@@ -32,35 +36,62 @@ export interface ResolvedBackend {
   /** The resolved backend instance. */
   backend: BreakpointBackend;
   /**
+   * "explicit-override" when MCP params force the choice,
    * "routed" when a routing rule matched,
    * "env-override" when BMUX_BACKEND forced the choice,
    * "default" when falling back to git-native.
    */
-  source: "routed" | "env-override" | "default";
+  source: "explicit-override" | "routed" | "env-override" | "default";
 }
 
 /**
  * Resolve the appropriate BreakpointBackend for a request.
  *
  * Resolution order:
+ *   1. Explicit MCP param override.
  *   1. BMUX_BACKEND env var -- forces a specific backend type.
  *      For "git-native" this uses the default git-native backend.
  *      For "github-issues" this requires a routing config to be present
  *      (to know which repo/owner/labels to use).
- *   2. `.a5c/routing.json` -- if present and a rule matches the
+ *   2. BMUX_BACKEND env var -- forces a specific backend type.
+ *   3. `.a5c/routing.json` -- if present and a rule matches the
  *      breakpoint's domain/tags, create the backend from the rule.
- *   3. Fall back to git-native backend (default behaviour).
+ *   4. Fall back to git-native backend (default behaviour).
  */
 export function resolveBreakpointBackend(
   ctx: BackendResolveContext = {},
 ): ResolvedBackend {
+  if (ctx.explicitBackend) {
+    if (ctx.explicitBackend === "git-native") {
+      return {
+        backend: createBackend("git-native", {
+          breakpointsDir: ctx.breakpointsDir,
+        }),
+        source: "explicit-override",
+      };
+    }
+
+    const routingConfig = loadRoutingConfigSync(ctx.configRoot);
+    if (routingConfig) {
+      const matched = matchRouteForBackendType(routingConfig, ctx.explicitBackend, ctx);
+      if (matched) {
+        return { backend: matched, source: "explicit-override" };
+      }
+    }
+
+    throw new Error(
+      `Explicit backend "${ctx.explicitBackend}" could not be resolved. ` +
+      "Define a matching backend in routing.json or use backend=\"git-native\".",
+    );
+  }
+
   const envBackend = process.env.BMUX_BACKEND;
 
   // -- 1. Env override ---------------------------------------------------
   if (envBackend) {
     if (envBackend === "git-native") {
       return {
-        backend: createDefaultBackend(),
+        backend: createDefaultBackend({ breakpointsDir: ctx.breakpointsDir }),
         source: "env-override",
       };
     }
@@ -98,7 +129,7 @@ export function resolveBreakpointBackend(
 
   // -- 3. Default backend ------------------------------------------------
   return {
-    backend: createDefaultBackend(),
+    backend: createDefaultBackend({ breakpointsDir: ctx.breakpointsDir }),
     source: "default",
   };
 }

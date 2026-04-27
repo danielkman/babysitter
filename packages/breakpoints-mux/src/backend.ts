@@ -1,6 +1,7 @@
 import type {
   Breakpoint,
   BreakpointAnswer,
+  BreakpointPublicAnswer,
   BreakpointContext,
   BreakpointRouting,
   BreakpointWaitResult,
@@ -17,6 +18,8 @@ export interface SubmitBreakpointParams {
   context: BreakpointContext;
   /** Routing configuration. */
   routing: BreakpointRouting;
+  /** Whether the requester requires a signed answer. */
+  proven?: boolean;
   /** Optional project scope. */
   projectId?: string;
   /** Optional repository scope. */
@@ -57,6 +60,10 @@ export interface SubmitAnswerParams {
   followUpQuestions?: string[];
   /** Decision memory for future reference. */
   decisionMemory?: { applicabilityContext: string; reasoning: string };
+  /** Whether the responder explicitly requests signing. */
+  sign?: boolean;
+  /** Specific signing key fingerprint to use when signing. */
+  keyFingerprint?: string;
 }
 
 /**
@@ -103,7 +110,7 @@ export interface BreakpointBackend {
   /**
    * Submit an answer for a breakpoint.
    */
-  answerBreakpoint(id: string, answer: SubmitAnswerParams): Promise<BreakpointAnswer>;
+  answerBreakpoint(id: string, answer: SubmitAnswerParams): Promise<BreakpointPublicAnswer>;
 
   /**
    * Cancel a pending breakpoint.
@@ -121,4 +128,26 @@ export interface BreakpointBackend {
    * Optional -- not all backends support explicit claiming.
    */
   claimBreakpoint?(id: string, responderId: string): Promise<Breakpoint>;
+}
+
+export function selectBreakpointAnswer(
+  breakpoint: Pick<Breakpoint, "answers" | "selectedAnswer">,
+): BreakpointPublicAnswer | undefined {
+  if (breakpoint.answers.length === 0) {
+    return undefined;
+  }
+
+  if (breakpoint.selectedAnswer) {
+    return breakpoint.answers.find((answer) => answer.id === breakpoint.selectedAnswer);
+  }
+
+  return breakpoint.answers[0];
+}
+
+export function supportsProvenAnswers(backendName: string): boolean {
+  return backendName === "git-native";
+}
+
+export function unsupportedBackendFeatureMessage(backendName: string, feature: string): string {
+  return `Backend "${backendName}" does not support ${feature}. Proven signing is currently supported only by "git-native".`;
 }
