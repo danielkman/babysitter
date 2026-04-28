@@ -33,7 +33,6 @@
     "test": "node --test test/integration.test.js",
     "test:integration": "node --test test/integration.test.js",
     "test:packaged-install": "node test/packaged-install.test.cjs",
-    "sync:commands": "node scripts/sync-command-docs.cjs",
     "deploy": "npm publish --access public",
     "deploy:staging": "npm publish --access public --tag staging"
   },
