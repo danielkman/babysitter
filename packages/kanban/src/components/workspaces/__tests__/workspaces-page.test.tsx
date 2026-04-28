@@ -503,6 +503,52 @@ describe("workspaces-page helpers", () => {
     expect(screen.getByText("Recovery required")).toBeInTheDocument();
   });
 
+  it("renders route-level workspace parity states for permission, loading, error, offline, and empty", async () => {
+    const never = new Promise<Response>(() => undefined);
+    vi.mocked(fetch).mockReturnValueOnce(never as Promise<Response>);
+
+    const { rerender } = render(<WorkspacesPageContent isAuthenticated={false} sessions={[]} />);
+    expect(screen.getByTestId("workspace-route-permission")).toBeInTheDocument();
+
+    rerender(<WorkspacesPageContent isAuthenticated sessions={[]} />);
+    expect(screen.getByTestId("workspace-route-loading")).toBeInTheDocument();
+
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify({ error: "Inventory exploded." }), {
+        status: 500,
+        headers: { "content-type": "application/json" },
+      }),
+    );
+    rerender(<WorkspacesPageContent isAuthenticated sessions={[{ sessionId: "session-1", agent: "codex", status: "active" }]} />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("workspace-route-error")).toBeInTheDocument();
+    });
+
+    vi.mocked(fetch).mockResolvedValueOnce(
+      new Response(JSON.stringify({
+        summary: { total: 0, active: 0, idle: 0, archived: 0, missing: 0 },
+        workspaces: [],
+      }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      }),
+    );
+    rerender(
+      <WorkspacesPageContent
+        isAuthenticated
+        sessions={[]}
+        connectionStatus="disconnected"
+        connectionError="Gateway socket is unavailable."
+      />,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId("workspace-route-offline")).toBeInTheDocument();
+    });
+    expect(screen.getByTestId("workspace-route-empty")).toBeInTheDocument();
+  });
+
   it("renders sidebar search, grouped layout, pinned rows, and mixed status badges", async () => {
     workspaceReviewArtifacts = [
       {
@@ -690,7 +736,7 @@ describe("workspaces-page helpers", () => {
     expect(screen.getAllByText("Pinned").length).toBeGreaterThan(0);
     expect(screen.getByText("Dev server running")).toBeInTheDocument();
     expect(screen.getByText("PR in review")).toBeInTheDocument();
-    expect(screen.getByText("Needs attention")).toBeInTheDocument();
+    expect(screen.getAllByText("Needs attention").length).toBeGreaterThanOrEqual(1);
   });
 
   it("filters workspace sidebar content and reports hidden items", async () => {
@@ -892,7 +938,7 @@ describe("workspaces-page helpers", () => {
       expect(screen.getByRole("button", { name: "Flat" })).toHaveAttribute("aria-pressed", "true");
     });
 
-    expect(screen.getByDisplayValue("beta")).toBeInTheDocument();
+    expect(screen.getByLabelText("Workspace search")).toHaveValue("beta");
     expect(screen.queryByText("alpha")).not.toBeInTheDocument();
     expect(screen.getByText("Workspace list")).toBeInTheDocument();
   });
@@ -964,7 +1010,7 @@ describe("workspaces-page helpers", () => {
     await user.click(screen.getByRole("button", { name: "Pin" }));
 
     await waitFor(() => {
-      expect(screen.getByText("Pin failed.")).toBeInTheDocument();
+      expect(screen.getAllByText("Pin failed.").length).toBeGreaterThanOrEqual(2);
     });
 
     expect(fetch).toHaveBeenNthCalledWith(

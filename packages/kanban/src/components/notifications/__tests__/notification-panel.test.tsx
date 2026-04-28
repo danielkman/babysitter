@@ -48,6 +48,27 @@ describe('NotificationPanel', () => {
     expect(screen.getByText('No notifications')).toBeInTheDocument();
   });
 
+  it("shows permission recovery messaging and requests browser permission from the empty state", async () => {
+    const user = setupUser();
+    const onRequestPermission = vi.fn();
+
+    render(
+      <NotificationPanel
+        {...defaultProps}
+        permission="default"
+        onRequestPermission={onRequestPermission}
+      />,
+    );
+
+    expect(
+      screen.getByText("Enable browser notifications to receive background alerts when this panel is closed."),
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Enable notifications" }));
+
+    expect(onRequestPermission).toHaveBeenCalledTimes(1);
+  });
+
   // -----------------------------------------------------------------------
   // Renders notifications
   // -----------------------------------------------------------------------

@@ -24,7 +24,7 @@ export function AppHeader() {
   const { theme, toggle: toggleTheme } = useTheme();
   const { connected: streamConnected } = useEventStream();
   const { isAuthenticated } = useGatewayAuth();
-  const { notifications, dismiss } = useNotificationContext();
+  const { notifications, dismiss, permission, requestPermission } = useNotificationContext();
   const [showNotifications, setShowNotifications] = useState(false);
 
   useKeyboard([
@@ -152,6 +152,8 @@ export function AppHeader() {
       <NotificationPanel
         open={showNotifications}
         notifications={notifications}
+        permission={permission}
+        onRequestPermission={requestPermission}
         onDismiss={dismiss}
         onClose={() => setShowNotifications(false)}
       />

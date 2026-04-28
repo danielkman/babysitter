@@ -9,7 +9,7 @@ import type { Attachment, WorkspaceRuntimeSurface } from "@a5c-ai/agent-mux-core
 import { RequireGatewayAuth } from "@/components/agent-mux/require-gateway-auth";
 import { WorkspacesPageContent } from "@/components/workspaces/workspaces-page";
 import { useGatewayFetch } from "@/components/agent-mux/gateway-provider";
-import { useGateway } from "@/lib/agent-mux-ui";
+import { useConnection, useGateway } from "@/lib/agent-mux-ui";
 
 function readRuntime(value: unknown): WorkspaceRuntimeSurface | undefined {
   if (!value || typeof value !== "object") {
@@ -30,6 +30,7 @@ function WorkspacesContent() {
   const searchParams = useSearchParams();
   const selectedWorkspacePath = searchParams.get("workspace");
   const fetchGateway = useGatewayFetch();
+  const connection = useConnection();
   const { store } = useGateway();
   const sessions = useStore(store, useShallow((state) => Object.values(state.sessions.byId)));
   const runs = useStore(store, useShallow((state) => Object.values(state.runs.byId)));
@@ -102,6 +103,8 @@ function WorkspacesContent() {
   return (
     <WorkspacesPageContent
       isAuthenticated
+      connectionStatus={connection.status}
+      connectionError={connection.error ?? null}
       sessions={workspaceSessions}
       selectedWorkspacePath={selectedWorkspacePath}
       allRuns={runs as Array<Record<string, unknown>>}

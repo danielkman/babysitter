@@ -16,6 +16,8 @@ const refreshMock = vi.fn();
 const updateProjectCollaborationMock = vi.fn();
 const updateRepositorySettingsMock = vi.fn();
 const requestPermissionMock = vi.fn();
+let backlogLoading = false;
+let backlogError: string | null = null;
 
 let snapshot = {
   projects: [
@@ -183,10 +185,14 @@ vi.mock("lucide-react", () => ({
   AlertTriangle: () => <svg aria-hidden="true" />,
   Boxes: () => <svg aria-hidden="true" />,
   Cpu: () => <svg aria-hidden="true" />,
+  Inbox: () => <svg aria-hidden="true" />,
+  Loader2: () => <svg aria-hidden="true" />,
   Network: () => <svg aria-hidden="true" />,
   ServerCog: () => <svg aria-hidden="true" />,
+  ShieldAlert: () => <svg aria-hidden="true" />,
   ShieldCheck: () => <svg aria-hidden="true" />,
   Users: () => <svg aria-hidden="true" />,
+  WifiOff: () => <svg aria-hidden="true" />,
 }));
 
 vi.mock("@/components/agent-mux/gateway-provider", () => ({
@@ -201,8 +207,8 @@ vi.mock("@/hooks/use-backlog", () => ({
   useBacklog: () => ({
     snapshot,
     refresh: refreshMock,
-    loading: false,
-    error: null,
+    loading: backlogLoading,
+    error: backlogError,
     updateProjectCollaboration: updateProjectCollaborationMock,
     updateRepositorySettings: updateRepositorySettingsMock,
   }),
@@ -260,6 +266,8 @@ describe("SettingsPage", () => {
     updateProjectCollaborationMock.mockReset();
     updateRepositorySettingsMock.mockReset();
     requestPermissionMock.mockReset();
+    backlogLoading = false;
+    backlogError = null;
 
     snapshot = {
       projects: [
@@ -417,6 +425,7 @@ describe("SettingsPage", () => {
     const user = setupUser();
     render(<SettingsPage />);
 
+    expect(screen.getByTestId("settings-route-offline")).toBeInTheDocument();
     expect(screen.getByTestId("settings-nav-general")).toBeInTheDocument();
     expect(screen.getByTestId("settings-nav-repositories-projects")).toBeInTheDocument();
     expect(screen.getByTestId("settings-nav-organization")).toBeInTheDocument();
@@ -477,9 +486,8 @@ describe("SettingsPage", () => {
     await user.click(screen.getByTestId("settings-nav-notifications"));
     expect(screen.getByTestId("notification-settings")).toBeInTheDocument();
     expect(screen.getByText("Browser notification permission pending")).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Enable browser notifications" }),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("settings-route-permission")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Enable browser notifications" })).toBeInTheDocument();
 
     await user.click(screen.getByTestId("settings-nav-keyboard-shortcuts"));
     expect(screen.getByTestId("keyboard-shortcut-settings")).toBeInTheDocument();
@@ -813,19 +821,37 @@ describe("SettingsPage", () => {
     expect(screen.getByTestId("organization-settings")).toBeInTheDocument();
   });
 
-  it("renders explicit missing project and organization context states", async () => {
-    const user = setupUser();
+  it("renders a route-level empty state when project context is missing", () => {
     snapshot.projects = [];
     render(<SettingsPage />);
 
-    await user.click(screen.getByTestId("settings-nav-repositories-projects"));
-    expect(screen.getByText("Project context is missing")).toBeInTheDocument();
+    expect(screen.getByTestId("settings-route-empty")).toBeInTheDocument();
+    expect(screen.getByText("No project settings are available yet")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Open projects" })).toHaveAttribute("href", "/projects");
+    expect(screen.getByRole("button", { name: "Refresh settings" })).toBeInTheDocument();
+  });
 
-    await user.click(screen.getByTestId("settings-nav-organization"));
-    expect(screen.getByText("Organization context is missing")).toBeInTheDocument();
+  it("renders route-level loading and error states for settings bootstrap", () => {
+    backlogLoading = true;
+    snapshot = null as never;
+    const { rerender } = render(<SettingsPage />);
 
-    await user.click(screen.getByTestId("settings-nav-remote-project"));
-    expect(screen.getByText("Project context is missing")).toBeInTheDocument();
+    expect(screen.getByTestId("settings-route-loading")).toBeInTheDocument();
+
+    backlogLoading = false;
+    backlogError = "Settings bootstrap failed.";
+    rerender(<SettingsPage />);
+
+    expect(screen.getByTestId("settings-route-error")).toBeInTheDocument();
+    expect(screen.getByText("Settings bootstrap failed.")).toBeInTheDocument();
+  });
+
+  it("renders integration empty-state messaging when no providers are configured", () => {
+    snapshot.projects[0]!.integrations = [];
+    render(<SettingsPage />);
+
+    expect(screen.getByTestId("settings-integrations-empty")).toBeInTheDocument();
+    expect(screen.getByText("No repository integrations are configured")).toBeInTheDocument();
   });
 
   it("shows section-specific loading for agent configuration", async () => {

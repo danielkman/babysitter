@@ -552,6 +552,89 @@ describe("BacklogOverview", () => {
     expect(screen.getByText("Set 1 assignees and 2 collaborators for KANBAN-GAP-007.")).toBeInTheDocument();
   });
 
+  it("renders explicit board-route loading, error, and empty states", () => {
+    backlogState = {
+      snapshot: null,
+      summary: null,
+      board: null,
+      loading: true,
+      error: null,
+      refresh: refreshMock,
+      moveIssue: moveIssueMock,
+      linkRepository: linkRepositoryMock,
+      updateRepositorySettings: updateRepositorySettingsMock,
+      createPullRequest: createPullRequestMock,
+      updateProjectCollaboration: updateProjectCollaborationMock,
+      updateIssueCollaboration: updateIssueCollaborationMock,
+      updateIssueDetail: updateIssueDetailMock,
+      updateIssueDispatchContextLabels: updateIssueDispatchContextLabelsMock,
+      createIssue: createIssueMock,
+      createSubIssue: createSubIssueMock,
+      linkChildIssue: linkChildIssueMock,
+      createIssueWorkspace: createIssueWorkspaceMock,
+      linkIssueWorkspace: linkIssueWorkspaceMock,
+      creatingIssue: false,
+    };
+
+    const { rerender } = render(<BacklogOverview routeMode="board" />);
+    expect(screen.getByTestId("backlog-overview-loading")).toBeInTheDocument();
+
+    backlogState = {
+      ...backlogState,
+      loading: false,
+      error: "Backlog snapshot failed.",
+    };
+    rerender(<BacklogOverview routeMode="board" />);
+    expect(screen.getByTestId("backlog-overview-error")).toBeInTheDocument();
+
+    backlogState = buildBacklogState();
+    backlogState.snapshot.projects = [];
+    rerender(<BacklogOverview routeMode="board" />);
+    expect(screen.getByTestId("backlog-overview-empty")).toBeInTheDocument();
+  });
+
+  it("renders explicit issue-route loading, error, and empty states", () => {
+    backlogState = {
+      snapshot: null,
+      summary: null,
+      board: null,
+      loading: true,
+      error: null,
+      refresh: refreshMock,
+      moveIssue: moveIssueMock,
+      linkRepository: linkRepositoryMock,
+      updateRepositorySettings: updateRepositorySettingsMock,
+      createPullRequest: createPullRequestMock,
+      updateProjectCollaboration: updateProjectCollaborationMock,
+      updateIssueCollaboration: updateIssueCollaborationMock,
+      updateIssueDetail: updateIssueDetailMock,
+      updateIssueDispatchContextLabels: updateIssueDispatchContextLabelsMock,
+      createIssue: createIssueMock,
+      createSubIssue: createSubIssueMock,
+      linkChildIssue: linkChildIssueMock,
+      createIssueWorkspace: createIssueWorkspaceMock,
+      linkIssueWorkspace: linkIssueWorkspaceMock,
+      creatingIssue: false,
+    };
+
+    const { rerender } = render(
+      <BacklogOverview routeMode="issue" initialProjectId="kanban-app" initialIssueId="KANBAN-GAP-007" />,
+    );
+    expect(screen.getByTestId("backlog-overview-loading")).toBeInTheDocument();
+
+    backlogState = {
+      ...backlogState,
+      loading: false,
+      error: "Issue snapshot failed.",
+    };
+    rerender(<BacklogOverview routeMode="issue" initialProjectId="kanban-app" initialIssueId="KANBAN-GAP-007" />);
+    expect(screen.getByTestId("backlog-overview-error")).toBeInTheDocument();
+
+    backlogState = buildBacklogState();
+    rerender(<BacklogOverview routeMode="issue" initialProjectId="kanban-app" initialIssueId="missing-issue" />);
+    expect(screen.getByTestId("issue-route-empty")).toBeInTheDocument();
+  });
+
   it("opens create mode from the board header and resets the draft after close and reopen", async () => {
     const user = setupUser();
     render(<BacklogOverview />);

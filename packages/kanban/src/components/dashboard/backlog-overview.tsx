@@ -48,6 +48,7 @@ import { usePersistedState } from "@/hooks/use-persisted-state";
 import { useReviews } from "@/hooks/use-reviews";
 import { useTaskTags } from "@/hooks/use-task-tags";
 import { ReviewPanel } from "@/components/review/review-panel";
+import { PageStateCard } from "@/components/shared/page-state";
 import { TaskTagAutocompleteTextarea } from "@/components/task-tags/task-tag-autocomplete-textarea";
 import type { WorkspaceInventoryItem, WorkspaceInventoryResponse } from "@/lib/workspace-lifecycle";
 
@@ -3935,36 +3936,6 @@ export function BacklogOverview({
     };
   }, [focusedIssue?.id]);
 
-  if (loading && !snapshot) {
-    return (
-      <section
-        className="mb-6 rounded-3xl border border-border bg-card p-6 shadow-lg"
-        data-testid="backlog-overview-loading"
-      >
-        <div className="animate-pulse space-y-3">
-          <div className="h-4 w-36 rounded bg-background-secondary" />
-          <div className="h-8 w-80 rounded bg-background-secondary" />
-          <div className="grid gap-3 md:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <div key={index} className="h-20 rounded-2xl bg-background-secondary" />
-            ))}
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  if (error || !snapshot || !summary || !board) {
-    return (
-      <section
-        className="mb-6 rounded-3xl border border-error/25 bg-error-muted p-6 text-sm text-error shadow-lg"
-        data-testid="backlog-overview-error"
-      >
-        Failed to load issue backlog model.
-      </section>
-    );
-  }
-
   const boardCards = primaryBoard
     ? primaryBoard.swimlanes.flatMap((swimlane) =>
         workflowOrder.flatMap((state) => findCardsForCell(primaryBoard, swimlane.id, state)),
@@ -4032,8 +4003,51 @@ export function BacklogOverview({
     });
   }, [visibleIssueIdsKey]);
 
+  const routeState =
+    loading && !snapshot ? (
+      <PageStateCard
+        variant="loading"
+        eyebrow="Planning route"
+        title={routeMode === "issue" ? "Loading issue route" : "Loading planning workspace"}
+        description="The shared backlog snapshot is still loading, so board, issue, and review state are being held at the route level."
+        className="mb-6"
+        testId="backlog-overview-loading"
+      />
+    ) : error || !snapshot || !summary || !board ? (
+      <PageStateCard
+        variant="error"
+        eyebrow="Planning route"
+        title="Issue backlog model failed to load"
+        description="Board and issue routes cannot render until the shared backlog snapshot is available again."
+        detail={error ?? "Retry the snapshot fetch or inspect local settings before continuing."}
+        actions={[
+          { label: "Retry", onClick: () => void refresh(), variant: "primary" },
+          { label: "Open settings", href: "/settings" },
+        ]}
+        className="mb-6"
+        testId="backlog-overview-error"
+      />
+    ) : null;
+
+  if (routeState) {
+    return routeState;
+  }
+
   if (!primaryProject || !primaryBoard) {
-    return null;
+    return (
+      <PageStateCard
+        variant="empty"
+        eyebrow="Planning route"
+        title="No project board is available for this route"
+        description="The route resolved, but there is no matching project board in the current backlog snapshot."
+        actions={[
+          { label: "Open projects", href: "/projects", variant: "primary" },
+          { label: "Refresh backlog", onClick: () => void refresh() },
+        ]}
+        className="mb-6"
+        testId="backlog-overview-empty"
+      />
+    );
   }
 
   if (routeMode === "create") {
@@ -4088,9 +4102,18 @@ export function BacklogOverview({
   if (routeMode === "issue") {
     if (!focusedIssue || !focusedIssueDraft) {
       return (
-        <section className="mb-6 rounded-3xl border border-error/25 bg-error-muted p-6 text-sm text-error shadow-lg">
-          Issue not found in the current backlog snapshot.
-        </section>
+        <PageStateCard
+          variant="empty"
+          eyebrow="Issue route"
+          title="Issue not found in the current backlog snapshot"
+          description="This deep link no longer resolves to an issue in the current project state."
+          actions={[
+            { label: "Back to board", onClick: clearFocusedIssue, variant: "primary" },
+            { label: "Refresh backlog", onClick: () => void refresh() },
+          ]}
+          className="mb-6"
+          testId="issue-route-empty"
+        />
       );
     }
 

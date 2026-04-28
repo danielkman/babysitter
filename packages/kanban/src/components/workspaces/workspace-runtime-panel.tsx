@@ -23,6 +23,7 @@ import {
 
 import { cn } from "@/lib/cn";
 import { DispatchContextAuditPanel } from "@/components/shared/dispatch-context-audit-panel";
+import { PageStateBanner } from "@/components/shared/page-state";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -289,7 +290,47 @@ export function WorkspaceRuntimePanel(props: {
               </div>
             </div>
           ) : (
-            <EmptyRuntimeState text="No preview URL has been detected from the workspace runtime yet." />
+            <PageStateBanner
+              variant={
+                isDisconnected
+                  ? "offline"
+                  : props.runtime.preview.status === "failed"
+                    ? "error"
+                    : props.runtime.preview.status === "starting"
+                      ? "loading"
+                      : "empty"
+              }
+              eyebrow="Preview surface"
+              title={
+                isDisconnected
+                  ? "Preview disconnected"
+                  : props.runtime.preview.status === "failed"
+                    ? "Preview failed to initialize"
+                    : props.runtime.preview.status === "starting"
+                      ? "Preview is still starting"
+                      : "No preview URL detected yet"
+              }
+              description={
+                isDisconnected
+                  ? "The selected session is not currently publishing runtime preview state."
+                  : props.runtime.preview.status === "failed"
+                    ? "The runtime reported a preview failure instead of a reachable URL."
+                    : props.runtime.preview.status === "starting"
+                      ? "Keep this route open while the runtime waits for a dev server or preview URL."
+                      : "No preview URL has been detected from the workspace runtime yet."
+              }
+              detail={
+                props.runtime.devServer.primaryUrl
+                  ? `Fallback dev server URL is available at ${props.runtime.devServer.primaryUrl}.`
+                  : "Open the logs or dev-server tabs to inspect runtime progress and recovery signals."
+              }
+              actions={
+                props.runtime.devServer.primaryUrl
+                  ? [{ label: "Open dev server", href: props.runtime.devServer.primaryUrl, variant: "primary" }]
+                  : undefined
+              }
+              testId="workspace-preview-state"
+            />
           )}
         </TabsContent>
 

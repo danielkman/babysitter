@@ -5,6 +5,7 @@ import { FolderGit2, ListTodo, Layers, Workflow, Users } from "lucide-react";
 
 import { useBacklog } from "@/hooks/use-backlog";
 import { PageSection, PageShell } from "@/components/shared/page-shell";
+import { PageStateCard } from "@/components/shared/page-state";
 
 export default function ProjectsPage() {
   const { snapshot, summary, loading, error } = useBacklog();
@@ -12,14 +13,13 @@ export default function ProjectsPage() {
   if (loading && !snapshot) {
     return (
       <PageShell>
-        <div className="w-full animate-pulse rounded-3xl border border-border bg-card p-6">
-          <div className="h-5 w-48 rounded bg-background-secondary" />
-          <div className="mt-4 grid gap-4 lg:grid-cols-3">
-            {Array.from({ length: 3 }).map((_, index) => (
-              <div key={index} className="h-40 rounded-2xl bg-background-secondary" />
-            ))}
-          </div>
-        </div>
+        <PageStateCard
+          variant="loading"
+          eyebrow="Projects"
+          title="Loading planning surfaces"
+          description="Building the project and board workspace so route-level planning state can render consistently."
+          testId="projects-page-loading"
+        />
       </PageShell>
     );
   }
@@ -27,9 +27,36 @@ export default function ProjectsPage() {
   if (error || !snapshot) {
     return (
       <PageShell>
-        <div className="w-full rounded-3xl border border-error/25 bg-error-muted p-6 text-sm text-error">
-          Failed to load project planning workspace.
-        </div>
+        <PageStateCard
+          variant="error"
+          eyebrow="Projects"
+          title="Project planning failed to load"
+          description="The board-first planning workspace could not be loaded right now."
+          detail={error ?? "Refresh the page or open settings to inspect local configuration and gateway posture."}
+          actions={[
+            { label: "Retry", onClick: () => window.location.reload(), variant: "primary" },
+            { label: "Open settings", href: "/settings" },
+          ]}
+          testId="projects-page-error"
+        />
+      </PageShell>
+    );
+  }
+
+  if (snapshot.projects.length === 0) {
+    return (
+      <PageShell>
+        <PageStateCard
+          variant="empty"
+          eyebrow="Projects"
+          title="No project boards are available yet"
+          description="This package expects planning to start from routed project boards. Create or sync a project before using board and list routes."
+          actions={[
+            { label: "Open workspaces", href: "/workspaces", variant: "primary" },
+            { label: "Open settings", href: "/settings" },
+          ]}
+          testId="projects-page-empty"
+        />
       </PageShell>
     );
   }

@@ -11,6 +11,7 @@ import {
   dialogHeaderClassName,
   dialogOverlayClassName,
 } from "@/components/shared/dialog-shell";
+import { Button } from "@/components/ui/button";
 
 const iconMap: Record<AppNotification["type"], React.ReactNode> = {
   success: <CheckCircle2 className="h-4 w-4 text-success drop-shadow-[var(--drop-glow-success)]" />,
@@ -29,11 +30,20 @@ const borderMap: Record<AppNotification["type"], string> = {
 interface NotificationPanelProps {
   open: boolean;
   notifications: AppNotification[];
+  permission?: NotificationPermission | "unsupported";
+  onRequestPermission?: (() => Promise<NotificationPermission | undefined>) | (() => void);
   onDismiss: (id: string) => void;
   onClose: () => void;
 }
 
-export function NotificationPanel({ open, notifications, onDismiss, onClose }: NotificationPanelProps) {
+export function NotificationPanel({
+  open,
+  notifications,
+  permission = "default",
+  onRequestPermission,
+  onDismiss,
+  onClose,
+}: NotificationPanelProps) {
   const router = useRouter();
 
   const handleClick = (notif: AppNotification) => {
@@ -81,6 +91,22 @@ export function NotificationPanel({ open, notifications, onDismiss, onClose }: N
               <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-border bg-background/50 py-12 text-foreground-muted">
                 <Bell className="h-8 w-8 mb-2 opacity-50" />
                 <p className="text-sm">No notifications</p>
+                <p className="mt-2 max-w-xs text-center text-xs leading-5">
+                  {permission === "granted"
+                    ? "Run and review alerts will appear here when attention is required."
+                    : permission === "denied"
+                      ? "Browser notifications are blocked. Re-enable them in the browser to restore background alerts."
+                      : permission === "unsupported"
+                        ? "Browser notifications are not supported in this environment."
+                        : "Enable browser notifications to receive background alerts when this panel is closed."}
+                </p>
+                {permission !== "granted" && permission !== "unsupported" ? (
+                  <div className="mt-4">
+                    <Button type="button" variant="outline" size="sm" onClick={() => void onRequestPermission?.()}>
+                      Enable notifications
+                    </Button>
+                  </div>
+                ) : null}
               </div>
             ) : (
               <div className="space-y-2">

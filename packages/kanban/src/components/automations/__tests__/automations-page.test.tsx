@@ -186,8 +186,56 @@ describe("AutomationsPage", () => {
     expect(screen.getByText("failing")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /KANBAN-AUTO-201/i })).toHaveAttribute(
       "href",
-      "/issues/KANBAN-AUTO-201",
+      "/projects/kanban-app/board?issueId=KANBAN-AUTO-201&issueKey=KANBAN-AUTO-201",
     );
+  });
+
+  it("renders explicit empty and error states for integration-oriented automation surfaces", async () => {
+    const user = setupUser();
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            ...initialCollection,
+            rules: [],
+            summary: {
+              ...initialCollection.summary,
+              totalCount: 0,
+              visibleCount: 0,
+              executionCount: 0,
+              failureCount: 0,
+              failingCount: 0,
+              stateCounts: { draft: 0, active: 0, paused: 0, disabled: 0, archived: 0 },
+              triggerCounts: { timer: 0, webhook: 0 },
+            },
+          }),
+          {
+            status: 200,
+            headers: { "content-type": "application/json" },
+          },
+        ),
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ error: "Automation API unavailable." }), {
+          status: 503,
+          headers: { "content-type": "application/json" },
+        }),
+      );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const { rerender } = render(<AutomationsPage />);
+
+    expect(await screen.findByText("No automation rules yet")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Create a timer or webhook rule to route generated work into the board without crowding the dashboard.",
+      ),
+    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Refresh rules" }));
+
+    expect(await screen.findByText("Automation API unavailable.")).toBeInTheDocument();
   });
 
   it("creates a webhook rule using the existing API contract", async () => {

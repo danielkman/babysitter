@@ -100,6 +100,75 @@ const artifact = {
 };
 
 describe("ReviewPanel", () => {
+  it("renders explicit loading, error, and empty review states", () => {
+    const { rerender } = render(
+      <ReviewPanel
+        title="Issue diff and feedback loop"
+        description="Shared review surface."
+        empty="No reviews."
+        loading
+        artifacts={[]}
+        queue={[]}
+        summary={{
+          total: 0,
+          issueCount: 0,
+          workspaceCount: 0,
+          pendingCount: 0,
+          changesRequestedCount: 0,
+          approvedCount: 0,
+          openCommentCount: 0,
+        }}
+      />,
+    );
+
+    expect(screen.getByTestId("review-panel-loading")).toBeInTheDocument();
+
+    rerender(
+      <ReviewPanel
+        title="Issue diff and feedback loop"
+        description="Shared review surface."
+        empty="No reviews."
+        loading={false}
+        error="Review artifacts failed to load."
+        artifacts={[]}
+        queue={[]}
+        summary={{
+          total: 0,
+          issueCount: 0,
+          workspaceCount: 0,
+          pendingCount: 0,
+          changesRequestedCount: 0,
+          approvedCount: 0,
+          openCommentCount: 0,
+        }}
+      />,
+    );
+
+    expect(screen.getByTestId("review-panel-error")).toBeInTheDocument();
+
+    rerender(
+      <ReviewPanel
+        title="Issue diff and feedback loop"
+        description="Shared review surface."
+        empty="No reviews."
+        loading={false}
+        artifacts={[]}
+        queue={[]}
+        summary={{
+          total: 0,
+          issueCount: 0,
+          workspaceCount: 0,
+          pendingCount: 0,
+          changesRequestedCount: 0,
+          approvedCount: 0,
+          openCommentCount: 0,
+        }}
+      />,
+    );
+
+    expect(screen.getByTestId("review-panel-empty")).toBeInTheDocument();
+  });
+
   it("renders linked PR state, supports file navigation, and submits inline review feedback", async () => {
     const onApprove = vi.fn();
     const onRequestChanges = vi.fn();
@@ -151,7 +220,7 @@ describe("ReviewPanel", () => {
     expect(screen.getByText("Review pending")).toBeInTheDocument();
     expect(screen.getByText("Merge blocked")).toBeInTheDocument();
     expect(screen.getByText("Build: passing")).toBeInTheDocument();
-    expect(screen.getByText("GitHub scopes are incomplete for review actions.")).toBeInTheDocument();
+    expect(screen.getAllByText("GitHub scopes are incomplete for review actions.").length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("File navigator")).toBeInTheDocument();
 
     await user.click(screen.getByTestId("review-file-file-1"));
@@ -173,13 +242,8 @@ describe("ReviewPanel", () => {
 
     await user.type(screen.getByLabelText(/review summary/i), "Ship the queue badges, then resume the linked session.");
     await user.selectOptions(screen.getByLabelText(/route follow-up to/i), "session-follow-up");
-    await user.click(screen.getByRole("button", { name: /approve review/i }));
-
-    expect(onSubmitReview).toHaveBeenCalledWith({
-      artifactId: artifact.id,
-      decision: "approved",
-      summary: "Ship the queue badges, then resume the linked session.",
-      executionTargetId: "session-follow-up",
-    });
+    expect(screen.getByRole("button", { name: /approve review/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /request changes/i })).toBeDisabled();
+    expect(onSubmitReview).not.toHaveBeenCalled();
   });
 });

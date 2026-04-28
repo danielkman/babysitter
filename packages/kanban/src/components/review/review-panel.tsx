@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
+import { PageStateCard } from "@/components/shared/page-state";
 
 import type {
   KanbanDiffFile,
@@ -261,6 +262,8 @@ function ReviewSubmissionBar(props: {
     await props.onRequestChanges(props.artifact.id);
   }
 
+  const reviewActionsBlocked = props.artifact.integration != null && !props.artifact.integration.actions.canApproveFromReview;
+
   return (
     <div className="rounded-2xl border border-border bg-background/70 p-4">
       <div className="flex items-center gap-2 text-sm font-medium text-foreground">
@@ -270,6 +273,12 @@ function ReviewSubmissionBar(props: {
       <p className="mt-2 text-sm leading-6 text-foreground-muted">
         Submit a decision from the review surface and optionally route the follow-up back into a workspace, session, or run context.
       </p>
+      {reviewActionsBlocked ? (
+        <div className="mt-3 rounded-xl border border-warning/20 bg-warning/10 px-3 py-2 text-sm text-warning">
+          {props.artifact.integration?.actions.reason ??
+            "Review submission actions are unavailable until integration prerequisites are restored."}
+        </div>
+      ) : null}
 
       <label className="mt-3 block text-xs font-medium text-foreground-muted">
         Review summary
@@ -300,11 +309,21 @@ function ReviewSubmissionBar(props: {
       ) : null}
 
       <div className="mt-3 flex flex-wrap gap-2">
-        <Button type="button" variant="outline" onClick={() => void submit("changes-requested")} disabled={props.pending}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => void submit("changes-requested")}
+          disabled={props.pending || reviewActionsBlocked}
+        >
           <XCircle className="mr-2 h-4 w-4" />
           Request changes
         </Button>
-        <Button type="button" variant="default" onClick={() => void submit("approved")} disabled={props.pending}>
+        <Button
+          type="button"
+          variant="default"
+          onClick={() => void submit("approved")}
+          disabled={props.pending || reviewActionsBlocked}
+        >
           <CheckCircle2 className="mr-2 h-4 w-4" />
           Approve review
         </Button>
@@ -706,34 +725,39 @@ export function ReviewPanel(props: {
 
   if (props.loading && props.artifacts.length === 0) {
     return (
-      <section className="rounded-3xl border border-border bg-card p-6 shadow-lg" data-testid="review-panel-loading">
-        <div className="animate-pulse space-y-3">
-          <div className="h-4 w-40 rounded bg-background-secondary" />
-          <div className="h-8 w-72 rounded bg-background-secondary" />
-          <div className="grid gap-4 xl:grid-cols-[320px_minmax(0,1fr)]">
-            <div className="h-64 rounded-2xl bg-background-secondary" />
-            <div className="h-64 rounded-2xl bg-background-secondary" />
-          </div>
-        </div>
-      </section>
+      <PageStateCard
+        variant="loading"
+        eyebrow="Review queue"
+        title="Loading review queue"
+        description="The review route is assembling queued artifacts, linked PR state, and approval controls."
+        testId="review-panel-loading"
+      />
     );
   }
 
   if (props.error) {
     return (
-      <section className="rounded-3xl border border-error/30 bg-error/10 p-6 text-sm text-error shadow-lg">
-        {props.error}
-      </section>
+      <PageStateCard
+        variant="error"
+        eyebrow="Review queue"
+        title="Review queue failed to load"
+        description="Review artifacts and approval controls are unavailable until the shared review snapshot can be loaded again."
+        detail={props.error}
+        testId="review-panel-error"
+      />
     );
   }
 
   if (props.artifacts.length === 0 || !selectedArtifact) {
     return (
-      <section className="rounded-3xl border border-border bg-card p-6 shadow-lg">
-        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">Review Queue</p>
-        <h2 className="mt-2 text-2xl font-semibold tracking-tight">{props.title}</h2>
-        <p className="mt-3 text-sm leading-6 text-foreground-muted">{props.empty}</p>
-      </section>
+      <PageStateCard
+        variant="empty"
+        eyebrow="Review queue"
+        title={props.title}
+        description={props.empty}
+        detail="Review and diff actions will appear here when issue or workspace artifacts enter the shared queue."
+        testId="review-panel-empty"
+      />
     );
   }
 

@@ -16,6 +16,7 @@ import { useStore } from "zustand";
 import { useGatewayAuth } from "@/components/agent-mux/gateway-provider";
 import { useNotificationContext } from "@/components/notifications/notification-provider";
 import { PageSection, PageShell } from "@/components/shared/page-shell";
+import { PageStateBanner, PageStateCard } from "@/components/shared/page-state";
 import { SHORTCUT_SECTION_LABELS, SHORTCUTS } from "@/components/shared/shortcuts-help";
 import { useTheme } from "@/components/shared/theme-provider";
 import { Button } from "@/components/ui/button";
@@ -375,6 +376,7 @@ function isDirty<T>(baseline: T | null, draft: T | null): boolean {
 export default function SettingsPage() {
   const { theme } = useTheme();
   const { auth, logout, isAuthenticated } = useGatewayAuth();
+  const connection = useConnection();
   const { notifications, permission, requestPermission } = useNotificationContext();
   const {
     snapshot,
@@ -537,6 +539,52 @@ export default function SettingsPage() {
         });
       });
   }, [mcpSection.status, selectedSection]);
+
+  const routeState =
+    backlogLoading && !snapshot ? (
+      <PageShell>
+        <PageStateCard
+          variant="loading"
+          eyebrow="Settings"
+          title="Loading settings breadth parity"
+          description="Gathering project, repository, notification, and integration state before the settings route can render consistently."
+          testId="settings-route-loading"
+        />
+      </PageShell>
+    ) : backlogError && !snapshot ? (
+      <PageShell>
+        <PageStateCard
+          variant="error"
+          eyebrow="Settings"
+          title="Settings failed to load"
+          description="The settings route could not bootstrap its shared project and repository state."
+          detail={backlogError}
+          actions={[
+            { label: "Retry", onClick: () => void refresh(), variant: "primary" },
+            { label: "Reconnect gateway", href: "/login" },
+          ]}
+          testId="settings-route-error"
+        />
+      </PageShell>
+    ) : !project ? (
+      <PageShell>
+        <PageStateCard
+          variant="empty"
+          eyebrow="Settings"
+          title="No project settings are available yet"
+          description="Project, integration, and notification defaults cannot be edited until the shared backlog model exposes at least one project."
+          actions={[
+            { label: "Open projects", href: "/projects", variant: "primary" },
+            { label: "Refresh settings", onClick: () => void refresh() },
+          ]}
+          testId="settings-route-empty"
+        />
+      </PageShell>
+    ) : null;
+
+  if (routeState) {
+    return routeState;
+  }
 
   const repoProjectDirty = isDirty(repoProjectBaseline, repoProjectDraft);
   const organizationDirty = isDirty(organizationBaseline, organizationDraft);
@@ -778,6 +826,59 @@ export default function SettingsPage() {
           notifications, task tags, and keyboard shortcuts all live as explicit sections.
         </p>
       </PageSection>
+
+      {connection.status !== "connected" ? (
+        <PageStateBanner
+          variant="offline"
+          eyebrow="Settings connectivity"
+          title="Gateway connection is degraded"
+          description="Saved settings remain visible, but live runtime, session, and integration posture may be stale until the gateway reconnects."
+          detail={connection.error ?? "Reconnect from the login flow or refresh once the local gateway is available again."}
+          actions={[{ label: "Reconnect gateway", href: "/login", variant: "primary" }]}
+          testId="settings-route-offline"
+        />
+      ) : null}
+
+      {selectedSection === "notifications" && permission !== "granted" ? (
+        <PageStateBanner
+          variant="permission"
+          eyebrow="Notification permission"
+          title={permission === "denied" ? "Browser notifications are blocked" : "Browser notification permission is still pending"}
+          description="In-app alerts still work, but background notification delivery stays limited until browser permission is granted."
+          detail="Breakpoint and review attention can still queue in the app even while browser delivery is unavailable."
+          actions={
+            permission === "denied"
+              ? [{ label: "Open browser settings", href: "/settings", variant: "primary", disabled: true }]
+              : [{ label: "Enable browser notifications", onClick: () => void requestPermission(), variant: "primary" }]
+          }
+          testId="settings-route-permission"
+        />
+      ) : null}
+
+      {(selectedSection === "general" || selectedSection === "remote-project" || selectedSection === "git") &&
+      integrationCount === 0 ? (
+        <PageStateBanner
+          variant="empty"
+          eyebrow="Integrations"
+          title="No repository integrations are configured"
+          description="Linked PR, review, and publish controls stay unavailable until at least one provider is configured for the current project."
+          detail="Use the remote-project and git sections to connect host bindings and default repository posture."
+          testId="settings-integrations-empty"
+        />
+      ) : null}
+
+      {(selectedSection === "general" || selectedSection === "remote-project" || selectedSection === "git") &&
+      integrationCount > 0 &&
+      missingIntegrationCount > 0 ? (
+        <PageStateBanner
+          variant="permission"
+          eyebrow="Integrations"
+          title="Some integration actions are blocked"
+          description={`${missingIntegrationCount} configured integration${missingIntegrationCount === 1 ? " is" : "s are"} missing required scopes or bindings.`}
+          detail="Create-PR, review-sync, and approval actions will stay degraded until those prerequisites are restored."
+          testId="settings-integrations-permission"
+        />
+      ) : null}
 
       <div className="grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)]">
         <aside className="rounded-3xl border border-border bg-card p-4 shadow-lg">
@@ -1963,11 +2064,9 @@ export default function SettingsPage() {
                     <p>Breakpoint notifications stay persistent until operators resolve them.</p>
                   </div>
                   {permission !== "granted" ? (
-                    <div className="mt-4">
-                      <Button type="button" variant="primary" onClick={requestPermission}>
-                        Enable browser notifications
-                      </Button>
-                    </div>
+                    <p className="mt-4 text-sm text-foreground-muted">
+                      Use the route banner above to request browser permission or confirm the current browser policy.
+                    </p>
                   ) : null}
                 </div>
                 <div className="rounded-2xl border border-border bg-background/60 p-4">

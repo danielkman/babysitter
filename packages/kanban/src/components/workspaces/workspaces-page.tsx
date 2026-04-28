@@ -26,6 +26,7 @@ import { WorkspaceDetailsSidebar, type WorkspaceSidebarFeedback } from "@/compon
 import { WorkspaceRuntimePanel } from "@/components/workspaces/workspace-runtime-panel";
 import { WorkspaceDetailShell } from "@/components/workspaces/workspace-detail-shell";
 import { PageSection, PageShell } from "@/components/shared/page-shell";
+import { PageStateBanner, PageStateCard } from "@/components/shared/page-state";
 
 function formatTimestamp(value: string | null): string {
   if (!value) {
@@ -377,6 +378,19 @@ function workspaceSidebarBadges(
   return badges;
 }
 
+function lifecycleTone(status: string): string {
+  if (status === "approved" || status === "ready" || status === "passing" || status === "published" || status === "merged") {
+    return "border-success/20 bg-success/10 text-success";
+  }
+  if (status === "pending" || status === "in-review") {
+    return "border-warning/20 bg-warning/10 text-warning";
+  }
+  if (status === "changes-requested" || status === "blocked" || status === "failing" || status === "failed") {
+    return "border-error/20 bg-error/10 text-error";
+  }
+  return "border-border text-foreground-muted";
+}
+
 function workspaceAttentionRank(workspace: WorkspaceInventoryItem): number {
   if (workspace.status === "missing" || workspace.rebase?.status === "rebase-conflicts") {
     return 0;
@@ -417,6 +431,8 @@ function compareAttentionWorkspaces(left: WorkspaceInventoryItem, right: Workspa
 
 export function WorkspacesPageContent(props: {
   isAuthenticated: boolean;
+  connectionStatus?: string;
+  connectionError?: string | null;
   sessions: WorkspaceSessionSnapshot[];
   selectedWorkspacePath?: string | null;
   allRuns?: Array<Record<string, unknown>>;
@@ -447,6 +463,7 @@ export function WorkspacesPageContent(props: {
   const mode = props.mode ?? "full";
   const selectedWorkspacePath =
     props.selectedWorkspacePath ?? (searchParams.get("workspace")?.trim() || null);
+  const gatewayDisconnected = props.isAuthenticated && props.connectionStatus != null && props.connectionStatus !== "connected";
 
   const sessionFingerprint = useMemo(
     () =>
@@ -463,6 +480,15 @@ export function WorkspacesPageContent(props: {
 
   useEffect(() => {
     let cancelled = false;
+
+    if (!props.isAuthenticated) {
+      setInventory(null);
+      setError(null);
+      setLoading(false);
+      return () => {
+        cancelled = true;
+      };
+    }
 
     setLoading(true);
     setError(null);
@@ -630,6 +656,55 @@ export function WorkspacesPageContent(props: {
 
     card.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [selectedWorkspacePath, inventory?.workspaces.length]);
+
+  const routeState =
+    !props.isAuthenticated ? (
+      <PageShell>
+        <PageStateCard
+          variant="permission"
+          eyebrow="Workspace route"
+          title="Gateway access is required for workspace controls"
+          description="Workspace lifecycle, runtime surfaces, and collaboration actions stay blocked until agent-mux access is restored."
+          actions={[
+            { label: "Connect gateway", href: "/login", variant: "primary" },
+            { label: "Open settings", href: "/settings" },
+          ]}
+          testId="workspace-route-permission"
+        />
+      </PageShell>
+    ) : loading && !inventory ? (
+      <PageShell>
+        <PageStateCard
+          variant="loading"
+          eyebrow={mode === "attention" ? "Inbox" : "Workspace route"}
+          title={mode === "attention" ? "Loading workspace inbox" : "Loading workspace inventory"}
+          description="Building route-level workspace state from live sessions, git worktrees, and linked review artifacts."
+          testId="workspace-route-loading"
+        />
+      </PageShell>
+    ) : error && !inventory ? (
+      <PageShell>
+        <PageStateCard
+          variant="error"
+          eyebrow={mode === "attention" ? "Inbox" : "Workspace route"}
+          title={mode === "attention" ? "Workspace inbox failed to load" : "Workspace inventory failed to load"}
+          description="The workspace route could not assemble its inventory from the current session and worktree state."
+          detail={error}
+          actions={[
+            {
+              label: mode === "attention" ? "Open full inventory" : "Open settings",
+              href: mode === "attention" ? "/workspaces" : "/settings",
+              variant: "primary",
+            },
+          ]}
+          testId="workspace-route-error"
+        />
+      </PageShell>
+    ) : null;
+
+  if (routeState) {
+    return routeState;
+  }
 
   function refreshInventory() {
     startTransition(() => {
@@ -967,34 +1042,63 @@ export function WorkspacesPageContent(props: {
           </div>
         </PageSection>
 
+        {gatewayDisconnected ? (
+          <PageStateBanner
+            variant="offline"
+            eyebrow="Inbox connectivity"
+            title="Gateway connection is degraded"
+            description="Recovery and review cards remain visible, but live runtime and collaboration actions may be delayed or unavailable until the gateway reconnects."
+            detail={props.connectionError ?? "Refresh the inbox or reconnect the gateway to restore live workspace state."}
+            actions={[
+              { label: "Open settings", href: "/settings", variant: "primary" },
+              { label: "Open full inventory", href: "/workspaces" },
+            ]}
+            testId="workspace-route-offline"
+          />
+        ) : null}
+
         {error ? (
           <section className="rounded-3xl border border-error/30 bg-error/10 p-4 text-sm text-error">
             {error}
           </section>
         ) : null}
 
-        <WorkspaceColumn
-          title="Needs attention"
-          icon={AlertTriangle}
-          empty="No workspaces currently need attention."
-          workspaces={attentionWorkspaces}
-          artifactByPath={liveArtifactByPath}
-          reviewByPath={liveReviewByPath}
-          executionContextsBySessionId={executionContextsBySessionId}
-          pendingAction={pendingAction}
-          onAction={handleAction}
-          onOpenInEditor={(workspace, href) =>
-            openEditorForWorkspace(workspace, href, `Opened ${workspace.path} in the configured editor.`)
-          }
-          onSaveNote={handleNoteSave}
-          pendingNotePath={pendingNotePath}
-          feedbackByWorkspacePath={feedbackByWorkspacePath}
-          selectedWorkspacePath={selectedWorkspacePath}
-          reviewPendingArtifactId={workspaceReviews.pendingArtifactId}
-          onCreatePullRequest={handleCreatePullRequest}
-          onLinkPullRequest={handleLinkPullRequest}
-          highlightReasons
-        />
+        {attentionWorkspaces.length === 0 ? (
+          <PageStateCard
+            variant="empty"
+            eyebrow="Inbox"
+            title="No workspaces currently need attention"
+            description="The attention route is clear. Healthy active and idle workspaces stay in the full inventory instead of cluttering the inbox."
+            actions={[
+              { label: "Open full inventory", href: "/workspaces", variant: "primary" },
+              { label: "Refresh inbox", onClick: refreshInventory },
+            ]}
+            testId="workspace-route-empty"
+          />
+        ) : (
+          <WorkspaceColumn
+            title="Needs attention"
+            icon={AlertTriangle}
+            empty="No workspaces currently need attention."
+            workspaces={attentionWorkspaces}
+            artifactByPath={liveArtifactByPath}
+            reviewByPath={liveReviewByPath}
+            executionContextsBySessionId={executionContextsBySessionId}
+            pendingAction={pendingAction}
+            onAction={handleAction}
+            onOpenInEditor={(workspace, href) =>
+              openEditorForWorkspace(workspace, href, `Opened ${workspace.path} in the configured editor.`)
+            }
+            onSaveNote={handleNoteSave}
+            pendingNotePath={pendingNotePath}
+            feedbackByWorkspacePath={feedbackByWorkspacePath}
+            selectedWorkspacePath={selectedWorkspacePath}
+            reviewPendingArtifactId={workspaceReviews.pendingArtifactId}
+            onCreatePullRequest={handleCreatePullRequest}
+            onLinkPullRequest={handleLinkPullRequest}
+            highlightReasons
+          />
+        )}
       </PageShell>
     );
   }
@@ -1043,12 +1147,37 @@ export function WorkspacesPageContent(props: {
         </div>
       </PageSection>
 
+      {gatewayDisconnected ? (
+        <PageStateBanner
+          variant="offline"
+          eyebrow="Workspace connectivity"
+          title="Gateway connection is degraded"
+          description="The route can still show cached workspace inventory, but runtime-backed controls and collaboration updates may be stale until the gateway reconnects."
+          detail={props.connectionError ?? "Reconnect the gateway from settings if runtime and review actions stay unavailable."}
+          actions={[{ label: "Open settings", href: "/settings", variant: "primary" }]}
+          testId="workspace-route-offline"
+        />
+      ) : null}
+
       {error ? (
         <section className="rounded-3xl border border-error/30 bg-error/10 p-4 text-sm text-error">
           {error}
         </section>
       ) : null}
 
+      {workspaces.length === 0 ? (
+        <PageStateCard
+          variant="empty"
+          eyebrow="Workspace route"
+          title="No workspaces are tracked yet"
+          description="Provision a workspace or start a session from an issue before using the full workspace inventory route."
+          actions={[
+            { label: "Provision workspace", href: "/workspaces/new", variant: "primary" },
+            { label: "Open projects", href: "/projects" },
+          ]}
+          testId="workspace-route-empty"
+        />
+      ) : (
       <section className="rounded-3xl border border-border bg-card p-6 shadow-lg" data-testid="workspace-sidebar-surface">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -1219,6 +1348,7 @@ export function WorkspacesPageContent(props: {
           </div>
         ) : null}
       </section>
+      )}
 
       <ReviewPanel
         title="Workspace diff and approval handoff"

@@ -7,7 +7,7 @@ import type { WorkspaceRuntimeSurface } from "@a5c-ai/agent-mux-core";
 
 import { RequireGatewayAuth } from "@/components/agent-mux/require-gateway-auth";
 import { WorkspacesPageContent } from "@/components/workspaces/workspaces-page";
-import { useGateway } from "@/lib/agent-mux-ui";
+import { useConnection, useGateway } from "@/lib/agent-mux-ui";
 
 function readRuntime(value: unknown): WorkspaceRuntimeSurface | undefined {
   if (!value || typeof value !== "object") {
@@ -25,6 +25,7 @@ export default function InboxPage() {
 }
 
 function InboxContent() {
+  const connection = useConnection();
   const { store } = useGateway();
   const sessions = useStore(store, useShallow((state) => Object.values(state.sessions.byId)));
 
@@ -55,5 +56,13 @@ function InboxContent() {
     [sessions],
   );
 
-  return <WorkspacesPageContent isAuthenticated sessions={workspaceSessions} mode="attention" />;
+  return (
+    <WorkspacesPageContent
+      isAuthenticated
+      connectionStatus={connection.status}
+      connectionError={connection.error ?? null}
+      sessions={workspaceSessions}
+      mode="attention"
+    />
+  );
 }
