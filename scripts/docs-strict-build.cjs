@@ -6,11 +6,16 @@ const env = {
   DOCS_STRICT_SCOPE: "1",
 };
 
-const command = process.platform === "win32" ? "npm.cmd" : "npm";
-const result = spawnSync(command, ["run", "docs:build"], {
-  env,
-  stdio: "inherit",
-});
+const npmExecPath = process.env.npm_execpath;
+const result = npmExecPath
+  ? spawnSync(process.execPath, [npmExecPath, "run", "docs:build"], {
+      env,
+      stdio: "inherit",
+    })
+  : spawnSync(process.platform === "win32" ? "npm.cmd" : "npm", ["run", "docs:build"], {
+      env,
+      stdio: "inherit",
+    });
 
 if (typeof result.status === "number" && result.status !== 0) {
   process.exit(result.status);

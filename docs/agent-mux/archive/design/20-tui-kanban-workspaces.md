@@ -82,7 +82,7 @@ It should expose:
 
 ## CI and publish implications
 
-This feature touches both `@a5c-ai/agent-mux-tui` and `@a5c-ai/kanban` release-critical surfaces.
+This feature touches both `@a5c-ai/agent-mux-tui` and the shared kanban/workspace release-critical surfaces.
 
 That means implementation needs to remain compatible with:
 
