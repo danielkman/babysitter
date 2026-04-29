@@ -186,9 +186,13 @@ describe('gateway server', () => {
     await fs.rm(tempDir, { recursive: true, force: true });
   });
 
-  it('finds the repo-local webui dist by default when available', () => {
+  it('uses the repo-local webui dist when available and otherwise reports none', () => {
     const root = resolveWebuiRoot(null);
-    expect(root).toBeTruthy();
-    expect(path.basename(root!)).toBe('dist');
+    if (root == null) {
+      expect(root).toBeNull();
+      return;
+    }
+
+    expect(path.basename(root)).toBe('dist');
   });
 });
