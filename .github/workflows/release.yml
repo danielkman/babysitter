@@ -407,6 +407,84 @@ jobs:
             fs.writeFileSync(metaPkgPath, JSON.stringify(metaPkg, null, 2) + '\n');
           "
 
+      - name: Sync internal workspace dependency versions for release publish
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const agentMuxVersion = JSON.parse(fs.readFileSync('packages/agent-mux/sdk/package.json', 'utf8')).version;
+
+          const dependencyVersions = new Map([
+            ['@a5c-ai/babysitter-sdk', '${{ steps.bump.outputs.version }}'],
+            ['@a5c-ai/hooks-mux-core', '${{ steps.bump.outputs.version }}'],
+            ['@a5c-ai/agent-mux', agentMuxVersion],
+            ['@a5c-ai/agent-mux-adapters', agentMuxVersion],
+            ['@a5c-ai/agent-mux-cli', agentMuxVersion],
+            ['@a5c-ai/agent-mux-core', agentMuxVersion],
+            ['@a5c-ai/agent-mux-gateway', agentMuxVersion],
+            ['@a5c-ai/agent-mux-observability', agentMuxVersion],
+            ['@a5c-ai/agent-mux-ui', agentMuxVersion],
+            ['@a5c-ai/transport-mux', agentMuxVersion],
+          ]);
+          const manifestPaths = ['package.json'];
+          const depFields = ['dependencies', 'peerDependencies', 'optionalDependencies', 'devDependencies'];
+
+          const rewriteVersion = (current, version) => {
+            if (typeof current !== 'string') return version;
+            if (current.startsWith('^')) return `^${version}`;
+            if (current.startsWith('~')) return `~${version}`;
+            return version;
+          };
+
+          const walk = (dir) => {
+            for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+              if (['node_modules', '.git', 'dist', 'dist-types', 'coverage', 'artifacts'].includes(entry.name)) {
+                continue;
+              }
+              const fullPath = path.join(dir, entry.name);
+              if (entry.isDirectory()) {
+                walk(fullPath);
+                continue;
+              }
+              if (entry.isFile() && entry.name === 'package.json') {
+                manifestPaths.push(fullPath);
+              }
+            }
+          };
+
+          for (const rootDir of ['packages']) {
+            if (fs.existsSync(rootDir)) {
+              walk(rootDir);
+            }
+          }
+
+          for (const manifestPath of manifestPaths) {
+            const data = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+            let changed = false;
+            for (const field of depFields) {
+              const deps = data[field];
+              if (!deps) continue;
+              for (const [name, version] of dependencyVersions) {
+                if (!(name in deps)) continue;
+                const next = rewriteVersion(deps[name], version);
+                if (deps[name] !== next) {
+                  deps[name] = next;
+                  changed = true;
+                }
+              }
+            }
+            if (changed) {
+              fs.writeFileSync(manifestPath, `${JSON.stringify(data, null, 2)}\n`);
+            }
+          }
+          NODE
+
+      - name: Refresh release publish lockfile
+        run: |
+          set -euo pipefail
+          npm install --package-lock-only --ignore-scripts
+
       - name: Pack npm artifacts
         run: |
           set -euo pipefail
