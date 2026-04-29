@@ -109,8 +109,8 @@ describe('ShortcutsHelp', () => {
     fireEvent.keyDown(window, { key: '?' });
     expect(screen.getByText('Keyboard Shortcuts')).toBeInTheDocument();
 
-    // Click the close button (the X button) - find it via the Dialog.Close wrapping
-    const closeButton = screen.getByTestId('icon-X').closest('button')!;
+    // Click the close button rendered by the compendium Modal
+    const closeButton = screen.getByLabelText('Close');
     fireEvent.click(closeButton);
     expect(screen.queryByText('Keyboard Shortcuts')).not.toBeInTheDocument();
   });

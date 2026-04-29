@@ -1,9 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import * as Dialog from "@radix-ui/react-dialog";
+import { Modal } from "@a5c-ai/compendium";
 import { Kbd } from "./kbd";
-import { X } from "lucide-react";
 import { useKeyboard } from "@/hooks/use-keyboard";
 
 export interface ShortcutEntry {
@@ -77,45 +76,28 @@ export function ShortcutsHelp() {
   }, {});
 
   return (
-    <Dialog.Root open={open} onOpenChange={setOpen}>
-      <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm" />
-        <Dialog.Content
-          className="fixed inset-x-4 bottom-4 top-4 z-50 flex max-h-[calc(100dvh-2rem)] flex-col overflow-hidden rounded-2xl border border-[var(--glass-border)] bg-[var(--glass-bg)] p-4 shadow-glass backdrop-blur-xl sm:left-1/2 sm:top-1/2 sm:w-full sm:max-w-md sm:-translate-x-1/2 sm:-translate-y-1/2 sm:p-6"
-        >
-          <div className="mb-4 flex items-center justify-between">
-            <Dialog.Title className="text-sm font-medium text-foreground">Keyboard Shortcuts</Dialog.Title>
-            <Dialog.Close>
-              <button
-                className="rounded-md p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-foreground-muted hover:text-primary transition-colors"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </Dialog.Close>
-          </div>
-          <div className="space-y-4 overflow-y-auto pr-1">
-            {Object.entries(sections).map(([context, items]) => (
-              <div key={context}>
-                <h3 className="text-xs font-medium text-foreground-muted uppercase tracking-wider mb-2">
-                  {SHORTCUT_SECTION_LABELS[context] ?? context}
-                </h3>
-                <div className="space-y-2">
-                  {items.map(({ keys, description }) => (
-                    <div key={description} className="flex flex-col gap-2 py-1 sm:flex-row sm:items-center sm:justify-between">
-                      <span className="text-sm text-foreground-secondary">{description}</span>
-                      <div className="flex flex-wrap items-center gap-1">
-                        {keys.map((k) => (
-                          <Kbd key={k}>{k}</Kbd>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
+    <Modal open={open} onClose={() => setOpen(false)} title="Keyboard Shortcuts">
+      <div className="space-y-4 overflow-y-auto pr-1">
+        {Object.entries(sections).map(([context, items]) => (
+          <div key={context}>
+            <h3 className="text-xs font-medium text-foreground-muted uppercase tracking-wider mb-2">
+              {SHORTCUT_SECTION_LABELS[context] ?? context}
+            </h3>
+            <div className="space-y-2">
+              {items.map(({ keys, description }) => (
+                <div key={description} className="flex flex-col gap-2 py-1 sm:flex-row sm:items-center sm:justify-between">
+                  <span className="text-sm text-foreground-secondary">{description}</span>
+                  <div className="flex flex-wrap items-center gap-1">
+                    {keys.map((k) => (
+                      <Kbd key={k}>{k}</Kbd>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+        ))}
+      </div>
+    </Modal>
   );
 }

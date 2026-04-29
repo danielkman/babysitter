@@ -110,12 +110,10 @@ describe('NotificationPanel', () => {
       />,
     );
 
-    // The dismiss button is the small X inside the notification card.
-    // There are two X icons: one for close panel, one for dismiss notification.
-    // The dismiss X is inside the notification card next to the text.
-    const allXIcons = screen.getAllByTestId('icon-X');
-    // The last X is the dismiss button for the notification (inside the card)
-    const dismissButton = allXIcons[allXIcons.length - 1].closest('button')!;
+    // The dismiss button is inside the notification card (the X icon within the panel content)
+    const xIcons = screen.getAllByTestId('icon-X');
+    // Find the dismiss button within the notification panel content area
+    const dismissButton = xIcons[xIcons.length - 1].closest('button')!;
     await user.click(dismissButton);
 
     expect(onDismiss).toHaveBeenCalledWith('notif-42');
@@ -137,8 +135,8 @@ describe('NotificationPanel', () => {
       />,
     );
 
-    // The close button at the top of the panel
-    const closeButton = screen.getAllByTestId('icon-X')[0].closest('button')!;
+    // The Drawer close button
+    const closeButton = screen.getByLabelText('Close');
     await user.click(closeButton);
 
     expect(onClose).toHaveBeenCalledTimes(1);

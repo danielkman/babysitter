@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import * as Dialog from "@radix-ui/react-dialog";
 import type { Attachment } from "@a5c-ai/agent-mux-core";
-import { ChevronLeft, ExternalLink, GripVertical, LayoutDashboard, MessagesSquare, PanelLeft, PanelRight, Search, Workflow, X } from "lucide-react";
+import { ChevronLeft, ExternalLink, GripVertical, LayoutDashboard, MessagesSquare, PanelLeft, PanelRight, Search, Workflow } from "lucide-react";
 
 import { SessionConversationSurface } from "@/components/sessions/session-conversation-surface";
 import { SessionObservabilityPanel } from "@/components/sessions/session-observability-panel";
-import { Button } from "@a5c-ai/compendium";
+import { Button, CommandPalette } from "@a5c-ai/compendium";
+import type { CommandItem } from "@a5c-ai/compendium";
 import { useKeyboard } from "@/hooks/use-keyboard";
 import { usePersistedState } from "@/hooks/use-persisted-state";
 import type { KanbanIntegrationProvider, KanbanReviewArtifact } from "@a5c-ai/agent-mux-core/kanban";
@@ -27,11 +27,6 @@ import {
 import type { WorkspaceInventoryItem, WorkspaceSessionSnapshot } from "@/lib/workspace-lifecycle";
 import { WorkspaceRuntimePanel } from "@/components/workspaces/workspace-runtime-panel";
 import { WorkspaceDetailsSidebar, type WorkspaceSidebarFeedback } from "@/components/workspaces/workspace-details-sidebar";
-import {
-  dialogCloseButtonClassName,
-  dialogCommandPanelClassName,
-  dialogOverlayClassName,
-} from "@/components/shared/dialog-shell";
 
 type EventBuffer = {
   events: Array<Record<string, unknown>>;
@@ -146,88 +141,28 @@ function WorkspaceCommandBar(props: {
   onOpenChange: (open: boolean) => void;
   onTogglePanel: (panel: WorkspacePanelKey) => void;
 }) {
-  const [query, setQuery] = useState("");
-
-  useEffect(() => {
-    if (!props.open) {
-      setQuery("");
-    }
-  }, [props.open]);
-
-  const commands = useMemo(
+  const items = useMemo<CommandItem[]>(
     () =>
       PANEL_DEFINITIONS.map((panel) => ({
-        ...panel,
-        description: props.visibility[panel.key] ? "Hide panel" : "Show panel",
-      })).filter((panel) => {
-        const haystack = `${panel.label} ${panel.description}`.toLowerCase();
-        return haystack.includes(query.trim().toLowerCase());
-      }),
-    [props.visibility, query],
+        id: panel.key,
+        label: panel.label,
+        shortcut: panel.shortcut,
+        group: "Panels",
+        onSelect: () => {
+          props.onTogglePanel(panel.key);
+          props.onOpenChange(false);
+        },
+      })),
+    [props],
   );
 
   return (
-    <Dialog.Root open={props.open} onOpenChange={props.onOpenChange}>
-      <Dialog.Portal>
-        <Dialog.Overlay className={dialogOverlayClassName} />
-        <Dialog.Content
-          data-testid="workspace-command-bar"
-          className={dialogCommandPanelClassName}
-        >
-          <div className="flex items-center gap-3 rounded-2xl border border-border bg-background/70 px-4 py-3">
-            <Search className="h-4 w-4 text-foreground-muted" />
-            <input
-              autoFocus
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Toggle workspace panels"
-              className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-foreground-muted"
-            />
-            <button
-              type="button"
-              onClick={() => props.onOpenChange(false)}
-              className={dialogCloseButtonClassName}
-              aria-label="Close command bar"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-          <div className="mt-3 grid gap-2">
-            {commands.map((command) => {
-              const Icon = command.icon;
-              return (
-                <button
-                  key={command.key}
-                  type="button"
-                  data-testid={`workspace-command-${command.key}`}
-                  onClick={() => {
-                    props.onTogglePanel(command.key);
-                    props.onOpenChange(false);
-                  }}
-                  className="flex items-center justify-between rounded-2xl border border-border bg-background/60 px-4 py-3 text-left transition-colors hover:border-primary/30 hover:bg-background"
-                >
-                  <span className="flex items-center gap-3">
-                    <Icon className="h-4 w-4 text-primary" />
-                    <span>
-                      <span className="block text-sm font-medium text-foreground">{command.label}</span>
-                      <span className="block text-xs text-foreground-muted">{command.description}</span>
-                    </span>
-                  </span>
-                  <span className="rounded-full border border-border px-2 py-1 text-[11px] uppercase tracking-[0.18em] text-foreground-muted">
-                    {command.shortcut}
-                  </span>
-                </button>
-              );
-            })}
-            {commands.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-border px-4 py-6 text-sm text-foreground-muted">
-                No panel commands match this query.
-              </div>
-            ) : null}
-          </div>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+    <CommandPalette
+      open={props.open}
+      onClose={() => props.onOpenChange(false)}
+      items={items}
+      placeholder="Toggle workspace panels"
+    />
   );
 }
 

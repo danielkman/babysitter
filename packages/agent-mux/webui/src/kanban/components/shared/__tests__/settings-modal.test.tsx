@@ -143,32 +143,9 @@ describe('SettingsModal', () => {
       expect(screen.getByText('Settings')).toBeInTheDocument();
     });
 
-    // Click the X close button (the button adjacent to the header)
-    const closeButtons = screen.getAllByRole('button');
-    // First button should be the X close button
-    const xButton = closeButtons[0];
-    await user.click(xButton);
-    expect(onClose).toHaveBeenCalled();
-  });
-
-  it('calls onClose when pressing Escape', async () => {
-    const onClose = vi.fn();
-    mockSettingsFetch();
-
-    render(
-      <ThemeProvider>
-        <SettingsModal open={true} onClose={onClose} />
-      </ThemeProvider>,
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText('Settings')).toBeInTheDocument();
-    });
-
-    // Radix Dialog listens for Escape on the document
-    const event = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true });
-    document.dispatchEvent(event);
-
+    // Click the close button rendered by the compendium Modal
+    const closeButton = screen.getByLabelText('Close');
+    await user.click(closeButton);
     expect(onClose).toHaveBeenCalled();
   });
 

@@ -1,16 +1,8 @@
 "use client";
 import { useRouter } from "next/navigation";
-import * as Dialog from "@radix-ui/react-dialog";
-import { cx } from "@a5c-ai/compendium";
-import { X, CheckCircle2, XCircle, AlertTriangle, Info, Bell, Pin } from "lucide-react";
+import { Drawer, cx } from "@a5c-ai/compendium";
+import { CheckCircle2, XCircle, AlertTriangle, Info, Bell, Pin, X } from "lucide-react";
 import type { AppNotification } from "@/hooks/use-notifications";
-import {
-  dialogBodyClassName,
-  dialogCloseButtonClassName,
-  dialogFloatingPanelClassName,
-  dialogHeaderClassName,
-  dialogOverlayClassName,
-} from "@/components/shared/dialog-shell";
 
 const iconMap: Record<AppNotification["type"], React.ReactNode> = {
   success: <CheckCircle2 className="h-4 w-4 text-success drop-shadow-[var(--drop-glow-success)]" />,
@@ -58,25 +50,21 @@ export function NotificationPanel({ open, notifications, onDismiss, onClose }: N
   };
 
   return (
-    <Dialog.Root open={open} onOpenChange={(isOpen) => { if (!isOpen) onClose(); }}>
-      <Dialog.Portal>
-        <Dialog.Overlay className={dialogOverlayClassName} />
-        <Dialog.Content data-testid="notification-panel" className={dialogFloatingPanelClassName}>
-          <div className={dialogHeaderClassName}>
-            <div className="flex items-center gap-2">
-              <Bell className="h-4 w-4 text-primary/60" />
-              <Dialog.Title className="text-sm font-medium text-foreground">Notifications</Dialog.Title>
-              {notifications.length > 0 && (
-                <span className="text-xs text-primary/70 font-mono">({notifications.length})</span>
-              )}
-            </div>
-            <Dialog.Close>
-              <button className={dialogCloseButtonClassName}>
-                <X className="h-4 w-4" />
-              </button>
-            </Dialog.Close>
-          </div>
-          <div className={cx(dialogBodyClassName, "space-y-2 p-2 sm:p-3")}>
+    <Drawer
+      open={open}
+      onClose={onClose}
+      title={
+        <div className="flex items-center gap-2">
+          <Bell className="h-4 w-4 text-primary/60" />
+          <span className="text-sm font-medium text-foreground">Notifications</span>
+          {notifications.length > 0 && (
+            <span className="text-xs text-primary/70 font-mono">({notifications.length})</span>
+          )}
+        </div>
+      }
+      width="32rem"
+    >
+      <div data-testid="notification-panel" className="space-y-2 p-2 sm:p-3">
             {notifications.length === 0 ? (
               <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-border bg-background/50 py-12 text-foreground-muted">
                 <Bell className="h-8 w-8 mb-2 opacity-50" />
@@ -109,7 +97,7 @@ export function NotificationPanel({ open, notifications, onDismiss, onClose }: N
                       </div>
                       <button
                         onClick={(e) => { e.stopPropagation(); onDismiss(notif.id); }}
-                        className={cx(dialogCloseButtonClassName, "shrink-0")}
+                        className="shrink-0 flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full p-2 text-foreground-muted transition-colors hover:bg-background hover:text-foreground"
                       >
                         <X className="h-3.5 w-3.5" />
                       </button>
@@ -118,9 +106,7 @@ export function NotificationPanel({ open, notifications, onDismiss, onClose }: N
                 ))}
               </div>
             )}
-          </div>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+      </div>
+    </Drawer>
   );
 }

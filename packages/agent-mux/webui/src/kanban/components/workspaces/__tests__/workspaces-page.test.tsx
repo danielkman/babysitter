@@ -32,35 +32,34 @@ vi.mock("next/link", () => ({
   ),
 }));
 
-vi.mock("@radix-ui/react-dialog", () => ({
-  Root: ({ children }: { children?: unknown }) => <>{children}</>,
-  Trigger: ({ children }: { children?: unknown }) => <>{children}</>,
-  Portal: ({ children }: { children?: unknown }) => <>{children}</>,
-  Overlay: ({ children, ...props }: { children?: unknown; [key: string]: unknown }) => (
-    <div {...props}>{children}</div>
-  ),
-  Content: ({ children, ...props }: { children?: unknown; [key: string]: unknown }) => (
-    <div {...props}>{children}</div>
-  ),
-  Title: ({ children, ...props }: { children?: unknown; [key: string]: unknown }) => (
-    <div {...props}>{children}</div>
-  ),
-  Description: ({ children, ...props }: { children?: unknown; [key: string]: unknown }) => (
-    <div {...props}>{children}</div>
-  ),
-  Close: ({ children }: { children?: unknown }) => <>{children}</>,
-}));
-
 vi.mock("@a5c-ai/compendium", () => ({
   Button: ({
     children,
-   ,
     ...props
   }: {
     children?: unknown;
-   ?: boolean;
     [key: string]: unknown;
-  }) => (asChild ? <>{children}</> : <button {...props}>{children}</button>),
+  }) => (<button {...props}>{children}</button>),
+  CommandPalette: ({
+    open,
+    items,
+    onClose,
+  }: {
+    open: boolean;
+    items: Array<{ id: string; label: string; shortcut?: string; onSelect?: () => void }>;
+    onClose?: () => void;
+    placeholder?: string;
+  }) =>
+    open ? (
+      <div data-testid="workspace-command-bar">
+        {items.map((item) => (
+          <button key={item.id} data-testid={`workspace-command-${item.id}`} onClick={item.onSelect}>
+            {item.label}
+          </button>
+        ))}
+      </div>
+    ) : null,
+  cx: (...args: unknown[]) => args.filter(Boolean).join(" "),
 }));
 
 vi.mock("@/hooks/use-reviews", () => ({

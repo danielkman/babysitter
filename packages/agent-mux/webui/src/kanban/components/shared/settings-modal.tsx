@@ -1,8 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback, useRef } from "react";
-import * as Dialog from "@radix-ui/react-dialog";
 import {
-  X,
   Settings,
   FolderOpen,
   Timer,
@@ -15,18 +13,10 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
-import { Button } from "@a5c-ai/compendium";
+import { Button, Modal } from "@a5c-ai/compendium";
 import { cx } from "@a5c-ai/compendium";
 import { resilientFetch } from "@/lib/fetcher";
 import { useTheme } from "@/components/shared/theme-provider";
-import {
-  dialogBodyClassName,
-  dialogCloseButtonClassName,
-  dialogHeaderClassName,
-  dialogOverlayClassName,
-  dialogSheetPanelClassName,
-  dialogSheetViewportClassName,
-} from "@/components/shared/dialog-shell";
 
 interface WatchSource {
   path: string;
@@ -213,28 +203,56 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
       JSON.stringify(hiddenProjects.slice().sort()) !==
         JSON.stringify((serverConfig.hiddenProjects ?? []).slice().sort()));
 
-  return (
-    <Dialog.Root open={open} onOpenChange={(isOpen) => { if (!isOpen) onClose(); }}>
-      <Dialog.Portal>
-        <Dialog.Overlay className={dialogOverlayClassName} />
-        <Dialog.Content className={dialogSheetViewportClassName} data-testid="settings-modal">
-          <div className={cx(dialogSheetPanelClassName, "sm:max-w-lg")}>
-            {/* Header */}
-            <div className={dialogHeaderClassName}>
-              <div className="flex items-center gap-2">
-                <Settings className="h-4 w-4 text-foreground-muted" />
-                <Dialog.Title className="text-sm font-medium text-foreground">Settings</Dialog.Title>
-              </div>
-              <Dialog.Close>
-                <button className={dialogCloseButtonClassName}>
-                  <X className="h-4 w-4" />
-                </button>
-              </Dialog.Close>
-            </div>
+  const footer = serverConfig ? (
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <p className="text-xs text-foreground-muted">
+        Config file: <span className="font-mono">~/.a5c/kanban.json</span>
+      </p>
+      <div className="flex items-center justify-end gap-2">
+        <Button
+          onClick={handleCancel}
+          disabled={saving}
+          size="sm"
+          variant="ghost"
+        >
+          Cancel
+        </Button>
+        <Button
+          onClick={handleSave}
+          disabled={saving || !hasChanges}
+          className={cx(
+            !hasChanges && "opacity-60",
+            saving && "opacity-50"
+          )}
+          size="sm"
+          variant="primary"
+        >
+          {saving ? (
+            <span className="flex items-center gap-1.5">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              Saving...
+            </span>
+          ) : (
+            "Save"
+          )}
+        </Button>
+      </div>
+    </div>
+  ) : undefined;
 
-            {/* Body */}
-            <Dialog.Description>
-              <div className={dialogBodyClassName}>
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={
+        <div className="flex items-center gap-2">
+          <Settings className="h-4 w-4 text-foreground-muted" />
+          <span className="text-sm font-medium text-foreground">Settings</span>
+        </div>
+      }
+      footer={footer}
+    >
+      <div data-testid="settings-modal">
                 {fetchLoading ? (
                   <div className="flex items-center justify-center py-12 text-foreground-muted">
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -465,49 +483,7 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
                     )}
                   </div>
                 ) : null}
-              </div>
-            </Dialog.Description>
-
-            {/* Footer */}
-            {serverConfig && (
-              <div className="flex flex-col gap-3 border-t border-border px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-xs text-foreground-muted">
-                  Config file: <span className="font-mono">~/.a5c/kanban.json</span>
-                </p>
-                <div className="flex items-center justify-end gap-2">
-                  <Button
-                    onClick={handleCancel}
-                    disabled={saving}
-                    size="sm"
-                    variant="ghost"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    onClick={handleSave}
-                    disabled={saving || !hasChanges}
-                    className={cx(
-                      !hasChanges && "opacity-60",
-                      saving && "opacity-50"
-                    )}
-                    size="sm"
-                    variant="primary"
-                  >
-                    {saving ? (
-                      <span className="flex items-center gap-1.5">
-                        <Loader2 className="h-3 w-3 animate-spin" />
-                        Saving...
-                      </span>
-                    ) : (
-                      "Save"
-                    )}
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+      </div>
+    </Modal>
   );
 }
