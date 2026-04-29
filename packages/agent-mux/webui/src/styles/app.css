@@ -1,0 +1,100 @@
+@import '@a5c-ai/compendium/css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  min-height: 100vh;
+  margin: 0;
+}
+
+body {
+  color: var(--tkc-ink);
+  background: var(--tkc-paper);
+}
+
+a { color: inherit; }
+img { display: block; max-width: 100%; }
+
+.app-shell {
+  display: flex;
+  height: 100vh;
+}
+
+.app-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  background: var(--tkc-paper);
+}
+
+.app-content {
+  flex: 1;
+  padding: var(--tk-space-lg, 24px);
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.app-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--tk-space-md, 16px) var(--tk-space-lg, 24px);
+  border-bottom: 1px solid var(--tkc-rule);
+}
+
+.app-topbar h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.app-topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--tk-space-sm, 8px);
+}
+
+.connection-pill {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-family: var(--font-mono, monospace);
+  border: 1px solid var(--tkc-rule);
+}
+
+.connection-connected { color: var(--tkc-emerald); border-color: var(--tkc-emerald); }
+.connection-disconnected { color: var(--tkc-cinnabar); border-color: var(--tkc-cinnabar); }
+.connection-connecting { color: var(--tkc-amber); border-color: var(--tkc-amber); }
+
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: clamp(20px, 4vw, 40px);
+  background: var(--tkc-paper);
+}
+
+.login-card {
+  width: min(42rem, 100%);
+  padding: clamp(24px, 4vw, 40px);
+}
+
+.stack { display: grid; gap: 16px; }
+.dashboard-layout { display: grid; gap: 16px; align-content: start; }
+.flow-grid { display: grid; gap: 16px; align-content: start; }
+.pairing-layout { display: grid; gap: 16px; align-content: start; }
+.settings-grid { display: grid; gap: 16px; }
+.list-grid { display: grid; gap: 16px; }
+.summary-grid { display: grid; gap: 16px; }
+
+@media (max-width: 768px) {
+  .app-shell { flex-direction: column; }
+  .app-content { padding: var(--tk-space-md, 16px); }
+}
