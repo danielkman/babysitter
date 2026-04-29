@@ -144,13 +144,10 @@ jobs:
       - name: Build and verify agent-mux release artifacts
         run: |
           set -euo pipefail
-          npm run build --workspace=@a5c-ai/agent-mux-core 2>&1 | tee artifacts/mux-logs/agent-mux-core-build.log
+          node scripts/agent-mux-build.cjs build packages/agent-mux/tui 2>&1 | tee artifacts/mux-logs/agent-mux-release-build.log
           npm run verify:release --workspace=@a5c-ai/agent-mux-core 2>&1 | tee artifacts/mux-logs/agent-mux-core-release.log
-          npm run build --workspace=@a5c-ai/agent-mux-ui 2>&1 | tee artifacts/mux-logs/agent-mux-ui-build.log
           npm run verify:release --workspace=@a5c-ai/agent-mux-ui 2>&1 | tee artifacts/mux-logs/agent-mux-ui-release.log
-          npm run build --workspace=@a5c-ai/agent-mux-webui 2>&1 | tee artifacts/mux-logs/agent-mux-webui-build.log
           npm run verify:release --workspace=@a5c-ai/agent-mux-webui 2>&1 | tee artifacts/mux-logs/agent-mux-webui-release.log
-          npm run build --workspace=@a5c-ai/agent-mux-tui 2>&1 | tee artifacts/mux-logs/agent-mux-tui-build.log
           npm run verify:release --workspace=@a5c-ai/agent-mux-tui 2>&1 | tee artifacts/mux-logs/agent-mux-tui-release.log
 
       - name: Validate transport-mux runtime owner

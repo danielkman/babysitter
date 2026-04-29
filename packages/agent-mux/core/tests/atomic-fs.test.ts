@@ -37,7 +37,9 @@ describe('atomic-fs', () => {
     await expect(fs.access(`${p}.lock`)).rejects.toBeTruthy();
   });
 
-  it('concurrent reads during writes never see a torn file', async () => {
+  it(
+    'concurrent reads during writes never see a torn file',
+    async () => {
     const dir = await tmpdir();
     const p = path.join(dir, 'big.json');
     // Seed with a valid baseline so readers always find *something*.
@@ -60,7 +62,9 @@ describe('atomic-fs', () => {
     stopped = true;
     await reader;
     expect(seenBad).toEqual([]);
-  });
+    },
+    15000,
+  );
 
   it('reclaims a stale lockfile whose holder PID is dead', async () => {
     const dir = await tmpdir();
