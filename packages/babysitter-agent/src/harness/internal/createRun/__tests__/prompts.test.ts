@@ -96,6 +96,7 @@ describe("harnessPrompts", () => {
     expect(prompt).toContain("AskUserQuestion, task, and skill are common tools in this phase");
     expect(prompt).toContain("built-in coding tools");
     expect(prompt).toContain("Never drive the orchestration loop through raw `babysitter` CLI commands inside `bash`");
+    expect(prompt).toContain("Do not implement the user's requested workspace deliverable directly before the bound run yields pending effects");
     expect(prompt).toContain("respect task-level harness metadata");
     expect(prompt).toContain("Shell and legacy node effects are first-class pending effects");
     expect(prompt).toContain("For delegated or fresh-context work, prefer `task`");
@@ -180,5 +181,20 @@ describe("harnessPrompts", () => {
 
     expect(prompt).toContain("Call babysitter_run_iterate exactly once after the last post");
     expect(prompt).toContain("Do not use `task:list`, plain narration, or a completion claim as a substitute");
+  });
+
+  test("PhaseOrchestration turn prompt forbids direct implementation before the first iterate on a created run", () => {
+    const prompt = buildOrchestrationTurnPrompt({
+      processPath: "/tmp/process.js",
+      userPrompt: "create a game",
+      maxIterations: 5,
+      currentIteration: 0,
+      runId: "run-1",
+      runDir: "/tmp/runs/run-1",
+      lastStatus: "created",
+    });
+
+    expect(prompt).toContain("Call babysitter_run_iterate exactly once in this turn");
+    expect(prompt).toContain("do not implement the workspace deliverable directly before that iterate call returns");
   });
 });

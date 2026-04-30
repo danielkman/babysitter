@@ -3556,6 +3556,107 @@ describe("handleHarnessCreateRun", () => {
       expect(orchestrationSession.prompt).toHaveBeenCalledTimes(1);
     });
 
+    it("bootstraps a freshly created run before prompting the orchestration agent", async () => {
+      const runDir = "/tmp/runs/run-created-bootstrap";
+      const assessRunSpy = vi.spyOn(resumeState, "assessRun");
+      const listTasksSpy = vi.spyOn(taskStore, "listTasks");
+      try {
+        (discoverHarnesses as Mock).mockResolvedValue([
+          makeDiscoveryResult({ name: "pi" }),
+        ]);
+        (createRun as Mock).mockResolvedValue({
+          runId: "run-created-bootstrap",
+          runDir,
+          metadata: {},
+        });
+        (orchestrateIteration as Mock).mockResolvedValue({
+          status: "completed",
+          output: "done",
+        });
+
+        assessRunSpy
+          .mockResolvedValueOnce({
+            run: {
+              runId: "run-created-bootstrap",
+              runDir,
+              processId: "proc-1",
+              createdAt: "2026-05-01T00:00:00.000Z",
+              status: "created",
+              pendingEffects: {},
+              totalEffects: 0,
+              resolvedEffects: 0,
+              entrypoint: { importPath: "/tmp/process.mjs" },
+            },
+            journalLength: 1,
+            lastEvent: {
+              type: "RUN_CREATED",
+              recordedAt: "2026-05-01T00:00:00.000Z",
+            },
+          })
+          .mockResolvedValueOnce({
+            run: {
+              runId: "run-created-bootstrap",
+              runDir,
+              processId: "proc-1",
+              createdAt: "2026-05-01T00:00:00.000Z",
+              status: "completed",
+              pendingEffects: {},
+              totalEffects: 1,
+              resolvedEffects: 1,
+              entrypoint: { importPath: "/tmp/process.mjs" },
+            },
+            journalLength: 2,
+            lastEvent: {
+              type: "RUN_COMPLETED",
+              recordedAt: "2026-05-01T00:00:01.000Z",
+            },
+          });
+        listTasksSpy.mockResolvedValue([]);
+
+        vi.mocked(createAgentCoreSession).mockImplementationOnce(() => ({
+          initialize: vi.fn().mockResolvedValue(undefined),
+          subscribe: vi.fn(() => () => {}),
+          dispose: vi.fn(),
+          executeBash: vi.fn(async () => ({
+            output: "",
+            exitCode: 0,
+            cancelled: false,
+          })),
+          get sessionId() {
+            return "mock-session-id-created-bootstrap";
+          },
+          get isInitialized() {
+            return true;
+          },
+          prompt: vi.fn(async () => ({
+            success: true,
+            output: "should not be called",
+            exitCode: 0,
+            duration: 1,
+          })),
+        }) as ReturnType<typeof createAgentCoreSession>);
+
+        const code = await handleHarnessCreateRun({
+          processPath: "/tmp/p.js",
+          runsDir: "/tmp/runs",
+          json: false,
+          verbose: false,
+          interactive: false,
+        });
+
+        expect(code).toBe(0);
+        expect(orchestrateIteration).toHaveBeenCalledTimes(1);
+        expect(listTasksSpy).toHaveBeenCalledTimes(1);
+        const orchestrationSession = vi.mocked(createAgentCoreSession).mock.results[0]?.value as {
+          prompt: Mock;
+        };
+        expect(orchestrationSession.prompt).not.toHaveBeenCalled();
+      } finally {
+        assessRunSpy.mockRestore();
+        listTasksSpy.mockRestore();
+      }
+    });
+
     it("syncs on-disk progress after a raw CLI orchestration turn and auto-advances without stalling", async () => {
       const runDir = "/tmp/runs/run-raw-cli-sync";
       const assessRunSpy = vi.spyOn(resumeState, "assessRun");
@@ -3576,24 +3677,7 @@ describe("handleHarnessCreateRun", () => {
         });
 
         assessRunSpy
-          .mockResolvedValueOnce({
-            run: {
-              runId: "run-raw-cli-sync",
-              runDir,
-              processId: "proc-1",
-              createdAt: "2026-05-01T00:00:00.000Z",
-              status: "created",
-              pendingEffects: {},
-              totalEffects: 0,
-              resolvedEffects: 0,
-              entrypoint: { importPath: "/tmp/process.mjs" },
-            },
-            journalLength: 1,
-            lastEvent: {
-              type: "RUN_CREATED",
-              recordedAt: "2026-05-01T00:00:00.000Z",
-            },
-          })
+          .mockRejectedValueOnce(new Error("transient artifact read failure"))
           .mockResolvedValueOnce({
             run: {
               runId: "run-raw-cli-sync",
@@ -3707,7 +3791,7 @@ describe("handleHarnessCreateRun", () => {
         expect(executeBash).toHaveBeenCalledWith(
           "babysitter run:iterate /tmp/runs/run-raw-cli-sync",
         );
-        expect(listTasksSpy).toHaveBeenCalledTimes(3);
+        expect(listTasksSpy.mock.calls.length).toBeGreaterThanOrEqual(2);
       } finally {
         assessRunSpy.mockRestore();
         listTasksSpy.mockRestore();

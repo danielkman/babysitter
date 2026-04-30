@@ -328,10 +328,13 @@ export async function runInternalOrchestrationPhase(
           state.lastIterationResult?.status === "waiting"
           && state.pendingActions.size === 0
         )
+        || observed.runStatus === "created"
         || observed.runStatus === "in-progress"
       ) {
         writeVerbose(
-          "[phaseOrchestration host] all pending effects were posted; auto-advancing the run",
+          observed.runStatus === "created"
+            ? "[phaseOrchestration host] bootstrapping the freshly created run"
+            : "[phaseOrchestration host] all pending effects were posted; auto-advancing the run",
         );
         await invokeTool(iterateTool, "babysitter_run_iterate");
         if (ensureTerminalResult() !== null) {

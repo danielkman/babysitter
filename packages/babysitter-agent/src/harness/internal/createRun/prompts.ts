@@ -279,6 +279,7 @@ export function buildOrchestrationSystemPrompt(
     "- Work in bounded turns. In each turn, call babysitter_run_iterate at most once unless the prompt explicitly tells you otherwise.",
     "- Never drive the orchestration loop through raw `babysitter` CLI commands inside `bash`. Use the custom babysitter tools (`babysitter_run_iterate`, `babysitter_task_post_result`, `babysitter_finish_orchestration`) for loop control.",
     "- `bash` is only for actual workspace commands and requested shell effects. It is not a substitute for babysitter loop-control tools.",
+    "- Do not implement the user's requested workspace deliverable directly before the bound run yields pending effects or a terminal result. First drive the run through `babysitter_run_iterate`.",
     "- Do not rely on a hidden host-side effect executor. Perform or dispatch each effect intentionally based on the effect payload you received from babysitter_run_iterate.",
     "- Shell and legacy node effects are first-class pending effects. Do not skip them, narrate them, or assume the host will run them for you.",
     preferAgentOnlyTasks
@@ -397,6 +398,7 @@ export function buildOrchestrationTurnPrompt(args: {
   } else {
     lines.push("");
     lines.push("Call babysitter_run_iterate exactly once in this turn.");
+    lines.push("If the run is freshly created or has not yielded effects yet, do not implement the workspace deliverable directly before that iterate call returns.");
     lines.push("If it returns pending effects, resolve all of them and post every result before stopping.");
     lines.push("If it returns completed or failed, stop after recording the terminal state.");
   }
