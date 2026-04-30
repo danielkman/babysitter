@@ -7,7 +7,7 @@ import {
   PI_WORKER_TIMEOUT_MS,
 } from "../utils";
 import { BabysitterRuntimeError, ErrorCategory } from "@a5c-ai/babysitter-sdk";
-import type { AgentCoreSessionHandle } from "@a5c-ai/agent-core";
+import type { AgentCoreSessionHandle } from "../../../piWrapper";
 
 describe("harnessUtils", () => {
   it("falls back to default answers when the interactive UI tool fails", async () => {

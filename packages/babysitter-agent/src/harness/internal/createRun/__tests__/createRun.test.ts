@@ -48,8 +48,8 @@ vi.mock("../../../../interaction", async () => {
   };
 });
 
-vi.mock("@a5c-ai/agent-core", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@a5c-ai/agent-core")>();
+vi.mock("../../../piWrapper", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../../../piWrapper")>();
   let sessionCounter = 0;
   const createAgentCoreSession = vi.fn((options?: { customTools?: Array<Record<string, unknown>>; workspace?: string }) => {
     sessionCounter += 1;
@@ -188,7 +188,7 @@ import {
 } from "@a5c-ai/babysitter-sdk";
 import { WorkspaceService, resolveWorkspaceDefaultCwd } from "@a5c-ai/agent-mux-core";
 import { invokeHarness } from "../../../invoker";
-import { createAgentCoreSession } from "@a5c-ai/agent-core";
+import { createAgentCoreSession } from "../../../piWrapper";
 import { getSessionContext } from "../../../../session/context";
 
 const detectCallerHarnessMock = detectCallerHarness as Mock;

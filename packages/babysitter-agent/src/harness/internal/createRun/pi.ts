@@ -5,7 +5,6 @@ import type {
   AgentCorePromptResult,
   AgentCoreSessionOptions,
 } from "../../types";
-import type { AgentCoreSessionHandle } from "@a5c-ai/agent-core";
 import type { DelegationConfig } from "./utils";
 
 export const TRANSIENT_PI_PROMPT_RETRY_DELAYS_MS = process.env.VITEST
@@ -84,8 +83,12 @@ export function isIgnorablePiPromptFailure(output: string): boolean {
   return output.includes("msg.content.filter is not a function");
 }
 
+type PromptCapableSession = {
+  prompt(text: string, timeout?: number): Promise<AgentCorePromptResult>;
+};
+
 export async function promptPiWithRetry(args: {
-  session: AgentCoreSessionHandle;
+  session: PromptCapableSession;
   message: string;
   timeout: number;
   label: string;

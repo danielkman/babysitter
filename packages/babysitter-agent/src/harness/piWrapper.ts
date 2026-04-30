@@ -17,15 +17,15 @@ import { createSecureBashBackend } from "./piSecureSandbox";
 import {
   buildCompactionSettings,
   loadCompressionConfigSafe,
-} from "./agent-core/compaction";
-import { discoverRepoInstructionPrompts } from "./agent-core/instructionPrompts";
+} from "./piWrapper/compaction";
+import { discoverRepoInstructionPrompts } from "./piWrapper/instructionPrompts";
 import {
   configureAzureOpenAiEnvDefaults,
   extractAssistantFailure,
   loadPiModule,
   resolvePiModel,
-} from "./agent-core/moduleSupport";
-import type { PiAgentSession } from "./agent-core/moduleSupport";
+} from "./piWrapper/moduleSupport";
+import type { PiAgentSession } from "./piWrapper/moduleSupport";
 
 const DEFAULT_TIMEOUT_MS = 900_000;
 const DEFAULT_BASH_SANDBOX_MODE: NonNullable<AgentCoreSessionOptions["bashSandbox"]> = "local";
