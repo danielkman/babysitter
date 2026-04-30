@@ -6,7 +6,7 @@ nodes:
     kind: EvidenceSource
     evidenceId: web-github-copilot-cli-overview
     kindLabel: web
-    sourcePathOrUrl: https://docs.github.com/en/copilot/how-tos/copilot-cli/use-copilot-cli-agents/overview
+    sourcePathOrUrl: https://docs.github.com/en/copilot/how-tos/copilot-cli/use-copilot-cli/overview
     capturedAt: 2026-04-24T00:00:00.000Z
     locator: Copilot CLI agent overview
     trustLevel: official-web
