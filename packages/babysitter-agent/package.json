@@ -85,7 +85,8 @@
     "./package.json": "./package.json"
   },
   "bin": {
-    "babysitter-agent": "dist/cli/main.js"
+    "babysitter-agent": "dist/cli/main.js",
+    "babysitter-harness": "dist/cli/main.js"
   },
   "files": [
     "dist/",

@@ -82,6 +82,17 @@ describe("babysitter-agent seam contract", () => {
     ]);
   });
 
+  test("publishes both runtime CLI entrypoint aliases", async () => {
+    const packageJson = JSON.parse(
+      await fs.readFile(path.join(packageRoot, "package.json"), "utf8"),
+    ) as { bin?: Record<string, string> };
+
+    expect(packageJson.bin).toEqual({
+      "babysitter-agent": "dist/cli/main.js",
+      "babysitter-harness": "dist/cli/main.js",
+    });
+  });
+
   test("keeps the validation gate stable for every seam", () => {
     expect(BABYSITTER_AGENT_SEAM_VALIDATION_COMMANDS).toEqual([
       "npm run build --workspace=@a5c-ai/babysitter-agent",
