@@ -1,6 +1,6 @@
 "use client";
 
-import { Link } from "react-router-dom-v6";
+import { Link, useNavigate } from "react-router-dom-v6";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Attachment } from "@a5c-ai/agent-mux-core";
 import { ChevronLeft, ExternalLink, GripVertical, LayoutDashboard, MessagesSquare, PanelLeft, PanelRight, Search, Workflow } from "lucide-react";
@@ -13,7 +13,6 @@ import { useKeyboard } from "@/hooks/use-keyboard";
 import { usePersistedState } from "@/hooks/use-persisted-state";
 import type { KanbanIntegrationProvider, KanbanReviewArtifact } from "@a5c-ai/agent-mux-core/kanban";
 import {
-  DEFAULT_WORKSPACE_PANEL_SIZES,
   DESKTOP_LAYOUT_BREAKPOINT,
   ensureVisiblePanels,
   getVisiblePanels,
@@ -94,11 +93,18 @@ type PanelDefinition = {
 };
 
 const PANEL_DEFINITIONS: PanelDefinition[] = [
-  { key: "sidebar", label: "Sidebar", shortcut: "Shift+W", icon: PanelLeft },
-  { key: "conversation", label: "Session", shortcut: "Shift+C", icon: MessagesSquare },
-  { key: "context", label: "Context", shortcut: "Shift+X", icon: Workflow },
+  { key: "sidebar", label: "Workspace", shortcut: "Shift+W", icon: PanelLeft },
+  { key: "conversation", label: "Chat", shortcut: "Shift+C", icon: MessagesSquare },
+  { key: "context", label: "Trace", shortcut: "Shift+X", icon: Workflow },
   { key: "details", label: "Runtime", shortcut: "Shift+D", icon: PanelRight },
 ];
+
+const DEFAULT_WORKSPACE_DETAIL_SIZES: WorkspacePanelSizes = {
+  sidebar: 20,
+  conversation: 58,
+  context: 14,
+  details: 8,
+};
 
 function workspaceHref(cwd: string): string {
   return `/workspaces?workspace=${encodeURIComponent(cwd)}`;
@@ -215,13 +221,15 @@ function EmptyWorkspaceState(props: { title: string; body: string }) {
 }
 
 export function WorkspaceDetailShell(props: WorkspaceDetailShellProps) {
-  const [sidebarOpen, setSidebarOpen] = usePersistedState("workspace-layout.sidebar-open", true);
-  const [conversationOpen, setConversationOpen] = usePersistedState("workspace-layout.conversation-open", true);
-  const [contextOpen, setContextOpen] = usePersistedState("workspace-layout.context-open", true);
-  const [detailsOpen, setDetailsOpen] = usePersistedState("workspace-layout.details-open", true);
+  const navigate = useNavigate();
+  const storagePrefix = "workspace-detail-layout-v3";
+  const [sidebarOpen, setSidebarOpen] = usePersistedState(`${storagePrefix}.sidebar-open`, true);
+  const [conversationOpen, setConversationOpen] = usePersistedState(`${storagePrefix}.conversation-open`, true);
+  const [contextOpen, setContextOpen] = usePersistedState(`${storagePrefix}.context-open`, false);
+  const [detailsOpen, setDetailsOpen] = usePersistedState(`${storagePrefix}.details-open`, false);
   const [desktopSizes, setDesktopSizes] = usePersistedState<WorkspacePanelSizes>(
-    "workspace-layout.desktop-sizes",
-    DEFAULT_WORKSPACE_PANEL_SIZES,
+    `${storagePrefix}.desktop-sizes`,
+    DEFAULT_WORKSPACE_DETAIL_SIZES,
   );
   const [commandBarOpen, setCommandBarOpen] = useState(false);
   const [activeConstrainedPanel, setActiveConstrainedPanel] = useState<WorkspacePanelKey>("conversation");
@@ -351,8 +359,8 @@ export function WorkspaceDetailShell(props: WorkspaceDetailShellProps) {
       return (
         <WorkspacePanelFrame
           panelKey="sidebar"
-          title="Sidebar"
-          subtitle="Lifecycle controls, session roster, and operator notes"
+          title="Workspace"
+          subtitle="Session roster, notes, and quick actions"
         >
           <div className="grid gap-4">
             <div className="rounded-2xl border border-border bg-background/65 p-4">
@@ -387,7 +395,7 @@ export function WorkspaceDetailShell(props: WorkspaceDetailShellProps) {
                 {props.sessions.length === 0 ? (
                   <EmptyWorkspaceState
                     title="No attached sessions"
-                    body="This workspace is present in the lifecycle inventory, but no gateway session is currently publishing into it."
+                    body="This workspace is tracked, but no session is currently publishing chat or runtime activity into it."
                   />
                 ) : null}
               </div>
@@ -418,8 +426,8 @@ export function WorkspaceDetailShell(props: WorkspaceDetailShellProps) {
       return (
         <WorkspacePanelFrame
           panelKey="conversation"
-          title="Session"
-          subtitle="Selected session transcript and next-turn input"
+          title="Session chat"
+          subtitle="Selected session transcript, approvals, and next-turn input"
         >
           <SessionConversationSurface
             sessionId={props.activeSession?.sessionId ?? "no-session"}
@@ -454,8 +462,8 @@ export function WorkspaceDetailShell(props: WorkspaceDetailShellProps) {
       return (
         <WorkspacePanelFrame
           panelKey="context"
-          title="Context"
-          subtitle="Execution reconstruction for the selected session"
+          title="Trace"
+          subtitle="Flow, files, and execution history for the selected session"
         >
           {props.activeSession ? (
             <SessionObservabilityPanel
@@ -468,7 +476,7 @@ export function WorkspaceDetailShell(props: WorkspaceDetailShellProps) {
           ) : (
             <EmptyWorkspaceState
               title="No session context"
-              body="Choose a session from the context bar or sidebar to unlock flow, timeline, transcript, and file attention views."
+              body="Choose a session to unlock trace, timeline, transcript, and file activity."
             />
           )}
         </WorkspacePanelFrame>
@@ -479,7 +487,7 @@ export function WorkspaceDetailShell(props: WorkspaceDetailShellProps) {
       <WorkspacePanelFrame
         panelKey="details"
         title="Runtime"
-        subtitle="Preview, shell, logs, and workspace-linked runtime activity"
+        subtitle="Preview, shell, and live workspace output"
       >
         {runtime ? (
           <WorkspaceRuntimePanel
@@ -492,7 +500,7 @@ export function WorkspaceDetailShell(props: WorkspaceDetailShellProps) {
         ) : (
           <EmptyWorkspaceState
             title="Runtime details unavailable"
-            body="No selected session in this workspace is currently publishing preview, terminal, or dev-server surfaces."
+            body="The selected session is not currently publishing preview, terminal, or dev-server output."
           />
         )}
       </WorkspacePanelFrame>
@@ -514,8 +522,8 @@ export function WorkspaceDetailShell(props: WorkspaceDetailShellProps) {
             </div>
             <h1 className="mt-3 text-3xl font-semibold tracking-tight">{props.workspace.name}</h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-foreground-muted">
-              This route keeps the workspace itself at the center: session switching, lifecycle controls,
-              context reconstruction, and runtime surfaces stay in a single resizable shell.
+              Keep the workspace anchored around its active session chat. Switch sessions, inspect
+              trace, and open runtime surfaces without losing the conversation.
             </p>
           </div>
 
@@ -529,8 +537,8 @@ export function WorkspaceDetailShell(props: WorkspaceDetailShellProps) {
               Open in editor
             </Button>
             {props.activeSession ? (
-              <Button type="button" variant="ghost">
-                <Link to={`/sessions/${props.activeSession.sessionId}`}>View session</Link>
+              <Button type="button" variant="ghost" onClick={() => navigate(`/sessions/${props.activeSession!.sessionId}`)}>
+                View session
               </Button>
             ) : null}
             {PANEL_DEFINITIONS.map((panel) => {
@@ -599,7 +607,7 @@ export function WorkspaceDetailShell(props: WorkspaceDetailShellProps) {
                 ) : null}
                 {props.workspace.ownership ? (
                   <div className="mt-3 text-xs text-foreground-muted" data-testid="workspace-ownership-summary">
-                    <span className="font-semibold text-foreground">Owner:</span>{" "}
+                    <span className="font-semibold text-foreground">Board link:</span>{" "}
                     {props.workspace.ownership.project ? props.workspace.ownership.project.projectKey : "Unassigned"}
                     {props.workspace.ownership.issue ? ` / ${props.workspace.ownership.issue.issueKey}` : ""}
                     {props.workspace.ownership.host ? ` · ${props.workspace.ownership.host.label}` : ""}
@@ -633,8 +641,10 @@ export function WorkspaceDetailShell(props: WorkspaceDetailShellProps) {
                     to={workspaceIssueHref(props.workspace, issue.issueId)}
                     className="rounded-full border border-border px-3 py-1.5 text-xs text-primary"
                     data-testid={`workspace-issue-link-${issue.issueKey}`}
+                    title={issue.issueTitle}
                   >
                     {issue.issueKey}
+                    <span className="ml-1 text-foreground-muted">· {issue.issueTitle}</span>
                   </Link>
                 ))
               ) : (
@@ -655,7 +665,7 @@ export function WorkspaceDetailShell(props: WorkspaceDetailShellProps) {
           <span className="shrink-0 rounded-full border border-border px-3 py-1.5">Command bar: Ctrl/Cmd+K</span>
           {props.workspace.git.root ? (
             <Link to={workspaceHref(props.workspace.path)} className="shrink-0 rounded-full border border-border px-3 py-1.5 text-primary">
-              Canonical workspace link
+              Open this workspace
             </Link>
           ) : null}
         </div>

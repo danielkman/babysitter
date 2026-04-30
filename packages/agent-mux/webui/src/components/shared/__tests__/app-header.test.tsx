@@ -104,7 +104,7 @@ describe("APP_HEADER_NAV_ITEMS", () => {
   it("renders settings access, theme toggle, and the main nav links", () => {
     render(<AppHeader />);
 
-    expect(screen.getByRole("link", { name: "Open settings" })).toHaveAttribute("href", "/settings");
+    expect(screen.getByRole("button", { name: "Open settings" })).toBeInTheDocument();
     expect(screen.getByTestId("theme-toggle")).toHaveAttribute("aria-label", "Switch to light theme");
 
     for (const item of APP_HEADER_NAV_ITEMS) {

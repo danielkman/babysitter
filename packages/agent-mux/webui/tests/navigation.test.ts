@@ -4,7 +4,7 @@ import { buildRecentSessionActions, titleForPath } from '../src/shell/navigation
 
 describe('titleForPath', () => {
   it('maps run deep links to the pending-session title', () => {
-    expect(titleForPath('/runs/run-123')).toBe('Creating Session');
+    expect(titleForPath('/runs/run-123')).toBe('Run Handoff');
   });
 });
 

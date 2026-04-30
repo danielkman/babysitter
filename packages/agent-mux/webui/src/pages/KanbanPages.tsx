@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom-v6';
 import { useStore } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
-import { useParams, useSearchParams } from 'react-router-dom-v6';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom-v6';
 import { LogoWordmark } from '@a5c-ai/compendium';
 import type { Attachment, WorkspaceRuntimeSurface } from '@a5c-ai/agent-mux-core';
 import type { KanbanWorkspaceSessionSummary } from '@a5c-ai/agent-mux-core/kanban';
@@ -104,6 +104,7 @@ export function HostWorkspaceCreatePage(): JSX.Element {
 }
 
 export function KanbanRunsPage(): JSX.Element {
+  const navigate = useNavigate();
   const { isAuthenticated } = useGatewayAuth();
   const {
     projects,
@@ -148,17 +149,17 @@ export function KanbanRunsPage(): JSX.Element {
             approvals, search, and status triage available as an execution dashboard.
           </p>
           <div className="page-actions">
-            <Button variant="primary">
-              <Link to="/projects">Open projects</Link>
+            <Button variant="primary" onClick={() => navigate('/projects')}>
+              Open projects
             </Button>
-            <Button variant="ghost">
-              <Link to="/sessions/new">Start session</Link>
+            <Button variant="ghost" onClick={() => navigate('/sessions/new')}>
+              Start session
             </Button>
-            <Button variant="ghost">
-              <Link to="/workspaces">Open workspaces</Link>
+            <Button variant="ghost" onClick={() => navigate('/workspaces')}>
+              Open workspaces
             </Button>
-            <Button variant="ghost">
-              <Link to="/inbox">Open inbox</Link>
+            <Button variant="ghost" onClick={() => navigate('/inbox')}>
+              Open inbox
             </Button>
           </div>
         </PageSection>
@@ -174,10 +175,8 @@ export function KanbanRunsPage(): JSX.Element {
               : 'Connect the gateway to enable session creation, chat continuation, and live workspace context from the same app.'}
           </p>
           <div className="page-actions">
-            <Button variant="ghost">
-              <Link to={isAuthenticated ? '/sessions' : '/login'}>
-                {isAuthenticated ? 'Open sessions' : 'Connect gateway'}
-              </Link>
+            <Button variant="ghost" onClick={() => navigate(isAuthenticated ? '/sessions' : '/login')}>
+              {isAuthenticated ? 'Open sessions' : 'Connect gateway'}
             </Button>
           </div>
         </PageSection>

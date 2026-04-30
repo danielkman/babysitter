@@ -293,8 +293,8 @@ export function WorkspaceProvisioningPage(props: {
             <Button type="submit" variant="primary" disabled={!selectedProject || !workspaceName.trim()} loading={submitting}>
               Create workspace
             </Button>
-            <Button variant="ghost">
-              <Link to={cancelHref}>Cancel</Link>
+            <Button variant="ghost" onClick={() => navigate(cancelHref)}>
+              Cancel
             </Button>
           </div>
         </form>

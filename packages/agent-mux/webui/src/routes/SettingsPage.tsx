@@ -10,7 +10,7 @@ import type {
 } from "@a5c-ai/agent-mux-core/kanban";
 import { LogoWordmark } from "@a5c-ai/compendium";
 import { Activity, AlertTriangle, Boxes, Cpu, Network, ServerCog, ShieldCheck, Users } from "lucide-react";
-import { Link } from "react-router-dom-v6";
+import { Link, useNavigate } from "react-router-dom-v6";
 import { useStore } from "zustand";
 
 import { useGatewayAuth } from "@/components/agent-mux/gateway-provider";
@@ -373,6 +373,7 @@ function isDirty<T>(baseline: T | null, draft: T | null): boolean {
 }
 
 export default function SettingsPage() {
+  const navigate = useNavigate();
   const { theme } = useTheme();
   const { auth, logout, isAuthenticated } = useGatewayAuth();
   const { notifications, permission, requestPermission } = useNotificationContext();
@@ -871,10 +872,8 @@ export default function SettingsPage() {
                       />
                     </div>
                     <div className="mt-4 flex flex-wrap gap-2">
-                      <Button variant="primary">
-                        <Link to="/login">
-                          {isAuthenticated ? "Reconnect gateway" : "Connect gateway"}
-                        </Link>
+                      <Button variant="primary" onClick={() => navigate("/login")}>
+                        {isAuthenticated ? "Reconnect gateway" : "Connect gateway"}
                       </Button>
                       {isAuthenticated ? (
                         <Button onClick={() => logout()} variant="ghost" type="button">
@@ -1850,11 +1849,11 @@ export default function SettingsPage() {
                     <SettingCard label="Session route" value="/sessions" />
                   </div>
                   <div className="mt-4 flex flex-wrap gap-2">
-                    <Button variant="primary">
-                      <Link to="/workspaces">Open workspaces</Link>
+                    <Button variant="primary" onClick={() => navigate("/workspaces")}>
+                      Open workspaces
                     </Button>
-                    <Button variant="ghost">
-                      <Link to="/sessions">Open sessions</Link>
+                    <Button variant="ghost" onClick={() => navigate("/sessions")}>
+                      Open sessions
                     </Button>
                   </div>
                 </div>

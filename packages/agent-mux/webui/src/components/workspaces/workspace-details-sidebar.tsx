@@ -1,6 +1,6 @@
 "use client";
 
-import { Link } from "react-router-dom-v6";
+import { Link, useNavigate } from "react-router-dom-v6";
 import { useEffect, useMemo, useState } from "react";
 import type { WorkspaceRuntimeSurface } from "@a5c-ai/agent-mux-core";
 import type { KanbanIntegrationProvider, KanbanReviewArtifact } from "@a5c-ai/agent-mux-core/kanban";
@@ -143,6 +143,7 @@ export function WorkspaceDetailsSidebar(props: {
     },
   ) => void;
 }) {
+  const navigate = useNavigate();
   const noteValue = props.workspace.notes?.value ?? "";
   const noteUpdatedAt = props.workspace.notes?.updatedAt ?? null;
   const [draftNote, setDraftNote] = useState(noteValue);
@@ -176,7 +177,7 @@ export function WorkspaceDetailsSidebar(props: {
     linkedPullRequest?.baseBranch ?? props.workspace.git.trackingBranch?.split("/").at(-1) ?? "main",
   );
   const [pullRequestTitle, setPullRequestTitle] = useState(
-    linkedPullRequest?.title ?? `${props.workspace.name}: ${props.workspace.git.branch ?? "workspace"} lifecycle`,
+    linkedPullRequest?.title ?? `${props.workspace.name}: ${props.workspace.git.branch ?? "workspace"} review`,
   );
   const [reviewers, setReviewers] = useState("kanban-maintainers");
   const [linkedNumber, setLinkedNumber] = useState(
@@ -196,7 +197,7 @@ export function WorkspaceDetailsSidebar(props: {
     setProvider(integration?.provider ?? linkedPullRequest?.provider ?? "github");
     setBranchName(linkedPullRequest?.branchName ?? props.workspace.git.branch ?? props.workspace.name);
     setBaseBranch(linkedPullRequest?.baseBranch ?? props.workspace.git.trackingBranch?.split("/").at(-1) ?? "main");
-    setPullRequestTitle(linkedPullRequest?.title ?? `${props.workspace.name}: ${props.workspace.git.branch ?? "workspace"} lifecycle`);
+    setPullRequestTitle(linkedPullRequest?.title ?? `${props.workspace.name}: ${props.workspace.git.branch ?? "workspace"} review`);
     setLinkedNumber(linkedPullRequest?.number ? String(linkedPullRequest.number) : "");
     setLinkedTitle(linkedPullRequest?.title ?? "");
   }, [
@@ -218,8 +219,8 @@ export function WorkspaceDetailsSidebar(props: {
     <aside className="rounded-[28px] border border-border bg-card p-4 shadow-lg" aria-label={`Workspace details for ${props.workspace.name}`}>
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary/80">Operational cockpit</p>
-          <h2 className="mt-2 text-lg font-semibold tracking-tight">Details sidebar</h2>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary/80">Workspace details</p>
+          <h2 className="mt-2 text-lg font-semibold tracking-tight">Status, notes, and handoff</h2>
         </div>
         <span className="rounded-full border border-border px-2.5 py-1 text-[11px] text-foreground-muted">
           {props.workspace.status}
@@ -246,8 +247,13 @@ export function WorkspaceDetailsSidebar(props: {
                   Session {selectedSession.sessionId}
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <Button type="button" size="sm" variant="ghost">
-                    <Link to={`/sessions/${selectedSession.sessionId}`}>Open session</Link>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => navigate(`/sessions/${selectedSession.sessionId}`)}
+                  >
+                    Open session
                   </Button>
                 </div>
               </div>
@@ -255,7 +261,7 @@ export function WorkspaceDetailsSidebar(props: {
               <SectionState
                 tone="neutral"
                 title="No active session selected"
-                body="Select a workspace session to keep runtime and process status aligned with the conversation surface."
+                body="Select a session to align this sidebar with the chat and runtime panels."
               />
             )}
 
@@ -270,7 +276,7 @@ export function WorkspaceDetailsSidebar(props: {
               <SectionState
                 tone="error"
                 title="Runtime disconnected"
-                body="Runtime, terminal, and dev-server status are unavailable until a workspace session starts publishing again."
+                body="Runtime, terminal, and preview status will appear here when the selected session publishes again."
               />
             )}
 
@@ -306,7 +312,7 @@ export function WorkspaceDetailsSidebar(props: {
               <SectionState
                 tone="neutral"
                 title="No workspace runs yet"
-                body="Run and process status will appear here once this workspace session starts publishing executions."
+                body="Run status will appear here once this workspace starts publishing executions."
               />
             )}
           </div>
@@ -341,17 +347,17 @@ export function WorkspaceDetailsSidebar(props: {
 
         <SidebarSection title="Terminal" icon={Terminal}>
           {!props.runtime ? (
-            <SectionState
-              tone="error"
-              title="Runtime disconnected"
-              body="No active agent-mux runtime is publishing shell state for this workspace."
-            />
+              <SectionState
+                tone="error"
+                title="Runtime disconnected"
+                body="No active runtime is currently publishing shell state for this workspace."
+              />
           ) : !lastCommand ? (
             <div className="space-y-3">
               <SectionState
                 tone="neutral"
                 title="No terminal activity yet"
-                body="Use the shell affordance below while the runtime waits for its first captured command."
+                body="The selected session has not published a captured command yet."
               />
               <pre className="overflow-x-auto rounded-2xl border border-border bg-background/80 px-3 py-2 text-xs text-foreground-muted">
                 {`cd ${props.workspace.path}\ngit status --short`}
@@ -405,7 +411,7 @@ export function WorkspaceDetailsSidebar(props: {
               <SectionState
                 tone="neutral"
                 title="No workspace notes yet"
-                body="Capture operator context, next steps, or handoff details for this worktree."
+                body="Capture next steps, blockers, or handoff notes for this workspace."
               />
             ) : (
               <p className="text-xs text-foreground-muted">Last updated {formatTimestamp(noteUpdatedAt)}</p>
@@ -476,11 +482,14 @@ export function WorkspaceDetailsSidebar(props: {
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {linkedPullRequest.url ? (
-                    <Button type="button" size="sm" variant="ghost">
-                      <a href={linkedPullRequest.url} target="_blank" rel="noreferrer">
-                        Open PR
-                        <ExternalLink className="ml-2 h-4 w-4" />
-                      </a>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => window.open(linkedPullRequest.url, "_blank", "noopener,noreferrer")}
+                    >
+                      Open PR
+                      <ExternalLink className="ml-2 h-4 w-4" />
                     </Button>
                   ) : null}
                 </div>
@@ -489,7 +498,7 @@ export function WorkspaceDetailsSidebar(props: {
               <SectionState
                 tone="neutral"
                 title="No linked PR yet"
-                body="Create a linked PR from this workspace or attach an existing one so review, CI, merge, and publish state stay attached to the worktree."
+                body="Create a PR from this workspace or attach an existing one to keep review and merge status visible."
               />
             )}
 
@@ -700,16 +709,19 @@ export function WorkspaceDetailsSidebar(props: {
                 Open in editor
               </Button>
               {props.sessionId ? (
-                <Button type="button" size="sm" variant="ghost">
-                  <Link to={`/sessions/${props.sessionId}`}>View session</Link>
+                <Button type="button" size="sm" variant="ghost" onClick={() => navigate(`/sessions/${props.sessionId}`)}>
+                  View session
                 </Button>
               ) : null}
               {previewUrl ? (
-                <Button type="button" size="sm" variant="ghost">
-                  <a href={previewUrl} target="_blank" rel="noreferrer">
-                    Open preview
-                    <ExternalLink className="ml-2 h-4 w-4" />
-                  </a>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => window.open(previewUrl, "_blank", "noopener,noreferrer")}
+                >
+                  Open preview
+                  <ExternalLink className="ml-2 h-4 w-4" />
                 </Button>
               ) : (
                 <Button type="button" size="sm" variant="ghost" disabled>

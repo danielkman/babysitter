@@ -1,35 +1,114 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom-v6';
-const NAV_ITEMS = [
-  { to: '/projects', label: 'Projects' },
-  { to: '/runs', label: 'Runs' },
-  { to: '/agents', label: 'Agents' },
-  { to: '/sessions', label: 'Sessions' },
-  { to: '/sessions/new', label: 'New session' },
-  { to: '/workspaces', label: 'Workspaces' },
-  { to: '/inbox', label: 'Hook inbox' },
-  { to: '/automations', label: 'Automations' },
-  { to: '/pair-device', label: 'Pair device' },
-  { to: '/settings', label: 'Settings' },
-];
+import React, { useMemo } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom-v6';
+import { useStore } from 'zustand';
+import { useShallow } from 'zustand/react/shallow';
+import { Button } from '@a5c-ai/compendium';
+import { Bot, FolderKanban, GitBranchPlus, Inbox, Layers3, PlaySquare, Settings2, Sparkles, Workflow } from 'lucide-react';
+import { useGateway } from '@a5c-ai/agent-mux-ui';
+
+type NavItem = {
+  to: string;
+  label: string;
+  section: 'Plan' | 'Operate' | 'System';
+  icon: React.ComponentType<{ className?: string }>;
+  badge?: number | null;
+};
+
+function countPendingHooks(value: Record<string, ReadonlyArray<unknown> | undefined>): number {
+  return Object.values(value).reduce((sum, entries) => sum + (entries?.length ?? 0), 0);
+}
 
 export function Sidebar(): JSX.Element {
+  const navigate = useNavigate();
+  const { store } = useGateway();
+  const sessions = useStore(store, useShallow((state) => Object.values(state.sessions.byId)));
+  const runs = useStore(store, useShallow((state) => Object.values(state.runs.byId)));
+  const pendingHooks = useStore(store, (state) => countPendingHooks(state.hooks.byRunId));
+
+  const activeSessions = useMemo(
+    () => sessions.filter((session) => session.status === 'active').length,
+    [sessions],
+  );
+  const runningRuns = useMemo(
+    () => runs.filter((run) => run.status === 'running').length,
+    [runs],
+  );
+
+  const navItems = useMemo<NavItem[]>(
+    () => [
+      { to: '/projects', label: 'Projects', section: 'Plan', icon: FolderKanban },
+      { to: '/sessions', label: 'Sessions', section: 'Plan', icon: Layers3, badge: activeSessions > 0 ? activeSessions : null },
+      { to: '/workspaces', label: 'Workspaces', section: 'Plan', icon: Workflow },
+      { to: '/runs', label: 'Runs', section: 'Operate', icon: PlaySquare, badge: runningRuns > 0 ? runningRuns : null },
+      { to: '/inbox', label: 'Inbox', section: 'Operate', icon: Inbox, badge: pendingHooks > 0 ? pendingHooks : null },
+      { to: '/automations', label: 'Automations', section: 'Operate', icon: Sparkles },
+      { to: '/agents', label: 'Agents', section: 'System', icon: Bot },
+      { to: '/settings', label: 'Settings', section: 'System', icon: Settings2 },
+    ],
+    [activeSessions, pendingHooks, runningRuns],
+  );
+
+  const sections = ['Plan', 'Operate', 'System'] as const;
+
   return (
     <aside className="app-sidebar">
-      <p className="app-sidebar__label">agent-mux</p>
-      <nav className="app-sidebar__nav">
-        {NAV_ITEMS.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            className={({ isActive }) =>
-              ['app-sidebar__link', isActive ? 'app-sidebar__link--active' : null]
-                .filter(Boolean)
-                .join(' ')
-            }
-          >
-            {item.label}
-          </NavLink>
+      <div className="app-sidebar__brand">
+        <p className="app-sidebar__label">agent-mux</p>
+        <h1 className="app-sidebar__title">Operator workbench</h1>
+        <p className="app-sidebar__copy">
+          Keep planning, sessions, workspaces, and execution on one surface.
+        </p>
+      </div>
+
+      <div className="app-sidebar__spotlight">
+        <div className="app-sidebar__spotlight-card">
+          <div>
+            <div className="app-sidebar__spotlight-label">Live now</div>
+            <div className="app-sidebar__spotlight-value">{activeSessions} sessions</div>
+          </div>
+          <div className="app-sidebar__spotlight-meta">{runningRuns} running runs</div>
+        </div>
+        <div className="app-sidebar__quick-actions">
+          <Button type="button" size="sm" onClick={() => navigate('/sessions/new')}>
+            <GitBranchPlus className="h-4 w-4" />
+            Start session
+          </Button>
+          <Button type="button" size="sm" variant="ghost" onClick={() => navigate('/projects')}>
+            <FolderKanban className="h-4 w-4" />
+            Open board
+          </Button>
+        </div>
+      </div>
+
+      <nav className="app-sidebar__nav" aria-label="Main navigation">
+        {sections.map((section) => (
+          <div key={section} className="app-sidebar__section">
+            <p className="app-sidebar__section-label">{section}</p>
+            <div className="app-sidebar__section-items">
+              {navItems
+                .filter((item) => item.section === section)
+                .map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <NavLink
+                      key={item.to}
+                      to={item.to}
+                      className={({ isActive }) =>
+                        ['app-sidebar__link', isActive ? 'app-sidebar__link--active' : null]
+                          .filter(Boolean)
+                          .join(' ')
+                      }
+                    >
+                      <span className="app-sidebar__link-icon">
+                        <Icon className="h-4 w-4" />
+                      </span>
+                      <span className="app-sidebar__link-label">{item.label}</span>
+                      {item.badge ? <span className="app-sidebar__link-badge">{item.badge}</span> : null}
+                    </NavLink>
+                  );
+                })}
+            </div>
+          </div>
         ))}
       </nav>
     </aside>

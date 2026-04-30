@@ -1,14 +1,22 @@
 export function titleForPath(pathname: string): string {
   if (pathname === '/') return 'Projects';
   if (pathname === '/projects') return 'Projects';
+  if (/^\/projects\/[^/]+\/board$/.test(pathname)) return 'Project Board';
+  if (/^\/projects\/[^/]+\/list$/.test(pathname)) return 'Project List';
+  if (/^\/projects\/[^/]+\/issues\/new$/.test(pathname)) return 'New Issue';
+  if (/^\/projects\/[^/]+\/issues\/[^/]+$/.test(pathname)) return 'Issue Detail';
+  if (/^\/projects\/[^/]+\/workspaces\/new$/.test(pathname)) return 'New Workspace';
+  if (/^\/projects\/[^/]+\/issues\/[^/]+\/workspace\/new$/.test(pathname)) return 'Provision Workspace';
   if (pathname === '/runs') return 'Runs';
+  if (/^\/runs\/[^/]+$/.test(pathname)) return 'Run Handoff';
   if (pathname === '/automations') return 'Automations';
   if (pathname === '/sessions') return 'Sessions';
   if (pathname === '/sessions/new') return 'New Session';
   if (pathname.startsWith('/sessions/pending/')) return 'Creating Session';
   if (pathname.startsWith('/sessions/')) return 'Session Chat';
+  if (pathname === '/workspaces/new') return 'New Workspace';
+  if (/^\/issues\/[^/]+$/.test(pathname)) return 'Issue Detail';
   if (pathname.startsWith('/projects/')) return 'Project';
-  if (pathname.startsWith('/runs/')) return 'Creating Session';
   if (pathname === '/agents') return 'Agents';
   if (pathname === '/inbox') return 'Hook Inbox';
   if (pathname === '/pair-device') return 'Pair Device';

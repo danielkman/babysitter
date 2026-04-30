@@ -1,7 +1,7 @@
 "use client";
 
 import { Link } from "react-router-dom-v6";
-import { useSearchParams } from "react-router-dom-v6";
+import { useNavigate, useSearchParams } from "react-router-dom-v6";
 import type { Attachment } from "@a5c-ai/agent-mux-core";
 import type {
   KanbanLinkedPullRequestSummary,
@@ -443,6 +443,7 @@ export function WorkspacesPageContent(props: {
   }) => Promise<void>;
   mode?: WorkspaceSurfaceMode;
 }) {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [inventory, setInventory] = useState<WorkspaceInventoryResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -895,11 +896,11 @@ export function WorkspacesPageContent(props: {
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">Workspace lifecycle</p>
             <h1 className="mt-2 text-3xl font-semibold tracking-tight">Workspace not found</h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-foreground-muted">
-              The selected workspace is not present in the current inventory snapshot. Refresh the inventory or return to the workspace list.
+              The selected workspace is not in the current workspace list. Refresh and try again, or go back to all workspaces.
             </p>
             <div className="mt-5">
-              <Button variant="ghost">
-                <Link to="/workspaces">Back to inventory</Link>
+              <Button variant="ghost" onClick={() => navigate("/workspaces")}>
+                Back to inventory
               </Button>
             </div>
           </PageSection>
@@ -952,8 +953,8 @@ export function WorkspacesPageContent(props: {
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <Button variant="ghost">
-                <Link to="/workspaces">Open full inventory</Link>
+              <Button variant="ghost" onClick={() => navigate("/workspaces")}>
+                Open full inventory
               </Button>
               <Button variant="ghost" onClick={refreshInventory} disabled={loading || isPending}>
                 <RefreshCw className="mr-2 h-4 w-4" />
@@ -1016,16 +1017,16 @@ export function WorkspacesPageContent(props: {
       <PageSection>
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">Workspace lifecycle</p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-tight">Provisioning and worktree control</h1>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">Workspaces</p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight">Workspace list and active sessions</h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-foreground-muted">
-              This surface keeps `packages/agent-mux/webui` as the browser shell while inventory and lifecycle actions
-              are derived from agent-mux session `cwd` values, Babysitter run discovery, and git worktree state.
+              Keep the session attached to its workspace, open the right chat quickly, and handle archive,
+              recovery, or cleanup work only when it matters.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Button variant="primary">
-              <Link to="/workspaces/new">Provision workspace</Link>
+            <Button variant="primary" onClick={() => navigate("/workspaces/new")}>
+              Provision workspace
             </Button>
             <Button variant="ghost" onClick={refreshInventory} disabled={loading || isPending}>
               <RefreshCw className="mr-2 h-4 w-4" />
@@ -1065,10 +1066,10 @@ export function WorkspacesPageContent(props: {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">Workspace sidebar</p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight">Search, group, pin, and triage workspaces</h2>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight">Search, group, and open the right workspace</h2>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-foreground-muted">
-              The sidebar keeps mixed workspace state visible: pinned rows, runtime and dev-server status, linked PR state,
-              archive and recovery actions, and search-driven filtering without hiding what changed.
+              Keep the list compact, search by issue or branch, and open the workspace shell only when
+              you need deeper detail.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -1228,7 +1229,7 @@ export function WorkspacesPageContent(props: {
 
       <ReviewPanel
         title="Workspace diff and approval handoff"
-        description="Workspace review is fed by the same shared artifact model as issue review, so lifecycle cards and diff actions stay in sync."
+        description="Workspace review, comments, and approval state stay together here."
         empty="No workspace reviews are queued yet."
         loading={workspaceReviews.loading}
         error={workspaceReviews.error}
@@ -1323,6 +1324,7 @@ function WorkspaceColumn(props: {
   highlightReasons?: boolean;
 }) {
   const Icon = props.icon;
+  const navigate = useNavigate();
 
   return (
     <section className="rounded-3xl border border-border bg-card p-6 shadow-lg">
@@ -1398,7 +1400,7 @@ function WorkspaceColumn(props: {
                   </p>
                   {ownershipSummary(workspace) ? (
                     <p className="mt-2 text-sm text-foreground-muted">
-                      Owned by <span className="font-medium text-foreground">{ownershipSummary(workspace)}</span>
+                      Board link <span className="font-medium text-foreground">{ownershipSummary(workspace)}</span>
                     </p>
                   ) : null}
                   {attentionReasons.length > 0 ? (
@@ -1456,8 +1458,8 @@ function WorkspaceColumn(props: {
                     <Trash2 className="mr-2 h-4 w-4" />
                     Cleanup
                   </Button>
-                  <Button variant="ghost" size="sm">
-                    <Link to={workspaceDetailHref(workspace.path)}>Open shell</Link>
+                  <Button variant="ghost" size="sm" onClick={() => navigate(workspaceDetailHref(workspace.path))}>
+                    Open shell
                   </Button>
                 </div>
               </div>
@@ -1476,8 +1478,10 @@ function WorkspaceColumn(props: {
                       key={`${workspace.path}-${issue.issueId}`}
                       to={issueHref(workspace, issue.issueId)}
                       className="rounded-full border border-border px-2.5 py-1 text-xs text-primary"
+                      title={issue.issueTitle}
                     >
                       {issue.issueKey}
+                      <span className="ml-1 text-foreground-muted">· {issue.issueTitle}</span>
                     </Link>
                   ))}
                 </div>

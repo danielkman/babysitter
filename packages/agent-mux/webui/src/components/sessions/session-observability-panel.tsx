@@ -3,7 +3,7 @@
 import { Link } from "react-router-dom-v6";
 import { useMemo, useState } from "react";
 import { Tabs, type TabItem } from "@a5c-ai/compendium";
-import { buildSessionFlowModel } from "@a5c-ai/agent-mux-ui/session-flow";
+import { buildSessionFlowModel, type SessionFlowModel } from "@a5c-ai/agent-mux-ui/session-flow";
 import type { WorkspaceRuntimeSurface } from "@a5c-ai/agent-mux-core";
 import { AlertTriangle, ArrowUpRight, CheckCircle2, Hand, TerminalSquare } from "lucide-react";
 
@@ -126,11 +126,12 @@ export function SessionObservabilityPanel(props: {
   eventBuffers: Record<string, EventBuffer | undefined>;
   workspacePath?: string | null;
   runtime?: WorkspaceRuntimeSurface | null;
+  flowModelOverride?: SessionFlowModel;
 }) {
   const [viewMode, setViewMode] = useState<"flow" | "timeline" | "transcript" | "files">("flow");
   const flowModel = useMemo(
-    () => buildSessionFlowModel(props.runs, props.eventBuffers),
-    [props.eventBuffers, props.runs],
+    () => props.flowModelOverride ?? buildSessionFlowModel(props.runs, props.eventBuffers),
+    [props.eventBuffers, props.flowModelOverride, props.runs],
   );
   const shortcuts = buildRunArtifactShortcuts(props.runs);
   const fallbackRuntimeHref = pickRuntimeHref(props.runtime ?? null);

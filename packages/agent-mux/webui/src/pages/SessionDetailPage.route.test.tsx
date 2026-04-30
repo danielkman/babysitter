@@ -2,8 +2,7 @@
 
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, render, screen, waitFor } from '@testing-library/react';
-import { userEvent } from '@testing-library/user-event';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import { SessionDetailPage } from './SessionDetailPage.js';
 
@@ -15,10 +14,10 @@ const mockBuildNativeAgentFlowLane = vi.fn();
 const mockBuildSessionTimelineFromTranscript = vi.fn();
 const mockBuildSessionFilesFromTranscript = vi.fn();
 const mockAccumulateEventCost = vi.fn();
+const capturedShellProps: Array<Record<string, unknown>> = [];
 
 vi.mock('react-router-dom-v6', () => ({
   useParams: () => ({ sessionId: 'session-1' }),
-  useSearchParams: () => [new URLSearchParams(''), vi.fn()],
 }));
 
 vi.mock('@a5c-ai/agent-mux-ui', () => ({
@@ -29,6 +28,40 @@ vi.mock('../providers/GatewayProvider.js', () => ({
   useGatewayFetch: () => mockFetchGateway,
 }));
 
+vi.mock('../components/sessions/session-workspace-shell.js', () => ({
+  SessionWorkspaceShell: (props: Record<string, unknown>) => {
+    capturedShellProps.push(props);
+    return (
+      <div data-testid="session-workspace-shell">
+        <div>{String(props.sessionTitle ?? '')}</div>
+        <div>{String((props.flowModelOverride as { transcript?: Array<{ text?: string }> } | undefined)?.transcript?.[0]?.text ?? '')}</div>
+        <button
+          type="button"
+          onClick={() =>
+            void (props.onSubmit as (input: {
+              sessionId: string;
+              prompt: string;
+              agent?: string;
+              model?: string;
+              approvalMode?: 'yolo' | 'prompt' | 'deny';
+              attachments?: Array<Record<string, unknown>>;
+            }) => Promise<void>)({
+              sessionId: 'session-1',
+              prompt: 'Continue the task',
+              agent: 'claude',
+              model: 'sonnet',
+              approvalMode: 'yolo',
+              attachments: [{ name: 'trace.txt', mimeType: 'text/plain', base64: 'dGVzdA==' }],
+            })
+          }
+        >
+          submit
+        </button>
+      </div>
+    );
+  },
+}));
+
 vi.mock('@a5c-ai/agent-mux-ui/session-flow', () => ({
   buildSessionFlowModel: (...args: unknown[]) => mockBuildSessionFlowModel(...args),
   buildNativeTranscript: (...args: unknown[]) => mockBuildNativeTranscript(...args),
@@ -36,43 +69,6 @@ vi.mock('@a5c-ai/agent-mux-ui/session-flow', () => ({
   buildSessionTimelineFromTranscript: (...args: unknown[]) => mockBuildSessionTimelineFromTranscript(...args),
   buildSessionFilesFromTranscript: (...args: unknown[]) => mockBuildSessionFilesFromTranscript(...args),
   accumulateEventCost: (...args: unknown[]) => mockAccumulateEventCost(...args),
-}));
-
-vi.mock('@a5c-ai/compendium', () => ({
-  Tabs: ({
-    value,
-    onChange,
-    items,
-  }: {
-    value: string;
-    onChange: (value: string) => void;
-    items: Array<{ value: string; label: string; body: React.ReactNode }>;
-  }) => (
-    <div>
-      <div role="tablist">
-        {items.map((item) => (
-          <button
-            key={item.value}
-            type="button"
-            role="tab"
-            aria-selected={item.value === value}
-            onClick={() => onChange(item.value)}
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
-      <div>{items.find((item) => item.value === value)?.body}</div>
-    </div>
-  ),
-  Button: ({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) => <button {...props}>{children}</button>,
-  Field: ({ label, children }: { label: React.ReactNode; children: React.ReactNode }) => (
-    <label>
-      <span>{label}</span>
-      {children}
-    </label>
-  ),
-  Textarea: (props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) => <textarea {...props} />,
 }));
 
 function createMockStore(initialState: Record<string, unknown>) {
@@ -96,7 +92,6 @@ function createSessionState(overrides?: {
         claude: {
           agent: 'claude',
           structuredSessionTransport: 'persistent',
-          sessionControlPlane: 'self-managed',
         },
       },
     },
@@ -106,6 +101,7 @@ function createSessionState(overrides?: {
           sessionId,
           status: 'active',
           agent: 'claude',
+          title: 'Realtime shell session',
           ...overrides?.session,
         },
       },
@@ -141,8 +137,13 @@ function okJson(body: unknown) {
   };
 }
 
-describe('SessionDetailPage realtime routing', () => {
+function latestShellProps() {
+  return capturedShellProps[capturedShellProps.length - 1] ?? null;
+}
+
+describe('SessionDetailPage route shell wiring', () => {
   beforeEach(() => {
+    capturedShellProps.length = 0;
     mockUseGateway.mockReset();
     mockFetchGateway.mockReset();
     mockBuildSessionFlowModel.mockReset();
@@ -152,26 +153,6 @@ describe('SessionDetailPage realtime routing', () => {
     mockBuildSessionFilesFromTranscript.mockReset();
     mockAccumulateEventCost.mockReset();
     mockAccumulateEventCost.mockReturnValue({ totalUsd: 0.25, inputTokens: 10, outputTokens: 5 });
-  });
-
-  afterEach(() => {
-    cleanup();
-  });
-
-  it('falls back to native transcript data and shows pending realtime flow across tabs', async () => {
-    const client = {
-      subscribeSession: vi.fn(() => () => {}),
-    };
-    const store = createMockStore(createSessionState());
-    mockUseGateway.mockReturnValue({ client, store });
-    mockFetchGateway.mockImplementation(async (path: string) => {
-      if (path.endsWith('/full')) {
-        return okJson({
-          messages: [{ role: 'assistant', content: 'unused transport body' }],
-        });
-      }
-      return okJson({});
-    });
     mockBuildSessionFlowModel.mockReturnValue({
       lanes: [],
       transcript: [],
@@ -185,6 +166,28 @@ describe('SessionDetailPage realtime routing', () => {
         fileCount: 0,
         totalUsd: null,
       },
+    });
+    mockBuildNativeTranscript.mockReturnValue([]);
+    mockBuildNativeAgentFlowLane.mockReturnValue(null);
+    mockBuildSessionTimelineFromTranscript.mockReturnValue([]);
+    mockBuildSessionFilesFromTranscript.mockReturnValue([]);
+  });
+
+  afterEach(() => {
+    cleanup();
+  });
+
+  it('hydrates the chat-first shell with native transcript fallback when event buffers are empty', async () => {
+    const client = { subscribeSession: vi.fn(() => () => {}) };
+    const store = createMockStore(createSessionState());
+    mockUseGateway.mockReturnValue({ client, store });
+    mockFetchGateway.mockImplementation(async (path: string) => {
+      if (path.endsWith('/full')) {
+        return okJson({
+          messages: [{ role: 'assistant', content: 'unused native payload' }],
+        });
+      }
+      return okJson({});
     });
     mockBuildNativeTranscript.mockReturnValue([
       {
@@ -247,28 +250,24 @@ describe('SessionDetailPage realtime routing', () => {
       ],
     });
 
-    const user = userEvent.setup();
     render(<SessionDetailPage />);
 
-    expect(await screen.findByText('Native tool still running')).toBeTruthy();
-    expect(screen.getAllByText('running').length).toBeGreaterThan(0);
+    expect(await screen.findByTestId('session-workspace-shell')).toBeInTheDocument();
 
-    await user.click(screen.getByRole('tab', { name: 'Transcript' }));
-    expect(screen.getByText('Native tool still running')).toBeTruthy();
+    await waitFor(() => {
+      expect(mockFetchGateway).toHaveBeenCalledWith('/api/v1/sessions/session-1/full');
+    });
 
-    await user.click(screen.getByRole('tab', { name: 'Timeline' }));
-    expect(screen.getByText('Write')).toBeTruthy();
-
-    await user.click(screen.getByRole('tab', { name: 'Files' }));
-    expect(screen.getByText('src/native.ts')).toBeTruthy();
-
-    expect(mockFetchGateway).toHaveBeenCalledWith('/api/v1/sessions/session-1/full');
+    const props = latestShellProps();
+    expect(props?.sessionTitle).toBe('Realtime shell session');
+    expect((props?.flowModelOverride as { transcript: Array<{ text: string }> }).transcript[0]?.text).toBe(
+      'Native tool still running',
+    );
+    expect(props?.conversationDisabled).toBe(false);
   });
 
-  it('prefers indexed event-stream data over the native transcript fallback when active events exist', async () => {
-    const client = {
-      subscribeSession: vi.fn(() => () => {}),
-    };
+  it('prefers indexed event data and skips native transcript fetch when streamed transcript exists', async () => {
+    const client = { subscribeSession: vi.fn(() => () => {}) };
     const store = createMockStore(createSessionState());
     mockUseGateway.mockReturnValue({ client, store });
     mockFetchGateway.mockImplementation(async () => okJson({}));
@@ -284,19 +283,7 @@ describe('SessionDetailPage realtime routing', () => {
           segmentCount: 1,
           toolCount: 1,
           totalUsd: 0.2,
-          segments: [
-            {
-              id: 'event-segment-1',
-              kind: 'tool',
-              title: 'ApplyPatch',
-              detail: 'Streamed event output',
-              weight: 1,
-              startedAt: 1_000,
-              endedAt: null,
-              status: 'running',
-              filePaths: ['src/event.ts'],
-            },
-          ],
+          segments: [],
         },
       ],
       transcript: [
@@ -354,208 +341,101 @@ describe('SessionDetailPage realtime routing', () => {
         filePaths: ['src/native.ts'],
       },
     ]);
-    mockBuildSessionTimelineFromTranscript.mockReturnValue([
-      {
-        id: 'native-transcript-1:timeline',
-        runId: 'run-1',
-        laneKey: 'run-1',
-        kind: 'assistant',
-        title: 'Assistant',
-        detail: 'Native fallback should stay hidden',
-        timestamp: 1_200,
-        status: 'complete',
-        filePaths: ['src/native.ts'],
-      },
-    ]);
-    mockBuildSessionFilesFromTranscript.mockReturnValue([
-      {
-        path: 'src/native.ts',
-        reads: 0,
-        writes: 0,
-        touches: 1,
-        lastEventAt: 1_200,
-        runIds: ['run-1'],
-        tools: [],
-      },
-    ]);
-    mockBuildNativeAgentFlowLane.mockReturnValue({
-      runId: 'run-1',
-      laneKey: 'run-1',
-      agent: 'claude',
-      status: 'running',
-      startedAt: 1_000,
-      lastEventAt: 1_200,
-      segmentCount: 1,
-      toolCount: 1,
-      totalUsd: null,
-      segments: [
-        {
-          id: 'native-segment-hidden',
-          kind: 'tool',
-          title: 'Write',
-          detail: 'Native fallback should stay hidden',
-          weight: 1,
-          startedAt: 1_000,
-          endedAt: null,
-          status: 'running',
-          filePaths: ['src/native.ts'],
-        },
-      ],
-    });
 
-    const user = userEvent.setup();
     render(<SessionDetailPage />);
 
-    await user.click(screen.getAllByRole('tab', { name: 'Transcript' })[0]!);
-    expect(screen.getByText('Event transcript wins')).toBeTruthy();
-    expect(screen.queryByText('Native fallback should stay hidden')).toBeNull();
-
-    await user.click(screen.getAllByRole('tab', { name: 'Timeline' })[0]!);
-    expect(screen.getByText('Event timeline wins')).toBeTruthy();
-
-    await user.click(screen.getAllByRole('tab', { name: 'Files' })[0]!);
-    expect(screen.getByText('src/event.ts')).toBeTruthy();
+    expect(await screen.findByText('Event transcript wins')).toBeInTheDocument();
 
     await waitFor(() => {
       expect(
         mockFetchGateway.mock.calls.some(([path]) => String(path).endsWith('/full')),
       ).toBe(false);
     });
+
+    const props = latestShellProps();
+    expect((props?.flowModelOverride as { transcript: Array<{ text: string }> }).transcript[0]?.text).toBe(
+      'Event transcript wins',
+    );
     expect(mockBuildSessionTimelineFromTranscript).not.toHaveBeenCalled();
     expect(mockBuildSessionFilesFromTranscript).not.toHaveBeenCalled();
   });
 
-  it('renders actionable deep links for realtime flow, transcript, timeline, and files', async () => {
-    const client = {
-      subscribeSession: vi.fn(() => () => {}),
-    };
+  it('locks the composer while a non-persistent live session is still attached', async () => {
+    const client = { subscribeSession: vi.fn(() => () => {}) };
     const store = createMockStore(
       createSessionState({
-        session: {
-          cwd: '/repo/worktrees/task-1',
-          runtime: {
-            preview: { primaryUrl: 'http://localhost:3000' },
+        agents: {
+          claude: {
+            agent: 'claude',
+            structuredSessionTransport: 'restart-per-turn',
           },
         },
-        runs: [
-          {
-            runId: 'run-1',
-            sessionId: 'session-1',
-            agent: 'claude',
-            processId: 'flow-process',
-            status: 'running',
-            startedAt: 1_000,
-            cwd: '/repo/worktrees/task-1',
-            runtime: {
-              preview: { primaryUrl: 'http://localhost:3000' },
-            },
-          },
-        ],
       }),
     );
     mockUseGateway.mockReturnValue({ client, store });
-    mockFetchGateway.mockImplementation(async () => okJson({}));
-    mockBuildSessionFlowModel.mockReturnValue({
-      lanes: [
-        {
-          runId: 'run-1',
-          laneKey: 'run-1',
-          agent: 'claude',
-          status: 'running',
-          startedAt: 1_000,
-          lastEventAt: 1_100,
-          segmentCount: 1,
-          toolCount: 1,
-          totalUsd: 0.2,
-          segments: [
-            {
-              id: 'event-segment-1',
-              kind: 'tool',
-              title: 'ApplyPatch',
-              detail: 'Event timeline wins',
-              weight: 1,
-              startedAt: 1_000,
-              endedAt: null,
-              status: 'running',
-              filePaths: ['src/event.ts'],
-            },
-          ],
-        },
-      ],
-      transcript: [
-        {
-          id: 'event-transcript-1',
-          kind: 'assistant',
-          label: 'Assistant',
-          text: 'Event transcript wins',
-          runId: 'run-1',
-          timestamp: 1_100,
-          filePaths: ['src/event.ts'],
-        },
-      ],
-      timeline: [
-        {
-          id: 'event-timeline-1',
-          runId: 'run-1',
-          laneKey: 'run-1',
-          kind: 'tool',
-          title: 'ApplyPatch',
-          detail: 'Event timeline wins',
-          timestamp: 1_100,
-          status: 'running',
-          filePaths: ['src/event.ts'],
-        },
-      ],
-      files: [
-        {
-          path: 'src/event.ts',
-          reads: 1,
-          writes: 1,
-          touches: 2,
-          lastEventAt: 1_100,
-          runIds: ['run-1'],
-          tools: ['ApplyPatch'],
-        },
-      ],
-      summary: {
-        totalRuns: 1,
-        totalSegments: 1,
-        totalTools: 1,
-        pendingTools: 1,
-        fileCount: 1,
-        totalUsd: 0.2,
-      },
+    mockFetchGateway.mockImplementation(async (path: string) => {
+      if (path.endsWith('/full')) {
+        return okJson({ messages: [] });
+      }
+      return okJson({});
     });
-    mockBuildNativeTranscript.mockReturnValue([]);
-    mockBuildNativeAgentFlowLane.mockReturnValue(null);
 
-    const user = userEvent.setup();
     render(<SessionDetailPage />);
 
-    expect(await screen.findByText('Event timeline wins')).toBeTruthy();
-    expect(screen.getAllByRole('link', { name: 'Open run detail' }).some((link) => link.getAttribute('href') === '/runs/run-1')).toBe(true);
-    expect(screen.getAllByRole('link', { name: 'Open file' }).some((link) => link.getAttribute('href') ===
-      'vscode://file/repo/worktrees/task-1/src/event.ts',
-    )).toBe(true);
-    expect(screen.getAllByRole('link', { name: 'Open workspace' }).some((link) => link.getAttribute('href') ===
-      'vscode://file/repo/worktrees/task-1',
-    )).toBe(true);
-    expect(screen.getAllByRole('link', { name: 'Open runtime' }).some((link) => link.getAttribute('href') === 'http://localhost:3000')).toBe(true);
+    expect(await screen.findByTestId('session-workspace-shell')).toBeInTheDocument();
 
-    await user.click(screen.getAllByRole('tab', { name: 'Transcript' })[0]!);
-    expect(screen.getByText('Event transcript wins')).toBeTruthy();
-    expect(screen.getAllByRole('link', { name: 'Open file' }).some((link) => link.getAttribute('href') ===
-      'vscode://file/repo/worktrees/task-1/src/event.ts',
-    )).toBe(true);
+    await waitFor(() => {
+      const props = latestShellProps();
+      expect(props?.conversationDisabled).toBe(true);
+      expect(props?.conversationPlaceholder).toBe('The live session is still running…');
+    });
+  });
 
-    await user.click(screen.getAllByRole('tab', { name: 'Timeline' })[0]!);
-    expect(screen.getByText('Event timeline wins')).toBeTruthy();
-    expect(screen.getAllByRole('link', { name: 'Open run detail' }).some((link) => link.getAttribute('href') === '/runs/run-1')).toBe(true);
+  it('submits follow-up turns through the session message endpoint and merges returned records', async () => {
+    const client = { subscribeSession: vi.fn(() => () => {}) };
+    const state = createSessionState();
+    const store = createMockStore(state);
+    mockUseGateway.mockReturnValue({ client, store });
+    mockFetchGateway.mockImplementation(async (path: string, init?: RequestInit) => {
+      if (path.endsWith('/messages')) {
+        expect(init?.method).toBe('POST');
+        expect(JSON.parse(String(init?.body))).toEqual({
+          prompt: 'Continue the task',
+          agent: 'claude',
+          model: 'sonnet',
+          approvalMode: 'yolo',
+          attachments: [{ name: 'trace.txt', mimeType: 'text/plain', base64: 'dGVzdA==' }],
+        });
+        return okJson({
+          run: { runId: 'run-2', sessionId: 'session-1', status: 'queued' },
+          session: { sessionId: 'session-1', status: 'active' },
+        });
+      }
+      if (path.endsWith('/full')) {
+        return okJson({ messages: [] });
+      }
+      return okJson({});
+    });
 
-    await user.click(screen.getAllByRole('tab', { name: 'Files' })[0]!);
-    expect(screen.getByText('src/event.ts')).toBeTruthy();
-    expect(screen.getAllByRole('link', { name: 'Open workspace' }).some((link) => link.getAttribute('href') ===
-      'vscode://file/repo/worktrees/task-1',
-    )).toBe(true);
+    render(<SessionDetailPage />);
+
+    expect(await screen.findByTestId('session-workspace-shell')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+
+    await waitFor(() => {
+      expect(mockFetchGateway).toHaveBeenCalledWith(
+        '/api/v1/sessions/session-1/messages',
+        expect.objectContaining({ method: 'POST' }),
+      );
+    });
+
+    expect((state.actions.mergeRun as ReturnType<typeof vi.fn>)).toHaveBeenCalledWith(
+      'run-2',
+      expect.objectContaining({ runId: 'run-2' }),
+    );
+    expect((state.actions.mergeSession as ReturnType<typeof vi.fn>)).toHaveBeenCalledWith(
+      'session-1',
+      expect.objectContaining({ sessionId: 'session-1' }),
+    );
   });
 });

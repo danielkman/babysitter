@@ -184,10 +184,7 @@ describe("AutomationsPage", () => {
     expect(screen.getByText("Allowed actions: pause, disable, delete")).toBeInTheDocument();
     expect(screen.getByText("POST /github/issues · :4100 · event github.issue.created")).toBeInTheDocument();
     expect(screen.getByText("failing")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /KANBAN-AUTO-201/i })).toHaveAttribute(
-      "href",
-      "/projects/kanban-app/board?issueId=KANBAN-AUTO-201&issueKey=KANBAN-AUTO-201",
-    );
+    expect(screen.getByRole("button", { name: /KANBAN-AUTO-201/i })).toBeInTheDocument();
   });
 
   it("creates a webhook rule using the existing API contract", async () => {

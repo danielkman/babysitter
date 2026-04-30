@@ -1,7 +1,7 @@
 "use client";
 
 import { Link } from "react-router-dom-v6";
-import { useLocation } from "react-router-dom-v6";
+import { useLocation, useNavigate } from "react-router-dom-v6";
 import { useState } from "react";
 import { LogoWordmark } from "@a5c-ai/compendium";
 import { Bell, Columns3, Github, Menu, Moon, Settings2, Sun, Wifi, WifiOff } from "lucide-react";
@@ -20,6 +20,7 @@ import { pageShellContainerClassName } from "@/components/shared/page-shell";
 export const WORKSPACES_HREF = "/workspaces";
 
 export function AppHeader() {
+  const navigate = useNavigate();
   const pathname = useLocation().pathname;
   const { theme, toggle: toggleTheme } = useTheme();
   const { connected: streamConnected } = useEventStream();
@@ -76,11 +77,9 @@ export function AppHeader() {
                 {isAuthenticated ? "Gateway connected" : "Gateway disconnected"}
               </span>
 
-              <Button variant="ghost" size="sm">
-                <Link to="/settings" aria-label="Open settings">
-                  <Settings2 className="h-4 w-4" />
-                  <span className="hidden sm:inline">Settings</span>
-                </Link>
+              <Button variant="ghost" size="sm" onClick={() => navigate("/settings")} aria-label="Open settings">
+                <Settings2 className="h-4 w-4" />
+                <span className="hidden sm:inline">Settings</span>
               </Button>
 
               <Button

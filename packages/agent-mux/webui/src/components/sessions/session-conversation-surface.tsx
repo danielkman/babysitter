@@ -1,6 +1,6 @@
 "use client";
 
-import { Link } from "react-router-dom-v6";
+import { Link, useNavigate } from "react-router-dom-v6";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useStore } from "zustand";
 import type { Attachment, WorkspaceRuntimeSurface } from "@a5c-ai/agent-mux-core";
@@ -8,7 +8,9 @@ import type { HookRequestRecord } from "@a5c-ai/agent-mux-ui";
 import type {
   AgentFlowLane,
   AgentFlowSegment,
+  SessionCost,
   SessionFlowFileRecord,
+  SessionFlowModel,
   SessionFlowTimelineItem,
   SessionTranscriptNode,
 } from "@a5c-ai/agent-mux-ui/session-flow";
@@ -62,6 +64,8 @@ type SessionConversationSurfaceProps = {
   openSessionHref?: string;
   submitLabel?: string;
   placeholder: string;
+  flowModelOverride?: SessionFlowModel;
+  sessionCostOverride?: SessionCost | null;
   onSubmit: (input: ComposerSubmitInput) => Promise<void>;
 };
 
@@ -341,55 +345,58 @@ function TranscriptCard(props: {
   onMentionFile: (path: string) => void;
 }) {
   const filePaths = props.node.filePaths.slice(0, 6);
+  const isUser = props.node.kind === "user";
   return (
-    <article className={cx("rounded-2xl border p-4", nodeTone(props.node.kind, props.node.status))}>
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className={cx("rounded-full border px-2 py-0.5 text-[11px] uppercase tracking-[0.18em]", badgeTone(props.node.kind, props.node.status))}>
-            {props.node.kind}
-          </span>
-          <span className="rounded-full border border-border px-2 py-0.5 text-xs text-foreground-muted">
-            {props.node.label}
-          </span>
-          <Link to={`/runs/${props.node.runId}`} className="text-xs text-primary">
-            {props.node.runId}
-          </Link>
-          <span className="text-xs text-foreground-muted">{formatTimestamp(props.node.timestamp)}</span>
+    <div className={cx("flex", isUser ? "justify-end" : "justify-start")}>
+      <article className={cx("w-full max-w-[88%] rounded-[24px] border p-4 shadow-sm", nodeTone(props.node.kind, props.node.status))}>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className={cx("rounded-full border px-2 py-0.5 text-[11px] uppercase tracking-[0.18em]", badgeTone(props.node.kind, props.node.status))}>
+              {props.node.kind}
+            </span>
+            <span className="rounded-full border border-border px-2 py-0.5 text-xs text-foreground-muted">
+              {props.node.label}
+            </span>
+            <Link to={`/runs/${props.node.runId}`} className="text-xs text-primary">
+              {props.node.runId}
+            </Link>
+            <span className="text-xs text-foreground-muted">{formatTimestamp(props.node.timestamp)}</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button type="button" size="sm" variant="ghost" onClick={() => props.onReuseText(props.node.text)}>
+              {props.node.kind === "user" ? "Edit" : "Reuse"}
+            </Button>
+          </div>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Button type="button" size="sm" variant="ghost" onClick={() => props.onReuseText(props.node.text)}>
-            {props.node.kind === "user" ? "Edit" : "Retry"}
-          </Button>
-        </div>
-      </div>
-      <pre className="mt-3 whitespace-pre-wrap break-words text-sm leading-6 text-foreground-secondary">
-        {props.node.text}
-      </pre>
-      {filePaths.length > 0 ? (
-        <div className="mt-3 flex flex-wrap gap-2">
-          {filePaths.map((path) => {
-            const absolutePath = resolveAbsoluteFilePath(props.workspacePath, path);
-            return (
-              <div
-                key={`${props.node.id}-${path}`}
-                className="flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1.5 text-xs"
-              >
-                {absolutePath ? (
-                  <a href={buildEditorHref(absolutePath)} target="_blank" rel="noreferrer" className="text-primary">
-                    {path}
-                  </a>
-                ) : (
-                  <span className="text-foreground-secondary">{path}</span>
-                )}
-                <button type="button" className="text-foreground-muted hover:text-foreground" onClick={() => props.onMentionFile(path)}>
-                  mention
-                </button>
-              </div>
-            );
-          })}
-        </div>
-      ) : null}
-    </article>
+        <pre className="mt-3 whitespace-pre-wrap break-words text-sm leading-6 text-foreground-secondary">
+          {props.node.text}
+        </pre>
+        {filePaths.length > 0 ? (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {filePaths.map((path) => {
+              const absolutePath = resolveAbsoluteFilePath(props.workspacePath, path);
+              return (
+                <div
+                  key={`${props.node.id}-${path}`}
+                  className="flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1.5 text-xs"
+                >
+                  {absolutePath ? (
+                    <a href={buildEditorHref(absolutePath)} target="_blank" rel="noreferrer" className="text-primary">
+                      {path}
+                    </a>
+                  ) : (
+                    <span className="text-foreground-secondary">{path}</span>
+                  )}
+                  <button type="button" className="text-foreground-muted hover:text-foreground" onClick={() => props.onMentionFile(path)}>
+                    mention
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        ) : null}
+      </article>
+    </div>
   );
 }
 
@@ -495,6 +502,7 @@ export type { ComposerSubmitInput };
 
 export function SessionConversationSurface(props: SessionConversationSurfaceProps) {
   const { client, store } = useGateway();
+  const navigate = useNavigate();
   const { taskTags } = useTaskTags();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [viewMode, setViewMode] = useState<ConversationViewMode>("transcript");
@@ -522,12 +530,12 @@ export function SessionConversationSurface(props: SessionConversationSurfaceProp
   ) as HookRequestRecord[];
 
   const flowModel = useMemo(
-    () => buildSessionFlowModel(props.runs, props.eventBuffers),
-    [props.eventBuffers, props.runs],
+    () => props.flowModelOverride ?? buildSessionFlowModel(props.runs, props.eventBuffers),
+    [props.eventBuffers, props.flowModelOverride, props.runs],
   );
   const sessionCost = useMemo(
-    () => accumulateEventCost(runIds, props.eventBuffers),
-    [props.eventBuffers, runIds],
+    () => props.sessionCostOverride ?? accumulateEventCost(runIds, props.eventBuffers),
+    [props.eventBuffers, props.sessionCostOverride, runIds],
   );
   const timelineSummary = useMemo(() => summarizeTimelineItems(flowModel.timeline), [flowModel.timeline]);
   const progressValue = useMemo(() => computeProgress(flowModel.lanes), [flowModel.lanes]);
@@ -639,8 +647,8 @@ export function SessionConversationSurface(props: SessionConversationSurfaceProp
     label: string;
     icon: typeof MessagesSquare;
   }> = [
-    { id: "transcript", label: "Transcript", icon: MessagesSquare },
-    { id: "flow", label: "Flow", icon: Sparkles },
+    { id: "transcript", label: "Chat", icon: MessagesSquare },
+    { id: "flow", label: "Trace", icon: Sparkles },
     { id: "timeline", label: "Timeline", icon: Hammer },
     { id: "files", label: "Files", icon: Files },
   ];
@@ -650,7 +658,7 @@ export function SessionConversationSurface(props: SessionConversationSurfaceProp
       <div className="rounded-2xl border border-border bg-background/65 p-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <div className="text-xs uppercase tracking-[0.18em] text-foreground-muted">Live operator surface</div>
+            <div className="text-xs uppercase tracking-[0.18em] text-foreground-muted">Conversation</div>
             <div className="mt-2 text-sm font-medium text-foreground">{props.sessionLabel}</div>
             <div className="mt-2 flex flex-wrap gap-2 text-xs text-foreground-muted">
               <span className="rounded-full border border-border px-2 py-1">{props.sessionStatus}</span>
@@ -667,45 +675,73 @@ export function SessionConversationSurface(props: SessionConversationSurfaceProp
           </div>
           <div className="flex flex-wrap gap-2">
             {props.openSessionHref ? (
-              <Button size="sm" variant="ghost">
-                <Link to={props.openSessionHref}>Open session</Link>
+              <Button size="sm" variant="ghost" onClick={() => navigate(props.openSessionHref!)}>
+                Open session
               </Button>
             ) : null}
             {props.workspacePath ? (
-              <Button size="sm" variant="ghost">
-                <Link to={`/workspaces?workspace=${encodeURIComponent(props.workspacePath)}`}>Open workspace</Link>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => navigate(`/workspaces?workspace=${encodeURIComponent(props.workspacePath!)}`)}
+              >
+                Open workspace
               </Button>
             ) : null}
           </div>
         </div>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-          <MetricCard label="Token usage" value={formatNumber((sessionCost?.inputTokens ?? 0) + (sessionCost?.outputTokens ?? 0) + (sessionCost?.thinkingTokens ?? 0))} detail={`${formatNumber(sessionCost?.inputTokens)} in · ${formatNumber(sessionCost?.outputTokens)} out`} />
-          <MetricCard label="Cost" value={formatUsd(sessionCost?.totalUsd)} detail={`${formatNumber(sessionCost?.thinkingTokens)} thinking tokens`} />
-          <MetricCard label="Task progress" value={`${progressValue}%`} detail={`${flowModel.summary.pendingTools} pending tools`} />
-          <MetricCard label="File changes" value={formatNumber(flowModel.files.filter((file) => file.writes > 0).length)} detail={`${formatNumber(flowModel.summary.fileCount)} files touched`} />
-          <MetricCard label="Approvals" value={formatNumber(hookRequests.length)} detail={`${timelineSummary.toolOutputs} tool outputs`} />
+        <div className="mt-4 flex flex-wrap gap-2 text-xs text-foreground-muted">
+          <span className="rounded-full border border-border px-3 py-1.5">
+            {formatNumber(flowModel.transcript.length)} messages
+          </span>
+          <span className="rounded-full border border-border px-3 py-1.5">
+            {formatNumber(flowModel.files.filter((file) => file.writes > 0).length)} files changed
+          </span>
+          <span className="rounded-full border border-border px-3 py-1.5">
+            {hookRequests.length} approvals waiting
+          </span>
+          <span className="rounded-full border border-border px-3 py-1.5">
+            {formatUsd(sessionCost?.totalUsd)} total cost
+          </span>
         </div>
-        <div className="mt-4">
-          <ProgressBar value={progressValue} variant={hookRequests.length > 0 ? "warning" : "default"} glow />
-        </div>
+        <details className="mt-4 rounded-2xl border border-border bg-card/60">
+          <summary className="cursor-pointer px-4 py-3 text-sm font-medium text-foreground">
+            Session details
+          </summary>
+          <div className="grid gap-3 border-t border-border px-4 py-4 sm:grid-cols-2 xl:grid-cols-5">
+            <MetricCard label="Token usage" value={formatNumber((sessionCost?.inputTokens ?? 0) + (sessionCost?.outputTokens ?? 0) + (sessionCost?.thinkingTokens ?? 0))} detail={`${formatNumber(sessionCost?.inputTokens)} in · ${formatNumber(sessionCost?.outputTokens)} out`} />
+            <MetricCard label="Cost" value={formatUsd(sessionCost?.totalUsd)} detail={`${formatNumber(sessionCost?.thinkingTokens)} thinking tokens`} />
+            <MetricCard label="Task progress" value={`${progressValue}%`} detail={`${flowModel.summary.pendingTools} pending tools`} />
+            <MetricCard label="File changes" value={formatNumber(flowModel.files.filter((file) => file.writes > 0).length)} detail={`${formatNumber(flowModel.summary.fileCount)} files touched`} />
+            <MetricCard label="Approvals" value={formatNumber(hookRequests.length)} detail={`${timelineSummary.toolOutputs} tool outputs`} />
+          </div>
+          <div className="border-t border-border px-4 py-4">
+            <ProgressBar value={progressValue} variant={hookRequests.length > 0 ? "warning" : "default"} glow />
+          </div>
+        </details>
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-2">
-        {tabs.map((tab) => {
-          const Icon = tab.icon;
-          return (
-            <Button
-              key={tab.id}
-              type="button"
-              size="sm"
-              variant={viewMode === tab.id ? "default" : "ghost"}
-              onClick={() => setViewMode(tab.id)}
-            >
-              <Icon className="h-4 w-4" />
-              {tab.label}
-            </Button>
-          );
-        })}
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        <span className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+          Focus
+        </span>
+        <div className="flex flex-wrap gap-2">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <Button
+                key={tab.id}
+                type="button"
+                size="sm"
+                variant={viewMode === tab.id ? "default" : "ghost"}
+                onClick={() => setViewMode(tab.id)}
+              >
+                <Icon className="h-4 w-4" />
+                {tab.label}
+              </Button>
+            );
+          })}
+        </div>
       </div>
 
       <div className="mt-4 min-h-0 flex-1 overflow-auto">

@@ -1,9 +1,10 @@
 "use client";
 
-import { Link } from "react-router-dom-v6";
+import { Link, useNavigate } from "react-router-dom-v6";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Attachment } from "@a5c-ai/agent-mux-core";
 import type { WorkspaceRuntimeSurface } from "@a5c-ai/agent-mux-core";
+import type { SessionCost, SessionFlowModel } from "@a5c-ai/agent-mux-ui/session-flow";
 import { ExternalLink, GripVertical, LayoutDashboard, MessagesSquare, PanelLeft, PanelRight, Search, TerminalSquare, Workflow } from "lucide-react";
 
 import { SessionConversationSurface } from "@/components/sessions/session-conversation-surface";
@@ -13,7 +14,6 @@ import type { CommandItem } from "@a5c-ai/compendium";
 import { useKeyboard } from "@/hooks/use-keyboard";
 import { usePersistedState } from "@/hooks/use-persisted-state";
 import {
-  DEFAULT_WORKSPACE_PANEL_SIZES,
   DESKTOP_LAYOUT_BREAKPOINT,
   ensureVisiblePanels,
   getVisiblePanels,
@@ -41,6 +41,17 @@ type SessionWorkspaceShellProps = {
   workspacePath: string | null;
   runtime?: WorkspaceRuntimeSurface;
   sessionModel?: string | null;
+  shellStorageKeyPrefix?: string;
+  desktopPanelSizes?: WorkspacePanelSizes;
+  flowModelOverride?: SessionFlowModel;
+  sessionCostOverride?: SessionCost | null;
+  conversationDisabled?: boolean;
+  conversationPlaceholder?: string;
+  conversationSubmitLabel?: string;
+  conversationEmptyStateTitle?: string;
+  conversationEmptyStateBody?: string;
+  heroEyebrow?: string;
+  heroBody?: string;
   onSubmit: (input: {
     sessionId: string;
     prompt: string;
@@ -60,10 +71,17 @@ type PanelDefinition = {
 
 const PANEL_DEFINITIONS: PanelDefinition[] = [
   { key: "sidebar", label: "Workspace", shortcut: "Shift+W", icon: PanelLeft },
-  { key: "conversation", label: "Conversation", shortcut: "Shift+C", icon: MessagesSquare },
-  { key: "context", label: "Context", shortcut: "Shift+X", icon: Workflow },
-  { key: "details", label: "Details", shortcut: "Shift+D", icon: PanelRight },
+  { key: "conversation", label: "Chat", shortcut: "Shift+C", icon: MessagesSquare },
+  { key: "context", label: "Trace", shortcut: "Shift+X", icon: Workflow },
+  { key: "details", label: "Runtime", shortcut: "Shift+D", icon: PanelRight },
 ];
+
+const DEFAULT_SESSION_SHELL_SIZES: WorkspacePanelSizes = {
+  sidebar: 18,
+  conversation: 58,
+  context: 14,
+  details: 10,
+};
 
 function formatRunStatus(run: Record<string, unknown>): string {
   return typeof run.status === "string" && run.status.length > 0 ? run.status : "unknown";
@@ -156,13 +174,15 @@ function WorkspaceResizeHandle(props: {
 }
 
 export function SessionWorkspaceShell(props: SessionWorkspaceShellProps) {
-  const [sidebarOpen, setSidebarOpen] = usePersistedState("workspace-layout.sidebar-open", true);
-  const [conversationOpen, setConversationOpen] = usePersistedState("workspace-layout.conversation-open", true);
-  const [contextOpen, setContextOpen] = usePersistedState("workspace-layout.context-open", true);
-  const [detailsOpen, setDetailsOpen] = usePersistedState("workspace-layout.details-open", true);
+  const navigate = useNavigate();
+  const storagePrefix = props.shellStorageKeyPrefix ?? "session-workspace-layout-v3";
+  const [sidebarOpen, setSidebarOpen] = usePersistedState(`${storagePrefix}.sidebar-open`, true);
+  const [conversationOpen, setConversationOpen] = usePersistedState(`${storagePrefix}.conversation-open`, true);
+  const [contextOpen, setContextOpen] = usePersistedState(`${storagePrefix}.context-open`, false);
+  const [detailsOpen, setDetailsOpen] = usePersistedState(`${storagePrefix}.details-open`, false);
   const [desktopSizes, setDesktopSizes] = usePersistedState<WorkspacePanelSizes>(
-    "workspace-layout.desktop-sizes",
-    DEFAULT_WORKSPACE_PANEL_SIZES,
+    `${storagePrefix}.desktop-sizes`,
+    props.desktopPanelSizes ?? DEFAULT_SESSION_SHELL_SIZES,
   );
   const [commandBarOpen, setCommandBarOpen] = useState(false);
   const [activeConstrainedPanel, setActiveConstrainedPanel] = useState<WorkspacePanelKey>("conversation");
@@ -290,7 +310,7 @@ export function SessionWorkspaceShell(props: SessionWorkspaceShellProps) {
         <WorkspacePanelFrame
           panelKey="sidebar"
           title="Workspace"
-          subtitle="Ownership, runs, and entry points"
+          subtitle="Session context and quick links"
         >
           <div className="grid gap-3">
             <div className="rounded-2xl border border-border bg-background/65 p-4">
@@ -310,10 +330,8 @@ export function SessionWorkspaceShell(props: SessionWorkspaceShellProps) {
                   {props.workspacePath}
                 </div>
                 <div className="mt-4">
-                  <Button size="sm" variant="ghost">
-                    <Link to={workspaceHref(props.workspacePath)}>
-                      Open workspace lifecycle
-                    </Link>
+                  <Button size="sm" variant="ghost" onClick={() => navigate(workspaceHref(props.workspacePath!))}>
+                    Open workspace
                   </Button>
                 </div>
               </div>
@@ -356,8 +374,8 @@ export function SessionWorkspaceShell(props: SessionWorkspaceShellProps) {
       return (
         <WorkspacePanelFrame
           panelKey="conversation"
-          title="Conversation"
-          subtitle="Transcript plus the next turn"
+          title="Chat"
+          subtitle="Transcript and the next turn"
         >
           <SessionConversationSurface
             sessionId={props.sessionId}
@@ -369,9 +387,16 @@ export function SessionWorkspaceShell(props: SessionWorkspaceShellProps) {
             eventBuffers={props.eventBuffers}
             workspacePath={props.workspacePath}
             runtime={props.runtime}
-            emptyStateTitle="No transcript events yet"
-            emptyStateBody="The session shell will start populating transcript, flow, timeline, and file attention views as soon as the gateway publishes run activity."
-            placeholder="Continue the session..."
+            disabled={props.conversationDisabled}
+            emptyStateTitle={props.conversationEmptyStateTitle ?? "No transcript events yet"}
+            emptyStateBody={
+              props.conversationEmptyStateBody ??
+              "The session will start filling in chat, trace, and file activity as soon as new events arrive."
+            }
+            placeholder={props.conversationPlaceholder ?? "Continue the session..."}
+            submitLabel={props.conversationSubmitLabel}
+            flowModelOverride={props.flowModelOverride}
+            sessionCostOverride={props.sessionCostOverride}
             onSubmit={props.onSubmit}
           />
         </WorkspacePanelFrame>
@@ -382,8 +407,8 @@ export function SessionWorkspaceShell(props: SessionWorkspaceShellProps) {
       return (
         <WorkspacePanelFrame
           panelKey="context"
-          title="Context"
-          subtitle="Flow, files, and execution reconstruction"
+          title="Trace"
+          subtitle="Flow, files, and execution history"
         >
           <SessionObservabilityPanel
             sessionId={props.sessionId}
@@ -391,6 +416,7 @@ export function SessionWorkspaceShell(props: SessionWorkspaceShellProps) {
             eventBuffers={props.eventBuffers}
             workspacePath={props.workspacePath}
             runtime={props.runtime}
+            flowModelOverride={props.flowModelOverride}
           />
         </WorkspacePanelFrame>
       );
@@ -399,8 +425,8 @@ export function SessionWorkspaceShell(props: SessionWorkspaceShellProps) {
     return (
       <WorkspacePanelFrame
         panelKey="details"
-        title="Details"
-        subtitle="Runtime and active workspace surfaces"
+        title="Runtime"
+        subtitle="Preview, shell, and live workspace output"
       >
         {props.runtime ? (
           <WorkspaceRuntimePanel
@@ -427,7 +453,7 @@ export function SessionWorkspaceShell(props: SessionWorkspaceShellProps) {
                 className="inline-flex items-center gap-2 rounded-2xl border border-border bg-background/65 px-4 py-3 text-sm text-primary transition-colors hover:border-primary/30"
               >
                 <ExternalLink className="h-4 w-4" />
-                Open workspace lifecycle
+                Open workspace
               </a>
             ) : null}
           </div>
@@ -446,10 +472,13 @@ export function SessionWorkspaceShell(props: SessionWorkspaceShellProps) {
               <span>/</span>
               <span className="font-mono text-xs text-foreground-secondary">{props.sessionId}</span>
             </div>
+            <div className="mt-3 text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">
+              {props.heroEyebrow ?? "Session workspace"}
+            </div>
             <h1 className="mt-3 text-3xl font-semibold tracking-tight">{props.sessionTitle}</h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-foreground-muted">
-              The session route now acts as the workspace shell: sidebar, conversation, context, and
-              details stay independently addressable while sharing the same session and runtime state.
+              {props.heroBody ??
+                "Keep the chat primary while trace, approvals, and runtime stay close enough to open only when needed."}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">

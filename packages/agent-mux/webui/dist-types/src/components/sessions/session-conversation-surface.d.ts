@@ -1,4 +1,5 @@
 import type { Attachment, WorkspaceRuntimeSurface } from "@a5c-ai/agent-mux-core";
+import type { SessionCost, SessionFlowModel } from "@a5c-ai/agent-mux-ui/session-flow";
 type EventBuffer = {
     events: Array<Record<string, unknown>>;
 };
@@ -27,6 +28,8 @@ type SessionConversationSurfaceProps = {
     openSessionHref?: string;
     submitLabel?: string;
     placeholder: string;
+    flowModelOverride?: SessionFlowModel;
+    sessionCostOverride?: SessionCost | null;
     onSubmit: (input: ComposerSubmitInput) => Promise<void>;
 };
 export type { ComposerSubmitInput };

@@ -1,6 +1,6 @@
 "use client";
 
-import { Link } from "react-router-dom-v6";
+import { Link, useNavigate } from "react-router-dom-v6";
 import { useEffect, useMemo, useState } from "react";
 import {
   AlertTriangle,
@@ -347,6 +347,7 @@ async function readJson<T>(response: Response): Promise<T> {
 }
 
 export function AutomationsPage() {
+  const navigate = useNavigate();
   const [data, setData] = useState<AutomationRuleCollectionResponse | null>(null);
   const [form, setForm] = useState<AutomationFormState>(() => createEmptyForm([]));
   const [editingRuleId, setEditingRuleId] = useState<string | null>(null);
@@ -486,8 +487,8 @@ export function AutomationsPage() {
               <RefreshCw className={cx("mr-2 h-4 w-4", refreshing && "animate-spin")} />
               Refresh rules
             </Button>
-            <Button variant="ghost">
-              <a href="/projects">Back to board</a>
+            <Button variant="ghost" onClick={() => navigate("/projects")}>
+              Back to board
             </Button>
           </div>
         </div>
@@ -982,11 +983,16 @@ function ExecutionHistoryBlock(props: { rule: AutomationRuleRecord }) {
                 </div>
 
                 {execution.issueId ? (
-                  <Button variant="ghost">
-                    <Link to={buildBoardHref(execution)}>
-                      {execution.issueKey ?? execution.issueId}
-                      <ExternalLink className="ml-2 h-4 w-4" />
-                    </Link>
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      if (typeof window !== "undefined") {
+                        window.location.assign(buildBoardHref(execution));
+                      }
+                    }}
+                  >
+                    {execution.issueKey ?? execution.issueId}
+                    <ExternalLink className="ml-2 h-4 w-4" />
                   </Button>
                 ) : null}
               </div>

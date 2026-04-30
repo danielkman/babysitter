@@ -1,11 +1,12 @@
 "use client";
 
-import { Link } from "react-router-dom-v6";
+import { useNavigate } from "react-router-dom-v6";
 
 import { Button } from "@a5c-ai/compendium";
 import { useGatewayAuth } from "@/components/agent-mux/gateway-provider";
 
 export function RequireGatewayAuth(props: { children: React.ReactNode; title?: string; body?: string }) {
+  const navigate = useNavigate();
   const { isAuthenticated } = useGatewayAuth();
 
   if (isAuthenticated) {
@@ -26,11 +27,11 @@ export function RequireGatewayAuth(props: { children: React.ReactNode; title?: s
             "This surface wraps live agent-mux sessions and hooks. Connect through the gateway login flow, then come back here."}
         </p>
         <div className="mt-6 flex gap-3">
-          <Button variant="primary">
-            <Link to="/login">Connect gateway</Link>
+          <Button variant="primary" onClick={() => navigate("/login")}>
+            Connect gateway
           </Button>
-          <Button variant="ghost">
-            <Link to="/settings">Open settings</Link>
+          <Button variant="ghost" onClick={() => navigate("/settings")}>
+            Open settings
           </Button>
         </div>
       </div>

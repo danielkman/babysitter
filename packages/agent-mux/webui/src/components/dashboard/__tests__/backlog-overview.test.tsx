@@ -1222,6 +1222,24 @@ describe("BacklogOverview", () => {
     );
   });
 
+  it("keeps supporting context collapsed so the board remains the primary surface", () => {
+    render(
+      <BacklogOverview
+        projectId="kanban-app"
+        routeBasePath="/projects/kanban-app"
+        forcedPresentation="board"
+      />,
+    );
+
+    expect(screen.getByTestId("kanban-board")).toBeInTheDocument();
+
+    const supportingSummary = screen.getByText("Supporting context");
+    const supportingDetails = supportingSummary.closest("details");
+
+    expect(supportingDetails).toBeInTheDocument();
+    expect(supportingDetails).not.toHaveAttribute("open");
+  });
+
   it("filters cards by assignee and applies bulk move to the visible selection", async () => {
     const user = setupUser();
     render(<BacklogOverview />);

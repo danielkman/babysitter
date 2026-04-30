@@ -163,11 +163,11 @@ describe("WorkspaceDetailShell", () => {
       />,
     );
 
-    expect(screen.getByTestId("workspace-panel-details")).toBeInTheDocument();
+    expect(screen.queryByTestId("workspace-panel-details")).toBeNull();
     expect(screen.getByTestId("workspace-session-select")).toHaveValue("session-1");
 
     await user.click(screen.getByTestId("panel-toggle-details"));
-    expect(screen.queryByTestId("workspace-panel-details")).toBeNull();
+    expect(screen.getByTestId("workspace-panel-details")).toBeInTheDocument();
     expect(screen.getByTestId("workspace-session-select")).toHaveValue("session-1");
 
     await user.click(screen.getByTestId("workspace-command-bar-trigger"));
@@ -175,6 +175,8 @@ describe("WorkspaceDetailShell", () => {
       expect(screen.getByTestId("workspace-command-details")).toBeInTheDocument();
     });
     await user.click(screen.getByTestId("workspace-command-details"));
+    expect(screen.queryByTestId("workspace-panel-details")).toBeNull();
+    await user.click(screen.getByTestId("panel-toggle-details"));
     expect(screen.getByTestId("workspace-panel-details")).toBeInTheDocument();
     expect(screen.getByText("runtime session-1")).toBeInTheDocument();
     expect(screen.getByTestId("workspace-session-select")).toHaveValue("session-1");

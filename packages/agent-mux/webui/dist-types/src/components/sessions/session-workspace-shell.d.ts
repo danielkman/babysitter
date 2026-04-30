@@ -1,5 +1,7 @@
 import type { Attachment } from "@a5c-ai/agent-mux-core";
 import type { WorkspaceRuntimeSurface } from "@a5c-ai/agent-mux-core";
+import type { SessionCost, SessionFlowModel } from "@a5c-ai/agent-mux-ui/session-flow";
+import { type WorkspacePanelSizes } from "@/lib/workspace-layout-state";
 type EventBuffer = {
     events: Array<Record<string, unknown>>;
 };
@@ -14,6 +16,17 @@ type SessionWorkspaceShellProps = {
     workspacePath: string | null;
     runtime?: WorkspaceRuntimeSurface;
     sessionModel?: string | null;
+    shellStorageKeyPrefix?: string;
+    desktopPanelSizes?: WorkspacePanelSizes;
+    flowModelOverride?: SessionFlowModel;
+    sessionCostOverride?: SessionCost | null;
+    conversationDisabled?: boolean;
+    conversationPlaceholder?: string;
+    conversationSubmitLabel?: string;
+    conversationEmptyStateTitle?: string;
+    conversationEmptyStateBody?: string;
+    heroEyebrow?: string;
+    heroBody?: string;
     onSubmit: (input: {
         sessionId: string;
         prompt: string;

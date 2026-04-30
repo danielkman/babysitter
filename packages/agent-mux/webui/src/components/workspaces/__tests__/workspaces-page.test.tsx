@@ -1649,6 +1649,7 @@ describe("workspaces-page helpers", () => {
   });
 
   it("renders the workspace shell when a workspace route selection is present", async () => {
+    const user = setupUser();
     window.innerWidth = 1440;
     window.dispatchEvent(new Event("resize"));
 
@@ -1804,14 +1805,20 @@ describe("workspaces-page helpers", () => {
     expect(screen.getByTestId("workspace-desktop-panels")).toBeInTheDocument();
     expect(screen.getByTestId("workspace-panel-sidebar")).toBeInTheDocument();
     expect(screen.getByTestId("workspace-panel-conversation")).toBeInTheDocument();
-    expect(screen.getByTestId("workspace-panel-context")).toBeInTheDocument();
-    expect(screen.getByTestId("workspace-panel-details")).toBeInTheDocument();
+    expect(screen.queryByTestId("workspace-panel-context")).toBeNull();
+    expect(screen.queryByTestId("workspace-panel-details")).toBeNull();
     expect(screen.getByTestId("workspace-session-select")).toHaveValue("session-1");
     expect(screen.getByTestId("workspace-issue-link-KANBAN-GAP-007")).toHaveAttribute(
       "href",
       "/projects/kanban-app/issues/KANBAN-GAP-007",
     );
+
+    await user.click(screen.getByTestId("panel-toggle-context"));
+    expect(screen.getByTestId("workspace-panel-context")).toBeInTheDocument();
     expect(screen.getByText("observability session-1")).toBeInTheDocument();
+
+    await user.click(screen.getByTestId("panel-toggle-details"));
+    expect(screen.getByTestId("workspace-panel-details")).toBeInTheDocument();
     expect(screen.getByText("runtime session-1")).toBeInTheDocument();
   });
 });

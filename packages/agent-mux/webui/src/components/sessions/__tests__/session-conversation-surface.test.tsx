@@ -93,7 +93,7 @@ describe("SessionConversationSurface", () => {
       />,
     );
 
-    expect(screen.getByText("Live operator surface")).toBeInTheDocument();
+    expect(screen.getByText("Conversation")).toBeInTheDocument();
     expect(screen.getAllByText("user").length).toBeGreaterThan(0);
     expect(screen.getByText("read_file")).toBeInTheDocument();
     expect(screen.getAllByText("write src/app.ts").length).toBeGreaterThan(0);

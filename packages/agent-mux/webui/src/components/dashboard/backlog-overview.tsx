@@ -217,6 +217,14 @@ function workspaceLifecycleTone(status: string): string {
   }
 }
 
+function workspaceLinkSummary(
+  link: NonNullable<KanbanIssue["workspaceLinks"]>[number],
+): string {
+  const source =
+    link.source === "created-from-issue" ? "created here" : "linked workspace";
+  return link.branchName ? `${source} · ${link.branchName}` : source;
+}
+
 async function loadIssueWorkspaceInventory(): Promise<WorkspaceInventoryResponse> {
   const response = await fetch("/api/workspaces", { cache: "no-store" });
   if (!response.ok) {
@@ -2426,12 +2434,12 @@ function IssueDetailPanel({
 
       <section className="mt-5 rounded-2xl border border-border bg-background/80 p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <div className="text-sm font-semibold text-foreground">Issue profile</div>
-            <div className="mt-1 text-xs text-foreground-muted">
-              Shared issue metadata now edits through the same mutation-backed flow as the board.
+            <div>
+              <div className="text-sm font-semibold text-foreground">Issue profile</div>
+              <div className="mt-1 text-xs text-foreground-muted">
+                Edit the core issue details here without leaving the planning flow.
+              </div>
             </div>
-          </div>
           <div className="flex gap-2">
             {isIssueFieldDirty("metadata", draft, issue) ? (
               <button
@@ -3989,6 +3997,13 @@ export function BacklogOverview({
   const allVisibleSelected = visibleCards.length > 0 && visibleCards.every((card) => selectedIssueIds.includes(card.issueId));
   const selectableAssignees = primaryProject?.team.members ?? [];
   const selectableTags = primaryProject?.labels ?? [];
+  const activeFilterCount = [
+    workflowFilter !== "all",
+    readinessFilter !== "all",
+    assigneeFilter !== "all",
+    tagFilter !== "all",
+    normalizedSearchTerm.length > 0,
+  ].filter(Boolean).length;
 
   const currentSurfacePath = routeBasePath ? `${routeBasePath}/${presentation}` : "/";
   const bulkTargetOptions = workflowOrder.filter((state) =>
@@ -4049,8 +4064,8 @@ export function BacklogOverview({
                 Create a first-class issue
               </h2>
               <p className="mt-3 text-sm leading-6 text-foreground-muted">
-                This route uses the same shared mutation-backed create flow as the board while giving
-                issue authoring its own stable URL.
+                Create an issue in its own focused route, then return to the board when you want to
+                keep moving work across columns.
               </p>
             </div>
             <button
@@ -4521,25 +4536,24 @@ export function BacklogOverview({
 
   return (
     <section
-      className="mb-6 rounded-3xl border border-border bg-card p-6 shadow-lg"
+      className="backlog-overview-surface mb-6 rounded-3xl border border-border bg-card p-6 shadow-lg"
       data-testid="backlog-overview"
     >
-      <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="backlog-overview__hero flex flex-wrap items-start justify-between gap-4">
         <div className="max-w-4xl">
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">
             Kanban Board
           </p>
           <h2 className="mt-2 text-2xl font-semibold tracking-tight text-foreground">
-            Real board mechanics now sit on shared workflow primitives
+            Run the backlog as an actual board
           </h2>
           <p className="mt-3 text-sm leading-6 text-foreground-muted">
-            The dashboard no longer stops at a backlog summary. Columns, swimlanes, WIP limits, and
-            move validation are computed from shared `agent-mux` board state, and card transitions
-            persist through the backlog service instead of living in a local-only client model.
+            Keep columns, workspace links, and review handoffs in one place. Open a card when you
+            need depth; stay on the board when you just need to move work.
           </p>
         </div>
 
-        <div className="min-w-[260px] rounded-2xl border border-border bg-background p-4">
+        <div className="backlog-overview__project-card min-w-[260px] rounded-2xl border border-border bg-background p-4">
           <div className="text-xs uppercase tracking-[0.2em] text-foreground-muted">
             Primary Project
           </div>
@@ -4555,7 +4569,7 @@ export function BacklogOverview({
         </div>
       </div>
 
-      <div className="mt-5 grid gap-3 md:grid-cols-4">
+      <div className="backlog-overview__metrics-grid mt-5 grid gap-3 md:grid-cols-4">
         <div className="rounded-2xl border border-border bg-background p-4">
           <div className="flex items-center gap-2 text-sm text-foreground-muted">
             <Layers className="h-4 w-4" />
@@ -4594,109 +4608,13 @@ export function BacklogOverview({
         </div>
       </div>
 
-      {targetModelIssue ? (
-        <div className="mt-5 rounded-2xl border border-border bg-background p-4">
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="rounded-full border border-primary/25 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
-              {targetModelIssue.key}
-            </span>
-            <span className="text-sm font-semibold text-foreground">{targetModelIssue.title}</span>
-            <span className="text-sm text-foreground-muted">{targetModelIssue.status}</span>
-          </div>
-          {targetModelIssue.summary ? (
-            <p className="mt-3 text-sm leading-6 text-foreground-muted">{targetModelIssue.summary}</p>
-          ) : null}
-          <div className="mt-3 flex flex-wrap gap-2">
-            {targetModelIssue.acceptanceCriteria.map((criterion) => (
-              <span
-                key={criterion.id}
-                className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-xs text-foreground-secondary"
-              >
-                <CheckCircle2 className="h-3.5 w-3.5" />
-                {criterion.title}
-              </span>
-            ))}
-          </div>
-        </div>
-      ) : null}
-
-      {primaryProject.repositories.length > 0 ? (
-        <div className="mt-5 rounded-3xl border border-border bg-background p-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground-muted">
-                Repository context
-              </p>
-              <h3 className="mt-1 text-lg font-semibold text-foreground">
-                Shared repository settings stay below `packages/agent-mux/webui`
-              </h3>
-            </div>
-            <span className="rounded-full border border-border px-3 py-1 text-xs text-foreground-muted">
-              {primaryProject.repositories.length} linked repos
-            </span>
-          </div>
-
-          <div className="mt-4 grid gap-3 xl:grid-cols-2">
-            {primaryProject.repositories.map((repository) => (
-              <article
-                key={repository.id}
-                className="rounded-2xl border border-border bg-card p-4"
-                data-testid={`repository-context-${repository.id}`}
-              >
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                    <FolderGit2 className="h-4 w-4" />
-                    {repository.fullName}
-                  </div>
-                  <span className="rounded-full border border-border px-2.5 py-1 text-xs text-foreground-muted">
-                    {providerLabel(repository.provider)}
-                  </span>
-                </div>
-                <div className="mt-3 flex flex-wrap gap-2 text-xs text-foreground-muted">
-                  <span className="rounded-full border border-border px-2.5 py-1">
-                    Base {repository.settings.baseBranch}
-                  </span>
-                  <span className="rounded-full border border-border px-2.5 py-1">
-                    CI {repository.settings.ciProvider ?? "Unconfigured"}
-                  </span>
-                  <span className="rounded-full border border-border px-2.5 py-1">
-                    Publish {repository.settings.publishTarget ?? "Unconfigured"}
-                  </span>
-                  <span className="rounded-full border border-border px-2.5 py-1">
-                    {repository.settings.requiredApprovals} approvals
-                  </span>
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-      ) : null}
-
-      <ProjectCollaborationPanel
-        project={primaryProject}
-        mutating={Boolean(mutatingIssueId)}
-        onSave={updateProjectCollaboration}
-      />
-
-      <div className="mt-5 flex flex-wrap gap-2">
-        {primaryBoard.policyHooks.map((hook) => (
-          <span
-            key={hook.id}
-            className="inline-flex items-center gap-1 rounded-full border border-border bg-background px-3 py-1 text-xs text-foreground-muted"
-          >
-            <ShieldAlert className="h-3.5 w-3.5" />
-            {hook.name}
-          </span>
-        ))}
-      </div>
-
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground-muted">
             Planning surface
           </p>
           <h3 className="mt-1 text-lg font-semibold text-foreground">
-            Project routes, filters, and bulk actions now shape the same board state
+            Filter, focus, and move work without leaving the board
           </h3>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -4745,7 +4663,7 @@ export function BacklogOverview({
         </div>
       </div>
 
-      <div className="mt-4 rounded-3xl border border-border bg-background/70 p-4">
+      <div className="backlog-overview__controls mt-4 rounded-3xl border border-border bg-background/70 p-4">
         <div className="grid gap-3 xl:grid-cols-[minmax(0,1.5fr)_repeat(4,minmax(0,180px))]">
           <label className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
             Search
@@ -4921,6 +4839,55 @@ export function BacklogOverview({
             Clear selection
           </button>
         </div>
+
+        <div className="mt-4 grid gap-3 xl:grid-cols-[minmax(0,1.45fr)_repeat(3,minmax(0,180px))]">
+          <div className="rounded-2xl border border-border bg-card px-4 py-3">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.18em] text-foreground-muted">Board focus</p>
+                <p className="mt-2 text-sm font-semibold text-foreground">
+                  {focusedIssue ? `${focusedIssue.key} · ${focusedIssue.title}` : "No issue selected"}
+                </p>
+                <p className="mt-1 text-sm text-foreground-muted">
+                  {focusedIssue
+                    ? "The detail panel is open beside the board so you can edit without losing column context."
+                    : "Open any card to inspect acceptance criteria, review state, workspace links, and child issues."}
+                </p>
+              </div>
+              {focusedIssue ? (
+                <button
+                  type="button"
+                  onClick={clearFocusedIssue}
+                  className="inline-flex h-10 items-center rounded-xl border border-border bg-background px-3 text-xs font-semibold text-foreground"
+                >
+                  Clear focus
+                </button>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-border bg-card px-4 py-3">
+            <p className="text-[11px] uppercase tracking-[0.18em] text-foreground-muted">Filters</p>
+            <p className="mt-2 text-base font-semibold text-foreground">{activeFilterCount}</p>
+            <p className="mt-1 text-sm text-foreground-muted">
+              {activeFilterCount === 0 ? "Board showing the default scope." : "Filters actively narrowing the board."}
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-border bg-card px-4 py-3">
+            <p className="text-[11px] uppercase tracking-[0.18em] text-foreground-muted">Selection</p>
+            <p className="mt-2 text-base font-semibold text-foreground">{selectedCards.length}</p>
+            <p className="mt-1 text-sm text-foreground-muted">Cards ready for bulk move or workspace creation.</p>
+          </div>
+
+          <div className="rounded-2xl border border-border bg-card px-4 py-3">
+            <p className="text-[11px] uppercase tracking-[0.18em] text-foreground-muted">Review queue</p>
+            <p className="mt-2 text-base font-semibold text-foreground">
+              {(issueReviews.summary?.pendingCount ?? 0) + (issueReviews.summary?.changesRequestedCount ?? 0)}
+            </p>
+            <p className="mt-1 text-sm text-foreground-muted">Artifacts waiting on review, approval, or rework.</p>
+          </div>
+        </div>
       </div>
 
       {createNotice ? (
@@ -4936,18 +4903,18 @@ export function BacklogOverview({
       ) : null}
 
       <div
-        className={`mt-6 grid gap-5 ${
+        className={`backlog-overview__workspace mt-6 grid gap-5 ${
           activeSidePanel ? "xl:grid-cols-[minmax(0,1.55fr)_minmax(320px,430px)]" : "grid-cols-1"
         }`}
       >
-        <div className="space-y-5">
+        <div className="backlog-overview__board-stack space-y-5">
           {visibleCards.length === 0 ? (
             <div className="rounded-3xl border border-dashed border-border bg-background/70 p-6 text-sm text-foreground-muted">
               No issues match the current planning filters. Adjust search, workflow, readiness, assignee, or tag filters to widen the board.
             </div>
           ) : null}
           {presentation === "board" ? (
-            <div className="space-y-5" data-testid="kanban-board">
+            <div className="backlog-overview__board space-y-5" data-testid="kanban-board">
               {primaryBoard.swimlanes
                 .filter((swimlane) => {
                   const visibleCount = visibleCards.filter((card) => card.swimlaneId === swimlane.id).length;
@@ -4956,7 +4923,7 @@ export function BacklogOverview({
                 .map((swimlane) => (
                   <section
                     key={swimlane.id}
-                    className="rounded-3xl border border-border bg-background/70 p-4"
+                    className="backlog-overview__swimlane rounded-3xl border border-border bg-background/70 p-4"
                     data-testid={`kanban-swimlane-${swimlane.id}`}
                   >
                     <div className="mb-4 flex items-center justify-between gap-3">
@@ -4971,7 +4938,7 @@ export function BacklogOverview({
                       </span>
                     </div>
 
-                    <div className="grid gap-4 xl:grid-cols-4">
+                    <div className="backlog-overview__swimlane-grid grid gap-4">
                       {workflowOrder.map((state) => {
                         const column = primaryBoard.columns.find((candidate) => candidate.id === state);
                         const cards = visibleCards.filter(
@@ -4984,7 +4951,7 @@ export function BacklogOverview({
                         return (
                           <div
                             key={`${swimlane.id}-${state}`}
-                            className={`rounded-2xl border p-4 ${columnTone(state, column.isOverLimit)}`}
+                            className={`backlog-overview__column rounded-2xl border p-4 ${columnTone(state, column.isOverLimit)}`}
                             data-testid={`kanban-column-${swimlane.id}-${state}`}
                           >
                             <div className="flex items-start justify-between gap-3">
@@ -5018,7 +4985,7 @@ export function BacklogOverview({
                               Add issue
                             </button>
 
-                            <div className="mt-4 space-y-3">
+                            <div className="backlog-overview__column-cards mt-4 space-y-3">
                               {cards.length === 0 ? (
                                 <div className="rounded-2xl border border-dashed border-border p-3 text-sm text-foreground-muted">
                                   No cards
@@ -5030,12 +4997,18 @@ export function BacklogOverview({
                                 const parentIssue = issue?.parentIssueId
                                   ? issueById.get(issue.parentIssueId)
                                   : undefined;
+                                const linkedWorkspaceCount = issue?.workspaceLinks?.length ?? 0;
+                                const showSecondaryDetails =
+                                  Boolean(card.repositoryLifecycle) ||
+                                  card.collaboratorNames.length > 0 ||
+                                  card.assigneeNames.length > 0 ||
+                                  card.labelNames.length > 0;
 
                                 return (
                                   <article
                                     key={card.issueId}
                                     id={`kanban-issue-${card.issueId}`}
-                                    className={`rounded-2xl border p-4 ${issueTone(card)} ${
+                                    className={`backlog-overview__card rounded-2xl border p-4 ${issueTone(card)} ${
                                       focusedIssueId === card.issueId || focusedIssueKey === card.issueKey
                                         ? "ring-2 ring-primary/50 ring-offset-2 ring-offset-background"
                                         : ""
@@ -5116,6 +5089,58 @@ export function BacklogOverview({
                                       </span>
                                     </div>
 
+                                    <div className="mt-4 rounded-2xl border border-current/15 bg-card/70 p-3 text-current/90">
+                                      <div className="flex flex-wrap items-start justify-between gap-3">
+                                        <div>
+                                          <div className="text-[11px] font-semibold uppercase tracking-[0.18em] opacity-70">
+                                            Workspace
+                                          </div>
+                                          <div className="mt-1 text-sm font-medium">
+                                            {linkedWorkspaceCount > 0
+                                              ? `${linkedWorkspaceCount} linked workspace${linkedWorkspaceCount === 1 ? "" : "s"}`
+                                              : "No workspace linked yet"}
+                                          </div>
+                                          <p className="mt-1 text-xs leading-5 opacity-80">
+                                            {linkedWorkspaceCount > 0
+                                              ? "Open the active workspace directly from the board."
+                                              : "Create a workspace when this issue moves into active execution."}
+                                          </p>
+                                        </div>
+                                        {linkedWorkspaceCount === 0 ? (
+                                          <button
+                                            type="button"
+                                            onClick={() =>
+                                              navigate(projectIssueWorkspaceCreateHref(primaryProject.id, card.issueId))
+                                            }
+                                            className="inline-flex h-10 items-center gap-2 rounded-xl border border-current/20 bg-background/70 px-3 text-xs font-semibold"
+                                            data-testid={`create-workspace-${card.issueKey}`}
+                                          >
+                                            <Plus className="h-3.5 w-3.5" />
+                                            Create workspace
+                                          </button>
+                                        ) : null}
+                                      </div>
+
+                                      {linkedWorkspaceCount > 0 ? (
+                                        <div className="mt-3 flex flex-wrap gap-2">
+                                          {(issue?.workspaceLinks ?? []).map((workspaceLink) => (
+                                            <button
+                                              key={`${card.issueId}-${workspaceLink.workspacePath}`}
+                                              type="button"
+                                              onClick={() => openWorkspacePath(workspaceLink.workspacePath)}
+                                              className="rounded-full border border-current/20 bg-background/70 px-3 py-1.5 text-left text-xs"
+                                              data-testid={`card-workspace-${card.issueKey}-${workspaceLink.workspaceName}`}
+                                            >
+                                              <span className="font-semibold">{workspaceLink.workspaceName}</span>
+                                              <span className="ml-2 opacity-75">
+                                                {workspaceLinkSummary(workspaceLink)}
+                                              </span>
+                                            </button>
+                                          ))}
+                                        </div>
+                                      ) : null}
+                                    </div>
+
                                     {showPolicySignals && card.policySignals.length > 0 ? (
                                       <div className="mt-3 space-y-2">
                                         {card.policySignals.map((signal, index) => (
@@ -5159,22 +5184,36 @@ export function BacklogOverview({
                                       </div>
                                     ) : null}
 
-                                    <RepositoryLifecyclePanel
-                                      card={card}
-                                      mutating={movingIssueId === card.issueId || mutatingIssueId === card.issueId}
-                                      onLinkRepository={linkRepository}
-                                      onUpdateRepositorySettings={updateRepositorySettings}
-                                      onCreatePullRequest={createPullRequest}
-                                    />
-                                    <IssueCollaborationPanel
-                                      card={card}
-                                      project={primaryProject}
-                                      activityEntries={
-                                        snapshot.issues.find((candidate) => candidate.id === card.issueId)?.activity ?? []
-                                      }
-                                      mutating={movingIssueId === card.issueId || mutatingIssueId === card.issueId}
-                                      onSave={updateIssueCollaboration}
-                                    />
+                                    {showSecondaryDetails ? (
+                                      <details className="backlog-overview__card-details mt-4">
+                                        <summary className="backlog-overview__card-summary">
+                                          <span>More details</span>
+                                          <span>
+                                            {card.assigneeNames.length} assignee{card.assigneeNames.length === 1 ? "" : "s"}
+                                            {" · "}
+                                            {card.labelNames.length} label{card.labelNames.length === 1 ? "" : "s"}
+                                          </span>
+                                        </summary>
+                                        <div className="backlog-overview__card-details-body">
+                                          <RepositoryLifecyclePanel
+                                            card={card}
+                                            mutating={movingIssueId === card.issueId || mutatingIssueId === card.issueId}
+                                            onLinkRepository={linkRepository}
+                                            onUpdateRepositorySettings={updateRepositorySettings}
+                                            onCreatePullRequest={createPullRequest}
+                                          />
+                                          <IssueCollaborationPanel
+                                            card={card}
+                                            project={primaryProject}
+                                            activityEntries={
+                                              snapshot.issues.find((candidate) => candidate.id === card.issueId)?.activity ?? []
+                                            }
+                                            mutating={movingIssueId === card.issueId || mutatingIssueId === card.issueId}
+                                            onSave={updateIssueCollaboration}
+                                          />
+                                        </div>
+                                      </details>
+                                    ) : null}
                                   </article>
                                 );
                               })}
@@ -5187,7 +5226,7 @@ export function BacklogOverview({
                 ))}
             </div>
           ) : (
-            <div className="space-y-4" data-testid="kanban-list">
+            <div className="backlog-overview__list space-y-4" data-testid="kanban-list">
               <div className="rounded-3xl border border-border bg-background/70 p-4">
                 <div className="flex items-center justify-between gap-3">
                   <div>
@@ -5278,10 +5317,140 @@ export function BacklogOverview({
         ) : null}
       </div>
 
+      <details className="backlog-overview__support-details">
+        <summary className="backlog-overview__support-summary">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground-muted">
+              Supporting context
+            </p>
+            <h3 className="mt-1 text-lg font-semibold text-foreground">
+              Board notes and shared settings
+            </h3>
+            <p className="mt-2 text-sm leading-6 text-foreground-muted">
+              Keep the board primary. Open this only when you need project-wide notes, repository
+              settings, or collaboration rules.
+            </p>
+          </div>
+          <div className="backlog-overview__support-badges">
+            {targetModelIssue ? (
+              <span className="rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                {targetModelIssue.key}
+              </span>
+            ) : null}
+            <span className="rounded-full border border-border bg-background px-3 py-1 text-xs text-foreground-muted">
+              {primaryProject.repositories.length} repos
+            </span>
+            <span className="rounded-full border border-border bg-background px-3 py-1 text-xs text-foreground-muted">
+              {primaryBoard.policyHooks.length} policies
+            </span>
+          </div>
+        </summary>
+
+        <div className="backlog-overview__support-body">
+          {targetModelIssue ? (
+            <div className="rounded-2xl border border-border bg-background p-4">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="rounded-full border border-primary/25 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
+                  {targetModelIssue.key}
+                </span>
+                <span className="text-sm font-semibold text-foreground">{targetModelIssue.title}</span>
+                <span className="text-sm text-foreground-muted">{targetModelIssue.status}</span>
+              </div>
+              {targetModelIssue.summary ? (
+                <p className="mt-3 text-sm leading-6 text-foreground-muted">{targetModelIssue.summary}</p>
+              ) : null}
+              <div className="mt-3 flex flex-wrap gap-2">
+                {targetModelIssue.acceptanceCriteria.map((criterion) => (
+                  <span
+                    key={criterion.id}
+                    className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-xs text-foreground-secondary"
+                  >
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    {criterion.title}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          {primaryProject.repositories.length > 0 ? (
+            <div className="rounded-3xl border border-border bg-background p-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground-muted">
+                    Repository context
+                  </p>
+                  <h3 className="mt-1 text-lg font-semibold text-foreground">
+                    Shared repository settings
+                  </h3>
+                </div>
+                <span className="rounded-full border border-border px-3 py-1 text-xs text-foreground-muted">
+                  {primaryProject.repositories.length} linked repos
+                </span>
+              </div>
+
+              <div className="mt-4 grid gap-3 xl:grid-cols-2">
+                {primaryProject.repositories.map((repository) => (
+                  <article
+                    key={repository.id}
+                    className="rounded-2xl border border-border bg-card p-4"
+                    data-testid={`repository-context-${repository.id}`}
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                        <FolderGit2 className="h-4 w-4" />
+                        {repository.fullName}
+                      </div>
+                      <span className="rounded-full border border-border px-2.5 py-1 text-xs text-foreground-muted">
+                        {providerLabel(repository.provider)}
+                      </span>
+                    </div>
+                    <div className="mt-3 flex flex-wrap gap-2 text-xs text-foreground-muted">
+                      <span className="rounded-full border border-border px-2.5 py-1">
+                        Base {repository.settings.baseBranch}
+                      </span>
+                      <span className="rounded-full border border-border px-2.5 py-1">
+                        CI {repository.settings.ciProvider ?? "Unconfigured"}
+                      </span>
+                      <span className="rounded-full border border-border px-2.5 py-1">
+                        Publish {repository.settings.publishTarget ?? "Unconfigured"}
+                      </span>
+                      <span className="rounded-full border border-border px-2.5 py-1">
+                        {repository.settings.requiredApprovals} approvals
+                      </span>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          <ProjectCollaborationPanel
+            project={primaryProject}
+            mutating={Boolean(mutatingIssueId)}
+            onSave={updateProjectCollaboration}
+          />
+
+          {primaryBoard.policyHooks.length > 0 ? (
+            <div className="backlog-overview__policy-strip mt-5 flex flex-wrap gap-2">
+              {primaryBoard.policyHooks.map((hook) => (
+                <span
+                  key={hook.id}
+                  className="inline-flex items-center gap-1 rounded-full border border-border bg-background px-3 py-1 text-xs text-foreground-muted"
+                >
+                  <ShieldAlert className="h-3.5 w-3.5" />
+                  {hook.name}
+                </span>
+              ))}
+            </div>
+          ) : null}
+        </div>
+      </details>
+
       <div className="mt-6">
         <ReviewPanel
           title="Issue diff and feedback loop"
-          description="Issue review artifacts stay in the shared layer, so diff viewing, inline comments, and approval state are the same review record used across the app."
+          description="Review, comments, and approval state for issues stay together here."
           empty="No issue reviews are queued yet."
           loading={issueReviews.loading}
           error={issueReviews.error}
