@@ -126,54 +126,213 @@ export async function process(inputs, ctx) {
   ctx.log?.('info', `Configuration: ${ontologyScope} scope, ${projectComplexity} complexity, ${stakeholderContext} stakeholders, ${domainType} domain, ${riskProfile} risk`);
 
   // ============================================================================
-  // PHASE 0: PROJECT ANALYSIS & PLANNING
+  // PHASE 0: WORLD ONTOLOGY & DOMAIN RESEARCH
   // ============================================================================
 
-  if (phase === 'full' || phase === 'analysis') {
-    ctx.log?.('info', 'Phase 0: Project analysis and strategic planning...');
+  if (phase === 'full' || phase === 'world-ontology') {
+    ctx.log?.('info', 'Phase 0: World ontology and deep domain research...');
 
-    const analysisResult = await executeIterativePhase(
+    const worldOntologyResult = await executeIterativePhase(
       ctx,
-      'analysis',
+      'world-ontology',
       {
-        mainTask: projectAnalysisTask,
+        mainTask: worldOntologyResearchTask,
         taskInputs: {
           projectName,
           domainDescription,
           ontologyScope,
-          projectComplexity,
-          stakeholderContext,
           domainType,
-          riskProfile
+          stakeholderContext,
+          researchDepth: 'comprehensive'
         },
-        qualityDimensions: ['feasibility', 'stakeholder_alignment', 'risk_assessment', 'resource_planning'],
+        qualityDimensions: ['domain_accuracy', 'world_model_completeness', 'stakeholder_coverage', 'external_system_mapping'],
         targetQuality,
-        maxIterations: Math.min(maxIterationsPerPhase, 3), // Analysis doesn't need many iterations
-        phaseName: 'Project Analysis & Planning'
+        maxIterations: maxIterationsPerPhase,
+        phaseName: 'World Ontology & Domain Research'
       }
     );
 
-    results.projectAnalysis = analysisResult.result;
-    results.metadata.phaseIterations['analysis'] = analysisResult.iterations;
-    results.metadata.qualityScores['analysis'] = analysisResult.qualityMetrics;
-    results.metadata.totalIterations += analysisResult.iterations;
-    artifacts.push(...(analysisResult.artifacts || []));
+    results.worldOntology = worldOntologyResult.result;
+    results.metadata.phaseIterations['world-ontology'] = worldOntologyResult.iterations;
+    results.metadata.qualityScores['world-ontology'] = worldOntologyResult.qualityMetrics;
+    results.metadata.totalIterations += worldOntologyResult.iterations;
+    artifacts.push(...(worldOntologyResult.artifacts || []));
 
     await ctx.breakpoint({
-      question: `Project analysis complete. Complexity: ${analysisResult.result?.complexityAssessment?.level}, Stakeholders: ${analysisResult.result?.stakeholderAnalysis?.count}, Risk Level: ${analysisResult.result?.riskAssessment?.level}. Proceed with recommended approach?`,
-      title: 'Project Analysis Review',
+      question: `World ontology research complete. Domain coverage: ${worldOntologyResult.result?.domainCoverage?.percentage}%, Key entities: ${worldOntologyResult.result?.keyEntities?.length}, External systems: ${worldOntologyResult.result?.externalSystems?.length}. Proceed to problem space analysis?`,
+      title: 'World Ontology Review',
       context: {
         runId: ctx.runId,
         data: {
-          complexityLevel: analysisResult.result?.complexityAssessment?.level,
-          stakeholderCount: analysisResult.result?.stakeholderAnalysis?.count,
-          riskLevel: analysisResult.result?.riskAssessment?.level,
-          recommendedApproach: analysisResult.result?.recommendedApproach
+          domainCoverage: worldOntologyResult.result?.domainCoverage?.percentage,
+          keyEntities: worldOntologyResult.result?.keyEntities?.length,
+          externalSystems: worldOntologyResult.result?.externalSystems?.length,
+          stakeholderTypes: worldOntologyResult.result?.stakeholderTypes?.length
         },
         files: [
-          { path: 'artifacts/odd/PROJECT_ANALYSIS.md', format: 'markdown', label: 'Project Analysis' },
-          { path: 'artifacts/odd/STAKEHOLDER_MAP.md', format: 'markdown', label: 'Stakeholder Analysis' },
-          { path: 'artifacts/odd/RISK_ASSESSMENT.md', format: 'markdown', label: 'Risk Assessment' }
+          { path: 'artifacts/odd/WORLD_ONTOLOGY.md', format: 'markdown', label: 'World Model' },
+          { path: 'artifacts/odd/DOMAIN_RESEARCH.md', format: 'markdown', label: 'Domain Research' },
+          { path: 'artifacts/odd/STAKEHOLDER_ECOSYSTEM.md', format: 'markdown', label: 'Stakeholder Ecosystem' }
+        ]
+      }
+    });
+  }
+
+  // ============================================================================
+  // PHASE 1: PROBLEM SPACE ONTOLOGY & DEEP ANALYSIS
+  // ============================================================================
+
+  if (phase === 'full' || phase === 'problem-ontology') {
+    ctx.log?.('info', 'Phase 1: Problem space ontology and deep analysis...');
+
+    const problemOntologyResult = await executeIterativePhase(
+      ctx,
+      'problem-ontology',
+      {
+        mainTask: problemSpaceOntologyTask,
+        taskInputs: {
+          projectName,
+          domainDescription,
+          worldOntology: results.worldOntology,
+          stakeholderContext,
+          projectComplexity,
+          analysisDepth: 'exhaustive'
+        },
+        qualityDimensions: ['problem_accuracy', 'pain_point_coverage', 'constraint_completeness', 'root_cause_depth'],
+        targetQuality,
+        maxIterations: maxIterationsPerPhase,
+        phaseName: 'Problem Space Ontology & Deep Analysis'
+      }
+    );
+
+    results.problemOntology = problemOntologyResult.result;
+    results.metadata.phaseIterations['problem-ontology'] = problemOntologyResult.iterations;
+    results.metadata.qualityScores['problem-ontology'] = problemOntologyResult.qualityMetrics;
+    results.metadata.totalIterations += problemOntologyResult.iterations;
+    artifacts.push(...(problemOntologyResult.artifacts || []));
+
+    await ctx.breakpoint({
+      question: `Problem ontology complete. Pain points identified: ${problemOntologyResult.result?.painPoints?.length}, Root causes: ${problemOntologyResult.result?.rootCauses?.length}, Constraints: ${problemOntologyResult.result?.constraints?.length}. Proceed to solution space exploration?`,
+      title: 'Problem Ontology Review',
+      context: {
+        runId: ctx.runId,
+        data: {
+          painPointsCount: problemOntologyResult.result?.painPoints?.length,
+          rootCausesCount: problemOntologyResult.result?.rootCauses?.length,
+          constraintsCount: problemOntologyResult.result?.constraints?.length,
+          problemComplexity: problemOntologyResult.result?.complexityAssessment
+        },
+        files: [
+          { path: 'artifacts/odd/PROBLEM_ONTOLOGY.md', format: 'markdown', label: 'Problem Model' },
+          { path: 'artifacts/odd/PAIN_POINT_ANALYSIS.md', format: 'markdown', label: 'Pain Point Analysis' },
+          { path: 'artifacts/odd/CONSTRAINT_MAPPING.md', format: 'markdown', label: 'Constraint Analysis' }
+        ]
+      }
+    });
+  }
+
+  // ============================================================================
+  // PHASE 2: SOLUTION SPACE ONTOLOGY & EXPLORATION
+  // ============================================================================
+
+  if (phase === 'full' || phase === 'solution-ontology') {
+    ctx.log?.('info', 'Phase 2: Solution space ontology and exploration...');
+
+    const solutionOntologyResult = await executeIterativePhase(
+      ctx,
+      'solution-ontology',
+      {
+        mainTask: solutionSpaceExplorationTask,
+        taskInputs: {
+          projectName,
+          worldOntology: results.worldOntology,
+          problemOntology: results.problemOntology,
+          domainType,
+          projectComplexity,
+          explorationScope: 'comprehensive'
+        },
+        qualityDimensions: ['solution_coverage', 'approach_feasibility', 'architecture_soundness', 'innovation_potential'],
+        targetQuality,
+        maxIterations: maxIterationsPerPhase,
+        phaseName: 'Solution Space Ontology & Exploration'
+      }
+    );
+
+    results.solutionOntology = solutionOntologyResult.result;
+    results.metadata.phaseIterations['solution-ontology'] = solutionOntologyResult.iterations;
+    results.metadata.qualityScores['solution-ontology'] = solutionOntologyResult.qualityMetrics;
+    results.metadata.totalIterations += solutionOntologyResult.iterations;
+    artifacts.push(...(solutionOntologyResult.artifacts || []));
+
+    await ctx.breakpoint({
+      question: `Solution ontology complete. Solution approaches: ${solutionOntologyResult.result?.solutionApproaches?.length}, Architecture patterns: ${solutionOntologyResult.result?.architecturePatterns?.length}, Technology options: ${solutionOntologyResult.result?.technologyOptions?.length}. Proceed to integrated ontology synthesis?`,
+      title: 'Solution Ontology Review',
+      context: {
+        runId: ctx.runId,
+        data: {
+          solutionApproaches: solutionOntologyResult.result?.solutionApproaches?.length,
+          architecturePatterns: solutionOntologyResult.result?.architecturePatterns?.length,
+          technologyOptions: solutionOntologyResult.result?.technologyOptions?.length,
+          feasibilityScore: solutionOntologyResult.result?.feasibilityAssessment
+        },
+        files: [
+          { path: 'artifacts/odd/SOLUTION_ONTOLOGY.md', format: 'markdown', label: 'Solution Model' },
+          { path: 'artifacts/odd/ARCHITECTURE_EXPLORATION.md', format: 'markdown', label: 'Architecture Analysis' },
+          { path: 'artifacts/odd/TECHNOLOGY_ASSESSMENT.md', format: 'markdown', label: 'Technology Options' }
+        ]
+      }
+    });
+  }
+
+  // ============================================================================
+  // PHASE 3: INTEGRATED ONTOLOGY SYNTHESIS & VALIDATION
+  // ============================================================================
+
+  if (phase === 'full' || phase === 'integrated-ontology') {
+    ctx.log?.('info', 'Phase 3: Integrated ontology synthesis and validation...');
+
+    const integratedOntologyResult = await executeIterativePhase(
+      ctx,
+      'integrated-ontology',
+      {
+        mainTask: integratedOntologySynthesisTask,
+        taskInputs: {
+          projectName,
+          worldOntology: results.worldOntology,
+          problemOntology: results.problemOntology,
+          solutionOntology: results.solutionOntology,
+          ontologyScope,
+          targetQuality
+        },
+        qualityDimensions: ['integration_coherence', 'traceability_completeness', 'strategic_alignment', 'implementation_readiness'],
+        targetQuality,
+        maxIterations: maxIterationsPerPhase,
+        phaseName: 'Integrated Ontology Synthesis & Validation'
+      }
+    );
+
+    results.integratedOntology = integratedOntologyResult.result;
+    results.schema = integratedOntologyResult.result?.schema;
+    results.metadata.phaseIterations['integrated-ontology'] = integratedOntologyResult.iterations;
+    results.metadata.qualityScores['integrated-ontology'] = integratedOntologyResult.qualityMetrics;
+    results.metadata.totalIterations += integratedOntologyResult.iterations;
+    artifacts.push(...(integratedOntologyResult.artifacts || []));
+
+    await ctx.breakpoint({
+      question: `Integrated ontology synthesis complete. Schema modules: ${integratedOntologyResult.result?.schema?.modules?.length}, Traceability links: ${integratedOntologyResult.result?.traceabilityMatrix?.totalLinks}, Coverage score: ${integratedOntologyResult.result?.coverageMetrics?.overall}%. Proceed to knowledge graph construction?`,
+      title: 'Integrated Ontology Review',
+      context: {
+        runId: ctx.runId,
+        data: {
+          schemaModules: integratedOntologyResult.result?.schema?.modules?.length,
+          traceabilityLinks: integratedOntologyResult.result?.traceabilityMatrix?.totalLinks,
+          coverageScore: integratedOntologyResult.result?.coverageMetrics?.overall,
+          qualityScore: integratedOntologyResult.qualityMetrics?.overallScore
+        },
+        files: [
+          { path: 'artifacts/odd/INTEGRATED_ONTOLOGY.md', format: 'markdown', label: 'Integrated Ontology' },
+          { path: 'artifacts/odd/ONTOLOGY_SCHEMA.md', format: 'markdown', label: 'Schema Definition' },
+          { path: 'artifacts/odd/TRACEABILITY_MATRIX.md', format: 'markdown', label: 'Traceability Matrix' }
         ]
       }
     });
@@ -216,7 +375,242 @@ export async function process(inputs, ctx) {
   }
 
   // ============================================================================
-  // PHASE 2: COLLABORATIVE KNOWLEDGE GRAPH CONSTRUCTION
+  // PHASE 4: EMPIRICAL SCHEMA VALIDATION & DATA POPULATION
+  // ============================================================================
+
+  if (phase === 'full' || phase === 'empirical-validation') {
+    ctx.log?.('info', 'Phase 4: Empirical schema validation and data population...');
+
+    const empiricalValidationResult = await executeIterativePhase(
+      ctx,
+      'empirical-validation',
+      {
+        mainTask: empiricalSchemaValidationTask,
+        taskInputs: {
+          projectName,
+          integratedOntology: results.integratedOntology,
+          schema: results.schema,
+          worldOntology: results.worldOntology,
+          problemOntology: results.problemOntology,
+          solutionOntology: results.solutionOntology
+        },
+        qualityDimensions: ['data_fit_quality', 'schema_adequacy', 'population_efficiency', 'query_performance'],
+        targetQuality,
+        maxIterations: maxIterationsPerPhase,
+        phaseName: 'Empirical Schema Validation & Data Population'
+      }
+    );
+
+    results.empiricalValidation = empiricalValidationResult.result;
+    results.metadata.phaseIterations['empirical-validation'] = empiricalValidationResult.iterations;
+    results.metadata.qualityScores['empirical-validation'] = empiricalValidationResult.qualityMetrics;
+    results.metadata.totalIterations += empiricalValidationResult.iterations;
+    artifacts.push(...(empiricalValidationResult.artifacts || []));
+
+    await ctx.breakpoint({
+      question: `Empirical validation complete. Schema adequacy: ${empiricalValidationResult.result?.schemaAdequacy?.score}%, Data population issues: ${empiricalValidationResult.result?.populationIssues?.length}, Performance metrics: ${empiricalValidationResult.result?.performanceScore}%. Proceed to retrospective optimization?`,
+      title: 'Empirical Validation Review',
+      context: {
+        runId: ctx.runId,
+        data: {
+          schemaAdequacy: empiricalValidationResult.result?.schemaAdequacy?.score,
+          populationIssues: empiricalValidationResult.result?.populationIssues?.length,
+          performanceScore: empiricalValidationResult.result?.performanceScore,
+          dataQuality: empiricalValidationResult.result?.dataQualityMetrics
+        },
+        files: [
+          { path: 'artifacts/odd/EMPIRICAL_VALIDATION.md', format: 'markdown', label: 'Empirical Validation' },
+          { path: 'artifacts/odd/DATA_POPULATION_ANALYSIS.md', format: 'markdown', label: 'Data Population Analysis' },
+          { path: 'artifacts/odd/PERFORMANCE_METRICS.md', format: 'markdown', label: 'Performance Analysis' }
+        ]
+      }
+    });
+  }
+
+  // ============================================================================
+  // PHASE 5: RETROSPECTIVE OPTIMIZATION & SCHEMA EVOLUTION
+  // ============================================================================
+
+  if (phase === 'full' || phase === 'retrospective-optimization') {
+    ctx.log?.('info', 'Phase 5: Retrospective optimization and schema evolution...');
+
+    let schemaConverged = false;
+    let optimizationIteration = 0;
+    const maxOptimizationIterations = Math.min(maxIterationsPerPhase, 5);
+    let currentSchema = results.schema;
+    let currentOntology = results.integratedOntology;
+
+    while (!schemaConverged && optimizationIteration < maxOptimizationIterations) {
+      optimizationIteration++;
+      ctx.log?.('info', `Schema optimization iteration ${optimizationIteration}/${maxOptimizationIterations}`);
+
+      const retrospectiveOptimizationResult = await executeIterativePhase(
+        ctx,
+        'retrospective-optimization',
+        {
+          mainTask: retrospectiveOptimizationTask,
+          taskInputs: {
+            projectName,
+            currentSchema: currentSchema,
+            currentOntology: currentOntology,
+            empiricalValidation: results.empiricalValidation,
+            populationLearnings: results.empiricalValidation?.learnings,
+            optimizationIteration,
+            previousOptimizations: results.schemaOptimizations || []
+          },
+          qualityDimensions: ['schema_optimality', 'modeling_efficiency', 'structural_elegance', 'performance_optimization'],
+          targetQuality,
+          maxIterations: 3, // Shorter inner iterations for optimization
+          phaseName: `Retrospective Optimization (Iteration ${optimizationIteration})`
+        }
+      );
+
+      // Update schema and ontology with optimizations
+      if (retrospectiveOptimizationResult.result?.optimizedSchema) {
+        currentSchema = retrospectiveOptimizationResult.result.optimizedSchema;
+        currentOntology = retrospectiveOptimizationResult.result.optimizedOntology;
+      }
+
+      // Re-validate with optimized schema
+      const revalidationResult = await ctx.task(revalidateOptimizedSchemaTask, {
+        projectName,
+        optimizedSchema: currentSchema,
+        optimizedOntology: currentOntology,
+        originalValidation: results.empiricalValidation,
+        optimizationIteration
+      });
+
+      artifacts.push(...(retrospectiveOptimizationResult.artifacts || []));
+      artifacts.push(...(revalidationResult.artifacts || []));
+
+      // Check convergence
+      const convergenceCheck = await ctx.task(schemaConvergenceAssessmentTask, {
+        projectName,
+        optimizationHistory: [...(results.schemaOptimizations || []), retrospectiveOptimizationResult.result],
+        currentQuality: revalidationResult.qualityMetrics,
+        targetQuality,
+        optimizationIteration
+      });
+
+      schemaConverged = convergenceCheck.hasConverged;
+
+      if (!results.schemaOptimizations) results.schemaOptimizations = [];
+      results.schemaOptimizations.push({
+        iteration: optimizationIteration,
+        optimization: retrospectiveOptimizationResult.result,
+        revalidation: revalidationResult,
+        convergence: convergenceCheck
+      });
+
+      if (schemaConverged) {
+        ctx.log?.('info', `Schema converged to optimal state in ${optimizationIteration} optimization iterations`);
+        results.schema = currentSchema;
+        results.integratedOntology = currentOntology;
+        results.finalValidation = revalidationResult;
+      } else {
+        ctx.log?.('info', `Schema optimization ${optimizationIteration}: Quality improved from ${convergenceCheck.previousQuality} to ${convergenceCheck.currentQuality}`);
+      }
+
+      // Breakpoint for complex optimization decisions
+      if (!schemaConverged && optimizationIteration >= maxOptimizationIterations - 1) {
+        await ctx.breakpoint({
+          question: `Schema optimization has completed ${optimizationIteration} iterations without full convergence. Quality: ${convergenceCheck.currentQuality}/${targetQuality}. Continue optimizing or proceed with current schema?`,
+          title: 'Schema Optimization Decision',
+          context: {
+            runId: ctx.runId,
+            data: {
+              optimizationIteration,
+              maxOptimizationIterations,
+              currentQuality: convergenceCheck.currentQuality,
+              targetQuality,
+              improvementRate: convergenceCheck.improvementRate,
+              remainingIssues: convergenceCheck.remainingIssues
+            }
+          }
+        });
+      }
+    }
+
+    results.metadata.optimizationIterations = optimizationIteration;
+    results.metadata.schemaConverged = schemaConverged;
+    results.metadata.phaseIterations['retrospective-optimization'] = optimizationIteration;
+    results.metadata.totalIterations += optimizationIteration;
+
+    await ctx.breakpoint({
+      question: `Retrospective optimization complete. Schema convergence: ${schemaConverged ? 'ACHIEVED' : 'PARTIAL'} in ${optimizationIteration} iterations. Final quality: ${results.finalValidation?.qualityMetrics?.overallScore || 'TBD'}%. Proceed to perfect graph construction?`,
+      title: 'Retrospective Optimization Review',
+      context: {
+        runId: ctx.runId,
+        data: {
+          schemaConverged,
+          optimizationIterations: optimizationIteration,
+          finalQuality: results.finalValidation?.qualityMetrics?.overallScore,
+          optimizationImprovements: results.schemaOptimizations?.map(o => o.optimization?.improvementSummary)
+        },
+        files: [
+          { path: 'artifacts/odd/SCHEMA_OPTIMIZATION.md', format: 'markdown', label: 'Schema Optimization' },
+          { path: 'artifacts/odd/OPTIMIZATION_TRAJECTORY.md', format: 'markdown', label: 'Optimization Progress' },
+          { path: 'artifacts/odd/FINAL_SCHEMA.md', format: 'markdown', label: 'Optimized Schema' }
+        ]
+      }
+    });
+  }
+
+  // ============================================================================
+  // PHASE 6: PERFECT GRAPH CONSTRUCTION & CONVERGENCE
+  // ============================================================================
+
+  if (phase === 'full' || phase === 'perfect-graph') {
+    ctx.log?.('info', 'Phase 6: Perfect graph construction and convergence...');
+
+    const perfectGraphResult = await executeIterativePhase(
+      ctx,
+      'perfect-graph',
+      {
+        mainTask: perfectGraphConstructionTask,
+        taskInputs: {
+          projectName,
+          optimizedSchema: results.schema,
+          optimizedOntology: results.integratedOntology,
+          empiricalValidation: results.empiricalValidation,
+          optimizationLearnings: results.schemaOptimizations,
+          targetQuality
+        },
+        qualityDimensions: ['graph_completeness', 'data_integrity', 'query_efficiency', 'semantic_richness'],
+        targetQuality,
+        maxIterations: maxIterationsPerPhase,
+        phaseName: 'Perfect Graph Construction & Convergence'
+      }
+    );
+
+    results.knowledgeGraph = perfectGraphResult.result;
+    results.metadata.phaseIterations['perfect-graph'] = perfectGraphResult.iterations;
+    results.metadata.qualityScores['perfect-graph'] = perfectGraphResult.qualityMetrics;
+    results.metadata.totalIterations += perfectGraphResult.iterations;
+    artifacts.push(...(perfectGraphResult.artifacts || []));
+
+    await ctx.breakpoint({
+      question: `Perfect graph construction complete. Graph completeness: ${perfectGraphResult.result?.completenessScore}%, Semantic richness: ${perfectGraphResult.result?.semanticRichness}%, Query performance: ${perfectGraphResult.result?.queryPerformance}%. Proceed to remaining phases?`,
+      title: 'Perfect Graph Review',
+      context: {
+        runId: ctx.runId,
+        data: {
+          completenessScore: perfectGraphResult.result?.completenessScore,
+          semanticRichness: perfectGraphResult.result?.semanticRichness,
+          queryPerformance: perfectGraphResult.result?.queryPerformance,
+          graphStatistics: perfectGraphResult.result?.graphStatistics
+        },
+        files: [
+          { path: 'artifacts/odd/PERFECT_GRAPH.md', format: 'markdown', label: 'Perfect Knowledge Graph' },
+          { path: 'artifacts/odd/GRAPH_STATISTICS.md', format: 'markdown', label: 'Graph Statistics' },
+          { path: 'artifacts/odd/SEMANTIC_ANALYSIS.md', format: 'markdown', label: 'Semantic Analysis' }
+        ]
+      }
+    });
+  }
+
+  // ============================================================================
+  // PHASE 2: COLLABORATIVE KNOWLEDGE GRAPH CONSTRUCTION (Legacy)
   // ============================================================================
 
   if (phase === 'full' || phase === 'graph') {
@@ -953,6 +1347,818 @@ function getMaxIterations(complexity) {
 /**
  * Task: Project Analysis & Planning
  */
+/**
+ * Task: World Ontology Research
+ * Purpose: Deep research and modeling of the world/domain context
+ */
+const worldOntologyResearchTask = defineTask({
+  name: 'world-ontology-research',
+  description: 'Comprehensive research and ontology modeling of world/domain context',
+
+  inputs: {
+    projectName: { type: 'string', required: true },
+    domainDescription: { type: 'string', default: '' },
+    ontologyScope: { type: 'string', default: 'comprehensive' },
+    domainType: { type: 'string', default: 'general' },
+    stakeholderContext: { type: 'string', default: 'multi-team' },
+    researchDepth: { type: 'string', default: 'comprehensive' },
+    iteration: { type: 'number', default: 0 },
+    previousResult: { type: 'object', default: null },
+    identifiedGaps: { type: 'array', default: [] }
+  },
+
+  outputs: {
+    worldModel: { type: 'object' },
+    domainCoverage: { type: 'object' },
+    keyEntities: { type: 'array' },
+    externalSystems: { type: 'array' },
+    stakeholderTypes: { type: 'array' },
+    industryContext: { type: 'object' },
+    regulatoryLandscape: { type: 'object' },
+    technologyEcosystem: { type: 'object' },
+    researchSources: { type: 'array' },
+    knowledgeGaps: { type: 'array' },
+    artifacts: { type: 'array' }
+  },
+
+  async run(inputs, taskCtx) {
+    const effectId = taskCtx.effectId;
+
+    return {
+      kind: 'agent',
+      title: `World Ontology Research: ${inputs.projectName} (Iteration ${inputs.iteration + 1})`,
+      agent: {
+        role: 'world-ontology-researcher',
+        goal: `Build comprehensive world model and domain ontology for ${inputs.projectName}`,
+        instructions: [
+          '=== STRUCTURED CRITICAL THINKING FRAMEWORK ===',
+          'Apply systematic analysis using the DEEP-CARE framework:',
+          'D - DEPTH ANALYSIS: What fundamental concepts need deeper investigation?',
+          'E - EVIDENCE QUALITY: How strong is our evidence base? What sources need validation?',
+          'E - EXPANSION NEEDS: What domains/perspectives are underrepresented?',
+          'P - PRECISION GAPS: Where are our models imprecise or ambiguous?',
+          'C - CONSISTENCY CHECK: What internal contradictions exist?',
+          'A - ACCURACY VALIDATION: What claims need empirical verification?',
+          'R - RELEVANCE ASSESSMENT: What research is peripheral vs. critical?',
+          'E - EVOLUTION PLANNING: How should this iteration advance our understanding?',
+
+          '=== MULTI-METHOD RESEARCH FRAMEWORK ===',
+          'Use triangulation across research methods for validation:',
+          '1. SYSTEMATIC LITERATURE REVIEW',
+          '   - Define search strategy with keywords, databases, inclusion criteria',
+          '   - Apply quality assessment framework for source credibility',
+          '   - Extract data systematically with standardized forms',
+          '   - Synthesize findings using thematic analysis or meta-analysis',
+          '   - Document evidence quality levels and confidence intervals',
+
+          '2. EXPERT CONSULTATION PROTOCOL',
+          '   - Identify and recruit domain experts using snowball sampling',
+          '   - Design structured interview protocols with validation questions',
+          '   - Use Delphi method for consensus building on contested topics',
+          '   - Apply inter-rater reliability measures for expert agreement',
+          '   - Weight expert opinions by expertise level and track record',
+
+          '3. EMPIRICAL DATA ANALYSIS',
+          '   - Collect quantitative data from industry reports, surveys, metrics',
+          '   - Apply statistical analysis to identify patterns and trends',
+          '   - Use observational studies of existing systems and processes',
+          '   - Conduct comparative analysis across similar domains/organizations',
+          '   - Validate findings through replication and sensitivity analysis',
+
+          '=== COMPREHENSIVE WORLD RESEARCH ===',
+          '1. DOMAIN LANDSCAPE ANALYSIS',
+          '   - Research industry structure, key players, competitive dynamics',
+          '   - Identify domain-specific concepts, terminology, and standards',
+          '   - Map value chains, business models, and economic factors',
+          '   - Analyze historical evolution and future trends',
+          '   - Document domain-specific best practices and methodologies',
+
+          '2. STAKEHOLDER ECOSYSTEM MAPPING',
+          '   - Identify ALL stakeholder types: direct, indirect, influencers',
+          '   - Map stakeholder relationships, dependencies, conflicts',
+          '   - Analyze stakeholder motivations, goals, and pain points',
+          '   - Document decision-making processes and authority structures',
+          '   - Understand cultural, geographic, and organizational contexts',
+
+          '3. EXTERNAL SYSTEMS & INTEGRATIONS',
+          '   - Map existing technology landscape and systems',
+          '   - Identify data sources, APIs, and integration points',
+          '   - Analyze system architectures, protocols, and standards',
+          '   - Document security, compliance, and governance requirements',
+          '   - Understand system lifecycles and migration patterns',
+
+          '4. REGULATORY & COMPLIANCE LANDSCAPE',
+          '   - Research applicable regulations across jurisdictions',
+          '   - Analyze compliance requirements and audit processes',
+          '   - Identify regulatory bodies and approval processes',
+          '   - Map legal constraints and liability considerations',
+          '   - Understand industry-specific governance frameworks',
+
+          '5. TECHNOLOGY ECOSYSTEM ANALYSIS',
+          '   - Map current and emerging technologies relevant to domain',
+          '   - Analyze technology adoption patterns and maturity levels',
+          '   - Identify standard platforms, frameworks, and tools',
+          '   - Understand vendor landscape and technology dependencies',
+          '   - Assess technology risks and obsolescence factors',
+
+          '=== ADVANCED ONTOLOGY CONSTRUCTION ===',
+          '1. FORMAL ONTOLOGY ENGINEERING',
+          '   - Apply ontology design patterns from established libraries',
+          '   - Use formal logic for concept definitions and relationships',
+          '   - Implement automated consistency checking with reasoners',
+          '   - Apply competency questions to validate ontology adequacy',
+          '   - Use modular design with clear interface specifications',
+
+          '2. EVIDENCE-BASED VALIDATION FRAMEWORK',
+          '   - Implement multi-source triangulation for each major claim',
+          '   - Apply Bradford Hill criteria for causal relationships',
+          '   - Use confidence intervals and uncertainty quantification',
+          '   - Document evidence quality using GRADE framework',
+          '   - Implement bias detection and mitigation protocols',
+
+          '3. STAKEHOLDER VALIDATION LOOPS',
+          '   - Design structured validation sessions with stakeholder groups',
+          '   - Use cognitive walkthroughs to test ontology usability',
+          '   - Apply card sorting and concept mapping for validation',
+          '   - Implement iterative feedback collection with version tracking',
+          '   - Use quantitative metrics for stakeholder agreement levels',
+
+          '=== ADVANCED QUALITY METRICS ===',
+          'Apply comprehensive quality assessment framework:',
+          '- COMPLETENESS: Domain coverage analysis using systematic checklists',
+          '- CORRECTNESS: Fact-checking against authoritative sources with confidence scores',
+          '- CONSISTENCY: Automated logic checking and conflict detection',
+          '- CONCISENESS: Information density analysis and redundancy elimination',
+          '- CLARITY: Readability metrics and expert comprehension testing',
+          '- CURRENCY: Temporal validity assessment and update requirements',
+          '- CREDIBILITY: Source quality analysis and expert endorsement tracking',
+
+          '=== SYSTEMATIC GAP DETECTION ===',
+          'Use structured gap identification methods:',
+          '1. COVERAGE MATRIX ANALYSIS: Map ontology against domain taxonomy',
+          '2. COMPETENCY QUESTION TESTING: Validate against use case scenarios',
+          '3. EXPERT REVIEW PROTOCOLS: Structured expert evaluation with scoring',
+          '4. COMPARATIVE ANALYSIS: Benchmark against existing domain models',
+          '5. STAKEHOLDER NEEDS MAPPING: Trace stakeholder requirements to ontology',
+          '6. TEMPORAL EVOLUTION ANALYSIS: Assess ontology stability and change needs',
+
+          '=== PREDICTIVE ITERATION PLANNING ===',
+          'Use data-driven iteration planning:',
+          '- QUALITY TRAJECTORY ANALYSIS: Model quality improvement rates',
+          '- GAP PRIORITIZATION MATRIX: Weight gaps by impact and effort',
+          '- RESEARCH EFFORT ESTIMATION: Predict time/resources for gap resolution',
+          '- CONVERGENCE PREDICTION: Estimate iterations needed for target quality',
+          '- RISK-BENEFIT ANALYSIS: Optimize iteration focus for maximum impact',
+
+          '=== UNCERTAINTY MANAGEMENT ===',
+          'Systematic uncertainty handling:',
+          '- UNCERTAINTY QUANTIFICATION: Assign confidence levels to all claims',
+          '- SENSITIVITY ANALYSIS: Test model robustness to assumption changes',
+          '- SCENARIO PLANNING: Model ontology under different future conditions',
+          '- ASSUMPTION TRACKING: Document and validate all underlying assumptions',
+          '- CONTINGENCY PLANNING: Prepare alternative models for uncertain areas'
+        ],
+        context: {
+          projectName: inputs.projectName,
+          domainDescription: inputs.domainDescription,
+          domainType: inputs.domainType,
+          stakeholderContext: inputs.stakeholderContext,
+          iteration: inputs.iteration,
+          previousResult: inputs.previousResult,
+          identifiedGaps: inputs.identifiedGaps
+        }
+      },
+      io: {
+        inputJsonPath: `tasks/${effectId}/input.json`,
+        outputJsonPath: `tasks/${effectId}/result.json`
+      },
+      labels: ['world-ontology', 'domain-research', 'comprehensive-analysis', 'stakeholder-mapping']
+    };
+  }
+});
+
+/**
+ * Task: Problem Space Ontology
+ * Purpose: Deep analysis and modeling of the problem space
+ */
+const problemSpaceOntologyTask = defineTask({
+  name: 'problem-space-ontology',
+  description: 'Comprehensive analysis and ontology modeling of the problem space',
+
+  inputs: {
+    projectName: { type: 'string', required: true },
+    domainDescription: { type: 'string', default: '' },
+    worldOntology: { type: 'object', required: true },
+    stakeholderContext: { type: 'string', default: 'multi-team' },
+    projectComplexity: { type: 'string', default: 'moderate' },
+    analysisDepth: { type: 'string', default: 'exhaustive' },
+    iteration: { type: 'number', default: 0 },
+    previousResult: { type: 'object', default: null },
+    identifiedGaps: { type: 'array', default: [] }
+  },
+
+  outputs: {
+    problemModel: { type: 'object' },
+    painPoints: { type: 'array' },
+    rootCauses: { type: 'array' },
+    constraints: { type: 'array' },
+    requirements: { type: 'object' },
+    userNeeds: { type: 'object' },
+    businessGoals: { type: 'object' },
+    problemComplexity: { type: 'object' },
+    impactAnalysis: { type: 'object' },
+    successCriteria: { type: 'array' },
+    artifacts: { type: 'array' }
+  },
+
+  async run(inputs, taskCtx) {
+    const effectId = taskCtx.effectId;
+
+    return {
+      kind: 'agent',
+      title: `Problem Space Ontology: ${inputs.projectName} (Iteration ${inputs.iteration + 1})`,
+      agent: {
+        role: 'problem-space-analyst',
+        goal: `Build comprehensive problem space model and ontology for ${inputs.projectName}`,
+        instructions: [
+          '=== SYSTEMATIC PROBLEM ANALYSIS FRAMEWORK ===',
+          'Apply the PROBLEM-SOLVE methodology:',
+          'P - PATTERN RECOGNITION: What recurring patterns exist in problem manifestations?',
+          'R - ROOT CAUSE VALIDATION: Are our causal models empirically supported?',
+          'O - OBJECTIVE MEASUREMENT: How can we quantify problem severity and impact?',
+          'B - BIAS IDENTIFICATION: What cognitive biases might distort our problem view?',
+          'L - LOGICAL CONSISTENCY: Do our problem models have internal contradictions?',
+          'E - EVIDENCE STRENGTH: What level of evidence supports each problem claim?',
+          'M - MULTI-PERSPECTIVE: Have we considered all stakeholder viewpoints?',
+          'S - SYSTEMS THINKING: How do problem elements interact dynamically?',
+          'O - OUTCOME PREDICTION: What are the consequences of not solving these problems?',
+          'L - LEARNING INTEGRATION: How does this iteration improve our understanding?',
+          'V - VALIDATION PLANNING: How will we test our problem hypotheses?',
+          'E - EVOLUTION STRATEGY: How should our problem model evolve next?',
+
+          '=== MULTI-DIMENSIONAL PROBLEM RESEARCH ===',
+          'Use systematic research methodology:',
+          '1. ETHNOGRAPHIC OBSERVATION',
+          '   - Conduct structured observation of problem contexts',
+          '   - Use participant observation to understand lived experiences',
+          '   - Apply time-sampling and event-sampling for systematic data collection',
+          '   - Document behavioral patterns and environmental factors',
+          '   - Use video analysis and coded observation protocols',
+
+          '2. QUANTITATIVE PROBLEM MEASUREMENT',
+          '   - Design metrics for problem frequency, severity, and impact',
+          '   - Collect baseline measurements and trend data',
+          '   - Use statistical analysis to identify problem correlations',
+          '   - Apply cost-benefit analysis to quantify problem economics',
+          '   - Implement control group analysis where possible',
+
+          '3. STAKEHOLDER JOURNEY MAPPING',
+          '   - Map detailed user journeys with pain point identification',
+          '   - Use service design methods for touchpoint analysis',
+          '   - Apply emotion mapping to understand psychological impacts',
+          '   - Conduct journey validation with representative users',
+          '   - Use journey analytics to prioritize improvement opportunities',
+
+          '=== COMPREHENSIVE PROBLEM ANALYSIS ===',
+          '1. PAIN POINT IDENTIFICATION & ANALYSIS',
+          '   - Systematically identify all stakeholder pain points',
+          '   - Categorize by severity, frequency, and impact',
+          '   - Analyze pain point relationships and cascading effects',
+          '   - Document current workarounds and coping mechanisms',
+          '   - Quantify business and operational costs of problems',
+
+          '2. ADVANCED ROOT CAUSE ANALYSIS',
+          '   - Apply multiple methodologies: 5 Whys, Fishbone, Fault Tree Analysis, FMEA',
+          '   - Use systems dynamics modeling for complex causal relationships',
+          '   - Apply Cynefin framework to categorize problem complexity',
+          '   - Use statistical correlation analysis to validate causal hypotheses',
+          '   - Implement causal loop diagrams for feedback system analysis',
+          '   - Apply Apollo RCA methodology for systematic investigation',
+          '   - Use barrier analysis to identify prevention failures',
+
+          '3. CONSTRAINT MAPPING & ANALYSIS',
+          '   - Identify ALL constraint types: technical, business, regulatory, cultural',
+          '   - Analyze constraint sources, flexibility, and change potential',
+          '   - Map constraint interactions and dependencies',
+          '   - Assess constraint impact on problem-solving approaches',
+          '   - Document constraint priorities and negotiability',
+
+          '4. REQUIREMENTS ELICITATION & MODELING',
+          '   - Capture functional, non-functional, and quality requirements',
+          '   - Model user needs across different personas and contexts',
+          '   - Document business goals with clear success metrics',
+          '   - Analyze requirement conflicts and trade-offs',
+          '   - Establish requirement priorities and dependencies',
+
+          '5. PROBLEM COMPLEXITY ASSESSMENT',
+          '   - Analyze problem complexity across multiple dimensions',
+          '   - Identify interconnections and system dynamics',
+          '   - Assess uncertainty and ambiguity levels',
+          '   - Map problem boundaries and scope',
+          '   - Evaluate problem stability and change dynamics',
+
+          '=== ADVANCED PROBLEM VALIDATION ===',
+          '1. EMPIRICAL PROBLEM TESTING',
+          '   - Design controlled experiments to test problem hypotheses',
+          '   - Use A/B testing to validate problem impact measurements',
+          '   - Apply longitudinal studies to understand problem evolution',
+          '   - Implement natural experiments using existing variations',
+          '   - Use predictive modeling to test problem causation theories',
+
+          '2. CROSS-VALIDATION METHODOLOGY',
+          '   - Implement multi-stakeholder validation sessions',
+          '   - Use independent research teams for parallel analysis',
+          '   - Apply expert panel reviews with structured protocols',
+          '   - Use crowdsourcing for large-scale validation',
+          '   - Implement automated validation using machine learning',
+
+          '3. PROBLEM MODEL STRESS TESTING',
+          '   - Test problem models under extreme scenarios',
+          '   - Use adversarial testing to identify model weaknesses',
+          '   - Apply Monte Carlo simulation for uncertainty analysis',
+          '   - Test model robustness across different contexts',
+          '   - Use counterfactual reasoning to validate problem logic',
+
+          '=== COMPREHENSIVE COVERAGE FRAMEWORK ===',
+          'Systematic coverage validation:',
+          '- STAKEHOLDER COVERAGE MATRIX: Ensure all affected parties represented',
+          '- TEMPORAL COVERAGE ANALYSIS: Past, present, and future problem states',
+          '- CONTEXTUAL COVERAGE: All environments where problems manifest',
+          '- SEVERITY COVERAGE: Problems across all impact levels',
+          '- FREQUENCY COVERAGE: Rare and common problem occurrences',
+          '- INTERDEPENDENCY MAPPING: Problems that interact or cascade',
+
+          '=== PREDICTIVE PROBLEM MODELING ===',
+          'Advanced problem evolution analysis:',
+          '- TREND ANALYSIS: Statistical modeling of problem evolution patterns',
+          '- SCENARIO MODELING: Future problem states under different conditions',
+          '- EARLY WARNING SYSTEMS: Indicators for emerging problems',
+          '- IMPACT FORECASTING: Predicting consequences of unresolved problems',
+          '- SOLUTION DEPENDENCY ANALYSIS: How solutions affect problem landscape',
+
+          '=== QUALITY-DRIVEN ITERATION STRATEGY ===',
+          'Data-driven iteration planning:',
+          '- PROBLEM UNDERSTANDING METRICS: Quantify depth and accuracy of knowledge',
+          '- GAP IMPACT ANALYSIS: Prioritize research based on potential impact',
+          '- VALIDATION CONFIDENCE TRACKING: Monitor certainty levels over iterations',
+          '- RESEARCH EFFICIENCY OPTIMIZATION: Focus effort on highest-value questions',
+          '- CONVERGENCE INDICATORS: Predict when sufficient understanding is achieved'
+        ],
+        context: {
+          projectName: inputs.projectName,
+          domainDescription: inputs.domainDescription,
+          worldOntology: inputs.worldOntology,
+          stakeholderContext: inputs.stakeholderContext,
+          iteration: inputs.iteration,
+          previousResult: inputs.previousResult,
+          identifiedGaps: inputs.identifiedGaps
+        }
+      },
+      io: {
+        inputJsonPath: `tasks/${effectId}/input.json`,
+        outputJsonPath: `tasks/${effectId}/result.json`
+      },
+      labels: ['problem-ontology', 'root-cause-analysis', 'requirements-modeling', 'constraint-analysis']
+    };
+  }
+});
+
+/**
+ * Task: Solution Space Exploration
+ * Purpose: Comprehensive exploration and modeling of solution possibilities
+ */
+const solutionSpaceExplorationTask = defineTask({
+  name: 'solution-space-exploration',
+  description: 'Comprehensive exploration and ontology modeling of solution space',
+
+  inputs: {
+    projectName: { type: 'string', required: true },
+    worldOntology: { type: 'object', required: true },
+    problemOntology: { type: 'object', required: true },
+    domainType: { type: 'string', default: 'general' },
+    projectComplexity: { type: 'string', default: 'moderate' },
+    explorationScope: { type: 'string', default: 'comprehensive' },
+    iteration: { type: 'number', default: 0 },
+    previousResult: { type: 'object', default: null },
+    identifiedGaps: { type: 'array', default: [] }
+  },
+
+  outputs: {
+    solutionModel: { type: 'object' },
+    solutionApproaches: { type: 'array' },
+    architecturePatterns: { type: 'array' },
+    technologyOptions: { type: 'array' },
+    implementationStrategies: { type: 'array' },
+    feasibilityAssessment: { type: 'object' },
+    riskAssessment: { type: 'object' },
+    tradeoffAnalysis: { type: 'object' },
+    innovationOpportunities: { type: 'array' },
+    solutionConstraints: { type: 'array' },
+    artifacts: { type: 'array' }
+  },
+
+  async run(inputs, taskCtx) {
+    const effectId = taskCtx.effectId;
+
+    return {
+      kind: 'agent',
+      title: `Solution Space Exploration: ${inputs.projectName} (Iteration ${inputs.iteration + 1})`,
+      agent: {
+        role: 'solution-space-explorer',
+        goal: `Explore comprehensive solution space and build solution ontology for ${inputs.projectName}`,
+        instructions: [
+          '=== SYSTEMATIC SOLUTION INNOVATION FRAMEWORK ===',
+          'Apply the INNOVATE-SOLVE methodology:',
+          'I - IDEATION BREADTH: Have we explored sufficient solution diversity?',
+          'N - NOVELTY ASSESSMENT: What innovative approaches are we missing?',
+          'N - NEED ALIGNMENT: Do solutions directly address validated problem needs?',
+          'O - OPPORTUNITY IDENTIFICATION: What untapped solution opportunities exist?',
+          'V - VIABILITY ANALYSIS: Are our feasibility assessments rigorous?',
+          'A - ALTERNATIVE GENERATION: What alternative approaches haven\'t been considered?',
+          'T - TECHNOLOGY ASSESSMENT: Are we current on relevant technology capabilities?',
+          'E - EVALUATION RIGOR: How robust are our solution evaluation methods?',
+          'S - SYNTHESIS POTENTIAL: Can we combine approaches for better solutions?',
+          'O - OPTIMIZATION OPPORTUNITIES: Where can solutions be enhanced?',
+          'L - LEARNING INTEGRATION: How do insights from this iteration inform next?',
+          'V - VALIDATION STRATEGY: How will we test solution effectiveness?',
+          'E - EVOLUTION PLANNING: How should solution models develop further?',
+
+          '=== SYSTEMATIC SOLUTION DISCOVERY ===',
+          'Use structured innovation methodologies:',
+          '1. DESIGN THINKING PROTOCOLS',
+          '   - Apply double diamond process for divergent-convergent thinking',
+          '   - Use structured brainstorming with SCAMPER and TRIZ methods',
+          '   - Implement biomimicry and analogical reasoning for innovation',
+          '   - Apply jobs-to-be-done framework for solution-need alignment',
+          '   - Use design sprints for rapid solution prototyping and testing',
+
+          '2. TECHNOLOGY INTELLIGENCE GATHERING',
+          '   - Conduct systematic patent landscape analysis',
+          '   - Monitor emerging technology research and development trends',
+          '   - Apply technology forecasting methods (Delphi, scenario planning)',
+          '   - Use competitive intelligence for solution benchmarking',
+          '   - Implement technology readiness level assessment protocols',
+
+          '3. SOLUTION SPACE MAPPING',
+          '   - Create comprehensive solution morphology matrices',
+          '   - Use function-behavior-structure modeling for systematic exploration',
+          '   - Apply solution pattern libraries and architectural catalogs',
+          '   - Use constraint satisfaction programming for solution optimization',
+          '   - Implement multi-objective optimization for trade-off analysis',
+
+          '=== COMPREHENSIVE SOLUTION EXPLORATION ===',
+          '1. SOLUTION APPROACH GENERATION',
+          '   - Generate diverse solution approaches using multiple methodologies',
+          '   - Consider conventional, innovative, and disruptive approaches',
+          '   - Explore solutions at different levels: tactical, strategic, transformational',
+          '   - Analyze existing solutions in similar domains for patterns',
+          '   - Generate hybrid approaches combining multiple strategies',
+
+          '2. ARCHITECTURE PATTERN ANALYSIS',
+          '   - Explore architectural patterns relevant to problem space',
+          '   - Analyze pattern trade-offs: monolithic, microservices, event-driven, etc.',
+          '   - Consider domain-specific architectural approaches',
+          '   - Map patterns to quality attributes and constraints',
+          '   - Evaluate pattern evolution and future-proofing',
+
+          '3. TECHNOLOGY LANDSCAPE MAPPING',
+          '   - Survey technology options across the solution stack',
+          '   - Analyze technology maturity, adoption, and ecosystem health',
+          '   - Consider emerging technologies and their potential impact',
+          '   - Evaluate technology compatibility and integration complexity',
+          '   - Assess vendor relationships and technology dependencies',
+
+          '4. IMPLEMENTATION STRATEGY ANALYSIS',
+          '   - Explore different implementation approaches: phased, big-bang, parallel',
+          '   - Analyze build vs. buy vs. partner strategies',
+          '   - Consider pilot, proof-of-concept, and MVP approaches',
+          '   - Evaluate implementation risks and mitigation strategies',
+          '   - Map implementation strategies to organizational capabilities',
+
+          '5. FEASIBILITY & RISK ASSESSMENT',
+          '   - Assess technical feasibility across all solution dimensions',
+          '   - Evaluate business feasibility: ROI, resource requirements, timeline',
+          '   - Analyze organizational feasibility: skills, culture, change capacity',
+          '   - Identify solution risks and failure modes',
+          '   - Assess regulatory and compliance feasibility',
+
+          '=== ADVANCED INNOVATION METHODOLOGIES ===',
+          '1. SYSTEMATIC INVENTIVE THINKING',
+          '   - Apply TRIZ methodology for systematic problem-solution matching',
+          '   - Use contradiction analysis to identify breakthrough opportunities',
+          '   - Apply algorithm of inventive problem solving (ARIZ)',
+          '   - Use function analysis and trimming for elegant solutions',
+          '   - Implement innovation patterns and evolutionary trends analysis',
+
+          '2. CROSS-DOMAIN SOLUTION MINING',
+          '   - Apply analogical reasoning from biology, physics, other industries',
+          '   - Use systematic literature mining across disciplines',
+          '   - Implement solution pattern matching algorithms',
+          '   - Apply biomimicry databases and natural solution principles',
+          '   - Use artificial intelligence for solution discovery assistance',
+
+          '3. FUTURE-ORIENTED SOLUTION DEVELOPMENT',
+          '   - Apply technology roadmapping for solution evolution planning',
+          '   - Use scenario-based solution design for future robustness',
+          '   - Implement anticipatory design for emerging requirements',
+          '   - Apply weak signal detection for emerging solution opportunities',
+          '   - Use backcasting from desired future states',
+
+          '=== RIGOROUS SOLUTION VALIDATION ===',
+          '1. MULTI-CRITERIA DECISION ANALYSIS',
+          '   - Apply AHP/ANP for systematic solution evaluation',
+          '   - Use PROMETHEE/ELECTRE methods for complex trade-offs',
+          '   - Implement fuzzy logic for uncertain solution attributes',
+          '   - Apply portfolio optimization for solution combination',
+          '   - Use sensitivity analysis for robust decision making',
+
+          '2. EXPERIMENTAL SOLUTION TESTING',
+          '   - Design controlled experiments for solution validation',
+          '   - Use rapid prototyping and MVP testing methodologies',
+          '   - Apply statistical design of experiments (DoE)',
+          '   - Implement A/B testing for solution performance comparison',
+          '   - Use simulation modeling for complex solution behavior',
+
+          '3. STAKEHOLDER VALIDATION PROTOCOLS',
+          '   - Design structured stakeholder evaluation sessions',
+          '   - Use conjoint analysis for stakeholder preference modeling',
+          '   - Apply user testing protocols with quantitative metrics',
+          '   - Implement expert panel evaluation with Delphi method',
+          '   - Use market research for solution acceptance testing',
+
+          '=== COMPREHENSIVE FEASIBILITY FRAMEWORK ===',
+          'Multi-dimensional feasibility assessment:',
+          '- TECHNICAL FEASIBILITY: Rigorous technical risk and capability analysis',
+          '- ECONOMIC FEASIBILITY: Detailed ROI, NPV, and cost-benefit modeling',
+          '- ORGANIZATIONAL FEASIBILITY: Change management and capability assessment',
+          '- MARKET FEASIBILITY: Market analysis and competitive positioning',
+          '- REGULATORY FEASIBILITY: Compliance analysis and approval timelines',
+          '- ENVIRONMENTAL FEASIBILITY: Sustainability and environmental impact',
+          '- SOCIAL FEASIBILITY: Social acceptance and ethical considerations',
+
+          '=== SOLUTION OPTIMIZATION STRATEGIES ===',
+          'Advanced optimization approaches:',
+          '- PARETO OPTIMIZATION: Multi-objective optimization for trade-off analysis',
+          '- ROBUST DESIGN: Solutions that perform well under uncertainty',
+          '- ADAPTIVE SOLUTIONS: Self-modifying solutions for changing environments',
+          '- MODULAR ARCHITECTURES: Flexible solutions with composable components',
+          '- EVOLUTIONARY APPROACHES: Solutions that improve through use',
+          '- ECOSYSTEM SOLUTIONS: Solutions that leverage network effects',
+
+          '=== PREDICTIVE SOLUTION MODELING ===',
+          'Forward-looking solution analysis:',
+          '- SOLUTION LIFECYCLE MODELING: Long-term solution behavior prediction',
+          '- ADOPTION CURVE ANALYSIS: Solution acceptance and scaling patterns',
+          '- COMPETITIVE RESPONSE MODELING: How competitors might react',
+          '- TECHNOLOGY EVOLUTION IMPACT: How advancing technology affects solutions',
+          '- REGULATORY EVOLUTION: How changing regulations affect viability',
+          '- SOCIAL TREND ALIGNMENT: How social changes affect solution relevance'
+        ],
+        context: {
+          projectName: inputs.projectName,
+          worldOntology: inputs.worldOntology,
+          problemOntology: inputs.problemOntology,
+          domainType: inputs.domainType,
+          projectComplexity: inputs.projectComplexity,
+          iteration: inputs.iteration,
+          previousResult: inputs.previousResult,
+          identifiedGaps: inputs.identifiedGaps
+        }
+      },
+      io: {
+        inputJsonPath: `tasks/${effectId}/input.json`,
+        outputJsonPath: `tasks/${effectId}/result.json`
+      },
+      labels: ['solution-exploration', 'architecture-analysis', 'technology-assessment', 'feasibility-study']
+    };
+  }
+});
+
+/**
+ * Task: Integrated Ontology Synthesis
+ * Purpose: Synthesize world, problem, and solution ontologies into integrated model
+ */
+const integratedOntologySynthesisTask = defineTask({
+  name: 'integrated-ontology-synthesis',
+  description: 'Synthesize world, problem, and solution ontologies into coherent integrated model',
+
+  inputs: {
+    projectName: { type: 'string', required: true },
+    worldOntology: { type: 'object', required: true },
+    problemOntology: { type: 'object', required: true },
+    solutionOntology: { type: 'object', required: true },
+    ontologyScope: { type: 'string', default: 'comprehensive' },
+    targetQuality: { type: 'number', default: 85 },
+    iteration: { type: 'number', default: 0 },
+    previousResult: { type: 'object', default: null },
+    identifiedGaps: { type: 'array', default: [] }
+  },
+
+  outputs: {
+    schema: { type: 'object' },
+    integratedOntology: { type: 'object' },
+    traceabilityMatrix: { type: 'object' },
+    coverageMetrics: { type: 'object' },
+    consistencyValidation: { type: 'object' },
+    strategicAlignment: { type: 'object' },
+    implementationReadiness: { type: 'object' },
+    qualityAssessment: { type: 'object' },
+    knowledgeGraph: { type: 'object' },
+    artifacts: { type: 'array' }
+  },
+
+  async run(inputs, taskCtx) {
+    const effectId = taskCtx.effectId;
+
+    return {
+      kind: 'agent',
+      title: `Integrated Ontology Synthesis: ${inputs.projectName} (Iteration ${inputs.iteration + 1})`,
+      agent: {
+        role: 'ontology-integration-architect',
+        goal: `Synthesize world, problem, and solution ontologies into coherent integrated model for ${inputs.projectName}`,
+        instructions: [
+          '=== SYSTEMATIC INTEGRATION ANALYSIS FRAMEWORK ===',
+          'Apply the INTEGRATE-VERIFY methodology:',
+          'I - INTEGRATION COHERENCE: Are ontology modules logically consistent?',
+          'N - NORMALIZATION ANALYSIS: Are there redundancies or conflicts to resolve?',
+          'T - TRACEABILITY STRENGTH: Can we trace from world through problem to solution?',
+          'E - EVIDENCE CONSOLIDATION: Are all claims supported across integrated model?',
+          'G - GAP IDENTIFICATION: What integration gaps create logical inconsistencies?',
+          'R - RELATIONSHIP VALIDATION: Are inter-ontology relationships correctly modeled?',
+          'A - ALIGNMENT VERIFICATION: Do integrated models serve strategic objectives?',
+          'T - TESTING COMPLETENESS: Can integrated model answer all competency questions?',
+          'E - ERROR DETECTION: What logical errors exist in the integrated model?',
+          'V - VALIDATION COVERAGE: Have we validated integration from all perspectives?',
+          'E - EVOLUTION READINESS: Can integrated model adapt to changes?',
+          'R - REFINEMENT STRATEGY: How should integration improve in next iteration?',
+          'I - IMPLEMENTATION SUPPORT: Does integration enable effective downstream work?',
+          'F - FORMAL VERIFICATION: Can we prove integration correctness?',
+          'Y - YIELD OPTIMIZATION: Does integration maximize value delivery?',
+
+          '=== FORMAL INTEGRATION METHODOLOGIES ===',
+          'Use rigorous integration techniques:',
+          '1. FORMAL ONTOLOGY ALIGNMENT',
+          '   - Apply automated ontology matching algorithms',
+          '   - Use semantic similarity measures for concept alignment',
+          '   - Implement logic-based integration with formal semantics',
+          '   - Apply ontology merging techniques with conflict resolution',
+          '   - Use federated ontology architectures for loose coupling',
+
+          '2. LOGICAL CONSISTENCY VERIFICATION',
+          '   - Apply automated theorem proving for logical validation',
+          '   - Use model checking for temporal and modal properties',
+          '   - Implement constraint satisfaction for consistency checking',
+          '   - Apply satisfiability (SAT) solving for logical conflicts',
+          '   - Use description logic reasoning for subsumption checking',
+
+          '3. SEMANTIC INTEGRATION VALIDATION',
+          '   - Apply semantic web technologies (OWL, RDF, SPARQL)',
+          '   - Use knowledge graph embeddings for similarity analysis',
+          '   - Implement semantic annotation and linking protocols',
+          '   - Apply natural language processing for semantic validation',
+          '   - Use machine learning for pattern recognition in integration',
+
+          '=== COMPREHENSIVE ONTOLOGY INTEGRATION ===',
+          '1. ONTOLOGY COHERENCE ANALYSIS',
+          '   - Analyze consistency between world, problem, and solution ontologies',
+          '   - Identify conflicts, gaps, and misalignments between models',
+          '   - Map relationships and dependencies across ontology boundaries',
+          '   - Resolve semantic conflicts and terminology mismatches',
+          '   - Ensure logical consistency across the integrated model',
+
+          '2. SCHEMA ARCHITECTURE DESIGN',
+          '   - Design modular schema architecture with clear boundaries',
+          '   - Create core domain schema with specialized extensions',
+          '   - Define interface specifications between schema modules',
+          '   - Establish schema governance and evolution principles',
+          '   - Implement schema versioning and compatibility management',
+
+          '3. STRATEGIC ALIGNMENT VALIDATION',
+          '   - Map business goals to ontology concepts and relationships',
+          '   - Trace user needs through world-problem-solution chain',
+          '   - Validate constraint satisfaction across all ontology levels',
+          '   - Ensure solution concepts address identified pain points',
+          '   - Verify strategic coherence from world context to implementation',
+
+          '4. TRACEABILITY MATRIX CONSTRUCTION',
+          '   - Build comprehensive traceability from world through solution',
+          '   - Map stakeholder needs to solution features',
+          '   - Trace requirements to architectural decisions',
+          '   - Link constraints to design choices and trade-offs',
+          '   - Create bidirectional traceability for impact analysis',
+
+          '5. COVERAGE & COMPLETENESS ASSESSMENT',
+          '   - Assess ontology coverage of world, problem, and solution spaces',
+          '   - Identify gaps in domain knowledge or modeling',
+          '   - Validate completeness against stakeholder requirements',
+          '   - Check coverage of edge cases and exceptional scenarios',
+          '   - Ensure balanced depth across all ontology dimensions',
+
+          '=== COMPREHENSIVE QUALITY ASSURANCE ===',
+          '1. MULTI-LEVEL VALIDATION FRAMEWORK',
+          '   - SYNTACTIC VALIDATION: Schema compliance and format checking',
+          '   - SEMANTIC VALIDATION: Meaning consistency and logical coherence',
+          '   - PRAGMATIC VALIDATION: Usability and fitness for purpose',
+          '   - EMPIRICAL VALIDATION: Evidence-based claim verification',
+          '   - TEMPORAL VALIDATION: Consistency across time and evolution',
+
+          '2. AUTOMATED QUALITY METRICS',
+          '   - Apply ontology evaluation metrics (cohesion, coupling, complexity)',
+          '   - Use graph analysis for structural quality assessment',
+          '   - Implement coverage metrics for completeness analysis',
+          '   - Apply information theory for ontology informativeness',
+          '   - Use machine learning for quality pattern recognition',
+
+          '3. STAKEHOLDER QUALITY VALIDATION',
+          '   - Design competency question frameworks for validation',
+          '   - Implement user acceptance testing protocols',
+          '   - Apply cognitive walkthroughs for usability testing',
+          '   - Use expert evaluation with structured assessment criteria',
+          '   - Implement continuous feedback collection and analysis',
+
+          '=== IMPLEMENTATION READINESS FRAMEWORK ===',
+          '1. CODE GENERATION READINESS',
+          '   - Validate schema supports all required code patterns',
+          '   - Test automated code generation from ontology models',
+          '   - Verify API generation and interface consistency',
+          '   - Validate database schema generation capabilities',
+          '   - Test documentation generation from ontology annotations',
+
+          '2. TESTING AND VALIDATION SUPPORT',
+          '   - Generate test cases from ontology specifications',
+          '   - Create validation rules from constraint definitions',
+          '   - Design acceptance criteria from requirement traceability',
+          '   - Generate performance tests from quality attributes',
+          '   - Create compliance tests from regulatory requirements',
+
+          '3. GOVERNANCE AND MAINTENANCE READINESS',
+          '   - Design versioning strategies for ontology evolution',
+          '   - Create change impact analysis frameworks',
+          '   - Establish quality gates for ontology updates',
+          '   - Design stakeholder governance processes',
+          '   - Create ontology lifecycle management protocols',
+
+          '=== STRATEGIC VALIDATION FRAMEWORK ===',
+          '1. BUSINESS VALUE VALIDATION',
+          '   - Map ontology capabilities to business value drivers',
+          '   - Validate ROI assumptions through ontology analysis',
+          '   - Test business process support through ontology modeling',
+          '   - Verify competitive advantage claims through differentiation analysis',
+          '   - Validate scalability claims through growth scenario modeling',
+
+          '2. STAKEHOLDER EXPERIENCE VALIDATION',
+          '   - Design user journey validation using ontology models',
+          '   - Test stakeholder interaction patterns against ontology',
+          '   - Validate emotional needs satisfaction through experience modeling',
+          '   - Test accessibility and inclusion through universal design validation',
+          '   - Verify cultural adaptation through cross-cultural ontology testing',
+
+          '3. COMPLIANCE AND CONSTRAINT VALIDATION',
+          '   - Test regulatory compliance through formal constraint checking',
+          '   - Validate ethical considerations through value-sensitive design analysis',
+          '   - Test security requirements through threat modeling with ontology',
+          '   - Verify privacy requirements through data flow ontology analysis',
+          '   - Test environmental constraints through lifecycle ontology modeling',
+
+          '=== PREDICTIVE INTEGRATION ANALYSIS ===',
+          'Advanced integration forecasting:',
+          '- EVOLUTION MODELING: How will integrated ontology evolve over time?',
+          '- ADAPTATION CAPABILITY: Can ontology adapt to changing requirements?',
+          '- SCALING CHARACTERISTICS: How does ontology perform under growth?',
+          '- INTEGRATION RESILIENCE: How robust is ontology to external changes?',
+          '- MAINTENANCE PREDICTION: What will be required to maintain ontology quality?',
+          '- OBSOLESCENCE ANALYSIS: What parts of ontology might become outdated?',
+
+          '=== CONTINUOUS IMPROVEMENT FRAMEWORK ===',
+          'Systematic improvement methodology:',
+          '- QUALITY TRAJECTORY MODELING: Predict quality improvement patterns',
+          '- DIMINISHING RETURNS ANALYSIS: Optimize iteration effort allocation',
+          '- CONVERGENCE PREDICTION: Estimate remaining iterations to target quality',
+          '- RISK-BENEFIT OPTIMIZATION: Balance quality improvements with costs',
+          '- LEARNING CURVE ANALYSIS: Understand team capability development',
+          '- SUCCESS PROBABILITY MODELING: Predict likelihood of achieving targets'
+        ],
+        context: {
+          projectName: inputs.projectName,
+          worldOntology: inputs.worldOntology,
+          problemOntology: inputs.problemOntology,
+          solutionOntology: inputs.solutionOntology,
+          ontologyScope: inputs.ontologyScope,
+          targetQuality: inputs.targetQuality,
+          iteration: inputs.iteration,
+          previousResult: inputs.previousResult,
+          identifiedGaps: inputs.identifiedGaps
+        }
+      },
+      io: {
+        inputJsonPath: `tasks/${effectId}/input.json`,
+        outputJsonPath: `tasks/${effectId}/result.json`
+      },
+      labels: ['ontology-integration', 'schema-design', 'traceability', 'strategic-alignment']
+    };
+  }
+});
+
 const projectAnalysisTask = defineTask({
   name: 'enhanced-project-analysis',
   description: 'Comprehensive project analysis with complexity assessment, stakeholder mapping, and risk evaluation',
@@ -2914,6 +4120,551 @@ const gapResolutionVerificationTask = defineTask({
         outputJsonPath: `tasks/${effectId}/result.json`
       },
       labels: ['gap-verification', 'resolution-effectiveness', 'quality-validation']
+    };
+  }
+});
+
+/**
+ * Task: Empirical Schema Validation
+ * Purpose: Test schema adequacy through actual data population and usage
+ */
+const empiricalSchemaValidationTask = defineTask({
+  name: 'empirical-schema-validation',
+  description: 'Validate schema through empirical data population and performance testing',
+
+  inputs: {
+    projectName: { type: 'string', required: true },
+    integratedOntology: { type: 'object', required: true },
+    schema: { type: 'object', required: true },
+    worldOntology: { type: 'object', required: true },
+    problemOntology: { type: 'object', required: true },
+    solutionOntology: { type: 'object', required: true },
+    iteration: { type: 'number', default: 0 },
+    previousResult: { type: 'object', default: null },
+    identifiedGaps: { type: 'array', default: [] }
+  },
+
+  outputs: {
+    schemaAdequacy: { type: 'object' },
+    populationIssues: { type: 'array' },
+    performanceScore: { type: 'number' },
+    dataQualityMetrics: { type: 'object' },
+    usabilityAssessment: { type: 'object' },
+    scalabilityAnalysis: { type: 'object' },
+    learnings: { type: 'array' },
+    optimizationOpportunities: { type: 'array' },
+    artifacts: { type: 'array' }
+  },
+
+  async run(inputs, taskCtx) {
+    const effectId = taskCtx.effectId;
+
+    return {
+      kind: 'agent',
+      title: `Empirical Schema Validation: ${inputs.projectName} (Iteration ${inputs.iteration + 1})`,
+      agent: {
+        role: 'empirical-validation-specialist',
+        goal: `Validate schema adequacy through real data population and usage testing for ${inputs.projectName}`,
+        instructions: [
+          '=== EMPIRICAL VALIDATION METHODOLOGY ===',
+          'Apply systematic empirical testing framework:',
+          '- DATA POPULATION TESTING: Attempt to populate schema with real/representative data',
+          '- PERFORMANCE BENCHMARKING: Measure query performance, storage efficiency, processing speed',
+          '- USABILITY ASSESSMENT: Test schema usability from developer and user perspectives',
+          '- SCALABILITY VALIDATION: Test schema behavior under varying data volumes and complexity',
+          '- SEMANTIC CONSISTENCY: Verify semantic integrity during data population',
+
+          '=== COMPREHENSIVE DATA POPULATION ANALYSIS ===',
+          '1. REAL DATA INTEGRATION TESTING',
+          '   - Collect representative data samples from all identified sources',
+          '   - Attempt systematic data mapping to schema structures',
+          '   - Identify data that doesn\'t fit schema patterns',
+          '   - Document transformation complexity and data loss',
+          '   - Test data quality preservation during population',
+
+          '2. SCHEMA ADEQUACY ASSESSMENT',
+          '   - Measure coverage: what percentage of real data fits schema?',
+          '   - Identify missing schema elements needed for complete representation',
+          '   - Find over-engineered schema parts with no corresponding data',
+          '   - Assess schema flexibility for data variations and edge cases',
+          '   - Evaluate schema expressiveness for domain concepts',
+
+          '3. PERFORMANCE EMPIRICAL TESTING',
+          '   - Benchmark query performance against realistic use cases',
+          '   - Measure storage efficiency and index effectiveness',
+          '   - Test concurrent access patterns and locking behavior',
+          '   - Evaluate memory usage under different data loads',
+          '   - Assess network performance for distributed scenarios',
+
+          '=== SYSTEMATIC ISSUE IDENTIFICATION ===',
+          '1. STRUCTURAL ISSUES',
+          '   - Identify schema elements that cause population difficulties',
+          '   - Find relationship modeling that doesn\'t match real data patterns',
+          '   - Detect normalization issues (over/under-normalized structures)',
+          '   - Identify constraint violations in real data scenarios',
+          '   - Find abstraction level mismatches with actual data granularity',
+
+          '2. SEMANTIC ISSUES',
+          '   - Detect concept definitions that don\'t align with real usage',
+          '   - Find relationship semantics that don\'t match domain reality',
+          '   - Identify missing semantic nuances revealed by real data',
+          '   - Detect semantic inconsistencies across integrated ontologies',
+          '   - Find terminology mismatches with actual domain usage',
+
+          '3. PERFORMANCE ISSUES',
+          '   - Identify query patterns that perform poorly',
+          '   - Find schema structures that cause indexing problems',
+          '   - Detect memory usage issues with complex object graphs',
+          '   - Identify serialization/deserialization bottlenecks',
+          '   - Find concurrent access patterns that cause conflicts',
+
+          '=== LEARNING EXTRACTION & OPTIMIZATION IDENTIFICATION ===',
+          '1. SYSTEMATIC LEARNING CAPTURE',
+          '   - Document all discrepancies between expected and actual behavior',
+          '   - Capture performance benchmarks against expectations',
+          '   - Record user feedback and usability pain points',
+          '   - Document workarounds and adaptations needed',
+          '   - Extract patterns from multiple data source integration attempts',
+
+          '2. OPTIMIZATION OPPORTUNITY ANALYSIS',
+          '   - Identify schema simplifications that would improve usability',
+          '   - Find performance optimizations through structural changes',
+          '   - Detect modeling improvements based on real data patterns',
+          '   - Identify missing abstractions revealed by usage patterns',
+          '   - Find redundancy elimination opportunities',
+
+          '=== RETROSPECTIVE ANALYSIS FRAMEWORK ===',
+          'Critical questions for schema improvement:',
+          '- What assumptions about data structure proved incorrect?',
+          '- Which modeling decisions created unnecessary complexity?',
+          '- Where does the schema force unnatural data transformations?',
+          '- What performance characteristics were worse than expected?',
+          '- How could schema better support actual usage patterns?',
+          '- What semantic gaps became apparent through real data population?',
+          '- Which integration points proved more difficult than anticipated?',
+
+          '=== QUANTITATIVE ASSESSMENT ===',
+          'Measure schema effectiveness:',
+          '- DATA FIT PERCENTAGE: How much real data fits without transformation?',
+          '- POPULATION EFFICIENCY: Time/effort required for data population',
+          '- QUERY PERFORMANCE RATIO: Actual vs. expected query performance',
+          '- USABILITY SCORE: Developer productivity and satisfaction metrics',
+          '- SEMANTIC ACCURACY: Correctness of represented domain knowledge',
+          '- SCALABILITY INDEX: Performance degradation under increased load'
+        ],
+        context: {
+          projectName: inputs.projectName,
+          integratedOntology: inputs.integratedOntology,
+          schema: inputs.schema,
+          ontologies: {
+            world: inputs.worldOntology,
+            problem: inputs.problemOntology,
+            solution: inputs.solutionOntology
+          },
+          iteration: inputs.iteration,
+          previousResult: inputs.previousResult,
+          identifiedGaps: inputs.identifiedGaps
+        }
+      },
+      io: {
+        inputJsonPath: `tasks/${effectId}/input.json`,
+        outputJsonPath: `tasks/${effectId}/result.json`
+      },
+      labels: ['empirical-validation', 'data-population', 'performance-testing', 'schema-adequacy']
+    };
+  }
+});
+
+/**
+ * Task: Retrospective Optimization
+ * Purpose: Optimize schema and modeling based on empirical learnings
+ */
+const retrospectiveOptimizationTask = defineTask({
+  name: 'retrospective-optimization',
+  description: 'Optimize schema and ontology modeling based on empirical validation learnings',
+
+  inputs: {
+    projectName: { type: 'string', required: true },
+    currentSchema: { type: 'object', required: true },
+    currentOntology: { type: 'object', required: true },
+    empiricalValidation: { type: 'object', required: true },
+    populationLearnings: { type: 'array', required: true },
+    optimizationIteration: { type: 'number', default: 0 },
+    previousOptimizations: { type: 'array', default: [] },
+    iteration: { type: 'number', default: 0 },
+    previousResult: { type: 'object', default: null }
+  },
+
+  outputs: {
+    optimizedSchema: { type: 'object' },
+    optimizedOntology: { type: 'object' },
+    optimizationActions: { type: 'array' },
+    improvementSummary: { type: 'object' },
+    rationale: { type: 'object' },
+    riskAssessment: { type: 'object' },
+    expectedImprovements: { type: 'object' },
+    migrationStrategy: { type: 'object' },
+    artifacts: { type: 'array' }
+  },
+
+  async run(inputs, taskCtx) {
+    const effectId = taskCtx.effectId;
+
+    return {
+      kind: 'agent',
+      title: `Retrospective Optimization: ${inputs.projectName} (Opt ${inputs.optimizationIteration + 1}, Iter ${inputs.iteration + 1})`,
+      agent: {
+        role: 'schema-optimization-architect',
+        goal: `Optimize schema and ontology based on empirical validation learnings for ${inputs.projectName}`,
+        instructions: [
+          '=== SYSTEMATIC OPTIMIZATION FRAMEWORK ===',
+          'Apply evidence-based optimization methodology:',
+          '- ISSUE PRIORITIZATION: Rank empirical issues by impact and effort',
+          '- OPTIMIZATION STRATEGY: Develop systematic improvement approach',
+          '- STRUCTURAL REFINEMENT: Optimize schema structure based on learnings',
+          '- SEMANTIC ENHANCEMENT: Improve semantic accuracy and expressiveness',
+          '- PERFORMANCE OPTIMIZATION: Address performance bottlenecks systematically',
+
+          '=== EMPIRICAL LEARNING ANALYSIS ===',
+          '1. SYSTEMATIC ISSUE CATEGORIZATION',
+          '   - CRITICAL ISSUES: Schema inadequacies that prevent core functionality',
+          '   - PERFORMANCE ISSUES: Structure problems causing unacceptable performance',
+          '   - USABILITY ISSUES: Schema complexity that impedes development productivity',
+          '   - SEMANTIC ISSUES: Modeling inaccuracies revealed by real data',
+          '   - SCALABILITY ISSUES: Structure problems that limit growth potential',
+
+          '2. ROOT CAUSE ANALYSIS FOR OPTIMIZATION',
+          '   - Why did certain schema elements fail to accommodate real data?',
+          '   - What modeling assumptions proved incorrect through empirical testing?',
+          '   - Which design decisions created unnecessary complexity or constraints?',
+          '   - How did integration challenges reveal ontology integration issues?',
+          '   - What performance characteristics indicate structural inefficiencies?',
+
+          '3. OPTIMIZATION OPPORTUNITY IDENTIFICATION',
+          '   - SIMPLIFICATION OPPORTUNITIES: Over-engineered elements to streamline',
+          '   - ABSTRACTION IMPROVEMENTS: Better abstractions for real usage patterns',
+          '   - RELATIONSHIP REFINEMENTS: More accurate relationship modeling',
+          '   - CONSTRAINT ADJUSTMENTS: Constraints that better match real data patterns',
+          '   - INDEXING OPTIMIZATIONS: Schema changes to improve query performance',
+
+          '=== SYSTEMATIC SCHEMA OPTIMIZATION ===',
+          '1. STRUCTURAL OPTIMIZATION',
+          '   - Normalize/denormalize based on empirical usage patterns',
+          '   - Simplify over-complex hierarchies that don\'t match real data',
+          '   - Optimize relationship structures for query performance',
+          '   - Eliminate redundancies discovered through data population',
+          '   - Add missing structures needed for real data representation',
+
+          '2. SEMANTIC OPTIMIZATION',
+          '   - Refine concept definitions based on real usage evidence',
+          '   - Improve relationship semantics for real-world accuracy',
+          '   - Add semantic nuances revealed by empirical testing',
+          '   - Resolve semantic conflicts discovered during integration',
+          '   - Enhance terminology alignment with actual domain usage',
+
+          '3. PERFORMANCE OPTIMIZATION',
+          '   - Restructure schema for optimal query patterns',
+          '   - Optimize data types for storage and processing efficiency',
+          '   - Improve indexing strategies based on access patterns',
+          '   - Eliminate performance bottlenecks through structural changes',
+          '   - Optimize for concurrent access patterns',
+
+          '=== ADVANCED OPTIMIZATION TECHNIQUES ===',
+          '1. PATTERN-BASED OPTIMIZATION',
+          '   - Apply proven schema design patterns for identified issues',
+          '   - Use domain-specific optimization patterns',
+          '   - Implement performance patterns for identified bottlenecks',
+          '   - Apply modularity patterns for better maintainability',
+          '   - Use versioning patterns for schema evolution',
+
+          '2. DATA-DRIVEN OPTIMIZATION',
+          '   - Analyze data distribution patterns for optimization',
+          '   - Use query frequency analysis for indexing decisions',
+          '   - Apply statistical analysis of data characteristics',
+          '   - Use machine learning for pattern recognition in optimization',
+          '   - Implement A/B testing for optimization validation',
+
+          '3. HOLISTIC SYSTEM OPTIMIZATION',
+          '   - Optimize for end-to-end system performance',
+          '   - Balance schema complexity with implementation simplicity',
+          '   - Optimize for maintainability and evolution',
+          '   - Consider ecosystem integration optimization',
+          '   - Balance semantic richness with practical usability',
+
+          '=== OPTIMIZATION VALIDATION & RISK MANAGEMENT ===',
+          '1. OPTIMIZATION IMPACT ASSESSMENT',
+          '   - Model expected performance improvements',
+          '   - Assess usability improvements for developers',
+          '   - Evaluate semantic accuracy improvements',
+          '   - Predict scalability enhancements',
+          '   - Estimate maintenance burden changes',
+
+          '2. RISK ASSESSMENT & MITIGATION',
+          '   - Identify risks of proposed schema changes',
+          '   - Assess backward compatibility implications',
+          '   - Evaluate migration complexity and risks',
+          '   - Consider impact on existing integrations',
+          '   - Plan rollback strategies for failed optimizations',
+
+          '=== ITERATIVE OPTIMIZATION STRATEGY ===',
+          'Systematic improvement approach:',
+          '- Focus on highest-impact, lowest-risk optimizations first',
+          '- Implement optimizations incrementally with validation',
+          '- Learn from each optimization iteration to improve methodology',
+          '- Build optimization confidence through empirical validation',
+          '- Prepare for multiple optimization cycles until convergence'
+        ],
+        context: {
+          projectName: inputs.projectName,
+          currentSchema: inputs.currentSchema,
+          currentOntology: inputs.currentOntology,
+          empiricalValidation: inputs.empiricalValidation,
+          populationLearnings: inputs.populationLearnings,
+          optimizationIteration: inputs.optimizationIteration,
+          previousOptimizations: inputs.previousOptimizations,
+          iteration: inputs.iteration,
+          previousResult: inputs.previousResult
+        }
+      },
+      io: {
+        inputJsonPath: `tasks/${effectId}/input.json`,
+        outputJsonPath: `tasks/${effectId}/result.json`
+      },
+      labels: ['schema-optimization', 'retrospective-analysis', 'performance-optimization', 'structural-refinement']
+    };
+  }
+});
+
+/**
+ * Task: Revalidate Optimized Schema
+ * Purpose: Validate optimized schema through re-testing
+ */
+const revalidateOptimizedSchemaTask = defineTask({
+  name: 'revalidate-optimized-schema',
+  description: 'Revalidate optimized schema through empirical retesting',
+
+  inputs: {
+    projectName: { type: 'string', required: true },
+    optimizedSchema: { type: 'object', required: true },
+    optimizedOntology: { type: 'object', required: true },
+    originalValidation: { type: 'object', required: true },
+    optimizationIteration: { type: 'number', default: 0 }
+  },
+
+  outputs: {
+    qualityMetrics: { type: 'object' },
+    improvementAnalysis: { type: 'object' },
+    remainingIssues: { type: 'array' },
+    performanceComparison: { type: 'object' },
+    validationResults: { type: 'object' },
+    artifacts: { type: 'array' }
+  },
+
+  async run(inputs, taskCtx) {
+    const effectId = taskCtx.effectId;
+
+    return {
+      kind: 'agent',
+      title: `Schema Revalidation: ${inputs.projectName} (Optimization ${inputs.optimizationIteration + 1})`,
+      agent: {
+        role: 'schema-revalidation-specialist',
+        goal: `Revalidate optimized schema and measure improvements for ${inputs.projectName}`,
+        instructions: [
+          'Re-run comprehensive empirical validation on optimized schema',
+          'Compare performance metrics against original validation results',
+          'Identify improvements achieved through optimization',
+          'Document remaining issues that need further optimization',
+          'Assess overall quality improvement trajectory',
+          'Validate that optimizations didn\'t introduce new issues',
+          'Measure schema adequacy improvements',
+          'Test data population efficiency improvements',
+          'Evaluate usability enhancements',
+          'Assess semantic accuracy improvements'
+        ],
+        context: {
+          projectName: inputs.projectName,
+          optimizedSchema: inputs.optimizedSchema,
+          optimizedOntology: inputs.optimizedOntology,
+          originalValidation: inputs.originalValidation,
+          optimizationIteration: inputs.optimizationIteration
+        }
+      },
+      io: {
+        inputJsonPath: `tasks/${effectId}/input.json`,
+        outputJsonPath: `tasks/${effectId}/result.json`
+      },
+      labels: ['schema-revalidation', 'improvement-measurement', 'optimization-validation']
+    };
+  }
+});
+
+/**
+ * Task: Schema Convergence Assessment
+ * Purpose: Assess whether schema has converged to optimal state
+ */
+const schemaConvergenceAssessmentTask = defineTask({
+  name: 'schema-convergence-assessment',
+  description: 'Assess schema optimization convergence and determine if further iteration needed',
+
+  inputs: {
+    projectName: { type: 'string', required: true },
+    optimizationHistory: { type: 'array', required: true },
+    currentQuality: { type: 'object', required: true },
+    targetQuality: { type: 'number', default: 85 },
+    optimizationIteration: { type: 'number', default: 0 }
+  },
+
+  outputs: {
+    hasConverged: { type: 'boolean' },
+    convergenceReason: { type: 'string' },
+    currentQuality: { type: 'number' },
+    previousQuality: { type: 'number' },
+    improvementRate: { type: 'number' },
+    remainingIssues: { type: 'number' },
+    recommendations: { type: 'array' },
+    artifacts: { type: 'array' }
+  },
+
+  async run(inputs, taskCtx) {
+    const effectId = taskCtx.effectId;
+
+    return {
+      kind: 'agent',
+      title: `Schema Convergence Assessment: ${inputs.projectName} (Optimization ${inputs.optimizationIteration + 1})`,
+      agent: {
+        role: 'convergence-assessment-specialist',
+        goal: `Assess schema optimization convergence for ${inputs.projectName}`,
+        instructions: [
+          'Analyze optimization trajectory and improvement rate',
+          'Assess whether target quality has been achieved',
+          'Evaluate diminishing returns in optimization iterations',
+          'Determine if remaining issues justify further optimization',
+          'Consider cost-benefit of additional optimization efforts',
+          'Assess schema stability and maturity',
+          'Evaluate whether schema is suitable for production use',
+          'Make convergence decision based on quality, effort, and business needs'
+        ],
+        context: {
+          projectName: inputs.projectName,
+          optimizationHistory: inputs.optimizationHistory,
+          currentQuality: inputs.currentQuality,
+          targetQuality: inputs.targetQuality,
+          optimizationIteration: inputs.optimizationIteration
+        }
+      },
+      io: {
+        inputJsonPath: `tasks/${effectId}/input.json`,
+        outputJsonPath: `tasks/${effectId}/result.json`
+      },
+      labels: ['convergence-assessment', 'optimization-completion', 'quality-analysis']
+    };
+  }
+});
+
+/**
+ * Task: Perfect Graph Construction
+ * Purpose: Construct perfect knowledge graph with optimized schema
+ */
+const perfectGraphConstructionTask = defineTask({
+  name: 'perfect-graph-construction',
+  description: 'Construct comprehensive perfect knowledge graph using optimized schema',
+
+  inputs: {
+    projectName: { type: 'string', required: true },
+    optimizedSchema: { type: 'object', required: true },
+    optimizedOntology: { type: 'object', required: true },
+    empiricalValidation: { type: 'object', required: true },
+    optimizationLearnings: { type: 'array', required: true },
+    targetQuality: { type: 'number', default: 85 },
+    iteration: { type: 'number', default: 0 },
+    previousResult: { type: 'object', default: null },
+    identifiedGaps: { type: 'array', default: [] }
+  },
+
+  outputs: {
+    knowledgeGraph: { type: 'object' },
+    completenessScore: { type: 'number' },
+    semanticRichness: { type: 'number' },
+    queryPerformance: { type: 'number' },
+    graphStatistics: { type: 'object' },
+    populationMetrics: { type: 'object' },
+    qualityAssessment: { type: 'object' },
+    artifacts: { type: 'array' }
+  },
+
+  async run(inputs, taskCtx) {
+    const effectId = taskCtx.effectId;
+
+    return {
+      kind: 'agent',
+      title: `Perfect Graph Construction: ${inputs.projectName} (Iteration ${inputs.iteration + 1})`,
+      agent: {
+        role: 'perfect-graph-architect',
+        goal: `Construct perfect knowledge graph using optimized schema for ${inputs.projectName}`,
+        instructions: [
+          '=== PERFECT GRAPH CONSTRUCTION METHODOLOGY ===',
+          'Build comprehensive, high-quality knowledge graph:',
+          '- COMPREHENSIVE POPULATION: Populate all schema elements with validated data',
+          '- SEMANTIC RICHNESS: Maximize semantic expressiveness and relationship depth',
+          '- QUALITY OPTIMIZATION: Ensure highest data quality and consistency',
+          '- PERFORMANCE OPTIMIZATION: Build for optimal query and reasoning performance',
+          '- VALIDATION INTEGRATION: Incorporate all empirical learnings and optimizations',
+
+          '=== SYSTEMATIC GRAPH CONSTRUCTION ===',
+          '1. COMPREHENSIVE DATA POPULATION',
+          '   - Use optimized schema to guide systematic data collection',
+          '   - Apply empirical learnings to ensure high-quality population',
+          '   - Implement validation rules based on optimization insights',
+          '   - Use automated quality checking during population',
+          '   - Ensure complete coverage of all schema elements',
+
+          '2. SEMANTIC RICHNESS MAXIMIZATION',
+          '   - Populate all relationship types with validated instances',
+          '   - Add semantic annotations and metadata comprehensively',
+          '   - Implement reasoning rules based on ontology specifications',
+          '   - Add contextual information for enhanced semantic understanding',
+          '   - Ensure semantic consistency across all graph elements',
+
+          '3. PERFORMANCE OPTIMIZATION IMPLEMENTATION',
+          '   - Implement optimized indexing strategies from empirical learnings',
+          '   - Use graph structure optimizations for query performance',
+          '   - Apply caching strategies for frequently accessed patterns',
+          '   - Implement efficient storage and retrieval mechanisms',
+          '   - Optimize for concurrent access and scaling requirements',
+
+          '=== COMPREHENSIVE QUALITY ASSURANCE ===',
+          'Apply rigorous quality control throughout construction:',
+          '- COMPLETENESS VALIDATION: Ensure all required elements are populated',
+          '- CONSISTENCY CHECKING: Validate logical consistency across graph',
+          '- ACCURACY VERIFICATION: Cross-validate all factual claims',
+          '- PERFORMANCE TESTING: Validate query performance meets requirements',
+          '- SEMANTIC VALIDATION: Ensure semantic integrity and expressiveness',
+
+          '=== ITERATIVE REFINEMENT FOR PERFECTION ===',
+          'Continuous improvement approach:',
+          '- QUALITY MONITORING: Continuous monitoring of graph quality metrics',
+          '- PERFORMANCE BENCHMARKING: Regular performance assessment',
+          '- COMPLETENESS TRACKING: Systematic tracking of population completeness',
+          '- SEMANTIC ANALYSIS: Deep analysis of semantic richness and accuracy',
+          '- OPTIMIZATION ITERATION: Continuous refinement based on usage patterns'
+        ],
+        context: {
+          projectName: inputs.projectName,
+          optimizedSchema: inputs.optimizedSchema,
+          optimizedOntology: inputs.optimizedOntology,
+          empiricalValidation: inputs.empiricalValidation,
+          optimizationLearnings: inputs.optimizationLearnings,
+          targetQuality: inputs.targetQuality,
+          iteration: inputs.iteration,
+          previousResult: inputs.previousResult,
+          identifiedGaps: inputs.identifiedGaps
+        }
+      },
+      io: {
+        inputJsonPath: `tasks/${effectId}/input.json`,
+        outputJsonPath: `tasks/${effectId}/result.json`
+      },
+      labels: ['perfect-graph', 'knowledge-construction', 'semantic-richness', 'performance-optimization']
     };
   }
 });
