@@ -165,7 +165,7 @@ describe("workspaces-page helpers", () => {
 
   it("falls back to local inventory copy when the gateway is disconnected", () => {
     expect(getWorkspaceOwnershipLabel(false, [])).toBe(
-      "Gateway disconnected: inventory falls back to local git worktrees and archived workspace metadata",
+      "Gateway disconnected: browsing saved workspaces and local worktrees only",
     );
   });
 
@@ -899,7 +899,7 @@ describe("workspaces-page helpers", () => {
 
     expect(screen.getByLabelText("Workspace search")).toHaveValue("beta");
     expect(screen.queryByText("alpha")).not.toBeInTheDocument();
-    expect(screen.getByText("Workspace list")).toBeInTheDocument();
+    expect(screen.getAllByText("Workspace list").length).toBeGreaterThan(0);
   });
 
   it("posts pin actions from the workspace sidebar and surfaces failures", async () => {
@@ -1270,7 +1270,7 @@ describe("workspaces-page helpers", () => {
     render(<WorkspacesPageContent isAuthenticated sessions={[]} />);
 
     await waitFor(() => {
-      expect(screen.getByText("Linked review state")).toBeInTheDocument();
+      expect(screen.getByText("Pull request")).toBeInTheDocument();
     });
 
     expect(screen.getByText(/GitHub PR #612 is partially linked/)).toBeInTheDocument();

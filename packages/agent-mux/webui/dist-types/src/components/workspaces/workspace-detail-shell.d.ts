@@ -17,6 +17,7 @@ type WorkspaceDetailShellProps = {
     onSelectSession: (sessionId: string) => void;
     pendingAction: string | null;
     notesSaving: boolean;
+    canSendMessages?: boolean;
     reviewArtifact?: KanbanReviewArtifact | null;
     reviewPending: boolean;
     feedback?: WorkspaceSidebarFeedback | null;

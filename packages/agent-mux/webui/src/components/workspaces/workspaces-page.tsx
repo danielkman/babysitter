@@ -113,7 +113,7 @@ export function getWorkspaceOwnershipLabel(
 
   return isAuthenticated
     ? `${sessions.length} live session${sessions.length === 1 ? "" : "s"} attached to the current workspace inventory`
-    : "Gateway disconnected: inventory falls back to local git worktrees and archived workspace metadata";
+    : "Gateway disconnected: browsing saved workspaces and local worktrees only";
 }
 
 function issueHref(
@@ -893,14 +893,14 @@ export function WorkspacesPageContent(props: {
       return (
         <PageShell>
           <PageSection>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">Workspace lifecycle</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">Workspace</p>
             <h1 className="mt-2 text-3xl font-semibold tracking-tight">Workspace not found</h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-foreground-muted">
               The selected workspace is not in the current workspace list. Refresh and try again, or go back to all workspaces.
             </p>
             <div className="mt-5">
               <Button variant="ghost" onClick={() => navigate("/workspaces")}>
-                Back to inventory
+                Back to workspaces
               </Button>
             </div>
           </PageSection>
@@ -920,6 +920,7 @@ export function WorkspacesPageContent(props: {
         onSelectSession={setSelectedSessionId}
         pendingAction={pendingAction}
         notesSaving={pendingNotePath === selectedWorkspace.path}
+        canSendMessages={Boolean(props.onSendPrompt)}
         feedback={feedbackByWorkspacePath[selectedWorkspace.path] ?? null}
         onSubmit={handleSessionSubmit}
         onAction={handleAction}
@@ -1018,10 +1019,10 @@ export function WorkspacesPageContent(props: {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">Workspaces</p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-tight">Workspace list and active sessions</h1>
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight">Find the right workspace and jump back into the session</h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-foreground-muted">
-              Keep the session attached to its workspace, open the right chat quickly, and handle archive,
-              recovery, or cleanup work only when it matters.
+              Start with the workspace list, keep issue links visible, and open the focused workspace shell only
+              when you need chat, runtime, or recovery detail.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -1051,7 +1052,7 @@ export function WorkspacesPageContent(props: {
             {props.sessions.length} live session{props.sessions.length === 1 ? "" : "s"} attached
           </span>
           <span className="rounded-full border border-border px-3 py-1.5">
-            Cleanup only unlocks for archived worktrees with no active sessions or pending runs.
+            Cleanup stays hidden until a workspace is archived and inactive.
           </span>
         </div>
       </PageSection>
@@ -1065,11 +1066,10 @@ export function WorkspacesPageContent(props: {
       <section className="rounded-3xl border border-border bg-card p-6 shadow-lg" data-testid="workspace-sidebar-surface">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">Workspace sidebar</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">Workspace list</p>
             <h2 className="mt-2 text-2xl font-semibold tracking-tight">Search, group, and open the right workspace</h2>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-foreground-muted">
-              Keep the list compact, search by issue or branch, and open the workspace shell only when
-              you need deeper detail.
+              Keep this list compact, search by issue or branch, and open the workspace shell only when you need deeper detail.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -1325,6 +1325,14 @@ function WorkspaceColumn(props: {
 }) {
   const Icon = props.icon;
   const navigate = useNavigate();
+  const [expandedWorkspacePaths, setExpandedWorkspacePaths] = useState<Record<string, boolean>>({});
+
+  function toggleWorkspaceDetails(workspacePath: string) {
+    setExpandedWorkspacePaths((current) => ({
+      ...current,
+      [workspacePath]: !current[workspacePath],
+    }));
+  }
 
   return (
     <section className="rounded-3xl border border-border bg-card p-6 shadow-lg">
@@ -1355,6 +1363,7 @@ function WorkspaceColumn(props: {
           const integration = reviewArtifact?.integration;
           const statusBadges = workspaceSidebarBadges(workspace, runtimeSession ?? null, linkedPullRequest);
           const isSelected = props.selectedWorkspacePath === workspace.path;
+          const detailsExpanded = props.workspaces.length === 1 || Boolean(expandedWorkspacePaths[workspace.path]);
 
           return (
             <article
@@ -1400,7 +1409,7 @@ function WorkspaceColumn(props: {
                   </p>
                   {ownershipSummary(workspace) ? (
                     <p className="mt-2 text-sm text-foreground-muted">
-                      Board link <span className="font-medium text-foreground">{ownershipSummary(workspace)}</span>
+                      Linked to <span className="font-medium text-foreground">{ownershipSummary(workspace)}</span>
                     </p>
                   ) : null}
                   {attentionReasons.length > 0 ? (
@@ -1418,6 +1427,15 @@ function WorkspaceColumn(props: {
                 </div>
 
                 <div className="flex flex-wrap gap-2">
+                  {props.workspaces.length > 1 ? (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => toggleWorkspaceDetails(workspace.path)}
+                    >
+                      {detailsExpanded ? "Hide details" : "Show details"}
+                    </Button>
+                  ) : null}
                   <Button
                     variant="ghost"
                     size="sm"
@@ -1503,68 +1521,72 @@ function WorkspaceColumn(props: {
                 {workspace.cleanedAt ? ` · cleaned ${formatTimestamp(workspace.cleanedAt)}` : ""}
               </p>
 
-              {integration || linkedPullRequest ? (
-                <section className="mt-4 rounded-2xl border border-border bg-card/80 p-4">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
-                        Linked review state
+              {detailsExpanded ? (
+                <>
+                  {integration || linkedPullRequest ? (
+                    <section className="mt-4 rounded-2xl border border-border bg-card/80 p-4">
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+                            Pull request
+                          </p>
+                          <h3 className="mt-1 text-sm font-semibold text-foreground">
+                            {linkedPullRequest
+                              ? `${providerLabel(linkedPullRequest.provider)} PR ${
+                                  linkedPullRequest.number ? `#${linkedPullRequest.number}` : ""
+                                } ${linkedPullRequest.linkState === "partially-linked" ? "is partially linked" : "is linked"}`
+                              : "Integration prerequisites are blocking pull request actions"}
+                          </h3>
+                        </div>
+                        {integration ? (
+                          <span className={cx("rounded-full border px-2 py-0.5 text-xs", integrationTone(integration.status))}>
+                            {integration.status.replace(/-/g, " ")}
+                          </span>
+                        ) : null}
+                      </div>
+                      {linkedPullRequest?.title ? (
+                        <p className="mt-2 text-sm text-foreground">{linkedPullRequest.title}</p>
+                      ) : null}
+                      <p className="mt-2 text-sm leading-6 text-foreground-muted">
+                        {integration?.guidance ?? linkedPullRequest?.guidance ?? "No additional pull request guidance."}
                       </p>
-                      <h3 className="mt-1 text-sm font-semibold text-foreground">
-                        {linkedPullRequest
-                          ? `${providerLabel(linkedPullRequest.provider)} PR ${
-                              linkedPullRequest.number ? `#${linkedPullRequest.number}` : ""
-                            } ${linkedPullRequest.linkState === "partially-linked" ? "is partially linked" : "is linked"}`
-                          : "Integration prerequisites are affecting linked review state"}
-                      </h3>
-                    </div>
-                    {integration ? (
-                      <span className={cx("rounded-full border px-2 py-0.5 text-xs", integrationTone(integration.status))}>
-                        {integration.status.replace(/-/g, " ")}
-                      </span>
-                    ) : null}
-                  </div>
-                  {linkedPullRequest?.title ? (
-                    <p className="mt-2 text-sm text-foreground">{linkedPullRequest.title}</p>
+                    </section>
                   ) : null}
-                  <p className="mt-2 text-sm leading-6 text-foreground-muted">
-                    {integration?.guidance ?? linkedPullRequest?.guidance ?? "No additional linked review guidance."}
-                  </p>
-                </section>
-              ) : null}
 
-              <div className={cx("mt-5 grid gap-4", runtimeSession?.runtime ? "xl:grid-cols-[minmax(0,1fr)_360px]" : "")}>
-                {runtimeSession?.runtime ? (
-                  <WorkspaceRuntimePanel
-                    className="border-border/70 bg-card/70"
-                    runtime={runtimeSession.runtime}
-                    rebase={workspace.rebase}
-                    sessionId={runtimeSession.sessionId}
-                    sessionStatus={runtimeSession.status}
-                    executionContexts={props.executionContextsBySessionId.get(runtimeSession.sessionId) ?? []}
-                  />
-                ) : null}
-                <WorkspaceDetailsSidebar
-                  workspace={workspace}
-                  runtime={runtimeSession?.runtime}
-                  reviewArtifact={reviewArtifact}
-                  sessionId={runtimeSession?.sessionId}
-                  sessionStatus={runtimeSession?.status}
-                  pendingAction={props.pendingAction}
-                  notesSaving={props.pendingNotePath === workspace.path}
-                  reviewPending={props.reviewPendingArtifactId === reviewArtifact?.id}
-                  feedback={props.feedbackByWorkspacePath[workspace.path] ?? null}
-                  onAction={props.onAction}
-                  onOpenInEditor={props.onOpenInEditor}
-                  onSaveNote={props.onSaveNote}
-                  onCreatePullRequest={(targetWorkspace, input) =>
-                    props.onCreatePullRequest(targetWorkspace, reviewArtifact, input)
-                  }
-                  onLinkPullRequest={(targetWorkspace, input) =>
-                    props.onLinkPullRequest(targetWorkspace, reviewArtifact, input)
-                  }
-                />
-              </div>
+                  <div className={cx("mt-5 grid gap-4", runtimeSession?.runtime ? "xl:grid-cols-[minmax(0,1fr)_360px]" : "")}>
+                    {runtimeSession?.runtime ? (
+                      <WorkspaceRuntimePanel
+                        className="border-border/70 bg-card/70"
+                        runtime={runtimeSession.runtime}
+                        rebase={workspace.rebase}
+                        sessionId={runtimeSession.sessionId}
+                        sessionStatus={runtimeSession.status}
+                        executionContexts={props.executionContextsBySessionId.get(runtimeSession.sessionId) ?? []}
+                      />
+                    ) : null}
+                    <WorkspaceDetailsSidebar
+                      workspace={workspace}
+                      runtime={runtimeSession?.runtime}
+                      reviewArtifact={reviewArtifact}
+                      sessionId={runtimeSession?.sessionId}
+                      sessionStatus={runtimeSession?.status}
+                      pendingAction={props.pendingAction}
+                      notesSaving={props.pendingNotePath === workspace.path}
+                      reviewPending={props.reviewPendingArtifactId === reviewArtifact?.id}
+                      feedback={props.feedbackByWorkspacePath[workspace.path] ?? null}
+                      onAction={props.onAction}
+                      onOpenInEditor={props.onOpenInEditor}
+                      onSaveNote={props.onSaveNote}
+                      onCreatePullRequest={(targetWorkspace, input) =>
+                        props.onCreatePullRequest(targetWorkspace, reviewArtifact, input)
+                      }
+                      onLinkPullRequest={(targetWorkspace, input) =>
+                        props.onLinkPullRequest(targetWorkspace, reviewArtifact, input)
+                      }
+                    />
+                  </div>
+                </>
+              ) : null}
             </article>
           );
         })}

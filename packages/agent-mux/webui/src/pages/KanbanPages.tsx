@@ -253,14 +253,29 @@ export function KanbanRunsPage(): JSX.Element {
 }
 
 export function KanbanWorkspacesPage(): JSX.Element {
+  const { isAuthenticated } = useGatewayAuth();
+
+  if (!isAuthenticated) {
+    return <KanbanWorkspacesLocalContent />;
+  }
+
+  return <KanbanWorkspacesGatewayContent />;
+}
+
+function KanbanWorkspacesLocalContent(): JSX.Element {
+  const [searchParams] = useSearchParams();
+  const selectedWorkspacePath = searchParams.get('workspace');
+
   return (
-    <RequireGatewayAuth>
-      <KanbanWorkspacesContent />
-    </RequireGatewayAuth>
+    <WorkspacesPageContent
+      isAuthenticated={false}
+      sessions={[]}
+      selectedWorkspacePath={selectedWorkspacePath}
+    />
   );
 }
 
-function KanbanWorkspacesContent(): JSX.Element {
+function KanbanWorkspacesGatewayContent(): JSX.Element {
   const [searchParams] = useSearchParams();
   const selectedWorkspacePath = searchParams.get('workspace');
   const fetchGateway = useGatewayFetch();

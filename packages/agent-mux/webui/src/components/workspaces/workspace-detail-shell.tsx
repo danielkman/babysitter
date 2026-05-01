@@ -49,6 +49,7 @@ type WorkspaceDetailShellProps = {
   onSelectSession: (sessionId: string) => void;
   pendingAction: string | null;
   notesSaving: boolean;
+  canSendMessages?: boolean;
   reviewArtifact?: KanbanReviewArtifact | null;
   reviewPending: boolean;
   feedback?: WorkspaceSidebarFeedback | null;
@@ -353,6 +354,7 @@ export function WorkspaceDetailShell(props: WorkspaceDetailShellProps) {
 
   const activeSessionLabel = props.activeSession?.title ?? props.activeSession?.sessionId ?? "No session selected";
   const runtime = props.activeSession?.runtime;
+  const canSendMessages = props.canSendMessages ?? true;
 
   const renderPanel = (panel: WorkspacePanelKey) => {
     if (panel === "sidebar") {
@@ -423,6 +425,21 @@ export function WorkspaceDetailShell(props: WorkspaceDetailShellProps) {
     }
 
     if (panel === "conversation") {
+      if (!canSendMessages) {
+        return (
+          <WorkspacePanelFrame
+            panelKey="conversation"
+            title="Session chat"
+            subtitle="Selected session transcript, approvals, and next-turn input"
+          >
+            <EmptyWorkspaceState
+              title="Connect the gateway to open live chat"
+              body="This workspace can still be browsed locally, but session transcript and new messages require a connected gateway."
+            />
+          </WorkspacePanelFrame>
+        );
+      }
+
       return (
         <WorkspacePanelFrame
           panelKey="conversation"
@@ -439,18 +456,22 @@ export function WorkspaceDetailShell(props: WorkspaceDetailShellProps) {
             eventBuffers={props.eventBuffers}
             workspacePath={props.workspace.path}
             runtime={runtime}
-            disabled={!props.activeSession}
+            disabled={!props.activeSession || !canSendMessages}
             emptyStateTitle="No transcript events"
             emptyStateBody={
-              props.activeSession
-                ? "The selected session has not published transcript, tool, or file attention events yet."
-                : "Select a session from this workspace to inspect transcript activity and continue the conversation."
+              !props.activeSession
+                ? "Select a session from this workspace to inspect transcript activity and continue the conversation."
+                : !canSendMessages
+                  ? "Connect the gateway to continue this session from the workspace view."
+                  : "The selected session has not published transcript, tool, or file attention events yet."
             }
             openSessionHref={props.activeSession ? `/sessions/${props.activeSession.sessionId}` : undefined}
             placeholder={
-              props.activeSession
-                ? "Continue the selected session..."
-                : "Select a session to continue the conversation."
+              !props.activeSession
+                ? "Select a session to continue the conversation."
+                : !canSendMessages
+                  ? "Connect the gateway to send a new message."
+                  : "Continue the selected session..."
             }
             onSubmit={props.onSubmit}
           />

@@ -69,6 +69,30 @@ function RequireAuth(props: { children: React.ReactNode }): JSX.Element {
   return <>{props.children}</>;
 }
 
+function WorkspacesRouteEntry(): JSX.Element {
+  const { auth, isAuthenticated, isReady } = useGatewayAuth();
+
+  if (auth && !isReady) {
+    return (
+      <main className="login-page">
+        <section className="login-card auth-card">
+          <p className="eyebrow">agent-mux webui</p>
+          <h1>Checking saved gateway access</h1>
+          <p className="lede auth-note">
+            Revalidating the stored gateway token before the app reconnects live sessions and run feeds.
+          </p>
+        </section>
+      </main>
+    );
+  }
+
+  if (isAuthenticated) {
+    return <AppShell />;
+  }
+
+  return <KanbanWorkspacesPage />;
+}
+
 function AppShell(): JSX.Element {
   const navigate = useNavigate();
   const location = useLocation();
@@ -154,6 +178,7 @@ export function AppRouter(): JSX.Element {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/workspaces" element={<WorkspacesRouteEntry />} />
       <Route
         path="*"
         element={
