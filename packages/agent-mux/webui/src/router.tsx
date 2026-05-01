@@ -47,21 +47,25 @@ function LegacySessionRouteRedirect(): JSX.Element {
   return <Navigate to={sessionId ? `/sessions/${sessionId}${location.search}` : '/sessions'} replace />;
 }
 
+function AuthPendingScreen(): JSX.Element {
+  return (
+    <main className="login-page">
+      <section className="login-card auth-card">
+        <p className="eyebrow">agent-mux webui</p>
+        <h1>Checking saved gateway access</h1>
+        <p className="lede auth-note">
+          Revalidating the stored gateway token before the app reconnects live sessions and run feeds.
+        </p>
+      </section>
+    </main>
+  );
+}
+
 function RequireAuth(props: { children: React.ReactNode }): JSX.Element {
   const { auth, isAuthenticated, isReady } = useGatewayAuth();
   const location = useLocation();
   if (auth && !isReady) {
-    return (
-      <main className="login-page">
-        <section className="login-card auth-card">
-          <p className="eyebrow">agent-mux webui</p>
-          <h1>Checking saved gateway access</h1>
-          <p className="lede auth-note">
-            Revalidating the stored gateway token before the app reconnects live sessions and run feeds.
-          </p>
-        </section>
-      </main>
-    );
+    return <AuthPendingScreen />;
   }
   if (!isAuthenticated) {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />;
@@ -73,27 +77,21 @@ function WorkspacesRouteEntry(): JSX.Element {
   const { auth, isAuthenticated, isReady } = useGatewayAuth();
 
   if (auth && !isReady) {
-    return (
-      <main className="login-page">
-        <section className="login-card auth-card">
-          <p className="eyebrow">agent-mux webui</p>
-          <h1>Checking saved gateway access</h1>
-          <p className="lede auth-note">
-            Revalidating the stored gateway token before the app reconnects live sessions and run feeds.
-          </p>
-        </section>
-      </main>
-    );
+    return <AuthPendingScreen />;
   }
 
   if (isAuthenticated) {
-    return <AppShell />;
+    return (
+      <AppShellFrame>
+        <KanbanWorkspacesPage />
+      </AppShellFrame>
+    );
   }
 
   return <KanbanWorkspacesPage />;
 }
 
-function AppShell(): JSX.Element {
+function AppShellFrame(props: { children: React.ReactNode }): JSX.Element {
   const navigate = useNavigate();
   const location = useLocation();
   const { store } = useGateway();
@@ -135,42 +133,48 @@ function AppShell(): JSX.Element {
       <Sidebar />
       <div className="app-main">
         <TopBar pathname={location.pathname} onOpenPalette={() => setPaletteOpen(true)} />
-        <main className="app-content">
-          <Routes>
-            <Route path="/" element={<Navigate to="/projects" replace />} />
-            <Route path="/agents" element={<AgentsPage />} />
-            <Route path="/sessions" element={<SessionsPage />} />
-            <Route path="/sessions/new" element={<NewRunPage />} />
-            <Route path="/sessions/pending/:runId" element={<SessionPendingPage />} />
-            <Route path="/runs/:runId" element={<SessionPendingPage />} />
-            <Route path="/sessions/:sessionId" element={<SessionDetailPage />} />
-            <Route path="/sessions/:agent/:sessionId" element={<LegacySessionRouteRedirect />} />
-            <Route path="/pair-device" element={<PairDevicePage />} />
-            <Route element={<KanbanLayout />}>
-              <Route path="/projects" element={<ProjectsPage />} />
-              <Route path="/projects/:projectId/board" element={<ProjectBoardPage />} />
-              <Route path="/projects/:projectId/list" element={<ProjectListPage />} />
-              <Route path="/projects/:projectId/issues/new" element={<ProjectIssueCreatePage />} />
-              <Route path="/projects/:projectId/issues/:issueId" element={<ProjectIssuePage />} />
-              <Route path="/projects/:projectId/workspaces/new" element={<ProjectWorkspaceCreatePage />} />
-              <Route path="/projects/:projectId/issues/:issueId/workspace/new" element={<IssueWorkspaceCreatePage />} />
-              <Route path="/issues/:issueId" element={<IssueDetailPage />} />
-              <Route path="/runs" element={<KanbanRunsPage />} />
-              <Route path="/workspaces" element={<KanbanWorkspacesPage />} />
-              <Route path="/workspaces/new" element={<HostWorkspaceCreatePage />} />
-              <Route path="/inbox" element={<KanbanInboxPage />} />
-              <Route path="/automations" element={<AutomationsPage />} />
-              <Route path="/settings" element={<KanbanSettingsPage />} />
-            </Route>
-            <Route path="/legacy-home" element={<HomePage />} />
-            <Route path="/legacy-workspaces" element={<WorkspacesPage />} />
-            <Route path="/legacy-inbox" element={<HookInboxPage />} />
-            <Route path="/legacy-settings" element={<SettingsPage />} />
-          </Routes>
-        </main>
+        <main className="app-content">{props.children}</main>
       </div>
       <CommandPalette actions={actions} open={paletteOpen} onClose={() => setPaletteOpen(false)} />
     </div>
+  );
+}
+
+function AppShell(): JSX.Element {
+  return (
+    <AppShellFrame>
+      <Routes>
+        <Route path="/" element={<Navigate to="/projects" replace />} />
+        <Route path="/agents" element={<AgentsPage />} />
+        <Route path="/sessions" element={<SessionsPage />} />
+        <Route path="/sessions/new" element={<NewRunPage />} />
+        <Route path="/sessions/pending/:runId" element={<SessionPendingPage />} />
+        <Route path="/runs/:runId" element={<SessionPendingPage />} />
+        <Route path="/sessions/:sessionId" element={<SessionDetailPage />} />
+        <Route path="/sessions/:agent/:sessionId" element={<LegacySessionRouteRedirect />} />
+        <Route path="/pair-device" element={<PairDevicePage />} />
+        <Route element={<KanbanLayout />}>
+          <Route path="/projects" element={<ProjectsPage />} />
+          <Route path="/projects/:projectId/board" element={<ProjectBoardPage />} />
+          <Route path="/projects/:projectId/list" element={<ProjectListPage />} />
+          <Route path="/projects/:projectId/issues/new" element={<ProjectIssueCreatePage />} />
+          <Route path="/projects/:projectId/issues/:issueId" element={<ProjectIssuePage />} />
+          <Route path="/projects/:projectId/workspaces/new" element={<ProjectWorkspaceCreatePage />} />
+          <Route path="/projects/:projectId/issues/:issueId/workspace/new" element={<IssueWorkspaceCreatePage />} />
+          <Route path="/issues/:issueId" element={<IssueDetailPage />} />
+          <Route path="/runs" element={<KanbanRunsPage />} />
+          <Route path="/workspaces" element={<KanbanWorkspacesPage />} />
+          <Route path="/workspaces/new" element={<HostWorkspaceCreatePage />} />
+          <Route path="/inbox" element={<KanbanInboxPage />} />
+          <Route path="/automations" element={<AutomationsPage />} />
+          <Route path="/settings" element={<KanbanSettingsPage />} />
+        </Route>
+        <Route path="/legacy-home" element={<HomePage />} />
+        <Route path="/legacy-workspaces" element={<WorkspacesPage />} />
+        <Route path="/legacy-inbox" element={<HookInboxPage />} />
+        <Route path="/legacy-settings" element={<SettingsPage />} />
+      </Routes>
+    </AppShellFrame>
   );
 }
 

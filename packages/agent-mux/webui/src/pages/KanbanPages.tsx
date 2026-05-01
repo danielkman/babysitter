@@ -51,7 +51,7 @@ export function KanbanSettingsPage(): JSX.Element {
 export function ProjectBoardPage(): JSX.Element {
   const { projectId = '' } = useParams();
   return (
-    <PageShell className="gap-0">
+    <PageShell className="gap-0 page-shell__container--board">
       <BacklogOverview
         projectId={projectId}
         routeBasePath={`/projects/${projectId}`}
@@ -64,7 +64,7 @@ export function ProjectBoardPage(): JSX.Element {
 export function ProjectListPage(): JSX.Element {
   const { projectId = '' } = useParams();
   return (
-    <PageShell className="gap-0">
+    <PageShell className="gap-0 page-shell__container--board">
       <BacklogOverview
         projectId={projectId}
         routeBasePath={`/projects/${projectId}`}
