@@ -847,6 +847,38 @@ describe("BacklogOverview", () => {
     expect(push).toHaveBeenCalledWith("/?issueId=KANBAN-GAP-007&issueKey=KANBAN-GAP-007");
   });
 
+  it("opens the primary linked workspace directly from the board card", async () => {
+    const user = setupUser();
+    backlogState = {
+      ...buildBacklogState(),
+      snapshot: {
+        ...buildBacklogState().snapshot,
+        issues: buildBacklogState().snapshot.issues.map((issue) =>
+          issue.id === "KANBAN-GAP-007"
+            ? {
+                ...issue,
+                workspaceLinks: [
+                  {
+                    workspacePath: "/repo/worktrees/gap-007",
+                    workspaceName: "KANBAN-GAP-007",
+                    branchName: "vk/kanban-gap-007",
+                    linkedAt: "2026-04-24T14:00:00.000Z",
+                    source: "created-from-issue",
+                  },
+                ],
+              }
+            : issue,
+        ),
+      },
+    };
+
+    render(<BacklogOverview projectId="kanban-app" forcedPresentation="board" />);
+
+    await user.click(await screen.findByTestId("open-linked-workspace-KANBAN-GAP-007"));
+
+    expect(push).toHaveBeenCalledWith("/workspaces?workspace=%2Frepo%2Fworktrees%2Fgap-007");
+  });
+
   it("links an existing workspace from the issue panel", async () => {
     const user = setupUser();
     searchParams = new URLSearchParams("issueId=KANBAN-GAP-007&issueKey=KANBAN-GAP-007");

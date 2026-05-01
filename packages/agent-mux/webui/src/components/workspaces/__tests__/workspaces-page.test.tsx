@@ -716,6 +716,102 @@ describe("workspaces-page helpers", () => {
     expect(screen.getAllByText("Needs attention").length).toBeGreaterThan(0);
   });
 
+  it("keeps issue and chat actions visible while hiding maintenance behind progressive disclosure", async () => {
+    const user = setupUser();
+
+    vi.mocked(fetch).mockResolvedValue(
+      new Response(JSON.stringify({
+        summary: { total: 1, active: 1, idle: 0, archived: 0, missing: 0 },
+        workspaces: [
+          {
+            path: "/repo/worktrees/alpha",
+            name: "alpha",
+            status: "active",
+            missing: false,
+            archivedAt: null,
+            cleanedAt: null,
+            lastActivityAt: "2026-04-24T12:00:00.000Z",
+            git: {
+              root: "/repo/main",
+              commonDir: "/repo/main/.git",
+              trackingBranch: "origin/vk/alpha",
+              branch: "vk/alpha",
+              head: "abc123",
+              ahead: 0,
+              behind: 0,
+              dirty: false,
+              uncommittedCount: 0,
+              isWorktree: true,
+              isPrimary: false,
+            },
+            ownership: {
+              source: "created-from-project",
+              project: { projectId: "kanban-app", projectKey: "KANBAN", projectName: "Kanban" },
+              issue: { issueId: "KANBAN-GAP-007", issueKey: "KANBAN-GAP-007", issueTitle: "Workspace parity" },
+            },
+            issues: [
+              {
+                issueId: "KANBAN-GAP-007",
+                issueKey: "KANBAN-GAP-007",
+                issueTitle: "Workspace parity",
+                projectId: "kanban-app",
+                projectKey: "KANBAN",
+                projectName: "Kanban",
+              },
+            ],
+            notes: { value: "", updatedAt: null },
+            links: { editorHref: "vscode://file/repo/worktrees/alpha" },
+            sessions: {
+              total: 1,
+              active: 1,
+              items: [
+                {
+                  sessionId: "session-alpha",
+                  agent: "codex",
+                  status: "active",
+                  title: "Workspace parity session",
+                },
+              ],
+            },
+            runs: { total: 1, active: 1, items: [] },
+            actions: {
+              canPin: true,
+              canUnpin: false,
+              canArchive: true,
+              canCleanup: true,
+              canRecover: true,
+              canRebaseStart: false,
+              canRebaseAutoResolve: false,
+              canRebaseOpenInEditor: false,
+              canRebaseMarkResolved: false,
+              canRebaseAbort: false,
+            },
+          },
+        ],
+      }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      }),
+    );
+
+    render(<WorkspacesPageContent isAuthenticated sessions={[]} />);
+
+    await waitFor(() => {
+      expect(screen.getByRole("link", { name: "Open issue" })).toBeInTheDocument();
+    });
+
+    expect(screen.getByRole("button", { name: "Open chat" })).toBeInTheDocument();
+    const maintenanceDetails = screen.getByText("Workspace maintenance").closest("details");
+    expect(maintenanceDetails).not.toHaveAttribute("open");
+
+    await user.click(screen.getByText("Workspace maintenance"));
+
+    expect(maintenanceDetails).toHaveAttribute("open");
+    expect(screen.getByRole("button", { name: "Archive" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Recover" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Cleanup" })).toBeInTheDocument();
+  });
+
   it("filters workspace sidebar content and reports hidden items", async () => {
     vi.mocked(fetch).mockResolvedValue(
       new Response(JSON.stringify({

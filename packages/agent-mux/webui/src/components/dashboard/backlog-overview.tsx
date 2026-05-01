@@ -5042,6 +5042,7 @@ export function BacklogOverview({
                                   ? issueById.get(issue.parentIssueId)
                                   : undefined;
                                 const linkedWorkspaceCount = issue?.workspaceLinks?.length ?? 0;
+                                const primaryWorkspaceLink = issue?.workspaceLinks?.[0];
                                 const showSecondaryDetails =
                                   Boolean(card.repositoryLifecycle) ||
                                   card.collaboratorNames.length > 0 ||
@@ -5139,7 +5140,7 @@ export function BacklogOverview({
                                           </div>
                                           <p className="mt-1 text-xs opacity-75">
                                             {linkedWorkspaceCount > 0
-                                              ? "Open or relink from the board."
+                                              ? "Jump into the owned workspace, then continue execution from the linked session."
                                               : "Create or link only when this issue is ready to execute."}
                                           </p>
                                         </div>
@@ -5168,15 +5169,28 @@ export function BacklogOverview({
                                               </button>
                                             </>
                                           ) : (
-                                            <button
-                                              type="button"
-                                              onClick={() => issue && setFocusedIssue(issue)}
-                                              className="inline-flex h-10 items-center gap-2 rounded-xl border border-current/20 bg-background/70 px-3 text-xs font-semibold"
-                                              data-testid={`manage-workspaces-${card.issueKey}`}
-                                            >
-                                              <Link2 className="h-3.5 w-3.5" />
-                                              Manage links
-                                            </button>
+                                            <>
+                                              {primaryWorkspaceLink ? (
+                                                <button
+                                                  type="button"
+                                                  onClick={() => openWorkspacePath(primaryWorkspaceLink.workspacePath)}
+                                                  className="inline-flex h-10 items-center gap-2 rounded-xl border border-current/20 bg-background/70 px-3 text-xs font-semibold"
+                                                  data-testid={`open-linked-workspace-${card.issueKey}`}
+                                                >
+                                                  <FolderGit2 className="h-3.5 w-3.5" />
+                                                  Open workspace
+                                                </button>
+                                              ) : null}
+                                              <button
+                                                type="button"
+                                                onClick={() => issue && setFocusedIssue(issue)}
+                                                className="inline-flex h-10 items-center gap-2 rounded-xl border border-current/20 bg-background/70 px-3 text-xs font-semibold"
+                                                data-testid={`manage-workspaces-${card.issueKey}`}
+                                              >
+                                                <Link2 className="h-3.5 w-3.5" />
+                                                Manage links
+                                              </button>
+                                            </>
                                           )}
                                         </div>
                                       </div>

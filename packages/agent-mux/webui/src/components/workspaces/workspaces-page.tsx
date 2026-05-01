@@ -1406,6 +1406,12 @@ function WorkspaceColumn(props: {
           const runtimeSession =
             workspace.sessions.items.find((session) => session.status === "active" && session.runtime) ??
             workspace.sessions.items.find((session) => session.runtime);
+          const primarySession =
+            workspace.sessions.items.find((session) => session.status === "active") ??
+            runtimeSession ??
+            workspace.sessions.items[0] ??
+            null;
+          const primaryIssue = workspace.issues?.[0] ?? null;
           const review = props.reviewByPath.get(workspace.path) ?? workspace.review;
           const reviewArtifact = props.artifactByPath.get(workspace.path);
           const linkedPullRequest = reviewArtifact?.linkedPullRequest;
@@ -1458,7 +1464,13 @@ function WorkspaceColumn(props: {
                   </p>
                   {ownershipSummary(workspace) ? (
                     <p className="mt-2 text-sm text-foreground-muted">
-                      Linked to <span className="font-medium text-foreground">{ownershipSummary(workspace)}</span>
+                      Workspace owner <span className="font-medium text-foreground">{ownershipSummary(workspace)}</span>
+                    </p>
+                  ) : null}
+                  {primarySession ? (
+                    <p className="mt-2 text-sm text-foreground-muted">
+                      Resume <span className="font-medium text-foreground">{primarySession.title ?? primarySession.sessionId}</span>
+                      {" "}from here instead of hunting through workspace maintenance.
                     </p>
                   ) : null}
                   {attentionReasons.length > 0 ? (
@@ -1498,33 +1510,19 @@ function WorkspaceColumn(props: {
                     {workspace.pinnedAt ? <PinOff className="mr-2 h-4 w-4" /> : <Pin className="mr-2 h-4 w-4" />}
                     {workspace.pinnedAt ? "Unpin" : "Pin"}
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => props.onAction("archive", workspace)}
-                    disabled={!workspace.actions.canArchive || props.pendingAction === archiveKey}
-                  >
-                    <Archive className="mr-2 h-4 w-4" />
-                    Archive
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => props.onAction("recover", workspace)}
-                    disabled={!workspace.actions.canRecover || props.pendingAction === recoverKey}
-                  >
-                    <RotateCcw className="mr-2 h-4 w-4" />
-                    Recover
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => props.onAction("cleanup", workspace)}
-                    disabled={!workspace.actions.canCleanup || props.pendingAction === cleanupKey}
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Cleanup
-                  </Button>
+                  {primaryIssue ? (
+                    <Link
+                      to={issueHref(workspace, primaryIssue.issueId)}
+                      className="inline-flex h-9 items-center rounded-xl border border-border bg-transparent px-3 text-sm font-medium text-foreground transition-colors hover:border-primary/30 hover:bg-card"
+                    >
+                      Open issue
+                    </Link>
+                  ) : null}
+                  {primarySession ? (
+                    <Button variant="ghost" size="sm" onClick={() => navigate(`/sessions/${primarySession.sessionId}`)}>
+                      Open chat
+                    </Button>
+                  ) : null}
                   <Button variant="ghost" size="sm" onClick={() => navigate(workspaceDetailHref(workspace.path))}>
                     Open shell
                   </Button>
@@ -1572,6 +1570,43 @@ function WorkspaceColumn(props: {
 
               {detailsExpanded ? (
                 <>
+                  {(workspace.actions.canArchive || workspace.actions.canRecover || workspace.actions.canCleanup) ? (
+                    <details className="mt-4 rounded-2xl border border-border bg-card/70">
+                      <summary className="cursor-pointer px-4 py-3 text-sm font-medium text-foreground">
+                        Workspace maintenance
+                      </summary>
+                      <div className="flex flex-wrap gap-2 border-t border-border px-4 py-4">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => props.onAction("archive", workspace)}
+                          disabled={!workspace.actions.canArchive || props.pendingAction === archiveKey}
+                        >
+                          <Archive className="mr-2 h-4 w-4" />
+                          Archive
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => props.onAction("recover", workspace)}
+                          disabled={!workspace.actions.canRecover || props.pendingAction === recoverKey}
+                        >
+                          <RotateCcw className="mr-2 h-4 w-4" />
+                          Recover
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => props.onAction("cleanup", workspace)}
+                          disabled={!workspace.actions.canCleanup || props.pendingAction === cleanupKey}
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Cleanup
+                        </Button>
+                      </div>
+                    </details>
+                  ) : null}
+
                   {integration || linkedPullRequest ? (
                     <section className="mt-4 rounded-2xl border border-border bg-card/80 p-4">
                       <div className="flex flex-wrap items-start justify-between gap-3">
