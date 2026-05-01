@@ -55,7 +55,7 @@ export async function invokePromptEffect(
   options: { workspace?: string; model?: string; compressionConfig?: CompressionConfig | null; streaming?: StreamingOutputOptions },
   piSession?: AgentCoreSessionHandle | null,
 ): Promise<ResolveEffectResult> {
-  if (isInternalHarness(taskHarness) && piSession) {
+  if ((isInternalHarness(taskHarness) || taskHarness === "pi") && piSession) {
     const piResult = await promptPiWithRetry({
       session: piSession,
       message: compressInternalHarnessPrompt(prompt, options.compressionConfig, "skill"),

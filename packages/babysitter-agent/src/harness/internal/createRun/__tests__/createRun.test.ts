@@ -4130,7 +4130,7 @@ describe("handleHarnessCreateRun", () => {
       expect(code).toBe(0);
     });
 
-    it("routes explicit --harness pi through host-driven external orchestration", async () => {
+    it("resolves explicit --harness pi effects with a host worker when no pi session is bound", async () => {
       (discoverHarnesses as Mock).mockResolvedValue([
         makeDiscoveryResult({ name: "pi" }),
         makeDiscoveryResult({ name: "claude-code" }),
@@ -4174,7 +4174,8 @@ describe("handleHarnessCreateRun", () => {
       });
 
       expect(code).toBe(0);
-      expect(invokeHarness).toHaveBeenCalled();
+      expect(createAgentCoreSession).toHaveBeenCalled();
+      expect(invokeHarness).not.toHaveBeenCalled();
       expect(commitEffectResult).toHaveBeenCalled();
     });
 

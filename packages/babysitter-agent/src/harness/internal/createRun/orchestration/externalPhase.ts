@@ -279,6 +279,11 @@ async function resolveExternalAction(args: {
     args.args.selectedHarnessName,
     args.args.discovered,
   );
+  const shouldUseHostPiWorker = (
+    args.args.selectedHarnessName === "pi" &&
+    taskHarness === args.args.selectedHarnessName &&
+    !args.state.sessionBound
+  );
   emitProgress(
     {
       phase: "2",
@@ -295,8 +300,23 @@ async function resolveExternalAction(args: {
   );
   let workerSession: ReturnType<typeof createAgentCoreSession> | null = null;
   let workerUnsub: (() => void) | null = null;
-  if (args.action.kind === "shell" || isInternalHarness(taskHarness)) {
+  if (
+    args.action.kind === "shell" ||
+    isInternalHarness(taskHarness) ||
+    shouldUseHostPiWorker
+  ) {
     if (isInternalHarness(taskHarness) || args.action.kind === "shell") {
+      workerSession = args.registerPiSession(createAgentCoreSession(buildPiWorkerSessionOptions({
+        action: args.action,
+        workspace: args.args.workspace,
+        model: args.args.model,
+      })));
+      workerUnsub = subscribeVerbosePiEvents(
+        workerSession,
+        `worker:${args.action.effectId.slice(-8)}`,
+        args.args,
+      );
+    } else if (shouldUseHostPiWorker) {
       workerSession = args.registerPiSession(createAgentCoreSession(buildPiWorkerSessionOptions({
         action: args.action,
         workspace: args.args.workspace,
