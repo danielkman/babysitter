@@ -46,6 +46,7 @@ export declare class WorkspaceLifecycleService {
         sessions?: WorkspaceSessionSnapshot[];
         reviewByWorkspacePath?: ReadonlyMap<string, KanbanReviewSummary>;
         linkedIssuesByWorkspacePath?: ReadonlyMap<string, readonly WorkspaceIssueLink[]>;
+        focusWorkspacePath?: string;
     }): Promise<WorkspaceInventoryResponse>;
     provisionWorkspace(input: {
         workspaceName: string;

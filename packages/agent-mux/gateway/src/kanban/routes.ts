@@ -1167,11 +1167,13 @@ export function registerKanbanRoutes(app: Hono): void {
     }
   });
 
-  app.get('/api/workspaces', async () => {
+  app.get('/api/workspaces', async (context) => {
     try {
       const reviews = await reviewService.listReviews({ targetType: 'workspace' });
+      const focusWorkspacePath = context.req.query('workspace')?.trim() || undefined;
       return jsonWithHeaders(
         await workspaceService.listWorkspaces({
+          focusWorkspacePath,
           reviewByWorkspacePath: buildReviewByWorkspacePath(reviews.artifacts),
           linkedIssuesByWorkspacePath: await buildLinkedIssuesByWorkspacePath(),
         }),
@@ -1185,6 +1187,10 @@ export function registerKanbanRoutes(app: Hono): void {
     try {
       const body = await context.req.json<Record<string, unknown>>();
       const sessions = readSessions(body);
+      const focusWorkspacePath =
+        typeof body.focusWorkspacePath === 'string' && body.focusWorkspacePath.trim().length > 0
+          ? body.focusWorkspacePath.trim()
+          : undefined;
       const reviews = await reviewService.listReviews({ targetType: 'workspace' });
       const reviewByWorkspacePath = buildReviewByWorkspacePath(reviews.artifacts);
       const linkedIssuesByWorkspacePath = await buildLinkedIssuesByWorkspacePath();
@@ -1297,6 +1303,7 @@ export function registerKanbanRoutes(app: Hono): void {
           return jsonWithHeaders({
             workspace: provisioned,
             ...(await workspaceService.listWorkspaces({
+              focusWorkspacePath,
               sessions,
               reviewByWorkspacePath,
               linkedIssuesByWorkspacePath: await buildLinkedIssuesByWorkspacePath(),
@@ -1317,6 +1324,7 @@ export function registerKanbanRoutes(app: Hono): void {
         return jsonWithHeaders({
           result,
           ...(await workspaceService.listWorkspaces({
+            focusWorkspacePath,
             sessions,
             reviewByWorkspacePath,
             linkedIssuesByWorkspacePath,
@@ -1326,6 +1334,7 @@ export function registerKanbanRoutes(app: Hono): void {
 
       return jsonWithHeaders(
         await workspaceService.listWorkspaces({
+          focusWorkspacePath,
           sessions,
           reviewByWorkspacePath,
           linkedIssuesByWorkspacePath,

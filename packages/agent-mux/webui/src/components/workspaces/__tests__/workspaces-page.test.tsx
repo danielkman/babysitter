@@ -367,6 +367,24 @@ describe("workspaces-page helpers", () => {
     );
   });
 
+  it("requests a focused workspace inventory when opening a selected workspace without live sessions", async () => {
+    const payload = {
+      summary: { total: 1, active: 0, idle: 1, archived: 0, missing: 0 },
+      workspaces: [],
+    };
+
+    vi.mocked(fetch).mockResolvedValue(
+      new Response(JSON.stringify(payload), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      }),
+    );
+
+    await expect(loadInventory([], "/repo/worktrees/task")).resolves.toEqual(payload);
+
+    expect(fetch).toHaveBeenCalledWith("/api/workspaces?workspace=%2Frepo%2Fworktrees%2Ftask");
+  });
+
   it("renders only workspaces that need attention in inbox mode", async () => {
     vi.mocked(fetch).mockResolvedValue(
       new Response(JSON.stringify({

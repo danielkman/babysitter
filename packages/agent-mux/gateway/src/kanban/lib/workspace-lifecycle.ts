@@ -304,6 +304,13 @@ function normalizeWorkspacePath(workspacePath: string): string {
   return path.resolve(workspacePath);
 }
 
+function matchesNormalizedWorkspacePath(candidatePath: string | null | undefined, normalizedTargetPath: string | null): boolean {
+  if (!candidatePath || !normalizedTargetPath) {
+    return false;
+  }
+  return normalizeWorkspacePath(candidatePath) === normalizedTargetPath;
+}
+
 function normalizeOwnershipValue(
   ownership: WorkspaceProvisionOwnershipInput | KanbanWorkspaceOwnershipSummary | null | undefined,
 ): KanbanWorkspaceOwnershipSummary | undefined {
@@ -610,32 +617,54 @@ export class WorkspaceLifecycleService {
     sessions?: WorkspaceSessionSnapshot[];
     reviewByWorkspacePath?: ReadonlyMap<string, KanbanReviewSummary>;
     linkedIssuesByWorkspacePath?: ReadonlyMap<string, readonly WorkspaceIssueLink[]>;
+    focusWorkspacePath?: string;
   } = {}): Promise<WorkspaceInventoryResponse> {
     const { resolveWorkspaceDefaultCwd, sharedWorkspaceService } = await this.getWorkspaceCore();
     const sessions = input.sessions ?? [];
+    const focusWorkspacePath = input.focusWorkspacePath ? normalizeWorkspacePath(input.focusWorkspacePath) : null;
     const reviewByWorkspacePath = input.reviewByWorkspacePath ?? new Map<string, KanbanReviewSummary>();
     const linkedIssuesByWorkspacePath =
       input.linkedIssuesByWorkspacePath ?? new Map<string, readonly WorkspaceIssueLink[]>();
     const registry = await readRegistry(this.deps);
     const records = new Map<string, MutableWorkspaceRecord>();
     let managedWorkspaces: ManagedWorkspaceSummary[] = [];
+    const scopedSessions = focusWorkspacePath
+      ? sessions.filter((session) => matchesNormalizedWorkspacePath(session.cwd, focusWorkspacePath))
+      : sessions;
 
     try {
       managedWorkspaces = (await sharedWorkspaceService.listWorkspaces({
-        liveSessions: toSharedSessionBindings(sessions),
+        liveSessions: toSharedSessionBindings(scopedSessions),
       })).workspaces as ManagedWorkspaceSummary[];
     } catch {
       managedWorkspaces = [];
     }
 
-    const seedPaths = new Set<string>([
-      normalizeWorkspacePath(this.deps.cwd()),
-      ...Object.keys(registry.workspaces).map(normalizeWorkspacePath),
-      ...managedWorkspaces.map((workspace) =>
-        normalizeWorkspacePath(toManagedWorkspacePath(workspace, resolveWorkspaceDefaultCwd)),
-      ),
-      ...sessions.flatMap((session) => (session.cwd ? [normalizeWorkspacePath(session.cwd)] : [])),
-    ]);
+    const scopedManagedWorkspaces = focusWorkspacePath
+      ? managedWorkspaces.filter((workspace) =>
+          matchesManagedWorkspacePath(workspace, focusWorkspacePath),
+        )
+      : managedWorkspaces;
+
+    const seedPaths = focusWorkspacePath
+      ? new Set<string>([
+          focusWorkspacePath,
+          ...Object.keys(registry.workspaces)
+            .map(normalizeWorkspacePath)
+            .filter((workspacePath) => workspacePath === focusWorkspacePath),
+          ...scopedManagedWorkspaces.map((workspace) =>
+            normalizeWorkspacePath(toManagedWorkspacePath(workspace, resolveWorkspaceDefaultCwd)),
+          ),
+          ...scopedSessions.flatMap((session) => (session.cwd ? [normalizeWorkspacePath(session.cwd)] : [])),
+        ])
+      : new Set<string>([
+          normalizeWorkspacePath(this.deps.cwd()),
+          ...Object.keys(registry.workspaces).map(normalizeWorkspacePath),
+          ...managedWorkspaces.map((workspace) =>
+            normalizeWorkspacePath(toManagedWorkspacePath(workspace, resolveWorkspaceDefaultCwd)),
+          ),
+          ...sessions.flatMap((session) => (session.cwd ? [normalizeWorkspacePath(session.cwd)] : [])),
+        ]);
 
     const seenCommonDirs = new Set<string>();
     for (const seedPath of seedPaths) {
@@ -658,6 +687,21 @@ export class WorkspaceLifecycleService {
       }
       seenCommonDirs.add(clusterKey);
 
+      if (focusWorkspacePath) {
+        const matchingWorktree =
+          cluster.worktrees.find((worktree) => normalizeWorkspacePath(worktree.path) === focusWorkspacePath) ??
+          cluster.worktrees.find((worktree) => normalizeWorkspacePath(worktree.path) === seedPath);
+        const record = ensureWorkspaceRecord(records, focusWorkspacePath);
+        record.gitRoot = cluster.gitRoot;
+        record.commonDir = cluster.commonDir;
+        record.branch = matchingWorktree?.branch ?? record.branch;
+        record.head = matchingWorktree?.head ?? record.head;
+        record.isWorktree = matchingWorktree ? true : record.isWorktree;
+        record.isPrimary = matchingWorktree?.isPrimary ?? record.isPrimary;
+        record.name = matchingWorktree?.branch ?? record.name;
+        continue;
+      }
+
       for (const worktree of cluster.worktrees) {
         const record = ensureWorkspaceRecord(records, worktree.path);
         record.gitRoot = cluster.gitRoot;
@@ -671,6 +715,9 @@ export class WorkspaceLifecycleService {
     }
 
     for (const entry of Object.values(registry.workspaces)) {
+      if (focusWorkspacePath && normalizeWorkspacePath(entry.path) !== focusWorkspacePath) {
+        continue;
+      }
       const record = ensureWorkspaceRecord(records, entry.path);
       record.name = entry.name ?? record.name;
       record.gitRoot = entry.gitRoot ?? record.gitRoot;
@@ -695,7 +742,7 @@ export class WorkspaceLifecycleService {
       }
     }
 
-    for (const workspace of managedWorkspaces) {
+    for (const workspace of scopedManagedWorkspaces) {
       const workspacePath = normalizeWorkspacePath(
         toManagedWorkspacePath(workspace, resolveWorkspaceDefaultCwd),
       );
@@ -735,7 +782,7 @@ export class WorkspaceLifecycleService {
       }
     }
 
-    for (const session of sessions) {
+    for (const session of scopedSessions) {
       if (!session.cwd) {
         continue;
       }

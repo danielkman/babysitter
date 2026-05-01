@@ -193,14 +193,25 @@ function sortWorkspaceSidebarItems(workspaces: WorkspaceInventoryItem[]): Worksp
   });
 }
 
-export async function loadInventory(sessions: WorkspaceSessionSnapshot[]): Promise<WorkspaceInventoryResponse> {
+export async function loadInventory(
+  sessions: WorkspaceSessionSnapshot[],
+  focusWorkspacePath?: string | null,
+): Promise<WorkspaceInventoryResponse> {
+  const normalizedFocusWorkspacePath = focusWorkspacePath?.trim() || null;
   const response =
     sessions.length === 0
-      ? await fetch("/api/workspaces")
+      ? await fetch(
+          normalizedFocusWorkspacePath
+            ? `/api/workspaces?workspace=${encodeURIComponent(normalizedFocusWorkspacePath)}`
+            : "/api/workspaces",
+        )
       : await fetch("/api/workspaces", {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ sessions }),
+          body: JSON.stringify({
+            sessions,
+            ...(normalizedFocusWorkspacePath ? { focusWorkspacePath: normalizedFocusWorkspacePath } : {}),
+          }),
         });
 
   if (!response.ok) {
@@ -490,7 +501,7 @@ export function WorkspacesPageContent(props: {
     setLoading(true);
     setError(null);
 
-    void loadInventory(inventorySessions)
+    void loadInventory(inventorySessions, selectedWorkspacePath)
       .then((payload) => {
         if (!cancelled) {
           setInventory(payload);
@@ -510,7 +521,7 @@ export function WorkspacesPageContent(props: {
     return () => {
       cancelled = true;
     };
-  }, [inventorySessions]);
+  }, [inventorySessions, selectedWorkspacePath]);
 
   const summary = inventory?.summary ?? {
     total: 0,
@@ -658,7 +669,7 @@ export function WorkspacesPageContent(props: {
     startTransition(() => {
       setLoading(true);
       setError(null);
-      void loadInventory(inventorySessions)
+      void loadInventory(inventorySessions, selectedWorkspacePath)
         .then((payload) => setInventory(payload))
         .catch((cause) => setError(cause instanceof Error ? cause.message : String(cause)))
         .finally(() => setLoading(false));

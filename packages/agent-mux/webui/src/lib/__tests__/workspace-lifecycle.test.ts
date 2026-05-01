@@ -176,6 +176,19 @@ describe("WorkspaceLifecycleService", () => {
     expect(result.workspaces[0]?.actions.canRebaseStart).toBe(true);
   }, 30000);
 
+  it("limits focused workspace inventory to the selected worktree", async () => {
+    const service = new WorkspaceLifecycleService(createDeps());
+
+    const result = await service.listWorkspaces({
+      focusWorkspacePath: repoPath("repo", "worktrees", "task"),
+    });
+
+    expect(result.summary.total).toBe(1);
+    expect(result.workspaces).toHaveLength(1);
+    expect(result.workspaces[0]?.path).toBe(repoPath("repo", "worktrees", "task"));
+    expect(result.workspaces[0]?.git.branch).toBe("vk/task");
+  });
+
   it("persists pin and unpin actions in the workspace registry", async () => {
     let registry = JSON.stringify({
       version: 1,
