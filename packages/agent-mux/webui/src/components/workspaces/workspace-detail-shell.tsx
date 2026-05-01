@@ -3,7 +3,7 @@
 import { Link, useNavigate } from "react-router-dom-v6";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Attachment } from "@a5c-ai/agent-mux-core";
-import { ChevronLeft, ExternalLink, GripVertical, LayoutDashboard, MessagesSquare, PanelLeft, PanelRight, Search, Workflow } from "lucide-react";
+import { ChevronLeft, ExternalLink, GripVertical, LayoutDashboard, MessagesSquare, PanelLeft, PanelRight, Workflow } from "lucide-react";
 
 import { SessionConversationSurface } from "@/components/sessions/session-conversation-surface";
 import { SessionObservabilityPanel } from "@/components/sessions/session-observability-panel";
@@ -106,10 +106,6 @@ const DEFAULT_WORKSPACE_DETAIL_SIZES: WorkspacePanelSizes = {
   context: 14,
   details: 8,
 };
-
-function workspaceHref(cwd: string): string {
-  return `/workspaces?workspace=${encodeURIComponent(cwd)}`;
-}
 
 function workspaceIssueHref(workspace: WorkspaceInventoryItem, issueId: string): string {
   const projectId =
@@ -237,7 +233,9 @@ export function WorkspaceDetailShell(props: WorkspaceDetailShellProps) {
   const [viewportWidth, setViewportWidth] = useState(() =>
     typeof window === "undefined" ? DESKTOP_LAYOUT_BREAKPOINT : window.innerWidth,
   );
+  const [minimalLayoutAppliedForWorkspace, setMinimalLayoutAppliedForWorkspace] = useState<string | null>(null);
   const shellRef = useRef<HTMLDivElement>(null);
+  const linkedIssue = props.workspace.issues?.[0] ?? null;
 
   const visibility = useMemo<WorkspacePanelVisibility>(
     () =>
@@ -355,6 +353,29 @@ export function WorkspaceDetailShell(props: WorkspaceDetailShellProps) {
   const activeSessionLabel = props.activeSession?.title ?? props.activeSession?.sessionId ?? "No session selected";
   const runtime = props.activeSession?.runtime;
   const canSendMessages = props.canSendMessages ?? true;
+  const forceMinimalWorkspaceDefaults = !props.activeSession && !canSendMessages;
+
+  useEffect(() => {
+    if (!forceMinimalWorkspaceDefaults) {
+      setMinimalLayoutAppliedForWorkspace(null);
+      return;
+    }
+    if (minimalLayoutAppliedForWorkspace === props.workspace.path) {
+      return;
+    }
+
+    setConversationOpen(false);
+    setContextOpen(false);
+    setDetailsOpen(false);
+    setMinimalLayoutAppliedForWorkspace(props.workspace.path);
+  }, [
+    forceMinimalWorkspaceDefaults,
+    minimalLayoutAppliedForWorkspace,
+    props.workspace.path,
+    setContextOpen,
+    setConversationOpen,
+    setDetailsOpen,
+  ]);
 
   const renderPanel = (panel: WorkspacePanelKey) => {
     if (panel === "sidebar") {
@@ -543,9 +564,22 @@ export function WorkspaceDetailShell(props: WorkspaceDetailShellProps) {
             </div>
             <h1 className="mt-3 text-3xl font-semibold tracking-tight">{props.workspace.name}</h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-foreground-muted">
-              Keep the workspace anchored around its active session chat. Switch sessions, inspect
-              trace, and open runtime surfaces without losing the conversation.
+              {linkedIssue
+                ? `${linkedIssue.issueKey} is linked here. Start from the workspace summary, then open chat or runtime only when you need them.`
+                : "Start from the workspace summary, then open chat or runtime only when you need them."}
             </p>
+            {linkedIssue ? (
+              <div className="mt-3">
+                <Link
+                  to={workspaceIssueHref(props.workspace, linkedIssue.issueId)}
+                  className="inline-flex rounded-full border border-border px-3 py-1.5 text-sm text-primary"
+                  data-testid={`workspace-primary-issue-link-${linkedIssue.issueKey}`}
+                >
+                  {linkedIssue.issueKey}
+                  <span className="ml-1 text-foreground-muted">· {linkedIssue.issueTitle}</span>
+                </Link>
+              </div>
+            ) : null}
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -579,47 +613,33 @@ export function WorkspaceDetailShell(props: WorkspaceDetailShellProps) {
                 </Button>
               );
             })}
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              data-testid="workspace-command-bar-trigger"
-              onClick={() => setCommandBarOpen(true)}
-            >
-              <Search className="h-4 w-4" />
-              Command bar
-            </Button>
           </div>
         </div>
 
         <div className="mt-5 grid gap-4 xl:grid-cols-[minmax(0,1.3fr)_minmax(18rem,0.7fr)]">
-          <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-4">
-            <div className="rounded-2xl border border-border bg-background/65 p-4">
-              <p className="text-[11px] uppercase tracking-[0.18em] text-foreground-muted">Status</p>
-              <p className="mt-2 text-base font-semibold text-foreground">{props.workspace.status}</p>
+          <div className="flex flex-wrap gap-3">
+            <div className="rounded-full border border-border bg-background/65 px-3 py-1.5 text-sm">
+              <span className="text-foreground-muted">Status</span>
+              <span className="ml-2 font-medium text-foreground">{props.workspace.status}</span>
             </div>
-            <div className="rounded-2xl border border-border bg-background/65 p-4">
-              <p className="text-[11px] uppercase tracking-[0.18em] text-foreground-muted">Branch</p>
-              <p className="mt-2 break-all font-mono text-sm text-foreground">{props.workspace.git.branch ?? "Unavailable"}</p>
+            <div className="rounded-full border border-border bg-background/65 px-3 py-1.5 text-sm">
+              <span className="text-foreground-muted">Branch</span>
+              <span className="ml-2 font-mono text-foreground">{props.workspace.git.branch ?? "Unavailable"}</span>
             </div>
-            <div className="rounded-2xl border border-border bg-background/65 p-4">
-              <p className="text-[11px] uppercase tracking-[0.18em] text-foreground-muted">Sessions</p>
-              <p className="mt-2 text-base font-semibold text-foreground">
-                {props.workspace.sessions.active}/{props.workspace.sessions.total}
-              </p>
+            <div className="rounded-full border border-border bg-background/65 px-3 py-1.5 text-sm">
+              <span className="text-foreground-muted">Sessions</span>
+              <span className="ml-2 font-medium text-foreground">{props.workspace.sessions.active}/{props.workspace.sessions.total}</span>
             </div>
-            <div className="rounded-2xl border border-border bg-background/65 p-4">
-              <p className="text-[11px] uppercase tracking-[0.18em] text-foreground-muted">Runs</p>
-              <p className="mt-2 text-base font-semibold text-foreground">
-                {props.workspace.runs.active}/{props.workspace.runs.total}
-              </p>
+            <div className="rounded-full border border-border bg-background/65 px-3 py-1.5 text-sm">
+              <span className="text-foreground-muted">Runs</span>
+              <span className="ml-2 font-medium text-foreground">{props.workspace.runs.active}/{props.workspace.runs.total}</span>
             </div>
           </div>
 
           <div className="rounded-2xl border border-border bg-background/65 p-4" data-testid="workspace-context-bar">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <p className="text-[11px] uppercase tracking-[0.18em] text-foreground-muted">Active session</p>
+                <p className="text-[11px] uppercase tracking-[0.18em] text-foreground-muted">Session</p>
                 <p className="mt-1 text-sm font-medium text-foreground">{activeSessionLabel}</p>
                 {props.activeSession ? (
                   <p className="mt-1 text-xs text-foreground-muted">
@@ -628,7 +648,7 @@ export function WorkspaceDetailShell(props: WorkspaceDetailShellProps) {
                 ) : null}
                 {props.workspace.ownership ? (
                   <div className="mt-3 text-xs text-foreground-muted" data-testid="workspace-ownership-summary">
-                    <span className="font-semibold text-foreground">Board link:</span>{" "}
+                    <span className="font-semibold text-foreground">Linked to:</span>{" "}
                     {props.workspace.ownership.project ? props.workspace.ownership.project.projectKey : "Unassigned"}
                     {props.workspace.ownership.issue ? ` / ${props.workspace.ownership.issue.issueKey}` : ""}
                     {props.workspace.ownership.host ? ` · ${props.workspace.ownership.host.label}` : ""}
@@ -675,20 +695,6 @@ export function WorkspaceDetailShell(props: WorkspaceDetailShellProps) {
               )}
             </div>
           </div>
-        </div>
-
-        <div data-testid="workspace-navbar" className="mt-4 flex gap-2 overflow-x-auto pb-1 text-xs text-foreground-muted [scrollbar-width:none]">
-          {PANEL_DEFINITIONS.map((panel) => (
-            <span key={panel.key} className="shrink-0 rounded-full border border-border px-3 py-1.5">
-              {panel.label}: {panel.shortcut}
-            </span>
-          ))}
-          <span className="shrink-0 rounded-full border border-border px-3 py-1.5">Command bar: Ctrl/Cmd+K</span>
-          {props.workspace.git.root ? (
-            <Link to={workspaceHref(props.workspace.path)} className="shrink-0 rounded-full border border-border px-3 py-1.5 text-primary">
-              Open this workspace
-            </Link>
-          ) : null}
         </div>
       </section>
 

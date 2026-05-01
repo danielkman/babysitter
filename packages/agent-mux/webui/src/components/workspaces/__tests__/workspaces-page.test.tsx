@@ -1094,9 +1094,7 @@ describe("workspaces-page helpers", () => {
     expect(within(sidebar).getAllByRole("heading", { level: 3 }).map((heading) => heading.textContent)).toEqual([
       "Workspace status",
       "Git summary",
-      "Terminal",
       "Notes",
-      "PR lifecycle",
       "Quick actions",
     ]);
     expect(screen.getByText("Resolve conflicts before returning to review or merge")).toBeInTheDocument();
@@ -1270,7 +1268,7 @@ describe("workspaces-page helpers", () => {
     render(<WorkspacesPageContent isAuthenticated sessions={[]} />);
 
     await waitFor(() => {
-      expect(screen.getByText("Pull request")).toBeInTheDocument();
+      expect(screen.getAllByText("Pull request").length).toBeGreaterThan(0);
     });
 
     expect(screen.getByText(/GitHub PR #612 is partially linked/)).toBeInTheDocument();
@@ -1454,7 +1452,7 @@ describe("workspaces-page helpers", () => {
       expect(screen.getByText("Repository metadata unavailable")).toBeInTheDocument();
     });
 
-    expect(screen.getAllByText("Runtime disconnected")).toHaveLength(2);
+    expect(screen.getAllByText("Runtime disconnected")).toHaveLength(1);
     expect(screen.getByText("No workspace notes yet")).toBeInTheDocument();
   });
 

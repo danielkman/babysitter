@@ -150,7 +150,7 @@ describe("WorkspaceDetailsSidebar", () => {
     );
 
     expect(screen.getByText("No active session selected")).toBeInTheDocument();
-    expect(screen.getAllByText("Runtime disconnected")).toHaveLength(2);
+    expect(screen.getAllByText("Runtime disconnected")).toHaveLength(1);
     expect(screen.getByText("No workspace runs yet")).toBeInTheDocument();
   });
 });

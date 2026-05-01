@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom-v6";
 import { useEffect, useMemo, useState } from "react";
 import type { WorkspaceRuntimeSurface } from "@a5c-ai/agent-mux-core";
 import type { KanbanIntegrationProvider, KanbanReviewArtifact } from "@a5c-ai/agent-mux-core/kanban";
-import { AlertCircle, ArrowUpDown, ExternalLink, FileText, GitBranch, Loader2, MessageSquareText, Terminal, Wrench } from "lucide-react";
+import { AlertCircle, ArrowUpDown, ExternalLink, FileText, GitBranch, Loader2, Wrench } from "lucide-react";
 
 import { Button, cx } from "@a5c-ai/compendium";
 import type { WorkspaceInventoryItem } from "@/lib/workspace-lifecycle";
@@ -188,6 +188,8 @@ export function WorkspaceDetailsSidebar(props: {
     () => [...(props.reviewArtifact?.comments ?? [])].slice(-2).reverse(),
     [props.reviewArtifact?.comments],
   );
+  const showTerminalSection = Boolean(props.runtime || lastCommand);
+  const pullRequestSectionDefaultOpen = Boolean(props.reviewArtifact || linkedPullRequest || integration || recentComments.length > 0);
 
   useEffect(() => {
     setDraftNote(noteValue);
@@ -345,65 +347,71 @@ export function WorkspaceDetailsSidebar(props: {
           )}
         </SidebarSection>
 
-        <SidebarSection title="Terminal" icon={Terminal}>
-          {!props.runtime ? (
-              <SectionState
-                tone="error"
-                title="Runtime disconnected"
-                body="No active runtime is currently publishing shell state for this workspace."
-              />
-          ) : !lastCommand ? (
-            <div className="space-y-3">
-              <SectionState
-                tone="neutral"
-                title="No terminal activity yet"
-                body="The selected session has not published a captured command yet."
-              />
-              <pre className="overflow-x-auto rounded-2xl border border-border bg-background/80 px-3 py-2 text-xs text-foreground-muted">
-                {`cd ${props.workspace.path}\ngit status --short`}
-              </pre>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              <div className="flex flex-wrap items-center gap-2">
-                <span
-                  className={cx(
-                    "rounded-full border px-2 py-0.5 text-[11px] uppercase",
-                    statusTone(lastCommand.status === "completed" ? "success" : lastCommand.status === "failed" ? "error" : "warning"),
-                  )}
-                >
-                  {lastCommand.status}
-                </span>
-                <span className="rounded-full border border-border px-2 py-0.5 text-[11px] text-foreground-muted">
-                  {lastCommand.source}
-                </span>
-                {lastCommand.toolName ? (
-                  <span className="rounded-full border border-border px-2 py-0.5 text-[11px] text-foreground-muted">
-                    {lastCommand.toolName}
-                  </span>
-                ) : null}
+        {showTerminalSection ? (
+          <CollapsibleSidebarSection
+            title="Terminal"
+            summary={lastCommand ? "Most recent command and captured output" : "Runtime shell output is available"}
+            defaultOpen={Boolean(lastCommand)}
+          >
+            {!props.runtime ? (
+                <SectionState
+                  tone="error"
+                  title="Runtime disconnected"
+                  body="No active runtime is currently publishing shell state for this workspace."
+                />
+            ) : !lastCommand ? (
+              <div className="space-y-3">
+                <SectionState
+                  tone="neutral"
+                  title="No terminal activity yet"
+                  body="The selected session has not published a captured command yet."
+                />
+                <pre className="overflow-x-auto rounded-2xl border border-border bg-background/80 px-3 py-2 text-xs text-foreground-muted">
+                  {`cd ${props.workspace.path}\ngit status --short`}
+                </pre>
               </div>
-              <pre className="overflow-x-auto rounded-2xl border border-border bg-slate-950 px-3 py-2 text-xs text-slate-100">
-                {lastCommand.command}
-              </pre>
-              <p className="text-xs text-foreground-muted">
-                Captured {formatRuntimeTimestamp(lastCommand.startedAt)}
-                {lastCommand.exitCode != null ? ` · exit ${lastCommand.exitCode}` : ""}
-              </p>
-              {lastCommand.logs.length > 0 ? (
-                <div className="rounded-2xl border border-border bg-background/80 px-3 py-2 text-xs text-foreground-muted">
-                  {lastCommand.logs.slice(-2).map((line: { timestamp: number; stream: string; text: string }, index: number) => (
-                    <p key={`${line.timestamp}:${index}`} className="break-words">
-                      <span className="font-mono">{line.stream}</span>: {line.text}
-                    </p>
-                  ))}
+            ) : (
+              <div className="space-y-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span
+                    className={cx(
+                      "rounded-full border px-2 py-0.5 text-[11px] uppercase",
+                      statusTone(lastCommand.status === "completed" ? "success" : lastCommand.status === "failed" ? "error" : "warning"),
+                    )}
+                  >
+                    {lastCommand.status}
+                  </span>
+                  <span className="rounded-full border border-border px-2 py-0.5 text-[11px] text-foreground-muted">
+                    {lastCommand.source}
+                  </span>
+                  {lastCommand.toolName ? (
+                    <span className="rounded-full border border-border px-2 py-0.5 text-[11px] text-foreground-muted">
+                      {lastCommand.toolName}
+                    </span>
+                  ) : null}
                 </div>
-              ) : (
-                <SectionState tone="neutral" title="No command output yet" body="The runtime captured the command but has not attached log lines." />
-              )}
-            </div>
-          )}
-        </SidebarSection>
+                <pre className="overflow-x-auto rounded-2xl border border-border bg-slate-950 px-3 py-2 text-xs text-slate-100">
+                  {lastCommand.command}
+                </pre>
+                <p className="text-xs text-foreground-muted">
+                  Captured {formatRuntimeTimestamp(lastCommand.startedAt)}
+                  {lastCommand.exitCode != null ? ` · exit ${lastCommand.exitCode}` : ""}
+                </p>
+                {lastCommand.logs.length > 0 ? (
+                  <div className="rounded-2xl border border-border bg-background/80 px-3 py-2 text-xs text-foreground-muted">
+                    {lastCommand.logs.slice(-2).map((line: { timestamp: number; stream: string; text: string }, index: number) => (
+                      <p key={`${line.timestamp}:${index}`} className="break-words">
+                        <span className="font-mono">{line.stream}</span>: {line.text}
+                      </p>
+                    ))}
+                  </div>
+                ) : (
+                  <SectionState tone="neutral" title="No command output yet" body="The runtime captured the command but has not attached log lines." />
+                )}
+              </div>
+            )}
+          </CollapsibleSidebarSection>
+        ) : null}
 
         <SidebarSection title="Notes" icon={FileText}>
           <div className="space-y-3">
@@ -435,7 +443,11 @@ export function WorkspaceDetailsSidebar(props: {
           </div>
         </SidebarSection>
 
-        <SidebarSection title="PR lifecycle" icon={MessageSquareText}>
+        <CollapsibleSidebarSection
+          title="Pull request"
+          summary={linkedPullRequest ? "Linked review state and status" : "Create or attach a pull request only when needed"}
+          defaultOpen={pullRequestSectionDefaultOpen}
+        >
           <div className="space-y-3">
             {linkedPullRequest ? (
               <div className="rounded-2xl border border-border bg-card/80 px-3 py-3">
@@ -665,7 +677,7 @@ export function WorkspaceDetailsSidebar(props: {
               )}
             </div>
           </div>
-        </SidebarSection>
+        </CollapsibleSidebarSection>
 
         <SidebarSection title="Quick actions" icon={Wrench}>
           <div className="space-y-3">
@@ -771,7 +783,7 @@ export function WorkspaceDetailsSidebar(props: {
               <SectionState tone={props.feedback.tone} title={props.feedback.tone === "error" ? "Action failed" : "Action updated"} body={props.feedback.message} />
             ) : (
               <p className="text-xs text-foreground-muted">
-                Preview, editor, and rebase helpers stay visible together so the workspace card remains the operational handoff surface.
+                Keep editor, preview, and rebase helpers close, without taking over the main workspace summary.
               </p>
             )}
           </div>
@@ -790,6 +802,38 @@ function SidebarSection(props: { title: string; icon: typeof GitBranch; children
         <h3>{props.title}</h3>
       </div>
       {props.children as any}
+    </section>
+  );
+}
+
+function CollapsibleSidebarSection(props: {
+  title: string;
+  summary: string;
+  defaultOpen?: boolean;
+  children: unknown;
+}) {
+  const [open, setOpen] = useState(props.defaultOpen ?? false);
+
+  useEffect(() => {
+    setOpen(props.defaultOpen ?? false);
+  }, [props.defaultOpen, props.title]);
+
+  return (
+    <section className="rounded-2xl border border-border bg-background/60 p-3">
+      <button
+        type="button"
+        onClick={() => setOpen((current) => !current)}
+        className="flex w-full items-start justify-between gap-3 text-left"
+      >
+        <div>
+          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-foreground-muted">{props.title}</div>
+          <div className="mt-1 text-xs text-foreground-muted">{props.summary}</div>
+        </div>
+        <span className="rounded-full border border-border px-2 py-0.5 text-[11px] text-foreground-muted">
+          {open ? "Hide" : "Show"}
+        </span>
+      </button>
+      {open ? <div className="mt-3">{props.children as any}</div> : null}
     </section>
   );
 }
