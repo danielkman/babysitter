@@ -3,8 +3,8 @@ import { describe, expect, it } from 'vitest';
 import { buildRecentSessionActions, titleForPath } from '../src/shell/navigation.js';
 
 describe('titleForPath', () => {
-  it('maps run deep links to the pending-session title', () => {
-    expect(titleForPath('/runs/run-123')).toBe('Dispatch Handoff');
+  it('maps run deep links to the dispatch detail title', () => {
+    expect(titleForPath('/runs/run-123')).toBe('Dispatch Detail');
   });
 });
 

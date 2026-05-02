@@ -1,4 +1,4 @@
-import { render, screen } from '@/test/test-utils';
+import { render, screen, setupUser } from '@/test/test-utils';
 import { vi } from 'vitest';
 import { RunCard } from '../run-card';
 import {
@@ -150,5 +150,22 @@ describe('RunCard', () => {
     const run = createMockRun({ status: 'pending' });
     render(<RunCard run={run} />);
     expect(screen.getByText('Pending')).toBeInTheDocument();
+  });
+
+  it('shows a stop button for active dispatches and calls the stop handler', async () => {
+    const user = setupUser();
+    const onStop = vi.fn();
+    const run = createMockRun({ runId: 'run-stop-1', status: 'waiting' });
+    render(<RunCard run={run} onStop={onStop} />);
+
+    await user.click(screen.getByRole('button', { name: 'Stop dispatch run-stop-1' }));
+
+    expect(onStop).toHaveBeenCalledWith(expect.objectContaining({ runId: 'run-stop-1' }));
+  });
+
+  it('does not show a stop button for completed dispatches', () => {
+    const run = createMockRun({ status: 'completed' });
+    render(<RunCard run={run} onStop={vi.fn()} />);
+    expect(screen.queryByRole('button', { name: /Stop dispatch/i })).not.toBeInTheDocument();
   });
 });

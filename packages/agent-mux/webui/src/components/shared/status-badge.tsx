@@ -29,6 +29,12 @@ const statusConfig: Record<string, { variant: "success" | "error" | "warning" | 
     label: "Failed",
     extraClass: "ring-error/30 shadow-neon-glow-error-sm",
   },
+  aborted: {
+    variant: "warning",
+    icon: <XCircle className={cx(iconSize, "drop-shadow-[var(--drop-glow-warning)]")} />,
+    label: "Stopped",
+    extraClass: "ring-warning/30 shadow-neon-glow-warning-sm",
+  },
   error: {
     variant: "error",
     icon: <XCircle className={cx(iconSize, "drop-shadow-[var(--drop-glow-error)]")} />,

@@ -22,6 +22,10 @@ interface VirtualizedRunListProps {
   maxHeight?: number;
   /** Optional render wrapper per-item (e.g. to add time overlays in activity mode) */
   renderItem?: (run: Run, index: number) => React.ReactNode;
+  /** Optional stop action for active dispatches */
+  onStopRun?: (run: Run) => void;
+  /** Run ids currently processing a stop request */
+  stoppingRunIds?: Set<string>;
 }
 
 /**
@@ -39,6 +43,8 @@ export function VirtualizedRunList({
   className,
   maxHeight = 600,
   renderItem,
+  onStopRun,
+  stoppingRunIds,
 }: VirtualizedRunListProps) {
   const parentRef = useRef<HTMLDivElement>(null);
 
@@ -72,7 +78,7 @@ export function VirtualizedRunList({
             renderItem ? (
               <div key={run.runId}>{renderItem(run, index)}</div>
             ) : (
-              <RunCard key={run.runId} run={run} />
+              <RunCard key={run.runId} run={run} onStop={onStopRun} stopping={stoppingRunIds?.has(run.runId)} />
             )
           )}
         </div>
@@ -119,7 +125,7 @@ export function VirtualizedRunList({
               }}
             >
               <div style={{ paddingBottom: 8 }}>
-                {renderItem ? renderItem(run, virtualRow.index) : <RunCard run={run} />}
+                {renderItem ? renderItem(run, virtualRow.index) : <RunCard run={run} onStop={onStopRun} stopping={stoppingRunIds?.has(run.runId)} />}
               </div>
             </div>
           );

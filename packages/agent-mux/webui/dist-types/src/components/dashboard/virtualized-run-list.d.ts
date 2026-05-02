@@ -8,6 +8,10 @@ interface VirtualizedRunListProps {
     maxHeight?: number;
     /** Optional render wrapper per-item (e.g. to add time overlays in activity mode) */
     renderItem?: (run: Run, index: number) => React.ReactNode;
+    /** Optional stop action for active dispatches */
+    onStopRun?: (run: Run) => void;
+    /** Run ids currently processing a stop request */
+    stoppingRunIds?: Set<string>;
 }
 /**
  * Virtualized run card list using @tanstack/react-virtual.
@@ -19,5 +23,5 @@ interface VirtualizedRunListProps {
  * - Falls back to a simple flat list when the item count is below the
  *   VIRTUALIZATION_THRESHOLD to avoid unnecessary overhead.
  */
-export declare function VirtualizedRunList({ runs, className, maxHeight, renderItem, }: VirtualizedRunListProps): import("react/jsx-runtime").JSX.Element;
+export declare function VirtualizedRunList({ runs, className, maxHeight, renderItem, onStopRun, stoppingRunIds, }: VirtualizedRunListProps): import("react/jsx-runtime").JSX.Element;
 export {};

@@ -8,7 +8,7 @@ import { useProjectRuns } from "@/hooks/use-project-runs";
 import { usePersistedState } from "@/hooks/use-persisted-state";
 import { resilientFetch } from "@/lib/fetcher";
 import { formatRelativeTime } from "@/lib/utils";
-import type { ProjectSummary, RunStatus } from "@/types";
+import type { ProjectSummary, Run, RunStatus } from "@/types";
 import {
   Activity,
   CheckCircle2,
@@ -29,6 +29,8 @@ interface ProjectHealthCardProps {
   statusFilter: RunStatus | "all";
   sortMode?: "status" | "activity";
   onHide?: (projectName: string) => void;
+  onStopRun?: (run: Run) => void;
+  stoppingRunIds?: Set<string>;
 }
 
 type HealthStatus = "healthy" | "active" | "stale" | "failing";
@@ -76,7 +78,14 @@ const healthConfig: Record<
 
 const PAGE_SIZE = 5;
 
-export function ProjectHealthCard({ project, statusFilter, sortMode = "status", onHide }: ProjectHealthCardProps) {
+export function ProjectHealthCard({
+  project,
+  statusFilter,
+  sortMode = "status",
+  onHide,
+  onStopRun,
+  stoppingRunIds,
+}: ProjectHealthCardProps) {
   const [hiding, setHiding] = useState(false);
 
   const handleHide = useCallback(async (e: React.MouseEvent) => {
@@ -368,7 +377,11 @@ export function ProjectHealthCard({ project, statusFilter, sortMode = "status", 
                   maxHeight={500}
                   renderItem={(run) => (
                     <div className="relative">
-                      <RunCard run={run} />
+                      <RunCard
+                        run={run}
+                        onStop={onStopRun}
+                        stopping={stoppingRunIds?.has(run.runId)}
+                      />
                       {/* Relative time overlay label */}
                       <span className="absolute top-2 right-2 inline-flex items-center gap-1 rounded-full bg-background/80 backdrop-blur-sm border border-border px-2 py-0.5 text-xs text-foreground-muted tabular-nums pointer-events-none z-10">
                         <Clock className="h-2.5 w-2.5" />
@@ -426,15 +439,15 @@ export function ProjectHealthCard({ project, statusFilter, sortMode = "status", 
 
                 {/* Active runs — always visible with section header */}
                 {hasActiveRuns && (
-                  <div className="mb-2">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Activity className="h-3.5 w-3.5 text-warning animate-pulse-dot" />
-                      <span className="text-xs font-semibold text-foreground">In Progress</span>
+                    <div className="mb-2">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Activity className="h-3.5 w-3.5 text-warning animate-pulse-dot" />
+                        <span className="text-xs font-semibold text-foreground">In Progress</span>
                       <span className="rounded-full bg-warning/10 border border-warning/20 px-2 py-px text-xs font-semibold text-warning tabular-nums">
                         {activeRuns.length}
                       </span>
-                    </div>
-                    <VirtualizedRunList runs={activeRuns} maxHeight={500} />
+                      </div>
+                    <VirtualizedRunList runs={activeRuns} maxHeight={500} onStopRun={onStopRun} stoppingRunIds={stoppingRunIds} />
                   </div>
                 )}
 
@@ -458,7 +471,7 @@ export function ProjectHealthCard({ project, statusFilter, sortMode = "status", 
                     </button>
                     {showFailed && (
                       <div className="mt-1 opacity-70">
-                        <VirtualizedRunList runs={failedRuns} maxHeight={400} />
+                        <VirtualizedRunList runs={failedRuns} maxHeight={400} onStopRun={onStopRun} stoppingRunIds={stoppingRunIds} />
                       </div>
                     )}
                   </div>
@@ -484,7 +497,7 @@ export function ProjectHealthCard({ project, statusFilter, sortMode = "status", 
                     </button>
                     {showCompleted && (
                       <div className="mt-1 opacity-60">
-                        <VirtualizedRunList runs={successRuns} maxHeight={400} />
+                        <VirtualizedRunList runs={successRuns} maxHeight={400} onStopRun={onStopRun} stoppingRunIds={stoppingRunIds} />
                       </div>
                     )}
                   </div>

@@ -11,7 +11,7 @@ import {
 import { cx } from "@a5c-ai/compendium";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { ProjectHealthCard } from "./project-health-card";
-import type { ProjectSummary, RunStatus } from "@/types";
+import type { ProjectSummary, Run, RunStatus } from "@/types";
 import type { DashboardSortMode, DashboardStatusFilter } from "@/hooks/use-run-dashboard";
 
 // ---------------------------------------------------------------------------
@@ -106,6 +106,8 @@ export interface ProjectListViewProps {
   historyCollapsed: boolean;
   onHistoryCollapsedChange: (value: boolean | ((prev: boolean) => boolean)) => void;
   onHideProject?: (projectName: string) => void;
+  onStopRun?: (run: Run) => void;
+  stoppingRunIds?: Set<string>;
 }
 
 export function ProjectListView({
@@ -120,6 +122,8 @@ export function ProjectListView({
   historyCollapsed,
   onHistoryCollapsedChange,
   onHideProject,
+  onStopRun,
+  stoppingRunIds,
 }: ProjectListViewProps) {
   if (loading) {
     return <LoadingSkeleton />;
@@ -180,6 +184,8 @@ export function ProjectListView({
                   statusFilter={cardStatusFilter}
                   sortMode={sortMode}
                   onHide={onHideProject}
+                  onStopRun={onStopRun}
+                  stoppingRunIds={stoppingRunIds}
                 />
               ))}
             </div>
@@ -197,6 +203,8 @@ export function ProjectListView({
                 project={project}
                 statusFilter={cardStatusFilter}
                 sortMode={sortMode}
+                onStopRun={onStopRun}
+                stoppingRunIds={stoppingRunIds}
               />
             ))}
           </div>
@@ -233,6 +241,8 @@ export function ProjectListView({
                       project={project}
                       statusFilter={cardStatusFilter}
                       sortMode={sortMode}
+                      onStopRun={onStopRun}
+                      stoppingRunIds={stoppingRunIds}
                     />
                   ))}
                 </div>

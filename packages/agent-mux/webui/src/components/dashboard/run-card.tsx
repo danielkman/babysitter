@@ -8,11 +8,13 @@ import { TruncatedId } from "@/components/shared/truncated-id";
 import { ProgressBar } from "@/components/shared/progress-bar";
 import { formatDuration, friendlyProcessName, formatRelativeTime } from "@/lib/utils";
 import type { Run } from "@/types";
-import { Clock, Layers, Hand, AlertCircle, Tag, ExternalLink } from "lucide-react";
+import { Clock, Layers, Hand, AlertCircle, Tag, ExternalLink, Square, Loader2 } from "lucide-react";
 
 interface RunCardProps {
   run: Run;
   selected?: boolean;
+  stopping?: boolean;
+  onStop?: (run: Run) => void;
 }
 
 /** Map run status to progress bar variant */
@@ -49,6 +51,7 @@ function formatStaleTime(updatedAt: string): string {
  */
 function runCardPropsAreEqual(prev: RunCardProps, next: RunCardProps): boolean {
   if (prev.selected !== next.selected) return false;
+  if (prev.stopping !== next.stopping) return false;
   const a = prev.run;
   const b = next.run;
   return (
@@ -66,10 +69,11 @@ function runCardPropsAreEqual(prev: RunCardProps, next: RunCardProps): boolean {
   );
 }
 
-export const RunCard = memo(function RunCard({ run, selected }: RunCardProps) {
+export const RunCard = memo(function RunCard({ run, selected, stopping = false, onStop }: RunCardProps) {
   const progress = displayProgress(run);
   const isActive = run.status === "waiting" || run.status === "pending";
   const isStale = run.isStale === true;
+  const canStop = typeof onStop === "function" && isActive && !isStale;
 
   // Find the first breakpoint task that is waiting for approval
   const pendingBreakpoint = run.tasks.find(
@@ -90,8 +94,7 @@ export const RunCard = memo(function RunCard({ run, selected }: RunCardProps) {
     : undefined;
 
   return (
-    <Link to={`/dispatches/${run.runId}`}>
-      <div className={cx("tkc-panel",
+    <div className={cx("tkc-panel",
         "cursor-pointer p-4 transition-all card-hover-lift",
         "hover:shadow-md",
         selected && "ring-1 ring-primary shadow-glow-primary",
@@ -100,7 +103,7 @@ export const RunCard = memo(function RunCard({ run, selected }: RunCardProps) {
         isStale && "opacity-50"
       )}>
         <div className="flex items-start justify-between gap-3">
-          <div className="flex-1 min-w-0">
+          <Link to={`/dispatches/${run.runId}`} className="flex-1 min-w-0 block">
             {/* Row 1: Title on its own row for readability */}
             <div className="flex items-center gap-2 mb-1.5">
               <span className={cx(
@@ -205,13 +208,34 @@ export const RunCard = memo(function RunCard({ run, selected }: RunCardProps) {
                 {formatDuration(run.duration)}
               </span>
             </div>
-          </div>
+            {/* Task 1.8 — Show progress bar for ALL runs, not just active */}
+            {run.totalTasks > 0 && (
+              <ProgressBar value={progress} variant={progressVariant(run.status)} glow={isActive && !isStale} className="mt-4" />
+            )}
+          </Link>
+          {canStop ? (
+            <button
+              type="button"
+              aria-label={`Stop dispatch ${run.runId}`}
+              disabled={stopping}
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                onStop?.(run);
+              }}
+              className={cx(
+                "inline-flex min-h-[40px] shrink-0 items-center gap-1 rounded-md border px-3 py-2 text-xs font-semibold transition-colors",
+                stopping
+                  ? "cursor-wait border-warning/30 bg-warning/10 text-warning"
+                  : "border-error/25 bg-error/8 text-error hover:bg-error/14",
+              )}
+              title={stopping ? "Stopping dispatch" : "Stop dispatch"}
+            >
+              {stopping ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Square className="h-3.5 w-3.5" />}
+              {stopping ? "Stopping" : "Stop"}
+            </button>
+          ) : null}
         </div>
-        {/* Task 1.8 — Show progress bar for ALL runs, not just active */}
-        {run.totalTasks > 0 && (
-          <ProgressBar value={progress} variant={progressVariant(run.status)} glow={isActive && !isStale} className="mt-4" />
-        )}
       </div>
-    </Link>
   );
 }, runCardPropsAreEqual);

@@ -1,4 +1,4 @@
-import type { ProjectSummary, RunStatus } from "@/types";
+import type { ProjectSummary, Run, RunStatus } from "@/types";
 import type { DashboardSortMode, DashboardStatusFilter } from "@/hooks/use-run-dashboard";
 export interface ProjectListViewProps {
     loading: boolean;
@@ -12,5 +12,7 @@ export interface ProjectListViewProps {
     historyCollapsed: boolean;
     onHistoryCollapsedChange: (value: boolean | ((prev: boolean) => boolean)) => void;
     onHideProject?: (projectName: string) => void;
+    onStopRun?: (run: Run) => void;
+    stoppingRunIds?: Set<string>;
 }
-export declare function ProjectListView({ loading, error, filteredProjects, activeProjects, historyProjects, statusFilter, sortMode, cardStatusFilter, historyCollapsed, onHistoryCollapsedChange, onHideProject, }: ProjectListViewProps): import("react/jsx-runtime").JSX.Element;
+export declare function ProjectListView({ loading, error, filteredProjects, activeProjects, historyProjects, statusFilter, sortMode, cardStatusFilter, historyCollapsed, onHistoryCollapsedChange, onHideProject, onStopRun, stoppingRunIds, }: ProjectListViewProps): import("react/jsx-runtime").JSX.Element;

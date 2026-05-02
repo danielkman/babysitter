@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom-v6';
 import { useStore } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
@@ -6,7 +6,8 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom-v6';
 import { LogoWordmark } from '@a5c-ai/compendium';
 import type { Attachment, WorkspaceRuntimeSurface } from '@a5c-ai/agent-mux-core';
 import type { KanbanWorkspaceSessionSummary } from '@a5c-ai/agent-mux-core/kanban';
-import { useGateway } from '@a5c-ai/agent-mux-ui';
+import { useGateway, useStopRun } from '@a5c-ai/agent-mux-ui';
+import type { Run } from '../types/index.js';
 
 import ProjectsRoutePage from '../routes/ProjectsPage.js';
 import AutomationsRoutePage from '../routes/AutomationsPage.js';
@@ -137,6 +138,10 @@ export function HostWorkspaceCreatePage(): JSX.Element {
 export function KanbanRunsPage(): JSX.Element {
   const navigate = useNavigate();
   const { isAuthenticated } = useGatewayAuth();
+  const { store } = useGateway();
+  const stopRun = useStopRun();
+  const [stoppingRunIds, setStoppingRunIds] = useState<Set<string>>(() => new Set());
+  const [stopError, setStopError] = useState<string | null>(null);
   const {
     projects,
     loading,
@@ -164,7 +169,65 @@ export function KanbanRunsPage(): JSX.Element {
     handleHideProject,
   } = useRunDashboard();
 
+  const liveRuns = useStore(store, useShallow((state) => Object.values(state.runs.byId)));
   const showBanners = !loading && !error && projects.length > 0;
+
+  useEffect(() => {
+    const activeRunIds = new Set(
+      liveRuns
+        .filter((run) => {
+          const status = String(run.status ?? '');
+          return status === 'pending' || status === 'waiting';
+        })
+        .map((run) => String(run.runId ?? ''))
+        .filter((runId) => runId.length > 0),
+    );
+
+    setStoppingRunIds((current) => {
+      let changed = false;
+      const next = new Set<string>();
+      for (const runId of current) {
+        if (activeRunIds.has(runId)) {
+          next.add(runId);
+        } else {
+          changed = true;
+        }
+      }
+      return changed ? next : current;
+    });
+  }, [liveRuns]);
+
+  const handleStopRun = useCallback(async (run: Run) => {
+    if (!run.runId) {
+      return;
+    }
+    setStopError(null);
+    setStoppingRunIds((current) => {
+      if (current.has(run.runId)) {
+        return current;
+      }
+      const next = new Set(current);
+      next.add(run.runId);
+      return next;
+    });
+
+    try {
+      const response = await stopRun(run.runId) as { stopped?: boolean };
+      if (!response?.stopped) {
+        throw new Error('Gateway refused to stop this dispatch');
+      }
+    } catch (cause) {
+      setStoppingRunIds((current) => {
+        if (!current.has(run.runId)) {
+          return current;
+        }
+        const next = new Set(current);
+        next.delete(run.runId);
+        return next;
+      });
+      setStopError(cause instanceof Error ? cause.message : String(cause));
+    }
+  }, [stopRun]);
 
   return (
     <PageShell>
@@ -256,6 +319,13 @@ export function KanbanRunsPage(): JSX.Element {
         </ErrorBoundary>
       ) : null}
 
+      {stopError ? (
+        <div className="summary-card border border-error/20 bg-error/5">
+          <span className="summary-label">Stop request failed</span>
+          <strong>{stopError}</strong>
+        </div>
+      ) : null}
+
       <RunFilterBar
         statusFilter={statusFilter}
         onStatusFilterChange={setStatusFilter}
@@ -277,6 +347,8 @@ export function KanbanRunsPage(): JSX.Element {
         historyCollapsed={historyCollapsed}
         onHistoryCollapsedChange={setHistoryCollapsed}
         onHideProject={handleHideProject}
+        onStopRun={handleStopRun}
+        stoppingRunIds={stoppingRunIds}
       />
     </PageShell>
   );

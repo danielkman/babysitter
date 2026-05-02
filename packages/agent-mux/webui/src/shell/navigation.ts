@@ -8,7 +8,7 @@ export function titleForPath(pathname: string): string {
   if (/^\/projects\/[^/]+\/workspaces\/new$/.test(pathname)) return 'New Workspace';
   if (/^\/projects\/[^/]+\/issues\/[^/]+\/workspace\/new$/.test(pathname)) return 'Provision Workspace';
   if (pathname === '/dispatches' || pathname === '/runs') return 'Dispatches';
-  if (/^\/(?:dispatches|runs)\/[^/]+$/.test(pathname)) return 'Dispatch Handoff';
+  if (/^\/(?:dispatches|runs)\/[^/]+$/.test(pathname)) return 'Dispatch Detail';
   if (pathname === '/automations') return 'Automations';
   if (pathname === '/sessions') return 'Sessions';
   if (pathname === '/sessions/new') return 'New Session';

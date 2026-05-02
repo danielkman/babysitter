@@ -27,7 +27,7 @@ vi.mock('lucide-react', () => {
     'Link2', 'ListTodo', 'Loader2', 'LoaderCircle', 'Logs', 'MessageSquareText', 'MessageSquareWarning',
     'MessagesSquare', 'Moon', 'Palette', 'PanelLeft', 'PanelRight', 'Pause', 'Percent', 'Pin', 'Play',
     'PinOff', 'PlayCircle', 'PlaySquare', 'Plus', 'Power', 'Puzzle', 'Radar', 'RefreshCw', 'RotateCcw', 'Search',
-    'Settings', 'ShieldCheck', 'Siren', 'Smartphone', 'Sparkles', 'Sun', 'TabletSmartphone', 'Tag',
+    'Settings', 'ShieldCheck', 'Siren', 'Smartphone', 'Sparkles', 'Square', 'Sun', 'TabletSmartphone', 'Tag',
     'Terminal', 'TerminalSquare', 'Timer', 'TimerReset', 'Trash2', 'UserRoundPlus', 'Users', 'WandSparkles',
     'Webhook', 'Wifi', 'WifiOff', 'Workflow', 'Wrench', 'X', 'XCircle',
   ];

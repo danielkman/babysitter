@@ -1,8 +1,58 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Button } from '@a5c-ai/compendium';
+import { useGateway, useRun, useStopRun } from '@a5c-ai/agent-mux-ui';
 import { Link, Navigate, useLocation, useParams } from 'react-router-dom-v6';
-import { useRun } from '@a5c-ai/agent-mux-ui';
 
 import { PageHeroGrid, PageSection, PageShell } from '../components/shared/page-shell.js';
+import { StatusBadge } from '../components/shared/status-badge.js';
+import { useGatewayFetch } from '../providers/GatewayProvider.js';
+
+type DispatchRecord = Record<string, unknown> | null;
+
+function readText(value: unknown, fallback = 'Unknown'): string {
+  return typeof value === 'string' && value.length > 0 ? value : fallback;
+}
+
+function readOptionalText(value: unknown): string | null {
+  return typeof value === 'string' && value.length > 0 ? value : null;
+}
+
+function readNumber(value: unknown): number | null {
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+
+function formatMoment(value: unknown): string {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return new Date(value).toLocaleString();
+  }
+  if (typeof value === 'string' && value.length > 0) {
+    const parsed = Date.parse(value);
+    if (Number.isFinite(parsed)) {
+      return new Date(parsed).toLocaleString();
+    }
+    return value;
+  }
+  return 'Unavailable';
+}
+
+function isActiveDispatch(run: DispatchRecord): boolean {
+  const status = String(run?.status ?? '');
+  return status === 'pending' || status === 'waiting';
+}
+
+function DispatchSummaryCard(props: {
+  label: string;
+  value: React.ReactNode;
+  detail?: React.ReactNode;
+}): JSX.Element {
+  return (
+    <div className="summary-card">
+      <span className="summary-label">{props.label}</span>
+      <strong>{props.value}</strong>
+      {props.detail ? <p className="muted-copy mt-2">{props.detail}</p> : null}
+    </div>
+  );
+}
 
 export function SessionPendingPage(): JSX.Element {
   const params = useParams<{ runId: string }>();
@@ -100,6 +150,235 @@ export function SessionPendingPage(): JSX.Element {
             Open workspaces
           </Link>
         </div>
+      </PageSection>
+    </PageShell>
+  );
+}
+
+export function DispatchDetailPage(): JSX.Element {
+  const { runId = '' } = useParams<{ runId: string }>();
+  const run = useRun(runId);
+  const fetchGateway = useGatewayFetch();
+  const stopRun = useStopRun();
+  const { client, store } = useGateway();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [stopError, setStopError] = useState<string | null>(null);
+  const [stopRequested, setStopRequested] = useState(false);
+
+  useEffect(() => {
+    if (!runId) {
+      return;
+    }
+    const unsubscribe = client.subscribeRun(runId);
+    return () => {
+      unsubscribe();
+    };
+  }, [client, runId]);
+
+  useEffect(() => {
+    if (!runId) {
+      setLoading(false);
+      setError('Missing dispatch id.');
+      return;
+    }
+
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    void (async () => {
+      try {
+        const response = await fetchGateway(`/api/v1/dispatches/${runId}`);
+        if (!response.ok) {
+          throw new Error(`Gateway request failed: ${response.status}`);
+        }
+        const body = await response.json() as Record<string, unknown>;
+        if (cancelled) {
+          return;
+        }
+        store.getState().actions.mergeRun(runId, body);
+        const sessionId = readOptionalText(body.sessionId);
+        if (sessionId) {
+          store.getState().actions.mergeSession(sessionId, {
+            sessionId,
+            agent: body.agent,
+            latestRunId: runId,
+          });
+        }
+      } catch (cause) {
+        if (!cancelled) {
+          setError(cause instanceof Error ? cause.message : String(cause));
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchGateway, runId, store]);
+
+  useEffect(() => {
+    if (!isActiveDispatch(run)) {
+      setStopRequested(false);
+    }
+  }, [run]);
+
+  const agent = readText(run?.agent, 'Unknown agent');
+  const processId = readText(run?.processId, 'Unknown process');
+  const status = String(run?.status ?? (loading ? 'loading' : 'unknown'));
+  const sessionId = readOptionalText(run?.sessionId);
+  const workspacePath =
+    readOptionalText(run?.cwd) ??
+    readOptionalText(run?.workspacePath) ??
+    readOptionalText(run?.workspaceRootPath);
+  const failureMessage =
+    readOptionalText(run?.failureMessage) ??
+    readOptionalText(run?.failureError) ??
+    readOptionalText(run?.exitReason);
+  const progress = useMemo(() => {
+    const totalTasks = readNumber(run?.totalTasks) ?? 0;
+    const completedTasks = readNumber(run?.completedTasks) ?? 0;
+    if (totalTasks <= 0) {
+      return null;
+    }
+    return `${completedTasks}/${totalTasks} tasks completed`;
+  }, [run]);
+  const canStop = isActiveDispatch(run) && !stopRequested;
+
+  async function handleStop(): Promise<void> {
+    if (!runId || !canStop) {
+      return;
+    }
+    setStopError(null);
+    setStopRequested(true);
+    try {
+      const response = await stopRun(runId) as { stopped?: boolean };
+      if (!response?.stopped) {
+        throw new Error('Gateway refused to stop this dispatch');
+      }
+    } catch (cause) {
+      setStopRequested(false);
+      setStopError(cause instanceof Error ? cause.message : String(cause));
+    }
+  }
+
+  return (
+    <PageShell>
+      <PageSection>
+        <PageHeroGrid className="session-browser__hero-grid">
+          <div>
+            <p className="page-kicker">Dispatch detail</p>
+            <h1 className="page-title page-title--secondary">Manage this live dispatch without leaving the queue.</h1>
+            <p className="page-copy page-copy--wide">
+              Use this surface to inspect the active dispatch, jump to its linked session or workspace,
+              and stop it when the underlying subprocess or in-process loop needs to be interrupted.
+            </p>
+            <div className="page-actions">
+              {sessionId ? (
+                <Link to={`/sessions/${sessionId}`} className="session-browser__action session-browser__action--primary">
+                  Open session chat
+                </Link>
+              ) : null}
+              {workspacePath ? (
+                <Link to={`/workspaces?workspace=${encodeURIComponent(workspacePath)}`} className="session-browser__action">
+                  Open workspace
+                </Link>
+              ) : null}
+              <Link to="/dispatches" className="session-browser__action">
+                Back to dispatches
+              </Link>
+            </div>
+          </div>
+
+          <div className="session-browser__hero-kpis">
+            <DispatchSummaryCard label="Dispatch id" value={runId || 'Unavailable'} />
+            <DispatchSummaryCard label="Agent" value={agent} />
+            <DispatchSummaryCard label="State" value={<StatusBadge status={status} />} />
+            <DispatchSummaryCard label="Session" value={sessionId ?? 'Not attached yet'} />
+          </div>
+        </PageHeroGrid>
+      </PageSection>
+
+      <PageSection inset>
+        {error ? (
+          <div className="summary-card border border-error/20 bg-error/5">
+            <span className="summary-label">Dispatch unavailable</span>
+            <strong>{error}</strong>
+          </div>
+        ) : null}
+
+        {stopError ? (
+          <div className="summary-card border border-error/20 bg-error/5">
+            <span className="summary-label">Stop request failed</span>
+            <strong>{stopError}</strong>
+          </div>
+        ) : null}
+
+        {stopRequested ? (
+          <div className="summary-card border border-warning/25 bg-warning/8">
+            <span className="summary-label">Stop requested</span>
+            <strong>The gateway is terminating this dispatch now.</strong>
+            <p className="muted-copy mt-2">
+              Subprocess-backed dispatches receive a terminate signal and are force-killed if they do not exit.
+              In-process agent-mux loops are aborted through the same control path.
+            </p>
+          </div>
+        ) : null}
+
+        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <DispatchSummaryCard label="Process" value={processId} />
+          <DispatchSummaryCard label="Created" value={formatMoment(run?.createdAt)} />
+          <DispatchSummaryCard label="Updated" value={formatMoment(run?.updatedAt)} />
+          <DispatchSummaryCard label="Progress" value={progress ?? 'No task breakdown'} />
+        </div>
+
+        <div className="mt-5 grid gap-3 md:grid-cols-2">
+          <DispatchSummaryCard
+            label="Workspace"
+            value={workspacePath ?? 'No workspace attached'}
+            detail={workspacePath ? 'Jump back into the workspace shell from the actions above.' : null}
+          />
+          <DispatchSummaryCard
+            label="Stop control"
+            value={canStop ? 'Available' : 'Not available'}
+            detail={
+              canStop
+                ? 'Use stop when the dispatch is still active and needs to be interrupted.'
+                : stopRequested
+                  ? 'A stop request is already in flight.'
+                  : 'Only active dispatches can be interrupted.'
+            }
+          />
+        </div>
+
+        {failureMessage ? (
+          <div className="summary-card mt-5 border border-error/20 bg-error/5">
+            <span className="summary-label">Latest failure or exit detail</span>
+            <strong>{failureMessage}</strong>
+          </div>
+        ) : null}
+
+        <div className="page-actions mt-5">
+          <Button type="button" variant="primary" disabled={!canStop} onClick={() => void handleStop()}>
+            {stopRequested ? 'Stopping dispatch' : 'Stop dispatch'}
+          </Button>
+          {sessionId ? (
+            <Link to={`/sessions/${sessionId}`} className="session-browser__action">
+              Open linked session
+            </Link>
+          ) : null}
+        </div>
+
+        {!run && loading ? (
+          <div className="summary-card mt-5">
+            <span className="summary-label">Loading</span>
+            <strong>Fetching live dispatch state…</strong>
+          </div>
+        ) : null}
       </PageSection>
     </PageShell>
   );

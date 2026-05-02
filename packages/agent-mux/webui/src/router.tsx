@@ -9,7 +9,7 @@ import { LoginPage } from './pages/LoginPage.js';
 import { AgentsPage } from './pages/AgentsPage.js';
 import { SessionsPage } from './pages/SessionsPage.js';
 import { SessionDetailPage } from './pages/SessionDetailPage.js';
-import { SessionPendingPage } from './pages/RunPage.js';
+import { DispatchDetailPage, SessionPendingPage } from './pages/RunPage.js';
 import { NewRunPage } from './pages/NewRunPage.js';
 import { HookInboxPage } from './pages/HookInboxPage.js';
 import { KanbanLayout } from './pages/KanbanLayout.js';
@@ -156,7 +156,7 @@ function AppShell(): JSX.Element {
         <Route path="/sessions" element={<SessionsPage />} />
         <Route path="/sessions/new" element={<NewRunPage />} />
         <Route path="/sessions/pending/:runId" element={<SessionPendingPage />} />
-        <Route path="/dispatches/:runId" element={<SessionPendingPage />} />
+        <Route path="/dispatches/:runId" element={<DispatchDetailPage />} />
         <Route path="/runs/:runId" element={<LegacyDispatchRouteRedirect />} />
         <Route path="/sessions/:sessionId" element={<SessionDetailPage />} />
         <Route path="/sessions/:agent/:sessionId" element={<LegacySessionRouteRedirect />} />

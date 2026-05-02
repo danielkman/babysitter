@@ -4,7 +4,7 @@ import { buildRecentSessionActions, titleForPath } from './navigation.js';
 
 describe('titleForPath', () => {
   it('returns route-specific labels for detailed run and project surfaces', () => {
-    expect(titleForPath('/runs/run-123')).toBe('Dispatch Handoff');
+    expect(titleForPath('/runs/run-123')).toBe('Dispatch Detail');
     expect(titleForPath('/projects/kanban-app/board')).toBe('Project Board');
     expect(titleForPath('/projects/kanban-app/list')).toBe('Project List');
     expect(titleForPath('/projects/kanban-app/issues/issue-1')).toBe('Issue Detail');
