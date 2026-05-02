@@ -87,8 +87,9 @@ class DetectStubAdapter extends BaseAgentAdapter {
 describe('BaseAgentAdapter.detectInstallation', () => {
   it('falls back to probing the bare cli command when the resolved wrapper probe fails', async () => {
     const adapter = new DetectStubAdapter();
+    const locator = process.platform === 'win32' ? 'where' : 'which';
     adapter.setSpawner(async (command, args) => {
-      if (command === 'where') {
+      if (command === locator) {
         return { code: 0, stdout: 'C:\\Users\\tmusk\\AppData\\Roaming\\npm\\codex\n', stderr: '' };
       }
       if (command === 'cmd.exe') {
