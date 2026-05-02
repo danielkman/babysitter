@@ -52,6 +52,7 @@ function AuthProbe(): JSX.Element {
   return (
     <div>
       <div data-testid="auth">{auth ? 'present' : 'none'}</div>
+      <div data-testid="gateway-url">{auth?.gatewayUrl ?? ''}</div>
       <div data-testid="ready">{isReady ? 'ready' : 'pending'}</div>
       <div data-testid="authenticated">{isAuthenticated ? 'yes' : 'no'}</div>
       <div data-testid="auth-error">{readPersistedAuthError() ?? ''}</div>
@@ -98,5 +99,30 @@ describe('GatewayProvider', () => {
     );
     expect(uiGatewayProviderSpy).not.toHaveBeenCalled();
     expect(closeMock).toHaveBeenCalled();
+  });
+
+  it('normalizes stored app route URLs back to the gateway base origin', async () => {
+    window.localStorage.setItem(
+      'amux.webui.auth',
+      JSON.stringify({
+        gatewayUrl: 'http://localhost:57751/sessions/rollout-2026-04-27T15-37-25-019dcef1-c795-7552-a983-71a1c631d64c',
+        token: 'valid-token',
+      }),
+    );
+    connectMock.mockResolvedValue(undefined);
+    requestMock.mockResolvedValue({ agents: [] });
+
+    render(
+      <GatewayProvider>
+        <AuthProbe />
+      </GatewayProvider>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('ready').textContent).toBe('ready');
+    });
+
+    expect(screen.getByTestId('gateway-url').textContent).toBe('http://localhost:57751');
+    expect(screen.getByTestId('authenticated').textContent).toBe('yes');
   });
 });

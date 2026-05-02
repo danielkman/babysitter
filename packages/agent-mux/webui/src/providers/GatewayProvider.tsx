@@ -34,6 +34,47 @@ function sanitizeGatewayUrl(url: string): string {
   return url.replace(/\/+$/, '');
 }
 
+const GATEWAY_APP_ROUTE_PATTERNS = [
+  /\/api\/v1(?:\/.*)?$/i,
+  /\/api\/gateway-proxy(?:\/.*)?$/i,
+  /\/sessions(?:\/.*)?$/i,
+  /\/dispatches(?:\/.*)?$/i,
+  /\/runs(?:\/.*)?$/i,
+  /\/projects(?:\/.*)?$/i,
+  /\/workspaces(?:\/.*)?$/i,
+  /\/settings(?:\/.*)?$/i,
+  /\/login$/i,
+  /\/pair(?:\/.*)?$/i,
+];
+
+function normalizeGatewayUrlCandidate(url: string): string {
+  const trimmed = url.trim();
+  if (!trimmed) {
+    return '';
+  }
+
+  let parsed: URL;
+  try {
+    parsed = new URL(trimmed);
+  } catch {
+    return sanitizeGatewayUrl(trimmed);
+  }
+
+  let normalizedPath = parsed.pathname.replace(/\/+$/, '');
+  for (const pattern of GATEWAY_APP_ROUTE_PATTERNS) {
+    if (!pattern.test(normalizedPath)) {
+      continue;
+    }
+    normalizedPath = normalizedPath.replace(pattern, '');
+    break;
+  }
+
+  parsed.pathname = normalizedPath.length > 0 ? normalizedPath : '/';
+  parsed.search = '';
+  parsed.hash = '';
+  return sanitizeGatewayUrl(parsed.toString());
+}
+
 function toSocketUrl(gatewayUrl: string): string {
   if (gatewayUrl.startsWith('https://')) return `wss://${gatewayUrl.slice('https://'.length)}`;
   if (gatewayUrl.startsWith('http://')) return `ws://${gatewayUrl.slice('http://'.length)}`;
@@ -61,7 +102,7 @@ function readStoredAuth(): SavedGatewayAuth | null {
       return null;
     }
     return {
-      gatewayUrl: sanitizeGatewayUrl(parsed.gatewayUrl),
+      gatewayUrl: normalizeGatewayUrlCandidate(parsed.gatewayUrl),
       token: parsed.token,
     };
   } catch {
@@ -348,7 +389,7 @@ export function GatewayProvider(props: { children: React.ReactNode }): JSX.Eleme
       isReady,
       async login(input) {
         const nextAuth = {
-          gatewayUrl: sanitizeGatewayUrl(input.gatewayUrl || defaultGatewayUrl()),
+          gatewayUrl: normalizeGatewayUrlCandidate(input.gatewayUrl || defaultGatewayUrl()),
           token: input.token.trim(),
         };
         await validateAuth(nextAuth);
