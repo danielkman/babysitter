@@ -14,10 +14,12 @@ type FixtureState = {
   adminUsername: string;
   adminPassword: string;
   sessionId: string;
+  codexSessionId: string;
   issueId: string;
   issueKey: string;
   workspacePath: string;
   transcriptText: string;
+  codexTranscriptText: string;
 };
 
 let cachedState: FixtureState | null = null;
@@ -203,6 +205,30 @@ test.describe("agent-mux webui e2e", () => {
       expect(viewport).not.toBeNull();
       expect(shellBox!.width / viewport!.width).toBeGreaterThan(0.65);
       expect(desktopPanelsBox!.width / shellBox!.width).toBeGreaterThan(0.9);
+    });
+
+    test("codex follow-up resumes the same session instead of drifting into a new one", async ({ page }) => {
+      const state = await readFixtureState();
+      const followUpPrompt = "Resume this codex session in place.";
+      const expectedReply = `Codex resumed the existing session: ${followUpPrompt}`;
+
+      await page.goto("/sessions", { waitUntil: "domcontentloaded" });
+      const codexCard = page.getByTestId(`session-card-${state.codexSessionId}`);
+      await expect(codexCard).toBeVisible();
+      await expect(codexCard).toContainText("codex");
+      await codexCard.getByRole("link", { name: "Resume chat" }).click();
+
+      await expect(page.getByTestId("workspace-shell")).toBeVisible();
+      await expect(page.getByTestId("workspace-panel-conversation")).toBeVisible();
+      await expect(page.getByTestId("workspace-panel-sidebar")).toContainText("codex");
+      await expect(page.getByPlaceholder("Continue the session...")).toBeEnabled();
+
+      await page.getByPlaceholder("Continue the session...").fill(followUpPrompt);
+      await page.getByRole("button", { name: "Continue session" }).click();
+
+      await expect(page).toHaveURL(new RegExp(`/sessions/${state.codexSessionId}$`));
+      await expect(page.getByText(expectedReply)).toBeVisible();
+      await expect(page.getByText("codex-session-unexpected-new-id")).toHaveCount(0);
     });
 
     test("sessions directory stays compact and keeps utility chrome collapsed until requested", async ({ page }) => {

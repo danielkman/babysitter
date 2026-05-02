@@ -22,22 +22,37 @@ const workspaceRegistryPath = path.join(tempRoot, "kanban-workspaces.json");
 const backlogFilePath = path.join(tempRoot, "kanban-backlog.json");
 const eventLogDir = path.join(tempRoot, "gateway-events");
 const sessionId = "session-e2e";
+const codexSessionId = "codex-session-e2e";
+const unexpectedCodexResumeSessionId = "codex-session-unexpected-new-id";
 const issueId = "KANBAN-GAP-007";
 const issueKey = "KANBAN-GAP-007";
 const adminUsername = "e2e-admin";
 const adminPassword = "e2e-password";
 const transcriptText = "Workspace association is visible from the linked session chat.";
+const codexTranscriptText = "Codex session is ready to resume without forking.";
 const sessionTitle = "Workspace association review";
+const codexSessionTitle = "Codex workspace review";
 const sessionModel = "gpt-5.4-mini";
+const codexSessionModel = "gpt-5.4-codex-mini";
 const sessionAgent = "claude";
+const codexSessionAgent = "codex";
 const sessionCreatedAt = "2026-04-30T12:00:00.000Z";
 const sessionUpdatedAt = "2026-04-30T12:05:00.000Z";
+const codexSessionCreatedAt = "2026-04-30T11:00:00.000Z";
+const codexSessionUpdatedAt = "2026-04-30T11:04:00.000Z";
 const sessionCost = {
   totalUsd: 0.0132,
   inputTokens: 802,
   outputTokens: 224,
   thinkingTokens: 128,
   cachedTokens: 64,
+};
+const codexSessionCost = {
+  totalUsd: 0.0091,
+  inputTokens: 611,
+  outputTokens: 171,
+  thinkingTokens: 0,
+  cachedTokens: 52,
 };
 
 process.env.KANBAN_WORKSPACE_REGISTRY_PATH = workspaceRegistryPath;
@@ -134,22 +149,40 @@ class FakeGatewayRunClient {
     this.nativeSessions = new Map();
     this.nativeSessionDetails = new Map();
     this.lastRunOptions = null;
+    this.codexResumeBehaviorEnabled = true;
     this.adapters = {
-      list: () => [{ agent: sessionAgent, displayName: "Claude" }],
-      installed: async () => [{ agent: sessionAgent, installed: true, meetsMinVersion: true }],
+      list: () => [
+        { agent: sessionAgent, displayName: "Claude" },
+        { agent: codexSessionAgent, displayName: "OpenAI Codex" },
+      ],
+      installed: async () => [
+        { agent: sessionAgent, installed: true, meetsMinVersion: true },
+        { agent: codexSessionAgent, installed: true, meetsMinVersion: true },
+      ],
       get: (agent) => {
-        if (agent !== sessionAgent) {
-          return undefined;
+        if (agent === sessionAgent) {
+          return {
+            adapterType: "subprocess",
+            capabilities: {
+              structuredSessionTransport: "persistent",
+              sessionControlPlane: "self-managed",
+              supportsInteractiveMode: true,
+              canResume: true,
+            },
+          };
         }
-        return {
-          adapterType: "subprocess",
-          capabilities: {
-            structuredSessionTransport: "persistent",
-            sessionControlPlane: "self-managed",
-            supportsInteractiveMode: true,
-            canResume: true,
-          },
-        };
+        if (agent === codexSessionAgent) {
+          return {
+            adapterType: "subprocess",
+            capabilities: {
+              structuredSessionTransport: "restart-per-turn",
+              sessionControlPlane: "self-managed",
+              supportsInteractiveMode: false,
+              canResume: true,
+            },
+          };
+        }
+        return undefined;
       },
     };
     this.sessions = {
@@ -192,8 +225,8 @@ class FakeGatewayRunClient {
     };
   }
 
-  seedNativeSession() {
-    const nativeRecord = {
+  seedNativeSessions() {
+    const claudeNativeRecord = {
       sessionId,
       title: sessionTitle,
       createdAt: sessionCreatedAt,
@@ -204,17 +237,36 @@ class FakeGatewayRunClient {
       cost: sessionCost,
       cwd: workspacePath,
     };
-    this.nativeSessions.set(sessionAgent, [nativeRecord]);
+    const codexNativeRecord = {
+      sessionId: codexSessionId,
+      title: codexSessionTitle,
+      createdAt: codexSessionCreatedAt,
+      updatedAt: codexSessionUpdatedAt,
+      turnCount: 3,
+      messageCount: 4,
+      model: codexSessionModel,
+      cost: codexSessionCost,
+      cwd: workspacePath,
+    };
+    this.nativeSessions.set(sessionAgent, [claudeNativeRecord]);
+    this.nativeSessions.set(codexSessionAgent, [codexNativeRecord]);
     this.nativeSessionDetails.set(`${sessionAgent}:${sessionId}`, {
-      ...nativeRecord,
+      ...claudeNativeRecord,
       messages: [
         { role: "user", content: "Show the linked workspace context." },
         { role: "assistant", content: transcriptText, thinking: "Checking workspace association." },
       ],
     });
+    this.nativeSessionDetails.set(`${codexSessionAgent}:${codexSessionId}`, {
+      ...codexNativeRecord,
+      messages: [
+        { role: "user", content: "Review the linked workspace before the next turn." },
+        { role: "assistant", content: codexTranscriptText },
+      ],
+    });
   }
 
-  emitAssistantReply(runId, text) {
+  emitAssistantReply(runId, text, agent = sessionAgent, cost = sessionCost) {
     const active = this.runs.get(runId);
     if (!active) {
       return;
@@ -224,14 +276,14 @@ class FakeGatewayRunClient {
     active.handle.emit({
       type: "thinking_delta",
       runId,
-      agent: sessionAgent,
+      agent,
       timestamp,
       delta: "Reviewing linked workspace context.",
     });
     active.handle.emit({
       type: "text_delta",
       runId,
-      agent: sessionAgent,
+      agent,
       timestamp: timestamp + 1,
       delta: text,
       accumulated: text,
@@ -239,14 +291,14 @@ class FakeGatewayRunClient {
     active.handle.emit({
       type: "cost",
       runId,
-      agent: sessionAgent,
+      agent,
       timestamp: timestamp + 2,
-      cost: sessionCost,
+      cost,
     });
     active.handle.emit({
       type: "message_stop",
       runId,
-      agent: sessionAgent,
+      agent,
       timestamp: timestamp + 3,
       text,
     });
@@ -281,6 +333,26 @@ class FakeGatewayRunClient {
     };
 
     this.runs.set(runId, activeRun);
+    if (this.codexResumeBehaviorEnabled && options.agent === codexSessionAgent && options.sessionId === codexSessionId) {
+      setTimeout(() => {
+        const active = this.runs.get(runId);
+        if (!active) {
+          return;
+        }
+        active.handle.emit({
+          type: "session_start",
+          runId,
+          agent: codexSessionAgent,
+          timestamp: Date.now(),
+          sessionId: unexpectedCodexResumeSessionId,
+          resumed: true,
+          cwd: workspacePath,
+        });
+        const text = `Codex resumed the existing session: ${String(options.prompt ?? "")}`;
+        this.emitAssistantReply(runId, text, codexSessionAgent, codexSessionCost);
+        active.handle.complete("completed", 0, null);
+      }, 0);
+    }
     return handle;
   }
 }
@@ -303,7 +375,7 @@ async function linkWorkspace(issueWorkspacePath) {
 }
 
 async function seedRunningSession(gateway, fakeClient) {
-  fakeClient.seedNativeSession();
+  fakeClient.seedNativeSessions();
   const run = await gateway.runManager.start(
     {
       agent: sessionAgent,
@@ -340,6 +412,44 @@ async function seedRunningSession(gateway, fakeClient) {
   );
 }
 
+async function seedCompletedCodexSession(gateway, fakeClient) {
+  fakeClient.codexResumeBehaviorEnabled = false;
+  try {
+    const run = await gateway.runManager.start(
+      {
+        agent: codexSessionAgent,
+        model: codexSessionModel,
+        prompt: "Review the linked workspace before the next turn.",
+        cwd: workspacePath,
+        sessionId: codexSessionId,
+      },
+      {
+        tokenId: "fixture-owner",
+        name: "fixture-owner",
+        remoteAddress: null,
+      },
+    );
+
+    await waitFor(() => fakeClient.runs.get(run.runId));
+    const timestamp = Date.now();
+    const activeRun = fakeClient.runs.get(run.runId);
+    activeRun.handle.emit({
+      type: "session_start",
+      runId: run.runId,
+      agent: codexSessionAgent,
+      timestamp,
+      sessionId: codexSessionId,
+      resumed: false,
+      cwd: workspacePath,
+    });
+    fakeClient.emitAssistantReply(run.runId, codexTranscriptText, codexSessionAgent, codexSessionCost);
+    activeRun.handle.complete("completed", 0, null);
+    await waitFor(() => gateway.runManager.get(run.runId)?.status === "completed", 10_000);
+  } finally {
+    fakeClient.codexResumeBehaviorEnabled = true;
+  }
+}
+
 async function writeState() {
   await fs.mkdir(path.dirname(stateFile), { recursive: true });
   await fs.writeFile(
@@ -354,6 +464,8 @@ async function writeState() {
         issueKey,
         workspacePath,
         transcriptText,
+        codexSessionId,
+        codexTranscriptText,
       },
       null,
       2,
@@ -390,6 +502,7 @@ async function main() {
   await gateway.start();
   await linkWorkspace(workspacePath);
   await seedRunningSession(gateway, fakeClient);
+  await seedCompletedCodexSession(gateway, fakeClient);
   await writeState();
 
   let stopping = false;

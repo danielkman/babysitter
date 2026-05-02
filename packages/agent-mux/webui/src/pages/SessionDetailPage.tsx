@@ -434,6 +434,7 @@ export function SessionDetailPage(): JSX.Element {
     };
     if (body.run && typeof body.run.runId === 'string') {
       store.getState().actions.mergeRun(body.run.runId, body.run);
+      client.subscribeRun(body.run.runId);
     }
     if (body.session && typeof body.session.sessionId === 'string') {
       store.getState().actions.mergeSession(body.session.sessionId, body.session);

@@ -415,7 +415,7 @@ describe('SessionDetailPage route shell wiring', () => {
   });
 
   it('submits follow-up turns through the session message endpoint and merges returned records', async () => {
-    const client = { subscribeSession: vi.fn(() => () => {}) };
+    const client = { subscribeSession: vi.fn(() => () => {}), subscribeRun: vi.fn(() => () => {}) };
     const state = createSessionState();
     const store = createMockStore(state);
     mockUseGateway.mockReturnValue({ client, store });
@@ -464,6 +464,7 @@ describe('SessionDetailPage route shell wiring', () => {
       'run-2',
       expect.objectContaining({ runId: 'run-2' }),
     );
+    expect(client.subscribeRun).toHaveBeenCalledWith('run-2');
     expect((state.actions.mergeSession as ReturnType<typeof vi.fn>)).toHaveBeenCalledWith(
       'session-1',
       expect.objectContaining({ sessionId: 'session-1' }),
