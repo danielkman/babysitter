@@ -471,14 +471,14 @@
     {
       "surface": "packages/transport-mux",
       "packageName": "@a5c-ai/transport-mux",
-      "description": "Internal transport/proxy seam for agent-mux launcher bridging while transport-mux remains a private placeholder",
+      "description": "Transport/proxy runtime seam for agent-mux launcher bridging",
       "hasReadme": true,
-      "status": "Internal-only workspace",
+      "status": "Public family package",
       "canonicalHome": "../packages/transport-mux/README.md",
       "supporting": [
-        "./workspace-validation.md"
+        "./agent-mux/README.md"
       ],
-      "note": "Treat as an internal placeholder seam even though release/staging automation still validates its migration and packaging edges."
+      "note": "README is the canonical package-level contract for the published transport/proxy runtime seam."
     },
     {
       "surface": "plugins/babysitter",

@@ -1,16 +1,16 @@
 # transport-mux
 
-`transport-mux` is an internal-only placeholder seam for the future JS transport/proxy runtime. The workspace keeps launcher-facing runtime modules here so `agent-mux` can integrate against a stable package boundary, but this package is not the active runtime or release owner yet and should not be treated as a publishable npm artifact.
+`transport-mux` is the published transport/proxy runtime seam used by the agent-mux launcher and related runtime consumers.
 
 <!-- docs-status:start -->
-> Status: Internal-only placeholder workspace.
+> Status: Public family package.
 > Canonical docs home: [Package and Plugin Docs Map](../../docs/package-and-plugin-map.md).
-> This README defines the placeholder-seam contract and should not be read as a productized public offering.
+> This README defines the package contract for the published transport/proxy runtime seam used by agent-mux.
 <!-- docs-status:end -->
 
 ## Current status
 
-This workspace currently carries source, tests, and package entrypoints that local workspace consumers import during development. While that seam is useful for local integration, the package remains private and its metadata intentionally does not describe a shippable npm artifact surface.
+This workspace carries the runtime, tests, and package entrypoints used by published agent-mux packages. It is expected to be installable from npm alongside the rest of the public agent-mux family.
 
 ## Intended seam
 
@@ -21,14 +21,14 @@ The control-plane shape is:
 3. `packages/agent-mux/adapters/src/translate-for-harness.ts` chooses the harness-facing protocol contract.
 4. `packages/transport-mux` is the package seam where that future runtime can converge once cutover work is complete.
 
-Historical references still exist under `packages/agent-mux/amux-proxy`, and those legacy assets remain the clearer operational reference until this package is explicitly promoted out of placeholder status.
+Historical references still exist under `packages/agent-mux/amux-proxy`, but this package is now the active JS runtime seam for published launcher flows.
 
 ## What this package means right now
 
-- it is a private workspace package, not a published npm deliverable
-- `src/config.ts`, `src/server.ts`, `src/runtime.ts`, and `src/types.ts` provide a local seam for workspace build/test coverage
-- package entrypoints and the `amux-proxy` bin exist for workspace-local development, not as a committed external artifact policy
-- the docs capture the protocol/provider split and the remaining cutover boundary
+- it is a published npm deliverable used by the agent-mux CLI/runtime stack
+- `src/config.ts`, `src/server.ts`, `src/runtime.ts`, and `src/types.ts` provide the transport/proxy runtime seam consumed by launcher flows
+- package entrypoints and the `amux-proxy` bin are part of the public runtime surface
+- the docs capture the protocol/provider split and the current runtime boundary
 
 ## Placeholder contract notes
 
@@ -38,7 +38,7 @@ Historical references still exist under `packages/agent-mux/amux-proxy`, and tho
 
 ## Operator checks
 
-Use these workspace gates when changing the placeholder seam or its migration docs:
+Use these workspace gates when changing the runtime seam or its migration docs:
 
 ```bash
 npm run build --workspace=@a5c-ai/transport-mux
@@ -46,9 +46,9 @@ npm run test --workspace=@a5c-ai/transport-mux
 npm run scorecard:migration --workspace=@a5c-ai/transport-mux
 ```
 
-Passing those commands proves the internal seam still compiles, its runtime tests still pass, and the migration scorecard still sees metadata and docs that match the private-placeholder policy.
+Passing those commands proves the runtime seam still compiles, its runtime tests still pass, and the migration scorecard still sees metadata and docs that match the published runtime policy.
 
 ## Current document set
 
 - [Architecture](./architecture.md): intended protocol/provider boundaries and route contract
-- [Migration](./migration.md): placeholder policy, cutover prerequisites, and archived legacy references
+- [Migration](./migration.md): release-owner policy, validation gates, and archived legacy references

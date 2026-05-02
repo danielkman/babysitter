@@ -36,31 +36,31 @@ const jsContractTests =
 
 const docsHonestyChecks = [
   {
-    name: 'README marks transport-mux as an internal-only placeholder seam',
+    name: 'README marks transport-mux as the published runtime seam',
     ok: containsAll(readmeDoc, [
-      'internal-only placeholder seam',
-      'not the active runtime or release owner yet',
+      'published transport/proxy runtime seam',
+      'used by the agent-mux launcher',
     ]),
   },
   {
-    name: 'README describes workspace-local entrypoints as non-publishable',
+    name: 'README describes the package as a published npm deliverable',
     ok: containsAll(readmeDoc, [
-      'workspace-local development',
-      'not a published npm deliverable',
+      'published npm deliverable',
+      'public runtime surface',
     ]),
   },
   {
-    name: 'migration.md describes a private placeholder policy',
+    name: 'migration.md describes a public runtime policy',
     ok: containsAll(migrationDoc, [
-      'private workspace package and placeholder seam',
-      'does not yet own publish, release, or externally installable runtime truth',
+      'published transport/proxy runtime seam',
+      'public install chain',
     ]),
   },
   {
-    name: 'migration.md requires publish-only metadata to stay absent',
+    name: 'migration.md requires publishable metadata and local artifact coverage',
     ok: containsAll(migrationDoc, [
-      '`files`, `publishConfig`, and `prepack` must stay absent',
-      'Referenced packaged artifacts must exist locally or be removed from package metadata.',
+      'publishable and aligned with the package docs map',
+      'package metadata does not advertise packable artifacts that are not present locally.',
     ]),
   },
   {
@@ -90,22 +90,20 @@ const scorecard = [
     retireWhen: 'Legacy tests are either removed entirely or explicitly separated from transport-mux package-artifact claims.',
   },
   {
-    gate: 'Private package metadata is coherent',
+    gate: 'Public package metadata is coherent',
     status:
-      packageJson.private === true &&
-      !('files' in packageJson) &&
-      !('publishConfig' in packageJson) &&
-      !('prepack' in (packageJson.scripts ?? {}))
+      packageJson.private !== true &&
+      Array.isArray(packageJson.files) &&
+      packageJson.publishConfig?.access === 'public'
         ? 'green'
         : 'red',
     evidence:
-      packageJson.private === true &&
-      !('files' in packageJson) &&
-      !('publishConfig' in packageJson) &&
-      !('prepack' in (packageJson.scripts ?? {}))
-        ? 'package.json stays private and omits publish-only metadata that would advertise a shippable npm artifact'
-        : 'package.json still advertises pack/publish metadata that conflicts with a private placeholder policy',
-    retireWhen: 'The package is intentionally promoted out of placeholder status and all publish-ready metadata returns in one explicit cutover.',
+      packageJson.private !== true &&
+      Array.isArray(packageJson.files) &&
+      packageJson.publishConfig?.access === 'public'
+        ? 'package.json describes a public artifact with publish surface metadata'
+        : 'package.json metadata does not match a public runtime package policy',
+    retireWhen: 'The package is intentionally demoted or split and public-package metadata is replaced in one explicit policy change.',
   },
   {
     gate: 'Workspace seam still builds and tests locally',
@@ -116,7 +114,7 @@ const scorecard = [
     retireWhen: 'Local build/test coverage is no longer needed or is replaced with a different seam-verification flow.',
   },
   {
-    gate: 'Launcher/runtime seam remains explicit without over-claiming ownership',
+    gate: 'Launcher/runtime seam remains explicit and published',
     status:
       launchCommand.includes('@a5c-ai/transport-mux') &&
       packageEntrypoint.includes("export * from './runtime.js';")
@@ -125,18 +123,18 @@ const scorecard = [
     evidence:
       launchCommand.includes('@a5c-ai/transport-mux') &&
       packageEntrypoint.includes("export * from './runtime.js';")
-        ? 'launch.ts imports transport-mux directly and the package entrypoint exports the local runtime seam'
+        ? 'launch.ts imports transport-mux directly and the package entrypoint exports the runtime seam'
         : 'launch.ts still bypasses the transport-mux runtime surface or the package entrypoint does not export it',
-    retireWhen: 'The local seam is retired or promoted with an explicit runtime-ownership policy change.',
+    retireWhen: 'The seam is retired or replaced with an explicit runtime-ownership policy change.',
   },
   {
     gate: 'Docs describe the migration seam honestly',
     status: docsHonestyFailures.length === 0 ? 'green' : 'red',
     evidence:
       docsHonestyFailures.length === 0
-        ? 'README.md, architecture.md, and migration.md agree that transport-mux is an internal seam today and a future cutover target.'
+        ? 'README.md, architecture.md, and migration.md agree that transport-mux is the active published runtime seam.'
         : `Docs drift detected: ${docsHonestyFailures.join('; ')}.`,
-    retireWhen: 'Docs and metadata are updated together when placeholder status changes.',
+    retireWhen: 'Docs and metadata are updated together when runtime ownership changes.',
   },
 ];
 

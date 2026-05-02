@@ -63,6 +63,7 @@ Use it to answer three questions quickly:
 | `packages/agent-mux/harness-mock` | Public family package | [packages/agent-mux/harness-mock/README.md](../packages/agent-mux/harness-mock/README.md) | [docs/agent-mux/README.md](./agent-mux/README.md) | README is the canonical package-level contract. |
 | `packages/agent-mux/observability` | Public family package | [packages/agent-mux/observability/README.md](../packages/agent-mux/observability/README.md) | [docs/agent-mux/README.md](./agent-mux/README.md) | README is the canonical package-level contract. |
 | `packages/agent-mux/sdk` | Public family package | [packages/agent-mux/sdk/README.md](../packages/agent-mux/sdk/README.md) | [docs/agent-mux/README.md](./agent-mux/README.md) | README is the canonical package-level contract. |
+| `packages/transport-mux` | Public family package | [packages/transport-mux/README.md](../packages/transport-mux/README.md) | [docs/agent-mux/README.md](./agent-mux/README.md) | README is the canonical package-level contract for the published transport/proxy runtime seam. |
 | `packages/agent-mux/tui` | Public family package | [packages/agent-mux/tui/README.md](../packages/agent-mux/tui/README.md) | [docs/agent-mux/README.md](./agent-mux/README.md) | README is the canonical package-level contract. |
 | `packages/agent-mux/ui` | Public family package | [packages/agent-mux/ui/README.md](../packages/agent-mux/ui/README.md) | [docs/agent-mux/README.md](./agent-mux/README.md) | README is the canonical package-level contract. |
 | `packages/agent-mux/webui` | Public family package | [packages/agent-mux/webui/README.md](../packages/agent-mux/webui/README.md) | [docs/agent-mux/README.md](./agent-mux/README.md) | README is the canonical package-level contract. |
@@ -105,7 +106,6 @@ Use it to answer three questions quickly:
 | `packages/agent-mux/watch-wearos-app` | Internal-only companion app | [docs/package-and-plugin-map.md](./package-and-plugin-map.md) | [docs/agent-mux/README.md](./agent-mux/README.md) | No package README today. This map is the explicit internal-only note until the surface is promoted. |
 | `packages/babysitter-tui-plugins` | Internal-only workspace | [docs/package-and-plugin-map.md](./package-and-plugin-map.md) | — | Internal-only support package for the TUI surface. This map is the explicit documentation home until the workspace gets a README. |
 | `packages/catalog` | Internal-only workspace | [packages/catalog/README.md](../packages/catalog/README.md) | — | Internal-only metadata/catalog surface. Keep discovery honest and routed through internal notes rather than productized public docs. |
-| `packages/transport-mux` | Internal-only workspace | [packages/transport-mux/README.md](../packages/transport-mux/README.md) | [docs/workspace-validation.md](./workspace-validation.md) | Treat as an internal placeholder seam even though release/staging automation still validates its migration and packaging edges. |
 
 ## Coverage rules for future changes
 

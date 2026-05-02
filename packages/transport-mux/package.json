@@ -1,12 +1,11 @@
 {
   "name": "@a5c-ai/transport-mux",
   "version": "0.4.9",
-  "private": true,
   "type": "module",
   "license": "MIT",
-  "description": "Internal transport/proxy seam for agent-mux launcher bridging while transport-mux remains a private placeholder",
+  "description": "Transport/proxy runtime seam for agent-mux launcher bridging",
   "author": "a5c-ai",
-  "homepage": "https://github.com/a5c-ai/babysitter#readme",
+  "homepage": "https://github.com/a5c-ai/babysitter/tree/main/packages/transport-mux#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/a5c-ai/babysitter.git",
@@ -62,6 +61,13 @@
         "default": "./dist/types.js"
       }
     }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "clean": "rm -rf dist",

@@ -31,6 +31,7 @@ These workspaces ship public packages or release-facing operational behavior. Th
 | `packages/observer-dashboard` | Published observer dashboard package | `.github/workflows/ci.yml` job `observer-dashboard`, plus `release.yml` and `staging-publish.yml` |
 | `packages/hooks-mux/*` | Published hooks-mux packages | `.github/workflows/ci.yml` job `test`, plus `release.yml` and `staging-publish.yml` |
 | `packages/agent-mux/*` | Published agent-mux packages | `.github/workflows/ci.yml` job `test`, plus `release.yml` and `staging-publish.yml` |
+| `packages/transport-mux` | Published transport/proxy runtime package used by the agent-mux CLI/runtime chain | `.github/workflows/ci.yml` job `workspace-coverage` (`build` + `lint` + `typecheck` + `test` + `scorecard:migration`), plus `release.yml` and `staging-publish.yml` |
 | `packages/babysitter` and `plugins/babysitter-*` | Published metapackage and harness plugin packages | `.github/workflows/ci.yml` job `test`, plus `release.yml` and `staging-publish.yml` |
 
 ## Public advanced/runtime packages
@@ -51,7 +52,6 @@ These workspaces are part of the active monorepo and ship code or operational be
 | --- | --- | --- |
 | `packages/catalog` | internal-only Next.js catalog UI and API surface for browsing process-library and graph-backed discovery data inside the monorepo | `.github/workflows/ci.yml` job `workspace-coverage` (`npm run ci:test --workspace=process-library-catalog`) |
 | `packages/babysitter-tui-plugins` | Internal TUI plugin package for babysitter observability | `.github/workflows/ci.yml` job `workspace-coverage` |
-| `packages/transport-mux` | Internal transport/proxy runtime workspace with package-local QA commands | `.github/workflows/ci.yml` job `workspace-coverage` (`build` + `lint` + `typecheck` + `test` + `scorecard:migration`) |
 
 ## Explicit exclusions
 
