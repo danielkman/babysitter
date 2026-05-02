@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildNativeAgentFlowLane } from './session-flow.js';
+import { buildNativeAgentFlowLane, buildNativeTranscript } from './session-flow.js';
 
 describe('buildNativeAgentFlowLane', () => {
   it('creates a fallback lane from native session messages', () => {
@@ -21,5 +21,24 @@ describe('buildNativeAgentFlowLane', () => {
       'thinking',
       'assistant',
     ]);
+  });
+
+  it('normalizes structured content blocks into readable transcript text', () => {
+    const transcript = buildNativeTranscript('session-2', [
+      {
+        role: 'assistant',
+        content: [
+          { type: 'thinking', thinking: 'hidden' },
+          { type: 'text', text: 'Normalized text' },
+          { type: 'tool_use', id: 'toolu_1', name: 'Read', input: { file_path: 'README.md' } },
+        ],
+      } as never,
+      {
+        role: 'user',
+        content: [{ type: 'tool_result', tool_use_id: 'toolu_1', content: 'Tool output' }],
+      } as never,
+    ]);
+
+    expect(transcript.map((node) => node.text)).toEqual(['Normalized text', 'Tool output']);
   });
 });

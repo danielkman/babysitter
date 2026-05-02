@@ -243,15 +243,18 @@ export async function parseJsonlSessionFile(
   turnCount: number;
   createdAt: string;
   updatedAt: string;
-  messages: Array<{ role: 'user' | 'assistant' | 'system' | 'tool'; content: string }>;
+  messages: SessionMessage[];
   raw: unknown;
 }> {
   const sessionId = path.basename(filePath, path.extname(filePath));
   const rows = await parseJsonlFile(filePath);
-  const messages: Array<{ role: 'user' | 'assistant' | 'system' | 'tool'; content: string }> = [];
+  const messages: SessionMessage[] = [];
+  const toolCallsById = new Map<string, SessionToolCall>();
   for (const row of rows) {
-    const msg = rowToMessage(row);
-    if (msg) messages.push(msg);
+    const parsedMessages = rowToMessages(row, toolCallsById);
+    if (parsedMessages.length > 0) {
+      messages.push(...parsedMessages);
+    }
   }
   const stat = await statSafe(filePath);
   const now = new Date().toISOString();
@@ -506,19 +509,268 @@ export function rowToMessage(row: Record<string, unknown>): {
   role: 'user' | 'assistant' | 'system' | 'tool';
   content: string;
 } | null {
-  const roleRaw = (row['role'] ?? row['sender'] ?? row['type']) as string | undefined;
-  let role: 'user' | 'assistant' | 'system' | 'tool';
-  if (roleRaw === 'user' || roleRaw === 'human') role = 'user';
-  else if (roleRaw === 'assistant' || roleRaw === 'ai' || roleRaw === 'model') role = 'assistant';
-  else if (roleRaw === 'system') role = 'system';
-  else if (roleRaw === 'tool' || roleRaw === 'tool_result' || roleRaw === 'tool_use') role = 'tool';
-  else return null;
-  const content =
-    (row['content'] as string | undefined) ??
-    (row['text'] as string | undefined) ??
-    (row['message'] as string | undefined) ??
-    '';
-  return { role, content: typeof content === 'string' ? content : JSON.stringify(content) };
+  return rowToMessages(row)[0] ?? null;
+}
+
+function rowToMessages(
+  row: Record<string, unknown>,
+  toolCallsById = new Map<string, SessionToolCall>(),
+): SessionMessage[] {
+  const nestedMessage = row['message'];
+  const envelope = nestedMessage && typeof nestedMessage === 'object'
+    ? (nestedMessage as Record<string, unknown>)
+    : row;
+  const role = normalizeSessionRole(envelope['role'] ?? row['role'] ?? row['sender'] ?? row['type']);
+  if (!role) {
+    return [];
+  }
+
+  const timestamp = parseSessionTimestamp(row['timestamp'] ?? envelope['timestamp']);
+  const thinkingText = flattenStructuredText(envelope['thinking']);
+  const contentInfo = parseStructuredContent(envelope['content'], toolCallsById);
+  const messages: SessionMessage[] = [];
+
+  if (role === 'assistant') {
+    if (contentInfo.toolCalls) {
+      for (const toolCall of contentInfo.toolCalls) {
+        toolCallsById.set(toolCall.toolCallId, toolCall);
+      }
+    }
+    const assistantText = contentInfo.text.length > 0
+      ? contentInfo.text
+      : flattenStructuredText(
+          envelope['text'] ??
+          (nestedMessage && typeof nestedMessage !== 'object' ? nestedMessage : row['text'] ?? row['message']),
+        );
+    if (assistantText.length > 0 || contentInfo.toolCalls?.length || contentInfo.thinking.length > 0) {
+      messages.push({
+        role,
+        content: assistantText,
+        ...(timestamp ? { timestamp } : {}),
+        ...(contentInfo.toolCalls?.length ? { toolCalls: contentInfo.toolCalls } : {}),
+        ...(contentInfo.thinking.length > 0
+          ? { thinking: joinTextParts([contentInfo.thinking, thinkingText].filter((value) => value.length > 0)) }
+          : thinkingText.length > 0
+            ? { thinking: thinkingText }
+            : {}),
+      });
+    }
+    return messages;
+  }
+
+  if (role === 'user') {
+    if (contentInfo.text.length > 0) {
+      messages.push({
+        role,
+        content: contentInfo.text,
+        ...(timestamp ? { timestamp } : {}),
+      });
+    }
+    for (const toolResult of contentInfo.toolResults) {
+      messages.push({
+        role: 'tool',
+        content: toolResult.text,
+        ...(timestamp ? { timestamp } : {}),
+        toolResult: {
+          toolCallId: toolResult.toolCallId,
+          toolName: toolResult.toolName,
+          output: toolResult.output,
+        },
+      });
+    }
+    return messages;
+  }
+
+  const directContent = contentInfo.text.length > 0
+    ? contentInfo.text
+    : flattenStructuredText(
+        envelope['content'] ??
+        envelope['text'] ??
+        (nestedMessage && typeof nestedMessage !== 'object' ? nestedMessage : row['text'] ?? row['message']),
+      );
+  if (directContent.length === 0 && role !== 'tool') {
+    return [];
+  }
+  messages.push({
+    role,
+    content: directContent,
+    ...(timestamp ? { timestamp } : {}),
+  });
+  return messages;
+}
+
+function normalizeSessionRole(value: unknown): SessionMessage['role'] | null {
+  if (value === 'user' || value === 'human') {
+    return 'user';
+  }
+  if (value === 'assistant' || value === 'ai' || value === 'model') {
+    return 'assistant';
+  }
+  if (value === 'system') {
+    return 'system';
+  }
+  if (value === 'tool' || value === 'tool_result' || value === 'tool_use') {
+    return 'tool';
+  }
+  return null;
+}
+
+function parseSessionTimestamp(value: unknown): Date | undefined {
+  if (value instanceof Date) {
+    return Number.isFinite(value.getTime()) ? value : undefined;
+  }
+  if (typeof value === 'string' || typeof value === 'number') {
+    const parsed = new Date(value);
+    if (Number.isFinite(parsed.getTime())) {
+      return parsed;
+    }
+  }
+  return undefined;
+}
+
+function flattenStructuredText(value: unknown): string {
+  if (typeof value === 'string') {
+    return value;
+  }
+  if (Array.isArray(value)) {
+    const parts = value.flatMap((entry) => {
+      if (typeof entry === 'string') {
+        return [entry];
+      }
+      if (!entry || typeof entry !== 'object') {
+        return [];
+      }
+      const block = entry as Record<string, unknown>;
+      const blockType = typeof block['type'] === 'string' ? block['type'] : '';
+      if (blockType === 'tool_use') {
+        return [];
+      }
+      if (blockType === 'text' && typeof block['text'] === 'string') {
+        return [block['text']];
+      }
+      if (blockType === 'thinking' && typeof block['thinking'] === 'string') {
+        return [block['thinking']];
+      }
+      if (blockType === 'tool_result') {
+        return [flattenStructuredText(block['content'] ?? block['tool_use_result'] ?? block['output'])];
+      }
+      if (typeof block['text'] === 'string') {
+        return [block['text']];
+      }
+      if (typeof block['content'] === 'string' || Array.isArray(block['content'])) {
+        return [flattenStructuredText(block['content'])];
+      }
+      if (typeof block['thinking'] === 'string') {
+        return [block['thinking']];
+      }
+      return [];
+    }).filter((part) => part.length > 0);
+    return joinTextParts(parts);
+  }
+  if (value && typeof value === 'object') {
+    const record = value as Record<string, unknown>;
+    if (typeof record['text'] === 'string') {
+      return record['text'];
+    }
+    if (typeof record['thinking'] === 'string') {
+      return record['thinking'];
+    }
+    if ('content' in record) {
+      return flattenStructuredText(record['content']);
+    }
+  }
+  if (value == null) {
+    return '';
+  }
+  return renderStructuredValue(value);
+}
+
+function parseStructuredContent(
+  value: unknown,
+  toolCallsById: Map<string, SessionToolCall>,
+): {
+  text: string;
+  thinking: string;
+  toolCalls?: SessionToolCall[];
+  toolResults: Array<{ toolCallId: string; toolName: string; output: unknown; text: string }>;
+} {
+  if (!Array.isArray(value)) {
+    return {
+      text: flattenStructuredText(value),
+      thinking: '',
+      toolResults: [],
+    };
+  }
+
+  const textParts: string[] = [];
+  const thinkingParts: string[] = [];
+  const toolCalls: SessionToolCall[] = [];
+  const toolResults: Array<{ toolCallId: string; toolName: string; output: unknown; text: string }> = [];
+
+  for (const entry of value) {
+    if (typeof entry === 'string') {
+      if (entry.length > 0) {
+        textParts.push(entry);
+      }
+      continue;
+    }
+    if (!entry || typeof entry !== 'object') {
+      continue;
+    }
+    const block = entry as Record<string, unknown>;
+    const blockType = typeof block['type'] === 'string' ? block['type'] : '';
+    if (blockType === 'text' && typeof block['text'] === 'string') {
+      textParts.push(block['text']);
+      continue;
+    }
+    if (blockType === 'thinking' && typeof block['thinking'] === 'string') {
+      thinkingParts.push(block['thinking']);
+      continue;
+    }
+    if (blockType === 'tool_use') {
+      const toolCallId = String(block['id'] ?? block['tool_use_id'] ?? '');
+      const toolName = String(block['name'] ?? 'tool');
+      if (toolCallId.length > 0) {
+        toolCalls.push({
+          toolCallId,
+          toolName,
+          input: block['input'],
+        });
+      }
+      continue;
+    }
+    if (blockType === 'tool_result') {
+      const toolCallId = String(block['tool_use_id'] ?? block['toolCallId'] ?? block['id'] ?? '');
+      const output = block['content'] ?? block['tool_use_result'] ?? block['output'] ?? '';
+      const resolvedToolName = toolCallsById.get(toolCallId)?.toolName;
+      toolResults.push({
+        toolCallId,
+        toolName: resolvedToolName ?? String(block['tool_name'] ?? 'tool'),
+        output,
+        text: flattenStructuredText(output),
+      });
+      continue;
+    }
+
+    const fallbackText = flattenStructuredText(block);
+    if (fallbackText.length > 0) {
+      textParts.push(fallbackText);
+    }
+  }
+
+  return {
+    text: joinTextParts(textParts),
+    thinking: joinTextParts(thinkingParts),
+    ...(toolCalls.length > 0 ? { toolCalls } : {}),
+    toolResults,
+  };
+}
+
+function joinTextParts(parts: string[]): string {
+  return parts
+    .map((part) => part.trim())
+    .filter((part) => part.length > 0)
+    .join('\n\n');
 }
 
 function flattenCodexMessageText(content: unknown): string {

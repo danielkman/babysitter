@@ -117,6 +117,24 @@ describe('session-fs helpers', () => {
       role: 'system',
       content: 'sys',
     });
+    expect(rowToMessage({
+      type: 'assistant',
+      timestamp: '2026-05-02T10:00:01.000Z',
+      message: {
+        role: 'assistant',
+        content: [
+          { type: 'thinking', thinking: 'inspect repo' },
+          { type: 'text', text: 'I will inspect the repo.' },
+          { type: 'tool_use', id: 'toolu_1', name: 'Read', input: { file_path: 'README.md' } },
+        ],
+      },
+    })).toEqual({
+      role: 'assistant',
+      content: 'I will inspect the repo.',
+      timestamp: new Date('2026-05-02T10:00:01.000Z'),
+      thinking: 'inspect repo',
+      toolCalls: [{ toolCallId: 'toolu_1', toolName: 'Read', input: { file_path: 'README.md' } }],
+    });
     expect(rowToMessage({ foo: 'bar' })).toBeNull();
   });
 
@@ -132,6 +150,65 @@ describe('session-fs helpers', () => {
     expect(parsed.turnCount).toBe(1);
     expect(parsed.messages).toHaveLength(2);
     expect(parsed.createdAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+  });
+
+  it('parseJsonlSessionFile normalizes Claude content blocks and tool results', async () => {
+    const p = path.join(dir, 'claude-session.jsonl');
+    await fs.writeFile(
+      p,
+      [
+        JSON.stringify({
+          type: 'user',
+          timestamp: '2026-05-02T10:00:00.000Z',
+          message: { role: 'user', content: 'Plan this change' },
+        }),
+        JSON.stringify({
+          type: 'assistant',
+          timestamp: '2026-05-02T10:00:01.000Z',
+          message: {
+            role: 'assistant',
+            content: [
+              { type: 'thinking', thinking: 'inspect repo' },
+              { type: 'text', text: 'I will inspect the repo.' },
+              { type: 'tool_use', id: 'toolu_1', name: 'Read', input: { file_path: 'README.md' } },
+            ],
+          },
+        }),
+        JSON.stringify({
+          type: 'user',
+          timestamp: '2026-05-02T10:00:02.000Z',
+          message: {
+            role: 'user',
+            content: [{ type: 'tool_result', tool_use_id: 'toolu_1', content: 'README contents', is_error: false }],
+          },
+        }),
+      ].join('\n'),
+    );
+
+    const parsed = await parseJsonlSessionFile(p, 'claude');
+    expect(parsed.messages).toHaveLength(3);
+    expect(parsed.messages[0]).toEqual({
+      role: 'user',
+      content: 'Plan this change',
+      timestamp: new Date('2026-05-02T10:00:00.000Z'),
+    });
+    expect(parsed.messages[1]).toEqual({
+      role: 'assistant',
+      content: 'I will inspect the repo.',
+      timestamp: new Date('2026-05-02T10:00:01.000Z'),
+      thinking: 'inspect repo',
+      toolCalls: [{ toolCallId: 'toolu_1', toolName: 'Read', input: { file_path: 'README.md' } }],
+    });
+    expect(parsed.messages[2]).toEqual({
+      role: 'tool',
+      content: 'README contents',
+      timestamp: new Date('2026-05-02T10:00:02.000Z'),
+      toolResult: {
+        toolCallId: 'toolu_1',
+        toolName: 'Read',
+        output: 'README contents',
+      },
+    });
   });
 
   it('writeTextFileAtomic creates parent dirs and writes', async () => {

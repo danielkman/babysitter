@@ -18,17 +18,68 @@ function readMessageTimestamp(message: NativeSessionMessage, index: number): num
   return index;
 }
 
+function normalizeMessageContent(value: unknown): string {
+  if (typeof value === 'string') {
+    return value;
+  }
+  if (Array.isArray(value)) {
+    const parts = value.flatMap((entry) => {
+      if (typeof entry === 'string') {
+        return [entry];
+      }
+      if (!entry || typeof entry !== 'object') {
+        return [];
+      }
+      const block = entry as Record<string, unknown>;
+      const blockType = typeof block.type === 'string' ? block.type : '';
+      if (blockType === 'tool_use') {
+        return [];
+      }
+      if (blockType === 'text' && typeof block.text === 'string') {
+        return [block.text];
+      }
+      if (blockType === 'tool_result') {
+        return [normalizeMessageContent(block.content ?? block.output ?? block.tool_use_result)];
+      }
+      if (typeof block.text === 'string') {
+        return [block.text];
+      }
+      if ('content' in block) {
+        return [normalizeMessageContent(block.content)];
+      }
+      return [];
+    }).filter((part) => part.length > 0);
+    if (parts.length > 0) {
+      return parts.join('\n\n');
+    }
+  }
+  if (value && typeof value === 'object') {
+    const record = value as Record<string, unknown>;
+    if (typeof record.text === 'string') {
+      return record.text;
+    }
+    if ('content' in record) {
+      const nested = normalizeMessageContent(record.content);
+      if (nested.length > 0) {
+        return nested;
+      }
+    }
+  }
+  return value == null ? '' : renderPayload(value);
+}
+
 export function buildNativeTranscript(sessionId: string, messages: NativeSessionMessage[]): SessionTranscriptNode[] {
   const nodes: SessionTranscriptNode[] = [];
   for (const [index, message] of messages.entries()) {
     const runId = `${sessionId}:native:${index}`;
     const baseTimestamp = readMessageTimestamp(message, index);
-    if (message.role === 'user' && typeof message.content === 'string' && message.content.length > 0) {
+    const normalizedContent = normalizeMessageContent(message.content as unknown);
+    if (message.role === 'user' && normalizedContent.length > 0) {
       nodes.push({
         id: `${runId}:user`,
         kind: 'user',
         label: 'user',
-        text: message.content,
+        text: normalizedContent,
         runId,
         timestamp: baseTimestamp,
         filePaths: [],
@@ -76,24 +127,24 @@ export function buildNativeTranscript(sessionId: string, messages: NativeSession
       });
       continue;
     }
-    if (message.role === 'assistant' && typeof message.content === 'string' && message.content.length > 0) {
+    if (message.role === 'assistant' && normalizedContent.length > 0) {
       nodes.push({
         id: `${runId}:assistant`,
         kind: 'assistant',
         label: 'assistant',
-        text: message.content,
+        text: normalizedContent,
         runId,
         timestamp: baseTimestamp + 0.3,
         filePaths: [],
       });
       continue;
     }
-    if (message.role === 'system' && typeof message.content === 'string' && message.content.length > 0) {
+    if (message.role === 'system' && normalizedContent.length > 0) {
       nodes.push({
         id: `${runId}:system`,
         kind: 'system',
         label: 'system',
-        text: message.content,
+        text: normalizedContent,
         runId,
         timestamp: baseTimestamp + 0.4,
         filePaths: [],
