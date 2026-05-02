@@ -717,6 +717,65 @@ describe("workspaces-page helpers", () => {
     expect(screen.getAllByText("Needs attention").length).toBeGreaterThan(0);
   });
 
+  it("omits the workspace review queue chrome when there is nothing waiting for review", async () => {
+    vi.mocked(fetch).mockResolvedValue(
+      new Response(JSON.stringify({
+        summary: { total: 1, active: 1, idle: 0, archived: 0, missing: 0 },
+        workspaces: [
+          {
+            path: "/repo/worktrees/task",
+            name: "task",
+            status: "active",
+            missing: false,
+            archivedAt: null,
+            cleanedAt: null,
+            lastActivityAt: "2026-04-24T12:00:00.000Z",
+            git: {
+              root: "/repo/main",
+              commonDir: "/repo/main/.git",
+              trackingBranch: "origin/vk/task",
+              branch: "vk/task",
+              head: "abc123",
+              ahead: 0,
+              behind: 0,
+              dirty: false,
+              uncommittedCount: 0,
+              isWorktree: true,
+              isPrimary: false,
+            },
+            notes: { value: "", updatedAt: null },
+            links: { editorHref: "vscode://file/repo/worktrees/task" },
+            sessions: { total: 0, active: 0, items: [] },
+            runs: { total: 0, active: 0, items: [] },
+            actions: {
+              canPin: true,
+              canUnpin: false,
+              canArchive: true,
+              canCleanup: false,
+              canRecover: false,
+              canRebaseStart: false,
+              canRebaseAutoResolve: false,
+              canRebaseOpenInEditor: false,
+              canRebaseMarkResolved: false,
+              canRebaseAbort: false,
+            },
+          },
+        ],
+      }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      }),
+    );
+
+    render(<WorkspacesPageContent isAuthenticated sessions={[]} />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("workspace-sidebar-surface")).toBeInTheDocument();
+    });
+
+    expect(screen.queryByTestId("workspace-review-queue-details")).toBeNull();
+  });
+
   it("keeps issue and chat actions visible while hiding maintenance behind progressive disclosure", async () => {
     const user = setupUser();
 

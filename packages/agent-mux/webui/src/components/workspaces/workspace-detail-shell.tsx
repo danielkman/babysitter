@@ -219,7 +219,7 @@ function EmptyWorkspaceState(props: { title: string; body: string }) {
 
 export function WorkspaceDetailShell(props: WorkspaceDetailShellProps) {
   const navigate = useNavigate();
-  const storagePrefix = "workspace-detail-layout-v3";
+  const storagePrefix = `workspace-detail-layout-v4.${props.workspace.path}`;
   const [sidebarOpen, setSidebarOpen] = usePersistedState(`${storagePrefix}.sidebar-open`, true);
   const [conversationOpen, setConversationOpen] = usePersistedState(`${storagePrefix}.conversation-open`, true);
   const [contextOpen, setContextOpen] = usePersistedState(`${storagePrefix}.context-open`, false);
@@ -376,6 +376,15 @@ export function WorkspaceDetailShell(props: WorkspaceDetailShellProps) {
     setConversationOpen,
     setDetailsOpen,
   ]);
+
+  useEffect(() => {
+    if (!props.activeSession) {
+      return;
+    }
+    setSidebarOpen(true);
+    setConversationOpen(true);
+    setActiveConstrainedPanel("conversation");
+  }, [props.activeSession, props.workspace.path, setConversationOpen, setSidebarOpen]);
 
   const renderPanel = (panel: WorkspacePanelKey) => {
     if (panel === "sidebar") {

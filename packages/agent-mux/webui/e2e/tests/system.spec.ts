@@ -130,10 +130,10 @@ test.describe("agent-mux webui e2e", () => {
       const linkedCard = page.getByTestId(`kanban-card-${state.issueKey}`);
       await expect(linkedCard).toBeVisible();
       await expect(linkedCard.getByText("Repository lifecycle")).not.toBeVisible();
-      await expect(page.getByTestId(`manage-workspaces-${state.issueKey}`)).not.toBeVisible();
+      await expect(linkedCard.locator(`[data-testid^="card-workspace-${state.issueKey}-"]`)).not.toBeVisible();
       await linkedCard.locator("details summary").click();
       await expect(linkedCard.getByText("Repository lifecycle")).toBeVisible();
-      await expect(page.getByTestId(`manage-workspaces-${state.issueKey}`)).toBeVisible();
+      await expect(linkedCard.locator(`[data-testid^="card-workspace-${state.issueKey}-"]`)).toBeVisible();
     });
 
     test("board workspace links keep issue association visible and hand off cleanly into the linked session chat", async ({ page }) => {
@@ -142,12 +142,15 @@ test.describe("agent-mux webui e2e", () => {
 
       const linkedCard = page.getByTestId(`kanban-card-${state.issueKey}`);
       await expect(linkedCard).toBeVisible();
-      await linkedCard.locator(`[data-testid^="card-workspace-${state.issueKey}-"]`).click();
+      await linkedCard.getByTestId(`open-linked-workspace-${state.issueKey}`).click();
 
       await expect(page).toHaveURL(new RegExp(`/workspaces\\?workspace=${encodeURIComponent(state.workspacePath)}`));
       await expect(page.getByTestId("workspace-shell")).toBeVisible();
       await expect(page.getByTestId(`workspace-primary-issue-link-${state.issueKey}`)).toBeVisible();
       await expect(page.getByTestId("workspace-session-select")).toBeVisible();
+      await expect(page.getByTestId("panel-toggle-conversation")).toHaveAttribute("aria-pressed", "true");
+      await expect(page.getByTestId("workspace-panel-conversation")).toBeVisible();
+      await expect(page.getByText(state.transcriptText)).toBeVisible();
       const viewSessionButton = page.getByRole("button", { name: "View session", exact: true }).first();
       await expect(viewSessionButton).toBeVisible();
       await expect(page.getByTestId("workspace-context-bar")).toContainText(state.issueKey);

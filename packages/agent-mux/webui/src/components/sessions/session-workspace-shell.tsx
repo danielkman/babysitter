@@ -175,7 +175,7 @@ function WorkspaceResizeHandle(props: {
 
 export function SessionWorkspaceShell(props: SessionWorkspaceShellProps) {
   const navigate = useNavigate();
-  const storagePrefix = props.shellStorageKeyPrefix ?? "session-workspace-layout-v3";
+  const storagePrefix = props.shellStorageKeyPrefix ?? `session-workspace-layout-v4.${props.sessionId}`;
   const [sidebarOpen, setSidebarOpen] = usePersistedState(`${storagePrefix}.sidebar-open`, true);
   const [conversationOpen, setConversationOpen] = usePersistedState(`${storagePrefix}.conversation-open`, true);
   const [contextOpen, setContextOpen] = usePersistedState(`${storagePrefix}.context-open`, false);

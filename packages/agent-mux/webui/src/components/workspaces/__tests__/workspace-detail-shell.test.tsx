@@ -136,6 +136,40 @@ function buildSession() {
 }
 
 describe("WorkspaceDetailShell", () => {
+  it("reopens the chat panel when an active session is present even if saved panel state hid it", () => {
+    window.innerWidth = 1440;
+    window.dispatchEvent(new Event("resize"));
+    window.localStorage.setItem(
+      "kanban:workspace-detail-layout-v4./repo/worktrees/task.conversation-open",
+      JSON.stringify(false),
+    );
+
+    render(
+      <WorkspaceDetailShell
+        workspace={buildWorkspace()}
+        sessions={[buildSession()]}
+        activeSession={buildSession()}
+        runs={[]}
+        eventBuffers={{}}
+        totalCostLabel="$0.12"
+        selectedSessionId="session-1"
+        onSelectSession={vi.fn()}
+        pendingAction={null}
+        notesSaving={false}
+        reviewPending={false}
+        onSubmit={vi.fn()}
+        onAction={vi.fn()}
+        onOpenInEditor={vi.fn()}
+        onSaveNote={vi.fn()}
+        onCreatePullRequest={vi.fn()}
+        onLinkPullRequest={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByTestId("panel-toggle-conversation")).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByTestId("workspace-panel-conversation")).toBeInTheDocument();
+  });
+
   it("keeps the selected session stable while toggling the runtime panel from shell controls", async () => {
     const user = setupUser();
     window.innerWidth = 1440;

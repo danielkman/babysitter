@@ -5133,11 +5133,13 @@ export function BacklogOverview({
                                               ? `${linkedWorkspaceCount} linked workspace${linkedWorkspaceCount === 1 ? "" : "s"}`
                                               : "No workspace linked yet"}
                                           </div>
-                                          <p className="mt-1 text-xs opacity-75">
-                                            {linkedWorkspaceCount > 0
-                                              ? "Jump straight into the linked workspace."
-                                              : "Create the workspace when this issue is ready to move."}
-                                          </p>
+                                          <div className="mt-1 text-xs opacity-75">
+                                            {linkedWorkspaceCount > 1
+                                              ? `${linkedWorkspaceCount - 1} additional link${linkedWorkspaceCount - 1 === 1 ? "" : "s"} in details`
+                                              : linkedWorkspaceCount === 1
+                                                ? "Open the linked workspace"
+                                                : "Create or link it when the issue is ready"}
+                                          </div>
                                         </div>
                                         <div className="flex flex-wrap gap-2">
                                           {linkedWorkspaceCount === 0 ? (
@@ -5169,25 +5171,6 @@ export function BacklogOverview({
                                           )}
                                         </div>
                                       </div>
-
-                                      {linkedWorkspaceCount > 0 ? (
-                                        <div className="mt-3 flex flex-wrap gap-2">
-                                          {(issue?.workspaceLinks ?? []).map((workspaceLink) => (
-                                            <button
-                                              key={`${card.issueId}-${workspaceLink.workspacePath}`}
-                                              type="button"
-                                              onClick={() => openWorkspacePath(workspaceLink.workspacePath)}
-                                              className="rounded-full border border-current/20 bg-background/70 px-3 py-1.5 text-left text-xs"
-                                              data-testid={`card-workspace-${card.issueKey}-${workspaceLink.workspaceName}`}
-                                            >
-                                              <span className="font-semibold">{workspaceLink.workspaceName}</span>
-                                              <span className="ml-2 opacity-75">
-                                                {workspaceLinkSummary(workspaceLink)}
-                                              </span>
-                                            </button>
-                                          ))}
-                                        </div>
-                                      ) : null}
                                     </div>
 
                                     {primaryMoveTarget ? (
@@ -5228,6 +5211,24 @@ export function BacklogOverview({
                                               <div className="text-xs font-semibold uppercase tracking-[0.18em] text-foreground-muted">
                                                 Workspace options
                                               </div>
+                                              {linkedWorkspaceCount > 0 ? (
+                                                <div className="flex flex-wrap gap-2">
+                                                  {(issue?.workspaceLinks ?? []).map((workspaceLink) => (
+                                                    <button
+                                                      key={`${card.issueId}-${workspaceLink.workspacePath}`}
+                                                      type="button"
+                                                      onClick={() => openWorkspacePath(workspaceLink.workspacePath)}
+                                                      className="rounded-full border border-current/20 bg-background/70 px-3 py-1.5 text-left text-xs"
+                                                      data-testid={`card-workspace-${card.issueKey}-${workspaceLink.workspaceName}`}
+                                                    >
+                                                      <span className="font-semibold">{workspaceLink.workspaceName}</span>
+                                                      <span className="ml-2 opacity-75">
+                                                        {workspaceLinkSummary(workspaceLink)}
+                                                      </span>
+                                                    </button>
+                                                  ))}
+                                                </div>
+                                              ) : null}
                                               <div className="flex flex-wrap gap-2">
                                                 {linkedWorkspaceCount === 0 ? (
                                                   <button

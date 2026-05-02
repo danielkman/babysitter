@@ -650,6 +650,11 @@ export function WorkspacesPageContent(props: {
     () => accumulateEventCost(selectedRunIds, selectedEventBuffers),
     [selectedEventBuffers, selectedRunIds],
   );
+  const hasWorkspaceReviewQueue =
+    workspaceReviews.artifacts.length > 0 ||
+    (workspaceReviews.summary?.pendingCount ?? 0) > 0 ||
+    (workspaceReviews.summary?.approvedCount ?? 0) > 0 ||
+    (workspaceReviews.summary?.openCommentCount ?? 0) > 0;
 
   useEffect(() => {
     if (!selectedWorkspacePath) {
@@ -1095,7 +1100,12 @@ export function WorkspacesPageContent(props: {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">Workspaces</p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-tight">Find the right workspace and jump back into the session</h1>
+            <h1
+              className="mt-2 max-w-4xl font-semibold tracking-tight"
+              style={{ fontSize: "clamp(2.35rem, 4.2vw, 4.4rem)", lineHeight: 0.94 }}
+            >
+              Find the right workspace and jump back into the session
+            </h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-foreground-muted">
               Search by issue, branch, or ownership, open the workspace you need, and reveal review or maintenance detail only when it becomes relevant.
             </p>
@@ -1126,12 +1136,14 @@ export function WorkspacesPageContent(props: {
           </span>
         </div>
 
-        <div className="mt-5 flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">Workspace list</p>
-            <p className="mt-2 text-sm leading-6 text-foreground-muted">
-              Keep the list compact and open deeper recovery or runtime detail only when needed.
-            </p>
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap gap-2 text-sm text-foreground-muted">
+            <span className="rounded-full border border-border px-3 py-1.5">
+              Open the workspace first
+            </span>
+            <span className="rounded-full border border-border px-3 py-1.5">
+              Reveal maintenance only on demand
+            </span>
           </div>
           <div className="flex flex-wrap gap-2">
             <Button
@@ -1288,56 +1300,58 @@ export function WorkspacesPageContent(props: {
         ) : null}
       </section>
 
-      <details
-        className="rounded-3xl border border-border bg-card shadow-lg"
-        data-testid="workspace-review-queue-details"
-      >
-        <summary className="flex cursor-pointer flex-wrap items-start justify-between gap-4 px-6 py-5">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">Review queue</p>
-            <h2 className="mt-2 text-xl font-semibold tracking-tight">Workspace diff and approval handoff</h2>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-foreground-muted">
-              Keep review, comments, and approval state nearby without letting it crowd the inventory by default.
-            </p>
+      {hasWorkspaceReviewQueue ? (
+        <details
+          className="rounded-3xl border border-border bg-card shadow-lg"
+          data-testid="workspace-review-queue-details"
+        >
+          <summary className="flex cursor-pointer flex-wrap items-start justify-between gap-4 px-6 py-5">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">Review queue</p>
+              <h2 className="mt-2 text-xl font-semibold tracking-tight">Workspace diff and approval handoff</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-foreground-muted">
+                Keep review, comments, and approval state nearby without letting it crowd the inventory by default.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2 text-xs text-foreground-muted">
+              <span className="rounded-full border border-border px-3 py-1.5">
+                queued {workspaceReviews.summary?.pendingCount ?? 0}
+              </span>
+              <span className="rounded-full border border-border px-3 py-1.5">
+                approved {workspaceReviews.summary?.approvedCount ?? 0}
+              </span>
+              <span className="rounded-full border border-border px-3 py-1.5">
+                open comments {workspaceReviews.summary?.openCommentCount ?? 0}
+              </span>
+            </div>
+          </summary>
+          <div className="border-t border-border px-6 py-6">
+            <ReviewPanel
+              title="Workspace diff and approval handoff"
+              description="Workspace review, comments, and approval state stay together here."
+              empty="No workspace reviews are queued yet."
+              loading={workspaceReviews.loading}
+              error={workspaceReviews.error}
+              artifacts={workspaceReviews.artifacts}
+              queue={workspaceReviews.queue}
+              summary={workspaceReviews.summary}
+              pendingArtifactId={workspaceReviews.pendingArtifactId}
+              onApprove={(artifactId) =>
+                workspaceReviews.actOnReview({ action: "approve", artifactId }).then(() => refreshInventory())
+              }
+              onRequestChanges={(artifactId) =>
+                workspaceReviews.actOnReview({ action: "request-changes", artifactId }).then(() => refreshInventory())
+              }
+              onSubmitReview={(input) =>
+                workspaceReviews.actOnReview({ action: "submit-review", ...input }).then(() => refreshInventory())
+              }
+              onAddComment={(input) =>
+                workspaceReviews.actOnReview({ action: "add-comment", ...input }).then(() => refreshInventory())
+              }
+            />
           </div>
-          <div className="flex flex-wrap gap-2 text-xs text-foreground-muted">
-            <span className="rounded-full border border-border px-3 py-1.5">
-              queued {workspaceReviews.summary?.pendingCount ?? 0}
-            </span>
-            <span className="rounded-full border border-border px-3 py-1.5">
-              approved {workspaceReviews.summary?.approvedCount ?? 0}
-            </span>
-            <span className="rounded-full border border-border px-3 py-1.5">
-              open comments {workspaceReviews.summary?.openCommentCount ?? 0}
-            </span>
-          </div>
-        </summary>
-        <div className="border-t border-border px-6 py-6">
-          <ReviewPanel
-            title="Workspace diff and approval handoff"
-            description="Workspace review, comments, and approval state stay together here."
-            empty="No workspace reviews are queued yet."
-            loading={workspaceReviews.loading}
-            error={workspaceReviews.error}
-            artifacts={workspaceReviews.artifacts}
-            queue={workspaceReviews.queue}
-            summary={workspaceReviews.summary}
-            pendingArtifactId={workspaceReviews.pendingArtifactId}
-            onApprove={(artifactId) =>
-              workspaceReviews.actOnReview({ action: "approve", artifactId }).then(() => refreshInventory())
-            }
-            onRequestChanges={(artifactId) =>
-              workspaceReviews.actOnReview({ action: "request-changes", artifactId }).then(() => refreshInventory())
-            }
-            onSubmitReview={(input) =>
-              workspaceReviews.actOnReview({ action: "submit-review", ...input }).then(() => refreshInventory())
-            }
-            onAddComment={(input) =>
-              workspaceReviews.actOnReview({ action: "add-comment", ...input }).then(() => refreshInventory())
-            }
-          />
-        </div>
-      </details>
+        </details>
+      ) : null}
     </PageShell>
   );
 }
