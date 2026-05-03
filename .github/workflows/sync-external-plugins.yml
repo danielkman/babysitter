@@ -54,4 +54,5 @@ jobs:
           GH_TOKEN: ${{ steps.a5c-token.outputs.a5c_token || github.token }}
         run: |
           set -euo pipefail
+          gh auth setup-git
           node scripts/sync-external-plugin-repos.mjs --push --branch=${{ github.ref_name }}
