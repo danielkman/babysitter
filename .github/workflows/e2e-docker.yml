@@ -129,17 +129,9 @@ jobs:
       - name: Run structural, SDK & stop-hook tests (no API key)
         run: |
           set -euo pipefail
-          npx vitest run --config e2e-tests/docker/vitest.config.ts \
+          npx vitest run --config e2e-tests/docker/vitest.no-api.config.ts \
             --reporter=default --reporter=json \
-            --outputFile.json=e2e-artifacts/test-results-structural.json \
-            e2e-tests/docker/structural.test.ts \
-            e2e-tests/docker/stop-hook.test.ts \
-            e2e-tests/docker/pi-structural.test.ts \
-            e2e-tests/docker/pi-stop-hook.test.ts \
-            e2e-tests/docker/oh-my-pi-structural.test.ts \
-            e2e-tests/docker/oh-my-pi-stop-hook.test.ts \
-            e2e-tests/docker/gemini-cli-structural.test.ts \
-            e2e-tests/docker/paperclip-structural.test.ts
+            --outputFile.json=e2e-artifacts/test-results-structural.json
 
       - name: Upload test artifacts
         if: always()
@@ -214,7 +206,7 @@ jobs:
           npx vitest run --config e2e-tests/docker/vitest.config.ts \
             --reporter=default --reporter=json \
             --outputFile.json=e2e-artifacts/test-results-provider-full-run.json \
-            e2e-tests/docker/session-create-full-run.test.ts
+            session-create-full-run.test.ts
 
       - name: Upload test artifacts
         if: always()
@@ -300,7 +292,7 @@ jobs:
           npx vitest run --config e2e-tests/docker/vitest.config.ts \
             --reporter=default --reporter=json \
             --outputFile.json=e2e-artifacts/test-results-codex.json \
-            e2e-tests/docker/codex-full-run.test.ts
+            codex-full-run.test.ts
 
       - name: Upload Codex test artifacts
         if: always()
