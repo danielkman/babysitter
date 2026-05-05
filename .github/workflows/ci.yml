@@ -226,7 +226,6 @@ jobs:
             plugins/babysitter-omp
             plugins/babysitter-opencode
             plugins/babysitter-openclaw
-            plugins/babysitter-paperclip
             plugins/babysitter-pi
           )
 

@@ -178,7 +178,6 @@ License filter: MIT / BSD / Apache-2.0 only
 | [polyclaw](clawhub/chainstacklabs/polyclaw/research.md) | @chainstacklabs | 301 | Apache-2.0 | Medium |
 | [awesome-openclaw-examples](clawhub/OthmaneBlial/awesome-openclaw-examples/research.md) | @OthmaneBlial | 100 | MIT | Medium |
 | [nonprofit-rbm-skill](clawhub/vassiliylakhonin/nonprofit-rbm-skill/research.md) | @vassiliylakhonin | 2 | MIT | Medium |
-| [paperclip](clawhub/paperclipai/paperclip/research.md) | @paperclipai | 52,218 | MIT | Medium |
 | [deep-research-pro](clawhub/parags/deep-research-pro/research.md) | @parags | 1 | MIT | High |
 
 ### Plugins

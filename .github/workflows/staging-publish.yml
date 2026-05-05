@@ -358,10 +358,6 @@ jobs:
             command: npm test --prefix plugins/babysitter-openclaw
             log: babysitter-openclaw-tests.log
             needs_sdk: false
-          - slug: babysitter-paperclip
-            command: npm test --prefix plugins/babysitter-paperclip
-            log: babysitter-paperclip-tests.log
-            needs_sdk: false
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -549,7 +545,6 @@ jobs:
           echo "staging_version_omp=$STAGING_VERSION" >> "$GITHUB_OUTPUT"
           echo "staging_version_opencode=$STAGING_VERSION" >> "$GITHUB_OUTPUT"
           echo "staging_version_openclaw=$STAGING_VERSION" >> "$GITHUB_OUTPUT"
-          echo "staging_version_paperclip=$STAGING_VERSION" >> "$GITHUB_OUTPUT"
           echo "Setting shared staging version: $STAGING_VERSION"
           export STAGING_VERSION
           node <<'NODE'
@@ -581,7 +576,6 @@ jobs:
             'plugins/babysitter-openclaw/versions.json',
             'plugins/babysitter-github/versions.json',
             'plugins/babysitter-cursor/versions.json',
-            'plugins/babysitter-paperclip/versions.json',
           ];
           const fields = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies'];
           const skipDirs = new Set(['.git', '.a5c', 'node_modules', 'dist', 'build', 'coverage', 'artifacts', 'generated', 'examples']);
@@ -657,7 +651,7 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add plugins/babysitter/versions.json plugins/babysitter-codex/versions.json plugins/babysitter-gemini/versions.json plugins/babysitter-pi/versions.json plugins/babysitter-omp/versions.json plugins/babysitter-opencode/versions.json plugins/babysitter-openclaw/versions.json plugins/babysitter-github/versions.json plugins/babysitter-cursor/versions.json plugins/babysitter-paperclip/versions.json
+          git add plugins/babysitter/versions.json plugins/babysitter-codex/versions.json plugins/babysitter-gemini/versions.json plugins/babysitter-pi/versions.json plugins/babysitter-omp/versions.json plugins/babysitter-opencode/versions.json plugins/babysitter-openclaw/versions.json plugins/babysitter-github/versions.json plugins/babysitter-cursor/versions.json
           if git diff --cached --quiet; then
             echo "No sdkVersion changes to commit."
           else

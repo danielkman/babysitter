@@ -58,7 +58,6 @@ Use this table when you need the canonical entrypoint for a specific Babysitter 
 | `plugins/babysitter-omp` | [plugins/babysitter-omp/README.md](../plugins/babysitter-omp/README.md) | README is the canonical package-level contract. |
 | `plugins/babysitter-openclaw` | [plugins/babysitter-openclaw/README.md](../plugins/babysitter-openclaw/README.md) | README is the canonical package-level contract. |
 | `plugins/babysitter-opencode` | [plugins/babysitter-opencode/README.md](../plugins/babysitter-opencode/README.md) | README is the canonical package-level contract. |
-| `plugins/babysitter-paperclip` | [plugins/babysitter-paperclip/README.md](../plugins/babysitter-paperclip/README.md) | README is the canonical package-level contract. |
 | `plugins/babysitter-pi` | [plugins/babysitter-pi/README.md](../plugins/babysitter-pi/README.md) | README is the canonical package-level contract. |
 <!-- supported-harness-plugins:end -->
 

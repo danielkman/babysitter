@@ -65,7 +65,6 @@ const packageFamilies = {
     "@a5c-ai/babysitter-omp",
     "@a5c-ai/babysitter-openclaw",
     "@a5c-ai/babysitter-opencode",
-    "@a5c-ai/babysitter-paperclip",
     "@a5c-ai/babysitter-pi",
   ],
 };

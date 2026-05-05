@@ -38,7 +38,6 @@ const targets = [
   { id: 'opencode', repo: 'a5c-ai/babysitter-opencode', sourceDir: 'generated/opencode', packageName: '@a5c-ai/babysitter-opencode', marketplaces: [] },
   { id: 'openclaw', repo: 'a5c-ai/babysitter-openclaw', sourceDir: 'generated/openclaw', packageName: '@a5c-ai/babysitter-openclaw', marketplaces: [] },
   { id: 'pi', repo: 'a5c-ai/babysitter-pi', sourceDir: 'generated/pi', packageName: '@a5c-ai/babysitter-pi', marketplaces: [] },
-  { id: 'paperclip', repo: 'a5c-ai/babysitter-paperclip', sourceDir: 'plugins/babysitter-paperclip', packageName: '@a5c-ai/babysitter-paperclip', marketplaces: [], buildBeforePublish: true },
 ];
 
 function currentBranch() {

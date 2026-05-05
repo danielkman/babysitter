@@ -279,7 +279,6 @@ const pluginPackageManifestPaths = [
   "plugins/babysitter-omp/package.json",
   "plugins/babysitter-opencode/package.json",
   "plugins/babysitter-openclaw/package.json",
-  "plugins/babysitter-paperclip/package.json",
 ];
 
 const pluginManifestPaths = [
@@ -305,7 +304,6 @@ const versionsJsonPaths = [
   "plugins/babysitter-github/versions.json",
   "plugins/babysitter-cursor/versions.json",
   "plugins/babysitter-openclaw/versions.json",
-  "plugins/babysitter-paperclip/versions.json",
 ];
 
 const lockPaths = ["package-lock.json"];
@@ -362,7 +360,6 @@ for (const path of [
   "plugins/babysitter-omp/package.json",
   "plugins/babysitter-opencode/package.json",
   "plugins/babysitter-openclaw/package.json",
-  "plugins/babysitter-paperclip/package.json",
 ]) {
   syncDependencyVersion(path, "@a5c-ai/babysitter-sdk", newVersion);
 }

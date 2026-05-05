@@ -71,7 +71,6 @@ jobs:
             'plugins/babysitter-openclaw/versions.json',
             'plugins/babysitter-github/versions.json',
             'plugins/babysitter-cursor/versions.json',
-            'plugins/babysitter-paperclip/versions.json',
           ];
           const fields = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies'];
           const skipDirs = new Set(['.git', '.a5c', 'node_modules', 'dist', 'build', 'coverage', 'artifacts', 'generated', 'examples']);

@@ -92,7 +92,6 @@ Use it to answer three questions quickly:
 | `plugins/babysitter-omp` | Public harness plugin | [plugins/babysitter-omp/README.md](../plugins/babysitter-omp/README.md) | [docs/plugins.md](./plugins.md) | README is the canonical package-level contract. |
 | `plugins/babysitter-openclaw` | Public harness plugin | [plugins/babysitter-openclaw/README.md](../plugins/babysitter-openclaw/README.md) | [docs/plugins.md](./plugins.md) | README is the canonical package-level contract. |
 | `plugins/babysitter-opencode` | Public harness plugin | [plugins/babysitter-opencode/README.md](../plugins/babysitter-opencode/README.md) | [docs/plugins.md](./plugins.md) | README is the canonical package-level contract. |
-| `plugins/babysitter-paperclip` | Public harness plugin | [plugins/babysitter-paperclip/README.md](../plugins/babysitter-paperclip/README.md) | [docs/plugins.md](./plugins.md) | README is the canonical package-level contract. |
 | `plugins/babysitter-pi` | Public harness plugin | [plugins/babysitter-pi/README.md](../plugins/babysitter-pi/README.md) | [docs/plugins.md](./plugins.md) | README is the canonical package-level contract. |
 
 ## Internal-only workspaces and companion apps

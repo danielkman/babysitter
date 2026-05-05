@@ -13,7 +13,6 @@ export default defineConfig({
       "oh-my-pi-structural.test.ts",
       "oh-my-pi-stop-hook.test.ts",
       "gemini-cli-structural.test.ts",
-      "paperclip-structural.test.ts",
     ],
     reporters: ["default", "json"],
     outputFile: {
