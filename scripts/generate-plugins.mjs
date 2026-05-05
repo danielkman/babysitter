@@ -3,7 +3,7 @@
 // Usage: node scripts/generate-plugins.mjs [--output <dir>] [--marketplace <path>] [--compare <dir>]
 
 import { execSync } from 'node:child_process';
-import { existsSync, readdirSync, readFileSync, rmSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join, relative, resolve, sep } from 'node:path';
 
 const ROOT = resolve(import.meta.dirname, '..');
@@ -22,6 +22,34 @@ function getArg(flag) {
   return idx >= 0 && args[idx + 1] ? args[idx + 1] : null;
 }
 
+function resolveUnifiedPluginVersion() {
+  const versionsPath = join(UNIFIED_SOURCE, 'versions.json');
+  if (existsSync(versionsPath)) {
+    const versions = JSON.parse(readFileSync(versionsPath, 'utf8'));
+    if (typeof versions.sdkVersion === 'string' && versions.sdkVersion.trim() !== '') {
+      return versions.sdkVersion;
+    }
+  }
+  const compilerPkg = JSON.parse(readFileSync(join(COMPILER_PKG, 'package.json'), 'utf8'));
+  if (typeof compilerPkg.version === 'string' && compilerPkg.version.trim() !== '') {
+    return compilerPkg.version;
+  }
+  throw new Error('Unable to resolve a unified plugin version.');
+}
+
+function syncUnifiedPluginVersion() {
+  const manifestPath = join(UNIFIED_SOURCE, 'plugin.json');
+  const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+  const nextVersion = resolveUnifiedPluginVersion();
+  if (manifest.version === nextVersion) {
+    return nextVersion;
+  }
+  manifest.version = nextVersion;
+  writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+  console.log(`[generate] Synced plugins/babysitter-unified/plugin.json version -> ${nextVersion}`);
+  return nextVersion;
+}
+
 // Build the compiler if needed
 const distCli = join(COMPILER_PKG, 'dist/cli.js');
 if (!existsSync(distCli)) {
@@ -37,8 +65,10 @@ if (!existsSync(distCli)) {
 }
 
 // Compile all targets
+const unifiedVersion = syncUnifiedPluginVersion();
 console.log(`[generate] Source: ${relative(ROOT, UNIFIED_SOURCE)}`);
 console.log(`[generate] Output: ${relative(ROOT, outputDir) || '.'}`);
+console.log(`[generate] Unified plugin version: ${unifiedVersion}`);
 
 if (!compareOnly) {
   resetOutputDir(outputDir);

@@ -262,6 +262,7 @@ const pluginPackageManifestPaths = [
 ];
 
 const pluginManifestPaths = [
+  "plugins/babysitter-unified/plugin.json",
   "plugins/babysitter/.claude-plugin/plugin.json",
   "plugins/babysitter/plugin.json",
   "plugins/babysitter-gemini/plugin.json",

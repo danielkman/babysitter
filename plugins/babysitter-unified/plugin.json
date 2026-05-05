@@ -1,6 +1,6 @@
 {
   "name": "babysitter",
-  "version": "5.0.0",
+  "version": "5.0.1-staging.dfac8e4a",
   "description": "Orchestrate complex, multi-step workflows with event-sourced state management, hook-based extensibility, and human-in-the-loop approval",
   "author": "a5c.ai",
   "license": "MIT",
@@ -190,17 +190,30 @@
         "managed-hooks-install"
       ],
       "harnessInstallSurfaceExports": [
-        "LEGACY_MARKETPLACE_PLUGIN_NAMES", "LEGACY_SKILL_NAMES", "LEGACY_PROMPT_NAMES",
-        "LEGACY_HOOK_SCRIPT_NAMES", "MANAGED_HOOK_SCRIPT_NAMES",
-        "getCodexHome", "getHomePluginRoot", "getHomeMarketplacePath",
-        "getWorkspacePluginRoot", "getWorkspaceMarketplacePath",
+        "LEGACY_MARKETPLACE_PLUGIN_NAMES",
+        "LEGACY_SKILL_NAMES",
+        "LEGACY_PROMPT_NAMES",
+        "LEGACY_HOOK_SCRIPT_NAMES",
+        "MANAGED_HOOK_SCRIPT_NAMES",
+        "getCodexHome",
+        "getHomePluginRoot",
+        "getHomeMarketplacePath",
+        "getWorkspacePluginRoot",
+        "getWorkspaceMarketplacePath",
         "renderCodexConfigToml",
-        "insertRootKey", "ensureSectionLine", "ensureWritableRoots",
-        "mergeCodexConfig", "mergeCodexConfigFile",
-        "resolveBabysitterCommand", "runBabysitterCli", "ensureGlobalProcessLibrary",
+        "insertRootKey",
+        "ensureSectionLine",
+        "ensureWritableRoots",
+        "mergeCodexConfig",
+        "mergeCodexConfigFile",
+        "resolveBabysitterCommand",
+        "runBabysitterCli",
+        "ensureGlobalProcessLibrary",
         "getMarketplaceRootDir",
         "removeLegacyCodexSurface",
-        "installCodexSurface", "harnessInstall", "harnessTeamInstall"
+        "installCodexSurface",
+        "harnessInstall",
+        "harnessTeamInstall"
       ]
     },
     "cursor": {
@@ -228,9 +241,12 @@
       "harnessInstallSurfaceExports": [
         "HOOK_SCRIPT_NAMES",
         "MANAGED_HOOKS_CONFIG_PATHS",
-        "getCursorHome", "getHomePluginRoot", "getHomeMarketplacePath",
+        "getCursorHome",
+        "getHomePluginRoot",
+        "getHomeMarketplacePath",
         "getManagedHooksConfigPath",
-        "removeManagedHooks", "installCursorSurface"
+        "removeManagedHooks",
+        "installCursorSurface"
       ]
     },
     "gemini": {
@@ -259,19 +275,35 @@
         "managed-hooks-install"
       ],
       "harnessInstallSurfaceExports": [
-        "LEGACY_HOOK_SCRIPT_NAMES", "HOOK_SCRIPT_NAMES",
-        "CLOUD_AGENT_BUNDLE_ENTRIES", "MANAGED_BLOCK_START", "MANAGED_BLOCK_END",
-        "getCopilotHome", "getHomePluginRoot", "getHomeMarketplacePath",
+        "LEGACY_HOOK_SCRIPT_NAMES",
+        "HOOK_SCRIPT_NAMES",
+        "CLOUD_AGENT_BUNDLE_ENTRIES",
+        "MANAGED_BLOCK_START",
+        "MANAGED_BLOCK_END",
+        "getCopilotHome",
+        "getHomePluginRoot",
+        "getHomeMarketplacePath",
         "writeJson",
-        "replaceManagedMarkdownBlock", "writeManagedMarkdown",
-        "readSdkVersion", "toLowerHyphenName", "rewriteCloudSkill",
-        "registerCopilotPlugin", "deregisterCopilotPlugin",
-        "removeLegacyHooks", "removeManagedHooks", "installCopilotSurface",
-        "renderCloudAgentAgentsBlock", "renderCloudAgentCopilotInstructionsBlock",
-        "renderCloudAgentSetupWorkflow", "installCloudAgentBundle",
-        "installCloudAgentSkills", "installCloudAgentInstructions",
-        "installCloudAgentSetupSteps", "installCloudAgentSurface",
-        "harnessCliRoute", "harnessInstall"
+        "replaceManagedMarkdownBlock",
+        "writeManagedMarkdown",
+        "readSdkVersion",
+        "toLowerHyphenName",
+        "rewriteCloudSkill",
+        "registerCopilotPlugin",
+        "deregisterCopilotPlugin",
+        "removeLegacyHooks",
+        "removeManagedHooks",
+        "installCopilotSurface",
+        "renderCloudAgentAgentsBlock",
+        "renderCloudAgentCopilotInstructionsBlock",
+        "renderCloudAgentSetupWorkflow",
+        "installCloudAgentBundle",
+        "installCloudAgentSkills",
+        "installCloudAgentInstructions",
+        "installCloudAgentSetupSteps",
+        "installCloudAgentSurface",
+        "harnessCliRoute",
+        "harnessInstall"
       ]
     },
     "pi": {
