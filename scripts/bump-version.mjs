@@ -295,6 +295,7 @@ const pluginManifestPaths = [
 ];
 
 const versionsJsonPaths = [
+  "plugins/babysitter-unified/versions.json",
   "plugins/babysitter/versions.json",
   "plugins/babysitter-codex/versions.json",
   "plugins/babysitter-gemini/versions.json",
@@ -416,7 +417,7 @@ for (const path of [
 for (const path of versionsJsonPaths) {
   const data = existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : {};
   data.sdkVersion = newVersion;
-  if (path === "plugins/babysitter-gemini/versions.json" && "extensionVersion" in data) {
+  if ("extensionVersion" in data) {
     data.extensionVersion = newVersion;
   }
   writeJson(path, data);

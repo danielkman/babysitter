@@ -122,8 +122,8 @@ function collectFiles(dir, prefix = '') {
   return results.sort();
 }
 
-function isIgnoredGeneratedFile(relativePath) {
-  return relativePath === 'versions.json';
+function isIgnoredGeneratedFile(_relativePath) {
+  return false;
 }
 
 function syncDirectory(sourceDir, targetDir) {
