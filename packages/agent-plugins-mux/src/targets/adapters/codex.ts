@@ -24,7 +24,7 @@ export class CodexAdapter extends BaseHarnessOutputAdapter {
     _diagnostics: Diagnostic[]
   ): TransformedFile | null {
     const content = generateCodexHooksJson(manifest, targetProfile);
-    return { path: 'hooks.json', content };
+    return { path: targetProfile.hookRegistrationOutputPath || 'hooks.json', content };
   }
 
   generateManifestFiles(
@@ -37,7 +37,9 @@ export class CodexAdapter extends BaseHarnessOutputAdapter {
     const files: TransformedFile[] = [];
     const codexPkg = generateCodexManifest(manifest);
     files.push({ path: 'package.json', content: codexPkg });
-    files.push({ path: '.codex-plugin/plugin.json', content: generateHarnessManifest(rawManifest || manifest, targetProfile) });
+    if (targetProfile.harnessManifestPath) {
+      files.push({ path: targetProfile.harnessManifestPath, content: generateHarnessManifest(rawManifest || manifest, targetProfile) });
+    }
     files.push({ path: '.app.json', content: JSON.stringify({ apps: {} }, null, 2) + '\n' });
     return files;
   }

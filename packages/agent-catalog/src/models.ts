@@ -476,6 +476,8 @@ export interface PluginTargetDescriptor {
   pluginRootEnvVarForExtension?: string | null;
   skillHandling?: "native" | "derived-from-commands" | "none";
   hookRegistrationFormat?: string | null;
+  hookRegistrationOutputPath?: string | null;
+  harnessManifestPath?: string | null;
   scriptVariants?: string[];
   adapterFamily?: "shell-hook" | "programmatic";
   distribution?: "marketplace" | "npm-cli" | "both";

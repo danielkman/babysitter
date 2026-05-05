@@ -18,7 +18,7 @@ export class GithubCopilotAdapter extends BaseHarnessOutputAdapter {
     _diagnostics: Diagnostic[]
   ): TransformedFile | null {
     const content = generateGithubCopilotHooksJson(manifest, targetProfile);
-    return { path: 'hooks.json', content };
+    return { path: targetProfile.hookRegistrationOutputPath || 'hooks.json', content };
   }
 
   generateManifestFiles(

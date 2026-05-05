@@ -13,6 +13,8 @@ nodes:
     commandFormat: markdown-commands
     skillHandling: native
     hookRegistrationFormat: claude-code
+    hookRegistrationOutputPath: hooks/hooks.json
+    harnessManifestPath: .claude-plugin/plugin.json
     scriptVariants:
       - bash
     adapterFamily: shell-hook
@@ -48,6 +50,8 @@ nodes:
     commandFormat: package-json commands
     skillHandling: derived-from-commands
     hookRegistrationFormat: codex
+    hookRegistrationOutputPath: hooks.json
+    harnessManifestPath: .codex-plugin/plugin.json
     scriptVariants:
       - bash
     adapterFamily: shell-hook
@@ -83,6 +87,8 @@ nodes:
     commandFormat: markdown-commands
     skillHandling: derived-from-commands
     hookRegistrationFormat: cursor
+    hookRegistrationOutputPath: hooks.json
+    harnessManifestPath: .cursor-plugin/plugin.json
     scriptVariants:
       - bash
       - powershell
@@ -120,6 +126,8 @@ nodes:
     commandFormat: extension-manifest
     skillHandling: native
     hookRegistrationFormat: gemini
+    hookRegistrationOutputPath: hooks/hooks.json
+    harnessManifestPath: null
     scriptVariants:
       - bash
     adapterFamily: shell-hook
@@ -155,6 +163,8 @@ nodes:
     commandFormat: markdown-commands
     skillHandling: derived-from-commands
     hookRegistrationFormat: github-copilot
+    hookRegistrationOutputPath: hooks.json
+    harnessManifestPath: null
     scriptVariants:
       - bash
       - powershell
@@ -193,6 +203,8 @@ nodes:
     commandFormat: markdown-commands
     skillHandling: derived-from-commands
     hookRegistrationFormat: null
+    hookRegistrationOutputPath: null
+    harnessManifestPath: null
     scriptVariants:
       - javascript
     adapterFamily: programmatic
@@ -229,6 +241,8 @@ nodes:
     commandFormat: markdown-commands
     skillHandling: derived-from-commands
     hookRegistrationFormat: null
+    hookRegistrationOutputPath: null
+    harnessManifestPath: null
     scriptVariants:
       - javascript
     adapterFamily: programmatic
@@ -265,6 +279,8 @@ nodes:
     commandFormat: event-hooks
     skillHandling: derived-from-commands
     hookRegistrationFormat: opencode
+    hookRegistrationOutputPath: hooks/hooks.json
+    harnessManifestPath: null
     scriptVariants:
       - javascript
     adapterFamily: programmatic
@@ -302,6 +318,8 @@ nodes:
     commandFormat: event-hooks
     skillHandling: derived-from-commands
     hookRegistrationFormat: openclaw
+    hookRegistrationOutputPath: hooks.json
+    harnessManifestPath: null
     scriptVariants:
       - bash
       - typescript

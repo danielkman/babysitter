@@ -24,7 +24,7 @@ export class OpenClawAdapter extends BaseHarnessOutputAdapter {
     _diagnostics: Diagnostic[]
   ): TransformedFile | null {
     const content = generateOpenClawHooksJson(manifest, targetProfile);
-    return { path: 'hooks.json', content };
+    return { path: targetProfile.hookRegistrationOutputPath || 'hooks.json', content };
   }
 
   generateManifestFiles(

@@ -19,7 +19,7 @@ export class CursorAdapter extends BaseHarnessOutputAdapter {
     _diagnostics: Diagnostic[]
   ): TransformedFile | null {
     const content = generateCursorHooksJson(manifest, targetProfile);
-    return { path: 'hooks.json', content };
+    return { path: targetProfile.hookRegistrationOutputPath || 'hooks.json', content };
   }
 
   generateManifestFiles(
@@ -32,7 +32,9 @@ export class CursorAdapter extends BaseHarnessOutputAdapter {
     const files: TransformedFile[] = [];
     const cursorManifest = generateCursorManifest(manifest);
     files.push({ path: 'plugin.json', content: cursorManifest });
-    files.push({ path: '.cursor-plugin/plugin.json', content: generateHarnessManifest(rawManifest || manifest, targetProfile) });
+    if (targetProfile.harnessManifestPath) {
+      files.push({ path: targetProfile.harnessManifestPath, content: generateHarnessManifest(rawManifest || manifest, targetProfile) });
+    }
     return files;
   }
 }

@@ -20,7 +20,7 @@ export class GeminiAdapter extends BaseHarnessOutputAdapter {
     _diagnostics: Diagnostic[]
   ): TransformedFile | null {
     const content = generateGeminiHooksJson(manifest, targetProfile);
-    return { path: 'hooks/hooks.json', content };
+    return { path: targetProfile.hookRegistrationOutputPath || 'hooks/hooks.json', content };
   }
 
   generateManifestFiles(

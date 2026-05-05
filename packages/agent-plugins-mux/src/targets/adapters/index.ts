@@ -1,8 +1,9 @@
-// Adapter registry and exports
+// Adapter registry — built dynamically from the agent-catalog graph
 
 export type { HarnessOutputAdapter } from './interface.js';
 export { BaseHarnessOutputAdapter } from './base.js';
 
+import { listPluginTargetDescriptors } from '@a5c-ai/agent-catalog';
 import type { HarnessOutputAdapter } from './interface.js';
 import { ClaudeCodeAdapter } from './claude-code.js';
 import { CodexAdapter } from './codex.js';
@@ -36,17 +37,33 @@ export { generateOpenClawHooksJson, generateOpenClawManifest, generateOpenClawPa
 export { generatePiManifest } from './pi.js';
 export { generateOhMyPiManifest } from './oh-my-pi.js';
 
-const ADAPTER_REGISTRY: Record<string, HarnessOutputAdapter> = {
-  'claude-code': new ClaudeCodeAdapter(),
-  'codex': new CodexAdapter(),
-  'cursor': new CursorAdapter(),
-  'gemini': new GeminiAdapter(),
-  'github-copilot': new GithubCopilotAdapter(),
-  'opencode': new OpenCodeAdapter(),
-  'openclaw': new OpenClawAdapter(),
-  'pi': new PiAdapter(),
-  'oh-my-pi': new OhMyPiAdapter(),
+// Map hookRegistrationFormat (from the catalog graph) to adapter class.
+// When a new target is added to the catalog, add its adapter class here.
+const ADAPTER_BY_HOOK_FORMAT: Record<string, () => HarnessOutputAdapter> = {
+  'claude-code': () => new ClaudeCodeAdapter(),
+  'codex': () => new CodexAdapter(),
+  'cursor': () => new CursorAdapter(),
+  'gemini': () => new GeminiAdapter(),
+  'github-copilot': () => new GithubCopilotAdapter(),
+  'opencode': () => new OpenCodeAdapter(),
+  'openclaw': () => new OpenClawAdapter(),
 };
+
+// Programmatic targets without hook registration — keyed by targetId
+const ADAPTER_BY_TARGET_ID: Record<string, () => HarnessOutputAdapter> = {
+  'pi': () => new PiAdapter(),
+  'oh-my-pi': () => new OhMyPiAdapter(),
+};
+
+// Build registry dynamically from the catalog graph
+const ADAPTER_REGISTRY: Record<string, HarnessOutputAdapter> = {};
+for (const descriptor of listPluginTargetDescriptors()) {
+  const format = descriptor.hookRegistrationFormat;
+  const factory = (format && ADAPTER_BY_HOOK_FORMAT[format]) || ADAPTER_BY_TARGET_ID[descriptor.targetId];
+  if (factory) {
+    ADAPTER_REGISTRY[descriptor.targetId] = factory();
+  }
+}
 
 export function getAdapter(targetName: string): HarnessOutputAdapter | undefined {
   return ADAPTER_REGISTRY[targetName];

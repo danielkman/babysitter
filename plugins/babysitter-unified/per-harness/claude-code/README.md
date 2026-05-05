@@ -97,7 +97,7 @@ Install the Claude Code plugin through the Claude plugin installer or the SDK
 CLI helper:
 
 ```bash
-claude plugin marketplace add a5c-ai/babysitter-claude-claude
+claude plugin marketplace add a5c-ai/babysitter-claude
 claude plugin install --scope user babysitter@a5c.ai
 ```
 

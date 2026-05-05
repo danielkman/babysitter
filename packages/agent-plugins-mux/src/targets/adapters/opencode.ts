@@ -22,7 +22,7 @@ export class OpenCodeAdapter extends BaseHarnessOutputAdapter {
     _diagnostics: Diagnostic[]
   ): TransformedFile | null {
     const content = generateOpenCodeHooksJson(manifest, targetProfile);
-    return { path: 'hooks/hooks.json', content };
+    return { path: targetProfile.hookRegistrationOutputPath || 'hooks/hooks.json', content };
   }
 
   generateManifestFiles(

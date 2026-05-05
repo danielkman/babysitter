@@ -58,6 +58,8 @@ function toTargetProfile(target: PluginTargetDescriptor): TargetProfile {
     skillHandling: target.skillHandling ?? 'none',
     manifestFormat: toManifestFormat(target.manifestFormat),
     hookRegistrationFormat: toHookRegistrationFormat(target.hookRegistrationFormat),
+    hookRegistrationOutputPath: target.hookRegistrationOutputPath ?? null,
+    harnessManifestPath: target.harnessManifestPath ?? null,
     scriptVariants: toScriptVariants(target.scriptVariants),
     npmPublishable: target.npmPublishable,
     adapterFamily: target.adapterFamily ?? 'shell-hook',

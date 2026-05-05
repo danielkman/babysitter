@@ -19,7 +19,7 @@ export class ClaudeCodeAdapter extends BaseHarnessOutputAdapter {
     _diagnostics: Diagnostic[]
   ): TransformedFile | null {
     const content = generateClaudeCodeHooksJson(manifest, targetProfile);
-    return { path: 'hooks/hooks.json', content };
+    return { path: targetProfile.hookRegistrationOutputPath || 'hooks/hooks.json', content };
   }
 
   generateManifestFiles(
@@ -34,7 +34,8 @@ export class ClaudeCodeAdapter extends BaseHarnessOutputAdapter {
     const author = typeof manifest.author === 'string'
       ? { name: manifest.author }
       : manifest.author;
-    files.push({ path: '.claude-plugin/plugin.json', content: JSON.stringify({
+    const harnessManifestPath = targetProfile.harnessManifestPath || '.claude-plugin/plugin.json';
+    files.push({ path: harnessManifestPath, content: JSON.stringify({
       name: manifest.name,
       version: manifest.version,
       description: manifest.description,

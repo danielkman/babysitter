@@ -237,6 +237,8 @@ export interface TargetProfile {
   skillHandling: 'native' | 'derived-from-commands' | 'none';
   manifestFormat: 'plugin.json' | 'package.json' | 'multiple';
   hookRegistrationFormat: HookRegistrationFormat | null;
+  hookRegistrationOutputPath: string | null;
+  harnessManifestPath: string | null;
   scriptVariants: Array<'bash' | 'powershell' | 'javascript' | 'typescript'>;
   npmPublishable: boolean;
   npmPackageName?: string;

@@ -529,6 +529,10 @@ function buildPluginTargetDescriptors(hooks: HookDescriptor[]): PluginTargetDesc
       skillHandling:
         (valueAsString(node.skillHandling) as PluginTargetDescriptor["skillHandling"]) || undefined,
       hookRegistrationFormat: valueAsString(node.hookRegistrationFormat) || undefined,
+      hookRegistrationOutputPath:
+        node.hookRegistrationOutputPath === null ? null : valueAsString(node.hookRegistrationOutputPath) || undefined,
+      harnessManifestPath:
+        node.harnessManifestPath === null ? null : valueAsString(node.harnessManifestPath) || undefined,
       scriptVariants: stringArray(node.scriptVariants),
       adapterFamily:
         (valueAsString(node.adapterFamily) as PluginTargetDescriptor["adapterFamily"]) || undefined,

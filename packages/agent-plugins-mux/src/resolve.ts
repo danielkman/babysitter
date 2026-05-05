@@ -38,6 +38,8 @@ export function resolve(
         skillHandling: 'native',
         manifestFormat: 'plugin.json',
         hookRegistrationFormat: null,
+        hookRegistrationOutputPath: null,
+        harnessManifestPath: null,
         scriptVariants: [],
         npmPublishable: false,
         adapterFamily: 'shell-hook',
