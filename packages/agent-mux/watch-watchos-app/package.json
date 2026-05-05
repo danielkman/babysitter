@@ -6,5 +6,5 @@
   "scripts": {
     "xcode": "echo Open packages/agent-mux/watch-watchos-app/AgentMuxWatch.xcodeproj in Xcode 15+"
   },
-  "version": "0.4.9"
+  "version": "5.0.0"
 }

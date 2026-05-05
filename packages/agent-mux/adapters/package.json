@@ -1,6 +1,6 @@
 {
   "name": "@a5c-ai/agent-mux-adapters",
-  "version": "0.4.9",
+  "version": "5.0.0",
   "type": "module",
   "license": "MIT",
   "description": "Built-in agent adapters for agent-mux",
@@ -52,7 +52,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@a5c-ai/agent-mux-core": "0.4.9",
+    "@a5c-ai/agent-mux-core": "5.0.0",
     "@anthropic-ai/claude-agent-sdk": "^0.2.113",
     "ws": "^8.20.0"
   }

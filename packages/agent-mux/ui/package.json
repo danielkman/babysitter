@@ -1,6 +1,6 @@
 {
   "name": "@a5c-ai/agent-mux-ui",
-  "version": "0.4.9",
+  "version": "5.0.0",
   "type": "module",
   "license": "MIT",
   "description": "Shared UI foundation and session-flow projection surface for browser and React Native agent-mux apps",
@@ -75,7 +75,7 @@
     "prepublishOnly": "npm run build:realtime && npm run test:realtime && npm run verify:release"
   },
   "dependencies": {
-    "@a5c-ai/agent-mux-core": "0.4.9",
+    "@a5c-ai/agent-mux-core": "5.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "^0.74.5",

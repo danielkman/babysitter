@@ -225,14 +225,8 @@ function prepareTarget(target) {
     run('git', ['commit', '-m', `chore: sync ${target.id} plugin release source`], { cwd: repoDir });
   }
   if (shouldPush) {
-    for (const targetBranch of ['develop', 'staging', 'main']) {
-      run('git', ['checkout', '-B', targetBranch, 'HEAD'], { cwd: repoDir });
-      run('git', ['push', '-u', 'origin', targetBranch], { cwd: repoDir });
-    }
-    run('gh', ['repo', 'edit', target.repo, '--default-branch', branch === 'main' ? 'main' : 'develop'], {
-      retries: 3,
-      retryDelayMs: 5000,
-    });
+    run('git', ['checkout', '-B', branch, 'HEAD'], { cwd: repoDir });
+    run('git', ['push', '-u', 'origin', branch], { cwd: repoDir });
   }
   return { repo: target.repo, changed: hasChanges, path: repoDir, source: target.sourceDir };
 }

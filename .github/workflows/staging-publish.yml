@@ -533,217 +533,124 @@ jobs:
         id: version
         run: |
           set -euo pipefail
-          BASE_SDK=$(node -e "console.log(require('./packages/sdk/package.json').version)")
-          IFS='.' read -r SDK_MAJOR SDK_MINOR SDK_PATCH <<< "$BASE_SDK"
-          SDK_NEXT_PATCH=$((SDK_PATCH + 1))
-          BASE_CODEX=$(node -e "console.log(require('./plugins/babysitter-codex/package.json').version)")
-          IFS='.' read -r CODEX_MAJOR CODEX_MINOR CODEX_PATCH <<< "$BASE_CODEX"
-          CODEX_NEXT_PATCH=$((CODEX_PATCH + 1))
-          BASE_GITHUB=$(node -e "console.log(require('./plugins/babysitter-github/package.json').version)")
-          IFS='.' read -r GITHUB_MAJOR GITHUB_MINOR GITHUB_PATCH <<< "$BASE_GITHUB"
-          GITHUB_NEXT_PATCH=$((GITHUB_PATCH + 1))
-          BASE_CURSOR=$(node -e "console.log(require('./plugins/babysitter-cursor/package.json').version)")
-          IFS='.' read -r CURSOR_MAJOR CURSOR_MINOR CURSOR_PATCH <<< "$BASE_CURSOR"
-          CURSOR_NEXT_PATCH=$((CURSOR_PATCH + 1))
-          BASE_GEMINI=$(node -e "console.log(require('./plugins/babysitter-gemini/package.json').version)")
-          IFS='.' read -r GEMINI_MAJOR GEMINI_MINOR GEMINI_PATCH <<< "$BASE_GEMINI"
-          GEMINI_NEXT_PATCH=$((GEMINI_PATCH + 1))
-          BASE_PI=$(node -e "console.log(require('./plugins/babysitter-pi/package.json').version)")
-          IFS='.' read -r PI_MAJOR PI_MINOR PI_PATCH <<< "$BASE_PI"
-          PI_NEXT_PATCH=$((PI_PATCH + 1))
-          BASE_OMP=$(node -e "console.log(require('./plugins/babysitter-omp/package.json').version)")
-          IFS='.' read -r OMP_MAJOR OMP_MINOR OMP_PATCH <<< "$BASE_OMP"
-          OMP_NEXT_PATCH=$((OMP_PATCH + 1))
-          BASE_OPENCODE=$(node -e "console.log(require('./plugins/babysitter-opencode/package.json').version)")
-          IFS='.' read -r OPENCODE_MAJOR OPENCODE_MINOR OPENCODE_PATCH <<< "$BASE_OPENCODE"
-          OPENCODE_NEXT_PATCH=$((OPENCODE_PATCH + 1))
-          BASE_OPENCLAW=$(node -e "console.log(require('./plugins/babysitter-openclaw/package.json').version)")
-          IFS='.' read -r OPENCLAW_MAJOR OPENCLAW_MINOR OPENCLAW_PATCH <<< "$BASE_OPENCLAW"
-          OPENCLAW_NEXT_PATCH=$((OPENCLAW_PATCH + 1))
-          BASE_PAPERCLIP=$(node -e "console.log(require('./plugins/babysitter-paperclip/package.json').version)")
-          IFS='.' read -r PAPERCLIP_MAJOR PAPERCLIP_MINOR PAPERCLIP_PATCH <<< "$BASE_PAPERCLIP"
-          PAPERCLIP_NEXT_PATCH=$((PAPERCLIP_PATCH + 1))
-          BASE_UNIFIED=$(node -e "console.log(require('./packages/agent-plugins-mux/package.json').version)")
-          IFS='.' read -r UNIFIED_MAJOR UNIFIED_MINOR UNIFIED_PATCH <<< "$BASE_UNIFIED"
-          UNIFIED_NEXT_PATCH=$((UNIFIED_PATCH + 1))
-          BASE_AGENT_MUX=$(node -e "console.log(require('./packages/agent-mux/sdk/package.json').version)")
-          IFS='.' read -r AGENT_MUX_MAJOR AGENT_MUX_MINOR AGENT_MUX_PATCH <<< "$BASE_AGENT_MUX"
-          AGENT_MUX_NEXT_PATCH=$((AGENT_MUX_PATCH + 1))
+          BASE_VERSION=$(node -p "require('./package.json').version.split('-')[0]")
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$BASE_VERSION"
+          NEXT_PATCH=$((PATCH + 1))
           SHORT_SHA=$(git rev-parse --short HEAD)
-          STAGING_VERSION_UNIFIED="${UNIFIED_MAJOR}.${UNIFIED_MINOR}.${UNIFIED_NEXT_PATCH}-staging.${SHORT_SHA}"
-          STAGING_VERSION_SDK="${SDK_MAJOR}.${SDK_MINOR}.${SDK_NEXT_PATCH}-staging.${SHORT_SHA}"
-          STAGING_VERSION_AGENT_MUX="${AGENT_MUX_MAJOR}.${AGENT_MUX_MINOR}.${AGENT_MUX_NEXT_PATCH}-staging.${SHORT_SHA}"
-          STAGING_VERSION_CODEX="${CODEX_MAJOR}.${CODEX_MINOR}.${CODEX_NEXT_PATCH}-staging.${SHORT_SHA}"
-          STAGING_VERSION_GITHUB="${GITHUB_MAJOR}.${GITHUB_MINOR}.${GITHUB_NEXT_PATCH}-staging.${SHORT_SHA}"
-          STAGING_VERSION_CURSOR="${CURSOR_MAJOR}.${CURSOR_MINOR}.${CURSOR_NEXT_PATCH}-staging.${SHORT_SHA}"
-          STAGING_VERSION_GEMINI="${GEMINI_MAJOR}.${GEMINI_MINOR}.${GEMINI_NEXT_PATCH}-staging.${SHORT_SHA}"
-          STAGING_VERSION_PI="${PI_MAJOR}.${PI_MINOR}.${PI_NEXT_PATCH}-staging.${SHORT_SHA}"
-          STAGING_VERSION_OMP="${OMP_MAJOR}.${OMP_MINOR}.${OMP_NEXT_PATCH}-staging.${SHORT_SHA}"
-          STAGING_VERSION_OPENCODE="${OPENCODE_MAJOR}.${OPENCODE_MINOR}.${OPENCODE_NEXT_PATCH}-staging.${SHORT_SHA}"
-          STAGING_VERSION_OPENCLAW="${OPENCLAW_MAJOR}.${OPENCLAW_MINOR}.${OPENCLAW_NEXT_PATCH}-staging.${SHORT_SHA}"
-          STAGING_VERSION_PAPERCLIP="${PAPERCLIP_MAJOR}.${PAPERCLIP_MINOR}.${PAPERCLIP_NEXT_PATCH}-staging.${SHORT_SHA}"
-          echo "staging_version_unified=$STAGING_VERSION_UNIFIED" >> "$GITHUB_OUTPUT"
-          echo "staging_version_sdk=$STAGING_VERSION_SDK" >> "$GITHUB_OUTPUT"
-          echo "staging_version_agent_mux=$STAGING_VERSION_AGENT_MUX" >> "$GITHUB_OUTPUT"
-          echo "staging_version_codex=$STAGING_VERSION_CODEX" >> "$GITHUB_OUTPUT"
-          echo "staging_version_github=$STAGING_VERSION_GITHUB" >> "$GITHUB_OUTPUT"
-          echo "staging_version_cursor=$STAGING_VERSION_CURSOR" >> "$GITHUB_OUTPUT"
-          echo "staging_version_gemini=$STAGING_VERSION_GEMINI" >> "$GITHUB_OUTPUT"
-          echo "staging_version_pi=$STAGING_VERSION_PI" >> "$GITHUB_OUTPUT"
-          echo "staging_version_omp=$STAGING_VERSION_OMP" >> "$GITHUB_OUTPUT"
-          echo "staging_version_opencode=$STAGING_VERSION_OPENCODE" >> "$GITHUB_OUTPUT"
-          echo "staging_version_openclaw=$STAGING_VERSION_OPENCLAW" >> "$GITHUB_OUTPUT"
-          echo "staging_version_paperclip=$STAGING_VERSION_PAPERCLIP" >> "$GITHUB_OUTPUT"
-          echo "Setting agent-plugins-mux staging version: $STAGING_VERSION_UNIFIED"
-          echo "Setting SDK staging version: $STAGING_VERSION_SDK"
-          echo "Setting agent-mux staging version: $STAGING_VERSION_AGENT_MUX"
-          echo "Setting Codex staging version: $STAGING_VERSION_CODEX"
-          echo "Setting GitHub staging version: $STAGING_VERSION_GITHUB"
-          echo "Setting Cursor staging version: $STAGING_VERSION_CURSOR"
-          echo "Setting Gemini staging version: $STAGING_VERSION_GEMINI"
-          echo "Setting Pi staging version: $STAGING_VERSION_PI"
-          echo "Setting OMP staging version: $STAGING_VERSION_OMP"
-          echo "Setting OpenCode staging version: $STAGING_VERSION_OPENCODE"
-          echo "Setting OpenClaw staging version: $STAGING_VERSION_OPENCLAW"
-          echo "Setting Paperclip staging version: $STAGING_VERSION_PAPERCLIP"
-          # Write prerelease version into package.json files (for npm publish)
-          node -e "
-            const fs = require('fs');
-            const pkgs = [
-              'package.json',
-              'packages/agent-catalog/package.json',
-              'packages/agent-core/package.json',
-              'packages/sdk/package.json',
-              'packages/babysitter/package.json',
-              'packages/babysitter-agent/package.json',
-              'packages/observer-dashboard/package.json',
-              'packages/cloud/package.json'
-            ];
-            for (const p of pkgs) {
-              const data = JSON.parse(fs.readFileSync(p, 'utf8'));
-              data.version = '${STAGING_VERSION_SDK}';
-              fs.writeFileSync(p, JSON.stringify(data, null, 2) + '\n');
+          STAGING_VERSION="${MAJOR}.${MINOR}.${NEXT_PATCH}-staging.${SHORT_SHA}"
+          echo "staging_version_unified=$STAGING_VERSION" >> "$GITHUB_OUTPUT"
+          echo "staging_version_sdk=$STAGING_VERSION" >> "$GITHUB_OUTPUT"
+          echo "staging_version_agent_mux=$STAGING_VERSION" >> "$GITHUB_OUTPUT"
+          echo "staging_version_codex=$STAGING_VERSION" >> "$GITHUB_OUTPUT"
+          echo "staging_version_github=$STAGING_VERSION" >> "$GITHUB_OUTPUT"
+          echo "staging_version_cursor=$STAGING_VERSION" >> "$GITHUB_OUTPUT"
+          echo "staging_version_gemini=$STAGING_VERSION" >> "$GITHUB_OUTPUT"
+          echo "staging_version_pi=$STAGING_VERSION" >> "$GITHUB_OUTPUT"
+          echo "staging_version_omp=$STAGING_VERSION" >> "$GITHUB_OUTPUT"
+          echo "staging_version_opencode=$STAGING_VERSION" >> "$GITHUB_OUTPUT"
+          echo "staging_version_openclaw=$STAGING_VERSION" >> "$GITHUB_OUTPUT"
+          echo "staging_version_paperclip=$STAGING_VERSION" >> "$GITHUB_OUTPUT"
+          echo "Setting shared staging version: $STAGING_VERSION"
+          export STAGING_VERSION
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+
+          const stagingVersion = process.env.STAGING_VERSION;
+          const packageJsonPaths = new Set(['package.json']);
+          const localPackageNames = new Set();
+          const pluginManifestPaths = [
+            'plugins/babysitter-unified/plugin.json',
+            'plugins/babysitter/.claude-plugin/plugin.json',
+            'plugins/babysitter/plugin.json',
+            'plugins/babysitter-gemini/plugin.json',
+            'plugins/babysitter-gemini/gemini-extension.json',
+            'plugins/babysitter-github/plugin.json',
+            'plugins/babysitter-cursor/plugin.json',
+            'plugins/babysitter-opencode/plugin.json',
+            'plugins/babysitter-openclaw/plugin.json',
+            'plugins/babysitter-openclaw/openclaw.plugin.json',
+          ];
+          const versionsJsonPaths = [
+            'plugins/babysitter/versions.json',
+            'plugins/babysitter-codex/versions.json',
+            'plugins/babysitter-gemini/versions.json',
+            'plugins/babysitter-pi/versions.json',
+            'plugins/babysitter-omp/versions.json',
+            'plugins/babysitter-opencode/versions.json',
+            'plugins/babysitter-openclaw/versions.json',
+            'plugins/babysitter-github/versions.json',
+            'plugins/babysitter-cursor/versions.json',
+            'plugins/babysitter-paperclip/versions.json',
+          ];
+          const fields = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies'];
+          const skipDirs = new Set(['.git', '.a5c', 'node_modules', 'dist', 'build', 'coverage', 'artifacts', 'generated', 'examples']);
+
+          function collectPackageJsons(dir) {
+            if (!fs.existsSync(dir)) return;
+            for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+              const fullPath = path.join(dir, entry.name);
+              if (entry.isDirectory()) {
+                if (!skipDirs.has(entry.name)) collectPackageJsons(fullPath);
+                continue;
+              }
+              if (entry.isFile() && entry.name === 'package.json') {
+                packageJsonPaths.add(fullPath);
+              }
             }
-            const unifiedPkgPath = 'packages/agent-plugins-mux/package.json';
-            const unifiedPkg = JSON.parse(fs.readFileSync(unifiedPkgPath, 'utf8'));
-            unifiedPkg.version = '${STAGING_VERSION_UNIFIED}';
-            fs.writeFileSync(unifiedPkgPath, JSON.stringify(unifiedPkg, null, 2) + '\n');
-            const agentMuxPackagePaths = [
-              'packages/agent-mux/adapters/package.json',
-              'packages/agent-mux/cli/package.json',
-              'packages/agent-mux/core/package.json',
-              'packages/agent-mux/gateway/package.json',
-              'packages/agent-mux/harness-mock/package.json',
-              'packages/agent-mux/mobile-android-app/package.json',
-              'packages/agent-mux/mobile-ios-app/package.json',
-              'packages/agent-mux/observability/package.json',
-              'packages/agent-mux/sdk/package.json',
-              'packages/agent-mux/tui/package.json',
-              'packages/agent-mux/tv-androidtv-app/package.json',
-              'packages/agent-mux/tv-appletv-app/package.json',
-              'packages/agent-mux/watch-watchos-app/package.json',
-              'packages/agent-mux/watch-wearos-app/package.json',
-              'packages/transport-mux/package.json'
-            ];
-            for (const pkgPath of agentMuxPackagePaths) {
-              const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-              pkg.version = '${STAGING_VERSION_AGENT_MUX}';
-              for (const field of ['dependencies', 'peerDependencies', 'optionalDependencies', 'devDependencies']) {
-                if (!pkg[field]) continue;
-                for (const depName of ['@a5c-ai/agent-mux', '@a5c-ai/agent-mux-adapters', '@a5c-ai/agent-mux-cli', '@a5c-ai/agent-mux-core', '@a5c-ai/agent-mux-gateway', '@a5c-ai/agent-mux-observability', '@a5c-ai/transport-mux', '@a5c-ai/triggers']) {
-                  if (pkg[field][depName]) {
-                    pkg[field][depName] = pkg[field][depName].startsWith('^')
-                      ? '^${STAGING_VERSION_AGENT_MUX}'
-                      : pkg[field][depName].startsWith('~')
-                        ? '~${STAGING_VERSION_AGENT_MUX}'
-                        : '${STAGING_VERSION_AGENT_MUX}';
-                  }
+          }
+
+          for (const rootDir of ['packages', 'plugins']) {
+            collectPackageJsons(rootDir);
+          }
+
+          for (const pkgPath of packageJsonPaths) {
+            const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+            if (String(pkg.name || '').startsWith('@a5c-ai/')) {
+              localPackageNames.add(pkg.name);
+            }
+          }
+
+          for (const pkgPath of packageJsonPaths) {
+            const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+            let changed = false;
+            if (pkgPath === 'package.json' || localPackageNames.has(pkg.name)) {
+              if (pkg.version !== stagingVersion) {
+                pkg.version = stagingVersion;
+                changed = true;
+              }
+            }
+            for (const field of fields) {
+              if (!pkg[field]) continue;
+              for (const [depName, currentValue] of Object.entries(pkg[field])) {
+                if (!localPackageNames.has(depName)) continue;
+                if (currentValue !== stagingVersion) {
+                  pkg[field][depName] = stagingVersion;
+                  changed = true;
                 }
               }
-              fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
             }
-            const githubPkgPath = 'plugins/babysitter-github/package.json';
-            const githubPkg = JSON.parse(fs.readFileSync(githubPkgPath, 'utf8'));
-            githubPkg.version = '${STAGING_VERSION_GITHUB}';
-            fs.writeFileSync(githubPkgPath, JSON.stringify(githubPkg, null, 2) + '\n');
-            const githubPluginPath = 'plugins/babysitter-github/plugin.json';
-            const githubPlugin = JSON.parse(fs.readFileSync(githubPluginPath, 'utf8'));
-            githubPlugin.version = '${STAGING_VERSION_GITHUB}';
-            fs.writeFileSync(githubPluginPath, JSON.stringify(githubPlugin, null, 2) + '\n');
-            const cursorPkgPath = 'plugins/babysitter-cursor/package.json';
-            const cursorPkg = JSON.parse(fs.readFileSync(cursorPkgPath, 'utf8'));
-            cursorPkg.version = '${STAGING_VERSION_CURSOR}';
-            fs.writeFileSync(cursorPkgPath, JSON.stringify(cursorPkg, null, 2) + '\n');
-            const cursorPluginPath = 'plugins/babysitter-cursor/plugin.json';
-            const cursorPlugin = JSON.parse(fs.readFileSync(cursorPluginPath, 'utf8'));
-            cursorPlugin.version = '${STAGING_VERSION_CURSOR}';
-            fs.writeFileSync(cursorPluginPath, JSON.stringify(cursorPlugin, null, 2) + '\n');
-            const piPkgPath = 'plugins/babysitter-pi/package.json';
-            const piPkg = JSON.parse(fs.readFileSync(piPkgPath, 'utf8'));
-            piPkg.version = '${STAGING_VERSION_PI}';
-            fs.writeFileSync(piPkgPath, JSON.stringify(piPkg, null, 2) + '\n');
-            const ompPkgPath = 'plugins/babysitter-omp/package.json';
-            const ompPkg = JSON.parse(fs.readFileSync(ompPkgPath, 'utf8'));
-            ompPkg.version = '${STAGING_VERSION_OMP}';
-            fs.writeFileSync(ompPkgPath, JSON.stringify(ompPkg, null, 2) + '\n');
-            const opencodePkgPath = 'plugins/babysitter-opencode/package.json';
-            const opencodePkg = JSON.parse(fs.readFileSync(opencodePkgPath, 'utf8'));
-            opencodePkg.version = '${STAGING_VERSION_OPENCODE}';
-            fs.writeFileSync(opencodePkgPath, JSON.stringify(opencodePkg, null, 2) + '\n');
-            const opencodePluginPath = 'plugins/babysitter-opencode/plugin.json';
-            const opencodePlugin = JSON.parse(fs.readFileSync(opencodePluginPath, 'utf8'));
-            opencodePlugin.version = '${STAGING_VERSION_OPENCODE}';
-            fs.writeFileSync(opencodePluginPath, JSON.stringify(opencodePlugin, null, 2) + '\n');
-            const openclawPkgPath = 'plugins/babysitter-openclaw/package.json';
-            const openclawPkg = JSON.parse(fs.readFileSync(openclawPkgPath, 'utf8'));
-            openclawPkg.version = '${STAGING_VERSION_OPENCLAW}';
-            fs.writeFileSync(openclawPkgPath, JSON.stringify(openclawPkg, null, 2) + '\n');
-            const openclawPluginPath = 'plugins/babysitter-openclaw/plugin.json';
-            const openclawPlugin = JSON.parse(fs.readFileSync(openclawPluginPath, 'utf8'));
-            openclawPlugin.version = '${STAGING_VERSION_OPENCLAW}';
-            fs.writeFileSync(openclawPluginPath, JSON.stringify(openclawPlugin, null, 2) + '\n');
-            const openclawManifestPath = 'plugins/babysitter-openclaw/openclaw.plugin.json';
-            const openclawManifest = JSON.parse(fs.readFileSync(openclawManifestPath, 'utf8'));
-            openclawManifest.version = '${STAGING_VERSION_OPENCLAW}';
-            fs.writeFileSync(openclawManifestPath, JSON.stringify(openclawManifest, null, 2) + '\n');
-            const paperclipPkgPath = 'plugins/babysitter-paperclip/package.json';
-            const paperclipPkg = JSON.parse(fs.readFileSync(paperclipPkgPath, 'utf8'));
-            paperclipPkg.version = '${STAGING_VERSION_PAPERCLIP}';
-            fs.writeFileSync(paperclipPkgPath, JSON.stringify(paperclipPkg, null, 2) + '\n');
-            for (const path of [
-              'packages/hooks-mux/core/package.json',
-              'packages/hooks-mux/cli/package.json',
-              'packages/hooks-mux/adapter-claude/package.json',
-              'packages/hooks-mux/adapter-codex/package.json',
-              'packages/hooks-mux/adapter-gemini/package.json',
-              'packages/hooks-mux/adapter-copilot/package.json',
-              'packages/hooks-mux/adapter-cursor/package.json',
-              'packages/hooks-mux/adapter-pi/package.json',
-              'packages/hooks-mux/adapter-oh-my-pi/package.json',
-              'packages/hooks-mux/adapter-opencode/package.json',
-              'packages/hooks-mux/adapter-openclaw/package.json'
-            ]) {
-              const data = JSON.parse(fs.readFileSync(path, 'utf8'));
-              data.version = '${STAGING_VERSION_SDK}';
-              if (data.dependencies?.['@a5c-ai/hooks-mux-core']) {
-                data.dependencies['@a5c-ai/hooks-mux-core'] = '${STAGING_VERSION_SDK}';
-              }
-              fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+            if (changed) {
+              fs.writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`);
             }
-          "
-          # Write sdkVersion into versions.json (separate from plugin.json to avoid
-          # Claude Code's plugin validator rejecting unrecognized keys)
-          node -e "
-            const fs = require('fs');
-            for (const path of ['plugins/babysitter/versions.json', 'plugins/babysitter-codex/versions.json', 'plugins/babysitter-gemini/versions.json', 'plugins/babysitter-pi/versions.json', 'plugins/babysitter-omp/versions.json', 'plugins/babysitter-opencode/versions.json', 'plugins/babysitter-openclaw/versions.json', 'plugins/babysitter-github/versions.json', 'plugins/babysitter-cursor/versions.json', 'plugins/babysitter-paperclip/versions.json']) {
-              const data = fs.existsSync(path) ? JSON.parse(fs.readFileSync(path, 'utf8')) : {};
-              data.sdkVersion = '${STAGING_VERSION_SDK}';
-              if (path === 'plugins/babysitter-gemini/versions.json') {
-                data.extensionVersion = '${STAGING_VERSION_GEMINI}';
-              }
-              fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          }
+
+          for (const manifestPath of pluginManifestPaths) {
+            if (!fs.existsSync(manifestPath)) continue;
+            const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+            manifest.version = stagingVersion;
+            fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+          }
+
+          for (const versionsPath of versionsJsonPaths) {
+            const versions = fs.existsSync(versionsPath) ? JSON.parse(fs.readFileSync(versionsPath, 'utf8')) : {};
+            versions.sdkVersion = stagingVersion;
+            if (versionsPath === 'plugins/babysitter-gemini/versions.json') {
+              versions.extensionVersion = stagingVersion;
             }
-          "
+            fs.writeFileSync(versionsPath, `${JSON.stringify(versions, null, 2)}\n`);
+          }
+          NODE
 
       - name: Commit sdkVersion to staging branch
         run: |
@@ -768,104 +675,91 @@ jobs:
       - name: Prepare workspace manifests for staging publish
         run: |
           set -euo pipefail
-          node -e "
-            const fs = require('fs');
-            const path = require('path');
-            const sdkVersion = '${{ steps.version.outputs.staging_version_sdk }}';
-            const unifiedVersion = '${{ steps.version.outputs.staging_version_unified }}';
-            const agentMuxVersion = '${{ steps.version.outputs.staging_version_agent_mux }}';
-            const versionByPackageName = new Map([
-              ['@a5c-ai/agent-catalog', sdkVersion],
-              ['@a5c-ai/agent-core', sdkVersion],
-              ['@a5c-ai/babysitter', sdkVersion],
-              ['@a5c-ai/babysitter-agent', sdkVersion],
-              ['@a5c-ai/babysitter-observer-dashboard', sdkVersion],
-              ['@a5c-ai/babysitter-sdk', sdkVersion],
-              ['@a5c-ai/cloud', sdkVersion],
-              ['@a5c-ai/hooks-mux-core', sdkVersion],
-              ['@a5c-ai/hooks-mux-cli', sdkVersion],
-              ['@a5c-ai/hooks-mux-adapter-claude', sdkVersion],
-              ['@a5c-ai/hooks-mux-adapter-codex', sdkVersion],
-              ['@a5c-ai/hooks-mux-adapter-gemini', sdkVersion],
-              ['@a5c-ai/hooks-mux-adapter-copilot', sdkVersion],
-              ['@a5c-ai/hooks-mux-adapter-cursor', sdkVersion],
-              ['@a5c-ai/hooks-mux-adapter-pi', sdkVersion],
-              ['@a5c-ai/hooks-mux-adapter-oh-my-pi', sdkVersion],
-              ['@a5c-ai/hooks-mux-adapter-opencode', sdkVersion],
-              ['@a5c-ai/hooks-mux-adapter-openclaw', sdkVersion],
-              ['@a5c-ai/agent-plugins-mux', unifiedVersion],
-              ['@a5c-ai/agent-mux', agentMuxVersion],
-              ['@a5c-ai/agent-mux-adapters', agentMuxVersion],
-              ['@a5c-ai/agent-mux-cli', agentMuxVersion],
-              ['@a5c-ai/agent-mux-core', agentMuxVersion],
-              ['@a5c-ai/agent-mux-gateway', agentMuxVersion],
-              ['@a5c-ai/agent-mux-harness-mock', agentMuxVersion],
-              ['@a5c-ai/agent-mux-observability', agentMuxVersion],
-              ['@a5c-ai/agent-mux-sdk', agentMuxVersion],
-              ['@a5c-ai/agent-mux-tui', agentMuxVersion],
-              ['@a5c-ai/transport-mux', agentMuxVersion],
-              ['@a5c-ai/triggers', agentMuxVersion]
-            ]);
-            const fields = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies'];
-            const roots = ['packages', 'plugins'];
-            const skipDirs = new Set(['.git', 'node_modules', 'dist', 'build', 'coverage', 'artifacts']);
-            const packageJsonPaths = new Set();
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
 
-            function collectPackageJsons(dir) {
-              if (!fs.existsSync(dir)) {
-                return;
+          const stagingVersion = process.env.STAGING_VERSION;
+          const packageJsonPaths = new Set(['package.json']);
+          const localPackageNames = new Set();
+          const pluginManifestPaths = [
+            'plugins/babysitter-unified/plugin.json',
+            'plugins/babysitter/.claude-plugin/plugin.json',
+            'plugins/babysitter/plugin.json',
+            'plugins/babysitter-gemini/plugin.json',
+            'plugins/babysitter-gemini/gemini-extension.json',
+            'plugins/babysitter-github/plugin.json',
+            'plugins/babysitter-cursor/plugin.json',
+            'plugins/babysitter-opencode/plugin.json',
+            'plugins/babysitter-openclaw/plugin.json',
+            'plugins/babysitter-openclaw/openclaw.plugin.json',
+          ];
+          const fields = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies'];
+          const skipDirs = new Set(['.git', '.a5c', 'node_modules', 'dist', 'build', 'coverage', 'artifacts', 'generated', 'examples']);
+
+          function collectPackageJsons(dir) {
+            if (!fs.existsSync(dir)) return;
+            for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+              const fullPath = path.join(dir, entry.name);
+              if (entry.isDirectory()) {
+                if (!skipDirs.has(entry.name)) collectPackageJsons(fullPath);
+                continue;
               }
-              for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-                const fullPath = path.join(dir, entry.name);
-                if (entry.isDirectory()) {
-                  if (!skipDirs.has(entry.name)) {
-                    collectPackageJsons(fullPath);
-                  }
-                  continue;
-                }
-                if (entry.isFile() && entry.name === 'package.json') {
-                  packageJsonPaths.add(fullPath);
-                }
+              if (entry.isFile() && entry.name === 'package.json') {
+                packageJsonPaths.add(fullPath);
               }
             }
+          }
 
-            packageJsonPaths.add('package.json');
-            for (const rootDir of roots) {
-              collectPackageJsons(rootDir);
+          for (const rootDir of ['packages', 'plugins']) {
+            collectPackageJsons(rootDir);
+          }
+
+          for (const pkgPath of packageJsonPaths) {
+            const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+            if (String(pkg.name || '').startsWith('@a5c-ai/')) {
+              localPackageNames.add(pkg.name);
             }
+          }
 
-            function rewriteInternalDependencyVersion(currentValue, nextVersion) {
-              return nextVersion;
-            }
-
-            for (const pkgPath of packageJsonPaths) {
-              const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-              let changed = false;
-              const nextPackageVersion = versionByPackageName.get(pkg.name);
-              if (nextPackageVersion && pkg.version !== nextPackageVersion) {
-                pkg.version = nextPackageVersion;
+          for (const pkgPath of packageJsonPaths) {
+            const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+            let changed = false;
+            if (pkgPath === 'package.json' || localPackageNames.has(pkg.name)) {
+              if (pkg.version !== stagingVersion) {
+                pkg.version = stagingVersion;
                 changed = true;
               }
-              for (const field of fields) {
-                if (!pkg[field]) continue;
-                for (const [depName, nextVersion] of versionByPackageName) {
-                  if (!pkg[field][depName]) continue;
-                  const rewrittenVersion = rewriteInternalDependencyVersion(pkg[field][depName], nextVersion);
-                  if (pkg[field][depName] === rewrittenVersion) continue;
-                  pkg[field][depName] = rewrittenVersion;
+            }
+            for (const field of fields) {
+              if (!pkg[field]) continue;
+              for (const [depName, currentValue] of Object.entries(pkg[field])) {
+                if (!localPackageNames.has(depName)) continue;
+                if (currentValue !== stagingVersion) {
+                  pkg[field][depName] = stagingVersion;
                   changed = true;
                 }
               }
-              if (changed) {
-                fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
-              }
             }
+            if (changed) {
+              fs.writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`);
+            }
+          }
 
-            const geminiVersionsPath = 'plugins/babysitter-gemini/versions.json';
-            const geminiVersions = JSON.parse(fs.readFileSync(geminiVersionsPath, 'utf8'));
-            geminiVersions.extensionVersion = '${{ steps.version.outputs.staging_version_gemini }}';
-            fs.writeFileSync(geminiVersionsPath, JSON.stringify(geminiVersions, null, 2) + '\n');
-          "
+          for (const manifestPath of pluginManifestPaths) {
+            if (!fs.existsSync(manifestPath)) continue;
+            const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+            manifest.version = stagingVersion;
+            fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+          }
+
+          const geminiVersionsPath = 'plugins/babysitter-gemini/versions.json';
+          const geminiVersions = JSON.parse(fs.readFileSync(geminiVersionsPath, 'utf8'));
+          geminiVersions.extensionVersion = stagingVersion;
+          fs.writeFileSync(geminiVersionsPath, `${JSON.stringify(geminiVersions, null, 2)}\n`);
+          NODE
+        env:
+          STAGING_VERSION: ${{ steps.version.outputs.staging_version_sdk }}
 
       - name: Refresh staging publish lockfile
         run: |

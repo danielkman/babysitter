@@ -1,6 +1,6 @@
 {
   "name": "@a5c-ai/agent-mux-cli",
-  "version": "0.4.9",
+  "version": "5.0.0",
   "type": "module",
   "license": "MIT",
   "description": "CLI binary (amux) for agent-mux",
@@ -58,11 +58,11 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@a5c-ai/agent-mux-gateway": "0.4.9",
-    "@a5c-ai/agent-mux-core": "0.4.9",
-    "@a5c-ai/agent-mux-adapters": "0.4.9",
-    "@a5c-ai/agent-mux-observability": "*",
-    "@a5c-ai/transport-mux": "0.4.9",
+    "@a5c-ai/agent-mux-gateway": "5.0.0",
+    "@a5c-ai/agent-mux-core": "5.0.0",
+    "@a5c-ai/agent-mux-adapters": "5.0.0",
+    "@a5c-ai/agent-mux-observability": "5.0.0",
+    "@a5c-ai/transport-mux": "5.0.0",
     "qrcode-terminal": "^0.12.0",
     "yaml": "^2.8.3"
   },

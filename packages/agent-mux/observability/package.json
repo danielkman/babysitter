@@ -1,6 +1,6 @@
 {
   "name": "@a5c-ai/agent-mux-observability",
-  "version": "0.4.9",
+  "version": "5.0.0",
   "description": "Logging and telemetry infrastructure for agent-mux",
   "keywords": [
     "logging",

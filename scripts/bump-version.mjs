@@ -86,7 +86,7 @@ const syncDependencyVersion = (path, packageName, version) => {
   }
 };
 
-const updateLockVersion = (path, version, agentMuxVersion) => {
+const updateLockVersion = (path, version) => {
   if (!existsSync(path)) {
     return;
   }
@@ -97,90 +97,108 @@ const updateLockVersion = (path, version, agentMuxVersion) => {
   if (data.packages && data.packages[""]) {
     data.packages[""].version = version;
     if (data.packages[""].dependencies?.["@a5c-ai/agent-mux"]) {
-      data.packages[""].dependencies["@a5c-ai/agent-mux"] = `^${agentMuxVersion}`;
+      data.packages[""].dependencies["@a5c-ai/agent-mux"] = `^${version}`;
     }
   }
   const lockUpdates = {
     "packages/agent-mux/adapters": {
-      version: agentMuxVersion,
-      dependencies: { "@a5c-ai/agent-mux-core": agentMuxVersion }
+      version,
+      dependencies: { "@a5c-ai/agent-mux-core": version }
     },
     "packages/agent-mux/cli": {
-      version: agentMuxVersion,
+      version,
       dependencies: {
-        "@a5c-ai/agent-mux-adapters": agentMuxVersion,
-        "@a5c-ai/agent-mux-core": agentMuxVersion,
-        "@a5c-ai/agent-mux-gateway": agentMuxVersion,
-        "@a5c-ai/agent-mux-observability": agentMuxVersion
+        "@a5c-ai/agent-mux-adapters": version,
+        "@a5c-ai/agent-mux-core": version,
+        "@a5c-ai/agent-mux-gateway": version,
+        "@a5c-ai/agent-mux-observability": version
       }
     },
     "packages/agent-mux/core": {
-      version: agentMuxVersion,
-      dependencies: { "@a5c-ai/agent-mux-observability": agentMuxVersion }
+      version,
+      dependencies: { "@a5c-ai/agent-mux-observability": version }
     },
     "packages/agent-mux/gateway": {
-      version: agentMuxVersion,
+      version,
       dependencies: {
-        "@a5c-ai/agent-mux-adapters": agentMuxVersion,
-        "@a5c-ai/agent-mux-core": agentMuxVersion
+        "@a5c-ai/agent-mux-adapters": version,
+        "@a5c-ai/agent-mux-core": version
       }
     },
     "packages/agent-mux/harness-mock": {
-      version: agentMuxVersion,
-      dependencies: { "@a5c-ai/agent-mux-core": agentMuxVersion }
+      version,
+      dependencies: { "@a5c-ai/agent-mux-core": version }
     },
     "packages/agent-mux/mobile-android-app": {
-      version: agentMuxVersion,
-      dependencies: { "@a5c-ai/agent-mux-ui": agentMuxVersion }
+      version,
+      dependencies: { "@a5c-ai/agent-mux-ui": version }
     },
     "packages/agent-mux/mobile-ios-app": {
-      version: agentMuxVersion,
-      dependencies: { "@a5c-ai/agent-mux-ui": agentMuxVersion }
+      version,
+      dependencies: { "@a5c-ai/agent-mux-ui": version }
     },
     "packages/agent-mux/observability": {
-      version: agentMuxVersion
+      version
     },
     "packages/agent-mux/sdk": {
-      version: agentMuxVersion,
+      version,
       dependencies: {
-        "@a5c-ai/agent-mux-adapters": agentMuxVersion,
-        "@a5c-ai/agent-mux-cli": agentMuxVersion,
-        "@a5c-ai/agent-mux-core": agentMuxVersion
+        "@a5c-ai/agent-mux-adapters": version,
+        "@a5c-ai/agent-mux-cli": version,
+        "@a5c-ai/agent-mux-core": version
       }
     },
     "packages/agent-mux/tui": {
-      version: agentMuxVersion,
+      version,
       dependencies: {
-        "@a5c-ai/agent-mux": agentMuxVersion,
-        "@a5c-ai/agent-mux-observability": agentMuxVersion
+        "@a5c-ai/agent-mux": version,
+        "@a5c-ai/agent-mux-observability": version
       }
     },
     "packages/agent-mux/tv-androidtv-app": {
-      version: agentMuxVersion
+      version
     },
     "packages/agent-mux/tv-appletv-app": {
-      version: agentMuxVersion
+      version
     },
     "packages/agent-mux/ui": {
-      version: agentMuxVersion,
-      dependencies: { "@a5c-ai/agent-mux-core": agentMuxVersion }
+      version,
+      dependencies: { "@a5c-ai/agent-mux-core": version }
     },
     "packages/agent-mux/watch-watchos-app": {
-      version: agentMuxVersion
+      version
     },
     "packages/agent-mux/watch-wearos-app": {
-      version: agentMuxVersion
+      version
     },
     "packages/agent-mux/webui": {
-      version: agentMuxVersion,
-      dependencies: { "@a5c-ai/agent-mux-ui": agentMuxVersion }
+      version,
+      dependencies: { "@a5c-ai/agent-mux-ui": version }
     },
     "packages/transport-mux": {
-      version: agentMuxVersion,
-      dependencies: { "@a5c-ai/agent-mux-core": agentMuxVersion }
+      version,
+      dependencies: { "@a5c-ai/agent-mux-core": version }
     },
     "packages/triggers": {
-      version: agentMuxVersion
+      version
+    },
+    "packages/agent-core": {
+      version,
+      dependencies: {
+        "@a5c-ai/agent-mux": version,
+        "@a5c-ai/babysitter-sdk": version
+      }
+    },
+    "packages/breakpoints-mux": {
+      version
+    },
+    "packages/babysitter-tui-plugins": {
+      version,
+      dependencies: {
+        "@a5c-ai/babysitter-sdk": version,
+        "@a5c-ai/agent-mux-tui": version,
+        "@a5c-ai/agent-mux": version
+      }
     },
     "packages/cloud": {
       version
@@ -209,10 +227,13 @@ const updateLockVersion = (path, version, agentMuxVersion) => {
 const workspaceManifestPaths = [
   "package.json",
   "packages/agent-catalog/package.json",
+  "packages/agent-core/package.json",
   "packages/sdk/package.json",
   "packages/babysitter/package.json",
   "packages/babysitter-agent/package.json",
   "packages/agent-plugins-mux/package.json",
+  "packages/breakpoints-mux/package.json",
+  "packages/babysitter-tui-plugins/package.json",
   "packages/cloud/package.json",
   "packages/observer-dashboard/package.json",
   "packages/hooks-mux/core/package.json",
@@ -291,7 +312,6 @@ const lockPaths = ["package-lock.json"];
 
 const rootManifest = JSON.parse(readFileSync("package.json", "utf8"));
 const currentVersion = rootManifest.version;
-const currentAgentMuxVersion = JSON.parse(readFileSync("packages/agent-mux/sdk/package.json", "utf8")).version;
 const explicitVersion = parseExplicitVersion(process.argv.slice(2));
 
 if (explicitVersion && !isValidSemver(explicitVersion)) {
@@ -319,7 +339,7 @@ if (!newVersion) {
   bumpTarget = getBumpLevel(currentVersion, newVersion);
 }
 
-const newAgentMuxVersion = bumpVersion(currentAgentMuxVersion, bumpTarget);
+const newAgentMuxVersion = newVersion;
 
 for (const path of [...workspaceManifestPaths, ...pluginPackageManifestPaths, ...pluginManifestPaths]) {
   updateVersionField(path, newVersion);
@@ -333,6 +353,7 @@ for (const path of [
   "package.json",
   "packages/babysitter/package.json",
   "packages/babysitter-agent/package.json",
+  "packages/babysitter-tui-plugins/package.json",
   "plugins/babysitter-codex/package.json",
   "plugins/babysitter-github/package.json",
   "plugins/babysitter-cursor/package.json",
@@ -360,9 +381,11 @@ for (const path of [
   "packages/agent-mux/mobile-ios-app/package.json",
   "packages/agent-mux/sdk/package.json",
   "packages/agent-mux/tui/package.json",
+  "packages/agent-mux/webui/package.json",
   "packages/agent-mux/ui/package.json",
   "packages/agent-mux/webui/package.json",
   "packages/transport-mux/package.json",
+  "packages/babysitter-tui-plugins/package.json",
 ]) {
   syncDependencyVersion(path, "@a5c-ai/agent-core", newVersion);
   syncDependencyVersion(path, "@a5c-ai/babysitter-agent", newVersion);
@@ -372,7 +395,9 @@ for (const path of [
   syncDependencyVersion(path, "@a5c-ai/agent-mux-core", newAgentMuxVersion);
   syncDependencyVersion(path, "@a5c-ai/agent-mux-gateway", newAgentMuxVersion);
   syncDependencyVersion(path, "@a5c-ai/agent-mux-observability", newAgentMuxVersion);
+  syncDependencyVersion(path, "@a5c-ai/agent-mux-tui", newAgentMuxVersion);
   syncDependencyVersion(path, "@a5c-ai/agent-mux-ui", newAgentMuxVersion);
+  syncDependencyVersion(path, "@a5c-ai/agent-mux-webui", newAgentMuxVersion);
   syncDependencyVersion(path, "@a5c-ai/transport-mux", newAgentMuxVersion);
 }
 
@@ -413,7 +438,7 @@ if (existsSync(marketplacePath)) {
 }
 
 for (const path of lockPaths) {
-  updateLockVersion(path, newVersion, newAgentMuxVersion);
+  updateLockVersion(path, newVersion);
 }
 
 const changelogPath = "CHANGELOG.md";

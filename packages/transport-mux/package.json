@@ -1,6 +1,6 @@
 {
   "name": "@a5c-ai/transport-mux",
-  "version": "0.4.9",
+  "version": "5.0.0",
   "type": "module",
   "license": "MIT",
   "description": "Transport/proxy runtime seam for agent-mux launcher bridging",
@@ -80,7 +80,7 @@
     "test": "npm run test:unit && npm run test:e2e"
   },
   "dependencies": {
-    "@a5c-ai/agent-mux-core": "0.4.9",
+    "@a5c-ai/agent-mux-core": "5.0.0",
     "hono": "^4.12.14"
   }
 }

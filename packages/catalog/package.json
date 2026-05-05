@@ -22,7 +22,7 @@
     "reindex:reset": "npx tsx scripts/reindex.ts --reset --stats"
   },
   "dependencies": {
-    "@a5c-ai/agent-catalog": "*",
+    "@a5c-ai/agent-catalog": "5.0.0",
     "@a5c-ai/compendium": "^0.1.0",
     "@arwes/react": "^1.0.0-next.25020502",
     "@radix-ui/react-accordion": "^1.1.2",

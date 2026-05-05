@@ -24,14 +24,14 @@
     "test": "vitest run"
   },
   "peerDependencies": {
-    "@a5c-ai/agent-mux-tui": ">=0.1.0"
+    "@a5c-ai/agent-mux-tui": "5.0.0"
   },
   "dependencies": {
     "@a5c-ai/babysitter-sdk": "5.0.0"
   },
   "devDependencies": {
-    "@a5c-ai/agent-mux-tui": ">=0.1.0",
-    "@a5c-ai/agent-mux": ">=0.1.0",
+    "@a5c-ai/agent-mux-tui": "5.0.0",
+    "@a5c-ai/agent-mux": "5.0.0",
     "@types/react": "^18.3.3",
     "ink": "^5.0.1",
     "react": "^18.3.1",

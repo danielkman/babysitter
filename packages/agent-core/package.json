@@ -1,6 +1,6 @@
 {
   "name": "@a5c-ai/agent-core",
-  "version": "0.1.0",
+  "version": "5.0.0",
   "description": "Built-in agent-core runtime and tool surface for Babysitter.",
   "license": "MIT",
   "type": "commonjs",
@@ -27,7 +27,7 @@
     "test": "vitest run --config vitest.config.ts"
   },
   "dependencies": {
-    "@a5c-ai/agent-mux": "^0.4.9",
+    "@a5c-ai/agent-mux": "^5.0.0",
     "@a5c-ai/babysitter-sdk": "5.0.0",
     "@sinclair/typebox": "^0.34.48"
   },

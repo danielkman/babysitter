@@ -1,6 +1,6 @@
 {
   "name": "@a5c-ai/agent-catalog",
-  "version": "0.1.0",
+  "version": "5.0.0",
   "description": "Public package for the shared agent ontology, discovery catalog, and packaged evidence graph consumed across the Babysitter toolchain.",
   "license": "MIT",
   "type": "commonjs",

@@ -1,6 +1,6 @@
 {
   "name": "@a5c-ai/agent-mux-core",
-  "version": "0.4.9",
+  "version": "5.0.0",
   "type": "module",
   "license": "MIT",
   "description": "Core runtime, types, and utilities for agent-mux",
@@ -91,7 +91,7 @@
     "prepublishOnly": "npm run build && npm run test && npm run verify:release"
   },
   "dependencies": {
-    "@a5c-ai/agent-catalog": "*",
-    "@a5c-ai/agent-mux-observability": "*"
+    "@a5c-ai/agent-catalog": "5.0.0",
+    "@a5c-ai/agent-mux-observability": "5.0.0"
   }
 }

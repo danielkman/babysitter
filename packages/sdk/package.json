@@ -39,8 +39,8 @@
     "smoke:cli": "node scripts/smoke-cli.js --runs-dir packages/sdk/test-fixtures/cli/runs/smoke"
   },
   "dependencies": {
-    "@a5c-ai/agent-catalog": "*",
-    "@a5c-ai/agent-mux": "^0.4.9",
+    "@a5c-ai/agent-catalog": "5.0.0",
+    "@a5c-ai/agent-mux": "^5.0.0",
     "@modelcontextprotocol/sdk": "^1.12.1",
     "@sinclair/typebox": "^0.34.48",
     "zod": "^4.0.0",

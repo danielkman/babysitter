@@ -1,6 +1,6 @@
 {
   "name": "@a5c-ai/triggers",
-  "version": "0.4.9",
+  "version": "5.0.0",
   "type": "module",
   "license": "MIT",
   "description": "Event trigger normalization, enrichment, and filtering helpers for automation actions",

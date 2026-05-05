@@ -6,5 +6,5 @@
   "scripts": {
     "tvos": "echo Open the tvOS target in Xcode to run the simulator"
   },
-  "version": "0.4.9"
+  "version": "5.0.0"
 }

@@ -1,6 +1,6 @@
 {
   "name": "@a5c-ai/agent-mux-webui",
-  "version": "0.4.9",
+  "version": "5.0.0",
   "type": "module",
   "license": "MIT",
   "description": "Browser app for agent-mux gateway control, monitoring, and realtime session-detail flow inspection",
@@ -54,7 +54,7 @@
     "prepublishOnly": "npm run build:realtime && npm run test && npm run verify:release"
   },
   "dependencies": {
-    "@a5c-ai/agent-mux-ui": "0.4.9",
+    "@a5c-ai/agent-mux-ui": "5.0.0",
     "@a5c-ai/compendium": "0.1.0",
     "@tanstack/react-virtual": "^3.13.19",
     "lucide-react": "^0.469.0",

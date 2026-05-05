@@ -1,6 +1,6 @@
 {
   "name": "@a5c-ai/agent-mux-gateway",
-  "version": "0.4.9",
+  "version": "5.0.0",
   "type": "module",
   "license": "MIT",
   "description": "Gateway package for remote and browser-facing agent-mux surfaces",
@@ -49,8 +49,8 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@a5c-ai/agent-mux-adapters": "0.4.9",
-    "@a5c-ai/agent-mux-core": "0.4.9",
+    "@a5c-ai/agent-mux-adapters": "5.0.0",
+    "@a5c-ai/agent-mux-core": "5.0.0",
     "@hono/node-server": "^1.19.14",
     "argon2": "^0.44.0",
     "hono": "^4.12.14",
