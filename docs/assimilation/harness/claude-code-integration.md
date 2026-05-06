@@ -104,7 +104,7 @@ Claude Code starts session
 
 ## 1. Plugin Manifest Registration
 
-**File:** `plugins/babysitter/plugin.json`
+**Generated bundle manifest:** `artifacts/generated-plugins/claude-code/plugin.json`
 
 The plugin manifest declares two hooks, three skills, and metadata:
 
@@ -123,7 +123,7 @@ The plugin manifest declares two hooks, three skills, and metadata:
 }
 ```
 
-Additionally, `plugins/babysitter/hooks/hooks.json` provides a secondary hook descriptor used by Claude Code's native hook system:
+Additionally, `artifacts/generated-plugins/claude-code/hooks/hooks.json` provides the Claude Code hook registration file for the generated bundle:
 
 ```json
 {
@@ -156,7 +156,7 @@ Additionally, `plugins/babysitter/hooks/hooks.json` provides a secondary hook de
 
 ## 2. SessionStart Hook
 
-**Shell entry:** `plugins/babysitter/hooks/babysitter-session-start-hook.sh`
+**Generated shell entry:** `artifacts/generated-plugins/claude-code/hooks/babysitter-proxied-session-start.sh`
 **TypeScript handler:** `packages/sdk/src/harness/claudeCode.ts` -> `handleSessionStartHookImpl()`
 
 ### Execution Flow
@@ -414,7 +414,7 @@ Build a REST API with authentication and rate limiting for the user service.
 
 ## 5. The Stop Hook -- Core Orchestration Loop Control
 
-**Shell entry:** `plugins/babysitter/hooks/babysitter-stop-hook.sh`
+**Generated shell entry:** `artifacts/generated-plugins/claude-code/hooks/babysitter-proxied-stop.sh`
 **TypeScript handler:** `handleStopHookImpl()` in `packages/sdk/src/harness/claudeCode.ts`
 
 The stop hook is the central mechanism that converts Claude Code's single-turn execution model into a multi-iteration orchestration loop. Every time Claude attempts to end its response, the stop hook intercepts and decides whether to allow the exit or block it with new context.
@@ -738,7 +738,7 @@ The `task:post` command:
 
 ## 7. Native Orchestration Hooks
 
-**Dispatcher:** `plugins/babysitter/hooks/hook-dispatcher.sh`
+**SDK hook discovery:** `packages/sdk/src/hooks/dispatcher.ts`
 
 The hook dispatcher executes native babysitter lifecycle hooks (distinct from Claude Code's `SessionStart`/`Stop` hooks). These hooks are triggered by the SDK runtime during `run:iterate`.
 
@@ -774,7 +774,7 @@ Within each directory, scripts are sorted alphabetically and executed sequential
 
 ### Breakpoint Hook Dispatcher
 
-**File:** `plugins/babysitter/hooks/on-breakpoint-dispatcher.sh`
+**Unified source hooks:** `plugins/babysitter-unified/hooks/`
 
 A specialized dispatcher for breakpoint events. Same three-tier discovery as the generic dispatcher but specific to the `on-breakpoint` hook type. Receives breakpoint payload on stdin via `BREAKPOINT_PAYLOAD` environment variable.
 
@@ -1114,13 +1114,14 @@ babysitter hook:run --hook-type stop --harness claude-code
 
 | File | Role |
 |------|------|
-| `plugins/babysitter/plugin.json` | Plugin manifest with hook and skill declarations |
-| `plugins/babysitter/hooks/hooks.json` | Secondary hook descriptor for Claude Code hook system |
-| `plugins/babysitter/hooks/babysitter-session-start-hook.sh` | Shell entry for SessionStart hook |
-| `plugins/babysitter/hooks/babysitter-stop-hook.sh` | Shell entry for Stop hook |
-| `plugins/babysitter/hooks/hook-dispatcher.sh` | Generic hook dispatcher (per-repo/per-user/plugin) |
-| `plugins/babysitter/hooks/on-breakpoint-dispatcher.sh` | Breakpoint-specific hook dispatcher |
-| `plugins/babysitter/skills/babysit/SKILL.md` | Primary orchestration skill definition |
+| `plugins/babysitter-unified/plugin.json` | Unified source manifest used to generate harness-specific bundles |
+| `artifacts/generated-plugins/claude-code/plugin.json` | Generated Claude Code plugin manifest |
+| `artifacts/generated-plugins/claude-code/hooks/hooks.json` | Claude Code hook registration file |
+| `artifacts/generated-plugins/claude-code/hooks/babysitter-proxied-session-start.sh` | Generated shell entry for SessionStart |
+| `artifacts/generated-plugins/claude-code/hooks/babysitter-proxied-stop.sh` | Generated shell entry for Stop |
+| `packages/sdk/src/hooks/dispatcher.ts` | SDK hook discovery for native babysitter lifecycle hooks |
+| `plugins/babysitter-unified/hooks/` | Unified source hook implementations copied into generated bundles |
+| `plugins/babysitter-unified/skills/babysit/SKILL.md` | Primary orchestration skill definition |
 | `packages/sdk/src/harness/types.ts` | HarnessAdapter interface definition |
 | `packages/sdk/src/harness/claudeCode.ts` | Claude Code adapter (stop hook, session-start, binding) |
 | `packages/sdk/src/harness/nullAdapter.ts` | No-op fallback adapter |

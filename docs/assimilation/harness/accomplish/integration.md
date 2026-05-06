@@ -49,7 +49,7 @@ This performs two installations in one step:
 To install exclusively to the Accomplish data directory without touching the standard OpenCode paths:
 
 ```bash
-cd plugins/babysitter-opencode
+cd artifacts/generated-plugins/opencode
 node bin/install.cjs --accomplish
 ```
 
@@ -63,7 +63,7 @@ Copy the plugin bundle manually:
 # Windows: %APPDATA%/Accomplish/opencode/plugins/babysitter/
 # Linux:   ~/.config/Accomplish/opencode/plugins/babysitter/
 
-cp -r plugins/babysitter-opencode/* <accomplishDataDir>/opencode/plugins/babysitter/
+cp -r artifacts/generated-plugins/opencode/* <accomplishDataDir>/opencode/plugins/babysitter/
 ```
 
 After any installation method, restart Accomplish to pick up the plugin.
@@ -233,8 +233,9 @@ Verify Accomplish is setting this variable when spawning OpenCode. This is an Ac
 |-----------|------|---------|
 | OpenCode adapter | `packages/sdk/src/harness/opencode.ts` | Accomplish detection, `ACCOMPLISH_TASK_ID` handling, data dir resolution, session metadata |
 | Discovery module | `packages/sdk/src/harness/discovery.ts` | Caller detection via env vars including `ACCOMPLISH_TASK_ID` |
-| Installer (shared) | `plugins/babysitter-opencode/bin/install-shared.cjs` | Accomplish detection, plugin bundle copy, surface installation |
-| Installer (entry) | `plugins/babysitter-opencode/bin/install.cjs` | CLI entry point with `--accomplish` flag |
-| `/babysitter` skill (Accomplish format) | `plugins/babysitter-opencode/accomplish-skills/babysitter/SKILL.md` | Orchestration skill formatted for Accomplish's skill system |
-| `/accomplish-status` skill | `plugins/babysitter-opencode/skills/accomplish-status/SKILL.md` | Run status reporting |
+| Generated OpenCode bundle | `artifacts/generated-plugins/opencode/` | Harness-specific plugin output generated from `plugins/babysitter-unified` |
+| Installer (shared) | `artifacts/generated-plugins/opencode/bin/install-shared.cjs` | Accomplish detection, plugin bundle copy, surface installation |
+| Installer (entry) | `artifacts/generated-plugins/opencode/bin/install.cjs` | CLI entry point with `--accomplish` flag |
+| `/babysitter` skill (Accomplish format) | `artifacts/generated-plugins/opencode/skills/babysit/SKILL.md` | Orchestration skill formatted for Accomplish's skill system |
+| `/accomplish-status` skill | `artifacts/generated-plugins/opencode/skills/accomplish-status/SKILL.md` | Run status reporting |
 | Session types | `packages/sdk/src/session/types.ts` | `SessionState.metadata` field for `accomplishTaskId` correlation |

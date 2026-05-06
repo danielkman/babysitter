@@ -13,9 +13,9 @@ The original January 2026 implementation report described a prototype where the 
 - Process implementation: `library/tdd-quality-convergence.js`
 - Process documentation: `library/tdd-quality-convergence.md`
 - Example inputs: `library/examples/tdd-quality-convergence-example.json`
-- Babysitter skill instructions: `plugins/babysitter/skills/babysit/SKILL.md`
+- Babysitter skill instructions: `plugins/babysitter-unified/skills/babysit/SKILL.md`
 
-The plugin skill does not ship a separate `process/` tree under `plugins/babysitter/skills/babysit/`. The canonical process library is `library/`, and project-local `.a5c/processes/` copies are user-managed overrides or generated local assets.
+The plugin skill does not ship a separate `process/` tree under `plugins/babysitter-unified/skills/babysit/`. The canonical process library is `library/`, and project-local `.a5c/processes/` copies are user-managed overrides or generated local assets.
 
 ---
 
@@ -74,7 +74,7 @@ If a project has copied or customized the process locally, the equivalent entry 
 The current model separates responsibilities:
 
 - `library/` contains the built-in process library, examples, assets, methodologies, and specializations.
-- `plugins/babysitter/skills/babysit/SKILL.md` provides the Babysitter skill instructions used by harnesses.
+- `plugins/babysitter-unified/skills/babysit/SKILL.md` provides the Babysitter skill instructions used by harnesses.
 - `.a5c/processes/`, `.a5c/skills/`, and `.a5c/agents/` are project-local copies or overrides when users install, generate, or customize assets locally.
 
 For a broader explanation of that lookup and packaging model, see `docs/user-guide/features/process-library.md`.

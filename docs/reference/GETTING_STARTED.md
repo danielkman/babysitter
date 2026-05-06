@@ -97,23 +97,35 @@ After installation:
 1. Restart Claude Code if prompted
 2. Verify with `/skills` - look for "babysitter" in the list
 
-### Option B: Manual Installation (Global)
+### Option B: Manual Installation from Source (Global)
 
 ```bash
-# Clone to Claude Code plugins directory
-git clone https://github.com/a5c-ai/babysitter.git ~/.claude/plugins/babysitter
+# Clone the source repo
+git clone https://github.com/a5c-ai/babysitter.git ~/src/babysitter
+cd ~/src/babysitter
+
+# Generate the harness-specific plugin bundles from plugins/babysitter-unified
+npm run generate:plugins
+
+# Install the generated Claude Code bundle
+mkdir -p ~/.claude/plugins/babysitter
+cp -r artifacts/generated-plugins/claude-code/* ~/.claude/plugins/babysitter/
 ```
 
-### Option C: Project-Local Installation
+### Option C: Manual Installation from Source (Project-Local)
 
 For project-specific plugin usage:
 
 ```bash
+# Generate the plugin bundle from the repo root first
+npm run generate:plugins
+
 # Create plugin directory in your project
 mkdir -p .claude/plugins
 
-# Clone the plugin
-git clone https://github.com/a5c-ai/babysitter.git .claude/plugins/babysitter
+# Copy the generated Claude Code bundle into the project-local plugins dir
+mkdir -p .claude/plugins/babysitter
+cp -r artifacts/generated-plugins/claude-code/* .claude/plugins/babysitter/
 ```
 
 ### Verify Installation
@@ -289,8 +301,9 @@ Babysitter uses quality gates to ensure work meets standards:
 
 **Solution:** Verify plugin installation:
 1. Check plugin directory exists: `ls ~/.claude/plugins/babysitter/`
-2. Restart Claude Code
-3. Run `/skills` again
+2. If you installed from source, re-run `npm run generate:plugins` before copying the bundle so the Claude Code files are generated from `plugins/babysitter-unified`
+3. Restart Claude Code
+4. Run `/skills` again
 
 #### Issue: "jq: command not found" during execution
 
@@ -327,8 +340,7 @@ choco install jq
 **Solution:** Make hook scripts executable:
 
 ```bash
-chmod +x plugins/babysitter/hooks/*.sh
-chmod +x plugins/babysitter/scripts/*.sh
+chmod +x plugins/babysitter-unified/hooks/*.sh
 ```
 
 ### Health Check
@@ -382,7 +394,7 @@ See the [Process Selection Guide](https://github.com/a5c-ai/babysitter/blob/main
 
 ### Advanced Topics
 
-- **[Plugin Specification](https://github.com/a5c-ai/babysitter/blob/main/docs/reference/BABYSITTER_PLUGIN_SPECIFICATION.md)** - Complete architecture documentation
+- **[Unified Plugin Source](https://github.com/a5c-ai/babysitter/tree/main/plugins/babysitter-unified)** - Maintained plugin source tree
 - **[Advanced Patterns](https://github.com/a5c-ai/babysitter/blob/main/docs/reference/ADVANCED_PATTERNS.md)** - Agent tasks, parallel execution
 - **[Troubleshooting Guide](https://github.com/a5c-ai/babysitter/blob/main/docs/reference/TROUBLESHOOTING.md)** - Comprehensive problem-solving
 

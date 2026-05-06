@@ -142,7 +142,7 @@ babysitter plugin:list-plugins --marketplace-name babysitter-marketplace --globa
       "description": "Core babysitter plugin for AI-assisted development",
       "latestVersion": "0.0.176",
       "versions": ["0.0.176", "0.0.175", "0.0.174"],
-      "packagePath": "plugins/babysitter",
+      "packagePath": "plugins/babysitter-unified",
       "tags": ["core", "development"],
       "author": "a5c-ai"
     }
@@ -212,7 +212,7 @@ babysitter plugin:install babysitter@a5c.ai --marketplace-name babysitter-market
   "marketplace": "babysitter-marketplace",
   "scope": "global",
   "instructions": "# Install babysitter@a5c.ai\n\n1. Copy the plugin configuration...\n",
-  "processFile": "/home/user/.a5c/marketplaces/babysitter-marketplace/plugins/babysitter/install-process.js"
+  "processFile": "/home/user/.a5c/marketplaces/babysitter-marketplace/plugins/babysitter-unified/install-process.js"
 }
 ```
 
@@ -489,7 +489,7 @@ babysitter plugin:update-registry babysitter@a5c.ai --plugin-version 0.0.176 --m
   "scope": "global",
   "installedAt": "2026-03-01T10:30:00.000Z",
   "updatedAt": "2026-03-06T09:00:00.000Z",
-  "packagePath": "/home/user/.a5c/marketplaces/babysitter-marketplace/plugins/babysitter",
+  "packagePath": "/home/user/.a5c/marketplaces/babysitter-marketplace/plugins/babysitter-unified",
   "metadata": {}
 }
 ```

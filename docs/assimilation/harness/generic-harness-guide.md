@@ -1602,8 +1602,8 @@ Key files in the reference implementation:
 | `packages/sdk/src/harness/nullAdapter.ts` | No-op fallback adapter (useful as a starting template) |
 | `packages/sdk/src/harness/registry.ts` | Adapter auto-detection and lookup |
 | `packages/sdk/src/session/` | Session state parsing, writing, and types |
-| `plugins/babysitter/hooks/babysitter-stop-hook.sh` | Shell entry for stop hook |
-| `plugins/babysitter/hooks/babysitter-session-start-hook.sh` | Shell entry for session-start hook |
+| `artifacts/generated-plugins/claude-code/hooks/babysitter-proxied-stop.sh` | Generated Claude Code stop hook entry |
+| `artifacts/generated-plugins/claude-code/hooks/babysitter-proxied-session-start.sh` | Generated Claude Code session-start hook entry |
 
 ### Writing a New Harness Adapter
 
