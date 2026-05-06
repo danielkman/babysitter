@@ -1,4 +1,5 @@
 import {
+  clearAtlasBridgeCache,
   getCatalogGraph,
   getGraphDocument,
   getOntologySchema,
@@ -7,7 +8,7 @@ import {
   listNodesByKind,
   listOutgoingTargets,
   listRelationshipsByRelation,
-} from "./graph";
+} from "./atlas-bridge";
 import { buildClaimsByEvidence, getEvidenceClaimStatement } from "./evidence-projection";
 import {
   effectiveTransportMuxClaimStatus,
@@ -707,6 +708,7 @@ function buildDataState(): AgentCatalogDataState {
 
 export function clearAgentCatalogDataCache(): void {
   cachedDataState = undefined;
+  clearAtlasBridgeCache();
 }
 
 export function getCatalogDataState(): AgentCatalogDataState {
