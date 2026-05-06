@@ -1,12 +1,15 @@
 name: Deploy Atlas WebUI to AKS
 
 on:
-  # Deploy after staging-publish completes successfully
-  workflow_run:
-    workflows: ["Staging Publish"]
-    types: [completed]
-    branches: [staging]
-  # Also trigger on develop/main pushes after CI passes
+  push:
+    branches:
+      - main
+      - staging
+      - develop
+    paths:
+      - packages/atlas/**
+      - .github/workflows/deploy-atlas-webui.yml
+  workflow_call:
   workflow_dispatch:
 
 permissions:
@@ -27,15 +30,10 @@ concurrency:
 jobs:
   deploy:
     # Only deploy if the triggering workflow succeeded (or manual dispatch)
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: Check deployment configuration
         id: config
@@ -79,11 +77,7 @@ jobs:
         if: steps.config.outputs.deploy_enabled == 'true'
         shell: bash
         run: |
-          BRANCH="${GITHUB_REF_NAME}"
-          if [[ "${{ github.event_name }}" == "workflow_run" ]]; then
-            BRANCH="${{ github.event.workflow_run.head_branch }}"
-          fi
-          case "${BRANCH}" in
+          case "${GITHUB_REF_NAME}" in
             main)
               echo "KUBE_NAMESPACE=atlas" >> "$GITHUB_ENV"
               echo "APP_HOST=atlas.a5c.ai" >> "$GITHUB_ENV"
@@ -125,7 +119,7 @@ jobs:
       - name: ACR login + build image (Azure CLI)
         if: steps.config.outputs.deploy_enabled == 'true' && steps.config.outputs.auth_method == 'azure-cli'
         env:
-          IMAGE_TAG: ${{ github.event.workflow_run.head_sha || github.sha }}
+          IMAGE_TAG: ${{ github.sha }}
         run: |
           az acr login --name "$ACR_NAME"
           image="${ACR_NAME}.azurecr.io/${IMAGE_NAME}:${IMAGE_TAG}"
@@ -141,7 +135,7 @@ jobs:
       - name: Build image (kubeconfig)
         if: steps.config.outputs.deploy_enabled == 'true' && steps.config.outputs.auth_method == 'kubeconfig'
         env:
-          IMAGE_TAG: ${{ github.event.workflow_run.head_sha || github.sha }}
+          IMAGE_TAG: ${{ github.sha }}
         run: |
           image="${APP_NAME}:${IMAGE_TAG}"
           docker build -f packages/atlas/webui/Dockerfile -t "$image" .
