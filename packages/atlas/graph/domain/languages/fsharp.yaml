@@ -1,0 +1,10 @@
+nodeKind: Language
+id: language:fsharp
+attributes:
+  displayName: "F#"
+  paradigms:
+    - functional
+    - object-oriented
+  description: |
+    The F
+edges: {}

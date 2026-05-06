@@ -1,0 +1,10 @@
+nodeKind: Tool
+id: tool:pulumi
+attributes:
+  displayName: "Pulumi"
+  kind: iac
+  description: |
+    Infrastructure-as-code in general-purpose programming languages.
+edges:
+  tool_used_by:
+    - target: skill-area:terraform-infrastructure

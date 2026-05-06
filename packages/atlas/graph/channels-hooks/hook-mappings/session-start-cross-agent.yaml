@@ -1,0 +1,111 @@
+nodeKind: HookMapping
+id: hook-mapping:session-start-cursor
+attributes:
+  mappingId: hook-mapping:session-start-cursor
+  hookId: hook-surface:cursor.session-start
+  targetId: agent-version:cursor@current
+  nativeName: SessionStart
+  versionRange: ">=0.0.0"
+  requiresRuntimeHooks: true
+  adapterFamily: cursor
+edges:
+  maps_hook:
+    - target: hook-surface:cursor.session-start
+  emits_hook:
+    - target: agent-version:cursor@current
+---
+nodeKind: HookMapping
+id: hook-mapping:session-start-gemini
+attributes:
+  mappingId: hook-mapping:session-start-gemini
+  hookId: hook-surface:session-start
+  targetId: agent-version:gemini-cli@current
+  nativeName: SessionStart
+  versionRange: ">=0.0.0"
+  requiresRuntimeHooks: true
+  adapterFamily: gemini
+edges:
+  maps_hook:
+    - target: hook-surface:session-start
+  emits_hook:
+    - target: agent-version:gemini-cli@current
+---
+nodeKind: HookMapping
+id: hook-mapping:session-start-copilot
+attributes:
+  mappingId: hook-mapping:session-start-copilot
+  hookId: hook-surface:session-start
+  targetId: agent-version:copilot-cli@current
+  nativeName: SessionStart
+  versionRange: ">=0.0.0"
+  requiresRuntimeHooks: true
+  adapterFamily: copilot
+edges:
+  maps_hook:
+    - target: hook-surface:session-start
+  emits_hook:
+    - target: agent-version:copilot-cli@current
+---
+nodeKind: HookMapping
+id: hook-mapping:session-start-opencode
+attributes:
+  mappingId: hook-mapping:session-start-opencode
+  hookId: hook-surface:session-start
+  targetId: agent-version:opencode@1.x
+  nativeName: SessionStart
+  versionRange: ">=0.0.0"
+  requiresRuntimeHooks: true
+  adapterFamily: opencode
+edges:
+  maps_hook:
+    - target: hook-surface:session-start
+  emits_hook:
+    - target: agent-version:opencode@1.x
+---
+nodeKind: HookMapping
+id: hook-mapping:session-start-openclaw
+attributes:
+  mappingId: hook-mapping:session-start-openclaw
+  hookId: hook-surface:session-start
+  targetId: agent-version:openclaw@current
+  nativeName: SessionStart
+  versionRange: ">=0.0.0"
+  requiresRuntimeHooks: true
+  adapterFamily: openclaw
+edges:
+  maps_hook:
+    - target: hook-surface:session-start
+  emits_hook:
+    - target: agent-version:openclaw@current
+---
+nodeKind: HookMapping
+id: hook-mapping:session-start-pi
+attributes:
+  mappingId: hook-mapping:session-start-pi
+  hookId: hook-surface:session-start
+  targetId: agent-version:pi@current
+  nativeName: SessionStart
+  versionRange: ">=0.0.0"
+  requiresRuntimeHooks: true
+  adapterFamily: pi
+edges:
+  maps_hook:
+    - target: hook-surface:session-start
+  emits_hook:
+    - target: agent-version:pi@current
+---
+nodeKind: HookMapping
+id: hook-mapping:session-start-omp
+attributes:
+  mappingId: hook-mapping:session-start-omp
+  hookId: hook-surface:session-start
+  targetId: agent-version:omp@current
+  nativeName: SessionStart
+  versionRange: ">=0.0.0"
+  requiresRuntimeHooks: true
+  adapterFamily: oh-my-pi
+edges:
+  maps_hook:
+    - target: hook-surface:session-start
+  emits_hook:
+    - target: agent-version:omp@current

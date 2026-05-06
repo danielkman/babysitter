@@ -1,0 +1,11 @@
+nodeKind: Term
+id: term:model-version
+attributes:
+  canonicalDefinitionId: definition:model-version.canonical
+  displayName: "ModelVersion"
+  kind: concept
+  references:
+    - "NodeKind:ModelVersion"
+  description: |
+    A specific versioned model
+edges:

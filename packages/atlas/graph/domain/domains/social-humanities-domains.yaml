@@ -1,0 +1,128 @@
+---
+nodeKind: Domain
+id: domain:healthcare
+attributes:
+  displayName: "Healthcare"
+  description: |
+    Healthcare operations, clinical systems, patient safety, and health informatics.
+edges: {}
+---
+nodeKind: Domain
+id: domain:education
+attributes:
+  displayName: "Education"
+  description: |
+    Educational technology, curriculum design, learning management, and assessment.
+edges: {}
+---
+nodeKind: Domain
+id: domain:arts-culture
+attributes:
+  displayName: "Arts & Culture"
+  description: |
+    Arts administration, cultural heritage, curation, and creative production.
+edges: {}
+---
+nodeKind: Domain
+id: domain:media-entertainment
+attributes:
+  displayName: "Media & Entertainment"
+  description: |
+    Media production, content distribution, streaming, and entertainment tech.
+edges: {}
+---
+nodeKind: Domain
+id: domain:social-sciences
+attributes:
+  displayName: "Social Sciences"
+  description: |
+    Social research methods, behavioral analytics, and policy analysis.
+edges: {}
+---
+nodeKind: Domain
+id: domain:supply-chain
+attributes:
+  displayName: "Supply Chain"
+  description: |
+    End-to-end supply chain management, procurement, and logistics optimization.
+edges: {}
+---
+nodeKind: Domain
+id: domain:decision-intelligence
+attributes:
+  displayName: "Decision Intelligence"
+  description: |
+    Decision analytics, forecasting, simulation, and optimization.
+edges: {}
+---
+nodeKind: Domain
+id: domain:real-estate
+attributes:
+  displayName: "Real Estate"
+  description: |
+    Property technology, facility management, and real estate operations.
+edges: {}
+---
+nodeKind: Domain
+id: domain:agriculture
+attributes:
+  displayName: "Agriculture"
+  description: |
+    AgTech, precision agriculture, and farm-to-table supply chain.
+edges: {}
+---
+nodeKind: Domain
+id: domain:energy
+attributes:
+  displayName: "Energy"
+  description: |
+    Energy systems, grid management, renewable energy, and utilities.
+edges: {}
+---
+nodeKind: Domain
+id: domain:telecommunications
+attributes:
+  displayName: "Telecommunications"
+  description: |
+    Telecom infrastructure, 5G, spectrum management, and network operations.
+edges: {}
+---
+nodeKind: Domain
+id: domain:government
+attributes:
+  displayName: "Government"
+  description: |
+    GovTech, civic technology, public sector digitization, and e-government.
+edges: {}
+---
+nodeKind: Domain
+id: domain:insurance
+attributes:
+  displayName: "Insurance"
+  description: |
+    InsurTech, underwriting, claims processing, and actuarial systems.
+edges: {}
+---
+nodeKind: Domain
+id: domain:retail
+attributes:
+  displayName: "Retail"
+  description: |
+    Retail operations, e-commerce, point-of-sale, and inventory management.
+edges: {}
+---
+nodeKind: Domain
+id: domain:hospitality
+attributes:
+  displayName: "Hospitality"
+  description: |
+    Hotel and restaurant tech, reservation systems, and guest experience.
+edges: {}
+---
+nodeKind: Domain
+id: domain:transportation
+attributes:
+  displayName: "Transportation"
+  description: |
+    Fleet management, route optimization, and mobility platforms.
+edges: {}

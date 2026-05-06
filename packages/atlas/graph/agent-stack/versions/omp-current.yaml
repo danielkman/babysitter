@@ -1,0 +1,48 @@
+nodeKind: AgentVersion
+id: agent-version:omp@current
+attributes:
+  agentProductId: agent:omp
+  versionRange: ">=1.0.0"
+  releasedAt: "2025-01-01"
+  cliCommand: "omp"
+  installMethods:
+    - install:npm
+  minSchemaVersion: "6.0.0"
+edges:
+  version_of:
+    - agent:omp
+  composed_of:
+    - target: agent-core-impl:omp.core@current
+      role: core
+    - target: agent-runtime-impl:omp.runtime@current
+      role: runtime
+    - target: agent-platform-impl:omp.platform@current
+      role: platform
+    - target: agent-ui-impl:omp.ui@current
+      role: ui
+  sourced_from: []
+  supports:
+    - target: capability:skills
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Oh-My-Pi documents file-backed skills explicitly.
+    - target: capability:supports-thinking
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Oh-My-Pi publicly described as a terminal coding agent with broad tool surface.
+    - target: capability:interactive-mode
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Interactive terminal behavior grounded in upstream product README.
+    - target: capability:stdin-injection
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Public operator docs are thin; local fallback metadata remains primary source of truth.
+    - target: capability:vision-input
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Public README advertises image support; technical detail is thinner.
+    - target: capability:can-resume
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Oh-My-Pi documents resume, continue, fork, and session switching as first-class session operations.

@@ -1,0 +1,11 @@
+nodeKind: Term
+id: term:tool-descriptor
+attributes:
+  canonicalDefinitionId: definition:tool-descriptor.canonical
+  displayName: "ToolDescriptor"
+  kind: tool
+  references:
+    - "NodeKind:ToolDescriptor"
+  description: |
+    A callable tool with schema
+edges:

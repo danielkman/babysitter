@@ -1,0 +1,14 @@
+nodeKind: StackProfile
+id: stack-profile:elixir-phoenix-liveview
+attributes:
+  displayName: "Elixir + Phoenix + LiveView"
+  description: |
+    Elixir web stack: Phoenix framework with LiveView for real-time,
+    server-rendered interactive UIs over a persistent WebSocket.
+  composes:
+    - language:elixir
+    - framework:phoenix
+edges:
+  composed_of:
+    - language:elixir
+    - framework:phoenix

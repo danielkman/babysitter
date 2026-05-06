@@ -1,0 +1,36 @@
+---
+nodeKind: Tool
+id: tool:tilt
+attributes:
+  displayName: "Tilt"
+  kind: orchestrator
+  description: |
+    Multi-service local Kubernetes dev tool that watches source files
+    and rebuilds/redeploys with live-reload semantics.
+edges:
+  tool_used_by:
+    - target: skill-area:containerization
+---
+nodeKind: Tool
+id: tool:skaffold
+attributes:
+  displayName: "Skaffold"
+  kind: orchestrator
+  description: |
+    Google CLI for continuous Kubernetes development — build, push,
+    deploy, and tail logs in a watch loop.
+edges:
+  tool_used_by:
+    - target: skill-area:containerization
+---
+nodeKind: Tool
+id: tool:colima
+attributes:
+  displayName: "Colima"
+  kind: container
+  description: |
+    Container runtime for macOS/Linux backed by Lima; Docker- and
+    containerd-compatible without Docker Desktop.
+edges:
+  tool_used_by:
+    - target: skill-area:containerization

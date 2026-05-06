@@ -1,0 +1,10 @@
+nodeKind: Tool
+id: tool:esbuild
+attributes:
+  displayName: "esbuild"
+  kind: bundler
+  description: |
+    Extremely fast JavaScript bundler and minifier written in Go.
+edges:
+  belongs_to_language:
+    - target: language:javascript

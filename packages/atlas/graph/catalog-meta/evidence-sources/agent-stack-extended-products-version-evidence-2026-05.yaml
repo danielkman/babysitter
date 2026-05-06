@@ -1,0 +1,13 @@
+nodeKind: EvidenceSource
+id: evidence:agent-stack-extended-products-version-source-2026-05
+attributes:
+  displayName: Extended agent products version source coverage
+  kindLabel: repo
+  filePath: graph/agent-stack/versions/extended-products-current.yaml
+  trustLevel: trust-level:repo
+  observedAt: '2026-05-04T00:00:00Z'
+  observedBy: a5c-ai-catalog
+  locator: agent-stack:extended-products-current
+edges:
+  has_trust_level:
+  - trust-level:repo

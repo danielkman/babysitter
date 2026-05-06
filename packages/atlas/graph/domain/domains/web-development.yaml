@@ -1,0 +1,7 @@
+nodeKind: Domain
+id: domain:web-development
+attributes:
+  displayName: "Web Development"
+  description: |
+    The Web Development domain.
+edges: {}

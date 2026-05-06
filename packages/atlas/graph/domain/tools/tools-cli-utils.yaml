@@ -1,0 +1,36 @@
+---
+nodeKind: Tool
+id: tool:tmux
+attributes:
+  displayName: "tmux"
+  kind: other
+  description: |
+    Terminal multiplexer for splitting, detaching, and resuming
+    terminal sessions over SSH.
+edges:
+  tool_used_by:
+    - target: skill-area:cli-tooling
+---
+nodeKind: Tool
+id: tool:ripgrep
+attributes:
+  displayName: "ripgrep"
+  kind: other
+  description: |
+    Fast recursive line-oriented search tool with .gitignore awareness,
+    Unicode support, and PCRE2 mode.
+edges:
+  tool_used_by:
+    - target: skill-area:cli-tooling
+---
+nodeKind: Tool
+id: tool:fzf
+attributes:
+  displayName: "fzf"
+  kind: other
+  description: |
+    General-purpose command-line fuzzy finder that integrates with
+    shells, editors, git, and process listings.
+edges:
+  tool_used_by:
+    - target: skill-area:cli-tooling

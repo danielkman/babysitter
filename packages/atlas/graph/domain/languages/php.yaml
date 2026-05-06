@@ -1,0 +1,11 @@
+nodeKind: Language
+id: language:php
+attributes:
+  displayName: "PHP"
+  paradigms:
+    - imperative
+    - object-oriented
+    - scripting
+  description: |
+    The PHP scripting language.
+edges: {}

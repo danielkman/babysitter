@@ -1,0 +1,11 @@
+nodeKind: Term
+id: term:test-set
+attributes:
+  canonicalDefinitionId: definition:test-set.canonical
+  displayName: "TestSet"
+  kind: concept
+  references:
+    - "NodeKind:TestSet"
+  description: |
+    Named collection of test cases
+edges:

@@ -1,0 +1,34 @@
+nodeKind: PluginTarget
+id: plugin-target:codex
+attributes:
+  displayName: "Codex"
+  hostAgent: agent:codex
+  adapterFamily: shell-hook
+  manifestFormat: "package.json + hooks.json"
+  commandFormat: "package-json commands"
+  adapterName: codex
+  skillHandling: derived-from-commands
+  hookRegistrationFormat: codex
+  scriptVariants:
+    - bash
+  distribution:
+    - npm-cli
+  distributionModel: workspace-generated
+  marketplacePath: ".agents/plugins/marketplace.json"
+  npmPublishable: false
+  installLayout:
+    harnessHomeRelative: ".codex"
+    pluginsDirRelative: ".agents/plugins"
+    marketplacePathRelative: ".agents/plugins/marketplace.json"
+  packageMetadata:
+    moduleType: commonjs
+    binScriptExt: ".js"
+    installLifecycle: none
+    activationMessage: codex-open-plugins
+    emitCjsWrappers: false
+  componentSupport:
+    agents: unsupported
+    context: unsupported
+edges:
+  hosted_by:
+    - target: agent:codex

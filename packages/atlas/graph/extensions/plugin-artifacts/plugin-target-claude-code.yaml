@@ -1,0 +1,51 @@
+nodeKind: PluginTarget
+id: plugin-target:claude-code
+attributes:
+  displayName: "Claude Code"
+  hostAgent: agent:claude-code
+  adapterName: claude
+  manifestPath: ".claude-plugin/plugin.json"
+  adapterFamily: claude-code-native
+  manifestFormat: "plugin.json + openclaw.plugin.json"
+  commandFormat: markdown-commands
+  skillHandling: native
+  hookRegistrationFormat: claude-code
+  pluginRootEnvVar: CLAUDE_PLUGIN_ROOT
+  scriptVariants:
+    - bash
+  distribution:
+    - github-repo
+    - marketplace
+    - container-image
+  distributionModel: workspace-generated
+  marketplacePath: ".claude-plugin/marketplace.json"
+  npmPublishable: false
+  installLayout:
+    manifest: ".claude-plugin/plugin.json"
+    commands: "commands/"
+    agents: "agents/"
+    skills: "skills/"
+    hooks: "hooks/"
+    mcp: ".mcp.json"
+  packageMetadata:
+    moduleType: commonjs
+    binScriptExt: ".js"
+    installLifecycle: none
+    activationMessage: restart
+    extraPackageFiles: []
+    extraScripts: {}
+    emitCjsWrappers: false
+  componentSupport:
+    agents: unsupported
+    context: unsupported
+    skills: native
+    hooks: native
+  description: |
+    Claude Code as a plugin host — accepts plugin.json + marketplace
+    manifests + container/binary plugin artifacts. Native plugin
+    layout follows the .claude-plugin/plugin.json convention with
+    optional commands/, agents/, skills/, hooks/, and .mcp.json
+    surfaces under the plugin root.
+edges:
+  hosted_by:
+    - target: agent:claude-code

@@ -1,0 +1,11 @@
+nodeKind: Term
+id: term:phase-machine
+attributes:
+  canonicalDefinitionId: definition:phase-machine.canonical
+  displayName: "PhaseMachine"
+  kind: lifecycle-state
+  references:
+    - "NodeKind:PhaseMachine"
+  description: |
+    A finite-state machine over Phase nodes declared by a reliability-interface
+edges:

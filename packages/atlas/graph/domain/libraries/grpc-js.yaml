@@ -1,0 +1,11 @@
+nodeKind: Library
+id: library:grpc-js
+attributes:
+  displayName: "@grpc/grpc-js"
+  belongsToLanguageId: language:javascript
+  category: http-client
+  description: |
+    Pure JavaScript implementation of gRPC for Node.js.
+edges:
+  belongs_to_language:
+    - language:javascript

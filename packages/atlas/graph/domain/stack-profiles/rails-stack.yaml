@@ -1,0 +1,14 @@
+nodeKind: StackProfile
+id: stack-profile:rails-stack
+attributes:
+  displayName: "Rails + Hotwire + Stimulus"
+  description: |
+    Classic modern-Rails stack: Ruby on Rails with Hotwire (Turbo) for
+    server-driven UI updates and Stimulus for sprinkles of JS behavior.
+  composes:
+    - language:ruby
+    - framework:rails
+edges:
+  composed_of:
+    - language:ruby
+    - framework:rails

@@ -1,0 +1,13 @@
+nodeKind: Framework
+id: framework:hasura
+attributes:
+  displayName: "Hasura"
+  belongsToLanguageId: language:graphql
+  category: web-backend
+  description: |
+    Hasura — an instant GraphQL (and REST) API engine over Postgres and
+    other databases, with declarative permissions, event triggers, and
+    remote-schema federation.
+edges:
+  belongs_to_language:
+    - language:graphql

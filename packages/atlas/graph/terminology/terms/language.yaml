@@ -1,0 +1,11 @@
+nodeKind: Term
+id: term:language
+attributes:
+  canonicalDefinitionId: definition:language.canonical
+  displayName: "Language"
+  kind: concept
+  references:
+    - "NodeKind:Language"
+  description: |
+    Programming language
+edges:

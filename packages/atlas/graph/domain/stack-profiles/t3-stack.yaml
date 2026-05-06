@@ -1,0 +1,16 @@
+nodeKind: StackProfile
+id: stack-profile:t3-stack
+attributes:
+  displayName: "T3 Stack (Next.js + tRPC + Prisma + Tailwind)"
+  description: |
+    The T3 Stack — Next.js for the app, tRPC for end-to-end-typed APIs,
+    Prisma as ORM, and Tailwind CSS for styling.
+  composes:
+    - language:typescript
+    - framework:nextjs
+    - framework:react
+edges:
+  composed_of:
+    - language:typescript
+    - framework:nextjs
+    - framework:react

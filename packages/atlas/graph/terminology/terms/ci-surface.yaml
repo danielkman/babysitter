@@ -1,0 +1,11 @@
+nodeKind: Term
+id: term:ci-surface
+attributes:
+  canonicalDefinitionId: definition:ci-surface.canonical
+  displayName: "CiSurface"
+  kind: primitive
+  references:
+    - "NodeKind:CiSurface"
+  description: |
+    CI/CD spec for a PackageSurface — scripts, publish strategy, release channels, validation, artifact expectations
+edges:

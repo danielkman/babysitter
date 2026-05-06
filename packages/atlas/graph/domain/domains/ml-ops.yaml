@@ -1,0 +1,7 @@
+nodeKind: Domain
+id: domain:ml-ops
+attributes:
+  displayName: "MLOps"
+  description: |
+    The MLOps domain.
+edges: {}

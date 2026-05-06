@@ -1,0 +1,16 @@
+nodeKind: StackProfile
+id: stack-profile:nextjs-supabase-stripe
+attributes:
+  displayName: "Next.js + Supabase + Stripe"
+  description: |
+    A common SaaS stack: Next.js for the app, Supabase for auth/postgres,
+    Stripe for billing.
+  composes:
+    - language:typescript
+    - framework:nextjs
+    - framework:react
+edges:
+  composed_of:
+    - language:typescript
+    - framework:nextjs
+    - framework:react

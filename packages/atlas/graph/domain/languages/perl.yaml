@@ -1,0 +1,10 @@
+nodeKind: Language
+id: language:perl
+attributes:
+  displayName: "Perl"
+  paradigms:
+    - imperative
+    - scripting
+  description: |
+    The Perl programming language.
+edges: {}

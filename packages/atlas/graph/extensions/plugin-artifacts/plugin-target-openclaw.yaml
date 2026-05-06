@@ -1,0 +1,34 @@
+nodeKind: PluginTarget
+id: plugin-target:openclaw
+attributes:
+  displayName: "OpenClaw"
+  hostAgent: agent:openclaw
+  adapterFamily: programmatic
+  manifestFormat: "plugin.json"
+  commandFormat: "event-hooks"
+  adapterName: openclaw
+  skillHandling: derived-from-commands
+  hookRegistrationFormat: openclaw
+  marketplacePath: null
+  scriptVariants:
+    - bash
+    - typescript
+  distribution:
+    - npm-cli
+  distributionModel: workspace-generated
+  npmPublishable: false
+  installLayout:
+    harnessHomeRelative: ".openclaw"
+  packageMetadata:
+    moduleType: module
+    binScriptExt: ".cjs"
+    installLifecycle: none
+    activationMessage: restart
+    peerDependencyPackage: openclaw
+    emitCjsWrappers: false
+  componentSupport:
+    agents: unsupported
+    context: unsupported
+edges:
+  hosted_by:
+    - target: agent:openclaw

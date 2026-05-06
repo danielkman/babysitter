@@ -1,0 +1,88 @@
+---
+nodeKind: SkillArea
+id: skill-area:financial-planning
+attributes:
+  displayName: "Financial Planning"
+  description: |
+    Budgeting, forecasting, variance analysis, cost modeling,
+    and financial reporting.
+  domains: []
+  expertiseLevels: [novice, intermediate, expert]
+edges: {}
+---
+nodeKind: SkillArea
+id: skill-area:procurement-management
+attributes:
+  displayName: "Procurement Management"
+  description: |
+    Strategic sourcing, vendor evaluation, contract negotiation,
+    and spend analytics.
+  domains: []
+  expertiseLevels: [novice, intermediate, expert]
+edges: {}
+---
+nodeKind: SkillArea
+id: skill-area:community-management
+attributes:
+  displayName: "Community Management"
+  description: |
+    Community platform management, engagement strategies, moderation,
+    and developer advocacy.
+  domains: []
+  expertiseLevels: [novice, intermediate, expert]
+edges: {}
+---
+nodeKind: SkillArea
+id: skill-area:customer-success
+attributes:
+  displayName: "Customer Success"
+  description: |
+    Health scoring, retention strategies, expansion revenue,
+    and customer lifecycle management.
+  domains: []
+  expertiseLevels: [novice, intermediate, expert]
+edges: {}
+---
+nodeKind: SkillArea
+id: skill-area:business-analysis
+attributes:
+  displayName: "Business Analysis"
+  description: |
+    Requirements elicitation, process mapping, stakeholder management,
+    and business case development.
+  domains: []
+  expertiseLevels: [novice, intermediate, expert]
+edges: {}
+---
+nodeKind: SkillArea
+id: skill-area:data-analytics
+attributes:
+  displayName: "Data Analytics"
+  description: |
+    SQL, dashboarding, statistical analysis, A/B testing interpretation,
+    and metrics definition.
+  domains: []
+  expertiseLevels: [novice, intermediate, expert]
+edges: {}
+---
+nodeKind: SkillArea
+id: skill-area:strategic-planning
+attributes:
+  displayName: "Strategic Planning"
+  description: |
+    Corporate strategy, OKR frameworks, competitive positioning,
+    and scenario planning.
+  domains: []
+  expertiseLevels: [novice, intermediate, expert]
+edges: {}
+---
+nodeKind: SkillArea
+id: skill-area:change-management
+attributes:
+  displayName: "Change Management"
+  description: |
+    Organizational change, stakeholder alignment, communication planning,
+    and adoption tracking.
+  domains: []
+  expertiseLevels: [novice, intermediate, expert]
+edges: {}

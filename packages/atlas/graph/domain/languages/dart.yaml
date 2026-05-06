@@ -1,0 +1,14 @@
+nodeKind: Language
+id: language:dart
+attributes:
+  displayName: "Dart"
+  paradigms:
+    - object-oriented
+    - imperative
+  description: |
+    The Dart programming language.
+edges:
+  used_by_skill_area:
+    - target: skill-area:flutter-development
+  used_by_skill_area:
+    - target: skill-area:flutter-development

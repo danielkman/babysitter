@@ -1,0 +1,32 @@
+nodeKind: PluginTarget
+id: plugin-target:pi
+attributes:
+  displayName: "Pi"
+  hostAgent: agent:pi
+  adapterFamily: programmatic
+  adapterName: pi
+  manifestFormat: "state-only"
+  commandFormat: markdown-commands
+  skillHandling: derived-from-commands
+  hookRegistrationFormat: null
+  marketplacePath: null
+  pluginRootEnvVarForExtension: PI_PLUGIN_ROOT
+  scriptVariants:
+    - javascript
+  distribution:
+    - npm-cli
+  distributionModel: workspace-generated
+  npmPublishable: true
+  packageMetadata:
+    moduleType: module
+    binScriptExt: ".cjs"
+    installLifecycle: none
+    activationMessage: restart
+    peerDependencyPackage: "@mariozechner/pi-coding-agent"
+    emitCjsWrappers: false
+  componentSupport:
+    agents: native
+    context: native
+edges:
+  hosted_by:
+    - target: agent:pi

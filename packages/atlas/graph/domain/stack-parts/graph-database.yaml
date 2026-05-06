@@ -1,0 +1,10 @@
+nodeKind: StackPart
+id: stack-part:graph-database
+attributes:
+  displayName: "Graph Database"
+  category: data-store
+  description: |
+    Database optimized for graph traversal queries. Examples: Neo4j, Dgraph, Amazon Neptune.
+edges:
+  implemented_by:
+    - target: tool:neo4j

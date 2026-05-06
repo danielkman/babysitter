@@ -1,0 +1,11 @@
+nodeKind: Library
+id: library:beautifulsoup
+attributes:
+  displayName: "Beautiful Soup"
+  belongsToLanguageId: language:python
+  category: parsing
+  description: |
+    Python library for pulling data out of HTML and XML files.
+edges:
+  belongs_to_language:
+    - language:python

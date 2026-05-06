@@ -1,0 +1,7 @@
+nodeKind: Domain
+id: domain:data-science
+attributes:
+  displayName: "Data Science"
+  description: |
+    The Data Science domain.
+edges: {}

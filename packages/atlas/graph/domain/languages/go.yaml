@@ -1,0 +1,14 @@
+nodeKind: Language
+id: language:go
+attributes:
+  displayName: "Go"
+  paradigms:
+    - imperative
+    - concurrent
+  description: |
+    The Go programming language.
+edges:
+  used_by_skill_area:
+    - target: skill-area:k8s-operator-development
+  used_by_skill_area:
+    - target: skill-area:k8s-operator-development

@@ -1,0 +1,22 @@
+nodeKind: ToolServer
+id: tool-server:brave-search-mcp
+attributes:
+  displayName: "Brave Search MCP"
+  protocol: mcp
+  mcpTransports:
+    - mcp-transport:stdio
+  tools:
+    - tool-descriptor:brave.web-search
+    - tool-descriptor:brave.local-search
+  sourceRef: source-ref:mcp-servers-registry
+edges:
+  contains_tool_descriptor:
+  - target: tool-descriptor:brave.web-search
+  - target: tool-descriptor:brave.local-search
+  implements:
+    - target: extension-interface:orchestration
+  requires_capability:
+    - target: capability:supports-mcp
+      level: required
+  sourced_from:
+    - target: source-ref:mcp-servers-registry

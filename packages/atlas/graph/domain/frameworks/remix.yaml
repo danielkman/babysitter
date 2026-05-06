@@ -1,0 +1,13 @@
+nodeKind: Framework
+id: framework:remix
+attributes:
+  displayName: "Remix"
+  belongsToLanguageId: language:typescript
+  category: web-fullstack
+  description: |
+    Remix — a full-stack web framework for React.
+edges:
+  belongs_to_language:
+    - language:typescript
+  used_by_skill_area:
+    - target: skill-area:server-side-rendering

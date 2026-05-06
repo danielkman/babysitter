@@ -1,0 +1,11 @@
+nodeKind: Framework
+id: framework:laravel
+attributes:
+  displayName: "Laravel"
+  belongsToLanguageId: language:php
+  category: web-backend
+  description: |
+    The Laravel PHP web framework.
+edges:
+  belongs_to_language:
+    - language:php

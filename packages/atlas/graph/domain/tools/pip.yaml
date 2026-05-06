@@ -1,0 +1,11 @@
+nodeKind: Tool
+id: tool:pip
+attributes:
+  displayName: "pip"
+  kind: package-manager
+  language: language:python
+  description: |
+    Package installer for Python.
+edges:
+  belongs_to_language:
+    - language:python

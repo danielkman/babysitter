@@ -1,0 +1,11 @@
+nodeKind: Tool
+id: tool:docker
+attributes:
+  displayName: "Docker"
+  kind: container
+  description: |
+    Platform for developing, shipping, and running applications in containers.
+edges:
+  tool_used_by:
+    - target: skill-area:container-security
+    - target: skill-area:containerization

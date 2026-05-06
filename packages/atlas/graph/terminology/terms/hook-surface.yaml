@@ -1,0 +1,11 @@
+nodeKind: Term
+id: term:hook-surface
+attributes:
+  canonicalDefinitionId: definition:hook-surface.canonical
+  displayName: "HookSurface"
+  kind: hook
+  references:
+    - "NodeKind:HookSurface"
+  description: |
+    A concrete hook event name (PreToolUse, PhaseChange, etc.)
+edges:

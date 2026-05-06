@@ -1,0 +1,11 @@
+nodeKind: Tool
+id: tool:pnpm
+attributes:
+  displayName: "pnpm"
+  kind: package-manager
+  language: language:javascript
+  description: |
+    Fast, disk-space-efficient package manager for JavaScript with content-addressable store.
+edges:
+  belongs_to_language:
+    - language:javascript

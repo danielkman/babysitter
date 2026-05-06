@@ -1,0 +1,20 @@
+nodeKind: Language
+id: language:typescript
+attributes:
+  displayName: "TypeScript"
+  paradigms:
+    - imperative
+    - object-oriented
+    - functional
+  description: |
+    The TypeScript programming language.
+edges:
+  used_by_skill_area:
+    - target: skill-area:react-testing
+    - target: skill-area:react-native-development
+    - target: skill-area:typescript-generic-programming
+  used_by_skill_area:
+    - target: skill-area:react-testing
+    - target: skill-area:react-native-development
+    - target: skill-area:web-scraping
+    - target: skill-area:typescript-generic-programming

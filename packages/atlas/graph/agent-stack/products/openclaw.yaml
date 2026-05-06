@@ -1,0 +1,17 @@
+nodeKind: AgentProduct
+id: agent:openclaw
+attributes:
+  displayName: "OpenClaw"
+  vendor: "openclaw community"
+  homepageUrl: "https://github.com/openclaw/openclaw"
+  primarySurface: cli
+  supportTier: adapter-only
+  productKind: full-cli-agent
+  stackScope: full
+  description: |
+    Open-source CLI coding agent integrated into the v6 catalog through
+    the agent-mux adapter. Supports plugins and an auto-approve
+    interaction primitive.
+edges:
+  has_version:
+    - agent-version:openclaw@current

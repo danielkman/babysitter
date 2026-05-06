@@ -1,0 +1,10 @@
+nodeKind: StackPart
+id: stack-part:vector-database
+attributes:
+  displayName: "Vector Database"
+  category: data-store
+  description: |
+    Stores high-dimensional embedding vectors with approximate nearest-neighbor search. Examples: Pinecone, Weaviate, Qdrant, pgvector, Milvus, LanceDB.
+edges:
+  stack_part_used_by:
+    - target: skill-area:retrieval-augmented-generation

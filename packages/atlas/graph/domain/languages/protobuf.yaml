@@ -1,0 +1,11 @@
+nodeKind: Language
+id: language:protobuf
+attributes:
+  displayName: "Protocol Buffers"
+  paradigms:
+    - declarative
+    - schema
+    - idl
+  description: |
+    Google's Protocol Buffers schema / IDL.
+edges: {}

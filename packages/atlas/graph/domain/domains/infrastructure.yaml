@@ -1,0 +1,7 @@
+nodeKind: Domain
+id: domain:infrastructure
+attributes:
+  displayName: "Infrastructure"
+  description: |
+    The Infrastructure domain.
+edges: {}

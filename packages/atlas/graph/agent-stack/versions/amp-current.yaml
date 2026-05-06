@@ -1,0 +1,23 @@
+nodeKind: AgentVersion
+id: agent-version:amp@current
+attributes:
+  agentProductId: agent:amp
+  versionRange: ">=2.0.0"
+  releasedAt: "2025-01-01"
+  cliCommand: "amp"
+  installMethods:
+    - install:npm
+  minSchemaVersion: "6.0.0"
+edges:
+  version_of:
+    - agent:amp
+  composed_of:
+    - target: agent-core-impl:amp.core@current
+      role: core
+    - target: agent-runtime-impl:amp.runtime@current
+      role: runtime
+    - target: agent-platform-impl:amp.platform@current
+      role: platform
+    - target: agent-ui-impl:amp.ui@current
+      role: ui
+  sourced_from: []

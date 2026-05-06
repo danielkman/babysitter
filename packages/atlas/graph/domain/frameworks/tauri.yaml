@@ -1,0 +1,11 @@
+nodeKind: Framework
+id: framework:tauri
+attributes:
+  displayName: "Tauri"
+  belongsToLanguageId: language:rust
+  category: desktop
+  description: |
+    Tauri — a Rust-based framework for building desktop and mobile apps with web frontends.
+edges:
+  belongs_to_language:
+    - language:rust

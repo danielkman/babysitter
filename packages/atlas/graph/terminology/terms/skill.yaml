@@ -1,0 +1,13 @@
+nodeKind: Term
+id: term:skill
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "Skill"
+  kind: extension-shape
+  references:
+    - "NodeKind:Skill"
+  description: |
+    A SKILL.md-driven extension shape.
+edges:
+
+

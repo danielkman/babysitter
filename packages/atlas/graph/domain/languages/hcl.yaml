@@ -1,0 +1,12 @@
+nodeKind: Language
+id: language:hcl
+attributes:
+  displayName: "HCL"
+  paradigms:
+    - declarative
+    - configuration
+  description: |
+    HashiCorp Configuration Language used by Terraform and other HashiCorp tools.
+edges:
+  used_by_skill_area:
+    - target: skill-area:terraform-infrastructure

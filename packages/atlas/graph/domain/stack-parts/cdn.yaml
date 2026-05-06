@@ -1,0 +1,8 @@
+nodeKind: StackPart
+id: stack-part:cdn
+attributes:
+  displayName: "Content Delivery Network"
+  category: infrastructure
+  description: |
+    Geographically distributed edge cache for static and dynamic content. Examples: Cloudflare, Fastly, Akamai, AWS CloudFront.
+edges: {}

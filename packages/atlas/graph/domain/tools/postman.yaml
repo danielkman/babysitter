@@ -1,0 +1,10 @@
+nodeKind: Tool
+id: tool:postman
+attributes:
+  displayName: "Postman"
+  kind: api-tool
+  description: |
+    Collaboration platform for API development - request building, collections, and tests.
+edges:
+  tool_used_by:
+    - target: skill-area:api-design

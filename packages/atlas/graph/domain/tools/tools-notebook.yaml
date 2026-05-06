@@ -1,0 +1,12 @@
+---
+nodeKind: Tool
+id: tool:jupyter
+attributes:
+  displayName: "Jupyter"
+  kind: other
+  description: |
+    Interactive notebook ecosystem (JupyterLab, Notebook, Hub) for
+    Python/R/Julia and other kernels.
+edges:
+  belongs_to_language:
+    - target: language:python

@@ -1,0 +1,36 @@
+nodeKind: PluginTarget
+id: plugin-target:opencode
+attributes:
+  displayName: "OpenCode"
+  hostAgent: agent:opencode
+  adapterFamily: programmatic
+  manifestFormat: "plugin.json"
+  commandFormat: "event-hooks"
+  adapterName: opencode
+  skillHandling: derived-from-commands
+  hookRegistrationFormat: opencode
+  marketplacePath: null
+  pluginRootEnvVar: OPENCODE_PLUGIN_ROOT
+  scriptVariants:
+    - javascript
+  distribution:
+    - npm-cli
+  distributionModel: workspace-generated
+  npmPublishable: false
+  installLayout:
+    harnessHomeRelative: ".opencode"
+  packageMetadata:
+    moduleType: commonjs
+    binScriptExt: ".js"
+    installLifecycle: postinstall
+    activationMessage: restart
+    extraScripts:
+      test: "node test/integration.test.js"
+      "sync:commands": "node scripts/sync-command-docs.cjs"
+    emitCjsWrappers: true
+  componentSupport:
+    agents: unsupported
+    context: unsupported
+edges:
+  hosted_by:
+    - target: agent:opencode

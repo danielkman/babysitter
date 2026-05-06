@@ -1,0 +1,10 @@
+nodeKind: Term
+id: term:expertise-level
+attributes:
+  canonicalDefinitionId: definition:expertise-level.canonical
+  displayName: "ExpertiseLevel"
+  kind: concept
+  references: []
+  description: |
+    Novice/intermediate/expert/authoritative
+edges:

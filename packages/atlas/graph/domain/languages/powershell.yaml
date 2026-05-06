@@ -1,0 +1,10 @@
+nodeKind: Language
+id: language:powershell
+attributes:
+  displayName: "PowerShell"
+  paradigms:
+    - scripting
+    - object-oriented
+  description: |
+    The PowerShell scripting and automation language.
+edges: {}

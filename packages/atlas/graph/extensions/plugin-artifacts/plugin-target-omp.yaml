@@ -1,0 +1,32 @@
+nodeKind: PluginTarget
+id: plugin-target:omp
+attributes:
+  displayName: "Oh-My-Pi"
+  hostAgent: agent:omp
+  adapterFamily: programmatic
+  adapterName: omp
+  manifestFormat: "state-only"
+  commandFormat: markdown-commands
+  skillHandling: derived-from-commands
+  hookRegistrationFormat: null
+  marketplacePath: null
+  pluginRootEnvVarForExtension: OMP_PLUGIN_ROOT
+  scriptVariants:
+    - javascript
+  distribution:
+    - npm-cli
+  distributionModel: workspace-generated
+  npmPublishable: true
+  packageMetadata:
+    moduleType: module
+    binScriptExt: ".cjs"
+    installLifecycle: none
+    activationMessage: restart
+    peerDependencyPackage: "@oh-my-pi/pi-coding-agent"
+    emitCjsWrappers: false
+  componentSupport:
+    agents: native
+    context: native
+edges:
+  hosted_by:
+    - target: agent:omp

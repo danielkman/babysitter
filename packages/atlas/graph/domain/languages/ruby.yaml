@@ -1,0 +1,11 @@
+nodeKind: Language
+id: language:ruby
+attributes:
+  displayName: "Ruby"
+  paradigms:
+    - object-oriented
+    - scripting
+    - functional
+  description: |
+    The Ruby programming language.
+edges: {}

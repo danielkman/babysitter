@@ -1,0 +1,8 @@
+nodeKind: StackPart
+id: stack-part:reverse-proxy
+attributes:
+  displayName: "Reverse Proxy"
+  category: infrastructure
+  description: |
+    HTTP-layer proxy in front of one or more upstream servers. Examples: nginx, Caddy, HAProxy.
+edges: {}

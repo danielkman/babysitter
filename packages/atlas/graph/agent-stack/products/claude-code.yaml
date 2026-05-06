@@ -1,0 +1,19 @@
+nodeKind: AgentProduct
+id: agent:claude-code
+attributes:
+  displayName: "Claude Code"
+  vendor: "Anthropic"
+  homepageUrl: "https://docs.anthropic.com/en/docs/claude-code/"
+  primarySurface: cli
+  supportTier: catalog-backed
+  productKind: full-cli-agent
+  stackScope: full
+  description: |
+    Anthropic's official command-line agent for coding tasks. Runs in the
+    terminal, drives Claude models over the Anthropic Messages API, and
+    composes against MCP tool servers, plugins, and a session-on-disk
+    layout under `~/.claude/projects/`.
+edges:
+  has_version:
+    - agent-version:claude-code@1.x
+  accepts_plugin: []

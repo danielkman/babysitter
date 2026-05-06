@@ -1,0 +1,11 @@
+nodeKind: StackPart
+id: stack-part:search-index
+attributes:
+  displayName: "Search Index"
+  category: data-store
+  description: |
+    Inverted-index search engine for full-text and faceted search. Examples: Elasticsearch, OpenSearch, Meilisearch, Typesense.
+edges:
+  implemented_by:
+    - target: tool:elasticsearch
+    - target: tool:meilisearch

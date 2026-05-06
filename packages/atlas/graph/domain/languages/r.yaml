@@ -1,0 +1,10 @@
+nodeKind: Language
+id: language:r-lang
+attributes:
+  displayName: "R"
+  paradigms:
+    - functional
+    - statistical
+  description: |
+    The R programming language for statistical computing.
+edges: {}

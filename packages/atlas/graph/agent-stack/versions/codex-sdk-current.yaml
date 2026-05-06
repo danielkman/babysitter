@@ -1,0 +1,19 @@
+nodeKind: AgentVersion
+id: agent-version:codex-sdk@current
+attributes:
+  agentProductId: agent:codex-sdk
+  versionRange: ">=0.1.0"
+  releasedAt: "2025-01-01"
+  cliCommand: "<sdk:openai>"
+  installMethods:
+    - install:npm
+  minSchemaVersion: "6.0.0"
+edges:
+  version_of:
+    - agent:codex-sdk
+  composed_of:
+    - target: agent-core-impl:codex-sdk.core@current
+      role: core
+    - target: agent-runtime-impl:codex-sdk.runtime@current
+      role: runtime
+  sourced_from: []

@@ -1,0 +1,11 @@
+nodeKind: Framework
+id: framework:litestar
+attributes:
+  displayName: "Litestar"
+  belongsToLanguageId: language:python
+  category: web-backend
+  description: |
+    Litestar — an async Python web framework (formerly Starlite).
+edges:
+  belongs_to_language:
+    - language:python

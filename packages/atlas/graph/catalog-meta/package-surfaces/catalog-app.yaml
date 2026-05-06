@@ -1,0 +1,16 @@
+nodeKind: PackageSurface
+id: package:a5c-ai-catalog
+attributes:
+  packageId: "@a5c-ai/catalog"
+  packageName: "@a5c-ai/catalog"
+  workspacePath: packages/catalog
+  moduleType: nextjs
+  surfaceKinds:
+    - ui-consumer
+    - api-consumer
+  sourceOfTruthRole: wrapper-over-graph
+  publishedTo: none
+  versionPolicy: semver
+edges:
+  references_path:
+    - target: path:catalog-api

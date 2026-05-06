@@ -1,0 +1,15 @@
+nodeKind: Language
+id: language:scala
+attributes:
+  displayName: "Scala"
+  paradigms:
+    - object-oriented
+    - functional
+  description: |
+    The Scala programming language on the JVM.
+edges:
+  used_by_skill_area:
+    - target: skill-area:spark-jobs
+  used_by_skill_area:
+    - target: skill-area:kafka-stream-processing
+    - target: skill-area:spark-jobs

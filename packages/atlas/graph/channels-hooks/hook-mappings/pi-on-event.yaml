@@ -1,0 +1,18 @@
+nodeKind: HookMapping
+id: hook-mapping:post-tool-use-pi
+attributes:
+  mappingId: hook-mapping:post-tool-use-pi
+  hookId: hook-surface:post-tool-use
+  targetId: agent-version:pi@current
+  nativeName: onEvent
+  versionRange: ">=0.0.0"
+  requiresRuntimeHooks: true
+  adapterFamily: pi
+  delivery: shell
+  blocking: false
+  supportLevel: supported
+edges:
+  maps_hook:
+    - target: hook-surface:post-tool-use
+  emits_hook:
+    - target: agent-version:pi@current

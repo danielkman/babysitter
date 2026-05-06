@@ -1,0 +1,39 @@
+---
+nodeKind: Tool
+id: tool:perf
+attributes:
+  displayName: "perf"
+  kind: profiler
+  description: |
+    Linux performance counters tool for sampling CPU profiles, tracing
+    syscalls, and inspecting hardware events.
+edges:
+  tool_used_by:
+    - target: skill-area:profiling-cpu
+---
+nodeKind: Tool
+id: tool:flamegraph
+attributes:
+  displayName: "FlameGraph"
+  kind: profiler
+  description: |
+    Brendan Gregg's tooling for turning sampled stack traces into
+    interactive flame-graph SVGs.
+edges:
+  tool_used_by:
+    - target: skill-area:profiling-cpu
+---
+nodeKind: Tool
+id: tool:py-spy
+attributes:
+  displayName: "py-spy"
+  kind: profiler
+  language: language:python
+  description: |
+    Sampling profiler for Python that runs without modifying or
+    restarting the target process; emits flamegraphs and top views.
+edges:
+  belongs_to_language:
+    - language:python
+  tool_used_by:
+    - target: skill-area:profiling-cpu

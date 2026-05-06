@@ -1,0 +1,13 @@
+nodeKind: Tool
+id: tool:vitest
+attributes:
+  displayName: "Vitest"
+  kind: test-runner
+  language: language:javascript
+  description: |
+    Vite-native unit-test framework - fast, ESM-first.
+edges:
+  belongs_to_language:
+    - language:javascript
+  tool_used_by:
+    - target: skill-area:react-testing

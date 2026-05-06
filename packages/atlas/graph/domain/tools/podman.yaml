@@ -1,0 +1,10 @@
+nodeKind: Tool
+id: tool:podman
+attributes:
+  displayName: "Podman"
+  kind: container
+  description: |
+    Daemonless container engine for developing, managing, and running OCI containers.
+edges:
+  tool_used_by:
+    - target: skill-area:containerization

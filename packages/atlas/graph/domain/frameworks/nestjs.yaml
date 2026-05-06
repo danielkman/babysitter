@@ -1,0 +1,11 @@
+nodeKind: Framework
+id: framework:nestjs
+attributes:
+  displayName: "NestJS"
+  belongsToLanguageId: language:typescript
+  category: web-backend
+  description: |
+    NestJS — a progressive Node.js framework built on top of Express / Fastify.
+edges:
+  belongs_to_language:
+    - language:typescript

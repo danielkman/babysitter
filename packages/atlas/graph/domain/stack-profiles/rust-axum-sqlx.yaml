@@ -1,0 +1,14 @@
+nodeKind: StackProfile
+id: stack-profile:rust-axum-sqlx
+attributes:
+  displayName: "Rust + Axum + SQLx + Postgres"
+  description: |
+    Rust web service stack: Axum HTTP framework, SQLx for compile-time
+    checked queries, and PostgreSQL as the data store.
+  composes:
+    - language:rust
+    - framework:axum
+edges:
+  composed_of:
+    - language:rust
+    - framework:axum

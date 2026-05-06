@@ -1,0 +1,10 @@
+nodeKind: Tool
+id: tool:bazel
+attributes:
+  displayName: "Bazel"
+  kind: build-tool
+  description: |
+    Multi-language, multi-platform build and test tool that scales to large codebases.
+edges:
+  tool_used_by:
+    - target: skill-area:terraform-infrastructure

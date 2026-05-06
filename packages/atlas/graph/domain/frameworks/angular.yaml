@@ -1,0 +1,13 @@
+nodeKind: Framework
+id: framework:angular
+attributes:
+  displayName: "Angular"
+  belongsToLanguageId: language:typescript
+  category: web-frontend
+  description: |
+    Angular — Google's batteries-included TypeScript web framework.
+    Modern (v17+) supports standalone components, signals, control-flow
+    syntax, and SSR via Angular Universal.
+edges:
+  belongs_to_language:
+    - language:typescript

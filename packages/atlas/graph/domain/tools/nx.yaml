@@ -1,0 +1,10 @@
+nodeKind: Tool
+id: tool:nx
+attributes:
+  displayName: "Nx"
+  kind: build-tool
+  description: |
+    Smart, fast, and extensible build system with first-class monorepo support.
+edges:
+  belongs_to_language:
+    - target: language:typescript

@@ -1,0 +1,18 @@
+nodeKind: Role
+id: role:doc-generator
+attributes:
+  displayName: "Doc Generator"
+  isAgentic: true
+  requiredCapabilities:
+    - capability:supports-tool-use
+    - capability:supports-text-streaming
+  requiredDomains:
+    - domain:software-engineering
+  description: |
+    Agent that generates and maintains code documentation, READMEs, and reference material.
+edges:
+  requires_capability:
+    - target: capability:supports-tool-use
+    - target: capability:supports-text-streaming
+  applies_to:
+    - target: domain:software-engineering

@@ -1,0 +1,10 @@
+nodeKind: Tool
+id: tool:github-actions
+attributes:
+  displayName: "GitHub Actions"
+  kind: ci
+  description: |
+    CI/CD platform integrated with GitHub repositories - workflows defined in YAML.
+edges:
+  belongs_to_language:
+    - target: language:yaml

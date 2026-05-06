@@ -1,0 +1,36 @@
+---
+nodeKind: Tool
+id: tool:argocd
+attributes:
+  displayName: "Argo CD"
+  kind: ci
+  description: |
+    Declarative GitOps continuous-delivery controller for Kubernetes;
+    syncs cluster state from Git repositories.
+edges:
+  tool_used_by:
+    - target: skill-area:gitops
+---
+nodeKind: Tool
+id: tool:flux
+attributes:
+  displayName: "Flux"
+  kind: ci
+  description: |
+    CNCF GitOps toolkit for Kubernetes — Source/Kustomize/Helm/Image
+    controllers and progressive delivery via Flagger.
+edges:
+  tool_used_by:
+    - target: skill-area:gitops
+---
+nodeKind: Tool
+id: tool:tekton
+attributes:
+  displayName: "Tekton"
+  kind: ci
+  description: |
+    Kubernetes-native CI/CD framework with Tasks, Pipelines, and
+    Triggers as custom resources.
+edges:
+  belongs_to_language:
+    - target: language:yaml

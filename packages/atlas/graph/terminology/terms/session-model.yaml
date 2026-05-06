@@ -1,0 +1,11 @@
+nodeKind: Term
+id: term:session-model
+attributes:
+  canonicalDefinitionId: definition:session-model.canonical
+  displayName: "SessionModel"
+  kind: primitive
+  references:
+    - "NodeKind:SessionModel"
+  description: |
+    Persistence/control-plane/structured-transport triple
+edges:

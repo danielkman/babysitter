@@ -1,0 +1,11 @@
+nodeKind: Library
+id: library:lodash
+attributes:
+  displayName: "Lodash"
+  belongsToLanguageId: language:javascript
+  category: data-structures
+  description: |
+    Modern JavaScript utility library delivering modularity, performance, and extras.
+edges:
+  belongs_to_language:
+    - language:javascript

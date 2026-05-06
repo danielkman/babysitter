@@ -1,0 +1,9 @@
+nodeKind: Topic
+id: topic:api-design
+attributes:
+  displayName: "API Design"
+  description: |
+    API Design as a cross-cutting topic — resource modeling, REST/gRPC/
+    GraphQL trade-offs, versioning strategy, idempotency, pagination,
+    error semantics, and contract evolution.
+edges: {}

@@ -1,0 +1,8 @@
+nodeKind: Tool
+id: tool:datadog
+attributes:
+  displayName: "Datadog"
+  kind: observability
+  description: |
+    Monitoring and analytics platform for cloud-scale infrastructure and applications.
+edges: {}

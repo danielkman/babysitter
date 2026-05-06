@@ -1,0 +1,11 @@
+nodeKind: Tool
+id: tool:biome
+attributes:
+  displayName: "Biome"
+  kind: linter
+  language: language:javascript
+  description: |
+    Toolchain combining a fast linter and formatter for the web - successor to Rome.
+edges:
+  belongs_to_language:
+    - language:javascript

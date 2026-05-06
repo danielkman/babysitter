@@ -1,0 +1,8 @@
+nodeKind: Domain
+id: domain:networking
+attributes:
+  displayName: "Networking"
+  description: |
+    Networking domain — TCP/IP, routing, switching, load balancing, DNS,
+    TLS, service mesh, and software-defined networking.
+edges: {}

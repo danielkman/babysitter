@@ -1,0 +1,14 @@
+nodeKind: StackProfile
+id: stack-profile:go-gin-postgres
+attributes:
+  displayName: "Go + Gin + Postgres"
+  description: |
+    Go web service stack: Gin HTTP framework with PostgreSQL as the
+    primary data store.
+  composes:
+    - language:go
+    - framework:gin
+edges:
+  composed_of:
+    - language:go
+    - framework:gin

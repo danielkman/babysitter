@@ -1,0 +1,31 @@
+nodeKind: PluginTarget
+id: plugin-target:droid
+attributes:
+  displayName: "Droid"
+  hostAgent: agent:droid
+  adapterFamily: shell-hook
+  manifestFormat: "n/a"
+  commandFormat: none
+  hookRegistrationFormat: none
+  skillHandling: unsupported
+  marketplacePath: null
+  adapterName: droid
+  scriptVariants: []
+  distribution:
+    - manual
+  distributionModel: workspace-generated
+  npmPublishable: false
+  installLayout:
+    harnessHomeRelative: ""
+  packageMetadata:
+    moduleType: commonjs
+    binScriptExt: ""
+    installLifecycle: none
+    activationMessage: restart
+    emitCjsWrappers: false
+  componentSupport:
+    agents: unsupported
+    context: unsupported
+edges:
+  hosted_by:
+    - target: agent:droid

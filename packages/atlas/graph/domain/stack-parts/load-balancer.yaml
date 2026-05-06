@@ -1,0 +1,8 @@
+nodeKind: StackPart
+id: stack-part:load-balancer
+attributes:
+  displayName: "Load Balancer"
+  category: infrastructure
+  description: |
+    Distributes incoming connections across a pool of backends. Examples: AWS ALB/NLB, Cloudflare Load Balancer.
+edges: {}

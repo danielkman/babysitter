@@ -1,0 +1,15 @@
+nodeKind: Language
+id: language:swift
+attributes:
+  displayName: "Swift"
+  paradigms:
+    - object-oriented
+    - functional
+    - protocol-oriented
+  description: |
+    The Swift programming language.
+edges:
+  used_by_skill_area:
+    - target: skill-area:ios-native
+  used_by_skill_area:
+    - target: skill-area:ios-native

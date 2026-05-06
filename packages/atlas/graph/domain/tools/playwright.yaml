@@ -1,0 +1,14 @@
+nodeKind: Tool
+id: tool:playwright
+attributes:
+  displayName: "Playwright"
+  kind: test-runner
+  language: language:javascript
+  description: |
+    Framework for end-to-end testing across Chromium, Firefox, and WebKit with a single API.
+edges:
+  belongs_to_language:
+    - language:javascript
+  tool_used_by:
+    - target: skill-area:react-testing
+    - target: skill-area:e2e-testing

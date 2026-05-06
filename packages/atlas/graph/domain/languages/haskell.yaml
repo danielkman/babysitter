@@ -1,0 +1,11 @@
+nodeKind: Language
+id: language:haskell
+attributes:
+  displayName: "Haskell"
+  paradigms:
+    - functional
+    - pure
+    - lazy
+  description: |
+    The Haskell pure functional programming language.
+edges: {}

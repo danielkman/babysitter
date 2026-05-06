@@ -1,0 +1,7 @@
+nodeKind: Topic
+id: topic:jwt-handling
+attributes:
+  displayName: "JWT Handling"
+  description: |
+    JWT Handling as a cross-cutting topic of expertise.
+edges: {}

@@ -1,0 +1,11 @@
+nodeKind: Tool
+id: tool:rye
+attributes:
+  displayName: "Rye"
+  kind: package-manager
+  language: language:python
+  description: |
+    Comprehensive project and package management solution for Python.
+edges:
+  belongs_to_language:
+    - language:python

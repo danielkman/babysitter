@@ -1,0 +1,72 @@
+---
+nodeKind: Tool
+id: tool:vscode
+attributes:
+  displayName: "Visual Studio Code"
+  kind: other
+  description: |
+    Cross-platform extensible code editor by Microsoft with a rich
+    extension marketplace, integrated terminal, and remote-dev support.
+edges:
+  tool_used_by:
+    - target: skill-area:editor-fluency
+---
+nodeKind: Tool
+id: tool:jetbrains-idea
+attributes:
+  displayName: "JetBrains IntelliJ IDEA"
+  kind: other
+  description: |
+    JVM-focused IDE with deep refactoring, language plugins, and an
+    ecosystem of language-specific IDEs (PyCharm, GoLand, WebStorm).
+edges:
+  tool_used_by:
+    - target: skill-area:editor-fluency
+---
+nodeKind: Tool
+id: tool:vim
+attributes:
+  displayName: "Vim"
+  kind: other
+  description: |
+    Modal terminal editor descended from vi; ubiquitous on Unix
+    systems and configurable via Vimscript.
+edges:
+  tool_used_by:
+    - target: skill-area:editor-fluency
+---
+nodeKind: Tool
+id: tool:neovim
+attributes:
+  displayName: "Neovim"
+  kind: other
+  description: |
+    Vim fork focused on extensibility and embeddability with native
+    Lua scripting and async plugin host.
+edges:
+  tool_used_by:
+    - target: skill-area:editor-fluency
+---
+nodeKind: Tool
+id: tool:emacs
+attributes:
+  displayName: "GNU Emacs"
+  kind: other
+  description: |
+    Extensible self-documenting editor with Emacs Lisp scripting;
+    common environments include Org mode and Magit.
+edges:
+  tool_used_by:
+    - target: skill-area:editor-fluency
+---
+nodeKind: Tool
+id: tool:helix
+attributes:
+  displayName: "Helix"
+  kind: other
+  description: |
+    Post-modern modal terminal editor with built-in LSP, tree-sitter
+    syntax, and a multi-selection-first edit model.
+edges:
+  tool_used_by:
+    - target: skill-area:editor-fluency

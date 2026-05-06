@@ -1,0 +1,13 @@
+nodeKind: Language
+id: language:javascript
+attributes:
+  displayName: "JavaScript"
+  paradigms:
+    - imperative
+    - object-oriented
+    - functional
+  description: |
+    The JavaScript programming language.
+edges:
+  used_by_skill_area:
+    - target: skill-area:react-testing

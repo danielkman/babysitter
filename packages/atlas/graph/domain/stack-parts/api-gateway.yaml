@@ -1,0 +1,8 @@
+nodeKind: StackPart
+id: stack-part:api-gateway
+attributes:
+  displayName: "API Gateway"
+  category: api
+  description: |
+    Edge router that fronts internal services - terminates TLS, enforces auth and rate limits, routes by path/host, handles request/response transformation. Examples: Kong, Traefik, Envoy, AWS API Gateway.
+edges: {}

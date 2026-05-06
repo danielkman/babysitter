@@ -1,0 +1,8 @@
+nodeKind: Topic
+id: topic:cqrs
+attributes:
+  displayName: "CQRS"
+  description: |
+    Command Query Responsibility Segregation — splitting write-side
+    command handlers from read-side query models.
+edges: {}

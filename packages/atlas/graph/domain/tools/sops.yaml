@@ -1,0 +1,10 @@
+nodeKind: Tool
+id: tool:sops
+attributes:
+  displayName: "SOPS"
+  kind: secrets-manager
+  description: |
+    Editor of encrypted files supporting YAML, JSON, ENV, INI, and binary formats.
+edges:
+  tool_used_by:
+    - target: skill-area:secrets-rotation

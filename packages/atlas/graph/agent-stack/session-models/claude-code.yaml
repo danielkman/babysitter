@@ -1,0 +1,17 @@
+nodeKind: SessionModel
+id: session-model:claude-code
+attributes:
+  agentVersionId: agent-version:claude-code@1.x
+  persistence: file
+  controlPlane: self-managed
+  structuredTransport: persistent
+  sessionDir: "~/.claude/projects/<hash>/"
+  canResume: true
+  canFork: true
+  format: jsonl
+edges:
+  state_machine_for:
+    - target: workspace:local-developer-default
+  requires_capability:
+    - target: capability:can-resume
+    - target: capability:can-fork

@@ -1,0 +1,11 @@
+nodeKind: Library
+id: library:rxjs
+attributes:
+  displayName: "RxJS"
+  belongsToLanguageId: language:typescript
+  category: concurrency
+  description: |
+    Reactive Extensions library for JavaScript/TypeScript — composable async / event-based programs using Observables.
+edges:
+  belongs_to_language:
+    - language:typescript

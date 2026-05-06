@@ -1,0 +1,10 @@
+nodeKind: Tool
+id: tool:vite
+attributes:
+  displayName: "Vite"
+  kind: bundler
+  description: |
+    Next-generation frontend tooling - native-ESM dev server plus Rollup-based production build.
+edges:
+  belongs_to_language:
+    - target: language:javascript

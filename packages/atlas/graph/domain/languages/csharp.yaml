@@ -1,0 +1,11 @@
+nodeKind: Language
+id: language:csharp
+attributes:
+  displayName: "C#"
+  paradigms:
+    - object-oriented
+    - functional
+    - imperative
+  description: |
+    The C
+edges: {}

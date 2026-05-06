@@ -1,0 +1,13 @@
+nodeKind: Tool
+id: tool:kubernetes
+attributes:
+  displayName: "Kubernetes"
+  kind: orchestrator
+  description: |
+    Open-source container orchestration system for automating deployment, scaling, and management.
+edges:
+  tool_used_by:
+    - target: skill-area:k8s-operator-development
+    - target: skill-area:gitops
+    - target: skill-area:k8s-rbac
+    - target: skill-area:container-security

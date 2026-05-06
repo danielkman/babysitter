@@ -1,0 +1,11 @@
+nodeKind: Tool
+id: tool:mypy
+attributes:
+  displayName: "mypy"
+  kind: linter
+  language: language:python
+  description: |
+    Optional static type checker for Python.
+edges:
+  belongs_to_language:
+    - language:python

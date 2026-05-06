@@ -1,0 +1,13 @@
+nodeKind: Framework
+id: framework:nuxt
+attributes:
+  displayName: "Nuxt"
+  belongsToLanguageId: language:typescript
+  category: web-fullstack
+  description: |
+    Nuxt — a full-stack Vue.js framework.
+edges:
+  belongs_to_language:
+    - language:typescript
+  used_by_skill_area:
+    - target: skill-area:server-side-rendering

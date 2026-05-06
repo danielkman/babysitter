@@ -1,0 +1,15 @@
+nodeKind: Language
+id: language:java
+attributes:
+  displayName: "Java"
+  paradigms:
+    - imperative
+    - object-oriented
+  description: |
+    The Java programming language. Stub created in catalog update to close
+    dangling refs from scope-boundary:java.scope.
+edges:
+  used_by_skill_area:
+    - target: skill-area:kafka-stream-processing
+  used_by_skill_area:
+    - target: skill-area:kafka-stream-processing

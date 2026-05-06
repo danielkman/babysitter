@@ -1,0 +1,11 @@
+nodeKind: Language
+id: language:cobol
+attributes:
+  displayName: "COBOL"
+  paradigms:
+    - imperative
+    - procedural
+  description: |
+    COBOL — the Common Business-Oriented Language; the dominant language
+    for legacy mainframe transaction processing systems.
+edges: {}

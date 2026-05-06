@@ -1,0 +1,13 @@
+nodeKind: Tool
+id: tool:cypress
+attributes:
+  displayName: "Cypress"
+  kind: test-runner
+  language: language:javascript
+  description: |
+    Front-end testing tool for the modern web.
+edges:
+  belongs_to_language:
+    - language:javascript
+  tool_used_by:
+    - target: skill-area:e2e-testing

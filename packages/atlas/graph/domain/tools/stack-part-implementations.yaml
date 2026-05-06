@@ -1,0 +1,195 @@
+---
+nodeKind: Tool
+id: tool:wordpress
+attributes:
+  displayName: "WordPress"
+  kind: other
+  description: |
+    Open-source PHP/MySQL content management system. Powers a large fraction
+    of public websites; rich plugin/theme ecosystem.
+edges:
+  implements_stack_part:
+    - target: stack-part:cms
+---
+nodeKind: Tool
+id: tool:strapi
+attributes:
+  displayName: "Strapi"
+  kind: other
+  description: |
+    Open-source headless CMS (Node.js). REST and GraphQL APIs over a
+    plugin-driven content model.
+edges:
+  implements_stack_part:
+    - target: stack-part:cms
+---
+nodeKind: Tool
+id: tool:neo4j
+attributes:
+  displayName: "Neo4j"
+  kind: other
+  description: |
+    Native graph database with a property-graph model and Cypher query
+    language. Available as community OSS and managed Aura.
+edges:
+  implements_stack_part:
+    - target: stack-part:graph-database
+---
+nodeKind: Tool
+id: tool:elasticsearch
+attributes:
+  displayName: "Elasticsearch"
+  kind: other
+  description: |
+    Distributed search and analytics engine built on Apache Lucene. Powers
+    full-text search, log aggregation, and observability use cases.
+edges:
+  implements_stack_part:
+    - target: stack-part:search-index
+---
+nodeKind: Tool
+id: tool:meilisearch
+attributes:
+  displayName: "Meilisearch"
+  kind: other
+  description: |
+    Open-source search engine focused on instant, typo-tolerant full-text
+    search with a developer-friendly REST API.
+edges:
+  implements_stack_part:
+    - target: stack-part:search-index
+---
+nodeKind: Tool
+id: tool:launchdarkly
+attributes:
+  displayName: "LaunchDarkly"
+  kind: other
+  description: |
+    Feature-flag and A/B testing platform with targeting rules,
+    experimentation, and progressive rollouts.
+edges:
+  implements_stack_part:
+    - target: stack-part:experiment-platform
+---
+nodeKind: Tool
+id: tool:temporal
+attributes:
+  displayName: "Temporal"
+  kind: orchestrator
+  description: |
+    Durable execution platform — author workflows in code (TypeScript,
+    Go, Java, Python) with deterministic replay and at-most-once activity
+    semantics.
+edges:
+  implements_stack_part:
+    - target: stack-part:workflow-engine
+---
+nodeKind: Tool
+id: tool:airflow
+attributes:
+  displayName: "Apache Airflow"
+  kind: orchestrator
+  description: |
+    Author, schedule, and monitor data-pipeline DAGs. Python-native;
+    operator ecosystem covers most data sources.
+edges:
+  implements_stack_part:
+    - target: stack-part:workflow-engine
+---
+nodeKind: Tool
+id: tool:kong
+attributes:
+  displayName: "Kong Gateway"
+  kind: api-tool
+  description: |
+    Cloud-native API gateway built on nginx/OpenResty with plugin-driven
+    rate limiting, auth, transformations, and observability.
+edges:
+  implements_stack_part:
+    - target: stack-part:rate-limiter
+    - target: stack-part:api-gateway
+---
+nodeKind: Tool
+id: tool:databricks
+attributes:
+  displayName: "Databricks"
+  kind: other
+  description: |
+    Unified data-and-AI platform built on Apache Spark + Delta Lake.
+    Handles data lake, warehousing, ML, and notebook workflows.
+edges:
+  implements_stack_part:
+    - target: stack-part:data-lake
+---
+nodeKind: Tool
+id: tool:sendgrid
+attributes:
+  displayName: "SendGrid"
+  kind: other
+  description: |
+    Transactional and marketing email delivery service (Twilio SendGrid).
+    REST API with templates, suppression lists, and event webhooks.
+edges:
+  implements_stack_part:
+    - target: stack-part:email-delivery
+---
+nodeKind: Tool
+id: tool:twilio
+attributes:
+  displayName: "Twilio"
+  kind: other
+  description: |
+    Programmable SMS, voice, WhatsApp, and verification APIs. Global
+    routing, regulatory templating, and delivery-status webhooks.
+edges:
+  implements_stack_part:
+    - target: stack-part:sms-delivery
+---
+nodeKind: Tool
+id: tool:mlflow
+attributes:
+  displayName: "MLflow"
+  kind: other
+  description: |
+    Open-source ML lifecycle platform — experiment tracking, model
+    registry, packaging, and deployment.
+edges:
+  implements_stack_part:
+    - target: stack-part:model-registry
+---
+nodeKind: Tool
+id: tool:bentoml
+attributes:
+  displayName: "BentoML"
+  kind: other
+  description: |
+    Framework for packaging ML models into production-ready microservices
+    with REST/gRPC adapters, batching, and adaptive scaling.
+edges:
+  implements_stack_part:
+    - target: stack-part:model-serving
+---
+nodeKind: Tool
+id: tool:feast
+attributes:
+  displayName: "Feast"
+  kind: other
+  description: |
+    Open-source feature store — defines, manages, and serves ML features
+    for both training and online inference. Integrates with Spark, Snowflake,
+    BigQuery, Redis, DynamoDB.
+edges:
+  implements_stack_part:
+    - target: stack-part:feature-store
+---
+nodeKind: Tool
+id: tool:datadome
+attributes:
+  displayName: "DataDome"
+  kind: other
+  description: |
+    Real-time bot detection and mitigation service. Edge-deployed
+    classifier with API/SDK integration for web, mobile, and APIs.
+edges:
+  implements_stack_part:
+    - target: stack-part:bot-detection

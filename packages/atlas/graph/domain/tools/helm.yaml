@@ -1,0 +1,10 @@
+nodeKind: Tool
+id: tool:helm
+attributes:
+  displayName: "Helm"
+  kind: orchestrator
+  description: |
+    Package manager for Kubernetes - manages charts that describe related Kubernetes resources.
+edges:
+  tool_used_by:
+    - target: skill-area:k8s-operator-development

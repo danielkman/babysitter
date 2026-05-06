@@ -1,0 +1,10 @@
+nodeKind: Tool
+id: tool:jenkins
+attributes:
+  displayName: "Jenkins"
+  kind: ci
+  description: |
+    Open-source automation server for building, testing, and deploying software.
+edges:
+  tool_used_by:
+    - target: skill-area:gitops

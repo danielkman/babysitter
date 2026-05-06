@@ -1,0 +1,37 @@
+nodeKind: AgentVersion
+id: agent-version:codex@1.x
+attributes:
+  agentProductId: agent:codex
+  versionRange: ">=1.0.0 <2.0.0"
+  releasedAt: "2025-04-16"
+  cliCommand: "codex"
+  installMethods:
+    - install:npm
+  minSchemaVersion: "6.0.0"
+edges:
+  version_of:
+    - agent:codex
+  composed_of:
+    - target: agent-core-impl:codex.core@1.x
+      role: core
+    - target: agent-runtime-impl:codex.runtime@1.x
+      role: runtime
+    - target: agent-platform-impl:codex.platform@1.x
+      role: platform
+    - target: agent-ui-impl:codex.ui@current
+      role: ui
+  has_launch_contract:
+    - target: launch-contract:codex-default
+  supports:
+    - target: capability:supports-agents-md
+      versionRange: '>=1.0.0 <2.0.0'
+      level: full
+      notes: Codex CLI reads AGENTS.md as long-term memory at session bootstrap. Source — github.com/openai/codex docs/.
+    - target: capability:requires-pty
+      versionRange: '>=1.0.0 <2.0.0'
+      level: partial
+      notes: Interactive TUI mode requires PTY; --quiet / scripted mode does not.
+    - target: capability:supports-file-attachments
+      versionRange: '>=1.0.0 <2.0.0'
+      level: partial
+      notes: TUI accepts pasted content; image attachments via --add-image.

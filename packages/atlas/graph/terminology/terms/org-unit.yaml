@@ -1,0 +1,11 @@
+nodeKind: Term
+id: term:org-unit
+attributes:
+  canonicalDefinitionId: definition:org-unit.canonical
+  displayName: "OrgUnit"
+  kind: role
+  references:
+    - "NodeKind:OrgUnit"
+  description: |
+    Team/department/squad
+edges:

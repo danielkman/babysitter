@@ -1,0 +1,9 @@
+nodeKind: Domain
+id: domain:devops
+attributes:
+  displayName: "DevOps"
+  description: |
+    The DevOps domain.
+edges:
+  contains:
+    - target: specialization:devops-sre-platform

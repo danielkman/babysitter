@@ -1,0 +1,11 @@
+nodeKind: Tool
+id: tool:flake8
+attributes:
+  displayName: "flake8"
+  kind: linter
+  language: language:python
+  description: |
+    Python tool that glues pyflakes, pycodestyle, and McCabe complexity checks.
+edges:
+  belongs_to_language:
+    - language:python

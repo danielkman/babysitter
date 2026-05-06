@@ -1,0 +1,9 @@
+nodeKind: Domain
+id: domain:software-engineering
+attributes:
+  displayName: "Software Engineering"
+  description: |
+    General software engineering — coding, design, code review,
+    refactoring, debugging, testing. Used as the catch-all domain
+    when nothing more specific applies.
+edges: {}

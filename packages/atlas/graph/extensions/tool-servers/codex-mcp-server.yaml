@@ -1,0 +1,25 @@
+nodeKind: ToolServer
+id: tool-server:codex-mcp-server
+attributes:
+  displayName: Codex MCP Server
+  protocol: mcp-stdio
+  provenance: built-in
+  mcpTransports:
+    - mcp-transport:stdio
+  sourceRef: source-ref:codex-github
+  tools:
+    - tool-descriptor:codex.mcp.codex
+    - tool-descriptor:codex.mcp.codex-reply
+edges:
+  contains_tool_descriptor:
+  - target: tool-descriptor:codex.mcp.codex
+  - target: tool-descriptor:codex.mcp.codex-reply
+  requires_capability:
+    - target: capability:mcp-stdio
+      versionRange: '>=1.0.0 <2.0.0'
+      level: full
+  sourced_from:
+    - target: source-ref:codex-github
+  exposes_tool:
+    - target: tool-descriptor:codex.mcp.codex
+    - target: tool-descriptor:codex.mcp.codex-reply

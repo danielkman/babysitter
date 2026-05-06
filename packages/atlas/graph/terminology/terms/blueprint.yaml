@@ -1,0 +1,11 @@
+nodeKind: Term
+id: term:blueprint
+attributes:
+  canonicalDefinitionId: definition:blueprint.canonical
+  displayName: "Blueprint"
+  kind: extension-shape
+  references:
+    - "NodeKind:Blueprint"
+  description: |
+    Markdown bundle agent reads to install/configure projects (a5c-flavored)
+edges:

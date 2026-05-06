@@ -1,0 +1,13 @@
+nodeKind: Tool
+id: tool:jest
+attributes:
+  displayName: "Jest"
+  kind: test-runner
+  language: language:javascript
+  description: |
+    JavaScript testing framework with focus on simplicity and zero-config.
+edges:
+  belongs_to_language:
+    - language:javascript
+  tool_used_by:
+    - target: skill-area:react-testing

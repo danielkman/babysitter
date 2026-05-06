@@ -1,0 +1,88 @@
+---
+nodeKind: SkillArea
+id: skill-area:digital-advertising
+attributes:
+  displayName: "Digital Advertising"
+  description: |
+    Paid search, programmatic, social ads, DSP management,
+    bid optimization, and ROAS measurement.
+  domains: []
+  expertiseLevels: [novice, intermediate, expert]
+edges: {}
+---
+nodeKind: SkillArea
+id: skill-area:content-marketing
+attributes:
+  displayName: "Content Marketing"
+  description: |
+    Content strategy, SEO writing, editorial calendars,
+    content distribution, and engagement analytics.
+  domains: []
+  expertiseLevels: [novice, intermediate, expert]
+edges: {}
+---
+nodeKind: SkillArea
+id: skill-area:marketing-automation
+attributes:
+  displayName: "Marketing Automation"
+  description: |
+    MAP configuration, lead scoring, nurture flows,
+    lifecycle campaigns, and email deliverability.
+  domains: []
+  expertiseLevels: [novice, intermediate, expert]
+edges: {}
+---
+nodeKind: SkillArea
+id: skill-area:sales-methodology
+attributes:
+  displayName: "Sales Methodology"
+  description: |
+    Sales frameworks (MEDDIC/BANT/Challenger), pipeline management,
+    forecasting, and deal strategy.
+  domains: []
+  expertiseLevels: [novice, intermediate, expert]
+edges: {}
+---
+nodeKind: SkillArea
+id: skill-area:revenue-operations
+attributes:
+  displayName: "Revenue Operations"
+  description: |
+    GTM alignment, funnel analytics, CRM administration,
+    and revenue forecasting.
+  domains: []
+  expertiseLevels: [novice, intermediate, expert]
+edges: {}
+---
+nodeKind: SkillArea
+id: skill-area:brand-strategy
+attributes:
+  displayName: "Brand Strategy"
+  description: |
+    Brand positioning, messaging architecture, visual identity systems,
+    and brand measurement.
+  domains: []
+  expertiseLevels: [novice, intermediate, expert]
+edges: {}
+---
+nodeKind: SkillArea
+id: skill-area:market-research
+attributes:
+  displayName: "Market Research"
+  description: |
+    Competitive intelligence, customer research, market sizing,
+    and trend analysis.
+  domains: []
+  expertiseLevels: [novice, intermediate, expert]
+edges: {}
+---
+nodeKind: SkillArea
+id: skill-area:event-management
+attributes:
+  displayName: "Event Management"
+  description: |
+    Event planning, logistics, speaker coordination, attendee experience,
+    and post-event analytics.
+  domains: []
+  expertiseLevels: [novice, intermediate, expert]
+edges: {}

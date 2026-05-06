@@ -1,0 +1,15 @@
+nodeKind: Framework
+id: framework:react
+attributes:
+  displayName: "React"
+  belongsToLanguageId: language:javascript
+  category: web-frontend
+  description: |
+    The React framework.
+edges:
+  belongs_to_language:
+    - language:javascript
+  used_by_skill_area:
+    - target: skill-area:react-state-management
+    - target: skill-area:react-testing
+    - target: skill-area:react-components

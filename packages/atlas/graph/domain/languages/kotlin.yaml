@@ -1,0 +1,14 @@
+nodeKind: Language
+id: language:kotlin
+attributes:
+  displayName: "Kotlin"
+  paradigms:
+    - object-oriented
+    - functional
+  description: |
+    The Kotlin programming language on the JVM.
+edges:
+  used_by_skill_area:
+    - target: skill-area:android-native
+  used_by_skill_area:
+    - target: skill-area:android-native

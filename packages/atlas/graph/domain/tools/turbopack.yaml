@@ -1,0 +1,10 @@
+nodeKind: Tool
+id: tool:turbopack
+attributes:
+  displayName: "Turbopack"
+  kind: bundler
+  description: |
+    Incremental bundler optimized for JavaScript and TypeScript, written in Rust by Vercel.
+edges:
+  belongs_to_language:
+    - target: language:javascript

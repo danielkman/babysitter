@@ -1,0 +1,10 @@
+nodeKind: Language
+id: language:zig
+attributes:
+  displayName: "Zig"
+  paradigms:
+    - imperative
+    - systems
+  description: |
+    The Zig systems programming language.
+edges: {}

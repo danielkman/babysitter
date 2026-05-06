@@ -1,0 +1,10 @@
+nodeKind: Language
+id: language:bash
+attributes:
+  displayName: "Bash"
+  paradigms:
+    - scripting
+    - imperative
+  description: |
+    The Bash shell scripting language.
+edges: {}

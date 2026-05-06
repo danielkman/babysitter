@@ -1,0 +1,25 @@
+nodeKind: HookSurface
+id: hook-surface:session-start
+attributes:
+  eventName: "SessionStart (canonical)"
+  displayName: "SessionStart (canonical)"
+  kind: canonical
+  direction: event
+  blocking: false
+  family: in-process
+  payloadSchema:
+    type: object
+    required: [session_id, transcript_path, source]
+    properties:
+      session_id: { type: string }
+      transcript_path: { type: string }
+      cwd: { type: string }
+      model: { type: string, description: "Model id at session start (e.g. claude-sonnet-4-5)." }
+      source:
+        type: string
+        enum: [startup, resume, clear]
+        description: "How the session was initiated."
+      startedAt: { type: string, format: date-time }
+  description: |
+    Fires when a new session is created.
+edges:

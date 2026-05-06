@@ -1,0 +1,23 @@
+nodeKind: AgentVersion
+id: agent-version:babysitter-agent@current
+attributes:
+  agentProductId: agent:babysitter-agent
+  versionRange: ">=5.0.0"
+  releasedAt: "2026-01-11"
+  cliCommand: "babysitter-agent"
+  installMethods:
+    - install:npm
+  minSchemaVersion: "6.0.0"
+edges:
+  version_of:
+    - agent:babysitter-agent
+  composed_of:
+    - target: agent-core-impl:babysitter-agent.core@current
+      role: core
+    - target: agent-runtime-impl:babysitter-agent.runtime@current
+      role: runtime
+    - target: agent-platform-impl:babysitter-agent.platform@current
+      role: platform
+    - target: agent-ui-impl:babysitter-agent.ui@current
+      role: ui
+  sourced_from: []

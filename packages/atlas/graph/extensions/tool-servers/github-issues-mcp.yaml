@@ -1,0 +1,34 @@
+nodeKind: ToolServer
+id: tool-server:github-issues-mcp
+attributes:
+  displayName: "GitHub Issues MCP"
+  protocol: mcp
+  mcpTransports:
+    - mcp-transport:stdio
+  tools:
+    - tool-descriptor:github.create-issue
+    - tool-descriptor:github.create-issue
+    - tool-descriptor:github.list-issues
+    - tool-descriptor:github.get-issue
+    - tool-descriptor:github.update-issue
+    - tool-descriptor:github.add-issue-comment
+  sourceRef: source-ref:github-mcp-servers
+edges:
+  contains_tool_descriptor:
+  - target: tool-descriptor:github.create-issue
+  - target: tool-descriptor:github.create-issue
+  - target: tool-descriptor:github.list-issues
+  - target: tool-descriptor:github.get-issue
+  - target: tool-descriptor:github.update-issue
+  - target: tool-descriptor:github.add-issue-comment
+  implements:
+    - target: extension-interface:orchestration
+  requires_capability:
+    - target: capability:supports-mcp
+      level: required
+  sourced_from:
+    - target: source-ref:github-mcp-servers
+  mcp_config_scoped_to:
+    - target: mcp-config-scope:claude-code-enterprise
+  has_connection_state:
+    - target: mcp-connection-state:claude-code-needs-auth-github

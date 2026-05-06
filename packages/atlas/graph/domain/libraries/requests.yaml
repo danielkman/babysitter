@@ -1,0 +1,11 @@
+nodeKind: Library
+id: library:requests
+attributes:
+  displayName: "Requests"
+  belongsToLanguageId: language:python
+  category: http-client
+  description: |
+    HTTP for Humans — a simple HTTP library for Python.
+edges:
+  belongs_to_language:
+    - language:python

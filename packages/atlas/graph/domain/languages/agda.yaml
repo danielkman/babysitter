@@ -1,0 +1,12 @@
+nodeKind: Language
+id: language:agda
+attributes:
+  displayName: "Agda"
+  paradigms:
+    - functional
+    - dependently-typed
+    - proof-assistant
+  description: |
+    Agda — a dependently-typed functional language and interactive
+    proof assistant developed at Chalmers / Gothenburg.
+edges: {}

@@ -1,0 +1,56 @@
+nodeKind: AgentVersion
+id: agent-version:gemini-cli@current
+attributes:
+  agentProductId: agent:gemini-cli
+  versionRange: ">=1.0.0"
+  releasedAt: "2025-06-25"
+  cliCommand: "gemini"
+  installMethods:
+    - install:npm
+  minSchemaVersion: "6.0.0"
+edges:
+  version_of:
+    - agent:gemini-cli
+  composed_of:
+    - target: agent-core-impl:gemini-cli.core@current
+      role: core
+    - target: agent-runtime-impl:gemini-cli.runtime@current
+      role: runtime
+    - target: agent-platform-impl:gemini-cli.platform@current
+      role: platform
+    - target: agent-ui-impl:gemini-cli.ui@current
+      role: ui
+  sourced_from: []
+  supports:
+    - target: capability:skills
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Gemini CLI documents first-class agent skills across workspace, user, and extension tiers.
+    - target: capability:supports-thinking
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Gemini CLI documented as an interactive and automation-capable terminal agent surface.
+    - target: capability:interactive-mode
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Interactive REPL semantics documented directly in the Gemini CLI reference.
+    - target: capability:stdin-injection
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Headless and piped execution documented separately from interactive usage.
+    - target: capability:vision-input
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Public Gemini CLI evidence describes multimodal CLI support.
+    - target: capability:runtime-hooks
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Gemini CLI hook events documented directly.
+    - target: capability:stop-hook
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Normalized stop-hook backed by Gemini's documented end-of-loop hook events.
+    - target: capability:can-resume
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Gemini CLI resume semantics documented through both session management and checkpoint restoration.

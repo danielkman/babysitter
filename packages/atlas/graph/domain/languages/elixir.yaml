@@ -1,0 +1,10 @@
+nodeKind: Language
+id: language:elixir
+attributes:
+  displayName: "Elixir"
+  paradigms:
+    - functional
+    - concurrent
+  description: |
+    The Elixir programming language on the BEAM VM.
+edges: {}

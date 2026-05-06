@@ -1,0 +1,10 @@
+nodeKind: Specialization
+id: specialization:backend-python-django
+attributes:
+  displayName: "Backend (Python/Django)"
+  parentDomainId: domain:web-development
+  description: |
+    Backend (Python/Django) specialization within the web-development domain.
+edges:
+  specializes:
+    - domain:web-development

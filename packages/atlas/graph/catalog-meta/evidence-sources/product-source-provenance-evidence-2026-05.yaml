@@ -1,0 +1,47 @@
+nodeKind: EvidenceSource
+id: evidence:source-provenance-hermes-product-doc
+attributes:
+  displayName: Hermes product documentation source
+  kindLabel: file
+  filePath: docs/agent-mux/reference/agents/hermes.md
+  trustLevel: trust-level:repo
+  observedAt: '2026-05-04T00:00:00Z'
+  observedBy: a5c-ai-catalog
+  locator: agent reference documentation
+edges: {}
+---
+nodeKind: EvidenceSource
+id: evidence:source-provenance-omp-package-peer-dependency
+attributes:
+  displayName: OMP Babysitter plugin package peer dependency source
+  kindLabel: file
+  filePath: plugins/babysitter-omp/package.json
+  trustLevel: trust-level:repo
+  observedAt: '2026-05-04T00:00:00Z'
+  observedBy: a5c-ai-catalog
+  locator: peerDependencies
+edges: {}
+---
+nodeKind: EvidenceSource
+id: evidence:source-provenance-openclaw-adapter-source
+attributes:
+  displayName: OpenClaw adapter source
+  kindLabel: file
+  filePath: packages/agent-mux/adapters/src/openclaw-adapter.ts
+  trustLevel: trust-level:repo
+  observedAt: '2026-05-04T00:00:00Z'
+  observedBy: a5c-ai-catalog
+  locator: adapter definition
+edges: {}
+---
+nodeKind: EvidenceSource
+id: evidence:source-provenance-pi-package-peer-dependency
+attributes:
+  displayName: Pi Babysitter plugin package peer dependency source
+  kindLabel: file
+  filePath: plugins/babysitter-pi/package.json
+  trustLevel: trust-level:repo
+  observedAt: '2026-05-04T00:00:00Z'
+  observedBy: a5c-ai-catalog
+  locator: peerDependencies
+edges: {}

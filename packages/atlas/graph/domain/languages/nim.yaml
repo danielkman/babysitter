@@ -1,0 +1,12 @@
+nodeKind: Language
+id: language:nim
+attributes:
+  displayName: "Nim"
+  paradigms:
+    - imperative
+    - object-oriented
+    - functional
+    - metaprogramming
+  description: |
+    The Nim programming language.
+edges: {}

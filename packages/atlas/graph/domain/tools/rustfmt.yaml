@@ -1,0 +1,11 @@
+nodeKind: Tool
+id: tool:rustfmt
+attributes:
+  displayName: "rustfmt"
+  kind: formatter
+  language: language:rust
+  description: |
+    Tool for formatting Rust code according to style guidelines.
+edges:
+  belongs_to_language:
+    - language:rust

@@ -1,0 +1,11 @@
+nodeKind: Framework
+id: framework:axum
+attributes:
+  displayName: "Axum"
+  belongsToLanguageId: language:rust
+  category: web-backend
+  description: |
+    Axum — a Tokio-based web framework for Rust.
+edges:
+  belongs_to_language:
+    - language:rust

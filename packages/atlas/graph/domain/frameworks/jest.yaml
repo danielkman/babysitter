@@ -1,0 +1,17 @@
+nodeKind: Framework
+id: framework:jest
+attributes:
+  displayName: "Jest"
+  description: |
+    JavaScript/TypeScript testing framework. Common pairing with React
+    Testing Library for component tests; widely used across Node, browser,
+    and React Native projects.
+  category: testing
+  homepageUrl: "https://jestjs.io/"
+  primaryLanguageIds:
+    - language:javascript
+    - language:typescript
+edges:
+  applies_to_language:
+    - target: language:javascript
+    - target: language:typescript

@@ -1,0 +1,24 @@
+---
+nodeKind: Tool
+id: tool:openapi-generator
+attributes:
+  displayName: "OpenAPI Generator"
+  kind: api-tool
+  description: |
+    Generates client SDKs, server stubs, and docs from OpenAPI 2.0/3.x
+    specs across 50+ languages and frameworks.
+edges:
+  tool_used_by:
+    - target: skill-area:sdk-codegen
+---
+nodeKind: Tool
+id: tool:graphql-codegen
+attributes:
+  displayName: "GraphQL Code Generator"
+  kind: api-tool
+  description: |
+    Plugin-based codegen that produces typed clients, hooks, and
+    resolvers from GraphQL schemas and operations.
+edges:
+  tool_used_by:
+    - target: skill-area:sdk-codegen

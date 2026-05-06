@@ -1,0 +1,12 @@
+nodeKind: Framework
+id: framework:svelte
+attributes:
+  displayName: "Svelte"
+  belongsToLanguageId: language:typescript
+  category: web-frontend
+  description: |
+    Svelte — a compiled web UI framework that emits minimal vanilla
+    JavaScript. Svelte 5 introduces runes for fine-grained reactivity.
+edges:
+  belongs_to_language:
+    - language:typescript

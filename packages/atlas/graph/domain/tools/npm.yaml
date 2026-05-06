@@ -1,0 +1,11 @@
+nodeKind: Tool
+id: tool:npm
+attributes:
+  displayName: "npm"
+  kind: package-manager
+  language: language:javascript
+  description: |
+    Node package manager - default JavaScript package registry and CLI.
+edges:
+  belongs_to_language:
+    - language:javascript

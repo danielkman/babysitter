@@ -1,0 +1,11 @@
+nodeKind: Term
+id: term:shared-context-spec
+attributes:
+  canonicalDefinitionId: definition:shared-context-spec.canonical
+  displayName: "SharedContextSpec"
+  kind: concept
+  references:
+    - "NodeKind:SharedContextSpec"
+  description: |
+    Stub. The shape of an a5c shared-context fabric record, attached as a
+edges:

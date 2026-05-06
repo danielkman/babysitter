@@ -1,0 +1,38 @@
+nodeKind: PluginTarget
+id: plugin-target:copilot-cli
+attributes:
+  displayName: "GitHub Copilot CLI"
+  hostAgent: agent:copilot-cli
+  adapterFamily: shell-hook
+  manifestFormat: "plugin.json"
+  commandFormat: "markdown-commands"
+  adapterName: copilot
+  skillHandling: derived-from-commands
+  hookRegistrationFormat: github-copilot
+  marketplacePath: null
+  pluginRootEnvVar: COPILOT_PLUGIN_DIR
+  scriptVariants:
+    - bash
+    - powershell
+  distribution:
+    - github-repo
+    - npm-cli
+  distributionModel: workspace-generated
+  npmPublishable: true
+  installLayout:
+    harnessHomeRelative: ".copilot"
+  packageMetadata:
+    moduleType: commonjs
+    binScriptExt: ".js"
+    installLifecycle: plugin-scripts
+    activationMessage: restart
+    extraPackageFiles:
+      - hooks.json
+      - AGENTS.md
+    emitCjsWrappers: false
+  componentSupport:
+    agents: native
+    context: native
+edges:
+  hosted_by:
+    - target: agent:copilot-cli

@@ -1,0 +1,10 @@
+nodeKind: Language
+id: language:crystal
+attributes:
+  displayName: "Crystal"
+  paradigms:
+    - imperative
+    - object-oriented
+  description: |
+    The Crystal programming language — Ruby-like syntax with static types.
+edges: {}

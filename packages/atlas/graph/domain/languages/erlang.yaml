@@ -1,0 +1,10 @@
+nodeKind: Language
+id: language:erlang
+attributes:
+  displayName: "Erlang"
+  paradigms:
+    - functional
+    - concurrent
+  description: |
+    The Erlang programming language on the BEAM VM.
+edges: {}

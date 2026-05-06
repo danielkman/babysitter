@@ -1,0 +1,11 @@
+nodeKind: Framework
+id: framework:django
+attributes:
+  displayName: "Django"
+  belongsToLanguageId: language:python
+  category: web-backend
+  description: |
+    The Django framework.
+edges:
+  belongs_to_language:
+    - language:python

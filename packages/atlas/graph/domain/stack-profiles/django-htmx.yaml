@@ -1,0 +1,17 @@
+nodeKind: StackProfile
+id: stack-profile:django-htmx
+attributes:
+  displayName: "Django + HTMX + Alpine"
+  description: |
+    Server-rendered Django pages enhanced with HTMX for partial-page
+    swaps and Alpine.js for small client-side interactions.
+  composes:
+    - language:python
+    - framework:django
+edges:
+  composed_of:
+    - language:python
+    - framework:django
+  composes_stack:
+    - target: language:python
+    - target: framework:django

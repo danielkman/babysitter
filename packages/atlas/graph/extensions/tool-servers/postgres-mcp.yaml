@@ -1,0 +1,24 @@
+nodeKind: ToolServer
+id: tool-server:postgres-mcp
+attributes:
+  displayName: "Postgres MCP (read-only)"
+  protocol: mcp
+  mcpTransports:
+    - mcp-transport:stdio
+  tools:
+    - tool-descriptor:postgres.query
+    - tool-descriptor:postgres.list-tables
+    - tool-descriptor:postgres.describe-table
+  sourceRef: source-ref:mcp-servers-registry
+edges:
+  contains_tool_descriptor:
+  - target: tool-descriptor:postgres.query
+  - target: tool-descriptor:postgres.list-tables
+  - target: tool-descriptor:postgres.describe-table
+  implements:
+    - target: extension-interface:sandbox
+  requires_capability:
+    - target: capability:supports-mcp
+      level: required
+  sourced_from:
+    - target: source-ref:mcp-servers-registry

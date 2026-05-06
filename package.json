@@ -6,6 +6,7 @@
   "workspaces": [
     "packages/*",
     "packages/agent-mux/*",
+    "packages/atlas/*",
     "packages/hooks-mux/core",
     "packages/hooks-mux/cli",
     "packages/hooks-mux/adapter-claude",
@@ -48,6 +49,7 @@
     "build:realtime-flow": "npm run build:realtime --workspace=@a5c-ai/agent-mux-ui && npm run build:realtime --workspace=@a5c-ai/agent-mux-webui",
     "test:realtime-flow": "npm run test:realtime --workspace=@a5c-ai/agent-mux-ui && npm run test:realtime --workspace=@a5c-ai/agent-mux-webui",
     "verify:realtime-flow-release": "npm run verify:release --workspace=@a5c-ai/agent-mux-ui && npm run verify:release --workspace=@a5c-ai/agent-mux-webui",
+    "build:atlas": "npm run build --workspace=@a5c-ai/atlas",
     "build:agent-mux": "node scripts/agent-mux-build.cjs build",
     "test:agent-mux": "node scripts/agent-mux-build.cjs build && node scripts/agent-mux-build.cjs test",
     "build:hooks-mux": "node scripts/hooks-mux-build.cjs build",

@@ -1,0 +1,10 @@
+nodeKind: Specialization
+id: specialization:k8s-ops
+attributes:
+  displayName: "Kubernetes Operations"
+  parentDomainId: domain:devops
+  description: |
+    Kubernetes Operations specialization within the devops domain.
+edges:
+  specializes:
+    - domain:devops

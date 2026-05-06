@@ -1,0 +1,48 @@
+nodeKind: ToolServer
+id: tool-server:filesystem-mcp
+attributes:
+  displayName: "Filesystem MCP"
+  protocol: mcp
+  mcpTransports:
+    - mcp-transport:stdio
+  tools:
+    - tool-descriptor:long-build
+    - tool-descriptor:fs.read-file
+    - tool-descriptor:fs.read-multiple-files
+    - tool-descriptor:fs.write-file
+    - tool-descriptor:fs.edit-file
+    - tool-descriptor:fs.create-directory
+    - tool-descriptor:fs.list-directory
+    - tool-descriptor:fs.directory-tree
+    - tool-descriptor:fs.move-file
+    - tool-descriptor:fs.search-files
+    - tool-descriptor:fs.get-file-info
+    - tool-descriptor:fs.list-allowed-directories
+  sourceRef: source-ref:mcp-filesystem
+edges:
+  contains_tool_descriptor:
+  - target: tool-descriptor:long-build
+  - target: tool-descriptor:fs.read-file
+  - target: tool-descriptor:fs.read-multiple-files
+  - target: tool-descriptor:fs.write-file
+  - target: tool-descriptor:fs.edit-file
+  - target: tool-descriptor:fs.create-directory
+  - target: tool-descriptor:fs.list-directory
+  - target: tool-descriptor:fs.directory-tree
+  - target: tool-descriptor:fs.move-file
+  - target: tool-descriptor:fs.search-files
+  - target: tool-descriptor:fs.get-file-info
+  - target: tool-descriptor:fs.list-allowed-directories
+  implements:
+    - target: extension-interface:sandbox
+  requires_capability:
+    - target: capability:mcp-stdio
+      level: required
+  sourced_from:
+    - target: source-ref:mcp-filesystem
+  mcp_config_scoped_to:
+    - target: mcp-config-scope:claude-code-project
+  has_connection_state:
+    - target: mcp-connection-state:claude-code-connected-anthropic-files
+  exposes_resource:
+    - target: mcp-resource:filesystem-readonly

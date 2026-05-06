@@ -1,0 +1,11 @@
+nodeKind: Tool
+id: tool:prettier
+attributes:
+  displayName: "Prettier"
+  kind: formatter
+  language: language:javascript
+  description: |
+    Opinionated code formatter for JavaScript / TypeScript / CSS / Markdown / and more.
+edges:
+  belongs_to_language:
+    - language:javascript

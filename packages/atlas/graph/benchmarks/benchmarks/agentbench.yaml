@@ -1,0 +1,10 @@
+nodeKind: Benchmark
+id: benchmark:agentbench
+attributes:
+  displayName: "AgentBench"
+  homepageUrl: https://github.com/THUDM/AgentBench
+  kind: tool-use
+  targetsKind: AgentVersion
+  description: |
+    Multi-domain agent benchmark spanning OS, DB, KG, web shopping, web browsing, and other environments.
+edges: {}

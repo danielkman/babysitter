@@ -1,0 +1,8 @@
+nodeKind: Tool
+id: tool:honeycomb
+attributes:
+  displayName: "Honeycomb"
+  kind: observability
+  description: |
+    Observability platform for high-cardinality, wide-event analytics on production systems.
+edges: {}

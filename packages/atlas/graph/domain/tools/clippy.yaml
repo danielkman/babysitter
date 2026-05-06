@@ -1,0 +1,11 @@
+nodeKind: Tool
+id: tool:clippy
+attributes:
+  displayName: "Clippy"
+  kind: linter
+  language: language:rust
+  description: |
+    Lint collection for catching common mistakes and improving Rust code.
+edges:
+  belongs_to_language:
+    - language:rust

@@ -1,0 +1,8 @@
+nodeKind: StackPart
+id: stack-part:logging
+attributes:
+  displayName: "Logging"
+  category: observability
+  description: |
+    Aggregation and search of structured/unstructured log streams. Examples: ELK stack, Splunk, Loki, Papertrail.
+edges: {}

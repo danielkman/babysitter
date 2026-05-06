@@ -1,0 +1,13 @@
+nodeKind: Framework
+id: framework:directus
+attributes:
+  displayName: "Directus"
+  belongsToLanguageId: language:javascript
+  category: web-backend
+  description: |
+    Directus — an open-source data platform that wraps any SQL database
+    with an instant REST/GraphQL API and an admin app, supporting
+    flows / extensions / webhooks for custom logic.
+edges:
+  belongs_to_language:
+    - language:javascript

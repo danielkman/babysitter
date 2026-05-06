@@ -1,0 +1,11 @@
+nodeKind: Framework
+id: framework:solid-start
+attributes:
+  displayName: "SolidStart"
+  belongsToLanguageId: language:typescript
+  category: web-fullstack
+  description: |
+    SolidStart — a full-stack framework for SolidJS.
+edges:
+  belongs_to_language:
+    - language:typescript

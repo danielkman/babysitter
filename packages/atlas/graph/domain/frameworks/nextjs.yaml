@@ -1,0 +1,14 @@
+nodeKind: Framework
+id: framework:nextjs
+attributes:
+  displayName: "Next.js"
+  belongsToLanguageId: language:typescript
+  category: web-fullstack
+  description: |
+    The Next.js framework.
+edges:
+  belongs_to_language:
+    - language:typescript
+  used_by_skill_area:
+    - target: skill-area:server-side-rendering
+    - target: skill-area:hydration

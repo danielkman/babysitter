@@ -1,0 +1,57 @@
+nodeKind: PackageSurface
+id: package:a5c-ai-breakpoints-mux
+attributes:
+  packageId: "@a5c-ai/breakpoints-mux"
+  packageName: "@a5c-ai/breakpoints-mux"
+  workspacePath: packages/breakpoints-mux
+  moduleType: typescript
+  surfaceKinds:
+    - breakpoint-runtime
+  sourceOfTruthRole: wrapper-over-graph
+  publishedTo: npm
+  versionPolicy: semver
+edges:
+  references_path:
+    - target: path:amux-hooks-global
+  exposes_subcommand:
+    - target: interaction-primitive:breakpoints-mux-cli-ask
+    - target: interaction-primitive:breakpoints-mux-cli-responders
+    - target: interaction-primitive:breakpoints-mux-cli-breakpoints
+    - target: interaction-primitive:breakpoints-mux-cli-server
+    - target: interaction-primitive:breakpoints-mux-cli-responder-loop
+    - target: interaction-primitive:breakpoints-mux-cli-auth
+    - target: interaction-primitive:breakpoints-mux-cli-auth-login
+    - target: interaction-primitive:breakpoints-mux-cli-auth-server-set
+    - target: interaction-primitive:breakpoints-mux-cli-auth-server-clear
+    - target: interaction-primitive:breakpoints-mux-cli-auth-token-set
+    - target: interaction-primitive:breakpoints-mux-cli-auth-token-clear
+    - target: interaction-primitive:breakpoints-mux-cli-auth-logout
+    - target: interaction-primitive:breakpoints-mux-cli-auth-status
+    - target: interaction-primitive:breakpoints-mux-cli-auth-keygen
+    - target: interaction-primitive:breakpoints-mux-cli-auth-key-push
+    - target: interaction-primitive:breakpoints-mux-cli-auth-keys
+    - target: interaction-primitive:breakpoints-mux-cli-breakpoints-pending
+    - target: interaction-primitive:breakpoints-mux-cli-breakpoints-answer
+    - target: interaction-primitive:breakpoints-mux-cli-breakpoints-status
+    - target: interaction-primitive:breakpoints-mux-cli-breakpoints-poll
+    - target: interaction-primitive:breakpoints-mux-cli-responders-list
+    - target: interaction-primitive:breakpoints-mux-cli-responders-show
+    - target: interaction-primitive:breakpoints-mux-cli-server-start
+  exposes_endpoint:
+    - target: api-endpoint:breakpoints-mux-mcp-streamable
+    - target: api-endpoint:breakpoints-mux-mcp-healthz
+    - target: api-endpoint:breakpoints-mux-server-client-questions-create
+    - target: api-endpoint:breakpoints-mux-server-client-questions-get
+    - target: api-endpoint:breakpoints-mux-server-client-questions-cancel
+    - target: api-endpoint:breakpoints-mux-server-client-questions-list
+    - target: api-endpoint:breakpoints-mux-server-client-experts-questions
+    - target: api-endpoint:breakpoints-mux-server-client-questions-answers
+    - target: api-endpoint:breakpoints-mux-server-client-experts-list
+    - target: api-endpoint:breakpoints-mux-server-client-questions-claim
+  has_payload_schema:
+    - target: shared-context-spec:breakpoints-mux-breakpoint-context
+    - target: shared-context-spec:breakpoints-mux-breakpoint-routing
+    - target: shared-context-spec:breakpoints-mux-breakpoint-answer
+    - target: shared-context-spec:breakpoints-mux-proven-breakpoint-answer
+    - target: shared-context-spec:breakpoints-mux-responder-profile
+    - target: shared-context-spec:breakpoints-mux-backend-iface

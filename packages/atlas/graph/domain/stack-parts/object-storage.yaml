@@ -1,0 +1,8 @@
+nodeKind: StackPart
+id: stack-part:object-storage
+attributes:
+  displayName: "Object Storage"
+  category: data-store
+  description: |
+    Bucket-based blob store with HTTP API. Examples: Amazon S3, Google Cloud Storage, Azure Blob Storage, MinIO.
+edges: {}

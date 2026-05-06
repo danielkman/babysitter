@@ -1,0 +1,10 @@
+nodeKind: Tool
+id: tool:rollup
+attributes:
+  displayName: "Rollup"
+  kind: bundler
+  description: |
+    Module bundler for JavaScript that compiles small pieces of code into something larger.
+edges:
+  belongs_to_language:
+    - target: language:javascript

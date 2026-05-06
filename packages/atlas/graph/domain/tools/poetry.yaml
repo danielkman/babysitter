@@ -1,0 +1,11 @@
+nodeKind: Tool
+id: tool:poetry
+attributes:
+  displayName: "Poetry"
+  kind: package-manager
+  language: language:python
+  description: |
+    Python dependency management and packaging made easy.
+edges:
+  belongs_to_language:
+    - language:python

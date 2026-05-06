@@ -1,0 +1,11 @@
+nodeKind: Term
+id: term:session-semantics
+attributes:
+  canonicalDefinitionId: definition:session-semantics.canonical
+  displayName: "SessionSemantics"
+  kind: lifecycle-state
+  references:
+    - "NodeKind:SessionSemantics"
+  description: |
+    Per-agent session behavior — dir strategy, id sources, resume/fork/prune semantics, concurrency model
+edges:

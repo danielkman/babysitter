@@ -1,0 +1,11 @@
+nodeKind: Tool
+id: tool:bun
+attributes:
+  displayName: "Bun"
+  kind: package-manager
+  language: language:javascript
+  description: |
+    All-in-one JavaScript runtime, bundler, transpiler, and package manager.
+edges:
+  belongs_to_language:
+    - language:javascript

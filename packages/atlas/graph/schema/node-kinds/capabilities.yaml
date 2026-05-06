@@ -1,0 +1,98 @@
+# NodeKinds for cluster 8-capabilities.
+# Loaded by tools/validator/validate.py via the manifest in ../ontology-schema.yaml.
+# DO NOT add backward-compat shims — catalog pass 37 policy.
+
+nodeKinds:
+- id: node:capability
+  name: Capability
+  origin: universal
+  prefix: capability
+  cluster: 8-capabilities
+  purpose: a named capability
+  attributes:
+  - name: id
+    type: id
+    required: true
+  - name: displayName
+    type: string
+    required: true
+  - name: description
+    type: markdown
+    required: true
+  - name: appliesToNodeKinds
+    type: list<string>
+    required: true
+  - name: category
+    type: enum<model
+    agent: null
+    runtime: null
+    platform: null
+    tool: null
+    session: null
+    hook: null
+    extension: null
+    reasoning: null
+    provider-feature>: null
+    required: true
+  incomingEdges:
+  - supports
+  - requires_capability
+  - supported_by
+  outgoingEdges: []
+  invariants: []
+  examples: []
+- id: node:install-method
+  name: InstallMethod
+  origin: universal
+  prefix: install
+  cluster: 8-capabilities
+  purpose: 'a canonical install method (npm, brew, gh-extension, …) referenced by
+
+    AgentVersion.installMethods, Plugin install records, and Blueprint setup
+
+    '
+  attributes:
+  - name: id
+    type: id
+    required: true
+  - name: displayName
+    type: string
+    required: true
+  - name: kind
+    type: enum<npm,brew,gh-extension,curl,winget,scoop,manual,pip,nix,cargo,go-install>
+    required: true
+  - name: platforms
+    type: list<enum<darwin,linux,win32,all>>
+    required: true
+    notes: Supported OS platforms. `all` is allowed as shorthand for [darwin,linux,win32].
+  - name: command
+    type: string
+    required: true
+    notes: Install-command template, e.g. `npm install -g {{package}}`.
+  - name: prerequisiteCheck
+    type: string
+    required: false
+    notes: Verification command, e.g. `node --version`.
+  incomingEdges:
+  - install_method_for
+  outgoingEdges:
+  - installs
+  - requires_capability
+  invariants:
+  - id starts with install: null
+  - command MUST be a non-empty templated string (V-11.x)
+  - platforms list MUST be non-empty
+  - kind values MUST be unique across the catalog (one canonical InstallMethod per kind)
+  examples:
+  - graph/capabilities/install-methods/npm.yaml
+  - graph/capabilities/install-methods/brew.yaml
+  - graph/capabilities/install-methods/gh-extension.yaml
+  - graph/capabilities/install-methods/curl.yaml
+  - graph/capabilities/install-methods/manual.yaml
+  - graph/capabilities/install-methods/winget.yaml
+  - graph/capabilities/install-methods/pip.yaml
+  - graph/capabilities/install-methods/scoop.yaml
+  - graph/capabilities/install-methods/nix.yaml
+  - graph/capabilities/install-methods/cargo.yaml
+  - graph/capabilities/install-methods/go-install.yaml
+

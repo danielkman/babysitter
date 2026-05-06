@@ -1,0 +1,24 @@
+---
+nodeKind: Tool
+id: tool:istio
+attributes:
+  displayName: "Istio"
+  kind: orchestrator
+  description: |
+    Service mesh for Kubernetes providing mTLS, traffic management,
+    policy, and telemetry via Envoy sidecars.
+edges:
+  tool_used_by:
+    - target: skill-area:service-mesh-config
+---
+nodeKind: Tool
+id: tool:linkerd
+attributes:
+  displayName: "Linkerd"
+  kind: orchestrator
+  description: |
+    Lightweight CNCF service mesh with Rust-based micro-proxy,
+    automatic mTLS, and minimal configuration surface.
+edges:
+  tool_used_by:
+    - target: skill-area:service-mesh-config

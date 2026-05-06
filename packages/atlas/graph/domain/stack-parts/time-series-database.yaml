@@ -1,0 +1,12 @@
+nodeKind: StackPart
+id: stack-part:time-series-database
+attributes:
+  displayName: "Time-Series Database"
+  category: data-store
+  description: |
+    Database optimized for time-stamped append-heavy workloads. Examples: InfluxDB, TimescaleDB, Prometheus.
+  commonImplementations:
+    - tool:prometheus
+edges:
+  implemented_by:
+    - tool:prometheus

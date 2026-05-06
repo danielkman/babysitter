@@ -1,0 +1,39 @@
+---
+nodeKind: Tool
+id: tool:gradle
+attributes:
+  displayName: "Gradle"
+  kind: build-tool
+  language: language:java
+  description: |
+    JVM build tool with Groovy/Kotlin DSLs, incremental builds, and a
+    rich plugin ecosystem (Android, Spring Boot, Kotlin).
+edges:
+  belongs_to_language:
+    - language:java
+---
+nodeKind: Tool
+id: tool:maven
+attributes:
+  displayName: "Apache Maven"
+  kind: build-tool
+  language: language:java
+  description: |
+    XML-driven JVM build tool with a convention-based lifecycle, POM
+    dependency model, and a vast plugin set.
+edges:
+  belongs_to_language:
+    - language:java
+---
+nodeKind: Tool
+id: tool:sbt
+attributes:
+  displayName: "sbt"
+  kind: build-tool
+  language: language:scala
+  description: |
+    Scala-centric build tool with incremental compilation, REPL,
+    cross-version builds, and plugin DSL.
+edges:
+  belongs_to_language:
+    - language:scala

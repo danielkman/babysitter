@@ -1,0 +1,69 @@
+nodeKind: Term
+id: term:agent-mux-run
+attributes:
+  canonicalDefinitionId: definition:invocation.canonical
+  displayName: "agent-mux run"
+  kind: concept
+  description: |
+    Legacy term for an Invocation in the agent-mux harness; mapped to
+    the canonical `Invocation` node kind via terminology/synonyms/.
+edges: {}
+---
+nodeKind: Term
+id: term:agent-to-agent
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition (no definition:agent-to-agent exists yet)"
+  displayName: "Agent-to-Agent (A2A)"
+  kind: concept
+  description: |
+    Communication pattern between agents; expanded acronym a2a.
+edges: {}
+---
+nodeKind: Term
+id: term:anthropic-skill
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "Anthropic Skill"
+  kind: concept
+  description: |
+    The Anthropic-led "Skill" concept — a SKILL.md-driven progressive
+    disclosure capability. Mapped to canonical `skill` via synonyms.
+edges: {}
+---
+nodeKind: Term
+id: term:model-context-protocol
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "Model Context Protocol"
+  kind: concept
+  description: |
+    The Model Context Protocol — open standard for tool servers and
+    elicitation surfaces. Acronym `mcp`.
+edges: {}
+---
+nodeKind: Term
+id: term:evidence-source
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "EvidenceSource"
+  kind: concept
+  references:
+    - "NodeKind:EvidenceSource"
+  description: |
+    Canonical NodeKind label for a discrete piece of evidence (doc page,
+    file, package, observation, attestation). See ../../../schema/evidence-model.md.
+edges: {}
+---
+nodeKind: Term
+id: term:gemini-generate-content
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "Gemini generateContent"
+  kind: concept
+  references:
+    - "NodeKind:ModelTransportProtocol"
+  description: |
+    Canonical name for the Google Gemini generateContent API transport.
+edges: {}
+
+

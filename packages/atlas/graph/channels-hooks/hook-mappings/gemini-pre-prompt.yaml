@@ -1,0 +1,18 @@
+nodeKind: HookMapping
+id: hook-mapping:pre-tool-use-gemini
+attributes:
+  mappingId: hook-mapping:pre-tool-use-gemini
+  hookId: hook-surface:pre-tool-use
+  targetId: agent-version:gemini-cli@current
+  nativeName: pre_prompt
+  versionRange: ">=0.0.0"
+  requiresRuntimeHooks: true
+  adapterFamily: gemini-cli
+  delivery: shell
+  blocking: true
+  supportLevel: supported
+edges:
+  maps_hook:
+    - target: hook-surface:pre-tool-use
+  emits_hook:
+    - target: agent-version:gemini-cli@current

@@ -1,0 +1,11 @@
+nodeKind: Framework
+id: framework:fastapi
+attributes:
+  displayName: "FastAPI"
+  belongsToLanguageId: language:python
+  category: web-backend
+  description: |
+    The FastAPI framework.
+edges:
+  belongs_to_language:
+    - language:python

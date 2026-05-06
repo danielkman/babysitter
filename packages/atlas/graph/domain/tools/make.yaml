@@ -1,0 +1,10 @@
+nodeKind: Tool
+id: tool:make
+attributes:
+  displayName: "GNU Make"
+  kind: build-tool
+  description: |
+    Tool that controls the generation of executables and other non-source files from source files.
+edges:
+  tool_used_by:
+    - target: skill-area:terraform-infrastructure

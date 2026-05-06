@@ -1,0 +1,23 @@
+nodeKind: AgentVersion
+id: agent-version:qwen@current
+attributes:
+  agentProductId: agent:qwen
+  versionRange: ">=0.0.1"
+  releasedAt: "2025-01-01"
+  cliCommand: "qwen"
+  installMethods:
+    - install:npm
+  minSchemaVersion: "6.0.0"
+edges:
+  version_of:
+    - agent:qwen
+  composed_of:
+    - target: agent-core-impl:qwen.core@current
+      role: core
+    - target: agent-runtime-impl:qwen.runtime@current
+      role: runtime
+    - target: agent-platform-impl:qwen.platform@current
+      role: platform
+    - target: agent-ui-impl:qwen.ui@current
+      role: ui
+  sourced_from: []

@@ -1,0 +1,11 @@
+nodeKind: Term
+id: term:claim
+attributes:
+  canonicalDefinitionId: definition:claim.canonical
+  displayName: "Claim"
+  kind: concept
+  references:
+    - "NodeKind:Claim"
+  description: |
+    A claim of fact about an entity attribute
+edges:

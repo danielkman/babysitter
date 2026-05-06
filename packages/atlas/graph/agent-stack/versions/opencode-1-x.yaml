@@ -1,0 +1,58 @@
+nodeKind: AgentVersion
+id: agent-version:opencode@1.x
+attributes:
+  agentProductId: agent:opencode
+  versionRange: ">=1.0.0 <2.0.0"
+  releasedAt: "2025-01-01"
+  cliCommand: "opencode"
+  installMethods:
+    - install:npm
+    - install:brew
+    - install:curl
+  minSchemaVersion: "6.0.0"
+edges:
+  version_of:
+    - agent:opencode
+  composed_of:
+    - target: agent-core-impl:opencode.core@1.x
+      role: core
+    - target: agent-runtime-impl:opencode.runtime@1.x
+      role: runtime
+    - target: agent-platform-impl:opencode.platform@1.x
+      role: platform
+    - target: agent-ui-impl:opencode.ui@current
+      role: ui
+  sourced_from: []
+  supports:
+    - target: capability:skills
+      versionRange: ">=0.0.0"
+      level: full
+      notes: OpenCode documents reusable command surfaces — first-party basis for the local skills abstraction.
+    - target: capability:supports-thinking
+      versionRange: ">=0.0.0"
+      level: full
+      notes: OpenCode documented as an interactive terminal coding surface backed by configurable providers.
+    - target: capability:interactive-mode
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Interactive terminal use documented directly in OpenCode TUI docs.
+    - target: capability:stdin-injection
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Public docs thinner for non-interactive prompt injection; local fallback metadata remains primary.
+    - target: capability:vision-input
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Public OpenCode docs lack strong technical detail for image input.
+    - target: capability:runtime-hooks
+      versionRange: ">=0.0.0"
+      level: full
+      notes: OpenCode plugins expose hook-based extensibility — first-party basis for runtime hooks.
+    - target: capability:stop-hook
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Local ontology normalizes stop-hook separately; first-party support is the broader plugin hook system.
+    - target: capability:can-resume
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Public OpenCode docs describe where sessions are stored.

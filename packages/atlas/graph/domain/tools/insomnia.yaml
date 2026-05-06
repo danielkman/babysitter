@@ -1,0 +1,10 @@
+nodeKind: Tool
+id: tool:insomnia
+attributes:
+  displayName: "Insomnia"
+  kind: api-tool
+  description: |
+    Open-source API client and design platform for REST, GraphQL, gRPC, and WebSockets.
+edges:
+  tool_used_by:
+    - target: skill-area:api-design

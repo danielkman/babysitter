@@ -1,0 +1,42 @@
+---
+nodeKind: StackPart
+id: stack-part:serverless-runtime
+attributes:
+  displayName: "Serverless Runtime (FaaS)"
+  category: compute
+  description: |
+    General-purpose function-as-a-service runtime (distinct from
+    edge-functions which run at the CDN POP). Implementations: AWS Lambda,
+    GCP Cloud Functions, Azure Functions.
+edges: {}
+---
+nodeKind: StackPart
+id: stack-part:container-runtime
+attributes:
+  displayName: "Container Runtime"
+  category: compute
+  description: |
+    Managed service that runs OCI containers without orchestrating a
+    cluster (Cloud Run, Fargate, Container Apps, Heroku Dyno, Fly App,
+    Railway Service).
+edges: {}
+---
+nodeKind: StackPart
+id: stack-part:kubernetes-cluster
+attributes:
+  displayName: "Managed Kubernetes Cluster"
+  category: infrastructure
+  description: |
+    Managed control plane for Kubernetes (EKS, GKE, AKS). Distinct from
+    kubernetes-the-platform itself.
+edges: {}
+---
+nodeKind: StackPart
+id: stack-part:container-registry
+attributes:
+  displayName: "Container Registry"
+  category: infrastructure
+  description: |
+    Storage and distribution of OCI/Docker container images (ECR,
+    GCR/Artifact Registry, ACR).
+edges: {}

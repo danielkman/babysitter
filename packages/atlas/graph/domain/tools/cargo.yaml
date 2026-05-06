@@ -1,0 +1,11 @@
+nodeKind: Tool
+id: tool:cargo
+attributes:
+  displayName: "Cargo"
+  kind: package-manager
+  language: language:rust
+  description: |
+    Rust package manager and build tool.
+edges:
+  belongs_to_language:
+    - language:rust

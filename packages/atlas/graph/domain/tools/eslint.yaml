@@ -1,0 +1,11 @@
+nodeKind: Tool
+id: tool:eslint
+attributes:
+  displayName: "ESLint"
+  kind: linter
+  language: language:javascript
+  description: |
+    Pluggable JavaScript and TypeScript linter.
+edges:
+  belongs_to_language:
+    - language:javascript

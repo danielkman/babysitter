@@ -1,0 +1,10 @@
+nodeKind: StackPart
+id: stack-part:event-bus
+attributes:
+  displayName: "Event Bus"
+  category: infrastructure
+  description: |
+    Publish-subscribe backbone for inter-service events. Examples: Kafka, AWS EventBridge, NATS.
+edges:
+  stack_part_used_by:
+    - target: skill-area:kafka-stream-processing

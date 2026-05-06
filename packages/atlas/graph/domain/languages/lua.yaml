@@ -1,0 +1,10 @@
+nodeKind: Language
+id: language:lua
+attributes:
+  displayName: "Lua"
+  paradigms:
+    - imperative
+    - scripting
+  description: |
+    The Lua scripting language.
+edges: {}

@@ -1,0 +1,10 @@
+nodeKind: Tool
+id: tool:kustomize
+attributes:
+  displayName: "Kustomize"
+  kind: orchestrator
+  description: |
+    Kubernetes-native configuration management with template-free YAML customization.
+edges:
+  belongs_to_language:
+    - target: language:yaml

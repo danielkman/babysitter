@@ -1,0 +1,23 @@
+nodeKind: AgentVersion
+id: agent-version:hermes@current
+attributes:
+  agentProductId: agent:hermes
+  versionRange: ">=1.0.0"
+  releasedAt: "2025-01-01"
+  cliCommand: "hermes"
+  installMethods:
+    - install:pip
+  minSchemaVersion: "6.0.0"
+edges:
+  version_of:
+    - agent:hermes
+  composed_of:
+    - target: agent-core-impl:hermes.core@current
+      role: core
+    - target: agent-runtime-impl:hermes.runtime@current
+      role: runtime
+    - target: agent-platform-impl:hermes.platform@current
+      role: platform
+    - target: agent-ui-impl:hermes.ui@current
+      role: ui
+  sourced_from: []

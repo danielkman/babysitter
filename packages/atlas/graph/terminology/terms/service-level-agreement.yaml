@@ -1,0 +1,9 @@
+nodeKind: Term
+id: term:service-level-agreement
+attributes:
+  canonicalDefinitionId: definition:service-level-agreement.canonical
+  displayName: "Service Level Agreement"
+  kind: concept
+  description: |
+    A contract specifying expected service availability and response targets.
+edges:

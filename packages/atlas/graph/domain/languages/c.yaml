@@ -1,0 +1,14 @@
+nodeKind: Language
+id: language:c
+attributes:
+  displayName: "C"
+  paradigms:
+    - imperative
+    - systems
+  description: |
+    The C programming language.
+edges:
+  used_by_skill_area:
+    - target: skill-area:firmware-development
+  used_by_skill_area:
+    - target: skill-area:firmware-development

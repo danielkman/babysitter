@@ -1,0 +1,10 @@
+nodeKind: Language
+id: language:sql
+attributes:
+  displayName: "SQL"
+  paradigms:
+    - declarative
+    - query
+  description: |
+    The SQL query language for relational databases.
+edges: {}

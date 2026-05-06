@@ -1,0 +1,17 @@
+nodeKind: Language
+id: language:cpp
+attributes:
+  displayName: "C++"
+  paradigms:
+    - object-oriented
+    - imperative
+    - generic
+    - systems
+  description: |
+    The C++ programming language.
+edges:
+  used_by_skill_area:
+    - target: skill-area:firmware-development
+    - target: skill-area:cuda-kernels
+  used_by_skill_area:
+    - target: skill-area:firmware-development

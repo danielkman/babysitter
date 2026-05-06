@@ -1,0 +1,13 @@
+nodeKind: Framework
+id: framework:astro
+attributes:
+  displayName: "Astro"
+  belongsToLanguageId: language:typescript
+  category: web-fullstack
+  description: |
+    Astro — a content-focused web framework with islands architecture.
+edges:
+  belongs_to_language:
+    - language:typescript
+  used_by_skill_area:
+    - target: skill-area:hydration

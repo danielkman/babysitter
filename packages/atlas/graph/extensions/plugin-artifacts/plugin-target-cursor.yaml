@@ -1,0 +1,37 @@
+nodeKind: PluginTarget
+id: plugin-target:cursor
+attributes:
+  displayName: "Cursor"
+  hostAgent: agent:cursor
+  adapterFamily: shell-hook
+  manifestFormat: "plugin.json"
+  commandFormat: "markdown-commands"
+  adapterName: cursor
+  skillHandling: derived-from-commands
+  hookRegistrationFormat: cursor
+  marketplacePath: null
+  pluginRootEnvVar: CURSOR_PLUGIN_ROOT
+  scriptVariants:
+    - bash
+    - powershell
+  distribution:
+    - github-repo
+    - npm-cli
+  distributionModel: workspace-generated
+  npmPublishable: false
+  installLayout:
+    harnessHomeRelative: ".cursor"
+  packageMetadata:
+    moduleType: commonjs
+    binScriptExt: ".js"
+    installLifecycle: postinstall
+    activationMessage: restart
+    extraPackageFiles:
+      - hooks.json
+    emitCjsWrappers: false
+  componentSupport:
+    agents: unsupported
+    context: unsupported
+edges:
+  hosted_by:
+    - target: agent:cursor

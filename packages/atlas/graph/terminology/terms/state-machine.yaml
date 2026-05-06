@@ -1,0 +1,11 @@
+nodeKind: Term
+id: term:state-machine
+attributes:
+  canonicalDefinitionId: definition:state-machine.canonical
+  displayName: "StateMachine"
+  kind: lifecycle-state
+  references:
+    - "NodeKind:StateMachine"
+  description: |
+    A named state machine over a NodeKind
+edges:

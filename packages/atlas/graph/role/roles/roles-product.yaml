@@ -1,0 +1,15 @@
+---
+nodeKind: Role
+id: role:product-owner
+attributes:
+  displayName: "Product Owner"
+  isAgentic: false
+  requiredCapabilities: []
+  requiredDomains: []
+  description: |
+    Owns backlog priority, acceptance criteria, and stakeholder alignment for a product area.
+edges:
+  requires_expertise:
+    - target: skill-area:adr-writing
+    - target: skill-area:reference-docs
+    - target: skill-area:eval-driven-development

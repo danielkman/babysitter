@@ -1,0 +1,10 @@
+nodeKind: Tool
+id: tool:prometheus
+attributes:
+  displayName: "Prometheus"
+  kind: observability
+  description: |
+    Open-source systems monitoring and alerting toolkit with a multi-dimensional time-series model.
+edges:
+  tool_used_by:
+    - target: skill-area:observability-pipeline

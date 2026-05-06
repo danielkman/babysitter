@@ -1,0 +1,11 @@
+nodeKind: Term
+id: term:run
+attributes:
+  canonicalDefinitionId: definition:run.babysitter
+  displayName: "Run"
+  kind: concept
+  references:
+    - "NodeKind:Run"
+  description: |
+    A babysitter run; note multiple definitions exist (babysitter-SDK Run vs. older agent-mux Run).
+edges:

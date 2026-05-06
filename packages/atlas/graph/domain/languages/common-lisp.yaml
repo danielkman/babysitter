@@ -1,0 +1,14 @@
+nodeKind: Language
+id: language:common-lisp
+attributes:
+  displayName: "Common Lisp"
+  paradigms:
+    - functional
+    - lisp
+    - object-oriented
+    - imperative
+  description: |
+    Common Lisp — the ANSI-standardized multi-paradigm Lisp dialect
+    (CLOS, condition system, macros) with mature implementations such
+    as SBCL.
+edges: {}

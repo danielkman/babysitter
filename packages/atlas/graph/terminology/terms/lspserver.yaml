@@ -1,0 +1,11 @@
+nodeKind: Term
+id: term:lspserver
+attributes:
+  canonicalDefinitionId: definition:lspserver.canonical
+  displayName: "LSPServer"
+  kind: tool
+  references:
+    - "NodeKind:LSPServer"
+  description: |
+    A Language Server Protocol server bundled in a plugin (Claude Code .lsp.json)
+edges:

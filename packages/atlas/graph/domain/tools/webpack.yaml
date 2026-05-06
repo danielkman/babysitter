@@ -1,0 +1,10 @@
+nodeKind: Tool
+id: tool:webpack
+attributes:
+  displayName: "webpack"
+  kind: bundler
+  description: |
+    Static module bundler for modern JavaScript applications.
+edges:
+  belongs_to_language:
+    - target: language:javascript

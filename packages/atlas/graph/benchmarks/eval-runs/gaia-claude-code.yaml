@@ -1,0 +1,35 @@
+nodeKind: EvalRun
+id: eval-run:gaia.claude-code.2025
+attributes:
+  benchmarkId: benchmark:gaia
+  testSetId: test-set:gaia-validation
+  target: agent-version:claude-code@1.x
+  targetId: agent-version:claude-code@1.x
+  runAt: "2025-06-01T00:00:00Z"
+  runBy: "@a5c-ai/team"
+  configHash: "sha256:placeholder-claude-code-gaia"
+edges:
+  evaluates_target:
+    - agent-version:claude-code@1.x
+  uses_test_set:
+    - test-set:gaia-validation
+  for_benchmark:
+    - benchmark:gaia
+  uses_harness:
+    - target: eval-harness:inspect-ai
+    - target: eval-harness:helm
+    - target: eval-harness:lm-eval-harness
+    - target: eval-harness:openai-evals
+    - target: eval-harness:promptfoo
+  judged_by:
+    - target: judge:gpt-4o-pairwise
+    - target: judge:claude-3-5-sonnet-rubric
+    - target: judge:exact-match
+  scored_against_rubric:
+    - target: rubric:helpfulness-1-5
+    - target: rubric:safety-3-axis
+    - target: rubric:code-quality
+  evaluated_by:
+    - target: benchmark:gaia
+  produced_result:
+    - target: eval-result:mmlu.qwen-2-5-72b.001

@@ -1,0 +1,11 @@
+nodeKind: Language
+id: language:ocaml
+attributes:
+  displayName: "OCaml"
+  paradigms:
+    - functional
+    - object-oriented
+    - imperative
+  description: |
+    The OCaml programming language.
+edges: {}

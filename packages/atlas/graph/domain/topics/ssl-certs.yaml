@@ -1,0 +1,7 @@
+nodeKind: Topic
+id: topic:ssl-certs
+attributes:
+  displayName: "SSL/TLS Certificates"
+  description: |
+    SSL/TLS Certificates as a cross-cutting topic of expertise.
+edges: {}

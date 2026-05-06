@@ -1,0 +1,11 @@
+nodeKind: Term
+id: term:eval-result
+attributes:
+  canonicalDefinitionId: definition:eval-result.canonical
+  displayName: "EvalResult"
+  kind: concept
+  references:
+    - "NodeKind:EvalResult"
+  description: |
+    Scored result of an EvalRun
+edges:

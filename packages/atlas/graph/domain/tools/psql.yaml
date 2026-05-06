@@ -1,0 +1,10 @@
+nodeKind: Tool
+id: tool:psql
+attributes:
+  displayName: "psql"
+  kind: sql-tool
+  description: |
+    PostgreSQL interactive command-line client.
+edges:
+  belongs_to_language:
+    - target: language:sql

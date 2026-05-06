@@ -1,0 +1,48 @@
+nodeKind: AgentVersion
+id: agent-version:pi@current
+attributes:
+  agentProductId: agent:pi
+  versionRange: ">=1.0.0"
+  releasedAt: "2025-01-01"
+  cliCommand: "pi"
+  installMethods:
+    - install:npm
+  minSchemaVersion: "6.0.0"
+edges:
+  version_of:
+    - agent:pi
+  composed_of:
+    - target: agent-core-impl:pi.core@current
+      role: core
+    - target: agent-runtime-impl:pi.runtime@current
+      role: runtime
+    - target: agent-platform-impl:pi.platform@current
+      role: platform
+    - target: agent-ui-impl:pi.ui@current
+      role: ui
+  sourced_from: []
+  supports:
+    - target: capability:skills
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Pi fallback harness; no runtime-hook support in current shared metadata.
+    - target: capability:supports-thinking
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Pi fallback harness with interactive sessions.
+    - target: capability:interactive-mode
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Pi fallback harness with interactive sessions.
+    - target: capability:stdin-injection
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Pi fallback harness.
+    - target: capability:vision-input
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Pi fallback harness.
+    - target: capability:can-resume
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Pi fallback harness.

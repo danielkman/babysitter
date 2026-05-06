@@ -1,0 +1,11 @@
+nodeKind: Term
+id: term:provider
+attributes:
+  canonicalDefinitionId: definition:provider.canonical
+  displayName: "Provider"
+  kind: concept
+  references:
+    - "NodeKind:Provider"
+  description: |
+    Entity serving inference for one or more model versions
+edges:

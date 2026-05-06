@@ -1,0 +1,21 @@
+nodeKind: AgentVersion
+id: agent-version:codex-app-server@current
+attributes:
+  agentProductId: agent:codex-app-server
+  versionRange: ">=0.119.0"
+  releasedAt: "2025-09-01"
+  cliCommand: "codex app-server"
+  installMethods:
+    - install:npm
+  minSchemaVersion: "6.0.0"
+edges:
+  version_of:
+    - agent:codex-app-server
+  composed_of:
+    - target: agent-core-impl:codex-app-server.core@current
+      role: core
+    - target: agent-runtime-impl:codex-app-server.runtime@current
+      role: runtime
+    - target: agent-platform-impl:codex-app-server.platform@current
+      role: platform
+  sourced_from: []

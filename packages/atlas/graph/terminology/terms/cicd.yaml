@@ -1,0 +1,9 @@
+nodeKind: Term
+id: term:cicd
+attributes:
+  canonicalDefinitionId: definition:cicd.canonical
+  displayName: "Continuous Integration / Continuous Delivery"
+  kind: concept
+  description: |
+    Automated build, test, and deploy pipelines triggered on commit.
+edges:

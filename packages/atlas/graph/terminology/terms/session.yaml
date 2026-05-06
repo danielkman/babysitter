@@ -1,0 +1,11 @@
+nodeKind: Term
+id: term:session
+attributes:
+  canonicalDefinitionId: definition:session.canonical
+  displayName: "Session"
+  kind: concept
+  references:
+    - "NodeKind:Session"
+  description: |
+    Persisted conversational state
+edges:

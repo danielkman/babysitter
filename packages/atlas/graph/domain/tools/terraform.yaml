@@ -1,0 +1,14 @@
+nodeKind: Tool
+id: tool:terraform
+attributes:
+  displayName: "Terraform"
+  kind: iac
+  description: |
+    Infrastructure-as-code tool for declarative cloud provisioning.
+edges:
+  belongs_to_language:
+    - target: language:hcl
+  used_for:
+    - target: skill-area:terraform-infrastructure
+  tool_used_by:
+    - target: skill-area:terraform-infrastructure

@@ -1,0 +1,11 @@
+nodeKind: Framework
+id: framework:flask
+attributes:
+  displayName: "Flask"
+  belongsToLanguageId: language:python
+  category: web-backend
+  description: |
+    Flask — a lightweight Python web framework.
+edges:
+  belongs_to_language:
+    - language:python

@@ -1,0 +1,10 @@
+nodeKind: Tool
+id: tool:gitlab-ci
+attributes:
+  displayName: "GitLab CI/CD"
+  kind: ci
+  description: |
+    CI/CD service built into GitLab - pipelines defined in .gitlab-ci.yml.
+edges:
+  belongs_to_language:
+    - target: language:yaml

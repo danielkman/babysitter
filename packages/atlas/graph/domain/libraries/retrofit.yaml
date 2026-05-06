@@ -1,0 +1,11 @@
+nodeKind: Library
+id: library:retrofit
+attributes:
+  displayName: "Retrofit"
+  belongsToLanguageId: language:java
+  category: http-client
+  description: |
+    Type-safe HTTP client for Android and Java by Square.
+edges:
+  belongs_to_language:
+    - language:java

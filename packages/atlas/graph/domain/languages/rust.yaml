@@ -1,0 +1,14 @@
+nodeKind: Language
+id: language:rust
+attributes:
+  displayName: "Rust"
+  paradigms:
+    - imperative
+    - functional
+  description: |
+    The Rust programming language.
+edges:
+  used_by_skill_area:
+    - target: skill-area:rust-async-runtime
+  used_by_skill_area:
+    - target: skill-area:rust-async-runtime

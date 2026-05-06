@@ -1,0 +1,11 @@
+nodeKind: Framework
+id: framework:gin
+attributes:
+  displayName: "Gin"
+  belongsToLanguageId: language:go
+  category: web-backend
+  description: |
+    Gin — an HTTP web framework for Go.
+edges:
+  belongs_to_language:
+    - language:go

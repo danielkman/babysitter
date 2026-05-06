@@ -1,0 +1,11 @@
+nodeKind: Language
+id: language:graphql
+attributes:
+  displayName: "GraphQL"
+  paradigms:
+    - declarative
+    - schema
+    - query
+  description: |
+    The GraphQL query language and schema definition language.
+edges: {}

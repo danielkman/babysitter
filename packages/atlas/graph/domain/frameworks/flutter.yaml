@@ -1,0 +1,13 @@
+nodeKind: Framework
+id: framework:flutter
+attributes:
+  displayName: "Flutter"
+  belongsToLanguageId: language:dart
+  category: mobile
+  description: |
+    Flutter — Google's cross-platform UI toolkit.
+edges:
+  belongs_to_language:
+    - language:dart
+  used_by_skill_area:
+    - target: skill-area:flutter-development

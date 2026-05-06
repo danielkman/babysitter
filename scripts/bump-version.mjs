@@ -227,6 +227,7 @@ const updateLockVersion = (path, version) => {
 const workspaceManifestPaths = [
   "package.json",
   "packages/agent-catalog/package.json",
+  "packages/atlas/package.json",
   "packages/agent-core/package.json",
   "packages/sdk/package.json",
   "packages/babysitter/package.json",

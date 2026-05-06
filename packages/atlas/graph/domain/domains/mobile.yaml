@@ -1,0 +1,7 @@
+nodeKind: Domain
+id: domain:mobile
+attributes:
+  displayName: "Mobile"
+  description: |
+    The Mobile domain.
+edges: {}

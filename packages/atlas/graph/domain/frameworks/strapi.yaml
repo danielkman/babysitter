@@ -1,0 +1,13 @@
+nodeKind: Framework
+id: framework:strapi
+attributes:
+  displayName: "Strapi"
+  belongsToLanguageId: language:javascript
+  category: web-backend
+  description: |
+    Strapi — an open-source headless CMS built on Node.js providing a
+    customizable admin panel, a content-type builder, and auto-generated
+    REST and GraphQL APIs.
+edges:
+  belongs_to_language:
+    - language:javascript

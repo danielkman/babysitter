@@ -1,0 +1,10 @@
+nodeKind: Tool
+id: tool:grafana
+attributes:
+  displayName: "Grafana"
+  kind: observability
+  description: |
+    Open-source analytics and interactive visualization platform for metrics and logs.
+edges:
+  tool_used_by:
+    - target: skill-area:observability-pipeline

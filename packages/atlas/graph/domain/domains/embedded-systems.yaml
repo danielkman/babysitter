@@ -1,0 +1,8 @@
+nodeKind: Domain
+id: domain:embedded-systems
+attributes:
+  displayName: "Embedded Systems"
+  description: |
+    Embedded Systems domain — firmware, RTOS, microcontrollers, and
+    resource-constrained software running on dedicated hardware.
+edges: {}

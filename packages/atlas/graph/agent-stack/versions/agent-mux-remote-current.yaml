@@ -1,0 +1,23 @@
+nodeKind: AgentVersion
+id: agent-version:agent-mux-remote@current
+attributes:
+  agentProductId: agent:agent-mux-remote
+  versionRange: ">=1.0.0"
+  releasedAt: "2025-01-01"
+  cliCommand: "amux"
+  installMethods:
+    - install:npm
+  minSchemaVersion: "6.0.0"
+edges:
+  version_of:
+    - agent:agent-mux-remote
+  composed_of:
+    - target: agent-core-impl:agent-mux-remote.core@current
+      role: core
+    - target: agent-runtime-impl:agent-mux-remote.runtime@current
+      role: runtime
+    - target: agent-platform-impl:agent-mux-remote.platform@current
+      role: platform
+    - target: agent-ui-impl:agent-mux-remote.ui@current
+      role: ui
+  sourced_from: []

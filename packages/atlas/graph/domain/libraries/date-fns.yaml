@@ -1,0 +1,11 @@
+nodeKind: Library
+id: library:date-fns
+attributes:
+  displayName: "date-fns"
+  belongsToLanguageId: language:javascript
+  category: datetime
+  description: |
+    Modern JavaScript date utility library — modular, pure functions over native Date.
+edges:
+  belongs_to_language:
+    - language:javascript

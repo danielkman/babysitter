@@ -1,0 +1,17 @@
+nodeKind: AgentProduct
+id: agent:pi
+attributes:
+  displayName: "Pi"
+  vendor: "Mario Zechner (@mariozechner)"
+  homepageUrl: "https://www.npmjs.com/package/@mariozechner/pi-coding-agent"
+  primarySurface: cli
+  supportTier: adapter-only
+  productKind: full-cli-agent
+  stackScope: full
+  description: |
+    Pi is a terminal coding agent integrated into the v6 catalog through
+    the agent-mux adapter. Exposes a CLI session over MCP; plugin and
+    marketplace details are not yet reconciled with the upstream project.
+edges:
+  has_version:
+    - agent-version:pi@current

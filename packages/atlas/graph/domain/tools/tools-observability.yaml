@@ -1,0 +1,24 @@
+---
+nodeKind: Tool
+id: tool:opentelemetry-collector
+attributes:
+  displayName: "OpenTelemetry Collector"
+  kind: observability
+  description: |
+    Vendor-neutral agent/gateway for receiving, processing, and
+    exporting traces, metrics, and logs.
+edges:
+  tool_used_by:
+    - target: skill-area:observability-pipeline
+---
+nodeKind: Tool
+id: tool:fluent-bit
+attributes:
+  displayName: "Fluent Bit"
+  kind: observability
+  description: |
+    Lightweight log and metrics processor/forwarder; common Kubernetes
+    log shipper with broad input/output plugin set.
+edges:
+  tool_used_by:
+    - target: skill-area:observability-pipeline

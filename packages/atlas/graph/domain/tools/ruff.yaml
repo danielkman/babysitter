@@ -1,0 +1,11 @@
+nodeKind: Tool
+id: tool:ruff
+attributes:
+  displayName: "Ruff"
+  kind: linter
+  language: language:python
+  description: |
+    Extremely fast Python linter and formatter, written in Rust.
+edges:
+  belongs_to_language:
+    - language:python

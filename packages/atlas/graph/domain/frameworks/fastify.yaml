@@ -1,0 +1,11 @@
+nodeKind: Framework
+id: framework:fastify
+attributes:
+  displayName: "Fastify"
+  belongsToLanguageId: language:javascript
+  category: web-backend
+  description: |
+    Fastify — a fast, low-overhead Node.js web framework.
+edges:
+  belongs_to_language:
+    - language:javascript

@@ -1,0 +1,11 @@
+nodeKind: EvidenceSource
+id: evidence:source-provenance-run5-claude-code-runtime-built-in-tools
+attributes:
+  displayName: Claude Code runtime builtInTools graph source
+  kindLabel: file
+  filePath: graph/agent-stack/runtime-impls/claude-code-runtime-1-x.yaml
+  trustLevel: trust-level:repo
+  observedAt: '2026-05-04T00:00:00Z'
+  observedBy: a5c-ai-catalog
+  locator: attributes.builtInTools
+edges: {}

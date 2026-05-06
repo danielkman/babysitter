@@ -1,0 +1,11 @@
+nodeKind: Language
+id: language:yaml
+attributes:
+  displayName: "YAML"
+  paradigms:
+    - declarative
+    - configuration
+    - data
+  description: |
+    YAML data-serialization / configuration language.
+edges: {}

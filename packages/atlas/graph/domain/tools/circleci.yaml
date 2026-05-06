@@ -1,0 +1,10 @@
+nodeKind: Tool
+id: tool:circleci
+attributes:
+  displayName: "CircleCI"
+  kind: ci
+  description: |
+    CI/CD platform with parallelism, caching, and orb ecosystem.
+edges:
+  belongs_to_language:
+    - target: language:yaml

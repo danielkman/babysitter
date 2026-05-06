@@ -1,0 +1,11 @@
+nodeKind: Tool
+id: tool:babel
+attributes:
+  displayName: "Babel"
+  kind: transpiler
+  language: language:javascript
+  description: |
+    JavaScript compiler - transforms next-generation syntax into a target ES version.
+edges:
+  belongs_to_language:
+    - language:javascript

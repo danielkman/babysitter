@@ -1,0 +1,11 @@
+nodeKind: Language
+id: language:julia
+attributes:
+  displayName: "Julia"
+  paradigms:
+    - multiple-dispatch
+    - scientific
+    - imperative
+  description: |
+    The Julia programming language for technical computing.
+edges: {}

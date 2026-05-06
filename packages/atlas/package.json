@@ -1,0 +1,48 @@
+{
+  "name": "@a5c-ai/atlas",
+  "version": "0.1.0",
+  "description": "Atlas catalog graph data, SDK, and CLI.",
+  "license": "UNLICENSED",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "atlas": "dist/cli.js",
+    "a5c-atlas": "dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./indexer": {
+      "types": "./dist/indexer.d.ts",
+      "default": "./dist/indexer.js"
+    },
+    "./graph-index": "./dist/index.json"
+  },
+  "files": [
+    "dist",
+    "graph",
+    "README.md"
+  ],
+  "scripts": {
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
+    "build:index": "tsx src/indexer.ts --catalog-dir ./graph --out src/index.json",
+    "build": "npm run build:index && tsc -p tsconfig.json && node scripts/copy-assets.cjs",
+    "prepack": "npm run build",
+    "cli": "node dist/cli.js"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.1"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^20",
+    "tsx": "^4.21.0",
+    "typescript": "^5"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

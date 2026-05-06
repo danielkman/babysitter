@@ -1,0 +1,184 @@
+---
+nodeKind: Domain
+id: domain:marketing
+attributes:
+  displayName: "Marketing"
+  description: |
+    Marketing strategy, campaigns, analytics, and brand management.
+edges: {}
+---
+nodeKind: Domain
+id: domain:sales
+attributes:
+  displayName: "Sales"
+  description: |
+    Sales processes, pipeline management, CRM, and revenue operations.
+edges: {}
+---
+nodeKind: Domain
+id: domain:customer-experience
+attributes:
+  displayName: "Customer Experience"
+  description: |
+    Customer success, support, feedback loops, and satisfaction measurement.
+edges: {}
+---
+nodeKind: Domain
+id: domain:finance
+attributes:
+  displayName: "Finance"
+  description: |
+    Financial planning, accounting, budgeting, and audit.
+edges: {}
+---
+nodeKind: Domain
+id: domain:human-resources
+attributes:
+  displayName: "Human Resources"
+  description: |
+    Recruiting, onboarding, performance management, and culture.
+edges: {}
+---
+nodeKind: Domain
+id: domain:legal
+attributes:
+  displayName: "Legal"
+  description: |
+    Contract management, compliance, IP, and regulatory affairs.
+edges: {}
+---
+nodeKind: Domain
+id: domain:operations
+attributes:
+  displayName: "Operations"
+  description: |
+    Business operations, process optimization, and supply chain.
+edges: {}
+---
+nodeKind: Domain
+id: domain:logistics
+attributes:
+  displayName: "Logistics"
+  description: |
+    Supply chain logistics, warehousing, fulfillment, and distribution.
+edges: {}
+---
+nodeKind: Domain
+id: domain:business-intelligence
+attributes:
+  displayName: "Business Intelligence"
+  description: |
+    BI, analytics, reporting, dashboards, and decision intelligence.
+edges: {}
+---
+nodeKind: Domain
+id: domain:public-relations
+attributes:
+  displayName: "Public Relations"
+  description: |
+    PR, communications, media relations, and crisis comms.
+edges: {}
+---
+nodeKind: Domain
+id: domain:digital-marketing
+attributes:
+  displayName: "Digital Marketing"
+  description: |
+    SEO, SEM, social media, content marketing, and growth.
+edges: {}
+---
+nodeKind: Domain
+id: domain:project-management
+attributes:
+  displayName: "Project Management"
+  description: |
+    Project planning, resource allocation, risk management, and delivery.
+edges: {}
+---
+nodeKind: Domain
+id: domain:entrepreneurship
+attributes:
+  displayName: "Entrepreneurship"
+  description: |
+    Startup operations, fundraising, product-market fit, and growth.
+edges: {}
+---
+nodeKind: Domain
+id: domain:venture-capital
+attributes:
+  displayName: "Venture Capital"
+  description: |
+    Deal flow, due diligence, portfolio management, and fund operations.
+edges: {}
+---
+nodeKind: Domain
+id: domain:knowledge-management
+attributes:
+  displayName: "Knowledge Management"
+  description: |
+    Knowledge bases, documentation culture, and organizational learning.
+edges: {}
+---
+nodeKind: Domain
+id: domain:advertising
+attributes:
+  displayName: "Advertising"
+  description: |
+    Advertising strategy, media buying, ad-tech, programmatic, creative production, and campaign measurement across channels.
+edges: {}
+---
+nodeKind: Domain
+id: domain:finops
+attributes:
+  displayName: "FinOps"
+  description: |
+    Cloud and AI financial operations — cost visibility, optimization, budgeting, showback/chargeback, and unit economics.
+edges: {}
+---
+nodeKind: Domain
+id: domain:business-development
+attributes:
+  displayName: "Business Development"
+  description: |
+    Business development, strategic partnerships, channel sales, alliances, and ecosystem growth.
+edges: {}
+---
+nodeKind: Domain
+id: domain:strategy
+attributes:
+  displayName: "Strategy"
+  description: |
+    Corporate and product strategy, competitive analysis, market research, and strategic planning.
+edges: {}
+---
+nodeKind: Domain
+id: domain:community
+attributes:
+  displayName: "Community"
+  description: |
+    Community building, engagement, moderation, events, developer advocacy, and ecosystem health.
+edges: {}
+---
+nodeKind: Domain
+id: domain:procurement
+attributes:
+  displayName: "Procurement"
+  description: |
+    Strategic sourcing, vendor evaluation, contract negotiation, and procurement operations.
+edges: {}
+---
+nodeKind: Domain
+id: domain:customer-relations
+attributes:
+  displayName: "Customer Relations"
+  description: |
+    Customer relationship management, account management, retention, and lifecycle marketing.
+edges: {}
+---
+nodeKind: Domain
+id: domain:revenue-operations
+attributes:
+  displayName: "Revenue Operations"
+  description: |
+    Revenue operations spanning marketing, sales, and customer success — pipeline, forecasting, and GTM alignment.
+edges: {}

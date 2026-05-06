@@ -1,0 +1,11 @@
+nodeKind: Term
+id: term:specialization
+attributes:
+  canonicalDefinitionId: definition:specialization.canonical
+  displayName: "Specialization"
+  kind: concept
+  references:
+    - "NodeKind:Specialization"
+  description: |
+    Sub-domain (frontend-react, backend-python-django, ...)
+edges:

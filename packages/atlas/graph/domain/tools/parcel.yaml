@@ -1,0 +1,10 @@
+nodeKind: Tool
+id: tool:parcel
+attributes:
+  displayName: "Parcel"
+  kind: bundler
+  description: |
+    Zero-config web application bundler.
+edges:
+  belongs_to_language:
+    - target: language:javascript

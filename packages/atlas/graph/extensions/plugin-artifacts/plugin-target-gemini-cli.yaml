@@ -1,0 +1,31 @@
+nodeKind: PluginTarget
+id: plugin-target:gemini-cli
+attributes:
+  displayName: "Gemini CLI"
+  hostAgent: agent:gemini-cli
+  adapterFamily: shell-hook
+  adapterName: gemini
+  manifestFormat: "plugin.json + gemini-extension.json"
+  commandFormat: extension-manifest
+  skillHandling: native
+  hookRegistrationFormat: gemini
+  marketplacePath: null
+  pluginRootEnvVar: GEMINI_EXTENSION_PATH
+  scriptVariants:
+    - bash
+  distribution:
+    - npm-cli
+  distributionModel: workspace-generated
+  npmPublishable: false
+  packageMetadata:
+    moduleType: commonjs
+    binScriptExt: ".js"
+    installLifecycle: plugin-scripts
+    activationMessage: restart
+    emitCjsWrappers: false
+  componentSupport:
+    agents: unsupported
+    context: native
+edges:
+  hosted_by:
+    - target: agent:gemini-cli

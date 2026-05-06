@@ -1,0 +1,60 @@
+nodeKind: AgentVersion
+id: agent-version:copilot-cli@current
+attributes:
+  agentProductId: agent:copilot-cli
+  versionRange: ">=1.0.0"
+  releasedAt: "2024-09-01"
+  cliCommand: "gh copilot"
+  installMethods:
+    - install:gh-extension
+  minSchemaVersion: "6.0.0"
+edges:
+  version_of:
+    - agent:copilot-cli
+  composed_of:
+    - target: agent-core-impl:copilot-cli.core@current
+      role: core
+    - target: agent-runtime-impl:copilot-cli.runtime@current
+      role: runtime
+    - target: agent-platform-impl:copilot-cli.platform@current
+      role: platform
+    - target: agent-ui-impl:copilot-cli.ui@current
+      role: ui
+  sourced_from: []
+  supports:
+    - target: capability:skills
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Copilot CLI plugins explicitly bundle reusable agents, skills, hooks, and integrations.
+    - target: capability:supports-thinking
+      versionRange: ">=0.0.0"
+      level: full
+      notes: GitHub documents Copilot CLI and Copilot coding-agent workflows as interactive agentic coding surfaces.
+    - target: capability:interactive-mode
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Interactive Copilot CLI usage is documented directly.
+    - target: capability:stdin-injection
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Public Copilot CLI docs cover command-line prompting flows.
+    - target: capability:vision-input
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Public image-input evidence is strongest in the Copilot SDK rather than CLI docs.
+    - target: capability:runtime-hooks
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Copilot CLI exposes hooks directly; the local target profile refines canonical hook-name mapping.
+    - target: capability:stop-hook
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Normalized stop-hook capability derived from documented lifecycle hooks + local hook-name mapping.
+    - target: capability:supports-mcp
+      versionRange: ">=0.0.0"
+      level: full
+      notes: GitHub documents MCP for Copilot CLI and the Copilot cloud agent.
+    - target: capability:can-resume
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Public session persistence evidence comes from Copilot CLI config-directory documentation.

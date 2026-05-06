@@ -1,0 +1,68 @@
+nodeKind: AgentVersion
+id: agent-version:cursor@current
+attributes:
+  agentProductId: agent:cursor
+  versionRange: ">=0.40.0"
+  releasedAt: "2024-08-01"
+  cliCommand: "cursor"
+  installMethods:
+    - install:manual
+  minSchemaVersion: "6.0.0"
+edges:
+  version_of:
+    - agent:cursor
+  composed_of:
+    - target: agent-core-impl:cursor.core@current
+      role: core
+    - target: agent-runtime-impl:cursor.runtime@current
+      role: runtime
+    - target: agent-platform-impl:cursor.platform@current
+      role: platform
+    - target: agent-ui-impl:cursor.ui@current
+      role: ui
+  sourced_from: []
+  supports:
+    - target: capability:skills
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Cursor rules and AGENTS.md support provide first-party basis for reusable persistent guidance.
+    - target: capability:supports-agents-md
+      versionRange: ">=0.40.0"
+      level: full
+      notes: Cursor reads AGENTS.md (and the .cursor/rules/ directory). Source — docs.cursor.com.
+    - target: capability:supports-file-attachments
+      versionRange: ">=0.40.0"
+      level: full
+      notes: Cursor accepts drag-drop / paste of files (images, code, docs) into the chat.
+    - target: capability:supports-image-output
+      versionRange: ">=0.40.0"
+      level: partial
+      notes: Image output is provider-bound; Cursor surfaces images returned by the underlying model.
+    - target: capability:supports-thinking
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Cursor documents both IDE and terminal agent surfaces for autonomous coding tasks.
+    - target: capability:interactive-mode
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Interactive Cursor behavior backed by CLI and agent docs.
+    - target: capability:stdin-injection
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Cursor documents headless and terminal-driven execution flows.
+    - target: capability:vision-input
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Cursor's agent overview documents image-capable reads and image generation.
+    - target: capability:runtime-hooks
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Cursor exposes hooks directly; local target profile refines canonical hook names.
+    - target: capability:stop-hook
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Normalized stop-hook capability grounded in Cursor hooks + local stop-name mapping.
+    - target: capability:can-resume
+      versionRange: ">=0.0.0"
+      level: full
+      notes: Cursor documents checkpoint restoration and persistent shell-mode context.

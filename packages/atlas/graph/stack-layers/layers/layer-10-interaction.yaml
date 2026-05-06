@@ -1,0 +1,26 @@
+nodeKind: Layer
+id: layer:10-interaction
+attributes:
+  displayName: Interaction
+  position: 10
+  path: surfacing
+  scope: Atomic user-agent and agent-system actions exposed by a surface.
+  summary: |
+    The interaction layer contains the actions exposed through an agent
+    surface: slash commands, keybindings, prompt controls, editor widgets,
+    voice or multimodal triggers, review/approve/resume gates, collaborative
+    actions, operational triggers, and telemetry affordances. Realized by
+    `InteractionPrimitive` nodes and related trigger/command records.
+  responsibilities:
+    - Expose commands, controls, triggers, approvals, and resumable interrupts.
+    - Translate human/system gestures into runtime or platform actions.
+    - Surface task state, telemetry, collaboration, and handoff controls.
+  examples:
+    - Slash commands, keybindings, prompt controls, approve/reject interrupt.
+    - GitHub Action trigger, webhook trigger, editor widget, dashboard button.
+    - LangGraph human-in-the-loop review, edit, approve, resume controls.
+  fitNotes: |
+    Interaction primitives are not presentation widgets by themselves; they are
+    the action vocabulary that a TUI, CLI, web UI, IDE, API, or automation host
+    renders and invokes.
+edges: {}

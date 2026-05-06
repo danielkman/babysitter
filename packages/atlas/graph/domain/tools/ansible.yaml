@@ -1,0 +1,10 @@
+nodeKind: Tool
+id: tool:ansible
+attributes:
+  displayName: "Ansible"
+  kind: config-mgmt
+  description: |
+    Agentless IT automation - configuration management, application deployment, and orchestration.
+edges:
+  belongs_to_language:
+    - target: language:yaml

@@ -1,0 +1,11 @@
+nodeKind: Term
+id: term:model-family
+attributes:
+  canonicalDefinitionId: definition:model-family.canonical
+  displayName: "ModelFamily"
+  kind: concept
+  references:
+    - "NodeKind:ModelFamily"
+  description: |
+    A family of models
+edges:

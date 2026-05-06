@@ -1,0 +1,10 @@
+nodeKind: Tool
+id: tool:opentofu
+attributes:
+  displayName: "OpenTofu"
+  kind: iac
+  description: |
+    Open-source fork of Terraform under the Linux Foundation.
+edges:
+  belongs_to_language:
+    - target: language:hcl

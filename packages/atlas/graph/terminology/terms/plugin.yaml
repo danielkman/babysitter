@@ -1,0 +1,11 @@
+nodeKind: Term
+id: term:plugin
+attributes:
+  canonicalDefinitionId: definition:plugin.canonical
+  displayName: "Plugin"
+  kind: tool
+  references:
+    - "NodeKind:Plugin"
+  description: |
+    Universal plugin (union of skills/MCP/hooks/lsp/monitors/bin)
+edges:

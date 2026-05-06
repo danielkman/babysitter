@@ -1,0 +1,20 @@
+nodeKind: AgentVersion
+id: agent-version:claude-agent-sdk@current
+attributes:
+  agentProductId: agent:claude-agent-sdk
+  versionRange: ">=0.1.0"
+  releasedAt: "2025-01-01"
+  cliCommand: "<sdk:@anthropic-ai/claude-agent-sdk>"
+  installMethods:
+    - install:npm
+    - install:pip
+  minSchemaVersion: "6.0.0"
+edges:
+  version_of:
+    - agent:claude-agent-sdk
+  composed_of:
+    - target: agent-core-impl:claude-agent-sdk.core@current
+      role: core
+    - target: agent-runtime-impl:claude-agent-sdk.runtime@current
+      role: runtime
+  sourced_from: []

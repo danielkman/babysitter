@@ -1,0 +1,104 @@
+---
+nodeKind: Domain
+id: domain:aerospace-engineering
+attributes:
+  displayName: "Aerospace Engineering"
+  description: |
+    Aerodynamics, propulsion, avionics, and space systems.
+edges: {}
+---
+nodeKind: Domain
+id: domain:automotive-engineering
+attributes:
+  displayName: "Automotive Engineering"
+  description: |
+    Vehicle systems, ADAS, powertrain, and automotive software.
+edges: {}
+---
+nodeKind: Domain
+id: domain:biomedical-engineering
+attributes:
+  displayName: "Biomedical Engineering"
+  description: |
+    Medical devices, health informatics, and clinical systems.
+edges: {}
+---
+nodeKind: Domain
+id: domain:chemical-engineering
+attributes:
+  displayName: "Chemical Engineering"
+  description: |
+    Process design, reaction engineering, and materials processing.
+edges: {}
+---
+nodeKind: Domain
+id: domain:civil-engineering
+attributes:
+  displayName: "Civil Engineering"
+  description: |
+    Structural analysis, construction management, and infrastructure.
+edges: {}
+---
+nodeKind: Domain
+id: domain:electrical-engineering
+attributes:
+  displayName: "Electrical Engineering"
+  description: |
+    Circuit design, signal processing, and power systems.
+edges: {}
+---
+nodeKind: Domain
+id: domain:environmental-engineering
+attributes:
+  displayName: "Environmental Engineering"
+  description: |
+    Environmental monitoring, sustainability, and remediation.
+edges: {}
+---
+nodeKind: Domain
+id: domain:industrial-engineering
+attributes:
+  displayName: "Industrial Engineering"
+  description: |
+    Manufacturing systems, quality control, and lean operations.
+edges: {}
+---
+nodeKind: Domain
+id: domain:materials-science
+attributes:
+  displayName: "Materials Science"
+  description: |
+    Material characterization, composites, and advanced materials.
+edges: {}
+---
+nodeKind: Domain
+id: domain:mechanical-engineering
+attributes:
+  displayName: "Mechanical Engineering"
+  description: |
+    Mechanical design, thermodynamics, and manufacturing.
+edges: {}
+---
+nodeKind: Domain
+id: domain:nanotechnology
+attributes:
+  displayName: "Nanotechnology"
+  description: |
+    Nanofabrication, nano-characterization, and nanomaterials.
+edges: {}
+---
+nodeKind: Domain
+id: domain:physics
+attributes:
+  displayName: "Physics"
+  description: |
+    Computational physics, simulation, and experimental data analysis.
+edges: {}
+---
+nodeKind: Domain
+id: domain:quantum-computing
+attributes:
+  displayName: "Quantum Computing"
+  description: |
+    Quantum algorithms, error correction, and quantum hardware.
+edges: {}

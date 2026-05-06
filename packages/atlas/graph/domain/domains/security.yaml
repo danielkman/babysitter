@@ -1,0 +1,7 @@
+nodeKind: Domain
+id: domain:security
+attributes:
+  displayName: "Security"
+  description: |
+    The Security domain.
+edges: {}

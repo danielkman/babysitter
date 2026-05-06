@@ -1,0 +1,9 @@
+nodeKind: Domain
+id: domain:databases
+attributes:
+  displayName: "Databases"
+  description: |
+    Databases domain — relational, document, key-value, time-series,
+    graph, and analytical databases; storage engines, query planning,
+    replication, and operations.
+edges: {}

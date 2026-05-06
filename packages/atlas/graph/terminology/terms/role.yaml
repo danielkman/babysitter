@@ -1,0 +1,11 @@
+nodeKind: Term
+id: term:role
+attributes:
+  canonicalDefinitionId: definition:role.canonical
+  displayName: "Role"
+  kind: role
+  references:
+    - "NodeKind:Role"
+  description: |
+    Human or agentic role
+edges:

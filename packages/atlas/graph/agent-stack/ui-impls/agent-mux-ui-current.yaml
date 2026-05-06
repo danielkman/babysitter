@@ -1,0 +1,64 @@
+nodeKind: AgentUIImpl
+id: agent-ui-impl:agent-mux.ui@current
+attributes:
+  displayName: "agent-mux UI (current) — multi-surface"
+  agentVersionId: agent-version:agent-mux@current
+  packageRef: source-ref:agent-mux-github
+  uiKind: multi-surface
+  presentationsBundled:
+    - presentation:agent-mux-tui
+    - presentation:agent-mux-cli
+    - presentation:agent-mux-webui
+    - presentation:agent-mux-mobile-ios
+    - presentation:agent-mux-mobile-android
+    - presentation:agent-mux-tv-androidtv
+    - presentation:agent-mux-tv-appletv
+    - presentation:agent-mux-watch-watchos
+    - presentation:agent-mux-watch-wearos
+  themeSupport: full-customizable
+  accessibilitySupport: wcag-aa
+  notes: |
+    agent-mux is a multi-surface UI suite. Each presentation is its own
+    package (tui, cli, webui, mobile-{ios,android}, tv-{androidtv,appletv},
+    watch-{watchos,wearos}). All surfaces share the agent-mux ui package
+    (`@a5c-ai/agent-mux-ui`) for client + protocol + session-flow projection.
+edges:
+  realizes:
+    - target: layer:11-presentation
+  bundled_with:
+    - target: presentation:agent-mux-tui
+    - target: presentation:agent-mux-cli
+    - target: presentation:agent-mux-webui
+    - target: presentation:agent-mux-mobile-ios
+    - target: presentation:agent-mux-mobile-android
+    - target: presentation:agent-mux-tv-androidtv
+    - target: presentation:agent-mux-tv-appletv
+    - target: presentation:agent-mux-watch-watchos
+    - target: presentation:agent-mux-watch-wearos
+  supports_interaction_primitive:
+    - target: interaction-primitive:agent-mux-kanban-board
+      attributes: { mechanism: ui-control }
+    - target: interaction-primitive:agent-mux-hook-inbox
+      attributes: { mechanism: ui-control }
+    - target: interaction-primitive:agent-mux-session-list
+      attributes: { mechanism: ui-control }
+    - target: interaction-primitive:agent-mux-session-detail
+      attributes: { mechanism: ui-control }
+    - target: interaction-primitive:agent-mux-new-run
+      attributes: { mechanism: ui-control }
+    - target: interaction-primitive:agent-mux-pair-device
+      attributes: { mechanism: ui-control }
+    - target: interaction-primitive:agent-mux-workspace-detail
+      attributes: { mechanism: ui-control }
+    - target: interaction-primitive:agent-mux-breakpoint-approval
+      attributes: { mechanism: ui-control }
+    - target: interaction-primitive:agent-mux-tool-call-interaction
+      attributes: { mechanism: ui-control }
+    - target: interaction-primitive:agent-mux-prompt-history
+      attributes: { mechanism: ui-control }
+    - target: interaction-primitive:command-palette
+      attributes: { mechanism: keybinding, invocationToken: "Cmd+K" }
+    - target: interaction-primitive:model-picker
+      attributes: { mechanism: ui-control }
+    - target: interaction-primitive:prompt-input
+      attributes: { mechanism: ui-control }

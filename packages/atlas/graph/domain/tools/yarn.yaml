@@ -1,0 +1,11 @@
+nodeKind: Tool
+id: tool:yarn
+attributes:
+  displayName: "Yarn"
+  kind: package-manager
+  language: language:javascript
+  description: |
+    Package manager for JavaScript / Node.
+edges:
+  belongs_to_language:
+    - language:javascript

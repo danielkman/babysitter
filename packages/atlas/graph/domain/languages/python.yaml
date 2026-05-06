@@ -1,0 +1,24 @@
+nodeKind: Language
+id: language:python
+attributes:
+  displayName: "Python"
+  paradigms:
+    - imperative
+    - object-oriented
+    - functional
+  description: |
+    The Python programming language.
+edges:
+  used_by_skill_area:
+    - target: skill-area:ml-fine-tuning
+    - target: skill-area:python-data-pipelines
+    - target: skill-area:autonomous-research-engineering
+    - target: skill-area:python-implementation
+    - target: skill-area:spark-jobs
+  used_by_skill_area:
+    - target: skill-area:ml-fine-tuning
+    - target: skill-area:python-data-pipelines
+    - target: skill-area:autonomous-research-engineering
+    - target: skill-area:python-implementation
+    - target: skill-area:spark-jobs
+    - target: skill-area:web-scraping

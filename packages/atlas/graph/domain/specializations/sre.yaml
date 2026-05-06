@@ -1,0 +1,10 @@
+nodeKind: Specialization
+id: specialization:sre
+attributes:
+  displayName: "Site Reliability Engineering"
+  parentDomainId: domain:devops
+  description: |
+    Site Reliability Engineering specialization within the devops domain.
+edges:
+  specializes:
+    - domain:devops

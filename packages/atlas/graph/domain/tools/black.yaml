@@ -1,0 +1,11 @@
+nodeKind: Tool
+id: tool:black
+attributes:
+  displayName: "Black"
+  kind: formatter
+  language: language:python
+  description: |
+    Uncompromising Python code formatter.
+edges:
+  belongs_to_language:
+    - language:python

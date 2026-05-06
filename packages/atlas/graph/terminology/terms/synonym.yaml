@@ -1,0 +1,11 @@
+nodeKind: Term
+id: term:synonym
+attributes:
+  canonicalDefinitionId: definition:synonym.canonical
+  displayName: "Synonym"
+  kind: concept
+  references:
+    - "NodeKind:Synonym"
+  description: |
+    A term that means the same as another in a stated context
+edges:

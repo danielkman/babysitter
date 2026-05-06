@@ -1,0 +1,10 @@
+nodeKind: Specialization
+id: specialization:frontend-react
+attributes:
+  displayName: "Frontend (React)"
+  parentDomainId: domain:web-development
+  description: |
+    Frontend (React) specialization within the web-development domain.
+edges:
+  specializes:
+    - domain:web-development

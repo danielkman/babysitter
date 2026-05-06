@@ -1,0 +1,10 @@
+nodeKind: Specialization
+id: specialization:mobile-ios
+attributes:
+  displayName: "iOS Mobile"
+  parentDomainId: domain:mobile
+  description: |
+    iOS Mobile specialization within the mobile domain.
+edges:
+  specializes:
+    - domain:mobile
