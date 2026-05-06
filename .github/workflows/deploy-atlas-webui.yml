@@ -85,10 +85,20 @@ jobs:
           docker push "$IMAGE"
           echo "IMAGE=$IMAGE" >> "$GITHUB_ENV"
 
-      - name: Deploy
+      - name: Create ACR pull secret
         if: steps.config.outputs.deploy_enabled == 'true'
         run: |
           kubectl create namespace "$KUBE_NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
+          ACR_TOKEN=$(az acr login --name "$ACR_NAME" --expose-token --output tsv --query accessToken)
+          kubectl -n "$KUBE_NAMESPACE" create secret docker-registry acr-pull \
+            --docker-server="${ACR_NAME}.azurecr.io" \
+            --docker-username=00000000-0000-0000-0000-000000000000 \
+            --docker-password="$ACR_TOKEN" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Deploy
+        if: steps.config.outputs.deploy_enabled == 'true'
+        run: |
           cat <<EOF | kubectl apply -f -
           apiVersion: apps/v1
           kind: Deployment
@@ -105,6 +115,8 @@ jobs:
                 labels:
                   app: ${APP_NAME}
               spec:
+                imagePullSecrets:
+                  - name: acr-pull
                 containers:
                   - name: ${APP_NAME}
                     image: ${IMAGE}
