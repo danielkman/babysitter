@@ -36,8 +36,8 @@ import type {
 // Record adaptation: Atlas `_kind` -> agent-catalog `kind`
 // ---------------------------------------------------------------------------
 
-function isAgentCatalogRecord(record: AtlasRecord): boolean {
-  return record._cluster === "agent-catalog";
+function isAgentCatalogRecord(_record: AtlasRecord): boolean {
+  return true;
 }
 
 function adaptRecord(record: AtlasRecord): GraphNode {
