@@ -25,6 +25,10 @@ import type {
 // Record adaptation: Atlas `_kind` -> agent-catalog `kind`
 // ---------------------------------------------------------------------------
 
+function isAgentCatalogRecord(record: AtlasRecord): boolean {
+  return record._cluster === "agent-catalog";
+}
+
 function adaptRecord(record: AtlasRecord): GraphNode {
   const { _kind, _file, _cluster, ...rest } = record;
   return { ...rest, kind: _kind } as unknown as GraphNode;
@@ -50,17 +54,29 @@ function adaptEdge(edge: Edge, index: number): GraphRelationship {
 
 let cachedNodes: GraphNode[] | undefined;
 let cachedEdges: GraphRelationship[] | undefined;
+let cachedNodeIds: Set<string> | undefined;
 
 function allNodes(): GraphNode[] {
   if (!cachedNodes) {
-    cachedNodes = atlas.getAllRecords().map(adaptRecord);
+    cachedNodes = atlas.getAllRecords().filter(isAgentCatalogRecord).map(adaptRecord);
   }
   return cachedNodes;
 }
 
+function agentCatalogNodeIds(): Set<string> {
+  if (!cachedNodeIds) {
+    cachedNodeIds = new Set(allNodes().map((node) => node.id));
+  }
+  return cachedNodeIds;
+}
+
 function allEdges(): GraphRelationship[] {
   if (!cachedEdges) {
-    cachedEdges = atlas.getIndex().edges.map(adaptEdge);
+    const nodeIds = agentCatalogNodeIds();
+    cachedEdges = atlas
+      .getIndex()
+      .edges.filter((edge) => nodeIds.has(edge.from) && nodeIds.has(edge.to))
+      .map(adaptEdge);
   }
   return cachedEdges;
 }
@@ -70,14 +86,14 @@ export function listGraphNodes(): GraphNode[] {
 }
 
 export function listNodesByKind(kind: GraphNode["kind"]): GraphNode[] {
-  return atlas.getRecordsByKind(kind as string).map(adaptRecord);
+  return atlas.getRecordsByKind(kind as string).filter(isAgentCatalogRecord).map(adaptRecord);
 }
 
 export function getNodeById<TNode extends GraphNode = GraphNode>(
   nodeId: string,
 ): TNode | undefined {
   const record = atlas.getRecord(nodeId);
-  return record ? (adaptRecord(record) as TNode) : undefined;
+  return record && isAgentCatalogRecord(record) ? (adaptRecord(record) as TNode) : undefined;
 }
 
 export function listRelationshipsByRelation(
@@ -101,7 +117,7 @@ export function listOutgoingTargets(
 
   return targetIds
     .map((id) => atlas.getRecord(id))
-    .filter((record): record is AtlasRecord => record !== undefined)
+    .filter((record): record is AtlasRecord => record !== undefined && isAgentCatalogRecord(record))
     .map(adaptRecord);
 }
 
@@ -199,4 +215,5 @@ export function listRelationshipsForNode(nodeId: string): GraphRelationship[] {
 export function clearAtlasBridgeCache(): void {
   cachedNodes = undefined;
   cachedEdges = undefined;
+  cachedNodeIds = undefined;
 }

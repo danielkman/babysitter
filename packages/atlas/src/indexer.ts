@@ -198,11 +198,18 @@ export function buildIndex(options: BuildIndexOptions): IndexShape {
   let parseErrors = 0;
 
   function addRecord(record: AtlasRecord, recordEdges: Edge[] = []): void {
-    records[record.id] = record;
-    nodeKindCounts[record._kind] = (nodeKindCounts[record._kind] ?? 0) + 1;
-    const clusterInfo = clusters[record._cluster] ??= { nodeKinds: new Set<string>(), recordCount: 0 };
-    clusterInfo.nodeKinds.add(record._kind);
-    clusterInfo.recordCount++;
+    const existing = records[record.id];
+    const shouldReplaceDuplicate =
+      existing !== undefined && existing._cluster !== "agent-catalog" && record._cluster === "agent-catalog";
+    if (existing === undefined || shouldReplaceDuplicate) {
+      records[record.id] = record;
+    }
+    if (existing === undefined) {
+      nodeKindCounts[record._kind] = (nodeKindCounts[record._kind] ?? 0) + 1;
+      const clusterInfo = clusters[record._cluster] ??= { nodeKinds: new Set<string>(), recordCount: 0 };
+      clusterInfo.nodeKinds.add(record._kind);
+      clusterInfo.recordCount++;
+    }
     for (const edge of recordEdges) {
       edges.push(edge);
       edgeKindCounts[edge.kind] = (edgeKindCounts[edge.kind] ?? 0) + 1;
@@ -220,6 +227,22 @@ export function buildIndex(options: BuildIndexOptions): IndexShape {
     for (const doc of docs) {
       const objectDoc = asObject(doc);
       if (!objectDoc) continue;
+      if (objectDoc.kind === "NodeDocument" && Array.isArray(objectDoc.nodes)) {
+        for (const nodeItem of objectDoc.nodes) {
+          const node = asObject(nodeItem);
+          if (!node || typeof node.id !== "string" || typeof node.kind !== "string") continue;
+          const { id, kind, edges: _edges, ...attributes } = node;
+          const record: AtlasRecord = {
+            id,
+            _kind: kind,
+            _file: relativeTo(catalogDir, file),
+            _cluster: clusterOf(catalogDir, file),
+            ...attributes,
+          };
+          addRecord(record, extractEdges(node, id));
+        }
+        continue;
+      }
       const id = objectDoc.id;
       const kind = objectDoc.nodeKind ?? objectDoc.kind;
       if (typeof id !== "string" || typeof kind !== "string") continue;
