@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 const packages = [
+  'packages/atlas',
   'packages/agent-catalog',
   'packages/hooks-mux/core',
   'packages/hooks-mux/cli',
