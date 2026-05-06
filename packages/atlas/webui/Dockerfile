@@ -11,9 +11,11 @@ RUN node -e " \
   const pkg = JSON.parse(require('fs').readFileSync('package.json','utf8')); \
   pkg.workspaces = ['packages/atlas', 'packages/atlas/*']; \
   delete pkg.devDependencies; \
+  delete pkg.overrides; \
+  delete pkg.dependencies; \
   require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2));"
 
-RUN npm install --ignore-scripts
+RUN npm install --ignore-scripts --no-package-lock
 
 FROM deps AS builder
 WORKDIR /app
