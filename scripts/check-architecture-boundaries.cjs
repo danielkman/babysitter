@@ -58,15 +58,8 @@ const packageFamilies = {
     "@a5c-ai/cloud",
     "process-library-catalog",
   ],
-  "distribution-bundles": [
-    "@a5c-ai/babysitter-codex",
-    "@a5c-ai/babysitter-cursor",
-    "@a5c-ai/babysitter-gemini",
-    "@a5c-ai/babysitter-github",
-    "@a5c-ai/babysitter-omp",
-    "@a5c-ai/babysitter-openclaw",
-    "@a5c-ai/babysitter-opencode",
-    "@a5c-ai/babysitter-pi",
+  "atlas-family": [
+    "@a5c-ai/atlas-webui",
   ],
 };
 
@@ -102,10 +95,10 @@ const familyRules = {
     rationale:
       "downstream consumers can depend on core layers, but they must not become upstream dependencies for those layers",
   },
-  "distribution-bundles": {
-    allow: new Set(["orchestration-core"]),
+  "atlas-family": {
+    allow: new Set(["support-systems", "atlas-family"]),
     rationale:
-      "first-class install bundles stay thin and may only depend on the orchestration core they package around",
+      "atlas packages form a self-contained graph SDK family; may depend on support systems but not orchestration core",
   },
 };
 
