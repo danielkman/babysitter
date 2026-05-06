@@ -140,8 +140,8 @@ function clone<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
 }
 
-const AGENT_FILE_PATH = "packages/agent-catalog/graph/nodes/agents/versions.yaml";
-const AGENT_DIRECTORY = "packages/agent-catalog/graph";
+const AGENT_FILE_PATH = "packages/atlas/graph/agent-stack/core-impls";
+const AGENT_DIRECTORY = "packages/atlas/graph";
 
 function slugifyVersionRange(versionRange: string): string {
   return slugify(versionRange);

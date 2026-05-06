@@ -36,8 +36,17 @@ import type {
 // Record adaptation: Atlas `_kind` -> agent-catalog `kind`
 // ---------------------------------------------------------------------------
 
-function isAgentCatalogRecord(_record: AtlasRecord): boolean {
-  return true;
+const AGENT_CATALOG_KINDS = new Set([
+  "AgentProduct", "AgentVersion", "Capability", "CapabilitySupport",
+  "CiSurface", "Claim", "DiscoverySignal", "EvidenceSource",
+  "HookMapping", "HookSurface", "LifecycleSemantics", "Modality",
+  "ModelFamily", "ModelProviderProduct", "ModelProviderVersion", "ModelVersion",
+  "PackageSurface", "PathDescriptor", "PluginArtifact", "PluginTarget",
+  "ProcessDescriptor", "SessionSemantics", "TransportProtocol", "TransportRuntime",
+]);
+
+function isAgentCatalogRecord(record: AtlasRecord): boolean {
+  return AGENT_CATALOG_KINDS.has(record._kind);
 }
 
 function adaptRecord(record: AtlasRecord): GraphNode {
