@@ -8,7 +8,7 @@ import { join, relative, resolve, sep } from 'node:path';
 
 const ROOT = resolve(import.meta.dirname, '..');
 const UNIFIED_SOURCE = join(ROOT, 'plugins/babysitter-unified');
-const DEFAULT_OUTPUT = join(ROOT, 'generated');
+const DEFAULT_OUTPUT = join(ROOT, 'artifacts', 'generated-plugins');
 const COMPILER_PKG = join(ROOT, 'packages/agent-plugins-mux');
 
 const args = process.argv.slice(2);
@@ -79,6 +79,7 @@ if (!compareOnly) {
     '--source', UNIFIED_SOURCE,
     '--output', outputDir,
     '--verbose',
+    '--verify',
   ];
 
   if (marketplacePath) {
@@ -108,28 +109,13 @@ if (compareDir) {
     (d) => statSync(join(outputDir, d)).isDirectory()
   );
 
-  const ORIGINAL_DIR_MAP = {
-    'claude-code': 'plugins/babysitter',
-    'codex': 'plugins/babysitter-codex',
-    'cursor': 'plugins/babysitter-cursor',
-    'gemini': 'plugins/babysitter-gemini',
-    'github-copilot': 'plugins/babysitter-github',
-    'pi': 'plugins/babysitter-pi',
-    'oh-my-pi': 'plugins/babysitter-omp',
-    'opencode': 'plugins/babysitter-opencode',
-    'openclaw': 'plugins/babysitter-openclaw',
-  };
-
   let totalGaps = 0;
 
   for (const target of targets) {
     const generatedDir = join(outputDir, target);
-    const originalRelPath = ORIGINAL_DIR_MAP[target];
-    if (!originalRelPath) continue;
-
-    const originalDir = join(compareDir, originalRelPath);
+    const originalDir = join(compareDir, target);
     if (!existsSync(originalDir)) {
-      console.log(`  [${target}] SKIP — original dir not found: ${originalRelPath}`);
+      console.log(`  [${target}] SKIP — comparison dir not found: ${relative(ROOT, originalDir)}`);
       continue;
     }
 

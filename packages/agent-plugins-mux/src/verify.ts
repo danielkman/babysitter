@@ -12,6 +12,24 @@ function getMarketplaceRootDir(marketplacePath: string): string {
   return path.resolve(path.dirname(marketplacePath), '..', '..');
 }
 
+function resolveMarketplaceSourceCandidates(
+  fullPath: string,
+  sourceValue: string,
+  useMarketplaceRootDir: boolean,
+): string[] {
+  const candidates = new Set<string>();
+  const baseDir = path.dirname(fullPath);
+  candidates.add(path.resolve(baseDir, sourceValue));
+  candidates.add(path.resolve(baseDir, '..', sourceValue));
+  candidates.add(path.resolve(baseDir, '..', '..', sourceValue));
+
+  if (useMarketplaceRootDir) {
+    candidates.add(path.resolve(getMarketplaceRootDir(fullPath), sourceValue));
+  }
+
+  return [...candidates];
+}
+
 export function verify(
   outputDir: string,
   emittedFiles: string[],
@@ -260,14 +278,16 @@ export function verify(
         continue;
       }
 
-      const resolutionRoot = typeof pluginEntry.source === 'string'
-        ? path.dirname(fullPath)
-        : getMarketplaceRootDir(fullPath);
-      const resolved = path.resolve(resolutionRoot, sourceValue);
-      if (!fs.existsSync(resolved)) {
+      const candidates = resolveMarketplaceSourceCandidates(
+        fullPath,
+        sourceValue,
+        typeof pluginEntry.source !== 'string',
+      );
+      const resolved = candidates.find((candidate) => fs.existsSync(candidate));
+      if (!resolved) {
         addDiagnostic(
           `${filePath} marketplace entry source missing: ${sourceValue}`,
-          resolved,
+          candidates[0] ?? path.resolve(path.dirname(fullPath), sourceValue),
         );
         continue;
       }

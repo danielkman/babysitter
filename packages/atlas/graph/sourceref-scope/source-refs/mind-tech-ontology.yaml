@@ -1,0 +1,23 @@
+nodeKind: SourceRef
+id: source-ref:mind-tech-ontology
+attributes:
+  description: MIND Tech Skills and Concepts Ontology repository
+  displayName: MIND-TechAI/MIND-tech-ontology
+  repoUrl: https://github.com/MIND-TechAI/MIND-tech-ontology
+  ref: main
+  path: .
+  kind: git-repo
+  notes: |
+    External ontology of technical skills, concepts, and relationships.
+    Atlas uses this as a source for manual taxonomy alignment instead of
+    mirroring the repository as a raw node dump.
+---
+nodeKind: SourceRef
+id: source-ref:mind-tech-ontology-readme
+attributes:
+  description: MIND Tech ontology README and category overview
+  displayName: MIND-TechAI/MIND-tech-ontology README
+  repoUrl: https://github.com/MIND-TechAI/MIND-tech-ontology
+  ref: main
+  path: README.md
+  kind: git-path

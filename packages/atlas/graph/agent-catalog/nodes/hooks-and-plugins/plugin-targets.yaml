@@ -302,7 +302,6 @@ nodes:
       extraPackageFiles: []
       extraScripts:
         test: node test/integration.test.js
-        "sync:commands": node scripts/sync-command-docs.cjs
       emitCjsWrappers: true
     componentSupport:
       agents: unsupported

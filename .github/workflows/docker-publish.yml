@@ -18,9 +18,8 @@ on:
       - 'packages/babysitter-agent/**'
       - 'packages/agent-mux/**'
       - 'packages/sdk/**'
-      - 'plugins/babysitter/**'
-      - 'plugins/babysitter-gemini/**'
-      - 'plugins/babysitter-openclaw/**'
+      - 'plugins/babysitter-unified/**'
+      - 'packages/agent-plugins-mux/**'
       - '.github/workflows/docker-publish.yml'
 
 env:

@@ -59,6 +59,7 @@ COPY packages/agent-mux/harness-mock/package.json ./packages/agent-mux/harness-m
 COPY packages/agent-mux/ui/package.json ./packages/agent-mux/ui/
 COPY packages/agent-mux/webui/package.json ./packages/agent-mux/webui/
 COPY packages/agent-mux/tui/package.json ./packages/agent-mux/tui/
+COPY packages/agent-plugins-mux/package.json ./packages/agent-plugins-mux/
 COPY third_party/webpackbar ./third_party/webpackbar
 
 # Install all dependencies (including dev for build) from the committed lockfile.
@@ -68,8 +69,11 @@ RUN --mount=type=cache,target=/root/.npm \
 # Copy the rest of the application
 COPY . .
 
-# Build the SDK and runtime-only agent graph
-RUN npm run build:runtime
+# Build the SDK, runtime graph, and plugin compiler surfaces
+RUN npm run build:runtime && \
+    npm run build --workspace=@a5c-ai/agent-catalog && \
+    npm run build --workspace=@a5c-ai/agent-plugins-mux && \
+    node packages/agent-plugins-mux/dist/cli.js compile --target claude-code --source plugins/babysitter-unified --output /tmp/babysitter-claude-plugin --verify
 
 # Clean up dev dependencies after build
 ENV NODE_ENV=production
@@ -84,11 +88,11 @@ RUN --mount=type=cache,target=/root/.npm \
 RUN --mount=type=cache,target=/root/.npm \
     npm install -g @mariozechner/pi-coding-agent --cache=/root/.npm
 
-# Read plugin version from plugin.json (single source of truth)
-RUN PLUGIN_VERSION=$(node -e "console.log(JSON.parse(require('fs').readFileSync('plugins/babysitter/plugin.json','utf8')).version)") && \
+# Read plugin version from the compiled Claude bundle
+RUN PLUGIN_VERSION=$(node -e "console.log(JSON.parse(require('fs').readFileSync('/tmp/babysitter-claude-plugin/plugin.json','utf8')).version)") && \
     PLUGIN_CACHE="/home/claude/.claude/plugins/cache/a5c-ai/babysitter/${PLUGIN_VERSION}" && \
     mkdir -p "${PLUGIN_CACHE}" && \
-    cp -r plugins/babysitter/* "${PLUGIN_CACHE}/" && \
+    cp -r /tmp/babysitter-claude-plugin/* "${PLUGIN_CACHE}/" && \
     chmod +x "${PLUGIN_CACHE}/hooks/"*.sh && \
     find "${PLUGIN_CACHE}/skills" -name "*.sh" -exec chmod +x {} + 2>/dev/null || true && \
     mkdir -p "${PLUGIN_CACHE}/.claude-plugin" && \

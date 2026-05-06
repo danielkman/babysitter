@@ -42,7 +42,7 @@ jobs:
           npm ci
           npm install --no-save @rollup/rollup-linux-x64-gnu 2>/dev/null || true
 
-      - name: Generate plugin snapshots
+      - name: Generate plugin bundles
         run: |
           set -euo pipefail
           BASE_VERSION=$(node -p "require('./package.json').version.split('-')[0]")

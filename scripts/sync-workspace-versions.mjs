@@ -16,27 +16,9 @@ const packageJsonPaths = new Set(['package.json']);
 const localPackageNames = new Set();
 const pluginManifestPaths = [
   'plugins/babysitter-unified/plugin.json',
-  'plugins/babysitter/.claude-plugin/plugin.json',
-  'plugins/babysitter/plugin.json',
-  'plugins/babysitter-gemini/plugin.json',
-  'plugins/babysitter-gemini/gemini-extension.json',
-  'plugins/babysitter-github/plugin.json',
-  'plugins/babysitter-cursor/plugin.json',
-  'plugins/babysitter-opencode/plugin.json',
-  'plugins/babysitter-openclaw/plugin.json',
-  'plugins/babysitter-openclaw/openclaw.plugin.json',
 ];
 const versionsJsonPaths = [
   'plugins/babysitter-unified/versions.json',
-  'plugins/babysitter/versions.json',
-  'plugins/babysitter-codex/versions.json',
-  'plugins/babysitter-gemini/versions.json',
-  'plugins/babysitter-pi/versions.json',
-  'plugins/babysitter-omp/versions.json',
-  'plugins/babysitter-opencode/versions.json',
-  'plugins/babysitter-openclaw/versions.json',
-  'plugins/babysitter-github/versions.json',
-  'plugins/babysitter-cursor/versions.json',
 ];
 const dependencyFields = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies'];
 const skipDirs = new Set(['.git', '.a5c', 'node_modules', 'dist', 'build', 'coverage', 'artifacts', 'generated', 'examples']);

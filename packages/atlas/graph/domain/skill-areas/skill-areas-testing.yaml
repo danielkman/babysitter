@@ -160,3 +160,69 @@ edges:
   applies_to:
     - target: specialization:qa-testing-automation
       confidence: primary
+---
+nodeKind: SkillArea
+id: skill-area:service-mocking
+attributes:
+  displayName: "Service Mocking"
+  description: |
+    Replacing upstream services with deterministic doubles during tests -
+    HTTP stubs, fake brokers, sandbox APIs, and contract-aligned mock behavior.
+  domains:
+    - specialization:qa-testing-automation
+  expertiseLevels: [intermediate, expert]
+edges:
+  applies_to:
+    - target: specialization:qa-testing-automation
+      confidence: primary
+  requires_skill_area:
+    - skill-area:integration-testing
+---
+nodeKind: SkillArea
+id: skill-area:acceptance-testing
+attributes:
+  displayName: "Acceptance Testing"
+  description: |
+    Validating business-visible outcomes against user stories and acceptance
+    criteria - scenario coverage, stakeholder-readable cases, and release gates.
+  domains:
+    - specialization:qa-testing-automation
+  expertiseLevels: [intermediate, expert]
+edges:
+  applies_to:
+    - target: specialization:qa-testing-automation
+      confidence: primary
+  requires_skill_area:
+    - skill-area:e2e-testing
+---
+nodeKind: SkillArea
+id: skill-area:regression-testing
+attributes:
+  displayName: "Regression Testing"
+  description: |
+    Building regression suites that lock in previously-fixed behavior -
+    coverage selection, bug reproduction harnesses, and change-risk triage.
+  domains:
+    - specialization:qa-testing-automation
+  expertiseLevels: [intermediate, expert]
+edges:
+  applies_to:
+    - target: specialization:qa-testing-automation
+      confidence: primary
+  requires_skill_area:
+    - skill-area:integration-testing
+---
+nodeKind: SkillArea
+id: skill-area:smoke-testing
+attributes:
+  displayName: "Smoke Testing"
+  description: |
+    Running fast confidence checks after deploys or release candidates -
+    core-path validation, environment sanity, and go/no-go release signals.
+  domains:
+    - specialization:qa-testing-automation
+  expertiseLevels: [novice, intermediate, expert]
+edges:
+  applies_to:
+    - target: specialization:qa-testing-automation
+      confidence: primary

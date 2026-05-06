@@ -52,7 +52,13 @@ export default async function RecordPage({
             ? "article"
             : "overview";
 
-  const baseTabHref = (t: string) => `/n/${encodeURIComponent(id)}${t === "overview" ? "" : `?tab=${t}`}`;
+  const basePath = `/n/${encodeURIComponent(id)}`;
+  const baseTabHref = (t: string) => {
+    if (hasArticle) {
+      return t === "article" ? basePath : `${basePath}?tab=${t}`;
+    }
+    return t === "overview" ? basePath : `${basePath}?tab=${t}`;
+  };
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -198,4 +204,3 @@ export default async function RecordPage({
     </div>
   );
 }
-

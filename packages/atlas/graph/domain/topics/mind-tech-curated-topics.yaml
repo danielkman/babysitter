@@ -1,0 +1,234 @@
+---
+nodeKind: Topic
+id: topic:clean-architecture
+attributes:
+  displayName: "Clean Architecture"
+  description: |
+    Clean Architecture as a cross-cutting topic - concentric dependency
+    boundaries, use-case orchestration, and infrastructure isolation.
+edges: {}
+---
+nodeKind: Topic
+id: topic:onion-architecture
+attributes:
+  displayName: "Onion Architecture"
+  description: |
+    Onion Architecture as a cross-cutting topic - domain-centered layering
+    with dependencies flowing inward toward the core model.
+edges: {}
+---
+nodeKind: Topic
+id: topic:microservices-architecture
+attributes:
+  displayName: "Microservices Architecture"
+  description: |
+    Microservices Architecture as a cross-cutting topic - service boundaries,
+    independently deployable units, and distributed-system tradeoffs.
+edges: {}
+---
+nodeKind: Topic
+id: topic:serverless-architecture
+attributes:
+  displayName: "Serverless Architecture"
+  description: |
+    Serverless Architecture as a cross-cutting topic - event-triggered compute,
+    managed platform dependencies, and operational tradeoffs around cold starts.
+edges: {}
+---
+nodeKind: Topic
+id: topic:backend-for-frontend
+attributes:
+  displayName: "Backend for Frontend"
+  description: |
+    Backend for Frontend as a cross-cutting topic - client-specific backend
+    surfaces that shape data, auth, and orchestration for one UI channel.
+edges: {}
+---
+nodeKind: Topic
+id: topic:retry-pattern
+attributes:
+  displayName: "Retry Pattern"
+  description: |
+    Retry Pattern as a cross-cutting topic - bounded retries, backoff,
+    idempotency awareness, and failure classification.
+edges: {}
+---
+nodeKind: Topic
+id: topic:timeout-pattern
+attributes:
+  displayName: "Timeout Pattern"
+  description: |
+    Timeout Pattern as a cross-cutting topic - deadline budgets,
+    cancellation, fail-fast behavior, and latency containment.
+edges: {}
+---
+nodeKind: Topic
+id: topic:single-page-application
+attributes:
+  displayName: "Single Page Application"
+  description: |
+    Single Page Application as a cross-cutting topic - client-routed apps with
+    long-lived browser sessions, incremental data loading, and stateful shells.
+edges: {}
+---
+nodeKind: Topic
+id: topic:progressive-web-application
+attributes:
+  displayName: "Progressive Web Application"
+  description: |
+    Progressive Web Application as a cross-cutting topic - installability,
+    offline support, service workers, and app-like web delivery.
+edges: {}
+---
+nodeKind: Topic
+id: topic:static-site-generation
+attributes:
+  displayName: "Static Site Generation"
+  description: |
+    Static Site Generation as a cross-cutting topic - build-time page
+    materialization, CDN-first delivery, and hybrid rendering tradeoffs.
+edges: {}
+---
+nodeKind: Topic
+id: topic:rest
+attributes:
+  displayName: "REST"
+  description: |
+    REST as a cross-cutting topic - resource-oriented APIs, HTTP semantics,
+    idempotency, representation design, and cache-aware interaction.
+edges: {}
+---
+nodeKind: Topic
+id: topic:message-driven-architecture
+attributes:
+  displayName: "Message-Driven Architecture"
+  description: |
+    Message-Driven Architecture as a cross-cutting topic - asynchronous
+    communication through queued or brokered messages between services.
+edges: {}
+---
+nodeKind: Topic
+id: topic:layered-architecture
+attributes:
+  displayName: "Layered Architecture"
+  description: |
+    Layered Architecture as a cross-cutting topic - presentation,
+    application, and data-access separation through explicit layers.
+edges: {}
+---
+nodeKind: Topic
+id: topic:service-oriented-architecture
+attributes:
+  displayName: "Service-Oriented Architecture"
+  description: |
+    Service-Oriented Architecture as a cross-cutting topic - coarse-grained
+    services, contracts, and integration through shared service boundaries.
+edges: {}
+---
+nodeKind: Topic
+id: topic:publish-subscribe
+attributes:
+  displayName: "Publish-Subscribe"
+  description: |
+    Publish-Subscribe as a cross-cutting topic - producers publish events to
+    a bus while subscribers react without direct producer coupling.
+edges: {}
+---
+nodeKind: Topic
+id: topic:request-reply
+attributes:
+  displayName: "Request-Reply"
+  description: |
+    Request-Reply as a cross-cutting topic - correlated requests and
+    responses across service or message boundaries.
+edges: {}
+---
+nodeKind: Topic
+id: topic:sidecar-pattern
+attributes:
+  displayName: "Sidecar Pattern"
+  description: |
+    Sidecar Pattern as a cross-cutting topic - colocated helper processes that
+    augment an application with networking, policy, or telemetry concerns.
+edges: {}
+---
+nodeKind: Topic
+id: topic:sharding
+attributes:
+  displayName: "Sharding"
+  description: |
+    Sharding as a cross-cutting topic - partitioning data or workload across
+    multiple storage or compute partitions for scale.
+edges: {}
+---
+nodeKind: Topic
+id: topic:bulkhead-pattern
+attributes:
+  displayName: "Bulkhead Pattern"
+  description: |
+    Bulkhead Pattern as a cross-cutting topic - isolating pools of work or
+    resources so one failure domain does not cascade into another.
+edges: {}
+---
+nodeKind: Topic
+id: topic:client-side-rendering
+attributes:
+  displayName: "Client-Side Rendering"
+  description: |
+    Client-Side Rendering as a cross-cutting topic - browser-side rendering,
+    hydration-free startup, and frontend bootstrapping after asset load.
+edges: {}
+---
+nodeKind: Topic
+id: topic:incremental-static-regeneration
+attributes:
+  displayName: "Incremental Static Regeneration"
+  description: |
+    Incremental Static Regeneration as a cross-cutting topic - time- or event-
+    driven static page refresh without rebuilding the full site.
+edges: {}
+---
+nodeKind: Topic
+id: topic:code-splitting
+attributes:
+  displayName: "Code Splitting"
+  description: |
+    Code Splitting as a cross-cutting topic - deferring portions of a bundle
+    until needed to improve initial load and execution behavior.
+edges: {}
+---
+nodeKind: Topic
+id: topic:finite-state-machine
+attributes:
+  displayName: "Finite State Machine"
+  description: |
+    Finite State Machine as a cross-cutting topic - explicit states,
+    transitions, guards, and side effects in interactive systems.
+edges: {}
+---
+nodeKind: Topic
+id: topic:micro-frontend-architecture
+attributes:
+  displayName: "Micro-Frontend Architecture"
+  description: |
+    Micro-Frontend Architecture as a cross-cutting topic - independently
+    delivered frontend slices composed into one user-facing experience.
+edges: {}
+---
+nodeKind: Topic
+id: topic:jamstack-architecture
+attributes:
+  displayName: "JAMstack Architecture"
+  description: |
+    JAMstack Architecture as a cross-cutting topic - prebuilt frontend assets,
+    CDN delivery, and API-backed dynamic behavior.
+edges: {}
+---
+nodeKind: Topic
+id: topic:offline-first
+attributes:
+  displayName: "Offline-First"
+  description: |
+    Offline-First as a cross-cutting topic - local persistence, sync
+    reconciliation, and usable degraded behavior without the network.
+edges: {}

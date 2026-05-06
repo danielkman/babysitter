@@ -272,40 +272,14 @@ const agentMuxManifestPaths = [
 ];
 
 const pluginPackageManifestPaths = [
-  "plugins/babysitter-codex/package.json",
-  "plugins/babysitter-github/package.json",
-  "plugins/babysitter-cursor/package.json",
-  "plugins/babysitter-gemini/package.json",
-  "plugins/babysitter-pi/package.json",
-  "plugins/babysitter-omp/package.json",
-  "plugins/babysitter-opencode/package.json",
-  "plugins/babysitter-openclaw/package.json",
 ];
 
 const pluginManifestPaths = [
   "plugins/babysitter-unified/plugin.json",
-  "plugins/babysitter/.claude-plugin/plugin.json",
-  "plugins/babysitter/plugin.json",
-  "plugins/babysitter-gemini/plugin.json",
-  "plugins/babysitter-gemini/gemini-extension.json",
-  "plugins/babysitter-github/plugin.json",
-  "plugins/babysitter-cursor/plugin.json",
-  "plugins/babysitter-opencode/plugin.json",
-  "plugins/babysitter-openclaw/plugin.json",
-  "plugins/babysitter-openclaw/openclaw.plugin.json",
 ];
 
 const versionsJsonPaths = [
   "plugins/babysitter-unified/versions.json",
-  "plugins/babysitter/versions.json",
-  "plugins/babysitter-codex/versions.json",
-  "plugins/babysitter-gemini/versions.json",
-  "plugins/babysitter-omp/versions.json",
-  "plugins/babysitter-opencode/versions.json",
-  "plugins/babysitter-pi/versions.json",
-  "plugins/babysitter-github/versions.json",
-  "plugins/babysitter-cursor/versions.json",
-  "plugins/babysitter-openclaw/versions.json",
 ];
 
 const lockPaths = ["package-lock.json"];
@@ -354,14 +328,6 @@ for (const path of [
   "packages/babysitter/package.json",
   "packages/babysitter-agent/package.json",
   "packages/babysitter-tui-plugins/package.json",
-  "plugins/babysitter-codex/package.json",
-  "plugins/babysitter-github/package.json",
-  "plugins/babysitter-cursor/package.json",
-  "plugins/babysitter-gemini/package.json",
-  "plugins/babysitter-pi/package.json",
-  "plugins/babysitter-omp/package.json",
-  "plugins/babysitter-opencode/package.json",
-  "plugins/babysitter-openclaw/package.json",
 ]) {
   syncDependencyVersion(path, "@a5c-ai/babysitter-sdk", newVersion);
 }

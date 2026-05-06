@@ -197,3 +197,39 @@ edges:
   applies_to:
     - target: specialization:web-development
       confidence: primary
+---
+nodeKind: SkillArea
+id: skill-area:frontend-routing
+attributes:
+  displayName: "Frontend Routing"
+  description: |
+    Client and app-shell routing design - nested routes, guards, data loading,
+    URL state, and navigation behavior across SPA and hybrid-rendered apps.
+  domains:
+    - specialization:web-development
+    - specialization:frontend-react
+  expertiseLevels: [intermediate, expert]
+edges:
+  applies_to:
+    - target: specialization:web-development
+      confidence: primary
+    - target: specialization:frontend-react
+      confidence: secondary
+---
+nodeKind: SkillArea
+id: skill-area:form-management
+attributes:
+  displayName: "Form Management"
+  description: |
+    Building robust form flows - validation, dirty-state tracking,
+    async submission, optimistic UX, multi-step flows, and error recovery.
+  domains:
+    - specialization:web-development
+    - specialization:frontend-react
+  expertiseLevels: [intermediate, expert]
+edges:
+  applies_to:
+    - target: specialization:web-development
+      confidence: primary
+    - target: specialization:frontend-react
+      confidence: secondary

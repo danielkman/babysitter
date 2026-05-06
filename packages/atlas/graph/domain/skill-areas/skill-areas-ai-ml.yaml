@@ -95,3 +95,64 @@ edges:
   applies_to:
     - target: specialization:ai-agents-conversational
       confidence: primary
+---
+nodeKind: SkillArea
+id: skill-area:model-monitoring-drift-detection
+attributes:
+  displayName: "Model Monitoring and Drift Detection"
+  description: |
+    Monitoring deployed models for data drift, concept drift, output quality
+    regressions, alert thresholds, and retraining triggers.
+  domains:
+    - specialization:ml-inference-serving
+    - domain:observability
+  expertiseLevels: [intermediate, expert]
+edges:
+  applies_to:
+    - target: specialization:ml-inference-serving
+      confidence: primary
+    - target: domain:observability
+      confidence: secondary
+  requires_skill_area:
+    - skill-area:observability-pipeline
+    - skill-area:sli-slo-management
+  uses_tool:
+    - tool:prometheus
+    - tool:grafana
+    - tool:mlflow
+---
+nodeKind: SkillArea
+id: skill-area:agent-planning-reasoning
+attributes:
+  displayName: "Agent Planning and Reasoning"
+  description: |
+    Designing planner/executor behavior for agents - decomposition quality,
+    intermediate reasoning structure, goal tracking, and termination control.
+  domains:
+    - specialization:ai-agents-conversational
+  expertiseLevels: [intermediate, expert]
+edges:
+  applies_to:
+    - target: specialization:ai-agents-conversational
+      confidence: primary
+  requires_skill_area:
+    - skill-area:agentic-loops
+    - skill-area:context-management
+---
+nodeKind: SkillArea
+id: skill-area:multi-agent-coordination
+attributes:
+  displayName: "Multi-Agent Coordination"
+  description: |
+    Coordinating multiple agents with explicit roles, message passing, shared
+    state boundaries, escalation rules, and convergence checks.
+  domains:
+    - specialization:ai-agents-conversational
+  expertiseLevels: [intermediate, expert]
+edges:
+  applies_to:
+    - target: specialization:ai-agents-conversational
+      confidence: primary
+  requires_skill_area:
+    - skill-area:agent-planning-reasoning
+    - skill-area:tool-use
