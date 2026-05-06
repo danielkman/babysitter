@@ -43,6 +43,12 @@ jobs:
           set -euo pipefail
           mkdir -p artifacts/core-logs
 
+      - name: Build Atlas and agent-catalog (prerequisite for command sync)
+        run: |
+          set -euo pipefail
+          npm run build --workspace=@a5c-ai/atlas
+          npm run build --workspace=@a5c-ai/agent-catalog
+
       - name: Check command surface sync
         run: |
           set -euo pipefail
@@ -289,6 +295,7 @@ jobs:
       - name: Build compiler prerequisites
         run: |
           set -euo pipefail
+          npm run build --workspace=@a5c-ai/atlas 2>&1 | tee artifacts/observer-compiler-logs/atlas-build.log
           npm run build --workspace=@a5c-ai/agent-catalog 2>&1 | tee artifacts/observer-compiler-logs/agent-catalog-build.log
 
       - name: Build and test agent-plugins-mux
@@ -296,6 +303,11 @@ jobs:
           set -euo pipefail
           npm run build --workspace=@a5c-ai/agent-plugins-mux 2>&1 | tee artifacts/observer-compiler-logs/agent-plugins-mux-build.log
           npm run test --workspace=@a5c-ai/agent-plugins-mux 2>&1 | tee artifacts/observer-compiler-logs/agent-plugins-mux-tests.log
+
+      - name: Generate unified plugin bundles
+        run: |
+          set -euo pipefail
+          npm run generate:plugins 2>&1 | tee artifacts/observer-compiler-logs/generated-plugin-bundles.log
 
       - name: Build and test observer-dashboard
         run: |
@@ -311,185 +323,6 @@ jobs:
           path: artifacts/observer-compiler-logs
           if-no-files-found: warn
 
-  validate_plugins:
-    if: ${{ !contains(github.event.head_commit.message, '[skip staging]') }}
-    name: Validate Plugin ${{ matrix.slug }}
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - slug: babysitter-claude
-            command: node packages/agent-plugins-mux/dist/cli.js diff --target claude-code --source plugins/babysitter-unified --existing plugins/babysitter
-            log: babysitter-claude-diff.log
-            needs_sdk: false
-            needs_plugin_compiler: true
-          - slug: babysitter-codex
-            command: npm test --prefix plugins/babysitter-codex
-            log: babysitter-codex-tests.log
-            needs_sdk: true
-          - slug: babysitter-github
-            command: bash plugins/babysitter-github/test/plugin-validate.sh
-            log: babysitter-github-validate.log
-            needs_sdk: true
-          - slug: babysitter-cursor
-            command: bash plugins/babysitter-cursor/test/plugin-validate.sh
-            log: babysitter-cursor-validate.log
-            needs_sdk: true
-          - slug: babysitter-gemini
-            command: node plugins/babysitter-gemini/test/integration.test.js
-            log: babysitter-gemini-integration.log
-            needs_sdk: false
-          - slug: babysitter-pi
-            command: npm test --prefix plugins/babysitter-pi
-            log: babysitter-pi-tests.log
-            needs_sdk: false
-          - slug: babysitter-omp
-            command: npm test --prefix plugins/babysitter-omp
-            log: babysitter-omp-tests.log
-            needs_sdk: false
-          - slug: babysitter-opencode
-            command: npm test --prefix plugins/babysitter-opencode
-            log: babysitter-opencode-tests.log
-            needs_sdk: false
-          - slug: babysitter-openclaw
-            command: npm test --prefix plugins/babysitter-openclaw
-            log: babysitter-openclaw-tests.log
-            needs_sdk: false
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-
-      - name: Install dependencies
-        run: |
-          npm ci
-          # Workaround: npm ci on Windows-generated lockfile may miss linux optional deps
-          npm install --no-save @rollup/rollup-linux-x64-gnu 2>/dev/null || true
-
-      - name: Prepare artifacts directory
-        run: |
-          set -euo pipefail
-          mkdir -p artifacts/plugin-logs
-
-      - name: Build local SDK prerequisites
-        if: ${{ matrix.needs_sdk }}
-        run: |
-          set -euo pipefail
-          npm run build:sdk 2>&1 | tee "artifacts/plugin-logs/${{ matrix.slug }}-sdk-prereqs.log"
-
-      - name: Build local plugin compiler prerequisites
-        if: ${{ matrix.needs_plugin_compiler }}
-        run: |
-          set -euo pipefail
-          npm run build --workspace=@a5c-ai/agent-catalog 2>&1 | tee "artifacts/plugin-logs/${{ matrix.slug }}-agent-catalog-build.log"
-          npm run build --workspace=@a5c-ai/agent-plugins-mux 2>&1 | tee "artifacts/plugin-logs/${{ matrix.slug }}-agent-plugins-mux-build.log"
-
-      - name: Run plugin validation
-        run: |
-          set -euo pipefail
-          ${{ matrix.command }} 2>&1 | tee "artifacts/plugin-logs/${{ matrix.log }}"
-
-      - name: Upload plugin validation logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: staging-${{ matrix.slug }}-logs
-          path: artifacts/plugin-logs
-          if-no-files-found: warn
-
-  generated_plugins:
-    if: ${{ !contains(github.event.head_commit.message, '[skip staging]') }}
-    name: Generate Plugin Snapshots
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-
-      - name: Install dependencies
-        run: |
-          npm ci
-          # Workaround: npm ci on Windows-generated lockfile may miss linux optional deps
-          npm install --no-save @rollup/rollup-linux-x64-gnu 2>/dev/null || true
-
-      - name: Prepare artifacts directory
-        run: |
-          set -euo pipefail
-          mkdir -p artifacts/generated-plugin-logs
-
-      - name: Generate plugin snapshots
-        run: |
-          set -euo pipefail
-          npm run generate:plugins 2>&1 | tee artifacts/generated-plugin-logs/generated-plugins.log
-
-      - name: Compare generated plugins with manual plugins
-        id: compare_plugins
-        continue-on-error: true
-        run: |
-          set -euo pipefail
-          node scripts/generate-plugins.mjs --output generated --compare . --compare-only 2>&1 | tee artifacts/generated-plugin-logs/generated-plugins-compare.log
-
-      - name: Warn on manual plugin drift
-        if: steps.compare_plugins.outcome == 'failure'
-        run: echo "::warning::Generated plugins differ from the manually maintained plugin directories. Review staging-generated-plugin-logs for the drift report."
-
-      - name: Upload generated plugin artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: staging-generated-plugins
-          path: generated
-          if-no-files-found: warn
-
-      - name: Upload generated plugin logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: staging-generated-plugin-logs
-          path: artifacts/generated-plugin-logs
-          if-no-files-found: warn
-
-      - name: Commit generated plugin snapshots
-        env:
-          BRANCH_NAME: ${{ github.ref_name }}
-        run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add generated/ plugins/babysitter-unified/plugin.json
-          if git diff --cached --quiet; then
-            echo "No generated plugin snapshot changes to commit."
-          else
-            git commit -m "chore: refresh generated plugin snapshots [skip staging]"
-            if git push origin HEAD:$BRANCH_NAME 2>/dev/null; then
-              echo "Generated plugin snapshots committed and pushed."
-            elif git pull --rebase --autostash origin "$BRANCH_NAME" 2>/dev/null && git push origin HEAD:$BRANCH_NAME 2>/dev/null; then
-              echo "Generated plugin snapshots committed after rebase."
-            else
-              echo "::warning::Could not push generated plugin snapshots due to a concurrent branch update."
-              git rebase --abort 2>/dev/null || true
-            fi
-          fi
-
   prepare_staging_publish:
     if: ${{ !contains(github.event.head_commit.message, '[skip staging]') }}
     name: Prepare Staging Publish
@@ -498,8 +331,6 @@ jobs:
       - validate_mux
       - validate_cloud
       - validate_observer_and_compiler
-      - validate_plugins
-      - generated_plugins
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -553,7 +384,7 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add plugins/babysitter-unified/versions.json plugins/babysitter/versions.json plugins/babysitter-codex/versions.json plugins/babysitter-gemini/versions.json plugins/babysitter-pi/versions.json plugins/babysitter-omp/versions.json plugins/babysitter-opencode/versions.json plugins/babysitter-openclaw/versions.json plugins/babysitter-github/versions.json plugins/babysitter-cursor/versions.json
+          git add plugins/babysitter-unified/versions.json
           if git diff --cached --quiet; then
             echo "No sdkVersion changes to commit."
           else
@@ -605,7 +436,7 @@ jobs:
       matrix:
         include:
           - name: agent-catalog
-            build: npm run build --workspace=@a5c-ai/agent-catalog
+            build: npm run build --workspace=@a5c-ai/atlas && npm run build --workspace=@a5c-ai/agent-catalog
             publish: npm publish --workspace=@a5c-ai/agent-catalog --access public --tag staging
           - name: agent-core
             build: npm run build --workspace=@a5c-ai/agent-core
@@ -617,7 +448,7 @@ jobs:
             build: npm run build:sdk
             publish: npm publish --workspace=@a5c-ai/babysitter-sdk --access public --tag staging
           - name: agent-plugins-mux
-            build: npm run build --workspace=@a5c-ai/agent-catalog && npm run build --workspace=@a5c-ai/agent-plugins-mux
+            build: npm run build --workspace=@a5c-ai/atlas && npm run build --workspace=@a5c-ai/agent-catalog && npm run build --workspace=@a5c-ai/agent-plugins-mux
             publish: npm publish --workspace=@a5c-ai/agent-plugins-mux --access public --tag staging
           - name: observer-dashboard
             build: npm run build:observer
@@ -726,7 +557,7 @@ jobs:
         run: |
           set -euo pipefail
           npm run build:hooks-mux
-          npm run build --workspace=@a5c-ai/agent-catalog
+          npm run build --workspace=@a5c-ai/atlas && npm run build --workspace=@a5c-ai/agent-catalog
           npm run build --workspace=@a5c-ai/agent-mux-observability
           npm run build --workspace=@a5c-ai/agent-mux-core
 
@@ -749,7 +580,7 @@ jobs:
           - name: agent-mux-adapters
             build: |
               set -euo pipefail
-              npm run build --workspace=@a5c-ai/agent-catalog
+              npm run build --workspace=@a5c-ai/atlas && npm run build --workspace=@a5c-ai/agent-catalog
               npm run build --workspace=@a5c-ai/agent-mux-observability
               npm run build --workspace=@a5c-ai/agent-mux-core
               npm run build --workspace=@a5c-ai/agent-mux-adapters
@@ -757,7 +588,7 @@ jobs:
           - name: agent-mux-harness-mock
             build: |
               set -euo pipefail
-              npm run build --workspace=@a5c-ai/agent-catalog
+              npm run build --workspace=@a5c-ai/atlas && npm run build --workspace=@a5c-ai/agent-catalog
               npm run build --workspace=@a5c-ai/agent-mux-observability
               npm run build --workspace=@a5c-ai/agent-mux-core
               npm run build --workspace=@a5c-ai/agent-mux-harness-mock
@@ -765,7 +596,7 @@ jobs:
           - name: transport-mux
             build: |
               set -euo pipefail
-              npm run build --workspace=@a5c-ai/agent-catalog
+              npm run build --workspace=@a5c-ai/atlas && npm run build --workspace=@a5c-ai/agent-catalog
               npm run build --workspace=@a5c-ai/agent-mux-observability
               npm run build --workspace=@a5c-ai/agent-mux-core
               npm run build --workspace=@a5c-ai/transport-mux
@@ -825,7 +656,7 @@ jobs:
           - name: agent-mux-gateway
             build: |
               set -euo pipefail
-              npm run build --workspace=@a5c-ai/agent-catalog
+              npm run build --workspace=@a5c-ai/atlas && npm run build --workspace=@a5c-ai/agent-catalog
               npm run build --workspace=@a5c-ai/agent-mux-observability
               npm run build --workspace=@a5c-ai/agent-mux-core
               npm run build --workspace=@a5c-ai/agent-mux-adapters
