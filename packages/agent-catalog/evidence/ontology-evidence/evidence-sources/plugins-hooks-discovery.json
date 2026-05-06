@@ -9,7 +9,7 @@
       "kind": "EvidenceSource",
       "evidenceId": "repo-codex-windows-hooks",
       "kindLabel": "repo",
-      "sourcePathOrUrl": "plugins/babysitter-codex/bin/install-shared.js",
+      "sourcePathOrUrl": "plugins/babysitter-unified/per-harness/codex/bin/install-surface.js",
       "capturedAt": "2026-04-23T00:00:00.000Z",
       "locator": "lines 748-756",
       "trustLevel": "repo"

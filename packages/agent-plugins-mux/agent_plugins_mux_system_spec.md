@@ -13,19 +13,19 @@ The Unified Plugin System is a **build tool** that compiles a single canonical p
 
 ### Problem
 
-The babysitter project currently maintains **9 separate plugin directories** under `plugins/`:
+The babysitter project historically maintained multiple plugin directories under `plugins/`, but the source of truth is now unified and generated per target:
 
 | Directory | Harness | Manual sync required |
 |-----------|---------|---------------------|
-| `plugins/babysitter/` | Claude Code | Source of truth |
-| `plugins/babysitter-codex/` | Codex | Skills derived from commands via `sync-command-skills.js` |
-| `plugins/babysitter-cursor/` | Cursor | Manual |
-| `plugins/babysitter-gemini/` | Gemini CLI | Commands converted to TOML |
-| `plugins/babysitter-github/` | GitHub Copilot | Manual |
-| `plugins/babysitter-pi/` | Pi | Manual |
-| `plugins/babysitter-omp/` | oh-my-pi | Manual |
-| `plugins/babysitter-opencode/` | OpenCode | Commands + skills copied |
-| `plugins/babysitter-openclaw/` | OpenClaw | Manual |
+| `plugins/babysitter-unified/` | Unified source | Source of truth |
+| `plugins/babysitter-unified/per-harness/codex/` | Codex overlay | Harness-specific source overlay |
+| `plugins/babysitter-unified/per-harness/cursor/` | Cursor overlay | Harness-specific source overlay |
+| `plugins/babysitter-unified/per-harness/gemini/` | Gemini CLI overlay | Harness-specific source overlay |
+| `plugins/babysitter-unified/per-harness/github/` | GitHub Copilot overlay | Harness-specific source overlay |
+| `plugins/babysitter-unified/per-harness/pi/` | Pi overlay | Harness-specific source overlay |
+| `plugins/babysitter-unified/per-harness/omp/` | oh-my-pi overlay | Harness-specific source overlay |
+| `plugins/babysitter-unified/per-harness/opencode/` | OpenCode overlay | Harness-specific source overlay |
+| `plugins/babysitter-unified/per-harness/openclaw/` | OpenClaw overlay | Harness-specific source overlay |
 
 Every time a command, skill, or hook changes in the canonical plugin, the change must be manually propagated to all targets. The `scripts/plugin-command-sync-lib.cjs` library and per-target `sync-command-skills.js` scripts partially automate skill derivation, but the process is fragile and incomplete.
 
@@ -414,7 +414,7 @@ allowed-tools: Read, Grep, Write, Task, Bash, Edit, Grep, Glob, WebFetch, WebSea
 Invoke the babysitter:babysit skill (using the Skill tool) and follow its instructions (SKILL.md). but without any user interaction or breakpoints in the run.
 ```
 
-**Current codebase commands** (all in `plugins/babysitter/commands/`):
+**Current codebase commands** (all in `plugins/babysitter-unified/commands/`):
 `call.md`, `yolo.md`, `forever.md`, `plan.md`, `resume.md`, `help.md`, `observe.md`, `cleanup.md`, `plugins.md`, `project-install.md`, `user-install.md`, `contrib.md`, `retrospect.md`, `assimilate.md`, `doctor.md`
 
 ### 3.2 Skills (`skills/*/SKILL.md`)
@@ -1345,7 +1345,7 @@ Generation rules:
 
 The `COMMANDS` list is derived from the UPF `commands/` directory: take each `*.md` filename (without extension), excluding `babysit` and `babysitter` (which are registered separately as the primary entry points).
 
-**Reference implementation** (from `plugins/babysitter-pi/extensions/index.ts`):
+**Reference implementation** (from the Pi per-harness source overlay under `plugins/babysitter-unified/per-harness/pi/`):
 
 ```typescript
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
@@ -1515,7 +1515,7 @@ Generation rules:
 1. The compiler creates `accomplish-skills/babysitter/SKILL.md` as a self-contained SKILL.md with:
    - YAML frontmatter: `name: babysitter`, `description` (same as the babysit skill), `command: /babysitter`, `verified: true`
    - Body content identical to the babysit skill but with OpenCode-specific harness references (e.g., `--harness opencode` in CLI commands)
-   - The `versions.json` probe path references the OpenCode plugin directory (e.g., `./plugins/babysitter-opencode/versions.json`)
+   - The `versions.json` probe path references the generated OpenCode plugin directory (e.g., `./artifacts/generated-plugins/opencode/versions.json`)
 2. Only the primary `babysitter` skill is placed in `accomplish-skills/`. Command-derived skills are not duplicated there.
 3. The accomplish-skills variant includes the `command` and `verified` frontmatter fields which are not present in regular skills
 
@@ -1830,7 +1830,7 @@ Emit context files for targets that support them:
 
 ### 5.5 Stage 4: EMIT
 
-Write all transformed files to the output directory. The output structure matches exactly what currently lives in `plugins/babysitter-<target>/`.
+Write all transformed files to the output directory. The output structure matches exactly what currently lives in the generated target bundle directory (for example, `artifacts/generated-plugins/codex/`).
 
 ### 5.6 Stage 5: VERIFY
 
@@ -2185,7 +2185,7 @@ The `extraFiles` field maps output paths to source paths, allowing targets to in
 The babysitter project uses synchronized versioning across all packages. The `scripts/bump-version.mjs` script updates:
 
 1. All workspace `package.json` files (root, `packages/sdk`, `packages/babysitter`, etc.)
-2. All plugin `package.json` files (`plugins/babysitter-codex/package.json`, etc.)
+2. All generated plugin `package.json` files or per-harness package surfaces (`artifacts/generated-plugins/codex/package.json`, etc.)
 3. All plugin manifest files (`plugin.json`, `gemini-extension.json`, `openclaw.plugin.json`)
 4. All `versions.json` files (setting `sdkVersion`)
 5. All cross-package dependency references (`@a5c-ai/babysitter-sdk`, `@a5c-ai/hooks-mux-core`)
@@ -2267,9 +2267,9 @@ jobs:
 
 #### Phase 1: Create the UPF Source
 
-1. **Create `a5c-plugin.json`** in a new `plugins/babysitter-unified/` directory (or reuse `plugins/babysitter/`).
+1. **Create `a5c-plugin.json`** in `plugins/babysitter-unified/`.
 
-2. **Base the manifest on `plugins/babysitter/plugin.json`**, which is already the superset:
+2. **Base the manifest on `plugins/babysitter-unified/plugin.json`**, which is already the superset:
 
 ```json
 {
@@ -2303,19 +2303,19 @@ jobs:
 }
 ```
 
-3. **Copy canonical files** from `plugins/babysitter/`:
+3. **Keep canonical files** in `plugins/babysitter-unified/`:
    - `commands/*.md` (already the source of truth)
    - `skills/babysit/SKILL.md` (standalone skill)
    - `hooks/*.sh` (handler scripts)
    - `versions.json`
 
-4. **Copy context files** from existing plugins:
-   - `plugins/babysitter-gemini/GEMINI.md` -> `context/GEMINI.md`
-   - `plugins/babysitter-github/AGENTS.md` -> `context/AGENTS.md`
+4. **Keep harness overlays** in `plugins/babysitter-unified/per-harness/`:
+   - `plugins/babysitter-unified/per-harness/gemini/GEMINI.md`
+   - `plugins/babysitter-unified/per-harness/github/AGENTS.md`
 
-5. **Copy override files** for special targets:
-   - Codex-specific files (`.codex-plugin/`, `.app.json`, `bin/cli.js`)
-   - Pi extensions from `plugins/babysitter-pi/extensions/`
+5. **Keep target-specific overrides** in per-harness source overlays:
+   - Codex-specific files in `plugins/babysitter-unified/per-harness/codex/`
+   - Pi extensions in `plugins/babysitter-unified/per-harness/pi/`
 
 #### Phase 2: Validate the Compiler
 
@@ -2323,7 +2323,7 @@ jobs:
 
 ```bash
 npx @a5c-ai/agent-plugins-mux compile --target claude-code --output /tmp/test-claude-code
-npx @a5c-ai/agent-plugins-mux diff --target claude-code --existing plugins/babysitter/
+npx @a5c-ai/agent-plugins-mux diff --target claude-code --existing artifacts/generated-plugins/claude-code
 ```
 
 2. Fix any discrepancies. The compiler output should match the existing plugins exactly (modulo whitespace/formatting).
@@ -2337,35 +2337,35 @@ npx @a5c-ai/agent-plugins-mux diff --target claude-code --existing plugins/babys
 
 #### Phase 4: Switch to Generated Output
 
-1. Delete the hand-maintained `plugins/babysitter-codex/`, `plugins/babysitter-cursor/`, etc.
-2. Add `dist/` output to `.gitignore` (or commit it if the project prefers checked-in generated files).
+1. Delete the old hand-maintained per-target plugin directories.
+2. Keep generated output outside tracked source directories (for this repo, `artifacts/generated-plugins/` is ignored).
 3. Update CI to compile and publish from UPF source.
 
 ### 9.2 What Becomes UPF Source
 
 | Current location | UPF role |
 |-----------------|----------|
-| `plugins/babysitter/plugin.json` | Base for `a5c-plugin.json` |
-| `plugins/babysitter/commands/*.md` | Canonical commands (copied to UPF) |
-| `plugins/babysitter/skills/babysit/SKILL.md` | Standalone skill (copied to UPF) |
-| `plugins/babysitter/hooks/*.sh` | Canonical hook handlers (copied to UPF) |
-| `plugins/babysitter/versions.json` | Canonical version pin (copied to UPF) |
-| `plugins/babysitter-gemini/GEMINI.md` | Context file for Gemini target |
-| `plugins/babysitter-github/AGENTS.md` | Context file for Copilot/Pi targets |
+| `plugins/babysitter-unified/plugin.json` | Base manifest for unified plugin compilation |
+| `plugins/babysitter-unified/commands/*.md` | Canonical commands |
+| `plugins/babysitter-unified/skills/babysit/SKILL.md` | Standalone skill |
+| `plugins/babysitter-unified/hooks/*.sh` | Canonical hook handlers |
+| `plugins/babysitter-unified/versions.json` | Canonical version pin |
+| `plugins/babysitter-unified/per-harness/gemini/GEMINI.md` | Context file for Gemini target |
+| `plugins/babysitter-unified/per-harness/github/AGENTS.md` | Context file for Copilot/Pi targets |
 | `scripts/plugin-command-sync-lib.cjs` | Logic absorbed into compiler |
 
 ### 9.3 What Gets Generated
 
 | Current location | Generated from |
 |-----------------|---------------|
-| `plugins/babysitter-codex/` | UPF + codex target profile |
-| `plugins/babysitter-cursor/` | UPF + cursor target profile |
-| `plugins/babysitter-gemini/` | UPF + gemini target profile |
-| `plugins/babysitter-github/` | UPF + github-copilot target profile |
-| `plugins/babysitter-pi/` | UPF + pi target profile |
-| `plugins/babysitter-omp/` | UPF + oh-my-pi target profile |
-| `plugins/babysitter-opencode/` | UPF + opencode target profile |
-| `plugins/babysitter-openclaw/` | UPF + openclaw target profile |
+| `artifacts/generated-plugins/codex/` | UPF + codex target profile |
+| `artifacts/generated-plugins/cursor/` | UPF + cursor target profile |
+| `artifacts/generated-plugins/gemini/` | UPF + gemini target profile |
+| `artifacts/generated-plugins/github-copilot/` | UPF + github-copilot target profile |
+| `artifacts/generated-plugins/pi/` | UPF + pi target profile |
+| `artifacts/generated-plugins/oh-my-pi/` | UPF + oh-my-pi target profile |
+| `artifacts/generated-plugins/opencode/` | UPF + opencode target profile |
+| `artifacts/generated-plugins/openclaw/` | UPF + openclaw target profile |
 
 ---
 
@@ -2463,7 +2463,7 @@ Options:
 **Example:**
 
 ```bash
-npx @a5c-ai/agent-plugins-mux diff --target codex --existing plugins/babysitter-codex
+npx @a5c-ai/agent-plugins-mux diff --target codex --existing artifacts/generated-plugins/codex
 ```
 
 **Output:**
@@ -2710,10 +2710,10 @@ Snapshot tests catch unintentional changes to emitted output format, whitespace,
 The `diff` CLI command (section 10.3) is the primary regression detection tool during migration:
 
 ```bash
-# Compare compiled output against the hand-maintained plugin directory
-npx @a5c-ai/agent-plugins-mux diff --target codex --existing plugins/babysitter-codex
-npx @a5c-ai/agent-plugins-mux diff --target pi --existing plugins/babysitter-pi
-npx @a5c-ai/agent-plugins-mux diff --target all --existing plugins/
+# Compare compiled output against generated plugin bundles
+npx @a5c-ai/agent-plugins-mux diff --target codex --existing artifacts/generated-plugins/codex
+npx @a5c-ai/agent-plugins-mux diff --target pi --existing artifacts/generated-plugins/pi
+npx @a5c-ai/agent-plugins-mux diff --target all --existing artifacts/generated-plugins
 ```
 
 The diff command:

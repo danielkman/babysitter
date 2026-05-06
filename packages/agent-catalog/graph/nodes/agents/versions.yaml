@@ -21,7 +21,7 @@ nodes:
       - win32
     displayName: Claude Code
     summary: Anthropic CLI harness with native lifecycle hooks, approvals, tool use, and background-agent evidence.
-    sourcePackage: packages/sdk/src/harness + packages/agent-plugins-mux + plugins/babysitter
+    sourcePackage: packages/sdk/src/harness + packages/agent-plugins-mux + plugins/babysitter-unified
     aliases:
       - claude-code
     pluginTargetIds:
@@ -53,7 +53,7 @@ nodes:
       - win32
     displayName: Codex
     summary: OpenAI terminal harness with hooks, skills, and a version-specific Windows lifecycle limitation below 0.119.0.
-    sourcePackage: packages/sdk/src/harness + packages/agent-plugins-mux + plugins/babysitter-codex
+    sourcePackage: packages/sdk/src/harness + packages/agent-plugins-mux + plugins/babysitter-unified/per-harness/codex
     aliases:
       - codex
     pluginTargetIds:
@@ -83,7 +83,7 @@ nodes:
       - win32
     displayName: Codex
     summary: OpenAI terminal harness with hooks, skills, and documented Windows hook support starting in 0.119.0.
-    sourcePackage: packages/sdk/src/harness + packages/agent-plugins-mux + plugins/babysitter-codex
+    sourcePackage: packages/sdk/src/harness + packages/agent-plugins-mux + plugins/babysitter-unified/per-harness/codex
     aliases:
       - codex
     pluginTargetIds:
@@ -139,7 +139,7 @@ nodes:
       - win32
     displayName: Gemini CLI
     summary: Gemini CLI target with SessionStart and AfterAgent hooks plus extension-backed runtime metadata.
-    sourcePackage: packages/sdk/src/harness + packages/agent-plugins-mux + plugins/babysitter-gemini
+    sourcePackage: packages/sdk/src/harness + packages/agent-plugins-mux + plugins/babysitter-unified/per-harness/gemini
     aliases:
       - gemini-cli
       - gemini

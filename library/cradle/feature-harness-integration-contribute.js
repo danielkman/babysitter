@@ -288,7 +288,7 @@ export const analyzeExistingHarnessesTask = defineTask('analyze-existing-harness
           'packages/sdk/src/cli/',
           'packages/sdk/src/hooks/',
           'packages/sdk/src/config/',
-          'plugins/babysitter/'
+          'plugins/babysitter-unified/'
         ]
       },
       instructions: [
