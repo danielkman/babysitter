@@ -194,7 +194,7 @@ export function generateOpenClawNativeHooksSection(
 
       const nativeHook = targetProfile.supportedHooks.get(canonicalHook);
       if (nativeHook) {
-        hooks[nativeHook] = `extensions/hooks/${nativeHook.replace(/_/g, '-')}.ts`;
+        hooks[nativeHook] = `extensions/hooks/${nativeHook.replace(/[._]/g, '-').replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()}.ts`;
       }
     }
   }
