@@ -1,17 +1,12 @@
 name: Deploy Atlas WebUI to AKS
 
 on:
-  push:
-    branches:
-      - main
-      - staging
-      - develop
-    paths:
-      - packages/atlas/webui/**
-      - packages/atlas/src/**
-      - packages/atlas/graph/**
-      - packages/atlas/package.json
-      - .github/workflows/deploy-atlas-webui.yml
+  # Deploy after staging-publish completes successfully
+  workflow_run:
+    workflows: ["Staging Publish"]
+    types: [completed]
+    branches: [staging]
+  # Also trigger on develop/main pushes after CI passes
   workflow_dispatch:
 
 permissions:
@@ -31,47 +26,64 @@ concurrency:
 
 jobs:
   deploy:
+    # Only deploy if the triggering workflow succeeded (or manual dispatch)
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
-      - name: Check Azure deployment configuration
+      - name: Check deployment configuration
         id: config
         shell: bash
         env:
-          AZURE_APPLICATION_CLIENT_ID: ${{ secrets.AZURE_APPLICATION_CLIENT_ID }}
-          AZURE_APPLICATION_CLIENT_SECRET: ${{ secrets.AZURE_APPLICATION_CLIENT_SECRET }}
+          KUBE_CONFIG_SECRET: ${{ secrets.KUBE_CONFIG }}
+          AZURE_CLIENT_ID_VAR: ${{ vars.AZURE_APPLICATION_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_APPLICATION_CLIENT_SECRET }}
         run: |
           set -euo pipefail
-          missing=()
-          [[ -n "${AZURE_APPLICATION_CLIENT_ID}" ]] || missing+=("secrets.AZURE_APPLICATION_CLIENT_ID")
-          [[ -n "${AZURE_APPLICATION_CLIENT_SECRET}" ]] || missing+=("secrets.AZURE_APPLICATION_CLIENT_SECRET")
-          [[ -n "${AZURE_SUBSCRIPTION_ID}" ]] || missing+=("vars.AZURE_SUBSCRIPTION_ID")
-          [[ -n "${AZURE_TENANT_ID}" ]] || missing+=("vars.AZURE_TENANT_ID")
-          [[ -n "${ACR_NAME}" ]] || missing+=("vars.AZURE_ACR_NAME")
-          [[ -n "${AKS_CLUSTER_NAME}" ]] || missing+=("vars.AZURE_AKS_CLUSTER_NAME")
-          [[ -n "${AKS_RESOURCE_GROUP}" ]] || missing+=("vars.AZURE_RESOURCE_GROUP_NAME")
-
-          if (( ${#missing[@]} == 0 )); then
+          # Prefer KUBE_CONFIG for direct kubectl access
+          if [[ -n "${KUBE_CONFIG_SECRET}" ]]; then
+            echo "auth_method=kubeconfig" >> "$GITHUB_OUTPUT"
             echo "deploy_enabled=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-
+          # Fall back to Azure CLI login
+          if [[ -n "${AZURE_CLIENT_ID_VAR}" ]] && [[ -n "${AZURE_CLIENT_SECRET}" ]] && \
+             [[ -n "${AZURE_SUBSCRIPTION_ID}" ]] && [[ -n "${AZURE_TENANT_ID}" ]] && \
+             [[ -n "${ACR_NAME}" ]] && [[ -n "${AKS_CLUSTER_NAME}" ]]; then
+            echo "auth_method=azure-cli" >> "$GITHUB_OUTPUT"
+            echo "deploy_enabled=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           echo "deploy_enabled=false" >> "$GITHUB_OUTPUT"
-          echo "Skipping Atlas WebUI deploy; missing configuration: ${missing[*]}"
+          echo "::notice::Atlas WebUI deploy skipped — neither KUBE_CONFIG nor Azure CLI credentials are configured"
 
-      - name: Azure login
+      - name: Setup Node.js
         if: steps.config.outputs.deploy_enabled == 'true'
-        uses: azure/login@v2
+        uses: actions/setup-node@v4
         with:
-          creds: '{"clientId":"${{ secrets.AZURE_APPLICATION_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_APPLICATION_CLIENT_SECRET }}","subscriptionId":"${{ env.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ env.AZURE_TENANT_ID }}"}'
+          node-version: 22
+
+      - name: Install dependencies
+        if: steps.config.outputs.deploy_enabled == 'true'
+        run: |
+          npm ci
+          npm install --no-save @rollup/rollup-linux-x64-gnu 2>/dev/null || true
 
       - name: Resolve deployment target
         if: steps.config.outputs.deploy_enabled == 'true'
         shell: bash
         run: |
-          case "${GITHUB_REF_NAME}" in
+          BRANCH="${GITHUB_REF_NAME}"
+          if [[ "${{ github.event_name }}" == "workflow_run" ]]; then
+            BRANCH="${{ github.event.workflow_run.head_branch }}"
+          fi
+          case "${BRANCH}" in
             main)
               echo "KUBE_NAMESPACE=atlas" >> "$GITHUB_ENV"
               echo "APP_HOST=atlas.a5c.ai" >> "$GITHUB_ENV"
@@ -85,36 +97,64 @@ jobs:
               echo "APP_HOST=atlas-develop.a5c.ai" >> "$GITHUB_ENV"
               ;;
             *)
-              echo "Unsupported branch: ${GITHUB_REF_NAME}" >&2
+              echo "Unsupported branch: ${BRANCH}" >&2
               exit 1
               ;;
           esac
-          echo "ACR_LOGIN_SERVER=${ACR_NAME}.azurecr.io" >> "$GITHUB_ENV"
           echo "IMAGE_NAME=${APP_NAME}" >> "$GITHUB_ENV"
           echo "TLS_SECRET=${APP_NAME}-tls" >> "$GITHUB_ENV"
           echo "INGRESS_NAME=${APP_NAME}" >> "$GITHUB_ENV"
           echo "SERVICE_NAME=${APP_NAME}" >> "$GITHUB_ENV"
           echo "DEPLOYMENT_NAME=${APP_NAME}" >> "$GITHUB_ENV"
 
-      - name: Skip deploy when Azure configuration is unavailable
-        if: steps.config.outputs.deploy_enabled != 'true'
-        run: echo "Atlas WebUI deployment skipped because Azure credentials or target variables are not configured for this repository."
+      # --- Auth path A: KUBE_CONFIG ---
+      - name: Configure kubectl from KUBE_CONFIG
+        if: steps.config.outputs.deploy_enabled == 'true' && steps.config.outputs.auth_method == 'kubeconfig'
+        run: |
+          mkdir -p "$HOME/.kube"
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > "$HOME/.kube/config"
+          chmod 600 "$HOME/.kube/config"
 
-      - name: Build and push image
-        if: steps.config.outputs.deploy_enabled == 'true'
+      # --- Auth path B: Azure CLI ---
+      - name: Azure login
+        if: steps.config.outputs.deploy_enabled == 'true' && steps.config.outputs.auth_method == 'azure-cli'
+        uses: azure/login@v2
+        with:
+          creds: '{"clientId":"${{ vars.AZURE_APPLICATION_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_APPLICATION_CLIENT_SECRET }}","subscriptionId":"${{ env.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ env.AZURE_TENANT_ID }}"}'
+
+      - name: ACR login + build image (Azure CLI)
+        if: steps.config.outputs.deploy_enabled == 'true' && steps.config.outputs.auth_method == 'azure-cli'
         env:
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: ${{ github.event.workflow_run.head_sha || github.sha }}
         run: |
           az acr login --name "$ACR_NAME"
-          image="$ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG"
+          image="${ACR_NAME}.azurecr.io/${IMAGE_NAME}:${IMAGE_TAG}"
           docker build -f packages/atlas/webui/Dockerfile -t "$image" .
           docker push "$image"
           echo "IMAGE=$image" >> "$GITHUB_ENV"
 
-      - name: Connect to AKS
-        if: steps.config.outputs.deploy_enabled == 'true'
+      - name: Connect to AKS (Azure CLI)
+        if: steps.config.outputs.deploy_enabled == 'true' && steps.config.outputs.auth_method == 'azure-cli'
         run: az aks get-credentials --resource-group "$AKS_RESOURCE_GROUP" --name "$AKS_CLUSTER_NAME" --overwrite-existing
 
+      # --- Auth path A: build + push via kubectl/docker ---
+      - name: Build image (kubeconfig)
+        if: steps.config.outputs.deploy_enabled == 'true' && steps.config.outputs.auth_method == 'kubeconfig'
+        env:
+          IMAGE_TAG: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: |
+          image="${APP_NAME}:${IMAGE_TAG}"
+          docker build -f packages/atlas/webui/Dockerfile -t "$image" .
+          echo "IMAGE=$image" >> "$GITHUB_ENV"
+          # If ACR is configured, push there
+          if [[ -n "${ACR_NAME:-}" ]]; then
+            az acr login --name "$ACR_NAME" 2>/dev/null || true
+            acr_image="${ACR_NAME}.azurecr.io/${IMAGE_NAME}:${IMAGE_TAG}"
+            docker tag "$image" "$acr_image"
+            docker push "$acr_image" && echo "IMAGE=$acr_image" >> "$GITHUB_ENV"
+          fi
+
+      # --- Common deploy ---
       - name: Deploy web app
         if: steps.config.outputs.deploy_enabled == 'true'
         shell: bash
