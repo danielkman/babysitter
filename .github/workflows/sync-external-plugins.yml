@@ -11,21 +11,6 @@ on:
         description: Commit, tag, or branch ref to checkout before generating plugins.
         required: false
         type: string
-  workflow_dispatch:
-    inputs:
-      branch:
-        description: Branch whose external plugin repositories should be synced.
-        required: true
-        default: develop
-        type: choice
-        options:
-          - develop
-          - staging
-          - main
-      ref:
-        description: Optional commit, tag, or branch ref to checkout before generating plugins.
-        required: false
-        type: string
 
 permissions:
   contents: write

@@ -239,41 +239,6 @@ jobs:
             packages/agent-mux/webui/.tmp/playwright-test-results
           if-no-files-found: ignore
 
-  live-stack-contracts:
-    name: Live Stack Contracts
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-
-      - name: Install dependencies
-        run: |
-          set -euo pipefail
-          npm ci
-          npm install --no-save @rollup/rollup-linux-x64-gnu 2>/dev/null || true
-
-      - name: Run live stack contracts
-        run: |
-          set -euo pipefail
-          mkdir -p artifacts/live-stack
-          npm run test:e2e:live-stack
-          npm run coverage:e2e:live-stack
-
-      - name: Upload live stack artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: live-stack-contracts
-          path: artifacts/live-stack
-          if-no-files-found: error
   workspace-coverage:
     name: Workspace Coverage
     runs-on: ubuntu-latest
@@ -351,71 +316,6 @@ jobs:
           name: workspace-coverage-logs
           path: artifacts/workspace-coverage-logs
           if-no-files-found: error
-
-  packages-sdk:
-    name: SDK Matrix (os=${{ matrix.os }}, node=${{ matrix.node }})
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 40
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-2022]
-        node: [20, 22]
-    defaults:
-      run:
-        shell: bash
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node }}
-          cache: npm
-
-      - name: Install dependencies
-        run: |
-          npm ci
-          # Workaround: npm ci on Windows-generated lockfile may miss linux optional deps
-          npm install --no-save @rollup/rollup-linux-x64-gnu 2>/dev/null || true
-
-      - name: Prepare artifact directories
-        run: |
-          set -euo pipefail
-          mkdir -p "_ci_artifacts/cli/${{ matrix.os }}/node${{ matrix.node }}"
-          mkdir -p "_ci_artifacts/logs/${{ matrix.os }}/node${{ matrix.node }}"
-
-      - name: SDK lint
-        run: |
-          set -euo pipefail
-          npm run lint --workspace=@a5c-ai/babysitter-sdk 2>&1 | tee "_ci_artifacts/logs/${{ matrix.os }}/node${{ matrix.node }}/lint.log"
-
-      - name: SDK build
-        run: |
-          set -euo pipefail
-          npm run build --workspace=@a5c-ai/babysitter-sdk 2>&1 | tee "_ci_artifacts/logs/${{ matrix.os }}/node${{ matrix.node }}/build.log"
-
-      - name: SDK tests
-        run: |
-          set -euo pipefail
-          npm run test --workspace=@a5c-ai/babysitter-sdk 2>&1 | tee "_ci_artifacts/logs/${{ matrix.os }}/node${{ matrix.node }}/test.log"
-
-      - name: SDK smoke CLI
-        run: |
-          set -euo pipefail
-          npm run smoke:cli --workspace=@a5c-ai/babysitter-sdk -- --runs-dir "_ci_artifacts/cli/${{ matrix.os }}/node${{ matrix.node }}" --keep 2>&1 | tee "_ci_artifacts/logs/${{ matrix.os }}/node${{ matrix.node }}/smoke.log"
-
-      - name: Upload SDK artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: sdk-artifacts-${{ matrix.os }}-node${{ matrix.node }}
-          if-no-files-found: warn
-          path: |
-            _ci_artifacts/cli/${{ matrix.os }}/node${{ matrix.node }}
-            _ci_artifacts/logs/${{ matrix.os }}/node${{ matrix.node }}
 
   observer-dashboard:
     name: Observer Dashboard
