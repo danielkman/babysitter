@@ -1,7 +1,7 @@
 export { createAdapter } from './adapter';
 export { PI_PHASE_MAPPINGS, getPiPhaseMapping, getSupportedPhases } from './mappings';
 export { createConfiguredEngine } from './integration';
-export { normalizePi, coerceInput, buildExecutionContext, buildPayload } from './normalizer';
+export { normalizePi, coerceInput, buildExecutionContext, buildPayload, setAdapterName } from './normalizer';
 export type {
   PiEventBase,
   PiSessionStartPayload,

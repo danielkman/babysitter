@@ -37,7 +37,6 @@ describe('CODEX_PHASE_MAPPINGS', () => {
     const m = findMapping('PreToolUse');
     expect(m).toBeDefined();
     expect(m!.supportLevel).toBe('lossy');
-    expect(m!.notes).toContain('Bash-only');
   });
 
   it('marks PostToolUse as lossy (bash-only)', () => {

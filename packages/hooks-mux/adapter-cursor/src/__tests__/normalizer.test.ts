@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { normalizeCursorEvent, parseStdin, ADAPTER_NAME } from '../normalizer';
+import { describe, it, expect, beforeAll, beforeEach } from 'vitest';
+import { normalizeCursorEvent, parseStdin, ADAPTER_NAME, setAdapterName } from '../normalizer';
 import { resetProfile } from '../capability-profile';
 import {
   SESSION_START_PAYLOAD,
@@ -10,6 +10,10 @@ import {
   MALFORMED_JSON_STRING,
   BASE_ENV,
 } from './fixtures/cursor-events';
+
+beforeAll(() => {
+  setAdapterName('cursor');
+});
 
 beforeEach(() => {
   resetProfile();

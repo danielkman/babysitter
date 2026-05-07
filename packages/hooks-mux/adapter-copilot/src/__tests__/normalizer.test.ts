@@ -1,11 +1,15 @@
-import { describe, it, expect } from 'vitest';
-import { parseStdin, normalizeCopilotEvent } from '../normalizer';
+import { describe, it, expect, beforeAll } from 'vitest';
+import { parseStdin, normalizeCopilotEvent, setAdapterName } from '../normalizer';
 import {
   SESSION_START,
   PRE_TOOL_USE,
   USER_PROMPT_SUBMITTED,
   ERROR_EVENT,
 } from './fixtures/copilot-events';
+
+beforeAll(() => {
+  setAdapterName('copilot');
+});
 
 describe('parseStdin', () => {
   it('should parse valid JSON', () => {

@@ -3,7 +3,7 @@ import { createAdapter } from '../adapter';
 
 describe('createAdapter', () => {
   it('returns correct capability descriptor', () => {
-    const caps = createAdapter();
+    const caps = createAdapter('gemini');
 
     expect(caps.name).toBe('gemini');
     expect(caps.family).toBe('shell-hook');
@@ -18,12 +18,12 @@ describe('createAdapter', () => {
   });
 
   it('includes union-style aggregation note', () => {
-    const caps = createAdapter();
+    const caps = createAdapter('gemini');
     expect(caps.notes).toContain('BeforeToolSelection has union-style aggregation');
   });
 
   it('includes stderr logging note', () => {
-    const caps = createAdapter();
+    const caps = createAdapter('gemini');
     expect(caps.notes).toContain('Logs must go to stderr; final JSON to stdout only');
   });
 });

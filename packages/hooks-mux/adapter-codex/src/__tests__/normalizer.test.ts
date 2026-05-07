@@ -1,5 +1,9 @@
-import { describe, it, expect } from 'vitest';
-import { normalizeCodexEvent, parseStdin, extractSessionId } from '../normalizer';
+import { describe, it, expect, beforeAll } from 'vitest';
+import { normalizeCodexEvent, parseStdin, extractSessionId, setAdapterName } from '../normalizer';
+
+beforeAll(() => {
+  setAdapterName('codex');
+});
 import {
   SESSION_START_PAYLOAD,
   USER_PROMPT_PAYLOAD,

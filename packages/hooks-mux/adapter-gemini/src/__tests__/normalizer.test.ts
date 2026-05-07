@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { normalizeGemini, parseStdin, buildPayload, buildExecutionContext } from '../normalizer';
+import { describe, it, expect, beforeAll } from 'vitest';
+import { normalizeGemini, parseStdin, buildPayload, buildExecutionContext, setAdapterName } from '../normalizer';
 import {
   SESSION_START_STDIN,
   BEFORE_TOOL_SELECTION_STDIN,
@@ -13,6 +13,10 @@ import {
   ENV_WITH_EXPLICIT_SESSION,
   ENV_WITH_PERSISTED,
 } from './fixtures/gemini-events';
+
+beforeAll(() => {
+  setAdapterName('gemini');
+});
 
 describe('parseStdin', () => {
   it('parses JSON string', () => {

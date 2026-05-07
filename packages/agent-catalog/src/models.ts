@@ -330,6 +330,7 @@ export interface HookMappingDescriptor {
   blockCapability?: boolean;
   mutationCapability?: boolean;
   scope?: string;
+  supportLevel: string;
   evidenceIds: string[];
 }
 

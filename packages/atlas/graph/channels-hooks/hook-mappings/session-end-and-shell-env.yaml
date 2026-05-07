@@ -19,26 +19,6 @@ edges:
     - target: agent-version:openclaw@current
 ---
 nodeKind: HookMapping
-id: hook-mapping:session-end-copilot
-attributes:
-  mappingId: hook-mapping:session-end-copilot
-  hookId: hook-surface:session-end
-  targetId: agent-version:copilot-cli@current
-  nativeName: SessionEnd
-  versionRange: ">=0.0.0"
-  requiresRuntimeHooks: true
-  adapterFamily: copilot
-  canonicalPhase: session.end
-  blockCapability: false
-  mutationCapability: false
-  scope: session
-edges:
-  maps_hook:
-    - target: hook-surface:session-end
-  emits_hook:
-    - target: agent-version:copilot-cli@current
----
-nodeKind: HookMapping
 id: hook-mapping:shell-env-opencode
 attributes:
   mappingId: hook-mapping:shell-env-opencode

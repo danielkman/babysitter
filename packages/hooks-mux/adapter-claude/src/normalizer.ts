@@ -1,6 +1,12 @@
 import type { UnifiedHookEvent, UnifiedExecutionContext } from '@a5c-ai/hooks-mux-core';
 import { CLAUDE_PHASE_MAPPINGS, getClaudePhaseMapping } from './mappings';
 
+let _adapterName: string;
+
+export function setAdapterName(name: string): void {
+  _adapterName = name;
+}
+
 /**
  * Claude Code stdin JSON payload shapes.
  *
@@ -92,8 +98,9 @@ export function buildExecutionContext(
   stdinData: Record<string, unknown>,
   nativeEventName: string,
   env: Record<string, string>,
-  adapterName: string,
+  adapterName?: string,
 ): UnifiedExecutionContext {
+  const effectiveName = adapterName ?? _adapterName;
   const persistedEnv: Record<string, string> = {};
   const contextVars: Record<string, string> = {};
 
@@ -113,7 +120,7 @@ export function buildExecutionContext(
     sessionId,
     turnId: env['HOOKS_PROXY_TURN_ID'] ?? null,
     conversationId: env['HOOKS_PROXY_CONVERSATION_ID'] ?? null,
-    adapter: adapterName,
+    adapter: effectiveName,
     cwd: (stdinData.cwd as string | undefined) ?? env['PWD'] ?? null,
     worktree: env['HOOKS_PROXY_WORKTREE'] ?? null,
     transcriptPath: (stdinData.transcript_path as string | undefined) ?? null,
@@ -233,15 +240,16 @@ export function normalizeClaude(
   nativeEventName: string,
   rawStdin: unknown,
   env: Record<string, string> = {},
-  adapterName: string,
+  adapterName?: string,
 ): UnifiedHookEvent {
+  const effectiveName = adapterName ?? _adapterName;
   const stdinData = parseStdin(rawStdin);
   const mapping = getClaudePhaseMapping(nativeEventName);
 
   const phase = mapping?.canonicalPhase ?? 'unknown';
   const supportLevel = mapping?.supportLevel ?? 'unsupported';
 
-  const execution = buildExecutionContext(stdinData, nativeEventName, env, adapterName);
+  const execution = buildExecutionContext(stdinData, nativeEventName, env, effectiveName);
   const payload = buildPayload(nativeEventName, stdinData);
 
   // Split env into input and persisted buckets
@@ -257,7 +265,7 @@ export function normalizeClaude(
 
   return {
     version: 'a5c.hooks.v1',
-    adapter: adapterName,
+    adapter: effectiveName,
     phase,
     rawEventName: nativeEventName,
     supportLevel,

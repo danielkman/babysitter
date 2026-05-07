@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll } from 'vitest';
 import { createAdapter } from '../adapter';
 import {
   OPENCLAW_PHASE_MAPPINGS,
@@ -9,10 +9,14 @@ import {
   getSupportedPluginPhases,
   classifyHookOrigin,
 } from '../mappings';
-import { normalizeOpenClaw, parseEventData, buildPayload } from '../normalizer';
+import { normalizeOpenClaw, parseEventData, buildPayload, setAdapterName } from '../normalizer';
 import { renderOpenClawOutput } from '../renderer';
 import { resolveSessionId } from '../session-resolver';
 import * as fixtures from './fixtures/openclaw-events';
+
+beforeAll(() => {
+  setAdapterName('openclaw');
+});
 
 // ---------------------------------------------------------------------------
 // Adapter capabilities
@@ -20,7 +24,7 @@ import * as fixtures from './fixtures/openclaw-events';
 
 describe('createAdapter', () => {
   it('returns correct capability descriptor', () => {
-    const caps = createAdapter();
+    const caps = createAdapter('openclaw');
 
     expect(caps.name).toBe('openclaw');
     expect(caps.family).toBe('in-process');
@@ -36,7 +40,7 @@ describe('createAdapter', () => {
   });
 
   it('includes notes about gateway vs plugin distinction', () => {
-    const caps = createAdapter();
+    const caps = createAdapter('openclaw');
     expect(caps.notes).toBeDefined();
     expect(caps.notes!.some((n) => n.includes('Gateway hooks'))).toBe(true);
     expect(caps.notes!.some((n) => n.includes('Plugin hooks'))).toBe(true);

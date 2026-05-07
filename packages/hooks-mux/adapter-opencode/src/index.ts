@@ -11,6 +11,7 @@ export {
   parseEventData,
   buildExecutionContext,
   buildPayload,
+  setAdapterName,
 } from './normalizer';
 export { renderOpenCodeOutput } from './renderer';
 export { resolveSessionId, deriveSessionId } from './session-resolver';

@@ -1,10 +1,14 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll } from 'vitest';
 import { createAdapter } from '../adapter';
 import { PI_PHASE_MAPPINGS, getPiPhaseMapping, getSupportedPhases } from '../mappings';
-import { normalizePi, coerceInput, buildPayload } from '../normalizer';
+import { normalizePi, coerceInput, buildPayload, setAdapterName } from '../normalizer';
 import { renderPiOutput, buildExtensionState } from '../renderer';
 import { resolveSessionId } from '../session-resolver';
 import * as fixtures from './fixtures/pi-payloads';
+
+beforeAll(() => {
+  setAdapterName('pi');
+});
 
 // ---------------------------------------------------------------------------
 // Adapter capabilities
@@ -12,7 +16,7 @@ import * as fixtures from './fixtures/pi-payloads';
 
 describe('createAdapter', () => {
   it('returns correct capability descriptor', () => {
-    const caps = createAdapter();
+    const caps = createAdapter('pi');
 
     expect(caps.name).toBe('pi');
     expect(caps.family).toBe('in-process');

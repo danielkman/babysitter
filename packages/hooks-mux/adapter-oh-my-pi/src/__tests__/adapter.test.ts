@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { createAdapter } from '../adapter';
 
 describe('createAdapter', () => {
-  const caps = createAdapter();
+  const caps = createAdapter('oh-my-pi');
 
   it('returns in-process family', () => {
     expect(caps.family).toBe('in-process');

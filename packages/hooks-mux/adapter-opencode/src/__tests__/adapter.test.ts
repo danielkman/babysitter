@@ -3,7 +3,7 @@ import { createAdapter } from '../adapter';
 
 describe('createAdapter', () => {
   it('returns correct capability descriptor', () => {
-    const caps = createAdapter();
+    const caps = createAdapter('opencode');
 
     expect(caps.name).toBe('opencode');
     expect(caps.family).toBe('in-process');
@@ -19,17 +19,17 @@ describe('createAdapter', () => {
   });
 
   it('includes library-only note', () => {
-    const caps = createAdapter();
+    const caps = createAdapter('opencode');
     expect(caps.notes).toContain('Library-only adapter; no CLI shell-hook mode');
   });
 
   it('includes native env injection note', () => {
-    const caps = createAdapter();
+    const caps = createAdapter('opencode');
     expect(caps.notes).toContain('Native env injection via shell.env hook');
   });
 
   it('includes native session ID note', () => {
-    const caps = createAdapter();
+    const caps = createAdapter('opencode');
     expect(caps.notes).toContain('Session ID provided natively by the OpenCode runtime');
   });
 });

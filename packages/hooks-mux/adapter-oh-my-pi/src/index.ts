@@ -11,6 +11,7 @@ export { createConfiguredEngine } from './integration';
 export {
   normalizeOhMyPiEvent,
   parseEventContext,
+  setAdapterName,
   ADAPTER_NAME,
 } from './normalizer';
 export type {

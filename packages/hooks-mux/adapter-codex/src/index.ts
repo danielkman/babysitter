@@ -8,6 +8,7 @@ export { CODEX_PHASE_MAPPINGS, findMapping } from './mappings';
 export {
   normalizeCodexEvent,
   normalizeCodexEvent as normalizeForInvoke,
+  setAdapterName,
   parseStdin,
   extractSessionId,
   ADAPTER_NAME,

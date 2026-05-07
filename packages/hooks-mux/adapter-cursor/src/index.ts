@@ -21,6 +21,7 @@ export { CURSOR_PHASE_MAPPINGS, findMapping, getSupportedPhases } from './mappin
 export {
   normalizeCursorEvent,
   parseStdin,
+  setAdapterName,
   ADAPTER_NAME,
 } from './normalizer';
 export type {

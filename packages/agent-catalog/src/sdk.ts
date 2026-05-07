@@ -363,6 +363,7 @@ function toHookMapping(node: GraphNode): HookMappingDescriptor {
     blockCapability: node.blockCapability === true || node.blockCapability === "true" ? true : node.blockCapability === false || node.blockCapability === "false" ? false : undefined,
     mutationCapability: node.mutationCapability === true || node.mutationCapability === "true" ? true : node.mutationCapability === false || node.mutationCapability === "false" ? false : undefined,
     scope: valueAsString(node.scope) || undefined,
+    supportLevel: valueAsString(node.supportLevel) || 'supported',
     evidenceIds: nodeEvidenceIds(node),
   };
 }
@@ -1129,8 +1130,9 @@ export function listPluginTargetDescriptors(): PluginTargetDescriptor[] {
   return clone(PLUGIN_TARGETS);
 }
 
-export function getPluginTargetDescriptor(targetId: string): PluginTargetDescriptor | undefined {
-  const target = PLUGIN_TARGETS.find((entry) => entry.targetId === targetId);
+export function getPluginTargetDescriptor(targetIdOrAdapterName: string): PluginTargetDescriptor | undefined {
+  const target = PLUGIN_TARGETS.find((entry) => entry.targetId === targetIdOrAdapterName)
+    ?? PLUGIN_TARGETS.find((entry) => entry.adapterName === targetIdOrAdapterName);
   return target ? clone(target) : undefined;
 }
 

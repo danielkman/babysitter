@@ -1,6 +1,6 @@
 export { createAdapter } from './adapter';
 export { GEMINI_PHASE_MAPPINGS, getGeminiPhaseMapping, getSupportedPhases } from './mappings';
-export { normalizeGemini, parseStdin, buildExecutionContext, buildPayload } from './normalizer';
+export { normalizeGemini, parseStdin, buildExecutionContext, buildPayload, setAdapterName } from './normalizer';
 export { renderGeminiOutput, emitOutput, logToStderr } from './renderer';
 export { resolveSessionId, deriveSessionId } from './session-resolver';
 

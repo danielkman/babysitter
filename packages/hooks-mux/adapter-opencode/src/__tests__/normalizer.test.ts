@@ -1,9 +1,10 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll } from 'vitest';
 import {
   normalizeOpenCode,
   parseEventData,
   buildPayload,
   buildExecutionContext,
+  setAdapterName,
 } from '../normalizer';
 import {
   SESSION_CREATED_EVENT,
@@ -14,6 +15,10 @@ import {
   ENV_WITH_EXPLICIT_SESSION,
   ENV_WITH_PERSISTED,
 } from './fixtures/opencode-events';
+
+beforeAll(() => {
+  setAdapterName('opencode');
+});
 
 describe('parseEventData', () => {
   it('parses JSON string', () => {

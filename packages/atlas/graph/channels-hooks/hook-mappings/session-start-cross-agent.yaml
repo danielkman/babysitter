@@ -1,24 +1,4 @@
 nodeKind: HookMapping
-id: hook-mapping:session-start-cursor
-attributes:
-  mappingId: hook-mapping:session-start-cursor
-  hookId: hook-surface:cursor.session-start
-  targetId: agent-version:cursor@current
-  nativeName: SessionStart
-  versionRange: ">=0.0.0"
-  requiresRuntimeHooks: true
-  adapterFamily: cursor
-  canonicalPhase: session.start
-  blockCapability: false
-  mutationCapability: false
-  scope: session
-edges:
-  maps_hook:
-    - target: hook-surface:cursor.session-start
-  emits_hook:
-    - target: agent-version:cursor@current
----
-nodeKind: HookMapping
 id: hook-mapping:session-start-gemini
 attributes:
   mappingId: hook-mapping:session-start-gemini
@@ -37,26 +17,6 @@ edges:
     - target: hook-surface:session-start
   emits_hook:
     - target: agent-version:gemini-cli@current
----
-nodeKind: HookMapping
-id: hook-mapping:session-start-copilot
-attributes:
-  mappingId: hook-mapping:session-start-copilot
-  hookId: hook-surface:session-start
-  targetId: agent-version:copilot-cli@current
-  nativeName: SessionStart
-  versionRange: ">=0.0.0"
-  requiresRuntimeHooks: true
-  adapterFamily: copilot
-  canonicalPhase: session.start
-  blockCapability: false
-  mutationCapability: false
-  scope: session
-edges:
-  maps_hook:
-    - target: hook-surface:session-start
-  emits_hook:
-    - target: agent-version:copilot-cli@current
 ---
 nodeKind: HookMapping
 id: hook-mapping:session-start-opencode

@@ -16,7 +16,7 @@ function extractSection(doc: string, heading: string, level = 2): string {
 }
 
 describe('Codex docs parity', () => {
-  const caps = createAdapter();
+  const caps = createAdapter('codex');
 
   it('keeps the adapter integration guide aligned with Codex capabilities', () => {
     const guide = readRepoFile('docs', 'adapter-integration-guide.md');

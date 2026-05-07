@@ -1,5 +1,28 @@
 ---
 nodeKind: HookMapping
+id: hook-mapping:session-end-claude-code
+attributes:
+  mappingId: hook-mapping:session-end-claude-code
+  hookId: hook-surface:session-end
+  targetId: agent-version:claude-code@1.x
+  nativeName: SessionEnd
+  versionRange: ">=0.0.0"
+  requiresRuntimeHooks: true
+  adapterFamily: claude
+  delivery: shell
+  blocking: false
+  supportLevel: lossy
+  canonicalPhase: session.end
+  blockCapability: false
+  mutationCapability: false
+  scope: session
+edges:
+  maps_hook:
+    - target: hook-surface:session-end
+  emits_hook:
+    - target: agent-version:claude-code@1.x
+---
+nodeKind: HookMapping
 id: hook-mapping:post-tool-use-claude-code
 attributes:
   mappingId: hook-mapping:post-tool-use-claude-code

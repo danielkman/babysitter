@@ -12,12 +12,20 @@ import type { HookMappingDescriptor } from '@a5c-ai/agent-catalog';
  * Spec section 17.7.
  */
 
+const SUPPORT_LEVEL_MAP: Record<string, PhaseMapping['supportLevel']> = {
+  supported: 'native',
+  native: 'native',
+  lossy: 'lossy',
+  emulated: 'emulated',
+  unsupported: 'unsupported',
+};
+
 function hookMappingToPhaseMapping(mapping: HookMappingDescriptor): PhaseMapping | null {
   if (!mapping.canonicalPhase) return null;
   return {
     canonicalPhase: mapping.canonicalPhase as PhaseMapping['canonicalPhase'],
     nativeHook: mapping.nativeName,
-    supportLevel: 'native',
+    supportLevel: SUPPORT_LEVEL_MAP[mapping.supportLevel] ?? 'native',
     blockCapability: mapping.blockCapability ?? false,
     mutationCapability: mapping.mutationCapability ?? false,
     scope: (mapping.scope ?? 'session') as PhaseMapping['scope'],

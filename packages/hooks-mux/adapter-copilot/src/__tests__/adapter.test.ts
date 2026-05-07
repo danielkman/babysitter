@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { createAdapter } from '../adapter';
 
 describe('createAdapter', () => {
-  const caps = createAdapter();
+  const caps = createAdapter('copilot');
 
   it('should return copilot as the name', () => {
     expect(caps.name).toBe('copilot');

@@ -15,6 +15,7 @@ export {
   parseEventData,
   buildExecutionContext,
   buildPayload,
+  setAdapterName,
 } from './normalizer';
 export type {
   OpenClawEventBase,

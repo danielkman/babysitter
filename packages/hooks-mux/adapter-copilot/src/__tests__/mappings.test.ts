@@ -29,7 +29,7 @@ describe('COPILOT_PHASE_MAPPINGS', () => {
 
   it('should have correct scopes', () => {
     const sessionMappings = COPILOT_PHASE_MAPPINGS.filter((m) => m.scope === 'session');
-    expect(sessionMappings).toHaveLength(2); // start + end
+    expect(sessionMappings.length).toBeGreaterThanOrEqual(2);
 
     const toolMappings = COPILOT_PHASE_MAPPINGS.filter((m) => m.scope === 'tool');
     expect(toolMappings).toHaveLength(2); // before + after

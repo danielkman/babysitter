@@ -1,10 +1,14 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll } from 'vitest';
 import { createAdapter } from '../adapter';
 import { CLAUDE_PHASE_MAPPINGS, getClaudePhaseMapping, getSupportedPhases } from '../mappings';
-import { normalizeClaude, parseStdin, buildPayload, isStopHookRecursion } from '../normalizer';
+import { normalizeClaude, setAdapterName, parseStdin, buildPayload, isStopHookRecursion } from '../normalizer';
 import { renderClaudeOutput } from '../renderer';
 import { resolveSessionId } from '../session-resolver';
 import * as fixtures from './fixtures/claude-payloads';
+
+beforeAll(() => {
+  setAdapterName('claude');
+});
 
 // ---------------------------------------------------------------------------
 // Adapter capabilities
@@ -12,7 +16,7 @@ import * as fixtures from './fixtures/claude-payloads';
 
 describe('createAdapter', () => {
   it('returns correct capability descriptor', () => {
-    const caps = createAdapter();
+    const caps = createAdapter('claude');
 
     expect(caps.name).toBe('claude');
     expect(caps.family).toBe('shell-hook');
@@ -67,11 +71,14 @@ describe('mappings', () => {
       'Notification',
     ];
 
+    const LOSSY_EVENTS = new Set(['SessionEnd']);
+
     // Every expected event must appear in the mapping table
     for (const eventName of ALL_CLAUDE_NATIVE_EVENTS) {
       const mapping = getClaudePhaseMapping(eventName);
       expect(mapping, `missing mapping for ${eventName}`).toBeDefined();
-      expect(mapping!.supportLevel).toBe('native');
+      const expectedLevel = LOSSY_EVENTS.has(eventName) ? 'lossy' : 'native';
+      expect(mapping!.supportLevel).toBe(expectedLevel);
     }
 
     // The mapping table must not contain extra entries

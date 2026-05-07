@@ -1,6 +1,6 @@
 export { createAdapter } from './adapter';
 export { CLAUDE_PHASE_MAPPINGS, getClaudePhaseMapping, getSupportedPhases } from './mappings';
-export { normalizeClaude, parseStdin, buildExecutionContext, buildPayload, isStopHookRecursion } from './normalizer';
+export { normalizeClaude, setAdapterName, parseStdin, buildExecutionContext, buildPayload, isStopHookRecursion } from './normalizer';
 export { normalizeClaude as normalizeForInvoke } from './normalizer';
 export type {
   ClaudeStdinBase,

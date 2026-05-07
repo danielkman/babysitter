@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { createAdapter } from '../adapter';
 
 describe('createAdapter', () => {
-  const caps = createAdapter();
+  const caps = createAdapter('codex');
 
   it('returns shell-hook family', () => {
     expect(caps.family).toBe('shell-hook');

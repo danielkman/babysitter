@@ -132,7 +132,13 @@ export function loadAdapter(adapterName: string): LoadedAdapter {
     );
   }
 
-  const capabilities = createAdapterFn() as AdapterCapabilities;
+  const capabilities = createAdapterFn(adapterName) as AdapterCapabilities;
+
+  // Initialize adapter name for normalizer if the module exports setAdapterName
+  const setNameFn = mod['setAdapterName'];
+  if (typeof setNameFn === 'function') {
+    (setNameFn as (name: string) => void)(adapterName);
+  }
 
   // Extract phase mappings -- convention: <ADAPTER>_PHASE_MAPPINGS or phaseMappings
   let phaseMappings: PhaseMapping[] = [];
