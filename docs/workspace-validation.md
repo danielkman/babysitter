@@ -50,7 +50,6 @@ These workspaces are part of the active monorepo and ship code or operational be
 
 | Workspace | Role | Validation path |
 | --- | --- | --- |
-| `packages/catalog` | internal-only Next.js catalog UI and API surface for browsing process-library and graph-backed discovery data inside the monorepo | `.github/workflows/ci.yml` job `workspace-coverage` (`npm run ci:test --workspace=process-library-catalog`) |
 | `packages/babysitter-tui-plugins` | Internal TUI plugin package for babysitter observability | `.github/workflows/ci.yml` job `workspace-coverage` |
 
 ## Explicit exclusions

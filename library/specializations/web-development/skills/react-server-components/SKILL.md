@@ -4,6 +4,10 @@ description: React Server Components patterns including streaming, data fetching
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  skillAreas: [skill-area:server-side-rendering, skill-area:data-fetching-caching]
+  roles: [role:frontend-engineer, role:fullstack-engineer]
+  topics: [topic:streaming-ssr]
 
 ---
 

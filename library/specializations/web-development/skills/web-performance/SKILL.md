@@ -4,6 +4,11 @@ description: Core Web Vitals optimization, Lighthouse audits, and performance mo
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  skillAreas: [skill-area:web-performance, skill-area:frontend-performance-testing]
+  roles: [role:frontend-engineer]
+  workflows: [workflow:feature-development]
+  topics: [topic:asset-optimization]
 
 ---
 

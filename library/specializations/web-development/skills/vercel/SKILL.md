@@ -4,6 +4,10 @@ description: Vercel deployment, edge functions, environment configuration, and p
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  skillAreas: [skill-area:deployment-infrastructure-management]
+  roles: [role:frontend-engineer, role:fullstack-engineer]
+  topics: [topic:continuous-deployment, topic:serverless-architecture]
 
 ---
 

@@ -4,6 +4,10 @@ description: Socket.io rooms, namespaces, adapters, middleware, and real-time pa
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  skillAreas: [skill-area:websocket-design]
+  roles: [role:backend-engineer, role:fullstack-engineer]
+  topics: [topic:event-driven-architecture]
 
 ---
 

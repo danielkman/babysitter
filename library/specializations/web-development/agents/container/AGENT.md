@@ -11,6 +11,10 @@ expertise:
   - Kubernetes basics
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  roles: [role:devops-engineer, role:fullstack-engineer]
+  skillAreas: [skill-area:containerization]
+  topics: [topic:twelve-factor-app]
 
 ---
 

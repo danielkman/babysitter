@@ -11,6 +11,11 @@ expertise:
   - TypeScript integration
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  roles: [role:frontend-engineer]
+  skillAreas: [skill-area:react-state-management, skill-area:react-components]
+  workflows: [workflow:feature-development]
+  topics: [topic:component-based-architecture, topic:design-patterns]
 
 ---
 

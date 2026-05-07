@@ -111,7 +111,7 @@ Work mainly in:
 - `packages/agent-mux/mobile-*`
 - `packages/agent-mux/tv-*`
 - `packages/agent-mux/watch-*`
-- `docs-site/` or `packages/catalog` where relevant
+- `docs-site/` or `packages/atlas/webui` where relevant
 
 ## Source-Of-Truth Map
 

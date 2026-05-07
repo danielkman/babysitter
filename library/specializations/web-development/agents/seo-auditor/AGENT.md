@@ -11,6 +11,10 @@ expertise:
   - Search console
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  roles: [role:frontend-engineer, role:ux-writer]
+  skillAreas: [skill-area:seo-sem, skill-area:content-strategy]
+  topics: [topic:progressive-web-application]
 
 ---
 

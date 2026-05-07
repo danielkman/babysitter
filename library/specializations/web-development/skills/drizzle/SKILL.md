@@ -4,6 +4,10 @@ description: Drizzle ORM patterns, migrations, type-safe queries, and database s
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  skillAreas: [skill-area:object-relational-mapping, skill-area:backend-data-persistence]
+  roles: [role:backend-engineer, role:fullstack-engineer]
+  topics: [topic:active-record]
 
 ---
 

@@ -4,6 +4,10 @@ description: CSS Modules patterns, composition, variables, and build configurati
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  skillAreas: [skill-area:ui-styling, skill-area:css-architecture]
+  roles: [role:frontend-engineer]
+  topics: [topic:css-modules]
 
 ---
 

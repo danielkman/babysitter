@@ -3,11 +3,12 @@ name: playwright
 description: Playwright E2E testing, page objects, fixtures, visual regression, accessibility testing, and CI integration patterns.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 graph:
-  domains: [domain:web-development, domain:software-engineering]
-  skillAreas: [skill-area:e2e-testing, skill-area:visual-regression-testing, skill-area:frontend-e2e-testing]
-  topics: [topic:trunk-based-development]
-  roles: [role:frontend-engineer, role:qa-engineer, role:fullstack-engineer]
-  workflows: [workflow:pull-request-lifecycle, workflow:feature-development]
+  domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  skillAreas: [skill-area:e2e-testing, skill-area:cross-browser-testing]
+  roles: [role:qa-engineer, role:frontend-engineer]
+  workflows: [workflow:feature-development]
+  topics: [topic:test-driven-development]
 ---
 
 # Playwright Skill

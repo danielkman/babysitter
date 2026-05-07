@@ -113,7 +113,7 @@ Owned primarily by:
 - `packages/agent-mux/mobile-*`
 - `packages/agent-mux/tv-*`
 - `packages/agent-mux/watch-*`
-- `docs/`, `docs-site/`, `packages/catalog`
+- `docs/`, `docs-site/`
 
 These packages are consumers of the orchestration and dispatch layers. They are not the architectural center of V6, but they are part of the stack and need coherent ownership boundaries.
 
@@ -125,7 +125,7 @@ These packages are consumers of the orchestration and dispatch layers. They are 
 | Dispatch family | `packages/agent-mux/*` | Harness invocation, adapter normalization, gateway, shared interaction contracts | Replacement of Babysitter orchestration |
 | Support mux family | `packages/hooks-mux/*`, `packages/agent-plugins-mux`, `packages/breakpoints-mux` | Hook normalization, bundle compilation, human approval routing | A formal "platform layer" that already has independent product boundaries |
 | Distribution surfaces | `plugins/babysitter-unified`, `plugins/babysitter-*` | Canonical plugin authoring plus harness-specific installable outputs | One single bundle format with no compatibility constraints |
-| User surfaces | `packages/agent-mux/ui`, `packages/agent-mux/webui`, `packages/agent-mux/tui`, `docs-site/`, `packages/catalog` | Human-facing interaction, visualization, docs, and operator surfaces | Ownership of orchestration semantics |
+| User surfaces | `packages/agent-mux/ui`, `packages/agent-mux/webui`, `packages/agent-mux/tui`, `docs-site/` | Human-facing interaction, visualization, docs, and operator surfaces | Ownership of orchestration semantics |
 
 ## Operational Path Through The Stack
 

@@ -11,6 +11,11 @@ expertise:
   - Remediation planning
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  roles: [role:qa-engineer]
+  skillAreas: [skill-area:accessibility-testing, skill-area:web-accessibility]
+  workflows: [workflow:feature-development]
+  topics: [topic:accessibility, topic:test-driven-development]
 
 ---
 

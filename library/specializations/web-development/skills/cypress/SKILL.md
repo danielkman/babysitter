@@ -4,6 +4,11 @@ description: Cypress testing patterns, custom commands, component testing, and C
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  skillAreas: [skill-area:e2e-testing, skill-area:cross-browser-testing]
+  roles: [role:qa-engineer, role:frontend-engineer]
+  workflows: [workflow:feature-development]
+  topics: [topic:test-driven-development]
 
 ---
 

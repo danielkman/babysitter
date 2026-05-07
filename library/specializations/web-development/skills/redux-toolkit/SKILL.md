@@ -4,6 +4,10 @@ description: Redux Toolkit patterns including slice creation, async thunks, RTK 
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  skillAreas: [skill-area:react-state-management, skill-area:application-state-management]
+  roles: [role:frontend-engineer]
+  topics: [topic:redux-pattern, topic:flux-architecture]
 
 ---
 

@@ -11,6 +11,11 @@ expertise:
   - API routes
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  roles: [role:frontend-engineer, role:fullstack-engineer]
+  skillAreas: [skill-area:server-side-rendering, skill-area:data-fetching-caching]
+  workflows: [workflow:feature-development]
+  topics: [topic:streaming-ssr]
 
 ---
 

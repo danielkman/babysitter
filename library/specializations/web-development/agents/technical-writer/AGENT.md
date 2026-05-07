@@ -11,6 +11,10 @@ expertise:
   - Content strategy
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  roles: [role:technical-writer, role:ux-writer]
+  skillAreas: [skill-area:content-strategy, skill-area:api-doc-generation]
+  topics: [topic:developer-experience]
 
 ---
 

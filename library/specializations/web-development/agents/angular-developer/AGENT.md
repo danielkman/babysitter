@@ -11,6 +11,11 @@ expertise:
   - Enterprise architecture
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  roles: [role:frontend-engineer]
+  skillAreas: [skill-area:react-state-management, skill-area:ui-styling]
+  workflows: [workflow:feature-development]
+  topics: [topic:component-based-architecture]
 
 ---
 

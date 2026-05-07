@@ -4,6 +4,10 @@ description: JWT implementation, token management, refresh patterns, and securit
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  skillAreas: [skill-area:authentication-authorization, skill-area:backend-auth]
+  roles: [role:backend-engineer, role:security-engineer]
+  topics: [topic:jwt-handling, topic:secure-authentication-patterns]
 
 ---
 

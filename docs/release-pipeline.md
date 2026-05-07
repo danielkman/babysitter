@@ -13,13 +13,11 @@ last_updated: 2026-05-01
 - `@a5c-ai/agent-catalog` is part of those central publish workflows. It ships as a public dependency surface for SDK, hooks-mux, agent-mux, and agent-plugins-mux consumers.
 - `@a5c-ai/agent-core` and `@a5c-ai/babysitter-agent` are part of those central publish workflows. `agent-core` publishes before `babysitter-agent` so the runtime CLI can be installed from npm without workspace-only dependencies.
 - `@a5c-ai/transport-mux` is part of the public agent-mux runtime chain. It must publish before the downstream agent-mux CLI/root packages so `@a5c-ai/babysitter-agent` remains globally installable through its agent-mux dependency chain.
-- `process-library-catalog` (`packages/catalog`) is intentionally excluded from those central publish workflows. It remains an internal-only workspace UI/API surface whose support contract is enforced through workspace CI rather than npm release automation.
 - Both central workflows validate, build, and publish observer-dashboard alongside the other public workspaces they own.
 
 ## Ownership Matrix
 - `release.yml` on `main`: validates the monorepo, bumps versions through `scripts/bump-version.mjs`, packs release artifacts, publishes public npm packages including `@a5c-ai/agent-catalog`, tags `vX.Y.Z`, and creates the GitHub Release.
 - `staging-publish.yml` on `staging`: validates the monorepo, writes prerelease versions into the publishable package manifests, and publishes the same centrally-owned npm packages with the `staging` dist-tag.
-- `packages/catalog`: validated through `npm run ci:test --workspace=process-library-catalog` in `.github/workflows/ci.yml`; no central publish workflow currently owns it.
 - `scripts/bump-version.mjs`: production version source of truth for the centrally versioned workspace packages, including `packages/agent-catalog/package.json` and `packages/observer-dashboard/package.json`.
 - `packages/observer-dashboard/README.md`: user-facing install guidance for the published package; it should describe the same central release ownership as this document.
 
@@ -48,4 +46,3 @@ last_updated: 2026-05-01
 1. Ensure release-notes.md matches the changelog section before approving the release.
 2. Tabletop the rollback script quarterly (Release Eng + Security) to confirm tag deletion + changelog revert steps are still valid.
 3. When adding or removing a public package from the central release set, update all three ownership surfaces together: `release.yml`, `staging-publish.yml`, and `scripts/bump-version.mjs`.
-4. If `packages/catalog` is ever promoted from internal-only CI ownership into a public deploy or publish surface, update this document, `docs/workspace-validation.md`, the package README, and the relevant central workflow files in the same change.

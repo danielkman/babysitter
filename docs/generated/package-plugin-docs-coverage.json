@@ -307,16 +307,6 @@
       "note": "README is the canonical package-level contract."
     },
     {
-      "surface": "packages/catalog",
-      "packageName": "process-library-catalog",
-      "description": "Internal-only Next.js catalog UI for browsing the Babysitter process library and related graph-backed metadata inside the monorepo.",
-      "hasReadme": true,
-      "status": "Internal-only workspace",
-      "canonicalHome": "../packages/catalog/README.md",
-      "supporting": [],
-      "note": "Internal-only metadata/catalog surface. Keep discovery honest and routed through internal notes rather than productized public docs."
-    },
-    {
       "surface": "packages/cloud",
       "packageName": "@a5c-ai/cloud",
       "description": "Deployment SDK and CLI for Babysitter Kubernetes environments.",

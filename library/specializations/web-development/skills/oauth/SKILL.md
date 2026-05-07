@@ -4,6 +4,10 @@ description: OAuth 2.0/OIDC flows, provider integration, and token handling.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  skillAreas: [skill-area:authentication-authorization, skill-area:oauth-flows]
+  roles: [role:backend-engineer, role:security-engineer]
+  topics: [topic:oauth-openid-connect]
 
 ---
 

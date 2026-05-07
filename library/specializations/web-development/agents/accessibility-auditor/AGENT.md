@@ -11,6 +11,10 @@ expertise:
   - Compliance reporting
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  roles: [role:qa-engineer, role:frontend-engineer]
+  skillAreas: [skill-area:web-accessibility, skill-area:accessibility-testing]
+  topics: [topic:accessibility]
 
 ---
 

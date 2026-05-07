@@ -4,6 +4,11 @@ description: RESTful API design principles, versioning, pagination, HATEOAS, and
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  skillAreas: [skill-area:backend-api-design, skill-area:api-design]
+  roles: [role:backend-engineer, role:tech-lead]
+  workflows: [workflow:api-design-review]
+  topics: [topic:rest, topic:api-design]
 
 ---
 

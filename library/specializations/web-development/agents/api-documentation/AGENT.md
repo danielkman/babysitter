@@ -11,6 +11,11 @@ expertise:
   - Changelog management
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  roles: [role:technical-writer, role:backend-engineer]
+  skillAreas: [skill-area:api-doc-generation, skill-area:api-design]
+  workflows: [workflow:api-design-review]
+  topics: [topic:api-design]
 
 ---
 

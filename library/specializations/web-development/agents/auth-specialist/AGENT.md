@@ -11,6 +11,10 @@ expertise:
   - Security best practices
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  roles: [role:backend-engineer, role:security-engineer]
+  skillAreas: [skill-area:authentication-authorization, skill-area:oauth-flows]
+  topics: [topic:oauth-openid-connect, topic:jwt-handling]
 
 ---
 

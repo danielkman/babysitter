@@ -11,6 +11,10 @@ expertise:
   - Runtime performance
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  roles: [role:frontend-engineer]
+  skillAreas: [skill-area:web-performance, skill-area:frontend-performance-testing]
+  topics: [topic:asset-optimization]
 
 ---
 

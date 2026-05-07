@@ -105,7 +105,6 @@ Use it to answer three questions quickly:
 | `packages/agent-mux/watch-watchos-app` | Internal-only companion app | [docs/package-and-plugin-map.md](./package-and-plugin-map.md) | [docs/agent-mux/README.md](./agent-mux/README.md) | No package README today. This map is the explicit internal-only note until the surface is promoted. |
 | `packages/agent-mux/watch-wearos-app` | Internal-only companion app | [docs/package-and-plugin-map.md](./package-and-plugin-map.md) | [docs/agent-mux/README.md](./agent-mux/README.md) | No package README today. This map is the explicit internal-only note until the surface is promoted. |
 | `packages/babysitter-tui-plugins` | Internal-only workspace | [docs/package-and-plugin-map.md](./package-and-plugin-map.md) | — | Internal-only support package for the TUI surface. This map is the explicit documentation home until the workspace gets a README. |
-| `packages/catalog` | Internal-only workspace | [packages/catalog/README.md](../packages/catalog/README.md) | — | Internal-only metadata/catalog surface. Keep discovery honest and routed through internal notes rather than productized public docs. |
 
 ## Coverage rules for future changes
 

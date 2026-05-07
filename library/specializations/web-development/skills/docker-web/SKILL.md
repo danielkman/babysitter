@@ -4,6 +4,10 @@ description: Docker containerization for web apps, multi-stage builds, and optim
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  skillAreas: [skill-area:containerization, skill-area:deployment-infrastructure-management]
+  roles: [role:fullstack-engineer, role:devops-engineer]
+  topics: [topic:twelve-factor-app]
 
 ---
 

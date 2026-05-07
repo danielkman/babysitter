@@ -11,6 +11,11 @@ expertise:
   - Design system integration
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  roles: [role:frontend-engineer]
+  skillAreas: [skill-area:react-components, skill-area:design-systems]
+  workflows: [workflow:feature-development]
+  topics: [topic:component-based-architecture]
 
 ---
 

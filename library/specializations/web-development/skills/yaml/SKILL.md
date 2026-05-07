@@ -4,6 +4,10 @@ description: YAML configuration for CI/CD, Docker Compose, and Kubernetes.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  skillAreas: [skill-area:configuration-management]
+  roles: [role:devops-engineer, role:backend-engineer]
+  topics: [topic:developer-experience]
 
 ---
 

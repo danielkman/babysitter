@@ -4,6 +4,10 @@ description: Image formats, responsive images, lazy loading, and CDN integration
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  skillAreas: [skill-area:web-performance, skill-area:asset-pipeline]
+  roles: [role:frontend-engineer]
+  topics: [topic:asset-optimization]
 
 ---
 

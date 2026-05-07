@@ -11,6 +11,11 @@ expertise:
   - Runtime integration patterns
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  roles: [role:frontend-engineer, role:tech-lead]
+  skillAreas: [skill-area:monorepo-extraction, skill-area:react-components]
+  workflows: [workflow:architecture-decision-record]
+  topics: [topic:micro-frontend-architecture]
 
 ---
 

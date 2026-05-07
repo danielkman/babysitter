@@ -4,6 +4,10 @@ description: Vite configuration, plugins, optimization, HMR, and build customiza
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  skillAreas: [skill-area:asset-pipeline, skill-area:web-performance]
+  roles: [role:frontend-engineer]
+  topics: [topic:developer-experience]
 
 ---
 

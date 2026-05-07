@@ -4,6 +4,10 @@ description: NestJS architecture including modules, dependency injection, guards
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  skillAreas: [skill-area:backend-api-design, skill-area:middleware-design]
+  roles: [role:backend-engineer]
+  topics: [topic:dependency-injection, topic:design-patterns]
 
 ---
 

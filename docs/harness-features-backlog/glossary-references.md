@@ -147,7 +147,6 @@ Terms, abbreviations, file paths, and cross-codebase references used throughout 
 | Hooks | `packages/sdk/src/hooks/` |
 | Hook dispatcher | `packages/sdk/src/hooks/dispatcher.ts` |
 | Observer dashboard | `packages/observer-dashboard/` |
-| Catalog | `packages/catalog/` |
 | Config | `packages/sdk/src/config/` |
 
 ### Harness Plugins

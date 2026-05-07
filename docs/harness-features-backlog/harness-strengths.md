@@ -49,7 +49,6 @@ While this gap analysis focuses primarily on areas where Claude Code leads, the 
 - Community-contributed process definitions
 - Version-pinned process binding per run
 - Methodology sharing (TDD, spec-driven, domain-specific)
-- Process catalog with SQLite indexing (`packages/catalog/`)
 
 ### 4. Plugin Migration System
 

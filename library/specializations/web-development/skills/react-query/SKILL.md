@@ -4,6 +4,10 @@ description: TanStack Query (React Query) patterns for server state management, 
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  skillAreas: [skill-area:data-fetching-caching, skill-area:react-state-management]
+  roles: [role:frontend-engineer]
+  topics: [topic:cache-aside-pattern]
 
 ---
 

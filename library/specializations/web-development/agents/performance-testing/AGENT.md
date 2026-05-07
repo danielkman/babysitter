@@ -11,6 +11,11 @@ expertise:
   - Core Web Vitals
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  roles: [role:qa-engineer, role:frontend-engineer]
+  skillAreas: [skill-area:frontend-performance-testing, skill-area:web-performance]
+  workflows: [workflow:feature-development]
+  topics: [topic:test-driven-development]
 
 ---
 

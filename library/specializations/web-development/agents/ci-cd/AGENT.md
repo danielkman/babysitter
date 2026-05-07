@@ -11,6 +11,11 @@ expertise:
   - Secrets handling
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  roles: [role:devops-engineer, role:frontend-engineer]
+  skillAreas: [skill-area:deployment-infrastructure-management]
+  workflows: [workflow:pull-request-lifecycle, workflow:release-management]
+  topics: [topic:continuous-integration, topic:continuous-deployment]
 
 ---
 

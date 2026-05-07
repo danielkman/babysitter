@@ -53,7 +53,6 @@ uses Ink for rich breakpoint prompts.
 | Component | Path |
 |-----------|------|
 | Embedded SDK dashboard (new) | `packages/sdk/src/dashboard/` |
-| Catalog UI (React, different renderer) | `packages/catalog/src/app/page.tsx` |
 | Interaction module | `packages/sdk/src/interaction/` |
 | CLI entry | `packages/sdk/src/cli/main.ts` |
 | CC reference | `src/ink.ts` |

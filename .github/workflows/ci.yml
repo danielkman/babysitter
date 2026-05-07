@@ -283,7 +283,6 @@ jobs:
 
           Additional active workspaces validated in this job:
           - @a5c-ai/agent-catalog -> ci:test + public package lifecycle policy
-          - process-library-catalog -> ci:test + internal-only lifecycle policy
           - @a5c-ai/babysitter-tui-plugins
           - @a5c-ai/transport-mux (build + lint + typecheck + test + migration scorecard)
 
@@ -291,11 +290,6 @@ jobs:
         run: |
           set -euo pipefail
           npm run ci:test --workspace=@a5c-ai/agent-catalog 2>&1 | tee artifacts/workspace-coverage-logs/agent-catalog-ci.log
-
-      - name: Validate catalog internal workspace policy
-        run: |
-          set -euo pipefail
-          npm run ci:test --workspace=process-library-catalog 2>&1 | tee artifacts/workspace-coverage-logs/catalog-ci.log
 
       - name: Validate transport-mux workspace QA surface
         run: |

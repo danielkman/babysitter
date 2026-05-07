@@ -10,11 +10,12 @@ expertise:
   - Visual regression
   - Page object patterns
 graph:
-  domains: [domain:web-development, domain:software-engineering]
-  skillAreas: [skill-area:e2e-testing, skill-area:visual-regression-testing, skill-area:cross-browser-testing]
-  topics: [topic:trunk-based-development]
+  domains: [domain:web-development]
+  specializations: [specialization:web-development]
   roles: [role:qa-engineer, role:frontend-engineer]
-  workflows: [workflow:pull-request-lifecycle, workflow:feature-development]
+  skillAreas: [skill-area:e2e-testing, skill-area:cross-browser-testing]
+  workflows: [workflow:feature-development]
+  topics: [topic:test-driven-development]
 ---
 
 # E2E Testing Agent

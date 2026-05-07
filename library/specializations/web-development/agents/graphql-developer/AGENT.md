@@ -11,6 +11,11 @@ expertise:
   - Federation
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  roles: [role:backend-engineer, role:fullstack-engineer]
+  skillAreas: [skill-area:graphql-schema-design]
+  workflows: [workflow:api-design-review]
+  topics: [topic:graphql-schema-design]
 
 ---
 

@@ -56,7 +56,6 @@ const packageFamilies = {
     "@a5c-ai/babysitter-observer-dashboard",
     "@a5c-ai/babysitter-tui-plugins",
     "@a5c-ai/cloud",
-    "process-library-catalog",
   ],
   "atlas-family": [
     "@a5c-ai/atlas-webui",

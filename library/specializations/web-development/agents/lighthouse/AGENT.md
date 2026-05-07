@@ -11,6 +11,10 @@ expertise:
   - SEO scoring
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  roles: [role:frontend-engineer, role:qa-engineer]
+  skillAreas: [skill-area:web-performance, skill-area:web-accessibility]
+  topics: [topic:accessibility, topic:asset-optimization]
 
 ---
 

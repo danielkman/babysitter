@@ -4,6 +4,10 @@ description: Zod schema validation and type inference.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  skillAreas: [skill-area:data-validation-sanitization]
+  roles: [role:fullstack-engineer, role:backend-engineer]
+  topics: [topic:api-design]
 
 ---
 

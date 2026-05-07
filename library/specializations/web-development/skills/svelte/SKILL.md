@@ -4,6 +4,10 @@ description: Svelte and SvelteKit development with built-in reactivity, stores, 
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  skillAreas: [skill-area:react-components, skill-area:ui-styling]
+  roles: [role:frontend-engineer]
+  topics: [topic:component-based-architecture]
 
 ---
 

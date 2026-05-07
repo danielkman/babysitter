@@ -4,6 +4,11 @@ description: Storybook configuration, stories, addons, interaction testing, and 
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  skillAreas: [skill-area:design-systems, skill-area:component-testing]
+  roles: [role:frontend-engineer, role:product-designer]
+  workflows: [workflow:feature-development]
+  topics: [topic:component-based-architecture]
 
 ---
 

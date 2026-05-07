@@ -4,6 +4,10 @@ description: OWASP Top 10, security headers, CSP, XSS prevention, and vulnerabil
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  skillAreas: [skill-area:web-security, skill-area:backend-security]
+  roles: [role:security-engineer, role:fullstack-engineer]
+  topics: [topic:xss-prevention, topic:content-security-policy]
 
 ---
 

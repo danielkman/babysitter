@@ -4,6 +4,11 @@ description: GitHub Actions for web app CI/CD, testing, and deployment.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  skillAreas: [skill-area:deployment-infrastructure-management]
+  roles: [role:frontend-engineer, role:devops-engineer]
+  workflows: [workflow:pull-request-lifecycle, workflow:feature-development]
+  topics: [topic:continuous-integration]
 
 ---
 

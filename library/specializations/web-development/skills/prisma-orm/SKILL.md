@@ -4,6 +4,10 @@ description: Prisma ORM schema design, migrations, relations, query optimization
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  skillAreas: [skill-area:object-relational-mapping, skill-area:backend-data-persistence]
+  roles: [role:backend-engineer, role:fullstack-engineer]
+  topics: [topic:data-mapper]
 
 ---
 

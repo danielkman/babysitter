@@ -11,6 +11,11 @@ expertise:
   - Environment management
 graph:
   domains: [domain:web-development]
+  specializations: [specialization:web-development]
+  roles: [role:devops-engineer, role:fullstack-engineer]
+  skillAreas: [skill-area:deployment-infrastructure-management]
+  workflows: [workflow:release-management]
+  topics: [topic:continuous-deployment]
 
 ---
 

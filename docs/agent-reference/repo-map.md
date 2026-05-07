@@ -24,7 +24,8 @@ npm run lint:hooks-mux
 | `packages/babysitter` | `@a5c-ai/babysitter` | Metapackage and `babysitter` binary |
 | `packages/babysitter-agent` | `@a5c-ai/babysitter-agent` | Optional runtime CLI exposed as `babysitter-harness` |
 | `packages/babysitter-tui-plugins` | `@a5c-ai/babysitter-tui-plugins` | TUI panels for status, cost, and governance |
-| `packages/catalog` | `process-library-catalog` | Next.js catalog UI for process-library content |
+| `packages/atlas` | `@a5c-ai/atlas` | Atlas catalog graph SDK, CLI, and data |
+| `packages/atlas/webui` | `@a5c-ai/atlas-webui` | Atlas graph explorer (Next.js) |
 | `packages/hooks-mux/*` | `hooks-mux workspace packages` | Hook normalization, CLI, and harness adapters |
 
 ## Key Entry Points
@@ -34,7 +35,7 @@ npm run lint:hooks-mux
 - SDK config and runs resolution: [`packages/sdk/src/config/`](../../packages/sdk/src/config)
 - Harness runtime CLI: [`packages/babysitter-agent/src/cli/main.ts`](../../packages/babysitter-agent/src/cli/main.ts)
 - Metapackage shim: `packages/babysitter/bin/babysitter.js`
-- Catalog app: [`packages/catalog/src/app/page.tsx`](../../packages/catalog/src/app/page.tsx)
+- Atlas graph explorer: [`packages/atlas/webui/app/page.tsx`](../../packages/atlas/webui/app/page.tsx)
 
 ## Repo Conventions
 
