@@ -15,9 +15,9 @@ metadata:
 graph:
   domains: [domain:strategy]
   specializations: [specialization:strategic-consulting]
-  skillAreas: [skill-area:strategic-planning, skill-area:change-management-leadership, skill-area:market-sizing]
+  skillAreas: [skill-area:risk-assessment, skill-area:strategic-analysis, skill-area:strategic-planning]
   workflows: [workflow:strategic-planning]
-  roles: [role:strategic-planner, role:business-analyst]
+  roles: [role:strategic-planner, role:risk-analyst]
 ---
 
 # Strategy Stress Testing Skill

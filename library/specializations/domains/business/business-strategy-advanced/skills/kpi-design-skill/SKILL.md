@@ -15,9 +15,9 @@ metadata:
 graph:
   domains: [domain:strategy]
   specializations: [specialization:strategic-consulting]
-  skillAreas: [skill-area:strategic-planning, skill-area:change-management-leadership, skill-area:market-sizing]
+  skillAreas: [skill-area:performance-management, skill-area:strategic-planning, skill-area:data-analytics]
   workflows: [workflow:strategic-planning]
-  roles: [role:strategic-planner, role:business-analyst]
+  roles: [role:strategic-planner, role:people-analytics-specialist]
 ---
 
 # KPI Design Skill

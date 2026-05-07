@@ -14,9 +14,9 @@ expertise:
 graph:
   domains: [domain:strategy]
   specializations: [specialization:strategic-consulting]
-  skillAreas: [skill-area:strategic-planning, skill-area:change-management-leadership, skill-area:market-sizing]
+  skillAreas: [skill-area:competitive-intelligence, skill-area:risk-assessment, skill-area:strategic-analysis]
   workflows: [workflow:strategic-planning]
-  roles: [role:strategic-planner, role:business-analyst]
+  roles: [role:strategic-planner, role:competitive-intelligence-analyst]
 ---
 
 # Early Warning Agent

@@ -16,9 +16,9 @@ metadata:
 graph:
   domains: [domain:strategy]
   specializations: [specialization:strategic-consulting]
-  skillAreas: [skill-area:strategic-planning, skill-area:business-model-design, skill-area:growth-strategy]
+  skillAreas: [skill-area:growth-strategy, skill-area:business-model-design, skill-area:competitive-intelligence]
   workflows: [workflow:strategic-planning, workflow:competitive-analysis]
-  roles: [role:strategic-planner, role:business-analyst]
+  roles: [role:strategic-planner, role:management-consultant]
 ---
 
 # Blue Ocean Strategy Skill
