@@ -33,8 +33,8 @@ export class BabysitterAdapter extends BaseAgentAdapter {
 
   constructor(agent?: string, cliCommand?: string) {
     super();
-    this.agent = agent ?? this.constructor.name.replace(/Adapter$/, '').toLowerCase();
-    this.cliCommand = cliCommand ?? this.agent;
+    this.agent = agent ?? 'babysitter';
+    this.cliCommand = cliCommand ?? 'babysitter-agent';
   }
   readonly hostEnvSignals = ['BABYSITTER_SESSION_ID', 'AGENT_SESSION_ID'] as const;
 
