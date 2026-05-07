@@ -14,7 +14,8 @@ This section collects pages that are produced directly from graph data to explai
 
 | Page | What it gives you |
 |---|---|
-| [`universal-agentic-stack`](./universal-agentic-stack/README.md) | A generated landscape map for the universal agentic stack, including layers and diagram output. |
+| [`universal-agentic-stack`](./universal-agentic-stack/README.md) | A guided entry point into the universal agentic stack map. |
+| [`universal-agentic-stack/02-landscape-diagram.md`](./universal-agentic-stack/02-landscape-diagram.md) | The full visual stack diagram as a dedicated page. |
 | [`universal-agentic-stack/layers.md`](./universal-agentic-stack/layers.md) | Layer-by-layer reference derived from the graph. |
 | [`universal-agentic-stack/source-map.md`](./universal-agentic-stack/source-map.md) | Traceability back to the graph sources used for the generated stack documentation. |
 
