@@ -148,12 +148,12 @@ export default async function RecordPage({
           runningLeft={
             <>
               <span className="folio">ii</span>
-              <span>{rec._kind}</span>
+              <span>Record</span>
             </>
           }
           runningTitle={
             <>
-              Atlas record · <em>{getDisplayName(rec)}</em>
+              Agentic AI Atlas · <em>{getDisplayName(rec)}</em>
             </>
           }
           runningRight={
@@ -162,7 +162,7 @@ export default async function RecordPage({
               <span>a5c.ai</span>
             </>
           }
-          tocSearchLabel="Search related folios"
+          tocSearchLabel="Search related records"
           tocBookLabel="Record · linked articles"
           tocTitle="Current article and related pages"
           chapters={[
@@ -185,7 +185,7 @@ export default async function RecordPage({
           ]}
           chapterMark={{
             num: "II.",
-            subtitle: `${rec._kind} reference folio`,
+            subtitle: `${rec._kind} reference`,
             context: id,
             readingTime: atlasReadingTime(String(articlePage.article)),
           }}

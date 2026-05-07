@@ -36,12 +36,12 @@ export default async function WikiPage({ params }: { params: Promise<Params> }) 
       runningLeft={
         <>
           <span className="folio">{parts.length === 0 ? "i" : `i.${parts.length}`}</span>
-          <span>Atlas wiki</span>
+          <span>Wiki</span>
         </>
       }
       runningTitle={
         <>
-          Atlas folio · <em>{pageTitle}</em>
+          Agentic AI Atlas · <em>{pageTitle}</em>
         </>
       }
       runningRight={
@@ -67,13 +67,13 @@ export default async function WikiPage({ params }: { params: Promise<Params> }) 
       ]}
       chapterMark={{
         num: "I.",
-        subtitle: "Atlas wiki folio",
+        subtitle: "Wiki article",
         context: slug,
         readingTime: atlasReadingTime(article),
       }}
       articleTitle={
         <>
-          {pageTitle} <em>folio</em>
+          {pageTitle} <em>reference</em>
         </>
       }
       lead={atlasLeadFromMarkdown(article, "Reference writing for this atlas page and the graph records it documents.")}
@@ -105,7 +105,7 @@ export default async function WikiPage({ params }: { params: Promise<Params> }) 
                   </Link>
                 );
               })
-            : [<p key="no-docs" className="atlas-docs-note">No documented graph nodes on this folio.</p>],
+            : [<p key="no-docs" className="atlas-docs-note">No documented graph nodes on this page.</p>],
         },
       ]}
     >
