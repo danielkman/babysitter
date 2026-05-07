@@ -14,9 +14,9 @@ metadata:
   category: physics
 graph:
   domains: [domain:physics]
-  skillAreas: [skill-area:statistical-analysis, skill-area:mathematical-reasoning, skill-area:data-analysis]
+  skillAreas: [skill-area:physics-simulation, skill-area:dynamic-programming, skill-area:mathematical-reasoning]
   workflows: [workflow:experiment-design, workflow:peer-review-cycle]
-  roles: [role:research-engineer, role:computational-scientist]
+  roles: [role:computational-scientist, role:research-engineer]
 ---
 
 # Scientific Computing Specialist Agent

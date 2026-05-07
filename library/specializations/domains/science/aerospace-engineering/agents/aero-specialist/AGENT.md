@@ -17,8 +17,8 @@ metadata:
 graph:
   domains: [domain:aerospace-engineering]
   specializations: [specialization:aerospace-engineering]
-  skillAreas: [skill-area:mathematical-reasoning, skill-area:physics-simulation, skill-area:sensor-fusion]
-  roles: [role:systems-integration-engineer, role:research-engineer]
+  skillAreas: [skill-area:physics-simulation, skill-area:mathematical-reasoning, skill-area:computational-geometry]
+  roles: [role:research-engineer, role:computational-scientist]
 ---
 
 # Aerodynamics Specialist Agent

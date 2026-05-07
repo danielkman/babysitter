@@ -15,7 +15,7 @@ metadata:
   skill-id: BME-SK-011
 graph:
   domains: [domain:biomedical-engineering]
-  skillAreas: [skill-area:data-analysis, skill-area:sensor-fusion, skill-area:statistical-analysis]
+  skillAreas: [skill-area:physics-simulation, skill-area:mathematical-reasoning, skill-area:computational-geometry]
   workflows: [workflow:experiment-design, workflow:peer-review-cycle]
   roles: [role:biomedical-engineer, role:research-engineer]
 ---

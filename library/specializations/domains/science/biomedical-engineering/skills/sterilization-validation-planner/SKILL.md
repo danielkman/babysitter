@@ -15,9 +15,9 @@ metadata:
   skill-id: BME-SK-026
 graph:
   domains: [domain:biomedical-engineering]
-  skillAreas: [skill-area:data-analysis, skill-area:sensor-fusion, skill-area:statistical-analysis]
+  skillAreas: [skill-area:statistical-analysis, skill-area:data-analysis, skill-area:compliance-automation]
   workflows: [workflow:experiment-design, workflow:peer-review-cycle]
-  roles: [role:biomedical-engineer, role:research-engineer]
+  roles: [role:biomedical-engineer, role:lab-technician]
 ---
 
 # Sterilization Validation Planner Skill

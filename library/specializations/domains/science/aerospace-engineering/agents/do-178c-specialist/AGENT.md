@@ -17,7 +17,7 @@ metadata:
 graph:
   domains: [domain:aerospace-engineering]
   specializations: [specialization:aerospace-engineering]
-  skillAreas: [skill-area:mathematical-reasoning, skill-area:physics-simulation, skill-area:sensor-fusion]
+  skillAreas: [skill-area:compiler-implementation, skill-area:compliance-automation, skill-area:language-design]
   roles: [role:systems-integration-engineer, role:research-engineer]
 ---
 

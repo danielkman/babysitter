@@ -16,9 +16,9 @@ metadata:
 graph:
   domains: [domain:quantum-computing]
   specializations: [specialization:quantum-computing]
-  skillAreas: [skill-area:mathematical-reasoning, skill-area:compiler-implementation, skill-area:language-design]
+  skillAreas: [skill-area:machine-learning-frameworks, skill-area:mathematical-reasoning, skill-area:physics-simulation]
   workflows: [workflow:experiment-design]
-  roles: [role:research-engineer]
+  roles: [role:research-engineer, role:ml-engineer]
 ---
 
 # PennyLane Hybrid Executor

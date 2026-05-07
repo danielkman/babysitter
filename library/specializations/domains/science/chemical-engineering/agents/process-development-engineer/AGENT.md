@@ -15,9 +15,9 @@ metadata:
   agent-id: CE-AG-001
 graph:
   domains: [domain:chemical-engineering]
-  skillAreas: [skill-area:mathematical-reasoning, skill-area:statistical-analysis, skill-area:data-analysis]
+  skillAreas: [skill-area:physics-simulation, skill-area:mathematical-reasoning, skill-area:dynamic-programming]
   workflows: [workflow:experiment-design]
-  roles: [role:research-engineer]
+  roles: [role:research-engineer, role:computational-scientist]
 ---
 
 # Process Development Engineer Agent

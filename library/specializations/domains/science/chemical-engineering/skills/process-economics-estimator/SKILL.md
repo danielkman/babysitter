@@ -15,9 +15,9 @@ metadata:
   skill-id: CE-SK-032
 graph:
   domains: [domain:chemical-engineering]
-  skillAreas: [skill-area:mathematical-reasoning, skill-area:statistical-analysis, skill-area:data-analysis]
+  skillAreas: [skill-area:statistical-analysis, skill-area:mathematical-reasoning, skill-area:data-analysis]
   workflows: [workflow:experiment-design]
-  roles: [role:research-engineer]
+  roles: [role:research-engineer, role:computational-scientist]
 ---
 
 # Process Economics Estimator Skill

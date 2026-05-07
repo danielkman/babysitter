@@ -15,9 +15,9 @@ metadata:
   phase: 6
 graph:
   domains: [domain:physics]
-  skillAreas: [skill-area:statistical-analysis, skill-area:mathematical-reasoning, skill-area:data-analysis]
+  skillAreas: [skill-area:physics-simulation, skill-area:statistical-analysis, skill-area:mathematical-reasoning]
   workflows: [workflow:experiment-design, workflow:peer-review-cycle]
-  roles: [role:research-engineer, role:computational-scientist]
+  roles: [role:computational-scientist, role:research-scientist]
 ---
 
 # MC Generator Specialist

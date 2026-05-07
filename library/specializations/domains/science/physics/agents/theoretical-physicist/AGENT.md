@@ -14,9 +14,9 @@ metadata:
   category: physics
 graph:
   domains: [domain:physics]
-  skillAreas: [skill-area:statistical-analysis, skill-area:mathematical-reasoning, skill-area:data-analysis]
+  skillAreas: [skill-area:mathematical-reasoning, skill-area:physics-simulation, skill-area:computational-geometry]
   workflows: [workflow:experiment-design, workflow:peer-review-cycle]
-  roles: [role:research-engineer, role:computational-scientist]
+  roles: [role:research-scientist, role:computational-scientist]
 ---
 
 # Theoretical Physicist Agent

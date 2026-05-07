@@ -15,9 +15,9 @@ metadata:
   skill-id: BME-SK-004
 graph:
   domains: [domain:biomedical-engineering]
-  skillAreas: [skill-area:data-analysis, skill-area:sensor-fusion, skill-area:statistical-analysis]
+  skillAreas: [skill-area:data-analysis, skill-area:compliance-automation, skill-area:python-data-pipelines]
   workflows: [workflow:experiment-design, workflow:peer-review-cycle]
-  roles: [role:biomedical-engineer, role:research-engineer]
+  roles: [role:biomedical-engineer, role:compliance-engineer]
 ---
 
 # UDI Labeling Generator Skill

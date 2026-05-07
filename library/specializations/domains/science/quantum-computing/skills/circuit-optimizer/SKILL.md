@@ -16,9 +16,9 @@ metadata:
 graph:
   domains: [domain:quantum-computing]
   specializations: [specialization:quantum-computing]
-  skillAreas: [skill-area:mathematical-reasoning, skill-area:compiler-implementation, skill-area:language-design]
+  skillAreas: [skill-area:compiler-implementation, skill-area:graph-algorithms, skill-area:mathematical-reasoning]
   workflows: [workflow:experiment-design]
-  roles: [role:research-engineer]
+  roles: [role:research-engineer, role:computational-scientist]
 ---
 
 # Circuit Optimizer

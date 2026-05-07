@@ -16,7 +16,7 @@ metadata:
 graph:
   domains: [domain:computer-science]
   specializations: [specialization:theoretical-computer-science]
-  skillAreas: [skill-area:language-design, skill-area:compiler-implementation, skill-area:graph-algorithms]
+  skillAreas: [skill-area:np-hard-heuristics, skill-area:graph-algorithms, skill-area:dynamic-programming]
   workflows: [workflow:research-grant-lifecycle]
   roles: [role:research-engineer, role:computational-scientist]
 ---

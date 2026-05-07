@@ -15,7 +15,7 @@ metadata:
   skill-id: BME-SK-014
 graph:
   domains: [domain:biomedical-engineering]
-  skillAreas: [skill-area:data-analysis, skill-area:sensor-fusion, skill-area:statistical-analysis]
+  skillAreas: [skill-area:sensor-fusion, skill-area:statistical-analysis, skill-area:data-analysis]
   workflows: [workflow:experiment-design, workflow:peer-review-cycle]
   roles: [role:biomedical-engineer, role:research-engineer]
 ---

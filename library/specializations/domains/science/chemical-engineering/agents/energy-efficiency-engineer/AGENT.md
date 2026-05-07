@@ -15,9 +15,9 @@ metadata:
   agent-id: CE-AG-017
 graph:
   domains: [domain:chemical-engineering]
-  skillAreas: [skill-area:mathematical-reasoning, skill-area:statistical-analysis, skill-area:data-analysis]
+  skillAreas: [skill-area:np-hard-heuristics, skill-area:mathematical-reasoning, skill-area:statistical-analysis]
   workflows: [workflow:experiment-design]
-  roles: [role:research-engineer]
+  roles: [role:research-engineer, role:computational-scientist]
 ---
 
 # Energy Efficiency Engineer Agent

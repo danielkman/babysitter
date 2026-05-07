@@ -21,8 +21,8 @@ metadata:
 graph:
   domains: [domain:aerospace-engineering]
   specializations: [specialization:aerospace-engineering]
-  skillAreas: [skill-area:mathematical-reasoning, skill-area:physics-simulation, skill-area:sensor-fusion]
-  roles: [role:systems-integration-engineer, role:research-engineer]
+  skillAreas: [skill-area:physics-simulation, skill-area:statistical-analysis, skill-area:data-analysis]
+  roles: [role:research-engineer, role:systems-integration-engineer]
 ---
 
 # Aerodynamic Database Generation Skill

@@ -16,9 +16,9 @@ metadata:
 graph:
   domains: [domain:mathematics]
   specializations: [specialization:computational-mathematics]
-  skillAreas: [skill-area:statistical-analysis, skill-area:mathematical-reasoning, skill-area:data-analysis]
+  skillAreas: [skill-area:mathematical-reasoning, skill-area:compiler-implementation, skill-area:language-design]
   workflows: [workflow:experiment-design]
-  roles: [role:research-engineer, role:computational-scientist]
+  roles: [role:computational-scientist, role:research-scientist]
 ---
 
 # Proof Structure Analyzer

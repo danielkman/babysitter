@@ -17,9 +17,9 @@ metadata:
 graph:
   domains: [domain:mathematics]
   specializations: [specialization:computational-mathematics]
-  skillAreas: [skill-area:statistical-analysis, skill-area:mathematical-reasoning, skill-area:data-analysis]
+  skillAreas: [skill-area:mathematical-reasoning, skill-area:np-hard-heuristics, skill-area:graph-algorithms]
   workflows: [workflow:experiment-design]
-  roles: [role:research-engineer, role:computational-scientist]
+  roles: [role:research-scientist, role:computational-scientist]
 ---
 
 # Conjecture Analyst

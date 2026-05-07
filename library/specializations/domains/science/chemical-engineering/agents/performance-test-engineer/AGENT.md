@@ -15,9 +15,9 @@ metadata:
   agent-id: CE-AG-019
 graph:
   domains: [domain:chemical-engineering]
-  skillAreas: [skill-area:mathematical-reasoning, skill-area:statistical-analysis, skill-area:data-analysis]
+  skillAreas: [skill-area:statistical-analysis, skill-area:sensor-fusion, skill-area:data-analysis]
   workflows: [workflow:experiment-design]
-  roles: [role:research-engineer]
+  roles: [role:research-engineer, role:lab-technician]
 ---
 
 # Performance Test Engineer Agent

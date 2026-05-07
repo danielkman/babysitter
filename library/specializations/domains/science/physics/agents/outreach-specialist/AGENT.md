@@ -14,9 +14,9 @@ metadata:
   category: physics
 graph:
   domains: [domain:physics]
-  skillAreas: [skill-area:statistical-analysis, skill-area:mathematical-reasoning, skill-area:data-analysis]
+  skillAreas: [skill-area:statistical-analysis, skill-area:data-visualization, skill-area:data-analysis]
   workflows: [workflow:experiment-design, workflow:peer-review-cycle]
-  roles: [role:research-engineer, role:computational-scientist]
+  roles: [role:research-scientist, role:technical-writer]
 ---
 
 # Outreach Specialist Agent

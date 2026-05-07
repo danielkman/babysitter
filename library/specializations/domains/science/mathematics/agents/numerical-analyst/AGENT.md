@@ -17,9 +17,9 @@ metadata:
 graph:
   domains: [domain:mathematics]
   specializations: [specialization:computational-mathematics]
-  skillAreas: [skill-area:statistical-analysis, skill-area:mathematical-reasoning, skill-area:data-analysis]
+  skillAreas: [skill-area:mathematical-reasoning, skill-area:dynamic-programming, skill-area:statistical-analysis]
   workflows: [workflow:experiment-design]
-  roles: [role:research-engineer, role:computational-scientist]
+  roles: [role:computational-scientist, role:research-engineer]
 ---
 
 # Numerical Analyst

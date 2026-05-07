@@ -14,9 +14,9 @@ metadata:
   category: physics
 graph:
   domains: [domain:physics]
-  skillAreas: [skill-area:statistical-analysis, skill-area:mathematical-reasoning, skill-area:data-analysis]
+  skillAreas: [skill-area:sensor-fusion, skill-area:physics-simulation, skill-area:statistical-analysis]
   workflows: [workflow:experiment-design, workflow:peer-review-cycle]
-  roles: [role:research-engineer, role:computational-scientist]
+  roles: [role:research-engineer, role:lab-technician]
 ---
 
 # Control Systems Engineer Agent

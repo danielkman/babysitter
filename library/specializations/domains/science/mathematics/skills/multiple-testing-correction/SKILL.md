@@ -18,7 +18,7 @@ graph:
   specializations: [specialization:computational-mathematics]
   skillAreas: [skill-area:statistical-analysis, skill-area:mathematical-reasoning, skill-area:data-analysis]
   workflows: [workflow:experiment-design]
-  roles: [role:research-engineer, role:computational-scientist]
+  roles: [role:research-scientist, role:data-scientist]
 ---
 
 # Multiple Testing Correction

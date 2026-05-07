@@ -15,9 +15,9 @@ metadata:
   agent-id: CE-AG-005
 graph:
   domains: [domain:chemical-engineering]
-  skillAreas: [skill-area:mathematical-reasoning, skill-area:statistical-analysis, skill-area:data-analysis]
+  skillAreas: [skill-area:physics-simulation, skill-area:statistical-analysis, skill-area:mathematical-reasoning]
   workflows: [workflow:experiment-design]
-  roles: [role:research-engineer]
+  roles: [role:research-scientist, role:lab-technician]
 ---
 
 # Catalysis Specialist Agent
