@@ -5426,3 +5426,35 @@ edgeKinds:
   - Page
   cardinality: N:N
   inverse: documents
+- id: edge:uses-agent
+  name: uses_agent
+  origin: universal
+  description: a library process uses an agent for task execution
+  source: [LibraryProcess]
+  target: [LibraryAgent]
+  cardinality: N:N
+  inverse: used_by_process
+- id: edge:used-by-process
+  name: used_by_process
+  origin: universal
+  description: inverse of uses_agent
+  source: [LibraryAgent]
+  target: [LibraryProcess]
+  cardinality: N:N
+  inverse: uses_agent
+- id: edge:uses-skill
+  name: uses_skill
+  origin: universal
+  description: a library process uses a skill for task execution
+  source: [LibraryProcess]
+  target: [LibrarySkill]
+  cardinality: N:N
+  inverse: used_by_process_skill
+- id: edge:used-by-process-skill
+  name: used_by_process_skill
+  origin: universal
+  description: inverse of uses_skill
+  source: [LibrarySkill]
+  target: [LibraryProcess]
+  cardinality: N:N
+  inverse: uses_skill

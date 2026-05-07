@@ -37,6 +37,8 @@ nodeKinds:
   incomingEdges: []
   outgoingEdges:
   - applies_to
+  - uses_agent
+  - uses_skill
   invariants: []
   examples: []
 - id: node:library-skill
@@ -64,7 +66,8 @@ nodeKinds:
   - name: contentSummary
     type: markdown
     required: false
-  incomingEdges: []
+  incomingEdges:
+  - used_by_process_skill
   outgoingEdges:
   - applies_to
   invariants: []
@@ -97,7 +100,8 @@ nodeKinds:
   - name: expertise
     type: list<string>
     required: false
-  incomingEdges: []
+  incomingEdges:
+  - used_by_process
   outgoingEdges:
   - applies_to
   invariants: []

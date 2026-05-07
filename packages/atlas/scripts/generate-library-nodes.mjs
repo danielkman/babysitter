@@ -367,9 +367,17 @@ function generateNodeYaml(node) {
   }
   if (node.edges && node.edges.length > 0) {
     lines.push("    edges:");
-    lines.push("      applies_to:");
+    // Group edges by kind
+    const byKind = {};
     for (const edge of node.edges) {
-      lines.push(`      - ${yamlString(edge.to)}`);
+      if (!byKind[edge.kind]) byKind[edge.kind] = [];
+      byKind[edge.kind].push(edge.to);
+    }
+    for (const [kind, targets] of Object.entries(byKind)) {
+      lines.push(`      ${kind}:`);
+      for (const target of targets) {
+        lines.push(`      - ${yamlString(target)}`);
+      }
     }
   }
   return lines.join("\n");
@@ -451,6 +459,23 @@ function main() {
     const { agents: usesAgents, skills: usesSkills } = extractTaskAssociations(content);
 
     const edges = buildEdges(id, graphMeta, specialization);
+
+    // Add uses_agent edges for task associations
+    for (const agentName of usesAgents) {
+      const agentSlug = slugify(agentName);
+      const agentId = specialization
+        ? `lib-agent:${slugify(specialization)}--${agentSlug}`
+        : `lib-agent:shared--${agentSlug}`;
+      edges.push({ kind: "uses_agent", to: agentId });
+    }
+    // Add uses_skill edges for task associations
+    for (const skillName of usesSkills) {
+      const skillSlug = slugify(skillName);
+      const skillId = specialization
+        ? `lib-skill:${slugify(specialization)}--${skillSlug}`
+        : `lib-skill:shared--${skillSlug}`;
+      edges.push({ kind: "uses_skill", to: skillId });
+    }
 
     processNodes.push({
       id,
