@@ -39,6 +39,7 @@ nodeKinds:
   - applies_to
   - uses_agent
   - uses_skill
+  - follows_methodology
   invariants: []
   examples: []
 - id: node:library-skill

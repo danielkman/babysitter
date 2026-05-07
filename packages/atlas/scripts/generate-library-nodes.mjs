@@ -65,6 +65,23 @@ function extractSpecialization(filePath) {
 }
 
 /**
+ * Extract methodology name from a library path.
+ * e.g. library/methodologies/tdd/processes/xxx.js -> tdd
+ *      library/methodologies/tdd.js -> tdd
+ *      library/methodologies/shared/xxx.js -> null (shared)
+ */
+function extractMethodology(filePath) {
+  const rel = path.relative(libraryDir, filePath).split(path.sep).join("/");
+  // Dir-based: methodologies/<name>/processes/xxx.js
+  const dirMatch = rel.match(/^methodologies\/([^/]+)\//);
+  if (dirMatch && dirMatch[1] !== "shared") return dirMatch[1];
+  // Top-level: methodologies/xxx.js
+  const topMatch = rel.match(/^methodologies\/([^/.]+)\.js$/);
+  if (topMatch) return topMatch[1];
+  return null;
+}
+
+/**
  * Compute a relative path from repo root, using forward slashes.
  */
 function relativeFromRoot(filePath) {
@@ -459,6 +476,22 @@ function main() {
     const { agents: usesAgents, skills: usesSkills } = extractTaskAssociations(content);
 
     const edges = buildEdges(id, graphMeta, specialization);
+
+    // Auto-detect methodology from path
+    const methodology = extractMethodology(file);
+    if (methodology) {
+      const methId = "methodology:" + slugify(methodology);
+      edges.push({ kind: "follows_methodology", to: methId });
+    }
+
+    // Also parse @graph methodologies: tag
+    if (graphMeta && graphMeta.methodologies) {
+      for (const m of graphMeta.methodologies) {
+        if (!edges.some(e => e.kind === "follows_methodology" && e.to === m)) {
+          edges.push({ kind: "follows_methodology", to: m });
+        }
+      }
+    }
 
     // Add uses_agent/uses_skill edges — deferred until agent/skill IDs are known
     // Store raw names for now; resolved in the second pass below
