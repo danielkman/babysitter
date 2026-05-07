@@ -6,8 +6,8 @@ import { resolveSyntheticSessionId } from './session-resolver';
 /** The default adapter name. */
 export const ADAPTER_NAME = 'copilot';
 
-/** Mutable adapter name — must be set via setAdapterName() before use. */
-let _copilotAdapterName: string;
+/** Mutable adapter name, defaulting to the Copilot adapter identity. */
+let _copilotAdapterName: string = 'copilot';
 
 /** Override the adapter name used in normalized events. */
 export function setAdapterName(name: string): void {

@@ -4,8 +4,8 @@ import { OH_MY_PI_PHASE_MAPPINGS } from './mappings';
 /** The default adapter identifier used in all normalized events. */
 export const ADAPTER_NAME = 'oh-my-pi';
 
-/** Mutable adapter name — must be set via setAdapterName() before use. */
-let _adapterName: string;
+/** Mutable adapter name, defaulting to the oh-my-pi adapter identity. */
+let _adapterName: string = 'oh-my-pi';
 
 /** Override the adapter name used in normalized events. */
 export function setAdapterName(name: string): void {

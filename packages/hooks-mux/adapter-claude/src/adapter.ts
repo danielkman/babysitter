@@ -9,7 +9,9 @@ import { getPluginTargetDescriptor } from '@a5c-ai/agent-catalog';
  *
  * Spec section 17.1.
  */
-export function createAdapter(name: string): AdapterCapabilities {
+const DEFAULT_ADAPTER_NAME = 'claude';
+
+export function createAdapter(name: string = DEFAULT_ADAPTER_NAME): AdapterCapabilities {
   const target = getPluginTargetDescriptor(name === 'claude' ? 'claude-code' : name);
   return {
     name,

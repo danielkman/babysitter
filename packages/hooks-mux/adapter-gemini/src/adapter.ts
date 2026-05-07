@@ -9,7 +9,9 @@ import { getPluginTargetDescriptor } from '@a5c-ai/agent-catalog';
  *
  * Spec section 17.3.
  */
-export function createAdapter(name: string): AdapterCapabilities {
+const DEFAULT_ADAPTER_NAME = 'gemini';
+
+export function createAdapter(name: string = DEFAULT_ADAPTER_NAME): AdapterCapabilities {
   const target = getPluginTargetDescriptor(name === 'gemini' ? 'gemini-cli' : name);
   return {
     name,

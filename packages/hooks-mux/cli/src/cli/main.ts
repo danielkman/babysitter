@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import yargs from 'yargs';
+import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
 import { createHooksLogger } from './hooks-logger';
 import { invokeCommand } from './commands/invoke';
@@ -23,7 +23,7 @@ export async function main(argv: string[] = process.argv): Promise<void> {
     .demandCommand(1, 'You must provide a command')
     .strict()
     .help()
-    .parseAsync();
+    .parse();
 }
 
 if (require.main === module) {

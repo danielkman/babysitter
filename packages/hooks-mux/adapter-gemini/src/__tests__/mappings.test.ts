@@ -19,6 +19,10 @@ describe('GEMINI_PHASE_MAPPINGS', () => {
     const EXPECTED_GEMINI_NATIVE_EVENTS = [
       'SessionStart',
       'SessionEnd',
+      'UserPromptSubmit',
+      'SessionIdle',
+      'ShellEnv',
+      'PreCompact',
       'BeforeToolSelection',
       'BeforeModel',
       'AfterModel',

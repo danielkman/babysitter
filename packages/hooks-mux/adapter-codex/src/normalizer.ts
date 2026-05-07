@@ -4,8 +4,8 @@ import { CODEX_PHASE_MAPPINGS } from './mappings';
 /** The default adapter identifier used in all normalized events. */
 export const ADAPTER_NAME = 'codex';
 
-/** The mutable adapter name — must be set via setAdapterName() before use. */
-let _adapterName: string;
+/** The mutable adapter name, defaulting to the Codex adapter identity. */
+let _adapterName: string = ADAPTER_NAME;
 
 /** Override the adapter name used in normalized events. */
 export function setAdapterName(name: string): void {

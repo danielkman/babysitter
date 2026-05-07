@@ -20,12 +20,24 @@ const SUPPORT_LEVEL_MAP: Record<string, PhaseMapping['supportLevel']> = {
   unsupported: 'unsupported',
 };
 
+const CODEX_COMPATIBILITY_MAPPINGS: PhaseMapping[] = [
+  {
+    canonicalPhase: 'tool.before',
+    nativeHook: 'PreToolUse',
+    supportLevel: 'lossy',
+    blockCapability: true,
+    mutationCapability: false,
+    scope: 'tool',
+    notes: 'Bash-only compatibility alias for legacy Codex hook payloads.',
+  },
+];
+
 function hookMappingToPhaseMapping(mapping: HookMappingDescriptor): PhaseMapping | null {
   if (!mapping.canonicalPhase) return null;
   return {
     canonicalPhase: mapping.canonicalPhase as PhaseMapping['canonicalPhase'],
     nativeHook: mapping.nativeName,
-    supportLevel: SUPPORT_LEVEL_MAP[mapping.supportLevel] ?? 'native',
+    supportLevel: SUPPORT_LEVEL_MAP[mapping.supportLevel] ?? (mapping.requiresRuntimeHooks ? 'native' : 'lossy'),
     blockCapability: mapping.blockCapability ?? false,
     mutationCapability: mapping.mutationCapability ?? false,
     scope: (mapping.scope ?? 'session') as PhaseMapping['scope'],
@@ -37,9 +49,12 @@ function buildFromCatalog(): PhaseMapping[] {
   if (mappings.length === 0) {
     throw new Error('hooks-mux adapter-codex: catalog unavailable or returned no mappings for family "codex"');
   }
-  const phaseMappings = mappings
-    .map(hookMappingToPhaseMapping)
-    .filter((m): m is PhaseMapping => m !== null);
+  const phaseMappings = [
+    ...CODEX_COMPATIBILITY_MAPPINGS,
+    ...mappings
+      .map(hookMappingToPhaseMapping)
+      .filter((m): m is PhaseMapping => m !== null),
+  ];
   const seen = new Set<string>();
   return phaseMappings.filter((m) => {
     if (seen.has(m.nativeHook)) return false;

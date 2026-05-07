@@ -72,5 +72,5 @@ export function getOpenCodePhaseMapping(nativeEventName: string): PhaseMapping |
  * Get all canonical phases supported by the OpenCode adapter.
  */
 export function getSupportedPhases(): string[] {
-  return OPENCODE_PHASE_MAPPINGS.map((m) => m.canonicalPhase);
+  return [...new Set(OPENCODE_PHASE_MAPPINGS.map((m) => m.canonicalPhase))];
 }

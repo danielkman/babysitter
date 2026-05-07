@@ -29,6 +29,9 @@ function hookMappingToPhaseMapping(mapping: HookMappingDescriptor): PhaseMapping
     blockCapability: mapping.blockCapability ?? false,
     mutationCapability: mapping.mutationCapability ?? false,
     scope: (mapping.scope ?? 'session') as PhaseMapping['scope'],
+    notes: mapping.nativeName === 'tool_call'
+      ? 'Mutation is NOT supported by Oh-My-Pi tool_call hooks.'
+      : undefined,
   };
 }
 

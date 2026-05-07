@@ -5,8 +5,8 @@ import type { OpenClawHookOrigin } from './mappings';
 /** The default adapter name. */
 export const ADAPTER_NAME = 'openclaw';
 
-/** Mutable adapter name — must be set via setAdapterName() before use. */
-let _adapterName: string;
+/** Mutable adapter name, defaulting to the openclaw adapter identity. */
+let _adapterName: string = 'openclaw';
 
 /** Override the adapter name used in normalized events. */
 export function setAdapterName(name: string): void {

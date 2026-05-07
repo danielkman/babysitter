@@ -29,6 +29,9 @@ function hookMappingToPhaseMapping(mapping: HookMappingDescriptor): PhaseMapping
     blockCapability: mapping.blockCapability ?? false,
     mutationCapability: mapping.mutationCapability ?? false,
     scope: (mapping.scope ?? 'session') as PhaseMapping['scope'],
+    notes: mapping.nativeName === 'BeforeToolSelection'
+      ? 'Union-style aggregation across matching handlers.'
+      : undefined,
   };
 }
 

@@ -5,8 +5,8 @@ import { resolveSessionId } from './session-resolver';
 /** The default adapter name. */
 export const ADAPTER_NAME = 'gemini';
 
-/** Mutable adapter name — must be set via setAdapterName() before use. */
-let _adapterName: string;
+/** Mutable adapter name, defaulting to the Gemini adapter identity. */
+let _adapterName: string = 'gemini';
 
 /** Override the adapter name used in normalized events. */
 export function setAdapterName(name: string): void {

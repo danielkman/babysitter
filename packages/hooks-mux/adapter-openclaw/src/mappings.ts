@@ -37,7 +37,7 @@ function hookMappingToPhaseMapping(mapping: HookMappingDescriptor): PhaseMapping
   return {
     canonicalPhase: mapping.canonicalPhase as PhaseMapping['canonicalPhase'],
     nativeHook: mapping.nativeName,
-    supportLevel: SUPPORT_LEVEL_MAP[mapping.supportLevel] ?? 'native',
+    supportLevel: SUPPORT_LEVEL_MAP[mapping.supportLevel] ?? (mapping.scope === 'gateway' ? 'lossy' : 'native'),
     blockCapability: mapping.blockCapability ?? false,
     mutationCapability: mapping.mutationCapability ?? false,
     scope: (mapping.scope ?? 'session') as PhaseMapping['scope'],
