@@ -36,6 +36,13 @@ function toScriptVariants(variants: string[] | undefined): TargetProfile['script
   );
 }
 
+const TARGET_ALIASES: Record<string, string> = {
+  gemini: 'gemini-cli',
+};
+
+function canonicalTargetName(name: string): string {
+  return TARGET_ALIASES[name] ?? name;
+}
 function toTargetProfile(target: PluginTargetDescriptor): TargetProfile {
   return {
     name: target.targetId,
@@ -69,7 +76,7 @@ export const TARGET_REGISTRY: Record<string, TargetProfile> = Object.fromEntries
 export const HOOK_NAME_MAP: Record<string, Record<string, string>> = getHookNameMap();
 
 export function getTargetProfile(name: string): TargetProfile | null {
-  const descriptor = getPluginTargetDescriptor(name);
+  const descriptor = getPluginTargetDescriptor(canonicalTargetName(name));
   return descriptor ? toTargetProfile(descriptor) : null;
 }
 

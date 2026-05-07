@@ -26,6 +26,7 @@ function toOutputPath(value: string): string {
 function getRequiredSurfaceFilename(targetProfile: TargetProfile): string | null {
   switch (targetProfile.name) {
     case 'gemini':
+    case 'gemini-cli':
       return 'GEMINI.md';
     case 'github-copilot':
     case 'pi':
@@ -143,7 +144,7 @@ export function generateManifests(
 
   // Generate package.json for npm-distributed targets that don't already have one
   if (
-    (targetProfile.distribution === 'npm-cli' || targetProfile.distribution === 'both') &&
+    (targetProfile.distribution === 'npm-cli' || (targetProfile.distribution === 'both' && targetProfile.npmPublishable)) &&
     !files.some(f => f.path === 'package.json')
   ) {
     const packageMetadata = targetProfile.packageMetadata ?? {};
@@ -239,7 +240,8 @@ export function copyContextFiles(
     return [];
   }
 
-  const contextPath = manifest.contextFiles?.[targetProfile.name];
+  const contextPath = manifest.contextFiles?.[targetProfile.name]
+    ?? (targetProfile.name === 'gemini-cli' ? manifest.contextFiles?.gemini : undefined);
   const declaredContextContent = contextPath ? readExistingTextFile(sourceDir, contextPath) : null;
   const agentContent = resolveAgentSurfaceContent(sourceDir, manifest);
   const content = declaredContextContent
@@ -345,7 +347,7 @@ export function generateExtraFiles(
   }
 
   // Generate CLI bin scripts for npm-cli distribution targets
-  if (targetProfile.distribution === 'npm-cli' || targetProfile.distribution === 'both') {
+  if (targetProfile.distribution === 'npm-cli' || (targetProfile.distribution === 'both' && targetProfile.npmPublishable)) {
     const packageMetadata = targetProfile.packageMetadata ?? {};
     const isEsm = packageMetadata.moduleType === 'module';
     const ext = packageMetadata.binScriptExt ?? (isEsm ? '.cjs' : '.js');

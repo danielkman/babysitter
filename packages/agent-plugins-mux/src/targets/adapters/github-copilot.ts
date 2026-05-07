@@ -84,7 +84,8 @@ export function generateGithubCopilotHooksJson(
     const bashCmd = p ? `./${p}` : `echo '{}'`;
     const psCmd = p ? `./${p.replace(/\.sh$/, '.ps1')}` : `Write-Output '{}'`;
     const timeout = canonical === 'UserPromptSubmit' ? 15 : 30;
-    hooks[native] = [{ type: 'command', bash: bashCmd, powershell: psCmd, timeoutSec: timeout }];
+    const hookName = native === 'SessionStart' ? 'sessionStart' : native === 'SessionEnd' ? 'sessionEnd' : native;
+    hooks[hookName] = [{ type: 'command', bash: bashCmd, powershell: psCmd, timeoutSec: timeout }];
   });
 
   return JSON.stringify({ version: 1, hooks }, null, 2) + '\n';
