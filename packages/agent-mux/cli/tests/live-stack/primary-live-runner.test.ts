@@ -5,7 +5,7 @@ import * as path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import { buildPrimaryLiveStackCommands, runPrimaryLiveStackScenario } from './primary-live-runner';
-import { primaryLiveStackScenario } from './scenario-matrix';
+import { primaryLiveStackScenario } from './scenario-contract';
 
 describe('primary live stack runner contract', () => {
   it('builds the no-mock command chain through harness install, plugin install, and amux launch', () => {
@@ -28,7 +28,7 @@ describe('primary live stack runner contract', () => {
         'gpt-5.5',
         '--with-proxy-if-needed',
         '--prompt',
-        '/babysitter:call Create a tiny proof run for live stack E2E. trace=trace-1 Return the Babysitter run id and confirm stop hooks ran.',
+        '/babysitter:call Create a tiny proof run for live.agent-mux.claude-code.foundry-openai.gpt-5.5. trace=trace-1. Return Babysitter run id, effect id, hook status, and stop-hook status.',
         '--max-turns',
         '1',
       ],
@@ -132,3 +132,4 @@ async function executeChildProcess(execution: Parameters<typeof runPrimaryLiveSt
     });
   });
 }
+

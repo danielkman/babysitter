@@ -5,11 +5,11 @@ import {
   assertEvidenceBundleComplete,
   createEvidenceBundle,
   getScenarioCapabilityStatus,
-  primaryLiveStackScenario,
+  liveStackScenarioFromEnv,
   redactLiveStackArtifact,
   type LiveStackEvidenceBundle,
   type LiveStackScenario,
-} from './scenario-matrix';
+} from './scenario-contract';
 
 export interface CommandExecution {
   readonly command: string;
@@ -54,22 +54,24 @@ export function buildPrimaryLiveStackCommands(
   const commandEnv = buildCommandEnv(options.env);
   const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
   const traceId = commandEnv['LIVE_STACK_TRACE_ID'];
-  const prompt = [
-    '/babysitter:call',
-    'Create a tiny proof run for live stack E2E.',
-    `trace=${traceId}`,
-    'Return the Babysitter run id and confirm stop hooks ran.',
-  ].join(' ');
+  const prompt = buildPrompt(scenario, traceId);
 
+  if (scenario.agent.integrationType === 'runtime-cli') {
+    return [
+      commandExecution(commandEnv, 'LIVE_STACK_BABYSITTER_AGENT_BIN', 'babysitter-agent', ['create-run', '--harness', 'internal', '--workspace', options.cwd, '--model', scenario.model.model, '--prompt', prompt, '--json'], options.cwd, timeoutMs),
+    ];
+  }
+
+  const launchHarness = scenario.agent.agent === 'claude-code' ? 'claude' : scenario.agent.agent;
   return [
-    commandExecution(commandEnv, 'LIVE_STACK_BABYSITTER_BIN', 'babysitter', ['harness:install', 'claude-code', '--workspace', options.cwd, '--json'], options.cwd, timeoutMs),
-    commandExecution(commandEnv, 'LIVE_STACK_BABYSITTER_BIN', 'babysitter', ['harness:install-plugin', 'claude-code', '--workspace', options.cwd, '--json'], options.cwd, timeoutMs),
-    commandExecution(commandEnv, 'LIVE_STACK_AMUX_BIN', 'amux', ['launch', 'claude', scenario.model.amuxProvider, '--model', scenario.model.model, '--with-proxy-if-needed', '--prompt', prompt, '--max-turns', '1'], options.cwd, timeoutMs),
+    commandExecution(commandEnv, 'LIVE_STACK_BABYSITTER_BIN', 'babysitter', ['harness:install', scenario.agent.agent, '--workspace', options.cwd, '--json'], options.cwd, timeoutMs),
+    commandExecution(commandEnv, 'LIVE_STACK_BABYSITTER_BIN', 'babysitter', ['harness:install-plugin', scenario.agent.agent, '--workspace', options.cwd, '--json'], options.cwd, timeoutMs),
+    commandExecution(commandEnv, 'LIVE_STACK_AMUX_BIN', 'amux', ['launch', launchHarness, scenario.model.amuxProvider, '--model', scenario.model.model, '--with-proxy-if-needed', '--prompt', prompt, '--max-turns', '1'], options.cwd, timeoutMs),
   ];
 }
 
 export async function runPrimaryLiveStackScenario(options: PrimaryLiveRunOptions): Promise<PrimaryLiveRunResult> {
-  const scenario = primaryLiveStackScenario();
+  const scenario = liveStackScenarioFromEnv(options.env);
   const capability = getScenarioCapabilityStatus(scenario, options.env);
   const commands = buildPrimaryLiveStackCommands(scenario, options);
 
@@ -133,10 +135,18 @@ function commandExecution(env: Record<string, string>, overrideKey: string, fall
 function buildCommandEnv(env: Record<string, string | undefined>): Record<string, string> {
   const traceId = env['LIVE_STACK_TRACE_ID'] ?? `live-stack-${Date.now()}`;
   return Object.fromEntries(
-    Object.entries({ ...env, AMUX_PROVIDER: 'foundry', AMUX_MODEL: 'gpt-5.5', LIVE_STACK_TRACE_ID: traceId, AGENT_SESSION_ID: env['AGENT_SESSION_ID'] ?? traceId }).filter(
+    Object.entries({ ...env, LIVE_STACK_TRACE_ID: traceId, AGENT_SESSION_ID: env['AGENT_SESSION_ID'] ?? traceId }).filter(
       (entry): entry is [string, string] => typeof entry[1] === 'string',
     ),
   );
+}
+
+function buildPrompt(scenario: LiveStackScenario, traceId: string): string {
+  if (scenario.agent.integrationType === 'runtime-cli') {
+    return `Create a tiny Babysitter proof run for ${scenario.scenarioId}. trace=${traceId}. Return run id, effect id, and terminal status.`;
+  }
+
+  return `/babysitter:call Create a tiny proof run for ${scenario.scenarioId}. trace=${traceId}. Return Babysitter run id, effect id, hook status, and stop-hook status.`;
 }
 
 function extractTraceIds(output: string): Partial<LiveStackEvidenceBundle> {

@@ -2,14 +2,14 @@ import { describe, expect, it } from 'vitest';
 
 import {
   assertEvidenceBundleComplete,
-  buildLiveStackScenarioMatrix,
   createEvidenceBundle,
   getScenarioCapabilityStatus,
+  liveStackScenarioFromEnv,
   primaryLiveStackScenario,
   redactLiveStackArtifact,
-} from './scenario-matrix';
+} from './scenario-contract';
 
-describe('live stack scenario matrix primitives', () => {
+describe('live stack scenario contract primitives', () => {
   it('declares the primary no-mock agent-mux Claude Code transport flow', () => {
     const scenario = primaryLiveStackScenario();
 
@@ -28,16 +28,25 @@ describe('live stack scenario matrix primitives', () => {
     expect(scenario.expectedArtifacts).toContain('provider-trace-redacted');
   });
 
-  it('keeps agent-mux plugin paths separate from babysitter-agent runtime paths', () => {
-    const matrix = buildLiveStackScenarioMatrix();
-    const pluginScenarios = matrix.filter((scenario) => scenario.agent.integrationType === 'third-party-plugin');
-    const runtimeScenarios = matrix.filter((scenario) => scenario.agent.integrationType === 'runtime-cli');
+  it('accepts scenario selection from pipeline env instead of building a code-side matrix', () => {
+    const scenario = liveStackScenarioFromEnv({
+      LIVE_STACK_SCENARIO_ID: 'live.babysitter-agent.internal.foundry-openai.gpt-5.5',
+      LIVE_STACK_AGENT_PATH: 'babysitter-agent',
+      LIVE_STACK_AGENT: 'internal',
+      LIVE_STACK_INTEGRATION_TYPE: 'runtime-cli',
+      LIVE_STACK_PROVIDER: 'foundry-openai',
+      LIVE_STACK_AMUX_PROVIDER: 'foundry',
+      LIVE_STACK_MODEL: 'gpt-5.5',
+      LIVE_STACK_CREDENTIAL_MODE: 'github-org-secrets-and-vars',
+      LIVE_STACK_REQUIRED_ENV: 'AZURE_API_KEY,AMUX_API_BASE',
+      LIVE_STACK_LAYERS: 'babysitter-agent create-run,agent-core runtime session,provider/model trace',
+      LIVE_STACK_REQUIRED_TRACE_IDS: 'babysitterRunId,babysitterEffectId',
+      LIVE_STACK_EXPECTED_ARTIFACTS: 'babysitter-run-summary,babysitter-task-bundle,provider-trace-redacted',
+    });
 
-    expect(pluginScenarios.length).toBeGreaterThan(0);
-    expect(runtimeScenarios.length).toBeGreaterThan(0);
-    expect(pluginScenarios.every((scenario) => scenario.agent.setupCommands.some((command) => command.includes('harness:install-plugin')))).toBe(true);
-    expect(runtimeScenarios.every((scenario) => scenario.agent.setupCommands.every((command) => !command.includes('harness:install-plugin')))).toBe(true);
-    expect(runtimeScenarios.every((scenario) => scenario.layers.includes('agent-core runtime session'))).toBe(true);
+    expect(scenario.agent.integrationType).toBe('runtime-cli');
+    expect(scenario.agent.setupCommands).toEqual(['babysitter-agent create-run --harness internal']);
+    expect(scenario.requiredTraceIds).toEqual(['babysitterRunId', 'babysitterEffectId']);
   });
 
   it('separates live model capability gates from deterministic no-credential execution', () => {
