@@ -839,85 +839,156 @@ describe("handleHarnessCreateRun", () => {
     it("fails interactive breakpoint posting when AskUserQuestion was skipped", async () => {
       const workspace = await fs.mkdtemp(path.join(os.tmpdir(), "session-create-interactive-breakpoint-"));
       tempDirs.push(workspace);
+      const runDir = "/tmp/runs/run-breakpoint-ui";
+      const assessRunSpy = vi.spyOn(resumeState, "assessRun");
+      const listTasksSpy = vi.spyOn(taskStore, "listTasks");
+      const readTaskSpy = vi.spyOn(taskStore, "readTask");
+      try {
+        (discoverHarnesses as Mock).mockResolvedValue([
+          makeDiscoveryResult({ name: "pi" }),
+        ]);
+        (createRun as Mock).mockResolvedValue({
+          runId: "run-breakpoint-ui",
+          runDir,
+          metadata: {},
+        });
+        (orchestrateIteration as Mock).mockResolvedValueOnce({
+          status: "waiting",
+          nextActions: [
+            {
+              effectId: "eff-breakpoint",
+              invocationKey: "key-breakpoint",
+              kind: "breakpoint",
+              taskDef: { kind: "breakpoint", title: "Approve the plan?" },
+            },
+          ],
+        });
 
-      (discoverHarnesses as Mock).mockResolvedValue([
-        makeDiscoveryResult({ name: "pi" }),
-      ]);
-      (createRun as Mock).mockResolvedValue({
-        runId: "run-breakpoint-ui",
-        runDir: "/tmp/runs/run-breakpoint-ui",
-        metadata: {},
-      });
-      (orchestrateIteration as Mock).mockResolvedValueOnce({
-        status: "waiting",
-        nextActions: [
+        const makeWaitingAssessment = () => ({
+          run: {
+            runId: "run-breakpoint-ui",
+            runDir,
+            processId: "proc-1",
+            createdAt: "2026-05-01T00:00:00.000Z",
+            status: "waiting" as const,
+            pendingEffects: { breakpoint: 1 },
+            totalEffects: 1,
+            resolvedEffects: 0,
+            entrypoint: { importPath: "/tmp/process.mjs" },
+          },
+          journalLength: 2,
+          lastEvent: { type: "EFFECT_REQUESTED", recordedAt: "2026-05-01T00:00:01.000Z" },
+        });
+
+        assessRunSpy
+          .mockResolvedValueOnce({
+            run: {
+              runId: "run-breakpoint-ui",
+              runDir,
+              processId: "proc-1",
+              createdAt: "2026-05-01T00:00:00.000Z",
+              status: "created" as const,
+              pendingEffects: {},
+              totalEffects: 0,
+              resolvedEffects: 0,
+              entrypoint: { importPath: "/tmp/process.mjs" },
+            },
+            journalLength: 1,
+            lastEvent: { type: "RUN_CREATED", recordedAt: "2026-05-01T00:00:00.000Z" },
+          })
+          .mockResolvedValue(makeWaitingAssessment());
+
+        listTasksSpy.mockResolvedValueOnce([]).mockResolvedValue([
           {
             effectId: "eff-breakpoint",
-            invocationKey: "key-breakpoint",
+            taskId: "task-breakpoint",
             kind: "breakpoint",
-            taskDef: { kind: "breakpoint", title: "Approve the plan?" },
+            title: "Approve the plan?",
+            status: "requested" as const,
+            labels: [],
+            requestedAt: "2026-05-01T00:00:01.000Z",
           },
-        ],
-      });
-      vi.mocked(createAgentCoreSession).mockImplementationOnce((options?: { customTools?: Array<Record<string, unknown>> }) => {
-        const tools = options?.customTools ?? [];
-        const getTool = (name: string) => tools.find((t) => t.name === name) as {
-          execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
-        } | undefined;
-
-        return {
-          initialize: vi.fn().mockResolvedValue(undefined),
-          subscribe: vi.fn(() => () => {}),
-          dispose: vi.fn(),
-          executeBash: vi.fn(async () => ({
-            output: "ok",
-            exitCode: 0,
-            cancelled: false,
-          })),
-          get sessionId() {
-            return "mock-session-id-interactive-breakpoint";
+        ]);
+        readTaskSpy.mockResolvedValue({
+          effectId: "eff-breakpoint",
+          taskId: "task-breakpoint",
+          runId: "run-breakpoint-ui",
+          kind: "breakpoint",
+          title: "Approve the plan?",
+          status: "requested" as const,
+          labels: [],
+          requestedAt: "2026-05-01T00:00:01.000Z",
+          definition: {
+            kind: "breakpoint",
+            title: "Approve the plan?",
+            invocationKey: "key-breakpoint",
           },
-          get isInitialized() {
-            return true;
-          },
-          prompt: vi.fn(async () => {
-            const iterationResult = await getTool("babysitter_run_iterate")?.execute?.("tool-run-iterate", {});
-            const details = iterationResult?.details as { nextActions?: Array<{ effectId?: string }> } | undefined;
-            const effectId = details?.nextActions?.[0]?.effectId;
-            if (effectId) {
-              await getTool("babysitter_task_post_result")?.execute?.("tool-post-breakpoint", { effectId });
-            }
-            return { success: true, output: "orchestration", exitCode: 0, duration: 1 };
-          }),
-        } as ReturnType<typeof createAgentCoreSession>;
-      });
+        } as Awaited<ReturnType<typeof taskStore.readTask>>);
 
-      const code = await handleHarnessCreateRun({
-        processPath: "/tmp/p.js",
-        runsDir: "/tmp/runs",
-        json: false,
-        verbose: false,
-        interactive: true,
-      });
+        vi.mocked(createAgentCoreSession).mockImplementationOnce((options?: { customTools?: Array<Record<string, unknown>> }) => {
+          const tools = options?.customTools ?? [];
+          const getTool = (name: string) => tools.find((t) => t.name === name) as {
+            execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
+          } | undefined;
 
-      expect(code).toBe(1);
-      expect(commitEffectResult).not.toHaveBeenCalled();
+          return {
+            initialize: vi.fn().mockResolvedValue(undefined),
+            subscribe: vi.fn(() => () => {}),
+            dispose: vi.fn(),
+            executeBash: vi.fn(async () => ({
+              output: "ok",
+              exitCode: 0,
+              cancelled: false,
+            })),
+            get sessionId() {
+              return "mock-session-id-interactive-breakpoint";
+            },
+            get isInitialized() {
+              return true;
+            },
+            prompt: vi.fn(async () => {
+              // The agent skips AskUserQuestion and directly tries to post the breakpoint result.
+              // This should fail because interactive breakpoints require AskUserQuestion first.
+              await getTool("babysitter_task_post_result")?.execute?.("tool-post-breakpoint", { effectId: "eff-breakpoint" });
+              return { success: true, output: "orchestration", exitCode: 0, duration: 1 };
+            }),
+          } as ReturnType<typeof createAgentCoreSession>;
+        });
+
+        const code = await handleHarnessCreateRun({
+          processPath: "/tmp/p.js",
+          runsDir: "/tmp/runs",
+          json: false,
+          verbose: false,
+          interactive: true,
+        });
+
+        expect(code).toBe(1);
+        expect(commitEffectResult).not.toHaveBeenCalled();
+      } finally {
+        assessRunSpy.mockRestore();
+        listTasksSpy.mockRestore();
+        readTaskSpy.mockRestore();
+      }
     });
 
     it("does not commit a delegated result when only stdout is posted without an explicit value payload", async () => {
       const workspace = await fs.mkdtemp(path.join(os.tmpdir(), "session-create-preserve-staged-"));
       tempDirs.push(workspace);
-
-      (discoverHarnesses as Mock).mockResolvedValue([
-        makeDiscoveryResult({ name: "pi" }),
-      ]);
-      (createRun as Mock).mockResolvedValue({
-        runId: "run-preserve-staged",
-        runDir: "/tmp/runs/run-preserve-staged",
-        metadata: {},
-      });
-      (orchestrateIteration as Mock)
-        .mockResolvedValueOnce({
+      const runDir = "/tmp/runs/run-preserve-staged";
+      const assessRunSpy = vi.spyOn(resumeState, "assessRun");
+      const listTasksSpy = vi.spyOn(taskStore, "listTasks");
+      const readTaskSpy = vi.spyOn(taskStore, "readTask");
+      try {
+        (discoverHarnesses as Mock).mockResolvedValue([
+          makeDiscoveryResult({ name: "pi" }),
+        ]);
+        (createRun as Mock).mockResolvedValue({
+          runId: "run-preserve-staged",
+          runDir,
+          metadata: {},
+        });
+        (orchestrateIteration as Mock).mockResolvedValueOnce({
           status: "waiting",
           nextActions: [
             {
@@ -927,73 +998,120 @@ describe("handleHarnessCreateRun", () => {
               taskDef: { kind: "agent", title: "Do work" },
             },
           ],
-        })
-        .mockResolvedValueOnce({
-          status: "completed",
-          output: { ok: true },
         });
-      (invokeHarness as Mock).mockResolvedValue(
-        makeInvokeResult({
-          output: JSON.stringify({ answer: 42 }),
-        }),
-      );
 
-      vi.mocked(createAgentCoreSession).mockImplementationOnce((options?: { customTools?: Array<Record<string, unknown>> }) => {
-        const tools = options?.customTools ?? [];
-        const getTool = (name: string) => tools.find((t) => t.name === name) as {
-          execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
-        } | undefined;
-        const taskTool = getCompatTool(tools, "task") as {
-          execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
-        } | undefined;
+        const makeWaitingAssessment = () => ({
+          run: {
+            runId: "run-preserve-staged",
+            runDir,
+            processId: "proc-1",
+            createdAt: "2026-05-01T00:00:00.000Z",
+            status: "waiting" as const,
+            pendingEffects: { agent: 1 },
+            totalEffects: 1,
+            resolvedEffects: 0,
+            entrypoint: { importPath: "/tmp/process.mjs" },
+          },
+          journalLength: 2,
+          lastEvent: { type: "EFFECT_REQUESTED", recordedAt: "2026-05-01T00:00:01.000Z" },
+        });
 
-        return {
-          initialize: vi.fn().mockResolvedValue(undefined),
-          subscribe: vi.fn(() => () => {}),
-          dispose: vi.fn(),
-          executeBash: vi.fn(async () => ({
-            output: "ok",
-            exitCode: 0,
-            cancelled: false,
-          })),
-          get sessionId() {
-            return "mock-session-id-preserve-staged";
+        assessRunSpy
+          .mockResolvedValueOnce({
+            run: {
+              runId: "run-preserve-staged",
+              runDir,
+              processId: "proc-1",
+              createdAt: "2026-05-01T00:00:00.000Z",
+              status: "created" as const,
+              pendingEffects: {},
+              totalEffects: 0,
+              resolvedEffects: 0,
+              entrypoint: { importPath: "/tmp/process.mjs" },
+            },
+            journalLength: 1,
+            lastEvent: { type: "RUN_CREATED", recordedAt: "2026-05-01T00:00:00.000Z" },
+          })
+          .mockResolvedValue(makeWaitingAssessment());
+
+        listTasksSpy.mockResolvedValueOnce([]).mockResolvedValue([
+          {
+            effectId: "eff-agent",
+            taskId: "task-agent",
+            kind: "agent",
+            title: "Do work",
+            status: "requested" as const,
+            labels: [],
+            requestedAt: "2026-05-01T00:00:01.000Z",
           },
-          get isInitialized() {
-            return true;
+        ]);
+        readTaskSpy.mockResolvedValue({
+          effectId: "eff-agent",
+          taskId: "task-agent",
+          runId: "run-preserve-staged",
+          kind: "agent",
+          title: "Do work",
+          status: "requested" as const,
+          labels: [],
+          requestedAt: "2026-05-01T00:00:01.000Z",
+          definition: {
+            kind: "agent",
+            title: "Do work",
+            invocationKey: "key-agent",
           },
-          prompt: vi.fn(async () => {
-            const iter1 = await getTool("babysitter_run_iterate")?.execute?.("tool-iterate-1", {});
-            const details = iter1?.details as { nextActions?: Array<{ effectId?: string }> } | undefined;
-            const effectId = details?.nextActions?.[0]?.effectId;
-            if (effectId) {
-              await taskTool?.execute?.("tool-dispatch", { task: "Do work" });
+        } as Awaited<ReturnType<typeof taskStore.readTask>>);
+
+        vi.mocked(createAgentCoreSession).mockImplementationOnce((options?: { customTools?: Array<Record<string, unknown>> }) => {
+          const tools = options?.customTools ?? [];
+          const getTool = (name: string) => tools.find((t) => t.name === name) as {
+            execute?: (toolCallId: string, params: Record<string, unknown>) => Promise<{ details?: unknown }>;
+          } | undefined;
+
+          return {
+            initialize: vi.fn().mockResolvedValue(undefined),
+            subscribe: vi.fn(() => () => {}),
+            dispose: vi.fn(),
+            executeBash: vi.fn(async () => ({
+              output: "ok",
+              exitCode: 0,
+              cancelled: false,
+            })),
+            get sessionId() {
+              return "mock-session-id-preserve-staged";
+            },
+            get isInitialized() {
+              return true;
+            },
+            prompt: vi.fn(async () => {
+              // The agent posts only stdout without a status or value payload.
+              // This should fail because no effect result can be constructed without
+              // an explicit status/value or a prior staged result.
               await getTool("babysitter_task_post_result")?.execute?.("tool-post", {
-                effectId,
-                status: "ok",
-                valueText: "done",
+                effectId: "eff-agent",
                 stdout: "worker-log",
               });
-            }
-            await getTool("babysitter_run_iterate")?.execute?.("tool-iterate-2", {});
-            await getTool("babysitter_finish_orchestration")?.execute?.("tool-finish", { summary: "done" });
-            return { success: true, output: "orchestration", exitCode: 0, duration: 1 };
-          }),
-        } as ReturnType<typeof createAgentCoreSession>;
-      });
+              return { success: true, output: "orchestration", exitCode: 0, duration: 1 };
+            }),
+          } as ReturnType<typeof createAgentCoreSession>;
+        });
 
-      const code = await handleHarnessCreateRun({
-        processPath: "/tmp/p.js",
-        prompt: "create a game",
-        workspace,
-        runsDir: "/tmp/runs",
-        json: false,
-        verbose: false,
-        interactive: false,
-      });
+        const code = await handleHarnessCreateRun({
+          processPath: "/tmp/p.js",
+          prompt: "create a game",
+          workspace,
+          runsDir: "/tmp/runs",
+          json: false,
+          verbose: false,
+          interactive: false,
+        });
 
-      expect(code).toBe(1);
-      expect(commitEffectResult).not.toHaveBeenCalled();
+        expect(code).toBe(1);
+        expect(commitEffectResult).not.toHaveBeenCalled();
+      } finally {
+        assessRunSpy.mockRestore();
+        listTasksSpy.mockRestore();
+        readTaskSpy.mockRestore();
+      }
     });
 
     it("continues orchestration after a late bootstrap prompt failure and preserves the original user prompt", async () => {
@@ -2981,7 +3099,7 @@ describe("handleHarnessCreateRun", () => {
         prompt: "",
         runsDir: "/tmp/runs",
         selectedHarnessName: "claude-code",
-        maxIterations: 65_000,
+        maxIterations: 256,
         interactive: false,
         verbose: false,
         json: false,
@@ -3029,7 +3147,7 @@ describe("handleHarnessCreateRun", () => {
         prompt: "",
         runsDir: "/tmp/runs",
         selectedHarnessName: "claude-code",
-        maxIterations: 65_000,
+        maxIterations: 256,
         interactive: false,
         verbose: false,
         json: false,
@@ -3093,7 +3211,7 @@ describe("handleHarnessCreateRun", () => {
           workspace: currentPath,
           runsDir: "/tmp/runs",
           selectedHarnessName: "claude-code",
-          maxIterations: 65_000,
+          maxIterations: 256,
           interactive: false,
           verbose: false,
           json: false,
@@ -4302,4 +4420,3 @@ describe("handleHarnessCreateRun", () => {
     });
   });
 });
-
