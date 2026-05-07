@@ -1,6 +1,7 @@
 import Link from "next/link";
 import path from "node:path";
 import { getRecord } from "@a5c-ai/atlas";
+import { MermaidDiagram } from "./MermaidDiagram";
 
 function resolveHref(href: string, articlePath?: string): { href: string; internal: boolean } {
   if (!href) return { href, internal: false };
@@ -101,6 +102,29 @@ function parseTableRow(line: string): string[] {
     .map((cell) => cell.trim());
 }
 
+function renderCodeBlock(
+  key: number,
+  lines: string[],
+  language: string,
+  docs: boolean,
+  variant: "default" | "docs",
+) {
+  const source = lines.join("\n");
+  if (language === "mermaid") {
+    return <MermaidDiagram key={key} definition={source} variant={variant} />;
+  }
+
+  return (
+    <pre
+      key={key}
+      className={docs ? "atlas-docs-pre" : "overflow-x-auto rounded-md p-3 text-xs"}
+      style={docs ? undefined : { background: "var(--ground-ink)", border: "1px solid var(--rule)", color: "var(--glyph-bone)" }}
+    >
+      <code>{source}</code>
+    </pre>
+  );
+}
+
 export function MarkdownArticle({
   markdown,
   articlePath,
@@ -115,7 +139,7 @@ export function MarkdownArticle({
   let paragraph: string[] = [];
   let list: string[] = [];
   let quote: string[] = [];
-  let code: string[] | null = null;
+  let code: { language: string; lines: string[] } | null = null;
   const docs = variant === "docs";
 
   const flushParagraph = () => {
@@ -160,26 +184,21 @@ export function MarkdownArticle({
     const line = lines[index];
     if (line.startsWith("```")) {
       if (code) {
-        blocks.push(
-          <pre
-            key={blocks.length}
-            className={docs ? "atlas-docs-pre" : "overflow-x-auto rounded-md p-3 text-xs"}
-            style={docs ? undefined : { background: "var(--ground-ink)", border: "1px solid var(--rule)", color: "var(--glyph-bone)" }}
-          >
-            <code>{code.join("\n")}</code>
-          </pre>,
-        );
+        blocks.push(renderCodeBlock(blocks.length, code.lines, code.language, docs, variant));
         code = null;
       } else {
         flushParagraph();
         flushList();
         flushQuote();
-        code = [];
+        code = {
+          language: line.slice(3).trim().toLowerCase(),
+          lines: [],
+        };
       }
       continue;
     }
     if (code) {
-      code.push(line);
+      code.lines.push(line);
       continue;
     }
     if (!line.trim()) {

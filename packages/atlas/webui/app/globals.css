@@ -704,10 +704,80 @@ html[data-theme="void"] .atlas-theme-toggle .tkc-check-row {
   font-size: 12.5px;
 }
 
+.atlas-mermaid {
+  display: grid;
+  gap: 10px;
+  margin: 12px 0 18px;
+}
+
+.atlas-mermaid__canvas {
+  width: 100%;
+  overflow-x: auto;
+  padding: 16px 18px;
+  border: 1px solid color-mix(in oklab, var(--rule) 82%, transparent);
+  background: color-mix(in oklab, var(--paper) 88%, white);
+}
+
+.atlas-mermaid__canvas svg {
+  display: block;
+  min-width: min-content;
+  max-width: none;
+  height: auto;
+  margin: 0 auto;
+}
+
+.atlas-mermaid--default .atlas-mermaid__canvas {
+  border-radius: 0.5rem;
+  background: var(--ground-ink);
+}
+
+.atlas-mermaid--default .atlas-mermaid__canvas svg {
+  color: var(--glyph-bone);
+}
+
+.atlas-mermaid__error {
+  display: grid;
+  gap: 8px;
+  color: var(--fg-2);
+  font-size: 13px;
+}
+
+.atlas-mermaid__error strong {
+  color: var(--fg);
+}
+
+.atlas-mermaid__source {
+  overflow-x: auto;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in oklab, var(--rule) 82%, transparent);
+  background: color-mix(in oklab, var(--bg-2) 78%, transparent);
+  color: var(--fg);
+  font-size: 12px;
+}
+
 html[data-theme="void"] .atlas-docs-pre {
   background: #101a25;
   border-color: rgba(127, 215, 255, 0.24);
   color: #d8ebf7;
+}
+
+html[data-theme="void"] .atlas-mermaid__canvas {
+  background: #101a25;
+  border-color: rgba(127, 215, 255, 0.24);
+}
+
+html[data-theme="void"] .atlas-mermaid__error {
+  color: color-mix(in oklab, var(--glyph-bone) 74%, var(--glyph-fade));
+}
+
+html[data-theme="void"] .atlas-mermaid__error strong,
+html[data-theme="void"] .atlas-mermaid__source {
+  color: var(--glyph-bone);
+}
+
+html[data-theme="void"] .atlas-mermaid__source {
+  border-color: color-mix(in oklab, var(--glyph-fade) 22%, transparent);
+  background: color-mix(in oklab, var(--ground-ink) 90%, var(--ground-void));
 }
 
 .atlas-docs-table-wrap {
