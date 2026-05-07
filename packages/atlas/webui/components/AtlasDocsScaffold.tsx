@@ -4,7 +4,7 @@ import {
   CodexDocsChapterMark,
   CodexDocsMargin,
   CodexDocsShell,
-} from "@a5c-ai/compendium";
+} from "@a5c-ai/compendium/codex";
 
 type CompendiumNode = Exclude<ReactNode, bigint>;
 
