@@ -9,7 +9,8 @@
     "prebuild": "cd .. && npm run build",
     "build": "next build",
     "start": "next start",
-    "db:init": "tsx scripts/init-db.ts"
+    "db:init": "tsx scripts/init-db.ts",
+    "test:smoke": "npm exec --yes --package=vitest -- vitest run --config vitest.config.ts"
   },
   "dependencies": {
     "@a5c-ai/atlas": "*",
