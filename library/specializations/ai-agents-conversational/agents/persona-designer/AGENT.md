@@ -11,7 +11,7 @@ expertise:
 graph:
   domains: [domain:software-engineering]
   specializations: [specialization:ai-agents-conversational]
-  skillAreas: [skill-area:natural-language-processing]
+  skillAreas: [skill-area:prompt-engineering, skill-area:natural-language-processing]
   roles: [role:ml-engineer, role:backend-engineer]
   workflows: [workflow:feature-development, workflow:ml-model-lifecycle]
 

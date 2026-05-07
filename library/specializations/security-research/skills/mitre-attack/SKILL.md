@@ -12,7 +12,7 @@ allowed-tools:
 graph:
   domains: [domain:cybersecurity]
   specializations: [specialization:security-research]
-  skillAreas: [skill-area:vulnerability-management, skill-area:penetration-testing-ethical-hacking]
+  skillAreas: [skill-area:threat-intelligence-hunting, skill-area:penetration-testing-ethical-hacking]
   roles: [role:security-engineer]
   workflows: [workflow:penetration-testing-cycle, workflow:vulnerability-management]
 ---

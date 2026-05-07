@@ -11,7 +11,7 @@ allowed-tools:
 graph:
   domains: [domain:cybersecurity]
   specializations: [specialization:security-research]
-  skillAreas: [skill-area:fuzz-testing, skill-area:vulnerability-management]
+  skillAreas: [skill-area:fuzz-testing, skill-area:vulnerability-scanning-remediation]
   roles: [role:security-engineer]
   workflows: [workflow:penetration-testing-cycle, workflow:vulnerability-management]
 ---

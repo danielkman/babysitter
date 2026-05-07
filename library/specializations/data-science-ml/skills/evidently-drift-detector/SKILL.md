@@ -4,6 +4,10 @@ description: Evidently AI skill for data drift detection, model performance moni
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob
 graph:
   domains: [domain:data-science]
+  specializations: [specialization:data-science-ml]
+  skillAreas: [skill-area:model-monitoring-drift-detection, skill-area:data-quality-testing]
+  roles: [role:ml-ops-engineer, role:data-scientist]
+  workflows: [workflow:data-quality-monitoring]
 
 ---
 

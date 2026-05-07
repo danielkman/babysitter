@@ -4,6 +4,7 @@ description: Agent specialized in model training, hyperparameter tuning, and exp
 required-skills: sklearn-model-trainer, mlflow-experiment-tracker, optuna-hyperparameter-tuner
 graph:
   domains: [domain:data-science]
+  specializations: [specialization:data-science-ml]
   skillAreas: [skill-area:hyperparameter-tuning-experiment-management, skill-area:model-validation-testing, skill-area:feature-engineering-pipelines]
   topics: [topic:trunk-based-development]
   roles: [role:ml-engineer, role:data-scientist]

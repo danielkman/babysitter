@@ -16,7 +16,7 @@ expertise:
 graph:
   domains: [domain:software-engineering]
   specializations: [specialization:ai-agents-conversational]
-  skillAreas: [skill-area:natural-language-processing]
+  skillAreas: [skill-area:mcp-server-implementation, skill-area:web-security]
   roles: [role:backend-engineer, role:fullstack-engineer]
   workflows: [workflow:feature-development]
 

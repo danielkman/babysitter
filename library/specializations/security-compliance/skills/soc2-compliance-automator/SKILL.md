@@ -11,7 +11,7 @@ allowed-tools:
 graph:
   domains: [domain:security]
   specializations: [specialization:security-compliance]
-  skillAreas: [skill-area:compliance-automation, skill-area:compliance-automation]
+  skillAreas: [skill-area:compliance-automation, skill-area:security-monitoring-siem]
   roles: [role:compliance-officer, role:security-engineer]
   workflows: [workflow:compliance-audit, workflow:security-audit]
 

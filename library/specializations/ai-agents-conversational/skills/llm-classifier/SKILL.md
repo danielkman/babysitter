@@ -11,7 +11,7 @@ allowed-tools:
 graph:
   domains: [domain:software-engineering]
   specializations: [specialization:ai-agents-conversational]
-  skillAreas: [skill-area:natural-language-processing]
+  skillAreas: [skill-area:natural-language-processing, skill-area:prompt-instruction-tuning-agents]
   roles: [role:ml-engineer, role:backend-engineer]
   workflows: [workflow:ml-model-lifecycle, workflow:feature-development]
 

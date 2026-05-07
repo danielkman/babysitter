@@ -12,7 +12,7 @@ expertise:
 graph:
   domains: [domain:cybersecurity]
   specializations: [specialization:security-research]
-  skillAreas: [skill-area:penetration-testing-ethical-hacking, skill-area:vulnerability-management]
+  skillAreas: [skill-area:application-security-testing, skill-area:web-security]
   roles: [role:security-engineer]
   workflows: [workflow:penetration-testing-cycle, workflow:vulnerability-management]
 ---

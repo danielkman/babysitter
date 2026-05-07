@@ -10,6 +10,10 @@ allowed-tools:
   - Grep
 graph:
   domains: [domain:cybersecurity]
+  specializations: [specialization:security-research]
+  skillAreas: [skill-area:penetration-testing-ethical-hacking, skill-area:code-cybersecurity]
+  roles: [role:security-engineer]
+  workflows: [workflow:penetration-testing-cycle]
 ---
 
 # Ghidra/IDA Reverse Engineering Skill
