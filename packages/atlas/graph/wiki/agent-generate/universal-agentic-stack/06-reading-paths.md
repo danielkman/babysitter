@@ -23,8 +23,9 @@ Use one of these short paths if you do not want to read the entire section linea
 
 1. Read [`00-orientation.md`](./00-orientation.md)
 2. Read [`04-worked-examples.md`](./04-worked-examples.md)
-3. Use [`03-placement-checklist.md`](./03-placement-checklist.md)
-4. Confirm details in [`layers.md`](./layers.md)
+3. Scan [`07-comparison-matrix.md`](./07-comparison-matrix.md)
+4. Use [`03-placement-checklist.md`](./03-placement-checklist.md)
+5. Confirm details in [`layers.md`](./layers.md)
 
 ## I am designing an agent product
 
@@ -44,6 +45,7 @@ Use one of these short paths if you do not want to read the entire section linea
 1. Read [`README.md`](./README.md)
 2. Read [`00-orientation.md`](./00-orientation.md)
 3. Read [`04-worked-examples.md`](./04-worked-examples.md)
+4. Skim [`07-comparison-matrix.md`](./07-comparison-matrix.md)
 
 ## I need graph-grounded detail
 

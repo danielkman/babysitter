@@ -47,6 +47,7 @@ If you only read three pages, read them in this order:
 | [`04-worked-examples.md`](./04-worked-examples.md) | Seeing complete stack placements for common product shapes. |
 | [`05-common-confusions.md`](./05-common-confusions.md) | Untangling the terms people mix up most often. |
 | [`06-reading-paths.md`](./06-reading-paths.md) | Following a short reading path based on your role or goal. |
+| [`07-comparison-matrix.md`](./07-comparison-matrix.md) | Comparing common product shapes against the full stack at a glance. |
 | [`layers.md`](./layers.md) | Reading the full layer-by-layer reference from the graph. |
 | [`source-map.md`](./source-map.md) | Tracing every page claim back to the graph files that generated it. |
 
@@ -79,4 +80,5 @@ That framing is the difference between a fuzzy taxonomy and an actually useful s
 - If you are evaluating a framework claim, start with [`01-builder-fit.md`](./01-builder-fit.md), then read [`04-worked-examples.md`](./04-worked-examples.md).
 - If you are classifying a real product, jump to [`03-placement-checklist.md`](./03-placement-checklist.md), then confirm against [`layers.md`](./layers.md).
 - If you keep mixing up plugins, tools, runtime, and platform, read [`05-common-confusions.md`](./05-common-confusions.md).
+- If you want a one-screen comparison across product shapes, open [`07-comparison-matrix.md`](./07-comparison-matrix.md).
 - If you want the shortest guided route for your role, open [`06-reading-paths.md`](./06-reading-paths.md).

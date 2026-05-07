@@ -21,6 +21,29 @@ documents:
 
 Derived from `graph/stack-layers/layers`. There are no modeled nested layer nodes; responsibilities/examples/fit notes are attributes on each top-level layer.
 
+## Quick navigation
+
+| Layer | Best question to ask |
+|---|---|
+| 1 Model | What model artifact is this, independent of who serves it? |
+| 2 Provider | Who serves it, with what quota, auth, and deployment posture? |
+| 3 Transport | What protocol or client path actually carries requests? |
+| 4 Agent-Core | Where does the decision loop or graph logic live? |
+| 5 Agent-Runtime | What hosts tools, state, approvals, and streaming around that loop? |
+| 6 Agent-Platform | What installs, extends, launches, and distributes the runtime? |
+| 7 Workspace | What working context is materialized for the agent? |
+| 8 Execution | Where do commands and side effects actually run? |
+| 9 Sandbox | What policy boundary constrains those side effects? |
+| 10 Interaction | What actions are exposed to users or systems? |
+| 11 Presentation | How are those actions and results rendered? |
+
+## How to read this page
+
+- Use the `Scope` line to identify the core boundary.
+- Use `Responsibilities` to see what belongs inside that boundary.
+- Use `Fit note` to avoid the most common category mistake.
+- If you are comparing product shapes, skim [`07-comparison-matrix.md`](./07-comparison-matrix.md) first and then return here.
+
 ## Layer 11: Presentation
 
 The presentation layer renders agent work to humans or downstream systems:
@@ -37,6 +60,9 @@ CLI, web, IDE, and API surfaces.
   - TUI, CLI, web app, IDE side panel, notebook/chat surface.
   - REST/WebSocket API, JSON stream, structured event log, dashboard.
   - LangGraph app UI, LangSmith trace view, custom workflow console.
+- Not this:
+  - the command vocabulary itself
+  - the approval logic behind an interaction
 - Fit note: Products can be headless and still fit the stack through an API or event
 stream presentation. Presentation can be supplied by a host IDE/web app
 rather than by the agent framework itself.
@@ -59,6 +85,9 @@ actions, operational triggers, and telemetry affordances. Realized by
   - Slash commands, keybindings, prompt controls, approve/reject interrupt.
   - GitHub Action trigger, webhook trigger, editor widget, dashboard button.
   - LangGraph human-in-the-loop review, edit, approve, resume controls.
+- Not this:
+  - layout, theming, or transcript rendering
+  - the runtime that carries out the action
 - Fit note: Interaction primitives are not presentation widgets by themselves; they are
 the action vocabulary that a TUI, CLI, web UI, IDE, API, or automation host
 renders and invokes.
@@ -81,6 +110,9 @@ filesystemPolicy and networkPolicy enums. Realized by `Sandbox` nodes.
   - Read-only filesystem, workspace-write mode, network-disabled mode.
   - Binary allow list, secret scope, approval-required command policy.
   - Container, VM, OS sandbox, or hosted policy engine.
+- Not this:
+  - the shell or process runner itself
+  - the human-facing approval UI by itself
 - Fit note: Custom-agent frameworks may leave sandboxing entirely to the embedding
 host. Production tools should model this layer explicitly even when users
 only see a simple approval prompt.
@@ -104,6 +136,9 @@ Realized by `Execution` nodes.
   - Local shell, Docker, SSH remote, Kubernetes pod, GitHub Actions runner.
   - Browser automation worker, notebook/kernel executor, cloud function.
   - LangGraph tool node executing inside a host application runtime.
+- Not this:
+  - the repo or mounted files being operated on
+  - the policy system that restricts execution
 - Fit note: Frameworks often delegate execution to user-defined tools. Hosted agent
 products may make this layer invisible but still need it for auditing and
 policy mapping.
@@ -126,6 +161,9 @@ git hooks, artifact scope, and multi-tenant policy. Realized by `Workspace` node
   - Local repository, remote clone, IDE project, container-mounted workspace.
   - Git worktree, generated artifact directory, vector/code index, cache scope.
   - LangGraph app state when backed by project files or persisted stores.
+- Not this:
+  - the process that runs the command
+  - the UI surface that renders the result
 - Fit note: Some products are read-only and omit this layer. Others delegate workspace
 ownership to an IDE, CI runner, hosted environment, or user shell.
 - Source: `graph/stack-layers/layers/layer-7-workspace.yaml`
@@ -148,6 +186,9 @@ Realized by `AgentPlatformImpl` instances.
   - Claude plugins/skills, Codex/Gemini/OpenCode extension packages, a5c plugins.
   - LangGraph Platform, LangSmith deployment, RemoteGraph, hosted graph operations.
   - Skill directories, plugin registries, marketplace manifests, MCP server configs.
+- Not this:
+  - a single tool invocation inside one running session
+  - the inner decision loop itself
 - Fit note: Installed plugins and skills belong explicitly in this layer. Products may
 expose a platform without owning a model/provider, or may hide platform
 services inside an IDE or hosted control plane. a5c platform is modeled as
@@ -172,6 +213,9 @@ identity. Realized by `AgentRuntimeImpl` instances.
   - Claude Code/Codex/Gemini CLI process runtimes.
   - a5c unified runtime, Pi-compatible session profiles, agent-mux remote runtime.
   - Built-in file/shell/search tools, approval gates, session files.
+- Not this:
+  - a package installer or marketplace
+  - the trained model or provider endpoint
 - Fit note: Frameworks can leave runtime to the host app; CLI products often combine
 core and runtime in one binary. a5c runtime is modeled as a unified
 same-layer implementation that can map Pi, Claude, Codex, LangGraph, and
@@ -196,6 +240,9 @@ Realized by `AgentCoreImpl` instances.
   - Claude Code/Codex/Gemini CLI loop cores.
   - a5c unified core and Pi-compatible tool-use loop profiles.
   - Tool dispatch, stop detection, context-window handling, result envelopes.
+- Not this:
+  - the transport client that calls the provider
+  - plugin installation or ecosystem distribution
 - Fit note: This is where custom agent builders fit first. A product may expose only a
 core library without owning runtime, platform, workspace, or presentation.
 a5c's core is modeled as a unified same-layer contract, not as built on top
@@ -219,6 +266,9 @@ not nested layer nodes.
   - OpenAI Responses, OpenAI Chat Completions, Anthropic Messages, Gemini GenerateContent.
   - HTTP, SSE, WebSocket, gRPC, OpenAI-compatible gateways.
   - LangChain chat-model adapters and transport clients.
+- Not this:
+  - the provider organization behind the endpoint
+  - the graph or loop that decides what to send
 - Fit note: Custom-agent frameworks often hide transport behind model abstractions.
 Gateway products may occupy mostly this layer while delegating core/runtime
 behavior upward.
@@ -240,6 +290,9 @@ protocol (Layer 3) and the agent-side core that consumes it (Layer 4).
   - Anthropic, OpenAI, Google, Azure OpenAI, AWS Bedrock, OpenRouter.
   - Self-hosted vLLM, Ollama, llama.cpp, or custom inference gateway.
   - Auth scheme, region, quota, rate-limit, and SLA records.
+- Not this:
+  - the request protocol itself
+  - the agent logic above the provider
 - Fit note: LangChain/LangGraph apps usually choose providers through model adapters
 rather than owning this layer. Gateways may specialize here while leaving
 higher layers to another product.
@@ -262,6 +315,9 @@ limits, modalities, native tools, and reasoning posture are bound to
   - Model family and version records.
   - Context window and output token limits.
   - Native tool-use, reasoning, vision, audio, and embedding support.
+- Not this:
+  - provider-specific quotas or deployment regions
+  - runtime behavior around tool calls and approvals
 - Fit note: Custom-agent apps may expose model choice directly or hide it behind a
 provider/model configuration. Local inference collapses Model and Provider
 operationally, but the graph keeps them separate.
