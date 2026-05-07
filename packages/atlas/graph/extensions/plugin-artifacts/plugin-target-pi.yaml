@@ -13,6 +13,7 @@ attributes:
   hookRegistrationAliasPaths: []
   harnessManifestPath: null
   marketplacePath: null
+  pluginRootEnvVar: null
   pluginRootEnvVarForExtension: PI_PLUGIN_ROOT
   scriptVariants:
     - javascript
@@ -20,6 +21,7 @@ attributes:
     - npm-cli
   distributionModel: workspace-generated
   npmPublishable: true
+  installLayout: null
   packageMetadata:
     moduleType: module
     binScriptExt: ".cjs"

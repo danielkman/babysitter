@@ -21,6 +21,7 @@ attributes:
     - npm-cli
   distributionModel: workspace-generated
   npmPublishable: false
+  installLayout: null
   packageMetadata:
     moduleType: commonjs
     binScriptExt: ".js"

@@ -12,6 +12,7 @@ attributes:
   hookRegistrationOutputPath: "hooks.json"
   hookRegistrationAliasPaths: []
   harnessManifestPath: null
+  pluginRootEnvVar: null
   pluginRootEnvVarForExtension: null
   marketplacePath: null
   scriptVariants:

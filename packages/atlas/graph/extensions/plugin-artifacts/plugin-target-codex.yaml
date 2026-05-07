@@ -12,6 +12,7 @@ attributes:
   hookRegistrationOutputPath: "hooks.json"
   hookRegistrationAliasPaths: []
   harnessManifestPath: ".codex-plugin/plugin.json"
+  pluginRootEnvVar: null
   pluginRootEnvVarForExtension: null
   scriptVariants:
     - bash
