@@ -5,8 +5,8 @@ allowed-tools: Read, Write, Edit
 id: SK-MAC-009
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:content-strategy, skill-area:audio-processing, skill-area:data-analysis]
+  roles: [role:creative-director, role:product-manager]
 ---
 
 # Track Sequencing

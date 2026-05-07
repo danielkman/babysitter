@@ -5,9 +5,9 @@ required-skills: tei-text-encoding, topic-modeling-text-mining, gis-mapping-huma
 graph:
   domains: [domain:humanities]
   specializations: [specialization:digital-humanities]
-  skillAreas: [skill-area:data-analysis, skill-area:deep-web-research, skill-area:docs-as-code]
+  skillAreas: [skill-area:natural-language-processing, skill-area:data-visualization, skill-area:geospatial-data-analysis]
   workflows: [workflow:peer-review-cycle]
-  roles: [role:research-engineer]
+  roles: [role:data-scientist, role:research-engineer]
 ---
 
 # Digital Humanities Technologist Agent

@@ -10,8 +10,8 @@ required-skills:
   - SK-FTV-009 (shot-composition)
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:visual-design, skill-area:prompt-engineering, skill-area:video-processing]
+  roles: [role:creative-director, role:media-engineer]
 ---
 
 # Visual Director Agent

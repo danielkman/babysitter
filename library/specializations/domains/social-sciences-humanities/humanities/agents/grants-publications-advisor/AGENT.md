@@ -5,9 +5,9 @@ required-skills: grant-narrative-writing, citation-scholarly-apparatus, metadata
 graph:
   domains: [domain:humanities]
   specializations: [specialization:digital-humanities]
-  skillAreas: [skill-area:data-analysis, skill-area:deep-web-research, skill-area:docs-as-code]
+  skillAreas: [skill-area:technical-writing, skill-area:content-strategy, skill-area:deep-web-research]
   workflows: [workflow:peer-review-cycle]
-  roles: [role:research-engineer]
+  roles: [role:technical-writer, role:research-analyst]
 ---
 
 # Grants and Publications Advisor Agent

@@ -10,9 +10,9 @@ allowed-tools:
   - Bash
 graph:
   domains: [domain:social-sciences]
-  skillAreas: [skill-area:data-analysis, skill-area:statistical-analysis, skill-area:user-research]
+  skillAreas: [skill-area:graph-databases, skill-area:data-analysis, skill-area:data-visualization]
   workflows: [workflow:experiment-design, workflow:peer-review-cycle]
-  roles: [role:research-engineer, role:data-analyst]
+  roles: [role:data-scientist, role:analytics-engineer]
 ---
 
 # Network Analysis Skill

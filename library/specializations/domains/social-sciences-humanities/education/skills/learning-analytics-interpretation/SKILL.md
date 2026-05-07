@@ -5,9 +5,9 @@ allowed-tools: Read, Grep, Write, Edit, Glob, Bash, WebFetch
 graph:
   domains: [domain:education]
   specializations: [specialization:instructional-design]
-  skillAreas: [skill-area:tutorial-design, skill-area:docs-as-code, skill-area:learning-development]
+  skillAreas: [skill-area:data-analysis, skill-area:learning-development, skill-area:analytics-tracking]
   workflows: [workflow:peer-review-cycle]
-  roles: [role:technical-writer]
+  roles: [role:data-analyst, role:analytics-engineer]
 ---
 
 # Learning Analytics Interpretation

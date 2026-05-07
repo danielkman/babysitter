@@ -4,9 +4,9 @@ description: Guide qualitative data collection and analysis using ethnographic a
 required-skills: qualitative-analysis, ethnographic-research, interview-facilitation
 graph:
   domains: [domain:social-sciences]
-  skillAreas: [skill-area:data-analysis, skill-area:statistical-analysis, skill-area:user-research]
+  skillAreas: [skill-area:user-research, skill-area:natural-language-processing, skill-area:data-analysis]
   workflows: [workflow:experiment-design, workflow:peer-review-cycle]
-  roles: [role:research-engineer, role:data-analyst]
+  roles: [role:ux-researcher, role:research-scientist]
 ---
 
 # Qualitative Research Specialist Agent

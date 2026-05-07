@@ -5,9 +5,9 @@ allowed-tools: Read, Grep, Write, Edit, Glob
 graph:
   domains: [domain:healthcare]
   specializations: [specialization:clinical-informatics]
-  skillAreas: [skill-area:data-analysis, skill-area:statistical-analysis, skill-area:data-governance]
+  skillAreas: [skill-area:document-processing, skill-area:data-quality, skill-area:compliance-automation]
   workflows: [workflow:experiment-design]
-  roles: [role:research-engineer]
+  roles: [role:data-analyst, role:compliance-officer]
 ---
 
 # Clinical Documentation Query

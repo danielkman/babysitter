@@ -4,8 +4,8 @@ description: Museum registrar and collections manager agent for collection docum
 required-skills: collection-documentation, conservation-assessment, risk-mitigation-planning
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:data-governance, skill-area:compliance-automation, skill-area:document-processing]
+  roles: [role:data-analyst, role:compliance-officer]
 ---
 
 # Registrar Agent

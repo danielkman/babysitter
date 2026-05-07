@@ -5,8 +5,8 @@ allowed-tools: Read, Write, Edit, WebSearch, WebFetch
 id: SK-MAC-002
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:audio-processing, skill-area:prompt-engineering, skill-area:brand-strategy]
+  roles: [role:creative-director, role:brand-manager]
 ---
 
 # Style Specification

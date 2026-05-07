@@ -10,9 +10,9 @@ allowed-tools:
   - Bash
 graph:
   domains: [domain:social-sciences]
-  skillAreas: [skill-area:data-analysis, skill-area:statistical-analysis, skill-area:user-research]
+  skillAreas: [skill-area:deep-web-research, skill-area:data-analysis, skill-area:statistical-analysis]
   workflows: [workflow:experiment-design, workflow:peer-review-cycle]
-  roles: [role:research-engineer, role:data-analyst]
+  roles: [role:research-analyst, role:data-scientist]
 ---
 
 # Systematic Review Skill

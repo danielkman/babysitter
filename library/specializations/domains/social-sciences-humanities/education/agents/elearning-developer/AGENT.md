@@ -5,9 +5,9 @@ required-skills: elearning-storyboarding, multimedia-learning-design, lms-config
 graph:
   domains: [domain:education]
   specializations: [specialization:instructional-design]
-  skillAreas: [skill-area:tutorial-design, skill-area:docs-as-code, skill-area:learning-development]
+  skillAreas: [skill-area:learning-development, skill-area:animation-transitions, skill-area:accessibility-first-design]
   workflows: [workflow:peer-review-cycle]
-  roles: [role:technical-writer]
+  roles: [role:frontend-engineer, role:technical-writer]
 ---
 
 # E-Learning Developer Agent

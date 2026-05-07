@@ -5,9 +5,9 @@ allowed-tools: Read, Grep, Write, Edit, Glob, Bash, WebFetch
 graph:
   domains: [domain:humanities]
   specializations: [specialization:digital-humanities]
-  skillAreas: [skill-area:data-analysis, skill-area:deep-web-research, skill-area:docs-as-code]
+  skillAreas: [skill-area:geospatial-data-analysis, skill-area:data-visualization, skill-area:data-analysis]
   workflows: [workflow:peer-review-cycle]
-  roles: [role:research-engineer]
+  roles: [role:data-analyst, role:research-scientist]
 ---
 
 # GIS Mapping for Humanities

@@ -5,9 +5,9 @@ required-skills: multimedia-learning-design, accessibility-compliance-auditing, 
 graph:
   domains: [domain:education]
   specializations: [specialization:instructional-design]
-  skillAreas: [skill-area:tutorial-design, skill-area:docs-as-code, skill-area:learning-development]
+  skillAreas: [skill-area:learning-development, skill-area:accessibility-first-design, skill-area:usability-testing]
   workflows: [workflow:peer-review-cycle]
-  roles: [role:technical-writer]
+  roles: [role:product-designer, role:ux-researcher]
 ---
 
 # Accessibility and UDL Specialist Agent

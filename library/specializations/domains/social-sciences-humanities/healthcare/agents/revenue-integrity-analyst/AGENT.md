@@ -5,9 +5,9 @@ required-skills: medical-coding-audit, revenue-cycle-analytics, clinical-documen
 graph:
   domains: [domain:healthcare]
   specializations: [specialization:clinical-informatics]
-  skillAreas: [skill-area:data-analysis, skill-area:statistical-analysis, skill-area:data-governance]
+  skillAreas: [skill-area:data-analysis, skill-area:compliance-automation, skill-area:financial-modeling]
   workflows: [workflow:experiment-design]
-  roles: [role:research-engineer]
+  roles: [role:financial-analyst, role:audit-analyst]
 ---
 
 # Revenue Integrity Analyst Agent

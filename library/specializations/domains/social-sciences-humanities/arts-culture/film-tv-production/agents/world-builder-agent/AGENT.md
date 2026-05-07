@@ -10,8 +10,8 @@ required-skills:
   - SK-FTV-012 (genre-analysis-film)
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:visual-design, skill-area:interaction-design, skill-area:content-strategy]
+  roles: [role:creative-director, role:product-designer]
 ---
 
 # World Builder Agent

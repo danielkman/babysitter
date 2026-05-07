@@ -10,8 +10,8 @@ required-skills:
   - SK-FTV-011 (screenplay-formatting)
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:content-strategy, skill-area:natural-language-processing, skill-area:document-processing]
+  roles: [role:content-strategist, role:ux-writer]
 ---
 
 # Screenwriter Agent

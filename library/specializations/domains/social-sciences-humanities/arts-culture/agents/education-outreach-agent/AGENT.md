@@ -4,8 +4,8 @@ description: Education and community engagement specialist agent for curriculum 
 required-skills: interpretive-writing, accessibility-compliance, digital-engagement-strategy
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:learning-development, skill-area:accessibility-first-design, skill-area:community-management]
+  roles: [role:product-designer, role:ux-researcher]
 ---
 
 # Education Outreach Agent

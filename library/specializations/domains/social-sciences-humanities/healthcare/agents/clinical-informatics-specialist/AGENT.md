@@ -5,9 +5,9 @@ required-skills: health-data-integration, clinical-decision-support-rules, clini
 graph:
   domains: [domain:healthcare]
   specializations: [specialization:clinical-informatics]
-  skillAreas: [skill-area:data-analysis, skill-area:statistical-analysis, skill-area:data-governance]
+  skillAreas: [skill-area:data-governance, skill-area:data-quality, skill-area:etl-pipelines]
   workflows: [workflow:experiment-design]
-  roles: [role:research-engineer]
+  roles: [role:data-engineer, role:analytics-engineer]
 ---
 
 # Clinical Informatics Specialist Agent

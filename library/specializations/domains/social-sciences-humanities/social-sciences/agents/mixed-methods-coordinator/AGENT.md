@@ -4,9 +4,9 @@ description: Integrate quantitative and qualitative approaches in complex resear
 required-skills: mixed-methods-integration, quantitative-methods, qualitative-analysis
 graph:
   domains: [domain:social-sciences]
-  skillAreas: [skill-area:data-analysis, skill-area:statistical-analysis, skill-area:user-research]
+  skillAreas: [skill-area:statistical-analysis, skill-area:user-research, skill-area:data-analysis]
   workflows: [workflow:experiment-design, workflow:peer-review-cycle]
-  roles: [role:research-engineer, role:data-analyst]
+  roles: [role:research-scientist, role:data-analyst]
 ---
 
 # Mixed Methods Research Coordinator Agent

@@ -11,9 +11,9 @@ allowed-tools:
 graph:
   domains: [domain:philosophy]
   specializations: [specialization:applied-ethics]
-  skillAreas: [skill-area:deep-web-research, skill-area:docs-as-code, skill-area:data-analysis]
+  skillAreas: [skill-area:natural-language-processing, skill-area:deep-web-research, skill-area:data-analysis]
   workflows: [workflow:peer-review-cycle]
-  roles: [role:research-engineer]
+  roles: [role:research-analyst, role:research-scientist]
 ---
 
 # Fallacy Detection and Analysis Skill

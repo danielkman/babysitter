@@ -4,8 +4,8 @@ description: Cultural policy and planning specialist agent for policy analysis, 
 required-skills: cultural-policy-analysis, arts-advocacy-communication, stakeholder-facilitation
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:strategic-analysis, skill-area:market-research, skill-area:stakeholder-management]
+  roles: [role:strategic-planner, role:business-analyst]
 ---
 
 # Cultural Policy Agent

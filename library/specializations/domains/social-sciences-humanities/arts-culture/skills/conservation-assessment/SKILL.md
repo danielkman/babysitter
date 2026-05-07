@@ -4,8 +4,8 @@ description: Assess condition of artworks and cultural objects, develop treatmen
 allowed-tools: Read, Grep, Write, Edit, Glob, WebFetch
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:data-analysis, skill-area:document-processing, skill-area:image-processing]
+  roles: [role:research-scientist, role:lab-technician]
 ---
 
 # Conservation Assessment

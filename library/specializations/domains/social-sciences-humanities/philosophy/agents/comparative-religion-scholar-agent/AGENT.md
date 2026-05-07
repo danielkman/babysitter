@@ -5,9 +5,9 @@ required-skills: comparative-religion-analysis, hermeneutical-interpretation, sc
 graph:
   domains: [domain:philosophy]
   specializations: [specialization:applied-ethics]
-  skillAreas: [skill-area:deep-web-research, skill-area:docs-as-code, skill-area:data-analysis]
+  skillAreas: [skill-area:deep-web-research, skill-area:data-analysis, skill-area:natural-language-processing]
   workflows: [workflow:peer-review-cycle]
-  roles: [role:research-engineer]
+  roles: [role:research-analyst, role:research-scientist]
 ---
 
 # Comparative Religion Scholar Agent

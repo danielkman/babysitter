@@ -4,9 +4,9 @@ description: Develop and validate measurement instruments across cultural contex
 required-skills: psychometric-assessment, survey-design-administration
 graph:
   domains: [domain:social-sciences]
-  skillAreas: [skill-area:data-analysis, skill-area:statistical-analysis, skill-area:user-research]
+  skillAreas: [skill-area:statistical-analysis, skill-area:data-analysis, skill-area:data-quality]
   workflows: [workflow:experiment-design, workflow:peer-review-cycle]
-  roles: [role:research-engineer, role:data-analyst]
+  roles: [role:data-scientist, role:research-scientist]
 ---
 
 # Measurement and Psychometrics Expert Agent

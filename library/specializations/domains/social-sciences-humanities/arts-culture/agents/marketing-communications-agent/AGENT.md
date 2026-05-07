@@ -4,8 +4,8 @@ description: Marketing and audience development specialist agent for campaign st
 required-skills: audience-analytics, digital-engagement-strategy, interpretive-writing
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:content-marketing, skill-area:digital-marketing-analytics, skill-area:brand-positioning]
+  roles: [role:marketing-manager, role:brand-manager]
 ---
 
 # Marketing Communications Agent

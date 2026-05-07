@@ -5,9 +5,9 @@ required-skills: ethical-framework-application, bioethics-deliberation, socratic
 graph:
   domains: [domain:philosophy]
   specializations: [specialization:applied-ethics]
-  skillAreas: [skill-area:deep-web-research, skill-area:docs-as-code, skill-area:data-analysis]
+  skillAreas: [skill-area:deep-web-research, skill-area:compliance-automation, skill-area:data-governance]
   workflows: [workflow:peer-review-cycle]
-  roles: [role:research-engineer]
+  roles: [role:compliance-officer, role:research-scientist]
 ---
 
 # Ethics Consultant Agent

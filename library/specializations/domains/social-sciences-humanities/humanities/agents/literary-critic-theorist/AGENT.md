@@ -5,9 +5,9 @@ required-skills: literary-close-reading, critical-theory-application, citation-s
 graph:
   domains: [domain:humanities]
   specializations: [specialization:digital-humanities]
-  skillAreas: [skill-area:data-analysis, skill-area:deep-web-research, skill-area:docs-as-code]
+  skillAreas: [skill-area:natural-language-processing, skill-area:deep-web-research, skill-area:content-strategy]
   workflows: [workflow:peer-review-cycle]
-  roles: [role:research-engineer]
+  roles: [role:research-analyst, role:technical-writer]
 ---
 
 # Literary Critic and Theorist Agent

@@ -4,8 +4,8 @@ description: Create accessible interpretive content for diverse audiences includ
 allowed-tools: Read, Grep, Write, Edit, Glob, WebFetch
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:content-strategy, skill-area:technical-writing, skill-area:accessibility-first-design]
+  roles: [role:technical-writer, role:ux-writer]
 ---
 
 # Interpretive Writing

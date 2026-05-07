@@ -5,9 +5,9 @@ required-skills: research-ethics-irb-navigation, oral-history-interview-techniqu
 graph:
   domains: [domain:humanities]
   specializations: [specialization:digital-humanities]
-  skillAreas: [skill-area:data-analysis, skill-area:deep-web-research, skill-area:docs-as-code]
+  skillAreas: [skill-area:compliance-automation, skill-area:data-governance, skill-area:deep-web-research]
   workflows: [workflow:peer-review-cycle]
-  roles: [role:research-engineer]
+  roles: [role:compliance-officer, role:research-scientist]
 ---
 
 # Research Ethics Consultant Agent

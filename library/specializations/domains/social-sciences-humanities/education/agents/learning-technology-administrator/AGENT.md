@@ -5,9 +5,9 @@ required-skills: lms-configuration-administration, learning-analytics-interpreta
 graph:
   domains: [domain:education]
   specializations: [specialization:instructional-design]
-  skillAreas: [skill-area:tutorial-design, skill-area:docs-as-code, skill-area:learning-development]
+  skillAreas: [skill-area:learning-development, skill-area:deployment-infrastructure-management, skill-area:configuration-management]
   workflows: [workflow:peer-review-cycle]
-  roles: [role:technical-writer]
+  roles: [role:it-ops-engineer, role:platform-engineer]
 ---
 
 # Learning Technology Administrator Agent

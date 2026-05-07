@@ -6,8 +6,8 @@ description: Write individual screenplay scenes with proper industry formatting,
 specialization: film-tv-production
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:content-strategy, skill-area:natural-language-processing, skill-area:visual-design]
+  roles: [role:ux-writer, role:creative-director]
 ---
 
 # Scene Writing Skill

@@ -5,9 +5,9 @@ allowed-tools: Read, Grep, Write, Edit, Glob, WebFetch
 graph:
   domains: [domain:humanities]
   specializations: [specialization:digital-humanities]
-  skillAreas: [skill-area:data-analysis, skill-area:deep-web-research, skill-area:docs-as-code]
+  skillAreas: [skill-area:deep-web-research, skill-area:data-analysis, skill-area:document-processing]
   workflows: [workflow:peer-review-cycle]
-  roles: [role:research-engineer]
+  roles: [role:research-analyst, role:research-scientist]
 ---
 
 # Primary Source Evaluation

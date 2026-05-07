@@ -5,9 +5,9 @@ required-skills: oral-history-interview-technique, research-ethics-irb-navigatio
 graph:
   domains: [domain:humanities]
   specializations: [specialization:digital-humanities]
-  skillAreas: [skill-area:data-analysis, skill-area:deep-web-research, skill-area:docs-as-code]
+  skillAreas: [skill-area:audio-processing, skill-area:data-analysis, skill-area:user-research]
   workflows: [workflow:peer-review-cycle]
-  roles: [role:research-engineer]
+  roles: [role:ux-researcher, role:research-scientist]
 ---
 
 # Oral Historian Agent

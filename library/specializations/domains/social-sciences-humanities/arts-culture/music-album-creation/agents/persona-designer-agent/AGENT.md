@@ -5,8 +5,8 @@ required-skills: persona-development, genre-analysis, album-conceptualization
 id: AG-MAC-004
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:brand-positioning, skill-area:visual-design, skill-area:content-strategy]
+  roles: [role:brand-manager, role:creative-director]
 ---
 
 # Persona Designer Agent

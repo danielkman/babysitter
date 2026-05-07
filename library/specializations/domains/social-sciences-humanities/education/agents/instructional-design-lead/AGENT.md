@@ -5,9 +5,9 @@ required-skills: learning-needs-analysis, learning-objectives-writing, elearning
 graph:
   domains: [domain:education]
   specializations: [specialization:instructional-design]
-  skillAreas: [skill-area:tutorial-design, skill-area:docs-as-code, skill-area:learning-development]
+  skillAreas: [skill-area:learning-development, skill-area:tutorial-design, skill-area:interaction-design]
   workflows: [workflow:peer-review-cycle]
-  roles: [role:technical-writer]
+  roles: [role:product-designer, role:technical-writer]
 ---
 
 # Instructional Design Lead Agent

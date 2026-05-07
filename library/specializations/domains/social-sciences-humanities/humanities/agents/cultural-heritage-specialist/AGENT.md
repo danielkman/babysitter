@@ -5,9 +5,9 @@ required-skills: metadata-standards-implementation, tei-text-encoding, gis-mappi
 graph:
   domains: [domain:humanities]
   specializations: [specialization:digital-humanities]
-  skillAreas: [skill-area:data-analysis, skill-area:deep-web-research, skill-area:docs-as-code]
+  skillAreas: [skill-area:data-governance, skill-area:geospatial-data-analysis, skill-area:document-processing]
   workflows: [workflow:peer-review-cycle]
-  roles: [role:research-engineer]
+  roles: [role:research-analyst, role:research-scientist]
 ---
 
 # Cultural Heritage Specialist Agent

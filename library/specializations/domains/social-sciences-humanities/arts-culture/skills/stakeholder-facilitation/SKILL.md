@@ -4,8 +4,8 @@ description: Facilitate meetings, workshops, and community consultations with di
 allowed-tools: Read, Grep, Write, Edit, Glob
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:stakeholder-management, skill-area:community-management, skill-area:change-management]
+  roles: [role:project-manager, role:strategic-planner]
 ---
 
 # Stakeholder Facilitation

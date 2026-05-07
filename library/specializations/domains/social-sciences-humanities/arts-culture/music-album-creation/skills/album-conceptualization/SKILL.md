@@ -5,8 +5,8 @@ allowed-tools: Read, Write, Edit, WebSearch
 id: SK-MAC-005
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:content-strategy, skill-area:brand-strategy, skill-area:audio-processing]
+  roles: [role:creative-director, role:brand-manager]
 ---
 
 # Album Conceptualization

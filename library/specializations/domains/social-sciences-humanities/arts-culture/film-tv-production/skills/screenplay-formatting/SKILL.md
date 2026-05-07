@@ -6,8 +6,8 @@ description: Format screenplays to industry standard using Fountain markup for p
 specialization: film-tv-production
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:document-processing, skill-area:technical-writing, skill-area:parsing-data-formats]
+  roles: [role:technical-writer, role:ux-writer]
 ---
 
 # Screenplay Formatting Skill

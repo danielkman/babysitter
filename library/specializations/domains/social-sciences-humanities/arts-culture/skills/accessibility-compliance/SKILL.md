@@ -4,8 +4,8 @@ description: Ensure cultural programs and facilities meet ADA requirements and u
 allowed-tools: Read, Grep, Write, Edit, Glob, WebFetch
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:accessibility-first-design, skill-area:usability-testing, skill-area:data-analysis]
+  roles: [role:product-designer, role:ux-researcher]
 ---
 
 # Accessibility Compliance

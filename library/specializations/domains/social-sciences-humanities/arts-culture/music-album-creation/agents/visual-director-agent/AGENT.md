@@ -5,7 +5,7 @@ required-skills: cover-art-prompting, persona-development, album-conceptualizati
 id: AG-MAC-003
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
+  skillAreas: [skill-area:visual-design, skill-area:prompt-engineering, skill-area:image-processing]
   roles: [role:creative-director, role:design-lead]
 ---
 

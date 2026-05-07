@@ -4,8 +4,8 @@ description: Performance production manager agent for stage management, technica
 required-skills: production-coordination, risk-mitigation-planning, stakeholder-facilitation
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:event-management, skill-area:change-management, skill-area:stakeholder-management]
+  roles: [role:project-manager, role:operations-analyst]
 ---
 
 # Production Manager Agent

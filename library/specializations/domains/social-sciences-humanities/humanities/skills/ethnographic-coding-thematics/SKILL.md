@@ -5,9 +5,9 @@ allowed-tools: Read, Grep, Write, Edit, Glob, Bash
 graph:
   domains: [domain:humanities]
   specializations: [specialization:digital-humanities]
-  skillAreas: [skill-area:data-analysis, skill-area:deep-web-research, skill-area:docs-as-code]
+  skillAreas: [skill-area:data-analysis, skill-area:natural-language-processing, skill-area:statistical-analysis]
   workflows: [workflow:peer-review-cycle]
-  roles: [role:research-engineer]
+  roles: [role:data-analyst, role:research-scientist]
 ---
 
 # Ethnographic Coding and Thematics

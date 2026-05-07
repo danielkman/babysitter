@@ -4,9 +4,9 @@ description: Design and conduct rigorous evaluations of social programs and poli
 required-skills: program-evaluation, mixed-methods-integration, policy-communication
 graph:
   domains: [domain:social-sciences]
-  skillAreas: [skill-area:data-analysis, skill-area:statistical-analysis, skill-area:user-research]
+  skillAreas: [skill-area:data-analysis, skill-area:statistical-analysis, skill-area:change-management]
   workflows: [workflow:experiment-design, workflow:peer-review-cycle]
-  roles: [role:research-engineer, role:data-analyst]
+  roles: [role:operations-analyst, role:research-scientist]
 ---
 
 # Program Evaluation Specialist Agent

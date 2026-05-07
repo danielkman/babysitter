@@ -6,8 +6,8 @@ description: Create comprehensive audio design including music cues, sound effec
 specialization: film-tv-production
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:audio-processing, skill-area:media-encoding, skill-area:content-strategy]
+  roles: [role:creative-director, role:media-engineer]
 ---
 
 # Sound Design Direction Skill

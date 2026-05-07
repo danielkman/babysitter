@@ -5,9 +5,9 @@ required-skills: assessment-item-development, rubric-design-validation, learning
 graph:
   domains: [domain:education]
   specializations: [specialization:instructional-design]
-  skillAreas: [skill-area:tutorial-design, skill-area:docs-as-code, skill-area:learning-development]
+  skillAreas: [skill-area:learning-development, skill-area:statistical-analysis, skill-area:data-analysis]
   workflows: [workflow:peer-review-cycle]
-  roles: [role:technical-writer]
+  roles: [role:research-scientist, role:data-analyst]
 ---
 
 # Assessment Design Specialist Agent

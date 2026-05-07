@@ -4,8 +4,8 @@ description: Fundraising and development specialist agent for grant writing, don
 required-skills: grant-proposal-writing, donor-relationship-management, audience-analytics
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:customer-success, skill-area:content-strategy, skill-area:data-analysis]
+  roles: [role:account-executive, role:marketing-strategist]
 ---
 
 # Development Officer Agent

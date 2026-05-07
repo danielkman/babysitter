@@ -4,8 +4,8 @@ description: Analyze cultural policies, assess community cultural needs, and dev
 allowed-tools: Read, Grep, Write, Edit, Glob, WebFetch, WebSearch
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:data-analysis, skill-area:strategic-analysis, skill-area:market-research]
+  roles: [role:strategic-planner, role:business-analyst]
 ---
 
 # Cultural Policy Analysis

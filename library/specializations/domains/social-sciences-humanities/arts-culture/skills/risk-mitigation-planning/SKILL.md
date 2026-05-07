@@ -4,8 +4,8 @@ description: Develop comprehensive risk management plans for collections and cul
 allowed-tools: Read, Grep, Write, Edit, Glob, WebFetch
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:compliance-automation, skill-area:data-governance, skill-area:incident-management]
+  roles: [role:compliance-officer, role:operations-analyst]
 ---
 
 # Risk Mitigation Planning

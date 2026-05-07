@@ -5,9 +5,9 @@ required-skills: primary-source-evaluation, archival-finding-aid-interpretation,
 graph:
   domains: [domain:humanities]
   specializations: [specialization:digital-humanities]
-  skillAreas: [skill-area:data-analysis, skill-area:deep-web-research, skill-area:docs-as-code]
+  skillAreas: [skill-area:deep-web-research, skill-area:document-processing, skill-area:data-analysis]
   workflows: [workflow:peer-review-cycle]
-  roles: [role:research-engineer]
+  roles: [role:research-analyst, role:research-scientist]
 ---
 
 # Archival Research Specialist Agent

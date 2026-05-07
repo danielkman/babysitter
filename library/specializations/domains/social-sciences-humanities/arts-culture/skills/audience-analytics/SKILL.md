@@ -4,8 +4,8 @@ description: Analyze visitor data, attendance patterns, and engagement metrics t
 allowed-tools: Read, Grep, Write, Edit, Glob, Bash, WebFetch
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:data-analysis, skill-area:analytics-tracking, skill-area:digital-marketing-analytics]
+  roles: [role:data-analyst, role:marketing-manager]
 ---
 
 # Audience Analytics

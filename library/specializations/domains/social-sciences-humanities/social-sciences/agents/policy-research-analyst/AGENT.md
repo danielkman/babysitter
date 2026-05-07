@@ -4,9 +4,9 @@ description: Conduct policy analysis and translate research findings for decisio
 required-skills: systematic-review, policy-communication, program-evaluation
 graph:
   domains: [domain:social-sciences]
-  skillAreas: [skill-area:data-analysis, skill-area:statistical-analysis, skill-area:user-research]
+  skillAreas: [skill-area:deep-web-research, skill-area:technical-writing, skill-area:stakeholder-management]
   workflows: [workflow:experiment-design, workflow:peer-review-cycle]
-  roles: [role:research-engineer, role:data-analyst]
+  roles: [role:research-analyst, role:strategic-planner]
 ---
 
 # Policy Research Analyst Agent

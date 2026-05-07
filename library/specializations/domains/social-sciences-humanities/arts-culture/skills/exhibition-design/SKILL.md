@@ -4,8 +4,8 @@ description: Plan and design exhibition layouts including spatial arrangement, o
 allowed-tools: Read, Grep, Write, Edit, Glob, WebFetch
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:visual-design, skill-area:interaction-design, skill-area:accessibility-first-design]
+  roles: [role:creative-director, role:product-designer]
 ---
 
 # Exhibition Design

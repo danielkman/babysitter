@@ -5,9 +5,9 @@ allowed-tools: Read, Grep, Write, Edit, Glob, Bash
 graph:
   domains: [domain:education]
   specializations: [specialization:instructional-design]
-  skillAreas: [skill-area:tutorial-design, skill-area:docs-as-code, skill-area:learning-development]
+  skillAreas: [skill-area:learning-development, skill-area:video-processing, skill-area:media-encoding]
   workflows: [workflow:peer-review-cycle]
-  roles: [role:technical-writer]
+  roles: [role:media-engineer, role:technical-writer]
 ---
 
 # Instructional Video Production

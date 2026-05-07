@@ -5,9 +5,9 @@ required-skills: learning-needs-analysis, learning-analytics-interpretation, qua
 graph:
   domains: [domain:education]
   specializations: [specialization:instructional-design]
-  skillAreas: [skill-area:tutorial-design, skill-area:docs-as-code, skill-area:learning-development]
+  skillAreas: [skill-area:learning-development, skill-area:data-analysis, skill-area:statistical-analysis]
   workflows: [workflow:peer-review-cycle]
-  roles: [role:technical-writer]
+  roles: [role:data-analyst, role:research-scientist]
 ---
 
 # Learning Evaluation Analyst Agent

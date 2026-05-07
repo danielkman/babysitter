@@ -5,9 +5,9 @@ allowed-tools: Read, Grep, Write, Edit, Glob
 graph:
   domains: [domain:humanities]
   specializations: [specialization:digital-humanities]
-  skillAreas: [skill-area:data-analysis, skill-area:deep-web-research, skill-area:docs-as-code]
+  skillAreas: [skill-area:audio-processing, skill-area:user-research, skill-area:data-analysis]
   workflows: [workflow:peer-review-cycle]
-  roles: [role:research-engineer]
+  roles: [role:ux-researcher, role:research-scientist]
 ---
 
 # Oral History Interview Technique

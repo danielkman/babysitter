@@ -4,8 +4,8 @@ description: Cultivate and steward donor relationships including prospect resear
 allowed-tools: Read, Grep, Write, Edit, Glob, WebFetch, WebSearch
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:customer-success, skill-area:community-management, skill-area:data-analysis]
+  roles: [role:customer-success-manager, role:account-executive]
 ---
 
 # Donor Relationship Management

@@ -6,8 +6,8 @@ description: Design settings, locations, props, costumes, and production element
 specialization: film-tv-production
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:visual-design, skill-area:interaction-design, skill-area:content-strategy]
+  roles: [role:creative-director, role:product-designer]
 ---
 
 # World Building Skill

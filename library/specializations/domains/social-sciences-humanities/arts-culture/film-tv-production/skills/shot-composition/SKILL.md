@@ -6,7 +6,7 @@ description: Plan camera angles, movements, shot sizes, and visual design for ci
 specialization: film-tv-production
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
+  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:image-processing]
   roles: [role:creative-director, role:design-lead]
 ---
 

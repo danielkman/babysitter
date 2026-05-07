@@ -5,9 +5,9 @@ required-skills: primary-source-evaluation, citation-scholarly-apparatus, archiv
 graph:
   domains: [domain:humanities]
   specializations: [specialization:digital-humanities]
-  skillAreas: [skill-area:data-analysis, skill-area:deep-web-research, skill-area:docs-as-code]
+  skillAreas: [skill-area:deep-web-research, skill-area:technical-writing, skill-area:data-analysis]
   workflows: [workflow:peer-review-cycle]
-  roles: [role:research-engineer]
+  roles: [role:research-analyst, role:technical-writer]
 ---
 
 # Historical Narrator Agent

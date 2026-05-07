@@ -5,9 +5,9 @@ required-skills: philosophical-writing-argumentation, scholarly-literature-synth
 graph:
   domains: [domain:philosophy]
   specializations: [specialization:applied-ethics]
-  skillAreas: [skill-area:deep-web-research, skill-area:docs-as-code, skill-area:data-analysis]
+  skillAreas: [skill-area:technical-writing, skill-area:deep-web-research, skill-area:natural-language-processing]
   workflows: [workflow:peer-review-cycle]
-  roles: [role:research-engineer]
+  roles: [role:technical-writer, role:research-analyst]
 ---
 
 # Academic Philosophy Writer Agent

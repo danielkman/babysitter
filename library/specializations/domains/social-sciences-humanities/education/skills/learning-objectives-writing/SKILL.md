@@ -5,9 +5,9 @@ allowed-tools: Read, Grep, Write, Edit, Glob
 graph:
   domains: [domain:education]
   specializations: [specialization:instructional-design]
-  skillAreas: [skill-area:tutorial-design, skill-area:docs-as-code, skill-area:learning-development]
+  skillAreas: [skill-area:learning-development, skill-area:tutorial-design, skill-area:technical-writing]
   workflows: [workflow:peer-review-cycle]
-  roles: [role:technical-writer]
+  roles: [role:technical-writer, role:product-manager]
 ---
 
 # Learning Objectives Writing

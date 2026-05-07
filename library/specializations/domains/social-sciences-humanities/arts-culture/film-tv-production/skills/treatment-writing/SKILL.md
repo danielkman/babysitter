@@ -6,8 +6,8 @@ description: Develop narrative synopses that tell the complete story cinematical
 specialization: film-tv-production
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:content-strategy, skill-area:technical-writing, skill-area:natural-language-processing]
+  roles: [role:content-strategist, role:creative-director]
 ---
 
 # Treatment Writing Skill

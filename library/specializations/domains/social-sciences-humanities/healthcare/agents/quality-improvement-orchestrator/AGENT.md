@@ -5,9 +5,9 @@ required-skills: clinical-workflow-analysis, quality-metrics-measurement, patien
 graph:
   domains: [domain:healthcare]
   specializations: [specialization:clinical-informatics]
-  skillAreas: [skill-area:data-analysis, skill-area:statistical-analysis, skill-area:data-governance]
+  skillAreas: [skill-area:data-analysis, skill-area:statistical-analysis, skill-area:change-management]
   workflows: [workflow:experiment-design]
-  roles: [role:research-engineer]
+  roles: [role:operations-analyst, role:engineering-manager]
 ---
 
 # Quality Improvement Orchestrator Agent

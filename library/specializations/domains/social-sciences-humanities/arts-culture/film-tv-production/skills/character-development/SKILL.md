@@ -6,8 +6,8 @@ description: Build complete character profiles with psychology, backstory, arcs,
 specialization: film-tv-production
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:visual-design, skill-area:natural-language-processing, skill-area:content-strategy]
+  roles: [role:creative-director, role:ux-writer]
 ---
 
 # Character Development Skill

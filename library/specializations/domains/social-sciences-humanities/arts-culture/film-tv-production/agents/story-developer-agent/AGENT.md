@@ -10,8 +10,8 @@ required-skills:
   - SK-FTV-012 (genre-analysis-film)
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:content-strategy, skill-area:natural-language-processing, skill-area:market-research]
+  roles: [role:content-strategist, role:creative-director]
 ---
 
 # Story Developer Agent

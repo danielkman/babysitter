@@ -5,9 +5,9 @@ required-skills: patient-safety-event-analysis, quality-metrics-measurement, acc
 graph:
   domains: [domain:healthcare]
   specializations: [specialization:clinical-informatics]
-  skillAreas: [skill-area:data-analysis, skill-area:statistical-analysis, skill-area:data-governance]
+  skillAreas: [skill-area:data-analysis, skill-area:compliance-automation, skill-area:incident-management]
   workflows: [workflow:experiment-design]
-  roles: [role:research-engineer]
+  roles: [role:compliance-officer, role:audit-analyst]
 ---
 
 # Patient Safety Officer Agent

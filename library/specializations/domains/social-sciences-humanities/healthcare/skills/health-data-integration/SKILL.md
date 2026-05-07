@@ -5,9 +5,9 @@ allowed-tools: Read, Grep, Write, Edit, Glob, Bash, WebFetch
 graph:
   domains: [domain:healthcare]
   specializations: [specialization:clinical-informatics]
-  skillAreas: [skill-area:data-analysis, skill-area:statistical-analysis, skill-area:data-governance]
+  skillAreas: [skill-area:etl-pipelines, skill-area:data-governance, skill-area:api-design]
   workflows: [workflow:experiment-design]
-  roles: [role:research-engineer]
+  roles: [role:data-engineer, role:backend-engineer]
 ---
 
 # Health Data Integration

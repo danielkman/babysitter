@@ -4,8 +4,8 @@ description: Arts administration executive agent for nonprofit management, strat
 required-skills: grant-proposal-writing, donor-relationship-management, stakeholder-facilitation
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:strategic-planning, skill-area:stakeholder-management, skill-area:budgeting-forecasting]
+  roles: [role:strategic-planner, role:project-manager]
 ---
 
 # Arts Administrator Agent

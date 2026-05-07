@@ -4,8 +4,8 @@ description: Create and maintain comprehensive collection records including cata
 allowed-tools: Read, Grep, Write, Edit, Glob, Bash
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:document-processing, skill-area:data-governance, skill-area:data-quality]
+  roles: [role:data-analyst, role:information-architect]
 ---
 
 # Collection Documentation

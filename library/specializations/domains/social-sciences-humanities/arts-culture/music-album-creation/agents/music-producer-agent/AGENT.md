@@ -5,8 +5,8 @@ required-skills: style-specification, genre-analysis, vocal-direction, productio
 id: AG-MAC-002
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:audio-processing, skill-area:prompt-engineering, skill-area:content-strategy]
+  roles: [role:creative-director, role:media-engineer]
 ---
 
 # Music Producer Agent

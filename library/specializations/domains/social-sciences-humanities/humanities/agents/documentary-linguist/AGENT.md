@@ -5,9 +5,9 @@ required-skills: ipa-transcription-phonological, morphosyntactic-analysis, topic
 graph:
   domains: [domain:humanities]
   specializations: [specialization:digital-humanities]
-  skillAreas: [skill-area:data-analysis, skill-area:deep-web-research, skill-area:docs-as-code]
+  skillAreas: [skill-area:natural-language-processing, skill-area:audio-processing, skill-area:data-analysis]
   workflows: [workflow:peer-review-cycle]
-  roles: [role:research-engineer]
+  roles: [role:research-scientist, role:computational-scientist]
 ---
 
 # Documentary Linguist Agent

@@ -6,7 +6,7 @@ description: Generate detailed image prompts for storyboard frames optimized for
 specialization: film-tv-production
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
+  skillAreas: [skill-area:visual-design, skill-area:prompt-engineering, skill-area:image-processing]
   roles: [role:creative-director, role:design-lead]
 ---
 

@@ -11,9 +11,9 @@ allowed-tools:
 graph:
   domains: [domain:philosophy]
   specializations: [specialization:applied-ethics]
-  skillAreas: [skill-area:deep-web-research, skill-area:docs-as-code, skill-area:data-analysis]
+  skillAreas: [skill-area:user-research, skill-area:mentorship, skill-area:natural-language-processing]
   workflows: [workflow:peer-review-cycle]
-  roles: [role:research-engineer]
+  roles: [role:ux-researcher, role:research-scientist]
 ---
 
 # Socratic Dialogue Facilitation Skill

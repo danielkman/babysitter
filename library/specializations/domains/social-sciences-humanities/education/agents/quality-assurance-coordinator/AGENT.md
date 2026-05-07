@@ -5,9 +5,9 @@ required-skills: quality-assurance-review, accessibility-compliance-auditing, cu
 graph:
   domains: [domain:education]
   specializations: [specialization:instructional-design]
-  skillAreas: [skill-area:tutorial-design, skill-area:docs-as-code, skill-area:learning-development]
+  skillAreas: [skill-area:learning-development, skill-area:acceptance-testing, skill-area:compliance-automation]
   workflows: [workflow:peer-review-cycle]
-  roles: [role:technical-writer]
+  roles: [role:qa-lead, role:compliance-officer]
 ---
 
 # Quality Assurance Coordinator Agent

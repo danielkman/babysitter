@@ -5,9 +5,9 @@ required-skills: ethnographic-coding-thematics, research-ethics-irb-navigation, 
 graph:
   domains: [domain:humanities]
   specializations: [specialization:digital-humanities]
-  skillAreas: [skill-area:data-analysis, skill-area:deep-web-research, skill-area:docs-as-code]
+  skillAreas: [skill-area:data-analysis, skill-area:user-research, skill-area:statistical-analysis]
   workflows: [workflow:peer-review-cycle]
-  roles: [role:research-engineer]
+  roles: [role:ux-researcher, role:research-scientist]
 ---
 
 # Ethnographic Methods Advisor Agent

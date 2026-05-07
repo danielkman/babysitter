@@ -5,8 +5,8 @@ allowed-tools: Read, Write, Edit, WebSearch
 id: SK-MAC-004
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:brand-positioning, skill-area:content-strategy, skill-area:visual-design]
+  roles: [role:brand-manager, role:creative-director]
 ---
 
 # Persona Development

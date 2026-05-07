@@ -5,9 +5,9 @@ allowed-tools: Read, Grep, Write, Edit, Glob, WebFetch
 graph:
   domains: [domain:healthcare]
   specializations: [specialization:clinical-informatics]
-  skillAreas: [skill-area:data-analysis, skill-area:statistical-analysis, skill-area:data-governance]
+  skillAreas: [skill-area:financial-modeling, skill-area:data-analysis, skill-area:compliance-automation]
   workflows: [workflow:experiment-design]
-  roles: [role:research-engineer]
+  roles: [role:financial-analyst, role:legal-advisor]
 ---
 
 # Payer Contract Analysis

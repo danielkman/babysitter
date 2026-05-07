@@ -5,8 +5,8 @@ allowed-tools: Read, Write, Edit, WebSearch, WebFetch
 id: SK-MAC-006
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:data-analysis, skill-area:market-research, skill-area:content-strategy]
+  roles: [role:research-analyst, role:creative-director]
 ---
 
 # Genre Analysis

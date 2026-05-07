@@ -5,8 +5,8 @@ allowed-tools: Read, Write, Edit, WebSearch
 id: SK-MAC-001
 graph:
   domains: [domain:arts-culture]
-  skillAreas: [skill-area:visual-design, skill-area:motion-design, skill-area:data-analysis]
-  roles: [role:creative-director, role:design-lead]
+  skillAreas: [skill-area:natural-language-processing, skill-area:content-strategy, skill-area:prompt-engineering]
+  roles: [role:ux-writer, role:content-strategist]
 ---
 
 # Lyric Writing
