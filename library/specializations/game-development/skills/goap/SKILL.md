@@ -2,6 +2,8 @@
 name: goap
 description: Goal-Oriented Action Planning skill for world state and action costs.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # GOAP Skill

@@ -8,6 +8,8 @@
  * @references
  * - Amazon Leadership Principles
  * - STAR Interview Method
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

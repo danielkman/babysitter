@@ -17,6 +17,8 @@
  * - CIS Docker Benchmark: https://www.cisecurity.org/benchmark/docker
  * - CIS Kubernetes Benchmark: https://www.cisecurity.org/benchmark/kubernetes
  * - Trivy: https://aquasecurity.github.io/trivy/
+ * @graph
+ *   domains: [domain:cybersecurity]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

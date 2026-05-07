@@ -19,6 +19,8 @@
  * - SystemVerilog for Verification: https://verificationacademy.com/
  * - Writing Testbenches: https://www.veripool.org/verilator/
  * - VHDL Verification: https://vunit.github.io/
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

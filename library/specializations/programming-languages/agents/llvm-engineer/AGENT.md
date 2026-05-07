@@ -10,6 +10,8 @@ expertise:
   - Cross-compilation and target configuration
   - ORC JIT implementation
   - LLVM intrinsics and builtins
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # LLVM Compiler Engineer Agent

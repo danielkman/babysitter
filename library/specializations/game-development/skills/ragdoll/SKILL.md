@@ -2,6 +2,8 @@
 name: ragdoll
 description: Ragdoll physics skill for joint constraints and hit reactions.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Ragdoll Skill

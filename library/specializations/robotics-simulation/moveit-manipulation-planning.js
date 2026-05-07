@@ -17,6 +17,8 @@
  * - MoveIt: https://moveit.ros.org/
  * - MoveIt Tutorials: https://ros-planning.github.io/moveit_tutorials/
  * - MoveIt2: https://github.com/ros-planning/moveit2
+ * @graph
+ *   domains: [domain:robotics]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

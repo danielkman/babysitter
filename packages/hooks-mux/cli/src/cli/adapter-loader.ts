@@ -158,15 +158,21 @@ export function loadAdapter(adapterName: string): LoadedAdapter {
 
 /**
  * List of known adapter names for discovery/doctor purposes.
+ * Derived from the Atlas catalog when available.
  */
-export const KNOWN_ADAPTERS = [
-  'claude',
-  'codex',
-  'copilot',
-  'cursor',
-  'gemini',
-  'oh-my-pi',
-  'openclaw',
-  'opencode',
-  'pi',
-] as const;
+function buildKnownAdapters(): string[] {
+  try {
+    const { listPluginTargetDescriptors } = require('@a5c-ai/agent-catalog') as {
+      listPluginTargetDescriptors: () => Array<{ adapterName: string }>;
+    };
+    const adapters = listPluginTargetDescriptors()
+      .map(t => t.adapterName)
+      .filter(Boolean);
+    if (adapters.length > 0) return adapters.sort();
+  } catch {
+    // Catalog unavailable
+  }
+  return [];
+}
+
+export const KNOWN_ADAPTERS: readonly string[] = buildKnownAdapters();

@@ -9,6 +9,8 @@ expertise:
   - Infrastructure deployment
   - Solution documentation
   - Educational content creation
+graph:
+  domains: [domain:cybersecurity]
 ---
 
 # CTF Challenge Creator Agent

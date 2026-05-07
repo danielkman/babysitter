@@ -11,6 +11,8 @@ expertise:
   - Multi-core firmware architecture
   - Firmware modularity and reusability
   - Performance vs resource trade-offs
+graph:
+  domains: [domain:embedded-systems]
 ---
 
 # Firmware Architect Agent

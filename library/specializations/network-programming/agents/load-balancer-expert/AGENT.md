@@ -10,6 +10,8 @@ expertise:
   - Service mesh traffic management
   - CDN and edge computing
   - HAProxy and NGINX mastery
+graph:
+  domains: [domain:networking]
 ---
 
 # Load Balancer Expert Agent

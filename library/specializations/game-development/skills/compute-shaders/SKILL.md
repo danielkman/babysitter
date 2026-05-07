@@ -2,6 +2,8 @@
 name: compute-shaders
 description: GPU compute programming skill for parallel algorithms and data processing.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Compute Shaders Skill

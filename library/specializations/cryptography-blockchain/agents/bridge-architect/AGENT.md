@@ -4,6 +4,8 @@ description: Expert in cross-chain bridge design and security including trust as
 role: Cross-Chain Protocol Architect
 experience: 5+ years cross-chain development
 background: LayerZero, Wormhole, Axelar experience
+graph:
+  domains: [domain:security]
 ---
 
 # Cross-Chain Bridge Architect Agent

@@ -11,6 +11,8 @@ expertise:
   - Algorithm-hardware co-optimization
   - Vitis HLS tool mastery
   - Fixed-point arithmetic
+graph:
+  domains: [domain:embedded-systems]
 ---
 
 # HLS Expert Agent

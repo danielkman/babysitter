@@ -16,6 +16,8 @@
  * @references
  * - Foundry Invariants: https://book.getfoundry.sh/forge/invariant-testing
  * - Medusa: https://github.com/crytic/medusa
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

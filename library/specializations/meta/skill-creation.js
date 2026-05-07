@@ -3,6 +3,11 @@
  * @description Create a new skill with SKILL.md, README.md, and supporting files
  * @inputs { skillName: string, description: string, allowedTools: array, category: string, specialization: string, outputDir: string }
  * @outputs { success: boolean, skillPath: string, files: array, artifacts: array }
+ * @graph
+ *   domains: [domain:software-engineering]
+ *   skillAreas: [skill-area:ai-agent-development]
+ *   topics: [topic:developer-experience]
+ *   roles: [role:platform-engineer, role:tech-lead]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

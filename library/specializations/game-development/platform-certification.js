@@ -4,6 +4,8 @@
  * Nintendo, Steam) including compliance verification, submission preparation, and issue resolution.
  * @inputs { projectName: string, targetPlatform?: string, submissionType?: string, outputDir?: string }
  * @outputs { success: boolean, certificationStatus: string, complianceReport: string, submissionId: string, artifacts: array }
+ * @graph
+ *   domains: [domain:gaming]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

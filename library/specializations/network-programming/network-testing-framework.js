@@ -15,6 +15,8 @@
  * @references
  * - tc (traffic control): https://man7.org/linux/man-pages/man8/tc.8.html
  * - toxiproxy: https://github.com/Shopify/toxiproxy
+ * @graph
+ *   domains: [domain:networking]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

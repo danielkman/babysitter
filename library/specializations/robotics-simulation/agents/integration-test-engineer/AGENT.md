@@ -13,6 +13,8 @@ expertise:
   - Regression testing
   - Test automation
   - Failure analysis
+graph:
+  domains: [domain:robotics]
 ---
 
 # Integration Test Engineer Agent

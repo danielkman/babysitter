@@ -7,6 +7,8 @@ allowed-tools:
   - Grep
   - Glob
   - Edit
+graph:
+  domains: [domain:computer-science]
 ---
 
 # Combinatorics Calculator Skill

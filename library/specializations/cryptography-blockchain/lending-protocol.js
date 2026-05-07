@@ -16,6 +16,8 @@
  * @references
  * - Compound Protocol Whitepaper: https://compound.finance/documents/Compound.Whitepaper.pdf
  * - Aave V3 Documentation: https://docs.aave.com/
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

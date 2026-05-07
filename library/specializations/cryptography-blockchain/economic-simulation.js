@@ -16,6 +16,8 @@
  * @references
  * - cadCAD: https://cadcad.org/
  * - Gauntlet: https://gauntlet.network/
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

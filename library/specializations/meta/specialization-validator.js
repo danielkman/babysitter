@@ -3,6 +3,11 @@
  * @description Validate a specialization for completeness across all 7 phases
  * @inputs { specializationPath: string, detailed: boolean }
  * @outputs { success: boolean, valid: boolean, score: number, phases: object, gaps: array, artifacts: array }
+ * @graph
+ *   domains: [domain:software-engineering]
+ *   skillAreas: [skill-area:ai-agent-development]
+ *   topics: [topic:developer-experience, topic:quality-assurance]
+ *   roles: [role:platform-engineer, role:tech-lead]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

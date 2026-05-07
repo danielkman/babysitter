@@ -2,6 +2,8 @@
 name: network-architect
 description: Multiplayer architecture agent for protocol selection and scalability planning.
 required-skills: client-server, state-sync, lag-compensation
+graph:
+  domains: [domain:gaming]
 ---
 
 # Network Architect Agent

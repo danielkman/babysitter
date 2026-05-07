@@ -16,6 +16,8 @@
  * @references
  * - CUDA Streams: https://docs.nvidia.com/cuda/cuda-c-programming-guide/
  * - CUDA Graphs: https://developer.nvidia.com/blog/cuda-graphs/
+ * @graph
+ *   domains: [domain:scientific-computing]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

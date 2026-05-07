@@ -13,6 +13,8 @@ expertise:
   - Domain randomization
   - Digital twin development
   - Sim-to-real transfer
+graph:
+  domains: [domain:robotics]
 ---
 
 # Simulation Engineer Agent

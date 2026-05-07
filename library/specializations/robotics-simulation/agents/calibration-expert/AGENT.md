@@ -13,6 +13,8 @@ expertise:
   - Multi-sensor calibration
   - Calibration validation methods
   - Automated calibration workflows
+graph:
+  domains: [domain:robotics]
 ---
 
 # Robot Calibration Expert Agent

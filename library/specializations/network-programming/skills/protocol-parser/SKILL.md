@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: protocol-implementation
   backlog-id: SK-002
+graph:
+  domains: [domain:networking]
 ---
 
 # protocol-parser

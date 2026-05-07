@@ -18,6 +18,8 @@
  * - Dragon Book Chapter 3: Lexical Analysis
  * - Flex Lexer Generator: https://github.com/westes/flex
  * - Unicode Text Segmentation: https://unicode.org/reports/tr29/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

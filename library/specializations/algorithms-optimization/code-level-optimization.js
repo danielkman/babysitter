@@ -8,6 +8,8 @@
  * @references
  * - Performance Optimization Guides
  * - Language-Specific Optimization Techniques
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

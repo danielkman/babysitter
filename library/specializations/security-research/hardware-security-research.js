@@ -16,6 +16,8 @@
  * @references
  * - ChipWhisperer: https://www.newae.com/chipwhisperer
  * - OpenOCD: https://openocd.org/
+ * @graph
+ *   domains: [domain:cybersecurity]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

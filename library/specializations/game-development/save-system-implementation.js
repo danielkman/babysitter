@@ -4,6 +4,8 @@
  * format, cloud saves, auto-save, save migration, and data integrity verification.
  * @inputs { projectName: string, saveType?: string, cloudSaveRequired?: boolean, outputDir?: string }
  * @outputs { success: boolean, saveSystemDoc: string, dataSchema: object, testResults: object, artifacts: array }
+ * @graph
+ *   domains: [domain:gaming]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

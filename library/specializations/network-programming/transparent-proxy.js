@@ -16,6 +16,8 @@
  * @references
  * - Linux TPROXY: https://www.kernel.org/doc/Documentation/networking/tproxy.txt
  * - iptables NAT: https://netfilter.org/documentation/HOWTO/NAT-HOWTO.html
+ * @graph
+ *   domains: [domain:networking]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

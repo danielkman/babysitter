@@ -6,6 +6,8 @@ backlog-id: AG-003
 metadata:
   author: babysitter-sdk
   version: "1.0.0"
+graph:
+  domains: [domain:scientific-computing]
 ---
 
 # parallel-algorithm-designer

@@ -9,6 +9,8 @@ expertise:
   - Executive summary creation
   - Technical writing for security
   - CVSS scoring and risk assessment
+graph:
+  domains: [domain:cybersecurity]
 ---
 
 # Security Report Writer Agent

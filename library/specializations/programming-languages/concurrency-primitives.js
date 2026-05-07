@@ -16,6 +16,8 @@
  * - CSP (Communicating Sequential Processes) by Hoare
  * - Tokio Runtime: https://tokio.rs/
  * - Go Concurrency: https://go.dev/doc/effective_go#concurrency
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

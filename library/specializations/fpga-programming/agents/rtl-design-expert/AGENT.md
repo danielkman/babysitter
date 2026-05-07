@@ -11,6 +11,8 @@ expertise:
   - Clock and reset design patterns
   - Parameterizable and reusable RTL
   - Synthesis-friendly coding styles
+graph:
+  domains: [domain:embedded-systems]
 ---
 
 # RTL Design Expert Agent

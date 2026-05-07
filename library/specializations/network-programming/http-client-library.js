@@ -15,6 +15,8 @@
  * @references
  * - Python requests: https://requests.readthedocs.io/
  * - Go net/http: https://pkg.go.dev/net/http
+ * @graph
+ *   domains: [domain:networking]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

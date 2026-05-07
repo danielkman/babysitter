@@ -11,6 +11,8 @@ expertise:
   - Safety requirements traceability
   - MISRA C compliance
   - Safety case documentation
+graph:
+  domains: [domain:embedded-systems]
 ---
 
 # Safety Compliance Expert Agent

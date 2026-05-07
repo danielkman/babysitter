@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: kernel-generation
   backlog-id: SK-016
+graph:
+  domains: [domain:scientific-computing]
 ---
 
 # cutlass-triton

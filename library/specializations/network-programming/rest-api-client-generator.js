@@ -16,6 +16,8 @@
  * @references
  * - OpenAPI Specification: https://swagger.io/specification/
  * - OpenAPI Generator: https://openapi-generator.tech/
+ * @graph
+ *   domains: [domain:networking]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

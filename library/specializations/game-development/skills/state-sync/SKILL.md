@@ -2,6 +2,8 @@
 name: state-sync
 description: State synchronization skill for delta compression and interpolation.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # State Sync Skill

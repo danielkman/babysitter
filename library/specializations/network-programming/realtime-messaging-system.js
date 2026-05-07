@@ -15,6 +15,8 @@
  * @references
  * - Phoenix Channels: https://hexdocs.pm/phoenix/channels.html
  * - Socket.IO: https://socket.io/docs/
+ * @graph
+ *   domains: [domain:networking]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -8,6 +8,8 @@ expertise:
   - Advanced graph technique application
   - Network flow modeling
   - Tree algorithm expertise
+graph:
+  domains: [domain:computer-science]
 ---
 
 # Graph Specialist Agent

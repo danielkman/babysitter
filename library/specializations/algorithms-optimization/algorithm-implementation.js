@@ -17,6 +17,8 @@
  * - CLRS Introduction to Algorithms
  * - CP-Algorithms: https://cp-algorithms.com/
  * - Algorithm Design Manual by Skiena
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

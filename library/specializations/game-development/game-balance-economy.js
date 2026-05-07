@@ -18,6 +18,8 @@
  * - Game Balance by Ian Schreiber
  * - Machinations: A Diagramming Tool for Game System Design
  * - Game Mechanics: Advanced Game Design by Ernest Adams
+ * @graph
+ *   domains: [domain:gaming]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

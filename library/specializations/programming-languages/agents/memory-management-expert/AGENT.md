@@ -10,6 +10,8 @@ expertise:
   - Memory allocator strategies
   - Heap profiling and analysis
   - Memory leak detection
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Memory Management Expert Agent

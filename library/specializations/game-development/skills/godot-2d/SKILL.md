@@ -2,6 +2,8 @@
 name: godot-2d
 description: Godot 2D game development skill for tilemaps, pixel-perfect rendering, and 2D physics.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Godot 2D Skill

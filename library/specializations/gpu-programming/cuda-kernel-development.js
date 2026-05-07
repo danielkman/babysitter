@@ -18,6 +18,8 @@
  * - CUDA C++ Programming Guide: https://docs.nvidia.com/cuda/cuda-c-programming-guide/
  * - CUDA C++ Best Practices Guide: https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/
  * - NVIDIA Developer Blog: https://developer.nvidia.com/blog/
+ * @graph
+ *   domains: [domain:scientific-computing]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

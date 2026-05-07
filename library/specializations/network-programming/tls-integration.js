@@ -21,6 +21,8 @@
  * - OpenSSL: https://www.openssl.org/docs/
  * - Mozilla SSL Config: https://ssl-config.mozilla.org/
  * - TLS 1.3 RFC: https://www.rfc-editor.org/rfc/rfc8446
+ * @graph
+ *   domains: [domain:networking]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

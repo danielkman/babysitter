@@ -8,6 +8,8 @@ expertise:
   - Prime number algorithms
   - Combinatorics calculations
   - Mathematical proof construction
+graph:
+  domains: [domain:computer-science]
 ---
 
 # Number Theory Specialist Agent

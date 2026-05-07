@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: video-processing
   backlog-id: SK-014
+graph:
+  domains: [domain:scientific-computing]
 ---
 
 # nvenc-nvdec

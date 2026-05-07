@@ -11,6 +11,8 @@ expertise:
   - Secure firmware updates
   - Side-channel attack mitigation
   - Security certifications (PSA, SESIP)
+graph:
+  domains: [domain:embedded-systems]
 ---
 
 # Embedded Security Expert Agent

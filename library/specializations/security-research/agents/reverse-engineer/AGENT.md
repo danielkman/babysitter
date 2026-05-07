@@ -9,6 +9,8 @@ expertise:
   - Packed and obfuscated code analysis
   - Protocol reverse engineering
   - Firmware analysis
+graph:
+  domains: [domain:cybersecurity]
 ---
 
 # Reverse Engineer Agent

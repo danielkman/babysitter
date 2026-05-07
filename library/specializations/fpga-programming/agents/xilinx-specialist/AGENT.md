@@ -2,6 +2,8 @@
 name: xilinx-specialist
 description: Deep expertise in Xilinx/AMD FPGA ecosystem including Vivado Design Suite, Vitis platform, IP catalog, and device-specific optimizations.
 role: Xilinx/AMD Applications Engineer
+graph:
+  domains: [domain:embedded-systems]
 ---
 
 # xilinx-specialist

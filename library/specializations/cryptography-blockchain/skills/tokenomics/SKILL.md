@@ -2,6 +2,8 @@
 name: tokenomics
 description: Token economics simulation and analysis. Supports supply modeling, staking mechanisms, liquidity mining, governance dynamics, agent-based simulations, and cadCAD integration.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:security]
 ---
 
 # Token Economics Modeling Skill

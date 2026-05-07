@@ -2,6 +2,8 @@
 name: embedded-crypto
 description: Embedded cryptographic operations and secure element integration. Expert skill for hardware crypto accelerators, secure key storage, TrustZone configuration, and side-channel attack mitigation.
 allowed-tools: Read, Grep, Write, Edit, Bash, Glob, WebFetch, WebSearch
+graph:
+  domains: [domain:embedded-systems]
 ---
 
 # Embedded Cryptographic Operations Skill

@@ -2,6 +2,8 @@
 name: zk-circuits
 description: Zero-knowledge circuit development using Circom and Noir languages. Supports constraint optimization, ZK-friendly cryptographic primitives, proof generation (Groth16, PLONK), and Merkle tree implementations.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:security]
 ---
 
 # ZK Circuit Development Skill

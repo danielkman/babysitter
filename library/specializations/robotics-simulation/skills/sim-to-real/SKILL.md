@@ -10,6 +10,8 @@ allowed-tools:
   - Edit
   - Glob
   - Grep
+graph:
+  domains: [domain:robotics]
 ---
 
 # Sim-to-Real Transfer Skill

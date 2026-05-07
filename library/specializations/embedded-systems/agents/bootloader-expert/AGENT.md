@@ -11,6 +11,8 @@ expertise:
   - Memory layout optimization
   - Boot time optimization
   - Multi-stage bootloaders
+graph:
+  domains: [domain:embedded-systems]
 ---
 
 # Bootloader Expert Agent

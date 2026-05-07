@@ -16,6 +16,8 @@
  * - The Garbage Collection Handbook by Jones, Hosking, Moss
  * - V8 Garbage Collection: https://v8.dev/blog/trash-talk
  * - Boehm GC: https://www.hboehm.info/gc/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

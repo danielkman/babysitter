@@ -8,6 +8,8 @@ metadata:
   category: algorithms-optimization
   skill-id: SK-ALGO-012
   priority: high
+graph:
+  domains: [domain:computer-science]
 ---
 
 # dp-pattern-library

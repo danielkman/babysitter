@@ -2,6 +2,8 @@
 name: wwise
 description: Wwise integration skill for sound banks, RTPC, and interactive music.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Wwise Skill

@@ -15,6 +15,8 @@
  * @references
  * - LeetCode Patterns: https://seanprashad.com/leetcode-patterns/
  * - Algorithm Pattern Recognition: https://www.geeksforgeeks.org/fundamentals-of-algorithms/
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

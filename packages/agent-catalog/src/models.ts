@@ -495,6 +495,17 @@ export interface PluginTargetDescriptor {
   externalPackageName?: string | null;
   generatedSourceDir?: string;
   requiredSurfaceFile?: string | null;
+  promptCapabilities?: string[];
+  loopControlTerm?: string;
+  hookDriven?: boolean;
+  interactiveToolName?: string;
+  sessionEnvVarsDescription?: string;
+  hasIntentFidelityChecks?: boolean;
+  hasNonNegotiables?: boolean;
+  cliSetupMode?: string;
+  defaultStepCount?: number;
+  skillSystemLabel?: string;
+  defaultTransportId?: string;
   supportedHooks: Record<string, string>;
   evidenceIds: string[];
 }

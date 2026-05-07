@@ -16,6 +16,8 @@
  * @references
  * - Immunefi: https://immunefi.com/
  * - Code4rena: https://code4rena.com/
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

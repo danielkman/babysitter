@@ -19,6 +19,8 @@
  * - ISO TC 299 Robotics: https://www.iso.org/committee/5915511.html
  * - ISO 10218 Robot Safety: https://www.iso.org/standard/51330.html
  * - Modern Robotics: http://modernrobotics.org/
+ * @graph
+ *   domains: [domain:robotics]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

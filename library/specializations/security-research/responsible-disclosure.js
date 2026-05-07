@@ -21,6 +21,8 @@
  * @references
  * - CERT/CC Disclosure Policy: https://vuls.cert.org/confluence/display/CVD
  * - Google Project Zero Policy: https://googleprojectzero.blogspot.com/p/vulnerability-disclosure-policy.html
+ * @graph
+ *   domains: [domain:cybersecurity]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

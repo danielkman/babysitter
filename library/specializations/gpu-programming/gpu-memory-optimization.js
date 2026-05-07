@@ -16,6 +16,8 @@
  * @references
  * - CUDA C++ Best Practices Guide - Memory Optimizations: https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/
  * - GPU Gems: Optimizing Memory Access: https://developer.nvidia.com/gpugems
+ * @graph
+ *   domains: [domain:scientific-computing]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

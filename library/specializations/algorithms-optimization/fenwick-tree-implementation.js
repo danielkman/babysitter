@@ -7,6 +7,8 @@
  *
  * @references
  * - Fenwick Tree: https://cp-algorithms.com/data_structures/fenwick.html
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

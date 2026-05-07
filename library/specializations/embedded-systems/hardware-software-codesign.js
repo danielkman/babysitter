@@ -17,6 +17,8 @@
  * - Hardware-Software Co-Design: https://www.embedded.com/hardware-software-co-design-for-embedded-systems/
  * - System Partitioning: https://www.embedded.com/partitioning-hardware-and-software/
  * - Interface Design: https://embeddedartistry.com/blog/2017/02/06/embedded-driver-development-patterns/
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

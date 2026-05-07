@@ -2,6 +2,8 @@
 name: godot-networking
 description: Godot multiplayer skill for high-level networking API, RPCs, and peer-to-peer networking.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Godot Networking Skill

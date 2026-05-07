@@ -3,6 +3,28 @@ import * as path from 'path';
 import { fileURLToPath } from 'url';
 import type { A5cPluginManifest } from './types.js';
 
+/**
+ * Build the contextFiles map from catalog data.
+ * Targets with a requiredSurfaceFile that is an AGENTS.md-style file
+ * get a context/ mapping.
+ */
+function buildContextFilesMap(): Record<string, string> {
+  try {
+    const { listPluginTargetDescriptors } = require('@a5c-ai/agent-catalog') as {
+      listPluginTargetDescriptors: () => Array<{ targetId: string; requiredSurfaceFile?: string | null }>;
+    };
+    const map: Record<string, string> = {};
+    for (const target of listPluginTargetDescriptors()) {
+      if (target.requiredSurfaceFile) {
+        map[target.targetId] = `context/${target.requiredSurfaceFile}`;
+      }
+    }
+    return map;
+  } catch {
+    return {};
+  }
+}
+
 export const INIT_TEMPLATES = ['minimal', 'full', 'hooks-only'] as const;
 
 export type InitTemplate = typeof INIT_TEMPLATES[number];
@@ -169,11 +191,7 @@ function buildManifest(name: string, template: InitTemplate): A5cPluginManifest 
           file: 'skills/example/SKILL.md',
         },
       ],
-      contextFiles: {
-        'github-copilot': 'context/AGENTS.md',
-        pi: 'context/AGENTS.md',
-        'oh-my-pi': 'context/AGENTS.md',
-      },
+      contextFiles: buildContextFilesMap(),
     };
   }
 

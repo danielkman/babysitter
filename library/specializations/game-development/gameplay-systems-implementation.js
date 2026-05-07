@@ -15,6 +15,8 @@
  * @references
  * - Game Programming Patterns by Robert Nystrom
  * - Game Engine Architecture by Jason Gregory
+ * @graph
+ *   domains: [domain:gaming]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

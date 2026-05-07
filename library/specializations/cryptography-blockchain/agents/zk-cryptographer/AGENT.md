@@ -4,6 +4,8 @@ description: Zero-knowledge proof systems expert specializing in circuit design,
 role: Senior ZK Cryptographer
 experience: 6+ years applied cryptography
 background: Academic research, ZK protocol development (Zcash, Aztec, zkSync methodology)
+graph:
+  domains: [domain:security]
 ---
 
 # ZK Cryptographer Agent

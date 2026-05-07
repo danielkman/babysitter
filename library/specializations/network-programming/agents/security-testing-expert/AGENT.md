@@ -10,6 +10,8 @@ expertise:
   - Security test automation
   - Vulnerability reporting and disclosure
   - Exploit development understanding
+graph:
+  domains: [domain:networking]
 ---
 
 # Security Testing Expert Agent

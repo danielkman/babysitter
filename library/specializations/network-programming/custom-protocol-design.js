@@ -22,6 +22,8 @@
  * @references
  * - RFC Index: https://www.rfc-editor.org/rfc-index.html
  * - Protocol Design Patterns: https://www.oreilly.com/library/view/network-protocols/
+ * @graph
+ *   domains: [domain:networking]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

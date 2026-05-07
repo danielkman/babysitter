@@ -2,6 +2,8 @@
 name: linker-script
 description: GNU linker script generation and optimization for embedded systems. Expert skill for memory layout definition, section placement, multi-image linking, and memory protection configuration.
 allowed-tools: Read, Grep, Write, Edit, Bash, Glob
+graph:
+  domains: [domain:embedded-systems]
 ---
 
 # Linker Script Skill

@@ -9,6 +9,8 @@ expertise:
   - Active Directory attacks
   - Cloud environment attacks
   - MITRE ATT&CK mapping
+graph:
+  domains: [domain:cybersecurity]
 ---
 
 # Red Team Operator Agent

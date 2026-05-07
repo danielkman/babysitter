@@ -8,6 +8,8 @@ expertise:
   - Practice problem selection
   - Misconception correction
   - Building intuition for algorithms
+graph:
+  domains: [domain:computer-science]
 ---
 
 # Algorithm Teacher Agent

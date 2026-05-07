@@ -2,6 +2,8 @@
 name: pbr-rendering
 description: Physically-based rendering skill for BRDF models and material workflows.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # PBR Rendering Skill

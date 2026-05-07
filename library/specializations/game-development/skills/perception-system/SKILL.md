@@ -2,6 +2,8 @@
 name: perception-system
 description: AI perception skill for sight, hearing, and threat detection systems.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Perception System Skill

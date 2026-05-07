@@ -56,6 +56,21 @@ attributes:
   generatedSourceDir: "github-copilot"
   marketplaceSpecs: []
   requiredSurfaceFile: "AGENTS.md"
+  promptCapabilities:
+    - hooks
+    - mcp
+    - task-tool
+    - breakpoint-routing
+  loopControlTerm: in-turn
+  hookDriven: false
+  interactiveToolName: "AskUserQuestion tool"
+  sessionEnvVarsDescription: "PID-scoped session marker (authoritative); COPILOT_ENV_FILE / COPILOT_SESSION_ID and AGENT_SESSION_ID are fallbacks"
+  hasIntentFidelityChecks: false
+  hasNonNegotiables: false
+  cliSetupMode: default
+  defaultStepCount: 8
+  skillSystemLabel: "Installed skill"
+  defaultTransportId: openai-chat
 
 edges:
   hosted_by:

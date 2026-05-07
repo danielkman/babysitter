@@ -23,6 +23,8 @@
  * - Beej's Guide to Network Programming: https://beej.us/guide/bgnet/
  * - Linux Socket Man Page: https://man7.org/linux/man-pages/man7/socket.7.html
  * - The C10K Problem: http://www.kegel.com/c10k.html
+ * @graph
+ *   domains: [domain:networking]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

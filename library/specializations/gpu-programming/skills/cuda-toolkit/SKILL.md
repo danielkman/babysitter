@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: cuda-development
   backlog-id: SK-001
+graph:
+  domains: [domain:scientific-computing]
 ---
 
 # cuda-toolkit

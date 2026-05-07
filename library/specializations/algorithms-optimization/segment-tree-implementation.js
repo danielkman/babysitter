@@ -7,6 +7,8 @@
  *
  * @references
  * - Segment Tree: https://cp-algorithms.com/data_structures/segment_tree.html
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

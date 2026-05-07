@@ -2,6 +2,8 @@
 name: console-performance
 description: Console optimization skill for memory constraints and TCRs.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Console Performance Skill

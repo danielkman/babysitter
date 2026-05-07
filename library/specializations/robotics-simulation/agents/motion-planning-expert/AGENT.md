@@ -13,6 +13,8 @@ expertise:
   - Dynamic obstacle avoidance
   - Multi-robot path planning
   - Trajectory optimization
+graph:
+  domains: [domain:robotics]
 ---
 
 # Motion Planning Expert Agent

@@ -16,6 +16,8 @@
  * @references
  * - Reality Gap: https://arxiv.org/abs/2011.12820
  * - Digital Twins: https://ieeexplore.ieee.org/document/9387482
+ * @graph
+ *   domains: [domain:robotics]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -2,6 +2,8 @@
 name: shader-effects
 description: Common shader effects skill for dissolve, outline, hologram, toon, water, fire effects.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Shader Effects Skill

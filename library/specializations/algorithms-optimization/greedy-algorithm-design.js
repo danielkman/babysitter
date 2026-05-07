@@ -8,6 +8,8 @@
  * @references
  * - Greedy Algorithm Design Techniques
  * - CLRS Greedy Algorithms Chapter
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

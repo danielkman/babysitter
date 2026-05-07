@@ -17,6 +17,8 @@
  * - OMPL: https://ompl.kavrakilab.org/
  * - move_base: http://wiki.ros.org/move_base
  * - Nav2: https://navigation.ros.org/
+ * @graph
+ *   domains: [domain:robotics]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -17,6 +17,8 @@
  * - Nsight Systems Documentation: https://docs.nvidia.com/nsight-systems/
  * - Nsight Compute Documentation: https://docs.nvidia.com/nsight-compute/
  * - Roofline Model: https://crd.lbl.gov/divisions/amcr/computer-science-amcr/par/research/roofline/
+ * @graph
+ *   domains: [domain:scientific-computing]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

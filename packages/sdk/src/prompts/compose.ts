@@ -8,12 +8,29 @@ import { PromptContext } from './types';
 import * as parts from './parts';
 
 /**
+ * Resolve the orchestration step count from catalog metadata.
+ * Harnesses that consolidate steps (e.g. claude-code) report a lower count.
+ */
+function resolveStepCount(ctx: PromptContext): string {
+  try {
+    const { listPluginTargetDescriptors } = require('@a5c-ai/agent-catalog') as {
+      listPluginTargetDescriptors: () => Array<{ targetId: string; defaultStepCount?: number }>;
+    };
+    const target = listPluginTargetDescriptors().find(t => t.targetId === ctx.harness);
+    if (target?.defaultStepCount) return String(target.defaultStepCount);
+  } catch {
+    // Catalog unavailable
+  }
+  return '8';
+}
+
+/**
  * Full babysit skill prompt -- equivalent to the current SKILL.md content.
  * Used to generate SKILL.md files for each harness plugin.
  */
 export function composeBabysitSkillPrompt(ctx: PromptContext): string {
-  // Determine step count based on harness
-  const stepCount = ctx.harness === 'claude-code' ? '4' : '8';
+  // Determine step count from catalog-derived context or fallback
+  const stepCount = resolveStepCount(ctx);
 
   // Determine loop step description
   const loopStepDesc = ctx.loopControlTerm === 'stop-hook'

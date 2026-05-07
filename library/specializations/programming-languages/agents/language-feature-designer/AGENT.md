@@ -10,6 +10,8 @@ expertise:
   - Effect system design
   - Error handling mechanisms
   - Concurrency primitives design
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Language Feature Designer Agent

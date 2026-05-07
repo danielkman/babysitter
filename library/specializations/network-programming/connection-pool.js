@@ -24,6 +24,8 @@
  * @references
  * - HikariCP: https://github.com/brettwooldridge/HikariCP
  * - Go sql/database: https://pkg.go.dev/database/sql
+ * @graph
+ *   domains: [domain:networking]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

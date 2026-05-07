@@ -4,6 +4,8 @@ description: Specialist in EVM gas optimization techniques including opcode anal
 role: Smart Contract Performance Engineer
 experience: 5+ years EVM development
 background: High-frequency DeFi, gas-sensitive applications
+graph:
+  domains: [domain:security]
 ---
 
 # Gas Optimizer Agent

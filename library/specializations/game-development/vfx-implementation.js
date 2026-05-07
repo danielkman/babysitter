@@ -4,6 +4,8 @@
  * shaders, post-processing, environmental effects, and performance optimization for visual effects.
  * @inputs { projectName: string, vfxStyle?: string, effectCategories?: array, outputDir?: string }
  * @outputs { success: boolean, vfxList: array, performanceReport: object, integrationDoc: string, artifacts: array }
+ * @graph
+ *   domains: [domain:gaming]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

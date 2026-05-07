@@ -18,6 +18,8 @@
  * @references
  * - ERC-1155 Standard: https://eips.ethereum.org/EIPS/eip-1155
  * - OpenZeppelin ERC1155: https://docs.openzeppelin.com/contracts/4.x/erc1155
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

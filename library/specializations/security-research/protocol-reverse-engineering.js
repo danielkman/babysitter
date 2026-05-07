@@ -17,6 +17,8 @@
  * - Wireshark: https://www.wireshark.org/
  * - Scapy: https://scapy.net/
  * - Boofuzz: https://github.com/jtpereyda/boofuzz
+ * @graph
+ *   domains: [domain:cybersecurity]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

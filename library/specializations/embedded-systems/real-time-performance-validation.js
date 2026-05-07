@@ -18,6 +18,8 @@
  * - Real-Time System Performance Analysis: https://www.embedded.com/real-time-system-performance-analysis/
  * - WCET Analysis: https://interrupt.memfault.com/blog/profiling-firmware-on-cortex-m
  * - Real-Time Systems: https://www.freertos.org/Documentation/RTOS_book.html
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

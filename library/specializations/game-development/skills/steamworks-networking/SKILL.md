@@ -2,6 +2,8 @@
 name: steamworks-networking
 description: Steam P2P networking skill for lobbies and relay servers.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Steamworks Networking Skill

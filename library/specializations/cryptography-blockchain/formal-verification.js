@@ -17,6 +17,8 @@
  * - Certora Prover Documentation: https://docs.certora.com/
  * - K Framework: https://github.com/runtimeverification/k
  * - Formal Verification Best Practices: https://ethereum.org/en/developers/docs/smart-contracts/formal-verification/
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

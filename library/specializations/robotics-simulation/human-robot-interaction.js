@@ -16,6 +16,8 @@
  * - HRI: https://humanrobotinteraction.org/
  * - ISO 10218: https://www.iso.org/standard/51330.html
  * - Collaborative Robots: https://www.iso.org/standard/62996.html
+ * @graph
+ *   domains: [domain:robotics]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

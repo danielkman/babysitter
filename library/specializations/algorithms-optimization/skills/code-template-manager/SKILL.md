@@ -8,6 +8,8 @@ allowed-tools:
   - Grep
   - Glob
   - Edit
+graph:
+  domains: [domain:computer-science]
 ---
 
 # Code Template Manager Skill

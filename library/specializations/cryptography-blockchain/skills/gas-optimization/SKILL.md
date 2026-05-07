@@ -2,6 +2,8 @@
 name: gas-optimization
 description: Advanced gas optimization techniques for EVM smart contracts. Covers storage packing, memory vs calldata optimization, assembly/Yul, efficient data structures, batch operations, and benchmark-driven optimization strategies.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:security]
 ---
 
 # Gas Optimization Skill

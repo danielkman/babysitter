@@ -13,6 +13,8 @@ expertise:
   - Map management and localization
   - SLAM accuracy evaluation
   - Real-time SLAM optimization
+graph:
+  domains: [domain:robotics]
 ---
 
 # SLAM Specialist Agent

@@ -8,6 +8,8 @@
  * @references
  * - Cracking the Coding Interview
  * - FAANG Interview Preparation Guides
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

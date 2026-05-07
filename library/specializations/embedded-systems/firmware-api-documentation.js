@@ -17,6 +17,8 @@
  * - Doxygen Guide: https://www.doxygen.nl/manual/
  * - API Documentation Best Practices: https://embeddedartistry.com/blog/2018/04/09/documenting-your-embedded-c-api/
  * - Code Comments: https://interrupt.memfault.com/blog/better-firmware-documentation
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

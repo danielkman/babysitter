@@ -50,6 +50,22 @@ attributes:
   generatedSourceDir: "openclaw"
   marketplaceSpecs: []
   requiredSurfaceFile: null
+  promptCapabilities:
+    - session-binding
+    - mcp
+    - headless-prompt
+    - task-tool
+    - breakpoint-routing
+  loopControlTerm: agent_end
+  hookDriven: false
+  interactiveToolName: "AskUserQuestion tool"
+  sessionEnvVarsDescription: "PID-scoped session marker (authoritative); OPENCLAW_SHELL gateway injection and AGENT_SESSION_ID are fallbacks"
+  hasIntentFidelityChecks: false
+  hasNonNegotiables: false
+  cliSetupMode: default
+  defaultStepCount: 8
+  skillSystemLabel: "Installed skill"
+  defaultTransportId: openai-chat
 
 edges:
   hosted_by:

@@ -2,6 +2,8 @@
 name: blender-integration
 description: Blender to engine pipeline skill for GLTF/FBX export.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Blender Integration Skill

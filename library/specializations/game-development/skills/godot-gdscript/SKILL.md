@@ -2,6 +2,8 @@
 name: godot-gdscript
 description: GDScript programming skill for Godot Engine, including signals, coroutines, and performance optimization.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Godot GDScript Skill

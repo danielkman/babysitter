@@ -2,6 +2,8 @@
 name: godot-shaders
 description: Godot shading language skill for visual shaders, custom rendering, and material effects.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Godot Shaders Skill

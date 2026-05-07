@@ -27,6 +27,11 @@
  *   finalQuality: number,
  *   iterations: number
  * }
+ * @graph
+ *   domains: [domain:software-engineering]
+ *   skillAreas: [skill-area:ai-agent-development]
+ *   topics: [topic:developer-experience, topic:knowledge-management]
+ *   roles: [role:platform-engineer, role:tech-lead]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

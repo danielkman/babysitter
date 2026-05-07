@@ -15,6 +15,8 @@
  * @references
  * - Warp Divergence: https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/
  * - SIMD Efficiency: https://developer.nvidia.com/blog/using-cuda-warp-level-primitives/
+ * @graph
+ *   domains: [domain:scientific-computing]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

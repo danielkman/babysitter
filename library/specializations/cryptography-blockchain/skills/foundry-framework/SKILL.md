@@ -2,6 +2,8 @@
 name: foundry-framework
 description: Expert usage of Foundry (Forge, Cast, Anvil, Chisel) for smart contract development, testing, and deployment. Includes fuzzing, gas reporting, local development, and deployment scripting capabilities.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:security]
 ---
 
 # Foundry Framework Skill

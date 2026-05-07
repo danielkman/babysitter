@@ -55,6 +55,22 @@ attributes:
   generatedSourceDir: "cursor"
   marketplaceSpecs: []
   requiredSurfaceFile: null
+  promptCapabilities:
+    - hooks
+    - stop-hook
+    - mcp
+    - task-tool
+    - breakpoint-routing
+  loopControlTerm: stop-hook
+  hookDriven: true
+  interactiveToolName: "AskUserQuestion tool"
+  sessionEnvVarsDescription: "conversation_id from hook stdin (authoritative per-request); PID-scoped session marker; AGENT_SESSION_ID fallback"
+  hasIntentFidelityChecks: false
+  hasNonNegotiables: false
+  cliSetupMode: default
+  defaultStepCount: 8
+  skillSystemLabel: "Installed skill"
+  defaultTransportId: openai-chat
 
 edges:
   hosted_by:

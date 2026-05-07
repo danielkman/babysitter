@@ -10,6 +10,8 @@ allowed-tools:
   - Edit
   - Glob
   - Grep
+graph:
+  domains: [domain:robotics]
 ---
 
 # Nav2 Navigation Skill

@@ -9,6 +9,8 @@ allowed-tools:
   - Edit
   - Glob
   - Grep
+graph:
+  domains: [domain:embedded-systems]
 ---
 
 # JTAG/SWD Debug Skill

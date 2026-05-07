@@ -17,6 +17,8 @@
  * - Game Engine Architecture by Jason Gregory
  * - GPU Gems Series
  * - GDC Performance Optimization Talks
+ * @graph
+ *   domains: [domain:gaming]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

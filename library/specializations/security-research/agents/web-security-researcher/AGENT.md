@@ -9,6 +9,8 @@ expertise:
   - Authentication and authorization flaws
   - API security vulnerabilities
   - Modern web framework security
+graph:
+  domains: [domain:cybersecurity]
 ---
 
 # Web Security Researcher Agent

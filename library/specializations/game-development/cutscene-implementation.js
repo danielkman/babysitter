@@ -4,6 +4,8 @@
  * pre-rendered videos, camera systems, sequencer tools, and interactive narrative sequences.
  * @inputs { projectName: string, cutsceneType?: string, cutsceneList?: array, outputDir?: string }
  * @outputs { success: boolean, cutscenes: array, cinematicDoc: string, testResults: object, artifacts: array }
+ * @graph
+ *   domains: [domain:gaming]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

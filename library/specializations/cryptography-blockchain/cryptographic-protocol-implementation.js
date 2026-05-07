@@ -16,6 +16,8 @@
  * @references
  * - NIST Cryptographic Standards: https://csrc.nist.gov/projects/cryptographic-standards-and-guidelines
  * - RFC 6979 Deterministic ECDSA: https://datatracker.ietf.org/doc/html/rfc6979
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

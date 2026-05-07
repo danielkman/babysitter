@@ -17,6 +17,8 @@
  * - AFL++: https://github.com/AFLplusplus/AFLplusplus
  * - boofuzz: https://boofuzz.readthedocs.io/
  * - Peach Fuzzer: https://www.peach.tech/
+ * @graph
+ *   domains: [domain:networking]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

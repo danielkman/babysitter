@@ -7,6 +7,8 @@
  *
  * @references
  * - Range Query Structures Comparison
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: robot-modeling
   backlog-id: SK-004
+graph:
+  domains: [domain:robotics]
 ---
 
 # urdf-sdf-model

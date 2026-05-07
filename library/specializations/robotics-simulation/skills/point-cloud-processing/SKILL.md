@@ -10,6 +10,8 @@ allowed-tools:
   - Edit
   - Glob
   - Grep
+graph:
+  domains: [domain:robotics]
 ---
 
 # Point Cloud Processing Skill

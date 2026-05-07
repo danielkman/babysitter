@@ -2,6 +2,8 @@
 name: gamemaker
 description: GameMaker Studio skill for GML scripting and 2D game patterns.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # GameMaker Skill

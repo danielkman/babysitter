@@ -14,6 +14,8 @@
  *
  * @references
  * - Wireshark Dissector Development: https://www.wireshark.org/docs/wsdg_html/ChDissectAdd.html
+ * @graph
+ *   domains: [domain:networking]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

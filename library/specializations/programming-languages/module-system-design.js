@@ -15,6 +15,8 @@
  * - Rust Modules: https://doc.rust-lang.org/book/ch07-00-managing-growing-projects-with-packages-crates-and-modules.html
  * - ES Modules: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules
  * - OCaml Modules: https://ocaml.org/docs/modules
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

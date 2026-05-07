@@ -11,6 +11,8 @@ expertise:
   - Production test strategies
   - Lab bring-up
   - Issue isolation techniques
+graph:
+  domains: [domain:embedded-systems]
 ---
 
 # FPGA Debug Expert Agent

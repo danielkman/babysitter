@@ -2,6 +2,8 @@
 name: unity-ecs
 description: Unity DOTS/ECS skill for data-oriented design, jobs system, burst compiler optimization, and high-performance gameplay systems.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Unity ECS Skill

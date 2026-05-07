@@ -2,6 +2,8 @@
 name: shader-optimization
 description: Shader performance optimization skill for instruction counting, GPU profiling, and rendering efficiency.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Shader Optimization Skill

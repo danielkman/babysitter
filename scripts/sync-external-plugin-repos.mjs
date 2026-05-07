@@ -42,19 +42,11 @@ async function buildTargetsFromCatalog() {
   }
 }
 
-const catalogTargets = await buildTargetsFromCatalog();
-const targets = catalogTargets ?? [
-  // Fallback when catalog is not built
-  { id: 'claude', repo: 'a5c-ai/babysitter-claude', sourceDir: 'artifacts/generated-plugins/claude-code', packageName: null, marketplaces: [] },
-  { id: 'codex', repo: 'a5c-ai/babysitter-codex', sourceDir: 'artifacts/generated-plugins/codex', packageName: '@a5c-ai/babysitter-codex', marketplaces: [] },
-  { id: 'gemini', repo: 'a5c-ai/babysitter-gemini', sourceDir: 'artifacts/generated-plugins/gemini-cli', packageName: '@a5c-ai/babysitter-gemini', marketplaces: [] },
-  { id: 'cursor', repo: 'a5c-ai/babysitter-cursor', sourceDir: 'artifacts/generated-plugins/cursor', packageName: '@a5c-ai/babysitter-cursor', marketplaces: [] },
-  { id: 'github-copilot', repo: 'a5c-ai/babysitter-github-copilot', sourceDir: 'artifacts/generated-plugins/github-copilot', packageName: '@a5c-ai/babysitter-github', marketplaces: [] },
-  { id: 'omp', repo: 'a5c-ai/babysitter-omp', sourceDir: 'artifacts/generated-plugins/oh-my-pi', packageName: '@a5c-ai/babysitter-omp', marketplaces: [] },
-  { id: 'opencode', repo: 'a5c-ai/babysitter-opencode', sourceDir: 'artifacts/generated-plugins/opencode', packageName: '@a5c-ai/babysitter-opencode', marketplaces: [] },
-  { id: 'openclaw', repo: 'a5c-ai/babysitter-openclaw', sourceDir: 'artifacts/generated-plugins/openclaw', packageName: '@a5c-ai/babysitter-openclaw', marketplaces: [] },
-  { id: 'pi', repo: 'a5c-ai/babysitter-pi', sourceDir: 'artifacts/generated-plugins/pi', packageName: '@a5c-ai/babysitter-pi', marketplaces: [] },
-];
+const targets = buildTargetsFromCatalog();
+if (!targets || targets.length === 0) {
+  console.error('ERROR: catalog is required for sync-external-plugin-repos. Build agent-catalog first (npm run build -w packages/agent-catalog).');
+  process.exit(1);
+}
 
 function currentBranch() {
   const result = spawnSync('git', ['branch', '--show-current'], { cwd: ROOT, encoding: 'utf8' });

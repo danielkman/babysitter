@@ -8,6 +8,8 @@ expertise:
   - Scalability analysis
   - Trade-off discussion
   - Diagram creation guidance
+graph:
+  domains: [domain:computer-science]
 ---
 
 # System Design Expert Agent

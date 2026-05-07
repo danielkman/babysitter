@@ -18,6 +18,8 @@
  * - Agile Game Development with Scrum by Clinton Keith
  * - The Game Production Handbook by Heather Maxwell Chandler
  * - Blood, Sweat, and Pixels by Jason Schreier
+ * @graph
+ *   domains: [domain:gaming]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

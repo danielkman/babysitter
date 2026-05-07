@@ -8,6 +8,8 @@
  * @references
  * - Dynamic Programming Recurrences
  * - Memoization vs Tabulation
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

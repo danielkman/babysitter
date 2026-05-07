@@ -2,6 +2,8 @@
 name: unreal-nanite
 description: Unreal Engine Nanite skill for virtualized geometry, mesh streaming, and LOD-free workflows.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Unreal Nanite Skill

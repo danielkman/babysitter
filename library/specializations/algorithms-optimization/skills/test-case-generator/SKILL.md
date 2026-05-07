@@ -8,6 +8,8 @@ metadata:
   category: algorithms-optimization
   skill-id: SK-ALGO-008
   priority: high
+graph:
+  domains: [domain:computer-science]
 ---
 
 # test-case-generator

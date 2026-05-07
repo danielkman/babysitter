@@ -2,6 +2,8 @@
 name: unity-urp
 description: Universal Render Pipeline configuration skill for Unity, including custom shaders, lighting setup, post-processing effects, and render feature development.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Unity URP Skill

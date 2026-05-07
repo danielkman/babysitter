@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: debugging
   backlog-id: SK-010
+graph:
+  domains: [domain:scientific-computing]
 ---
 
 # cuda-debugging

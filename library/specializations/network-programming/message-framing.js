@@ -16,6 +16,8 @@
  * @references
  * - Protocol Design Best Practices
  * - HTTP/2 Framing: https://www.rfc-editor.org/rfc/rfc7540
+ * @graph
+ *   domains: [domain:networking]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

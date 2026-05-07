@@ -2,6 +2,8 @@
 name: zbrush
 description: ZBrush skill for decimation and normal map baking.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # ZBrush Skill

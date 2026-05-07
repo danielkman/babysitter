@@ -16,6 +16,8 @@
  * @references
  * - Squid Proxy: http://www.squid-cache.org/Doc/
  * - mitmproxy: https://docs.mitmproxy.org/
+ * @graph
+ *   domains: [domain:networking]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

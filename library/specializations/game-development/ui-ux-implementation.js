@@ -16,6 +16,8 @@
  * @references
  * - Game UI Design: Best Practices
  * - WCAG 2.1 Accessibility Guidelines
+ * @graph
+ *   domains: [domain:gaming]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

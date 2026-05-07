@@ -19,6 +19,8 @@
  * - ERC-721 Standard: https://eips.ethereum.org/EIPS/eip-721
  * - OpenSea Metadata Standards: https://docs.opensea.io/docs/metadata-standards
  * - ERC-2981 Royalties: https://eips.ethereum.org/EIPS/eip-2981
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

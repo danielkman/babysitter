@@ -2,6 +2,8 @@
 name: destruction
 description: Destructible environment skill for fracturing and debris systems.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Destruction Skill

@@ -15,6 +15,8 @@
  * - Engineering a Compiler Chapter 4: Context-Sensitive Analysis
  * - Dragon Book Chapter 6: Intermediate-Code Generation
  * - Symbol Tables: https://en.wikipedia.org/wiki/Symbol_table
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

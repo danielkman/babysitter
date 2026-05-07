@@ -16,6 +16,8 @@
  * @references
  * - GDC: Building a Vertical Slice
  * - Game Production Handbook by Heather Maxwell Chandler
+ * @graph
+ *   domains: [domain:gaming]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

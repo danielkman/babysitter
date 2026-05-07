@@ -16,6 +16,8 @@
  * @references
  * - Zcash Protocol: https://zips.z.cash/protocol/protocol.pdf
  * - Tornado Cash: https://docs.tornado.cash/
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

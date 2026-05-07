@@ -11,6 +11,8 @@ expertise:
   - Power management in drivers
   - Driver testing with mocks
   - Cross-platform driver portability
+graph:
+  domains: [domain:embedded-systems]
 ---
 
 # Device Driver Expert Agent

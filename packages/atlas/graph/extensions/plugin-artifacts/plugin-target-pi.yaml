@@ -49,6 +49,22 @@ attributes:
   generatedSourceDir: "pi"
   marketplaceSpecs: []
   requiredSurfaceFile: "AGENTS.md"
+  promptCapabilities:
+    - skills
+    - slash-commands
+    - task-tool
+    - harness-routing
+    - programmatic-session
+  loopControlTerm: skill-driven
+  hookDriven: false
+  interactiveToolName: "AskUserQuestion"
+  sessionEnvVarsDescription: "PID-scoped session marker (authoritative); PI_SESSION_ID and AGENT_SESSION_ID are fallbacks"
+  hasIntentFidelityChecks: false
+  hasNonNegotiables: false
+  cliSetupMode: default
+  defaultStepCount: 8
+  skillSystemLabel: "Installed skill"
+  defaultTransportId: openai-chat
 
 edges:
   hosted_by:

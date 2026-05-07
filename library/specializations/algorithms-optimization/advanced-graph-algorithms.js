@@ -8,6 +8,8 @@
  * @references
  * - Network Flow: https://cp-algorithms.com/graph/
  * - MST Algorithms, Matching Algorithms
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -16,6 +16,8 @@
  * @references
  * - Geth Documentation: https://geth.ethereum.org/docs/
  * - Erigon: https://github.com/ledgerwatch/erigon
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

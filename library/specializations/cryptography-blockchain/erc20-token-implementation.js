@@ -18,6 +18,8 @@
  * - ERC-20 Standard: https://eips.ethereum.org/EIPS/eip-20
  * - OpenZeppelin ERC20: https://docs.openzeppelin.com/contracts/4.x/erc20
  * - ERC-2612 Permit: https://eips.ethereum.org/EIPS/eip-2612
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

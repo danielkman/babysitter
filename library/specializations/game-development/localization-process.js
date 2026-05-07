@@ -11,6 +11,8 @@
  *   targetLanguages: ['en', 'fr', 'de', 'es', 'ja', 'zh-CN'],
  *   localizationScope: 'full'
  * });
+ * @graph
+ *   domains: [domain:gaming]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

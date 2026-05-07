@@ -14,6 +14,11 @@
  *   - CI/CD workflow integration (PR validation, E2E Docker, release pipeline)
  *   - Command sync script (keeps plugin commands/skills in sync with canonical babysitter commands)
  *   - Quality verification and refinement
+ * @graph
+ *   domains: [domain:software-engineering]
+ *   skillAreas: [skill-area:ai-agent-development, skill-area:orchestration-loop]
+ *   topics: [topic:developer-experience, topic:integrations]
+ *   roles: [role:platform-engineer]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

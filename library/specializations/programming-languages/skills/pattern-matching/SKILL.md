@@ -2,6 +2,8 @@
 name: pattern-matching
 description: Expert skill for implementing pattern matching including exhaustiveness checking, decision tree compilation, and efficient match dispatch code generation.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Pattern Matching Skill

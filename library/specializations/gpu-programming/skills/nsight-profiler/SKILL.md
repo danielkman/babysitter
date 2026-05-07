@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: performance-profiling
   backlog-id: SK-002
+graph:
+  domains: [domain:scientific-computing]
 ---
 
 # nsight-profiler

@@ -2,6 +2,8 @@
 name: monetization-analyst
 description: Monetization analyst agent for IAP optimization.
 required-skills: iap, economy-balancing, game-analytics
+graph:
+  domains: [domain:gaming]
 ---
 
 # Monetization Analyst Agent

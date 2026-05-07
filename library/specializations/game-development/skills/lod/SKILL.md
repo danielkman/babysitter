@@ -2,6 +2,8 @@
 name: lod
 description: Level of Detail skill for mesh simplification and HLOD generation.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # LOD Skill

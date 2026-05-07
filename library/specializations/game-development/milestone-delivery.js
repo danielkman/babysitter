@@ -15,6 +15,8 @@
  * @references
  * - Game Production Handbook by Heather Maxwell Chandler
  * - GDC: Milestone Management Best Practices
+ * @graph
+ *   domains: [domain:gaming]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

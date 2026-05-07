@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: state-estimation
   backlog-id: SK-009
+graph:
+  domains: [domain:robotics]
 ---
 
 # sensor-fusion

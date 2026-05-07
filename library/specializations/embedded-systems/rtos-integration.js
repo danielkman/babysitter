@@ -17,6 +17,8 @@
  * - FreeRTOS Documentation: https://www.freertos.org/Documentation/RTOS_book.html
  * - Zephyr RTOS: https://docs.zephyrproject.org/latest/
  * - RTOS Design Patterns: https://www.embedded.com/design-patterns-for-embedded-systems-in-c/
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

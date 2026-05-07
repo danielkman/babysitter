@@ -11,6 +11,8 @@ expertise:
   - Boot and configuration
   - PetaLinux and Yocto
   - Bare-metal programming
+graph:
+  domains: [domain:embedded-systems]
 ---
 
 # Embedded FPGA Expert Agent

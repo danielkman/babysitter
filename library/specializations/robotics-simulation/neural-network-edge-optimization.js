@@ -16,6 +16,8 @@
  * - TensorRT: https://developer.nvidia.com/tensorrt
  * - ONNX Runtime: https://onnxruntime.ai/
  * - OpenVINO: https://docs.openvino.ai/
+ * @graph
+ *   domains: [domain:robotics]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

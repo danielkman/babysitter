@@ -15,6 +15,8 @@
  * @references
  * - ntopng: https://www.ntop.org/products/traffic-analysis/ntop/
  * - Zeek: https://zeek.org/
+ * @graph
+ *   domains: [domain:networking]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

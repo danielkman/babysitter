@@ -18,6 +18,8 @@
  * - ModelSim/QuestaSim User Guide: https://eda.sw.siemens.com/en-US/ic/questa/
  * - VCS User Guide: https://www.synopsys.com/verification/simulation/vcs.html
  * - Verilator: https://www.veripool.org/verilator/
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

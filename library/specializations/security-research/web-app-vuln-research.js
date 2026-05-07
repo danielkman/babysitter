@@ -17,6 +17,8 @@
  * - OWASP Testing Guide: https://owasp.org/www-project-web-security-testing-guide/
  * - Burp Suite: https://portswigger.net/burp
  * - OWASP ZAP: https://www.zaproxy.org/
+ * @graph
+ *   domains: [domain:cybersecurity]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

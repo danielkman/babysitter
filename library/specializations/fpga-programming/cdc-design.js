@@ -17,6 +17,8 @@
  * - CDC Design Guidelines: http://www.sunburst-design.com/papers/
  * - CDC Verification: https://www.synopsys.com/verification/static-and-formal-verification/spyglass.html
  * - Async FIFO Design: https://zipcpu.com/blog/2017/10/20/cdc.html
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

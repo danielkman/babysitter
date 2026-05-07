@@ -16,6 +16,8 @@
  * - AtCoder: https://atcoder.jp/
  * - AtCoder Problems: https://kenkoooo.com/atcoder/
  * - Competitive Programming Handbook: https://cses.fi/book/book.pdf
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

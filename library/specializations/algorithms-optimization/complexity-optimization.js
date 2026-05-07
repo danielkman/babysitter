@@ -8,6 +8,8 @@
  * @references
  * - Big-O Analysis, Complexity Theory
  * - Algorithm Optimization Techniques
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

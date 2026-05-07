@@ -11,6 +11,8 @@
  *   artStyle: 'stylized-realistic',
  *   targetPlatforms: ['PC', 'console']
  * });
+ * @graph
+ *   domains: [domain:gaming]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -11,6 +11,8 @@ expertise:
   - First-light firmware development
   - PCB debugging techniques
   - Schematic review and validation
+graph:
+  domains: [domain:embedded-systems]
 ---
 
 # Hardware Bring-Up Specialist Agent

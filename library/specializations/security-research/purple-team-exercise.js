@@ -16,6 +16,8 @@
  * @references
  * - Purple Team Exercise Framework: https://github.com/scythe-io/purple-team-exercise-framework
  * - MITRE ATT&CK: https://attack.mitre.org/
+ * @graph
+ *   domains: [domain:cybersecurity]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

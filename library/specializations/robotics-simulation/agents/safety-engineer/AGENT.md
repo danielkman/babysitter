@@ -13,6 +13,8 @@ expertise:
   - Emergency stop systems
   - Safety-rated monitoring
   - Certification preparation
+graph:
+  domains: [domain:robotics]
 ---
 
 # Safety Engineer Agent

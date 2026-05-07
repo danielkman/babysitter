@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: hardware-security
   backlog-id: SK-019
+graph:
+  domains: [domain:cybersecurity]
 ---
 
 # hardware-security

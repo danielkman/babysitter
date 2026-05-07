@@ -2,6 +2,8 @@
 name: technical-director
 description: Technical direction agent for engine selection, team technical leadership, and technology strategy.
 required-skills: unity-development, unreal-development, godot-development
+graph:
+  domains: [domain:gaming]
 ---
 
 # Technical Director Agent

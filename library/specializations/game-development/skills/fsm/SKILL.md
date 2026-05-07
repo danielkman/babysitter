@@ -2,6 +2,8 @@
 name: fsm
 description: Finite State Machine skill for hierarchical FSM and state transitions.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # FSM Skill

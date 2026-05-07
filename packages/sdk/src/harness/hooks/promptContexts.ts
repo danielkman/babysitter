@@ -4,7 +4,7 @@
  * @deprecated Adapters now derive their config from @a5c-ai/agent-mux metadata
  * via amuxMetadata.ts and derivePromptContext.ts. These factory functions are
  * retained for backward compatibility with prompts/context.ts re-exports.
- * New code should use createPromptContext() directly.
+ * New code should use createPromptContextForHarness() directly.
  */
 
 import type { PromptContext } from "../../prompts/types";
@@ -13,194 +13,130 @@ import {
   createDefaultCliSetupSnippet,
   createPromptContext,
 } from "../../prompts/contextShared";
+import type { PluginTargetDescriptor } from "@a5c-ai/agent-catalog";
+
+let _listPluginTargetDescriptors: (() => PluginTargetDescriptor[]) | undefined;
+function getTargetDescriptors(): PluginTargetDescriptor[] {
+  if (!_listPluginTargetDescriptors) {
+    try {
+      // Dynamic import to avoid circular dependency issues at module load time
+      const catalog = require("@a5c-ai/agent-catalog");
+      _listPluginTargetDescriptors = catalog.listPluginTargetDescriptors;
+    } catch {
+      return [];
+    }
+  }
+  return _listPluginTargetDescriptors?.() ?? [];
+}
+
+function resolveCliSetupSnippet(target: PluginTargetDescriptor): string {
+  if (target.cliSetupMode === 'claude-code') return createClaudeCodeCliSetupSnippet();
+  return createDefaultCliSetupSnippet();
+}
+
+function resolvePluginRootVar(target: PluginTargetDescriptor): string {
+  if (target.pluginRootEnvVar) return `\${${target.pluginRootEnvVar}}`;
+  if (target.pluginRootEnvVarForExtension) return `\${${target.pluginRootEnvVarForExtension}}`;
+  return '';
+}
+
+/**
+ * Build a PromptContext from catalog data for a given harness.
+ * Falls back to a minimal context when the catalog target is not found.
+ */
+export function createPromptContextFromCatalog(
+  harness: string,
+  overrides?: Partial<PromptContext>,
+): PromptContext {
+  const target = getTargetDescriptors().find(t => t.targetId === harness);
+  if (!target) {
+    return createPromptContext({
+      harness,
+      harnessLabel: harness,
+      capabilities: [],
+      pluginRootVar: '',
+      loopControlTerm: 'in-turn',
+      sessionBindingFlags: '',
+      hookDriven: false,
+      interactiveToolName: '',
+      sessionEnvVars: '',
+      resumeFlags: '',
+      cliSetupSnippet: createDefaultCliSetupSnippet(),
+      iterateFlags: '',
+      hasIntentFidelityChecks: false,
+      hasNonNegotiables: false,
+    }, overrides);
+  }
+
+  return createPromptContext({
+    harness: target.targetId,
+    harnessLabel: target.displayName,
+    capabilities: target.promptCapabilities ?? [],
+    pluginRootVar: resolvePluginRootVar(target),
+    loopControlTerm: target.loopControlTerm ?? 'in-turn',
+    sessionBindingFlags: '',
+    hookDriven: target.hookDriven ?? false,
+    interactiveToolName: target.interactiveToolName ?? '',
+    sessionEnvVars: target.sessionEnvVarsDescription ?? '',
+    resumeFlags: '',
+    cliSetupSnippet: resolveCliSetupSnippet(target),
+    sdkVersionExpr: target.cliSetupMode === 'claude-code' ? '$SDK_VERSION' : '',
+    iterateFlags: '',
+    hasIntentFidelityChecks: target.hasIntentFidelityChecks ?? false,
+    hasNonNegotiables: target.hasNonNegotiables ?? false,
+  }, overrides);
+}
 
 export function createCodexContext(
   overrides?: Partial<PromptContext>,
 ): PromptContext {
-  return createPromptContext({
-    harness: 'codex',
-    harnessLabel: 'Codex',
-    capabilities: ['hooks', 'stop-hook', 'ask-user-question', 'task-tool', 'breakpoint-routing'],
-    pluginRootVar: '${CODEX_PLUGIN_ROOT}',
-    loopControlTerm: 'stop-hook',
-    sessionBindingFlags: '',
-    hookDriven: true,
-    interactiveToolName: 'AskUserQuestion tool',
-    sessionEnvVars:
-      'PID-scoped session marker (authoritative); CODEX_THREAD_ID/CODEX_SESSION_ID and AGENT_SESSION_ID are fallbacks',
-    resumeFlags: '',
-    cliSetupSnippet: createDefaultCliSetupSnippet(),
-    iterateFlags: '',
-    hasIntentFidelityChecks: true,
-    hasNonNegotiables: true,
-  }, overrides);
+  return createPromptContextFromCatalog('codex', overrides);
 }
 
 export function createCursorContext(
   overrides?: Partial<PromptContext>,
 ): PromptContext {
-  return createPromptContext({
-    harness: 'cursor',
-    harnessLabel: 'Cursor',
-    capabilities: ['hooks', 'stop-hook', 'mcp', 'task-tool', 'breakpoint-routing'],
-    pluginRootVar: '${CURSOR_PLUGIN_ROOT}',
-    loopControlTerm: 'stop-hook',
-    sessionBindingFlags: '',
-    hookDriven: true,
-    interactiveToolName: 'AskUserQuestion tool',
-    sessionEnvVars: 'conversation_id from hook stdin (authoritative per-request); PID-scoped session marker; AGENT_SESSION_ID fallback',
-    resumeFlags: '',
-    cliSetupSnippet: createDefaultCliSetupSnippet(),
-    iterateFlags: '',
-    hasIntentFidelityChecks: false,
-    hasNonNegotiables: false,
-  }, overrides);
+  return createPromptContextFromCatalog('cursor', overrides);
 }
 
 export function createGeminiCliContext(
   overrides?: Partial<PromptContext>,
 ): PromptContext {
-  return createPromptContext({
-    harness: 'gemini-cli',
-    harnessLabel: 'Gemini CLI',
-    capabilities: ['hooks', 'stop-hook', 'task-tool', 'breakpoint-routing'],
-    pluginRootVar: '${GEMINI_EXTENSION_PATH}',
-    loopControlTerm: 'stop-hook',
-    sessionBindingFlags: '',
-    hookDriven: true,
-    interactiveToolName: 'AskUserQuestion tool',
-    sessionEnvVars: 'PID-scoped session marker (authoritative); GEMINI_SESSION_ID and AGENT_SESSION_ID are fallbacks',
-    resumeFlags: '',
-    cliSetupSnippet: createDefaultCliSetupSnippet(),
-    iterateFlags: '',
-    hasIntentFidelityChecks: false,
-    hasNonNegotiables: false,
-  }, overrides);
+  return createPromptContextFromCatalog('gemini-cli', overrides);
 }
 
 export function createGithubCopilotContext(
   overrides?: Partial<PromptContext>,
 ): PromptContext {
-  return createPromptContext({
-    harness: 'github-copilot',
-    harnessLabel: 'GitHub Copilot CLI',
-    capabilities: ['hooks', 'mcp', 'task-tool', 'breakpoint-routing'],
-    pluginRootVar: '${COPILOT_PLUGIN_ROOT}',
-    loopControlTerm: 'in-turn',
-    sessionBindingFlags: '',
-    hookDriven: false,
-    interactiveToolName: 'AskUserQuestion tool',
-    sessionEnvVars: 'PID-scoped session marker (authoritative); COPILOT_ENV_FILE / COPILOT_SESSION_ID and AGENT_SESSION_ID are fallbacks',
-    resumeFlags: '',
-    cliSetupSnippet: createDefaultCliSetupSnippet(),
-    iterateFlags: '',
-    hasIntentFidelityChecks: false,
-    hasNonNegotiables: false,
-  }, overrides);
+  return createPromptContextFromCatalog('github-copilot', overrides);
 }
 
 export function createOhMyPiContext(
   overrides?: Partial<PromptContext>,
 ): PromptContext {
-  return createPromptContext({
-    harness: 'oh-my-pi',
-    harnessLabel: 'oh-my-pi',
-    capabilities: ['skills', 'slash-commands', 'task-tool', 'harness-routing', 'programmatic-session', 'mcp'],
-    pluginRootVar: '${OMP_PLUGIN_ROOT}',
-    loopControlTerm: 'skill-driven',
-    sessionBindingFlags: '',
-    hookDriven: false,
-    interactiveToolName: 'AskUserQuestion',
-    sessionEnvVars: 'PID-scoped session marker (authoritative); OMP_SESSION_ID and AGENT_SESSION_ID are fallbacks',
-    resumeFlags: '',
-    cliSetupSnippet: createDefaultCliSetupSnippet(),
-    iterateFlags: '',
-    hasIntentFidelityChecks: false,
-    hasNonNegotiables: false,
-  }, overrides);
+  return createPromptContextFromCatalog('oh-my-pi', overrides);
 }
 
 export function createOpenClawContext(
   overrides?: Partial<PromptContext>,
 ): PromptContext {
-  return createPromptContext({
-    harness: 'openclaw',
-    harnessLabel: 'OpenClaw',
-    capabilities: ['session-binding', 'mcp', 'headless-prompt', 'task-tool', 'breakpoint-routing'],
-    pluginRootVar: '',
-    loopControlTerm: 'agent_end',
-    sessionBindingFlags: '',
-    hookDriven: false,
-    interactiveToolName: 'AskUserQuestion tool',
-    sessionEnvVars: 'PID-scoped session marker (authoritative); OPENCLAW_SHELL gateway injection and AGENT_SESSION_ID are fallbacks',
-    resumeFlags: '',
-    cliSetupSnippet: createDefaultCliSetupSnippet(),
-    iterateFlags: '',
-    hasIntentFidelityChecks: false,
-    hasNonNegotiables: false,
-  }, overrides);
+  return createPromptContextFromCatalog('openclaw', overrides);
 }
 
 export function createOpenCodeContext(
   overrides?: Partial<PromptContext>,
 ): PromptContext {
-  return createPromptContext({
-    harness: 'opencode',
-    harnessLabel: 'OpenCode',
-    capabilities: ['task-tool', 'breakpoint-routing'],
-    pluginRootVar: '',
-    loopControlTerm: 'in-turn',
-    sessionBindingFlags: '',
-    hookDriven: false,
-    interactiveToolName: '',
-    sessionEnvVars: 'PID-scoped session marker (authoritative); shell.env-injected session ID and AGENT_SESSION_ID are fallbacks',
-    resumeFlags: '',
-    cliSetupSnippet: createDefaultCliSetupSnippet(),
-    iterateFlags: '',
-    hasIntentFidelityChecks: false,
-    hasNonNegotiables: false,
-  }, overrides);
+  return createPromptContextFromCatalog('opencode', overrides);
 }
 
 export function createPiContext(
   overrides?: Partial<PromptContext>,
 ): PromptContext {
-  return createPromptContext({
-    harness: 'pi',
-    harnessLabel: 'Pi Coding Agent',
-    capabilities: ['skills', 'slash-commands', 'task-tool', 'harness-routing', 'programmatic-session'],
-    pluginRootVar: '${PI_PLUGIN_ROOT}',
-    loopControlTerm: 'skill-driven',
-    sessionBindingFlags: '',
-    hookDriven: false,
-    interactiveToolName: 'AskUserQuestion',
-    sessionEnvVars: 'PID-scoped session marker (authoritative); PI_SESSION_ID and AGENT_SESSION_ID are fallbacks',
-    resumeFlags: '',
-    cliSetupSnippet: createDefaultCliSetupSnippet(),
-    iterateFlags: '',
-    hasIntentFidelityChecks: false,
-    hasNonNegotiables: false,
-  }, overrides);
+  return createPromptContextFromCatalog('pi', overrides);
 }
 
 export function createClaudeCodeContext(
   overrides?: Partial<PromptContext>,
 ): PromptContext {
-  return createPromptContext({
-    harness: 'claude-code',
-    harnessLabel: 'Claude Code',
-    capabilities: ['hooks', 'stop-hook', 'ask-user-question', 'task-tool', 'breakpoint-routing'],
-    pluginRootVar: '${CLAUDE_PLUGIN_ROOT}',
-    loopControlTerm: 'stop-hook',
-    sessionBindingFlags: '',
-    hookDriven: true,
-    interactiveToolName: 'AskUserQuestion tool',
-    sessionEnvVars: 'PID-scoped session marker (authoritative); CLAUDE_ENV_FILE and AGENT_SESSION_ID are fallbacks',
-    resumeFlags: '',
-    cliSetupSnippet: createClaudeCodeCliSetupSnippet(),
-    sdkVersionExpr: '$SDK_VERSION',
-    iterateFlags: '',
-    hasIntentFidelityChecks: false,
-    hasNonNegotiables: false,
-  }, overrides);
+  return createPromptContextFromCatalog('claude-code', overrides);
 }

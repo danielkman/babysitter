@@ -17,6 +17,8 @@
  * - explore_lite: https://github.com/RobustFieldAutonomyLab/explore_lite
  * - Frontier Exploration: http://wiki.ros.org/frontier_exploration
  * - Frontier-based Exploration: https://ieeexplore.ieee.org/document/613851
+ * @graph
+ *   domains: [domain:robotics]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

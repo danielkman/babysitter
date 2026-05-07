@@ -4,6 +4,8 @@
  * cloud saves, social features, controller support, and platform certification requirements.
  * @inputs { projectName: string, platforms?: array, features?: array, outputDir?: string }
  * @outputs { success: boolean, integrations: array, certificationStatus: object, documentation: string, artifacts: array }
+ * @graph
+ *   domains: [domain:gaming]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -4,6 +4,8 @@
  * retention metrics, funnel analysis, and A/B testing infrastructure.
  * @inputs { projectName: string, analyticsProvider?: string, eventsToTrack?: array, outputDir?: string }
  * @outputs { success: boolean, analyticsDoc: string, eventSchema: object, dashboards: array, artifacts: array }
+ * @graph
+ *   domains: [domain:gaming]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

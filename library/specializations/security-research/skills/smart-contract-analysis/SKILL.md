@@ -8,6 +8,8 @@ allowed-tools:
   - Edit
   - Glob
   - Grep
+graph:
+  domains: [domain:cybersecurity]
 ---
 
 # Smart Contract Analysis Skill

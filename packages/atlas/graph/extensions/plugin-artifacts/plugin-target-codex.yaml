@@ -13,7 +13,7 @@ attributes:
   hookRegistrationAliasPaths: []
   harnessManifestPath: ".codex-plugin/plugin.json"
   pluginRootEnvVar: null
-  pluginRootEnvVarForExtension: null
+  pluginRootEnvVarForExtension: CODEX_PLUGIN_ROOT
   scriptVariants:
     - bash
   distribution:
@@ -55,6 +55,22 @@ attributes:
     - from: ".agents/plugins/marketplace.json"
       kind: "codex"
   requiredSurfaceFile: null
+  promptCapabilities:
+    - hooks
+    - stop-hook
+    - ask-user-question
+    - task-tool
+    - breakpoint-routing
+  loopControlTerm: stop-hook
+  hookDriven: true
+  interactiveToolName: "AskUserQuestion tool"
+  sessionEnvVarsDescription: "PID-scoped session marker (authoritative); CODEX_THREAD_ID/CODEX_SESSION_ID and AGENT_SESSION_ID are fallbacks"
+  hasIntentFidelityChecks: true
+  hasNonNegotiables: true
+  cliSetupMode: default
+  defaultStepCount: 8
+  skillSystemLabel: "Installed skill"
+  defaultTransportId: openai-responses
 
 edges:
   hosted_by:

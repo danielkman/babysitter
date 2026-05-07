@@ -17,6 +17,8 @@
  * - CUDA Atomics: https://docs.nvidia.com/cuda/cuda-c-programming-guide/
  * - Cooperative Groups: https://docs.nvidia.com/cuda/cuda-c-programming-guide/
  * - Lock-Free Programming: https://developer.nvidia.com/blog/cooperative-groups/
+ * @graph
+ *   domains: [domain:scientific-computing]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

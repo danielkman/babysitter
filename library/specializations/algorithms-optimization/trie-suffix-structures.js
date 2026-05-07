@@ -7,6 +7,8 @@
  *
  * @references
  * - Suffix Structures: https://cp-algorithms.com/string/
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

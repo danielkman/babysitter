@@ -16,6 +16,8 @@
  * - Eff Language: https://www.eff-lang.org/
  * - Effect Handlers: https://effect-handlers.org/
  * - Algebraic Effects: https://www.microsoft.com/en-us/research/publication/algebraic-effects-for-functional-programming/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

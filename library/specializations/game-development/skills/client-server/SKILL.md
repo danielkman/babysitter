@@ -2,6 +2,8 @@
 name: client-server
 description: Client-server architecture skill for authority models and validation.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Client-Server Skill

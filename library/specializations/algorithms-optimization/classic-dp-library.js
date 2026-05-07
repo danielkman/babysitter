@@ -8,6 +8,8 @@
  * @references
  * - Classic DP Problems: https://www.geeksforgeeks.org/dynamic-programming/
  * - CLRS Dynamic Programming Chapter
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

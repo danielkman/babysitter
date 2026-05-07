@@ -17,6 +17,8 @@
  * - HackerOne: https://www.hackerone.com/
  * - Bugcrowd: https://www.bugcrowd.com/
  * - Intigriti: https://www.intigriti.com/
+ * @graph
+ *   domains: [domain:cybersecurity]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

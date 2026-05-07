@@ -15,6 +15,8 @@
  * @references
  * - CLRS Chapter on Correctness
  * - Formal Methods in Software Engineering
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

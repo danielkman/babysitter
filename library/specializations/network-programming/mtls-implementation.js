@@ -19,6 +19,8 @@
  * @references
  * - mTLS Best Practices: https://www.cloudflare.com/learning/access-management/what-is-mutual-tls/
  * - X.509 Certificates: https://www.rfc-editor.org/rfc/rfc5280
+ * @graph
+ *   domains: [domain:networking]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

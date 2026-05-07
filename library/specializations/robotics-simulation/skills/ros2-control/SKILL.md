@@ -10,6 +10,8 @@ allowed-tools:
   - Edit
   - Glob
   - Grep
+graph:
+  domains: [domain:robotics]
 ---
 
 # ros2_control Skill

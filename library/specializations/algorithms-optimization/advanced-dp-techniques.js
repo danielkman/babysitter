@@ -7,6 +7,8 @@
  *
  * @references
  * - Advanced DP: https://cp-algorithms.com/dynamic_programming/
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

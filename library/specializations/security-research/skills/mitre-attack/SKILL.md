@@ -9,6 +9,8 @@ allowed-tools:
   - Glob
   - Grep
   - WebFetch
+graph:
+  domains: [domain:cybersecurity]
 ---
 
 # MITRE ATT&CK Skill

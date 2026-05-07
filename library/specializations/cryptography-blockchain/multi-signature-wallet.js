@@ -15,6 +15,8 @@
  *
  * @references
  * - Safe Contracts: https://github.com/safe-global/safe-contracts
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

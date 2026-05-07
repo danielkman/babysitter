@@ -16,6 +16,8 @@
  * @references
  * - Programming Massively Parallel Processors by Kirk & Hwu
  * - GPU Gems 3: Parallel Prefix Sum: https://developer.nvidia.com/gpugems/gpugems3
+ * @graph
+ *   domains: [domain:scientific-computing]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

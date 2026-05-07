@@ -17,6 +17,8 @@
  * - ROS Camera Calibration: https://wiki.ros.org/camera_calibration
  * - Kalibr: https://github.com/ethz-asl/kalibr
  * - Robot Calibration: http://wiki.ros.org/robot_calibration
+ * @graph
+ *   domains: [domain:robotics]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

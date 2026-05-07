@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: simulation
   backlog-id: SK-002
+graph:
+  domains: [domain:robotics]
 ---
 
 # gazebo-simulation

@@ -16,6 +16,8 @@
  * @references
  * - Consul Health Checks: https://developer.hashicorp.com/consul/docs/services/usage/checks
  * - Kubernetes Probes: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+ * @graph
+ *   domains: [domain:networking]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -17,6 +17,8 @@
  * - HIL Testing: https://www.ni.com/en-us/innovations/white-papers/09/what-is-hardware-in-the-loop-testing.html
  * - dSPACE: https://www.dspace.com/en/inc/home/products/hw/simulator_hardware.cfm
  * - Speedgoat: https://www.speedgoat.com/
+ * @graph
+ *   domains: [domain:robotics]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

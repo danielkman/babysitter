@@ -17,6 +17,8 @@
  * @references
  * - OpenZeppelin Governor: https://docs.openzeppelin.com/contracts/4.x/governance
  * - Compound Governance: https://compound.finance/docs/governance
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

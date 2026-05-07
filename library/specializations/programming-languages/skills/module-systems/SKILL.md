@@ -2,6 +2,8 @@
 name: module-systems
 description: Expert skill for designing module systems including resolution algorithms, import/export mechanisms, visibility control, namespace management, and cyclic dependency handling.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Module Systems Skill

@@ -9,6 +9,8 @@ expertise:
   - MITRE ATT&CK coverage
   - Detection engineering
   - Metrics and reporting
+graph:
+  domains: [domain:cybersecurity]
 ---
 
 # Purple Team Coordinator Agent

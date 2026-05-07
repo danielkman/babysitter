@@ -10,6 +10,8 @@ expertise:
   - Message ordering and delivery guarantees
   - Horizontal scaling for real-time systems
   - Low-latency optimization
+graph:
+  domains: [domain:networking]
 ---
 
 # Real-Time Expert Agent

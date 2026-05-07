@@ -18,6 +18,8 @@
  * - Design Patterns for Embedded Systems in C: https://www.embedded.com/design-patterns-for-embedded-systems-in-c/
  * - Real-Time Systems Design: https://www.embedded.com/real-time-system-design/
  * - Layered Architecture: https://embeddedartistry.com/blog/
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

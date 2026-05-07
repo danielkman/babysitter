@@ -16,6 +16,8 @@
  * @references
  * - Groth16: https://eprint.iacr.org/2016/260.pdf
  * - SnarkJS: https://github.com/iden3/snarkjs
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

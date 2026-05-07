@@ -16,6 +16,8 @@
  * @references
  * - MITRE ATT&CK: https://attack.mitre.org/
  * - STIX: https://oasis-open.github.io/cti-documentation/stix/intro
+ * @graph
+ *   domains: [domain:cybersecurity]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

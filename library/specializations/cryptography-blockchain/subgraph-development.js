@@ -16,6 +16,8 @@
  * @references
  * - The Graph Docs: https://thegraph.com/docs/
  * - Subgraph Best Practices: https://thegraph.com/docs/en/developing/creating-a-subgraph/
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

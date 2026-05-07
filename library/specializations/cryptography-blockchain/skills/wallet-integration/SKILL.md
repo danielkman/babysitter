@@ -2,6 +2,8 @@
 name: wallet-integration
 description: Wallet connection and transaction management for dApps using wagmi and viem. Supports multiple connectors, chain switching, EIP-712 signing, and hardware wallet integration.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:security]
 ---
 
 # Wallet Integration Skill

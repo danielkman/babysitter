@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: cloud-security
   backlog-id: SK-012
+graph:
+  domains: [domain:cybersecurity]
 ---
 
 # cloud-security-testing

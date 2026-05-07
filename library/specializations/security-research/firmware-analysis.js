@@ -17,6 +17,8 @@
  * - Binwalk: https://github.com/ReFirmLabs/binwalk
  * - FACT: https://github.com/fkie-cad/FACT_core
  * - Attify: https://attify.com/
+ * @graph
+ *   domains: [domain:cybersecurity]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

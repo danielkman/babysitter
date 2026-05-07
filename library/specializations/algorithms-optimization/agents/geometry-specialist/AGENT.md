@@ -8,6 +8,8 @@ expertise:
   - Degenerate case identification
   - Algorithm selection for geometry problems
   - Visualization for verification
+graph:
+  domains: [domain:computer-science]
 ---
 
 # Geometry Specialist Agent

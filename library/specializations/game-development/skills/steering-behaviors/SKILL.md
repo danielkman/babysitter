@@ -2,6 +2,8 @@
 name: steering-behaviors
 description: Steering behaviors skill for flocking, avoidance, and group movement.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Steering Behaviors Skill

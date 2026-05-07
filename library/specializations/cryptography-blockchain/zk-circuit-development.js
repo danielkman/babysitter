@@ -16,6 +16,8 @@
  * @references
  * - Circom Documentation: https://docs.circom.io/
  * - Noir Language: https://noir-lang.org/docs/
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

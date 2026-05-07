@@ -15,6 +15,8 @@
  * @references
  * - CP-Algorithms Data Structures: https://cp-algorithms.com/data_structures/
  * - Competitive Programming 4 by Steven Halim
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -18,6 +18,8 @@
  * - OpenZeppelin Upgrades: https://docs.openzeppelin.com/upgrades-plugins/
  * - EIP-1967 Proxy Storage Slots: https://eips.ethereum.org/EIPS/eip-1967
  * - UUPS Pattern: https://eips.ethereum.org/EIPS/eip-1822
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

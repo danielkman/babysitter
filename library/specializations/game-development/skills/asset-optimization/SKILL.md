@@ -2,6 +2,8 @@
 name: asset-optimization
 description: Asset optimization skill for mesh and texture budgets.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Asset Optimization Skill

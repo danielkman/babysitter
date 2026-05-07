@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: analysis-environment
   backlog-id: SK-008
+graph:
+  domains: [domain:cybersecurity]
 ---
 
 # security-sandbox

@@ -18,6 +18,8 @@
  * - Engineering a Compiler by Cooper & Torczon
  * - ANTLR Reference: https://www.antlr.org/
  * - Parsing Techniques: A Practical Guide by Grune & Jacobs
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -25,6 +25,8 @@
  * @references
  * - Protocol Buffers: https://developers.google.com/protocol-buffers
  * - Binary Protocol Design: https://www.rfc-editor.org/rfc-index.html
+ * @graph
+ *   domains: [domain:networking]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

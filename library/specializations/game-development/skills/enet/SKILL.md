@@ -2,6 +2,8 @@
 name: enet
 description: ENet reliable UDP skill for channels and packet fragmentation.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # ENet Skill

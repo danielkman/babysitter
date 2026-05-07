@@ -15,6 +15,8 @@
  * @references
  * - NGINX: https://nginx.org/en/docs/
  * - Envoy Proxy: https://www.envoyproxy.io/docs/
+ * @graph
+ *   domains: [domain:networking]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

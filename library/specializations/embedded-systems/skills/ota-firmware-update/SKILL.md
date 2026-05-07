@@ -2,6 +2,8 @@
 name: ota-firmware-update
 description: Over-the-air firmware update implementation expertise for embedded systems. Expert skill for delta updates, image signing, update protocols, partition management, and rollback mechanisms.
 allowed-tools: Read, Grep, Write, Edit, Bash, Glob, WebFetch, WebSearch
+graph:
+  domains: [domain:embedded-systems]
 ---
 
 # OTA Firmware Update Skill

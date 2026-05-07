@@ -2,6 +2,8 @@
 name: cloth-simulation
 description: Cloth physics skill for softbody dynamics and constraint systems.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Cloth Simulation Skill

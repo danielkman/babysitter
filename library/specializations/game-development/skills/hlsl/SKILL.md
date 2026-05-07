@@ -2,6 +2,8 @@
 name: hlsl
 description: HLSL shader programming skill for DirectX, compute shaders, and optimization.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # HLSL Skill

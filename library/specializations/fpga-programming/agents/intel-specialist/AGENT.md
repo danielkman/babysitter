@@ -2,6 +2,8 @@
 name: intel-specialist
 description: Deep expertise in Intel/Altera FPGA ecosystem including Quartus Prime, Platform Designer, IP catalog, and device-specific optimizations.
 role: Intel/Altera Applications Engineer
+graph:
+  domains: [domain:embedded-systems]
 ---
 
 # intel-specialist

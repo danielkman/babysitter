@@ -17,6 +17,8 @@
  * - BIP-32: https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
  * - BIP-39: https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki
  * - BIP-44: https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

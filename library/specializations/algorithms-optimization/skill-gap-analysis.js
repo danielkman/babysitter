@@ -7,6 +7,8 @@
  *
  * @references
  * - Competitive Programming Skill Tracks
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

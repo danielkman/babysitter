@@ -17,6 +17,8 @@
  * - How to Write a Bootloader from Scratch: https://interrupt.memfault.com/blog/how-to-write-a-bootloader-from-scratch
  * - Secure Boot Overview: https://interrupt.memfault.com/blog/secure-boot-overview
  * - Bootloader Design: https://www.embedded.com/bootloader-design-for-microcontrollers/
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

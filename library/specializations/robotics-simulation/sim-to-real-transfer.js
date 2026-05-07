@@ -16,6 +16,8 @@
  * - Domain Randomization: https://arxiv.org/abs/1703.06907
  * - Sim-to-Real: https://arxiv.org/abs/1812.05671
  * - Real-World Robot Learning: https://arxiv.org/abs/1910.02998
+ * @graph
+ *   domains: [domain:robotics]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

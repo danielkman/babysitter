@@ -2,6 +2,8 @@
 name: behavior-trees
 description: Behavior tree design and implementation skill for game AI. Enables creation of behavior tree structures, custom nodes, decorators, composites, and integration with game engines for NPC and enemy AI systems.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Behavior Trees Skill

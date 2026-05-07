@@ -13,6 +13,8 @@ expertise:
   - Traffic management
   - Fleet monitoring and analytics
   - Scalability engineering
+graph:
+  domains: [domain:robotics]
 ---
 
 # Fleet Management Agent

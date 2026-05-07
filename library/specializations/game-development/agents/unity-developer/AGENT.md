@@ -2,6 +2,8 @@
 name: unity-developer
 description: Agent specialized in Unity game development, C# scripting, editor extensions, and Unity-specific workflows. Implements gameplay features, creates tools, and solves Unity-specific technical challenges.
 required-skills: unity-development, behavior-trees, navmesh
+graph:
+  domains: [domain:gaming]
 ---
 
 # Unity Developer Agent

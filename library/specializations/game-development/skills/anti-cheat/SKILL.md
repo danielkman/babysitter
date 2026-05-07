@@ -2,6 +2,8 @@
 name: anti-cheat
 description: Anti-cheat skill for server validation and cheat detection.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Anti-Cheat Skill

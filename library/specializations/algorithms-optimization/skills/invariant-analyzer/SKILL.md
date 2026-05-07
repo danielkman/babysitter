@@ -6,6 +6,8 @@ allowed-tools:
   - Write
   - Grep
   - Glob
+graph:
+  domains: [domain:computer-science]
 ---
 
 # Invariant Analyzer Skill

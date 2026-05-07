@@ -8,6 +8,8 @@ expertise:
   - Stress test design
   - Oracle implementation
   - Regression test maintenance
+graph:
+  domains: [domain:computer-science]
 ---
 
 # Test Engineer Agent

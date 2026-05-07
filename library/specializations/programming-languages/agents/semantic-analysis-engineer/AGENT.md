@@ -10,6 +10,8 @@ expertise:
   - Semantic validation rules
   - Control flow analysis
   - Data flow analysis basics
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Semantic Analysis Engineer Agent

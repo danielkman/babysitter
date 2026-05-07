@@ -15,6 +15,8 @@
  * @references
  * - A Composer's Guide to Game Music by Winifred Phillips
  * - Game Audio Implementation by Richard Stevens
+ * @graph
+ *   domains: [domain:gaming]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

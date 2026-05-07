@@ -2,6 +2,8 @@
 name: unity-animation
 description: Unity Animation skill for Animator controllers, Animation Rigging, Timeline integration, and animation state machines.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Unity Animation Skill

@@ -17,6 +17,8 @@
  * - IEEE 1800.2-2020 UVM Standard: https://standards.ieee.org/standard/1800_2-2020.html
  * - UVM Reference: https://verificationacademy.com/
  * - UVM Cookbook: https://www.mentor.com/
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

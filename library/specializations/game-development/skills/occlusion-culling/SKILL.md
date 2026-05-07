@@ -2,6 +2,8 @@
 name: occlusion-culling
 description: Occlusion culling skill for visibility determination and GPU queries.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Occlusion Culling Skill

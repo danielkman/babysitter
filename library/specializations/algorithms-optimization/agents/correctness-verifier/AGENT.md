@@ -8,6 +8,8 @@ expertise:
   - Edge case identification
   - Counter-example generation
   - Termination proof
+graph:
+  domains: [domain:computer-science]
 ---
 
 # Correctness Verifier Agent

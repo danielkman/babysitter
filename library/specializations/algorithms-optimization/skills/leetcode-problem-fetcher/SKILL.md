@@ -8,6 +8,8 @@ metadata:
   category: algorithms-optimization
   skill-id: SK-ALGO-001
   priority: high
+graph:
+  domains: [domain:computer-science]
 ---
 
 # leetcode-problem-fetcher

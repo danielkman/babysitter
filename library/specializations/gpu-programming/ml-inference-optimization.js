@@ -17,6 +17,8 @@
  * - TensorRT Documentation: https://docs.nvidia.com/deeplearning/tensorrt/
  * - ONNX Runtime: https://onnxruntime.ai/
  * - Quantization: https://pytorch.org/docs/stable/quantization.html
+ * @graph
+ *   domains: [domain:scientific-computing]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

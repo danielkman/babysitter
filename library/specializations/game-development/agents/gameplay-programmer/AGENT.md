@@ -2,6 +2,8 @@
 name: gameplay-programmer
 description: Agent specialized in implementing gameplay systems, player mechanics, abilities, and game features across multiple engines. Focuses on translating game design into working code with proper architecture and performance.
 required-skills: unity-development, unreal-development, godot-development, behavior-trees, navmesh
+graph:
+  domains: [domain:gaming]
 ---
 
 # Gameplay Programmer Agent

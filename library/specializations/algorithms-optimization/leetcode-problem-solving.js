@@ -18,6 +18,8 @@
  * - LeetCode Patterns: https://seanprashad.com/leetcode-patterns/
  * - Problem-Solving Strategies: https://www.geeksforgeeks.org/fundamentals-of-algorithms/
  * - Big-O Cheat Sheet: https://www.bigocheatsheet.com/
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

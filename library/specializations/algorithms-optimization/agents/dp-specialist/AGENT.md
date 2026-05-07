@@ -8,6 +8,8 @@ expertise:
   - Transition formula derivation
   - Advanced DP technique application
   - DP debugging and verification
+graph:
+  domains: [domain:computer-science]
 ---
 
 # DP Specialist Agent

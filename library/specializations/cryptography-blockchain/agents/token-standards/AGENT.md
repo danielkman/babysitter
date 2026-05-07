@@ -4,6 +4,8 @@ description: Expert in ERC token standards and implementations including ERC-20,
 role: Token Standards Specialist
 experience: 5+ years token development
 background: Major token launches, NFT platforms
+graph:
+  domains: [domain:security]
 ---
 
 # Token Standards Expert Agent

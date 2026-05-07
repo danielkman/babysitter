@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: execution-optimization
   backlog-id: SK-017
+graph:
+  domains: [domain:scientific-computing]
 ---
 
 # cuda-graphs

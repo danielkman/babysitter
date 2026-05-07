@@ -13,6 +13,8 @@ expertise:
   - Dexterous manipulation
   - Contact-rich manipulation
   - Assembly tasks
+graph:
+  domains: [domain:robotics]
 ---
 
 # Manipulation Specialist Agent

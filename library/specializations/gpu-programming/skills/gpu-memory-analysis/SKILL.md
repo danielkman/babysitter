@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: memory-optimization
   backlog-id: SK-005
+graph:
+  domains: [domain:scientific-computing]
 ---
 
 # gpu-memory-analysis

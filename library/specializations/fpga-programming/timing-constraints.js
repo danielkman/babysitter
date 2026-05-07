@@ -17,6 +17,8 @@
  * - SDC Standard: https://www.synopsys.com/
  * - Vivado Constraints: https://docs.amd.com/r/en-US/ug903-vivado-using-constraints
  * - Timing Analysis: https://www.intel.com/content/www/us/en/programmable/documentation/mwh1410385117325.html
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

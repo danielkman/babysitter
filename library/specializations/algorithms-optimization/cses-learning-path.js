@@ -15,6 +15,8 @@
  * @references
  * - CSES Problem Set: https://cses.fi/problemset/
  * - Competitive Programmer's Handbook: https://cses.fi/book/book.pdf
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

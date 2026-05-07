@@ -18,6 +18,8 @@
  * - Embedded Driver Development Patterns: https://embeddedartistry.com/blog/2017/02/06/embedded-driver-development-patterns/
  * - Device Driver Design: https://interrupt.memfault.com/blog/device-driver-design-patterns
  * - HAL Design Patterns: https://www.embedded.com/design-patterns-for-embedded-systems-in-c/
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -16,6 +16,8 @@
  * @references
  * - Echidna: https://github.com/crytic/echidna
  * - Foundry Fuzzing: https://book.getfoundry.sh/forge/fuzz-testing
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

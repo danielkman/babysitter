@@ -9,6 +9,8 @@ metadata:
   category: algorithms-optimization
   agent-id: AG-ALGO-001
   priority: high
+graph:
+  domains: [domain:computer-science]
 ---
 
 # Competitive Programmer Agent

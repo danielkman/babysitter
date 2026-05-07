@@ -16,6 +16,8 @@
  * - Field Robotics: https://www.fieldrobotics.org/
  * - Robot Testing Standards: https://www.nist.gov/el/intelligent-systems-division-73500/test-methods-and-metrics
  * - Autonomous Vehicle Testing: https://www.sae.org/standards/content/j3016_202104/
+ * @graph
+ *   domains: [domain:robotics]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -2,6 +2,8 @@
 name: adaptive-music
 description: Adaptive music skill for horizontal/vertical resequencing and stingers.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Adaptive Music Skill

@@ -17,6 +17,8 @@
  * - SystemVerilog Assertions: https://www.accellera.org/
  * - SVA Handbook: https://verificationacademy.com/
  * - Formal Verification with SVA: https://www.synopsys.com/verification/static-and-formal-verification.html
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

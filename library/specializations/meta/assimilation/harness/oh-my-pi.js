@@ -9,6 +9,11 @@
  *   distribution, CLI surface, and richer extension capabilities.
  * @inputs { projectDir: string, targetQuality: number, maxIterations: number }
  * @outputs { success: boolean, integrationFiles: string[], finalQuality: number, iterations: number }
+ * @graph
+ *   domains: [domain:software-engineering]
+ *   skillAreas: [skill-area:ai-agent-development, skill-area:orchestration-loop]
+ *   topics: [topic:developer-experience, topic:integrations]
+ *   roles: [role:platform-engineer]
  */
 
 import {

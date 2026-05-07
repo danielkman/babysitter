@@ -9,6 +9,8 @@ expertise:
   - Cryptographic weaknesses and implementation flaws
   - Race conditions and TOCTOU issues
   - Deserialization vulnerabilities
+graph:
+  domains: [domain:cybersecurity]
 ---
 
 # Vulnerability Researcher Agent

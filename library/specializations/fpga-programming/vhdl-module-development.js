@@ -19,6 +19,8 @@
  * - IEEE 1076-2019 VHDL Standard: https://standards.ieee.org/standard/1076-2019.html
  * - VHDL RTL Synthesis: https://standards.ieee.org/standard/1076_6-2004.html
  * - Xilinx VHDL Coding Guidelines: https://docs.amd.com/r/en-US/ug901-vivado-synthesis
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

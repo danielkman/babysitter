@@ -2,6 +2,8 @@
 name: rendering-architect
 description: Graphics pipeline architecture agent for render feature design.
 required-skills: unity-urp, unity-hdrp, unreal-materials, pbr-rendering
+graph:
+  domains: [domain:gaming]
 ---
 
 # Rendering Architect Agent

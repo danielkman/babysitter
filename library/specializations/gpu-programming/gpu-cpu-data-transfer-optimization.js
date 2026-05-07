@@ -16,6 +16,8 @@
  * @references
  * - CUDA Best Practices - Data Transfer: https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/
  * - Unified Memory: https://docs.nvidia.com/cuda/cuda-c-programming-guide/
+ * @graph
+ *   domains: [domain:scientific-computing]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -8,6 +8,8 @@
  * @references
  * - Space Optimization Techniques
  * - Memory-Efficient Algorithms
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

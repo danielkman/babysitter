@@ -16,6 +16,8 @@
  * @references
  * - The Graph Protocol: https://thegraph.com/docs/
  * - Subsquid: https://docs.subsquid.io/
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

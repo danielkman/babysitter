@@ -17,6 +17,8 @@
  * - Wagmi: https://wagmi.sh/
  * - RainbowKit: https://rainbowkit.com/docs/
  * - Web3Modal: https://docs.walletconnect.com/web3modal/
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

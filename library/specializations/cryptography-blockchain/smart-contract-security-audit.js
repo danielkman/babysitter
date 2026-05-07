@@ -19,6 +19,8 @@
  * - Mythril Security Tool: https://github.com/Consensys/mythril
  * - SWC Registry: https://swcregistry.io/
  * - Trail of Bits Audit Guide: https://github.com/trailofbits/publications
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

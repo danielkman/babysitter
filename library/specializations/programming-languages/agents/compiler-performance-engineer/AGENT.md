@@ -10,6 +10,8 @@ expertise:
   - Startup time optimization
   - Compilation speed optimization
   - Performance regression testing
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Compiler Performance Engineer Agent

@@ -17,6 +17,8 @@
  * - MISRA C Guidelines: https://www.misra.org.uk/
  * - MISRA C Compliance: https://www.embedded.com/misra-c-compliance-testing-tools/
  * - Static Analysis: https://interrupt.memfault.com/blog/static-analysis-with-misra-c
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -15,6 +15,8 @@
  *
  * @references
  * - Threshold ECDSA: https://eprint.iacr.org/2020/540.pdf
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

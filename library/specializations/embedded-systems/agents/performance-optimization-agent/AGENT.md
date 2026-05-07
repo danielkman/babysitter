@@ -1,6 +1,8 @@
 ---
 name: perf-optimization-expert
 description: Expert in embedded performance analysis and optimization. Specializes in code profiling, assembly-level optimization, cache utilization, DMA strategies, and WCET analysis for real-time systems.
+graph:
+  domains: [domain:embedded-systems]
 ---
 
 # Performance Optimization Expert Agent

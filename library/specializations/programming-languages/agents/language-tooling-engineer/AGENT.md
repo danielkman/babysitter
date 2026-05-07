@@ -10,6 +10,8 @@ expertise:
   - Refactoring operations
   - Source map generation
   - REPL development
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Language Tooling Engineer Agent

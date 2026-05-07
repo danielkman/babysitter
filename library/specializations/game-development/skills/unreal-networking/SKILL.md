@@ -2,6 +2,8 @@
 name: unreal-networking
 description: Unreal Engine networking skill for replication, RPCs, relevancy, and dedicated server architecture.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Unreal Networking Skill

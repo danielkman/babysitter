@@ -22,6 +22,8 @@
  * - CVE: https://cve.mitre.org/
  * - CERT/CC: https://www.kb.cert.org/vuls/
  * - FIRST: https://www.first.org/
+ * @graph
+ *   domains: [domain:cybersecurity]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

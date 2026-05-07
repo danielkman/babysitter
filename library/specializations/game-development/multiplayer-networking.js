@@ -17,6 +17,8 @@
  * - Multiplayer Game Programming by Joshua Glazer
  * - Gaffer on Games - Networking Articles
  * - Overwatch Gameplay Architecture and Netcode (GDC)
+ * @graph
+ *   domains: [domain:gaming]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

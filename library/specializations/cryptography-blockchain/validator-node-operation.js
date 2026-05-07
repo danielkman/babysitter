@@ -16,6 +16,8 @@
  * @references
  * - Ethereum Staking: https://ethereum.org/staking/
  * - MEV-Boost: https://docs.flashbots.net/flashbots-mev-boost
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

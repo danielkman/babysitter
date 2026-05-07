@@ -18,6 +18,8 @@
  * - LIO-SAM: https://github.com/TixiaoShan/LIO-SAM
  * - A-LOAM: https://github.com/HKUST-Aerial-Robotics/A-LOAM
  * - Point Cloud Library: https://pointclouds.org/
+ * @graph
+ *   domains: [domain:robotics]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -10,6 +10,8 @@ expertise:
   - Inline caching and type feedback
   - On-stack replacement (OSR)
   - Code cache management
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # JIT Compiler Specialist Agent

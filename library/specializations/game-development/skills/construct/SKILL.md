@@ -2,6 +2,8 @@
 name: construct
 description: Construct 3 visual programming skill for rapid prototyping and 2D game development.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Construct Skill

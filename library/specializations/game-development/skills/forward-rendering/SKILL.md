@@ -2,6 +2,8 @@
 name: forward-rendering
 description: Forward+ and clustered rendering skill for transparency handling.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Forward Rendering Skill

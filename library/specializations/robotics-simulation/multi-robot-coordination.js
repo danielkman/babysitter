@@ -16,6 +16,8 @@
  * - Multi-Robot Systems: https://www.springer.com/gp/book/9783319388267
  * - Task Allocation: https://robotics.cs.rutgers.edu/AAMAS-2018-Tutorial/Slides/
  * - ROS Multi-Robot: http://wiki.ros.org/multimaster_fkie
+ * @graph
+ *   domains: [domain:robotics]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

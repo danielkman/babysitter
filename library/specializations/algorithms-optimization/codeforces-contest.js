@@ -17,6 +17,8 @@
  * - Codeforces: https://codeforces.com/
  * - Competitive Programmer's Handbook: https://cses.fi/book/book.pdf
  * - CP-Algorithms: https://cp-algorithms.com/
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

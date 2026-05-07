@@ -10,6 +10,8 @@ expertise:
   - Optimization pass design
   - IR verification
   - Phi function placement
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # IR Design Specialist Agent

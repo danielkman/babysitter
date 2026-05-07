@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: digital-forensics
   backlog-id: SK-015
+graph:
+  domains: [domain:cybersecurity]
 ---
 
 # incident-forensics

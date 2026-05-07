@@ -15,6 +15,8 @@
  * - LSP Specification: https://microsoft.github.io/language-server-protocol/
  * - Rust Analyzer: https://rust-analyzer.github.io/
  * - TypeScript Language Server: https://github.com/microsoft/TypeScript/wiki/Standalone-Server-%28tsserver%29
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

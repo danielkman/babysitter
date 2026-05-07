@@ -17,6 +17,8 @@
  * - SLSA: https://slsa.dev/
  * - Sigstore: https://www.sigstore.dev/
  * - SBOM: https://www.cisa.gov/sbom
+ * @graph
+ *   domains: [domain:cybersecurity]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

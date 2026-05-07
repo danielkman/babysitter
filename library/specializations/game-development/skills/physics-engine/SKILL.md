@@ -2,6 +2,8 @@
 name: physics-engine
 description: Physics engine integration skill for rigid body dynamics and collision detection.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Physics Engine Skill

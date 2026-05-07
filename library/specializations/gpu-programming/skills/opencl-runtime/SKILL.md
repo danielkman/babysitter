@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: opencl-development
   backlog-id: SK-003
+graph:
+  domains: [domain:scientific-computing]
 ---
 
 # opencl-runtime

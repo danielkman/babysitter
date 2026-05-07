@@ -18,6 +18,8 @@
  * - Gazebo Tutorials: https://gazebosim.org/docs
  * - gazebo_ros_pkgs: http://wiki.ros.org/gazebo_ros_pkgs
  * - Classic Gazebo Tutorials: https://classic.gazebosim.org/tutorials
+ * @graph
+ *   domains: [domain:robotics]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

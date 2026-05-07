@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: parallel-algorithms
   backlog-id: SK-011
+graph:
+  domains: [domain:scientific-computing]
 ---
 
 # parallel-patterns

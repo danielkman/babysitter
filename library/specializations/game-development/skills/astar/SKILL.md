@@ -2,6 +2,8 @@
 name: astar
 description: A* pathfinding skill for heuristics and optimization.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # A* Pathfinding Skill

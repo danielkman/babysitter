@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: domain-algorithms
   backlog-id: SK-013
+graph:
+  domains: [domain:scientific-computing]
 ---
 
 # stencil-convolution

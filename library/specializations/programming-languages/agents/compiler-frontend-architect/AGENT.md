@@ -9,6 +9,8 @@ expertise:
   - AST design patterns and best practices
   - Error recovery and diagnostic generation
   - Incremental parsing for IDE support
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Compiler Frontend Architect Agent

@@ -17,6 +17,8 @@
  * - Embedded Version Control: https://interrupt.memfault.com/blog/firmware-versioning
  * - Git Workflows: https://www.atlassian.com/git/tutorials/comparing-workflows
  * - Configuration Management: https://www.embedded.com/configuration-management-for-embedded-systems/
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

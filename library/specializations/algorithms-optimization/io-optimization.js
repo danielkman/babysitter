@@ -7,6 +7,8 @@
  *
  * @references
  * - Fast I/O Techniques for Competitive Programming
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

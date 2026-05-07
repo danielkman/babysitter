@@ -15,6 +15,8 @@
  * - libffi: https://sourceware.org/libffi/
  * - Rust FFI: https://doc.rust-lang.org/nomicon/ffi.html
  * - Python ctypes: https://docs.python.org/3/library/ctypes.html
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

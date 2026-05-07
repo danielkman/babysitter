@@ -17,6 +17,8 @@
  * - LLVM Tutorial: https://llvm.org/docs/tutorial/
  * - LLVM Language Reference: https://llvm.org/docs/LangRef.html
  * - Getting Started with LLVM Core Libraries
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

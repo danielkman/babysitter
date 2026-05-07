@@ -11,6 +11,8 @@ expertise:
   - IP integration
   - Bus architecture
   - Transaction modeling
+graph:
+  domains: [domain:embedded-systems]
 ---
 
 # AXI Expert Agent

@@ -8,6 +8,8 @@ expertise:
   - Time/space trade-off analysis
   - Implementation debugging
   - Performance optimization
+graph:
+  domains: [domain:computer-science]
 ---
 
 # Data Structures Expert Agent

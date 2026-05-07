@@ -52,6 +52,19 @@ attributes:
   generatedSourceDir: "opencode"
   marketplaceSpecs: []
   requiredSurfaceFile: null
+  promptCapabilities:
+    - task-tool
+    - breakpoint-routing
+  loopControlTerm: in-turn
+  hookDriven: false
+  interactiveToolName: ""
+  sessionEnvVarsDescription: "PID-scoped session marker (authoritative); shell.env-injected session ID and AGENT_SESSION_ID are fallbacks"
+  hasIntentFidelityChecks: false
+  hasNonNegotiables: false
+  cliSetupMode: default
+  defaultStepCount: 8
+  skillSystemLabel: "Installed skill"
+  defaultTransportId: openai-chat
 
 edges:
   hosted_by:

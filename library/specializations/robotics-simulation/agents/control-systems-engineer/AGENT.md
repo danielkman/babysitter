@@ -13,6 +13,8 @@ expertise:
   - Trajectory tracking control
   - ros2_control framework
   - Real-time control systems
+graph:
+  domains: [domain:robotics]
 ---
 
 # Control Systems Engineer Agent

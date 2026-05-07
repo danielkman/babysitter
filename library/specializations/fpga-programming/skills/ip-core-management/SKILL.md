@@ -8,6 +8,8 @@ allowed-tools:
   - Glob
   - Grep
   - Bash
+graph:
+  domains: [domain:embedded-systems]
 ---
 
 # IP Core Management Skill

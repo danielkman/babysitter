@@ -2,6 +2,8 @@
 name: unreal-gamesframework
 description: Unreal Engine Gameplay Ability System (GAS) skill for attributes, abilities, and gameplay effects.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Unreal GAS Skill

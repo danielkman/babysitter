@@ -16,6 +16,8 @@
  * @references
  * - Vivado IP Integrator: https://docs.amd.com/r/en-US/ug994-vivado-ip-subsystems
  * - Platform Designer: https://www.intel.com/content/www/us/en/programmable/documentation/jrw1529444674987.html
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

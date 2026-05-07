@@ -17,6 +17,8 @@
  * - Pratt Parsing: https://matklad.github.io/2020/04/13/simple-but-powerful-pratt-parsing.html
  * - Dragon Book Chapter 4: Syntax Analysis
  * - ANTLR Reference: https://www.antlr.org/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

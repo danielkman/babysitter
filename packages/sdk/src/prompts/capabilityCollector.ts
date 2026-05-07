@@ -130,28 +130,44 @@ async function collectLibraryCapabilities(
 
 /**
  * Collect adapter capabilities from harness name.
- * Maps known harness capabilities to string identifiers.
+ * Reads capabilities from the agent-catalog (Atlas graph) instead of a
+ * hardcoded map. Falls back to empty when the catalog is unavailable.
  */
 function collectAdapterCapabilities(
   options: CapabilityCollectionOptions,
 ): string[] {
   if (!options.harness) return [];
 
-  // Map known harness names to their intrinsic capabilities
-  const harnessCapabilities: Record<string, string[]> = {
-    'claude-code': ['hooks', 'stop-hook', 'session-binding'],
-    'codex': ['hooks', 'stop-hook', 'session-binding'],
-    'cursor': ['hooks', 'stop-hook', 'mcp'],
-    'gemini-cli': ['hooks', 'stop-hook'],
-    'github-copilot': ['hooks', 'mcp'],
-    'pi': ['programmatic-session', 'skills'],
-    'oh-my-pi': ['programmatic-session', 'skills', 'mcp'],
-    'opencode': [],
-    'openclaw': ['session-binding', 'mcp', 'headless-prompt'],
-    'internal': ['programmatic-session', 'concurrent-effects', 'background-effects'],
-  };
+  try {
+    const { listPluginTargetDescriptors } = require('@a5c-ai/agent-catalog') as {
+      listPluginTargetDescriptors: () => Array<{ targetId: string; harnessCapabilities?: string[] }>;
+    };
+    const target = listPluginTargetDescriptors().find(t => t.targetId === options.harness);
+    if (target?.harnessCapabilities) {
+      return capabilityIdsToAdapterCapabilities(target.harnessCapabilities);
+    }
+  } catch {
+    // Catalog not available — return empty
+  }
 
-  return harnessCapabilities[options.harness] ?? [];
+  return [];
+}
+
+/** Map Atlas capability IDs (PascalCase) to adapter capability strings (kebab-case). */
+function capabilityIdsToAdapterCapabilities(ids: string[]): string[] {
+  const CAPABILITY_MAP: Record<string, string> = {
+    SessionBinding: 'session-binding',
+    StopHook: 'stop-hook',
+    Mcp: 'mcp',
+    HeadlessPrompt: 'headless-prompt',
+    Programmatic: 'programmatic-session',
+  };
+  // Also include hooks if StopHook is present
+  const mapped = ids.map(id => CAPABILITY_MAP[id]).filter((c): c is string => Boolean(c));
+  if (ids.includes('StopHook') && !mapped.includes('hooks')) {
+    mapped.unshift('hooks');
+  }
+  return mapped;
 }
 
 /**

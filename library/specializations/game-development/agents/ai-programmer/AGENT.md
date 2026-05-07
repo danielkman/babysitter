@@ -2,6 +2,8 @@
 name: ai-programmer
 description: AI programmer agent for behavior trees and pathfinding.
 required-skills: behavior-trees, navmesh, fsm, goap, utility-ai
+graph:
+  domains: [domain:gaming]
 ---
 
 # AI Programmer Agent

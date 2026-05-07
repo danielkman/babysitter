@@ -10,6 +10,8 @@ expertise:
   - Network forensics and incident analysis
   - Performance bottleneck identification
   - Wireshark and tcpdump mastery
+graph:
+  domains: [domain:networking]
 ---
 
 # Network Analysis Expert Agent

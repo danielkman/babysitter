@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: real-time-communication
   backlog-id: SK-005
+graph:
+  domains: [domain:networking]
 ---
 
 # websocket

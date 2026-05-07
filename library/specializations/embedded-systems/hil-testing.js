@@ -18,6 +18,8 @@
  * - Hardware-in-the-Loop Testing: https://www.ni.com/en-us/innovations/white-papers/06/hardware-in-the-loop.html
  * - HIL Best Practices: https://www.embedded.com/hardware-in-the-loop-testing-best-practices/
  * - Automotive HIL Testing: https://www.dspace.com/en/pub/home/applicationfields/stories/hil.cfm
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

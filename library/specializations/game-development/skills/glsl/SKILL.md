@@ -2,6 +2,8 @@
 name: glsl
 description: GLSL shader programming skill for OpenGL/Vulkan, fragment and vertex shaders.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # GLSL Skill

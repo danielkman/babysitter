@@ -19,6 +19,8 @@
  * - FSM Design Best Practices: http://www.sunburst-design.com/papers/
  * - State Machine Encoding: https://docs.amd.com/r/en-US/ug901-vivado-synthesis
  * - Safe FSM Design: https://www.intel.com/content/www/us/en/programmable/documentation/mwh1409960181641.html
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

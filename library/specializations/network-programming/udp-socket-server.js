@@ -21,6 +21,8 @@
  * @references
  * - UDP RFC 768: https://www.rfc-editor.org/rfc/rfc768
  * - Beej's Guide to Network Programming: https://beej.us/guide/bgnet/
+ * @graph
+ *   domains: [domain:networking]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

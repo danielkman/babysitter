@@ -16,6 +16,8 @@
  * @references
  * - Dynamic Parallelism: https://docs.nvidia.com/cuda/cuda-c-programming-guide/
  * - Nested Parallelism: https://developer.nvidia.com/blog/introduction-cuda-dynamic-parallelism/
+ * @graph
+ *   domains: [domain:scientific-computing]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: cross-platform
   backlog-id: SK-009
+graph:
+  domains: [domain:scientific-computing]
 ---
 
 # hip-rocm

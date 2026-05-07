@@ -10,6 +10,8 @@ expertise:
   - Type error diagnosis and localization
   - Gradual typing and flow analysis
   - Effect systems and algebraic effects
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Type System Engineer Agent

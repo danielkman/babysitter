@@ -18,6 +18,8 @@
  * - Vitis HLS Guide: https://docs.amd.com/r/en-US/ug1399-vitis-hls
  * - Intel HLS Compiler: https://www.intel.com/content/www/us/en/software/programmable/quartus-prime/hls-compiler.html
  * - HLS Best Practices: https://docs.amd.com/r/en-US/ug1399-vitis-hls/Best-Practices-for-HLS
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

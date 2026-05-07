@@ -19,6 +19,8 @@
  * - The Art of Game Design: A Book of Lenses by Jesse Schell
  * - Game Design Theory and Practice by Richard Rouse III
  * - GDC Vault: Game Concept Development Talks
+ * @graph
+ *   domains: [domain:gaming]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -8,6 +8,8 @@
  * @references
  * - Shortest Path Algorithms: https://cp-algorithms.com/graph/
  * - CLRS Shortest Path Chapter
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

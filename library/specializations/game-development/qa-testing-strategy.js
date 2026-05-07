@@ -11,6 +11,8 @@
  *   testPhase: 'beta',
  *   targetPlatforms: ['PC', 'PlayStation 5', 'Xbox Series X']
  * });
+ * @graph
+ *   domains: [domain:gaming]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

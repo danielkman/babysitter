@@ -2,6 +2,39 @@ import { renderTemplate, resolveTemplatePath } from '../templateRenderer';
 import type { PromptContext } from '../types';
 
 /**
+ * Check whether the harness uses codex-style ambient env var session binding.
+ */
+function hasCodexAmbientSessionBinding(ctx: PromptContext): boolean {
+  try {
+    const { listPluginTargetDescriptors } = require('@a5c-ai/agent-catalog') as {
+      listPluginTargetDescriptors: () => Array<{ targetId: string; callerEnvVars?: string[] }>;
+    };
+    const target = listPluginTargetDescriptors().find(t => t.targetId === ctx.harness);
+    if (target?.callerEnvVars) {
+      return target.callerEnvVars.includes('CODEX_THREAD_ID') || target.callerEnvVars.includes('CODEX_SESSION_ID');
+    }
+  } catch {
+    // Catalog unavailable
+  }
+  return false;
+}
+
+/**
+ * Check whether the harness uses programmatic adapter family (pi-style).
+ */
+function isProgrammaticAdapter(ctx: PromptContext): boolean {
+  try {
+    const { listPluginTargetDescriptors } = require('@a5c-ai/agent-catalog') as {
+      listPluginTargetDescriptors: () => Array<{ targetId: string; adapterFamily?: string }>;
+    };
+    const target = listPluginTargetDescriptors().find(t => t.targetId === ctx.harness);
+    return target?.adapterFamily === 'programmatic';
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Renders the run:create and session binding section.
  * Complex conditional logic is pre-computed and passed as extras to the template.
  */
@@ -20,7 +53,8 @@ export function renderRunCreation(ctx: PromptContext): string {
     `  auto-resolved from ${ctx.sessionEnvVars}.`,
   ];
 
-  const sessionIdNote = ctx.harness === 'codex'
+  const isCodexStyle = hasCodexAmbientSessionBinding(ctx);
+  const sessionIdNote = isCodexStyle
     ? `Do **not** pass \`--session-id\` explicitly inside a real ${ctx.harnessLabel} session. The\nsession ID auto-resolves from the **PID-scoped session marker** written by the\nsession-start hook (authoritative), with the harness env file and\n\`AGENT_SESSION_ID\` env var used only as last-resort fallbacks. Orchestrators\ncan verify the binding at any time via \`babysitter session:whoami --json\`. Only\npass \`--session-id\` in out-of-band recovery flows.\n`
     : `The session ID auto-resolves from the **PID-scoped session marker** written by\nthe session-start hook (authoritative), with the harness env file and\n\`AGENT_SESSION_ID\` env var used only as last-resort fallbacks. Orchestrators\ncan verify the binding at any time via \`babysitter session:whoami --json\`.\n`;
 
@@ -28,9 +62,10 @@ export function renderRunCreation(ctx: PromptContext): string {
     ? `\n  ${ctx.resumeFlags} \\`
     : '';
 
-  const mistakeHarnessNote = ctx.harness === 'codex'
+  const isProgrammatic = isProgrammaticAdapter(ctx);
+  const mistakeHarnessNote = isCodexStyle
     ? `- wrong: Trying to bind the session in a separate step after run creation\n- correct: Using \`--harness ${ctx.harness}\` with \`run:create\` to create the run AND\n  auto-bind the session, relying on environment variables for honest session\n  binding`
-    : ctx.harness === 'pi'
+    : isProgrammatic
       ? `- correct: Using \`--harness ${ctx.harness}\` with \`run:create\` to create the run AND\n  auto-bind the session, relying on the environment variables set by the\n  extension for honest session binding.`
       : `- wrong: Trying to bind the session in a separate step after run creation instead of using \`--harness ${ctx.harness}\` to do both in one step.\n- correct: Using \`--harness ${ctx.harness}\` with \`run:create\` to create the run AND auto-bind the session without manual intervention and relying on the environment variables set by the hooks for honest session binding.`;
 

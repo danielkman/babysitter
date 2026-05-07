@@ -17,6 +17,8 @@
  * - HIP Documentation: https://rocm.docs.amd.com/projects/HIP/
  * - Hipify Tools: https://github.com/ROCm-Developer-Tools/HIPIFY
  * - ROCm Documentation: https://rocm.docs.amd.com/
+ * @graph
+ *   domains: [domain:scientific-computing]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

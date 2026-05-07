@@ -8,6 +8,8 @@ expertise:
   - Data structure selection
   - Complexity optimization
   - Trade-off analysis
+graph:
+  domains: [domain:computer-science]
 ---
 
 # Algorithm Designer Agent

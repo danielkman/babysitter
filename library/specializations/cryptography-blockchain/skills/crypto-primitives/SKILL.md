@@ -2,6 +2,8 @@
 name: crypto-primitives
 description: Implementation and secure usage of cryptographic primitives including ECDSA, BLS, Schnorr signatures, key derivation, secret sharing, and constant-time operations. Provides guidance for secure cryptographic implementations in blockchain applications.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:security]
 ---
 
 # Cryptographic Primitives Skill

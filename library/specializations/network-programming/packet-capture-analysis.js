@@ -16,6 +16,8 @@
  * @references
  * - libpcap: https://www.tcpdump.org/
  * - Wireshark Developer Guide: https://www.wireshark.org/docs/wsdg_html/
+ * @graph
+ *   domains: [domain:networking]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

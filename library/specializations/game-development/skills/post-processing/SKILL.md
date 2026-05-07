@@ -2,6 +2,8 @@
 name: post-processing
 description: Post-processing skill for bloom, DOF, motion blur, color grading, and TAA.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Post-Processing Skill

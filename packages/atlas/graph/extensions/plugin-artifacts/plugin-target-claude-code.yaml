@@ -65,6 +65,22 @@ attributes:
     - from: ".claude-plugin/marketplace.json"
       kind: "claude"
   requiredSurfaceFile: null
+  promptCapabilities:
+    - hooks
+    - stop-hook
+    - ask-user-question
+    - task-tool
+    - breakpoint-routing
+  loopControlTerm: stop-hook
+  hookDriven: true
+  interactiveToolName: "AskUserQuestion tool"
+  sessionEnvVarsDescription: "PID-scoped session marker (authoritative); CLAUDE_ENV_FILE and AGENT_SESSION_ID are fallbacks"
+  hasIntentFidelityChecks: false
+  hasNonNegotiables: false
+  cliSetupMode: claude-code
+  defaultStepCount: 4
+  skillSystemLabel: "Claude Code skill"
+  defaultTransportId: anthropic
   description: |
     Claude Code as a plugin host — accepts plugin.json + marketplace
     manifests + container/binary plugin artifacts. Native plugin

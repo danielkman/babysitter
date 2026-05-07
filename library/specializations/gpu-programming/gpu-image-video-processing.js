@@ -17,6 +17,8 @@
  * - NVIDIA Video Codec SDK: https://developer.nvidia.com/nvidia-video-codec-sdk
  * - NPP Library: https://docs.nvidia.com/cuda/npp/
  * - NVENC/NVDEC: https://developer.nvidia.com/video-encode-and-decode-gpu-support-matrix
+ * @graph
+ *   domains: [domain:scientific-computing]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

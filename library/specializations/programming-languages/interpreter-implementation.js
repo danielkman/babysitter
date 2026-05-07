@@ -16,6 +16,8 @@
  * - Crafting Interpreters: https://craftinginterpreters.com/
  * - Structure and Interpretation of Computer Programs
  * - Writing An Interpreter In Go by Thorsten Ball
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

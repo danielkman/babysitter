@@ -8,6 +8,8 @@ allowed-tools:
   - Write
   - Grep
   - Glob
+graph:
+  domains: [domain:computer-science]
 ---
 
 # CSES Tracker Skill

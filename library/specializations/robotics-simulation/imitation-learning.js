@@ -16,6 +16,8 @@
  * - DAgger: https://arxiv.org/abs/1011.0686
  * - Deep Imitation Learning: https://sites.google.com/view/deep-imitation-learning
  * - Berkeley RL: https://rll.berkeley.edu/
+ * @graph
+ *   domains: [domain:robotics]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

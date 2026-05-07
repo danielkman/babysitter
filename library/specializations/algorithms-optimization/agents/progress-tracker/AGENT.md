@@ -8,6 +8,8 @@ expertise:
   - Progress visualization
   - Goal setting and tracking
   - Personalized practice recommendations
+graph:
+  domains: [domain:computer-science]
 ---
 
 # Progress Tracker Agent

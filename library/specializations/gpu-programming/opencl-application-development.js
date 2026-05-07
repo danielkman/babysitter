@@ -17,6 +17,8 @@
  * - OpenCL Specification: https://registry.khronos.org/OpenCL/specs/3.0-unified/html/OpenCL_API.html
  * - OpenCL C Language Specification: https://registry.khronos.org/OpenCL/specs/3.0-unified/html/OpenCL_C.html
  * - OpenCL Reference Pages: https://man.opencl.org/
+ * @graph
+ *   domains: [domain:scientific-computing]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

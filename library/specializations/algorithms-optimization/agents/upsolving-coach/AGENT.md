@@ -8,6 +8,8 @@ expertise:
   - Knowledge gap identification
   - Technique extraction and cataloging
   - Practice problem recommendation
+graph:
+  domains: [domain:computer-science]
 ---
 
 # Upsolving Coach Agent

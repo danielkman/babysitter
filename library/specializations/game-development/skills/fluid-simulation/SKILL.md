@@ -2,6 +2,8 @@
 name: fluid-simulation
 description: Water physics skill for fluid dynamics and buoyancy systems.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Fluid Simulation Skill

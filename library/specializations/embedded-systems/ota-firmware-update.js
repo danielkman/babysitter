@@ -17,6 +17,8 @@
  * - OTA Updates Guide: https://interrupt.memfault.com/blog/device-firmware-update-cookbook
  * - A/B Updates: https://source.android.com/devices/tech/ota/ab
  * - Delta Updates: https://www.embedded.com/delta-firmware-updates/
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

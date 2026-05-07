@@ -2,6 +2,8 @@
 name: rtl-linting
 description: RTL code quality checking and linting. Runs lint rules, identifies synthesis issues, detects inferred latches, and generates lint reports with waivers.
 allowed-tools: Read, Grep, Write, Edit, Bash, Glob
+graph:
+  domains: [domain:embedded-systems]
 ---
 
 # RTL Linting Skill

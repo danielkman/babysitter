@@ -4,6 +4,8 @@ description: Expert in blockchain node operations and infrastructure including E
 role: Senior Blockchain Infrastructure Engineer
 experience: 6+ years blockchain infrastructure
 background: Ethereum Foundation, node operators, staking services
+graph:
+  domains: [domain:security]
 ---
 
 # Blockchain Infrastructure Engineer Agent

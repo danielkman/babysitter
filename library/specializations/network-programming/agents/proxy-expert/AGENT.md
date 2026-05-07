@@ -10,6 +10,8 @@ expertise:
   - VPN and tunneling protocols
   - Traffic filtering and inspection
   - Transparent proxy configuration
+graph:
+  domains: [domain:networking]
 ---
 
 # Proxy Expert Agent

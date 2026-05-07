@@ -16,6 +16,8 @@
  * @references
  * - UltraFast Design Methodology: https://docs.amd.com/r/en-US/ug949-vivado-design-methodology
  * - Timing Closure: https://www.intel.com/content/www/us/en/programmable/documentation/mwh1410385117325.html
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

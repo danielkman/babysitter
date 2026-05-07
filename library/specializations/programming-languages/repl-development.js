@@ -15,6 +15,8 @@
  * - Crafting Interpreters REPL: https://craftinginterpreters.com/scanning.html#the-repl
  * - Readline Library: https://tiswww.case.edu/php/chet/readline/rltop.html
  * - REPL Best Practices: https://langserver.org/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

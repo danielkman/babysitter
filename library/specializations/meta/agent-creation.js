@@ -3,6 +3,11 @@
  * @description Create a new agent with AGENT.md and README.md including role definition, expertise, and prompt templates
  * @inputs { agentName: string, description: string, role: string, expertise: array, specialization: string, outputDir: string }
  * @outputs { success: boolean, agentPath: string, files: array, artifacts: array }
+ * @graph
+ *   domains: [domain:software-engineering]
+ *   skillAreas: [skill-area:ai-agent-development]
+ *   topics: [topic:developer-experience, topic:architecture-decisions]
+ *   roles: [role:platform-engineer, role:tech-lead]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -5,6 +5,11 @@
  * place: adding orchestration loop entrypoints, session binding, process-library
  * usage, hook/middleware interception, effect execution, observability, and
  * verification inside the target repo.
+ * @graph
+ *   domains: [domain:software-engineering]
+ *   skillAreas: [skill-area:ai-agent-development, skill-area:orchestration-loop]
+ *   topics: [topic:developer-experience, topic:integrations]
+ *   roles: [role:platform-engineer, role:backend-engineer]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

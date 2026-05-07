@@ -4,6 +4,8 @@
  * blend trees, IK systems, procedural animation, and animation optimization.
  * @inputs { projectName: string, animationType?: string, characterTypes?: array, outputDir?: string }
  * @outputs { success: boolean, animationSystems: array, animationList: array, documentation: string, artifacts: array }
+ * @graph
+ *   domains: [domain:gaming]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

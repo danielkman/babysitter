@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: low-level-networking
   backlog-id: SK-001
+graph:
+  domains: [domain:networking]
 ---
 
 # socket-programming

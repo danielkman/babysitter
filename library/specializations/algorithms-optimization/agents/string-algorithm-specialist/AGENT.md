@@ -7,6 +7,8 @@ expertise:
   - Suffix structure expertise
   - Hashing technique application
   - Pattern matching optimization
+graph:
+  domains: [domain:computer-science]
 ---
 
 # String Algorithm Specialist Agent

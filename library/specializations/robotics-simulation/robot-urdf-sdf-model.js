@@ -18,6 +18,8 @@
  * - URDF Tutorials: http://wiki.ros.org/urdf/Tutorials
  * - SDF Format: http://sdformat.org/
  * - Xacro: https://wiki.ros.org/xacro
+ * @graph
+ *   domains: [domain:robotics]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

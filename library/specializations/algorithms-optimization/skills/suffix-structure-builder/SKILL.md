@@ -7,6 +7,8 @@ allowed-tools:
   - Grep
   - Glob
   - Edit
+graph:
+  domains: [domain:computer-science]
 ---
 
 # Suffix Structure Builder Skill

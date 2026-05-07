@@ -7,6 +7,8 @@ allowed-tools:
   - Write
   - Grep
   - Glob
+graph:
+  domains: [domain:computer-science]
 ---
 
 # Code Profiler Skill

@@ -17,6 +17,8 @@
  * - Uniswap V3 Whitepaper: https://uniswap.org/whitepaper-v3.pdf
  * - Curve Finance Whitepaper: https://curve.fi/whitepaper
  * - Balancer Whitepaper: https://balancer.fi/whitepaper.pdf
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

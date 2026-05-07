@@ -11,6 +11,8 @@ expertise:
   - Physical constraint application
   - Timing report analysis
   - Clock domain crossing timing
+graph:
+  domains: [domain:embedded-systems]
 ---
 
 # FPGA Timing Expert Agent

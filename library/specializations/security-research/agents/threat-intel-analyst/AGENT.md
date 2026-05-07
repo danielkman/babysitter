@@ -9,6 +9,8 @@ expertise:
   - STIX/TAXII standards
   - Dark web intelligence
   - Geopolitical context analysis
+graph:
+  domains: [domain:cybersecurity]
 ---
 
 # Threat Intelligence Analyst Agent

@@ -2,6 +2,8 @@
 name: utility-ai
 description: Utility AI skill for scoring functions and decision making.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Utility AI Skill

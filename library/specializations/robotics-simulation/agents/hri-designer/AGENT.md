@@ -13,6 +13,8 @@ expertise:
   - Social navigation
   - Intent recognition
   - User study design
+graph:
+  domains: [domain:robotics]
 ---
 
 # HRI Interface Designer Agent

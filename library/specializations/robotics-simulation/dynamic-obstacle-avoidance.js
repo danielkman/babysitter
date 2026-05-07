@@ -16,6 +16,8 @@
  * - DWA: https://wiki.ros.org/dwa_local_planner
  * - TEB: https://wiki.ros.org/teb_local_planner
  * - Social Navigation: https://arxiv.org/abs/2103.14750
+ * @graph
+ *   domains: [domain:robotics]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

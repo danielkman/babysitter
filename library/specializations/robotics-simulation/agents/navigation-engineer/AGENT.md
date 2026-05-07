@@ -13,6 +13,8 @@ expertise:
   - Autonomous exploration
   - Multi-floor navigation
   - Fleet navigation coordination
+graph:
+  domains: [domain:robotics]
 ---
 
 # Navigation Engineer Agent

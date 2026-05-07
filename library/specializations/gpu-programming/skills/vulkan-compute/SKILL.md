@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: compute-shaders
   backlog-id: SK-004
+graph:
+  domains: [domain:scientific-computing]
 ---
 
 # vulkan-compute

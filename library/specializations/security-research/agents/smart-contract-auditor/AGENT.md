@@ -9,6 +9,8 @@ expertise:
   - Access control and upgradeability
   - Gas optimization and DoS
   - Cross-chain security
+graph:
+  domains: [domain:cybersecurity]
 ---
 
 # Smart Contract Auditor Agent

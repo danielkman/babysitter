@@ -2,6 +2,8 @@
 name: voice-chat
 description: Voice chat skill for echo cancellation and codec optimization.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Voice Chat Skill

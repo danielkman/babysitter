@@ -7,6 +7,8 @@
  *
  * @references
  * - Computational Geometry: https://cp-algorithms.com/geometry/
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

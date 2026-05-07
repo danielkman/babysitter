@@ -17,6 +17,8 @@
  * - Low Power Embedded Systems: https://interrupt.memfault.com/blog/low-power-design-tips
  * - Sleep Modes: https://www.embedded.com/understanding-low-power-sleep-modes/
  * - Power Management: https://www.arm.com/technologies/low-power-optimization
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

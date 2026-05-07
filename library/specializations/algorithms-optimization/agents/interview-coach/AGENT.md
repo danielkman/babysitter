@@ -8,6 +8,8 @@ expertise:
   - Communication improvement advice
   - Confidence building strategies
   - Mock interview analysis
+graph:
+  domains: [domain:computer-science]
 ---
 
 # Interview Coach Agent

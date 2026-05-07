@@ -15,6 +15,8 @@
  * @references
  * - WebSocket RFC 6455: https://www.rfc-editor.org/rfc/rfc6455
  * - WebSocket Compression: https://www.rfc-editor.org/rfc/rfc7692
+ * @graph
+ *   domains: [domain:networking]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

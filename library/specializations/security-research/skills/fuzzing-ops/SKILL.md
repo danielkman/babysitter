@@ -8,6 +8,8 @@ allowed-tools:
   - Edit
   - Glob
   - Grep
+graph:
+  domains: [domain:cybersecurity]
 ---
 
 # Fuzzing Operations Skill

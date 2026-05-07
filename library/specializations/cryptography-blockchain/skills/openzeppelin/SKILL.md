@@ -2,6 +2,8 @@
 name: openzeppelin
 description: Expert usage of OpenZeppelin Contracts library for secure smart contract development. Covers access control, token standards, governance, upgrades, and security utilities.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:security]
 ---
 
 # OpenZeppelin Contracts Skill

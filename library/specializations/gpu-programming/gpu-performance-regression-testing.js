@@ -17,6 +17,8 @@
  * - Google Benchmark: https://github.com/google/benchmark
  * - NVIDIA/cuda-samples benchmarks: https://github.com/NVIDIA/cuda-samples
  * - Performance Testing Best Practices: https://developer.nvidia.com/blog/
+ * @graph
+ *   domains: [domain:scientific-computing]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

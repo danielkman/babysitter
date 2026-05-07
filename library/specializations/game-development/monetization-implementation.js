@@ -4,6 +4,8 @@
  * in-app purchases, virtual economy, battle pass, subscriptions, and ethical monetization practices.
  * @inputs { projectName: string, monetizationModel?: string, currencies?: array, outputDir?: string }
  * @outputs { success: boolean, monetizationDoc: string, storeIntegration: object, economyModel: object, artifacts: array }
+ * @graph
+ *   domains: [domain:gaming]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

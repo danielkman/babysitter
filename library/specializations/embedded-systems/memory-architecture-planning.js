@@ -17,6 +17,8 @@
  * - Memory Management for Embedded Systems: https://www.embedded.com/memory-management-for-embedded-systems/
  * - Linker Scripts: https://interrupt.memfault.com/blog/how-to-write-linker-scripts-for-firmware
  * - Memory Protection: https://www.embedded.com/memory-protection-unit-mpu/
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

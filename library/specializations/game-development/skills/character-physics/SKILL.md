@@ -2,6 +2,8 @@
 name: character-physics
 description: Character controller skill for movement physics and platformer mechanics.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Character Physics Skill

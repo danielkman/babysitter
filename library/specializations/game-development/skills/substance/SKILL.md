@@ -2,6 +2,8 @@
 name: substance
 description: Substance Painter/Designer skill for baking and material export.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Substance Skill

@@ -11,6 +11,8 @@ expertise:
   - Tool-specific optimizations
   - Multi-vendor synthesis flows
   - Synthesis scripting
+graph:
+  domains: [domain:embedded-systems]
 ---
 
 # Synthesis Expert Agent

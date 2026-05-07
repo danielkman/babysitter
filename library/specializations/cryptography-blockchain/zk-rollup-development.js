@@ -17,6 +17,8 @@
  * - zkSync: https://docs.zksync.io/
  * - StarkNet: https://docs.starknet.io/
  * - Polygon zkEVM: https://wiki.polygon.technology/docs/zkEVM/
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

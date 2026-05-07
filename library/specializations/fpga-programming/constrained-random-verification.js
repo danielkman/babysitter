@@ -17,6 +17,8 @@
  * - SystemVerilog for Verification: https://verificationacademy.com/
  * - Constrained Random Verification: https://www.mentor.com/
  * - Coverage-Driven Verification: https://www.cadence.com/
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

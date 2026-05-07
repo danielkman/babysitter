@@ -2,6 +2,8 @@
 name: matchmaking
 description: Matchmaking skill for ELO/MMR and skill-based matching.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Matchmaking Skill

@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: performance-testing
   backlog-id: SK-015
+graph:
+  domains: [domain:scientific-computing]
 ---
 
 # gpu-benchmarking

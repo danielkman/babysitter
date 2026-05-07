@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: gpu-libraries
   backlog-id: SK-006
+graph:
+  domains: [domain:scientific-computing]
 ---
 
 # cublas-cudnn

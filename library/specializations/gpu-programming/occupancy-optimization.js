@@ -16,6 +16,8 @@
  * @references
  * - CUDA Occupancy Calculator: https://docs.nvidia.com/cuda/cuda-occupancy-calculator/
  * - Occupancy Best Practices: https://docs.nvidia.com/cuda/cuda-c-best-practices-guide/
+ * @graph
+ *   domains: [domain:scientific-computing]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

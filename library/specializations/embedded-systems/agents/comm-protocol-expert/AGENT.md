@@ -11,6 +11,8 @@ expertise:
   - Protocol state machines
   - Timing and synchronization
   - Error handling and recovery
+graph:
+  domains: [domain:embedded-systems]
 ---
 
 # Communication Protocol Expert Agent

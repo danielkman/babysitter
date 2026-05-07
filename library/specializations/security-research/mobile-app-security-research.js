@@ -17,6 +17,8 @@
  * - OWASP MASTG: https://mas.owasp.org/MASTG/
  * - Frida: https://frida.re/
  * - objection: https://github.com/sensepost/objection
+ * @graph
+ *   domains: [domain:cybersecurity]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -8,6 +8,8 @@
  * @references
  * - Two Pointer Technique Patterns
  * - Sliding Window Problems
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

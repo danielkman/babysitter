@@ -2,6 +2,8 @@
 name: procedural-audio
 description: Procedural sound skill for synthesis and dynamic sound design.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Procedural Audio Skill

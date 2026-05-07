@@ -10,6 +10,8 @@ expertise:
   - Runtime profiling and optimization
   - Thread and concurrency support
   - FFI and native code interop
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Runtime Systems Engineer Agent

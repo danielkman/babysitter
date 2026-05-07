@@ -2,6 +2,8 @@
 name: raytracing
 description: Real-time ray tracing skill for DXR/VK_KHR_ray_tracing and hybrid rendering.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Ray Tracing Skill

@@ -16,6 +16,8 @@
  *
  * @references
  * - Synthetix Staking Rewards: https://docs.synthetix.io/contracts/source/contracts/stakingrewards/
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

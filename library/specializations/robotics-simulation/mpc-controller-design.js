@@ -17,6 +17,8 @@
  * - CasADi: https://web.casadi.org/
  * - ACADO: https://acado.github.io/
  * - CVXPY: https://cvxpy.org/
+ * @graph
+ *   domains: [domain:robotics]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

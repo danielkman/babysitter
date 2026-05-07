@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: low-level-optimization
   backlog-id: SK-012
+graph:
+  domains: [domain:scientific-computing]
 ---
 
 # warp-primitives

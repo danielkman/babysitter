@@ -17,6 +17,8 @@
  * - Ceedling Test Framework: http://www.throwtheswitch.org/ceedling
  * - Unity Test Framework: http://www.throwtheswitch.org/unity
  * - CMock: http://www.throwtheswitch.org/cmock
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

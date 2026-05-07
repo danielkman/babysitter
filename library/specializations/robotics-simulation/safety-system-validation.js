@@ -16,6 +16,8 @@
  * - ISO 13849: https://www.iso.org/standard/73481.html
  * - ISO 10218: https://www.iso.org/standard/51330.html
  * - IEC 62443: https://www.iec.ch/cyber-security
+ * @graph
+ *   domains: [domain:robotics]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

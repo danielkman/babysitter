@@ -14,6 +14,8 @@
  *
  * @references
  * - HTTP/1.1 RFC 7230-7235: https://www.rfc-editor.org/rfc/rfc7230
+ * @graph
+ *   domains: [domain:networking]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

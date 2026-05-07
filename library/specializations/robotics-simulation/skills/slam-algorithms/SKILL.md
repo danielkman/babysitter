@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: perception
   backlog-id: SK-007
+graph:
+  domains: [domain:robotics]
 ---
 
 # slam-algorithms

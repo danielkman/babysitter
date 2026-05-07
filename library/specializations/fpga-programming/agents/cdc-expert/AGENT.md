@@ -11,6 +11,8 @@ expertise:
   - CDC constraint development
   - Multi-clock architecture
   - Metastability theory
+graph:
+  domains: [domain:embedded-systems]
 ---
 
 # CDC Expert Agent

@@ -23,6 +23,8 @@
  * - kqueue: https://www.freebsd.org/cgi/man.cgi?query=kqueue
  * - The C10K Problem: http://www.kegel.com/c10k.html
  * - io_uring: https://kernel.dk/io_uring.pdf
+ * @graph
+ *   domains: [domain:networking]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

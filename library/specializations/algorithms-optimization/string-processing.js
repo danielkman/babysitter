@@ -8,6 +8,8 @@
  * @references
  * - String Algorithm Catalog
  * - Classic String Problems
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

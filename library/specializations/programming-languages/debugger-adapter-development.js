@@ -14,6 +14,8 @@
  * @references
  * - DAP Specification: https://microsoft.github.io/debug-adapter-protocol/
  * - VS Code Debugging: https://code.visualstudio.com/api/extension-guides/debugger-extension
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

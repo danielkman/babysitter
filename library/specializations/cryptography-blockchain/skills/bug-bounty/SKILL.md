@@ -2,6 +2,8 @@
 name: bug-bounty
 description: Bug bounty program management and security disclosure expertise for smart contracts. Covers program setup on Immunefi, vulnerability triage, responsible disclosure coordination, bounty payments, and post-disclosure analysis.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch, WebSearch
+graph:
+  domains: [domain:security]
 ---
 
 # Bug Bounty/Security Disclosure Skill

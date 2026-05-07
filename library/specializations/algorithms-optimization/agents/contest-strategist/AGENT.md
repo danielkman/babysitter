@@ -8,6 +8,8 @@ expertise:
   - Time allocation recommendations
   - When-to-skip decisions
   - Stress management guidance
+graph:
+  domains: [domain:computer-science]
 ---
 
 # Contest Strategist Agent

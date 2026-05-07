@@ -18,6 +18,8 @@
  * - Power Management in Embedded Systems: https://www.embedded.com/power-management-in-embedded-systems/
  * - Low-Power Design: https://www.embedded.com/low-power-design-techniques-for-embedded-systems/
  * - Battery Life Estimation: https://interrupt.memfault.com/blog/measuring-battery-life
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

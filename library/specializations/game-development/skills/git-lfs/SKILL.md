@@ -2,6 +2,8 @@
 name: git-lfs
 description: Git LFS skill for large game assets.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Git LFS Skill

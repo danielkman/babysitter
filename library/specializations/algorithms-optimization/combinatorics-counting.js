@@ -7,6 +7,8 @@
  *
  * @references
  * - Combinatorics: https://cp-algorithms.com/combinatorics/
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

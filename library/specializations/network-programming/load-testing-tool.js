@@ -17,6 +17,8 @@
  * - wrk: https://github.com/wg/wrk
  * - k6: https://k6.io/docs/
  * - Locust: https://docs.locust.io/
+ * @graph
+ *   domains: [domain:networking]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

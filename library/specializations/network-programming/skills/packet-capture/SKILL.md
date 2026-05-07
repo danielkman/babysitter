@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: network-analysis
   backlog-id: SK-003
+graph:
+  domains: [domain:networking]
 ---
 
 # packet-capture

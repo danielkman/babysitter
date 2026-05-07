@@ -11,6 +11,8 @@ expertise:
   - Code and functional coverage
   - Verification planning
   - Debug and root cause analysis
+graph:
+  domains: [domain:embedded-systems]
 ---
 
 # Verification Expert Agent

@@ -2,6 +2,8 @@
 name: unreal-cpp
 description: Unreal Engine C++ programming skill for UCLASS macros, reflection system, garbage collection, and engine integration.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Unreal C++ Skill

@@ -10,6 +10,8 @@ expertise:
   - Network test automation
   - Test result analysis and reporting
   - Benchmark design and execution
+graph:
+  domains: [domain:networking]
 ---
 
 # Network Testing Expert Agent

@@ -2,6 +2,8 @@
 name: power-profiler
 description: Power consumption measurement and analysis expertise for embedded systems. Integrates with power analyzer tools to measure, profile, and optimize power consumption in battery-powered and energy-efficient designs.
 allowed-tools: Read, Grep, Write, Edit, Bash, Glob, WebFetch, WebSearch
+graph:
+  domains: [domain:embedded-systems]
 ---
 
 # Power Profiler Skill

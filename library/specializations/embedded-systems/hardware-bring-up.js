@@ -19,6 +19,8 @@
  * - Hardware Bring-Up Best Practices: https://www.embedded.com/hardware-bring-up-best-practices/
  * - JTAG Debugging: https://interrupt.memfault.com/blog/a-deep-dive-into-jtag
  * - Embedded Systems Debugging: https://www.embedded.com/debugging-embedded-systems-with-oscilloscopes/
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

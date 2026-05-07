@@ -17,6 +17,8 @@
  * - Interface Design: https://embeddedartistry.com/blog/2017/02/06/embedded-driver-development-patterns/
  * - Register Maps: https://interrupt.memfault.com/blog/building-drivers-register-interface
  * - Hardware Abstraction: https://www.embedded.com/hardware-abstraction-layer-design/
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -13,6 +13,8 @@ expertise:
   - Vision-based robot learning
   - Multi-task learning
   - Curriculum learning
+graph:
+  domains: [domain:robotics]
 ---
 
 # ML/RL Robotics Agent

@@ -16,6 +16,8 @@
  * @references
  * - ACME Protocol: https://www.rfc-editor.org/rfc/rfc8555
  * - Let's Encrypt: https://letsencrypt.org/docs/
+ * @graph
+ *   domains: [domain:networking]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

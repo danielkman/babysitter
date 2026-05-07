@@ -17,6 +17,8 @@
  * @references
  * - CTFd: https://ctfd.io/
  * - CTF Design Guide: https://ctf-wiki.org/en/
+ * @graph
+ *   domains: [domain:cybersecurity]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

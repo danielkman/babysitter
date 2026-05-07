@@ -2,6 +2,8 @@
 name: verilog-sv-language
 description: Expert-level Verilog and SystemVerilog knowledge following IEEE 1800 standards. Generates synthesizable RTL code with proper coding styles and constructs.
 allowed-tools: Read, Grep, Write, Edit, Bash, Glob
+graph:
+  domains: [domain:embedded-systems]
 ---
 
 # Verilog/SystemVerilog Language Skill

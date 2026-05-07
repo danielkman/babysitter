@@ -4,6 +4,8 @@
  * player feedback through qualitative and quantitative research methods.
  * @inputs { projectName: string, testingPhase?: string, participantCount?: number, outputDir?: string }
  * @outputs { success: boolean, researchReport: string, findings: array, recommendations: array, artifacts: array }
+ * @graph
+ *   domains: [domain:gaming]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

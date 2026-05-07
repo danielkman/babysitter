@@ -8,6 +8,8 @@
  * @references
  * - Backtracking Algorithms
  * - Constraint Satisfaction Problems
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

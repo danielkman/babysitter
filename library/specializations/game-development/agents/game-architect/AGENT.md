@@ -2,6 +2,8 @@
 name: game-architect
 description: Agent specialized in game systems architecture, technical design, component patterns, and documentation. Designs scalable game systems, evaluates technical approaches, and produces architecture documentation.
 required-skills: unity-development, unreal-development, godot-development, behavior-trees
+graph:
+  domains: [domain:gaming]
 ---
 
 # Game Architect Agent

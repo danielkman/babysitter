@@ -2,6 +2,8 @@
 name: lighting-artist
 description: Lighting artist agent for baked/real-time lighting.
 required-skills: unity-hdrp, unreal-lumen, global-illumination
+graph:
+  domains: [domain:gaming]
 ---
 
 # Lighting Artist Agent

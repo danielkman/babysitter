@@ -16,6 +16,8 @@
  * @references
  * - HAProxy: https://www.haproxy.org/
  * - IPVS: http://www.linuxvirtualserver.org/software/ipvs.html
+ * @graph
+ *   domains: [domain:networking]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

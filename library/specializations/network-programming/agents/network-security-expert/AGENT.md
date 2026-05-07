@@ -10,6 +10,8 @@ expertise:
   - Secure protocol design principles
   - Penetration testing for network services
   - Security auditing and compliance
+graph:
+  domains: [domain:networking]
 ---
 
 # Network Security Expert Agent

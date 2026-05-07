@@ -7,6 +7,8 @@
  *
  * @references
  * - Binary Search Patterns: https://cp-algorithms.com/num_methods/binary_search.html
+ * @graph
+ *   domains: [domain:computer-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

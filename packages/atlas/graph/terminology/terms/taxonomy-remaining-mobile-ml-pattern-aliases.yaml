@@ -1,0 +1,328 @@
+---
+nodeKind: Term
+id: term:coordinator-pattern
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "Coordinator Pattern"
+  kind: concept
+  references:
+    - skill-area:mobile-state-management
+  description: |
+    Taxonomy alias term for coordinator-style flow control in mobile apps.
+edges: {}
+---
+nodeKind: Term
+id: term:modular-architecture-mobile
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "Modular Architecture"
+  kind: concept
+  references:
+    - specialization:mobile-development
+  description: |
+    Taxonomy alias term for modular composition in mobile application structure.
+edges: {}
+---
+nodeKind: Term
+id: term:gesture-based-interaction
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "Gesture-Based Interaction"
+  kind: concept
+  references:
+    - specialization:mobile-development
+  description: |
+    Taxonomy alias term for gesture-centric mobile interaction patterns.
+edges: {}
+---
+nodeKind: Term
+id: term:composable-ui
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "Composable UI"
+  kind: concept
+  references:
+    - skill-area:ui-component-libraries
+  description: |
+    Taxonomy alias term for composing interfaces from reusable building blocks.
+edges: {}
+---
+nodeKind: Term
+id: term:declarative-ui
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "Declarative UI"
+  kind: concept
+  references:
+    - skill-area:flutter-development
+    - skill-area:ios-native
+    - skill-area:android-native
+  description: |
+    Taxonomy alias term for state-driven declarative interface programming.
+edges: {}
+---
+nodeKind: Term
+id: term:bottom-sheet
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "Bottom Sheet"
+  kind: concept
+  references:
+    - topic:modal-dialog
+  description: |
+    Taxonomy alias term for bottom-anchored modal or partial-overlay surfaces.
+edges: {}
+---
+nodeKind: Term
+id: term:navigation-drawer
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "Navigation Drawer"
+  kind: concept
+  references:
+    - skill-area:frontend-routing
+  description: |
+    Taxonomy alias term for drawer-based navigation shells.
+edges: {}
+---
+nodeKind: Term
+id: term:tab-navigation
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "Tab Navigation"
+  kind: concept
+  references:
+    - skill-area:frontend-routing
+  description: |
+    Taxonomy alias term for tab-scoped navigation structures.
+edges: {}
+---
+nodeKind: Term
+id: term:mobx-pattern
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "MobX Pattern"
+  kind: concept
+  references:
+    - skill-area:mobile-state-management
+  description: |
+    Taxonomy alias term for observable-store style mobile state management.
+edges: {}
+---
+nodeKind: Term
+id: term:riverpod-pattern
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "Riverpod Pattern"
+  kind: concept
+  references:
+    - skill-area:flutter-development
+    - skill-area:mobile-state-management
+  description: |
+    Taxonomy alias term for Riverpod-style dependency and state wiring.
+edges: {}
+---
+nodeKind: Term
+id: term:view-recycling
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "View Recycling"
+  kind: concept
+  references:
+    - topic:windowing-virtualization
+  description: |
+    Taxonomy alias term for reusing rendered view containers to reduce overhead.
+edges: {}
+---
+nodeKind: Term
+id: term:memory-cache-management
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "Memory Cache Management"
+  kind: concept
+  references:
+    - skill-area:caching-strategies
+  description: |
+    Taxonomy alias term for cache sizing, eviction, and in-memory reuse behavior.
+edges: {}
+---
+nodeKind: Term
+id: term:navigation-stack
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "Navigation Stack"
+  kind: concept
+  references:
+    - skill-area:frontend-routing
+  description: |
+    Taxonomy alias term for stack-based navigation transitions and history.
+edges: {}
+---
+nodeKind: Term
+id: term:modal-navigation
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "Modal Navigation"
+  kind: concept
+  references:
+    - topic:modal-routes
+  description: |
+    Taxonomy alias term for navigation flows that present modal route states.
+edges: {}
+---
+nodeKind: Term
+id: term:network-aware-pattern
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "Network-Aware Pattern"
+  kind: concept
+  references:
+    - skill-area:network-condition-testing
+  description: |
+    Taxonomy alias term for adapting behavior to varying network conditions.
+edges: {}
+---
+nodeKind: Term
+id: term:resource-pooling
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "Resource Pooling"
+  kind: concept
+  references:
+    - skill-area:concurrency-multithreading
+  description: |
+    Taxonomy alias term for managed reuse of constrained computational resources.
+edges: {}
+---
+nodeKind: Term
+id: term:lazy-resource-loading
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "Lazy Resource Loading"
+  kind: concept
+  references:
+    - topic:lazy-loading
+  description: |
+    Taxonomy alias term for deferring non-critical resource initialization.
+edges: {}
+---
+nodeKind: Term
+id: term:batch-training
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "Batch Training"
+  kind: concept
+  references:
+    - skill-area:machine-learning-frameworks
+  description: |
+    Taxonomy alias term for offline batched model-training workflows.
+edges: {}
+---
+nodeKind: Term
+id: term:online-training
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "Online Training"
+  kind: concept
+  references:
+    - skill-area:automated-retraining
+  description: |
+    Taxonomy alias term for continuously updated or incrementally trained models.
+edges: {}
+---
+nodeKind: Term
+id: term:serverless-deployment
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "Serverless Deployment"
+  kind: concept
+  references:
+    - topic:serverless-architecture
+    - skill-area:model-serving-deployment
+  description: |
+    Taxonomy alias term for serverless deployment surfaces in application or ML serving.
+edges: {}
+---
+nodeKind: Term
+id: term:edge-deployment
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "Edge Deployment"
+  kind: concept
+  references:
+    - skill-area:model-serving-deployment
+  description: |
+    Taxonomy alias term for deploying inference or logic near the edge.
+edges: {}
+---
+nodeKind: Term
+id: term:rolling-updates
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "Rolling Updates"
+  kind: concept
+  references:
+    - skill-area:deployment-infrastructure-management
+  description: |
+    Taxonomy alias term for staged update rollout across live instances.
+edges: {}
+---
+nodeKind: Term
+id: term:shadow-deployment
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "Shadow Deployment"
+  kind: concept
+  references:
+    - skill-area:model-serving-deployment
+  description: |
+    Taxonomy alias term for shadow-serving new behavior alongside live traffic.
+edges: {}
+---
+nodeKind: Term
+id: term:feature-importance-analysis
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "Feature Importance Analysis"
+  kind: concept
+  references:
+    - skill-area:explainability-interpretation
+  description: |
+    Taxonomy alias term for ranking feature contributions in model behavior.
+edges: {}
+---
+nodeKind: Term
+id: term:counterfactual-explanations
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "Counterfactual Explanations"
+  kind: concept
+  references:
+    - skill-area:explainability-interpretation
+  description: |
+    Taxonomy alias term for explanation methods based on nearest alternative outcomes.
+edges: {}
+---
+nodeKind: Term
+id: term:partial-dependence-plots
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "Partial Dependence Plots"
+  kind: concept
+  references:
+    - skill-area:explainability-interpretation
+  description: |
+    Taxonomy alias term for visualizing marginal model behavior over feature changes.
+edges: {}
+---
+nodeKind: Term
+id: term:surrogate-models-explainability
+attributes:
+  canonicalDefinitionId: "# TODO: link canonical definition"
+  displayName: "Surrogate Models for Explainability"
+  kind: concept
+  references:
+    - skill-area:explainability-interpretation
+  description: |
+    Taxonomy alias term for interpretable approximations used to explain complex models.
+edges: {}

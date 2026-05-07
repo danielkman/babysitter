@@ -16,6 +16,8 @@
  * @references
  * - Multichain: https://docs.multichain.org/
  * - LayerZero: https://layerzero.gitbook.io/docs/
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

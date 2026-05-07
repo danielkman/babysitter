@@ -2,6 +2,8 @@
 name: deferred-rendering
 description: Deferred shading/lighting skill for G-buffer design and decals.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Deferred Rendering Skill

@@ -17,6 +17,8 @@
  * - Code Size Optimization: https://interrupt.memfault.com/blog/code-size-optimization-gcc-flags
  * - Link-Time Optimization: https://gcc.gnu.org/wiki/LinkTimeOptimization
  * - Dead Code Elimination: https://www.embedded.com/dead-code-elimination/
+ * @graph
+ *   domains: [domain:embedded-systems]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -17,6 +17,8 @@
  * - ERC-4626 Standard: https://eips.ethereum.org/EIPS/eip-4626
  * - OpenZeppelin ERC4626: https://docs.openzeppelin.com/contracts/4.x/api/token/erc20#ERC4626
  * - Yearn Vault Design: https://docs.yearn.finance/
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -2,6 +2,8 @@
 name: audio-dsp
 description: Audio DSP skill for filters and real-time processing.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Audio DSP Skill

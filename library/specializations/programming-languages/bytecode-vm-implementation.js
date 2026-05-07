@@ -16,6 +16,8 @@
  * - Crafting Interpreters VM: https://craftinginterpreters.com/a-virtual-machine.html
  * - JVM Specification: https://docs.oracle.com/javase/specs/jvms/se17/html/
  * - Lua VM: http://www.yourfruit.info/lua/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

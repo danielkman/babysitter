@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: multi-gpu
   backlog-id: SK-007
+graph:
+  domains: [domain:scientific-computing]
 ---
 
 # nccl-communication

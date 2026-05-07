@@ -9,6 +9,8 @@ expertise:
   - Runtime hooking and instrumentation
   - Mobile malware analysis
   - MDM and enterprise security
+graph:
+  domains: [domain:cybersecurity]
 ---
 
 # Mobile Security Researcher Agent

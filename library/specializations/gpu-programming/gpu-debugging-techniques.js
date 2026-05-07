@@ -17,6 +17,8 @@
  * - compute-sanitizer: https://docs.nvidia.com/cuda/compute-sanitizer/
  * - CUDA-GDB: https://docs.nvidia.com/cuda/cuda-gdb/
  * - Nsight Debugger: https://docs.nvidia.com/nsight-visual-studio-edition/
+ * @graph
+ *   domains: [domain:scientific-computing]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

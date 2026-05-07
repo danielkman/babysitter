@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: ai-security
   backlog-id: SK-020
+graph:
+  domains: [domain:cybersecurity]
 ---
 
 # aiml-security

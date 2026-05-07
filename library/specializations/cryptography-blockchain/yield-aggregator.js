@@ -15,6 +15,8 @@
  *
  * @references
  * - Yearn Finance Documentation: https://docs.yearn.finance/
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

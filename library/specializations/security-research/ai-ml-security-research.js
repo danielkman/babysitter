@@ -16,6 +16,8 @@
  * @references
  * - OWASP LLM Top 10: https://owasp.org/www-project-top-10-for-large-language-model-applications/
  * - Adversarial Robustness Toolbox: https://github.com/Trusted-AI/adversarial-robustness-toolbox
+ * @graph
+ *   domains: [domain:cybersecurity]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

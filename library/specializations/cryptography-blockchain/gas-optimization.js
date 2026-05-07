@@ -18,6 +18,8 @@
  * - EVM Codes: https://www.evm.codes/
  * - Foundry Gas Reports: https://book.getfoundry.sh/forge/gas-reports
  * - Solidity Gas Optimization Guide: https://www.alchemy.com/overviews/solidity-gas-optimization
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

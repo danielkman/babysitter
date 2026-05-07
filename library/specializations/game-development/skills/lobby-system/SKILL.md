@@ -2,6 +2,8 @@
 name: lobby-system
 description: Lobby management skill for party systems and session handling.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:gaming]
 ---
 
 # Lobby System Skill

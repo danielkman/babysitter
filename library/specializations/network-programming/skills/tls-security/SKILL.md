@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: network-security
   backlog-id: SK-004
+graph:
+  domains: [domain:networking]
 ---
 
 # tls-security

@@ -16,6 +16,8 @@
  * @references
  * - NCCL Documentation: https://docs.nvidia.com/deeplearning/nccl/
  * - Multi-GPU Programming Guide: https://docs.nvidia.com/cuda/cuda-c-programming-guide/
+ * @graph
+ *   domains: [domain:scientific-computing]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

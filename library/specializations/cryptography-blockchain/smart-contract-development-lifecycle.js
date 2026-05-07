@@ -22,6 +22,8 @@
  * - ConsenSys Smart Contract Best Practices: https://consensys.github.io/smart-contract-best-practices/
  * - Foundry Book: https://book.getfoundry.sh/
  * - OpenZeppelin Contracts: https://docs.openzeppelin.com/contracts/
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: ml-inference
   backlog-id: SK-008
+graph:
+  domains: [domain:scientific-computing]
 ---
 
 # tensorrt-optimization

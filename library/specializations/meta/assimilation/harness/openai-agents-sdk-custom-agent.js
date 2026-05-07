@@ -7,6 +7,11 @@
  *   existing application runtime rather than a distributable babysitter plugin.
  * @inputs { projectDir: string, targetQuality: number, maxIterations: number, targetAssumptions?: string[] }
  * @outputs { success: boolean, integrationFiles: string[], finalQuality: number, iterations: number }
+ * @graph
+ *   domains: [domain:software-engineering]
+ *   skillAreas: [skill-area:ai-agent-development, skill-area:orchestration-loop]
+ *   topics: [topic:developer-experience, topic:integrations]
+ *   roles: [role:platform-engineer, role:backend-engineer]
  */
 
 import {
