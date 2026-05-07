@@ -5,4 +5,6 @@ attributes:
   description: |
     Observability domain — metrics, logs, traces, profiling, and
     telemetry-driven operations of distributed systems.
-edges: {}
+edges:
+  contains:
+    - specialization:observability

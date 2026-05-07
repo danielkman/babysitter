@@ -33,7 +33,9 @@ attributes:
   displayName: "Media & Entertainment"
   description: |
     Media production, content distribution, streaming, and entertainment tech.
-edges: {}
+edges:
+  contains:
+    - specialization:media
 ---
 nodeKind: Domain
 id: domain:social-sciences

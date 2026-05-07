@@ -6,7 +6,9 @@ attributes:
   category: infrastructure
   description: |
     Tenant-isolated software-defined network (VPC, VNet).
-edges: {}
+edges:
+  implemented_by:
+    - target: platform-service:aws-vpc
 ---
 nodeKind: StackPart
 id: stack-part:dns-service
@@ -30,4 +32,7 @@ attributes:
   relatedStackParts:
     - stack-part:message-queue
     - stack-part:event-bus
-edges: {}
+edges:
+  implemented_by:
+    - target: platform-service:gcp-pubsub
+    - target: platform-service:aws-sqs

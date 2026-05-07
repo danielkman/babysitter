@@ -80,4 +80,7 @@ attributes:
     Globally distributed serverless runtime executing close to the
     user. Examples: Cloudflare Workers, Vercel Edge Functions, Deno
     Deploy, Netlify Edge.
-edges: {}
+edges:
+  implemented_by:
+    - target: platform-service:vercel-edge-network
+    - target: platform-service:netlify-edge-functions

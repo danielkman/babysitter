@@ -8,7 +8,10 @@ attributes:
     and factor models.
   domains: []
   expertiseLevels: [novice, intermediate, expert]
-edges: {}
+edges:
+  applies_to:
+    - target: domain:quantitative-finance
+      confidence: primary
 ---
 nodeKind: SkillArea
 id: skill-area:algorithmic-trading
@@ -19,7 +22,10 @@ attributes:
     market microstructure, and latency optimization.
   domains: []
   expertiseLevels: [novice, intermediate, expert]
-edges: {}
+edges:
+  applies_to:
+    - target: domain:algorithmic-trading
+      confidence: primary
 ---
 nodeKind: SkillArea
 id: skill-area:portfolio-construction
@@ -30,7 +36,10 @@ attributes:
     and portfolio optimization.
   domains: []
   expertiseLevels: [novice, intermediate, expert]
-edges: {}
+edges:
+  applies_to:
+    - target: domain:portfolio-management
+      confidence: primary
 ---
 nodeKind: SkillArea
 id: skill-area:financial-risk-modeling
@@ -41,7 +50,10 @@ attributes:
     and regulatory capital.
   domains: []
   expertiseLevels: [novice, intermediate, expert]
-edges: {}
+edges:
+  applies_to:
+    - target: domain:financial-risk-management
+      confidence: primary
 ---
 nodeKind: SkillArea
 id: skill-area:market-data-engineering
@@ -52,7 +64,10 @@ attributes:
     and time-series databases.
   domains: []
   expertiseLevels: [novice, intermediate, expert]
-edges: {}
+edges:
+  applies_to:
+    - target: domain:market-data
+      confidence: primary
 ---
 nodeKind: SkillArea
 id: skill-area:trade-lifecycle
@@ -63,7 +78,10 @@ attributes:
     and post-trade reporting.
   domains: []
   expertiseLevels: [novice, intermediate, expert]
-edges: {}
+edges:
+  applies_to:
+    - target: domain:trading-operations
+      confidence: primary
 ---
 nodeKind: SkillArea
 id: skill-area:financial-regulation
@@ -74,7 +92,10 @@ attributes:
     and best execution requirements.
   domains: []
   expertiseLevels: [novice, intermediate, expert]
-edges: {}
+edges:
+  applies_to:
+    - target: domain:regulatory-finance
+      confidence: primary
 ---
 nodeKind: SkillArea
 id: skill-area:technical-analysis
@@ -85,4 +106,9 @@ attributes:
     and systematic signal generation.
   domains: []
   expertiseLevels: [novice, intermediate, expert]
-edges: {}
+edges:
+  applies_to:
+    - target: domain:algorithmic-trading
+      confidence: primary
+    - target: domain:capital-markets
+      confidence: secondary

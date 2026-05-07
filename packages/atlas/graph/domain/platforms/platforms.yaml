@@ -8,7 +8,22 @@ attributes:
   kind: cloud-provider
   homepageUrl: https://aws.amazon.com/
   ownerCompany: "Amazon"
-edges: {}
+edges:
+  provides:
+    - target: platform-service:aws-s3
+    - target: platform-service:aws-lambda
+    - target: platform-service:aws-rds
+    - target: platform-service:aws-dynamodb
+    - target: platform-service:aws-cloudfront
+    - target: platform-service:aws-sqs
+    - target: platform-service:aws-eventbridge
+    - target: platform-service:aws-cloudwatch
+    - target: platform-service:aws-iam
+    - target: platform-service:aws-eks
+    - target: platform-service:aws-ecr
+    - target: platform-service:aws-api-gateway
+    - target: platform-service:aws-cognito
+    - target: platform-service:aws-vpc
 ---
 nodeKind: Platform
 id: platform:azure
@@ -19,7 +34,16 @@ attributes:
   kind: cloud-provider
   homepageUrl: https://azure.microsoft.com/
   ownerCompany: "Microsoft"
-edges: {}
+edges:
+  provides:
+    - target: platform-service:azure-functions
+    - target: platform-service:azure-blob-storage
+    - target: platform-service:azure-cosmos-db
+    - target: platform-service:azure-service-bus
+    - target: platform-service:azure-monitor
+    - target: platform-service:azure-aks
+    - target: platform-service:azure-container-registry
+    - target: platform-service:azure-active-directory
 ---
 nodeKind: Platform
 id: platform:gcp
@@ -30,7 +54,19 @@ attributes:
   kind: cloud-provider
   homepageUrl: https://cloud.google.com/
   ownerCompany: "Google"
-edges: {}
+edges:
+  provides:
+    - target: platform-service:gcp-cloud-run
+    - target: platform-service:gcp-cloud-functions
+    - target: platform-service:gcp-pubsub
+    - target: platform-service:gcp-bigquery
+    - target: platform-service:gcp-gcs
+    - target: platform-service:gcp-cloud-sql
+    - target: platform-service:gcp-firestore
+    - target: platform-service:gcp-cloud-build
+    - target: platform-service:gcp-iam
+    - target: platform-service:gcp-gke
+    - target: platform-service:gcp-artifact-registry
 ---
 nodeKind: Platform
 id: platform:kubernetes
@@ -41,7 +77,17 @@ attributes:
   kind: k8s-distribution
   homepageUrl: https://kubernetes.io/
   ownerCompany: "CNCF"
-edges: {}
+edges:
+  provides:
+    - target: platform-service:k8s-deployment
+    - target: platform-service:k8s-service
+    - target: platform-service:k8s-ingress
+    - target: platform-service:k8s-configmap
+    - target: platform-service:k8s-secret
+    - target: platform-service:k8s-pvc
+    - target: platform-service:k8s-hpa
+    - target: platform-service:k8s-crd
+    - target: platform-service:k8s-operator
 ---
 nodeKind: Platform
 id: platform:vercel
@@ -52,7 +98,13 @@ attributes:
   kind: paas
   homepageUrl: https://vercel.com/
   ownerCompany: "Vercel Inc."
-edges: {}
+edges:
+  provides:
+    - target: platform-service:vercel-functions
+    - target: platform-service:vercel-edge-network
+    - target: platform-service:vercel-kv
+    - target: platform-service:vercel-postgres
+    - target: platform-service:vercel-blob
 ---
 nodeKind: Platform
 id: platform:netlify
@@ -63,7 +115,12 @@ attributes:
   kind: paas
   homepageUrl: https://www.netlify.com/
   ownerCompany: "Netlify Inc."
-edges: {}
+edges:
+  provides:
+    - target: platform-service:netlify-functions
+    - target: platform-service:netlify-edge-functions
+    - target: platform-service:netlify-forms
+    - target: platform-service:netlify-identity
 ---
 nodeKind: Platform
 id: platform:heroku
@@ -74,7 +131,12 @@ attributes:
   kind: paas
   homepageUrl: https://www.heroku.com/
   ownerCompany: "Salesforce"
-edges: {}
+edges:
+  provides:
+    - target: platform-service:heroku-dynos
+    - target: platform-service:heroku-postgres
+    - target: platform-service:heroku-redis
+    - target: platform-service:heroku-connect
 ---
 nodeKind: Platform
 id: platform:fly-io
@@ -85,7 +147,12 @@ attributes:
   kind: paas
   homepageUrl: https://fly.io/
   ownerCompany: "Fly.io Inc."
-edges: {}
+edges:
+  provides:
+    - target: platform-service:fly-apps
+    - target: platform-service:fly-volumes
+    - target: platform-service:fly-postgres
+    - target: platform-service:fly-redis
 ---
 nodeKind: Platform
 id: platform:railway
@@ -96,7 +163,11 @@ attributes:
   kind: paas
   homepageUrl: https://railway.app/
   ownerCompany: "Railway Corp."
-edges: {}
+edges:
+  provides:
+    - target: platform-service:railway-service
+    - target: platform-service:railway-database
+    - target: platform-service:railway-redis
 ---
 nodeKind: Platform
 id: platform:dokploy
@@ -107,4 +178,8 @@ attributes:
   kind: self-hosted-paas
   homepageUrl: https://dokploy.com/
   ownerCompany: "Dokploy"
-edges: {}
+edges:
+  provides:
+    - target: platform-service:dokploy-app
+    - target: platform-service:dokploy-database
+    - target: platform-service:dokploy-domain

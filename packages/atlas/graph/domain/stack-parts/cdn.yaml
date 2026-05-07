@@ -5,4 +5,6 @@ attributes:
   category: infrastructure
   description: |
     Geographically distributed edge cache for static and dynamic content. Examples: Cloudflare, Fastly, Akamai, AWS CloudFront.
-edges: {}
+edges:
+  implemented_by:
+    - target: platform-service:aws-cloudfront

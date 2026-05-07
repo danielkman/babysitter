@@ -7,7 +7,9 @@ attributes:
   description: |
     Network-attached block volumes (EBS, Persistent Disk, Azure Managed
     Disks, Fly Volumes).
-edges: {}
+edges:
+  implemented_by:
+    - target: platform-service:fly-volumes
 ---
 nodeKind: StackPart
 id: stack-part:file-storage

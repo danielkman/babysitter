@@ -8,7 +8,11 @@ attributes:
     General-purpose function-as-a-service runtime (distinct from
     edge-functions which run at the CDN POP). Implementations: AWS Lambda,
     GCP Cloud Functions, Azure Functions.
-edges: {}
+edges:
+  implemented_by:
+    - target: platform-service:aws-lambda
+    - target: platform-service:gcp-cloud-functions
+    - target: platform-service:azure-functions
 ---
 nodeKind: StackPart
 id: stack-part:container-runtime
@@ -19,7 +23,12 @@ attributes:
     Managed service that runs OCI containers without orchestrating a
     cluster (Cloud Run, Fargate, Container Apps, Heroku Dyno, Fly App,
     Railway Service).
-edges: {}
+edges:
+  implemented_by:
+    - target: platform-service:gcp-cloud-run
+    - target: platform-service:heroku-dynos
+    - target: platform-service:fly-apps
+    - target: platform-service:railway-service
 ---
 nodeKind: StackPart
 id: stack-part:kubernetes-cluster
@@ -29,7 +38,11 @@ attributes:
   description: |
     Managed control plane for Kubernetes (EKS, GKE, AKS). Distinct from
     kubernetes-the-platform itself.
-edges: {}
+edges:
+  implemented_by:
+    - target: platform-service:aws-eks
+    - target: platform-service:gcp-gke
+    - target: platform-service:azure-aks
 ---
 nodeKind: StackPart
 id: stack-part:container-registry
@@ -39,4 +52,8 @@ attributes:
   description: |
     Storage and distribution of OCI/Docker container images (ECR,
     GCR/Artifact Registry, ACR).
-edges: {}
+edges:
+  implemented_by:
+    - target: platform-service:aws-ecr
+    - target: platform-service:gcp-artifact-registry
+    - target: platform-service:azure-container-registry

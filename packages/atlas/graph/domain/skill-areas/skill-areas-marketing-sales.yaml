@@ -8,7 +8,12 @@ attributes:
     bid optimization, and ROAS measurement.
   domains: []
   expertiseLevels: [novice, intermediate, expert]
-edges: {}
+edges:
+  applies_to:
+    - target: domain:advertising
+      confidence: primary
+    - target: domain:digital-marketing
+      confidence: secondary
 ---
 nodeKind: SkillArea
 id: skill-area:content-marketing
@@ -19,7 +24,12 @@ attributes:
     content distribution, and engagement analytics.
   domains: []
   expertiseLevels: [novice, intermediate, expert]
-edges: {}
+edges:
+  applies_to:
+    - target: domain:marketing
+      confidence: primary
+    - target: domain:digital-marketing
+      confidence: secondary
 ---
 nodeKind: SkillArea
 id: skill-area:marketing-automation
@@ -30,7 +40,10 @@ attributes:
     lifecycle campaigns, and email deliverability.
   domains: []
   expertiseLevels: [novice, intermediate, expert]
-edges: {}
+edges:
+  applies_to:
+    - target: domain:marketing
+      confidence: primary
 ---
 nodeKind: SkillArea
 id: skill-area:sales-methodology
@@ -41,7 +54,10 @@ attributes:
     forecasting, and deal strategy.
   domains: []
   expertiseLevels: [novice, intermediate, expert]
-edges: {}
+edges:
+  applies_to:
+    - target: domain:sales
+      confidence: primary
 ---
 nodeKind: SkillArea
 id: skill-area:revenue-operations
@@ -52,7 +68,10 @@ attributes:
     and revenue forecasting.
   domains: []
   expertiseLevels: [novice, intermediate, expert]
-edges: {}
+edges:
+  applies_to:
+    - target: domain:revenue-operations
+      confidence: primary
 ---
 nodeKind: SkillArea
 id: skill-area:brand-strategy
@@ -63,7 +82,10 @@ attributes:
     and brand measurement.
   domains: []
   expertiseLevels: [novice, intermediate, expert]
-edges: {}
+edges:
+  applies_to:
+    - target: domain:marketing
+      confidence: primary
 ---
 nodeKind: SkillArea
 id: skill-area:market-research
@@ -74,7 +96,12 @@ attributes:
     and trend analysis.
   domains: []
   expertiseLevels: [novice, intermediate, expert]
-edges: {}
+edges:
+  applies_to:
+    - target: domain:marketing
+      confidence: primary
+    - target: domain:strategy
+      confidence: secondary
 ---
 nodeKind: SkillArea
 id: skill-area:event-management
@@ -85,4 +112,7 @@ attributes:
     and post-event analytics.
   domains: []
   expertiseLevels: [novice, intermediate, expert]
-edges: {}
+edges:
+  applies_to:
+    - target: domain:marketing
+      confidence: primary

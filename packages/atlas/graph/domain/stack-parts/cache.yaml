@@ -15,4 +15,7 @@ attributes:
     operates at the HTTP layer for full-page or fragment caching. Key
     operational concerns include cache invalidation strategies, TTL tuning,
     eviction policies (LRU, LFU), and hot-key management in clustered setups.
-edges: {}
+edges:
+  stack_part_used_by:
+    - target: skill-area:caching-strategies
+    - target: skill-area:cache-optimization

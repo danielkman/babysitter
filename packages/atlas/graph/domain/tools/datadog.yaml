@@ -5,4 +5,8 @@ attributes:
   kind: observability
   description: |
     Monitoring and analytics platform for cloud-scale infrastructure and applications.
-edges: {}
+edges:
+  tool_used_by:
+    - target: skill-area:observability-pipeline
+    - target: skill-area:metrics-dashboarding
+    - target: skill-area:alerting-oncall

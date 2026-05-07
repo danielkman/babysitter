@@ -8,7 +8,10 @@ attributes:
     and financial reporting.
   domains: []
   expertiseLevels: [novice, intermediate, expert]
-edges: {}
+edges:
+  applies_to:
+    - target: domain:finance
+      confidence: primary
 ---
 nodeKind: SkillArea
 id: skill-area:procurement-management
@@ -19,7 +22,10 @@ attributes:
     and spend analytics.
   domains: []
   expertiseLevels: [novice, intermediate, expert]
-edges: {}
+edges:
+  applies_to:
+    - target: domain:procurement
+      confidence: primary
 ---
 nodeKind: SkillArea
 id: skill-area:community-management
@@ -30,7 +36,10 @@ attributes:
     and developer advocacy.
   domains: []
   expertiseLevels: [novice, intermediate, expert]
-edges: {}
+edges:
+  applies_to:
+    - target: domain:community
+      confidence: primary
 ---
 nodeKind: SkillArea
 id: skill-area:customer-success
@@ -41,7 +50,10 @@ attributes:
     and customer lifecycle management.
   domains: []
   expertiseLevels: [novice, intermediate, expert]
-edges: {}
+edges:
+  applies_to:
+    - target: domain:customer-experience
+      confidence: primary
 ---
 nodeKind: SkillArea
 id: skill-area:business-analysis
@@ -52,7 +64,12 @@ attributes:
     and business case development.
   domains: []
   expertiseLevels: [novice, intermediate, expert]
-edges: {}
+edges:
+  applies_to:
+    - target: domain:operations
+      confidence: primary
+    - target: domain:business-intelligence
+      confidence: secondary
 ---
 nodeKind: SkillArea
 id: skill-area:data-analytics
@@ -63,7 +80,10 @@ attributes:
     and metrics definition.
   domains: []
   expertiseLevels: [novice, intermediate, expert]
-edges: {}
+edges:
+  applies_to:
+    - target: domain:business-intelligence
+      confidence: primary
 ---
 nodeKind: SkillArea
 id: skill-area:strategic-planning
@@ -74,7 +94,10 @@ attributes:
     and scenario planning.
   domains: []
   expertiseLevels: [novice, intermediate, expert]
-edges: {}
+edges:
+  applies_to:
+    - target: domain:strategy
+      confidence: primary
 ---
 nodeKind: SkillArea
 id: skill-area:change-management
@@ -85,4 +108,7 @@ attributes:
     and adoption tracking.
   domains: []
   expertiseLevels: [novice, intermediate, expert]
-edges: {}
+edges:
+  applies_to:
+    - target: domain:operations
+      confidence: primary

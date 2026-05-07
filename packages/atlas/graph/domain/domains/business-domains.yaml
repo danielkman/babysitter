@@ -5,7 +5,9 @@ attributes:
   displayName: "Marketing"
   description: |
     Marketing strategy, campaigns, analytics, and brand management.
-edges: {}
+edges:
+  contains:
+    - specialization:digital-marketing-strategy
 ---
 nodeKind: Domain
 id: domain:sales
@@ -75,7 +77,9 @@ attributes:
   displayName: "Business Intelligence"
   description: |
     BI, analytics, reporting, dashboards, and decision intelligence.
-edges: {}
+edges:
+  contains:
+    - specialization:data-engineering-analytics
 ---
 nodeKind: Domain
 id: domain:public-relations
@@ -101,7 +105,9 @@ attributes:
   displayName: "Project Management"
   description: |
     Project planning, resource allocation, risk management, and delivery.
-edges: {}
+edges:
+  contains:
+    - specialization:product-management
 ---
 nodeKind: Domain
 id: domain:entrepreneurship

@@ -15,4 +15,10 @@ attributes:
     offerings (AWS CloudWatch Logs, Datadog Logs, Papertrail). Structured
     JSON logging is preferred over plain text for machine-readable queries.
     Closely integrated with the Metrics and Tracing stack parts.
-edges: {}
+edges:
+  implemented_by:
+    - target: tool:elasticsearch
+    - target: platform-service:aws-cloudwatch
+  stack_part_used_by:
+    - target: skill-area:log-aggregation
+    - target: skill-area:observability-pipeline

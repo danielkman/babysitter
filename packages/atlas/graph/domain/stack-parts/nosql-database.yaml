@@ -15,4 +15,8 @@ attributes:
     or single-key read. Often paired with a relational DB for structured
     transactional data. Schema validation, indexing strategies, and
     consistency tuning are key operational concerns.
-edges: {}
+edges:
+  implemented_by:
+    - target: platform-service:aws-dynamodb
+    - target: platform-service:gcp-firestore
+    - target: platform-service:azure-cosmos-db
