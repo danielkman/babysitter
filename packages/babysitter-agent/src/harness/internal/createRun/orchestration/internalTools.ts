@@ -3,7 +3,7 @@ import { createAgentCoreToolDefinitions } from "@a5c-ai/agent-core";
 import { buildBreakpointEffectResult } from "./internalToolsHelpers";
 import {
   commitEffectResult,
-  createPiContext,
+  createPromptContextFromCatalog,
   composeProcessCreatePrompt,
 } from "@a5c-ai/babysitter-sdk";
 import {
@@ -189,7 +189,7 @@ function createRunIterateTool(args: {
           recoverable: true,
           hint: "The process code has a bug. Read the error and the process-authoring reference below, fix the process file, and call babysitter_run_iterate again.",
           processAuthoringReference: composeProcessCreatePrompt(
-            createPiContext({ interactive: false }),
+            createPromptContextFromCatalog('pi', { interactive: false }),
           ),
         };
       }

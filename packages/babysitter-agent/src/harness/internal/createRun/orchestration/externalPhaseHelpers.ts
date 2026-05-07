@@ -5,7 +5,7 @@
 
 import * as path from "node:path";
 import {
-  createPiContext,
+  createPromptContextFromCatalog,
   composeProcessCreatePrompt,
 } from "@a5c-ai/babysitter-sdk";
 import {
@@ -51,7 +51,7 @@ export async function recoverExternalProcessError(args: {
   })));
   const recoveryUnsub = subscribeVerbosePiEvents(recoverySession, "recovery", args.args);
   try {
-    const guidelines = composeProcessCreatePrompt(createPiContext({ interactive: false }));
+    const guidelines = composeProcessCreatePrompt(createPromptContextFromCatalog('pi', { interactive: false }));
     const recoveryPrompt = [
       `The babysitter process at ${path.resolve(args.args.processPath)} threw an error during execution:`,
       "",

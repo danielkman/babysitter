@@ -1,6 +1,6 @@
 import type { HarnessDiscoveryResult } from "../../types";
 import {
-  createPiContext,
+  createPromptContextFromCatalog,
   composeProcessCreatePrompt,
   resolveActiveProcessLibrary,
   getDefaultProcessLibrarySpec,
@@ -132,7 +132,7 @@ export async function buildProcessDefinitionSystemPrompt(
     // No binding — templates will fall back to manual instructions
   }
 
-  const piCtx = createPiContext({
+  const piCtx = createPromptContextFromCatalog('pi', {
     interactive,
     processLibraryRoot,
     processLibraryReferenceRoot,
@@ -261,7 +261,7 @@ export function buildOrchestrationSystemPrompt(
   interactive?: boolean | undefined,
   preferAgentOnlyTasks?: boolean | undefined,
 ): string {
-  const piCtx = createPiContext({ interactive });
+  const piCtx = createPromptContextFromCatalog('pi', { interactive });
   const sharedGuidance = [
     renderBreakpointHandling(piCtx),
     renderResultsPosting(piCtx),
