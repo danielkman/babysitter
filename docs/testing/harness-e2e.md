@@ -23,12 +23,12 @@ babysitter harness:install claude-code --workspace . --json
 babysitter harness:install-plugin codex --workspace . --json
 babysitter harness:install-plugin claude-code --workspace . --json
 babysitter plugin:install babysitter --project --json
-babysitter harness:list --json
+babysitter list --json
 ```
 
 | Test | Expected proof |
 | --- | --- |
-| `harness:list` includes known harnesses | JSON includes harness names and capability metadata |
+| `list` includes known harnesses | JSON includes harness names and capability metadata |
 | `harness:install --dry-run` for each target | Installation plan is valid and does not mutate the workspace |
 | `harness:install-plugin --dry-run` for each target | Plugin installer package, target, and destination are resolved |
 | Repeated plugin install | Manifest remains idempotent and contains no duplicate plugin entries |
@@ -85,7 +85,7 @@ Required assertions:
 - Missing credentials should skip model-backed jobs before any provider call begins.
 - A selected setup job should fail if installer preconditions are unavailable.
 - A selected babysitter-agent runtime job should fail if it tries to run installer commands.
-- `babysitter harness:call` usage in new runtime tests should fail review; use `babysitter-agent call` for babysitter-agent runtime or `amux run` for agent-mux session E2E.
+- Use of the deprecated `harness:call` alias in new runtime tests should fail review; use `babysitter-agent call` for babysitter-agent runtime or `amux run` for agent-mux session E2E.
 - Any log containing a raw secret must fail the job and block artifact upload until redaction is fixed.
 
 ## `install-plugins` Wrapper Acceptance Criteria
