@@ -7,9 +7,8 @@ background: Protocol security teams, white-hat rescue operations, hack response
 graph:
   domains: [domain:security]
   specializations: [specialization:cryptography-blockchain]
-  skillAreas: [skill-area:symmetric-encryption, skill-area:asymmetric-encryption]
-  roles: [role:security-engineer]
-  topics: [topic:hmac-signing, topic:ssl-certs]
+  skillAreas: [skill-area:incident-response-forensics, skill-area:smart-contract-security, skill-area:blockchain-analytics-explorer]
+  roles: [role:incident-commander, role:security-engineer]
 ---
 
 # Incident Response Specialist Agent

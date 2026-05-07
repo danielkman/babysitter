@@ -7,9 +7,8 @@ background: Academic research, ZK protocol development (Zcash, Aztec, zkSync met
 graph:
   domains: [domain:security]
   specializations: [specialization:cryptography-blockchain]
-  skillAreas: [skill-area:symmetric-encryption, skill-area:asymmetric-encryption]
-  roles: [role:security-engineer]
-  topics: [topic:hmac-signing, topic:ssl-certs]
+  skillAreas: [skill-area:asymmetric-encryption, skill-area:smart-contract-security, skill-area:smart-contract-development-testing]
+  roles: [role:security-engineer, role:research-engineer]
 ---
 
 # ZK Cryptographer Agent

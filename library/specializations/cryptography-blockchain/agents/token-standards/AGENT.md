@@ -7,9 +7,8 @@ background: Major token launches, NFT platforms
 graph:
   domains: [domain:security]
   specializations: [specialization:cryptography-blockchain]
-  skillAreas: [skill-area:symmetric-encryption, skill-area:asymmetric-encryption]
-  roles: [role:security-engineer]
-  topics: [topic:hmac-signing, topic:ssl-certs]
+  skillAreas: [skill-area:token-nft-management, skill-area:smart-contract-development-testing]
+  roles: [role:backend-engineer, role:security-engineer]
 ---
 
 # Token Standards Expert Agent

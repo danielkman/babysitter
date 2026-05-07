@@ -7,9 +7,8 @@ background: High-frequency DeFi, gas-sensitive applications
 graph:
   domains: [domain:security]
   specializations: [specialization:cryptography-blockchain]
-  skillAreas: [skill-area:symmetric-encryption, skill-area:asymmetric-encryption, skill-area:performance-testing]
-  roles: [role:security-engineer]
-  topics: [topic:hmac-signing, topic:ssl-certs]
+  skillAreas: [skill-area:transaction-fee-optimization, skill-area:smart-contract-development-testing, skill-area:performance-testing]
+  roles: [role:backend-engineer, role:performance-profiler]
 ---
 
 # Gas Optimizer Agent

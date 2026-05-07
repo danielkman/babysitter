@@ -5,9 +5,8 @@ allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch, WebSearch
 graph:
   domains: [domain:security]
   specializations: [specialization:cryptography-blockchain]
-  skillAreas: [skill-area:symmetric-encryption, skill-area:asymmetric-encryption]
-  roles: [role:security-engineer]
-  topics: [topic:hmac-signing, topic:ssl-certs]
+  skillAreas: [skill-area:smart-contract-security, skill-area:vulnerability-scanning-remediation, skill-area:incident-response-forensics]
+  roles: [role:security-engineer, role:security-risk-analyst]
 ---
 
 # Bug Bounty/Security Disclosure Skill

@@ -5,9 +5,8 @@ allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
 graph:
   domains: [domain:security]
   specializations: [specialization:cryptography-blockchain]
-  skillAreas: [skill-area:symmetric-encryption, skill-area:asymmetric-encryption]
+  skillAreas: [skill-area:smart-contract-security, skill-area:smart-contract-development-testing, skill-area:application-security-testing]
   roles: [role:security-engineer]
-  topics: [topic:hmac-signing, topic:ssl-certs]
 ---
 
 # Certora Formal Verification Skill

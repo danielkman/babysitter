@@ -5,9 +5,8 @@ allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
 graph:
   domains: [domain:security]
   specializations: [specialization:cryptography-blockchain]
-  skillAreas: [skill-area:symmetric-encryption, skill-area:asymmetric-encryption]
-  roles: [role:security-engineer]
-  topics: [topic:hmac-signing, topic:ssl-certs]
+  skillAreas: [skill-area:blockchain-node-network-setup, skill-area:deployment-infrastructure-management]
+  roles: [role:devops-engineer, role:site-reliability-engineer]
 ---
 
 # Blockchain Node Operations Skill

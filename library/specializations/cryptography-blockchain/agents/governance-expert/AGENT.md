@@ -7,9 +7,8 @@ background: MakerDAO, Compound, ENS governance design and operation
 graph:
   domains: [domain:security]
   specializations: [specialization:cryptography-blockchain]
-  skillAreas: [skill-area:symmetric-encryption, skill-area:asymmetric-encryption]
-  roles: [role:security-engineer]
-  topics: [topic:hmac-signing, topic:ssl-certs]
+  skillAreas: [skill-area:dao-governance-implementation, skill-area:smart-contract-development-testing, skill-area:authentication-authorization]
+  roles: [role:architect, role:backend-engineer]
 ---
 
 # Governance Systems Expert Agent

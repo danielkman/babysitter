@@ -11,7 +11,7 @@ expertise:
 graph:
   domains: [domain:computer-science]
   specializations: [specialization:algorithms-optimization]
-  skillAreas: [skill-area:dynamic-programming, skill-area:graph-algorithms]
+  skillAreas: [skill-area:dynamic-programming, skill-area:graph-algorithms, skill-area:string-matching, skill-area:computational-geometry, skill-area:np-hard-heuristics]
   roles: [role:backend-engineer, role:computational-scientist]
 ---
 

@@ -7,9 +7,8 @@ background: Uniswap, Aave, MakerDAO protocol design methodology
 graph:
   domains: [domain:security]
   specializations: [specialization:cryptography-blockchain]
-  skillAreas: [skill-area:symmetric-encryption, skill-area:asymmetric-encryption]
-  roles: [role:security-engineer]
-  topics: [topic:hmac-signing, topic:ssl-certs]
+  skillAreas: [skill-area:smart-contract-development-testing, skill-area:on-chain-data-oracle-integration, skill-area:transaction-fee-optimization, skill-area:dao-governance-implementation]
+  roles: [role:architect, role:backend-engineer]
 ---
 
 # DeFi Protocol Architect Agent

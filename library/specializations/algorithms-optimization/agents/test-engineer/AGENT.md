@@ -11,8 +11,8 @@ expertise:
 graph:
   domains: [domain:computer-science]
   specializations: [specialization:algorithms-optimization]
-  skillAreas: [skill-area:dynamic-programming, skill-area:graph-algorithms]
-  roles: [role:backend-engineer, role:computational-scientist]
+  skillAreas: [skill-area:dynamic-programming, skill-area:graph-algorithms, skill-area:fuzz-testing]
+  roles: [role:backend-engineer, role:computational-scientist, role:qa-engineer]
 ---
 
 # Test Engineer Agent

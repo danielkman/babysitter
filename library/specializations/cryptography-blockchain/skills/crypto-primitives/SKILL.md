@@ -5,9 +5,8 @@ allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
 graph:
   domains: [domain:security]
   specializations: [specialization:cryptography-blockchain]
-  skillAreas: [skill-area:symmetric-encryption, skill-area:asymmetric-encryption]
+  skillAreas: [skill-area:symmetric-encryption, skill-area:asymmetric-encryption, skill-area:signature-schemes, skill-area:key-derivation]
   roles: [role:security-engineer]
-  topics: [topic:hmac-signing, topic:ssl-certs]
 ---
 
 # Cryptographic Primitives Skill

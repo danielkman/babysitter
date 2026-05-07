@@ -5,9 +5,8 @@ allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
 graph:
   domains: [domain:security]
   specializations: [specialization:cryptography-blockchain]
-  skillAreas: [skill-area:symmetric-encryption, skill-area:asymmetric-encryption, skill-area:wallet-integration-key-management]
-  roles: [role:security-engineer]
-  topics: [topic:hmac-signing, topic:ssl-certs]
+  skillAreas: [skill-area:wallet-integration-key-management, skill-area:authentication-authorization]
+  roles: [role:frontend-engineer, role:security-engineer]
 ---
 
 # Wallet Integration Skill

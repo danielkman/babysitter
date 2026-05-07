@@ -7,9 +7,8 @@ background: Academic formal methods, Certora/Runtime Verification experience
 graph:
   domains: [domain:security]
   specializations: [specialization:cryptography-blockchain]
-  skillAreas: [skill-area:symmetric-encryption, skill-area:asymmetric-encryption]
-  roles: [role:security-engineer]
-  topics: [topic:hmac-signing, topic:ssl-certs]
+  skillAreas: [skill-area:smart-contract-security, skill-area:smart-contract-development-testing, skill-area:application-security-testing]
+  roles: [role:security-engineer, role:research-engineer]
 ---
 
 # Formal Methods Engineer Agent

@@ -7,9 +7,8 @@ background: Trail of Bits, OpenZeppelin, Consensys Diligence methodology
 graph:
   domains: [domain:security]
   specializations: [specialization:cryptography-blockchain]
-  skillAreas: [skill-area:symmetric-encryption, skill-area:asymmetric-encryption]
-  roles: [role:security-engineer]
-  topics: [topic:hmac-signing, topic:ssl-certs]
+  skillAreas: [skill-area:smart-contract-security, skill-area:application-security-testing, skill-area:vulnerability-scanning-remediation, skill-area:penetration-testing-ethical-hacking]
+  roles: [role:security-engineer, role:security-reviewer]
 ---
 
 # Solidity Security Auditor Agent

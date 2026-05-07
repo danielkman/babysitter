@@ -5,9 +5,8 @@ allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
 graph:
   domains: [domain:security]
   specializations: [specialization:cryptography-blockchain]
-  skillAreas: [skill-area:symmetric-encryption, skill-area:asymmetric-encryption, skill-area:cross-chain-interoperability]
-  roles: [role:security-engineer]
-  topics: [topic:hmac-signing, topic:ssl-certs]
+  skillAreas: [skill-area:cross-chain-interoperability, skill-area:smart-contract-development-testing, skill-area:smart-contract-security]
+  roles: [role:backend-engineer, role:security-engineer]
 ---
 
 # Cross-Chain Development Skill
