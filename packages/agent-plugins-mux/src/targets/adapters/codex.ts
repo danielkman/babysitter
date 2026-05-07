@@ -16,7 +16,8 @@ import {
 import { generateHarnessManifest } from '../../transformHelpers.js';
 
 export class CodexAdapter extends BaseHarnessOutputAdapter {
-  readonly targetName = 'codex';
+
+
 
   generateHookRegistration(
     manifest: A5cPluginManifest,

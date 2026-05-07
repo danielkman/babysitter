@@ -14,7 +14,8 @@ import {
 import { generateOpenCodeAccomplishSkill } from '../../transformHelpers.js';
 
 export class OpenCodeAdapter extends BaseHarnessOutputAdapter {
-  readonly targetName = 'opencode';
+
+
 
   generateHookRegistration(
     manifest: A5cPluginManifest,

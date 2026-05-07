@@ -10,7 +10,8 @@ import {
 } from './hooks-utils.js';
 
 export class GithubCopilotAdapter extends BaseHarnessOutputAdapter {
-  readonly targetName = 'github-copilot';
+
+
 
   generateHookRegistration(
     manifest: A5cPluginManifest,

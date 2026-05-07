@@ -3,8 +3,12 @@
 import type { A5cPluginManifest, TargetProfile, TransformedFile, Diagnostic } from '../../types.js';
 import type { HarnessOutputAdapter } from './interface.js';
 
-export abstract class BaseHarnessOutputAdapter implements HarnessOutputAdapter {
-  abstract readonly targetName: string;
+export class BaseHarnessOutputAdapter implements HarnessOutputAdapter {
+  readonly targetName: string;
+
+  constructor(targetName: string) {
+    this.targetName = targetName;
+  }
 
   generateHookRegistration(
     _manifest: A5cPluginManifest,

@@ -8,7 +8,8 @@ import {
 } from '../../sdkConfig.js';
 
 export class PiAdapter extends BaseHarnessOutputAdapter {
-  readonly targetName = 'pi';
+
+
 
   generateManifestFiles(
     _sourceDir: string,

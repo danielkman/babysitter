@@ -12,7 +12,8 @@ import {
 import { getCommandPaths } from '../../utils.js';
 
 export class GeminiAdapter extends BaseHarnessOutputAdapter {
-  readonly targetName = 'gemini';
+
+
 
   generateHookRegistration(
     manifest: A5cPluginManifest,

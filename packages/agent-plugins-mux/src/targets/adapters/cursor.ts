@@ -11,7 +11,8 @@ import {
 import { generateHarnessManifest } from '../../transformHelpers.js';
 
 export class CursorAdapter extends BaseHarnessOutputAdapter {
-  readonly targetName = 'cursor';
+
+
 
   generateHookRegistration(
     manifest: A5cPluginManifest,

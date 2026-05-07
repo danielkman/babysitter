@@ -16,7 +16,8 @@ import {
 import { generateOpenClawNativeHooksSection } from '../../transformHelpers.js';
 
 export class OpenClawAdapter extends BaseHarnessOutputAdapter {
-  readonly targetName = 'openclaw';
+
+
 
   generateHookRegistration(
     manifest: A5cPluginManifest,

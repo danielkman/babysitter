@@ -8,7 +8,8 @@ import {
 } from '../../sdkConfig.js';
 
 export class OhMyPiAdapter extends BaseHarnessOutputAdapter {
-  readonly targetName = 'oh-my-pi';
+
+
 
   generateManifestFiles(
     _sourceDir: string,

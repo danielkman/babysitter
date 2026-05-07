@@ -37,31 +37,30 @@ export { generateOpenClawHooksJson, generateOpenClawManifest, generateOpenClawPa
 export { generatePiManifest } from './pi.js';
 export { generateOhMyPiManifest } from './oh-my-pi.js';
 
-// Map hookRegistrationFormat (from the catalog graph) to adapter class.
-// When a new target is added to the catalog, add its adapter class here.
-const ADAPTER_BY_HOOK_FORMAT: Record<string, () => HarnessOutputAdapter> = {
-  'claude-code': () => new ClaudeCodeAdapter(),
-  'codex': () => new CodexAdapter(),
-  'cursor': () => new CursorAdapter(),
-  'gemini': () => new GeminiAdapter(),
-  'github-copilot': () => new GithubCopilotAdapter(),
-  'opencode': () => new OpenCodeAdapter(),
-  'openclaw': () => new OpenClawAdapter(),
+// Map hookRegistrationFormat → adapter constructor.
+// The adapter receives its targetId from the catalog at construction time.
+const ADAPTER_CLASS_BY_FORMAT: Record<string, new (targetName: string) => HarnessOutputAdapter> = {
+  'claude-code': ClaudeCodeAdapter,
+  'codex': CodexAdapter,
+  'cursor': CursorAdapter,
+  'gemini': GeminiAdapter,
+  'github-copilot': GithubCopilotAdapter,
+  'opencode': OpenCodeAdapter,
+  'openclaw': OpenClawAdapter,
 };
 
-// Programmatic targets without hook registration — keyed by targetId
-const ADAPTER_BY_TARGET_ID: Record<string, () => HarnessOutputAdapter> = {
-  'pi': () => new PiAdapter(),
-  'oh-my-pi': () => new OhMyPiAdapter(),
+const ADAPTER_CLASS_BY_TARGET: Record<string, new (targetName: string) => HarnessOutputAdapter> = {
+  'pi': PiAdapter,
+  'oh-my-pi': OhMyPiAdapter,
 };
 
-// Build registry dynamically from the catalog graph
+// Build registry dynamically from the catalog graph — adapter names come from Atlas
 const ADAPTER_REGISTRY: Record<string, HarnessOutputAdapter> = {};
 for (const descriptor of listPluginTargetDescriptors()) {
   const format = descriptor.hookRegistrationFormat;
-  const factory = (format && ADAPTER_BY_HOOK_FORMAT[format]) || ADAPTER_BY_TARGET_ID[descriptor.targetId];
-  if (factory) {
-    ADAPTER_REGISTRY[descriptor.targetId] = factory();
+  const AdapterClass = (format && ADAPTER_CLASS_BY_FORMAT[format]) || ADAPTER_CLASS_BY_TARGET[descriptor.targetId];
+  if (AdapterClass) {
+    ADAPTER_REGISTRY[descriptor.targetId] = new AdapterClass(descriptor.targetId);
   }
 }
 

@@ -11,7 +11,8 @@ import {
 } from './hooks-utils.js';
 
 export class ClaudeCodeAdapter extends BaseHarnessOutputAdapter {
-  readonly targetName = 'claude-code';
+
+
 
   generateHookRegistration(
     manifest: A5cPluginManifest,
