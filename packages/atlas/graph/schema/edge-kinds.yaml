@@ -5458,3 +5458,19 @@ edgeKinds:
   target: [LibraryProcess]
   cardinality: N:N
   inverse: uses_skill
+- id: edge:follows-methodology
+  name: follows_methodology
+  origin: universal
+  description: a library process follows or implements a methodology
+  source: [LibraryProcess]
+  target: [Methodology]
+  cardinality: N:N
+  inverse: methodology_followed_by
+- id: edge:methodology-followed-by
+  name: methodology_followed_by
+  origin: universal
+  description: inverse of follows_methodology
+  source: [Methodology]
+  target: [LibraryProcess]
+  cardinality: N:N
+  inverse: follows_methodology

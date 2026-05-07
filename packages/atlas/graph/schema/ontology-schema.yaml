@@ -31,4 +31,5 @@ nodeKindFiles:
 - schema/node-kinds/context-engineering.yaml
 - schema/node-kinds/workflows.yaml
 - schema/node-kinds/library-artifacts.yaml
+- schema/node-kinds/methodologies.yaml
 edgeKindFile: schema/edge-kinds.yaml
