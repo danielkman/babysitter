@@ -33,6 +33,19 @@ attributes:
   componentSupport:
     agents: unsupported
     context: unsupported
+  cliCommand: "codex"
+  callerEnvVars:
+    - "CODEX_THREAD_ID"
+    - "CODEX_SESSION_ID"
+    - "CODEX_PLUGIN_ROOT"
+  configPaths:
+    - ".codex"
+  processNames:
+    - "codex"
+  capabilities:
+    - SessionBinding
+    - StopHook
+    - HeadlessPrompt
 edges:
   hosted_by:
     - target: agent:codex

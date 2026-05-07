@@ -635,6 +635,11 @@ function buildPluginTargetDescriptors(_hooks: HookDescriptor[]): PluginTargetDes
       installLayout,
       packageMetadata,
       componentSupport,
+      cliCommand: valueAsString(node.cliCommand) || undefined,
+      callerEnvVars: stringArray(node.callerEnvVars),
+      configPaths: stringArray(node.configPaths),
+      processNames: stringArray(node.processNames),
+      harnessCapabilities: stringArray(node.capabilities),
       supportedHooks: supportedHooksForTarget(targetId),
       evidenceIds: [],
     };

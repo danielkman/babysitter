@@ -30,6 +30,20 @@ attributes:
   componentSupport:
     agents: unsupported
     context: native
+  cliCommand: "gemini"
+  callerEnvVars:
+    - "GEMINI_SESSION_ID"
+    - "GEMINI_CWD"
+    - "GEMINI_PROJECT_DIR"
+  configPaths:
+    - ".gemini"
+  processNames:
+    - "gemini"
+    - "gemini-cli"
+  capabilities:
+    - SessionBinding
+    - StopHook
+    - HeadlessPrompt
 edges:
   hosted_by:
     - target: agent:gemini-cli

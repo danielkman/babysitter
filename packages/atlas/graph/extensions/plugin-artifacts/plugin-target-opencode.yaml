@@ -35,6 +35,18 @@ attributes:
   componentSupport:
     agents: unsupported
     context: unsupported
+  cliCommand: "opencode"
+  callerEnvVars:
+    - "AGENT_SESSION_ID"
+    - "OPENCODE_SESSION_ID"
+  configPaths:
+    - ".opencode"
+  processNames:
+    - "opencode"
+  capabilities:
+    - SessionBinding
+    - StopHook
+    - HeadlessPrompt
 edges:
   hosted_by:
     - target: agent:opencode

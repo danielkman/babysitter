@@ -37,6 +37,18 @@ attributes:
   componentSupport:
     agents: unsupported
     context: unsupported
+  cliCommand: "cursor"
+  callerEnvVars:
+    - "CURSOR_PROJECT_DIR"
+    - "CURSOR_VERSION"
+  configPaths:
+    - ".cursor"
+  processNames:
+    - "cursor"
+  capabilities:
+    - SessionBinding
+    - StopHook
+    - HeadlessPrompt
 edges:
   hosted_by:
     - target: agent:cursor

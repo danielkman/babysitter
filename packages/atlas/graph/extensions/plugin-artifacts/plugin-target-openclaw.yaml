@@ -33,6 +33,16 @@ attributes:
   componentSupport:
     agents: unsupported
     context: unsupported
+  cliCommand: "openclaw"
+  callerEnvVars:
+    []
+  configPaths:
+    - ".openclaw"
+  processNames:
+    - "openclaw"
+  capabilities:
+    - Programmatic
+    - HeadlessPrompt
 edges:
   hosted_by:
     - target: agent:openclaw

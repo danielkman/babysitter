@@ -37,6 +37,19 @@ attributes:
   componentSupport:
     agents: native
     context: native
+  cliCommand: "gh"
+  callerEnvVars:
+    - "COPILOT_SESSION_ID"
+  configPaths:
+    - ".github"
+    - ".copilot"
+  processNames:
+    - "copilot"
+    - "github-copilot"
+  capabilities:
+    - SessionBinding
+    - StopHook
+    - HeadlessPrompt
 edges:
   hosted_by:
     - target: agent:copilot-cli

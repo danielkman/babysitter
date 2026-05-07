@@ -26,80 +26,60 @@ import { UNIFIED_DISCOVERY_SPEC } from "./unified/discovery";
 import { createCustomAdapter } from "./customAdapter";
 
 // ---------------------------------------------------------------------------
-// Inline discovery specs (previously in per-adapter discovery.ts files)
+// Discovery specs — derived from agent-catalog (which reads Atlas graph)
 // ---------------------------------------------------------------------------
 
-export const CLAUDE_CODE_DISCOVERY_SPEC: HarnessSpec = {
-  name: "claude-code",
-  cli: "claude",
-  callerEnvVars: ["CLAUDE_ENV_FILE"],
-  capabilities: [Cap.SessionBinding, Cap.StopHook, Cap.Mcp, Cap.HeadlessPrompt],
-  configPaths: [".claude"],
+import { listPluginTargetDescriptors } from "@a5c-ai/agent-catalog";
+
+const CAPABILITY_MAP: Record<string, Cap> = {
+  SessionBinding: Cap.SessionBinding,
+  StopHook: Cap.StopHook,
+  Mcp: Cap.Mcp,
+  HeadlessPrompt: Cap.HeadlessPrompt,
+  Programmatic: Cap.Programmatic,
 };
 
-export const PI_DISCOVERY_SPEC: HarnessSpec = {
-  name: "pi",
-  cli: "pi",
-  callerEnvVars: ["PI_SESSION_ID"],
-  capabilities: [Cap.Programmatic, Cap.SessionBinding, Cap.HeadlessPrompt],
-  configPaths: [".pi"],
-};
+function buildDiscoverySpecs(): Map<string, HarnessSpec> {
+  const specs = new Map<string, HarnessSpec>();
+  try {
+    for (const target of listPluginTargetDescriptors()) {
+      if (!target.cliCommand) continue;
+      specs.set(target.targetId, {
+        name: target.targetId,
+        cli: target.cliCommand,
+        callerEnvVars: target.callerEnvVars ?? [],
+        capabilities: (target.harnessCapabilities ?? [])
+          .map((c) => CAPABILITY_MAP[c])
+          .filter((c): c is Cap => c !== undefined),
+        configPaths: target.configPaths ?? [],
+      });
+    }
+  } catch {
+    // Atlas/catalog not available (e.g. during initial bootstrap) — empty specs
+  }
+  return specs;
+}
 
-export const CODEX_DISCOVERY_SPEC: HarnessSpec = {
-  name: "codex",
-  cli: "codex",
-  callerEnvVars: ["CODEX_THREAD_ID", "CODEX_SESSION_ID", "CODEX_PLUGIN_ROOT"],
-  capabilities: [Cap.SessionBinding, Cap.StopHook, Cap.HeadlessPrompt],
-  configPaths: [".codex"],
-};
+let cachedDiscoverySpecs: Map<string, HarnessSpec> | undefined;
+function getDiscoverySpecs(): Map<string, HarnessSpec> {
+  if (!cachedDiscoverySpecs) cachedDiscoverySpecs = buildDiscoverySpecs();
+  return cachedDiscoverySpecs;
+}
 
-export const CURSOR_DISCOVERY_SPEC: HarnessSpec = {
-  name: "cursor",
-  cli: "cursor",
-  callerEnvVars: ["CURSOR_PROJECT_DIR", "CURSOR_VERSION"],
-  capabilities: [Cap.SessionBinding, Cap.StopHook, Cap.HeadlessPrompt],
-  configPaths: [".cursor"],
-};
+function getDiscoverySpec(name: string): HarnessSpec | undefined {
+  return getDiscoverySpecs().get(name);
+}
 
-export const GEMINI_CLI_DISCOVERY_SPEC: HarnessSpec = {
-  name: "gemini-cli",
-  cli: "gemini",
-  callerEnvVars: ["GEMINI_SESSION_ID", "GEMINI_CWD", "GEMINI_PROJECT_DIR"],
-  capabilities: [Cap.SessionBinding, Cap.StopHook, Cap.HeadlessPrompt],
-  configPaths: [".gemini"],
-};
-
-export const GITHUB_COPILOT_DISCOVERY_SPEC: HarnessSpec = {
-  name: "github-copilot",
-  cli: "gh",
-  callerEnvVars: ["COPILOT_SESSION_ID"],
-  capabilities: [Cap.SessionBinding, Cap.StopHook, Cap.HeadlessPrompt],
-  configPaths: [".github", ".copilot"],
-};
-
-export const OH_MY_PI_DISCOVERY_SPEC: HarnessSpec = {
-  name: "oh-my-pi",
-  cli: "pi",
-  callerEnvVars: ["OMP_SESSION_ID"],
-  capabilities: [Cap.SessionBinding, Cap.StopHook, Cap.Programmatic],
-  configPaths: [".omp"],
-};
-
-export const OPENCODE_DISCOVERY_SPEC: HarnessSpec = {
-  name: "opencode",
-  cli: "opencode",
-  callerEnvVars: ["AGENT_SESSION_ID", "OPENCODE_SESSION_ID"],
-  capabilities: [Cap.SessionBinding, Cap.StopHook, Cap.HeadlessPrompt],
-  configPaths: [".opencode"],
-};
-
-export const OPENCLAW_DISCOVERY_SPEC: HarnessSpec = {
-  name: "openclaw",
-  cli: "openclaw",
-  callerEnvVars: [],
-  capabilities: [Cap.Programmatic, Cap.HeadlessPrompt],
-  configPaths: [".openclaw"],
-};
+// Named exports for backward compatibility (consumers import these directly)
+export const CLAUDE_CODE_DISCOVERY_SPEC: HarnessSpec = { get name() { return getDiscoverySpec("claude-code")?.name ?? "claude-code"; }, get cli() { return getDiscoverySpec("claude-code")?.cli ?? "claude"; }, get callerEnvVars() { return getDiscoverySpec("claude-code")?.callerEnvVars ?? ["CLAUDE_ENV_FILE"]; }, get capabilities() { return getDiscoverySpec("claude-code")?.capabilities ?? [Cap.SessionBinding, Cap.StopHook, Cap.Mcp, Cap.HeadlessPrompt]; }, get configPaths() { return getDiscoverySpec("claude-code")?.configPaths ?? [".claude"]; } };
+export const PI_DISCOVERY_SPEC: HarnessSpec = { get name() { return getDiscoverySpec("pi")?.name ?? "pi"; }, get cli() { return getDiscoverySpec("pi")?.cli ?? "pi"; }, get callerEnvVars() { return getDiscoverySpec("pi")?.callerEnvVars ?? ["PI_SESSION_ID"]; }, get capabilities() { return getDiscoverySpec("pi")?.capabilities ?? [Cap.Programmatic, Cap.SessionBinding, Cap.HeadlessPrompt]; }, get configPaths() { return getDiscoverySpec("pi")?.configPaths ?? [".pi"]; } };
+export const CODEX_DISCOVERY_SPEC: HarnessSpec = { get name() { return getDiscoverySpec("codex")?.name ?? "codex"; }, get cli() { return getDiscoverySpec("codex")?.cli ?? "codex"; }, get callerEnvVars() { return getDiscoverySpec("codex")?.callerEnvVars ?? []; }, get capabilities() { return getDiscoverySpec("codex")?.capabilities ?? [Cap.SessionBinding, Cap.StopHook, Cap.HeadlessPrompt]; }, get configPaths() { return getDiscoverySpec("codex")?.configPaths ?? [".codex"]; } };
+export const CURSOR_DISCOVERY_SPEC: HarnessSpec = { get name() { return getDiscoverySpec("cursor")?.name ?? "cursor"; }, get cli() { return getDiscoverySpec("cursor")?.cli ?? "cursor"; }, get callerEnvVars() { return getDiscoverySpec("cursor")?.callerEnvVars ?? []; }, get capabilities() { return getDiscoverySpec("cursor")?.capabilities ?? [Cap.SessionBinding, Cap.StopHook, Cap.HeadlessPrompt]; }, get configPaths() { return getDiscoverySpec("cursor")?.configPaths ?? [".cursor"]; } };
+export const GEMINI_CLI_DISCOVERY_SPEC: HarnessSpec = { get name() { return getDiscoverySpec("gemini")?.name ?? "gemini-cli"; }, get cli() { return getDiscoverySpec("gemini")?.cli ?? "gemini"; }, get callerEnvVars() { return getDiscoverySpec("gemini")?.callerEnvVars ?? []; }, get capabilities() { return getDiscoverySpec("gemini")?.capabilities ?? [Cap.SessionBinding, Cap.StopHook, Cap.HeadlessPrompt]; }, get configPaths() { return getDiscoverySpec("gemini")?.configPaths ?? [".gemini"]; } };
+export const GITHUB_COPILOT_DISCOVERY_SPEC: HarnessSpec = { get name() { return getDiscoverySpec("github-copilot")?.name ?? "github-copilot"; }, get cli() { return getDiscoverySpec("github-copilot")?.cli ?? "gh"; }, get callerEnvVars() { return getDiscoverySpec("github-copilot")?.callerEnvVars ?? []; }, get capabilities() { return getDiscoverySpec("github-copilot")?.capabilities ?? [Cap.SessionBinding, Cap.StopHook, Cap.HeadlessPrompt]; }, get configPaths() { return getDiscoverySpec("github-copilot")?.configPaths ?? [".github", ".copilot"]; } };
+export const OH_MY_PI_DISCOVERY_SPEC: HarnessSpec = { get name() { return getDiscoverySpec("oh-my-pi")?.name ?? "oh-my-pi"; }, get cli() { return getDiscoverySpec("oh-my-pi")?.cli ?? "pi"; }, get callerEnvVars() { return getDiscoverySpec("oh-my-pi")?.callerEnvVars ?? []; }, get capabilities() { return getDiscoverySpec("oh-my-pi")?.capabilities ?? [Cap.SessionBinding, Cap.StopHook, Cap.Programmatic]; }, get configPaths() { return getDiscoverySpec("oh-my-pi")?.configPaths ?? [".omp"]; } };
+export const OPENCODE_DISCOVERY_SPEC: HarnessSpec = { get name() { return getDiscoverySpec("opencode")?.name ?? "opencode"; }, get cli() { return getDiscoverySpec("opencode")?.cli ?? "opencode"; }, get callerEnvVars() { return getDiscoverySpec("opencode")?.callerEnvVars ?? []; }, get capabilities() { return getDiscoverySpec("opencode")?.capabilities ?? [Cap.SessionBinding, Cap.StopHook, Cap.HeadlessPrompt]; }, get configPaths() { return getDiscoverySpec("opencode")?.configPaths ?? [".opencode"]; } };
+export const OPENCLAW_DISCOVERY_SPEC: HarnessSpec = { get name() { return getDiscoverySpec("openclaw")?.name ?? "openclaw"; }, get cli() { return getDiscoverySpec("openclaw")?.cli ?? "openclaw"; }, get callerEnvVars() { return getDiscoverySpec("openclaw")?.callerEnvVars ?? []; }, get capabilities() { return getDiscoverySpec("openclaw")?.capabilities ?? [Cap.Programmatic, Cap.HeadlessPrompt]; }, get configPaths() { return getDiscoverySpec("openclaw")?.configPaths ?? [".openclaw"]; } };
 
 export type { SessionResolutionDetails } from "./adapters/claude-code";
 
@@ -175,16 +155,7 @@ const harnessRegistryByName = new Map(
 );
 
 export const KNOWN_HARNESSES: readonly HarnessSpec[] = [
-  CLAUDE_CODE_DISCOVERY_SPEC,
-  CODEX_DISCOVERY_SPEC,
-  CURSOR_DISCOVERY_SPEC,
-  GEMINI_CLI_DISCOVERY_SPEC,
-  GITHUB_COPILOT_DISCOVERY_SPEC,
-  OPENCODE_DISCOVERY_SPEC,
-  OH_MY_PI_DISCOVERY_SPEC,
-  OPENCLAW_DISCOVERY_SPEC,
-  PI_DISCOVERY_SPEC,
-  // Unified is last — lowest priority in discovery and caller detection.
+  ...Array.from(getDiscoverySpecs().values()),
   UNIFIED_DISCOVERY_SPEC,
 ];
 

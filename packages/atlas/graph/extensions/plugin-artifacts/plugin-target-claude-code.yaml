@@ -44,6 +44,19 @@ attributes:
     context: unsupported
     skills: native
     hooks: native
+  cliCommand: "claude"
+  callerEnvVars:
+    - "CLAUDE_ENV_FILE"
+  configPaths:
+    - ".claude"
+  processNames:
+    - "claude"
+    - "claude-code"
+  capabilities:
+    - SessionBinding
+    - StopHook
+    - Mcp
+    - HeadlessPrompt
   description: |
     Claude Code as a plugin host — accepts plugin.json + marketplace
     manifests + container/binary plugin artifacts. Native plugin

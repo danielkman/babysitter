@@ -486,6 +486,11 @@ export interface PluginTargetDescriptor {
   installLayout?: PluginInstallLayout;
   packageMetadata?: PluginPackageMetadata;
   componentSupport?: PluginComponentSupport;
+  cliCommand?: string;
+  callerEnvVars?: string[];
+  configPaths?: string[];
+  processNames?: string[];
+  harnessCapabilities?: string[];
   supportedHooks: Record<string, string>;
   evidenceIds: string[];
 }

@@ -256,26 +256,19 @@ export function getSessionMarkerPath(harness: string, ancestorPid: number): stri
 
 function deriveProcessNames(harness: string): string[] {
   const slug = sanitizeHarnessSlug(harness);
-  switch (slug) {
-    case 'claude-code':
-    case 'claude':
-      return ['claude'];
-    case 'codex':
-      return ['codex'];
-    case 'cursor':
-      return ['cursor'];
-    case 'gemini-cli':
-    case 'gemini':
-      return ['gemini', 'node'];
-    case 'github-copilot':
-    case 'copilot':
-      return ['copilot', 'gh'];
-    case 'pi':
-    case 'oh-my-pi':
-      return ['pi'];
-    default:
-      return [slug];
+  try {
+    const { getPluginTargetDescriptor } = require("@a5c-ai/agent-catalog") as { getPluginTargetDescriptor: (id: string) => { processNames?: string[]; cliCommand?: string } | undefined };
+    // Try exact match first, then common aliases
+    const target = getPluginTargetDescriptor(slug)
+      ?? getPluginTargetDescriptor(slug === "claude" ? "claude-code" : slug)
+      ?? getPluginTargetDescriptor(slug === "gemini" ? "gemini-cli" : slug)
+      ?? getPluginTargetDescriptor(slug === "copilot" ? "github-copilot" : slug);
+    if (target?.processNames?.length) return target.processNames;
+    if (target?.cliCommand) return [target.cliCommand];
+  } catch {
+    // Catalog unavailable at runtime — fall through to slug
   }
+  return [slug];
 }
 
 // ---------------------------------------------------------------------------
