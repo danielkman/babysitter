@@ -1,12 +1,12 @@
 ---
 id: page:process-gaps
 nodeKind: Page
-title: "`process/gaps/`"
+title: "Gap Tracker"
 slug: "process/gaps"
 articlePath: "wiki/process/gaps/README.md"
 documents: []
 ---
-# `process/gaps/`
+# Gap Tracker
 
 Human-readable form of every tracked gap. Each file in this directory mirrors a `Gap` node in the graph (see `graph/02-node-kinds/catalog-meta.md`, NodeKind `Gap`).
 

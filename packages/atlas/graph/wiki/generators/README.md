@@ -1,12 +1,12 @@
 ---
 id: page:generators
 nodeKind: Page
-title: "Generators (Phase 3)"
+title: "Generators and Derived Artifacts"
 slug: "generators"
 articlePath: "wiki/generators/README.md"
 documents: []
 ---
-# Generators (Phase 3)
+# Generators and Derived Artifacts
 
 Generators turn graph queries into derived artifacts. Every page of prose, every TypeScript type, every OpenAPI document, every scaffolded code skeleton in the v6 ecosystem should be produced from graph data rather than hand-maintained copies.
 

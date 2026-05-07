@@ -1,12 +1,12 @@
 ---
 id: page:qa
 nodeKind: Page
-title: "QA / Verification / Delivery (Phase 5)"
+title: "Quality, Verification, and Delivery"
 slug: "qa"
 articlePath: "wiki/qa/README.md"
 documents: []
 ---
-# QA / Verification / Delivery (Phase 5)
+# Quality, Verification, and Delivery
 
 Tests, evidence-boundary checks, versioning, CI/CD, and downstream artifact distribution. The phase that **enforces** every guarantee the earlier phases promise.
 

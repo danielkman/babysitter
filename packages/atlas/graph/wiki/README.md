@@ -1,27 +1,46 @@
 ---
 id: page:index
 nodeKind: Page
-title: "Wiki (Phase 4)"
+title: "Agentic AI Atlas Wiki"
 slug: "index"
 articlePath: "wiki/README.md"
 documents: []
 ---
-# Wiki (Phase 4)
+# Agentic AI Atlas Wiki
 
-The full encyclopedia of the v6 ecosystem, **derived from the graph**. Every page corresponds to a graph query; no page is hand-authored. If a fact appears on a wiki page, it appears in the graph first.
+Welcome to the readable side of the Atlas graph. This wiki is the easiest way to move between narrative docs, generated reference pages, and the underlying graph records without having to know the schema first.
 
-## Files in this directory
+## Start here
 
-| Path | Purpose |
+- New to Atlas? Open [`agent-generate/universal-agentic-stack`](./agent-generate/README.md) for the big-picture map.
+- Looking for process and governance? Start at [`process`](./process/README.md).
+- Checking delivery, testing, or release discipline? Go to [`qa`](./qa/README.md).
+- Want to understand how pages are produced? Open [`generators`](./generators/README.md).
+- Need the implementation details of the wiki itself? See [`00-wiki-architecture.md`](./00-wiki-architecture.md) and [`01-derivation-mapping.md`](./01-derivation-mapping.md).
+
+## Ways to browse
+
+| Path | When to use it |
 |---|---|
-| [`00-wiki-architecture.md`](./00-wiki-architecture.md) | Site structure, navigation taxonomy, search, cross-refs, asset handling, generation cadence. |
-| [`01-derivation-mapping.md`](./01-derivation-mapping.md) | Table mapping each wiki page type to the graph query that produces it. |
-| `generated/` | Generator output land. Untracked content during dev; built by CI for publishing. |
-| `assets/` | Static assets (logos, hand-drawn diagrams) — the only hand-authored material in the wiki. |
+| [`/wiki`](./README.md) | Stay in prose and follow section hubs. |
+| [`/search`](/search) | Jump directly to a page, node, or topic by name. |
+| Node ledgers | Open any documented record to inspect attributes and edges directly. |
+| [`/graph`](/graph) | Move visually through neighborhoods when you do not know the exact node yet. |
 
-## Acceptance
+## Main sections
 
-- Every `Term`, `Product`, `Capability`, `Hook`, `Channel`, and `Stack-layer` in the graph has a page.
-- Navigation produces no dead links.
-- Search returns expected hits for the spot-check queries in `wiki/qa/00-qa-architecture.md`.
-- A regeneration on the same graph snapshot produces a byte-identical site.
+| Section | What it contains |
+|---|---|
+| [`process`](./process/README.md) | The ontology-driven workflow, debt loop, cascade rule, governance, and tracked gaps. |
+| [`qa`](./qa/README.md) | Quality gates, CI/CD, coverage, evidence freshness, and delivery policy. |
+| [`generators`](./generators/README.md) | The derivation layer that turns graph data into docs, types, diagrams, and other artifacts. |
+| [`agent-generate`](./agent-generate/README.md) | Generated references and landscape maps derived from graph data. |
+| [`00-wiki-architecture.md`](./00-wiki-architecture.md) | How the wiki is structured, navigated, and published. |
+| [`01-derivation-mapping.md`](./01-derivation-mapping.md) | Which graph queries and generators are responsible for which page types. |
+
+## What this wiki is for
+
+- Give readers a welcoming way into the graph before they drop into raw node ledgers.
+- Keep section hubs, reference pages, and graph records linked tightly enough that navigation stays easy.
+- Make it obvious where to continue next from any page.
+- Preserve the rule that graph-backed truth lives in the catalog, while the wiki provides the reading experience around it.
