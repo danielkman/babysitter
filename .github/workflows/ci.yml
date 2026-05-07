@@ -128,11 +128,6 @@ jobs:
         run: |
           set -euo pipefail
           npm run build:agent-mux 2>&1 | tee artifacts/test-logs/agent-mux-build.log
-      - name: Live stack contract tests
-        run: |
-          set -euo pipefail
-          npm run test:e2e:live-stack 2>&1 | tee artifacts/test-logs/live-stack-contract-tests.log
-          npm run coverage:e2e:live-stack 2>&1 | tee artifacts/test-logs/live-stack-coverage.log
 
       - name: Build Atlas packages
         run: |
@@ -233,6 +228,7 @@ jobs:
           path: artifacts/test-logs
           if-no-files-found: error
 
+
       - name: Upload Playwright artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -243,6 +239,41 @@ jobs:
             packages/agent-mux/webui/.tmp/playwright-test-results
           if-no-files-found: ignore
 
+  live-stack-contracts:
+    name: Live Stack Contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: |
+          set -euo pipefail
+          npm ci
+          npm install --no-save @rollup/rollup-linux-x64-gnu 2>/dev/null || true
+
+      - name: Run live stack contracts
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/live-stack
+          npm run test:e2e:live-stack
+          npm run coverage:e2e:live-stack
+
+      - name: Upload live stack artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-stack-contracts
+          path: artifacts/live-stack
+          if-no-files-found: error
   workspace-coverage:
     name: Workspace Coverage
     runs-on: ubuntu-latest
