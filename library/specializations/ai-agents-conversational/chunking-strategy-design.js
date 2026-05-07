@@ -17,6 +17,7 @@
  * - LlamaIndex Node Parsers: https://docs.llamaindex.ai/en/stable/module_guides/loading/node_parsers/
  * @graph
  *   domains: [domain:software-engineering]
+ *   workflows: [workflow:architecture-decision-record]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

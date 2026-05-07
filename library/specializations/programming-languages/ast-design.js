@@ -21,6 +21,7 @@
  *   specializations: [specialization:programming-languages]
  *   skillAreas: [skill-area:language-design, skill-area:compiler-implementation, skill-area:graph-algorithms]
  *   roles: [role:backend-engineer]
+ *   workflows: [workflow:architecture-decision-record]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

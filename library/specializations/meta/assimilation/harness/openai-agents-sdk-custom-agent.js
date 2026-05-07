@@ -12,6 +12,7 @@
  *   skillAreas: [skill-area:ai-agent-development, skill-area:orchestration-loop]
  *   topics: [topic:developer-experience, topic:integrations]
  *   roles: [role:platform-engineer, role:backend-engineer]
+ *   workflows: [workflow:feature-development]
  */
 
 import {

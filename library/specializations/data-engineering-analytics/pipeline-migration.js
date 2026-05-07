@@ -36,6 +36,7 @@
  * - Pipeline Testing: https://docs.getdbt.com/docs/building-a-dbt-project/tests
  * @graph
  *   domains: [domain:data-engineering]
+ *   workflows: [workflow:technical-debt-reduction]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

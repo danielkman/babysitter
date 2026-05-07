@@ -25,6 +25,7 @@
  * - FIRST Best Practices: https://www.first.org/resources/guides/
  * @graph
  *   domains: [domain:security, skill-area:incident-management]
+ *   workflows: [workflow:incident-response]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -31,6 +31,7 @@
  * - CNIL GDPR Guide: https://www.cnil.fr/en/rgpd-guide
  * @graph
  *   domains: [domain:security, role:security-engineer]
+ *   workflows: [workflow:vulnerability-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

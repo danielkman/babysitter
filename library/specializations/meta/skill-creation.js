@@ -9,6 +9,7 @@
  *   skillAreas: [skill-area:prompt-engineering, skill-area:plugin-systems]
  *   topics: [topic:developer-experience]
  *   roles: [role:platform-engineer, role:tech-lead, role:architect]
+ *   workflows: [workflow:feature-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

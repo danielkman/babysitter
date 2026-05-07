@@ -26,6 +26,7 @@
  * - Performance Optimization: https://www.databricks.com/blog/2022/05/20/five-simple-steps-for-implementing-a-star-schema-in-databricks-with-delta-lake.html
  * @graph
  *   domains: [domain:data-engineering]
+ *   workflows: [workflow:data-pipeline-deployment]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

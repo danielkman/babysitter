@@ -21,6 +21,7 @@
  * - Slowly Changing Dimensions: https://en.wikipedia.org/wiki/Slowly_changing_dimension
  * @graph
  *   domains: [domain:data-engineering]
+ *   workflows: [workflow:data-pipeline-deployment]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

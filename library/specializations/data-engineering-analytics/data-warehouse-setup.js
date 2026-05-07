@@ -5,6 +5,7 @@
  * @outputs { success: boolean, architecture: object, securityConfig: object, optimizationPlan: object, artifacts: array }
  * @graph
  *   domains: [domain:data-engineering]
+ *   workflows: [workflow:data-pipeline-deployment]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

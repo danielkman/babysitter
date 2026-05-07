@@ -18,6 +18,7 @@
  * - Stateful Agents: https://blog.langchain.dev/langgraph/
  * @graph
  *   domains: [domain:software-engineering]
+ *   workflows: [workflow:architecture-decision-record]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

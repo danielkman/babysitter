@@ -5,6 +5,7 @@
  * @outputs { success: boolean, iterations: number, finalQuality: number, artifacts: object }
   * @graph
  *   domains: [domain:software-engineering]
+ *   workflows: [workflow:code-review]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

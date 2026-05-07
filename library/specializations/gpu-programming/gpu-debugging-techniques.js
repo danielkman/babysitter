@@ -22,6 +22,7 @@
  *   specializations: [specialization:gpu-programming]
  *   skillAreas: [skill-area:cuda-kernels, skill-area:compute-shaders]
  *   roles: [role:computational-scientist, role:ml-engineer]
+ *   workflows: [workflow:bug-triage]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

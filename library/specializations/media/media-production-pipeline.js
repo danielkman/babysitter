@@ -9,6 +9,7 @@
  *   skillAreas: [skill-area:media-encoding, skill-area:streaming-protocols, skill-area:video-processing, skill-area:audio-processing]
  *   topics: [topic:developer-experience]
  *   roles: [role:media-engineer, role:platform-engineer]
+ *   workflows: [workflow:data-pipeline-deployment]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

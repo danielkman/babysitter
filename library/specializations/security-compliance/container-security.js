@@ -30,6 +30,7 @@
  * - Falco Runtime Security: https://falco.org/
  * @graph
  *   domains: [domain:security, topic:microservices]
+ *   workflows: [workflow:vulnerability-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

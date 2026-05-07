@@ -27,6 +27,7 @@
  *   domains: [domain:mechanical-engineering]
  *   skillAreas: [skill-area:physics-simulation, skill-area:mathematical-reasoning, skill-area:motion-planning]
  *   roles: [role:systems-integration-engineer, role:research-engineer]
+ *   workflows: [workflow:engineering-onboarding]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

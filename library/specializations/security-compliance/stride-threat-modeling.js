@@ -33,6 +33,7 @@
  * - Microsoft Security Development Lifecycle: https://www.microsoft.com/en-us/securityengineering/sdl/threatmodeling
  * @graph
  *   domains: [domain:security, role:data-scientist]
+ *   workflows: [workflow:vulnerability-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

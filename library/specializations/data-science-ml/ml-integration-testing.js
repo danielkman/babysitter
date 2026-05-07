@@ -32,6 +32,7 @@
  * - ML Observability: https://neptune.ai/blog/ml-model-testing
  * @graph
  *   domains: [domain:data-science, workflow:code-review]
+ *   workflows: [workflow:feature-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

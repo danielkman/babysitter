@@ -34,6 +34,7 @@
  * - NIST Cybersecurity Supply Chain Risk Management: https://csrc.nist.gov/projects/cyber-supply-chain-risk-management
  * @graph
  *   domains: [domain:security]
+ *   workflows: [workflow:vulnerability-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

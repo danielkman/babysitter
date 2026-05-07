@@ -13,6 +13,7 @@
  *   skillAreas: [skill-area:image-processing, skill-area:media-encoding, skill-area:prompt-engineering]
  *   topics: [topic:developer-experience]
  *   roles: [role:media-engineer, role:platform-engineer]
+ *   workflows: [workflow:feature-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

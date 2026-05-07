@@ -24,6 +24,7 @@
  *   specializations: [specialization:aerospace-engineering]
  *   skillAreas: [skill-area:mathematical-reasoning, skill-area:physics-simulation, skill-area:sensor-fusion]
  *   roles: [role:systems-integration-engineer, role:research-engineer]
+ *   workflows: [workflow:experiment-design]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

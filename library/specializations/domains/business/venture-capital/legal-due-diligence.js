@@ -7,6 +7,7 @@
  *   domains: [domain:venture-capital]
  *   skillAreas: [skill-area:investment-analysis, skill-area:valuation-analysis, skill-area:financial-modeling]
  *   roles: [role:financial-analyst]
+ *   workflows: [workflow:contract-lifecycle]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -36,6 +36,7 @@
  * - NIST Cybersecurity Framework to SOC 2 Mapping: https://www.nist.gov/cyberframework
  * @graph
  *   domains: [domain:security, role:security-engineer]
+ *   workflows: [workflow:vulnerability-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -8,6 +8,7 @@
  *   skillAreas: [skill-area:docs-as-code, skill-area:reference-docs, skill-area:api-doc-generation]
  *   topics: [topic:developer-experience]
  *   roles: [role:technical-writer, role:tech-lead]
+ *   workflows: [workflow:feature-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

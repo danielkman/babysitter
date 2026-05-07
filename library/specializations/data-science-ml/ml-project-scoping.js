@@ -20,6 +20,7 @@
  * - Rules of Machine Learning - Google: https://developers.google.com/machine-learning/guides/rules-of-ml
  * @graph
  *   domains: [domain:data-science, role:data-scientist]
+ *   workflows: [workflow:data-pipeline-deployment]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

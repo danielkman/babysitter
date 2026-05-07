@@ -33,6 +33,7 @@
  * - Data Drift in ML: https://towardsdatascience.com/understanding-dataset-shift-f2a5a262a766
  * @graph
  *   domains: [domain:data-science, role:data-scientist]
+ *   workflows: [workflow:data-pipeline-deployment]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

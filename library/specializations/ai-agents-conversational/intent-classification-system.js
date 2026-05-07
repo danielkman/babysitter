@@ -19,6 +19,7 @@
  * - Rasa NLU: https://rasa.com/docs/rasa/nlu-training-data/
  * @graph
  *   domains: [domain:software-engineering]
+ *   workflows: [workflow:feature-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

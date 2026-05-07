@@ -38,6 +38,7 @@
  * preventable with the Phase 5 permission audit.
   * @graph
  *   domains: [domain:software-engineering]
+ *   workflows: [workflow:feature-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

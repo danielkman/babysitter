@@ -18,6 +18,7 @@
  * - Adversarial Robustness Toolbox: https://github.com/Trusted-AI/adversarial-robustness-toolbox
  * @graph
  *   domains: [domain:cybersecurity]
+ *   workflows: [workflow:vulnerability-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

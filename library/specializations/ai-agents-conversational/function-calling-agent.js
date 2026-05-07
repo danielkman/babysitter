@@ -19,6 +19,7 @@
  * - LangChain Tools: https://python.langchain.com/docs/modules/agents/tools/
  * @graph
  *   domains: [domain:software-engineering]
+ *   workflows: [workflow:incident-response]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

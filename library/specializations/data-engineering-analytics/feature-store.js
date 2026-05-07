@@ -35,6 +35,7 @@
  * - Training-Serving Skew Prevention: https://developers.google.com/machine-learning/guides/rules-of-ml/
  * @graph
  *   domains: [domain:data-engineering]
+ *   workflows: [workflow:data-pipeline-deployment]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

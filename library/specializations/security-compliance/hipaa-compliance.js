@@ -31,6 +31,7 @@
  * - HHS Breach Notification Rule: https://www.hhs.gov/hipaa/for-professionals/breach-notification/index.html
  * @graph
  *   domains: [domain:security, role:security-engineer]
+ *   workflows: [workflow:vulnerability-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

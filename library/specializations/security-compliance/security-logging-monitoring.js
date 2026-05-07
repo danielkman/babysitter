@@ -30,6 +30,7 @@
  * - MITRE ATT&CK Detection: https://attack.mitre.org/
  * @graph
  *   domains: [domain:security, role:security-engineer]
+ *   workflows: [workflow:vulnerability-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

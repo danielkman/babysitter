@@ -18,6 +18,7 @@
  * - DEF CON CFP: https://defcon.org/html/defcon-call-for-papers.html
  * @graph
  *   domains: [domain:cybersecurity]
+ *   workflows: [workflow:vulnerability-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

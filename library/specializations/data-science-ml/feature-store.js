@@ -21,6 +21,7 @@
  * - Hopsworks Feature Store: https://www.hopsworks.ai/
  * @graph
  *   domains: [domain:data-science, role:data-scientist]
+ *   workflows: [workflow:data-pipeline-deployment]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

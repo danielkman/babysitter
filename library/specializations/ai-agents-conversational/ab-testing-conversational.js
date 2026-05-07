@@ -18,6 +18,7 @@
  * - Prompt A/B Testing: https://docs.helicone.ai/features/experiments
  * @graph
  *   domains: [domain:software-engineering, workflow:code-review]
+ *   workflows: [workflow:feature-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

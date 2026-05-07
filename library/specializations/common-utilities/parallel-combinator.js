@@ -6,6 +6,7 @@
  *   skillAreas: [skill-area:orchestration-loop, skill-area:agentic-loops, skill-area:concurrency-multithreading]
  *   topics: [topic:developer-experience]
  *   roles: [role:platform-engineer, role:backend-engineer, role:tech-lead]
+ *   workflows: [workflow:feature-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

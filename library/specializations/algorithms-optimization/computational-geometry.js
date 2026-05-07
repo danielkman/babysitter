@@ -12,6 +12,7 @@
  *   specializations: [specialization:algorithms-optimization]
  *   skillAreas: [skill-area:dynamic-programming, skill-area:graph-algorithms, skill-area:computational-geometry]
  *   roles: [role:backend-engineer, role:computational-scientist]
+ *   workflows: [workflow:feature-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

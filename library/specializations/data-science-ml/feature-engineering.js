@@ -5,6 +5,7 @@
  * @outputs { success: boolean, qualityScore: number, features: object, artifacts: array }
  * @graph
  *   domains: [domain:data-science, role:data-scientist]
+ *   workflows: [workflow:data-pipeline-deployment]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

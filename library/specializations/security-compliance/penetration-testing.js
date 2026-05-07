@@ -37,6 +37,7 @@
  * - MITRE ATT&CK Framework: https://attack.mitre.org/
  * @graph
  *   domains: [domain:security, workflow:code-review]
+ *   workflows: [workflow:vulnerability-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

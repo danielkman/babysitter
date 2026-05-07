@@ -18,6 +18,7 @@
  * - Genstruct: https://huggingface.co/NousResearch/Genstruct-7B
  * @graph
  *   domains: [domain:software-engineering]
+ *   workflows: [workflow:data-pipeline-deployment]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

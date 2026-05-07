@@ -6,6 +6,7 @@
  *   skillAreas: [skill-area:file-handling, skill-area:document-processing, skill-area:parsing-data-formats]
  *   topics: [topic:developer-experience]
  *   roles: [role:backend-engineer, role:technical-writer]
+ *   workflows: [workflow:feature-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

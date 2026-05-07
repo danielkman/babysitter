@@ -33,6 +33,7 @@
  * follow-up runs.
   * @graph
  *   domains: [domain:software-engineering]
+ *   workflows: [workflow:bug-triage]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

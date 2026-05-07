@@ -48,6 +48,7 @@
  *   domains: [domain:knowledge-management]
  *   skillAreas: [skill-area:docs-as-code, skill-area:reference-docs, skill-area:data-governance]
  *   roles: [role:information-architect, role:technical-writer]
+ *   workflows: [workflow:strategic-planning]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

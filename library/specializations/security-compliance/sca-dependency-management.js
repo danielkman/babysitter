@@ -35,6 +35,7 @@
  * - SLSA Framework: https://slsa.dev/
  * @graph
  *   domains: [domain:security]
+ *   workflows: [workflow:vulnerability-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -39,6 +39,7 @@
  * - NIST SAST Guide: https://csrc.nist.gov/publications/detail/sp/500-268/final
  * @graph
  *   domains: [domain:security, workflow:release-management]
+ *   workflows: [workflow:vulnerability-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

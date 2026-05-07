@@ -17,6 +17,7 @@
  * - OWASP LLM Security: https://owasp.org/www-project-top-10-for-large-language-model-applications/
  * @graph
  *   domains: [domain:software-engineering]
+ *   workflows: [workflow:feature-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

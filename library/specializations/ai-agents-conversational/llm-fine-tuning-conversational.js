@@ -19,6 +19,7 @@
  * - Unsloth: https://github.com/unslothai/unsloth
  * @graph
  *   domains: [domain:software-engineering]
+ *   workflows: [workflow:feature-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

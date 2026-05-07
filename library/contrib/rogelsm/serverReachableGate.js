@@ -12,6 +12,7 @@
  * @see https://github.com/a5c-ai/babysitter/issues/71
   * @graph
  *   domains: [domain:software-engineering]
+ *   workflows: [workflow:feature-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

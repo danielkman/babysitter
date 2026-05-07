@@ -22,6 +22,7 @@
  *   skillAreas: [skill-area:sdk-codegen, skill-area:api-clients-sdks, skill-area:semver-discipline]
  *   roles: [role:platform-engineer]
  *   topics: [topic:api-design, topic:developer-experience]
+ *   workflows: [workflow:strategic-planning]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

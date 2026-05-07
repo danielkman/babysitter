@@ -21,6 +21,7 @@
  * - ML Test Score: https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/aad9f93b86b7addfea4c419b9100c6cdd26cacea.pdf
  * @graph
  *   domains: [domain:data-science, role:data-scientist]
+ *   workflows: [workflow:data-pipeline-deployment]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

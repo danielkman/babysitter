@@ -27,6 +27,7 @@
  * - dbt Cloud CI/CD: https://docs.getdbt.com/docs/deploy/continuous-integration
  * @graph
  *   domains: [domain:data-engineering]
+ *   workflows: [workflow:data-pipeline-deployment]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

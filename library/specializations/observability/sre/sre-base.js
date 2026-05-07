@@ -13,6 +13,7 @@
  *   skillAreas: [skill-area:incident-management]
  *   topics: [topic:slo-sli, topic:incident-management]
  *   roles: [role:site-reliability-engineer, role:platform-engineer]
+ *   workflows: [workflow:feature-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

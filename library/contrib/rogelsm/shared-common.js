@@ -21,6 +21,7 @@
  * @see .a5c/processes/PROCESS-GUIDE.md for usage guidelines
   * @graph
  *   domains: [domain:software-engineering]
+ *   workflows: [workflow:feature-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

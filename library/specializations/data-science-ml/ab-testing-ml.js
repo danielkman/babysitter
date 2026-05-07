@@ -32,6 +32,7 @@
  * - Spotify Experimentation: https://engineering.atspotify.com/2020/10/spotifys-new-experimentation-platform-part-1/
  * @graph
  *   domains: [domain:data-science, workflow:code-review]
+ *   workflows: [workflow:feature-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -22,6 +22,7 @@
  *   specializations: [specialization:game-development]
  *   skillAreas: [skill-area:game-engine-development, skill-area:gameplay-programming, skill-area:multiplayer-networking]
  *   roles: [role:game-developer]
+ *   workflows: [workflow:feature-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

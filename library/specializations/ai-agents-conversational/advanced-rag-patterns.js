@@ -18,6 +18,7 @@
  * - LlamaIndex Advanced RAG: https://docs.llamaindex.ai/en/stable/optimizing/advanced_retrieval/
  * @graph
  *   domains: [domain:software-engineering, role:backend-engineer]
+ *   workflows: [workflow:feature-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

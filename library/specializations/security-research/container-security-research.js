@@ -19,6 +19,7 @@
  * - Trivy: https://aquasecurity.github.io/trivy/
  * @graph
  *   domains: [domain:cybersecurity]
+ *   workflows: [workflow:vulnerability-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

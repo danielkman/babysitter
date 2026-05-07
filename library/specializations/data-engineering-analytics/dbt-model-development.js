@@ -29,6 +29,7 @@
  * - dbt Documentation: https://docs.getdbt.com/docs/collaborate/documentation
  * @graph
  *   domains: [domain:data-engineering]
+ *   workflows: [workflow:data-pipeline-deployment]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

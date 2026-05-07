@@ -13,6 +13,7 @@
  *   skillAreas: [skill-area:deep-web-research, skill-area:data-analysis, skill-area:statistical-analysis]
  *   topics: [topic:developer-experience]
  *   roles: [role:research-engineer, role:tech-lead]
+ *   workflows: [workflow:experiment-design]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

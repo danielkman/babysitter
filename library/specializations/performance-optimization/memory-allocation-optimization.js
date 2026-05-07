@@ -20,6 +20,7 @@
  *   skillAreas: [skill-area:performance-monitoring-profiling, skill-area:profiling-cpu, skill-area:mobile-location-services]
  *   roles: [role:backend-engineer, role:sre]
  *   topics: [topic:observability-driven-development]
+ *   workflows: [workflow:feature-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

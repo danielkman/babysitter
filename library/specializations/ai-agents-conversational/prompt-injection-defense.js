@@ -18,6 +18,7 @@
  * - Prompt Injection Attacks: https://simonwillison.net/2022/Sep/12/prompt-injection/
  * @graph
  *   domains: [domain:software-engineering]
+ *   workflows: [workflow:feature-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

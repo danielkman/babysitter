@@ -8,6 +8,7 @@
  * @outputs { success: boolean, vulnerabilitiesFound: number, criticalIssues: number, securityScore: number, complianceStatus: object, scanResults: object, artifacts: array }
  * @graph
  *   domains: [domain:security]
+ *   workflows: [workflow:vulnerability-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

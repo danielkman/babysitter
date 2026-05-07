@@ -36,6 +36,7 @@
  * - Policy Framework Best Practices: https://www.isaca.org/resources/isaca-journal/issues/2019/volume-1/developing-an-information-security-policy-framework
  * @graph
  *   domains: [domain:security, role:security-engineer]
+ *   workflows: [workflow:vulnerability-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -33,6 +33,7 @@
  * - PCI-DSS Encryption Requirements: https://www.pcisecuritystandards.org/document_library
  * @graph
  *   domains: [domain:security]
+ *   workflows: [workflow:vulnerability-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -23,6 +23,7 @@
  * - Model Parallelism Patterns: https://arxiv.org/abs/1909.08053
  * @graph
  *   domains: [domain:data-science]
+ *   workflows: [workflow:data-pipeline-deployment]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

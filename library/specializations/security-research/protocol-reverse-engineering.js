@@ -19,6 +19,7 @@
  * - Boofuzz: https://github.com/jtpereyda/boofuzz
  * @graph
  *   domains: [domain:cybersecurity]
+ *   workflows: [workflow:vulnerability-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

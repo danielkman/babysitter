@@ -22,6 +22,7 @@
  *   specializations: [specialization:embedded-systems]
  *   skillAreas: [skill-area:rtos-programming, skill-area:firmware-development, skill-area:peripheral-interfacing]
  *   roles: [role:embedded-engineer]
+ *   workflows: [workflow:architecture-decision-record]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

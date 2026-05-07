@@ -26,6 +26,7 @@
  * - MLOps Deployment Strategies: https://ml-ops.org/content/deployment-strategies
  * @graph
  *   domains: [domain:data-science, role:data-scientist]
+ *   workflows: [workflow:release-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

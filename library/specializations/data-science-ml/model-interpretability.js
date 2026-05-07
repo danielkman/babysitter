@@ -28,6 +28,7 @@
  * - TensorFlow Model Analysis: https://www.tensorflow.org/tfx/guide/tfma
  * @graph
  *   domains: [domain:data-science, role:data-scientist]
+ *   workflows: [workflow:data-pipeline-deployment]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -24,6 +24,7 @@
  *   specializations: [specialization:fpga-programming]
  *   skillAreas: [skill-area:hdl-design, skill-area:fpga-synthesis]
  *   roles: [role:embedded-engineer]
+ *   workflows: [workflow:architecture-decision-record]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

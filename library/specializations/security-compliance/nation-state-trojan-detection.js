@@ -79,6 +79,7 @@
  * @agent trojan-detection-agent specializations/security-compliance/agents/trojan-detection-agent/AGENT.md
  * @graph
  *   domains: [domain:security]
+ *   workflows: [workflow:vulnerability-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

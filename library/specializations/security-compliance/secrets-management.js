@@ -34,6 +34,7 @@
  * - PCI-DSS Requirements: https://www.pcisecuritystandards.org/
  * @graph
  *   domains: [domain:security]
+ *   workflows: [workflow:vulnerability-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

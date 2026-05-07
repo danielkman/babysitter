@@ -26,6 +26,7 @@
  * - FEMA Continuity Guidance: https://www.fema.gov/emergency-managers/national-preparedness/continuity
  * @graph
  *   domains: [domain:security]
+ *   workflows: [workflow:vulnerability-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

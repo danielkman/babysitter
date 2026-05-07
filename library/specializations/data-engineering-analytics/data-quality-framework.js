@@ -41,6 +41,7 @@
  * - Data Profiling: https://github.com/ydataai/ydata-profiling
  * @graph
  *   domains: [domain:data-engineering]
+ *   workflows: [workflow:code-review]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

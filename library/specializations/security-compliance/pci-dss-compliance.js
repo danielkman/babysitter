@@ -34,6 +34,7 @@
  * - Tokenization Guidelines: https://www.pcisecuritystandards.org/document_library?document=tokenization-guidelines
  * @graph
  *   domains: [domain:security, role:security-engineer]
+ *   workflows: [workflow:vulnerability-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

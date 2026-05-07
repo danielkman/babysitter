@@ -23,6 +23,7 @@
  * - Google Project Zero Policy: https://googleprojectzero.blogspot.com/p/vulnerability-disclosure-policy.html
  * @graph
  *   domains: [domain:cybersecurity]
+ *   workflows: [workflow:vulnerability-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

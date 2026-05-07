@@ -21,6 +21,7 @@
  * - Google AutoML: https://cloud.google.com/automl
  * @graph
  *   domains: [domain:data-science, workflow:release-management]
+ *   workflows: [workflow:data-pipeline-deployment]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

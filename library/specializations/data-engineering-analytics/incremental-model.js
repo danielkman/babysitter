@@ -30,6 +30,7 @@
  * - dbt Performance Best Practices: https://docs.getdbt.com/best-practices/how-we-build-our-metrics/3-optimize-performance
  * @graph
  *   domains: [domain:data-engineering]
+ *   workflows: [workflow:data-pipeline-deployment]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

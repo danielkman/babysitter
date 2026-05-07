@@ -22,6 +22,7 @@
  *   skillAreas: [skill-area:symmetric-encryption, skill-area:asymmetric-encryption, skill-area:cross-chain-interoperability]
  *   roles: [role:security-engineer]
  *   topics: [topic:hmac-signing, topic:ssl-certs]
+ *   workflows: [workflow:feature-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';
