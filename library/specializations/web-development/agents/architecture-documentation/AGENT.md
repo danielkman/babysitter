@@ -9,6 +9,9 @@ expertise:
   - C4 model documentation
   - API contracts
   - Onboarding docs
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Architecture Documentation Agent

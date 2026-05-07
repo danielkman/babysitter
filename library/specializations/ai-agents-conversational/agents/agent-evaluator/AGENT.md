@@ -8,6 +8,9 @@ expertise:
   - Metric selection
   - Test automation
   - Quality assurance
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Agent Evaluator

@@ -4,6 +4,8 @@
  * @inputs { projectName: string, deployTarget?: string }
  * @outputs { success: boolean, workflows: array, pipelines: object, artifacts: array }
  * @references - GitHub Actions: https://docs.github.com/en/actions
+ * @graph
+ *   domains: [domain:web-development, workflow:release-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

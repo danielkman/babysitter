@@ -7,6 +7,8 @@ expertise:
   - Unix conventions
   - Command structure design
   - Help text and error messaging
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # CLI UX Reviewer Agent

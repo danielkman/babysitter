@@ -7,6 +7,8 @@ model: opus
 skills:
   - rollback-automation-skill
   - migration-validator
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Cutover Coordinator Agent

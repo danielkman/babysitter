@@ -23,6 +23,8 @@
  * - Cypress Documentation: https://docs.cypress.io/
  * - Test Automation Patterns: https://www.selenium.dev/documentation/test_practices/
  * - Flaky Test Prevention: https://testing.googleblog.com/2016/05/flaky-tests-at-google-and-how-we.html
+ * @graph
+ *   domains: [domain:software-engineering, workflow:feature-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

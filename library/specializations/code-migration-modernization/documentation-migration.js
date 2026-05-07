@@ -18,6 +18,8 @@
  * - Docs as Code: https://www.writethedocs.org/guide/docs-as-code/
  * - MkDocs: https://www.mkdocs.org/
  * - Docusaurus: https://docusaurus.io/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

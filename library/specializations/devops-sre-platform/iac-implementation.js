@@ -30,6 +30,8 @@
  * - Infrastructure as Code Patterns: https://infrastructure-as-code.com/patterns/
  * - HashiCorp Learn: https://learn.hashicorp.com/terraform
  * - Pulumi Documentation: https://www.pulumi.com/docs/
+ * @graph
+ *   domains: [domain:devops]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

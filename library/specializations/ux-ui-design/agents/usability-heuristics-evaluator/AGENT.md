@@ -8,6 +8,8 @@ expertise:
   - Issue documentation
   - Competitive heuristic analysis
   - Recommendation prioritization
+graph:
+  domains: [domain:web-development]
 ---
 
 # Usability Heuristics Evaluator Agent

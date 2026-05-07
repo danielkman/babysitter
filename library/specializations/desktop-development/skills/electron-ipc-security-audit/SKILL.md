@@ -3,6 +3,8 @@ name: electron-ipc-security-audit
 description: Analyze Electron IPC implementations for security vulnerabilities including contextIsolation, nodeIntegration, preload scripts, and channel validation
 allowed-tools: Read, Grep, Glob, Bash
 tags: [electron, security, ipc, audit, desktop]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # electron-ipc-security-audit

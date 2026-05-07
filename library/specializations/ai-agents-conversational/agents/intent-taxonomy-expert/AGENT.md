@@ -8,6 +8,9 @@ expertise:
   - Intent disambiguation
   - Hierarchical intents
   - Training data design
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Intent Taxonomy Expert

@@ -9,6 +9,8 @@
  * 2. Draft (automatic) - parallel codebase scan + draft PRD inline (full instructions embedded in agent prompt)
  * 3. Verification (with user gates) - what-could-go-wrong, consistency, conventions, adversarial, quality checklist, optional secondary reviewer; every proposed change goes through a per-finding breakpoint
  * 4. Finalize - final review breakpoint, optional tracker update, emit follow-up prompt
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

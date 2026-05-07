@@ -9,6 +9,9 @@ expertise:
   - Remediation planning
   - Rollback coordination
   - Post-incident documentation
+graph:
+  domains: [domain:data-science]
+
 ---
 
 # incident-responder

@@ -28,6 +28,8 @@
  * - Grafana Documentation: https://grafana.com/docs/
  * - OpenTelemetry: https://opentelemetry.io/docs/
  * - The Three Pillars of Observability: https://www.oreilly.com/library/view/distributed-systems-observability/9781492033431/
+ * @graph
+ *   domains: [domain:devops]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

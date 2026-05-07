@@ -19,6 +19,8 @@
  * - Express.js: https://expressjs.com/
  * - React: https://react.dev/
  * - Node.js: https://nodejs.org/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

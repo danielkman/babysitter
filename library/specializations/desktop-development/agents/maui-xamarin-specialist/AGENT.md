@@ -2,6 +2,8 @@
 name: maui-xamarin-specialist
 description: Expert in .NET MAUI, Xamarin legacy migration, and cross-platform .NET development
 expertise: [maui, xamarin, dotnet, xaml, cross-platform]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # maui-xamarin-specialist

@@ -8,6 +8,8 @@ expertise:
   - Content hierarchy analysis
   - Labeling system validation
   - Findability optimization
+graph:
+  domains: [domain:web-development]
 ---
 
 # Information Architecture Agent

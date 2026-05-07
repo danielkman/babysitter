@@ -3,6 +3,8 @@ name: electron-auto-updater-setup
 description: Configure electron-updater with code signing verification, delta updates, staged rollouts, and multiple update channels for Electron applications
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [electron, desktop, auto-update, deployment, releases]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # electron-auto-updater-setup

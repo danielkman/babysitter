@@ -2,6 +2,9 @@
 name: prettier
 description: Prettier configuration and integration.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Prettier Skill

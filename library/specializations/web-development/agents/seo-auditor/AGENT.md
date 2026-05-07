@@ -9,6 +9,9 @@ expertise:
   - Site speed SEO
   - Mobile SEO
   - Search console
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # SEO Auditor Agent

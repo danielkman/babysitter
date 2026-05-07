@@ -10,6 +10,9 @@ expertise:
   - Mobile testing automation
   - CI/CD integration patterns
   - Test data management
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # E2E Automation Expert Agent

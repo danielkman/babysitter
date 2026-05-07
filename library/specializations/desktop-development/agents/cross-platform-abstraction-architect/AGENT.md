@@ -2,6 +2,8 @@
 name: cross-platform-abstraction-architect
 description: Designs platform abstraction layers for consistent behavior across Windows/macOS/Linux
 expertise: [abstraction, cross-platform, architecture, patterns]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # cross-platform-abstraction-architect

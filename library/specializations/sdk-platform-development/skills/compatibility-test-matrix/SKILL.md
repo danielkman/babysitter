@@ -8,6 +8,8 @@ allowed-tools:
   - Glob
   - Grep
   - Bash
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Compatibility Test Matrix Skill

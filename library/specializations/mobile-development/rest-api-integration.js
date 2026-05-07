@@ -17,6 +17,8 @@
  * - URLSession: https://developer.apple.com/documentation/foundation/urlsession
  * - Retrofit: https://square.github.io/retrofit/
  * - Axios: https://axios-http.com/
+ * @graph
+ *   domains: [domain:mobile]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

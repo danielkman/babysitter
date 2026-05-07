@@ -8,6 +8,8 @@ allowed-tools:
   - Bash
   - Glob
   - Grep
+graph:
+  domains: [domain:web-development]
 ---
 
 # User Flow Diagram Skill

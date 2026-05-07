@@ -30,6 +30,8 @@
  * - Optimizely Stats Engine: https://www.optimizely.com/insights/blog/stats-engine/
  * - Netflix Experimentation: https://netflixtechblog.com/its-all-a-bout-testing-the-netflix-experimentation-platform-4e1ca458c15
  * - Spotify Experimentation: https://engineering.atspotify.com/2020/10/spotifys-new-experimentation-platform-part-1/
+ * @graph
+ *   domains: [domain:data-science, workflow:code-review]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

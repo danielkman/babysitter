@@ -2,6 +2,9 @@
 name: ngrx
 description: NgRx state management for Angular including store, effects, entity adapter, component store, and selectors.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # NgRx Skill

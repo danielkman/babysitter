@@ -3,6 +3,8 @@ name: electron-mock-factory
 description: Generate mocks for Electron APIs (ipcMain, ipcRenderer, dialog, etc.) for unit testing
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [electron, testing, mocks, unit-testing, jest]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # electron-mock-factory

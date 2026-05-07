@@ -31,6 +31,8 @@
  * - Environment Parity: https://12factor.net/dev-prod-parity
  * - Docker Best Practices: https://docs.docker.com/develop/dev-best-practices/
  * - Environment Monitoring: https://sre.google/workbook/monitoring/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

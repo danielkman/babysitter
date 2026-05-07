@@ -3,6 +3,8 @@
  * @description Design Critique and Review Process for structured design feedback, evaluation, and iteration planning with collaborative critique sessions, design principles assessment, and actionable recommendations
  * @inputs { projectName: string, designFiles: array, designPhase: string, critiqueType: string, participants: array, designPrinciples: array, evaluationCriteria: object }
  * @outputs { success: boolean, critiqueReport: string, feedbackSummary: object, actionItems: array, iterationPlan: object, qualityScore: number, artifacts: array }
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

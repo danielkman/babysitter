@@ -2,6 +2,8 @@
 name: prd-to-spec
 description: "Convert an approved PRD into a phase-gated implementation SPEC. User-facing entry point that dispatches to the prd-to-spec babysitter process via /babysitter:call (interactive) or /babysitter:yolo (auto). Stack-agnostic."
 author: Yehuda Yungstein
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # PRD to SPEC Generator

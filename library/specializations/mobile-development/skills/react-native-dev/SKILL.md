@@ -5,6 +5,8 @@ version: 1.0.0
 category: Cross-Platform Development
 slug: react-native-dev
 status: active
+graph:
+  domains: [domain:mobile]
 ---
 
 # React Native Development Skill

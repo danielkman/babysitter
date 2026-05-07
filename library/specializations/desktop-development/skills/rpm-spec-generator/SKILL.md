@@ -3,6 +3,8 @@ name: rpm-spec-generator
 description: Generate RPM spec files for Fedora, RHEL, and CentOS distributions
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [linux, rpm, fedora, rhel, packaging]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # rpm-spec-generator

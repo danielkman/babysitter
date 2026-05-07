@@ -4,6 +4,8 @@
  * @inputs { projectName: string, library?: string }
  * @outputs { success: boolean, themeConfig: object, components: array, artifacts: array }
  * @references - Styled Components: https://styled-components.com/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

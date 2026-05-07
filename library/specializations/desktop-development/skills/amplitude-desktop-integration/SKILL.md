@@ -3,6 +3,8 @@ name: amplitude-desktop-integration
 description: Integrate Amplitude analytics with privacy controls for desktop applications
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [analytics, amplitude, tracking, privacy, desktop]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # amplitude-desktop-integration

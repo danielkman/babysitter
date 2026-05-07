@@ -2,6 +2,8 @@
 name: ui-automation-specialist
 description: Expert in desktop UI automation, page object patterns, and visual testing
 expertise: [ui-automation, playwright, page-objects, visual-testing]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # ui-automation-specialist

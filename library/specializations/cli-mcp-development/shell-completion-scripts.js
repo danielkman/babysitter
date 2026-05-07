@@ -17,6 +17,8 @@
  * - Bash Completion: https://github.com/scop/bash-completion
  * - Zsh Completion: https://zsh.sourceforge.io/Doc/Release/Completion-System.html
  * - Fish Completion: https://fishshell.com/docs/current/completions.html
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

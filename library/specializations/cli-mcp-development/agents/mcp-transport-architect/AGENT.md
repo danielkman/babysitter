@@ -8,6 +8,9 @@ expertise:
   - WebSocket transport
   - Connection management
   - Error recovery
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # MCP Transport Architect Agent

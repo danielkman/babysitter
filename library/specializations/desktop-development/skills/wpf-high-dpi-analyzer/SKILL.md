@@ -3,6 +3,8 @@ name: wpf-high-dpi-analyzer
 description: Analyze and fix WPF applications for high DPI support, per-monitor DPI awareness, and scaling issues
 allowed-tools: Read, Grep, Glob, Bash
 tags: [wpf, dpi, scaling, accessibility, windows]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # wpf-high-dpi-analyzer

@@ -16,6 +16,8 @@
  * @references
  * - Pact Contract Testing: https://docs.pact.io/
  * - Martin Fowler Testing: https://martinfowler.com/articles/microservice-testing/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

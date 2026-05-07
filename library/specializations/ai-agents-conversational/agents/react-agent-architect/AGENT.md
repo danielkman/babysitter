@@ -8,6 +8,9 @@ expertise:
   - Tool orchestration
   - Error recovery strategies
   - Agent loop optimization
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # ReAct Agent Architect

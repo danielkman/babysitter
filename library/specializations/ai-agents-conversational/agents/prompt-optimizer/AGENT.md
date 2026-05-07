@@ -8,6 +8,9 @@ expertise:
   - Metric analysis
   - Iterative refinement
   - Cost optimization
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Prompt Optimizer

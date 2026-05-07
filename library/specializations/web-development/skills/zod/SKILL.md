@@ -2,6 +2,9 @@
 name: zod
 description: Zod schema validation and type inference.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Zod Skill

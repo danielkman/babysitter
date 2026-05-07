@@ -3,6 +3,8 @@
  * @description Design Sprint Facilitation process implementing 5-day framework (Understand, Diverge, Decide, Prototype, Test) with stakeholder management, rapid prototyping, and validation testing
  * @inputs { projectName: string, challengeStatement: string, sprintGoal: string, participants: array, duration: string, format: string, targetUsers: object, constraints: object, outputDir: string }
  * @outputs { success: boolean, sprintReport: string, prototype: object, testingResults: object, decisions: array, insights: array, nextSteps: array, artifacts: array, qualityScore: number }
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

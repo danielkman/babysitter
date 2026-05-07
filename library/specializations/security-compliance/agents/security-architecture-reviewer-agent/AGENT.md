@@ -9,6 +9,9 @@ expertise:
   - Cloud security architecture
   - Threat modeling
   - Security control design
+graph:
+  domains: [domain:security]
+
 ---
 
 # Security Architecture Reviewer Agent

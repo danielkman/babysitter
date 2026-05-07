@@ -29,6 +29,8 @@
  * - FEMA National Exercise Program: https://www.fema.gov/emergency-managers/national-preparedness/exercises
  * - SANS Disaster Recovery Testing: https://www.sans.org/white-papers/
  * - BCI Good Practice Guidelines: https://www.thebci.org/training-qualifications/good-practice-guidelines.html
+ * @graph
+ *   domains: [domain:security, workflow:code-review]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

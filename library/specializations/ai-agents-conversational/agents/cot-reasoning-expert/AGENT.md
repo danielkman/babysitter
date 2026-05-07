@@ -8,6 +8,9 @@ expertise:
   - Step-by-step decomposition
   - Self-consistency
   - Tree-of-thought
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Chain-of-Thought Reasoning Expert

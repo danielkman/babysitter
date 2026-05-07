@@ -18,6 +18,8 @@
  * - Nuxt 3 Documentation: https://nuxt.com/docs
  * - Nitro Server: https://nitro.unjs.io/
  * - Nuxt Modules: https://nuxt.com/modules
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

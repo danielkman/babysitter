@@ -5,6 +5,8 @@ version: 1.0.0
 category: Native iOS Development
 slug: swift-swiftui
 status: active
+graph:
+  domains: [domain:mobile]
 ---
 
 # Swift/SwiftUI Development Skill

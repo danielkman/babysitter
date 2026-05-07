@@ -2,6 +2,8 @@
 name: artifact-distribution-specialist
 description: Expert in desktop app distribution channels, update servers, and CDN configuration
 expertise: [distribution, cdn, update-servers, release-channels]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # artifact-distribution-specialist

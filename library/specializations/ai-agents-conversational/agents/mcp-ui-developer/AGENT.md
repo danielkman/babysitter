@@ -15,6 +15,9 @@ expertise:
   - Hybrid initialization (MCP mode vs standalone mode detection)
   - app.callServerTool() for UI-driven server interaction
   - app.updateModelContext() and app.sendMessage()
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # MCP UI Developer Agent

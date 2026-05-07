@@ -20,6 +20,8 @@
  * - Outcome-Driven Innovation by Tony Ulwick: https://jobs-to-be-done.com/outcome-driven-innovation-odi-is-jobs-to-be-done-theory-in-practice-2944c6ebc40e
  * - Competing Against Luck: https://www.christenseninstitute.org/jobs-to-be-done/
  * - JTBD Framework Guide: https://jtbd.info/2-what-is-jobs-to-be-done-jtbd-796b82081cca
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

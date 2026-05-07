@@ -2,6 +2,8 @@
 name: desktop-migration-strategist
 description: Plans and executes migrations between desktop frameworks with strangler pattern support
 expertise: [migration, framework-transition, strangler-pattern, modernization]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # desktop-migration-strategist

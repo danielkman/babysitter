@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: network-io
   backlog-id: SK-016
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # network-performance

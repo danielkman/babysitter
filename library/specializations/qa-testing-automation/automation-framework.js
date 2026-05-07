@@ -29,6 +29,8 @@
  * - Testing Best Practices: https://testingjavascript.com/
  * - CI/CD Integration: https://docs.github.com/en/actions/automating-builds-and-tests
  * - Allure Reporting: https://docs.qameta.io/allure/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -2,6 +2,8 @@
 name: task-to-prd
 description: "Convert a raw task (tracker ticket, email, or text) into a fully characterized PRD. User-facing entry point that dispatches to the task-to-prd babysitter process via /babysitter:call (interactive) or /babysitter:yolo (auto). Stack-agnostic."
 author: Yehuda Yungstein
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Task to PRD Generator

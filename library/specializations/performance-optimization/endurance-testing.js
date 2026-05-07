@@ -15,6 +15,8 @@
  * @references
  * - JMeter: https://jmeter.apache.org/
  * - Gatling Endurance Testing: https://gatling.io/docs/gatling/reference/current/http/check/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

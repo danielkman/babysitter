@@ -2,6 +2,9 @@
 name: viper-go-setup
 description: Set up Viper for Go configuration management with file, env, and flag binding.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Viper Go Setup

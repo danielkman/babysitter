@@ -8,6 +8,9 @@ expertise:
   - Asset embedding
   - Size optimization
   - Platform targeting
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Binary Packaging Expert Agent

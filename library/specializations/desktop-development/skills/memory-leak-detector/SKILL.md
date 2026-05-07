@@ -3,6 +3,8 @@ name: memory-leak-detector
 description: Detect memory leaks in desktop applications through heap analysis and object tracking
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [performance, memory, leaks, debugging, profiling]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # memory-leak-detector

@@ -3,6 +3,8 @@
  * @description Ensure every public component ships Storybook stories covering default, variants, edge states, and a11y.
  * @inputs { componentPath: string, componentName: string, existingStories?: Array<string>, variantsDeclared?: Array<string> }
  * @outputs { success: boolean, missingStories: Array<string>, generatedStoryPath?: string, a11yNotes?: Array<string> }
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

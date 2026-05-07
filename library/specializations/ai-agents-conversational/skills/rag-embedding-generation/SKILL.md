@@ -8,6 +8,9 @@ allowed-tools:
   - Bash
   - Glob
   - Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # RAG Embedding Generation Skill

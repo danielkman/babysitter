@@ -17,6 +17,8 @@
  * - npm publishing: https://docs.npmjs.com/cli/v8/commands/npm-publish
  * - PyPI publishing: https://packaging.python.org/tutorials/packaging-projects/
  * - crates.io publishing: https://doc.rust-lang.org/cargo/reference/publishing.html
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

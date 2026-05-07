@@ -26,6 +26,8 @@
  * - PyTorch: https://pytorch.org/
  * - Scikit-learn Model Selection: https://scikit-learn.org/stable/model_selection.html
  * - Optuna Hyperparameter Optimization: https://optuna.org/
+ * @graph
+ *   domains: [domain:data-science, workflow:release-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

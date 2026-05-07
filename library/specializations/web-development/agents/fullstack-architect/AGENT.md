@@ -9,6 +9,9 @@ expertise:
   - Database schema design
   - Deployment and infrastructure
   - Monorepo organization
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Full-Stack Architect Agent

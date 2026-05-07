@@ -2,6 +2,9 @@
 name: langsmith-tracing
 description: LangSmith tracing and debugging setup for LLM applications. Configure observability, capture traces, and enable debugging for LangChain/LangGraph agents.
 allowed-tools: Read, Grep, Write, Edit, Bash, Glob, WebFetch
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # langsmith-tracing

@@ -9,6 +9,9 @@ expertise:
   - Storybook documentation
   - Testing strategies
   - Design system integration
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Component Developer Agent

@@ -10,6 +10,9 @@ expertise:
   - Feature parity validation
   - Anti-corruption layer design
   - Modernization patterns
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Legacy Modernization Expert Agent

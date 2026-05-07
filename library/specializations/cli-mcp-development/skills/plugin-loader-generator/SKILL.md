@@ -2,6 +2,9 @@
 name: plugin-loader-generator
 description: Generate dynamic plugin loading system with discovery, validation, and lifecycle management.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Plugin Loader Generator

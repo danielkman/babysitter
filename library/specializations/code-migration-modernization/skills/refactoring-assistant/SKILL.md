@@ -2,6 +2,8 @@
 name: refactoring-assistant
 description: Suggest and guide application of refactoring patterns to improve code quality
 allowed-tools: ["Bash", "Read", "Write", "Grep", "Glob", "Edit"]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Refactoring Assistant Skill

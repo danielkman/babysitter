@@ -14,6 +14,8 @@
  *
  * @references
  * - Linux Performance: https://www.brendangregg.com/linuxperf.html
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

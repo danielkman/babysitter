@@ -7,6 +7,8 @@ model: opus
 skills:
   - cloud-cost-estimator
   - performance-baseline-capturer
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Cost Optimization Agent

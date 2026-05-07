@@ -2,6 +2,8 @@
 name: license-compliance-checker
 description: Automated license compliance verification for dependencies to ensure legal compliance during migration
 allowed-tools: ["Bash", "Read", "Write", "Grep", "Glob", "Edit"]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # License Compliance Checker Skill

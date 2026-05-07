@@ -9,6 +9,9 @@ expertise:
   - Interactive docs
   - SDK documentation
   - Changelog management
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # API Documentation Agent

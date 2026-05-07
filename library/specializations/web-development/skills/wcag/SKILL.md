@@ -2,6 +2,9 @@
 name: wcag
 description: WCAG 2.1/2.2 compliance, auditing, and remediation.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # WCAG Skill

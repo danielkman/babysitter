@@ -17,6 +17,8 @@
  * - iOS Performance: https://developer.apple.com/documentation/xcode/improving-your-app-s-performance
  * - Android Performance: https://developer.android.com/topic/performance
  * - React Native Performance: https://reactnative.dev/docs/performance
+ * @graph
+ *   domains: [domain:mobile]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

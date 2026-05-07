@@ -10,6 +10,9 @@ expertise:
   - Trade-off documentation
   - Sensitivity point analysis
   - Architecture decision validation
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Architecture Trade-off Analyst Agent

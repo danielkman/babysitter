@@ -4,6 +4,8 @@
  * @inputs { projectName: string, features?: array }
  * @outputs { success: boolean, storeConfig: object, slices: array, artifacts: array }
  * @references - Redux Toolkit: https://redux-toolkit.js.org/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -9,6 +9,9 @@ expertise:
   - Resource estimation
   - Risk identification
   - Success criteria definition
+graph:
+  domains: [domain:data-science]
+
 ---
 
 # ml-requirements-analyst

@@ -2,6 +2,8 @@
 name: mobile-security
 description: Mobile application security skill for implementing OWASP MASVS compliance, secure storage, certificate pinning, biometric authentication, and security hardening across iOS and Android platforms.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:mobile]
 ---
 
 # Mobile Security Skill

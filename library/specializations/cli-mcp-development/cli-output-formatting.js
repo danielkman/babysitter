@@ -16,6 +16,8 @@
  * @references
  * - Chalk: https://github.com/chalk/chalk
  * - cli-table3: https://github.com/cli-table/cli-table3
+ * @graph
+ *   domains: [domain:software-engineering, role:backend-engineer]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

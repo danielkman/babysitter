@@ -8,6 +8,9 @@ expertise:
   - Tool selection strategies
   - Error handling
   - API integration
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Tool Use Specialist

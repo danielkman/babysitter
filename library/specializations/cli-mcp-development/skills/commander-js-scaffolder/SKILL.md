@@ -2,6 +2,9 @@
 name: commander-js-scaffolder
 description: Generate Commander.js CLI project structure with TypeScript, commands, options, and best practices. Creates a complete scaffolded CLI application ready for development.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Commander.js Scaffolder

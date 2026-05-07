@@ -2,6 +2,9 @@
 name: great-expectations-validator
 description: Data quality validation skill using Great Expectations for schema validation, expectation suites, data documentation, and automated data quality checks in ML pipelines.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob
+graph:
+  domains: [domain:data-science]
+
 ---
 
 # Great Expectations Validator

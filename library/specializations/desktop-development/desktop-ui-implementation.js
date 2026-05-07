@@ -18,6 +18,8 @@
  * - Electron UI: https://www.electronjs.org/docs/latest/tutorial/application-architecture
  * - Fluent UI: https://developer.microsoft.com/en-us/fluentui
  * - Apple Human Interface Guidelines: https://developer.apple.com/design/human-interface-guidelines/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

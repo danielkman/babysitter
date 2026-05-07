@@ -16,6 +16,8 @@
  * @references
  * - Electron Security: https://www.electronjs.org/docs/latest/tutorial/security
  * - OWASP Desktop Security: https://owasp.org/www-project-desktop-app-security-top-10/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

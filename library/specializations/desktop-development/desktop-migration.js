@@ -16,6 +16,8 @@
  * @references
  * - Migration patterns: https://docs.microsoft.com/en-us/dotnet/architecture/modernize-desktop/
  * - Electron migration: https://www.electronjs.org/docs/latest/tutorial/context-isolation
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

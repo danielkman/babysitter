@@ -4,6 +4,8 @@
  * @inputs { projectName: string, scope?: string }
  * @outputs { success: boolean, auditReport: object, vulnerabilities: array, artifacts: array }
  * @references - OWASP: https://owasp.org/www-project-top-ten/
+ * @graph
+ *   domains: [domain:web-development, role:security-engineer]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

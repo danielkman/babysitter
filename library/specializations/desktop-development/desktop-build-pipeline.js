@@ -18,6 +18,8 @@
  * - GitHub Actions: https://docs.github.com/en/actions
  * - electron-builder CI: https://www.electron.build/configuration/publish#how-to-ci
  * - Azure Pipelines: https://azure.microsoft.com/en-us/services/devops/pipelines/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

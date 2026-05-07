@@ -2,6 +2,8 @@
 name: test-coverage-analyzer
 description: Analyze test coverage and identify gaps before migration to ensure adequate safety nets
 allowed-tools: ["Bash", "Read", "Write", "Grep", "Glob", "Edit"]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Test Coverage Analyzer Skill

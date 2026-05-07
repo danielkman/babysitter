@@ -2,6 +2,9 @@
 name: pnpm-workspaces
 description: pnpm workspace patterns and dependency management.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # pnpm Workspaces Skill

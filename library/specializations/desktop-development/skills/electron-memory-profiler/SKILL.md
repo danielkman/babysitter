@@ -3,6 +3,8 @@ name: electron-memory-profiler
 description: Profile Electron app memory usage, detect leaks, analyze renderer process memory, and optimize memory consumption
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [electron, performance, memory, profiling, optimization]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # electron-memory-profiler

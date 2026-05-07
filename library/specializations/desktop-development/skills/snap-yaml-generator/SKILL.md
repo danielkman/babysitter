@@ -3,6 +3,8 @@ name: snap-yaml-generator
 description: Generate snapcraft.yaml with confinement settings for Ubuntu Snap packages
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [linux, snap, ubuntu, packaging, distribution]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # snap-yaml-generator

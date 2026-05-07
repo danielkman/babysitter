@@ -19,6 +19,8 @@
  * - Pinia: https://pinia.vuejs.org/
  * - Vue Router: https://router.vuejs.org/
  * - Vitest: https://vitest.dev/
+ * @graph
+ *   domains: [domain:web-development, role:frontend-engineer]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -53,6 +53,8 @@
  * Storage->`az storage blob copy` to backup container; Webapp->config + image
  * ref capture; ACR->repo+manifest list; Network resources->`az group export`
  * (config-only, recreatable).
+ * @graph
+ *   domains: [domain:devops, role:devops-engineer]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

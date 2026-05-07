@@ -7,6 +7,8 @@ model: opus
 skills:
   - domain-model-extractor
   - architecture-analyzer
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # DDD Analyst Agent

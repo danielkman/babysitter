@@ -8,6 +8,8 @@ expertise:
   - Code snippet generation
   - Accessibility documentation
   - Version history tracking
+graph:
+  domains: [domain:web-development]
 ---
 
 # Design Documentation Agent

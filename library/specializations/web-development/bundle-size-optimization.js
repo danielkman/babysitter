@@ -6,6 +6,8 @@
  * @references
  * - Webpack Bundle Analyzer: https://github.com/webpack-contrib/webpack-bundle-analyzer
  * - Vite Optimization: https://vitejs.dev/guide/build.html
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

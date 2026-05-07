@@ -6,6 +6,9 @@ backlog-id: AG-001
 metadata:
   author: babysitter-sdk
   version: "1.0.0"
+graph:
+  domains: [domain:devops]
+
 ---
 
 # kubernetes-expert

@@ -8,6 +8,8 @@ skills:
   - strangler-fig-orchestrator
   - api-compatibility-analyzer
   - migration-validator
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Strangler Implementation Agent

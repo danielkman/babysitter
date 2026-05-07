@@ -27,6 +27,8 @@
  * - NIST Cybersecurity Framework: https://www.nist.gov/cyberframework
  * - DevSecOps: https://www.devsecops.org/
  * - SAST/DAST Best Practices: https://owasp.org/www-community/Source_Code_Analysis_Tools
+ * @graph
+ *   domains: [domain:devops, role:security-engineer]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

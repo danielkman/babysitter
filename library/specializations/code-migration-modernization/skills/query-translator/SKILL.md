@@ -2,6 +2,8 @@
 name: query-translator
 description: Translate SQL queries between different database dialects with function mapping and optimization
 allowed-tools: ["Bash", "Read", "Write", "Grep", "Glob", "Edit"]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Query Translator Skill

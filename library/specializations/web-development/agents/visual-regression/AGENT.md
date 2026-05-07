@@ -9,6 +9,9 @@ expertise:
   - Diff analysis
   - CI integration
   - Responsive testing
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Visual Regression Agent

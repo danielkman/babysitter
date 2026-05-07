@@ -16,6 +16,8 @@
  * - vLLM: https://docs.vllm.ai/
  * - TensorRT-LLM: https://nvidia.github.io/TensorRT-LLM/
  * - DeepSpeed: https://www.deepspeed.ai/
+ * @graph
+ *   domains: [domain:software-engineering, skill-area:caching-strategies]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

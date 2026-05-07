@@ -2,6 +2,8 @@
 name: swiftui-macos-expert
 description: Expert in SwiftUI, AppKit, macOS development, and Apple platform integration
 expertise: [swiftui, appkit, macos, swift, combine, apple]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # swiftui-macos-expert

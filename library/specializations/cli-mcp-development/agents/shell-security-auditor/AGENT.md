@@ -8,6 +8,9 @@ expertise:
   - Path handling
   - Temporary file security
   - Privilege escalation
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Shell Security Auditor Agent

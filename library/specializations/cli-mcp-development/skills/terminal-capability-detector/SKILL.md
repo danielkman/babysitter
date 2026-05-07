@@ -2,6 +2,9 @@
 name: terminal-capability-detector
 description: Detect terminal capabilities including color support, TTY status, size, and Unicode support for adaptive CLI output.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Terminal Capability Detector

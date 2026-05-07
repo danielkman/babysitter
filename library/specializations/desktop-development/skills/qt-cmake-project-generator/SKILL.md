@@ -3,6 +3,8 @@ name: qt-cmake-project-generator
 description: Generate CMake-based Qt project with proper module dependencies, cross-compilation support, and modern Qt6 configuration
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [qt, cmake, cpp, cross-platform, build]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # qt-cmake-project-generator

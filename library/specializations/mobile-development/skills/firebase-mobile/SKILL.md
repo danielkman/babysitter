@@ -5,6 +5,8 @@ version: 1.0.0
 category: Backend Services
 slug: firebase-mobile
 status: active
+graph:
+  domains: [domain:mobile]
 ---
 
 # Firebase Mobile Skill

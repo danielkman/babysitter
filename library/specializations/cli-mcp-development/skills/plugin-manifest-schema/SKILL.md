@@ -2,6 +2,9 @@
 name: plugin-manifest-schema
 description: Define plugin manifest schema with versioning and dependency declarations.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Plugin Manifest Schema

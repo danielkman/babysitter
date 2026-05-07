@@ -9,6 +9,9 @@ expertise:
   - Spot instance strategies
   - Cost allocation and showback
   - Budget alerts and governance
+graph:
+  domains: [domain:devops]
+
 ---
 
 # FinOps Expert Agent

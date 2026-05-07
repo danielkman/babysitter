@@ -15,6 +15,8 @@
  * @references
  * - Web Vitals: https://web.dev/vitals/
  * - Performance Observer API: https://developer.mozilla.org/en-US/docs/Web/API/PerformanceObserver
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -2,6 +2,9 @@
 name: fastify
 description: Fastify plugins, hooks, validation, serialization, and performance optimization patterns.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Fastify Skill

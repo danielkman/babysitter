@@ -3,6 +3,8 @@
  * @description Runbook and Operational Procedure Documentation process with service overview, deployment procedures, incident response, troubleshooting guides, monitoring setup, and maintenance procedures
  * @inputs { serviceName: string, serviceType: string, environment: string, outputDir: string, existingRunbook: string, includeSections: array, requireReview: boolean }
  * @outputs { success: boolean, runbookPath: string, sections: object, qualityScore: number, artifacts: array }
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

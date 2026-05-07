@@ -2,6 +2,8 @@
 name: platform-convention-advisor
 description: Advises on platform-specific UI conventions (Windows Fluent, macOS HIG, GNOME/KDE)
 expertise: [hig, fluent-design, gnome, kde, platform-conventions]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # platform-convention-advisor

@@ -8,6 +8,9 @@ allowed-tools:
   - Edit
   - Glob
   - Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # API Testing Skill

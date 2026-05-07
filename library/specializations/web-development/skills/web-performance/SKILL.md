@@ -2,6 +2,9 @@
 name: web-performance
 description: Core Web Vitals optimization, Lighthouse audits, and performance monitoring.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Web Performance Skill

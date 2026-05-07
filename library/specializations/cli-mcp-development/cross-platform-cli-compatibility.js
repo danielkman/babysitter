@@ -17,6 +17,8 @@
  * - Node.js path: https://nodejs.org/api/path.html
  * - cross-env: https://github.com/kentcdodds/cross-env
  * - execa: https://github.com/sindresorhus/execa
+ * @graph
+ *   domains: [domain:software-engineering, role:backend-engineer]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

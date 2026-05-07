@@ -8,6 +8,9 @@ expertise:
   - E2E testing
   - Snapshot testing
   - Test harness design
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # CLI Testing Architect Agent

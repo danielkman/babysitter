@@ -10,6 +10,9 @@ expertise:
   - ADR lifecycle management
   - Decision linking
   - Status management
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # ADR Author Agent

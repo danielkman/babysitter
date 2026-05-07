@@ -7,6 +7,8 @@ model: opus
 skills:
   - compliance-validator
   - authentication-migrator
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Compliance Migration Agent

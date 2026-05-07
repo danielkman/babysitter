@@ -9,6 +9,9 @@ expertise:
   - Golden paths and templates
   - Platform adoption metrics
   - Team topologies and cognitive load
+graph:
+  domains: [domain:devops]
+
 ---
 
 # Platform Engineer Agent

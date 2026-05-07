@@ -31,6 +31,8 @@
  * - Journey Map Types: references.md lines 258-264
  * - Journey Mapping Tools: references.md lines 265-269
  * - User Research Methods: references.md lines 146-173
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

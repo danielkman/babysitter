@@ -8,6 +8,9 @@ expertise:
   - Tone and style
   - Personality traits
   - Response characterization
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Persona Designer

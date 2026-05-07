@@ -8,6 +8,8 @@
  * @references
  * - NestJS Documentation: https://nestjs.com/
  * - Microservices Patterns: https://microservices.io/
+ * @graph
+ *   domains: [domain:web-development, topic:microservices]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

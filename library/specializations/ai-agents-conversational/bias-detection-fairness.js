@@ -16,6 +16,8 @@
  * - AI Fairness 360: https://aif360.mybluemix.net/
  * - Fairlearn: https://fairlearn.org/
  * - NIST AI RMF: https://www.nist.gov/itl/ai-risk-management-framework
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

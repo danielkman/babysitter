@@ -9,6 +9,8 @@ skills:
   - containerization-assistant
   - cloud-readiness-assessor
   - cloud-cost-estimator
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Cloud Migration Engineer Agent

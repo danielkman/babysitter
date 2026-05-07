@@ -2,6 +2,9 @@
 name: argparse-scaffolder
 description: Generate argparse-based Python CLI applications with subparsers, type converters, and standard library patterns. Creates lightweight Python CLIs without external dependencies.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Argparse Scaffolder

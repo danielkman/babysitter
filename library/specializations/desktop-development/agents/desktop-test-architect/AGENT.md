@@ -2,6 +2,8 @@
 name: desktop-test-architect
 description: Expert agent in designing comprehensive testing strategies for desktop applications including E2E, visual regression, accessibility, performance, and cross-platform test matrices
 expertise: [testing-strategy, e2e-testing, visual-regression, accessibility, performance-testing, playwright]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # desktop-test-architect

@@ -16,6 +16,8 @@
  * @references
  * - API Evolution: https://www.mnot.net/blog/2012/12/04/api-evolution
  * - Semantic Versioning: https://semver.org/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

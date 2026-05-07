@@ -3,6 +3,8 @@
  * @description Task-oriented how-to guide development process with task analysis, goal-oriented content structure, step-by-step instructions, validation, and usability testing
  * @inputs { guideTopic: string, targetAudience: object, userTasks: array, prerequisites: array, tools: array, constraints: object }
  * @outputs { success: boolean, guideDocument: string, qualityScore: number, usabilityTestResults: object, artifacts: array }
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

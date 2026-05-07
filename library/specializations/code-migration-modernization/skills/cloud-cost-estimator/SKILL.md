@@ -2,6 +2,8 @@
 name: cloud-cost-estimator
 description: Estimate cloud costs for migration targets with resource sizing and optimization recommendations
 allowed-tools: ["Bash", "Read", "Write", "Grep", "Glob", "Edit"]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Cloud Cost Estimator Skill

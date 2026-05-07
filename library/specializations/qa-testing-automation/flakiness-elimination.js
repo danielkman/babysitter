@@ -26,6 +26,8 @@
  * - Playwright - Best Practices: https://playwright.dev/docs/best-practices
  * - TestProject - Flaky Tests Guide: https://blog.testproject.io/2020/06/23/how-to-handle-flaky-tests/
  * - Cypress - Flakiness Guide: https://docs.cypress.io/guides/references/best-practices#Flake-Resistant-Tests
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

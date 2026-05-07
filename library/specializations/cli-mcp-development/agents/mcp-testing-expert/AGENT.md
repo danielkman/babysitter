@@ -8,6 +8,9 @@ expertise:
   - Tool testing
   - Resource testing
   - Integration testing
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # MCP Testing Expert Agent

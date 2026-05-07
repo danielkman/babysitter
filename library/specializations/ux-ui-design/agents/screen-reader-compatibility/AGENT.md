@@ -7,6 +7,8 @@ expertise:
   - ARIA implementation validation
   - Focus management testing
   - Assistive technology compatibility
+graph:
+  domains: [domain:web-development]
 ---
 
 # Screen Reader Compatibility Agent

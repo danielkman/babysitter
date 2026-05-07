@@ -21,6 +21,8 @@
  * - Conversion Rate Optimization: https://www.optimizely.com/optimization-glossary/conversion-rate-optimization/
  * - Google Analytics Funnel Visualization: https://support.google.com/analytics/answer/6180923
  * - Mixpanel Funnels: https://mixpanel.com/blog/funnel-analysis/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

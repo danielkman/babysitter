@@ -7,6 +7,9 @@ metadata:
   version: "1.0.0"
   category: infrastructure-as-code
   backlog-id: SK-002
+graph:
+  domains: [domain:devops]
+
 ---
 
 # terraform-iac

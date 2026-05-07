@@ -28,6 +28,8 @@
  *   - https://axios-http.com/docs/interceptors
  *   - https://grpc.io/docs/guides/
  *   - https://docs.python.org/3/library/http.client.html
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

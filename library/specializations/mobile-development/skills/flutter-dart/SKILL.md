@@ -5,6 +5,8 @@ version: 1.0.0
 category: Cross-Platform Development
 slug: flutter-dart
 status: active
+graph:
+  domains: [domain:mobile]
 ---
 
 # Flutter/Dart Development Skill

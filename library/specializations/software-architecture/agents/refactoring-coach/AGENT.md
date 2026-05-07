@@ -10,6 +10,9 @@ expertise:
   - Metrics improvement
   - Safe refactoring techniques
   - IDE refactoring tools
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Refactoring Coach Agent

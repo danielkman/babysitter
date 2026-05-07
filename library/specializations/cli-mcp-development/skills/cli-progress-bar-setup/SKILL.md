@@ -2,6 +2,9 @@
 name: cli-progress-bar-setup
 description: Configure cli-progress with custom formatters, multi-bar support, and ETA calculations for CLI progress indication.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # CLI Progress Bar Setup

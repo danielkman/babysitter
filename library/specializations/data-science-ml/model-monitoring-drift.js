@@ -31,6 +31,8 @@
  * - MLOps Continuous Monitoring: https://cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning
  * - Concept Drift Detection: https://arxiv.org/abs/1010.4784
  * - Data Drift in ML: https://towardsdatascience.com/understanding-dataset-shift-f2a5a262a766
+ * @graph
+ *   domains: [domain:data-science, role:data-scientist]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

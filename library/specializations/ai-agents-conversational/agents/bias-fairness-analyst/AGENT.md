@@ -8,6 +8,9 @@ expertise:
   - Demographic analysis
   - Mitigation strategies
   - Compliance
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Bias and Fairness Analyst

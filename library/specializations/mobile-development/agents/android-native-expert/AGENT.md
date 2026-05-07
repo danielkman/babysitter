@@ -6,6 +6,8 @@ category: Native Android Development
 slug: android-native-expert
 status: active
 role: Senior Android Engineer
+graph:
+  domains: [domain:mobile]
 ---
 
 # Android Native Expert Agent

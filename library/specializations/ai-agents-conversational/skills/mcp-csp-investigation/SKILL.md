@@ -2,6 +2,9 @@
 name: mcp-csp-investigation
 description: Comprehensive Content Security Policy audit for MCP Apps in sandboxed iframes. Discovers all network origins, traces them to source, and generates CSP configuration for registerAppResource.
 allowed-tools: Read, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # mcp-csp-investigation

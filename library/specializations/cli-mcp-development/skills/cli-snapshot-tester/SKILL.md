@@ -2,6 +2,9 @@
 name: cli-snapshot-tester
 description: Set up snapshot testing for CLI output with update workflows and diff reporting.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # CLI Snapshot Tester

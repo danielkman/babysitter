@@ -8,6 +8,8 @@ skills:
   - framework-compatibility-checker
   - codemod-executor
   - dependency-updater
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Framework Upgrade Specialist Agent

@@ -4,6 +4,8 @@
  * @inputs { projectName: string, strictness?: string }
  * @outputs { success: boolean, cspPolicy: object, directives: array, artifacts: array }
  * @references - CSP: https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
+ * @graph
+ *   domains: [domain:web-development, role:security-engineer]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

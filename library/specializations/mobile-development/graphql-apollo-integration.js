@@ -17,6 +17,8 @@
  * - Apollo iOS: https://www.apollographql.com/docs/ios/
  * - Apollo Kotlin: https://www.apollographql.com/docs/kotlin/
  * - Apollo React Native: https://www.apollographql.com/docs/react/integrations/react-native/
+ * @graph
+ *   domains: [domain:mobile]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -3,6 +3,8 @@ name: swift-package-manager-config
 description: Configure Swift Package Manager with platform-specific dependencies and build settings
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [swift, spm, package, dependencies, apple]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # swift-package-manager-config

@@ -4,6 +4,9 @@ description: Generates DrawIO XML diagrams for Amazon Web Services architectures
 license: MIT
 compatibility: Requires image analysis capability for image conversion. Scripts require Python 3 and Bash. DrawIO Desktop optional for validation.
 allowed-tools: Read Write
+graph:
+  domains: [domain:devops]
+
 ---
 
 # AWS DrawIO Diagram Generator

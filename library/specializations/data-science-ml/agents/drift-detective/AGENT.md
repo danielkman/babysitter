@@ -9,6 +9,9 @@ expertise:
   - Root cause investigation
   - Alert threshold configuration
   - Retraining recommendation
+graph:
+  domains: [domain:data-science]
+
 ---
 
 # drift-detective

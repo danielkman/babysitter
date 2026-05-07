@@ -4,6 +4,8 @@
  * @inputs { projectName: string, strictness?: string }
  * @outputs { success: boolean, tsConfig: object, types: array, artifacts: array }
  * @references - TypeScript: https://www.typescriptlang.org/docs/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -19,6 +19,8 @@
  * - Human Interface Guidelines: https://developer.apple.com/design/human-interface-guidelines/
  * - Combine Framework: https://developer.apple.com/documentation/combine
  * - Swift Concurrency: https://docs.swift.org/swift-book/LanguageGuide/Concurrency.html
+ * @graph
+ *   domains: [domain:mobile]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

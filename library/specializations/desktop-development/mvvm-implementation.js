@@ -17,6 +17,8 @@
  * - MobX: https://mobx.js.org/
  * - Redux: https://redux.js.org/
  * - MVVM Pattern: https://docs.microsoft.com/en-us/dotnet/architecture/maui/mvvm
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

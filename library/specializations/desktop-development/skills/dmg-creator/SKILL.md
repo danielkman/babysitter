@@ -3,6 +3,8 @@ name: dmg-creator
 description: Create macOS DMG installers with custom backgrounds and app placement
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [macos, dmg, installer, distribution, packaging]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # dmg-creator

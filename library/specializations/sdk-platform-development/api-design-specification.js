@@ -18,6 +18,8 @@
  * - OpenAPI Specification: https://spec.openapis.org/oas/latest.html
  * - Google API Design Guide: https://cloud.google.com/apis/design
  * - Microsoft REST API Guidelines: https://github.com/microsoft/api-guidelines
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -3,6 +3,8 @@
  * @description Facilitated workshop for identifying, prioritizing, and specifying quality attributes (non-functional requirements) with scenario-based elicitation, stakeholder-driven prioritization, and architecture implications mapping
  * @inputs { systemName: string, businessContext: object, stakeholders: array, constraints: object, existingRequirements: array }
  * @outputs { success: boolean, qualityAttributes: array, scenarios: array, prioritizedScenarios: array, architectureImplications: object, artifacts: array }
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

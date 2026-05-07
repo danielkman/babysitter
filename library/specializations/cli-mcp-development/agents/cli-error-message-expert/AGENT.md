@@ -8,6 +8,9 @@ expertise:
   - Context inclusion
   - Exit code design
   - User-friendly formatting
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # CLI Error Message Expert Agent

@@ -27,6 +27,8 @@
  * - dbt Model Layers: https://docs.getdbt.com/guides/best-practices/how-we-structure/1-guide-overview
  * - dbt Testing: https://docs.getdbt.com/docs/build/tests
  * - dbt Documentation: https://docs.getdbt.com/docs/collaborate/documentation
+ * @graph
+ *   domains: [domain:data-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

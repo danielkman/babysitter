@@ -2,6 +2,9 @@
 name: mcp-host-styling-integration
 description: Integrates MCP App UI with host theming system. Applies host CSS variables, handles onhostcontextchanged, safe area insets, display mode detection, and fullscreen configuration.
 allowed-tools: Read, Write, Edit
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # mcp-host-styling-integration

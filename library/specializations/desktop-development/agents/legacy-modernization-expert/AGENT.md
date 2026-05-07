@@ -2,6 +2,8 @@
 name: legacy-modernization-expert
 description: Specializes in modernizing legacy desktop apps (MFC, WinForms) to modern frameworks
 expertise: [legacy, mfc, winforms, modernization, refactoring]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # legacy-modernization-expert

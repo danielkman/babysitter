@@ -46,6 +46,8 @@
  *   in library/reference for the motivating incident report.
  *
  * @agent general-purpose
+ * @graph
+ *   domains: [domain:devops, workflow:feature-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

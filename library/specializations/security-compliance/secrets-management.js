@@ -32,6 +32,8 @@
  * - CIS Benchmark for Secrets: https://www.cisecurity.org/
  * - NIST Key Management: https://csrc.nist.gov/publications/detail/sp/800-57-part-1/rev-5/final
  * - PCI-DSS Requirements: https://www.pcisecuritystandards.org/
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -2,6 +2,9 @@
 name: screen-reader
 description: Screen reader compatibility, testing, and optimization.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Screen Reader Skill

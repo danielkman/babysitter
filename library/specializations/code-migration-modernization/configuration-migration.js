@@ -18,6 +18,8 @@
  * - 12-Factor Config: https://12factor.net/config
  * - Spring Cloud Config: https://spring.io/projects/spring-cloud-config
  * - HashiCorp Vault: https://www.vaultproject.io/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

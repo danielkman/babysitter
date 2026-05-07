@@ -8,6 +8,9 @@ expertise:
   - Metrics design
   - Alerting systems
   - Dashboard creation
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Observability Engineer

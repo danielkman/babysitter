@@ -5,6 +5,8 @@ version: 1.0.0
 category: Transformation
 skill-id: SK-DEA-003
 allowed-tools: Read, Grep, Glob, Bash, WebFetch
+graph:
+  domains: [domain:data-engineering]
 ---
 
 # dbt Project Analyzer

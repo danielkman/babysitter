@@ -30,6 +30,8 @@
  * - Storybook: https://storybook.js.org/
  * - Style Dictionary: https://amzn.github.io/style-dictionary/
  * - Design Tokens W3C: https://www.w3.org/community/design-tokens/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -24,6 +24,8 @@
  * - Material Design Handoff: https://material.io/design/communication/design-handoff.html
  * - Design Tokens W3C: https://www.w3.org/community/design-tokens/
  * - Component Driven Development: https://www.componentdriven.org/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

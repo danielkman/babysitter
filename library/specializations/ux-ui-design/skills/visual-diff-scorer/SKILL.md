@@ -6,6 +6,8 @@ metadata:
   author: babysitter-sdk
   version: "1.0.0"
   category: visual-testing
+graph:
+  domains: [domain:web-development]
 ---
 
 # visual-diff-scorer

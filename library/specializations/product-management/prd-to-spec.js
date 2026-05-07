@@ -9,6 +9,8 @@
  * 2. SPEC Generation - generate the phase-gated SPEC file inline (full structure embedded in agent prompt)
  * 3. Self-Verification - internal review + optional secondary reviewer + user approval breakpoint
  * 4. Execution Prompt - emit the short prompt that drives downstream execution
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

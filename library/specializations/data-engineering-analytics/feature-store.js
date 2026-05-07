@@ -33,6 +33,8 @@
  * - Feature Store Best Practices: https://www.featurestore.org/
  * - Feature Engineering at Scale: https://www.oreilly.com/library/view/feature-engineering-for/9781492053811/
  * - Training-Serving Skew Prevention: https://developers.google.com/machine-learning/guides/rules-of-ml/
+ * @graph
+ *   domains: [domain:data-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

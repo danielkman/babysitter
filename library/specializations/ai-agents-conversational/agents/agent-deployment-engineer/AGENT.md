@@ -8,6 +8,9 @@ expertise:
   - Infrastructure as code
   - Scaling strategies
   - Monitoring setup
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Agent Deployment Engineer

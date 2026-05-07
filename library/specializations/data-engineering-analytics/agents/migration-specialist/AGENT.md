@@ -14,6 +14,8 @@ expertise:
   - Performance comparison
   - Risk assessment
   - Cutover planning
+graph:
+  domains: [domain:data-engineering]
 ---
 
 # Migration Specialist Agent

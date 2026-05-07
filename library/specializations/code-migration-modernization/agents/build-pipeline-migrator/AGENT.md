@@ -7,6 +7,8 @@ model: opus
 skills:
   - build-system-migrator
   - configuration-migrator
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Build Pipeline Migrator Agent

@@ -8,6 +8,8 @@ expertise:
   - Gesture pattern design
   - Thumb zone mapping
   - Mobile-first interaction optimization
+graph:
+  domains: [domain:web-development]
 ---
 
 # Touch Target Optimizer Agent

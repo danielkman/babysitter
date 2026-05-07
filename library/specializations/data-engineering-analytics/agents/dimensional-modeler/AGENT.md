@@ -14,6 +14,8 @@ expertise:
   - Conformed dimension management
   - Bus matrix maintenance
   - Model documentation
+graph:
+  domains: [domain:data-engineering]
 ---
 
 # Dimensional Modeler Agent

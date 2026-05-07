@@ -3,6 +3,8 @@ name: windows-authenticode-signer
 description: Sign Windows executables with Authenticode using signtool, supporting EV and standard certificates
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [windows, codesigning, authenticode, security, distribution]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # windows-authenticode-signer

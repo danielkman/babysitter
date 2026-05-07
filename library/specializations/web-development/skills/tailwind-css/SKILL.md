@@ -2,6 +2,9 @@
 name: tailwind-css
 description: Tailwind CSS configuration, custom plugins, design systems, theming, and component patterns for modern web applications.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Tailwind CSS Skill

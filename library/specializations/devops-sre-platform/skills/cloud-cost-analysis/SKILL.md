@@ -9,6 +9,9 @@ allowed-tools:
   - Glob
   - Grep
   - WebFetch
+graph:
+  domains: [domain:devops]
+
 ---
 
 # Cloud Cost Analysis Skill

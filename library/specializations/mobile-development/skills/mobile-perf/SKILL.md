@@ -5,6 +5,8 @@ version: 1.0.0
 category: Performance
 slug: mobile-perf
 status: active
+graph:
+  domains: [domain:mobile]
 ---
 
 # Mobile Performance Profiling Skill

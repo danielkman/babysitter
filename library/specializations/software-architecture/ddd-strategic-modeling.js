@@ -19,6 +19,8 @@
  * - Domain-Driven Design Distilled by Vaughn Vernon: https://www.informit.com/store/domain-driven-design-distilled-9780134434421
  * - Patterns, Principles, and Practices of Domain-Driven Design by Scott Millett: https://www.wiley.com/en-us/Patterns%2C+Principles%2C+and+Practices+of+Domain+Driven+Design-p-9781118714706
  * - Strategic DDD Context Mapping: https://github.com/ddd-crew/context-mapping
+ * @graph
+ *   domains: [domain:software-engineering, role:data-scientist]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

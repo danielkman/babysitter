@@ -8,6 +8,8 @@ skills:
   - migration-validator
   - data-migration-validator
   - performance-baseline-capturer
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Post-Migration Validator Agent

@@ -26,6 +26,8 @@
  * - Disaster Recovery Planning: https://sre.google/sre-book/data-integrity/
  * - Backup Best Practices: https://docs.microsoft.com/en-us/azure/architecture/framework/resiliency/backup-and-recovery
  * - RPO/RTO Guidelines: https://www.ibm.com/cloud/learn/rpo-rto
+ * @graph
+ *   domains: [domain:devops]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

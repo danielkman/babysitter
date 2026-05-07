@@ -9,6 +9,9 @@ expertise:
   - API documentation
   - User guides
   - Content strategy
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Technical Writer Agent

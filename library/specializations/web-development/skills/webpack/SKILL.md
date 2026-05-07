@@ -2,6 +2,9 @@
 name: webpack
 description: Webpack configuration, module federation, loaders, plugins, and optimization.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Webpack Skill

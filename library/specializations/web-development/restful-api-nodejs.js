@@ -9,6 +9,8 @@
  * - REST API Design Principles: https://restfulapi.net/
  * - Express.js Documentation: https://expressjs.com/
  * - OpenAPI/Swagger: https://swagger.io/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

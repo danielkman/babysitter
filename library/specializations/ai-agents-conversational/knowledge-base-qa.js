@@ -16,6 +16,8 @@
  * - RAGAS: https://docs.ragas.io/
  * - LlamaIndex: https://docs.llamaindex.ai/
  * - Haystack: https://docs.haystack.deepset.ai/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

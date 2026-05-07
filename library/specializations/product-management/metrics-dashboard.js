@@ -22,6 +22,8 @@
  * - HEART Framework: https://library.gv.com/how-to-choose-the-right-ux-metrics-for-your-product-5f46359ab5be
  * - North Star Metric: https://amplitude.com/blog/product-north-star-metric
  * - Data Dashboard Design: https://www.nngroup.com/articles/dashboard-design/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -3,6 +3,8 @@
  * @description Architecture Decision Records (ADRs) lifecycle management process with decision analysis, template generation, review workflow, and ADR repository maintenance
  * @inputs { decision: string, context: object, stakeholders: array, adrNumber: number, outputDir: string, relatedAdrs: array }
  * @outputs { success: boolean, adrDocument: string, adrNumber: number, status: string, artifacts: array }
+ * @graph
+ *   domains: [domain:software-engineering, workflow:code-review]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

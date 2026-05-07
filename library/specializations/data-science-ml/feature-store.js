@@ -19,6 +19,8 @@
  * - Tecton Feature Platform: https://www.tecton.ai/
  * - AWS SageMaker Feature Store: https://aws.amazon.com/sagemaker/feature-store/
  * - Hopsworks Feature Store: https://www.hopsworks.ai/
+ * @graph
+ *   domains: [domain:data-science, role:data-scientist]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

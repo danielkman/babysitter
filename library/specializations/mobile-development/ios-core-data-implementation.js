@@ -18,6 +18,8 @@
  * - Core Data Documentation: https://developer.apple.com/documentation/coredata/
  * - NSPersistentContainer: https://developer.apple.com/documentation/coredata/nspersistentcontainer
  * - CloudKit Integration: https://developer.apple.com/documentation/coredata/mirroring_a_core_data_store_with_cloudkit
+ * @graph
+ *   domains: [domain:mobile]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

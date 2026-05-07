@@ -10,6 +10,9 @@ expertise:
   - Risk assessment
   - Vendor evaluation
   - Technology radar analysis
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Tech Stack Evaluator Agent

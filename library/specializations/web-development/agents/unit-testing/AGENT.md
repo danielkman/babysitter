@@ -9,6 +9,9 @@ expertise:
   - Test-driven development
   - React component testing
   - Test utilities
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Unit Testing Agent

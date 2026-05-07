@@ -7,6 +7,8 @@ model: opus
 skills:
   - contract-test-generator
   - api-compatibility-analyzer
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Cross-Team Integrator Agent

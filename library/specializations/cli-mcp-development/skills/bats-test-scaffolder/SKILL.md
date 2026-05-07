@@ -2,6 +2,9 @@
 name: bats-test-scaffolder
 description: Generate BATS test structure and fixtures for shell script testing with setup/teardown, assertions, and mocking.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # BATS Test Scaffolder

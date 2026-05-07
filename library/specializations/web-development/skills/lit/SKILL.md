@@ -2,6 +2,9 @@
 name: lit
 description: Web Components development with Lit including custom elements, reactive properties, shadow DOM, and interoperability.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Lit Skill

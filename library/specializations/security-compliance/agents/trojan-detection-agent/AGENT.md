@@ -5,6 +5,9 @@ category: security-compliance
 metadata:
   author: Eyaldavid7
   version: "1.0.0"
+graph:
+  domains: [domain:security]
+
 ---
 
 # trojan-detection-agent

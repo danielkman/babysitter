@@ -8,6 +8,9 @@ expertise:
   - Query optimization
   - Scaling strategies
   - Multi-tenancy design
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Vector Database Specialist

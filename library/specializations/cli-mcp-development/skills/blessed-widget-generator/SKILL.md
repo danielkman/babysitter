@@ -2,6 +2,9 @@
 name: blessed-widget-generator
 description: Generate blessed widgets for Node.js terminal UIs with boxes, lists, forms, and dashboard layouts.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Blessed Widget Generator

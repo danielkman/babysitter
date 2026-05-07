@@ -8,6 +8,9 @@ expertise:
   - User guides
   - Command examples
   - README structure
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # CLI Docs Writer Agent

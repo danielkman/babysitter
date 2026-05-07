@@ -8,6 +8,9 @@ expertise:
   - Input sanitization
   - Security hardening
   - Threat modeling
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Prompt Injection Defender

@@ -8,6 +8,8 @@ expertise:
   - Viewport simulation
   - Responsive image optimization
   - Touch target measurement
+graph:
+  domains: [domain:web-development]
 ---
 
 # Responsive Design Validator Agent

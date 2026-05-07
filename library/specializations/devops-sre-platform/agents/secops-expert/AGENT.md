@@ -9,6 +9,9 @@ expertise:
   - Compliance requirements (SOC2, HIPAA, PCI)
   - Security scanning interpretation
   - Zero-trust architecture
+graph:
+  domains: [domain:devops]
+
 ---
 
 # Security Operations Expert Agent

@@ -9,6 +9,8 @@ skills:
   - dependency-scanner
   - vulnerability-scanner
   - architecture-analyzer
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Migration Readiness Assessor Agent

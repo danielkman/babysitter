@@ -2,6 +2,9 @@
 name: shadcn
 description: shadcn/ui component patterns, customization, theming, and integration.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # shadcn/ui Skill

@@ -3,6 +3,8 @@
  * @description Complete C4 Model architecture documentation process with hierarchical diagram generation (Context, Container, Component, Code levels) and supplementary diagrams
  * @inputs { systemName: string, requirements: array, technologies: array, users: array, externalSystems: array, deploymentArchitecture: object, outputDir: string }
  * @outputs { success: boolean, contextDiagram: string, containerDiagram: string, componentDiagrams: array, supplementaryDiagrams: array, narrativeDocument: string, artifacts: array }
+ * @graph
+ *   domains: [domain:software-engineering, role:backend-engineer]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

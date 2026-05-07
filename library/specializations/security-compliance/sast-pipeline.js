@@ -37,6 +37,8 @@
  * - Bandit: https://bandit.readthedocs.io/
  * - ESLint Security: https://github.com/nodesecurity/eslint-plugin-security
  * - NIST SAST Guide: https://csrc.nist.gov/publications/detail/sp/500-268/final
+ * @graph
+ *   domains: [domain:security, workflow:release-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

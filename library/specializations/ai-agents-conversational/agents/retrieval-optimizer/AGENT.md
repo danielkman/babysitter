@@ -8,6 +8,9 @@ expertise:
   - Hybrid search optimization
   - Query transformation
   - Evaluation metrics
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Retrieval Optimizer

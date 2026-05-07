@@ -6,6 +6,8 @@ category: Cross-Platform Development
 slug: react-native-expert
 status: active
 role: Senior React Native Engineer
+graph:
+  domains: [domain:mobile]
 ---
 
 # React Native Expert Agent

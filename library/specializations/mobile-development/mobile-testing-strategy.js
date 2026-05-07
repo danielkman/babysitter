@@ -18,6 +18,8 @@
  * - Espresso: https://developer.android.com/training/testing/espresso
  * - Detox: https://wix.github.io/Detox/
  * - Maestro: https://maestro.mobile.dev/
+ * @graph
+ *   domains: [domain:mobile]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -10,6 +10,9 @@ expertise:
   - Markdown/MDX proficiency
   - Documentation structure
   - Audience-appropriate writing
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Technical Writer Agent

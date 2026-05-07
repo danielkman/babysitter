@@ -2,6 +2,9 @@
 name: mcp-capability-declarator
 description: Generate MCP capability declarations from tool and resource inventory with proper versioning and feature flags.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # MCP Capability Declarator

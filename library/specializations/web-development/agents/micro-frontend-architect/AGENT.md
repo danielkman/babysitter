@@ -9,6 +9,9 @@ expertise:
   - Shared dependency management
   - Cross-team architecture
   - Runtime integration patterns
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Micro-Frontend Architect Agent

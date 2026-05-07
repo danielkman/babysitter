@@ -2,6 +2,9 @@
 name: dotenv-integration
 description: Integrate dotenv for environment variable loading with validation and type coercion.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Dotenv Integration

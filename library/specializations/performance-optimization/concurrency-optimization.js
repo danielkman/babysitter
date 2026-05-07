@@ -15,6 +15,8 @@
  * @references
  * - Java Concurrency in Practice: https://jcip.net/
  * - LMAX Disruptor: https://lmax-exchange.github.io/disruptor/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

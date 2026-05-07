@@ -8,6 +8,8 @@ expertise:
   - Visual regression testing
   - Addon configuration
   - Component playground creation
+graph:
+  domains: [domain:web-development]
 ---
 
 # Storybook Integration Agent

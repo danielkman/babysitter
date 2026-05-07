@@ -8,6 +8,9 @@ expertise:
   - Help text writing
   - Type coercion strategies
   - Default value selection
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Argument Schema Designer Agent

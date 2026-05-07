@@ -8,6 +8,9 @@ expertise:
   - BSD vs GNU utilities
   - Cross-platform patterns
   - Shell detection
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Shell Portability Expert Agent

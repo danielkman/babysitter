@@ -9,6 +9,9 @@ expertise:
   - TTP analysis
   - MITRE ATT&CK mapping
   - Intelligence reporting
+graph:
+  domains: [domain:security]
+
 ---
 
 # Threat Intelligence Agent

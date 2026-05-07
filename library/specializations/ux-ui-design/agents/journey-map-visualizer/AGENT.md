@@ -8,6 +8,8 @@ expertise:
   - Pain point identification
   - Service blueprint creation
   - Current vs future state mapping
+graph:
+  domains: [domain:web-development]
 ---
 
 # Journey Map Visualizer Agent

@@ -4,6 +4,8 @@
  * @inputs { projectName: string, runtime?: string }
  * @outputs { success: boolean, dockerConfig: object, images: array, artifacts: array }
  * @references - Docker: https://docs.docker.com/
+ * @graph
+ *   domains: [domain:web-development, topic:microservices]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

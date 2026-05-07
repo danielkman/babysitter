@@ -29,6 +29,8 @@
  * - The Site Reliability Workbook - Error Budgets: https://sre.google/workbook/error-budget-policy/
  * - Alex Hidalgo - Implementing Service Level Objectives: https://www.alex-hidalgo.com/
  * - Sloth - SLO Toolkit: https://github.com/slok/sloth
+ * @graph
+ *   domains: [domain:devops]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

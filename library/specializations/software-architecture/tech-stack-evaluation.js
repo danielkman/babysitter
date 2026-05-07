@@ -23,6 +23,8 @@
  * - Architecture Decision Records: https://adr.github.io/
  * - The Twelve-Factor App: https://12factor.net/
  * - Cloud Native Computing Foundation Landscape: https://landscape.cncf.io/
+ * @graph
+ *   domains: [domain:software-engineering, workflow:feature-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

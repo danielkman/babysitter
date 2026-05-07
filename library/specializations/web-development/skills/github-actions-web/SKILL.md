@@ -2,6 +2,9 @@
 name: github-actions-web
 description: GitHub Actions for web app CI/CD, testing, and deployment.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # GitHub Actions Web Skill

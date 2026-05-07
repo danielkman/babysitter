@@ -7,6 +7,8 @@ expertise:
   - Credential handling best practices
   - OWASP guidelines
   - Security vulnerability assessment
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Security Review Agent

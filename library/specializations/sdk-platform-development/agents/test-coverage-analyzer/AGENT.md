@@ -7,6 +7,8 @@ expertise:
   - Test strategy design
   - Edge case identification
   - Testing patterns and anti-patterns
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Test Coverage Analyzer Agent

@@ -9,6 +9,9 @@ expertise:
   - Performance budgets
   - Accessibility scoring
   - SEO scoring
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Lighthouse Agent

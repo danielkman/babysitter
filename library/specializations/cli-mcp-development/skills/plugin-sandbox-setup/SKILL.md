@@ -2,6 +2,9 @@
 name: plugin-sandbox-setup
 description: Configure plugin sandboxing with vm2 or isolated-vm for secure plugin execution.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Plugin Sandbox Setup

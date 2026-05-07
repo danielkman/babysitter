@@ -14,6 +14,8 @@ expertise:
   - Windowing and watermarking
   - Connector development
   - Performance tuning
+graph:
+  domains: [domain:data-engineering]
 ---
 
 # Streaming Pipeline Engineer Agent

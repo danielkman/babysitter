@@ -22,6 +22,8 @@
  * - Atlassian Incident Management: https://www.atlassian.com/incident-management
  * - FireHydrant: https://firehydrant.io/blog/incident-response-process/
  * - Incident.io Best Practices: https://incident.io/guide/incident-response-process
+ * @graph
+ *   domains: [domain:devops, skill-area:incident-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -8,6 +8,8 @@ skills:
   - schema-comparator
   - etl-pipeline-builder
   - event-sourcing-migrator
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Data Architect Agent

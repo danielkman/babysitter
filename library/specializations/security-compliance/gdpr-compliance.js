@@ -29,6 +29,8 @@
  * - EDPB Guidelines: https://edpb.europa.eu/our-work-tools/general-guidance/gdpr-guidelines-recommendations-best-practices_en
  * - GDPR Checklist: https://gdpr.eu/checklist/
  * - CNIL GDPR Guide: https://www.cnil.fr/en/rgpd-guide
+ * @graph
+ *   domains: [domain:security, role:security-engineer]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

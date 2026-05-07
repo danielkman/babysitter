@@ -16,6 +16,8 @@
  * @references
  * - Jest: https://jestjs.io/docs/getting-started
  * - Electron testing: https://www.electronjs.org/docs/latest/tutorial/testing-overview
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -7,6 +7,8 @@ expertise:
   - Developer documentation frameworks
   - Code example creation
   - API documentation standards
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # DX Content Writer Agent

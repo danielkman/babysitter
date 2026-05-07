@@ -18,6 +18,8 @@
  * - React Migration: https://reactjs.org/docs/thinking-in-react.html
  * - Vue Migration: https://vuejs.org/guide/introduction.html
  * - Angular Upgrade Guide: https://angular.io/guide/upgrade
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

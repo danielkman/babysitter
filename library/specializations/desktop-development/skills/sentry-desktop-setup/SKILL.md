@@ -3,6 +3,8 @@ name: sentry-desktop-setup
 description: Configure Sentry for comprehensive desktop application crash reporting, error monitoring, performance tracking, and release health for Electron and native desktop apps
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [desktop, monitoring, crash-reporting, sentry, electron, observability]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # sentry-desktop-setup

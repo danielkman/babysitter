@@ -3,6 +3,8 @@ name: gdpr-consent-manager
 description: Implement GDPR-compliant consent management for desktop applications
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [privacy, gdpr, consent, compliance, desktop]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # gdpr-consent-manager

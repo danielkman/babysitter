@@ -10,6 +10,9 @@ expertise:
   - Correlation strategies
   - Observability pipelines
   - Cost optimization
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Observability Architect Agent

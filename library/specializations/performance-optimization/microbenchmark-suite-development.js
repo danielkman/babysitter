@@ -15,6 +15,8 @@
  * @references
  * - JMH: https://openjdk.java.net/projects/code-tools/jmh/
  * - Benchmark.js: https://benchmarkjs.com/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

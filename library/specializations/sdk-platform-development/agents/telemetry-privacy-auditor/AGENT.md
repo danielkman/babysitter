@@ -7,6 +7,8 @@ expertise:
   - Data minimization principles
   - Anonymization techniques
   - Consent management
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Telemetry Privacy Auditor Agent

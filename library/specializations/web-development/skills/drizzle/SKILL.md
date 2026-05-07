@@ -2,6 +2,9 @@
 name: drizzle
 description: Drizzle ORM patterns, migrations, type-safe queries, and database schema design.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Drizzle Skill

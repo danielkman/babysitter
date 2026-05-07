@@ -16,6 +16,8 @@
  * - LangGraph Documentation: https://langchain-ai.github.io/langgraph/
  * - LangGraph Tutorials: https://langchain-ai.github.io/langgraph/tutorials/
  * - Stateful Agents: https://blog.langchain.dev/langgraph/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

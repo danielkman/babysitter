@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: performance-auditing
   backlog-id: SK-UX-004
+graph:
+  domains: [domain:web-development]
 ---
 
 # lighthouse

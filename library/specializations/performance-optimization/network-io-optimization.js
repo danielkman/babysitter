@@ -15,6 +15,8 @@
  * @references
  * - High Performance Browser Networking: https://hpbn.co/
  * - Wireshark: https://www.wireshark.org/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

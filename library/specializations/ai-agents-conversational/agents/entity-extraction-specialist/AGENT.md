@@ -8,6 +8,9 @@ expertise:
   - Entity normalization
   - Custom entity types
   - Context-aware extraction
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Entity Extraction Specialist

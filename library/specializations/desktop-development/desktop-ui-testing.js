@@ -16,6 +16,8 @@
  * @references
  * - Playwright Electron: https://playwright.dev/docs/api/class-electron
  * - Testing Library: https://testing-library.com/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

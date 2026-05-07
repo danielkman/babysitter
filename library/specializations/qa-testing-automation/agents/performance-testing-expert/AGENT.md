@@ -10,6 +10,9 @@ expertise:
   - Capacity planning
   - Performance optimization recommendations
   - APM tool integration
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Performance Testing Expert Agent

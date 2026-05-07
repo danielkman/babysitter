@@ -10,6 +10,9 @@ expertise:
   - Compliance requirements
   - Zero trust architecture
   - Security controls design
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Security Architect Agent

@@ -2,6 +2,8 @@
 name: dependency-scanner
 description: Comprehensive dependency scanning, inventory generation, and SBOM creation for migration readiness assessment
 allowed-tools: ["Bash", "Read", "Write", "Grep", "Glob", "Edit"]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Dependency Scanner Skill

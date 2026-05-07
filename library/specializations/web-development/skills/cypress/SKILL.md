@@ -2,6 +2,9 @@
 name: cypress
 description: Cypress testing patterns, custom commands, component testing, and CI integration.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Cypress Skill

@@ -8,6 +8,9 @@ expertise:
   - Multimodal RAG
   - Document processing
   - Visual reasoning
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Multimodal Agent Expert

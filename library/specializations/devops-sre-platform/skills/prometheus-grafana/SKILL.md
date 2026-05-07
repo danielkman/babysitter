@@ -7,6 +7,9 @@ metadata:
   version: "1.0.0"
   category: observability
   backlog-id: SK-003
+graph:
+  domains: [domain:devops]
+
 ---
 
 # prometheus-grafana

@@ -24,6 +24,8 @@
  * - The Three Pillars: https://www.oreilly.com/library/view/distributed-systems-observability/9781492033431/
  * - OpenTelemetry: https://opentelemetry.io/docs/
  * - SRE Book: https://sre.google/sre-book/table-of-contents/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

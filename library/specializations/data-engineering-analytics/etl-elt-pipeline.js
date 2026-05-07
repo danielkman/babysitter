@@ -46,6 +46,8 @@
  * - dbt (data build tool): https://docs.getdbt.com/
  * - Great Expectations: https://greatexpectations.io/
  * - Data Engineering Best Practices: https://github.com/DataTalksClub/data-engineering-zoomcamp
+ * @graph
+ *   domains: [domain:data-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

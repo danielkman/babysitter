@@ -2,6 +2,8 @@
 name: desktop-security-auditor
 description: Audits desktop applications for security vulnerabilities, insecure configurations, and attack vectors
 expertise: [security, audit, vulnerabilities, sandboxing, code-signing]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # desktop-security-auditor

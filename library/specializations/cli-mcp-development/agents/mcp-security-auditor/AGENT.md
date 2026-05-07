@@ -8,6 +8,9 @@ expertise:
   - Path traversal prevention
   - Command injection prevention
   - Resource access control
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # MCP Security Auditor Agent

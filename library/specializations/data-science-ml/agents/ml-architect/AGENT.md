@@ -9,6 +9,9 @@ expertise:
   - Infrastructure requirements
   - Scalability planning
   - Technical debt assessment
+graph:
+  domains: [domain:data-science]
+
 ---
 
 # ml-architect

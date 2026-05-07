@@ -9,6 +9,9 @@ expertise:
   - Health check implementation
   - Rollback mechanism setup
   - Performance optimization
+graph:
+  domains: [domain:data-science]
+
 ---
 
 # deployment-engineer

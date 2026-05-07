@@ -14,6 +14,8 @@
  *
  * @references
  * - Systems Performance: https://www.brendangregg.com/systems-performance-2nd-edition-book.html
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

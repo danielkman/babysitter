@@ -4,6 +4,8 @@
  * @inputs { projectName: string, framework?: string }
  * @outputs { success: boolean, deployConfig: object, functions: array, artifacts: array }
  * @references - Vercel: https://vercel.com/docs
+ * @graph
+ *   domains: [domain:web-development, workflow:release-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

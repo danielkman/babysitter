@@ -2,6 +2,8 @@
 name: etl-pipeline-builder
 description: Build and manage ETL pipelines for data migration with transformation, CDC, and monitoring
 allowed-tools: ["Bash", "Read", "Write", "Grep", "Glob", "Edit"]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # ETL Pipeline Builder Skill

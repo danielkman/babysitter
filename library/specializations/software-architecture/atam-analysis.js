@@ -16,6 +16,8 @@
  *   tradeoffs: array,
  *   report: string
  * }
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

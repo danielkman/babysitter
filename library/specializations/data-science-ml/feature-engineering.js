@@ -3,6 +3,8 @@
  * @description Feature engineering design and implementation with quality gates and validation
  * @inputs { dataPath: string, targetColumn: string, featureEngineering: object, targetQuality: number }
  * @outputs { success: boolean, qualityScore: number, features: object, artifacts: array }
+ * @graph
+ *   domains: [domain:data-science, role:data-scientist]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

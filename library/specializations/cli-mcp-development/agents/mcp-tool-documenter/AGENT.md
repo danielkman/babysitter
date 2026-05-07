@@ -8,6 +8,9 @@ expertise:
   - AI-friendly writing
   - Example generation
   - Error documentation
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # MCP Tool Documenter Agent

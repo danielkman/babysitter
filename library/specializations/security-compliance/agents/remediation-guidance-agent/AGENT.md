@@ -9,6 +9,9 @@ expertise:
   - Configuration remediation
   - Effort estimation
   - Remediation tracking
+graph:
+  domains: [domain:security]
+
 ---
 
 # Remediation Guidance Agent

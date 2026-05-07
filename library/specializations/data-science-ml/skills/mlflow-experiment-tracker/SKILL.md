@@ -2,6 +2,9 @@
 name: mlflow-experiment-tracker
 description: MLflow integration skill for experiment tracking, model registry, and artifact management. Enables LLMs to log experiments, compare runs, manage model lifecycle, and retrieve artifacts through the MLflow API.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:data-science]
+
 ---
 
 # MLflow Experiment Tracker

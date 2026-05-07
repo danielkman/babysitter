@@ -8,6 +8,8 @@ allowed-tools:
   - Grep
   - Bash
   - WebSearch
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # GTM Strategy Skill

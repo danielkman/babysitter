@@ -2,6 +2,9 @@
 name: keyboard-navigation
 description: Keyboard accessibility, focus management, and shortcuts.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Keyboard Navigation Skill

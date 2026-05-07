@@ -28,6 +28,8 @@
  *   - https://www.slf4j.org/
  *   - https://docs.python.org/3/library/logging.html
  *   - https://pkg.go.dev/log/slog
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

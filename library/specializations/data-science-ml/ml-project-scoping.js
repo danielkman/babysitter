@@ -18,6 +18,8 @@
  * - Team Data Science Process (TDSP): https://learn.microsoft.com/en-us/azure/architecture/data-science-process/overview
  * - MLOps Principles: https://cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning
  * - Rules of Machine Learning - Google: https://developers.google.com/machine-learning/guides/rules-of-ml
+ * @graph
+ *   domains: [domain:data-science, role:data-scientist]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

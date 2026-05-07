@@ -17,6 +17,8 @@
  * - Backstage: https://backstage.io/
  * - Platform Engineering: https://platformengineering.org/
  * - Internal Developer Platform: https://internaldeveloperplatform.org/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

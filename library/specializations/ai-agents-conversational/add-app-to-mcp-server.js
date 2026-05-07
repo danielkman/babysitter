@@ -18,6 +18,8 @@
  * - MCP Apps SDK: https://github.com/modelcontextprotocol/ext-apps
  * - MCP Apps Specification (2026-01-26): https://modelcontextprotocol.io/specification/2026-01-26/server/utilities/apps
  * - npm: @modelcontextprotocol/ext-apps
+ * @graph
+ *   domains: [domain:software-engineering, role:backend-engineer]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

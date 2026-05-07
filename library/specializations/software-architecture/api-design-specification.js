@@ -27,6 +27,8 @@
  * - API Design Patterns: https://microservice-api-patterns.org/
  * - Google API Design Guide: https://cloud.google.com/apis/design
  * - Microsoft REST API Guidelines: https://github.com/microsoft/api-guidelines
+ * @graph
+ *   domains: [domain:software-engineering, topic:api-design]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

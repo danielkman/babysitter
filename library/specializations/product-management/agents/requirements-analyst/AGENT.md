@@ -9,6 +9,8 @@ expertise:
   - Story mapping and backlog management
   - Sprint planning support
   - Requirements traceability
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Requirements Analyst Agent

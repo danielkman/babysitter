@@ -2,6 +2,8 @@
 name: documentation-generator
 description: Generate documentation for migrated systems including API docs, architecture docs, and runbooks
 allowed-tools: ["Bash", "Read", "Write", "Grep", "Glob", "Edit"]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Documentation Generator Skill

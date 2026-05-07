@@ -8,6 +8,9 @@ expertise:
   - Metadata design
   - Update strategies
   - Quality maintenance
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Knowledge Base Curator

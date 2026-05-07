@@ -4,6 +4,8 @@
  * @inputs { projectName: string, apps?: array }
  * @outputs { success: boolean, federationConfig: object, remotes: array, artifacts: array }
  * @references - Module Federation: https://webpack.js.org/concepts/module-federation/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

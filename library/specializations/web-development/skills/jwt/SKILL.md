@@ -2,6 +2,9 @@
 name: jwt
 description: JWT implementation, token management, refresh patterns, and security.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # JWT Skill

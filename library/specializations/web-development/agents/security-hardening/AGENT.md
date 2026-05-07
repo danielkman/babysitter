@@ -9,6 +9,9 @@ expertise:
   - Rate limiting
   - Input validation
   - Infrastructure security
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Security Hardening Agent

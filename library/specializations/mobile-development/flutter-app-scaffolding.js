@@ -23,6 +23,8 @@
  * - Bloc Library: https://bloclibrary.dev/
  * - Clean Architecture: https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
  * - GetIt: https://pub.dev/packages/get_it
+ * @graph
+ *   domains: [domain:mobile]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

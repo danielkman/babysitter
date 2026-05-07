@@ -6,6 +6,8 @@ category: API Integration
 slug: mobile-backend-expert
 status: active
 role: Senior Full-Stack Mobile Engineer
+graph:
+  domains: [domain:mobile]
 ---
 
 # Backend Integration Agent

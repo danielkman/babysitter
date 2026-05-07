@@ -20,6 +20,8 @@
  * - React Testing Library: https://testing-library.com/react
  * - Redux Toolkit: https://redux-toolkit.js.org/
  * - TypeScript: https://www.typescriptlang.org/
+ * @graph
+ *   domains: [domain:web-development, skill-area:react-state-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

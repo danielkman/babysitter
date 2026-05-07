@@ -7,6 +7,8 @@ model: opus
 skills:
   - rollback-automation-skill
   - data-migration-validator
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Rollback Specialist Agent

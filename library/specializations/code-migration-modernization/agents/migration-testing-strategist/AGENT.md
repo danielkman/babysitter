@@ -8,6 +8,8 @@ skills:
   - characterization-test-generator
   - static-code-analyzer
   - dependency-scanner
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Migration Testing Strategist Agent

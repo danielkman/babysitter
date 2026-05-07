@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: versioning-compatibility
   backlog-id: SK-SDK-004
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # semver-analyzer

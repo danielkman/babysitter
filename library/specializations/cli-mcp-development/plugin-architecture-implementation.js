@@ -17,6 +17,8 @@
  * - oclif plugins: https://oclif.io/docs/plugins
  * - Yeoman generators: https://yeoman.io/authoring/
  * - Pluggy (Python): https://pluggy.readthedocs.io/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

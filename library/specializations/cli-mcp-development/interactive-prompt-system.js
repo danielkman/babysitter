@@ -20,6 +20,8 @@
  * - Inquirer.js: https://github.com/SBoudrias/Inquirer.js
  * - Questionary: https://github.com/tmbo/questionary
  * - Survey: https://github.com/AlecAivazis/survey
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

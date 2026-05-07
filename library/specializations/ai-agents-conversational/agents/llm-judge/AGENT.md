@@ -8,6 +8,9 @@ expertise:
   - Scoring rubrics
   - Judge calibration
   - Agreement analysis
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # LLM Judge

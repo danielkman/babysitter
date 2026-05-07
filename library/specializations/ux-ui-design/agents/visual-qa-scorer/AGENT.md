@@ -9,6 +9,8 @@ expertise:
   - Spacing and whitespace validation
   - Component visual regression
   - Decorative element positioning
+graph:
+  domains: [domain:web-development]
 ---
 
 # visual-qa-scorer

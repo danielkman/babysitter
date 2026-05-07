@@ -2,6 +2,9 @@
 name: chocolatey-package-generator
 description: Generate Chocolatey package for Windows CLI distribution.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Chocolatey Package Generator

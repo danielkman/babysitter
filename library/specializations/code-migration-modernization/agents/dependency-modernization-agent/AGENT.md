@@ -9,6 +9,8 @@ skills:
   - dependency-updater
   - vulnerability-scanner
   - license-compliance-checker
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Dependency Modernization Agent

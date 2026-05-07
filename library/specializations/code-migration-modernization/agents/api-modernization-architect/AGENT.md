@@ -8,6 +8,8 @@ skills:
   - api-inventory-scanner
   - openapi-generator
   - api-compatibility-analyzer
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # API Modernization Architect Agent

@@ -10,6 +10,9 @@ expertise:
   - Performance testing for APIs
   - Schema validation
   - Mock server design
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # API Testing Expert Agent

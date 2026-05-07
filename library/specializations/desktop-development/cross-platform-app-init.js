@@ -19,6 +19,8 @@
  * - Qt Getting Started: https://doc.qt.io/qt-6/gettingstarted.html
  * - Flutter Desktop: https://flutter.dev/desktop
  * - .NET MAUI: https://docs.microsoft.com/en-us/dotnet/maui/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

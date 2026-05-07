@@ -9,6 +9,9 @@ expertise:
   - IDE configuration
   - Onboarding docs
   - Environment parity
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Environment Setup Agent

@@ -2,6 +2,9 @@
 name: cross-platform-path-handler
 description: Generate cross-platform path handling utilities for Windows, macOS, and Linux compatibility in CLI applications.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Cross-Platform Path Handler

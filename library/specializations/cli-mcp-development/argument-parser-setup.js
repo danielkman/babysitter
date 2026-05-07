@@ -18,6 +18,8 @@
  * - Yargs: https://yargs.js.org/
  * - Argparse: https://docs.python.org/3/library/argparse.html
  * - Cobra: https://cobra.dev/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -6,6 +6,8 @@ category: Native iOS Development
 slug: ios-native-expert
 status: active
 role: Senior iOS Engineer
+graph:
+  domains: [domain:mobile]
 ---
 
 # iOS Native Expert Agent

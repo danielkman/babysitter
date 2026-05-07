@@ -2,6 +2,8 @@
 name: openapi-generator
 description: Generate OpenAPI specifications from code or legacy APIs with schema inference and documentation
 allowed-tools: ["Bash", "Read", "Write", "Grep", "Glob", "Edit"]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # OpenAPI Generator Skill

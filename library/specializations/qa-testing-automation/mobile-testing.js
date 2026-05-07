@@ -36,6 +36,8 @@
  * - Cloud Device Labs: https://www.browserstack.com/, https://saucelabs.com/
  * - Mobile Gestures: https://appium.io/docs/en/commands/interactions/touch/
  * - Real Device Testing: https://appium.io/docs/en/writing-running-appium/running-tests/
+ * @graph
+ *   domains: [domain:software-engineering, workflow:code-review]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

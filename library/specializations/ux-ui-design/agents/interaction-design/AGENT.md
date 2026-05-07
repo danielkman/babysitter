@@ -8,6 +8,8 @@ expertise:
   - State transition mapping
   - Feedback pattern design
   - Motion design guidelines
+graph:
+  domains: [domain:web-development]
 ---
 
 # Interaction Design Agent

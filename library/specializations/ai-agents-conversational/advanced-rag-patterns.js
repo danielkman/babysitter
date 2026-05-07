@@ -16,6 +16,8 @@
  * - Self-RAG: https://arxiv.org/abs/2310.11511
  * - HyDE: https://arxiv.org/abs/2212.10496
  * - LlamaIndex Advanced RAG: https://docs.llamaindex.ai/en/stable/optimizing/advanced_retrieval/
+ * @graph
+ *   domains: [domain:software-engineering, role:backend-engineer]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

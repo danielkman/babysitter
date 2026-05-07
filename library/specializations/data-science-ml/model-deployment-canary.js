@@ -24,6 +24,8 @@
  * - Google SRE Canary: https://sre.google/workbook/canarying-releases/
  * - AWS ML Deployments: https://docs.aws.amazon.com/sagemaker/latest/dg/deployment-guardrails.html
  * - MLOps Deployment Strategies: https://ml-ops.org/content/deployment-strategies
+ * @graph
+ *   domains: [domain:data-science, role:data-scientist]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

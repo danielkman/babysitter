@@ -2,6 +2,9 @@
 name: mcp-transport-sse-setup
 description: Configure HTTP/SSE transport for web-based MCP servers with proper endpoints, authentication, and CORS.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # MCP Transport SSE Setup

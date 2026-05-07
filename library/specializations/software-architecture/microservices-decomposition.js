@@ -19,6 +19,8 @@
  * - Monolith to Microservices by Sam Newman: https://www.oreilly.com/library/view/monolith-to-microservices/9781492047834/
  * - Microservices Patterns by Chris Richardson: https://microservices.io/patterns/
  * - The Art of Scalability by Martin Abbott: https://theartofscalability.com/
+ * @graph
+ *   domains: [domain:software-engineering, topic:microservices]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

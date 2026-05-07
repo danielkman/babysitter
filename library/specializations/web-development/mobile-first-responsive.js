@@ -4,6 +4,8 @@
  * @inputs { projectName: string, framework?: string }
  * @outputs { success: boolean, breakpoints: array, responsiveComponents: array, artifacts: array }
  * @references - Responsive Design: https://web.dev/responsive-web-design-basics/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

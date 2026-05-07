@@ -7,6 +7,9 @@ metadata:
   version: "1.0.0"
   category: environment-management
   backlog-id: SK-020
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # docker-test-environments

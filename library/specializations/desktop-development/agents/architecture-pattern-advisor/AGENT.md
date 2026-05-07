@@ -2,6 +2,8 @@
 name: architecture-pattern-advisor
 description: Advises on desktop architecture patterns (MVVM, MVC, Clean Architecture, Flux)
 expertise: [architecture, mvvm, mvc, clean-architecture, patterns]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # architecture-pattern-advisor

@@ -27,6 +27,8 @@
  * - Retention Metrics: https://www.lennysnewsletter.com/p/what-is-good-retention
  * - Product Analytics: https://www.reforge.com/blog/retention-engagement-growth-silent-killer
  * - Activation Best Practices: https://www.productled.com/blog/user-activation
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -2,6 +2,9 @@
 name: cosmiconfig-setup
 description: Set up cosmiconfig for hierarchical configuration loading from multiple sources and formats.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Cosmiconfig Setup

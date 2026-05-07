@@ -3,6 +3,8 @@ name: swiftui-view-generator
 description: Generate SwiftUI views with proper state management (@State, @Binding, @ObservedObject, @StateObject) and macOS-specific patterns
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [swiftui, macos, swift, ui, apple]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # swiftui-view-generator

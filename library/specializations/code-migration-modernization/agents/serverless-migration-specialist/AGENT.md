@@ -8,6 +8,8 @@ skills:
   - cloud-readiness-assessor
   - iac-generator
   - containerization-assistant
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Serverless Migration Specialist Agent

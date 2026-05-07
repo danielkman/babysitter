@@ -3,6 +3,8 @@
  * @description User Story Mapping process with user activity identification, task breakdown, story creation, prioritization, and release planning for product development
  * @inputs { productName: string, productGoal: string, userPersonas: array, existingBacklog: array, outputDir: string, releaseCount: number, teamCapacity: number }
  * @outputs { success: boolean, userActivities: array, userTasks: array, userStories: array, releaseMap: object, prioritizedBacklog: array, artifacts: array, metadata: object }
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

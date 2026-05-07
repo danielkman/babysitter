@@ -9,6 +9,9 @@ expertise:
   - Statistical power analysis
   - Metric selection
   - Bias prevention
+graph:
+  domains: [domain:data-science]
+
 ---
 
 # experiment-designer

@@ -9,6 +9,9 @@ expertise:
   - Gradient synchronization
   - Checkpointing strategies
   - Failure recovery
+graph:
+  domains: [domain:data-science]
+
 ---
 
 # distributed-training-engineer

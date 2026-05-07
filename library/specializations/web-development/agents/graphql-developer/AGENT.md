@@ -9,6 +9,9 @@ expertise:
   - DataLoader optimization
   - Subscriptions
   - Federation
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # GraphQL Developer Agent

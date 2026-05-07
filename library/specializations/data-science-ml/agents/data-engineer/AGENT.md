@@ -9,6 +9,9 @@ expertise:
   - Version control integration
   - Pipeline monitoring setup
   - Error handling strategies
+graph:
+  domains: [domain:data-science]
+
 ---
 
 # data-engineer

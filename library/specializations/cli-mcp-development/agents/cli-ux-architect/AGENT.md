@@ -8,6 +8,9 @@ expertise:
   - Help text and documentation
   - Error message crafting
   - User workflow optimization
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # CLI UX Architect Agent

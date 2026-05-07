@@ -9,6 +9,9 @@ expertise:
   - Root cause analysis
   - Postmortem facilitation
   - Incident metrics (MTTR, MTTD)
+graph:
+  domains: [domain:devops]
+
 ---
 
 # Incident Commander Agent

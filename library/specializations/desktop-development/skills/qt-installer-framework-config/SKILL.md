@@ -3,6 +3,8 @@ name: qt-installer-framework-config
 description: Configure Qt Installer Framework for cross-platform installers with component management, online updates, and custom UI
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [qt, installer, deployment, distribution, packaging]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # qt-installer-framework-config

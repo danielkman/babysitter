@@ -33,6 +33,8 @@
  * - Design QA Best Practices: https://www.smashingmagazine.com/
  * - Visual Regression Testing: https://www.browserstack.com/guide/visual-regression-testing
  * - Design System Testing: https://storybook.js.org/docs/react/writing-tests/visual-testing
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

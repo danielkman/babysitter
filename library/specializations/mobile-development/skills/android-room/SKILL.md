@@ -5,6 +5,8 @@ version: 1.0.0
 category: Android Data Storage
 slug: android-room
 status: active
+graph:
+  domains: [domain:mobile]
 ---
 
 # Room Database Skill

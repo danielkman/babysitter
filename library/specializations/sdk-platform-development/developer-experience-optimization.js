@@ -16,6 +16,8 @@
  * @references
  * - Developer Experience: https://www.postman.com/api-platform/developer-experience/
  * - API Design Patterns: https://www.oreilly.com/library/view/api-design-patterns/9781617295850/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

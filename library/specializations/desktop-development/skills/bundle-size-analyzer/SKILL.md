@@ -3,6 +3,8 @@ name: bundle-size-analyzer
 description: Analyze and optimize application bundle size for desktop applications
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [performance, bundle, optimization, webpack, desktop]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # bundle-size-analyzer

@@ -33,6 +33,8 @@
  * - Shift-Right Testing: https://www.dynatrace.com/news/blog/what-is-shift-right-testing/
  * - CI/CD Best Practices: https://www.atlassian.com/continuous-delivery/principles
  * - Test Automation Patterns: https://www.selenium.dev/documentation/test_practices/
+ * @graph
+ *   domains: [domain:software-engineering, workflow:code-review]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

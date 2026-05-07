@@ -19,6 +19,8 @@
  * @references
  * - Huh: https://github.com/charmbracelet/huh
  * - Enquirer: https://github.com/enquirer/enquirer
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -8,6 +8,9 @@ expertise:
   - Lifecycle management
   - Dependency resolution
   - Sandboxing
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Plugin System Architect Agent

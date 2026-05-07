@@ -2,6 +2,9 @@
 name: mcp-app-verification
 description: Comprehensive verification checklists for MCP Apps. Tests with basic-host reference, validates handler-before-connect, text fallback, resource URI linking, single-file bundling, host styling, CSP, and legacy pattern detection.
 allowed-tools: Read, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # mcp-app-verification

@@ -24,6 +24,8 @@
  * - Beta Testing Best Practices: https://www.centercode.com/blog/beta-testing-best-practices
  * - Product Launch Guide: https://www.productplan.com/learn/beta-testing/
  * - User Testing: https://www.usertesting.com/resources/topics/beta-testing
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

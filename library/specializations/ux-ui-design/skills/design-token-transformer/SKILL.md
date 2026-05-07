@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: design-systems
   backlog-id: SK-UX-003
+graph:
+  domains: [domain:web-development]
 ---
 
 # design-token-transformer

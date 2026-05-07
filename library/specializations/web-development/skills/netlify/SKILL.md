@@ -2,6 +2,9 @@
 name: netlify
 description: Netlify deployment, functions, forms, and edge handlers.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Netlify Skill

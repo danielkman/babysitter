@@ -2,6 +2,8 @@
 name: accessibility-testing
 description: Mobile accessibility testing skill for WCAG compliance, VoiceOver/TalkBack validation, dynamic type support, color contrast analysis, and accessibility auditing across iOS and Android platforms.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob, WebFetch
+graph:
+  domains: [domain:mobile]
 ---
 
 # Accessibility Testing Skill

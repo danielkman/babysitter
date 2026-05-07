@@ -23,6 +23,8 @@
  * - Fairness Indicators: https://www.tensorflow.org/responsible_ai/fairness_indicators/guide
  * - SHAP (SHapley Additive exPlanations): https://github.com/slundberg/shap
  * - Model Validation Best Practices: https://cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning
+ * @graph
+ *   domains: [domain:data-science, role:data-scientist]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

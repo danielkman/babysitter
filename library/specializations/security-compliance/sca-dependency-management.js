@@ -33,6 +33,8 @@
  * - SPDX: https://spdx.dev/
  * - NIST SSDF: https://csrc.nist.gov/Projects/ssdf
  * - SLSA Framework: https://slsa.dev/
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

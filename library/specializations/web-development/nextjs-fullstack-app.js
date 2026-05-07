@@ -19,6 +19,8 @@
  * - React Server Components: https://nextjs.org/docs/app/building-your-application/rendering/server-components
  * - Prisma: https://www.prisma.io/
  * - NextAuth.js: https://next-auth.js.org/
+ * @graph
+ *   domains: [domain:web-development, role:frontend-engineer]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

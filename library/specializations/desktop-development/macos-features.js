@@ -15,6 +15,8 @@
  * @references
  * - Electron macOS: https://www.electronjs.org/docs/latest/tutorial/macos-dock
  * - Apple Human Interface Guidelines: https://developer.apple.com/design/human-interface-guidelines/macos
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

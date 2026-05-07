@@ -16,6 +16,8 @@
  * - HuggingGPT: https://arxiv.org/abs/2303.17580
  * - TaskMatrix: https://arxiv.org/abs/2303.16434
  * - AutoGPT: https://github.com/Significant-Gravitas/AutoGPT
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -2,6 +2,9 @@
 name: sse
 description: Server-Sent Events implementation, streaming patterns, and real-time updates.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # SSE Skill

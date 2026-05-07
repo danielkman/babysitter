@@ -4,6 +4,8 @@
  * @inputs { projectName: string, framework?: string }
  * @outputs { success: boolean, seoConfig: object, optimizations: array, artifacts: array }
  * @references - Google SEO: https://developers.google.com/search/docs
+ * @graph
+ *   domains: [domain:web-development, role:frontend-engineer]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

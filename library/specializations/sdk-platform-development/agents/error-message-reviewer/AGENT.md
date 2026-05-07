@@ -7,6 +7,8 @@ expertise:
   - UX writing principles
   - Developer experience optimization
   - Actionable error design
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Error Message Reviewer Agent

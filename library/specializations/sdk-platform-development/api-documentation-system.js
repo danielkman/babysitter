@@ -17,6 +17,8 @@
  * - Diataxis Documentation Framework: https://diataxis.fr/
  * - Google Developer Documentation Style Guide: https://developers.google.com/style
  * - Write the Docs: https://www.writethedocs.org/guide/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

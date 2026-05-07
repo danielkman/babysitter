@@ -5,6 +5,8 @@ version: 1.0.0
 category: iOS Data Storage
 slug: ios-persistence
 status: active
+graph:
+  domains: [domain:mobile]
 ---
 
 # iOS Persistence Skill

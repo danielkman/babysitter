@@ -2,6 +2,9 @@
 name: nestjs
 description: NestJS architecture including modules, dependency injection, guards, interceptors, and microservices patterns.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # NestJS Skill

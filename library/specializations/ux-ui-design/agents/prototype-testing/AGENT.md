@@ -8,6 +8,8 @@ expertise:
   - Time-on-task measurement
   - Error rate calculation
   - Usability metrics aggregation
+graph:
+  domains: [domain:web-development]
 ---
 
 # Prototype Testing Agent

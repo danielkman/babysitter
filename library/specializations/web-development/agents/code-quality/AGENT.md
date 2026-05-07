@@ -9,6 +9,9 @@ expertise:
   - Pre-commit hooks
   - Quality metrics
   - Technical debt
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Code Quality Agent

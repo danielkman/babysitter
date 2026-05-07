@@ -6,6 +6,8 @@
  * @complexity Medium
  * @inputs { projectPath: string, teamSize: number, currentWorkflow: object, qualityTargets: object }
  * @outputs { success: boolean, implementationPlan: object, metricsBaseline: object, culturalReadiness: number }
+ * @graph
+ *   domains: [domain:software-engineering, workflow:code-review]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

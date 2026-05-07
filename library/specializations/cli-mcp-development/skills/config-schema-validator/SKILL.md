@@ -2,6 +2,9 @@
 name: config-schema-validator
 description: Generate Zod/JSON Schema configuration validators with defaults and error messages.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Config Schema Validator

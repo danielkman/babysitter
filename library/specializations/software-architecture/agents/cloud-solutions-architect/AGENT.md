@@ -10,6 +10,9 @@ expertise:
   - FinOps principles
   - Serverless architecture
   - Container orchestration
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Cloud Solutions Architect Agent

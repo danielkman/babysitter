@@ -15,6 +15,8 @@
  * @references
  * - Ora: https://github.com/sindresorhus/ora
  * - cli-progress: https://github.com/npkgz/cli-progress
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

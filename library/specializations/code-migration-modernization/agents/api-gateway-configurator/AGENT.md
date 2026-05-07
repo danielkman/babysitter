@@ -7,6 +7,8 @@ model: opus
 skills:
   - api-compatibility-analyzer
   - strangler-fig-orchestrator
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # API Gateway Configurator Agent

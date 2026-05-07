@@ -16,6 +16,8 @@
  * - OpenTelemetry: https://opentelemetry.io/docs/
  * - Jaeger: https://www.jaegertracing.io/docs/
  * - Zipkin: https://zipkin.io/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -17,6 +17,8 @@
  * - Semantic Versioning: https://semver.org/
  * - Keep a Changelog: https://keepachangelog.com/
  * - Conventional Commits: https://www.conventionalcommits.org/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

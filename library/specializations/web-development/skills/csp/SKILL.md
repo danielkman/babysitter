@@ -2,6 +2,9 @@
 name: csp
 description: Content Security Policy configuration, nonces, and reporting.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # CSP Skill

@@ -9,6 +9,9 @@ expertise:
   - Data fetching patterns
   - Vercel deployment
   - API routes
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Next.js Developer Agent

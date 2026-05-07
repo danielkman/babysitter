@@ -2,6 +2,9 @@
 name: mongodb
 description: MongoDB schema design, aggregation pipelines, indexing strategies, and performance.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # MongoDB Skill

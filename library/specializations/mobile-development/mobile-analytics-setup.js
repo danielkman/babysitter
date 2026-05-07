@@ -17,6 +17,8 @@
  * - Firebase Analytics: https://firebase.google.com/docs/analytics
  * - Amplitude: https://www.docs.developers.amplitude.com/
  * - Crashlytics: https://firebase.google.com/docs/crashlytics
+ * @graph
+ *   domains: [domain:mobile]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

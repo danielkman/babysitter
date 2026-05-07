@@ -9,6 +9,9 @@ expertise:
   - Model comparison with baseline
   - Deployment decision making
   - Rollback coordination
+graph:
+  domains: [domain:data-science]
+
 ---
 
 # retraining-orchestrator

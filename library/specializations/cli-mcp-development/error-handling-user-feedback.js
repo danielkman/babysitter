@@ -14,6 +14,8 @@
  *
  * @references
  * - CLI Guidelines - Errors: https://clig.dev/#errors
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

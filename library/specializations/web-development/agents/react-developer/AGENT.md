@@ -9,6 +9,9 @@ expertise:
   - Performance optimization
   - Testing with React Testing Library
   - TypeScript integration
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # React Developer Agent

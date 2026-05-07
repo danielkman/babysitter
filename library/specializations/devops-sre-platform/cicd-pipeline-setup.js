@@ -32,6 +32,8 @@
  * - GitHub Actions: https://docs.github.com/en/actions
  * - Jenkins Pipeline: https://www.jenkins.io/doc/book/pipeline/
  * - CI/CD Best Practices: https://martinfowler.com/articles/continuousIntegration.html
+ * @graph
+ *   domains: [domain:devops, workflow:release-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

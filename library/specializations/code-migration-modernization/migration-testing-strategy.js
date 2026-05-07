@@ -19,6 +19,8 @@
  * - Characterization Testing: https://michaelfeathers.silvrback.com/characterization-testing
  * - Approval Tests: https://approvaltests.com/
  * - Golden Master Testing: https://blog.thecodewhisperer.com/permalink/surviving-legacy-code-with-golden-master-and-sampling
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

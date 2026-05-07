@@ -8,6 +8,9 @@ expertise:
   - Schema validation
   - Config merging
   - Environment binding
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Config System Architect Agent

@@ -3,6 +3,8 @@ name: accessibility-test-runner
 description: Run accessibility audits with axe-core and screen reader testing for desktop applications
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [accessibility, a11y, testing, wcag, axe-core]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # accessibility-test-runner

@@ -9,6 +9,9 @@ expertise:
   - TypeScript integration
   - Component design
   - Reactivity system
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Vue Developer Agent

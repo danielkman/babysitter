@@ -28,6 +28,8 @@
  *   - https://oclif.io/docs/
  *   - https://cobra.dev/
  *   - https://click.palletsprojects.com/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

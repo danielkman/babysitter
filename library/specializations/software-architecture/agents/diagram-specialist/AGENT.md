@@ -10,6 +10,9 @@ expertise:
   - Visual communication
   - Diagram layout
   - Audience-appropriate abstraction
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Diagram Specialist Agent

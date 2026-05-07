@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: sdk-code-generation
   backlog-id: SK-SDK-001
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # openapi-codegen-orchestrator

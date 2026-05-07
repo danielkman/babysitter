@@ -35,6 +35,8 @@
  * - OWASP Top 10: https://owasp.org/www-project-top-ten/
  * - OWASP API Security Top 10: https://owasp.org/www-project-api-security/
  * - MITRE ATT&CK Framework: https://attack.mitre.org/
+ * @graph
+ *   domains: [domain:security, workflow:code-review]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

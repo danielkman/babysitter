@@ -17,6 +17,8 @@
  * - React Native Reanimated: https://docs.swmansion.com/react-native-reanimated/
  * - Flutter Animations: https://flutter.dev/docs/development/ui/animations
  * - iOS Animations: https://developer.apple.com/documentation/uikit/animation_and_haptics
+ * @graph
+ *   domains: [domain:mobile]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

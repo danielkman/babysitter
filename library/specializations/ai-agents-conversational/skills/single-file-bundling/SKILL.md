@@ -2,6 +2,9 @@
 name: single-file-bundling
 description: Configure Vite with vite-plugin-singlefile for mandatory single-file HTML bundling of MCP Apps. All assets (JS, CSS, images, fonts) must be inlined into a single HTML file for sandboxed iframe compatibility.
 allowed-tools: Read, Write, Edit, Bash
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # single-file-bundling

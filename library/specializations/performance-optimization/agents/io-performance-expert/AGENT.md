@@ -13,6 +13,8 @@ expertise:
   - Storage system performance
   - NVMe and SSD optimization
   - Memory-mapped I/O
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # I/O Performance Expert Agent

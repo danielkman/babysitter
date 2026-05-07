@@ -8,6 +8,9 @@ allowed-tools:
   - Glob
   - Grep
   - WebFetch
+graph:
+  domains: [domain:security]
+
 ---
 
 # Vendor Risk Monitor Skill

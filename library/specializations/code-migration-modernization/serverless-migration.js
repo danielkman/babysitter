@@ -18,6 +18,8 @@
  * - AWS Lambda: https://aws.amazon.com/lambda/
  * - Serverless Framework: https://www.serverless.com/
  * - Serverless Patterns: https://www.serverlesspatterns.io/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

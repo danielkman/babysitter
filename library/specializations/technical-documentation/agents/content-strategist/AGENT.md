@@ -6,6 +6,8 @@ backlog-id: AG-010
 metadata:
   author: babysitter-sdk
   version: "1.0.0"
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # content-strategist

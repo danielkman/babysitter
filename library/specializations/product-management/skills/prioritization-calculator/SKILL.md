@@ -2,6 +2,8 @@
 name: prioritization-calculator
 description: Automated calculation and scoring for product prioritization frameworks including RICE, ICE, MoSCoW, and custom weighted scoring. Normalizes scores, validates inputs, and generates priority rankings with confidence intervals.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Prioritization Calculator Skill

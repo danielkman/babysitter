@@ -2,6 +2,9 @@
 name: memory-architect
 description: Designs memory hierarchies and consolidation strategies for AI agents. Specializes in short-term, long-term, and semantic memory systems for personalized AI experiences.
 role: Memory Systems Architect
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # memory-architect

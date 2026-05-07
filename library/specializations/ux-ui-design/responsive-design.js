@@ -26,6 +26,8 @@
  * - Media Queries: https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries
  * - Touch Target Guidelines: https://web.dev/accessible-tap-targets/
  * - Core Web Vitals: https://web.dev/vitals/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

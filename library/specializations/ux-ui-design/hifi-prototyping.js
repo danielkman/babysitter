@@ -32,6 +32,8 @@
  * - Interaction Design Foundation: https://www.interaction-design.org/
  * - Lottie Animations: https://lottiefiles.com/
  * - Design Handoff Best Practices: https://www.figma.com/best-practices/developer-handoff/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

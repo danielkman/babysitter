@@ -17,6 +17,8 @@
  * - electron-builder Linux targets: https://www.electron.build/configuration/linux
  * - Flatpak documentation: https://docs.flatpak.org/
  * - Snapcraft: https://snapcraft.io/docs
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

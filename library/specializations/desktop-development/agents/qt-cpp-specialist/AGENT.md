@@ -2,6 +2,8 @@
 name: qt-cpp-specialist
 description: Expert in Qt/C++ development, signal/slot patterns, memory management, and cross-platform Qt deployment
 expertise: [qt, cpp, cmake, signals-slots, qml, cross-platform]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # qt-cpp-specialist

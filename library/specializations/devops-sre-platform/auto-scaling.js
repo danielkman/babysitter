@@ -36,6 +36,8 @@
  * - Azure Autoscale: https://docs.microsoft.com/en-us/azure/azure-monitor/autoscale/
  * - KEDA: https://keda.sh/docs/
  * - Karpenter: https://karpenter.sh/docs/
+ * @graph
+ *   domains: [domain:devops]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

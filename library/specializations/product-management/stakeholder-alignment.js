@@ -3,6 +3,8 @@
  * @description Stakeholder Interview and Alignment process with stakeholder mapping, interview guide creation, expectation alignment, decision-making framework establishment, and communication plan development
  * @inputs { projectName: string, projectDescription: string, initialStakeholders: array, outputDir: string, alignmentGoals: array, decisionScope: string, timeline: object }
  * @outputs { success: boolean, stakeholderMap: object, interviewGuides: array, expectationsDocument: string, decisionFramework: object, communicationPlan: object, artifacts: array }
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -2,6 +2,9 @@
 name: vite
 description: Vite configuration, plugins, optimization, HMR, and build customization.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Vite Skill

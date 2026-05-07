@@ -8,6 +8,9 @@ expertise:
   - Example diversity
   - Quality optimization
   - Example formatting
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Few-Shot Curator

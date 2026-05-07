@@ -2,6 +2,9 @@
 name: websocket
 description: WebSocket implementation, connection management, scaling patterns, and real-time features.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # WebSocket Skill

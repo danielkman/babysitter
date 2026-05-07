@@ -4,6 +4,8 @@
  * @inputs { projectName: string, framework?: string }
  * @outputs { success: boolean, buildConfig: object, plugins: array, artifacts: array }
  * @references - Vite: https://vitejs.dev/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

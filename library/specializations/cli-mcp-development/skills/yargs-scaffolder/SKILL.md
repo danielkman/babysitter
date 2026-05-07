@@ -2,6 +2,9 @@
 name: yargs-scaffolder
 description: Generate Yargs-based CLI applications with commands, positional args, middleware, and TypeScript support. Creates a complete scaffolded CLI application with modern patterns.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Yargs Scaffolder

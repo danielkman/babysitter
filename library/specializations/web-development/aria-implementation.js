@@ -4,6 +4,8 @@
  * @inputs { projectName: string, components?: array }
  * @outputs { success: boolean, ariaPatterns: array, components: array, artifacts: array }
  * @references - WAI-ARIA: https://www.w3.org/WAI/ARIA/apg/
+ * @graph
+ *   domains: [domain:web-development, skill-area:accessibility-testing]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

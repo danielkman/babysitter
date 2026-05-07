@@ -27,6 +27,8 @@
  * - SFDPOT Heuristic: https://developsense.com/blog/2012/07/few-hiccupps-and-sfdpot/
  * - Testing Tours: https://www.satisfice.com/blog/archives/1220
  * - Heuristic Test Strategy Model: https://www.satisfice.com/tools/htsm.pdf
+ * @graph
+ *   domains: [domain:software-engineering, workflow:code-review]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

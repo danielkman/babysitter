@@ -27,6 +27,8 @@
  * - Inclusive Design Principles: https://inclusivedesignprinciples.org/
  * - Section 508: https://www.section508.gov/
  * - EN 301 549: https://www.etsi.org/deliver/etsi_en/301500_301599/301549/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

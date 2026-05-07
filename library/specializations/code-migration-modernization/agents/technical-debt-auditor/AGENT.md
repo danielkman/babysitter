@@ -8,6 +8,8 @@ skills:
   - technical-debt-quantifier
   - code-smell-detector
   - static-code-analyzer
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Technical Debt Auditor Agent

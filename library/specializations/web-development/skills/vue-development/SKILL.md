@@ -2,6 +2,9 @@
 name: vue-development
 description: Vue 3 development with Composition API, reactivity system, component patterns, TypeScript integration, and best practices.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Vue Development Skill

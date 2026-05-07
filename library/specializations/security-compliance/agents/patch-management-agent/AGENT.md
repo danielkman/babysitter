@@ -9,6 +9,9 @@ expertise:
   - Deployment validation
   - Compliance tracking
   - Rollback planning
+graph:
+  domains: [domain:security]
+
 ---
 
 # Patch Management Agent

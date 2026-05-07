@@ -2,6 +2,9 @@
 name: redis
 description: Redis caching patterns, pub/sub, sessions, rate limiting, and data structures.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Redis Skill

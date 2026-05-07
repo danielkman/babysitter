@@ -9,6 +9,9 @@ expertise:
   - Multi-factor authentication
   - NextAuth.js
   - Security best practices
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Auth Specialist Agent

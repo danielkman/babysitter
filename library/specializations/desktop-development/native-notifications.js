@@ -17,6 +17,8 @@
  * - Electron Notification: https://www.electronjs.org/docs/latest/api/notification
  * - Windows Toast Notifications: https://docs.microsoft.com/en-us/windows/apps/design/shell/tiles-and-notifications/toast-notifications
  * - macOS User Notifications: https://developer.apple.com/documentation/usernotifications
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

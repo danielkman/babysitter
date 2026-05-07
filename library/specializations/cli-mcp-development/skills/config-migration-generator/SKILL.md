@@ -2,6 +2,9 @@
 name: config-migration-generator
 description: Generate configuration file migration utilities for version upgrades.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Config Migration Generator

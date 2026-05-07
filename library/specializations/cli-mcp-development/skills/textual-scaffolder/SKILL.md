@@ -2,6 +2,9 @@
 name: textual-scaffolder
 description: Generate Textual (Python) TUI application structure with widgets, screens, and CSS styling.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Textual Scaffolder

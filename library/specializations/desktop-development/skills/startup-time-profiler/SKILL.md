@@ -3,6 +3,8 @@ name: startup-time-profiler
 description: Profile and optimize application startup time for desktop applications
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [performance, profiling, startup, optimization, desktop]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # startup-time-profiler

@@ -16,6 +16,8 @@
  * @references
  * - Valgrind Massif: https://valgrind.org/docs/manual/ms-manual.html
  * - Eclipse MAT: https://www.eclipse.org/mat/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -2,6 +2,9 @@
 name: plugin-hook-system
 description: Generate hook-based plugin extension system with event emitter patterns.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Plugin Hook System

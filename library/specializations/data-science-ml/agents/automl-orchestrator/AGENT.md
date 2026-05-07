@@ -9,6 +9,9 @@ expertise:
   - Ensemble strategy selection
   - Model comparison
   - Human-in-loop validation
+graph:
+  domains: [domain:data-science]
+
 ---
 
 # automl-orchestrator

@@ -8,6 +8,9 @@ expertise:
   - Parameter naming and typing
   - Error response design
   - Tool discoverability
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # MCP Tool Designer Agent

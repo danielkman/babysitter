@@ -17,6 +17,8 @@
  * - GoReleaser: https://goreleaser.com/
  * - pkg (Node.js): https://github.com/vercel/pkg
  * - PyInstaller: https://pyinstaller.org/
+ * @graph
+ *   domains: [domain:software-engineering, role:backend-engineer]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

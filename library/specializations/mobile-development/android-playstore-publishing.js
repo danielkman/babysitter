@@ -17,6 +17,8 @@
  * - Google Play Console: https://play.google.com/console
  * - Play Store Policies: https://support.google.com/googleplay/android-developer/topic/9858052
  * - Android App Bundle: https://developer.android.com/guide/app-bundle
+ * @graph
+ *   domains: [domain:mobile]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

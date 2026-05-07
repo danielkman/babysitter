@@ -4,6 +4,8 @@
  * @inputs { projectName: string, features?: object }
  * @outputs { success: boolean, testConfig: object, testSuites: array, artifacts: array }
  * @references - Playwright: https://playwright.dev/
+ * @graph
+ *   domains: [domain:web-development, workflow:code-review]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

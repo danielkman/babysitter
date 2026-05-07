@@ -9,6 +9,8 @@ expertise:
   - Retention and engagement
   - Referral and viral mechanics
   - Monetization optimization
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Growth PM Agent

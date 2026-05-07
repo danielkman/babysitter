@@ -4,6 +4,8 @@
  * @inputs { projectName: string, framework?: string }
  * @outputs { success: boolean, cachingConfig: object, strategies: array, artifacts: array }
  * @references - Workbox: https://developers.google.com/web/tools/workbox
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

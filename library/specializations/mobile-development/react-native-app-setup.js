@@ -23,6 +23,8 @@
  * - React Navigation: https://reactnavigation.org/
  * - Redux Toolkit: https://redux-toolkit.js.org/
  * - React Native Testing Library: https://callstack.github.io/react-native-testing-library/
+ * @graph
+ *   domains: [domain:mobile]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

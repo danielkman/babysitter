@@ -10,6 +10,9 @@ expertise:
   - Rapid testing strategies
   - Edge case discovery
   - User experience testing
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Exploratory Testing Expert Agent

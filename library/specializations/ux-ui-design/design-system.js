@@ -33,6 +33,8 @@
  * - Design Systems Handbook: https://www.designbetter.co/design-systems-handbook
  * - Style Dictionary: https://amzn.github.io/style-dictionary/
  * - Figma Design Tokens: https://www.figma.com/community/plugin/888356646278934516/Design-Tokens
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

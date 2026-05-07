@@ -2,6 +2,9 @@
 name: eslint
 description: ESLint configuration, custom rules, and plugin development.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # ESLint Skill

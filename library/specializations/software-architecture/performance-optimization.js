@@ -23,6 +23,8 @@
  * - Optimization Patterns: https://martinfowler.com/articles/patterns-of-distributed-systems/
  * - APM Best Practices: https://www.datadoghq.com/knowledge-center/apm/
  * - Database Performance: https://use-the-index-luke.com/
+ * @graph
+ *   domains: [domain:software-engineering, skill-area:caching-strategies]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

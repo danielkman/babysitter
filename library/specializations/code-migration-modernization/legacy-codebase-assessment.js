@@ -20,6 +20,8 @@
  * - SonarQube Documentation: https://docs.sonarqube.org/
  * - CAST Software Intelligence: https://www.castsoftware.com/
  * - Technical Debt Quadrant: https://martinfowler.com/bliki/TechnicalDebtQuadrant.html
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

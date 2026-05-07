@@ -2,6 +2,9 @@
 name: redux-toolkit
 description: Redux Toolkit patterns including slice creation, async thunks, RTK Query, state normalization, and DevTools integration.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Redux Toolkit Skill

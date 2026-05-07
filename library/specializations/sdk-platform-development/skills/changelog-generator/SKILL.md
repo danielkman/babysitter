@@ -8,6 +8,8 @@ allowed-tools:
   - Glob
   - Grep
   - Bash
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Changelog Generator Skill

@@ -5,6 +5,8 @@ version: 1.0.0
 category: API Integration
 slug: graphql-mobile
 status: active
+graph:
+  domains: [domain:mobile]
 ---
 
 # GraphQL Mobile Skill

@@ -29,6 +29,8 @@
  * - Trivy Scanner: https://aquasecurity.github.io/trivy/
  * - SBOM Generation: https://www.cisa.gov/sbom
  * - Harbor Registry: https://goharbor.io/docs/
+ * @graph
+ *   domains: [domain:devops, topic:microservices]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

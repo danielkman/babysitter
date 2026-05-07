@@ -84,6 +84,8 @@
  *     role and exports scoped creds before each walk.
  *   - Tolerate AccessDenied / OptInRequired per service; record in manifest.
  *   - Drift defense: composers `cat` source artifacts at execution time.
+ * @graph
+ *   domains: [domain:devops]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

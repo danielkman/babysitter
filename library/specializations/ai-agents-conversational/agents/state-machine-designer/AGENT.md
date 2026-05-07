@@ -8,6 +8,9 @@ expertise:
   - State transitions
   - Context management
   - State persistence
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # State Machine Designer

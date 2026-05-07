@@ -18,6 +18,8 @@
  * - Enterprise Integration Patterns: https://www.enterpriseintegrationpatterns.com/
  * - API-First Design: https://swagger.io/resources/articles/adopting-an-api-first-approach/
  * - Event-Driven Architecture: https://martinfowler.com/articles/201701-event-driven.html
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

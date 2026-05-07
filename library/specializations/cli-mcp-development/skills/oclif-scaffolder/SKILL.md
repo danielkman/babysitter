@@ -2,6 +2,9 @@
 name: oclif-scaffolder
 description: Generate oclif CLI framework projects with plugin support, topics, hooks, and TypeScript. Creates enterprise-grade CLI applications with extensibility.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # oclif Scaffolder

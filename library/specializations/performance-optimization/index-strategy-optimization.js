@@ -14,6 +14,8 @@
  *
  * @references
  * - Use The Index Luke: https://use-the-index-luke.com/sql/table-of-contents
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

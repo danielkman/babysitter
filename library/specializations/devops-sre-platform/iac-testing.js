@@ -46,6 +46,8 @@
  * - Infracost: https://www.infracost.io/
  * - InSpec: https://www.chef.io/products/chef-inspec
  * - AWS CloudFormation Testing: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-validate-template.html
+ * @graph
+ *   domains: [domain:devops, workflow:code-review]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

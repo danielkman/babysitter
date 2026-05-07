@@ -7,6 +7,8 @@ model: opus
 skills:
   - performance-baseline-capturer
   - migration-validator
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Performance Validation Agent

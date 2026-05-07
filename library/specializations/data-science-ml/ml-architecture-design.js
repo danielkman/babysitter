@@ -19,6 +19,8 @@
  * - Production ML Systems - Google: https://developers.google.com/machine-learning/crash-course/production-ml-systems
  * - ML Test Score Rubric: https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/aad9f93b86b7addfea4c419b9100c6cdd26cacea.pdf
  * - Rules of Machine Learning - Google: https://developers.google.com/machine-learning/guides/rules-of-ml
+ * @graph
+ *   domains: [domain:data-science, role:data-scientist]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

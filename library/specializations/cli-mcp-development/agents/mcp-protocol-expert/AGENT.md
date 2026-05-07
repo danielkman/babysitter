@@ -9,6 +9,9 @@ expertise:
   - Tool and resource design
   - Security best practices
   - Performance optimization
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # MCP Protocol Expert Agent

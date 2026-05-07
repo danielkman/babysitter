@@ -2,6 +2,9 @@
 name: evidently-drift-detector
 description: Evidently AI skill for data drift detection, model performance monitoring, target drift analysis, and automated reporting for ML systems in production.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob
+graph:
+  domains: [domain:data-science]
+
 ---
 
 # Evidently Drift Detector

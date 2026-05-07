@@ -18,6 +18,8 @@
  * - PWA Documentation: https://web.dev/progressive-web-apps/
  * - Workbox: https://developers.google.com/web/tools/workbox
  * - Service Worker API: https://developer.mozilla.org/docs/Web/API/Service_Worker_API
+ * @graph
+ *   domains: [domain:web-development, role:frontend-engineer]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

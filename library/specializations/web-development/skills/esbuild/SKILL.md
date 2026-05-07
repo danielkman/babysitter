@@ -2,6 +2,9 @@
 name: esbuild
 description: esbuild bundling, plugins, and build optimization.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # esbuild Skill

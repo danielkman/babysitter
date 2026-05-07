@@ -9,6 +9,9 @@ expertise:
   - Remediation planning
   - Priority assessment
   - Compliance reporting
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Accessibility Auditor Agent

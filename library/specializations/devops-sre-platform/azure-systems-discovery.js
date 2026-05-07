@@ -73,6 +73,8 @@
  *     under the run's `tasks/` tree.
  *   - Drift defense: composition agents read source data via Bash `cat` at
  *     execution time rather than receiving inlined bytes through the prompt.
+ * @graph
+ *   domains: [domain:devops]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

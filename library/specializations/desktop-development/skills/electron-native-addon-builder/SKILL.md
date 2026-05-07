@@ -3,6 +3,8 @@ name: electron-native-addon-builder
 description: Build and bundle native Node.js addons for Electron with proper ABI compatibility, cross-compilation support, and rebuild automation
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [electron, native-modules, node-addon, n-api, build]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # electron-native-addon-builder

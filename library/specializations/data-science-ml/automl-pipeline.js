@@ -19,6 +19,8 @@
  * - H2O AutoML: https://docs.h2o.ai/h2o/latest-stable/h2o-docs/automl.html
  * - MLflow Experiment Tracking: https://mlflow.org/
  * - Google AutoML: https://cloud.google.com/automl
+ * @graph
+ *   domains: [domain:data-science, workflow:release-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -9,6 +9,9 @@ expertise:
   - Form UX patterns
   - Accessibility
   - Complex form handling
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Forms Developer Agent

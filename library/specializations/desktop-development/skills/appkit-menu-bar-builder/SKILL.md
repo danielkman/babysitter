@@ -3,6 +3,8 @@ name: appkit-menu-bar-builder
 description: Generate NSMenu and NSStatusItem configurations for macOS menu bar applications
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [macos, appkit, menubar, statusitem, swift]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # appkit-menu-bar-builder

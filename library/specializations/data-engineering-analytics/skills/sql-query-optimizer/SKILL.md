@@ -5,6 +5,8 @@ version: 1.0.0
 category: SQL Optimization
 skill-id: SK-DEA-004
 allowed-tools: Read, Grep, Glob, Bash, WebFetch
+graph:
+  domains: [domain:data-engineering]
 ---
 
 # SQL Query Optimizer

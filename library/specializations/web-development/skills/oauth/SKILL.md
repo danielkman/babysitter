@@ -2,6 +2,9 @@
 name: oauth
 description: OAuth 2.0/OIDC flows, provider integration, and token handling.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # OAuth Skill

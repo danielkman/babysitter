@@ -9,6 +9,9 @@ expertise:
   - DR testing and validation
   - Compliance requirements
   - Chaos engineering for DR
+graph:
+  domains: [domain:devops]
+
 ---
 
 # Disaster Recovery Specialist Agent

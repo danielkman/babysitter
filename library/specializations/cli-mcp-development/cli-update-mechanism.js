@@ -16,6 +16,8 @@
  * @references
  * - go-selfupdate: https://github.com/rhysd/go-self-update
  * - update-notifier (Node.js): https://github.com/yeoman/update-notifier
+ * @graph
+ *   domains: [domain:software-engineering, role:backend-engineer]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

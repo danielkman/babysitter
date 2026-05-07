@@ -2,6 +2,9 @@
 name: vercel
 description: Vercel deployment, edge functions, environment configuration, and preview deployments.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Vercel Skill

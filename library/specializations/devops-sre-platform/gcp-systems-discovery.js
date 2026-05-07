@@ -62,6 +62,8 @@
  *   - The single user-controlled path is `inputs.outputDir`, ONLY for final reports.
  *   - Drift defense: composition agents read source data via Bash `cat`/`jq` at execution time rather than via inlined prompt bytes.
  *   - Org-wide scope short-circuits per-project enumeration via Cloud Asset Inventory (`gcloud asset search-all-resources --scope=organizations/<id>`) — ~10x faster.
+ * @graph
+ *   domains: [domain:devops]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

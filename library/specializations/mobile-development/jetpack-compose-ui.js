@@ -19,6 +19,8 @@
  * - Material Design 3: https://m3.material.io/
  * - Compose Navigation: https://developer.android.com/jetpack/compose/navigation
  * - Compose Testing: https://developer.android.com/jetpack/compose/testing
+ * @graph
+ *   domains: [domain:mobile]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

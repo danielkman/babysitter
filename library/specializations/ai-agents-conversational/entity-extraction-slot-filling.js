@@ -16,6 +16,8 @@
  * - spaCy NER: https://spacy.io/usage/linguistic-features#named-entities
  * - Hugging Face NER: https://huggingface.co/docs/transformers/tasks/token_classification
  * - Rasa Entity Extraction: https://rasa.com/docs/rasa/nlu-training-data/#entities
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

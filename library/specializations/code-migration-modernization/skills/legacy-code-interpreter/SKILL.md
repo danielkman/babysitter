@@ -2,6 +2,8 @@
 name: legacy-code-interpreter
 description: Understand and document legacy code behavior through deep analysis and behavior characterization
 allowed-tools: ["Bash", "Read", "Write", "Grep", "Glob", "Edit"]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Legacy Code Interpreter Skill

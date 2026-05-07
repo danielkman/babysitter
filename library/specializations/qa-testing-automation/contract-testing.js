@@ -26,6 +26,8 @@
  * - Contract Testing Best Practices: https://pactflow.io/blog/contract-testing-best-practices/
  * - Spring Cloud Contract: https://spring.io/projects/spring-cloud-contract
  * - Pact Broker: https://github.com/pact-foundation/pact_broker
+ * @graph
+ *   domains: [domain:software-engineering, workflow:code-review]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

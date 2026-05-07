@@ -17,6 +17,8 @@
  * - Fastlane: https://fastlane.tools/
  * - Fastlane iOS: https://docs.fastlane.tools/actions/
  * - Fastlane Android: https://docs.fastlane.tools/getting-started/android/setup/
+ * @graph
+ *   domains: [domain:mobile]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

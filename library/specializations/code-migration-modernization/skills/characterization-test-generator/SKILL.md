@@ -2,6 +2,8 @@
 name: characterization-test-generator
 description: Generate characterization tests to capture and verify existing behavior before migration
 allowed-tools: ["Bash", "Read", "Write", "Grep", "Glob", "Edit"]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Characterization Test Generator Skill

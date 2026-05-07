@@ -17,6 +17,8 @@
  * - Room Documentation: https://developer.android.com/training/data-storage/room
  * - Room with Flow: https://developer.android.com/training/data-storage/room/async-queries
  * - Database Migration: https://developer.android.com/training/data-storage/room/migrating-db-versions
+ * @graph
+ *   domains: [domain:mobile]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

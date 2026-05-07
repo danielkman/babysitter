@@ -18,6 +18,8 @@
  * - Azure SDK Guidelines: https://azure.github.io/azure-sdk/
  * - OpenAPI Generator: https://openapi-generator.tech/
  * - Smithy: https://smithy.io/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

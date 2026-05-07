@@ -2,6 +2,9 @@
 name: rest-api-design
 description: RESTful API design principles, versioning, pagination, HATEOAS, and documentation.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # REST API Design Skill

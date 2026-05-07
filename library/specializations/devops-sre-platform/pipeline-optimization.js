@@ -28,6 +28,8 @@
  * - Jenkins Pipeline Optimization: https://www.jenkins.io/doc/book/pipeline/pipeline-best-practices/
  * - CircleCI Optimization: https://circleci.com/docs/optimization-cookbook/
  * - Build Caching: https://docs.docker.com/build/cache/
+ * @graph
+ *   domains: [domain:devops, workflow:release-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

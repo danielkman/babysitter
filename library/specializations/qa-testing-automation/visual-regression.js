@@ -28,6 +28,8 @@
  * - Applitools Eyes: https://applitools.com/
  * - Chromatic: https://www.chromatic.com/
  * - Visual Regression Testing Best Practices: https://testingjavascript.com/
+ * @graph
+ *   domains: [domain:software-engineering, workflow:feature-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

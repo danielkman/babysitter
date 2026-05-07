@@ -17,6 +17,8 @@
  * - Electron clipboard: https://www.electronjs.org/docs/latest/api/clipboard
  * - Electron globalShortcut: https://www.electronjs.org/docs/latest/api/global-shortcut
  * - Electron powerMonitor: https://www.electronjs.org/docs/latest/api/power-monitor
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

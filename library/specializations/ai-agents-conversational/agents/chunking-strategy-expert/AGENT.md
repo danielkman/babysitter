@@ -8,6 +8,9 @@ expertise:
   - Semantic boundary detection
   - Overlap configuration
   - Format-specific chunking
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Chunking Strategy Expert

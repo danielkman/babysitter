@@ -18,6 +18,8 @@
  * - Performance Engineering: https://www.brendangregg.com/linuxperf.html
  * - Web Performance: https://web.dev/performance/
  * - APM Tools: https://www.datadoghq.com/product/apm/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

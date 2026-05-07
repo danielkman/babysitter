@@ -2,6 +2,9 @@
 name: argument-validator-generator
 description: Generate argument validation logic with type coercion, constraints, custom validators, and helpful error messages for CLI applications.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Argument Validator Generator

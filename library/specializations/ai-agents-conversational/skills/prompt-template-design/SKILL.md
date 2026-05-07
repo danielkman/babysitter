@@ -8,6 +8,9 @@ allowed-tools:
   - Bash
   - Glob
   - Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Prompt Template Design Skill

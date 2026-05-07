@@ -8,6 +8,9 @@ allowed-tools:
   - Edit
   - Glob
   - Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Appium Mobile Testing Skill

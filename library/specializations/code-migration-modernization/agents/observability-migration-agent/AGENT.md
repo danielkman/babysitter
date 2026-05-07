@@ -7,6 +7,8 @@ model: opus
 skills:
   - logging-migrator
   - performance-baseline-capturer
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Observability Migration Agent

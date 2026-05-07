@@ -2,6 +2,9 @@
 name: apollo-server
 description: Apollo Server configuration, plugins, caching, federation, and performance optimization.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Apollo Server Skill

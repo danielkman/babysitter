@@ -2,6 +2,9 @@
 name: secrets-management
 description: Secrets handling, environment variables, and vault integration.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Secrets Management Skill

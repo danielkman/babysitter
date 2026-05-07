@@ -16,6 +16,8 @@
  * @references
  * - Diataxis Tutorial Framework: https://diataxis.fr/tutorials/
  * - Developer Education Best Practices: https://www.developerrelations.com/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

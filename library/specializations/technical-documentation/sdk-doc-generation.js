@@ -30,6 +30,8 @@
  * - Godoc: https://go.dev/blog/godoc
  * - Docusaurus: https://docusaurus.io/
  * - Documentation Best Practices: https://documentation.divio.com/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

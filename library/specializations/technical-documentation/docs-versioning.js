@@ -29,6 +29,8 @@
  * - MkDocs Material Versioning: https://squidfunk.github.io/mkdocs-material/setup/setting-up-versioning/
  * - VuePress Versioning: https://vuepress.vuejs.org/guide/deploy.html#versioning
  * - Documentation Version Management: https://documentation.divio.com/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -6,6 +6,8 @@
  * @references
  * - Redis Documentation: https://redis.io/documentation
  * - ioredis: https://github.com/redis/ioredis
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

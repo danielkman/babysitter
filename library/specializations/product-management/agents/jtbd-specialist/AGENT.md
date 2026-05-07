@@ -9,6 +9,8 @@ expertise:
   - Progress mapping
   - Outcome-driven innovation
   - Switch interview analysis
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # JTBD Specialist Agent

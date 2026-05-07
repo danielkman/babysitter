@@ -10,6 +10,9 @@ expertise:
   - Fallback mechanisms
   - Rate limiting
   - Backpressure handling
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Resilience Patterns Engineer Agent

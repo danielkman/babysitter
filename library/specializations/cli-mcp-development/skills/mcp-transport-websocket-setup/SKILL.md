@@ -2,6 +2,9 @@
 name: mcp-transport-websocket-setup
 description: Configure WebSocket transport for bidirectional MCP communication with connection management and reconnection handling.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # MCP Transport WebSocket Setup

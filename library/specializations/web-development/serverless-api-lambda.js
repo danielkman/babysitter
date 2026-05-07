@@ -9,6 +9,8 @@
  * - AWS Lambda Documentation: https://docs.aws.amazon.com/lambda/
  * - Serverless Framework: https://www.serverless.com/
  * - AWS SAM: https://aws.amazon.com/serverless/sam/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -9,6 +9,9 @@ expertise:
   - Guardrail monitoring
   - Decision recommendation
   - Test documentation
+graph:
+  domains: [domain:data-science]
+
 ---
 
 # ab-test-analyst

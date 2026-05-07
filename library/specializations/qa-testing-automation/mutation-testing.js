@@ -6,6 +6,8 @@
  * @complexity Medium
  * @inputs { projectPath: string, testSuitePath: string, mutationTool: string, scopePatterns: array, qualityThresholds: object }
  * @outputs { success: boolean, mutationScore: number, survivedMutants: array, testImprovements: array, dashboardUrl: string }
+ * @graph
+ *   domains: [domain:software-engineering, workflow:code-review]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

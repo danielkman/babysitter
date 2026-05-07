@@ -9,6 +9,8 @@ expertise:
   - Spacing pattern recognition
   - Component cataloging
   - Visual hierarchy mapping
+graph:
+  domains: [domain:web-development]
 ---
 
 # design-mock-analyzer

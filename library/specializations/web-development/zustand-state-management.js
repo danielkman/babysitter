@@ -4,6 +4,8 @@
  * @inputs { projectName: string }
  * @outputs { success: boolean, storeConfig: object, stores: array, artifacts: array }
  * @references - Zustand: https://docs.pmnd.rs/zustand/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -2,6 +2,9 @@
 name: socketio
 description: Socket.io rooms, namespaces, adapters, middleware, and real-time patterns.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Socket.io Skill

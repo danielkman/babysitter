@@ -2,6 +2,9 @@
 name: cobra-scaffolder
 description: Generate Cobra/Viper-based Go CLI applications with persistent flags, subcommands, and configuration management. Creates production-ready Go CLI with modern patterns.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Cobra Scaffolder

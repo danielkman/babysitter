@@ -3,6 +3,8 @@
  * @description Cloud-native architecture design process with cloud provider selection, compute/data/network design, security planning, HA design, and cost optimization
  * @inputs { projectName: string, requirements: object, cloudProviders?: string[], targetQuality?: number }
  * @outputs { success: boolean, architecture: object, cost: object, security: object, iac: object }
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

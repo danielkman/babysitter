@@ -2,6 +2,9 @@
 name: aria
 description: WAI-ARIA implementation, roles, states, and properties.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # ARIA Skill

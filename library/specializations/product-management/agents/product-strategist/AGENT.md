@@ -9,6 +9,8 @@ expertise:
   - Build vs. buy vs. partner decisions
   - Platform strategy
   - Business model innovation
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Product Strategist Agent

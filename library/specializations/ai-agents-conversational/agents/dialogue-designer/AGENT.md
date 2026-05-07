@@ -8,6 +8,9 @@ expertise:
   - State management
   - User intent handling
   - Response generation
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Dialogue Designer

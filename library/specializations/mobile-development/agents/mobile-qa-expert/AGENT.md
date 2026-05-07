@@ -6,6 +6,8 @@ category: Quality Assurance
 slug: mobile-qa-expert
 status: active
 role: Senior Mobile QA Engineer
+graph:
+  domains: [domain:mobile]
 ---
 
 # Mobile QA Engineer Agent

@@ -16,6 +16,8 @@
  * @references
  * - Oracle GC Tuning Guide: https://docs.oracle.com/en/java/javase/17/gctuning/
  * - GCEasy: https://gceasy.io/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -17,6 +17,8 @@
  * - App Store Connect: https://developer.apple.com/app-store-connect/
  * - App Store Review Guidelines: https://developer.apple.com/app-store/review/guidelines/
  * - App Store Optimization: https://developer.apple.com/app-store/product-page/
+ * @graph
+ *   domains: [domain:mobile]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

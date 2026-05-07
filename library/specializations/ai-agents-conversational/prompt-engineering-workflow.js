@@ -16,6 +16,8 @@
  * - LangSmith: https://docs.smith.langchain.com/
  * - PromptLayer: https://docs.promptlayer.com/
  * - Prompt Engineering Guide: https://www.promptingguide.ai/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

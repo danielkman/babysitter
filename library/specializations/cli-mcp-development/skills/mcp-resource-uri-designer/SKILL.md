@@ -2,6 +2,9 @@
 name: mcp-resource-uri-designer
 description: Design and implement MCP resource URI schemes and templates with proper naming, hierarchy, and documentation.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # MCP Resource URI Designer

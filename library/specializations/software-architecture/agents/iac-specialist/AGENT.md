@@ -10,6 +10,9 @@ expertise:
   - Module design
   - Provider configuration
   - Drift detection
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # IaC Specialist Agent

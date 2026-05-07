@@ -3,6 +3,8 @@
  * @description Collaborative workshop technique for discovering domain events, commands, aggregates, and bounded contexts
  * @inputs { domain: string, scope: string, participantCount: number, workshopDuration: number }
  * @outputs { success: boolean, domainModel: object, boundedContexts: array, artifacts: object }
+ * @graph
+ *   domains: [domain:software-engineering, topic:event-sourcing]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

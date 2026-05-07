@@ -7,6 +7,8 @@ expertise:
   - Color blindness simulation
   - Accessible color alternatives
   - Dark/light mode contrast validation
+graph:
+  domains: [domain:web-development]
 ---
 
 # Color Contrast Analyzer Agent

@@ -9,6 +9,9 @@ expertise:
   - OpenAPI/Swagger specification
   - API security and authentication
   - Rate limiting and throttling
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # API Architect Agent

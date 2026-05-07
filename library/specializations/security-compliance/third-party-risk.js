@@ -32,6 +32,8 @@
  * - CAIQ (Consensus Assessments Initiative Questionnaire): https://cloudsecurityalliance.org/artifacts/caiq/
  * - BitSight and SecurityScorecard (Third-Party Risk): https://www.bitsight.com/
  * - NIST Cybersecurity Supply Chain Risk Management: https://csrc.nist.gov/projects/cyber-supply-chain-risk-management
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

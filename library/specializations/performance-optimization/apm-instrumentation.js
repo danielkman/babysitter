@@ -16,6 +16,8 @@
  * - Datadog APM: https://docs.datadoghq.com/tracing/
  * - New Relic APM: https://docs.newrelic.com/docs/apm/
  * - Dynatrace: https://www.dynatrace.com/support/help/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

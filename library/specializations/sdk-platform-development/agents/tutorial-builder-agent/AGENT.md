@@ -7,6 +7,8 @@ expertise:
   - Interactive learning experiences
   - Developer onboarding patterns
   - Learning design principles
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Tutorial Builder Agent

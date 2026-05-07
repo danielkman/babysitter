@@ -2,6 +2,8 @@
 name: strangler-fig-orchestrator
 description: Orchestrate strangler fig pattern implementation for gradual migration with traffic routing and cutover management
 allowed-tools: ["Bash", "Read", "Write", "Grep", "Glob", "Edit"]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Strangler Fig Orchestrator Skill

@@ -5,6 +5,8 @@ version: 1.0.0
 category: Mobile DevOps
 slug: fastlane-cicd
 status: active
+graph:
+  domains: [domain:mobile]
 ---
 
 # Fastlane/Mobile CI-CD Skill

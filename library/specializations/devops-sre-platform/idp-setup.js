@@ -34,6 +34,8 @@
  * - CNCF Platform Engineering: https://tag-app-delivery.cncf.io/whitepapers/platforms/
  * - Internal Developer Platform: https://internaldeveloperplatform.org/
  * - Golden Paths: https://engineering.atspotify.com/2020/08/how-we-use-golden-paths-to-solve-fragmentation-in-our-software-ecosystem/
+ * @graph
+ *   domains: [domain:devops]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

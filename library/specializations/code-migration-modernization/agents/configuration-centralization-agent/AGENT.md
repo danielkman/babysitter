@@ -7,6 +7,8 @@ model: opus
 skills:
   - configuration-migrator
   - compliance-validator
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Configuration Centralization Agent

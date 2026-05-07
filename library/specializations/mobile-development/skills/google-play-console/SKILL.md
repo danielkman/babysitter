@@ -5,6 +5,8 @@ version: 1.0.0
 category: Android Distribution
 slug: google-play-console
 status: active
+graph:
+  domains: [domain:mobile]
 ---
 
 # Google Play Console Skill

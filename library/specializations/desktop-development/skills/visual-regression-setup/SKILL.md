@@ -3,6 +3,8 @@ name: visual-regression-setup
 description: Configure visual regression testing with Percy, Chromatic, or custom screenshot comparison
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [testing, visual-regression, screenshots, ui-testing, desktop]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # visual-regression-setup

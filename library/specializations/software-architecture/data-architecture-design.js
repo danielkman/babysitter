@@ -19,6 +19,8 @@
  * - Data Architecture: A Primer for the Data Scientist: https://www.oreilly.com/library/view/data-architecture-a/9780128025109/
  * - The Data Warehouse Toolkit by Ralph Kimball: https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/books/
  * - Data Modeling Made Simple by Steve Hoberman: https://www.dataversity.net/data-modeling-made-simple/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

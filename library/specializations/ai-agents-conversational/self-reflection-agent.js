@@ -16,6 +16,8 @@
  * - Reflexion: https://arxiv.org/abs/2303.11366
  * - Self-Refine: https://arxiv.org/abs/2303.17651
  * - Constitutional AI: https://arxiv.org/abs/2212.08073
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

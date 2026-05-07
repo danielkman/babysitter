@@ -27,6 +27,8 @@
  * - Google Cloud DR Planning: https://cloud.google.com/architecture/dr-scenarios-planning-guide
  * - ISO 22301 Business Continuity: https://www.iso.org/standard/75106.html
  * - Site Reliability Engineering: https://sre.google/workbook/implementing-slos/
+ * @graph
+ *   domains: [domain:devops]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -16,6 +16,8 @@
  * @references
  * - blessed-contrib: https://github.com/yaronn/blessed-contrib
  * - Textual: https://textual.textualize.io/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

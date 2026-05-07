@@ -25,6 +25,8 @@
  * @references
  * - Playwright Electron: https://playwright.dev/docs/api/class-electron
  * - Related issue: https://github.com/a5c-ai/babysitter/issues/59
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

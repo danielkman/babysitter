@@ -16,6 +16,8 @@
  * @references
  * - Chrome DevTools Performance: https://developer.chrome.com/docs/devtools/performance/
  * - Electron Performance: https://www.electronjs.org/docs/latest/tutorial/performance
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

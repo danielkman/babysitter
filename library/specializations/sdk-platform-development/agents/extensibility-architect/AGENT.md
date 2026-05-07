@@ -7,6 +7,8 @@ expertise:
   - Extension point design
   - Backward compatibility for extensions
   - Middleware and hook systems
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Extensibility Architect Agent

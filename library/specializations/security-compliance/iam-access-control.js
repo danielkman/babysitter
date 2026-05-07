@@ -34,6 +34,8 @@
  * - NIST SP 800-53: Access Control Family: https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-53r5.pdf
  * - PCI-DSS Requirement 7 & 8: https://www.pcisecuritystandards.org/
  * - Zero Trust Architecture (NIST SP 800-207): https://csrc.nist.gov/publications/detail/sp/800-207/final
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

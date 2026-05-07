@@ -18,6 +18,8 @@
  * - Remix Documentation: https://remix.run/docs
  * - Web Fetch API: https://developer.mozilla.org/docs/Web/API/Fetch_API
  * - Prisma: https://www.prisma.io/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

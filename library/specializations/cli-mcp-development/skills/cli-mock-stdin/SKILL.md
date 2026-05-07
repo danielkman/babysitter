@@ -2,6 +2,9 @@
 name: cli-mock-stdin
 description: Create mock stdin utilities for interactive CLI testing.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # CLI Mock Stdin

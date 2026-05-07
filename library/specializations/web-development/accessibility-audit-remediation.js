@@ -4,6 +4,8 @@
  * @inputs { projectName: string, wcagLevel?: string }
  * @outputs { success: boolean, auditResults: object, remediations: array, artifacts: array }
  * @references - WCAG: https://www.w3.org/WAI/standards-guidelines/wcag/
+ * @graph
+ *   domains: [domain:web-development, skill-area:accessibility-testing]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

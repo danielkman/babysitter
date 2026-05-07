@@ -15,6 +15,9 @@ expertise:
   - Unavailable feature documentation (widgetState, uploadFile, requestModal, view)
   - Pattern-based search-and-replace verification
   - CORS configuration for MCP clients
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # MCP Migration Specialist Agent

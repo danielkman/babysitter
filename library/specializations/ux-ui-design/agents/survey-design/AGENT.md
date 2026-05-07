@@ -8,6 +8,8 @@ expertise:
   - Response bias detection
   - Statistical analysis
   - Results visualization
+graph:
+  domains: [domain:web-development]
 ---
 
 # Survey Design Agent

@@ -8,6 +8,9 @@ expertise:
   - Training configuration
   - Model evaluation
   - Deployment integration
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Fine-Tuning Specialist

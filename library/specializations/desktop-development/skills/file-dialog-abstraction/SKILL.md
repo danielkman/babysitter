@@ -3,6 +3,8 @@ name: file-dialog-abstraction
 description: Cross-platform file dialog implementation for open, save, and directory selection
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [files, dialogs, cross-platform, desktop, native]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # file-dialog-abstraction

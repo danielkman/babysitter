@@ -2,6 +2,9 @@
 name: git
 description: Git workflows, branching strategies, and hooks.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Git Skill

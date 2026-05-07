@@ -16,6 +16,8 @@
  * @references
  * - GitHub Actions matrix: https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs
  * - Cross-platform testing: https://www.electronjs.org/docs/latest/tutorial/testing-overview
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

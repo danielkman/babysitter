@@ -3,6 +3,8 @@ name: nsis-installer-generator
 description: Generate NSIS installer scripts for Windows with custom UI and features
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [windows, nsis, installer, distribution, packaging]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # nsis-installer-generator

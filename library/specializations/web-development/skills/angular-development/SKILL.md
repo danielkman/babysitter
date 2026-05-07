@@ -2,6 +2,9 @@
 name: angular-development
 description: Angular development patterns including modules, components, services, dependency injection, signals, and enterprise architecture.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Angular Development Skill

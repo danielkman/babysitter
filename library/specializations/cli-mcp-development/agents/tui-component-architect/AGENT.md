@@ -8,6 +8,9 @@ expertise:
   - Input handling
   - State management
   - Animation patterns
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # TUI Component Architect Agent

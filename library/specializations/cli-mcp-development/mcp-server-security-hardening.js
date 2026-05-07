@@ -16,6 +16,8 @@
  * @references
  * - MCP Security: https://modelcontextprotocol.io/docs/concepts/security
  * - OWASP Guidelines: https://owasp.org/
+ * @graph
+ *   domains: [domain:software-engineering, role:security-engineer]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

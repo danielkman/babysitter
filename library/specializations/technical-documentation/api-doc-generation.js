@@ -5,6 +5,8 @@
  * @category API Documentation
  * @inputs { specPath: string, outputFormat: string[], includeExamples: boolean, languages: string[], interactive: boolean }
  * @outputs { success: boolean, documentation: object, quality: number, artifacts: string[] }
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

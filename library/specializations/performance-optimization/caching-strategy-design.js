@@ -15,6 +15,8 @@
  * @references
  * - Redis Documentation: https://redis.io/documentation
  * - Memcached: https://memcached.org/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

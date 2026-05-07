@@ -2,6 +2,9 @@
 name: cli-table-formatter
 description: Generate table formatters for structured CLI output with column alignment, borders, and responsive sizing.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # CLI Table Formatter

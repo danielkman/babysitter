@@ -6,6 +6,9 @@ backlog-id: AG-SA-003
 metadata:
   author: babysitter-sdk
   version: "1.0.0"
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # ddd-expert

@@ -2,6 +2,9 @@
 name: chalk-styling-system
 description: Create consistent chalk-based color and styling system for CLI output with themes, semantic colors, and formatting utilities.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Chalk Styling System

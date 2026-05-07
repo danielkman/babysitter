@@ -2,6 +2,9 @@
 name: nx
 description: Nx workspace configuration, generators, and affected commands.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Nx Skill

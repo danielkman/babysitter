@@ -8,6 +8,8 @@ expertise:
   - SVG optimization
   - Icon accessibility
   - Icon library documentation
+graph:
+  domains: [domain:web-development]
 ---
 
 # Iconography System Agent

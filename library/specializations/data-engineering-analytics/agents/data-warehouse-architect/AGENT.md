@@ -5,6 +5,8 @@ version: 1.0.0
 category: Architecture
 agent-id: AG-DEA-001
 type: specialist
+graph:
+  domains: [domain:data-engineering]
 ---
 
 # Data Warehouse Architect Agent

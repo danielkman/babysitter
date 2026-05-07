@@ -9,6 +9,9 @@ expertise:
   - WCAG compliance
   - Accessibility audits
   - Remediation planning
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Accessibility Testing Agent

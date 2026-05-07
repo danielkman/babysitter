@@ -3,6 +3,8 @@
  * @description Resilience pattern implementation process with failure point analysis, pattern selection, circuit breaker design, bulkhead implementation, retry logic, timeout configuration, chaos testing, and monitoring setup
  * @inputs { system: string, components: array, slas: object, outputDir: string, chaosTestingEnabled: boolean }
  * @outputs { success: boolean, patternsImplemented: array, resilienceScore: number, artifacts: array }
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -2,6 +2,9 @@
 name: css-modules
 description: CSS Modules patterns, composition, variables, and build configuration.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # CSS Modules Skill

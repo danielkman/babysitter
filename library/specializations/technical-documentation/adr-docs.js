@@ -3,6 +3,8 @@
  * @description Complete Architecture Decision Records (ADR) documentation lifecycle with decision analysis, alternatives research, template-based drafting, quality validation, review workflow, and repository maintenance
  * @inputs { decision: string, context: object, stakeholders: array, adrNumber: number, outputDir: string, relatedAdrs: array, template: string }
  * @outputs { success: boolean, adrDocument: string, adrNumber: string, status: string, qualityScore: number, artifacts: array }
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

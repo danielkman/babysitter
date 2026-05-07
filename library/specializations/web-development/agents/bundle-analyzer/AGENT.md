@@ -9,6 +9,9 @@ expertise:
   - Code splitting
   - Import cost analysis
   - Optimization strategies
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Bundle Analyzer Agent

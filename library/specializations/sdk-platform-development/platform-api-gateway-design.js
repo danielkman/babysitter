@@ -17,6 +17,8 @@
  * - Kong Gateway: https://docs.konghq.com/
  * - AWS API Gateway: https://docs.aws.amazon.com/apigateway/
  * - Envoy Proxy: https://www.envoyproxy.io/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

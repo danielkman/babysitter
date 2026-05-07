@@ -7,6 +7,8 @@ model: opus
 skills:
   - logging-migrator
   - documentation-generator
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Operational Readiness Agent

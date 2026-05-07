@@ -3,6 +3,8 @@ name: linux-gpg-signing
 description: Sign Linux packages with GPG keys for secure distribution
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [linux, gpg, signing, security, packaging]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # linux-gpg-signing

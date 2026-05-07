@@ -28,6 +28,8 @@
  * - Mermaid ER Syntax: https://mermaid.js.org/syntax/entityRelationshipDiagram.html
  * - OpenAPI Schema Documentation: https://swagger.io/docs/specification/data-models/
  * - Data Dictionary Standards: https://dataedo.com/kb/data-documentation/data-dictionary-best-practices
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

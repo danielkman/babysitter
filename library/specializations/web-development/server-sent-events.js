@@ -4,6 +4,8 @@
  * @inputs { projectName: string }
  * @outputs { success: boolean, sseConfig: object, streams: array, artifacts: array }
  * @references - SSE: https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events
+ * @graph
+ *   domains: [domain:web-development, topic:event-sourcing]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

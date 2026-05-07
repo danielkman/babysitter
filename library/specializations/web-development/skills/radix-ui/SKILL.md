@@ -2,6 +2,9 @@
 name: radix-ui
 description: Radix UI primitives, composition patterns, accessibility, and customization.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Radix UI Skill

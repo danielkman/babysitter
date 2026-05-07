@@ -2,6 +2,8 @@
 name: domain-model-extractor
 description: Extract domain models from monolithic codebases using DDD principles for microservices decomposition
 allowed-tools: ["Bash", "Read", "Write", "Grep", "Glob", "Edit"]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Domain Model Extractor Skill

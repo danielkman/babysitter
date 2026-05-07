@@ -4,6 +4,8 @@
  * @inputs { projectName: string, apiType?: string }
  * @outputs { success: boolean, testConfig: object, testSuites: array, artifacts: array }
  * @references - MSW: https://mswjs.io/
+ * @graph
+ *   domains: [domain:web-development, topic:api-design]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

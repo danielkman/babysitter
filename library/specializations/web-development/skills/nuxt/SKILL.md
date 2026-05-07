@@ -2,6 +2,9 @@
 name: nuxt
 description: Nuxt 3 patterns including Nitro server, auto-imports, modules, hybrid rendering, and full-stack development.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Nuxt Skill

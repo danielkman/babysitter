@@ -10,6 +10,9 @@ expertise:
   - Audit trail design
   - Evidence collection
   - Gap analysis
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Compliance Auditor Agent

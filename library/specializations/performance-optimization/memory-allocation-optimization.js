@@ -14,6 +14,8 @@
  *
  * @references
  * - Caffeine Cache: https://github.com/ben-manes/caffeine
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

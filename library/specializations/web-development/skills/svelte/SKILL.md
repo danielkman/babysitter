@@ -2,6 +2,9 @@
 name: svelte
 description: Svelte and SvelteKit development with built-in reactivity, stores, SSR/SSG, and modern web patterns.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Svelte Skill

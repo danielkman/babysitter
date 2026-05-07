@@ -2,6 +2,9 @@
 name: caching
 description: HTTP caching, service workers, cache invalidation, and CDN configuration.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Caching Skill

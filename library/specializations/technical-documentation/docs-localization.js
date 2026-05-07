@@ -40,6 +40,8 @@
  * - XLIFF: http://docs.oasis-open.org/xliff/xliff-core/v2.1/xliff-core-v2.1.html
  * - ICU Message Format: https://unicode-org.github.io/icu/userguide/format_parse/messages/
  * - Localization Best Practices: https://developers.google.com/international
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

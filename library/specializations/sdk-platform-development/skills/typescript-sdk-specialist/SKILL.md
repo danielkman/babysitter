@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: multi-language-sdk
   backlog-id: SK-SDK-002
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # typescript-sdk-specialist

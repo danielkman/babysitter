@@ -23,6 +23,8 @@
  * - Google Analytics: https://developers.google.com/analytics
  * - Heatmap Analysis Best Practices: https://www.nngroup.com/articles/heatmap-visualizations/
  * - Session Replay Ethics: https://www.nngroup.com/articles/session-replay/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

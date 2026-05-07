@@ -32,6 +32,8 @@
  * - Canary Releases: https://martinfowler.com/bliki/CanaryRelease.html
  * - GitOps: https://www.gitops.tech/
  * - Site Reliability Engineering: https://sre.google/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

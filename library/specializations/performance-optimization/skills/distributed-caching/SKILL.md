@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: caching
   backlog-id: SK-010
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # distributed-caching

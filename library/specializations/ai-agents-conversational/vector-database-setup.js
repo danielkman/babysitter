@@ -18,6 +18,8 @@
  * - Weaviate: https://weaviate.io/developers/weaviate
  * - Chroma: https://docs.trychroma.com/
  * - Qdrant: https://qdrant.tech/documentation/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

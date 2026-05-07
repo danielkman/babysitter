@@ -10,6 +10,9 @@ expertise:
   - Threat documentation
   - Data flow analysis
   - Trust boundary identification
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Threat Modeler Agent

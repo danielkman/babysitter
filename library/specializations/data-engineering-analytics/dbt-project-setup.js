@@ -25,6 +25,8 @@
  * - dbt Style Guide: https://github.com/dbt-labs/corp/blob/main/dbt_style_guide.md
  * - dbt Project Structure: https://docs.getdbt.com/reference/project-configs/project-structure
  * - dbt Cloud CI/CD: https://docs.getdbt.com/docs/deploy/continuous-integration
+ * @graph
+ *   domains: [domain:data-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

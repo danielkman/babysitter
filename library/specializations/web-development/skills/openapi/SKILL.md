@@ -2,6 +2,9 @@
 name: openapi
 description: OpenAPI/Swagger specification, code generation, documentation, and validation.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # OpenAPI Skill

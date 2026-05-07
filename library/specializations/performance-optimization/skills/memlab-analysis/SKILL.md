@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: memory-profiling
   backlog-id: SK-017
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # memlab-analysis

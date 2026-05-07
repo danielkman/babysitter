@@ -2,6 +2,8 @@
 name: code-smell-detector
 description: Automated detection of code smells and anti-patterns to identify refactoring opportunities
 allowed-tools: ["Bash", "Read", "Write", "Grep", "Glob", "Edit"]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Code Smell Detector Skill

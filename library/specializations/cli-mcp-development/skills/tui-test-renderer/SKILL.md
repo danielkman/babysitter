@@ -2,6 +2,9 @@
 name: tui-test-renderer
 description: Set up testing utilities for TUI components with ink-testing-library and Bubble Tea testing.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # TUI Test Renderer

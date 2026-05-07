@@ -8,6 +8,9 @@ expertise:
   - Fish completions
   - Dynamic completions
   - Context-aware suggestions
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Completion Script Expert Agent

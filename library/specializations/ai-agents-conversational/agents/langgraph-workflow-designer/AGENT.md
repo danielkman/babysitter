@@ -8,6 +8,9 @@ expertise:
   - Conditional routing
   - Cycle management
   - Checkpoint strategies
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # LangGraph Workflow Designer

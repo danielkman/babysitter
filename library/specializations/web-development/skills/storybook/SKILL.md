@@ -2,6 +2,9 @@
 name: storybook
 description: Storybook configuration, stories, addons, interaction testing, and documentation.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Storybook Skill

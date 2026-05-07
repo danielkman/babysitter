@@ -20,6 +20,8 @@
  * - Azure Migrate: https://azure.microsoft.com/en-us/services/azure-migrate/
  * - Google Cloud Migration: https://cloud.google.com/migration-center
  * - 6 Rs of Migration: https://docs.aws.amazon.com/prescriptive-guidance/latest/migration-strategies/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

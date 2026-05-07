@@ -10,6 +10,9 @@ expertise:
   - Trade-off analysis
   - NFR documentation
   - Quality metrics definition
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Quality Attributes Specialist Agent

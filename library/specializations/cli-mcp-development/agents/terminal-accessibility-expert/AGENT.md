@@ -8,6 +8,9 @@ expertise:
   - Color contrast
   - Non-visual feedback
   - WCAG compliance
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Terminal Accessibility Expert Agent

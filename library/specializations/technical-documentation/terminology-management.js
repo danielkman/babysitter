@@ -30,6 +30,8 @@
  * - Google Developer Documentation Style Guide: https://developers.google.com/style
  * - Terminology Management Best Practices
  * - Controlled Vocabularies and Taxonomies
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -8,6 +8,8 @@ expertise:
   - Touch target verification
   - Layout adaptation analysis
   - Mobile-first verification
+graph:
+  domains: [domain:web-development]
 ---
 
 # responsive-verifier

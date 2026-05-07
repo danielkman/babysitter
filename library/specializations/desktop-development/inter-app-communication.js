@@ -16,6 +16,8 @@
  * @references
  * - Electron IPC: https://www.electronjs.org/docs/latest/tutorial/ipc
  * - Node.js IPC: https://nodejs.org/api/child_process.html#child_processforkmodulepath-args-options
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: load-testing
   backlog-id: SK-006
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # gatling-load-testing

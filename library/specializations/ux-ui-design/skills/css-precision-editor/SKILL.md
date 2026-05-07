@@ -6,6 +6,8 @@ metadata:
   author: babysitter-sdk
   version: "1.0.0"
   category: implementation
+graph:
+  domains: [domain:web-development]
 ---
 
 # css-precision-editor

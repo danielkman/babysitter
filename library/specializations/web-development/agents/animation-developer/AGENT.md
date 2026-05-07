@@ -9,6 +9,9 @@ expertise:
   - Performance optimization
   - Gesture handling
   - Scroll-based animations
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Animation Developer Agent

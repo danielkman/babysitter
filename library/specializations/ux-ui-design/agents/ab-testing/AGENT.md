@@ -8,6 +8,8 @@ expertise:
   - Statistical significance testing
   - Conversion rate analysis
   - Test result interpretation
+graph:
+  domains: [domain:web-development]
 ---
 
 # A/B Testing Agent

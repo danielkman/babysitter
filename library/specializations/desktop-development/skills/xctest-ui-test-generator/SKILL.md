@@ -3,6 +3,8 @@ name: xctest-ui-test-generator
 description: Generate XCTest UI tests for macOS applications with accessibility identifiers and page object patterns
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [macos, xctest, uitesting, swift, testing]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # xctest-ui-test-generator

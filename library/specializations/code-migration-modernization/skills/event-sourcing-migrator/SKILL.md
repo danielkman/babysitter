@@ -2,6 +2,8 @@
 name: event-sourcing-migrator
 description: Migrate to event-sourcing architecture with event extraction, store setup, and CQRS implementation
 allowed-tools: ["Bash", "Read", "Write", "Grep", "Glob", "Edit"]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Event Sourcing Migrator Skill

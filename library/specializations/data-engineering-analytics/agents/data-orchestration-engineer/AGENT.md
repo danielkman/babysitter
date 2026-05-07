@@ -14,6 +14,8 @@ expertise:
   - SLA configuration
   - Cross-DAG coordination
   - Backfill management
+graph:
+  domains: [domain:data-engineering]
 ---
 
 # Data Orchestration Engineer Agent

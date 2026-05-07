@@ -24,6 +24,8 @@
  * - DRI International BCM Professional Practices: https://drii.org/resources/professionalpractices
  * - BCI Good Practice Guidelines: https://www.thebci.org/training-qualifications/good-practice-guidelines.html
  * - FEMA Continuity Guidance: https://www.fema.gov/emergency-managers/national-preparedness/continuity
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

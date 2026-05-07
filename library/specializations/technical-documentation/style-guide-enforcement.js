@@ -5,6 +5,8 @@
  * @category Style & Standards
  * @inputs { organization: string, existingStyleGuide: string, documentationTypes: array, targetAudience: string, outputDir: string, enforcementLevel: string, automationTools: array }
  * @outputs { success: boolean, styleGuidePath: string, enforcementRules: array, qualityScore: number, artifacts: array, metadata: object }
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

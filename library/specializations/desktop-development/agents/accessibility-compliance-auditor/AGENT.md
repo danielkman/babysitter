@@ -2,6 +2,8 @@
 name: accessibility-compliance-auditor
 description: Audits desktop apps for WCAG compliance, screen reader compatibility, and keyboard navigation
 expertise: [accessibility, wcag, screen-readers, keyboard-navigation]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # accessibility-compliance-auditor

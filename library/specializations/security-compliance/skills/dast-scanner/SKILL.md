@@ -7,6 +7,9 @@ metadata:
   version: "1.0.0"
   category: security-testing
   backlog-id: SK-SEC-003
+graph:
+  domains: [domain:security]
+
 ---
 
 # dast-scanner

@@ -2,6 +2,9 @@
 name: structured-data
 description: JSON-LD schema markup and validation.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Structured Data Skill

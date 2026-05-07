@@ -17,6 +17,8 @@
  *
  * @references
  * - Google SRE Book - SLOs: https://sre.google/sre-book/service-level-objectives/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

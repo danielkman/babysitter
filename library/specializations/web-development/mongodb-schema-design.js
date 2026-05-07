@@ -6,6 +6,8 @@
  * @references
  * - MongoDB Documentation: https://docs.mongodb.com/
  * - Mongoose: https://mongoosejs.com/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

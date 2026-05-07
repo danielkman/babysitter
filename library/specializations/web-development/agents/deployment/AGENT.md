@@ -9,6 +9,9 @@ expertise:
   - Zero-downtime deployment
   - Monitoring setup
   - Environment management
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Deployment Agent

@@ -21,6 +21,8 @@
  * - Think-Aloud Protocol: https://www.nngroup.com/articles/thinking-aloud-the-1-usability-tool/
  * - System Usability Scale (SUS): https://www.usability.gov/how-to-and-tools/methods/system-usability-scale.html
  * - Task Success Rate: https://measuringu.com/task-completion/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

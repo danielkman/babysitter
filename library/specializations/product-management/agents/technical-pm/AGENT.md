@@ -9,6 +9,8 @@ expertise:
   - Technical debt prioritization
   - Architecture decision involvement
   - Technical roadmap planning
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Technical Product Manager Agent

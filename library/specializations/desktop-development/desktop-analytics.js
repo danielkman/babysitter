@@ -16,6 +16,8 @@
  * @references
  * - Sentry Electron: https://docs.sentry.io/platforms/javascript/guides/electron/
  * - Amplitude: https://www.amplitude.com/docs
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -9,6 +9,9 @@ expertise:
   - Image optimization
   - Container security
   - Kubernetes basics
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Container Agent

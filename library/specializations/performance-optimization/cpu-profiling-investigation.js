@@ -17,6 +17,8 @@
  * @references
  * - Flame Graphs: https://www.brendangregg.com/flamegraphs.html
  * - async-profiler: https://github.com/jvm-profiling-tools/async-profiler
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

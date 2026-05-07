@@ -5,6 +5,8 @@ version: 1.0.0
 category: Native Android Development
 slug: kotlin-compose
 status: active
+graph:
+  domains: [domain:mobile]
 ---
 
 # Kotlin/Jetpack Compose Development Skill

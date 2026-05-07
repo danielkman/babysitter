@@ -2,6 +2,9 @@
 name: react-development
 description: Specialized skill for React component development, hooks patterns, state management, context API, performance optimization, and modern React best practices.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # React Development Skill

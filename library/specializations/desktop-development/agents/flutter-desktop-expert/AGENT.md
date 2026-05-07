@@ -2,6 +2,8 @@
 name: flutter-desktop-expert
 description: Expert in Flutter desktop development, platform channels, and widget architecture
 expertise: [flutter, dart, desktop, platform-channels, widgets]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # flutter-desktop-expert

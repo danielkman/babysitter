@@ -17,6 +17,8 @@
  * - node-config: https://github.com/node-config/node-config
  * - Viper (Go): https://github.com/spf13/viper
  * - python-decouple: https://github.com/HBNetwork/python-decouple
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

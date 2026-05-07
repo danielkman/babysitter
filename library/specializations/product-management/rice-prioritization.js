@@ -22,6 +22,8 @@
  * - RICE Framework by Intercom: https://www.intercom.com/blog/rice-simple-prioritization-for-product-managers/
  * - Product Roadmapping Best Practices: https://www.productplan.com/learn/product-roadmap-best-practices/
  * - Prioritization Frameworks Guide: https://www.mindtheproduct.com/prioritization-frameworks/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

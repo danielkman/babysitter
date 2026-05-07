@@ -8,6 +8,9 @@ expertise:
   - Coordination patterns
   - Conflict resolution
   - Resource allocation
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Multi-Agent Coordinator

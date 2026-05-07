@@ -8,6 +8,9 @@ expertise:
   - Streaming optimization
   - Parallel processing
   - Infrastructure tuning
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Latency Optimizer

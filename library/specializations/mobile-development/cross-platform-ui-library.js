@@ -19,6 +19,8 @@
  * - Flutter Material/Cupertino: https://flutter.dev/docs/development/ui/widgets
  * - Design Systems: https://www.designsystems.com/
  * - WCAG Guidelines: https://www.w3.org/WAI/standards-guidelines/wcag/
+ * @graph
+ *   domains: [domain:mobile]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

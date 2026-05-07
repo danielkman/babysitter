@@ -8,6 +8,8 @@ expertise:
   - Readability optimization
   - Responsive typography
   - Vertical rhythm calculation
+graph:
+  domains: [domain:web-development]
 ---
 
 # Typography System Agent

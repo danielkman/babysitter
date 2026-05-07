@@ -6,6 +6,8 @@
  * @references
  * - Web Vitals: https://web.dev/vitals/
  * - Lighthouse: https://developers.google.com/web/tools/lighthouse
+ * @graph
+ *   domains: [domain:web-development, skill-area:caching-strategies]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

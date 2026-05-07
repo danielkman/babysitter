@@ -7,6 +7,8 @@ model: opus
 skills:
   - codemod-executor
   - static-code-analyzer
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Code Translation Agent

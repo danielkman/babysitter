@@ -21,6 +21,8 @@
  *   migrationPlan, iacScripts, diagrams, architectureDoc, qualityReview,
  *   qualityScore, metadata
  * }
+ * @graph
+ *   domains: [domain:devops]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -6,6 +6,9 @@ allowed-tools:
   - Read
   - Glob
   - Grep
+graph:
+  domains: [domain:security]
+
 ---
 
 # Git Forensics Scanner

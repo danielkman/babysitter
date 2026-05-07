@@ -13,6 +13,9 @@ expertise:
   - Streaming input architecture (ontoolinputpartial)
   - Model context management (updateModelContext, sendMessage)
   - Multi-tool resource sharing patterns
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # MCP App Architect Agent

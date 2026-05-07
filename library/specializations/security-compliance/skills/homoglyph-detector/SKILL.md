@@ -5,6 +5,9 @@ allowed-tools:
   - Bash
   - Read
   - Grep
+graph:
+  domains: [domain:security]
+
 ---
 
 # Homoglyph Detector

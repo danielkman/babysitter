@@ -10,6 +10,9 @@ expertise:
   - APM tool interpretation
   - Capacity planning
   - Performance modeling
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Performance Engineer Agent

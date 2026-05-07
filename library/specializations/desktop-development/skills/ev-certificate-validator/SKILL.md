@@ -3,6 +3,8 @@ name: ev-certificate-validator
 description: Validate EV code signing certificate chain and timestamp for Windows SmartScreen
 allowed-tools: Read, Grep, Bash
 tags: [windows, codesigning, ev-certificate, security, validation]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # ev-certificate-validator

@@ -7,6 +7,8 @@ expertise:
   - Documentation style guides
   - API reference documentation
   - Code example creation
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Technical Writer Agent

@@ -4,6 +4,8 @@
  * @inputs { projectName: string, region?: string }
  * @outputs { success: boolean, amplifyConfig: object, services: array, artifacts: array }
  * @references - AWS Amplify: https://docs.amplify.aws/
+ * @graph
+ *   domains: [domain:web-development, workflow:release-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

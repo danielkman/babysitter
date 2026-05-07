@@ -2,6 +2,9 @@
 name: sklearn-model-trainer
 description: Scikit-learn model training skill with cross-validation, hyperparameter tuning, pipeline construction, and model serialization. Enables automated ML model development using scikit-learn's comprehensive toolkit.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob
+graph:
+  domains: [domain:data-science]
+
 ---
 
 # Scikit-learn Model Trainer

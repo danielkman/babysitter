@@ -31,6 +31,8 @@
  * - Grafana Dashboards: https://grafana.com/docs/grafana/latest/dashboards/
  * - Allure Reports: https://docs.qameta.io/allure/
  * - Test Analytics: https://testing.googleblog.com/2020/08/code-coverage-best-practices.html
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

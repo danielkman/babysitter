@@ -19,6 +19,8 @@
  * - CSAT Best Practices: https://www.questionpro.com/blog/csat/
  * - Sentiment Analysis: https://www.nngroup.com/articles/sentiment-analysis-user-research/
  * - Voice of Customer: https://www.forrester.com/what-it-means/voice-of-the-customer/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

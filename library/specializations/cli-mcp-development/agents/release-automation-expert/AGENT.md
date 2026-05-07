@@ -8,6 +8,9 @@ expertise:
   - Changelog generation
   - GitHub releases
   - Release automation
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Release Automation Expert Agent

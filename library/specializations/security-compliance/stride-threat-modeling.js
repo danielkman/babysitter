@@ -31,6 +31,8 @@
  * - OWASP Threat Modeling: https://owasp.org/www-community/Threat_Modeling
  * - Threat Modeling Manifesto: https://www.threatmodelingmanifesto.org/
  * - Microsoft Security Development Lifecycle: https://www.microsoft.com/en-us/securityengineering/sdl/threatmodeling
+ * @graph
+ *   domains: [domain:security, role:data-scientist]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -20,6 +20,8 @@
  * - Great Expectations: https://greatexpectations.io/
  * - DVC (Data Version Control): https://dvc.org/
  * - MLOps Principles: https://cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning
+ * @graph
+ *   domains: [domain:data-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

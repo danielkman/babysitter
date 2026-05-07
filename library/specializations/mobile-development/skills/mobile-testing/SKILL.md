@@ -5,6 +5,8 @@ version: 1.0.0
 category: Quality Assurance
 slug: mobile-testing
 status: active
+graph:
+  domains: [domain:mobile]
 ---
 
 # Mobile Testing Frameworks Skill

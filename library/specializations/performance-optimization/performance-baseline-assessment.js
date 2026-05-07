@@ -18,6 +18,8 @@
  * @references
  * - Web Vitals: https://web.dev/vitals/
  * - Brendan Gregg's Methodology: https://www.brendangregg.com/methodology.html
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

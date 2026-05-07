@@ -20,6 +20,8 @@
  * - Liquibase: https://www.liquibase.org/
  * - Database Refactoring: https://martinfowler.com/books/refactoringDatabases.html
  * - Expand and Contract Pattern: https://martinfowler.com/bliki/ParallelChange.html
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

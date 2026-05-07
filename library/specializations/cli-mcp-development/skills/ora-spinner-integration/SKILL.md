@@ -2,6 +2,9 @@
 name: ora-spinner-integration
 description: Integrate ora spinners with consistent styling, promise handling, and status updates for CLI progress feedback.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Ora Spinner Integration

@@ -2,6 +2,9 @@
 name: bubble-tea-scaffolder
 description: Generate Bubble Tea (Go) TUI application structure with models, commands, and views using the Elm architecture.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Bubble Tea Scaffolder

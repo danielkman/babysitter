@@ -14,6 +14,8 @@ expertise:
   - Report automation
   - Data visualization best practices
   - Self-service enablement
+graph:
+  domains: [domain:data-engineering]
 ---
 
 # BI Analytics Engineer Agent

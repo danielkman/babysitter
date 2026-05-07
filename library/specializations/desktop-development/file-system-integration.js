@@ -17,6 +17,8 @@
  * - Node.js fs module: https://nodejs.org/api/fs.html
  * - Electron dialog: https://www.electronjs.org/docs/latest/api/dialog
  * - chokidar: https://github.com/paulmillr/chokidar
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

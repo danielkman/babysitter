@@ -9,6 +9,9 @@ expertise:
   - Bundle analysis
   - Loading optimization
   - Runtime performance
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Performance Auditor Agent

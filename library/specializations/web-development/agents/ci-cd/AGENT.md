@@ -9,6 +9,9 @@ expertise:
   - Deployment workflows
   - Environment management
   - Secrets handling
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # CI/CD Agent

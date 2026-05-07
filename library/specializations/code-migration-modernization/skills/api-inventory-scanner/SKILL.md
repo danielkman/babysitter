@@ -2,6 +2,8 @@
 name: api-inventory-scanner
 description: Discover and document existing API endpoints from code, logs, and traffic analysis
 allowed-tools: ["Bash", "Read", "Write", "Grep", "Glob", "Edit"]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # API Inventory Scanner Skill

@@ -2,6 +2,9 @@
 name: jest
 description: Jest configuration, mocking strategies, snapshot testing, and coverage.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Jest Skill

@@ -57,6 +57,8 @@
  *    - Ensure terminology is consistent throughout
  *
  * ============================================================================
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

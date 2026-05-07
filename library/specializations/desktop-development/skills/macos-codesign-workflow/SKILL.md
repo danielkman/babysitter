@@ -3,6 +3,8 @@ name: macos-codesign-workflow
 description: Execute macOS code signing with Developer ID and hardened runtime requirements
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [macos, codesigning, developerid, security, apple]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # macos-codesign-workflow

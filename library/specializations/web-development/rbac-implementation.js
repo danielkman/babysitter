@@ -8,6 +8,8 @@
  * @references
  * - RBAC Model: https://csrc.nist.gov/projects/role-based-access-control
  * - CASL Authorization: https://casl.js.org/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

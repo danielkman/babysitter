@@ -2,6 +2,8 @@
 name: contract-test-generator
 description: Generate contract tests for API migrations with consumer-driven contracts and provider verification
 allowed-tools: ["Bash", "Read", "Write", "Grep", "Glob", "Edit"]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Contract Test Generator Skill

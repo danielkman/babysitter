@@ -2,6 +2,9 @@
 name: pyinstaller-config
 description: Configure PyInstaller for Python binary builds with spec files and bundling options.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # PyInstaller Config

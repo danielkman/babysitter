@@ -19,6 +19,8 @@
  * - Experimentation Best Practices: https://developers.google.com/machine-learning/guides/rules-of-ml
  * - A/B Testing Guidelines - Microsoft: https://exp-platform.com/
  * - Statistical Power Analysis: https://www.stat.ubc.ca/~rollin/stats/ssize/
+ * @graph
+ *   domains: [domain:data-science, role:data-scientist]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

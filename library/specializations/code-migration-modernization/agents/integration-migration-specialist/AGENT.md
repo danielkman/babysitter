@@ -8,6 +8,8 @@ skills:
   - api-inventory-scanner
   - configuration-migrator
   - contract-test-generator
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Integration Migration Specialist Agent

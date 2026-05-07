@@ -2,6 +2,9 @@
 name: remix
 description: Remix patterns including loaders, actions, nested routing, progressive enhancement, and deployment strategies.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Remix Skill

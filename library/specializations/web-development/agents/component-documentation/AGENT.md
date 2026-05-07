@@ -9,6 +9,9 @@ expertise:
   - Design tokens docs
   - Accessibility docs
   - Migration guides
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Component Documentation Agent

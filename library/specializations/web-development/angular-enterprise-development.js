@@ -19,6 +19,8 @@
  * - NgRx: https://ngrx.io/
  * - RxJS: https://rxjs.dev/
  * - Angular Material: https://material.angular.io/
+ * @graph
+ *   domains: [domain:web-development, role:frontend-engineer]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

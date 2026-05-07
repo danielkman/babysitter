@@ -17,6 +17,8 @@
  * - App Store Search Ads: https://searchads.apple.com/
  * - Google Play Console: https://play.google.com/console
  * - ASO Best Practices: https://developer.apple.com/app-store/product-page/
+ * @graph
+ *   domains: [domain:mobile]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

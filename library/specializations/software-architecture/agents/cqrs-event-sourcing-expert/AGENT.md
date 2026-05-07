@@ -10,6 +10,9 @@ expertise:
   - Eventual consistency patterns
   - Saga/Process manager patterns
   - Snapshot strategies
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # CQRS/Event Sourcing Expert Agent

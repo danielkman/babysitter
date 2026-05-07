@@ -4,6 +4,8 @@
  * @inputs { projectName: string, stack?: array }
  * @outputs { success: boolean, devSetup: object, tools: array, artifacts: array }
  * @references - Development Setup: https://code.visualstudio.com/docs
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

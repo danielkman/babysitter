@@ -4,6 +4,8 @@
  * @inputs { projectName: string, browsers?: array }
  * @outputs { success: boolean, compatibilityReport: object, fixes: array, artifacts: array }
  * @references - Can I Use: https://caniuse.com/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

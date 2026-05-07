@@ -11,6 +11,8 @@ allowed-tools:
   - Glob
   - Grep
   - Bash
+graph:
+  domains: [domain:data-engineering]
 ---
 
 # A/B Test Statistical Analyzer

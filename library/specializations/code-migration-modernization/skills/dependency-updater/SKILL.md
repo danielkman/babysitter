@@ -2,6 +2,8 @@
 name: dependency-updater
 description: Automated dependency update execution with breaking change detection and rollback capability
 allowed-tools: ["Bash", "Read", "Write", "Grep", "Glob", "Edit"]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Dependency Updater Skill

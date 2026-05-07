@@ -28,6 +28,8 @@
  * - Fluentd: https://www.fluentd.org/
  * - OpenTelemetry Logs: https://opentelemetry.io/docs/concepts/signals/logs/
  * - Log Management Best Practices: https://www.datadoghq.com/blog/log-management-best-practices/
+ * @graph
+ *   domains: [domain:devops]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -7,6 +7,9 @@ metadata:
   version: "1.0.0"
   category: accessibility-testing
   backlog-id: SK-011
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # axe-accessibility

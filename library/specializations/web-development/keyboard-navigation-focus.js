@@ -4,6 +4,8 @@
  * @inputs { projectName: string }
  * @outputs { success: boolean, navigationConfig: object, focusPatterns: array, artifacts: array }
  * @references - Focus Management: https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

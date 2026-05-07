@@ -31,6 +31,8 @@
  * - Azure Key Vault: https://docs.microsoft.com/azure/key-vault/general/best-practices
  * - NIST Key Management Guidelines: https://csrc.nist.gov/publications/detail/sp/800-57-part-1/rev-5/final
  * - PCI-DSS Encryption Requirements: https://www.pcisecuritystandards.org/document_library
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

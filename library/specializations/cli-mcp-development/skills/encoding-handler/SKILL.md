@@ -2,6 +2,9 @@
 name: encoding-handler
 description: Handle text encoding across platforms including UTF-8, Windows codepages, and BOM handling.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Encoding Handler

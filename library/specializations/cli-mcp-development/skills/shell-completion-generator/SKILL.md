@@ -2,6 +2,9 @@
 name: shell-completion-generator
 description: Generate shell completion scripts for bash, zsh, and fish from CLI command definitions. Creates intelligent completions with argument suggestions, file completions, and dynamic values.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Shell Completion Generator

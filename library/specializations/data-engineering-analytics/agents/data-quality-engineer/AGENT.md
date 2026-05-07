@@ -5,6 +5,8 @@ version: 1.0.0
 category: Data Quality
 agent-id: AG-DEA-003
 type: specialist
+graph:
+  domains: [domain:data-engineering]
 ---
 
 # Data Quality Engineer Agent

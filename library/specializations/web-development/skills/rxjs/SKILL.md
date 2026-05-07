@@ -2,6 +2,9 @@
 name: rxjs
 description: RxJS reactive programming patterns including operators, error handling, multicasting, and Angular integration.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # RxJS Skill

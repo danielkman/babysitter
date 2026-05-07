@@ -2,6 +2,9 @@
 name: langgraph-state-graph
 description: LangGraph StateGraph builder with state schema design. Create stateful agent workflows with cycles, conditionals, and persistence.
 allowed-tools: Read, Grep, Write, Edit, Bash, Glob, WebFetch
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # langgraph-state-graph

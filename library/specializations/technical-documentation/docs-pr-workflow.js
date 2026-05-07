@@ -5,6 +5,8 @@
  * @category Docs-as-Code
  * @inputs { prNumber: number, repository: string, branch: string, targetQuality: number, autoApprove: boolean }
  * @outputs { success: boolean, approved: boolean, quality: number, checks: object, artifacts: string[] }
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

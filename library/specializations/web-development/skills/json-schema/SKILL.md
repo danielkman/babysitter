@@ -2,6 +2,9 @@
 name: json-schema
 description: JSON Schema validation and API contract design.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # JSON Schema Skill

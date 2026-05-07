@@ -7,6 +7,8 @@ model: opus
 skills:
   - data-migration-validator
   - etl-pipeline-builder
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Data Integrity Validator Agent

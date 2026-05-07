@@ -15,6 +15,8 @@
  * @references
  * - Electron Windows Integration: https://www.electronjs.org/docs/latest/tutorial/windows-taskbar
  * - Windows App Features: https://docs.microsoft.com/en-us/windows/apps/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

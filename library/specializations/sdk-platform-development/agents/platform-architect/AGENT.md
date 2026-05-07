@@ -7,6 +7,8 @@ expertise:
   - Scalable infrastructure patterns
   - Multi-region deployments
   - High availability design
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Platform Architect Agent

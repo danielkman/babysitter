@@ -2,6 +2,8 @@
 name: data-pm
 description: Agent specialized in metrics, analytics, and experimentation for product management. Expert in product metrics definition, funnel analysis, cohort retention analysis, A/B test design, and growth metrics strategies.
 required-skills: product-analytics, prioritization-calculator, ab-test-design
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Data-Driven PM Agent

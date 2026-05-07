@@ -8,6 +8,8 @@
  * @references
  * - tRPC Documentation: https://trpc.io/
  * - Zod Validation: https://zod.dev/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

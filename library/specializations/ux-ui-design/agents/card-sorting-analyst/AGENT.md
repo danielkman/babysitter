@@ -8,6 +8,8 @@ expertise:
   - Dendrogram analysis
   - Category labeling
   - IA recommendations
+graph:
+  domains: [domain:web-development]
 ---
 
 # Card Sorting Analyst Agent

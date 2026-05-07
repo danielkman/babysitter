@@ -4,6 +4,8 @@
  * @inputs { projectName: string, measurementId?: string }
  * @outputs { success: boolean, analyticsConfig: object, events: array, artifacts: array }
  * @references - Google Analytics: https://developers.google.com/analytics
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

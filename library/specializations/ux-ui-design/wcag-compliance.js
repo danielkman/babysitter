@@ -25,6 +25,8 @@
  * - ARIA Practices: https://www.w3.org/WAI/ARIA/apg/
  * - VPAT: https://www.itic.org/policy/accessibility/vpat
  * - Section 508: https://www.section508.gov/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

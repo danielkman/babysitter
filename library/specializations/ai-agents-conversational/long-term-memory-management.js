@@ -16,6 +16,8 @@
  * - Zep: https://docs.getzep.com/
  * - Mem0: https://docs.mem0.ai/
  * - User Modeling: https://en.wikipedia.org/wiki/User_modeling
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -8,6 +8,9 @@ expertise:
   - Voice interface design
   - Audio processing
   - Real-time streaming
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Voice AI Specialist

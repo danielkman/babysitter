@@ -8,6 +8,8 @@ expertise:
   - Measurement annotation
   - Implementation guidelines
   - Code reference generation
+graph:
+  domains: [domain:web-development]
 ---
 
 # Developer Handoff Agent

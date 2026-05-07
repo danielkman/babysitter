@@ -18,6 +18,8 @@
  * - Gradle Migration Guide: https://docs.gradle.org/current/userguide/migrating_from_maven.html
  * - Bazel Migration: https://bazel.build/migrate/maven
  * - Modern Build Tools: https://www.thoughtworks.com/radar/tools
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

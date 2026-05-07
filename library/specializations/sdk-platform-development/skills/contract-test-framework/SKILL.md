@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: sdk-testing
   backlog-id: SK-SDK-003
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # contract-test-framework

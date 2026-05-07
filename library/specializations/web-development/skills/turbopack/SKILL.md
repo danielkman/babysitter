@@ -2,6 +2,9 @@
 name: turbopack
 description: Turbopack configuration and Next.js integration.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Turbopack Skill

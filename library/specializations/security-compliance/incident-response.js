@@ -23,6 +23,8 @@
  * - ISO/IEC 27035 - Incident Management: https://www.iso.org/standard/78973.html
  * - CISA Incident Response Guide: https://www.cisa.gov/sites/default/files/publications/Federal_Government_Cybersecurity_Incident_and_Vulnerability_Response_Playbooks_508C.pdf
  * - FIRST Best Practices: https://www.first.org/resources/guides/
+ * @graph
+ *   domains: [domain:security, skill-area:incident-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

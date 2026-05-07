@@ -3,6 +3,8 @@
  * @description Product-Market Fit Assessment process with PMF survey (40% rule), retention metrics, NPS analysis, growth indicators, qualitative signals, and iteration recommendations
  * @inputs { productName: string, productDescription: string, targetMarket: string, userBase: number, surveyResponses: array, retentionData: object, npsData: object, outputDir: string }
  * @outputs { success: boolean, pmfScore: number, pmfAchieved: boolean, surveyAnalysis: object, retentionAnalysis: object, npsAnalysis: object, growthIndicators: object, qualitativeSignals: object, recommendations: array, artifacts: array, metadata: object }
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

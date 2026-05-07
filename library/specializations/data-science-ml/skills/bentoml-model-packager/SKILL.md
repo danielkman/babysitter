@@ -7,6 +7,9 @@ allowed-tools:
   - Bash
   - Glob
   - Grep
+graph:
+  domains: [domain:data-science]
+
 ---
 
 # bentoml-model-packager

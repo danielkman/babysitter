@@ -6,6 +6,8 @@ backlog-id: AG-UX-001
 metadata:
   author: babysitter-sdk
   version: "1.0.0"
+graph:
+  domains: [domain:web-development]
 ---
 
 # wcag-accessibility-auditor

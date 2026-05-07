@@ -3,6 +3,8 @@ name: qt-translation-workflow
 description: Set up Qt Linguist workflow with .ts files, lupdate/lrelease integration, and translation management
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [qt, i18n, translation, linguist, localization]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # qt-translation-workflow

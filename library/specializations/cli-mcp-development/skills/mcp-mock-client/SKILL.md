@@ -2,6 +2,9 @@
 name: mcp-mock-client
 description: Create mock MCP client for server testing with request/response simulation.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # MCP Mock Client

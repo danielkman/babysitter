@@ -18,6 +18,8 @@
  * - Python 3 Porting Guide: https://docs.python.org/3/howto/pyporting.html
  * - Java Migration Guide: https://docs.oracle.com/en/java/javase/17/migrate/
  * - TypeScript Migration: https://www.typescriptlang.org/docs/handbook/migrating-from-javascript.html
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

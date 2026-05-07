@@ -2,6 +2,8 @@
 name: code-signing-specialist
 description: Expert in code signing workflows across all platforms, certificate management, and timestamping
 expertise: [code-signing, certificates, authenticode, developer-id, gpg]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # code-signing-specialist

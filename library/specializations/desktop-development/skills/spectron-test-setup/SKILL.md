@@ -3,6 +3,8 @@ name: spectron-test-setup
 description: Set up Spectron (deprecated) tests for legacy Electron application testing
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [electron, testing, spectron, legacy, deprecated]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # spectron-test-setup

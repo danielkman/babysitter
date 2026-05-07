@@ -17,6 +17,8 @@
  * - OWASP MASVS: https://owasp.org/www-project-mobile-application-security/
  * - iOS Security: https://developer.apple.com/documentation/security
  * - Android Security: https://developer.android.com/topic/security/best-practices
+ * @graph
+ *   domains: [domain:mobile]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

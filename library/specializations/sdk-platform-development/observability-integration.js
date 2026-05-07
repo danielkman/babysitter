@@ -28,6 +28,8 @@
  *   - https://opentelemetry.io/docs/
  *   - https://www.jaegertracing.io/docs/
  *   - https://prometheus.io/docs/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

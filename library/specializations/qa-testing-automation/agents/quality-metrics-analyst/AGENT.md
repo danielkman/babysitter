@@ -10,6 +10,9 @@ expertise:
   - Test efficiency metrics
   - Release quality assessment
   - Predictive quality analytics
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Quality Metrics Analyst Agent

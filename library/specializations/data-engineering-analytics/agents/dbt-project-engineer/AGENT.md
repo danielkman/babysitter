@@ -5,6 +5,8 @@ version: 1.0.0
 category: Transformation
 agent-id: AG-DEA-002
 type: specialist
+graph:
+  domains: [domain:data-engineering]
 ---
 
 # dbt Project Engineer Agent

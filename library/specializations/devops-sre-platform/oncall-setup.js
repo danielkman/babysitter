@@ -6,6 +6,8 @@
  * @complexity Medium
  * @inputs { teamMembers: array, toolChoice: string, escalationLevels: number, rotationSchedule: string, integrations: array, runbookLibrary: object }
  * @outputs { success: boolean, scheduleConfigured: boolean, escalationPolicies: array, toolingSetup: object, teamReadiness: number, artifacts: array }
+ * @graph
+ *   domains: [domain:devops]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

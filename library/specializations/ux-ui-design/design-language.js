@@ -3,6 +3,8 @@
  * @description Establish or extend a design-language system (tokens, primitives, patterns) with consistency audits against current usage.
  * @inputs { action: "audit"|"extend", existingTokens?: object, proposedTokens?: object, surfaces?: Array<string>, componentInventory?: Array<object> }
  * @outputs { success: boolean, drifts?: Array<object>, tokenPlan?: object, migrationSteps?: Array<string> }
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -8,6 +8,8 @@ expertise:
   - Component styling
   - Responsive adjustments
   - Regression prevention
+graph:
+  domains: [domain:web-development]
 ---
 
 # ui-implementer

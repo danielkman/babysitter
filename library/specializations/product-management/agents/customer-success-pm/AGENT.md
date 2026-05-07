@@ -9,6 +9,8 @@ expertise:
   - Churn analysis and prevention
   - Customer feedback programs
   - Advisory board management
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Customer Success PM Agent

@@ -2,6 +2,8 @@
 name: performance-test-engineer
 description: Specializes in desktop performance testing, profiling, and benchmark creation
 expertise: [performance, profiling, benchmarks, optimization, testing]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # performance-test-engineer

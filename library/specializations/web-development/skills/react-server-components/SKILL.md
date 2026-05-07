@@ -2,6 +2,9 @@
 name: react-server-components
 description: React Server Components patterns including streaming, data fetching, client/server component composition, and performance optimization.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # React Server Components Skill

@@ -11,6 +11,8 @@ allowed-tools:
   - Glob
   - Grep
   - Bash
+graph:
+  domains: [domain:data-engineering]
 ---
 
 # OBT Design Optimizer

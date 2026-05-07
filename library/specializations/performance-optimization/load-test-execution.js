@@ -15,6 +15,8 @@
  *
  * @references
  * - k6 Cloud: https://k6.io/cloud/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

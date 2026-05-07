@@ -69,6 +69,8 @@
  * - Visual QA Best Practices: https://www.smashingmagazine.com/
  * - Pixel-Perfect Design Implementation: https://css-tricks.com/
  * - Visual Regression Testing: https://playwright.dev/docs/test-snapshots
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

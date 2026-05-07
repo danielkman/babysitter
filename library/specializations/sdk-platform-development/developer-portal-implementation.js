@@ -16,6 +16,8 @@
  * @references
  * - Backstage: https://backstage.io/
  * - Developer Portal Best Practices: https://www.developerrelations.com/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -6,6 +6,8 @@ category: Cross-Platform Development
 slug: flutter-expert
 status: active
 role: Senior Flutter Developer
+graph:
+  domains: [domain:mobile]
 ---
 
 # Flutter Expert Agent

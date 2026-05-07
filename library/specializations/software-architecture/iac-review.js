@@ -27,6 +27,8 @@
  * - Google Cloud Architecture Framework: https://cloud.google.com/architecture/framework
  * - Infrastructure as Code Patterns: https://infrastructure-as-code.com/patterns/
  * - NIST Cybersecurity Framework: https://www.nist.gov/cyberframework
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

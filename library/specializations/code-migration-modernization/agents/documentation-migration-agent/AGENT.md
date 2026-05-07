@@ -7,6 +7,8 @@ model: opus
 skills:
   - documentation-generator
   - openapi-generator
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Documentation Migration Agent

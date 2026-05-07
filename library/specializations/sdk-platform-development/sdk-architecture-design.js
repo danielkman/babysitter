@@ -18,6 +18,8 @@
  * - Azure SDK Guidelines: https://azure.github.io/azure-sdk/
  * - Google API Design Guide: https://cloud.google.com/apis/design
  * - Stripe API Design: https://stripe.com/docs/api
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

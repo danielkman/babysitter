@@ -2,6 +2,9 @@
 name: trpc
 description: tRPC end-to-end type safety, procedures, routers, middleware, and React integration.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # tRPC Skill

@@ -9,6 +9,9 @@ expertise:
   - Abuse case development
   - Requirements validation
   - Implementation tracking
+graph:
+  domains: [domain:security]
+
 ---
 
 # Security Requirements Agent

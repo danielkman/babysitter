@@ -9,6 +9,9 @@ expertise:
   - Security headers
   - Dependency audits
   - Security best practices
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Security Auditor Agent

@@ -20,6 +20,8 @@
  * - REST API Design: https://restfulapi.net/
  * - GraphQL: https://graphql.org/
  * - API Versioning: https://www.baeldung.com/rest-versioning
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

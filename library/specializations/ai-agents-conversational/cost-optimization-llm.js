@@ -16,6 +16,8 @@
  * - LLMLingua: https://github.com/microsoft/LLMLingua
  * - GPTCache: https://gptcache.io/
  * - Semantic Router: https://github.com/aurelio-labs/semantic-router
+ * @graph
+ *   domains: [domain:software-engineering, role:devops-engineer]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

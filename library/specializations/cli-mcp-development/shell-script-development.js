@@ -17,6 +17,8 @@
  * - Bash Guide: https://mywiki.wooledge.org/BashGuide
  * - ShellCheck: https://www.shellcheck.net/
  * - BATS testing: https://github.com/bats-core/bats-core
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -16,6 +16,8 @@
  * @references
  * - Click Testing: https://click.palletsprojects.com/en/8.1.x/testing/
  * - oclif/test: https://github.com/oclif/test
+ * @graph
+ *   domains: [domain:software-engineering, workflow:code-review]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

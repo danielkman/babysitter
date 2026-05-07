@@ -2,6 +2,9 @@
 name: docker-web
 description: Docker containerization for web apps, multi-stage builds, and optimization.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Docker Web Skill

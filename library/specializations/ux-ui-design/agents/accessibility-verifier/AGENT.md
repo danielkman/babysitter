@@ -8,6 +8,8 @@ expertise:
   - Keyboard navigation testing
   - Screen reader compatibility
   - Focus management verification
+graph:
+  domains: [domain:web-development]
 ---
 
 # accessibility-verifier

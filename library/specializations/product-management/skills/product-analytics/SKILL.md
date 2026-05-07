@@ -2,6 +2,8 @@
 name: product-analytics
 description: Deep integration with product analytics platforms for metrics, funnels, retention, and experimentation. Query Amplitude/Mixpanel/Heap data, generate retention curves, calculate conversion metrics, and build dashboard configurations.
 allowed-tools: Read, Grep, Write, Bash, Edit, Glob
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Product Analytics Skill

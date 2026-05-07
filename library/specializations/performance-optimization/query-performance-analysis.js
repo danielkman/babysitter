@@ -15,6 +15,8 @@
  * @references
  * - Use The Index Luke: https://use-the-index-luke.com/
  * - PostgreSQL EXPLAIN: https://www.postgresql.org/docs/current/sql-explain.html
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -8,6 +8,9 @@ expertise:
   - Memory indexing
   - Relevance optimization
   - Memory consolidation
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Semantic Memory Curator

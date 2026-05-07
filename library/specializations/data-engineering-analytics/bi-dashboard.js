@@ -4,6 +4,8 @@
  * dashboard implementation across platforms (Tableau/Looker/PowerBI), testing, and deployment with best practices.
  * @inputs { projectName: string, platform: string, dataWarehouse: string, dashboardScope: string, userRoles: array }
  * @outputs { success: boolean, dashboardCount: number, qualityScore: number, performanceScore: number, artifacts: array }
+ * @graph
+ *   domains: [domain:data-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

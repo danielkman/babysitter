@@ -8,6 +8,8 @@ expertise:
   - Delight moment identification
   - Experience emotion scoring
   - Touchpoint optimization
+graph:
+  domains: [domain:web-development]
 ---
 
 # Emotional Design Analyst Agent

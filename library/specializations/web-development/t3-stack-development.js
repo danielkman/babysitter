@@ -18,6 +18,8 @@
  * - tRPC: https://trpc.io/
  * - Prisma: https://www.prisma.io/
  * - NextAuth.js: https://next-auth.js.org/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

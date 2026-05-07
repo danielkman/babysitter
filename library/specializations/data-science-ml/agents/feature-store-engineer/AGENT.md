@@ -9,6 +9,9 @@ expertise:
   - Consistency validation
   - Performance optimization
   - Schema evolution handling
+graph:
+  domains: [domain:data-science]
+
 ---
 
 # feature-store-engineer

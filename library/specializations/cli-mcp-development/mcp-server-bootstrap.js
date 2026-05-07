@@ -18,6 +18,8 @@
  * - MCP Quickstart: https://modelcontextprotocol.io/docs/quickstart
  * - TypeScript SDK: https://github.com/modelcontextprotocol/typescript-sdk
  * - MCP Specification: https://spec.modelcontextprotocol.io/
+ * @graph
+ *   domains: [domain:software-engineering, role:backend-engineer]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

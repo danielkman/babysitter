@@ -9,6 +9,9 @@ expertise:
   - Resilience testing
   - Coverage analysis
   - Test reporting
+graph:
+  domains: [domain:data-science]
+
 ---
 
 # integration-tester

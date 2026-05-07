@@ -26,6 +26,8 @@
  * - OWASP Secrets Management Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html
  * - CIS Benchmark for Secrets Management: https://www.cisecurity.org/
  * - NIST Guidelines for Key Management: https://csrc.nist.gov/publications/detail/sp/800-57-part-1/rev-5/final
+ * @graph
+ *   domains: [domain:devops]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

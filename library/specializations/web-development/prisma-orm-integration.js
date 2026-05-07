@@ -5,6 +5,8 @@
  * @outputs { success: boolean, schema: object, migrations: array, client: object, artifacts: array }
  * @references
  * - Prisma Documentation: https://www.prisma.io/docs
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

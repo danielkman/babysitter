@@ -30,6 +30,8 @@
  * - ZAP Documentation: https://www.zaproxy.org/docs/
  * - Burp Suite: https://portswigger.net/burp/documentation
  * - Security Headers: https://securityheaders.com/
+ * @graph
+ *   domains: [domain:software-engineering, workflow:code-review]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

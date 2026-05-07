@@ -17,6 +17,8 @@
  * - Firebase iOS: https://firebase.google.com/docs/ios/setup
  * - Firebase Android: https://firebase.google.com/docs/android/setup
  * - Firebase React Native: https://rnfirebase.io/
+ * @graph
+ *   domains: [domain:mobile]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

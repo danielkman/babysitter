@@ -16,6 +16,8 @@
  * @references
  * - i18next: https://www.i18next.com/
  * - react-intl: https://formatjs.io/docs/react-intl/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

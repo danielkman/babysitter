@@ -14,6 +14,8 @@ expertise:
   - Business glossary curation
   - Compliance monitoring
   - Data discovery facilitation
+graph:
+  domains: [domain:data-engineering]
 ---
 
 # Data Governance Steward Agent

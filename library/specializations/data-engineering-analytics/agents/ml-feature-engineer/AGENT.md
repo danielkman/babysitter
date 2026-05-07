@@ -14,6 +14,8 @@ expertise:
   - Version management
   - Feature documentation
   - Performance optimization
+graph:
+  domains: [domain:data-engineering]
 ---
 
 # ML Feature Engineer Agent

@@ -26,6 +26,8 @@
  * - SLO Workbook: https://sre.google/workbook/implementing-slos/
  * - Error Budget Policy: https://sre.google/workbook/error-budget-policy/
  * - SLI Menu: https://landing.google.com/sre/workbook/chapters/slo-engineering-case-studies/
+ * @graph
+ *   domains: [domain:devops]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -10,6 +10,9 @@ expertise:
   - Mobile performance testing
   - Gesture and touch testing
   - Mobile accessibility testing
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Mobile Testing Expert Agent

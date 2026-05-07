@@ -2,6 +2,9 @@
 name: pkg-binary-builder
 description: Configure pkg for Node.js binary builds with asset bundling and cross-platform targets.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Pkg Binary Builder

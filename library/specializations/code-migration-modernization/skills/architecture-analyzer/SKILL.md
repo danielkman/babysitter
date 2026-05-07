@@ -2,6 +2,8 @@
 name: architecture-analyzer
 description: Analyze and visualize software architecture patterns, dependencies, and module boundaries for migration planning
 allowed-tools: ["Bash", "Read", "Write", "Grep", "Glob", "Edit"]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Architecture Analyzer Skill

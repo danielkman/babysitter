@@ -6,6 +6,8 @@ backlog-id: SK-005
 metadata:
   author: babysitter-sdk
   version: "1.0.0"
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Markdown/MDX Skill

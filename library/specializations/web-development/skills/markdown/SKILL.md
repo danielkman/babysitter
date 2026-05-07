@@ -2,6 +2,9 @@
 name: markdown
 description: Markdown documentation, MDX, and content formatting.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Markdown Skill

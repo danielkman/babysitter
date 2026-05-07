@@ -14,6 +14,8 @@
  *
  * @references
  * - Google SRE - Capacity Planning: https://sre.google/sre-book/software-engineering-in-sre/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

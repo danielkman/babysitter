@@ -4,6 +4,8 @@
  * @inputs { projectName: string, preset?: string }
  * @outputs { success: boolean, nxConfig: object, projects: array, artifacts: array }
  * @references - Nx: https://nx.dev/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

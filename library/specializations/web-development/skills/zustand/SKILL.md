@@ -2,6 +2,9 @@
 name: zustand
 description: Zustand state management patterns including store creation, middleware, persistence, slices, and DevTools integration.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Zustand Skill

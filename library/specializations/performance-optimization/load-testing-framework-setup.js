@@ -16,6 +16,8 @@
  * - k6 Documentation: https://k6.io/docs/
  * - Gatling: https://gatling.io/
  * - Locust: https://locust.io/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

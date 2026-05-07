@@ -6,6 +6,8 @@
  * @complexity Medium-High
  * @inputs { projectPath: string, qualityStandards: object, gateTypes: array, enforcementLevel: string, cicdPlatform: string }
  * @outputs { success: boolean, gatesImplemented: array, enforcementMetrics: object, monitoringSetup: object, artifacts: array }
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -2,6 +2,9 @@
 name: image-optimization
 description: Image formats, responsive images, lazy loading, and CDN integration.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Image Optimization Skill

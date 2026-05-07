@@ -9,6 +9,8 @@ skills:
   - data-migration-validator
   - query-translator
   - etl-pipeline-builder
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Database Migration Orchestrator Agent

@@ -9,6 +9,9 @@ expertise:
   - High availability and fault tolerance
   - Infrastructure modernization strategies
   - Multi-cloud and hybrid architectures
+graph:
+  domains: [domain:devops]
+
 ---
 
 # Infrastructure Architect Agent

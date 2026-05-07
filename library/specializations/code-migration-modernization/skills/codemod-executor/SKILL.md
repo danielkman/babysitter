@@ -2,6 +2,8 @@
 name: codemod-executor
 description: Execute automated AST-based code transformations for large-scale refactoring and migration
 allowed-tools: ["Bash", "Read", "Write", "Grep", "Glob", "Edit"]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Codemod Executor Skill

@@ -2,6 +2,9 @@
 name: analytics
 description: Google Analytics 4, tag management, and event tracking.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Analytics Skill

@@ -10,6 +10,9 @@ expertise:
   - Chaos engineering
   - Toil reduction
   - Blameless postmortems
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # SRE/Reliability Engineer Agent

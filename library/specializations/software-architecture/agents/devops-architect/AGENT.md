@@ -10,6 +10,9 @@ expertise:
   - Release management
   - Build optimization
   - Environment management
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # DevOps Architect Agent

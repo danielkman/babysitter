@@ -5,6 +5,8 @@ version: 1.0.0
 category: Orchestration
 skill-id: SK-DEA-002
 allowed-tools: Read, Grep, Glob, Bash, WebFetch
+graph:
+  domains: [domain:data-engineering]
 ---
 
 # Airflow DAG Analyzer

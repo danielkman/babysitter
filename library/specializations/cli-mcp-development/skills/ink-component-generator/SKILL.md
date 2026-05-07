@@ -2,6 +2,9 @@
 name: ink-component-generator
 description: Generate Ink (React for CLI) components for terminal UIs with hooks, state management, and layout components.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Ink Component Generator

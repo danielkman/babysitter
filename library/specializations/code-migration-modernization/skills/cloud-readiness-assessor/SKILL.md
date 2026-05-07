@@ -2,6 +2,8 @@
 name: cloud-readiness-assessor
 description: Assess application readiness for cloud migration with 6Rs classification and cloud-native compliance checking
 allowed-tools: ["Bash", "Read", "Write", "Grep", "Glob", "Edit"]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Cloud Readiness Assessor Skill

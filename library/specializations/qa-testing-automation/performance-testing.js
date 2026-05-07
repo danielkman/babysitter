@@ -27,6 +27,8 @@
  * - Apache JMeter: https://jmeter.apache.org/
  * - Gatling Documentation: https://gatling.io/docs/
  * - Performance Engineering: https://www.infoq.com/articles/performance-engineering/
+ * @graph
+ *   domains: [domain:software-engineering, skill-area:caching-strategies]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

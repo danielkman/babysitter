@@ -28,6 +28,8 @@
  *   - https://plugins.gradle.org/docs/
  *   - https://docs.nestjs.com/fundamentals/dynamic-modules
  *   - https://webpack.js.org/concepts/plugins/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

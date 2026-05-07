@@ -8,6 +8,9 @@ expertise:
   - Homebrew formulas
   - Chocolatey packages
   - Scoop manifests
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Package Manager Publisher Agent

@@ -8,6 +8,8 @@ skills:
   - iac-generator
   - containerization-assistant
   - configuration-migrator
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Infrastructure Migration Agent

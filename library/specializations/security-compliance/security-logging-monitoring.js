@@ -28,6 +28,8 @@
  * - Azure Sentinel: https://azure.microsoft.com/en-us/services/azure-sentinel/
  * - AWS Security Hub: https://aws.amazon.com/security-hub/
  * - MITRE ATT&CK Detection: https://attack.mitre.org/
+ * @graph
+ *   domains: [domain:security, role:security-engineer]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

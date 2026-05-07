@@ -18,6 +18,8 @@
  * - OpenTelemetry: https://opentelemetry.io/
  * - ELK Stack: https://www.elastic.co/elastic-stack
  * - Structured Logging: https://stackify.com/what-is-structured-logging-and-why-developers-need-it/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -7,6 +7,9 @@ metadata:
   version: "1.0.0"
   category: infrastructure-as-code
   backlog-id: SK-SA-005
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # terraform-analyzer

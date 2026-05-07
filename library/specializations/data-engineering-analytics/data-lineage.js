@@ -27,6 +27,8 @@
  * - Amundsen: https://www.amundsen.io/
  * - DataHub: https://datahubproject.io/
  * - dbt Lineage: https://docs.getdbt.com/docs/collaborate/data-lineage
+ * @graph
+ *   domains: [domain:data-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

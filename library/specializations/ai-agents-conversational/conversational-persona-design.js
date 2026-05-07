@@ -16,6 +16,8 @@
  * - OCEAN Personality Model: https://en.wikipedia.org/wiki/Big_Five_personality_traits
  * - Character.AI: https://character.ai/
  * - Brand Voice Guidelines: https://www.nngroup.com/articles/tone-voice-users/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

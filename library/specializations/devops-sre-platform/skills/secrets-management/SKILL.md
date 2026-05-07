@@ -7,6 +7,9 @@ metadata:
   version: "1.0.0"
   category: security
   backlog-id: SK-008
+graph:
+  domains: [domain:devops]
+
 ---
 
 # secrets-management

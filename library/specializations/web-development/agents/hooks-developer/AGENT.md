@@ -9,6 +9,9 @@ expertise:
   - Hook testing
   - Performance optimization
   - TypeScript generics
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Hooks Developer Agent

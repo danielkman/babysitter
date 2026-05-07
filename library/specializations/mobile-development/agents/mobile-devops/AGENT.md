@@ -6,6 +6,8 @@ category: CI/CD and Release
 slug: mobile-devops
 status: active
 role: Mobile DevOps Engineer
+graph:
+  domains: [domain:mobile]
 ---
 
 # Mobile DevOps Agent

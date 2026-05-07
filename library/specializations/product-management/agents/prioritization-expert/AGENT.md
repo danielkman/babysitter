@@ -2,6 +2,8 @@
 name: prioritization-expert
 description: Agent specialized in prioritization frameworks and tradeoff analysis. Expert in RICE, ICE, MoSCoW frameworks, opportunity scoring, resource allocation, and backlog management for product development.
 required-skills: prioritization-calculator, user-research-synthesis, product-analytics
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Prioritization Expert Agent

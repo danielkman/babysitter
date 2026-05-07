@@ -16,6 +16,8 @@
  * - LangSmith Evaluation: https://docs.smith.langchain.com/evaluation
  * - AgentBench: https://github.com/THUDM/AgentBench
  * - LLM-as-Judge: https://arxiv.org/abs/2306.05685
+ * @graph
+ *   domains: [domain:software-engineering, workflow:feature-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

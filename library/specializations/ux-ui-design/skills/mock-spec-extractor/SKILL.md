@@ -6,6 +6,8 @@ metadata:
   author: babysitter-sdk
   version: "1.0.0"
   category: design-analysis
+graph:
+  domains: [domain:web-development]
 ---
 
 # mock-spec-extractor

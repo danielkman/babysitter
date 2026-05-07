@@ -15,6 +15,8 @@
  * @references
  * - Pyroscope: https://pyroscope.io/docs/
  * - Parca: https://www.parca.dev/docs/overview
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

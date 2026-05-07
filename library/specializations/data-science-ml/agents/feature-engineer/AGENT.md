@@ -9,6 +9,9 @@ expertise:
   - Feature selection methods
   - Leakage prevention
   - Training-serving skew avoidance
+graph:
+  domains: [domain:data-science]
+
 ---
 
 # feature-engineer

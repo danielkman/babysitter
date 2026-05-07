@@ -9,6 +9,9 @@ expertise:
   - Update strategies
   - License compliance
   - Breaking changes
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Dependency Audit Agent

@@ -8,6 +8,9 @@ expertise:
   - Replanning strategies
   - Goal tracking
   - Plan validation
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Plan-Execute Planner

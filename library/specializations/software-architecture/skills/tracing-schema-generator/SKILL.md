@@ -6,6 +6,9 @@ allowed-tools:
   - Read
   - Write
   - Glob
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Tracing Schema Generator Skill

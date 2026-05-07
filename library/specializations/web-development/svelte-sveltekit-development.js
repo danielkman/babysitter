@@ -18,6 +18,8 @@
  * - Svelte Documentation: https://svelte.dev/
  * - SvelteKit Documentation: https://kit.svelte.dev/
  * - Vite: https://vitejs.dev/
+ * @graph
+ *   domains: [domain:web-development, role:frontend-engineer]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

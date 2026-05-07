@@ -19,6 +19,8 @@
  * - Click: https://click.palletsprojects.com/
  * - Cobra: https://cobra.dev/
  * - CLI Guidelines: https://clig.dev/
+ * @graph
+ *   domains: [domain:software-engineering, role:backend-engineer]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

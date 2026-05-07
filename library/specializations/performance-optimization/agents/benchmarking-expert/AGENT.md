@@ -13,6 +13,8 @@ expertise:
   - A/B performance testing
   - Warmup and measurement iteration tuning
   - Benchmark pitfall avoidance
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Benchmarking Expert Agent

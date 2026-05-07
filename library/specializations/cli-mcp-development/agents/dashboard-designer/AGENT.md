@@ -8,6 +8,9 @@ expertise:
   - Chart selection
   - Metric visualization
   - Alert indicators
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Dashboard Designer Agent

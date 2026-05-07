@@ -2,6 +2,9 @@
 name: clap-scaffolder
 description: Generate Clap-based Rust CLI applications with derive macros, subcommands, and modern Rust patterns. Creates production-ready Rust CLI with proper cargo structure.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Clap Scaffolder

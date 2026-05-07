@@ -8,6 +8,8 @@ skills:
   - codemod-executor
   - refactoring-assistant
   - dead-code-eliminator
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Code Transformation Executor Agent

@@ -2,6 +2,9 @@
 name: bash-script-template
 description: Generate bash script templates with best practices including error handling, argument parsing, logging, and portability considerations.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Bash Script Template

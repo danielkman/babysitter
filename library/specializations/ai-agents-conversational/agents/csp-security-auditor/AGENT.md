@@ -13,6 +13,9 @@ expertise:
   - Silent failure diagnosis (missing CSP origins in sandboxed iframe)
   - Conditional origin verification (runtime URL matches CSP entry)
   - CSP configuration in registerAppResource read callback placement
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # CSP Security Auditor Agent

@@ -21,6 +21,8 @@
  * - OKR Framework: https://www.whatmatters.com/faqs/okr-meaning-definition-example
  * - Theme-Based Roadmapping: https://www.aha.io/roadmapping/guide/product-strategy/what-is-a-theme-based-roadmap
  * - Evidence-Guided Product Development: https://www.svpg.com/product-roadmaps-in-scrum/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

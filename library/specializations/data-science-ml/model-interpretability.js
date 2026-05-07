@@ -26,6 +26,8 @@
  * - What-If Tool: https://pair-code.github.io/what-if-tool/
  * - Captum (PyTorch): https://captum.ai/
  * - TensorFlow Model Analysis: https://www.tensorflow.org/tfx/guide/tfma
+ * @graph
+ *   domains: [domain:data-science, role:data-scientist]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

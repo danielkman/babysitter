@@ -19,6 +19,8 @@
  * - Snyk: https://snyk.io/
  * - npm audit: https://docs.npmjs.com/cli/v8/commands/npm-audit
  * - Dependabot: https://docs.github.com/en/code-security/dependabot
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

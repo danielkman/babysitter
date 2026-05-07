@@ -8,6 +8,8 @@
  * @references
  * - PostgreSQL Documentation: https://www.postgresql.org/docs/
  * - Prisma: https://www.prisma.io/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

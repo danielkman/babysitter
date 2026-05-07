@@ -2,6 +2,9 @@
 name: react-query
 description: TanStack Query (React Query) patterns for server state management, caching, mutations, optimistic updates, and infinite queries.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # React Query Skill

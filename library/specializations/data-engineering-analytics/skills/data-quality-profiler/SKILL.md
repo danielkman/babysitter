@@ -5,6 +5,8 @@ version: 1.0.0
 category: Data Quality
 skill-id: SK-DEA-005
 allowed-tools: Read, Grep, Glob, Bash, WebFetch
+graph:
+  domains: [domain:data-engineering]
 ---
 
 # Data Quality Profiler

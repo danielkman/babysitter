@@ -8,6 +8,8 @@ skills:
   - dead-code-eliminator
   - compliance-validator
   - rollback-automation-skill
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Legacy Decommissioning Specialist Agent

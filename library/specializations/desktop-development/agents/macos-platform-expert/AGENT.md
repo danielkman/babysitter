@@ -2,6 +2,8 @@
 name: macos-platform-expert
 description: Deep expertise in macOS APIs, Cocoa, sandbox, notarization, and App Store submission
 expertise: [macos, cocoa, sandbox, notarization, app-store, apple]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # macos-platform-expert

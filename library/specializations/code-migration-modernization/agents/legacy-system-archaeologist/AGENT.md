@@ -8,6 +8,8 @@ skills:
   - static-code-analyzer
   - architecture-analyzer
   - dependency-scanner
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Legacy System Archaeologist Agent

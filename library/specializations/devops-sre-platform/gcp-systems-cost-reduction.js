@@ -61,6 +61,8 @@
  * export sql` to GCS; GCS -> `gcloud storage cp -r` to backup bucket;
  * BigQuery -> `bq cp`/`bq extract` to GCS; Pub/Sub -> schema + sub config
  * capture; Firestore -> `gcloud firestore export gs://<bucket>`.
+ * @graph
+ *   domains: [domain:devops, role:devops-engineer]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

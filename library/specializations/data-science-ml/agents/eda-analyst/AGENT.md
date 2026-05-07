@@ -9,6 +9,9 @@ expertise:
   - Outlier identification
   - Feature quality assessment
   - Data documentation
+graph:
+  domains: [domain:data-science]
+
 ---
 
 # eda-analyst

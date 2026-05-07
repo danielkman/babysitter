@@ -3,6 +3,8 @@ name: wix-toolset-config
 description: Configure WiX Toolset for Windows MSI installers
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [windows, wix, msi, installer, packaging]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # wix-toolset-config

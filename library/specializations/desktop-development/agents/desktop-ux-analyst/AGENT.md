@@ -2,6 +2,8 @@
 name: desktop-ux-analyst
 description: Analyzes desktop UX patterns, platform conventions, and user interaction flows
 expertise: [ux, user-experience, desktop-patterns, interaction-design]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # desktop-ux-analyst

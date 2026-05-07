@@ -3,6 +3,8 @@ name: winui3-migration-helper
 description: Assist migration from WPF to WinUI 3 / Windows App SDK with code transformation and compatibility guidance
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [winui, wpf, migration, windows-app-sdk, modernization]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # winui3-migration-helper

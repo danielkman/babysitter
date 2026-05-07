@@ -5,6 +5,8 @@ version: 1.0.0
 category: Analytics & Monitoring
 slug: mobile-analytics
 status: active
+graph:
+  domains: [domain:mobile]
 ---
 
 # Mobile Analytics Skill

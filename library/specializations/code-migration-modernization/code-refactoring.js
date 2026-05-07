@@ -18,6 +18,8 @@
  * - Refactoring (Martin Fowler): https://refactoring.com/
  * - Clean Code (Robert Martin): https://www.oreilly.com/library/view/clean-code/9780136083238/
  * - Refactoring Catalog: https://refactoring.guru/refactoring/catalog
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

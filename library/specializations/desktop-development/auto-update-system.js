@@ -17,6 +17,8 @@
  * - electron-updater: https://www.electron.build/auto-update
  * - Squirrel.Windows: https://github.com/Squirrel/Squirrel.Windows
  * - Sparkle: https://sparkle-project.org/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

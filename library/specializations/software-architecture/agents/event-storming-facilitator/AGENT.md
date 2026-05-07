@@ -10,6 +10,9 @@ expertise:
   - Read model design
   - Process modeling
   - Hotspot identification
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Event Storming Facilitator Agent

@@ -15,6 +15,8 @@
  * @references
  * - LangChain Text Splitters: https://python.langchain.com/docs/modules/data_connection/document_transformers/
  * - LlamaIndex Node Parsers: https://docs.llamaindex.ai/en/stable/module_guides/loading/node_parsers/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

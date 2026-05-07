@@ -2,6 +2,9 @@
 name: code-signing-setup
 description: Configure code signing for macOS and Windows binaries with notarization.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Code Signing Setup

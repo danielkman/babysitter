@@ -21,6 +21,8 @@
  * - DeepSpeed: https://www.deepspeed.ai/
  * - Ray Train: https://docs.ray.io/en/latest/train/train.html
  * - Model Parallelism Patterns: https://arxiv.org/abs/1909.08053
+ * @graph
+ *   domains: [domain:data-science]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -9,6 +9,9 @@ expertise:
   - MITRE ATT&CK mapping
   - Containment recommendations
   - Incident prioritization
+graph:
+  domains: [domain:security]
+
 ---
 
 # Incident Triage Agent

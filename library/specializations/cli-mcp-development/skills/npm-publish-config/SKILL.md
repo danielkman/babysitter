@@ -2,6 +2,9 @@
 name: npm-publish-config
 description: Configure npm publishing with proper bin entry, files, and registry settings.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # NPM Publish Config

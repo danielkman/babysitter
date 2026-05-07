@@ -2,6 +2,9 @@
 name: styled-components
 description: Styled Components theming, variants, SSR support, and patterns.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Styled Components Skill

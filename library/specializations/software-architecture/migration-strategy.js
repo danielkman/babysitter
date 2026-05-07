@@ -20,6 +20,8 @@
  * - Cloud Migration Patterns: https://docs.aws.amazon.com/prescriptive-guidance/latest/migration-strategies/welcome.html
  * - The Software Architect's Handbook: https://www.oreilly.com/library/view/the-software-architects/9781788624060/
  * - Building Microservices (Sam Newman): https://www.oreilly.com/library/view/building-microservices-2nd/9781492034018/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

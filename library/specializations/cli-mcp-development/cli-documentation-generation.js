@@ -16,6 +16,8 @@
  * @references
  * - Cobra doc generation: https://github.com/spf13/cobra/blob/main/doc/README.md
  * - oclif README generation: https://oclif.io/docs/commands#readme-generation
+ * @graph
+ *   domains: [domain:software-engineering, role:backend-engineer]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

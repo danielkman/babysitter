@@ -9,6 +9,8 @@ expertise:
   - Industry analyst research
   - Win/loss analysis
   - Market segmentation
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Market Analyst Agent

@@ -8,6 +8,9 @@ expertise:
   - Data augmentation
   - Quality validation
   - Diversity optimization
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Synthetic Data Generator

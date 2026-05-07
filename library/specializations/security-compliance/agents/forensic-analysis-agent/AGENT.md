@@ -9,6 +9,9 @@ expertise:
   - Malware behavior analysis
   - Evidence preservation
   - Forensic reporting
+graph:
+  domains: [domain:security]
+
 ---
 
 # Forensic Analysis Agent

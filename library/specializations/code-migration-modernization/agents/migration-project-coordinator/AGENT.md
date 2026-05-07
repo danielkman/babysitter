@@ -4,6 +4,8 @@ description: Coordinate overall migration project activities with planning, reso
 color: blue
 allowed-tools: ["Bash", "Read", "Write", "Grep", "Glob", "Edit", "Task", "WebFetch", "WebSearch"]
 model: opus
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Migration Project Coordinator Agent

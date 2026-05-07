@@ -30,6 +30,8 @@
  * - Microsoft ML Testing: https://learn.microsoft.com/en-us/azure/architecture/guide/testing/mission-critical-deployment-testing
  * - Integration Testing Patterns: https://martinfowler.com/articles/microservice-testing/
  * - ML Observability: https://neptune.ai/blog/ml-model-testing
+ * @graph
+ *   domains: [domain:data-science, workflow:code-review]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

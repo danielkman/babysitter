@@ -15,6 +15,8 @@
  *
  * @references
  * - MCP Testing: https://modelcontextprotocol.io/docs/testing
+ * @graph
+ *   domains: [domain:software-engineering, workflow:code-review]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

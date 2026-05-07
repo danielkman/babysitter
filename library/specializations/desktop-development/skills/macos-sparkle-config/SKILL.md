@@ -3,6 +3,8 @@ name: macos-sparkle-config
 description: Configure Sparkle framework for macOS auto-updates with appcast, delta updates, and code signing
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [macos, sparkle, autoupdate, distribution, swift]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # macos-sparkle-config

@@ -63,6 +63,8 @@
  *
  * Drift defense: the recs executor re-reads recs.json via a small inline cat
  * agent rather than receiving inlined bytes through the prompt.
+ * @graph
+ *   domains: [domain:devops, role:devops-engineer]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

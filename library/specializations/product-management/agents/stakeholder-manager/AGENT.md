@@ -9,6 +9,8 @@ expertise:
   - Product council facilitation
   - Roadmap presentations
   - Conflict resolution
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Stakeholder Manager Agent

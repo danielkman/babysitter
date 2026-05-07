@@ -15,6 +15,8 @@
  * @references
  * - CLI Guidelines: https://clig.dev/
  * - Heroku CLI Style Guide: https://devcenter.heroku.com/articles/cli-style-guide
+ * @graph
+ *   domains: [domain:software-engineering, role:backend-engineer]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

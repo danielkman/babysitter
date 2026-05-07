@@ -16,6 +16,8 @@
  * @references
  * - WCAG 2.1: https://www.w3.org/WAI/WCAG21/quickref/
  * - Electron Accessibility: https://www.electronjs.org/docs/latest/tutorial/accessibility
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

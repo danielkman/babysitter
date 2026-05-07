@@ -15,6 +15,8 @@
  *
  * @references
  * - Mechanical Sympathy: https://mechanical-sympathy.blogspot.com/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

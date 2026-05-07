@@ -4,6 +4,8 @@
  * @inputs { projectName: string, testFramework?: string }
  * @outputs { success: boolean, testConfig: object, testPatterns: array, artifacts: array }
  * @references - React Testing Library: https://testing-library.com/react
+ * @graph
+ *   domains: [domain:web-development, skill-area:react-state-management]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

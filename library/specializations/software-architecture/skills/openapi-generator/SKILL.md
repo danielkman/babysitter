@@ -7,6 +7,9 @@ metadata:
   version: "1.0.0"
   category: api-design
   backlog-id: SK-SA-002
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # openapi-generator

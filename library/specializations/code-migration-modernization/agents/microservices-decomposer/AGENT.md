@@ -8,6 +8,8 @@ skills:
   - domain-model-extractor
   - strangler-fig-orchestrator
   - architecture-analyzer
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Microservices Decomposer Agent

@@ -3,6 +3,8 @@
  * @description Card Sorting Process for Information Architecture validation through open, closed, and hybrid card sorting methodologies with participant recruitment, session facilitation, dendrogram analysis, and navigation structure recommendations
  * @inputs { projectName: string, sortingType: string, contentItems: array, existingCategories: array, participantCount: number, toolPreference: string, researchObjectives: array, outputDir: string }
  * @outputs { success: boolean, sortingResults: object, dendrogramAnalysis: object, categoryRecommendations: array, navigationStructure: object, validationReport: string, artifacts: array, qualityScore: number }
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

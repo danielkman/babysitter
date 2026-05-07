@@ -2,6 +2,9 @@
 name: react-testing-library
 description: React Testing Library patterns, queries, user events, and accessibility testing.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # React Testing Library Skill

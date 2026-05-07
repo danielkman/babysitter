@@ -28,6 +28,8 @@
  * - Snowflake Incremental Models: https://docs.getdbt.com/reference/resource-configs/snowflake-configs#merge-behavior-incremental-models
  * - BigQuery Incremental Models: https://docs.getdbt.com/reference/resource-configs/bigquery-configs#merge-behavior-incremental-models
  * - dbt Performance Best Practices: https://docs.getdbt.com/best-practices/how-we-build-our-metrics/3-optimize-performance
+ * @graph
+ *   domains: [domain:data-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

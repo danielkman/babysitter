@@ -3,6 +3,8 @@ name: wpf-xaml-style-generator
 description: Generate XAML styles, templates, and resource dictionaries with theme support for WPF applications
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [wpf, xaml, styles, themes, ui]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # wpf-xaml-style-generator

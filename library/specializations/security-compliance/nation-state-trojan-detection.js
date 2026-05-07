@@ -77,6 +77,8 @@
  * @skill semantic-code-analyzer specializations/security-compliance/skills/semantic-code-analyzer/SKILL.md
  * @skill homoglyph-detector specializations/security-compliance/skills/homoglyph-detector/SKILL.md
  * @agent trojan-detection-agent specializations/security-compliance/agents/trojan-detection-agent/AGENT.md
+ * @graph
+ *   domains: [domain:security]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

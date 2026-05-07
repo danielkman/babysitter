@@ -2,6 +2,8 @@
 name: configuration-migrator
 description: Migrate configuration files between formats and versions with environment variable extraction
 allowed-tools: ["Bash", "Read", "Write", "Grep", "Glob", "Edit"]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Configuration Migrator Skill

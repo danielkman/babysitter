@@ -2,6 +2,9 @@
 name: trap-handler-generator
 description: Generate trap handlers for cleanup, signal handling, and graceful shutdown in shell scripts.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Trap Handler Generator

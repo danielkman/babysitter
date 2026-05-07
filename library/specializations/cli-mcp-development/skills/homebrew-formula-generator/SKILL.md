@@ -2,6 +2,9 @@
 name: homebrew-formula-generator
 description: Generate Homebrew formula for CLI distribution on macOS and Linux.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Homebrew Formula Generator

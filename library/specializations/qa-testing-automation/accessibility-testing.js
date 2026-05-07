@@ -25,6 +25,8 @@
  * - ARIA Practices: https://www.w3.org/WAI/ARIA/apg/
  * - WebAIM: https://webaim.org/
  * - Playwright Accessibility Testing: https://playwright.dev/docs/accessibility-testing
+ * @graph
+ *   domains: [domain:software-engineering, skill-area:accessibility-testing]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

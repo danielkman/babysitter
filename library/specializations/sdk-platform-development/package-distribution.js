@@ -16,6 +16,8 @@
  * @references
  * - npm Publishing: https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry
  * - PyPI Publishing: https://packaging.python.org/tutorials/packaging-projects/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

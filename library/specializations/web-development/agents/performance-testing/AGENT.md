@@ -9,6 +9,9 @@ expertise:
   - Stress testing
   - API performance
   - Core Web Vitals
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Performance Testing Agent

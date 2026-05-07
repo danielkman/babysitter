@@ -5,6 +5,8 @@ version: 1.0.0
 category: iOS Distribution
 slug: app-store-connect
 status: active
+graph:
+  domains: [domain:mobile]
 ---
 
 # App Store Connect Skill

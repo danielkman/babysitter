@@ -2,6 +2,9 @@
 name: react-hooks
 description: Deep expertise in React hooks patterns including custom hooks, composition, optimization, and testing strategies.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # React Hooks Skill

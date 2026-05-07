@@ -8,6 +8,8 @@
  * @references
  * - TOTP RFC 6238: https://datatracker.ietf.org/doc/html/rfc6238
  * - WebAuthn: https://webauthn.guide/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

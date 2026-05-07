@@ -2,6 +2,9 @@
 name: mcp-error-code-mapper
 description: Map application errors to MCP error codes with proper messages, error types, and recovery suggestions.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # MCP Error Code Mapper

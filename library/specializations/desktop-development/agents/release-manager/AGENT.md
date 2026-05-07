@@ -2,6 +2,8 @@
 name: release-manager
 description: Coordinates release process including versioning, changelog, signing, and distribution
 expertise: [release, versioning, changelog, distribution, ci-cd]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # release-manager

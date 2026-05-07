@@ -29,6 +29,8 @@
  * - Postman Testing: https://learning.postman.com/docs/writing-scripts/test-scripts/
  * - Supertest: https://github.com/ladjs/supertest
  * - Swagger/OpenAPI: https://swagger.io/specification/
+ * @graph
+ *   domains: [domain:software-engineering, workflow:code-review]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

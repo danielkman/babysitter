@@ -15,6 +15,8 @@
  * @references
  * - FIO Documentation: https://fio.readthedocs.io/
  * - iostat: https://man7.org/linux/man-pages/man1/iostat.1.html
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

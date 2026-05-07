@@ -8,6 +8,8 @@ expertise:
   - Animation performance profiling
   - Asset optimization
   - Performance budget validation
+graph:
+  domains: [domain:web-development]
 ---
 
 # Performance Auditor Agent

@@ -8,6 +8,8 @@ skills:
   - migration-validator
   - characterization-test-generator
   - contract-test-generator
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Regression Detector Agent

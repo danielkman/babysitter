@@ -2,6 +2,8 @@
 name: dead-code-eliminator
 description: Identify and safely remove dead, unused, and unreachable code from codebases
 allowed-tools: ["Bash", "Read", "Write", "Grep", "Glob", "Edit"]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Dead Code Eliminator Skill

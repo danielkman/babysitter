@@ -3,6 +3,8 @@
  * @description Complete Information Architecture design process including content inventory, user research, IA strategy, sitemap design, navigation design, labeling, card sorting validation, tree testing, and documentation
  * @inputs { projectName: string, businessGoals: array, userResearch: object, existingContent: array, contentTypes: array, userTasks: array, platformType: string, outputDir: string }
  * @outputs { success: boolean, contentInventory: object, iaStrategy: object, sitemap: string, navigationStructure: object, labelingScheme: object, cardSortingResults: object, treeTestingResults: object, iaDocumentation: string, artifacts: array }
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

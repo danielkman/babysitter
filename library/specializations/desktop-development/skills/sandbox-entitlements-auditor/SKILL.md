@@ -3,6 +3,8 @@ name: sandbox-entitlements-auditor
 description: Audit and recommend minimal sandbox entitlements for secure desktop applications
 allowed-tools: Read, Grep, Glob, Bash
 tags: [security, sandbox, entitlements, audit, macos]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # sandbox-entitlements-auditor

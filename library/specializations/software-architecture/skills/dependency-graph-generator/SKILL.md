@@ -7,6 +7,9 @@ allowed-tools:
   - Write
   - Glob
   - Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Dependency Graph Generator Skill

@@ -2,6 +2,9 @@
 name: postgresql
 description: PostgreSQL query optimization, indexing, full-text search, JSONB, and advanced features.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # PostgreSQL Skill

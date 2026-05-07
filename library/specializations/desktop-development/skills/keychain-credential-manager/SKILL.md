@@ -3,6 +3,8 @@ name: keychain-credential-manager
 description: Manage credentials in OS keychains across Windows, macOS, and Linux
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [security, credentials, keychain, cross-platform, secrets]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # keychain-credential-manager

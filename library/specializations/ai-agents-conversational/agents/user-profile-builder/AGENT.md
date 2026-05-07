@@ -8,6 +8,9 @@ expertise:
   - Profile management
   - Personalization
   - Privacy handling
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # User Profile Builder

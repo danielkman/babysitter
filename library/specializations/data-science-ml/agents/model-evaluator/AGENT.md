@@ -2,6 +2,9 @@
 name: model-evaluator
 description: Agent specialized in comprehensive model evaluation, metric calculation, error analysis, and performance validation across different segments and scenarios.
 required-skills: sklearn-model-trainer, mlflow-experiment-tracker, great-expectations-validator
+graph:
+  domains: [domain:data-science]
+
 ---
 
 # Model Evaluator Agent

@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: visual-testing
   backlog-id: SK-UX-005
+graph:
+  domains: [domain:web-development]
 ---
 
 # screenshot-comparison

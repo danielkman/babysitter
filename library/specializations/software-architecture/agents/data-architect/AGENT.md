@@ -10,6 +10,9 @@ expertise:
   - Data governance
   - Data warehousing
   - Data lake architecture
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Data Architect Agent

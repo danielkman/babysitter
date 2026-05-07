@@ -3,6 +3,8 @@ name: flatpak-manifest-generator
 description: Generate Flatpak manifest with proper permissions and sandboxing
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [linux, flatpak, sandbox, packaging, distribution]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # flatpak-manifest-generator

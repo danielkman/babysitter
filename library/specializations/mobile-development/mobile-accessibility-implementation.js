@@ -17,6 +17,8 @@
  * - WCAG 2.1: https://www.w3.org/WAI/WCAG21/quickref/
  * - iOS Accessibility: https://developer.apple.com/accessibility/ios/
  * - Android Accessibility: https://developer.android.com/guide/topics/ui/accessibility
+ * @graph
+ *   domains: [domain:mobile]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

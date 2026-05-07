@@ -17,6 +17,8 @@
  * - React Upgrade Guide: https://react.dev/blog/2022/03/08/react-18-upgrade-guide
  * - Angular Update Guide: https://update.angular.io/
  * - Spring Boot Migration: https://github.com/spring-projects/spring-boot/wiki
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -7,6 +7,9 @@ metadata:
   version: "1.0.0"
   category: test-data-management
   backlog-id: SK-015
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # test-data-generation

@@ -25,6 +25,8 @@
  * - Kimball SCD Techniques: https://www.kimballgroup.com/2008/08/slowly-changing-dimensions/
  * - Type 2 SCD Best Practices: https://www.kimballgroup.com/2013/02/design-tip-152-slowly-changing-dimension-types-0-4-5-6/
  * - dbt Snapshots Documentation: https://docs.getdbt.com/docs/build/snapshots
+ * @graph
+ *   domains: [domain:data-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

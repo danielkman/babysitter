@@ -9,6 +9,8 @@ expertise:
   - Sales enablement
   - Customer marketing
   - Analyst relations
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Go-to-Market Strategist Agent

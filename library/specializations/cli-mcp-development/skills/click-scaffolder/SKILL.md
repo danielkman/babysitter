@@ -2,6 +2,9 @@
 name: click-scaffolder
 description: Generate Click-based Python CLI applications with decorators, groups, context, and modern Python patterns. Creates complete scaffolded CLI with proper project structure.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Click Scaffolder

@@ -27,6 +27,8 @@
  * - OpenAPI Specification: https://swagger.io/specification/
  * - Stripe API Documentation: https://stripe.com/docs/api
  * - Twilio API Documentation: https://www.twilio.com/docs/usage/api
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

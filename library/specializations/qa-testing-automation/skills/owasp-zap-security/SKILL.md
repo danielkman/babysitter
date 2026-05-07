@@ -7,6 +7,9 @@ metadata:
   version: "1.0.0"
   category: security-testing
   backlog-id: SK-017
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # owasp-zap-security

@@ -2,6 +2,9 @@
 name: mcp-inspector-integration
 description: Set up MCP Inspector for debugging and testing MCP servers with request logging, response inspection, and protocol validation.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # MCP Inspector Integration

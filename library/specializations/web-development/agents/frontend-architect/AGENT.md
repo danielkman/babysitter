@@ -9,6 +9,9 @@ expertise:
   - Build system and bundler configuration
   - Micro-frontend architecture
   - Accessibility and internationalization
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Frontend Architect Agent

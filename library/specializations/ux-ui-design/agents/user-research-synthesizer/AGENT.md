@@ -8,6 +8,8 @@ expertise:
   - Statistical analysis
   - Insight extraction
   - Pattern recognition
+graph:
+  domains: [domain:web-development]
 ---
 
 # User Research Synthesizer Agent

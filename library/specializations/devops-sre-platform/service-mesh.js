@@ -38,6 +38,8 @@
  * - Service Mesh Comparison: https://servicemesh.es/
  * - Service Mesh Patterns: https://www.oreilly.com/library/view/the-enterprise-path/9781492041795/
  * - CNCF Service Mesh Landscape: https://landscape.cncf.io/card-mode?category=service-mesh
+ * @graph
+ *   domains: [domain:devops]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

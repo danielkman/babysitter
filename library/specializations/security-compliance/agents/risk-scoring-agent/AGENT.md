@@ -6,6 +6,9 @@ backlog-id: AG-SEC-003
 metadata:
   author: babysitter-sdk
   version: "1.0.0"
+graph:
+  domains: [domain:security]
+
 ---
 
 # risk-scoring-agent

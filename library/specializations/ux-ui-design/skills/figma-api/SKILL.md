@@ -7,6 +7,8 @@ metadata:
   version: "1.0.0"
   category: design-integration
   backlog-id: SK-UX-002
+graph:
+  domains: [domain:web-development]
 ---
 
 # figma-api

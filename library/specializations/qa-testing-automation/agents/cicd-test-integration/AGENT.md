@@ -10,6 +10,9 @@ expertise:
   - Test artifact management
   - Fast feedback loop design
   - Pipeline debugging and optimization
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # CI/CD Test Integration Expert Agent

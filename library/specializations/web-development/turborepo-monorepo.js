@@ -4,6 +4,8 @@
  * @inputs { projectName: string, packages?: array }
  * @outputs { success: boolean, turboConfig: object, workspaces: array, artifacts: array }
  * @references - Turborepo: https://turbo.build/repo
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

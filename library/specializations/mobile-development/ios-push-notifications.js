@@ -18,6 +18,8 @@
  * - APNs Documentation: https://developer.apple.com/documentation/usernotifications
  * - Push Notification Setup: https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server
  * - Notification Service Extension: https://developer.apple.com/documentation/usernotifications/unnotificationserviceextension
+ * @graph
+ *   domains: [domain:mobile]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

@@ -8,6 +8,8 @@ expertise:
   - Annotation generation
   - Responsive wireframe variants
   - Wireframe-to-prototype conversion
+graph:
+  domains: [domain:web-development]
 ---
 
 # Wireframe Generator Agent

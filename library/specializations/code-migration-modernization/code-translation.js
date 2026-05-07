@@ -16,6 +16,8 @@
  * @references
  * - Transpilers Overview: https://en.wikipedia.org/wiki/Source-to-source_compiler
  * - Code Migration Best Practices: https://martinfowler.com/articles/code-migration.html
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

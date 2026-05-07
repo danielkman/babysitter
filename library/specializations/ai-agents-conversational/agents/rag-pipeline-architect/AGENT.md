@@ -2,6 +2,9 @@
 name: rag-pipeline-architect
 description: Designs end-to-end RAG pipeline architecture. Specializes in document processing, chunking strategies, embedding selection, retrieval optimization, and generation quality.
 role: RAG Systems Architect
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # rag-pipeline-architect

@@ -10,6 +10,9 @@ expertise:
   - Risk mitigation
   - Parallel running
   - Feature parity validation
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Migration Strategist Agent

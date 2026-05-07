@@ -25,6 +25,8 @@
  * - Incident Response: https://response.pagerduty.com/
  * - OpenTelemetry for ML: https://opentelemetry.io/
  * - Evidently AI Monitoring: https://www.evidentlyai.com/
+ * @graph
+ *   domains: [domain:data-science, role:data-scientist]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

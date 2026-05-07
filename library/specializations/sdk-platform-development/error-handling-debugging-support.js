@@ -27,6 +27,8 @@
  *   - https://www.baeldung.com/java-exceptions
  *   - https://docs.python.org/3/tutorial/errors.html
  *   - https://stripe.com/docs/error-codes
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

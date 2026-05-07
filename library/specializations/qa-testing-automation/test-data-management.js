@@ -32,6 +32,8 @@
  * - Data Masking: https://www.redgate.com/products/dba/data-masker
  * - Faker Libraries: https://fakerjs.dev/
  * - GDPR Compliance: https://gdpr-info.eu/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

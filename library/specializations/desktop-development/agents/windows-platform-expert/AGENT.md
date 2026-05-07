@@ -2,6 +2,8 @@
 name: windows-platform-expert
 description: Deep expertise in Windows APIs, Win32, WinRT, registry, UAC, and Windows Store submission
 expertise: [windows, win32, winrt, registry, msix, windows-store]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # windows-platform-expert

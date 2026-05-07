@@ -17,6 +17,8 @@
  * - TestFlight: https://developer.apple.com/testflight/
  * - Google Play Testing: https://support.google.com/googleplay/android-developer/answer/9845334
  * - Firebase App Distribution: https://firebase.google.com/docs/app-distribution
+ * @graph
+ *   domains: [domain:mobile]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

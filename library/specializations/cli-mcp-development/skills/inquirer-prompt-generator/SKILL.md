@@ -2,6 +2,9 @@
 name: inquirer-prompt-generator
 description: Generate interactive command-line prompts using Inquirer.js with validation, conditional logic, and custom renderers. Creates user-friendly input collection flows for CLI applications.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Inquirer Prompt Generator

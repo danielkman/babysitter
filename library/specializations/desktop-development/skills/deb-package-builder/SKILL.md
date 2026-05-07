@@ -3,6 +3,8 @@ name: deb-package-builder
 description: Build Debian packages with proper control files, dependencies, and maintainer scripts
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [linux, debian, packaging, deb, distribution]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # deb-package-builder

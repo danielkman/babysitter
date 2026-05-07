@@ -7,6 +7,9 @@ metadata:
   version: "1.0.0"
   category: documentation
   backlog-id: SK-SA-003
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # adr-generator

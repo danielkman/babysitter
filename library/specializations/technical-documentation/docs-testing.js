@@ -5,6 +5,8 @@
  * @category Quality Assurance
  * @inputs { docsPath: string, docType: string, testCodeExamples: boolean, checkLinks: boolean, validateAccessibility: boolean, targetQuality: number }
  * @outputs { success: boolean, testResults: object, quality: number, issues: array, artifacts: string[] }
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

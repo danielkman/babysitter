@@ -8,6 +8,8 @@ expertise:
   - Psychographic analysis
   - Goals and frustrations mapping
   - Empathy map creation
+graph:
+  domains: [domain:web-development]
 ---
 
 # Persona Builder Agent

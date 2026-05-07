@@ -2,6 +2,9 @@
 name: getopts-parser-generator
 description: Generate getopts-based argument parsing for shell scripts with short/long options and validation.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Getopts Parser Generator

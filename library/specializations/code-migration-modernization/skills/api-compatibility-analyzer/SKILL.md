@@ -2,6 +2,8 @@
 name: api-compatibility-analyzer
 description: Analyze API changes for backward compatibility with breaking change detection and consumer impact assessment
 allowed-tools: ["Bash", "Read", "Write", "Grep", "Glob", "Edit"]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # API Compatibility Analyzer Skill

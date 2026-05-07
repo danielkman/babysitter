@@ -3,6 +3,8 @@ name: clipboard-handler
 description: Cross-platform clipboard operations for text, images, files, and rich content
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
 tags: [clipboard, cross-platform, desktop, copy-paste, files]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # clipboard-handler

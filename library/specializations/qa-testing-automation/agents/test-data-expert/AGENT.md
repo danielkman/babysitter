@@ -10,6 +10,9 @@ expertise:
   - Test isolation strategies
   - Data-driven testing
   - Environment data management
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Test Data Expert Agent

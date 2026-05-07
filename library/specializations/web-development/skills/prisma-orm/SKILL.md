@@ -2,6 +2,9 @@
 name: prisma-orm
 description: Prisma ORM schema design, migrations, relations, query optimization, and database integration patterns.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Prisma ORM Skill

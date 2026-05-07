@@ -7,6 +7,9 @@ metadata:
   version: "1.0.0"
   category: visualization
   backlog-id: SK-SA-001
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # c4-diagram-generator

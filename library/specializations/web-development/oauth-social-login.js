@@ -8,6 +8,8 @@
  * @references
  * - OAuth 2.0 Specification: https://oauth.net/2/
  * - Passport.js: https://www.passportjs.org/
+ * @graph
+ *   domains: [domain:web-development, skill-area:authentication-authorization]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

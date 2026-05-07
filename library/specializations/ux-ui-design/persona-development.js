@@ -18,6 +18,8 @@
  * - Persona Development: https://www.interaction-design.org/literature/article/personas-why-and-how-you-should-use-them
  * - Jobs to Be Done Framework: https://jtbd.info/
  * - User Journey Mapping: https://www.nngroup.com/articles/journey-mapping-101/
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

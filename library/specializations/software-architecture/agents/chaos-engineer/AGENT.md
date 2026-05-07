@@ -10,6 +10,9 @@ expertise:
   - Post-mortem analysis
   - Steady state hypothesis
   - Chaos tooling (Litmus, Gremlin)
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Chaos Engineer Agent

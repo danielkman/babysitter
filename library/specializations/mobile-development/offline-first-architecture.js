@@ -17,6 +17,8 @@
  * - Core Data: https://developer.apple.com/documentation/coredata
  * - Room: https://developer.android.com/training/data-storage/room
  * - WatermelonDB: https://watermelondb.dev/
+ * @graph
+ *   domains: [domain:mobile]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

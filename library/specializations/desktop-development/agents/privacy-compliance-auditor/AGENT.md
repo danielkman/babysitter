@@ -2,6 +2,8 @@
 name: privacy-compliance-auditor
 description: Ensures desktop apps comply with GDPR, CCPA, and platform-specific privacy requirements
 expertise: [gdpr, ccpa, privacy, compliance, data-protection]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # privacy-compliance-auditor

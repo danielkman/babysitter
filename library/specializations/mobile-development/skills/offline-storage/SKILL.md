@@ -5,6 +5,8 @@ version: 1.0.0
 category: Data Persistence
 slug: offline-storage
 status: active
+graph:
+  domains: [domain:mobile]
 ---
 
 # Mobile Offline Storage Skill

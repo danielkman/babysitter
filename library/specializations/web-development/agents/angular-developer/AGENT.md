@@ -9,6 +9,9 @@ expertise:
   - RxJS patterns
   - Dependency injection
   - Enterprise architecture
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Angular Developer Agent

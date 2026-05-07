@@ -16,6 +16,8 @@
  * @references
  * - MemLab: https://facebook.github.io/memlab/
  * - LeakCanary: https://square.github.io/leakcanary/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

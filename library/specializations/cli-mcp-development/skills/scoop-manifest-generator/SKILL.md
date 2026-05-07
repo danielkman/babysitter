@@ -2,6 +2,9 @@
 name: scoop-manifest-generator
 description: Generate Scoop manifest for Windows CLI distribution.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Scoop Manifest Generator

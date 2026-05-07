@@ -2,6 +2,8 @@
 name: containerization-assistant
 description: Assist in containerizing applications with Dockerfile generation and optimization
 allowed-tools: ["Bash", "Read", "Write", "Grep", "Glob", "Edit"]
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Containerization Assistant Skill

@@ -17,6 +17,8 @@
  * @references
  * - Data Retention: https://www.gdpreu.org/compliance/data-retention-requirements/
  * - System Decommissioning: https://www.cisa.gov/uscert/sites/default/files/documents/06-015%20-%20IT%20System%20Disposition.pdf
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

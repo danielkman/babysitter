@@ -39,6 +39,8 @@
  * - Data Quality Dimensions: https://www.dataversity.net/six-key-dimensions-data-quality/
  * - Anomaly Detection: https://scikit-learn.org/stable/modules/outlier_detection.html
  * - Data Profiling: https://github.com/ydataai/ydata-profiling
+ * @graph
+ *   domains: [domain:data-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

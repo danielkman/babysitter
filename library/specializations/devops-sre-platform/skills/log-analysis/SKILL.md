@@ -9,6 +9,9 @@ allowed-tools:
   - Glob
   - Grep
   - WebFetch
+graph:
+  domains: [domain:devops]
+
 ---
 
 # Log Analysis Skill

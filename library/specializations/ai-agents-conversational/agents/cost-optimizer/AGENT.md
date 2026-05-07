@@ -8,6 +8,9 @@ expertise:
   - Model selection
   - Caching strategies
   - Budget management
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Cost Optimizer

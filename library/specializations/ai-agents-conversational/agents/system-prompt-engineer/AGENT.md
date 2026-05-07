@@ -8,6 +8,9 @@ expertise:
   - Role definition
   - Constraint specification
   - Output formatting
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # System Prompt Engineer

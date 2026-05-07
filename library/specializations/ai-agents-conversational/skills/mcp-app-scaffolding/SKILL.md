@@ -2,6 +2,9 @@
 name: mcp-app-scaffolding
 description: Scaffolds MCP App project structure with correct directory layout, dependencies, entry points, and framework-specific templates. Handles React (useApp hook), Vanilla JS, Vue, Svelte, Preact, and Solid.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # mcp-app-scaffolding

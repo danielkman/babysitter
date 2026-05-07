@@ -29,6 +29,8 @@
  * - Responsive Testing: https://web.dev/responsive-web-design-basics/
  * - Browser Compatibility: https://caniuse.com/
  * - Cross-Browser Testing Guide: https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Cross_browser_testing
+ * @graph
+ *   domains: [domain:software-engineering, workflow:code-review]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

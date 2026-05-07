@@ -19,6 +19,8 @@
  * - Monolith to Microservices (Sam Newman): https://www.oreilly.com/library/view/monolith-to-microservices/9781492047834/
  * - Domain-Driven Design: https://domainlanguage.com/ddd/
  * - Strangler Fig Pattern: https://martinfowler.com/bliki/StranglerFigApplication.html
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

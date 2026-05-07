@@ -6,6 +6,8 @@ backlog-id: SK-014
 metadata:
   author: babysitter-sdk
   version: "1.0.0"
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # JSDoc/TSDoc Skill

@@ -7,6 +7,8 @@ expertise:
   - Code generation patterns
   - Template engine systems
   - SDK style guides per ecosystem
+graph:
+  domains: [domain:software-engineering]
 ---
 
 # Template Customization Agent

@@ -9,6 +9,9 @@ expertise:
   - Authentication/authorization
   - Error handling
   - Performance optimization
+graph:
+  domains: [domain:web-development]
+
 ---
 
 # Backend Developer Agent

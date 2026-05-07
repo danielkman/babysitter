@@ -21,6 +21,8 @@
  * - Windows Authenticode: https://docs.microsoft.com/en-us/windows/win32/seccrypto/authenticode
  * - Apple Code Signing: https://developer.apple.com/documentation/security/code_signing_services
  * - electron-builder code signing: https://www.electron.build/code-signing
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

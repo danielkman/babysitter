@@ -2,6 +2,9 @@
 name: line-ending-normalizer
 description: Normalize line endings for cross-platform file handling with CRLF/LF conversion and git configuration.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Line Ending Normalizer

@@ -8,6 +8,9 @@ expertise:
   - Disambiguation
   - Graceful degradation
   - User guidance
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Conversation Repair Expert

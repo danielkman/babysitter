@@ -2,6 +2,9 @@
 name: mutually-exclusive-group-handler
 description: Generate logic for handling mutually exclusive argument groups with clear error messages and validation in CLI applications.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # Mutually Exclusive Group Handler

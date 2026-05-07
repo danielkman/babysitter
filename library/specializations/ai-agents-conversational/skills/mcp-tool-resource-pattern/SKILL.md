@@ -2,6 +2,9 @@
 name: mcp-tool-resource-pattern
 description: Implements the core MCP Apps architectural pattern where a Tool declares _meta.ui.resourceUri referencing a registered Resource. Covers registerAppTool, registerAppResource, text fallback, structuredContent, and app-only helper tools.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+graph:
+  domains: [domain:software-engineering]
+
 ---
 
 # mcp-tool-resource-pattern

@@ -9,6 +9,8 @@
  * - GraphQL Specification: https://graphql.org/
  * - Apollo Server Documentation: https://www.apollographql.com/docs/apollo-server/
  * - DataLoader: https://github.com/graphql/dataloader
+ * @graph
+ *   domains: [domain:web-development, topic:api-design]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

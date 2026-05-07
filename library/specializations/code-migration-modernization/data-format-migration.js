@@ -18,6 +18,8 @@
  * - JSON Schema: https://json-schema.org/
  * - Apache NiFi: https://nifi.apache.org/
  * - Data Transformation Patterns: https://www.enterpriseintegrationpatterns.com/
+ * @graph
+ *   domains: [domain:software-engineering]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

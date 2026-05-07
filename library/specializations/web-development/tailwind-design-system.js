@@ -4,6 +4,8 @@
  * @inputs { projectName: string, brandColors?: object }
  * @outputs { success: boolean, designTokens: object, components: array, artifacts: array }
  * @references - Tailwind CSS: https://tailwindcss.com/docs
+ * @graph
+ *   domains: [domain:web-development]
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';
