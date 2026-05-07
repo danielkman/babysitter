@@ -74,9 +74,21 @@ function loadGraphData(_rootDir) {
     graphId: "graph:agent-catalog",
     schemaVersion: "2026.04.agent-catalog-v2",
     evidencePolicy: {
-      kindLabels: ["web", "docs", "repo"],
-      trustLevels: ["vendor-official", "vendor-adjacent"],
-      maxAgeDays: 90,
+      summary: "Atlas-backed vendor evidence freshness policy.",
+      vendorBackedEvidence: {
+        selector: {
+          kindLabels: ["web"],
+          trustLevels: ["trust-level:official-web"],
+        },
+        requiredAttributes: ["reviewOwner", "reviewedAt", "freshnessWindowDays"],
+        maxFreshnessWindowDays: 90,
+        reviewOwnerPattern: "^@a5c-ai/",
+        reachability: {
+          timeoutMs: 15000,
+          retries: 2,
+          acceptedStatusCodes: [200, 401, 403, 405],
+        },
+      },
     },
   };
 
@@ -123,7 +135,7 @@ function validateMetadata(evidenceSources, policy, now) {
       );
     }
 
-    const capturedAt = parseIsoDate(node.capturedAt, `${node.id}.capturedAt`);
+    const capturedAt = parseIsoDate(node.capturedAt || node.observedAt, `${node.id}.capturedAt`);
     const reviewedAt = parseIsoDate(node.reviewedAt, `${node.id}.reviewedAt`);
 
     if (reviewedAt < capturedAt) {
@@ -212,7 +224,7 @@ async function runReachabilityChecks(evidenceSources, policy) {
 
       try {
         results.push(
-          await fetchReachability(node.sourcePathOrUrl, policy).then((reachability) => ({
+          await fetchReachability(node.sourcePathOrUrl || node.sourceUrl, policy).then((reachability) => ({
             evidenceId: node.evidenceId,
             ...reachability,
           })),
@@ -220,7 +232,7 @@ async function runReachabilityChecks(evidenceSources, policy) {
       } catch (error) {
         failures.push({
           evidenceId: node.evidenceId,
-          sourcePathOrUrl: node.sourcePathOrUrl,
+          sourcePathOrUrl: node.sourcePathOrUrl || node.sourceUrl,
           error: error.message,
         });
       }

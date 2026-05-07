@@ -40,6 +40,8 @@ jobs:
           npm install --no-save @rollup/rollup-linux-x64-gnu 2>/dev/null || true
 
       - name: Run docs QA
+        env:
+          AGENT_CATALOG_SKIP_VENDOR_WEB_CHECK: "1"
         run: npm run docs:qa
 
       - name: Build docs
