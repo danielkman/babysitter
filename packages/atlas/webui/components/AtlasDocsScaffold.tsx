@@ -1,10 +1,5 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import {
-  CodexDocsChapterMark,
-  CodexDocsMargin,
-  CodexDocsShell,
-} from "@a5c-ai/compendium";
 
 type CompendiumNode = Exclude<ReactNode, bigint>;
 
@@ -47,6 +42,79 @@ export function atlasReadingTime(markdown: string): string {
     .split(/\s+/)
     .filter(Boolean).length;
   return `Reading · ${Math.max(1, Math.ceil(words / 220))} min`;
+}
+
+function AtlasDocsShellLayout({
+  runningLeft,
+  title,
+  runningRight,
+  toc,
+  article,
+  margin,
+}: {
+  runningLeft: ReactNode;
+  title: ReactNode;
+  runningRight: ReactNode;
+  toc: ReactNode;
+  article: ReactNode;
+  margin: ReactNode;
+}) {
+  return (
+    <section className="mk-docs">
+      <header className="mk-docs__running">
+        <div className="mk-docs__running-left">{runningLeft}</div>
+        <span>{title}</span>
+        <div className="mk-docs__running-right">{runningRight}</div>
+      </header>
+      <div className="mk-docs__layout">
+        {toc}
+        {article}
+        {margin}
+      </div>
+    </section>
+  );
+}
+
+function AtlasDocsChapterMark({
+  num,
+  subtitle,
+  context,
+  readingTime,
+}: {
+  num: ReactNode;
+  subtitle: ReactNode;
+  context: ReactNode;
+  readingTime: ReactNode;
+}) {
+  return (
+    <div className="mk-docs__chapter-mark">
+      <b>{num}</b>
+      <div>
+        <small>{subtitle}</small>
+        <p>{context}</p>
+      </div>
+      <span>{readingTime}</span>
+    </div>
+  );
+}
+
+function AtlasDocsMargin({
+  sections,
+}: {
+  sections: readonly AtlasDocsMarginSection[];
+}) {
+  return (
+    <aside className="mk-docs__margin">
+      {sections.map((section) => (
+        <div key={section.title}>
+          <h3>{section.title}</h3>
+          {section.items.map((item, index) => (
+            <div key={index}>{toCompendiumNode(item)}</div>
+          ))}
+        </div>
+      ))}
+    </aside>
+  );
 }
 
 export function AtlasDocsScaffold({
@@ -92,9 +160,9 @@ export function AtlasDocsScaffold({
 
   return (
     <div className="atlas-docs-shell">
-      <CodexDocsShell
+      <AtlasDocsShellLayout
         runningLeft={<div className="mk-docs__running-left">{toCompendiumNode(runningLeft)}</div> as never}
-        title={toCompendiumNode(runningTitle) as never}
+        title={toCompendiumNode(runningTitle)}
         runningRight={<div className="mk-docs__running-right">{toCompendiumNode(runningRight)}</div> as never}
         toc={
           <aside className="mk-docs__toc">
@@ -146,11 +214,11 @@ export function AtlasDocsScaffold({
         }
         article={
           <article className="mk-docs__article atlas-docs-article">
-            <CodexDocsChapterMark
-              num={toCompendiumNode(chapterMark.num) as never}
-              subtitle={toCompendiumNode(chapterMark.subtitle) as never}
-              context={toCompendiumNode(chapterMark.context) as never}
-              readingTime={toCompendiumNode(chapterMark.readingTime) as never}
+            <AtlasDocsChapterMark
+              num={toCompendiumNode(chapterMark.num)}
+              subtitle={toCompendiumNode(chapterMark.subtitle)}
+              context={toCompendiumNode(chapterMark.context)}
+              readingTime={toCompendiumNode(chapterMark.readingTime)}
             />
             <h2>{toCompendiumNode(articleTitle)}</h2>
             <p className="lead">{toCompendiumNode(lead)}</p>
@@ -159,12 +227,7 @@ export function AtlasDocsScaffold({
           </article>
         }
         margin={
-          <CodexDocsMargin
-            sections={marginSections.map((section) => ({
-              title: section.title,
-              items: section.items.map((item) => toCompendiumNode(item) as never),
-            }))}
-          />
+          <AtlasDocsMargin sections={marginSections} />
         }
       />
     </div>
