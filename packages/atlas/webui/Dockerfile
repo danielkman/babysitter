@@ -7,12 +7,13 @@ COPY packages/atlas/package.json packages/atlas/package.json
 COPY packages/atlas/webui/package.json packages/atlas/webui/package.json
 
 # Override root package.json to only include atlas workspaces
+# Keep dependencies/overrides that the webui needs for correct resolution
 RUN node -e " \
   const pkg = JSON.parse(require('fs').readFileSync('package.json','utf8')); \
   pkg.workspaces = ['packages/atlas', 'packages/atlas/*']; \
   delete pkg.devDependencies; \
   delete pkg.overrides; \
-  delete pkg.dependencies; \
+  pkg.dependencies = {}; \
   require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2));"
 
 RUN npm install --ignore-scripts --no-package-lock
