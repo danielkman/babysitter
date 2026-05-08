@@ -764,7 +764,7 @@ jobs:
           if-no-files-found: error
 
   publish_atlas:
-    if: ${{ always() && needs.prepare_publish.result == 'success' && !contains(github.event.head_commit.message, '[skip publish]') }}
+    if: ${{ !contains(github.event.head_commit.message, '[skip publish]') }}
     name: Publish Atlas
     needs: prepare_publish
     runs-on: ubuntu-latest
@@ -804,7 +804,7 @@ jobs:
         run: npm publish --workspace=@a5c-ai/atlas --access public --tag "$NPM_TAG"
 
   publish_foundation:
-    if: ${{ always() && needs.prepare_publish.result == 'success' && needs.publish_atlas.result == 'success' && !contains(github.event.head_commit.message, '[skip publish]') }}
+    if: ${{ !contains(github.event.head_commit.message, '[skip publish]') }}
     name: Publish Foundation - ${{ matrix.name }}
     needs:
       - prepare_publish
@@ -877,7 +877,7 @@ jobs:
         run: ${{ matrix.publish }}
 
   publish_hooks_and_core:
-    if: ${{ always() && needs.prepare_publish.result == 'success' && needs.publish_foundation.result == 'success' && !contains(github.event.head_commit.message, '[skip publish]') }}
+    if: ${{ !contains(github.event.head_commit.message, '[skip publish]') }}
     name: Publish Hooks And Core - ${{ matrix.name }}
     needs:
       - prepare_publish
@@ -950,7 +950,7 @@ jobs:
         run: ${{ matrix.publish }}
 
   publish_agent_mux_leaf:
-    if: ${{ always() && needs.prepare_publish.result == 'success' && needs.publish_hooks_and_core.result == 'success' && !contains(github.event.head_commit.message, '[skip publish]') }}
+    if: ${{ !contains(github.event.head_commit.message, '[skip publish]') }}
     name: Publish Agent Mux Leaf - ${{ matrix.name }}
     needs:
       - prepare_publish
@@ -1028,7 +1028,7 @@ jobs:
         run: ${{ matrix.publish }}
 
   publish_agent_mux_gateway:
-    if: ${{ always() && needs.prepare_publish.result == 'success' && needs.publish_agent_mux_leaf.result == 'success' && !contains(github.event.head_commit.message, '[skip publish]') }}
+    if: ${{ !contains(github.event.head_commit.message, '[skip publish]') }}
     name: Publish Agent Mux Gateway - ${{ matrix.name }}
     needs:
       - prepare_publish
@@ -1083,7 +1083,7 @@ jobs:
         run: ${{ matrix.publish }}
 
   publish_agent_mux_cli:
-    if: ${{ always() && needs.prepare_publish.result == 'success' && needs.publish_agent_mux_gateway.result == 'success' && !contains(github.event.head_commit.message, '[skip publish]') }}
+    if: ${{ !contains(github.event.head_commit.message, '[skip publish]') }}
     name: Publish Agent Mux CLI
     needs:
       - prepare_publish
@@ -1138,7 +1138,7 @@ jobs:
         run: npm publish --workspace=@a5c-ai/agent-mux-cli --access public --tag "$NPM_TAG"
 
   publish_agent_mux_root:
-    if: ${{ always() && needs.prepare_publish.result == 'success' && needs.publish_agent_mux_cli.result == 'success' && !contains(github.event.head_commit.message, '[skip publish]') }}
+    if: ${{ !contains(github.event.head_commit.message, '[skip publish]') }}
     name: Publish Agent Mux Root
     needs:
       - prepare_publish
@@ -1194,7 +1194,7 @@ jobs:
         run: npm publish --workspace=@a5c-ai/agent-mux --access public --tag "$NPM_TAG"
 
   publish_agent_mux_tui:
-    if: ${{ always() && needs.prepare_publish.result == 'success' && needs.publish_agent_mux_root.result == 'success' && !contains(github.event.head_commit.message, '[skip publish]') }}
+    if: ${{ !contains(github.event.head_commit.message, '[skip publish]') }}
     name: Publish Agent Mux TUI
     needs:
       - prepare_publish
@@ -1251,7 +1251,7 @@ jobs:
         run: npm publish --workspace=@a5c-ai/agent-mux-tui --access public --tag "$NPM_TAG"
 
   deploy_docs_site:
-    if: ${{ always() && needs.prepare_publish.result == 'success' && needs.publish_atlas.result == 'success' && !contains(github.event.head_commit.message, '[skip publish]') && github.ref_name != 'develop' }}
+    if: ${{ !contains(github.event.head_commit.message, '[skip publish]') && github.ref_name != 'develop' }}
     name: Deploy Docs Site
     needs:
       - prepare_publish
@@ -1298,7 +1298,7 @@ jobs:
         uses: actions/deploy-pages@v4
 
   deploy_atlas_webui:
-    if: ${{ always() && needs.prepare_publish.result == 'success' && needs.publish_atlas.result == 'success' && !contains(github.event.head_commit.message, '[skip publish]') }}
+    if: ${{ !contains(github.event.head_commit.message, '[skip publish]') }}
     name: Deploy Atlas WebUI To AKS
     needs:
       - prepare_publish
@@ -1475,7 +1475,7 @@ jobs:
           EOF
           kubectl -n "$KUBE_NAMESPACE" rollout status deployment/"$APP_NAME" --timeout=300s
   deploy_cloud:
-    if: ${{ always() && needs.prepare_publish.result == 'success' && needs.publish_foundation.result == 'success' && !contains(github.event.head_commit.message, '[skip publish]') }}
+    if: ${{ !contains(github.event.head_commit.message, '[skip publish]') }}
     name: Deploy Cloud
     needs:
       - prepare_publish
@@ -1549,7 +1549,7 @@ jobs:
           npm run deploy:cloud:prod
 
   publish_metapackage:
-    if: ${{ always() && needs.prepare_publish.result == 'success' && needs.publish_atlas.result == 'success' && needs.publish_agent_mux_tui.result == 'success' && needs.publish_foundation.result == 'success' && needs.publish_hooks_and_core.result == 'success' && needs.publish_agent_mux_leaf.result == 'success' && needs.publish_agent_mux_gateway.result == 'success' && needs.publish_agent_mux_cli.result == 'success' && needs.publish_agent_mux_root.result == 'success' && needs.deploy_cloud.result == 'success' && !contains(github.event.head_commit.message, '[skip publish]') }}
+    if: ${{ !contains(github.event.head_commit.message, '[skip publish]') }}
     name: Publish Metapackage
     needs:
       - prepare_publish
