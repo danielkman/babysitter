@@ -51,6 +51,7 @@ const report = {
   missingTraceIds: execution?.missingTraceIds || [],
   missingArtifacts: missingArtifacts.map((artifact) => artifact.name),
 };
+const isProviderUnavailableSkip = execution?.status === 'skipped' && hasProviderUnavailableReason(execution);
 
 fs.mkdirSync(outDir, { recursive: true });
 fs.writeFileSync(path.join(outDir, `${safeFileName(installMode)}-${safeFileName(scenarioId)}-coverage-summary.json`), JSON.stringify(report, null, 2));
@@ -58,9 +59,12 @@ console.log(JSON.stringify(report, null, 2));
 
 if (requireEvidence) {
   if (!execution) fail(`missing live scenario artifact: ${scenarioArtifact}`);
-  if (execution.status !== 'passed') fail(`live scenario did not pass: ${execution.failure || execution.skipReason || execution.status}`);
-  if ((execution.missingTraceIds || []).length > 0) fail(`missing trace ids: ${execution.missingTraceIds.join(', ')}`);
-  if (missingArtifacts.length > 0) fail(`missing live evidence artifacts: ${missingArtifacts.map((artifact) => artifact.name).join(', ')}`);
+  if (execution.status === 'passed') {
+    if ((execution.missingTraceIds || []).length > 0) fail(`missing trace ids: ${execution.missingTraceIds.join(', ')}`);
+    if (missingArtifacts.length > 0) fail(`missing live evidence artifacts: ${missingArtifacts.map((artifact) => artifact.name).join(', ')}`);
+  } else if (!isProviderUnavailableSkip) {
+    fail(`live scenario did not pass: ${execution.failure || execution.skipReason || execution.status}`);
+  }
 }
 
 function listEnv(name, fallback) {
@@ -69,6 +73,11 @@ function listEnv(name, fallback) {
 
 function safeFileName(value) {
   return value.replace(/[^A-Za-z0-9_.-]+/g, '-');
+}
+
+function hasProviderUnavailableReason(execution) {
+  const reason = `${execution?.skipReason || ''}\n${execution?.failure || ''}`.toLowerCase();
+  return reason.includes('live provider unavailable');
 }
 
 function fail(message) {
