@@ -1,0 +1,149 @@
+nodeKind: Tool
+id: tool:homebrew
+attributes:
+  displayName: "Homebrew"
+  kind: package-manager
+  description: |
+    The missing package manager for macOS (and Linux), installable via a single shell script.
+    Manages thousands of open-source formulae and casks, handling dependencies, upgrades,
+    and linking so developers can install CLI tools and desktop apps with a single command.
+edges:
+  tool_used_by:
+    - target: skill-area:developer-environment
+---
+nodeKind: Tool
+id: tool:chocolatey
+attributes:
+  displayName: "Chocolatey"
+  kind: package-manager
+  description: |
+    Windows package manager that automates software installation, upgrade, and removal
+    through a central repository of over 9,000 community-maintained packages.
+    Supports silent installs, version pinning, and enterprise deployment via PowerShell.
+edges:
+  tool_used_by:
+    - target: skill-area:developer-environment
+---
+nodeKind: Tool
+id: tool:scoop
+attributes:
+  displayName: "Scoop"
+  kind: package-manager
+  description: |
+    Command-line installer for Windows that installs programs to the user's home folder,
+    eliminating UAC permission prompts and keeping the PATH clean.
+    Organizes packages into buckets and handles shims, making it ideal for developer tools.
+edges:
+  tool_used_by:
+    - target: skill-area:developer-environment
+---
+nodeKind: Tool
+id: tool:winget
+attributes:
+  displayName: "winget"
+  kind: package-manager
+  description: |
+    Microsoft's official Windows Package Manager CLI, built into Windows 10/11 and backed
+    by the Windows Package Manager Community Repository with thousands of verified packages.
+    Supports install, upgrade, uninstall, and export/import of package lists for reproducible setups.
+edges:
+  tool_used_by:
+    - target: skill-area:developer-environment
+---
+nodeKind: Tool
+id: tool:nix
+attributes:
+  displayName: "Nix"
+  kind: package-manager
+  description: |
+    Purely functional cross-platform package manager that provides reproducible, declarative,
+    and atomic package management across Linux and macOS.
+    Each package lives in an isolated store path ensuring no dependency conflicts and enabling
+    reliable rollbacks, development shells, and system-level configuration via NixOS.
+edges:
+  tool_used_by:
+    - target: skill-area:developer-environment
+---
+nodeKind: Tool
+id: tool:apt
+attributes:
+  displayName: "apt"
+  kind: package-manager
+  description: |
+    Advanced Package Tool — the primary package manager for Debian-based Linux distributions
+    including Ubuntu, handling dependency resolution, installs, upgrades, and removals.
+    Wraps dpkg with a high-level interface and integrates with software repositories
+    via signed sources.list entries for secure, authenticated package delivery.
+edges:
+  tool_used_by:
+    - target: skill-area:developer-environment
+---
+nodeKind: Tool
+id: tool:hoppscotch
+attributes:
+  displayName: "Hoppscotch"
+  kind: api-tool
+  description: |
+    Open-source, lightweight API development suite available as a web app and self-hosted
+    platform for testing REST, GraphQL, WebSocket, SSE, and Socket.IO endpoints.
+    Provides realtime collaboration, collections, environments, and a PWA for offline use
+    — positioned as a privacy-friendly alternative to Postman.
+edges:
+  tool_used_by:
+    - target: skill-area:api-design
+---
+nodeKind: Tool
+id: tool:httpie
+attributes:
+  displayName: "HTTPie"
+  kind: api-tool
+  description: |
+    Modern command-line HTTP client designed for human-readable interaction with APIs,
+    offering intuitive syntax, JSON highlighting, session persistence, and plugin support.
+    Also ships HTTPie Desktop, a cross-platform GUI client for exploring and debugging
+    REST, GraphQL, and other HTTP-based APIs without leaving the terminal workflow.
+edges:
+  tool_used_by:
+    - target: skill-area:api-design
+---
+nodeKind: Tool
+id: tool:bruno
+attributes:
+  displayName: "Bruno"
+  kind: api-tool
+  description: |
+    Fast, git-friendly, offline-first open-source API client that stores collections
+    directly on the filesystem in a plain-text Bru format — no cloud sync required.
+    Supports REST, GraphQL, and scripting with JavaScript, making collections version-
+    controllable alongside the code they test.
+edges:
+  tool_used_by:
+    - target: skill-area:api-design
+---
+nodeKind: Tool
+id: tool:rapidapi
+attributes:
+  displayName: "RapidAPI"
+  kind: api-tool
+  description: |
+    World's largest API hub and marketplace where developers discover, test, and connect
+    to thousands of public and private APIs through a unified interface.
+    Provides a browser-based API client, usage analytics, rate-limit management,
+    and monetization tooling for API publishers.
+edges:
+  tool_used_by:
+    - target: skill-area:api-design
+---
+nodeKind: Tool
+id: tool:swagger-editor
+attributes:
+  displayName: "Swagger Editor"
+  kind: api-tool
+  description: |
+    Browser-based and desktop editor for designing, writing, and validating OpenAPI
+    (Swagger) and AsyncAPI specifications with live preview and instant validation feedback.
+    Part of the open-source Swagger toolset maintained by SmartBear, integrating with
+    Swagger UI and Swagger Codegen to generate documentation and client/server stubs.
+edges:
+  tool_used_by:
+    - target: skill-area:api-design
