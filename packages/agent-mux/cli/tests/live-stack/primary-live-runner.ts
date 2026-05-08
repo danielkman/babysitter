@@ -129,6 +129,7 @@ export function buildPrimaryLiveStackCommands(
       prompt,
       '--max-turns',
       String(resolveLaunchMaxTurns(scenario)),
+      '--no-interactive',
     ],
     options.cwd,
     timeoutMs,
@@ -311,16 +312,17 @@ function withWorkspaceBinOnPath(env: Record<string, string | undefined>, cwd: st
 }
 
 function buildPrompt(scenario: LiveStackScenario, traceId: string): string {
+  const evidence = `Print exactly: trace=${traceId} scenario=${scenario.scenarioId}`;
+
   if (scenario.agent.installMode === 'vanilla') {
-    return `Run a tiny vanilla agent-mux proof for ${scenario.scenarioId}. trace=${traceId}; print labels agentMuxSessionId and transportTraceId when observable. Do not invoke Babysitter commands.`;
+    return `Reply with "hello" and the following labels. ${evidence}`;
   }
 
-  const requestedEvidence = `trace=${traceId}; print labels agentMuxSessionId, babysitterRunId, babysitterEffectId, hookEventId, hookMuxEventId, transportTraceId when observable`;
   if (scenario.agent.integrationType === 'runtime-cli') {
-    return `Create a tiny Babysitter proof run for ${scenario.scenarioId}. ${requestedEvidence}. Return terminal status.`;
+    return `Reply with "ok" and the following labels. ${evidence}`;
   }
 
-  return `/babysitter:call Create a tiny proof run for ${scenario.scenarioId}. ${requestedEvidence}. Verify the stop hook ran.`;
+  return `Reply with "ok" and the following labels. ${evidence}`;
 }
 
 function extractTraceIds(output: string): Partial<LiveStackEvidenceBundle> {
