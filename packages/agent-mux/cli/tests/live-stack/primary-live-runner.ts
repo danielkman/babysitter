@@ -67,7 +67,29 @@ export function buildPrimaryLiveStackCommands(
   }
 
   const installTarget = scenario.agent.agentMuxAgent;
-  const launchCommand = commandExecution(commandEnv, 'LIVE_STACK_AMUX_BIN', 'amux', ['launch', installTarget, scenario.model.amuxProvider, '--model', scenario.model.model, '--with-proxy-if-needed', '--proxy-log-level', 'debug', '--session-id', traceId, '--prompt', prompt, '--max-turns', '1'], options.cwd, timeoutMs);
+  const launchCommand = commandExecution(
+    commandEnv,
+    'LIVE_STACK_AMUX_BIN',
+    'amux',
+    [
+      'launch',
+      installTarget,
+      scenario.model.amuxProvider,
+      '--model',
+      scenario.model.model,
+      '--with-proxy-if-needed',
+      '--proxy-log-level',
+      'debug',
+      '--session-id',
+      traceId,
+      '--prompt',
+      prompt,
+      '--max-turns',
+      String(resolveLaunchMaxTurns(scenario)),
+    ],
+    options.cwd,
+    timeoutMs,
+  );
 
   if (scenario.agent.installMode === 'vanilla') {
     return [
@@ -83,6 +105,13 @@ export function buildPrimaryLiveStackCommands(
     generatedPluginInstallCommand(commandEnv, scenario, options.cwd, timeoutMs),
     launchCommand,
   ];
+}
+
+function resolveLaunchMaxTurns(scenario: LiveStackScenario): number {
+  if (scenario.agent.agent === 'claude-code' && scenario.model.provider === 'anthropic-direct') {
+    return 2;
+  }
+  return 1;
 }
 
 

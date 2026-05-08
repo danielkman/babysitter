@@ -77,6 +77,29 @@ describe('primary live stack runner contract', () => {
     ]);
   });
 
+  it('gives claude anthropic live lanes a two-turn budget', () => {
+    const scenario = primaryLiveStackScenario();
+    const anthropicScenario = {
+      ...scenario,
+      scenarioId: 'live.agent-mux.claude-code.anthropic-direct.sonnet',
+      model: {
+        ...scenario.model,
+        provider: 'anthropic-direct' as const,
+        amuxProvider: 'anthropic' as const,
+        model: 'sonnet',
+        credentialMode: 'github-org-secrets' as const,
+        requiredEnv: ['ANTHROPIC_API_KEY'],
+      },
+    };
+    const commands = buildPrimaryLiveStackCommands(anthropicScenario, {
+      cwd: '/repo',
+      timeoutMs: 1000,
+      env: { ANTHROPIC_API_KEY: 'sk-ant-secret', LIVE_STACK_TRACE_ID: 'trace-1' },
+    });
+
+    expect(commands.at(-1)?.args.slice(-2)).toEqual(['--max-turns', '2']);
+  });
+
 
   it('passes the selected babysitter-agent harness through the agent-mux environment', () => {
     const scenario = primaryLiveStackScenario();
@@ -186,4 +209,3 @@ describe('primary live stack runner contract', () => {
     expect(result.artifactPath).toBeDefined();
   });
 });
-
