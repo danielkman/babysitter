@@ -303,8 +303,26 @@ jobs:
 
       - name: Build live stack CLIs
         run: |
-          npm run build:hooks-mux
-          npm run build:runtime
+          set -euo pipefail
+          npm run build:sdk
+          for workspace in \
+            @a5c-ai/hooks-mux-core \
+            @a5c-ai/hooks-mux-cli \
+            @a5c-ai/hooks-mux-adapter-claude \
+            @a5c-ai/hooks-mux-adapter-codex \
+            @a5c-ai/hooks-mux-adapter-gemini \
+            @a5c-ai/hooks-mux-adapter-copilot \
+            @a5c-ai/hooks-mux-adapter-cursor \
+            @a5c-ai/hooks-mux-adapter-pi \
+            @a5c-ai/hooks-mux-adapter-oh-my-pi \
+            @a5c-ai/hooks-mux-adapter-opencode \
+            @a5c-ai/hooks-mux-adapter-openclaw
+          do
+            npm run build --workspace="$workspace"
+          done
+          npm run build:agent-mux:non-realtime
+          npx tsc --build --force packages/agent-core/tsconfig.json
+          npx tsc --build packages/babysitter-agent/tsconfig.json
 
       - name: Run selected live stack E2E
         env:
