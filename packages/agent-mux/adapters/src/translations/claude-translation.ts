@@ -21,6 +21,7 @@ export function translateForClaude(config: ProviderConfig): HarnessProviderTrans
       if (config.params['region']) env['GOOGLE_CLOUD_LOCATION'] = String(config.params['region']);
       return { env, args, proxyRequired: false };
     case 'foundry':
+      env['ANTHROPIC_API_KEY'] = '';
       return { env, args, proxyRequired: true, proxyExposedTransport: 'anthropic' };
     case 'ollama': {
       const apiBase = config.params['apiBase'] ? String(config.params['apiBase']) : 'http://localhost:11434';
@@ -39,6 +40,7 @@ export function translateForClaude(config: ProviderConfig): HarnessProviderTrans
       return { env, args, proxyRequired: false };
     }
     default:
+      env['ANTHROPIC_API_KEY'] = '';
       return { env, args, proxyRequired: true, proxyExposedTransport: 'anthropic' };
   }
 }

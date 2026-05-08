@@ -82,7 +82,7 @@ describe('translateForClaude', () => {
   describe('foundry provider', () => {
     it('routes Foundry through transport-mux with Claude-facing Anthropic transport', () => {
       const result = translateForClaude(makeConfig({ provider: 'foundry', auth: { type: 'api_key', apiKey: 'az-key' } }));
-      expect(result.env).toEqual({});
+      expect(result.env).toEqual({ ANTHROPIC_API_KEY: '' });
       expect(result.proxyRequired).toBe(true);
       expect(result.proxyExposedTransport).toBe('anthropic');
     });
@@ -123,10 +123,11 @@ describe('translateForClaude', () => {
       expect(result.proxyExposedTransport).toBe('anthropic');
     });
 
-    it('returns empty env for unsupported providers', () => {
+    it('clears ANTHROPIC_API_KEY for unsupported providers routed through proxy', () => {
       const result = translateForClaude(makeConfig({ provider: 'openai', auth: { type: 'api_key' } }));
-      expect(result.env).toEqual({});
+      expect(result.env).toEqual({ ANTHROPIC_API_KEY: '' });
       expect(result.args).toEqual([]);
+      expect(result.proxyRequired).toBe(true);
     });
   });
 });

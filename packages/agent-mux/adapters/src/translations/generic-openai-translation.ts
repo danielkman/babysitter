@@ -13,7 +13,13 @@ export function translateForGenericOpenAI(config: ProviderConfig): HarnessProvid
     env['OPENAI_API_KEY'] = config.auth.apiKey;
   }
 
-  const directProviders = ['openai', 'groq', 'fireworks', 'together', 'deepseek',
+  // When routing through a non-Anthropic provider, suppress ANTHROPIC_API_KEY
+  // to prevent the harness from falling back to direct Anthropic calls.
+  if (config.provider !== 'anthropic') {
+    env['ANTHROPIC_API_KEY'] = '';
+  }
+
+  const directProviders = ['openai', 'foundry', 'groq', 'fireworks', 'together', 'deepseek',
     'mistral', 'cerebras', 'sambanova', 'openrouter', 'ollama', 'local',
     'lmstudio', 'vllm', 'custom'];
 
