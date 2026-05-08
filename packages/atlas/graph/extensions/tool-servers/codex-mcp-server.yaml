@@ -24,6 +24,8 @@ edges:
       level: full
   sourced_from:
     - target: source-ref:codex-github
+  integrates_with:
+    - target: provider:openai
   exposes_tool:
     - target: tool-descriptor:codex.mcp.codex
     - target: tool-descriptor:codex.mcp.codex-reply

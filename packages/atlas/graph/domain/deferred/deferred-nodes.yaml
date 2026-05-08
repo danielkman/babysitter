@@ -159,11 +159,18 @@ attributes:
   displayName: "Canonicalized-To Unification"
   description: |
     canonicalized_to edges need unification to compact the graph.
+    Audit (2026-05-08): 21 canonicalized_to edges exist, all mapping
+    vendor-specific hook-surface aliases to 7 canonical hook surfaces
+    (pre-tool-use, post-tool-use, stop, subagent-stop, notification,
+    user-prompt-submit, pre-compact). These are clean, intentional
+    mappings — no merging or compaction needed.
   targetNodeKind: Edge
   priority: medium
   reason: "canonicalized_to edges need unification to compact the graph"
   suggestedBy: todo.md
   createdAt: "2026-05-08"
+  resolvedTo: "edge:canonicalized-to-hook-surfaces"
+  resolvedAt: "2026-05-08"
 edges:
   deferred_for:
     - domain:software-engineering

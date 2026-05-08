@@ -202,6 +202,8 @@ edges:
     level: required
   sourced_from:
   - target: source-ref:mcp-servers-registry
+  integrates_with:
+  - target: provider:google
   lib_applies_to_domain:
   - target: domain:knowledge-management
 ---
@@ -243,6 +245,8 @@ edges:
     level: required
   sourced_from:
   - target: source-ref:mcp-servers-registry
+  integrates_with:
+  - target: provider:google
   lib_applies_to_domain:
   - target: domain:web-development
 ---
@@ -362,6 +366,8 @@ edges:
     level: required
   sourced_from:
   - target: source-ref:mcp-servers-registry
+  integrates_with:
+  - target: issue-tracker:linear
   lib_applies_to_domain:
   - target: domain:software-engineering
 ---
@@ -482,6 +488,8 @@ edges:
     level: required
   sourced_from:
   - target: source-ref:mcp-servers-registry
+  integrates_with:
+  - target: stack-part:tracing
   lib_applies_to_domain:
   - target: domain:observability
 ---
@@ -585,6 +593,9 @@ edges:
     level: required
   sourced_from:
   - target: source-ref:mcp-servers-registry
+  integrates_with:
+  - target: provider:github
+  - target: issue-tracker:github-issues
   exposes_resource:
   - target: mcp-resource:github-issue
   lib_applies_to_domain:
@@ -630,6 +641,8 @@ edges:
     level: required
   sourced_from:
   - target: source-ref:mcp-servers-registry
+  integrates_with:
+  - target: tool:gitlab-ci
   lib_applies_to_domain:
   - target: domain:software-engineering
 ---
@@ -883,6 +896,8 @@ edges:
     level: required
   sourced_from:
   - target: source-ref:mcp-servers-registry
+  integrates_with:
+  - target: provider:aws-bedrock
   lib_applies_to_domain:
   - target: domain:data-science
 ---
@@ -920,6 +935,8 @@ edges:
     versionRange: current
     level: partial
     notes: Read-only search; approval only at install time.
+  integrates_with:
+  - target: stack-part:search-index
   lib_applies_to_domain:
   - target: domain:software-engineering
 ---
@@ -959,6 +976,8 @@ edges:
     versionRange: current
     level: full
     notes: Outbound network calls — clients should gate on approval.
+  integrates_with:
+  - target: stack-part:search-index
   lib_applies_to_domain:
   - target: domain:software-engineering
 ---
@@ -998,6 +1017,8 @@ edges:
     versionRange: current
     level: partial
     notes: Read-only search; approval only at install time.
+  integrates_with:
+  - target: stack-part:search-index
   lib_applies_to_domain:
   - target: domain:software-engineering
 ---

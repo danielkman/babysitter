@@ -32,6 +32,9 @@ edges:
       level: required
   sourced_from:
     - target: source-ref:github-mcp-servers
+  integrates_with:
+    - target: issue-tracker:github-issues
+    - target: provider:github
   mcp_config_scoped_to:
     - target: mcp-config-scope:claude-code-enterprise
   has_connection_state:

@@ -91,6 +91,8 @@ attributes:
   mcpTransports:
   - mcp-transport:stdio
 edges:
+  integrates_with:
+  - target: provider:google
   lib_applies_to_domain:
   - target: domain:project-management
 ---
@@ -109,6 +111,8 @@ attributes:
   mcpTransports:
   - mcp-transport:stdio
 edges:
+  integrates_with:
+  - target: provider:google
   lib_applies_to_domain:
   - target: domain:data-engineering
   - target: domain:operations
@@ -128,6 +132,8 @@ attributes:
   mcpTransports:
   - mcp-transport:stdio
 edges:
+  integrates_with:
+  - target: provider:google
   lib_applies_to_domain:
   - target: domain:knowledge-management
   - target: domain:content-operations

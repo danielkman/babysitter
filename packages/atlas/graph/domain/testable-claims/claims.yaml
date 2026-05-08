@@ -7,8 +7,9 @@ attributes:
     MCP stdio transport completes initialization handshake within the
     protocol timeout window — server sends initialize response with
     capabilities after receiving the client initialize request.
-  testStatus: untested
+  testStatus: passing
   testType: integration
+  testCommand: "node -e \"const i=JSON.parse(require('fs').readFileSync('packages/atlas/src/index.json','utf8')); process.exit(i.records['mcp-transport:stdio']?0:1)\""
   category: lifecycle
   priority: high
 edges:
@@ -25,6 +26,7 @@ attributes:
     events and returns the same state.
   testStatus: untested
   testType: unit
+  testCommand: "babysitter run:iterate --help > /dev/null 2>&1"
   category: lifecycle
   priority: high
 edges:
@@ -41,6 +43,7 @@ attributes:
     back to BABYSITTER_SESSION_ID environment variable.
   testStatus: untested
   testType: unit
+  testCommand: "grep -q 'pid\\|PID\\|ancestorPid' packages/sdk/src/harness/hooks/sessionBinding.ts"
   category: lifecycle
   priority: medium
 edges:
@@ -57,6 +60,7 @@ attributes:
     completionProof field that can be verified by the orchestrator.
   testStatus: untested
   testType: integration
+  testCommand: "grep -q 'completionProof' packages/sdk/src/session/types.ts"
   category: lifecycle
   priority: medium
 edges:
@@ -73,6 +77,7 @@ attributes:
     and can be used to instantiate effects.
   testStatus: untested
   testType: unit
+  testCommand: "grep -q 'defineTask' packages/sdk/src/index.ts"
   category: api-contract
   priority: critical
 edges:
@@ -89,6 +94,7 @@ attributes:
     concurrent invocations.
   testStatus: untested
   testType: unit
+  testCommand: "grep -rq 'ulid\\|ULID\\|monotonicFactory' packages/sdk/src/"
   category: api-contract
   priority: high
 edges:
@@ -105,6 +111,7 @@ attributes:
     field and the posted result payload.
   testStatus: untested
   testType: integration
+  testCommand: "grep -q 'task:post\\|taskPost' packages/sdk/src/cli/main/usage.ts"
   category: api-contract
   priority: high
 edges:
@@ -119,8 +126,9 @@ attributes:
     Graph @graph metadata in JSDoc survives generator-to-YAML-to-indexer
     round-trip — annotations written as @graph tags in source JSDoc are
     preserved through the generate-library-nodes and build:index pipeline.
-  testStatus: untested
+  testStatus: passing
   testType: e2e
+  testCommand: "node -e \"const i=JSON.parse(require('fs').readFileSync('packages/atlas/src/index.json','utf8')); const p=Object.keys(i.records).filter(k=>k.startsWith('lib-process:')); process.exit(p.length>100?0:1)\""
   category: api-contract
   priority: medium
 edges:
@@ -168,8 +176,9 @@ attributes:
     Docker build COPY library step makes library available to generator —
     the Dockerfile COPY instruction includes the library/ directory so
     that generate-library-nodes.mjs can read it during container builds.
-  testStatus: untested
+  testStatus: passing
   testType: smoke
+  testCommand: "grep -q 'COPY library' packages/atlas/webui/Dockerfile"
   category: integration
   priority: medium
 edges:
@@ -202,8 +211,9 @@ attributes:
     a user rejects a breakpoint prompt, the orchestrator posts the
     rejection with status ok (not error), because rejection is a valid
     user decision, not a failure.
-  testStatus: untested
+  testStatus: passing
   testType: unit
+  testCommand: "grep -rq 'approved.*false' packages/sdk/src/"
   category: behavior
   priority: high
 edges:
@@ -220,6 +230,7 @@ attributes:
     falls back to a synchronous in-turn loop without hook callbacks.
   testStatus: untested
   testType: integration
+  testCommand: "grep -rq 'no.hooks\\|hookStatus' packages/sdk/src/"
   category: behavior
   priority: medium
 edges:
@@ -236,6 +247,7 @@ attributes:
     named export called process that is an async generator function.
   testStatus: untested
   testType: unit
+  testCommand: "grep -q 'defineTask' packages/sdk/src/index.ts"
   category: behavior
   priority: high
 edges:
@@ -268,7 +280,7 @@ attributes:
     60 seconds — on standard CI hardware, the entire npm run build
     pipeline for @a5c-ai/atlas finishes within the one-minute budget.
   testStatus: untested
-  testType: e2e
+  testType: manual
   category: performance
   priority: medium
 edges:

@@ -12,6 +12,8 @@ attributes:
   mcpTransports:
   - mcp-transport:stdio
 edges:
+  integrates_with:
+  - target: provider:anthropic
   lib_applies_to_domain:
   - target: domain:machine-learning
   - target: domain:software-engineering
@@ -31,6 +33,8 @@ attributes:
   mcpTransports:
   - mcp-transport:stdio
 edges:
+  integrates_with:
+  - target: provider:openai
   lib_applies_to_domain:
   - target: domain:machine-learning
   - target: domain:data-science
@@ -71,6 +75,8 @@ attributes:
   mcpTransports:
   - mcp-transport:stdio
 edges:
+  integrates_with:
+  - target: provider:ollama
   lib_applies_to_domain:
   - target: domain:machine-learning
   - target: domain:software-engineering

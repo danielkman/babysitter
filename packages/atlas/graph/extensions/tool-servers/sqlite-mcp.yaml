@@ -33,5 +33,7 @@ edges:
       level: required
   sourced_from:
     - target: source-ref:mcp-servers-registry
+  integrates_with:
+    - target: stack-part:relational-database
   lib_applies_to_domain:
     - target: domain:databases
