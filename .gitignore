@@ -25,6 +25,7 @@ yarn-error.log*
 generated/
 artifacts/generated-plugins/
 packages/atlas/graph/generated-library/
+packages/atlas/graph/wiki/library/
 
 
 _ci_artifacts/**

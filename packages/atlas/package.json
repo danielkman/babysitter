@@ -38,7 +38,7 @@
   "scripts": {
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
     "build:index": "tsx src/indexer.ts --catalog-dir ./graph --out src/index.json",
-    "build": "node scripts/generate-library-nodes.mjs && npm run build:index && tsc -p tsconfig.json && node scripts/copy-assets.cjs",
+    "build": "node scripts/generate-library-nodes.mjs && node scripts/generate-wiki-pages.mjs && npm run build:index && tsc -p tsconfig.json && node scripts/copy-assets.cjs",
     "prepack": "npm run build",
     "cli": "node dist/cli.js",
     "verify:library-metadata": "node scripts/verify-library-metadata.mjs",
