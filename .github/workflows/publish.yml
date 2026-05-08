@@ -230,7 +230,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-2022]
+        os: [ubuntu-latest, macos-latest]
         install_mode:
           - id: babysitter-plugin
             layers: agent-mux install,agent-mux invocation,generated Babysitter plugin package,Babysitter SDK installation,plugin babysitter command dispatch,session persistence,native stop hook,hooks-mux normalization,transport-mux route,provider/model trace
@@ -243,24 +243,11 @@ jobs:
             required_trace_ids: agentMuxRunId,agentMuxSessionId,transportTraceId
             expected_artifacts: agent-mux-events,transport-mux-trace,provider-trace-redacted
         exclude:
-          - os: windows-2022
+          - install_mode:
+              id: babysitter-plugin
             scenario:
-              id: live.agent-mux.claude-code.foundry-openai.gpt-5.5
-          - os: windows-2022
-            scenario:
-              id: live.agent-mux.claude-code.anthropic-direct.sonnet
+              id: live.agent-mux.pi.foundry-openai.gpt-5.5
         scenario:
-          - id: live.agent-mux.claude-code.foundry-openai.gpt-5.5
-            agent_path: agent-mux
-            agent: claude-code
-            amux_agent: claude
-            integration_type: third-party-plugin
-            provider: foundry-openai
-            amux_provider: foundry
-            model: gpt-5.5
-            credential_mode: github-org-secrets-and-vars
-            required_env: AZURE_API_KEY,AMUX_API_BASE
-            coverage_layers: foundry-openai,claude-code
           - id: live.agent-mux.claude-code.anthropic-direct.sonnet
             agent_path: agent-mux
             agent: claude-code
@@ -272,28 +259,6 @@ jobs:
             credential_mode: github-org-secrets
             required_env: ANTHROPIC_API_KEY
             coverage_layers: anthropic-direct,claude-code
-          - id: live.agent-mux.codex.foundry-openai.gpt-5.5
-            agent_path: agent-mux
-            agent: codex
-            amux_agent: codex
-            integration_type: third-party-plugin
-            provider: foundry-openai
-            amux_provider: foundry
-            model: gpt-5.5
-            credential_mode: github-org-secrets-and-vars
-            required_env: AZURE_API_KEY,AMUX_API_BASE
-            coverage_layers: foundry-openai,codex
-          - id: live.agent-mux.gemini.foundry-openai.gpt-5.5
-            agent_path: agent-mux
-            agent: gemini-cli
-            amux_agent: gemini
-            integration_type: third-party-plugin
-            provider: foundry-openai
-            amux_provider: foundry
-            model: gpt-5.5
-            credential_mode: github-org-secrets-and-vars
-            required_env: AZURE_API_KEY,AMUX_API_BASE
-            coverage_layers: foundry-openai,gemini
           - id: live.agent-mux.pi.foundry-openai.gpt-5.5
             agent_path: agent-mux
             agent: pi

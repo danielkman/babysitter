@@ -79,9 +79,20 @@ export function buildPrimaryLiveStackCommands(
     commandExecution(commandEnv, 'LIVE_STACK_NPM_BIN', 'npm', ['run', 'generate:plugins'], options.cwd, timeoutMs),
     commandExecution(commandEnv, 'LIVE_STACK_AMUX_BIN', 'amux', ['install', installTarget, '--json'], options.cwd, timeoutMs),
     commandExecution(commandEnv, 'LIVE_STACK_NPM_BIN', 'npm', ['install', '--global', './packages/sdk'], options.cwd, timeoutMs),
-    commandExecution(commandEnv, 'LIVE_STACK_BABYSITTER_BIN', 'babysitter', ['harness:install-plugin', scenario.agent.agent, '--workspace', options.cwd, '--json'], options.cwd, timeoutMs),
+    generatedPluginInstallCommand(commandEnv, scenario, options.cwd, timeoutMs),
     launchCommand,
   ];
+}
+
+
+function generatedPluginInstallCommand(env: Record<string, string>, scenario: LiveStackScenario, cwd: string, timeoutMs: number): CommandExecution {
+  if (scenario.agent.agent === 'claude-code') {
+    return commandExecution(env, 'LIVE_STACK_BABYSITTER_BIN', 'babysitter', ['harness:install-plugin', scenario.agent.agent, '--workspace', cwd, '--json'], cwd, timeoutMs);
+  }
+
+  const pluginDir = path.join(env['LIVE_STACK_GENERATED_PLUGINS_DIR'], scenario.agent.agent);
+  const cliScript = scenario.agent.agent === 'pi' ? path.join(pluginDir, 'bin', 'cli.cjs') : path.join(pluginDir, 'bin', 'cli.js');
+  return { command: process.execPath, args: [cliScript, 'install', '--workspace', cwd], env, cwd, timeoutMs };
 }
 
 export async function runPrimaryLiveStackScenario(options: PrimaryLiveRunOptions): Promise<PrimaryLiveRunResult> {
