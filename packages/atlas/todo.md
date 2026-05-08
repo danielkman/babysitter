@@ -83,6 +83,8 @@ library - graph:
   └─────┴──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 
 
+---
+\babysitter\docs\atlas-library-gaps.md
 
 ---
-ToolServer - model it better- how to run/use it if, where is the repo, etc. then enrich the graph with that information and connect it to the relevant entities (most imprortantly, the frameworks,systems,services,tools,libs it provides integrations for, and the relevant skills, skill areas). then enrich the catalog of tools by search mcp servers for existing components in the graph (that represent functionality that a mcp server could provide an interface for) and add the relevant toolserver to the graph (with connectivity)
+[ ] - ToolServer - model it better- how to run/use it if, where is the repo, etc. then enrich the graph with that information and connect it to the relevant entities (most imprortantly, the frameworks,systems,services,tools,libs it provides integrations for, and the relevant skills, skill areas). then enrich the catalog of tools by search mcp servers for existing components in the graph (that represent functionality that a mcp server could provide an interface for) and add the relevant toolserver to the graph (with connectivity)
