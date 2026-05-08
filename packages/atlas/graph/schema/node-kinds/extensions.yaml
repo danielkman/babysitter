@@ -611,11 +611,47 @@ nodeKinds:
   - name: tools
     type: list<string>
     required: false
+  - name: description
+    type: markdown
+    required: false
+    notes: Human-readable summary of what this tool server does.
+  - name: repoUrl
+    type: url
+    required: false
+    notes: Source repository URL.
+  - name: installCommand
+    type: string
+    required: false
+    notes: One-liner install command (e.g. npx, npm install).
+  - name: category
+    type: enum<database,search,cloud,devtools,productivity,communication,ai,monitoring,version-control,file-system,design,analytics,security,payment,cms,other>
+    required: false
+    notes: High-level category for filtering and discovery.
+  - name: maintainer
+    type: string
+    required: false
+    notes: Maintainer or organization name.
+  - name: npmPackage
+    type: string
+    required: false
+    notes: npm package name when applicable.
   incomingEdges:
   - contains_tool_server
   outgoingEdges:
   - implements
   - sourced_from
+  - contains_tool_descriptor
+  - requires_capability
+  - supports
+  - exposes_resource
+  - exposes_prompt
+  - exposes_root
+  - exposes_sampling
+  - exposes_tool
+  - mcp_config_scoped_to
+  - has_connection_state
+  - integrates_with
+  - lib_applies_to_domain
   invariants: []
   examples: []
 - id: node:tool-descriptor

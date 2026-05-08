@@ -2,7 +2,11 @@ nodeKind: ToolServer
 id: tool-server:github-issues-mcp
 attributes:
   displayName: "GitHub Issues MCP"
+  description: "MCP server for GitHub issue management in enterprise contexts. Enables AI agents to create, list, update, and comment on GitHub issues. Supports stdio transport."
   protocol: mcp
+  category: version-control
+  repoUrl: https://github.com/github/github-mcp-server
+  maintainer: GitHub
   mcpTransports:
     - mcp-transport:stdio
   tools:
@@ -32,3 +36,5 @@ edges:
     - target: mcp-config-scope:claude-code-enterprise
   has_connection_state:
     - target: mcp-connection-state:claude-code-needs-auth-github
+  lib_applies_to_domain:
+    - target: domain:software-engineering

@@ -2,7 +2,12 @@ nodeKind: ToolServer
 id: tool-server:slack-mcp
 attributes:
   displayName: "Slack MCP"
+  description: "MCP server providing programmatic access to Slack workspaces. Enables AI agents to list channels, post messages, reply to threads, add reactions, and retrieve user profiles. Supports stdio transport."
   protocol: mcp
+  category: communication
+  repoUrl: https://github.com/modelcontextprotocol/servers/tree/main/src/slack
+  npmPackage: "@modelcontextprotocol/server-slack"
+  maintainer: Anthropic
   mcpTransports:
     - mcp-transport:stdio
   tools:
@@ -34,3 +39,5 @@ edges:
     - target: source-ref:mcp-servers-registry
   exposes_resource:
     - target: mcp-resource:slack-channel-history
+  lib_applies_to_domain:
+    - target: domain:software-engineering

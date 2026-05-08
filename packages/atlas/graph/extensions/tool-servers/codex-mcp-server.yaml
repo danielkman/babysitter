@@ -2,8 +2,12 @@ nodeKind: ToolServer
 id: tool-server:codex-mcp-server
 attributes:
   displayName: Codex MCP Server
+  description: "Built-in MCP server for OpenAI Codex integration. Enables AI agents to dispatch coding tasks to Codex and receive replies. Ships as a built-in component of the Codex CLI."
   protocol: mcp-stdio
   provenance: built-in
+  category: ai
+  repoUrl: https://github.com/openai/codex
+  maintainer: OpenAI
   mcpTransports:
     - mcp-transport:stdio
   sourceRef: source-ref:codex-github
@@ -23,3 +27,5 @@ edges:
   exposes_tool:
     - target: tool-descriptor:codex.mcp.codex
     - target: tool-descriptor:codex.mcp.codex-reply
+  lib_applies_to_domain:
+    - target: domain:software-engineering

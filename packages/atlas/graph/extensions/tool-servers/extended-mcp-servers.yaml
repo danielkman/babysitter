@@ -2,7 +2,12 @@ nodeKind: ToolServer
 id: tool-server:mcp-everything
 attributes:
   displayName: MCP Everything (reference)
+  description: "Reference MCP server exercising all protocol features. Demonstrates tools, resources, prompts, roots, and sampling capabilities. Used for testing and validating MCP client implementations."
   protocol: mcp
+  category: devtools
+  repoUrl: https://github.com/modelcontextprotocol/servers/tree/main/src/everything
+  npmPackage: "@modelcontextprotocol/server-everything"
+  maintainer: Anthropic
   mcpTransports:
   - mcp-transport:stdio
   tools:
@@ -48,13 +53,19 @@ edges:
   exposes_sampling:
   - target: mcp-sampling:default-anthropic
   - target: mcp-sampling:cost-optimized
+  lib_applies_to_domain:
+  - target: domain:software-engineering
 ---
 
 nodeKind: ToolServer
 id: tool-server:mcp-time
 attributes:
   displayName: MCP Time
+  description: "MCP server providing time zone conversion and current time retrieval. Enables AI agents to get the current time in any timezone and convert between time zones. Supports stdio transport."
   protocol: mcp
+  category: productivity
+  repoUrl: https://github.com/modelcontextprotocol/servers/tree/main/src/time
+  maintainer: Community
   mcpTransports:
   - mcp-transport:stdio
   tools:
@@ -72,13 +83,20 @@ edges:
     level: required
   sourced_from:
   - target: source-ref:mcp-servers-registry
+  lib_applies_to_domain:
+  - target: domain:software-engineering
 ---
 
 nodeKind: ToolServer
 id: tool-server:mcp-memory
 attributes:
   displayName: MCP Memory (knowledge graph)
+  description: "MCP server providing persistent knowledge graph memory. Enables AI agents to create entities, relations, and observations for long-term information retention across sessions. Supports stdio transport."
   protocol: mcp
+  category: ai
+  repoUrl: https://github.com/modelcontextprotocol/servers/tree/main/src/memory
+  npmPackage: "@modelcontextprotocol/server-memory"
+  maintainer: Anthropic
   mcpTransports:
   - mcp-transport:stdio
   tools:
@@ -110,13 +128,20 @@ edges:
     level: required
   sourced_from:
   - target: source-ref:mcp-servers-registry
+  lib_applies_to_domain:
+  - target: domain:software-engineering
 ---
 
 nodeKind: ToolServer
 id: tool-server:mcp-puppeteer
 attributes:
   displayName: MCP Puppeteer
+  description: "MCP server providing browser automation via Puppeteer. Enables AI agents to navigate web pages, take screenshots, click elements, fill forms, and evaluate JavaScript. Supports stdio transport."
   protocol: mcp
+  category: devtools
+  repoUrl: https://github.com/modelcontextprotocol/servers/tree/main/src/puppeteer
+  npmPackage: "@modelcontextprotocol/server-puppeteer"
+  maintainer: Anthropic
   mcpTransports:
   - mcp-transport:stdio
   tools:
@@ -144,13 +169,22 @@ edges:
     level: required
   sourced_from:
   - target: source-ref:mcp-servers-registry
+  integrates_with:
+  - target: tool:playwright
+  lib_applies_to_domain:
+  - target: domain:web-development
 ---
 
 nodeKind: ToolServer
 id: tool-server:mcp-google-drive
 attributes:
   displayName: MCP Google Drive
+  description: "MCP server providing access to Google Drive. Enables AI agents to search files and read document contents from Google Drive. Supports stdio transport."
   protocol: mcp
+  category: productivity
+  repoUrl: https://github.com/modelcontextprotocol/servers/tree/main/src/gdrive
+  npmPackage: "@modelcontextprotocol/server-gdrive"
+  maintainer: Anthropic
   mcpTransports:
   - mcp-transport:stdio
   tools:
@@ -168,13 +202,20 @@ edges:
     level: required
   sourced_from:
   - target: source-ref:mcp-servers-registry
+  lib_applies_to_domain:
+  - target: domain:knowledge-management
 ---
 
 nodeKind: ToolServer
 id: tool-server:mcp-google-maps
 attributes:
   displayName: MCP Google Maps
+  description: "MCP server providing Google Maps Platform access. Enables AI agents to geocode addresses, search for places, get directions, compute distance matrices, and query elevation data. Supports stdio transport."
   protocol: mcp
+  category: other
+  repoUrl: https://github.com/modelcontextprotocol/servers/tree/main/src/google-maps
+  npmPackage: "@modelcontextprotocol/server-google-maps"
+  maintainer: Anthropic
   mcpTransports:
   - mcp-transport:stdio
   tools:
@@ -202,13 +243,19 @@ edges:
     level: required
   sourced_from:
   - target: source-ref:mcp-servers-registry
+  lib_applies_to_domain:
+  - target: domain:web-development
 ---
 
 nodeKind: ToolServer
 id: tool-server:mcp-aws-s3
 attributes:
   displayName: MCP AWS S3
+  description: "MCP server providing access to Amazon S3 object storage. Enables AI agents to list buckets, browse objects, read files, and upload content to S3. Supports stdio transport."
   protocol: mcp
+  category: cloud
+  repoUrl: https://github.com/aws/aws-mcp-servers
+  maintainer: AWS
   mcpTransports:
   - mcp-transport:stdio
   tools:
@@ -230,13 +277,22 @@ edges:
     level: required
   sourced_from:
   - target: source-ref:mcp-servers-registry
+  integrates_with:
+  - target: stack-part:object-storage
+  lib_applies_to_domain:
+  - target: domain:cloud-infra
 ---
 
 nodeKind: ToolServer
 id: tool-server:mcp-stripe
 attributes:
   displayName: MCP Stripe
+  description: "MCP server providing access to the Stripe payments platform. Enables AI agents to manage customers, products, prices, payment links, and invoices. Supports stdio transport."
   protocol: mcp
+  category: payment
+  repoUrl: https://github.com/stripe/agent-toolkit
+  npmPackage: "@stripe/agent-toolkit"
+  maintainer: Stripe
   mcpTransports:
   - mcp-transport:stdio
   tools:
@@ -268,13 +324,19 @@ edges:
     level: required
   sourced_from:
   - target: source-ref:mcp-servers-registry
+  lib_applies_to_domain:
+  - target: domain:fintech
 ---
 
 nodeKind: ToolServer
 id: tool-server:mcp-linear
 attributes:
   displayName: MCP Linear
+  description: "MCP server providing access to the Linear project management platform. Enables AI agents to list and manage issues, projects, and teams. Supports stdio transport."
   protocol: mcp
+  category: productivity
+  repoUrl: https://github.com/jerhadf/linear-mcp-server
+  maintainer: Community
   mcpTransports:
   - mcp-transport:stdio
   tools:
@@ -300,13 +362,19 @@ edges:
     level: required
   sourced_from:
   - target: source-ref:mcp-servers-registry
+  lib_applies_to_domain:
+  - target: domain:software-engineering
 ---
 
 nodeKind: ToolServer
 id: tool-server:mcp-notion
 attributes:
   displayName: MCP Notion
+  description: "MCP server providing access to the Notion workspace platform. Enables AI agents to search, create, update pages, append block children, and query databases. Supports stdio transport."
   protocol: mcp
+  category: productivity
+  repoUrl: https://github.com/makenotion/notion-mcp-server
+  maintainer: Notion
   mcpTransports:
   - mcp-transport:stdio
   tools:
@@ -334,13 +402,19 @@ edges:
   - target: source-ref:mcp-servers-registry
   exposes_resource:
   - target: mcp-resource:notion-page
+  lib_applies_to_domain:
+  - target: domain:software-engineering
 ---
 
 nodeKind: ToolServer
 id: tool-server:mcp-jira
 attributes:
   displayName: MCP Atlassian (Jira & Confluence)
+  description: "MCP server providing access to Atlassian Jira and Confluence. Enables AI agents to search, create, update, and transition Jira issues, add comments, and read Confluence pages. Supports stdio transport."
   protocol: mcp
+  category: productivity
+  repoUrl: https://github.com/sooperset/mcp-atlassian
+  maintainer: Community
   mcpTransports:
   - mcp-transport:stdio
   tools:
@@ -370,13 +444,19 @@ edges:
     level: required
   sourced_from:
   - target: source-ref:mcp-servers-registry
+  lib_applies_to_domain:
+  - target: domain:software-engineering
 ---
 
 nodeKind: ToolServer
 id: tool-server:mcp-sentry
 attributes:
   displayName: MCP Sentry
+  description: "MCP server providing access to Sentry error tracking. Enables AI agents to list, search, and inspect issues and error events. Supports stdio transport."
   protocol: mcp
+  category: monitoring
+  repoUrl: https://github.com/getsentry/sentry-mcp
+  maintainer: Sentry
   mcpTransports:
   - mcp-transport:stdio
   tools:
@@ -398,13 +478,19 @@ edges:
     level: required
   sourced_from:
   - target: source-ref:mcp-servers-registry
+  lib_applies_to_domain:
+  - target: domain:observability
 ---
 
 nodeKind: ToolServer
 id: tool-server:mcp-cloudflare
 attributes:
   displayName: MCP Cloudflare
+  description: "MCP server providing access to Cloudflare's developer platform. Enables AI agents to manage Workers, KV namespaces, D1 databases, R2 object storage, and run analytics queries. Supports streamable HTTP transport."
   protocol: mcp
+  category: cloud
+  repoUrl: https://github.com/cloudflare/mcp-server-cloudflare
+  maintainer: Cloudflare
   mcpTransports:
   - mcp-transport:streamable-http
   tools:
@@ -438,13 +524,19 @@ edges:
     level: required
   sourced_from:
   - target: source-ref:mcp-servers-registry
+  lib_applies_to_domain:
+  - target: domain:cloud-infra
 ---
 
 nodeKind: ToolServer
 id: tool-server:mcp-github
 attributes:
   displayName: MCP GitHub (official)
+  description: "Official MCP server for the GitHub platform. Enables AI agents to manage issues, pull requests, search repositories and code, create branches, fork repos, and manipulate file contents. Supports stdio and streamable HTTP transports."
   protocol: mcp
+  category: version-control
+  repoUrl: https://github.com/github/github-mcp-server
+  maintainer: GitHub
   mcpTransports:
   - mcp-transport:stdio
   - mcp-transport:streamable-http
@@ -489,13 +581,20 @@ edges:
   - target: source-ref:mcp-servers-registry
   exposes_resource:
   - target: mcp-resource:github-issue
+  lib_applies_to_domain:
+  - target: domain:software-engineering
 ---
 
 nodeKind: ToolServer
 id: tool-server:mcp-gitlab
 attributes:
   displayName: MCP GitLab
+  description: "MCP server providing access to the GitLab platform. Enables AI agents to search repositories, manage files, create issues and merge requests, fork repos, and create branches. Supports stdio transport."
   protocol: mcp
+  category: version-control
+  repoUrl: https://github.com/modelcontextprotocol/servers/tree/main/src/gitlab
+  npmPackage: "@modelcontextprotocol/server-gitlab"
+  maintainer: Anthropic
   mcpTransports:
   - mcp-transport:stdio
   tools:
@@ -525,13 +624,19 @@ edges:
     level: required
   sourced_from:
   - target: source-ref:mcp-servers-registry
+  lib_applies_to_domain:
+  - target: domain:software-engineering
 ---
 
 nodeKind: ToolServer
 id: tool-server:mcp-elasticsearch
 attributes:
   displayName: MCP Elasticsearch
+  description: "MCP server providing access to Elasticsearch clusters. Enables AI agents to list indices, inspect mappings, run search queries, and execute ES|QL. Supports stdio transport."
   protocol: mcp
+  category: search
+  repoUrl: https://github.com/elastic/mcp-server-elasticsearch
+  maintainer: Elastic
   mcpTransports:
   - mcp-transport:stdio
   tools:
@@ -553,13 +658,22 @@ edges:
     level: required
   sourced_from:
   - target: source-ref:mcp-servers-registry
+  integrates_with:
+  - target: stack-part:search-index
+  - target: tool:elasticsearch
+  lib_applies_to_domain:
+  - target: domain:databases
 ---
 
 nodeKind: ToolServer
 id: tool-server:mcp-mongodb
 attributes:
   displayName: MCP MongoDB
+  description: "MCP server providing access to MongoDB databases. Enables AI agents to list databases and collections, run find and aggregate queries, count documents, and perform bulk inserts and updates. Supports stdio transport."
   protocol: mcp
+  category: database
+  repoUrl: https://github.com/mongodb-js/mongodb-mcp-server
+  maintainer: MongoDB
   mcpTransports:
   - mcp-transport:stdio
   tools:
@@ -587,13 +701,22 @@ edges:
     level: required
   sourced_from:
   - target: source-ref:mcp-servers-registry
+  integrates_with:
+  - target: stack-part:nosql-database
+  - target: tool:mongosh
+  lib_applies_to_domain:
+  - target: domain:databases
 ---
 
 nodeKind: ToolServer
 id: tool-server:mcp-redis
 attributes:
   displayName: MCP Redis
+  description: "MCP server providing access to Redis key-value stores. Enables AI agents to get, set, delete keys, manage hash fields, and work with lists. Supports stdio transport."
   protocol: mcp
+  category: database
+  repoUrl: https://github.com/redis/mcp-redis
+  maintainer: Redis
   mcpTransports:
   - mcp-transport:stdio
   tools:
@@ -623,13 +746,22 @@ edges:
     level: required
   sourced_from:
   - target: source-ref:mcp-servers-registry
+  integrates_with:
+  - target: stack-part:cache
+  - target: tool:redis-cli
+  lib_applies_to_domain:
+  - target: domain:databases
 ---
 
 nodeKind: ToolServer
 id: tool-server:mcp-kubernetes
 attributes:
   displayName: MCP Kubernetes
+  description: "MCP server providing access to Kubernetes clusters via kubectl. Enables AI agents to get, describe, and manage resources, view logs, apply manifests, and execute commands in pods. Supports stdio transport."
   protocol: mcp
+  category: cloud
+  repoUrl: https://github.com/strowk/mcp-k8s-go
+  maintainer: Community
   mcpTransports:
   - mcp-transport:stdio
   tools:
@@ -662,13 +794,21 @@ edges:
     versionRange: current
     level: full
     notes: 'Cluster mutations: clients MUST gate writes on approval.'
+  integrates_with:
+  - target: tool:kubernetes
+  lib_applies_to_domain:
+  - target: domain:devops
 ---
 
 nodeKind: ToolServer
 id: tool-server:mcp-docker
 attributes:
   displayName: MCP Docker
+  description: "MCP server providing Docker container management. Enables AI agents to list, run, stop, and exec into containers, view logs, manage images, and trigger builds. Supports stdio transport."
   protocol: mcp
+  category: devtools
+  repoUrl: https://github.com/docker/docker-mcp
+  maintainer: Docker
   mcpTransports:
   - mcp-transport:stdio
   tools:
@@ -701,13 +841,21 @@ edges:
     versionRange: current
     level: full
     notes: Container lifecycle calls; clients should gate on approval.
+  integrates_with:
+  - target: tool:docker
+  lib_applies_to_domain:
+  - target: domain:devops
 ---
 
 nodeKind: ToolServer
 id: tool-server:mcp-aws-bedrock
 attributes:
   displayName: MCP AWS Bedrock
+  description: "MCP server providing access to AWS Bedrock AI services. Enables AI agents to list foundation models, invoke model inference, manage knowledge bases, and run RAG queries. Supports stdio transport."
   protocol: mcp
+  category: ai
+  repoUrl: https://github.com/aws/aws-mcp-servers
+  maintainer: AWS
   mcpTransports:
   - mcp-transport:stdio
   tools:
@@ -729,13 +877,19 @@ edges:
     level: required
   sourced_from:
   - target: source-ref:mcp-servers-registry
+  lib_applies_to_domain:
+  - target: domain:data-science
 ---
 
 nodeKind: ToolServer
 id: tool-server:mcp-perplexity
 attributes:
   displayName: MCP Perplexity
+  description: "MCP server providing access to Perplexity AI search. Enables AI agents to ask questions, conduct deep research, and reason over web search results. Supports stdio transport."
   protocol: mcp
+  category: search
+  repoUrl: https://github.com/ppl-ai/modelcontextprotocol
+  maintainer: Perplexity
   mcpTransports:
   - mcp-transport:stdio
   tools:
@@ -760,13 +914,19 @@ edges:
     versionRange: current
     level: partial
     notes: Read-only search; approval only at install time.
+  lib_applies_to_domain:
+  - target: domain:software-engineering
 ---
 
 nodeKind: ToolServer
 id: tool-server:mcp-tavily
 attributes:
   displayName: MCP Tavily
+  description: "MCP server providing web search and content extraction via Tavily API. Enables AI agents to search the web, extract page content, crawl sites, and generate sitemaps. Supports stdio transport."
   protocol: mcp
+  category: search
+  repoUrl: https://github.com/tavily-ai/tavily-mcp
+  maintainer: Tavily
   mcpTransports:
   - mcp-transport:stdio
   tools:
@@ -793,13 +953,19 @@ edges:
     versionRange: current
     level: full
     notes: Outbound network calls — clients should gate on approval.
+  lib_applies_to_domain:
+  - target: domain:software-engineering
 ---
 
 nodeKind: ToolServer
 id: tool-server:mcp-exa
 attributes:
   displayName: MCP Exa
+  description: "MCP server providing neural web search via Exa API. Enables AI agents to search the web semantically, find similar pages, extract full page contents, and conduct multi-step research. Supports stdio transport."
   protocol: mcp
+  category: search
+  repoUrl: https://github.com/exa-labs/exa-mcp-server
+  maintainer: Exa
   mcpTransports:
   - mcp-transport:stdio
   tools:
@@ -826,13 +992,19 @@ edges:
     versionRange: current
     level: partial
     notes: Read-only search; approval only at install time.
+  lib_applies_to_domain:
+  - target: domain:software-engineering
 ---
 
 nodeKind: ToolServer
 id: tool-server:mcp-firecrawl
 attributes:
   displayName: MCP Firecrawl
+  description: "MCP server providing web scraping and crawling via Firecrawl API. Enables AI agents to scrape pages, crawl sites, generate sitemaps, search, and extract structured data. Supports stdio transport."
   protocol: mcp
+  category: search
+  repoUrl: https://github.com/mendableai/firecrawl-mcp-server
+  maintainer: Firecrawl
   mcpTransports:
   - mcp-transport:stdio
   tools:
@@ -861,13 +1033,20 @@ edges:
     versionRange: current
     level: full
     notes: Outbound crawl + scrape; clients should gate on approval.
+  lib_applies_to_domain:
+  - target: domain:web-development
 ---
 
 nodeKind: ToolServer
 id: tool-server:mcp-context7
 attributes:
   displayName: MCP Context7
+  description: "MCP server providing up-to-date library documentation lookups. Enables AI agents to resolve library IDs and retrieve current documentation for programming libraries and frameworks. Supports stdio transport."
   protocol: mcp
+  category: devtools
+  repoUrl: https://github.com/upstash/context7
+  npmPackage: "@upstash/context7-mcp"
+  maintainer: Upstash
   mcpTransports:
   - mcp-transport:stdio
   tools:
@@ -892,13 +1071,20 @@ edges:
     notes: Read-only docs lookups; approval typically needed only on first use.
   exposes_resource:
   - target: mcp-resource:context7-docs
+  lib_applies_to_domain:
+  - target: domain:software-engineering
 ---
 
 nodeKind: ToolServer
 id: tool-server:mcp-sequential-thinking
 attributes:
   displayName: MCP Sequential Thinking
+  description: "MCP server providing a structured sequential thinking scratchpad. Enables AI agents to break down complex problems into ordered reasoning steps with revision and branching support. Supports stdio transport."
   protocol: mcp
+  category: ai
+  repoUrl: https://github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking
+  npmPackage: "@modelcontextprotocol/server-sequential-thinking"
+  maintainer: Anthropic
   mcpTransports:
   - mcp-transport:stdio
   tools:
@@ -919,13 +1105,19 @@ edges:
     versionRange: current
     level: partial
     notes: Local in-process scratchpad — approval only at install time.
+  lib_applies_to_domain:
+  - target: domain:software-engineering
 ---
 
 nodeKind: ToolServer
 id: tool-server:mcp-figma
 attributes:
   displayName: MCP Figma
+  description: "MCP server providing access to Figma design files. Enables AI agents to read file structures, inspect design nodes, export images, and list components. Supports stdio transport."
   protocol: mcp
+  category: design
+  repoUrl: https://github.com/nicholasgriffintn/figma-mcp-server
+  maintainer: Community
   mcpTransports:
   - mcp-transport:stdio
   tools:
@@ -954,13 +1146,19 @@ edges:
     versionRange: current
     level: partial
     notes: Read-mostly; approval needed when scope token grants write.
+  lib_applies_to_domain:
+  - target: domain:frontend
 ---
 
 nodeKind: ToolServer
 id: tool-server:mcp-supabase
 attributes:
   displayName: MCP Supabase
+  description: "MCP server providing access to the Supabase platform. Enables AI agents to manage projects, execute SQL, apply migrations, deploy edge functions, and retrieve logs. Supports stdio transport."
   protocol: mcp
+  category: cloud
+  repoUrl: https://github.com/supabase-community/supabase-mcp
+  maintainer: Supabase
   mcpTransports:
   - mcp-transport:stdio
   tools:
@@ -997,13 +1195,21 @@ edges:
     versionRange: current
     level: full
     notes: DB and auth mutations — approval required for writes.
+  integrates_with:
+  - target: framework:supabase
+  lib_applies_to_domain:
+  - target: domain:web-development
 ---
 
 nodeKind: ToolServer
 id: tool-server:mcp-clickhouse
 attributes:
   displayName: MCP ClickHouse
+  description: "MCP server providing access to ClickHouse analytical databases. Enables AI agents to run SELECT queries, list databases, and list tables. Supports stdio transport."
   protocol: mcp
+  category: database
+  repoUrl: https://github.com/ClickHouse/mcp-clickhouse
+  maintainer: ClickHouse
   mcpTransports:
   - mcp-transport:stdio
   tools:
@@ -1028,3 +1234,7 @@ edges:
     versionRange: current
     level: full
     notes: DB queries; approval required for non-SELECT statements.
+  integrates_with:
+  - target: stack-part:data-warehouse
+  lib_applies_to_domain:
+  - target: domain:databases

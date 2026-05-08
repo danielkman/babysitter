@@ -2,7 +2,12 @@ nodeKind: ToolServer
 id: tool-server:postgres-mcp
 attributes:
   displayName: "Postgres MCP (read-only)"
+  description: "MCP server providing read-only programmatic access to PostgreSQL databases. Enables AI agents to query tables, list schemas, and describe table structures. Supports stdio transport."
   protocol: mcp
+  category: database
+  repoUrl: https://github.com/modelcontextprotocol/servers/tree/main/src/postgres
+  npmPackage: "@modelcontextprotocol/server-postgres"
+  maintainer: Anthropic
   mcpTransports:
     - mcp-transport:stdio
   tools:
@@ -22,3 +27,7 @@ edges:
       level: required
   sourced_from:
     - target: source-ref:mcp-servers-registry
+  integrates_with:
+    - target: tool:psql
+  lib_applies_to_domain:
+    - target: domain:databases

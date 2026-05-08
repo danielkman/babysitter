@@ -2,7 +2,12 @@ nodeKind: ToolServer
 id: tool-server:filesystem-mcp
 attributes:
   displayName: "Filesystem MCP"
+  description: "MCP server providing sandboxed filesystem access. Enables AI agents to read, write, edit, search, and organize files within allowed directory boundaries. Supports stdio transport."
   protocol: mcp
+  category: file-system
+  repoUrl: https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem
+  npmPackage: "@modelcontextprotocol/server-filesystem"
+  maintainer: Anthropic
   mcpTransports:
     - mcp-transport:stdio
   tools:
@@ -46,3 +51,5 @@ edges:
     - target: mcp-connection-state:claude-code-connected-anthropic-files
   exposes_resource:
     - target: mcp-resource:filesystem-readonly
+  lib_applies_to_domain:
+    - target: domain:software-engineering

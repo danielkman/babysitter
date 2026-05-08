@@ -142,6 +142,7 @@ nodeKinds:
     required: false
   incomingEdges:
   - composes
+  - integrates_with
   outgoingEdges:
   - belongs_to_language
   invariants:
@@ -315,6 +316,7 @@ nodeKinds:
   incomingEdges:
   - composes
   - implemented_by
+  - integrates_with
   outgoingEdges:
   - belongs_to_language
   - used_for
@@ -350,6 +352,7 @@ nodeKinds:
     required: false
   incomingEdges:
   - composes
+  - integrates_with
   outgoingEdges:
   - implemented_by
   - stack_part_used_by

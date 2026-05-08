@@ -2541,20 +2541,25 @@ edgeKinds:
 - id: edge:integrates-with
   name: integrates_with
   origin: universal
-  description: two PlatformServices have a documented integration (e.g. Lambda ↔ S3 event trigger)
+  description: documented integration between platform services, or between a tool server and its backing tool/stack-part/framework
   source:
   - PlatformService
+  - ToolServer
   target:
   - PlatformService
+  - Tool
+  - StackPart
+  - Framework
   cardinality: N:N
-  symmetric: true
+  symmetric: false
   attributes:
   - name: nature
     type: enum<native,sdk,api,event>
-    required: true
+    required: false
+    notes: Required for PlatformService↔PlatformService pairs. Optional for ToolServer→* edges (defaults to api).
   inverse: integrates_with
   invariants:
-  - canonicalized as (min(id), max(id)) — exactly one row per unordered pair (V-platform-2)
+  - for PlatformService↔PlatformService pairs, canonicalized as (min(id), max(id)) — exactly one row per unordered pair (V-platform-2)
 - id: edge:depends-on
   name: depends_on
   origin: universal
@@ -5541,8 +5546,8 @@ edgeKinds:
 - id: edge:lib-applies-to-domain
   name: lib_applies_to_domain
   origin: universal
-  description: a library artifact applies to a knowledge domain
-  source: [LibraryProcess, LibrarySkill, LibraryAgent]
+  description: a library artifact or tool server applies to a knowledge domain
+  source: [LibraryProcess, LibrarySkill, LibraryAgent, ToolServer]
   target: [Domain]
   cardinality: N:N
   inverse: lib_domain_applied_by
@@ -5551,7 +5556,7 @@ edgeKinds:
   origin: universal
   description: inverse of lib_applies_to_domain
   source: [Domain]
-  target: [LibraryProcess, LibrarySkill, LibraryAgent]
+  target: [LibraryProcess, LibrarySkill, LibraryAgent, ToolServer]
   cardinality: N:N
   inverse: lib_applies_to_domain
 - id: edge:lib-covers-topic
