@@ -19,7 +19,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@a5c-ai/atlas": ["../dist/index.d.ts"],
+      "@a5c-ai/atlas/*": ["../dist/*"]
     }
   },
   "include": [

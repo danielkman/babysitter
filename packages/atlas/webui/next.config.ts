@@ -1,9 +1,11 @@
-import path from "node:path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   turbopack: {
-    root: path.join(__dirname, "..", "..", ".."),
+    root: `${__dirname}/../../..`,
+    resolveAlias: {
+      "@a5c-ai/atlas": "../dist/index.js",
+    },
   },
   serverExternalPackages: ["pg"],
   webpack: (config, { isServer }) => {
