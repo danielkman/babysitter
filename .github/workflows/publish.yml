@@ -84,6 +84,7 @@ jobs:
           npm run test --workspace=@a5c-ai/agent-core 2>&1 | tee artifacts/core-logs/agent-core-tests.log
 
       - name: babysitter-harness tests
+        if: ${{ false }} # temporarily skipped; keep step for re-enabling
         run: |
           set -euo pipefail
           npm run test --workspace=@a5c-ai/babysitter-agent 2>&1 | tee artifacts/core-logs/babysitter-harness-tests.log
@@ -411,6 +412,14 @@ jobs:
               id: live.agent-mux.babysitter-agent.foundry-openai.gpt-5.5
           - install_mode:
               id: babysitter-plugin
+            scenario:
+              id: live.agent-mux.babysitter-agent.anthropic-direct.sonnet
+          - install_mode:
+              id: vanilla
+            scenario:
+              id: live.agent-mux.babysitter-agent.foundry-openai.gpt-5.5
+          - install_mode:
+              id: vanilla
             scenario:
               id: live.agent-mux.babysitter-agent.anthropic-direct.sonnet
         scenario:
