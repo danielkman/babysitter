@@ -10,6 +10,8 @@ attributes:
   reason: "agent orchestration sublayer (vibe-kanban etc) not modeled"
   suggestedBy: todo.md
   createdAt: "2026-05-08"
+  resolvedTo: "topic:vibe-kanban"
+  resolvedAt: "2026-05-08"
 edges:
   deferred_for:
     - domain:software-engineering
@@ -20,6 +22,11 @@ attributes:
   displayName: "CC-RevEx Product Features"
   description: |
     cc-revex product features not cataloged in graph.
+    Research note (2026-05-08): No cc-revex documentation, adapter, or
+    product definition found in the codebase. The name appears only in
+    todo.md and this deferred node. vibe-kanban references "CCR" as a
+    supported agent but that maps to Claude Code Remote, not cc-revex.
+    Remains deferred pending external research or vendor docs.
   targetNodeKind: Feature
   priority: medium
   reason: "cc-revex product features not cataloged in graph"
@@ -35,11 +42,17 @@ attributes:
   displayName: "Oh-My-Pi Features"
   description: |
     oh-my-pi capabilities not fully documented in the graph.
+    Partially resolved: harness integration topic covers OMP adapter
+    features (JSONL event parsing, thinking normalization, session
+    resume/fork, plugin support via npm-package and skill-file formats).
+    Individual feature nodes not created — adapter docs already comprehensive.
   targetNodeKind: Feature
   priority: medium
   reason: "oh-my-pi capabilities not fully documented"
   suggestedBy: todo.md
   createdAt: "2026-05-08"
+  resolvedTo: "topic:harness-integration"
+  resolvedAt: "2026-05-08"
 edges:
   deferred_for:
     - domain:software-engineering
@@ -72,6 +85,8 @@ attributes:
   reason: "information trust/confidence tiers not modeled"
   suggestedBy: todo.md
   createdAt: "2026-05-08"
+  resolvedTo: "topic:information-trust-tiers"
+  resolvedAt: "2026-05-08"
 edges:
   deferred_for:
     - domain:cybersecurity
