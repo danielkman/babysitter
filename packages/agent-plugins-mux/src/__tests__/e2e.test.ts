@@ -259,6 +259,10 @@ describe('e2e: sample plugin compilation', () => {
         path.join(result.outputDir, 'extensions/index.ts'), 'utf-8'
       );
       expect(ext).toContain('@mariozechner/pi-coding-agent');
+      expect(ext).toContain('ExtensionContext');
+      expect(ext).toContain('process.env.PI_SESSION_ID = sessionId');
+      expect(ext).toContain('const forwardBabysit = async (args: unknown, ctx?: ExtensionContext)');
+      expect(ext).toContain('runProxiedHook("babysitter-proxied-session-start.js", sessionStartInput(ctx))');
       expect(ext).toContain('"help"');
       expect(ext).toContain('"status"');
       expect(result.emittedFiles).toContain('AGENTS.md');
