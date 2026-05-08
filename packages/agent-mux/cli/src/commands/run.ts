@@ -263,14 +263,17 @@ export async function runCommand(client: AgentMuxClient, args: ParsedArgs): Prom
   }
 
   try {
-    const runOpts = {
+    let runOpts = {
       agent: effectiveAgent as string,
       prompt: resolvedPrompt,
       ...options,
-    };
+    } as Parameters<typeof client.run>[0];
 
-    // Call client.run() — currently throws "not yet implemented"
-    const handle = client.run(runOpts as Parameters<typeof client.run>[0]);
+    if (typeof runOpts.profile === 'string' && runOpts.profile.length > 0) {
+      runOpts = await client.profiles.apply(runOpts.profile, runOpts) as Parameters<typeof client.run>[0];
+    }
+
+    const handle = client.run(runOpts);
 
     // If we get here, stream events
     if (jsonMode) {

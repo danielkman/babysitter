@@ -24,6 +24,7 @@ import { printError, printJsonError } from '../output.js';
 /** Launch-specific flag definitions (global flags like model/json/debug are excluded). */
 export const LAUNCH_FLAGS: Record<string, FlagDef> = {
   'api-key': { type: 'string' },
+  'profile': { type: 'string' },
   'api-base': { type: 'string' },
   'region': { type: 'string' },
   'project': { type: 'string' },
@@ -68,6 +69,7 @@ export interface LaunchPlanInput {
   resourceGroup?: string;
   endpointName?: string;
   authCommand?: string;
+  profile?: string;
   proxyMode: 'always' | 'if-needed' | 'never';
   proxyPort?: number;
   adapter?: { translateProvider?(config: Record<string, unknown>): any };
@@ -99,10 +101,8 @@ export interface LaunchPlan {
 // ---------------------------------------------------------------------------
 
 export function resolveLaunchPlan(input: LaunchPlanInput): LaunchPlan {
-  const providerId = (input.provider ?? 'anthropic') as ProviderId;
-
   const providerConfig = resolveProvider({
-    provider: providerId,
+    provider: input.provider as ProviderId | undefined,
     model: input.model,
     transport: input.transport as TransportId | undefined,
     apiKey: input.apiKey,
@@ -112,6 +112,7 @@ export function resolveLaunchPlan(input: LaunchPlanInput): LaunchPlan {
     resourceGroup: input.resourceGroup,
     endpointName: input.endpointName,
     authCommand: input.authCommand,
+    profile: input.profile,
   });
 
   // Merge extra provider args into params
@@ -130,23 +131,23 @@ export function resolveLaunchPlan(input: LaunchPlanInput): LaunchPlan {
       proxyReason = 'Proxy forced via --with-proxy';
     } else {
       proxyNeeded = false;
-      proxyReason = `${input.harness} supports ${providerId} natively`;
+      proxyReason = `${input.harness} supports ${providerConfig.provider} natively`;
     }
   } else {
     if (input.proxyMode === 'never') {
       throw new Error(
-        `${input.harness} does not support ${providerId} natively. ` +
+        `${input.harness} does not support ${providerConfig.provider} natively. ` +
         `Use --with-proxy-if-needed to auto-launch the proxy.`,
       );
     }
     proxyReason =
-      `${input.harness} does not support ${providerId} natively; ` +
-      `proxy bridges ${providerId} → ${translation.proxyExposedTransport}`;
+      `${input.harness} does not support ${providerConfig.provider} natively; ` +
+      `proxy bridges ${providerConfig.provider} → ${translation.proxyExposedTransport}`;
   }
 
   const proxy: ProxyPlan | undefined = proxyNeeded
     ? {
-        targetProvider: providerId,
+        targetProvider: providerConfig.provider,
         targetModel: providerConfig.model,
         exposedTransport: translation.proxyExposedTransport ?? 'openai-chat',
         port: input.proxyPort ?? 0,
@@ -155,7 +156,7 @@ export function resolveLaunchPlan(input: LaunchPlanInput): LaunchPlan {
 
   return {
     harness: input.harness,
-    provider: providerId,
+    provider: providerConfig.provider,
     transport: providerConfig.transport,
     model: providerConfig.model,
     proxyNeeded,
@@ -350,6 +351,7 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
       resourceGroup: flagStr(args.flags, 'resource-group'),
       endpointName: flagStr(args.flags, 'endpoint-name'),
       authCommand: flagStr(args.flags, 'auth-command'),
+      profile: flagStr(args.flags, 'profile'),
       proxyMode,
       proxyPort: flagNum(args.flags, 'proxy-port'),
       adapter: adapter as any,
@@ -368,6 +370,7 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
     model: flagStr(args.flags, 'model'),
     apiKey: flagStr(args.flags, 'api-key'),
     authCommand: flagStr(args.flags, 'auth-command'),
+    profile: flagStr(args.flags, 'profile'),
   });
   if (resolvedConfig.auth.type === 'api_key' && !resolvedConfig.auth.apiKey) {
     const defaults = (await import('@a5c-ai/agent-mux-core')).PROVIDER_DEFAULTS;
@@ -518,7 +521,7 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
         stdio: prompt ? ['pipe', 'inherit', 'inherit'] : 'inherit',
         env: { ...process.env, ...plan.env },
         cwd: launchCwd,
-        shell: false,
+        shell: process.platform === 'win32',
       });
     }
   } else {
@@ -528,7 +531,7 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
       stdio: ['pipe', 'inherit', 'inherit'],
       env: { ...process.env, ...plan.env },
       cwd: launchCwd,
-      shell: false,
+      shell: process.platform === 'win32',
     });
   }
 

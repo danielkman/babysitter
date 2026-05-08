@@ -25,15 +25,15 @@ No-model tests should prefer deterministic fixture transcripts and mock harness 
 
 ### Implemented No-Model Matrices
 
-`Publish` now has a dedicated `no_model_mock_matrix` job. The matrix is owned by `.github/workflows/publish.yml`, not by a code-side runner. Each lane selects one existing deterministic suite and uploads `publish-no-model-mock-*` evidence:
+`Publish` owns the `no_model_mock_matrix` job as a stack E2E matrix, not as a package-suite aggregator. The matrix dimensions are declared in `.github/workflows/publish.yml` and the test consumes exactly one selected lane:
 
-| Matrix ID | Command owner | Coverage boundary |
+| Dimension | Values | Required proof |
 | --- | --- | --- |
-| `agent-mux-harness-mock` | `node scripts/agent-mux-build.cjs test packages/agent-mux/harness-mock` | Mock harness session lifecycle and protocol events |
-| `agent-mux-runtime-hooks` | Focused Vitest files in `agent-mux/core` and `agent-mux/adapters` | Runtime hook manager, dispatcher, and adapter hook integration without provider calls |
-| `hooks-mux-fixture-e2e` | `@a5c-ai/hooks-mux-cli` E2E fixtures | Native payload normalization, session store, handler fan-out, and adapter rendering |
-| `transport-mux-fixtures` | `@a5c-ai/transport-mux` tests | Route/codec/provider fixture behavior without live model credentials |
-| `live-stack-contracts-no-provider` | `test:e2e:live-stack` | Scenario contracts and no-provider skip/evidence behavior without executing live agents |
+| Agent runtime | `agent-mux-mocks`, `real-agent` | The lane installs/verifies the target through `amux install --dry-run`, then launches the agent path selected by the runtime dimension |
+| Agent | `claude`, `codex`, `pi`, `gemini` | The target CLI path is selected by agent-mux and produces per-agent evidence |
+| Hook mode | `none`, `hooks-mux` | `hooks-mux` lanes register an `amux hooks` command bridge and assert the normalized hooks-mux phase evidence |
+
+Every no-model stack lane starts a local transport-mux runtime with a fixture completion engine. The launched agent, including the local CI shim for real-agent lanes and the mock-harness path for `agent-mux-mocks`, must send a request through that transport-mux runtime and attach the request count plus redacted evidence under `publish-no-model-stack-*`.
 
 `Publish` also has an `agent_mux_hooks_mux_e2e` no-model/no-SDK job. It is intentionally separate from the live Babysitter plugin matrix: the GitHub matrix chooses `claude-code`, `codex`, and `pi`; the test only consumes that one selected lane, registers an `amux hooks` command hook, bridges the native payload into `a5c-hooks-mux invoke`, and asserts the hooks-mux normalized phase evidence.
 

@@ -308,7 +308,7 @@ jobs:
 
   no_model_mock_matrix:
     if: ${{ !contains(github.event.head_commit.message, '[skip publish]') }}
-    name: No-Model Mock Matrix (${{ matrix.suite.id }})
+    name: No-Model Stack (${{ matrix.runtime.id }}, ${{ matrix.agent.id }}, hooks=${{ matrix.hooks.id }})
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -318,22 +318,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        suite:
-          - id: agent-mux-harness-mock
-            coverage_layers: agent-mux,mock-harness,session-lifecycle
-            command: node scripts/agent-mux-build.cjs test packages/agent-mux/harness-mock
-          - id: agent-mux-runtime-hooks
-            coverage_layers: agent-mux,runtime-hooks,mock-adapters
-            command: npx vitest run --config vitest.config.ts packages/agent-mux/core/tests/hooks.test.ts packages/agent-mux/adapters/tests/hook-integration.test.ts
-          - id: hooks-mux-fixture-e2e
-            coverage_layers: hooks-mux,fixture-payloads,session-store,handler-fanout
-            command: npm run test --workspace=@a5c-ai/hooks-mux-cli -- src/__tests__/e2e/e2e-invoke.test.ts src/__tests__/e2e/e2e-exec.test.ts src/__tests__/e2e/e2e-bootstrap.test.ts src/__tests__/e2e/e2e-adapter-claude.test.ts
-          - id: transport-mux-fixtures
-            coverage_layers: transport-mux,fixture-provider,route-codecs
-            command: npm run test --workspace=@a5c-ai/transport-mux
-          - id: live-stack-contracts-no-provider
-            coverage_layers: pipeline-contracts,live-stack-runner,no-provider-skip-contract
-            command: npm run test:e2e:live-stack
+        runtime:
+          - id: agent-mux-mocks
+            description: agent-mux mock harness path with a transport-mux mock model
+          - id: real-agent
+            description: real harness CLI path installed as local CI shim with a transport-mux mock model
+        agent:
+          - id: claude
+          - id: codex
+          - id: pi
+          - id: gemini
+        hooks:
+          - id: none
+            description: launch/session plus transport-mux request evidence only
+          - id: hooks-mux
+            description: launch/session plus hooks-mux normalized hook evidence
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -351,30 +350,27 @@ jobs:
           npm ci
           npm install --no-save @rollup/rollup-linux-x64-gnu 2>/dev/null || true
 
-      - name: Build no-model prerequisites
+      - name: Build no-model stack prerequisites
         run: |
           set -euo pipefail
-          npm run build:runtime
           npm run build:hooks-mux
           npm run build:agent-mux:non-realtime
 
-      - name: Run selected no-model mock suite
+      - name: Run selected no-model stack lane
         env:
-          NO_MODEL_SUITE_ID: ${{ matrix.suite.id }}
-          NO_MODEL_COVERAGE_LAYERS: ${{ matrix.suite.coverage_layers }}
-        run: |
-          set -euo pipefail
-          mkdir -p artifacts/no-model-mock-matrix
-          echo "suite=${NO_MODEL_SUITE_ID}" | tee "artifacts/no-model-mock-matrix/${NO_MODEL_SUITE_ID}.txt"
-          echo "coverage_layers=${NO_MODEL_COVERAGE_LAYERS}" | tee -a "artifacts/no-model-mock-matrix/${NO_MODEL_SUITE_ID}.txt"
-          ${{ matrix.suite.command }} 2>&1 | tee -a "artifacts/no-model-mock-matrix/${NO_MODEL_SUITE_ID}.log"
+          NO_MODEL_STACK_MATRIX: '1'
+          NO_MODEL_STACK_AGENT: ${{ matrix.agent.id }}
+          NO_MODEL_STACK_RUNTIME: ${{ matrix.runtime.id }}
+          NO_MODEL_STACK_HOOKS: ${{ matrix.hooks.id }}
+          NO_MODEL_STACK_ARTIFACT_DIR: artifacts/no-model-stack-matrix
+        run: npm run test:e2e:agent-mux-no-model-stack
 
-      - name: Upload no-model mock artifacts
+      - name: Upload no-model stack artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: publish-no-model-mock-${{ matrix.suite.id }}
-          path: artifacts/no-model-mock-matrix
+          name: publish-no-model-stack-${{ matrix.runtime.id }}-${{ matrix.agent.id }}-${{ matrix.hooks.id }}
+          path: artifacts/no-model-stack-matrix
           if-no-files-found: error
 
   live_stack_e2e:

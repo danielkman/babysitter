@@ -83,7 +83,8 @@
     "test:e2e:live-stack": "npm run test:e2e:live-stack:framework && npm run test:e2e:live-stack:primary",
     "coverage:e2e:live-stack": "node scripts/live-stack-coverage-report.cjs",
     "test:e2e:live-stack:pipeline": "vitest run --config vitest.config.ts packages/agent-mux/cli/tests/live-stack/pipeline-scenario.test.ts",
-    "test:e2e:agent-mux-hooks-mux": "vitest run --config vitest.config.ts packages/agent-mux/cli/tests/e2e/agent-mux-hooks-mux.pipeline.test.ts"
+    "test:e2e:agent-mux-hooks-mux": "vitest run --config vitest.config.ts packages/agent-mux/cli/tests/e2e/agent-mux-hooks-mux.pipeline.test.ts",
+    "test:e2e:agent-mux-no-model-stack": "vitest run --config vitest.config.ts packages/agent-mux/cli/tests/e2e/agent-mux-no-model-stack.pipeline.test.ts"
   },
   "devDependencies": {
     "@anthropic-ai/claude-agent-sdk": "^0.2.113",

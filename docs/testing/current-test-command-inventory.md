@@ -137,6 +137,7 @@ Status: Current. This inventory implements roadmap slice 0, "Inventory and namin
 | `babysitter` | `test:agent-catalog-contracts` | No-model | contract | CI maintainers | `test-logs/babysitter-test-agent-catalog-contracts.log` | ci.yml test or package-local validation when package is touched |
 | `babysitter` | `test:agent-mux` | No-model | unit-or-integration | CI maintainers | `test-logs/babysitter-test-agent-mux.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
 | `babysitter` | `test:e2e:agent-mux-hooks-mux` | No-model | integration | CI maintainers | `e2e/agent-mux-hooks-mux/*.jsonl` | publish.yml agent_mux_hooks_mux_e2e matrix for claude-code, codex, pi |
+| `babysitter` | `test:e2e:agent-mux-no-model-stack` | No-model | e2e | CI maintainers | `e2e/no-model-stack/*.jsonl`, `summary.json` | publish.yml no_model_mock_matrix across runtime, agent, and hook-mode dimensions |
 | `babysitter` | `test:agent-plugins-mux` | No-model | unit-or-integration | CI maintainers | `test-logs/babysitter-test-agent-plugins-mux.log` | ci.yml test or package-local validation when package is touched |
 | `babysitter` | `test:architecture` | No-model | static-check | CI maintainers | `test-logs/babysitter-test-architecture.log` | ci.yml packages-sdk/test; publish.yml validate_core |
 | `babysitter` | `test:cloud` | No-model | unit-or-integration | CI maintainers | `test-logs/babysitter-test-cloud.log` | ci.yml test or package-local validation when package is touched |
@@ -167,4 +168,4 @@ Current workflows already call many of these commands. Slice 0 does not change w
 - Current package scripts are mostly no-model package checks; the implemented model-backed live-stack lane is selected by `.github/workflows/publish.yml` and exercised through `test:e2e:live-stack:pipeline`.
 - Artifact naming is partially enforced in `publish.yml` for validation logs and live-stack artifacts; remaining package-local logs should converge on the inventory names when touched.
 - Some root scripts aggregate package-local scripts. Follow-up workflow comments should name both the aggregate and package-local owner when they upload one shared log.
-- The next missing implementation slice is deeper no-model transport-mux fixture coverage plus a checklist-style scenario summary.
+- The no-model stack matrix now covers transport-mux-backed agent launches; the next missing slice is broadening runtime-hook assertions from hook bridge evidence into native agent lifecycle hook emission where each harness supports it.
