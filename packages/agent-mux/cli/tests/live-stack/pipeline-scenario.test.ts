@@ -30,13 +30,17 @@ describe('pipeline-owned live stack scenario execution', () => {
       return;
     }
 
-    expect(['passed', 'skipped'], result.failure ?? result.skipReason).toContain(result.status);
-    if (result.status === 'passed') {
-      expect(result.missingTraceIds).toEqual([]);
-    } else {
-      expect(result.skipReason).toContain('live provider unavailable');
-    }
+    expect(result.status, result.failure ?? result.skipReason).toBe('passed');
+    expect(result.missingTraceIds).toEqual([]);
+    expect(result.missingArtifacts ?? []).toEqual([]);
     expect(result.artifactPath).toBeDefined();
+
+    // Verify the artifact file exists and contains real output
+    const fs = await import('node:fs/promises');
+    const artifactContent = await fs.readFile(result.artifactPath!, 'utf8');
+    const artifact = JSON.parse(artifactContent);
+    expect(artifact.status).toBe('passed');
+    expect(artifact.scenarioId).toBe(scenario.scenarioId);
   }, Number(process.env['LIVE_STACK_TEST_TIMEOUT_MS'] ?? 25 * 60 * 1000));
 
   it('keeps local non-live runs cheap and explicit', async () => {
