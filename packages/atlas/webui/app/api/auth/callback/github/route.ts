@@ -35,7 +35,9 @@ type GitHubEmail = {
 export const dynamic = "force-dynamic";
 
 async function exchangeCodeForToken(request: Request, code: string): Promise<GitHubTokenResponse> {
-  const { clientId, clientSecret } = getGitHubClientConfig();
+  const config = getGitHubClientConfig();
+  if (!config) throw new Error("GitHub OAuth is not configured");
+  const { clientId, clientSecret } = config;
   const origin = buildAppOrigin(request);
   const response = await fetch("https://github.com/login/oauth/access_token", {
     method: "POST",
@@ -122,8 +124,12 @@ export async function GET(request: Request) {
     tokenType: token.token_type ?? null,
   });
 
+  const sessionToken = createSessionToken(user);
+  if (!sessionToken) {
+    return NextResponse.json({ error: "Session creation failed — AUTH_SECRET not configured" }, { status: 503 });
+  }
   const response = NextResponse.redirect(new URL(statePayload.callbackUrl, origin));
-  response.cookies.set(ATLAS_SESSION_COOKIE, createSessionToken(user), {
+  response.cookies.set(ATLAS_SESSION_COOKIE, sessionToken, {
     httpOnly: true,
     sameSite: "lax",
     secure: origin.startsWith("https://"),

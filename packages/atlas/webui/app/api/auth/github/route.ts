@@ -11,10 +11,17 @@ import {
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
-  const { clientId } = getGitHubClientConfig();
+  const config = getGitHubClientConfig();
+  if (!config) {
+    return NextResponse.json({ error: "Authentication is not configured" }, { status: 503 });
+  }
+  const { clientId } = config;
   const url = new URL(request.url);
   const callbackUrl = normalizeCallbackUrl(url.searchParams.get("callbackUrl"), "/workspace");
   const stateToken = createOAuthStateToken(callbackUrl);
+  if (!stateToken) {
+    return NextResponse.json({ error: "Authentication is not configured" }, { status: 503 });
+  }
   const origin = buildAppOrigin(request);
   const redirectUri = `${origin}/api/auth/callback/github`;
   const authorizeUrl = new URL("https://github.com/login/oauth/authorize");

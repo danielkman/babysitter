@@ -8,18 +8,17 @@ declare global {
   var __atlasWebuiSchemaReady: Promise<void> | undefined;
 }
 
-function requireDatabaseUrl(): string {
-  const value = process.env.DATABASE_URL;
-  if (!value) {
-    throw new Error("DATABASE_URL is required for Atlas authenticated features.");
-  }
-  return value;
+export function isDatabaseConfigured(): boolean {
+  return typeof process.env.DATABASE_URL === "string" && process.env.DATABASE_URL.length > 0;
 }
 
 export function getDbPool(): Pool {
+  if (!isDatabaseConfigured()) {
+    throw new Error("DATABASE_URL is not configured. Private workspace features are unavailable.");
+  }
   if (!global.__atlasWebuiPgPool) {
     global.__atlasWebuiPgPool = new Pool({
-      connectionString: requireDatabaseUrl(),
+      connectionString: process.env.DATABASE_URL!,
       max: 10,
     });
   }

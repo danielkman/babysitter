@@ -30,12 +30,9 @@ export const ATLAS_GITHUB_STATE_COOKIE = "atlas_github_oauth_state";
 const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 30;
 const STATE_TTL_MS = 1000 * 60 * 10;
 
-function requireAuthSecret(): string {
+function getAuthSecret(): string | null {
   const value = process.env.AUTH_SECRET;
-  if (!value) {
-    throw new Error("AUTH_SECRET is required for Atlas authentication.");
-  }
-  return value;
+  return value && value.length > 0 ? value : null;
 }
 
 function encodeBase64Url(value: string): string {
@@ -46,13 +43,16 @@ function decodeBase64Url(value: string): string {
   return Buffer.from(value, "base64url").toString("utf8");
 }
 
-function signTokenBody(body: string): string {
-  return createHmac("sha256", requireAuthSecret()).update(body).digest("base64url");
+function signTokenBody(body: string): string | null {
+  const secret = getAuthSecret();
+  if (!secret) return null;
+  return createHmac("sha256", secret).update(body).digest("base64url");
 }
 
-function encodeSignedPayload(payload: Record<string, unknown>): string {
+function encodeSignedPayload(payload: Record<string, unknown>): string | null {
   const body = encodeBase64Url(JSON.stringify(payload));
   const signature = signTokenBody(body);
+  if (!signature) return null;
   return `${body}.${signature}`;
 }
 
@@ -67,6 +67,7 @@ function decodeSignedPayload<T extends { exp?: number }>(token: string | undefin
   }
 
   const expectedSignature = signTokenBody(body);
+  if (!expectedSignature) return null;
   const actualBytes = Buffer.from(signature);
   const expectedBytes = Buffer.from(expectedSignature);
   if (actualBytes.length !== expectedBytes.length || !timingSafeEqual(actualBytes, expectedBytes)) {
@@ -94,12 +95,10 @@ export function normalizeCallbackUrl(raw: string | null | undefined, fallback = 
   return raw;
 }
 
-export function getGitHubClientConfig() {
+export function getGitHubClientConfig(): { clientId: string; clientSecret: string } | null {
   const clientId = process.env.GITHUB_CLIENT_ID;
   const clientSecret = process.env.GITHUB_CLIENT_SECRET;
-  if (!clientId || !clientSecret) {
-    throw new Error("GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET are required for Atlas authentication.");
-  }
+  if (!clientId || !clientSecret) return null;
   return { clientId, clientSecret };
 }
 
@@ -112,7 +111,7 @@ export function buildAppOrigin(request: Request): string {
   return `${protocol}://${host}`;
 }
 
-export function createOAuthStateToken(callbackUrl: string): string {
+export function createOAuthStateToken(callbackUrl: string): string | null {
   const payload: OAuthStatePayload = {
     nonce: randomBytes(18).toString("base64url"),
     callbackUrl: normalizeCallbackUrl(callbackUrl),
@@ -125,7 +124,7 @@ export function verifyOAuthStateToken(token: string | undefined): OAuthStatePayl
   return decodeSignedPayload<OAuthStatePayload>(token);
 }
 
-export function createSessionToken(user: AtlasSessionUser): string {
+export function createSessionToken(user: AtlasSessionUser): string | null {
   const payload: SessionTokenPayload = {
     user,
     exp: Date.now() + SESSION_TTL_MS,
