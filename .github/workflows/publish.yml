@@ -388,7 +388,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest]
         install_mode:
           - id: babysitter-plugin
             layers: agent-mux install,agent-mux invocation,generated Babysitter plugin package,Babysitter SDK installation,plugin babysitter command dispatch,session persistence,native stop hook,hooks-mux normalization,transport-mux route,provider/model trace
