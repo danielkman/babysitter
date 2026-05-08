@@ -1,0 +1,159 @@
+---
+# IaC / Platform Engineering tools
+nodeKind: Tool
+id: tool:terraform-cloud
+attributes:
+  displayName: "Terraform Cloud"
+  kind: iac
+  description: |
+    HashiCorp's managed service for Terraform — provides remote state storage,
+    collaborative plan/apply runs, policy enforcement via Sentinel, and an
+    API-driven workspace model for team-based infrastructure workflows.
+edges:
+  tool_used_by:
+    - target: skill-area:terraform-infrastructure
+---
+nodeKind: Tool
+id: tool:pulumi-cloud
+attributes:
+  displayName: "Pulumi Cloud"
+  kind: iac
+  description: |
+    Pulumi's SaaS control plane for infrastructure-as-code — hosts stack state,
+    provides secrets management, policy enforcement, drift detection, and
+    collaborative deployment history across cloud providers.
+edges:
+  tool_used_by:
+    - target: skill-area:terraform-infrastructure
+---
+nodeKind: Tool
+id: tool:crossplane
+attributes:
+  displayName: "Crossplane"
+  kind: iac
+  description: |
+    CNCF project that extends Kubernetes with Composite Resource Definitions and
+    Managed Resources, enabling platform teams to build internal cloud APIs and
+    provision external infrastructure declaratively from the Kubernetes control plane.
+edges:
+  tool_used_by:
+    - target: skill-area:gitops
+---
+nodeKind: Tool
+id: tool:backstage
+attributes:
+  displayName: "Backstage"
+  kind: orchestrator
+  description: |
+    CNCF open-source developer portal platform by Spotify — provides a software
+    catalog, TechDocs, scaffolder templates, and plugin ecosystem for building
+    unified internal developer portals that improve developer experience.
+edges:
+  tool_used_by:
+    - target: skill-area:platform-engineering
+---
+nodeKind: Tool
+id: tool:port-dev
+attributes:
+  displayName: "Port"
+  kind: orchestrator
+  description: |
+    Developer portal and internal developer platform (IDP) — provides a software
+    catalog, self-service actions, scorecards, and workflow automation to give
+    developers full visibility and control over their engineering stack.
+edges:
+  tool_used_by:
+    - target: skill-area:platform-engineering
+---
+# GitOps tools
+nodeKind: Tool
+id: tool:helmfile
+attributes:
+  displayName: "Helmfile"
+  kind: orchestrator
+  description: |
+    Declarative spec for deploying Helm charts across environments — supports
+    templating, layered values, selective sync, and diff previews, enabling
+    GitOps-style management of multi-chart Kubernetes deployments.
+edges:
+  tool_used_by:
+    - target: skill-area:gitops
+---
+# Container / local cluster tools
+nodeKind: Tool
+id: tool:docker-compose
+attributes:
+  displayName: "Docker Compose"
+  kind: container
+  description: |
+    YAML-based tool for defining and running multi-container Docker applications
+    locally or in CI — manages service dependencies, networking, volumes, and
+    environment configuration in a single compose file.
+edges:
+  tool_used_by:
+    - target: skill-area:containerization
+---
+nodeKind: Tool
+id: tool:k3s
+attributes:
+  displayName: "K3s"
+  kind: container
+  description: |
+    CNCF-certified lightweight Kubernetes distribution by Rancher/SUSE — designed
+    for edge, IoT, and resource-constrained environments; ships as a single binary
+    with embedded SQLite or etcd and minimal memory footprint.
+edges:
+  tool_used_by:
+    - target: skill-area:containerization
+---
+nodeKind: Tool
+id: tool:kind
+attributes:
+  displayName: "kind"
+  kind: container
+  description: |
+    Kubernetes IN Docker — runs multi-node Kubernetes clusters inside Docker
+    containers, primarily used for local development and CI testing of Kubernetes
+    controllers, operators, and admission webhooks.
+edges:
+  tool_used_by:
+    - target: skill-area:containerization
+---
+nodeKind: Tool
+id: tool:minikube
+attributes:
+  displayName: "minikube"
+  kind: container
+  description: |
+    Local Kubernetes cluster tool that provisions a single-node cluster using VM
+    or container drivers — offers add-ons for ingress, dashboard, metrics-server,
+    and GPU support, ideal for developer iteration and local testing.
+edges:
+  tool_used_by:
+    - target: skill-area:containerization
+---
+nodeKind: Tool
+id: tool:rancher
+attributes:
+  displayName: "Rancher"
+  kind: orchestrator
+  description: |
+    SUSE's open-source Kubernetes management platform — provides a multi-cluster
+    management UI, role-based access control, App Catalog (Helm charts), Fleet
+    GitOps engine, and integrations for RKE2 and K3s cluster provisioning.
+edges:
+  tool_used_by:
+    - target: skill-area:containerization
+---
+nodeKind: Tool
+id: tool:nomad
+attributes:
+  displayName: "Nomad"
+  kind: orchestrator
+  description: |
+    HashiCorp's flexible workload orchestrator — schedules containerized, VM,
+    and bare-metal jobs across cloud and on-prem; integrates natively with Consul
+    for service mesh and Vault for secrets, supporting diverse deployment patterns.
+edges:
+  tool_used_by:
+    - target: skill-area:containerization
