@@ -45,7 +45,7 @@ describe('agent-mux hooks-mux no-SDK wiring matrix', () => {
     const hooksMuxCli = path.join(repoRoot, 'packages', 'hooks-mux', 'cli', 'dist', 'cli', 'main.js');
     await assertFileExists(hooksMuxCli, 'hooks-mux CLI must be built before this matrix test runs');
 
-    const evidenceDir = path.resolve(process.env['AGENT_MUX_HOOKS_MUX_ARTIFACT_DIR'] ?? path.join(repoRoot, 'artifacts', 'agent-mux-hooks-mux'));
+    const evidenceDir = resolveEvidenceDir(repoRoot, process.env['AGENT_MUX_HOOKS_MUX_ARTIFACT_DIR']);
     await fs.mkdir(evidenceDir, { recursive: true });
     const evidencePath = path.join(evidenceDir, `${sanitize(lane.amuxAgent)}-${sanitize(lane.hooksAdapter)}.jsonl`);
     const handlerPath = path.join(cwd, 'hooks-mux-handler.mjs');
@@ -123,6 +123,11 @@ function requiredEnv(name: string): string {
 function restoreEnv(name: string, value: string | undefined): void {
   if (value === undefined) delete process.env[name];
   else process.env[name] = value;
+}
+
+function resolveEvidenceDir(repoRoot: string, configuredDir: string | undefined): string {
+  if (!configuredDir) return path.join(repoRoot, 'artifacts', 'agent-mux-hooks-mux');
+  return path.isAbsolute(configuredDir) ? configuredDir : path.join(repoRoot, configuredDir);
 }
 
 async function assertFileExists(filePath: string, message: string): Promise<void> {
