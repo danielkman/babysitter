@@ -14,7 +14,17 @@ export function translateForCodex(config: ProviderConfig): HarnessProviderTransl
       env['OPENAI_API_KEY'] = 'ollama';
       args.push('--oss');
       return { env, args, proxyRequired: false };
-    case 'foundry':
+    case 'foundry': {
+      const apiBase = config.params['apiBase'] ? String(config.params['apiBase']) : undefined;
+      if (apiBase) {
+        args.push('-c', `model_provider=${config.provider}`);
+        args.push('-c', `model_providers.${config.provider}.base_url=${apiBase}/openai`);
+        args.push('-c', `model_providers.${config.provider}.env_key=AZURE_API_KEY`);
+      }
+      if (config.auth.apiKey) env['AZURE_API_KEY'] = config.auth.apiKey;
+      env['ANTHROPIC_API_KEY'] = '';
+      return { env, args, proxyRequired: false };
+    }
     case 'custom':
     case 'groq':
     case 'fireworks':
