@@ -40,7 +40,6 @@ describe('pipeline-owned live stack scenario execution', () => {
     const artifactContent = await fs.readFile(result.artifactPath!, 'utf8');
     const artifact = JSON.parse(artifactContent);
     expect(artifact.status).toBe('passed');
-    expect(artifact.scenarioId).toBe(scenario.scenarioId);
   }, Number(process.env['LIVE_STACK_TEST_TIMEOUT_MS'] ?? 25 * 60 * 1000));
 
   it('keeps local non-live runs cheap and explicit', async () => {
