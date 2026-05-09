@@ -1,0 +1,156 @@
+---
+nodeKind: Tool
+id: tool:dotnet-cli
+attributes:
+  displayName: ".NET CLI"
+  kind: build
+  description: |
+    Cross-platform command-line interface for the .NET ecosystem.
+    Provides dotnet build, run, test, publish, restore, add, and tool
+    management commands for C#, F#, and Visual Basic projects.
+edges:
+  tool_used_by:
+    - target: skill-area:backend-api-design
+---
+nodeKind: Tool
+id: tool:flutter-cli
+attributes:
+  displayName: "Flutter CLI"
+  kind: build
+  description: |
+    Command-line interface for the Flutter cross-platform UI SDK.
+    Used to create, build, run, test, and deploy Flutter apps to
+    Android, iOS, web, and desktop from the terminal.
+edges:
+  tool_used_by:
+    - target: skill-area:android-native
+---
+nodeKind: Tool
+id: tool:xcodebuild
+attributes:
+  displayName: "xcodebuild"
+  kind: build
+  description: |
+    Apple command-line build tool for Xcode projects and workspaces.
+    Supports building, testing, archiving, and exporting iOS/macOS/
+    tvOS/watchOS apps from CI pipelines without the Xcode GUI.
+edges:
+  tool_used_by:
+    - target: skill-area:ios-native
+---
+nodeKind: Tool
+id: tool:android-studio
+attributes:
+  displayName: "Android Studio"
+  kind: other
+  description: |
+    Official IDE for Android development based on IntelliJ IDEA.
+    Includes layout editors, APK analyzer, AVD emulator manager,
+    Gradle integration, and Jetpack Compose tooling.
+edges:
+  tool_used_by:
+    - target: skill-area:android-native
+---
+nodeKind: Tool
+id: tool:jq
+attributes:
+  displayName: "jq"
+  kind: other
+  description: |
+    Lightweight and flexible command-line JSON processor.
+    Supports complex filters, transformations, and formatting
+    of JSON data; widely used in shell scripts and CI pipelines.
+edges:
+  tool_used_by:
+    - target: skill-area:cli-tooling
+---
+nodeKind: Tool
+id: tool:yq
+attributes:
+  displayName: "yq"
+  kind: other
+  description: |
+    YAML, JSON, and XML processor inspired by jq. Reads, writes,
+    and transforms structured data formats from the command line;
+    commonly used in DevOps pipelines and Kubernetes workflows.
+edges:
+  tool_used_by:
+    - target: skill-area:cli-tooling
+---
+nodeKind: Tool
+id: tool:bat
+attributes:
+  displayName: "bat"
+  kind: other
+  description: |
+    A cat clone with syntax highlighting and Git integration.
+    Renders file contents with color, line numbers, and diff-aware
+    paging; integrates with fzf for interactive file previews.
+edges:
+  tool_used_by:
+    - target: skill-area:cli-tooling
+---
+nodeKind: Tool
+id: tool:fd
+attributes:
+  displayName: "fd"
+  kind: other
+  description: |
+    Fast and user-friendly alternative to the find command.
+    Supports regex patterns, parallel execution, and .gitignore
+    awareness; written in Rust for high performance on large repos.
+edges:
+  tool_used_by:
+    - target: skill-area:cli-tooling
+---
+nodeKind: Tool
+id: tool:delta
+attributes:
+  displayName: "delta"
+  kind: other
+  description: |
+    Syntax-highlighting pager for git, diff, and grep output.
+    Provides side-by-side diffs, line numbers, and theme support;
+    integrates with git as a configurable core.pager replacement.
+edges:
+  tool_used_by:
+    - target: skill-area:cli-tooling
+---
+nodeKind: Tool
+id: tool:lazygit
+attributes:
+  displayName: "lazygit"
+  kind: other
+  description: |
+    Terminal-based UI for Git written in Go. Provides interactive
+    staging, rebasing, branch management, and commit history browsing
+    without leaving the terminal; designed for keyboard-driven workflows.
+edges:
+  tool_used_by:
+    - target: skill-area:cli-tooling
+---
+nodeKind: Tool
+id: tool:gh-cli
+attributes:
+  displayName: "GitHub CLI"
+  kind: other
+  description: |
+    Official command-line tool for GitHub. Enables creating and
+    reviewing pull requests, managing issues, triggering workflows,
+    and authenticating with GitHub directly from the terminal.
+edges:
+  tool_used_by:
+    - target: skill-area:cli-tooling
+---
+nodeKind: Tool
+id: tool:act
+attributes:
+  displayName: "act"
+  kind: ci
+  description: |
+    Local runner for GitHub Actions workflows using Docker containers.
+    Enables developers to test and debug GitHub Actions locally without
+    pushing commits; mirrors the GitHub Actions environment closely.
+edges:
+  tool_used_by:
+    - target: skill-area:ci-cd
