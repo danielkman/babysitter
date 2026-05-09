@@ -1,10 +1,11 @@
-import type { AtlasGraph, AtlasRecord, Edge } from "@a5c-ai/atlas";
+import type { AtlasRecord, Edge } from "@a5c-ai/atlas";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import Fuse from "fuse.js";
 import { z } from "zod";
 import { openapiSpec } from "@/lib/openapi";
 import { paginate } from "@/lib/api-helpers";
 import { getAtlasViewForUser } from "./atlas-view";
+import type { AtlasGraphLike } from "./atlas-local";
 
 type AtlasView = Awaited<ReturnType<typeof getAtlasViewForUser>>;
 
@@ -50,7 +51,7 @@ function normalizeClusterMatch(lhs: string, rhs: string) {
   return lhs.replace(/^\d+-/, "") === rhs.replace(/^\d+-/, "");
 }
 
-function summarizeRecord(graph: AtlasGraph, record: AtlasRecord) {
+function summarizeRecord(graph: AtlasGraphLike, record: AtlasRecord) {
   return {
     id: record.id,
     nodeKind: record._kind,

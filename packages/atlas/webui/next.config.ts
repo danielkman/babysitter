@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: `${__dirname}/../../..`,
   },
-  serverExternalPackages: ["pg", "@a5c-ai/atlas"],
+  serverExternalPackages: ["pg"],
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {

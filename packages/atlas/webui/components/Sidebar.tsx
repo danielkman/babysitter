@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { getClusters, getNodeKinds } from "@a5c-ai/atlas";
+import { getPublicAtlasGraph } from "@/lib/server/atlas-local";
 
 export function Sidebar() {
-  const clusters = getClusters();
-  const nodeKinds = getNodeKinds();
+  const graph = getPublicAtlasGraph();
+  const clusters = graph.getClusters();
+  const nodeKinds = graph.getNodeKinds();
   const sortedClusters = Object.entries(clusters).sort(
     (a, b) => b[1].recordCount - a[1].recordCount
   );
