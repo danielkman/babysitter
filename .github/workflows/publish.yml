@@ -424,24 +424,7 @@ jobs:
 
       - name: Package built artifacts
         run: |
-          tar czf /tmp/live-stack-build.tar.gz \
-            packages/atlas/dist \
-            packages/agent-catalog/dist \
-            packages/sdk/dist \
-            packages/hooks-mux/core/dist \
-            packages/hooks-mux/cli/dist \
-            packages/hooks-mux/adapter-*/dist \
-            packages/agent-mux/observability/dist \
-            packages/agent-mux/core/dist \
-            packages/agent-mux/adapters/dist \
-            packages/agent-mux/gateway/dist \
-            packages/agent-mux/cli/dist \
-            packages/agent-mux/sdk/dist \
-            packages/agent-mux/harness-mock/dist \
-            packages/agent-core/dist \
-            packages/babysitter-agent/dist \
-            packages/transport-mux/dist \
-            packages/triggers/dist
+          find packages -path '*/dist' -type d | tar czf /tmp/live-stack-build.tar.gz -T -
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
