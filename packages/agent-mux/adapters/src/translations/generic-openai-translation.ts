@@ -7,7 +7,9 @@ export function translateForGenericOpenAI(config: ProviderConfig): HarnessProvid
 
   // OpenAI-compatible providers can be reached directly
   if (config.params['apiBase']) {
-    env['OPENAI_BASE_URL'] = String(config.params['apiBase']);
+    const base = String(config.params['apiBase']);
+    env['OPENAI_BASE_URL'] = base;
+    env['OPENAI_API_BASE'] = base; // legacy env var used by some CLIs
   }
   if (config.auth.apiKey) {
     env['OPENAI_API_KEY'] = config.auth.apiKey;
