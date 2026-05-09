@@ -183,12 +183,11 @@ describe('Codex invoke integration through CLI loader', () => {
       } as never);
 
       const output = JSON.parse(stdout.getOutput().trim()) as Record<string, unknown>;
-      expect(output).toEqual({
-        continueSession: false,
-        stopReason: 'iteration limit',
-        reason: 'forced stop',
-      });
+      expect(output.continueSession).toBe(false);
+      expect(output.stopReason).toBe('iteration limit');
+      expect(output.reason).toBe('forced stop');
       expect(output).not.toHaveProperty('decision');
+      expect(output.metadata).toBeDefined();
     } finally {
       stdout.restore();
       await cleanup();
@@ -219,11 +218,10 @@ describe('Codex invoke integration through CLI loader', () => {
       } as never);
 
       const output = JSON.parse(stdout.getOutput().trim()) as Record<string, unknown>;
-      expect(output).toEqual({
-        suppressOutput: true,
-        reason: 'redacted tool output',
-      });
+      expect(output.suppressOutput).toBe(true);
+      expect(output.reason).toBe('redacted tool output');
       expect(output).not.toHaveProperty('decision');
+      expect(output.metadata).toBeDefined();
     } finally {
       stdout.restore();
       await cleanup();
