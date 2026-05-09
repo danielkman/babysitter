@@ -515,6 +515,21 @@ jobs:
       - name: Extract dist directories
         run: tar xzf /tmp/build-all-dist.tar.gz
 
+      - name: Link workspace CLIs to PATH
+        run: |
+          mkdir -p "$HOME/.local/bin"
+          for pair in \
+            "amux:packages/agent-mux/cli/dist/index.js" \
+            "babysitter-agent:packages/babysitter-agent/dist/cli/main.js" \
+            "babysitter:packages/sdk/dist/cli/main.js"
+          do
+            name="${pair%%:*}"
+            script="${pair#*:}"
+            printf '#!/bin/sh\nexec node "%s/%s" "$@"\n' "${{ github.workspace }}" "$script" > "$HOME/.local/bin/$name"
+            chmod +x "$HOME/.local/bin/$name"
+          done
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
       - name: Run selected live stack E2E
         env:
           LIVE_STACK_SCENARIO_ID: ${{ matrix.scenario.id }}
