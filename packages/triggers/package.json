@@ -26,7 +26,7 @@
     "node": ">=20.9.0"
   },
   "bin": {
-    "amux-triggers": "./dist/cli.js"
+    "triggers": "./dist/cli.js"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -57,7 +57,8 @@
   "scripts": {
     "build": "tsc --build && tsc --emitDeclarationOnly --declarationMap false -p tsconfig.json",
     "test": "npm run test:unit && npm run test:e2e",
-    "prepublishOnly": "npm run build && npm run test",
+    "prepublishOnly": "npm run verify:release",
+    "verify:release": "npm run build && npm run test:unit && npm run test:e2e && npm run test:coverage",
     "test:unit": "vitest run --root ../.. --config vitest.config.ts packages/triggers/tests/action-helpers.test.ts packages/triggers/tests/action-metadata.test.ts packages/triggers/tests/backend-modules.test.ts packages/triggers/tests/backends.test.ts packages/triggers/tests/cli.test.ts packages/triggers/tests/enrich.test.ts packages/triggers/tests/query.test.ts packages/triggers/tests/readme-examples.test.ts packages/triggers/src",
     "test:e2e": "npm run build && vitest run --root ../.. --config vitest.config.ts packages/triggers/tests/action.test.ts packages/triggers/tests/dist-cli.smoke.test.ts",
     "test:coverage": "vitest run --root ../.. --config vitest.config.ts --coverage --coverage.include=packages/triggers/src/**/*.ts packages/triggers/tests/action-helpers.test.ts packages/triggers/tests/action-metadata.test.ts packages/triggers/tests/action.test.ts packages/triggers/tests/backend-modules.test.ts packages/triggers/tests/backends.test.ts packages/triggers/tests/cli.test.ts packages/triggers/tests/enrich.test.ts packages/triggers/tests/query.test.ts packages/triggers/tests/readme-examples.test.ts packages/triggers/src"

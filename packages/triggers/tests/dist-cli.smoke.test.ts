@@ -8,9 +8,9 @@ import { describe, expect, it } from 'vitest';
 
 const execFileAsync = promisify(execFile);
 
-describe('built amux-triggers binary', () => {
+describe('built triggers binary', () => {
   it('evaluates event files from dist/cli.js after build', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'amux-dist-'));
+    const dir = await mkdtemp(join(tmpdir(), 'triggers-dist-'));
     const eventPath = join(dir, 'event.json');
     const outputPath = join(dir, 'result.json');
     await writeFile(eventPath, JSON.stringify({ comment: { body: '@develop-this from dist' } }), 'utf8');

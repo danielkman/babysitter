@@ -12,9 +12,9 @@ afterEach(() => {
   stderr.mockClear();
 });
 
-describe('amux-triggers CLI', () => {
+describe('triggers CLI', () => {
   it('writes enriched events to an output file', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'amux-cli-'));
+    const dir = await mkdtemp(join(tmpdir(), 'triggers-cli-'));
     const eventPath = join(dir, 'event.json');
     const outputPath = join(dir, 'enriched.json');
     await writeFile(eventPath, JSON.stringify({ comment: { body: '@develop-this' } }), 'utf8');
@@ -40,7 +40,7 @@ describe('amux-triggers CLI', () => {
 
   it('prints help without error', async () => {
     await expect(main(['--help'])).resolves.toBe(0);
-    expect(stdout.mock.calls.join('\n')).toContain('Usage: amux-triggers');
+    expect(stdout.mock.calls.join('\n')).toContain('Usage: triggers');
   });
 
   it('reports unknown commands as errors', async () => {
@@ -48,7 +48,7 @@ describe('amux-triggers CLI', () => {
   });
 
   it('writes evaluation output files for matches', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'amux-cli-'));
+    const dir = await mkdtemp(join(tmpdir(), 'triggers-cli-'));
     const eventPath = join(dir, 'event.json');
     const outputPath = join(dir, 'result.json');
     await writeFile(eventPath, JSON.stringify({ comment: { body: '@develop-this' } }), 'utf8');

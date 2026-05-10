@@ -19,7 +19,7 @@ export async function main(argv = process.argv.slice(2)): Promise<number> {
   const command = argv[0];
   if (!command || has(argv, '--help') || has(argv, '-h')) {
     process.stdout.write([
-      'Usage: amux-triggers <evaluate|enrich> [flags]',
+      'Usage: triggers <evaluate|enrich> [flags]',
       '',
       'Flags:',
       '  --backend <github|gitlab|bitbucket|generic-webhook>',

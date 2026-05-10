@@ -5,8 +5,8 @@ Trigger glue for running `amux` from automation systems. It normalizes GitHub, G
 ## CLI
 
 ```bash
-amux-triggers evaluate --backend github --query "event:issue_comment text:@develop-this path:packages/agent-mux/**"
-amux-triggers enrich --backend github --include-diff --output event.json
+triggers evaluate --backend github --query "event:issue_comment text:@develop-this path:packages/agent-mux/**"
+triggers enrich --backend github --include-diff --output event.json
 ```
 
 ## GitHub Action
