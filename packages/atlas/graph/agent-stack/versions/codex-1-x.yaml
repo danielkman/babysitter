@@ -31,6 +31,8 @@ edges:
       role: platform
     - target: agent-ui-impl:codex.ui@current
       role: ui
+    - target: knowledge-fabric-impl:codex.knowledge@current
+      role: knowledge-fabric
   has_launch_contract:
     - target: launch-contract:codex-default
   supports:
@@ -80,6 +82,8 @@ edges:
       role: platform
     - target: agent-ui-impl:codex.ui@current
       role: ui
+    - target: knowledge-fabric-impl:codex.knowledge@current
+      role: knowledge-fabric
   has_launch_contract:
     - target: launch-contract:codex-default
   uses_transport:

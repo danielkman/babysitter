@@ -33,6 +33,8 @@ edges:
       role: platform
     - target: agent-ui-impl:claude-code.ui@current
       role: ui
+    - target: knowledge-fabric-impl:claude-code.knowledge@current
+      role: knowledge-fabric
   uses_vector_store:
     - target: vector-store:weaviate
     - target: vector-store:chroma

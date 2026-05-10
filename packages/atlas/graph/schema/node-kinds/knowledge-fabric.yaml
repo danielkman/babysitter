@@ -102,3 +102,54 @@ nodeKinds:
   invariants:
   - id starts with retrieval-pipeline: null
   examples: []
+
+- id: node:knowledge-fabric-impl
+  name: KnowledgeFabricImpl
+  origin: universal
+  prefix: knowledge-fabric-impl
+  cluster: 21-knowledge-fabric
+  purpose: a concrete knowledge fabric implementation for an agent product — how it persists, discovers, and retrieves persistent knowledge across sessions
+  attributes:
+  - name: id
+    type: id
+    required: true
+  - name: displayName
+    type: string
+    required: true
+  - name: description
+    type: markdown
+    required: true
+  - name: agentVersionId
+    type: ref<AgentVersion>
+    required: true
+  - name: knowledgeFileFormats
+    type: list<string>
+    required: false
+    notes: On-disk file formats the agent reads for persistent knowledge (e.g. CLAUDE.md, .cursorrules, AGENTS.md).
+  - name: knowledgeScopes
+    type: list<enum<project,user,enterprise,session,team>>
+    required: false
+    notes: Scopes at which knowledge is stored and retrieved.
+  - name: autoExtractionSupport
+    type: bool
+    required: false
+    notes: Whether the agent automatically extracts and persists knowledge from conversations.
+  - name: retrievalStrategy
+    type: enum<file-hierarchy,vector-rag,semantic-search,graph-traversal,hybrid,keyword,none>
+    required: false
+    notes: Primary strategy for retrieving persisted knowledge at session start or mid-session.
+  - name: knowledgePersistence
+    type: enum<filesystem,database,cloud-service,in-memory,none>
+    required: false
+    notes: Where knowledge is physically stored between sessions.
+  - name: notes
+    type: markdown
+    required: false
+  incomingEdges:
+  - composed_of
+  outgoingEdges:
+  - composes
+  - realizes
+  invariants:
+  - id starts with knowledge-fabric-impl: null
+  examples: []

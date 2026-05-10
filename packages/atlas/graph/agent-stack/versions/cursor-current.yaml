@@ -31,6 +31,8 @@ edges:
       role: platform
     - target: agent-ui-impl:cursor.ui@current
       role: ui
+    - target: knowledge-fabric-impl:cursor.knowledge@current
+      role: knowledge-fabric
   sourced_from: []
   supports:
     - target: capability:skills

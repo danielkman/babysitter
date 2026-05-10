@@ -14,6 +14,8 @@ edgeKinds:
   - AgentCoreImpl
   - AgentRuntimeImpl
   - AgentPlatformImpl
+  - AgentUIImpl
+  - KnowledgeFabricImpl
   - Language
   - Framework
   - Tool
@@ -22,7 +24,9 @@ edgeKinds:
   - name: role
     type: enum<core
     runtime: null
-    platform>: null
+    platform: null
+    ui: null
+    knowledge-fabric>: null
   inverse: composes
 - id: edge:composes
   name: composes
@@ -32,6 +36,8 @@ edgeKinds:
   - AgentCoreImpl
   - AgentRuntimeImpl
   - AgentPlatformImpl
+  - AgentUIImpl
+  - KnowledgeFabricImpl
   - Language
   - Framework
   - Tool
@@ -44,7 +50,9 @@ edgeKinds:
   - name: role
     type: enum<core
     runtime: null
-    platform>: null
+    platform: null
+    ui: null
+    knowledge-fabric>: null
   inverse: composed_of
 - id: edge:bundled-with
   name: bundled_with
@@ -136,6 +144,7 @@ edgeKinds:
   - AgentRuntimeImpl
   - AgentPlatformImpl
   - AgentUIImpl
+  - KnowledgeFabricImpl
   - AgentVersion
   - Presentation
   - Channel
@@ -165,6 +174,7 @@ edgeKinds:
   - AgentRuntimeImpl
   - AgentPlatformImpl
   - AgentUIImpl
+  - KnowledgeFabricImpl
   - AgentVersion
   - Presentation
   - Channel

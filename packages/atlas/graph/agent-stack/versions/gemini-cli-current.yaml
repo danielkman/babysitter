@@ -32,6 +32,8 @@ edges:
       role: platform
     - target: agent-ui-impl:gemini-cli.ui@current
       role: ui
+    - target: knowledge-fabric-impl:gemini-cli.knowledge@current
+      role: knowledge-fabric
   sourced_from: []
   supports:
     - target: capability:skills
