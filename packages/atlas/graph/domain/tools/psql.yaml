@@ -8,3 +8,5 @@ attributes:
 edges:
   belongs_to_language:
     - target: language:sql
+  used_for:
+    - target: skill-area:backend-data-persistence

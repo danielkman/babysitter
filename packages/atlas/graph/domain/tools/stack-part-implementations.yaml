@@ -10,6 +10,8 @@ attributes:
 edges:
   implements_stack_part:
     - target: stack-part:cms
+  used_for:
+    - target: skill-area:content-strategy
 ---
 nodeKind: Tool
 id: tool:strapi
@@ -22,6 +24,8 @@ attributes:
 edges:
   implements_stack_part:
     - target: stack-part:cms
+  used_for:
+    - target: skill-area:backend-api-design
 ---
 nodeKind: Tool
 id: tool:neo4j
@@ -34,6 +38,8 @@ attributes:
 edges:
   implements_stack_part:
     - target: stack-part:graph-database
+  used_for:
+    - target: skill-area:graph-databases
 ---
 nodeKind: Tool
 id: tool:elasticsearch
@@ -46,6 +52,8 @@ attributes:
 edges:
   implements_stack_part:
     - target: stack-part:search-index
+  used_for:
+    - target: skill-area:search-infrastructure
 ---
 nodeKind: Tool
 id: tool:meilisearch
@@ -58,6 +66,8 @@ attributes:
 edges:
   implements_stack_part:
     - target: stack-part:search-index
+  used_for:
+    - target: skill-area:search-infrastructure
 ---
 nodeKind: Tool
 id: tool:launchdarkly
@@ -70,6 +80,8 @@ attributes:
 edges:
   implements_stack_part:
     - target: stack-part:experiment-platform
+  used_for:
+    - target: skill-area:feature-management
 ---
 nodeKind: Tool
 id: tool:temporal
@@ -83,6 +95,8 @@ attributes:
 edges:
   implements_stack_part:
     - target: stack-part:workflow-engine
+  used_for:
+    - target: skill-area:backend-async-processing
 ---
 nodeKind: Tool
 id: tool:airflow
@@ -95,6 +109,8 @@ attributes:
 edges:
   implements_stack_part:
     - target: stack-part:workflow-engine
+  used_for:
+    - target: skill-area:event-driven-architecture
 ---
 nodeKind: Tool
 id: tool:kong
@@ -108,6 +124,8 @@ edges:
   implements_stack_part:
     - target: stack-part:rate-limiter
     - target: stack-part:api-gateway
+  used_for:
+    - target: skill-area:backend-api-design
 ---
 nodeKind: Tool
 id: tool:databricks
@@ -120,6 +138,8 @@ attributes:
 edges:
   implements_stack_part:
     - target: stack-part:data-lake
+  used_for:
+    - target: skill-area:machine-learning
 ---
 nodeKind: Tool
 id: tool:sendgrid
@@ -132,6 +152,8 @@ attributes:
 edges:
   implements_stack_part:
     - target: stack-part:email-delivery
+  used_for:
+    - target: skill-area:transactional-email
 ---
 nodeKind: Tool
 id: tool:twilio
@@ -144,6 +166,8 @@ attributes:
 edges:
   implements_stack_part:
     - target: stack-part:sms-delivery
+  used_for:
+    - target: skill-area:communication
 ---
 nodeKind: Tool
 id: tool:mlflow
@@ -156,6 +180,8 @@ attributes:
 edges:
   implements_stack_part:
     - target: stack-part:model-registry
+  used_for:
+    - target: skill-area:model-serving
 ---
 nodeKind: Tool
 id: tool:bentoml
@@ -168,6 +194,8 @@ attributes:
 edges:
   implements_stack_part:
     - target: stack-part:model-serving
+  used_for:
+    - target: skill-area:model-serving
 ---
 nodeKind: Tool
 id: tool:feast
@@ -181,6 +209,8 @@ attributes:
 edges:
   implements_stack_part:
     - target: stack-part:feature-store
+  used_for:
+    - target: skill-area:machine-learning
 ---
 nodeKind: Tool
 id: tool:datadome
@@ -193,3 +223,5 @@ attributes:
 edges:
   implements_stack_part:
     - target: stack-part:bot-detection
+  used_for:
+    - target: skill-area:application-security

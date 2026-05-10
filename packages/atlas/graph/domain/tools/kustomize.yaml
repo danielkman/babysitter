@@ -8,3 +8,5 @@ attributes:
 edges:
   belongs_to_language:
     - target: language:yaml
+  used_for:
+    - target: skill-area:deployment-automation

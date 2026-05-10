@@ -9,3 +9,5 @@ attributes:
 edges:
   belongs_to_language:
     - language:python
+  used_for:
+    - target: skill-area:developer-environment

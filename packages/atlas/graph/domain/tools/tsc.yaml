@@ -9,3 +9,5 @@ attributes:
 edges:
   belongs_to_language:
     - language:typescript
+  used_for:
+    - target: skill-area:code-quality

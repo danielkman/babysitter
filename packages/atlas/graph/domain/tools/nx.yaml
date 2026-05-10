@@ -8,3 +8,5 @@ attributes:
 edges:
   belongs_to_language:
     - target: language:typescript
+  used_for:
+    - target: skill-area:ci-pipeline-optimization

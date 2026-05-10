@@ -8,3 +8,5 @@ attributes:
 edges:
   belongs_to_language:
     - target: language:hcl
+  used_for:
+    - target: skill-area:deployment-automation

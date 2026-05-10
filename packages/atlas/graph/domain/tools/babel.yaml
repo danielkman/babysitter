@@ -9,3 +9,5 @@ attributes:
 edges:
   belongs_to_language:
     - language:javascript
+  used_for:
+    - target: skill-area:ci-pipeline-optimization
