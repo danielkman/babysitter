@@ -14,6 +14,11 @@ edges:
   applies_to:
     - domain:software-engineering
     - specialization:ai-agents-conversational
+  related_topics:
+    - topic:memory-to-knowledge-bridge
+    - topic:multi-agent-knowledge-sharing
+    - topic:knowledge-access-control
+    - topic:knowledge-freshness
 ---
 nodeKind: Topic
 id: topic:knowledge-fabric-architecture
@@ -30,6 +35,11 @@ edges:
   applies_to:
     - domain:software-engineering
     - specialization:ai-agents-conversational
+  related_topics:
+    - topic:context-to-fabric-sync
+    - topic:knowledge-access-control
+    - topic:knowledge-feedback-loop
+    - topic:multi-agent-knowledge-sharing
 ---
 nodeKind: Topic
 id: topic:rag-pipeline-design
@@ -46,6 +56,13 @@ edges:
   applies_to:
     - domain:software-engineering
     - specialization:ai-agents-conversational
+  related_topics:
+    - topic:chunking-strategies
+    - topic:embedding-pipeline
+    - topic:dense-retrieval
+    - topic:hybrid-retrieval
+    - topic:re-ranking
+    - topic:agentic-rag
 ---
 nodeKind: Topic
 id: topic:knowledge-graph-construction
@@ -61,6 +78,8 @@ attributes:
 edges:
   applies_to:
     - domain:software-engineering
+  related_topics:
+    - topic:graph-rag
 ---
 nodeKind: Topic
 id: topic:organizational-memory
@@ -77,6 +96,11 @@ edges:
   applies_to:
     - domain:software-engineering
     - specialization:ai-agents-conversational
+  related_topics:
+    - topic:memory-to-knowledge-bridge
+    - topic:context-to-fabric-sync
+    - topic:knowledge-freshness
+    - topic:knowledge-feedback-loop
 ---
 nodeKind: Topic
 id: topic:knowledge-provenance

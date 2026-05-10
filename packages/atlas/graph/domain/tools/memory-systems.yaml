@@ -17,6 +17,9 @@ edges:
     - target: skill-area:context-management
     - target: skill-area:knowledge-fabric-design
     - target: skill-area:organizational-intelligence
+  relates_to_topic:
+    - target: topic:memory-to-knowledge-bridge
+    - target: topic:context-to-fabric-sync
 ---
 nodeKind: Tool
 id: tool:zep
@@ -36,6 +39,9 @@ edges:
     - target: skill-area:context-management
     - target: skill-area:knowledge-fabric-design
     - target: skill-area:organizational-intelligence
+  relates_to_topic:
+    - target: topic:memory-to-knowledge-bridge
+    - target: topic:context-to-fabric-sync
 ---
 nodeKind: Tool
 id: tool:chromadb
@@ -55,6 +61,9 @@ edges:
     - target: skill-area:search-indexing
     - target: skill-area:knowledge-fabric-design
     - target: skill-area:rag-pipeline-engineering
+  relates_to_topic:
+    - target: topic:dense-retrieval
+    - target: topic:embedding-pipeline
 ---
 nodeKind: Tool
 id: tool:weaviate
@@ -74,6 +83,10 @@ edges:
     - target: skill-area:search-indexing
     - target: skill-area:knowledge-fabric-design
     - target: skill-area:rag-pipeline-engineering
+  relates_to_topic:
+    - target: topic:hybrid-retrieval
+    - target: topic:dense-retrieval
+    - target: topic:embedding-pipeline
 ---
 nodeKind: Tool
 id: tool:pinecone
@@ -93,6 +106,10 @@ edges:
     - target: skill-area:search-indexing
     - target: skill-area:knowledge-fabric-design
     - target: skill-area:rag-pipeline-engineering
+  relates_to_topic:
+    - target: topic:hybrid-retrieval
+    - target: topic:dense-retrieval
+    - target: topic:embedding-pipeline
 ---
 nodeKind: Tool
 id: tool:qdrant
@@ -112,6 +129,9 @@ edges:
     - target: skill-area:search-indexing
     - target: skill-area:knowledge-fabric-design
     - target: skill-area:rag-pipeline-engineering
+  relates_to_topic:
+    - target: topic:dense-retrieval
+    - target: topic:embedding-pipeline
 ---
 nodeKind: Tool
 id: tool:milvus
@@ -131,3 +151,6 @@ edges:
     - target: skill-area:search-indexing
     - target: skill-area:knowledge-fabric-design
     - target: skill-area:rag-pipeline-engineering
+  relates_to_topic:
+    - target: topic:dense-retrieval
+    - target: topic:embedding-pipeline

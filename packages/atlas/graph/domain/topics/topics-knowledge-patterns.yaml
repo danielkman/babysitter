@@ -1,0 +1,264 @@
+---
+nodeKind: Topic
+id: topic:chunking-strategies
+attributes:
+  displayName: "Chunking Strategies"
+  description: |
+    Chunking Strategies as a cross-cutting topic — methods for splitting
+    documents into meaningful units for embedding and retrieval. Covers
+    fixed-size chunking with token or character windows, semantic chunking
+    that detects topic boundaries using embedding similarity, parent-child
+    chunking that maintains hierarchical document structure, sliding window
+    approaches with configurable overlap, and code-aware chunking that
+    respects AST boundaries. The choice of strategy directly impacts
+    retrieval precision, recall, and the coherence of retrieved context
+    passed to LLMs.
+edges:
+  applies_to:
+    - domain:software-engineering
+    - specialization:ai-agents-conversational
+---
+nodeKind: Topic
+id: topic:embedding-pipeline
+attributes:
+  displayName: "Embedding Pipeline"
+  description: |
+    Embedding Pipeline as a cross-cutting topic — the end-to-end flow from
+    raw documents through chunking, embedding model inference, and vector
+    store ingestion. Covers batch embedding for initial corpus loading vs
+    streaming embedding for real-time document updates, embedding model
+    selection (OpenAI ada-002, Cohere embed-v3, open-source models like
+    E5, BGE, GTE), dimensionality trade-offs, normalization strategies,
+    and pipeline orchestration patterns for keeping embeddings synchronized
+    with source documents as they change.
+edges:
+  applies_to:
+    - domain:software-engineering
+    - specialization:ai-agents-conversational
+    - domain:data-science
+---
+nodeKind: Topic
+id: topic:dense-retrieval
+attributes:
+  displayName: "Dense Retrieval"
+  description: |
+    Dense Retrieval as a cross-cutting topic — similarity search using
+    dense vector representations of queries and documents. Covers
+    approximate nearest neighbor algorithms (HNSW, IVF, DiskANN),
+    embedding space geometry, query-document asymmetry (bi-encoder
+    architectures), distance metrics (cosine, dot product, L2), and
+    the fundamental trade-off between index build time, memory usage,
+    and retrieval latency. Dense retrieval excels at semantic matching
+    but struggles with exact keyword lookups and rare terms.
+edges:
+  applies_to:
+    - domain:software-engineering
+    - domain:data-science
+---
+nodeKind: Topic
+id: topic:sparse-retrieval
+attributes:
+  displayName: "Sparse Retrieval"
+  description: |
+    Sparse Retrieval as a cross-cutting topic — keyword-based retrieval
+    using sparse vector representations. Covers BM25 as the dominant
+    baseline, TF-IDF weighting, learned sparse retrieval models (SPLADE,
+    DeepImpact), inverted index construction, and the strengths of sparse
+    methods for exact term matching, rare vocabulary, and domain-specific
+    terminology where dense models lack training signal.
+edges:
+  applies_to:
+    - domain:software-engineering
+    - domain:data-science
+---
+nodeKind: Topic
+id: topic:hybrid-retrieval
+attributes:
+  displayName: "Hybrid Retrieval"
+  description: |
+    Hybrid Retrieval as a cross-cutting topic — combining dense vector
+    similarity with sparse keyword matching for better retrieval quality.
+    Covers reciprocal rank fusion (RRF) for merging ranked lists,
+    linear score combination with tunable weights, Weaviate's built-in
+    hybrid search, Pinecone's sparse-dense vectors, and the empirical
+    finding that hybrid consistently outperforms either method alone
+    on diverse query types. The key design decision is the fusion
+    strategy and how to weight semantic vs lexical signals.
+edges:
+  applies_to:
+    - domain:software-engineering
+    - domain:data-science
+    - specialization:ai-agents-conversational
+---
+nodeKind: Topic
+id: topic:re-ranking
+attributes:
+  displayName: "Re-Ranking"
+  description: |
+    Re-Ranking as a cross-cutting topic — applying cross-encoder models
+    to re-score retrieved documents for relevance after initial retrieval.
+    Covers the bi-encoder (fast, approximate) vs cross-encoder (slow,
+    accurate) trade-off, popular re-ranker models (Cohere Rerank, BGE
+    Reranker, cross-encoder/ms-marco), ColBERT-style late interaction
+    for efficient re-ranking, and the retrieve-then-rerank pipeline
+    pattern where a cheap first-stage retriever fetches candidates and
+    an expensive re-ranker selects the best.
+edges:
+  applies_to:
+    - domain:software-engineering
+    - domain:data-science
+    - specialization:ai-agents-conversational
+---
+nodeKind: Topic
+id: topic:graph-rag
+attributes:
+  displayName: "Graph RAG"
+  description: |
+    Graph RAG as a cross-cutting topic — combining knowledge graphs with
+    retrieval-augmented generation for multi-hop reasoning over structured
+    and unstructured data. Covers Microsoft's GraphRAG pattern (community
+    detection, summarization hierarchies, global search), entity-relation
+    extraction from documents into graph form, graph traversal as retrieval,
+    and the advantage over flat vector RAG for questions requiring synthesis
+    across multiple documents or reasoning about relationships between
+    entities. Graph RAG excels at "what is the overall theme?" queries
+    that flat retrieval cannot answer.
+edges:
+  applies_to:
+    - domain:software-engineering
+    - specialization:ai-agents-conversational
+    - domain:data-science
+---
+nodeKind: Topic
+id: topic:multi-agent-knowledge-sharing
+attributes:
+  displayName: "Multi-Agent Knowledge Sharing"
+  description: |
+    Multi-Agent Knowledge Sharing as a cross-cutting topic — protocols and
+    patterns for agents to share, discover, and update organizational
+    knowledge collaboratively. Covers shared memory stores that multiple
+    agents read from and write to, knowledge broadcasting (one agent
+    discovers a fact, all agents benefit), conflict resolution when agents
+    produce contradictory knowledge, knowledge ownership and provenance
+    in multi-agent systems, and the Blackboard architecture pattern where
+    agents post partial solutions to a shared workspace.
+edges:
+  applies_to:
+    - domain:software-engineering
+    - specialization:ai-agents-conversational
+---
+nodeKind: Topic
+id: topic:knowledge-freshness
+attributes:
+  displayName: "Knowledge Freshness"
+  description: |
+    Knowledge Freshness as a cross-cutting topic — detecting and managing
+    stale knowledge in organizational knowledge systems. Covers time-based
+    decay models (knowledge expires after N days without verification),
+    change-detection triggers (source document modified, invalidate
+    derived embeddings), freshness scoring in retrieval ranking, Guru-style
+    verification workflows with assigned knowledge owners, and the
+    distinction between stable knowledge (architectural principles) and
+    volatile knowledge (API versions, team rosters) that requires
+    different freshness policies.
+edges:
+  applies_to:
+    - domain:software-engineering
+    - specialization:ai-agents-conversational
+---
+nodeKind: Topic
+id: topic:knowledge-access-control
+attributes:
+  displayName: "Knowledge Access Control"
+  description: |
+    Knowledge Access Control as a cross-cutting topic — row-level security
+    and permission-aware retrieval in knowledge systems. Covers inheriting
+    access permissions from source systems (only retrieve Confluence pages
+    the user can see), role-based knowledge partitioning (engineering sees
+    code context, sales sees deal context), metadata-based filtering in
+    vector stores, document-level ACLs in RAG pipelines, and the security
+    challenge of preventing knowledge leakage through semantic similarity
+    (a nearby vector might expose restricted content even if the exact
+    document is filtered).
+edges:
+  applies_to:
+    - domain:software-engineering
+    - specialization:ai-agents-conversational
+---
+nodeKind: Topic
+id: topic:knowledge-feedback-loop
+attributes:
+  displayName: "Knowledge Feedback Loop"
+  description: |
+    Knowledge Feedback Loop as a cross-cutting topic — human-in-the-loop
+    correction and continuous improvement cycles for organizational
+    knowledge systems. Covers thumbs-up/down signals on retrieved answers,
+    expert correction workflows (user fixes a wrong answer, system learns),
+    retrieval quality monitoring dashboards, embedding model fine-tuning
+    on domain-specific relevance judgments, and the flywheel effect where
+    usage data improves retrieval which increases usage.
+edges:
+  applies_to:
+    - domain:software-engineering
+    - specialization:ai-agents-conversational
+---
+nodeKind: Topic
+id: topic:agentic-rag
+attributes:
+  displayName: "Agentic RAG"
+  description: |
+    Agentic RAG as a cross-cutting topic — agents that actively reason
+    about what to retrieve, iterate on retrieval results, and update
+    knowledge rather than passively returning the top-k nearest vectors.
+    Covers query planning (decompose complex questions into sub-queries),
+    self-reflective retrieval (evaluate if retrieved context is sufficient,
+    re-query if not), tool-augmented retrieval (agent uses calculator,
+    code execution, or API calls alongside vector search), corrective
+    RAG (detect hallucination, re-retrieve), and the shift from
+    "retrieve then generate" to "reason, retrieve, reason, retrieve"
+    loops that characterize agentic knowledge work.
+edges:
+  applies_to:
+    - domain:software-engineering
+    - specialization:ai-agents-conversational
+---
+nodeKind: Topic
+id: topic:memory-to-knowledge-bridge
+attributes:
+  displayName: "Memory-to-Knowledge Bridge"
+  description: |
+    Memory-to-Knowledge Bridge as a cross-cutting topic — how per-session
+    agent memory (Mem0, Zep, conversation buffer) feeds into and reads
+    from persistent organizational knowledge (vector stores, knowledge
+    graphs). The bridge pattern: session memory captures entities, facts,
+    and decisions during a conversation; an extraction pipeline identifies
+    durable knowledge worth persisting; that knowledge is written to the
+    organizational fabric (vector store, knowledge graph, or structured
+    store); subsequent sessions retrieve from the fabric to bootstrap
+    context. This is the mechanism that turns ephemeral agent interactions
+    into lasting organizational intelligence.
+edges:
+  applies_to:
+    - domain:software-engineering
+    - specialization:ai-agents-conversational
+---
+nodeKind: Topic
+id: topic:context-to-fabric-sync
+attributes:
+  displayName: "Context-to-Fabric Sync"
+  description: |
+    Context-to-Fabric Sync as a cross-cutting topic — how compacted
+    conversation context from agent runtime flows into the knowledge
+    fabric for long-term retention. When an agent session compacts its
+    context window (via background consolidation or compaction policies),
+    the compacted summaries, extracted entities, and decision records
+    can be persisted to the organizational knowledge layer rather than
+    being discarded. Covers compaction-triggered write-back, selective
+    persistence (only persist high-value summaries), deduplication
+    against existing fabric knowledge, and the feedback loop where
+    future sessions retrieve previously compacted knowledge to avoid
+    re-discovering the same information.
+edges:
+  applies_to:
+    - domain:software-engineering
+    - specialization:ai-agents-conversational
