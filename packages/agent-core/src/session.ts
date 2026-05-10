@@ -87,7 +87,7 @@ function mapEventPayload(event: unknown): AgentCoreSessionEvent {
 }
 
 function resolveRunBackend(
-  client: import("@a5c-ai/agent-mux").AgentMuxClient,
+  _client: import("@a5c-ai/agent-mux").AgentMuxClient,
   options: AgentCoreSessionOptions,
 ): string {
   const configuredBackend = options.backend ?? process.env.AGENT_CORE_BACKEND;
@@ -95,22 +95,9 @@ function resolveRunBackend(
     return configuredBackend;
   }
 
-  if (!options.model) {
-    return DEFAULT_BACKEND;
-  }
-
-  const defaultBackendSupportsModel = client.models.model(DEFAULT_BACKEND, options.model);
-  if (defaultBackendSupportsModel) {
-    return DEFAULT_BACKEND;
-  }
-
-  if (DEFAULT_BACKEND.endsWith(SDK_BACKEND_SUFFIX)) {
-    const fallbackBackend = DEFAULT_BACKEND.slice(0, -SDK_BACKEND_SUFFIX.length);
-    if (client.adapters.get(fallbackBackend as import("@a5c-ai/agent-mux").AgentName)) {
-      return fallbackBackend;
-    }
-  }
-
+  // Always use the in-process SDK backend. The model registry is for discovery
+  // only — the SDK can call any model the provider supports regardless of
+  // whether it's in the static model list.
   return DEFAULT_BACKEND;
 }
 

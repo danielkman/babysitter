@@ -11,13 +11,12 @@ export function translateForPi(config: ProviderConfig): HarnessProviderTranslati
       return { env, args, proxyRequired: false };
     case 'foundry':
     case 'azure': {
-      // Pi has native Azure OpenAI support via --provider flag and env vars
-      const apiBase = config.params['apiBase'] ? String(config.params['apiBase']) : undefined;
-      if (apiBase) env['AZURE_OPENAI_BASE_URL'] = `${apiBase}/openai`;
-      if (config.auth.apiKey) env['AZURE_OPENAI_API_KEY'] = config.auth.apiKey;
-      args.push('--provider', 'azure');
+      // Azure AI Services (foundry) requires api-version query params that Pi
+      // can't add natively. Route through the transport-mux proxy which exposes
+      // an OpenAI-compatible endpoint locally (Pi reads OPENAI_BASE_URL from
+      // the proxy's applyHarnessEnv).
       env['ANTHROPIC_API_KEY'] = '';
-      return { env, args, proxyRequired: false };
+      return { env, args, proxyRequired: true, proxyExposedTransport: 'openai-chat' };
     }
     case 'anthropic':
       if (config.auth.apiKey) env['ANTHROPIC_API_KEY'] = config.auth.apiKey;
@@ -28,7 +27,7 @@ export function translateForPi(config: ProviderConfig): HarnessProviderTranslati
     case 'local':
     case 'lmstudio':
     case 'vllm': {
-      // Custom/local providers: Pi supports baseUrl via models.json or env vars
+      // Custom/local providers: Pi supports baseUrl via models.json config
       if (config.params['apiBase']) {
         env['OPENAI_BASE_URL'] = String(config.params['apiBase']);
         env['OPENAI_API_BASE'] = String(config.params['apiBase']);

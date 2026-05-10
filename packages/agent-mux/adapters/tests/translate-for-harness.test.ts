@@ -118,14 +118,18 @@ describe('translateForHarness', () => {
   });
 
   describe('dispatches to pi translator', () => {
-    it('returns proxyRequired=false for pi with foundry provider and sets azure env', () => {
+    it('returns proxyRequired=true for pi with foundry provider (needs proxy for api-version)', () => {
       const config = makeConfig({ provider: 'foundry' as any, transport: 'openai-chat' as any, auth: { type: 'api_key' as const, apiKey: 'azkey' }, params: { apiBase: 'https://myres.services.ai.azure.com' } });
       const r = translateForHarness('pi' as AgentName, config);
+      expect(r.proxyRequired).toBe(true);
+      expect(r.proxyExposedTransport).toBe('openai-chat');
+    });
+
+    it('returns proxyRequired=false for pi with custom provider', () => {
+      const config = makeConfig({ provider: 'custom' as any, transport: 'openai-chat' as any, auth: { type: 'api_key' as const, apiKey: 'key' }, params: { apiBase: 'http://localhost:8080' } });
+      const r = translateForHarness('pi' as AgentName, config);
       expect(r.proxyRequired).toBe(false);
-      expect(r.env['AZURE_OPENAI_BASE_URL']).toBe('https://myres.services.ai.azure.com/openai');
-      expect(r.env['AZURE_OPENAI_API_KEY']).toBe('azkey');
-      expect(r.args).toContain('--provider');
-      expect(r.args).toContain('azure');
+      expect(r.env['OPENAI_BASE_URL']).toBe('http://localhost:8080');
     });
 
     it('returns proxyRequired=true for pi with unsupported provider', () => {

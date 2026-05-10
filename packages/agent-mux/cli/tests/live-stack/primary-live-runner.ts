@@ -96,7 +96,6 @@ export function buildPrimaryLiveStackCommands(
     if (scenario.agent.installMode === 'vanilla') {
       return [
         commandExecution(commandEnv, 'LIVE_STACK_AMUX_BIN', 'amux', ['install', 'babysitter', '--json'], options.cwd, timeoutMs),
-        commandExecution(commandEnv, 'LIVE_STACK_AMUX_BIN', 'amux', ['install', 'codex', '--json'], options.cwd, timeoutMs),
         runCommand,
       ];
     }
@@ -104,7 +103,6 @@ export function buildPrimaryLiveStackCommands(
     return [
       commandExecution(commandEnv, 'LIVE_STACK_NPM_BIN', 'npm', ['run', 'generate:plugins'], options.cwd, timeoutMs),
       commandExecution(commandEnv, 'LIVE_STACK_AMUX_BIN', 'amux', ['install', 'babysitter', '--json'], options.cwd, timeoutMs),
-      commandExecution(commandEnv, 'LIVE_STACK_AMUX_BIN', 'amux', ['install', 'codex', '--json'], options.cwd, timeoutMs),
       commandExecution(commandEnv, 'LIVE_STACK_NPM_BIN', 'npm', ['install', '--global', './packages/sdk'], options.cwd, timeoutMs),
       generatedPluginInstallCommand(commandEnv, scenario, options.cwd, timeoutMs),
       runCommand,
