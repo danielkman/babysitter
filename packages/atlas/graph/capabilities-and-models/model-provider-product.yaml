@@ -120,3 +120,37 @@ attributes:
   evidenceRefs:
     - "repo-transport-mux-readme"
     - "repo-transport-mux-architecture"
+---
+nodeKind: ModelProviderProduct
+id: provider:cloudflare-ai
+attributes:
+  providerId: "cloudflare-ai"
+  displayName: "Cloudflare Workers AI"
+  kindLabel: "inference-provider"
+  vendor: "Cloudflare"
+  homepage: "https://developers.cloudflare.com/workers-ai/"
+  apiFamilies:
+    - "run"
+  authKinds:
+    - "CLOUDFLARE_API_TOKEN"
+    - "CLOUDFLARE_ACCOUNT_ID"
+  evidenceRefs:
+    - "pi-packages-ai-providers"
+---
+nodeKind: ModelProviderProduct
+id: provider:azure-openai
+attributes:
+  providerId: "azure-openai"
+  displayName: "Azure OpenAI"
+  kindLabel: "cloud-provider"
+  vendor: "Microsoft"
+  homepage: "https://azure.microsoft.com/en-us/products/ai-services/openai-service"
+  apiFamilies:
+    - "responses"
+    - "chat"
+    - "completions"
+  authKinds:
+    - "AZURE_OPENAI_API_KEY"
+    - "AZURE_AD_TOKEN"
+  evidenceRefs:
+    - "pi-packages-ai-providers"

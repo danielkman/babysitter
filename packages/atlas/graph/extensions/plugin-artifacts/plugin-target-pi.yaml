@@ -80,3 +80,4 @@ attributes:
 edges:
   hosted_by:
     - target: agent:pi
+    - target: agent-platform-impl:pi.platform@current

@@ -80,3 +80,4 @@ attributes:
 edges:
   hosted_by:
     - target: agent:opencode
+    - target: agent-platform-impl:opencode.platform@1.x

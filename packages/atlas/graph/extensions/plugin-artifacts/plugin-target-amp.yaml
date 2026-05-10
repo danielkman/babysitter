@@ -30,3 +30,4 @@ attributes:
 edges:
   hosted_by:
     - target: agent:amp
+    - target: agent-platform-impl:amp.platform@current

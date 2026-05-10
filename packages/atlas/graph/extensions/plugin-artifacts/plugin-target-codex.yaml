@@ -86,3 +86,4 @@ attributes:
 edges:
   hosted_by:
     - target: agent:codex
+    - target: agent-platform-impl:codex.platform@1.x

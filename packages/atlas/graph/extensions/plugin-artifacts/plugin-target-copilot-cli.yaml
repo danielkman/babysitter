@@ -86,3 +86,4 @@ attributes:
 edges:
   hosted_by:
     - target: agent:copilot-cli
+    - target: agent-platform-impl:copilot-cli.platform@current

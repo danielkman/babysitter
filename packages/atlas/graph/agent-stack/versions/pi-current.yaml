@@ -6,7 +6,7 @@ attributes:
   runtimeFamily: "cli-harness"
   releaseChannel: "stable"
   displayName: "Pi"
-  summary: "Pi CLI coding agent"
+  summary: "Pi CLI coding agent — harness with skills, compaction, prompt templates, and session management"
   sourcePackage: "pi"
   osSupport:
     - "linux"
@@ -36,7 +36,9 @@ edges:
     - target: capability:skills
       versionRange: ">=0.0.0"
       level: full
-      notes: Pi fallback harness; no runtime-hook support in current shared metadata.
+      notes: |
+        Pi harness supports skill invocation via formatSkillInvocation.
+        Skills are dispatched as structured interactions within the agent loop.
     - target: capability:supports-thinking
       versionRange: ">=0.0.0"
       level: full
@@ -56,4 +58,23 @@ edges:
     - target: capability:can-resume
       versionRange: ">=0.0.0"
       level: full
-      notes: Pi fallback harness.
+      notes: |
+        Multi-turn JSONL-tree sessions with resume, fork, and branch operations.
+    - target: capability:supports-compaction
+      versionRange: ">=0.0.0"
+      level: full
+      notes: |
+        Client-side branch-summarization compaction via AgentHarness.
+        Configurable threshold and summarization strategy.
+    - target: capability:supports-prompt-templates
+      versionRange: ">=0.0.0"
+      level: full
+      notes: |
+        Parameterized prompt-template system for system prompts,
+        tool descriptions, and context injection.
+    - target: capability:supports-session-management
+      versionRange: ">=0.0.0"
+      level: full
+      notes: |
+        Harness-managed session lifecycle with JSONL-tree persistence,
+        session resume, fork, and execution-env abstraction.

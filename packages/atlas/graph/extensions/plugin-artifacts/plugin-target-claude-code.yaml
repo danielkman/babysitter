@@ -101,3 +101,4 @@ attributes:
 edges:
   hosted_by:
     - target: agent:claude-code
+    - target: agent-platform-impl:claude-code.platform@1.x

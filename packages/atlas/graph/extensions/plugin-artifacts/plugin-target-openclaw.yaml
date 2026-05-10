@@ -81,3 +81,4 @@ attributes:
 edges:
   hosted_by:
     - target: agent:openclaw
+    - target: agent-platform-impl:openclaw.platform@current

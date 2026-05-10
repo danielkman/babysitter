@@ -86,3 +86,4 @@ attributes:
 edges:
   hosted_by:
     - target: agent:cursor
+    - target: agent-platform-impl:cursor.platform@current

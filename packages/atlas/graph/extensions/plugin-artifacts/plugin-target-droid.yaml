@@ -29,3 +29,4 @@ attributes:
 edges:
   hosted_by:
     - target: agent:droid
+    - target: agent-platform-impl:droid.platform@current

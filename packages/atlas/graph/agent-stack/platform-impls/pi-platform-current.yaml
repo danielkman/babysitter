@@ -9,8 +9,9 @@ attributes:
   nativeExtensionManifestPath: ~/.pi/agent/plugins/<name>/plugin.json
   nativeExtensionsDirectoryPath:
   - ~/.pi/agent/plugins/
-  skillFormat: none
-  skillsDirectoryPath: []
+  skillFormat: harness-native
+  skillsDirectoryPath:
+  - skills/
   customSlashCommandsPath: []
   subagentsDirectoryPath: []
   hooksDirectoryOrConfigPath: []
@@ -35,13 +36,29 @@ edges:
   - target: capability:can-resume
     versionRange: '>=1.0.0'
     level: full
-    notes: 'Multi-turn JSONL-tree sessions; resume + fork.
-
-      '
+    notes: |
+      Multi-turn JSONL-tree sessions; resume + fork.
   - target: capability:supports-plugins
     versionRange: '>=1.0.0'
     level: none
-    notes: 'Pi exposes only MCP servers for extensibility (per agent-mux ref). Task
+    notes: |
+      Pi exposes only MCP servers for extensibility (per agent-mux ref). Task
       brief mentions a marketplace; reconcile TODO.
-
-      '
+  - target: capability:skills
+    versionRange: '>=0.0.0'
+    level: full
+    notes: |
+      Pi harness supports skill invocation via formatSkillInvocation.
+      Skills are dispatched as structured interactions within the agent loop.
+  - target: capability:supports-prompt-templates
+    versionRange: '>=0.0.0'
+    level: full
+    notes: |
+      Harness includes parameterized prompt-template system for system
+      prompts, tool descriptions, and context injection.
+  - target: capability:supports-compaction
+    versionRange: '>=0.0.0'
+    level: full
+    notes: |
+      Client-side branch-summarization compaction with configurable
+      threshold and strategy settings.

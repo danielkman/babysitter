@@ -81,3 +81,4 @@ attributes:
 edges:
   hosted_by:
     - target: agent:gemini-cli
+    - target: agent-platform-impl:gemini-cli.platform@current
