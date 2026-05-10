@@ -1390,18 +1390,18 @@ jobs:
           KUBE_CONFIG_SECRET: ${{ secrets.KUBE_CONFIG }}
           AZURE_CLIENT_ID_VAR: ${{ vars.AZURE_APPLICATION_CLIENT_ID }}
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_APPLICATION_CLIENT_SECRET }}
-          ATLAS_GITHUB_CLIENT_ID: ${{ secrets.AUTH_GITHUB_CLIENT_ID }}
-          ATLAS_GITHUB_CLIENT_SECRET: ${{ secrets.AUTH_GITHUB_CLIENT_SECRET }}
-          ATLAS_AUTH_SECRET: ${{ secrets.AUTH_SECRET != '' && secrets.AUTH_SECRET || secrets.AUTH_GITHUB_CLIENT_SECRET }}
+          ATLAS_GITHUB_CLIENT_ID: ${{ vars.ATLAS_GITHUB_CLIENT_ID }}
+          ATLAS_GITHUB_CLIENT_SECRET: ${{ secrets.ATLAS_GITHUB_CLIENT_SECRET }}
+          ATLAS_AUTH_SECRET: ${{ secrets.ATLAS_AUTH_SECRET != '' && secrets.ATLAS_AUTH_SECRET || secrets.ATLAS_GITHUB_CLIENT_SECRET }}
         run: |
           missing=()
           [[ -n "${KUBE_CONFIG_SECRET}" ]] || missing+=("KUBE_CONFIG")
           [[ -n "${AZURE_CLIENT_ID_VAR}" ]] || missing+=("AZURE_APPLICATION_CLIENT_ID")
           [[ -n "${AZURE_CLIENT_SECRET}" ]] || missing+=("AZURE_APPLICATION_CLIENT_SECRET")
           [[ -n "${ACR_NAME}" ]] || missing+=("AZURE_ACR_NAME")
-          [[ -n "${ATLAS_GITHUB_CLIENT_ID}" ]] || missing+=("AUTH_GITHUB_CLIENT_ID")
-          [[ -n "${ATLAS_GITHUB_CLIENT_SECRET}" ]] || missing+=("AUTH_GITHUB_CLIENT_SECRET")
-          [[ -n "${ATLAS_AUTH_SECRET}" ]] || missing+=("AUTH_SECRET or AUTH_GITHUB_CLIENT_SECRET")
+          [[ -n "${ATLAS_GITHUB_CLIENT_ID}" ]] || missing+=("ATLAS_GITHUB_CLIENT_ID")
+          [[ -n "${ATLAS_GITHUB_CLIENT_SECRET}" ]] || missing+=("ATLAS_GITHUB_CLIENT_SECRET")
+          [[ -n "${ATLAS_AUTH_SECRET}" ]] || missing+=("ATLAS_AUTH_SECRET or ATLAS_GITHUB_CLIENT_SECRET")
           if (( ${#missing[@]} == 0 )); then
             echo "deploy_enabled=true" >> "$GITHUB_OUTPUT"
           else
@@ -1459,9 +1459,9 @@ jobs:
       - name: Create Atlas auth secret
         if: steps.config.outputs.deploy_enabled == 'true'
         env:
-          ATLAS_GITHUB_CLIENT_ID: ${{ secrets.AUTH_GITHUB_CLIENT_ID }}
-          ATLAS_GITHUB_CLIENT_SECRET: ${{ secrets.AUTH_GITHUB_CLIENT_SECRET }}
-          ATLAS_AUTH_SECRET: ${{ secrets.AUTH_SECRET != '' && secrets.AUTH_SECRET || secrets.AUTH_GITHUB_CLIENT_SECRET }}
+          ATLAS_GITHUB_CLIENT_ID: ${{ vars.ATLAS_GITHUB_CLIENT_ID }}
+          ATLAS_GITHUB_CLIENT_SECRET: ${{ secrets.ATLAS_GITHUB_CLIENT_SECRET }}
+          ATLAS_AUTH_SECRET: ${{ secrets.ATLAS_AUTH_SECRET != '' && secrets.ATLAS_AUTH_SECRET || secrets.ATLAS_GITHUB_CLIENT_SECRET }}
         run: |
           kubectl -n "$KUBE_NAMESPACE" create secret generic atlas-webui-auth \
             --from-literal=GITHUB_CLIENT_ID="$ATLAS_GITHUB_CLIENT_ID" \
