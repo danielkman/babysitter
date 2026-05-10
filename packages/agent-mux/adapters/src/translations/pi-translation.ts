@@ -13,8 +13,9 @@ export function translateForPi(config: ProviderConfig): HarnessProviderTranslati
     case 'azure': {
       // Azure AI Services (foundry) requires api-version query params that Pi
       // can't add natively. Route through the transport-mux proxy which exposes
-      // an OpenAI-compatible endpoint locally (Pi reads OPENAI_BASE_URL from
-      // the proxy's applyHarnessEnv).
+      // an OpenAI-compatible endpoint locally. Pi's built-in OpenAI provider
+      // ignores OPENAI_BASE_URL, so we force --provider custom which does read it.
+      args.push('--provider', 'custom');
       env['ANTHROPIC_API_KEY'] = '';
       return { env, args, proxyRequired: true, proxyExposedTransport: 'openai-chat' };
     }
@@ -37,7 +38,9 @@ export function translateForPi(config: ProviderConfig): HarnessProviderTranslati
       return { env, args, proxyRequired: false };
     }
     default:
-      // For providers Pi doesn't natively support, route through transport-mux proxy
+      // For providers Pi doesn't natively support, route through transport-mux proxy.
+      // Force --provider custom so Pi reads OPENAI_BASE_URL from the proxy env.
+      args.push('--provider', 'custom');
       if (config.auth.apiKey) env['OPENAI_API_KEY'] = config.auth.apiKey;
       env['ANTHROPIC_API_KEY'] = '';
       return { env, args, proxyRequired: true, proxyExposedTransport: 'openai-chat' };

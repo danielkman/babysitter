@@ -89,7 +89,7 @@ async function callCompletionApi(
     const body = JSON.stringify({
       model: endpoint.model,
       messages,
-      max_tokens: 16384,
+      max_completion_tokens: 16384,
     });
 
     const response = await fetch(url, {
