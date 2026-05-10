@@ -157,6 +157,7 @@ export function buildPrimaryLiveStackCommands(
           '--max-turns',
           String(resolveLaunchMaxTurns(scenario)),
           '--no-interactive',
+          ...harnessApprovalPassthrough(installTarget),
         ],
         options.cwd,
         timeoutMs,
@@ -176,6 +177,19 @@ export function buildPrimaryLiveStackCommands(
     generatedPluginInstallCommand(commandEnv, scenario, options.cwd, timeoutMs),
     executionCommand,
   ];
+}
+
+function harnessApprovalPassthrough(harness: string): string[] {
+  switch (harness) {
+    case 'codex':
+      return ['--', '--full-auto'];
+    case 'claude':
+      return ['--', '--dangerously-skip-permissions'];
+    case 'pi':
+      return ['--', '--yolo'];
+    default:
+      return [];
+  }
 }
 
 function resolveLaunchMaxTurns(scenario: LiveStackScenario): number {
@@ -556,23 +570,19 @@ async function validateAgentBehavior(
 ): Promise<string[]> {
   const failures: string[] = [];
 
-  // 1. Verify tool execution: file created OR agent attempted tool use
-  if (traceId) {
+  // 1. Verify tool execution: agent must create the requested file
+  if (traceId && scenario.agent.agent !== 'babysitter-agent') {
     const expectedFile = path.join(cwd, '.a5c-live-test', `${traceId}.txt`);
-    let fileCreated = false;
     try {
-      await fs.access(expectedFile);
-      fileCreated = true;
-    } catch {
-      // File not created — check if agent attempted but was blocked (sandbox)
-    }
-
-    if (!fileCreated) {
-      // Accept if the agent attempted tool use but was blocked by sandbox/permissions
-      const toolAttemptEvidence = /tool_call|tool_use|execute_code|write_file|Bash|Write|patch|sandbox|read-only|permission|denied|creat/i.test(output);
-      if (!toolAttemptEvidence) {
-        failures.push('agent did not attempt tool execution (no file created and no tool invocation evidence in output)');
+      const content = await fs.readFile(expectedFile, 'utf8');
+      const expectedContent = scenario.agent.installMode === 'babysitter-plugin'
+        ? 'babysitter-plugin-verified'
+        : 'vanilla-verified';
+      if (!content.includes(expectedContent)) {
+        failures.push(`file created but content mismatch: expected "${expectedContent}", got "${content.trim().slice(0, 100)}"`);
       }
+    } catch {
+      failures.push(`agent did not create .a5c-live-test/${traceId}.txt (tool execution must succeed — verify sandbox is disabled)`);
     }
   }
 
