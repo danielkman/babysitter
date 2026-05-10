@@ -118,7 +118,17 @@ describe('translateForHarness', () => {
   });
 
   describe('dispatches to pi translator', () => {
-    it('returns proxyRequired=true for pi with non-openai provider', () => {
+    it('returns proxyRequired=false for pi with foundry provider and sets azure env', () => {
+      const config = makeConfig({ provider: 'foundry' as any, transport: 'openai-chat' as any, auth: { type: 'api_key' as const, apiKey: 'azkey' }, params: { apiBase: 'https://myres.services.ai.azure.com' } });
+      const r = translateForHarness('pi' as AgentName, config);
+      expect(r.proxyRequired).toBe(false);
+      expect(r.env['AZURE_OPENAI_BASE_URL']).toBe('https://myres.services.ai.azure.com/openai');
+      expect(r.env['AZURE_OPENAI_API_KEY']).toBe('azkey');
+      expect(r.args).toContain('--provider');
+      expect(r.args).toContain('azure');
+    });
+
+    it('returns proxyRequired=true for pi with unsupported provider', () => {
       const config = makeConfig({ provider: 'groq' as any, transport: 'openai-chat' as any, auth: { type: 'api_key' as const, apiKey: 'gsk' } });
       const r = translateForHarness('pi' as AgentName, config);
       expect(r.proxyRequired).toBe(true);

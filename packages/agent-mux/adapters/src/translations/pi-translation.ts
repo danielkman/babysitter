@@ -9,10 +9,22 @@ export function translateForPi(config: ProviderConfig): HarnessProviderTranslati
     case 'openai':
       if (config.auth.apiKey) env['OPENAI_API_KEY'] = config.auth.apiKey;
       return { env, args, proxyRequired: false };
+    case 'foundry':
+    case 'azure': {
+      // Pi has native Azure OpenAI support via --provider flag and env vars
+      const apiBase = config.params['apiBase'] ? String(config.params['apiBase']) : undefined;
+      if (apiBase) env['AZURE_OPENAI_BASE_URL'] = `${apiBase}/openai`;
+      if (config.auth.apiKey) env['AZURE_OPENAI_API_KEY'] = config.auth.apiKey;
+      args.push('--provider', 'azure');
+      env['ANTHROPIC_API_KEY'] = '';
+      return { env, args, proxyRequired: false };
+    }
+    case 'anthropic':
+      if (config.auth.apiKey) env['ANTHROPIC_API_KEY'] = config.auth.apiKey;
+      args.push('--provider', 'anthropic');
+      return { env, args, proxyRequired: false };
     default:
-      // Pi ignores OPENAI_BASE_URL and always connects to api.openai.com.
-      // For any non-OpenAI provider, we must route through the transport-mux proxy
-      // which exposes an OpenAI-compatible endpoint locally.
+      // For providers Pi doesn't natively support, route through transport-mux proxy
       if (config.auth.apiKey) env['OPENAI_API_KEY'] = config.auth.apiKey;
       env['ANTHROPIC_API_KEY'] = '';
       return { env, args, proxyRequired: true, proxyExposedTransport: 'openai-chat' };
