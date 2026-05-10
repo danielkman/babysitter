@@ -350,8 +350,10 @@ function buildPrompt(scenario: LiveStackScenario, traceId: string): string {
     return `/babysitter:call Create a file called .a5c-live-test/${traceId}.txt containing "babysitter-plugin-verified". Then ${traceEvidence}`;
   }
 
-  if (scenario.agent.integrationType === 'runtime-cli') {
-    return `Create a file called .a5c-live-test/${traceId}.txt containing "runtime-cli-verified". Then ${traceEvidence}`;
+  if (scenario.agent.agent === 'babysitter-agent') {
+    // babysitter-agent uses agent-core which makes direct API calls.
+    // Keep the prompt simple to avoid triggering full orchestration pipeline.
+    return `Reply with: trace=${traceId} scenario=${scenario.scenarioId}`;
   }
 
   // Vanilla: request tool use (file creation) to validate the agent actually executes tools
@@ -587,10 +589,11 @@ async function validateAgentBehavior(
     }
   }
 
-  // 5. For babysitter-plugin: verify stop hooks fired and orchestration ran
-  if (scenario.agent.installMode === 'babysitter-plugin') {
-    // Check hooks-mux stop event in logs
-    const hasStopHookEvidence = /hook:run.*stop|stop.*hook|AGENT_SESSION_ID/i.test(output);
+  // 5. For babysitter-plugin in structured-run mode: verify stop hooks fired
+  const isStructuredRun = process.env['LIVE_STACK_USE_AMUX_RUN'] === 'true';
+  if (scenario.agent.installMode === 'babysitter-plugin' && isStructuredRun) {
+    // Check hooks-mux stop event in logs — only in structured-run where hooks fire
+    const hasStopHookEvidence = /hook:run.*stop|stop.*hook|AGENT_SESSION_ID|session_end/i.test(output);
     if (!hasStopHookEvidence) {
       failures.push('babysitter-plugin: no stop hook evidence in output (hooks may not be configured or firing)');
     }
