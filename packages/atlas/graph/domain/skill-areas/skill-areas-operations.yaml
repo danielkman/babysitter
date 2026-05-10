@@ -43,6 +43,9 @@ edges:
       confidence: primary
     - target: domain:platform-engineering
       confidence: secondary
+  prerequisite_for_learning:
+    - target: skill-area:incident-management
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:capacity-planning-ops

@@ -76,6 +76,9 @@ edges:
       confidence: primary
     - target: domain:data-engineering
       confidence: secondary
+  prerequisite_for_learning:
+    - target: skill-area:streaming-realtime-processing
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:error-tracking
@@ -261,6 +264,11 @@ edges:
   applies_to:
     - target: domain:networking
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:dns-design
+      strength: recommended
+    - target: skill-area:tcp-tuning
+      strength: helpful
 ---
 nodeKind: SkillArea
 id: skill-area:serverless-compute
@@ -311,3 +319,6 @@ edges:
   applies_to:
     - target: domain:devops
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:capacity-planning-ops
+      strength: recommended

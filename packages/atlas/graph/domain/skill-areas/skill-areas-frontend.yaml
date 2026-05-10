@@ -19,6 +19,9 @@ edges:
   uses_framework:
     - framework:react
     - target: framework:react
+  prerequisite_for_learning:
+    - target: skill-area:react-state-management
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:vue-components
@@ -111,6 +114,9 @@ edges:
   applies_to:
     - target: specialization:web-development
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:ui-styling
+      strength: required
 ---
 nodeKind: SkillArea
 id: skill-area:web-accessibility
@@ -146,6 +152,9 @@ edges:
       confidence: primary
     - target: specialization:security-research
       confidence: secondary
+  prerequisite_for_learning:
+    - target: skill-area:web-security-testing
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:web-performance

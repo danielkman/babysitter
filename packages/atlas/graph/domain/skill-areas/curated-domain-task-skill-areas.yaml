@@ -35,6 +35,9 @@ edges:
       confidence: secondary
   requires_skill_area:
     - skill-area:peripheral-interfacing
+  prerequisite_for_learning:
+    - target: skill-area:protocol-design
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:sensor-libraries

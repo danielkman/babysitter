@@ -14,6 +14,9 @@ edges:
   applies_to:
     - target: domain:software-engineering
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:code-quality
+      strength: helpful
 ---
 nodeKind: SkillArea
 id: skill-area:api-contract-testing

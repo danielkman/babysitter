@@ -58,6 +58,9 @@ edges:
   applies_to:
     - target: specialization:robotics-simulation
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:motion-planning
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:motion-planning

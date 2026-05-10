@@ -19,6 +19,9 @@ edges:
       confidence: primary
     - target: domain:business-intelligence
       confidence: secondary
+  prerequisite_for_learning:
+    - target: skill-area:competitive-intelligence
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:business-model-design
@@ -61,6 +64,9 @@ edges:
       confidence: primary
     - target: domain:marketing
       confidence: secondary
+  prerequisite_for_learning:
+    - target: skill-area:market-sizing
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:market-sizing

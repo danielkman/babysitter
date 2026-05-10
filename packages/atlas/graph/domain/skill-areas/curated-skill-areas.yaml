@@ -130,6 +130,9 @@ edges:
       confidence: primary
   uses_stack_part:
     - stack-part:search-index
+  prerequisite_for_learning:
+    - target: skill-area:search-infrastructure
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:background-job-processing
@@ -151,6 +154,9 @@ edges:
   uses_stack_part:
     - stack-part:scheduler
     - stack-part:workflow-engine
+  prerequisite_for_learning:
+    - target: skill-area:event-driven-architecture
+      strength: helpful
 ---
 nodeKind: SkillArea
 id: skill-area:streaming-realtime-processing
@@ -261,6 +267,9 @@ edges:
       confidence: primary
     - target: domain:data-science
       confidence: secondary
+  prerequisite_for_learning:
+    - target: skill-area:data-warehouse-modeling
+      strength: helpful
 ---
 nodeKind: SkillArea
 id: skill-area:ui-styling
@@ -304,6 +313,8 @@ edges:
     - skill-area:unit-testing
   prerequisite_for_learning:
     - target: skill-area:e2e-testing
+      strength: recommended
+    - target: skill-area:cross-browser-testing
       strength: recommended
 ---
 nodeKind: SkillArea

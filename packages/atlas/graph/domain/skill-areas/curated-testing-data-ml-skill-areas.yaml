@@ -320,6 +320,8 @@ edges:
       strength: recommended
     - target: skill-area:feature-engineering
       strength: required
+    - target: skill-area:streaming-realtime-processing
+      strength: helpful
 ---
 nodeKind: SkillArea
 id: skill-area:statistical-analysis

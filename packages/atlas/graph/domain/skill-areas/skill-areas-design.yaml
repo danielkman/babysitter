@@ -43,6 +43,9 @@ edges:
       confidence: secondary
     - target: specialization:ux-ui-design
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:prototyping
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:visual-design
@@ -63,6 +66,9 @@ edges:
       confidence: secondary
     - target: specialization:ux-ui-design
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:design-systems
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:prototyping
@@ -84,6 +90,9 @@ edges:
       confidence: secondary
     - target: specialization:ux-ui-design
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:design-critique
+      strength: helpful
 ---
 nodeKind: SkillArea
 id: skill-area:design-critique

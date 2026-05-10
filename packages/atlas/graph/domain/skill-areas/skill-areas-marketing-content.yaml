@@ -20,6 +20,9 @@ edges:
       confidence: primary
     - target: domain:digital-marketing
       confidence: secondary
+  prerequisite_for_learning:
+    - target: skill-area:brand-positioning
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:brand-positioning
@@ -64,6 +67,9 @@ edges:
       confidence: primary
     - target: domain:business-intelligence
       confidence: secondary
+  prerequisite_for_learning:
+    - target: skill-area:seo-sem
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:seo-sem

@@ -111,6 +111,8 @@ edges:
   prerequisite_for_learning:
     - target: skill-area:embedding-optimization
       strength: required
+    - target: skill-area:knowledge-graph-management
+      strength: helpful
 ---
 nodeKind: SkillArea
 id: skill-area:organizational-intelligence
@@ -132,6 +134,9 @@ edges:
   uses_tool:
     - tool:mem0
     - tool:zep
+  prerequisite_for_learning:
+    - target: skill-area:knowledge-curation
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:embedding-optimization

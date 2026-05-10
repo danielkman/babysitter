@@ -176,6 +176,9 @@ edges:
   applies_to:
     - target: domain:software-engineering
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:domain-driven-design
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:executive-communication

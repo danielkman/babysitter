@@ -67,6 +67,9 @@ edges:
       confidence: primary
     - target: domain:operations
       confidence: secondary
+  prerequisite_for_learning:
+    - target: skill-area:investment-analysis
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:investment-analysis
@@ -89,3 +92,6 @@ edges:
       confidence: primary
     - target: domain:venture-capital
       confidence: secondary
+  prerequisite_for_learning:
+    - target: skill-area:valuation-analysis
+      strength: recommended

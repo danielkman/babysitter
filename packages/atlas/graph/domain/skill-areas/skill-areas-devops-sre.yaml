@@ -18,6 +18,11 @@ edges:
     - tool:flux
     - tool:kubernetes
     - tool:jenkins
+  prerequisite_for_learning:
+    - target: skill-area:blue-green-deployment
+      strength: helpful
+    - target: skill-area:canary-rollouts
+      strength: helpful
 ---
 nodeKind: SkillArea
 id: skill-area:blue-green-deployment
@@ -80,6 +85,9 @@ edges:
   applies_to:
     - target: specialization:devops-sre-platform
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:chaos-engineering
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:incident-response

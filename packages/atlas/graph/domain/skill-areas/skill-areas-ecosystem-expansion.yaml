@@ -140,6 +140,8 @@ edges:
   prerequisite_for_learning:
     - target: skill-area:application-security
       strength: recommended
+    - target: skill-area:dast-scanning
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:iac-security
@@ -172,6 +174,9 @@ edges:
   applies_to:
     - target: domain:software-engineering
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:e2e-testing
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:frontend-testing
@@ -322,6 +327,9 @@ edges:
   applies_to:
     - target: domain:cloud-infra
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:deployment-automation
+      strength: required
 ---
 nodeKind: SkillArea
 id: skill-area:frontend-development
@@ -512,3 +520,6 @@ edges:
   applies_to:
     - target: domain:cybersecurity
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:application-security
+      strength: recommended

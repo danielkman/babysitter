@@ -16,6 +16,9 @@ edges:
       confidence: primary
     - target: domain:software-engineering
       confidence: secondary
+  prerequisite_for_learning:
+    - target: skill-area:ci-pipeline-optimization
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:ci-pipeline-optimization
@@ -34,6 +37,9 @@ edges:
       confidence: primary
     - target: domain:software-engineering
       confidence: secondary
+  prerequisite_for_learning:
+    - target: skill-area:deployment-automation
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:deployment-automation
