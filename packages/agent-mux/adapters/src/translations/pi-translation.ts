@@ -11,9 +11,10 @@ export function translateForPi(config: ProviderConfig): HarnessProviderTranslati
       return { env, args, proxyRequired: false };
     case 'foundry':
     case 'azure': {
-      // Pi has native Azure OpenAI support via --provider flag and env vars
+      // Pi has native Azure OpenAI support via --provider flag and env vars.
+      // Pi's azure provider constructs the full path internally, so pass the base URL as-is.
       const apiBase = config.params['apiBase'] ? String(config.params['apiBase']) : undefined;
-      if (apiBase) env['AZURE_OPENAI_BASE_URL'] = `${apiBase}/openai`;
+      if (apiBase) env['AZURE_OPENAI_BASE_URL'] = apiBase;
       if (config.auth.apiKey) env['AZURE_OPENAI_API_KEY'] = config.auth.apiKey;
       args.push('--provider', 'azure');
       env['ANTHROPIC_API_KEY'] = '';

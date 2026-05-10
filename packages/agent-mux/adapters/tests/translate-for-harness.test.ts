@@ -122,7 +122,7 @@ describe('translateForHarness', () => {
       const config = makeConfig({ provider: 'foundry' as any, transport: 'openai-chat' as any, auth: { type: 'api_key' as const, apiKey: 'azkey' }, params: { apiBase: 'https://myres.services.ai.azure.com' } });
       const r = translateForHarness('pi' as AgentName, config);
       expect(r.proxyRequired).toBe(false);
-      expect(r.env['AZURE_OPENAI_BASE_URL']).toBe('https://myres.services.ai.azure.com/openai');
+      expect(r.env['AZURE_OPENAI_BASE_URL']).toBe('https://myres.services.ai.azure.com');
       expect(r.env['AZURE_OPENAI_API_KEY']).toBe('azkey');
       expect(r.args).toContain('--provider');
       expect(r.args).toContain('azure');
