@@ -12,12 +12,11 @@ export function translateForPi(config: ProviderConfig): HarnessProviderTranslati
     case 'foundry':
     case 'azure': {
       // Pi has native Azure support. The AzureOpenAI SDK constructs paths as
-      // {baseUrl}/openai/deployments/{model}/... so we pass the base URL as-is
-      // (without appending /openai). Pi reads AZURE_OPENAI_BASE_URL and
-      // AZURE_OPENAI_API_KEY directly.
+      // {baseUrl}/openai/deployments/{model}/... so we pass the base URL as-is.
       const apiBase = config.params['apiBase'] ? String(config.params['apiBase']) : undefined;
       if (apiBase) env['AZURE_OPENAI_BASE_URL'] = apiBase;
       if (config.auth.apiKey) env['AZURE_OPENAI_API_KEY'] = config.auth.apiKey;
+      env['AZURE_OPENAI_API_VERSION'] = '2025-04-01-preview';
       args.push('--provider', 'azure');
       env['ANTHROPIC_API_KEY'] = '';
       env['OPENAI_API_KEY'] = '';
