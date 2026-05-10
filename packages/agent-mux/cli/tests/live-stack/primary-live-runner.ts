@@ -110,7 +110,6 @@ export function buildPrimaryLiveStackCommands(
   }
 
   const installTarget = scenario.agent.agentMuxAgent;
-  const isInteractive = scenario.agent.installMode === 'babysitter-plugin';
   const launchArgs = [
     'launch',
     installTarget,
@@ -126,7 +125,7 @@ export function buildPrimaryLiveStackCommands(
     prompt,
     '--max-turns',
     String(resolveLaunchMaxTurns(scenario)),
-    ...(isInteractive ? [] : ['--no-interactive']),
+    '--no-interactive',
   ];
   const launchCommand = commandExecution(
     commandEnv,
