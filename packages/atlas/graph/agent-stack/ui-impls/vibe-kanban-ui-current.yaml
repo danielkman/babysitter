@@ -29,3 +29,18 @@ edges:
     - target: interaction-primitive:vibe-kanban-agent-picker
       attributes:
         mechanism: ui-control
+    - target: interaction-primitive:vibe-kanban-branch-view
+      attributes:
+        mechanism: ui-control
+    - target: interaction-primitive:vibe-kanban-pr-review
+      attributes:
+        mechanism: ui-control
+    - target: interaction-primitive:vibe-kanban-workspace-isolation
+      attributes:
+        mechanism: ui-control
+    - target: interaction-primitive:vibe-kanban-progress-stream
+      attributes:
+        mechanism: ui-control
+    - target: interaction-primitive:vibe-kanban-multi-agent-dispatch
+      attributes:
+        mechanism: ui-control

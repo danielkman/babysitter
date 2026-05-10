@@ -29,3 +29,7 @@ edges:
       versionRange: '>=0.1.0'
       level: full
       notes: Bounded concurrency for parallel issue processing.
+    - target: capability:can-resume
+      versionRange: '>=0.1.0'
+      level: full
+      notes: Filesystem-driven restart recovery — reconciles workspace directories on startup to resume in-progress work.

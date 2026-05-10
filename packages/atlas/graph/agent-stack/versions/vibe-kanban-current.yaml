@@ -13,6 +13,12 @@ edges:
   composed_of:
     - target: agent-ui-impl:vibe-kanban.ui@current
       role: ui
+    - target: agent-core-impl:vibe-kanban.core@current
+      role: core
+    - target: agent-platform-impl:vibe-kanban.platform@current
+      role: platform
+    - target: presentation:vibe-kanban-web
+      role: presentation
   sourced_from: []
   supports:
     - target: capability:streaming
@@ -31,3 +37,15 @@ edges:
       versionRange: '>=0.1.0'
       level: full
       notes: Dispatches coding agents (Claude Code, Codex, Gemini CLI) as subagents per task card.
+    - target: capability:supports-mcp
+      versionRange: '>=0.1.0'
+      level: full
+      notes: Agents spawned by Vibe Kanban inherit MCP server configurations from their respective harnesses.
+    - target: capability:can-fork
+      versionRange: '>=0.1.0'
+      level: full
+      notes: Per-task git worktree isolation — each task card gets a dedicated workspace directory and branch.
+    - target: capability:vision-input
+      versionRange: '>=0.1.0'
+      level: partial
+      notes: PR review screenshots and visual diffs available in the review column for agents that support vision.

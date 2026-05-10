@@ -9,12 +9,15 @@ attributes:
   productKind: web-agent
   stackScope: full
   description: |
-    Open-source orchestration platform for zero-human companies. Provides
-    multi-agent coordination where autonomous agents handle end-to-end
-    business operations — from customer interaction and project management
-    to code development and deployment — without human intervention.
-    Designed for fully autonomous business workflows with agent-to-agent
-    delegation, persistent state, and goal-driven task decomposition.
+    Control plane for AI-agent companies. Multi-agent task board with
+    company-scoped multi-tenant architecture. Provides adapter-based
+    integration with multiple coding agents (Claude Code, Codex, Cursor,
+    Gemini CLI, OpenCode, Pi, OpenClaw) through a unified dispatch
+    interface. Features governed action approval gates, budget hard-stop
+    auto-pause, atomic single-assignee task checkout, and mutation
+    activity logging. Server is Express REST API with Drizzle ORM;
+    UI is React + Vite board; supports PGlite for local dev and
+    Postgres for production.
   aliases:
     - "paperclip"
 edges:
@@ -24,6 +27,20 @@ edges:
     - target: skill-area:ai-agent-development
     - target: skill-area:multi-agent-coordination
     - target: topic:agent-orchestration-products
+    - target: agent:claude-code
+      notes: claude-local adapter
+    - target: agent:codex
+      notes: codex-local adapter
+    - target: agent:cursor
+      notes: cursor-local adapter
+    - target: agent:gemini-cli
+      notes: gemini-local adapter
+    - target: agent:opencode
+      notes: opencode-local adapter
+    - target: agent:openclaw
+      notes: openclaw-gateway adapter
+    - target: agent:pi
+      notes: pi-local adapter
 ---
 nodeKind: AgentVersion
 id: agent-version:paperclip@current
@@ -42,6 +59,8 @@ edges:
       role: core
     - target: agent-runtime-impl:paperclip.runtime@current
       role: runtime
+    - target: agent-platform-impl:paperclip.platform@current
+      role: platform
   sourced_from: []
   supports:
     - target: capability:can-multi-turn
@@ -51,12 +70,16 @@ edges:
     - target: capability:supports-subagent-dispatch
       versionRange: '>=0.1.0'
       level: full
-      notes: Multi-agent delegation for end-to-end autonomous business operations.
+      notes: Adapter-based dispatch to multiple coding agents for task execution.
     - target: capability:supports-parallel-execution
       versionRange: '>=0.1.0'
       level: full
-      notes: Concurrent agent execution for parallel business workflow steps.
+      notes: Concurrent agent execution for parallel task processing across the board.
     - target: capability:streaming
       versionRange: '>=0.1.0'
       level: full
-      notes: Streams agent output in the web UI.
+      notes: Streams agent output in the web UI board view.
+    - target: capability:supports-plugins
+      versionRange: '>=0.1.0'
+      level: full
+      notes: Plugin SDK with create-paperclip-plugin scaffolding and sandbox providers.

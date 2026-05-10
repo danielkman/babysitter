@@ -21,8 +21,6 @@ attributes:
 edges:
   has_version:
     - agent-version:babysitter@current
-  integrates_with:
-    - target: topic:agent-orchestration-products
   defines_automation_rule:
     - target: automation-rule:auto-approve-readonly-clarifications
     - target: automation-rule:never-auto-approve-destroy

@@ -31,3 +31,9 @@ edges:
     - target: interaction-primitive:approval-prompt
       attributes:
         mechanism: ui-control
+    - target: interaction-primitive:pikiclaw-skill-invoke
+      attributes:
+        mechanism: ui-control
+    - target: interaction-primitive:pikiclaw-agent-select
+      attributes:
+        mechanism: ui-control
