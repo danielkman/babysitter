@@ -343,6 +343,10 @@ edges:
       strength: required
     - target: skill-area:frontend-performance
       strength: recommended
+    - target: skill-area:android-native
+      strength: helpful
+    - target: skill-area:ios-native
+      strength: helpful
 ---
 nodeKind: SkillArea
 id: skill-area:machine-learning

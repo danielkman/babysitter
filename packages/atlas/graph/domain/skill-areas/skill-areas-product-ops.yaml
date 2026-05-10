@@ -45,6 +45,8 @@ edges:
   prerequisite_for_learning:
     - target: skill-area:a-b-testing
       strength: recommended
+    - target: skill-area:product-discovery
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:a-b-testing

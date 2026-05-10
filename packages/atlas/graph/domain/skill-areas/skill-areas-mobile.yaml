@@ -18,6 +18,9 @@ edges:
   uses_language:
     - language:swift
     - target: language:swift
+  prerequisite_for_learning:
+    - target: skill-area:react-native-development
+      strength: helpful
 ---
 nodeKind: SkillArea
 id: skill-area:android-native
@@ -38,6 +41,9 @@ edges:
   uses_language:
     - language:kotlin
     - target: language:kotlin
+  prerequisite_for_learning:
+    - target: skill-area:flutter-development
+      strength: helpful
 ---
 nodeKind: SkillArea
 id: skill-area:react-native-development

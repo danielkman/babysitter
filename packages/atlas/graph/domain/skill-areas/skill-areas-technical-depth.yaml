@@ -15,6 +15,11 @@ edges:
   applies_to:
     - target: specialization:game-development
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:gameplay-programming
+      strength: recommended
+    - target: skill-area:shader-programming
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:gameplay-programming
@@ -32,6 +37,13 @@ edges:
   applies_to:
     - target: specialization:game-development
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:game-physics
+      strength: recommended
+    - target: skill-area:multiplayer-networking
+      strength: helpful
+    - target: skill-area:game-audio-systems
+      strength: helpful
 ---
 nodeKind: SkillArea
 id: skill-area:game-physics
@@ -48,6 +60,9 @@ edges:
   applies_to:
     - target: specialization:game-development
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:game-ai-pathfinding
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:desktop-ui-frameworks
@@ -115,6 +130,9 @@ edges:
   applies_to:
     - target: specialization:embedded-systems
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:sensor-fusion
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:protocol-design
@@ -132,6 +150,9 @@ edges:
   applies_to:
     - target: specialization:network-programming
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:networking
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:socket-programming
@@ -148,6 +169,9 @@ edges:
   applies_to:
     - target: specialization:network-programming
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:protocol-design
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:observability-instrumentation
@@ -318,6 +342,8 @@ edges:
       strength: recommended
     - target: skill-area:api-testing
       strength: recommended
+    - target: skill-area:solution-architecture
+      strength: helpful
 ---
 nodeKind: SkillArea
 id: skill-area:backend-data-persistence
@@ -340,6 +366,8 @@ edges:
       strength: recommended
     - target: skill-area:backend-async-processing
       strength: recommended
+    - target: skill-area:search-infrastructure
+      strength: helpful
 ---
 nodeKind: SkillArea
 id: skill-area:backend-auth
@@ -375,6 +403,9 @@ edges:
   applies_to:
     - target: specialization:backend-development
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:event-driven-architecture
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:product-discovery

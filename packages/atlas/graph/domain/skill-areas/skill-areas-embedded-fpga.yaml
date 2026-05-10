@@ -21,6 +21,11 @@ edges:
     - language:cpp
     - target: language:c
     - target: language:cpp
+  prerequisite_for_learning:
+    - target: skill-area:rtos-programming
+      strength: recommended
+    - target: skill-area:communication-protocols
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:real-time-os

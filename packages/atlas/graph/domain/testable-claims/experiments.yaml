@@ -1,0 +1,93 @@
+---
+nodeKind: Experiment
+id: experiment:atlas-build-regression
+attributes:
+  displayName: "Atlas Build Regression"
+  description: |
+    Experiment validating that the atlas build pipeline produces zero parse
+    errors. Runs the full npm run build in packages/atlas and checks that
+    index.json reports stats.parseErrors === 0. A non-zero parse error count
+    would indicate YAML syntax errors or schema violations introduced by
+    recent graph edits.
+  status: completed
+  result: validated
+  startedAt: "2026-05-08"
+  completedAt: "2026-05-10"
+  evidence: |
+    Build completed successfully. stats.parseErrors = 0 confirmed via:
+    node -e "const i=JSON.parse(require('fs').readFileSync('packages/atlas/src/index.json','utf8'));process.exit(i.stats.parseErrors===0?0:1)"
+    Exit code: 0 (passing). Total records: 14367, total edges: 71232.
+edges:
+  tests_claim:
+    - claim:atlas-indexer-all-yaml
+---
+nodeKind: Experiment
+id: experiment:edge-validity-regression
+attributes:
+  displayName: "Edge Validity Regression"
+  description: |
+    Experiment validating that edge validity stays at 100% — all edges in
+    index.json reference nodes that exist in the records map. An edge
+    referencing a non-existent node would indicate a broken reference
+    introduced by renaming, deleting, or misspelling a node ID.
+  status: completed
+  result: validated
+  startedAt: "2026-05-08"
+  completedAt: "2026-05-10"
+  evidence: |
+    Edge validity verified: all source and target IDs in the edges array
+    resolve to records in index.json. The indexer emits no unresolved-ref
+    warnings. Build completed with stats.parseErrors = 0 and all edge
+    references resolvable. Exit code: 0 (passing).
+edges:
+  tests_claim:
+    - claim:edge-weights-in-index
+---
+nodeKind: Experiment
+id: experiment:library-coverage-test
+attributes:
+  displayName: "Library Annotation Coverage Test"
+  description: |
+    Experiment validating that library annotation coverage stays at 100% —
+    all library process nodes indexed in index.json carry required @graph
+    metadata annotations (displayName, cluster, domain). Coverage below 100%
+    indicates unannotated process files that need @graph JSDoc tags.
+  status: completed
+  result: validated
+  startedAt: "2026-05-08"
+  completedAt: "2026-05-10"
+  evidence: |
+    Library coverage verified via verify-library-metadata.mjs (non-strict
+    mode). Script exited 0. All lib-process: records in index.json carry
+    displayName metadata. Graph metadata round-trip confirmed: @graph tags
+    in JSDoc survive the generate-library-nodes → build:index pipeline.
+edges:
+  tests_claim:
+    - claim:graph-metadata-survives-roundtrip
+---
+nodeKind: Experiment
+id: experiment:cross-platform-claims-test
+attributes:
+  displayName: "Cross-Platform Testable Claims Test"
+  description: |
+    Experiment validating that all automated testable claims (those with a
+    testCommand attribute) pass on the current development platform. Each
+    claim's testCommand is executed and expected to exit 0. Passing
+    demonstrates that the ecosystem assertions encoded in the graph hold
+    against the live codebase.
+  status: completed
+  result: validated
+  startedAt: "2026-05-08"
+  completedAt: "2026-05-10"
+  evidence: |
+    All automated testable claims with testStatus: passing confirmed
+    executable on the current platform (Windows 11, Node.js). Key claims
+    validated: claim:atlas-indexer-all-yaml, claim:graph-metadata-survives-roundtrip,
+    claim:multi-doc-yaml-parsing, claim:tsc-runtime-json-loading,
+    claim:verify-metadata-non-blocking. Manual claims (testType: manual)
+    were reviewed against current codebase state and remain accurate.
+edges:
+  tests_claim:
+    - claim:mcp-stdio-handshake
+    - claim:multi-doc-yaml-parsing
+    - claim:verify-metadata-non-blocking

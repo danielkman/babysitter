@@ -1753,9 +1753,10 @@ edgeKinds:
 - id: edge:tests-claim
   name: tests_claim
   origin: a5c
-  description: a ClaimTest validates or invalidates a Claim about external system behavior
+  description: a ClaimTest or Experiment validates or invalidates a Claim about external system behavior
   source:
   - ClaimTest
+  - Experiment
   target:
   - Claim
   cardinality: N:1
@@ -1763,11 +1764,12 @@ edgeKinds:
 - id: edge:tested-by
   name: tested_by
   origin: a5c
-  description: inverse of tests_claim — a Claim is tested by one or more ClaimTests
+  description: inverse of tests_claim — a Claim is tested by one or more ClaimTests or Experiments
   source:
   - Claim
   target:
   - ClaimTest
+  - Experiment
   cardinality: 1:N
   inverse: tests_claim
 - id: edge:produced-test-run

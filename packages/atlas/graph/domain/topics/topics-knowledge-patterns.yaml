@@ -493,3 +493,26 @@ edges:
     - topic:auto-memory
     - topic:memory-scoping
     - topic:memory-consolidation
+---
+nodeKind: Topic
+id: topic:auto-discovery
+attributes:
+  displayName: "Auto-Discovery"
+  description: |
+    Auto-Discovery as a cross-cutting topic — automated discovery of new
+    tools, MCP servers, frameworks, and libraries from npm registry trending
+    data and GitHub trending repositories for graph enrichment. Covers
+    polling strategies (npm trending API, GitHub trending scraping, release
+    feed monitoring), signal filtering (filter noise from star counts vs
+    genuine adoption signals), deduplication against already-known nodes,
+    candidate scoring (stars, weekly downloads, MCP-compatibility),
+    and the human-in-the-loop review step before auto-generated nodes are
+    committed to the graph. Auto-discovery closes the gap between the
+    ecosystem's rate of change and the graph's coverage without requiring
+    full manual curation for every new tool release.
+edges:
+  applies_to:
+    - domain:software-engineering
+  related_topics:
+    - topic:knowledge-freshness
+    - topic:agentic-rag

@@ -27,8 +27,11 @@ attributes:
     todo.md and this deferred node. vibe-kanban references "CCR" as a
     supported agent but that maps to Claude Code Remote, not cc-revex.
     Remains deferred pending external research or vendor docs.
+    Note (2026-05-10): Permanently deferred — cc-revex does not exist in
+    the codebase. CCR refers to Claude Code Remote, not a separate product.
+    No further research needed unless vendor documentation surfaces.
   targetNodeKind: Feature
-  priority: medium
+  priority: low
   reason: "cc-revex product features not cataloged in graph"
   suggestedBy: todo.md
   createdAt: "2026-05-08"
@@ -114,6 +117,11 @@ attributes:
   displayName: "Guide Generator"
   description: |
     Agentic guide generator from graph content not built.
+    Note (2026-05-10): Keep as low priority future feature — an agent-driven
+    process that traverses the knowledge graph and generates structured guides
+    (e.g., onboarding docs, best-practice guides) from connected node content.
+    No current priority; revisit when graph coverage is sufficiently broad to
+    make generated guides useful.
   targetNodeKind: LibraryProcess
   priority: low
   reason: "agentic guide generator from graph content not built"
@@ -129,6 +137,11 @@ attributes:
   displayName: "Course Generator"
   description: |
     Course/kit/hub generator not built.
+    Note (2026-05-10): Keep as low priority future feature — an agent-driven
+    process that assembles course content, learning kits, and knowledge hubs
+    from graph nodes organized by domain and cluster. Depends on sufficient
+    graph coverage and a guide-generator foundation. No current priority;
+    revisit after guide-generator is scoped and implemented.
   targetNodeKind: LibraryProcess
   priority: low
   reason: "course/kit/hub generator not built"
