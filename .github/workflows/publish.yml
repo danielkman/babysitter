@@ -25,7 +25,7 @@ jobs:
   build_all:
     if: ${{ !contains(github.event.head_commit.message, '[skip publish]') }}
     name: Build All Packages
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-xlarge
     permissions:
       contents: read
     steps:
@@ -74,9 +74,11 @@ jobs:
           set -euo pipefail
           npm run build:cloud
 
-      - name: Package all dist directories
+      - name: Package dist + node_modules for downstream jobs
         run: |
-          find packages -path '*/dist' -type d | tar czf /tmp/build-all-dist.tar.gz -T -
+          tar czf /tmp/build-all-dist.tar.gz \
+            $(find packages -path '*/dist' -type d) \
+            node_modules
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -89,7 +91,7 @@ jobs:
     if: ${{ !contains(github.event.head_commit.message, '[skip publish]') }}
     needs: build_all
     name: Validate Core Runtime
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-large
     permissions:
       contents: read
     steps:
@@ -102,21 +104,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
 
-      - name: Install dependencies
-        run: |
-          npm ci
-          # Workaround: npm ci on Windows-generated lockfile may miss linux optional deps
-          npm install --no-save @rollup/rollup-linux-x64-gnu 2>/dev/null || true
-
-      - name: Download pre-built dist directories
+      - name: Download pre-built artifacts
         uses: actions/download-artifact@v4
         with:
           name: build-all-dist
           path: /tmp
 
-      - name: Extract dist directories
+      - name: Extract dist + node_modules
         run: tar xzf /tmp/build-all-dist.tar.gz
 
       - name: Prepare artifacts directory
@@ -167,7 +162,7 @@ jobs:
     if: ${{ !contains(github.event.head_commit.message, '[skip publish]') }}
     needs: build_all
     name: Validate Mux Surfaces
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-large
     permissions:
       contents: read
     steps:
@@ -180,21 +175,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
 
-      - name: Install dependencies
-        run: |
-          npm ci
-          # Workaround: npm ci on Windows-generated lockfile may miss linux optional deps
-          npm install --no-save @rollup/rollup-linux-x64-gnu 2>/dev/null || true
-
-      - name: Download pre-built dist directories
+      - name: Download pre-built artifacts
         uses: actions/download-artifact@v4
         with:
           name: build-all-dist
           path: /tmp
 
-      - name: Extract dist directories
+      - name: Extract dist + node_modules
         run: tar xzf /tmp/build-all-dist.tar.gz
 
       - name: Prepare artifacts directory
@@ -306,20 +294,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
 
-      - name: Install dependencies
-        run: |
-          npm ci
-          npm install --no-save @rollup/rollup-linux-x64-gnu 2>/dev/null || true
-
-      - name: Download pre-built dist directories
+      - name: Download pre-built artifacts
         uses: actions/download-artifact@v4
         with:
           name: build-all-dist
           path: /tmp
 
-      - name: Extract dist directories
+      - name: Extract dist + node_modules
         run: tar xzf /tmp/build-all-dist.tar.gz
 
       - name: Run agent-mux hooks-mux lane
@@ -380,20 +362,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
 
-      - name: Install dependencies
-        run: |
-          npm ci
-          npm install --no-save @rollup/rollup-linux-x64-gnu 2>/dev/null || true
-
-      - name: Download pre-built dist directories
+      - name: Download pre-built artifacts
         uses: actions/download-artifact@v4
         with:
           name: build-all-dist
           path: /tmp
 
-      - name: Extract dist directories
+      - name: Extract dist + node_modules
         run: tar xzf /tmp/build-all-dist.tar.gz
 
       - name: Run selected no-model stack lane
@@ -499,20 +475,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
 
-      - name: Install dependencies
-        run: |
-          npm ci
-          npm install --no-save @rollup/rollup-linux-x64-gnu 2>/dev/null || true
-
-      - name: Download pre-built dist directories
+      - name: Download pre-built artifacts
         uses: actions/download-artifact@v4
         with:
           name: build-all-dist
           path: /tmp
 
-      - name: Extract dist directories
+      - name: Extract dist + node_modules
         run: tar xzf /tmp/build-all-dist.tar.gz
 
       - name: Link workspace CLIs to PATH
@@ -573,7 +543,7 @@ jobs:
     if: ${{ !contains(github.event.head_commit.message, '[skip publish]') }}
     needs: build_all
     name: Validate Cloud Workspace
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-large
     permissions:
       contents: read
     steps:
@@ -586,21 +556,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
 
-      - name: Install dependencies
-        run: |
-          npm ci
-          # Workaround: npm ci on Windows-generated lockfile may miss linux optional deps
-          npm install --no-save @rollup/rollup-linux-x64-gnu 2>/dev/null || true
-
-      - name: Download pre-built dist directories
+      - name: Download pre-built artifacts
         uses: actions/download-artifact@v4
         with:
           name: build-all-dist
           path: /tmp
 
-      - name: Extract dist directories
+      - name: Extract dist + node_modules
         run: tar xzf /tmp/build-all-dist.tar.gz
 
       - name: Prepare artifacts directory
@@ -627,7 +590,7 @@ jobs:
     if: ${{ !contains(github.event.head_commit.message, '[skip publish]') }}
     needs: build_all
     name: Validate Observer And Compiler
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-large
     permissions:
       contents: read
     steps:
@@ -640,21 +603,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
 
-      - name: Install dependencies
-        run: |
-          npm ci
-          # Workaround: npm ci on Windows-generated lockfile may miss linux optional deps
-          npm install --no-save @rollup/rollup-linux-x64-gnu 2>/dev/null || true
-
-      - name: Download pre-built dist directories
+      - name: Download pre-built artifacts
         uses: actions/download-artifact@v4
         with:
           name: build-all-dist
           path: /tmp
 
-      - name: Extract dist directories
+      - name: Extract dist + node_modules
         run: tar xzf /tmp/build-all-dist.tar.gz
 
       - name: Prepare artifacts directory
