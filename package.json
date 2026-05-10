@@ -130,6 +130,9 @@
     "@a5c-ai/compendium": "^0.1.0",
     "@mariozechner/pi-coding-agent": "0.73.1",
     "@modelcontextprotocol/sdk": "1.29.0",
-    "express-rate-limit": "8.5.1"
+    "expo": "^55.0.23",
+    "expo-notifications": "^55.0.22",
+    "express-rate-limit": "8.5.1",
+    "react-native": "^0.85.3"
   }
 }
