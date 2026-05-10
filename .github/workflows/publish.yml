@@ -818,7 +818,7 @@ jobs:
               exit 1
               ;;
           esac
-          npm install --package-lock-only --ignore-scripts --workspaces --include-workspace-root
+          npm install --package-lock-only --ignore-scripts --workspaces --include-workspace-root --legacy-peer-deps
           echo "publish_version=$PUBLISH_VERSION" >> "$GITHUB_OUTPUT"
           echo "Setting ${GITHUB_REF_NAME} publish version: $PUBLISH_VERSION"
 
