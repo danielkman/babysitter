@@ -16,6 +16,7 @@ permissions:
 env:
   NPM_TAG: ${{ github.ref_name == 'main' && 'latest' || github.ref_name }}
   PUBLISH_BRANCH: ${{ github.ref_name }}
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 concurrency:
   group: publish-${{ github.ref_name }}
