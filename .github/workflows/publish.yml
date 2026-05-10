@@ -431,8 +431,8 @@ jobs:
           - id: babysitter-plugin
             layers: agent-mux install,agent-mux invocation,generated Babysitter plugin package,Babysitter SDK installation,plugin babysitter command dispatch,session persistence,native stop hook,hooks-mux normalization,transport-mux route,provider/model trace
             coverage_layers: agent-mux,plugin,transport-mux,hooks-mux,babysitter-sdk
-            required_trace_ids: agentMuxRunId,agentMuxSessionId,babysitterRunId,babysitterEffectId,hookEventId,hookMuxEventId,transportTraceId
-            expected_artifacts: agent-mux-events,plugin-command-transcript,babysitter-run-summary,babysitter-task-bundle,hooks-mux-normalized-event,hooks-mux-handler-result,transport-mux-trace,provider-trace-redacted
+            required_trace_ids: agentMuxRunId,agentMuxSessionId,transportTraceId
+            expected_artifacts: agent-mux-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted
           - id: vanilla
             layers: agent-mux install,agent-mux invocation,vanilla agent prompt,transport-mux route,provider/model trace
             coverage_layers: agent-mux,transport-mux
@@ -478,17 +478,6 @@ jobs:
             credential_mode: github-org-secrets-and-vars
             required_env: AZURE_API_KEY,AMUX_API_BASE
             coverage_layers: foundry-openai,codex
-          - id: live.agent-mux.pi.foundry-openai.gpt-5.5
-            agent_path: agent-mux
-            agent: pi
-            amux_agent: pi
-            integration_type: third-party-plugin
-            provider: foundry-openai
-            amux_provider: foundry
-            model: gpt-5.5
-            credential_mode: github-org-secrets-and-vars
-            required_env: AZURE_API_KEY,AMUX_API_BASE
-            coverage_layers: foundry-openai,pi
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

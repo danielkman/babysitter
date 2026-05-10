@@ -5,6 +5,7 @@ import { translateForClaude } from './translations/claude-translation.js';
 import { translateForCodex } from './translations/codex-translation.js';
 import { translateForGemini } from './translations/gemini-translation.js';
 import { translateForOpenCode } from './translations/opencode-translation.js';
+import { translateForPi } from './translations/pi-translation.js';
 import { translateForGenericOpenAI } from './translations/generic-openai-translation.js';
 
 type TranslationFn = (config: ProviderConfig) => HarnessProviderTranslation;
@@ -21,9 +22,10 @@ registerTranslation('codex', translateForCodex);
 registerTranslation('gemini', translateForGemini);
 registerTranslation('qwen', translateForGemini);
 registerTranslation('opencode', translateForOpenCode);
+registerTranslation('pi', translateForPi);
 
 // Generic OpenAI translation for adapters that don't need custom logic
-for (const agent of ['cursor', 'pi', 'omp', 'openclaw', 'hermes', 'droid', 'amp']) {
+for (const agent of ['cursor', 'omp', 'openclaw', 'hermes', 'droid', 'amp']) {
   registerTranslation(agent, translateForGenericOpenAI);
 }
 

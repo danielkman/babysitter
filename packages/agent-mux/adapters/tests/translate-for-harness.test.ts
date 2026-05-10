@@ -117,12 +117,12 @@ describe('translateForHarness', () => {
     });
   });
 
-  describe('dispatches to generic openai translator', () => {
-    it('dispatches pi to generic openai translator', () => {
+  describe('dispatches to pi translator', () => {
+    it('returns proxyRequired=true for pi with non-openai provider', () => {
       const config = makeConfig({ provider: 'groq' as any, transport: 'openai-chat' as any, auth: { type: 'api_key' as const, apiKey: 'gsk' } });
       const r = translateForHarness('pi' as AgentName, config);
-      expect(r.proxyRequired).toBe(false);
-      expect(r.env['OPENAI_API_KEY']).toBe('gsk');
+      expect(r.proxyRequired).toBe(true);
+      expect(r.proxyExposedTransport).toBe('openai-chat');
     });
   });
 });
