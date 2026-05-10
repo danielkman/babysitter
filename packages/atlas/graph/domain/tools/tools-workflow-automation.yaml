@@ -1,0 +1,59 @@
+---
+nodeKind: Tool
+id: tool:n8n
+attributes:
+  displayName: "n8n"
+  kind: other
+  description: |
+    Open-source workflow automation platform with a visual node-based
+    editor. Connects 400+ integrations (APIs, databases, SaaS services)
+    into automated workflows with branching, loops, error handling, and
+    webhooks. Self-hostable with a fair-code license. Increasingly used
+    as an AI agent orchestration layer with LLM nodes, AI agent nodes,
+    and tool-use capabilities. Supports custom code nodes (JavaScript/
+    Python) for advanced logic.
+edges:
+  tool_used_by:
+    - target: skill-area:operations-automation
+  used_for:
+    - skill-area:operations-automation
+  lib_applies_to_domain:
+    - target: domain:software-engineering
+    - target: domain:operations
+---
+nodeKind: Tool
+id: tool:zapier
+attributes:
+  displayName: "Zapier"
+  kind: other
+  description: |
+    Cloud-based workflow automation platform connecting 7,000+ apps
+    via triggers and actions ("Zaps"). No-code interface for building
+    multi-step automations with filters, formatters, paths, and
+    scheduling. Offers Zapier Central for AI-powered automation and
+    natural-language workflow creation.
+edges:
+  tool_used_by:
+    - target: skill-area:operations-automation
+  used_for:
+    - skill-area:operations-automation
+  lib_applies_to_domain:
+    - target: domain:operations
+---
+nodeKind: Tool
+id: tool:make
+attributes:
+  displayName: "Make (Integromat)"
+  kind: other
+  description: |
+    Visual workflow automation platform (formerly Integromat) with a
+    drag-and-drop scenario builder. Connects 1,500+ apps with advanced
+    data transformation, iteration, error handling, and webhook triggers.
+    Supports complex multi-branch scenarios with routers and aggregators.
+edges:
+  tool_used_by:
+    - target: skill-area:operations-automation
+  used_for:
+    - skill-area:operations-automation
+  lib_applies_to_domain:
+    - target: domain:operations

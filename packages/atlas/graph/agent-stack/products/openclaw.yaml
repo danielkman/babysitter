@@ -10,8 +10,15 @@ attributes:
   stackScope: full
   description: |
     Open-source CLI coding agent integrated into the v6 catalog through
-    the agent-mux adapter. Supports plugins and an auto-approve
-    interaction primitive.
+    the agent-mux adapter. Features a plugin system for extensibility,
+    an auto-approve interaction primitive for unattended operation,
+    streaming tool-use output, and MCP server support. The full stack
+    is modeled across core (tool-use loop), runtime (session persistence),
+    platform (plugin discovery and loading), and UI (TUI presentation)
+    layers. One of the most comprehensively cataloged community agents
+    with deep adapter integration for orchestrated workflows.
 edges:
   has_version:
     - agentVersion:openclaw:ge-0-0-0
+  integrates_with:
+    - target: skill-area:ai-agent-development

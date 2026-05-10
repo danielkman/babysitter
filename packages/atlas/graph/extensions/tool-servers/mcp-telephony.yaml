@@ -1,0 +1,22 @@
+nodeKind: ToolServer
+id: tool-server:mcp-saperly
+attributes:
+  displayName: Saperly Phone MCP Server
+  description: |
+    MCP server that gives AI agents a phone number with telephony
+    capabilities. Enables voice calls, SMS sending and receiving, and
+    phone-based identity verification. Agents can initiate outbound
+    calls, handle inbound call routing, and integrate telephony into
+    multi-step workflows.
+  protocol: mcp
+  category: communication
+  repoUrl: https://github.com/Saperly/saperly-mcp
+  maintainer: Saperly
+  mcpTransports:
+  - mcp-transport:stdio
+edges:
+  integrates_with:
+  - target: stack-part:sms-delivery
+  lib_applies_to_domain:
+  - target: domain:software-engineering
+  - target: skill-area:communication

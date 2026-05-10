@@ -1,0 +1,53 @@
+nodeKind: AgentProduct
+id: agent:pikiclaw
+attributes:
+  displayName: "PikiClaw"
+  vendor: "PikiClaw"
+  homepageUrl: "https://pikiclaw.com/"
+  primarySurface: mobile
+  supportTier: none
+  productKind: mobile-agent
+  stackScope: full
+  description: |
+    Mobile-first AI agent platform with a plugin system. Provides a
+    native mobile interface for interacting with coding and productivity
+    agents on the go, with plugin extensibility for custom tools,
+    workflows, and integrations. Targets developers who need agent
+    access from mobile devices with touch-optimized UI.
+edges:
+  has_version:
+    - agent-version:pikiclaw@current
+---
+nodeKind: AgentVersion
+id: agent-version:pikiclaw@current
+attributes:
+  agentProductId: agent:pikiclaw
+  versionRange: '>=1.0.0'
+  releasedAt: '2025-01-01'
+  installMethods:
+  - install:manual
+  minSchemaVersion: 6.0.0
+edges:
+  version_of:
+  - agent:pikiclaw
+  sourced_from: []
+---
+nodeKind: Presentation
+id: presentation:pikiclaw-mobile
+attributes:
+  displayName: "PikiClaw Mobile"
+  kind: mobile
+  description: |
+    Native mobile presentation layer for the PikiClaw agent platform.
+    Touch-optimized interface for agent interaction, plugin management,
+    and workflow execution on iOS and Android devices.
+  renderingTechnology: native
+  themeSupport: light-dark
+  accessibilitySupport: basic
+  offlineMode: partial
+  platforms: [ios, android]
+  bundleSize: "~40 MB"
+  updateChannel: extension-store
+edges:
+  bundled_with:
+    - agent-version:pikiclaw@current

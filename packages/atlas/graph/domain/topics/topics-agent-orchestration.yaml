@@ -176,6 +176,25 @@ edges:
     - domain:software-engineering
 ---
 nodeKind: Topic
+id: topic:a2a-protocol
+attributes:
+  displayName: "Agent-to-Agent (A2A) Protocol"
+  description: |
+    Agent-to-Agent (A2A) Protocol as a cross-cutting topic - Google's open
+    protocol for inter-agent communication. A2A enables agents built on
+    different frameworks and by different vendors to discover each other's
+    capabilities (via Agent Cards), negotiate interaction modalities, and
+    exchange structured messages, artifacts, and streaming updates. The
+    protocol defines a JSON-RPC 2.0 transport, task lifecycle management
+    (submitted, working, input-required, completed, failed, canceled),
+    push notifications via webhooks, and SSE-based streaming for long-
+    running tasks. Complementary to MCP (which connects agents to tools),
+    A2A connects agents to other agents across organizational boundaries.
+edges:
+  applies_to:
+    - domain:software-engineering
+---
+nodeKind: Topic
 id: topic:information-trust-tiers
 attributes:
   displayName: "Information Trust Tiers"

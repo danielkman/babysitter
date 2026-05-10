@@ -1,0 +1,39 @@
+nodeKind: AgentProduct
+id: agent:paperclip
+attributes:
+  displayName: "Paperclip"
+  vendor: "Paperclip (open-source)"
+  homepageUrl: "https://github.com/paperclip-ai/paperclip"
+  primarySurface: web
+  supportTier: none
+  productKind: web-agent
+  stackScope: full
+  description: |
+    Open-source orchestration platform for zero-human companies. Provides
+    multi-agent coordination where autonomous agents handle end-to-end
+    business operations — from customer interaction and project management
+    to code development and deployment — without human intervention.
+    Designed for fully autonomous business workflows with agent-to-agent
+    delegation, persistent state, and goal-driven task decomposition.
+edges:
+  has_version:
+    - agent-version:paperclip@current
+---
+nodeKind: AgentVersion
+id: agent-version:paperclip@current
+attributes:
+  agentProductId: agent:paperclip
+  versionRange: '>=0.1.0'
+  releasedAt: '2025-01-01'
+  installMethods:
+  - install:manual
+  minSchemaVersion: 6.0.0
+edges:
+  version_of:
+  - agent:paperclip
+  sourced_from: []
+  supports:
+  - target: capability:can-multi-turn
+    versionRange: '>=0.1.0'
+    level: full
+    notes: Paperclip agents maintain persistent multi-turn state across workflows.

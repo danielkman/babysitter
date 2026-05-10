@@ -141,6 +141,35 @@ edges:
     - target: skill-area:agentic-loops
 ---
 nodeKind: Framework
+id: framework:google-adk
+attributes:
+  displayName: "Google Agent Development Kit (ADK)"
+  belongsToLanguageId: language:python
+  category: agent-orchestration
+  description: |
+    Google's open-source framework for building, evaluating, and deploying
+    AI agents. Provides a code-first approach with composable agent
+    architectures — sequential agents, parallel agents, and loop agents
+    for multi-step reasoning. Features built-in support for Google's
+    Gemini models, tool calling with automatic schema generation, session
+    state management, memory services, and artifact handling. Includes
+    a local development UI for testing and debugging agent interactions.
+    Natively supports the A2A (Agent-to-Agent) protocol for inter-agent
+    communication and MCP tool servers for external tool integration.
+    Deployable to Google Cloud (Vertex AI, Cloud Run) or any container
+    environment.
+edges:
+  belongs_to_language:
+    - language:python
+  used_by_skill_area:
+    - target: skill-area:ai-agent-development
+    - target: skill-area:multi-agent-coordination
+    - target: skill-area:tool-use
+    - target: skill-area:agentic-loops
+  integrates_with:
+    - target: topic:a2a-protocol
+---
+nodeKind: Framework
 id: framework:vercel-ai-sdk
 attributes:
   displayName: "Vercel AI SDK"
@@ -151,11 +180,20 @@ attributes:
     streaming UI, tool calling, structured outputs, and multi-step agent
     workflows. Provides React hooks (useChat, useCompletion) and server
     actions for seamless frontend-backend AI integration. Supports
-    multiple providers via a unified API. The standard choice for adding
-    AI features to Next.js applications.
+    multiple providers via a unified API (OpenAI, Anthropic, Google,
+    Mistral, Cohere, and community providers). Features include:
+    generateText/streamText for server-side LLM calls, generateObject
+    for structured outputs with Zod schemas, multi-step tool use with
+    maxSteps, middleware for guardrails and logging, and an experimental
+    agent framework (experimental_createMCPClient) for MCP tool server
+    integration. The standard choice for adding AI features to Next.js
+    applications. Pairs with Vercel AI Elements (presentation:ai-elements)
+    for pre-built UI components.
 edges:
   belongs_to_language:
     - language:typescript
   used_by_skill_area:
     - target: skill-area:ai-agent-development
     - target: skill-area:server-side-rendering
+    - target: skill-area:tool-use
+    - target: skill-area:agentic-loops

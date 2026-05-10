@@ -270,7 +270,15 @@ attributes:
     streaming agent loop over the Responses API, supports
     handoffs/subagents, tools, and emits a structured streaming-event
     taxonomy (RawResponsesStreamEvent, RunItemStreamEvent + 11 item
-    subtypes, AgentUpdatedStreamEvent).
+    subtypes, AgentUpdatedStreamEvent). Features guardrails for input/
+    output validation, tracing for debugging and observability, and
+    MCP tool server integration. The SDK emphasizes minimal abstraction
+    over the Responses API while providing structured multi-agent
+    patterns via handoffs.
 edges:
   has_version:
     - agent-version:openai-agents-sdk@current
+  integrates_with:
+    - target: skill-area:ai-agent-development
+    - target: skill-area:multi-agent-coordination
+    - target: skill-area:tool-use
