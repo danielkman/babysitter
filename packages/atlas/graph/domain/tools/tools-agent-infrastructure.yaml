@@ -161,3 +161,99 @@ edges:
   tool_used_by:
     - target: skill-area:ai-agent-development
     - target: skill-area:frontend-development
+---
+nodeKind: Tool
+id: tool:cloudflare-agent-memory
+attributes:
+  displayName: "Cloudflare Agent Memory"
+  kind: other
+  description: |
+    Cloudflare's managed persistent memory service for AI agents. Built on
+    Durable Objects (strongly consistent state) and Vectorize (vector search),
+    it exposes ingest, remember, recall, and forget operations through a REST
+    API. Supports team-shared memory profiles so multiple agents or users can
+    share a common memory namespace. Runs on Cloudflare's global network with
+    no self-hosted infrastructure required. Accessible from Cloudflare Workers
+    or any HTTP client, making it a zero-ops memory backend for agent
+    applications.
+edges:
+  tool_used_by:
+    - target: skill-area:ai-agent-development
+    - target: skill-area:context-management
+    - target: skill-area:knowledge-fabric-design
+  relates_to_topic:
+    - target: topic:cloud-agent-memory
+    - target: topic:memory-scoping
+    - target: topic:memory-to-knowledge-bridge
+---
+nodeKind: Tool
+id: tool:memories-sh
+attributes:
+  displayName: "memories.sh"
+  kind: other
+  description: |
+    Local-first durable state layer for coding agents. Implements four
+    memory types — session (cleared per run), semantic (memory.md facts),
+    episodic (daily interaction logs), and procedural (workflow patterns)
+    — stored as plain files under ~/.memories/. Compatible with Cursor,
+    Claude Code, GitHub Copilot, Windsurf, Cline, Roo, and Gemini through
+    a shared filesystem layout. No cloud dependency, no vector database,
+    no LLM processing — just reliable local-first persistence that any
+    agent with filesystem access can use. Source as a shell library
+    (source memories.sh) or use the memories CLI.
+edges:
+  tool_used_by:
+    - target: skill-area:ai-agent-development
+    - target: skill-area:context-management
+  relates_to_topic:
+    - target: topic:unified-agent-memory
+    - target: topic:memory-type-taxonomy
+    - target: topic:auto-memory
+---
+nodeKind: Tool
+id: tool:memori-labs
+attributes:
+  displayName: "Memori Labs"
+  kind: other
+  description: |
+    Agent-native memory infrastructure that structures memory from agent
+    execution traces. Memori Labs automatically extracts structured memory
+    entries from agent traces (tool calls, reasoning steps, task outcomes)
+    without requiring agents to explicitly write memory. LLM-agnostic REST
+    API organizes memories by entity, event, and procedure types. The
+    trace-driven extraction model means memory accumulates as a by-product
+    of normal agent operation — no dedicated memory management code required
+    in the agent itself.
+edges:
+  tool_used_by:
+    - target: skill-area:ai-agent-development
+    - target: skill-area:knowledge-fabric-design
+    - target: skill-area:organizational-intelligence
+  relates_to_topic:
+    - target: topic:cloud-agent-memory
+    - target: topic:auto-memory
+    - target: topic:memory-to-knowledge-bridge
+---
+nodeKind: Tool
+id: tool:vercel-ai-memory
+attributes:
+  displayName: "Vercel AI SDK Memory"
+  kind: other
+  description: |
+    Built-in memory system for Vercel AI SDK agent applications. Integrates
+    directly into the AI SDK agent loop so agents can read and write memories
+    using standard tool-use interfaces. Supports multiple storage backends
+    (Vercel KV, Postgres, Upstash Redis) via Vercel storage adapters. Memory
+    scoping follows the AI SDK's user/session/agent model. Designed for
+    Next.js AI applications where Vercel's managed storage handles persistence
+    without additional infrastructure. Reference documentation at
+    ai-sdk.dev/docs/agents/memory.
+edges:
+  tool_used_by:
+    - target: skill-area:ai-agent-development
+    - target: skill-area:context-management
+    - target: skill-area:knowledge-fabric-design
+  relates_to_topic:
+    - target: topic:cloud-agent-memory
+    - target: topic:memory-scoping
+    - target: topic:memory-to-knowledge-bridge

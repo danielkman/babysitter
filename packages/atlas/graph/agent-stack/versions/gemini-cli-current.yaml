@@ -34,6 +34,8 @@ edges:
       role: ui
     - target: knowledge-fabric-impl:gemini-cli.knowledge@current
       role: knowledge-fabric
+  uses_memory_system:
+    - target: memory-system:gemini-cli-memory
   sourced_from: []
   supports:
     - target: capability:skills

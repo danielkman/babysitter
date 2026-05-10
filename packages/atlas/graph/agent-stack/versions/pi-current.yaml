@@ -33,6 +33,8 @@ edges:
       role: ui
     - target: knowledge-fabric-impl:pi.knowledge@current
       role: knowledge-fabric
+  uses_memory_system:
+    - target: memory-system:pi-memory
   sourced_from: []
   supports:
     - target: capability:skills

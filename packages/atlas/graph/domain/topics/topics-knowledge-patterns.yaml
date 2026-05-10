@@ -407,3 +407,89 @@ edges:
   related_topics:
     - topic:auto-memory
     - topic:memory-scoping
+---
+nodeKind: Topic
+id: topic:unified-agent-memory
+attributes:
+  displayName: "Unified Agent Memory"
+  description: |
+    Unified Agent Memory as a cross-cutting topic — compatibility layers
+    and shared protocols that allow multiple agent products to read from and
+    write to a common memory store. The core problem: each coding agent has
+    its own memory format and location, so a developer switching between
+    Claude Code, Cursor, and Windsurf must maintain separate memory files
+    with duplicated or drifted content. Unified memory layers (memories.sh,
+    agentmemory, memsearch patterns) address this by defining a canonical
+    storage layout that all participating agents can read. The four-type
+    taxonomy (session / semantic / episodic / procedural) is the emerging
+    schema for unified memory, with memories.sh as the reference
+    implementation. Key design tensions: storage format (plain files vs
+    vector DB), update semantics (each agent writes independently vs a
+    central service mediates), and conflict resolution when two agents
+    write different values for the same fact.
+edges:
+  applies_to:
+    - domain:software-engineering
+    - specialization:ai-agents-conversational
+  related_topics:
+    - topic:instruction-file-standard
+    - topic:memory-scoping
+    - topic:memory-type-taxonomy
+---
+nodeKind: Topic
+id: topic:cloud-agent-memory
+attributes:
+  displayName: "Cloud Agent Memory"
+  description: |
+    Cloud Agent Memory as a cross-cutting topic — managed cloud services
+    that provide persistent memory storage for AI agents without requiring
+    self-hosted infrastructure. Covers Cloudflare Agent Memory (Durable
+    Objects + Vectorize, REST API, team-shared profiles), Vercel AI SDK
+    Memory (storage-adapter-backed, Next.js-native), Databricks AI Memory
+    (notebook and agent memory with Unity Catalog governance), and hosted
+    tiers of Mem0 and Zep. The key trade-offs vs local-file memory are
+    operational simplicity (no infrastructure to run), cross-device access
+    (memories available from any client), and cross-team sharing (org-scoped
+    namespaces), offset by cloud dependency, latency for retrieval, and
+    vendor lock-in. Cloud memory is particularly valuable for long-lived
+    agents (Devin sessions, multi-day workflows) where local state is
+    insufficient.
+edges:
+  applies_to:
+    - domain:software-engineering
+    - specialization:ai-agents-conversational
+  related_topics:
+    - topic:unified-agent-memory
+    - topic:memory-scoping
+    - topic:memory-to-knowledge-bridge
+---
+nodeKind: Topic
+id: topic:memory-type-taxonomy
+attributes:
+  displayName: "Memory Type Taxonomy"
+  description: |
+    Memory Type Taxonomy as a cross-cutting topic — the classification of
+    agent memory into distinct types with different persistence, update,
+    and retrieval semantics. The four-type model (popularized by memories.sh)
+    identifies: session memory (volatile, cleared per run — equivalent to
+    context window scratch space), semantic memory (persisted facts and
+    preferences — the "what I know" layer, typically memory.md), episodic
+    memory (dated logs of past interactions — the "what I did" layer,
+    supporting retrospection and audit), and procedural memory (workflows
+    and reusable task patterns — the "how I do things" layer). This taxonomy
+    maps to cognitive psychology's memory model (working memory, semantic
+    long-term memory, episodic long-term memory, procedural long-term
+    memory) and provides a principled framework for deciding what to
+    persist, where, and for how long. Different agent products emphasize
+    different memory types: Claude Code primarily implements semantic memory
+    (MEMORY.md), Cline emphasizes structured semantic categories, and
+    memories.sh is the only system that explicitly models all four types.
+edges:
+  applies_to:
+    - domain:software-engineering
+    - specialization:ai-agents-conversational
+  related_topics:
+    - topic:unified-agent-memory
+    - topic:auto-memory
+    - topic:memory-scoping
+    - topic:memory-consolidation

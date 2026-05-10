@@ -14,6 +14,8 @@ edges:
   composed_of:
   - target: knowledge-fabric-impl:aider.knowledge@current
     role: knowledge-fabric
+  uses_memory_system:
+  - target: memory-system:aider-memory
   sourced_from: []
   supports:
   - target: capability:streaming
@@ -131,6 +133,8 @@ attributes:
 edges:
   version_of:
   - agent:goose
+  uses_memory_system:
+  - target: memory-system:goose-memory
   sourced_from: []
   supports:
   - target: capability:streaming
@@ -158,6 +162,8 @@ attributes:
 edges:
   version_of:
   - agent:devin
+  uses_memory_system:
+  - target: memory-system:devin-memory
   sourced_from: []
   supports:
   - target: capability:can-multi-turn

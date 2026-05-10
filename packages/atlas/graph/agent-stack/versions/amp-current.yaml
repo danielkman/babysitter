@@ -22,4 +22,6 @@ edges:
       role: ui
     - target: knowledge-fabric-impl:amp.knowledge@current
       role: knowledge-fabric
+  uses_memory_system:
+    - target: memory-system:amp-memory
   sourced_from: []
