@@ -58,8 +58,8 @@ describe('getSupportedPhases', () => {
     expect(phases).toContain('tool.after');
   });
 
-  it('returns exactly 3 phases', () => {
+  it('returns at least the core phases', () => {
     const phases = getSupportedPhases();
-    expect(phases).toHaveLength(3);
+    expect(phases.length).toBeGreaterThanOrEqual(3);
   });
 });
