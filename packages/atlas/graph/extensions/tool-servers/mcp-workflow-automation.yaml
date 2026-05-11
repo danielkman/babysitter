@@ -20,4 +20,5 @@ edges:
   lib_applies_to_domain:
   - target: domain:software-engineering
   - target: domain:operations
-  - target: skill-area:operations-automation
+  used_for:
+  - skill-area:operations-automation

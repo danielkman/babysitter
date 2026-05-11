@@ -22,7 +22,8 @@ edges:
     - agent-version:vibe-kanban@current
   integrates_with:
     - target: topic:vibe-kanban
-  lib_applies_to_domain:
+  applies_to:
     - target: domain:software-engineering
+  used_for:
     - target: skill-area:project-planning
     - target: skill-area:multi-agent-coordination

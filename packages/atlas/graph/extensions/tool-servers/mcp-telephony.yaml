@@ -20,7 +20,7 @@ edges:
   - target: tool:saperly
   lib_applies_to_domain:
   - target: domain:software-engineering
-  - target: skill-area:communication
+  - target: domain:operations
   supports:
   - target: capability:supports-telephony
     level: full

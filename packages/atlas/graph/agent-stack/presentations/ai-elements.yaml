@@ -39,6 +39,7 @@ edges:
     - target: interaction-primitive:file-attachment
       attributes:
         mechanism: ui-control
-  lib_applies_to_domain:
+  applies_to:
     - target: domain:software-engineering
+  used_for:
     - target: skill-area:ai-agent-development
