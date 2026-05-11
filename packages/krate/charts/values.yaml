@@ -259,6 +259,12 @@ argocd:
 
 
 
+agents:
+  enabled: true
+  agentMux:
+    enabled: false
+    gateway: ""
+
 kubevela:
   enabled: true
   applicationName: krate-kubevela

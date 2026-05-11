@@ -27,7 +27,7 @@ npm run demo      # Print handoff summary
 - No external runtime dependencies in core (Node.js built-ins only)
 - Web console is in ../web/ (Next.js 16 + React 19)
 - Helm chart is in ../charts/ (not an npm workspace)
-- Resource taxonomy: 26 kinds across config (etcd) and aggregated (Postgres) storage
+- Resource taxonomy: 49 kinds across config (etcd) and aggregated (Postgres) storage
 
 ## Agent Mux Integration (Future)
 
