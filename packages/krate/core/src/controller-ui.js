@@ -18,7 +18,14 @@ const controllerEndpoints = [
   { method: 'GET', path: '/api/orgs/:org/policy-exception-requests', purpose: 'list pending and approved Krate policy exception requests' },
   { method: 'POST', path: '/api/orgs/:org/policy-exception-requests', purpose: 'request a temporary policy exception through Krate' },
   { method: 'GET', path: '/api/watch/orgs/:org/*', purpose: 'org-scoped Krate live event stream bridged to browser updates' },
-  { method: 'POST', path: '/api/git-proxy', purpose: 'repository streaming proxy when configured' }
+  { method: 'POST', path: '/api/git-proxy', purpose: 'repository streaming proxy when configured' },
+  { method: 'GET', path: '/api/orgs/:org/agents/stacks', purpose: 'list agent stacks and capability status' },
+  { method: 'GET', path: '/api/orgs/:org/agents/runs', purpose: 'list agent dispatch runs with queue and status' },
+  { method: 'GET', path: '/api/orgs/:org/agents/rules', purpose: 'list trigger rules and delivery status' },
+  { method: 'GET', path: '/api/orgs/:org/agents/sessions', purpose: 'list agent sessions with lifecycle state' },
+  { method: 'GET', path: '/api/orgs/:org/agents/workspaces', purpose: 'list agent workspaces with lifecycle state' },
+  { method: 'GET', path: '/api/orgs/:org/agents/approvals', purpose: 'list pending and resolved agent approvals' },
+  { method: 'GET', path: '/api/orgs/:org/agents/permissions/review', purpose: 'explainable permission check for agent dispatch' }
 ];
 
 const runtimeComponents = [
@@ -28,7 +35,8 @@ const runtimeComponents = [
   { id: 'repository-service', title: 'Repository service', area: 'data-plane', resources: ['Repository', 'BranchProtection', 'RefPolicy'], docs: 'src/data-plane.js' },
   { id: 'runners-ci', title: 'Runner scheduler', area: 'ci', resources: ['RunnerPool', 'Pipeline', 'Job'], docs: 'src/kubernetes-controller.js' },
   { id: 'hooks-events', title: 'Webhook bus', area: 'events', resources: ['WebhookSubscription', 'WebhookDelivery'], docs: 'src/kubernetes-controller.js' },
-  { id: 'policy-engine', title: 'Kyverno policy engine', area: 'policy', resources: ['PolicyProfile', 'PolicyTemplate', 'PolicyBinding', 'PolicyExceptionRequest'], docs: 'docs/todo-kyverno' }
+  { id: 'policy-engine', title: 'Kyverno policy engine', area: 'policy', resources: ['PolicyProfile', 'PolicyTemplate', 'PolicyBinding', 'PolicyExceptionRequest'], docs: 'docs/todo-kyverno' },
+  { id: 'agent-orchestration', title: 'Agent orchestration', area: 'agents', resources: ['AgentStack', 'AgentDispatchRun', 'AgentTriggerRule', 'AgentSession', 'AgentWorkspace', 'AgentApproval'], docs: 'docs/agents/' }
 ];
 
 export function createControllerUiModel(source, options = {}) {
@@ -79,6 +87,22 @@ export function createControllerUiModel(source, options = {}) {
   const policyBindings = filterByOrg(snapshot.resources.PolicyBinding || [], activeOrg?.slug);
   const policyExceptionRequests = filterByOrg(snapshot.resources.PolicyExceptionRequest || [], activeOrg?.slug);
   const policyEngine = createPolicyEngineView({ kyverno: snapshot.kyverno, policyProfiles, policyTemplates, policyBindings, policyExceptionRequests, org: activeOrg?.slug, namespace: activeOrg?.namespace || snapshot.namespace });
+  const agentStacks = filterByOrg(snapshot.resources.AgentStack || [], activeOrg?.slug);
+  const agentDispatchRuns = filterByOrg(snapshot.resources.AgentDispatchRun || [], activeOrg?.slug);
+  const agentTriggerRules = filterByOrg(snapshot.resources.AgentTriggerRule || [], activeOrg?.slug);
+  const agentSessions = filterByOrg(snapshot.resources.AgentSession || [], activeOrg?.slug);
+  const agentWorkspaces = filterByOrg(snapshot.resources.AgentWorkspace || [], activeOrg?.slug);
+  const agentApprovals = filterByOrg(snapshot.resources.AgentApproval || [], activeOrg?.slug);
+
+  const agentView = {
+    org: activeOrg?.slug,
+    stacks: { count: agentStacks.length, items: agentStacks },
+    runs: { count: agentDispatchRuns.length, items: agentDispatchRuns, active: agentDispatchRuns.filter(r => r.status?.phase && r.status.phase !== 'Completed' && r.status.phase !== 'Failed') },
+    rules: { count: agentTriggerRules.length, items: agentTriggerRules },
+    sessions: { count: agentSessions.length, items: agentSessions },
+    workspaces: { count: agentWorkspaces.length, items: agentWorkspaces },
+    approvals: { count: agentApprovals.length, items: agentApprovals, pending: agentApprovals.filter(a => !a.status?.phase || a.status.phase === 'Pending') },
+  };
   const deploymentApplications = filterByOrg(snapshot.resources.KubeVelaApplication || [], activeOrg?.slug);
   const deploymentReleases = filterByOrg(snapshot.resources.KubeVelaApplicationRevision || [], activeOrg?.slug);
   const deploymentComponents = snapshot.resources.KubeVelaComponentDefinition || [];
@@ -138,6 +162,9 @@ export function createControllerUiModel(source, options = {}) {
       policyBindings: policyBindings.length,
       deployments: deploymentApplications.length,
       releases: deploymentReleases.length,
+      agentStacks: agentStacks.length,
+      agentRuns: agentDispatchRuns.length,
+      agentSessions: agentSessions.length,
       greenChecks: validation.filter((item) => item.passed).length,
       totalChecks: validation.length
     },
@@ -154,6 +181,7 @@ export function createControllerUiModel(source, options = {}) {
     auditLog: [],
     delivery: createDeliveryView({ applications: deploymentApplications, releases: deploymentReleases, components: deploymentComponents, workloads: deploymentWorkloads, traits: deploymentTraits, scopes: deploymentScopes, policyDefinitions: deploymentPolicyDefinitions, policies: deploymentPolicies, automationSteps: deploymentAutomationSteps, automations: deploymentAutomations, managedResources: deploymentManagedResources }),
     policyEngine,
+    agents: agentView,
     identity: identityView,
     validation,
     permissions: snapshot.permissions || [],

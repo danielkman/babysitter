@@ -54,6 +54,15 @@ export function createKrateHandoffSummary(demo, { packageInfo = {}, generatedAt 
     resources: Object.fromEntries(Object.entries(demo.resources).map(([key, value]) => [key, value?.kind || 'workflow'])),
     storage: demo.controlPlane.storageReport(),
     excellentFlows: demo.ui.dashboard.excellentFlows,
+    agents: demo.agents ? {
+      stacks: demo.agents.stacks?.count || 0,
+      runs: demo.agents.runs?.count || 0,
+      activeRuns: demo.agents.runs?.active?.length || 0,
+      rules: demo.agents.rules?.count || 0,
+      sessions: demo.agents.sessions?.count || 0,
+      workspaces: demo.agents.workspaces?.count || 0,
+      pendingApprovals: demo.agents.approvals?.pending?.length || 0
+    } : null,
     operations: { chartPackage: demo.operations.chartPackage, localSetup: demo.operations.localSetup },
     releaseGates: demo.operations.releaseGates,
     smoke: {
