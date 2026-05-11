@@ -1,0 +1,83 @@
+import { createPermissionReviewer } from './agent-permission-review.js';
+import { createAgentStackController } from './agent-stack-controller.js';
+import { assembleContextBundle } from './agent-context-bundles.js';
+import { createResource, clone } from './resource-model.js';
+import { createAgentMuxClient } from './agent-mux-client.js';
+
+export const AGENT_DISPATCH_CONTROLLER_BOUNDARY = {
+  role: 'agent-dispatch-controller',
+  scope: 'Manual dispatch orchestration with permission gating and context assembly',
+  owns: ['dispatch creation', 'attempt lifecycle', 'Agent Mux session binding'],
+  delegatesTo: ['agent-permission-review', 'agent-stack-controller', 'agent-context-bundles', 'agent-mux-client'],
+  mustNotOwn: ['secret values', 'UI rendering']
+};
+
+export function createAgentDispatchController(options = {}) {
+  const permissionReviewer = options.permissionReviewer || createPermissionReviewer();
+  const stackController = options.stackController || createAgentStackController();
+  const agentMuxClient = options.agentMuxClient || createAgentMuxClient();
+
+  return {
+    role: 'agent-dispatch-controller',
+
+    async createManualDispatch({ repository, ref, sourceRefs = [], agentStack, taskKind, actor, namespace = 'default', organizationRef = 'default', resources = {} }) {
+      // 1. Find stack
+      const stack = (resources.AgentStack || []).find(s => s.metadata?.name === agentStack);
+      if (!stack) return { error: true, reason: 'stack-not-found', message: `AgentStack '${agentStack}' not found` };
+
+      // 2. Permission review
+      const review = permissionReviewer.reviewPermissions({ repository, ref, actor, agentStack, resources });
+      if (review.decision === 'denied') {
+        return { error: true, reason: 'permission-denied', message: 'Dispatch denied by permission review', review };
+      }
+      const permissionSnapshot = permissionReviewer.createPermissionSnapshot(review);
+
+      // 3. Assemble context bundle
+      const contextBundle = assembleContextBundle({ stack, repository, ref, sourceRefs, contextLabels: [], resources });
+
+      // 4. Create resources
+      const now = new Date().toISOString();
+      const runName = `dispatch-${Date.now()}`;
+
+      const run = createResource('AgentDispatchRun', { name: runName, namespace }, {
+        organizationRef,
+        repository,
+        sourceRefs: clone(sourceRefs),
+        agentStack,
+        taskKind: taskKind || 'diagnostic',
+        contextBundleRef: contextBundle.metadata.name,
+      });
+      run.status = { phase: 'Pending', queuedAt: now };
+
+      const attempt = createResource('AgentDispatchAttempt', { name: `${runName}-attempt-1`, namespace }, {
+        organizationRef,
+        agentDispatchRun: runName,
+        attemptReason: 'initial',
+        agentStackSnapshot: clone(stack.spec),
+        contextBundleDigest: contextBundle.spec.digest,
+      });
+      attempt.status = { permissionSnapshot, queueEnteredAt: now };
+
+      // 5. Try Agent Mux launch
+      if (agentMuxClient.isAvailable()) {
+        try {
+          const session = await agentMuxClient.launchSession({ stack, contextBundle, permissionSnapshot });
+          if (session && session.runId) {
+            attempt.status.agentMuxRunId = session.runId;
+            attempt.status.agentMuxSessionId = session.sessionId;
+            run.status.phase = 'Running';
+            attempt.status.startedAt = now;
+          }
+        } catch {
+          run.status.phase = 'Queued';
+          run.status.conditions = [{ type: 'AgentMuxBound', status: 'False', reason: 'LaunchFailed' }];
+        }
+      } else {
+        run.status.phase = 'Queued';
+        run.status.conditions = [{ type: 'AgentMuxBound', status: 'False', reason: 'Unavailable', message: 'Agent Mux gateway not configured' }];
+      }
+
+      return { error: false, run, attempt, contextBundle, permissionSnapshot };
+    }
+  };
+}

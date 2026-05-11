@@ -1,5 +1,6 @@
 import { createKubernetesResourceGateway } from './kubernetes-resource-gateway.js';
 import { createPermissionReviewer } from './agent-permission-review.js';
+import { createAgentDispatchController } from './agent-dispatch-controller.js';
 
 export const KRATE_API_CONTROLLER_BOUNDARY = {
   role: 'krate-api-controller',
@@ -62,6 +63,14 @@ export function createKrateApiController(options = {}) {
       const reviewer = createPermissionReviewer();
       const snapshot = await this.snapshot();
       return reviewer.reviewPermissions({
+        ...input,
+        resources: snapshot.resources
+      });
+    },
+    async dispatchAgent(input) {
+      const snapshot = await this.snapshot();
+      const controller = createAgentDispatchController(input.controllerOptions || {});
+      return controller.createManualDispatch({
         ...input,
         resources: snapshot.resources
       });
