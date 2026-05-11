@@ -87,17 +87,16 @@ function buildProviderProfile(provider: ProviderConfig): ProviderProfileEntry {
   };
 }
 
-function defaultRouting(config: CloudConfig, providers: readonly ProviderConfig[]): ModelRoutingConfig | undefined {
-  const modelRouting = config.components.babysitterAgent?.modelRouting ?? [];
-  return modelRouting.find((route) => !route.agent)
-    ?? providers
-      .map((provider) => provider.defaultModel ? { provider: provider.id, model: provider.defaultModel } : undefined)
-      .find((entry): entry is ModelRoutingConfig => entry !== undefined);
+function defaultRouting(_config: CloudConfig, providers: readonly ProviderConfig[]): ModelRoutingConfig | undefined {
+  return providers
+    .map((provider) => provider.defaultModel ? { provider: provider.id, model: provider.defaultModel } : undefined)
+    .find((entry): entry is ModelRoutingConfig => entry !== undefined);
 }
 
 function buildProviderAutomationPlan(config: CloudConfig): ProviderConfigurationResult["automation"] {
-  const providers = config.components.babysitterAgent?.providers ?? [];
-  const modelRouting = config.components.babysitterAgent?.modelRouting ?? [];
+  const configAny = config as unknown as Record<string, unknown>;
+  const providers: readonly ProviderConfig[] = (configAny.providerConfigs as readonly ProviderConfig[] | undefined) ?? [];
+  const modelRouting: readonly ModelRoutingConfig[] = (configAny.modelRouting as readonly ModelRoutingConfig[] | undefined) ?? [];
   const defaultRoute = defaultRouting(config, providers);
 
   return {
@@ -164,7 +163,8 @@ function providerSecretManifest(
 }
 
 export function configureProviders(config: CloudConfig): ProviderConfigurationResult {
-  const providers = config.components.babysitterAgent?.providers ?? [];
+  const configAny2 = config as unknown as Record<string, unknown>;
+  const providers: readonly ProviderConfig[] = (configAny2.providerConfigs as readonly ProviderConfig[] | undefined) ?? [];
   const manifests: KubernetesManifest[] = [];
   const env: Record<string, string> = {};
   const summary: string[] = [];
@@ -184,7 +184,7 @@ export function configureProviders(config: CloudConfig): ProviderConfigurationRe
     summary.push(`provider ${provider.id}: ${manifest ? "secret rendered" : "secret ref only"}`);
   }
 
-  env.BABYSITTER_AGENT_PROVIDER_CONFIG_JSON = JSON.stringify(config.components.babysitterAgent?.providers ?? []);
+  env.BABYSITTER_AGENT_PROVIDER_CONFIG_JSON = JSON.stringify(providers);
   env.BABYSITTER_AGENT_MODEL_ROUTING_JSON = JSON.stringify(automation.modelRouting);
   env.BABYSITTER_AGENT_AMUX_PROVIDERS_FILE_PATH = automation.filePath;
   env.BABYSITTER_AGENT_AMUX_PROVIDERS_FILE_JSON = JSON.stringify(automation.providersFile);

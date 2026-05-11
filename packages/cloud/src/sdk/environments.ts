@@ -4,14 +4,14 @@ const BASE_CONFIG: CloudConfig = {
   environment: "custom",
   namespace: "babysitter",
   releaseTag: "latest",
-  imageRegistry: "ghcr.io/a5c-ai/babysitter",
+  imageRegistry: "ghcr.io/a5c-ai/krate",
   target: {
     type: "existing",
     kubeContext: "default",
     namespace: "babysitter",
   },
   ingress: {
-    hostnames: ["kanban.localdev.me", "gateway.localdev.me"],
+    hostnames: ["krate.localdev.me"],
     tls: false,
     ingressClassName: "nginx",
   },
@@ -20,10 +20,24 @@ const BASE_CONFIG: CloudConfig = {
     adminUsername: "admin",
     defaultAdminPassword: "admin",
   },
-  components: {
-    kanban: { enabled: true, replicas: 1 },
-    gateway: { enabled: true, replicas: 1 },
-    babysitterAgent: { enabled: false, replicas: 1, providers: [], modelRouting: [] },
+  krate: {
+    api: { replicas: 1 },
+    controllers: { replicas: 1 },
+    web: { replicas: 1 },
+    webhookWorker: { replicas: 1 },
+    gitea: {
+      enabled: true,
+      persistence: { size: "10Gi" },
+      admin: { username: "gitea_admin", password: "admin" },
+    },
+    agents: { enabled: false, agentMux: { enabled: false, gateway: "" } },
+    demo: { enabled: false, postgres: { mode: "embedded" }, objectStore: { mode: "minio" } },
+    argocd: { enabled: false, namespace: "argocd" },
+    auth: {
+      github: { enabled: false, clientId: "", clientSecret: "" },
+      sso: { enabled: false },
+      delegatedIdentity: { enabled: false },
+    },
   },
   agents: {
     install: false,
@@ -73,7 +87,7 @@ export function environmentPreset(environment: DeploymentEnvironment): CloudConf
       preset.target = { type: "minikube", profile: "babysitter" };
       preset.namespace = "babysitter-local";
       preset.ingress = {
-        hostnames: ["kanban.localdev.me", "gateway.localdev.me"],
+        hostnames: ["krate.localdev.me"],
         tls: false,
         ingressClassName: "nginx",
       };
@@ -86,12 +100,22 @@ export function environmentPreset(environment: DeploymentEnvironment): CloudConf
         className: "standard",
         gatewayStateSize: "2Gi",
       };
+      preset.krate = {
+        ...preset.krate,
+        api: { replicas: 1 },
+        controllers: { replicas: 1 },
+        web: { replicas: 1 },
+        webhookWorker: { replicas: 1 },
+        gitea: { ...preset.krate.gitea, enabled: true },
+        demo: { ...preset.krate.demo, enabled: true },
+        agents: { ...preset.krate.agents, enabled: false },
+      };
       break;
     case "staging":
       preset.target = { type: "existing", kubeContext: "staging", namespace: "babysitter-staging" };
       preset.namespace = "babysitter-staging";
       preset.ingress = {
-        hostnames: ["kanban.staging.a5c.ai", "gateway.staging.a5c.ai"],
+        hostnames: ["krate.staging.a5c.ai"],
         tls: true,
         ingressClassName: "nginx",
       };
@@ -99,17 +123,22 @@ export function environmentPreset(environment: DeploymentEnvironment): CloudConf
         mode: "bootstrap-admin",
         adminUsername: "admin",
       };
-      preset.components = {
-        ...preset.components,
-        kanban: { enabled: true, replicas: 2 },
-        gateway: { enabled: true, replicas: 2 },
+      preset.krate = {
+        ...preset.krate,
+        api: { replicas: 2 },
+        controllers: { replicas: 2 },
+        web: { replicas: 2 },
+        webhookWorker: { replicas: 2 },
+        gitea: { ...preset.krate.gitea, enabled: true },
+        demo: { ...preset.krate.demo, enabled: false },
+        agents: { ...preset.krate.agents, enabled: true },
       };
       break;
     case "prod":
       preset.target = { type: "existing", kubeContext: "prod", namespace: "babysitter-prod" };
       preset.namespace = "babysitter-prod";
       preset.ingress = {
-        hostnames: ["kanban.a5c.ai", "gateway.a5c.ai"],
+        hostnames: ["krate.a5c.ai"],
         tls: true,
         ingressClassName: "nginx",
       };
@@ -117,10 +146,15 @@ export function environmentPreset(environment: DeploymentEnvironment): CloudConf
         mode: "bootstrap-admin",
         adminUsername: "admin",
       };
-      preset.components = {
-        ...preset.components,
-        kanban: { enabled: true, replicas: 3 },
-        gateway: { enabled: true, replicas: 3 },
+      preset.krate = {
+        ...preset.krate,
+        api: { replicas: 3 },
+        controllers: { replicas: 3 },
+        web: { replicas: 3 },
+        webhookWorker: { replicas: 3 },
+        gitea: { ...preset.krate.gitea, enabled: true },
+        demo: { ...preset.krate.demo, enabled: false },
+        agents: { ...preset.krate.agents, enabled: true },
       };
       break;
     case "custom":

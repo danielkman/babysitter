@@ -200,7 +200,10 @@ async function handlePlan(parsed: ParsedCli, io: CliIo): Promise<number> {
   io.stdout(`Environment: ${config.environment}\n`);
   io.stdout(`Namespace: ${config.namespace}\n`);
   io.stdout(`Target: ${config.target.type}\n`);
-  io.stdout(`Components: ${plan.components.map((component) => component.id).join(", ")}\n`);
+  io.stdout(`Helm release: ${plan.helm.releaseName}\n`);
+  for (const line of plan.helm.summary) {
+    io.stdout(`  ${line}\n`);
+  }
   if (!validation.ok) {
     for (const entry of validation.errors) {
       io.stderr(`error ${entry.path}: ${entry.message}\n`);

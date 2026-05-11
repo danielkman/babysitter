@@ -1,4 +1,5 @@
 import type { DeploymentPlan, KubernetesManifest, KubernetesRenderResult } from "../types.js";
+import { renderHelmValuesYaml } from "../helm/krate-values.js";
 
 function yamlScalar(value: unknown): string {
   if (typeof value === "string") {
@@ -53,7 +54,12 @@ export function serializeManifest(manifest: KubernetesManifest): string {
 }
 
 export function renderKubernetes(plan: DeploymentPlan): KubernetesRenderResult {
-  const content = plan.kubernetes.manifests.map((manifest) => serializeManifest(manifest)).join("\n---\n");
+  const helmValuesYaml = renderHelmValuesYaml(plan.helm);
+  const manifestContent = plan.kubernetes.manifests.map((manifest) => serializeManifest(manifest)).join("\n---\n");
+  const content = manifestContent
+    ? `# Helm values for krate\n${helmValuesYaml}\n---\n# Additional manifests\n${manifestContent}`
+    : `# Helm values for krate\n${helmValuesYaml}`;
+
   return {
     fileName: "manifests.yaml",
     manifests: plan.kubernetes.manifests,
@@ -61,4 +67,3 @@ export function renderKubernetes(plan: DeploymentPlan): KubernetesRenderResult {
     summary: plan.kubernetes.summary.summary,
   };
 }
-

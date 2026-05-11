@@ -1,130 +1,31 @@
-import type { CloudConfig, ComponentPlan, DeploymentPlan, KubernetesManifest } from "../types.js";
-import { buildGatewayManifests, buildGatewayPlan } from "../adapters/agent-mux-gateway.js";
-import { buildBabysitterAgentManifests, buildBabysitterAgentPlan } from "../adapters/babysitter-agent.js";
-import { buildKanbanManifests, buildKanbanPlan } from "../adapters/kanban.js";
+import type { CloudConfig, DeploymentPlan } from "../types.js";
+import { buildKrateHelmPlan } from "../helm/krate-values.js";
 import { bootstrapAuth } from "./auth.js";
 import { defaultReleaseTagForEnvironment } from "./environments.js";
 import { buildAgentInstallPlan } from "./agents.js";
 import { configureProviders } from "./providers.js";
 
-function kanbanPublicUrl(config: CloudConfig): string | undefined {
-  const host = config.ingress.hostnames[0];
-  if (!host) return undefined;
-  return `${config.ingress.tls ? "https" : "http"}://${host}`;
-}
-
-function gatewayPublicUrl(config: CloudConfig): string | undefined {
-  const explicit = config.ingress.hostnames[1];
-  const primary = config.ingress.hostnames[0];
-  const host = explicit ?? (primary ? `gateway.${primary}` : undefined);
-  if (!host) return undefined;
-  return `${config.ingress.tls ? "https" : "http"}://${host}`;
-}
-
-function namespaceManifest(namespace: string): KubernetesManifest {
-  return {
-    apiVersion: "v1",
-    kind: "Namespace",
-    metadata: {
-      name: namespace,
-    },
-  };
-}
-
-function ingressManifest(config: CloudConfig, serviceName: string, port: number, host: string): KubernetesManifest {
-  return {
-    apiVersion: "networking.k8s.io/v1",
-    kind: "Ingress",
-    metadata: {
-      name: `${serviceName}-ingress`,
-      namespace: config.namespace,
-      ...(config.ingress.ingressClassName ? {
-        annotations: {
-          "kubernetes.io/ingress.class": config.ingress.ingressClassName,
-        },
-      } : {}),
-    },
-    spec: {
-      ...(config.ingress.tls ? {
-        tls: [
-          {
-            hosts: [host],
-            secretName: `${serviceName}-tls`,
-          },
-        ],
-      } : {}),
-      rules: [
-        {
-          host,
-          http: {
-            paths: [
-              {
-                path: "/",
-                pathType: "Prefix",
-                backend: {
-                  service: {
-                    name: serviceName,
-                    port: { number: port },
-                  },
-                },
-              },
-            ],
-          },
-        },
-      ],
-    },
-  };
-}
-
 export function buildDeploymentPlan(config: CloudConfig): DeploymentPlan {
   const releaseTag = config.releaseTag ?? defaultReleaseTagForEnvironment(config.environment);
   const auth = bootstrapAuth(config);
   const providers = configureProviders(config);
-  const gatewayPublic = gatewayPublicUrl(config);
-  const gateway = buildGatewayPlan(config, releaseTag, gatewayPublic);
-  const kanban = buildKanbanPlan(config, releaseTag, gateway.serviceName, kanbanPublicUrl(config));
-  const babysitterAgent = buildBabysitterAgentPlan(config, releaseTag);
-
-  const manifests: KubernetesManifest[] = [
-    namespaceManifest(config.namespace),
-    ...auth.manifests,
-    ...providers.manifests,
-    ...buildGatewayManifests(config, gateway, auth),
-    ...buildKanbanManifests(config, kanban, gateway.internalUrl, gatewayPublic),
-    ...buildBabysitterAgentManifests(config, babysitterAgent, gateway.internalUrl, providers),
-  ];
-
-  const ingressHosts = config.ingress.hostnames;
-  if (kanban.enabled && ingressHosts[0]) {
-    manifests.push(ingressManifest(config, kanban.serviceName, kanban.port, ingressHosts[0]));
-  }
-  if (gateway.enabled) {
-    const gatewayHost = ingressHosts[1] ?? (ingressHosts[0] ? `gateway.${ingressHosts[0]}` : undefined);
-    if (gatewayHost) {
-      manifests.push(ingressManifest(config, gateway.serviceName, gateway.port, gatewayHost));
-    }
-  }
-
-  const components: ComponentPlan[] = [gateway, kanban];
-  if (babysitterAgent.enabled) {
-    components.push(babysitterAgent);
-  }
+  const helm = buildKrateHelmPlan(config);
 
   return {
     config,
     namespace: config.namespace,
     releaseTag,
-    components,
+    helm,
     auth,
     providers,
     kubernetes: {
-      manifests,
+      manifests: [...auth.manifests, ...providers.manifests],
       summary: {
         namespace: config.namespace,
-        manifestCount: manifests.length,
+        manifestCount: auth.manifests.length + providers.manifests.length,
         summary: [
           `namespace ${config.namespace}`,
-          `${components.filter((component) => component.enabled).length} enabled components`,
+          `helm release: krate`,
           ...(config.ingress.hostnames.length > 0 ? [`${config.ingress.hostnames.length} ingress hostnames`] : []),
         ],
       },

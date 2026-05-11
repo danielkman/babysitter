@@ -36,6 +36,7 @@ describe("cloud cli", () => {
     const output = sink.read();
     expect(exitCode).toBe(0);
     expect(output.stdout).toContain("Environment: minikube");
+    expect(output.stdout).toContain("Helm release: krate");
   });
 
   it("emits structured provider automation json", async () => {

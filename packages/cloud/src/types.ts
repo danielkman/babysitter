@@ -76,20 +76,58 @@ export interface AuthConfig {
   defaultAdminPassword?: string;
 }
 
-export interface ComponentToggleConfig {
+export interface KrateComponentConfig {
+  replicas: number;
+  resources?: Record<string, unknown>;
+}
+
+export interface KrateGiteaConfig {
   enabled: boolean;
-  replicas?: number;
+  persistence: { size: string; storageClassName?: string };
+  admin: { username: string; password: string };
 }
 
-export interface BabysitterAgentComponentConfig extends ComponentToggleConfig {
-  providers?: readonly ProviderConfig[];
-  modelRouting?: readonly ModelRoutingConfig[];
+export interface KrateAgentsConfig {
+  enabled: boolean;
+  agentMux: { enabled: boolean; gateway: string };
 }
 
-export interface ComponentsConfig {
-  kanban: ComponentToggleConfig;
-  gateway: ComponentToggleConfig;
-  babysitterAgent?: BabysitterAgentComponentConfig;
+export interface KrateDemoConfig {
+  enabled: boolean;
+  postgres: { mode: string };
+  objectStore: { mode: string };
+}
+
+export interface KrateAuthConfig {
+  github: { enabled: boolean; clientId: string; clientSecret: string };
+  sso: { enabled: boolean };
+  delegatedIdentity: { enabled: boolean };
+}
+
+export interface KrateConfig {
+  api: KrateComponentConfig;
+  controllers: KrateComponentConfig;
+  web: KrateComponentConfig;
+  webhookWorker: KrateComponentConfig;
+  gitea: KrateGiteaConfig;
+  agents: KrateAgentsConfig;
+  demo: KrateDemoConfig;
+  argocd: { enabled: boolean; namespace: string };
+  auth: KrateAuthConfig;
+}
+
+export interface KrateImageConfig {
+  repository: string;
+  tag: string;
+  pullPolicy: "IfNotPresent" | "Always";
+}
+
+export interface KrateHelmPlan {
+  readonly releaseName: string;
+  readonly chartPath: string;
+  readonly namespace: string;
+  readonly values: Readonly<Record<string, unknown>>;
+  readonly summary: readonly string[];
 }
 
 export interface AgentInstallConfig {
@@ -113,22 +151,16 @@ export interface ExecutionConfig {
   providerConfigScope?: ProviderAutomationScope;
 }
 
-export interface ImageOverrides {
-  kanban?: string;
-  gateway?: string;
-  babysitterAgent?: string;
-}
-
 export interface CloudConfig {
   environment: DeploymentEnvironment;
   namespace: string;
   releaseTag?: string;
   imageRegistry?: string;
-  images?: ImageOverrides;
+  image?: KrateImageConfig;
   target: TargetConfig;
   ingress: IngressConfig;
   auth: AuthConfig;
-  components: ComponentsConfig;
+  krate: KrateConfig;
   agents?: AgentInstallConfig;
   storage: StorageConfig;
   execution?: ExecutionConfig;
@@ -164,23 +196,6 @@ export interface KubernetesManifest {
   readonly kind: string;
   readonly metadata: Readonly<Record<string, unknown>>;
   readonly [key: string]: unknown;
-}
-
-export interface ComponentImage {
-  readonly image: string;
-  readonly pullPolicy: "IfNotPresent" | "Always";
-}
-
-export interface ComponentPlan {
-  readonly id: "kanban" | "gateway" | "babysitter-agent";
-  readonly enabled: boolean;
-  readonly image: ComponentImage;
-  readonly replicas: number;
-  readonly serviceName: string;
-  readonly port: number;
-  readonly internalUrl: string;
-  readonly publicUrl?: string;
-  readonly summary: readonly string[];
 }
 
 export interface AuthBootstrapResult {
@@ -330,7 +345,7 @@ export interface DeploymentPlan {
   readonly config: CloudConfig;
   readonly namespace: string;
   readonly releaseTag: string;
-  readonly components: readonly ComponentPlan[];
+  readonly helm: KrateHelmPlan;
   readonly auth: AuthBootstrapResult;
   readonly providers: ProviderConfigurationResult;
   readonly kubernetes: {

@@ -11,6 +11,7 @@ import type {
   InstallResult,
   StatusResource,
 } from "../types.js";
+import { renderHelmValuesYaml } from "../helm/krate-values.js";
 import { renderKubernetes } from "../kubernetes/render.js";
 import { renderTerraform } from "../terraform/root.js";
 import { buildDeploymentPlan } from "./plans.js";
@@ -82,15 +83,19 @@ async function applyTerraform(plan: DeploymentPlan, terraformDirectory: string):
   return executions;
 }
 
-async function applyKubernetes(plan: DeploymentPlan, manifestPath: string): Promise<readonly CommandExecution[]> {
-  if (!(await commandExists("kubectl"))) {
-    throw new Error("kubectl is not installed or not available on PATH.");
+async function applyHelm(plan: DeploymentPlan, valuesPath: string): Promise<readonly CommandExecution[]> {
+  if (!(await commandExists("helm"))) {
+    throw new Error("helm is not installed or not available on PATH.");
   }
-  const args = ["apply", "-f", manifestPath];
-  if (plan.config.target.type === "existing") {
-    args.push("--context", plan.config.target.kubeContext);
-  }
-  return [await execCommand("kubectl", args)];
+  const args = [
+    "upgrade", "--install",
+    plan.helm.releaseName,
+    plan.helm.chartPath,
+    "-n", plan.helm.namespace,
+    "-f", valuesPath,
+    "--create-namespace",
+  ];
+  return [await execCommand("helm", args)];
 }
 
 function parseResources(payload: string): readonly StatusResource[] {
@@ -160,10 +165,15 @@ export async function installEnvironment(config: CloudConfig, options: InstallOp
   const rootDir = workingDirectoryFor(config, options.workingDirectory);
   const terraformDirectory = path.join(rootDir, terraform.directoryName);
   const kubernetesDirectory = path.join(rootDir, "kubernetes");
-  const manifestPath = path.join(kubernetesDirectory, kubernetes.fileName);
+  const valuesPath = path.join(rootDir, "krate-values.yaml");
 
   await writeFiles(terraformDirectory, terraform.files);
   await writeFiles(kubernetesDirectory, [{ path: kubernetes.fileName, content: kubernetes.content }]);
+
+  // Write helm values YAML
+  const helmValuesContent = renderHelmValuesYaml(plan.helm);
+  await ensureDirectory(path.dirname(valuesPath));
+  await fs.writeFile(valuesPath, helmValuesContent, "utf8");
 
   if (options.dryRun || options.renderOnly) {
     return {
@@ -174,7 +184,7 @@ export async function installEnvironment(config: CloudConfig, options: InstallOp
   }
 
   const terraformApply = config.execution?.autoApplyTerraform === false ? [] : await applyTerraform(plan, terraformDirectory);
-  const kubernetesApply = config.execution?.autoApplyKubernetes === false ? [] : await applyKubernetes(plan, manifestPath);
+  const kubernetesApply = config.execution?.autoApplyKubernetes === false ? [] : await applyHelm(plan, valuesPath);
   const providerConfiguration = config.execution?.configureProvidersOnApply
     ? applyProviderConfiguration(config, { cwd: rootDir })
     : undefined;
