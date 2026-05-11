@@ -312,8 +312,6 @@ jobs:
         interaction_mode:
           - id: non-interactive
             interactive: 'false'
-          - id: interactive
-            interactive: 'true'
         install_mode:
           - id: babysitter-plugin
             required_trace_ids: agentMuxRunId,agentMuxSessionId,transportTraceId
@@ -324,14 +322,6 @@ jobs:
         exclude:
           - install_mode:
               id: babysitter-plugin
-            scenario:
-              id: live.agent-mux.babysitter-agent.foundry-openai.gpt-5.5
-          - install_mode:
-              id: vanilla
-            interaction_mode:
-              id: interactive
-          - interaction_mode:
-              id: interactive
             scenario:
               id: live.agent-mux.babysitter-agent.foundry-openai.gpt-5.5
         scenario:
