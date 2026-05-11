@@ -25,7 +25,11 @@ const controllerEndpoints = [
   { method: 'GET', path: '/api/orgs/:org/agents/sessions', purpose: 'list agent sessions with lifecycle state' },
   { method: 'GET', path: '/api/orgs/:org/agents/workspaces', purpose: 'list agent workspaces with lifecycle state' },
   { method: 'GET', path: '/api/orgs/:org/agents/approvals', purpose: 'list pending and resolved agent approvals' },
-  { method: 'GET', path: '/api/orgs/:org/agents/permissions/review', purpose: 'explainable permission check for agent dispatch' }
+  { method: 'GET', path: '/api/orgs/:org/agents/permissions/review', purpose: 'explainable permission check for agent dispatch' },
+  { method: 'GET', path: '/api/orgs/:org/agents/adapters', purpose: 'list agent adapters and transport bindings' },
+  { method: 'GET', path: '/api/orgs/:org/agents/providers', purpose: 'list model provider configurations' },
+  { method: 'GET', path: '/api/orgs/:org/agents/projects', purpose: 'list agent projects with board config' },
+  { method: 'POST', path: '/api/orgs/:org/agents/dispatch', purpose: 'create manual agent dispatch run' }
 ];
 
 const runtimeComponents = [
@@ -36,7 +40,7 @@ const runtimeComponents = [
   { id: 'runners-ci', title: 'Runner scheduler', area: 'ci', resources: ['RunnerPool', 'Pipeline', 'Job'], docs: 'src/kubernetes-controller.js' },
   { id: 'hooks-events', title: 'Webhook bus', area: 'events', resources: ['WebhookSubscription', 'WebhookDelivery'], docs: 'src/kubernetes-controller.js' },
   { id: 'policy-engine', title: 'Kyverno policy engine', area: 'policy', resources: ['PolicyProfile', 'PolicyTemplate', 'PolicyBinding', 'PolicyExceptionRequest'], docs: 'docs/todo-kyverno' },
-  { id: 'agent-orchestration', title: 'Agent orchestration', area: 'agents', resources: ['AgentStack', 'AgentDispatchRun', 'AgentTriggerRule', 'AgentSession', 'AgentWorkspace', 'AgentApproval'], docs: 'docs/agents/' }
+  { id: 'agent-orchestration', title: 'Agent orchestration', area: 'agents', resources: ['AgentStack', 'AgentDispatchRun', 'AgentTriggerRule', 'AgentSession', 'AgentWorkspace', 'AgentApproval', 'AgentAdapter', 'AgentProviderConfig', 'AgentProject'], docs: 'docs/agents/' }
 ];
 
 export function createControllerUiModel(source, options = {}) {
@@ -93,6 +97,11 @@ export function createControllerUiModel(source, options = {}) {
   const agentSessions = filterByOrg(snapshot.resources.AgentSession || [], activeOrg?.slug);
   const agentWorkspaces = filterByOrg(snapshot.resources.AgentWorkspace || [], activeOrg?.slug);
   const agentApprovals = filterByOrg(snapshot.resources.AgentApproval || [], activeOrg?.slug);
+  const agentAdapters = filterByOrg(snapshot.resources.AgentAdapter || [], activeOrg?.slug);
+  const agentProviders = filterByOrg(snapshot.resources.AgentProviderConfig || [], activeOrg?.slug);
+  const agentProjects = filterByOrg(snapshot.resources.AgentProject || [], activeOrg?.slug);
+  const agentGateway = filterByOrg(snapshot.resources.AgentGatewayConfig || [], activeOrg?.slug);
+  const agentTranscripts = filterByOrg(snapshot.resources.AgentSessionTranscript || [], activeOrg?.slug);
 
   const agentView = {
     org: activeOrg?.slug,
@@ -102,6 +111,11 @@ export function createControllerUiModel(source, options = {}) {
     sessions: { count: agentSessions.length, items: agentSessions },
     workspaces: { count: agentWorkspaces.length, items: agentWorkspaces },
     approvals: { count: agentApprovals.length, items: agentApprovals, pending: agentApprovals.filter(a => !a.status?.phase || a.status.phase === 'Pending') },
+    adapters: { count: agentAdapters.length, items: agentAdapters },
+    providers: { count: agentProviders.length, items: agentProviders },
+    projects: { count: agentProjects.length, items: agentProjects },
+    gateway: agentGateway[0] || null,
+    transcripts: { count: agentTranscripts.length, items: agentTranscripts },
   };
   const deploymentApplications = filterByOrg(snapshot.resources.KubeVelaApplication || [], activeOrg?.slug);
   const deploymentReleases = filterByOrg(snapshot.resources.KubeVelaApplicationRevision || [], activeOrg?.slug);

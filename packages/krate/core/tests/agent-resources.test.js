@@ -24,7 +24,12 @@ const AGENT_CONFIG_KINDS = [
   'AgentServiceAccount',
   'AgentRoleBinding',
   'AgentSecretGrant',
-  'AgentConfigGrant'
+  'AgentConfigGrant',
+  'AgentAdapter',
+  'AgentTransportBinding',
+  'AgentProviderConfig',
+  'AgentProject',
+  'AgentGatewayConfig'
 ];
 
 const AGENT_AGGREGATED_KINDS = [
@@ -38,7 +43,10 @@ const AGENT_AGGREGATED_KINDS = [
   'AgentTriggerExecution',
   'AgentCapabilityRequirement',
   'WorkItemSessionLink',
-  'WorkItemWorkspaceLink'
+  'WorkItemWorkspaceLink',
+  'AgentSessionTranscript',
+  'AgentSessionAttachment',
+  'AgentWorkspaceRuntime'
 ];
 
 const ALL_AGENT_KINDS = [...AGENT_CONFIG_KINDS, ...AGENT_AGGREGATED_KINDS];
@@ -68,7 +76,15 @@ function minimalSpecForKind(kind) {
     AgentTriggerExecution: { organizationRef: 'default', triggerRule: 'on-ci-fail', sourceEvent: 'pipeline-failed', decision: 'dispatch' },
     AgentCapabilityRequirement: { organizationRef: 'default', ownerRef: 'stack-1', requiredRoles: ['shell', 'git'] },
     WorkItemSessionLink: { organizationRef: 'default', workItemRef: 'issue-1', agentSession: 'sess-123' },
-    WorkItemWorkspaceLink: { organizationRef: 'default', workItemRef: 'issue-1', workspace: 'ws-1' }
+    WorkItemWorkspaceLink: { organizationRef: 'default', workItemRef: 'issue-1', workspace: 'ws-1' },
+    AgentAdapter: { organizationRef: 'default', adapterType: 'claude-code', transport: 'stdio' },
+    AgentTransportBinding: { organizationRef: 'default', adapterRef: 'claude-code', endpoint: 'https://agent.example.test', protocol: 'https' },
+    AgentProviderConfig: { organizationRef: 'default', provider: 'anthropic', authType: 'api-key' },
+    AgentProject: { organizationRef: 'default', displayName: 'Platform' },
+    AgentGatewayConfig: { organizationRef: 'default', gatewayUrl: 'https://mux.example.test' },
+    AgentSessionTranscript: { organizationRef: 'default', sessionRef: 'sess-123', messages: [{ role: 'user', content: 'hello' }] },
+    AgentSessionAttachment: { organizationRef: 'default', sessionRef: 'sess-123', sourceType: 'upload', digest: 'sha256:abc' },
+    AgentWorkspaceRuntime: { organizationRef: 'default', workspaceRef: 'ws-1', status: 'running' }
   };
   return specs[kind];
 }
@@ -178,19 +194,19 @@ describe('storageClassForKind for agent kinds', () => {
 });
 
 describe('kind set counts', () => {
-  it('CONFIG_KINDS has 32 members', () => {
-    assert.equal(CONFIG_KINDS.size, 32);
+  it('CONFIG_KINDS has 37 members', () => {
+    assert.equal(CONFIG_KINDS.size, 37);
   });
 
-  it('AGGREGATED_KINDS has 17 members', () => {
-    assert.equal(AGGREGATED_KINDS.size, 17);
+  it('AGGREGATED_KINDS has 20 members', () => {
+    assert.equal(AGGREGATED_KINDS.size, 20);
   });
 
-  it('ALL_KINDS has 49 members', () => {
-    assert.equal(ALL_KINDS.size, 49);
+  it('ALL_KINDS has 57 members', () => {
+    assert.equal(ALL_KINDS.size, 57);
   });
 
-  it('listResourceDefinitions returns 49 definitions', () => {
-    assert.equal(listResourceDefinitions().length, 49);
+  it('listResourceDefinitions returns 57 definitions', () => {
+    assert.equal(listResourceDefinitions().length, 57);
   });
 });
