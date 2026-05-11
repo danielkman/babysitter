@@ -30,6 +30,18 @@ describe('pipeline-owned live stack scenario execution', () => {
       return;
     }
 
+    // Print verification report for vitest output
+    if (result.verifications?.length) {
+      console.log('\n┌─────────────────────────────────────────────────');
+      console.log(`│ Verification Report: ${scenario.scenarioId}`);
+      console.log('├─────────────────────────────────────────────────');
+      for (const v of result.verifications) {
+        const icon = v.status === 'passed' ? '✓' : v.status === 'failed' ? '✗' : '⊘';
+        console.log(`│ ${icon} ${v.name}: ${v.detail ?? ''}`);
+      }
+      console.log('└─────────────────────────────────────────────────\n');
+    }
+
     expect(result.status, result.failure ?? result.skipReason).toBe('passed');
     expect(result.missingTraceIds).toEqual([]);
     expect(result.missingArtifacts ?? []).toEqual([]);

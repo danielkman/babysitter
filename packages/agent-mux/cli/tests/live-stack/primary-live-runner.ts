@@ -835,7 +835,14 @@ async function writeVerificationReport(
     ...verifications.map((v) => `| ${statusIcon(v.status)} | ${v.name} | ${v.detail ?? ''} |`),
     ``,
   ];
-  await fs.writeFile(path.join(artifactsDir, 'verification-report.md'), lines.join('\n'));
+  const report = lines.join('\n');
+  await fs.writeFile(path.join(artifactsDir, 'verification-report.md'), report);
+
+  // Write to GitHub Actions step summary so it's visible in the Actions UI
+  const summaryPath = process.env['GITHUB_STEP_SUMMARY'];
+  if (summaryPath) {
+    await fs.appendFile(summaryPath, report + '\n\n');
+  }
 }
 
 async function writeScenarioArtifact(artifactsDir: string, scenario: LiveStackScenario, value: unknown): Promise<string> {
