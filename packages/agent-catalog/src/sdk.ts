@@ -1475,19 +1475,19 @@ export interface LaunchConfigDescriptor {
 
 export function getLaunchConfig(harness: string, mode: string): LaunchConfigDescriptor | undefined {
   try {
-    const atlas = require('@a5c-ai/atlas') as { AtlasGraph: new (index: unknown) => { getAllRecords(): Array<{ id: string; nodeKind?: string; attributes?: Record<string, unknown> }> }; getIndex(): unknown };
+    const atlas = require('@a5c-ai/atlas') as { AtlasGraph: new (index: unknown) => { getAllRecords(): Array<Record<string, unknown>> }; getIndex(): unknown };
     const graph = new atlas.AtlasGraph(atlas.getIndex());
     const configId = `launch-config:${harness}.${mode}`;
-    const record = graph.getAllRecords().find((r) => r.id === configId && r.nodeKind === 'LaunchConfig');
-    if (!record?.attributes) return undefined;
+    const record = graph.getAllRecords().find((r) => r.id === configId);
+    if (!record) return undefined;
     return {
-      id: record.id,
+      id: String(record.id),
       harness,
       mode,
-      displayName: String(record.attributes.displayName ?? ''),
-      commArgs: Array.isArray(record.attributes.commArgs) ? record.attributes.commArgs as string[] : [],
-      env: (record.attributes.env && typeof record.attributes.env === 'object') ? record.attributes.env as Record<string, string> : {},
-      description: String(record.attributes.description ?? ''),
+      displayName: String(record.displayName ?? ''),
+      commArgs: Array.isArray(record.commArgs) ? record.commArgs as string[] : [],
+      env: (record.env && typeof record.env === 'object') ? record.env as Record<string, string> : {},
+      description: String(record.description ?? ''),
     };
   } catch {
     return undefined;
