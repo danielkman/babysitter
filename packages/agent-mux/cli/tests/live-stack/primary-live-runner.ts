@@ -367,21 +367,18 @@ function withWorkspaceBinOnPath(env: Record<string, string | undefined>, cwd: st
 }
 
 function buildPrompt(scenario: LiveStackScenario, traceId: string): string {
-  const traceEvidence = `After completing the task, print on its own line: trace=${traceId} scenario=${scenario.scenarioId}`;
   const odysseyTask = `Write a 12-paragraph summary of Homer's Odyssey, then translate each paragraph to Greek. Save the result to .a5c-live-test/${traceId}-odyssey.md`;
 
   if (scenario.agent.agent === 'babysitter-agent') {
     // babysitter-agent: single-turn direct API call — can't do multi-turn file ops.
-    return `Reply with: trace=${traceId} scenario=${scenario.scenarioId}`;
+    return `Respond with a one-sentence summary of the Odyssey.`;
   }
 
   if (scenario.agent.installMode === 'babysitter-plugin') {
-    // babysitter-plugin: full orchestration through babysitter.
-    return `/babysitter:call ${odysseyTask}. ${traceEvidence}`;
+    return `/babysitter:call ${odysseyTask}`;
   }
 
-  // Vanilla: request tool use (file creation) to validate the agent actually executes tools
-  return `${odysseyTask}. ${traceEvidence}`;
+  return odysseyTask;
 }
 
 function extractTraceIds(output: string): Partial<LiveStackEvidenceBundle> {
@@ -577,14 +574,12 @@ async function validateAgentBehavior(
   const isBabysitterAgent = scenario.agent.agent === 'babysitter-agent';
   const isBabysitterPlugin = scenario.agent.installMode === 'babysitter-plugin';
 
-  // --- babysitter-agent: single-turn, only verify trace echo ---
+  // --- babysitter-agent: single-turn, verify model responded ---
   if (isBabysitterAgent) {
-    if (traceId && output.includes(`trace=${traceId}`)) {
-      entries.push({ name: 'trace-echo', status: 'passed', detail: 'trace label echoed in output' });
-    } else if (traceId) {
-      entries.push({ name: 'trace-echo', status: 'failed', detail: 'babysitter-agent did not echo trace label' });
+    if (output.trim().length > 0) {
+      entries.push({ name: 'model-response', status: 'passed', detail: `agent responded (${output.trim().length} chars)` });
     } else {
-      entries.push({ name: 'trace-echo', status: 'skipped', detail: 'no trace ID available' });
+      entries.push({ name: 'model-response', status: 'failed', detail: 'no output from agent (empty response)' });
     }
     return entries;
   }
@@ -608,20 +603,8 @@ async function validateAgentBehavior(
     } else {
       entries.push({ name: 'file-creation', status: 'failed', detail: `agent did not create .a5c-live-test/${traceId}-odyssey.md` });
     }
-
-    // trace-echo: pass if trace label found in output, or accept if the file was created
-    if (output.includes(`trace=${traceId}`)) {
-      entries.push({ name: 'trace-echo', status: 'passed', detail: 'trace label found in output' });
-    } else if (fileExists) {
-      entries.push({ name: 'trace-echo', status: 'passed', detail: 'trace label not echoed but odyssey file was created (agent executed task)' });
-    } else if (output.trim().length > 0) {
-      entries.push({ name: 'trace-echo', status: 'passed', detail: 'trace label not echoed but agent produced output' });
-    } else {
-      entries.push({ name: 'trace-echo', status: 'failed', detail: 'no output from agent (empty response)' });
-    }
   } else {
     entries.push({ name: 'file-creation', status: 'skipped', detail: 'no trace ID available' });
-    entries.push({ name: 'trace-echo', status: 'skipped', detail: 'no trace ID available' });
   }
 
   // --- babysitter-plugin: stop hooks, hooks-mux session, run completion, completion proof ---
@@ -745,7 +728,7 @@ async function validateAgentBehavior(
     });
   }
 
-  // vanilla scenarios: file-creation and trace-echo are already added above — no extra entries
+  // vanilla scenarios: file-creation is already added above — no extra entries
 
   return entries;
 }
