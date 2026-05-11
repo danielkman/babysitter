@@ -67,6 +67,9 @@ export function createAgentDispatchController(options = {}) {
             attempt.status.agentMuxSessionId = session.sessionId;
             run.status.phase = 'Running';
             attempt.status.startedAt = now;
+          } else {
+            run.status.phase = 'Queued';
+            run.status.conditions = [{ type: 'AgentMuxBound', status: 'False', reason: 'LaunchFailed', message: 'Agent Mux launch returned no session' }];
           }
         } catch {
           run.status.phase = 'Queued';

@@ -48,7 +48,12 @@ function buildValidResources(stackName) {
 }
 
 test('Successful dispatch with Agent Mux available', async () => {
-  const muxClient = createAgentMuxClient({ gateway: 'http://localhost:9090', enabled: true });
+  // Use a mock mux client that returns a session without making real HTTP calls
+  const muxClient = {
+    role: 'agent-mux-client',
+    isAvailable() { return true; },
+    async launchSession() { return { runId: `amux-${Date.now()}`, sessionId: `session-${Date.now()}` }; },
+  };
   const resources = buildValidResources('dispatch-stack');
   const controller = createAgentDispatchController({ agentMuxClient: muxClient });
 
