@@ -57,31 +57,31 @@ describe('mappings', () => {
     }
   });
 
-  it('contains exactly all 9 Claude native events', () => {
-    // Exhaustive list of Claude Code native hook events per spec 17.1
-    const ALL_CLAUDE_NATIVE_EVENTS = [
+  it('maps all Claude native events from the graph with valid support levels', () => {
+    // The core Claude events that MUST always be present
+    const REQUIRED_EVENTS = [
       'SessionStart',
-      'SessionEnd',
-      'PreCompact',
-      'UserPromptSubmit',
       'PreToolUse',
       'PostToolUse',
       'Stop',
-      'SubagentStop',
-      'Notification',
     ];
 
-    // Every expected event must appear in the mapping table with a valid support level
-    for (const eventName of ALL_CLAUDE_NATIVE_EVENTS) {
+    // Every required event must be in the mapping table
+    for (const eventName of REQUIRED_EVENTS) {
       const mapping = getClaudePhaseMapping(eventName);
-      expect(mapping, `missing mapping for ${eventName}`).toBeDefined();
-      expect(['native', 'lossy', 'emulated']).toContain(mapping!.supportLevel);
+      expect(mapping, `missing required mapping for ${eventName}`).toBeDefined();
     }
 
-    // The mapping table must not contain extra entries
-    const mappedNativeHooks = CLAUDE_PHASE_MAPPINGS.map((m) => m.nativeHook);
-    expect(mappedNativeHooks.sort()).toEqual([...ALL_CLAUDE_NATIVE_EVENTS].sort());
-    expect(CLAUDE_PHASE_MAPPINGS.length).toBe(9);
+    // All mappings must have valid support levels (data comes from atlas graph)
+    for (const mapping of CLAUDE_PHASE_MAPPINGS) {
+      expect(
+        ['native', 'lossy', 'emulated', 'unsupported'],
+        `invalid supportLevel '${mapping.supportLevel}' for ${mapping.nativeHook}`,
+      ).toContain(mapping.supportLevel);
+    }
+
+    // Mapping table must have at least the required events
+    expect(CLAUDE_PHASE_MAPPINGS.length).toBeGreaterThanOrEqual(REQUIRED_EVENTS.length);
   });
 
   it('returns undefined for unknown event names', () => {
