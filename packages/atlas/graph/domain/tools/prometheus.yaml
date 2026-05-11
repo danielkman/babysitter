@@ -12,3 +12,8 @@ edges:
     - skill-area:observability-instrumentation
   implements_stack_part:
     - stack-part:metrics
+  alternative_to:
+    - target: tool:datadog
+      comparison: "Monitoring and observability platforms"
+    - target: tool:grafana
+      comparison: "Monitoring and observability platforms"

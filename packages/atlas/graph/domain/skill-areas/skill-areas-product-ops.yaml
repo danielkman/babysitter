@@ -21,6 +21,12 @@ edges:
   prerequisite_for_learning:
     - target: skill-area:roadmap-planning
       strength: required
+    - target: skill-area:prioritization-frameworks
+      strength: recommended
+    - target: skill-area:roadmap-management
+      strength: recommended
+    - target: skill-area:project-planning
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:user-research
@@ -127,3 +133,5 @@ edges:
   prerequisite_for_learning:
     - target: skill-area:cross-team-coordination
       strength: helpful
+    - target: skill-area:communication
+      strength: recommended

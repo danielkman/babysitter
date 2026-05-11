@@ -78,6 +78,9 @@ edges:
   used_for:
     - target: skill-area:developer-experience
     - target: skill-area:json-data-wrangling
+  alternative_to:
+    - target: tool:yq
+      comparison: "CLI data processors — jq is JSON-only; yq handles YAML, JSON, and XML"
 ---
 nodeKind: Tool
 id: tool:yq
@@ -94,6 +97,9 @@ edges:
   used_for:
     - target: skill-area:developer-experience
     - target: skill-area:json-data-wrangling
+  alternative_to:
+    - target: tool:jq
+      comparison: "CLI data processors — yq handles YAML, JSON, and XML; jq is JSON-only"
 ---
 nodeKind: Tool
 id: tool:bat
@@ -109,6 +115,9 @@ edges:
     - target: skill-area:cli-tooling
   used_for:
     - target: skill-area:developer-experience
+  alternative_to:
+    - target: tool:delta
+      comparison: "Terminal display tools — bat shows file contents with syntax highlighting; delta shows diffs"
 ---
 nodeKind: Tool
 id: tool:fd
@@ -124,6 +133,11 @@ edges:
     - target: skill-area:cli-tooling
   used_for:
     - target: skill-area:developer-experience
+  alternative_to:
+    - target: tool:ripgrep
+      comparison: "Terminal search tools — fd searches file names; ripgrep searches file contents"
+    - target: tool:fzf
+      comparison: "Terminal search tools — fd is file name search; fzf is interactive fuzzy finding"
 ---
 nodeKind: Tool
 id: tool:delta
@@ -139,6 +153,9 @@ edges:
     - target: skill-area:cli-tooling
   used_for:
     - target: skill-area:developer-experience
+  alternative_to:
+    - target: tool:bat
+      comparison: "Terminal display tools — delta shows diffs; bat shows file contents with syntax highlighting"
 ---
 nodeKind: Tool
 id: tool:lazygit
@@ -154,6 +171,9 @@ edges:
     - target: skill-area:cli-tooling
   used_for:
     - target: skill-area:developer-experience
+  alternative_to:
+    - target: tool:gh-cli
+      comparison: "Git CLI tools — lazygit is a TUI for git operations; gh-cli is GitHub-specific CLI"
 ---
 nodeKind: Tool
 id: tool:gh-cli
@@ -170,6 +190,9 @@ edges:
   used_for:
     - target: skill-area:developer-experience
     - target: skill-area:ci-cd
+  alternative_to:
+    - target: tool:lazygit
+      comparison: "Git CLI tools — gh-cli is GitHub-specific CLI; lazygit is a TUI for git operations"
 ---
 nodeKind: Tool
 id: tool:act
@@ -186,3 +209,6 @@ edges:
   used_for:
     - target: skill-area:ci-cd
     - target: skill-area:developer-experience
+  alternative_to:
+    - target: tool:tekton
+      comparison: "CI tools — act runs GitHub Actions locally; Tekton is Kubernetes-native CI/CD"

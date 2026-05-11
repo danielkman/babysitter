@@ -15,6 +15,15 @@ edges:
   used_for:
     - skill-area:vulnerability-scanning
     - skill-area:runtime-security
+  alternative_to:
+    - target: tool:snyk
+      comparison: "Security scanning — Trivy is open-source CLI; Snyk is a commercial platform"
+    - target: tool:checkov
+      comparison: "Security scanning — Trivy covers containers+IaC; Checkov focuses on IaC"
+    - target: tool:tfsec
+      comparison: "Security scanning — Trivy is multi-target; tfsec is Terraform-specific"
+    - target: tool:sonarqube
+      comparison: "Code security — Trivy scans dependencies and containers; SonarQube scans source code"
 ---
 nodeKind: Tool
 id: tool:falco
@@ -32,6 +41,9 @@ edges:
   used_for:
     - skill-area:vulnerability-scanning
     - skill-area:runtime-security
+  alternative_to:
+    - target: tool:opa
+      comparison: "Runtime security — Falco detects threats via eBPF; OPA enforces policies via Rego"
 ---
 nodeKind: Tool
 id: tool:opa
@@ -46,6 +58,9 @@ edges:
   tool_used_by:
     - target: skill-area:policy-enforcement
     - target: skill-area:access-control
+  alternative_to:
+    - target: tool:falco
+      comparison: "Runtime security — OPA enforces policies via Rego; Falco detects threats via eBPF"
 ---
 nodeKind: Tool
 id: tool:checkov
@@ -63,6 +78,13 @@ edges:
   used_for:
     - skill-area:vulnerability-scanning
     - skill-area:runtime-security
+  alternative_to:
+    - target: tool:tfsec
+      comparison: "IaC security — Checkov covers multi-IaC; tfsec is Terraform-specific"
+    - target: tool:trivy
+      comparison: "Security scanning — Checkov focuses on IaC; Trivy covers containers+IaC"
+    - target: tool:snyk
+      comparison: "Security scanning — Checkov is open-source IaC-focused; Snyk is a commercial platform"
 ---
 nodeKind: Tool
 id: tool:tfsec
@@ -80,6 +102,13 @@ edges:
   used_for:
     - skill-area:vulnerability-scanning
     - skill-area:runtime-security
+  alternative_to:
+    - target: tool:checkov
+      comparison: "IaC security — tfsec is Terraform-specific; Checkov covers multi-IaC"
+    - target: tool:trivy
+      comparison: "Security scanning — tfsec is Terraform-specific; Trivy is multi-target"
+    - target: tool:snyk
+      comparison: "Security scanning tools"
 ---
 nodeKind: Tool
 id: tool:owasp-zap
@@ -94,6 +123,11 @@ edges:
   tool_used_by:
     - target: skill-area:dast-scanning
     - target: skill-area:web-security-testing
+  alternative_to:
+    - target: tool:snyk
+      comparison: "Security scanning — OWASP ZAP is DAST for web apps; Snyk is SCA and code scanning"
+    - target: tool:sonarqube
+      comparison: "Security testing — OWASP ZAP is DAST (runtime); SonarQube is SAST (static)"
 ---
 nodeKind: Tool
 id: tool:jaeger
@@ -108,6 +142,11 @@ edges:
   tool_used_by:
     - target: skill-area:distributed-tracing
     - target: skill-area:observability-pipeline
+  alternative_to:
+    - target: tool:zipkin
+      comparison: "Distributed tracing platforms"
+    - target: tool:honeycomb
+      comparison: "Distributed tracing platforms"
 ---
 nodeKind: Tool
 id: tool:zipkin
@@ -122,6 +161,11 @@ edges:
   tool_used_by:
     - target: skill-area:distributed-tracing
     - target: skill-area:observability-pipeline
+  alternative_to:
+    - target: tool:jaeger
+      comparison: "Distributed tracing platforms"
+    - target: tool:honeycomb
+      comparison: "Distributed tracing platforms"
 ---
 nodeKind: Tool
 id: tool:opentelemetry
@@ -136,6 +180,9 @@ edges:
   tool_used_by:
     - target: skill-area:observability-pipeline
     - target: skill-area:distributed-tracing
+  alternative_to:
+    - target: tool:opentelemetry-collector
+      comparison: "OpenTelemetry ecosystem — OTel is the instrumentation SDK; the Collector is the data pipeline"
 ---
 nodeKind: Tool
 id: tool:loki
@@ -150,6 +197,13 @@ edges:
   tool_used_by:
     - target: skill-area:observability-pipeline
     - target: skill-area:log-aggregation
+  alternative_to:
+    - target: tool:fluentd
+      comparison: "Log infrastructure — Loki is a log storage backend; Fluentd is a log collector/router"
+    - target: tool:fluent-bit
+      comparison: "Log infrastructure — Loki is a log storage backend; Fluent Bit is a log shipper"
+    - target: tool:vector
+      comparison: "Log infrastructure — Loki is a log storage backend; Vector is a log pipeline"
 ---
 nodeKind: Tool
 id: tool:tempo
@@ -164,6 +218,9 @@ edges:
   tool_used_by:
     - target: skill-area:distributed-tracing
     - target: skill-area:observability-pipeline
+  alternative_to:
+    - target: tool:jaeger
+      comparison: "Distributed tracing backends — Tempo uses object storage; Jaeger uses Elasticsearch/Cassandra"
 ---
 nodeKind: Tool
 id: tool:vector
@@ -178,6 +235,13 @@ edges:
   tool_used_by:
     - target: skill-area:observability-pipeline
     - target: skill-area:log-aggregation
+  alternative_to:
+    - target: tool:fluentd
+      comparison: "Log shipping — Vector is Rust-based and high-performance; Fluentd has 500+ plugins"
+    - target: tool:fluent-bit
+      comparison: "Log shipping — Vector handles logs+metrics+traces; Fluent Bit is lightweight log shipper"
+    - target: tool:loki
+      comparison: "Log infrastructure — Vector is a log pipeline; Loki is a log storage backend"
 ---
 nodeKind: Tool
 id: tool:fluentd
@@ -192,3 +256,10 @@ edges:
   tool_used_by:
     - target: skill-area:observability-pipeline
     - target: skill-area:log-aggregation
+  alternative_to:
+    - target: tool:fluent-bit
+      comparison: "Log shipping — Fluentd has 500+ plugins; Fluent Bit is a lightweight alternative"
+    - target: tool:vector
+      comparison: "Log shipping — Fluentd has 500+ plugins; Vector is Rust-based and high-performance"
+    - target: tool:loki
+      comparison: "Log infrastructure — Fluentd is a log collector/router; Loki is a log storage backend"

@@ -23,6 +23,18 @@ edges:
   prerequisite_for_learning:
     - target: skill-area:brand-positioning
       strength: recommended
+    - target: skill-area:content-marketing
+      strength: recommended
+    - target: skill-area:digital-advertising
+      strength: recommended
+    - target: skill-area:marketing-automation
+      strength: recommended
+    - target: skill-area:brand-strategy
+      strength: recommended
+    - target: skill-area:market-research
+      strength: recommended
+    - target: skill-area:event-management
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:brand-positioning

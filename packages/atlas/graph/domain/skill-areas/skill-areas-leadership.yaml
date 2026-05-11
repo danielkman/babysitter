@@ -16,6 +16,17 @@ edges:
   applies_to:
     - target: domain:software-engineering
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:organizational-design
+      strength: recommended
+    - target: skill-area:learning-development
+      strength: recommended
+    - target: skill-area:team-management
+      strength: recommended
+    - target: skill-area:hiring-interviewing
+      strength: recommended
+    - target: skill-area:mentorship
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:team-management

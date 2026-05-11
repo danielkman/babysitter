@@ -48,3 +48,5 @@ edges:
       notes: |
         Multi-agent and subgraph patterns can be encoded as graphs, supervisors,
         handoffs, or Deep Agents-style subagent harnesses.
+  uses_memory_system:
+    - target: memory-system:vector-backed-recall-pattern

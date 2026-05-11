@@ -10,3 +10,10 @@ edges:
     - target: language:javascript
   used_for:
     - target: skill-area:ci-pipeline-optimization
+  alternative_to:
+    - target: tool:webpack
+      comparison: "JavaScript bundlers"
+    - target: tool:vite
+      comparison: "JavaScript bundlers"
+    - target: tool:parcel
+      comparison: "JavaScript bundlers"

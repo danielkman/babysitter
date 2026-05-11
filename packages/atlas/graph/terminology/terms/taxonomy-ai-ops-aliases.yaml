@@ -2,7 +2,6 @@
 nodeKind: Term
 id: term:retrieval-augmented-generation-setup
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Retrieval-Augmented Generation (RAG) Setup"
   kind: concept
   references:
@@ -17,7 +16,6 @@ edges:
 nodeKind: Term
 id: term:prompt-engineering-context-management
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Prompt Engineering and Context Management"
   kind: concept
   references:
@@ -33,7 +31,6 @@ edges:
 nodeKind: Term
 id: term:chain-of-thought-prompting-multi-turn-dialogue
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Chain-of-Thought Prompting and Multi-turn Dialogue"
   kind: concept
   references:
@@ -49,7 +46,6 @@ edges:
 nodeKind: Term
 id: term:llm-fine-tuning-adaptation
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "LLM Fine-tuning and Adaptation"
   kind: concept
   references:
@@ -64,7 +60,6 @@ edges:
 nodeKind: Term
 id: term:embedding-generation-similarity-search
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Embedding Generation and Similarity Search"
   kind: concept
   references:
@@ -79,7 +74,6 @@ edges:
 nodeKind: Term
 id: term:inference-serving-optimization
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Inference and Serving Optimization"
   kind: concept
   references:
@@ -95,7 +89,6 @@ edges:
 nodeKind: Term
 id: term:llm-monitoring-logging
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "LLM Monitoring and Logging"
   kind: concept
   references:
@@ -111,7 +104,6 @@ edges:
 nodeKind: Term
 id: term:context-window-management
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Context Window Management"
   kind: concept
   references:
@@ -126,7 +118,6 @@ edges:
 nodeKind: Term
 id: term:tool-integration-architecture
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Tool-Integration Architecture"
   kind: concept
   references:
@@ -141,7 +132,6 @@ edges:
 nodeKind: Term
 id: term:state-management-memory-persistence
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "State Management and Memory Persistence"
   kind: concept
   references:
@@ -156,7 +146,6 @@ edges:
 nodeKind: Term
 id: term:multi-agent-coordination-messaging
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Multi-Agent Coordination and Messaging"
   kind: concept
   references:
@@ -171,7 +160,6 @@ edges:
 nodeKind: Term
 id: term:environment-context-adaptation
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Environment and Context Adaptation"
   kind: concept
   references:
@@ -186,7 +174,6 @@ edges:
 nodeKind: Term
 id: term:containerization-orchestration
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Containerization and Orchestration"
   kind: concept
   references:
@@ -201,7 +188,6 @@ edges:
 nodeKind: Term
 id: term:secret-secure-config-management
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Secret and Secure Config Management"
   kind: concept
   references:
@@ -217,7 +203,6 @@ edges:
 nodeKind: Term
 id: term:observability-monitoring-logging-alerting
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Observability and Monitoring (Logging, Alerting)"
   kind: concept
   references:
@@ -232,7 +217,6 @@ edges:
 nodeKind: Term
 id: term:incident-on-call-management
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Incident and On-Call Management"
   kind: concept
   references:
@@ -247,7 +231,6 @@ edges:
 nodeKind: Term
 id: term:version-control-gitops
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Version Control and GitOps"
   kind: concept
   references:
@@ -262,7 +245,6 @@ edges:
 nodeKind: Term
 id: term:ci-cd-release-orchestration
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "CI/CD and Release Orchestration"
   kind: concept
   references:
@@ -277,7 +259,6 @@ edges:
 nodeKind: Term
 id: term:infrastructure-as-code-configuration-management
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Infrastructure as Code and Configuration Management"
   kind: concept
   references:
@@ -293,7 +274,6 @@ edges:
 nodeKind: Term
 id: term:rate-limiting
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Rate Limiting"
   kind: concept
   references:
@@ -309,7 +289,6 @@ edges:
 nodeKind: Term
 id: term:dependency-injection
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Dependency Injection"
   kind: concept
   references:
@@ -324,7 +303,6 @@ edges:
 nodeKind: Term
 id: term:progressive-enhancement
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Progressive Enhancement"
   kind: concept
   references:
@@ -339,7 +317,6 @@ edges:
 nodeKind: Term
 id: term:infinite-scroll
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Infinite Scroll"
   kind: concept
   references:
@@ -354,7 +331,6 @@ edges:
 nodeKind: Term
 id: term:feature-store-architecture
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Feature Store Architecture"
   kind: concept
   references:
@@ -370,7 +346,6 @@ edges:
 nodeKind: Term
 id: term:drift-detection
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Drift Detection"
   kind: concept
   references:

@@ -17,6 +17,50 @@ edges:
   prerequisite_for_learning:
     - target: skill-area:multi-agent-coordination
       strength: required
+    - target: skill-area:prompt-engineering
+      strength: recommended
+    - target: skill-area:agentic-loops
+      strength: recommended
+    - target: skill-area:tool-use
+      strength: recommended
+    - target: skill-area:context-management
+      strength: recommended
+    - target: skill-area:eval-driven-development
+      strength: recommended
+    - target: skill-area:agent-planning-reasoning
+      strength: recommended
+    - target: skill-area:agent-simulation-testing
+      strength: recommended
+    - target: skill-area:agent-debugging-logging
+      strength: recommended
+    - target: skill-area:tool-service-integration-agents
+      strength: recommended
+    - target: skill-area:chain-of-thought-multistep-orchestration
+      strength: recommended
+    - target: skill-area:reinforcement-learning-agents
+      strength: recommended
+    - target: skill-area:prompt-instruction-tuning-agents
+      strength: recommended
+    - target: skill-area:safety-redteaming
+      strength: recommended
+    - target: skill-area:multi-turn-tool-use
+      strength: recommended
+    - target: skill-area:orchestration-loop
+      strength: recommended
+    - target: skill-area:hallucination-mitigation-fact-checking
+      strength: recommended
+    - target: skill-area:rlhf-systems
+      strength: recommended
+    - target: skill-area:ai-evaluation
+      strength: recommended
+    - target: skill-area:llm-observability
+      strength: recommended
+    - target: skill-area:llm-summarization-qa
+      strength: recommended
+    - target: skill-area:medical-agent
+      strength: recommended
+    - target: skill-area:travel-itinerary-planning
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:cloud-infrastructure
@@ -33,6 +77,25 @@ edges:
   applies_to:
     - target: domain:cloud-infra
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:containerization
+      strength: recommended
+    - target: skill-area:serverless-compute
+      strength: recommended
+    - target: skill-area:serverless-cold-start-optimization
+      strength: recommended
+    - target: skill-area:cdn-edge
+      strength: recommended
+    - target: skill-area:terraform-infrastructure
+      strength: recommended
+    - target: skill-area:cloud-deployment
+      strength: recommended
+    - target: skill-area:k8s-operator-development
+      strength: recommended
+    - target: skill-area:k8s-rbac
+      strength: recommended
+    - target: skill-area:service-mesh-config
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:technical-writing

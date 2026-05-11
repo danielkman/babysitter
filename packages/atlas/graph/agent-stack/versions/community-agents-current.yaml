@@ -17,6 +17,8 @@ edges:
     versionRange: '>=1.0.0'
     level: full
     notes: claude-sh implements the full agent loop in bash with multi-turn support.
+  uses_memory_system:
+    - target: memory-system:file-based-markdown-pattern
 ---
 nodeKind: AgentVersion
 id: agent-version:psclaudecode@current

@@ -12,6 +12,11 @@ edges:
     - target: skill-area:profiling-cpu
   used_for:
     - skill-area:frontend-performance
+  alternative_to:
+    - target: tool:flamegraph
+      comparison: "Profiling — perf samples CPU profiles; FlameGraph visualizes stack traces"
+    - target: tool:py-spy
+      comparison: "Profiling — perf is Linux system-level; py-spy is Python-specific"
 ---
 nodeKind: Tool
 id: tool:flamegraph
@@ -26,6 +31,11 @@ edges:
     - target: skill-area:profiling-cpu
   used_for:
     - skill-area:frontend-performance
+  alternative_to:
+    - target: tool:perf
+      comparison: "Profiling — FlameGraph visualizes stack traces; perf samples CPU profiles"
+    - target: tool:py-spy
+      comparison: "Profiling — FlameGraph is a visualization tool; py-spy is a Python sampling profiler"
 ---
 nodeKind: Tool
 id: tool:py-spy
@@ -43,3 +53,8 @@ edges:
     - target: skill-area:profiling-cpu
   used_for:
     - skill-area:frontend-performance
+  alternative_to:
+    - target: tool:perf
+      comparison: "Profiling — py-spy is Python-specific; perf is Linux system-level"
+    - target: tool:flamegraph
+      comparison: "Profiling — py-spy is a Python sampling profiler; FlameGraph is a visualization tool"

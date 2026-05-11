@@ -51,3 +51,6 @@ edges:
   used_for:
     - target: skill-area:ci-cd
     - target: skill-area:deployment-automation
+  alternative_to:
+    - target: tool:act
+      comparison: "CI tools — Tekton is Kubernetes-native CI/CD; act runs GitHub Actions locally"

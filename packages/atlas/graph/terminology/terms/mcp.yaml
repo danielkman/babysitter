@@ -1,7 +1,6 @@
 nodeKind: Term
 id: term:mcp
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Model Context Protocol"
   kind: protocol
   references:

@@ -11,3 +11,7 @@ attributes:
   scope: project
   evaluationContext: project
   expansion: literal
+
+edges:
+  owned_by:
+    - target: agent-runtime-impl:cursor.runtime@current

@@ -16,3 +16,7 @@ attributes:
     %LOCALAPPDATA%\opencode\. TODO: confirm via vendor doc.
 
 
+
+edges:
+  owned_by:
+    - target: agent-platform-impl:opencode.platform@1.x

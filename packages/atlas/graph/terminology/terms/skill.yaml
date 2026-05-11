@@ -1,7 +1,6 @@
 nodeKind: Term
 id: term:skill
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Skill"
   kind: extension-shape
   references:

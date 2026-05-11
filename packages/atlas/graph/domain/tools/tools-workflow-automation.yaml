@@ -27,6 +27,11 @@ edges:
     - target: skill-area:multi-agent-coordination
     - target: skill-area:communication
     - target: topic:agent-orchestration-products
+  alternative_to:
+    - target: tool:zapier
+      comparison: "Workflow automation platforms"
+    - target: tool:make
+      comparison: "Workflow automation platforms"
 ---
 nodeKind: Tool
 id: tool:zapier
@@ -46,6 +51,11 @@ edges:
     - skill-area:operations-automation
   lib_applies_to_domain:
     - target: domain:operations
+  alternative_to:
+    - target: tool:n8n
+      comparison: "Workflow automation platforms"
+    - target: tool:make
+      comparison: "Workflow automation platforms"
 ---
 nodeKind: Tool
 id: tool:make
@@ -64,3 +74,8 @@ edges:
     - skill-area:operations-automation
   lib_applies_to_domain:
     - target: domain:operations
+  alternative_to:
+    - target: tool:n8n
+      comparison: "Workflow automation platforms"
+    - target: tool:zapier
+      comparison: "Workflow automation platforms"

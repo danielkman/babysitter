@@ -36,3 +36,5 @@ edges:
   supports_modality:
     - modality:mcp
   sourced_from: []
+  uses_memory_system:
+    - target: memory-system:instruction-file-hierarchy

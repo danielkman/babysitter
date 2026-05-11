@@ -11,3 +11,7 @@ edges:
     - language:typescript
   library_used_by:
     - target: skill-area:data-validation-sanitization
+  alternative_to:
+    - library:yup
+    - library:joi
+    - library:io-ts

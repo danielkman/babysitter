@@ -70,6 +70,8 @@ edges:
       versionRange: '>=1.0.0'
       level: full
       notes: Tool calling via registered plugins and MCP servers.
+  uses_memory_system:
+    - target: memory-system:file-based-markdown-pattern
 ---
 nodeKind: Presentation
 id: presentation:pikiclaw-mobile

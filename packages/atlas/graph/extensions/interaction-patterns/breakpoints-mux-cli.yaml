@@ -1,4 +1,4 @@
-# Catalog pass 97c — top-level CLI subcommand groups exposed by the
+# Top-level CLI subcommand groups exposed by the
 # `breakpoints-mux` bin (packages/breakpoints-mux/src/cli/program.ts).
 # Each group sub-tree (e.g. `auth login|set-token|status|...`) is summarized
 # at the group level; deep enumeration is deferred — leaf subcommand

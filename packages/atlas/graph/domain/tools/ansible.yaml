@@ -12,3 +12,8 @@ edges:
     - target: skill-area:operations-automation
     - target: skill-area:deployment-automation
     - target: skill-area:configuration-management
+  alternative_to:
+    - target: tool:terraform-cloud
+      comparison: "IaC/config — Ansible is agentless config management; Terraform Cloud is declarative provisioning"
+    - target: tool:pulumi-cloud
+      comparison: "IaC/config — Ansible is imperative playbooks; Pulumi Cloud is code-based provisioning"

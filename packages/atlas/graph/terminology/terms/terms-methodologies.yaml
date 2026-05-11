@@ -92,7 +92,6 @@ edges:
 nodeKind: Term
 id: term:everything-claude-code
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Everything Claude Code Methodology"
   kind: concept
   description: |
@@ -107,7 +106,6 @@ edges:
 nodeKind: Term
 id: term:superpowers-methodology
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Superpowers (Methodology)"
   kind: concept
   description: |
@@ -122,7 +120,6 @@ edges:
 nodeKind: Term
 id: term:spec-kit
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Spec Kit"
   kind: concept
   description: |
@@ -137,7 +134,6 @@ edges:
 nodeKind: Term
 id: term:shape-up
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Shape Up"
   kind: concept
   description: |
@@ -152,7 +148,6 @@ edges:
 nodeKind: Term
 id: term:domain-driven-design
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Domain-Driven Design"
   kind: concept
   description: |
@@ -166,7 +161,6 @@ edges:
 nodeKind: Term
 id: term:event-storming
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Event Storming"
   kind: concept
   description: |
@@ -180,7 +174,6 @@ edges:
 nodeKind: Term
 id: term:scrum
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Scrum"
   kind: concept
   description: |
@@ -194,7 +187,6 @@ edges:
 nodeKind: Term
 id: term:kanban
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Kanban"
   kind: concept
   description: |
@@ -208,7 +200,6 @@ edges:
 nodeKind: Term
 id: term:waterfall
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Waterfall"
   kind: concept
   description: |
@@ -223,7 +214,6 @@ edges:
 nodeKind: Term
 id: term:spiral-model
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Spiral Model"
   kind: concept
   description: |
@@ -237,7 +227,6 @@ edges:
 nodeKind: Term
 id: term:v-model
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "V-Model"
   kind: concept
   description: |
@@ -251,7 +240,6 @@ edges:
 nodeKind: Term
 id: term:rup
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Rational Unified Process"
   kind: concept
   description: |
@@ -265,7 +253,6 @@ edges:
 nodeKind: Term
 id: term:extreme-programming
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Extreme Programming"
   kind: concept
   description: |
@@ -279,7 +266,6 @@ edges:
 nodeKind: Term
 id: term:feature-driven-development
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Feature-Driven Development"
   kind: concept
   description: |
@@ -292,7 +278,6 @@ edges:
 nodeKind: Term
 id: term:hypothesis-driven-development
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Hypothesis-Driven Development"
   kind: concept
   description: |
@@ -306,7 +291,6 @@ edges:
 nodeKind: Term
 id: term:double-diamond
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Double Diamond"
   kind: concept
   description: |
@@ -320,7 +304,6 @@ edges:
 nodeKind: Term
 id: term:jobs-to-be-done
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Jobs To Be Done"
   kind: concept
   description: |
@@ -334,7 +317,6 @@ edges:
 nodeKind: Term
 id: term:impact-mapping
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Impact Mapping"
   kind: concept
   description: |
@@ -348,7 +330,6 @@ edges:
 nodeKind: Term
 id: term:example-mapping
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Example Mapping"
   kind: concept
   description: |
@@ -362,7 +343,6 @@ edges:
 nodeKind: Term
 id: term:cleanroom
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Cleanroom Software Engineering"
   kind: concept
   description: |
@@ -376,7 +356,6 @@ edges:
 nodeKind: Term
 id: term:adversarial-spec-debates
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Adversarial Spec Debates"
   kind: concept
   description: |
@@ -390,7 +369,6 @@ edges:
 nodeKind: Term
 id: term:consensus-and-voting-mechanisms
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Consensus and Voting Mechanisms"
   kind: concept
   description: |
@@ -405,7 +383,6 @@ edges:
 nodeKind: Term
 id: term:graph-of-thoughts
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Graph of Thoughts"
   kind: concept
   description: |
@@ -420,7 +397,6 @@ edges:
 nodeKind: Term
 id: term:plan-and-execute
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Plan-and-Execute"
   kind: concept
   description: |
@@ -434,7 +410,6 @@ edges:
 nodeKind: Term
 id: term:state-machine-orchestration
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "State-Machine Orchestration"
   kind: concept
   description: |
@@ -449,7 +424,6 @@ edges:
 nodeKind: Term
 id: term:self-assessment-loop
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Self-Assessment Loop"
   kind: concept
   description: |
@@ -463,7 +437,6 @@ edges:
 nodeKind: Term
 id: term:deep-research
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Deep Research"
   kind: concept
   description: |
@@ -477,7 +450,6 @@ edges:
 nodeKind: Term
 id: term:evolutionary-prototyping
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Evolutionary Prototyping"
   kind: concept
   description: |
@@ -491,7 +463,6 @@ edges:
 nodeKind: Term
 id: term:bottom-up-decomposition
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Bottom-Up Decomposition"
   kind: concept
   description: |
@@ -504,7 +475,6 @@ edges:
 nodeKind: Term
 id: term:top-down-decomposition
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Top-Down Decomposition"
   kind: concept
   description: |
@@ -517,7 +487,6 @@ edges:
 nodeKind: Term
 id: term:quality-gated-six-phase
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Quality-Gated Six-Phase"
   kind: concept
   description: |
@@ -532,7 +501,6 @@ edges:
 nodeKind: Term
 id: term:process-hardening
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Process Hardening"
   kind: concept
   description: |

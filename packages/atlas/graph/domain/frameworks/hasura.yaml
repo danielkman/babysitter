@@ -18,3 +18,5 @@ edges:
       comparison: "Headless CMS/API — Hasura is data-access-focused; Strapi is content-focused"
     - target: framework:directus
       comparison: "Data platforms — Hasura is GraphQL-engine-first; Directus has an admin UI"
+    - target: framework:supabase
+      comparison: "CMS / BaaS platforms"

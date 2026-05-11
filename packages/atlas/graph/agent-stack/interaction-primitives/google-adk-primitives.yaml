@@ -18,6 +18,8 @@ edges:
     - target: layer:10-interaction
   in_category:
     - interaction-primitive-category:telemetry
+  integrates_with:
+    - target: framework:google-adk
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:google-adk-a2a-dispatch
@@ -39,6 +41,8 @@ edges:
     - target: layer:10-interaction
   in_category:
     - interaction-primitive-category:lifecycle
+  integrates_with:
+    - target: framework:google-adk
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:google-adk-sequential-agent
@@ -57,3 +61,5 @@ attributes:
 edges:
   realizes:
     - target: layer:10-interaction
+  integrates_with:
+    - target: framework:google-adk

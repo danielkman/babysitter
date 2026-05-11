@@ -73,21 +73,6 @@ edgeKinds:
     type: enum<default
     optional>: null
   inverse: bundled_into
-- id: edge:bundled-into
-  name: bundled_into
-  origin: universal
-  description: inverse of bundled_with
-  source:
-  - Presentation
-  - AgentPlatformImpl
-  - AgentUIImpl
-  target:
-  - AgentProduct
-  - AgentPlatformImpl
-  - AgentUIImpl
-  - Presentation
-  cardinality: N:N
-  inverse: bundled_with
 - id: edge:supports-interaction-primitive
   name: supports_interaction_primitive
   origin: universal
@@ -124,17 +109,6 @@ edgeKinds:
     required: false
     notes: When mechanism=slash-command|keybinding|deep-link, the literal trigger (e.g. `/clear`, `Ctrl+L`, `cursor://chat/new`).
   inverse: supported_by_agent_ui
-- id: edge:supported-by-agent-ui
-  name: supported_by_agent_ui
-  origin: universal
-  description: inverse of supports_interaction_primitive (target widened to AgentPlatformImpl catalog pass 85)
-  source:
-  - InteractionPrimitive
-  target:
-  - AgentUIImpl
-  - AgentPlatformImpl
-  cardinality: N:N
-  inverse: supports_interaction_primitive
 - id: edge:realizes
   name: realizes
   origin: universal
@@ -164,35 +138,6 @@ edgeKinds:
   - Layer
   cardinality: N:N
   inverse: realized_by
-- id: edge:realized-by
-  name: realized_by
-  origin: universal
-  description: inverse of realizes
-  source:
-  - Layer
-  target:
-  - AgentCoreImpl
-  - AgentRuntimeImpl
-  - AgentPlatformImpl
-  - AgentUIImpl
-  - KnowledgeFabricImpl
-  - MemorySystem
-  - AgentVersion
-  - Presentation
-  - Channel
-  - HookSurface
-  - ModelFamily
-  - ModelVersion
-  - Provider
-  - ModelTransportProtocol
-  - MCPTransport
-  - TransportProxy
-  - Workspace
-  - Execution
-  - Sandbox
-  - InteractionPrimitive
-  cardinality: N:N
-  inverse: realizes
 - id: edge:has-version
   name: has_version
   origin: universal
@@ -299,25 +244,6 @@ edgeKinds:
     type: enum<required
     recommended>: null
   inverse: required_by
-- id: edge:required-by
-  name: required_by
-  origin: universal
-  description: inverse of requires_capability
-  source:
-  - Capability
-  target:
-  - Skill
-  - Plugin
-  - InteractionPrimitive
-  - CapabilityProfile
-  - LaunchConfig
-  - SessionModel
-  - ToolDescriptor
-  - Subagent
-  - ToolServer
-  - Role
-  cardinality: N:N
-  inverse: requires_capability
 - id: edge:applies-to-version
   name: applies_to_version
   origin: universal
@@ -394,18 +320,6 @@ edgeKinds:
   - HookSurface
   cardinality: N:N
   inverse: exposed_by_runtime
-- id: edge:exposed-by-runtime
-  name: exposed_by_runtime
-  origin: universal
-  description: inverse of exposes (transport/hook surface flavor); split from `exposed_by` which is reserved for APIEndpoint↔HTTPServerExtension semantics (catalog pass 22)
-  source:
-  - AgentHostTransport
-  - HookSurface
-  target:
-  - AgentPlatformImpl
-  - AgentRuntimeImpl
-  cardinality: N:N
-  inverse: exposes
 - id: edge:exposes-resource
   name: exposes_resource
   origin: standard
@@ -416,16 +330,6 @@ edgeKinds:
   - MCPResource
   cardinality: N:N
   inverse: resource_exposed_by
-- id: edge:resource-exposed-by
-  name: resource_exposed_by
-  origin: standard
-  description: inverse of exposes_resource
-  source:
-  - MCPResource
-  target:
-  - ToolServer
-  cardinality: N:N
-  inverse: exposes_resource
 - id: edge:exposes-prompt
   name: exposes_prompt
   origin: standard
@@ -436,16 +340,6 @@ edgeKinds:
   - MCPPrompt
   cardinality: N:N
   inverse: prompt_exposed_by
-- id: edge:prompt-exposed-by
-  name: prompt_exposed_by
-  origin: standard
-  description: inverse of exposes_prompt
-  source:
-  - MCPPrompt
-  target:
-  - ToolServer
-  cardinality: N:N
-  inverse: exposes_prompt
 - id: edge:exposes-sampling
   name: exposes_sampling
   origin: standard
@@ -456,16 +350,6 @@ edgeKinds:
   - MCPSampling
   cardinality: N:1
   inverse: sampling_exposed_by
-- id: edge:sampling-exposed-by
-  name: sampling_exposed_by
-  origin: standard
-  description: inverse of exposes_sampling
-  source:
-  - MCPSampling
-  target:
-  - ToolServer
-  cardinality: 1:N
-  inverse: exposes_sampling
 - id: edge:exposes-root
   name: exposes_root
   origin: standard
@@ -476,16 +360,6 @@ edgeKinds:
   - MCPRoot
   cardinality: N:N
   inverse: root_exposed_by
-- id: edge:root-exposed-by
-  name: root_exposed_by
-  origin: standard
-  description: inverse of exposes_root
-  source:
-  - MCPRoot
-  target:
-  - ToolServer
-  cardinality: N:N
-  inverse: exposes_root
 - id: edge:uses-checkpoint
   name: uses_checkpoint
   origin: derived
@@ -498,18 +372,6 @@ edgeKinds:
   - HumanCheckpoint
   cardinality: N:N
   inverse: checkpoint_used_by
-- id: edge:checkpoint-used-by
-  name: checkpoint_used_by
-  origin: derived
-  originContext: Derived from current catalog relationship semantics.
-  description: inverse of uses_checkpoint
-  source:
-  - HumanCheckpoint
-  target:
-  - Skill
-  - Subagent
-  cardinality: N:N
-  inverse: uses_checkpoint
 - id: edge:bridges
   name: bridges
   origin: standard
@@ -540,20 +402,6 @@ edgeKinds:
   - name: since
     type: semver
   inverse: emitted_by
-- id: edge:emitted-by
-  name: emitted_by
-  origin: standard
-  description: inverse of emits_hook
-  source:
-  - HookSurface
-  - AgentVersion
-  target:
-  - AgentVersion
-  - HookMapping
-  - HookSurface
-  - BackgroundMonitor
-  cardinality: N:N
-  inverse: emits_hook
 - id: edge:transitions-to
   name: transitions_to
   origin: universal
@@ -580,16 +428,6 @@ edgeKinds:
   - StateMachine
   cardinality: N:1
   inverse: has_state
-- id: edge:has-state
-  name: has_state
-  origin: universal
-  description: inverse of belongs_to_machine
-  source:
-  - StateMachine
-  target:
-  - LifecycleState
-  cardinality: 1:N
-  inverse: belongs_to_machine
 - id: edge:state-machine-for
   name: state_machine_for
   origin: universal
@@ -620,20 +458,6 @@ edgeKinds:
   - SessionModel
   cardinality: N:N
   inverse: state_machine_for
-- id: edge:phase-in
-  name: phase_in
-  origin: universal
-  description: a phase belongs to a state machine or phase machine
-  source:
-  - Phase
-  target:
-  - StateMachine
-  - PhaseMachine
-  cardinality: N:1
-  attributes:
-  - name: order
-    type: int
-  inverse: has_phase
 - id: edge:has-phase
   name: has_phase
   origin: universal
@@ -676,16 +500,6 @@ edgeKinds:
   - name: path
     type: string
   inverse: materialization_of
-- id: edge:materialization-of
-  name: materialization_of
-  origin: universal
-  description: inverse of materializes_as
-  source:
-  - Worktree
-  target:
-  - Workspace
-  cardinality: N:1
-  inverse: materializes_as
 - id: edge:runs-via
   name: runs_via
   origin: universal
@@ -698,18 +512,6 @@ edgeKinds:
   - Execution
   cardinality: N:1
   inverse: runs_for
-- id: edge:runs-for
-  name: runs_for
-  origin: universal
-  description: inverse of runs_via
-  source:
-  - Execution
-  target:
-  - Workspace
-  - Invocation
-  - LaunchConfig
-  cardinality: 1:N
-  inverse: runs_via
 - id: edge:sandboxed-by
   name: sandboxed_by
   origin: universal
@@ -720,16 +522,6 @@ edgeKinds:
   - Sandbox
   cardinality: N:1
   inverse: sandboxes
-- id: edge:sandboxes
-  name: sandboxes
-  origin: universal
-  description: inverse of sandboxed_by
-  source:
-  - Sandbox
-  target:
-  - Execution
-  cardinality: 1:N
-  inverse: sandboxed_by
 - id: edge:contains
   name: contains
   origin: universal
@@ -742,18 +534,6 @@ edgeKinds:
   - Topic
   cardinality: 1:N
   inverse: contained_in
-- id: edge:contained-in
-  name: contained_in
-  origin: universal
-  description: inverse of contains
-  source:
-  - Specialization
-  - Topic
-  target:
-  - Domain
-  - Specialization
-  cardinality: N:1
-  inverse: contains
 - id: edge:belongs-to-language
   name: belongs_to_language
   origin: universal
@@ -764,16 +544,6 @@ edgeKinds:
   - Language
   cardinality: N:1
   inverse: has_framework
-- id: edge:has-framework
-  name: has_framework
-  origin: universal
-  description: inverse of belongs_to_language
-  source:
-  - Language
-  target:
-  - Framework
-  cardinality: 1:N
-  inverse: belongs_to_language
 - id: edge:composes-stack
   name: composes_stack
   origin: universal
@@ -790,18 +560,6 @@ edgeKinds:
     type: string
   inverse: composed_in
   aliasOf: composes
-- id: edge:composed-in
-  name: composed_in
-  origin: universal
-  description: inverse of composes_stack (stack profile)
-  source:
-  - Language
-  - Framework
-  - Tool
-  target:
-  - StackProfile
-  cardinality: N:N
-  inverse: composes_stack
 - id: edge:applies-to
   name: applies_to
   origin: universal
@@ -870,18 +628,6 @@ edgeKinds:
   - SkillArea
   cardinality: N:N
   inverse: addressed_by
-- id: edge:addressed-by
-  name: addressed_by
-  origin: universal
-  description: inverse of addresses
-  source:
-  - SkillArea
-  target:
-  - Skill
-  - Subagent
-  - Plugin
-  cardinality: N:N
-  inverse: addresses
 - id: edge:requires-expertise
   name: requires_expertise
   origin: universal
@@ -899,17 +645,6 @@ edgeKinds:
     expert: null
     authoritative>: null
   inverse: expertise_required_by
-- id: edge:expertise-required-by
-  name: expertise_required_by
-  origin: universal
-  description: inverse of requires_expertise
-  source:
-  - SkillArea
-  target:
-  - Role
-  - Responsibility
-  cardinality: N:N
-  inverse: requires_expertise
 - id: edge:requires-skill-area
   name: requires_skill_area
   origin: universal
@@ -921,17 +656,6 @@ edgeKinds:
   - SkillArea
   cardinality: N:N
   inverse: prerequisite_for
-- id: edge:prerequisite-for
-  name: prerequisite_for
-  origin: universal
-  description: inverse of requires_skill_area
-  source:
-  - SkillArea
-  target:
-  - SkillArea
-  - Workflow
-  cardinality: N:N
-  inverse: requires_skill_area
 - id: edge:uses-language
   name: uses_language
   origin: universal
@@ -1107,18 +831,6 @@ edgeKinds:
     authoritative>: null
     notes: Carries the former ExpertiseLevel enum (collapsed into edge attribute, remodel 2026-04-29 Change A.6).
   inverse: required_for
-- id: edge:required-for
-  name: required_for
-  description: inverse of requires_skill
-  source:
-  - Skill
-  - Domain
-  - Specialization
-  target:
-  - Role
-  - Responsibility
-  cardinality: N:N
-  inverse: requires_skill
 - id: edge:delegates-to
   name: delegates_to
   origin: universal
@@ -1132,26 +844,6 @@ edgeKinds:
   - name: condition
     type: markdown
   inverse: delegated_from
-- id: edge:delegated-from
-  name: delegated_from
-  origin: universal
-  description: inverse of delegates_to
-  source:
-  - Role
-  target:
-  - Role
-  cardinality: N:N
-  inverse: delegates_to
-- id: edge:member-of
-  name: member_of
-  origin: universal
-  description: a role is a member of an org unit
-  source:
-  - Role
-  target:
-  - OrgUnit
-  cardinality: N:1
-  inverse: has_member
 - id: edge:has-member
   name: has_member
   origin: universal
@@ -1175,16 +867,6 @@ edgeKinds:
   - name: partial
     type: bool
   inverse: played_by
-- id: edge:played-by
-  name: played_by
-  origin: universal
-  description: inverse of roles_played_by
-  source:
-  - Role
-  target:
-  - Subagent
-  cardinality: N:N
-  inverse: roles_played_by
 - id: edge:targets
   name: targets
   origin: universal
@@ -1204,44 +886,6 @@ edgeKinds:
   - ExtensionInterface
   cardinality: N:N
   inverse: targeted_by
-- id: edge:targeted-by
-  name: targeted_by
-  origin: universal
-  description: inverse of targets
-  source:
-  - Skill
-  - Plugin
-  - Domain
-  - Specialization
-  - StackProfile
-  - AgentVersion
-  - ModelVersion
-  - Layer
-  - Capability
-  - ExtensionInterface
-  target:
-  - Benchmark
-  cardinality: N:N
-  inverse: targets
-- id: edge:tests-in-scope
-  name: tests_in_scope
-  origin: universal
-  description: a test set declares the entities in scope for testing
-  source:
-  - TestSet
-  target:
-  - NodeKind
-  cardinality: N:N
-  inverse: in_test_scope_of
-- id: edge:in-test-scope-of
-  name: in_test_scope_of
-  description: inverse of tests_in_scope
-  source:
-  - NodeKind
-  target:
-  - TestSet
-  cardinality: N:N
-  inverse: tests_in_scope
 - id: edge:evaluated-by
   name: evaluated_by
   origin: universal
@@ -1255,16 +899,6 @@ edgeKinds:
   - name: runAt
     type: iso-timestamp
   inverse: evaluations
-- id: edge:evaluations
-  name: evaluations
-  origin: universal
-  description: inverse of evaluated_by
-  source:
-  - Benchmark
-  target:
-  - EvalRun
-  cardinality: 1:N
-  inverse: evaluated_by
 - id: edge:produced-result
   name: produced_result
   origin: universal
@@ -1275,16 +909,6 @@ edgeKinds:
   - EvalResult
   cardinality: 1:N
   inverse: produced_by
-- id: edge:produced-by
-  name: produced_by
-  origin: universal
-  description: inverse of produced_result
-  source:
-  - EvalResult
-  target:
-  - EvalRun
-  cardinality: N:1
-  inverse: produced_result
 - id: edge:scored-against
   name: scored_against
   origin: universal
@@ -1300,15 +924,6 @@ edgeKinds:
   - name: unit
     type: string
   inverse: scores_of
-- id: edge:scores-of
-  name: scores_of
-  description: inverse of scored_against
-  source:
-  - Benchmark
-  target:
-  - EvalResult
-  cardinality: 1:N
-  inverse: scored_against
 - id: edge:installs-into
   name: installs_into
   origin: universal
@@ -1324,16 +939,6 @@ edgeKinds:
     git: null
     local>: null
   inverse: accepts_plugin
-- id: edge:accepts-plugin
-  name: accepts_plugin
-  origin: universal
-  description: inverse of installs_into
-  source:
-  - AgentProduct
-  target:
-  - Plugin
-  cardinality: N:N
-  inverse: installs_into
 - id: edge:compiles-to
   name: compiles_to
   origin: universal
@@ -1348,17 +953,6 @@ edgeKinds:
   - name: host
     type: id
   inverse: compiled_from
-- id: edge:compiled-from
-  name: compiled_from
-  origin: universal
-  description: inverse of compiles_to
-  source:
-  - Plugin
-  - AgentVersion
-  target:
-  - Plugin
-  cardinality: N:1
-  inverse: compiles_to
 - id: edge:contains-skill
   name: contains_skill
   origin: universal
@@ -1369,16 +963,6 @@ edgeKinds:
   - Skill
   cardinality: 1:N
   inverse: skill_contained_in_plugin
-- id: edge:skill-contained-in-plugin
-  name: skill_contained_in_plugin
-  origin: universal
-  description: inverse of contains_skill (catalog pass 22 split — replaces overloaded `contained_in_plugin`)
-  source:
-  - Skill
-  target:
-  - Plugin
-  cardinality: N:1
-  inverse: contains_skill
 - id: edge:contains-subagent
   name: contains_subagent
   origin: universal
@@ -1389,16 +973,6 @@ edgeKinds:
   - Subagent
   cardinality: 1:N
   inverse: subagent_contained_in_plugin
-- id: edge:subagent-contained-in-plugin
-  name: subagent_contained_in_plugin
-  origin: universal
-  description: inverse of contains_subagent (catalog pass 22 split)
-  source:
-  - Subagent
-  target:
-  - Plugin
-  cardinality: N:1
-  inverse: contains_subagent
 - id: edge:contains-tool-server
   name: contains_tool_server
   origin: universal
@@ -1409,16 +983,6 @@ edgeKinds:
   - ToolServer
   cardinality: 1:N
   inverse: tool_server_contained_in_plugin
-- id: edge:tool-server-contained-in-plugin
-  name: tool_server_contained_in_plugin
-  origin: universal
-  description: inverse of contains_tool_server (catalog pass 22 split)
-  source:
-  - ToolServer
-  target:
-  - Plugin
-  cardinality: N:1
-  inverse: contains_tool_server
 - id: edge:contains-lsp-server
   name: contains_lsp_server
   origin: universal
@@ -1429,16 +993,6 @@ edgeKinds:
   - LSPServer
   cardinality: 1:N
   inverse: lsp_server_contained_in_plugin
-- id: edge:lsp-server-contained-in-plugin
-  name: lsp_server_contained_in_plugin
-  origin: universal
-  description: inverse of contains_lsp_server (catalog pass 22 split)
-  source:
-  - LSPServer
-  target:
-  - Plugin
-  cardinality: N:1
-  inverse: contains_lsp_server
 - id: edge:contains-monitor
   name: contains_monitor
   origin: universal
@@ -1449,16 +1003,6 @@ edgeKinds:
   - BackgroundMonitor
   cardinality: 1:N
   inverse: monitor_contained_in_plugin
-- id: edge:monitor-contained-in-plugin
-  name: monitor_contained_in_plugin
-  origin: universal
-  description: inverse of contains_monitor (catalog pass 22 split)
-  source:
-  - BackgroundMonitor
-  target:
-  - Plugin
-  cardinality: N:1
-  inverse: contains_monitor
 - id: edge:contains-bin
   name: contains_bin
   origin: universal
@@ -1469,16 +1013,6 @@ edgeKinds:
   - BinaryProvider
   cardinality: 1:N
   inverse: bin_contained_in_plugin
-- id: edge:bin-contained-in-plugin
-  name: bin_contained_in_plugin
-  origin: universal
-  description: inverse of contains_bin (catalog pass 22 split)
-  source:
-  - BinaryProvider
-  target:
-  - Plugin
-  cardinality: N:1
-  inverse: contains_bin
 - id: edge:ships-settings
   name: ships_settings
   origin: universal
@@ -1489,16 +1023,6 @@ edgeKinds:
   - SettingsTemplate
   cardinality: 1:N
   inverse: settings_contained_in_plugin
-- id: edge:settings-contained-in-plugin
-  name: settings_contained_in_plugin
-  origin: universal
-  description: inverse of ships_settings (catalog pass 22 split)
-  source:
-  - SettingsTemplate
-  target:
-  - Plugin
-  cardinality: N:1
-  inverse: ships_settings
 - id: edge:implements
   name: implements
   origin: universal
@@ -1538,19 +1062,6 @@ edgeKinds:
   - NodeKind
   cardinality: N:N
   inverse: defines_term
-- id: edge:defines-term
-  name: defines_term
-  origin: universal
-  description: inverse of defined_in_context_of
-  source:
-  - Domain
-  - Layer
-  - NodeKind
-  target:
-  - Term
-  - Definition
-  cardinality: N:N
-  inverse: defined_in_context_of
 - id: edge:synonym-of
   name: synonym_of
   origin: universal
@@ -1574,16 +1085,6 @@ edgeKinds:
   - Term
   cardinality: N:N
   inverse: subsumed_by
-- id: edge:subsumed-by
-  name: subsumed_by
-  origin: universal
-  description: inverse of subsumes
-  source:
-  - Term
-  target:
-  - Term
-  cardinality: N:N
-  inverse: subsumes
 - id: edge:references
   name: references
   origin: universal
@@ -1595,17 +1096,6 @@ edgeKinds:
   - Capability
   cardinality: N:N
   inverse: referenced_by
-- id: edge:referenced-by
-  name: referenced_by
-  origin: universal
-  description: inverse of references
-  source:
-  - NodeKind
-  - Capability
-  target:
-  - Term
-  cardinality: N:N
-  inverse: references
 - id: edge:expands-to
   name: expands_to
   origin: universal
@@ -1634,16 +1124,6 @@ edgeKinds:
   - Layer
   cardinality: N:1
   inverse: bridged_by_mux
-- id: edge:bridged-by-mux
-  name: bridged_by_mux
-  origin: a5c
-  description: inverse of bridges_protocol_type
-  source:
-  - Layer
-  target:
-  - Mux
-  cardinality: 1:N
-  inverse: bridges_protocol_type
 - id: edge:has-strategy
   name: has_strategy
   origin: a5c
@@ -1654,16 +1134,6 @@ edgeKinds:
   - BreakpointStrategy
   cardinality: N:1
   inverse: strategy_used_by
-- id: edge:strategy-used-by
-  name: strategy_used_by
-  origin: a5c
-  description: inverse of has_strategy
-  source:
-  - BreakpointStrategy
-  target:
-  - HumanCheckpoint
-  cardinality: 1:N
-  inverse: has_strategy
 - id: edge:routes-to-responder
   name: routes_to_responder
   origin: a5c
@@ -1674,16 +1144,6 @@ edgeKinds:
   - ResponderProfile
   cardinality: N:N
   inverse: responder_for
-- id: edge:responder-for
-  name: responder_for
-  origin: a5c
-  description: inverse of routes_to_responder
-  source:
-  - ResponderProfile
-  target:
-  - HumanCheckpoint
-  cardinality: N:N
-  inverse: routes_to_responder
 - id: edge:has-answer
   name: has_answer
   origin: a5c
@@ -1715,17 +1175,6 @@ edgeKinds:
   - DecisionMemory
   cardinality: N:N
   inverse: memory_for_decision
-- id: edge:memory-for-decision
-  name: memory_for_decision
-  origin: a5c
-  description: inverse of records_decision_memory
-  source:
-  - DecisionMemory
-  target:
-  - HumanCheckpoint
-  - BreakpointAnswer
-  cardinality: N:N
-  inverse: records_decision_memory
 - id: edge:bridges-for
   name: bridges_for
   origin: a5c
@@ -1761,27 +1210,6 @@ edgeKinds:
   - Claim
   cardinality: N:1
   inverse: tested_by
-- id: edge:tested-by
-  name: tested_by
-  origin: a5c
-  description: inverse of tests_claim — a Claim is tested by one or more ClaimTests or Experiments
-  source:
-  - Claim
-  target:
-  - ClaimTest
-  - Experiment
-  cardinality: 1:N
-  inverse: tests_claim
-- id: edge:produced-test-run
-  name: produced_test_run
-  origin: a5c
-  description: a ClaimTest produced a ClaimTestRun (single execution record)
-  source:
-  - ClaimTest
-  target:
-  - ClaimTestRun
-  cardinality: 1:N
-  inverse: test_run_of
 - id: edge:test-run-of
   name: test_run_of
   origin: a5c
@@ -1792,16 +1220,6 @@ edgeKinds:
   - ClaimTest
   cardinality: N:1
   inverse: produced_test_run
-- id: edge:scheduled-by-ci
-  name: scheduled_by_ci
-  origin: a5c
-  description: a ClaimTest is scheduled by a CIWorkflow (e.g. daily cron)
-  source:
-  - ClaimTest
-  target:
-  - CIWorkflow
-  cardinality: N:N
-  inverse: schedules_claim_test
 - id: edge:schedules-claim-test
   name: schedules_claim_test
   origin: a5c
@@ -1812,129 +1230,6 @@ edgeKinds:
   - ClaimTest
   cardinality: N:N
   inverse: scheduled_by_ci
-- id: edge:produced-evidence-for
-  name: produced_evidence_for
-  origin: universal
-  description: an evidence source produced evidence for a claim or claim-bearing record
-  source:
-  - EvidenceSource
-  target:
-  - Claim
-  - LifecycleSemantics
-  - SessionSemantics
-  cardinality: N:N
-  inverse: evidenced_by
-- id: edge:evidenced-by
-  name: evidenced_by
-  origin: universal
-  description: inverse of produced_evidence_for; also used by claim-bearing records (LifecycleSemantics, SessionSemantics) to link to evidence
-  source:
-  - Claim
-  - LifecycleSemantics
-  - SessionSemantics
-  target:
-  - EvidenceSource
-  cardinality: N:N
-  inverse: produced_evidence_for
-- id: edge:claims
-  name: claims
-  description: a claim asserts (subject, attribute, value)
-  source:
-  - Claim
-  target:
-  - NodeKind
-  cardinality: N:1
-  attributes:
-  - name: attribute
-    type: string
-  - name: value
-    type: any
-- id: edge:at-trust-level
-  name: at_trust_level
-  origin: universal
-  description: an evidence source carries a trust level
-  source:
-  - EvidenceSource
-  target:
-  - TrustLevel
-  cardinality: N:1
-  inverse: evidence_at_level
-- id: edge:evidence-at-level
-  name: evidence_at_level
-  origin: universal
-  description: inverse of at_trust_level
-  source:
-  - TrustLevel
-  target:
-  - EvidenceSource
-  cardinality: 1:N
-  inverse: at_trust_level
-- id: edge:in-scope
-  name: in_scope
-  origin: universal
-  description: an entity declares itself within a scope boundary
-  source:
-  - NodeKind
-  target:
-  - ScopeBoundary
-  cardinality: N:N
-  attributes:
-  - name: note
-    type: markdown
-  inverse: scopes_in
-- id: edge:scopes-in
-  name: scopes_in
-  origin: universal
-  description: inverse of in_scope
-  source:
-  - ScopeBoundary
-  target:
-  - NodeKind
-  cardinality: N:N
-  inverse: in_scope
-- id: edge:out-of-scope
-  name: out_of_scope
-  origin: universal
-  description: an entity declares itself outside a scope boundary
-  source:
-  - NodeKind
-  target:
-  - ScopeBoundary
-  cardinality: N:N
-  attributes:
-  - name: note
-    type: markdown
-  inverse: scopes_out
-- id: edge:scopes-out
-  name: scopes_out
-  origin: universal
-  description: inverse of out_of_scope
-  source:
-  - ScopeBoundary
-  target:
-  - NodeKind
-  cardinality: N:N
-  inverse: out_of_scope
-- id: edge:out-of-scope-reason
-  name: out_of_scope_reason
-  origin: universal
-  description: a scope boundary's out-of-scope items are tagged with reasons
-  source:
-  - ScopeBoundary
-  target:
-  - OutOfScopeReason
-  cardinality: 1:N
-  inverse: reason_for
-- id: edge:reason-for
-  name: reason_for
-  origin: universal
-  description: inverse of out_of_scope_reason
-  source:
-  - OutOfScopeReason
-  target:
-  - ScopeBoundary
-  cardinality: N:1
-  inverse: out_of_scope_reason
 - id: edge:sourced-from
   name: sourced_from
   origin: universal
@@ -1958,26 +1253,6 @@ edgeKinds:
   - name: importedAt
     type: iso-timestamp
   inverse: source_for
-- id: edge:source-for
-  name: source_for
-  origin: universal
-  description: inverse of sourced_from
-  source:
-  - SourceRef
-  target:
-  - Skill
-  - Plugin
-  - Subagent
-  - ToolServer
-  - MCPServer
-  - AgentVersion
-  - Process
-  - BackgroundMonitor
-  - Blueprint
-  - LSPServer
-  - PluginArtifact
-  cardinality: 1:N
-  inverse: sourced_from
 - id: edge:affects
   name: affects
   origin: universal
@@ -2008,16 +1283,6 @@ edgeKinds:
   - OpenQuestion
   cardinality: N:N
   inverse: raised_by_gap
-- id: edge:raised-by-gap
-  name: raised_by_gap
-  origin: universal
-  description: inverse of raised_question
-  source:
-  - OpenQuestion
-  target:
-  - Gap
-  cardinality: N:N
-  inverse: raised_question
 - id: edge:references-path
   name: references_path
   origin: universal
@@ -2031,19 +1296,6 @@ edgeKinds:
   - PathDescriptor
   cardinality: N:N
   inverse: path_for
-- id: edge:path-for
-  name: path_for
-  origin: universal
-  description: a PathDescriptor describes a path used by some entity
-  source:
-  - PathDescriptor
-  target:
-  - PackageSurface
-  - PluginArtifact
-  - SessionSemantics
-  - LifecycleSemantics
-  cardinality: N:N
-  inverse: references_path
 - id: edge:emits-artifact
   name: emits_artifact
   origin: universal
@@ -2155,16 +1407,6 @@ edgeKinds:
   - ToolDescriptor
   - Presentation
   cardinality: 1:N
-- id: edge:belongs-to-state-machine
-  name: belongs_to_state_machine
-  origin: universal
-  description: a LifecycleState belongs to a StateMachine (synonym/longer form of belongs_to_machine)
-  source:
-  - LifecycleState
-  target:
-  - StateMachine
-  cardinality: N:1
-  aliasOf: belongs_to_machine
 - id: edge:specializes
   name: specializes
   origin: universal
@@ -2601,16 +1843,6 @@ edgeKinds:
     type: enum<required,optional,recommended>
     required: true
   inverse: depended_on_by
-- id: edge:depended-on-by
-  name: depended_on_by
-  origin: universal
-  description: inverse of depends_on
-  source:
-  - PlatformService
-  target:
-  - PlatformService
-  cardinality: N:N
-  inverse: depends_on
 - id: edge:covers
   name: covers
   origin: universal
@@ -2628,16 +1860,6 @@ edgeKinds:
     type: float
     required: false
   inverse: covered_by_benchmark
-- id: edge:covered-by-benchmark
-  name: covered_by_benchmark
-  origin: universal
-  description: inverse of covers — a SkillArea is exercised by a Benchmark
-  source:
-  - SkillArea
-  target:
-  - Benchmark
-  cardinality: N:N
-  inverse: covers
 - id: edge:targets-tracker
   name: targets_tracker
   origin: universal
@@ -2648,16 +1870,6 @@ edgeKinds:
   - IssueTracker
   cardinality: N:1
   inverse: targeted_by_workflow
-- id: edge:targeted-by-workflow
-  name: targeted_by_workflow
-  origin: universal
-  description: inverse of targets_tracker
-  source:
-  - IssueTracker
-  target:
-  - WorkflowDefinition
-  cardinality: 1:N
-  inverse: targets_tracker
 - id: edge:invokes-agent
   name: invokes_agent
   origin: universal
@@ -2668,16 +1880,6 @@ edgeKinds:
   - AgentVersion
   cardinality: N:1
   inverse: invoked_by_workflow
-- id: edge:invoked-by-workflow
-  name: invoked_by_workflow
-  origin: universal
-  description: inverse of invokes_agent
-  source:
-  - AgentVersion
-  target:
-  - WorkflowDefinition
-  cardinality: 1:N
-  inverse: invokes_agent
 - id: edge:uses-workspace
   name: uses_workspace
   origin: universal
@@ -2688,16 +1890,6 @@ edgeKinds:
   - Workspace
   cardinality: N:1
   inverse: used_by_run_attempt
-- id: edge:used-by-run-attempt
-  name: used_by_run_attempt
-  origin: universal
-  description: inverse of uses_workspace
-  source:
-  - Workspace
-  target:
-  - RunAttempt
-  cardinality: 1:N
-  inverse: uses_workspace
 - id: edge:for-issue
   name: for_issue
   origin: universal
@@ -2708,16 +1900,6 @@ edgeKinds:
   - Issue
   cardinality: N:1
   inverse: has_run_attempts
-- id: edge:has-run-attempts
-  name: has_run_attempts
-  origin: universal
-  description: inverse of for_issue — an Issue has 1+ RunAttempts addressing it
-  source:
-  - Issue
-  target:
-  - RunAttempt
-  cardinality: 1:N
-  inverse: for_issue
 - id: edge:has-live-session
   name: has_live_session
   origin: universal
@@ -2771,16 +1953,6 @@ edgeKinds:
   cardinality: N:N
   notes: Distinct semantics from derives_from (which binds to a RuntimeSnapshot for catalog provenance / snapshot shape). reads_endpoint is the runtime data plane; derives_from is the catalog provenance plane.
   inverse: read_by_dashboard
-- id: edge:read-by-dashboard
-  name: read_by_dashboard
-  origin: universal
-  description: inverse of reads_endpoint
-  source:
-  - APIEndpoint
-  target:
-  - Dashboard
-  cardinality: N:N
-  inverse: reads_endpoint
 - id: edge:derives-from
   name: derives_from
   origin: universal
@@ -2792,16 +1964,6 @@ edgeKinds:
   cardinality: N:1
   notes: Catalog provenance edge (which RuntimeSnapshot was the dashboard designed against). Disambiguated from reads_endpoint per reviewer fix 2026-05-01.
   inverse: source_of_dashboard
-- id: edge:source-of-dashboard
-  name: source_of_dashboard
-  origin: universal
-  description: inverse of derives_from
-  source:
-  - RuntimeSnapshot
-  target:
-  - Dashboard
-  cardinality: 1:N
-  inverse: derives_from
 - id: edge:implements-protocol
   name: implements_protocol
   origin: universal
@@ -2812,16 +1974,6 @@ edgeKinds:
   - IssueTrackerProtocol
   cardinality: N:1
   inverse: implemented_by_tracker
-- id: edge:implemented-by-tracker
-  name: implemented_by_tracker
-  origin: universal
-  description: inverse of implements_protocol
-  source:
-  - IssueTrackerProtocol
-  target:
-  - IssueTracker
-  cardinality: 1:N
-  inverse: implements_protocol
 - id: edge:from-tracker
   name: from_tracker
   origin: universal
@@ -2832,16 +1984,6 @@ edgeKinds:
   - IssueTracker
   cardinality: N:1
   inverse: produces_issue
-- id: edge:produces-issue
-  name: produces_issue
-  origin: universal
-  description: inverse of from_tracker — an IssueTracker produces 1+ Issues
-  source:
-  - IssueTracker
-  target:
-  - Issue
-  cardinality: 1:N
-  inverse: from_tracker
 - id: edge:handles-failure
   name: handles_failure
   origin: universal
@@ -2852,16 +1994,6 @@ edgeKinds:
   - FailureClass
   cardinality: N:1
   inverse: handled_by_strategy
-- id: edge:handled-by-strategy
-  name: handled_by_strategy
-  origin: universal
-  description: inverse of handles_failure
-  source:
-  - FailureClass
-  target:
-  - RecoveryStrategy
-  cardinality: 1:N
-  inverse: handles_failure
 - id: edge:categorized-as
   name: categorized_as
   origin: universal
@@ -2872,16 +2004,6 @@ edgeKinds:
   - FailureClass
   cardinality: N:1
   inverse: categorizes_errors
-- id: edge:categorizes-errors
-  name: categorizes_errors
-  origin: universal
-  description: inverse of categorized_as
-  source:
-  - FailureClass
-  target:
-  - ErrorCategory
-  cardinality: 1:N
-  inverse: categorized_as
 - id: edge:fires-operational-trigger
   name: fires_operational_trigger
   origin: universal
@@ -2892,16 +2014,6 @@ edgeKinds:
   - OperationalTrigger
   cardinality: N:N
   inverse: triggered_by_endpoint
-- id: edge:triggered-by-endpoint
-  name: triggered_by_endpoint
-  origin: universal
-  description: inverse of fires_operational_trigger
-  source:
-  - OperationalTrigger
-  target:
-  - APIEndpoint
-  cardinality: N:N
-  inverse: fires_operational_trigger
 - id: edge:snapshots-state
   name: snapshots_state
   origin: universal
@@ -2912,16 +2024,6 @@ edgeKinds:
   - OrchestratorState
   cardinality: N:1
   inverse: snapshotted_by
-- id: edge:snapshotted-by
-  name: snapshotted_by
-  origin: universal
-  description: inverse of snapshots_state
-  source:
-  - OrchestratorState
-  target:
-  - RuntimeSnapshot
-  cardinality: 1:N
-  inverse: snapshots_state
 - id: edge:provides-cost-for
   name: provides_cost_for
   origin: universal
@@ -2934,18 +2036,6 @@ edgeKinds:
   - AgentVersion
   cardinality: N:N
   inverse: priced_by
-- id: edge:priced-by
-  name: priced_by
-  origin: universal
-  description: inverse of provides_cost_for
-  source:
-  - Provider
-  - ModelVersion
-  - AgentVersion
-  target:
-  - CostModel
-  cardinality: N:N
-  inverse: provides_cost_for
 - id: edge:constrains
   name: constrains
   origin: universal
@@ -2957,17 +2047,6 @@ edgeKinds:
   - Role
   cardinality: N:N
   inverse: constrained_by
-- id: edge:constrained-by
-  name: constrained_by
-  origin: universal
-  description: inverse of constrains
-  source:
-  - Tenant
-  - Role
-  target:
-  - Quota
-  cardinality: N:N
-  inverse: constrains
 - id: edge:applies-to-tenant
   name: applies_to_tenant
   origin: universal
@@ -2978,15 +2057,6 @@ edgeKinds:
   - Tenant
   cardinality: N:N
   inverse: tenant_quotas
-- id: edge:tenant-quotas
-  name: tenant_quotas
-  description: inverse of applies_to_tenant
-  source:
-  - Tenant
-  target:
-  - Quota
-  cardinality: N:N
-  inverse: applies_to_tenant
 - id: edge:recorded-against
   name: recorded_against
   origin: universal
@@ -2999,18 +2069,6 @@ edgeKinds:
   - BudgetPolicy
   cardinality: N:N
   inverse: usage_recorded
-- id: edge:usage-recorded
-  name: usage_recorded
-  origin: universal
-  description: inverse of recorded_against
-  source:
-  - CostModel
-  - Quota
-  - BudgetPolicy
-  target:
-  - UsageRecord
-  cardinality: 1:N
-  inverse: recorded_against
 - id: edge:owns-budget
   name: owns_budget
   origin: universal
@@ -3022,17 +2080,6 @@ edgeKinds:
   - OrgUnit
   cardinality: N:N
   inverse: budget_owned_by
-- id: edge:budget-owned-by
-  name: budget_owned_by
-  origin: universal
-  description: inverse of owns_budget
-  source:
-  - Tenant
-  - OrgUnit
-  target:
-  - BudgetPolicy
-  cardinality: 1:N
-  inverse: owns_budget
 - id: edge:owned-by
   name: owned_by
   origin: universal
@@ -3043,16 +2090,6 @@ edgeKinds:
   - OrgUnit
   cardinality: N:1
   inverse: owns_tenant
-- id: edge:owns-tenant
-  name: owns_tenant
-  origin: universal
-  description: inverse of owned_by
-  source:
-  - OrgUnit
-  target:
-  - Tenant
-  cardinality: 1:N
-  inverse: owned_by
 - id: edge:represents
   name: represents
   origin: universal
@@ -3063,16 +2100,6 @@ edgeKinds:
   - OrgUnit
   cardinality: N:1
   inverse: represented_by
-- id: edge:represented-by
-  name: represented_by
-  origin: universal
-  description: inverse of represents
-  source:
-  - OrgUnit
-  target:
-  - Customer
-  cardinality: 1:N
-  inverse: represents
 - id: edge:with-organization
   name: with_organization
   origin: universal
@@ -3083,16 +2110,6 @@ edgeKinds:
   - OrgUnit
   cardinality: N:1
   inverse: has_vendor_relationship
-- id: edge:has-vendor-relationship
-  name: has_vendor_relationship
-  origin: universal
-  description: inverse of with_organization
-  source:
-  - OrgUnit
-  target:
-  - VendorRelationship
-  cardinality: 1:N
-  inverse: with_organization
 - id: edge:emitted-by-span
   name: emitted_by_span
   origin: universal
@@ -3103,16 +2120,6 @@ edgeKinds:
   - Effect
   cardinality: N:1
   inverse: emits_span
-- id: edge:emits-span
-  name: emits_span
-  origin: universal
-  description: inverse of emitted_by_span
-  source:
-  - Effect
-  target:
-  - Span
-  cardinality: 1:N
-  inverse: emitted_by_span
 - id: edge:exports-to
   name: exports_to
   origin: universal
@@ -3126,19 +2133,6 @@ edgeKinds:
   - ObservabilityBackend
   cardinality: N:N
   inverse: ingests_from
-- id: edge:ingests-from
-  name: ingests_from
-  origin: universal
-  description: inverse of exports_to
-  source:
-  - ObservabilityBackend
-  target:
-  - Span
-  - AgentRuntimeImpl
-  - AgentPlatformImpl
-  - PlatformService
-  cardinality: 1:N
-  inverse: exports_to
 - id: edge:hosted-on-vcs
   name: hosted_on_vcs
   origin: universal
@@ -3150,17 +2144,6 @@ edgeKinds:
   - VCSHost
   cardinality: N:1
   inverse: hosts
-- id: edge:hosts
-  name: hosts
-  origin: universal
-  description: inverse of hosted_on_vcs
-  source:
-  - VCSHost
-  target:
-  - PullRequest
-  - CIWorkflow
-  cardinality: 1:N
-  inverse: hosted_on_vcs
 - id: edge:submitted-by
   name: submitted_by
   origin: universal
@@ -3172,17 +2155,6 @@ edgeKinds:
   - Role
   cardinality: N:1
   inverse: submitted
-- id: edge:submitted
-  name: submitted
-  origin: universal
-  description: inverse of submitted_by
-  source:
-  - Role
-  target:
-  - PullRequest
-  - CodeReview
-  cardinality: 1:N
-  inverse: submitted_by
 - id: edge:reviews
   name: reviews
   origin: universal
@@ -3193,16 +2165,6 @@ edgeKinds:
   - PullRequest
   cardinality: N:1
   inverse: reviewed_by
-- id: edge:reviewed-by
-  name: reviewed_by
-  origin: universal
-  description: inverse of reviews
-  source:
-  - PullRequest
-  target:
-  - CodeReview
-  cardinality: 1:N
-  inverse: reviews
 - id: edge:validates-pull-request
   name: validates_pull_request
   origin: universal
@@ -3213,16 +2175,6 @@ edgeKinds:
   - PullRequest
   cardinality: N:N
   inverse: validated_by_workflow
-- id: edge:validated-by-workflow
-  name: validated_by_workflow
-  origin: universal
-  description: inverse of validates_pull_request
-  source:
-  - PullRequest
-  target:
-  - CIWorkflow
-  cardinality: N:N
-  inverse: validates_pull_request
 - id: edge:conforms-to
   name: conforms_to
   origin: universal
@@ -3233,16 +2185,6 @@ edgeKinds:
   - ComplianceFramework
   cardinality: N:N
   inverse: conformance_claimed_by
-- id: edge:conformance-claimed-by
-  name: conformance_claimed_by
-  origin: universal
-  description: inverse of conforms_to
-  source:
-  - ComplianceFramework
-  target:
-  - Claim
-  cardinality: 1:N
-  inverse: conforms_to
 - id: edge:regulates
   name: regulates
   origin: universal
@@ -3263,16 +2205,6 @@ edgeKinds:
   - Regulator
   cardinality: N:N
   inverse: regulates
-- id: edge:policy-applied-by
-  name: policy_applied_by
-  origin: universal
-  description: a ContentPolicy is applied by an AgentVersion. Original plan also targeted Guardrail -> dropped per reviewer (no Guardrail NodeKind in v6).
-  source:
-  - ContentPolicy
-  target:
-  - AgentVersion
-  cardinality: N:N
-  inverse: applies_policy
 - id: edge:applies-policy
   name: applies_policy
   origin: universal
@@ -3293,16 +2225,6 @@ edgeKinds:
   - JailbreakPattern
   cardinality: N:N
   inverse: detected_by_policy
-- id: edge:detected-by-policy
-  name: detected_by_policy
-  origin: universal
-  description: inverse of detects_jailbreak
-  source:
-  - JailbreakPattern
-  target:
-  - ContentPolicy
-  cardinality: N:N
-  inverse: detects_jailbreak
 - id: edge:uses-vector-store
   name: uses_vector_store
   origin: universal
@@ -3314,17 +2236,6 @@ edgeKinds:
   - VectorStore
   cardinality: N:N
   inverse: vector_store_used_by
-- id: edge:vector-store-used-by
-  name: vector_store_used_by
-  origin: universal
-  description: inverse of uses_vector_store
-  source:
-  - VectorStore
-  target:
-  - AgentVersion
-  - RetrievalPipeline
-  cardinality: N:N
-  inverse: uses_vector_store
 - id: edge:embeds-with
   name: embeds_with
   origin: universal
@@ -3335,16 +2246,6 @@ edgeKinds:
   - EmbeddingModelProfile
   cardinality: N:1
   inverse: embedding_for_bundle
-- id: edge:embedding-for-bundle
-  name: embedding_for_bundle
-  origin: universal
-  description: inverse of embeds_with
-  source:
-  - EmbeddingModelProfile
-  target:
-  - ContextBundle
-  cardinality: 1:N
-  inverse: embeds_with
 - id: edge:embeds-into
   name: embeds_into
   origin: universal
@@ -3355,16 +2256,6 @@ edgeKinds:
   - VectorStore
   cardinality: N:N
   inverse: embedded_by
-- id: edge:embedded-by
-  name: embedded_by
-  origin: universal
-  description: inverse of embeds_into
-  source:
-  - VectorStore
-  target:
-  - EmbeddingModelProfile
-  cardinality: N:N
-  inverse: embeds_into
 - id: edge:has-memory
   name: has_memory
   origin: universal
@@ -3375,16 +2266,6 @@ edgeKinds:
   - MemoryStore
   cardinality: N:N
   inverse: memory_for
-- id: edge:memory-for
-  name: memory_for
-  origin: universal
-  description: inverse of has_memory
-  source:
-  - MemoryStore
-  target:
-  - AgentVersion
-  cardinality: N:N
-  inverse: has_memory
 - id: edge:governs-template
   name: governs_template
   origin: universal
@@ -3395,16 +2276,6 @@ edgeKinds:
   - PromptTemplate
   cardinality: N:N
   inverse: governed_by_agent
-- id: edge:governed-by-agent
-  name: governed_by_agent
-  origin: universal
-  description: inverse of governs_template
-  source:
-  - PromptTemplate
-  target:
-  - AgentVersion
-  cardinality: N:N
-  inverse: governs_template
 - id: edge:bundles-template
   name: bundles_template
   origin: universal
@@ -3415,16 +2286,6 @@ edgeKinds:
   - PromptTemplate
   cardinality: N:N
   inverse: bundled_in_context
-- id: edge:bundled-in-context
-  name: bundled_in_context
-  origin: universal
-  description: inverse of bundles_template
-  source:
-  - PromptTemplate
-  target:
-  - ContextBundle
-  cardinality: N:N
-  inverse: bundles_template
 - id: edge:uses-harness
   name: uses_harness
   origin: universal
@@ -3435,16 +2296,6 @@ edgeKinds:
   - EvalHarness
   cardinality: N:1
   inverse: harness_used_by
-- id: edge:harness-used-by
-  name: harness_used_by
-  origin: universal
-  description: inverse of uses_harness
-  source:
-  - EvalHarness
-  target:
-  - EvalRun
-  cardinality: 1:N
-  inverse: uses_harness
 - id: edge:judged-by
   name: judged_by
   origin: universal
@@ -3455,16 +2306,6 @@ edgeKinds:
   - Judge
   cardinality: N:N
   inverse: judges
-- id: edge:judges
-  name: judges
-  origin: universal
-  description: inverse of judged_by
-  source:
-  - Judge
-  target:
-  - EvalRun
-  cardinality: N:N
-  inverse: judged_by
 - id: edge:scored-against-rubric
   name: scored_against_rubric
   origin: universal
@@ -3475,16 +2316,6 @@ edgeKinds:
   - Rubric
   cardinality: N:N
   inverse: rubric_for
-- id: edge:rubric-for
-  name: rubric_for
-  origin: universal
-  description: inverse of scored_against_rubric
-  source:
-  - Rubric
-  target:
-  - EvalRun
-  cardinality: N:N
-  inverse: scored_against_rubric
 - id: edge:uses-async-job
   name: uses_async_job
   origin: universal
@@ -3495,16 +2326,6 @@ edgeKinds:
   - AsyncJob
   cardinality: N:N
   inverse: async_job_used_by
-- id: edge:async-job-used-by
-  name: async_job_used_by
-  origin: universal
-  description: inverse of uses_async_job
-  source:
-  - AsyncJob
-  target:
-  - Run
-  cardinality: N:N
-  inverse: uses_async_job
 - id: edge:defines-automation-rule
   name: defines_automation_rule
   origin: a5c
@@ -3515,16 +2336,6 @@ edgeKinds:
   - AutomationRule
   cardinality: 1:N
   inverse: automation_rule_defined_by
-- id: edge:automation-rule-defined-by
-  name: automation_rule_defined_by
-  origin: a5c
-  description: inverse of defines_automation_rule
-  source:
-  - AutomationRule
-  target:
-  - AgentProduct
-  cardinality: N:1
-  inverse: defines_automation_rule
 - id: edge:has-preflight
   name: has_preflight
   origin: derived
@@ -3536,17 +2347,6 @@ edgeKinds:
   - DispatchPreflight
   cardinality: N:1
   inverse: preflight_for
-- id: edge:preflight-for
-  name: preflight_for
-  origin: derived
-  originContext: Derived from current catalog relationship semantics.
-  description: inverse of has_preflight
-  source:
-  - DispatchPreflight
-  target:
-  - Run
-  cardinality: 1:N
-  inverse: has_preflight
 - id: edge:enforces-invariant
   name: enforces_invariant
   origin: standard
@@ -3565,16 +2365,6 @@ edgeKinds:
   - FilesystemSafetyInvariant
   cardinality: N:N
   inverse: invariant_enforced_by
-- id: edge:invariant-enforced-by
-  name: invariant_enforced_by
-  origin: standard
-  description: inverse of enforces_invariant
-  source:
-  - FilesystemSafetyInvariant
-  target:
-  - AgentRuntimeImpl
-  cardinality: N:N
-  inverse: enforces_invariant
 - id: edge:installed-via
   name: installed_via
   origin: universal
@@ -3593,16 +2383,6 @@ edgeKinds:
   - InstallMethod
   cardinality: N:N
   inverse: install_method_for
-- id: edge:install-method-for
-  name: install_method_for
-  origin: universal
-  description: inverse of installed_via
-  source:
-  - InstallMethod
-  target:
-  - AgentVersion
-  cardinality: N:N
-  inverse: installed_via
 - id: edge:has-launch-contract
   name: has_launch_contract
   origin: derived
@@ -3614,17 +2394,6 @@ edgeKinds:
   - LaunchContract
   cardinality: N:1
   inverse: launch_contract_for
-- id: edge:launch-contract-for
-  name: launch_contract_for
-  origin: derived
-  originContext: Derived from current catalog relationship semantics.
-  description: inverse of has_launch_contract
-  source:
-  - LaunchContract
-  target:
-  - AgentRuntimeImpl
-  cardinality: 1:N
-  inverse: has_launch_contract
 - id: edge:uses-merge-policy
   name: uses_merge_policy
   origin: a5c
@@ -3635,16 +2404,6 @@ edgeKinds:
   - MergePolicy
   cardinality: N:1
   inverse: merge_policy_used_by
-- id: edge:merge-policy-used-by
-  name: merge_policy_used_by
-  origin: a5c
-  description: inverse of uses_merge_policy
-  source:
-  - MergePolicy
-  target:
-  - HookSurface
-  cardinality: 1:N
-  inverse: uses_merge_policy
 - id: edge:exposes-intervention-point
   name: exposes_intervention_point
   origin: derived
@@ -3656,17 +2415,6 @@ edgeKinds:
   - OperatorInterventionPoint
   cardinality: N:N
   inverse: intervention_point_exposed_by
-- id: edge:intervention-point-exposed-by
-  name: intervention_point_exposed_by
-  origin: derived
-  originContext: Derived from current catalog relationship semantics.
-  description: inverse of exposes_intervention_point
-  source:
-  - OperatorInterventionPoint
-  target:
-  - Phase
-  cardinality: N:N
-  inverse: exposes_intervention_point
 - id: edge:has-transition
   name: has_transition
   origin: universal
@@ -3698,17 +2446,6 @@ edgeKinds:
   - Reconciliation
   cardinality: 1:N
   inverse: reconciliation_performed_by
-- id: edge:reconciliation-performed-by
-  name: reconciliation_performed_by
-  origin: derived
-  originContext: Derived from current catalog relationship semantics.
-  description: inverse of performs_reconciliation
-  source:
-  - Reconciliation
-  target:
-  - Run
-  cardinality: N:1
-  inverse: performs_reconciliation
 - id: edge:issues-resume-token
   name: issues_resume_token
   origin: universal
@@ -3719,16 +2456,6 @@ edgeKinds:
   - ResumeToken
   cardinality: 1:N
   inverse: resume_token_issued_by
-- id: edge:resume-token-issued-by
-  name: resume_token_issued_by
-  origin: universal
-  description: inverse of issues_resume_token
-  source:
-  - ResumeToken
-  target:
-  - Run
-  cardinality: N:1
-  inverse: issues_resume_token
 - id: edge:applies-secret-policy
   name: applies_secret_policy
   origin: standard
@@ -3739,16 +2466,6 @@ edgeKinds:
   - SecretHandlingPolicy
   cardinality: N:N
   inverse: secret_policy_applied_by
-- id: edge:secret-policy-applied-by
-  name: secret_policy_applied_by
-  origin: standard
-  description: inverse of applies_secret_policy
-  source:
-  - SecretHandlingPolicy
-  target:
-  - WorkflowDefinition
-  cardinality: N:N
-  inverse: applies_secret_policy
 - id: edge:contains-meta-node-kind
   name: contains_meta_node_kind
   origin: universal
@@ -3809,26 +2526,6 @@ edgeKinds:
   - MetaNodeKind
   cardinality: N:1
   inverse: contains_meta_attribute
-- id: edge:has-outgoing-edge
-  name: has_outgoing_edge
-  origin: universal
-  description: a MetaNodeKind has a MetaEdgeKind as an outgoing edge (the underlying NodeKind is a source of the underlying EdgeKind)
-  source:
-  - MetaNodeKind
-  target:
-  - MetaEdgeKind
-  cardinality: N:N
-  inverse: source_of_meta_edge
-- id: edge:has-incoming-edge
-  name: has_incoming_edge
-  origin: universal
-  description: a MetaNodeKind has a MetaEdgeKind as an incoming edge (the underlying NodeKind is a target of the underlying EdgeKind)
-  source:
-  - MetaNodeKind
-  target:
-  - MetaEdgeKind
-  cardinality: N:N
-  inverse: target_of_meta_edge
 - id: edge:source-of-meta-edge
   name: source_of_meta_edge
   origin: universal
@@ -3869,16 +2566,6 @@ edgeKinds:
   - MetaAttribute
   cardinality: N:N
   inverse: enum_value_for
-- id: edge:enum-value-for
-  name: enum_value_for
-  origin: universal
-  description: inverse of used_on_attribute (a MetaAttribute draws its values from a MetaEnum)
-  source:
-  - MetaAttribute
-  target:
-  - MetaEnum
-  cardinality: N:1
-  inverse: used_on_attribute
 - id: edge:has-example
   name: has_example
   origin: universal
@@ -3913,18 +2600,6 @@ edgeKinds:
   - ObservabilityBackend
   cardinality: N:N
   inverse: receives_signals_from
-- id: edge:receives-signals-from
-  name: receives_signals_from
-  origin: universal
-  description: inverse of emits_signals_to
-  source:
-  - ObservabilityBackend
-  target:
-  - AgentRuntimeImpl
-  - AgentPlatformImpl
-  - PlatformService
-  cardinality: 1:N
-  inverse: emits_signals_to
 - id: edge:versioned-via
   name: versioned_via
   origin: universal
@@ -3937,18 +2612,6 @@ edgeKinds:
   - VCSHost
   cardinality: N:1
   inverse: versions
-- id: edge:versions
-  name: versions
-  origin: universal
-  description: inverse of versioned_via
-  source:
-  - VCSHost
-  target:
-  - AgentVersion
-  - Workspace
-  - WorkflowDefinition
-  cardinality: 1:N
-  inverse: versioned_via
 - id: edge:triggered-by
   name: triggered_by
   origin: universal
@@ -3961,18 +2624,6 @@ edgeKinds:
   - Issue
   cardinality: N:1
   inverse: triggers_run
-- id: edge:triggers-run
-  name: triggers_run
-  origin: universal
-  description: inverse of triggered_by
-  source:
-  - CIWorkflow
-  - PullRequest
-  - Issue
-  target:
-  - Run
-  cardinality: 1:N
-  inverse: triggered_by
 - id: edge:complies-with
   name: complies_with
   origin: universal
@@ -3985,18 +2636,6 @@ edgeKinds:
   - ComplianceFramework
   cardinality: N:N
   inverse: compliance_for
-- id: edge:compliance-for
-  name: compliance_for
-  origin: universal
-  description: inverse of complies_with
-  source:
-  - ComplianceFramework
-  target:
-  - AgentVersion
-  - Run
-  - Tenant
-  cardinality: N:N
-  inverse: complies_with
 - id: edge:owns-workspace
   name: owns_workspace
   origin: universal
@@ -4007,16 +2646,6 @@ edgeKinds:
   - Workspace
   cardinality: 1:N
   inverse: workspace_owned_by
-- id: edge:workspace-owned-by
-  name: workspace_owned_by
-  origin: universal
-  description: inverse of owns_workspace
-  source:
-  - Workspace
-  target:
-  - Tenant
-  cardinality: N:1
-  inverse: owns_workspace
 - id: edge:records-usage
   name: records_usage
   origin: universal
@@ -4029,18 +2658,6 @@ edgeKinds:
   - UsageRecord
   cardinality: 1:N
   inverse: usage_recorded_for
-- id: edge:usage-recorded-for
-  name: usage_recorded_for
-  origin: universal
-  description: inverse of records_usage
-  source:
-  - UsageRecord
-  target:
-  - Run
-  - RunAttempt
-  - Invocation
-  cardinality: N:1
-  inverse: records_usage
 - id: edge:uses-template
   name: uses_template
   origin: universal
@@ -4052,17 +2669,6 @@ edgeKinds:
   - PromptTemplate
   cardinality: N:N
   inverse: template_used_by
-- id: edge:template-used-by
-  name: template_used_by
-  origin: universal
-  description: inverse of uses_template
-  source:
-  - PromptTemplate
-  target:
-  - Skill
-  - Subagent
-  cardinality: N:N
-  inverse: uses_template
 - id: edge:uses-context-bundle
   name: uses_context_bundle
   origin: universal
@@ -4075,18 +2681,6 @@ edgeKinds:
   - ContextBundle
   cardinality: N:N
   inverse: context_bundle_used_by
-- id: edge:context-bundle-used-by
-  name: context_bundle_used_by
-  origin: universal
-  description: inverse of uses_context_bundle
-  source:
-  - ContextBundle
-  target:
-  - Run
-  - RunAttempt
-  - AgentVersion
-  cardinality: N:N
-  inverse: uses_context_bundle
 - id: edge:backed-by-memory
   name: backed_by_memory
   origin: universal
@@ -4097,16 +2691,6 @@ edgeKinds:
   - MemoryStore
   cardinality: N:N
   inverse: memory_backs_bundle
-- id: edge:memory-backs-bundle
-  name: memory_backs_bundle
-  origin: universal
-  description: inverse of backed_by_memory
-  source:
-  - MemoryStore
-  target:
-  - ContextBundle
-  cardinality: N:N
-  inverse: backed_by_memory
 - id: edge:assesses-policy
   name: assesses_policy
   origin: universal
@@ -4117,16 +2701,6 @@ edgeKinds:
   - ContentPolicy
   cardinality: N:N
   inverse: policy_assessed_by
-- id: edge:policy-assessed-by
-  name: policy_assessed_by
-  origin: universal
-  description: inverse of assesses_policy
-  source:
-  - ContentPolicy
-  target:
-  - ToolDescriptor
-  cardinality: N:N
-  inverse: assesses_policy
 - id: edge:evaluates-policy
   name: evaluates_policy
   origin: universal
@@ -4137,16 +2711,6 @@ edgeKinds:
   - ContentPolicy
   cardinality: N:N
   inverse: policy_evaluated_by
-- id: edge:policy-evaluated-by
-  name: policy_evaluated_by
-  origin: universal
-  description: inverse of evaluates_policy
-  source:
-  - ContentPolicy
-  target:
-  - Benchmark
-  cardinality: N:N
-  inverse: evaluates_policy
 - id: edge:escalates-to
   name: escalates_to
   origin: universal
@@ -4157,16 +2721,6 @@ edgeKinds:
   - Role
   cardinality: N:N
   inverse: escalation_target_for
-- id: edge:escalation-target-for
-  name: escalation_target_for
-  origin: universal
-  description: inverse of escalates_to
-  source:
-  - Role
-  target:
-  - HumanCheckpoint
-  cardinality: N:N
-  inverse: escalates_to
 - id: edge:notifies-via
   name: notifies_via
   origin: universal
@@ -4177,27 +2731,6 @@ edgeKinds:
   - Channel
   cardinality: N:N
   inverse: notifies_checkpoint
-- id: edge:notifies-checkpoint
-  name: notifies_checkpoint
-  origin: universal
-  description: inverse of notifies_via
-  source:
-  - Channel
-  target:
-  - HumanCheckpoint
-  cardinality: N:N
-  inverse: notifies_via
-- id: edge:scoped-to-tenant
-  name: scoped_to_tenant
-  origin: universal
-  description: a Run / Session is scoped to a Tenant (multi-tenancy attribution at the unit-of-work level — distinct from owns_workspace which is durable ownership)
-  source:
-  - Run
-  - Session
-  target:
-  - Tenant
-  cardinality: N:1
-  inverse: scopes_runs
 - id: edge:scopes-runs
   name: scopes_runs
   origin: universal
@@ -4219,16 +2752,6 @@ edgeKinds:
   - Project
   cardinality: N:1
   inverse: groups_issue
-- id: edge:groups-issue
-  name: groups_issue
-  origin: universal
-  description: inverse of belongs_to_project
-  source:
-  - Project
-  target:
-  - Issue
-  cardinality: 1:N
-  inverse: belongs_to_project
 - id: edge:groups-workspace
   name: groups_workspace
   origin: universal
@@ -4239,16 +2762,6 @@ edgeKinds:
   - Workspace
   cardinality: 1:N
   inverse: workspace_in_project
-- id: edge:workspace-in-project
-  name: workspace_in_project
-  origin: universal
-  description: inverse of groups_workspace
-  source:
-  - Workspace
-  target:
-  - Project
-  cardinality: N:1
-  inverse: groups_workspace
 - id: edge:has-column
   name: has_column
   origin: universal
@@ -4309,16 +2822,6 @@ edgeKinds:
   - BacklogSnapshot
   cardinality: 1:N
   inverse: snapshots_project_backlog
-- id: edge:has-acceptance-criterion
-  name: has_acceptance_criterion
-  origin: universal
-  description: an Issue has one or more AcceptanceCriterions (graph-traversable replacement for the AcceptanceCriterion.issueId FK)
-  source:
-  - Issue
-  target:
-  - AcceptanceCriterion
-  cardinality: 1:N
-  inverse: criterion_of_issue
 - id: edge:criterion-of-issue
   name: criterion_of_issue
   origin: universal
@@ -4329,16 +2832,6 @@ edgeKinds:
   - Issue
   cardinality: N:1
   inverse: has_acceptance_criterion
-- id: edge:decomposes-into
-  name: decomposes_into
-  origin: universal
-  description: a parent Issue decomposes into an IssueDecomposition record (1:1 — each Issue has at most one decomposition; replaces IssueDecomposition.parentIssueId FK)
-  source:
-  - Issue
-  target:
-  - IssueDecomposition
-  cardinality: 61
-  inverse: decomposition_of
 - id: edge:decomposition-of
   name: decomposition_of
   origin: universal
@@ -4349,16 +2842,6 @@ edgeKinds:
   - Issue
   cardinality: 61
   inverse: decomposes_into
-- id: edge:child-issue-of-decomposition
-  name: child_issue_of_decomposition
-  origin: universal
-  description: a child Issue belongs to an IssueDecomposition (graph-traversable replacement for IssueDecomposition.childIssueIds FK list)
-  source:
-  - Issue
-  target:
-  - IssueDecomposition
-  cardinality: N:1
-  inverse: has_child_issue
 - id: edge:has-child-issue
   name: has_child_issue
   origin: universal
@@ -4399,27 +2882,6 @@ edgeKinds:
   - FileAttention
   cardinality: 1:N
   inverse: attention_recorded_in
-- id: edge:attention-recorded-in
-  name: attention_recorded_in
-  origin: universal
-  description: inverse of recorded_attention — a FileAttention entry is anchored to the Session that produced it
-  source:
-  - FileAttention
-  target:
-  - Session
-  cardinality: N:1
-  inverse: recorded_attention
-- id: edge:paired-to
-  name: paired_to
-  origin: derived
-  originContext: agent-mux webui — paired mobile/desktop device bound to a remote-control AgentVersion (e.g. agent-mux mobile ↔ agent-mux-remote)
-  description: a DevicePair is paired to a specific AgentVersion (the remote-control surface the device drives)
-  source:
-  - DevicePair
-  target:
-  - AgentVersion
-  cardinality: N:1
-  inverse: has_device_pair
 - id: edge:has-device-pair
   name: has_device_pair
   origin: derived
@@ -4471,16 +2933,6 @@ edgeKinds:
   - AgentFlowLane
   cardinality: N:1
   inverse: contains_segment
-- id: edge:projects-span
-  name: projects_span
-  origin: universal
-  description: an AgentFlowSegment optionally projects from a Span (observability bridge — segment's underlying tracing record)
-  source:
-  - AgentFlowSegment
-  target:
-  - Span
-  cardinality: N:1
-  inverse: projected_by_segment
 - id: edge:projected-by-segment
   name: projected_by_segment
   origin: universal
@@ -4501,16 +2953,6 @@ edgeKinds:
   - Session
   cardinality: N:1
   inverse: has_child_session
-- id: edge:has-child-session
-  name: has_child_session
-  origin: universal
-  description: inverse of parent_session — a Session has zero or more ChildSessions spawned from it
-  source:
-  - Session
-  target:
-  - ChildSession
-  cardinality: 1:N
-  inverse: parent_session
 - id: edge:runs-subagent
   name: runs_subagent
   origin: universal
@@ -4521,16 +2963,6 @@ edgeKinds:
   - Subagent
   cardinality: N:1
   inverse: dispatched_to_child_session
-- id: edge:dispatched-to-child-session
-  name: dispatched_to_child_session
-  origin: universal
-  description: inverse of runs_subagent — a Subagent has been dispatched to one or more ChildSessions
-  source:
-  - Subagent
-  target:
-  - ChildSession
-  cardinality: 1:N
-  inverse: runs_subagent
 - id: edge:runs-skill
   name: runs_skill
   origin: universal
@@ -4541,16 +2973,6 @@ edgeKinds:
   - Skill
   cardinality: N:1
   inverse: executed_in_child_session
-- id: edge:executed-in-child-session
-  name: executed_in_child_session
-  origin: universal
-  description: inverse of runs_skill — a Skill is executed in one or more ChildSessions
-  source:
-  - Skill
-  target:
-  - ChildSession
-  cardinality: 1:N
-  inverse: runs_skill
 - id: edge:invoking-tool
   name: invoking_tool
   origin: universal
@@ -4561,16 +2983,6 @@ edgeKinds:
   - ToolDescriptor
   cardinality: N:1
   inverse: triggers_child_session
-- id: edge:triggers-child-session
-  name: triggers_child_session
-  origin: universal
-  description: inverse of invoking_tool — a ToolDescriptor triggers spawn of one or more ChildSessions
-  source:
-  - ToolDescriptor
-  target:
-  - ChildSession
-  cardinality: 1:N
-  inverse: invoking_tool
 - id: edge:contains-tool-descriptor
   name: contains_tool_descriptor
   origin: universal
@@ -4582,17 +2994,6 @@ edgeKinds:
   - ToolDescriptor
   cardinality: 1:N
   inverse: tool_descriptor_contained_in_plugin
-- id: edge:tool-descriptor-contained-in-plugin
-  name: tool_descriptor_contained_in_plugin
-  origin: universal
-  description: inverse of contains_tool_descriptor (catalog pass 50; target includes ToolServer)
-  source:
-  - ToolDescriptor
-  target:
-  - Plugin
-  - ToolServer
-  cardinality: N:1
-  inverse: contains_tool_descriptor
 - id: edge:dispatched-via-tool
   name: dispatched_via_tool
   origin: universal
@@ -4603,16 +3004,6 @@ edgeKinds:
   - ToolDescriptor
   cardinality: N:1
   inverse: dispatches_subagent
-- id: edge:dispatches-subagent
-  name: dispatches_subagent
-  origin: universal
-  description: inverse of dispatched_via_tool — a ToolDescriptor dispatches one or more Subagents
-  source:
-  - ToolDescriptor
-  target:
-  - Subagent
-  cardinality: 1:N
-  inverse: dispatched_via_tool
 - id: edge:attempt-of
   name: attempt_of
   origin: universal
@@ -4623,16 +3014,6 @@ edgeKinds:
   - Run
   cardinality: N:1
   inverse: has_attempt
-- id: edge:has-attempt
-  name: has_attempt
-  origin: universal
-  description: inverse of attempt_of — a Run enumerates its RunAttempts
-  source:
-  - Run
-  target:
-  - RunAttempt
-  cardinality: 1:N
-  inverse: attempt_of
 - id: edge:shadows-session
   name: shadows_session
   origin: universal
@@ -4643,16 +3024,6 @@ edgeKinds:
   - Session
   cardinality: N:1
   inverse: has_live_session_shadow
-- id: edge:has-live-session-shadow
-  name: has_live_session_shadow
-  origin: universal
-  description: inverse of shadows_session — a Session enumerates its LiveSession shadows
-  source:
-  - Session
-  target:
-  - LiveSession
-  cardinality: 1:N
-  inverse: shadows_session
 - id: edge:tagged-with
   name: tagged_with
   origin: universal
@@ -4663,16 +3034,6 @@ edgeKinds:
   - TaskTag
   cardinality: N:N
   inverse: tags_issue
-- id: edge:tags-issue
-  name: tags_issue
-  origin: universal
-  description: inverse of tagged_with — a TaskTag is applied to one or more Issues
-  source:
-  - TaskTag
-  target:
-  - Issue
-  cardinality: N:N
-  inverse: tagged_with
 - id: edge:labeled-with
   name: labeled_with
   origin: universal
@@ -4683,16 +3044,6 @@ edgeKinds:
   - Label
   cardinality: N:N
   inverse: labels_issue
-- id: edge:labels-issue
-  name: labels_issue
-  origin: universal
-  description: inverse of labeled_with — a Label is applied to one or more Issues
-  source:
-  - Label
-  target:
-  - Issue
-  cardinality: N:N
-  inverse: labeled_with
 - id: edge:scoped-to-team
   name: scoped_to_team
   origin: derived
@@ -4726,39 +3077,6 @@ edgeKinds:
   - Workspace
   cardinality: N:1
   inverse: scopes_task_tag_workspace
-- id: edge:scopes-task-tag
-  name: scopes_task_tag
-  origin: derived
-  originContext: Derived from current catalog relationship semantics.
-  description: inverse of scoped_to_team — an OrgUnit owns one or more team-scoped TaskTags
-  source:
-  - OrgUnit
-  target:
-  - TaskTag
-  cardinality: 1:N
-  inverse: scoped_to_team
-- id: edge:scopes-task-tag-project
-  name: scopes_task_tag_project
-  origin: derived
-  originContext: Derived from current catalog relationship semantics.
-  description: inverse of scoped_to_project — a Project owns one or more project-scoped TaskTags
-  source:
-  - Project
-  target:
-  - TaskTag
-  cardinality: 1:N
-  inverse: scoped_to_project
-- id: edge:scopes-task-tag-workspace
-  name: scopes_task_tag_workspace
-  origin: derived
-  originContext: Derived from current catalog relationship semantics.
-  description: inverse of scoped_to_workspace — a Workspace owns one or more workspace-scoped TaskTags
-  source:
-  - Workspace
-  target:
-  - TaskTag
-  cardinality: 1:N
-  inverse: scoped_to_workspace
 - id: edge:owned-by-project
   name: owned_by_project
   origin: derived
@@ -4770,17 +3088,6 @@ edgeKinds:
   - Project
   cardinality: N:1
   inverse: owns_label
-- id: edge:owns-label
-  name: owns_label
-  origin: derived
-  originContext: Derived from current catalog relationship semantics.
-  description: inverse of owned_by_project — a Project owns one or more Labels
-  source:
-  - Project
-  target:
-  - Label
-  cardinality: 1:N
-  inverse: owned_by_project
 - id: edge:activity-for-issue
   name: activity_for_issue
   origin: derived
@@ -4825,20 +3132,6 @@ edgeKinds:
   - BoardSnapshot
   cardinality: N:1
   inverse: has_activity_entry
-- id: edge:has-activity-entry
-  name: has_activity_entry
-  origin: derived
-  originContext: Derived from current catalog relationship semantics.
-  description: inverse of activity_for_* — an Issue / Project / Workspace / BoardSnapshot enumerates its ActivityEntries (catalog pass 52)
-  source:
-  - Issue
-  - Project
-  - Workspace
-  - BoardSnapshot
-  target:
-  - ActivityEntry
-  cardinality: 1:N
-  inverse: activity_for_issue
 - id: edge:dispatch-state-of-issue
   name: dispatch_state_of_issue
   origin: derived
@@ -4850,17 +3143,6 @@ edgeKinds:
   - Issue
   cardinality: 61
   inverse: has_dispatch_state
-- id: edge:has-dispatch-state
-  name: has_dispatch_state
-  origin: derived
-  originContext: Derived from current catalog relationship semantics.
-  description: inverse of dispatch_state_of_issue — an Issue points at its IssueDispatchState (catalog pass 52)
-  source:
-  - Issue
-  target:
-  - IssueDispatchState
-  cardinality: 61
-  inverse: dispatch_state_of_issue
 - id: edge:dispatched-as-run-attempt
   name: dispatched_as_run_attempt
   origin: derived
@@ -4872,18 +3154,6 @@ edgeKinds:
   - RunAttempt
   cardinality: N:1
   inverse: dispatch_origin
-- id: edge:dispatch-origin
-  name: dispatch_origin
-  origin: derived
-  originContext: Derived from current catalog relationship semantics.
-  description: inverse of dispatched_as_run_attempt — a RunAttempt records the IssueDispatchState that triggered it (catalog pass 52)
-  source:
-  - RunAttempt
-  target:
-  - IssueDispatchState
-  cardinality: 1:N
-  inverse: dispatched_as_run_attempt
-# catalog pass 82 — agent-teams + plugin-marketplaces + deep-link-handlers
 - id: edge:has-team
   name: has_team
   origin: universal
@@ -4918,26 +3188,6 @@ edgeKinds:
   - Subagent
   cardinality: 1:N
   inverse: member_of_team
-- id: edge:member-of-team
-  name: member_of_team
-  origin: universal
-  description: inverse of has_member — a Subagent participates in an AgentTeam (catalog pass 82)
-  source:
-  - Subagent
-  target:
-  - AgentTeam
-  cardinality: N:1
-  inverse: has_member
-- id: edge:cataloged-in
-  name: cataloged_in
-  origin: universal
-  description: a Plugin is listed by a PluginMarketplace (catalog pass 82)
-  source:
-  - Plugin
-  target:
-  - PluginMarketplace
-  cardinality: N:1
-  inverse: catalogs
 - id: edge:catalogs
   name: catalogs
   origin: universal
@@ -4960,21 +3210,6 @@ edgeKinds:
   - PluginMarketplace
   cardinality: 1:N
   inverse: marketplace_of
-- id: edge:marketplace-of
-  name: marketplace_of
-  origin: universal
-  description: inverse of has_marketplace — PluginMarketplace points back to its trusting runtime/version/platform (catalog pass 83, Platform target added catalog pass 85)
-  source:
-  - PluginMarketplace
-  target:
-  - AgentVersion
-  - AgentRuntimeImpl
-  - AgentPlatformImpl
-  cardinality: N:1
-  inverse: has_marketplace
-# catalog pass 83 — registers_handler / registered_by edges removed; DeepLinkHandler folded
-# into InteractionPrimitive (kind=deep-link). The existing `supports_interaction_primitive`
-# edge with `mechanism: deep-link` carries the registration relation.
 - id: edge:has-env-var
   name: has_env_var
   origin: universal
@@ -5010,18 +3245,6 @@ edgeKinds:
   - PermissionMode
   cardinality: 1:N
   inverse: permission_mode_used_by
-- id: edge:permission-mode-used-by
-  name: permission_mode_used_by
-  origin: universal
-  description: inverse of operates_in_permission_mode (catalog pass 86).
-  source:
-  - PermissionMode
-  target:
-  - AgentRuntimeImpl
-  - AgentVersion
-  - AgentCoreImpl
-  cardinality: N:1
-  inverse: operates_in_permission_mode
 - id: edge:fires-hook
   name: fires_hook
   origin: universal
@@ -5032,16 +3255,6 @@ edgeKinds:
   - HookSurface
   cardinality: 1:N
   inverse: fired_by_core
-- id: edge:fired-by-core
-  name: fired_by_core
-  origin: universal
-  description: inverse of fires_hook (catalog pass 86).
-  source:
-  - HookSurface
-  target:
-  - AgentCoreImpl
-  cardinality: N:1
-  inverse: fires_hook
 - id: edge:uses-mcp-scope
   name: uses_mcp_scope
   origin: universal
@@ -5052,16 +3265,6 @@ edgeKinds:
   - MCPConfigScope
   cardinality: 1:N
   inverse: mcp_scope_used_by
-- id: edge:mcp-scope-used-by
-  name: mcp_scope_used_by
-  origin: universal
-  description: inverse of uses_mcp_scope (catalog pass 86).
-  source:
-  - MCPConfigScope
-  target:
-  - AgentRuntimeImpl
-  cardinality: N:1
-  inverse: uses_mcp_scope
 - id: edge:installs-plugins-in-scope
   name: installs_plugins_in_scope
   origin: universal
@@ -5072,16 +3275,6 @@ edgeKinds:
   - PluginInstallScope
   cardinality: 1:N
   inverse: plugin_install_scope_used_by
-- id: edge:plugin-install-scope-used-by
-  name: plugin_install_scope_used_by
-  origin: universal
-  description: inverse of installs_plugins_in_scope (catalog pass 86).
-  source:
-  - PluginInstallScope
-  target:
-  - AgentRuntimeImpl
-  cardinality: N:1
-  inverse: installs_plugins_in_scope
 - id: edge:discovers-skills-in-scope
   name: discovers_skills_in_scope
   origin: universal
@@ -5092,16 +3285,6 @@ edgeKinds:
   - SkillDiscoveryScope
   cardinality: 1:N
   inverse: skill_discovery_scope_used_by
-- id: edge:skill-discovery-scope-used-by
-  name: skill_discovery_scope_used_by
-  origin: universal
-  description: inverse of discovers_skills_in_scope (catalog pass 86).
-  source:
-  - SkillDiscoveryScope
-  target:
-  - AgentRuntimeImpl
-  cardinality: N:1
-  inverse: discovers_skills_in_scope
 - id: edge:emits-message-type
   name: emits_message_type
   origin: universal
@@ -5118,17 +3301,6 @@ edgeKinds:
   - ProtocolMessage
   cardinality: 1:N
   inverse: emitted_by_core
-- id: edge:emitted-by-core
-  name: emitted_by_core
-  origin: universal
-  description: inverse of emits_message_type; source includes Provider for provider-level protocol taxonomies.
-  source:
-  - ProtocolMessage
-  target:
-  - AgentCoreImpl
-  - Provider
-  cardinality: N:1
-  inverse: emits_message_type
 - id: edge:supports-effort-level
   name: supports_effort_level
   origin: universal
@@ -5140,17 +3312,6 @@ edgeKinds:
   - EffortLevel
   cardinality: 1:N
   inverse: effort_level_supported_by
-- id: edge:effort-level-supported-by
-  name: effort_level_supported_by
-  origin: universal
-  description: inverse of supports_effort_level (catalog pass 86).
-  source:
-  - EffortLevel
-  target:
-  - AgentCoreImpl
-  - ModelVersion
-  cardinality: N:1
-  inverse: supports_effort_level
 - id: edge:defines-frontmatter-field
   name: defines_frontmatter_field
   origin: universal
@@ -5167,17 +3328,6 @@ edgeKinds:
   - FrontmatterField
   cardinality: 1:N
   inverse: frontmatter_field_defined_by
-- id: edge:frontmatter-field-defined-by
-  name: frontmatter_field_defined_by
-  origin: universal
-  description: inverse of defines_frontmatter_field (catalog pass 86; catalog pass 95 source widened).
-  source:
-  - FrontmatterField
-  target:
-  - AgentPlatformImpl
-  - OperationalTrigger
-  cardinality: N:1
-  inverse: defines_frontmatter_field
 - id: edge:emits-journal-event
   name: emits_journal_event
   origin: universal
@@ -5291,17 +3441,6 @@ edgeKinds:
   - SharedContextSpec
   cardinality: N:1
   inverse: payload_schema_for
-- id: edge:payload-schema-for
-  name: payload_schema_for
-  origin: a5c
-  description: inverse of has_payload_schema (catalog pass 95; catalog pass 97b widened target to PackageSurface).
-  source:
-  - SharedContextSpec
-  target:
-  - OperationalTrigger
-  - PackageSurface
-  cardinality: 1:N
-  inverse: has_payload_schema
 - id: edge:exposes-subcommand
   name: exposes_subcommand
   origin: a5c
@@ -5337,17 +3476,6 @@ edgeKinds:
   cardinality: N:N
   attributes: []
   inverse: domain_workflows
-- id: edge:domain-workflows
-  name: domain_workflows
-  origin: universal
-  description: inverse of applies_to_domain — a Domain has Workflows that operate within it
-  source:
-  - Domain
-  target:
-  - Workflow
-  cardinality: N:N
-  attributes: []
-  inverse: applies_to_domain
 - id: edge:involves-role
   name: involves_role
   origin: universal
@@ -5359,17 +3487,6 @@ edgeKinds:
   cardinality: N:N
   attributes: []
   inverse: involved_in_workflow
-- id: edge:involved-in-workflow
-  name: involved_in_workflow
-  origin: universal
-  description: inverse of involves_role — a Role participates in a Workflow
-  source:
-  - Role
-  target:
-  - Workflow
-  cardinality: N:N
-  attributes: []
-  inverse: involves_role
 - id: edge:triggers-responsibility
   name: triggers_responsibility
   origin: universal
@@ -5381,17 +3498,6 @@ edgeKinds:
   cardinality: N:N
   attributes: []
   inverse: triggered_by_workflow
-- id: edge:triggered-by-workflow
-  name: triggered_by_workflow
-  origin: universal
-  description: inverse of triggers_responsibility — a Responsibility is activated by a Workflow
-  source:
-  - Responsibility
-  target:
-  - Workflow
-  cardinality: N:N
-  attributes: []
-  inverse: triggers_responsibility
 - id: edge:performed-by-org-unit
   name: performed_by_org_unit
   origin: universal
@@ -5403,21 +3509,6 @@ edgeKinds:
   cardinality: N:N
   attributes: []
   inverse: performs_workflow
-- id: edge:performs-workflow
-  name: performs_workflow
-  origin: universal
-  description: inverse of performed_by_org_unit — an OrgUnit owns or performs a Workflow
-  source:
-  - OrgUnit
-  target:
-  - Workflow
-  cardinality: N:N
-  attributes: []
-  inverse: performed_by_org_unit
-
-
-
-
 - id: edge:documents
   name: documents
   origin: universal
@@ -5439,27 +3530,6 @@ edgeKinds:
   - Term
   cardinality: N:N
   inverse: documented_by
-- id: edge:documented-by
-  name: documented_by
-  origin: universal
-  description: inverse of documents
-  source:
-  - NodeKind
-  - Layer
-  - AgentProduct
-  - AgentVersion
-  - AgentCoreImpl
-  - AgentRuntimeImpl
-  - AgentPlatformImpl
-  - AgentUIImpl
-  - AgentHostTransport
-  - Capability
-  - SourceRef
-  - Term
-  target:
-  - Page
-  cardinality: N:N
-  inverse: documents
 - id: edge:uses-agent
   name: uses_agent
   origin: universal
@@ -5468,14 +3538,6 @@ edgeKinds:
   target: [LibraryAgent]
   cardinality: N:N
   inverse: used_by_process
-- id: edge:used-by-process
-  name: used_by_process
-  origin: universal
-  description: inverse of uses_agent
-  source: [LibraryAgent]
-  target: [LibraryProcess]
-  cardinality: N:N
-  inverse: uses_agent
 - id: edge:uses-skill
   name: uses_skill
   origin: universal
@@ -5484,14 +3546,6 @@ edgeKinds:
   target: [LibrarySkill]
   cardinality: N:N
   inverse: used_by_process_skill
-- id: edge:used-by-process-skill
-  name: used_by_process_skill
-  origin: universal
-  description: inverse of uses_skill
-  source: [LibrarySkill]
-  target: [LibraryProcess]
-  cardinality: N:N
-  inverse: uses_skill
 - id: edge:follows-methodology
   name: follows_methodology
   origin: universal
@@ -5500,14 +3554,6 @@ edgeKinds:
   target: [Methodology]
   cardinality: N:N
   inverse: methodology_followed_by
-- id: edge:methodology-followed-by
-  name: methodology_followed_by
-  origin: universal
-  description: inverse of follows_methodology
-  source: [Methodology]
-  target: [LibraryProcess]
-  cardinality: N:N
-  inverse: follows_methodology
 - id: edge:lib-requires-skill-area
   name: lib_requires_skill_area
   origin: universal
@@ -5516,14 +3562,6 @@ edgeKinds:
   target: [SkillArea]
   cardinality: N:N
   inverse: lib_skill_area_required_by
-- id: edge:lib-skill-area-required-by
-  name: lib_skill_area_required_by
-  origin: universal
-  description: inverse of lib_requires_skill_area
-  source: [SkillArea]
-  target: [LibraryProcess, LibrarySkill, LibraryAgent]
-  cardinality: N:N
-  inverse: lib_requires_skill_area
 - id: edge:lib-involves-role
   name: lib_involves_role
   origin: universal
@@ -5532,14 +3570,6 @@ edgeKinds:
   target: [Role]
   cardinality: N:N
   inverse: lib_role_involved_in
-- id: edge:lib-role-involved-in
-  name: lib_role_involved_in
-  origin: universal
-  description: inverse of lib_involves_role
-  source: [Role]
-  target: [LibraryProcess, LibrarySkill, LibraryAgent]
-  cardinality: N:N
-  inverse: lib_involves_role
 - id: edge:lib-belongs-to-specialization
   name: lib_belongs_to_specialization
   origin: universal
@@ -5548,14 +3578,6 @@ edgeKinds:
   target: [Specialization]
   cardinality: N:N
   inverse: lib_specialization_contains
-- id: edge:lib-specialization-contains
-  name: lib_specialization_contains
-  origin: universal
-  description: inverse of lib_belongs_to_specialization
-  source: [Specialization]
-  target: [LibraryProcess, LibrarySkill, LibraryAgent]
-  cardinality: N:N
-  inverse: lib_belongs_to_specialization
 - id: edge:lib-implements-workflow
   name: lib_implements_workflow
   origin: universal
@@ -5564,14 +3586,6 @@ edgeKinds:
   target: [Workflow]
   cardinality: N:N
   inverse: lib_workflow_implemented_by
-- id: edge:lib-workflow-implemented-by
-  name: lib_workflow_implemented_by
-  origin: universal
-  description: inverse of lib_implements_workflow
-  source: [Workflow]
-  target: [LibraryProcess]
-  cardinality: N:N
-  inverse: lib_implements_workflow
 - id: edge:lib-applies-to-domain
   name: lib_applies_to_domain
   origin: universal
@@ -5580,14 +3594,6 @@ edgeKinds:
   target: [Domain]
   cardinality: N:N
   inverse: lib_domain_applied_by
-- id: edge:lib-domain-applied-by
-  name: lib_domain_applied_by
-  origin: universal
-  description: inverse of lib_applies_to_domain
-  source: [Domain]
-  target: [LibraryProcess, LibrarySkill, LibraryAgent, ToolServer]
-  cardinality: N:N
-  inverse: lib_applies_to_domain
 - id: edge:lib-covers-topic
   name: lib_covers_topic
   origin: universal
@@ -5596,14 +3602,6 @@ edgeKinds:
   target: [Topic]
   cardinality: N:N
   inverse: lib_topic_covered_by
-- id: edge:lib-topic-covered-by
-  name: lib_topic_covered_by
-  origin: universal
-  description: inverse of lib_covers_topic
-  source: [Topic]
-  target: [LibraryProcess, LibrarySkill, LibraryAgent]
-  cardinality: N:N
-  inverse: lib_covers_topic
 - id: edge:deferred-for
   name: deferred_for
   origin: universal
@@ -5612,15 +3610,6 @@ edgeKinds:
   target: [Domain, Specialization, Topic, SkillArea]
   cardinality: N:N
   inverse: has_deferred
-- id: edge:has-deferred
-  name: has_deferred
-  origin: universal
-  description: inverse of deferred_for
-  source: [Domain, Specialization, Topic, SkillArea]
-  target: [DeferredNode]
-  cardinality: N:N
-  inverse: deferred_for
-# ── Knowledge Fabric edges (cluster 21) ──────────────────────────────
 - id: edge:feeds-knowledge
   name: feeds_knowledge
   origin: universal
@@ -5629,14 +3618,6 @@ edgeKinds:
   target: [KnowledgeDomain]
   cardinality: N:N
   inverse: knowledge_fed_by
-- id: edge:knowledge-fed-by
-  name: knowledge_fed_by
-  origin: universal
-  description: inverse of feeds_knowledge
-  source: [KnowledgeDomain]
-  target: [KnowledgeSource]
-  cardinality: N:N
-  inverse: feeds_knowledge
 - id: edge:provides-knowledge-to
   name: provides_knowledge_to
   origin: universal
@@ -5645,14 +3626,6 @@ edgeKinds:
   target: [RetrievalPipeline]
   cardinality: N:N
   inverse: knowledge_provided_by
-- id: edge:knowledge-provided-by
-  name: knowledge_provided_by
-  origin: universal
-  description: inverse of provides_knowledge_to
-  source: [RetrievalPipeline]
-  target: [KnowledgeDomain]
-  cardinality: N:N
-  inverse: provides_knowledge_to
 - id: edge:retrieves-from
   name: retrieves_from
   origin: universal
@@ -5661,14 +3634,6 @@ edgeKinds:
   target: [KnowledgeSource]
   cardinality: N:N
   inverse: retrieved_by
-- id: edge:retrieved-by
-  name: retrieved_by
-  origin: universal
-  description: inverse of retrieves_from
-  source: [KnowledgeSource]
-  target: [RetrievalPipeline]
-  cardinality: N:N
-  inverse: retrieves_from
 - id: edge:supports-orchestration-primitive
   name: supports_orchestration_primitive
   origin: universal
@@ -5677,15 +3642,6 @@ edgeKinds:
   target: [OrchestrationPrimitive]
   cardinality: N:N
   inverse: orchestration_primitive_supported_by
-- id: edge:orchestration-primitive-supported-by
-  name: orchestration_primitive_supported_by
-  origin: universal
-  description: inverse of supports_orchestration_primitive
-  source: [OrchestrationPrimitive]
-  target: [AgentUIImpl, AgentPlatformImpl, AgentCoreImpl]
-  cardinality: N:N
-  inverse: supports_orchestration_primitive
-# ── Orchestration Primitive outgoing edges ──────────────────────────────
 - id: edge:orch-applies-to
   name: orch_applies_to
   origin: universal
@@ -5694,14 +3650,6 @@ edgeKinds:
   target: [Topic]
   cardinality: N:N
   inverse: orch_applied_by
-- id: edge:orch-applied-by
-  name: orch_applied_by
-  origin: universal
-  description: inverse of orch_applies_to
-  source: [Topic]
-  target: [OrchestrationPrimitive]
-  cardinality: N:N
-  inverse: orch_applies_to
 - id: edge:orch-requires-skill-area
   name: orch_requires_skill_area
   origin: universal
@@ -5710,14 +3658,6 @@ edgeKinds:
   target: [SkillArea]
   cardinality: N:N
   inverse: orch_skill_area_required_by
-- id: edge:orch-skill-area-required-by
-  name: orch_skill_area_required_by
-  origin: universal
-  description: inverse of orch_requires_skill_area
-  source: [SkillArea]
-  target: [OrchestrationPrimitive]
-  cardinality: N:N
-  inverse: orch_requires_skill_area
 - id: edge:orch-triggers
   name: orch_triggers
   origin: universal
@@ -5726,14 +3666,6 @@ edgeKinds:
   target: [OrchestrationPrimitive]
   cardinality: N:N
   inverse: orch_triggered_by
-- id: edge:orch-triggered-by
-  name: orch_triggered_by
-  origin: universal
-  description: inverse of orch_triggers
-  source: [OrchestrationPrimitive]
-  target: [OrchestrationPrimitive]
-  cardinality: N:N
-  inverse: orch_triggers
 - id: edge:orch-implements-workflow
   name: orch_implements_workflow
   origin: universal
@@ -5742,15 +3674,6 @@ edgeKinds:
   target: [Workflow]
   cardinality: N:N
   inverse: orch_workflow_implemented_by
-- id: edge:orch-workflow-implemented-by
-  name: orch_workflow_implemented_by
-  origin: universal
-  description: inverse of orch_implements_workflow
-  source: [Workflow]
-  target: [OrchestrationPrimitive]
-  cardinality: N:N
-  inverse: orch_implements_workflow
-# --- Edge kinds discovered from data (schema gap-fill) ---
 - id: edge:asserts-about
   name: asserts_about
   origin: universal
@@ -6055,11 +3978,3 @@ edgeKinds:
     type: enum<required,recommended,helpful>
     required: false
   inverse: has_learning_prerequisite
-- id: edge:has-learning-prerequisite
-  name: has_learning_prerequisite
-  origin: universal
-  description: inverse of prerequisite_for_learning
-  source: [SkillArea]
-  target: [SkillArea]
-  cardinality: N:N
-  inverse: prerequisite_for_learning

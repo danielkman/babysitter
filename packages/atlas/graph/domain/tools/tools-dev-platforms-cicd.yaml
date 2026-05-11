@@ -14,6 +14,15 @@ edges:
   used_for:
     - target: skill-area:developer-environment
     - target: skill-area:local-development
+  alternative_to:
+    - target: tool:gitpod
+      comparison: "Cloud dev environments"
+    - target: tool:codespaces
+      comparison: "Cloud dev environments"
+    - target: tool:stackblitz
+      comparison: "Browser-based dev environments"
+    - target: tool:codesandbox
+      comparison: "Browser-based dev environments"
 ---
 nodeKind: Tool
 id: tool:gitpod
@@ -30,6 +39,15 @@ edges:
   used_for:
     - target: skill-area:developer-environment
     - target: skill-area:local-development
+  alternative_to:
+    - target: tool:codespaces
+      comparison: "Cloud dev environments — Gitpod is vendor-neutral; Codespaces is GitHub-integrated"
+    - target: tool:replit
+      comparison: "Cloud dev environments"
+    - target: tool:stackblitz
+      comparison: "Cloud dev environments"
+    - target: tool:codesandbox
+      comparison: "Cloud dev environments"
 ---
 nodeKind: Tool
 id: tool:codespaces
@@ -46,6 +64,15 @@ edges:
   used_for:
     - target: skill-area:developer-environment
     - target: skill-area:local-development
+  alternative_to:
+    - target: tool:gitpod
+      comparison: "Cloud dev environments — Codespaces is GitHub-integrated; Gitpod is vendor-neutral"
+    - target: tool:replit
+      comparison: "Cloud dev environments"
+    - target: tool:stackblitz
+      comparison: "Cloud dev environments"
+    - target: tool:codesandbox
+      comparison: "Cloud dev environments"
 ---
 nodeKind: Tool
 id: tool:stackblitz
@@ -62,6 +89,15 @@ edges:
   used_for:
     - target: skill-area:developer-environment
     - target: skill-area:local-development
+  alternative_to:
+    - target: tool:codesandbox
+      comparison: "Browser-based dev environments"
+    - target: tool:replit
+      comparison: "Browser-based dev environments"
+    - target: tool:gitpod
+      comparison: "Cloud dev environments"
+    - target: tool:codespaces
+      comparison: "Cloud dev environments"
 ---
 nodeKind: Tool
 id: tool:codesandbox
@@ -78,6 +114,15 @@ edges:
   used_for:
     - target: skill-area:developer-environment
     - target: skill-area:local-development
+  alternative_to:
+    - target: tool:stackblitz
+      comparison: "Browser-based dev environments"
+    - target: tool:replit
+      comparison: "Browser-based dev environments"
+    - target: tool:gitpod
+      comparison: "Cloud dev environments"
+    - target: tool:codespaces
+      comparison: "Cloud dev environments"
 ---
 nodeKind: Tool
 id: tool:cursor
@@ -94,6 +139,13 @@ edges:
   used_for:
     - target: skill-area:developer-environment
     - target: skill-area:editor-fluency
+  alternative_to:
+    - target: tool:vscode
+      comparison: "Code editors / IDEs"
+    - target: tool:jetbrains-idea
+      comparison: "Code editors / IDEs"
+    - target: tool:neovim
+      comparison: "Code editors / IDEs"
 ---
 nodeKind: Tool
 id: tool:windsurf
@@ -110,6 +162,13 @@ edges:
   used_for:
     - target: skill-area:developer-environment
     - target: skill-area:editor-fluency
+  alternative_to:
+    - target: tool:cursor
+      comparison: "AI-powered IDEs — Windsurf has Cascade agentic flows; Cursor has inline AI edits"
+    - target: tool:aider
+      comparison: "AI coding assistants — Windsurf is an IDE; Aider is terminal-based"
+    - target: tool:cline
+      comparison: "AI coding agents"
 ---
 nodeKind: Tool
 id: tool:buildkite
@@ -151,6 +210,9 @@ edges:
   used_for:
     - target: skill-area:ci-cd
     - target: skill-area:deployment-automation
+  alternative_to:
+    - target: tool:woodpecker
+      comparison: "Self-hosted CI — Drone CI is the original; Woodpecker is its community fork"
 ---
 nodeKind: Tool
 id: tool:woodpecker
@@ -167,6 +229,9 @@ edges:
   used_for:
     - target: skill-area:ci-cd
     - target: skill-area:deployment-automation
+  alternative_to:
+    - target: tool:drone-ci
+      comparison: "Self-hosted CI — Woodpecker is a community fork of Drone CI"
 ---
 nodeKind: Tool
 id: tool:earthly
@@ -183,6 +248,9 @@ edges:
   used_for:
     - target: skill-area:ci-cd
     - target: skill-area:ci-pipeline-optimization
+  alternative_to:
+    - target: tool:dagger
+      comparison: "Reproducible CI — Earthly uses Makefiles+Dockerfiles; Dagger uses typed modules"
 ---
 nodeKind: Tool
 id: tool:dagger
@@ -199,3 +267,6 @@ edges:
   used_for:
     - target: skill-area:ci-cd
     - target: skill-area:ci-pipeline-optimization
+  alternative_to:
+    - target: tool:earthly
+      comparison: "Reproducible CI — Dagger uses typed modules; Earthly uses Makefiles+Dockerfiles"

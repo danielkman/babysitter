@@ -11,3 +11,10 @@ edges:
     - language:python
   used_for:
     - target: skill-area:developer-environment
+  alternative_to:
+    - target: tool:pip
+      comparison: "Python package managers"
+    - target: tool:poetry
+      comparison: "Python project managers"
+    - target: tool:uv
+      comparison: "Python project managers — Rye preceded uv; uv is its successor"

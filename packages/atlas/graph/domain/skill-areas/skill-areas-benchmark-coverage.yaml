@@ -32,6 +32,15 @@ edges:
   applies_to:
     - target: specialization:web-development
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:web-action-grounding
+      strength: recommended
+    - target: skill-area:web-scraping
+      strength: recommended
+    - target: skill-area:desktop-automation
+      strength: recommended
+    - target: skill-area:mobile-gui-automation
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:safety-redteaming

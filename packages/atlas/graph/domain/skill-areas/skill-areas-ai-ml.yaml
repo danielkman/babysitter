@@ -13,6 +13,19 @@ edges:
   applies_to:
     - target: specialization:ai-agents-conversational
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:autonomous-research-engineering
+      strength: recommended
+    - target: skill-area:autonomous-coding-engagement
+      strength: recommended
+    - target: skill-area:deep-web-research
+      strength: recommended
+    - target: skill-area:multi-app-orchestration
+      strength: recommended
+    - target: skill-area:closed-book-frontier-reasoning
+      strength: recommended
+    - target: skill-area:visual-pattern-induction
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:retrieval-augmented-generation

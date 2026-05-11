@@ -59,6 +59,17 @@ edges:
   applies_to:
     - target: specialization:game-development
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:cuda-kernels
+      strength: recommended
+    - target: skill-area:opencl-programming
+      strength: recommended
+    - target: skill-area:compute-shaders
+      strength: recommended
+    - target: skill-area:gpu-memory-hierarchy
+      strength: recommended
+    - target: skill-area:profiling-cuda
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:asset-pipeline

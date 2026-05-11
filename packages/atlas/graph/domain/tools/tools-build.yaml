@@ -13,6 +13,13 @@ edges:
     - language:java
   used_for:
     - target: skill-area:ci-pipeline-optimization
+  alternative_to:
+    - target: tool:maven
+      comparison: "JVM build tools — Gradle uses Groovy/Kotlin DSL; Maven uses XML"
+    - target: tool:sbt
+      comparison: "JVM build tools"
+    - target: tool:bazel
+      comparison: "Build systems — Gradle is JVM-focused; Bazel is multi-language"
 ---
 nodeKind: Tool
 id: tool:maven
@@ -28,6 +35,13 @@ edges:
     - language:java
   used_for:
     - target: skill-area:ci-pipeline-optimization
+  alternative_to:
+    - target: tool:gradle
+      comparison: "JVM build tools — Maven uses XML; Gradle uses Groovy/Kotlin DSL"
+    - target: tool:sbt
+      comparison: "JVM build tools"
+    - target: tool:bazel
+      comparison: "Build systems — Maven is JVM-focused; Bazel is multi-language"
 ---
 nodeKind: Tool
 id: tool:sbt
@@ -43,3 +57,8 @@ edges:
     - language:scala
   used_for:
     - target: skill-area:ci-pipeline-optimization
+  alternative_to:
+    - target: tool:gradle
+      comparison: "JVM build tools"
+    - target: tool:maven
+      comparison: "JVM build tools"

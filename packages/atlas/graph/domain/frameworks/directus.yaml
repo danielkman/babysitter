@@ -18,3 +18,5 @@ edges:
       comparison: "Headless CMS — Directus wraps any SQL database; Strapi is code-first"
     - target: framework:hasura
       comparison: "Data platforms — Directus has an admin UI; Hasura is GraphQL-engine-first"
+    - target: framework:supabase
+      comparison: "CMS / BaaS platforms"

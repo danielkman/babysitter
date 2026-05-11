@@ -11,3 +11,6 @@ edges:
     - language:typescript
   used_for:
     - target: skill-area:code-quality
+  alternative_to:
+    - target: tool:mypy
+      comparison: "Type checkers — tsc checks TypeScript; mypy checks Python"

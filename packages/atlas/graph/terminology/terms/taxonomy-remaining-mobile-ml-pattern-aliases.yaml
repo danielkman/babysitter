@@ -2,7 +2,6 @@
 nodeKind: Term
 id: term:coordinator-pattern
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Coordinator Pattern"
   kind: concept
   references:
@@ -17,7 +16,6 @@ edges:
 nodeKind: Term
 id: term:modular-architecture-mobile
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Modular Architecture"
   kind: concept
   references:
@@ -32,7 +30,6 @@ edges:
 nodeKind: Term
 id: term:gesture-based-interaction
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Gesture-Based Interaction"
   kind: concept
   references:
@@ -47,7 +44,6 @@ edges:
 nodeKind: Term
 id: term:composable-ui
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Composable UI"
   kind: concept
   references:
@@ -62,7 +58,6 @@ edges:
 nodeKind: Term
 id: term:declarative-ui
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Declarative UI"
   kind: concept
   references:
@@ -79,7 +74,6 @@ edges:
 nodeKind: Term
 id: term:bottom-sheet
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Bottom Sheet"
   kind: concept
   references:
@@ -94,7 +88,6 @@ edges:
 nodeKind: Term
 id: term:navigation-drawer
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Navigation Drawer"
   kind: concept
   references:
@@ -109,7 +102,6 @@ edges:
 nodeKind: Term
 id: term:tab-navigation
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Tab Navigation"
   kind: concept
   references:
@@ -124,7 +116,6 @@ edges:
 nodeKind: Term
 id: term:mobx-pattern
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "MobX Pattern"
   kind: concept
   references:
@@ -139,7 +130,6 @@ edges:
 nodeKind: Term
 id: term:riverpod-pattern
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Riverpod Pattern"
   kind: concept
   references:
@@ -155,7 +145,6 @@ edges:
 nodeKind: Term
 id: term:view-recycling
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "View Recycling"
   kind: concept
   references:
@@ -170,7 +159,6 @@ edges:
 nodeKind: Term
 id: term:memory-cache-management
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Memory Cache Management"
   kind: concept
   references:
@@ -185,7 +173,6 @@ edges:
 nodeKind: Term
 id: term:navigation-stack
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Navigation Stack"
   kind: concept
   references:
@@ -200,7 +187,6 @@ edges:
 nodeKind: Term
 id: term:modal-navigation
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Modal Navigation"
   kind: concept
   references:
@@ -215,7 +201,6 @@ edges:
 nodeKind: Term
 id: term:network-aware-pattern
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Network-Aware Pattern"
   kind: concept
   references:
@@ -230,7 +215,6 @@ edges:
 nodeKind: Term
 id: term:resource-pooling
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Resource Pooling"
   kind: concept
   references:
@@ -245,7 +229,6 @@ edges:
 nodeKind: Term
 id: term:lazy-resource-loading
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Lazy Resource Loading"
   kind: concept
   references:
@@ -260,7 +243,6 @@ edges:
 nodeKind: Term
 id: term:batch-training
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Batch Training"
   kind: concept
   references:
@@ -275,7 +257,6 @@ edges:
 nodeKind: Term
 id: term:online-training
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Online Training"
   kind: concept
   references:
@@ -290,7 +271,6 @@ edges:
 nodeKind: Term
 id: term:serverless-deployment
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Serverless Deployment"
   kind: concept
   references:
@@ -306,7 +286,6 @@ edges:
 nodeKind: Term
 id: term:edge-deployment
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Edge Deployment"
   kind: concept
   references:
@@ -321,7 +300,6 @@ edges:
 nodeKind: Term
 id: term:rolling-updates
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Rolling Updates"
   kind: concept
   references:
@@ -336,7 +314,6 @@ edges:
 nodeKind: Term
 id: term:shadow-deployment
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Shadow Deployment"
   kind: concept
   references:
@@ -351,7 +328,6 @@ edges:
 nodeKind: Term
 id: term:feature-importance-analysis
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Feature Importance Analysis"
   kind: concept
   references:
@@ -366,7 +342,6 @@ edges:
 nodeKind: Term
 id: term:counterfactual-explanations
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Counterfactual Explanations"
   kind: concept
   references:
@@ -381,7 +356,6 @@ edges:
 nodeKind: Term
 id: term:partial-dependence-plots
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Partial Dependence Plots"
   kind: concept
   references:
@@ -396,7 +370,6 @@ edges:
 nodeKind: Term
 id: term:surrogate-models-explainability
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Surrogate Models for Explainability"
   kind: concept
   references:

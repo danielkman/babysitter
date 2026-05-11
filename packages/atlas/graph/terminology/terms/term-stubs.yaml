@@ -14,7 +14,7 @@ edges:
 nodeKind: Term
 id: term:agent-to-agent
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition (no definition:agent-to-agent exists yet)"
+  canonicalDefinitionId: ~
   displayName: "Agent-to-Agent (A2A)"
   kind: concept
   description: |
@@ -26,7 +26,6 @@ edges:
 nodeKind: Term
 id: term:anthropic-skill
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Anthropic Skill"
   kind: concept
   description: |
@@ -39,7 +38,6 @@ edges:
 nodeKind: Term
 id: term:model-context-protocol
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Model Context Protocol"
   kind: concept
   description: |
@@ -52,7 +50,6 @@ edges:
 nodeKind: Term
 id: term:evidence-source
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "EvidenceSource"
   kind: concept
   references:
@@ -67,7 +64,6 @@ edges:
 nodeKind: Term
 id: term:gemini-generate-content
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Gemini generateContent"
   kind: concept
   references:

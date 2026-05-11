@@ -14,6 +14,8 @@ edges:
     - language:csharp
   library_used_by:
     - target: skill-area:backend-data-persistence
+  alternative_to:
+    - library:dapper
 ---
 nodeKind: Library
 id: library:aspnet-core
@@ -30,6 +32,8 @@ edges:
     - language:csharp
   library_used_by:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - library:express
 ---
 nodeKind: Library
 id: library:dapper
@@ -62,6 +66,8 @@ edges:
     - language:csharp
   library_used_by:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - library:bull
 ---
 nodeKind: Library
 id: library:automapper
@@ -78,6 +84,8 @@ edges:
     - language:csharp
   library_used_by:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - library:jackson
 ---
 nodeKind: Library
 id: library:fluentvalidation
@@ -94,6 +102,8 @@ edges:
     - language:csharp
   library_used_by:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - library:pydantic
 ---
 nodeKind: Library
 id: library:serilog
@@ -110,6 +120,8 @@ edges:
     - language:csharp
   library_used_by:
     - target: skill-area:observability-instrumentation
+  alternative_to:
+    - library:nlog
 ---
 nodeKind: Library
 id: library:nlog
@@ -142,6 +154,8 @@ edges:
     - language:csharp
   library_used_by:
     - target: skill-area:backend-async-processing
+  alternative_to:
+    - library:tower
 ---
 nodeKind: Library
 id: library:hangfire
@@ -158,6 +172,9 @@ edges:
     - language:csharp
   library_used_by:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - library:oban
+    - library:sidekiq
 ---
 nodeKind: Library
 id: library:signalr
@@ -174,6 +191,8 @@ edges:
     - language:csharp
   library_used_by:
     - target: skill-area:streaming-realtime-processing
+  alternative_to:
+    - library:socket-io
 ---
 nodeKind: Library
 id: library:identity-server
@@ -190,6 +209,9 @@ edges:
     - language:csharp
   library_used_by:
     - target: skill-area:authentication-authorization
+  alternative_to:
+    - library:devise
+    - library:next-auth
 ---
 nodeKind: Library
 id: library:xunit
@@ -206,6 +228,8 @@ edges:
     - language:csharp
   library_used_by:
     - target: skill-area:component-testing
+  alternative_to:
+    - library:nunit
 ---
 nodeKind: Library
 id: library:nunit
@@ -238,6 +262,8 @@ edges:
     - language:csharp
   library_used_by:
     - target: skill-area:component-testing
+  alternative_to:
+    - library:mockito
 ---
 nodeKind: Library
 id: library:newtonsoft-json
@@ -254,6 +280,8 @@ edges:
     - language:csharp
   library_used_by:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - library:system-text-json
 ---
 nodeKind: Library
 id: library:system-text-json
@@ -286,3 +314,5 @@ edges:
     - language:csharp
   library_used_by:
     - target: skill-area:backend-data-persistence
+  alternative_to:
+    - library:alembic

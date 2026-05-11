@@ -16,6 +16,9 @@ edges:
   uses_library:
     - library:cobra
     - library:clap
+  prerequisite_for_learning:
+    - target: skill-area:mcp-server-implementation
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:mcp-server-implementation
@@ -31,6 +34,15 @@ edges:
   applies_to:
     - target: specialization:cli-mcp-development
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:mcp-stdio-transport
+      strength: recommended
+    - target: skill-area:mcp-sse-transport
+      strength: recommended
+    - target: skill-area:mcp-tool-design
+      strength: recommended
+    - target: skill-area:mcp-resource-design
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:mcp-stdio-transport

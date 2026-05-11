@@ -68,6 +68,15 @@ edges:
     - target: skill-area:payment-processing
   used_for:
     - skill-area:payment-processing
+  alternative_to:
+    - target: tool:paypal
+      comparison: "Payment processing platforms"
+    - target: tool:square
+      comparison: "Payment processing platforms"
+    - target: tool:paddle
+      comparison: "Payment processing platforms"
+    - target: tool:braintree
+      comparison: "Payment processing platforms"
 ---
 nodeKind: Tool
 id: tool:zoom
@@ -83,6 +92,9 @@ edges:
     - target: skill-area:communication
   used_for:
     - skill-area:communication
+  alternative_to:
+    - target: tool:calendly
+      comparison: "Communication tools — Zoom is video conferencing; Calendly is meeting scheduling"
 ---
 nodeKind: Tool
 id: tool:calendly
@@ -98,6 +110,9 @@ edges:
     - target: skill-area:communication
   used_for:
     - skill-area:communication
+  alternative_to:
+    - target: tool:zoom
+      comparison: "Communication tools — Calendly is meeting scheduling; Zoom is video conferencing"
 ---
 nodeKind: Tool
 id: tool:snyk
@@ -113,6 +128,17 @@ edges:
     - target: skill-area:application-security
   used_for:
     - skill-area:application-security
+  alternative_to:
+    - target: tool:sonarqube
+      comparison: "Code security — Snyk focuses on dependencies and containers; SonarQube on source code quality"
+    - target: tool:trivy
+      comparison: "Security scanning — Snyk is a commercial platform; Trivy is open-source CLI"
+    - target: tool:checkov
+      comparison: "Security scanning — Snyk is a commercial platform; Checkov is open-source IaC-focused"
+    - target: tool:tfsec
+      comparison: "Security scanning tools"
+    - target: tool:owasp-zap
+      comparison: "Security scanning — Snyk is SCA and code scanning; OWASP ZAP is DAST for web apps"
 ---
 nodeKind: Tool
 id: tool:sonarqube
@@ -128,6 +154,13 @@ edges:
     - target: skill-area:code-quality
   used_for:
     - skill-area:code-quality
+  alternative_to:
+    - target: tool:snyk
+      comparison: "Code security — SonarQube scans source code quality; Snyk focuses on dependencies and containers"
+    - target: tool:trivy
+      comparison: "Code security — SonarQube scans source code; Trivy scans dependencies and containers"
+    - target: tool:owasp-zap
+      comparison: "Security testing — SonarQube is SAST (static); OWASP ZAP is DAST (runtime)"
 ---
 nodeKind: Tool
 id: tool:intercom
@@ -143,6 +176,9 @@ edges:
     - target: skill-area:customer-support
   used_for:
     - skill-area:customer-support
+  alternative_to:
+    - target: tool:servicenow
+      comparison: "Customer support — Intercom is messaging-first; ServiceNow is enterprise ITSM"
 ---
 nodeKind: Tool
 id: tool:shopify
@@ -188,6 +224,11 @@ edges:
     - target: skill-area:project-planning
   used_for:
     - skill-area:project-planning
+  alternative_to:
+    - target: tool:basecamp
+      comparison: "Project tools — Todoist is personal task management; Basecamp is all-in-one team collaboration"
+    - target: tool:airtable
+      comparison: "Project tools — Todoist is task management; Airtable is a no-code database"
 ---
 nodeKind: Tool
 id: tool:airtable
@@ -203,6 +244,11 @@ edges:
     - target: skill-area:project-planning
   used_for:
     - skill-area:project-planning
+  alternative_to:
+    - target: tool:basecamp
+      comparison: "Project tools — Airtable is a no-code database; Basecamp is project collaboration"
+    - target: tool:todoist
+      comparison: "Project tools — Airtable is a no-code database; Todoist is task management"
 ---
 nodeKind: Tool
 id: tool:render
@@ -248,6 +294,11 @@ edges:
     - target: skill-area:frontend-development
   used_for:
     - skill-area:frontend-development
+  alternative_to:
+    - target: tool:chromatic
+      comparison: "Frontend UI tools — Storybook is the component sandbox; Chromatic is visual testing for Storybook"
+    - target: tool:percy
+      comparison: "Frontend testing — Storybook is component development; Percy is visual regression testing"
 ---
 nodeKind: Tool
 id: tool:huggingface

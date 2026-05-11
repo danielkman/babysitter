@@ -54,6 +54,15 @@ edges:
       confidence: primary
     - target: domain:ml-ops
       confidence: secondary
+  prerequisite_for_learning:
+    - target: skill-area:video-processing
+      strength: recommended
+    - target: skill-area:media-encoding
+      strength: recommended
+    - target: skill-area:streaming-protocols
+      strength: recommended
+    - target: skill-area:image-processing
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:video-processing

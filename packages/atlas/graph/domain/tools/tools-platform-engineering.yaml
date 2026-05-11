@@ -35,6 +35,15 @@ edges:
   tool_used_by:
     - target: skill-area:platform-engineering
     - target: skill-area:ci-cd
+  alternative_to:
+    - target: tool:backstage
+      comparison: "Platform engineering — Devtron is K8s app management; Backstage is a developer portal"
+    - target: tool:kubevela
+      comparison: "Kubernetes app delivery platforms"
+    - target: tool:rancher
+      comparison: "Kubernetes management platforms"
+    - target: tool:port-dev
+      comparison: "Platform engineering tools"
 ---
 nodeKind: Tool
 id: tool:kubevela
@@ -54,6 +63,15 @@ edges:
   tool_used_by:
     - target: skill-area:platform-engineering
     - target: skill-area:deployment-automation
+  alternative_to:
+    - target: tool:backstage
+      comparison: "Platform engineering — KubeVela is OAM-based delivery; Backstage is a developer portal"
+    - target: tool:devtron
+      comparison: "Kubernetes app delivery platforms"
+    - target: tool:rancher
+      comparison: "Kubernetes platforms — KubeVela manages app delivery; Rancher manages clusters"
+    - target: tool:port-dev
+      comparison: "Platform engineering tools"
 ---
 nodeKind: Tool
 id: tool:onedev
@@ -72,3 +90,8 @@ edges:
   tool_used_by:
     - target: skill-area:ci-cd
     - target: skill-area:project-planning
+  alternative_to:
+    - target: tool:drone-ci
+      comparison: "Self-hosted CI — OneDev is all-in-one Git+CI; Drone CI is container-native CI only"
+    - target: tool:woodpecker
+      comparison: "Self-hosted CI — OneDev is all-in-one Git+CI; Woodpecker is container-native CI only"

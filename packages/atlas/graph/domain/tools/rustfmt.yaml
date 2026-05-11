@@ -11,3 +11,6 @@ edges:
     - language:rust
   used_for:
     - target: skill-area:code-quality
+  alternative_to:
+    - target: tool:clippy
+      comparison: "Rust code quality — rustfmt is a formatter; Clippy is a linter"

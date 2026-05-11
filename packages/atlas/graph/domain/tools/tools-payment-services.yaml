@@ -13,6 +13,15 @@ edges:
     - target: skill-area:payment-processing
   used_for:
     - skill-area:payment-processing
+  alternative_to:
+    - target: tool:stripe
+      comparison: "Payment processing platforms"
+    - target: tool:square
+      comparison: "Payment processing platforms"
+    - target: tool:paddle
+      comparison: "Payment processing platforms"
+    - target: tool:braintree
+      comparison: "Payment processing platforms"
 ---
 nodeKind: Tool
 id: tool:square
@@ -28,6 +37,15 @@ edges:
     - target: skill-area:payment-processing
   used_for:
     - skill-area:payment-processing
+  alternative_to:
+    - target: tool:stripe
+      comparison: "Payment processing platforms"
+    - target: tool:paypal
+      comparison: "Payment processing platforms"
+    - target: tool:paddle
+      comparison: "Payment processing platforms"
+    - target: tool:braintree
+      comparison: "Payment processing platforms"
 ---
 nodeKind: Tool
 id: tool:paddle
@@ -43,6 +61,15 @@ edges:
     - target: skill-area:payment-processing
   used_for:
     - skill-area:payment-processing
+  alternative_to:
+    - target: tool:stripe
+      comparison: "Payment processing platforms"
+    - target: tool:paypal
+      comparison: "Payment processing platforms"
+    - target: tool:square
+      comparison: "Payment processing platforms"
+    - target: tool:braintree
+      comparison: "Payment processing platforms"
 ---
 nodeKind: Tool
 id: tool:braintree
@@ -58,3 +85,12 @@ edges:
     - target: skill-area:payment-processing
   used_for:
     - skill-area:payment-processing
+  alternative_to:
+    - target: tool:stripe
+      comparison: "Payment processing platforms"
+    - target: tool:paypal
+      comparison: "Payment processing platforms"
+    - target: tool:square
+      comparison: "Payment processing platforms"
+    - target: tool:paddle
+      comparison: "Payment processing platforms"

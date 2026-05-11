@@ -14,6 +14,15 @@ edges:
   used_for:
     - skill-area:data-collection
     - skill-area:frontend-performance
+  alternative_to:
+    - target: tool:mixpanel
+      comparison: "Product analytics platforms"
+    - target: tool:amplitude
+      comparison: "Product analytics platforms"
+    - target: tool:posthog
+      comparison: "Product analytics platforms"
+    - target: tool:heap
+      comparison: "Product analytics platforms"
 ---
 nodeKind: Tool
 id: tool:mixpanel
@@ -30,6 +39,15 @@ edges:
   used_for:
     - skill-area:data-collection
     - skill-area:frontend-performance
+  alternative_to:
+    - target: tool:segment
+      comparison: "Product analytics platforms"
+    - target: tool:amplitude
+      comparison: "Product analytics platforms"
+    - target: tool:posthog
+      comparison: "Product analytics platforms"
+    - target: tool:heap
+      comparison: "Product analytics platforms"
 ---
 nodeKind: Tool
 id: tool:amplitude
@@ -46,6 +64,15 @@ edges:
   used_for:
     - skill-area:data-collection
     - skill-area:frontend-performance
+  alternative_to:
+    - target: tool:segment
+      comparison: "Product analytics platforms"
+    - target: tool:mixpanel
+      comparison: "Product analytics platforms"
+    - target: tool:posthog
+      comparison: "Product analytics platforms"
+    - target: tool:heap
+      comparison: "Product analytics platforms"
 ---
 nodeKind: Tool
 id: tool:posthog
@@ -62,6 +89,15 @@ edges:
   used_for:
     - skill-area:data-collection
     - skill-area:frontend-performance
+  alternative_to:
+    - target: tool:segment
+      comparison: "Product analytics platforms"
+    - target: tool:mixpanel
+      comparison: "Product analytics platforms"
+    - target: tool:amplitude
+      comparison: "Product analytics platforms"
+    - target: tool:heap
+      comparison: "Product analytics platforms"
 ---
 nodeKind: Tool
 id: tool:heap
@@ -78,6 +114,15 @@ edges:
   used_for:
     - skill-area:data-collection
     - skill-area:frontend-performance
+  alternative_to:
+    - target: tool:segment
+      comparison: "Product analytics platforms"
+    - target: tool:mixpanel
+      comparison: "Product analytics platforms"
+    - target: tool:amplitude
+      comparison: "Product analytics platforms"
+    - target: tool:posthog
+      comparison: "Product analytics platforms"
 ---
 nodeKind: Tool
 id: tool:google-analytics
@@ -94,6 +139,11 @@ edges:
   used_for:
     - skill-area:data-collection
     - skill-area:frontend-performance
+  alternative_to:
+    - target: tool:hotjar
+      comparison: "Web analytics — Google Analytics tracks quantitative metrics; Hotjar provides qualitative insights"
+    - target: tool:fullstory
+      comparison: "Web analytics — Google Analytics tracks traffic; FullStory provides session replay"
 ---
 nodeKind: Tool
 id: tool:hotjar
@@ -110,6 +160,11 @@ edges:
   used_for:
     - skill-area:data-collection
     - skill-area:frontend-performance
+  alternative_to:
+    - target: tool:google-analytics
+      comparison: "Web analytics — Hotjar provides qualitative insights; Google Analytics tracks quantitative metrics"
+    - target: tool:fullstory
+      comparison: "UX analytics — Hotjar has heatmaps and surveys; FullStory has session replay and frustration detection"
 ---
 nodeKind: Tool
 id: tool:fullstory
@@ -126,3 +181,8 @@ edges:
   used_for:
     - skill-area:data-collection
     - skill-area:frontend-performance
+  alternative_to:
+    - target: tool:google-analytics
+      comparison: "Web analytics — FullStory provides session replay; Google Analytics tracks traffic"
+    - target: tool:hotjar
+      comparison: "UX analytics — FullStory has session replay and frustration detection; Hotjar has heatmaps and surveys"

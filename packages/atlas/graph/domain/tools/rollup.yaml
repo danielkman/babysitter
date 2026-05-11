@@ -10,3 +10,8 @@ edges:
     - target: language:javascript
   used_for:
     - target: skill-area:ci-pipeline-optimization
+  alternative_to:
+    - target: tool:esbuild
+      comparison: "JavaScript bundlers — Rollup is plugin-rich; esbuild is Go-based and extremely fast"
+    - target: tool:babel
+      comparison: "JavaScript build tools — Rollup is a bundler; Babel is a transpiler"

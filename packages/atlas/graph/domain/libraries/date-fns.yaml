@@ -11,3 +11,7 @@ edges:
     - language:javascript
   library_used_by:
     - target: skill-area:date-time-manipulation
+  alternative_to:
+    - library:dayjs
+    - library:moment
+    - library:luxon

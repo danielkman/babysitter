@@ -16,10 +16,9 @@ attributes:
 edges:
   references_path:
     - target: path:agent-mux-observability
-  # Catalog pass 97c — public LogLevel / CostInfo / LogContext / Logger /
-  # Telemetry types modeled as SharedContextSpec records. Source:
-  # packages/agent-mux/observability/src/types.ts. Activates the W97b
-  # widening of `has_payload_schema` source to PackageSurface.
+  # Public LogLevel / CostInfo / LogContext / Logger / Telemetry types
+  # modeled as SharedContextSpec records.
+  # Source: packages/agent-mux/observability/src/types.ts.
   has_payload_schema:
     - target: shared-context-spec:agent-mux-observability-log-level
     - target: shared-context-spec:agent-mux-observability-cost-info

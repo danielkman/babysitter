@@ -13,3 +13,6 @@ edges:
     - language:typescript
   used_by_skill_area:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - framework:nestjs
+    - framework:fastify

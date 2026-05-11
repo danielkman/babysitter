@@ -2,7 +2,6 @@
 nodeKind: Term
 id: term:rest-representational-state-transfer
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "REST (Representational State Transfer)"
   kind: concept
   references:
@@ -17,7 +16,6 @@ edges:
 nodeKind: Term
 id: term:event-driven-architecture-eda
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Event-Driven Architecture (EDA)"
   kind: concept
   references:
@@ -32,7 +30,6 @@ edges:
 nodeKind: Term
 id: term:domain-driven-design-ddd
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Domain-Driven Design (DDD)"
   kind: concept
   references:
@@ -48,7 +45,6 @@ edges:
 nodeKind: Term
 id: term:cqrs-command-query-responsibility-segregation
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "CQRS (Command Query Responsibility Segregation)"
   kind: concept
   references:
@@ -64,7 +60,6 @@ edges:
 nodeKind: Term
 id: term:backend-for-frontend-bff
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Backend for Frontend (BFF)"
   kind: concept
   references:
@@ -79,7 +74,6 @@ edges:
 nodeKind: Term
 id: term:service-oriented-architecture-soa
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Service-Oriented Architecture (SOA)"
   kind: concept
   references:
@@ -94,7 +88,6 @@ edges:
 nodeKind: Term
 id: term:publish-subscribe-pubsub
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Publish-Subscribe (PubSub)"
   kind: concept
   references:
@@ -109,7 +102,6 @@ edges:
 nodeKind: Term
 id: term:mvc-model-view-controller
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "MVC (Model-View-Controller)"
   kind: concept
   references:
@@ -124,7 +116,6 @@ edges:
 nodeKind: Term
 id: term:mvp-model-view-presenter
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "MVP (Model-View-Presenter)"
   kind: concept
   references:
@@ -139,7 +130,6 @@ edges:
 nodeKind: Term
 id: term:mvvm-model-view-viewmodel
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "MVVM (Model-View-ViewModel)"
   kind: concept
   references:
@@ -154,7 +144,6 @@ edges:
 nodeKind: Term
 id: term:single-page-application-spa
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Single Page Application (SPA)"
   kind: concept
   references:
@@ -169,7 +158,6 @@ edges:
 nodeKind: Term
 id: term:progressive-web-application-pwa
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Progressive Web Application (PWA)"
   kind: concept
   references:
@@ -184,7 +172,6 @@ edges:
 nodeKind: Term
 id: term:client-side-rendering-csr
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Client-Side Rendering (CSR)"
   kind: concept
   references:
@@ -199,7 +186,6 @@ edges:
 nodeKind: Term
 id: term:server-side-rendering-ssr
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Server-Side Rendering (SSR)"
   kind: concept
   references:
@@ -214,7 +200,6 @@ edges:
 nodeKind: Term
 id: term:static-site-generation-ssg
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Static Site Generation (SSG)"
   kind: concept
   references:
@@ -229,7 +214,6 @@ edges:
 nodeKind: Term
 id: term:incremental-static-regeneration-isr
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Incremental Static Regeneration (ISR)"
   kind: concept
   references:
@@ -244,7 +228,6 @@ edges:
 nodeKind: Term
 id: term:finite-state-machine-fsm
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Finite State Machine (FSM)"
   kind: concept
   references:
@@ -259,7 +242,6 @@ edges:
 nodeKind: Term
 id: term:grpc-google-remote-procedure-call
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "gRPC (Google Remote Procedure Call)"
   kind: concept
   references:
@@ -275,7 +257,6 @@ edges:
 nodeKind: Term
 id: term:server-sent-events-sse
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Server-Sent Events (SSE)"
   kind: concept
   references:
@@ -291,7 +272,6 @@ edges:
 nodeKind: Term
 id: term:jwt-json-web-tokens
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "JWT (JSON Web Tokens)"
   kind: concept
   references:
@@ -307,7 +287,6 @@ edges:
 nodeKind: Term
 id: term:circuit-breaker
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Circuit Breaker"
   kind: concept
   references:
@@ -322,7 +301,6 @@ edges:
 nodeKind: Term
 id: term:canary-testing
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Canary Testing"
   kind: concept
   references:
@@ -338,7 +316,6 @@ edges:
 nodeKind: Term
 id: term:rpc-remote-procedure-call
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "RPC (Remote Procedure Call)"
   kind: concept
   references:
@@ -354,7 +331,6 @@ edges:
 nodeKind: Term
 id: term:authentication
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Authentication"
   kind: concept
   references:
@@ -369,7 +345,6 @@ edges:
 nodeKind: Term
 id: term:authorization
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Authorization"
   kind: concept
   references:
@@ -384,7 +359,6 @@ edges:
 nodeKind: Term
 id: term:test-driven-development-tdd
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Test-Driven Development (TDD)"
   kind: concept
   references:
@@ -400,7 +374,6 @@ edges:
 nodeKind: Term
 id: term:behavior-driven-development-bdd
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Behavior-Driven Development (BDD)"
   kind: concept
   references:
@@ -416,7 +389,6 @@ edges:
 nodeKind: Term
 id: term:multi-page-application-mpa
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Multi-Page Application (MPA)"
   kind: concept
   references:

@@ -12,6 +12,8 @@ edges:
     - language:rust
   library_used_by:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - library:hyper
 ---
 nodeKind: Library
 id: library:sea-orm
@@ -26,6 +28,10 @@ edges:
     - language:rust
   library_used_by:
     - target: skill-area:backend-data-persistence
+  alternative_to:
+    - library:diesel
+    - library:diesel-rs
+    - library:sqlx-rust
 ---
 nodeKind: Library
 id: library:diesel

@@ -1,4 +1,4 @@
-# Catalog pass 97b — protocol v1 wire frames for @a5c-ai/agent-mux-gateway.
+# Protocol v1 wire frames for @a5c-ai/agent-mux-gateway.
 # Source of truth: packages/agent-mux/gateway/src/protocol/v1.ts (TypeScript
 # interfaces) + packages/agent-mux/gateway/src/protocol/frames.ts (zod
 # discriminated-union runtime validators in `gatewayFrameSchema`).

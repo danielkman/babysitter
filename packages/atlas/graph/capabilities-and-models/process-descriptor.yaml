@@ -1,4 +1,3 @@
-# Migrated from agent-catalog graph (ProcessDescriptor)
 ---
 nodeKind: ProcessDescriptor
 id: process:packages/catalog/process-library-catalog

@@ -9,3 +9,6 @@ edges:
   tool_used_by:
     - target: skill-area:secrets-rotation
     - target: skill-area:identity-security
+  alternative_to:
+    - target: tool:sops
+      comparison: "Secrets management tools"

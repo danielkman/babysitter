@@ -14,6 +14,17 @@ edges:
     - target: skill-area:knowledge-fabric-design
   used_for:
     - skill-area:project-planning
+  alternative_to:
+    - target: tool:notion
+      comparison: "Collaboration and knowledge management platforms"
+    - target: tool:trello
+      comparison: "Team collaboration platforms"
+    - target: tool:clickup
+      comparison: "Team collaboration platforms"
+    - target: tool:asana
+      comparison: "Team collaboration platforms"
+    - target: tool:monday
+      comparison: "Team collaboration platforms"
 ---
 nodeKind: Tool
 id: tool:trello
@@ -29,6 +40,17 @@ edges:
     - target: skill-area:project-planning
   used_for:
     - skill-area:project-planning
+  alternative_to:
+    - target: tool:confluence
+      comparison: "Team collaboration platforms"
+    - target: tool:notion
+      comparison: "Team collaboration platforms"
+    - target: tool:clickup
+      comparison: "Team collaboration platforms"
+    - target: tool:asana
+      comparison: "Team collaboration platforms"
+    - target: tool:monday
+      comparison: "Team collaboration platforms"
 ---
 nodeKind: Tool
 id: tool:clickup
@@ -44,6 +66,17 @@ edges:
     - target: skill-area:project-planning
   used_for:
     - skill-area:project-planning
+  alternative_to:
+    - target: tool:confluence
+      comparison: "Team collaboration platforms"
+    - target: tool:notion
+      comparison: "Team collaboration platforms"
+    - target: tool:trello
+      comparison: "Team collaboration platforms"
+    - target: tool:asana
+      comparison: "Team collaboration platforms"
+    - target: tool:monday
+      comparison: "Team collaboration platforms"
 ---
 nodeKind: Tool
 id: tool:shortcut
@@ -59,6 +92,9 @@ edges:
     - target: skill-area:project-planning
   used_for:
     - skill-area:project-planning
+  alternative_to:
+    - target: tool:asana
+      comparison: "Project management platforms"
 ---
 nodeKind: Tool
 id: tool:basecamp
@@ -74,6 +110,11 @@ edges:
     - target: skill-area:project-planning
   used_for:
     - skill-area:project-planning
+  alternative_to:
+    - target: tool:todoist
+      comparison: "Project tools — Basecamp is all-in-one team collaboration; Todoist is personal task management"
+    - target: tool:airtable
+      comparison: "Project tools — Basecamp is project collaboration; Airtable is a no-code database"
 ---
 nodeKind: Tool
 id: tool:asana
@@ -89,6 +130,19 @@ edges:
     - target: skill-area:project-planning
   used_for:
     - skill-area:project-planning
+  alternative_to:
+    - target: tool:confluence
+      comparison: "Team collaboration platforms"
+    - target: tool:notion
+      comparison: "Team collaboration platforms"
+    - target: tool:trello
+      comparison: "Team collaboration platforms"
+    - target: tool:clickup
+      comparison: "Team collaboration platforms"
+    - target: tool:monday
+      comparison: "Team collaboration platforms"
+    - target: tool:shortcut
+      comparison: "Project management platforms"
 ---
 nodeKind: Tool
 id: tool:monday
@@ -104,6 +158,17 @@ edges:
     - target: skill-area:project-planning
   used_for:
     - skill-area:project-planning
+  alternative_to:
+    - target: tool:confluence
+      comparison: "Team collaboration platforms"
+    - target: tool:notion
+      comparison: "Team collaboration platforms"
+    - target: tool:trello
+      comparison: "Team collaboration platforms"
+    - target: tool:clickup
+      comparison: "Team collaboration platforms"
+    - target: tool:asana
+      comparison: "Team collaboration platforms"
 ---
 nodeKind: Tool
 id: tool:notion
@@ -121,3 +186,14 @@ edges:
     - target: skill-area:knowledge-fabric-design
   used_for:
     - skill-area:project-planning
+  alternative_to:
+    - target: tool:confluence
+      comparison: "Collaboration and knowledge management platforms"
+    - target: tool:trello
+      comparison: "Team collaboration platforms"
+    - target: tool:clickup
+      comparison: "Team collaboration platforms"
+    - target: tool:asana
+      comparison: "Team collaboration platforms"
+    - target: tool:monday
+      comparison: "Team collaboration platforms"

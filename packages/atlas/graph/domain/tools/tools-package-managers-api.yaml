@@ -12,6 +12,17 @@ edges:
     - target: skill-area:developer-environment
   used_for:
     - skill-area:developer-environment
+  alternative_to:
+    - target: tool:nix
+      comparison: "System package managers — Homebrew is macOS-first simple; Nix is reproducible and declarative"
+    - target: tool:apt
+      comparison: "System package managers — Homebrew is macOS/Linux; apt is Debian/Ubuntu"
+    - target: tool:chocolatey
+      comparison: "System package managers — Homebrew is macOS; Chocolatey is Windows"
+    - target: tool:scoop
+      comparison: "System package managers — Homebrew is macOS; Scoop is Windows"
+    - target: tool:winget
+      comparison: "System package managers — Homebrew is macOS; winget is Windows"
 ---
 nodeKind: Tool
 id: tool:chocolatey
@@ -27,6 +38,13 @@ edges:
     - target: skill-area:developer-environment
   used_for:
     - skill-area:developer-environment
+  alternative_to:
+    - target: tool:scoop
+      comparison: "Windows package managers — Chocolatey needs admin; Scoop installs to user home"
+    - target: tool:winget
+      comparison: "Windows package managers — Chocolatey is community-driven; winget is Microsoft official"
+    - target: tool:homebrew
+      comparison: "System package managers — Chocolatey is Windows; Homebrew is macOS"
 ---
 nodeKind: Tool
 id: tool:scoop
@@ -42,6 +60,13 @@ edges:
     - target: skill-area:developer-environment
   used_for:
     - skill-area:developer-environment
+  alternative_to:
+    - target: tool:chocolatey
+      comparison: "Windows package managers — Scoop installs to user home; Chocolatey needs admin"
+    - target: tool:winget
+      comparison: "Windows package managers — Scoop is developer-focused; winget is Microsoft official"
+    - target: tool:homebrew
+      comparison: "System package managers — Scoop is Windows; Homebrew is macOS"
 ---
 nodeKind: Tool
 id: tool:winget
@@ -57,6 +82,13 @@ edges:
     - target: skill-area:developer-environment
   used_for:
     - skill-area:developer-environment
+  alternative_to:
+    - target: tool:chocolatey
+      comparison: "Windows package managers — winget is Microsoft official; Chocolatey is community-driven"
+    - target: tool:scoop
+      comparison: "Windows package managers — winget is Microsoft official; Scoop is developer-focused"
+    - target: tool:homebrew
+      comparison: "System package managers — winget is Windows; Homebrew is macOS"
 ---
 nodeKind: Tool
 id: tool:nix
@@ -73,6 +105,11 @@ edges:
     - target: skill-area:developer-environment
   used_for:
     - skill-area:developer-environment
+  alternative_to:
+    - target: tool:homebrew
+      comparison: "System package managers — Nix is reproducible and declarative; Homebrew is simple"
+    - target: tool:apt
+      comparison: "System package managers — Nix is cross-platform declarative; apt is Debian/Ubuntu"
 ---
 nodeKind: Tool
 id: tool:apt
@@ -89,6 +126,11 @@ edges:
     - target: skill-area:developer-environment
   used_for:
     - skill-area:developer-environment
+  alternative_to:
+    - target: tool:homebrew
+      comparison: "System package managers — apt is Debian/Ubuntu; Homebrew is macOS/Linux"
+    - target: tool:nix
+      comparison: "System package managers — apt is Debian/Ubuntu; Nix is cross-platform declarative"
 ---
 nodeKind: Tool
 id: tool:hoppscotch
@@ -106,6 +148,15 @@ edges:
   used_for:
     - skill-area:api-testing
     - skill-area:backend-api-design
+  alternative_to:
+    - target: tool:postman
+      comparison: "API testing clients"
+    - target: tool:insomnia
+      comparison: "API testing clients"
+    - target: tool:bruno
+      comparison: "API testing clients"
+    - target: tool:httpie
+      comparison: "API testing clients"
 ---
 nodeKind: Tool
 id: tool:httpie
@@ -123,6 +174,15 @@ edges:
   used_for:
     - skill-area:api-testing
     - skill-area:backend-api-design
+  alternative_to:
+    - target: tool:postman
+      comparison: "API testing clients"
+    - target: tool:insomnia
+      comparison: "API testing clients"
+    - target: tool:hoppscotch
+      comparison: "API testing clients"
+    - target: tool:bruno
+      comparison: "API testing clients"
 ---
 nodeKind: Tool
 id: tool:bruno
@@ -140,6 +200,15 @@ edges:
   used_for:
     - skill-area:api-testing
     - skill-area:backend-api-design
+  alternative_to:
+    - target: tool:postman
+      comparison: "API testing clients"
+    - target: tool:insomnia
+      comparison: "API testing clients"
+    - target: tool:hoppscotch
+      comparison: "API testing clients"
+    - target: tool:httpie
+      comparison: "API testing clients"
 ---
 nodeKind: Tool
 id: tool:rapidapi
@@ -157,6 +226,11 @@ edges:
   used_for:
     - skill-area:api-testing
     - skill-area:backend-api-design
+  alternative_to:
+    - target: tool:swagger-editor
+      comparison: "API tools — RapidAPI is an API marketplace; Swagger Editor is a spec editor"
+    - target: tool:openapi-generator
+      comparison: "API tools — RapidAPI is an API marketplace; OpenAPI Generator produces code from specs"
 ---
 nodeKind: Tool
 id: tool:swagger-editor
@@ -174,3 +248,10 @@ edges:
   used_for:
     - skill-area:api-testing
     - skill-area:backend-api-design
+  alternative_to:
+    - target: tool:openapi-generator
+      comparison: "OpenAPI tools — Swagger Editor designs specs; OpenAPI Generator produces code from specs"
+    - target: tool:rapidapi
+      comparison: "API tools — Swagger Editor is a spec editor; RapidAPI is an API marketplace"
+    - target: tool:graphql-codegen
+      comparison: "API codegen — Swagger Editor is for REST/OpenAPI; GraphQL Codegen is for GraphQL"

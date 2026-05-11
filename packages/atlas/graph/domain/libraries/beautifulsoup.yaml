@@ -9,5 +9,8 @@ attributes:
 edges:
   belongs_to_language:
     - language:python
+  alternative_to:
+    - library:lxml
+    - library:scrapy
   library_used_by:
     - target: skill-area:web-scraping

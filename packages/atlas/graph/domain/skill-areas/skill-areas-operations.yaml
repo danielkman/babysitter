@@ -22,6 +22,10 @@ edges:
   prerequisite_for_learning:
     - target: skill-area:runbook-authoring
       strength: helpful
+    - target: skill-area:incident-response
+      strength: recommended
+    - target: skill-area:runbook-writing
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:change-management-ops

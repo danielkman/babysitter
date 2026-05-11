@@ -13,6 +13,13 @@ edges:
     - target: skill-area:feature-management
   used_for:
     - skill-area:feature-management
+  alternative_to:
+    - target: tool:launchdarkly
+      comparison: "Feature flag platforms"
+    - target: tool:unleash
+      comparison: "Feature flag platforms"
+    - target: tool:split-io
+      comparison: "Feature flag platforms"
 ---
 nodeKind: Tool
 id: tool:unleash
@@ -28,6 +35,13 @@ edges:
     - target: skill-area:feature-management
   used_for:
     - skill-area:feature-management
+  alternative_to:
+    - target: tool:launchdarkly
+      comparison: "Feature flag platforms"
+    - target: tool:flagsmith
+      comparison: "Feature flag platforms"
+    - target: tool:split-io
+      comparison: "Feature flag platforms"
 ---
 nodeKind: Tool
 id: tool:split-io
@@ -43,3 +57,10 @@ edges:
     - target: skill-area:feature-management
   used_for:
     - skill-area:feature-management
+  alternative_to:
+    - target: tool:launchdarkly
+      comparison: "Feature flag platforms"
+    - target: tool:flagsmith
+      comparison: "Feature flag platforms"
+    - target: tool:unleash
+      comparison: "Feature flag platforms"

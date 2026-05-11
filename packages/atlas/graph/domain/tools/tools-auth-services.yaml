@@ -13,6 +13,15 @@ edges:
     - target: skill-area:authentication
   used_for:
     - skill-area:authentication
+  alternative_to:
+    - target: tool:clerk
+      comparison: "Authentication services"
+    - target: tool:keycloak
+      comparison: "Authentication services"
+    - target: tool:okta
+      comparison: "Authentication services"
+    - target: tool:firebase-auth
+      comparison: "Authentication services"
 ---
 nodeKind: Tool
 id: tool:clerk
@@ -28,6 +37,15 @@ edges:
     - target: skill-area:authentication
   used_for:
     - skill-area:authentication
+  alternative_to:
+    - target: tool:auth0
+      comparison: "Authentication services"
+    - target: tool:keycloak
+      comparison: "Authentication services"
+    - target: tool:okta
+      comparison: "Authentication services"
+    - target: tool:firebase-auth
+      comparison: "Authentication services"
 ---
 nodeKind: Tool
 id: tool:keycloak
@@ -43,6 +61,15 @@ edges:
     - target: skill-area:authentication
   used_for:
     - skill-area:authentication
+  alternative_to:
+    - target: tool:auth0
+      comparison: "Authentication services"
+    - target: tool:clerk
+      comparison: "Authentication services"
+    - target: tool:okta
+      comparison: "Authentication services"
+    - target: tool:firebase-auth
+      comparison: "Authentication services"
 ---
 nodeKind: Tool
 id: tool:firebase-auth
@@ -58,6 +85,15 @@ edges:
     - target: skill-area:authentication
   used_for:
     - skill-area:authentication
+  alternative_to:
+    - target: tool:auth0
+      comparison: "Authentication services"
+    - target: tool:clerk
+      comparison: "Authentication services"
+    - target: tool:keycloak
+      comparison: "Authentication services"
+    - target: tool:okta
+      comparison: "Authentication services"
 ---
 nodeKind: Tool
 id: tool:okta
@@ -73,3 +109,12 @@ edges:
     - target: skill-area:authentication
   used_for:
     - skill-area:authentication
+  alternative_to:
+    - target: tool:auth0
+      comparison: "Authentication services"
+    - target: tool:clerk
+      comparison: "Authentication services"
+    - target: tool:keycloak
+      comparison: "Authentication services"
+    - target: tool:firebase-auth
+      comparison: "Authentication services"

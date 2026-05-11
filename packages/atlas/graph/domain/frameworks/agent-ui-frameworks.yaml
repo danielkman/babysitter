@@ -18,6 +18,13 @@ edges:
   used_by_skill_area:
     - target: skill-area:cli-design
     - target: skill-area:cli-tooling
+  alternative_to:
+    - target: framework:bubbletea
+      comparison: "Terminal UI frameworks"
+    - target: framework:textual
+      comparison: "Terminal UI frameworks"
+    - target: framework:rich
+      comparison: "Terminal UI frameworks"
 ---
 nodeKind: Framework
 id: framework:bubbletea
@@ -38,6 +45,13 @@ edges:
   used_by_skill_area:
     - target: skill-area:cli-design
     - target: skill-area:cli-tooling
+  alternative_to:
+    - target: framework:ink
+      comparison: "Terminal UI frameworks"
+    - target: framework:textual
+      comparison: "Terminal UI frameworks"
+    - target: framework:rich
+      comparison: "Terminal UI frameworks"
 ---
 nodeKind: Framework
 id: framework:textual
@@ -58,6 +72,13 @@ edges:
   used_by_skill_area:
     - target: skill-area:cli-design
     - target: skill-area:cli-tooling
+  alternative_to:
+    - target: framework:ink
+      comparison: "Terminal UI frameworks"
+    - target: framework:bubbletea
+      comparison: "Terminal UI frameworks"
+    - target: framework:rich
+      comparison: "Terminal UI frameworks"
 ---
 nodeKind: Framework
 id: framework:rich
@@ -77,6 +98,13 @@ edges:
     - language:python
   used_by_skill_area:
     - target: skill-area:cli-design
+  alternative_to:
+    - target: framework:ink
+      comparison: "Terminal UI frameworks"
+    - target: framework:bubbletea
+      comparison: "Terminal UI frameworks"
+    - target: framework:textual
+      comparison: "Terminal UI frameworks"
 ---
 nodeKind: Framework
 id: framework:open-webui
@@ -95,6 +123,9 @@ edges:
     - language:typescript
   used_by_skill_area:
     - target: skill-area:ai-agent-development
+  alternative_to:
+    - framework:chatbot-ui
+    - framework:librechat
 ---
 nodeKind: Framework
 id: framework:chatbot-ui
@@ -113,6 +144,9 @@ edges:
     - language:typescript
   used_by_skill_area:
     - target: skill-area:ai-agent-development
+  alternative_to:
+    - framework:open-webui
+    - framework:librechat
 ---
 nodeKind: Framework
 id: framework:librechat
@@ -132,3 +166,6 @@ edges:
     - language:typescript
   used_by_skill_area:
     - target: skill-area:ai-agent-development
+  alternative_to:
+    - framework:open-webui
+    - framework:chatbot-ui

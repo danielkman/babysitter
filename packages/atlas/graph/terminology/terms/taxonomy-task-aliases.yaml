@@ -2,7 +2,6 @@
 nodeKind: Term
 id: term:internationalization-and-localization
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Internationalization and Localization"
   kind: concept
   references:
@@ -16,7 +15,6 @@ edges:
 nodeKind: Term
 id: term:routing
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Routing"
   kind: concept
   references:
@@ -30,7 +28,6 @@ edges:
 nodeKind: Term
 id: term:server-side-rendering-frameworks
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Server-Side Rendering Frameworks"
   kind: concept
   references:
@@ -44,7 +41,6 @@ edges:
 nodeKind: Term
 id: term:backend-unit-testing
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Backend Unit Testing"
   kind: concept
   references:
@@ -58,7 +54,6 @@ edges:
 nodeKind: Term
 id: term:backend-integration-testing
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Backend Integration Testing"
   kind: concept
   references:
@@ -72,7 +67,6 @@ edges:
 nodeKind: Term
 id: term:frontend-e2e-testing
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Frontend E2E Testing"
   kind: concept
   references:
@@ -86,7 +80,6 @@ edges:
 nodeKind: Term
 id: term:state-management-testing
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "State Management Testing"
   kind: concept
   references:

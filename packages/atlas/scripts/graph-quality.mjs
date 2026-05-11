@@ -52,13 +52,13 @@ const altCoverage = altEligible > 0 ? (withAlt.size / altEligible * 100).toFixed
 
 // 9. Learning paths
 const skillAreas = records.filter(r => r._kind === 'SkillArea');
-const withPrereq = new Set(edges.filter(e => e.kind === 'prerequisite_for_learning').map(e => e.from));
-const learnCoverage = skillAreas.length > 0 ? (withPrereq.size / skillAreas.length * 100).toFixed(1) : '0.0';
+const withPrereq = new Set(edges.filter(e => e.kind === 'prerequisite_for_learning').flatMap(e => [e.from, e.to]));
+const learnCoverage = skillAreas.length > 0 ? (Math.min(withPrereq.size, skillAreas.length) / skillAreas.length * 100).toFixed(1) : '0.0';
 
 // 10. Memory coverage
 const agents = records.filter(r => r._kind === 'AgentVersion');
 const withMem = new Set(edges.filter(e => e.kind === 'uses_memory_system').map(e => e.from));
-const memCoverage = agents.length > 0 ? (withMem.size / agents.length * 100).toFixed(1) : '0.0';
+const memCoverage = agents.length > 0 ? Math.min(100, withMem.size / agents.length * 100).toFixed(1) : '0.0';
 
 // 11. Dangling edges
 const recordIds = new Set(Object.keys(index.records));

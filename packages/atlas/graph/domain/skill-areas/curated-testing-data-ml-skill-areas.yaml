@@ -322,6 +322,50 @@ edges:
       strength: required
     - target: skill-area:streaming-realtime-processing
       strength: helpful
+    - target: skill-area:statistical-analysis
+      strength: recommended
+    - target: skill-area:geospatial-data-analysis
+      strength: recommended
+    - target: skill-area:data-preprocessing
+      strength: recommended
+    - target: skill-area:data-analytics
+      strength: recommended
+    - target: skill-area:data-collection
+      strength: recommended
+    - target: skill-area:time-series-analysis
+      strength: recommended
+    - target: skill-area:big-data-tools
+      strength: recommended
+    - target: skill-area:data-quality
+      strength: recommended
+    - target: skill-area:etl-pipelines
+      strength: recommended
+    - target: skill-area:spark-jobs
+      strength: recommended
+    - target: skill-area:dbt-modeling
+      strength: recommended
+    - target: skill-area:data-lineage
+      strength: recommended
+    - target: skill-area:data-governance
+      strength: recommended
+    - target: skill-area:batch-vs-stream-tradeoffs
+      strength: recommended
+    - target: skill-area:columnar-storage
+      strength: recommended
+    - target: skill-area:python-data-pipelines
+      strength: recommended
+    - target: skill-area:data-quality-testing
+      strength: recommended
+    - target: skill-area:data-pipeline-testing
+      strength: recommended
+    - target: skill-area:etl-testing
+      strength: recommended
+    - target: skill-area:reproducibility-testing
+      strength: recommended
+    - target: skill-area:statistical-testing
+      strength: recommended
+    - target: skill-area:analytics-tracking
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:statistical-analysis

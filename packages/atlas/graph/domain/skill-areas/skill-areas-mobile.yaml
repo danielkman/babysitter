@@ -21,6 +21,22 @@ edges:
   prerequisite_for_learning:
     - target: skill-area:react-native-development
       strength: helpful
+    - target: skill-area:mobile-local-databases
+      strength: recommended
+    - target: skill-area:mobile-state-management
+      strength: recommended
+    - target: skill-area:push-notifications
+      strength: recommended
+    - target: skill-area:deep-linking
+      strength: recommended
+    - target: skill-area:mobile-offline-sync
+      strength: recommended
+    - target: skill-area:mobile-biometrics
+      strength: recommended
+    - target: skill-area:in-app-purchases
+      strength: recommended
+    - target: skill-area:app-store-deployment
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:android-native
@@ -44,6 +60,22 @@ edges:
   prerequisite_for_learning:
     - target: skill-area:flutter-development
       strength: helpful
+    - target: skill-area:mobile-local-databases
+      strength: recommended
+    - target: skill-area:mobile-state-management
+      strength: recommended
+    - target: skill-area:push-notifications
+      strength: recommended
+    - target: skill-area:deep-linking
+      strength: recommended
+    - target: skill-area:mobile-offline-sync
+      strength: recommended
+    - target: skill-area:mobile-biometrics
+      strength: recommended
+    - target: skill-area:in-app-purchases
+      strength: recommended
+    - target: skill-area:app-store-deployment
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:react-native-development
@@ -64,6 +96,11 @@ edges:
   uses_language:
     - language:typescript
     - target: language:typescript
+  prerequisite_for_learning:
+    - target: skill-area:mobile-sensor-integration
+      strength: recommended
+    - target: skill-area:mobile-location-services
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:flutter-development
@@ -89,6 +126,11 @@ edges:
   uses_framework:
     - framework:flutter
     - target: framework:flutter
+  prerequisite_for_learning:
+    - target: skill-area:mobile-sensor-integration
+      strength: recommended
+    - target: skill-area:mobile-location-services
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:mobile-state-management

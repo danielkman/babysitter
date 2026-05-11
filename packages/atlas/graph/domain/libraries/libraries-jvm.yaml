@@ -26,6 +26,8 @@ edges:
     - language:java
   library_used_by:
     - target: skill-area:component-testing
+  alternative_to:
+    - library:moq
 ---
 nodeKind: Library
 id: library:junit

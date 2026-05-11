@@ -1,4 +1,4 @@
-# Catalog pass 97c — public type schemas for the four mock-surface families
+# Public type schemas for the four mock-surface families
 # in @a5c-ai/agent-mux-harness-mock (subprocess, http, websocket, sdk). Each
 # scenario is parameterized by a `HarnessScenario` plus a per-execution-type
 # config, and produces a per-execution-type handle. Source: packages/

@@ -20,6 +20,24 @@ edges:
       strength: recommended
     - target: skill-area:shader-programming
       strength: recommended
+    - target: skill-area:game-engines
+      strength: recommended
+    - target: skill-area:graphics-rendering
+      strength: recommended
+    - target: skill-area:ui-menu-systems
+      strength: recommended
+    - target: skill-area:save-load-systems
+      strength: recommended
+    - target: skill-area:game-analytics-monetization
+      strength: recommended
+    - target: skill-area:game-loop
+      strength: recommended
+    - target: skill-area:scene-graphs
+      strength: recommended
+    - target: skill-area:physics-simulation
+      strength: recommended
+    - target: skill-area:asset-pipeline
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:gameplay-programming
@@ -80,6 +98,11 @@ edges:
   applies_to:
     - target: specialization:desktop-development
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:cross-platform-desktop
+      strength: recommended
+    - target: skill-area:desktop-system-integration
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:cross-platform-desktop
@@ -132,6 +155,20 @@ edges:
       confidence: primary
   prerequisite_for_learning:
     - target: skill-area:sensor-fusion
+      strength: recommended
+    - target: skill-area:firmware-testing
+      strength: recommended
+    - target: skill-area:hardware-interface-testing
+      strength: recommended
+    - target: skill-area:real-time-behavior-testing
+      strength: recommended
+    - target: skill-area:power-consumption-testing
+      strength: recommended
+    - target: skill-area:environmental-stress-testing
+      strength: recommended
+    - target: skill-area:safety-critical-testing
+      strength: recommended
+    - target: skill-area:protocol-conformance-testing
       strength: recommended
 ---
 nodeKind: SkillArea
@@ -195,6 +232,18 @@ edges:
       strength: recommended
     - target: skill-area:alerting-oncall
       strength: required
+    - target: skill-area:log-aggregation
+      strength: recommended
+    - target: skill-area:metrics-dashboarding
+      strength: recommended
+    - target: skill-area:observability-pipeline
+      strength: recommended
+    - target: skill-area:sli-slo-management
+      strength: recommended
+    - target: skill-area:incident-response
+      strength: recommended
+    - target: skill-area:error-tracking
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:alerting-oncall
@@ -344,6 +393,22 @@ edges:
       strength: recommended
     - target: skill-area:solution-architecture
       strength: helpful
+    - target: skill-area:rate-limiting
+      strength: recommended
+    - target: skill-area:webhook-verification
+      strength: recommended
+    - target: skill-area:middleware-design
+      strength: recommended
+    - target: skill-area:api-clients-sdks
+      strength: recommended
+    - target: skill-area:api-design
+      strength: recommended
+    - target: skill-area:payment-integration
+      strength: recommended
+    - target: skill-area:payment-processing
+      strength: recommended
+    - target: skill-area:e-commerce
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:backend-data-persistence
@@ -368,6 +433,16 @@ edges:
       strength: recommended
     - target: skill-area:search-infrastructure
       strength: helpful
+    - target: skill-area:database-drivers-connectors
+      strength: recommended
+    - target: skill-area:object-relational-mapping
+      strength: recommended
+    - target: skill-area:database-migrations-zero-downtime
+      strength: recommended
+    - target: skill-area:postgres-tuning
+      strength: recommended
+    - target: skill-area:graph-databases
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:backend-auth
@@ -405,6 +480,12 @@ edges:
       confidence: primary
   prerequisite_for_learning:
     - target: skill-area:event-driven-architecture
+      strength: recommended
+    - target: skill-area:messaging-queuing
+      strength: recommended
+    - target: skill-area:task-scheduling-cron-jobs
+      strength: recommended
+    - target: skill-area:kafka-stream-processing
       strength: recommended
 ---
 nodeKind: SkillArea

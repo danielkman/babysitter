@@ -20,3 +20,9 @@ edges:
       comparison: "meta-frameworks — SvelteKit for Svelte; Next.js for React"
     - target: framework:nuxt
       comparison: "meta-frameworks — SvelteKit for Svelte; Nuxt for Vue"
+    - target: framework:remix
+      comparison: "JavaScript meta-frameworks"
+    - target: framework:astro
+      comparison: "JavaScript meta-frameworks"
+    - target: framework:gatsby
+      comparison: "JavaScript meta-frameworks"

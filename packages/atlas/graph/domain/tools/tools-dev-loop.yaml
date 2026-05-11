@@ -13,6 +13,9 @@ edges:
   used_for:
     - target: skill-area:local-development
     - target: skill-area:developer-experience
+  alternative_to:
+    - target: tool:skaffold
+      comparison: "Kubernetes dev loops — Tilt has a UI dashboard; Skaffold is CLI-first"
 ---
 nodeKind: Tool
 id: tool:skaffold
@@ -28,6 +31,9 @@ edges:
   used_for:
     - target: skill-area:local-development
     - target: skill-area:developer-experience
+  alternative_to:
+    - target: tool:tilt
+      comparison: "Kubernetes dev loops — Skaffold is CLI-first; Tilt has a UI dashboard"
 ---
 nodeKind: Tool
 id: tool:colima
@@ -45,3 +51,6 @@ edges:
     - target: skill-area:containerization
   implements_stack_part:
     - target: stack-part:container-runtime
+  alternative_to:
+    - target: tool:docker-compose
+      comparison: "Local container tools — Colima provides the container runtime; Docker Compose orchestrates containers"

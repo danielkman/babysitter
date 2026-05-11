@@ -13,3 +13,14 @@ edges:
     - target: skill-area:hydration
     - target: skill-area:frontend-development
     - target: skill-area:frontend-performance
+  alternative_to:
+    - target: framework:nextjs
+      comparison: "JavaScript meta-frameworks"
+    - target: framework:nuxt
+      comparison: "JavaScript meta-frameworks"
+    - target: framework:sveltekit
+      comparison: "JavaScript meta-frameworks"
+    - target: framework:remix
+      comparison: "JavaScript meta-frameworks"
+    - target: framework:gatsby
+      comparison: "JavaScript meta-frameworks"

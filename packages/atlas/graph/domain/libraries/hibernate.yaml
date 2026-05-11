@@ -11,3 +11,6 @@ edges:
     - language:java
   library_used_by:
     - target: skill-area:backend-data-persistence
+  alternative_to:
+    - library:spring-data
+    - library:exposed

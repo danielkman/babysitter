@@ -14,6 +14,8 @@ edges:
     - language:php
   library_used_by:
     - target: skill-area:backend-data-persistence
+  alternative_to:
+    - library:eloquent
 ---
 nodeKind: Library
 id: library:eloquent
@@ -46,6 +48,8 @@ edges:
     - language:php
   library_used_by:
     - target: skill-area:component-testing
+  alternative_to:
+    - library:pest-php
 ---
 nodeKind: Library
 id: library:pest-php
@@ -78,6 +82,8 @@ edges:
     - language:php
   library_used_by:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - library:sidekiq
 ---
 nodeKind: Library
 id: library:laravel-sanctum
@@ -94,6 +100,8 @@ edges:
     - language:php
   library_used_by:
     - target: skill-area:authentication-authorization
+  alternative_to:
+    - library:devise
 ---
 nodeKind: Library
 id: library:filament
@@ -110,6 +118,8 @@ edges:
     - language:php
   library_used_by:
     - target: skill-area:frontend-development
+  alternative_to:
+    - framework:strapi
 ---
 nodeKind: Library
 id: library:inertia-laravel
@@ -126,6 +136,8 @@ edges:
     - language:php
   library_used_by:
     - target: skill-area:frontend-development
+  alternative_to:
+    - framework:livewire
 ---
 nodeKind: Library
 id: library:alamofire
@@ -142,6 +154,8 @@ edges:
     - language:swift
   library_used_by:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - library:axios
 ---
 nodeKind: Library
 id: library:kingfisher
@@ -158,6 +172,8 @@ edges:
     - language:swift
   library_used_by:
     - target: skill-area:ios-native
+  alternative_to:
+    - library:sharp
 ---
 nodeKind: Library
 id: library:snapkit
@@ -174,6 +190,8 @@ edges:
     - language:swift
   library_used_by:
     - target: skill-area:ios-native
+  alternative_to:
+    - library:shadcn
 ---
 nodeKind: Library
 id: library:combine
@@ -190,6 +208,8 @@ edges:
     - language:swift
   library_used_by:
     - target: skill-area:ios-native
+  alternative_to:
+    - library:rxjs
 ---
 nodeKind: Library
 id: library:koin
@@ -206,6 +226,9 @@ edges:
     - language:kotlin
   library_used_by:
     - target: skill-area:android-native
+  alternative_to:
+    - library:hilt
+    - library:dagger-java
 ---
 nodeKind: Library
 id: library:hilt
@@ -238,6 +261,8 @@ edges:
     - language:kotlin
   library_used_by:
     - target: skill-area:backend-data-persistence
+  alternative_to:
+    - library:ecto
 ---
 nodeKind: Library
 id: library:retrofit-kt
@@ -254,6 +279,9 @@ edges:
     - language:kotlin
   library_used_by:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - library:ktor
+    - library:retrofit
 ---
 nodeKind: Library
 id: library:coroutines
@@ -270,3 +298,5 @@ edges:
     - language:kotlin
   library_used_by:
     - target: skill-area:backend-async-processing
+  alternative_to:
+    - library:tokio

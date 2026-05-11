@@ -83,6 +83,11 @@ edges:
     - language:typescript
   used_for:
     - skill-area:backend-data-persistence
+  alternative_to:
+    - library:prisma
+    - library:typeorm
+    - library:drizzle-orm
+    - library:sequelize
 ---
 nodeKind: Library
 id: library:objection
@@ -99,6 +104,10 @@ edges:
     - language:typescript
   used_for:
     - skill-area:backend-data-persistence
+  alternative_to:
+    - library:prisma
+    - library:knex
+    - library:kysely
 ---
 nodeKind: Library
 id: library:kysely
@@ -115,6 +124,10 @@ edges:
     - language:typescript
   used_for:
     - skill-area:backend-data-persistence
+  alternative_to:
+    - library:knex
+    - library:drizzle-orm
+    - library:prisma
 ---
 nodeKind: Library
 id: library:apollo-client
@@ -131,6 +144,10 @@ edges:
     - language:typescript
   used_for:
     - skill-area:graphql-schema-design
+  alternative_to:
+    - library:urql
+    - library:relay
+    - library:graphql-request
 ---
 nodeKind: Library
 id: library:urql
@@ -195,6 +212,8 @@ edges:
     - language:typescript
   used_for:
     - skill-area:graphql-schema-design
+  alternative_to:
+    - library:mercurius
 ---
 nodeKind: Library
 id: library:nexus
@@ -243,6 +262,10 @@ edges:
     - language:typescript
   used_for:
     - skill-area:graphql-schema-design
+  alternative_to:
+    - library:yoga
+    - library:nexus
+    - library:type-graphql
 ---
 nodeKind: Library
 id: library:yoga
@@ -275,6 +298,9 @@ edges:
     - language:typescript
   used_for:
     - skill-area:authentication
+  alternative_to:
+    - library:lucia
+    - library:passport
 ---
 nodeKind: Library
 id: library:lucia
@@ -307,6 +333,9 @@ edges:
     - language:typescript
   used_for:
     - skill-area:backend-api-design
+  alternative_to:
+    - library:trpc-client
+    - library:trpc
 ---
 nodeKind: Library
 id: library:trpc-client
@@ -323,3 +352,6 @@ edges:
     - language:typescript
   used_for:
     - skill-area:backend-api-design
+  alternative_to:
+    - library:trpc-server
+    - library:trpc

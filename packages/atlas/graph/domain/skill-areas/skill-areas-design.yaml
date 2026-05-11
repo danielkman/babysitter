@@ -46,6 +46,8 @@ edges:
   prerequisite_for_learning:
     - target: skill-area:prototyping
       strength: recommended
+    - target: skill-area:information-architect
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:visual-design
@@ -68,6 +70,18 @@ edges:
       confidence: primary
   prerequisite_for_learning:
     - target: skill-area:design-systems
+      strength: recommended
+    - target: skill-area:figma-prototyping
+      strength: recommended
+    - target: skill-area:color-theory
+      strength: recommended
+    - target: skill-area:typography
+      strength: recommended
+    - target: skill-area:motion-design
+      strength: recommended
+    - target: skill-area:accessibility-first-design
+      strength: recommended
+    - target: skill-area:ui-ux-design
       strength: recommended
 ---
 nodeKind: SkillArea

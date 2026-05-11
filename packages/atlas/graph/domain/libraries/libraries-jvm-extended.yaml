@@ -28,6 +28,8 @@ edges:
     - language:java
   library_used_by:
     - target: skill-area:authentication-authorization
+  alternative_to:
+    - library:devise
 ---
 nodeKind: Library
 id: library:spring-cloud
@@ -43,6 +45,8 @@ edges:
     - language:java
   library_used_by:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - library:micronaut
 ---
 nodeKind: Library
 id: library:micronaut
@@ -58,6 +62,9 @@ edges:
     - language:java
   library_used_by:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - library:quarkus
+    - library:spring-boot
 ---
 nodeKind: Library
 id: library:quarkus
@@ -118,6 +125,9 @@ edges:
     - language:kotlin
   library_used_by:
     - target: skill-area:component-testing
+  alternative_to:
+    - library:junit
+    - library:scalatest
 ---
 nodeKind: Library
 id: library:arrow-kt
@@ -133,6 +143,8 @@ edges:
     - language:kotlin
   library_used_by:
     - target: skill-area:backend-async-processing
+  alternative_to:
+    - library:cats
 ---
 nodeKind: Library
 id: library:dagger-java
@@ -148,6 +160,10 @@ edges:
     - language:java
   library_used_by:
     - target: skill-area:solution-architecture
+  alternative_to:
+    - library:guice
+    - library:koin
+    - library:hilt
 ---
 nodeKind: Library
 id: library:guice
@@ -178,6 +194,8 @@ edges:
     - language:java
   library_used_by:
     - target: skill-area:observability-instrumentation
+  alternative_to:
+    - library:log4j
 ---
 nodeKind: Library
 id: library:log4j
@@ -208,3 +226,5 @@ edges:
     - language:java
   library_used_by:
     - target: skill-area:backend-async-processing
+  alternative_to:
+    - library:tokio

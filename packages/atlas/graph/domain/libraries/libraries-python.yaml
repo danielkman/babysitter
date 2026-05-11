@@ -12,6 +12,8 @@ edges:
     - language:python
   library_used_by:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - library:fastapi-lib
 ---
 nodeKind: Library
 id: library:pytest
@@ -26,6 +28,8 @@ edges:
     - language:python
   library_used_by:
     - target: skill-area:component-testing
+  alternative_to:
+    - library:hypothesis
 ---
 nodeKind: Library
 id: library:hypothesis
@@ -68,6 +72,8 @@ edges:
     - language:python
   library_used_by:
     - target: skill-area:machine-learning
+  alternative_to:
+    - library:pytorch
 ---
 nodeKind: Library
 id: library:scikit-learn
@@ -82,6 +88,8 @@ edges:
     - language:python
   library_used_by:
     - target: skill-area:machine-learning
+  alternative_to:
+    - library:pytorch
 ---
 nodeKind: Library
 id: library:matplotlib
@@ -96,6 +104,8 @@ edges:
     - language:python
   library_used_by:
     - target: skill-area:data-analysis
+  alternative_to:
+    - library:seaborn
 ---
 nodeKind: Library
 id: library:seaborn
@@ -124,6 +134,9 @@ edges:
     - language:python
   library_used_by:
     - target: skill-area:machine-learning
+  alternative_to:
+    - library:tensorflow
+    - library:jax
 ---
 nodeKind: Library
 id: library:tensorflow
@@ -167,6 +180,8 @@ edges:
   library_used_by:
     - target: skill-area:retrieval-augmented-generation
     - target: skill-area:rag-pipeline-engineering
+  alternative_to:
+    - library:llama-index
 ---
 nodeKind: Library
 id: library:llama-index
@@ -197,6 +212,8 @@ edges:
     - language:python
   library_used_by:
     - target: skill-area:retrieval-augmented-generation
+  alternative_to:
+    - library:qdrant-client
 ---
 nodeKind: Library
 id: library:qdrant-client
@@ -226,3 +243,5 @@ edges:
     - language:python
   library_used_by:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - library:starlette

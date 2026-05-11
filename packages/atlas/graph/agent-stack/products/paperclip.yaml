@@ -83,3 +83,5 @@ edges:
       versionRange: '>=0.1.0'
       level: full
       notes: Plugin SDK with create-paperclip-plugin scaffolding and sandbox providers.
+  uses_memory_system:
+    - target: memory-system:file-based-markdown-pattern

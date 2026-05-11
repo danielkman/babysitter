@@ -1,4 +1,4 @@
-# Catalog pass 97c — public zod-validated wire schemas exposed by
+# Public zod-validated wire schemas exposed by
 # @a5c-ai/breakpoints-mux/src/types.ts. Modeled types are the ones that
 # cross the package boundary (CLI ↔ backend ↔ MCP tool boundary). Internal
 # helpers (Code Snippet helpers, lock-file shapes) are not modeled.

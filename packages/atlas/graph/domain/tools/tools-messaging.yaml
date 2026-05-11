@@ -13,6 +13,13 @@ edges:
     - target: skill-area:event-driven-architecture
   used_for:
     - skill-area:event-driven-architecture
+  alternative_to:
+    - target: tool:nats
+      comparison: "Message brokers"
+    - target: tool:pulsar
+      comparison: "Message brokers"
+    - target: tool:zeromq
+      comparison: "Message brokers"
 ---
 nodeKind: Tool
 id: tool:nats
@@ -28,6 +35,13 @@ edges:
     - target: skill-area:event-driven-architecture
   used_for:
     - skill-area:event-driven-architecture
+  alternative_to:
+    - target: tool:rabbitmq
+      comparison: "Message brokers"
+    - target: tool:pulsar
+      comparison: "Message brokers"
+    - target: tool:zeromq
+      comparison: "Message brokers"
 ---
 nodeKind: Tool
 id: tool:pulsar
@@ -43,6 +57,13 @@ edges:
     - target: skill-area:event-driven-architecture
   used_for:
     - skill-area:event-driven-architecture
+  alternative_to:
+    - target: tool:rabbitmq
+      comparison: "Message brokers"
+    - target: tool:nats
+      comparison: "Message brokers"
+    - target: tool:zeromq
+      comparison: "Message brokers"
 ---
 nodeKind: Tool
 id: tool:zeromq
@@ -58,6 +79,13 @@ edges:
     - target: skill-area:event-driven-architecture
   used_for:
     - skill-area:event-driven-architecture
+  alternative_to:
+    - target: tool:rabbitmq
+      comparison: "Message brokers"
+    - target: tool:nats
+      comparison: "Message brokers"
+    - target: tool:pulsar
+      comparison: "Message brokers"
 ---
 nodeKind: Tool
 id: tool:mosquitto

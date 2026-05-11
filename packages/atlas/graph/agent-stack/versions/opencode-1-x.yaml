@@ -69,3 +69,5 @@ edges:
       versionRange: ">=0.0.0"
       level: full
       notes: Public OpenCode docs describe where sessions are stored.
+  uses_memory_system:
+    - target: memory-system:file-based-markdown-pattern

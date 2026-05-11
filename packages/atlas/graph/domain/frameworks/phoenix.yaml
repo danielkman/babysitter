@@ -11,3 +11,6 @@ edges:
     - language:elixir
   used_by_skill_area:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - target: framework:phoenix-liveview
+      comparison: "Elixir web frameworks"

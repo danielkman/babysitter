@@ -11,3 +11,6 @@ edges:
     - language:java
   library_used_by:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - library:retrofit-kt
+    - library:ktor

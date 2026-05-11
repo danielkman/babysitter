@@ -14,7 +14,7 @@ attributes:
 edges:
   references_path:
     - target: path:agent-catalog-graph
-  # Catalog pass 97c — `amux-proxy` runtime CLI bin modeled as
+  # `amux-proxy` runtime CLI bin modeled as
   # InteractionPrimitive[kind=cli-subcommand]. The package's transport-
   # protocol handlers are already modeled as ModelTransportProtocol records
   # and are NOT duplicated here.

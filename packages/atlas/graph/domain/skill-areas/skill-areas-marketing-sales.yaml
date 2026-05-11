@@ -58,6 +58,15 @@ edges:
   applies_to:
     - target: domain:sales
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:revenue-operations
+      strength: recommended
+    - target: skill-area:sales-operations
+      strength: recommended
+    - target: skill-area:customer-success
+      strength: recommended
+    - target: skill-area:customer-support
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:revenue-operations

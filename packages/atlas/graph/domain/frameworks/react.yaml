@@ -23,3 +23,5 @@ edges:
       comparison: "UI frameworks"
     - target: framework:svelte
       comparison: "UI frameworks"
+    - target: framework:preact
+      comparison: "Frontend UI frameworks"

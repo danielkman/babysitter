@@ -71,3 +71,5 @@ edges:
       versionRange: ">=0.0.0"
       level: full
       notes: Public session persistence evidence comes from Copilot CLI config-directory documentation.
+  uses_memory_system:
+    - target: memory-system:instruction-file-hierarchy

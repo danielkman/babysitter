@@ -11,3 +11,7 @@ attributes:
   scope: user
   evaluationContext: user
   expansion: home
+
+edges:
+  owned_by:
+    - target: agent-runtime-impl:claude-code.runtime@1.x

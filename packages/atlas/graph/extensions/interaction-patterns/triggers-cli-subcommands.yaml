@@ -1,4 +1,4 @@
-# Catalog pass 95 — `amux-triggers` CLI subcommand surface.
+# `amux-triggers` CLI subcommand surface.
 # Source: packages/triggers/src/cli.ts:18-69 (main()), package.json:28 (bin entry).
 nodeKind: InteractionPrimitive
 id: interaction-primitive:amux-triggers-enrich

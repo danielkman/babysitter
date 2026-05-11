@@ -17,11 +17,17 @@ attributes:
     MongoDB Atlas for managed database hosting.
   composes:
     - language:javascript
+    - language:typescript
     - framework:react
+    - library:express
+    - library:mongoose
 edges:
   composed_of:
     - language:javascript
+    - language:typescript
     - framework:react
+    - library:express
+    - library:mongoose
 ---
 nodeKind: StackProfile
 id: stack-profile:mean-stack
@@ -41,11 +47,17 @@ attributes:
     conventions reduce the decision surface.
   composes:
     - language:typescript
+    - language:javascript
     - framework:angular
+    - library:express
+    - library:mongoose
 edges:
   composed_of:
     - language:typescript
+    - language:javascript
     - framework:angular
+    - library:express
+    - library:mongoose
 ---
 nodeKind: StackProfile
 id: stack-profile:python-ml-stack

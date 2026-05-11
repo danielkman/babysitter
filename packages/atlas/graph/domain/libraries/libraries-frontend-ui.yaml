@@ -77,6 +77,8 @@ edges:
     - language:typescript
   used_for:
     - skill-area:animation-transitions
+  alternative_to:
+    - library:d3
 ---
 nodeKind: Library
 id: library:three
@@ -94,6 +96,8 @@ edges:
   used_for:
     - skill-area:data-visualization
     - skill-area:animation-transitions
+  alternative_to:
+    - library:d3
 ---
 nodeKind: Library
 id: library:d3
@@ -110,6 +114,9 @@ edges:
     - language:javascript
   used_for:
     - skill-area:data-visualization
+  alternative_to:
+    - library:chart-js
+    - library:recharts
 ---
 nodeKind: Library
 id: library:chart-js
@@ -158,6 +165,11 @@ edges:
     - language:typescript
   used_for:
     - skill-area:design-systems
+  alternative_to:
+    - library:material-ui
+    - library:chakra-ui
+    - library:mantine
+    - library:ant-design
 ---
 nodeKind: Library
 id: library:radix-ui
@@ -174,6 +186,8 @@ edges:
     - language:typescript
   used_for:
     - skill-area:design-systems
+  alternative_to:
+    - library:headless-ui
 ---
 nodeKind: Library
 id: library:headless-ui
@@ -206,6 +220,11 @@ edges:
     - language:typescript
   used_for:
     - skill-area:design-systems
+  alternative_to:
+    - library:chakra-ui
+    - library:mantine
+    - library:ant-design
+    - library:shadcn
 ---
 nodeKind: Library
 id: library:chakra-ui
@@ -270,6 +289,10 @@ edges:
     - language:javascript
   used_for:
     - skill-area:ui-styling
+  alternative_to:
+    - library:sass
+    - library:styled-components
+    - library:emotion
 ---
 nodeKind: Library
 id: library:daisyui
@@ -287,6 +310,8 @@ edges:
   used_for:
     - skill-area:ui-styling
     - skill-area:design-systems
+  alternative_to:
+    - library:shadcn
 ---
 nodeKind: Library
 id: library:styled-components
@@ -303,6 +328,8 @@ edges:
     - language:typescript
   used_for:
     - skill-area:ui-styling
+  alternative_to:
+    - library:emotion
 ---
 nodeKind: Library
 id: library:emotion
@@ -335,6 +362,8 @@ edges:
     - language:javascript
   used_for:
     - skill-area:ui-styling
+  alternative_to:
+    - library:sass
 ---
 nodeKind: Library
 id: library:sass

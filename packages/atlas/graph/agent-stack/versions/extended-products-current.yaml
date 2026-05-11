@@ -57,6 +57,8 @@ edges:
     versionRange: '>=0.8.0'
     level: full
     notes: Continue's chat panel maintains multi-turn context.
+  uses_memory_system:
+    - target: memory-system:file-based-markdown-pattern
 ---
 nodeKind: AgentVersion
 id: agent-version:cline@current
@@ -210,6 +212,8 @@ edges:
     versionRange: current
     level: full
     notes: Zed shipped native MCP server support in 2025.
+  uses_memory_system:
+    - target: memory-system:file-based-markdown-pattern
 ---
 nodeKind: AgentVersion
 id: agent-version:windsurf@current
@@ -287,6 +291,8 @@ edges:
     versionRange: current
     level: full
     notes: Iterative back-and-forth edits with the user.
+  uses_memory_system:
+    - target: memory-system:file-based-markdown-pattern
 ---
 nodeKind: AgentVersion
 id: agent-version:bolt@current
@@ -315,6 +321,8 @@ edges:
     versionRange: current
     level: full
     notes: Iterative refinement of a generated app via chat.
+  uses_memory_system:
+    - target: memory-system:file-based-markdown-pattern
 ---
 nodeKind: AgentVersion
 id: agent-version:v0@current
@@ -343,6 +351,8 @@ edges:
     versionRange: current
     level: full
     notes: Conversational refinement of generated UI.
+  uses_memory_system:
+    - target: memory-system:instruction-file-hierarchy
 ---
 nodeKind: AgentVersion
 id: agent-version:lovable@current
@@ -371,6 +381,8 @@ edges:
     versionRange: current
     level: full
     notes: Iterative chat-driven refinement.
+  uses_memory_system:
+    - target: memory-system:file-based-markdown-pattern
 ---
 nodeKind: AgentVersion
 id: agent-version:openhands@current
@@ -415,6 +427,8 @@ edges:
     versionRange: current
     level: full
     notes: Streams tool-call deltas where the backing model supports it.
+  uses_memory_system:
+    - target: memory-system:file-based-markdown-pattern
 ---
 nodeKind: AgentVersion
 id: agent-version:warp@current
@@ -451,6 +465,8 @@ edges:
     versionRange: current
     level: full
     notes: Warp added native MCP support in 2025.
+  uses_memory_system:
+    - target: memory-system:file-based-markdown-pattern
 ---
 nodeKind: AgentVersion
 id: agent-version:openai-agents-sdk@current
@@ -508,3 +524,5 @@ edges:
         Built-in tracing captures the full execution flow — LLM calls,
         tool invocations, handoffs, and guardrail checks. Traces are
         exportable to external backends for debugging and observability.
+  uses_memory_system:
+    - target: memory-system:vector-backed-recall-pattern

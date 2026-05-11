@@ -30,6 +30,9 @@ edges:
     - language:javascript
   used_for:
     - skill-area:backend-async-processing
+  alternative_to:
+    - library:fp-ts
+    - library:neverthrow
 ---
 nodeKind: Library
 id: library:fp-ts
@@ -62,6 +65,10 @@ edges:
     - language:javascript
   used_for:
     - skill-area:data-validation-sanitization
+  alternative_to:
+    - library:zod
+    - library:yup
+    - library:joi
 ---
 nodeKind: Library
 id: library:neverthrow
@@ -94,6 +101,9 @@ edges:
     - language:javascript
   used_for:
     - skill-area:cli-design
+  alternative_to:
+    - library:execa
+    - library:shelljs
 ---
 nodeKind: Library
 id: library:execa
@@ -142,6 +152,8 @@ edges:
     - language:javascript
   used_for:
     - skill-area:ci-pipeline-optimization
+  alternative_to:
+    - library:fast-glob
 ---
 nodeKind: Library
 id: library:fast-glob
@@ -174,6 +186,8 @@ edges:
     - language:javascript
   used_for:
     - skill-area:ci-pipeline-optimization
+  alternative_to:
+    - library:nodemon
 ---
 nodeKind: Library
 id: library:fs-extra
@@ -190,6 +204,8 @@ edges:
     - language:javascript
   used_for:
     - skill-area:cli-design
+  alternative_to:
+    - library:chokidar
 ---
 nodeKind: Library
 id: library:cross-env
@@ -206,6 +222,8 @@ edges:
     - language:javascript
   used_for:
     - skill-area:ci-pipeline-optimization
+  alternative_to:
+    - library:dotenv
 ---
 nodeKind: Library
 id: library:concurrently
@@ -222,6 +240,8 @@ edges:
     - language:javascript
   used_for:
     - skill-area:ci-pipeline-optimization
+  alternative_to:
+    - library:npm-run-all
 ---
 nodeKind: Library
 id: library:npm-run-all
@@ -254,6 +274,12 @@ edges:
     - language:javascript
   used_for:
     - skill-area:technical-documentation
+  alternative_to:
+    - library:ejs
+    - library:mustache
+    - library:pug
+    - library:nunjucks
+    - library:eta
 ---
 nodeKind: Library
 id: library:ejs

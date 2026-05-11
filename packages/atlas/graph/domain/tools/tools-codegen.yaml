@@ -10,6 +10,13 @@ attributes:
 edges:
   tool_used_by:
     - target: skill-area:sdk-codegen
+  alternative_to:
+    - target: tool:graphql-codegen
+      comparison: "API codegen — OpenAPI Generator is for REST/OpenAPI; GraphQL Codegen is for GraphQL"
+    - target: tool:swagger-editor
+      comparison: "OpenAPI tools — OpenAPI Generator produces code from specs; Swagger Editor designs specs"
+    - target: tool:rapidapi
+      comparison: "API tools — OpenAPI Generator produces code from specs; RapidAPI is an API marketplace"
 ---
 nodeKind: Tool
 id: tool:graphql-codegen
@@ -22,3 +29,8 @@ attributes:
 edges:
   tool_used_by:
     - target: skill-area:sdk-codegen
+  alternative_to:
+    - target: tool:openapi-generator
+      comparison: "API codegen — GraphQL Codegen is for GraphQL; OpenAPI Generator is for REST/OpenAPI"
+    - target: tool:swagger-editor
+      comparison: "API codegen — GraphQL Codegen is for GraphQL; Swagger Editor is for REST/OpenAPI"

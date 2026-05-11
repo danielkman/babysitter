@@ -14,6 +14,8 @@ edges:
     - language:javascript
   used_for:
     - skill-area:backend-api-design
+  alternative_to:
+    - framework:fastify
 ---
 nodeKind: Library
 id: library:socket-io
@@ -30,6 +32,8 @@ edges:
     - language:javascript
   used_for:
     - skill-area:streaming-realtime-processing
+  alternative_to:
+    - library:websockets
 ---
 nodeKind: Library
 id: library:passport
@@ -46,6 +50,9 @@ edges:
     - language:javascript
   used_for:
     - skill-area:authentication
+  alternative_to:
+    - library:next-auth
+    - library:lucia
 ---
 nodeKind: Library
 id: library:bcrypt
@@ -62,6 +69,8 @@ edges:
     - language:javascript
   used_for:
     - skill-area:authentication-authorization
+  alternative_to:
+    - library:jsonwebtoken
 ---
 nodeKind: Library
 id: library:jsonwebtoken
@@ -78,6 +87,8 @@ edges:
     - language:javascript
   used_for:
     - skill-area:authentication-authorization
+  alternative_to:
+    - library:next-auth
 ---
 nodeKind: Library
 id: library:cors
@@ -94,6 +105,8 @@ edges:
     - language:javascript
   used_for:
     - skill-area:backend-api-design
+  alternative_to:
+    - library:helmet
 ---
 nodeKind: Library
 id: library:helmet
@@ -110,6 +123,8 @@ edges:
     - language:javascript
   used_for:
     - skill-area:backend-security
+  alternative_to:
+    - library:cors
 ---
 nodeKind: Library
 id: library:morgan
@@ -126,6 +141,9 @@ edges:
     - language:javascript
   used_for:
     - skill-area:observability-instrumentation
+  alternative_to:
+    - library:winston
+    - library:pino
 ---
 nodeKind: Library
 id: library:multer
@@ -142,6 +160,8 @@ edges:
     - language:javascript
   used_for:
     - skill-area:backend-api-design
+  alternative_to:
+    - library:express
 ---
 nodeKind: Library
 id: library:nodemailer
@@ -158,6 +178,8 @@ edges:
     - language:javascript
   used_for:
     - skill-area:backend-async-processing
+  alternative_to:
+    - library:bull
 ---
 nodeKind: Library
 id: library:bull
@@ -174,6 +196,8 @@ edges:
     - language:javascript
   used_for:
     - skill-area:backend-async-processing
+  alternative_to:
+    - library:bullmq
 ---
 nodeKind: Library
 id: library:bullmq
@@ -206,6 +230,8 @@ edges:
     - language:javascript
   used_for:
     - skill-area:caching-strategies
+  alternative_to:
+    - library:redis
 ---
 nodeKind: Library
 id: library:redis
@@ -297,6 +323,9 @@ edges:
     - language:javascript
   used_for:
     - skill-area:backend-api-design
+  alternative_to:
+    - library:python-dotenv
+    - library:viper
 ---
 nodeKind: Library
 id: library:chalk
@@ -313,6 +342,8 @@ edges:
     - language:javascript
   used_for:
     - skill-area:cli-design
+  alternative_to:
+    - library:rich-lib
 ---
 nodeKind: Library
 id: library:commander
@@ -329,6 +360,9 @@ edges:
     - language:javascript
   used_for:
     - skill-area:cli-design
+  alternative_to:
+    - library:inquirer
+    - library:zx
 ---
 nodeKind: Library
 id: library:inquirer

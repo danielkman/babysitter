@@ -62,6 +62,9 @@ edges:
     - framework:nuxt
     - framework:sveltekit
     - framework:remix
+  prerequisite_for_learning:
+    - target: skill-area:hydration
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:hydration
@@ -155,6 +158,8 @@ edges:
   prerequisite_for_learning:
     - target: skill-area:web-security-testing
       strength: recommended
+    - target: skill-area:document-processing
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:web-performance
@@ -176,6 +181,11 @@ edges:
       confidence: secondary
   requires_skill_area:
     - skill-area:web-vitals
+  prerequisite_for_learning:
+    - target: skill-area:web-vitals
+      strength: recommended
+    - target: skill-area:hydration
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:browser-compatibility

@@ -15,3 +15,6 @@ edges:
   used_for:
     - skill-area:e2e-testing
     - skill-area:cross-browser-testing
+  alternative_to:
+    - target: tool:cypress
+      comparison: "E2E testing — Playwright drives browsers externally; Cypress runs in-browser"

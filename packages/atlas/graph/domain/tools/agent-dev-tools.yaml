@@ -15,6 +15,25 @@ edges:
   tool_used_by:
     - target: skill-area:ai-agent-development
     - target: skill-area:autonomous-coding-engagement
+  alternative_to:
+    - target: tool:continue-dev
+      comparison: "AI coding assistants — Aider is terminal-based; Continue is IDE-embedded"
+    - target: tool:cline
+      comparison: "AI coding agents"
+    - target: tool:sweep
+      comparison: "AI coding agents"
+    - target: tool:bolt-new
+      comparison: "AI coding tools"
+    - target: tool:lovable
+      comparison: "AI coding tools"
+    - target: tool:v0-dev
+      comparison: "AI coding tools"
+    - target: tool:windsurf
+      comparison: "AI coding agents"
+    - target: tool:replit
+      comparison: "AI-assisted development platforms"
+    - target: tool:cursor
+      comparison: "AI coding assistants"
 ---
 nodeKind: Tool
 id: tool:continue-dev

@@ -17,6 +17,9 @@ edges:
       confidence: primary
     - target: domain:software-engineering
       confidence: secondary
+  prerequisite_for_learning:
+    - target: skill-area:agile-delivery
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:authentication
@@ -41,6 +44,14 @@ edges:
       strength: required
     - target: skill-area:vulnerability-scanning
       strength: helpful
+    - target: skill-area:oauth-flows
+      strength: recommended
+    - target: skill-area:backend-auth
+      strength: recommended
+    - target: skill-area:backend-security
+      strength: recommended
+    - target: skill-area:encryption-decryption
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:transactional-email
@@ -198,6 +209,19 @@ edges:
   applies_to:
     - target: domain:software-engineering
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:api-doc-generation
+      strength: recommended
+    - target: skill-area:runbook-writing
+      strength: recommended
+    - target: skill-area:tutorial-design
+      strength: recommended
+    - target: skill-area:reference-docs
+      strength: recommended
+    - target: skill-area:docs-as-code
+      strength: recommended
+    - target: skill-area:technical-writing
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:sales-operations
@@ -269,6 +293,14 @@ edges:
       strength: recommended
     - target: skill-area:tcp-tuning
       strength: helpful
+    - target: skill-area:udp-protocol-design
+      strength: recommended
+    - target: skill-area:http2-multiplexing
+      strength: recommended
+    - target: skill-area:websocket-design
+      strength: recommended
+    - target: skill-area:network-buffers
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:serverless-compute
@@ -321,4 +353,8 @@ edges:
       confidence: primary
   prerequisite_for_learning:
     - target: skill-area:capacity-planning-ops
+      strength: recommended
+    - target: skill-area:vendor-management-ops
+      strength: recommended
+    - target: skill-area:itsm
       strength: recommended

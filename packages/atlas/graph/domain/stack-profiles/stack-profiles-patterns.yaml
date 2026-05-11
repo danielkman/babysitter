@@ -16,13 +16,16 @@ attributes:
     LAMP. The stack's maturity means extensive documentation, tooling,
     and a massive installed base, though newer projects increasingly
     favor framework-specific stacks with more opinionated structure.
+    Laravel is the dominant modern PHP framework on this stack.
   composes:
     - language:php
     - language:sql
+    - framework:laravel
 edges:
   composed_of:
     - language:php
     - language:sql
+    - framework:laravel
 ---
 nodeKind: StackProfile
 id: stack-profile:jamstack
@@ -44,10 +47,12 @@ attributes:
   composes:
     - language:javascript
     - language:typescript
+    - framework:nextjs
 edges:
   composed_of:
     - language:javascript
     - language:typescript
+    - framework:nextjs
 ---
 nodeKind: StackProfile
 id: stack-profile:serverless-aws
@@ -68,9 +73,11 @@ attributes:
     workflow orchestration for complex multi-step processes.
   composes:
     - language:typescript
+    - language:python
 edges:
   composed_of:
     - language:typescript
+    - language:python
 ---
 nodeKind: StackProfile
 id: stack-profile:data-lake-stack
@@ -91,10 +98,16 @@ attributes:
   composes:
     - language:python
     - language:sql
+    - framework:spark-java
+    - tool:airflow
+    - tool:databricks
 edges:
   composed_of:
     - language:python
     - language:sql
+    - framework:spark-java
+    - tool:airflow
+    - tool:databricks
 ---
 nodeKind: StackProfile
 id: stack-profile:event-driven-stack
@@ -114,10 +127,21 @@ attributes:
     operational events.
   composes:
     - language:java
+    - language:protobuf
+    - tool:kubernetes
+    - library:grpc-js
+    - library:redis
+    - tool:rabbitmq
+    - tool:docker
 edges:
   composed_of:
     - language:java
     - language:protobuf
+    - tool:kubernetes
+    - library:grpc-js
+    - library:redis
+    - tool:rabbitmq
+    - tool:docker
 ---
 nodeKind: StackProfile
 id: stack-profile:ai-agent-stack

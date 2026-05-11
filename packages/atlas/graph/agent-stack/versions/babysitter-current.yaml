@@ -38,3 +38,6 @@ edges:
       versionRange: ">=5.0.0"
       level: full
       notes: babysitter-agent resumes runs and sessions through explicit resume-run and session-history command surfaces.
+  uses_memory_system:
+    - target: memory-system:claude-code-auto-memory
+    - target: memory-system:instruction-file-hierarchy

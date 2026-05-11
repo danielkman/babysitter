@@ -18,3 +18,7 @@ attributes:
     `/Users/alice/repo` → `-Users-alice-repo`). It is *not* a cryptographic
     hash; renaming or moving the project directory invalidates resume.
     Backed by JSONL session files (see SessionModel format).
+
+edges:
+  owned_by:
+    - target: agent-runtime-impl:claude-code.runtime@1.x

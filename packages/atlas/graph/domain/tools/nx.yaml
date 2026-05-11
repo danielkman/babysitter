@@ -10,3 +10,6 @@ edges:
     - target: language:typescript
   used_for:
     - target: skill-area:ci-pipeline-optimization
+  alternative_to:
+    - target: tool:bazel
+      comparison: "Build systems — Nx is TypeScript-first monorepo; Bazel is multi-language"

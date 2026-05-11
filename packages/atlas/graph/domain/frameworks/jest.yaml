@@ -20,3 +20,5 @@ edges:
     - target: language:typescript
   used_by_skill_area:
     - target: skill-area:component-testing
+  alternative_to:
+    - library:rspec

@@ -2,7 +2,6 @@
 nodeKind: Term
 id: term:mobile-ui-components
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Mobile UI Components"
   kind: concept
   references:
@@ -17,7 +16,6 @@ edges:
 nodeKind: Term
 id: term:authentication-libraries-tools-services-agents
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Authentication Libraries/Tools/Services/Agents"
   kind: concept
   references:
@@ -32,7 +30,6 @@ edges:
 nodeKind: Term
 id: term:device-compatibility-testing
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Device Compatibility Testing"
   kind: concept
   references:
@@ -46,7 +43,6 @@ edges:
 nodeKind: Term
 id: term:push-notifications-task
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Push Notifications"
   kind: concept
   references:
@@ -60,7 +56,6 @@ edges:
 nodeKind: Term
 id: term:offline-mode-testing-task
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Offline Mode Testing"
   kind: concept
   references:
@@ -74,7 +69,6 @@ edges:
 nodeKind: Term
 id: term:app-store-deployment-task
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "App Store Deployment"
   kind: concept
   references:
@@ -89,7 +83,6 @@ edges:
 nodeKind: Term
 id: term:in-app-purchases-task
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Payment Integration"
   kind: concept
   references:
@@ -104,7 +97,6 @@ edges:
 nodeKind: Term
 id: term:mobile-offline-sync-task
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Offline Sync"
   kind: concept
   references:

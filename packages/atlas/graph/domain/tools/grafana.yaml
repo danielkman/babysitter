@@ -14,3 +14,5 @@ edges:
   alternative_to:
     - target: tool:datadog
       comparison: "APM/dashboards — Grafana is open-source visualization; Datadog is all-in-one SaaS"
+    - target: tool:prometheus
+      comparison: "Monitoring and observability platforms"

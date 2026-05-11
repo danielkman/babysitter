@@ -11,3 +11,6 @@ edges:
     - language:ruby
   used_by_skill_area:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - target: framework:laravel
+      comparison: "Full-stack server-side frameworks"

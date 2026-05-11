@@ -11,3 +11,8 @@ edges:
     - language:rust
   used_for:
     - target: skill-area:developer-environment
+  alternative_to:
+    - target: tool:gradle
+      comparison: "Build tools — Cargo is Rust's build tool; Gradle is for JVM languages"
+    - target: tool:maven
+      comparison: "Build tools — Cargo is Rust's build tool; Maven is for JVM languages"

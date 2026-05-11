@@ -26,6 +26,22 @@ edges:
       strength: recommended
     - target: skill-area:communication-protocols
       strength: recommended
+    - target: skill-area:device-drivers
+      strength: recommended
+    - target: skill-area:sensor-libraries
+      strength: recommended
+    - target: skill-area:real-time-os
+      strength: recommended
+    - target: skill-area:hardware-abstraction-layer
+      strength: recommended
+    - target: skill-area:peripheral-interfacing
+      strength: recommended
+    - target: skill-area:bootloader-design
+      strength: recommended
+    - target: skill-area:low-power-design
+      strength: recommended
+    - target: skill-area:hdl-design
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:real-time-os
@@ -119,6 +135,13 @@ edges:
   applies_to:
     - target: specialization:fpga-programming
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:fpga-synthesis
+      strength: recommended
+    - target: skill-area:timing-closure
+      strength: recommended
+    - target: skill-area:hardware-verification-uvm
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:fpga-synthesis

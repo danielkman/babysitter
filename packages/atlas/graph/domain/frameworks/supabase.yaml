@@ -14,3 +14,10 @@ edges:
   used_by_skill_area:
     - target: skill-area:backend-data-persistence
     - target: skill-area:authentication
+  alternative_to:
+    - target: framework:strapi
+      comparison: "CMS / BaaS platforms"
+    - target: framework:directus
+      comparison: "CMS / BaaS platforms"
+    - target: framework:hasura
+      comparison: "CMS / BaaS platforms"

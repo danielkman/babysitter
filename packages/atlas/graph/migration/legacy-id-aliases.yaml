@@ -1,19 +1,18 @@
 # Legacy `packages/agent-catalog/graph/` id → v6 `graph/` id alias map.
 #
-# catalog pass 91 expansion. catalog pass 90 seeded ~16 entries; this iteration walks the
-# legacy graph (496 ids across 23 prefixes) and produces alias rows for every
-# record the v6 graph carries a counterpart for. The babysitter agent-catalog
-# SDK (packages/agent-catalog/src/sdk.ts) should normalize legacy ids through
-# this map on read.
+# Walks the legacy graph (496 ids across 23 prefixes) and produces alias rows
+# for every record the v6 graph carries a counterpart for. The babysitter
+# agent-catalog SDK (packages/agent-catalog/src/sdk.ts) should normalize
+# legacy ids through this map on read.
 #
 # Format: { legacyId, v6Id, nodeKind, source?, notes? }
 #   - source: legacy YAML path that anchors the legacyId (where used)
 #   - notes: anything migration-relevant (id-pattern divergence,
 #     `@semver` rewrite, host-rename like gemini→gemini-cli, etc.)
 #
-# Path chosen: (a) flat shim file (per catalog pass 91 plan). v6 schema does not yet
-# carry a cross-graph `aliasOf` edge kind that maps to LEGACY ids
-# (the existing `aliasOf` ergonomics live inside v6 only).
+# Path chosen: flat shim file. v6 schema does not yet carry a cross-graph
+# `aliasOf` edge kind that maps to LEGACY ids (the existing `aliasOf`
+# ergonomics live inside v6 only).
 
 aliases:
 
@@ -304,5 +303,5 @@ aliases:
 # - Coverage: ~95 alias rows across 18 NodeKinds. Uncovered legacy prefixes:
 #   `claim:`, `evidence:`, `capabilitySupport:`, `discovery:` — none are
 #   consumed by agent-plugins-mux / agent-mux-core / hooks-mux-core codegen
-#   based on the catalog pass 90 projection-adapters.md audit.
+#   based on the projection-adapters.md audit.
 

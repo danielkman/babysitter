@@ -1,5 +1,5 @@
-# Catalog pass 95 — packages/triggers/action.yml inputs (16) + outputs (3) decomposed
-# from catalog pass 94's `dispatchModel` string into per-field FrontmatterField records.
+# packages/triggers/action.yml inputs (16) + outputs (3) decomposed into
+# per-field FrontmatterField records.
 # Source: packages/triggers/action.yml (lines 9-75 inputs, 66-75 outputs).
 nodeKind: FrontmatterField
 id: frontmatter-field:triggers-action-input-command

@@ -15,3 +15,7 @@ attributes:
     Cache directory used by the Statsig client embedded in Claude Code for
     feature flags and telemetry. pathKind=other because the schema enum has
     no dedicated cache-dir literal.
+
+edges:
+  owned_by:
+    - target: agent-platform-impl:claude-code.platform@1.x

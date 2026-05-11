@@ -15,6 +15,9 @@ edges:
     - target: skill-area:networking
   implements_stack_part:
     - target: stack-part:service-mesh
+  alternative_to:
+    - target: tool:linkerd
+      comparison: "Service mesh platforms"
 ---
 nodeKind: Tool
 id: tool:linkerd
@@ -32,3 +35,6 @@ edges:
     - target: skill-area:networking
   implements_stack_part:
     - target: stack-part:service-mesh
+  alternative_to:
+    - target: tool:istio
+      comparison: "Service mesh platforms"

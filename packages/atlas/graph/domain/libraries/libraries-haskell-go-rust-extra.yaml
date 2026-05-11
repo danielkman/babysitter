@@ -14,6 +14,9 @@ edges:
     - language:haskell
   library_used_by:
     - target: skill-area:serialization-deserialization
+  alternative_to:
+    - library:serde
+    - library:jackson
 ---
 nodeKind: Library
 id: library:servant
@@ -30,6 +33,8 @@ edges:
     - language:haskell
   library_used_by:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - library:yesod
 ---
 nodeKind: Library
 id: library:yesod
@@ -62,6 +67,8 @@ edges:
     - language:haskell
   library_used_by:
     - target: skill-area:backend-async-processing
+  alternative_to:
+    - library:fs2
 ---
 nodeKind: Library
 id: library:lens
@@ -78,6 +85,8 @@ edges:
     - language:haskell
   library_used_by:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - library:arrow-kt
 ---
 nodeKind: Library
 id: library:mtl
@@ -94,6 +103,8 @@ edges:
     - language:haskell
   library_used_by:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - library:cats
 ---
 nodeKind: Library
 id: library:quickcheck
@@ -110,6 +121,8 @@ edges:
     - language:haskell
   library_used_by:
     - target: skill-area:component-testing
+  alternative_to:
+    - library:hspec
 ---
 nodeKind: Library
 id: library:hspec
@@ -142,6 +155,8 @@ edges:
     - language:haskell
   library_used_by:
     - target: skill-area:cli-tooling
+  alternative_to:
+    - library:cabal-lib
 ---
 nodeKind: Library
 id: library:cabal-lib
@@ -190,6 +205,9 @@ edges:
     - language:go
   library_used_by:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - library:cors
+    - library:helmet
 ---
 nodeKind: Library
 id: library:gorm-v2
@@ -223,6 +241,8 @@ edges:
     - language:go
   library_used_by:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - library:tower
 ---
 nodeKind: Library
 id: library:fx
@@ -239,6 +259,8 @@ edges:
     - language:go
   library_used_by:
     - target: skill-area:solution-architecture
+  alternative_to:
+    - library:wire-go
 ---
 nodeKind: Library
 id: library:wire-go
@@ -271,6 +293,8 @@ edges:
     - language:rust
   library_used_by:
     - target: skill-area:backend-async-processing
+  alternative_to:
+    - library:go-kit
 ---
 nodeKind: Library
 id: library:tonic
@@ -287,6 +311,8 @@ edges:
     - language:rust
   library_used_by:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - library:grpc-js
 ---
 nodeKind: Library
 id: library:sqlx-pg
@@ -319,6 +345,9 @@ edges:
     - language:rust
   library_used_by:
     - target: skill-area:backend-data-persistence
+  alternative_to:
+    - library:sea-orm
+    - library:sqlx-rust
 ---
 nodeKind: Library
 id: library:axum-extra
@@ -335,6 +364,8 @@ edges:
     - language:rust
   library_used_by:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - library:tower
 ---
 nodeKind: Library
 id: library:leptos
@@ -351,3 +382,5 @@ edges:
     - language:rust
   library_used_by:
     - target: skill-area:frontend-development
+  alternative_to:
+    - framework:blazor

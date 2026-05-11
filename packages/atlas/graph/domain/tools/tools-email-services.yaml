@@ -13,6 +13,17 @@ edges:
     - target: skill-area:transactional-email
   used_for:
     - skill-area:transactional-email
+  alternative_to:
+    - target: tool:sendgrid
+      comparison: "Email delivery services"
+    - target: tool:postmark
+      comparison: "Email delivery services"
+    - target: tool:resend
+      comparison: "Email delivery services"
+    - target: tool:aws-ses
+      comparison: "Email delivery services"
+    - target: tool:sparkpost
+      comparison: "Email delivery services"
 ---
 nodeKind: Tool
 id: tool:postmark
@@ -28,6 +39,17 @@ edges:
     - target: skill-area:transactional-email
   used_for:
     - skill-area:transactional-email
+  alternative_to:
+    - target: tool:sendgrid
+      comparison: "Email delivery services"
+    - target: tool:mailgun
+      comparison: "Email delivery services"
+    - target: tool:resend
+      comparison: "Email delivery services"
+    - target: tool:aws-ses
+      comparison: "Email delivery services"
+    - target: tool:sparkpost
+      comparison: "Email delivery services"
 ---
 nodeKind: Tool
 id: tool:resend
@@ -43,6 +65,17 @@ edges:
     - target: skill-area:transactional-email
   used_for:
     - skill-area:transactional-email
+  alternative_to:
+    - target: tool:sendgrid
+      comparison: "Email delivery services"
+    - target: tool:mailgun
+      comparison: "Email delivery services"
+    - target: tool:postmark
+      comparison: "Email delivery services"
+    - target: tool:aws-ses
+      comparison: "Email delivery services"
+    - target: tool:sparkpost
+      comparison: "Email delivery services"
 ---
 nodeKind: Tool
 id: tool:aws-ses
@@ -58,6 +91,17 @@ edges:
     - target: skill-area:transactional-email
   used_for:
     - skill-area:transactional-email
+  alternative_to:
+    - target: tool:sendgrid
+      comparison: "Email delivery services"
+    - target: tool:mailgun
+      comparison: "Email delivery services"
+    - target: tool:postmark
+      comparison: "Email delivery services"
+    - target: tool:resend
+      comparison: "Email delivery services"
+    - target: tool:sparkpost
+      comparison: "Email delivery services"
 ---
 nodeKind: Tool
 id: tool:sparkpost
@@ -73,3 +117,14 @@ edges:
     - target: skill-area:transactional-email
   used_for:
     - skill-area:transactional-email
+  alternative_to:
+    - target: tool:sendgrid
+      comparison: "Email delivery services"
+    - target: tool:mailgun
+      comparison: "Email delivery services"
+    - target: tool:postmark
+      comparison: "Email delivery services"
+    - target: tool:resend
+      comparison: "Email delivery services"
+    - target: tool:aws-ses
+      comparison: "Email delivery services"

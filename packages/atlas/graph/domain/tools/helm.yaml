@@ -11,3 +11,8 @@ edges:
   used_for:
     - target: skill-area:configuration-management
     - target: skill-area:deployment-automation
+  alternative_to:
+    - target: tool:kustomize
+      comparison: "Kubernetes config — Helm uses templated charts; Kustomize uses overlay patching"
+    - target: tool:helmfile
+      comparison: "Kubernetes deployment — Helm manages single charts; Helmfile orchestrates multi-chart deployments"

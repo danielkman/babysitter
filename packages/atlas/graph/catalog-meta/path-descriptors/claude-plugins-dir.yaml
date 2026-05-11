@@ -12,3 +12,7 @@ attributes:
   evaluationContext: user
   expansion: home
   notes: User-level Claude Code plugins (CLAUDE_PLUGIN_ROOT default scope).
+
+edges:
+  owned_by:
+    - target: agent-runtime-impl:claude-code.runtime@1.x

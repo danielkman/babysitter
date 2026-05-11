@@ -13,3 +13,6 @@ edges:
     - language:typescript
   used_by_skill_area:
     - target: skill-area:hydration
+  alternative_to:
+    - framework:solid-start
+    - framework:astro

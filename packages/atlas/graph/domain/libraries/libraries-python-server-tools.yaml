@@ -30,6 +30,8 @@ edges:
     - language:python
   library_used_by:
     - target: skill-area:backend-data-persistence
+  alternative_to:
+    - library:efcore-migrations
 ---
 nodeKind: Library
 id: library:uvicorn
@@ -46,6 +48,8 @@ edges:
     - language:python
   library_used_by:
     - target: skill-area:deployment
+  alternative_to:
+    - library:gunicorn
 ---
 nodeKind: Library
 id: library:gunicorn
@@ -78,6 +82,8 @@ edges:
     - language:python
   library_used_by:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - library:python-dotenv
 ---
 nodeKind: Library
 id: library:python-dotenv
@@ -110,6 +116,8 @@ edges:
     - language:python
   library_used_by:
     - target: skill-area:technical-documentation
+  alternative_to:
+    - library:mako
 ---
 nodeKind: Library
 id: library:mako
@@ -142,6 +150,8 @@ edges:
     - language:python
   library_used_by:
     - target: skill-area:cli-tooling
+  alternative_to:
+    - library:copier
 ---
 nodeKind: Library
 id: library:copier
@@ -174,6 +184,8 @@ edges:
     - language:python
   library_used_by:
     - target: skill-area:vulnerability-scanning
+  alternative_to:
+    - library:safety
 ---
 nodeKind: Library
 id: library:safety
@@ -206,3 +218,5 @@ edges:
     - language:python
   library_used_by:
     - target: skill-area:code-analysis-linting
+  alternative_to:
+    - library:husky

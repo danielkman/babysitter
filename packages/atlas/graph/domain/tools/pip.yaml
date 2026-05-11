@@ -11,3 +11,10 @@ edges:
     - language:python
   used_for:
     - target: skill-area:developer-environment
+  alternative_to:
+    - target: tool:poetry
+      comparison: "Python package managers — pip is minimal; Poetry adds lockfiles and virtualenvs"
+    - target: tool:rye
+      comparison: "Python package managers"
+    - target: tool:uv
+      comparison: "Python package managers — pip is the standard; uv is a fast Rust-based drop-in"

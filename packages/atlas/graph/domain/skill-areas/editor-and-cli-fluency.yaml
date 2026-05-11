@@ -22,6 +22,9 @@ edges:
     - tool:helix
     - tool:vscode
     - tool:jetbrains-idea
+  prerequisite_for_learning:
+    - target: skill-area:cli-tooling
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:cli-tooling
@@ -44,3 +47,8 @@ edges:
     - tool:fzf
     - tool:redis-cli
     - tool:mongosh
+  prerequisite_for_learning:
+    - target: skill-area:cli-design
+      strength: recommended
+    - target: skill-area:command-line-interface-tools
+      strength: recommended

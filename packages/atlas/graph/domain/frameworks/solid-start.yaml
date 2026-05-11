@@ -11,3 +11,6 @@ edges:
     - language:typescript
   used_by_skill_area:
     - target: skill-area:frontend-development
+  alternative_to:
+    - framework:qwik
+    - framework:astro

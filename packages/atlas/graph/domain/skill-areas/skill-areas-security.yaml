@@ -121,6 +121,13 @@ edges:
   applies_to:
     - target: specialization:security-research
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:identity-security
+      strength: recommended
+    - target: skill-area:threat-detection
+      strength: recommended
+    - target: skill-area:vulnerability-management
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:identity-security

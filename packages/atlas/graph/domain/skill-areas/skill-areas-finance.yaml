@@ -23,6 +23,24 @@ edges:
   prerequisite_for_learning:
     - target: skill-area:valuation-analysis
       strength: required
+    - target: skill-area:quantitative-modeling
+      strength: recommended
+    - target: skill-area:algorithmic-trading
+      strength: recommended
+    - target: skill-area:portfolio-construction
+      strength: recommended
+    - target: skill-area:financial-risk-modeling
+      strength: recommended
+    - target: skill-area:market-data-engineering
+      strength: recommended
+    - target: skill-area:trade-lifecycle
+      strength: recommended
+    - target: skill-area:financial-regulation
+      strength: recommended
+    - target: skill-area:technical-analysis
+      strength: recommended
+    - target: skill-area:financial-planning
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:valuation-analysis

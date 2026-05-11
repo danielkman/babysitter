@@ -13,6 +13,9 @@ edges:
     - target: skill-area:cdn-edge
   used_for:
     - skill-area:cdn-edge
+  alternative_to:
+    - target: tool:akamai
+      comparison: "CDN and edge platforms"
 ---
 nodeKind: Tool
 id: tool:akamai
@@ -28,6 +31,9 @@ edges:
     - target: skill-area:cdn-edge
   used_for:
     - skill-area:cdn-edge
+  alternative_to:
+    - target: tool:fastly
+      comparison: "CDN and edge platforms"
 ---
 nodeKind: Tool
 id: tool:ngrok
@@ -43,6 +49,9 @@ edges:
     - target: skill-area:local-development
   used_for:
     - skill-area:networking
+  alternative_to:
+    - target: tool:tailscale
+      comparison: "Network tunneling — ngrok exposes local services publicly; Tailscale creates private mesh networks"
 ---
 nodeKind: Tool
 id: tool:tailscale
@@ -58,6 +67,9 @@ edges:
     - target: skill-area:networking
   used_for:
     - skill-area:networking
+  alternative_to:
+    - target: tool:ngrok
+      comparison: "Network tunneling — Tailscale creates private mesh networks; ngrok exposes local services publicly"
 ---
 nodeKind: Tool
 id: tool:cloudflare-workers
@@ -74,3 +86,8 @@ edges:
     - target: skill-area:cdn-edge
   used_for:
     - skill-area:cdn-edge
+  alternative_to:
+    - target: tool:sst
+      comparison: "Serverless platforms — Cloudflare Workers is edge compute; SST is AWS serverless framework"
+    - target: tool:serverless-framework
+      comparison: "Serverless platforms — Cloudflare Workers is edge-first; Serverless Framework is multi-cloud FaaS"

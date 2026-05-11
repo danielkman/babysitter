@@ -1,4 +1,3 @@
-# Migrated from agent-catalog graph (CapabilitySupport)
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:babysitter-agent:ge-5-0-0:mcp
@@ -13,6 +12,11 @@ attributes:
   evidenceRefs:
     - "repo-babysitter-agent-package"
     - "repo-babysitter-agent-cli"
+edges:
+  capability_of_version:
+    - target: agentVersion:babysitter-agent:ge-5-0-0
+  evidences_capability:
+    - target: capability:supports-mcp
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:babysitter-agent:ge-5-0-0:interactive-mode
@@ -27,6 +31,11 @@ attributes:
   evidenceRefs:
     - "repo-babysitter-agent-package"
     - "repo-babysitter-agent-cli"
+edges:
+  capability_of_version:
+    - target: agentVersion:babysitter-agent:ge-5-0-0
+  evidences_capability:
+    - target: capability:interactive-mode
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:babysitter-agent:ge-5-0-0:stdin-injection
@@ -41,6 +50,11 @@ attributes:
   evidenceRefs:
     - "repo-babysitter-agent-package"
     - "repo-babysitter-agent-cli"
+edges:
+  capability_of_version:
+    - target: agentVersion:babysitter-agent:ge-5-0-0
+  evidences_capability:
+    - target: capability:stdin-injection
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:babysitter-agent:ge-5-0-0:session-resume
@@ -55,6 +69,9 @@ attributes:
   evidenceRefs:
     - "repo-babysitter-agent-package"
     - "repo-babysitter-agent-cli"
+edges:
+  capability_of_version:
+    - target: agentVersion:babysitter-agent:ge-5-0-0
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:claude:ge-0-0-0:skills
@@ -73,6 +90,11 @@ attributes:
     - "web-claude-code-commands"
     - "web-claude-code-skills"
     - "web-claude-code-claude-directory"
+edges:
+  capability_of_version:
+    - target: agentVersion:claude:ge-0-0-0
+  evidences_capability:
+    - target: capability:skills
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:claude:ge-0-0-0:thinking
@@ -90,6 +112,11 @@ attributes:
     - "web-claude-code-overview"
     - "web-claude-code-quickstart"
     - "web-claude-code-interactive-mode"
+edges:
+  capability_of_version:
+    - target: agentVersion:claude:ge-0-0-0
+  evidences_capability:
+    - target: capability:supports-thinking
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:claude:ge-0-0-0:mcp
@@ -106,6 +133,11 @@ attributes:
     - "web-claude-code-mcp"
     - "web-claude-code-tools-reference"
     - "web-claude-code-features-overview"
+edges:
+  capability_of_version:
+    - target: agentVersion:claude:ge-0-0-0
+  evidences_capability:
+    - target: capability:supports-mcp
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:claude:ge-0-0-0:tool-approval
@@ -122,6 +154,11 @@ attributes:
     - "web-claude-code-permissions"
     - "web-claude-code-permission-modes"
     - "web-anthropic-claude-code-auto-mode"
+edges:
+  capability_of_version:
+    - target: agentVersion:claude:ge-0-0-0
+  evidences_capability:
+    - target: capability:tool-approval
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:claude:ge-0-0-0:interactive-mode
@@ -139,6 +176,11 @@ attributes:
     - "web-claude-code-overview"
     - "web-claude-code-quickstart"
     - "web-claude-code-interactive-mode"
+edges:
+  capability_of_version:
+    - target: agentVersion:claude:ge-0-0-0
+  evidences_capability:
+    - target: capability:interactive-mode
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:claude:ge-0-0-0:stdin-injection
@@ -154,6 +196,11 @@ attributes:
     - "repo-sdk-fallback"
     - "web-claude-code-headless"
     - "web-claude-code-cli-reference"
+edges:
+  capability_of_version:
+    - target: agentVersion:claude:ge-0-0-0
+  evidences_capability:
+    - target: capability:stdin-injection
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:claude:ge-0-0-0:image-input
@@ -169,6 +216,9 @@ attributes:
     - "repo-sdk-fallback"
     - "web-claude-platform-vision"
     - "web-claude-code-overview"
+edges:
+  capability_of_version:
+    - target: agentVersion:claude:ge-0-0-0
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:claude:ge-0-0-0:runtime-hooks
@@ -186,6 +236,11 @@ attributes:
     - "repo-target-index"
     - "web-claude-code-hooks"
     - "web-claude-code-hooks-guide"
+edges:
+  capability_of_version:
+    - target: agentVersion:claude:ge-0-0-0
+  evidences_capability:
+    - target: capability:runtime-hooks
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:claude:ge-0-0-0:stop-hook
@@ -203,6 +258,11 @@ attributes:
     - "repo-target-index"
     - "web-claude-code-hooks"
     - "web-claude-code-hooks-guide"
+edges:
+  capability_of_version:
+    - target: agentVersion:claude:ge-0-0-0
+  evidences_capability:
+    - target: capability:stop-hook
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:claude:ge-0-0-0:subagent-dispatch
@@ -219,6 +279,11 @@ attributes:
     - "web-claude-code-subagents"
     - "web-claude-code-features-overview"
     - "web-claude-code-claude-directory"
+edges:
+  capability_of_version:
+    - target: agentVersion:claude:ge-0-0-0
+  evidences_capability:
+    - target: capability:supports-subagent-dispatch
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:claude:ge-0-0-0:parallel-execution
@@ -235,6 +300,11 @@ attributes:
     - "web-claude-code-subagents"
     - "web-claude-code-agent-teams"
     - "web-claude-code-quickstart"
+edges:
+  capability_of_version:
+    - target: agentVersion:claude:ge-0-0-0
+  evidences_capability:
+    - target: capability:supports-parallel-execution
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:claude:ge-0-0-0:session-resume
@@ -251,6 +321,9 @@ attributes:
     - "web-claude-code-checkpointing"
     - "web-claude-code-headless"
     - "web-claude-code-cli-reference"
+edges:
+  capability_of_version:
+    - target: agentVersion:claude:ge-0-0-0
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:codex:ge-0-0-0-lt-0-119-0:skills
@@ -267,6 +340,11 @@ attributes:
     - "repo-target-codex"
     - "repo-target-index"
     - "web-codex-skills"
+edges:
+  capability_of_version:
+    - target: agentVersion:codex:ge-0-0-0-lt-0-119-0
+  evidences_capability:
+    - target: capability:skills
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:codex:ge-0-0-0-lt-0-119-0:thinking
@@ -282,6 +360,11 @@ attributes:
     - "repo-sdk-fallback"
     - "web-codex-cli"
     - "web-codex-cli-features"
+edges:
+  capability_of_version:
+    - target: agentVersion:codex:ge-0-0-0-lt-0-119-0
+  evidences_capability:
+    - target: capability:supports-thinking
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:codex:ge-0-0-0-lt-0-119-0:interactive-mode
@@ -297,6 +380,11 @@ attributes:
     - "repo-sdk-fallback"
     - "web-codex-cli"
     - "web-codex-cli-features"
+edges:
+  capability_of_version:
+    - target: agentVersion:codex:ge-0-0-0-lt-0-119-0
+  evidences_capability:
+    - target: capability:interactive-mode
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:codex:ge-0-0-0-lt-0-119-0:stdin-injection
@@ -312,6 +400,11 @@ attributes:
     - "repo-sdk-fallback"
     - "web-codex-noninteractive"
     - "web-codex-cli-reference"
+edges:
+  capability_of_version:
+    - target: agentVersion:codex:ge-0-0-0-lt-0-119-0
+  evidences_capability:
+    - target: capability:stdin-injection
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:codex:ge-0-0-0-lt-0-119-0:image-input
@@ -327,6 +420,9 @@ attributes:
     - "repo-sdk-fallback"
     - "web-codex-cli"
     - "web-codex-cli-features"
+edges:
+  capability_of_version:
+    - target: agentVersion:codex:ge-0-0-0-lt-0-119-0
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:codex:ge-0-0-0-lt-0-119-0:runtime-hooks
@@ -344,6 +440,11 @@ attributes:
     - "repo-target-index"
     - "repo-codex-windows-hooks"
     - "web-codex-hooks"
+edges:
+  capability_of_version:
+    - target: agentVersion:codex:ge-0-0-0-lt-0-119-0
+  evidences_capability:
+    - target: capability:runtime-hooks
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:codex:ge-0-0-0-lt-0-119-0:stop-hook
@@ -361,6 +462,11 @@ attributes:
     - "repo-target-index"
     - "repo-codex-windows-hooks"
     - "web-codex-hooks"
+edges:
+  capability_of_version:
+    - target: agentVersion:codex:ge-0-0-0-lt-0-119-0
+  evidences_capability:
+    - target: capability:stop-hook
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:codex:ge-0-0-0-lt-0-119-0:session-resume
@@ -376,6 +482,9 @@ attributes:
     - "repo-sdk-fallback"
     - "web-codex-cli-features"
     - "web-codex-cli-reference"
+edges:
+  capability_of_version:
+    - target: agentVersion:codex:ge-0-0-0-lt-0-119-0
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:codex:ge-0-119-0:skills
@@ -392,6 +501,11 @@ attributes:
     - "repo-target-codex"
     - "repo-target-index"
     - "web-codex-skills"
+edges:
+  capability_of_version:
+    - target: agentVersion:codex:ge-0-119-0
+  evidences_capability:
+    - target: capability:skills
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:codex:ge-0-119-0:thinking
@@ -407,6 +521,11 @@ attributes:
     - "repo-sdk-fallback"
     - "web-codex-cli"
     - "web-codex-cli-features"
+edges:
+  capability_of_version:
+    - target: agentVersion:codex:ge-0-119-0
+  evidences_capability:
+    - target: capability:supports-thinking
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:codex:ge-0-119-0:interactive-mode
@@ -422,6 +541,11 @@ attributes:
     - "repo-sdk-fallback"
     - "web-codex-cli"
     - "web-codex-cli-features"
+edges:
+  capability_of_version:
+    - target: agentVersion:codex:ge-0-119-0
+  evidences_capability:
+    - target: capability:interactive-mode
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:codex:ge-0-119-0:stdin-injection
@@ -437,6 +561,11 @@ attributes:
     - "repo-sdk-fallback"
     - "web-codex-noninteractive"
     - "web-codex-cli-reference"
+edges:
+  capability_of_version:
+    - target: agentVersion:codex:ge-0-119-0
+  evidences_capability:
+    - target: capability:stdin-injection
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:codex:ge-0-119-0:image-input
@@ -452,6 +581,9 @@ attributes:
     - "repo-sdk-fallback"
     - "web-codex-cli"
     - "web-codex-cli-features"
+edges:
+  capability_of_version:
+    - target: agentVersion:codex:ge-0-119-0
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:codex:ge-0-119-0:runtime-hooks
@@ -469,6 +601,11 @@ attributes:
     - "repo-target-index"
     - "repo-codex-windows-hooks"
     - "web-codex-hooks"
+edges:
+  capability_of_version:
+    - target: agentVersion:codex:ge-0-119-0
+  evidences_capability:
+    - target: capability:runtime-hooks
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:codex:ge-0-119-0:stop-hook
@@ -486,6 +623,11 @@ attributes:
     - "repo-target-index"
     - "repo-codex-windows-hooks"
     - "web-codex-hooks"
+edges:
+  capability_of_version:
+    - target: agentVersion:codex:ge-0-119-0
+  evidences_capability:
+    - target: capability:stop-hook
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:codex:ge-0-119-0:session-resume
@@ -501,6 +643,9 @@ attributes:
     - "repo-sdk-fallback"
     - "web-codex-cli-features"
     - "web-codex-cli-reference"
+edges:
+  capability_of_version:
+    - target: agentVersion:codex:ge-0-119-0
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:copilot:ge-0-0-0:skills
@@ -518,6 +663,11 @@ attributes:
     - "repo-target-index"
     - "web-github-copilot-cli-plugins"
     - "web-github-copilot-cli-plugin-reference"
+edges:
+  capability_of_version:
+    - target: agentVersion:copilot:ge-0-0-0
+  evidences_capability:
+    - target: capability:skills
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:copilot:ge-0-0-0:thinking
@@ -534,6 +684,11 @@ attributes:
     - "web-github-copilot-cli-overview"
     - "web-github-copilot-cli-getting-started"
     - "web-github-copilot-agent"
+edges:
+  capability_of_version:
+    - target: agentVersion:copilot:ge-0-0-0
+  evidences_capability:
+    - target: capability:supports-thinking
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:copilot:ge-0-0-0:interactive-mode
@@ -550,6 +705,11 @@ attributes:
     - "web-github-copilot-cli-overview"
     - "web-github-copilot-cli-getting-started"
     - "web-github-copilot-agent"
+edges:
+  capability_of_version:
+    - target: agentVersion:copilot:ge-0-0-0
+  evidences_capability:
+    - target: capability:interactive-mode
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:copilot:ge-0-0-0:stdin-injection
@@ -565,6 +725,11 @@ attributes:
     - "repo-sdk-fallback"
     - "web-github-copilot-cli-overview"
     - "web-github-copilot-cli-getting-started"
+edges:
+  capability_of_version:
+    - target: agentVersion:copilot:ge-0-0-0
+  evidences_capability:
+    - target: capability:stdin-injection
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:copilot:ge-0-0-0:image-input
@@ -579,6 +744,9 @@ attributes:
   evidenceRefs:
     - "repo-sdk-fallback"
     - "web-github-copilot-sdk-image-input"
+edges:
+  capability_of_version:
+    - target: agentVersion:copilot:ge-0-0-0
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:copilot:ge-0-0-0:runtime-hooks
@@ -596,6 +764,11 @@ attributes:
     - "repo-target-index"
     - "web-github-copilot-cli-hooks"
     - "web-github-copilot-hooks-config"
+edges:
+  capability_of_version:
+    - target: agentVersion:copilot:ge-0-0-0
+  evidences_capability:
+    - target: capability:runtime-hooks
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:copilot:ge-0-0-0:stop-hook
@@ -613,6 +786,11 @@ attributes:
     - "repo-target-index"
     - "web-github-copilot-cli-hooks"
     - "web-github-copilot-hooks-config"
+edges:
+  capability_of_version:
+    - target: agentVersion:copilot:ge-0-0-0
+  evidences_capability:
+    - target: capability:stop-hook
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:copilot:ge-0-0-0:mcp
@@ -630,6 +808,11 @@ attributes:
     - "repo-target-index"
     - "web-github-copilot-cli-mcp"
     - "web-github-copilot-mcp"
+edges:
+  capability_of_version:
+    - target: agentVersion:copilot:ge-0-0-0
+  evidences_capability:
+    - target: capability:supports-mcp
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:copilot:ge-0-0-0:session-resume
@@ -645,6 +828,9 @@ attributes:
     - "repo-sdk-fallback"
     - "web-github-copilot-cli-config-dir"
     - "web-github-copilot-cli-getting-started"
+edges:
+  capability_of_version:
+    - target: agentVersion:copilot:ge-0-0-0
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:cursor:ge-0-0-0:skills
@@ -661,6 +847,11 @@ attributes:
     - "repo-target-cursor"
     - "repo-target-index"
     - "web-cursor-rules"
+edges:
+  capability_of_version:
+    - target: agentVersion:cursor:ge-0-0-0
+  evidences_capability:
+    - target: capability:skills
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:cursor:ge-0-0-0:thinking
@@ -677,6 +868,11 @@ attributes:
     - "web-cursor-agent-overview"
     - "web-cursor-cli-overview"
     - "web-cursor-cli-using"
+edges:
+  capability_of_version:
+    - target: agentVersion:cursor:ge-0-0-0
+  evidences_capability:
+    - target: capability:supports-thinking
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:cursor:ge-0-0-0:interactive-mode
@@ -693,6 +889,11 @@ attributes:
     - "web-cursor-agent-overview"
     - "web-cursor-cli-overview"
     - "web-cursor-cli-using"
+edges:
+  capability_of_version:
+    - target: agentVersion:cursor:ge-0-0-0
+  evidences_capability:
+    - target: capability:interactive-mode
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:cursor:ge-0-0-0:stdin-injection
@@ -708,6 +909,11 @@ attributes:
     - "repo-sdk-fallback"
     - "web-cursor-cli-headless"
     - "web-cursor-cli-using"
+edges:
+  capability_of_version:
+    - target: agentVersion:cursor:ge-0-0-0
+  evidences_capability:
+    - target: capability:stdin-injection
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:cursor:ge-0-0-0:image-input
@@ -722,6 +928,9 @@ attributes:
   evidenceRefs:
     - "repo-sdk-fallback"
     - "web-cursor-agent-overview"
+edges:
+  capability_of_version:
+    - target: agentVersion:cursor:ge-0-0-0
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:cursor:ge-0-0-0:runtime-hooks
@@ -738,6 +947,11 @@ attributes:
     - "repo-target-cursor"
     - "repo-target-index"
     - "web-cursor-hooks"
+edges:
+  capability_of_version:
+    - target: agentVersion:cursor:ge-0-0-0
+  evidences_capability:
+    - target: capability:runtime-hooks
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:cursor:ge-0-0-0:stop-hook
@@ -754,6 +968,11 @@ attributes:
     - "repo-target-cursor"
     - "repo-target-index"
     - "web-cursor-hooks"
+edges:
+  capability_of_version:
+    - target: agentVersion:cursor:ge-0-0-0
+  evidences_capability:
+    - target: capability:stop-hook
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:cursor:ge-0-0-0:session-resume
@@ -769,6 +988,9 @@ attributes:
     - "repo-sdk-fallback"
     - "web-cursor-agent-overview"
     - "web-cursor-cli-shell-mode"
+edges:
+  capability_of_version:
+    - target: agentVersion:cursor:ge-0-0-0
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:gemini:ge-0-0-0:skills
@@ -785,6 +1007,11 @@ attributes:
     - "repo-target-gemini"
     - "repo-target-index"
     - "web-gemini-cli-skills"
+edges:
+  capability_of_version:
+    - target: agentVersion:gemini:ge-0-0-0
+  evidences_capability:
+    - target: capability:skills
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:gemini:ge-0-0-0:thinking
@@ -800,6 +1027,11 @@ attributes:
     - "repo-sdk-fallback"
     - "web-gemini-cli-index"
     - "web-gemini-cli-reference"
+edges:
+  capability_of_version:
+    - target: agentVersion:gemini:ge-0-0-0
+  evidences_capability:
+    - target: capability:supports-thinking
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:gemini:ge-0-0-0:interactive-mode
@@ -815,6 +1047,11 @@ attributes:
     - "repo-sdk-fallback"
     - "web-gemini-cli-index"
     - "web-gemini-cli-reference"
+edges:
+  capability_of_version:
+    - target: agentVersion:gemini:ge-0-0-0
+  evidences_capability:
+    - target: capability:interactive-mode
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:gemini:ge-0-0-0:stdin-injection
@@ -830,6 +1067,11 @@ attributes:
     - "repo-sdk-fallback"
     - "web-gemini-cli-headless"
     - "web-gemini-cli-reference"
+edges:
+  capability_of_version:
+    - target: agentVersion:gemini:ge-0-0-0
+  evidences_capability:
+    - target: capability:stdin-injection
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:gemini:ge-0-0-0:image-input
@@ -845,6 +1087,9 @@ attributes:
     - "repo-sdk-fallback"
     - "web-gemini-cli-index"
     - "web-gemini-cli-changelog"
+edges:
+  capability_of_version:
+    - target: agentVersion:gemini:ge-0-0-0
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:gemini:ge-0-0-0:runtime-hooks
@@ -861,6 +1106,11 @@ attributes:
     - "repo-target-gemini"
     - "repo-target-index"
     - "web-gemini-cli-hooks"
+edges:
+  capability_of_version:
+    - target: agentVersion:gemini:ge-0-0-0
+  evidences_capability:
+    - target: capability:runtime-hooks
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:gemini:ge-0-0-0:stop-hook
@@ -877,6 +1127,11 @@ attributes:
     - "repo-target-gemini"
     - "repo-target-index"
     - "web-gemini-cli-hooks"
+edges:
+  capability_of_version:
+    - target: agentVersion:gemini:ge-0-0-0
+  evidences_capability:
+    - target: capability:stop-hook
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:gemini:ge-0-0-0:session-resume
@@ -892,6 +1147,9 @@ attributes:
     - "repo-sdk-fallback"
     - "web-gemini-cli-session-management"
     - "web-gemini-cli-checkpointing"
+edges:
+  capability_of_version:
+    - target: agentVersion:gemini:ge-0-0-0
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:omp:ge-0-0-0:skills
@@ -906,6 +1164,11 @@ attributes:
   evidenceRefs:
     - "repo-sdk-fallback"
     - "web-omp-skills"
+edges:
+  capability_of_version:
+    - target: agentVersion:omp:ge-0-0-0
+  evidences_capability:
+    - target: capability:skills
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:omp:ge-0-0-0:thinking
@@ -920,6 +1183,11 @@ attributes:
   evidenceRefs:
     - "repo-sdk-fallback"
     - "web-omp-readme"
+edges:
+  capability_of_version:
+    - target: agentVersion:omp:ge-0-0-0
+  evidences_capability:
+    - target: capability:supports-thinking
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:omp:ge-0-0-0:interactive-mode
@@ -934,6 +1202,11 @@ attributes:
   evidenceRefs:
     - "repo-sdk-fallback"
     - "web-omp-readme"
+edges:
+  capability_of_version:
+    - target: agentVersion:omp:ge-0-0-0
+  evidences_capability:
+    - target: capability:interactive-mode
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:omp:ge-0-0-0:stdin-injection
@@ -948,6 +1221,11 @@ attributes:
   evidenceRefs:
     - "repo-sdk-fallback"
     - "web-omp-readme"
+edges:
+  capability_of_version:
+    - target: agentVersion:omp:ge-0-0-0
+  evidences_capability:
+    - target: capability:stdin-injection
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:omp:ge-0-0-0:image-input
@@ -962,6 +1240,9 @@ attributes:
   evidenceRefs:
     - "repo-sdk-fallback"
     - "web-omp-readme"
+edges:
+  capability_of_version:
+    - target: agentVersion:omp:ge-0-0-0
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:omp:ge-0-0-0:session-resume
@@ -976,6 +1257,9 @@ attributes:
   evidenceRefs:
     - "repo-sdk-fallback"
     - "web-omp-session-resume"
+edges:
+  capability_of_version:
+    - target: agentVersion:omp:ge-0-0-0
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:openclaw:ge-0-0-0:skills
@@ -991,6 +1275,11 @@ attributes:
     - "repo-sdk-fallback"
     - "repo-hooks-detector"
     - "repo-target-index"
+edges:
+  capability_of_version:
+    - target: agentVersion:openclaw:ge-0-0-0
+  evidences_capability:
+    - target: capability:skills
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:openclaw:ge-0-0-0:thinking
@@ -1006,6 +1295,11 @@ attributes:
     - "repo-sdk-fallback"
     - "repo-hooks-detector"
     - "repo-target-index"
+edges:
+  capability_of_version:
+    - target: agentVersion:openclaw:ge-0-0-0
+  evidences_capability:
+    - target: capability:supports-thinking
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:openclaw:ge-0-0-0:interactive-mode
@@ -1021,6 +1315,11 @@ attributes:
     - "repo-sdk-fallback"
     - "repo-hooks-detector"
     - "repo-target-index"
+edges:
+  capability_of_version:
+    - target: agentVersion:openclaw:ge-0-0-0
+  evidences_capability:
+    - target: capability:interactive-mode
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:openclaw:ge-0-0-0:stdin-injection
@@ -1036,6 +1335,11 @@ attributes:
     - "repo-sdk-fallback"
     - "repo-hooks-detector"
     - "repo-target-index"
+edges:
+  capability_of_version:
+    - target: agentVersion:openclaw:ge-0-0-0
+  evidences_capability:
+    - target: capability:stdin-injection
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:openclaw:ge-0-0-0:image-input
@@ -1051,6 +1355,9 @@ attributes:
     - "repo-sdk-fallback"
     - "repo-hooks-detector"
     - "repo-target-index"
+edges:
+  capability_of_version:
+    - target: agentVersion:openclaw:ge-0-0-0
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:openclaw:ge-0-0-0:session-resume
@@ -1066,6 +1373,9 @@ attributes:
     - "repo-sdk-fallback"
     - "repo-hooks-detector"
     - "repo-target-index"
+edges:
+  capability_of_version:
+    - target: agentVersion:openclaw:ge-0-0-0
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:opencode:ge-0-0-0:skills
@@ -1081,6 +1391,11 @@ attributes:
     - "repo-sdk-fallback"
     - "repo-target-index"
     - "web-opencode-commands"
+edges:
+  capability_of_version:
+    - target: agentVersion:opencode:ge-0-0-0
+  evidences_capability:
+    - target: capability:skills
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:opencode:ge-0-0-0:thinking
@@ -1096,6 +1411,11 @@ attributes:
     - "repo-sdk-fallback"
     - "web-opencode-tui"
     - "web-opencode-providers"
+edges:
+  capability_of_version:
+    - target: agentVersion:opencode:ge-0-0-0
+  evidences_capability:
+    - target: capability:supports-thinking
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:opencode:ge-0-0-0:interactive-mode
@@ -1111,6 +1431,11 @@ attributes:
     - "repo-sdk-fallback"
     - "web-opencode-tui"
     - "web-opencode-providers"
+edges:
+  capability_of_version:
+    - target: agentVersion:opencode:ge-0-0-0
+  evidences_capability:
+    - target: capability:interactive-mode
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:opencode:ge-0-0-0:stdin-injection
@@ -1127,6 +1452,11 @@ attributes:
     - "repo-target-index"
     - "web-opencode-tui"
     - "web-opencode-commands"
+edges:
+  capability_of_version:
+    - target: agentVersion:opencode:ge-0-0-0
+  evidences_capability:
+    - target: capability:stdin-injection
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:opencode:ge-0-0-0:image-input
@@ -1142,6 +1472,9 @@ attributes:
     - "repo-sdk-fallback"
     - "repo-target-index"
     - "web-opencode-tui"
+edges:
+  capability_of_version:
+    - target: agentVersion:opencode:ge-0-0-0
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:opencode:ge-0-0-0:runtime-hooks
@@ -1157,6 +1490,11 @@ attributes:
     - "repo-sdk-fallback"
     - "repo-target-index"
     - "web-opencode-plugins"
+edges:
+  capability_of_version:
+    - target: agentVersion:opencode:ge-0-0-0
+  evidences_capability:
+    - target: capability:runtime-hooks
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:opencode:ge-0-0-0:stop-hook
@@ -1172,6 +1510,11 @@ attributes:
     - "repo-sdk-fallback"
     - "repo-target-index"
     - "web-opencode-plugins"
+edges:
+  capability_of_version:
+    - target: agentVersion:opencode:ge-0-0-0
+  evidences_capability:
+    - target: capability:stop-hook
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:opencode:ge-0-0-0:session-resume
@@ -1187,6 +1530,9 @@ attributes:
     - "repo-sdk-fallback"
     - "repo-target-index"
     - "web-opencode-windows-wsl"
+edges:
+  capability_of_version:
+    - target: agentVersion:opencode:ge-0-0-0
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:pi:ge-0-0-0:skills
@@ -1200,6 +1546,11 @@ attributes:
   notes: "Pi fallback harness with interactive sessions but no runtime-hook support in current shared metadata."
   evidenceRefs:
     - "repo-sdk-fallback"
+edges:
+  capability_of_version:
+    - target: agentVersion:pi:ge-0-0-0
+  evidences_capability:
+    - target: capability:skills
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:pi:ge-0-0-0:thinking
@@ -1213,6 +1564,11 @@ attributes:
   notes: "Pi fallback harness with interactive sessions but no runtime-hook support in current shared metadata."
   evidenceRefs:
     - "repo-sdk-fallback"
+edges:
+  capability_of_version:
+    - target: agentVersion:pi:ge-0-0-0
+  evidences_capability:
+    - target: capability:supports-thinking
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:pi:ge-0-0-0:interactive-mode
@@ -1226,6 +1582,11 @@ attributes:
   notes: "Pi fallback harness with interactive sessions but no runtime-hook support in current shared metadata."
   evidenceRefs:
     - "repo-sdk-fallback"
+edges:
+  capability_of_version:
+    - target: agentVersion:pi:ge-0-0-0
+  evidences_capability:
+    - target: capability:interactive-mode
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:pi:ge-0-0-0:stdin-injection
@@ -1239,6 +1600,11 @@ attributes:
   notes: "Pi fallback harness with interactive sessions but no runtime-hook support in current shared metadata."
   evidenceRefs:
     - "repo-sdk-fallback"
+edges:
+  capability_of_version:
+    - target: agentVersion:pi:ge-0-0-0
+  evidences_capability:
+    - target: capability:stdin-injection
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:pi:ge-0-0-0:image-input
@@ -1252,6 +1618,9 @@ attributes:
   notes: "Pi fallback harness with interactive sessions but no runtime-hook support in current shared metadata."
   evidenceRefs:
     - "repo-sdk-fallback"
+edges:
+  capability_of_version:
+    - target: agentVersion:pi:ge-0-0-0
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:pi:ge-0-0-0:session-resume
@@ -1265,6 +1634,9 @@ attributes:
   notes: "Pi fallback harness with interactive sessions but no runtime-hook support in current shared metadata."
   evidenceRefs:
     - "repo-sdk-fallback"
+edges:
+  capability_of_version:
+    - target: agentVersion:pi:ge-0-0-0
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:anthropic:streaming
@@ -1280,6 +1652,11 @@ attributes:
     - "repo-sdk-fallback"
     - "repo-agent-mux-host"
     - "web-anthropic-claude-code"
+edges:
+  capability_of_version:
+    - target: providerVersion:anthropic:ge-0-0-0
+  evidences_capability:
+    - target: capability:streaming
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:anthropic:tool-calling
@@ -1295,6 +1672,11 @@ attributes:
     - "repo-sdk-fallback"
     - "repo-agent-mux-host"
     - "web-anthropic-claude-code"
+edges:
+  capability_of_version:
+    - target: providerVersion:anthropic:ge-0-0-0
+  evidences_capability:
+    - target: capability:tool-calling
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:openai:streaming
@@ -1310,6 +1692,11 @@ attributes:
     - "repo-sdk-fallback"
     - "repo-hooks-detector"
     - "web-openai-codex-skills"
+edges:
+  capability_of_version:
+    - target: providerVersion:openai:ge-0-0-0
+  evidences_capability:
+    - target: capability:streaming
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:openai:tool-calling
@@ -1325,6 +1712,11 @@ attributes:
     - "repo-sdk-fallback"
     - "repo-hooks-detector"
     - "web-openai-codex-skills"
+edges:
+  capability_of_version:
+    - target: providerVersion:openai:ge-0-0-0
+  evidences_capability:
+    - target: capability:tool-calling
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:google:streaming
@@ -1340,6 +1732,11 @@ attributes:
     - "repo-sdk-fallback"
     - "repo-target-gemini"
     - "web-gemini-hooks"
+edges:
+  capability_of_version:
+    - target: providerVersion:google:ge-0-0-0
+  evidences_capability:
+    - target: capability:streaming
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:google:tool-calling
@@ -1355,6 +1752,11 @@ attributes:
     - "repo-sdk-fallback"
     - "repo-target-gemini"
     - "web-gemini-hooks"
+edges:
+  capability_of_version:
+    - target: providerVersion:google:ge-0-0-0
+  evidences_capability:
+    - target: capability:tool-calling
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:terminal-cli:interactive-mode
@@ -1369,6 +1771,9 @@ attributes:
   evidenceRefs:
     - "repo-sdk-fallback"
     - "repo-agent-mux-host"
+edges:
+  evidences_capability:
+    - target: capability:interactive-mode
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:terminal-cli:stdin-injection
@@ -1383,6 +1788,9 @@ attributes:
   evidenceRefs:
     - "repo-sdk-fallback"
     - "repo-agent-mux-host"
+edges:
+  evidences_capability:
+    - target: capability:stdin-injection
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:shell-hook-runtime:runtime-hooks
@@ -1398,6 +1806,9 @@ attributes:
     - "repo-target-index"
     - "repo-target-claude"
     - "repo-target-codex"
+edges:
+  evidences_capability:
+    - target: capability:runtime-hooks
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:shell-hook-runtime:stop-hook
@@ -1413,6 +1824,9 @@ attributes:
     - "repo-target-index"
     - "repo-target-claude"
     - "repo-target-codex"
+edges:
+  evidences_capability:
+    - target: capability:stop-hook
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:shell-hook-runtime:stdin-injection
@@ -1428,6 +1842,9 @@ attributes:
     - "repo-target-index"
     - "repo-target-claude"
     - "repo-target-codex"
+edges:
+  evidences_capability:
+    - target: capability:stdin-injection
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:shell-hook-runtime:interactive-mode
@@ -1443,6 +1860,9 @@ attributes:
     - "repo-target-index"
     - "repo-target-claude"
     - "repo-target-codex"
+edges:
+  evidences_capability:
+    - target: capability:interactive-mode
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:amux-proxy:streaming
@@ -1458,6 +1878,9 @@ attributes:
     - "repo-transport-mux-readme"
     - "repo-transport-mux-architecture"
     - "repo-transport-mux-migration"
+edges:
+  evidences_capability:
+    - target: capability:streaming
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:amux-proxy:proxy-transport-emulation
@@ -1473,6 +1896,9 @@ attributes:
     - "repo-transport-mux-readme"
     - "repo-transport-mux-architecture"
     - "repo-transport-mux-migration"
+edges:
+  evidences_capability:
+    - target: capability:proxy-transport-emulation
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:amux-proxy:model-discovery
@@ -1488,6 +1914,9 @@ attributes:
     - "repo-transport-mux-readme"
     - "repo-transport-mux-architecture"
     - "repo-transport-mux-migration"
+edges:
+  evidences_capability:
+    - target: capability:model-discovery
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:amux-proxy:token-counting
@@ -1503,6 +1932,9 @@ attributes:
     - "repo-transport-mux-readme"
     - "repo-transport-mux-architecture"
     - "repo-transport-mux-migration"
+edges:
+  evidences_capability:
+    - target: capability:token-counting
 ---
 nodeKind: CapabilitySupport
 id: capabilitySupport:amux-proxy:tool-calling
@@ -1518,3 +1950,6 @@ attributes:
     - "repo-transport-mux-readme"
     - "repo-transport-mux-architecture"
     - "repo-transport-mux-migration"
+edges:
+  evidences_capability:
+    - target: capability:tool-calling

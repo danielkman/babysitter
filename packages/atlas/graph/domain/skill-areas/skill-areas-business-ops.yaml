@@ -70,6 +70,17 @@ edges:
       confidence: primary
     - target: domain:business-intelligence
       confidence: secondary
+  prerequisite_for_learning:
+    - target: skill-area:data-analytics
+      strength: recommended
+    - target: skill-area:requirements-engineering
+      strength: recommended
+    - target: skill-area:process-improvement
+      strength: recommended
+    - target: skill-area:quality-management
+      strength: recommended
+    - target: skill-area:operational-excellence
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:data-analytics
@@ -98,6 +109,29 @@ edges:
   applies_to:
     - target: domain:strategy
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:business-analysis
+      strength: recommended
+    - target: skill-area:business-model-design
+      strength: recommended
+    - target: skill-area:growth-strategy
+      strength: recommended
+    - target: skill-area:change-management
+      strength: recommended
+    - target: skill-area:change-management-leadership
+      strength: recommended
+    - target: skill-area:economic-analysis
+      strength: recommended
+    - target: skill-area:geopolitical-analysis
+      strength: recommended
+    - target: skill-area:problem-solving
+      strength: recommended
+    - target: skill-area:executive-communication
+      strength: recommended
+    - target: skill-area:procurement-management
+      strength: recommended
+    - target: skill-area:community-management
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:change-management

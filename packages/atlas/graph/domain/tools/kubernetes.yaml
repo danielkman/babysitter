@@ -18,3 +18,6 @@ edges:
     - target: skill-area:deployment-automation
   implements_stack_part:
     - target: stack-part:kubernetes-cluster
+  alternative_to:
+    - target: tool:nomad
+      comparison: "Container orchestration platforms"

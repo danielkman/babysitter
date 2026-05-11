@@ -43,6 +43,9 @@ edges:
   used_for:
     - skill-area:knowledge-fabric-design
     - skill-area:rag-pipeline-engineering
+  alternative_to:
+    - target: tool:kapa-ai
+      comparison: "Knowledge platforms — Guru is verified knowledge cards; Kapa.ai turns docs into AI assistants"
 ---
 nodeKind: Tool
 id: tool:danswer
@@ -141,6 +144,9 @@ edges:
   used_for:
     - skill-area:knowledge-fabric-design
     - skill-area:rag-pipeline-engineering
+  alternative_to:
+    - target: tool:guru
+      comparison: "Knowledge platforms — Kapa.ai turns docs into AI assistants; Guru is verified knowledge cards"
 ---
 nodeKind: Tool
 id: tool:dashworks
@@ -185,6 +191,11 @@ edges:
   used_for:
     - skill-area:knowledge-fabric-design
     - skill-area:rag-pipeline-engineering
+  alternative_to:
+    - target: tool:cognita
+      comparison: "RAG frameworks — Haystack is a composable pipeline framework; Cognita is a modular RAG app"
+    - target: tool:verba
+      comparison: "RAG frameworks — Haystack is a pipeline framework; Verba is a turnkey RAG chatbot"
 ---
 nodeKind: Tool
 id: tool:cognita
@@ -205,6 +216,11 @@ edges:
   used_for:
     - skill-area:knowledge-fabric-design
     - skill-area:rag-pipeline-engineering
+  alternative_to:
+    - target: tool:haystack
+      comparison: "RAG frameworks — Cognita is a modular RAG app; Haystack is a composable pipeline framework"
+    - target: tool:verba
+      comparison: "RAG frameworks — Cognita has a UI for experimentation; Verba is a turnkey chatbot"
 ---
 nodeKind: Tool
 id: tool:verba
@@ -226,3 +242,8 @@ edges:
   used_for:
     - skill-area:knowledge-fabric-design
     - skill-area:rag-pipeline-engineering
+  alternative_to:
+    - target: tool:haystack
+      comparison: "RAG frameworks — Verba is a turnkey RAG chatbot; Haystack is a pipeline framework"
+    - target: tool:cognita
+      comparison: "RAG frameworks — Verba is a turnkey chatbot; Cognita has a UI for experimentation"

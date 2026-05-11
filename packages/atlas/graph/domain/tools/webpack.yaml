@@ -14,3 +14,7 @@ edges:
   alternative_to:
     - target: tool:vite
       comparison: "bundlers — webpack is the established standard; Vite is the faster modern alternative"
+    - target: tool:parcel
+      comparison: "JavaScript bundlers"
+    - target: tool:turbopack
+      comparison: "JavaScript bundlers"

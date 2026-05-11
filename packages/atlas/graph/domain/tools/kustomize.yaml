@@ -10,3 +10,8 @@ edges:
     - target: language:yaml
   used_for:
     - target: skill-area:deployment-automation
+  alternative_to:
+    - target: tool:helm
+      comparison: "Kubernetes config — Kustomize uses overlay patching; Helm uses templated charts"
+    - target: tool:helmfile
+      comparison: "Kubernetes config management"

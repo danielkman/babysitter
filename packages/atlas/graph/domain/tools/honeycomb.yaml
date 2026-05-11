@@ -11,3 +11,8 @@ edges:
     - target: skill-area:distributed-tracing
   used_for:
     - skill-area:distributed-tracing
+  alternative_to:
+    - target: tool:jaeger
+      comparison: "Distributed tracing platforms"
+    - target: tool:zipkin
+      comparison: "Distributed tracing platforms"

@@ -18,6 +18,10 @@ attributes:
     later run defaults.
 
     '
+edges:
+  owned_by:
+    - target: graph:agent-catalog
+
 ---
 nodeKind: PathDescriptor
 id: path:project-config
@@ -39,6 +43,10 @@ attributes:
     library, default harness, and CI/CD integration choices.
 
     '
+edges:
+  owned_by:
+    - target: graph:agent-catalog
+
 ---
 nodeKind: PathDescriptor
 id: path:journal-events
@@ -60,6 +68,10 @@ attributes:
     `.a5c/runs/<runId>/` (see path:a5c-runs-dir).
 
     '
+edges:
+  owned_by:
+    - target: graph:agent-catalog
+
 ---
 nodeKind: PathDescriptor
 id: path:run-tasks-dir
@@ -79,6 +91,10 @@ attributes:
     its own subdir for inputs, intermediate artifacts, and outputs.
 
     '
+edges:
+  owned_by:
+    - target: graph:agent-catalog
+
 ---
 nodeKind: PathDescriptor
 id: path:run-effects-dir
@@ -100,6 +116,10 @@ attributes:
     /babysitter:doctor command.
 
     '
+edges:
+  owned_by:
+    - target: graph:agent-catalog
+
 ---
 nodeKind: PathDescriptor
 id: path:run-locks-dir
@@ -119,6 +139,10 @@ attributes:
     orchestrator instances. Inspected by /babysitter:doctor.
 
     '
+edges:
+  owned_by:
+    - target: graph:agent-catalog
+
 ---
 nodeKind: PathDescriptor
 id: path:run-history-insights
@@ -140,6 +164,10 @@ attributes:
     completed/failed runs for later reuse.
 
     '
+edges:
+  owned_by:
+    - target: graph:agent-catalog
+
 ---
 nodeKind: PathDescriptor
 id: path:amux-hooks-project

@@ -11,3 +11,8 @@ edges:
     - language:python
   used_for:
     - target: skill-area:code-quality
+  alternative_to:
+    - target: tool:ruff
+      comparison: "Python code quality — mypy is a type checker; Ruff is a linter/formatter"
+    - target: tool:flake8
+      comparison: "Python code quality — mypy is type checking; Flake8 is style/error linting"

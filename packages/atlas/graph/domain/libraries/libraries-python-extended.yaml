@@ -13,6 +13,8 @@ edges:
     - language:python
   library_used_by:
     - target: skill-area:backend-async-processing
+  alternative_to:
+    - library:dramatiq
 ---
 nodeKind: Library
 id: library:dramatiq
@@ -43,6 +45,8 @@ edges:
     - language:python
   library_used_by:
     - target: skill-area:backend-data-persistence
+  alternative_to:
+    - library:ioredis
 ---
 nodeKind: Library
 id: library:aiohttp
@@ -58,6 +62,9 @@ edges:
     - language:python
   library_used_by:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - library:httpx
+    - library:requests
 ---
 nodeKind: Library
 id: library:websockets
@@ -88,6 +95,8 @@ edges:
     - language:python
   library_used_by:
     - target: skill-area:cli-design
+  alternative_to:
+    - library:typer
 ---
 nodeKind: Library
 id: library:typer
@@ -118,6 +127,8 @@ edges:
     - language:python
   library_used_by:
     - target: skill-area:cli-tooling
+  alternative_to:
+    - library:chalk
 ---
 nodeKind: Library
 id: library:textual-lib
@@ -133,6 +144,8 @@ edges:
     - language:python
   library_used_by:
     - target: skill-area:cli-tooling
+  alternative_to:
+    - library:rich-lib
 ---
 nodeKind: Library
 id: library:structlog
@@ -148,6 +161,8 @@ edges:
     - language:python
   library_used_by:
     - target: skill-area:observability-instrumentation
+  alternative_to:
+    - library:loguru
 ---
 nodeKind: Library
 id: library:loguru
@@ -178,6 +193,8 @@ edges:
     - language:python
   library_used_by:
     - target: skill-area:date-time-manipulation
+  alternative_to:
+    - library:pendulum
 ---
 nodeKind: Library
 id: library:pendulum
@@ -208,6 +225,8 @@ edges:
     - language:python
   library_used_by:
     - target: skill-area:image-processing
+  alternative_to:
+    - library:opencv-python
 ---
 nodeKind: Library
 id: library:opencv-python
@@ -238,6 +257,9 @@ edges:
     - language:python
   library_used_by:
     - target: skill-area:cloud-infrastructure
+  alternative_to:
+    - library:google-cloud-python
+    - library:azure-sdk-python
 ---
 nodeKind: Library
 id: library:google-cloud-python
@@ -283,6 +305,9 @@ edges:
     - language:python
   library_used_by:
     - target: skill-area:streaming-realtime-processing
+  alternative_to:
+    - library:ray
+    - library:polars
 ---
 nodeKind: Library
 id: library:ray

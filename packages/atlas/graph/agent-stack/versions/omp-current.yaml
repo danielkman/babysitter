@@ -58,3 +58,5 @@ edges:
       versionRange: ">=0.0.0"
       level: full
       notes: Oh-My-Pi documents resume, continue, fork, and session switching as first-class session operations.
+  uses_memory_system:
+    - target: memory-system:pi-memory

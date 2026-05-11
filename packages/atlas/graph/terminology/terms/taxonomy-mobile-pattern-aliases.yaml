@@ -2,7 +2,6 @@
 nodeKind: Term
 id: term:hydration
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Hydration"
   kind: concept
   references:
@@ -16,7 +15,6 @@ edges:
 nodeKind: Term
 id: term:bloc-architecture
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "BLoC Architecture"
   kind: concept
   references:
@@ -31,7 +29,6 @@ edges:
 nodeKind: Term
 id: term:bloc-pattern
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "BLoC Pattern"
   kind: concept
   references:
@@ -46,7 +43,6 @@ edges:
 nodeKind: Term
 id: term:sqlite-database
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "SQLite Database"
   kind: concept
   references:
@@ -60,7 +56,6 @@ edges:
 nodeKind: Term
 id: term:realm-database
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Realm Database"
   kind: concept
   references:
@@ -74,7 +69,6 @@ edges:
 nodeKind: Term
 id: term:core-data
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Core Data"
   kind: concept
   references:
@@ -88,7 +82,6 @@ edges:
 nodeKind: Term
 id: term:key-value-storage
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Key-Value Storage"
   kind: concept
   references:
@@ -102,7 +95,6 @@ edges:
 nodeKind: Term
 id: term:file-system-storage
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "File System Storage"
   kind: concept
   references:
@@ -116,7 +108,6 @@ edges:
 nodeKind: Term
 id: term:encrypted-storage
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Encrypted Storage"
   kind: concept
   references:
@@ -131,7 +122,6 @@ edges:
 nodeKind: Term
 id: term:cache-storage
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Cache Storage"
   kind: concept
   references:
@@ -145,7 +135,6 @@ edges:
 nodeKind: Term
 id: term:cache-synchronization
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Cache Synchronization"
   kind: concept
   references:
@@ -159,7 +148,6 @@ edges:
 nodeKind: Term
 id: term:queue-based-updates
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Queue-Based Updates"
   kind: concept
   references:
@@ -174,7 +162,6 @@ edges:
 nodeKind: Term
 id: term:conflict-resolution
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Conflict Resolution"
   kind: concept
   references:
@@ -188,7 +175,6 @@ edges:
 nodeKind: Term
 id: term:optimistic-ui-updates
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Optimistic UI Updates"
   kind: concept
   references:
@@ -202,7 +188,6 @@ edges:
 nodeKind: Term
 id: term:background-synchronization
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Background Synchronization"
   kind: concept
   references:
@@ -217,7 +202,6 @@ edges:
 nodeKind: Term
 id: term:image-caching
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Image Caching"
   kind: concept
   references:
@@ -231,7 +215,6 @@ edges:
 nodeKind: Term
 id: term:background-processing
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Background Processing"
   kind: concept
   references:
@@ -245,7 +228,6 @@ edges:
 nodeKind: Term
 id: term:biometric-authentication
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Biometric Authentication"
   kind: concept
   references:
@@ -259,7 +241,6 @@ edges:
 nodeKind: Term
 id: term:secure-storage
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Secure Storage"
   kind: concept
   references:
@@ -273,7 +254,6 @@ edges:
 nodeKind: Term
 id: term:certificate-pinning
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Certificate Pinning"
   kind: concept
   references:
@@ -287,7 +267,6 @@ edges:
 nodeKind: Term
 id: term:app-signing
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "App Signing"
   kind: concept
   references:
@@ -301,7 +280,6 @@ edges:
 nodeKind: Term
 id: term:code-obfuscation
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Code Obfuscation"
   kind: concept
   references:
@@ -315,7 +293,6 @@ edges:
 nodeKind: Term
 id: term:data-encryption
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Data Encryption"
   kind: concept
   references:
@@ -329,7 +306,6 @@ edges:
 nodeKind: Term
 id: term:deep-linking
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Deep Linking"
   kind: concept
   references:
@@ -343,7 +319,6 @@ edges:
 nodeKind: Term
 id: term:widget-testing
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Widget Testing"
   kind: concept
   references:
@@ -357,7 +332,6 @@ edges:
 nodeKind: Term
 id: term:ui-automation-testing
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "UI Automation Testing"
   kind: concept
   references:

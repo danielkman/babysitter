@@ -9,5 +9,7 @@ attributes:
 edges:
   belongs_to_language:
     - language:javascript
+  alternative_to:
+    - library:ramda
   library_used_by:
     - target: skill-area:data-preprocessing

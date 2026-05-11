@@ -63,6 +63,16 @@ edges:
       strength: recommended
     - target: skill-area:serverless-compute
       strength: helpful
+    - target: skill-area:blue-green-deployment
+      strength: recommended
+    - target: skill-area:canary-rollouts
+      strength: recommended
+    - target: skill-area:gitops
+      strength: recommended
+    - target: skill-area:deployment
+      strength: recommended
+    - target: skill-area:feature-management
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:ci-security
@@ -81,3 +91,6 @@ edges:
       confidence: primary
     - target: domain:cybersecurity
       confidence: secondary
+  prerequisite_for_learning:
+    - target: skill-area:secrets-rotation
+      strength: recommended

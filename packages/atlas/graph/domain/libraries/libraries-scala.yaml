@@ -13,6 +13,8 @@ edges:
     - language:scala
   library_used_by:
     - target: skill-area:backend-async-processing
+  alternative_to:
+    - library:cats-effect
 ---
 nodeKind: Library
 id: library:play-framework-lib
@@ -43,6 +45,8 @@ edges:
     - language:scala
   library_used_by:
     - target: skill-area:backend-async-processing
+  alternative_to:
+    - library:arrow-kt
 ---
 nodeKind: Library
 id: library:cats-effect
@@ -58,6 +62,8 @@ edges:
     - language:scala
   library_used_by:
     - target: skill-area:backend-async-processing
+  alternative_to:
+    - library:zio
 ---
 nodeKind: Library
 id: library:zio
@@ -88,6 +94,9 @@ edges:
     - language:scala
   library_used_by:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - library:play-framework-lib
+    - library:tapir
 ---
 nodeKind: Library
 id: library:doobie
@@ -103,6 +112,8 @@ edges:
     - language:scala
   library_used_by:
     - target: skill-area:backend-data-persistence
+  alternative_to:
+    - library:slick
 ---
 nodeKind: Library
 id: library:circe
@@ -118,6 +129,9 @@ edges:
     - language:scala
   library_used_by:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - library:jackson
+    - library:aeson
 ---
 nodeKind: Library
 id: library:scalatest
@@ -133,6 +147,9 @@ edges:
     - language:scala
   library_used_by:
     - target: skill-area:component-testing
+  alternative_to:
+    - library:specs2
+    - library:kotest
 ---
 nodeKind: Library
 id: library:specs2
@@ -178,6 +195,8 @@ edges:
     - language:scala
   library_used_by:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - library:conduit
 ---
 nodeKind: Library
 id: library:tapir

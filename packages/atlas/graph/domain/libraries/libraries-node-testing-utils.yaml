@@ -13,6 +13,8 @@ edges:
   used_for:
     - skill-area:browser-automation
     - skill-area:web-scraping
+  alternative_to:
+    - library:cheerio
 ---
 nodeKind: Library
 id: library:cheerio
@@ -41,6 +43,8 @@ edges:
     - language:javascript
   used_for:
     - skill-area:image-processing
+  alternative_to:
+    - library:kingfisher
 ---
 nodeKind: Library
 id: library:jest-dom
@@ -55,6 +59,8 @@ edges:
     - language:javascript
   used_for:
     - skill-area:component-testing
+  alternative_to:
+    - library:react-testing-library
 ---
 nodeKind: Library
 id: library:msw
@@ -69,6 +75,8 @@ edges:
     - language:javascript
   used_for:
     - skill-area:component-testing
+  alternative_to:
+    - library:nock
 ---
 nodeKind: Library
 id: library:nock
@@ -83,6 +91,8 @@ edges:
     - language:javascript
   used_for:
     - skill-area:component-testing
+  alternative_to:
+    - library:msw
 ---
 nodeKind: Library
 id: library:supertest
@@ -97,6 +107,8 @@ edges:
     - language:javascript
   used_for:
     - skill-area:component-testing
+  alternative_to:
+    - library:msw
 ---
 nodeKind: Library
 id: library:faker
@@ -111,6 +123,8 @@ edges:
     - language:javascript
   used_for:
     - skill-area:component-testing
+  alternative_to:
+    - library:faker-python
 ---
 nodeKind: Library
 id: library:dayjs
@@ -125,6 +139,10 @@ edges:
     - language:javascript
   used_for:
     - skill-area:backend-api-design
+  alternative_to:
+    - library:moment
+    - library:date-fns
+    - library:luxon
 ---
 nodeKind: Library
 id: library:moment
@@ -139,6 +157,10 @@ edges:
     - language:javascript
   used_for:
     - skill-area:backend-api-design
+  alternative_to:
+    - library:dayjs
+    - library:date-fns
+    - library:luxon
 ---
 nodeKind: Library
 id: library:immer
@@ -153,6 +175,8 @@ edges:
     - language:javascript
   used_for:
     - skill-area:application-state-management
+  alternative_to:
+    - library:lodash
 ---
 nodeKind: Library
 id: library:nodemon
@@ -167,6 +191,8 @@ edges:
     - language:javascript
   used_for:
     - skill-area:ci-pipeline-optimization
+  alternative_to:
+    - library:tsx
 ---
 nodeKind: Library
 id: library:ts-node
@@ -181,6 +207,9 @@ edges:
     - language:javascript
   used_for:
     - skill-area:ci-pipeline-optimization
+  alternative_to:
+    - library:tsx
+    - library:swc
 ---
 nodeKind: Library
 id: library:tsx
@@ -195,6 +224,9 @@ edges:
     - language:javascript
   used_for:
     - skill-area:ci-pipeline-optimization
+  alternative_to:
+    - library:ts-node
+    - library:swc
 ---
 nodeKind: Library
 id: library:tsup
@@ -209,6 +241,8 @@ edges:
     - language:javascript
   used_for:
     - skill-area:ci-pipeline-optimization
+  alternative_to:
+    - library:tsx
 ---
 nodeKind: Library
 id: library:husky
@@ -223,6 +257,9 @@ edges:
     - language:javascript
   used_for:
     - skill-area:code-quality
+  alternative_to:
+    - library:lint-staged
+    - library:pre-commit
 ---
 nodeKind: Library
 id: library:lint-staged
@@ -237,6 +274,8 @@ edges:
     - language:javascript
   used_for:
     - skill-area:code-quality
+  alternative_to:
+    - library:husky
 ---
 nodeKind: Library
 id: library:commitlint
@@ -251,6 +290,8 @@ edges:
     - language:javascript
   used_for:
     - skill-area:code-quality
+  alternative_to:
+    - library:husky
 ---
 nodeKind: Library
 id: library:changesets
@@ -265,6 +306,8 @@ edges:
     - language:javascript
   used_for:
     - skill-area:code-quality
+  alternative_to:
+    - library:semantic-release-lib
 ---
 nodeKind: Library
 id: library:semantic-release-lib

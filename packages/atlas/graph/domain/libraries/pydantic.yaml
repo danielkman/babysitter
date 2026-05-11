@@ -11,3 +11,5 @@ edges:
     - language:python
   library_used_by:
     - target: skill-area:data-validation-sanitization
+  alternative_to:
+    - library:fluentvalidation

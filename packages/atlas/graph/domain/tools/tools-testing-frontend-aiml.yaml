@@ -16,6 +16,11 @@ edges:
     - target: skill-area:performance-testing
   used_for:
     - skill-area:api-testing
+  alternative_to:
+    - target: tool:locust
+      comparison: "Load testing — k6 uses JavaScript; Locust uses Python"
+    - target: tool:artillery
+      comparison: "Load testing — k6 uses JavaScript scripts; Artillery uses YAML scenarios"
 ---
 nodeKind: Tool
 id: tool:locust
@@ -32,6 +37,11 @@ edges:
     - target: skill-area:performance-testing
   used_for:
     - skill-area:api-testing
+  alternative_to:
+    - target: tool:k6
+      comparison: "Load testing — Locust uses Python; k6 uses JavaScript"
+    - target: tool:artillery
+      comparison: "Load testing — Locust uses Python code; Artillery uses YAML scenarios"
 ---
 nodeKind: Tool
 id: tool:artillery
@@ -48,6 +58,11 @@ edges:
     - target: skill-area:performance-testing
   used_for:
     - skill-area:api-testing
+  alternative_to:
+    - target: tool:k6
+      comparison: "Load testing — Artillery uses YAML scenarios; k6 uses JavaScript scripts"
+    - target: tool:locust
+      comparison: "Load testing — Artillery uses YAML scenarios; Locust uses Python code"
 ---
 nodeKind: Tool
 id: tool:pact
@@ -65,6 +80,11 @@ edges:
     - target: skill-area:api-testing
   used_for:
     - skill-area:api-testing
+  alternative_to:
+    - target: tool:wiremock
+      comparison: "API testing — Pact is contract testing; WireMock is service virtualisation"
+    - target: tool:testcontainers
+      comparison: "Integration testing — Pact uses contracts; Testcontainers uses real services in Docker"
 ---
 nodeKind: Tool
 id: tool:wiremock
@@ -82,6 +102,11 @@ edges:
     - target: skill-area:api-testing
   used_for:
     - skill-area:api-testing
+  alternative_to:
+    - target: tool:pact
+      comparison: "API testing — WireMock is service virtualisation; Pact is contract testing"
+    - target: tool:testcontainers
+      comparison: "Integration testing — WireMock mocks HTTP services; Testcontainers runs real services"
 ---
 nodeKind: Tool
 id: tool:testcontainers
@@ -98,6 +123,11 @@ edges:
     - target: skill-area:integration-testing
   used_for:
     - skill-area:api-testing
+  alternative_to:
+    - target: tool:pact
+      comparison: "Integration testing — Testcontainers uses real services in Docker; Pact uses contracts"
+    - target: tool:wiremock
+      comparison: "Integration testing — Testcontainers runs real services; WireMock mocks HTTP services"
 ---
 # Frontend visual-testing tools
 nodeKind: Tool
@@ -116,6 +146,11 @@ edges:
     - target: skill-area:visual-regression-testing
   used_for:
     - skill-area:frontend-testing
+  alternative_to:
+    - target: tool:percy
+      comparison: "Visual testing — Chromatic is Storybook-native; Percy integrates with multiple E2E frameworks"
+    - target: tool:storybook
+      comparison: "Frontend UI tools — Chromatic is visual testing for Storybook; Storybook is the component sandbox"
 ---
 nodeKind: Tool
 id: tool:percy
@@ -134,6 +169,9 @@ edges:
     - target: skill-area:visual-regression-testing
   used_for:
     - skill-area:frontend-testing
+  alternative_to:
+    - target: tool:chromatic
+      comparison: "Visual testing — Percy integrates with multiple E2E frameworks; Chromatic is Storybook-native"
 ---
 # AI / ML inference and evaluation tools
 nodeKind: Tool
@@ -154,6 +192,13 @@ edges:
   used_for:
     - skill-area:model-serving
     - skill-area:ai-evaluation
+  alternative_to:
+    - target: tool:tensorrt
+      comparison: "ML inference — vLLM is LLM-focused with PagedAttention; TensorRT is GPU model optimization"
+    - target: tool:triton-inference
+      comparison: "ML inference — vLLM is LLM-specific; Triton serves multiple model frameworks"
+    - target: tool:onnx-runtime
+      comparison: "ML inference — vLLM is LLM-specific GPU; ONNX Runtime is cross-platform multi-model"
 ---
 nodeKind: Tool
 id: tool:tensorrt
@@ -173,6 +218,13 @@ edges:
   used_for:
     - skill-area:model-serving
     - skill-area:ai-evaluation
+  alternative_to:
+    - target: tool:vllm
+      comparison: "ML inference — TensorRT is GPU model optimization; vLLM is LLM-focused with PagedAttention"
+    - target: tool:triton-inference
+      comparison: "NVIDIA inference — TensorRT optimizes models; Triton serves them"
+    - target: tool:onnx-runtime
+      comparison: "ML inference — TensorRT is NVIDIA GPU-only; ONNX Runtime is cross-platform"
 ---
 nodeKind: Tool
 id: tool:triton-inference
@@ -192,6 +244,13 @@ edges:
   used_for:
     - skill-area:model-serving
     - skill-area:ai-evaluation
+  alternative_to:
+    - target: tool:vllm
+      comparison: "ML inference — Triton serves multiple model frameworks; vLLM is LLM-specific"
+    - target: tool:tensorrt
+      comparison: "NVIDIA inference — Triton serves models; TensorRT optimizes them"
+    - target: tool:onnx-runtime
+      comparison: "ML inference — Triton is a serving platform; ONNX Runtime is an inference engine"
 ---
 nodeKind: Tool
 id: tool:onnx-runtime
@@ -211,6 +270,13 @@ edges:
   used_for:
     - skill-area:model-serving
     - skill-area:ai-evaluation
+  alternative_to:
+    - target: tool:vllm
+      comparison: "ML inference — ONNX Runtime is cross-platform multi-model; vLLM is LLM-specific GPU"
+    - target: tool:tensorrt
+      comparison: "ML inference — ONNX Runtime is cross-platform; TensorRT is NVIDIA GPU-only"
+    - target: tool:triton-inference
+      comparison: "ML inference — ONNX Runtime is an inference engine; Triton is a serving platform"
 ---
 nodeKind: Tool
 id: tool:langsmith
@@ -229,6 +295,13 @@ edges:
     - target: skill-area:ai-evaluation
   used_for:
     - skill-area:llm-observability
+  alternative_to:
+    - target: tool:langfuse
+      comparison: "LLM observability — LangSmith is commercial by LangChain; Langfuse is open-source"
+    - target: tool:ragas
+      comparison: "LLM evaluation — LangSmith is full observability; Ragas focuses on RAG metrics"
+    - target: tool:braintrust-proxy
+      comparison: "LLM observability and evaluation platforms"
 ---
 nodeKind: Tool
 id: tool:langfuse
@@ -247,6 +320,13 @@ edges:
     - target: skill-area:ai-evaluation
   used_for:
     - skill-area:llm-observability
+  alternative_to:
+    - target: tool:langsmith
+      comparison: "LLM observability — Langfuse is open-source; LangSmith is commercial by LangChain"
+    - target: tool:ragas
+      comparison: "LLM evaluation — Langfuse is full observability; Ragas focuses on RAG metrics"
+    - target: tool:braintrust-proxy
+      comparison: "LLM observability and evaluation platforms"
 ---
 nodeKind: Tool
 id: tool:ragas
@@ -265,3 +345,10 @@ edges:
     - target: skill-area:retrieval-augmented-generation
   used_for:
     - skill-area:ai-evaluation
+  alternative_to:
+    - target: tool:langsmith
+      comparison: "LLM evaluation — Ragas focuses on RAG metrics; LangSmith is full observability"
+    - target: tool:langfuse
+      comparison: "LLM evaluation — Ragas focuses on RAG metrics; Langfuse is full observability"
+    - target: tool:braintrust-proxy
+      comparison: "LLM evaluation platforms"

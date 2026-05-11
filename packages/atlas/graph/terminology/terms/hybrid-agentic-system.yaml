@@ -1,7 +1,6 @@
 nodeKind: Term
 id: term:hybrid-agentic-system
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Hybrid Agentic System"
   kind: concept
   description: |
@@ -19,7 +18,6 @@ edges:
 nodeKind: Term
 id: term:two-loops-control-plane
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Two-loops control plane"
   kind: concept
   description: |
@@ -37,7 +35,6 @@ edges:
 nodeKind: Term
 id: term:symbolic-orchestrator
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Symbolic Orchestrator"
   kind: concept
   description: |
@@ -55,7 +52,6 @@ edges:
 nodeKind: Term
 id: term:symbolic-logic-surface
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Symbolic logic surface"
   kind: concept
   description: |

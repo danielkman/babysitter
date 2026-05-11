@@ -1,4 +1,4 @@
-# Catalog pass 95 — packages/triggers/action.yml `runs.steps[]` decomposed.
+# packages/triggers/action.yml `runs.steps[]` decomposed.
 # Source: packages/triggers/action.yml lines 80-232. 7 steps in order.
 nodeKind: GithubActionStep
 id: github-action-step:triggers-action-setup-node

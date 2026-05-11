@@ -28,6 +28,14 @@ edges:
       comparison: "Agent frameworks — LangChain is chain/agent; AutoGen is conversation-based"
     - target: framework:pydantic-ai
       comparison: "Agent frameworks — LangChain is batteries-included; PydanticAI is type-safe minimal"
+    - target: framework:semantic-kernel
+      comparison: "Agent orchestration frameworks"
+    - target: framework:google-adk
+      comparison: "Agent orchestration frameworks"
+    - target: framework:mastra
+      comparison: "Agent orchestration frameworks"
+    - target: framework:vercel-ai-sdk
+      comparison: "Agent orchestration frameworks"
 ---
 nodeKind: Framework
 id: framework:langgraph
@@ -56,6 +64,16 @@ edges:
       comparison: "Agent frameworks — LangGraph is graph-based; CrewAI is role-based"
     - target: framework:autogen
       comparison: "Agent frameworks — LangGraph is graph-based; AutoGen is conversation-based"
+    - target: framework:pydantic-ai
+      comparison: "Agent orchestration frameworks"
+    - target: framework:semantic-kernel
+      comparison: "Agent orchestration frameworks"
+    - target: framework:google-adk
+      comparison: "Agent orchestration frameworks"
+    - target: framework:mastra
+      comparison: "Agent orchestration frameworks"
+    - target: framework:vercel-ai-sdk
+      comparison: "Agent orchestration frameworks"
 ---
 nodeKind: Framework
 id: framework:crewai
@@ -83,6 +101,16 @@ edges:
       comparison: "Multi-agent frameworks — CrewAI uses roles; AutoGen uses conversations"
     - target: framework:pydantic-ai
       comparison: "Agent frameworks — CrewAI is multi-agent; PydanticAI is single-agent type-safe"
+    - target: framework:langgraph
+      comparison: "Agent orchestration frameworks"
+    - target: framework:semantic-kernel
+      comparison: "Agent orchestration frameworks"
+    - target: framework:google-adk
+      comparison: "Agent orchestration frameworks"
+    - target: framework:mastra
+      comparison: "Agent orchestration frameworks"
+    - target: framework:vercel-ai-sdk
+      comparison: "Agent orchestration frameworks"
 ---
 nodeKind: Framework
 id: framework:autogen
@@ -110,6 +138,16 @@ edges:
       comparison: "Multi-agent frameworks — AutoGen uses conversations; CrewAI uses roles"
     - target: framework:langgraph
       comparison: "Agent frameworks — AutoGen is conversation-based; LangGraph is graph-based"
+    - target: framework:pydantic-ai
+      comparison: "Agent orchestration frameworks"
+    - target: framework:semantic-kernel
+      comparison: "Agent orchestration frameworks"
+    - target: framework:google-adk
+      comparison: "Agent orchestration frameworks"
+    - target: framework:mastra
+      comparison: "Agent orchestration frameworks"
+    - target: framework:vercel-ai-sdk
+      comparison: "Agent orchestration frameworks"
 ---
 nodeKind: Framework
 id: framework:pydantic-ai
@@ -135,6 +173,18 @@ edges:
       comparison: "Agent frameworks — PydanticAI is type-safe minimal; LangChain is batteries-included"
     - target: framework:crewai
       comparison: "Agent frameworks — PydanticAI is single-agent type-safe; CrewAI is multi-agent"
+    - target: framework:langgraph
+      comparison: "Agent orchestration frameworks"
+    - target: framework:autogen
+      comparison: "Agent orchestration frameworks"
+    - target: framework:semantic-kernel
+      comparison: "Agent orchestration frameworks"
+    - target: framework:google-adk
+      comparison: "Agent orchestration frameworks"
+    - target: framework:mastra
+      comparison: "Agent orchestration frameworks"
+    - target: framework:vercel-ai-sdk
+      comparison: "Agent orchestration frameworks"
 ---
 nodeKind: Framework
 id: framework:semantic-kernel
@@ -155,6 +205,23 @@ edges:
   used_by_skill_area:
     - target: skill-area:ai-agent-development
     - target: skill-area:tool-use
+  alternative_to:
+    - target: framework:langchain
+      comparison: "Agent orchestration frameworks"
+    - target: framework:langgraph
+      comparison: "Agent orchestration frameworks"
+    - target: framework:crewai
+      comparison: "Agent orchestration frameworks"
+    - target: framework:autogen
+      comparison: "Agent orchestration frameworks"
+    - target: framework:pydantic-ai
+      comparison: "Agent orchestration frameworks"
+    - target: framework:mastra
+      comparison: "Agent orchestration frameworks"
+    - target: framework:vercel-ai-sdk
+      comparison: "Agent orchestration frameworks"
+    - target: framework:google-adk
+      comparison: "Agent orchestration frameworks"
 ---
 nodeKind: Framework
 id: framework:mastra
@@ -178,6 +245,20 @@ edges:
   alternative_to:
     - target: framework:vercel-ai-sdk
       comparison: "TypeScript agent frameworks — Mastra is workflow-focused; Vercel AI SDK is web-focused"
+    - target: framework:langchain
+      comparison: "Agent orchestration frameworks"
+    - target: framework:langgraph
+      comparison: "Agent orchestration frameworks"
+    - target: framework:crewai
+      comparison: "Agent orchestration frameworks"
+    - target: framework:autogen
+      comparison: "Agent orchestration frameworks"
+    - target: framework:pydantic-ai
+      comparison: "Agent orchestration frameworks"
+    - target: framework:semantic-kernel
+      comparison: "Agent orchestration frameworks"
+    - target: framework:google-adk
+      comparison: "Agent orchestration frameworks"
 ---
 nodeKind: Framework
 id: framework:google-adk
@@ -205,6 +286,23 @@ edges:
     - target: skill-area:multi-agent-coordination
     - target: skill-area:tool-use
     - target: skill-area:agentic-loops
+  alternative_to:
+    - target: framework:langchain
+      comparison: "Agent orchestration frameworks"
+    - target: framework:langgraph
+      comparison: "Agent orchestration frameworks"
+    - target: framework:crewai
+      comparison: "Agent orchestration frameworks"
+    - target: framework:autogen
+      comparison: "Agent orchestration frameworks"
+    - target: framework:pydantic-ai
+      comparison: "Agent orchestration frameworks"
+    - target: framework:semantic-kernel
+      comparison: "Agent orchestration frameworks"
+    - target: framework:mastra
+      comparison: "Agent orchestration frameworks"
+    - target: framework:vercel-ai-sdk
+      comparison: "Agent orchestration frameworks"
   integrates_with:
     - target: topic:a2a-protocol
     - target: topic:parallel-agent-execution
@@ -260,3 +358,17 @@ edges:
   alternative_to:
     - target: framework:mastra
       comparison: "TypeScript agent frameworks — Vercel AI SDK is web-focused; Mastra is workflow-focused"
+    - target: framework:langchain
+      comparison: "Agent orchestration frameworks"
+    - target: framework:langgraph
+      comparison: "Agent orchestration frameworks"
+    - target: framework:crewai
+      comparison: "Agent orchestration frameworks"
+    - target: framework:autogen
+      comparison: "Agent orchestration frameworks"
+    - target: framework:pydantic-ai
+      comparison: "Agent orchestration frameworks"
+    - target: framework:semantic-kernel
+      comparison: "Agent orchestration frameworks"
+    - target: framework:google-adk
+      comparison: "Agent orchestration frameworks"

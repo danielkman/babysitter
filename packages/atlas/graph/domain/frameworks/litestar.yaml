@@ -11,3 +11,10 @@ edges:
     - language:python
   used_by_skill_area:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - target: framework:django
+      comparison: "Python web frameworks"
+    - target: framework:flask
+      comparison: "Python web frameworks"
+    - target: framework:fastapi
+      comparison: "Python web frameworks"

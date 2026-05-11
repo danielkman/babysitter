@@ -11,3 +11,5 @@ edges:
     - language:typescript
   library_used_by:
     - target: skill-area:streaming-realtime-processing
+  alternative_to:
+    - library:combine

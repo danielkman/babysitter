@@ -13,6 +13,15 @@ edges:
     - language:javascript
   used_by_skill_area:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - target: framework:nestjs
+      comparison: "Node.js backend frameworks"
+    - target: framework:fastify
+      comparison: "Node.js backend frameworks"
+    - target: framework:hono
+      comparison: "Node.js backend frameworks"
+    - target: framework:hapi
+      comparison: "Node.js backend frameworks"
 ---
 nodeKind: Framework
 id: framework:hapi
@@ -29,6 +38,15 @@ edges:
     - language:javascript
   used_by_skill_area:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - target: framework:nestjs
+      comparison: "Node.js backend frameworks"
+    - target: framework:fastify
+      comparison: "Node.js backend frameworks"
+    - target: framework:hono
+      comparison: "Node.js backend frameworks"
+    - target: framework:koa
+      comparison: "Node.js backend frameworks"
 ---
 nodeKind: Framework
 id: framework:gatsby
@@ -46,6 +64,17 @@ edges:
   used_by_skill_area:
     - target: skill-area:frontend-development
     - target: skill-area:frontend-performance
+  alternative_to:
+    - target: framework:nextjs
+      comparison: "JavaScript meta-frameworks"
+    - target: framework:nuxt
+      comparison: "JavaScript meta-frameworks"
+    - target: framework:sveltekit
+      comparison: "JavaScript meta-frameworks"
+    - target: framework:remix
+      comparison: "JavaScript meta-frameworks"
+    - target: framework:astro
+      comparison: "JavaScript meta-frameworks"
 ---
 nodeKind: Framework
 id: framework:docusaurus
@@ -62,6 +91,8 @@ edges:
     - language:typescript
   used_by_skill_area:
     - target: skill-area:technical-documentation
+  alternative_to:
+    - framework:vitepress
 ---
 nodeKind: Framework
 id: framework:vitepress
@@ -78,6 +109,8 @@ edges:
     - language:typescript
   used_by_skill_area:
     - target: skill-area:technical-documentation
+  alternative_to:
+    - framework:docusaurus
 ---
 nodeKind: Framework
 id: framework:redwood
@@ -94,6 +127,9 @@ edges:
     - language:javascript
   used_by_skill_area:
     - target: skill-area:frontend-development
+  alternative_to:
+    - framework:blitz
+    - framework:t3-stack
 ---
 nodeKind: Framework
 id: framework:blitz
@@ -110,6 +146,9 @@ edges:
     - language:javascript
   used_by_skill_area:
     - target: skill-area:frontend-development
+  alternative_to:
+    - framework:redwood
+    - framework:t3-stack
 ---
 nodeKind: Framework
 id: framework:preact
@@ -127,6 +166,15 @@ edges:
   used_by_skill_area:
     - target: skill-area:frontend-development
     - target: skill-area:design-systems
+  alternative_to:
+    - target: framework:react
+      comparison: "Frontend UI frameworks"
+    - target: framework:vue
+      comparison: "Frontend UI frameworks"
+    - target: framework:angular
+      comparison: "Frontend UI frameworks"
+    - target: framework:svelte
+      comparison: "Frontend UI frameworks"
 ---
 nodeKind: Framework
 id: framework:alpine
@@ -144,6 +192,10 @@ edges:
   used_by_skill_area:
     - target: skill-area:frontend-development
     - target: skill-area:design-systems
+  alternative_to:
+    - framework:htmx
+    - framework:stimulus
+    - framework:livewire
 ---
 nodeKind: Framework
 id: framework:htmx
@@ -160,6 +212,10 @@ edges:
     - language:javascript
   used_by_skill_area:
     - target: skill-area:frontend-development
+  alternative_to:
+    - framework:alpine
+    - framework:stimulus
+    - framework:turbo-rails
 ---
 nodeKind: Framework
 id: framework:slidev
@@ -176,6 +232,8 @@ edges:
     - language:javascript
   used_by_skill_area:
     - target: skill-area:technical-documentation
+  alternative_to:
+    - framework:docusaurus
 ---
 nodeKind: Framework
 id: framework:inertia
@@ -192,3 +250,5 @@ edges:
     - language:javascript
   used_by_skill_area:
     - target: skill-area:frontend-development
+  alternative_to:
+    - framework:livewire

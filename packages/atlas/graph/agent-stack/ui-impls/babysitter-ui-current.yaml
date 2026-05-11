@@ -115,3 +115,75 @@ edges:
       attributes:
         mechanism: slash-command
         invocationToken: "/babysitter:contrib"
+    - target: interaction-primitive:babysitter-sdk-cli-run
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:babysitter-sdk-cli-task
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:babysitter-sdk-cli-session
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:babysitter-sdk-cli-plugin
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:babysitter-sdk-cli-skill
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:babysitter-sdk-cli-process-library
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:babysitter-sdk-cli-profile
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:babysitter-sdk-cli-instructions
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:babysitter-sdk-cli-compression
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:babysitter-sdk-cli-breakpoint
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:babysitter-sdk-cli-hook
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:babysitter-sdk-cli-harness-runtime
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:babysitter-sdk-cli-mcp-server
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:breakpoints-mux-cli-auth-login
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:breakpoints-mux-cli-auth-server-set
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:breakpoints-mux-cli-auth-server-clear
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:breakpoints-mux-cli-auth-token-set
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:breakpoints-mux-cli-auth-token-clear
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:breakpoints-mux-cli-auth-logout
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:breakpoints-mux-cli-auth-status
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:breakpoints-mux-cli-auth-keygen
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:breakpoints-mux-cli-auth-key-push
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:breakpoints-mux-cli-auth-keys
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:breakpoints-mux-cli-breakpoints-pending
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:breakpoints-mux-cli-breakpoints-answer
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:breakpoints-mux-cli-breakpoints-status
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:breakpoints-mux-cli-breakpoints-poll
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:breakpoints-mux-cli-responders-list
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:breakpoints-mux-cli-responders-show
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:breakpoints-mux-cli-server-start
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:breakpoints-mux-cli-ask
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:breakpoints-mux-cli-responders
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:breakpoints-mux-cli-breakpoints
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:breakpoints-mux-cli-server
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:breakpoints-mux-cli-responder-loop
+      attributes: { mechanism: cli-subcommand }
+    - target: interaction-primitive:breakpoints-mux-cli-auth
+      attributes: { mechanism: cli-subcommand }

@@ -11,3 +11,10 @@ edges:
     - language:python
   used_for:
     - target: skill-area:developer-environment
+  alternative_to:
+    - target: tool:pip
+      comparison: "Python package managers — Poetry adds lockfiles and virtualenvs; pip is minimal"
+    - target: tool:rye
+      comparison: "Python project managers"
+    - target: tool:uv
+      comparison: "Python project managers — Poetry uses pyproject.toml; uv is Rust-based and faster"

@@ -6,9 +6,8 @@ attributes:
   priority: P2
   discoveredAt: "2026-05-04T00:00:00Z"
   source: |
-    Catalog enrichment identified implementation claims that are currently
-    backed by broad repository or public documentation evidence rather than
-    exact source-file evidence.
+    Some implementation claims are currently backed by broad repository or
+    public documentation evidence rather than exact source-file evidence.
   currentState: |
     A5C and Codex implementation records have graph-local and public-document
     evidence, but some runtime/core/platform internals are not pinned to exact

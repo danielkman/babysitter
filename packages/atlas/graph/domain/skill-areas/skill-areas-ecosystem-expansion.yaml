@@ -14,6 +14,59 @@ edges:
   applies_to:
     - target: domain:software-engineering
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:dynamic-programming
+      strength: recommended
+    - target: skill-area:graph-algorithms
+      strength: recommended
+    - target: skill-area:string-matching
+      strength: recommended
+    - target: skill-area:computational-geometry
+      strength: recommended
+    - target: skill-area:np-hard-heuristics
+      strength: recommended
+    - target: skill-area:concurrency-multithreading
+      strength: recommended
+    - target: skill-area:error-handling-exception-management
+      strength: recommended
+    - target: skill-area:file-handling
+      strength: recommended
+    - target: skill-area:parsing-data-formats
+      strength: recommended
+    - target: skill-area:command-line-interface-tools
+      strength: recommended
+    - target: skill-area:date-time-manipulation
+      strength: recommended
+    - target: skill-area:compression-archiving
+      strength: recommended
+    - target: skill-area:typescript-generic-programming
+      strength: recommended
+    - target: skill-area:python-implementation
+      strength: recommended
+    - target: skill-area:json-data-wrangling
+      strength: recommended
+    - target: skill-area:language-design
+      strength: recommended
+    - target: skill-area:compiler-implementation
+      strength: recommended
+    - target: skill-area:polyglot-development
+      strength: recommended
+    - target: skill-area:local-development
+      strength: recommended
+    - target: skill-area:developer-experience
+      strength: recommended
+    - target: skill-area:desktop-ui-frameworks
+      strength: recommended
+    - target: skill-area:bug-fixing-from-issues
+      strength: recommended
+    - target: skill-area:general-knowledge-reasoning
+      strength: recommended
+    - target: skill-area:mathematical-reasoning
+      strength: recommended
+    - target: skill-area:rust-async-runtime
+      strength: recommended
+    - target: skill-area:serialization-deserialization
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:developer-environment
@@ -70,6 +123,14 @@ edges:
       strength: required
     - target: skill-area:ci-security
       strength: recommended
+    - target: skill-area:deployment-infrastructure-management
+      strength: recommended
+    - target: skill-area:containerization
+      strength: recommended
+    - target: skill-area:terraform-infrastructure
+      strength: recommended
+    - target: skill-area:github-actions-authoring
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:model-serving
@@ -88,6 +149,12 @@ edges:
       confidence: primary
   prerequisite_for_learning:
     - target: skill-area:llm-infrastructure
+      strength: recommended
+    - target: skill-area:model-serving-deployment
+      strength: recommended
+    - target: skill-area:model-serving-operations
+      strength: recommended
+    - target: skill-area:model-optimisation
       strength: recommended
 ---
 nodeKind: SkillArea
@@ -193,6 +260,17 @@ edges:
   applies_to:
     - target: domain:web-development
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:frontend-e2e-testing
+      strength: recommended
+    - target: skill-area:frontend-performance-testing
+      strength: recommended
+    - target: skill-area:state-management-testing
+      strength: recommended
+    - target: skill-area:react-testing
+      strength: recommended
+    - target: skill-area:visual-regression-testing
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:llm-infrastructure
@@ -276,6 +354,50 @@ edges:
   prerequisite_for_learning:
     - target: skill-area:compliance-automation
       strength: recommended
+    - target: skill-area:vulnerability-scanning-remediation
+      strength: recommended
+    - target: skill-area:penetration-testing-ethical-hacking
+      strength: recommended
+    - target: skill-area:security-monitoring-siem
+      strength: recommended
+    - target: skill-area:endpoint-security-edr
+      strength: recommended
+    - target: skill-area:application-security-testing
+      strength: recommended
+    - target: skill-area:incident-response-forensics
+      strength: recommended
+    - target: skill-area:data-protection-dlp
+      strength: recommended
+    - target: skill-area:threat-intelligence-hunting
+      strength: recommended
+    - target: skill-area:sast
+      strength: recommended
+    - target: skill-area:dast
+      strength: recommended
+    - target: skill-area:threat-modeling
+      strength: recommended
+    - target: skill-area:secret-scanning
+      strength: recommended
+    - target: skill-area:dependency-vulnerability-mgmt
+      strength: recommended
+    - target: skill-area:supply-chain-security
+      strength: recommended
+    - target: skill-area:container-security
+      strength: recommended
+    - target: skill-area:code-cybersecurity
+      strength: recommended
+    - target: skill-area:runtime-security
+      strength: recommended
+    - target: skill-area:policy-enforcement
+      strength: recommended
+    - target: skill-area:access-control
+      strength: recommended
+    - target: skill-area:compliance-scanning
+      strength: recommended
+    - target: skill-area:iac-security
+      strength: recommended
+    - target: skill-area:risk-assessment
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:code-quality
@@ -295,6 +417,12 @@ edges:
   prerequisite_for_learning:
     - target: skill-area:ci-pipeline-optimization
       strength: helpful
+    - target: skill-area:dead-code-elimination
+      strength: recommended
+    - target: skill-area:dependency-upgrade-strategies
+      strength: recommended
+    - target: skill-area:code-analysis-linting
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:e-commerce
@@ -355,6 +483,42 @@ edges:
       strength: helpful
     - target: skill-area:ios-native
       strength: helpful
+    - target: skill-area:animation-transitions
+      strength: recommended
+    - target: skill-area:application-state-management
+      strength: recommended
+    - target: skill-area:web-accessibility
+      strength: recommended
+    - target: skill-area:web-performance
+      strength: recommended
+    - target: skill-area:frontend-routing
+      strength: recommended
+    - target: skill-area:form-management
+      strength: recommended
+    - target: skill-area:data-fetching-caching
+      strength: recommended
+    - target: skill-area:ui-styling
+      strength: recommended
+    - target: skill-area:design-systems
+      strength: recommended
+    - target: skill-area:server-side-rendering
+      strength: recommended
+    - target: skill-area:progressive-enhancement
+      strength: recommended
+    - target: skill-area:browser-compatibility
+      strength: recommended
+    - target: skill-area:vue-components
+      strength: recommended
+    - target: skill-area:react-components
+      strength: recommended
+    - target: skill-area:frontend-testing
+      strength: recommended
+    - target: skill-area:ui-component-libraries
+      strength: recommended
+    - target: skill-area:internationalization
+      strength: recommended
+    - target: skill-area:web-scraping
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:machine-learning
@@ -375,6 +539,54 @@ edges:
     - target: skill-area:natural-language-processing
       strength: required
     - target: skill-area:model-evaluation
+      strength: recommended
+    - target: skill-area:computer-vision
+      strength: recommended
+    - target: skill-area:deep-learning-libraries
+      strength: recommended
+    - target: skill-area:machine-learning-frameworks
+      strength: recommended
+    - target: skill-area:bias-fairness-analysis
+      strength: recommended
+    - target: skill-area:explainability-interpretation
+      strength: recommended
+    - target: skill-area:model-serving-deployment
+      strength: recommended
+    - target: skill-area:model-serving-operations
+      strength: recommended
+    - target: skill-area:ml-fine-tuning
+      strength: recommended
+    - target: skill-area:feature-engineering-pipelines
+      strength: recommended
+    - target: skill-area:model-registry-management
+      strength: recommended
+    - target: skill-area:hyperparameter-tuning-experiment-management
+      strength: recommended
+    - target: skill-area:automated-retraining
+      strength: recommended
+    - target: skill-area:ml-governance-compliance
+      strength: recommended
+    - target: skill-area:ci-cd-ml-pipelines
+      strength: recommended
+    - target: skill-area:model-monitoring-drift-detection
+      strength: recommended
+    - target: skill-area:model-optimisation
+      strength: recommended
+    - target: skill-area:training-data-testing
+      strength: recommended
+    - target: skill-area:bias-fairness-testing
+      strength: recommended
+    - target: skill-area:model-robustness-testing
+      strength: recommended
+    - target: skill-area:inference-performance-testing
+      strength: recommended
+    - target: skill-area:model-explainability-testing
+      strength: recommended
+    - target: skill-area:ml-pipeline-testing
+      strength: recommended
+    - target: skill-area:model-validation-testing
+      strength: recommended
+    - target: skill-area:data-science-experimentation
       strength: recommended
 ---
 nodeKind: SkillArea

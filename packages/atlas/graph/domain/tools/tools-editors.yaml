@@ -13,6 +13,13 @@ edges:
   used_for:
     - target: skill-area:developer-environment
     - target: skill-area:editor-fluency
+  alternative_to:
+    - target: tool:jetbrains-idea
+      comparison: "Code editors / IDEs"
+    - target: tool:neovim
+      comparison: "Code editors / IDEs"
+    - target: tool:cursor
+      comparison: "Code editors / IDEs"
 ---
 nodeKind: Tool
 id: tool:jetbrains-idea
@@ -28,6 +35,13 @@ edges:
   used_for:
     - target: skill-area:developer-environment
     - target: skill-area:editor-fluency
+  alternative_to:
+    - target: tool:vscode
+      comparison: "Code editors / IDEs"
+    - target: tool:neovim
+      comparison: "Code editors / IDEs"
+    - target: tool:cursor
+      comparison: "Code editors / IDEs"
 ---
 nodeKind: Tool
 id: tool:vim
@@ -43,6 +57,13 @@ edges:
   used_for:
     - target: skill-area:developer-environment
     - target: skill-area:editor-fluency
+  alternative_to:
+    - target: tool:emacs
+      comparison: "Terminal editors — Vim is modal; Emacs uses modifier keys"
+    - target: tool:helix
+      comparison: "Modal terminal editors — Vim uses Vimscript; Helix has built-in LSP and tree-sitter"
+    - target: tool:neovim
+      comparison: "Modal editors — Vim uses Vimscript; Neovim adds Lua scripting"
 ---
 nodeKind: Tool
 id: tool:neovim
@@ -58,6 +79,13 @@ edges:
   used_for:
     - target: skill-area:developer-environment
     - target: skill-area:editor-fluency
+  alternative_to:
+    - target: tool:vscode
+      comparison: "Code editors / IDEs"
+    - target: tool:jetbrains-idea
+      comparison: "Code editors / IDEs"
+    - target: tool:cursor
+      comparison: "Code editors / IDEs"
 ---
 nodeKind: Tool
 id: tool:emacs
@@ -73,6 +101,11 @@ edges:
   used_for:
     - target: skill-area:developer-environment
     - target: skill-area:editor-fluency
+  alternative_to:
+    - target: tool:vim
+      comparison: "Terminal editors — Emacs uses modifier keys; Vim is modal"
+    - target: tool:helix
+      comparison: "Terminal editors — Emacs uses Emacs Lisp; Helix has built-in LSP"
 ---
 nodeKind: Tool
 id: tool:helix
@@ -88,3 +121,10 @@ edges:
   used_for:
     - target: skill-area:developer-environment
     - target: skill-area:editor-fluency
+  alternative_to:
+    - target: tool:vim
+      comparison: "Modal terminal editors — Helix has built-in LSP and tree-sitter; Vim uses Vimscript"
+    - target: tool:emacs
+      comparison: "Terminal editors — Helix has built-in LSP; Emacs uses Emacs Lisp"
+    - target: tool:neovim
+      comparison: "Modal terminal editors — Helix has built-in LSP; Neovim requires plugins"

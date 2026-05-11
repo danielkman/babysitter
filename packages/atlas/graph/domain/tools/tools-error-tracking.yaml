@@ -18,6 +18,8 @@ edges:
       comparison: "Error tracking platforms"
     - target: tool:airbrake
       comparison: "Error tracking platforms"
+    - target: tool:logrocket
+      comparison: "Error tracking platforms"
 ---
 nodeKind: Tool
 id: tool:rollbar
@@ -38,6 +40,8 @@ edges:
       comparison: "Error tracking platforms"
     - target: tool:airbrake
       comparison: "Error tracking platforms"
+    - target: tool:logrocket
+      comparison: "Error tracking platforms"
 ---
 nodeKind: Tool
 id: tool:airbrake
@@ -53,6 +57,13 @@ edges:
     - target: skill-area:error-tracking
   used_for:
     - skill-area:error-tracking
+  alternative_to:
+    - target: tool:bugsnag
+      comparison: "Error tracking platforms"
+    - target: tool:rollbar
+      comparison: "Error tracking platforms"
+    - target: tool:logrocket
+      comparison: "Error tracking platforms"
 ---
 nodeKind: Tool
 id: tool:logrocket
@@ -70,3 +81,10 @@ edges:
   used_for:
     - skill-area:error-tracking
     - skill-area:frontend-performance
+  alternative_to:
+    - target: tool:bugsnag
+      comparison: "Error tracking platforms"
+    - target: tool:rollbar
+      comparison: "Error tracking platforms"
+    - target: tool:airbrake
+      comparison: "Error tracking platforms"

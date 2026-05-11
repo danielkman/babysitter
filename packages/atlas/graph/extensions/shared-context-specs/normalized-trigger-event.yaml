@@ -1,4 +1,4 @@
-# Catalog pass 95 — NormalizedTriggerEvent payload schema.
+# NormalizedTriggerEvent payload schema.
 # Source: packages/triggers/src/types.ts:11-28 (NormalizedTriggerEvent),
 # packages/triggers/src/types.ts:3-9 (TriggerChange).
 nodeKind: SharedContextSpec

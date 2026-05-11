@@ -18,3 +18,7 @@ attributes:
       - Windows: %APPDATA%\Cursor\
     Single descriptor uses macOS path; sibling descriptors should be added if
     per-OS distinctions are needed.
+
+edges:
+  owned_by:
+    - target: agent-platform-impl:cursor.platform@current

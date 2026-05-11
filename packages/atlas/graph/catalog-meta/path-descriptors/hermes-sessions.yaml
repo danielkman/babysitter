@@ -11,3 +11,7 @@ attributes:
   scope: user
   evaluationContext: user
   expansion: home
+
+edges:
+  owned_by:
+    - target: agent-platform-impl:hermes.platform@current

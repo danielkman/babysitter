@@ -30,3 +30,6 @@ edges:
         Cursor, Gemini); effort tiers are owned by the bridged harness.
         a5c.core@current carries `effortLevelDelegation=passthrough-to-harness`
         and is correctly silent on `supports_effort_level`.
+  uses_memory_system:
+    - target: memory-system:claude-code-auto-memory
+    - target: memory-system:file-based-markdown-pattern

@@ -83,6 +83,17 @@ edges:
   relates_to_topic:
     - target: topic:organizational-memory
     - target: topic:memory-to-knowledge-bridge
+  alternative_to:
+    - target: tool:agentmemory
+      comparison: "AI agent memory — MemPalace has quality scoring; agentmemory has privacy filtering"
+    - target: tool:memories-sh
+      comparison: "AI agent memory — MemPalace has vector search; memories.sh is plain file key-value"
+    - target: tool:cloudflare-agent-memory
+      comparison: "AI agent memory — MemPalace is self-hosted; Cloudflare Agent Memory is managed"
+    - target: tool:memori-labs
+      comparison: "AI agent memory systems"
+    - target: tool:vercel-ai-memory
+      comparison: "AI agent memory systems"
 ---
 nodeKind: Tool
 id: tool:lunaroute
@@ -185,6 +196,17 @@ edges:
     - target: topic:cloud-agent-memory
     - target: topic:memory-scoping
     - target: topic:memory-to-knowledge-bridge
+  alternative_to:
+    - target: tool:agentmemory
+      comparison: "AI agent memory — Cloudflare is managed cloud; agentmemory is self-hosted"
+    - target: tool:mempalace
+      comparison: "AI agent memory — Cloudflare is managed; MemPalace is self-hosted"
+    - target: tool:memories-sh
+      comparison: "AI agent memory — Cloudflare is cloud-based; memories.sh is local files"
+    - target: tool:memori-labs
+      comparison: "AI agent memory services"
+    - target: tool:vercel-ai-memory
+      comparison: "Managed AI agent memory services"
 ---
 nodeKind: Tool
 id: tool:memories-sh
@@ -209,6 +231,17 @@ edges:
     - target: topic:unified-agent-memory
     - target: topic:memory-type-taxonomy
     - target: topic:auto-memory
+  alternative_to:
+    - target: tool:agentmemory
+      comparison: "AI agent memory — memories.sh is plain file key-value; agentmemory has vector search and privacy filtering"
+    - target: tool:mempalace
+      comparison: "AI agent memory — memories.sh is plain files; MemPalace has vector search"
+    - target: tool:cloudflare-agent-memory
+      comparison: "AI agent memory — memories.sh is local files; Cloudflare is cloud-based"
+    - target: tool:memori-labs
+      comparison: "AI agent memory systems"
+    - target: tool:vercel-ai-memory
+      comparison: "AI agent memory systems"
 ---
 nodeKind: Tool
 id: tool:memori-labs
@@ -233,6 +266,17 @@ edges:
     - target: topic:cloud-agent-memory
     - target: topic:auto-memory
     - target: topic:memory-to-knowledge-bridge
+  alternative_to:
+    - target: tool:agentmemory
+      comparison: "AI agent memory systems"
+    - target: tool:mempalace
+      comparison: "AI agent memory systems"
+    - target: tool:memories-sh
+      comparison: "AI agent memory systems"
+    - target: tool:cloudflare-agent-memory
+      comparison: "AI agent memory services"
+    - target: tool:vercel-ai-memory
+      comparison: "AI agent memory services"
 ---
 nodeKind: Tool
 id: tool:vercel-ai-memory
@@ -257,3 +301,14 @@ edges:
     - target: topic:cloud-agent-memory
     - target: topic:memory-scoping
     - target: topic:memory-to-knowledge-bridge
+  alternative_to:
+    - target: tool:agentmemory
+      comparison: "AI agent memory systems"
+    - target: tool:mempalace
+      comparison: "AI agent memory systems"
+    - target: tool:memories-sh
+      comparison: "AI agent memory systems"
+    - target: tool:cloudflare-agent-memory
+      comparison: "Managed AI agent memory services"
+    - target: tool:memori-labs
+      comparison: "AI agent memory services"

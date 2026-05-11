@@ -11,3 +11,12 @@ edges:
     - language:typescript
   used_by_skill_area:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - target: framework:fastify
+      comparison: "Node.js backend frameworks"
+    - target: framework:hono
+      comparison: "Node.js backend frameworks"
+    - target: framework:koa
+      comparison: "Node.js backend frameworks"
+    - target: framework:hapi
+      comparison: "Node.js backend frameworks"

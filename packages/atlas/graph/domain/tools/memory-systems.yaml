@@ -235,6 +235,17 @@ edges:
     - target: topic:auto-memory
     - target: topic:memory-deduplication
     - target: topic:memory-security
+  alternative_to:
+    - target: tool:memories-sh
+      comparison: "AI agent memory — agentmemory has vector search and privacy filtering; memories.sh is plain file key-value"
+    - target: tool:mempalace
+      comparison: "AI agent memory — agentmemory has privacy filtering; MemPalace has quality scoring"
+    - target: tool:cloudflare-agent-memory
+      comparison: "AI agent memory — agentmemory is self-hosted; Cloudflare is managed cloud"
+    - target: tool:memori-labs
+      comparison: "AI agent memory systems"
+    - target: tool:vercel-ai-memory
+      comparison: "AI agent memory systems"
 ---
 nodeKind: Tool
 id: tool:memories-sh

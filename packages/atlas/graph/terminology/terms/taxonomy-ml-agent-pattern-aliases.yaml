@@ -2,7 +2,6 @@
 nodeKind: Term
 id: term:transfer-learning
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Transfer Learning"
   kind: concept
   references:
@@ -17,7 +16,6 @@ edges:
 nodeKind: Term
 id: term:fine-tuning-models
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Fine-Tuning Models"
   kind: concept
   references:
@@ -32,7 +30,6 @@ edges:
 nodeKind: Term
 id: term:active-learning
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Active Learning"
   kind: concept
   references:
@@ -47,7 +44,6 @@ edges:
 nodeKind: Term
 id: term:federated-learning
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Federated Learning"
   kind: concept
   references:
@@ -62,7 +58,6 @@ edges:
 nodeKind: Term
 id: term:continual-learning
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Continual Learning"
   kind: concept
   references:
@@ -77,7 +72,6 @@ edges:
 nodeKind: Term
 id: term:ab-testing-models
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "A/B Testing for Models"
   kind: concept
   references:
@@ -93,7 +87,6 @@ edges:
 nodeKind: Term
 id: term:performance-metrics-monitoring
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Performance Metrics Monitoring"
   kind: concept
   references:
@@ -108,7 +101,6 @@ edges:
 nodeKind: Term
 id: term:logging-metrics-aggregation
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Logging and Metrics Aggregation"
   kind: concept
   references:
@@ -123,7 +115,6 @@ edges:
 nodeKind: Term
 id: term:anomaly-detection-predictions
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Anomaly Detection in Predictions"
   kind: concept
   references:
@@ -138,7 +129,6 @@ edges:
 nodeKind: Term
 id: term:model-rollback-strategies
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Model Rollback Strategies"
   kind: concept
   references:
@@ -154,7 +144,6 @@ edges:
 nodeKind: Term
 id: term:dag-pipelines
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Directed Acyclic Graph (DAG) Pipelines"
   kind: concept
   references:
@@ -170,7 +159,6 @@ edges:
 nodeKind: Term
 id: term:workflow-orchestration-tools
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Workflow Orchestration Tools"
   kind: concept
   references:
@@ -186,7 +174,6 @@ edges:
 nodeKind: Term
 id: term:automl-pipelines
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Automated Machine Learning (AutoML) Pipelines"
   kind: concept
   references:
@@ -201,7 +188,6 @@ edges:
 nodeKind: Term
 id: term:hyperparameter-tuning
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Hyperparameter Tuning"
   kind: concept
   references:
@@ -216,7 +202,6 @@ edges:
 nodeKind: Term
 id: term:model-registry-patterns
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Model Registry Patterns"
   kind: concept
   references:
@@ -231,7 +216,6 @@ edges:
 nodeKind: Term
 id: term:ci-cd-machine-learning
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "CI/CD for Machine Learning"
   kind: concept
   references:
@@ -246,7 +230,6 @@ edges:
 nodeKind: Term
 id: term:multi-agent-systems
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Multi-Agent Systems"
   kind: concept
   references:
@@ -261,7 +244,6 @@ edges:
 nodeKind: Term
 id: term:memory-based-agents
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Memory-based Agents"
   kind: concept
   references:
@@ -276,7 +258,6 @@ edges:
 nodeKind: Term
 id: term:chain-of-thought-orchestration
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Chain-of-Thought Orchestration"
   kind: concept
   references:
@@ -292,7 +273,6 @@ edges:
 nodeKind: Term
 id: term:tool-driven-agent
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Tool-Driven Agent"
   kind: concept
   references:
@@ -307,7 +287,6 @@ edges:
 nodeKind: Term
 id: term:agent-environment-loop
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Agent and Environment Loop"
   kind: concept
   references:
@@ -322,7 +301,6 @@ edges:
 nodeKind: Term
 id: term:hierarchical-agent-architectures
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Hierarchical Agent Architectures"
   kind: concept
   references:
@@ -338,7 +316,6 @@ edges:
 nodeKind: Term
 id: term:instruction-tuned-llms
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Instruction-Tuned LLMs"
   kind: concept
   references:
@@ -354,7 +331,6 @@ edges:
 nodeKind: Term
 id: term:chain-of-thought-prompting
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Chain-of-Thought Prompting"
   kind: concept
   references:
@@ -370,7 +346,6 @@ edges:
 nodeKind: Term
 id: term:fine-tuning-full-lora-peft
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "Fine-Tuning (Full / LoRA / PEFT)"
   kind: concept
   references:
@@ -385,7 +360,6 @@ edges:
 nodeKind: Term
 id: term:system-user-prompting-layers
 attributes:
-  canonicalDefinitionId: "# TODO: link canonical definition"
   displayName: "System and User Prompting Layers"
   kind: concept
   references:

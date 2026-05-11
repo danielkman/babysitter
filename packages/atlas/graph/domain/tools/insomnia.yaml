@@ -8,3 +8,12 @@ attributes:
 edges:
   tool_used_by:
     - target: skill-area:api-design
+  alternative_to:
+    - target: tool:postman
+      comparison: "API testing clients"
+    - target: tool:hoppscotch
+      comparison: "API testing clients"
+    - target: tool:bruno
+      comparison: "API testing clients"
+    - target: tool:httpie
+      comparison: "API testing clients"

@@ -69,7 +69,7 @@ attributes:
   claimedAt: '2026-05-04T00:00:00Z'
   claimedBy: a5c-ai-catalog
   claimKind: provenance
-  note: Captures that enrichment did not need replacement layer nodes because no implementation layer gap remained.
+  note: No implementation layer gap remained; all expected stack layers are present.
 edges:
   about_subject:
     - agent-version:a5c@current

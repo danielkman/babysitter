@@ -1,4 +1,4 @@
-# Catalog pass 97c — runtime CLI bin entry exposed by @a5c-ai/transport-mux.
+# Runtime CLI bin entry exposed by @a5c-ai/transport-mux.
 # The package's TransportProtocol handlers (anthropic-messages, openai-chat,
 # openai-responses, openai-completions, ollama, vllm, lmstudio, llamacpp)
 # are already modeled in catalog as ModelTransportProtocol records — those

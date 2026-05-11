@@ -179,6 +179,18 @@ edges:
   prerequisite_for_learning:
     - target: skill-area:domain-driven-design
       strength: recommended
+    - target: skill-area:hexagonal-architecture
+      strength: recommended
+    - target: skill-area:event-sourcing
+      strength: recommended
+    - target: skill-area:cqrs
+      strength: recommended
+    - target: skill-area:monolith-vs-microservices
+      strength: recommended
+    - target: skill-area:c4-modeling
+      strength: recommended
+    - target: skill-area:adr-writing
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:executive-communication

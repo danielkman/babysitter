@@ -197,6 +197,9 @@ edges:
   uses_stack_part:
     - stack-part:email-delivery
     - stack-part:notification-service
+  prerequisite_for_learning:
+    - target: skill-area:transactional-email
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:data-fetching-caching
@@ -270,6 +273,8 @@ edges:
   prerequisite_for_learning:
     - target: skill-area:data-warehouse-modeling
       strength: helpful
+    - target: skill-area:visualization-testing
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:ui-styling
@@ -287,6 +292,8 @@ edges:
       confidence: primary
   prerequisite_for_learning:
     - target: skill-area:design-systems
+      strength: recommended
+    - target: skill-area:css-architecture
       strength: recommended
 ---
 nodeKind: SkillArea
@@ -315,6 +322,74 @@ edges:
     - target: skill-area:e2e-testing
       strength: recommended
     - target: skill-area:cross-browser-testing
+      strength: recommended
+    - target: skill-area:api-testing
+      strength: recommended
+    - target: skill-area:integration-testing
+      strength: recommended
+    - target: skill-area:load-testing
+      strength: recommended
+    - target: skill-area:contract-testing
+      strength: recommended
+    - target: skill-area:visual-regression-testing
+      strength: recommended
+    - target: skill-area:accessibility-testing
+      strength: recommended
+    - target: skill-area:security-testing
+      strength: recommended
+    - target: skill-area:mutation-testing
+      strength: recommended
+    - target: skill-area:fuzz-testing
+      strength: recommended
+    - target: skill-area:performance-testing
+      strength: recommended
+    - target: skill-area:unit-testing
+      strength: recommended
+    - target: skill-area:functional-testing
+      strength: recommended
+    - target: skill-area:regression-testing
+      strength: recommended
+    - target: skill-area:smoke-testing
+      strength: recommended
+    - target: skill-area:sanity-testing
+      strength: recommended
+    - target: skill-area:stress-testing
+      strength: recommended
+    - target: skill-area:compatibility-testing
+      strength: recommended
+    - target: skill-area:usability-testing
+      strength: recommended
+    - target: skill-area:acceptance-testing
+      strength: recommended
+    - target: skill-area:ui-testing
+      strength: recommended
+    - target: skill-area:database-testing
+      strength: recommended
+    - target: skill-area:frontend-e2e-testing
+      strength: recommended
+    - target: skill-area:state-management-testing
+      strength: recommended
+    - target: skill-area:frontend-performance-testing
+      strength: recommended
+    - target: skill-area:scalability-testing
+      strength: recommended
+    - target: skill-area:cross-platform-testing
+      strength: recommended
+    - target: skill-area:offline-mode-testing
+      strength: recommended
+    - target: skill-area:battery-consumption-testing
+      strength: recommended
+    - target: skill-area:memory-usage-testing
+      strength: recommended
+    - target: skill-area:mobile-security-testing
+      strength: recommended
+    - target: skill-area:network-condition-testing
+      strength: recommended
+    - target: skill-area:mobile-ui-automation
+      strength: recommended
+    - target: skill-area:service-mocking
+      strength: recommended
+    - target: skill-area:ab-testing-experimentation
       strength: recommended
 ---
 nodeKind: SkillArea
@@ -430,6 +505,15 @@ edges:
   applies_to:
     - target: domain:security
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:symmetric-encryption
+      strength: recommended
+    - target: skill-area:asymmetric-encryption
+      strength: recommended
+    - target: skill-area:key-derivation
+      strength: recommended
+    - target: skill-area:signature-schemes
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:file-handling
@@ -480,6 +564,19 @@ edges:
       confidence: secondary
   requires_skill_area:
     - skill-area:observability-pipeline
+  prerequisite_for_learning:
+    - target: skill-area:profiling-cpu
+      strength: recommended
+    - target: skill-area:profiling-memory
+      strength: recommended
+    - target: skill-area:cache-optimization
+      strength: recommended
+    - target: skill-area:branch-prediction
+      strength: recommended
+    - target: skill-area:simd
+      strength: recommended
+    - target: skill-area:lock-free-data-structures
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:code-analysis-linting
@@ -657,6 +754,9 @@ edges:
       confidence: primary
     - target: domain:ml-ops
       confidence: secondary
+  prerequisite_for_learning:
+    - target: skill-area:vision-extraction
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:model-validation-testing

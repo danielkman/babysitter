@@ -11,3 +11,5 @@ edges:
     - language:python
   library_used_by:
     - target: skill-area:backend-data-persistence
+  alternative_to:
+    - library:flask-sqlalchemy

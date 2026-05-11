@@ -12,3 +12,12 @@ edges:
   used_by_skill_area:
     - target: skill-area:flutter-development
     - target: skill-area:android-native
+  alternative_to:
+    - target: framework:swiftui
+      comparison: "Mobile / cross-platform UI frameworks"
+    - target: framework:jetpack-compose
+      comparison: "Mobile / cross-platform UI frameworks"
+    - target: framework:compose-multiplatform
+      comparison: "Mobile / cross-platform UI frameworks"
+    - target: framework:maui
+      comparison: "Mobile / cross-platform UI frameworks"

@@ -14,6 +14,13 @@ edges:
   tool_used_by:
     - target: skill-area:ai-agent-development
     - target: skill-area:model-serving-operations
+  alternative_to:
+    - target: tool:openrouter
+      comparison: "LLM proxy / gateway services"
+    - target: tool:portkey-ai
+      comparison: "LLM proxy / gateway services"
+    - target: tool:helicone
+      comparison: "LLM proxy / gateway services"
 ---
 nodeKind: Tool
 id: tool:openrouter
@@ -31,6 +38,13 @@ edges:
   tool_used_by:
     - target: skill-area:ai-agent-development
     - target: skill-area:model-serving-operations
+  alternative_to:
+    - target: tool:litellm
+      comparison: "LLM proxy / gateway services"
+    - target: tool:portkey-ai
+      comparison: "LLM proxy / gateway services"
+    - target: tool:helicone
+      comparison: "LLM proxy / gateway services"
 ---
 nodeKind: Tool
 id: tool:portkey-ai
@@ -47,6 +61,13 @@ edges:
   tool_used_by:
     - target: skill-area:ai-agent-development
     - target: skill-area:model-serving-operations
+  alternative_to:
+    - target: tool:litellm
+      comparison: "LLM proxy / gateway services"
+    - target: tool:openrouter
+      comparison: "LLM proxy / gateway services"
+    - target: tool:helicone
+      comparison: "LLM proxy / gateway services"
 ---
 nodeKind: Tool
 id: tool:helicone
@@ -63,6 +84,13 @@ edges:
   tool_used_by:
     - target: skill-area:ai-agent-development
     - target: skill-area:observability-instrumentation
+  alternative_to:
+    - target: tool:litellm
+      comparison: "LLM proxy / gateway services"
+    - target: tool:openrouter
+      comparison: "LLM proxy / gateway services"
+    - target: tool:portkey-ai
+      comparison: "LLM proxy / gateway services"
 ---
 nodeKind: Tool
 id: tool:braintrust-proxy
@@ -79,3 +107,10 @@ edges:
   tool_used_by:
     - target: skill-area:ai-agent-development
     - target: skill-area:eval-driven-development
+  alternative_to:
+    - target: tool:langsmith
+      comparison: "LLM observability and evaluation platforms"
+    - target: tool:langfuse
+      comparison: "LLM observability and evaluation platforms"
+    - target: tool:ragas
+      comparison: "LLM evaluation platforms"

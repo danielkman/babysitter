@@ -74,6 +74,15 @@ edges:
   applies_to:
     - target: specialization:cryptography-blockchain
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:smart-contract-development-testing
+      strength: recommended
+    - target: skill-area:token-nft-management
+      strength: recommended
+    - target: skill-area:dao-governance-implementation
+      strength: recommended
+    - target: skill-area:transaction-fee-optimization
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:consensus-protocols
@@ -89,3 +98,14 @@ edges:
   applies_to:
     - target: specialization:cryptography-blockchain
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:blockchain-node-network-setup
+      strength: recommended
+    - target: skill-area:on-chain-data-oracle-integration
+      strength: recommended
+    - target: skill-area:wallet-integration-key-management
+      strength: recommended
+    - target: skill-area:cross-chain-interoperability
+      strength: recommended
+    - target: skill-area:blockchain-analytics-explorer
+      strength: recommended

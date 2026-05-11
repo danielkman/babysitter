@@ -13,6 +13,13 @@ edges:
     - target: skill-area:customer-support
   used_for:
     - skill-area:customer-support
+  alternative_to:
+    - target: tool:freshdesk
+      comparison: "Customer support platforms"
+    - target: tool:hubspot
+      comparison: "CRM and support platforms"
+    - target: tool:salesforce
+      comparison: "CRM and support platforms"
 ---
 nodeKind: Tool
 id: tool:freshdesk
@@ -28,6 +35,13 @@ edges:
     - target: skill-area:customer-support
   used_for:
     - skill-area:customer-support
+  alternative_to:
+    - target: tool:zendesk
+      comparison: "Customer support platforms"
+    - target: tool:hubspot
+      comparison: "CRM and support platforms"
+    - target: tool:salesforce
+      comparison: "CRM and support platforms"
 ---
 nodeKind: Tool
 id: tool:hubspot
@@ -44,6 +58,13 @@ edges:
     - target: skill-area:sales-operations
   used_for:
     - skill-area:customer-support
+  alternative_to:
+    - target: tool:salesforce
+      comparison: "CRM platforms"
+    - target: tool:zendesk
+      comparison: "CRM and support platforms"
+    - target: tool:freshdesk
+      comparison: "CRM and support platforms"
 ---
 nodeKind: Tool
 id: tool:salesforce
@@ -60,6 +81,13 @@ edges:
     - target: skill-area:customer-support
   used_for:
     - skill-area:customer-support
+  alternative_to:
+    - target: tool:hubspot
+      comparison: "CRM platforms"
+    - target: tool:zendesk
+      comparison: "CRM and support platforms"
+    - target: tool:freshdesk
+      comparison: "CRM and support platforms"
 ---
 nodeKind: Tool
 id: tool:servicenow
@@ -76,3 +104,6 @@ edges:
     - target: skill-area:operations-automation
   used_for:
     - skill-area:customer-support
+  alternative_to:
+    - target: tool:intercom
+      comparison: "Customer support — ServiceNow is enterprise ITSM; Intercom is messaging-first"

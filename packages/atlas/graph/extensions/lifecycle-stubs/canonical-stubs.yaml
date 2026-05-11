@@ -84,6 +84,44 @@ edges:
   belongs_to_machine:
     - target: state-machine:run
 ---
+nodeKind: LifecycleState
+id: lifecycle-state:effect.pending
+attributes:
+  displayName: "Effect — pending"
+  terminal_state: false
+edges:
+  belongs_to_machine:
+    - target: state-machine:run
+  transitions_to:
+    - target: lifecycle-state:effect.ok
+---
+nodeKind: LifecycleState
+id: lifecycle-state:effect.ok
+attributes:
+  displayName: "Effect — ok"
+  terminal_state: true
+edges:
+  belongs_to_machine:
+    - target: state-machine:run
+---
+nodeKind: LifecycleState
+id: lifecycle-state:invocation.running
+attributes:
+  displayName: "Invocation — running"
+  terminal_state: false
+edges:
+  belongs_to_machine:
+    - target: state-machine:run
+---
+nodeKind: LifecycleState
+id: lifecycle-state:session.active
+attributes:
+  displayName: "Session — active"
+  terminal_state: false
+edges:
+  belongs_to_machine:
+    - target: state-machine:run
+---
 nodeKind: BackgroundMonitor
 id: background-monitor:plugin-watch
 attributes:

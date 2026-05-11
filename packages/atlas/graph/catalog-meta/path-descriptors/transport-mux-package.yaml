@@ -12,3 +12,7 @@ attributes:
   evaluationContext: project
   expansion: literal
   notes: Protocol/provider ontology reference package.
+
+edges:
+  owned_by:
+    - target: package:a5c-ai-transport-mux

@@ -8,3 +8,6 @@ attributes:
 edges:
   tool_used_by:
     - target: skill-area:secrets-rotation
+  alternative_to:
+    - target: tool:vault
+      comparison: "Secrets management tools"

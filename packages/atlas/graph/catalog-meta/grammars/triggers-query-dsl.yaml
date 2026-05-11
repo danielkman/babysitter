@@ -1,4 +1,3 @@
-# Catalog pass 95 — packages/triggers/src/query.ts grammar decomposed.
 # Source: parseQuery() at packages/triggers/src/query.ts:75-100,
 # evaluateExpression() at lines 55-73, globToRegExp() at lines 20-37.
 nodeKind: Grammar

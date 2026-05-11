@@ -14,3 +14,7 @@ edges:
   alternative_to:
     - target: tool:webpack
       comparison: "bundlers — Vite uses native ESM for dev, Rollup for prod; webpack is the older incumbent"
+    - target: tool:parcel
+      comparison: "JavaScript bundlers"
+    - target: tool:turbopack
+      comparison: "JavaScript bundlers"

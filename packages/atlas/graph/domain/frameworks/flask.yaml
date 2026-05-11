@@ -16,3 +16,5 @@ edges:
       comparison: "Python web frameworks — Flask is minimal; FastAPI is async-first"
     - target: framework:django
       comparison: "Python web frameworks — Flask is minimal; Django is batteries-included"
+    - target: framework:litestar
+      comparison: "Python web frameworks"

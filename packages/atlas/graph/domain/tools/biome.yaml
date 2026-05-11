@@ -15,3 +15,5 @@ edges:
   alternative_to:
     - target: tool:eslint
       comparison: "JavaScript linters / formatters"
+    - target: tool:prettier
+      comparison: "JavaScript linters / formatters"

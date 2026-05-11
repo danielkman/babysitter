@@ -10,3 +10,8 @@ edges:
     - target: skill-area:terraform-infrastructure
   used_for:
     - target: skill-area:ci-pipeline-optimization
+  alternative_to:
+    - target: tool:gradle
+      comparison: "Build systems — Bazel is multi-language; Gradle is JVM-focused"
+    - target: tool:maven
+      comparison: "Build systems — Bazel is multi-language; Maven is JVM-focused"

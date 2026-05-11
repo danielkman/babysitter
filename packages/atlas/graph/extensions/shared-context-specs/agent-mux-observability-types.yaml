@@ -1,4 +1,4 @@
-# Catalog pass 97c — public TypeScript types exposed by
+# Public TypeScript types exposed by
 # @a5c-ai/agent-mux-observability for log + telemetry instrumentation.
 # Source: packages/agent-mux/observability/src/types.ts (single canonical
 # types module re-exported by index.ts and index-simple.ts).

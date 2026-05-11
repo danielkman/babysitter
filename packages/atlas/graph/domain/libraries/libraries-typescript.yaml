@@ -12,6 +12,8 @@ edges:
     - language:typescript
   used_for:
     - skill-area:application-state-management
+  alternative_to:
+    - library:swr
 ---
 nodeKind: Library
 id: library:swr
@@ -40,6 +42,9 @@ edges:
     - language:typescript
   used_for:
     - skill-area:backend-api-design
+  alternative_to:
+    - library:trpc-server
+    - library:trpc-client
 ---
 nodeKind: Library
 id: library:drizzle-orm

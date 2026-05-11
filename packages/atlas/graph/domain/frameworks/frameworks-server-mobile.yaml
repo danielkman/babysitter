@@ -13,6 +13,9 @@ edges:
     - language:php
   used_by_skill_area:
     - target: skill-area:frontend-development
+  alternative_to:
+    - framework:inertia
+    - framework:alpine
 ---
 nodeKind: Framework
 id: framework:stimulus
@@ -29,6 +32,10 @@ edges:
     - language:javascript
   used_by_skill_area:
     - target: skill-area:frontend-development
+  alternative_to:
+    - framework:alpine
+    - framework:htmx
+    - framework:turbo-rails
 ---
 nodeKind: Framework
 id: framework:turbo-rails
@@ -45,6 +52,10 @@ edges:
     - language:ruby
   used_by_skill_area:
     - target: skill-area:frontend-development
+  alternative_to:
+    - framework:htmx
+    - framework:stimulus
+    - framework:alpine
 ---
 nodeKind: Framework
 id: framework:blazor
@@ -61,6 +72,8 @@ edges:
     - language:csharp
   used_by_skill_area:
     - target: skill-area:frontend-development
+  alternative_to:
+    - library:leptos
 ---
 nodeKind: Framework
 id: framework:spring-webflux
@@ -141,6 +154,17 @@ edges:
     - language:java
   used_by_skill_area:
     - target: skill-area:backend-async-processing
+  alternative_to:
+    - target: framework:spring-webflux
+      comparison: "JVM backend frameworks"
+    - target: framework:dropwizard
+      comparison: "JVM backend frameworks"
+    - target: framework:spark-java
+      comparison: "JVM backend frameworks"
+    - target: framework:javalin
+      comparison: "JVM backend frameworks"
+    - target: framework:ktor-server
+      comparison: "JVM backend frameworks"
 ---
 nodeKind: Framework
 id: framework:swiftui
@@ -157,6 +181,15 @@ edges:
     - language:swift
   used_by_skill_area:
     - target: skill-area:ios-native
+  alternative_to:
+    - target: framework:flutter
+      comparison: "Mobile / cross-platform UI frameworks"
+    - target: framework:jetpack-compose
+      comparison: "Mobile / cross-platform UI frameworks"
+    - target: framework:compose-multiplatform
+      comparison: "Mobile / cross-platform UI frameworks"
+    - target: framework:maui
+      comparison: "Mobile / cross-platform UI frameworks"
 ---
 nodeKind: Framework
 id: framework:jetpack-compose
@@ -173,6 +206,15 @@ edges:
     - language:kotlin
   used_by_skill_area:
     - target: skill-area:android-native
+  alternative_to:
+    - target: framework:flutter
+      comparison: "Mobile / cross-platform UI frameworks"
+    - target: framework:swiftui
+      comparison: "Mobile / cross-platform UI frameworks"
+    - target: framework:compose-multiplatform
+      comparison: "Mobile / cross-platform UI frameworks"
+    - target: framework:maui
+      comparison: "Mobile / cross-platform UI frameworks"
 ---
 nodeKind: Framework
 id: framework:compose-multiplatform
@@ -189,6 +231,15 @@ edges:
     - language:kotlin
   used_by_skill_area:
     - target: skill-area:android-native
+  alternative_to:
+    - target: framework:flutter
+      comparison: "Mobile / cross-platform UI frameworks"
+    - target: framework:swiftui
+      comparison: "Mobile / cross-platform UI frameworks"
+    - target: framework:jetpack-compose
+      comparison: "Mobile / cross-platform UI frameworks"
+    - target: framework:maui
+      comparison: "Mobile / cross-platform UI frameworks"
 ---
 nodeKind: Framework
 id: framework:maui
@@ -206,6 +257,15 @@ edges:
     - language:csharp
   used_by_skill_area:
     - target: skill-area:frontend-development
+  alternative_to:
+    - target: framework:flutter
+      comparison: "Mobile / cross-platform UI frameworks"
+    - target: framework:swiftui
+      comparison: "Mobile / cross-platform UI frameworks"
+    - target: framework:jetpack-compose
+      comparison: "Mobile / cross-platform UI frameworks"
+    - target: framework:compose-multiplatform
+      comparison: "Mobile / cross-platform UI frameworks"
 ---
 nodeKind: Framework
 id: framework:vapor
@@ -222,6 +282,8 @@ edges:
     - language:swift
   used_by_skill_area:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - framework:phoenix
 ---
 nodeKind: Framework
 id: framework:ktor-server

@@ -16,6 +16,19 @@ edges:
   uses_tool:
     - tool:postman
     - tool:insomnia
+  prerequisite_for_learning:
+    - target: skill-area:semver-discipline
+      strength: recommended
+    - target: skill-area:breaking-change-management
+      strength: recommended
+    - target: skill-area:deprecation-policy
+      strength: recommended
+    - target: skill-area:sdk-codegen
+      strength: recommended
+    - target: skill-area:plugin-systems
+      strength: recommended
+    - target: skill-area:api-contract-testing
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:semver-discipline
@@ -109,6 +122,15 @@ edges:
   applies_to:
     - target: specialization:software-architecture
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:strangler-fig-pattern
+      strength: recommended
+    - target: skill-area:parallel-run-migration
+      strength: recommended
+    - target: skill-area:schema-evolution
+      strength: recommended
+    - target: skill-area:monorepo-extraction
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:hexagonal-architecture

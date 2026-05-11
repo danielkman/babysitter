@@ -12,6 +12,9 @@ edges:
     - target: stack-part:cms
   used_for:
     - target: skill-area:content-strategy
+  alternative_to:
+    - target: tool:strapi
+      comparison: "CMS platforms — WordPress is traditional PHP CMS; Strapi is headless Node.js CMS"
 ---
 nodeKind: Tool
 id: tool:strapi
@@ -26,6 +29,9 @@ edges:
     - target: stack-part:cms
   used_for:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - target: tool:wordpress
+      comparison: "CMS platforms — Strapi is headless Node.js CMS; WordPress is traditional PHP CMS"
 ---
 nodeKind: Tool
 id: tool:neo4j
@@ -98,6 +104,13 @@ edges:
     - target: stack-part:experiment-platform
   used_for:
     - target: skill-area:feature-management
+  alternative_to:
+    - target: tool:flagsmith
+      comparison: "Feature flag platforms"
+    - target: tool:unleash
+      comparison: "Feature flag platforms"
+    - target: tool:split-io
+      comparison: "Feature flag platforms"
 ---
 nodeKind: Tool
 id: tool:temporal
@@ -113,6 +126,13 @@ edges:
     - target: stack-part:workflow-engine
   used_for:
     - target: skill-area:backend-async-processing
+  alternative_to:
+    - target: tool:airflow
+      comparison: "Workflow orchestration — Temporal is durable execution in code; Airflow is data-pipeline DAGs"
+    - target: tool:dagster
+      comparison: "Workflow orchestration platforms"
+    - target: tool:prefect
+      comparison: "Workflow orchestration platforms"
 ---
 nodeKind: Tool
 id: tool:airflow
@@ -127,6 +147,15 @@ edges:
     - target: stack-part:workflow-engine
   used_for:
     - target: skill-area:event-driven-architecture
+  alternative_to:
+    - target: tool:temporal
+      comparison: "Workflow orchestration — Airflow is data-pipeline DAGs; Temporal is durable execution in code"
+    - target: tool:dagster
+      comparison: "Data orchestration — Airflow uses DAGs; Dagster is asset-centric"
+    - target: tool:prefect
+      comparison: "Data orchestration — Airflow uses DAGs; Prefect is Python-native"
+    - target: tool:apache-beam
+      comparison: "Data pipeline tools"
 ---
 nodeKind: Tool
 id: tool:kong
@@ -142,6 +171,9 @@ edges:
     - target: stack-part:api-gateway
   used_for:
     - target: skill-area:backend-api-design
+  alternative_to:
+    - target: tool:ngrok
+      comparison: "API/network tools — Kong is an API gateway; ngrok is a tunnel for local services"
 ---
 nodeKind: Tool
 id: tool:databricks
@@ -156,6 +188,11 @@ edges:
     - target: stack-part:data-lake
   used_for:
     - target: skill-area:machine-learning
+  alternative_to:
+    - target: tool:mlflow
+      comparison: "ML platforms — Databricks is a unified data+AI platform; MLflow is ML lifecycle management"
+    - target: tool:bentoml
+      comparison: "ML platforms — Databricks is a unified platform; BentoML is model serving"
 ---
 nodeKind: Tool
 id: tool:sendgrid
@@ -170,6 +207,17 @@ edges:
     - target: stack-part:email-delivery
   used_for:
     - target: skill-area:transactional-email
+  alternative_to:
+    - target: tool:mailgun
+      comparison: "Email delivery services"
+    - target: tool:postmark
+      comparison: "Email delivery services"
+    - target: tool:resend
+      comparison: "Email delivery services"
+    - target: tool:aws-ses
+      comparison: "Email delivery services"
+    - target: tool:sparkpost
+      comparison: "Email delivery services"
 ---
 nodeKind: Tool
 id: tool:twilio
@@ -198,6 +246,11 @@ edges:
     - target: stack-part:model-registry
   used_for:
     - target: skill-area:model-serving
+  alternative_to:
+    - target: tool:databricks
+      comparison: "ML platforms — MLflow is ML lifecycle management; Databricks is a unified data+AI platform"
+    - target: tool:bentoml
+      comparison: "ML tools — MLflow is experiment tracking and model registry; BentoML is model serving"
 ---
 nodeKind: Tool
 id: tool:bentoml
@@ -212,6 +265,11 @@ edges:
     - target: stack-part:model-serving
   used_for:
     - target: skill-area:model-serving
+  alternative_to:
+    - target: tool:mlflow
+      comparison: "ML tools — BentoML is model serving; MLflow is experiment tracking and model registry"
+    - target: tool:databricks
+      comparison: "ML platforms — BentoML is model serving; Databricks is a unified platform"
 ---
 nodeKind: Tool
 id: tool:feast

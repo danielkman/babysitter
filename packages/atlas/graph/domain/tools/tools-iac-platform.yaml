@@ -15,6 +15,11 @@ edges:
   used_for:
     - target: skill-area:platform-engineering
     - target: skill-area:deployment-automation
+  alternative_to:
+    - target: tool:pulumi-cloud
+      comparison: "Managed IaC platforms — Terraform Cloud uses HCL; Pulumi Cloud uses programming languages"
+    - target: tool:ansible
+      comparison: "IaC/config — Terraform Cloud is declarative provisioning; Ansible is agentless config management"
 ---
 nodeKind: Tool
 id: tool:pulumi-cloud
@@ -31,6 +36,11 @@ edges:
   used_for:
     - target: skill-area:platform-engineering
     - target: skill-area:deployment-automation
+  alternative_to:
+    - target: tool:terraform-cloud
+      comparison: "Managed IaC platforms — Pulumi Cloud uses programming languages; Terraform Cloud uses HCL"
+    - target: tool:ansible
+      comparison: "IaC/config — Pulumi Cloud is code-based provisioning; Ansible is imperative playbooks"
 ---
 nodeKind: Tool
 id: tool:crossplane
@@ -70,6 +80,15 @@ edges:
   used_for:
     - target: skill-area:platform-engineering
     - target: skill-area:developer-environment
+  alternative_to:
+    - target: tool:port-dev
+      comparison: "Internal developer portals — Backstage is open-source plugin-based; Port is managed SaaS"
+    - target: tool:devtron
+      comparison: "Platform engineering — Backstage is a developer portal; Devtron is K8s app management"
+    - target: tool:kubevela
+      comparison: "Platform engineering — Backstage is a developer portal; KubeVela is OAM-based delivery"
+    - target: tool:rancher
+      comparison: "Platform engineering — Backstage is a developer portal; Rancher is K8s cluster management"
 ---
 nodeKind: Tool
 id: tool:port-dev
@@ -86,6 +105,13 @@ edges:
   used_for:
     - target: skill-area:platform-engineering
     - target: skill-area:developer-environment
+  alternative_to:
+    - target: tool:backstage
+      comparison: "Internal developer portals — Port is managed SaaS; Backstage is open-source plugin-based"
+    - target: tool:devtron
+      comparison: "Platform engineering tools"
+    - target: tool:kubevela
+      comparison: "Platform engineering tools"
 ---
 # GitOps tools
 nodeKind: Tool
@@ -103,6 +129,11 @@ edges:
   used_for:
     - target: skill-area:gitops
     - target: skill-area:deployment-automation
+  alternative_to:
+    - target: tool:helm
+      comparison: "Kubernetes deployment — Helmfile orchestrates multi-chart deployments; Helm manages single charts"
+    - target: tool:kustomize
+      comparison: "Kubernetes config management"
 ---
 # Container / local cluster tools
 nodeKind: Tool
@@ -120,6 +151,15 @@ edges:
   used_for:
     - target: skill-area:containerization
     - target: skill-area:local-development
+  alternative_to:
+    - target: tool:k3s
+      comparison: "Local container orchestration — Docker Compose is simple multi-container; K3s is full Kubernetes"
+    - target: tool:kind
+      comparison: "Local container orchestration — Docker Compose is multi-container; kind is Kubernetes-in-Docker"
+    - target: tool:minikube
+      comparison: "Local container orchestration — Docker Compose is multi-container; minikube is local Kubernetes"
+    - target: tool:colima
+      comparison: "Local container tools — Docker Compose orchestrates containers; Colima provides the container runtime"
 ---
 nodeKind: Tool
 id: tool:k3s
@@ -138,6 +178,13 @@ edges:
     - target: skill-area:deployment-automation
   implements_stack_part:
     - target: stack-part:kubernetes-cluster
+  alternative_to:
+    - target: tool:kind
+      comparison: "Local Kubernetes — K3s is a lightweight distro; kind runs clusters in Docker containers"
+    - target: tool:minikube
+      comparison: "Local Kubernetes — K3s is lightweight and edge-ready; minikube is single-node with add-ons"
+    - target: tool:docker-compose
+      comparison: "Local container orchestration — K3s is full Kubernetes; Docker Compose is simple multi-container"
 ---
 nodeKind: Tool
 id: tool:kind
@@ -154,6 +201,13 @@ edges:
   used_for:
     - target: skill-area:local-development
     - target: skill-area:containerization
+  alternative_to:
+    - target: tool:minikube
+      comparison: "Local Kubernetes — kind uses Docker containers; minikube uses VMs or containers"
+    - target: tool:k3s
+      comparison: "Local Kubernetes — kind runs clusters in Docker containers; K3s is a lightweight distro"
+    - target: tool:docker-compose
+      comparison: "Local container orchestration — kind is Kubernetes-in-Docker; Docker Compose is multi-container"
 ---
 nodeKind: Tool
 id: tool:minikube
@@ -170,6 +224,13 @@ edges:
   used_for:
     - target: skill-area:local-development
     - target: skill-area:containerization
+  alternative_to:
+    - target: tool:kind
+      comparison: "Local Kubernetes — minikube uses VMs or containers; kind uses Docker containers"
+    - target: tool:k3s
+      comparison: "Local Kubernetes — minikube is single-node with add-ons; K3s is lightweight and edge-ready"
+    - target: tool:docker-compose
+      comparison: "Local container orchestration — minikube is local Kubernetes; Docker Compose is multi-container"
 ---
 nodeKind: Tool
 id: tool:rancher
@@ -188,6 +249,13 @@ edges:
     - target: skill-area:deployment-automation
   implements_stack_part:
     - target: stack-part:kubernetes-cluster
+  alternative_to:
+    - target: tool:backstage
+      comparison: "Platform engineering — Rancher is K8s cluster management; Backstage is a developer portal"
+    - target: tool:devtron
+      comparison: "Kubernetes management platforms"
+    - target: tool:kubevela
+      comparison: "Kubernetes platforms — Rancher manages clusters; KubeVela manages app delivery"
 ---
 nodeKind: Tool
 id: tool:nomad
@@ -204,3 +272,6 @@ edges:
   used_for:
     - target: skill-area:platform-engineering
     - target: skill-area:deployment-automation
+  alternative_to:
+    - target: tool:kubernetes
+      comparison: "Container orchestration platforms"

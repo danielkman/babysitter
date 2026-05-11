@@ -9,5 +9,7 @@ attributes:
 edges:
   belongs_to_language:
     - language:javascript
+  alternative_to:
+    - library:protobuf-js
   library_used_by:
     - target: skill-area:backend-api-design

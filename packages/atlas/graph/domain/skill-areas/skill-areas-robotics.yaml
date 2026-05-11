@@ -13,6 +13,11 @@ edges:
   applies_to:
     - target: specialization:robotics-simulation
       confidence: primary
+  prerequisite_for_learning:
+    - target: skill-area:robot-kinematics
+      strength: recommended
+    - target: skill-area:slam
+      strength: recommended
 ---
 nodeKind: SkillArea
 id: skill-area:robot-kinematics

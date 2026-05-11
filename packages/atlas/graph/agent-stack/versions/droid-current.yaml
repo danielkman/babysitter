@@ -23,3 +23,5 @@ edges:
     - target: agent-ui-impl:droid.ui@current
       role: ui
   sourced_from: []
+  uses_memory_system:
+    - target: memory-system:file-based-markdown-pattern

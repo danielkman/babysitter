@@ -12,6 +12,8 @@ edges:
     - language:c
   library_used_by:
     - target: skill-area:real-time-os
+  alternative_to:
+    - library:zephyr-rtos
 ---
 nodeKind: Library
 id: library:zephyr-rtos

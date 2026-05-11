@@ -1,4 +1,3 @@
-# Migrated from agent-catalog graph (TransportProtocol)
 ---
 nodeKind: TransportProtocol
 id: transportProtocol:terminal-cli
@@ -44,6 +43,10 @@ attributes:
     - "repo-transport-mux-readme"
     - "repo-transport-mux-architecture"
     - "repo-transport-mux-scorecard"
+edges:
+  used_by:
+    - target: agent:agent-mux
+
 ---
 nodeKind: TransportProtocol
 id: transportProtocol:openai-chat
@@ -60,6 +63,10 @@ attributes:
     - "repo-transport-mux-readme"
     - "repo-transport-mux-migration"
     - "repo-transport-mux-scorecard"
+edges:
+  used_by:
+    - target: agent:agent-mux
+
 ---
 nodeKind: TransportProtocol
 id: transportProtocol:openai-responses
@@ -76,6 +83,10 @@ attributes:
     - "repo-transport-mux-readme"
     - "repo-transport-mux-migration"
     - "repo-transport-mux-scorecard"
+edges:
+  used_by:
+    - target: agent:agent-mux
+
 ---
 nodeKind: TransportProtocol
 id: transportProtocol:google
@@ -92,6 +103,10 @@ attributes:
     - "repo-transport-mux-readme"
     - "repo-transport-mux-architecture"
     - "repo-transport-mux-scorecard"
+edges:
+  used_by:
+    - target: agent:agent-mux
+
 ---
 nodeKind: TransportProtocol
 id: transportProtocol:passthrough
@@ -107,6 +122,10 @@ attributes:
   evidenceRefs:
     - "repo-transport-mux-readme"
     - "repo-transport-mux-scorecard"
+edges:
+  used_by:
+    - target: agent:agent-mux
+
 ---
 nodeKind: TransportProtocol
 id: transportProtocol:bedrock-converse
@@ -123,6 +142,10 @@ attributes:
     - "repo-transport-mux-readme"
     - "repo-transport-mux-architecture"
     - "repo-transport-mux-scorecard"
+edges:
+  used_by:
+    - target: agent:agent-mux
+
 ---
 nodeKind: TransportProtocol
 id: transportProtocol:vertex-native
@@ -139,6 +162,10 @@ attributes:
     - "repo-transport-mux-readme"
     - "repo-transport-mux-architecture"
     - "repo-transport-mux-scorecard"
+edges:
+  used_by:
+    - target: agent:agent-mux
+
 ---
 nodeKind: TransportProtocol
 id: transportProtocol:azure-foundry
@@ -155,3 +182,7 @@ attributes:
     - "repo-transport-mux-readme"
     - "repo-transport-mux-architecture"
     - "repo-transport-mux-scorecard"
+
+edges:
+  used_by:
+    - target: agent:agent-mux

@@ -13,3 +13,6 @@ edges:
     - language:elixir
   used_by_skill_area:
     - target: skill-area:frontend-development
+  alternative_to:
+    - target: framework:phoenix
+      comparison: "Elixir web frameworks"

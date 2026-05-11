@@ -17,3 +17,5 @@ edges:
     - target: agent-runtime-impl:codex-sdk.runtime@current
       role: runtime
   sourced_from: []
+  uses_memory_system:
+    - target: memory-system:codex-agents-md
