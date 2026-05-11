@@ -466,38 +466,17 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
     plan.args.push('--model', modelFlag);
   }
 
-  // --yolo: add harness-specific auto-approve/sandbox-disable flags
-  // First try atlas graph (launch-config records), then fall back to known mappings
+  // --yolo: add harness-specific auto-approve flags resolved through
+  // agent-catalog → atlas graph (LaunchConfig records with commArgs)
   if (flagBool(args.flags, 'yolo')) {
-    let yoloArgs: string[] | undefined;
     try {
-      const atlas = await import('@a5c-ai/atlas');
-      const graph = new atlas.AtlasGraph(atlas.getIndex());
-      const yoloConfigId = `launch-config:${plan.harness}.dangerously-bypass-approvals-and-sandbox`;
-      const record = graph.getAllRecords().find((r) => r.id === yoloConfigId);
-      const attrs = record?.attributes as Record<string, unknown> | undefined;
-      if (attrs?.commArgs && Array.isArray(attrs.commArgs)) {
-        yoloArgs = attrs.commArgs as string[];
+      const { getYoloLaunchArgs } = await import('@a5c-ai/agent-catalog');
+      const yoloArgs = getYoloLaunchArgs(plan.harness);
+      if (yoloArgs.length > 0) {
+        plan.args.push(...yoloArgs);
       }
     } catch {
-      // atlas not available — fall back
-    }
-
-    if (yoloArgs) {
-      plan.args.push(...yoloArgs);
-    } else {
-      // Fallback for harnesses without atlas launch-config records
-      switch (plan.harness) {
-        case 'codex':
-          plan.args.push('--dangerously-bypass-approvals-and-sandbox');
-          break;
-        case 'claude':
-          plan.args.push('--dangerously-skip-permissions');
-          break;
-        case 'pi':
-          plan.args.push('--auto-approve');
-          break;
-      }
+      // agent-catalog not available
     }
   }
 
