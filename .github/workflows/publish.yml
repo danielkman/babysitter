@@ -383,10 +383,14 @@ jobs:
           LIVE_STACK_INSTALL_MODE: ${{ matrix.install_mode.id }}
           LIVE_STACK_INTERACTION_MODE: ${{ matrix.interaction_mode.id }}
           LIVE_STACK_INTERACTIVE: ${{ matrix.interaction_mode.interactive }}
+          LIVE_STACK_USE_AMUX_RUN: 'false'
           LIVE_STACK_PROVIDER: ${{ matrix.scenario.provider }}
           LIVE_STACK_AMUX_PROVIDER: ${{ matrix.scenario.amux_provider }}
           LIVE_STACK_MODEL: ${{ matrix.scenario.model }}
+          LIVE_STACK_CREDENTIAL_MODE: github-org-secrets-and-vars
           LIVE_STACK_REQUIRED_ENV: ${{ matrix.scenario.required_env }}
+          LIVE_STACK_LAYERS: ${{ matrix.install_mode.id }}
+          LIVE_STACK_COVERAGE_LAYERS: ${{ matrix.scenario.provider }},${{ matrix.scenario.agent }}
           LIVE_STACK_REQUIRED_TRACE_IDS: ${{ matrix.install_mode.required_trace_ids }}
           LIVE_STACK_EXPECTED_ARTIFACTS: ${{ matrix.install_mode.expected_artifacts }}
           LIVE_STACK_RUN_MODEL_TESTS: '1'
