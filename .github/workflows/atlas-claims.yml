@@ -1,0 +1,30 @@
+name: Atlas Testable Claims
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'  # Every Monday at 6am UTC
+  workflow_dispatch: {}
+
+jobs:
+  verify-claims:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --prefer-offline --legacy-peer-deps
+      - run: npm run build -w packages/atlas
+      - name: Run testable claims
+        run: node packages/atlas/scripts/run-testable-claims.mjs
+      - name: Find untested claims
+        run: node packages/atlas/scripts/find-untested-claims.mjs
+      - name: Graph quality score
+        run: node packages/atlas/scripts/graph-quality.mjs
+      - name: Validate edges
+        run: node packages/atlas/scripts/validate-edges.mjs --summary
+      - name: Deferred node status
+        run: node packages/atlas/scripts/resolve-deferred-nodes.mjs
+      - name: Canonicalization report
+        run: node packages/atlas/scripts/compact-canonicalized.mjs

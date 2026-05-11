@@ -26,7 +26,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm ci
+          npm ci --prefer-offline --legacy-peer-deps
           # Workaround: npm ci on Windows-generated lockfile may miss linux optional deps
           npm install --no-save @rollup/rollup-linux-x64-gnu 2>/dev/null || true
 
@@ -65,7 +65,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm ci
+          npm ci --prefer-offline --legacy-peer-deps
           # Workaround: npm ci on Windows-generated lockfile may miss linux optional deps
           npm install --no-save @rollup/rollup-linux-x64-gnu 2>/dev/null || true
 
@@ -256,7 +256,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm ci
+          npm ci --prefer-offline --legacy-peer-deps
           # Workaround: npm ci on Windows-generated lockfile may miss linux optional deps
           npm install --no-save @rollup/rollup-linux-x64-gnu 2>/dev/null || true
 
@@ -334,7 +334,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm ci
+          npm ci --prefer-offline --legacy-peer-deps
           # Workaround: npm ci on Windows-generated lockfile may miss linux optional deps
           npm install --no-save @rollup/rollup-linux-x64-gnu 2>/dev/null || true
 

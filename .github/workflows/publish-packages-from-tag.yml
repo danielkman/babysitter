@@ -33,7 +33,7 @@ jobs:
       - name: Install dependencies
         run: |
           set -euo pipefail
-          npm ci
+          npm ci --prefer-offline --legacy-peer-deps
           npm install --no-save @rollup/rollup-linux-x64-gnu 2>/dev/null || true
 
       - name: Prepare staging prerelease manifests
