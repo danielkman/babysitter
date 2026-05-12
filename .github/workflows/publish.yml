@@ -1422,14 +1422,14 @@ jobs:
                         value: 0.0.0.0
                     readinessProbe:
                       httpGet:
-                        path: /
+                        path: /api/health
                         port: 3000
                       initialDelaySeconds: 5
                       periodSeconds: 5
                       failureThreshold: 30
                     livenessProbe:
                       httpGet:
-                        path: /
+                        path: /api/health
                         port: 3000
                       initialDelaySeconds: 15
                       periodSeconds: 10
