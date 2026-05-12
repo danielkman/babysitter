@@ -99,6 +99,50 @@ export function createKrateHttpHandler({ runtime = createKrateRuntime(), control
           : await scopedController.denyAgentAction(input);
         return send(response, result.error ? 400 : 200, result);
       }
+      // Agent webhook ingress
+      const webhookIngestMatch = url.pathname.match(/^\/api\/orgs\/([^/]+)\/agents\/webhooks\/ingest$/);
+      if (request.method === 'POST' && webhookIngestMatch) {
+        const org = webhookIngestMatch[1];
+        const body = await readJson(request);
+        const event = normalizeWebhookEvent(body, org);
+        const scopedController = createKrateApiController({ namespace: orgNamespaceName(org) });
+        const result = await scopedController.processWebhookEvent({ event, organizationRef: org, namespace: orgNamespaceName(org) });
+        return send(response, 200, result);
+      }
+
+      // Pipeline failure event
+      const pipelineFailMatch = url.pathname.match(/^\/api\/orgs\/([^/]+)\/agents\/events\/pipeline-failure$/);
+      if (request.method === 'POST' && pipelineFailMatch) {
+        const org = pipelineFailMatch[1];
+        const body = await readJson(request);
+        const event = { type: 'ci-failure', source: { kind: 'Pipeline', name: body.name || 'unknown', namespace: body.namespace }, repository: body.repository || '', ref: body.ref || 'main', actor: body.actor || 'system', payload: body };
+        const scopedController = createKrateApiController({ namespace: orgNamespaceName(org) });
+        const result = await scopedController.processWebhookEvent({ event, organizationRef: org, namespace: orgNamespaceName(org) });
+        return send(response, 200, result);
+      }
+
+      // Comment event
+      const commentMatch = url.pathname.match(/^\/api\/orgs\/([^/]+)\/agents\/events\/comment$/);
+      if (request.method === 'POST' && commentMatch) {
+        const org = commentMatch[1];
+        const body = await readJson(request);
+        const event = { type: 'comment', source: { kind: body.kind || 'Issue', name: body.name || 'unknown' }, repository: body.repository || '', ref: body.ref || 'main', actor: body.actor || 'system', payload: { body: body.body || '' } };
+        const scopedController = createKrateApiController({ namespace: orgNamespaceName(org) });
+        const result = await scopedController.processWebhookEvent({ event, organizationRef: org, namespace: orgNamespaceName(org) });
+        return send(response, 200, result);
+      }
+
+      // Label event
+      const labelMatch = url.pathname.match(/^\/api\/orgs\/([^/]+)\/agents\/events\/label$/);
+      if (request.method === 'POST' && labelMatch) {
+        const org = labelMatch[1];
+        const body = await readJson(request);
+        const event = { type: 'label-added', source: { kind: body.kind || 'Issue', name: body.name || 'unknown' }, repository: body.repository || '', ref: body.ref || 'main', actor: body.actor || 'system', payload: { label: body.label || '' } };
+        const scopedController = createKrateApiController({ namespace: orgNamespaceName(org) });
+        const result = await scopedController.processWebhookEvent({ event, organizationRef: org, namespace: orgNamespaceName(org) });
+        return send(response, 200, result);
+      }
+
       const agentTriggerProcessMatch = url.pathname.match(/^\/api\/orgs\/([^/]+)\/agents\/triggers\/process$/);
       if (request.method === 'POST' && agentTriggerProcessMatch) {
         const org = agentTriggerProcessMatch[1];
@@ -148,4 +192,29 @@ async function readJson(request) {
 function send(response, status, body) {
   response.writeHead(status, jsonHeaders);
   response.end(JSON.stringify(body, null, 2));
+}
+
+export function normalizeWebhookEvent(body, org) {
+  // GitHub/Gitea webhook normalization
+  if (body.action === 'completed' && body.workflow_run?.conclusion === 'failure') {
+    return { type: 'ci-failure', source: { kind: 'Pipeline', name: body.workflow_run?.name || 'unknown' }, repository: body.repository?.full_name || '', ref: body.workflow_run?.head_branch || 'main', actor: body.sender?.login || 'system', payload: body };
+  }
+  if (body.action === 'opened' && body.pull_request) {
+    return { type: 'pr-opened', source: { kind: 'PullRequest', name: String(body.pull_request.number) }, repository: body.repository?.full_name || '', ref: body.pull_request?.head?.ref || 'main', actor: body.sender?.login || 'system', payload: body };
+  }
+  if (body.action === 'created' && body.comment) {
+    const kind = body.issue?.pull_request ? 'PullRequest' : 'Issue';
+    return { type: 'comment', source: { kind, name: String(body.issue?.number || 'unknown') }, repository: body.repository?.full_name || '', ref: 'main', actor: body.sender?.login || body.comment?.user?.login || 'system', payload: { body: body.comment?.body || '' } };
+  }
+  if (body.action === 'labeled') {
+    return { type: 'label-added', source: { kind: body.pull_request ? 'PullRequest' : 'Issue', name: String(body.issue?.number || body.pull_request?.number || 'unknown') }, repository: body.repository?.full_name || '', ref: 'main', actor: body.sender?.login || 'system', payload: { label: body.label?.name || '' } };
+  }
+  if (body.action === 'opened' && body.issue && !body.pull_request) {
+    return { type: 'issue-created', source: { kind: 'Issue', name: String(body.issue.number) }, repository: body.repository?.full_name || '', ref: 'main', actor: body.sender?.login || 'system', payload: body };
+  }
+  if (body.ref && body.commits) {
+    return { type: 'push', source: { kind: 'Repository', name: body.repository?.full_name || '' }, repository: body.repository?.full_name || '', ref: body.ref?.replace('refs/heads/', '') || 'main', actor: body.sender?.login || body.pusher?.name || 'system', payload: body };
+  }
+  // Generic fallback
+  return { type: 'webhook', source: { kind: 'WebhookDelivery', name: 'unknown' }, repository: body.repository?.full_name || '', ref: 'main', actor: body.sender?.login || 'system', payload: body };
 }

@@ -53,6 +53,15 @@ test('Successful dispatch with Agent Mux available', async () => {
     role: 'agent-mux-client',
     isAvailable() { return true; },
     async launchSession() { return { runId: `amux-${Date.now()}`, sessionId: `session-${Date.now()}` }; },
+    subscribeToEvents(runId, cb) { return { abort() {} }; },
+    reconcileTranscript(sessionId, events, opts) {
+      return createResource('AgentSessionTranscript', { name: `transcript-${sessionId}`, namespace: opts?.namespace || 'default' }, {
+        organizationRef: opts?.organizationRef || 'default',
+        sessionRef: sessionId,
+        messages: [],
+        cost: { inputTokens: 0, outputTokens: 0, totalTokens: 0 },
+      }, { phase: 'Reconciled', reconciledAt: new Date().toISOString() });
+    },
   };
   const resources = buildValidResources('dispatch-stack');
   const controller = createAgentDispatchController({ agentMuxClient: muxClient });
@@ -173,4 +182,134 @@ test('Context bundle referenced correctly', async () => {
     result.contextBundle.metadata.name,
     'Run contextBundleRef should match context bundle name'
   );
+});
+
+function makeMemoryRepository(name) {
+  return createResource('AgentMemoryRepository', { name, namespace: 'krate-org-default' }, {
+    organizationRef: 'default',
+    repositoryRef: 'memory-repo',
+    defaultBranch: 'main',
+    layoutProfile: 'standard',
+  });
+}
+
+test('Dispatch with AgentMemoryRepository creates memorySnapshot', async () => {
+  const muxClient = createAgentMuxClient({ gateway: '', enabled: false });
+  const resources = {
+    ...buildValidResources('mem-stack'),
+    AgentMemoryRepository: [makeMemoryRepository('org-memory')],
+  };
+  const controller = createAgentDispatchController({ agentMuxClient: muxClient });
+
+  const result = await controller.createManualDispatch({
+    repository: 'test-repo',
+    ref: 'main',
+    agentStack: 'mem-stack',
+    actor: 'test-user',
+    namespace: 'krate-org-default',
+    organizationRef: 'default',
+    resources,
+  });
+
+  assert.equal(result.error, false, 'Dispatch should succeed');
+  assert.ok(result.memorySnapshot, 'Result should include memorySnapshot');
+  assert.equal(result.memorySnapshot.kind, 'AgentMemorySnapshot', 'memorySnapshot should be an AgentMemorySnapshot');
+  assert.equal(result.memorySnapshot.spec.memoryRepository, 'org-memory', 'memorySnapshot should reference the memory repo');
+  assert.equal(result.memorySnapshot.status.phase, 'Pinned', 'memorySnapshot should be Pinned');
+  assert.equal(result.run.spec.memorySnapshotRef, result.memorySnapshot.metadata.name, 'Run should reference memorySnapshot');
+});
+
+test('Dispatch without memory repos has null memorySnapshot', async () => {
+  const muxClient = createAgentMuxClient({ gateway: '', enabled: false });
+  const resources = buildValidResources('no-mem-stack');
+  const controller = createAgentDispatchController({ agentMuxClient: muxClient });
+
+  const result = await controller.createManualDispatch({
+    repository: 'test-repo',
+    ref: 'main',
+    agentStack: 'no-mem-stack',
+    actor: 'test-user',
+    namespace: 'krate-org-default',
+    organizationRef: 'default',
+    resources,
+  });
+
+  assert.equal(result.error, false, 'Dispatch should succeed');
+  assert.equal(result.memorySnapshot, null, 'memorySnapshot should be null when no AgentMemoryRepository');
+  assert.equal(result.run.spec.memorySnapshotRef, undefined, 'Run should not have memorySnapshotRef');
+});
+
+test('Dispatch with requires-approval returns early with awaitingApproval', async () => {
+  // Build resources where the secret grant has requiredApproval set,
+  // which causes the permission reviewer to return 'requires-approval'
+  const stack = makeStack('approval-stack');
+  const resources = {
+    AgentStack: [stack],
+    AgentServiceAccount: [makeServiceAccount('sa-default')],
+    AgentRoleBinding: [makeRoleBinding('rb-1', 'sa-default')],
+    AgentSecretGrant: [makeSecretGrant('sg-model', 'sa-default', 'model-provider')],
+  };
+  // Add requiredApproval to the secret grant so permission review returns 'requires-approval'
+  resources.AgentSecretGrant[0].spec.requiredApproval = 'manager';
+
+  const controller = createAgentDispatchController();
+
+  const result = await controller.createManualDispatch({
+    repository: 'test-repo',
+    ref: 'main',
+    agentStack: 'approval-stack',
+    actor: 'test-user',
+    namespace: 'krate-org-default',
+    organizationRef: 'default',
+    resources,
+  });
+
+  assert.equal(result.error, false, 'Dispatch should not error — it is awaiting approval');
+  assert.equal(result.awaitingApproval, true, 'Result should indicate awaitingApproval');
+  assert.equal(result.run.status.phase, 'AwaitingApproval', 'Run phase should be AwaitingApproval');
+  assert.ok(result.approval, 'Result should include the approval resource');
+  assert.equal(result.approval.kind, 'AgentApproval', 'Approval should be an AgentApproval resource');
+  assert.equal(result.approval.status.phase, 'Pending', 'Approval should be in Pending phase');
+  assert.ok(result.permissionSnapshot, 'Result should include permissionSnapshot');
+  // No contextBundle or attempt since we returned early
+  assert.equal(result.contextBundle, undefined, 'No contextBundle when awaiting approval');
+  assert.equal(result.attempt, undefined, 'No attempt when awaiting approval');
+});
+
+test('Successful launch creates transcript ref on run', async () => {
+  const sessionId = `session-${Date.now()}`;
+  const runId = `amux-${Date.now()}`;
+  const muxClient = {
+    role: 'agent-mux-client',
+    isAvailable() { return true; },
+    async launchSession() { return { runId, sessionId }; },
+    subscribeToEvents(rid, cb) { return { abort() {} }; },
+    reconcileTranscript(sid, events, opts) {
+      return createResource('AgentSessionTranscript', { name: `transcript-${sid}`, namespace: opts?.namespace || 'default' }, {
+        organizationRef: opts?.organizationRef || 'default',
+        sessionRef: sid,
+        messages: [],
+        cost: { inputTokens: 0, outputTokens: 0, totalTokens: 0 },
+      }, { phase: 'Reconciled', reconciledAt: new Date().toISOString() });
+    },
+  };
+  const resources = buildValidResources('transcript-stack');
+  const controller = createAgentDispatchController({ agentMuxClient: muxClient });
+
+  const result = await controller.createManualDispatch({
+    repository: 'test-repo',
+    ref: 'main',
+    agentStack: 'transcript-stack',
+    actor: 'test-user',
+    namespace: 'krate-org-default',
+    organizationRef: 'default',
+    resources,
+  });
+
+  assert.equal(result.error, false, 'Dispatch should succeed');
+  assert.equal(result.run.status.phase, 'Running', 'Run phase should be Running');
+  assert.ok(result.transcript, 'Result should include transcript');
+  assert.equal(result.transcript.kind, 'AgentSessionTranscript', 'Transcript should be AgentSessionTranscript');
+  assert.ok(result.run.status.transcriptRef, 'Run should have transcriptRef in status');
+  assert.equal(result.run.status.transcriptRef, result.transcript.metadata.name, 'Run transcriptRef should match transcript name');
 });
