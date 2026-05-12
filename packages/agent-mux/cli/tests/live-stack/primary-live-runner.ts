@@ -692,14 +692,43 @@ async function validateAgentBehavior(
       entries.push({ name: 'stop-hooks', status: 'failed', detail: 'no hooks-mux log files found in .a5c/logs/hooks/ or XDG state dir' });
     }
 
-    // hooks-mux-session: check output for AGENT_SESSION_ID or hooks-mux evidence
-    const hasHooksMuxEvidence = /AGENT_SESSION_ID|hooks-mux|hookMuxEventId|hook.*session/i.test(output);
-    if (hasHooksMuxEvidence) {
-      entries.push({ name: 'hooks-mux-session', status: 'passed', detail: 'hooks-mux session evidence found in output' });
-    } else if (hooksLogsFound) {
-      entries.push({ name: 'hooks-mux-session', status: 'passed', detail: 'hooks-mux logs exist (session ran even if not in output)' });
+    // hooks-mux-session: check hooks-mux session logs and run journal for stop hook events
+    let hasSessionLogs = hooksLogsFound;
+    let hasStopHookInJournal = false;
+    const runsDir = path.join(cwd, '.a5c', 'runs');
+    try {
+      const runEntries = await fs.readdir(runsDir);
+      for (const entry of runEntries.slice(-5)) {
+        try {
+          const journalDir = path.join(runsDir, entry, 'journal');
+          const journalEntries = await fs.readdir(journalDir);
+          for (const jf of journalEntries) {
+            const content = await fs.readFile(path.join(journalDir, jf), 'utf8');
+            if (/stop|STOP_HOOK|hook.*stop/i.test(content)) {
+              hasStopHookInJournal = true;
+              break;
+            }
+          }
+        } catch {
+          // try flat journal.jsonl
+          try {
+            const journal = await fs.readFile(path.join(runsDir, entry, 'journal.jsonl'), 'utf8');
+            if (/stop|STOP_HOOK|hook.*stop/i.test(journal)) hasStopHookInJournal = true;
+          } catch { /* */ }
+        }
+        if (hasStopHookInJournal) break;
+      }
+    } catch { /* no runs dir */ }
+
+    if (hasSessionLogs || hasStopHookInJournal) {
+      const parts = [];
+      if (hasSessionLogs) parts.push('hooks-mux log files found');
+      if (hasStopHookInJournal) parts.push('stop hook event in run journal');
+      entries.push({ name: 'hooks-mux-session', status: 'passed', detail: parts.join('; ') });
+    } else if (!isInteractiveMode) {
+      entries.push({ name: 'hooks-mux-session', status: 'passed', detail: 'no hooks-mux evidence (expected in non-interactive — hooks require TTY)' });
     } else {
-      entries.push({ name: 'hooks-mux-session', status: isInteractiveMode ? 'failed' : 'passed', detail: isInteractiveMode ? 'no AGENT_SESSION_ID or hooks-mux evidence in output' : 'no hooks-mux evidence (expected in non-interactive mode)' });
+      entries.push({ name: 'hooks-mux-session', status: 'failed', detail: 'no hooks-mux logs or stop hook events in run journal' });
     }
 
     // babysitter-run-completion: check .a5c/runs/ for completed state or RUN_COMPLETED
