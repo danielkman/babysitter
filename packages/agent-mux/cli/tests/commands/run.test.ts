@@ -339,17 +339,16 @@ describe('runCommand', () => {
     expect(calls[0]?.['prompt']).toBe(' ');
   });
 
-  it('rejects explicit interactive mode on adapters that do not support it in the current transport', async () => {
+  it('passes interactive flag through to run options (PTY support in spawn-runner)', async () => {
     const client = {
       adapters: {
         list: () => [{ agent: 'codex' }],
-        get: () => ({ capabilities: { supportsInteractiveMode: false } }),
+        get: () => ({ capabilities: {} }),
       },
-      run: vi.fn(),
+      run: vi.fn().mockReturnValue(Object.assign((async function* () {})(), { result: async () => ({ exitReason: 'completed', exitCode: 0 }) })),
     } as unknown as Parameters<typeof runCommand>[0];
 
-    const code = await runCommand(client, parseArgs(['run', '--agent', 'codex', '--interactive', '--prompt', 'hello'], RUN_FLAGS));
-    expect(code).toBe(ExitCode.USAGE_ERROR);
-    expect(client.run).not.toHaveBeenCalled();
+    await runCommand(client, parseArgs(['run', '--agent', 'codex', '--interactive', '--prompt', 'hello'], RUN_FLAGS));
+    expect(client.run).toHaveBeenCalledWith(expect.objectContaining({ interactive: true }));
   });
 });

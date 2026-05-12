@@ -169,6 +169,9 @@ export async function runDaemonLoop(
   if (activeRuns.size > 0) {
     await Promise.allSettled([...activeRuns]);
   }
+
+  // Write final status after all runs have drained
+  await writeLoopStatus();
 }
 
 /**
