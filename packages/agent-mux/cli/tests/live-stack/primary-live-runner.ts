@@ -414,8 +414,7 @@ function buildPrompt(scenario: LiveStackScenario, traceId: string): string {
   const odysseyTask = `Write a 12-paragraph summary of Homer's Odyssey, then translate each paragraph to Greek. Save the result to .a5c-live-test/${traceId}-odyssey.md`;
 
   if (scenario.agent.agent === 'babysitter-agent') {
-    // babysitter-agent: single-turn direct API call — can't do multi-turn file ops.
-    return `Respond with a one-sentence summary of the Odyssey.`;
+    return odysseyTask;
   }
 
   if (scenario.agent.installMode === 'babysitter-plugin') {
@@ -618,14 +617,15 @@ async function validateAgentBehavior(
   const isBabysitterAgent = scenario.agent.agent === 'babysitter-agent';
   const isBabysitterPlugin = scenario.agent.installMode === 'babysitter-plugin';
 
-  // --- babysitter-agent: single-turn, verify model responded ---
+  // --- babysitter-agent: verify model responded with content ---
   if (isBabysitterAgent) {
     if (output.trim().length > 0) {
       entries.push({ name: 'model-response', status: 'passed', detail: `agent responded (${output.trim().length} chars)` });
     } else {
       entries.push({ name: 'model-response', status: 'failed', detail: 'no output from agent (empty response)' });
     }
-    return entries;
+    // Fall through to file-creation check — babysitter-agent gets the same
+    // odyssey task and should produce the file or at least substantial content.
   }
 
   // --- file-creation: verify the odyssey output file exists with real content (>500 bytes) ---
