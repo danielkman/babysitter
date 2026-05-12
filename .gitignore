@@ -26,6 +26,8 @@ generated/
 artifacts/generated-plugins/
 packages/atlas/graph/generated-library/
 packages/atlas/graph/wiki/library/
+packages/atlas/graph/wiki/docs/
+packages/atlas/graph/wiki/docs.md
 
 
 _ci_artifacts/**

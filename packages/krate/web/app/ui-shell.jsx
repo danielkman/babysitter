@@ -6,6 +6,7 @@ import { DeploymentManager, RepositoryManager, ResourceApplyPanel, UserManagemen
 import { ApprovalDecisionButtons } from './components/approval-actions.jsx';
 import { SessionDetailTabs } from './components/session-tabs.jsx';
 import { DispatchButton } from './components/dispatch-button.jsx';
+import { StackBuilder } from './components/stack-builder.jsx';
 
 export const orgNavigationGroups = [
   {

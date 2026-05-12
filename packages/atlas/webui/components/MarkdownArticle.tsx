@@ -29,7 +29,7 @@ function resolveHref(
       : normalized;
 
   if (wikiPath.startsWith("wiki/") && wikiPath.endsWith(".md")) {
-    const slug = wikiPath.replace(/^wiki\//, "").replace(/\/README\.md$/i, "").replace(/\.md$/i, "");
+    const slug = wikiPath.replace(/^wiki\//, "").replace(/\/(README|index)\.md$/i, "").replace(/\.md$/i, "");
     return { href: `/wiki/${slug.split("/").filter(Boolean).map(encodeURIComponent).join("/")}`, internal: true };
   }
 

@@ -1,12 +1,16 @@
 /**
  * generate-wiki-pages.mjs
  *
- * Pre-build generator that walks library specialization and methodology
- * README.md files and produces atlas wiki pages with proper frontmatter.
+ * Pre-build generator that walks library specialization/methodology README.md
+ * files and repository docs markdown files, then produces Atlas wiki pages with
+ * proper frontmatter.
  *
- * Output: packages/atlas/graph/wiki/library/<slug>.md
+ * Outputs:
+ *   packages/atlas/graph/wiki/library/<slug>.md
+ *   packages/atlas/graph/wiki/docs.md
+ *   packages/atlas/graph/wiki/docs/<generated>.md
  *
- * These generated pages are gitignored and rebuilt on every atlas build.
+ * These generated pages are gitignored and rebuilt on every Atlas build.
  */
 
 import fs from "node:fs";
@@ -19,7 +23,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const libraryDir = path.resolve(__dirname, "..", "..", "..", "library");
-const outputDir = path.resolve(__dirname, "..", "graph", "wiki", "library");
+const docsDir = path.resolve(__dirname, "..", "..", "..", "docs");
+const wikiOutputDir = path.resolve(__dirname, "..", "graph", "wiki");
+const libraryOutputDir = path.join(wikiOutputDir, "library");
+const docsOutputDir = path.join(wikiOutputDir, "docs");
+const docsIndexPath = path.join(wikiOutputDir, "docs.md");
 const repoRoot = path.resolve(__dirname, "..", "..", "..");
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -43,6 +51,25 @@ function findReadmes(dir, results = []) {
   return results;
 }
 
+function walkMarkdown(dir, results = []) {
+  let entries;
+  try {
+    entries = fs.readdirSync(dir, { withFileTypes: true });
+  } catch {
+    return results;
+  }
+  for (const entry of entries) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      if (entry.name === "node_modules" || entry.name === ".git") continue;
+      walkMarkdown(full, results);
+    } else if (entry.name.toLowerCase().endsWith(".md")) {
+      results.push(full);
+    }
+  }
+  return results;
+}
+
 function slugify(str) {
   return str
     .toLowerCase()
@@ -50,20 +77,29 @@ function slugify(str) {
     .replace(/^-|-$/g, "");
 }
 
+function yamlString(value) {
+  return JSON.stringify(String(value));
+}
+
+function stripLeadingFrontmatter(content) {
+  return content.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, "");
+}
+
 /**
- * Extract a human-friendly specialization/methodology name from the README
- * content or from the directory path.
+ * Extract a human-friendly specialization/methodology/docs page name from the
+ * README/content or from the directory/file path.
  *
  * Strategy:
  *   1. Use the first H1 heading if present.
- *   2. Otherwise, title-case the parent directory name.
+ *   2. Otherwise, title-case the fallback name.
  */
-function extractTitle(content, dirName) {
-  const h1Match = content.match(/^#\s+(.+)$/m);
+function extractTitle(content, fallbackName) {
+  const body = stripLeadingFrontmatter(content);
+  const h1Match = body.match(/^#\s+(.+)$/m);
   if (h1Match) return h1Match[1].trim();
-  // Title-case the directory name
-  return dirName
-    .replace(/-/g, " ")
+  return fallbackName
+    .replace(/[-_]+/g, " ")
+    .replace(/\.md$/i, "")
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
@@ -76,15 +112,48 @@ function extractTitle(content, dirName) {
  *   methodologies/tdd/README.md                         -> tdd
  *   methodologies/scrum/README.md                       -> scrum
  */
-function deriveSlug(relPath) {
-  // Normalise to forward slashes
+function deriveLibrarySlug(relPath) {
   const parts = relPath.split(/[\\/]/).filter(Boolean);
-  // Remove trailing README.md
   if (parts[parts.length - 1] === "README.md") parts.pop();
-  // The slug is the last directory segment
   const dirName = parts[parts.length - 1];
   if (!dirName) return null;
   return slugify(dirName);
+}
+
+function deriveDocsSlug(relPath) {
+  const parts = relPath
+    .replace(/\\/g, "/")
+    .replace(/\.md$/i, "")
+    .split("/")
+    .filter(Boolean);
+  const last = parts[parts.length - 1]?.toLowerCase();
+  if (last === "readme" || last === "index") parts.pop();
+  const slugParts = parts.map(slugify).filter(Boolean);
+  return ["docs", ...slugParts].join("/") || "docs";
+}
+
+function docsArticlePath(relPath) {
+  return `wiki/docs/${relPath.replace(/\\/g, "/")}`;
+}
+
+function outputPathForSlug(slug) {
+  return path.join(wikiOutputDir, `${slug}.md`);
+}
+
+function makeUniqueSlug(slug, usedSlugs, relPath) {
+  if (!usedSlugs.has(slug)) {
+    usedSlugs.set(slug, relPath);
+    return slug;
+  }
+  const suffix = slugify(relPath.replace(/\.md$/i, ""));
+  let candidate = `${slug}-${suffix}`;
+  let counter = 2;
+  while (usedSlugs.has(candidate)) {
+    candidate = `${slug}-${suffix}-${counter}`;
+    counter += 1;
+  }
+  usedSlugs.set(candidate, relPath);
+  return candidate;
 }
 
 /**
@@ -96,31 +165,50 @@ function deriveCategory(relPath) {
   return "specialization";
 }
 
-// ── Main ────────────────────────────────────────────────────────────────────
+function relativeFromRoot(filePath) {
+  return path.relative(repoRoot, filePath).split(path.sep).join("/");
+}
 
-function main() {
+function writePage(filePath, frontmatter, body) {
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  const lines = ["---"];
+  for (const [key, value] of Object.entries(frontmatter)) {
+    if (Array.isArray(value)) {
+      lines.push(`${key}:`);
+      for (const item of value) lines.push(`  - ${yamlString(item)}`);
+    } else {
+      lines.push(`${key}: ${yamlString(value)}`);
+    }
+  }
+  lines.push("---", "", body.trimStart());
+  fs.writeFileSync(filePath, `${lines.join("\n").trimEnd()}\n`);
+}
+
+// ── Library pages ───────────────────────────────────────────────────────────
+
+function generateLibraryPages() {
   console.log("[generate-wiki-pages] scanning library READMEs...");
 
-  // Clean and recreate output dir
-  if (fs.existsSync(outputDir)) {
-    fs.rmSync(outputDir, { recursive: true, force: true });
+  if (fs.existsSync(libraryOutputDir)) {
+    fs.rmSync(libraryOutputDir, { recursive: true, force: true });
   }
-  fs.mkdirSync(outputDir, { recursive: true });
+  fs.mkdirSync(libraryOutputDir, { recursive: true });
 
   if (!fs.existsSync(libraryDir)) {
-    console.log("[generate-wiki-pages] library dir not found, skipping");
-    return;
+    console.log("[generate-wiki-pages] library dir not found, skipping library pages");
+    return 0;
   }
 
   const readmes = [];
-  // Only collect top-level specialization READMEs (not from skills/agents/processes subdirs)
   const specDir = path.join(libraryDir, "specializations");
-  for (const entry of fs.readdirSync(specDir, { withFileTypes: true })) {
-    if (!entry.isDirectory() || entry.name === "node_modules" || entry.name === "domains") continue;
-    const readme = path.join(specDir, entry.name, "README.md");
-    if (fs.existsSync(readme)) readmes.push(readme);
+  if (fs.existsSync(specDir)) {
+    for (const entry of fs.readdirSync(specDir, { withFileTypes: true })) {
+      if (!entry.isDirectory() || entry.name === "node_modules" || entry.name === "domains") continue;
+      const readme = path.join(specDir, entry.name, "README.md");
+      if (fs.existsSync(readme)) readmes.push(readme);
+    }
   }
-  // Domain specializations (one level deeper)
+
   const domainsDir = path.join(specDir, "domains");
   if (fs.existsSync(domainsDir)) {
     for (const cat of fs.readdirSync(domainsDir, { withFileTypes: true })) {
@@ -132,7 +220,7 @@ function main() {
       }
     }
   }
-  // Methodology READMEs (top-level only)
+
   const methDir = path.join(libraryDir, "methodologies");
   if (fs.existsSync(methDir)) {
     for (const entry of fs.readdirSync(methDir, { withFileTypes: true })) {
@@ -142,36 +230,30 @@ function main() {
     }
   }
 
-  // Track slugs to avoid collisions
   const usedSlugs = new Map();
   let count = 0;
 
   for (const readme of readmes) {
     const content = fs.readFileSync(readme, "utf8");
     const relPath = path.relative(libraryDir, readme).split(path.sep).join("/");
-
-    const slug = deriveSlug(relPath);
+    const slug = deriveLibrarySlug(relPath);
     if (!slug) continue;
 
-    // Handle slug collisions by appending category prefix
     const category = deriveCategory(relPath);
     let finalSlug = slug;
     if (usedSlugs.has(slug)) {
-      // If this slug already exists from a different category, prefix it
       const existing = usedSlugs.get(slug);
       if (existing.category !== category) {
-        // Rename existing if it hasn't been renamed yet
         if (!existing.renamed) {
-          const oldPath = path.join(outputDir, `${slug}.md`);
+          const oldPath = path.join(libraryOutputDir, `${slug}.md`);
           const newSlug = `${existing.category}-${slug}`;
-          const newPath = path.join(outputDir, `${newSlug}.md`);
+          const newPath = path.join(libraryOutputDir, `${newSlug}.md`);
           if (fs.existsSync(oldPath)) {
-            // Rewrite with updated id/slug
             const oldContent = fs.readFileSync(oldPath, "utf8");
             fs.writeFileSync(
               newPath,
               oldContent
-                .replace(`id: page:library-${slug}`, `id: page:library-${newSlug}`)
+                .replace(`id: "page:library-${slug}"`, `id: "page:library-${newSlug}"`)
                 .replace(`slug: "library/${slug}"`, `slug: "library/${newSlug}"`)
             );
             fs.unlinkSync(oldPath);
@@ -181,7 +263,6 @@ function main() {
         }
         finalSlug = `${category}-${slug}`;
       } else {
-        // Same category collision — append a counter
         let counter = 2;
         while (usedSlugs.has(`${slug}-${counter}`)) counter++;
         finalSlug = `${slug}-${counter}`;
@@ -192,28 +273,111 @@ function main() {
     const relDir = path.dirname(relPath);
     const dirName = relDir.split("/").pop();
     const title = extractTitle(content, dirName);
-
-    // Build the document reference ID matching generated-library-nodes conventions
     const specId = `specialization:${slug}`;
 
-    const page = `---
-id: page:library-${finalSlug}
-nodeKind: Page
-title: "${title.replace(/"/g, '\\"')} (Library)"
-slug: "library/${finalSlug}"
-articlePath: "wiki/library/${finalSlug}.md"
-documents:
-  - ${specId}
----
-
-${content}
-`;
-
-    fs.writeFileSync(path.join(outputDir, `${finalSlug}.md`), page);
+    writePage(
+      path.join(libraryOutputDir, `${finalSlug}.md`),
+      {
+        id: `page:library-${finalSlug}`,
+        nodeKind: "Page",
+        title: `${title} (Library)`,
+        slug: `library/${finalSlug}`,
+        articlePath: `wiki/library/${finalSlug}.md`,
+        documents: [specId],
+      },
+      content,
+    );
     count++;
   }
 
-  console.log(`[generate-wiki-pages] done: ${count} pages written to graph/wiki/library/`);
+  console.log(`[generate-wiki-pages] library: ${count} pages written to graph/wiki/library/`);
+  return count;
+}
+
+// ── Docs pages ──────────────────────────────────────────────────────────────
+
+function generateDocsPages() {
+  console.log("[generate-wiki-pages] scanning docs markdown...");
+
+  if (fs.existsSync(docsOutputDir)) {
+    fs.rmSync(docsOutputDir, { recursive: true, force: true });
+  }
+  if (fs.existsSync(docsIndexPath)) {
+    fs.rmSync(docsIndexPath, { force: true });
+  }
+
+  if (!fs.existsSync(docsDir)) {
+    console.log("[generate-wiki-pages] docs dir not found, skipping docs pages");
+    return 0;
+  }
+
+  const usedSlugs = new Map([["docs", "docs-index"]]);
+  const pages = [];
+
+  for (const file of walkMarkdown(docsDir).sort()) {
+    const relPath = path.relative(docsDir, file).split(path.sep).join("/");
+    const raw = fs.readFileSync(file, "utf8");
+    const body = stripLeadingFrontmatter(raw);
+    const slug = makeUniqueSlug(deriveDocsSlug(relPath), usedSlugs, relPath);
+    const fallbackName = path.basename(relPath, ".md");
+    const title = extractTitle(raw, fallbackName);
+    const articlePath = docsArticlePath(relPath);
+
+    writePage(
+      outputPathForSlug(slug),
+      {
+        id: `page:${slug.replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-|-$/g, "")}`,
+        nodeKind: "Page",
+        title,
+        slug,
+        articlePath,
+        sourcePath: relativeFromRoot(file),
+        sourceKind: "repo-docs",
+      },
+      body,
+    );
+
+    pages.push({ slug, title, articlePath });
+  }
+
+  const topLevelPages = pages
+    .filter((page) => page.slug.split("/").length === 2)
+    .sort((a, b) => a.title.localeCompare(b.title));
+  const indexBody = [
+    "# Babysitter Docs",
+    "",
+    "Atlas wiki mirror of the repository docs site. The existing docs site remains unchanged; these pages are generated from `docs` markdown during the Atlas build.",
+    "",
+    "## Sections",
+    "",
+    ...topLevelPages.map((page) => `- [${page.title}](${path.posix.relative("wiki", page.articlePath)})`),
+    "",
+  ].join("\n");
+
+  writePage(
+    docsIndexPath,
+    {
+      id: "page:docs",
+      nodeKind: "Page",
+      title: "Babysitter Docs",
+      slug: "docs",
+      articlePath: "wiki/docs.md",
+      sourcePath: "docs",
+      sourceKind: "repo-docs-index",
+    },
+    indexBody,
+  );
+
+  console.log(`[generate-wiki-pages] docs: ${pages.length + 1} pages written to graph/wiki/docs/`);
+  return pages.length + 1;
+}
+
+// ── Main ────────────────────────────────────────────────────────────────────
+
+function main() {
+  const libraryCount = generateLibraryPages();
+  const docsCount = generateDocsPages();
+  console.log(`[generate-wiki-pages] done: ${libraryCount + docsCount} total pages written`);
 }
 
 main();

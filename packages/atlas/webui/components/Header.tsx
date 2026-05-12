@@ -39,15 +39,10 @@ export function Header() {
             <GitBranch style={{ width: 15, height: 15 }} />
             <span>GitHub</span>
           </a>
-          <a
-            href="https://a5c-ai.github.io/babysitter/docs/user-guide"
-            target="_blank"
-            rel="noreferrer"
-            className="atlas-header__link"
-          >
+          <Link href="/wiki/docs" className="atlas-header__link">
             <BookOpenText style={{ width: 15, height: 15 }} />
             <span>Docs</span>
-          </a>
+          </Link>
           <a
             href="https://discord.gg/tjgmhJz6fF"
             target="_blank"
