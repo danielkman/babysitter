@@ -5,6 +5,7 @@ import { CodeEditor, LiveWatchPanel } from './components/code-editor.jsx';
 import { DeploymentManager, RepositoryManager, ResourceApplyPanel, UserManagementPanel } from './components/resource-actions.jsx';
 import { ApprovalDecisionButtons } from './components/approval-actions.jsx';
 import { SessionDetailTabs } from './components/session-tabs.jsx';
+import { DispatchButton } from './components/dispatch-button.jsx';
 
 export const orgNavigationGroups = [
   {
@@ -192,6 +193,9 @@ export async function AgentsDashboardPage({ org = null } = {}) {
   const agentView = ui.model.agents || { stacks: { count: 0 }, runs: { count: 0, active: [] }, rules: { count: 0 }, approvals: { count: 0, pending: [] } };
   return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/agents" eyebrow="agent orchestration" title="Agent stacks, runs, and rules" text="View agent stacks, dispatch runs, trigger rules, and pending approvals from one place." actions={[['/agents/stacks', 'View stacks'], ['/agents/runs', 'View runs']]} breadcrumbs={[['/', 'Krate'], ['/agents', 'Agents']]}>
     <DegradedBanner model={ui.model} />
+    <div style={{ marginBottom: '1rem' }}>
+      <DispatchButton org={activeOrg} stacks={(agentView.stacks?.items || []).map(s => s.metadata?.name).filter(Boolean)} />
+    </div>
     <section className="routeGrid two">
       <div className="card">
         <div className="cardTitle"><h2>Agent overview</h2><StatusPill tone={agentView.stacks.count ? 'good' : 'neutral'}>{ui.model.status}</StatusPill></div>
@@ -268,7 +272,7 @@ export async function AgentStackDetailPage({ org = null, name } = {}) {
 export async function AgentRunsPage({ org = null, linkToDetail = false } = {}) {
   const ui = await loadKrateUi(org);
   const activeOrg = ui.model.org?.slug || org || 'default';
-  const agentView = ui.model.agents || { runs: { count: 0, items: [] } };
+  const agentView = ui.model.agents || { runs: { count: 0, items: [] }, stacks: { count: 0, items: [] } };
   const runs = agentView.runs.items || [];
   const phaseTone = (phase) => {
     if (!phase || phase === 'Queued' || phase === 'Pending') return 'neutral';
@@ -279,6 +283,9 @@ export async function AgentRunsPage({ org = null, linkToDetail = false } = {}) {
   };
   return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/agents" eyebrow="agent dispatch runs" title="Dispatch runs" text="Track agent dispatch runs across stacks, repositories, and phases. Each run represents a dispatched agent task." actions={[['/agents', 'Overview'], ['/agents/stacks', 'Stacks']]} breadcrumbs={[['/', 'Krate'], ['/agents', 'Agents'], ['/agents/runs', 'Dispatch runs']]}>
     <DegradedBanner model={ui.model} />
+    <div style={{ marginBottom: '1rem' }}>
+      <DispatchButton org={activeOrg} stacks={(agentView.stacks?.items || []).map(s => s.metadata?.name).filter(Boolean)} />
+    </div>
     <div className="card">
       <div className="cardTitle"><h2>Dispatch runs</h2><StatusPill tone={runs.length ? 'good' : 'neutral'}>{runs.length} runs</StatusPill></div>
       {runs.length ? <ul className="resourceList runList">{runs.map((run) => <li key={run.metadata?.name}>

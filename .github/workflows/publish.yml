@@ -357,6 +357,15 @@ jobs:
             amux_provider: foundry
             model: gpt-5.5
             required_env: AZURE_API_KEY,AMUX_API_BASE
+          - id: live.agent-mux.claude-code.google-vertex.gemini-3.1-pro-preview
+            agent_path: agent-mux
+            agent: claude-code
+            amux_agent: claude
+            integration_type: third-party-plugin
+            provider: google-vertex
+            amux_provider: vertex
+            model: gemini-3.1-pro-preview
+            required_env: GOOGLE_CLOUD_PROJECT,GOOGLE_API_KEY,GOOGLE_CLOUD_LOCATION,GOOGLE_GENAI_USE_VERTEXAI
           - id: live.agent-mux.babysitter-agent.foundry-openai.gpt-5.5
             agent_path: agent-mux
             agent: babysitter-agent
@@ -472,6 +481,10 @@ jobs:
           LIVE_STACK_BABYSITTER_AGENT_BIN: ${{ github.workspace }}/packages/babysitter-agent/dist/cli/main.js
           AZURE_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           AMUX_API_BASE: https://${{ vars.AZURE_OPENAI_PROJECT_NAME }}.services.ai.azure.com
+          GOOGLE_CLOUD_PROJECT: ${{ secrets.GOOGLE_CLOUD_PROJECT }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GOOGLE_CLOUD_LOCATION: global
+          GOOGLE_GENAI_USE_VERTEXAI: True
         run: |
           npm run test:e2e:live-stack:pipeline
           npm run coverage:e2e:live-stack
@@ -1497,8 +1510,8 @@ jobs:
           [[ -n "${AZURE_CLIENT_ID_VAR}" ]] || missing+=("AZURE_APPLICATION_CLIENT_ID")
           [[ -n "${AZURE_CLIENT_SECRET}" ]] || missing+=("AZURE_APPLICATION_CLIENT_SECRET")
           [[ -n "${ACR_NAME}" ]] || missing+=("AZURE_ACR_NAME")
-          [[ -n "${KRATE_GITHUB_CLIENT_ID}" ]] || missing+=("KRATE_GITHUB_CLIENT_ID")
-          [[ -n "${KRATE_GITHUB_CLIENT_SECRET}" ]] || missing+=("KRATE_GITHUB_CLIENT_SECRET")
+          [[ -n "${KRATE_GITHUB_CLIENT_ID}" ]] || echo "::notice::KRATE_GITHUB_CLIENT_ID not set — GitHub OAuth will be disabled"
+          [[ -n "${KRATE_GITHUB_CLIENT_SECRET}" ]] || echo "::notice::KRATE_GITHUB_CLIENT_SECRET not set — GitHub OAuth will be disabled"
           if (( ${#missing[@]} == 0 )); then
             echo "deploy_enabled=true" >> "$GITHUB_OUTPUT"
           else
@@ -1569,10 +1582,14 @@ jobs:
           KRATE_GITHUB_CLIENT_ID: ${{ vars.KRATE_GITHUB_CLIENT_ID }}
           KRATE_GITHUB_CLIENT_SECRET: ${{ secrets.KRATE_GITHUB_CLIENT_SECRET }}
         run: |
-          kubectl -n "$KUBE_NAMESPACE" create secret generic krate-auth \
-            --from-literal=github-client-id="$KRATE_GITHUB_CLIENT_ID" \
-            --from-literal=github-client-secret="$KRATE_GITHUB_CLIENT_SECRET" \
-            --dry-run=client -o yaml | kubectl apply -f -
+          if [[ -n "${KRATE_GITHUB_CLIENT_ID}" && -n "${KRATE_GITHUB_CLIENT_SECRET}" ]]; then
+            kubectl -n "$KUBE_NAMESPACE" create secret generic krate-auth \
+              --from-literal=github-client-id="$KRATE_GITHUB_CLIENT_ID" \
+              --from-literal=github-client-secret="$KRATE_GITHUB_CLIENT_SECRET" \
+              --dry-run=client -o yaml | kubectl apply -f -
+          else
+            echo "::notice::Skipping krate-auth secret — GitHub OAuth not configured"
+          fi
 
       - name: Deploy Krate
         if: steps.config.outputs.deploy_enabled == 'true'
