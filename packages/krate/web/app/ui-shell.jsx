@@ -7,6 +7,7 @@ import { ApprovalDecisionButtons } from './components/approval-actions.jsx';
 import { SessionDetailTabs } from './components/session-tabs.jsx';
 import { DispatchButton } from './components/dispatch-button.jsx';
 import { StackBuilder } from './components/stack-builder.jsx';
+import { InteractiveKanbanBoard } from './components/kanban-interactive.jsx';
 
 export const orgNavigationGroups = [
   {
@@ -267,6 +268,15 @@ export async function AgentStackDetailPage({ org = null, name } = {}) {
         </div>
       </div>
     </section>
+  </PageFrame>;
+}
+
+export async function AgentStackBuilderPage({ org = null } = {}) {
+  const ui = await loadKrateUi(org);
+  const activeOrg = ui.model.org?.slug || org || 'default';
+  return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/agents" eyebrow="agent stack" title="New agent stack" text="Configure a new agent stack with a base agent, adapter, model, and prompts." actions={[['/agents/stacks', 'All stacks'], ['/agents', 'Overview']]} breadcrumbs={[['/', 'Krate'], ['/agents', 'Agents'], ['/agents/stacks', 'Stacks'], ['/agents/stacks/new', 'New']]}>
+    <DegradedBanner model={ui.model} />
+    <StackBuilder org={activeOrg} />
   </PageFrame>;
 }
 
@@ -809,7 +819,7 @@ export async function AgentProjectBoardPage({ org = null, projectId } = {}) {
     <DegradedBanner model={ui.model} />
     {project ? <div className="card">
       <div className="cardTitle"><h2>Board</h2><StatusPill tone={boardItems.length ? 'good' : 'neutral'}>{boardItems.length} items</StatusPill></div>
-      <KanbanBoard project={project} items={boardItems} org={activeOrg} />
+      <InteractiveKanbanBoard project={project} initialIssues={boardItems} org={activeOrg} />
     </div> : <EmptyState title={`Project ${projectId} not found`} text="This project does not exist in the current workspace. Create it through Krate resource definitions." />}
   </PageFrame>;
 }
