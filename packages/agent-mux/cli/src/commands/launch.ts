@@ -84,6 +84,9 @@ export interface ProxyPlan {
   port: number;
   apiBase?: string;
   apiKey?: string;
+  project?: string;
+  location?: string;
+  useVertexAi?: boolean;
 }
 
 export interface LaunchPlan {
@@ -156,6 +159,9 @@ export function resolveLaunchPlan(input: LaunchPlanInput): LaunchPlan {
         port: input.proxyPort ?? 0,
         apiBase: providerConfig.params['apiBase'] ? String(providerConfig.params['apiBase']) : undefined,
         apiKey: providerConfig.auth.apiKey,
+        project: providerConfig.params['project'] ? String(providerConfig.params['project']) : undefined,
+        location: providerConfig.params['region'] ? String(providerConfig.params['region']) : undefined,
+        useVertexAi: providerConfig.provider === 'vertex',
       }
     : undefined;
 
@@ -192,18 +198,21 @@ function appendHarnessSessionArgs(plan: LaunchPlan, session: SessionArgs): void 
     case 'claude':
       if (session.resumeId) plan.args.push('--resume', session.resumeId);
       if (session.sessionId) plan.args.push('--session-id', session.sessionId);
-      if (session.prompt && !interactive) plan.args.push('--print', session.prompt);
+      // Always pass prompt via --print so the harness exits after processing.
+      // Hooks still fire because the babysitter plugin is in Claude settings.
+      if (session.prompt) plan.args.push('--print', session.prompt);
       if (session.maxTurns) plan.args.push('--max-turns', String(session.maxTurns));
       break;
     case 'codex':
       if (session.resumeId) {
         plan.args.unshift('resume', session.resumeId);
-      } else if (session.prompt && !interactive) {
+      } else if (session.prompt) {
+        // Always use exec mode so codex processes the prompt and exits.
         plan.args.unshift('exec', session.prompt);
       }
       break;
     case 'gemini':
-      if (session.prompt && !interactive) plan.args.push('--prompt', session.prompt);
+      if (session.prompt) plan.args.push('--prompt', session.prompt);
       break;
     case 'pi':
       // Pi doesn't accept --prompt or --max-turns flags.
@@ -498,7 +507,18 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
       // When exposed transport differs from target (e.g., anthropic→foundry),
       // the proxy needs a completion engine to translate request/response formats.
       let completionEngine;
-      if (plan.proxy.apiBase && plan.proxy.apiKey) {
+      if ((plan.proxy.targetProvider === 'google' || plan.proxy.targetProvider === 'vertex') && plan.proxy.apiKey) {
+        const { createGoogleCompletionEngine } = await import('./launch-completion-engine.js');
+        completionEngine = createGoogleCompletionEngine({
+          apiBase: plan.proxy.apiBase,
+          apiKey: plan.proxy.apiKey,
+          targetModel: plan.proxy.targetModel,
+          provider: plan.proxy.targetProvider,
+          project: plan.proxy.project,
+          location: plan.proxy.location,
+          useVertexAi: plan.proxy.useVertexAi,
+        });
+      } else if (plan.proxy.apiBase && plan.proxy.apiKey) {
         const { createOpenAICompletionEngine } = await import('./launch-completion-engine.js');
         completionEngine = createOpenAICompletionEngine({
           apiBase: plan.proxy.apiBase,
