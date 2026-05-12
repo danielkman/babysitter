@@ -120,64 +120,35 @@ export function buildPrimaryLiveStackCommands(
   const isInteractive = options.env['LIVE_STACK_INTERACTIVE'] === 'true';
   const isBabysitterPlugin = scenario.agent.installMode === 'babysitter-plugin';
 
-  // babysitter-plugin uses `amux run` which has the full hook dispatch pipeline
-  // (session-start, pre-tool-use, stop, .a5c/runs/ lifecycle). This is needed
-  // because amux launch has no hook support — it just spawns the harness.
-  // vanilla uses `amux launch` — no hooks needed, just run the harness directly.
-  let executionCommand: CommandExecution;
-  if (isBabysitterPlugin) {
-    const runArgs = [
-      'run',
+  // All scenarios use `amux launch` which handles provider resolution, proxy
+  // setup, and harness-specific args. babysitter-plugin hooks fire from INSIDE
+  // the harness (hooks-mux is installed into harness settings) — they don't
+  // need amux run's RuntimeHooks system.
+  const executionCommand = commandExecution(
+    commandEnv,
+    'LIVE_STACK_AMUX_BIN',
+    'amux',
+    [
+      'launch',
       installTarget,
+      scenario.model.amuxProvider,
       '--model',
       scenario.model.model,
+      '--with-proxy-if-needed',
+      '--proxy-log-level',
+      'debug',
+      '--session-id',
+      traceId,
       '--prompt',
       prompt,
       '--max-turns',
       String(resolveLaunchMaxTurns(scenario)),
-    ];
-    if (isInteractive) {
-      // Interactive: PTY mode inside amux run, harness gets real TTY so hooks fire.
-      // No --json/--output-format since PTY mixes terminal UI with structured data.
-      runArgs.push('--interactive');
-    } else {
-      runArgs.push('--non-interactive', '--output-format', 'jsonl', '--json');
-    }
-    executionCommand = commandExecution(
-      { ...commandEnv, AMUX_PROVIDER: scenario.model.amuxProvider },
-      'LIVE_STACK_AMUX_BIN',
-      'amux',
-      runArgs,
-      options.cwd,
-      timeoutMs,
-    );
-  } else {
-    executionCommand = commandExecution(
-      commandEnv,
-      'LIVE_STACK_AMUX_BIN',
-      'amux',
-      [
-        'launch',
-        installTarget,
-        scenario.model.amuxProvider,
-        '--model',
-        scenario.model.model,
-        '--with-proxy-if-needed',
-        '--proxy-log-level',
-        'debug',
-        '--session-id',
-        traceId,
-        '--prompt',
-        prompt,
-        '--max-turns',
-        String(resolveLaunchMaxTurns(scenario)),
-        '--no-interactive',
-        ...harnessApprovalPassthrough(installTarget),
-      ],
-      options.cwd,
-      timeoutMs,
-    );
-  }
+      ...(isInteractive ? [] : ['--no-interactive']),
+      ...harnessApprovalPassthrough(installTarget),
+    ],
+    options.cwd,
+    timeoutMs,
+  );
 
   if (scenario.agent.installMode === 'vanilla') {
     return [
