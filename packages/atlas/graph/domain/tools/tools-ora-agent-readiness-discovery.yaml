@@ -309,6 +309,13 @@ attributes:
     tags: [data warehouse, cloud data, data lake, analytics, data sharing]
     scoreUrl: https://ora.run/score/snowflake.com
 edges:
+  supports_work:
+    - target: role:data-engineer
+      confidence: high
+      evidence: "Ora surfaced Snowflake for warehouse and data orchestration workflows."
+    - target: workflow:data-pipeline-monitoring
+      confidence: high
+      evidence: "Warehouse freshness and query metadata support data pipeline monitoring."
   sourced_from:
     - source-ref:ora-discover-api
   tool_used_by:

@@ -17,6 +17,13 @@ attributes:
   mcpTransports:
   - mcp-transport:stdio
 edges:
+  supports_work:
+    - target: role:marketing-manager
+      confidence: medium
+      evidence: "HubSpot MCP access to CRM and marketing data supports campaign and revenue workflows."
+    - target: role:account-executive
+      confidence: medium
+      evidence: "CRM records support account management through an agent tool server."
   integrates_with:
   - target: tool:hubspot
   lib_applies_to_domain:
@@ -68,6 +75,13 @@ attributes:
   mcpTransports:
   - mcp-transport:stdio
 edges:
+  supports_work:
+    - target: role:account-executive
+      confidence: medium
+      evidence: "Salesforce MCP access supports CRM account and opportunity workflows."
+    - target: role:sales-engineer
+      confidence: medium
+      evidence: "Opportunity and account context supports technical sales collaboration."
   integrates_with:
   - target: tool:salesforce
   lib_applies_to_domain:

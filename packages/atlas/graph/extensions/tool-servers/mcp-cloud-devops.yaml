@@ -111,6 +111,13 @@ attributes:
   mcpTransports:
   - mcp-transport:stdio
 edges:
+  supports_work:
+    - target: role:platform-engineer
+      confidence: medium
+      evidence: "Pulumi MCP/IaC access supports infrastructure and FinOps workflow projections."
+    - target: workflow:cloud-cost-anomaly-detection
+      confidence: medium
+      evidence: "IaC inventory and stack metadata can support cost anomaly analysis."
   integrates_with:
   - target: tool:pulumi
   lib_applies_to_domain:

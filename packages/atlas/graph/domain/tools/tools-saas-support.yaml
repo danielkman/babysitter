@@ -63,6 +63,13 @@ attributes:
     Manages contacts, deals, pipelines, email sequences, and customer
     support tickets across the full customer lifecycle.
 edges:
+  supports_work:
+    - target: role:marketing-manager
+      confidence: high
+      evidence: "Ora surfaced HubSpot for marketing automation and campaign analytics workflows."
+    - target: role:account-executive
+      confidence: medium
+      evidence: "CRM contact and deal state supports revenue operations workflows."
   tool_used_by:
     - target: skill-area:customer-support
     - target: skill-area:sales-operations
@@ -87,6 +94,13 @@ attributes:
     and analytics. Provides customizable objects, automation via Flow,
     and an extensive AppExchange ecosystem for B2B and B2C workflows.
 edges:
+  supports_work:
+    - target: role:account-executive
+      confidence: high
+      evidence: "Ora surfaced Salesforce as a top CRM match for sales account management and revenue operations."
+    - target: role:sales-engineer
+      confidence: medium
+      evidence: "CRM opportunity and account context support technical sales workflows."
   tool_used_by:
     - target: skill-area:sales-operations
     - target: skill-area:customer-support

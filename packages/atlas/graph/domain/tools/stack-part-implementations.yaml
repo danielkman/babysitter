@@ -210,6 +210,13 @@ attributes:
     Unified data-and-AI platform built on Apache Spark + Delta Lake.
     Handles data lake, warehousing, ML, and notebook workflows.
 edges:
+  supports_work:
+    - target: role:data-engineer
+      confidence: high
+      evidence: "Ora surfaced Databricks as a top match for data engineering orchestration and warehouse workflows."
+    - target: workflow:data-pipeline-monitoring
+      confidence: high
+      evidence: "Jobs, notebooks, and warehouse metadata support pipeline monitoring."
   implements_stack_part:
     - target: stack-part:data-lake
   used_for:

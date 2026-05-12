@@ -14,6 +14,16 @@ attributes:
     and tool-use capabilities. Supports custom code nodes (JavaScript/
     Python) for advanced logic.
 edges:
+  supports_work:
+    - target: role:legal-counsel
+      confidence: medium
+      evidence: "Ora surfaced n8n for legal/compliance workflow automation."
+    - target: workflow:contract-review-cycle
+      confidence: medium
+      evidence: "Workflow automation can route contract review steps and handoffs."
+    - target: workflow:accounts-payable-cycle
+      confidence: medium
+      evidence: "Automation can connect finance approvals, procurement, and accounting workflows."
   belongs_to_language:
     - language:typescript
   tool_used_by:

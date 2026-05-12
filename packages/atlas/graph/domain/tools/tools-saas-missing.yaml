@@ -112,6 +112,13 @@ attributes:
     Eliminates back-and-forth scheduling by sharing availability links,
     configuring event types, and syncing with calendar and CRM tools.
 edges:
+  supports_work:
+    - target: role:talent-recruiter
+      confidence: high
+      evidence: "Ora surfaced Calendly for recruiting interview scheduling workflows."
+    - target: workflow:recruiting-pipeline-review
+      confidence: medium
+      evidence: "Interview scheduling state supports recruiting pipeline review."
   tool_used_by:
     - target: skill-area:communication
   used_for:

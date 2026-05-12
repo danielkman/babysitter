@@ -1103,3 +1103,440 @@ edges:
       observedVia: ora-discover-api
   sourced_from:
     - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.attio-com
+attributes:
+  displayName: "Ora score — Attio"
+  domain: "attio.com"
+  productName: "Attio"
+  score: 84
+  grade: "B"
+  category: "CRM"
+  matchScore: 6
+  tags: ["crm", "relationship management", "contacts", "modern crm"]
+  discoveryIntents: ["MCP server for sales CRM account management revenue operations workflows"]
+  scoreUrl: https://ora.run/score/attio.com
+  badgeUrl: https://ora.run/api/badge/attio.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:attio
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.close-com
+attributes:
+  displayName: "Ora score — Close"
+  domain: "close.com"
+  productName: "Close"
+  score: 74
+  grade: "B"
+  category: "CRM"
+  matchScore: 6
+  tags: ["crm", "sales", "calling", "email sequences", "pipeline"]
+  discoveryIntents: ["MCP server for sales CRM account management revenue operations workflows"]
+  scoreUrl: https://ora.run/score/close.com
+  badgeUrl: https://ora.run/api/badge/close.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:close
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.copper-com
+attributes:
+  displayName: "Ora score — Copper"
+  domain: "copper.com"
+  productName: "Copper"
+  score: 71
+  grade: "B"
+  category: "CRM"
+  matchScore: 6
+  tags: ["crm", "google workspace", "contact management", "relationship management"]
+  discoveryIntents: ["MCP server for sales CRM account management revenue operations workflows"]
+  scoreUrl: https://ora.run/score/copper.com
+  badgeUrl: https://ora.run/api/badge/copper.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:copper
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.pipedrive-com
+attributes:
+  displayName: "Ora score — Pipedrive"
+  domain: "pipedrive.com"
+  productName: "Pipedrive"
+  score: 62
+  grade: "C"
+  category: "CRM"
+  matchScore: 6
+  tags: ["crm", "sales pipeline", "deals", "contact management"]
+  discoveryIntents: ["MCP server for sales CRM account management revenue operations workflows"]
+  scoreUrl: https://ora.run/score/pipedrive.com
+  badgeUrl: https://ora.run/api/badge/pipedrive.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:pipedrive
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.salesforce-com
+attributes:
+  displayName: "Ora score — Salesforce"
+  domain: "salesforce.com"
+  productName: "Salesforce"
+  score: 66
+  grade: "C"
+  category: "CRM"
+  matchScore: 8
+  tags: ["crm", "sales", "customer management", "leads", "pipeline", "enterprise crm"]
+  discoveryIntents: ["MCP server for sales CRM account management revenue operations workflows"]
+  scoreUrl: https://ora.run/score/salesforce.com
+  badgeUrl: https://ora.run/api/badge/salesforce.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:salesforce
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.hubspot-com
+attributes:
+  displayName: "Ora score — HubSpot"
+  domain: "hubspot.com"
+  productName: "HubSpot"
+  score: 64
+  grade: "C"
+  category: "CRM"
+  matchScore: 6
+  tags: ["crm", "marketing", "sales", "inbound", "email marketing", "automation"]
+  discoveryIntents: ["MCP server for sales CRM account management revenue operations workflows", "MCP server for marketing automation campaign analytics content workflows"]
+  scoreUrl: https://ora.run/score/hubspot.com
+  badgeUrl: https://ora.run/api/badge/hubspot.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:hubspot
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.klaviyo-com
+attributes:
+  displayName: "Ora score — Klaviyo"
+  domain: "klaviyo.com"
+  productName: "Klaviyo"
+  score: 79
+  grade: "B"
+  category: "E-commerce"
+  matchScore: 6
+  tags: ["ecommerce marketing", "email marketing", "sms marketing", "customer data", "marketing automation"]
+  discoveryIntents: ["MCP server for marketing automation campaign analytics content workflows"]
+  scoreUrl: https://ora.run/score/klaviyo.com
+  badgeUrl: https://ora.run/api/badge/klaviyo.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:klaviyo
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.june-so
+attributes:
+  displayName: "Ora score — June"
+  domain: "june.so"
+  productName: "June"
+  score: 0
+  grade: "F"
+  category: "Data & Analytics"
+  matchScore: 5
+  tags: ["product analytics", "b2b analytics", "user analytics", "retention"]
+  discoveryIntents: ["MCP server for marketing automation campaign analytics content workflows"]
+  scoreUrl: https://ora.run/score/june.so
+  badgeUrl: https://ora.run/api/badge/june.so
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:june
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.calendly-com
+attributes:
+  displayName: "Ora score — Calendly"
+  domain: "calendly.com"
+  productName: "Calendly"
+  score: 71
+  grade: "B"
+  category: "Productivity"
+  matchScore: 4
+  tags: ["scheduling", "calendar", "appointments", "booking", "meetings"]
+  discoveryIntents: ["MCP server for recruiting applicant tracking interview scheduling workflows"]
+  scoreUrl: https://ora.run/score/calendly.com
+  badgeUrl: https://ora.run/api/badge/calendly.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:calendly
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.ramp-com
+attributes:
+  displayName: "Ora score — Ramp"
+  domain: "ramp.com"
+  productName: "Ramp"
+  score: 0
+  grade: "F"
+  category: "Payments & Fintech"
+  matchScore: 3
+  tags: ["corporate cards", "expense management", "spend management", "accounting"]
+  discoveryIntents: ["MCP server for finance accounting expense procurement workflows"]
+  scoreUrl: https://ora.run/score/ramp.com
+  badgeUrl: https://ora.run/api/badge/ramp.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:ramp
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.getdbt-com
+attributes:
+  displayName: "Ora score — dbt Labs"
+  domain: "getdbt.com"
+  productName: "dbt Labs"
+  score: 0
+  grade: "F"
+  category: "Data & Analytics"
+  matchScore: 5
+  tags: ["data transformation", "analytics engineering", "sql", "data modeling", "elt"]
+  discoveryIntents: ["MCP server for data engineering orchestration dbt airflow warehouse workflows"]
+  scoreUrl: https://ora.run/score/getdbt.com
+  badgeUrl: https://ora.run/api/badge/getdbt.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:dbt-labs
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.labelbox-com
+attributes:
+  displayName: "Ora score — Labelbox"
+  domain: "labelbox.com"
+  productName: "Labelbox"
+  score: 0
+  grade: "F"
+  category: "AI & ML"
+  matchScore: 5
+  tags: ["data labeling", "annotation", "training data", "rlhf", "data curation"]
+  discoveryIntents: ["MCP server for data engineering orchestration dbt airflow warehouse workflows"]
+  scoreUrl: https://ora.run/score/labelbox.com
+  badgeUrl: https://ora.run/api/badge/labelbox.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:labelbox
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.linode-com
+attributes:
+  displayName: "Ora score — Linode"
+  domain: "linode.com"
+  productName: "Linode"
+  score: 0
+  grade: "F"
+  category: "Infrastructure & DevOps"
+  matchScore: 5
+  tags: ["vps", "cloud hosting", "akamai cloud", "developer cloud"]
+  discoveryIntents: ["MCP server for DevSecOps container registry cloud cost finops workflows"]
+  scoreUrl: https://ora.run/score/linode.com
+  badgeUrl: https://ora.run/api/badge/linode.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:linode
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.pulumi-com
+attributes:
+  displayName: "Ora score — Pulumi"
+  domain: "pulumi.com"
+  productName: "Pulumi"
+  score: 66
+  grade: "C"
+  category: "Infrastructure & DevOps"
+  matchScore: 3
+  tags: ["infrastructure as code", "cloud management", "devops", "automation"]
+  discoveryIntents: ["MCP server for DevSecOps container registry cloud cost finops workflows"]
+  scoreUrl: https://ora.run/score/pulumi.com
+  badgeUrl: https://ora.run/api/badge/pulumi.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:pulumi
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.tavily-com
+attributes:
+  displayName: "Ora score — Tavily"
+  domain: "tavily.com"
+  productName: "Tavily"
+  score: 80
+  grade: "B"
+  category: "Agent Tools"
+  matchScore: 5
+  tags: ["search", "web search", "ai search", "research api", "agent search"]
+  discoveryIntents: ["MCP server for knowledge search enterprise wiki RAG retrieval workflows"]
+  scoreUrl: https://ora.run/score/tavily.com
+  badgeUrl: https://ora.run/api/badge/tavily.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:tavily
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.exa-ai
+attributes:
+  displayName: "Ora score — Exa"
+  domain: "exa.ai"
+  productName: "Exa"
+  score: 66
+  grade: "C"
+  category: "Agent Tools"
+  matchScore: 5
+  tags: ["search", "neural search", "semantic search", "web search api"]
+  discoveryIntents: ["MCP server for knowledge search enterprise wiki RAG retrieval workflows"]
+  scoreUrl: https://ora.run/score/exa.ai
+  badgeUrl: https://ora.run/api/badge/exa.ai
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:exa
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.cohere-com
+attributes:
+  displayName: "Ora score — Cohere"
+  domain: "cohere.com"
+  productName: "Cohere"
+  score: 65
+  grade: "C"
+  category: "AI & ML"
+  matchScore: 4
+  tags: ["llm", "embeddings", "search", "reranking", "ai api", "language model", "rag"]
+  discoveryIntents: ["MCP server for knowledge search enterprise wiki RAG retrieval workflows"]
+  scoreUrl: https://ora.run/score/cohere.com
+  badgeUrl: https://ora.run/api/badge/cohere.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:cohere
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.perplexity-ai
+attributes:
+  displayName: "Ora score — Perplexity"
+  domain: "perplexity.ai"
+  productName: "Perplexity"
+  score: 64
+  grade: "C"
+  category: "AI & ML"
+  matchScore: 4
+  tags: ["search", "ai search", "research", "question answering", "web search"]
+  discoveryIntents: ["MCP server for knowledge search enterprise wiki RAG retrieval workflows"]
+  scoreUrl: https://ora.run/score/perplexity.ai
+  badgeUrl: https://ora.run/api/badge/perplexity.ai
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:perplexity
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.n8n-io
+attributes:
+  displayName: "Ora score — n8n"
+  domain: "n8n.io"
+  productName: "n8n"
+  score: 73
+  grade: "B"
+  category: "Productivity"
+  matchScore: 2
+  tags: []
+  discoveryIntents: ["MCP server for legal contract review compliance privacy workflows", "MCP server for finance accounting expense procurement workflows"]
+  scoreUrl: https://ora.run/score/n8n.io
+  badgeUrl: https://ora.run/api/badge/n8n.io
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:n8n
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api

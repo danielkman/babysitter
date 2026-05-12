@@ -7,6 +7,13 @@ attributes:
   description: |
     Infrastructure-as-code in general-purpose programming languages.
 edges:
+  supports_work:
+    - target: role:platform-engineer
+      confidence: medium
+      evidence: "Ora surfaced Pulumi for DevSecOps, cloud cost, and FinOps workflows."
+    - target: workflow:infrastructure-cost-optimization
+      confidence: medium
+      evidence: "IaC resource definitions support cloud cost review and optimization."
   belongs_to_language:
     - language:go
   tool_used_by:
