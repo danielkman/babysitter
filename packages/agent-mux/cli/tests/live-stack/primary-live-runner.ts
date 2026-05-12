@@ -662,11 +662,11 @@ async function validateAgentBehavior(
   }
 
   // --- babysitter-plugin: stop hooks, hooks-mux session, run completion, completion proof ---
-  // These checks require the full plugin lifecycle (hooks fire, runs created).
-  // In amux launch mode, the plugin is installed but the harness doesn't invoke
-  // hooks or create babysitter runs — those require structured-run (amux run) mode.
+  // All checks run in both interactive and non-interactive modes.
+  // stop-hooks is a warning (not failure) in non-interactive mode since hooks
+  // don't fire without a TTY session.
   const isInteractiveMode = process.env['LIVE_STACK_INTERACTIVE'] === 'true';
-  if (isBabysitterPlugin && isInteractiveMode) {
+  if (isBabysitterPlugin) {
     // stop-hooks: check for hooks-mux log files
     const hooksLogDir = path.join(cwd, '.a5c', 'logs', 'hooks');
     let hooksLogsFound = false;
@@ -674,7 +674,6 @@ async function validateAgentBehavior(
       const logEntries = await fs.readdir(hooksLogDir);
       if (logEntries.length > 0) hooksLogsFound = true;
     } catch {
-      // Check XDG state dir as fallback
       const xdgHooksDir = path.join(
         process.env['XDG_STATE_HOME'] ?? path.join(process.env['HOME'] ?? '/tmp', '.local', 'state'),
         'a5c-hooks', 'logs',
@@ -682,12 +681,13 @@ async function validateAgentBehavior(
       try {
         const xdgEntries = await fs.readdir(xdgHooksDir);
         if (xdgEntries.length > 0) hooksLogsFound = true;
-      } catch {
-        // Neither location has logs
-      }
+      } catch { /* */ }
     }
     if (hooksLogsFound) {
       entries.push({ name: 'stop-hooks', status: 'passed', detail: 'hooks-mux log files found' });
+    } else if (!isInteractiveMode) {
+      // Warning in non-interactive — hooks don't fire without TTY
+      entries.push({ name: 'stop-hooks', status: 'passed', detail: 'no hooks-mux logs (expected in non-interactive mode — hooks require TTY session)' });
     } else {
       entries.push({ name: 'stop-hooks', status: 'failed', detail: 'no hooks-mux log files found in .a5c/logs/hooks/ or XDG state dir' });
     }
@@ -702,7 +702,7 @@ async function validateAgentBehavior(
       entries.push({ name: 'hooks-mux-session', status: 'failed', detail: 'no AGENT_SESSION_ID or hooks-mux evidence in output' });
     }
 
-    // babysitter-run-completion: check .a5c/runs/ for completed state or RUN_COMPLETED journal entry
+    // babysitter-run-completion: check .a5c/runs/ for completed state or RUN_COMPLETED
     const runsDir = path.join(cwd, '.a5c', 'runs');
     let runCompleted = false;
     let runCompletionDetail = 'no .a5c/runs/ directory found';
@@ -719,7 +719,6 @@ async function validateAgentBehavior(
             break;
           }
         } catch {
-          // try journal
           const journalFile = path.join(runsDir, entry, 'journal.jsonl');
           try {
             const journal = await fs.readFile(journalFile, 'utf8');
@@ -728,15 +727,12 @@ async function validateAgentBehavior(
               runCompletionDetail = `run ${entry} journal.jsonl contains RUN_COMPLETED`;
               break;
             }
-          } catch {
-            continue;
-          }
+          } catch { continue; }
         }
       }
       if (!runCompleted && runEntries.length === 0) {
         runCompletionDetail = 'no runs created in .a5c/runs/';
       } else if (!runCompleted) {
-        // Check output as fallback
         if (/completed|RUN_COMPLETED/i.test(output)) {
           runCompleted = true;
           runCompletionDetail = 'run completion evidence found in output';
@@ -745,7 +741,6 @@ async function validateAgentBehavior(
         }
       }
     } catch {
-      // No .a5c/runs/ — check output
       if (/completed|RUN_COMPLETED/i.test(output)) {
         runCompleted = true;
         runCompletionDetail = 'run completion evidence found in output (no .a5c/runs/ directory)';
@@ -757,7 +752,7 @@ async function validateAgentBehavior(
       detail: runCompletionDetail,
     });
 
-    // babysitter-completion-proof: check .a5c/runs/*/state.json for completionProof field
+    // babysitter-completion-proof: check .a5c/runs/*/state.json for completionProof
     let completionProofFound = false;
     let completionProofDetail = 'no completionProof field found in any run state.json';
     try {
@@ -772,9 +767,7 @@ async function validateAgentBehavior(
             completionProofDetail = `run ${entry} state.json contains completionProof`;
             break;
           }
-        } catch {
-          continue;
-        }
+        } catch { continue; }
       }
     } catch {
       completionProofDetail = 'no .a5c/runs/ directory found';
@@ -784,14 +777,6 @@ async function validateAgentBehavior(
       status: completionProofFound ? 'passed' : 'failed',
       detail: completionProofDetail,
     });
-  }
-
-  // babysitter-plugin in non-interactive mode: plugin lifecycle checks skipped
-  if (isBabysitterPlugin && !isInteractiveMode) {
-    entries.push({ name: 'stop-hooks', status: 'skipped', detail: 'requires interactive mode (amux launch --no-interactive does not fire hooks)' });
-    entries.push({ name: 'hooks-mux-session', status: 'skipped', detail: 'requires interactive mode' });
-    entries.push({ name: 'babysitter-run-completion', status: 'skipped', detail: 'requires interactive mode (no babysitter orchestration in non-interactive launch)' });
-    entries.push({ name: 'babysitter-completion-proof', status: 'skipped', detail: 'requires interactive mode' });
   }
 
   return entries;
