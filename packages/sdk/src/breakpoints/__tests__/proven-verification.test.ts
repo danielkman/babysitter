@@ -95,20 +95,18 @@ describe("verifyBreakpointResult", () => {
   });
 
   it("returns verified:false when breakpoints-mux is not installed", async () => {
-    // Simulate missing module by mocking the dynamic import to throw
+    vi.resetModules();
     vi.doMock("@a5c-ai/breakpoints-mux/proven", () => {
       throw new Error("Cannot find module '@a5c-ai/breakpoints-mux/proven'");
     });
-    // Re-import to pick up the mock
     const { verifyBreakpointResult: verify } = await import("../proven-verification");
     const result = await verify(makeSignedResult());
     expect(result.verified).toBe(false);
     expect(result.reason).toBe("breakpoints-mux not installed");
-    vi.doUnmock("@a5c-ai/breakpoints-mux/proven");
   });
 
   it("never throws even with unexpected import errors", async () => {
-    // Simulate unexpected import error
+    vi.resetModules();
     vi.doMock("@a5c-ai/breakpoints-mux/proven", () => {
       throw new Error("Unexpected filesystem error");
     });
@@ -119,11 +117,10 @@ describe("verifyBreakpointResult", () => {
     });
     expect(result.verified).toBe(false);
     expect(result.reason).toBeDefined();
-    vi.doUnmock("@a5c-ai/breakpoints-mux/proven");
   });
 
   it("defaults to enabled:true when config is omitted", async () => {
-    // Simulate missing module
+    vi.resetModules();
     vi.doMock("@a5c-ai/breakpoints-mux/proven", () => {
       throw new Error("Cannot find module '@a5c-ai/breakpoints-mux/proven'");
     });
