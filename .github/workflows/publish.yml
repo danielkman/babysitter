@@ -1574,13 +1574,13 @@ jobs:
       - name: Create Atlas auth secret
         if: steps.config.outputs.deploy_enabled == 'true'
         env:
-          ATLAS_GITHUB_CLIENT_ID: ${{ vars.ATLAS_GITHUB_CLIENT_ID }}
-          ATLAS_GITHUB_CLIENT_SECRET: ${{ secrets.ATLAS_GITHUB_CLIENT_SECRET }}
+          AUTH_GITHUB_CLIENT_ID: ${{ secrets.AUTH_GITHUB_CLIENT_ID }}
+          AUTH_GITHUB_CLIENT_SECRET: ${{ secrets.AUTH_GITHUB_CLIENT_SECRET }}
         run: |
-          if [[ -n "${ATLAS_GITHUB_CLIENT_ID}" && -n "${ATLAS_GITHUB_CLIENT_SECRET}" ]]; then
+          if [[ -n "${AUTH_GITHUB_CLIENT_ID}" && -n "${AUTH_GITHUB_CLIENT_SECRET}" ]]; then
             kubectl -n "$KUBE_NAMESPACE" create secret generic atlas-auth \
-              --from-literal=GITHUB_CLIENT_ID="$ATLAS_GITHUB_CLIENT_ID" \
-              --from-literal=GITHUB_CLIENT_SECRET="$ATLAS_GITHUB_CLIENT_SECRET" \
+              --from-literal=GITHUB_CLIENT_ID="$AUTH_GITHUB_CLIENT_ID" \
+              --from-literal=GITHUB_CLIENT_SECRET="$AUTH_GITHUB_CLIENT_SECRET" \
               --from-literal=ATLAS_SESSION_SECRET="$(openssl rand -hex 32)" \
               --dry-run=client -o yaml | kubectl apply -f -
           else
