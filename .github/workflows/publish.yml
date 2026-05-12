@@ -1485,16 +1485,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
         with:
-          node-version: 22
-          cache: npm
+          name: build-all-dist
+          path: /tmp
 
-      - name: Install dependencies
-        run: |
-          npm ci --prefer-offline --legacy-peer-deps
-          npm install --no-save @rollup/rollup-linux-x64-gnu 2>/dev/null || true
+      - name: Extract build artifacts
+        run: tar xzf /tmp/build-all-dist.tar.gz
 
       - name: Check deployment configuration
         id: config
