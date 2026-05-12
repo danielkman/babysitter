@@ -1,6 +1,7 @@
 nodeKind: ModelVersion
 id: model:llama-4-maverick@current
 attributes:
+  displayName: "Llama 4 Maverick"
   costPerMTokInput: 0
   costPerMTokOutput: 0
   supportsExtendedThinking: false

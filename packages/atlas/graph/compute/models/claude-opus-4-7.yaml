@@ -1,6 +1,7 @@
 nodeKind: ModelVersion
 id: model:claude-opus-4-7@current
 attributes:
+  displayName: "Claude 4.7 Opus"
   modelFamilyId: model-family:claude-opus-4
   versionRange: '>=4.7.0 <4.8.0'
   kind: chat

@@ -1,6 +1,7 @@
 nodeKind: ModelVersion
 id: model:llama-4-scout@current
 attributes:
+  displayName: "Llama 4 Scout"
   costPerMTokInput: 0
   costPerMTokOutput: 0
   supportsExtendedThinking: false

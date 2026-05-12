@@ -1,6 +1,7 @@
 nodeKind: ModelVersion
 id: model:gemini-3-pro@current
 attributes:
+  displayName: "Gemini 3 Pro"
   supportsExtendedThinking: false
   safetyTier: google-deepmind-frontier-safety
   modelFamilyId: model-family:gemini-3

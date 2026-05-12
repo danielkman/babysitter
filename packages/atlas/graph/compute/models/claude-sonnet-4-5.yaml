@@ -1,6 +1,7 @@
 nodeKind: ModelVersion
 id: model:claude-sonnet-4-5@current
 attributes:
+  displayName: "Claude 4.5 Sonnet"
   modelFamilyId: model-family:claude-sonnet-4
   versionRange: '>=4.5.0 <4.6.0'
   kind: chat

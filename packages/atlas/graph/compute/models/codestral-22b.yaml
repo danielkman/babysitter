@@ -1,6 +1,7 @@
 nodeKind: ModelVersion
 id: model:codestral-22b@current
 attributes:
+  displayName: "Codestral 22B"
   costPerMTokInput: 0
   costPerMTokOutput: 0
   supportsExtendedThinking: false

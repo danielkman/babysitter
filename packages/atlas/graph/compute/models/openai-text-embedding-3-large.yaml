@@ -1,6 +1,7 @@
 nodeKind: ModelVersion
 id: model:openai-text-embedding-3-large@current
 attributes:
+  displayName: "OpenAI Text Embedding 3 Large"
   modelFamilyId: model-family:openai-text-embedding-3
   versionRange: ">=3.0.0 <4.0.0"
   kind: embedding

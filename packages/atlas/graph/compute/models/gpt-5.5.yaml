@@ -1,6 +1,7 @@
 nodeKind: ModelVersion
 id: model:gpt-5.5@current
 attributes:
+  displayName: "GPT-5.5"
   supportsExtendedThinking: false
   modelFamilyId: model-family:gpt-5
   versionRange: '>=5.5.0 <5.6.0'

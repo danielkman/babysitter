@@ -1,6 +1,7 @@
 nodeKind: ModelVersion
 id: model:voyageai-voyage-3@current
 attributes:
+  displayName: "Voyage AI Voyage 3"
   modelFamilyId: model-family:voyageai-voyage-3
   versionRange: ">=3.0.0 <4.0.0"
   kind: embedding

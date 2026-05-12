@@ -1,6 +1,7 @@
 nodeKind: ModelVersion
 id: model:mistral-medium-3@current
 attributes:
+  displayName: "Mistral Medium 3"
   costPerMTokInput: 0.4
   costPerMTokOutput: 2.0
   supportsExtendedThinking: false

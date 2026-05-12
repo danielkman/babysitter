@@ -1,6 +1,7 @@
 nodeKind: ModelVersion
 id: model:gemini-2-0-flash@current
 attributes:
+  displayName: "Gemini 2.0 Flash"
   supportsExtendedThinking: false
   modelFamilyId: model-family:gemini-2-0
   versionRange: '>=2.0.0 <2.1.0'

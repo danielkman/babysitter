@@ -1,6 +1,7 @@
 nodeKind: ModelVersion
 id: model:phi-3-mini@current
 attributes:
+  displayName: "Phi-3 Mini"
   costPerMTokInput: 0
   costPerMTokOutput: 0
   supportsExtendedThinking: false

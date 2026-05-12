@@ -1,6 +1,7 @@
 nodeKind: ModelVersion
 id: model:qwen-2-5-coder-32b@current
 attributes:
+  displayName: "Qwen 2.5 Coder 32B"
   costPerMTokInput: 0
   costPerMTokOutput: 0
   supportsExtendedThinking: false

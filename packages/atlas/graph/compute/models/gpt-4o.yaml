@@ -1,6 +1,7 @@
 nodeKind: ModelVersion
 id: model:gpt-4o@current
 attributes:
+  displayName: "GPT-4o"
   supportsExtendedThinking: false
   modelFamilyId: model-family:gpt-4o
   versionRange: '>=4.0.0 <5.0.0'

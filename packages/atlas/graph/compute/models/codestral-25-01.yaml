@@ -1,6 +1,7 @@
 nodeKind: ModelVersion
 id: model:codestral-25-01@current
 attributes:
+  displayName: "Codestral 25.01"
   costPerMTokInput: 0.3
   costPerMTokOutput: 0.9
   supportsExtendedThinking: false

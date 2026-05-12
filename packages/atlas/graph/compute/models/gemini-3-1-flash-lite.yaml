@@ -1,6 +1,7 @@
 nodeKind: ModelVersion
 id: model:gemini-3-1-flash-lite@current
 attributes:
+  displayName: "Gemini 3.1 Flash Lite"
   supportsExtendedThinking: false
   safetyTier: google-deepmind-frontier-safety
   modelFamilyId: model-family:gemini-3

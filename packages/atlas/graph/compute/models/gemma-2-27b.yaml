@@ -1,6 +1,7 @@
 nodeKind: ModelVersion
 id: model:gemma-2-27b@current
 attributes:
+  displayName: "Gemma 2 27B"
   costPerMTokInput: 0
   costPerMTokOutput: 0
   supportsExtendedThinking: false

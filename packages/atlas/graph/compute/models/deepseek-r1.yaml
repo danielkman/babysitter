@@ -1,6 +1,7 @@
 nodeKind: ModelVersion
 id: model:deepseek-r1@current
 attributes:
+  displayName: "DeepSeek R1"
   costPerMTokInput: 0.55
   costPerMTokOutput: 2.19
   supportsExtendedThinking: true

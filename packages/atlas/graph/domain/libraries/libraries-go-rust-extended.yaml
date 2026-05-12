@@ -176,7 +176,6 @@ edges:
   library_used_by:
     - target: skill-area:backend-data-persistence
   alternative_to:
-    - library:diesel
     - library:diesel-rs
     - library:sea-orm
     - library:sqlx-pg

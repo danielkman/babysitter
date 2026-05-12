@@ -18,12 +18,12 @@ attributes:
   composes:
     - language:rust
     - framework:actix-web
-    - library:diesel
+    - library:diesel-rs
 edges:
   composed_of:
     - language:rust
     - framework:actix-web
-    - library:diesel
+    - library:diesel-rs
 ---
 nodeKind: StackProfile
 id: stack-profile:elixir-phoenix-postgres

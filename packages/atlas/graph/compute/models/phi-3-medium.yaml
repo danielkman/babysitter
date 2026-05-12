@@ -1,6 +1,7 @@
 nodeKind: ModelVersion
 id: model:phi-3-medium@current
 attributes:
+  displayName: "Phi-3 Medium"
   costPerMTokInput: 0
   costPerMTokOutput: 0
   supportsExtendedThinking: false

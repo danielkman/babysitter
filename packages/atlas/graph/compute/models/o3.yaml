@@ -1,6 +1,7 @@
 nodeKind: ModelVersion
 id: model:o3@current
 attributes:
+  displayName: "o3"
   supportsExtendedThinking: false
   modelFamilyId: model-family:o-reasoning-series
   versionRange: '>=3.0.0 <4.0.0'

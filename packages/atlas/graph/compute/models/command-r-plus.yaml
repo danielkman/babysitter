@@ -1,6 +1,7 @@
 nodeKind: ModelVersion
 id: model:command-r-plus@current
 attributes:
+  displayName: "Command R+"
   costPerMTokInput: 2.5
   costPerMTokOutput: 10.0
   supportsExtendedThinking: false

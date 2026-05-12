@@ -29,23 +29,8 @@ edges:
   library_used_by:
     - target: skill-area:backend-data-persistence
   alternative_to:
-    - library:diesel
     - library:diesel-rs
     - library:sqlx-rust
----
-nodeKind: Library
-id: library:diesel
-attributes:
-  displayName: "Diesel"
-  belongsToLanguageId: language:rust
-  description: |
-    Type-safe Rust ORM and query builder with compile-time schema
-    checks; supports Postgres, MySQL, and SQLite.
-edges:
-  belongs_to_language:
-    - language:rust
-  library_used_by:
-    - target: skill-area:backend-data-persistence
 ---
 nodeKind: Library
 id: library:clap

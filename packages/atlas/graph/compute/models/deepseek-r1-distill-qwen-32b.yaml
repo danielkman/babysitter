@@ -1,6 +1,7 @@
 nodeKind: ModelVersion
 id: model:deepseek-r1-distill-qwen-32b@current
 attributes:
+  displayName: "DeepSeek R1 Distill Qwen 32B"
   costPerMTokInput: 0
   costPerMTokOutput: 0
   supportsExtendedThinking: true

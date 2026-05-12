@@ -1,6 +1,7 @@
 nodeKind: ModelVersion
 id: model:llama-3-1-70b-instruct@current
 attributes:
+  displayName: "Llama 3.1 70B Instruct"
   costPerMTokInput: 0
   costPerMTokOutput: 0
   supportsExtendedThinking: false

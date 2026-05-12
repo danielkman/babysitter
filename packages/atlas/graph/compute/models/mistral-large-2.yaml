@@ -1,6 +1,7 @@
 nodeKind: ModelVersion
 id: model:mistral-large-2@current
 attributes:
+  displayName: "Mistral Large 2"
   costPerMTokInput: 2.0
   costPerMTokOutput: 6.0
   supportsExtendedThinking: false

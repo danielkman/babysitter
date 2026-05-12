@@ -1,6 +1,7 @@
 nodeKind: ModelVersion
 id: model:gemini-2-5-pro@current
 attributes:
+  displayName: "Gemini 2.5 Pro"
   supportsExtendedThinking: false
   safetyTier: google-deepmind-asl-2
   modelFamilyId: model-family:gemini-2-5

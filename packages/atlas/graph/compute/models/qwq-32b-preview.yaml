@@ -1,6 +1,7 @@
 nodeKind: ModelVersion
 id: model:qwq-32b-preview@current
 attributes:
+  displayName: "QwQ 32B Preview"
   costPerMTokInput: 0
   costPerMTokOutput: 0
   supportsExtendedThinking: true

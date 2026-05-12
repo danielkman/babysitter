@@ -19,6 +19,7 @@ edges:
 nodeKind: ModelVersion
 id: modelVersion:codex-default:ge-0-0-0
 attributes:
+  displayName: "Codex Default"
   modelId: codex-default
   providerId: openai
   versionRange: ">=0.0.0"
@@ -46,6 +47,7 @@ edges:
 nodeKind: ModelVersion
 id: modelVersion:claude-code-default:ge-0-0-0
 attributes:
+  displayName: "Claude Code Default"
   modelId: claude-code-default
   providerId: anthropic
   versionRange: ">=0.0.0"
@@ -72,6 +74,7 @@ edges:
 nodeKind: ModelVersion
 id: modelVersion:copilot-default:ge-0-0-0
 attributes:
+  displayName: "Copilot Default"
   modelId: copilot-default
   providerId: openai
   versionRange: ">=0.0.0"
@@ -99,6 +102,7 @@ edges:
 nodeKind: ModelVersion
 id: modelVersion:gemini-cli-default:ge-0-0-0
 attributes:
+  displayName: "Gemini CLI Default"
   modelId: gemini-cli-default
   providerId: google
   versionRange: ">=0.0.0"
