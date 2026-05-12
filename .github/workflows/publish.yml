@@ -1460,7 +1460,7 @@ jobs:
     if: ${{ !contains(github.event.head_commit.message, '[skip publish]') }}
     name: Deploy Krate To AKS
     needs:
-      - prepare_staging_publish
+      - validate_krate
     runs-on: ubuntu-latest-l
     env:
       ACR_NAME: ${{ vars.AZURE_ACR_NAME }}
