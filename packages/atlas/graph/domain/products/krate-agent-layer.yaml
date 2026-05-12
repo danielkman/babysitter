@@ -24,6 +24,12 @@ edges:
     - domain:devops
     - topic:agent-dispatch
     - topic:agent-orchestration-products
+  related_to:
+    - target: topic:krate-agent-subagent
+    - target: topic:krate-agent-tool-profile
+    - target: topic:krate-agent-mcp-server
+    - target: topic:krate-agent-skill
+    - target: topic:krate-agent-provider-config
 ---
 nodeKind: Topic
 id: topic:krate-agent-subagent
@@ -40,6 +46,10 @@ edges:
     - domain:platform-engineering
     - domain:software-engineering
     - topic:agent-dispatch
+  requires:
+    - target: topic:krate-agent-stack
+  related_to:
+    - target: topic:krate-agent-tool-profile
 ---
 nodeKind: Topic
 id: topic:krate-agent-tool-profile
@@ -55,6 +65,10 @@ edges:
     - domain:platform-engineering
     - domain:software-engineering
     - topic:human-in-the-loop
+  requires:
+    - target: topic:krate-agent-stack
+  related_to:
+    - target: topic:krate-agent-subagent
 ---
 nodeKind: Topic
 id: topic:krate-agent-mcp-server
@@ -70,6 +84,10 @@ edges:
   applies_to:
     - domain:platform-engineering
     - domain:software-engineering
+  requires:
+    - target: topic:krate-agent-stack
+  related_to:
+    - target: topic:krate-agent-transport-binding
 ---
 nodeKind: Topic
 id: topic:krate-agent-skill
@@ -86,6 +104,8 @@ edges:
     - domain:platform-engineering
     - domain:software-engineering
     - topic:agent-dispatch
+  requires:
+    - target: topic:krate-agent-stack
 ---
 nodeKind: Topic
 id: topic:krate-agent-trigger-rule
@@ -103,6 +123,11 @@ edges:
     - domain:devops
     - topic:event-driven-dispatch
     - topic:scheduled-dispatch
+  requires:
+    - target: topic:krate-agent-stack
+  related_to:
+    - target: topic:krate-agent-trigger-execution
+    - target: topic:krate-agent-capability-requirement
 ---
 nodeKind: Topic
 id: topic:krate-agent-context-label
@@ -118,6 +143,8 @@ edges:
   applies_to:
     - domain:platform-engineering
     - domain:software-engineering
+  related_to:
+    - target: topic:krate-agent-context-bundle
 ---
 nodeKind: Topic
 id: topic:krate-agent-workspace-policy
@@ -133,6 +160,9 @@ edges:
     - domain:platform-engineering
     - domain:devops
     - topic:agent-run-lifecycle
+  related_to:
+    - target: topic:krate-agent-workspace
+    - target: topic:krate-agent-workspace-runtime
 ---
 nodeKind: Topic
 id: topic:krate-agent-service-account
@@ -149,6 +179,9 @@ edges:
     - domain:platform-engineering
     - domain:devops
     - skill-area:k8s-rbac
+  related_to:
+    - target: topic:krate-agent-role-binding
+    - target: topic:krate-agent-secret-grant
 ---
 nodeKind: Topic
 id: topic:krate-agent-role-binding
@@ -165,6 +198,8 @@ edges:
     - domain:platform-engineering
     - domain:devops
     - skill-area:k8s-rbac
+  requires:
+    - target: topic:krate-agent-service-account
 ---
 nodeKind: Topic
 id: topic:krate-agent-secret-grant
@@ -181,6 +216,10 @@ edges:
     - domain:platform-engineering
     - domain:devops
     - skill-area:container-security
+  requires:
+    - target: topic:krate-agent-service-account
+  related_to:
+    - target: topic:krate-agent-config-grant
 ---
 nodeKind: Topic
 id: topic:krate-agent-config-grant
@@ -196,6 +235,10 @@ edges:
   applies_to:
     - domain:platform-engineering
     - domain:devops
+  requires:
+    - target: topic:krate-agent-service-account
+  related_to:
+    - target: topic:krate-agent-secret-grant
 ---
 nodeKind: Topic
 id: topic:krate-agent-adapter
@@ -212,6 +255,8 @@ edges:
     - domain:platform-engineering
     - domain:software-engineering
     - topic:remote-dispatch
+  related_to:
+    - target: topic:krate-agent-transport-binding
 ---
 nodeKind: Topic
 id: topic:krate-agent-transport-binding
@@ -227,6 +272,8 @@ edges:
   applies_to:
     - domain:platform-engineering
     - domain:devops
+  requires:
+    - target: topic:krate-agent-adapter
 ---
 nodeKind: Topic
 id: topic:krate-agent-provider-config
@@ -242,6 +289,8 @@ edges:
   applies_to:
     - domain:platform-engineering
     - domain:software-engineering
+  requires:
+    - target: topic:krate-agent-stack
 ---
 nodeKind: Topic
 id: topic:krate-agent-project
@@ -257,6 +306,9 @@ edges:
   applies_to:
     - domain:platform-engineering
     - domain:software-engineering
+  related_to:
+    - target: topic:krate-agent-stack
+    - target: topic:krate-agent-workspace-policy
 ---
 nodeKind: Topic
 id: topic:krate-agent-gateway-config
@@ -273,6 +325,10 @@ edges:
     - domain:platform-engineering
     - domain:devops
     - topic:agent-dispatch
+  related_to:
+    - target: topic:krate-agent-trigger-rule
+    - target: topic:krate-agent-capability-requirement
+    - target: topic:krate-agent-dispatch-run
 ---
 nodeKind: Topic
 id: topic:krate-agent-memory-repository
@@ -290,6 +346,11 @@ edges:
     - domain:software-engineering
     - topic:company-brain
     - topic:organizational-memory
+  related_to:
+    - target: topic:krate-agent-memory-source
+    - target: topic:krate-agent-memory-ontology
+    - target: topic:krate-agent-memory-snapshot
+    - target: topic:krate-agent-memory-query
 ---
 nodeKind: Topic
 id: topic:krate-agent-memory-source
@@ -307,6 +368,8 @@ edges:
     - domain:software-engineering
     - topic:company-brain
     - topic:memory-consolidation
+  requires:
+    - target: topic:krate-agent-memory-repository
 ---
 nodeKind: Topic
 id: topic:krate-agent-memory-ontology
@@ -324,6 +387,10 @@ edges:
     - domain:software-engineering
     - topic:company-brain
     - topic:unified-agent-memory
+  requires:
+    - target: topic:krate-agent-memory-repository
+  related_to:
+    - target: topic:krate-agent-memory-association
 ---
 nodeKind: Topic
 id: topic:krate-agent-memory-association
@@ -342,6 +409,10 @@ edges:
     - domain:software-engineering
     - topic:company-brain
     - topic:memory-to-knowledge-bridge
+  requires:
+    - target: topic:krate-agent-memory-ontology
+  related_to:
+    - target: topic:krate-agent-memory-snapshot
 
 # ─────────────────────────────────────────────────────────────────────────────
 # SECTION 2: Agent Runtime Resources (Postgres aggregated)
@@ -364,6 +435,15 @@ edges:
     - domain:devops
     - topic:agent-run-lifecycle
     - topic:agent-dispatch
+  requires:
+    - target: topic:krate-agent-stack
+  related_to:
+    - target: topic:krate-agent-dispatch-attempt
+    - target: topic:krate-agent-session
+    - target: topic:krate-agent-context-bundle
+    - target: topic:krate-agent-workspace
+    - target: topic:krate-agent-approval
+    - target: topic:krate-agent-artifact
 ---
 nodeKind: Topic
 id: topic:krate-agent-dispatch-attempt
@@ -380,6 +460,8 @@ edges:
     - domain:platform-engineering
     - domain:devops
     - topic:agent-run-lifecycle
+  requires:
+    - target: topic:krate-agent-dispatch-run
 ---
 nodeKind: Topic
 id: topic:krate-agent-session
@@ -396,6 +478,10 @@ edges:
     - domain:platform-engineering
     - domain:software-engineering
     - topic:agent-run-lifecycle
+  requires:
+    - target: topic:krate-agent-dispatch-run
+  related_to:
+    - target: topic:krate-agent-session-transcript
 ---
 nodeKind: Topic
 id: topic:krate-agent-context-bundle
@@ -411,6 +497,11 @@ edges:
   applies_to:
     - domain:platform-engineering
     - domain:software-engineering
+  requires:
+    - target: topic:krate-agent-dispatch-run
+  related_to:
+    - target: topic:krate-agent-context-label
+    - target: topic:krate-agent-memory-query
 ---
 nodeKind: Topic
 id: topic:krate-agent-artifact
@@ -427,6 +518,8 @@ edges:
     - domain:platform-engineering
     - domain:software-engineering
     - topic:agent-run-lifecycle
+  requires:
+    - target: topic:krate-agent-dispatch-run
 ---
 nodeKind: Topic
 id: topic:krate-agent-approval
@@ -444,6 +537,8 @@ edges:
     - domain:platform-engineering
     - domain:software-engineering
     - topic:human-in-the-loop
+  requires:
+    - target: topic:krate-agent-dispatch-run
 ---
 nodeKind: Topic
 id: topic:krate-agent-workspace
@@ -460,6 +555,11 @@ edges:
     - domain:platform-engineering
     - domain:devops
     - topic:agent-run-lifecycle
+  requires:
+    - target: topic:krate-agent-dispatch-run
+  related_to:
+    - target: topic:krate-agent-workspace-policy
+    - target: topic:krate-agent-workspace-runtime
 ---
 nodeKind: Topic
 id: topic:krate-agent-trigger-execution
@@ -476,6 +576,10 @@ edges:
     - domain:platform-engineering
     - domain:devops
     - topic:event-driven-dispatch
+  requires:
+    - target: topic:krate-agent-trigger-rule
+  related_to:
+    - target: topic:krate-agent-dispatch-run
 ---
 nodeKind: Topic
 id: topic:krate-agent-capability-requirement
@@ -492,6 +596,9 @@ edges:
     - domain:platform-engineering
     - domain:software-engineering
     - topic:agent-dispatch
+  related_to:
+    - target: topic:krate-agent-gateway-config
+    - target: topic:krate-agent-stack
 ---
 nodeKind: Topic
 id: topic:krate-agent-session-transcript
@@ -508,6 +615,10 @@ edges:
     - domain:platform-engineering
     - domain:software-engineering
     - topic:agent-run-lifecycle
+  requires:
+    - target: topic:krate-agent-session
+  related_to:
+    - target: topic:krate-agent-memory-snapshot
 ---
 nodeKind: Topic
 id: topic:krate-agent-workspace-runtime
@@ -524,6 +635,8 @@ edges:
     - domain:platform-engineering
     - domain:devops
     - topic:agent-run-lifecycle
+  requires:
+    - target: topic:krate-agent-workspace
 ---
 nodeKind: Topic
 id: topic:krate-agent-memory-snapshot
@@ -541,6 +654,10 @@ edges:
     - domain:software-engineering
     - topic:company-brain
     - topic:memory-consolidation
+  requires:
+    - target: topic:krate-agent-memory-repository
+  related_to:
+    - target: topic:krate-agent-session-transcript
 ---
 nodeKind: Topic
 id: topic:krate-agent-memory-query
@@ -558,6 +675,10 @@ edges:
     - domain:software-engineering
     - topic:company-brain
     - topic:unified-agent-memory
+  requires:
+    - target: topic:krate-agent-memory-repository
+  related_to:
+    - target: topic:krate-agent-context-bundle
 ---
 nodeKind: Topic
 id: topic:krate-agent-memory-update
@@ -575,6 +696,11 @@ edges:
     - domain:software-engineering
     - topic:company-brain
     - topic:memory-security
+  requires:
+    - target: topic:krate-agent-memory-repository
+  related_to:
+    - target: topic:krate-agent-memory-ontology
+    - target: topic:krate-agent-memory-snapshot
 
 # ─────────────────────────────────────────────────────────────────────────────
 # SECTION 3: Krate Controllers as InteractionPrimitives
@@ -600,6 +726,12 @@ attributes:
 edges:
   realizes:
     - target: layer:10-interaction
+  in_category:
+    - target: interaction-primitive-category:lifecycle
+  integrates_with:
+    - target: topic:krate-agent-dispatch-run
+    - target: topic:krate-agent-stack
+    - target: topic:agent-dispatch-as-ci
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:krate-agent-trigger-process
@@ -620,6 +752,12 @@ attributes:
 edges:
   realizes:
     - target: layer:10-interaction
+  in_category:
+    - target: interaction-primitive-category:lifecycle
+  integrates_with:
+    - target: topic:krate-agent-trigger-rule
+    - target: topic:krate-agent-trigger-execution
+    - target: topic:krate-agent-capability-requirement
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:krate-agent-approval-decide
@@ -640,6 +778,12 @@ attributes:
 edges:
   realizes:
     - target: layer:10-interaction
+  in_category:
+    - target: interaction-primitive-category:human-in-loop
+    - target: interaction-primitive-category:approval
+  integrates_with:
+    - target: topic:krate-agent-approval
+    - target: topic:krate-agent-dispatch-run
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:krate-pr-create
@@ -660,6 +804,11 @@ attributes:
 edges:
   realizes:
     - target: layer:10-interaction
+  in_category:
+    - target: interaction-primitive-category:lifecycle
+  integrates_with:
+    - target: definition:krate-forge-model
+    - target: topic:krate-agent-artifact
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:krate-pr-merge
@@ -680,6 +829,11 @@ attributes:
 edges:
   realizes:
     - target: layer:10-interaction
+  in_category:
+    - target: interaction-primitive-category:lifecycle
+  integrates_with:
+    - target: definition:krate-forge-model
+    - target: topic:krate-agent-approval
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:krate-pr-review
@@ -699,6 +853,12 @@ attributes:
 edges:
   realizes:
     - target: layer:10-interaction
+  in_category:
+    - target: interaction-primitive-category:human-in-loop
+    - target: interaction-primitive-category:collaborative
+  integrates_with:
+    - target: definition:krate-forge-model
+    - target: topic:krate-agent-session
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:krate-memory-query
@@ -718,6 +878,13 @@ attributes:
 edges:
   realizes:
     - target: layer:10-interaction
+  in_category:
+    - target: interaction-primitive-category:context
+    - target: interaction-primitive-category:navigation
+  integrates_with:
+    - target: topic:krate-agent-memory-repository
+    - target: topic:krate-agent-memory-query
+    - target: topic:company-brain-memory
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:krate-memory-update
@@ -739,3 +906,10 @@ attributes:
 edges:
   realizes:
     - target: layer:10-interaction
+  in_category:
+    - target: interaction-primitive-category:human-in-loop
+    - target: interaction-primitive-category:collaborative
+  integrates_with:
+    - target: topic:krate-agent-memory-repository
+    - target: topic:krate-agent-memory-update
+    - target: topic:krate-agent-memory-ontology

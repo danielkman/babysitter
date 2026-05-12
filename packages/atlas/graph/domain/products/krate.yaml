@@ -122,6 +122,12 @@ edges:
       versionRange: ">=0.1.0"
       level: partial
       notes: "Plugin system for extending Krate with custom resource types and webhooks"
+  composed_of:
+    - target: agent-core-impl:krate.core@current
+    - target: agent-runtime-impl:krate.runtime@current
+    - target: agent-platform-impl:krate.platform@current
+    - target: agent-ui-impl:krate.ui@current
+    - target: knowledge-fabric-impl:krate.knowledge@current
   uses_memory_system:
     - target: memory-system:file-based-markdown-pattern
 

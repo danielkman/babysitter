@@ -1540,3 +1540,578 @@ edges:
       observedVia: ora-discover-api
   sourced_from:
     - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.fireflies-ai
+attributes:
+  displayName: "Ora score — Fireflies.ai"
+  domain: "fireflies.ai"
+  productName: "Fireflies.ai"
+  score: 69
+  grade: "C"
+  category: "Productivity"
+  matchScore: 6
+  tags: ["meeting notes", "transcription", "ai notetaker", "meeting recording", "conversation intelligence"]
+  discoveryIntents: ["MCP server for team communication chat email calendar meeting notes workflows"]
+  scoreUrl: https://ora.run/score/fireflies.ai
+  badgeUrl: https://ora.run/api/badge/fireflies.ai
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:fireflies-ai
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.otter-ai
+attributes:
+  displayName: "Ora score — Otter.ai"
+  domain: "otter.ai"
+  productName: "Otter.ai"
+  score: 68
+  grade: "C"
+  category: "Productivity"
+  matchScore: 6
+  tags: ["meeting notes", "transcription", "ai notetaker", "meeting summary", "speech to text"]
+  discoveryIntents: ["MCP server for team communication chat email calendar meeting notes workflows"]
+  scoreUrl: https://ora.run/score/otter.ai
+  badgeUrl: https://ora.run/api/badge/otter.ai
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:otter-ai
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.nylas-com
+attributes:
+  displayName: "Ora score — Nylas"
+  domain: "nylas.com"
+  productName: "Nylas"
+  score: 72
+  grade: "B"
+  category: "Communication & Support"
+  matchScore: 5
+  tags: ["email api", "calendar api", "contacts api", "email integration", "scheduling"]
+  discoveryIntents: ["MCP server for team communication chat email calendar meeting notes workflows"]
+  scoreUrl: https://ora.run/score/nylas.com
+  badgeUrl: https://ora.run/api/badge/nylas.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:nylas
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.loops-so
+attributes:
+  displayName: "Ora score — Loops"
+  domain: "loops.so"
+  productName: "Loops"
+  score: 71
+  grade: "B"
+  category: "Communication & Support"
+  matchScore: 5
+  tags: ["email marketing", "transactional email", "email automation", "newsletters"]
+  discoveryIntents: ["MCP server for team communication chat email calendar meeting notes workflows"]
+  scoreUrl: https://ora.run/score/loops.so
+  badgeUrl: https://ora.run/api/badge/loops.so
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:loops
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.bigcommerce-com
+attributes:
+  displayName: "Ora score — BigCommerce"
+  domain: "bigcommerce.com"
+  productName: "BigCommerce"
+  score: 72
+  grade: "B"
+  category: "E-commerce"
+  matchScore: 6
+  tags: ["ecommerce", "online store", "storefront", "headless commerce"]
+  discoveryIntents: ["MCP server for ecommerce inventory orders storefront customer support workflows"]
+  scoreUrl: https://ora.run/score/bigcommerce.com
+  badgeUrl: https://ora.run/api/badge/bigcommerce.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:bigcommerce
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.medusajs-com
+attributes:
+  displayName: "Ora score — Medusa"
+  domain: "medusajs.com"
+  productName: "Medusa"
+  score: 68
+  grade: "C"
+  category: "E-commerce"
+  matchScore: 6
+  tags: ["ecommerce", "headless commerce", "open source ecommerce", "storefront api"]
+  discoveryIntents: ["MCP server for ecommerce inventory orders storefront customer support workflows"]
+  scoreUrl: https://ora.run/score/medusajs.com
+  badgeUrl: https://ora.run/api/badge/medusajs.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:medusa
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.saleor-io
+attributes:
+  displayName: "Ora score — Saleor"
+  domain: "saleor.io"
+  productName: "Saleor"
+  score: 68
+  grade: "C"
+  category: "E-commerce"
+  matchScore: 5
+  tags: ["ecommerce", "headless commerce", "graphql", "open source ecommerce"]
+  discoveryIntents: ["MCP server for ecommerce inventory orders storefront customer support workflows"]
+  scoreUrl: https://ora.run/score/saleor.io
+  badgeUrl: https://ora.run/api/badge/saleor.io
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:saleor
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.onelogin-com
+attributes:
+  displayName: "Ora score — OneLogin"
+  domain: "onelogin.com"
+  productName: "OneLogin"
+  score: 0
+  grade: "F"
+  category: "Identity & Auth"
+  matchScore: 7
+  tags: ["sso", "identity", "access management", "directory"]
+  discoveryIntents: ["MCP server for identity access management secrets compliance workflows"]
+  scoreUrl: https://ora.run/score/onelogin.com
+  badgeUrl: https://ora.run/api/badge/onelogin.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:onelogin
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.jumpcloud-com
+attributes:
+  displayName: "Ora score — JumpCloud"
+  domain: "jumpcloud.com"
+  productName: "JumpCloud"
+  score: 0
+  grade: "F"
+  category: "Identity & Auth"
+  matchScore: 5
+  tags: ["directory", "identity", "device management", "sso", "ldap"]
+  discoveryIntents: ["MCP server for identity access management secrets compliance workflows"]
+  scoreUrl: https://ora.run/score/jumpcloud.com
+  badgeUrl: https://ora.run/api/badge/jumpcloud.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:jumpcloud
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.fireworks-ai
+attributes:
+  displayName: "Ora score — Fireworks AI"
+  domain: "fireworks.ai"
+  productName: "Fireworks AI"
+  score: 75
+  grade: "B"
+  category: "AI & ML"
+  matchScore: 5
+  tags: ["llm", "inference", "ai api", "fast inference", "model serving"]
+  discoveryIntents: ["MCP server for LLMOps prompt evaluation tracing model monitoring workflows"]
+  scoreUrl: https://ora.run/score/fireworks.ai
+  badgeUrl: https://ora.run/api/badge/fireworks.ai
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:fireworks-ai
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.anthropic-com
+attributes:
+  displayName: "Ora score — Anthropic"
+  domain: "anthropic.com"
+  productName: "Anthropic"
+  score: 72
+  grade: "B"
+  category: "AI & ML"
+  matchScore: 5
+  tags: ["llm", "claude", "chat", "ai api", "language model", "completions", "safety"]
+  discoveryIntents: ["MCP server for LLMOps prompt evaluation tracing model monitoring workflows"]
+  scoreUrl: https://ora.run/score/anthropic.com
+  badgeUrl: https://ora.run/api/badge/anthropic.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:anthropic
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.mistral-ai
+attributes:
+  displayName: "Ora score — Mistral AI"
+  domain: "mistral.ai"
+  productName: "Mistral AI"
+  score: 69
+  grade: "C"
+  category: "AI & ML"
+  matchScore: 5
+  tags: ["llm", "language model", "open source ai", "ai api", "completions"]
+  discoveryIntents: ["MCP server for LLMOps prompt evaluation tracing model monitoring workflows"]
+  scoreUrl: https://ora.run/score/mistral.ai
+  badgeUrl: https://ora.run/api/badge/mistral.ai
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:mistral
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.openai-com
+attributes:
+  displayName: "Ora score — OpenAI"
+  domain: "openai.com"
+  productName: "OpenAI"
+  score: 64
+  grade: "C"
+  category: "AI & ML"
+  matchScore: 5
+  tags: ["llm", "gpt", "chat", "embeddings", "ai api", "language model", "completions", "image generation"]
+  discoveryIntents: ["MCP server for LLMOps prompt evaluation tracing model monitoring workflows"]
+  scoreUrl: https://ora.run/score/openai.com
+  badgeUrl: https://ora.run/api/badge/openai.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:openai
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.deepseek-com
+attributes:
+  displayName: "Ora score — DeepSeek"
+  domain: "deepseek.com"
+  productName: "DeepSeek"
+  score: 62
+  grade: "C"
+  category: "AI & ML"
+  matchScore: 5
+  tags: ["llm", "language model", "coding ai", "ai api", "completions"]
+  discoveryIntents: ["MCP server for LLMOps prompt evaluation tracing model monitoring workflows"]
+  scoreUrl: https://ora.run/score/deepseek.com
+  badgeUrl: https://ora.run/api/badge/deepseek.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:deepseek
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.turso-tech
+attributes:
+  displayName: "Ora score — Turso"
+  domain: "turso.tech"
+  productName: "Turso"
+  score: 72
+  grade: "B"
+  category: "Infrastructure & DevOps"
+  matchScore: 5
+  tags: ["database", "sqlite", "edge database", "embedded database", "libsql", "serverless database"]
+  discoveryIntents: ["MCP server for database admin postgres redis elasticsearch query workflows"]
+  scoreUrl: https://ora.run/score/turso.tech
+  badgeUrl: https://ora.run/api/badge/turso.tech
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:turso
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.neon-tech
+attributes:
+  displayName: "Ora score — Neon"
+  domain: "neon.tech"
+  productName: "Neon"
+  score: 68
+  grade: "C"
+  category: "Developer Tools"
+  matchScore: 5
+  tags: ["database", "postgres", "serverless database", "branching", "edge"]
+  discoveryIntents: ["MCP server for database admin postgres redis elasticsearch query workflows"]
+  scoreUrl: https://ora.run/score/neon.tech
+  badgeUrl: https://ora.run/api/badge/neon.tech
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:neon
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.redis-io
+attributes:
+  displayName: "Ora score — Redis"
+  domain: "redis.io"
+  productName: "Redis"
+  score: 62
+  grade: "C"
+  category: "Infrastructure & DevOps"
+  matchScore: 5
+  tags: ["database", "cache", "key-value store", "redis", "in-memory data"]
+  discoveryIntents: ["MCP server for database admin postgres redis elasticsearch query workflows"]
+  scoreUrl: https://ora.run/score/redis.io
+  badgeUrl: https://ora.run/api/badge/redis.io
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:redis
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.supabase-com
+attributes:
+  displayName: "Ora score — Supabase"
+  domain: "supabase.com"
+  productName: "Supabase"
+  score: 69
+  grade: "C"
+  category: "Developer Tools"
+  matchScore: 4
+  tags: ["database", "postgres", "auth", "realtime", "storage", "backend as a service"]
+  discoveryIntents: ["MCP server for database admin postgres redis elasticsearch query workflows"]
+  scoreUrl: https://ora.run/score/supabase.com
+  badgeUrl: https://ora.run/api/badge/supabase.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:supabase
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.resend-com
+attributes:
+  displayName: "Ora score — Resend"
+  domain: "resend.com"
+  productName: "Resend"
+  score: 73
+  grade: "B"
+  category: "Communication & Support"
+  matchScore: 7
+  tags: ["email", "transactional email", "email api", "smtp", "email delivery"]
+  discoveryIntents: ["MCP server for team communication chat email calendar meeting notes workflows"]
+  scoreUrl: https://ora.run/score/resend.com
+  badgeUrl: https://ora.run/api/badge/resend.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:resend
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.slack-com
+attributes:
+  displayName: "Ora score — Slack"
+  domain: "slack.com"
+  productName: "Slack"
+  score: 67
+  grade: "C"
+  category: "Communication & Support"
+  matchScore: 5
+  tags: ["messaging", "team chat", "channels", "collaboration", "workplace communication"]
+  discoveryIntents: ["MCP server for team communication chat email calendar meeting notes workflows"]
+  scoreUrl: https://ora.run/score/slack.com
+  badgeUrl: https://ora.run/api/badge/slack.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:slack
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.shopify-com
+attributes:
+  displayName: "Ora score — Shopify"
+  domain: "shopify.com"
+  productName: "Shopify"
+  score: 67
+  grade: "C"
+  category: "E-commerce"
+  matchScore: 6
+  tags: ["ecommerce", "online store", "storefront", "shopping cart", "dropshipping"]
+  discoveryIntents: ["MCP server for ecommerce inventory orders storefront customer support workflows"]
+  scoreUrl: https://ora.run/score/shopify.com
+  badgeUrl: https://ora.run/api/badge/shopify.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:shopify
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.okta-com
+attributes:
+  displayName: "Ora score — Okta"
+  domain: "okta.com"
+  productName: "Okta"
+  score: 66
+  grade: "C"
+  category: "Identity & Auth"
+  matchScore: 5
+  tags: ["identity", "sso", "authentication", "zero trust", "workforce identity"]
+  discoveryIntents: ["MCP server for identity access management secrets compliance workflows"]
+  scoreUrl: https://ora.run/score/okta.com
+  badgeUrl: https://ora.run/api/badge/okta.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:okta
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.elastic-co
+attributes:
+  displayName: "Ora score — Elastic"
+  domain: "elastic.co"
+  productName: "Elastic"
+  score: 0
+  grade: "F"
+  category: "Infrastructure & DevOps"
+  matchScore: 9
+  tags: ["search", "elasticsearch", "logging", "observability", "full-text search"]
+  discoveryIntents: ["MCP server for database admin postgres redis elasticsearch query workflows"]
+  scoreUrl: https://ora.run/score/elastic.co
+  badgeUrl: https://ora.run/api/badge/elastic.co
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:elasticsearch
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.airtable-com
+attributes:
+  displayName: "Ora score — Airtable"
+  domain: "airtable.com"
+  productName: "Airtable"
+  score: 67
+  grade: "C"
+  category: "Productivity"
+  matchScore: 4
+  tags: ["spreadsheet", "database", "project management", "low-code", "collaboration"]
+  discoveryIntents: ["MCP server for database admin postgres redis elasticsearch query workflows"]
+  scoreUrl: https://ora.run/score/airtable.com
+  badgeUrl: https://ora.run/api/badge/airtable.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:airtable
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.outlook-com
+attributes:
+  displayName: "Ora score — Outlook"
+  domain: "outlook.com"
+  productName: "Outlook"
+  score: 0
+  grade: "F"
+  category: "Communication & Support"
+  matchScore: 8
+  tags: ["email", "calendar", "microsoft outlook", "personal email", "consumer email"]
+  discoveryIntents: ["MCP server for team communication chat email calendar meeting notes workflows"]
+  scoreUrl: https://ora.run/score/outlook.com
+  badgeUrl: https://ora.run/api/badge/outlook.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:outlook
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
