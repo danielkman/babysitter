@@ -13,6 +13,13 @@ attributes:
   mcpTransports:
   - mcp-transport:stdio
 edges:
+  supports_work:
+    - target: role:engineering-manager
+      confidence: medium
+      evidence: "Task/project metadata supports team planning and execution review."
+    - target: responsibility:triage-incoming-issues
+      confidence: medium
+      evidence: "Task intake queues can represent issue triage and assignment workflows."
   integrates_with:
   - target: tool:asana
   - target: issue-tracker:asana

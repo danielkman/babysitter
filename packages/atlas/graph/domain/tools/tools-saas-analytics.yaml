@@ -36,6 +36,13 @@ attributes:
     Enables event-based analysis, cohort segmentation, A/B test measurement,
     and retention reporting for web and mobile applications.
 edges:
+  supports_work:
+    - target: role:product-manager
+      confidence: medium
+      evidence: "Ora surfaced Mixpanel for product analytics and experimentation workflows."
+    - target: workflow:user-feedback-loop
+      confidence: medium
+      evidence: "Funnels and cohorts support behavioral feedback-loop analysis."
   tool_used_by:
     - target: skill-area:product-analytics
   used_for:
@@ -62,6 +69,13 @@ attributes:
     Provides pathfinder analysis, funnel charts, retention curves, and
     experiment analysis to help teams understand user journeys.
 edges:
+  supports_work:
+    - target: role:product-manager
+      confidence: high
+      evidence: "Ora surfaced Amplitude for product analytics, feature flag, and experimentation workflows."
+    - target: responsibility:metric-definition
+      confidence: medium
+      evidence: "Product analytics events and dashboards support metric definition and review."
   tool_used_by:
     - target: skill-area:product-analytics
   used_for:
@@ -114,6 +128,13 @@ attributes:
     all user interactions. Eliminates manual instrumentation by capturing
     clicks, taps, and form submissions without upfront tagging.
 edges:
+  supports_work:
+    - target: role:product-manager
+      confidence: medium
+      evidence: "Ora surfaced Heap for product analytics and experimentation workflows."
+    - target: workflow:user-feedback-loop
+      confidence: medium
+      evidence: "Automatic event capture supports user behavior feedback loops."
   tool_used_by:
     - target: skill-area:product-analytics
   used_for:

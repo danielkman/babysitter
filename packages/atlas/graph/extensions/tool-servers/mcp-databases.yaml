@@ -149,6 +149,13 @@ attributes:
   mcpTransports:
   - mcp-transport:stdio
 edges:
+  supports_work:
+    - target: role:data-scientist
+      confidence: high
+      evidence: "Warehouse queries and metadata support analytics investigation."
+    - target: workflow:data-pipeline-monitoring
+      confidence: high
+      evidence: "Warehouse state and query results project pipeline health and data freshness."
   integrates_with:
   - target: stack-part:data-warehouse
   lib_applies_to_domain:

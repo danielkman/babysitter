@@ -306,6 +306,13 @@ attributes:
     Provides a sandbox for developing, documenting, and visually testing
     React, Vue, Angular, and other frontend components independently.
 edges:
+  supports_work:
+    - target: role:product-designer
+      confidence: medium
+      evidence: "Component examples and visual states support design-system review."
+    - target: workflow:design-system-maintenance
+      confidence: high
+      evidence: "Storybook is a canonical component-system projection surface."
   belongs_to_language:
     - language:typescript
   tool_used_by:

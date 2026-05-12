@@ -1239,6 +1239,8 @@ edgeKinds:
   - Plugin
   - Subagent
   - ToolServer
+  - Tool
+  - AgentReadinessScore
   - MCPServer
   - AgentVersion
   - Process
@@ -3978,3 +3980,43 @@ edgeKinds:
     type: enum<required,recommended,helpful>
     required: false
   inverse: has_learning_prerequisite
+- id: edge:scores-agent-readiness-of
+  name: scores_agent_readiness_of
+  origin: ora
+  description: an Ora AgentReadinessScore record scores a product/tool/server entity for agent readiness
+  source: [AgentReadinessScore]
+  target: [Tool, ToolServer, Platform, Provider, VCSHost, IssueTracker, ModelProviderProduct]
+  cardinality: N:1
+  attributes:
+  - name: observedVia
+    type: string
+  inverse: agent_readiness_score_for
+- id: edge:agent-readiness-score-for
+  name: agent_readiness_score_for
+  origin: ora
+  description: inverse of scores_agent_readiness_of
+  source: [Tool, ToolServer, Platform, Provider, VCSHost, IssueTracker, ModelProviderProduct]
+  target: [AgentReadinessScore]
+  cardinality: 1:N
+  inverse: scores_agent_readiness_of
+- id: edge:supports-work
+  name: supports_work
+  origin: universal
+  description: a Tool or ToolServer supports a role, responsibility, or workflow with operational affordances
+  source: [Tool, ToolServer]
+  target: [Role, Responsibility, Workflow]
+  cardinality: N:N
+  attributes:
+  - name: confidence
+    type: enum<low,medium,high>
+  - name: evidence
+    type: markdown
+  inverse: work_supported_by_tool
+- id: edge:work-supported-by-tool
+  name: work_supported_by_tool
+  origin: universal
+  description: inverse of supports_work
+  source: [Role, Responsibility, Workflow]
+  target: [Tool, ToolServer]
+  cardinality: N:N
+  inverse: supports_work

@@ -40,6 +40,13 @@ attributes:
   mcpTransports:
   - mcp-transport:streamable-http
 edges:
+  supports_work:
+    - target: role:technical-writer
+      confidence: high
+      evidence: "Docusaurus docs sites support developer-documentation authoring and review."
+    - target: workflow:developer-documentation-review
+      confidence: high
+      evidence: "Docs source and build surfaces can be reviewed as a documentation workflow."
   integrates_with:
   - target: framework:docusaurus
   lib_applies_to_domain:

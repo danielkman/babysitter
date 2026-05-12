@@ -13,6 +13,16 @@ attributes:
   mcpTransports:
   - mcp-transport:stdio
 edges:
+  supports_work:
+    - target: role:platform-engineer
+      confidence: high
+      evidence: "Terraform state and plan access supports infrastructure operations."
+    - target: role:cloud-architect
+      confidence: high
+      evidence: "IaC review projects architecture decisions into concrete resources."
+    - target: responsibility:architecture-governance
+      confidence: medium
+      evidence: "IaC plans and state help enforce cloud architecture policy."
   integrates_with:
   - target: tool:terraform
   lib_applies_to_domain:

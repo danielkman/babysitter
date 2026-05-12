@@ -13,6 +13,19 @@ attributes:
   mcpTransports:
   - mcp-transport:stdio
 edges:
+  supports_work:
+    - target: role:security-reviewer
+      confidence: high
+      evidence: "Dependency and container vulnerability results support security review."
+    - target: role:dependency-updater
+      confidence: high
+      evidence: "Dependency vulnerability data informs update priority and remediation."
+    - target: responsibility:run-security-scans
+      confidence: high
+      evidence: "Snyk is a security scanning surface."
+    - target: workflow:vulnerability-management
+      confidence: high
+      evidence: "Findings, severity, and remediation metadata project vulnerability workflows."
   integrates_with:
   - target: tool:snyk
   lib_applies_to_domain:
@@ -35,6 +48,16 @@ attributes:
   mcpTransports:
   - mcp-transport:stdio
 edges:
+  supports_work:
+    - target: role:security-reviewer
+      confidence: medium
+      evidence: "Static analysis findings support security and quality review."
+    - target: responsibility:run-security-scans
+      confidence: high
+      evidence: "SonarQube provides code quality and security scanning results."
+    - target: workflow:vulnerability-management
+      confidence: medium
+      evidence: "Security hotspots and code smells feed remediation workflows."
   integrates_with:
   - target: tool:sonarqube
   lib_applies_to_domain:

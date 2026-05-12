@@ -1,0 +1,1105 @@
+# Ora discovery-derived agent readiness scores observed on 2026-05-12.
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.adobe-com
+attributes:
+  displayName: "Ora score — Adobe"
+  domain: "adobe.com"
+  productName: "Adobe"
+  score: 0
+  grade: "F"
+  category: "Productivity"
+  matchScore: 5
+  tags: ["creative tools", "design", "pdf", "photoshop", "illustrator", "creative cloud", "firefly", "ai design"]
+  discoveryIntents: ["MCP server for design system product design workflows"]
+  scoreUrl: https://ora.run/score/adobe.com
+  badgeUrl: https://ora.run/api/badge/adobe.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:adobe-creative-cloud
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.asana-com
+attributes:
+  displayName: "Ora score — Asana"
+  domain: "asana.com"
+  productName: "Asana"
+  score: 72
+  grade: "B"
+  category: "Productivity"
+  matchScore: 8
+  tags: ["project management", "task management", "workflows", "team collaboration"]
+  discoveryIntents: ["MCP server for project management issue triage workflows", "MCP server for design system product design workflows"]
+  scoreUrl: https://ora.run/score/asana.com
+  badgeUrl: https://ora.run/api/badge/asana.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:asana
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.basecamp-com
+attributes:
+  displayName: "Ora score — Basecamp"
+  domain: "basecamp.com"
+  productName: "Basecamp"
+  score: 71
+  grade: "B"
+  category: "Productivity"
+  matchScore: 5
+  tags: ["project management", "team communication", "collaboration", "to-do lists"]
+  discoveryIntents: ["MCP server for project management issue triage workflows"]
+  scoreUrl: https://ora.run/score/basecamp.com
+  badgeUrl: https://ora.run/api/badge/basecamp.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:basecamp
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.clickup-com
+attributes:
+  displayName: "Ora score — ClickUp"
+  domain: "clickup.com"
+  productName: "ClickUp"
+  score: 74
+  grade: "B"
+  category: "Productivity"
+  matchScore: 6
+  tags: ["project management", "task management", "docs", "goals", "time tracking"]
+  discoveryIntents: ["MCP server for project management issue triage workflows"]
+  scoreUrl: https://ora.run/score/clickup.com
+  badgeUrl: https://ora.run/api/badge/clickup.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:clickup
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.coreweave-com
+attributes:
+  displayName: "Ora score — CoreWeave"
+  domain: "coreweave.com"
+  productName: "CoreWeave"
+  score: 72
+  grade: "B"
+  category: "Infrastructure & DevOps"
+  matchScore: 4
+  tags: ["gpu cloud", "ai infrastructure", "compute", "gpu"]
+  discoveryIntents: ["MCP server for cloud infrastructure terraform kubernetes operations"]
+  scoreUrl: https://ora.run/score/coreweave.com
+  badgeUrl: https://ora.run/api/badge/coreweave.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:coreweave
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.cursor-com
+attributes:
+  displayName: "Ora score — Cursor"
+  domain: "cursor.com"
+  productName: "Cursor"
+  score: 77
+  grade: "B"
+  category: "Developer Tools"
+  matchScore: 2
+  tags: ["ide", "code editor", "ai coding", "code completion", "programming"]
+  discoveryIntents: ["MCP server for repository code review pull request analysis", "MCP server for incident response observability logs metrics traces"]
+  scoreUrl: https://ora.run/score/cursor.com
+  badgeUrl: https://ora.run/api/badge/cursor.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:cursor
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.databricks-com
+attributes:
+  displayName: "Ora score — Databricks"
+  domain: "databricks.com"
+  productName: "Databricks"
+  score: 71
+  grade: "B"
+  category: "Data & Analytics"
+  matchScore: 5
+  tags: ["data engineering", "machine learning", "lakehouse", "spark", "data warehouse"]
+  discoveryIntents: ["MCP server for data analytics notebooks warehouse queries"]
+  scoreUrl: https://ora.run/score/databricks.com
+  badgeUrl: https://ora.run/api/badge/databricks.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:databricks
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.datadoghq-com
+attributes:
+  displayName: "Ora score — Datadog"
+  domain: "datadoghq.com"
+  productName: "Datadog"
+  score: 65
+  grade: "C"
+  category: "Infrastructure & DevOps"
+  matchScore: 4
+  tags: ["monitoring", "observability", "apm", "logging", "metrics", "tracing"]
+  discoveryIntents: ["MCP server for incident response observability logs metrics traces"]
+  scoreUrl: https://ora.run/score/datadoghq.com
+  badgeUrl: https://ora.run/api/badge/datadoghq.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:datadog
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.deepl-com
+attributes:
+  displayName: "Ora score — DeepL"
+  domain: "deepl.com"
+  productName: "DeepL"
+  score: 78
+  grade: "B"
+  category: "Productivity"
+  matchScore: 2
+  tags: ["translation", "language translation", "localization", "multilingual"]
+  discoveryIntents: ["MCP server for design system product design workflows"]
+  scoreUrl: https://ora.run/score/deepl.com
+  badgeUrl: https://ora.run/api/badge/deepl.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:deepl
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.digitalocean-com
+attributes:
+  displayName: "Ora score — DigitalOcean"
+  domain: "digitalocean.com"
+  productName: "DigitalOcean"
+  score: 68
+  grade: "C"
+  category: "Infrastructure & DevOps"
+  matchScore: 6
+  tags: ["cloud", "vps", "hosting", "kubernetes", "droplets", "servers"]
+  discoveryIntents: ["MCP server for cloud infrastructure terraform kubernetes operations"]
+  scoreUrl: https://ora.run/score/digitalocean.com
+  badgeUrl: https://ora.run/api/badge/digitalocean.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:digitalocean
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.e2b-dev
+attributes:
+  displayName: "Ora score — E2B"
+  domain: "e2b.dev"
+  productName: "E2B"
+  score: 69
+  grade: "C"
+  category: "Agent Tools"
+  matchScore: 2
+  tags: ["code execution", "sandbox", "code interpreter", "agent sandbox"]
+  discoveryIntents: ["MCP server for repository code review pull request analysis"]
+  scoreUrl: https://ora.run/score/e2b.dev
+  badgeUrl: https://ora.run/api/badge/e2b.dev
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:e2b
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.figma-com
+attributes:
+  displayName: "Ora score — Figma"
+  domain: "figma.com"
+  productName: "Figma"
+  score: 75
+  grade: "B"
+  category: "Productivity"
+  matchScore: 8
+  tags: ["design", "ui design", "prototyping", "collaboration", "wireframing", "design system"]
+  discoveryIntents: ["MCP server for design system product design workflows"]
+  scoreUrl: https://ora.run/score/figma.com
+  badgeUrl: https://ora.run/api/badge/figma.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:figma
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.fivetran-com
+attributes:
+  displayName: "Ora score — Fivetran"
+  domain: "fivetran.com"
+  productName: "Fivetran"
+  score: 69
+  grade: "C"
+  category: "Data & Analytics"
+  matchScore: 5
+  tags: ["data integration", "etl", "data pipeline", "connectors", "data sync"]
+  discoveryIntents: ["MCP server for data analytics notebooks warehouse queries"]
+  scoreUrl: https://ora.run/score/fivetran.com
+  badgeUrl: https://ora.run/api/badge/fivetran.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:fivetran
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.gitbook-com
+attributes:
+  displayName: "Ora score — GitBook"
+  domain: "gitbook.com"
+  productName: "GitBook"
+  score: 65
+  grade: "C"
+  category: "Developer Tools"
+  matchScore: 5
+  tags: ["documentation", "docs", "knowledge base", "api docs", "developer docs", "wiki"]
+  discoveryIntents: ["MCP server for documentation technical writing knowledge base"]
+  scoreUrl: https://ora.run/score/gitbook.com
+  badgeUrl: https://ora.run/api/badge/gitbook.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:gitbook
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.github-com
+attributes:
+  displayName: "Ora score — GitHub"
+  domain: "github.com"
+  productName: "GitHub"
+  score: 74
+  grade: "B"
+  category: "Developer Tools"
+  matchScore: 5
+  tags: ["git", "version control", "code hosting", "repositories", "ci/cd", "pull requests", "code review"]
+  discoveryIntents: ["MCP server for repository code review pull request analysis"]
+  scoreUrl: https://ora.run/score/github.com
+  badgeUrl: https://ora.run/api/badge/github.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: vcs-host:github
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.grafana-com
+attributes:
+  displayName: "Ora score — Grafana"
+  domain: "grafana.com"
+  productName: "Grafana"
+  score: 77
+  grade: "B"
+  category: "Infrastructure & DevOps"
+  matchScore: 4
+  tags: ["dashboards", "monitoring", "observability", "metrics", "visualization", "alerting"]
+  discoveryIntents: ["MCP server for incident response observability logs metrics traces"]
+  scoreUrl: https://ora.run/score/grafana.com
+  badgeUrl: https://ora.run/api/badge/grafana.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:grafana
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.hashicorp-com
+attributes:
+  displayName: "Ora score — HashiCorp"
+  domain: "hashicorp.com"
+  productName: "HashiCorp"
+  score: 0
+  grade: "F"
+  category: "Infrastructure & DevOps"
+  matchScore: 5
+  tags: ["infrastructure as code", "terraform", "vault", "secrets management", "consul"]
+  discoveryIntents: ["MCP server for cloud infrastructure terraform kubernetes operations"]
+  scoreUrl: https://ora.run/score/hashicorp.com
+  badgeUrl: https://ora.run/api/badge/hashicorp.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:hashicorp
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.linear-app
+attributes:
+  displayName: "Ora score — Linear"
+  domain: "linear.app"
+  productName: "Linear"
+  score: 74
+  grade: "B"
+  category: "Productivity"
+  matchScore: 7
+  tags: ["issue tracking", "project management", "bug tracking", "sprint planning", "task management"]
+  discoveryIntents: ["MCP server for project management issue triage workflows"]
+  scoreUrl: https://ora.run/score/linear.app
+  badgeUrl: https://ora.run/api/badge/linear.app
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: issue-tracker:linear
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.monday-com
+attributes:
+  displayName: "Ora score — Monday.com"
+  domain: "monday.com"
+  productName: "Monday.com"
+  score: 73
+  grade: "B"
+  category: "Productivity"
+  matchScore: 8
+  tags: ["project management", "work management", "collaboration", "workflows", "crm"]
+  discoveryIntents: ["MCP server for project management issue triage workflows", "MCP server for design system product design workflows"]
+  scoreUrl: https://ora.run/score/monday.com
+  badgeUrl: https://ora.run/api/badge/monday.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:monday
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.nebius-com
+attributes:
+  displayName: "Ora score — Nebius"
+  domain: "nebius.com"
+  productName: "Nebius"
+  score: 62
+  grade: "C"
+  category: "Infrastructure & DevOps"
+  matchScore: 5
+  tags: ["cloud", "ai infrastructure", "gpu", "compute"]
+  discoveryIntents: ["MCP server for cloud infrastructure terraform kubernetes operations"]
+  scoreUrl: https://ora.run/score/nebius.com
+  badgeUrl: https://ora.run/api/badge/nebius.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:nebius
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.notion-so
+attributes:
+  displayName: "Ora score — Notion"
+  domain: "notion.so"
+  productName: "Notion"
+  score: 71
+  grade: "B"
+  category: "Productivity"
+  matchScore: 5
+  tags: ["notes", "wiki", "project management", "documentation", "knowledge base", "workspace"]
+  discoveryIntents: ["MCP server for documentation technical writing knowledge base", "MCP server for project management issue triage workflows"]
+  scoreUrl: https://ora.run/score/notion.so
+  badgeUrl: https://ora.run/api/badge/notion.so
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:notion
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.pagerduty-com
+attributes:
+  displayName: "Ora score — PagerDuty"
+  domain: "pagerduty.com"
+  productName: "PagerDuty"
+  score: 71
+  grade: "B"
+  category: "Infrastructure & DevOps"
+  matchScore: 4
+  tags: ["incident management", "alerting", "on-call", "monitoring", "operations"]
+  discoveryIntents: ["MCP server for cloud infrastructure terraform kubernetes operations"]
+  scoreUrl: https://ora.run/score/pagerduty.com
+  badgeUrl: https://ora.run/api/badge/pagerduty.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:pagerduty
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.powerbi-microsoft-com
+attributes:
+  displayName: "Ora score — Power BI"
+  domain: "powerbi.microsoft.com"
+  productName: "Power BI"
+  score: 0
+  grade: "F"
+  category: "Data & Analytics"
+  matchScore: 4
+  tags: ["business intelligence", "bi", "data visualization", "dashboards", "power bi"]
+  discoveryIntents: ["MCP server for incident response observability logs metrics traces", "MCP server for dependency vulnerability scanning security review"]
+  scoreUrl: https://ora.run/score/powerbi.microsoft.com
+  badgeUrl: https://ora.run/api/badge/powerbi.microsoft.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:power-bi
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.segment-com
+attributes:
+  displayName: "Ora score — Segment"
+  domain: "segment.com"
+  productName: "Segment"
+  score: 68
+  grade: "C"
+  category: "Data & Analytics"
+  matchScore: 6
+  tags: ["customer data platform", "cdp", "analytics", "data collection", "event tracking"]
+  discoveryIntents: ["MCP server for data analytics notebooks warehouse queries"]
+  scoreUrl: https://ora.run/score/segment.com
+  badgeUrl: https://ora.run/api/badge/segment.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:segment
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.smithery-ai
+attributes:
+  displayName: "Ora score — Smithery"
+  domain: "smithery.ai"
+  productName: "Smithery"
+  score: 0
+  grade: "F"
+  category: "Agent Tools"
+  matchScore: 5
+  tags: ["mcp registry", "mcp server", "model context protocol", "agent tools directory", "mcp marketplace"]
+  discoveryIntents: ["MCP server for repository code review pull request analysis", "MCP server for incident response observability logs metrics traces", "MCP server for documentation technical writing knowledge base", "MCP server for dependency vulnerability scanning security review", "MCP server for data analytics notebooks warehouse queries", "MCP server for design system product design workflows", "MCP server for cloud infrastructure terraform kubernetes operations"]
+  scoreUrl: https://ora.run/score/smithery.ai
+  badgeUrl: https://ora.run/api/badge/smithery.ai
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:smithery
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.tinybird-co
+attributes:
+  displayName: "Ora score — Tinybird"
+  domain: "tinybird.co"
+  productName: "Tinybird"
+  score: 75
+  grade: "B"
+  category: "Data & Analytics"
+  matchScore: 5
+  tags: ["real-time analytics", "data api", "clickhouse", "analytics api"]
+  discoveryIntents: ["MCP server for incident response observability logs metrics traces", "MCP server for dependency vulnerability scanning security review", "MCP server for data analytics notebooks warehouse queries"]
+  scoreUrl: https://ora.run/score/tinybird.co
+  badgeUrl: https://ora.run/api/badge/tinybird.co
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:tinybird
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.trello-com
+attributes:
+  displayName: "Ora score — Trello"
+  domain: "trello.com"
+  productName: "Trello"
+  score: 65
+  grade: "C"
+  category: "Productivity"
+  matchScore: 6
+  tags: ["kanban", "project management", "boards", "task management"]
+  discoveryIntents: ["MCP server for project management issue triage workflows"]
+  scoreUrl: https://ora.run/score/trello.com
+  badgeUrl: https://ora.run/api/badge/trello.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:trello
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.wiz-io
+attributes:
+  displayName: "Ora score — Wiz"
+  domain: "wiz.io"
+  productName: "Wiz"
+  score: 0
+  grade: "F"
+  category: "Infrastructure & DevOps"
+  matchScore: 5
+  tags: ["cloud security", "cnapp", "cloud posture", "container security", "kubernetes security"]
+  discoveryIntents: ["MCP server for dependency vulnerability scanning security review", "MCP server for cloud infrastructure terraform kubernetes operations"]
+  scoreUrl: https://ora.run/score/wiz.io
+  badgeUrl: https://ora.run/api/badge/wiz.io
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:wiz
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.zapier-com
+attributes:
+  displayName: "Ora score — Zapier"
+  domain: "zapier.com"
+  productName: "Zapier"
+  score: 84
+  grade: "B"
+  category: "Productivity"
+  matchScore: 4
+  tags: ["automation", "integrations", "workflows", "no-code", "connectors"]
+  discoveryIntents: ["MCP server for design system product design workflows"]
+  scoreUrl: https://ora.run/score/zapier.com
+  badgeUrl: https://ora.run/api/badge/zapier.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:zapier
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.zendesk-com
+attributes:
+  displayName: "Ora score — Zendesk"
+  domain: "zendesk.com"
+  productName: "Zendesk"
+  score: 66
+  grade: "C"
+  category: "Communication & Support"
+  matchScore: 3
+  tags: ["customer support", "helpdesk", "ticketing", "knowledge base", "live chat"]
+  discoveryIntents: ["MCP server for documentation technical writing knowledge base"]
+  scoreUrl: https://ora.run/score/zendesk.com
+  badgeUrl: https://ora.run/api/badge/zendesk.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:zendesk
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.freshdesk-com
+attributes:
+  displayName: "Ora score — Freshdesk"
+  domain: "freshdesk.com"
+  productName: "Freshdesk"
+  score: 0
+  grade: "F"
+  category: "Communication & Support"
+  matchScore: 8
+  tags: ["customer support", "helpdesk", "ticketing", "knowledge base"]
+  discoveryIntents: ["MCP server for customer support ticket triage knowledge base workflows"]
+  scoreUrl: https://ora.run/score/freshdesk.com
+  badgeUrl: https://ora.run/api/badge/freshdesk.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:freshdesk
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.plain-com
+attributes:
+  displayName: "Ora score — Plain"
+  domain: "plain.com"
+  productName: "Plain"
+  score: 74
+  grade: "B"
+  category: "Communication & Support"
+  matchScore: 6
+  tags: ["customer support", "api-first support", "modern helpdesk"]
+  discoveryIntents: ["MCP server for customer support ticket triage knowledge base workflows", "MCP server for developer relations community support documentation workflows"]
+  scoreUrl: https://ora.run/score/plain.com
+  badgeUrl: https://ora.run/api/badge/plain.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:plain
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.intercom-com
+attributes:
+  displayName: "Ora score — Intercom"
+  domain: "intercom.com"
+  productName: "Intercom"
+  score: 64
+  grade: "C"
+  category: "Communication & Support"
+  matchScore: 6
+  tags: ["customer support", "live chat", "helpdesk", "chatbot", "customer engagement"]
+  discoveryIntents: ["MCP server for customer support ticket triage knowledge base workflows"]
+  scoreUrl: https://ora.run/score/intercom.com
+  badgeUrl: https://ora.run/api/badge/intercom.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:intercom
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.livechat-com
+attributes:
+  displayName: "Ora score — LiveChat"
+  domain: "livechat.com"
+  productName: "LiveChat"
+  score: 62
+  grade: "C"
+  category: "Communication & Support"
+  matchScore: 5
+  tags: ["live chat", "customer support", "chatbot", "helpdesk"]
+  discoveryIntents: ["MCP server for customer support ticket triage knowledge base workflows"]
+  scoreUrl: https://ora.run/score/livechat.com
+  badgeUrl: https://ora.run/api/badge/livechat.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:livechat
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.browserbase-com
+attributes:
+  displayName: "Ora score — Browserbase"
+  domain: "browserbase.com"
+  productName: "Browserbase"
+  score: 70
+  grade: "B"
+  category: "Agent Tools"
+  matchScore: 4
+  tags: ["browser automation", "headless browser", "web scraping", "browser api"]
+  discoveryIntents: ["MCP server for QA test automation browser testing workflows"]
+  scoreUrl: https://ora.run/score/browserbase.com
+  badgeUrl: https://ora.run/api/badge/browserbase.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:browserbase
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.browserless-io
+attributes:
+  displayName: "Ora score — Browserless"
+  domain: "browserless.io"
+  productName: "Browserless"
+  score: 70
+  grade: "B"
+  category: "Agent Tools"
+  matchScore: 4
+  tags: ["headless browser", "browser automation", "web scraping", "puppeteer", "playwright", "browser api"]
+  discoveryIntents: ["MCP server for QA test automation browser testing workflows"]
+  scoreUrl: https://ora.run/score/browserless.io
+  badgeUrl: https://ora.run/api/badge/browserless.io
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:browserless
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.bill-com
+attributes:
+  displayName: "Ora score — Bill"
+  domain: "bill.com"
+  productName: "Bill"
+  score: 74
+  grade: "B"
+  category: "Payments & Fintech"
+  matchScore: 7
+  tags: []
+  discoveryIntents: ["MCP server for API integration payments billing workflows"]
+  scoreUrl: https://ora.run/score/bill.com
+  badgeUrl: https://ora.run/api/badge/bill.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:bill-com
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.paddle-com
+attributes:
+  displayName: "Ora score — Paddle"
+  domain: "paddle.com"
+  productName: "Paddle"
+  score: 66
+  grade: "C"
+  category: "Payments & Fintech"
+  matchScore: 7
+  tags: ["payments", "billing", "subscriptions", "saas billing", "merchant of record"]
+  discoveryIntents: ["MCP server for API integration payments billing workflows"]
+  scoreUrl: https://ora.run/score/paddle.com
+  badgeUrl: https://ora.run/api/badge/paddle.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:paddle
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.stripe-com
+attributes:
+  displayName: "Ora score — Stripe"
+  domain: "stripe.com"
+  productName: "Stripe"
+  score: 84
+  grade: "B"
+  category: "Payments & Fintech"
+  matchScore: 6
+  tags: ["payments", "billing", "subscriptions", "invoicing", "payment processing", "checkout"]
+  discoveryIntents: ["MCP server for API integration payments billing workflows"]
+  scoreUrl: https://ora.run/score/stripe.com
+  badgeUrl: https://ora.run/api/badge/stripe.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:stripe
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.getlago-com
+attributes:
+  displayName: "Ora score — Lago"
+  domain: "getlago.com"
+  productName: "Lago"
+  score: 69
+  grade: "C"
+  category: "Payments & Fintech"
+  matchScore: 6
+  tags: ["billing", "usage-based billing", "metering", "invoicing", "open source billing"]
+  discoveryIntents: ["MCP server for API integration payments billing workflows"]
+  scoreUrl: https://ora.run/score/getlago.com
+  badgeUrl: https://ora.run/api/badge/getlago.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:lago
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.adyen-com
+attributes:
+  displayName: "Ora score — Adyen"
+  domain: "adyen.com"
+  productName: "Adyen"
+  score: 0
+  grade: "F"
+  category: "Payments & Fintech"
+  matchScore: 6
+  tags: ["payments", "payment processing", "global payments", "checkout", "enterprise payments"]
+  discoveryIntents: ["MCP server for API integration payments billing workflows"]
+  scoreUrl: https://ora.run/score/adyen.com
+  badgeUrl: https://ora.run/api/badge/adyen.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:adyen
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.checkout-com
+attributes:
+  displayName: "Ora score — Checkout.com"
+  domain: "checkout.com"
+  productName: "Checkout.com"
+  score: 65
+  grade: "C"
+  category: "Payments & Fintech"
+  matchScore: 5
+  tags: ["payments", "payment processing", "global payments", "checkout", "card processing", "acquiring"]
+  discoveryIntents: ["MCP server for API integration payments billing workflows"]
+  scoreUrl: https://ora.run/score/checkout.com
+  badgeUrl: https://ora.run/api/badge/checkout.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:checkout-com
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.cloudflare-com
+attributes:
+  displayName: "Ora score — Cloudflare"
+  domain: "cloudflare.com"
+  productName: "Cloudflare"
+  score: 78
+  grade: "B"
+  category: "Infrastructure & DevOps"
+  matchScore: 2
+  tags: ["cdn", "dns", "security", "edge computing", "ddos protection", "workers", "web application firewall"]
+  discoveryIntents: ["MCP server for security incident SIEM alerts workflows"]
+  scoreUrl: https://ora.run/score/cloudflare.com
+  badgeUrl: https://ora.run/api/badge/cloudflare.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:cloudflare
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.amplitude-com
+attributes:
+  displayName: "Ora score — Amplitude"
+  domain: "amplitude.com"
+  productName: "Amplitude"
+  score: 71
+  grade: "B"
+  category: "Data & Analytics"
+  matchScore: 9
+  tags: ["product analytics", "user analytics", "experimentation", "behavioral analytics"]
+  discoveryIntents: ["MCP server for product analytics feature flag experimentation workflows"]
+  scoreUrl: https://ora.run/score/amplitude.com
+  badgeUrl: https://ora.run/api/badge/amplitude.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:amplitude
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.posthog-com
+attributes:
+  displayName: "Ora score — PostHog"
+  domain: "posthog.com"
+  productName: "PostHog"
+  score: 70
+  grade: "B"
+  category: "Data & Analytics"
+  matchScore: 7
+  tags: ["product analytics", "feature flags", "session recording", "a/b testing", "open source analytics"]
+  discoveryIntents: ["MCP server for product analytics feature flag experimentation workflows"]
+  scoreUrl: https://ora.run/score/posthog.com
+  badgeUrl: https://ora.run/api/badge/posthog.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:posthog
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.mixpanel-com
+attributes:
+  displayName: "Ora score — Mixpanel"
+  domain: "mixpanel.com"
+  productName: "Mixpanel"
+  score: 64
+  grade: "C"
+  category: "Data & Analytics"
+  matchScore: 6
+  tags: ["product analytics", "event tracking", "funnels", "user analytics", "retention"]
+  discoveryIntents: ["MCP server for product analytics feature flag experimentation workflows"]
+  scoreUrl: https://ora.run/score/mixpanel.com
+  badgeUrl: https://ora.run/api/badge/mixpanel.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:mixpanel
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.heap-io
+attributes:
+  displayName: "Ora score — Heap"
+  domain: "heap.io"
+  productName: "Heap"
+  score: 63
+  grade: "C"
+  category: "Data & Analytics"
+  matchScore: 6
+  tags: ["product analytics", "auto-capture", "session replay", "user analytics"]
+  discoveryIntents: ["MCP server for product analytics feature flag experimentation workflows"]
+  scoreUrl: https://ora.run/score/heap.io
+  badgeUrl: https://ora.run/api/badge/heap.io
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:heap
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api
+---
+nodeKind: AgentReadinessScore
+id: agent-readiness-score:ora.optimizely-com
+attributes:
+  displayName: "Ora score — Optimizely"
+  domain: "optimizely.com"
+  productName: "Optimizely"
+  score: 70
+  grade: "B"
+  category: "Data & Analytics"
+  matchScore: 5
+  tags: ["experimentation", "a/b testing", "feature flags", "cms", "personalization", "digital experience"]
+  discoveryIntents: ["MCP server for product analytics feature flag experimentation workflows"]
+  scoreUrl: https://ora.run/score/optimizely.com
+  badgeUrl: https://ora.run/api/badge/optimizely.com
+  observedVia: ora-discover-api
+  observedAt: "2026-05-12T00:00:00Z"
+edges:
+  scores_agent_readiness_of:
+    - target: tool:optimizely
+      observedVia: ora-discover-api
+  sourced_from:
+    - source-ref:ora-discover-api

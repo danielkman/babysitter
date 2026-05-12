@@ -1253,3 +1253,56 @@ nodeKinds:
   - references_path
   invariants: []
   examples: []
+- id: node:agent-readiness-score
+  name: AgentReadinessScore
+  origin: ora
+  prefix: agent-readiness-score
+  cluster: 13-catalog-meta
+  purpose: A product or tool readiness score observed from Ora's agent-readiness scanner and discovery surfaces.
+  attributes:
+  - name: id
+    type: id
+    required: true
+  - name: displayName
+    type: string
+    required: true
+  - name: domain
+    type: string
+    required: true
+  - name: productName
+    type: string
+    required: false
+  - name: score
+    type: float
+    required: true
+  - name: grade
+    type: string
+    required: true
+  - name: category
+    type: string
+    required: false
+  - name: matchScore
+    type: float
+    required: false
+  - name: tags
+    type: list<string>
+    required: false
+  - name: scoreUrl
+    type: url
+    required: false
+  - name: badgeUrl
+    type: url
+    required: false
+  - name: observedVia
+    type: string
+    required: false
+  - name: observedAt
+    type: iso-timestamp
+    required: false
+  incomingEdges:
+  - agent_readiness_score_for
+  outgoingEdges:
+  - scores_agent_readiness_of
+  - sourced_from
+  invariants: []
+  examples: []

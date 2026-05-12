@@ -314,6 +314,13 @@ attributes:
   - tool-descriptor:stripe.list-invoices
   sourceRef: source-ref:mcp-servers-registry
 edges:
+  supports_work:
+    - target: role:platform-engineer
+      confidence: medium
+      evidence: "Stripe API access supports billing and payment integration operations."
+    - target: workflow:release-management
+      confidence: medium
+      evidence: "Billing integration readiness is often release-critical for commerce and SaaS systems."
   contains_tool_descriptor:
   - target: tool-descriptor:stripe.list-customers
   - target: tool-descriptor:stripe.create-customer
@@ -357,6 +364,16 @@ attributes:
   - tool-descriptor:linear.list-teams
   sourceRef: source-ref:mcp-servers-registry
 edges:
+  supports_work:
+    - target: responsibility:triage-incoming-issues
+      confidence: high
+      evidence: "Linear issue, project, comment, and cycle access supports issue triage."
+    - target: workflow:bug-triage
+      confidence: high
+      evidence: "Issue tracker state and comments drive bug-triage workflow projections."
+    - target: workflow:release-management
+      confidence: medium
+      evidence: "Project/cycle metadata supports release-scope coordination."
   contains_tool_descriptor:
   - target: tool-descriptor:linear.list-issues
   - target: tool-descriptor:linear.get-issue
@@ -397,6 +414,16 @@ attributes:
   - tool-descriptor:notion.query-database
   sourceRef: source-ref:mcp-servers-registry
 edges:
+  supports_work:
+    - target: role:technical-writer
+      confidence: medium
+      evidence: "Knowledge-base pages and database content support docs workflows."
+    - target: responsibility:write-user-docs
+      confidence: medium
+      evidence: "Notion can host drafts, specs, and user-facing documentation content."
+    - target: workflow:documentation-sprint
+      confidence: medium
+      evidence: "Workspace pages and project databases support docs sprint planning and execution."
   contains_tool_descriptor:
   - target: tool-descriptor:notion.search
   - target: tool-descriptor:notion.get-page
@@ -441,6 +468,16 @@ attributes:
   - tool-descriptor:confluence.get-page
   sourceRef: source-ref:mcp-servers-registry
 edges:
+  supports_work:
+    - target: responsibility:triage-incoming-issues
+      confidence: high
+      evidence: "Jira issue search, transitions, comments, and attachments support triage."
+    - target: workflow:bug-triage
+      confidence: high
+      evidence: "Jira is a primary bug and support-ticket workflow surface."
+    - target: workflow:release-management
+      confidence: medium
+      evidence: "Jira versions, boards, and issue states support release readiness review."
   contains_tool_descriptor:
   - target: tool-descriptor:jira.search
   - target: tool-descriptor:jira.get-issue
@@ -482,6 +519,13 @@ attributes:
   - tool-descriptor:sentry.get-event
   sourceRef: source-ref:mcp-servers-registry
 edges:
+  supports_work:
+    - target: role:incident-commander
+      confidence: medium
+      evidence: "Error events and release regression signals support incident assessment."
+    - target: workflow:incident-response
+      confidence: medium
+      evidence: "Application errors and traces help identify incident root causes."
   contains_tool_descriptor:
   - target: tool-descriptor:sentry.get-issue
   - target: tool-descriptor:sentry.list-issues
@@ -524,6 +568,13 @@ attributes:
   - tool-descriptor:cloudflare.analytics-query
   sourceRef: source-ref:mcp-servers-registry
 edges:
+  supports_work:
+    - target: role:platform-engineer
+      confidence: high
+      evidence: "Cloudflare MCP access to DNS, Workers, R2, Pages, and zone settings supports platform operations."
+    - target: workflow:incident-response
+      confidence: medium
+      evidence: "Cloudflare operational state and security controls are incident-response inputs."
   contains_tool_descriptor:
   - target: tool-descriptor:cloudflare.list-workers
   - target: tool-descriptor:cloudflare.deploy-worker
@@ -577,6 +628,19 @@ attributes:
   - tool-descriptor:github.create-branch
   sourceRef: source-ref:mcp-servers-registry
 edges:
+  supports_work:
+    - target: role:code-reviewer
+      confidence: high
+      evidence: "GitHub repository, pull request, and issue access supports code-review work."
+    - target: responsibility:review-prs-merge-decisions
+      confidence: high
+      evidence: "Pull request metadata, diffs, checks, and comments are primary inputs to merge decisions."
+    - target: workflow:bug-triage
+      confidence: high
+      evidence: "GitHub issues and pull requests are common bug-triage surfaces."
+    - target: workflow:test-automation-pipeline
+      confidence: medium
+      evidence: "Repository checks and CI statuses project test automation outcomes."
   contains_tool_descriptor:
   - target: tool-descriptor:github.create-issue
   - target: tool-descriptor:github.list-issues
@@ -807,6 +871,13 @@ attributes:
   - tool-descriptor:kubectl.list-contexts
   sourceRef: source-ref:mcp-servers-registry
 edges:
+  supports_work:
+    - target: role:platform-engineer
+      confidence: high
+      evidence: "Cluster, workload, and event access supports platform operations."
+    - target: workflow:incident-response
+      confidence: medium
+      evidence: "Kubernetes events and workload status are incident-response inputs."
   contains_tool_descriptor:
   - target: tool-descriptor:kubectl.get
   - target: tool-descriptor:kubectl.describe
@@ -1177,6 +1248,13 @@ attributes:
   - tool-descriptor:figma.download-images
   sourceRef: source-ref:mcp-servers-registry
 edges:
+  supports_work:
+    - target: role:product-designer
+      confidence: high
+      evidence: "Figma design and component access supports product design workflows."
+    - target: workflow:design-system-maintenance
+      confidence: high
+      evidence: "Design tokens, components, and files project design-system state."
   contains_tool_descriptor:
   - target: tool-descriptor:figma.get-file
   - target: tool-descriptor:figma.get-node

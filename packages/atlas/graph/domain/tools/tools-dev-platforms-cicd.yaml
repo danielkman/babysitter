@@ -140,6 +140,13 @@ attributes:
     assistant for autocomplete, inline edits, multi-file refactors, and
     natural-language codebase Q&A directly in the editor.
 edges:
+  supports_work:
+    - target: role:code-reviewer
+      confidence: medium
+      evidence: "AI coding IDE support helps inspect code changes and propose review fixes."
+    - target: role:test-writer
+      confidence: medium
+      evidence: "AI coding workflows can draft and refine tests around code changes."
   tool_used_by:
     - target: skill-area:software-development
   used_for:

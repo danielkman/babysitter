@@ -49,6 +49,13 @@ attributes:
     scheduling. Offers Zapier Central for AI-powered automation and
     natural-language workflow creation.
 edges:
+  supports_work:
+    - target: workflow:ai-agent-adoption-rollout
+      confidence: medium
+      evidence: "Workflow automation connects agent-ready products into rollout automations."
+    - target: responsibility:ai-tooling-evaluation
+      confidence: medium
+      evidence: "Integration breadth is relevant when evaluating agent toolchains."
   tool_used_by:
     - target: skill-area:operations-automation
   used_for:

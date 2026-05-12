@@ -39,6 +39,13 @@ attributes:
   mcpTransports:
   - mcp-transport:stdio
 edges:
+  supports_work:
+    - target: role:support-engineer
+      confidence: high
+      evidence: "Zendesk tickets, help center content, and support analytics support support triage workflows."
+    - target: responsibility:triage-incoming-issues
+      confidence: high
+      evidence: "Ticket queues and customer context are direct issue triage inputs."
   integrates_with:
   - target: tool:zendesk
   lib_applies_to_domain:
@@ -83,6 +90,13 @@ attributes:
   mcpTransports:
   - mcp-transport:stdio
 edges:
+  supports_work:
+    - target: role:technical-writer
+      confidence: high
+      evidence: "Confluence space/page access supports structured technical documentation."
+    - target: workflow:developer-documentation-review
+      confidence: high
+      evidence: "Docs review can project page changes, comments, and approvals from Confluence."
   integrates_with:
   - target: tool:confluence
   lib_applies_to_domain:
@@ -127,6 +141,16 @@ attributes:
   mcpTransports:
   - mcp-transport:stdio
 edges:
+  supports_work:
+    - target: role:product-manager
+      confidence: high
+      evidence: "PostHog analytics, feature flags, and experiments support product decision workflows."
+    - target: workflow:a-b-test-lifecycle
+      confidence: high
+      evidence: "Feature flags and experiment analysis support A/B lifecycle projections."
+    - target: workflow:user-feedback-loop
+      confidence: medium
+      evidence: "Session recordings and funnels inform product feedback loops."
   integrates_with:
   - target: tool:posthog
   lib_applies_to_domain:
@@ -235,6 +259,13 @@ attributes:
   mcpTransports:
   - mcp-transport:stdio
 edges:
+  supports_work:
+    - target: role:data-scientist
+      confidence: medium
+      evidence: "Event instrumentation and audience data supports analytics workflows."
+    - target: workflow:data-pipeline-monitoring
+      confidence: medium
+      evidence: "Event stream health and schema metadata feed data pipeline review."
   integrates_with:
   - target: tool:segment
   lib_applies_to_domain:

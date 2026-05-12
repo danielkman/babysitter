@@ -319,10 +319,15 @@ nodeKinds:
   - composes
   - implemented_by
   - integrates_with
+  - scores_agent_readiness_of
+  - work_supported_by_tool
   outgoingEdges:
   - belongs_to_language
   - used_for
   - tool_used_by
+  - sourced_from
+  - supports_work
+  - agent_readiness_score_for
   invariants:
   - id starts with tool: null
   examples: []

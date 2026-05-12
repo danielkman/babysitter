@@ -122,6 +122,13 @@ attributes:
   mcpTransports:
   - mcp-transport:stdio
 edges:
+  supports_work:
+    - target: role:support-engineer
+      confidence: high
+      evidence: "Intercom conversations, contacts, and help center articles support support engineering workflows."
+    - target: responsibility:triage-incoming-issues
+      confidence: high
+      evidence: "Customer conversations and bot handoffs are direct triage inputs."
   integrates_with:
   - target: tool:intercom
   lib_applies_to_domain:

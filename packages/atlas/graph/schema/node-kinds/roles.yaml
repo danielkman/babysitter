@@ -42,6 +42,7 @@ nodeKinds:
   - constrains
   - submitted_by
   - escalates_to
+  - work_supported_by_tool
   outgoingEdges:
   - holds_responsibility
   - requires_skill
@@ -77,6 +78,7 @@ nodeKinds:
     required: false
   incomingEdges:
   - holds_responsibility
+  - work_supported_by_tool
   outgoingEdges: []
   invariants: []
   examples: []

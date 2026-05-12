@@ -34,6 +34,13 @@ attributes:
   mcpTransports:
   - mcp-transport:stdio
 edges:
+  supports_work:
+    - target: responsibility:data-pipeline-reliability
+      confidence: high
+      evidence: "Connector status, sync failures, and freshness support pipeline reliability."
+    - target: workflow:data-pipeline-monitoring
+      confidence: high
+      evidence: "Fivetran connector metadata is a direct data-pipeline monitoring input."
   integrates_with:
   - target: tool:fivetran
   lib_applies_to_domain:

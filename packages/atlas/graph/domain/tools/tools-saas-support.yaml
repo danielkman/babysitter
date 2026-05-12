@@ -33,6 +33,13 @@ attributes:
     ticketing, omnichannel inbox, automation, SLA management, and
     a self-service knowledge base for support teams.
 edges:
+  supports_work:
+    - target: role:support-engineer
+      confidence: high
+      evidence: "Ora surfaced Freshdesk for customer support ticket triage and knowledge-base workflows."
+    - target: responsibility:triage-incoming-issues
+      confidence: high
+      evidence: "Helpdesk tickets and SLA context support issue intake and routing."
   tool_used_by:
     - target: skill-area:customer-support
   used_for:

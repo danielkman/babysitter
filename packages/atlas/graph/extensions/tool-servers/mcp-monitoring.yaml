@@ -13,6 +13,16 @@ attributes:
   mcpTransports:
   - mcp-transport:stdio
 edges:
+  supports_work:
+    - target: role:incident-commander
+      confidence: high
+      evidence: "Metrics, logs, traces, monitors, and dashboards support incident command."
+    - target: responsibility:incident-command
+      confidence: high
+      evidence: "Observability telemetry is a primary incident-command input."
+    - target: workflow:incident-response
+      confidence: high
+      evidence: "Datadog telemetry supports incident detection, diagnosis, and response."
   integrates_with:
   - target: tool:datadog
   - target: stack-part:metrics
@@ -37,6 +47,16 @@ attributes:
   mcpTransports:
   - mcp-transport:stdio
 edges:
+  supports_work:
+    - target: role:incident-commander
+      confidence: high
+      evidence: "Dashboard and data-source access supports service health assessment."
+    - target: workflow:on-call-rotation-management
+      confidence: medium
+      evidence: "On-call review often depends on dashboard and alert context."
+    - target: workflow:incident-response
+      confidence: high
+      evidence: "Grafana dashboards and metrics are core incident-response projections."
   integrates_with:
   - target: tool:grafana
   - target: stack-part:metrics
@@ -84,6 +104,16 @@ attributes:
   mcpTransports:
   - mcp-transport:stdio
 edges:
+  supports_work:
+    - target: responsibility:incident-response-coordination
+      confidence: high
+      evidence: "PagerDuty incident and schedule access directly supports response coordination."
+    - target: workflow:on-call-rotation-management
+      confidence: high
+      evidence: "On-call schedules, escalations, and incidents are PagerDuty-native workflow surfaces."
+    - target: workflow:incident-response
+      confidence: high
+      evidence: "Incident acknowledgement, escalation, and coordination are response-critical actions."
   integrates_with:
   - target: tool:pagerduty
   lib_applies_to_domain:

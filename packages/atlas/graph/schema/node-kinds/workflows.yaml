@@ -34,12 +34,14 @@ nodeKinds:
   incomingEdges:
   - applies_to
   - orch_workflow_implemented_by
+  - work_supported_by_tool
   outgoingEdges:
   - involves_role
   - requires_skill_area
   - applies_to_domain
   - triggers_responsibility
   - performed_by_org_unit
+  - follows_methodology
   invariants:
   - at least one involves_role (V-11.1)
   - at least one applies_to_domain (V-11.2)

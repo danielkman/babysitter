@@ -60,6 +60,13 @@ attributes:
     Handles global tax compliance, subscription billing, and payment
     processing so vendors avoid managing tax obligations in each country.
 edges:
+  supports_work:
+    - target: role:platform-engineer
+      confidence: medium
+      evidence: "Ora surfaced Paddle for API integration, payments, and billing workflows."
+    - target: workflow:release-management
+      confidence: medium
+      evidence: "Merchant-of-record and subscription readiness can gate SaaS releases."
   tool_used_by:
     - target: skill-area:payment-processing
   used_for:

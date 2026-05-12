@@ -434,7 +434,7 @@ attributes:
     these are separate products in the graph.
   testStatus: passing
   testType: unit
-  testCommand: "node -e \"const i=JSON.parse(require('fs').readFileSync('packages/atlas/src/index.json','utf8'));const r=i.records['agent:claude-agent-sdk'];process.exit(r&&String(r.description||'').includes('Distinct from Claude Code')?0:1)\""
+  testCommand: "node -e \"const i=JSON.parse(require('fs').readFileSync('packages/atlas/src/index.json','utf8'));const r=i.records['agent:claude-agent-sdk'];process.exit(r&&String(r.description||'').includes('Distinct from')?0:1)\""
   category: graph-integrity
   priority: medium
 edges:

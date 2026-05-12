@@ -637,6 +637,8 @@ nodeKinds:
     notes: npm package name when applicable.
   incomingEdges:
   - contains_tool_server
+  - scores_agent_readiness_of
+  - work_supported_by_tool
   outgoingEdges:
   - implements
   - sourced_from
@@ -652,6 +654,8 @@ nodeKinds:
   - has_connection_state
   - integrates_with
   - lib_applies_to_domain
+  - supports_work
+  - agent_readiness_score_for
   invariants: []
   examples: []
 - id: node:tool-descriptor
