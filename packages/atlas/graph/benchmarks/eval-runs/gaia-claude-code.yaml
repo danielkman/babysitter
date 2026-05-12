@@ -32,4 +32,4 @@ edges:
   evaluated_by:
     - target: benchmark:gaia
   produced_result:
-    - target: eval-result:mmlu.qwen-2-5-72b.001
+    - target: eval-result:gaia.claude-code.001

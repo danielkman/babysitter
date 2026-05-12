@@ -38,8 +38,8 @@ nodeKind: EvalRun
 id: eval-run:gpqa.claude-sonnet-4-5.2025-09
 attributes:
   target: "model:claude-sonnet-4-5@current"
-  benchmarkId: benchmark:mmlu
-  testSetId: test-set:swe-bench-verified-2024-12
+  benchmarkId: benchmark:gpqa
+  testSetId: test-set:gpqa-diamond-2024
   targetId: model:claude-sonnet-4-5@current
   runAt: "2025-09-29T00:00:00Z"
   runBy: "anthropic"
@@ -48,7 +48,7 @@ edges:
   evaluates_target:
     - model:claude-sonnet-4-5@current
   for_benchmark:
-    - benchmark:mmlu
+    - benchmark:gpqa
 ---
 nodeKind: EvalRun
 id: eval-run:livecodebench.gpt-5.2025-08

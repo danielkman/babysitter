@@ -21,8 +21,8 @@ nodeKind: EvalRun
 id: eval-run:gpqa.claude-haiku-4-5.2025-10
 attributes:
   target: "model:claude-haiku-4-5@current"
-  benchmarkId: benchmark:mmlu
-  testSetId: test-set:swe-bench-verified-2024-12
+  benchmarkId: benchmark:gpqa
+  testSetId: test-set:gpqa-diamond-2024
   targetId: model:claude-haiku-4-5@current
   runAt: "2025-10-15T00:00:00Z"
   runBy: "anthropic"
@@ -31,7 +31,7 @@ edges:
   evaluates_target:
     - model:claude-haiku-4-5@current
   for_benchmark:
-    - benchmark:mmlu
+    - benchmark:gpqa
 ---
 nodeKind: EvalRun
 id: eval-run:human-eval.claude-sonnet-4-6.2025-11
