@@ -1561,6 +1561,22 @@ jobs:
             --docker-password="$ACR_TOKEN" \
             --dry-run=client -o yaml | kubectl apply -f -
 
+      - name: Create Atlas auth secret
+        if: steps.config.outputs.deploy_enabled == 'true'
+        env:
+          ATLAS_GITHUB_CLIENT_ID: ${{ vars.ATLAS_GITHUB_CLIENT_ID }}
+          ATLAS_GITHUB_CLIENT_SECRET: ${{ secrets.ATLAS_GITHUB_CLIENT_SECRET }}
+        run: |
+          if [[ -n "${ATLAS_GITHUB_CLIENT_ID}" && -n "${ATLAS_GITHUB_CLIENT_SECRET}" ]]; then
+            kubectl -n "$KUBE_NAMESPACE" create secret generic atlas-auth \
+              --from-literal=GITHUB_CLIENT_ID="$ATLAS_GITHUB_CLIENT_ID" \
+              --from-literal=GITHUB_CLIENT_SECRET="$ATLAS_GITHUB_CLIENT_SECRET" \
+              --from-literal=ATLAS_SESSION_SECRET="$(openssl rand -hex 32)" \
+              --dry-run=client -o yaml | kubectl apply -f -
+          else
+            echo "::notice::Skipping atlas-auth secret — GitHub OAuth not configured"
+          fi
+
       - name: Deploy Atlas WebUI
         if: steps.config.outputs.deploy_enabled == 'true'
         run: |
@@ -1598,6 +1614,10 @@ jobs:
                         value: "3000"
                       - name: HOSTNAME
                         value: 0.0.0.0
+                    envFrom:
+                      - secretRef:
+                          name: atlas-auth
+                          optional: true
                     readinessProbe:
                       httpGet:
                         path: /api/health
