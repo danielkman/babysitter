@@ -593,8 +593,34 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
         env: { ...process.env, ...plan.env } as Record<string, string>,
       });
 
-      // Pipe PTY to stdout and stdin to PTY
-      ptyProcess.onData((data: string) => process.stdout.write(data));
+      // End-of-turn detection: read turnCompletePattern from atlas graph
+      let turnCompleteRegex: RegExp | null = null;
+      let turnDetected = false;
+      try {
+        const { getInteractiveSignals } = await import('@a5c-ai/agent-catalog');
+        const signals = getInteractiveSignals(plan.harness);
+        if (signals?.turnCompletePattern) {
+          turnCompleteRegex = new RegExp(signals.turnCompletePattern, 'm');
+        }
+      } catch { /* catalog not available */ }
+
+      // Pipe PTY to stdout, check for turn completion
+      let ptyOutputBuf = '';
+      ptyProcess.onData((data: string) => {
+        process.stdout.write(data);
+        if (turnCompleteRegex && !turnDetected && prompt) {
+          ptyOutputBuf += data;
+          // Strip ANSI escapes for pattern matching
+          const clean = ptyOutputBuf.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '');
+          if (turnCompleteRegex.test(clean)) {
+            turnDetected = true;
+            // Harness finished processing — kill it after a brief settle
+            setTimeout(() => {
+              try { ptyProcess.kill('SIGTERM'); } catch { /* */ }
+            }, 500);
+          }
+        }
+      });
       if (process.stdin.isTTY) {
         process.stdin.setRawMode(true);
       }

@@ -21,6 +21,11 @@ attributes:
     - install:npm
     - install:brew
   minSchemaVersion: "6.0.0"
+  interactiveSignals:
+    turnCompletePattern: "^\\s*❯\\s*$|^\\s*%\\s*$"
+    exitOnNonInteractive: true
+    nonInteractiveMode: "--print"
+    interactiveMode: ""
 edges:
   version_of:
     - agent:claude-code

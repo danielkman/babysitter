@@ -379,6 +379,17 @@ export interface CiSurfaceDescriptor {
   evidenceIds: string[];
 }
 
+export interface InteractiveSignals {
+  /** Regex pattern that appears in terminal output when the harness finishes a turn and is ready for input. */
+  turnCompletePattern?: string;
+  /** Whether the harness exits after processing a single prompt in non-interactive mode. */
+  exitOnNonInteractive?: boolean;
+  /** The harness-specific flag/mode for non-interactive one-shot execution (e.g. "--print" for Claude, "exec" for Codex). */
+  nonInteractiveMode?: string;
+  /** The harness-specific flag/mode for interactive session (e.g. no flag for Claude, no flag for Codex). */
+  interactiveMode?: string;
+}
+
 export interface AgentVersion {
   agentId: string;
   aliases: string[];
@@ -401,6 +412,7 @@ export interface AgentVersion {
   sessionNuanceIds: string[];
   lifecycleNuanceIds: string[];
   evidenceIds: string[];
+  interactiveSignals?: InteractiveSignals;
 }
 
 export interface GraphEdge {

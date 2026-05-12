@@ -19,6 +19,11 @@ attributes:
   installMethods:
     - install:npm
   minSchemaVersion: "6.0.0"
+  interactiveSignals:
+    turnCompletePattern: "^>"
+    exitOnNonInteractive: false
+    nonInteractiveMode: ""
+    interactiveMode: ""
 edges:
   version_of:
     - agent:pi

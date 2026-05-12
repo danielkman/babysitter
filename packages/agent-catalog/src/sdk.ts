@@ -42,6 +42,7 @@ import type {
   HarnessImageEntry,
   HookDescriptor,
   HookMappingDescriptor,
+  InteractiveSignals,
   HooksMuxDetectionRule,
   HostDetectionRule,
   HostMetadataField,
@@ -1497,4 +1498,9 @@ export function getLaunchConfig(harness: string, mode: string): LaunchConfigDesc
 export function getYoloLaunchArgs(harness: string): string[] {
   const config = getLaunchConfig(harness, 'dangerously-bypass-approvals-and-sandbox');
   return config?.commArgs ?? [];
+}
+
+export function getInteractiveSignals(harness: string): InteractiveSignals | undefined {
+  const agent = getAgentVersion(harness);
+  return agent?.interactiveSignals;
 }

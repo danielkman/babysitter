@@ -420,6 +420,12 @@ function toAgentVersion(node: GraphNode): AgentVersion {
     sessionNuanceIds: agentSessionNuanceIds(node.id),
     lifecycleNuanceIds: agentLifecycleNuanceIds(node.id),
     evidenceIds: nodeEvidenceIds(node),
+    interactiveSignals: node.interactiveSignals != null ? {
+      turnCompletePattern: valueAsString((node.interactiveSignals as Record<string, unknown>)?.turnCompletePattern) || undefined,
+      exitOnNonInteractive: (node.interactiveSignals as Record<string, unknown>)?.exitOnNonInteractive === true ? true : undefined,
+      nonInteractiveMode: valueAsString((node.interactiveSignals as Record<string, unknown>)?.nonInteractiveMode) || undefined,
+      interactiveMode: valueAsString((node.interactiveSignals as Record<string, unknown>)?.interactiveMode),
+    } : undefined,
   };
 }
 
