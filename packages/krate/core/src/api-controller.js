@@ -3,6 +3,7 @@ import { createPermissionReviewer } from './agent-permission-review.js';
 import { createAgentDispatchController } from './agent-dispatch-controller.js';
 import { createAgentApprovalController } from './agent-approval-controller.js';
 import { createAgentTriggerController } from './agent-trigger-controller.js';
+import { createAgentWorkspaceController } from './agent-workspace-controller.js';
 
 export const KRATE_API_CONTROLLER_BOUNDARY = {
   role: 'krate-api-controller',
@@ -104,6 +105,30 @@ export function createKrateApiController(options = {}) {
         resources: snapshot.resources,
         namespace: input.namespace || namespace,
         organizationRef: input.organizationRef || 'default',
+      });
+    },
+    async provisionAgentWorkspace(input) {
+      const workspaceController = createAgentWorkspaceController();
+      return workspaceController.provisionWorkspace({
+        ...input,
+        namespace: input.namespace || namespace,
+        organizationRef: input.organizationRef || 'default'
+      });
+    },
+    async archiveAgentWorkspace(input) {
+      const snapshot = await this.snapshot();
+      const workspaceController = createAgentWorkspaceController();
+      return workspaceController.archiveWorkspace({
+        ...input,
+        resources: snapshot.resources
+      });
+    },
+    async linkWorkItem(input) {
+      const workspaceController = createAgentWorkspaceController();
+      return workspaceController.linkWorkItem({
+        ...input,
+        namespace: input.namespace || namespace,
+        organizationRef: input.organizationRef || 'default'
       });
     }
   };
