@@ -2088,7 +2088,7 @@ jobs:
             --set "ingress.tls[0].hosts[0]=${APP_HOST}" \
             --set "ingress.annotations.cert-manager\\.io/cluster-issuer=letsencrypt-production" \
             --set "ingress.annotations.external-dns\\.alpha\\.kubernetes\\.io/hostname=${APP_HOST}" \
-            --set "ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/ssl-redirect=true" \
+            --set-string "ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/ssl-redirect=true" \
             --set demo.enabled=false \
             --set gitea.enabled=false \
             --set argocd.enabled=false \
