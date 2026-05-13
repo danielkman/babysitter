@@ -11,6 +11,10 @@ import { InteractiveKanbanBoard } from './components/kanban-interactive.jsx';
 import { MemorySearchForm } from './components/memory-search-form.jsx';
 import { LiveUpdates } from './components/live-updates.jsx';
 import { TriggerRuleForm } from './components/trigger-rule-form.jsx';
+import { ToolCallInspector } from './components/tool-inspector.jsx';
+import { SessionCost } from './components/session-cost.jsx';
+import { ApprovalModeToggle } from './components/approval-mode-toggle.jsx';
+import { SessionShell } from './components/session-shell.jsx';
 
 export const orgNavigationGroups = [
   {
@@ -1179,45 +1183,13 @@ export async function AgentSessionDetailPage({ org = null, sessionId } = {}) {
   };
   return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/agents" eyebrow={`agent session / ${sessionId}`} title={sessionId || 'Session detail'} text={session ? `Agent session on ${stackName || 'unknown stack'} with phase ${session.status?.phase || 'Pending'}.` : 'This agent session was not found in the current workspace.'} actions={[['/agents/sessions', 'All sessions'], ['/agents/runs', 'Dispatch runs']]} breadcrumbs={[['/', 'Krate'], ['/agents', 'Agents'], ['/agents/sessions', 'Sessions'], [`/agents/sessions/${sessionId}`, sessionId || 'Detail']]}>
     <DegradedBanner model={ui.model} />
-    <section className="routeGrid wideLeft">
-      <div className="card">
-        <SessionDetailTabs
-          transcriptContent={<>
-            <div className="cardTitle"><h3>Transcript</h3><StatusPill tone={messages.length ? 'good' : 'neutral'}>{messages.length} messages</StatusPill></div>
-            {messages.length ? <div className="sessionTranscript">{messages.map((msg, index) => <TranscriptMessage key={`${msg.role}-${index}`} message={msg} />)}</div> : <EmptyState title="No transcript available" text="Session transcript available when Agent Mux is connected and the session has exchanged messages." />}
-          </>}
-          flowContent={<>
-            <div className="cardTitle"><h3>Execution flow</h3><StatusPill tone={sessionRuns.length ? 'good' : 'neutral'}>{sessionRuns.length} runs</StatusPill></div>
-            <FlowVisualization runs={sessionRuns} transcripts={allTranscripts} />
-          </>}
-        />
-      </div>
-      <div className="stack">
-        <div className="card">
-          <div className="cardTitle"><h3>Session details</h3><StatusPill tone={session ? phaseTone(session.status?.phase) : 'warn'}>{session?.status?.phase || 'not found'}</StatusPill></div>
-          {session ? <dl className="kv">
-            <dt>Name</dt><dd>{session.metadata?.name}</dd>
-            <dt>Agent stack</dt><dd>{stackName ? <a href={orgHref(activeOrg, `/agents/stacks/${stackName}`)}>{stackName}</a> : 'not specified'}</dd>
-            <dt>Model</dt><dd>{session.spec?.model || session.status?.model || 'default'}</dd>
-            <dt>Dispatch run</dt><dd>{dispatchRunName ? <a href={orgHref(activeOrg, `/agents/runs/${dispatchRunName}`)}>{dispatchRunName}</a> : 'none'}</dd>
-            <dt>Workspace</dt><dd>{session.spec?.workspace ? <a href={orgHref(activeOrg, `/agents/workspaces/${session.spec.workspace}`)}>{session.spec.workspace}</a> : 'none'}</dd>
-            <dt>Phase</dt><dd>{session.status?.phase || 'Pending'}</dd>
-            <dt>Cost</dt><dd>{session.status?.cost != null ? `$${session.status.cost}` : transcriptRecord?.status?.totalCost != null ? `$${transcriptRecord.status.totalCost}` : 'not tracked'}</dd>
-            <dt>Agent Mux session</dt><dd>{session.spec?.agentMuxSessionId || 'not assigned'}</dd>
-            <dt>Started</dt><dd>{session.status?.startedAt || session.metadata?.creationTimestamp || 'unknown'}</dd>
-            <dt>Updated</dt><dd>{session.status?.updatedAt || 'unknown'}</dd>
-          </dl> : <EmptyState title={`Session ${sessionId} not found`} text="This agent session does not exist in the current workspace." />}
-        </div>
-        {transcriptRecord ? <div className="card">
-          <div className="cardTitle"><h3>Transcript metadata</h3><StatusPill tone="neutral">record</StatusPill></div>
-          <dl className="kv">
-            <dt>Transcript</dt><dd>{transcriptRecord.metadata?.name}</dd>
-            <dt>Messages</dt><dd>{messages.length}</dd>
-            <dt>Cost per turn</dt><dd>{transcriptRecord.status?.costPerTurn != null ? `$${transcriptRecord.status.costPerTurn}` : 'not tracked'}</dd>
-          </dl>
-        </div> : null}
-      </div>
-    </section>
+    <SessionShell
+      session={session}
+      messages={messages}
+      runs={sessionRuns}
+      transcripts={allTranscripts}
+      transcriptRecord={transcriptRecord}
+    />
   </PageFrame>;
 }
 
@@ -1270,7 +1242,7 @@ function ToolCallCard({ toolName, input, output, status }) {
 function TranscriptMessage({ message }) {
   const role = message.role || 'unknown';
   if (role === 'tool' || role === 'tool_use' || role === 'tool_result') {
-    return <ToolCallCard toolName={message.toolName || message.name} input={message.input || message.content} output={message.output} status={message.status || 'completed'} />;
+    return <ToolCallInspector toolName={message.toolName || message.name} input={message.input || message.content} output={message.output} status={message.status || 'completed'} durationMs={message.durationMs} />;
   }
   if (role === 'system' || role === 'thinking') {
     return <div className="transcriptMessage transcriptSystem">
