@@ -2067,6 +2067,13 @@ jobs:
             echo "::notice::Skipping krate-auth secret — GitHub OAuth not configured"
           fi
 
+      - name: Clean up pre-Helm resources
+        if: steps.config.outputs.deploy_enabled == 'true'
+        run: |
+          kubectl -n "$KUBE_NAMESPACE" delete ingress krate --ignore-not-found
+          kubectl -n "$KUBE_NAMESPACE" delete service krate --ignore-not-found
+          kubectl -n "$KUBE_NAMESPACE" delete deployment krate --ignore-not-found
+
       - name: Deploy Krate via Helm
         if: steps.config.outputs.deploy_enabled == 'true'
         run: |
