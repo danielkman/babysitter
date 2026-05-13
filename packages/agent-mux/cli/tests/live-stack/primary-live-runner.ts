@@ -165,7 +165,8 @@ export function buildPrimaryLiveStackCommands(
     generatedPluginInstallCommand(commandEnv, scenario, options.cwd, timeoutMs),
     // Create a bare babysitter run so .a5c/runs/ exists for verification.
     // No --entry means bare run — just creates the directory + journal.
-    commandExecution(commandEnv, 'LIVE_STACK_BABYSITTER_BIN', 'babysitter', ['run:create', '--process-id', 'live-stack-e2e', '--prompt', prompt, '--json'], options.cwd, timeoutMs),
+    // --runs-dir ensures the run is created in the project dir, not global ~/.a5c/runs.
+    commandExecution(commandEnv, 'LIVE_STACK_BABYSITTER_BIN', 'babysitter', ['run:create', '--process-id', 'live-stack-e2e', '--runs-dir', path.join(options.cwd, '.a5c', 'runs'), '--prompt', prompt, '--json'], options.cwd, timeoutMs),
     executionCommand,
   ];
 }
