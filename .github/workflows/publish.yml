@@ -2051,23 +2051,6 @@ jobs:
             --docker-password="$ACR_TOKEN" \
             --dry-run=client -o yaml | kubectl apply -f -
 
-      - name: Create Krate auth secret
-        if: steps.config.outputs.deploy_enabled == 'true'
-        env:
-          KRATE_GITHUB_CLIENT_ID: ${{ vars.KRATE_GITHUB_CLIENT_ID }}
-          KRATE_GITHUB_CLIENT_SECRET: ${{ secrets.KRATE_GITHUB_CLIENT_SECRET }}
-        run: |
-          if [[ -n "${KRATE_GITHUB_CLIENT_ID}" && -n "${KRATE_GITHUB_CLIENT_SECRET}" ]]; then
-            kubectl -n "$KUBE_NAMESPACE" create secret generic krate-auth \
-              --from-literal=KRATE_AUTH_GITHUB_CLIENT_ID="$KRATE_GITHUB_CLIENT_ID" \
-              --from-literal=KRATE_AUTH_GITHUB_CLIENT_SECRET="$KRATE_GITHUB_CLIENT_SECRET" \
-              --from-literal=KRATE_ADMIN_ORG="a5c-ai" \
-              --from-literal=KRATE_ADMIN_USERNAME="tmuskal" \
-              --dry-run=client -o yaml | kubectl apply -f -
-          else
-            echo "::notice::Skipping krate-auth secret — GitHub OAuth not configured"
-          fi
-
       - name: Clean up pre-Helm resources
         if: steps.config.outputs.deploy_enabled == 'true'
         run: |
@@ -2077,6 +2060,9 @@ jobs:
 
       - name: Deploy Krate via Helm
         if: steps.config.outputs.deploy_enabled == 'true'
+        env:
+          KRATE_GITHUB_CLIENT_ID: ${{ vars.KRATE_GITHUB_CLIENT_ID }}
+          KRATE_GITHUB_CLIENT_SECRET: ${{ secrets.KRATE_GITHUB_CLIENT_SECRET }}
         run: |
           helm upgrade --install krate packages/krate/charts \
             --namespace "$KUBE_NAMESPACE" \
@@ -2087,6 +2073,10 @@ jobs:
             --set image.web.tag="${GITHUB_SHA}" \
             --set image.pullPolicy=Always \
             --set "global.imagePullSecrets[0].name=acr-pull" \
+            --set auth.github.clientId="${KRATE_GITHUB_CLIENT_ID}" \
+            --set auth.github.clientSecret="${KRATE_GITHUB_CLIENT_SECRET}" \
+            --set admin.org=a5c-ai \
+            --set admin.username=tmuskal \
             --set ingress.enabled=true \
             --set ingress.className=nginx \
             --set "ingress.hosts[0].host=${APP_HOST}" \

@@ -124,6 +124,10 @@ oidc:
 
 
 
+admin:
+  org: ""
+  username: ""
+
 auth:
   session:
     cookieName: krate_session

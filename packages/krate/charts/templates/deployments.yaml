@@ -284,12 +284,15 @@ spec:
         - name: web
           image: {{ include "krate.webImage" . | quote }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ["node", "apps/web/server.js"]
           env:
             - name: PORT
-              value: "8080"
+              value: "3000"
             - name: HOSTNAME
               value: "0.0.0.0"
+            - name: KRATE_ADMIN_ORG
+              value: {{ .Values.admin.org | quote }}
+            - name: KRATE_ADMIN_USERNAME
+              value: {{ .Values.admin.username | quote }}
             - name: KRATE_NAMESPACE
               value: {{ .Release.Namespace | quote }}
             - name: KRATE_KUBEVELA_NAMESPACE
@@ -378,4 +381,4 @@ spec:
                   optional: true
           ports:
             - name: http
-              containerPort: 8080
+              containerPort: 3000
