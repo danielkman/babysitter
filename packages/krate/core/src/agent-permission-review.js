@@ -9,22 +9,50 @@ export const AGENT_PERMISSION_REVIEW_BOUNDARY = {
   mustNotOwn: ['secret values', 'native K8s API calls', 'runtime execution']
 };
 
+const VALID_APPROVAL_MODES = new Set(['yolo', 'prompt', 'deny']);
+
 export function createPermissionReviewer(options = {}) {
   return {
     role: 'agent-permission-review',
 
-    reviewPermissions({ repository, ref, actor, agentStack, triggerSource, taskKind, runnerPool, toolRefs = [], skillRefs = [], mcpServerRefs = [], contextLabelRefs = [], resources = {} }) {
+    reviewPermissions({ repository, ref, actor, agentStack, triggerSource, taskKind, runnerPool, toolRefs = [], skillRefs = [], mcpServerRefs = [], contextLabelRefs = [], workspacePolicyRef, isFork = false, resources = {} }) {
       const reasons = [];
       const grants = [];
+      const crossOrgDenials = [];
+      const untrustedForkWarnings = [];
 
       // Step 1 — Resolve AgentStack
       const stacks = resources.AgentStack || [];
       const stack = stacks.find((s) => s.metadata?.name === agentStack);
       if (!stack) {
-        return buildDecision({ decision: 'denied', reasons: [{ severity: 'error', message: `AgentStack not found: ${agentStack}` }], grants, capabilities: {}, actor, repository, ref, agentStack, taskKind });
+        return buildDecision({ decision: 'denied', reasons: [{ severity: 'error', message: `AgentStack not found: ${agentStack}` }], grants, capabilities: {}, actor, repository, ref, agentStack, taskKind, crossOrgDenials, untrustedForkWarnings });
       }
 
-      // Step 2 — Expand capabilities from stack spec
+      // Step 1a — Validate approvalMode
+      const approvalMode = stack.spec?.approvalMode;
+      if (approvalMode !== undefined && !VALID_APPROVAL_MODES.has(approvalMode)) {
+        reasons.push({ severity: 'error', message: `Invalid approvalMode '${approvalMode}': must be one of ${[...VALID_APPROVAL_MODES].join(', ')}` });
+      }
+
+      // Step 1b — Deny mode blocks everything immediately
+      if (approvalMode === 'deny') {
+        reasons.push({ severity: 'error', message: `approvalMode is 'deny': all requests are blocked by policy` });
+        return buildDecision({ decision: 'denied', reasons, grants, capabilities: {}, actor, repository, ref, agentStack, taskKind, approvalMode, crossOrgDenials, untrustedForkWarnings });
+      }
+
+      // Step 2 — Cross-org denial check
+      const agentOrg = stack.spec?.organizationRef;
+      if (agentOrg && repository) {
+        // repository format: '<org>/<repo>' or just '<repo>'
+        const repoParts = repository.split('/');
+        const repoOrg = repoParts.length >= 2 ? repoParts[0] : null;
+        if (repoOrg && repoOrg !== agentOrg) {
+          crossOrgDenials.push({ agentOrg, resourceOrg: repoOrg, resource: repository });
+          reasons.push({ severity: 'error', message: `Cross-org access denied: agent org '${agentOrg}' cannot access repository in org '${repoOrg}'` });
+        }
+      }
+
+      // Step 3 — Expand capabilities from stack spec
       const capabilities = {
         toolRefs: clone(stack.spec?.toolPolicy ? [stack.spec.toolPolicy] : toolRefs),
         mcpServerRefs: clone(stack.spec?.mcpServerRefs || mcpServerRefs),
@@ -32,17 +60,34 @@ export function createPermissionReviewer(options = {}) {
         subagentRefs: clone(stack.spec?.subagentRefs || [])
       };
 
-      // Step 3 — Check runtime identity (AgentServiceAccount)
+      // Step 4 — Untrusted fork detection
+      const isForkRef = isFork || /^refs\/pull\/\d+\//.test(ref);
+      if (isForkRef) {
+        const blockedKinds = ['AgentServiceAccount', 'AgentSecretGrant'];
+        untrustedForkWarnings.push({
+          ref,
+          isFork: true,
+          blockedKinds,
+          message: `Untrusted fork detected for ref '${ref}': privileged grants restricted`
+        });
+        reasons.push({ severity: 'warning', message: `Untrusted fork detected for ref '${ref}': privileged grants (${blockedKinds.join(', ')}) are not auto-approved` });
+      }
+
+      // Step 5 — Check runtime identity (AgentServiceAccount)
       const serviceAccountRef = stack.spec?.runtimeIdentity?.serviceAccountRef || stack.spec?.runtimeIdentity;
       const serviceAccounts = resources.AgentServiceAccount || [];
       const serviceAccount = serviceAccounts.find((sa) => sa.metadata?.name === serviceAccountRef);
       if (!serviceAccount) {
         reasons.push({ severity: 'error', message: `Missing AgentServiceAccount: ${serviceAccountRef}` });
       } else {
-        grants.push({ kind: 'AgentServiceAccount', name: serviceAccount.metadata.name, status: 'bound' });
+        const saGrant = { kind: 'AgentServiceAccount', name: serviceAccount.metadata.name, status: 'bound' };
+        if (isForkRef) {
+          saGrant.status = 'fork-restricted';
+        }
+        grants.push(saGrant);
       }
 
-      // Step 4 — Check role bindings
+      // Step 6 — Check role bindings
       const roleBindings = resources.AgentRoleBinding || [];
       const matchedBindings = roleBindings.filter((rb) => rb.spec?.subject === serviceAccountRef || rb.spec?.subject === agentStack);
       for (const binding of matchedBindings) {
@@ -52,7 +97,7 @@ export function createPermissionReviewer(options = {}) {
         reasons.push({ severity: 'warning', message: `No AgentRoleBinding found for subject: ${serviceAccountRef}` });
       }
 
-      // Step 5 — Check secret grants
+      // Step 7 — Check secret grants
       const secretGrants = resources.AgentSecretGrant || [];
       const neededSecrets = collectSecretNeeds(stack, capabilities, resources);
       for (const need of neededSecrets) {
@@ -67,7 +112,9 @@ export function createPermissionReviewer(options = {}) {
           reasons.push({ severity: 'error', message: `Missing AgentSecretGrant for ${need.description} (purpose: ${need.purpose})` });
         } else {
           const grantEntry = { kind: 'AgentSecretGrant', name: match.metadata.name, purpose: match.spec?.purpose, status: 'granted' };
-          if (match.spec?.requiredApproval) {
+          if (isForkRef) {
+            grantEntry.status = 'fork-restricted';
+          } else if (match.spec?.requiredApproval) {
             grantEntry.status = 'requires-approval';
             grantEntry.requiredApproval = match.spec.requiredApproval;
             reasons.push({ severity: 'info', message: `AgentSecretGrant ${match.metadata.name} requires approval: ${match.spec.requiredApproval}` });
@@ -76,7 +123,7 @@ export function createPermissionReviewer(options = {}) {
         }
       }
 
-      // Step 6 — Check config grants
+      // Step 8 — Check config grants
       const configGrants = resources.AgentConfigGrant || [];
       const neededConfigs = collectConfigNeeds(stack, capabilities, resources);
       for (const need of neededConfigs) {
@@ -92,12 +139,48 @@ export function createPermissionReviewer(options = {}) {
         }
       }
 
-      // Step 7 — Decision
+      // Step 9 — Workspace policy enforcement
+      if (workspacePolicyRef) {
+        const policies = resources.AgentWorkspacePolicy || [];
+        const policy = policies.find((p) => p.metadata?.name === workspacePolicyRef);
+        if (policy) {
+          // Check maxConcurrentSessions
+          if (policy.spec?.maxConcurrentSessions === 0) {
+            reasons.push({ severity: 'error', message: `Workspace policy '${workspacePolicyRef}' maxConcurrentSessions is 0: no sessions allowed` });
+          }
+          // Check deniedTools
+          const deniedTools = policy.spec?.deniedTools || [];
+          const requestedTools = capabilities.toolRefs;
+          for (const tool of requestedTools) {
+            if (deniedTools.includes(tool)) {
+              reasons.push({ severity: 'error', message: `Tool '${tool}' is denied by workspace policy '${workspacePolicyRef}'` });
+            }
+          }
+          // Check allowedTools (if specified, only those tools are permitted)
+          const allowedTools = policy.spec?.allowedTools;
+          if (allowedTools && allowedTools.length > 0) {
+            for (const tool of requestedTools) {
+              if (!allowedTools.includes(tool)) {
+                reasons.push({ severity: 'error', message: `Tool '${tool}' is not in allowedTools for workspace policy '${workspacePolicyRef}'` });
+              }
+            }
+          }
+        }
+      }
+
+      // Step 10 — Decision
       const hasErrors = reasons.some((r) => r.severity === 'error');
       const hasApprovals = grants.some((g) => g.status === 'requires-approval');
-      const decision = hasErrors ? 'denied' : hasApprovals ? 'requires-approval' : 'allowed';
+      let decision;
+      if (hasErrors) {
+        decision = 'denied';
+      } else if (hasApprovals) {
+        decision = 'requires-approval';
+      } else {
+        decision = 'allowed';
+      }
 
-      return buildDecision({ decision, reasons, grants, capabilities, actor, repository, ref, agentStack, taskKind });
+      return buildDecision({ decision, reasons, grants, capabilities, actor, repository, ref, agentStack, taskKind, approvalMode, crossOrgDenials, untrustedForkWarnings });
     },
 
     createPermissionSnapshot(reviewResult) {
@@ -137,7 +220,7 @@ function collectConfigNeeds(stack, capabilities, resources) {
   return needs;
 }
 
-function buildDecision({ decision, reasons, grants, capabilities, actor, repository, ref, agentStack, taskKind }) {
+function buildDecision({ decision, reasons, grants, capabilities, actor, repository, ref, agentStack, taskKind, approvalMode, crossOrgDenials = [], untrustedForkWarnings = [] }) {
   const result = {
     decision,
     actor,
@@ -148,8 +231,13 @@ function buildDecision({ decision, reasons, grants, capabilities, actor, reposit
     capabilities: clone(capabilities),
     grants: clone(grants),
     reasons: clone(reasons),
+    crossOrgDenials: clone(crossOrgDenials),
+    untrustedForkWarnings: clone(untrustedForkWarnings),
     reviewedAt: new Date().toISOString()
   };
+  if (approvalMode !== undefined) {
+    result.approvalMode = approvalMode;
+  }
   result.digest = computeDigest(result);
   return result;
 }
