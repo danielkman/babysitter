@@ -13,6 +13,8 @@ html[data-theme="vellum"] {
   --brass: var(--brass);
   --brass-light: var(--brass-light);
   --ground-ink: color-mix(in oklab, var(--paper-3) 86%, var(--paper));
+  --atlas-selection-bg: #1f5fd1;
+  --atlas-selection-fg: #ffffff;
 }
 
 html[data-theme="void"] {
@@ -25,6 +27,8 @@ html[data-theme="void"] {
   --edge-fade: color-mix(in oklab, var(--glyph-fade) 24%, transparent);
   --brass: var(--tkc-danger-hover);
   --brass-light: var(--tkc-danger-hover);
+  --atlas-selection-bg: #7dd3fc;
+  --atlas-selection-fg: #06121f;
 }
 
 html,
@@ -56,8 +60,18 @@ code, pre {
 }
 
 ::selection {
-  background: var(--brass-light);
-  color: var(--fg);
+  background: var(--atlas-selection-bg);
+  color: var(--atlas-selection-fg);
+  text-shadow: none;
+}
+
+input::selection,
+textarea::selection,
+code::selection,
+pre::selection {
+  background: var(--atlas-selection-bg);
+  color: var(--atlas-selection-fg);
+  text-shadow: none;
 }
 
 .atlas-body {
@@ -730,6 +744,49 @@ html[data-theme="void"] .atlas-theme-toggle .tkc-check-row {
   font-size: 12.5px;
 }
 
+.atlas-copyable-text {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 18px;
+  min-width: 0;
+}
+
+.atlas-copyable-text__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.atlas-copyable-text__label {
+  margin-right: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+
+.atlas-copyable-text__textarea {
+  width: 100%;
+  min-height: 260px;
+  resize: vertical;
+  border: 1px solid color-mix(in oklab, var(--rule) 82%, transparent);
+  background: color-mix(in oklab, var(--paper) 88%, white);
+  color: var(--tk-line);
+  padding: 16px 18px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.55;
+  white-space: pre;
+}
+
+.atlas-copyable-text .atlas-docs-pre,
+.atlas-copyable-text .atlas-mermaid__source {
+  margin: 0;
+}
+
 .atlas-mermaid {
   display: grid;
   gap: 10px;
@@ -782,6 +839,12 @@ html[data-theme="void"] .atlas-theme-toggle .tkc-check-row {
 }
 
 html[data-theme="void"] .atlas-docs-pre {
+  background: #101a25;
+  border-color: rgba(127, 215, 255, 0.24);
+  color: #d8ebf7;
+}
+
+html[data-theme="void"] .atlas-copyable-text__textarea {
   background: #101a25;
   border-color: rgba(127, 215, 255, 0.24);
   color: #d8ebf7;

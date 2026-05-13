@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import type mermaidType from "mermaid";
+import { CopyableText } from "@/components/CopyableText";
 
 const MERMAID_CONFIG = {
   startOnLoad: false,
@@ -88,9 +89,12 @@ export function MermaidDiagram({
         <figcaption className="atlas-mermaid__error">
           <strong>Mermaid render failed.</strong>
           <span>{error}</span>
-          <pre className="atlas-mermaid__source">
-            <code>{definition}</code>
-          </pre>
+          <CopyableText
+            text={definition}
+            copyLabel="Copy Mermaid source"
+            languageLabel="Mermaid source"
+            preClassName="atlas-mermaid__source"
+          />
         </figcaption>
       ) : null}
     </figure>

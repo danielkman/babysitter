@@ -402,6 +402,10 @@ describe("private workspace pages", () => {
     expect(html).toContain("Reusable system dependency");
     expect(html).toContain("Search Atlas entities");
     expect(html).toContain("Extra coverage");
+    expect(html).toContain("Save to private graphs");
+    expect(html).toContain("Copy YAML");
+    expect(html).toContain("Download YAML");
+    expect(html).toContain("Generated company graph YAML");
   });
 
   it("renders company builder in local SQLite mode when the database is unavailable", async () => {

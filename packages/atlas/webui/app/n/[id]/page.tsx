@@ -11,6 +11,7 @@ import { AttributeTable } from "@/components/AttributeTable";
 import { EdgeList } from "@/components/EdgeList";
 import { MiniGraph } from "@/components/MiniGraph";
 import { MarkdownArticle } from "@/components/MarkdownArticle";
+import { CopyableText } from "@/components/CopyableText";
 import { getCurrentAtlasView } from "@/lib/server/atlas-view";
 
 export const dynamicParams = true;
@@ -264,27 +265,26 @@ export default async function RecordPage({
           ]}
         >
           <div className="atlas-docs-body">
-            <pre
-              className="atlas-docs-pre atlas-docs-full"
-            >
-              <code>
-                {JSON.stringify(
-                  {
-                    id,
-                    _kind: rec._kind,
-                    _file: rec._file,
-                    _cluster: rec._cluster,
-                    attributes: Object.fromEntries(
-                      Object.entries(rec).filter(([k]) => !k.startsWith("_") && k !== "id")
-                    ),
-                    outgoingEdges: out,
-                    incomingEdges: inc,
-                  },
-                  null,
-                  2
-                )}
-              </code>
-            </pre>
+            <CopyableText
+              text={JSON.stringify(
+                {
+                  id,
+                  _kind: rec._kind,
+                  _file: rec._file,
+                  _cluster: rec._cluster,
+                  attributes: Object.fromEntries(
+                    Object.entries(rec).filter(([key]) => !key.startsWith("_") && key !== "id")
+                  ),
+                  outgoingEdges: out,
+                  incomingEdges: inc,
+                },
+                null,
+                2
+              )}
+              copyLabel="Copy JSON"
+              languageLabel="Record JSON"
+              preClassName="atlas-docs-pre atlas-docs-full"
+            />
           </div>
         </AtlasDocsScaffold>
       )}

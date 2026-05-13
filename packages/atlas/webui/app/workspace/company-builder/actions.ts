@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
+import { createUserGraphUpload } from "@/lib/server/user-graphs";
 import {
   addCompanyIntegration,
   addCompanyLayerBinding,
@@ -154,6 +155,25 @@ export async function exportCompanyBlueprintAction(formData: FormData) {
   const userId = await requireUserId();
   await exportCompanyBlueprintYaml(userId, requiredString(formData, "blueprintId"));
   refreshBuilder();
+}
+
+export async function saveCompanyBlueprintExportToPrivateGraphAction(formData: FormData) {
+  const userId = await requireUserId();
+  const yaml = await exportCompanyBlueprintYaml(userId, requiredString(formData, "blueprintId"));
+  const title = requiredString(formData, "graphTitle");
+  const sourceFilename = optionalString(formData, "sourceFilename") || `${title}.yaml`;
+
+  await createUserGraphUpload({
+    userId,
+    title,
+    description: optionalString(formData, "graphDescription") || undefined,
+    sourceFilename,
+    rawYaml: yaml,
+  });
+
+  refreshBuilder();
+  revalidatePath("/workspace/graphs");
+  redirect("/workspace/graphs");
 }
 
 export async function deleteCompanyBlueprintAction(formData: FormData) {

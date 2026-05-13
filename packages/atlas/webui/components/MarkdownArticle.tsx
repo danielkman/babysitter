@@ -1,6 +1,7 @@
 import Link from "next/link";
 import path from "node:path";
 import type { AtlasRecord } from "@a5c-ai/atlas";
+import { CopyableText } from "./CopyableText";
 import { MermaidDiagram } from "./MermaidDiagram";
 
 function resolveHref(
@@ -120,13 +121,14 @@ function renderCodeBlock(
   }
 
   return (
-    <pre
+    <CopyableText
       key={key}
-      className={docs ? "atlas-docs-pre" : "overflow-x-auto rounded-md p-3 text-xs"}
-      style={docs ? undefined : { background: "var(--ground-ink)", border: "1px solid var(--rule)", color: "var(--glyph-bone)" }}
-    >
-      <code>{source}</code>
-    </pre>
+      text={source}
+      copyLabel="Copy code"
+      languageLabel={language || "Code"}
+      preClassName={docs ? "atlas-docs-pre" : "overflow-x-auto rounded-md p-3 text-xs"}
+      preStyle={docs ? undefined : { background: "var(--ground-ink)", border: "1px solid var(--rule)", color: "var(--glyph-bone)" }}
+    />
   );
 }
 

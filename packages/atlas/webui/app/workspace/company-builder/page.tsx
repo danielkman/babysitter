@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AtlasDocsScaffold } from "@/components/AtlasDocsScaffold";
+import { CopyableText } from "@/components/CopyableText";
 import { auth, isDevelopmentMockLoginEnabled } from "@/auth";
 import { isDatabaseConfigured } from "@/lib/server/db";
 import {
@@ -28,6 +29,7 @@ import {
   deleteCompanyResourceBindingAction,
   deleteCompanySystemAction,
   exportCompanyBlueprintAction,
+  saveCompanyBlueprintExportToPrivateGraphAction,
   saveCompanyBlueprintMetadataAction,
 } from "./actions";
 import { LayerBindingComposer } from "./LayerBindingComposer";
@@ -113,6 +115,14 @@ function renderCoveragePills(system: CompanyBlueprint["draft"]["systems"][number
 function bindingLabel(binding: CompanyLayerBindingDraft) {
   const primary = COMPANY_LAYER_DEFS.find((entry) => entry.key === binding.primaryLayerId);
   return primary?.label ?? binding.primaryLayerId;
+}
+
+function exportYamlFilename(blueprint: CompanyBlueprint) {
+  const slug = (blueprint.slug || blueprint.name || blueprint.id)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+  return `${slug || "company-graph"}.yaml`;
 }
 
 export default async function CompanyBuilderPage({
@@ -282,18 +292,38 @@ export default async function CompanyBuilderPage({
 
               <div className="atlas-docs-panel">
                 <h3>Export</h3>
-                <form action={exportCompanyBlueprintAction} className="atlas-docs-stack">
-                  <input type="hidden" name="blueprintId" value={blueprint.id} />
-                  <button type="submit" className="atlas-header__button">Generate YAML export</button>
-                </form>
+                <div className="atlas-docs-stack">
+                  <form action={exportCompanyBlueprintAction}>
+                    <input type="hidden" name="blueprintId" value={blueprint.id} />
+                    <button type="submit" className="atlas-header__button">Generate YAML export</button>
+                  </form>
+                  <form action={saveCompanyBlueprintExportToPrivateGraphAction}>
+                    <input type="hidden" name="blueprintId" value={blueprint.id} />
+                    <input type="hidden" name="graphTitle" value={`${blueprint.name} export`} />
+                    <input
+                      type="hidden"
+                      name="graphDescription"
+                      value={`Generated from the company-builder graph ${blueprint.name}.`}
+                    />
+                    <input type="hidden" name="sourceFilename" value={exportYamlFilename(blueprint)} />
+                    <button type="submit" className="atlas-header__button">Save to private graphs</button>
+                  </form>
+                </div>
                 <form action={deleteCompanyBlueprintAction} className="atlas-docs-stack">
                   <input type="hidden" name="blueprintId" value={blueprint.id} />
                   <button type="submit" className="atlas-header__button">Delete graph</button>
                 </form>
                 {blueprint.lastExportYaml ? (
-                  <pre className="atlas-docs-pre" style={{ maxHeight: 320, overflow: "auto" }}>
-                    <code>{blueprint.lastExportYaml}</code>
-                  </pre>
+                  <CopyableText
+                    text={blueprint.lastExportYaml}
+                    mode="textarea"
+                    rows={12}
+                    copyLabel="Copy YAML"
+                    downloadLabel="Download YAML"
+                    filename={exportYamlFilename(blueprint)}
+                    languageLabel="Generated YAML"
+                    textareaLabel="Generated company graph YAML"
+                  />
                 ) : (
                   <p className="atlas-docs-note">No export generated yet.</p>
                 )}
