@@ -10,6 +10,7 @@ import { StackBuilder } from './components/stack-builder.jsx';
 import { InteractiveKanbanBoard } from './components/kanban-interactive.jsx';
 import { MemorySearchForm } from './components/memory-search-form.jsx';
 import { LiveUpdates } from './components/live-updates.jsx';
+import { TriggerRuleForm } from './components/trigger-rule-form.jsx';
 
 export const orgNavigationGroups = [
   {
@@ -498,8 +499,8 @@ export async function AgentRuleDetailPage({ org = null, ruleName } = {}) {
 export async function AgentRuleBuilderPage({ org = null } = {}) {
   const ui = await loadKrateUi(org);
   const activeOrg = ui.model.org?.slug || org || 'default';
-  const eventTypes = ['ci-failure', 'webhook', 'comment', 'label-added', 'push', 'schedule', 'manual', 'pr-opened', 'issue-created'];
-  const taskKinds = ['diagnostic', 'repair', 'review', 'custom'];
+  const agentView = ui.model.agents || { stacks: { items: [] } };
+  const stacks = (agentView.stacks?.items || []).map(s => s.metadata?.name).filter(Boolean);
   const exampleYaml = `apiVersion: krate.a5c.ai/v1alpha1
 kind: AgentTriggerRule
 metadata:
@@ -508,41 +509,13 @@ metadata:
 spec:
   organizationRef: ${activeOrg}
   sources:
-    - ci-failure
+    - push
   agentStack: my-diagnostic-stack
   taskKind: diagnostic`;
   return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/agents" eyebrow="new trigger rule" title="Create trigger rule" text="Define which events dispatch agent runs and which stack handles them." actions={[['/agents/rules', 'All rules'], ['/agents/stacks', 'Stacks']]} breadcrumbs={[['/', 'Krate'], ['/agents', 'Agents'], ['/agents/rules', 'Trigger rules'], ['/agents/rules/new', 'New rule']]}>
     <DegradedBanner model={ui.model} />
-    <div className="card" style={{ borderLeft: '3px solid var(--color-info, #3b82f6)' }}>
-      <div className="cardTitle"><h3>Read-only preview</h3><StatusPill tone="neutral">reference</StatusPill></div>
-      <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>Create trigger rules using the Krate CLI or resource definitions. This page shows the resource format for reference.</p>
-    </div>
     <section className="routeGrid two">
-      <div className="card">
-        <div className="cardTitle"><h3>Rule shape</h3><StatusPill tone="neutral">preview</StatusPill></div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div>
-            <label style={{ display: 'block', fontWeight: 600, fontSize: '0.8125rem', marginBottom: '0.25rem' }}>Name</label>
-            <input disabled type="text" placeholder="my-trigger-rule" style={{ width: '100%', padding: '0.5rem', borderRadius: '0.375rem', border: '1px solid #d1d5db', background: '#f9fafb', color: '#9ca3af', fontSize: '0.875rem' }} />
-          </div>
-          <div>
-            <label style={{ display: 'block', fontWeight: 600, fontSize: '0.8125rem', marginBottom: '0.5rem' }}>Sources</label>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>{eventTypes.map((eventType) => <label key={eventType} style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.8125rem', color: '#9ca3af' }}><input disabled type="checkbox" />{eventType}</label>)}</div>
-          </div>
-          <div>
-            <label style={{ display: 'block', fontWeight: 600, fontSize: '0.8125rem', marginBottom: '0.25rem' }}>Target stack</label>
-            <select disabled style={{ width: '100%', padding: '0.5rem', borderRadius: '0.375rem', border: '1px solid #d1d5db', background: '#f9fafb', color: '#9ca3af', fontSize: '0.875rem' }}><option>Select a stack...</option></select>
-          </div>
-          <div>
-            <label style={{ display: 'block', fontWeight: 600, fontSize: '0.8125rem', marginBottom: '0.25rem' }}>Task kind</label>
-            <select disabled style={{ width: '100%', padding: '0.5rem', borderRadius: '0.375rem', border: '1px solid #d1d5db', background: '#f9fafb', color: '#9ca3af', fontSize: '0.875rem' }}>{taskKinds.map((kind) => <option key={kind}>{kind}</option>)}</select>
-          </div>
-          <div>
-            <label style={{ display: 'block', fontWeight: 600, fontSize: '0.8125rem', marginBottom: '0.25rem' }}>Repository scope</label>
-            <input disabled type="text" placeholder="Optional -- leave empty for all repos" style={{ width: '100%', padding: '0.5rem', borderRadius: '0.375rem', border: '1px solid #d1d5db', background: '#f9fafb', color: '#9ca3af', fontSize: '0.875rem' }} />
-          </div>
-        </div>
-      </div>
+      <TriggerRuleForm org={activeOrg} stacks={stacks} />
       <div className="card">
         <div className="cardTitle"><h3>Resource definition</h3><StatusPill tone="neutral">example</StatusPill></div>
         <pre style={{ background: '#1e1e2e', color: '#cdd6f4', padding: '1rem', borderRadius: '0.5rem', fontSize: '0.8125rem', lineHeight: '1.6', overflow: 'auto' }}><code>{exampleYaml}</code></pre>
