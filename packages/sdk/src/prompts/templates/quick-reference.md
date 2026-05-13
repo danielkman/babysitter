@@ -37,7 +37,7 @@ $CLI task:post <runId> <effectId> --status <ok|error> --json
 
 **Assign process to bare run:**
 ```bash
-$CLI run:process-assign <runDir> --entry <path>#<export> [--process-id <id>] [--json]
+$CLI run:assign-process <runDir> --entry <path>#<export> [--process-id <id>] [--json]
 ```
 
 **Iterate:**

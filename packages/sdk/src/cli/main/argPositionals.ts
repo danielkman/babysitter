@@ -8,7 +8,7 @@ export function applyPositionalArgs(parsed: ParsedArgs, positionals: string[]) {
       [parsed.runDirArg, parsed.effectId] = positionals;
       return;
     case "task:list":
-    case "run:process-assign":
+    case "run:assign-process":
     case "run:status":
     case "run:iterate":
     case "run:events":

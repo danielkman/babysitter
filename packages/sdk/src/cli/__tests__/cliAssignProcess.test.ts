@@ -7,13 +7,13 @@ import { readRunMetadata } from "../../storage/runFiles";
 import { loadJournal } from "../../storage/journal";
 import { createRunDir } from "../../storage/createRunDir";
 
-describe("babysitter run:process-assign CLI", () => {
+describe("babysitter run:assign-process CLI", () => {
   let runsRoot: string;
   let logSpy: ReturnType<typeof vi.spyOn>;
   let errorSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(async () => {
-    runsRoot = await fs.mkdtemp(path.join(os.tmpdir(), "cli-process-assign-"));
+    runsRoot = await fs.mkdtemp(path.join(os.tmpdir(), "cli-assign-process-"));
     logSpy = vi.spyOn(console, "log").mockImplementation(() => undefined);
     errorSpy = vi.spyOn(console, "error").mockImplementation(() => undefined);
   });
@@ -65,7 +65,7 @@ describe("babysitter run:process-assign CLI", () => {
 
     const cli = createBabysitterCli();
     const exitCode = await cli.run([
-      "run:process-assign",
+      "run:assign-process",
       runDir,
       "--entry",
       `${entryFile}#handler`,
@@ -76,7 +76,7 @@ describe("babysitter run:process-assign CLI", () => {
     ]);
 
     expect(exitCode).toBe(0);
-    expect(logSpy).toHaveBeenCalledWith(expect.stringContaining("[run:process-assign]"));
+    expect(logSpy).toHaveBeenCalledWith(expect.stringContaining("[run:assign-process]"));
 
     const metadata = await readRunMetadata(runDir);
     expect(metadata.entrypoint.importPath).toBe(entryFile);
@@ -98,7 +98,7 @@ describe("babysitter run:process-assign CLI", () => {
 
     const cli = createBabysitterCli();
     const exitCode = await cli.run([
-      "run:process-assign",
+      "run:assign-process",
       runDir,
       "--entry",
       `${entryFile}#process`,
@@ -126,7 +126,7 @@ describe("babysitter run:process-assign CLI", () => {
 
     const cli = createBabysitterCli();
     const exitCode = await cli.run([
-      "run:process-assign",
+      "run:assign-process",
       runDir,
       "--entry",
       `${entryFile}#handler`,
@@ -150,7 +150,7 @@ describe("babysitter run:process-assign CLI", () => {
 
     const cli = createBabysitterCli();
     const exitCode = await cli.run([
-      "run:process-assign",
+      "run:assign-process",
       runDir,
       "--entry",
       `${entryFile}#handler`,
@@ -173,7 +173,7 @@ describe("babysitter run:process-assign CLI", () => {
 
     const cli = createBabysitterCli();
     const exitCode = await cli.run([
-      "run:process-assign",
+      "run:assign-process",
       runDir,
       "--entry",
       `${newEntry}#handler`,
@@ -192,7 +192,7 @@ describe("babysitter run:process-assign CLI", () => {
 
     const cli = createBabysitterCli();
     const exitCode = await cli.run([
-      "run:process-assign",
+      "run:assign-process",
       runDir,
       "--entry",
       `${newEntry}#handler`,
@@ -213,7 +213,7 @@ describe("babysitter run:process-assign CLI", () => {
 
     const cli = createBabysitterCli();
     const exitCode = await cli.run([
-      "run:process-assign",
+      "run:assign-process",
       runDir,
       "--entry",
       `${newEntry}#handler`,
@@ -242,7 +242,7 @@ describe("babysitter run:process-assign CLI", () => {
 
     const cli = createBabysitterCli();
     const exitCode = await cli.run([
-      "run:process-assign",
+      "run:assign-process",
       runDir,
       "--runs-dir",
       runsRoot,
@@ -258,7 +258,7 @@ describe("babysitter run:process-assign CLI", () => {
 
     const cli = createBabysitterCli();
     const exitCode = await cli.run([
-      "run:process-assign",
+      "run:assign-process",
       fakeRunDir,
       "--entry",
       `${entryFile}#handler`,
@@ -274,7 +274,7 @@ describe("babysitter run:process-assign CLI", () => {
 
     const cli = createBabysitterCli();
     const exitCode = await cli.run([
-      "run:process-assign",
+      "run:assign-process",
       runDir,
       "--entry",
       "/nonexistent/path.mjs#handler",
@@ -291,7 +291,7 @@ describe("babysitter run:process-assign CLI", () => {
 
     const cli = createBabysitterCli();
     const exitCode = await cli.run([
-      "run:process-assign",
+      "run:assign-process",
       runDir,
       "--entry",
       `${entryFile}#handler`,
@@ -312,7 +312,7 @@ describe("babysitter run:process-assign CLI", () => {
 
     const cli = createBabysitterCli();
     const exitCode = await cli.run([
-      "run:process-assign",
+      "run:assign-process",
       runDir,
       "--entry",
       `${entryFile}#handler`,
@@ -331,7 +331,7 @@ describe("babysitter run:process-assign CLI", () => {
 
     const cli = createBabysitterCli();
     const exitCode = await cli.run([
-      "run:process-assign",
+      "run:assign-process",
       runDir,
       "--entry",
       `${entryFile}#handler`,
@@ -366,7 +366,7 @@ describe("babysitter run:process-assign CLI", () => {
   it("fails when <runDir> positional is missing", async () => {
     const cli = createBabysitterCli();
     const exitCode = await cli.run([
-      "run:process-assign",
+      "run:assign-process",
       "--entry",
       "some/path.mjs#handler",
       "--runs-dir",

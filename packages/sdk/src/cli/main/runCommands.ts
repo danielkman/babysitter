@@ -3,5 +3,5 @@ export {
   handleRunRebuildState,
   handleRunRepairJournal,
 } from "./runCreate";
-export { handleRunProcessAssign } from "./runProcessAssign";
+export { handleRunAssignProcess } from "./runAssignProcess";
 export { handleRunEvents, handleRunIterate, handleRunStatus } from "./runInspection";

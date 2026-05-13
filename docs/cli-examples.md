@@ -42,7 +42,7 @@ Typical JSON response (`--json`):
 When a run is created without `--entry` (a bare run), assign a process before iterating:
 
 ```bash
-babysitter run:process-assign .a5c/runs/run-20260112-130455 \
+babysitter run:assign-process .a5c/runs/run-20260112-130455 \
   --entry processes/build/process.mjs#process \
   --process-id dev/build \
   --json

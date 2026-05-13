@@ -50,7 +50,7 @@ export async function orchestrateIteration(options: OrchestrateOptions): Promise
       exportName: engine.metadata.entrypoint?.exportName,
     };
     if (defaultEntrypoint.importPath === "bare-run") {
-      throw new RunFailedError("Run has no process assigned. Use run:process-assign to attach a process before iterating.");
+      throw new RunFailedError("Run has no process assigned. Use run:assign-process to attach a process before iterating.");
     }
     const processFn = await loadProcessFunction(options, defaultEntrypoint, options.runDir);
     const inputs = options.inputs ?? engine.inputs;

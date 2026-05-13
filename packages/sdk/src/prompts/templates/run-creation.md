@@ -37,11 +37,11 @@ $CLI session:resume \
 
 **For assigning a process to a bare run:**
 
-If a run was created without `--entry` (a "bare" run), use `run:process-assign` to
+If a run was created without `--entry` (a "bare" run), use `run:assign-process` to
 attach a process definition before orchestration can begin:
 
 ```bash
-$CLI run:process-assign <runDir> \
+$CLI run:assign-process <runDir> \
   --entry <absolute-path>#<export>
 ```
 

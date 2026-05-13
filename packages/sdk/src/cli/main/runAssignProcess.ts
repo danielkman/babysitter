@@ -12,15 +12,15 @@ import {
 } from "./runSupport";
 import { USAGE } from "./usage";
 
-export async function handleRunProcessAssign(parsed: ParsedArgs): Promise<number> {
+export async function handleRunAssignProcess(parsed: ParsedArgs): Promise<number> {
   if (!parsed.runDirArg) {
-    console.error("run:process-assign requires a <runDir> positional argument");
+    console.error("run:assign-process requires a <runDir> positional argument");
     console.error(USAGE);
     return 1;
   }
 
   if (!parsed.entrySpecifier) {
-    console.error("--entry is required for run:process-assign");
+    console.error("--entry is required for run:assign-process");
     console.error(USAGE);
     return 1;
   }
@@ -38,7 +38,7 @@ export async function handleRunProcessAssign(parsed: ParsedArgs): Promise<number
   const absoluteImportPath = path.resolve(entrypoint.importPath);
   const resolvedEntry = formatResolvedEntrypoint(absoluteImportPath, entrypoint.exportName);
 
-  logVerbose("run:process-assign", parsed, {
+  logVerbose("run:assign-process", parsed, {
     runDir,
     entry: resolvedEntry,
     processId: parsed.processId,
@@ -97,12 +97,12 @@ export async function handleRunProcessAssign(parsed: ParsedArgs): Promise<number
     if (parsed.json) {
       console.log(JSON.stringify(summary, null, 2));
     } else {
-      console.log(`[run:process-assign] dry-run runDir=${runDir} entry=${resolvedEntry} processId=${processId}`);
+      console.log(`[run:assign-process] dry-run runDir=${runDir} entry=${resolvedEntry} processId=${processId}`);
     }
     return 0;
   }
 
-  await withRunLock(runDir, "run:process-assign", async () => {
+  await withRunLock(runDir, "run:assign-process", async () => {
     const current = await readRunMetadata(runDir);
     const previousEntrypoint = { ...current.entrypoint };
 
@@ -141,7 +141,7 @@ export async function handleRunProcessAssign(parsed: ParsedArgs): Promise<number
       assigned: true,
     }, null, 2));
   } else {
-    console.log(`[run:process-assign] runId=${updatedMetadata.runId} runDir=${runDir} entry=${resolvedEntry} processId=${processId}`);
+    console.log(`[run:assign-process] runId=${updatedMetadata.runId} runDir=${runDir} entry=${resolvedEntry} processId=${processId}`);
   }
   return 0;
 }

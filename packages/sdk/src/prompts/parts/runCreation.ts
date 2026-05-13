@@ -35,7 +35,7 @@ export function renderRunCreation(ctx: PromptContext): string {
     '- `--process-id <id>` -- unique identifier for the process definition',
     '- `--entry <absolute-path>#<export>` -- path to the process JS file and its',
     '  named export (e.g., `./my-process.js#process`). Omit to create a bare run',
-    '  (assign the process later via `run:process-assign`)',
+    '  (assign the process later via `run:assign-process`)',
     '- `--prompt "$PROMPT"` -- the user\'s initial prompt/request text',
     `- \`--harness ${ctx.harness}\` -- activates ${ctx.harnessLabel} session binding. The session ID is`,
     `  auto-resolved from ${ctx.sessionEnvVars}.`,

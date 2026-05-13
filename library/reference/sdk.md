@@ -1142,12 +1142,12 @@ Outputs:
 * `--json` prints the same data as a single JSON object so automation can parse it reliably.
 * initializes `run.json`, `inputs.json`, and `RUN_CREATED` event (metadata includes `processId`, `entrypoint.importPath/exportName`, `layoutVersion`, optional `processRevision`, and `request`).
 
-#### `babysitter run:process-assign <runDir>`
+#### `babysitter run:assign-process <runDir>`
 
 Assign a process to an existing bare run (one created without `--entry`).
 
 ```bash
-babysitter run:process-assign .a5c/runs/run-20260125-001 \
+babysitter run:assign-process .a5c/runs/run-20260125-001 \
   --entry ./process/build.js#process \
   --process-id dev/build
 ```
