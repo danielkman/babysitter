@@ -212,7 +212,7 @@ test('OAuth callback route completes fake SSO exchange and registers Krate ident
     const response = await handler(new Request('https://krate.example.test/api/auth/callback/sso?code=fake-code&state=state'), { params: { provider: 'sso' } });
 
     assert.equal(response.status, 302);
-    assert.equal(response.headers.get('location'), '/people');
+    assert.equal(response.headers.get('location'), '/orgs/default/people');
     assert.equal(response.headers.get('x-krate-user'), 'route-alice');
     assert.match(response.headers.get('set-cookie'), /krate_session=/);
     assert.deepEqual(fetchCalls.map((call) => call.url), ['https://idp.example.test/token', 'https://idp.example.test/userinfo']);
@@ -290,7 +290,7 @@ test('Delegated identity route redirects localhost fallback even when Kubernetes
     const response = await GET(new Request('http://localhost:3000/api/auth/delegated?user=Route%20Alice&email=route@example.test&groups=krate:developers'));
 
     assert.equal(response.status, 302);
-    assert.equal(response.headers.get('location'), '/people');
+    assert.equal(response.headers.get('location'), '/orgs/default/people');
     assert.equal(response.headers.get('x-krate-user'), 'route-alice');
     assert.match(response.headers.get('set-cookie'), /krate_session=/);
   } finally {

@@ -1,4 +1,5 @@
 import { createKubernetesResourceGateway } from './kubernetes-resource-gateway.js';
+import { clearSnapshotCache } from './snapshot-cache.js';
 import { createPermissionReviewer } from './agent-permission-review.js';
 import { createAgentDispatchController } from './agent-dispatch-controller.js';
 import { createAgentApprovalController } from './agent-approval-controller.js';
@@ -42,10 +43,14 @@ export function createKrateApiController(options = {}) {
       return resourceGateway.get(kindOrPlural, name);
     },
     async applyResource(resource) {
-      return resourceGateway.apply(resource);
+      const result = await resourceGateway.apply(resource);
+      clearSnapshotCache();
+      return result;
     },
     async deleteResource(kindOrPlural, name) {
-      return resourceGateway.delete(kindOrPlural, name);
+      const result = await resourceGateway.delete(kindOrPlural, name);
+      clearSnapshotCache();
+      return result;
     },
     async createRepository(input) {
       const created = await resourceGateway.createRepository(input);

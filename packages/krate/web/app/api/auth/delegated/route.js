@@ -16,7 +16,8 @@ export async function GET(request) {
     } catch (registrationError) {
       if (profile.delegatedIdentitySource !== 'local-development') throw registrationError;
     }
-    const response = new Response(null, { status: 302, headers: { Location: '/people', 'Set-Cookie': createSessionCookie(config, profile) } });
+    const org = process.env.KRATE_ADMIN_ORG || process.env.KRATE_ORG || 'default';
+    const response = new Response(null, { status: 302, headers: { Location: `/orgs/${org}/people`, 'Set-Cookie': createSessionCookie(config, profile) } });
     response.headers.set('X-Krate-User', userName);
     return response;
   } catch (error) {

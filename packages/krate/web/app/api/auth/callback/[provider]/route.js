@@ -22,7 +22,8 @@ export function createOAuthCallbackHandler({ controller, fetchImpl = globalThis.
     try {
       const profile = await exchangeOAuthCodeForProfile({ provider: selected, code, requestUrl: publicUrl, fetchImpl });
       const registration = await registerLoginProfile({ controller, profile });
-      const response = new Response(null, { status: 302, headers: { Location: '/people', 'Set-Cookie': createSessionCookie(config, profile) } });
+      const org = process.env.KRATE_ADMIN_ORG || process.env.KRATE_ORG || 'default';
+      const response = new Response(null, { status: 302, headers: { Location: `/orgs/${org}/people`, 'Set-Cookie': createSessionCookie(config, profile) } });
       response.headers.set('X-Krate-User', registration.user.metadata.name);
       return response;
     } catch (error) {
