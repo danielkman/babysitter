@@ -2,8 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   turbopack: {
-    // In Docker the workspace is flattened — skip monorepo root override
-    ...(process.env.DOCKER_BUILD ? {} : { root: `${__dirname}/../../..` }),
+    // In Docker the workspace is flattened — point root to webui dir itself
+    root: process.env.DOCKER_BUILD ? __dirname : `${__dirname}/../../..`,
   },
   serverExternalPackages: ["pg"],
   webpack: (config, { isServer }) => {
