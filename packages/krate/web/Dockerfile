@@ -1,17 +1,21 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
-COPY packages/krate/web/package.json ./packages/krate/web/
-COPY packages/krate/core/package.json ./packages/krate/core/
 COPY package.json package-lock.json ./
-RUN npm install --prefix packages/krate/web --legacy-peer-deps --ignore-scripts 2>/dev/null; exit 0
+COPY packages/krate/web/package.json ./packages/krate/web/
+COPY packages/krate/sdk/package.json ./packages/krate/sdk/
+COPY packages/krate/core/package.json ./packages/krate/core/
+RUN npm install --workspace=packages/krate/web --legacy-peer-deps --ignore-scripts 2>/dev/null; exit 0
 
 FROM node:20-alpine AS build
 WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/packages/krate/web/node_modules ./packages/krate/web/node_modules
 COPY packages/krate/web ./packages/krate/web
+COPY packages/krate/sdk ./packages/krate/sdk
 COPY packages/krate/core/src ./packages/krate/core/src
+COPY packages/krate/core/package.json ./packages/krate/core/
 WORKDIR /app/packages/krate/web
-RUN npx next build
+RUN npx next build --webpack
 
 FROM node:20-alpine AS runtime
 RUN apk add --no-cache curl \

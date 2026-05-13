@@ -1,6 +1,7 @@
 {
   "name": "@a5c-ai/krate-cli",
   "version": "0.1.0",
+  "private": true,
   "description": "CLI and MCP server for the Krate Kubernetes-native forge",
   "type": "module",
   "main": "src/index.js",
