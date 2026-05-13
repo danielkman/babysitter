@@ -34,3 +34,5 @@ export * from './agent-adapter-controller.js';
 export * from './agent-transport-binding-controller.js';
 export * from './agent-provider-config-controller.js';
 export * from './agent-project-controller.js';
+export * from './agent-gateway-config-controller.js';
+export * from './agent-session-transcript-controller.js';
