@@ -24,7 +24,7 @@ ENV DOCKER_BUILD=1
 COPY packages/atlas packages/atlas
 COPY library library
 RUN npm run build -w @a5c-ai/atlas
-RUN npm run build -w @a5c-ai/atlas-webui
+RUN npm run build -w @a5c-ai/atlas-webui -- --webpack
 
 FROM node:22-alpine AS runner
 WORKDIR /app
