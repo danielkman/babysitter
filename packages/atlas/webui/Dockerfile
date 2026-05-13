@@ -23,6 +23,7 @@ WORKDIR /app
 ENV DOCKER_BUILD=1
 COPY packages/atlas packages/atlas
 COPY library library
+COPY docs docs
 RUN npm run build -w @a5c-ai/atlas
 RUN npm run build -w @a5c-ai/atlas-webui -- --webpack
 
