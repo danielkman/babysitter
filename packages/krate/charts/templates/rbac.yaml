@@ -17,6 +17,13 @@ rules:
 
 
 
+  - apiGroups: ["krate.a5c.ai"]
+
+    resources: ["externalbackendproviders", "externalbackendbindings", "externalbackendsyncpolicies", "externalprovidercapabilitymanifests", "externalwebhookdeliveries", "externalsyncevents", "externalsyncstates", "externalwriteintents", "externalsyncconflicts", "externalobjectlinks"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+
+
   - apiGroups: ["core.oam.dev"]
 
     resources: ["applications", "applicationrevisions", "componentdefinitions", "workloaddefinitions", "traitdefinitions", "scopedefinitions", "policydefinitions", "policies", "workflowstepdefinitions", "workflows", "resourcetrackers"]

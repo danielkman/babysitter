@@ -210,19 +210,19 @@ describe('storageClassForKind for agent kinds', () => {
 });
 
 describe('kind set counts', () => {
-  it('CONFIG_KINDS has 41 members', () => {
-    assert.equal(CONFIG_KINDS.size, 41);
+  it('CONFIG_KINDS has 45 members', () => {
+    assert.equal(CONFIG_KINDS.size, 45);
   });
 
-  it('AGGREGATED_KINDS has 24 members', () => {
-    assert.equal(AGGREGATED_KINDS.size, 24);
+  it('AGGREGATED_KINDS has 30 members', () => {
+    assert.equal(AGGREGATED_KINDS.size, 30);
   });
 
-  it('ALL_KINDS has 65 members', () => {
-    assert.equal(ALL_KINDS.size, 65);
+  it('ALL_KINDS has 75 members', () => {
+    assert.equal(ALL_KINDS.size, 75);
   });
 
-  it('listResourceDefinitions returns 65 definitions', () => {
-    assert.equal(listResourceDefinitions().length, 65);
+  it('listResourceDefinitions returns 75 definitions', () => {
+    assert.equal(listResourceDefinitions().length, 75);
   });
 });
