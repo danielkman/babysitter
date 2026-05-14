@@ -387,6 +387,62 @@ function ResourceStats({ cpu, memory, disk }) {
 
 // ---- Main workspace panel ----
 
+// ---- PVC status badge ----
+
+function PvcStatusBadge({ status }) {
+  const display = status || 'Unknown';
+  const bg = display === 'Bound' ? '#d1fae5' : display === 'Pending' ? '#fef3c7' : display === 'Released' ? '#e5e7eb' : '#f3f4f6';
+  const fg = display === 'Bound' ? '#065f46' : display === 'Pending' ? '#92400e' : display === 'Released' ? '#374151' : '#6b7280';
+
+  return (
+    <span
+      style={{
+        background: bg,
+        color: fg,
+        borderRadius: '0.25rem',
+        padding: '0.0625rem 0.375rem',
+        fontWeight: 700,
+        fontSize: '0.6875rem',
+      }}
+    >
+      PVC: {display}
+    </span>
+  );
+}
+
+// ---- Workspace action buttons ----
+
+function WorkspaceActions({ phase, onSync, onRelease, onDelete }) {
+  const btnBase = {
+    padding: '0.375rem 0.75rem',
+    fontSize: '0.75rem',
+    border: 'none',
+    borderRadius: '0.375rem',
+    cursor: 'pointer',
+    transition: 'background 0.15s',
+  };
+
+  return (
+    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+      {(phase === 'Ready' || phase === 'InUse') ? (
+        <button onClick={onSync} style={{ ...btnBase, background: '#2563eb', color: '#fff' }}>
+          Sync
+        </button>
+      ) : null}
+      {phase === 'InUse' ? (
+        <button onClick={onRelease} style={{ ...btnBase, background: '#f59e0b', color: '#fff' }}>
+          Release
+        </button>
+      ) : null}
+      {(phase !== 'Terminating') ? (
+        <button onClick={onDelete} style={{ ...btnBase, background: '#ef4444', color: '#fff' }}>
+          Delete
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
 export function WorkspacePanel({
   workspace = null,
   runtime = null,
@@ -398,10 +454,19 @@ export function WorkspacePanel({
   const wsName = workspace?.metadata?.name || 'Workspace';
   const repository = workspace?.spec?.repository || null;
   const phase = workspace?.status?.phase || 'Unknown';
-  const workspacePath = workspace?.spec?.workspacePath || null;
 
-  // Git info from runtime or workspace status
-  const gitBranch = runtime?.spec?.gitBranch || workspace?.status?.gitBranch || null;
+  // Volume info
+  const volumeSpec = workspace?.spec?.volumeSpec || {};
+  const pvcName = workspace?.spec?.pvcName || null;
+  const volumeStatus = workspace?.status?.volumeStatus || 'Unknown';
+  const capacity = volumeSpec.capacity || '10Gi';
+  const storageClassName = volumeSpec.storageClassName || 'standard';
+
+  // Run binding
+  const runRef = workspace?.status?.runRef || null;
+
+  // Git info
+  const gitBranch = workspace?.spec?.branch || runtime?.spec?.gitBranch || workspace?.status?.gitBranch || null;
   const gitDirty = runtime?.spec?.gitDirty ?? workspace?.status?.gitDirty ?? null;
   const gitAhead = runtime?.spec?.gitAhead ?? workspace?.status?.gitAhead ?? null;
   const gitBehind = runtime?.spec?.gitBehind ?? workspace?.status?.gitBehind ?? null;
@@ -418,7 +483,17 @@ export function WorkspacePanel({
   const sessionName = session?.metadata?.name || null;
   const sessionHref = sessionName ? `/orgs/${org}/agents/sessions/${sessionName}` : null;
 
-  const phaseColor = phase === 'Active' ? '#22c55e' : phase === 'Archived' ? '#f59e0b' : phase === 'Failed' ? '#ef4444' : '#9ca3af';
+  const phaseColor = phase === 'Ready' ? '#22c55e' : phase === 'InUse' ? '#3b82f6' : phase === 'Pending' ? '#f59e0b' : phase === 'Terminating' ? '#ef4444' : phase === 'Archived' ? '#6b7280' : '#9ca3af';
+
+  const handleSync = useCallback(() => {
+    // Intent — dispatched to controller
+  }, []);
+  const handleRelease = useCallback(() => {
+    // Intent — dispatched to controller
+  }, []);
+  const handleDelete = useCallback(() => {
+    // Intent — dispatched to controller
+  }, []);
 
   return (
     <div
@@ -453,12 +528,39 @@ export function WorkspacePanel({
           >
             {phase}
           </span>
+          <PvcStatusBadge status={volumeStatus} />
         </div>
         {repository ? (
           <span style={{ fontSize: '0.8125rem', color: '#6b7280', fontFamily: 'var(--font-mono, monospace)' }}>
             {repository}
           </span>
         ) : null}
+      </div>
+
+      {/* Volume info bar */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '1rem',
+          padding: '0.5rem 0.75rem',
+          background: '#f9fafb',
+          borderRadius: '0.375rem',
+          fontSize: '0.75rem',
+          fontFamily: 'var(--font-mono, monospace)',
+          flexWrap: 'wrap',
+        }}
+      >
+        {pvcName ? (
+          <span><strong>PVC:</strong> {pvcName}</span>
+        ) : null}
+        <span><strong>Capacity:</strong> {capacity}</span>
+        <span><strong>Storage class:</strong> {storageClassName}</span>
+        {runRef ? (
+          <span style={{ color: '#2563eb' }}><strong>Mounted by:</strong> {runRef}</span>
+        ) : (
+          <span style={{ color: '#9ca3af' }}>Not mounted</span>
+        )}
       </div>
 
       {/* Git status */}
@@ -470,6 +572,14 @@ export function WorkspacePanel({
           behind={gitBehind}
         />
       ) : null}
+
+      {/* Actions */}
+      <WorkspaceActions
+        phase={phase}
+        onSync={handleSync}
+        onRelease={handleRelease}
+        onDelete={handleDelete}
+      />
 
       {/* Main area: sidebar + content */}
       <div
@@ -499,7 +609,7 @@ export function WorkspacePanel({
             minWidth: 0,
           }}
         >
-          {/* Active session link */}
+          {/* Active session / mounted-by info */}
           {sessionName ? (
             <div
               style={{
@@ -533,26 +643,6 @@ export function WorkspacePanel({
               No active session bound
             </div>
           )}
-
-          {/* Workspace path */}
-          {workspacePath ? (
-            <div
-              style={{
-                padding: '0.375rem 0.625rem',
-                background: '#f3f4f6',
-                borderRadius: '0.375rem',
-                fontFamily: 'var(--font-mono, monospace)',
-                fontSize: '0.75rem',
-                color: '#374151',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}
-              title={workspacePath}
-            >
-              {workspacePath}
-            </div>
-          ) : null}
 
           {/* Terminal */}
           <TerminalPlaceholder sessionHref={sessionHref} />

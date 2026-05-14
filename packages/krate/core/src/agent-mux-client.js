@@ -116,7 +116,7 @@ export function createAgentMuxClient(options = {}) {
           prompt: contextBundle?.prompt,
           systemPrompt: contextBundle?.systemPrompt,
           attachments: contextBundle?.attachments,
-          workspace: workspace?.workspacePath,
+          workspace: workspace?.mountPath || '/workspace',
         };
         const { status, body } = await httpRequest(`${gateway}/api/v1/sessions`, { method: 'POST', body: payload });
         if (status >= 200 && status < 300 && body?.runId && body?.sessionId) {

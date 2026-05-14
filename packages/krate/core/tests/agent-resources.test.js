@@ -33,7 +33,8 @@ const AGENT_CONFIG_KINDS = [
   'AgentMemoryRepository',
   'AgentMemorySource',
   'AgentMemoryOntology',
-  'AgentMemoryAssociation'
+  'AgentMemoryAssociation',
+  'KrateWorkspace'
 ];
 
 const AGENT_AGGREGATED_KINDS = [
@@ -43,7 +44,6 @@ const AGENT_AGGREGATED_KINDS = [
   'AgentContextBundle',
   'KrateArtifact',
   'AgentApproval',
-  'KrateWorkspace',
   'AgentTriggerExecution',
   'AgentCapabilityRequirement',
   'WorkItemSessionLink',
@@ -80,7 +80,7 @@ function minimalSpecForKind(kind) {
     AgentContextBundle: { organizationRef: 'default', dispatchRun: 'run-1', digest: 'sha256:abc', sources: ['repo-context'] },
     KrateArtifact: { organizationRef: 'default', dispatchRun: 'run-1', kind: 'patch', digest: 'sha256:def' },
     AgentApproval: { organizationRef: 'default', dispatchRun: 'run-1', action: 'write-back', requestedBy: 'agent-runner' },
-    KrateWorkspace: { organizationRef: 'default', repository: 'app', workspacePath: '/workspaces/app-1', ownership: 'agent-runner' },
+    KrateWorkspace: { organizationRef: 'default', repository: 'app', volumeSpec: { storageClassName: 'standard', capacity: '10Gi', accessModes: ['ReadWriteOnce'] } },
     AgentTriggerExecution: { organizationRef: 'default', triggerRule: 'on-ci-fail', sourceEvent: 'pipeline-failed', decision: 'dispatch' },
     AgentCapabilityRequirement: { organizationRef: 'default', ownerRef: 'stack-1', requiredRoles: ['shell', 'git'] },
     WorkItemSessionLink: { organizationRef: 'default', workItemRef: 'issue-1', agentSession: 'sess-123' },
@@ -210,12 +210,12 @@ describe('storageClassForKind for agent kinds', () => {
 });
 
 describe('kind set counts', () => {
-  it('CONFIG_KINDS has 45 members', () => {
-    assert.equal(CONFIG_KINDS.size, 45);
+  it('CONFIG_KINDS has 46 members', () => {
+    assert.equal(CONFIG_KINDS.size, 46);
   });
 
-  it('AGGREGATED_KINDS has 30 members', () => {
-    assert.equal(AGGREGATED_KINDS.size, 30);
+  it('AGGREGATED_KINDS has 29 members', () => {
+    assert.equal(AGGREGATED_KINDS.size, 29);
   });
 
   it('ALL_KINDS has 75 members', () => {

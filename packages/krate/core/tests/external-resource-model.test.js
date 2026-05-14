@@ -197,12 +197,12 @@ describe('resourceSchemaForKind for external kinds', () => {
 });
 
 describe('kind set counts after external kinds added', () => {
-  it('CONFIG_KINDS has 45 members (41 previous + 4 external config)', () => {
-    assert.equal(CONFIG_KINDS.size, 45);
+  it('CONFIG_KINDS has 46 members (42 previous + 4 external config)', () => {
+    assert.equal(CONFIG_KINDS.size, 46);
   });
 
-  it('AGGREGATED_KINDS has 30 members (24 previous + 6 external aggregated)', () => {
-    assert.equal(AGGREGATED_KINDS.size, 30);
+  it('AGGREGATED_KINDS has 29 members (23 previous + 6 external aggregated)', () => {
+    assert.equal(AGGREGATED_KINDS.size, 29);
   });
 
   it('ALL_KINDS has 75 members (65 previous + 10 external)', () => {

@@ -2,15 +2,15 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createAgentWorkspaceController, createResource } from '../src/index.js';
 
-function makeWorkspace(name, repository, ownership, phase = 'Active', extra = {}) {
+function makeWorkspace(name, repository, runRef, phase = 'InUse', extra = {}) {
   const workspace = createResource('KrateWorkspace', { name, namespace: 'krate-org-default' }, {
     organizationRef: 'default',
     repository,
-    workspacePath: `/workspaces/${repository}/main-${Date.now()}`,
-    ownership,
-    ...extra
+    volumeSpec: extra.volumeSpec || { storageClassName: 'standard', capacity: '10Gi', accessModes: ['ReadWriteOnce'] },
+    branch: extra.branch || 'main',
+    pvcName: extra.pvcName || `krate-ws-${name}`,
   });
-  workspace.status = { phase, createdAt: new Date().toISOString(), boundSessions: [], ...extra.status };
+  workspace.status = { phase, createdAt: new Date().toISOString(), runRef: runRef || undefined, volumeStatus: 'Bound', ...extra.status };
   return workspace;
 }
 
@@ -39,11 +39,9 @@ test('provisionWorkspace creates KrateWorkspace + KrateWorkspaceRuntime', () => 
   assert.ok(result.workspace, 'Should return a workspace resource');
   assert.equal(result.workspace.kind, 'KrateWorkspace');
   assert.equal(result.workspace.spec.repository, 'my-repo');
-  assert.equal(result.workspace.spec.ownership, 'run-1');
-  assert.ok(result.workspace.spec.workspacePath.includes('my-repo'), 'workspacePath should contain repository');
-  assert.ok(result.workspace.spec.workspacePath.includes('feature-1'), 'workspacePath should contain branch');
-  assert.equal(result.workspace.status.phase, 'Active');
-  assert.ok(Array.isArray(result.workspace.status.boundSessions), 'boundSessions should be an array');
+  assert.equal(result.workspace.status.runRef, 'run-1');
+  assert.equal(result.workspace.status.phase, 'InUse');
+  assert.ok(result.pvcManifest, 'Should return a PVC manifest');
 
   assert.ok(result.runtime, 'Should return a runtime resource');
   assert.equal(result.runtime.kind, 'KrateWorkspaceRuntime');
@@ -54,7 +52,7 @@ test('provisionWorkspace creates KrateWorkspace + KrateWorkspaceRuntime', () => 
 
 test('archiveWorkspace sets phase=Archived', () => {
   const controller = createAgentWorkspaceController();
-  const existing = makeWorkspace('ws-1', 'my-repo', 'run-1', 'Active');
+  const existing = makeWorkspace('ws-1', 'my-repo', 'run-1', 'InUse');
   const result = controller.archiveWorkspace({
     workspaceName: 'ws-1',
     reason: 'Run completed',
@@ -85,7 +83,7 @@ test('recoverWorkspace sets phase=Active', () => {
 
 test('bindSession adds session to boundSessions', () => {
   const controller = createAgentWorkspaceController();
-  const existing = makeWorkspace('ws-3', 'my-repo', 'run-2', 'Active');
+  const existing = makeWorkspace('ws-3', 'my-repo', 'run-2', 'InUse');
   const result = controller.bindSession({
     workspaceName: 'ws-3',
     sessionRef: 'session-1',
@@ -141,38 +139,6 @@ test('linkWorkItemToSession creates WorkItemSessionLink', () => {
   assert.equal(result.link.spec.organizationRef, 'default');
 });
 
-test('getWorkspaceStatus returns full bindings', () => {
-  const controller = createAgentWorkspaceController();
-  const ws = makeWorkspace('ws-5', 'my-repo', 'run-3', 'Active', {
-    status: { boundSessions: [{ sessionRef: 'session-10', boundAt: new Date().toISOString() }] }
-  });
-  const rt = makeRuntime('rt-ws-5', 'ws-5', 'provisioning');
-  const link = createResource('WorkItemWorkspaceLink', { name: 'link-1', namespace: 'krate-org-default' }, {
-    organizationRef: 'default',
-    workItemRef: 'issue-99',
-    workspace: 'ws-5'
-  });
-
-  const result = controller.getWorkspaceStatus({
-    workspaceName: 'ws-5',
-    resources: {
-      KrateWorkspace: [ws],
-      KrateWorkspaceRuntime: [rt],
-      AgentSession: [],
-      WorkItemWorkspaceLink: [link]
-    }
-  });
-
-  assert.equal(result.error, false, 'Should succeed');
-  assert.ok(result.workspace, 'Should return workspace');
-  assert.equal(result.workspace.metadata.name, 'ws-5');
-  assert.ok(result.runtime, 'Should return runtime');
-  assert.equal(result.runtime.spec.workspaceRef, 'ws-5');
-  assert.equal(result.sessions.length, 1, 'Should return bound sessions');
-  assert.equal(result.workItems.length, 1, 'Should return linked work items');
-  assert.equal(result.workItems[0].spec.workItemRef, 'issue-99');
-});
-
 test('listWorkspacesForRepo filters by repository', () => {
   const controller = createAgentWorkspaceController();
   const ws1 = makeWorkspace('ws-a', 'repo-alpha', 'run-a');
@@ -203,7 +169,7 @@ test('archiveWorkspace on nonexistent returns error', () => {
 
 test('recoverWorkspace on non-archived returns error', () => {
   const controller = createAgentWorkspaceController();
-  const active = makeWorkspace('ws-active', 'my-repo', 'run-x', 'Active');
+  const active = makeWorkspace('ws-active', 'my-repo', 'run-x', 'InUse');
   const result = controller.recoverWorkspace({
     workspaceName: 'ws-active',
     resources: { KrateWorkspace: [active] }

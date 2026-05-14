@@ -5,12 +5,13 @@ import { createResource, clone } from './resource-model.js';
 import { createAgentMuxClient } from './agent-mux-client.js';
 import { createAgentMemoryController } from './agent-memory-controller.js';
 import { createAgentApprovalController } from './agent-approval-controller.js';
+import { createAgentWorkspaceController } from './agent-workspace-controller.js';
 
 export const AGENT_DISPATCH_CONTROLLER_BOUNDARY = {
   role: 'agent-dispatch-controller',
-  scope: 'Manual dispatch orchestration with permission gating and context assembly',
-  owns: ['dispatch creation', 'attempt lifecycle', 'Agent Mux session binding'],
-  delegatesTo: ['agent-permission-review', 'agent-stack-controller', 'agent-context-bundles', 'agent-mux-client', 'agent-memory-controller', 'agent-approval-controller'],
+  scope: 'Manual dispatch orchestration with permission gating, context assembly, and workspace provisioning',
+  owns: ['dispatch creation', 'attempt lifecycle', 'Agent Mux session binding', 'workspace provisioning'],
+  delegatesTo: ['agent-permission-review', 'agent-stack-controller', 'agent-context-bundles', 'agent-mux-client', 'agent-memory-controller', 'agent-approval-controller', 'agent-workspace-controller'],
   mustNotOwn: ['secret values', 'UI rendering']
 };
 
@@ -20,6 +21,7 @@ export function createAgentDispatchController(options = {}) {
   const agentMuxClient = options.agentMuxClient || createAgentMuxClient();
   const memoryController = options.memoryController || createAgentMemoryController();
   const approvalController = options.approvalController || createAgentApprovalController();
+  const workspaceController = options.workspaceController || createAgentWorkspaceController();
 
   return {
     role: 'agent-dispatch-controller',
@@ -94,10 +96,44 @@ export function createAgentDispatchController(options = {}) {
         };
       }
 
-      // 5. Assemble context bundle
+      // 5. Workspace provisioning — reuse or create
+      let workspaceResult = null;
+      let mountSpec = null;
+      const branch = ref || 'main';
+
+      const reusable = workspaceController.findReusableWorkspace({
+        organizationRef, repository, branch, resources,
+      });
+
+      if (reusable) {
+        const claimResult = workspaceController.claimWorkspace({
+          name: reusable.metadata.name,
+          runRef: `dispatch-pending`,
+          resources,
+        });
+        if (!claimResult.error) {
+          workspaceResult = { workspace: claimResult.workspace, reused: true };
+          const mount = workspaceController.getMountSpec({ workspace: claimResult.workspace });
+          if (!mount.error) mountSpec = { volume: mount.volume, volumeMount: mount.volumeMount };
+        }
+      }
+
+      if (!workspaceResult) {
+        const createResult = workspaceController.createWorkspace({
+          organizationRef, repository, branch, namespace,
+          volumeSpec: {},
+        });
+        if (!createResult.error) {
+          workspaceResult = { workspace: createResult.workspace, pvcManifest: createResult.pvcManifest, reused: false };
+          const mount = workspaceController.getMountSpec({ workspace: createResult.workspace });
+          if (!mount.error) mountSpec = { volume: mount.volume, volumeMount: mount.volumeMount };
+        }
+      }
+
+      // 6. Assemble context bundle
       const contextBundle = assembleContextBundle({ stack, repository, ref, sourceRefs, contextLabels: [], resources });
 
-      // 6. Create resources
+      // 7. Create resources
       const now = new Date().toISOString();
       const runName = `dispatch-${Date.now()}`;
 
@@ -112,6 +148,17 @@ export function createAgentDispatchController(options = {}) {
       run.status = { phase: 'Pending', queuedAt: now };
       if (memorySnapshot) {
         run.spec.memorySnapshotRef = memorySnapshot.metadata.name;
+      }
+      if (workspaceResult) {
+        run.spec.workspaceRef = workspaceResult.workspace.metadata.name;
+      }
+      if (mountSpec) {
+        run.spec.mountSpec = mountSpec;
+      }
+
+      // Update workspace runRef to actual dispatch name
+      if (workspaceResult) {
+        workspaceResult.workspace.status.runRef = runName;
       }
 
       const attempt = createResource('AgentDispatchAttempt', { name: `${runName}-attempt-1`, namespace }, {
@@ -156,7 +203,7 @@ export function createAgentDispatchController(options = {}) {
         run.status.conditions = [{ type: 'AgentMuxBound', status: 'False', reason: 'Unavailable', message: 'Agent Mux gateway not configured' }];
       }
 
-      return { error: false, run, attempt, contextBundle, permissionSnapshot, memorySnapshot, transcript };
+      return { error: false, run, attempt, contextBundle, permissionSnapshot, memorySnapshot, transcript, workspace: workspaceResult, mountSpec };
     }
   };
 }

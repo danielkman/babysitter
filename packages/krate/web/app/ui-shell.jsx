@@ -670,7 +670,7 @@ export async function AgentWorkspacesPage({ org = null } = {}) {
     if (phase === 'Failed') return 'danger';
     return 'neutral';
   };
-  return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/agents" eyebrow="agent workspaces" title="Agent workspaces" text="Each workspace represents a provisioned git worktree with runtime state, session bindings, and work item links." actions={[['/agents', 'Overview'], ['/agents/sessions', 'Sessions']]} breadcrumbs={[['/', 'Krate'], ['/agents', 'Agents'], ['/agents/workspaces', 'Workspaces']]}>
+  return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/agents" eyebrow="agent workspaces" title="Agent workspaces" text="Volume-backed git workspaces with PVC lifecycle, repo binding, and runner mount specs. Workspaces are reusable across runs." actions={[['/agents', 'Overview'], ['/agents/sessions', 'Sessions']]} breadcrumbs={[['/', 'Krate'], ['/agents', 'Agents'], ['/agents/workspaces', 'Workspaces']]}>
     <DegradedBanner model={ui.model} />
     <div className="card">
       <div className="cardTitle"><h2>Workspaces</h2><StatusPill tone={workspaces.length ? 'good' : 'neutral'}>{workspaces.length} workspaces</StatusPill></div>
@@ -679,11 +679,13 @@ export async function AgentWorkspacesPage({ org = null } = {}) {
           <strong>{ws.metadata?.name}</strong>
           <span>{ws.spec?.repository || 'no repository'}</span>
           <StatusPill tone={phaseTone(ws.status?.phase)}>{ws.status?.phase || 'Pending'}</StatusPill>
-          <span>{(ws.status?.boundSessions || []).length} sessions</span>
-          <small>{ws.spec?.workspacePath || ''}</small>
+          <StatusPill tone={ws.status?.volumeStatus === 'Bound' ? 'good' : ws.status?.volumeStatus === 'Pending' ? 'warn' : 'neutral'}>{ws.status?.volumeStatus ? `PVC: ${ws.status.volumeStatus}` : 'PVC: Unknown'}</StatusPill>
+          <span>{ws.spec?.volumeSpec?.capacity || '10Gi'}</span>
+          <small>{ws.spec?.branch || 'main'}</small>
+          {ws.status?.runRef ? <small style={{ color: '#2563eb' }}>mounted: {ws.status.runRef}</small> : null}
         </a>
-        <ResourceActions org={activeOrg} apiPath={`agents/workspaces/${ws.metadata?.name}`} actions={ws.status?.phase === 'Archived' ? ['delete'] : ['archive', 'delete']} />
-      </div>)}</div> : <EmptyState title="No agent workspaces" text="Agent workspaces appear when dispatch runs provision git worktrees. Configure agent stacks and workspace policies to manage worktree lifecycle." />}
+        <ResourceActions org={activeOrg} apiPath={`agents/workspaces/${ws.metadata?.name}`} actions={ws.status?.phase === 'Archived' ? ['delete'] : ws.status?.phase === 'InUse' ? ['release', 'delete'] : ['sync', 'delete']} />
+      </div>)}</div> : <EmptyState title="No agent workspaces" text="Agent workspaces appear when dispatch runs provision volumes. Configure agent stacks and workspace policies to manage workspace lifecycle." />}
     </div>
   </PageFrame>;
 }
