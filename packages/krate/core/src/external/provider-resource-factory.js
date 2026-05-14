@@ -5,15 +5,22 @@
 //   - createExternalBackendProvider() — creates ExternalBackendProvider CRD resources
 
 import { createProviderRegistry } from './provider-adapter.js';
+import { GitHubGitForge } from './github/git-forge.js';
+import { GitHubIssueTracking } from './github/issue-tracking.js';
+import { GitHubCicd } from './github/cicd.js';
+
+// Re-export for consumers that want the real classes from this module
+export { GitHubGitForge, GitHubIssueTracking, GitHubCicd };
 
 // ---------------------------------------------------------------------------
-// GitHub provider descriptor (lightweight, no credentials required)
+// GitHub provider descriptor — wraps real GitHub classes
 // ---------------------------------------------------------------------------
 
 /**
- * Build a lightweight GitHub provider adapter descriptor for the registry.
- * This adapter is credential-free — it only describes GitHub's capabilities.
- * Concrete authenticated instances are created via createGitHubProvider().
+ * Build a GitHub provider adapter descriptor for the registry.
+ * This descriptor exposes real GitHubGitForge, GitHubIssueTracking, and
+ * GitHubCicd classes as factory methods.  Credential-free listing operations
+ * return empty arrays; authenticated operations are created via createGitHubProvider().
  *
  * @returns {object} ExternalProviderAdapter descriptor
  */
@@ -33,20 +40,50 @@ function buildGitHubAdapterDescriptor() {
       return { status: 'healthy', message: 'GitHub provider registered (no live connection)' };
     },
 
-    // Minimal interface stubs so validateProviderAdapter considers this valid
+    /**
+     * Create a GitHubGitForge instance bound to specific credentials.
+     *
+     * @param {{ owner: string, installationToken: string, fetchImpl?: Function }} opts
+     * @returns {GitHubGitForge}
+     */
+    createForge({ owner, installationToken, fetchImpl } = {}) {
+      return new GitHubGitForge({ owner, installationToken, fetchImpl: fetchImpl ?? globalThis.fetch });
+    },
+
+    /**
+     * Create a GitHubIssueTracking instance bound to specific credentials.
+     *
+     * @param {{ owner: string, installationToken: string, fetchImpl?: Function }} opts
+     * @returns {GitHubIssueTracking}
+     */
+    createIssueTracker({ owner, installationToken, fetchImpl } = {}) {
+      return new GitHubIssueTracking({ owner, installationToken, fetchImpl: fetchImpl ?? globalThis.fetch });
+    },
+
+    /**
+     * Create a GitHubCicd instance bound to specific credentials.
+     *
+     * @param {{ owner: string, installationToken: string, fetchImpl?: Function }} opts
+     * @returns {GitHubCicd}
+     */
+    createCicd({ owner, installationToken, fetchImpl } = {}) {
+      return new GitHubCicd({ owner, installationToken, fetchImpl: fetchImpl ?? globalThis.fetch });
+    },
+
+    // Credential-free listing stubs — real operations require authenticated instances
     gitForge: {
       listRepositories: async () => [],
-      createRepository: async () => { throw new Error('Use createGitHubProvider for authenticated operations'); }
+      createRepository: async () => { throw new Error('Use createForge() for authenticated git forge operations'); }
     },
 
     issueTracking: {
       listIssues: async () => [],
-      createIssue: async () => { throw new Error('Use createGitHubProvider for authenticated operations'); }
+      createIssue: async () => { throw new Error('Use createIssueTracker() for authenticated issue tracking operations'); }
     },
 
     cicd: {
       listWorkflowRuns: async () => [],
-      triggerWorkflow: async () => { throw new Error('Use createGitHubProvider for authenticated operations'); }
+      triggerWorkflow: async () => { throw new Error('Use createCicd() for authenticated CI/CD operations'); }
     },
 
     normalizeWebhook(payload) {

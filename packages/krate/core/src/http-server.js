@@ -160,6 +160,132 @@ export function createKrateHttpHandler({ runtime = createKrateRuntime(), control
         const result = await scopedController.queryAgentMemory({ ...body, organizationRef: org });
         return send(response, 200, result);
       }
+      // --- Secrets management routes ---
+      const orgSecretsMatch = url.pathname.match(/^\/api\/orgs\/([^/]+)\/secrets$/);
+      if (orgSecretsMatch) {
+        const org = orgSecretsMatch[1];
+        const scopedController = createKrateApiController({ namespace: orgNamespaceName(org) });
+        if (request.method === 'GET') {
+          const result = await scopedController.listResourceForOrg(org, 'AgentSecretGrant');
+          const items = Array.isArray(result?.items) ? result.items : [];
+          return send(response, 200, {
+            secrets: items.map((item) => ({
+              name: item.spec?.secretName || item.spec?.secretRef || item.metadata?.name,
+              type: item.spec?.type || 'Opaque',
+              createdAt: item.status?.createdAt || item.metadata?.creationTimestamp || null,
+              namespace: orgNamespaceName(org),
+              grants: []
+            }))
+          });
+        }
+        if (request.method === 'POST') {
+          const body = await readJson(request);
+          const secretResource = {
+            apiVersion: 'krate.a5c.ai/v1alpha1',
+            kind: 'AgentSecretGrant',
+            metadata: { name: body.name, namespace: orgNamespaceName(org) },
+            spec: {
+              organizationRef: org,
+              secretName: body.name,
+              secretRef: body.name,
+              grantedTo: body.grantedTo || 'system',
+              subject: body.grantedTo || 'system',
+              permissions: body.permissions || ['read'],
+              purpose: 'read',
+              data: body.data || {}
+            }
+          };
+          const result = await scopedController.applyResourceForOrg(org, secretResource);
+          return send(response, 201, result);
+        }
+      }
+
+      const orgSecretMatch = url.pathname.match(/^\/api\/orgs\/([^/]+)\/secrets\/([^/]+)$/);
+      if (orgSecretMatch) {
+        const org = orgSecretMatch[1];
+        const secretName = orgSecretMatch[2];
+        const scopedController = createKrateApiController({ namespace: orgNamespaceName(org) });
+        if (request.method === 'DELETE') {
+          const result = await scopedController.deleteResourceForOrg(org, 'AgentSecretGrant', secretName);
+          return send(response, 200, result);
+        }
+      }
+
+      const orgSecretGrantsMatch = url.pathname.match(/^\/api\/orgs\/([^/]+)\/secret-grants$/);
+      if (orgSecretGrantsMatch) {
+        const org = orgSecretGrantsMatch[1];
+        const scopedController = createKrateApiController({ namespace: orgNamespaceName(org) });
+        if (request.method === 'GET') {
+          return send(response, 200, await scopedController.listResourceForOrg(org, 'AgentSecretGrant'));
+        }
+        if (request.method === 'POST') {
+          const body = await readJson(request);
+          const grant = {
+            apiVersion: 'krate.a5c.ai/v1alpha1',
+            kind: 'AgentSecretGrant',
+            metadata: { name: body.name || `grant-${Date.now()}`, namespace: orgNamespaceName(org) },
+            spec: {
+              organizationRef: org,
+              secretName: body.secretName,
+              secretRef: body.secretName,
+              grantedTo: body.grantedTo,
+              subject: body.grantedTo,
+              permissions: body.permissions || ['read'],
+              purpose: (body.permissions || ['read']).join(',')
+            }
+          };
+          return send(response, 201, await scopedController.applyResourceForOrg(org, grant));
+        }
+      }
+
+      // --- External integration routes ---
+      const externalSyncMatch = url.pathname.match(/^\/api\/orgs\/([^/]+)\/external\/sync$/);
+      if (request.method === 'POST' && externalSyncMatch) {
+        const org = externalSyncMatch[1];
+        const body = await readJson(request);
+        const scopedController = createKrateApiController({ namespace: orgNamespaceName(org) });
+        const bindingName = body.bindingName || '';
+        const result = await scopedController.syncExternalBinding(bindingName, {
+          kind: body.kind,
+          localName: body.localName,
+          namespace: orgNamespaceName(org),
+          spec: body.spec || {},
+          externalEnvelope: body.externalEnvelope || { nativeId: '', url: '', etag: '', providerRef: '' },
+          watermark: body.watermark
+        });
+        return send(response, 200, result);
+      }
+
+      const externalConflictResolveMatch = url.pathname.match(/^\/api\/orgs\/([^/]+)\/external\/conflicts\/([^/]+)\/resolve$/);
+      if (request.method === 'POST' && externalConflictResolveMatch) {
+        const org = externalConflictResolveMatch[1];
+        const conflictName = externalConflictResolveMatch[2];
+        const body = await readJson(request);
+        const scopedController = createKrateApiController({ namespace: orgNamespaceName(org) });
+        const result = await scopedController.resolveExternalConflict({ conflictName, strategy: body.strategy, resolvedValue: body.resolvedValue, resources: body.resources || {} });
+        return send(response, 200, result);
+      }
+
+      const externalWriteIntentApproveMatch = url.pathname.match(/^\/api\/orgs\/([^/]+)\/external\/write-intents\/([^/]+)\/approve$/);
+      if (request.method === 'POST' && externalWriteIntentApproveMatch) {
+        const org = externalWriteIntentApproveMatch[1];
+        const intentName = externalWriteIntentApproveMatch[2];
+        const body = await readJson(request);
+        const scopedController = createKrateApiController({ namespace: orgNamespaceName(org) });
+        const result = await scopedController.approveExternalWriteIntent({ intentName, approvedBy: body.approvedBy || 'unknown', resources: body.resources || {} });
+        return send(response, 200, result);
+      }
+
+      const externalWriteIntentCancelMatch = url.pathname.match(/^\/api\/orgs\/([^/]+)\/external\/write-intents\/([^/]+)\/cancel$/);
+      if (request.method === 'POST' && externalWriteIntentCancelMatch) {
+        const org = externalWriteIntentCancelMatch[1];
+        const intentName = externalWriteIntentCancelMatch[2];
+        const body = await readJson(request);
+        const scopedController = createKrateApiController({ namespace: orgNamespaceName(org) });
+        const result = await scopedController.cancelExternalWriteIntent({ intentName, cancelledBy: body.cancelledBy || 'unknown', resources: body.resources || {} });
+        return send(response, 200, result);
+      }
+
       const sseMatch = url.pathname.match(/^\/api\/orgs\/([^/]+)\/agents\/events\/stream$/);
       if (request.method === 'GET' && sseMatch) {
         response.writeHead(200, {

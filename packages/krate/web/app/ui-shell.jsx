@@ -24,6 +24,7 @@ import { ExternalProviderWizard } from './components/external-provider-wizard.js
 import { ExternalSyncDashboard } from './components/external-sync-dashboard.jsx';
 import { ExternalConflictResolver } from './components/external-conflict-resolver.jsx';
 import { AgentSettingsForm } from './components/agent-settings-form.jsx';
+import { SecretManager } from './components/secret-manager.jsx';
 import { StackActions } from './components/stack-actions.jsx';
 import { ManualDispatchButton, RunActions } from './components/run-actions.jsx';
 import { EnableDisableToggle, DeleteRuleButton } from './components/rule-actions.jsx';
@@ -45,7 +46,8 @@ export const orgNavigationGroups = [
     items: [
       ['/people', 'People', 'Users, teams, and access'],
       ['/hooks-events', 'Hooks & Policies', 'Webhooks and policies'],
-      ['/runners-ci', 'Capacity', 'Runner pools']
+      ['/runners-ci', 'Capacity', 'Runner pools'],
+      ['/settings/secrets', 'Secrets', 'Secret and config grants']
     ]
   },
   {
@@ -1220,6 +1222,23 @@ function TranscriptMessage({ message }) {
     <small className="transcriptRole">{role}</small>
     <div className="transcriptContent">{typeof message.content === 'string' ? message.content : Array.isArray(message.content) ? message.content.map((block, i) => <span key={i}>{typeof block === 'string' ? block : block.text || block.content || JSON.stringify(block)}</span>) : JSON.stringify(message.content)}</div>
   </div>;
+}
+
+export async function SecretManagerPage({ org = null } = {}) {
+  const ui = await loadKrateUi(org);
+  const activeOrg = ui.model.org?.slug || org || 'default';
+  const secretGrants = (ui.model.resources || []).filter((r) => r.kind === 'AgentSecretGrant');
+  const secrets = secretGrants.reduce((acc, grant) => {
+    const sName = grant.spec?.secretName || grant.spec?.secretRef;
+    if (sName && !acc.find((s) => s.name === sName)) {
+      acc.push({ name: sName, type: 'Opaque', createdAt: grant.status?.createdAt || null, grants: [] });
+    }
+    return acc;
+  }, []);
+  return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/settings/secrets" eyebrow="secrets management" title="Secrets" text="Manage Kubernetes Secrets and grant agents access to credentials. Use grants to control which agent stacks can read each secret." actions={[['/settings/secrets', 'Refresh']]} breadcrumbs={[['/', 'Krate'], ['/settings/secrets', 'Secrets']]}>
+    <DegradedBanner model={ui.model} />
+    <SecretManager org={activeOrg} secrets={secrets} grants={secretGrants} />
+  </PageFrame>;
 }
 
 export async function RepositoryCodePage({ org = null, repo }) { return <RepositorySectionPage org={org} repo={repo} section="code" />; }
