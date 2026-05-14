@@ -752,6 +752,8 @@ jobs:
         interaction_mode:
           - id: non-interactive
             interactive: 'false'
+          - id: interactive
+            interactive: 'true'
         install_mode:
           - id: vanilla
             required_trace_ids: agentMuxRunId,agentMuxSessionId,transportTraceId
