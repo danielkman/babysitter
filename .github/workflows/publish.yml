@@ -2464,6 +2464,10 @@ jobs:
           kubectl -n "$KUBE_NAMESPACE" delete service krate --ignore-not-found
           kubectl -n "$KUBE_NAMESPACE" delete deployment krate --ignore-not-found
 
+      - name: Update Krate CRDs
+        if: steps.config.outputs.deploy_enabled == 'true'
+        run: kubectl apply -f packages/krate/charts/crds/ --server-side --force-conflicts
+
       - name: Deploy Krate via Helm
         if: steps.config.outputs.deploy_enabled == 'true'
         env:
