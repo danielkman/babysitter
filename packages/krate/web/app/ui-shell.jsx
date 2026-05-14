@@ -9,6 +9,8 @@ import { StackBuilder } from './components/stack-builder.jsx';
 import { GraphStackBuilder } from './components/stack-builder-graph.jsx';
 import { InteractiveKanbanBoard } from './components/kanban-interactive.jsx';
 import { MemorySearchForm } from './components/memory-search-form.jsx';
+import { MemoryOntologyEditor } from './components/memory-ontology-editor.jsx';
+import { MemoryImportReview } from './components/memory-import-review.jsx';
 import { LiveUpdates } from './components/live-updates.jsx';
 import { TriggerRuleForm } from './components/trigger-rule-form.jsx';
 import { ToolCallInspector } from './components/tool-inspector.jsx';
@@ -921,18 +923,17 @@ export async function AgentMemoryImportsPage({ org = null } = {}) {
   const activeOrg = ui.model.org?.slug || org || 'default';
   const memoryView = ui.model.agents?.memory || { imports: { items: [] } };
   const imports = memoryView.imports?.items || [];
-  const importPhaseTone = (phase) => {
-    if (!phase || phase === 'Pending') return 'neutral';
-    if (phase === 'Collecting' || phase === 'Redacting' || phase === 'Normalizing' || phase === 'Validating') return 'warn';
-    if (phase === 'AwaitingReview') return 'info';
-    if (phase === 'Merged') return 'good';
-    if (phase === 'Rejected' || phase === 'Failed') return 'danger';
-    return 'neutral';
-  };
+  const awaitingReview = imports.filter((imp) => imp.status?.phase === 'AwaitingReview');
   return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/agents" eyebrow="memory imports" title="Memory imports" text="Review agent run memory imports as they progress through collection, redaction, normalization, and review phases." actions={[['/agents/memory', 'Overview'], ['/agents/memory/search', 'Search']]} breadcrumbs={[['/', 'Krate'], ['/agents', 'Agents'], ['/agents/memory', 'Memory'], ['/agents/memory/imports', 'Imports']]}>
     <DegradedBanner model={ui.model} />
+    {awaitingReview.length > 0 && (
+      <div className="card">
+        <div className="cardTitle"><h2>Pending review</h2><StatusPill tone="info">{awaitingReview.length} awaiting</StatusPill></div>
+        <MemoryImportReview org={activeOrg} imports={awaitingReview} />
+      </div>
+    )}
     <div className="card">
-      <div className="cardTitle"><h2>Memory imports</h2><StatusPill tone={imports.length ? 'good' : 'neutral'}>{imports.length} imports</StatusPill></div>
+      <div className="cardTitle"><h2>All imports</h2><StatusPill tone={imports.length ? 'good' : 'neutral'}>{imports.length} imports</StatusPill></div>
       {imports.length ? <div className="resourceTable">
         <div className="resourceRow" style={{ fontWeight: 600, fontSize: '0.75rem', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
           <span>Name</span><span>Source</span><span>Phase</span><span>Repository</span><span>Created</span>
@@ -940,7 +941,7 @@ export async function AgentMemoryImportsPage({ org = null } = {}) {
         {imports.map((imp) => <a key={imp.metadata?.name} href={orgHref(activeOrg, `/agents/memory/imports/${imp.metadata?.name}`)} className="resourceRow" style={{ textDecoration: 'none' }}>
           <strong>{imp.metadata?.name}</strong>
           <span>{imp.spec?.source?.kind || 'unknown'}{imp.spec?.source?.runId ? ` / ${imp.spec.source.runId}` : ''}</span>
-          <StatusPill tone={importPhaseTone(imp.status?.phase)}>{imp.status?.phase || 'Pending'}</StatusPill>
+          <StatusPill tone={imp.status?.phase === 'AwaitingReview' ? 'info' : imp.status?.phase === 'Merged' ? 'good' : imp.status?.phase === 'Rejected' || imp.status?.phase === 'Failed' ? 'danger' : imp.status?.phase && ['Collecting','Redacting','Normalizing','Validating'].includes(imp.status.phase) ? 'warn' : 'neutral'}>{imp.status?.phase || 'Pending'}</StatusPill>
           <span>{imp.spec?.source?.repositoryRef || imp.spec?.repositoryRef || 'unassigned'}</span>
           <small>{imp.metadata?.creationTimestamp || ''}</small>
         </a>)}
@@ -1007,12 +1008,8 @@ export async function AgentMemoryImportDetailPage({ org = null, importId } = {})
         </div>
       </section>
       <div className="card">
-        <div className="cardTitle"><h3>Actions</h3><StatusPill tone="neutral">read-only</StatusPill></div>
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <button disabled title="Approve and merge this import into the memory repository. Available through Krate CLI." style={{ padding: '0.5rem 1rem', borderRadius: '0.375rem', border: '1px solid #d1d5db', background: '#f9fafb', color: '#9ca3af', fontSize: '0.875rem', cursor: 'not-allowed' }}>Approve</button>
-          <button disabled title="Reject this import. The collected artifacts will not be merged. Available through Krate CLI." style={{ padding: '0.5rem 1rem', borderRadius: '0.375rem', border: '1px solid #d1d5db', background: '#f9fafb', color: '#9ca3af', fontSize: '0.875rem', cursor: 'not-allowed' }}>Reject</button>
-        </div>
-        <p style={{ color: '#9ca3af', fontSize: '0.8125rem', marginTop: '0.5rem' }}>Approve and reject actions are available through the Krate CLI or resource API.</p>
+        <div className="cardTitle"><h3>Actions</h3><StatusPill tone={imp.status?.phase === 'AwaitingReview' ? 'info' : 'neutral'}>{imp.status?.phase === 'AwaitingReview' ? 'review required' : 'read-only'}</StatusPill></div>
+        <MemoryImportReview org={activeOrg} imports={[imp]} />
       </div>
     </> : <EmptyState title={`Import ${importId} not found`} text="This memory import does not exist in the current workspace. Memory imports are created when agent runs produce knowledge artifacts." />}
   </PageFrame>;
@@ -1023,52 +1020,26 @@ export async function AgentMemoryOntologyPage({ org = null } = {}) {
   const activeOrg = ui.model.org?.slug || org || 'default';
   const memoryView = ui.model.agents?.memory || { ontologies: { count: 0, items: [] } };
   const ontologies = memoryView.ontologies?.items || [];
-  const defaultNodeKinds = ['Repository', 'Team', 'Service', 'Runbook', 'Decision', 'Incident', 'AgentPractice', 'Workflow', 'Configuration', 'Dependency', 'API', 'Documentation'];
-  const defaultEdgeKinds = ['documents', 'implements', 'depends_on', 'owned_by', 'triggered_by', 'resolves', 'references', 'contains', 'produces', 'consumes', 'relates_to'];
+  const primaryOntology = ontologies[0] || null;
   return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/agents" eyebrow="memory ontology" title="Memory ontology" text="Define graph schema for memory repositories, including supported node kinds and edge relationship types." actions={[['/agents/memory', 'Overview'], ['/agents/memory/search', 'Search']]} breadcrumbs={[['/', 'Krate'], ['/agents', 'Agents'], ['/agents/memory', 'Memory'], ['/agents/memory/ontology', 'Ontology']]}>
     <DegradedBanner model={ui.model} />
-    {ontologies.length ? <>{ontologies.map((ontology) => {
-      const name = ontology.metadata?.name || 'default';
-      const nodeKinds = ontology.spec?.nodeKinds || defaultNodeKinds;
-      const edgeKinds = ontology.spec?.edgeKinds || defaultEdgeKinds;
-      return <div key={name}>
-        <div className="card">
-          <div className="cardTitle"><h2>{name}</h2><StatusPill tone="good">{ontology.status?.phase || 'Active'}</StatusPill></div>
-          <dl className="kv">
-            <dt>Name</dt><dd>{ontology.metadata?.name}</dd>
-            <dt>Namespace</dt><dd>{ontology.metadata?.namespace || ui.model.namespace}</dd>
-            <dt>Node kinds</dt><dd>{nodeKinds.length}</dd>
-            <dt>Edge kinds</dt><dd>{edgeKinds.length}</dd>
-          </dl>
-        </div>
-        <section className="routeGrid two" style={{ marginTop: '1rem' }}>
-          <div className="card">
-            <div className="cardTitle"><h3>Node kinds</h3><StatusPill tone="good">{nodeKinds.length} kinds</StatusPill></div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}>{nodeKinds.map((kind) => <span key={kind} className="pill neutral" style={{ fontSize: '0.8125rem' }}>{kind}</span>)}</div>
-          </div>
-          <div className="card">
-            <div className="cardTitle"><h3>Edge kinds</h3><StatusPill tone="good">{edgeKinds.length} kinds</StatusPill></div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}>{edgeKinds.map((kind) => <span key={kind} className="pill neutral" style={{ fontSize: '0.8125rem' }}>{kind}</span>)}</div>
-          </div>
-        </section>
-      </div>;
-    })}</> : <>
-      <div className="card" style={{ borderLeft: '3px solid var(--color-info, #3b82f6)' }}>
-        <div className="cardTitle"><h3>Default ontology reference</h3><StatusPill tone="neutral">reference</StatusPill></div>
-        <p style={{ color: '#6b7280', fontSize: '0.875rem', marginBottom: '0.75rem' }}>When no AgentMemoryOntology resource is configured, agents use the default schema below. Create a custom ontology to extend or restrict the available kinds.</p>
+    {!primaryOntology && (
+      <div className="card" style={{ borderLeft: '3px solid var(--color-info, #3b82f6)', marginBottom: '0.5rem' }}>
+        <div className="cardTitle"><h3>No ontology configured</h3><StatusPill tone="neutral">new</StatusPill></div>
+        <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>No AgentMemoryOntology resource exists yet. Use the editor below to define node kinds and edge kinds, then save to create one.</p>
       </div>
-      <section className="routeGrid two">
-        <div className="card">
-          <div className="cardTitle"><h3>Node kinds</h3><StatusPill tone="neutral">{defaultNodeKinds.length} default</StatusPill></div>
-          <ul className="compactList">{defaultNodeKinds.map((kind) => <li key={kind}><strong>{kind}</strong></li>)}</ul>
-        </div>
-        <div className="card">
-          <div className="cardTitle"><h3>Edge kinds</h3><StatusPill tone="neutral">{defaultEdgeKinds.length} default</StatusPill></div>
-          <ul className="compactList">{defaultEdgeKinds.map((kind) => <li key={kind}><strong>{kind}</strong></li>)}</ul>
-        </div>
-      </section>
-      <EmptyState title="No ontology configured" text="Create an AgentMemoryOntology resource to define custom node kinds, edge kinds, and graph schema for your memory repositories." />
-    </>}
+    )}
+    {primaryOntology && (
+      <div className="card" style={{ marginBottom: '0.5rem' }}>
+        <div className="cardTitle"><h2>{primaryOntology.metadata?.name || 'default'}</h2><StatusPill tone="good">{primaryOntology.status?.phase || 'Active'}</StatusPill></div>
+        <dl className="kv">
+          <dt>Namespace</dt><dd>{primaryOntology.metadata?.namespace || ui.model.namespace}</dd>
+          <dt>Node kinds</dt><dd>{(primaryOntology.spec?.nodeKinds || []).length}</dd>
+          <dt>Edge kinds</dt><dd>{(primaryOntology.spec?.edgeKinds || []).length}</dd>
+        </dl>
+      </div>
+    )}
+    <MemoryOntologyEditor org={activeOrg} initialOntology={primaryOntology} />
   </PageFrame>;
 }
 
