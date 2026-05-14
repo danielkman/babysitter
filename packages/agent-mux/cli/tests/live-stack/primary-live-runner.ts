@@ -176,12 +176,11 @@ function harnessApprovalPassthrough(_harness: string): string[] {
 }
 
 function bridgeFlags(scenario: LiveStackScenario): string[] {
-  // Harnesses that need interactive mode for tool use (file creation) use
-  // --bridge-interactive to spawn via PTY internally while presenting
-  // non-interactive NDJSON output externally. Codex doesn't need this
-  // because exec mode has native tool support.
-  const needsBridge = scenario.agent.agentMuxAgent !== 'codex';
-  return needsBridge ? ['--bridge-interactive'] : [];
+  // Only harnesses with interactiveBridge capability can use --bridge-interactive.
+  // Claude Code supports it (PTY spawn for tool use). Codex doesn't need it
+  // (exec mode has native tools). Pi, Gemini don't support it.
+  const bridgeable = new Set(['claude']);
+  return bridgeable.has(scenario.agent.agentMuxAgent) ? ['--bridge-interactive'] : [];
 }
 
 function resolveLaunchMaxTurns(scenario: LiveStackScenario): number {
