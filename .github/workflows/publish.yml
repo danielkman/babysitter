@@ -2113,8 +2113,6 @@ jobs:
 
       - name: Provision Atlas Postgres
         if: steps.config.outputs.deploy_enabled == 'true'
-        env:
-          ATLAS_POSTGRES_STORAGE_CLASS: ${{ vars.ATLAS_POSTGRES_STORAGE_CLASS }}
         run: |
           POSTGRES_APP=atlas-postgres
           POSTGRES_DB=atlas_webui
@@ -2139,22 +2137,32 @@ jobs:
             --dry-run=client -o yaml | kubectl apply -f -
 
           POSTGRES_PVC="data-${POSTGRES_APP}-0"
-          POSTGRES_STORAGE_CLASS="${ATLAS_POSTGRES_STORAGE_CLASS:-}"
-          for candidate in "$POSTGRES_STORAGE_CLASS" azurefile-csi-premium azurefile-csi azure-files managed-csi managed-premium default; do
-            if [[ -n "$candidate" ]] && kubectl get storageclass "$candidate" >/dev/null 2>&1; then
-              POSTGRES_STORAGE_CLASS="$candidate"
-              break
-            fi
-          done
+          POSTGRES_PV="${KUBE_NAMESPACE}-${POSTGRES_APP}"
+          POSTGRES_STORAGE_CLASS="atlas-postgres-static"
+          POSTGRES_SHARE="${KUBE_NAMESPACE}-${POSTGRES_APP}"
+          AZURE_RESOURCE_GROUP=$(az acr show --name "$ACR_NAME" --query resourceGroup -o tsv)
+          AZURE_LOCATION=$(az acr show --name "$ACR_NAME" --query location -o tsv)
+          SUBSCRIPTION_HASH=$(az account show --query id -o tsv | tr -d '-' | cut -c1-8)
+          STORAGE_ACCOUNT="a5catlaspg${SUBSCRIPTION_HASH}"
 
-          POSTGRES_STORAGE_CLASS_LINE=""
-          if [[ -n "$POSTGRES_STORAGE_CLASS" ]]; then
-            POSTGRES_STORAGE_CLASS_LINE="        storageClassName: ${POSTGRES_STORAGE_CLASS}"
-            echo "Using Atlas Postgres storageClassName=${POSTGRES_STORAGE_CLASS}"
-          else
-            echo "::warning::No Kubernetes storage class found; Atlas Postgres PVC may remain pending"
-            kubectl get storageclass -o wide || true
+          if ! az storage account show --name "$STORAGE_ACCOUNT" --resource-group "$AZURE_RESOURCE_GROUP" >/dev/null 2>&1; then
+            az storage account create \
+              --name "$STORAGE_ACCOUNT" \
+              --resource-group "$AZURE_RESOURCE_GROUP" \
+              --location "$AZURE_LOCATION" \
+              --sku Standard_LRS \
+              --kind StorageV2 \
+              --https-only true \
+              --allow-blob-public-access false \
+              --min-tls-version TLS1_2 >/dev/null
           fi
+          STORAGE_KEY=$(az storage account keys list --resource-group "$AZURE_RESOURCE_GROUP" --account-name "$STORAGE_ACCOUNT" --query '[0].value' -o tsv)
+          az storage share create --account-name "$STORAGE_ACCOUNT" --account-key "$STORAGE_KEY" --name "$POSTGRES_SHARE" --quota 8 >/dev/null
+
+          kubectl -n "$KUBE_NAMESPACE" create secret generic atlas-postgres-azure-file \
+            --from-literal=azurestorageaccountname="$STORAGE_ACCOUNT" \
+            --from-literal=azurestorageaccountkey="$STORAGE_KEY" \
+            --dry-run=client -o yaml | kubectl apply -f -
 
           kubectl -n "$KUBE_NAMESPACE" delete statefulset "$POSTGRES_APP" --ignore-not-found --wait=true
 
@@ -2164,8 +2172,45 @@ jobs:
               echo "Deleting non-bound Atlas Postgres PVC ${POSTGRES_PVC} in phase ${POSTGRES_PVC_PHASE:-unknown}"
               kubectl -n "$KUBE_NAMESPACE" delete pod "${POSTGRES_APP}-0" --ignore-not-found --wait=false
               kubectl -n "$KUBE_NAMESPACE" delete pvc "$POSTGRES_PVC" --ignore-not-found
+              kubectl delete pv "$POSTGRES_PV" --ignore-not-found
             fi
           fi
+
+          cat <<EOF | kubectl apply -f -
+          apiVersion: v1
+          kind: PersistentVolume
+          metadata:
+            name: ${POSTGRES_PV}
+            labels:
+              app: ${POSTGRES_APP}
+          spec:
+            capacity:
+              storage: 8Gi
+            accessModes:
+              - ReadWriteMany
+            persistentVolumeReclaimPolicy: Retain
+            storageClassName: ${POSTGRES_STORAGE_CLASS}
+            mountOptions:
+              - dir_mode=0700
+              - file_mode=0600
+              - uid=70
+              - gid=70
+              - mfsymlinks
+              - cache=strict
+              - nosharesock
+            claimRef:
+              namespace: ${KUBE_NAMESPACE}
+              name: ${POSTGRES_PVC}
+            csi:
+              driver: file.csi.azure.com
+              readOnly: false
+              volumeHandle: ${POSTGRES_PV}-${STORAGE_ACCOUNT}
+              volumeAttributes:
+                shareName: ${POSTGRES_SHARE}
+              nodeStageSecretRef:
+                name: atlas-postgres-azure-file
+                namespace: ${KUBE_NAMESPACE}
+          EOF
 
           cat <<EOF | kubectl apply -f -
           apiVersion: v1
@@ -2225,9 +2270,9 @@ jobs:
               - metadata:
                   name: data
                 spec:
-          ${POSTGRES_STORAGE_CLASS_LINE}
+                  storageClassName: ${POSTGRES_STORAGE_CLASS}
                   accessModes:
-                    - ReadWriteOnce
+                    - ReadWriteMany
                   resources:
                     requests:
                       storage: 8Gi
@@ -2235,9 +2280,11 @@ jobs:
           if ! kubectl -n "$KUBE_NAMESPACE" rollout status statefulset/"$POSTGRES_APP" --timeout=300s; then
             kubectl -n "$KUBE_NAMESPACE" get pods -l app="$POSTGRES_APP" -o wide || true
             kubectl -n "$KUBE_NAMESPACE" get pvc "$POSTGRES_PVC" -o wide || true
+            kubectl get pv "$POSTGRES_PV" -o wide || true
             kubectl get storageclass -o wide || true
             kubectl -n "$KUBE_NAMESPACE" describe pods -l app="$POSTGRES_APP" || true
             kubectl -n "$KUBE_NAMESPACE" describe pvc "$POSTGRES_PVC" || true
+            kubectl describe pv "$POSTGRES_PV" || true
             kubectl -n "$KUBE_NAMESPACE" logs statefulset/"$POSTGRES_APP" --tail=100 || true
             exit 1
           fi
