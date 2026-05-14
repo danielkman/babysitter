@@ -127,7 +127,7 @@ function ProviderCard({ provider, onDelete }) {
   );
 }
 
-export function ExternalProviderList({ org, providers = [], onAdd }) {
+export function ExternalProviderList({ org, providers = [], onAdd, addHref }) {
   const [removing, setRemoving] = useState(null);
   const [error, setError] = useState('');
 
@@ -177,7 +177,11 @@ export function ExternalProviderList({ org, providers = [], onAdd }) {
             {providers.length} configured
           </p>
         </div>
-        <button style={addBtnStyle} onClick={onAdd}>Add provider</button>
+        {addHref && !onAdd ? (
+          <a href={addHref} style={{ ...addBtnStyle, textDecoration: 'none', display: 'inline-block' }}>Add provider</a>
+        ) : (
+          <button style={addBtnStyle} onClick={onAdd}>Add provider</button>
+        )}
       </div>
 
       {error && (

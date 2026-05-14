@@ -3,11 +3,8 @@ import { createAuthProviderConfig, listEnabledAuthProviders, parseSessionCookie,
 import { CodeEditor, LiveWatchPanel } from './components/code-editor.jsx';
 import { DeploymentManager, RepositoryManager, ResourceApplyPanel, UserManagementPanel } from './components/resource-actions.jsx';
 import { ApprovalDecisionButtons } from './components/approval-actions.jsx';
-import { SessionDetailTabs } from './components/session-tabs.jsx';
 import { DispatchButton } from './components/dispatch-button.jsx';
-import { StackBuilder } from './components/stack-builder.jsx';
 import { GraphStackBuilder } from './components/stack-builder-graph.jsx';
-import { InteractiveKanbanBoard } from './components/kanban-interactive.jsx';
 import { EnhancedKanbanBoard } from './components/kanban-enhanced.jsx';
 import { WorkspacePanel } from './components/workspace-panel.jsx';
 import { MemorySearchForm } from './components/memory-search-form.jsx';
@@ -1118,7 +1115,13 @@ export async function AgentSessionsPage({ org = null } = {}) {
           <strong>{session.metadata?.name}</strong>
           <span>{session.spec?.agentStack || session.spec?.stackRef || 'unassigned'}</span>
           <StatusPill tone={phaseTone(session.status?.phase)}>{session.status?.phase || 'Pending'}</StatusPill>
-          <span>{session.spec?.dispatchRun || 'no run'}</span>
+        </a>
+        {session.spec?.dispatchRun ? (
+          <a href={orgHref(activeOrg, `/agents/runs/${session.spec.dispatchRun}`)} style={{ color: '#2563eb', fontSize: '0.875rem' }}>{session.spec.dispatchRun}</a>
+        ) : (
+          <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>no run</span>
+        )}
+        <a href={orgHref(activeOrg, `/agents/sessions/${session.metadata?.name}`)} style={{ textDecoration: 'none', display: 'contents' }}>
           <small>{session.status?.updatedAt || session.metadata?.creationTimestamp || ''}</small>
         </a>
         {(session.status?.phase !== 'Terminated' && session.status?.phase !== 'Completed' && session.status?.phase !== 'Succeeded') ? (
@@ -1150,6 +1153,10 @@ export async function AgentSessionDetailPage({ org = null, sessionId } = {}) {
   };
   return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/agents" eyebrow={`agent session / ${sessionId}`} title={sessionId || 'Session detail'} text={session ? `Agent session on ${stackName || 'unknown stack'} with phase ${session.status?.phase || 'Pending'}.` : 'This agent session was not found in the current workspace.'} actions={[['/agents/sessions', 'All sessions'], ['/agents/runs', 'Dispatch runs']]} breadcrumbs={[['/', 'Krate'], ['/agents', 'Agents'], ['/agents/sessions', 'Sessions'], [`/agents/sessions/${sessionId}`, sessionId || 'Detail']]}>
     <DegradedBanner model={ui.model} />
+    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap', marginBottom: '0.75rem' }}>
+      <ApprovalModeToggle initialMode={session?.spec?.approvalMode || 'prompt'} />
+      <SessionCost turns={transcriptRecord?.status?.turns || []} totalCost={session?.status?.cost ?? transcriptRecord?.status?.totalCost} compact />
+    </div>
     <SessionShell
       session={session}
       messages={messages}
@@ -1622,10 +1629,10 @@ export async function ExternalProvidersPage({ org = null } = {}) {
   const activeOrg = ui.model.org?.slug || org || 'default';
   const externalView = ui.model.external || {};
   const providers = externalView.providers?.items || (ui.model.resources || []).find((r) => r.kind === 'ExternalBackendProvider')?.items || [];
-  return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/external" eyebrow="external backends" title="External backend providers" text="Connect external forges, issue trackers, and CI/CD systems as Krate-managed provider backends." actions={[['/external/sync', 'Sync status'], ['/external/conflicts', 'Conflicts']]} breadcrumbs={[['/', 'Krate'], ['/external', 'Providers']]}>
+  return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/external" eyebrow="external backends" title="External backend providers" text="Connect external forges, issue trackers, and CI/CD systems as Krate-managed provider backends." actions={[['/external/providers/new', 'Add provider'], ['/external/sync', 'Sync status'], ['/external/conflicts', 'Conflicts']]} breadcrumbs={[['/', 'Krate'], ['/external', 'Providers']]}>
     <DegradedBanner model={ui.model} />
     <div className="card">
-      <ExternalProviderList org={activeOrg} providers={providers} />
+      <ExternalProviderList org={activeOrg} providers={providers} addHref={orgHref(activeOrg, '/external/providers/new')} />
     </div>
   </PageFrame>;
 }
