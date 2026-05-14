@@ -391,10 +391,10 @@ function withWorkspaceBinOnPath(env: Record<string, string | undefined>, cwd: st
 }
 
 function buildPrompt(scenario: LiveStackScenario, traceId: string): string {
-  const fileTask = `Write a short 3-sentence summary of Homer's Odyssey. Save it to .a5c-live-test/${traceId}-odyssey.md`;
+  const fileTask = `Write a 4-paragraph summary of Homer's Odyssey (at least 600 words). Save it to .a5c-live-test/${traceId}-odyssey.md`;
 
   if (scenario.agent.agent === 'babysitter-agent') {
-    return `Write a short 3-sentence summary of Homer's Odyssey.`;
+    return `Write a 4-paragraph summary of Homer's Odyssey (at least 600 words).`;
   }
 
   if (scenario.agent.installMode === 'babysitter-plugin') {
@@ -608,7 +608,7 @@ async function validateAgentBehavior(
     // odyssey task and should produce the file or at least substantial content.
   }
 
-  // --- file-creation: verify the output file exists with real content (>100 bytes) ---
+  // --- file-creation: verify the output file exists with real content (>500 bytes) ---
   if (traceId) {
     const expectedFile = path.join(cwd, '.a5c-live-test', `${traceId}-odyssey.md`);
     let fileSize = 0;
@@ -620,7 +620,7 @@ async function validateAgentBehavior(
     } catch {
       // file not created
     }
-    if (fileExists && fileSize > 100) {
+    if (fileExists && fileSize > 500) {
       entries.push({ name: 'file-creation', status: 'passed', detail: `odyssey file created (${fileSize} bytes)` });
     } else if (fileExists) {
       entries.push({ name: 'file-creation', status: 'failed', detail: `odyssey file exists but too small (${fileSize} bytes — expected >500)` });
