@@ -25,6 +25,7 @@ import { ExternalSyncDashboard } from './components/external-sync-dashboard.jsx'
 import { ExternalConflictResolver } from './components/external-conflict-resolver.jsx';
 import { AgentSettingsForm } from './components/agent-settings-form.jsx';
 import { StackActions } from './components/stack-actions.jsx';
+import { ManualDispatchButton, RunActions } from './components/run-actions.jsx';
 
 export const orgNavigationGroups = [
   {
@@ -322,10 +323,12 @@ export async function AgentRunsPage({ org = null, linkToDetail = false } = {}) {
     if (phase === 'Failed') return 'danger';
     return 'neutral';
   };
+  const availableStacks = (agentView.stacks?.items || []).map(s => s.metadata?.name).filter(Boolean);
   return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/agents" eyebrow="agent dispatch runs" title="Dispatch runs" text="Track agent dispatch runs across stacks, repositories, and phases. Each run represents a dispatched agent task." actions={[['/agents', 'Overview'], ['/agents/stacks', 'Stacks']]} breadcrumbs={[['/', 'Krate'], ['/agents', 'Agents'], ['/agents/runs', 'Dispatch runs']]}>
     <DegradedBanner model={ui.model} />
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: '1rem' }}>
-      <DispatchButton org={activeOrg} stacks={(agentView.stacks?.items || []).map(s => s.metadata?.name).filter(Boolean)} />
+      <ManualDispatchButton org={activeOrg} stacks={availableStacks} />
+      <DispatchButton org={activeOrg} stacks={availableStacks} />
       <LiveUpdates org={activeOrg} />
     </div>
     <div className="card">
@@ -335,6 +338,7 @@ export async function AgentRunsPage({ org = null, linkToDetail = false } = {}) {
         <StatusPill tone={phaseTone(run.status?.phase)}>{run.status?.phase || 'Pending'}</StatusPill>
         <span>{run.spec?.stackRef || 'unassigned'} / {run.spec?.repository || 'no repository'}</span>
         <small>Phase: {run.status?.phase || 'Pending'}{run.status?.startedAt ? ` / Started: ${run.status.startedAt}` : ''}</small>
+        <RunActions org={activeOrg} runName={run.metadata?.name} stackRef={run.spec?.stackRef || run.spec?.agentStack} phase={run.status?.phase} />
       </li>)}</ul> : <EmptyState title="No dispatch runs" text="Dispatch runs appear when agent stacks are triggered by rules or manual dispatch. Configure trigger rules or dispatch manually to create runs." />}
     </div>
   </PageFrame>;
@@ -381,6 +385,9 @@ export async function AgentRunDetailPage({ org = null, runId } = {}) {
         <div className="card">
           <div className="cardTitle"><h3>{runId}</h3><StatusPill tone={phaseTone(run.status?.phase)}>{run.status?.phase || 'Pending'}</StatusPill></div>
           {stackName ? <p>Agent stack: <a href={orgHref(activeOrg, `/agents/stacks/${stackName}`)}>{stackName}</a></p> : <p>Agent stack: not assigned</p>}
+          <div style={{ marginTop: '0.75rem' }}>
+            <RunActions org={activeOrg} runName={runId} stackRef={stackName} phase={run.status?.phase} />
+          </div>
         </div>
       </section>
       <section className="routeGrid two">
