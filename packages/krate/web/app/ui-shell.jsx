@@ -24,6 +24,7 @@ import { ExternalProviderWizard } from './components/external-provider-wizard.js
 import { ExternalSyncDashboard } from './components/external-sync-dashboard.jsx';
 import { ExternalConflictResolver } from './components/external-conflict-resolver.jsx';
 import { AgentSettingsForm } from './components/agent-settings-form.jsx';
+import { StackActions } from './components/stack-actions.jsx';
 
 export const orgNavigationGroups = [
   {
@@ -247,16 +248,19 @@ export async function AgentStacksPage({ org = null } = {}) {
   const activeOrg = ui.model.org?.slug || org || 'default';
   const agentView = ui.model.agents || { stacks: { count: 0, items: [] } };
   const stacks = agentView.stacks.items || [];
-  return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/agents" eyebrow="agent stacks" title="Agent stack configurations" text="Each agent stack defines a base agent, adapter, runtime identity, and capability gates." actions={[['/agents', 'Overview'], ['/agents/runs', 'Dispatch runs']]} breadcrumbs={[['/', 'Krate'], ['/agents', 'Agents'], ['/agents/stacks', 'Stacks']]}>
+  return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/agents" eyebrow="agent stacks" title="Agent stack configurations" text="Each agent stack defines a base agent, adapter, runtime identity, and capability gates." actions={[['/agents', 'Overview'], ['/agents/runs', 'Dispatch runs'], [orgHref(activeOrg, '/agents/stacks/new'), 'Create Stack']]} breadcrumbs={[['/', 'Krate'], ['/agents', 'Agents'], ['/agents/stacks', 'Stacks']]}>
     <DegradedBanner model={ui.model} />
     <div className="card">
       <div className="cardTitle"><h2>Stacks</h2><StatusPill tone={stacks.length ? 'good' : 'neutral'}>{stacks.length} stacks</StatusPill></div>
-      {stacks.length ? <div className="resourceTable">{stacks.map((stack) => <a key={stack.metadata?.name} href={orgHref(activeOrg, `/agents/stacks/${stack.metadata?.name}`)} className="resourceRow" style={{ textDecoration: 'none' }}>
-        <strong>{stack.metadata?.name}</strong>
-        <span>{stack.spec?.adapter || 'default'}</span>
-        <span>{stack.spec?.runtimeIdentity || stack.spec?.identity || 'workspace'}</span>
-        <small>{stack.status?.phase || 'Pending'}</small>
-      </a>)}</div> : <EmptyState title="No agent stacks configured" text="Agent stacks are created through Krate resource definitions. When stacks are available, they appear here with their adapter, identity, and phase." />}
+      {stacks.length ? <div className="resourceTable">{stacks.map((stack) => <div key={stack.metadata?.name} className="resourceRow" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <a href={orgHref(activeOrg, `/agents/stacks/${stack.metadata?.name}`)} style={{ textDecoration: 'none', flex: 1, display: 'flex', gap: 12, alignItems: 'center' }}>
+          <strong>{stack.metadata?.name}</strong>
+          <span>{stack.spec?.adapter || 'default'}</span>
+          <span>{stack.spec?.runtimeIdentity || stack.spec?.identity || 'workspace'}</span>
+          <small>{stack.status?.phase || 'Pending'}</small>
+        </a>
+        <StackActions org={activeOrg} stackName={stack.metadata?.name} />
+      </div>)}</div> : <EmptyState title="No agent stacks" text="Create your first agent stack to get started."><a href={orgHref(activeOrg, '/agents/stacks/new')}>Create Stack</a></EmptyState>}
     </div>
   </PageFrame>;
 }
@@ -268,19 +272,19 @@ export async function AgentStackDetailPage({ org = null, name } = {}) {
   const stack = (agentView.stacks.items || []).find((s) => s.metadata?.name === name) || null;
   const relatedRules = (agentView.rules.items || []).filter((rule) => rule.spec?.stackRef === name || rule.spec?.targetStack === name);
   const conditions = stack?.status?.conditions || [];
-  return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/agents" eyebrow={`agent stack / ${name}`} title={name || 'Stack detail'} text={stack ? `Agent stack using ${stack.spec?.adapter || 'default'} adapter with ${stack.spec?.runtimeIdentity || 'workspace'} identity.` : 'This agent stack was not found in the current workspace.'} actions={[['/agents/stacks', 'All stacks'], ['/agents/runs', 'Dispatch runs']]} breadcrumbs={[['/', 'Krate'], ['/agents', 'Agents'], ['/agents/stacks', 'Stacks'], [`/agents/stacks/${name}`, name || 'Detail']]}>
+  return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/agents" eyebrow={`agent stack / ${name}`} title={name || 'Stack detail'} text={stack ? `Agent stack using ${stack.spec?.adapter || 'default'} adapter with ${stack.spec?.runtimeIdentity || 'workspace'} identity.` : 'This agent stack was not found in the current workspace.'} actions={[[orgHref(activeOrg, '/agents/stacks'), 'All stacks'], ['/agents/runs', 'Dispatch runs']]} breadcrumbs={[['/', 'Krate'], ['/agents', 'Agents'], ['/agents/stacks', 'Stacks'], [`/agents/stacks/${name}`, name || 'Detail']]}>
     <DegradedBanner model={ui.model} />
     <section className="routeGrid two">
       <div className="card">
         <div className="cardTitle"><h3>Stack configuration</h3><StatusPill tone={stack ? 'good' : 'warn'}>{stack?.status?.phase || 'not found'}</StatusPill></div>
-        {stack ? <dl className="kv">
+        {stack ? <><dl className="kv">
           <dt>Name</dt><dd>{stack.metadata?.name}</dd>
           <dt>Namespace</dt><dd>{stack.metadata?.namespace || ui.model.namespace}</dd>
           <dt>Base agent</dt><dd>{stack.spec?.baseAgent || stack.spec?.agent || 'not specified'}</dd>
           <dt>Adapter</dt><dd>{stack.spec?.adapter || 'default'}</dd>
           <dt>Runtime identity</dt><dd>{stack.spec?.runtimeIdentity || stack.spec?.identity || 'workspace'}</dd>
           <dt>Phase</dt><dd>{stack.status?.phase || 'Pending'}</dd>
-        </dl> : <EmptyState title={`Stack ${name} not found`} text="This agent stack does not exist in the current workspace. Create it through Krate resource definitions." />}
+        </dl><div style={{ marginTop: 12 }}><StackActions org={activeOrg} stackName={name} /></div></> : <EmptyState title={`Stack ${name} not found`} text="This agent stack does not exist in the current workspace. Create it through Krate resource definitions." />}
       </div>
       <div className="stack">
         <div className="card">
