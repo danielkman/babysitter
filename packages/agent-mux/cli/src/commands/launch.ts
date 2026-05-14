@@ -199,7 +199,7 @@ function appendHarnessSessionArgs(plan: LaunchPlan, session: SessionArgs): void 
       if (session.resumeId) plan.args.push('--resume', session.resumeId);
       if (session.sessionId) plan.args.push('--session-id', session.sessionId);
       if (session.prompt && !interactive) {
-        plan.args.push(session.prompt);
+        plan.args.push('-p', session.prompt);
       }
       if (session.maxTurns) plan.args.push('--max-turns', String(session.maxTurns));
       break;
@@ -576,7 +576,7 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
 
   // Spawn harness
 
-  let child: import('node:child_process').ChildProcess;
+  let child: import('node:child_process').ChildProcess = null as any;
   let ptyProcess: any = null;
 
   if (isInteractive) {
@@ -670,49 +670,15 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
       });
     }
   } else {
-    // Non-interactive: use PTY so harnesses like Claude Code detect a TTY and
-    // enable tool use (Write, Edit, Bash). The prompt is a positional arg,
-    // --max-turns controls when the harness exits, --dangerously-skip-permissions
-    // (via --yolo) enables tool permissions. No human stdin — the session runs
-    // to completion automatically. Falls back to plain spawn when node-pty is
-    // unavailable (Claude Code then runs in text-only mode without tools).
-    try {
-      const nodePty: any = await import('node-pty');
-      ptyProcess = nodePty.spawn(plan.command, plan.args, {
-        name: 'xterm-256color',
-        cols: 120,
-        rows: 40,
-        cwd: launchCwd,
-        env: { ...process.env, ...plan.env } as Record<string, string>,
-      });
-      const ptyOutput: string[] = [];
-      ptyProcess.onData((data: string) => {
-        ptyOutput.push(data);
-        // Only write live output when stdout is a real TTY (interactive).
-        // When piped, buffer everything to avoid backpressure deadlock.
-        if (process.stdout.isTTY) {
-          process.stdout.write(data);
-        }
-      });
-      ptyProcess.onExit(() => {
-        // Flush buffered PTY output to stdout on exit
-        if (!process.stdout.isTTY && ptyOutput.length > 0) {
-          const combined = ptyOutput.join('');
-          const clean = combined.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '').replace(/\x1b\][^\x07]*\x07/g, '');
-          process.stdout.write(clean);
-        }
-      });
-      child = { pid: ptyProcess.pid, kill: (sig: string) => ptyProcess.kill(sig) } as any;
-    } catch (err) {
-      console.error(`[amux launch] PTY unavailable: ${err instanceof Error ? err.message : String(err)}`);
-      const { spawn } = await import('node:child_process');
-      child = spawn(plan.command, plan.args, {
-        stdio: ['pipe', 'inherit', 'inherit'],
-        env: { ...process.env, ...plan.env },
-        cwd: launchCwd,
-        shell: process.platform === 'win32',
-      });
-    }
+    // Non-interactive: plain spawn. Each harness handles non-interactive mode
+    // internally (claude -p, codex exec, gemini --prompt, pi stdin).
+    const { spawn } = await import('node:child_process');
+    child = spawn(plan.command, plan.args, {
+      stdio: ['pipe', 'inherit', 'inherit'],
+      env: { ...process.env, ...plan.env },
+      cwd: launchCwd,
+      shell: process.platform === 'win32',
+    });
   }
 
   if (flagBool(args.flags, 'observe')) {
