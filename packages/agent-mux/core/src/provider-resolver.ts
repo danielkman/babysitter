@@ -121,7 +121,7 @@ export function resolveProvider(input: ResolveProviderInput): ProviderConfig {
   if (apiBase) params['apiBase'] = apiBase;
 
   // Auto-upgrade google provider to vertex when enterprise credentials are detected
-  if (providerId === 'google' && (project || process.env['GOOGLE_GENAI_USE_VERTEXAI'] === 'true')) {
+  if (providerId === 'google' && (project || /^true$/i.test(process.env['GOOGLE_GENAI_USE_VERTEXAI'] ?? ''))) {
     params['useVertexAi'] = true;
   }
   if (input.resourceGroup) params['resourceGroup'] = input.resourceGroup;
