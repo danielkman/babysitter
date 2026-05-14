@@ -4,13 +4,45 @@ import { clone } from './resource-model.js';
 export const AGENT_STACK_CONTROLLER_BOUNDARY = {
   role: 'agent-stack-controller',
   scope: 'Stack readiness reconciliation with capability resolution and condition management',
-  owns: ['capability resolution', 'stack conditions', 'readiness computation'],
+  owns: ['capability resolution', 'stack conditions', 'readiness computation', 'mcp health checks'],
   delegatesTo: ['agent-permission-review', 'resource-model'],
   mustNotOwn: ['secret values', 'dispatch execution', 'Agent Mux sessions']
 };
 
+const MCP_HEALTH_TIMEOUT_MS = 3000;
+
+/**
+ * Perform an HTTP health check for an MCP server endpoint.
+ * @param {string} url
+ * @param {Function|null} fetchFn
+ * @returns {Promise<{ status: string, latencyMs: number, error?: string }>}
+ */
+async function performMcpHealthCheck(url, fetchFn) {
+  const fn = fetchFn || globalThis.fetch;
+  const start = Date.now();
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), MCP_HEALTH_TIMEOUT_MS);
+    let response;
+    try {
+      response = await fn(url, { signal: controller.signal });
+    } finally {
+      clearTimeout(timer);
+    }
+    const latencyMs = Date.now() - start;
+    if (response.ok) {
+      return { status: 'healthy', latencyMs };
+    }
+    return { status: 'unhealthy', latencyMs, error: `HTTP ${response.status}` };
+  } catch (err) {
+    const latencyMs = Date.now() - start;
+    return { status: 'unhealthy', latencyMs, error: err.message || String(err) };
+  }
+}
+
 export function createAgentStackController(options = {}) {
   const permissionReviewer = options.permissionReviewer || createPermissionReviewer();
+  const fetchFn = options.fetch || null;
 
   return {
     role: 'agent-stack-controller',
@@ -291,6 +323,25 @@ export function createAgentStackController(options = {}) {
       }
 
       return capabilities;
+    },
+
+    /**
+     * Perform a health check for an AgentMcpServer resource.
+     * If no endpoint is configured in spec, returns { status: 'unknown', reason: 'no-endpoint' }.
+     * Otherwise performs a real HTTP GET with a 3s timeout.
+     * @param {object} mcpServer
+     * @returns {Promise<{ serverName: string, status: string, latencyMs?: number, reason?: string, error?: string }>}
+     */
+    async checkMcpHealth(mcpServer) {
+      const serverName = mcpServer?.metadata?.name;
+      const endpoint = mcpServer?.spec?.endpoint;
+
+      if (!endpoint) {
+        return { serverName, status: 'unknown', reason: 'no-endpoint' };
+      }
+
+      const checkResult = await performMcpHealthCheck(endpoint, fetchFn);
+      return { serverName, ...checkResult };
     }
   };
 }

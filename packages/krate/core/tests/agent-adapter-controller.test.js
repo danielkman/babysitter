@@ -154,11 +154,11 @@ test('getSupportedTransports returns the transport types', () => {
 // 8. healthCheck — stub result when no endpoint configured
 // ---------------------------------------------------------------------------
 
-test('healthCheck returns a stub result with status "unknown" when no endpoint configured', () => {
+test('healthCheck returns a result with status "unknown" when no endpoint configured', async () => {
   const controller = createAgentAdapterController();
   const adapter = makeAdapter('no-endpoint-adapter');
   // Adapter has no healthEndpoint in spec
-  const result = controller.healthCheck(adapter);
+  const result = await controller.healthCheck(adapter);
 
   assert.ok(result, 'healthCheck must return a result');
   assert.equal(result.status, 'unknown', 'status must be "unknown" when no endpoint is configured');
@@ -239,15 +239,17 @@ test('validate accepts adapter with unix transport', () => {
 // 13. healthCheck returns 'not-implemented' when healthEndpoint IS configured
 // ---------------------------------------------------------------------------
 
-test('healthCheck returns status "unknown" with reason "not-implemented" when healthEndpoint is configured', () => {
-  const controller = createAgentAdapterController();
+test('healthCheck performs real HTTP check when healthEndpoint is configured', async () => {
+  // Use a mock fetch to avoid real network calls in unit tests
+  const mockFetch = async () => ({ ok: true, status: 200 });
+  const controller = createAgentAdapterController({ fetch: mockFetch });
   const adapter = makeAdapter('endpoint-adapter', { healthEndpoint: 'http://localhost:9090/health' });
-  const result = controller.healthCheck(adapter);
+  const result = await controller.healthCheck(adapter);
 
   assert.ok(result, 'healthCheck must return a result');
-  assert.equal(result.status, 'unknown', 'status must be "unknown" even when endpoint is configured (stub)');
-  assert.equal(result.reason, 'not-implemented', 'reason must be "not-implemented" when endpoint is configured');
+  assert.equal(result.status, 'healthy', 'status must be "healthy" when endpoint fetch succeeds');
   assert.equal(result.adapterName, adapter.metadata.name, 'result must carry the adapter name');
+  assert.ok(typeof result.latencyMs === 'number', 'result must include latencyMs');
 });
 
 // ---------------------------------------------------------------------------
@@ -275,12 +277,12 @@ test('getCapabilities throws on null resource', () => {
   );
 });
 
-test('healthCheck throws on null resource', () => {
+test('healthCheck rejects on null resource', async () => {
   const controller = createAgentAdapterController();
-  assert.throws(
+  await assert.rejects(
     () => controller.healthCheck(null),
     /null|undefined/i,
-    'healthCheck must throw on null resource'
+    'healthCheck must reject on null resource'
   );
 });
 
