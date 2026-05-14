@@ -217,6 +217,8 @@ function buildCompletionRequest(
         : 'mock-model',
     transport,
     messages,
+    tools: Array.isArray(body.tools) ? body.tools as unknown[] : undefined,
+    toolChoice: body.tool_choice ?? body.toolChoice ?? undefined,
     stream,
     input: transport === 'openai-responses' ? normalizeInput(body.input) : undefined,
     raw: body,

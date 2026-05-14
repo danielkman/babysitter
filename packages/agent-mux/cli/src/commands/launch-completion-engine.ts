@@ -29,8 +29,11 @@ function buildHeaders(apiKey: string): Record<string, string> {
   };
 }
 
-function buildBody(messages: Array<{ role: string; content: string }>, model: string, stream: boolean): string {
-  return JSON.stringify({ messages, model, stream });
+function buildBody(messages: Array<{ role: string; content: string }>, model: string, stream: boolean, tools?: unknown[], toolChoice?: unknown): string {
+  const body: Record<string, unknown> = { messages, model, stream };
+  if (tools && tools.length > 0) body.tools = tools;
+  if (toolChoice !== undefined) body.tool_choice = toolChoice;
+  return JSON.stringify(body);
 }
 
 function buildGoogleContents(messages: Array<{ role: string; content: string }>): Array<{ role: string; parts: Array<{ text: string }> }> {
@@ -40,8 +43,12 @@ function buildGoogleContents(messages: Array<{ role: string; content: string }>)
   }));
 }
 
-function buildGoogleBody(messages: Array<{ role: string; content: string }>): string {
-  return JSON.stringify({ contents: buildGoogleContents(messages) });
+function buildGoogleBody(messages: Array<{ role: string; content: string }>, tools?: unknown[]): string {
+  const body: Record<string, unknown> = { contents: buildGoogleContents(messages) };
+  if (tools && tools.length > 0) {
+    body.tools = [{ functionDeclarations: tools.map((t: any) => ({ name: t.function?.name ?? t.name, description: t.function?.description ?? t.description, parameters: t.function?.parameters ?? t.parameters })) }];
+  }
+  return JSON.stringify(body);
 }
 
 function buildGoogleUrl(options: GoogleCompletionEngineOptions, streaming: boolean): string {
@@ -149,7 +156,7 @@ export function createOpenAICompletionEngine(options: {
         {
           method: 'POST',
           headers: buildHeaders(options.apiKey),
-          body: buildBody(messages, options.targetModel, false),
+          body: buildBody(messages, options.targetModel, false, request.tools, request.toolChoice),
         },
       );
 
@@ -186,7 +193,7 @@ export function createOpenAICompletionEngine(options: {
         {
           method: 'POST',
           headers: buildHeaders(options.apiKey),
-          body: buildBody(messages, options.targetModel, true),
+          body: buildBody(messages, options.targetModel, true, request.tools, request.toolChoice),
         },
       );
 
@@ -257,7 +264,7 @@ export function createGoogleCompletionEngine(options: GoogleCompletionEngineOpti
       const response = await fetch(buildGoogleUrl(options, false), {
         method: 'POST',
         headers: googleHeaders(),
-        body: buildGoogleBody(messages),
+        body: buildGoogleBody(messages, request.tools),
       });
 
       if (!response.ok) {
@@ -285,7 +292,7 @@ export function createGoogleCompletionEngine(options: GoogleCompletionEngineOpti
       const response = await fetch(buildGoogleUrl(options, true), {
         method: 'POST',
         headers: googleHeaders(),
-        body: buildGoogleBody(messages),
+        body: buildGoogleBody(messages, request.tools),
       });
 
       if (!response.ok) {

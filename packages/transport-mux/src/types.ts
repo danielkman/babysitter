@@ -32,6 +32,8 @@ export interface CompletionRequest {
   model: string;
   transport: TransportId;
   messages: CompletionRequestMessage[];
+  tools?: unknown[];
+  toolChoice?: unknown;
   stream: boolean;
   input?: string;
   raw: unknown;
