@@ -44,6 +44,9 @@ export const orgNavigationGroups = [
     title: 'Manage',
     items: [
       ['/people', 'People', 'Users, teams, and access'],
+      ['/access/ssh-keys', 'SSH keys', 'Deploy and user SSH keys'],
+      ['/access/permissions', 'Permissions', 'Repository collaborators'],
+      ['/access/branch-protection', 'Branch protection', 'Protected branch rules'],
       ['/hooks-events', 'Hooks & Policies', 'Webhooks and policies'],
       ['/runners-ci', 'Capacity', 'Runner pools'],
       ['/settings/secrets', 'Secrets', 'Secret and config grants'],
@@ -1267,6 +1270,153 @@ export async function UserProfilePage({ org = null } = {}) {
   </PageFrame>;
 }
 
+export async function SSHKeysPage({ org = null } = {}) {
+  const ui = await loadKrateUi(org);
+  const activeOrg = ui.model.org?.slug || org || 'default';
+  const sshKeys = (ui.model.resources || []).filter((r) => r.kind === 'SSHKey');
+  const items = sshKeys.flatMap((r) => r.items || []);
+  const sshKeyFields = [
+    { name: 'name', label: 'Name', placeholder: 'my-deploy-key', required: true },
+    { name: 'scope', label: 'Scope', placeholder: 'deploy | user | automation', required: true },
+    { name: 'key', label: 'Public key', placeholder: 'ssh-ed25519 AAAA...', required: true, type: 'textarea' }
+  ];
+  return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/access/ssh-keys" eyebrow="access management" title="SSH keys" text="Manage deploy keys, user SSH keys, and automation keys. Keys are reconciled into repository key APIs." actions={[['/people', 'People'], ['/access/permissions', 'Permissions']]} breadcrumbs={[['/', 'Krate'], ['/access/ssh-keys', 'SSH keys']]}>
+    <DegradedBanner model={ui.model} />
+    <section className="routeGrid two" style={{ alignItems: 'start' }}>
+      <div className="card">
+        <div className="cardTitle"><h2>SSH keys</h2><StatusPill tone={items.length ? 'good' : 'neutral'}>{items.length} keys</StatusPill></div>
+        {items.length ? <div className="resourceTable">{items.map((key) => {
+          const name = key.metadata?.name || 'unknown';
+          const scope = key.spec?.scope || 'unknown';
+          const phase = key.status?.phase || 'Pending';
+          const fingerprint = key.status?.fingerprint || '';
+          const phaseTone = phase === 'Synced' ? 'good' : phase === 'Revoked' ? 'danger' : 'neutral';
+          return <div key={name} className="resourceRow" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <strong>{name}</strong>
+            <span className="pill neutral" style={{ fontSize: '0.75rem' }}>{scope}</span>
+            <StatusPill tone={phaseTone}>{phase}</StatusPill>
+            {fingerprint ? <small style={{ color: '#6b7280', fontFamily: 'monospace', fontSize: '0.75rem' }}>{fingerprint.substring(0, 20)}</small> : null}
+            <ResourceActions org={activeOrg} apiPath={`sshkeys/${name}`} actions={phase === 'Revoked' ? ['delete'] : ['revoke', 'delete']} />
+          </div>;
+        })}</div> : <EmptyState title="No SSH keys" text="Add deploy keys for CI/CD pipelines, user SSH keys for developer access, or automation keys for agent workspaces." />}
+      </div>
+      <InlineCreateForm
+        org={activeOrg}
+        kind="SSHKey"
+        title="Add SSH key"
+        fields={sshKeyFields}
+        successText="SSH key added"
+      />
+    </section>
+  </PageFrame>;
+}
+
+export async function RepositoryPermissionsPage({ org = null } = {}) {
+  const ui = await loadKrateUi(org);
+  const activeOrg = ui.model.org?.slug || org || 'default';
+  const permResources = (ui.model.resources || []).filter((r) => r.kind === 'RepositoryPermission');
+  const items = permResources.flatMap((r) => r.items || []);
+  const repositories = ui.repositories || [];
+  const permFields = [
+    { name: 'name', label: 'Name', placeholder: 'repo-user-read', required: true },
+    { name: 'repository', label: 'Repository', placeholder: 'my-repo', required: true },
+    { name: 'subject', label: 'Subject', placeholder: 'username or team name', required: true },
+    { name: 'permission', label: 'Permission', placeholder: 'read | write | admin', required: true }
+  ];
+  return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/access/permissions" eyebrow="access management" title="Repository permissions" text="Manage repository collaborators and team access grants. Permissions are synced with the underlying repository hosting." actions={[['/people', 'People'], ['/access/ssh-keys', 'SSH keys']]} breadcrumbs={[['/', 'Krate'], ['/access/permissions', 'Permissions']]}>
+    <DegradedBanner model={ui.model} />
+    <section className="routeGrid two" style={{ alignItems: 'start' }}>
+      <div className="card">
+        <div className="cardTitle"><h2>Repository permissions</h2><StatusPill tone={items.length ? 'good' : 'neutral'}>{items.length} grants</StatusPill></div>
+        {items.length ? <div className="resourceTable">
+          <div className="resourceRow" style={{ fontWeight: 600, fontSize: '0.75rem', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <span>Name</span><span>Repository</span><span>Subject</span><span>Permission</span><span>Status</span>
+          </div>
+          {items.map((perm) => {
+            const name = perm.metadata?.name || 'unknown';
+            const repo = perm.spec?.repository || '--';
+            const subject = perm.spec?.subject || '--';
+            const permission = perm.spec?.permission || 'read';
+            const phase = perm.status?.phase || 'Pending';
+            const phaseTone = phase === 'Synced' ? 'good' : phase === 'Revoked' ? 'danger' : 'neutral';
+            return <div key={name} className="resourceRow" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+              <strong>{name}</strong>
+              <span>{repo}</span>
+              <span>{subject}</span>
+              <span className="pill neutral" style={{ fontSize: '0.75rem' }}>{permission}</span>
+              <StatusPill tone={phaseTone}>{phase}</StatusPill>
+              <ResourceActions org={activeOrg} apiPath={`repositorypermissions/${name}`} actions={phase === 'Revoked' ? ['delete'] : ['revoke', 'delete']} />
+            </div>;
+          })}
+        </div> : <EmptyState title="No repository permissions" text="Grant collaborator or team access to repositories. Permissions are reconciled with the repository hosting platform." />}
+      </div>
+      <InlineCreateForm
+        org={activeOrg}
+        kind="RepositoryPermission"
+        title="Grant access"
+        fields={permFields}
+        successText="Permission granted"
+      />
+    </section>
+  </PageFrame>;
+}
+
+export async function BranchProtectionPage({ org = null } = {}) {
+  const ui = await loadKrateUi(org);
+  const activeOrg = ui.model.org?.slug || org || 'default';
+  const bpResources = (ui.model.resources || []).filter((r) => r.kind === 'BranchProtection');
+  const items = bpResources.flatMap((r) => r.items || []);
+  const refPolicyResources = (ui.model.resources || []).filter((r) => r.kind === 'RefPolicy');
+  const refPolicies = refPolicyResources.flatMap((r) => r.items || []);
+  const bpFields = [
+    { name: 'name', label: 'Name', placeholder: 'protect-main', required: true },
+    { name: 'refs', label: 'Protected refs', placeholder: 'refs/heads/main, refs/heads/release/*', required: true },
+    { name: 'requiredReviews', label: 'Required reviews', placeholder: '1', required: false },
+    { name: 'requireStatusChecks', label: 'Require status checks', placeholder: 'true', required: false }
+  ];
+  return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/access/branch-protection" eyebrow="access management" title="Branch protection" text="Define protected branch rules and ref policies. Control force-push, signing requirements, and merge gates." actions={[['/people', 'People'], ['/access/permissions', 'Permissions']]} breadcrumbs={[['/', 'Krate'], ['/access/branch-protection', 'Branch protection']]}>
+    <DegradedBanner model={ui.model} />
+    <section className="routeGrid two" style={{ alignItems: 'start' }}>
+      <div className="stack">
+        <div className="card">
+          <div className="cardTitle"><h2>Branch protection rules</h2><StatusPill tone={items.length ? 'good' : 'neutral'}>{items.length} rules</StatusPill></div>
+          {items.length ? <div className="resourceTable">{items.map((bp) => {
+            const name = bp.metadata?.name || 'unknown';
+            const refs = bp.spec?.refs || [];
+            const phase = bp.status?.phase || 'Pending';
+            const phaseTone = phase === 'Active' || phase === 'Ready' || phase === 'Synced' ? 'good' : phase === 'Failed' ? 'danger' : 'neutral';
+            return <div key={name} className="resourceRow" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+              <strong>{name}</strong>
+              <span>{Array.isArray(refs) ? refs.join(', ') : String(refs)}</span>
+              <StatusPill tone={phaseTone}>{phase}</StatusPill>
+              <ResourceActions org={activeOrg} apiPath={`branchprotections/${name}`} actions={['delete']} />
+            </div>;
+          })}</div> : <EmptyState title="No branch protection rules" text="Add branch protection rules to enforce review requirements, status checks, and merge policies on protected branches." />}
+        </div>
+        <div className="card">
+          <div className="cardTitle"><h2>Ref policies</h2><StatusPill tone={refPolicies.length ? 'good' : 'neutral'}>{refPolicies.length} policies</StatusPill></div>
+          {refPolicies.length ? <div className="resourceTable">{refPolicies.map((rp) => {
+            const name = rp.metadata?.name || 'unknown';
+            const phase = rp.status?.phase || 'Pending';
+            return <div key={name} className="resourceRow">
+              <strong>{name}</strong>
+              <StatusPill tone={phase === 'Active' || phase === 'Ready' ? 'good' : 'neutral'}>{phase}</StatusPill>
+              <ResourceActions org={activeOrg} apiPath={`refpolicies/${name}`} actions={['delete']} />
+            </div>;
+          })}</div> : <p className="emptyText">No ref policies configured. Ref policies control force-push, signing requirements, and custom hook gates.</p>}
+        </div>
+      </div>
+      <InlineCreateForm
+        org={activeOrg}
+        kind="BranchProtection"
+        title="Add protection rule"
+        fields={bpFields}
+        successText="Branch protection rule created"
+      />
+    </section>
+  </PageFrame>;
+}
+
 export async function RepositoryCodePage({ org = null, repo }) { return <RepositorySectionPage org={org} repo={repo} section="code" />; }
 export async function RepositoryPullRequestsPage({ org = null, repo }) { return <RepositorySectionPage org={org} repo={repo} section="pull-requests" />; }
 export async function RepositoryIssuesPage({ org = null, repo }) { return <RepositorySectionPage org={org} repo={repo} section="issues" />; }
@@ -1295,11 +1445,11 @@ function sectionContent(section, ui, activeOrg) {
     'controller-api': { eyebrow: 'Krate workspace API', title: 'Krate API and access checks', text: 'Inspect live endpoints, permissions, and workspace health only when troubleshooting.', actions: [['/api/controller', 'Open diagnostics'], [`/api/watch/orgs/${activeOrg}/repositories`, 'Open live stream']], body: <div className="routeGrid wideLeft"><ArchitectureMap model={model} /><div className="stack"><EndpointPanel model={model} /><PermissionPanel model={model} /></div></div> },
     repositories: { eyebrow: 'repository workspace', title: 'Create, clone, and manage repositories', text: 'Create a repository, copy clone commands, review changes, and manage access without leaving the Krate flow.', actions: [['/repositories', 'New repository'], ['/advanced-plans', 'Advanced details']], body: <><ForgeFlowRail repository={repositories[0]} model={model} /><div className="routeGrid wideLeft"><RepositoryLanding model={model} repositories={repositories.map(publicResource)} /><div className="stack"><RepositoryManager namespace={model.namespace} org={activeOrg} repositories={repositories.map(publicResource)} /><ResourceTable resource={repositoryResource} /></div></div></> },
     people: { eyebrow: 'people and access', title: 'Invite people, identity links, and access', text: 'Admins can invite teammates, link identities, organize teams, and manage repository permissions from one place.', actions: [['/login', 'Preview sign in'], ['/repositories', 'Open repositories']], body: <PeopleAdmin model={model} repositories={repositories.map(publicResource)} /> },
-    deployments: { eyebrow: 'delivery workspace', title: 'Deployments, releases, and environments', text: 'Choose a repository, promote a release, inspect managed services, and adjust policies from one Krate experience.', actions: [['/repositories', 'Choose repository'], ['/advanced-plans', 'Advanced details']], body: <div className="routeGrid wideLeft"><div className="stack"><DeploymentManager namespace={model.namespace} org={activeOrg} repositories={repositories.map(publicResource)} delivery={model.delivery} /><DeploymentCenter model={model} deployments={deploymentResource} releases={releaseResource} /></div><div className="stack"><ResourceTable resource={deploymentResource} /><ResourceTable resource={deploymentPolicyResource} /></div></div> },
+    deployments: { eyebrow: 'delivery workspace', title: 'Deployments, releases, and environments', text: 'Choose a repository, promote a release, inspect managed services, and adjust policies from one Krate experience.', actions: [['/repositories', 'Choose repository'], ['/advanced-plans', 'Advanced details']], body: <div className="routeGrid wideLeft"><div className="stack"><KubeVelaRequiredBanner model={model} /><DeploymentManager namespace={model.namespace} org={activeOrg} repositories={repositories.map(publicResource)} delivery={model.delivery} /><DeploymentCenter model={model} deployments={deploymentResource} releases={releaseResource} /></div><div className="stack"><ResourceTable resource={deploymentResource} /><ResourceTable resource={deploymentPolicyResource} /></div></div> },
     inbox: { eyebrow: 'review queue', title: 'Reviews, issues, and triage', text: 'Review changes, triage issues, and see merge readiness with policy and run status in one place.', actions: [[`/api/watch/orgs/${activeOrg}/pullrequests`, 'Watch reviews'], ['/repositories', 'Open repositories']], body: <div className="routeGrid wideLeft"><InboxFlow model={model} /><div className="stack"><ResourceTable resource={pullRequests} /><ResourceTable resource={issues} /></div></div> },
     runs: { eyebrow: 'run lifecycle', title: 'Runs', text: 'Track repository checks, merge gates, and deployment work as user-facing runs. This page is about what is running and what needs attention; advanced run records stay collapsed until needed.', actions: [[`/api/watch/orgs/${activeOrg}/pipelines`, 'Watch run events'], ['/runners-ci', 'Runner capacity']], body: <div className="routeGrid wideLeft"><RunCenter model={model} pipelines={pipelines} repositories={repositories.map(publicResource)} /><div className="stack"><RunEventStream org={activeOrg} resource={pipelines} events={model.events} /><RunnerCapacitySnapshot model={model} resource={runnerPools} /></div></div> },
     'runners-ci': { eyebrow: 'capacity controls', title: 'Runner capacity', text: 'Adjust warm capacity, limits, and trust tier before enabling more jobs.', actions: [[`/api/watch/orgs/${activeOrg}/runnerpools`, 'Watch capacity'], ['/advanced-plans', 'Advanced details']], body: <div className="routeGrid wideLeft"><RunnerPoolDesigner org={activeOrg} resource={runnerPools} /><ResourceApplyPanel org={activeOrg} resource={publicResource(runnerPools?.items?.[0] || null)} /></div> },
-    'hooks-events': { eyebrow: 'hooks and policies', title: 'Hooks & Policies', text: 'Manage outbound hooks, admission policy posture, Kyverno reports, and exception requests from one Krate-native policy center.', actions: [[`/api/watch/orgs/${activeOrg}/webhooksubscriptions`, 'Watch subscriptions'], [`/api/orgs/${activeOrg}/policy-reports`, 'Policy reports']], body: <div className="routeGrid wideLeft"><PolicyCenter org={activeOrg} model={model} profiles={policyProfiles} templates={policyTemplates} bindings={policyBindings} exceptionRequests={policyExceptionRequests} /><div className="stack"><WebhookInspector model={model} /><ResourceTable resource={webhooks} /></div></div> },
+    'hooks-events': { eyebrow: 'hooks and policies', title: 'Hooks & Policies', text: 'Manage outbound hooks, admission policy posture, Kyverno reports, and exception requests from one Krate-native policy center.', actions: [[`/api/watch/orgs/${activeOrg}/webhooksubscriptions`, 'Watch subscriptions'], [`/api/orgs/${activeOrg}/policy-reports`, 'Policy reports']], body: <div className="routeGrid wideLeft"><><KyvernoRequiredBanner model={model} /><PolicyCenter org={activeOrg} model={model} profiles={policyProfiles} templates={policyTemplates} bindings={policyBindings} exceptionRequests={policyExceptionRequests} /></><div className="stack"><WebhookInspector model={model} /><ResourceTable resource={webhooks} /></div></div> },
     insights: { eyebrow: 'workspace insights', title: 'Health, activity, and access', text: 'See counts, recent events, access checks, and readiness signals for the workspace.', actions: [['/api/controller', 'Refresh data'], ['/controller-api', 'Krate API']], body: <div className="routeGrid wideLeft"><DashboardMetrics model={model} /><div className="stack"><EventPanel events={model.events} /><ArchitectureMap model={model} compact /></div></div> },
     'operations-install': { eyebrow: 'release readiness', title: 'Readiness checklist', text: 'Confirm package, image, access, and repository readiness before handing off a release.', actions: [['/insights', 'View health'], ['/advanced-plans', 'Advanced details']], body: <div className="routeGrid wideLeft"><OperationsPanel model={model} /><div className="stack"><SecurityPosture model={model} /><ArchitectureMap model={model} compact /></div></div> },
     'advanced-plans': { eyebrow: 'advanced workspace details', title: 'Advanced resource details', text: 'Use this only when you need direct resource editing. Krate keeps it collapsed elsewhere so everyday work stays task-focused.', actions: [['/repositories', 'Repository form'], ['/applications', 'Deployment center']], body: <div className="routeGrid two"><ResourceApplyPanel org={activeOrg} resource={publicResource(repositoryResource?.items?.[0] || null)} /><PlanCard title="Live repository details" plan={repositoryResource?.yaml} command="Save repository changes" initiallyOpen /></div> }
@@ -1460,6 +1610,28 @@ function CloneAndRefs({ repo, repository }) {
 function RepoSettingsPanel({ repository, model, org = 'default', repo }) {
   const repoName = repo || repository?.metadata?.name;
   return <div className="card securitySettings"><div className="cardTitle"><h3>Repository settings map</h3><StatusPill tone={repository ? 'good' : 'warn'}>{repository ? 'live' : 'missing'}</StatusPill></div><dl className="kv"><dt>Workspace</dt><dd>{repository?.metadata?.namespace || model.namespace}</dd><dt>Visibility</dt><dd>{repository?.spec?.visibility || 'not set'}</dd><dt>Default branch</dt><dd>{repository?.spec?.defaultBranch || 'main'}</dd><dt>Policy checks</dt><dd>{repository ? 'Ready' : 'Waiting for a repository'}</dd></dl><div className="heroActions" aria-label="Repository settings links"><a href={orgHref(org, '/people')}>Manage access</a>{repoName ? <a href={orgHref(org, `/repositories/${repoName}/runs`)}>Open runs</a> : null}<a href={orgHref(org, '/advanced-plans')}>Open advanced details</a></div></div>;
+}
+
+function KubeVelaRequiredBanner({ model }) {
+  const kubeVelaResources = (model.resources || []).filter((r) => String(r.kind || '').startsWith('KubeVela'));
+  const hasKubeVela = kubeVelaResources.some((r) => (r.count || 0) > 0) || model.delivery?.available;
+  if (hasKubeVela) return null;
+  return <section className="card" style={{ borderLeft: '3px solid var(--color-info, #3b82f6)', marginBottom: '0.75rem' }}>
+    <div className="cardTitle"><h3>KubeVela not detected</h3><StatusPill tone="neutral">optional dependency</StatusPill></div>
+    <p style={{ color: '#6b7280', fontSize: '0.875rem', margin: '0.5rem 0' }}>Deployments require KubeVela. Install KubeVela to enable application deployment management, release tracking, and environment promotion.</p>
+    <p style={{ color: '#9ca3af', fontSize: '0.8125rem' }}>Krate will automatically discover KubeVela CRDs once installed. Webhook and repository features remain available without KubeVela.</p>
+  </section>;
+}
+
+function KyvernoRequiredBanner({ model }) {
+  const engine = model.policyEngine || {};
+  const hasKyverno = engine.detected || engine.health === 'ready' || (engine.controllers || []).length > 0;
+  if (hasKyverno) return null;
+  return <section className="card" style={{ borderLeft: '3px solid var(--color-info, #3b82f6)', marginBottom: '0.75rem' }}>
+    <div className="cardTitle"><h3>Kyverno not detected</h3><StatusPill tone="neutral">optional dependency</StatusPill></div>
+    <p style={{ color: '#6b7280', fontSize: '0.875rem', margin: '0.5rem 0' }}>Policy management requires Kyverno. Install Kyverno to enable policy enforcement, admission control, and policy reporting.</p>
+    <p style={{ color: '#9ca3af', fontSize: '0.8125rem' }}>Krate will automatically discover Kyverno CRDs once installed. Webhook subscriptions and hook management remain available without Kyverno.</p>
+  </section>;
 }
 
 function DegradedBanner({ model }) {
