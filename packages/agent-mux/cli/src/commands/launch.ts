@@ -689,6 +689,7 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
       ptyProcess.onData((data: string) => process.stdout.write(data));
       child = { pid: ptyProcess.pid, kill: (sig: string) => ptyProcess.kill(sig) } as any;
     } catch {
+      console.error(`[amux launch] node-pty unavailable, falling back to spawn`);
       const { spawn } = await import('node:child_process');
       child = spawn(plan.command, plan.args, {
         stdio: ['pipe', 'inherit', 'inherit'],
@@ -697,6 +698,7 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
         shell: process.platform === 'win32',
       });
     }
+    console.error(`[amux launch] spawn: ${plan.command} ${plan.args.map(a => a.includes(' ') ? JSON.stringify(a) : a).join(' ')}`);
   }
 
   if (flagBool(args.flags, 'observe')) {
