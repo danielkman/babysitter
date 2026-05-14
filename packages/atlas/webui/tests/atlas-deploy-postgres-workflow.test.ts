@@ -18,7 +18,9 @@ describe("Atlas WebUI deploy workflow", () => {
     expect(workflow).toContain("AZURE_RESOURCE_GROUP=$RG");
     expect(workflow).toContain("A5C_CLOUD_STAGING_RESOURCE_GROUP");
     expect(workflow).toContain("NODE_PROVIDER_ID=$(kubectl get nodes");
-    expect(workflow).toContain("Using AKS node resource group");
+    expect(workflow).toContain("Using AKS cluster resource group");
+    expect(workflow).toContain("NODE_RESOURCE_GROUP=$(echo");
+    expect(workflow).toContain("AZURE_LOCATION=$(echo");
     expect(workflow).toContain("az storage account create");
     expect(workflow).toContain("az storage share create");
     expect(workflow).toContain("kind: PersistentVolume");

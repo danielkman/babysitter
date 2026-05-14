@@ -2143,10 +2143,18 @@ jobs:
           POSTGRES_SHARE="${KUBE_NAMESPACE}-${POSTGRES_APP}"
           if [[ -z "${AZURE_RESOURCE_GROUP:-}" ]]; then
             NODE_PROVIDER_ID=$(kubectl get nodes -o jsonpath='{.items[0].spec.providerID}')
-            AZURE_RESOURCE_GROUP=$(echo "$NODE_PROVIDER_ID" | sed -E 's#.*resourceGroups/([^/]+)/.*#\1#')
-            echo "Using AKS node resource group ${AZURE_RESOURCE_GROUP} for Atlas Postgres storage"
+            NODE_RESOURCE_GROUP=$(echo "$NODE_PROVIDER_ID" | sed -E 's#.*resourceGroups/([^/]+)/.*#\1#')
+            NODE_RESOURCE_GROUP_LOWER=$(echo "$NODE_RESOURCE_GROUP" | tr '[:upper:]' '[:lower:]')
+            if [[ "$NODE_RESOURCE_GROUP_LOWER" == mc_* ]]; then
+              AZURE_RESOURCE_GROUP=$(echo "$NODE_RESOURCE_GROUP" | cut -d_ -f2)
+              AZURE_LOCATION=$(echo "$NODE_RESOURCE_GROUP" | awk -F_ '{print $NF}')
+              echo "Using AKS cluster resource group ${AZURE_RESOURCE_GROUP} for Atlas Postgres storage"
+            else
+              AZURE_RESOURCE_GROUP="$NODE_RESOURCE_GROUP"
+              echo "Using AKS provider resource group ${AZURE_RESOURCE_GROUP} for Atlas Postgres storage"
+            fi
           fi
-          AZURE_LOCATION=$(az group show --name "$AZURE_RESOURCE_GROUP" --query location -o tsv)
+          AZURE_LOCATION="${AZURE_LOCATION:-$(az group show --name "$AZURE_RESOURCE_GROUP" --query location -o tsv)}"
           SUBSCRIPTION_HASH=$(az account show --query id -o tsv | tr -d '-' | cut -c1-8)
           STORAGE_ACCOUNT="a5catlaspg${SUBSCRIPTION_HASH}"
 
