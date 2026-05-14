@@ -1,12 +1,49 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const ADAPTER_TYPES = ['subprocess', 'remote', 'programmatic'];
 const TRANSPORT_TYPES = ['stdio', 'websocket', 'http', 'unix'];
 const ADAPTER_CAPABILITIES = ['chat', 'tools', 'streaming', 'files', 'code-execution'];
-const PROVIDER_TYPES = ['anthropic', 'openai', 'gemini', 'azure-openai', 'bedrock', 'vertex', 'custom'];
+const PROVIDER_TYPES = ['anthropic', 'openai', 'azure-openai', 'google-vertex', 'foundry', 'custom'];
 const AUTH_TYPES = ['token', 'oauth', 'none'];
+
+// Provider-specific field definitions
+const PROVIDER_FIELDS = {
+  anthropic: [
+    { name: 'apiKey', label: 'API Key', sensitive: true, fromSecret: true },
+    { name: 'baseUrl', label: 'Base URL', default: 'https://api.anthropic.com' },
+    { name: 'defaultModel', label: 'Default Model', default: 'claude-sonnet-4-20250514' },
+  ],
+  openai: [
+    { name: 'apiKey', label: 'API Key', sensitive: true, fromSecret: true },
+    { name: 'baseUrl', label: 'Base URL', default: 'https://api.openai.com' },
+    { name: 'defaultModel', label: 'Default Model', default: 'gpt-4o' },
+    { name: 'organization', label: 'Organization ID' },
+  ],
+  'azure-openai': [
+    { name: 'apiKey', label: 'API Key', sensitive: true, fromSecret: true },
+    { name: 'endpoint', label: 'Azure Endpoint', required: true },
+    { name: 'deploymentId', label: 'Deployment ID', required: true },
+    { name: 'apiVersion', label: 'API Version', default: '2024-02-01' },
+  ],
+  'google-vertex': [
+    { name: 'serviceAccountKey', label: 'Service Account Key', sensitive: true, fromSecret: true },
+    { name: 'project', label: 'GCP Project', required: true },
+    { name: 'location', label: 'Location', default: 'us-central1' },
+    { name: 'defaultModel', label: 'Default Model', default: 'gemini-2.0-flash' },
+  ],
+  foundry: [
+    { name: 'apiKey', label: 'API Key', sensitive: true, fromSecret: true },
+    { name: 'baseUrl', label: 'Foundry Endpoint', required: true },
+    { name: 'defaultModel', label: 'Default Model' },
+  ],
+  custom: [
+    { name: 'apiKey', label: 'API Key', sensitive: true, fromSecret: true },
+    { name: 'baseUrl', label: 'Base URL', required: true },
+    { name: 'defaultModel', label: 'Default Model' },
+  ],
+};
 
 const labelStyle = { display: 'block', fontWeight: 600, fontSize: '0.8125rem', marginBottom: '0.25rem' };
 const inputStyle = { width: '100%', padding: '0.5rem', borderRadius: '0.375rem', border: '1px solid #d1d5db', fontSize: '0.875rem', boxSizing: 'border-box' };
@@ -389,14 +426,77 @@ function ProviderRow({ org, provider, onDeleted }) {
   );
 }
 
-function AddProviderForm({ org, onCreated }) {
+/**
+ * SecretRefField — dropdown to select a secret + key for sensitive fields.
+ */
+function SecretRefField({ label, value, onChange, secrets, required }) {
+  const secretName = value?.secretName || '';
+  const secretKey = value?.key || '';
+
+  // Get keys for the selected secret
+  const selectedSecret = secrets.find((s) => s.name === secretName);
+  const availableKeys = selectedSecret?.keys || [];
+
+  return (
+    <div>
+      <label style={labelStyle}>{label} <small style={{ fontWeight: 400, color: '#6b7280' }}>(from Secret)</small></label>
+      <div style={{ display: 'flex', gap: '0.5rem' }}>
+        <select
+          value={secretName}
+          onChange={(e) => onChange({ secretName: e.target.value, key: '' })}
+          style={{ ...selectStyle, flex: '1 1 60%' }}
+          required={required}
+        >
+          <option value="">-- Select secret --</option>
+          {secrets.map((s) => (
+            <option key={s.name} value={s.name}>{s.name}</option>
+          ))}
+        </select>
+        {secretName && (
+          availableKeys.length > 0 ? (
+            <select
+              value={secretKey}
+              onChange={(e) => onChange({ secretName, key: e.target.value })}
+              style={{ ...selectStyle, flex: '1 1 40%' }}
+            >
+              <option value="">-- Key --</option>
+              {availableKeys.map((k) => (
+                <option key={k} value={k}>{k}</option>
+              ))}
+            </select>
+          ) : (
+            <input
+              type="text"
+              value={secretKey}
+              onChange={(e) => onChange({ secretName, key: e.target.value })}
+              placeholder="key name"
+              style={{ ...inputStyle, flex: '1 1 40%' }}
+            />
+          )
+        )}
+      </div>
+    </div>
+  );
+}
+
+function AddProviderForm({ org, onCreated, secrets }) {
   const [name, setName] = useState('');
   const [providerType, setProviderType] = useState('anthropic');
   const [authType, setAuthType] = useState('token');
-  const [endpoint, setEndpoint] = useState('');
-  const [credentialRef, setCredentialRef] = useState('');
+  const [fieldValues, setFieldValues] = useState({});
+  const [secretRefs, setSecretRefs] = useState({});
   const [status, setStatus] = useState('idle');
   const [message, setMessage] = useState('');
+
+  const fields = PROVIDER_FIELDS[providerType] || PROVIDER_FIELDS.custom;
+
+  function updateFieldValue(fieldName, value) {
+    setFieldValues((prev) => ({ ...prev, [fieldName]: value }));
+  }
+
+  function updateSecretRef(fieldName, ref) {
+    setSecretRefs((prev) => ({ ...prev, [fieldName]: ref }));
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -404,17 +504,48 @@ function AddProviderForm({ org, onCreated }) {
     setStatus('saving');
     setMessage('');
 
+    // Build spec from field values
+    const spec = {
+      organizationRef: org,
+      provider: providerType,
+      authType,
+    };
+
+    // Build credentialRef from sensitive fields
+    const credentialRefs = {};
+
+    for (const field of fields) {
+      if (field.fromSecret && secretRefs[field.name]?.secretName) {
+        credentialRefs[field.name] = {
+          secretName: secretRefs[field.name].secretName,
+          key: secretRefs[field.name].key || field.name,
+        };
+      } else {
+        const val = fieldValues[field.name];
+        if (val && val.trim()) {
+          spec[field.name] = val.trim();
+        } else if (field.default) {
+          spec[field.name] = field.default;
+        }
+      }
+    }
+
+    // Set the primary credentialRef (first sensitive field's secret ref)
+    const primarySensitiveField = fields.find((f) => f.fromSecret);
+    if (primarySensitiveField && credentialRefs[primarySensitiveField.name]) {
+      spec.credentialRef = credentialRefs[primarySensitiveField.name];
+    }
+
+    // Add all credential refs
+    if (Object.keys(credentialRefs).length > 0) {
+      spec.credentialRefs = credentialRefs;
+    }
+
     const resource = {
       apiVersion: 'krate.a5c.ai/v1alpha1',
       kind: 'AgentProviderConfig',
       metadata: { name: name.trim() },
-      spec: {
-        organizationRef: org,
-        provider: providerType,
-        authType,
-        ...(endpoint.trim() ? { endpoint: endpoint.trim() } : {}),
-        ...(credentialRef.trim() ? { credentialRef: credentialRef.trim() } : {}),
-      },
+      spec,
     };
 
     try {
@@ -434,8 +565,8 @@ function AddProviderForm({ org, onCreated }) {
         setName('');
         setProviderType('anthropic');
         setAuthType('token');
-        setEndpoint('');
-        setCredentialRef('');
+        setFieldValues({});
+        setSecretRefs({});
       }
     } catch (err) {
       setStatus('error');
@@ -457,27 +588,61 @@ function AddProviderForm({ org, onCreated }) {
             </div>
             <div>
               <label style={labelStyle}>Provider</label>
-              <select value={providerType} onChange={e => setProviderType(e.target.value)} style={selectStyle}>
+              <select value={providerType} onChange={e => { setProviderType(e.target.value); setFieldValues({}); setSecretRefs({}); }} style={selectStyle}>
                 {PROVIDER_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
           </div>
-          <div style={rowStyle}>
-            <div>
-              <label style={labelStyle}>Auth type</label>
-              <select value={authType} onChange={e => setAuthType(e.target.value)} style={selectStyle}>
-                {AUTH_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
-            </div>
-            <div>
-              <label style={labelStyle}>Credential secret ref <small style={{ fontWeight: 400, color: '#6b7280' }}>(optional)</small></label>
-              <input type="text" value={credentialRef} onChange={e => setCredentialRef(e.target.value)} placeholder="my-api-key-secret" style={inputStyle} />
-            </div>
-          </div>
           <div>
-            <label style={labelStyle}>Endpoint URL <small style={{ fontWeight: 400, color: '#6b7280' }}>(optional — override default API base)</small></label>
-            <input type="url" value={endpoint} onChange={e => setEndpoint(e.target.value)} placeholder="https://api.anthropic.com/v1" style={inputStyle} />
+            <label style={labelStyle}>Auth type</label>
+            <select value={authType} onChange={e => setAuthType(e.target.value)} style={selectStyle}>
+              {AUTH_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
           </div>
+
+          {/* Provider-specific fields */}
+          <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: '0.75rem' }}>
+            <h5 style={{ margin: '0 0 0.75rem', fontSize: '0.8125rem', fontWeight: 600, color: '#374151' }}>
+              {providerType} configuration
+            </h5>
+            <div style={fieldGroupStyle}>
+              {fields.map((field) => {
+                if (field.fromSecret) {
+                  return (
+                    <SecretRefField
+                      key={field.name}
+                      label={field.label}
+                      value={secretRefs[field.name] || {}}
+                      onChange={(ref) => updateSecretRef(field.name, ref)}
+                      secrets={secrets}
+                      required={field.required}
+                    />
+                  );
+                }
+
+                return (
+                  <div key={field.name}>
+                    <label style={labelStyle}>
+                      {field.label}
+                      {!field.required && <small style={{ fontWeight: 400, color: '#6b7280' }}> (optional)</small>}
+                    </label>
+                    <input
+                      type={field.name.toLowerCase().includes('url') || field.name.toLowerCase().includes('endpoint') ? 'url' : 'text'}
+                      value={fieldValues[field.name] || ''}
+                      onChange={e => updateFieldValue(field.name, e.target.value)}
+                      placeholder={field.default || ''}
+                      required={field.required}
+                      style={inputStyle}
+                    />
+                    {field.default && !fieldValues[field.name] && (
+                      <small style={{ color: '#9ca3af', fontSize: '0.75rem' }}>Default: {field.default}</small>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <button type="submit" disabled={!canSubmit} style={!canSubmit ? disabledStyle : primaryStyle}>
               {status === 'saving' ? 'Creating...' : 'Create provider'}
@@ -490,9 +655,36 @@ function AddProviderForm({ org, onCreated }) {
   );
 }
 
-function ProvidersSection({ org, initialProviders }) {
+function ProvidersSection({ org, initialProviders, secrets: initialSecrets }) {
   const [providers, setProviders] = useState(initialProviders);
   const [showForm, setShowForm] = useState(false);
+  const [secrets, setSecrets] = useState(initialSecrets || []);
+
+  // Fetch secrets on mount if not provided
+  useEffect(() => {
+    if (initialSecrets && initialSecrets.length > 0) return;
+    let cancelled = false;
+    async function fetchSecrets() {
+      try {
+        const res = await fetch(`/api/orgs/${encodeURIComponent(org)}/secrets?type=k8s-secrets`);
+        if (res.ok) {
+          const data = await res.json();
+          if (!cancelled) {
+            const items = (data.items || []).map((s) => ({
+              name: s.metadata?.name,
+              keys: Object.keys(s.data || {}),
+              type: s.type || 'Opaque',
+            }));
+            setSecrets(items);
+          }
+        }
+      } catch {
+        // Non-critical — secrets dropdown will be empty
+      }
+    }
+    fetchSecrets();
+    return () => { cancelled = true; };
+  }, [org, initialSecrets]);
 
   function handleDeleted(name) {
     setProviders(prev => prev.filter(p => p.metadata?.name !== name));
@@ -525,19 +717,19 @@ function ProvidersSection({ org, initialProviders }) {
           <p>No providers configured. Click <strong>+ Add provider</strong> to define LLM access credentials and default models.</p>
         </div>
       ) : null}
-      {showForm && <AddProviderForm org={org} onCreated={handleCreated} />}
+      {showForm && <AddProviderForm org={org} onCreated={handleCreated} secrets={secrets} />}
     </div>
   );
 }
 
 // ─── Root export ───────────────────────────────────────────────────────────────
 
-export function AgentSettingsForm({ org, gateway, adapters, providers }) {
+export function AgentSettingsForm({ org, gateway, adapters, providers, secrets }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       <GatewaySection org={org} gateway={gateway} />
       <AdaptersSection org={org} initialAdapters={adapters} />
-      <ProvidersSection org={org} initialProviders={providers} />
+      <ProvidersSection org={org} initialProviders={providers} secrets={secrets} />
     </div>
   );
 }

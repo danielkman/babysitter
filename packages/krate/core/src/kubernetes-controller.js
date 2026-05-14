@@ -65,7 +65,12 @@ export const KRATE_RESOURCES = [
   { kind: 'KubeVelaWorkflow', plural: 'workflows', group: KUBEVELA_API_GROUP, namespaced: true, storage: 'kubevela' },
   { kind: 'KubeVelaResourceTracker', plural: 'resourcetrackers', group: KUBEVELA_API_GROUP, namespaced: false, storage: 'kubevela' },
   { kind: 'View', plural: 'views', namespaced: true, storage: 'etcd' },
-  { kind: 'Selector', plural: 'selectors', namespaced: true, storage: 'etcd' }
+  { kind: 'Selector', plural: 'selectors', namespaced: true, storage: 'etcd' },
+  // Core Kubernetes resources (group: '' — no API group prefix for kubectl).
+  // These are excluded from snapshot discovery (storage: 'core') but are
+  // available for list/get/delete via findResourceDefinition.
+  { kind: 'Secret', plural: 'secrets', group: '', namespaced: true, storage: 'core' },
+  { kind: 'ConfigMap', plural: 'configmaps', group: '', namespaced: true, storage: 'core' }
 ];
 
 export const KYVERNO_RESOURCES = [
@@ -332,7 +337,7 @@ export async function getControllerSnapshot(options = {}) {
       },
       apiService: null,
       crds: [],
-      resources: Object.fromEntries(KRATE_RESOURCES.map((definition) => [definition.kind, []])),
+      resources: Object.fromEntries(KRATE_RESOURCES.filter((d) => d.storage !== 'core').map((definition) => [definition.kind, []])),
       kyverno: emptyKyvernoDiscovery(namespace, env),
       events: [],
       permissions: [],
@@ -359,7 +364,7 @@ export async function getControllerSnapshot(options = {}) {
       },
       apiService: null,
       crds: [],
-      resources: Object.fromEntries(KRATE_RESOURCES.map((definition) => [definition.kind, []])),
+      resources: Object.fromEntries(KRATE_RESOURCES.filter((d) => d.storage !== 'core').map((definition) => [definition.kind, []])),
       kyverno: emptyKyvernoDiscovery(namespace, env),
       events: [],
       permissions: [],
@@ -385,7 +390,7 @@ export async function getControllerSnapshot(options = {}) {
       },
       apiService: null,
       crds: [],
-      resources: Object.fromEntries(KRATE_RESOURCES.map((definition) => [definition.kind, []])),
+      resources: Object.fromEntries(KRATE_RESOURCES.filter((d) => d.storage !== 'core').map((definition) => [definition.kind, []])),
       kyverno: emptyKyvernoDiscovery(namespace, env),
       events: [],
       permissions: [],
@@ -394,10 +399,13 @@ export async function getControllerSnapshot(options = {}) {
     };
   }
   const kyverno = discoverKyverno({ kubectl, namespace, timeoutMs, env, discoveredPluralSet });
-  const resources = Object.fromEntries(KRATE_RESOURCES.map((definition) => [definition.kind, []]));
+  // Exclude core K8s resources (Secret, ConfigMap) from snapshot — they are
+  // accessed on-demand via listResource, not loaded into the full snapshot.
+  const snapshotResources = KRATE_RESOURCES.filter((d) => d.storage !== 'core');
+  const resources = Object.fromEntries(snapshotResources.map((definition) => [definition.kind, []]));
   const listResults = [];
-  const platformScopedDefinitions = KRATE_RESOURCES.filter((definition) => definition.platformScoped);
-  const orgScopedDefinitions = KRATE_RESOURCES.filter((definition) => !definition.platformScoped);
+  const platformScopedDefinitions = snapshotResources.filter((definition) => definition.platformScoped);
+  const orgScopedDefinitions = snapshotResources.filter((definition) => !definition.platformScoped);
 
   for (const definition of platformScopedDefinitions) {
     if (!discoveredPluralSet.has(`${definition.group || KRATE_API_GROUP}/${definition.plural}`)) continue;
@@ -420,7 +428,7 @@ export async function getControllerSnapshot(options = {}) {
   }
 
   const eventsResult = runKubectl(['get', 'events', '-n', namespace, '-o', 'json', '--ignore-not-found'], { kubectl, timeoutMs, env, allowFailure: true });
-  const permissions = await Promise.all(KRATE_RESOURCES.filter((definition) => discoveredPluralSet.has(`${definition.group || KRATE_API_GROUP}/${definition.plural}`)).map(async (definition) => ({
+  const permissions = await Promise.all(snapshotResources.filter((definition) => discoveredPluralSet.has(`${definition.group || KRATE_API_GROUP}/${definition.plural}`)).map(async (definition) => ({
     kind: definition.kind,
     plural: definition.plural,
     verbs: Object.fromEntries(['get', 'list', 'watch', 'create', 'update', 'patch', 'delete'].map((verb) => [verb, canI(verb, definition, { kubectl, namespace: definition.namespace || namespace, timeoutMs, env })]))
@@ -607,7 +615,9 @@ export function findResourceDefinition(kindOrPlural) {
 }
 
 export function apiResourceName(definition) {
-  return `${definition.plural}.${definition.group || KRATE_API_GROUP}`;
+  // Core K8s resources (Secret, ConfigMap) have group: '' — use bare plural name
+  const group = definition.group === '' ? '' : (definition.group || KRATE_API_GROUP);
+  return group ? `${definition.plural}.${group}` : definition.plural;
 }
 
 export function withKrateDefaults(resource, namespace) {

@@ -1223,7 +1223,11 @@ function TranscriptMessage({ message }) {
 export async function SecretManagerPage({ org = null } = {}) {
   const ui = await loadKrateUi(org);
   const activeOrg = ui.model.org?.slug || org || 'default';
-  const secretGrants = (ui.model.resources || []).filter((r) => r.kind === 'AgentSecretGrant');
+  const allResources = ui.model.resources || [];
+  const secretGrants = allResources.filter((r) => r.kind === 'AgentSecretGrant');
+  const configGrants = allResources.filter((r) => r.kind === 'AgentConfigGrant');
+  const allGrants = [...secretGrants, ...configGrants];
+  // Derive secrets list from grants (actual K8s secrets are fetched on-demand by the component)
   const secrets = secretGrants.reduce((acc, grant) => {
     const sName = grant.spec?.secretName || grant.spec?.secretRef;
     if (sName && !acc.find((s) => s.name === sName)) {
@@ -1231,9 +1235,16 @@ export async function SecretManagerPage({ org = null } = {}) {
     }
     return acc;
   }, []);
-  return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/settings/secrets" eyebrow="secrets management" title="Secrets" text="Manage Kubernetes Secrets and grant agents access to credentials. Use grants to control which agent stacks can read each secret." actions={[['/settings/secrets', 'Refresh']]} breadcrumbs={[['/', 'Krate'], ['/settings/secrets', 'Secrets']]}>
+  const configMaps = configGrants.reduce((acc, grant) => {
+    const cName = grant.spec?.configMapName || grant.spec?.configMapRef;
+    if (cName && !acc.find((c) => c.name === cName)) {
+      acc.push({ name: cName, type: 'ConfigMap', createdAt: grant.status?.createdAt || null, grants: [] });
+    }
+    return acc;
+  }, []);
+  return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/settings/secrets" eyebrow="secrets & config management" title="Secrets & ConfigMaps" text="Manage Kubernetes Secrets and ConfigMaps. Use grants to control which agent stacks can access each resource." actions={[['/settings/secrets', 'Refresh']]} breadcrumbs={[['/', 'Krate'], ['/settings/secrets', 'Secrets & ConfigMaps']]}>
     <DegradedBanner model={ui.model} />
-    <SecretManager org={activeOrg} secrets={secrets} grants={secretGrants} />
+    <SecretManager org={activeOrg} secrets={secrets} configMaps={configMaps} grants={allGrants} />
   </PageFrame>;
 }
 

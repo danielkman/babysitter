@@ -3,18 +3,20 @@
 import { useState } from 'react';
 
 /**
- * SecretManager — list secrets with grants, create new secrets, delete secrets.
+ * SecretManager — manage Kubernetes Secrets and ConfigMaps with grants.
  *
- * @param {{ org: string, secrets?: object[], grants?: object[] }} props
+ * @param {{ org: string, secrets?: object[], configMaps?: object[], grants?: object[] }} props
  */
-export function SecretManager({ org = 'default', secrets = [], grants = [] }) {
+export function SecretManager({ org = 'default', secrets = [], configMaps = [], grants = [] }) {
+  const [activeTab, setActiveTab] = useState('secrets');
   const [secretList, setSecretList] = useState(secrets);
+  const [configMapList, setConfigMapList] = useState(configMaps);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [pendingDelete, setPendingDelete] = useState(null);
-  const [createError, setCreateError] = useState(null);
+  const [error, setError] = useState(null);
   const [createLoading, setCreateLoading] = useState(false);
 
-  // Key-value pairs for the create form
+  // Create form state
   const [newName, setNewName] = useState('');
   const [kvPairs, setKvPairs] = useState([{ key: '', value: '' }]);
   const [grantedTo, setGrantedTo] = useState('');
@@ -31,106 +33,211 @@ export function SecretManager({ org = 'default', secrets = [], grants = [] }) {
     setKvPairs((prev) => prev.map((pair, i) => (i === index ? { ...pair, [field]: value } : pair)));
   }
 
+  function resetForm() {
+    setNewName('');
+    setKvPairs([{ key: '', value: '' }]);
+    setGrantedTo('');
+    setShowCreateForm(false);
+  }
+
   async function handleCreate(e) {
     e.preventDefault();
-    setCreateError(null);
+    setError(null);
     if (!newName.trim()) {
-      setCreateError('Secret name is required');
+      setError('Name is required');
       return;
     }
+
     const data = {};
     for (const pair of kvPairs) {
       if (pair.key.trim()) data[pair.key.trim()] = pair.value;
     }
+
+    if (Object.keys(data).length === 0) {
+      setError('At least one key-value pair is required');
+      return;
+    }
+
     setCreateLoading(true);
     try {
+      const isSecret = activeTab === 'secrets';
+
+      // Step 1: Create the actual Kubernetes resource (Secret or ConfigMap)
+      const resource = {
+        apiVersion: 'v1',
+        kind: isSecret ? 'Secret' : 'ConfigMap',
+        metadata: { name: newName.trim() },
+        ...(isSecret
+          ? { type: 'Opaque', stringData: data }
+          : { data }
+        ),
+      };
+
       const res = await fetch(`/api/orgs/${encodeURIComponent(org)}/secrets`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          name: newName.trim(),
-          data,
-          grantedTo: grantedTo.trim() || undefined,
-          permissions: ['read']
-        })
+        body: JSON.stringify(resource),
       });
+
       if (!res.ok) {
         const err = await res.json().catch(() => ({ error: res.statusText }));
         throw new Error(err.message || err.error || 'Create failed');
       }
-      const created = await res.json();
-      const secretName = created.resource?.spec?.secretName || newName.trim();
-      setSecretList((prev) => [
-        ...prev,
-        { name: secretName, type: 'Opaque', createdAt: new Date().toISOString(), grants: [] }
-      ]);
-      setNewName('');
-      setKvPairs([{ key: '', value: '' }]);
-      setGrantedTo('');
-      setShowCreateForm(false);
+
+      // Step 2: If grantedTo is specified, also create an AgentSecretGrant / AgentConfigGrant
+      if (grantedTo.trim()) {
+        const grantKind = isSecret ? 'AgentSecretGrant' : 'AgentConfigGrant';
+        const grantResource = {
+          apiVersion: 'krate.a5c.ai/v1alpha1',
+          kind: grantKind,
+          metadata: { name: `${newName.trim()}-grant-${grantedTo.trim()}` },
+          spec: {
+            organizationRef: org,
+            ...(isSecret
+              ? { secretName: newName.trim(), secretRef: newName.trim() }
+              : { configMapName: newName.trim(), configMapRef: newName.trim() }
+            ),
+            grantedTo: grantedTo.trim(),
+            subject: grantedTo.trim(),
+            permissions: ['read'],
+            purpose: `Grant ${grantedTo.trim()} access to ${isSecret ? 'secret' : 'configmap'} ${newName.trim()}`,
+          },
+        };
+
+        await fetch(`/api/orgs/${encodeURIComponent(org)}/secrets`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(grantResource),
+        }).catch(() => { /* grant creation is best-effort */ });
+      }
+
+      // Update local state
+      const newItem = {
+        name: newName.trim(),
+        type: isSecret ? 'Opaque' : 'ConfigMap',
+        createdAt: new Date().toISOString(),
+        keys: Object.keys(data),
+        grants: grantedTo.trim() ? [grantedTo.trim()] : [],
+      };
+
+      if (isSecret) {
+        setSecretList((prev) => [...prev, newItem]);
+      } else {
+        setConfigMapList((prev) => [...prev, newItem]);
+      }
+      resetForm();
     } catch (err) {
-      setCreateError(err.message);
+      setError(err.message);
     } finally {
       setCreateLoading(false);
     }
   }
 
-  async function handleDelete(secretName) {
+  async function handleDelete(itemName) {
+    const isSecret = activeTab === 'secrets';
     try {
-      const res = await fetch(`/api/orgs/${encodeURIComponent(org)}/secrets/${encodeURIComponent(secretName)}`, {
-        method: 'DELETE'
-      });
+      const typeParam = isSecret ? 'secret' : 'configmap';
+      const res = await fetch(
+        `/api/orgs/${encodeURIComponent(org)}/secrets/${encodeURIComponent(itemName)}?type=${typeParam}`,
+        { method: 'DELETE' }
+      );
       if (!res.ok) {
         const err = await res.json().catch(() => ({ error: res.statusText }));
         throw new Error(err.message || err.error || 'Delete failed');
       }
-      setSecretList((prev) => prev.filter((s) => s.name !== secretName));
+      if (isSecret) {
+        setSecretList((prev) => prev.filter((s) => s.name !== itemName));
+      } else {
+        setConfigMapList((prev) => prev.filter((c) => c.name !== itemName));
+      }
     } catch (err) {
-      // Surface error to user without crashing
-      setCreateError(`Delete failed: ${err.message}`);
+      setError(`Delete failed: ${err.message}`);
     } finally {
       setPendingDelete(null);
     }
   }
 
-  // Build a map of secretName → agents that have grants
+  // Build grant maps
   const grantsBySecret = {};
   for (const grant of grants) {
-    const sName = grant.spec?.secretName || grant.spec?.secretRef;
+    const sName = grant.spec?.secretName || grant.spec?.secretRef || grant.spec?.configMapName || grant.spec?.configMapRef;
     if (sName) {
       if (!grantsBySecret[sName]) grantsBySecret[sName] = [];
       grantsBySecret[sName].push(grant.spec?.grantedTo || grant.spec?.subject || 'unknown');
     }
   }
 
+  const isSecrets = activeTab === 'secrets';
+  const currentList = isSecrets ? secretList : configMapList;
+  const resourceLabel = isSecrets ? 'Secret' : 'ConfigMap';
+  const resourceLabelPlural = isSecrets ? 'Secrets' : 'ConfigMaps';
+
   return (
     <div className="secretManager">
-      <div className="cardTitle">
-        <h2>Secrets</h2>
+      {/* Tab toggle */}
+      <div style={{ display: 'flex', gap: '0.25rem', marginBottom: '1rem', background: '#f3f4f6', borderRadius: '0.5rem', padding: '0.25rem', width: 'fit-content' }}>
         <button
-          className="button"
-          onClick={() => { setShowCreateForm((v) => !v); setCreateError(null); }}
-          aria-expanded={showCreateForm}
+          type="button"
+          onClick={() => { setActiveTab('secrets'); setShowCreateForm(false); setError(null); }}
+          style={{
+            padding: '0.375rem 1rem',
+            borderRadius: '0.375rem',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: '0.875rem',
+            fontWeight: isSecrets ? 700 : 500,
+            background: isSecrets ? '#fff' : 'transparent',
+            color: isSecrets ? '#111827' : '#6b7280',
+            boxShadow: isSecrets ? '0 1px 2px rgba(0,0,0,0.05)' : 'none',
+          }}
         >
-          {showCreateForm ? 'Cancel' : 'Create Secret'}
+          Secrets
+        </button>
+        <button
+          type="button"
+          onClick={() => { setActiveTab('configmaps'); setShowCreateForm(false); setError(null); }}
+          style={{
+            padding: '0.375rem 1rem',
+            borderRadius: '0.375rem',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: '0.875rem',
+            fontWeight: !isSecrets ? 700 : 500,
+            background: !isSecrets ? '#fff' : 'transparent',
+            color: !isSecrets ? '#111827' : '#6b7280',
+            boxShadow: !isSecrets ? '0 1px 2px rgba(0,0,0,0.05)' : 'none',
+          }}
+        >
+          ConfigMaps
         </button>
       </div>
 
-      {createError && (
-        <div className="errorBanner" role="alert">{createError}</div>
+      <div className="cardTitle">
+        <h2>{resourceLabelPlural}</h2>
+        <button
+          className="button"
+          onClick={() => { setShowCreateForm((v) => !v); setError(null); }}
+          aria-expanded={showCreateForm}
+        >
+          {showCreateForm ? 'Cancel' : `Create ${resourceLabel}`}
+        </button>
+      </div>
+
+      {error && (
+        <div className="errorBanner" role="alert">{error}</div>
       )}
 
       {showCreateForm && (
-        <form className="secretCreateForm card" onSubmit={handleCreate} aria-label="Create new secret">
-          <h3>New Secret</h3>
+        <form className="secretCreateForm card" onSubmit={handleCreate} aria-label={`Create new ${resourceLabel.toLowerCase()}`}>
+          <h3>New {resourceLabel}</h3>
           <div className="formRow">
-            <label htmlFor="secret-name">Name</label>
+            <label htmlFor="resource-name">Name</label>
             <input
-              id="secret-name"
+              id="resource-name"
               type="text"
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
-              placeholder="my-api-key"
+              placeholder={isSecrets ? 'my-api-key' : 'my-config'}
               required
               autoComplete="off"
             />
@@ -148,7 +255,7 @@ export function SecretManager({ org = 'default', secrets = [], grants = [] }) {
                   aria-label={`Key ${i + 1}`}
                 />
                 <input
-                  type="password"
+                  type={isSecrets ? 'password' : 'text'}
                   placeholder="value"
                   value={pair.value}
                   onChange={(e) => updateKvPair(i, 'value', e.target.value)}
@@ -179,26 +286,34 @@ export function SecretManager({ org = 'default', secrets = [], grants = [] }) {
 
           <div className="formActions">
             <button type="submit" className="button" disabled={createLoading}>
-              {createLoading ? 'Creating…' : 'Create Secret'}
+              {createLoading ? 'Creating...' : `Create ${resourceLabel}`}
             </button>
           </div>
         </form>
       )}
 
-      {secretList.length === 0 ? (
-        <p className="emptyText">No secrets yet. Create one above to grant agents access to credentials.</p>
+      {currentList.length === 0 ? (
+        <p className="emptyText">
+          {isSecrets
+            ? 'No secrets yet. Create one above to grant agents access to credentials.'
+            : 'No config maps yet. Create one above to store non-sensitive configuration data.'
+          }
+        </p>
       ) : (
-        <ul className="resourceList secretList" aria-label="Secrets">
-          {secretList.map((secret) => {
-            const agentGrants = grantsBySecret[secret.name] || secret.grants || [];
-            const isDeletePending = pendingDelete === secret.name;
+        <ul className="resourceList secretList" aria-label={resourceLabelPlural}>
+          {currentList.map((item) => {
+            const agentGrants = grantsBySecret[item.name] || item.grants || [];
+            const isDeletePending = pendingDelete === item.name;
             return (
-              <li key={secret.name} className="secretRow">
+              <li key={item.name} className="secretRow">
                 <div className="secretInfo">
-                  <strong className="secretName">{secret.name}</strong>
-                  <span className="secretType pill neutral">{secret.type || 'Opaque'}</span>
-                  {secret.createdAt && (
-                    <small className="secretDate">Created {new Date(secret.createdAt).toLocaleDateString()}</small>
+                  <strong className="secretName">{item.name}</strong>
+                  <span className="secretType pill neutral">{item.type || (isSecrets ? 'Opaque' : 'ConfigMap')}</span>
+                  {item.keys && item.keys.length > 0 && (
+                    <small className="secretDate" style={{ color: '#6b7280' }}>{item.keys.length} key{item.keys.length !== 1 ? 's' : ''}</small>
+                  )}
+                  {item.createdAt && (
+                    <small className="secretDate">Created {new Date(item.createdAt).toLocaleDateString()}</small>
                   )}
                 </div>
                 {agentGrants.length > 0 && (
@@ -212,15 +327,15 @@ export function SecretManager({ org = 'default', secrets = [], grants = [] }) {
                 <div className="secretActions">
                   {isDeletePending ? (
                     <>
-                      <span className="confirmText">Delete &ldquo;{secret.name}&rdquo;?</span>
-                      <button className="buttonSmall danger" onClick={() => handleDelete(secret.name)}>Confirm</button>
+                      <span className="confirmText">Delete &ldquo;{item.name}&rdquo;?</span>
+                      <button className="buttonSmall danger" onClick={() => handleDelete(item.name)}>Confirm</button>
                       <button className="buttonSmall" onClick={() => setPendingDelete(null)}>Cancel</button>
                     </>
                   ) : (
                     <button
                       className="buttonSmall danger"
-                      onClick={() => setPendingDelete(secret.name)}
-                      aria-label={`Delete secret ${secret.name}`}
+                      onClick={() => setPendingDelete(item.name)}
+                      aria-label={`Delete ${resourceLabel.toLowerCase()} ${item.name}`}
                     >
                       Delete
                     </button>
