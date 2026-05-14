@@ -2345,7 +2345,14 @@ jobs:
                       - secretRef:
                           name: atlas-postgres
           EOF
-          kubectl -n "$KUBE_NAMESPACE" wait --for=condition=complete job/atlas-webui-db-init --timeout=300s
+          if ! kubectl -n "$KUBE_NAMESPACE" wait --for=condition=complete job/atlas-webui-db-init --timeout=300s; then
+            kubectl -n "$KUBE_NAMESPACE" get job atlas-webui-db-init -o wide || true
+            kubectl -n "$KUBE_NAMESPACE" get pods -l app=atlas-webui-db-init -o wide || true
+            kubectl -n "$KUBE_NAMESPACE" describe job atlas-webui-db-init || true
+            kubectl -n "$KUBE_NAMESPACE" describe pods -l app=atlas-webui-db-init || true
+            kubectl -n "$KUBE_NAMESPACE" logs job/atlas-webui-db-init --all-containers --tail=200 --prefix || true
+            exit 1
+          fi
 
       - name: Deploy Atlas WebUI
         if: steps.config.outputs.deploy_enabled == 'true'

@@ -37,6 +37,8 @@ describe("Atlas WebUI deploy workflow", () => {
     expect(workflow).toContain("describe pv \"$POSTGRES_PV\"");
     expect(workflow).toContain("name: Initialize Atlas database");
     expect(workflow).toContain("job/atlas-webui-db-init");
+    expect(workflow).toContain("describe pods -l app=atlas-webui-db-init");
+    expect(workflow).toContain("logs job/atlas-webui-db-init");
     expect(workflow).toContain("db:init");
     expect(workflow).toContain('"@a5c-ai/atlas-webui"');
     expect(workflow).toContain("name: atlas-postgres");
