@@ -670,11 +670,10 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
       });
     }
   } else {
-    // Non-interactive: use node-pty when available so harnesses like Claude Code
-    // detect a TTY and enable tool use. node-pty is an optionalDependency —
-    // when it's not available (CI without build tools), fall back to plain spawn
-    // where Claude Code enters text-only print mode.
-    let usedPty = false;
+    // Non-interactive: run the harness in PTY mode (so tools like Write/Edit
+    // are available) but control it programmatically — no human stdin, detect
+    // turn end via adapter event parsing, collect structured events, auto-exit.
+    // Falls back to plain spawn when node-pty is unavailable.
     try {
       const nodePty: any = await import('node-pty');
       ptyProcess = nodePty.spawn(plan.command, plan.args, {
@@ -684,11 +683,55 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
         cwd: launchCwd,
         env: { ...process.env, ...plan.env } as Record<string, string>,
       });
-      usedPty = true;
-      ptyProcess.onData((data: string) => process.stdout.write(data));
+
+      let turnDetected = false;
+      let lineBuf = '';
+      let assembler: any = null;
+      let adapter: any = null;
+      const collectedEvents: unknown[] = [];
+      try {
+        const core = await import('@a5c-ai/agent-mux-core');
+        assembler = new core.StreamAssembler();
+        const adaptersModule = await import('@a5c-ai/agent-mux-adapters');
+        const factory = adaptersModule.getAdapterFactory?.(plan.harness);
+        adapter = factory ? factory() : null;
+      } catch { /* core/adapters not available */ }
+
+      ptyProcess.onData((data: string) => {
+        process.stdout.write(data);
+        if (!assembler || !adapter || turnDetected) return;
+
+        const clean = data.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '').replace(/\x1b\][^\x07]*\x07/g, '');
+        lineBuf += clean;
+        let idx: number;
+        while ((idx = lineBuf.indexOf('\n')) !== -1) {
+          const line = lineBuf.slice(0, idx).replace(/\r$/, '');
+          lineBuf = lineBuf.slice(idx + 1);
+          if (line.length === 0) continue;
+          const assembled = assembler.feed(line);
+          if (assembled === null) continue;
+          try {
+            const ctx = { runId: 'launch', agent: plan.harness, sessionId: undefined, turnIndex: 0, debug: false, outputFormat: 'json', source: 'stdout', assembler, eventCount: collectedEvents.length, lastEventType: null, adapterState: {} };
+            const result = adapter.parseEvent(assembled, ctx);
+            if (result === null) continue;
+            const events = Array.isArray(result) ? result : [result];
+            for (const ev of events) {
+              collectedEvents.push(ev);
+              if (ev.type === 'message_stop' || ev.type === 'turn_end' || ev.type === 'session_end') {
+                turnDetected = true;
+                setTimeout(() => {
+                  try { ptyProcess.kill('SIGTERM'); } catch { /* */ }
+                }, 1000);
+                return;
+              }
+            }
+          } catch { /* parse error — ignore */ }
+        }
+      });
+
       child = { pid: ptyProcess.pid, kill: (sig: string) => ptyProcess.kill(sig) } as any;
     } catch {
-      // node-pty unavailable — Claude Code will run in text-only mode
+      // node-pty unavailable — fall back to plain spawn (text-only, no tools)
       const { spawn } = await import('node:child_process');
       child = spawn(plan.command, plan.args, {
         stdio: ['pipe', 'inherit', 'inherit'],
