@@ -39,6 +39,12 @@ attributes:
   streaming: "true"
   requestShape: "POST /v1/messages"
   responseShape: "Anthropic message response"
+  codecCapabilities:
+    supportsTools: true
+    supportsStreaming: true
+    supportsTokenCounting: true
+    costTracking: true
+    toolSchemaFormat: "anthropic"
   evidenceRefs:
     - "repo-transport-mux-readme"
     - "repo-transport-mux-architecture"
@@ -59,6 +65,12 @@ attributes:
   streaming: "true"
   requestShape: "POST /v1/chat/completions"
   responseShape: "chat.completion"
+  codecCapabilities:
+    supportsTools: true
+    supportsStreaming: true
+    supportsTokenCounting: true
+    costTracking: true
+    toolSchemaFormat: "openai"
   evidenceRefs:
     - "repo-transport-mux-readme"
     - "repo-transport-mux-migration"
@@ -79,6 +91,12 @@ attributes:
   streaming: "true"
   requestShape: "POST /v1/responses"
   responseShape: "response"
+  codecCapabilities:
+    supportsTools: true
+    supportsStreaming: true
+    supportsTokenCounting: true
+    costTracking: true
+    toolSchemaFormat: "openai"
   evidenceRefs:
     - "repo-transport-mux-readme"
     - "repo-transport-mux-migration"
@@ -99,6 +117,12 @@ attributes:
   streaming: "true"
   requestShape: "POST /v1beta/models/*"
   responseShape: "candidates[]"
+  codecCapabilities:
+    supportsTools: true
+    supportsStreaming: true
+    supportsTokenCounting: false
+    costTracking: true
+    toolSchemaFormat: "google"
   evidenceRefs:
     - "repo-transport-mux-readme"
     - "repo-transport-mux-architecture"
@@ -119,6 +143,12 @@ attributes:
   streaming: "true"
   requestShape: "provider-native path"
   responseShape: "provider-native response"
+  codecCapabilities:
+    supportsTools: false
+    supportsStreaming: false
+    supportsTokenCounting: false
+    costTracking: false
+    toolSchemaFormat: "none"
   evidenceRefs:
     - "repo-transport-mux-readme"
     - "repo-transport-mux-scorecard"
@@ -138,6 +168,12 @@ attributes:
   streaming: "true"
   requestShape: "POST /converse"
   responseShape: "Bedrock output.message"
+  codecCapabilities:
+    supportsTools: true
+    supportsStreaming: true
+    supportsTokenCounting: false
+    costTracking: true
+    toolSchemaFormat: "anthropic"
   evidenceRefs:
     - "repo-transport-mux-readme"
     - "repo-transport-mux-architecture"
@@ -158,6 +194,12 @@ attributes:
   streaming: "true"
   requestShape: "POST /v1/projects/...:generateContent"
   responseShape: "Vertex candidates[]"
+  codecCapabilities:
+    supportsTools: true
+    supportsStreaming: true
+    supportsTokenCounting: false
+    costTracking: true
+    toolSchemaFormat: "google"
   evidenceRefs:
     - "repo-transport-mux-readme"
     - "repo-transport-mux-architecture"
@@ -178,6 +220,12 @@ attributes:
   streaming: "true"
   requestShape: "POST /models/chat/completions"
   responseShape: "Azure Foundry chat completion"
+  codecCapabilities:
+    supportsTools: true
+    supportsStreaming: true
+    supportsTokenCounting: true
+    costTracking: true
+    toolSchemaFormat: "openai"
   evidenceRefs:
     - "repo-transport-mux-readme"
     - "repo-transport-mux-architecture"

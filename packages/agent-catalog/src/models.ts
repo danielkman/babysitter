@@ -193,6 +193,16 @@ export interface ModelVersion {
   evidenceIds: string[];
 }
 
+export type ToolSchemaFormat = "openai" | "anthropic" | "google" | "none";
+
+export interface CodecCapabilities {
+  supportsTools: boolean;
+  supportsStreaming: boolean;
+  supportsTokenCounting: boolean;
+  costTracking: boolean;
+  toolSchemaFormat: ToolSchemaFormat;
+}
+
 export interface TransportDescriptor {
   transportId: string;
   label: string;
@@ -201,6 +211,7 @@ export interface TransportDescriptor {
   persistentSession: boolean;
   stdinInjection: boolean;
   blockingStopHook: boolean;
+  codecCapabilities?: CodecCapabilities;
   evidenceIds: string[];
 }
 
@@ -305,6 +316,7 @@ export interface TransportProtocolDescriptor {
   streaming: boolean;
   requestShape: string;
   responseShape: string;
+  codecCapabilities?: CodecCapabilities;
   evidenceIds: string[];
 }
 

@@ -35,6 +35,7 @@ import type {
   CatalogGraph,
   ClaimRecord,
   CiSurfaceDescriptor,
+  CodecCapabilities,
   DiscoverySignalDescriptor,
   EvidenceRecord,
   GraphNode,
@@ -66,6 +67,7 @@ import type {
   ProviderModelTopology,
   SessionNuance,
   SubjectProvenance,
+  ToolSchemaFormat,
   TransportDescriptor,
   TransportProtocolDescriptor,
   UiAgentCard,
@@ -334,6 +336,24 @@ function toModelFamily(node: GraphNode): ModelFamilyDescriptor {
   };
 }
 
+function parseToolSchemaFormat(value: unknown): ToolSchemaFormat {
+  const normalized = valueAsString(value);
+  if (normalized === "openai" || normalized === "anthropic" || normalized === "google") return normalized;
+  return "none";
+}
+
+function parseCodecCapabilities(value: unknown): CodecCapabilities | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+  const obj = value as Record<string, unknown>;
+  return {
+    supportsTools: obj.supportsTools === true || obj.supportsTools === "true",
+    supportsStreaming: obj.supportsStreaming === true || obj.supportsStreaming === "true",
+    supportsTokenCounting: obj.supportsTokenCounting === true || obj.supportsTokenCounting === "true",
+    costTracking: obj.costTracking === true || obj.costTracking === "true",
+    toolSchemaFormat: parseToolSchemaFormat(obj.toolSchemaFormat),
+  };
+}
+
 function toTransportProtocol(node: GraphNode): TransportProtocolDescriptor {
   return {
     transportId: valueAsString(node.transportId),
@@ -344,6 +364,7 @@ function toTransportProtocol(node: GraphNode): TransportProtocolDescriptor {
     streaming: Boolean(node.streaming),
     requestShape: valueAsString(node.requestShape),
     responseShape: valueAsString(node.responseShape),
+    codecCapabilities: parseCodecCapabilities(node.codecCapabilities),
     evidenceIds: nodeEvidenceIds(node),
   };
 }
@@ -1515,4 +1536,24 @@ export function getHookSupport(harness: string, mode: 'interactive' | 'nonIntera
 export function getBridgeCapabilities(harness: string): BridgeCapabilities | undefined {
   const agent = getAgentVersion(harness);
   return agent?.bridgeCapabilities;
+}
+
+export function getTransportCodecCapabilities(transportId: string): CodecCapabilities | undefined {
+  // First check TransportRuntime descriptors (TransportDescriptor)
+  const transportDescriptor = getSdkState().transportById.get(transportId);
+  if (transportDescriptor?.codecCapabilities) {
+    return clone(transportDescriptor.codecCapabilities);
+  }
+
+  // Then check TransportProtocol nodes
+  const protocolNode = getNode(`transportProtocol:${transportId}`) ??
+    getSdkState().graph.nodes.find(
+      (node) => node.kind === "TransportProtocol" && valueAsString(node.transportId) === transportId,
+    );
+  if (protocolNode) {
+    const capabilities = parseCodecCapabilities(protocolNode.codecCapabilities);
+    return capabilities ? clone(capabilities) : undefined;
+  }
+
+  return undefined;
 }

@@ -58,6 +58,7 @@ import type {
   ClaimEvidenceStrength,
   ClaimProvenanceKind,
   ClaimRecord,
+  CodecCapabilities,
   EvidenceRecord,
   GraphEdge,
   GraphDocument,
@@ -80,6 +81,7 @@ import type {
   PluginTargetDescriptor,
   ProcessDescriptor,
   SessionNuance,
+  ToolSchemaFormat,
   TransportDescriptor,
   OntologySchema,
 } from "./models";
@@ -185,6 +187,7 @@ function toTransportDescriptor(node: GraphNode): TransportDescriptor {
     persistentSession: Boolean(node.persistentSession),
     stdinInjection: Boolean(node.stdinInjection),
     blockingStopHook: Boolean(node.blockingStopHook),
+    codecCapabilities: parseCodecCapabilities(node.codecCapabilities),
     evidenceIds: nodeEvidenceIds(node),
   };
 }
@@ -445,6 +448,24 @@ function parseBridgeCapabilities(value: unknown): BridgeCapabilities | undefined
     interactiveBridge: Boolean(obj.interactiveBridge),
     sessionResume: Boolean(obj.sessionResume),
     positionalPrompt: Boolean(obj.positionalPrompt),
+  };
+}
+
+function parseToolSchemaFormat(value: unknown): ToolSchemaFormat {
+  const normalized = valueAsString(value);
+  if (normalized === "openai" || normalized === "anthropic" || normalized === "google") return normalized;
+  return "none";
+}
+
+function parseCodecCapabilities(value: unknown): CodecCapabilities | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+  const obj = value as Record<string, unknown>;
+  return {
+    supportsTools: obj.supportsTools === true || obj.supportsTools === "true",
+    supportsStreaming: obj.supportsStreaming === true || obj.supportsStreaming === "true",
+    supportsTokenCounting: obj.supportsTokenCounting === true || obj.supportsTokenCounting === "true",
+    costTracking: obj.costTracking === true || obj.costTracking === "true",
+    toolSchemaFormat: parseToolSchemaFormat(obj.toolSchemaFormat),
   };
 }
 
