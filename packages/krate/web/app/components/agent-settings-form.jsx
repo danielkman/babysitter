@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 
-const ADAPTER_TYPES = ['subprocess', 'remote', 'programmatic', 'mux'];
-const TRANSPORT_TYPES = ['stdio', 'websocket', 'http', 'grpc'];
+const ADAPTER_TYPES = ['subprocess', 'remote', 'programmatic'];
+const TRANSPORT_TYPES = ['stdio', 'websocket', 'http', 'unix'];
 const ADAPTER_CAPABILITIES = ['chat', 'tools', 'streaming', 'files', 'code-execution'];
 const PROVIDER_TYPES = ['anthropic', 'openai', 'gemini', 'azure-openai', 'bedrock', 'vertex', 'custom'];
+const AUTH_TYPES = ['token', 'oauth', 'none'];
 
 const labelStyle = { display: 'block', fontWeight: 600, fontSize: '0.8125rem', marginBottom: '0.25rem' };
 const inputStyle = { width: '100%', padding: '0.5rem', borderRadius: '0.375rem', border: '1px solid #d1d5db', fontSize: '0.875rem', boxSizing: 'border-box' };
@@ -43,7 +44,7 @@ function GatewaySection({ org, gateway }) {
       apiVersion: 'krate.a5c.ai/v1alpha1',
       kind: 'AgentGatewayConfig',
       metadata: { name: existingName },
-      spec: { gatewayUrl: url.trim() },
+      spec: { organizationRef: org, gatewayUrl: url.trim() },
     };
 
     try {
@@ -171,8 +172,8 @@ function AdapterRow({ org, adapter, onDeleted }) {
   return (
     <div className="resourceRow" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
       <strong style={{ flex: '1 1 auto' }}>{name}</strong>
-      <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>{adapter.spec?.type || 'subprocess'}</span>
-      <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>{adapter.spec?.transport || adapter.spec?.transportBinding || 'default'}</span>
+      <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>{adapter.spec?.adapterType || 'subprocess'}</span>
+      <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>{adapter.spec?.transport || 'default'}</span>
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.8125rem' }}>
         <span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', backgroundColor: phaseTone(adapter.status?.phase) }} />
         {adapter.status?.phase || 'Pending'}
@@ -191,15 +192,12 @@ function AdapterRow({ org, adapter, onDeleted }) {
 
 function AddAdapterForm({ org, onCreated }) {
   const [name, setName] = useState('');
-  const [type, setType] = useState('subprocess');
-  const [transports, setTransports] = useState(['stdio']);
+  const [adapterType, setAdapterType] = useState('subprocess');
+  const [transport, setTransport] = useState('stdio');
   const [capabilities, setCapabilities] = useState(['chat']);
   const [status, setStatus] = useState('idle');
   const [message, setMessage] = useState('');
 
-  function toggleTransport(t) {
-    setTransports(prev => prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t]);
-  }
   function toggleCapability(c) {
     setCapabilities(prev => prev.includes(c) ? prev.filter(x => x !== c) : [...prev, c]);
   }
@@ -215,8 +213,9 @@ function AddAdapterForm({ org, onCreated }) {
       kind: 'AgentAdapter',
       metadata: { name: name.trim() },
       spec: {
-        type,
-        ...(transports.length === 1 ? { transport: transports[0] } : { transports }),
+        organizationRef: org,
+        adapterType,
+        transport,
         ...(capabilities.length ? { capabilities } : {}),
       },
     };
@@ -236,8 +235,8 @@ function AddAdapterForm({ org, onCreated }) {
         setMessage(`Adapter "${name.trim()}" created.`);
         onCreated(data);
         setName('');
-        setType('subprocess');
-        setTransports(['stdio']);
+        setAdapterType('subprocess');
+        setTransport('stdio');
         setCapabilities(['chat']);
       }
     } catch (err) {
@@ -259,22 +258,17 @@ function AddAdapterForm({ org, onCreated }) {
               <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="my-adapter" required style={inputStyle} />
             </div>
             <div>
-              <label style={labelStyle}>Type</label>
-              <select value={type} onChange={e => setType(e.target.value)} style={selectStyle}>
+              <label style={labelStyle}>Adapter type</label>
+              <select value={adapterType} onChange={e => setAdapterType(e.target.value)} style={selectStyle}>
                 {ADAPTER_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
           </div>
           <div>
             <label style={labelStyle}>Transport</label>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-              {TRANSPORT_TYPES.map(t => (
-                <label key={t} style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.8125rem', cursor: 'pointer' }}>
-                  <input type="checkbox" checked={transports.includes(t)} onChange={() => toggleTransport(t)} />
-                  {t}
-                </label>
-              ))}
-            </div>
+            <select value={transport} onChange={e => setTransport(e.target.value)} style={selectStyle}>
+              {TRANSPORT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
           </div>
           <div>
             <label style={labelStyle}>Capabilities</label>
@@ -375,9 +369,9 @@ function ProviderRow({ org, provider, onDeleted }) {
   return (
     <div className="resourceRow" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
       <strong style={{ flex: '1 1 auto' }}>{name}</strong>
-      <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>{provider.spec?.type || provider.spec?.authType || 'api-key'}</span>
-      <span style={{ color: '#6b7280', fontSize: '0.875rem', fontFamily: 'var(--font-mono, monospace)', fontSize: '0.8125rem' }}>
-        {provider.spec?.defaultModel || provider.spec?.model || 'default'}
+      <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>{provider.spec?.provider || 'unknown'}</span>
+      <span style={{ color: '#6b7280', fontFamily: 'var(--font-mono, monospace)', fontSize: '0.8125rem' }}>
+        {provider.spec?.authType || 'token'}
       </span>
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.8125rem' }}>
         <span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', backgroundColor: phaseTone(provider.status?.phase) }} />
@@ -397,9 +391,9 @@ function ProviderRow({ org, provider, onDeleted }) {
 
 function AddProviderForm({ org, onCreated }) {
   const [name, setName] = useState('');
-  const [type, setType] = useState('anthropic');
+  const [providerType, setProviderType] = useState('anthropic');
+  const [authType, setAuthType] = useState('token');
   const [endpoint, setEndpoint] = useState('');
-  const [defaultModel, setDefaultModel] = useState('');
   const [credentialRef, setCredentialRef] = useState('');
   const [status, setStatus] = useState('idle');
   const [message, setMessage] = useState('');
@@ -415,9 +409,10 @@ function AddProviderForm({ org, onCreated }) {
       kind: 'AgentProviderConfig',
       metadata: { name: name.trim() },
       spec: {
-        type,
+        organizationRef: org,
+        provider: providerType,
+        authType,
         ...(endpoint.trim() ? { endpoint: endpoint.trim() } : {}),
-        ...(defaultModel.trim() ? { defaultModel: defaultModel.trim() } : {}),
         ...(credentialRef.trim() ? { credentialRef: credentialRef.trim() } : {}),
       },
     };
@@ -437,9 +432,9 @@ function AddProviderForm({ org, onCreated }) {
         setMessage(`Provider "${name.trim()}" created.`);
         onCreated(data);
         setName('');
-        setType('anthropic');
+        setProviderType('anthropic');
+        setAuthType('token');
         setEndpoint('');
-        setDefaultModel('');
         setCredentialRef('');
       }
     } catch (err) {
@@ -461,16 +456,18 @@ function AddProviderForm({ org, onCreated }) {
               <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="my-provider" required style={inputStyle} />
             </div>
             <div>
-              <label style={labelStyle}>Type</label>
-              <select value={type} onChange={e => setType(e.target.value)} style={selectStyle}>
+              <label style={labelStyle}>Provider</label>
+              <select value={providerType} onChange={e => setProviderType(e.target.value)} style={selectStyle}>
                 {PROVIDER_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
           </div>
           <div style={rowStyle}>
             <div>
-              <label style={labelStyle}>Default model <small style={{ fontWeight: 400, color: '#6b7280' }}>(optional)</small></label>
-              <input type="text" value={defaultModel} onChange={e => setDefaultModel(e.target.value)} placeholder="claude-sonnet-4-5" style={inputStyle} />
+              <label style={labelStyle}>Auth type</label>
+              <select value={authType} onChange={e => setAuthType(e.target.value)} style={selectStyle}>
+                {AUTH_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
             </div>
             <div>
               <label style={labelStyle}>Credential secret ref <small style={{ fontWeight: 400, color: '#6b7280' }}>(optional)</small></label>

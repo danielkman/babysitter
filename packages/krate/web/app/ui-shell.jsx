@@ -21,6 +21,8 @@ import { ExternalProviderWizard } from './components/external-provider-wizard.js
 import { ExternalSyncDashboard } from './components/external-sync-dashboard.jsx';
 import { ExternalConflictResolver } from './components/external-conflict-resolver.jsx';
 import { AgentSettingsForm } from './components/agent-settings-form.jsx';
+import { AppSettingsForm } from './components/app-settings.jsx';
+import { UserProfileForm } from './components/user-profile.jsx';
 import { SecretManager } from './components/secret-manager.jsx';
 import { StackActions } from './components/stack-actions.jsx';
 import { ManualDispatchButton, RunActions } from './components/run-actions.jsx';
@@ -44,7 +46,9 @@ export const orgNavigationGroups = [
       ['/people', 'People', 'Users, teams, and access'],
       ['/hooks-events', 'Hooks & Policies', 'Webhooks and policies'],
       ['/runners-ci', 'Capacity', 'Runner pools'],
-      ['/settings/secrets', 'Secrets', 'Secret and config grants']
+      ['/settings/secrets', 'Secrets', 'Secret and config grants'],
+      ['/settings', 'Settings', 'App preferences and display'],
+      ['/profile', 'Profile', 'User account and API keys']
     ]
   },
   {
@@ -1245,6 +1249,25 @@ export async function SecretManagerPage({ org = null } = {}) {
   return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/settings/secrets" eyebrow="secrets management" title="Secrets" text="Manage Kubernetes Secrets and grant agents access to credentials. Use grants to control which agent stacks can read each secret." actions={[['/settings/secrets', 'Refresh']]} breadcrumbs={[['/', 'Krate'], ['/settings/secrets', 'Secrets']]}>
     <DegradedBanner model={ui.model} />
     <SecretManager org={activeOrg} secrets={secrets} grants={secretGrants} />
+  </PageFrame>;
+}
+
+export async function AppSettingsPage({ org = null } = {}) {
+  const ui = await loadKrateUi(org);
+  const activeOrg = ui.model.org?.slug || org || 'default';
+  return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/settings" eyebrow="application settings" title="Settings" text="Customize appearance, locale, live update preferences, and cache behavior for the Krate console." actions={[['/', 'Home']]} breadcrumbs={[['/', 'Krate'], ['/settings', 'Settings']]}>
+    <DegradedBanner model={ui.model} />
+    <AppSettingsForm />
+  </PageFrame>;
+}
+
+export async function UserProfilePage({ org = null } = {}) {
+  const ui = await loadKrateUi(org);
+  const activeOrg = ui.model.org?.slug || org || 'default';
+  const currentUser = await getSignedInUser();
+  return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/profile" eyebrow="user profile" title="Profile" text="View and manage your account, API keys, and session information." actions={[['/', 'Home']]} breadcrumbs={[['/', 'Krate'], ['/profile', 'Profile']]}>
+    <DegradedBanner model={ui.model} />
+    <UserProfileForm org={activeOrg} user={currentUser} />
   </PageFrame>;
 }
 
