@@ -2149,7 +2149,7 @@ jobs:
 
           POSTGRES_STORAGE_CLASS_LINE=""
           if [[ -n "$POSTGRES_STORAGE_CLASS" ]]; then
-            POSTGRES_STORAGE_CLASS_LINE="                  storageClassName: ${POSTGRES_STORAGE_CLASS}"
+            POSTGRES_STORAGE_CLASS_LINE="        storageClassName: ${POSTGRES_STORAGE_CLASS}"
             echo "Using Atlas Postgres storageClassName=${POSTGRES_STORAGE_CLASS}"
           else
             echo "::warning::No Kubernetes storage class found; Atlas Postgres PVC may remain pending"
