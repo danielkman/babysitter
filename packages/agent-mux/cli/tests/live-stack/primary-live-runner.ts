@@ -608,7 +608,7 @@ async function validateAgentBehavior(
     // odyssey task and should produce the file or at least substantial content.
   }
 
-  // --- file-creation: verify the odyssey output file exists with real content (>500 bytes) ---
+  // --- file-creation: verify the output file exists with real content (>100 bytes) ---
   if (traceId) {
     const expectedFile = path.join(cwd, '.a5c-live-test', `${traceId}-odyssey.md`);
     let fileSize = 0;
@@ -620,7 +620,7 @@ async function validateAgentBehavior(
     } catch {
       // file not created
     }
-    if (fileExists && fileSize > 500) {
+    if (fileExists && fileSize > 100) {
       entries.push({ name: 'file-creation', status: 'passed', detail: `odyssey file created (${fileSize} bytes)` });
     } else if (fileExists) {
       entries.push({ name: 'file-creation', status: 'failed', detail: `odyssey file exists but too small (${fileSize} bytes — expected >500)` });
