@@ -49,3 +49,4 @@ export * from './external/write-controller.js';
 export * from './external/conflict-controller.js';
 export * from './audit-controller.js';
 export * from './async-controller.js';
+export * from './event-bus.js';

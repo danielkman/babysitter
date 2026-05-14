@@ -7,6 +7,7 @@ import { createAgentTriggerController } from './agent-trigger-controller.js';
 import { createAgentWorkspaceController } from './agent-workspace-controller.js';
 import { createAgentMemoryController } from './agent-memory-controller.js';
 import { orgNamespaceName, normalizeOrgSlug } from './org-scoping.js';
+import { globalEventBus } from './event-bus.js';
 
 export const KRATE_API_CONTROLLER_BOUNDARY = {
   role: 'krate-api-controller',
@@ -98,6 +99,11 @@ export function createKrateApiController(options = {}) {
       clearSnapshotCache();
       const appliedResource = result.resource || resource;
       emitAuditEvent(appliedResource, result.operation || 'apply');
+      globalEventBus.emitResourceChange(
+        appliedResource.kind || resource.kind || 'Unknown',
+        appliedResource.metadata?.name || resource.metadata?.name || 'unknown',
+        result.operation || 'apply'
+      );
       return result;
     },
     async applyResourceForOrg(orgSlug, resource) {
@@ -118,6 +124,11 @@ export function createKrateApiController(options = {}) {
       clearSnapshotCache();
       const appliedResource = result.resource || scopedResource;
       emitAuditEvent(appliedResource, result.operation || 'apply');
+      globalEventBus.emitResourceChange(
+        appliedResource.kind || scopedResource.kind || 'Unknown',
+        appliedResource.metadata?.name || scopedResource.metadata?.name || 'unknown',
+        result.operation || 'apply'
+      );
       return { ...result, resource: appliedResource };
     },
     async deleteResource(kindOrPlural, name) {
@@ -127,6 +138,7 @@ export function createKrateApiController(options = {}) {
         { kind: kindOrPlural, metadata: { name, namespace }, spec: {} },
         'delete'
       );
+      globalEventBus.emitResourceChange(kindOrPlural, name, 'delete');
       return result;
     },
     async deleteResourceForOrg(orgSlug, kindOrPlural, name) {
@@ -149,6 +161,7 @@ export function createKrateApiController(options = {}) {
         { kind: kindOrPlural, metadata: { name, namespace: orgNs }, spec: { organizationRef: slug } },
         'delete'
       );
+      globalEventBus.emitResourceChange(kindOrPlural, name, 'delete');
       return result;
     },
     async getResourceForOrg(orgSlug, kindOrPlural, name) {

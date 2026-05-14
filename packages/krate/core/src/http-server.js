@@ -4,6 +4,7 @@ import { createControllerUiModel } from './controller-ui.js';
 import { createKrateApiController } from './api-controller.js';
 import { createKubernetesResourceGateway } from './kubernetes-resource-gateway.js';
 import { orgNamespaceName } from './kubernetes-controller.js';
+import { globalEventBus } from './event-bus.js';
 
 const jsonHeaders = { 'content-type': 'application/json; charset=utf-8' };
 
@@ -168,10 +169,17 @@ export function createKrateHttpHandler({ runtime = createKrateRuntime(), control
           'X-Accel-Buffering': 'no',
         });
         response.write('data: {"type":"connected"}\n\n');
+        const writer = (event) => {
+          response.write(`data: ${JSON.stringify(event)}\n\n`);
+        };
+        globalEventBus.subscribe(writer);
         const interval = setInterval(() => {
           response.write('data: {"type":"heartbeat"}\n\n');
         }, 30000);
-        request.on('close', () => clearInterval(interval));
+        request.on('close', () => {
+          clearInterval(interval);
+          globalEventBus.unsubscribe(writer);
+        });
         return;
       }
       return send(response, 404, { error: 'not_found', method: request.method, path: url.pathname });
