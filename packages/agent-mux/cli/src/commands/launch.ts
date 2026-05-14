@@ -198,10 +198,11 @@ function appendHarnessSessionArgs(plan: LaunchPlan, session: SessionArgs): void 
     case 'claude':
       if (session.resumeId) plan.args.push('--resume', session.resumeId);
       if (session.sessionId) plan.args.push('--session-id', session.sessionId);
-      // Pass prompt as positional arg — starts agentic session with tool use.
-      // --print/-p is text-only and disables tools, so never use it.
-      // --max-turns controls when the session exits.
-      if (session.prompt && !interactive) plan.args.push(session.prompt);
+      // -p for non-interactive with --tools default to enable all tools.
+      // Without --tools, -p mode restricts filesystem tools.
+      if (session.prompt && !interactive) {
+        plan.args.push('-p', session.prompt, '--tools', 'default');
+      }
       if (session.maxTurns) plan.args.push('--max-turns', String(session.maxTurns));
       break;
     case 'codex':
