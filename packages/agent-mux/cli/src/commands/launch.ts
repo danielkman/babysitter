@@ -685,9 +685,18 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
         cwd: launchCwd,
         env: { ...process.env, ...plan.env } as Record<string, string>,
       });
-      ptyProcess.onData((data: string) => process.stdout.write(data));
+      console.error(`[amux launch] PTY spawned: pid=${ptyProcess.pid} cmd=${plan.command} args=${plan.args.length}`);
+      let ptyBytes = 0;
+      ptyProcess.onData((data: string) => {
+        ptyBytes += data.length;
+        process.stdout.write(data);
+      });
+      ptyProcess.onExit(({ exitCode: code }: { exitCode: number }) => {
+        console.error(`[amux launch] PTY exited: code=${code} totalBytes=${ptyBytes}`);
+      });
       child = { pid: ptyProcess.pid, kill: (sig: string) => ptyProcess.kill(sig) } as any;
-    } catch {
+    } catch (err) {
+      console.error(`[amux launch] PTY unavailable: ${err instanceof Error ? err.message : String(err)}`);
       const { spawn } = await import('node:child_process');
       child = spawn(plan.command, plan.args, {
         stdio: ['pipe', 'inherit', 'inherit'],
@@ -724,12 +733,20 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
         const { execSync } = require('node:child_process');
         execSync(`taskkill /PID ${child.pid} /T /F`, { stdio: 'ignore' });
       } catch { /* process may already be dead */ }
+    } else if (ptyProcess) {
+      // PTY child runs in its own session — kill the process group to avoid orphans
+      try { process.kill(-ptyProcess.pid, sig); } catch { /* */ }
+      try { ptyProcess.kill(sig); } catch { /* */ }
     } else {
       child.kill(sig);
     }
   };
   process.on('SIGINT', forwardSignal);
   process.on('SIGTERM', forwardSignal);
+  // Ensure PTY cleanup on exit
+  if (ptyProcess) {
+    process.on('exit', () => { try { ptyProcess.kill('SIGKILL'); } catch { /* */ } });
+  }
 
   if (prompt && child.stdin && !ptyProcess) {
     child.stdin.write(prompt + '\n');
