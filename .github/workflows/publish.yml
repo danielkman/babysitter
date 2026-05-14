@@ -2339,8 +2339,8 @@ jobs:
                       - npm
                       - run
                       - db:init
-                      - -w
-                      - @a5c-ai/atlas-webui
+                      - "-w"
+                      - "@a5c-ai/atlas-webui"
                     envFrom:
                       - secretRef:
                           name: atlas-postgres
