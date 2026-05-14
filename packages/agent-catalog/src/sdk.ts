@@ -27,6 +27,7 @@ import type {
   AgentVersionReference,
   AgentProductDescriptor,
   AgentVersion,
+  BridgeCapabilities,
   CapabilityAssertion,
   AgentVersionTopology,
   CapabilityDescriptor,
@@ -42,6 +43,7 @@ import type {
   HarnessImageEntry,
   HookDescriptor,
   HookMappingDescriptor,
+  HookSupportMap,
   InteractiveSignals,
   HooksMuxDetectionRule,
   HostDetectionRule,
@@ -1503,4 +1505,14 @@ export function getYoloLaunchArgs(harness: string): string[] {
 export function getInteractiveSignals(harness: string): InteractiveSignals | undefined {
   const agent = getAgentVersion(harness);
   return agent?.interactiveSignals;
+}
+
+export function getHookSupport(harness: string, mode: 'interactive' | 'nonInteractive'): Partial<HookSupportMap> | undefined {
+  const agent = getAgentVersion(harness);
+  return agent?.hookSupport?.[mode];
+}
+
+export function getBridgeCapabilities(harness: string): BridgeCapabilities | undefined {
+  const agent = getAgentVersion(harness);
+  return agent?.bridgeCapabilities;
 }

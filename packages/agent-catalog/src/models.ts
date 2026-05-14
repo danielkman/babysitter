@@ -379,6 +379,22 @@ export interface CiSurfaceDescriptor {
   evidenceIds: string[];
 }
 
+export type HookSupportLevel = 'native' | 'emulated' | 'unsupported';
+
+export interface HookSupportMap {
+  sessionStart: HookSupportLevel;
+  stop: HookSupportLevel;
+  userPromptSubmit: HookSupportLevel;
+  preToolUse: HookSupportLevel;
+  sessionEnd: HookSupportLevel;
+}
+
+export interface BridgeCapabilities {
+  interactiveBridge: boolean;
+  sessionResume: boolean;
+  positionalPrompt: boolean;
+}
+
 export interface InteractiveSignals {
   /** Regex pattern that appears in terminal output when the harness finishes a turn and is ready for input. */
   turnCompletePattern?: string;
@@ -413,6 +429,11 @@ export interface AgentVersion {
   lifecycleNuanceIds: string[];
   evidenceIds: string[];
   interactiveSignals?: InteractiveSignals;
+  hookSupport?: {
+    interactive: HookSupportMap;
+    nonInteractive: Partial<HookSupportMap>;
+  };
+  bridgeCapabilities?: BridgeCapabilities;
 }
 
 export interface GraphEdge {

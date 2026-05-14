@@ -24,7 +24,7 @@ export function createAgentWorkspaceController() {
       const workspacePath = `/workspaces/${repository}/${branchName}-${Date.now()}`;
       const workspaceName = `ws-${repository}-${branchName}-${Date.now()}`;
 
-      const workspace = createResource('AgentWorkspace', { name: workspaceName, namespace }, {
+      const workspace = createResource('KrateWorkspace', { name: workspaceName, namespace }, {
         organizationRef,
         repository,
         workspacePath,
@@ -36,7 +36,7 @@ export function createAgentWorkspaceController() {
       workspace.status = { phase: 'Active', createdAt: new Date().toISOString(), boundSessions: [] };
 
       const runtimeName = `rt-${workspaceName}`;
-      const runtime = createResource('AgentWorkspaceRuntime', { name: runtimeName, namespace }, {
+      const runtime = createResource('KrateWorkspaceRuntime', { name: runtimeName, namespace }, {
         organizationRef,
         workspaceRef: workspaceName,
         status: 'provisioning'
@@ -51,10 +51,10 @@ export function createAgentWorkspaceController() {
         return { error: true, reason: 'missing-workspace-name', message: 'workspaceName is required' };
       }
 
-      const workspaces = resources.AgentWorkspace || [];
+      const workspaces = resources.KrateWorkspace || [];
       const workspace = workspaces.find((w) => w.metadata?.name === workspaceName);
       if (!workspace) {
-        return { error: true, reason: 'not-found', message: `AgentWorkspace not found: ${workspaceName}` };
+        return { error: true, reason: 'not-found', message: `KrateWorkspace not found: ${workspaceName}` };
       }
 
       const now = new Date().toISOString();
@@ -74,14 +74,14 @@ export function createAgentWorkspaceController() {
         return { error: true, reason: 'missing-workspace-name', message: 'workspaceName is required' };
       }
 
-      const workspaces = resources.AgentWorkspace || [];
+      const workspaces = resources.KrateWorkspace || [];
       const workspace = workspaces.find((w) => w.metadata?.name === workspaceName);
       if (!workspace) {
-        return { error: true, reason: 'not-found', message: `AgentWorkspace not found: ${workspaceName}` };
+        return { error: true, reason: 'not-found', message: `KrateWorkspace not found: ${workspaceName}` };
       }
 
       if (workspace.status?.phase !== 'Archived') {
-        return { error: true, reason: 'not-archived', message: `AgentWorkspace ${workspaceName} is not archived (current phase: ${workspace.status?.phase || 'Unknown'})` };
+        return { error: true, reason: 'not-archived', message: `KrateWorkspace ${workspaceName} is not archived (current phase: ${workspace.status?.phase || 'Unknown'})` };
       }
 
       const updated = clone(workspace);
@@ -103,10 +103,10 @@ export function createAgentWorkspaceController() {
         return { error: true, reason: 'missing-session-ref', message: 'sessionRef is required' };
       }
 
-      const workspaces = resources.AgentWorkspace || [];
+      const workspaces = resources.KrateWorkspace || [];
       const workspace = workspaces.find((w) => w.metadata?.name === workspaceName);
       if (!workspace) {
-        return { error: true, reason: 'not-found', message: `AgentWorkspace not found: ${workspaceName}` };
+        return { error: true, reason: 'not-found', message: `KrateWorkspace not found: ${workspaceName}` };
       }
 
       const updated = clone(workspace);
@@ -166,13 +166,13 @@ export function createAgentWorkspaceController() {
         return { error: true, reason: 'missing-workspace-name', message: 'workspaceName is required' };
       }
 
-      const workspaces = resources.AgentWorkspace || [];
+      const workspaces = resources.KrateWorkspace || [];
       const workspace = workspaces.find((w) => w.metadata?.name === workspaceName);
       if (!workspace) {
-        return { error: true, reason: 'not-found', message: `AgentWorkspace not found: ${workspaceName}` };
+        return { error: true, reason: 'not-found', message: `KrateWorkspace not found: ${workspaceName}` };
       }
 
-      const runtimes = resources.AgentWorkspaceRuntime || [];
+      const runtimes = resources.KrateWorkspaceRuntime || [];
       const runtime = runtimes.find((r) => r.spec?.workspaceRef === workspaceName) || null;
 
       const sessions = (workspace.status?.boundSessions || []).map((binding) => {
@@ -196,12 +196,12 @@ export function createAgentWorkspaceController() {
     },
 
     listWorkspacesForRepo({ repository, resources = {} }) {
-      const workspaces = resources.AgentWorkspace || [];
+      const workspaces = resources.KrateWorkspace || [];
       return workspaces.filter((w) => w.spec?.repository === repository).map(clone);
     },
 
     listWorkspacesForRun({ dispatchRun, resources = {} }) {
-      const workspaces = resources.AgentWorkspace || [];
+      const workspaces = resources.KrateWorkspace || [];
       return workspaces.filter((w) => w.spec?.ownership === dispatchRun).map(clone);
     }
   };

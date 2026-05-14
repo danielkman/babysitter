@@ -3,7 +3,7 @@ import test from 'node:test';
 import { createAgentWritebackController, createResource } from '../src/index.js';
 
 function makeArtifact(name, runRef, contentRef, extra = {}) {
-  const artifact = createResource('AgentArtifact', { name, namespace: 'krate-org-default' }, {
+  const artifact = createResource('KrateArtifact', { name, namespace: 'krate-org-default' }, {
     organizationRef: 'default',
     dispatchRun: runRef,
     kind: 'output',
@@ -29,7 +29,7 @@ test('createArtifact creates an artifact resource with name, runRef, and content
 
   assert.equal(result.error, false, 'Should succeed');
   assert.ok(result.artifact, 'Should return an artifact resource');
-  assert.equal(result.artifact.kind, 'AgentArtifact');
+  assert.equal(result.artifact.kind, 'KrateArtifact');
   assert.equal(result.artifact.spec.dispatchRun, 'run-abc');
   assert.equal(result.artifact.spec.digest, 'sha256:deadbeef');
   assert.ok(result.artifact.metadata.name, 'Should have a name');
@@ -88,7 +88,7 @@ test('listArtifactsForRun returns artifacts filtered by runRef', () => {
 
   const result = controller.listArtifactsForRun({
     runRef: 'run-10',
-    resources: { AgentArtifact: [a1, a2, a3] }
+    resources: { KrateArtifact: [a1, a2, a3] }
   });
 
   assert.equal(result.length, 2, 'Should return only artifacts for run-10');

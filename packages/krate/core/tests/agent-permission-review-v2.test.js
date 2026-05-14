@@ -43,7 +43,7 @@ function makeSecretGrant(name, subject, purpose, overrides = {}) {
 }
 
 function makeWorkspacePolicy(name, specOverrides = {}) {
-  return createResource('AgentWorkspacePolicy', { name }, {
+  return createResource('KrateWorkspacePolicy', { name }, {
     organizationRef: 'org-a',
     mode: 'ephemeral',
     retentionPolicy: 'delete-on-completion',
@@ -59,7 +59,7 @@ function fullyGrantedResources(stackOverrides = {}) {
     AgentSecretGrant: [makeSecretGrant('sg-model', 'sa-agent', 'model-provider')],
     AgentConfigGrant: [],
     AgentMcpServer: [],
-    AgentWorkspacePolicy: []
+    KrateWorkspacePolicy: []
   };
 }
 
@@ -175,7 +175,7 @@ describe('agent permission review v2 — approval mode', () => {
       AgentSecretGrant: [mcpGrant, makeSecretGrant('sg-model', 'sa-agent', 'model-provider')],
       AgentConfigGrant: [],
       AgentMcpServer: [mcpServer],
-      AgentWorkspacePolicy: []
+      KrateWorkspacePolicy: []
     };
     const result = reviewer.reviewPermissions({ ...baseInput, resources });
     assert.equal(result.decision, 'requires-approval');
@@ -207,7 +207,7 @@ describe('agent permission review v2 — workspace policy', () => {
     const policy = makeWorkspacePolicy('wp-1', { allowedTools: ['bash', 'read_file'] });
     const resources = {
       ...fullyGrantedResources(),
-      AgentWorkspacePolicy: [policy]
+      KrateWorkspacePolicy: [policy]
     };
     const result = reviewer.reviewPermissions({
       ...baseInput,
@@ -223,7 +223,7 @@ describe('agent permission review v2 — workspace policy', () => {
     const policy = makeWorkspacePolicy('wp-1', { deniedTools: ['bash'] });
     const resources = {
       ...fullyGrantedResources(),
-      AgentWorkspacePolicy: [policy]
+      KrateWorkspacePolicy: [policy]
     };
     const result = reviewer.reviewPermissions({
       ...baseInput,
@@ -243,7 +243,7 @@ describe('agent permission review v2 — workspace policy', () => {
     const policy = makeWorkspacePolicy('wp-strict', { maxConcurrentSessions: 0 });
     const resources = {
       ...fullyGrantedResources(),
-      AgentWorkspacePolicy: [policy]
+      KrateWorkspacePolicy: [policy]
     };
     const result = reviewer.reviewPermissions({
       ...baseInput,

@@ -141,7 +141,7 @@ export function createPermissionReviewer(options = {}) {
 
       // Step 9 — Workspace policy enforcement
       if (workspacePolicyRef) {
-        const policies = resources.AgentWorkspacePolicy || [];
+        const policies = resources.KrateWorkspacePolicy || [];
         const policy = policies.find((p) => p.metadata?.name === workspacePolicyRef);
         if (policy) {
           // Check maxConcurrentSessions

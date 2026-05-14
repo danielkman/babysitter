@@ -108,7 +108,7 @@ export function ResourceActions({ org, apiPath, actions = [], onMutated }) {
  * Props:
  *   org         {string}  — organization slug
  *   namespace   {string}  — resource namespace
- *   kind        {string}  — resource kind e.g. "AgentProject"
+ *   kind        {string}  — resource kind e.g. "KrateProject"
  *   apiVersion  {string}  — default "krate.a5c.ai/v1alpha1"
  *   title       {string}  — card heading
  *   fields      {Array}   — [{ name, label, type?, placeholder?, required?, defaultValue?, options? }]

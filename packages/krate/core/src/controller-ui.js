@@ -49,7 +49,7 @@ const runtimeComponents = [
   { id: 'runners-ci', title: 'Runner scheduler', area: 'ci', resources: ['RunnerPool', 'Pipeline', 'Job'], docs: 'src/kubernetes-controller.js' },
   { id: 'hooks-events', title: 'Webhook bus', area: 'events', resources: ['WebhookSubscription', 'WebhookDelivery'], docs: 'src/kubernetes-controller.js' },
   { id: 'policy-engine', title: 'Kyverno policy engine', area: 'policy', resources: ['PolicyProfile', 'PolicyTemplate', 'PolicyBinding', 'PolicyExceptionRequest'], docs: 'docs/todo-kyverno' },
-  { id: 'agent-orchestration', title: 'Agent orchestration', area: 'agents', resources: ['AgentStack', 'AgentDispatchRun', 'AgentTriggerRule', 'AgentSession', 'AgentWorkspace', 'AgentApproval', 'AgentAdapter', 'AgentProviderConfig', 'AgentProject'], docs: 'docs/agents/' }
+  { id: 'agent-orchestration', title: 'Agent orchestration', area: 'agents', resources: ['AgentStack', 'AgentDispatchRun', 'AgentTriggerRule', 'AgentSession', 'KrateWorkspace', 'AgentApproval', 'AgentAdapter', 'AgentProviderConfig', 'KrateProject'], docs: 'docs/agents/' }
 ];
 
 export function createControllerUiModel(source, options = {}) {
@@ -104,11 +104,11 @@ export function createControllerUiModel(source, options = {}) {
   const agentDispatchRuns = filterByOrg(snapshot.resources.AgentDispatchRun || [], activeOrg?.slug);
   const agentTriggerRules = filterByOrg(snapshot.resources.AgentTriggerRule || [], activeOrg?.slug);
   const agentSessions = filterByOrg(snapshot.resources.AgentSession || [], activeOrg?.slug);
-  const agentWorkspaces = filterByOrg(snapshot.resources.AgentWorkspace || [], activeOrg?.slug);
+  const agentWorkspaces = filterByOrg(snapshot.resources.KrateWorkspace || [], activeOrg?.slug);
   const agentApprovals = filterByOrg(snapshot.resources.AgentApproval || [], activeOrg?.slug);
   const agentAdapters = filterByOrg(snapshot.resources.AgentAdapter || [], activeOrg?.slug);
   const agentProviders = filterByOrg(snapshot.resources.AgentProviderConfig || [], activeOrg?.slug);
-  const agentProjects = filterByOrg(snapshot.resources.AgentProject || [], activeOrg?.slug);
+  const agentProjects = filterByOrg(snapshot.resources.KrateProject || [], activeOrg?.slug);
   const agentGateway = filterByOrg(snapshot.resources.AgentGatewayConfig || [], activeOrg?.slug);
   const agentTranscripts = filterByOrg(snapshot.resources.AgentSessionTranscript || [], activeOrg?.slug);
   const memoryRepositories = filterByOrg(snapshot.resources.AgentMemoryRepository || [], activeOrg?.slug);

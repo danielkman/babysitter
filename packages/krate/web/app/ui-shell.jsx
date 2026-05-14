@@ -690,7 +690,7 @@ export async function AgentWorkspaceDetailPage({ org = null, workspaceId } = {})
   const activeOrg = ui.model.org?.slug || org || 'default';
   const agentView = ui.model.agents || { workspaces: { items: [] }, sessions: { items: [] } };
   const workspace = (agentView.workspaces?.items || []).find((w) => w.metadata?.name === workspaceId) || null;
-  const runtimes = (ui.model.resources || []).find((r) => r.kind === 'AgentWorkspaceRuntime');
+  const runtimes = (ui.model.resources || []).find((r) => r.kind === 'KrateWorkspaceRuntime');
   const runtimeItems = runtimes?.items || [];
   const runtime = runtimeItems.find((r) => r.spec?.workspaceRef === workspaceId) || null;
   const boundSessions = workspace?.status?.boundSessions || [];
@@ -781,7 +781,7 @@ export async function AgentProjectsPage({ org = null } = {}) {
       </div>
       <InlineCreateForm
         org={activeOrg}
-        kind="AgentProject"
+        kind="KrateProject"
         title="Create project"
         fields={projectFields}
         successText="Project created"

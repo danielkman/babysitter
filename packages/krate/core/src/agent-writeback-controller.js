@@ -2,7 +2,7 @@ import { createResource, clone } from './resource-model.js';
 
 export const AGENT_WRITEBACK_CONTROLLER_BOUNDARY = {
   role: 'agent-writeback-controller',
-  scope: 'AgentArtifact write pipeline, branch push approval flow, and PR merge with status check enforcement',
+  scope: 'KrateArtifact write pipeline, branch push approval flow, and PR merge with status check enforcement',
   owns: ['artifact creation', 'artifact listing', 'branch push requests', 'push approval/denial', 'PR merge requests', 'write intent validation', 'write intent status'],
   delegatesTo: ['resource-model'],
   mustNotOwn: ['git operations', 'secret values', 'agent execution', 'CI orchestration']
@@ -36,7 +36,7 @@ export function createAgentWritebackController() {
       const now = new Date().toISOString();
       const artifactName = name || `artifact-${runRef}-${Date.now()}`;
 
-      const artifact = createResource('AgentArtifact', { name: artifactName, namespace }, {
+      const artifact = createResource('KrateArtifact', { name: artifactName, namespace }, {
         organizationRef,
         dispatchRun: runRef,
         kind,
@@ -51,8 +51,8 @@ export function createAgentWritebackController() {
       if (!artifact || typeof artifact !== 'object') {
         return { valid: false, error: true, reason: 'invalid-artifact', message: 'artifact must be an object' };
       }
-      if (artifact.kind !== 'AgentArtifact') {
-        return { valid: false, error: true, reason: 'wrong-kind', message: `Expected AgentArtifact, got: ${artifact.kind}` };
+      if (artifact.kind !== 'KrateArtifact') {
+        return { valid: false, error: true, reason: 'wrong-kind', message: `Expected KrateArtifact, got: ${artifact.kind}` };
       }
       if (!artifact.spec?.dispatchRun) {
         return { valid: false, error: true, reason: 'missing-run-ref', message: 'artifact spec.dispatchRun is required' };
@@ -64,7 +64,7 @@ export function createAgentWritebackController() {
     },
 
     listArtifactsForRun({ runRef, resources = {} }) {
-      const artifacts = resources.AgentArtifact || [];
+      const artifacts = resources.KrateArtifact || [];
       return artifacts.filter((a) => a.spec?.dispatchRun === runRef).map(clone);
     },
 

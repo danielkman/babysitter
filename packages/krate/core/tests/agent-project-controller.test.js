@@ -5,7 +5,7 @@ import { createAgentProjectController, validateAgentProject, createResource, AGE
 // ---------------------------------------------------------------------------
 // Acceptance criteria: Slice 1.2d — Agent Project Controller
 //
-// An AgentProject groups issues and tasks into a kanban board with workflow
+// A KrateProject groups issues and tasks into a kanban board with workflow
 // columns, default column assignment, issue tracking, and board state management.
 //
 // All tests in this file are expected to FAIL until the controller is
@@ -13,7 +13,7 @@ import { createAgentProjectController, validateAgentProject, createResource, AGE
 // ---------------------------------------------------------------------------
 
 function makeProject(name, overrides = {}) {
-  return createResource('AgentProject', { name, namespace: 'krate-org-default' }, {
+  return createResource('KrateProject', { name, namespace: 'krate-org-default' }, {
     organizationRef: 'default',
     workflowColumns: [
       { id: 'todo', displayName: 'To Do', color: '#888888', default: true },
@@ -60,7 +60,7 @@ test('validate rejects project with missing name', () => {
   const controller = createAgentProjectController();
   const project = {
     apiVersion: 'krate.a5c.ai/v1alpha1',
-    kind: 'AgentProject',
+    kind: 'KrateProject',
     metadata: { namespace: 'krate-org-default', labels: {}, annotations: {} },
     spec: {
       organizationRef: 'default',
@@ -291,7 +291,7 @@ test('getWorkflowColumns handles resource with no spec gracefully', () => {
   const controller = createAgentProjectController();
   const resource = {
     apiVersion: 'krate.a5c.ai/v1alpha1',
-    kind: 'AgentProject',
+    kind: 'KrateProject',
     metadata: { name: 'spec-less-project', namespace: 'krate-org-default', labels: {}, annotations: {} },
     status: {}
   };

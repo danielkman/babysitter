@@ -50,6 +50,7 @@ import {
 import type {
   AgentCatalog,
   AgentVersion,
+  BridgeCapabilities,
   CatalogGraph,
   CapabilityAssertion,
   CapabilityDescriptor,
@@ -61,6 +62,8 @@ import type {
   GraphEdge,
   GraphDocument,
   GraphNode,
+  HookSupportLevel,
+  HookSupportMap,
   GraphRelationship,
   HarnessFallbackMetadata,
   HarnessImageEntry,
@@ -397,6 +400,54 @@ function agentLifecycleNuanceIds(agentNodeId: string): string[] {
     .filter(Boolean);
 }
 
+function toHookSupportLevel(value: unknown): HookSupportLevel {
+  const normalized = valueAsString(value);
+  if (normalized === 'native' || normalized === 'emulated') return normalized;
+  return 'unsupported';
+}
+
+function parseHookSupportMap(value: unknown): HookSupportMap {
+  const obj = (value && typeof value === 'object') ? value as Record<string, unknown> : {};
+  return {
+    sessionStart: toHookSupportLevel(obj.sessionStart),
+    stop: toHookSupportLevel(obj.stop),
+    userPromptSubmit: toHookSupportLevel(obj.userPromptSubmit),
+    preToolUse: toHookSupportLevel(obj.preToolUse),
+    sessionEnd: toHookSupportLevel(obj.sessionEnd),
+  };
+}
+
+function parsePartialHookSupportMap(value: unknown): Partial<HookSupportMap> {
+  const obj = (value && typeof value === 'object') ? value as Record<string, unknown> : {};
+  const result: Partial<HookSupportMap> = {};
+  if (obj.sessionStart != null) result.sessionStart = toHookSupportLevel(obj.sessionStart);
+  if (obj.stop != null) result.stop = toHookSupportLevel(obj.stop);
+  if (obj.userPromptSubmit != null) result.userPromptSubmit = toHookSupportLevel(obj.userPromptSubmit);
+  if (obj.preToolUse != null) result.preToolUse = toHookSupportLevel(obj.preToolUse);
+  if (obj.sessionEnd != null) result.sessionEnd = toHookSupportLevel(obj.sessionEnd);
+  return result;
+}
+
+function parseHookSupport(value: unknown): AgentVersion['hookSupport'] {
+  if (!value || typeof value !== 'object') return undefined;
+  const obj = value as Record<string, unknown>;
+  if (!obj.interactive || typeof obj.interactive !== 'object') return undefined;
+  return {
+    interactive: parseHookSupportMap(obj.interactive),
+    nonInteractive: parsePartialHookSupportMap(obj.nonInteractive),
+  };
+}
+
+function parseBridgeCapabilities(value: unknown): BridgeCapabilities | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+  const obj = value as Record<string, unknown>;
+  return {
+    interactiveBridge: Boolean(obj.interactiveBridge),
+    sessionResume: Boolean(obj.sessionResume),
+    positionalPrompt: Boolean(obj.positionalPrompt),
+  };
+}
+
 function toAgentVersion(node: GraphNode): AgentVersion {
   return {
     agentId: valueAsString(node.agentId),
@@ -426,6 +477,8 @@ function toAgentVersion(node: GraphNode): AgentVersion {
       nonInteractiveMode: valueAsString((node.interactiveSignals as Record<string, unknown>)?.nonInteractiveMode) || undefined,
       interactiveMode: valueAsString((node.interactiveSignals as Record<string, unknown>)?.interactiveMode),
     } : undefined,
+    hookSupport: parseHookSupport(node.hookSupport),
+    bridgeCapabilities: parseBridgeCapabilities(node.bridgeCapabilities),
   };
 }
 

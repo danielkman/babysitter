@@ -1,9 +1,9 @@
 // Agent Project Controller — Slice 1.2d
-// Manages AgentProject resources: validation, workflow columns, board state, and issue assignment.
+// Manages KrateProject resources: validation, workflow columns, board state, and issue assignment.
 
 export const AGENT_PROJECT_CONTROLLER_BOUNDARY = {
   role: 'agent-project-controller',
-  scope: 'AgentProject lifecycle: validation, workflow column definitions, board state management, issue assignment tracking',
+  scope: 'KrateProject lifecycle: validation, workflow column definitions, board state management, issue assignment tracking',
   owns: ['project validation', 'workflow columns', 'board state', 'default column resolution', 'issue assignment tracking'],
   delegatesTo: ['resource-model'],
   mustNotOwn: ['issue content', 'PR lifecycle', 'dispatch execution', 'Agent Mux sessions']
@@ -12,7 +12,7 @@ export const AGENT_PROJECT_CONTROLLER_BOUNDARY = {
 const VALID_BOARD_STATES = ['active', 'archived'];
 
 /**
- * Validate an AgentProject resource. Returns { valid, errors }.
+ * Validate a KrateProject resource. Returns { valid, errors }.
  * @param {object} resource
  * @returns {{ valid: boolean, errors: string[] }}
  */
@@ -63,14 +63,14 @@ export function validateAgentProject(resource) {
 }
 
 /**
- * Factory that returns an AgentProject controller instance.
+ * Factory that returns a KrateProject controller instance.
  */
 export function createAgentProjectController() {
   return {
     role: 'agent-project-controller',
 
     /**
-     * Validate an AgentProject resource.
+     * Validate a KrateProject resource.
      * @param {object} resource
      * @returns {{ valid: boolean, errors: string[] }}
      */
