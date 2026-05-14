@@ -6,7 +6,11 @@ const controller = createKrateApiController();
 
 export async function GET(request) {
   const organization = new URL(request.url).searchParams.get('org');
-  return Response.json(createControllerUiModel(await controller.snapshot(), { organization }), {
-    headers: { 'Cache-Control': 'no-store' }
-  });
+  try {
+    return Response.json(createControllerUiModel(await controller.snapshot(), { organization }), {
+      headers: { 'Cache-Control': 'no-store' }
+    });
+  } catch (error) {
+    return Response.json({ error: 'operation_failed', message: error.message }, { status: error.message?.includes('not found') ? 404 : 500 });
+  }
 }

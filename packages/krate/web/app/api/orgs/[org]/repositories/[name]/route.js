@@ -6,11 +6,19 @@ export const dynamic = 'force-dynamic';
 export async function GET(_request, { params }) {
   const { org, name } = await params;
   const controller = createKrateApiController({ namespace: orgNamespaceName(org) });
-  return Response.json(await controller.getResource('Repository', name), { headers: { 'Cache-Control': 'no-store' } });
+  try {
+    return Response.json(await controller.getResource('Repository', name), { headers: { 'Cache-Control': 'no-store' } });
+  } catch (error) {
+    return Response.json({ error: 'operation_failed', message: error.message }, { status: error.message?.includes('not found') ? 404 : 500 });
+  }
 }
 
 export async function DELETE(_request, { params }) {
   const { org, name } = await params;
   const controller = createKrateApiController({ namespace: orgNamespaceName(org) });
-  return Response.json(await controller.deleteResource('Repository', name), { headers: { 'Cache-Control': 'no-store' } });
+  try {
+    return Response.json(await controller.deleteResource('Repository', name), { headers: { 'Cache-Control': 'no-store' } });
+  } catch (error) {
+    return Response.json({ error: 'operation_failed', message: error.message }, { status: error.message?.includes('not found') ? 404 : 500 });
+  }
 }

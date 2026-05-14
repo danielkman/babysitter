@@ -24,13 +24,17 @@ async function proxyGitRequest(request) {
   const target = new URL(upstream);
   target.pathname = joinPath(target.pathname, upstreamUrl.pathname.replace(/^\/api\/git-proxy/, ''));
   target.search = upstreamUrl.search;
-  const response = await fetch(target, {
-    method: request.method,
-    headers: request.headers,
-    body: request.method === 'GET' || request.method === 'HEAD' ? undefined : request.body,
-    duplex: 'half'
-  });
-  return new Response(response.body, { status: response.status, statusText: response.statusText, headers: response.headers });
+  try {
+    const response = await fetch(target, {
+      method: request.method,
+      headers: request.headers,
+      body: request.method === 'GET' || request.method === 'HEAD' ? undefined : request.body,
+      duplex: 'half'
+    });
+    return new Response(response.body, { status: response.status, statusText: response.statusText, headers: response.headers });
+  } catch (error) {
+    return Response.json({ error: 'operation_failed', message: error.message }, { status: error.message?.includes('not found') ? 404 : 500 });
+  }
 }
 
 function joinPath(base, next) {

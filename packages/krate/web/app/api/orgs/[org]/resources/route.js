@@ -8,7 +8,11 @@ export async function GET(request, { params }) {
   const namespace = orgNamespaceName(org);
   const controller = createKrateApiController({ namespace });
   const kind = new URL(request.url).searchParams.get('kind') || 'Repository';
-  return Response.json(await controller.listResource(kind), { headers: { 'Cache-Control': 'no-store' } });
+  try {
+    return Response.json(await controller.listResource(kind), { headers: { 'Cache-Control': 'no-store' } });
+  } catch (error) {
+    return Response.json({ error: 'operation_failed', message: error.message }, { status: error.message?.includes('not found') ? 404 : 500 });
+  }
 }
 
 export async function POST(request, { params }) {
