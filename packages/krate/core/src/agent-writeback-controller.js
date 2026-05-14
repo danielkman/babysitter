@@ -230,6 +230,73 @@ export function createAgentWritebackController() {
         deniedAt: intent.status?.deniedAt || null,
         reason: intent.status?.reason || null
       };
+    },
+
+    // -----------------------------------------------------------------------
+    // B2: Persistence
+    // -----------------------------------------------------------------------
+
+    async persistWriteIntent({ intent, applyResource }) {
+      if (!intent) {
+        return { error: true, reason: 'missing-intent', message: 'intent is required' };
+      }
+      if (typeof applyResource !== 'function') {
+        return { error: true, reason: 'missing-apply-resource', message: 'applyResource function is required' };
+      }
+      try {
+        const applyResult = await applyResource(intent);
+        return { error: false, intent, applyResult };
+      } catch (err) {
+        return { error: true, reason: 'persist-failed', message: err?.message || 'applyResource failed' };
+      }
+    },
+
+    // -----------------------------------------------------------------------
+    // B2: Execution pipeline
+    // -----------------------------------------------------------------------
+
+    async executeWriteIntent({ intent, gateway }) {
+      if (!intent) {
+        return { error: true, reason: 'missing-intent', message: 'intent is required' };
+      }
+
+      const approvalStatus = intent.status?.approvalStatus;
+      if (approvalStatus !== 'approved') {
+        return { error: true, reason: 'not-approved', message: `WriteIntent is not approved (current status: ${approvalStatus})` };
+      }
+
+      const writeType = intent.spec?.writeType;
+
+      try {
+        if (writeType === 'branch-push') {
+          const executionResult = await gateway.pushBranch({
+            branch: intent.spec.branch,
+            targetRepo: intent.spec.targetRepo,
+            runRef: intent.spec.runRef
+          });
+          return { error: false, executionResult };
+        }
+
+        if (writeType === 'pr-merge') {
+          // Validate status checks before merging
+          const statusChecks = intent.spec?.statusChecks || [];
+          const failing = statusChecks.filter((c) => c.state !== 'success');
+          if (failing.length > 0) {
+            const names = failing.map((c) => c.name).join(', ');
+            return { error: true, reason: 'status-checks-failing', message: `The following status checks are not passing: ${names}` };
+          }
+
+          const executionResult = await gateway.mergePr({
+            prRef: intent.spec.prRef,
+            runRef: intent.spec.runRef
+          });
+          return { error: false, executionResult };
+        }
+
+        return { error: true, reason: 'unsupported-write-type', message: `Execution not supported for writeType: ${writeType}` };
+      } catch (err) {
+        return { error: true, reason: 'execution-failed', message: err?.message || 'Gateway execution failed' };
+      }
     }
   };
 }

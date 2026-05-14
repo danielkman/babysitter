@@ -1,3 +1,4 @@
+import { createHmac, timingSafeEqual } from 'node:crypto';
 import { createResource, clone } from './resource-model.js';
 import { mapOidcIdentity } from './identity-policy.js';
 
@@ -147,15 +148,52 @@ export async function registerLoginProfile({ controller, namespace, profile }) {
   return { ...mapped, userResult, mappingResult };
 }
 
-export function createSessionCookie(config, profile) {
-  const value = Buffer.from(JSON.stringify({ provider: profile.provider, subject: profile.subject, user: profile.username || profile.email })).toString('base64url');
+export function createSessionCookie(config, profile, options = {}) {
+  const secret = options.secret || process.env.KRATE_SESSION_SECRET || '';
+  const payload = Buffer.from(JSON.stringify({ provider: profile.provider, subject: profile.subject, user: profile.username || profile.email })).toString('base64url');
+  let value;
+  if (secret) {
+    const signature = createHmac('sha256', secret).update(payload).digest('base64url');
+    value = `${payload}.${signature}`;
+  } else {
+    value = payload;
+  }
   return `${config.session.cookieName}=${value}; Path=/; HttpOnly; SameSite=Lax`;
 }
 
-export function parseSessionCookie(config, cookieValue) {
+export function parseSessionCookie(config, cookieValue, options = {}) {
   if (!cookieValue || typeof cookieValue !== 'string') return null;
+  const secret = options.secret || process.env.KRATE_SESSION_SECRET || '';
   try {
-    const session = JSON.parse(Buffer.from(cookieValue, 'base64url').toString('utf8'));
+    const dotIndex = cookieValue.indexOf('.');
+    const isSigned = dotIndex !== -1;
+
+    if (isSigned && !secret) {
+      // Signed cookie but no secret to verify — reject
+      return null;
+    }
+
+    if (!isSigned && secret) {
+      // No signature present but secret is configured — reject (could be tampered or unsigned legacy)
+      return null;
+    }
+
+    let payload;
+    if (isSigned && secret) {
+      payload = cookieValue.slice(0, dotIndex);
+      const receivedSig = cookieValue.slice(dotIndex + 1);
+      const expectedSig = createHmac('sha256', secret).update(payload).digest('base64url');
+      // Constant-time comparison
+      const expected = Buffer.from(expectedSig, 'base64url');
+      const received = Buffer.from(receivedSig, 'base64url');
+      if (expected.length !== received.length || !timingSafeEqual(expected, received)) {
+        return null;
+      }
+    } else {
+      payload = cookieValue;
+    }
+
+    const session = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
     const user = typeof session.user === 'string' ? session.user.trim() : '';
     const subject = typeof session.subject === 'string' ? session.subject.trim() : '';
     const provider = typeof session.provider === 'string' ? session.provider.trim() : '';

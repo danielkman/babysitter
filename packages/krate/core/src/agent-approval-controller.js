@@ -118,6 +118,53 @@ export function createAgentApprovalController() {
     listApprovalsForRun({ dispatchRun, resources = {} }) {
       const approvals = resources.AgentApproval || [];
       return approvals.filter((a) => a.spec?.dispatchRun === dispatchRun).map(clone);
+    },
+
+    // -----------------------------------------------------------------------
+    // B1: Persistence
+    // -----------------------------------------------------------------------
+
+    async persistApproval({ approval, applyResource }) {
+      if (!approval) {
+        return { error: true, reason: 'missing-approval', message: 'approval is required' };
+      }
+      if (typeof applyResource !== 'function') {
+        return { error: true, reason: 'missing-apply-resource', message: 'applyResource function is required' };
+      }
+      try {
+        const applyResult = await applyResource(approval);
+        return { error: false, approval, applyResult };
+      } catch (err) {
+        return { error: true, reason: 'persist-failed', message: err?.message || 'applyResource failed' };
+      }
+    },
+
+    // -----------------------------------------------------------------------
+    // B1: Enforcement gate
+    // -----------------------------------------------------------------------
+
+    enforceApproval({ dispatchRun, action, resources = {} }) {
+      const approvals = resources.AgentApproval || [];
+      const match = approvals.find(
+        (a) => a.spec?.dispatchRun === dispatchRun && a.spec?.action === action
+      );
+
+      if (!match) {
+        return { allowed: false, reason: 'no-approval-found', message: `No approval found for dispatchRun=${dispatchRun} action=${action}`, approval: null };
+      }
+
+      const phase = match.status?.phase;
+
+      if (phase === 'Approved') {
+        return { allowed: true, approval: clone(match), reason: 'approved' };
+      }
+
+      if (phase === 'Denied') {
+        return { allowed: false, reason: 'approval-denied', message: `Approval for dispatchRun=${dispatchRun} action=${action} was denied`, approval: clone(match) };
+      }
+
+      // Pending or unknown
+      return { allowed: false, reason: 'approval-pending', message: `Approval for dispatchRun=${dispatchRun} action=${action} is still pending`, approval: clone(match) };
     }
   };
 }

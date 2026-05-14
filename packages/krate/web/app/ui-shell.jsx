@@ -26,6 +26,8 @@ import { ExternalConflictResolver } from './components/external-conflict-resolve
 import { AgentSettingsForm } from './components/agent-settings-form.jsx';
 import { StackActions } from './components/stack-actions.jsx';
 import { ManualDispatchButton, RunActions } from './components/run-actions.jsx';
+import { EnableDisableToggle, DeleteRuleButton } from './components/rule-actions.jsx';
+import { ResourceActions, InlineCreateForm } from './components/resource-crud-actions.jsx';
 
 export const orgNavigationGroups = [
   {
@@ -457,17 +459,23 @@ export async function AgentRulesPage({ org = null } = {}) {
   const activeOrg = ui.model.org?.slug || org || 'default';
   const agentView = ui.model.agents || { rules: { count: 0, items: [] } };
   const rules = agentView.rules.items || [];
-  return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/agents" eyebrow="agent trigger rules" title="Trigger rules" text="Trigger rules define which events dispatch agent runs and which stack handles them." actions={[['/agents/rules/new', 'New rule'], ['/agents', 'Overview'], ['/agents/stacks', 'Stacks']]} breadcrumbs={[['/', 'Krate'], ['/agents', 'Agents'], ['/agents/rules', 'Trigger rules']]}>
+  return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/agents" eyebrow="agent trigger rules" title="Trigger rules" text="Trigger rules define which events dispatch agent runs and which stack handles them." actions={[['/agents/rules/new', 'Create rule'], ['/agents', 'Overview'], ['/agents/stacks', 'Stacks']]} breadcrumbs={[['/', 'Krate'], ['/agents', 'Agents'], ['/agents/rules', 'Trigger rules']]}>
     <DegradedBanner model={ui.model} />
     <div className="card">
       <div className="cardTitle"><h2>Trigger rules</h2><StatusPill tone={rules.length ? 'good' : 'neutral'}>{rules.length} rules</StatusPill></div>
-      {rules.length ? <div className="resourceTable">{rules.map((rule) => <a key={rule.metadata?.name} href={orgHref(activeOrg, `/agents/rules/${rule.metadata?.name}`)} className="resourceRow" style={{ textDecoration: 'none' }}>
-        <strong>{rule.metadata?.name}</strong>
-        <span>{(rule.spec?.sources || []).join(', ') || 'all sources'}</span>
-        <span>{rule.spec?.stackRef || rule.spec?.targetStack || 'unassigned'}</span>
-        <span>{rule.spec?.taskKind || 'default'}</span>
-        <small>{rule.status?.phase || 'Pending'}</small>
-      </a>)}</div> : <EmptyState title="No trigger rules configured" text="Trigger rules are created through Krate resource definitions. When rules are available, they appear here with their sources, target stack, and task kind." />}
+      {rules.length ? <div className="resourceTable">{rules.map((rule) => <div key={rule.metadata?.name} className="resourceRow" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+        <a href={orgHref(activeOrg, `/agents/rules/${rule.metadata?.name}`)} style={{ textDecoration: 'none', flex: '1 1 auto', display: 'contents' }}>
+          <strong>{rule.metadata?.name}</strong>
+          <span>{(rule.spec?.sources || []).join(', ') || 'all sources'}</span>
+          <span>{rule.spec?.stackRef || rule.spec?.targetStack || 'unassigned'}</span>
+          <span>{rule.spec?.taskKind || 'default'}</span>
+          <small>{rule.status?.phase || 'Pending'}</small>
+        </a>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', marginLeft: 'auto' }}>
+          <EnableDisableToggle org={activeOrg} ruleName={rule.metadata?.name} enabled={rule.spec?.enabled !== false && rule.status?.phase !== 'Disabled'} />
+          <DeleteRuleButton org={activeOrg} ruleName={rule.metadata?.name} />
+        </span>
+      </div>)}</div> : <EmptyState title="No trigger rules configured" text="Create your first trigger rule to start dispatching agent runs on events." cta={orgHref(activeOrg, '/agents/rules/new')} ctaLabel="Create rule" />}
     </div>
   </PageFrame>;
 }
@@ -660,13 +668,16 @@ export async function AgentWorkspacesPage({ org = null } = {}) {
     <DegradedBanner model={ui.model} />
     <div className="card">
       <div className="cardTitle"><h2>Workspaces</h2><StatusPill tone={workspaces.length ? 'good' : 'neutral'}>{workspaces.length} workspaces</StatusPill></div>
-      {workspaces.length ? <div className="resourceTable">{workspaces.map((ws) => <a key={ws.metadata?.name} href={orgHref(activeOrg, `/agents/workspaces/${ws.metadata?.name}`)} className="resourceRow" style={{ textDecoration: 'none' }}>
-        <strong>{ws.metadata?.name}</strong>
-        <span>{ws.spec?.repository || 'no repository'}</span>
-        <StatusPill tone={phaseTone(ws.status?.phase)}>{ws.status?.phase || 'Pending'}</StatusPill>
-        <span>{(ws.status?.boundSessions || []).length} sessions</span>
-        <small>{ws.spec?.workspacePath || ''}</small>
-      </a>)}</div> : <EmptyState title="No agent workspaces" text="Agent workspaces appear when dispatch runs provision git worktrees. Configure agent stacks and workspace policies to manage worktree lifecycle." />}
+      {workspaces.length ? <div className="resourceTable">{workspaces.map((ws) => <div key={ws.metadata?.name} className="resourceRow" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+        <a href={orgHref(activeOrg, `/agents/workspaces/${ws.metadata?.name}`)} style={{ textDecoration: 'none', display: 'contents' }}>
+          <strong>{ws.metadata?.name}</strong>
+          <span>{ws.spec?.repository || 'no repository'}</span>
+          <StatusPill tone={phaseTone(ws.status?.phase)}>{ws.status?.phase || 'Pending'}</StatusPill>
+          <span>{(ws.status?.boundSessions || []).length} sessions</span>
+          <small>{ws.spec?.workspacePath || ''}</small>
+        </a>
+        <ResourceActions org={activeOrg} apiPath={`agents/workspaces/${ws.metadata?.name}`} actions={ws.status?.phase === 'Archived' ? ['delete'] : ['archive', 'delete']} />
+      </div>)}</div> : <EmptyState title="No agent workspaces" text="Agent workspaces appear when dispatch runs provision git worktrees. Configure agent stacks and workspace policies to manage worktree lifecycle." />}
     </div>
   </PageFrame>;
 }
@@ -742,20 +753,45 @@ export async function AgentProjectsPage({ org = null } = {}) {
   const agentView = ui.model.agents || { projects: { count: 0, items: [] }, stacks: { items: [] } };
   const projects = agentView.projects?.items || [];
   const stacks = agentView.stacks?.items || [];
+  const projectFields = [
+    { name: 'name', label: 'Name', placeholder: 'my-project', required: true },
+    { name: 'displayName', label: 'Display name', placeholder: 'My Project', required: false },
+    { name: 'description', label: 'Description', placeholder: 'What is this project for?', required: false },
+    { name: 'workflow', label: 'Workflow columns', placeholder: 'todo,in-progress,review,done', required: false }
+  ];
+  function buildProjectSpec(formData) {
+    return {
+      displayName: formData.get('displayName') || formData.get('name'),
+      description: formData.get('description') || '',
+      workflowColumns: String(formData.get('workflow') || 'todo,in-progress,review,done').split(',').map((c) => c.trim()).filter(Boolean)
+    };
+  }
   return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/agents" eyebrow="agent projects" title="Projects" text="Organize agent work into projects with kanban boards, linked stacks, and tracked issues." actions={[['/agents', 'Overview'], ['/agents/stacks', 'Stacks']]} breadcrumbs={[['/', 'Krate'], ['/agents', 'Agents'], ['/agents/projects', 'Projects']]}>
     <DegradedBanner model={ui.model} />
-    {projects.length ? <section className="routeGrid three">{projects.map((project) => {
-      const name = project.metadata?.name;
-      const displayName = project.spec?.displayName || name;
-      const linkedStacks = (project.spec?.stackRefs || []).length || (stacks.filter((s) => s.spec?.projectRef === name).length);
-      const phase = project.status?.phase || 'Active';
-      const phaseTone = phase === 'Active' ? 'good' : phase === 'Archived' ? 'neutral' : 'warn';
-      return <a key={name} href={orgHref(activeOrg, `/agents/projects/${name}`)} className="card quickAction" style={{ textDecoration: 'none' }}>
-        <div className="cardTitle"><h3>{displayName}</h3><StatusPill tone={phaseTone}>{phase}</StatusPill></div>
-        <p style={{ color: '#6b7280', fontSize: '0.8125rem' }}>{project.spec?.description || 'No description'}</p>
-        <small>{linkedStacks} linked stack{linkedStacks === 1 ? '' : 's'}</small>
-      </a>;
-    })}</section> : <EmptyState title="No projects yet" text="Projects organize agent work into boards with columns. Create a project through Krate resource definitions to start tracking work." />}
+    <section className="routeGrid two" style={{ alignItems: 'start' }}>
+      <div>
+        {projects.length ? <section className="routeGrid three" style={{ gridColumn: '1 / -1' }}>{projects.map((project) => {
+          const name = project.metadata?.name;
+          const displayName = project.spec?.displayName || name;
+          const linkedStacks = (project.spec?.stackRefs || []).length || (stacks.filter((s) => s.spec?.projectRef === name).length);
+          const phase = project.status?.phase || 'Active';
+          const phaseTone = phase === 'Active' ? 'good' : phase === 'Archived' ? 'neutral' : 'warn';
+          return <a key={name} href={orgHref(activeOrg, `/agents/projects/${name}`)} className="card quickAction" style={{ textDecoration: 'none' }}>
+            <div className="cardTitle"><h3>{displayName}</h3><StatusPill tone={phaseTone}>{phase}</StatusPill></div>
+            <p style={{ color: '#6b7280', fontSize: '0.8125rem' }}>{project.spec?.description || 'No description'}</p>
+            <small>{linkedStacks} linked stack{linkedStacks === 1 ? '' : 's'}</small>
+          </a>;
+        })}</section> : <EmptyState title="No projects yet" text="Projects organize agent work into boards with columns. Use the form to create your first project." />}
+      </div>
+      <InlineCreateForm
+        org={activeOrg}
+        kind="AgentProject"
+        title="Create project"
+        fields={projectFields}
+        buildSpec={buildProjectSpec}
+        successText={(body) => `Created project ${body.resource?.metadata?.name || ''}`}
+      />
+    </section>
   </PageFrame>;
 }
 
@@ -784,6 +820,17 @@ export async function AgentMemoryPage({ org = null } = {}) {
   const pendingImports = memoryView.imports?.pending ?? 0;
   const ontologyCount = memoryView.ontologies?.count ?? (memoryView.ontologies?.items?.length || 0);
   const hasRepos = repoCount > 0;
+  const memoryRepoFields = [
+    { name: 'name', label: 'Name', placeholder: 'my-memory-repo', required: true },
+    { name: 'repoUrl', label: 'Repository URL', type: 'url', placeholder: 'https://github.com/acme/memory', required: true },
+    { name: 'description', label: 'Description', placeholder: 'What knowledge does this repo store?', required: false }
+  ];
+  function buildMemoryRepoSpec(formData) {
+    return {
+      repoUrl: formData.get('repoUrl'),
+      description: formData.get('description') || ''
+    };
+  }
   return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/agents" eyebrow="agent memory" title="Memory repositories and imports" text="Manage agent memory repositories, search stored knowledge, review pending imports, and configure ontologies." actions={[['/agents/memory/search', 'Search'], ['/agents/memory/imports', 'Imports'], ['/agents/memory/ontology', 'Ontology']]} breadcrumbs={[['/', 'Krate'], ['/agents', 'Agents'], ['/agents/memory', 'Memory']]}>
     <DegradedBanner model={ui.model} />
     {hasRepos ? <>
@@ -805,21 +852,41 @@ export async function AgentMemoryPage({ org = null } = {}) {
           <p className="emptyText">Graph schema definitions</p>
         </a>
       </section>
-      <section className="routeGrid three">
-        <a href={orgHref(activeOrg, '/agents/memory/search')} className="card quickAction" style={{ textDecoration: 'none' }}>
-          <div className="cardTitle"><h3>Search memory</h3></div>
-          <p style={{ color: '#6b7280', fontSize: '0.8125rem' }}>Query structured records or full-text search across markdown documents.</p>
-        </a>
-        <a href={orgHref(activeOrg, '/agents/memory/imports')} className="card quickAction" style={{ textDecoration: 'none' }}>
-          <div className="cardTitle"><h3>Review imports</h3></div>
-          <p style={{ color: '#6b7280', fontSize: '0.8125rem' }}>Inspect pending memory imports from agent runs and sessions.</p>
-        </a>
-        <a href={orgHref(activeOrg, '/agents/memory/ontology')} className="card quickAction" style={{ textDecoration: 'none' }}>
-          <div className="cardTitle"><h3>Configure ontology</h3></div>
-          <p style={{ color: '#6b7280', fontSize: '0.8125rem' }}>Define node kinds, edge kinds, and graph schema for memory repositories.</p>
-        </a>
+      <section className="routeGrid two" style={{ alignItems: 'start' }}>
+        <section className="routeGrid three" style={{ gridColumn: '1 / -1' }}>
+          <a href={orgHref(activeOrg, '/agents/memory/search')} className="card quickAction" style={{ textDecoration: 'none' }}>
+            <div className="cardTitle"><h3>Search memory</h3></div>
+            <p style={{ color: '#6b7280', fontSize: '0.8125rem' }}>Query structured records or full-text search across markdown documents.</p>
+          </a>
+          <a href={orgHref(activeOrg, '/agents/memory/imports')} className="card quickAction" style={{ textDecoration: 'none' }}>
+            <div className="cardTitle"><h3>Review imports</h3></div>
+            <p style={{ color: '#6b7280', fontSize: '0.8125rem' }}>Inspect pending memory imports from agent runs and sessions.</p>
+          </a>
+          <a href={orgHref(activeOrg, '/agents/memory/ontology')} className="card quickAction" style={{ textDecoration: 'none' }}>
+            <div className="cardTitle"><h3>Configure ontology</h3></div>
+            <p style={{ color: '#6b7280', fontSize: '0.8125rem' }}>Define node kinds, edge kinds, and graph schema for memory repositories.</p>
+          </a>
+        </section>
+        <InlineCreateForm
+          org={activeOrg}
+          kind="AgentMemoryRepository"
+          title="Add repository"
+          fields={memoryRepoFields}
+          buildSpec={buildMemoryRepoSpec}
+          successText={(body) => `Added repository ${body.resource?.metadata?.name || ''}`}
+        />
       </section>
-    </> : <EmptyState title="No memory repositories configured" text="Memory repositories store structured knowledge extracted from agent runs. Create an AgentMemoryRepository resource to get started with agent memory." />}
+    </> : <section className="routeGrid two" style={{ alignItems: 'start' }}>
+      <EmptyState title="No memory repositories configured" text="Memory repositories store structured knowledge extracted from agent runs. Add one using the form." />
+      <InlineCreateForm
+        org={activeOrg}
+        kind="AgentMemoryRepository"
+        title="Add repository"
+        fields={memoryRepoFields}
+        buildSpec={buildMemoryRepoSpec}
+        successText={(body) => `Added repository ${body.resource?.metadata?.name || ''}`}
+      />
+    </section>}
   </PageFrame>;
 }
 
@@ -1044,13 +1111,18 @@ export async function AgentSessionsPage({ org = null } = {}) {
     <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}><LiveUpdates org={activeOrg} /></div>
     <div className="card">
       <div className="cardTitle"><h2>Sessions</h2><StatusPill tone={sessions.length ? 'good' : 'neutral'}>{sessions.length} sessions</StatusPill></div>
-      {sessions.length ? <div className="resourceTable">{sessions.map((session) => <a key={session.metadata?.name} href={orgHref(activeOrg, `/agents/sessions/${session.metadata?.name}`)} className="resourceRow" style={{ textDecoration: 'none' }}>
-        <strong>{session.metadata?.name}</strong>
-        <span>{session.spec?.agentStack || session.spec?.stackRef || 'unassigned'}</span>
-        <StatusPill tone={phaseTone(session.status?.phase)}>{session.status?.phase || 'Pending'}</StatusPill>
-        <span>{session.spec?.dispatchRun || 'no run'}</span>
-        <small>{session.status?.updatedAt || session.metadata?.creationTimestamp || ''}</small>
-      </a>)}</div> : <EmptyState title="No agent sessions" text="Agent sessions appear when dispatch runs create Agent Mux chat sessions. Configure agent stacks and trigger rules to start sessions." />}
+      {sessions.length ? <div className="resourceTable">{sessions.map((session) => <div key={session.metadata?.name} className="resourceRow" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+        <a href={orgHref(activeOrg, `/agents/sessions/${session.metadata?.name}`)} style={{ textDecoration: 'none', display: 'contents' }}>
+          <strong>{session.metadata?.name}</strong>
+          <span>{session.spec?.agentStack || session.spec?.stackRef || 'unassigned'}</span>
+          <StatusPill tone={phaseTone(session.status?.phase)}>{session.status?.phase || 'Pending'}</StatusPill>
+          <span>{session.spec?.dispatchRun || 'no run'}</span>
+          <small>{session.status?.updatedAt || session.metadata?.creationTimestamp || ''}</small>
+        </a>
+        {(session.status?.phase !== 'Terminated' && session.status?.phase !== 'Completed' && session.status?.phase !== 'Succeeded') ? (
+          <ResourceActions org={activeOrg} apiPath={`agents/sessions/${session.metadata?.name}`} actions={['terminate']} />
+        ) : null}
+      </div>)}</div> : <EmptyState title="No agent sessions" text="Agent sessions appear when dispatch runs create Agent Mux chat sessions. Configure agent stacks and trigger rules to start sessions." />}
     </div>
   </PageFrame>;
 }
@@ -1522,8 +1594,8 @@ export function FlowVisualization({ runs = [], transcripts = [] }) {
   })}</div>;
 }
 
-function EmptyState({ title, text }) {
-  return <div className="card emptyState"><h3>{title}</h3><p>{text}</p></div>;
+function EmptyState({ title, text, cta, ctaLabel }) {
+  return <div className="card emptyState"><h3>{title}</h3><p>{text}</p>{cta ? <div style={{ marginTop: '0.75rem' }}><a href={cta} style={{ padding: '0.4rem 1rem', background: 'var(--color-accent, #3b82f6)', color: '#fff', borderRadius: '6px', textDecoration: 'none', fontSize: '0.875rem', fontWeight: 600 }}>{ctaLabel || 'Get started'}</a></div> : null}</div>;
 }
 
 export async function ExternalProvidersPage({ org = null } = {}) {
