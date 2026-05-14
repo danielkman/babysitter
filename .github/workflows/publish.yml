@@ -46,6 +46,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Build lint dependencies
+        run: |
+          npm run build --workspace=@a5c-ai/atlas
+          npm run build --workspace=@a5c-ai/agent-catalog
+
       - name: Lint SDK
         run: npm run lint --workspace=@a5c-ai/babysitter-sdk
 
@@ -135,6 +140,7 @@ jobs:
             npm run build --workspace=@a5c-ai/hooks-mux-adapter-oh-my-pi
             npm run build --workspace=@a5c-ai/hooks-mux-adapter-opencode
             npm run build --workspace=@a5c-ai/hooks-mux-adapter-openclaw
+            npm run build --workspace=@a5c-ai/hooks-mux-adapter-hermes
             npm run build --workspace=@a5c-ai/hooks-mux-cli
           '
           run_bg npm run build --workspace=@a5c-ai/agent-plugins-mux
@@ -1381,6 +1387,8 @@ jobs:
             workspace: '@a5c-ai/hooks-mux-adapter-opencode'
           - name: hooks-mux-adapter-openclaw
             workspace: '@a5c-ai/hooks-mux-adapter-openclaw'
+          - name: hooks-mux-adapter-hermes
+            workspace: '@a5c-ai/hooks-mux-adapter-hermes'
     steps:
       - name: Download publish workspace
         uses: actions/download-artifact@v4
