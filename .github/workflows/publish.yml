@@ -2113,6 +2113,8 @@ jobs:
 
       - name: Provision Atlas Postgres
         if: steps.config.outputs.deploy_enabled == 'true'
+        env:
+          ATLAS_POSTGRES_STORAGE_CLASS: ${{ vars.ATLAS_POSTGRES_STORAGE_CLASS }}
         run: |
           POSTGRES_APP=atlas-postgres
           POSTGRES_DB=atlas_webui
@@ -2137,15 +2139,13 @@ jobs:
             --dry-run=client -o yaml | kubectl apply -f -
 
           POSTGRES_PVC="data-${POSTGRES_APP}-0"
-          POSTGRES_STORAGE_CLASS=$(kubectl get storageclass -o jsonpath='{range .items[?(@.metadata.annotations.storageclass\.kubernetes\.io/is-default-class=="true")]}{.metadata.name}{"\n"}{end}' | head -n1)
-          if [[ -z "$POSTGRES_STORAGE_CLASS" ]]; then
-            for candidate in managed-csi managed-premium default azurefile-csi; do
-              if kubectl get storageclass "$candidate" >/dev/null 2>&1; then
-                POSTGRES_STORAGE_CLASS="$candidate"
-                break
-              fi
-            done
-          fi
+          POSTGRES_STORAGE_CLASS="${ATLAS_POSTGRES_STORAGE_CLASS:-}"
+          for candidate in "$POSTGRES_STORAGE_CLASS" azurefile-csi-premium azurefile-csi azure-files managed-csi managed-premium default; do
+            if [[ -n "$candidate" ]] && kubectl get storageclass "$candidate" >/dev/null 2>&1; then
+              POSTGRES_STORAGE_CLASS="$candidate"
+              break
+            fi
+          done
 
           POSTGRES_STORAGE_CLASS_LINE=""
           if [[ -n "$POSTGRES_STORAGE_CLASS" ]]; then
