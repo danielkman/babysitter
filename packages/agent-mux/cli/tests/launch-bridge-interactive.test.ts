@@ -1,0 +1,351 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+// ---------------------------------------------------------------------------
+// Mocks
+// ---------------------------------------------------------------------------
+
+const execSyncMock = vi.fn(() => '');
+const spawnMock = vi.fn();
+
+vi.mock('node:child_process', () => ({
+  execSync: execSyncMock,
+  spawn: spawnMock,
+  spawnSync: vi.fn(() => ({ status: 0 })),
+}));
+
+// PTY mock — emits data and supports onExit/write/kill
+type PtyDataCb = (data: string) => void;
+type PtyExitCb = (info: { exitCode: number }) => void;
+
+let ptyDataCallbacks: PtyDataCb[] = [];
+let ptyExitCallbacks: PtyExitCb[] = [];
+let ptyWritten: string[] = [];
+let ptyKilled: string[] = [];
+
+const ptySpawnMock = vi.fn(() => {
+  ptyDataCallbacks = [];
+  ptyExitCallbacks = [];
+  ptyWritten = [];
+  ptyKilled = [];
+  return {
+    pid: 9999,
+    onData(cb: PtyDataCb) { ptyDataCallbacks.push(cb); },
+    onExit(cb: PtyExitCb) { ptyExitCallbacks.push(cb); },
+    write(data: string) { ptyWritten.push(data); },
+    kill(sig: string) { ptyKilled.push(sig); },
+  };
+});
+
+/** Shared ref object — vi.mock factory captures the reference, reads .value at call time. */
+const ptyMockControl = { shouldThrow: false };
+
+vi.mock('node-pty', () => {
+  if (ptyMockControl.shouldThrow) throw new Error('node-pty not installed');
+  return {
+    default: { spawn: ptySpawnMock },
+    spawn: ptySpawnMock,
+  };
+});
+
+vi.mock('@a5c-ai/transport-mux', () => ({
+  startTransportMuxRuntime: vi.fn(),
+}));
+
+vi.mock('@a5c-ai/agent-mux-adapters', () => ({
+  translateForHarness: vi.fn(() => ({
+    env: {},
+    args: [],
+    proxyRequired: false,
+    proxyExposedTransport: undefined,
+  })),
+  getAdapterFactory: vi.fn(() => () => ({
+    parseEvent(line: string, _ctx: any) {
+      // Simple adapter: lines containing "turn_end" emit a turn_end event
+      if (line.includes('turn_end')) {
+        return { type: 'turn_end', timestamp: new Date().toISOString() };
+      }
+      if (line.includes('message_stop')) {
+        return { type: 'message_stop', timestamp: new Date().toISOString() };
+      }
+      return null;
+    },
+  })),
+}));
+
+vi.mock('@a5c-ai/agent-mux-core', () => ({
+  PROVIDER_DEFAULTS: {},
+  StreamAssembler: class {
+    feed(line: string) { return line; }
+    endBlock() { return null; }
+    reset() {}
+  },
+  WorkspaceService: class {
+    async createWorkspace() { throw new Error('not used'); }
+    async resolveWorkspace() { return null; }
+  },
+  resolveWorkspaceDefaultCwd: vi.fn(() => process.cwd()),
+  resolveProvider: vi.fn((input: Record<string, unknown>) => ({
+    provider: input['provider'] ?? 'anthropic',
+    model: input['model'] ?? 'claude-sonnet-4-20250514',
+    transport: input['transport'] ?? 'anthropic',
+    auth: { type: 'api_key', apiKey: 'sk-test' },
+    params: {},
+  })),
+}));
+
+vi.mock('@a5c-ai/agent-catalog', () => ({
+  getBridgeCapabilities: vi.fn(() => ({ interactiveBridge: true })),
+  getYoloLaunchArgs: vi.fn(() => []),
+}));
+
+// ---------------------------------------------------------------------------
+// Tests
+// ---------------------------------------------------------------------------
+
+describe('bridge-interactive spawn', () => {
+  let stdoutChunks: string[];
+  let origWrite: typeof process.stdout.write;
+
+  beforeEach(() => {
+    vi.resetModules();
+    execSyncMock.mockReset();
+    spawnMock.mockReset();
+    ptySpawnMock.mockClear();
+    ptyMockControl.shouldThrow = false;
+    stdoutChunks = [];
+    origWrite = process.stdout.write;
+    // Intercept stdout writes to capture NDJSON output
+    process.stdout.write = ((chunk: string | Uint8Array) => {
+      stdoutChunks.push(typeof chunk === 'string' ? chunk : chunk.toString());
+      return true;
+    }) as any;
+  });
+
+  afterEach(() => {
+    process.stdout.write = origWrite;
+    vi.restoreAllMocks();
+  });
+
+  async function importModules() {
+    const [{ launchCommand, LAUNCH_FLAGS }, { parseArgs }] = await Promise.all([
+      import('../src/commands/launch.js'),
+      import('../src/parse-args.js'),
+    ]);
+    return { launchCommand, LAUNCH_FLAGS, parseArgs };
+  }
+
+  function makeClient(harness = 'claude') {
+    return {
+      adapters: {
+        get: () => ({
+          agent: harness,
+          detectInstallation: async () => ({ installed: true }),
+          capabilities: { canResume: true },
+        }),
+        list: () => [{ agent: harness }],
+      },
+    } as any;
+  }
+
+  it('spawns PTY, emits NDJSON events, and auto-kills on turn_end', async () => {
+    const { launchCommand, LAUNCH_FLAGS, parseArgs } = await importModules();
+
+    const launchPromise = launchCommand(
+      makeClient(),
+      parseArgs(
+        ['launch', 'claude', '--bridge-interactive', '--no-interactive', '--prompt', 'hello world'],
+        LAUNCH_FLAGS,
+      ),
+    );
+
+    // Let the setTimeout for prompt injection fire
+    await new Promise(r => setTimeout(r, 600));
+
+    // Verify prompt was injected into PTY
+    expect(ptyWritten).toContain('hello world\n');
+
+    // Verify PTY was spawned (not child_process.spawn)
+    expect(ptySpawnMock).toHaveBeenCalledTimes(1);
+    expect(spawnMock).not.toHaveBeenCalled();
+
+    // Simulate PTY output with a turn_end event
+    for (const cb of ptyDataCallbacks) {
+      cb('Some output text\n');
+      cb('turn_end\n');
+    }
+
+    // Let setImmediate flush the NDJSON events
+    await new Promise(r => setTimeout(r, 50));
+
+    // The turn_end event should trigger a SIGTERM after 1s timeout
+    // Simulate PTY exit before the timeout
+    for (const cb of ptyExitCallbacks) {
+      cb({ exitCode: 0 });
+    }
+
+    // Let setImmediate flush the final output event
+    await new Promise(r => setTimeout(r, 50));
+
+    const exitCode = await launchPromise;
+    expect(exitCode).toBe(0);
+
+    // Parse emitted NDJSON events
+    const events = stdoutChunks
+      .join('')
+      .split('\n')
+      .filter(l => l.trim())
+      .map(l => JSON.parse(l));
+
+    // Should have a turn_end event and a final output event
+    const turnEndEvents = events.filter((e: any) => e.type === 'turn_end');
+    expect(turnEndEvents.length).toBe(1);
+
+    const outputEvents = events.filter((e: any) => e.type === 'output');
+    expect(outputEvents.length).toBe(1);
+    expect(outputEvents[0].data.text).toContain('turn_end');
+  });
+
+  it('emits message_stop events as NDJSON', async () => {
+    const { launchCommand, LAUNCH_FLAGS, parseArgs } = await importModules();
+
+    const launchPromise = launchCommand(
+      makeClient(),
+      parseArgs(
+        ['launch', 'claude', '--bridge-interactive', '--no-interactive', '--prompt', 'test'],
+        LAUNCH_FLAGS,
+      ),
+    );
+
+    await new Promise(r => setTimeout(r, 600));
+
+    // Simulate message_stop
+    for (const cb of ptyDataCallbacks) {
+      cb('response text\nmessage_stop\n');
+    }
+
+    await new Promise(r => setTimeout(r, 50));
+
+    for (const cb of ptyExitCallbacks) {
+      cb({ exitCode: 0 });
+    }
+
+    await new Promise(r => setTimeout(r, 50));
+
+    const exitCode = await launchPromise;
+    expect(exitCode).toBe(0);
+
+    const events = stdoutChunks
+      .join('')
+      .split('\n')
+      .filter(l => l.trim())
+      .map(l => JSON.parse(l));
+
+    const stopEvents = events.filter((e: any) => e.type === 'message_stop');
+    expect(stopEvents.length).toBe(1);
+  });
+
+  it('requires --no-interactive with --bridge-interactive', async () => {
+    const { launchCommand, LAUNCH_FLAGS, parseArgs } = await importModules();
+
+    // When used without --no-interactive, should fail validation
+    const code = await launchCommand(
+      makeClient(),
+      parseArgs(
+        ['launch', 'claude', '--bridge-interactive', '--prompt', 'test'],
+        LAUNCH_FLAGS,
+      ),
+    );
+
+    // Should return USAGE_ERROR (2) because --bridge-interactive requires --no-interactive
+    expect(code).toBe(2);
+    // PTY should not have been spawned
+    expect(ptySpawnMock).not.toHaveBeenCalled();
+    expect(spawnMock).not.toHaveBeenCalled();
+  });
+
+  it('does not write PTY data synchronously to stdout (avoids deadlock)', async () => {
+    const { launchCommand, LAUNCH_FLAGS, parseArgs } = await importModules();
+
+    let stdoutCallsDuringPtyCallback = 0;
+    // Track stdout writes that happen synchronously during PTY data callback
+    let inPtyCallback = false;
+    process.stdout.write = ((chunk: string | Uint8Array) => {
+      if (inPtyCallback) stdoutCallsDuringPtyCallback++;
+      stdoutChunks.push(typeof chunk === 'string' ? chunk : chunk.toString());
+      return true;
+    }) as any;
+
+    const launchPromise = launchCommand(
+      makeClient(),
+      parseArgs(
+        ['launch', 'claude', '--bridge-interactive', '--no-interactive', '--prompt', 'test'],
+        LAUNCH_FLAGS,
+      ),
+    );
+
+    await new Promise(r => setTimeout(r, 600));
+
+    // Feed PTY data and check no stdout writes happen synchronously
+    for (const cb of ptyDataCallbacks) {
+      inPtyCallback = true;
+      cb('some output\nturn_end\n');
+      inPtyCallback = false;
+    }
+
+    // No stdout writes should happen synchronously inside the PTY callback
+    expect(stdoutCallsDuringPtyCallback).toBe(0);
+
+    // But after setImmediate, events should be emitted
+    await new Promise(r => setTimeout(r, 50));
+    expect(stdoutChunks.length).toBeGreaterThan(0);
+
+    for (const cb of ptyExitCallbacks) {
+      cb({ exitCode: 0 });
+    }
+    await new Promise(r => setTimeout(r, 50));
+
+    await launchPromise;
+  });
+
+  it('NDJSON events have correct BridgeEvent shape', async () => {
+    const { launchCommand, LAUNCH_FLAGS, parseArgs } = await importModules();
+
+    const launchPromise = launchCommand(
+      makeClient(),
+      parseArgs(
+        ['launch', 'claude', '--bridge-interactive', '--no-interactive', '--prompt', 'test'],
+        LAUNCH_FLAGS,
+      ),
+    );
+
+    await new Promise(r => setTimeout(r, 600));
+
+    for (const cb of ptyDataCallbacks) {
+      cb('turn_end\n');
+    }
+
+    await new Promise(r => setTimeout(r, 50));
+
+    for (const cb of ptyExitCallbacks) {
+      cb({ exitCode: 0 });
+    }
+
+    await new Promise(r => setTimeout(r, 50));
+    await launchPromise;
+
+    const events = stdoutChunks
+      .join('')
+      .split('\n')
+      .filter(l => l.trim())
+      .map(l => JSON.parse(l));
+
+    for (const ev of events) {
+      expect(ev).toHaveProperty('type');
+      expect(ev).toHaveProperty('timestamp');
+      expect(ev).toHaveProperty('data');
+      // timestamp should be ISO format
+      expect(() => new Date(ev.timestamp)).not.toThrow();
+      expect(new Date(ev.timestamp).toISOString()).toBe(ev.timestamp);
+    }
+  });
+});

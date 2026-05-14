@@ -704,6 +704,148 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
         shell: process.platform === 'win32',
       });
     }
+  } else if (bridgeInteractive) {
+    // Bridge-interactive: spawn via PTY like interactive mode, but:
+    // - No human stdin forwarding
+    // - Parse PTY output via adapter for structured events
+    // - Emit events as NDJSON to stdout
+    // - Auto-kill on turn completion
+    // - Buffer PTY output to avoid pipe deadlock (stdout is piped)
+
+    let nodePty: any;
+    try {
+      nodePty = await import('node-pty');
+    } catch {
+      const msg = '--bridge-interactive requires node-pty but it is not available. Install it with: npm install node-pty';
+      if (jsonMode) printJsonError('SPAWN_ERROR', msg);
+      else printError(msg);
+      return ExitCode.GENERAL_ERROR;
+    }
+
+    ptyProcess = nodePty.spawn(plan.command, plan.args, {
+      name: 'xterm-256color',
+      cols: 120,
+      rows: 40,
+      cwd: launchCwd,
+      env: { ...process.env, ...plan.env } as Record<string, string>,
+    });
+
+    // Set up adapter + assembler for parsing PTY output into structured events
+    let assembler: import('@a5c-ai/agent-mux-core').StreamAssembler | null = null;
+    let adapter: { parseEvent(line: string, ctx: any): any } | null = null;
+    try {
+      const core = await import('@a5c-ai/agent-mux-core');
+      assembler = new core.StreamAssembler();
+      const adaptersModule = await import('@a5c-ai/agent-mux-adapters');
+      const factory = adaptersModule.getAdapterFactory?.(plan.harness);
+      adapter = factory ? factory() : null;
+    } catch { /* core/adapters not available — raw output only */ }
+
+    /** Emit a bridge event as NDJSON, deferred to avoid blocking PTY callback. */
+    function emitBridgeEvent(event: {
+      type: string;
+      timestamp: string;
+      data: unknown;
+    }): void {
+      const line = JSON.stringify(event) + '\n';
+      setImmediate(() => {
+        try { process.stdout.write(line); } catch { /* stdout closed */ }
+      });
+    }
+
+    let turnComplete = false;
+    let lineBuf = '';
+    let outputBuf = '';
+    let eventCount = 0;
+
+    const parseCtx = {
+      runId: 'bridge',
+      agent: plan.harness,
+      sessionId: undefined,
+      turnIndex: 0,
+      debug: false,
+      outputFormat: 'text' as const,
+      source: 'stdout' as const,
+      assembler: assembler!,
+      eventCount: 0,
+      lastEventType: null as string | null,
+      adapterState: {},
+    };
+
+    ptyProcess.onData((data: string) => {
+      // Buffer all PTY output — never write synchronously to stdout (pipe deadlock)
+      outputBuf += data;
+
+      if (!assembler || !adapter || turnComplete) return;
+
+      // Strip ANSI escapes, then feed lines to the event parser
+      const clean = data.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '').replace(/\x1b\][^\x07]*\x07/g, '');
+      lineBuf += clean;
+
+      let idx: number;
+      while ((idx = lineBuf.indexOf('\n')) !== -1) {
+        const line = lineBuf.slice(0, idx).replace(/\r$/, '');
+        lineBuf = lineBuf.slice(idx + 1);
+        if (line.length === 0) continue;
+
+        const assembled = assembler.feed(line);
+        if (assembled === null) continue;
+        try {
+          parseCtx.eventCount = eventCount;
+          const result = adapter.parseEvent(assembled, parseCtx);
+          if (result === null) continue;
+          const events = Array.isArray(result) ? result : [result];
+          for (const ev of events) {
+            eventCount++;
+            parseCtx.lastEventType = ev.type;
+
+            // Emit as NDJSON bridge event
+            emitBridgeEvent({
+              type: ev.type,
+              timestamp: new Date().toISOString(),
+              data: ev,
+            });
+
+            // Detect turn completion events — schedule PTY termination
+            if (ev.type === 'message_stop' || ev.type === 'turn_end' || ev.type === 'session_end') {
+              turnComplete = true;
+              setTimeout(() => {
+                try { ptyProcess.kill('SIGTERM'); } catch { /* */ }
+              }, 1000);
+              return;
+            }
+          }
+        } catch { /* parse error — ignore */ }
+      }
+    });
+
+    // Inject prompt as initial input after harness starts (like interactive mode)
+    if (prompt) {
+      setTimeout(() => ptyProcess.write(prompt + '\n'), 500);
+    }
+
+    // Create a fake ChildProcess-like for signal handling
+    child = { pid: ptyProcess.pid, kill: (sig: string) => ptyProcess.kill(sig) } as any;
+
+    // On PTY exit, flush remaining buffered text as a final output event
+    const origOnExit = ptyProcess.onExit.bind(ptyProcess);
+    const exitPromise = new Promise<number>((resolve) => {
+      origOnExit(({ exitCode: code }: { exitCode: number }) => {
+        // Flush any remaining output as a final bridge event
+        if (outputBuf.length > 0) {
+          emitBridgeEvent({
+            type: 'output',
+            timestamp: new Date().toISOString(),
+            data: { text: outputBuf },
+          });
+          outputBuf = '';
+        }
+        resolve(code);
+      });
+    });
+
+    // Store the exit promise so main exit handler can use it
+    (child as any).__bridgeExitPromise = exitPromise;
   } else {
     // Non-interactive: plain spawn. Each harness handles non-interactive mode
     // internally (claude -p, codex exec, gemini --prompt, pi stdin).
@@ -768,18 +910,22 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
     }
   }
 
-  const exitCode = await new Promise<number>((resolve) => {
-    if (ptyProcess) {
-      ptyProcess.onExit(({ exitCode: code }: { exitCode: number }) => {
-        if (process.stdin.isTTY) process.stdin.setRawMode(false);
-        resolve(code);
-      });
-    } else {
-      child.on('exit', (code: number | null, signal: string | null) => {
-        resolve(signal ? 128 + (signal === 'SIGINT' ? 2 : 15) : (code ?? 1));
-      });
-    }
-  });
+  const exitCode = await (
+    (child as any).__bridgeExitPromise
+      ? (child as any).__bridgeExitPromise as Promise<number>
+      : new Promise<number>((resolve) => {
+          if (ptyProcess) {
+            ptyProcess.onExit(({ exitCode: code }: { exitCode: number }) => {
+              if (process.stdin.isTTY) process.stdin.setRawMode(false);
+              resolve(code);
+            });
+          } else {
+            child.on('exit', (code: number | null, signal: string | null) => {
+              resolve(signal ? 128 + (signal === 'SIGINT' ? 2 : 15) : (code ?? 1));
+            });
+          }
+        })
+  );
 
   process.off('SIGINT', forwardSignal);
   process.off('SIGTERM', forwardSignal);
