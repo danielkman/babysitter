@@ -627,10 +627,8 @@ async function validateAgentBehavior(
       entries.push({ name: 'file-creation', status: 'passed', detail: `odyssey file created (${fileSize} bytes)` });
     } else if (fileExists) {
       entries.push({ name: 'file-creation', status: 'failed', detail: `odyssey file exists but too small (${fileSize} bytes — expected >500)` });
-    } else if (output.length > 500) {
-      entries.push({ name: 'file-creation', status: 'passed', detail: `agent produced substantial output (${output.length} chars) but did not write file — acceptable in non-interactive/print mode` });
     } else {
-      entries.push({ name: 'file-creation', status: 'failed', detail: `agent did not create .a5c-live-test/${traceId}-odyssey.md and output too small (${output.length} chars)` });
+      entries.push({ name: 'file-creation', status: 'failed', detail: `agent did not create .a5c-live-test/${traceId}-odyssey.md (output: ${output.length} chars)` });
     }
   } else {
     entries.push({ name: 'file-creation', status: 'skipped', detail: 'no trace ID available' });
