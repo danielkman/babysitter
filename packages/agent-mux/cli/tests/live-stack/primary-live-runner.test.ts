@@ -25,19 +25,19 @@ describe('primary live stack runner contract', () => {
     expect(run?.args).not.toContain('sonnet');
   });
 
-  it('passes explicit Google Vertex env to Gemini 3.1 Pro live lanes', () => {
+  it('passes explicit Google env to Gemini 3.1 Pro live lanes', () => {
     const scenario = liveStackScenarioFromEnv({
-      LIVE_STACK_SCENARIO_ID: 'live.agent-mux.claude-code.google-vertex.gemini-3.1-pro-preview',
+      LIVE_STACK_SCENARIO_ID: 'live.agent-mux.claude-code.google.gemini-3.1-pro',
       LIVE_STACK_AGENT_PATH: 'agent-mux',
       LIVE_STACK_AGENT: 'claude-code',
       LIVE_STACK_AMUX_AGENT: 'claude',
       LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin',
       LIVE_STACK_INSTALL_MODE: 'vanilla',
-      LIVE_STACK_PROVIDER: 'google-vertex',
-      LIVE_STACK_AMUX_PROVIDER: 'vertex',
-      LIVE_STACK_MODEL: 'gemini-3.1-pro-preview',
+      LIVE_STACK_PROVIDER: 'google',
+      LIVE_STACK_AMUX_PROVIDER: 'google',
+      LIVE_STACK_MODEL: 'gemini-3.1-pro',
       LIVE_STACK_CREDENTIAL_MODE: 'github-org-secrets-and-vars',
-      LIVE_STACK_REQUIRED_ENV: 'GOOGLE_CLOUD_PROJECT,GOOGLE_API_KEY,GOOGLE_CLOUD_LOCATION,GOOGLE_GENAI_USE_VERTEXAI',
+      LIVE_STACK_REQUIRED_ENV: 'GOOGLE_API_KEY',
       LIVE_STACK_LAYERS: 'agent-mux install,agent-mux invocation,transport-mux route,provider/model trace',
       LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId',
       LIVE_STACK_EXPECTED_ARTIFACTS: 'agent-mux-events,transport-mux-trace,provider-trace-redacted',
@@ -46,21 +46,15 @@ describe('primary live stack runner contract', () => {
       cwd: '/repo',
       timeoutMs: 1000,
       env: {
-        GOOGLE_CLOUD_PROJECT: 'google-project',
         GOOGLE_API_KEY: 'google-secret',
-        GOOGLE_CLOUD_LOCATION: 'global',
-        GOOGLE_GENAI_USE_VERTEXAI: 'True',
         LIVE_STACK_TRACE_ID: 'trace-1',
       },
     });
 
     const launch = commands.at(-1);
-    expect(launch?.args).toContain('vertex');
-    expect(launch?.args).toContain('gemini-3.1-pro-preview');
-    expect(launch?.env['GOOGLE_CLOUD_PROJECT']).toBe('google-project');
+    expect(launch?.args).toContain('google');
+    expect(launch?.args).toContain('gemini-3.1-pro');
     expect(launch?.env['GOOGLE_API_KEY']).toBe('google-secret');
-    expect(launch?.env['GOOGLE_CLOUD_LOCATION']).toBe('global');
-    expect(launch?.env['GOOGLE_GENAI_USE_VERTEXAI']).toBe('True');
   });
 
   it('skips safely without Foundry credentials and never calls the command executor', async () => {

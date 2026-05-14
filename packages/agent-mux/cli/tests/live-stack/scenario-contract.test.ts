@@ -109,28 +109,28 @@ describe('live stack scenario contract primitives', () => {
     expect(scenario.agent.setupCommands).toEqual(['amux install babysitter', 'amux run babysitter']);
   });
 
-  it('accepts pipeline-selected Google Vertex Gemini scenarios', () => {
+  it('accepts pipeline-selected Google Gemini scenarios', () => {
     const scenario = liveStackScenarioFromEnv({
-      LIVE_STACK_SCENARIO_ID: 'live.agent-mux.claude-code.google-vertex.gemini-3.1-pro-preview',
+      LIVE_STACK_SCENARIO_ID: 'live.agent-mux.claude-code.google.gemini-3.1-pro',
       LIVE_STACK_AGENT_PATH: 'agent-mux',
       LIVE_STACK_AGENT: 'claude-code',
       LIVE_STACK_AMUX_AGENT: 'claude',
       LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin',
       LIVE_STACK_INSTALL_MODE: 'vanilla',
-      LIVE_STACK_PROVIDER: 'google-vertex',
-      LIVE_STACK_AMUX_PROVIDER: 'vertex',
-      LIVE_STACK_MODEL: 'gemini-3.1-pro-preview',
+      LIVE_STACK_PROVIDER: 'google',
+      LIVE_STACK_AMUX_PROVIDER: 'google',
+      LIVE_STACK_MODEL: 'gemini-3.1-pro',
       LIVE_STACK_CREDENTIAL_MODE: 'github-org-secrets-and-vars',
-      LIVE_STACK_REQUIRED_ENV: 'GOOGLE_CLOUD_PROJECT,GOOGLE_API_KEY,GOOGLE_CLOUD_LOCATION,GOOGLE_GENAI_USE_VERTEXAI',
+      LIVE_STACK_REQUIRED_ENV: 'GOOGLE_API_KEY',
       LIVE_STACK_LAYERS: 'agent-mux install,agent-mux invocation,transport-mux route,provider/model trace',
       LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId',
       LIVE_STACK_EXPECTED_ARTIFACTS: 'agent-mux-events,transport-mux-trace,provider-trace-redacted',
     });
 
-    expect(scenario.model.provider).toBe('google-vertex');
-    expect(scenario.model.amuxProvider).toBe('vertex');
-    expect(scenario.model.model).toBe('gemini-3.1-pro-preview');
-    expect(scenario.model.requiredEnv).toEqual(['GOOGLE_CLOUD_PROJECT', 'GOOGLE_API_KEY', 'GOOGLE_CLOUD_LOCATION', 'GOOGLE_GENAI_USE_VERTEXAI']);
+    expect(scenario.model.provider).toBe('google');
+    expect(scenario.model.amuxProvider).toBe('google');
+    expect(scenario.model.model).toBe('gemini-3.1-pro');
+    expect(scenario.model.requiredEnv).toEqual(['GOOGLE_API_KEY']);
   });
 
   it('separates live model capability gates from deterministic no-credential execution', () => {

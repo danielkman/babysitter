@@ -94,6 +94,7 @@ edges:
     - model:claude-sonnet-4-5@current
     - model:claude-sonnet-3-5@current
     - model:claude-haiku-4-5@current
+    - model:gemini-3-1-pro@current
     - model:gemini-2-5-pro@current
     - model:gemini-2-5-flash@current
     - model:gemini-2-0-flash@current

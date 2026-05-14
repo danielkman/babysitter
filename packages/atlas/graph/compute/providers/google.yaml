@@ -64,6 +64,7 @@ edges:
   - target: capability:model-discovery
     versionRange: '>=2024-01-01'
   serves:
+  - model:gemini-3-1-pro@current
   - model:gemini-2-5-pro@current
   emits_message_type:
   - protocol-message:gemini-content
