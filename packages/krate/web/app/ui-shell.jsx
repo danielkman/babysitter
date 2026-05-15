@@ -235,12 +235,12 @@ export async function AgentsDashboardPage({ org = null } = {}) {
     </div>
     <section className="routeGrid two">
       <div className="card">
-        <div className="cardTitle"><h2>Agent overview</h2><StatusPill tone={agentView.stacks.count ? 'good' : 'neutral'}>{ui.model.status}</StatusPill></div>
+        <div className="cardTitle"><h2>Agent overview</h2><StatusPill tone={agentView.stacks?.count ? 'good' : 'neutral'}>{ui.model.status}</StatusPill></div>
         <div className="metricGrid">
-          <a href={orgHref(activeOrg, '/agents/stacks')}><strong>{agentView.stacks.count}</strong><span>Agent stacks</span></a>
-          <a href={orgHref(activeOrg, '/agents/runs')}><strong>{agentView.runs.active?.length || 0}</strong><span>Active runs</span></a>
-          <a href={orgHref(activeOrg, '/agents/runs')}><strong>{agentView.approvals.pending?.length || 0}</strong><span>Pending approvals</span></a>
-          <a href={orgHref(activeOrg, '/agents/rules')}><strong>{agentView.rules.count}</strong><span>Trigger rules</span></a>
+          <a href={orgHref(activeOrg, '/agents/stacks')}><strong>{agentView.stacks?.count || 0}</strong><span>Agent stacks</span></a>
+          <a href={orgHref(activeOrg, '/agents/runs')}><strong>{agentView.runs?.active?.length || 0}</strong><span>Active runs</span></a>
+          <a href={orgHref(activeOrg, '/agents/runs')}><strong>{agentView.approvals?.pending?.length || 0}</strong><span>Pending approvals</span></a>
+          <a href={orgHref(activeOrg, '/agents/rules')}><strong>{agentView.rules?.count || 0}</strong><span>Trigger rules</span></a>
         </div>
         <InfoList title="Quick links" items={['View and inspect agent stack configurations', 'Monitor dispatch runs and their phases', 'Review trigger rules and delivery targets']} />
       </div>

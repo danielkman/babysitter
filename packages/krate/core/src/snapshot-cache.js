@@ -5,7 +5,7 @@
  *  - Configurable TTL via KRATE_SNAPSHOT_CACHE_TTL_MS
  */
 
-export const CACHE_TTL_MS = Number(process.env.KRATE_SNAPSHOT_CACHE_TTL_MS || 10_000);
+export const CACHE_TTL_MS = Number(process.env.KRATE_SNAPSHOT_CACHE_TTL_MS || 30_000);
 
 /**
  * Per-org cache map.  Key = org string (or '' for no-org).
