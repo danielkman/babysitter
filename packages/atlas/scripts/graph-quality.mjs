@@ -323,7 +323,15 @@ const laRoleCoverage = pct(laWithRole.size, libAgents.length);
 // ═══════════════════════════════════════════
 
 const specializations = byKind('Specialization');
-const specsWithSkillArea = new Set(edges.filter(e => e.kind === 'applies_to' && e.to.startsWith('specialization:')).map(e => e.to));
+const specializationIds = new Set(specializations.map(s => s.id));
+const skillAreaIds = new Set(skillAreas.map(s => s.id));
+const specsWithAppliedSkillArea = new Set(edges
+  .filter(e => e.kind === 'applies_to' && specializationIds.has(e.to) && skillAreaIds.has(e.from))
+  .map(e => e.to));
+const specsContainingSkillArea = new Set(edges
+  .filter(e => e.kind === 'contains' && specializationIds.has(e.from) && skillAreaIds.has(e.to))
+  .map(e => e.from));
+const specsWithSkillArea = new Set([...specsWithAppliedSkillArea, ...specsContainingSkillArea]);
 const specSkillCoverage = pct(specsWithSkillArea.size, specializations.length);
 
 const methodologies = byKind('Methodology');
