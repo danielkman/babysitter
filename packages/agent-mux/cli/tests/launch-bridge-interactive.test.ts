@@ -185,6 +185,7 @@ describe('bridge-interactive spawn', () => {
       expect(claudeConfig.projects[projectPath].projectOnboardingSeenCount).toBe(1);
       expect(claudeConfig.projects[projectPath].lastVersionBase).toBe('999.999.999');
       expect(claudeSettings.theme).toBe('dark');
+      expect(claudeSettings.skipDangerousModePermissionPrompt).toBe(true);
 
       const codexLaunch = launchCommand(
         makeClient('codex'),

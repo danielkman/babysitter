@@ -297,6 +297,7 @@ async function prepareClaudeAutomationState(cwd: string, env: Record<string, str
   await writeJsonObject(settingsPath, {
     ...settings,
     theme: typeof settings['theme'] === 'string' ? settings['theme'] : 'dark',
+    skipDangerousModePermissionPrompt: true,
     permissions: { allow: [], deny: [], ...recordObject(settings['permissions']) },
   });
 
