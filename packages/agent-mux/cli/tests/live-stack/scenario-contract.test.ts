@@ -229,10 +229,12 @@ describe('live stack scenario contract primitives', () => {
     expect(workflow).toContain('cancel-in-progress: true');
   });
 
-  it('schedules Pi in live-stack with idle-timeout completion detection', () => {
+  it('includes all target harnesses in live-stack matrix (some skipped)', () => {
     const workflow = fs.readFileSync('.github/workflows/live-stack.yml', 'utf8');
 
-    expect(workflow).toContain('live.agent-mux.pi.foundry-openai.gpt-5.5');
+    for (const harness of ['claude-code', 'codex', 'pi', 'hermes', 'gemini-cli', 'copilot-cli', 'cursor-cli']) {
+      expect(workflow).toContain(`live.agent-mux.${harness}.foundry-openai.gpt-5.5`);
+    }
   });
 
   it('keeps live-stack matrix concurrency below publish runner saturation', () => {
