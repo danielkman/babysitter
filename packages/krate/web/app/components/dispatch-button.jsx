@@ -46,12 +46,14 @@ export function DispatchButton({ org, stacks = [] }) {
 
   if (status === 'selecting') {
     return (
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center', padding: '8px 0' }}>
-        <select value={selectedStack} onChange={e => setSelectedStack(e.target.value)} style={{ padding: '6px 12px', borderRadius: 4, border: '1px solid #d1d5db', fontSize: 13 }}>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center', padding: '8px 0', flexWrap: 'wrap' }}>
+        <label htmlFor="dispatch-stack-select" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)' }}>Agent stack</label>
+        <select id="dispatch-stack-select" value={selectedStack} onChange={e => setSelectedStack(e.target.value)} style={{ padding: '6px 12px', borderRadius: 4, border: '1px solid #d1d5db', fontSize: 13 }} aria-label="Select agent stack">
           <option value="">Select stack...</option>
           {stacks.map(s => <option key={s} value={s}>{s}</option>)}
         </select>
-        <input placeholder="Repository (optional)" value={repository} onChange={e => setRepository(e.target.value)} style={{ padding: '6px 12px', borderRadius: 4, border: '1px solid #d1d5db', fontSize: 13, width: 180 }} />
+        <label htmlFor="dispatch-repo-input" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0,0,0,0)' }}>Repository</label>
+        <input id="dispatch-repo-input" placeholder="Repository (optional)" value={repository} onChange={e => setRepository(e.target.value)} style={{ padding: '6px 12px', borderRadius: 4, border: '1px solid #d1d5db', fontSize: 13, width: 180 }} aria-label="Repository (optional)" />
         <button onClick={handleDispatch} disabled={!selectedStack} style={{ ...primaryStyle, opacity: selectedStack ? 1 : 0.5 }}>Launch</button>
         <button onClick={() => { setStatus('idle'); setSelectedStack(''); setRepository(''); }} style={secondaryStyle}>Cancel</button>
       </div>

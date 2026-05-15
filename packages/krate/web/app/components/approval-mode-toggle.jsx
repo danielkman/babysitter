@@ -68,7 +68,7 @@ export function ApprovalModeToggle({ initialMode = 'prompt', onChange }) {
           borderRadius: 6,
           overflow: 'hidden',
         }}
-        role="group"
+        role="radiogroup"
         aria-label="Approval mode"
       >
         {MODES.map((m) => {
@@ -80,6 +80,8 @@ export function ApprovalModeToggle({ initialMode = 'prompt', onChange }) {
               onClick={() => handleSelect(m.id)}
               onMouseEnter={() => setTooltip(m.id)}
               onMouseLeave={() => setTooltip(null)}
+              role="radio"
+              aria-checked={active}
               aria-pressed={active}
               title={m.tooltip}
               style={{

@@ -25,14 +25,24 @@ const btnSecondaryStyle = { padding: '0.5rem 1.25rem', background: '#fff', color
 
 function StepIndicator({ current, total }) {
   return (
-    <div style={{ display: 'flex', gap: '0.375rem', marginBottom: '1.5rem' }}>
+    <div
+      style={{ display: 'flex', gap: '0.375rem', marginBottom: '1.5rem' }}
+      role="list"
+      aria-label={`Step ${current + 1} of ${total}`}
+    >
       {Array.from({ length: total }, (_, i) => (
-        <div key={i} style={{
-          height: 4,
-          flex: 1,
-          borderRadius: 2,
-          background: i < current ? '#2563eb' : i === current ? '#93c5fd' : '#e5e7eb',
-        }} />
+        <div
+          key={i}
+          role="listitem"
+          aria-current={i === current ? 'step' : undefined}
+          aria-label={`Step ${i + 1}${i < current ? ' (completed)' : i === current ? ' (current)' : ''}`}
+          style={{
+            height: 4,
+            flex: 1,
+            borderRadius: 2,
+            background: i < current ? '#2563eb' : i === current ? '#93c5fd' : '#e5e7eb',
+          }}
+        />
       ))}
     </div>
   );
@@ -109,8 +119,9 @@ function Step2Hosting({ hosting, setHosting, baseUrl, setBaseUrl, providerType }
 
       {hosting === 'self-hosted' && (
         <div>
-          <label style={labelStyle}>Base URL</label>
+          <label htmlFor="provider-base-url" style={labelStyle}>Base URL</label>
           <input
+            id="provider-base-url"
             type="url"
             value={baseUrl}
             onChange={(e) => setBaseUrl(e.target.value)}
@@ -169,8 +180,9 @@ function Step4Auth({ name, setName, secretRef, setSecretRef, providerType }) {
       <p style={{ margin: 0, fontSize: '0.8125rem', color: '#6b7280' }}>Configure the resource name and secret reference for API credentials.</p>
 
       <div>
-        <label style={labelStyle}>Provider resource name</label>
+        <label htmlFor="provider-resource-name" style={labelStyle}>Provider resource name <span aria-hidden="true" style={{ color: '#dc2626' }}>*</span></label>
         <input
+          id="provider-resource-name"
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-'))}
@@ -181,8 +193,9 @@ function Step4Auth({ name, setName, secretRef, setSecretRef, providerType }) {
       </div>
 
       <div>
-        <label style={labelStyle}>Secret name (for API key / App credentials)</label>
+        <label htmlFor="provider-secret-ref" style={labelStyle}>Secret name (for API key / App credentials) <span aria-hidden="true" style={{ color: '#dc2626' }}>*</span></label>
         <input
+          id="provider-secret-ref"
           type="text"
           value={secretRef}
           onChange={(e) => setSecretRef(e.target.value)}

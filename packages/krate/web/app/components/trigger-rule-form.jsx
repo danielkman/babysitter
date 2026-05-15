@@ -82,13 +82,15 @@ export function TriggerRuleForm({ org, stacks = [] }) {
         </div>
         <div style={fieldGroupStyle}>
           <div>
-            <label style={labelStyle}>Name</label>
+            <label htmlFor="trigger-name" style={labelStyle}>Name <span aria-hidden="true" style={{ color: '#dc2626' }}>*</span></label>
             <input
+              id="trigger-name"
               type="text"
               value={name}
               onChange={e => setName(e.target.value)}
               placeholder="my-trigger-rule"
               required
+              aria-required="true"
               style={inputStyle}
             />
           </div>
@@ -113,11 +115,13 @@ export function TriggerRuleForm({ org, stacks = [] }) {
           </div>
 
           <div>
-            <label style={labelStyle}>Target stack</label>
+            <label htmlFor="trigger-stack" style={labelStyle}>Target stack <span aria-hidden="true" style={{ color: '#dc2626' }}>*</span></label>
             <select
+              id="trigger-stack"
               value={stackRef}
               onChange={e => setStackRef(e.target.value)}
               required
+              aria-required="true"
               style={selectStyle}
             >
               <option value="">Select a stack...</option>
@@ -128,8 +132,9 @@ export function TriggerRuleForm({ org, stacks = [] }) {
           </div>
 
           <div>
-            <label style={labelStyle}>Task kind</label>
+            <label htmlFor="trigger-task-kind" style={labelStyle}>Task kind</label>
             <select
+              id="trigger-task-kind"
               value={taskKind}
               onChange={e => setTaskKind(e.target.value)}
               style={selectStyle}
@@ -141,8 +146,9 @@ export function TriggerRuleForm({ org, stacks = [] }) {
           </div>
 
           <div>
-            <label style={labelStyle}>Repository filter <small style={{ fontWeight: 400, color: '#6b7280' }}>(optional — leave empty for all repos)</small></label>
+            <label htmlFor="trigger-repository" style={labelStyle}>Repository filter <small style={{ fontWeight: 400, color: '#6b7280' }}>(optional — leave empty for all repos)</small></label>
             <input
+              id="trigger-repository"
               type="text"
               value={repository}
               onChange={e => setRepository(e.target.value)}
@@ -152,8 +158,9 @@ export function TriggerRuleForm({ org, stacks = [] }) {
           </div>
 
           <div>
-            <label style={labelStyle}>Condition expression <small style={{ fontWeight: 400, color: '#6b7280' }}>(optional)</small></label>
+            <label htmlFor="trigger-condition" style={labelStyle}>Condition expression <small style={{ fontWeight: 400, color: '#6b7280' }}>(optional)</small></label>
             <input
+              id="trigger-condition"
               type="text"
               value={condition}
               onChange={e => setCondition(e.target.value)}

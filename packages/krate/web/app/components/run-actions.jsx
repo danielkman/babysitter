@@ -57,7 +57,7 @@ export function ManualDispatchButton({ org, stacks = [] }) {
     return (
       <span style={{ display: 'inline-flex', gap: 8, alignItems: 'center' }}>
         <span style={{ fontSize: 13, color: '#16a34a', fontWeight: 600 }}>{message}</span>
-        <button onClick={reset} style={secondaryBtn}>Dispatch another</button>
+        <button onClick={reset} style={secondaryBtn} aria-label="Dispatch another run">Dispatch another</button>
       </span>
     );
   }
@@ -66,7 +66,7 @@ export function ManualDispatchButton({ org, stacks = [] }) {
     return (
       <span style={{ display: 'inline-flex', gap: 8, alignItems: 'center' }}>
         <span style={{ fontSize: 13, color: '#dc2626' }}>{message}</span>
-        <button onClick={reset} style={secondaryBtn}>Try again</button>
+        <button onClick={reset} style={secondaryBtn} aria-label="Try dispatch again">Try again</button>
       </span>
     );
   }
@@ -104,7 +104,7 @@ export function ManualDispatchButton({ org, stacks = [] }) {
       >
         {status === 'loading' ? 'Dispatching…' : 'Dispatch'}
       </button>
-      <button onClick={reset} style={secondaryBtn}>Cancel</button>
+      <button onClick={reset} style={secondaryBtn} aria-label="Cancel dispatch form">Cancel</button>
     </span>
   );
 }
@@ -177,7 +177,7 @@ export function RunActions({ org, runName, stackRef, phase }) {
   return (
     <span style={{ display: 'inline-flex', gap: 6, alignItems: 'center' }}>
       {canCancel && (
-        <button onClick={handleCancel} style={dangerBtn} title="Cancel this run">
+        <button onClick={handleCancel} style={dangerBtn} title="Cancel this run" aria-label={`Cancel run ${runName}`}>
           Cancel
         </button>
       )}
@@ -186,7 +186,7 @@ export function RunActions({ org, runName, stackRef, phase }) {
       {cancelStatus === 'error' && <span style={{ fontSize: 12, color: '#dc2626' }}>{cancelMsg}</span>}
 
       {canRetry && stackRef && (
-        <button onClick={handleRetry} style={secondaryBtn} title="Retry this run with the same stack">
+        <button onClick={handleRetry} style={secondaryBtn} title="Retry this run with the same stack" aria-label={`Retry run ${runName}`}>
           Retry
         </button>
       )}

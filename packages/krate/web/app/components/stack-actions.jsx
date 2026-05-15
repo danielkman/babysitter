@@ -54,13 +54,13 @@ export function StackActions({ org, stackName }) {
   return (
     <span style={{ display: 'flex', gap: 8, flexDirection: 'column', alignItems: 'flex-start' }}>
       <span style={{ display: 'flex', gap: 8 }}>
-        <a href={editHref} style={{ padding: '4px 8px', border: '1px solid #ccc', borderRadius: 4, textDecoration: 'none', fontSize: 'inherit' }}>
+        <a href={editHref} aria-label={`Edit stack ${stackName}`} style={{ padding: '4px 8px', border: '1px solid #ccc', borderRadius: 4, textDecoration: 'none', fontSize: 'inherit' }}>
           Edit
         </a>
-        <button onClick={handleDispatch} disabled={status !== 'idle'}>
+        <button onClick={handleDispatch} disabled={status !== 'idle'} aria-label={`Dispatch stack ${stackName}`}>
           {status === 'dispatching' ? 'Dispatching...' : status === 'dispatched' ? 'Dispatched!' : status === 'error' && errorMsg?.startsWith('Dispatch') ? 'Error' : 'Dispatch'}
         </button>
-        <button onClick={handleDelete} style={{ color: '#ef4444' }} disabled={status === 'deleting'}>
+        <button onClick={handleDelete} style={{ color: '#ef4444' }} disabled={status === 'deleting'} aria-label={`Delete stack ${stackName}`}>
           {status === 'deleting' ? 'Deleting...' : 'Delete'}
         </button>
       </span>
