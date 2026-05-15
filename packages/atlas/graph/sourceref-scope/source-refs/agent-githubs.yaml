@@ -136,3 +136,47 @@ attributes:
   path: "."
   kind: github-repo
 edges: {}
+---
+nodeKind: SourceRef
+id: source-ref:psclaudecode-github
+attributes:
+  description: "PSClaudeCode (GitHub)"
+  displayName: "PSClaudeCode (GitHub)"
+  repoUrl: https://github.com/dfinke/PSClaudeCode
+  ref: main
+  path: "."
+  kind: github-repo
+edges: {}
+---
+nodeKind: SourceRef
+id: source-ref:cyclop-one-github
+attributes:
+  description: "Cyclop One (GitHub)"
+  displayName: "Cyclop One (GitHub)"
+  repoUrl: https://github.com/cyclopone/cyclopone
+  ref: main
+  path: "."
+  kind: github-repo
+edges: {}
+---
+nodeKind: SourceRef
+id: source-ref:cli-anything-github
+attributes:
+  description: "CLI Anything (GitHub)"
+  displayName: "CLI Anything (GitHub)"
+  repoUrl: https://github.com/ATheoLogical/cli-anything
+  ref: main
+  path: "."
+  kind: github-repo
+edges: {}
+---
+nodeKind: SourceRef
+id: source-ref:nanny-github
+attributes:
+  description: "Nanny (GitHub)"
+  displayName: "Nanny (GitHub)"
+  repoUrl: https://github.com/nannycodes/nanny
+  ref: main
+  path: "."
+  kind: github-repo
+edges: {}

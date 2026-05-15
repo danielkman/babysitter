@@ -36,6 +36,9 @@ attributes:
   - install:manual
   minSchemaVersion: 6.0.0
 edges:
+  composed_of:
+  - target: agent-core-impl:psclaudecode.core@current
+    role: core
   version_of:
   - agent:psclaudecode
   sourced_from: []
@@ -56,6 +59,9 @@ attributes:
   - install:manual
   minSchemaVersion: 6.0.0
 edges:
+  composed_of:
+  - target: agent-core-impl:cyclop-one.core@current
+    role: core
   version_of:
   - agent:cyclop-one
   sourced_from: []
@@ -76,6 +82,9 @@ attributes:
   - install:manual
   minSchemaVersion: 6.0.0
 edges:
+  composed_of:
+  - target: agent-core-impl:cli-anything.core@current
+    role: core
   version_of:
   - agent:cli-anything
   sourced_from: []
@@ -96,6 +105,9 @@ attributes:
   - install:manual
   minSchemaVersion: 6.0.0
 edges:
+  composed_of:
+  - target: agent-core-impl:nanny.core@current
+    role: core
   version_of:
   - agent:nanny
   sourced_from: []
