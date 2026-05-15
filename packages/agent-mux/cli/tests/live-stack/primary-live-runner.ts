@@ -63,6 +63,10 @@ export function buildPrimaryLiveStackCommands(
   options: Pick<PrimaryLiveRunOptions, 'env' | 'cwd' | 'timeoutMs'>,
 ): readonly CommandExecution[] {
   const commandEnv = buildCommandEnv(options.env, options.cwd);
+  if (scenario.agent.installMode === 'babysitter-plugin') {
+    commandEnv['BABYSITTER_RUNS_DIR'] = commandEnv['BABYSITTER_RUNS_DIR'] ?? path.join(options.cwd, '.a5c', 'runs');
+    commandEnv['BABYSITTER_RUNS_SCOPE'] = commandEnv['BABYSITTER_RUNS_SCOPE'] ?? 'repo';
+  }
   if (scenario.agent.babysitterHarness) commandEnv['BABYSITTER_HARNESS'] = scenario.agent.babysitterHarness;
   const isInteractive = options.env['LIVE_STACK_INTERACTIVE'] === 'true';
   const timeoutMs = options.timeoutMs ?? (isInteractive ? INTERACTIVE_TIMEOUT_MS : DEFAULT_TIMEOUT_MS);
@@ -666,7 +670,7 @@ async function validateAgentBehavior(
     let hasStopHookInJournal = false;
     const runsDir = path.join(cwd, '.a5c', 'runs');
     try {
-      const runEntries = await fs.readdir(runsDir);
+      const runEntries = (await fs.readdir(runsDir)).sort();
       for (const entry of runEntries.slice(-5)) {
         try {
           const journalDir = path.join(runsDir, entry, 'journal');
@@ -747,8 +751,9 @@ async function validateAgentBehavior(
     let completionProofFound = false;
     let completionProofDetail = 'no completionProof found in any run';
     try {
-      const runEntries = await fs.readdir(runsDir);
-      for (const entry of runEntries.slice(-5)) {
+      const runEntries = (await fs.readdir(runsDir)).sort();
+      let bareRunDetail: string | undefined;
+      for (const entry of runEntries.slice(-10).reverse()) {
         const runFile = path.join(runsDir, entry, 'run.json');
         try {
           const runRaw = await fs.readFile(runFile, 'utf8');
@@ -775,18 +780,18 @@ async function validateAgentBehavior(
           const isBareRun = processId === 'bare-run' || !processId;
 
           if (isBareRun) {
-            // This check only runs for babysitter-plugin scenarios.
-            // A bare run means the babysitter skill didn't assign a process.
-            completionProofDetail = `run ${entry} is still a bare run — babysitter skill should have assigned a process via run:assign-process`;
-          } else if (hasRunCompleted) {
+            bareRunDetail ??= `run ${entry} is still a bare run — babysitter skill should have assigned a process via run:assign-process`;
+            continue;
+          }
+          if (hasRunCompleted) {
             completionProofFound = true;
             completionProofDetail = `run ${entry} completed with processId=${processId} and completionProof`;
-          } else {
-            completionProofDetail = `run ${entry} has completionProof and processId=${processId} but no RUN_COMPLETED event in journal`;
+            break;
           }
-          break;
+          completionProofDetail = `run ${entry} has completionProof and processId=${processId} but no RUN_COMPLETED event in journal`;
         } catch { continue; }
       }
+      if (!completionProofFound && bareRunDetail) completionProofDetail = bareRunDetail;
     } catch {
       completionProofDetail = 'no .a5c/runs/ directory found';
     }

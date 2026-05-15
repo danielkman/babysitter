@@ -25,6 +25,20 @@ describe('primary live stack runner contract', () => {
     expect(run?.args).not.toContain('sonnet');
   });
 
+  it('pins babysitter-plugin runs to the workspace runs directory', () => {
+    const scenario = primaryLiveStackScenario();
+    const commands = buildPrimaryLiveStackCommands(scenario, {
+      cwd: '/repo',
+      timeoutMs: 1000,
+      env: { AZURE_API_KEY: 'sk-live-secret', AMUX_API_BASE: 'https://foundry.example.test', LIVE_STACK_TRACE_ID: 'trace-1' },
+    });
+
+    for (const command of commands) {
+      expect(command.env['BABYSITTER_RUNS_DIR']).toBe(path.join('/repo', '.a5c', 'runs'));
+      expect(command.env['BABYSITTER_RUNS_SCOPE']).toBe('repo');
+    }
+  });
+
   it('passes explicit Google env to Gemini 3.1 Pro live lanes', () => {
     const scenario = liveStackScenarioFromEnv({
       LIVE_STACK_SCENARIO_ID: 'live.agent-mux.claude-code.google.gemini-3.1-pro',
@@ -85,6 +99,53 @@ describe('primary live stack runner contract', () => {
     expect(result.status).toBe('skipped');
     expect(result.skipReason).toBe('set LIVE_STACK_RUN_MODEL_TESTS=1 to execute live provider scenario');
     expect(JSON.stringify(result)).not.toContain('sk-live-secret');
+  });
+
+  it('accepts completed plugin runs when setup also leaves a bare run behind', async () => {
+    const cwd = await fs.mkdtemp(path.join(os.tmpdir(), 'live-stack-plugin-run-'));
+    const artifactsDir = path.join(cwd, 'artifacts');
+    const traceId = 'trace-plugin-run';
+    const completedRunId = '01KRNFFW81BT433PT8HSTA32NZ';
+    const bareRunId = '01KRNFFW81BT433PT8HSTA32NY';
+
+    const result = await runPrimaryLiveStackScenario({
+      cwd,
+      artifactsDir,
+      executeLiveProvider: true,
+      env: { AZURE_API_KEY: 'sk-live-secret', AMUX_API_BASE: 'https://foundry.example.test', LIVE_STACK_TRACE_ID: traceId },
+      executeCommand: async (command) => {
+        if (!command.args.includes('launch')) return { status: 0, stdout: '{}', stderr: '' };
+
+        await fs.mkdir(path.join(cwd, '.a5c-live-test'), { recursive: true });
+        await fs.writeFile(path.join(cwd, '.a5c-live-test', `${traceId}-odyssey.md`), '# Odyssey\n\n' + 'Greek text ΑΒΓ '.repeat(80));
+        for (const [runId, processId, completed] of [
+          [bareRunId, 'bare-run', false],
+          [completedRunId, 'live-stack-e2e', true],
+        ] as const) {
+          const runDir = path.join(cwd, '.a5c', 'runs', runId);
+          await fs.mkdir(path.join(runDir, 'journal'), { recursive: true });
+          await fs.writeFile(path.join(runDir, 'run.json'), JSON.stringify({ processId, metadata: { completionProof: `${runId}-proof` } }));
+          await fs.writeFile(path.join(runDir, 'journal', '001.json'), completed ? 'RUN_COMPLETED' : 'RUN_CREATED');
+        }
+
+        return {
+          status: 0,
+          stdout: [
+            'agentMuxRunId: amux-run-1',
+            'agentMuxSessionId: amux-session-1',
+            `babysitterRunId: ${completedRunId}`,
+            'babysitterEffectId: effect-1',
+            'hookEventId: hook-1',
+            'hookMuxEventId: hookmux-1',
+            `transportTraceId: ${traceId}`,
+          ].join('\n'),
+          stderr: '',
+        };
+      },
+    });
+
+    expect(result.status).toBe('passed');
+    expect(result.failure).toBeUndefined();
   });
 
   it('writes a redacted failed artifact when live output lacks required joined trace IDs', async () => {

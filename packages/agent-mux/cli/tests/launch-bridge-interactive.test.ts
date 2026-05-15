@@ -1,3 +1,7 @@
+import * as fs from 'node:fs/promises';
+import * as os from 'node:os';
+import * as path from 'node:path';
+
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // ---------------------------------------------------------------------------
@@ -146,6 +150,51 @@ describe('bridge-interactive spawn', () => {
       },
     } as any;
   }
+
+  it('preseeds first-run trust state for CI harness launches', async () => {
+    const { launchCommand, LAUNCH_FLAGS, parseArgs } = await importModules();
+    const home = await fs.mkdtemp(path.join(os.tmpdir(), 'amux-launch-home-'));
+    const originalHome = process.env['HOME'];
+    const originalUserProfile = process.env['USERPROFILE'];
+    const originalCi = process.env['CI'];
+    process.env['HOME'] = home;
+    process.env['USERPROFILE'] = home;
+    process.env['CI'] = 'true';
+
+    try {
+      const claudeLaunch = launchCommand(
+        makeClient('claude'),
+        parseArgs(['launch', 'claude', '--bridge-interactive', '--no-interactive', '--prompt', 'hello'], LAUNCH_FLAGS),
+      );
+      await new Promise(r => setTimeout(r, 20));
+      for (const cb of ptyExitCallbacks) cb({ exitCode: 0 });
+      await claudeLaunch;
+
+      const claudeConfig = JSON.parse(await fs.readFile(path.join(home, '.claude.json'), 'utf8'));
+      const claudeSettings = JSON.parse(await fs.readFile(path.join(home, '.claude', 'settings.json'), 'utf8'));
+      const projectPath = path.resolve(process.cwd()).replace(/\\/g, '/');
+      expect(claudeConfig.hasCompletedOnboarding).toBe(true);
+      expect(claudeConfig.projects[projectPath].hasTrustDialogAccepted).toBe(true);
+      expect(claudeConfig.projects[projectPath].hasCompletedProjectOnboarding).toBe(true);
+      expect(claudeSettings.theme).toBe('dark');
+
+      const codexLaunch = launchCommand(
+        makeClient('codex'),
+        parseArgs(['launch', 'codex', '--bridge-interactive', '--no-interactive', '--prompt', 'hello'], LAUNCH_FLAGS),
+      );
+      await new Promise(r => setTimeout(r, 20));
+      for (const cb of ptyExitCallbacks) cb({ exitCode: 0 });
+      await codexLaunch;
+
+      const codexConfig = await fs.readFile(path.join(home, '.codex', 'config.toml'), 'utf8');
+      expect(codexConfig).toContain(`[projects.${JSON.stringify(path.resolve(process.cwd()))}]`);
+      expect(codexConfig).toContain('trust_level = "trusted"');
+    } finally {
+      if (originalHome === undefined) delete process.env['HOME']; else process.env['HOME'] = originalHome;
+      if (originalUserProfile === undefined) delete process.env['USERPROFILE']; else process.env['USERPROFILE'] = originalUserProfile;
+      if (originalCi === undefined) delete process.env['CI']; else process.env['CI'] = originalCi;
+    }
+  });
 
   it('spawns PTY, emits NDJSON events, and auto-kills on turn_end', async () => {
     const { launchCommand, LAUNCH_FLAGS, parseArgs } = await importModules();

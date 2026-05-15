@@ -234,6 +234,105 @@ function appendHarnessSessionArgs(plan: LaunchPlan, session: SessionArgs): void 
 // Provider auth validation helper
 // ---------------------------------------------------------------------------
 
+
+async function prepareHarnessAutomationState(harness: string, cwd: string, env: Record<string, string>): Promise<void> {
+  if (!isAutomationPreseedEnabled(env)) return;
+  if (harness === 'claude') await prepareClaudeAutomationState(cwd);
+  if (harness === 'codex') await prepareCodexAutomationState(cwd);
+}
+
+function isAutomationPreseedEnabled(env: Record<string, string>): boolean {
+  return env['AMUX_PRESEED_HARNESS_ONBOARDING'] === '1' || env['CI'] === 'true' || env['GITHUB_ACTIONS'] === 'true' || process.env['CI'] === 'true' || process.env['GITHUB_ACTIONS'] === 'true';
+}
+
+function automationHome(): string | undefined {
+  return process.env['HOME'] || process.env['USERPROFILE'];
+}
+
+async function readJsonObject(filePath: string): Promise<Record<string, unknown>> {
+  try {
+    const fs = await import('node:fs/promises');
+    const value = JSON.parse(await fs.readFile(filePath, 'utf8'));
+    return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
+  } catch {
+    return {};
+  }
+}
+
+async function writeJsonObject(filePath: string, value: Record<string, unknown>): Promise<void> {
+  const { dirname } = await import('node:path');
+  const fs = await import('node:fs/promises');
+  await fs.mkdir(dirname(filePath), { recursive: true });
+  await fs.writeFile(filePath, `${JSON.stringify(value, null, 2)}\n`);
+}
+
+function recordObject(value: unknown): Record<string, unknown> {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
+}
+
+async function prepareClaudeAutomationState(cwd: string): Promise<void> {
+  const home = automationHome();
+  if (!home) return;
+  const { join, resolve } = await import('node:path');
+  const settingsPath = join(home, '.claude', 'settings.json');
+  const settings = await readJsonObject(settingsPath);
+  await writeJsonObject(settingsPath, {
+    ...settings,
+    theme: typeof settings['theme'] === 'string' ? settings['theme'] : 'dark',
+    permissions: { allow: [], deny: [], ...recordObject(settings['permissions']) },
+  });
+
+  const configPath = join(home, '.claude.json');
+  const config = await readJsonObject(configPath);
+  const projects = recordObject(config['projects']);
+  const projectPath = resolve(cwd).replace(/\\/g, '/');
+  const project = recordObject(projects[projectPath]);
+  projects[projectPath] = {
+    allowedTools: [],
+    mcpContextUris: [],
+    mcpServers: {},
+    enabledMcpjsonServers: [],
+    disabledMcpjsonServers: [],
+    hasClaudeMdExternalIncludesApproved: false,
+    hasClaudeMdExternalIncludesWarningShown: false,
+    ...project,
+    hasTrustDialogAccepted: true,
+    hasCompletedProjectOnboarding: true,
+  };
+  await writeJsonObject(configPath, {
+    ...config,
+    numStartups: typeof config['numStartups'] === 'number' ? config['numStartups'] : 0,
+    hasCompletedOnboarding: true,
+    lastOnboardingVersion: typeof config['lastOnboardingVersion'] === 'string' ? config['lastOnboardingVersion'] : 'automation',
+    hasIdeOnboardingBeenShown: { vscode: true, ...recordObject(config['hasIdeOnboardingBeenShown']) },
+    officialMarketplaceAutoInstallAttempted: true,
+    officialMarketplaceAutoInstalled: true,
+    projects,
+  });
+}
+
+async function prepareCodexAutomationState(cwd: string): Promise<void> {
+  const home = automationHome();
+  if (!home) return;
+  const { join, resolve, dirname } = await import('node:path');
+  const fs = await import('node:fs/promises');
+  const configPath = join(home, '.codex', 'config.toml');
+  await fs.mkdir(dirname(configPath), { recursive: true });
+  let config = '';
+  try {
+    config = await fs.readFile(configPath, 'utf8');
+  } catch {
+    config = '';
+  }
+  const projectPath = resolve(cwd);
+  const basicKey = JSON.stringify(projectPath);
+  const literalKey = `'${projectPath}'`;
+  if (config.includes(`[projects.${basicKey}]`) || config.includes(`[projects.${literalKey}]`)) return;
+  const prefix = config.trimEnd();
+  const addition = `[projects.${basicKey}]\ntrust_level = "trusted"\n`;
+  await fs.writeFile(configPath, `${prefix}${prefix ? '\n\n' : ''}${addition}`);
+}
+
 async function validateProviderAuth(plan: LaunchPlan): Promise<string | null> {
   const { execSync } = await import('node:child_process');
   try {
@@ -629,6 +728,8 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
     });
     await bridgeHookEmulator.emulateSessionStart();
   }
+
+  await prepareHarnessAutomationState(plan.harness, launchCwd, plan.env);
 
   // Spawn harness
 
