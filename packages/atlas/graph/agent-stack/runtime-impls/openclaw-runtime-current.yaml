@@ -29,6 +29,8 @@ edges:
     role: runtime
   exposes:
   - target: hook-surface:openclaw.on-event
+  - target: hook-surface:error
+  - target: hook-surface:tool-permission-request
   bundles:
   - target: tool-descriptor:read
   - target: tool-descriptor:write

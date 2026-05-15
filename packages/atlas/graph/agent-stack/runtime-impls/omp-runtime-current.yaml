@@ -29,6 +29,7 @@ edges:
     role: runtime
   exposes:
   - target: hook-surface:omp.on-event
+  - target: hook-surface:error
   bundles:
   - target: tool-descriptor:read
   - target: tool-descriptor:write

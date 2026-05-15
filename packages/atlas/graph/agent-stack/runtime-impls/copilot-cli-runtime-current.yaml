@@ -30,6 +30,7 @@ edges:
   exposes:
   - target: hook-surface:copilot.pre-tool
   - target: hook-surface:copilot.post-tool
+  - target: hook-surface:error
   bundles: []
   connects:
   - target: mcp-transport:stdio

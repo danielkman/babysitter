@@ -38,6 +38,10 @@ edges:
   - target: hook-surface:gemini.post-response
   - target: hook-surface:gemini.tool-call-pre
   - target: hook-surface:gemini.tool-call-post
+  - target: hook-surface:before-tool-selection
+  - target: hook-surface:before-model
+  - target: hook-surface:after-model
+  - target: hook-surface:before-agent
   bundles:
   - target: tool-descriptor:read
   - target: tool-descriptor:write
