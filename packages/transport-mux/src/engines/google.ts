@@ -22,15 +22,57 @@ export interface GoogleCompletionEngineOptions {
   useVertexAi?: boolean;
 }
 
-function buildGoogleContents(messages: Array<{ role: string; content: string }>): Array<{ role: string; parts: Array<{ text: string }> }> {
-  return messages.map((message) => ({
-    role: message.role === 'assistant' || message.role === 'model' ? 'model' : 'user',
-    parts: [{ text: message.content }],
-  }));
+type GoogleContentPart = { text: string } | { functionCall: { name: string; args: Record<string, unknown> } } | { functionResponse: { name: string; response: { content: string } } };
+
+function translateMessagesToGoogle(messages: CompletionRequest['messages']): Array<{ role: string; parts: GoogleContentPart[] }> {
+  const result: Array<{ role: string; parts: GoogleContentPart[] }> = [];
+  const toolIdToName = new Map<string, string>();
+  for (const msg of messages) {
+    const googleRole = msg.role === 'assistant' || msg.role === 'model' ? 'model' : 'user';
+    const raw = msg.rawContent;
+
+    if (!Array.isArray(raw)) {
+      result.push({ role: googleRole, parts: [{ text: msg.content }] });
+      continue;
+    }
+
+    const blocks = raw as Array<Record<string, unknown>>;
+    const parts: GoogleContentPart[] = [];
+
+    for (const block of blocks) {
+      if (block['type'] === 'tool_use') {
+        const name = String(block['name'] ?? '');
+        const id = String(block['id'] ?? '');
+        if (id) toolIdToName.set(id, name);
+        parts.push({
+          functionCall: { name, args: (block['input'] as Record<string, unknown>) ?? {} },
+        });
+      } else if (block['type'] === 'tool_result') {
+        const content = typeof block['content'] === 'string' ? block['content']
+          : Array.isArray(block['content']) ? (block['content'] as Array<Record<string, unknown>>).map(c => c['text'] ?? '').join('')
+          : JSON.stringify(block['content'] ?? '');
+        const toolUseId = String(block['tool_use_id'] ?? '');
+        parts.push({
+          functionResponse: {
+            name: toolIdToName.get(toolUseId) ?? String(block['name'] ?? toolUseId),
+            response: { content },
+          },
+        });
+      } else if (block['type'] === 'text' && block['text']) {
+        parts.push({ text: String(block['text']) });
+      }
+    }
+
+    if (parts.length === 0) {
+      parts.push({ text: msg.content || '' });
+    }
+    result.push({ role: googleRole, parts });
+  }
+  return result;
 }
 
-function buildGoogleBody(messages: Array<{ role: string; content: string }>, tools?: unknown[]): string {
-  const body: Record<string, unknown> = { contents: buildGoogleContents(messages) };
+function buildGoogleBody(messages: CompletionRequest['messages'], tools?: unknown[]): string {
+  const body: Record<string, unknown> = { contents: translateMessagesToGoogle(messages) };
   if (tools && tools.length > 0) {
     body.tools = [{ functionDeclarations: tools.map((t: any) => ({ name: t.function?.name ?? t.name, description: t.function?.description ?? t.description, parameters: t.function?.parameters ?? t.parameters })) }];
   }
@@ -155,11 +197,10 @@ async function* parseGoogleStream(response: Response): AsyncIterable<CompletionS
 export function createGoogleCompletionEngine(options: GoogleCompletionEngineOptions): CompletionEngine {
   return {
     async complete(request: CompletionRequest): Promise<CompletionResult> {
-      const messages = request.messages.map((m) => ({ role: m.role, content: m.content }));
       const response = await fetch(buildGoogleUrl(options, false), {
         method: 'POST',
         headers: googleHeaders(),
-        body: buildGoogleBody(messages, request.tools),
+        body: buildGoogleBody(request.messages, request.tools),
       });
 
       if (!response.ok) {
@@ -182,11 +223,10 @@ export function createGoogleCompletionEngine(options: GoogleCompletionEngineOpti
     },
 
     async *stream(request: CompletionRequest): AsyncIterable<CompletionStreamEvent> {
-      const messages = request.messages.map((m) => ({ role: m.role, content: m.content }));
       const response = await fetch(buildGoogleUrl(options, true), {
         method: 'POST',
         headers: googleHeaders(),
-        body: buildGoogleBody(messages, request.tools),
+        body: buildGoogleBody(request.messages, request.tools),
       });
 
       if (!response.ok) {
