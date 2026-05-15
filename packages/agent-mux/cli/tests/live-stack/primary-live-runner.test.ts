@@ -261,7 +261,7 @@ describe('primary live stack runner contract', () => {
       executeLiveProvider: true,
       env: process.env,
       executeCommand: executeChildProcessCommand,
-      timeoutMs: 20 * 60 * 1000,
+      timeoutMs: 5 * 60 * 1000,
     });
 
     expect(result.status).toBe('passed');

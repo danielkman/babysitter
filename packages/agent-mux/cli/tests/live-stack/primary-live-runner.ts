@@ -55,8 +55,9 @@ export interface PrimaryLiveRunResult {
   readonly verifications?: readonly VerificationEntry[];
 }
 
-const DEFAULT_TIMEOUT_MS = 10 * 60 * 1000;
-const INTERACTIVE_TIMEOUT_MS = 10 * 60 * 1000;
+const SETUP_TIMEOUT_MS = 2 * 60 * 1000;
+const DEFAULT_TIMEOUT_MS = 5 * 60 * 1000;
+const INTERACTIVE_TIMEOUT_MS = 5 * 60 * 1000;
 
 export function buildPrimaryLiveStackCommands(
   scenario: LiveStackScenario,
@@ -108,16 +109,16 @@ export function buildPrimaryLiveStackCommands(
 
     if (scenario.agent.installMode === 'vanilla') {
       return [
-        commandExecution(commandEnv, 'LIVE_STACK_AMUX_BIN', 'amux', ['install', 'babysitter', '--json'], options.cwd, timeoutMs),
+        commandExecution(commandEnv, 'LIVE_STACK_AMUX_BIN', 'amux', ['install', 'babysitter', '--json'], options.cwd, SETUP_TIMEOUT_MS),
         runCommand,
       ];
     }
 
     return [
-      commandExecution(commandEnv, 'LIVE_STACK_NPM_BIN', 'npm', ['run', 'generate:plugins'], options.cwd, timeoutMs),
-      commandExecution(commandEnv, 'LIVE_STACK_AMUX_BIN', 'amux', ['install', 'babysitter', '--json'], options.cwd, timeoutMs),
-      commandExecution(commandEnv, 'LIVE_STACK_NPM_BIN', 'npm', ['install', '--global', './packages/sdk'], options.cwd, timeoutMs),
-      generatedPluginInstallCommand(commandEnv, scenario, options.cwd, timeoutMs),
+      commandExecution(commandEnv, 'LIVE_STACK_NPM_BIN', 'npm', ['run', 'generate:plugins'], options.cwd, SETUP_TIMEOUT_MS),
+      commandExecution(commandEnv, 'LIVE_STACK_AMUX_BIN', 'amux', ['install', 'babysitter', '--json'], options.cwd, SETUP_TIMEOUT_MS),
+      commandExecution(commandEnv, 'LIVE_STACK_NPM_BIN', 'npm', ['install', '--global', './packages/sdk'], options.cwd, SETUP_TIMEOUT_MS),
+      generatedPluginInstallCommand(commandEnv, scenario, options.cwd, SETUP_TIMEOUT_MS),
       runCommand,
     ];
   }
@@ -157,20 +158,17 @@ export function buildPrimaryLiveStackCommands(
 
   if (scenario.agent.installMode === 'vanilla') {
     return [
-      commandExecution(commandEnv, 'LIVE_STACK_AMUX_BIN', 'amux', ['install', installTarget, '--json'], options.cwd, timeoutMs),
+      commandExecution(commandEnv, 'LIVE_STACK_AMUX_BIN', 'amux', ['install', installTarget, '--json'], options.cwd, SETUP_TIMEOUT_MS),
       executionCommand,
     ];
   }
 
   return [
-    commandExecution(commandEnv, 'LIVE_STACK_NPM_BIN', 'npm', ['run', 'generate:plugins'], options.cwd, timeoutMs),
-    commandExecution(commandEnv, 'LIVE_STACK_AMUX_BIN', 'amux', ['install', installTarget, '--json'], options.cwd, timeoutMs),
-    commandExecution(commandEnv, 'LIVE_STACK_NPM_BIN', 'npm', ['install', '--global', './packages/sdk'], options.cwd, timeoutMs),
-    generatedPluginInstallCommand(commandEnv, scenario, options.cwd, timeoutMs),
-    // Create a bare babysitter run so .a5c/runs/ exists for verification.
-    // No --entry means bare run — just creates the directory + journal.
-    // --runs-dir ensures the run is created in the project dir, not global ~/.a5c/runs.
-    commandExecution(commandEnv, 'LIVE_STACK_BABYSITTER_BIN', 'babysitter', ['run:create', '--process-id', 'live-stack-e2e', '--runs-dir', path.join(options.cwd, '.a5c', 'runs'), '--prompt', prompt, '--json'], options.cwd, timeoutMs),
+    commandExecution(commandEnv, 'LIVE_STACK_NPM_BIN', 'npm', ['run', 'generate:plugins'], options.cwd, SETUP_TIMEOUT_MS),
+    commandExecution(commandEnv, 'LIVE_STACK_AMUX_BIN', 'amux', ['install', installTarget, '--json'], options.cwd, SETUP_TIMEOUT_MS),
+    commandExecution(commandEnv, 'LIVE_STACK_NPM_BIN', 'npm', ['install', '--global', './packages/sdk'], options.cwd, SETUP_TIMEOUT_MS),
+    generatedPluginInstallCommand(commandEnv, scenario, options.cwd, SETUP_TIMEOUT_MS),
+    commandExecution(commandEnv, 'LIVE_STACK_BABYSITTER_BIN', 'babysitter', ['run:create', '--process-id', 'live-stack-e2e', '--runs-dir', path.join(options.cwd, '.a5c', 'runs'), '--prompt', prompt, '--json'], options.cwd, SETUP_TIMEOUT_MS),
     executionCommand,
   ];
 }

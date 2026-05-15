@@ -19,7 +19,7 @@ describe('pipeline-owned live stack scenario execution', () => {
       executeLiveProvider: process.env['LIVE_STACK_RUN_MODEL_TESTS'] === '1',
       requireRunnable: requireLiveEvidence,
       executeCommand: executeChildProcessCommand,
-      timeoutMs: Number(process.env['LIVE_STACK_COMMAND_TIMEOUT_MS'] ?? 20 * 60 * 1000),
+      timeoutMs: Number(process.env['LIVE_STACK_COMMAND_TIMEOUT_MS'] ?? 5 * 60 * 1000),
     });
 
     if (!requireLiveEvidence) {
@@ -52,7 +52,7 @@ describe('pipeline-owned live stack scenario execution', () => {
     const artifactContent = await fs.readFile(result.artifactPath!, 'utf8');
     const artifact = JSON.parse(artifactContent);
     expect(artifact.status).toBe('passed');
-  }, Number(process.env['LIVE_STACK_TEST_TIMEOUT_MS'] ?? 25 * 60 * 1000));
+  }, Number(process.env['LIVE_STACK_TEST_TIMEOUT_MS'] ?? 6 * 60 * 1000));
 
   it('keeps local non-live runs cheap and explicit', async () => {
     if (process.env['LIVE_STACK_REQUIRE_EVIDENCE'] === '1') return;
