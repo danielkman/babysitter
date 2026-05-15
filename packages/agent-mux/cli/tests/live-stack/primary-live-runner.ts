@@ -170,7 +170,7 @@ export function buildPrimaryLiveStackCommands(
     commandExecution(commandEnv, 'LIVE_STACK_AMUX_BIN', 'amux', ['install', installTarget, '--json'], options.cwd, SETUP_TIMEOUT_MS),
     commandExecution(commandEnv, 'LIVE_STACK_NPM_BIN', 'npm', ['install', '--global', './packages/sdk'], options.cwd, SETUP_TIMEOUT_MS),
     generatedPluginInstallCommand(commandEnv, scenario, options.cwd, SETUP_TIMEOUT_MS),
-    commandExecution(commandEnv, 'LIVE_STACK_BABYSITTER_BIN', 'babysitter', ['run:create', '--process-id', LIVE_STACK_PROCESS_ID, '--entry', path.join(options.cwd, LIVE_STACK_PROCESS_ENTRY), '--runs-dir', path.join(options.cwd, '.a5c', 'runs'), '--prompt', prompt, '--json'], options.cwd, SETUP_TIMEOUT_MS),
+    commandExecution(commandEnv, 'LIVE_STACK_BABYSITTER_BIN', 'babysitter', ['run:create', '--process-id', 'live-stack-e2e', '--runs-dir', path.join(options.cwd, '.a5c', 'runs'), '--prompt', prompt, '--json'], options.cwd, SETUP_TIMEOUT_MS),
     executionCommand,
   ];
 }
