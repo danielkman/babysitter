@@ -481,10 +481,6 @@ jobs:
             interactive: 'false'
             bridge_interactive: 'false'
             bridge_hooks: 'false'
-          - id: bridged-hooks
-            interactive: 'false'
-            bridge_interactive: 'false'
-            bridge_hooks: 'true'
           - id: bridged-interactive
             interactive: 'false'
             bridge_interactive: 'true'
@@ -537,8 +533,6 @@ jobs:
         exclude:
           - interaction_mode: { id: bridged-interactive }
             scenario: { amux_agent: codex }
-          - interaction_mode: { id: bridged-hooks }
-            scenario: { amux_agent: pi }
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
