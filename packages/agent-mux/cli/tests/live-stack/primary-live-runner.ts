@@ -58,9 +58,6 @@ export interface PrimaryLiveRunResult {
 const SETUP_TIMEOUT_MS = 2 * 60 * 1000;
 const DEFAULT_TIMEOUT_MS = 5 * 60 * 1000;
 const INTERACTIVE_TIMEOUT_MS = 5 * 60 * 1000;
-const LIVE_STACK_PROCESS_ID = 'processes/shared/local-dev-workflow';
-const LIVE_STACK_PROCESS_ENTRY = path.join('library', 'processes', 'shared', 'local-dev-workflow.js') + '#process';
-
 export function buildPrimaryLiveStackCommands(
   scenario: LiveStackScenario,
   options: Pick<PrimaryLiveRunOptions, 'env' | 'cwd' | 'timeoutMs'>,
@@ -170,7 +167,6 @@ export function buildPrimaryLiveStackCommands(
     commandExecution(commandEnv, 'LIVE_STACK_AMUX_BIN', 'amux', ['install', installTarget, '--json'], options.cwd, SETUP_TIMEOUT_MS),
     commandExecution(commandEnv, 'LIVE_STACK_NPM_BIN', 'npm', ['install', '--global', './packages/sdk'], options.cwd, SETUP_TIMEOUT_MS),
     generatedPluginInstallCommand(commandEnv, scenario, options.cwd, SETUP_TIMEOUT_MS),
-    commandExecution(commandEnv, 'LIVE_STACK_BABYSITTER_BIN', 'babysitter', ['run:create', '--process-id', 'live-stack-e2e', '--runs-dir', path.join(options.cwd, '.a5c', 'runs'), '--prompt', prompt, '--json'], options.cwd, SETUP_TIMEOUT_MS),
     executionCommand,
   ];
 }

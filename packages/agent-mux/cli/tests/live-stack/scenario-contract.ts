@@ -203,7 +203,6 @@ function setupCommandsFor(agentPath: LiveStackAgentPath, agent: LiveStackAgentId
     `amux install ${agentMuxAgent}`,
     'npm install --global ./packages/sdk',
     `babysitter harness:install-plugin ${agent}`,
-    'babysitter run:create --process-id processes/shared/local-dev-workflow --entry library/processes/shared/local-dev-workflow.js#process',
     agent === 'babysitter-agent' ? 'amux run babysitter' : `amux launch ${agentMuxAgent}`,
   ];
 }

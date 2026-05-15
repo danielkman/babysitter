@@ -39,7 +39,7 @@ describe('primary live stack runner contract', () => {
     }
   });
 
-  it('creates an assigned Babysitter setup run for plugin live lanes', () => {
+  it('does not pre-create a babysitter run — hooks handle run lifecycle', () => {
     const scenario = primaryLiveStackScenario();
     const commands = buildPrimaryLiveStackCommands(scenario, {
       cwd: '/repo',
@@ -47,10 +47,8 @@ describe('primary live stack runner contract', () => {
       env: { AZURE_API_KEY: 'sk-live-secret', AMUX_API_BASE: 'https://foundry.example.test', LIVE_STACK_TRACE_ID: 'trace-1' },
     });
 
-    const createRun = commands.find((command) => command.command === 'babysitter' && command.args[0] === 'run:create');
-    expect(createRun?.args).toContain('--entry');
-    expect(createRun?.args).toContain(`${path.join('/repo', 'library', 'processes', 'shared', 'local-dev-workflow.js')}#process`);
-    expect(createRun?.args).toContain('processes/shared/local-dev-workflow');
+    const createRun = commands.find((command) => command.args?.[0] === 'run:create');
+    expect(createRun).toBeUndefined();
   });
 
   it('passes explicit Google env to Gemini 3.1 Pro live lanes', () => {
