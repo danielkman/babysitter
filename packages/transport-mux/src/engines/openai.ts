@@ -95,7 +95,11 @@ function normalizeOpenAiToolChoice(toolChoice: unknown): unknown {
 function buildBody(messages: Array<{ role: string; content: string }>, model: string, stream: boolean, tools?: unknown[], toolChoice?: unknown): string {
   const body: Record<string, unknown> = { messages, model, stream };
   const openAiTools = normalizeOpenAiTools(tools);
-  if (openAiTools) body.tools = openAiTools;
+  if (openAiTools) {
+    body.tools = openAiTools;
+  } else if (tools && tools.length > 0) {
+    console.error(`[transport-mux] WARNING: ${tools.length} tools received but normalization returned empty. Raw tool[0] keys: ${Object.keys(tools[0] as Record<string, unknown>).join(',')}`);
+  }
   const openAiToolChoice = normalizeOpenAiToolChoice(toolChoice);
   if (openAiToolChoice !== undefined) body.tool_choice = openAiToolChoice;
   return JSON.stringify(body);
