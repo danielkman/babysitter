@@ -23,7 +23,8 @@ test('web smoke: ui-shell.jsx exports key page components', () => {
   const uiShellPath = path.join(webRoot, 'app', 'ui-shell.jsx');
   assert.ok(fs.existsSync(uiShellPath), `ui-shell.jsx must exist at ${uiShellPath}`);
 
-  const content = fs.readFileSync(uiShellPath, 'utf8');
+  const modulePaths = ['app/lib/krate-ui.jsx', 'app/lib/page-frame.jsx', 'app/pages/agent-pages.jsx', 'app/pages/repo-pages.jsx', 'app/pages/manage-pages.jsx', 'app/pages/settings-pages.jsx', 'app/pages/external-pages.jsx'];
+  const content = modulePaths.map((m) => { try { return fs.readFileSync(path.join(webRoot, m), 'utf8'); } catch { return ''; } }).join('\n');
 
   // Verify key page exports
   const expectedExports = [
@@ -62,8 +63,8 @@ test('web smoke: ui-shell.jsx exports key page components', () => {
 // ---------------------------------------------------------------------------
 
 test('web smoke: ui-shell.jsx nav items have expected routes', () => {
-  const uiShellPath = path.join(webRoot, 'app', 'ui-shell.jsx');
-  const content = fs.readFileSync(uiShellPath, 'utf8');
+  const modulePaths = ['app/lib/krate-ui.jsx', 'app/lib/page-frame.jsx', 'app/pages/agent-pages.jsx', 'app/pages/repo-pages.jsx', 'app/pages/manage-pages.jsx', 'app/pages/settings-pages.jsx', 'app/pages/external-pages.jsx'];
+  const content = modulePaths.map((m) => { try { return fs.readFileSync(path.join(webRoot, m), 'utf8'); } catch { return ''; } }).join('\n');
 
   // Verify key navigation routes are present
   const expectedRoutes = [

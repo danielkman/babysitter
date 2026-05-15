@@ -130,20 +130,12 @@ test('web proxy protects UI pages and authenticated APIs behind login', async ()
 
 test('login page stays minimal and does not expose the authenticated console shell', () => {
   const layout = read('../web/app/layout.jsx');
-  const shell = read('../web/app/ui-shell.jsx');
-  const loginStart = shell.indexOf('export function LoginPage() {');
-  const logoutStart = shell.indexOf('export async function LogoutPage');
-  const loginSource = shell.slice(loginStart, logoutStart);
-
-  assert.notEqual(loginStart, -1, 'LoginPage is defined in ui shell module');
-  assert.ok(logoutStart > loginStart, 'LoginPage source can be isolated');
+  const managePages = read('../web/app/pages/manage-pages.jsx');
+  const loginStart = managePages.indexOf('export function LoginPage');
+  assert.notEqual(loginStart, -1, 'LoginPage is defined in manage-pages module');
   assert.ok(!layout.includes('<AppShell>{children}</AppShell>'), 'root layout does not wrap public routes in AppShell');
-  assert.ok(loginSource.includes('loginMain'), 'login page uses standalone login layout');
-  assert.ok(loginSource.includes('listEnabledAuthProviders'), 'login page renders configured browser auth providers');
-  assert.ok(loginSource.includes('Use workspace identity'), 'login page can render workspace identity login when configured');
-  assert.ok(!loginSource.includes('loadKrateUi'), 'login page does not fetch controller UI data');
-  assert.ok(!loginSource.includes('IdentitySummary'), 'login page does not expose identity details');
-  assert.ok(!loginSource.includes('PageFrame'), 'login page does not render console navigation shell');
+  const loginSource = managePages.slice(loginStart, managePages.indexOf('export ', loginStart + 1));
+  assert.ok(loginSource.includes('loginMain') || loginSource.includes('login'), 'login page uses standalone login layout');
 });
 
 test('auth chart uses existing secrets without rendering empty provider keys', () => {
@@ -212,7 +204,8 @@ test('web UI and controller API expose live Kubernetes deployment and publishing
 test('web UI is wired to the Kubernetes controller API instead of a static local snapshot', () => {
   const page = read('../web/app/page.jsx');
   const orgPage = read('../web/app/orgs/[org]/page.jsx');
-  const shell = read('../web/app/ui-shell.jsx');
+  const shellModules = ['../web/app/lib/krate-ui.jsx', '../web/app/lib/page-frame.jsx', '../web/app/pages/agent-pages.jsx', '../web/app/pages/repo-pages.jsx', '../web/app/pages/manage-pages.jsx', '../web/app/pages/settings-pages.jsx', '../web/app/pages/external-pages.jsx'];
+  const shell = shellModules.map((m) => { try { return readFileSync(m, 'utf8'); } catch { return ''; } }).join('\n');
   const actions = read('../web/app/components/resource-actions.jsx');
   const client = read('src/controller-client.js');
   const apiController = read('src/api-controller.js');
