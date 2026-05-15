@@ -2,8 +2,8 @@ import { createResource, clone } from './resource-model.js';
 
 export const AGENT_WORKSPACE_CONTROLLER_BOUNDARY = {
   role: 'agent-workspace-controller',
-  scope: 'Volume-backed git workspace provisioning with PVC lifecycle, git ops, runner mount, and reuse',
-  owns: ['workspace creation', 'PVC manifest generation', 'git command specs', 'mount specs', 'workspace reuse'],
+  scope: 'Volume-backed git workspace provisioning with PVC lifecycle, git ops, runner mount, reuse, codespace management, and workspace associations',
+  owns: ['workspace creation', 'PVC manifest generation', 'git command specs', 'mount specs', 'workspace reuse', 'codespace lifecycle', 'workspace associations', 'run history'],
   delegatesTo: ['resource-model'],
   mustNotOwn: ['git execution', 'Kubernetes API calls', 'secret values']
 };
@@ -442,6 +442,261 @@ export function createAgentWorkspaceController() {
     listWorkspacesForRun({ dispatchRun, resources = {} }) {
       const workspaces = resources.KrateWorkspace || [];
       return workspaces.filter((w) => w.status?.runRef === dispatchRun).map(clone);
+    },
+
+    // --- Codespace lifecycle ---
+
+    launchCodespace(workspace, options = {}) {
+      if (!workspace) {
+        return { error: true, reason: 'missing-workspace', message: 'workspace is required' };
+      }
+
+      // Only one codespace per workspace
+      if (workspace.status?.codespace?.running) {
+        return { error: true, reason: 'codespace-already-running', message: `Codespace already running for workspace ${workspace.metadata?.name}` };
+      }
+
+      const wsName = workspace.metadata?.name || 'unknown';
+      const namespace = workspace.metadata?.namespace || 'default';
+      const orgRef = workspace.spec?.organizationRef || 'default';
+      const pvcName = workspace.spec?.pvcName || `krate-ws-${wsName}`;
+      const image = options.image || 'codercom/code-server:latest';
+      const cpuLimit = options.cpu || '1';
+      const memoryLimit = options.memory || '2Gi';
+      const port = options.port || 8080;
+      const passwordSecretRef = options.passwordSecretRef || null;
+
+      const podName = `codespace-${wsName}`;
+      const serviceName = `codespace-svc-${wsName}`;
+
+      const podSpec = {
+        apiVersion: 'v1',
+        kind: 'Pod',
+        metadata: {
+          name: podName,
+          namespace,
+          labels: {
+            'krate.a5c.ai/workspace': wsName,
+            'krate.a5c.ai/org': orgRef,
+            'krate.a5c.ai/component': 'codespace',
+          },
+        },
+        spec: {
+          containers: [
+            {
+              name: 'code-server',
+              image,
+              ports: [{ containerPort: port, name: 'http' }],
+              resources: {
+                limits: { cpu: cpuLimit, memory: memoryLimit },
+                requests: { cpu: '250m', memory: '512Mi' },
+              },
+              env: [
+                { name: 'KRATE_WORKSPACE', value: wsName },
+                { name: 'KRATE_ORG', value: orgRef },
+                { name: 'GIT_AUTHOR_NAME', value: options.gitAuthorName || 'krate-agent' },
+                { name: 'GIT_AUTHOR_EMAIL', value: options.gitAuthorEmail || `agent@${orgRef}.krate.local` },
+              ],
+              volumeMounts: [
+                { name: 'workspace', mountPath: '/workspace' },
+              ],
+            },
+          ],
+          volumes: [
+            {
+              name: 'workspace',
+              persistentVolumeClaim: { claimName: pvcName },
+            },
+          ],
+          restartPolicy: 'Always',
+        },
+      };
+
+      if (passwordSecretRef) {
+        podSpec.spec.containers[0].env.push({
+          name: 'PASSWORD',
+          valueFrom: { secretKeyRef: passwordSecretRef },
+        });
+      }
+
+      const serviceSpec = {
+        apiVersion: 'v1',
+        kind: 'Service',
+        metadata: {
+          name: serviceName,
+          namespace,
+          labels: {
+            'krate.a5c.ai/workspace': wsName,
+            'krate.a5c.ai/org': orgRef,
+            'krate.a5c.ai/component': 'codespace',
+          },
+        },
+        spec: {
+          selector: {
+            'krate.a5c.ai/workspace': wsName,
+            'krate.a5c.ai/component': 'codespace',
+          },
+          ports: [
+            { port, targetPort: port, protocol: 'TCP', name: 'http' },
+          ],
+          type: 'ClusterIP',
+        },
+      };
+
+      const codespaceUrl = `http://${serviceName}.${namespace}.svc.cluster.local:${port}`;
+
+      return { error: false, podSpec, serviceSpec, codespaceUrl };
+    },
+
+    stopCodespace(workspace) {
+      if (!workspace) {
+        return { error: true, reason: 'missing-workspace', message: 'workspace is required' };
+      }
+
+      const wsName = workspace.metadata?.name || 'unknown';
+      const namespace = workspace.metadata?.namespace || 'default';
+
+      const podDeleteManifest = {
+        apiVersion: 'v1',
+        kind: 'Pod',
+        metadata: { name: `codespace-${wsName}`, namespace },
+        action: 'delete',
+      };
+
+      const serviceDeleteManifest = {
+        apiVersion: 'v1',
+        kind: 'Service',
+        metadata: { name: `codespace-svc-${wsName}`, namespace },
+        action: 'delete',
+      };
+
+      return { error: false, podDeleteManifest, serviceDeleteManifest };
+    },
+
+    getCodespaceStatus(workspace, podStatus = null) {
+      if (!workspace) {
+        return { error: true, reason: 'missing-workspace', message: 'workspace is required' };
+      }
+
+      const wsName = workspace.metadata?.name || 'unknown';
+      const namespace = workspace.metadata?.namespace || 'default';
+      const running = podStatus?.phase === 'Running';
+      const port = 8080;
+      const serviceName = `codespace-svc-${wsName}`;
+      const url = running ? `http://${serviceName}.${namespace}.svc.cluster.local:${port}` : null;
+
+      return {
+        error: false,
+        running,
+        url,
+        port,
+        uptime: podStatus?.startTime ? new Date().toISOString() : null,
+        startTime: podStatus?.startTime || null,
+        connectedUsers: podStatus?.connectedUsers || 0,
+        phase: podStatus?.phase || 'Unknown',
+      };
+    },
+
+    // --- Workspace associations ---
+
+    addAssociation(workspace, ref) {
+      if (!workspace) {
+        return { error: true, reason: 'missing-workspace', message: 'workspace is required' };
+      }
+      if (!ref || !ref.kind || !ref.name) {
+        return { error: true, reason: 'invalid-ref', message: 'ref must have kind and name' };
+      }
+      const validKinds = ['AgentDispatchRun', 'User', 'AgentSession'];
+      if (!validKinds.includes(ref.kind)) {
+        return { error: true, reason: 'invalid-ref-kind', message: `ref.kind must be one of: ${validKinds.join(', ')}` };
+      }
+
+      const updated = clone(workspace);
+      if (!updated.spec) updated.spec = {};
+      if (!Array.isArray(updated.spec.associations)) updated.spec.associations = [];
+
+      // Prevent duplicates
+      const exists = updated.spec.associations.some(
+        (a) => a.kind === ref.kind && a.name === ref.name
+      );
+      if (exists) {
+        return { error: true, reason: 'duplicate-association', message: `Association ${ref.kind}/${ref.name} already exists` };
+      }
+
+      updated.spec.associations.push({
+        kind: ref.kind,
+        name: ref.name,
+        addedAt: new Date().toISOString(),
+      });
+
+      return { error: false, workspace: updated };
+    },
+
+    removeAssociation(workspace, ref) {
+      if (!workspace) {
+        return { error: true, reason: 'missing-workspace', message: 'workspace is required' };
+      }
+      if (!ref || !ref.kind || !ref.name) {
+        return { error: true, reason: 'invalid-ref', message: 'ref must have kind and name' };
+      }
+
+      const updated = clone(workspace);
+      if (!updated.spec) updated.spec = {};
+      if (!Array.isArray(updated.spec.associations)) updated.spec.associations = [];
+
+      const before = updated.spec.associations.length;
+      updated.spec.associations = updated.spec.associations.filter(
+        (a) => !(a.kind === ref.kind && a.name === ref.name)
+      );
+
+      if (updated.spec.associations.length === before) {
+        return { error: true, reason: 'not-found', message: `Association ${ref.kind}/${ref.name} not found` };
+      }
+
+      return { error: false, workspace: updated };
+    },
+
+    listAssociations(workspace) {
+      if (!workspace) {
+        return { error: true, reason: 'missing-workspace', message: 'workspace is required' };
+      }
+
+      const associations = workspace.spec?.associations || [];
+      return { error: false, associations: clone(associations) };
+    },
+
+    // --- Run history ---
+
+    getWorkspaceRuns(workspace, allRuns = []) {
+      if (!workspace) {
+        return { error: true, reason: 'missing-workspace', message: 'workspace is required' };
+      }
+
+      const wsName = workspace.metadata?.name;
+      const active = [];
+      const history = [];
+
+      for (const run of allRuns) {
+        const refersToWs =
+          run.status?.workspaceRef === wsName ||
+          run.spec?.workspaceRef === wsName ||
+          (workspace.spec?.associations || []).some(
+            (a) => a.kind === 'AgentDispatchRun' && a.name === run.metadata?.name
+          );
+
+        if (!refersToWs) continue;
+
+        const phase = run.status?.phase || 'Unknown';
+        const isActive = phase === 'Running' || phase === 'Queued' || phase === 'Pending' || phase === 'Dispatched';
+
+        if (isActive) {
+          active.push(clone(run));
+        } else {
+          history.push(clone(run));
+        }
+      }
+
+      return { error: false, active, history };
     }
   };
 }
