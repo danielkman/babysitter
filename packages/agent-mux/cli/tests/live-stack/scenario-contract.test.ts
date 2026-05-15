@@ -208,6 +208,15 @@ describe('live stack scenario contract primitives', () => {
     expect(publish).not.toContain('live-stack.yml');
   });
 
+  it('installs publish agent-core dependencies instead of trusting node_modules cache', () => {
+    const publish = fs.readFileSync('.github/workflows/publish.yml', 'utf8');
+
+    for (const jobName of ['publish_staging_agent_core', 'publish_staging_babysitter_agent']) {
+      const pattern = new RegExp(String.raw`${jobName}:[\s\S]*?- name: Install dependencies\n\s+run: \|[\s\S]*?npm ci[\s\S]*?- name: Build`);
+      expect(publish).toMatch(pattern);
+    }
+  });
+
   it('keeps Live Stack independently triggered and self-contained', () => {
     const workflow = fs.readFileSync('.github/workflows/live-stack.yml', 'utf8');
 
@@ -224,7 +233,7 @@ describe('live stack scenario contract primitives', () => {
     const workflow = fs.readFileSync('.github/workflows/live-stack.yml', 'utf8');
 
     for (const jobName of ['live_stack_babysitter_plugin', 'live_stack_vanilla']) {
-      const pattern = new RegExp(`${jobName}:[\\s\\S]*?strategy:\\n\\s+fail-fast: false\\n\\s+max-parallel: 2`);
+      const pattern = new RegExp(`${jobName}:[\\s\\S]*?strategy:\\n\\s+fail-fast: false\\n\\s+max-parallel: 3`);
       expect(workflow).toMatch(pattern);
     }
   });
