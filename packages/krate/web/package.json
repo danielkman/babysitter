@@ -12,7 +12,6 @@
     "test": "node --test tests/build-smoke.test.js"
   },
   "dependencies": {
-    "@a5c-ai/krate": "*",
     "@a5c-ai/krate-sdk": "*",
     "@codemirror/lang-javascript": "^6.2.5",
     "@codemirror/lang-yaml": "^6.1.3",

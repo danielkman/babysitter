@@ -1,8 +1,10 @@
 import { createKrateApiController, orgNamespaceName } from '@a5c-ai/krate-sdk';
+import { withAuth } from '../../../../../lib/api-auth.js';
+import { errorResponse } from '../../../../../lib/api-errors.js';
 
 export const dynamic = 'force-dynamic';
 
-export async function DELETE(request, { params }) {
+export const DELETE = withAuth(async (request, { params }) => {
   const { org, name } = await params;
   const url = new URL(request.url);
   const type = url.searchParams.get('type') || 'grant';
@@ -23,6 +25,6 @@ export async function DELETE(request, { params }) {
     const result = await controller.deleteResource('AgentSecretGrant', name);
     return Response.json(result);
   } catch (error) {
-    return Response.json({ error: 'operation_failed', message: error.message }, { status: 500 });
+    return errorResponse(error.message, 500);
   }
-}
+});

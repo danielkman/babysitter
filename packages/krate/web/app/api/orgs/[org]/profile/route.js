@@ -1,23 +1,14 @@
-import { createAuthProviderConfig, createKrateApiController, orgNamespaceName, parseSessionCookie } from '@a5c-ai/krate-sdk';
-import { cookies } from 'next/headers';
+import { createKrateApiController, orgNamespaceName } from '@a5c-ai/krate-sdk';
+import { requireAuth, withAuth } from '../../../../lib/api-auth.js';
+import { errorResponse } from '../../../../lib/api-errors.js';
 
 export const dynamic = 'force-dynamic';
 
-async function getUser() {
-  try {
-    const config = createAuthProviderConfig();
-    const cookieStore = await cookies();
-    return parseSessionCookie(config, cookieStore.get(config.session.cookieName)?.value);
-  } catch {
-    return null;
-  }
-}
-
 export async function GET(request, { params }) {
   const { org } = await params;
-  const user = await getUser();
+  const user = requireAuth(request);
   if (!user) {
-    return Response.json({ error: 'unauthorized', message: 'Not signed in' }, { status: 401 });
+    return errorResponse('Not signed in', 401);
   }
 
   try {
@@ -50,17 +41,11 @@ export async function GET(request, { params }) {
       apiKeys,
     });
   } catch (error) {
-    return Response.json({ error: 'operation_failed', message: error.message }, { status: 500 });
+    return errorResponse(error.message, 500);
   }
 }
 
-export async function PATCH(request, { params }) {
-  const { org } = await params;
-  const user = await getUser();
-  if (!user) {
-    return Response.json({ error: 'unauthorized', message: 'Not signed in' }, { status: 401 });
-  }
-
+export const PATCH = withAuth(async (request, _context, session) => {
   try {
     const body = await request.json();
     // Profile updates are stored as user preferences; in a full implementation
@@ -68,12 +53,12 @@ export async function PATCH(request, { params }) {
     return Response.json({
       ok: true,
       user: {
-        user: user.user || user.subject || '',
-        displayName: body.displayName || user.displayName || user.user || '',
+        user: session.user || session.subject || '',
+        displayName: body.displayName || session.displayName || session.user || '',
         emailNotifications: body.emailNotifications !== undefined ? body.emailNotifications : true,
       },
     });
   } catch (error) {
-    return Response.json({ error: 'operation_failed', message: error.message }, { status: 400 });
+    return errorResponse(error.message, 400);
   }
-}
+});

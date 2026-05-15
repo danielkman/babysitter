@@ -1,4 +1,6 @@
 import { createKrateApiController, orgNamespaceName } from '@a5c-ai/krate-sdk';
+import { withAuth } from '../../../../lib/api-auth.js';
+import { errorResponse } from '../../../../lib/api-errors.js';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,11 +13,11 @@ export async function GET(request, { params }) {
   try {
     return Response.json(await controller.listResource(kind), { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
-    return Response.json({ error: 'operation_failed', message: error.message }, { status: error.message?.includes('not found') ? 404 : 500 });
+    return errorResponse(error.message, error.message?.includes('not found') ? 404 : 500);
   }
 }
 
-export async function POST(request, { params }) {
+export const POST = withAuth(async (request, { params }) => {
   const { org } = await params;
   const namespace = orgNamespaceName(org);
   const controller = createKrateApiController({ namespace });
@@ -29,6 +31,6 @@ export async function POST(request, { params }) {
     const result = await controller.applyResource(scoped);
     return Response.json(result, { status: 201, headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
-    return Response.json({ error: 'apply_failed', message: error.message }, { status: 400 });
+    return errorResponse(error.message, 400);
   }
-}
+});

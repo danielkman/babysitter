@@ -1,8 +1,10 @@
 import { createKrateApiController, orgNamespaceName } from '@a5c-ai/krate-sdk';
+import { withAuth } from '../../../../../lib/api-auth.js';
+import { errorResponse } from '../../../../../lib/api-errors.js';
 
 export const dynamic = 'force-dynamic';
 
-export async function POST(request, { params }) {
+export const POST = withAuth(async (request, { params }) => {
   const { org } = await params;
   const namespace = orgNamespaceName(org);
   const controller = createKrateApiController({ namespace });
@@ -11,7 +13,7 @@ export async function POST(request, { params }) {
     // Accept either stackRef (from run-actions) or agentStack (from dispatch-button)
     const agentStack = body.agentStack || body.stackRef;
     if (!agentStack) {
-      return Response.json({ error: true, message: 'stackRef or agentStack is required' }, { status: 400 });
+      return errorResponse('stackRef or agentStack is required', 400);
     }
     const result = await controller.dispatchAgent({
       agentStack,
@@ -23,10 +25,10 @@ export async function POST(request, { params }) {
       organizationRef: org,
     });
     if (result.error) {
-      return Response.json(result, { status: 400 });
+      return errorResponse(result.message || 'Dispatch failed', 400);
     }
     return Response.json(result, { status: 201, headers: { 'Cache-Control': 'no-store' } });
   } catch (err) {
-    return Response.json({ error: true, message: err.message || 'Dispatch failed' }, { status: 500 });
+    return errorResponse(err.message || 'Dispatch failed', 500);
   }
-}
+});

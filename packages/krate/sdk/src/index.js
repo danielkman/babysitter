@@ -195,6 +195,9 @@ export {
   createCheckpointer
 } from '../../core/src/async-controller.js';
 
+// Gitea Service
+export { createGiteaService } from '../../core/src/gitea-service.js';
+
 // Memory import / snapshot / ontology
 export {
   parseJournalForImport,

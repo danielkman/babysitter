@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { statusTone } from '../lib/status-tones.js';
 
 const WEBHOOK_EVENT_TYPES = ['push', 'pull_request', 'issues', 'workflow_run', 'ping'];
 const PROVIDERS = ['GitHub', 'Gitea', 'Generic'];
@@ -19,6 +20,7 @@ function Badge({ children, tone = 'neutral' }) {
     good: { background: '#dcfce7', color: '#16a34a' },
     warn: { background: '#fef9c3', color: '#a16207' },
     bad: { background: '#fee2e2', color: '#dc2626' },
+    danger: { background: '#fee2e2', color: '#dc2626' },
     neutral: { background: '#f3f4f6', color: '#6b7280' },
     info: { background: '#dbeafe', color: '#2563eb' },
   };
@@ -251,12 +253,6 @@ function AddWebhookForm({ org, onCreated }) {
 
 function DeliveryHistoryList({ deliveries = [] }) {
   const recent = deliveries.slice(0, 10);
-
-  function statusTone(status) {
-    if (status === 'processed' || status === 'received') return 'good';
-    if (status === 'failed') return 'bad';
-    return 'neutral';
-  }
 
   function truncateId(id) {
     if (!id) return '—';

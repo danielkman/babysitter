@@ -1,12 +1,6 @@
 'use client';
 import { useState } from 'react';
-
-function statusTone(phase) {
-  if (phase === 'Running' || phase === 'Queued' || phase === 'Pending') return 'warn';
-  if (phase === 'Succeeded' || phase === 'Success') return 'good';
-  if (phase === 'Failed' || phase === 'Errored') return 'danger';
-  return 'neutral';
-}
+import { statusTone } from '../lib/status-tones.js';
 
 function formatDuration(startedAt, finishedAt) {
   if (!startedAt) return '--';

@@ -1,4 +1,4 @@
-import { createGiteaService } from '@a5c-ai/krate';
+import { createGiteaService } from '@a5c-ai/krate-sdk';
 
 // Lazily created so the service is instantiated per-process rather than per-request
 let _service;

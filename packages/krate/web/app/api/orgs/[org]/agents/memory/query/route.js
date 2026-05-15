@@ -1,8 +1,10 @@
 import { createKrateApiController, orgNamespaceName } from '@a5c-ai/krate-sdk';
+import { withAuth } from '../../../../../../lib/api-auth.js';
+import { errorResponse } from '../../../../../../lib/api-errors.js';
 
 export const dynamic = 'force-dynamic';
 
-export async function POST(request, { params }) {
+export const POST = withAuth(async (request, { params }) => {
   const { org } = await params;
   try {
     const controller = createKrateApiController({ namespace: orgNamespaceName(org) });
@@ -10,6 +12,6 @@ export async function POST(request, { params }) {
     const result = await controller.queryAgentMemory(body);
     return Response.json(result);
   } catch (error) {
-    return Response.json({ error: 'operation_failed', message: error.message }, { status: 500 });
+    return errorResponse(error.message, 500);
   }
-}
+});

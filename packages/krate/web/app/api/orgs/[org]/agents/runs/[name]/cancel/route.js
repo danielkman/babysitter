@@ -1,8 +1,10 @@
 import { createKrateApiController, orgNamespaceName } from '@a5c-ai/krate-sdk';
+import { withAuth } from '../../../../../../../lib/api-auth.js';
+import { errorResponse } from '../../../../../../../lib/api-errors.js';
 
 export const dynamic = 'force-dynamic';
 
-export async function POST(_request, { params }) {
+export const POST = withAuth(async (_request, { params }) => {
   const { org, name } = await params;
   const namespace = orgNamespaceName(org);
   const controller = createKrateApiController({ namespace });
@@ -11,7 +13,7 @@ export async function POST(_request, { params }) {
     const existing = await controller.getResource('AgentDispatchRun', name);
     const run = existing?.resource || existing;
     if (!run) {
-      return Response.json({ error: true, message: `Run '${name}' not found` }, { status: 404 });
+      return errorResponse(`Run '${name}' not found`, 404);
     }
     const patched = {
       ...run,
@@ -25,6 +27,6 @@ export async function POST(_request, { params }) {
     const result = await controller.applyResource(patched);
     return Response.json({ error: false, run: result }, { status: 200, headers: { 'Cache-Control': 'no-store' } });
   } catch (err) {
-    return Response.json({ error: true, message: err.message || 'Cancel failed' }, { status: 500 });
+    return errorResponse(err.message || 'Cancel failed', 500);
   }
-}
+});

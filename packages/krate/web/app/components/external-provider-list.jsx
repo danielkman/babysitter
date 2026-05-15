@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { statusTone } from '../lib/status-tones.js';
 
 const PROVIDER_ICONS = {
   github: 'GH',
@@ -9,18 +10,6 @@ const PROVIDER_ICONS = {
   gitea: 'GT',
   azure_devops: 'AZ',
 };
-
-const STATUS_TONE = {
-  Ready: 'good',
-  Degraded: 'warn',
-  Failed: 'danger',
-  Pending: 'neutral',
-  RateLimited: 'warn',
-};
-
-function statusTone(status) {
-  return STATUS_TONE[status] || 'neutral';
-}
 
 function ProviderCard({ provider, onDelete }) {
   const spec = provider.spec || {};

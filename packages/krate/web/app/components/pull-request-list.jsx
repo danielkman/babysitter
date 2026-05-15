@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
+import { statusTone } from '../lib/status-tones.js';
 
-const STATUS_TONES = { Open: 'good', Merged: 'neutral', Closed: 'warn' };
 const REVIEW_TONES = { approved: 'good', 'changes-requested': 'danger', pending: 'neutral' };
 
 export function PullRequestList({ org, repo, pullRequests = [] }) {
@@ -20,7 +20,6 @@ export function PullRequestList({ org, repo, pullRequests = [] }) {
     return pr.status?.phase || pr.spec?.status || 'Open';
   }
 
-  function statusTone(status) { return STATUS_TONES[status] || 'neutral'; }
   function reviewTone(decision) { return REVIEW_TONES[decision] || 'neutral'; }
 
   async function handleCreate(e) {
