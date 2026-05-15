@@ -317,23 +317,46 @@ export async function executeChildProcessCommand(execution: CommandExecution): P
       cwd: execution.cwd,
       env: { ...process.env, ...execution.env },
       shell: process.platform === 'win32',
+      detached: process.platform !== 'win32',
       stdio: ['pipe', 'pipe', 'pipe'],
     });
     child.stdin?.end();
     let stdout = '';
     let stderr = '';
+    let timedOut = false;
+    let forceKillTimer: NodeJS.Timeout | undefined;
+
+    const killProcessTree = (signal: NodeJS.Signals) => {
+      if (!child.pid) return;
+      if (process.platform === 'win32') {
+        const taskkill = spawn('taskkill', ['/PID', String(child.pid), '/T', '/F'], { stdio: 'ignore' });
+        taskkill.on('error', () => child.kill(signal));
+        return;
+      }
+      try {
+        process.kill(-child.pid, signal);
+      } catch {
+        child.kill(signal);
+      }
+    };
+
     const timer = setTimeout(() => {
-      child.kill('SIGTERM');
+      timedOut = true;
       stderr += `\nTimed out after ${execution.timeoutMs}ms`;
+      killProcessTree('SIGTERM');
+      forceKillTimer = setTimeout(() => killProcessTree('SIGKILL'), 1000);
+      forceKillTimer.unref?.();
     }, execution.timeoutMs);
     child.stdout?.on('data', (chunk) => { stdout += String(chunk); });
     child.stderr?.on('data', (chunk) => { stderr += String(chunk); });
     child.on('close', (code) => {
       clearTimeout(timer);
-      resolve({ status: code ?? 1, stdout, stderr });
+      if (forceKillTimer) clearTimeout(forceKillTimer);
+      resolve({ status: timedOut ? (code ?? 124) : (code ?? 1), stdout, stderr });
     });
     child.on('error', (error) => {
       clearTimeout(timer);
+      if (forceKillTimer) clearTimeout(forceKillTimer);
       resolve({ status: 1, stdout, stderr: `${stderr}\n${error.message}` });
     });
   });

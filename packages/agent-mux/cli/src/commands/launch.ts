@@ -270,6 +270,13 @@ function recordObject(value: unknown): Record<string, unknown> {
   return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
 }
 
+function numberAtLeast(value: unknown, minimum: number): number {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? Math.max(numeric, minimum) : minimum;
+}
+
+const AUTOMATION_CLAUDE_ONBOARDING_VERSION = '999.999.999';
+
 async function prepareClaudeAutomationState(cwd: string): Promise<void> {
   const home = automationHome();
   if (!home) return;
@@ -296,14 +303,17 @@ async function prepareClaudeAutomationState(cwd: string): Promise<void> {
     hasClaudeMdExternalIncludesApproved: false,
     hasClaudeMdExternalIncludesWarningShown: false,
     ...project,
+    projectOnboardingSeenCount: numberAtLeast(project['projectOnboardingSeenCount'], 1),
     hasTrustDialogAccepted: true,
     hasCompletedProjectOnboarding: true,
+    lastVersionBase: AUTOMATION_CLAUDE_ONBOARDING_VERSION,
   };
   await writeJsonObject(configPath, {
     ...config,
-    numStartups: typeof config['numStartups'] === 'number' ? config['numStartups'] : 0,
+    numStartups: numberAtLeast(config['numStartups'], 1),
     hasCompletedOnboarding: true,
-    lastOnboardingVersion: typeof config['lastOnboardingVersion'] === 'string' ? config['lastOnboardingVersion'] : 'automation',
+    lastOnboardingVersion: AUTOMATION_CLAUDE_ONBOARDING_VERSION,
+    lastReleaseNotesSeen: AUTOMATION_CLAUDE_ONBOARDING_VERSION,
     hasIdeOnboardingBeenShown: { vscode: true, ...recordObject(config['hasIdeOnboardingBeenShown']) },
     officialMarketplaceAutoInstallAttempted: true,
     officialMarketplaceAutoInstalled: true,

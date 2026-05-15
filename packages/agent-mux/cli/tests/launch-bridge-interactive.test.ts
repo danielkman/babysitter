@@ -174,8 +174,12 @@ describe('bridge-interactive spawn', () => {
       const claudeSettings = JSON.parse(await fs.readFile(path.join(home, '.claude', 'settings.json'), 'utf8'));
       const projectPath = path.resolve(process.cwd()).replace(/\\/g, '/');
       expect(claudeConfig.hasCompletedOnboarding).toBe(true);
+      expect(claudeConfig.lastOnboardingVersion).toBe('999.999.999');
+      expect(claudeConfig.lastReleaseNotesSeen).toBe('999.999.999');
       expect(claudeConfig.projects[projectPath].hasTrustDialogAccepted).toBe(true);
       expect(claudeConfig.projects[projectPath].hasCompletedProjectOnboarding).toBe(true);
+      expect(claudeConfig.projects[projectPath].projectOnboardingSeenCount).toBe(1);
+      expect(claudeConfig.projects[projectPath].lastVersionBase).toBe('999.999.999');
       expect(claudeSettings.theme).toBe('dark');
 
       const codexLaunch = launchCommand(

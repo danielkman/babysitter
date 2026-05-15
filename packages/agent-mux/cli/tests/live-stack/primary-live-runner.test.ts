@@ -239,6 +239,19 @@ describe('primary live stack runner contract', () => {
     expect(result.artifactPath).toBeDefined();
   });
 
+  it('terminates the command process group when live commands time out', async () => {
+    const result = await executeChildProcessCommand({
+      command: process.execPath,
+      args: ['-e', 'process.on("SIGTERM", () => {}); setInterval(() => {}, 1000);'],
+      env: {},
+      cwd: process.cwd(),
+      timeoutMs: 50,
+    });
+
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toContain('Timed out after 50ms');
+  });
+
   const liveIt = process.env['LIVE_STACK_RUN_MODEL_TESTS'] === '1' ? it : it.skip;
 
   liveIt('executes the primary live provider scenario when explicitly enabled', async () => {
