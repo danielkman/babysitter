@@ -19,7 +19,7 @@ Krate is split into 4 packages under `packages/krate/`:
 
 ```bash
 npm run build     # Generate dist/ JSON snapshots
-npm test          # Unit + integration tests (node:test) — 956 tests
+npm test          # Unit + integration tests (node:test) — 1259 tests
 npm run e2e       # End-to-end package validation — 3 tests
 npm run smoke     # MVP smoke assertions — 21 checks
 npm run serve     # Start HTTP API on port 3080
@@ -29,13 +29,13 @@ npm run demo      # Print handoff summary
 ### SDK (`packages/krate/sdk`)
 
 ```bash
-node --test tests/*.test.js   # SDK export + resource tests — 12 tests
+node --test tests/*.test.js   # SDK export + integration tests — 73 tests
 ```
 
 ### CLI (`packages/krate/cli`)
 
 ```bash
-node --test tests/*.test.js   # MCP server protocol tests — 15 tests
+node --test tests/*.test.js   # CLI commands + MCP protocol tests — 51 tests
 krate serve                   # Start HTTP API server
 krate mcp                     # Start MCP (Model Context Protocol) server over stdio
 ```
@@ -60,14 +60,21 @@ npm run dev       # Development server
 
 ## MCP Server Mode
 
-The CLI provides an MCP server (`krate mcp`) that exposes 8 tools over stdio:
+The CLI provides an MCP server (`krate mcp`) that exposes 14 tools, 3 prompts, and 2 resources over stdio:
 
+**Tools:**
 - `krate_snapshot` — org runtime snapshot
 - `krate_list_resources` / `krate_get_resource` — read resources by kind
 - `krate_apply_resource` / `krate_delete_resource` — write resources
 - `krate_search` — full-text resource search
-- `krate_list_stacks` — list agent stacks
+- `krate_list_stacks` / `krate_create_stack` — agent stacks
 - `krate_dispatch_agent` — dispatch an agent run
+- `krate_list_secrets` / `krate_create_secret` — secret management
+- `krate_sync_external` — trigger external sync
+- `krate_resolve_conflict` — resolve sync conflict
+- `krate_audit_query` — query audit events
+
+**CLI commands:** `krate serve`, `krate mcp`, `krate status`, `krate stacks`, `krate dispatch`, `krate apply`, `krate get`, `krate list`, `krate delete`, `krate version`
 
 ## Conventions
 
@@ -76,7 +83,10 @@ The CLI provides an MCP server (`krate mcp`) that exposes 8 tools over stdio:
 - SDK re-exports core helpers for web/CLI consumers; web imports from `@a5c-ai/krate-sdk`
 - Web console is in ../web/ (Next.js 16 + React 19)
 - Helm chart is in ../charts/ (not an npm workspace)
-- Resource taxonomy: 49+ kinds across config (etcd) and aggregated (Postgres) storage
+- Resource taxonomy: 76 kinds across config (etcd) and aggregated (Postgres) storage, 75 CRDs
+- Web console split into 7 modules (lib/krate-ui, lib/page-frame, pages/agent, pages/repo, pages/manage, pages/settings, pages/external)
+- Auth middleware on all mutating API routes
+- Async kubectl snapshot with stale-while-revalidate cache (30s TTL)
 
 ## Agent Mux Integration
 
