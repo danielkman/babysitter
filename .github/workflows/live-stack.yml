@@ -32,7 +32,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -145,7 +145,7 @@ jobs:
         run: find packages -path '*/dist' -type d | tar czf /tmp/build-all-dist.tar.gz -T -
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: build-all-dist
           path: /tmp/build-all-dist.tar.gz
@@ -267,7 +267,7 @@ jobs:
 
       - name: Checkout repository
         if: ${{ matrix.scenario.skip != 'true' }}
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -409,7 +409,7 @@ jobs:
             required_env: AZURE_API_KEY,AMUX_API_BASE
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -467,6 +467,7 @@ jobs:
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Run selected live stack E2E
+        if: ${{ matrix.scenario.skip != 'true' }}
         timeout-minutes: 12
         env:
           LIVE_STACK_SCENARIO_ID: ${{ matrix.scenario.id }}
@@ -502,9 +503,9 @@ jobs:
           npm run coverage:e2e:live-stack
 
       - name: Upload live stack artifacts
-        if: always()
+        if: ${{ always() && matrix.scenario.skip != 'true' }}
         timeout-minutes: 1
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: live-stack-${{ github.run_id }}-${{ matrix.install_mode.id }}-${{ matrix.interaction_mode.id }}-${{ matrix.scenario.id }}
           path: artifacts/live-stack
@@ -688,6 +689,7 @@ jobs:
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Run selected live stack E2E
+        if: ${{ matrix.scenario.skip != 'true' }}
         timeout-minutes: 12
         env:
           LIVE_STACK_SCENARIO_ID: ${{ matrix.scenario.id }}
@@ -729,9 +731,9 @@ jobs:
           npm run coverage:e2e:live-stack
 
       - name: Upload live stack artifacts
-        if: always()
+        if: ${{ always() && matrix.scenario.skip != 'true' }}
         timeout-minutes: 1
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: live-stack-${{ github.run_id }}-${{ matrix.install_mode.id }}-${{ matrix.interaction_mode.id }}-${{ matrix.scenario.id }}
           path: artifacts/live-stack
