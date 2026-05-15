@@ -1,6 +1,6 @@
 import * as path from "path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
+import { z } from "zod/v3";
 import { commitEffectResult } from "../../runtime/commitEffectResult";
 import { loadJournal } from "../../storage";
 import { readTaskDefinition, readTaskResult } from "../../storage/tasks";
@@ -86,6 +86,7 @@ function buildTaskList(events: JournalEvent[]): Array<{
 
 export function registerTaskTools(server: McpServer): void {
   // ── task_post ───────────────────────────────────────────────────────
+  // @ts-expect-error MCP SDK generic depth limit with zod/v3 inference
   server.tool(
     "task_post",
     "Post a result for a pending task effect",

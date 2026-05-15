@@ -1,6 +1,6 @@
 import * as path from "path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
+import { z } from "zod/v3";
 import { DEFAULTS } from "../../config";
 import {
   readSessionFile,
@@ -17,6 +17,7 @@ import { resolveRunDir } from "../util/resolve-run-dir";
 
 export function registerSessionTools(server: McpServer): void {
   // ── session_init ────────────────────────────────────────────────────
+  // @ts-expect-error MCP SDK generic depth limit with zod/v3 inference
   server.tool(
     "session_init",
     "Initialize a new session state for orchestration",

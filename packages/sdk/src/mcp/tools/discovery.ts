@@ -1,6 +1,6 @@
 import * as path from "path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
+import { z } from "zod/v3";
 import { runHealthCheck } from "../../cli/commands/health";
 import { configureShow } from "../../cli/commands/configure";
 import { discoverSkillsInternal } from "../../cli/commands/skill";
@@ -9,6 +9,7 @@ import { toolResult, toolError } from "../util/errors";
 
 export function registerDiscoveryTools(server: McpServer): void {
   // ── skill_discover ──────────────────────────────────────────────────
+  // @ts-expect-error -- MCP SDK generic depth limit with zod/v3 inference
   server.tool(
     "skill_discover",
     "Discover available skills, agents, and process definitions",
