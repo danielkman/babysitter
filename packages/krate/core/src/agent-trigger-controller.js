@@ -267,6 +267,66 @@ export function createAgentTriggerController(options = {}) {
       return execution;
     },
 
+    /**
+     * Evaluate a normalized inbound webhook event against a set of AgentTriggerRule resources.
+     *
+     * A rule matches when ALL of:
+     *   1. rule.spec.enabled !== false
+     *   2. rule.spec.webhookTrigger.events includes event.eventType (or is absent/['*'])
+     *   3. rule.spec.webhookTrigger.repository (if set) equals event.repository
+     *   4. rule.spec.webhookTrigger.action (if set) equals event.action
+     *
+     * Duplicate rule names are deduplicated (first occurrence wins).
+     *
+     * @param {{ eventType: string, repository?: string, ref?: string, action?: string, provider?: string }} event
+     * @param {object[]} [rules]  Array of AgentTriggerRule resources
+     * @returns {{ matchingRules: object[], dispatchIntents: object[] }}
+     */
+    evaluateWebhookEvent(event, rules) {
+      if (!rules || rules.length === 0) {
+        return { matchingRules: [], dispatchIntents: [] };
+      }
+
+      const seen = new Set();
+      const matchingRules = [];
+      const dispatchIntents = [];
+
+      for (const rule of rules) {
+        const ruleName = rule.metadata?.name;
+
+        // Deduplication
+        if (seen.has(ruleName)) continue;
+        seen.add(ruleName);
+
+        // 1. Enabled check
+        if (rule.spec?.enabled === false) continue;
+
+        const wh = rule.spec?.webhookTrigger;
+        // Rule must have a webhookTrigger spec to be considered
+        if (!wh) continue;
+
+        // 2. Event type match
+        const events = wh.events;
+        if (events && !(events.includes('*') || events.includes(event.eventType))) continue;
+
+        // 3. Repository filter
+        if (wh.repository && wh.repository !== event.repository) continue;
+
+        // 4. Action filter
+        if (wh.action && wh.action !== event.action) continue;
+
+        matchingRules.push(rule);
+        dispatchIntents.push({
+          rule,
+          event,
+          agentStack: rule.spec.agentStack,
+          taskKind: rule.spec.taskKind || 'diagnostic',
+        });
+      }
+
+      return { matchingRules, dispatchIntents };
+    },
+
     async processEvent({ event, resources, namespace = 'default', organizationRef = 'default' }) {
       const evaluations = this.evaluateEvent({ event, resources });
       const executions = [];
