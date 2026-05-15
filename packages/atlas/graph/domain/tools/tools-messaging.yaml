@@ -52,6 +52,7 @@ edges:
 nodeKind: Tool
 id: tool:pulsar
 attributes:
+  languageApplicability: neutral
   displayName: "Apache Pulsar"
   homepageUrl: "https://pulsar.apache.org"
   kind: other

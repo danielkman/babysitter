@@ -2,6 +2,7 @@
 nodeKind: Tool
 id: tool:redis-cli
 attributes:
+  languageApplicability: neutral
   displayName: "redis-cli"
   homepageUrl: "https://redis.io/docs/latest/develop/tools/cli/"
   kind: sql-tool

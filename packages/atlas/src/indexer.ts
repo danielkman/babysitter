@@ -13,6 +13,11 @@ interface ClusterAccumulator {
   recordCount: number;
 }
 
+interface PendingRecordPatch {
+  record: AtlasRecord;
+  edges: Edge[];
+}
+
 function walk(dir: string, exts: string[], out: string[] = []): string[] {
   let entries: fs.Dirent[];
   try {
@@ -106,6 +111,23 @@ function extractEdges(record: Record<string, unknown>, fromId: string): Edge[] {
 
 function hasRecordEdge(edges: Edge[], kind: string, to: string): boolean {
   return edges.some((edge) => edge.kind === kind && edge.to === to);
+}
+
+function isRecordPatch(record: AtlasRecord): boolean {
+  return record.patch === true || record.mergeStrategy === "patch";
+}
+
+function mergeRecordPatch(record: AtlasRecord, patchRecord: AtlasRecord): AtlasRecord {
+  const {
+    id: _id,
+    _kind: _kind,
+    _file: _file,
+    _cluster: _cluster,
+    patch: _patch,
+    mergeStrategy: _mergeStrategy,
+    ...attributes
+  } = patchRecord;
+  return { ...record, ...attributes };
 }
 
 function evidenceSourceId(ref: string): string {
@@ -345,6 +367,7 @@ export function buildIndex(options: BuildIndexOptions): IndexShape {
   const nodeKindCounts: Record<string, number> = {};
   const edgeKindCounts: Record<string, number> = {};
   const clusters: Record<string, ClusterAccumulator> = {};
+  const pendingRecordPatches: Record<string, PendingRecordPatch[]> = {};
   let parseErrors = 0;
 
   function addEdge(edge: Edge): void {
@@ -353,11 +376,30 @@ export function buildIndex(options: BuildIndexOptions): IndexShape {
   }
 
   function addRecord(record: AtlasRecord, recordEdges: Edge[] = []): void {
+    if (isRecordPatch(record)) {
+      const existing = records[record.id];
+      if (existing) {
+        records[record.id] = mergeRecordPatch(existing, record);
+        for (const edge of recordEdges) addEdge(edge);
+      } else {
+        (pendingRecordPatches[record.id] ??= []).push({ record, edges: recordEdges });
+      }
+      return;
+    }
+
     const existing = records[record.id];
     const shouldReplaceDuplicate =
       existing !== undefined && existing._cluster !== "agent-catalog" && record._cluster === "agent-catalog";
     if (existing === undefined || shouldReplaceDuplicate) {
       records[record.id] = record;
+      const patches = pendingRecordPatches[record.id];
+      if (patches) {
+        for (const patch of patches) {
+          records[record.id] = mergeRecordPatch(records[record.id], patch.record);
+          for (const edge of patch.edges) addEdge(edge);
+        }
+        delete pendingRecordPatches[record.id];
+      }
     }
     if (existing === undefined) {
       nodeKindCounts[record._kind] = (nodeKindCounts[record._kind] ?? 0) + 1;
@@ -412,6 +454,11 @@ export function buildIndex(options: BuildIndexOptions): IndexShape {
 
   const pages = loadMarkdownPages(catalogDir);
   for (const record of Object.values(pages.records)) addRecord(record, pages.edges.filter((edge) => edge.from === record.id));
+
+  const unresolvedRecordPatches = Object.keys(pendingRecordPatches);
+  if (unresolvedRecordPatches.length > 0) {
+    throw new Error(`Unresolved record patches: ${unresolvedRecordPatches.join(", ")}`);
+  }
 
   const recordIds = new Set(Object.keys(records));
   for (const record of Object.values(records)) {

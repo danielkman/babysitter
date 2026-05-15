@@ -32,6 +32,7 @@ edges:
 nodeKind: Tool
 id: tool:saperly
 attributes:
+  languageApplicability: neutral
   displayName: "Saperly"
   homepageUrl: "https://saperly.com"
   kind: other

@@ -2,6 +2,7 @@
 nodeKind: Tool
 id: tool:replit
 attributes:
+  languageApplicability: neutral
   displayName: "Replit"
   homepageUrl: "https://replit.com"
   kind: other
@@ -28,6 +29,7 @@ edges:
 nodeKind: Tool
 id: tool:gitpod
 attributes:
+  languageApplicability: neutral
   displayName: "Gitpod"
   homepageUrl: "https://www.gitpod.io"
   kind: other
@@ -54,6 +56,7 @@ edges:
 nodeKind: Tool
 id: tool:codespaces
 attributes:
+  languageApplicability: neutral
   displayName: "GitHub Codespaces"
   homepageUrl: "https://github.com/features/codespaces"
   kind: other
@@ -80,6 +83,7 @@ edges:
 nodeKind: Tool
 id: tool:stackblitz
 attributes:
+  languageApplicability: neutral
   displayName: "StackBlitz"
   homepageUrl: "https://stackblitz.com"
   kind: other
@@ -106,6 +110,7 @@ edges:
 nodeKind: Tool
 id: tool:codesandbox
 attributes:
+  languageApplicability: neutral
   displayName: "CodeSandbox"
   homepageUrl: "https://codesandbox.io"
   kind: other
@@ -132,6 +137,7 @@ edges:
 nodeKind: Tool
 id: tool:cursor
 attributes:
+  languageApplicability: neutral
   displayName: "Cursor"
   homepageUrl: "https://www.cursor.com"
   kind: other
@@ -163,6 +169,7 @@ edges:
 nodeKind: Tool
 id: tool:windsurf
 attributes:
+  languageApplicability: neutral
   displayName: "Windsurf"
   homepageUrl: "https://windsurf.com"
   kind: other
@@ -187,6 +194,7 @@ edges:
 nodeKind: Tool
 id: tool:buildkite
 attributes:
+  languageApplicability: neutral
   displayName: "Buildkite"
   homepageUrl: "https://buildkite.com"
   kind: ci
@@ -213,6 +221,7 @@ edges:
 nodeKind: Tool
 id: tool:drone-ci
 attributes:
+  languageApplicability: neutral
   displayName: "Drone CI"
   homepageUrl: "https://www.drone.io"
   kind: ci
@@ -233,6 +242,7 @@ edges:
 nodeKind: Tool
 id: tool:woodpecker
 attributes:
+  languageApplicability: neutral
   displayName: "Woodpecker CI"
   homepageUrl: "https://woodpecker-ci.org"
   kind: ci
