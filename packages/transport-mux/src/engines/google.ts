@@ -156,7 +156,7 @@ function googleUsage(data: { usageMetadata?: { promptTokenCount?: number; candid
   };
 }
 
-function parseGoogleStreamPayload(payload: string): { text?: string; finishReason?: string; usage?: CompletionResult['usage']; toolCalls?: CompletionResult['toolCalls'] } | null {
+function parseGoogleStreamPayload(payload: string, sigStore?: Map<string, string>): { text?: string; finishReason?: string; usage?: CompletionResult['usage']; toolCalls?: CompletionResult['toolCalls'] } | null {
   if (!payload || payload === '[DONE]') return null;
   try {
     const data = JSON.parse(payload) as GoogleResponseData;
@@ -164,14 +164,14 @@ function parseGoogleStreamPayload(payload: string): { text?: string; finishReaso
       text: extractGoogleText(data),
       finishReason: data.candidates?.find((candidate) => candidate.finishReason)?.finishReason?.toLowerCase(),
       usage: data.usageMetadata ? googleUsage(data) : undefined,
-      toolCalls: extractGoogleToolCalls(data),
+      toolCalls: extractGoogleToolCalls(data, sigStore),
     };
   } catch {
     return null;
   }
 }
 
-async function* parseGoogleStream(response: Response): AsyncIterable<CompletionStreamEvent> {
+async function* parseGoogleStream(response: Response, sigStore?: Map<string, string>): AsyncIterable<CompletionStreamEvent> {
   const reader = response.body?.getReader();
   if (!reader) throw new Error('No response body');
 
@@ -192,7 +192,7 @@ async function* parseGoogleStream(response: Response): AsyncIterable<CompletionS
       const trimmed = line.trim();
       if (!trimmed) continue;
       const payload = trimmed.startsWith('data:') ? trimmed.slice(5).trim() : trimmed;
-      const parsed = parseGoogleStreamPayload(payload);
+      const parsed = parseGoogleStreamPayload(payload, sigStore);
       if (!parsed) continue;
       if (parsed.text) yield { type: 'text-delta', text: parsed.text };
       if (parsed.toolCalls) {
@@ -248,7 +248,7 @@ export function createGoogleCompletionEngine(options: GoogleCompletionEngineOpti
         throw new Error(`Google API error ${response.status}: ${errorText}`);
       }
 
-      yield* parseGoogleStream(response);
+      yield* parseGoogleStream(response, request.thoughtSignatureStore);
     },
   };
 }
