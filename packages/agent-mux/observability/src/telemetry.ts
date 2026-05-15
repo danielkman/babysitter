@@ -8,7 +8,9 @@
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { resourceFromAttributes } from '@opentelemetry/resources';
 import { ATTR_SERVICE_NAME, ATTR_SERVICE_VERSION } from '@opentelemetry/semantic-conventions';
-import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
+import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
+import { UndiciInstrumentation } from '@opentelemetry/instrumentation-undici';
+import { PinoInstrumentation } from '@opentelemetry/instrumentation-pino';
 import {
   metrics,
   trace,
@@ -105,11 +107,11 @@ export class TelemetryManager implements Telemetry {
         [ATTR_SERVICE_NAME]: this.config.serviceName,
         [ATTR_SERVICE_VERSION]: this.config.serviceVersion,
       }),
-      instrumentations: [getNodeAutoInstrumentations({
-        // Disable some noisy instrumentations
-        '@opentelemetry/instrumentation-dns': { enabled: false },
-        '@opentelemetry/instrumentation-net': { enabled: false },
-      })],
+      instrumentations: [
+        new HttpInstrumentation(),
+        new UndiciInstrumentation(),
+        new PinoInstrumentation(),
+      ],
     });
 
     this.sdk.start();

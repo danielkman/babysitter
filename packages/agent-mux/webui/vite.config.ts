@@ -18,6 +18,7 @@ export default defineConfig({
       '@a5c-ai/agent-mux-ui/gateway': path.resolve(rootDir, '..', 'ui', 'src', 'gateway.ts'),
       '@a5c-ai/agent-mux-ui/session-flow': path.resolve(rootDir, '..', 'ui', 'src', 'session-flow.ts'),
       '@a5c-ai/agent-mux-ui': path.resolve(rootDir, '..', 'ui', 'src', 'index.ts'),
+      'lucide-react': path.resolve(rootDir, '..', '..', '..', 'node_modules', 'lucide-react', 'dist', 'esm', 'lucide-react.js'),
       '@': path.join(rootDir, 'src'),
       'react-native': path.resolve(rootDir, '..', '..', '..', 'node_modules', 'react-native-web'),
       'react-native$': path.resolve(rootDir, '..', '..', '..', 'node_modules', 'react-native-web'),
@@ -32,5 +33,6 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
+    chunkSizeWarningLimit: 1100,
   },
 });

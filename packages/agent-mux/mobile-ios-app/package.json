@@ -13,15 +13,15 @@
   },
   "dependencies": {
     "@a5c-ai/agent-mux-ui": "5.0.0",
-    "expo": "^55.0.23",
-    "expo-camera": "~15.0.16",
-    "expo-haptics": "~13.0.1",
-    "expo-notifications": "~0.28.19",
-    "react": "^19.1.0",
-    "react-native": "^0.78.0",
+    "expo": "^55.0.24",
+    "expo-camera": "^55.0.18",
+    "expo-haptics": "^55.0.14",
+    "expo-notifications": "^55.0.23",
+    "react": "^19.2.6",
+    "react-native": "^0.85.3",
     "react-native-keychain": "^10.0.0"
   },
   "devDependencies": {
-    "@types/react": "^19.1.0"
+    "@types/react": "^19.2.14"
   }
 }

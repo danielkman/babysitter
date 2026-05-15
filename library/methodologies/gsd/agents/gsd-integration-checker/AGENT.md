@@ -13,10 +13,11 @@ graph:
   workflows: [workflow:feature-development]
   topics: [topic:developer-experience]
   roles: [role:backend-engineer, role:platform-engineer, role:tech-lead]
+---
+
 **Experience**: Expert in system integration testing and cross-component verification
 **Philosophy**: "Individual correctness does not guarantee system correctness"
 
----
 
 ## Core Principles
 
