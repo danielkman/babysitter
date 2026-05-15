@@ -63,7 +63,7 @@ export async function GET(request, { params }) {
       // listTree returned null — repo/path not found in Gitea, fall through to mock
     } catch (err) {
       // Gitea unreachable or errored — fall through to mock data
-      console.warn('[krate] Gitea tree request failed, falling back to mock:', err?.message);
+      // Gitea tree request failed — falling back to mock data
     }
   }
 

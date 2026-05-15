@@ -250,7 +250,7 @@ export async function GET(request, { params }) {
       // null from service — file not found in Gitea, fall through to mock
     } catch (err) {
       // Gitea unreachable or errored — fall through to mock data
-      console.warn('[krate] Gitea blob request failed, falling back to mock:', err?.message);
+      // Gitea blob request failed — falling back to mock data
     }
   }
 

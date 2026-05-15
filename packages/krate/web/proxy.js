@@ -4,12 +4,24 @@ const PUBLIC_PAGE_PATHS = new Set(['/login']);
 const PUBLIC_PATH_PREFIXES = ['/api/auth', '/_next'];
 const PUBLIC_FILE_PATTERN = /\.(?:css|js|map|png|jpg|jpeg|gif|svg|ico|webp|avif|txt|xml|json|woff2?)$/;
 
+function applySecurityHeaders(response) {
+  response.headers.set('X-Frame-Options', 'DENY');
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  return response;
+}
+
 export function proxy(request) {
   const { pathname, search } = request.nextUrl;
-  if (isPublicPath(pathname)) return NextResponse.next();
+  if (isPublicPath(pathname)) {
+    return applySecurityHeaders(NextResponse.next());
+  }
 
   const cookieName = process.env.KRATE_AUTH_COOKIE_NAME || 'krate_session';
-  if (request.cookies.has(cookieName)) return NextResponse.next();
+  if (request.cookies.has(cookieName)) {
+    return applySecurityHeaders(NextResponse.next());
+  }
 
   const loginUrl = new URL('/login', request.url);
   if (pathname !== '/') loginUrl.searchParams.set('next', `${pathname}${search}`);
