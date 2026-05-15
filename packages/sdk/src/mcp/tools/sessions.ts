@@ -17,7 +17,7 @@ import { resolveRunDir } from "../util/resolve-run-dir";
 
 export function registerSessionTools(server: McpServer): void {
   // ── session_init ────────────────────────────────────────────────────
-  // @ts-expect-error MCP SDK generic depth limit with zod/v3 inference
+  // @ts-ignore -- MCP SDK type depth limit
   server.tool(
     "session_init",
     "Initialize a new session state for orchestration",
@@ -92,6 +92,7 @@ export function registerSessionTools(server: McpServer): void {
   );
 
   // ── session_associate ───────────────────────────────────────────────
+  // @ts-ignore -- MCP SDK type depth limit
   server.tool(
     "session_associate",
     "Associate a session with a run ID",
@@ -138,6 +139,7 @@ export function registerSessionTools(server: McpServer): void {
   );
 
   // ── session_resume ──────────────────────────────────────────────────
+  // @ts-ignore -- MCP SDK type depth limit
   server.tool(
     "session_resume",
     "Resume an existing run in a new session",
@@ -202,6 +204,7 @@ export function registerSessionTools(server: McpServer): void {
   );
 
   // ── session_state ───────────────────────────────────────────────────
+  // @ts-ignore -- MCP SDK type depth limit
   server.tool(
     "session_state",
     "Get the current state of a session",
