@@ -237,7 +237,7 @@ function appendHarnessSessionArgs(plan: LaunchPlan, session: SessionArgs): void 
 
 async function prepareHarnessAutomationState(harness: string, cwd: string, env: Record<string, string>): Promise<void> {
   if (!isAutomationPreseedEnabled(env)) return;
-  if (harness === 'claude') await prepareClaudeAutomationState(cwd);
+  if (harness === 'claude') await prepareClaudeAutomationState(cwd, env);
   if (harness === 'codex') await prepareCodexAutomationState(cwd);
 }
 
@@ -275,9 +275,20 @@ function numberAtLeast(value: unknown, minimum: number): number {
   return Number.isFinite(numeric) ? Math.max(numeric, minimum) : minimum;
 }
 
+function approveClaudeCustomApiKey(config: Record<string, unknown>, env: Record<string, string>): void {
+  const apiKey = env['ANTHROPIC_API_KEY'] || process.env['ANTHROPIC_API_KEY'];
+  if (!apiKey) return;
+  const fingerprint = apiKey.slice(-20);
+  const responses = recordObject(config['customApiKeyResponses']);
+  const approved = Array.isArray(responses['approved']) ? responses['approved'].filter((value): value is string => typeof value === 'string') : [];
+  const rejected = Array.isArray(responses['rejected']) ? responses['rejected'].filter((value): value is string => typeof value === 'string' && value !== fingerprint) : [];
+  if (!approved.includes(fingerprint)) approved.push(fingerprint);
+  config['customApiKeyResponses'] = { ...responses, approved, rejected };
+}
+
 const AUTOMATION_CLAUDE_ONBOARDING_VERSION = '999.999.999';
 
-async function prepareClaudeAutomationState(cwd: string): Promise<void> {
+async function prepareClaudeAutomationState(cwd: string, env: Record<string, string>): Promise<void> {
   const home = automationHome();
   if (!home) return;
   const { join, resolve } = await import('node:path');
@@ -291,6 +302,7 @@ async function prepareClaudeAutomationState(cwd: string): Promise<void> {
 
   const configPath = join(home, '.claude.json');
   const config = await readJsonObject(configPath);
+  approveClaudeCustomApiKey(config, env);
   const projects = recordObject(config['projects']);
   const projectPath = resolve(cwd).replace(/\\/g, '/');
   const project = recordObject(projects[projectPath]);
@@ -844,17 +856,9 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
     // - Auto-kill on turn completion
     // - Buffer PTY output to avoid pipe deadlock (stdout is piped)
 
-    // Pre-create Claude Code settings to skip onboarding wizard in PTY mode
+    // Pre-create full Claude Code automation state to skip all onboarding prompts
     if (plan.harness === 'claude') {
-      const { join } = await import('node:path');
-      const { mkdirSync, existsSync, writeFileSync } = await import('node:fs');
-      const home = process.env['HOME'] ?? process.env['USERPROFILE'] ?? '';
-      const claudeDir = join(home, '.claude');
-      const settingsPath = join(claudeDir, 'settings.json');
-      if (home && !existsSync(settingsPath)) {
-        mkdirSync(claudeDir, { recursive: true });
-        writeFileSync(settingsPath, JSON.stringify({ permissions: { allow: [], deny: [] }, theme: 'dark' }, null, 2));
-      }
+      await prepareClaudeAutomationState(launchCwd, plan.env);
     }
 
     let nodePty: any;
@@ -902,6 +906,7 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
     let lineBuf = '';
     let outputBuf = '';
     let eventCount = 0;
+    let apiKeyPromptHandled = false;
 
     const parseCtx = {
       runId: 'bridge',
@@ -920,6 +925,14 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
     ptyProcess.onData((data: string) => {
       // Buffer all PTY output — never write synchronously to stdout (pipe deadlock)
       outputBuf += data;
+
+      // Auto-respond to Claude Code's "Do you want to use this API key?" prompt.
+      // ANSI cursor-move codes replace spaces, so stripped text is concatenated.
+      if (!apiKeyPromptHandled && outputBuf.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '').includes('usethisAPIkey')) {
+        apiKeyPromptHandled = true;
+        // Default selection is "No (recommended)". Send Up arrow then Enter to select "Yes".
+        setTimeout(() => ptyProcess.write('\x1b[A\r'), 200);
+      }
 
       if (!assembler || !adapter || turnComplete) return;
 
@@ -964,7 +977,7 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
       }
     });
 
-    // Inject prompt as initial input after harness starts (like interactive mode)
+    // Inject prompt as initial input after harness starts (like interactive mode).
     if (prompt) {
       setTimeout(() => ptyProcess.write(prompt + '\n'), 500);
     }
