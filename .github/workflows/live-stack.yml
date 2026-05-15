@@ -577,7 +577,7 @@ jobs:
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Run selected live stack E2E
-        timeout-minutes: 8
+        timeout-minutes: 12
         env:
           LIVE_STACK_SCENARIO_ID: ${{ matrix.scenario.id }}
           LIVE_STACK_AGENT_PATH: ${{ matrix.scenario.agent_path }}
@@ -602,8 +602,8 @@ jobs:
           LIVE_STACK_EXPECTED_ARTIFACTS: ${{ matrix.install_mode.expected_artifacts }}
           LIVE_STACK_RUN_MODEL_TESTS: '1'
           LIVE_STACK_REQUIRE_EVIDENCE: '1'
-          LIVE_STACK_TEST_TIMEOUT_MS: '360000'
-          LIVE_STACK_COMMAND_TIMEOUT_MS: '300000'
+          LIVE_STACK_TEST_TIMEOUT_MS: '540000'
+          LIVE_STACK_COMMAND_TIMEOUT_MS: '480000'
           LIVE_STACK_BABYSITTER_BIN: ${{ github.workspace }}/packages/sdk/dist/cli/main.js
           LIVE_STACK_AMUX_BIN: ${{ github.workspace }}/packages/agent-mux/cli/dist/index.js
           LIVE_STACK_BABYSITTER_AGENT_BIN: ${{ github.workspace }}/packages/babysitter-agent/dist/cli/main.js

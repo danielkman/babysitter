@@ -53,7 +53,7 @@ export interface CompletionResult {
   text: string;
   finishReason: string;
   usage: CompletionUsage;
-  toolCalls?: Array<{ id: string; name: string; arguments: string }>;
+  toolCalls?: Array<{ id: string; name: string; arguments: string; metadata?: Record<string, unknown> }>;
   costRecord?: { inputTokens: number; outputTokens: number; cacheReadTokens?: number; cacheWriteTokens?: number };
 }
 
@@ -77,6 +77,7 @@ export interface CompletionToolCallEvent {
   id: string;
   name: string;
   arguments: string;
+  metadata?: Record<string, unknown>;
 }
 
 export type CompletionStreamEvent = CompletionTextDeltaEvent | CompletionToolCallEvent | CompletionDoneEvent;

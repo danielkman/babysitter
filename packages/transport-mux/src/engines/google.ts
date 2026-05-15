@@ -22,7 +22,10 @@ export interface GoogleCompletionEngineOptions {
   useVertexAi?: boolean;
 }
 
-type GoogleContentPart = { text: string } | { functionCall: { name: string; args: Record<string, unknown> } } | { functionResponse: { name: string; response: { content: string } } };
+type GoogleContentPart =
+  | { text: string }
+  | { functionCall: { name: string; args: Record<string, unknown> }; thoughtSignature?: string }
+  | { functionResponse: { name: string; response: { content: string } } };
 
 function translateMessagesToGoogle(messages: CompletionRequest['messages']): Array<{ role: string; parts: GoogleContentPart[] }> {
   const result: Array<{ role: string; parts: GoogleContentPart[] }> = [];
@@ -44,9 +47,13 @@ function translateMessagesToGoogle(messages: CompletionRequest['messages']): Arr
         const name = String(block['name'] ?? '');
         const id = String(block['id'] ?? '');
         if (id) toolIdToName.set(id, name);
-        parts.push({
+        const part: GoogleContentPart = {
           functionCall: { name, args: (block['input'] as Record<string, unknown>) ?? {} },
-        });
+        };
+        if (block['thoughtSignature']) {
+          (part as Record<string, unknown>)['thoughtSignature'] = block['thoughtSignature'];
+        }
+        parts.push(part);
       } else if (block['type'] === 'tool_result') {
         const content = typeof block['content'] === 'string' ? block['content']
           : Array.isArray(block['content']) ? (block['content'] as Array<Record<string, unknown>>).map(c => c['text'] ?? '').join('')
@@ -118,15 +125,19 @@ function extractGoogleText(data: GoogleResponseData): string {
     .join('') ?? '';
 }
 
-function extractGoogleToolCalls(data: GoogleResponseData): Array<{ id: string; name: string; arguments: string }> | undefined {
-  const calls: Array<{ id: string; name: string; arguments: string }> = [];
+function extractGoogleToolCalls(data: GoogleResponseData): Array<{ id: string; name: string; arguments: string; metadata?: Record<string, unknown> }> | undefined {
+  const calls: Array<{ id: string; name: string; arguments: string; metadata?: Record<string, unknown> }> = [];
   for (const candidate of data.candidates ?? []) {
     for (const part of candidate.content?.parts ?? []) {
       if (part.functionCall) {
+        const rawPart = part as Record<string, unknown>;
+        const metadata: Record<string, unknown> = {};
+        if (rawPart['thoughtSignature']) metadata['thoughtSignature'] = rawPart['thoughtSignature'];
         calls.push({
           id: `call_${Date.now()}_${calls.length}`,
           name: part.functionCall.name,
           arguments: JSON.stringify(part.functionCall.args ?? {}),
+          metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
         });
       }
     }
@@ -183,7 +194,7 @@ async function* parseGoogleStream(response: Response): AsyncIterable<CompletionS
       if (parsed.text) yield { type: 'text-delta', text: parsed.text };
       if (parsed.toolCalls) {
         for (const tc of parsed.toolCalls) {
-          yield { type: 'tool-call' as const, id: tc.id, name: tc.name, arguments: tc.arguments };
+          yield { type: 'tool-call' as const, id: tc.id, name: tc.name, arguments: tc.arguments, metadata: tc.metadata };
         }
       }
       if (parsed.usage) usage = parsed.usage;

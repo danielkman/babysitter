@@ -428,8 +428,7 @@ function buildPrompt(scenario: LiveStackScenario, traceId: string): string {
     return `Write a 12-paragraph summary of Homer's Odyssey, then translate each paragraph to Greek.`;
   }
 
-  const isInteractive = process.env['LIVE_STACK_INTERACTIVE'] === 'true';
-  if (scenario.agent.installMode === 'babysitter-plugin' && isInteractive) {
+  if (scenario.agent.installMode === 'babysitter-plugin') {
     return `Use the babysitter skill to: ${coreTask}`;
   }
 

@@ -476,11 +476,13 @@ function anthropicStreamResponse(
             }
             // Anthropic streaming format: content_block_start with empty input,
             // then input_json_delta with the full JSON, then content_block_stop.
+            const toolUseBlock: Record<string, unknown> = { type: 'tool_use', id: event.id, name: event.name, input: {} };
+            if (event.metadata) Object.assign(toolUseBlock, event.metadata);
             controller.enqueue(encoder.encode(
               encodeSseChunk('event: content_block_start\ndata: ', {
                 type: 'content_block_start',
                 index: contentIndex,
-                content_block: { type: 'tool_use', id: event.id, name: event.name, input: {} },
+                content_block: toolUseBlock,
               }),
             ));
             controller.enqueue(encoder.encode(
@@ -813,7 +815,9 @@ function anthropicResponse(result: CompletionResult, config: ProxyConfig) {
     for (const tc of result.toolCalls) {
       let input: unknown;
       try { input = JSON.parse(tc.arguments); } catch { input = {}; }
-      content.push({ type: 'tool_use', id: tc.id, name: tc.name, input });
+      const block: Record<string, unknown> = { type: 'tool_use', id: tc.id, name: tc.name, input };
+      if (tc.metadata) Object.assign(block, tc.metadata);
+      content.push(block);
     }
   }
   if (content.length === 0) {
