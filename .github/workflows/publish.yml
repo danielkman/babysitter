@@ -461,12 +461,18 @@ jobs:
           PUBLISH_REF: ${{ github.ref_name }}
         run: |
           set -euo pipefail
-          gh workflow run live-stack.yml \
-            --repo "${{ github.repository }}" \
-            --ref "$PUBLISH_REF" \
-            -f publish_run_id="$PUBLISH_RUN_ID" \
-            -f publish_head_sha="$PUBLISH_HEAD_SHA" \
-            -f publish_ref="$PUBLISH_REF"
+          workflow_id="$(gh api "repos/${{ github.repository }}/actions/workflows/live-stack.yml" --jq .id 2>/tmp/live-stack-workflow.err || true)"
+          if [[ -z "$workflow_id" ]]; then
+            echo "::warning::Live Stack workflow is not registered on the default branch yet; skipping dispatch for this Publish run."
+            cat /tmp/live-stack-workflow.err || true
+            exit 0
+          fi
+
+          gh api --method POST "repos/${{ github.repository }}/actions/workflows/$workflow_id/dispatches" \
+            -f ref="$PUBLISH_REF" \
+            -f inputs[publish_run_id]="$PUBLISH_RUN_ID" \
+            -f inputs[publish_head_sha]="$PUBLISH_HEAD_SHA" \
+            -f inputs[publish_ref]="$PUBLISH_REF"
 
   validate_cloud:
     if: ${{ !contains(github.event.head_commit.message, '[skip publish]') }}

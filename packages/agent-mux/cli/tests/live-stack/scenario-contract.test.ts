@@ -201,7 +201,8 @@ describe('live stack scenario contract primitives', () => {
   it('keeps Publish decoupled from live-stack matrix execution', () => {
     const publish = fs.readFileSync('.github/workflows/publish.yml', 'utf8');
 
-    expect(publish).toContain('gh workflow run live-stack.yml');
+    expect(publish).toContain('actions/workflows/live-stack.yml');
+    expect(publish).toContain('dispatches');
     expect(publish).not.toContain('Run selected live stack E2E');
     expect(publish).not.toContain('live_stack_babysitter_plugin');
     expect(publish).not.toContain('live_stack_babysitter_agent');
