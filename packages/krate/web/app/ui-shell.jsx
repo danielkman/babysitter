@@ -28,6 +28,7 @@ import { StackActions } from './components/stack-actions.jsx';
 import { ManualDispatchButton, RunActions } from './components/run-actions.jsx';
 import { EnableDisableToggle, DeleteRuleButton } from './components/rule-actions.jsx';
 import { ResourceActions, InlineCreateForm } from './components/resource-crud-actions.jsx';
+import { RepoCodeBrowser } from './components/repo-code-browser.jsx';
 
 export const orgNavigationGroups = [
   {
@@ -802,11 +803,34 @@ export async function AgentProjectBoardPage({ org = null, projectId } = {}) {
   const project = (agentView.projects?.items || []).find((p) => p.metadata?.name === projectId) || null;
   const displayName = project?.spec?.displayName || projectId || 'Project';
   const boardItems = project?.spec?.boardItems || project?.status?.boardItems || [];
+
+  // Load workspaces and sessions to enrich board items with live refs
+  const workspaces = agentView.workspaces?.items || [];
+  const sessions = agentView.sessions?.items || [];
+
+  // Enrich board items: match by boardItemRef label or by name convention
+  const enrichedItems = boardItems.map((item) => {
+    const itemName = item.metadata?.name || item.spec?.title;
+    const ws = workspaces.find(
+      (w) => w.spec?.boardItemRef === itemName || w.metadata?.labels?.['krate.a5c.ai/board-item'] === itemName
+    );
+    const sess = sessions.find(
+      (s) => s.spec?.boardItemRef === itemName || s.metadata?.labels?.['krate.a5c.ai/board-item'] === itemName
+    );
+    return {
+      ...item,
+      workspaceRef: ws?.metadata?.name || item.workspaceRef || null,
+      workspacePvcStatus: ws?.status?.pvcPhase || ws?.status?.storagePhase || (ws ? 'Unknown' : null),
+      sessionRef: sess?.metadata?.name || item.sessionRef || null,
+      sessionStatus: sess?.status?.phase || null,
+    };
+  });
+
   return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/agents" eyebrow={`project / ${displayName}`} title={displayName} text={project ? (project.spec?.description || `Kanban board for project ${displayName}.`) : 'This project was not found in the current workspace.'} actions={[['/agents/projects', 'All projects'], ['/agents/stacks', 'Stacks']]} breadcrumbs={[['/', 'Krate'], ['/agents', 'Agents'], ['/agents/projects', 'Projects'], [`/agents/projects/${projectId}`, displayName]]}>
     <DegradedBanner model={ui.model} />
     {project ? <div className="card">
-      <div className="cardTitle"><h2>Board</h2><StatusPill tone={boardItems.length ? 'good' : 'neutral'}>{boardItems.length} items</StatusPill></div>
-      <EnhancedKanbanBoard project={project} initialIssues={boardItems} org={activeOrg} />
+      <div className="cardTitle"><h2>Board</h2><StatusPill tone={enrichedItems.length ? 'good' : 'neutral'}>{enrichedItems.length} items</StatusPill></div>
+      <EnhancedKanbanBoard project={project} initialIssues={enrichedItems} org={activeOrg} workspaces={workspaces} sessions={sessions} />
     </div> : <EmptyState title={`Project ${projectId} not found`} text="This project does not exist in the current workspace. Create it through Krate resource definitions." />}
   </PageFrame>;
 }
@@ -1475,7 +1499,7 @@ function repositorySectionContent(section, repo, repository, ui, activeOrg) {
   const plan = repository ? resourceJson(repository) : null;
   const empty = !repository;
   const pages = {
-    code: { title: repo, text: empty ? 'Create this repository to start browsing files and cloning code.' : 'Browse files, copy clone commands, and branch from the default ref.', body: <div className="repoCodePage"><CodeBrowser org={activeOrg} repo={repo} plan={plan} exists={!empty} repository={repository} /><CloneAndRefs repo={repo} repository={repository} /></div> },
+    code: { title: repo, text: empty ? 'Create this repository to start browsing files and cloning code.' : 'Browse files, copy clone commands, and branch from the default ref.', body: <div className="repoCodePage">{!empty ? <RepoCodeBrowser org={activeOrg} repo={repo} defaultBranch={repository?.spec?.defaultBranch || 'main'} /> : <div className="card"><h3>Repository not connected</h3><p>Create this repository to start browsing files and cloning code.</p></div>}<CloneAndRefs repo={repo} repository={repository} /></div> },
     'pull-requests': { title: 'Reviews', text: 'Review files, checks, policy, and merge readiness without hunting through raw records.', body: <div className="routeGrid wideLeft"><PullRequestReviewPanel model={ui.model} repo={repo} /><ResourceTable resource={ui.pullRequests} /></div> },
     issues: { title: 'Issues', text: 'Triage issues by state and keep saved views close to the repository.', body: <div className="routeGrid wideLeft"><IssueBoard model={ui.model} repo={repo} /><ResourceTable resource={ui.issues} /></div> },
     runs: { title: 'Runs', text: 'Follow checks, jobs, and reruns for this repository without dropping into raw pipeline objects.', body: <div className="routeGrid wideLeft"><RunCenter model={ui.model} pipelines={ui.pipelines} repositories={[publicResource(repository)].filter(Boolean)} repo={repo} /><RunEventStream org={activeOrg} resource={ui.pipelines} events={ui.model.events} /></div> },
@@ -1611,7 +1635,128 @@ function CloneAndRefs({ repo, repository }) {
 
 function RepoSettingsPanel({ repository, model, org = 'default', repo }) {
   const repoName = repo || repository?.metadata?.name;
-  return <div className="card securitySettings"><div className="cardTitle"><h3>Repository settings map</h3><StatusPill tone={repository ? 'good' : 'warn'}>{repository ? 'live' : 'missing'}</StatusPill></div><dl className="kv"><dt>Workspace</dt><dd>{repository?.metadata?.namespace || model.namespace}</dd><dt>Visibility</dt><dd>{repository?.spec?.visibility || 'not set'}</dd><dt>Default branch</dt><dd>{repository?.spec?.defaultBranch || 'main'}</dd><dt>Policy checks</dt><dd>{repository ? 'Ready' : 'Waiting for a repository'}</dd></dl><div className="heroActions" aria-label="Repository settings links"><a href={orgHref(org, '/people')}>Manage access</a>{repoName ? <a href={orgHref(org, `/repositories/${repoName}/runs`)}>Open runs</a> : null}<a href={orgHref(org, '/advanced-plans')}>Open advanced details</a></div></div>;
+  const visibility = repository?.spec?.visibility || 'private';
+  const defaultBranch = repository?.spec?.defaultBranch || 'main';
+  const bpItems = (model.resources || []).find((r) => r.kind === 'BranchProtection')?.items || [];
+  const repoBps = bpItems.filter((bp) => {
+    const refs = bp.spec?.refs || [];
+    return !repoName || refs.some((ref) => String(ref).includes(repoName) || String(ref).includes('*'));
+  });
+
+  return (
+    <div className="stack">
+      {/* General settings */}
+      <div className="card securitySettings">
+        <div className="cardTitle">
+          <h3>Repository settings</h3>
+          <StatusPill tone={repository ? 'good' : 'warn'}>{repository ? 'connected' : 'missing'}</StatusPill>
+        </div>
+        <dl className="kv">
+          <dt>Name</dt><dd><code>{repoName || '—'}</code></dd>
+          <dt>Visibility</dt>
+          <dd>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem' }}>
+              <span style={{ width: '0.5rem', height: '0.5rem', borderRadius: '50%', background: visibility === 'public' ? '#22c55e' : visibility === 'internal' ? '#3b82f6' : '#6b7280', flexShrink: 0 }} />
+              {visibility}
+            </span>
+          </dd>
+          <dt>Default branch</dt><dd><code>{defaultBranch}</code></dd>
+          <dt>Workspace</dt><dd>{repository?.metadata?.namespace || model.namespace}</dd>
+          <dt>Phase</dt><dd>{repository?.status?.phase || 'Unknown'}</dd>
+        </dl>
+        <div className="heroActions" aria-label="Repository settings links">
+          {repoName ? <a href={orgHref(org, `/repositories/${repoName}/runs`)}>View runs</a> : null}
+          <a href={orgHref(org, '/people')}>Manage access</a>
+          <a href={orgHref(org, '/advanced-plans')}>Advanced details</a>
+        </div>
+      </div>
+
+      {/* Update settings form */}
+      {repository ? (
+        <InlineCreateForm
+          org={org}
+          kind="Repository"
+          title="Update repository settings"
+          fields={[
+            { name: 'visibility', label: 'Visibility', type: 'select', options: ['public', 'internal', 'private'], required: true },
+            { name: 'defaultBranch', label: 'Default branch', placeholder: defaultBranch, required: false },
+          ]}
+          successText="Repository settings updated"
+        />
+      ) : null}
+
+      {/* Branch protection rules */}
+      <div className="card">
+        <div className="cardTitle">
+          <h3>Branch protection rules</h3>
+          <StatusPill tone={repoBps.length ? 'good' : 'neutral'}>{repoBps.length} rules</StatusPill>
+        </div>
+        {repoBps.length ? (
+          <div className="resourceTable">
+            {repoBps.map((bp) => {
+              const bpName = bp.metadata?.name || 'unknown';
+              const refs = bp.spec?.refs || [];
+              const phase = bp.status?.phase || 'Pending';
+              const phaseTone = phase === 'Active' || phase === 'Ready' ? 'good' : phase === 'Failed' ? 'danger' : 'neutral';
+              return (
+                <div key={bpName} className="resourceRow" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                  <strong>{bpName}</strong>
+                  <span>{Array.isArray(refs) ? refs.join(', ') : String(refs)}</span>
+                  <StatusPill tone={phaseTone}>{phase}</StatusPill>
+                  <ResourceActions org={org} apiPath={`branchprotections/${bpName}`} actions={['delete']} />
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="emptyText">No branch protection rules for this repository. Add rules in <a href={orgHref(org, '/access/branch-protection')}>Branch protection</a>.</p>
+        )}
+      </div>
+
+      {/* Collaborators */}
+      <div className="card">
+        <div className="cardTitle">
+          <h3>Collaborators</h3>
+          <StatusPill tone="neutral">access control</StatusPill>
+        </div>
+        <p style={{ color: '#6b7280', fontSize: '0.875rem', margin: '0 0 0.75rem' }}>
+          Collaborators are managed through Krate user and team grants. Use the People page to add or remove repository access.
+        </p>
+        <div className="heroActions">
+          <a href={orgHref(org, '/people')}>Manage collaborators</a>
+          <a href={orgHref(org, '/access/permissions')}>View permissions</a>
+        </div>
+      </div>
+
+      {/* Danger zone */}
+      <div className="card" style={{ borderLeft: '3px solid #ef4444' }}>
+        <div className="cardTitle">
+          <h3>Danger zone</h3>
+          <StatusPill tone="danger">destructive</StatusPill>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem', background: '#fef2f2', borderRadius: '0.375rem', gap: '1rem', flexWrap: 'wrap' }}>
+            <div>
+              <strong style={{ fontSize: '0.875rem' }}>Transfer repository</strong>
+              <p style={{ margin: '0.25rem 0 0', fontSize: '0.8125rem', color: '#6b7280' }}>Transfer ownership to another organization or user.</p>
+            </div>
+            <button disabled title="Coming soon — transfer requires org admin approval" style={{ padding: '0.375rem 0.75rem', fontSize: '0.8125rem', background: '#f3f4f6', color: '#9ca3af', border: '1px solid #e5e7eb', borderRadius: '0.375rem', cursor: 'not-allowed', flexShrink: 0 }}>
+              Transfer (coming soon)
+            </button>
+          </div>
+          {repository && repoName ? (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem', background: '#fef2f2', borderRadius: '0.375rem', gap: '1rem', flexWrap: 'wrap' }}>
+              <div>
+                <strong style={{ fontSize: '0.875rem' }}>Delete this repository</strong>
+                <p style={{ margin: '0.25rem 0 0', fontSize: '0.8125rem', color: '#6b7280' }}>Permanently delete <code>{repoName}</code> and all its data. This action cannot be undone.</p>
+              </div>
+              <ResourceActions org={org} apiPath={`repositories/${repoName}`} actions={['delete']} />
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function KubeVelaRequiredBanner({ model }) {

@@ -31,6 +31,12 @@ function CardDetailModal({ item, onClose, columnColor }) {
   const storyPoints = item.spec?.storyPoints || item.spec?.points || null;
   const createdAt = item.metadata?.creationTimestamp || item.spec?.createdAt || null;
   const updatedAt = item.status?.updatedAt || item.spec?.updatedAt || null;
+  const workspaceRef = item.workspaceRef || item.spec?.workspaceRef || null;
+  const workspacePvcStatus = item.workspacePvcStatus || item.spec?.workspacePvcStatus || null;
+  const sessionRef = item.sessionRef || item.spec?.sessionRef || null;
+  const sessionStatus = item.sessionStatus || item.spec?.sessionStatus || null;
+  const dispatchRunRef = item.dispatchRunRef || item.spec?.dispatchRunRef || null;
+  const agentName = item.agentName || item.spec?.agentName || (item.status?.agentActive ? 'Agent active' : null);
 
   return (
     <div
@@ -114,6 +120,56 @@ function CardDetailModal({ item, onClose, columnColor }) {
                 <dd style={{ margin: 0 }}>{storyPoints}</dd>
               </>
             ) : null}
+            {workspaceRef ? (
+              <>
+                <dt style={{ color: '#6b7280', fontWeight: 600 }}>Workspace</dt>
+                <dd style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                  <code style={{ fontSize: '0.75rem' }}>{workspaceRef}</code>
+                  {workspacePvcStatus ? (
+                    <span style={{
+                      fontSize: '0.625rem',
+                      padding: '0.0625rem 0.375rem',
+                      borderRadius: '9999px',
+                      background: workspacePvcStatus === 'Bound' ? '#dcfce7' : '#fef3c7',
+                      color: workspacePvcStatus === 'Bound' ? '#16a34a' : '#92400e',
+                      fontWeight: 600,
+                    }}>
+                      {workspacePvcStatus}
+                    </span>
+                  ) : null}
+                </dd>
+              </>
+            ) : null}
+            {sessionRef ? (
+              <>
+                <dt style={{ color: '#6b7280', fontWeight: 600 }}>Session</dt>
+                <dd style={{ margin: 0 }}>
+                  <a href={`/agents/sessions/${sessionRef}`} style={{ color: '#2563eb', fontSize: '0.75rem' }}>
+                    {sessionRef.slice(0, 16)}…
+                  </a>
+                  {sessionStatus ? <span style={{ marginLeft: '0.375rem', color: '#9ca3af', fontSize: '0.6875rem' }}>{sessionStatus}</span> : null}
+                </dd>
+              </>
+            ) : null}
+            {dispatchRunRef ? (
+              <>
+                <dt style={{ color: '#6b7280', fontWeight: 600 }}>Run</dt>
+                <dd style={{ margin: 0 }}>
+                  <a href={`/agents/runs/${dispatchRunRef}`} style={{ color: '#7c3aed', fontSize: '0.75rem' }}>
+                    {dispatchRunRef.slice(0, 16)}…
+                  </a>
+                </dd>
+              </>
+            ) : null}
+            {agentName ? (
+              <>
+                <dt style={{ color: '#6b7280', fontWeight: 600 }}>Agent</dt>
+                <dd style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.375rem', color: '#059669' }}>
+                  <span style={{ width: '0.5rem', height: '0.5rem', borderRadius: '9999px', background: '#10b981', flexShrink: 0, animation: 'kanbanPulse 2s infinite' }} />
+                  {agentName}
+                </dd>
+              </>
+            ) : null}
             {createdAt ? (
               <>
                 <dt style={{ color: '#6b7280', fontWeight: 600 }}>Created</dt>
@@ -152,13 +208,112 @@ function CardDetailModal({ item, onClose, columnColor }) {
   );
 }
 
-function KanbanCard({ item, columnColor, onDragStart, onDragEnd, isDragging, onCardClick }) {
+function StartWorkDialog({ item, onConfirm, onCancel, org }) {
+  const [loading, setLoading] = useState(false);
+  const name = item.spec?.title || item.metadata?.name || 'this item';
+  const repoRef = item.spec?.repoRef || item.spec?.repository || null;
+
+  const handleConfirm = async () => {
+    setLoading(true);
+    try {
+      await onConfirm(item);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'rgba(0,0,0,0.4)',
+        zIndex: 1100,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '1rem',
+      }}
+      onClick={(e) => { if (e.target === e.currentTarget) onCancel(); }}
+    >
+      <div
+        style={{
+          background: '#fff',
+          borderRadius: '0.75rem',
+          padding: '1.5rem',
+          maxWidth: '28rem',
+          width: '100%',
+          boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+        }}
+      >
+        <h3 style={{ margin: '0 0 0.75rem', fontSize: '1rem', fontWeight: 700 }}>
+          Start work on &quot;{name}&quot;?
+        </h3>
+        <p style={{ margin: '0 0 1rem', fontSize: '0.875rem', color: '#6b7280' }}>
+          This will create or claim a KrateWorkspace for{' '}
+          {repoRef ? `repository ${repoRef}` : 'this item'} and link it to the board card.
+        </p>
+        {repoRef ? (
+          <div style={{ margin: '0 0 1rem', padding: '0.5rem 0.75rem', background: '#f0fdf4', borderRadius: '0.375rem', fontSize: '0.8125rem' }}>
+            <strong>Repository:</strong> <code>{repoRef}</code>
+          </div>
+        ) : null}
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <button
+            onClick={handleConfirm}
+            disabled={loading}
+            style={{
+              flex: 1,
+              padding: '0.5rem',
+              background: loading ? '#93c5fd' : '#2563eb',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '0.375rem',
+              fontSize: '0.875rem',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              fontWeight: 600,
+            }}
+          >
+            {loading ? 'Creating…' : 'Create workspace'}
+          </button>
+          <button
+            onClick={onCancel}
+            disabled={loading}
+            style={{
+              flex: 1,
+              padding: '0.5rem',
+              background: '#f3f4f6',
+              color: '#374151',
+              border: 'none',
+              borderRadius: '0.375rem',
+              fontSize: '0.875rem',
+              cursor: 'pointer',
+            }}
+          >
+            Skip for now
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function KanbanCard({ item, columnColor, onDragStart, onDragEnd, isDragging, onCardClick, onStartWork }) {
   const name = item.metadata?.name || item.spec?.title;
   const title = item.spec?.title || name || 'Untitled';
   const priority = item.spec?.priority;
   const assignee = item.spec?.assignee;
   const labels = item.spec?.labels || [];
   const storyPoints = item.spec?.storyPoints || item.spec?.points;
+
+  // Workspace/session/run/agent refs
+  const workspaceRef = item.workspaceRef || item.spec?.workspaceRef || null;
+  const workspacePvcStatus = item.workspacePvcStatus || item.spec?.workspacePvcStatus || null;
+  const sessionRef = item.sessionRef || item.spec?.sessionRef || null;
+  const sessionStatus = item.sessionStatus || item.spec?.sessionStatus || null;
+  const dispatchRunRef = item.dispatchRunRef || item.spec?.dispatchRunRef || null;
+  const agentName = item.agentName || item.spec?.agentName || (item.status?.agentActive ? 'Agent active' : null);
+  const hasWorkspace = !!workspaceRef;
 
   return (
     <div
@@ -196,6 +351,76 @@ function KanbanCard({ item, columnColor, onDragStart, onDragEnd, isDragging, onC
           <span key={label} className="pill neutral" style={{ fontSize: '0.6875rem' }}>{label}</span>
         ))}
       </div>
+
+      {/* Workspace badge */}
+      {workspaceRef ? (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginTop: '0.25rem', fontSize: '0.6875rem' }}>
+          <span style={{ background: '#ede9fe', color: '#6d28d9', padding: '0.0625rem 0.375rem', borderRadius: '9999px', fontWeight: 600, flexShrink: 0 }}>
+            WS
+          </span>
+          <span style={{ color: '#6b7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+            {workspaceRef}
+          </span>
+          <span style={{
+            fontSize: '0.5625rem',
+            padding: '0.0625rem 0.25rem',
+            borderRadius: '9999px',
+            background: workspacePvcStatus === 'Bound' ? '#dcfce7' : '#fef3c7',
+            color: workspacePvcStatus === 'Bound' ? '#16a34a' : '#92400e',
+            fontWeight: 600,
+            flexShrink: 0,
+          }}>
+            {workspacePvcStatus || 'Pending'}
+          </span>
+        </div>
+      ) : null}
+
+      {/* Session link */}
+      {sessionRef ? (
+        <a
+          href={`/agents/sessions/${sessionRef}`}
+          onClick={(e) => e.stopPropagation()}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginTop: '0.25rem', fontSize: '0.6875rem', color: '#2563eb', textDecoration: 'none' }}
+        >
+          <span style={{ background: '#dbeafe', color: '#1d4ed8', padding: '0.0625rem 0.375rem', borderRadius: '9999px', fontWeight: 600, flexShrink: 0 }}>Session</span>
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+            {sessionRef.slice(0, 12)}…
+          </span>
+          {sessionStatus ? (
+            <span style={{ fontSize: '0.5625rem', color: '#6b7280', flexShrink: 0 }}>{sessionStatus}</span>
+          ) : null}
+        </a>
+      ) : null}
+
+      {/* Run link */}
+      {dispatchRunRef ? (
+        <a
+          href={`/agents/runs/${dispatchRunRef}`}
+          onClick={(e) => e.stopPropagation()}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginTop: '0.125rem', fontSize: '0.6875rem', color: '#7c3aed', textDecoration: 'none' }}
+        >
+          <span style={{ background: '#ede9fe', color: '#6d28d9', padding: '0.0625rem 0.375rem', borderRadius: '9999px', fontWeight: 600, flexShrink: 0 }}>Run</span>
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {dispatchRunRef.slice(0, 14)}
+          </span>
+        </a>
+      ) : null}
+
+      {/* Agent indicator */}
+      {agentName ? (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginTop: '0.25rem', fontSize: '0.6875rem', color: '#059669' }}>
+          <span style={{
+            width: '0.5rem',
+            height: '0.5rem',
+            borderRadius: '9999px',
+            background: '#10b981',
+            flexShrink: 0,
+            animation: 'kanbanPulse 2s ease-in-out infinite',
+          }} />
+          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{agentName}</span>
+        </div>
+      ) : null}
+
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '0.25rem' }}>
         {assignee ? (
           <small style={{ color: '#6b7280', fontSize: '0.75rem' }}>{assignee}</small>
@@ -215,6 +440,27 @@ function KanbanCard({ item, columnColor, onDragStart, onDragEnd, isDragging, onC
           </span>
         ) : null}
       </div>
+
+      {/* Start Work button — shown when no workspace and column is not done */}
+      {onStartWork && !hasWorkspace && item._column !== 'done' ? (
+        <button
+          onClick={(e) => { e.stopPropagation(); onStartWork(item); }}
+          style={{
+            marginTop: '0.375rem',
+            padding: '0.1875rem 0.5rem',
+            fontSize: '0.6875rem',
+            background: '#eff6ff',
+            color: '#1d4ed8',
+            border: '1px solid #bfdbfe',
+            borderRadius: '0.25rem',
+            cursor: 'pointer',
+            width: '100%',
+            textAlign: 'center',
+          }}
+        >
+          Start Work
+        </button>
+      ) : null}
     </div>
   );
 }
@@ -311,7 +557,7 @@ function AddCardRow({ onAdd }) {
   );
 }
 
-function Swimlane({ label, items, columnColor, draggingId, onDragStart, onDragEnd, onCardClick }) {
+function Swimlane({ label, items, columnColor, draggingId, onDragStart, onDragEnd, onCardClick, onStartWork }) {
   return (
     <div style={{ marginBottom: '0.5rem' }}>
       <div
@@ -338,6 +584,7 @@ function Swimlane({ label, items, columnColor, draggingId, onDragStart, onDragEn
             onDragEnd={onDragEnd}
             isDragging={draggingId === (item.metadata?.name || item.spec?.title)}
             onCardClick={onCardClick}
+            onStartWork={onStartWork}
           />
         ))}
       </div>
@@ -357,6 +604,7 @@ function KanbanColumn({
   onDrop,
   onCardClick,
   onAddCard,
+  onStartWork,
   groupBy,
 }) {
   const isOver = dragOverCol === col.id;
@@ -467,6 +715,7 @@ function KanbanColumn({
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
             onCardClick={onCardClick}
+            onStartWork={onStartWork}
           />
         ))
       ) : (
@@ -480,6 +729,7 @@ function KanbanColumn({
               onDragEnd={onDragEnd}
               isDragging={draggingId === (item.metadata?.name || item.spec?.title)}
               onCardClick={onCardClick}
+              onStartWork={onStartWork}
             />
           ))}
         </div>
@@ -493,7 +743,14 @@ function KanbanColumn({
   );
 }
 
-export function EnhancedKanbanBoard({ initialIssues = [], org = 'default', project, wipLimits = {} }) {
+export function EnhancedKanbanBoard({
+  initialIssues = [],
+  org = 'default',
+  project,
+  wipLimits = {},
+  workspaces = [],
+  sessions = [],
+}) {
   const [issues, setIssues] = useState(() =>
     initialIssues.map((item) => ({
       ...item,
@@ -507,6 +764,7 @@ export function EnhancedKanbanBoard({ initialIssues = [], org = 'default', proje
   const [filterLabel, setFilterLabel] = useState('');
   const [searchText, setSearchText] = useState('');
   const [groupBy, setGroupBy] = useState('none');
+  const [pendingWorkspaceItem, setPendingWorkspaceItem] = useState(null);
   const dragItemRef = useRef(null);
 
   const projectName = project?.metadata?.name;
@@ -599,6 +857,11 @@ export function EnhancedKanbanBoard({ initialIssues = [], org = 'default', proje
       setDragOverCol(null);
       dragItemRef.current = null;
 
+      // Offer to create workspace when moving to in-progress without one
+      if (targetColId === 'in-progress' && !item.workspaceRef && !item.spec?.workspaceRef) {
+        setPendingWorkspaceItem({ ...item, _column: targetColId });
+      }
+
       if (projectName) {
         fetch(`/api/orgs/${encodeURIComponent(org)}/resources`, {
           method: 'POST',
@@ -642,12 +905,73 @@ export function EnhancedKanbanBoard({ initialIssues = [], org = 'default', proje
     setSelectedCard(item);
   }, []);
 
+  // Handle Start Work — creates a KrateWorkspace and links it to the card
+  const handleStartWork = useCallback(
+    async (item) => {
+      const itemId = item.metadata?.name || item.spec?.title || `item-${Date.now()}`;
+      const workspaceName = `ws-${itemId.toLowerCase().replace(/[^a-z0-9]/g, '-').slice(0, 40)}`;
+      const repoRef = item.spec?.repoRef || item.spec?.repository || null;
+
+      try {
+        await fetch(`/api/orgs/${encodeURIComponent(org)}/resources`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            apiVersion: 'krate.a5c.ai/v1alpha1',
+            kind: 'KrateWorkspace',
+            metadata: {
+              name: workspaceName,
+              labels: { 'krate.a5c.ai/board-item': itemId },
+            },
+            spec: {
+              boardItemRef: itemId,
+              ...(repoRef ? { repositoryRef: repoRef } : {}),
+              ...(projectName ? { projectRef: projectName } : {}),
+            },
+          }),
+        });
+
+        // Update the card locally with the workspace ref
+        setIssues((prev) =>
+          prev.map((i) => {
+            const iId = i.metadata?.name || i.spec?.title;
+            if (iId === itemId) {
+              return {
+                ...i,
+                workspaceRef: workspaceName,
+                workspacePvcStatus: 'Pending',
+              };
+            }
+            return i;
+          })
+        );
+      } catch {
+        // Silently ignore — workspace creation is best-effort
+      } finally {
+        setPendingWorkspaceItem(null);
+      }
+    },
+    [org, projectName]
+  );
+
+  const handleStartWorkFromButton = useCallback((item) => {
+    setPendingWorkspaceItem(item);
+  }, []);
+
   const getColumnColor = (colId) => WORKFLOW_COLUMNS.find((c) => c.id === colId)?.color || '#6b7280';
 
   const hasActiveFilter = filterAssignee || filterLabel || searchText;
 
   return (
     <div>
+      {/* Keyframe animation for agent pulse indicator */}
+      <style>{`
+        @keyframes kanbanPulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.4; transform: scale(0.85); }
+        }
+      `}</style>
+
       {/* Filter bar */}
       <div
         style={{
@@ -761,6 +1085,7 @@ export function EnhancedKanbanBoard({ initialIssues = [], org = 'default', proje
             onDrop={handleDrop}
             onCardClick={handleCardClick}
             onAddCard={handleAddCard}
+            onStartWork={handleStartWorkFromButton}
             groupBy={groupBy}
           />
         ))}
@@ -777,6 +1102,16 @@ export function EnhancedKanbanBoard({ initialIssues = [], org = 'default', proje
           item={selectedCard}
           columnColor={getColumnColor(selectedCard._column)}
           onClose={() => setSelectedCard(null)}
+        />
+      ) : null}
+
+      {/* Start Work dialog */}
+      {pendingWorkspaceItem ? (
+        <StartWorkDialog
+          item={pendingWorkspaceItem}
+          org={org}
+          onConfirm={handleStartWork}
+          onCancel={() => setPendingWorkspaceItem(null)}
         />
       ) : null}
     </div>
