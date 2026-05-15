@@ -92,7 +92,7 @@ function normalizeOpenAiToolChoice(toolChoice: unknown): unknown {
   return toolChoice;
 }
 
-function buildBody(messages: Array<{ role: string; content: string }>, model: string, stream: boolean, tools?: unknown[], toolChoice?: unknown): string {
+function buildBody(messages: Array<Record<string, unknown>>, model: string, stream: boolean, tools?: unknown[], toolChoice?: unknown): string {
   const body: Record<string, unknown> = { messages, model, stream };
   const openAiTools = normalizeOpenAiTools(tools);
   if (openAiTools) {
@@ -105,6 +105,47 @@ function buildBody(messages: Array<{ role: string; content: string }>, model: st
   return JSON.stringify(body);
 }
 
+type OpenAiMessage = { role: string; content: string | null; tool_calls?: Array<{ id: string; type: string; function: { name: string; arguments: string } }>; tool_call_id?: string };
+
+function translateMessagesToOpenAi(messages: CompletionRequest['messages']): OpenAiMessage[] {
+  const result: OpenAiMessage[] = [];
+  for (const msg of messages) {
+    const raw = msg.rawContent;
+    if (!Array.isArray(raw)) {
+      result.push({ role: msg.role, content: msg.content });
+      continue;
+    }
+
+    const blocks = raw as Array<Record<string, unknown>>;
+    const toolUseBlocks = blocks.filter(b => b['type'] === 'tool_use');
+    const toolResultBlocks = blocks.filter(b => b['type'] === 'tool_result');
+    const textBlocks = blocks.filter(b => b['type'] === 'text' || typeof b === 'string');
+
+    if (toolResultBlocks.length > 0) {
+      for (const tr of toolResultBlocks) {
+        const content = typeof tr['content'] === 'string' ? tr['content']
+          : Array.isArray(tr['content']) ? (tr['content'] as Array<Record<string, unknown>>).map(c => c['text'] ?? '').join('')
+          : JSON.stringify(tr['content'] ?? '');
+        result.push({ role: 'tool', content, tool_call_id: String(tr['tool_use_id'] ?? '') });
+      }
+    } else if (toolUseBlocks.length > 0) {
+      const text = textBlocks.map(b => typeof b === 'string' ? b : String(b['text'] ?? '')).filter(Boolean).join('');
+      result.push({
+        role: 'assistant',
+        content: text || null,
+        tool_calls: toolUseBlocks.map(tu => ({
+          id: String(tu['id'] ?? ''),
+          type: 'function' as const,
+          function: { name: String(tu['name'] ?? ''), arguments: JSON.stringify(tu['input'] ?? {}) },
+        })),
+      });
+    } else {
+      result.push({ role: msg.role, content: msg.content });
+    }
+  }
+  return result;
+}
+
 export function createOpenAICompletionEngine(options: {
   apiBase: string;
   apiKey: string;
@@ -112,7 +153,7 @@ export function createOpenAICompletionEngine(options: {
 }): CompletionEngine {
   return {
     async complete(request: CompletionRequest): Promise<CompletionResult> {
-      const messages = request.messages.map((m) => ({ role: m.role, content: m.content }));
+      const messages = translateMessagesToOpenAi(request.messages);
       const response = await fetch(
         buildUrl(options.apiBase, options.targetModel),
         {
@@ -161,7 +202,7 @@ export function createOpenAICompletionEngine(options: {
     },
 
     async *stream(request: CompletionRequest): AsyncIterable<CompletionStreamEvent> {
-      const messages = request.messages.map((m) => ({ role: m.role, content: m.content }));
+      const messages = translateMessagesToOpenAi(request.messages);
       const response = await fetch(
         buildUrl(options.apiBase, options.targetModel),
         {

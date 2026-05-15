@@ -26,6 +26,7 @@ export interface ProxyConfig {
 export interface CompletionRequestMessage {
   role: string;
   content: string;
+  rawContent?: unknown;
 }
 
 export interface CompletionRequest {

@@ -116,6 +116,7 @@ function normalizeMessages(raw: unknown): CompletionRequest['messages'] {
     return {
       role: typeof record.role === 'string' ? record.role : 'user',
       content: parseMessageContent(record.content ?? record.parts),
+      rawContent: record.content,
     };
   });
 }

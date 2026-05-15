@@ -165,7 +165,7 @@ describe('transport-mux server', () => {
       {
         model: 'openai/gpt-4o',
         transport: 'anthropic',
-        messages: [{ role: 'user', content: 'count these tokens' }],
+        messages: [{ role: 'user', content: 'count these tokens', rawContent: 'count these tokens' }],
       },
     ]);
   });
