@@ -39,6 +39,20 @@ describe('primary live stack runner contract', () => {
     }
   });
 
+  it('creates an assigned Babysitter setup run for plugin live lanes', () => {
+    const scenario = primaryLiveStackScenario();
+    const commands = buildPrimaryLiveStackCommands(scenario, {
+      cwd: '/repo',
+      timeoutMs: 1000,
+      env: { AZURE_API_KEY: 'sk-live-secret', AMUX_API_BASE: 'https://foundry.example.test', LIVE_STACK_TRACE_ID: 'trace-1' },
+    });
+
+    const createRun = commands.find((command) => command.command === 'babysitter' && command.args[0] === 'run:create');
+    expect(createRun?.args).toContain('--entry');
+    expect(createRun?.args).toContain(`${path.join('/repo', 'library', 'processes', 'shared', 'local-dev-workflow.js')}#process`);
+    expect(createRun?.args).toContain('processes/shared/local-dev-workflow');
+  });
+
   it('passes explicit Google env to Gemini 3.1 Pro live lanes', () => {
     const scenario = liveStackScenarioFromEnv({
       LIVE_STACK_SCENARIO_ID: 'live.agent-mux.claude-code.google.gemini-3.1-pro',
@@ -120,7 +134,7 @@ describe('primary live stack runner contract', () => {
         await fs.writeFile(path.join(cwd, '.a5c-live-test', `${traceId}-odyssey.md`), '# Odyssey\n\n' + 'Greek text ΑΒΓ '.repeat(80));
         for (const [runId, processId, completed] of [
           [bareRunId, 'bare-run', false],
-          [completedRunId, 'live-stack-e2e', true],
+          [completedRunId, 'processes/shared/local-dev-workflow', true],
         ] as const) {
           const runDir = path.join(cwd, '.a5c', 'runs', runId);
           await fs.mkdir(path.join(runDir, 'journal'), { recursive: true });
