@@ -795,8 +795,24 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
       } catch { /* core/adapters not available */ }
 
       // Pipe PTY to stdout + feed through event parser for turn detection
+      let interactiveOutputBuf = '';
+      let interactiveApiKeyHandled = false;
+      let interactiveBypassHandled = false;
       ptyProcess.onData((data: string) => {
         process.stdout.write(data);
+        interactiveOutputBuf += data;
+
+        // Auto-respond to Claude Code onboarding prompts
+        const stripped = interactiveOutputBuf.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '');
+        if (!interactiveApiKeyHandled && stripped.includes('usethisAPIkey')) {
+          interactiveApiKeyHandled = true;
+          setTimeout(() => ptyProcess.write('\x1b[A\r'), 200);
+        }
+        if (!interactiveBypassHandled && stripped.includes('BypassPermissionsmode')) {
+          interactiveBypassHandled = true;
+          setTimeout(() => ptyProcess.write('\x1b[B\r'), 200);
+        }
+
         if (!assembler || !adapter || turnDetected) return;
 
         // Strip ANSI escapes, then feed lines to the event parser
@@ -840,9 +856,25 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
         ptyProcess.resize(process.stdout.columns || 80, process.stdout.rows || 24);
       });
 
-      // Inject prompt as initial input after a short delay for the harness to start
+      // Inject prompt — wait for onboarding prompts to clear first
       if (prompt && !plan.args.some(a => a === prompt)) {
-        setTimeout(() => ptyProcess.write(prompt + '\r'), 500);
+        const doInject = () => {
+          ptyProcess.write(prompt);
+          setTimeout(() => ptyProcess.write('\r'), 500);
+        };
+        const checkReady = () => {
+          if (interactiveApiKeyHandled || interactiveBypassHandled) {
+            setTimeout(doInject, 2000);
+          } else {
+            const s = interactiveOutputBuf.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '');
+            if (s.includes('APIkey') || s.includes('Bypass')) {
+              setTimeout(checkReady, 500);
+            } else {
+              doInject();
+            }
+          }
+        };
+        setTimeout(checkReady, 1000);
       }
 
       // Create a fake ChildProcess-like for signal handling
