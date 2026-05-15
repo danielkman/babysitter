@@ -182,8 +182,8 @@ describe('live stack scenario contract primitives', () => {
       events: [{ token: '[REDACTED]' }, { status: 'ok' }],
     });
   });
-  it('keeps Publish live-stack step timeouts aligned with live test budgets', () => {
-    const workflow = fs.readFileSync('.github/workflows/publish.yml', 'utf8');
+  it('keeps live-stack workflow step timeouts aligned with live test budgets', () => {
+    const workflow = fs.readFileSync('.github/workflows/live-stack.yml', 'utf8');
     const liveStepPattern = /- name: Run selected live stack E2E\n(?<body>[\s\S]*?)(?=\n\s*- name:|\n\s{2}\w|$)/g;
     const liveSteps = Array.from(workflow.matchAll(liveStepPattern));
 
@@ -197,4 +197,15 @@ describe('live stack scenario contract primitives', () => {
       expect(timeoutMinutes).toBeGreaterThanOrEqual(requiredMinutes);
     }
   });
+
+  it('keeps Publish decoupled from live-stack matrix execution', () => {
+    const publish = fs.readFileSync('.github/workflows/publish.yml', 'utf8');
+
+    expect(publish).toContain('gh workflow run live-stack.yml');
+    expect(publish).not.toContain('Run selected live stack E2E');
+    expect(publish).not.toContain('live_stack_babysitter_plugin');
+    expect(publish).not.toContain('live_stack_babysitter_agent');
+    expect(publish).not.toContain('live_stack_vanilla');
+  });
+
 });
