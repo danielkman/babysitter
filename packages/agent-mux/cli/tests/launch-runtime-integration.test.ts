@@ -217,7 +217,7 @@ describe('launchCommand transport-mux integration', () => {
       expect(spawnedArgs).toContain('--prompt');
       expect(spawnedArgs).toContain('write the file');
       expect(child.stdin.write).not.toHaveBeenCalled();
-      expect(child.stdin.end).not.toHaveBeenCalled();
+      expect(child.stdin.end).toHaveBeenCalledTimes(1);
       expect(runtimeStop).toHaveBeenCalledTimes(1);
     } finally {
       if (originalHome === undefined) delete process.env['HOME'];
