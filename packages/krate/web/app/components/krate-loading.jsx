@@ -58,28 +58,44 @@ export function KrateLoadingView({
   );
 }
 
-export function KrateControllerRecovery({ org = 'default', pollMs = 10000 }) {
+function controllerModelIsReachable(body) {
+  if (!body || body.error) return false;
+  const errors = body.controller?.connection?.errors || [];
+  const hasFetchFailure = errors.some((error) => /fetch failed|controller API|ECONN|ENOTFOUND|ETIMEDOUT|Krate workspace unavailable/i.test(String(error || '')));
+  return Boolean(body.product === 'Krate' || body.controller) && !hasFetchFailure;
+}
+
+export function KrateControllerRecovery({ org = 'default', pollMs = 2500 }) {
   const redirectingRef = useRef(false);
-  const [detail, setDetail] = useState('Polling the controller until the workspace is ready.');
+  const [detail, setDetail] = useState('Polling the controller until the workspace responds.');
 
   useEffect(() => {
     let disposed = false;
+
+    function leaveRecovery() {
+      if (!redirectingRef.current) {
+        redirectingRef.current = true;
+        window.location.reload();
+      }
+    }
 
     async function checkController() {
       const target = new URL('/api/controller', window.location.origin);
       if (org) target.searchParams.set('org', org);
       try {
         const response = await fetch(target, { cache: 'no-store' });
-        if (!response.ok) throw new Error(`controller ${response.status}`);
-        const body = await response.json();
-        if (body?.status === 'ready') {
-          if (!redirectingRef.current) {
-            redirectingRef.current = true;
-            window.location.reload();
-          }
+        if (response.redirected && new URL(response.url).pathname === '/login') {
+          window.location.assign(response.url);
           return;
         }
-        if (!disposed) setDetail('The controller answered; waiting for ready workspace data.');
+        if (!response.ok) throw new Error(`controller ${response.status}`);
+        if (!response.headers.get('content-type')?.includes('application/json')) throw new Error('controller did not return JSON');
+        const body = await response.json();
+        if (controllerModelIsReachable(body)) {
+          leaveRecovery();
+          return;
+        }
+        if (!disposed) setDetail('The controller answered; waiting for reachable workspace data.');
       } catch {
         if (!disposed) setDetail('Waiting for the workspace service to answer.');
       }
@@ -101,7 +117,8 @@ export function KrateControllerRecovery({ org = 'default', pollMs = 10000 }) {
         detail={detail}
         fullPage={false}
       />
-      <p className="krateRecoveryHint">This page will refresh back to the requested view as soon as the controller returns ready data.</p>
+      <p className="krateRecoveryHint">This page will refresh back to the requested view as soon as the controller responds with workspace data.</p>
     </div>
   );
 }
+

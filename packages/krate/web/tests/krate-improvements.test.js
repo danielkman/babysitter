@@ -44,13 +44,21 @@ test('repository code browser uses CodeMirror syntax highlighting', () => {
   assert.match(browser, /languageExtension\(language\)/);
   assert.match(browser, /<CodeMirror/);
 });
-test('degraded Krate UI renders recovery loader instead of degraded error copy', () => {
+test('degraded Krate UI renders recovery loader only for controller fetch failures', () => {
   const ui = readWebFile('app', 'lib', 'krate-ui.jsx');
   const loader = readWebFile('app', 'components', 'krate-loading.jsx');
+  assert.match(ui, /shouldShowControllerRecovery/);
   assert.match(ui, /KrateControllerRecovery/);
+  assert.match(ui, /hasControllerData/);
+  assert.match(ui, /metrics\?\.resources/);
+  assert.doesNotMatch(ui, /orgs\?\.length/);
+  assert.match(ui, /hasFetchFailure/);
   assert.doesNotMatch(ui, /Krate workspace degraded or empty/);
   assert.match(loader, /fetch\(target, \{ cache: 'no-store' \}\)/);
+  assert.match(loader, /controllerModelIsReachable/);
+  assert.match(loader, /content-type/);
   assert.match(loader, /window\.location\.reload\(\)/);
+  assert.doesNotMatch(loader, /body\?\.status === 'ready'/);
 });
 
 test('loading page uses changing phases and progressing bar', () => {
@@ -62,3 +70,5 @@ test('loading page uses changing phases and progressing bar', () => {
   assert.match(loader, /setInterval\(\(\) => setProgress/);
   assert.match(loader, /shownProgress/);
 });
+
+

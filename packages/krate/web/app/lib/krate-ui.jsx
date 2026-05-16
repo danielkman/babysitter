@@ -190,8 +190,16 @@ export function EmptyState({ title, text, cta, ctaLabel, children, info = false 
   return <div className="card emptyState">{info && <span style={{ display: 'inline-block', marginBottom: '0.25rem', fontSize: '1.25rem' }} aria-hidden="true">&#10003;</span>}<h3>{title}</h3><p>{text}</p>{hasAction ? <div style={{ marginTop: '0.75rem', display: 'flex', gap: '0.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>{ctaBtn}{children}</div> : null}</div>;
 }
 
+export function shouldShowControllerRecovery(model) {
+  if (!model || model.status === 'ready') return false;
+  const errors = model.controller?.connection?.errors || [];
+  const hasControllerData = Boolean(model.controller?.connection?.available || model.controller?.apiService || model.metrics?.resources);
+  const hasFetchFailure = errors.some((error) => /fetch failed|controller API|ECONN|ENOTFOUND|ETIMEDOUT|Krate workspace unavailable/i.test(String(error || '')));
+  return !hasControllerData && hasFetchFailure;
+}
+
 export function DegradedBanner({ model }) {
-  if (model.status === 'ready') return null;
+  if (!shouldShowControllerRecovery(model)) return null;
   return <KrateControllerRecovery org={model.org?.slug || 'default'} />;
 }
 
@@ -208,3 +216,5 @@ export function ResourceTable({ resource }) {
   const label = displayKind(resource.kind);
   return <details className="card"><summary><span><h3>{label}</h3><p>{resource.count} records available. Expand for advanced details.</p></span><StatusPill tone={resource.count ? 'good' : 'neutral'}>{resource.count} returned</StatusPill></summary><code>{displayCommand(resource, 'list')}</code>{resource.names?.length ? <ul className="compactList">{resource.names.map((name) => <li key={name}>{name}</li>)}</ul> : <p className="emptyText">No {label} records returned by Krate.</p>}<PlanCard title={`${label} details`} plan={resource.yaml} command={displayCommand(resource, 'apply')} /></details>;
 }
+
+
