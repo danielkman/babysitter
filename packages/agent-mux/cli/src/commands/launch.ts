@@ -999,7 +999,7 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
   let ptyProcess: any = null;
   let ptyTerminationExpected = false;
   const ptyCleanup: Array<() => void> = [];
-  const niStdoutChunks: Buffer[] = [];
+  const capturedOutputChunks: string[] = [];
   const completePtyPrompt = () => {
     if (!ptyProcess || ptyTerminationExpected) return;
     ptyTerminationExpected = true;
@@ -1055,6 +1055,7 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
       ptyProcess.onData((data: string) => {
         process.stdout.write(data);
         interactiveOutputBuf += data;
+        capturedOutputChunks.push(data);
 
         // Auto-respond to Claude Code onboarding prompts
         const stripped = interactiveOutputBuf.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '');
@@ -1272,6 +1273,7 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
     ptyProcess.onData((data: string) => {
       // Buffer all PTY output — never write synchronously to stdout (pipe deadlock)
       outputBuf += data;
+      capturedOutputChunks.push(data);
 
       // Auto-respond to Claude Code interactive prompts that block automation.
       // ANSI cursor-move codes replace spaces, so stripped text is concatenated.
@@ -1428,7 +1430,7 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
     const NI_IDLE_TIMEOUT_MS = 30_000;
     child.stdout?.on('data', (chunk: Buffer) => {
       process.stdout.write(chunk);
-      niStdoutChunks.push(chunk);
+      capturedOutputChunks.push(chunk.toString('utf8'));
       niHasOutput = true;
       if (niUseIdleKill) {
         if (niIdleTimer) clearTimeout(niIdleTimer);
@@ -1520,20 +1522,21 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
   for (const cleanup of ptyCleanup.splice(0)) cleanup();
   if (ptyTerminationExpected && exitCode !== 0) exitCode = 0;
 
-  // NI stdout-to-file bridge: write captured output to expected artifact path
+  // Output-to-file bridge: write captured output to expected artifact path
   // for agents without native file-writing tools (Pi, Hermes, etc.)
-  if (!isInteractive && !ptyProcess && niStdoutChunks.length > 0) {
-    const niArtifactPaths = extractPromptArtifactPaths(prompt, launchCwd);
-    if (niArtifactPaths.length > 0) {
-      const niStdout = Buffer.concat(niStdoutChunks).toString('utf8');
-      if (niStdout.length >= 200) {
-        const fsNi = await import('node:fs/promises');
-        const { dirname: dirnameNi } = await import('node:path');
-        for (const artifactPath of niArtifactPaths) {
-          try { await fsNi.access(artifactPath); continue; } catch { /* doesn't exist yet */ }
-          await fsNi.mkdir(dirnameNi(artifactPath), { recursive: true });
-          await fsNi.writeFile(artifactPath, niStdout);
-          console.error(`[amux launch] NI stdout bridged to ${artifactPath} (${niStdout.length} bytes)`);
+  if (capturedOutputChunks.length > 0) {
+    const bridgeArtifactPaths = extractPromptArtifactPaths(prompt, launchCwd);
+    if (bridgeArtifactPaths.length > 0) {
+      const rawOutput = capturedOutputChunks.join('');
+      const cleanOutput = rawOutput.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '');
+      if (cleanOutput.length >= 200) {
+        const fsBridge = await import('node:fs/promises');
+        const { dirname: dirnameBridge } = await import('node:path');
+        for (const artifactPath of bridgeArtifactPaths) {
+          try { await fsBridge.access(artifactPath); continue; } catch { /* doesn't exist yet */ }
+          await fsBridge.mkdir(dirnameBridge(artifactPath), { recursive: true });
+          await fsBridge.writeFile(artifactPath, cleanOutput);
+          console.error(`[amux launch] Output bridged to ${artifactPath} (${cleanOutput.length} bytes)`);
         }
       }
     }
