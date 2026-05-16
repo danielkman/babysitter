@@ -200,9 +200,6 @@ function appendHarnessSessionArgs(plan: LaunchPlan, session: SessionArgs): void 
 
   switch (plan.harness) {
     case 'claude':
-      if (session.bridgeInteractive) {
-        plan.args.push('--bare');
-      }
       if (session.resumeId) plan.args.push('--resume', session.resumeId);
       if (session.sessionId) plan.args.push('--session-id', session.sessionId);
       if (session.prompt && !interactive) {

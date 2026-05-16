@@ -370,6 +370,25 @@ describe('bridge-interactive spawn', () => {
     }
   });
 
+  it('does not pass Claude bare mode for bridge-interactive sessions', async () => {
+    const { launchCommand, LAUNCH_FLAGS, parseArgs } = await importModules();
+
+    const launchPromise = launchCommand(
+      makeClient(),
+      parseArgs(
+        ['launch', 'claude', '--bridge-interactive', '--no-interactive', '--prompt', '/babysitter:yolo test'],
+        LAUNCH_FLAGS,
+      ),
+    );
+
+    await new Promise(r => setTimeout(r, 600));
+    const spawnedArgs = ptySpawnMock.mock.calls[0]?.[1] as string[];
+    expect(spawnedArgs).not.toContain('--bare');
+
+    for (const cb of ptyExitCallbacks) cb({ exitCode: 0 });
+    await launchPromise;
+  });
+
   it('requires --no-interactive with --bridge-interactive', async () => {
     const { launchCommand, LAUNCH_FLAGS, parseArgs } = await importModules();
 

@@ -158,6 +158,7 @@ export function buildPrimaryLiveStackCommands(
   if (scenario.agent.installMode === 'vanilla') {
     return [
       commandExecution(commandEnv, 'LIVE_STACK_AMUX_BIN', 'amux', ['install', installTarget, '--json'], options.cwd, SETUP_TIMEOUT_MS),
+      ensureLiveArtifactDirCommand(commandEnv, options.cwd),
       executionCommand,
     ];
   }
@@ -167,6 +168,7 @@ export function buildPrimaryLiveStackCommands(
     commandExecution(commandEnv, 'LIVE_STACK_AMUX_BIN', 'amux', ['install', installTarget, '--json'], options.cwd, SETUP_TIMEOUT_MS),
     commandExecution(commandEnv, 'LIVE_STACK_NPM_BIN', 'npm', ['install', '--global', './packages/sdk'], options.cwd, SETUP_TIMEOUT_MS),
     generatedPluginInstallCommand(commandEnv, scenario, options.cwd, SETUP_TIMEOUT_MS),
+    ensureLiveArtifactDirCommand(commandEnv, options.cwd),
     { command: 'bash', args: ['-c', `mkdir -p ${path.join(options.cwd, '.a5c', 'processes')} && cp ${path.join(options.cwd, 'packages', 'agent-mux', 'cli', 'tests', 'live-stack', 'fixtures', 'summarize-translate-test.mjs')} ${path.join(options.cwd, '.a5c', 'processes', 'summarize-translate-test.mjs')}`], env: commandEnv, cwd: options.cwd, timeoutMs: SETUP_TIMEOUT_MS },
     executionCommand,
   ];
@@ -174,6 +176,16 @@ export function buildPrimaryLiveStackCommands(
 
 function harnessApprovalPassthrough(_harness: string): string[] {
   return ['--yolo'];
+}
+
+function ensureLiveArtifactDirCommand(env: Record<string, string>, cwd: string): CommandExecution {
+  return {
+    command: process.execPath,
+    args: ['-e', "require('node:fs').mkdirSync(process.argv[1], { recursive: true })", path.join(cwd, '.a5c-live-test')],
+    env,
+    cwd,
+    timeoutMs: SETUP_TIMEOUT_MS,
+  };
 }
 
 function bridgeFlags(env: Record<string, string | undefined>): string[] {
@@ -425,8 +437,11 @@ function withWorkspaceBinOnPath(env: Record<string, string | undefined>, cwd: st
 
 function buildPrompt(scenario: LiveStackScenario, traceId: string, env: Record<string, string | undefined>): string {
   const usesClaudeTty = scenario.agent.agent === 'claude-code' && (env['LIVE_STACK_INTERACTIVE'] === 'true' || env['LIVE_STACK_BRIDGE_INTERACTIVE'] === 'true');
-  const coreTask = usesClaudeTty
+  const conciseTask = scenario.agent.installMode === 'babysitter-plugin'
     ? `Write a concise 6-section summary of Homer's Odyssey, then add one Greek translation sentence after each section. Combine the English and Greek versions into one markdown document and save the entire result in a single file write to .a5c-live-test/${traceId}-odyssey.md`
+    : `Write a concise 6-section summary of Homer's Odyssey, then add one Greek translation sentence after each section. Combine the English and Greek versions into one markdown document and save the entire result in a single file write to .a5c-live-test/${traceId}-odyssey.md. The .a5c-live-test directory already exists; use file writing/editing tools only and do not run shell commands`;
+  const coreTask = usesClaudeTty
+    ? conciseTask
     : `Write a 12-paragraph summary of Homer's Odyssey, then translate each paragraph to Greek. Combine the English and Greek versions into one markdown document and save the entire result in a single file write to .a5c-live-test/${traceId}-odyssey.md`;
 
   if (scenario.agent.agent === 'babysitter-agent') {

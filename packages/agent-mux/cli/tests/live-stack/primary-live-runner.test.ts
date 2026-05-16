@@ -107,6 +107,7 @@ describe('primary live stack runner contract', () => {
       const prompt = promptFor(scenario, env);
 
       expect(prompt).toContain('concise 6-section summary');
+      expect(prompt).toContain('do not run shell commands');
       expect(prompt).not.toContain('12-paragraph summary');
     }
   });
