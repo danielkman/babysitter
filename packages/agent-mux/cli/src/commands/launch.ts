@@ -20,6 +20,7 @@ import type { ParsedArgs, FlagDef } from '../parse-args.js';
 import { flagStr, flagNum, flagBool, flagArr } from '../parse-args.js';
 import { ExitCode } from '../exit-codes.js';
 import { printError, printJsonError } from '../output.js';
+import { resolve as resolvePath } from 'node:path';
 
 /** Launch-specific flag definitions (global flags like model/json/debug are excluded). */
 export const LAUNCH_FLAGS: Record<string, FlagDef> = {
@@ -345,6 +346,45 @@ async function prepareClaudeAutomationState(cwd: string, env: Record<string, str
   });
 }
 
+function extractPromptArtifactPaths(prompt: string | undefined, cwd: string): string[] {
+  if (!prompt) return [];
+  const matches = prompt.matchAll(/(?:^|[\s`"'])((?:\.\/)?\.a5c-live-test\/[^\s`"')]+)/g);
+  const paths = new Set<string>();
+  for (const match of matches) {
+    const cleaned = match[1]?.replace(/[.,;:!?]+$/, '');
+    if (!cleaned) continue;
+    paths.add(resolvePath(cwd, cleaned.replace(/^\.\//, '')));
+  }
+  return [...paths];
+}
+
+function startPromptArtifactCompletionMonitor(input: {
+  readonly prompt: string | undefined;
+  readonly cwd: string;
+  readonly onComplete: () => void;
+}): ReturnType<typeof setInterval> | undefined {
+  const expectedPaths = extractPromptArtifactPaths(input.prompt, input.cwd);
+  if (expectedPaths.length === 0) return undefined;
+  const lastSizes = new Map<string, number>();
+  return setInterval(() => {
+    void (async () => {
+      const fs = await import('node:fs/promises');
+      for (const expectedPath of expectedPaths) {
+        try {
+          const stat = await fs.stat(expectedPath);
+          if (!stat.isFile() || stat.size <= 0) continue;
+          if (lastSizes.get(expectedPath) === stat.size) {
+            input.onComplete();
+            return;
+          }
+          lastSizes.set(expectedPath, stat.size);
+        } catch {
+          // expected artifact not written yet
+        }
+      }
+    })();
+  }, 1000);
+}
 async function prepareCodexAutomationState(cwd: string): Promise<void> {
   const home = automationHome();
   if (!home) return;
@@ -772,6 +812,13 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
 
   let child: import('node:child_process').ChildProcess = null as any;
   let ptyProcess: any = null;
+  let ptyTerminationExpected = false;
+  const ptyCleanup: Array<() => void> = [];
+  const completePtyPrompt = () => {
+    if (!ptyProcess || ptyTerminationExpected) return;
+    ptyTerminationExpected = true;
+    try { ptyProcess.kill('SIGTERM'); } catch { /* */ }
+  };
 
   if (isInteractive) {
     // Interactive mode: full TTY passthrough. If a prompt is provided, it's
@@ -841,10 +888,8 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
               // Detect turn completion events
               if (ev.type === 'message_stop' || ev.type === 'turn_end' || ev.type === 'session_end') {
                 turnDetected = true;
-                // Give the harness a moment to flush output, then kill
-                setTimeout(() => {
-                  try { ptyProcess.kill('SIGTERM'); } catch { /* */ }
-                }, 1000);
+                // Give the harness a moment to flush output, then end the PTY.
+                setTimeout(completePtyPrompt, 1000);
                 return;
               }
             }
@@ -862,28 +907,56 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
         ptyProcess.resize(process.stdout.columns || 80, process.stdout.rows || 24);
       });
 
-      // Inject prompt after harness is ready. Wait for output, then inject.
+      if (prompt && plan.args.some(a => a === prompt)) {
+        let artifactMonitor: ReturnType<typeof setInterval> | undefined;
+        artifactMonitor = startPromptArtifactCompletionMonitor({
+          prompt,
+          cwd: launchCwd,
+          onComplete: () => {
+            if (artifactMonitor) clearInterval(artifactMonitor);
+            completePtyPrompt();
+          },
+        });
+        ptyCleanup.push(() => { if (artifactMonitor) clearInterval(artifactMonitor); });
+      }
+
+      // Inject prompt after observed onboarding prompts are dismissed.
       if (prompt && !plan.args.some(a => a === prompt)) {
-        const waitForOutputThenInject = () => {
+        const startedAt = Date.now();
+        let promptInjected = false;
+        let artifactMonitor: ReturnType<typeof setInterval> | undefined;
+        const injectPrompt = () => {
+          if (promptInjected) return;
+          promptInjected = true;
+          ptyProcess.write(prompt);
+          setTimeout(() => ptyProcess.write('\r'), 500);
+          artifactMonitor = startPromptArtifactCompletionMonitor({
+            prompt,
+            cwd: launchCwd,
+            onComplete: () => {
+              if (artifactMonitor) clearInterval(artifactMonitor);
+              completePtyPrompt();
+            },
+          });
+          ptyCleanup.push(() => { if (artifactMonitor) clearInterval(artifactMonitor); });
+        };
+        const checkAndInject = () => {
+          if (promptInjected) return;
           if (interactiveOutputBuf.length === 0) {
-            setTimeout(waitForOutputThenInject, 500);
+            if (Date.now() - startedAt >= 1000) injectPrompt();
+            else setTimeout(checkAndInject, 100);
             return;
           }
-          // Harness produced output — wait for onboarding prompts or stabilization
-          const checkAndInject = () => {
-            const s = interactiveOutputBuf.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '');
-            if (interactiveApiKeyHandled || interactiveBypassHandled) {
-              setTimeout(() => { ptyProcess.write(prompt); setTimeout(() => ptyProcess.write('\r'), 500); }, 2000);
-            } else if (s.includes('APIkey') || s.includes('Bypass')) {
-              setTimeout(checkAndInject, 500);
-            } else {
-              // Input field should be ready — inject after stabilization delay
-              setTimeout(() => { ptyProcess.write(prompt); setTimeout(() => ptyProcess.write('\r'), 500); }, 8000);
-            }
-          };
-          checkAndInject();
+          const s = interactiveOutputBuf.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '');
+          if (interactiveApiKeyHandled || interactiveBypassHandled) {
+            setTimeout(injectPrompt, 2000);
+          } else if (s.includes('APIkey') || s.includes('Bypass')) {
+            setTimeout(checkAndInject, 500);
+          } else {
+            setTimeout(injectPrompt, 3000);
+          }
         };
-        waitForOutputThenInject();
+        checkAndInject();
       }
 
       // Create a fake ChildProcess-like for signal handling
@@ -1029,9 +1102,7 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
             if (ev.type === 'message_stop' || ev.type === 'turn_end' || ev.type === 'session_end') {
               turnComplete = true;
               if (idleTimer) clearTimeout(idleTimer);
-              setTimeout(() => {
-                try { ptyProcess.kill('SIGTERM'); } catch { /* */ }
-              }, 1000);
+              setTimeout(completePtyPrompt, 1000);
               return;
             }
 
@@ -1041,7 +1112,7 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
               idleTimer = setTimeout(() => {
                 if (!turnComplete && eventCount > 0) {
                   turnComplete = true;
-                  try { ptyProcess.kill('SIGTERM'); } catch { /* */ }
+                  completePtyPrompt();
                 }
               }, IDLE_TIMEOUT_MS);
             }
@@ -1056,11 +1127,21 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
     if (prompt) {
       const startedAt = Date.now();
       let promptInjected = false;
+      let artifactMonitor: ReturnType<typeof setInterval> | undefined;
       const injectPrompt = () => {
         if (promptInjected) return;
         promptInjected = true;
         ptyProcess.write(prompt);
         setTimeout(() => ptyProcess.write('\r'), 500);
+        artifactMonitor = startPromptArtifactCompletionMonitor({
+          prompt,
+          cwd: launchCwd,
+          onComplete: () => {
+            if (artifactMonitor) clearInterval(artifactMonitor);
+            completePtyPrompt();
+          },
+        });
+        ptyCleanup.push(() => { if (artifactMonitor) clearInterval(artifactMonitor); });
       };
       const checkAndInject = () => {
         if (promptInjected) return;
@@ -1194,7 +1275,7 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
     child.stdin.end();
   }
 
-  const exitCode = await (
+  let exitCode = await (
     (child as any).__bridgeExitPromise
       ? (child as any).__bridgeExitPromise as Promise<number>
       : new Promise<number>((resolve) => {
@@ -1210,6 +1291,9 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
           }
         })
   );
+
+  for (const cleanup of ptyCleanup.splice(0)) cleanup();
+  if (ptyTerminationExpected && exitCode !== 0) exitCode = 0;
 
   process.off('SIGINT', forwardSignal);
   process.off('SIGTERM', forwardSignal);

@@ -307,6 +307,68 @@ describe('bridge-interactive spawn', () => {
     expect(stopEvents.length).toBe(1);
   });
 
+  it('exits bridge-interactive CI sessions when the requested prompt artifact is complete', async () => {
+    const { launchCommand, LAUNCH_FLAGS, parseArgs } = await importModules();
+    const cwd = await fs.mkdtemp(path.join(os.tmpdir(), 'amux-bridge-artifact-'));
+    const originalCwd = process.cwd();
+    process.chdir(cwd);
+
+    try {
+      const launchPromise = launchCommand(
+        makeClient(),
+        parseArgs(
+          ['launch', 'claude', '--bridge-interactive', '--no-interactive', '--prompt', 'write .a5c-live-test/bridge-artifact.md'],
+          LAUNCH_FLAGS,
+        ),
+      );
+
+      await new Promise(r => setTimeout(r, 1600));
+      expect(ptyWritten).toContain('write .a5c-live-test/bridge-artifact.md');
+
+      await fs.mkdir(path.join(cwd, '.a5c-live-test'), { recursive: true });
+      await fs.writeFile(path.join(cwd, '.a5c-live-test', 'bridge-artifact.md'), 'completed artifact\n'.repeat(40));
+      await new Promise(r => setTimeout(r, 2300));
+
+      expect(ptyKilled).toContain('SIGTERM');
+      for (const cb of ptyExitCallbacks) cb({ exitCode: 143 });
+      expect(await launchPromise).toBe(0);
+    } finally {
+      process.chdir(originalCwd);
+    }
+  });
+
+  it('exits prompt-injected interactive CI sessions when the requested prompt artifact is complete', async () => {
+    const { launchCommand, LAUNCH_FLAGS, parseArgs } = await importModules();
+    const cwd = await fs.mkdtemp(path.join(os.tmpdir(), 'amux-interactive-artifact-'));
+    const originalCwd = process.cwd();
+    process.chdir(cwd);
+
+    try {
+      const launchPromise = launchCommand(
+        makeClient(),
+        parseArgs(
+          ['launch', 'claude', '--prompt', 'write .a5c-live-test/interactive-artifact.md'],
+          LAUNCH_FLAGS,
+        ),
+      );
+
+      await new Promise(r => setTimeout(r, 200));
+      const spawnedArgs = ptySpawnMock.mock.calls[0]?.[1] as string[];
+      expect(spawnedArgs).toContain('write .a5c-live-test/interactive-artifact.md');
+      expect(spawnedArgs).not.toContain('-p');
+
+      await fs.mkdir(path.join(cwd, '.a5c-live-test'), { recursive: true });
+      await fs.writeFile(path.join(cwd, '.a5c-live-test', 'interactive-artifact.md'), 'completed artifact\n'.repeat(40));
+      await new Promise(r => setTimeout(r, 2300));
+
+      expect(ptyKilled).toContain('SIGTERM');
+      for (const cb of ptyExitCallbacks) cb({ exitCode: 143 });
+      expect(await launchPromise).toBe(0);
+    } finally {
+      process.chdir(originalCwd);
+    }
+  });
+
   it('requires --no-interactive with --bridge-interactive', async () => {
     const { launchCommand, LAUNCH_FLAGS, parseArgs } = await importModules();
 
