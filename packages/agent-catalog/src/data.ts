@@ -451,6 +451,27 @@ function parseBridgeCapabilities(value: unknown): BridgeCapabilities | undefined
   };
 }
 
+function parseAdapterMetadata(value: unknown): import('./models.js').AdapterMetadata | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+  const obj = value as Record<string, unknown>;
+  return {
+    authMethods: Array.isArray(obj.authMethods) ? obj.authMethods.map((m: unknown) => {
+      const method = m as Record<string, unknown>;
+      return {
+        type: valueAsString(method.type),
+        name: valueAsString(method.name),
+        envVars: Array.isArray(method.envVars) ? method.envVars.map(String) : undefined,
+      };
+    }) : undefined,
+    authFiles: Array.isArray(obj.authFiles) ? obj.authFiles.map(String) : undefined,
+    hostEnvSignals: Array.isArray(obj.hostEnvSignals) ? obj.hostEnvSignals.map(String) : undefined,
+    sessionDir: valueAsString(obj.sessionDir) || undefined,
+    sessionPersistence: (['file', 'sqlite', 'none'].includes(valueAsString(obj.sessionPersistence)) ? valueAsString(obj.sessionPersistence) : undefined) as 'file' | 'sqlite' | 'none' | undefined,
+    automationEnv: obj.automationEnv && typeof obj.automationEnv === 'object' ? Object.fromEntries(Object.entries(obj.automationEnv as Record<string, unknown>).map(([k, v]) => [k, String(v)])) : undefined,
+    approvalModes: Array.isArray(obj.approvalModes) ? obj.approvalModes.map(String) : undefined,
+  };
+}
+
 function parseToolSchemaFormat(value: unknown): ToolSchemaFormat {
   const normalized = valueAsString(value);
   if (normalized === "openai" || normalized === "anthropic" || normalized === "google") return normalized;
@@ -500,6 +521,7 @@ function toAgentVersion(node: GraphNode): AgentVersion {
     } : undefined,
     hookSupport: parseHookSupport(node.hookSupport),
     bridgeCapabilities: parseBridgeCapabilities(node.bridgeCapabilities),
+    adapterMetadata: parseAdapterMetadata(node.adapterMetadata),
   };
 }
 

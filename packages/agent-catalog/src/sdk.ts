@@ -1557,3 +1557,30 @@ export function getTransportCodecCapabilities(transportId: string): CodecCapabil
 
   return undefined;
 }
+
+export function getAdapterMetadata(harness: string): import('./models.js').AdapterMetadata | undefined {
+  const agent = getAgentVersion(harness);
+  return agent?.adapterMetadata;
+}
+
+export function getInstallMethods(harness: string): string[] {
+  const agent = getAgentVersion(harness);
+  const node = resolveVersionNode(agentVersionNodes(harness));
+  const installRefs = node ? stringArray(node.installMethods) : [];
+  return installRefs.map((ref: string) => ref.replace(/^install:/, ''));
+}
+
+export function getAutomationEnv(harness: string): Record<string, string> {
+  const metadata = getAdapterMetadata(harness);
+  return metadata?.automationEnv ?? {};
+}
+
+export function getHostEnvSignals(harness: string): string[] {
+  const metadata = getAdapterMetadata(harness);
+  return metadata?.hostEnvSignals ?? [];
+}
+
+export function getSessionConfig(harness: string): { sessionDir?: string; sessionPersistence?: string } {
+  const metadata = getAdapterMetadata(harness);
+  return { sessionDir: metadata?.sessionDir, sessionPersistence: metadata?.sessionPersistence };
+}

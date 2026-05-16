@@ -418,6 +418,22 @@ export interface InteractiveSignals {
   interactiveMode?: string;
 }
 
+export interface AdapterAuthMethod {
+  type: string;
+  name: string;
+  envVars?: string[];
+}
+
+export interface AdapterMetadata {
+  authMethods?: AdapterAuthMethod[];
+  authFiles?: string[];
+  hostEnvSignals?: string[];
+  sessionDir?: string;
+  sessionPersistence?: 'file' | 'sqlite' | 'none';
+  automationEnv?: Record<string, string>;
+  approvalModes?: string[];
+}
+
 export interface AgentVersion {
   agentId: string;
   aliases: string[];
@@ -446,6 +462,7 @@ export interface AgentVersion {
     nonInteractive: Partial<HookSupportMap>;
   };
   bridgeCapabilities?: BridgeCapabilities;
+  adapterMetadata?: AdapterMetadata;
 }
 
 export interface GraphEdge {
