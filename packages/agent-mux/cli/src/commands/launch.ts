@@ -207,6 +207,9 @@ function appendHarnessSessionArgs(plan: LaunchPlan, session: SessionArgs): void 
       if (session.prompt && !interactive) {
         plan.args.push('-p', session.prompt);
       }
+      if (session.prompt && interactive && !session.bridgeInteractive) {
+        plan.args.push(session.prompt);
+      }
       if (session.maxTurns) plan.args.push('--max-turns', String(session.maxTurns));
       break;
     case 'codex':
