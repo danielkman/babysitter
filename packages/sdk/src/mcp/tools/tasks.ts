@@ -87,7 +87,6 @@ function buildTaskList(events: JournalEvent[]): Array<{
 export function registerTaskTools(server: McpServer): void {
   // ── task_post ───────────────────────────────────────────────────────
   // @ts-ignore -- MCP SDK type depth limit
-  // @ts-ignore -- MCP SDK type depth limit
   server.tool(
     "task_post",
     "Post a result for a pending task effect",

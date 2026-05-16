@@ -10,7 +10,6 @@ import { toolResult, toolError } from "../util/errors";
 export function registerDiscoveryTools(server: McpServer): void {
   // ── skill_discover ──────────────────────────────────────────────────
   // @ts-ignore -- MCP SDK type depth limit
-  // @ts-ignore -- MCP SDK type depth limit
   server.tool(
     "skill_discover",
     "Discover available skills, agents, and process definitions",
