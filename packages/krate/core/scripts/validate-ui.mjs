@@ -130,9 +130,13 @@ for (const token of ['RepositoryManager', 'DeploymentManager', 'ResourceApplyPan
 for (const token of ['DegradedBanner', 'No repositories are available yet.', 'No resource selected yet.', 'Access checks', 'Krate repositories']) {
   if (!(webUiSource() + files['apps/web/app/components/resource-actions.jsx']).includes(token)) failures.push(`truthful degraded/empty UI missing ${token}`);
 }
-for (const token of ['KrateControllerRecovery', 'KrateRouteLoadingOverlay', 'KrateLoadingView', 'KRATE_LOADING_MESSAGES', '/api/controller', 'setRecovered(true)', 'router.refresh()', 'sessionStorage', 'krate-route-loading-refresh']) {
+for (const token of ['KrateControllerRecovery', 'KrateLoadingView', 'KRATE_LOADING_MESSAGES', '/api/controller', 'setRecovered(true)', 'router.refresh()', 'sessionStorage']) {
   if (!(webUiSource() + files['apps/web/app/components/krate-loading.jsx']).includes(token)) failures.push(`recovery loading UI missing ${token}`);
 }
+for (const token of ['KrateRouteLoadingOverlay', 'krate-route-loading-refresh']) {
+  if ((webUiSource() + files['apps/web/app/components/krate-loading.jsx']).includes(token)) failures.push(`route transitions must not render recovery loading UI token ${token}`);
+}
+if (!files['apps/web/app/loading.jsx'].includes('return null')) failures.push('route loading UI must stay silent during normal navigation');
 if ((webUiSource() + files['apps/web/app/components/krate-loading.jsx']).includes('Krate workspace degraded or empty')) failures.push('degraded workspace copy should be replaced by recovery loading UI');
 if ((webUiSource() + files['apps/web/app/components/krate-loading.jsx']).includes('window.location.reload')) failures.push('recovery loading UI must not reload the page');
 if (!/\.krateRecoveryOverlay\s*\{[\s\S]*?position:\s*fixed;[\s\S]*?inset:\s*0;/.test(files['apps/web/app/globals.css'])) failures.push('recovery loading UI must be fixed overlay');

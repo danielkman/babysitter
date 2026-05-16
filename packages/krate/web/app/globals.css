@@ -1154,6 +1154,20 @@ main { width: 100%; max-width: none; padding: 0 0 48px; }
 .loginCard h1 { margin: 8px 0 16px; font-size: clamp(2.8rem, 9vw, 5.8rem); }
 .loginNotice { margin: 26px 0 0; padding: 16px 18px; border: 1px solid rgba(224, 166, 58, .48); border-radius: 14px; color: #7c4e1f; background: rgba(224, 166, 58, .16); }
 
+.krateRecoveryOverlay { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: clamp(20px, 5vw, 64px); background: rgba(28, 20, 12, .42); backdrop-filter: blur(6px); }
+.krateLoadingView { width: min(100%, 560px); padding: clamp(24px, 5vw, 44px); border: 1px solid rgba(126, 82, 35, .32); border-radius: 24px; color: var(--ink-pigment); background: linear-gradient(180deg, rgba(255, 251, 244, .96), rgba(235, 228, 209, .94)); box-shadow: 0 28px 90px -40px var(--shadow), inset 0 1px 0 rgba(255,255,255,.66); text-align: center; }
+.krateLoadingView.fullPage { min-height: 100vh; width: 100%; border: 0; border-radius: 0; box-shadow: none; display: grid; align-content: center; justify-items: center; }
+.krateLoadingLogo { display: inline-grid; place-items: center; width: 56px; height: 56px; margin: 0 auto 18px; border-radius: 16px; color: var(--glyph-bone); background: var(--mahogany); font-weight: 800; font-size: 1.4rem; box-shadow: inset 0 1px 0 rgba(255,220,170,.2); }
+.krateLoadingText h2 { margin: 0 0 8px; font-size: clamp(1.6rem, 4vw, 2.4rem); }
+.krateLoadingText p { margin: 0; color: var(--ink-fade); }
+.krateLoadingBar { width: min(100%, 420px); height: 10px; margin: 24px auto 12px; overflow: hidden; border-radius: 999px; background: rgba(126, 82, 35, .18); }
+.krateLoadingBar span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--accent-cinnabar), var(--accent-sulphur)); transition: width .36s ease; }
+.krateLoadingPhase { min-height: 1.4em; margin: 0 0 8px; color: var(--ink-pigment); font-weight: 700; }
+.krateRecoveryHint { width: min(100%, 560px); margin: 14px auto 0; color: rgba(255, 251, 244, .9); text-align: center; font-size: .92rem; text-shadow: 0 1px 2px rgba(0,0,0,.34); }
+[data-theme="dark"] .krateRecoveryOverlay { background: rgba(1, 4, 9, .68); }
+[data-theme="dark"] .krateLoadingView { color: #c9d1d9; border-color: #30363d; background: linear-gradient(180deg, rgba(22, 27, 34, .98), rgba(13, 17, 23, .96)); }
+[data-theme="dark"] .krateLoadingText p { color: #8b949e; }
+[data-theme="dark"] .krateLoadingBar { background: rgba(48, 54, 61, .72); }
 /* Dark mode support */
 [data-theme="dark"] {
   --color-bg: #0d1117;

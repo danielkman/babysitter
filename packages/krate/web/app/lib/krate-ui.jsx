@@ -193,9 +193,9 @@ export function EmptyState({ title, text, cta, ctaLabel, children, info = false 
 export function shouldShowControllerRecovery(model) {
   if (!model || model.status === 'ready') return false;
   const errors = model.controller?.connection?.errors || [];
-  const hasControllerData = Boolean(model.controller?.connection?.available || model.controller?.apiService || Number.isFinite(model.metrics?.resources));
   const hasFetchFailure = errors.some((error) => /fetch failed|controller API|ECONN|ENOTFOUND|ETIMEDOUT|Krate workspace unavailable|KRATE_CONTROLLER_URL is not configured/i.test(String(error || '')));
-  return !hasControllerData && hasFetchFailure;
+  const hasLiveControllerData = Boolean(model.controller?.connection?.available || model.controller?.apiService);
+  return hasFetchFailure && !hasLiveControllerData;
 }
 
 export function DegradedBanner({ model }) {

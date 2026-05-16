@@ -63,20 +63,10 @@ function controllerModelIsReachable(body) {
   if (!body || body.error) return false;
   const errors = body.controller?.connection?.errors || [];
   const hasUnavailableError = errors.some((error) => /fetch failed|controller API|ECONN|ENOTFOUND|ETIMEDOUT|Krate workspace unavailable|KRATE_CONTROLLER_URL is not configured/i.test(String(error || '')));
+  if (hasUnavailableError) return false;
   const hasResourceMetric = Number.isFinite(body.metrics?.resources);
   const hasControllerEnvelope = Boolean(body.controller?.connection || body.metrics || body.views);
-  const hasUsableControllerData = Boolean(body.status === 'ready' || body.controller?.connection?.available || body.controller?.apiService || hasResourceMetric);
-  return hasUsableControllerData || (hasControllerEnvelope && !hasUnavailableError);
-}
-
-function orgFromPathname(pathname) {
-  const match = /^\/orgs\/([^/?#]+)/.exec(pathname || '');
-  if (!match) return 'default';
-  try {
-    return decodeURIComponent(match[1]);
-  } catch {
-    return match[1] || 'default';
-  }
+  return Boolean(body.status === 'ready' || body.controller?.connection?.available || body.controller?.apiService || hasResourceMetric || hasControllerEnvelope);
 }
 
 function refreshCurrentRoute(router, refreshKey, cooldownMs) {
@@ -149,51 +139,3 @@ export function KrateControllerRecovery({ org = 'default', pollMs = 2500 }) {
   );
 }
 
-export function KrateRouteLoadingOverlay({ pollMs = 2500 }) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const [detail, setDetail] = useState('Checking controller readiness before refreshing this route.');
-  const org = orgFromPathname(pathname);
-
-  useEffect(() => {
-    let disposed = false;
-
-    async function checkController() {
-      const target = new URL('/api/controller', window.location.origin);
-      target.searchParams.set('org', org);
-      try {
-        const response = await fetch(target, { cache: 'no-store' });
-        if (response.redirected && new URL(response.url).pathname === '/login') {
-          window.location.assign(response.url);
-          return;
-        }
-        if (!response.ok) throw new Error(`controller ${response.status}`);
-        if (!response.headers.get('content-type')?.includes('application/json')) throw new Error('controller did not return JSON');
-        const body = await response.json();
-        if (controllerModelIsReachable(body)) {
-          if (!disposed) {
-            setDetail('Controller is ready; refreshing the page shell.');
-            refreshCurrentRoute(router, `krate-route-loading-refresh:${org}:${pathname || '/'}`, 5000);
-          }
-          return;
-        }
-        if (!disposed) setDetail('Controller answered; waiting for reachable workspace data.');
-      } catch {
-        if (!disposed) setDetail('Waiting for the workspace service to answer.');
-      }
-    }
-
-    checkController();
-    const pollInterval = setInterval(checkController, pollMs);
-    return () => {
-      disposed = true;
-      clearInterval(pollInterval);
-    };
-  }, [org, pathname, pollMs, router]);
-
-  return (
-    <div className="krateRecoveryOverlay krateRouteLoadingOverlay">
-      <KrateLoadingView title="Loading Krate workspace" subtitle="Fetching the latest workspace state." detail={detail} fullPage={false} />
-    </div>
-  );
-}

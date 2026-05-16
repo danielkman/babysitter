@@ -44,6 +44,7 @@ test('chart package contains the MVP Kubernetes install surface', () => {
   for (const file of requiredChartFiles) assert.equal(existsSync(file), true, `${file} exists`);
 
   const chart = requiredChartFiles.map((file) => readFileSync(file, 'utf8')).join('\n');
+  const values = readFileSync('../charts/values.yaml', 'utf8');
 
   for (const kind of ['CustomResourceDefinition', 'Deployment', 'Service', 'ServiceAccount', 'ClusterRole', 'NetworkPolicy', 'PersistentVolumeClaim']) assert.ok(chart.includes(`kind: ${kind}`), `chart includes ${kind}`);
 
@@ -64,6 +65,8 @@ test('chart package contains the MVP Kubernetes install surface', () => {
   assert.ok(chart.includes('repositorypermissions.krate.a5c.ai'), 'package includes Gitea permission reconciliation resources');
   assert.ok(chart.includes('revoked'), 'package access CRDs allow revocation state');
   assert.ok(chart.includes('KRATE_CONTROLLER_URL'), 'web deployment points at the in-cluster controller API');
+  assert.ok(values.includes('port: 80'), 'controller API service exposes an HTTP service port for in-cluster web fetches');
+  assert.ok(!values.includes('port: 443'), 'controller API does not expose plain HTTP through a TLS-looking service port');
   assert.ok(chart.includes('containerPort: 2222'), 'rootless Gitea SSH service targets port 2222');
   assert.ok(chart.includes('krate.fullname') && chart.includes('gitea-http'), 'Gitea and Argo CD URLs derive the release-scoped service name');
   assert.ok(chart.includes('krate.a5c.ai/gitops-engine: argocd'), 'package labels Argo CD GitOps engine');

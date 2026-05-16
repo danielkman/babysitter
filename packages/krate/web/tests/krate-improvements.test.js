@@ -51,18 +51,19 @@ test('degraded Krate UI renders recovery loader only for controller fetch failur
   assert.match(ui, /localFallback: false/);
   assert.match(ui, /useCache: false/);
   assert.match(ui, /KrateControllerRecovery/);
-  assert.match(ui, /hasControllerData/);
-  assert.match(ui, /Number\.isFinite\(model\.metrics\?\.resources\)/);
+  assert.match(ui, /hasLiveControllerData/);
+  assert.doesNotMatch(ui, /Number\.isFinite\(model\.metrics\?\.resources\)/);
   assert.doesNotMatch(ui, /orgs\?\.length/);
   assert.match(ui, /hasFetchFailure/);
   assert.doesNotMatch(ui, /Krate workspace degraded or empty/);
   assert.match(loader, /fetch\(target, \{ cache: 'no-store' \}\)/);
   assert.match(loader, /controllerModelIsReachable/);
   assert.match(loader, /content-type/);
+  assert.match(loader, /if \(hasUnavailableError\) return false/);
   assert.match(loader, /hasResourceMetric/);
   assert.match(loader, /hasControllerEnvelope/);
   assert.match(loader, /Number\.isFinite\(body\.metrics\?\.resources\)/);
-  assert.match(loader, /hasUsableControllerData/);
+  assert.doesNotMatch(loader, /hasUsableControllerData/);
   assert.match(loader, /KRATE_CONTROLLER_URL is not configured/);
   assert.doesNotMatch(loader, /product === 'Krate' \|\| body\??\.controller/);
   assert.match(loader, /setRecovered\(true\)/);
@@ -72,15 +73,17 @@ test('degraded Krate UI renders recovery loader only for controller fetch failur
   assert.doesNotMatch(loader, /body\?\.status === 'ready'/);
 });
 
-test('loading page uses changing phases and progressing bar', () => {
+test('recovery overlay progresses without covering normal route navigation', () => {
   const loading = readWebFile('app', 'loading.jsx');
   const css = readWebFile('app', 'globals.css');
   const loader = readWebFile('app', 'components', 'krate-loading.jsx');
-  assert.match(loading, /KrateRouteLoadingOverlay/);
+  assert.match(loading, /return null/);
+  assert.doesNotMatch(loading, /KrateRouteLoadingOverlay/);
   assert.match(css, /\.krateRecoveryOverlay\s*\{[\s\S]*position:\s*fixed[\s\S]*inset:\s*0/);
-  assert.match(loader, /export function KrateRouteLoadingOverlay/);
-  assert.match(loader, /krate-route-loading-refresh/);
-  assert.match(loader, /orgFromPathname/);
+  assert.match(loader, /export function KrateControllerRecovery/);
+  assert.doesNotMatch(loader, /export function KrateRouteLoadingOverlay/);
+  assert.doesNotMatch(loader, /krate-route-loading-refresh/);
+  assert.doesNotMatch(loader, /orgFromPathname/);
   assert.match(loader, /KRATE_LOADING_MESSAGES/);
   assert.match(loader, /setInterval\(\(\) => setTick/);
   assert.match(loader, /setInterval\(\(\) => setProgress/);
