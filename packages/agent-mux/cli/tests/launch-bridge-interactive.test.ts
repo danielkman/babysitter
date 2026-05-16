@@ -100,6 +100,10 @@ vi.mock('@a5c-ai/agent-mux-core', () => ({
 vi.mock('@a5c-ai/agent-catalog', () => ({
   getBridgeCapabilities: vi.fn(() => ({ interactiveBridge: true })),
   getYoloLaunchArgs: vi.fn(() => []),
+  getAutomationEnv: vi.fn(() => ({})),
+  getHookSupport: vi.fn(() => ({})),
+  getAdapterMetadata: vi.fn(() => null),
+  getSessionConfig: vi.fn(() => ({})),
 }));
 
 // ---------------------------------------------------------------------------
@@ -341,7 +345,9 @@ describe('bridge-interactive spawn', () => {
       await waitFor(async () => {
         try {
           await fs.access(path.join(cwd, '.a5c-live-test', 'fallback-trace-odyssey.md'));
-          await fs.access(path.join(cwd, '.a5c', 'runs', 'run-fallback-trace', 'journal', '001.json'));
+          const journalDir = path.join(cwd, '.a5c', 'runs', 'run-fallback-trace', 'journal');
+          const entries = await fs.readdir(journalDir);
+          if (entries.length < 15) return false;
           await fs.access(path.join(cwd, '.a5c', 'logs', 'hooks', 'hooks-mux-fallback-trace.json'));
           return true;
         } catch {

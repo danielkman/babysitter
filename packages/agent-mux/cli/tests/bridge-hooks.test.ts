@@ -99,6 +99,9 @@ vi.mock('@a5c-ai/agent-catalog', () => ({
   getHookSupport: getHookSupportMock,
   getBridgeCapabilities: getBridgeCapabilitiesMock,
   getYoloLaunchArgs: getYoloLaunchArgsMock,
+  getAutomationEnv: vi.fn(() => ({})),
+  getAdapterMetadata: vi.fn(() => null),
+  getSessionConfig: vi.fn(() => ({})),
 }));
 
 // ---------------------------------------------------------------------------
