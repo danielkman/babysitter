@@ -24,6 +24,22 @@ type WikiPageSummary = {
   articlePath: string;
 };
 
+type PublicAtlasToolConfig = {
+  title?: string;
+  description?: string;
+  inputSchema?: Record<string, z.ZodTypeAny>;
+};
+
+type PublicAtlasToolRegistrar = (
+  name: string,
+  config: PublicAtlasToolConfig,
+  handler: (...args: any[]) => unknown,
+) => unknown;
+
+function createPublicAtlasToolRegistrar(server: McpServer): PublicAtlasToolRegistrar {
+  return server.registerTool.bind(server) as PublicAtlasToolRegistrar;
+}
+
 function jsonToolResult(data: unknown) {
   return {
     content: [
@@ -451,7 +467,9 @@ export function getPublicOpenApiPayload() {
 }
 
 export function registerPublicAtlasMcpTools(server: McpServer) {
-  server.registerTool(
+  const registerTool = createPublicAtlasToolRegistrar(server);
+
+  registerTool(
     "atlas_public_stats",
     {
       title: "Atlas public stats",
@@ -460,7 +478,7 @@ export function registerPublicAtlasMcpTools(server: McpServer) {
     async () => jsonToolResult(getPublicAtlasStatsFromView(await getPublicAtlasView())),
   );
 
-  server.registerTool(
+  registerTool(
     "atlas_public_clusters",
     {
       title: "Atlas public clusters",
@@ -469,7 +487,7 @@ export function registerPublicAtlasMcpTools(server: McpServer) {
     async () => jsonToolResult(listPublicClustersFromView(await getPublicAtlasView())),
   );
 
-  server.registerTool(
+  registerTool(
     "atlas_public_search",
     {
       title: "Atlas public search",
@@ -497,7 +515,7 @@ export function registerPublicAtlasMcpTools(server: McpServer) {
     },
   );
 
-  server.registerTool(
+  registerTool(
     "atlas_public_record",
     {
       title: "Atlas public record detail",
@@ -515,7 +533,7 @@ export function registerPublicAtlasMcpTools(server: McpServer) {
     },
   );
 
-  server.registerTool(
+  registerTool(
     "atlas_public_neighbors",
     {
       title: "Atlas public neighbors",
@@ -540,7 +558,7 @@ export function registerPublicAtlasMcpTools(server: McpServer) {
     },
   );
 
-  server.registerTool(
+  registerTool(
     "atlas_public_kinds",
     {
       title: "Atlas public node kinds",
@@ -552,7 +570,7 @@ export function registerPublicAtlasMcpTools(server: McpServer) {
     async ({ cluster }) => jsonToolResult(listPublicKindsFromView(await getPublicAtlasView(), cluster)),
   );
 
-  server.registerTool(
+  registerTool(
     "atlas_public_kind",
     {
       title: "Atlas public node kind detail",
@@ -571,7 +589,7 @@ export function registerPublicAtlasMcpTools(server: McpServer) {
     },
   );
 
-  server.registerTool(
+  registerTool(
     "atlas_public_edge_kinds",
     {
       title: "Atlas public edge kinds",
@@ -580,7 +598,7 @@ export function registerPublicAtlasMcpTools(server: McpServer) {
     async () => jsonToolResult(listPublicEdgeKindsFromView(await getPublicAtlasView())),
   );
 
-  server.registerTool(
+  registerTool(
     "atlas_public_edge_kind",
     {
       title: "Atlas public edge kind detail",
@@ -599,7 +617,7 @@ export function registerPublicAtlasMcpTools(server: McpServer) {
     },
   );
 
-  server.registerTool(
+  registerTool(
     "atlas_public_wiki_page",
     {
       title: "Atlas public wiki page",
@@ -616,7 +634,7 @@ export function registerPublicAtlasMcpTools(server: McpServer) {
     },
   );
 
-  server.registerTool(
+  registerTool(
     "atlas_public_openapi",
     {
       title: "Atlas public OpenAPI",
