@@ -9,4 +9,3 @@ Invoke the babysitter:babysit skill (using the Skill tool) and follow its instru
 User arguments for this command:
 
 $ARGUMENTS
-
