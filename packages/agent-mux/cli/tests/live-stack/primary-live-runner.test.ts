@@ -25,6 +25,48 @@ describe('primary live stack runner contract', () => {
     expect(run?.args).not.toContain('sonnet');
   });
 
+  it('invokes concrete Babysitter commands for plugin live lanes', () => {
+    const claudeScenario = primaryLiveStackScenario();
+    const claudeCommands = buildPrimaryLiveStackCommands(claudeScenario, {
+      cwd: '/repo',
+      timeoutMs: 1000,
+      env: { AZURE_API_KEY: 'sk-live-secret', AMUX_API_BASE: 'https://foundry.example.test', LIVE_STACK_TRACE_ID: 'trace-1' },
+    });
+    const claudeLaunch = claudeCommands.at(-1);
+    const claudePrompt = claudeLaunch?.args[(claudeLaunch?.args.indexOf('--prompt') ?? -2) + 1];
+
+    expect(claudePrompt).toMatch(/^\/babysitter:yolo /);
+    expect(claudePrompt).toContain('.a5c/processes/summarize-translate-test.mjs');
+    expect(claudePrompt).not.toContain('Use the babysitter skill');
+
+    const codexScenario = liveStackScenarioFromEnv({
+      LIVE_STACK_SCENARIO_ID: 'live.agent-mux.codex.foundry-openai.gpt-5.5',
+      LIVE_STACK_AGENT_PATH: 'agent-mux',
+      LIVE_STACK_AGENT: 'codex',
+      LIVE_STACK_AMUX_AGENT: 'codex',
+      LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin',
+      LIVE_STACK_INSTALL_MODE: 'babysitter-plugin',
+      LIVE_STACK_PROVIDER: 'foundry-openai',
+      LIVE_STACK_AMUX_PROVIDER: 'foundry',
+      LIVE_STACK_MODEL: 'gpt-5.5',
+      LIVE_STACK_CREDENTIAL_MODE: 'github-org-secrets-and-vars',
+      LIVE_STACK_REQUIRED_ENV: 'AZURE_API_KEY,AMUX_API_BASE',
+      LIVE_STACK_LAYERS: 'babysitter-plugin',
+      LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId',
+      LIVE_STACK_EXPECTED_ARTIFACTS: 'agent-mux-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted',
+    });
+    const codexCommands = buildPrimaryLiveStackCommands(codexScenario, {
+      cwd: '/repo',
+      timeoutMs: 1000,
+      env: { AZURE_API_KEY: 'sk-live-secret', AMUX_API_BASE: 'https://foundry.example.test', LIVE_STACK_TRACE_ID: 'trace-1' },
+    });
+    const codexLaunch = codexCommands.at(-1);
+    const codexPrompt = codexLaunch?.args[(codexLaunch?.args.indexOf('--prompt') ?? -2) + 1];
+
+    expect(codexPrompt).toMatch(/^\$babysitter:yolo /);
+    expect(codexPrompt).toContain('.a5c/processes/summarize-translate-test.mjs');
+  });
+
   it('pins babysitter-plugin runs to the workspace runs directory', () => {
     const scenario = primaryLiveStackScenario();
     const commands = buildPrimaryLiveStackCommands(scenario, {

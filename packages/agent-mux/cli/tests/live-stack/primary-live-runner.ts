@@ -431,7 +431,10 @@ function buildPrompt(scenario: LiveStackScenario, traceId: string): string {
   }
 
   if (scenario.agent.installMode === 'babysitter-plugin') {
-    return `Use the babysitter skill to: ${coreTask}. A process definition is available at .a5c/processes/summarize-translate-test.mjs`;
+    const processHint = 'A process definition is available at .a5c/processes/summarize-translate-test.mjs';
+    if (scenario.agent.agent === 'claude-code') return `/babysitter:yolo ${coreTask}. ${processHint}`;
+    if (scenario.agent.agent === 'codex') return `$babysitter:yolo ${coreTask}. ${processHint}`;
+    return `Invoke the babysitter:yolo command to: ${coreTask}. ${processHint}`;
   }
 
   return coreTask;
