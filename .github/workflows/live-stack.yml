@@ -170,6 +170,10 @@ jobs:
             interactive: 'false'
             bridge_interactive: 'false'
             bridge_hooks: 'true'
+          - id: interactive
+            interactive: 'true'
+            bridge_interactive: 'false'
+            bridge_hooks: 'false'
         install_mode:
           - id: babysitter-plugin
             required_trace_ids: agentMuxRunId,agentMuxSessionId,transportTraceId
@@ -525,6 +529,10 @@ jobs:
             interactive: 'false'
             bridge_interactive: 'false'
             bridge_hooks: 'false'
+          - id: bridged-interactive
+            interactive: 'false'
+            bridge_interactive: 'true'
+            bridge_hooks: 'false'
           - id: interactive
             interactive: 'true'
             bridge_interactive: 'false'
@@ -612,8 +620,8 @@ jobs:
             required_env: AZURE_API_KEY,AMUX_API_BASE
             skip: 'true'
         exclude:
-          - interaction_mode: { id: interactive }
-            scenario: { amux_agent: claude }
+          - interaction_mode: { id: bridged-interactive }
+            scenario: { amux_agent: codex }
     steps:
       - name: Skip marker
         if: ${{ matrix.scenario.skip == 'true' }}
