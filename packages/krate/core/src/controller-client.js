@@ -6,13 +6,16 @@ import { getControllerSnapshotAsync } from './kubernetes-controller-async.js';
 
 export { clearSnapshotCache };
 
-export async function fetchControllerUiModel({ controllerUrl = process.env.KRATE_CONTROLLER_URL, fetchImpl = globalThis.fetch, controller = createKrateApiController({ resourceGateway: createKubernetesResourceGateway() }), organization = process.env.KRATE_ORG || null, localFallback = true } = {}) {
+const CONTROLLER_REQUEST_TIMEOUT_MS = Number(process.env.KRATE_CONTROLLER_REQUEST_TIMEOUT_MS || 5_000);
+
+export async function fetchControllerUiModel({ controllerUrl = process.env.KRATE_CONTROLLER_URL, fetchImpl = globalThis.fetch, controller = createKrateApiController({ resourceGateway: createKubernetesResourceGateway() }), organization = process.env.KRATE_ORG || null, localFallback = true, requestTimeoutMs = CONTROLLER_REQUEST_TIMEOUT_MS, useCache = true, swrOptions = {} } = {}) {
   const revalidateFn = async () => {
     if (controllerUrl) {
       try {
         const target = new URL('/api/controller', controllerUrl);
         if (organization) target.searchParams.set('org', organization);
-        const response = await fetchImpl(target, { cache: 'no-store' });
+        const signal = requestTimeoutMs > 0 && globalThis.AbortSignal?.timeout ? AbortSignal.timeout(requestTimeoutMs) : undefined;
+        const response = await fetchImpl(target, { cache: 'no-store', ...(signal ? { signal } : {}) });
         if (!response.ok) throw new Error(`controller API ${response.status}`);
         return await response.json();
       } catch (error) {
@@ -28,7 +31,8 @@ export async function fetchControllerUiModel({ controllerUrl = process.env.KRATE
     return fallbackControllerModel(controller, null, organization);
   };
 
-  return staleWhileRevalidate(organization, revalidateFn);
+  if (!useCache) return revalidateFn();
+  return staleWhileRevalidate(organization, revalidateFn, swrOptions);
 }
 
 async function fallbackControllerModel(controller, connectionError = null, organization = null) {

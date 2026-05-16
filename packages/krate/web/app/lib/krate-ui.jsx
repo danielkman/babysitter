@@ -137,7 +137,7 @@ export function sanitizeAction(value) {
 }
 
 export async function loadKrateUi(org = null) {
-  const model = await fetchControllerUiModel({ organization: org, localFallback: false });
+  const model = await fetchControllerUiModel({ organization: org, localFallback: false, useCache: false });
   const repositories = model.views.dashboard.repositories || [];
   return {
     model,

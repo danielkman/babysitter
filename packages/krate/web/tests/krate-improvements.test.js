@@ -49,6 +49,7 @@ test('degraded Krate UI renders recovery loader only for controller fetch failur
   const loader = readWebFile('app', 'components', 'krate-loading.jsx');
   assert.match(ui, /shouldShowControllerRecovery/);
   assert.match(ui, /localFallback: false/);
+  assert.match(ui, /useCache: false/);
   assert.match(ui, /KrateControllerRecovery/);
   assert.match(ui, /hasControllerData/);
   assert.match(ui, /metrics\?\.resources/);
