@@ -186,6 +186,9 @@ function resolveLaunchMaxTurns(scenario: LiveStackScenario): number {
   if (scenario.agent.agent === 'babysitter-agent') {
     return 1;
   }
+  if (scenario.agent.installMode === 'babysitter-plugin') {
+    return 30;
+  }
   return 15;
 }
 

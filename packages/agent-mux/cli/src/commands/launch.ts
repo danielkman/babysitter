@@ -872,7 +872,7 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
               setTimeout(checkAndInject, 500);
             } else {
               // Input field should be ready — inject after stabilization delay
-              setTimeout(() => { ptyProcess.write(prompt); setTimeout(() => ptyProcess.write('\r'), 500); }, 3000);
+              setTimeout(() => { ptyProcess.write(prompt); setTimeout(() => ptyProcess.write('\r'), 500); }, 8000);
             }
           };
           checkAndInject();
