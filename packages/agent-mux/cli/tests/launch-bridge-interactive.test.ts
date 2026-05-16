@@ -352,10 +352,11 @@ describe('bridge-interactive spawn', () => {
         ),
       );
 
-      await new Promise(r => setTimeout(r, 200));
+      await new Promise(r => setTimeout(r, 1600));
       const spawnedArgs = ptySpawnMock.mock.calls[0]?.[1] as string[];
-      expect(spawnedArgs).toContain('write .a5c-live-test/interactive-artifact.md');
+      expect(spawnedArgs).not.toContain('write .a5c-live-test/interactive-artifact.md');
       expect(spawnedArgs).not.toContain('-p');
+      expect(ptyWritten).toContain('write .a5c-live-test/interactive-artifact.md');
 
       await fs.mkdir(path.join(cwd, '.a5c-live-test'), { recursive: true });
       await fs.writeFile(path.join(cwd, '.a5c-live-test', 'interactive-artifact.md'), 'completed artifact\n'.repeat(40));
