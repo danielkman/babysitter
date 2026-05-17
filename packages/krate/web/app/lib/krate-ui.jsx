@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers';
-import { createAuthProviderConfig, listEnabledAuthProviders, parseSessionCookie, fetchControllerUiModel } from '@a5c-ai/krate-sdk';
+import { createAuthProviderConfig, listEnabledAuthProviders, parseSessionCookie, fetchControllerUiModel, createKrateApiController, orgNamespaceName, resourceToYaml } from '@a5c-ai/krate-sdk';
 import { KrateControllerRecovery } from '../components/krate-loading.jsx';
 
 export const orgNavigationGroups = [
@@ -138,26 +138,53 @@ export function sanitizeAction(value) {
 
 export async function loadKrateUi(org = null) {
   const model = await fetchControllerUiModel({ organization: org, useCache: false });
-  const repositories = model.views.dashboard.repositories || [];
+  const activeOrg = org || model.org?.slug || 'default';
+  const resourceByKind = new Map(model.resources.map((resource) => [resource.kind, resource]));
+  await hydrateEmptyOrgResources(resourceByKind, activeOrg, ['Repository', 'RunnerPool', 'Pipeline', 'Job']);
+  const repositoryResource = resourceByKind.get('Repository');
+  const repositories = repositoryResource?.items?.length ? repositoryResource.items : model.views.dashboard.repositories || [];
   return {
     model,
     repositories,
     repository: repositories[0] || null,
-    repositoryResource: model.resources.find((resource) => resource.kind === 'Repository'),
-    projectResource: model.resources.find((resource) => resource.kind === 'KrateProject'),
-    deploymentResource: model.resources.find((resource) => resource.kind === deploymentKind('Application')),
-    releaseResource: model.resources.find((resource) => resource.kind === deploymentKind('ApplicationRevision')),
-    deploymentPolicyResource: model.resources.find((resource) => resource.kind === deploymentKind('Policy')),
-    pullRequests: model.resources.find((resource) => resource.kind === 'PullRequest'),
-    issues: model.resources.find((resource) => resource.kind === 'Issue'),
-    pipelines: model.resources.find((resource) => resource.kind === 'Pipeline'),
-    runnerPools: model.resources.find((resource) => resource.kind === 'RunnerPool'),
-    webhooks: model.resources.find((resource) => resource.kind === 'WebhookSubscription'),
-    policyProfiles: model.resources.find((resource) => resource.kind === 'PolicyProfile'),
-    policyTemplates: model.resources.find((resource) => resource.kind === 'PolicyTemplate'),
-    policyBindings: model.resources.find((resource) => resource.kind === 'PolicyBinding'),
-    policyExceptionRequests: model.resources.find((resource) => resource.kind === 'PolicyExceptionRequest')
+    repositoryResource,
+    projectResource: resourceByKind.get('KrateProject'),
+    deploymentResource: resourceByKind.get(deploymentKind('Application')),
+    releaseResource: resourceByKind.get(deploymentKind('ApplicationRevision')),
+    deploymentPolicyResource: resourceByKind.get(deploymentKind('Policy')),
+    pullRequests: resourceByKind.get('PullRequest'),
+    issues: resourceByKind.get('Issue'),
+    pipelines: resourceByKind.get('Pipeline'),
+    runnerPools: resourceByKind.get('RunnerPool'),
+    webhooks: resourceByKind.get('WebhookSubscription'),
+    policyProfiles: resourceByKind.get('PolicyProfile'),
+    policyTemplates: resourceByKind.get('PolicyTemplate'),
+    policyBindings: resourceByKind.get('PolicyBinding'),
+    policyExceptionRequests: resourceByKind.get('PolicyExceptionRequest')
   };
+}
+
+async function hydrateEmptyOrgResources(resourceByKind, org, kinds) {
+  const missingKinds = kinds.filter((kind) => !(resourceByKind.get(kind)?.items?.length));
+  if (!missingKinds.length) return;
+  try {
+    const controller = createKrateApiController({ namespace: orgNamespaceName(org) });
+    await Promise.all(missingKinds.map(async (kind) => {
+      const result = await controller.listResourceForOrg(org, kind);
+      const items = Array.isArray(result?.items) ? result.items : [];
+      if (!items.length) return;
+      const existing = resourceByKind.get(kind) || { kind, names: [], items: [], count: 0 };
+      resourceByKind.set(kind, {
+        ...existing,
+        count: items.length,
+        names: items.map((item) => item.metadata?.name).filter(Boolean),
+        items,
+        yaml: resourceToYaml(items[0])
+      });
+    }));
+  } catch {
+    // Keep the controller model as-is when local org-scoped hydration is unavailable.
+  }
 }
 
 export function orgHref(org = 'default', href = '/') {
