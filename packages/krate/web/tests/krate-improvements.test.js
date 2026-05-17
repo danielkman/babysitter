@@ -127,6 +127,7 @@ test('theme setting applies across full page loads', () => {
   assert.match(css, /background: #ffb4ab/);
   assert.match(css, /\[data-theme="dark"\] h4/);
   assert.match(css, /\.repoCommandBar > a/);
+  assert.match(css, /routeMain:has\(\.repoHeader\) \.repoCommandBar > a/);
   assert.ok(settings.includes('storeTheme(newTheme)'));
   assert.ok(!settings.includes("localStorage.setItem('krate-theme'"));
 });
