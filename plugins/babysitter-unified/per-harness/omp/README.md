@@ -10,7 +10,23 @@ This is a thin oh-my-pi package:
 
 ## Installation
 
-Recommended:
+Install the Babysitter CLI once when using the SDK helper:
+
+```bash
+npm install -g @a5c-ai/babysitter
+```
+
+Recommended for automation:
+
+```bash
+# Global install
+babysitter harness:install-plugin oh-my-pi
+
+# Workspace install
+babysitter harness:install-plugin oh-my-pi --workspace /path/to/repo
+```
+
+Native oh-my-pi plugin install:
 
 ```bash
 omp plugin install @a5c-ai/babysitter-omp
@@ -22,10 +38,11 @@ Verify the plugin is available:
 babysitter harness:discover --json
 ```
 
-Development helper:
+Published package installer:
 
 ```bash
-npx @a5c-ai/babysitter-omp install --workspace /path/to/repo
+npx --yes @a5c-ai/babysitter-omp install --global
+npx --yes @a5c-ai/babysitter-omp install --workspace /path/to/repo
 ```
 
 Removal:

@@ -117,10 +117,8 @@ of this repo for that flow, or upload plugin ZIPs manually.
 
 ### Codex CLI (Beta)
 
-After cloning this repo, From within the Codex CLI:
-
 ```bash
-npx -y @a5c-ai/babysitter-codex install --global
+babysitter harness:install-plugin codex
 codex
 ```
 
@@ -133,10 +131,10 @@ Navigate to the "babysitter" entry and select "Install".
 
 ### Cursor IDE and CLI (Experimental)
 
-Via the Cursor marketplace or npm:
+Via the Cursor marketplace or the SDK helper:
 
 ```bash
-npm install -g @a5c-ai/babysitter-cursor
+babysitter harness:install-plugin cursor
 ```
 
 [Plugin README](plugins/babysitter-unified/per-harness/cursor/README.md)
@@ -144,8 +142,7 @@ npm install -g @a5c-ai/babysitter-cursor
 ### Gemini CLI (Experimental)
 
 ```bash
-npm install -g @a5c-ai/babysitter-gemini
-babysitter-gemini install --global
+babysitter harness:install-plugin gemini-cli
 ```
 
 [Plugin README](plugins/babysitter-unified/per-harness/gemini/README.md)
@@ -155,8 +152,7 @@ babysitter-gemini install --global
 Via the GitHub Copilot CLI marketplace, or:
 
 ```bash
-npm install -g @a5c-ai/babysitter-github
-babysitter-github install
+babysitter harness:install-plugin github-copilot
 ```
 
 [Plugin README](plugins/babysitter-unified/per-harness/github/README.md)
@@ -184,10 +180,10 @@ omp plugin install @a5c-ai/babysitter-omp
 ### OpenCode (Experimental)
 
 ```bash
-npm install -g @a5c-ai/babysitter-opencode
+babysitter harness:install-plugin opencode
 ```
 
-The postinstall script copies the plugin to `.opencode/plugins/babysitter/` automatically.
+Use `--workspace /path/to/repo` to install into a project-local OpenCode plugin directory.
 
 [Plugin README](plugins/babysitter-unified/per-harness/opencode/README.md)
 
@@ -376,9 +372,14 @@ babysitter harness:discover
 # Install a harness CLI
 babysitter harness:install claude-code
 
-# Install a harness plugin
+# Install a Babysitter harness plugin globally
 babysitter harness:install-plugin claude-code
+
+# Install a Babysitter harness plugin into a workspace
+babysitter harness:install-plugin codex --workspace /path/to/repo
 ```
+
+`harness:install-plugin` is the canonical scriptable install path for Babysitter plugins. For non-Claude harnesses it resolves to the published package installer shape tested in the SDK, for example `npx --yes @a5c-ai/babysitter-codex install --workspace /path/to/repo`.
 
 ### Using `--harness internal` for Automation
 

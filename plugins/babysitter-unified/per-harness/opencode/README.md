@@ -36,31 +36,29 @@ artifacts/generated-plugins/opencode/
 
 ### Prerequisites
 
-Install the Babysitter SDK CLI:
+Install the Babysitter CLI once:
 
 ```bash
-npm install -g @a5c-ai/babysitter-sdk
+npm install -g @a5c-ai/babysitter
 ```
 
-### Method 1: npm global install (recommended)
+### Method 1: Babysitter harness install (recommended)
+
+Use the SDK helper for scriptable global or workspace installs. This is the canonical path used by the installer tests and resolves to `npx --yes @a5c-ai/babysitter-opencode install ...` under the hood:
 
 ```bash
-npm install -g @a5c-ai/babysitter-opencode
-```
-
-The `postinstall` script automatically copies the plugin into your current
-workspace's `.opencode/plugins/babysitter/` directory.
-
-To install into a specific workspace:
-
-```bash
-babysitter-opencode install --workspace /path/to/project
-```
-
-### Method 2: Babysitter harness install
-
-```bash
+# Global install
 babysitter harness:install-plugin opencode
+
+# Workspace install
+babysitter harness:install-plugin opencode --workspace /path/to/project
+```
+
+### Method 2: Published package installer
+
+```bash
+npx --yes @a5c-ai/babysitter-opencode install --global
+npx --yes @a5c-ai/babysitter-opencode install --workspace /path/to/project
 ```
 
 ### Method 3: Manual copy
@@ -94,13 +92,13 @@ OpenCode config directory (`<userDataPath>/opencode/plugins/babysitter/`).
 
 ```bash
 # Auto-detects Accomplish during standard install
-npm install -g @a5c-ai/babysitter-opencode
+npx --yes @a5c-ai/babysitter-opencode install --global
 
 # Or target Accomplish explicitly
-babysitter-opencode install --accomplish
+npx --yes @a5c-ai/babysitter-opencode install --accomplish
 
 # Install to both standalone OpenCode and Accomplish
-babysitter-opencode install --global --accomplish
+npx --yes @a5c-ai/babysitter-opencode install --global --accomplish
 ```
 
 Accomplish stores OpenCode config at platform-specific locations:

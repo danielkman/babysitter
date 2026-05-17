@@ -13,24 +13,31 @@ The SDK (`@a5c-ai/babysitter-sdk`) remains the single source of truth for orches
 
 ## Installation
 
-### Primary: Babysitter Harness Install
+Install the Babysitter CLI once:
 
 ```bash
+npm install -g @a5c-ai/babysitter
+```
+
+### Primary: Babysitter Harness Install
+
+Use the SDK helper for scriptable global or workspace installs. This is the canonical path used by the installer tests and resolves to `npx --yes @a5c-ai/babysitter-openclaw install ...` under the hood:
+
+```bash
+# Global install
 babysitter harness:install-plugin openclaw
+
+# Workspace install
+babysitter harness:install-plugin openclaw --workspace /path/to/repo
 ```
 
 This installs the `@a5c-ai/babysitter-openclaw` npm package and registers it with OpenClaw.
 
-### Secondary: npm
+### Secondary: Published package installer
 
 ```bash
-npm install -g @a5c-ai/babysitter-openclaw
-```
-
-The `postinstall` script registers the plugin globally. To install into a specific workspace:
-
-```bash
-npx @a5c-ai/babysitter-openclaw install --workspace /path/to/repo
+npx --yes @a5c-ai/babysitter-openclaw install --global
+npx --yes @a5c-ai/babysitter-openclaw install --workspace /path/to/repo
 ```
 
 ### Verify Installation
@@ -42,7 +49,7 @@ babysitter harness:discover --json
 ### Removal
 
 ```bash
-npm uninstall -g @a5c-ai/babysitter-openclaw
+npx --yes @a5c-ai/babysitter-openclaw uninstall --global
 ```
 
 ## Architecture

@@ -118,10 +118,10 @@ The Babysitter plugin provides slash commands for orchestrating development work
 
 ## SDK CLI Commands
 
-The Babysitter SDK CLI (`babysitter`) is used to drive the orchestration loop and inspect run state. Install it globally if you need it in your terminal:
+The Babysitter CLI (`babysitter`) is used to drive the orchestration loop and inspect run state. Install the metapackage globally if you need it in your terminal:
 
 ```bash
-npm install -g @a5c-ai/babysitter-sdk@latest
+npm install -g @a5c-ai/babysitter@latest
 ```
 
 ### Run Management

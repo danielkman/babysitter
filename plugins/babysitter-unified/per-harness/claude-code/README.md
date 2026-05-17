@@ -101,10 +101,16 @@ claude plugin marketplace add a5c-ai/babysitter-claude
 claude plugin install --scope user babysitter@a5c.ai
 ```
 
-The SDK helper runs the same published Claude plugin flow:
+The SDK helper runs the same published Claude plugin flow. Install the Babysitter CLI once, then choose user or project scope:
 
 ```bash
+npm install -g @a5c-ai/babysitter
+
+# User-scope install
 babysitter harness:install-plugin claude-code
+
+# Project-scope install
+babysitter harness:install-plugin claude-code --workspace /path/to/repo
 ```
 
 Then restart Claude Code. The installer does not materialize a repo-local

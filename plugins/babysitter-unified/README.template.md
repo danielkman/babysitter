@@ -4,15 +4,22 @@
 
 ## Prerequisites
 
-Install the Babysitter SDK CLI:
+Install the Babysitter CLI once. The `babysitter` command is backed by the SDK and exposes the canonical harness/plugin installer used in tests:
 
 ```bash
-npm install -g @a5c-ai/babysitter-sdk
+npm install -g @a5c-ai/babysitter
 ```
 
 ## Installation — {{targetDisplayName}}
 
 {{installInstructions}}
+
+For scriptable installs, prefer the SDK helper shape:
+
+```bash
+babysitter harness:install-plugin <harness>
+babysitter harness:install-plugin <harness> --workspace /path/to/repo
+```
 
 ## What's Included
 

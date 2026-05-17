@@ -16,23 +16,27 @@ Babysitter orchestration loop from within the agent session.
 
 ## Installation
 
-Install the SDK CLI first:
+Install the Babysitter CLI once:
 
 ```bash
-npm install -g @a5c-ai/babysitter-sdk
+npm install -g @a5c-ai/babysitter
 ```
 
-Then install the Gemini extension globally:
+Install the Gemini extension through the SDK helper. This is the canonical path used by the installer tests and resolves to `npx --yes @a5c-ai/babysitter-gemini install ...` under the hood:
 
 ```bash
-npm install -g @a5c-ai/babysitter-gemini
-babysitter-gemini install --global
+# Global install
+babysitter harness:install-plugin gemini-cli
+
+# Workspace install
+babysitter harness:install-plugin gemini-cli --workspace /path/to/project
 ```
 
-Or install to a specific workspace only:
+You can also run the published package installer directly:
 
 ```bash
-babysitter-gemini install --workspace /path/to/project
+npx --yes @a5c-ai/babysitter-gemini install --global
+npx --yes @a5c-ai/babysitter-gemini install --workspace /path/to/project
 ```
 
 For development, use a symlink instead of copying files:

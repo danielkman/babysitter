@@ -19,13 +19,13 @@ hooks so Cursor can execute Babysitter commands and hook scripts directly.
 
 ## Installation
 
-Install the SDK CLI first:
+Install the Babysitter CLI once:
 
 ```bash
-npm install -g @a5c-ai/babysitter-sdk
+npm install -g @a5c-ai/babysitter
 ```
 
-### Via Cursor Marketplace (recommended)
+### Via Cursor Marketplace
 
 Install through Cursor's marketplace UI using the repo-root
 `/.cursor-plugin/marketplace.json` manifest:
@@ -34,10 +34,16 @@ Install through Cursor's marketplace UI using the repo-root
 2. Open the marketplace entry named **a5c-ai**
 3. Install the plugin named **babysitter**
 
-### Via Babysitter harness install
+### Via Babysitter harness install (recommended for automation)
+
+Use the SDK helper for scriptable global or workspace installs. This resolves to `npx --yes @a5c-ai/babysitter-cursor install ...` under the hood:
 
 ```bash
+# Global install
 babysitter harness:install-plugin cursor
+
+# Workspace install
+babysitter harness:install-plugin cursor --workspace /path/to/repo
 ```
 
 If the workspace does not already have an active process-library binding, the
@@ -51,11 +57,11 @@ babysitter process-library:active --json
 
 For local development or environments without marketplace access:
 
-#### Via npm
+#### Via the published package installer
 
 ```bash
-npm install -g @a5c-ai/babysitter-cursor
-babysitter-cursor install
+npx --yes @a5c-ai/babysitter-cursor install --global
+npx --yes @a5c-ai/babysitter-cursor install --workspace /path/to/repo
 ```
 
 #### From generated source

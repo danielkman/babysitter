@@ -18,7 +18,8 @@ directly.
 - **Node.js 22+**
 - **GitHub Copilot CLI** (`copilot`) -- requires an active GitHub Copilot
   subscription
-- **Babysitter SDK CLI** (`@a5c-ai/babysitter-sdk`) -- installed globally
+- **Babysitter CLI** (`@a5c-ai/babysitter`) -- installed globally when using
+  the SDK helper
 
 ## Installation
 
@@ -42,22 +43,31 @@ Install directly from the generated external plugin repository:
 copilot plugin install a5c-ai/babysitter-github-copilot
 ```
 
-### Alternative Installation (npm / development)
+### Alternative Installation (SDK helper / development)
 
-For development or environments where the Copilot CLI plugin system is not
-available, install via npm:
+For development, automation, or environments where the Copilot CLI plugin system is not available, install through the Babysitter SDK helper. This is the canonical scriptable path used by the installer tests and resolves to `npx --yes @a5c-ai/babysitter-github install ...` under the hood:
 
-Install the SDK CLI first:
+Install the Babysitter CLI first:
 
 ```bash
-npm install -g @a5c-ai/babysitter-sdk
+npm install -g @a5c-ai/babysitter
 ```
 
-Then install the GitHub Copilot plugin globally:
+Then install the GitHub Copilot plugin globally or into a workspace:
 
 ```bash
-npm install -g @a5c-ai/babysitter-github
-babysitter-github install
+# Global install
+babysitter harness:install-plugin github-copilot
+
+# Workspace install
+babysitter harness:install-plugin github-copilot --workspace /path/to/repo
+```
+
+You can also run the published package installer directly:
+
+```bash
+npx --yes @a5c-ai/babysitter-github install --global
+npx --yes @a5c-ai/babysitter-github install --workspace /path/to/repo
 ```
 
 Or install from generated source:
@@ -67,10 +77,10 @@ npm run generate:plugins
 node artifacts/generated-plugins/github-copilot/bin/install.js
 ```
 
-Install into a specific workspace:
+Install into a specific workspace from generated source:
 
 ```bash
-babysitter-github install --workspace /path/to/repo
+node artifacts/generated-plugins/github-copilot/bin/install.js --workspace /path/to/repo
 ```
 
 ### GitHub Copilot cloud agent installation
