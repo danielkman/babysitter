@@ -5,12 +5,12 @@ attributes:
   agentProductId: agent:hermes
   displayName: "Hermes"
   summary: "NousResearch agentic CLI"
-  sourcePackage: "@nousresearch/hermes-cli"
+  sourcePackage: "hermes"
   versionRange: ">=1.0.0"
   releasedAt: "2025-01-01"
   cliCommand: "hermes"
   installMethods:
-    - install:npm
+    - install:curl
   minSchemaVersion: "6.0.0"
   adapterMetadata:
     authMethods:
