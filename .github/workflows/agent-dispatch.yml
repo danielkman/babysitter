@@ -1,0 +1,160 @@
+# Agent Dispatch — trigger babysitter agent from issue/PR comments
+#
+# Usage: Comment `/agent <prompt>` on any issue or PR.
+# The agent determines the right process from issue labels, checks out
+# the correct branch (or creates one), and works autonomously.
+
+name: Agent Dispatch
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  dispatch:
+    if: startsWith(github.event.comment.body, '/agent ')
+    runs-on: ubuntu-latest-l
+    steps:
+      - name: Extract prompt from comment
+        id: parse
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.comment.body;
+            const prompt = body.replace(/^\/agent\s+/, '').trim();
+            const issue = context.payload.issue;
+            const isPR = !!issue.pull_request;
+            const labels = (issue.labels || []).map(l => l.name).join(',');
+            const issueNumber = issue.number;
+            const issueTitle = issue.title;
+
+            core.setOutput('prompt', prompt);
+            core.setOutput('is_pr', isPR ? 'true' : 'false');
+            core.setOutput('labels', labels);
+            core.setOutput('issue_number', String(issueNumber));
+            core.setOutput('issue_title', issueTitle);
+
+      - name: Resolve branch
+        id: branch
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const isPR = !!issue.pull_request;
+
+            if (isPR) {
+              // PR comment — use the PR's head branch
+              const { data: pr } = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: issue.number,
+              });
+              core.setOutput('ref', pr.head.ref);
+              core.setOutput('action', 'checkout');
+              core.setOutput('pr_number', String(issue.number));
+              return;
+            }
+
+            // Issue comment — check for an existing open PR linked to this issue
+            const { data: prs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+            });
+            const linked = prs.find(pr =>
+              pr.body && pr.body.includes(`#${issue.number}`) ||
+              pr.title.includes(`#${issue.number}`)
+            );
+            if (linked) {
+              core.setOutput('ref', linked.head.ref);
+              core.setOutput('action', 'checkout');
+              core.setOutput('pr_number', String(linked.number));
+              return;
+            }
+
+            // No existing PR — create a new branch
+            const branchName = `agent/issue-${issue.number}`;
+            core.setOutput('ref', branchName);
+            core.setOutput('action', 'create');
+            core.setOutput('pr_number', '');
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.branch.outputs.action == 'checkout' && steps.branch.outputs.ref || github.event.repository.default_branch }}
+          fetch-depth: 0
+
+      - name: Create branch if needed
+        if: steps.branch.outputs.action == 'create'
+        run: |
+          git checkout -b "${{ steps.branch.outputs.ref }}"
+          git push -u origin "${{ steps.branch.outputs.ref }}"
+
+      - name: Acknowledge command
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.reactions.createForIssueComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: context.payload.comment.id,
+              content: 'rocket',
+            });
+
+      - uses: a5c-ai/babysitter/packages/triggers@main
+        with:
+          harness: claude
+          provider: foundry
+          model: gpt-5.5
+          interaction-mode: bridged-hooks
+          babysitter-plugin: 'true'
+          babysitter-prompt-prefix: '/babysitter:call'
+          max-turns: '9999'
+          prompt: |
+            You are working on issue #${{ steps.parse.outputs.issue_number }}: ${{ steps.parse.outputs.issue_title }}
+            Branch: ${{ steps.branch.outputs.ref }}
+            Labels: ${{ steps.parse.outputs.labels }}
+            Is PR: ${{ steps.parse.outputs.is_pr }}
+            PR number: ${{ steps.branch.outputs.pr_number }}
+
+            Instructions:
+            1. Determine the right babysitter process from the process library based on the issue labels.
+               Search .a5c/process-library/ for processes matching labels: ${{ steps.parse.outputs.labels }}.
+               If no matching process exists, research the library and create an appropriate one.
+            2. If working from a PR comment, you're already on the PR branch — work directly on it.
+               If working from an issue with an existing PR, you're on the PR branch — work on it.
+               If working from an issue without a PR, you're on a new branch agent/issue-${{ steps.parse.outputs.issue_number }}.
+            3. Commit and push changes during work. Use descriptive commit messages.
+            4. After pushing, if no PR exists yet, create one linking to issue #${{ steps.parse.outputs.issue_number }}.
+
+            User request: ${{ steps.parse.outputs.prompt }}
+          trigger-query: |
+            event: issue_comment
+            action: created
+            body: /^\/agent /
+        env:
+          AZURE_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+          AMUX_API_BASE: https://${{ vars.AZURE_OPENAI_PROJECT_NAME }}.services.ai.azure.com
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+
+      - name: Post completion summary
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const status = '${{ job.status }}' === 'success' ? '✅' : '❌';
+            const body = `${status} Agent dispatch completed (${status === '✅' ? 'success' : 'failed'})\n\n` +
+              `**Branch:** \`${{ steps.branch.outputs.ref }}\`\n` +
+              `**Run:** [#${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})`;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ steps.parse.outputs.issue_number }},
+              body,
+            });
