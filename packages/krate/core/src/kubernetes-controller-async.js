@@ -53,6 +53,19 @@ function kubectlArgs(args, env) {
   return extra ? [...extra, ...args] : args;
 }
 
+function currentContextResult(env) {
+  if (!inClusterArgs(env)) return null;
+  return {
+    ok: true,
+    status: 0,
+    signal: null,
+    stdout: 'in-cluster\n',
+    stderr: '',
+    error: null,
+    command: 'kubectl config current-context'
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Low-level async kubectl runner
 // ---------------------------------------------------------------------------
@@ -155,8 +168,9 @@ export async function getControllerSnapshotAsync(options = {}) {
 
   try {
     // Phase 1: context + version in parallel
+    const inClusterContext = currentContextResult(env);
     const [contextResult, versionResult] = await Promise.all([
-      runKubectlAsync(['config', 'current-context'], { kubectl, timeoutMs, env, allowFailure: true }),
+      inClusterContext || runKubectlAsync(['config', 'current-context'], { kubectl, timeoutMs, env, allowFailure: true }),
       runKubectlAsync(['version', '--client=true', '-o', 'json'], { kubectl, timeoutMs, env, allowFailure: true })
     ]);
 

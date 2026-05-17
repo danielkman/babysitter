@@ -3,6 +3,9 @@
  */
 
 import assert from 'node:assert/strict';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 import test from 'node:test';
 import { runKubectlAsync, getPartialSnapshot, getControllerSnapshotAsync } from '../src/kubernetes-controller-async.js';
 import {
@@ -83,6 +86,36 @@ test('runKubectlAsync rejects on timeout when allowFailure is not set', async ()
   );
 });
 
+
+test('getControllerSnapshotAsync uses in-cluster service account instead of kubeconfig current-context', async () => {
+  const tempDir = await mkdtemp(path.join(tmpdir(), 'krate-sa-'));
+  const kubectlPath = path.join(tempDir, process.platform === 'win32' ? 'kubectl.cmd' : 'kubectl');
+  const kubectlScript = process.platform === 'win32'
+    ? '@echo off\r\nnode -e "const args=process.argv.slice(1); if(args.includes(\'version\')){console.log(JSON.stringify({clientVersion:{gitVersion:\'v1.32.2\'}})); process.exit(0)} if(args.includes(\'current-context\')){console.error(\'current-context should not be called\'); process.exit(9)} console.log(JSON.stringify({items:[]}));" -- %*\r\n'
+    : '#!/usr/bin/env sh\nnode -e "const args=process.argv.slice(1); if(args.includes(\'version\')){console.log(JSON.stringify({clientVersion:{gitVersion:\'v1.32.2\'}})); process.exit(0)} if(args.includes(\'current-context\')){console.error(\'current-context should not be called\'); process.exit(9)} console.log(JSON.stringify({items:[]}));" -- "$@"\n';
+
+  try {
+    await writeFile(path.join(tempDir, 'token'), 'token');
+    await writeFile(path.join(tempDir, 'ca.crt'), 'ca');
+    await writeFile(kubectlPath, kubectlScript, { mode: 0o755 });
+
+    const snapshot = await getControllerSnapshotAsync({
+      kubectl: kubectlPath,
+      timeoutMs: 500,
+      env: {
+        KUBERNETES_SERVICE_HOST: '10.0.0.1',
+        KUBERNETES_SERVICE_PORT: '443',
+        KRATE_SERVICE_ACCOUNT_DIR: tempDir
+      }
+    });
+
+    assert.equal(snapshot.kubectl.context, 'in-cluster');
+    if (process.platform !== 'win32') assert.equal(snapshot.kubectl.available, true);
+    assert.doesNotMatch((snapshot.kubectl.errors || []).join('; '), /current-context/);
+  } finally {
+    await rm(tempDir, { recursive: true, force: true });
+  }
+});
 // ---------------------------------------------------------------------------
 // getPartialSnapshot
 // ---------------------------------------------------------------------------
