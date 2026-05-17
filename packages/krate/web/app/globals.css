@@ -1304,6 +1304,9 @@ main { width: 100%; max-width: none; padding: 0 0 48px; }
 [data-theme="dark"] .cardTitle {
   border-color: rgba(48, 54, 61, .5);
 }
+[data-theme="dark"] h4 {
+  color: #e6edf3;
+}
 [data-theme="dark"] .routeHero {
   background: rgba(22, 27, 34, .78);
   border-color: #30363d;
@@ -1326,7 +1329,7 @@ main { width: 100%; max-width: none; padding: 0 0 48px; }
   border-color: #30363d;
   background: rgba(22, 27, 34, .95);
 }
-[data-theme="dark"] .metricGrid a, [data-theme="dark"] .resourceList li, [data-theme="dark"] .resources li, [data-theme="dark"] .compactList li, [data-theme="dark"] .workItems li, [data-theme="dark"] .boardColumns section, [data-theme="dark"] .boardColumns article {
+[data-theme="dark"] .metricGrid a, [data-theme="dark"] .repoCommandBar > a, [data-theme="dark"] .resourceList li, [data-theme="dark"] .resources li, [data-theme="dark"] .compactList li, [data-theme="dark"] .workItems li, [data-theme="dark"] .boardColumns section, [data-theme="dark"] .boardColumns article {
   border-color: #30363d;
   background: rgba(22, 27, 34, .9);
 }
