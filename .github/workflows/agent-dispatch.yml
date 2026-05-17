@@ -50,8 +50,7 @@ jobs:
           provider: foundry
           model: gpt-5.5
           interaction-mode: bridged-hooks
-          babysitter-plugin: 'true'
-          babysitter-prompt-prefix: '/babysitter:call'
+          babysitter-plugin: 'false'
           max-turns: '9999'
           prompt: |
             You are an autonomous coding agent.
