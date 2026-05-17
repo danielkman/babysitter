@@ -169,7 +169,7 @@ export function resolveLaunchPlan(input: LaunchPlanInput): LaunchPlan {
         apiKey: providerConfig.auth.apiKey,
         project: providerConfig.params['project'] ? String(providerConfig.params['project']) : undefined,
         location: providerConfig.params['region'] ? String(providerConfig.params['region']) : undefined,
-        useVertexAi: providerConfig.provider === 'vertex' || Boolean(providerConfig.params['useVertexAi']),
+        useVertexAi: providerConfig.provider === 'vertex',
       }
     : undefined;
 
@@ -902,17 +902,34 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
       // When exposed transport differs from target (e.g., anthropic→foundry),
       // the proxy needs a completion engine to translate request/response formats.
       let completionEngine;
-      if ((plan.proxy.targetProvider === 'google' || plan.proxy.targetProvider === 'vertex') && plan.proxy.apiKey) {
-        const { createGoogleCompletionEngine } = await import('./launch-completion-engine.js');
-        completionEngine = createGoogleCompletionEngine({
-          apiBase: plan.proxy.useVertexAi ? undefined : plan.proxy.apiBase,
-          apiKey: plan.proxy.apiKey,
-          targetModel: plan.proxy.targetModel,
-          provider: plan.proxy.targetProvider,
-          project: plan.proxy.project,
-          location: plan.proxy.location,
-          useVertexAi: plan.proxy.useVertexAi,
-        });
+      if ((plan.proxy.targetProvider === 'google' || plan.proxy.targetProvider === 'vertex')) {
+        // Resolve the API key: prefer the explicitly resolved key from the proxy
+        // plan, but fall back to reading GOOGLE_API_KEY / GEMINI_API_KEY from the
+        // process environment so that CI secrets flow through even when
+        // resolveProvider didn't capture them (e.g. the key was injected into the
+        // runner env after provider resolution).
+        const googleApiKey = plan.proxy.apiKey
+          || process.env['GOOGLE_API_KEY']
+          || process.env['GEMINI_API_KEY'];
+        if (googleApiKey) {
+          // Only use Vertex AI mode when the provider is explicitly 'vertex'.
+          // When targetProvider is 'google', the GOOGLE_API_KEY is a Google AI
+          // Studio key that authenticates against generativelanguage.googleapis.com,
+          // NOT against the Vertex AI endpoint (aiplatform.googleapis.com).
+          // The GOOGLE_GENAI_USE_VERTEXAI env var controls the Gemini CLI's own
+          // endpoint selection and should not affect the transport-mux proxy.
+          const useVertexAi = plan.proxy.targetProvider === 'vertex';
+          const { createGoogleCompletionEngine } = await import('./launch-completion-engine.js');
+          completionEngine = createGoogleCompletionEngine({
+            apiBase: useVertexAi ? undefined : plan.proxy.apiBase,
+            apiKey: googleApiKey,
+            targetModel: plan.proxy.targetModel,
+            provider: plan.proxy.targetProvider,
+            project: plan.proxy.project,
+            location: plan.proxy.location,
+            useVertexAi,
+          });
+        }
       } else if (plan.proxy.apiBase && plan.proxy.apiKey) {
         const { createOpenAICompletionEngine } = await import('./launch-completion-engine.js');
         completionEngine = createOpenAICompletionEngine({

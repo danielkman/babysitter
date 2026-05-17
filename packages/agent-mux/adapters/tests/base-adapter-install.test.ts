@@ -147,10 +147,11 @@ describe('BaseAgentAdapter.install (default)', () => {
     const { spawner, calls } = spawnerFrom((cmd, args) => {
       if (cmd === 'which' || cmd === 'where') {
         return installed
-          ? { code: 0, stdout: '/usr/bin/cursor\n', stderr: '' }
+          ? { code: 0, stdout: '/usr/bin/cursor-agent\n', stderr: '' }
           : { code: 1, stdout: '', stderr: '' };
       }
-      if (cmd === 'curl') {
+      // The curl|bash command is wrapped as sh -c "..." (or cmd /c "..." on Windows)
+      if (cmd === 'sh' || cmd === 'cmd') {
         installed = true;
         return { code: 0, stdout: 'installed cursor', stderr: '' };
       }
@@ -161,8 +162,10 @@ describe('BaseAgentAdapter.install (default)', () => {
     const res = await adapter.install({ force: true });
     expect(res.ok).toBe(true);
     expect(res.method).toBe('curl');
-    const curlCall = calls.find(c => c.cmd === 'curl');
-    expect(curlCall).toBeDefined();
+    // Piped commands (curl ... | bash) are wrapped in sh -c / cmd /c
+    const shellCall = calls.find(c => c.cmd === 'sh' || c.cmd === 'cmd');
+    expect(shellCall).toBeDefined();
+    expect(shellCall!.args.join(' ')).toContain('curl');
   });
 });
 
@@ -231,32 +234,36 @@ describe('GeminiAdapter.parseVersionOutput override', () => {
 // ---------------------------------------------------------------------------
 
 describe('CursorAdapter install/update (standard base adapter logic)', () => {
-  it('install resolves a curl command for cursor', async () => {
+  it('install resolves a curl command for cursor via shell wrapper', async () => {
     const adapter = new CursorAdapter();
     const { spawner, calls } = spawnerFrom((cmd, args) => {
-      if (cmd === 'curl') return { code: 0, stdout: '', stderr: '' };
+      // Piped commands are wrapped: sh -c "curl ... | bash"
+      if (cmd === 'sh' || cmd === 'cmd') return { code: 0, stdout: '', stderr: '' };
       if (args?.includes('--version')) return { code: 0, stdout: '1.0.0', stderr: '' };
       return { code: 0, stdout: '', stderr: '' };
     });
     adapter.setSpawner(spawner);
     const res = await adapter.install();
     expect(res.ok).toBe(true);
-    const curlCall = calls.find(c => c.cmd === 'curl');
-    expect(curlCall).toBeDefined();
+    const shellCall = calls.find(c => c.cmd === 'sh' || c.cmd === 'cmd');
+    expect(shellCall).toBeDefined();
+    expect(shellCall!.args.join(' ')).toContain('curl');
+    expect(shellCall!.args.join(' ')).toContain('bash');
   });
 
-  it('update re-runs the curl installer for cursor', async () => {
+  it('update re-runs the curl installer for cursor via shell wrapper', async () => {
     const adapter = new CursorAdapter();
     const { spawner, calls } = spawnerFrom((cmd, args) => {
-      if (cmd === 'curl') return { code: 0, stdout: '', stderr: '' };
+      if (cmd === 'sh' || cmd === 'cmd') return { code: 0, stdout: '', stderr: '' };
       if (args?.includes('--version')) return { code: 0, stdout: '1.0.0', stderr: '' };
       return { code: 0, stdout: '', stderr: '' };
     });
     adapter.setSpawner(spawner);
     const res = await adapter.update();
     expect(res.ok).toBe(true);
-    const curlCall = calls.find(c => c.cmd === 'curl');
-    expect(curlCall).toBeDefined();
+    const shellCall = calls.find(c => c.cmd === 'sh' || c.cmd === 'cmd');
+    expect(shellCall).toBeDefined();
+    expect(shellCall!.args.join(' ')).toContain('curl');
   });
 });
 

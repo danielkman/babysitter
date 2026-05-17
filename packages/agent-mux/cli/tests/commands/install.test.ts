@@ -199,7 +199,7 @@ describe('installCommand dispatch (real adapters)', () => {
     } finally { io.restore(); }
   });
 
-  it('cursor install runs curl install', async () => {
+  it('cursor install runs curl install via shell wrapper', async () => {
     const io = captureOutput();
     const { runner, calls } = makeSpawnRunner(async (cmd) => {
       if (cmd === 'which' || cmd === 'where') return { code: 1, stdout: '', stderr: '' };
@@ -210,8 +210,10 @@ describe('installCommand dispatch (real adapters)', () => {
       const client = makeClient([cursor]);
       const code = await installCommand(client, args, { spawnRunner: runner });
       expect(code).toBe(ExitCode.SUCCESS);
-      const curlCall = calls.find((c) => c.cmd === 'curl');
-      expect(curlCall).toBeDefined();
+      // Piped commands (curl ... | bash) are wrapped in sh -c / cmd /c
+      const shellCall = calls.find((c) => c.cmd === 'sh' || c.cmd === 'cmd');
+      expect(shellCall).toBeDefined();
+      expect(shellCall!.args.join(' ')).toContain('curl');
     } finally { io.restore(); }
   });
 
@@ -281,10 +283,10 @@ describe('updateCommand dispatch', () => {
     } finally { io.restore(); }
   });
 
-  it('cursor update resolves curl update', async () => {
+  it('cursor update resolves curl update via shell wrapper', async () => {
     const io = captureOutput();
     const { runner, calls } = makeSpawnRunner(async (cmd) => {
-      if (cmd === 'which' || cmd === 'where') return { code: 0, stdout: '/usr/bin/cursor\n', stderr: '' };
+      if (cmd === 'which' || cmd === 'where') return { code: 0, stdout: '/usr/bin/cursor-agent\n', stderr: '' };
       return { code: 0, stdout: '', stderr: '' };
     });
     try {
@@ -292,8 +294,9 @@ describe('updateCommand dispatch', () => {
       const client = makeClient([new CursorAdapter()]);
       const code = await installCommand(client, args, { spawnRunner: runner });
       expect(code).toBe(ExitCode.SUCCESS);
-      const curlCall = calls.find((c) => c.cmd === 'curl');
-      expect(curlCall).toBeDefined();
+      const shellCall = calls.find((c) => c.cmd === 'sh' || c.cmd === 'cmd');
+      expect(shellCall).toBeDefined();
+      expect(shellCall!.args.join(' ')).toContain('curl');
     } finally { io.restore(); }
   });
 });

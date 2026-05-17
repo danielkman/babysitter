@@ -39,11 +39,12 @@ import {
 export class CursorAdapter extends BaseAgentAdapter {
   readonly agent: string = this.constructor.name.replace(/Adapter$/, "").toLowerCase();
   get displayName() { return getDisplayName(this.agent); }
-  readonly cliCommand: string = this.agent;
+  readonly cliCommand: string;
   readonly minVersion = '0.40.0';
 
   constructor(agent?: string, cliCommand?: string) {
     super();
+    this.cliCommand = cliCommand ?? 'cursor-agent';
   }
   get hostEnvSignals() { return getHostEnvSignals(this.agent); }
 
@@ -221,7 +222,7 @@ export class CursorAdapter extends BaseAgentAdapter {
       providerName: 'Cursor',
       steps: [
         { step: 1, description: 'Install Cursor CLI: curl -fsS https://cursor.com/install | bash', command: 'curl -fsS https://cursor.com/install | bash' },
-        { step: 2, description: 'Authenticate with: cursor auth (opens browser)', command: 'cursor auth' },
+        { step: 2, description: 'Authenticate with: cursor-agent auth (opens browser)', command: 'cursor-agent auth' },
         { step: 3, description: 'Optionally set CURSOR_API_KEY for headless/CI usage', command: 'export CURSOR_API_KEY=...' },
       ],
       envVars: [

@@ -28,13 +28,34 @@ export interface InstallContext {
   deriveUpdateCommand(method: InstallMethod): string | null;
 }
 
+/** Returns true when a command string contains shell operators (pipe, &&, etc.). */
+function needsShell(command: string): boolean {
+  return /[|&;><]/.test(command);
+}
+
 async function executeCommand(
   ctx: InstallContext,
   method: InstallMethod,
   command: string,
 ): Promise<InstallResult> {
-  const parts = command.split(/\s+/).filter(Boolean);
-  const [cmd, ...argv] = parts as [string, ...string[]];
+  let cmd: string;
+  let argv: string[];
+
+  if (needsShell(command)) {
+    // The command contains shell operators (e.g. "curl ... | bash").
+    // Spawner uses shell:false, so we wrap in an explicit shell invocation.
+    if (os.platform() === 'win32') {
+      cmd = 'cmd';
+      argv = ['/c', command];
+    } else {
+      cmd = 'sh';
+      argv = ['-c', command];
+    }
+  } else {
+    const parts = command.split(/\s+/).filter(Boolean);
+    [cmd, ...argv] = parts as [string, ...string[]];
+  }
+
   let runResult;
   try {
     runResult = await ctx.spawner(cmd, argv);

@@ -15,7 +15,7 @@ attributes:
   agentProductId: agent:cursor
   versionRange: ">=0.0.0"
   releasedAt: "2024-08-01"
-  cliCommand: "cursor"
+  cliCommand: "cursor-agent"
   installMethods:
     - install:curl
   minSchemaVersion: "6.0.0"
