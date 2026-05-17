@@ -17,9 +17,9 @@ describe('triggers action metadata', () => {
     expect(action.inputs['pre-run']).toBeDefined();
     expect(action.inputs['post-run']).toBeDefined();
     expect(action.inputs['args-json'].description).toContain('JSON string array');
-    expect(serializedSteps).toContain('npm run build --workspace=@a5c-ai/triggers');
-    expect(serializedSteps).toContain('packages/triggers/dist/cli.js');
-    expect(serializedSteps).toContain('packages/agent-mux/cli/dist/index.js');
+    expect(serializedSteps).toContain('npm install -g');
+    expect(serializedSteps).toContain('amux');
+    expect(serializedSteps).toContain('triggers');
     expect(serializedSteps).toContain('INPUT_ARGS_JSON');
     expect(serializedSteps).toContain('args-json must be a JSON array');
   });
