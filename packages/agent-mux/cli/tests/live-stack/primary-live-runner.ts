@@ -482,17 +482,16 @@ function buildPrompt(scenario: LiveStackScenario, traceId: string, env: Record<s
     const processMode = env['LIVE_STACK_PROCESS_MODE'] ?? 'predefined';
     if (processMode === 'create') {
       const createInstructions = [
-        'STEP 1 — MANDATORY BEFORE ANYTHING ELSE: Create a babysitter process file at .a5c/processes/odyssey-live-test.mjs.',
-        'Read packages/agent-mux/cli/tests/live-stack/fixtures/summarize-translate-test.mjs as a reference for the pattern.',
-        'Also look in the process library (.a5c/process-library/) for additional examples.',
+        'STEP 1 — Create a NEW babysitter process file at .a5c/processes/odyssey-live-test.mjs from scratch.',
+        'Do NOT use any existing process file. Research the process library at .a5c/process-library/ for patterns and examples.',
         'The process must: import defineTask from @a5c-ai/babysitter-sdk; export an async process(inputs, ctx) function;',
         'use parallel steps (ctx.parallel.all); have agent kind tasks for content generation;',
         'have shell kind tasks for file I/O with expectedExitCode; have at least 3 iterations.',
-        'The FIRST LINE of the file MUST be: // @reference summarize-translate-test.mjs, library/processes/shared/deterministic-quality-gate.js',
-        'Write this file to disk NOW before proceeding to step 2.',
+        'Include a // @reference comment near the top listing which library processes you used as inspiration (e.g. library paths you read).',
+        'Write this file to disk before proceeding to step 2.',
         '',
-        `STEP 2 — ONLY AFTER the process file exists: ${coreTask}.`,
-        'A process definition is available at .a5c/processes/odyssey-live-test.mjs',
+        `STEP 2 — After the process file is written: ${coreTask}.`,
+        'Use the process you just created at .a5c/processes/odyssey-live-test.mjs',
       ].join('\n');
       if (scenario.agent.agent === 'claude-code') return `/babysitter:call ${createInstructions}`;
       if (scenario.agent.agent === 'codex') return `$babysitter:call ${createInstructions}`;
