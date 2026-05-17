@@ -378,8 +378,11 @@ jobs:
           GOOGLE_CLOUD_LOCATION: global
           GOOGLE_GENAI_USE_VERTEXAI: True
         run: |
+          START_TS=$(date +%s)
           npm run test:e2e:live-stack:pipeline
           npm run coverage:e2e:live-stack
+          ELAPSED=$(( $(date +%s) - START_TS ))
+          echo "${ELAPSED}" > artifacts/live-stack/duration-seconds.txt
 
       - name: Upload live stack artifacts
         if: ${{ always() && matrix.scenario.skip != 'true' }}
@@ -577,8 +580,11 @@ jobs:
           GOOGLE_CLOUD_LOCATION: global
           GOOGLE_GENAI_USE_VERTEXAI: True
         run: |
+          START_TS=$(date +%s)
           npm run test:e2e:live-stack:pipeline
           npm run coverage:e2e:live-stack
+          ELAPSED=$(( $(date +%s) - START_TS ))
+          echo "${ELAPSED}" > artifacts/live-stack/duration-seconds.txt
 
       - name: Upload live stack artifacts
         if: ${{ always() && matrix.scenario.skip != 'true' }}
@@ -713,8 +719,11 @@ jobs:
           AZURE_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           AMUX_API_BASE: https://${{ vars.AZURE_OPENAI_PROJECT_NAME }}.services.ai.azure.com
         run: |
+          START_TS=$(date +%s)
           npm run test:e2e:live-stack:pipeline
           npm run coverage:e2e:live-stack
+          ELAPSED=$(( $(date +%s) - START_TS ))
+          echo "${ELAPSED}" > artifacts/live-stack/duration-seconds.txt
 
       - name: Upload live stack artifacts
         if: ${{ always() && matrix.scenario.skip != 'true' }}
@@ -956,8 +965,11 @@ jobs:
           GOOGLE_CLOUD_LOCATION: global
           GOOGLE_GENAI_USE_VERTEXAI: True
         run: |
+          START_TS=$(date +%s)
           npm run test:e2e:live-stack:pipeline
           npm run coverage:e2e:live-stack
+          ELAPSED=$(( $(date +%s) - START_TS ))
+          echo "${ELAPSED}" > artifacts/live-stack/duration-seconds.txt
 
       - name: Upload live stack artifacts
         if: ${{ always() && matrix.scenario.skip != 'true' }}
@@ -1150,8 +1162,11 @@ jobs:
           GOOGLE_CLOUD_LOCATION: global
           GOOGLE_GENAI_USE_VERTEXAI: True
         run: |
+          START_TS=$(date +%s)
           npm run test:e2e:live-stack:pipeline
           npm run coverage:e2e:live-stack
+          ELAPSED=$(( $(date +%s) - START_TS ))
+          echo "${ELAPSED}" > artifacts/live-stack/duration-seconds.txt
 
       - name: Upload live stack artifacts
         if: ${{ always() && matrix.scenario.skip != 'true' }}
@@ -1195,8 +1210,8 @@ jobs:
 
           echo "## Babysitter-Plugin Matrix" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Agent | Provider | Model | Mode | Status | Detail |" >> "$GITHUB_STEP_SUMMARY"
-          echo "|-------|----------|-------|------|--------|--------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Agent | Provider | Model | Mode | Runtime | Status | Detail |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|-------|----------|-------|------|---------|--------|--------|" >> "$GITHUB_STEP_SUMMARY"
 
           for dir in all-artifacts/live-stack-*-babysitter-plugin-*/ ; do
             [ -d "$dir" ] || continue
@@ -1215,10 +1230,17 @@ jobs:
                 status="✅"; bp_pass=$((bp_pass + 1))
                 detail="${passes:-0} checks"
               fi
-              echo "| ${agent} | ${provider} | ${model} | ${mode} | ${status} | ${detail} |" >> "$GITHUB_STEP_SUMMARY"
+              dur_file=$(find "$dir" -name "duration-seconds.txt" | head -1)
+              if [ -n "$dur_file" ] && [ -f "$dur_file" ]; then
+                dur_s=$(cat "$dur_file")
+                runtime="$((dur_s / 60))m$((dur_s % 60))s"
+              else
+                runtime="—"
+              fi
+              echo "| ${agent} | ${provider} | ${model} | ${mode} | ${runtime} | ${status} | ${detail} |" >> "$GITHUB_STEP_SUMMARY"
             else
               mode=$(echo "$dir" | grep -oP '(bridged-hooks|bridged-interactive|interactive|non-interactive)' | head -1 || echo "?")
-              echo "| ? | — | — | ${mode} | ⊘ | skipped |" >> "$GITHUB_STEP_SUMMARY"
+              echo "| ? | — | — | ${mode} | — | ⊘ | skipped |" >> "$GITHUB_STEP_SUMMARY"
               bp_skip=$((bp_skip + 1))
             fi
           done
@@ -1226,8 +1248,8 @@ jobs:
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "## Agent-Mux Matrix" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Agent | Provider | Model | Mode | Status | Detail |" >> "$GITHUB_STEP_SUMMARY"
-          echo "|-------|----------|-------|------|--------|--------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Agent | Provider | Model | Mode | Runtime | Status | Detail |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|-------|----------|-------|------|---------|--------|--------|" >> "$GITHUB_STEP_SUMMARY"
 
           for dir in all-artifacts/live-stack-*-vanilla-*/ ; do
             [ -d "$dir" ] || continue
@@ -1248,7 +1270,7 @@ jobs:
               echo "| ${agent} | ${provider} | ${mode} | ${status} | ${detail} |" >> "$GITHUB_STEP_SUMMARY"
             else
               mode=$(echo "$dir" | grep -oP '(bridged-hooks|bridged-interactive|interactive|non-interactive)' | head -1 || echo "?")
-              echo "| ? | — | — | ${mode} | ⊘ | skipped |" >> "$GITHUB_STEP_SUMMARY"
+              echo "| ? | — | — | ${mode} | — | ⊘ | skipped |" >> "$GITHUB_STEP_SUMMARY"
               van_skip=$((van_skip + 1))
             fi
           done
