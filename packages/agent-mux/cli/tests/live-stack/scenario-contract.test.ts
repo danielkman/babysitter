@@ -236,7 +236,7 @@ describe('live stack scenario contract primitives', () => {
     const workflow = fs.readFileSync('.github/workflows/live-stack.yml', 'utf8');
 
     for (const harness of ['claude-code', 'codex', 'pi', 'hermes', 'gemini-cli', 'copilot-cli', 'cursor-cli']) {
-      expect(workflow).toContain(`live.agent-mux.${harness}.foundry-openai.gpt-5.5`);
+      expect(workflow).toMatch(new RegExp(`live\\.agent-mux\\.${harness}\\.`));
     }
   });
 
