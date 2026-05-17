@@ -438,7 +438,7 @@ jobs:
   live_stack_bp_interactive:
     if: ${{ !contains(github.event.head_commit.message || '', '[skip publish]') }}
     needs: [build_all, setup]
-    name: "Live Stack (bp, ${{ matrix.scenario.agent }}/${{ matrix.scenario.model }}, ${{ matrix.interaction_mode.id }})"
+    name: "Live Stack (bp/${{ matrix.scenario.process_mode || 'predefined' }}, ${{ matrix.scenario.agent }}/${{ matrix.scenario.model }}, ${{ matrix.interaction_mode.id }})"
     runs-on: ubuntu-latest-m
     permissions:
       contents: read
@@ -454,7 +454,7 @@ jobs:
   live_stack_bp_bridged:
     if: ${{ !contains(github.event.head_commit.message || '', '[skip publish]') }}
     needs: [build_all, setup]
-    name: "Live Stack (bp, ${{ matrix.scenario.agent }}/${{ matrix.scenario.model }}, ${{ matrix.interaction_mode.id }})"
+    name: "Live Stack (bp/${{ matrix.scenario.process_mode || 'predefined' }}, ${{ matrix.scenario.agent }}/${{ matrix.scenario.model }}, ${{ matrix.interaction_mode.id }})"
     runs-on: ubuntu-latest-m
     permissions:
       contents: read
@@ -500,8 +500,8 @@ jobs:
 
           echo "## Babysitter-Plugin Matrix" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Agent | Provider | Model | Mode | Runtime | Status | Detail |" >> "$GITHUB_STEP_SUMMARY"
-          echo "|-------|----------|-------|------|---------|--------|--------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Agent | Provider | Model | Mode | Process | Runtime | Status | Detail |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|-------|----------|-------|------|---------|---------|--------|--------|" >> "$GITHUB_STEP_SUMMARY"
 
           for dir in all-artifacts/live-stack-*-babysitter-plugin-*/ ; do
             [ -d "$dir" ] || continue
@@ -511,6 +511,8 @@ jobs:
               provider=$(grep -oP '(?<=\*\*Provider:\*\* ).*' "$report" | head -1 || echo "?")
               model=$(grep -oP '(?<=\*\*Model:\*\* ).*' "$report" | head -1 || echo "?")
               mode=$(echo "$dir" | grep -oP '(bridged-hooks|bridged-interactive|interactive|non-interactive)' | head -1 || echo "?")
+              proc_mode="predefined"
+              if grep -q 'process-creation' "$report" 2>/dev/null; then proc_mode="create"; fi
               failures=$(grep -c '✗' "$report" 2>/dev/null || true)
               passes=$(grep -c '✓' "$report" 2>/dev/null || true)
               dur_file=$(find "$dir" -name "duration-seconds.txt" | head -1)
@@ -526,10 +528,10 @@ jobs:
                 status="✅"; bp_pass=$((bp_pass + 1))
                 detail="${passes:-0} checks"
               fi
-              echo "| ${agent} | ${provider} | ${model} | ${mode} | ${runtime} | ${status} | ${detail} |" >> "$GITHUB_STEP_SUMMARY"
+              echo "| ${agent} | ${provider} | ${model} | ${mode} | ${proc_mode} | ${runtime} | ${status} | ${detail} |" >> "$GITHUB_STEP_SUMMARY"
             else
               mode=$(echo "$dir" | grep -oP '(bridged-hooks|bridged-interactive|interactive|non-interactive)' | head -1 || echo "?")
-              echo "| ? | — | — | ${mode} | — | ⊘ | skipped |" >> "$GITHUB_STEP_SUMMARY"
+              echo "| ? | — | — | ${mode} | — | — | ⊘ | skipped |" >> "$GITHUB_STEP_SUMMARY"
               bp_skip=$((bp_skip + 1))
             fi
           done

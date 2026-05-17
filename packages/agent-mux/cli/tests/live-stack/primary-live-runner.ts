@@ -925,6 +925,7 @@ async function writeVerificationReport(
     `**Agent:** ${scenario.agent.agent}  `,
     `**Provider:** ${scenario.model.provider}  `,
     `**Model:** ${scenario.model.model}  `,
+    `**Process Mode:** ${env['LIVE_STACK_PROCESS_MODE'] ?? 'predefined'}  `,
     ``,
     `| Status | Verification | Detail |`,
     `|--------|-------------|--------|`,
