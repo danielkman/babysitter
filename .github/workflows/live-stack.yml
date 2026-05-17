@@ -248,11 +248,10 @@ jobs:
               const codex = scenario('codex','codex',google);
               const pi = scenario('pi','pi',kimi);
 
-              // Vanilla NI: claude+codex + pi (bridged-interactive only, no NI support)
+              // Vanilla NI: claude+codex NI, pi bridged-interactive only (Pi needs PTY)
               const vanillaNi = [
                 {scenario: claude, interaction_mode: ni, install_mode: vanillaInstall},
                 {scenario: codex, interaction_mode: ni, install_mode: vanillaInstall},
-                {scenario: pi, interaction_mode: ni, install_mode: vanillaInstall},
               ];
 
               // Vanilla Interactive: empty — defaults use NI + bridged-interactive only
