@@ -62,7 +62,7 @@ jobs:
 
       - uses: a5c-ai/babysitter/packages/triggers@staging
         with:
-          harness: claude
+          harness: claude-code
           provider: foundry
           model: gpt-5.5
           interaction-mode: bridged-hooks
