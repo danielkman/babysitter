@@ -151,7 +151,7 @@ runs:
       run: |
         set -euo pipefail
         REPO_ROOT=$(cd "$ACTION_ROOT/../.." && pwd)
-        if [ -f "$REPO_ROOT/package.json" ] && grep -q '"@a5c-ai/agent-mux-cli"' "$REPO_ROOT/package.json" 2>/dev/null; then
+        if [ -d "$REPO_ROOT/packages/agent-mux/cli" ] && [ -f "$REPO_ROOT/packages/triggers/action.yml" ]; then
           echo "mode=monorepo" >> "$GITHUB_OUTPUT"
           echo "repo_root=$REPO_ROOT" >> "$GITHUB_OUTPUT"
         else
