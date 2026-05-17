@@ -624,3 +624,300 @@ Source: `packages/krate/core/src/resource-model.js`
 | `createSelector(spec)` | `(object) → Selector resource` | Create Selector |
 | `createView(spec)` | `(object) → View resource` | Create View |
 | `resourceToYaml(resource)` | `(object) → string` | Serialize to YAML |
+
+---
+
+## 5. Complete KRATE_RESOURCES Array
+
+> Source: `packages/krate/core/src/kubernetes-controller.js` — lines 31–111
+
+Every entry in `KRATE_RESOURCES` with all fields:
+
+```javascript
+// ─── Platform-Scoped (listed from krate-system only) ───
+{ kind: 'Organization',            plural: 'organizations',            namespaced: true, namespace: KRATE_PLATFORM_NAMESPACE, storage: 'etcd',     platformScoped: true }
+{ kind: 'OrgNamespaceBinding',     plural: 'orgnamespacebindings',     namespaced: true, namespace: KRATE_PLATFORM_NAMESPACE, storage: 'etcd',     platformScoped: true }
+
+// ─── Identity & Access (etcd, org-scoped) ───
+{ kind: 'User',                    plural: 'users',                    namespaced: true, storage: 'etcd' }
+{ kind: 'Team',                    plural: 'teams',                    namespaced: true, storage: 'etcd' }
+{ kind: 'Invite',                  plural: 'invites',                  namespaced: true, storage: 'etcd' }
+{ kind: 'IdentityMapping',         plural: 'identitymappings',         namespaced: true, storage: 'etcd' }
+{ kind: 'AuthProvider',            plural: 'authproviders',            namespaced: true, storage: 'etcd' }
+
+// ─── Data-Plane (etcd, org-scoped) ───
+{ kind: 'Repository',              plural: 'repositories',             namespaced: true, storage: 'etcd' }
+{ kind: 'SSHKey',                  plural: 'sshkeys',                  namespaced: true, storage: 'etcd' }
+{ kind: 'RepositoryPermission',    plural: 'repositorypermissions',    namespaced: true, storage: 'etcd' }
+{ kind: 'BranchProtection',        plural: 'branchprotections',        namespaced: true, storage: 'etcd' }
+{ kind: 'RefPolicy',               plural: 'refpolicies',              namespaced: true, storage: 'etcd' }
+
+// ─── Policy (etcd, org-scoped) ───
+{ kind: 'PolicyProfile',           plural: 'policyprofiles',           namespaced: true, storage: 'etcd' }
+{ kind: 'PolicyTemplate',          plural: 'policytemplates',          namespaced: true, storage: 'etcd' }
+{ kind: 'PolicyBinding',           plural: 'policybindings',           namespaced: true, storage: 'etcd' }
+{ kind: 'PolicyExceptionRequest',  plural: 'policyexceptionrequests',  namespaced: true, storage: 'etcd' }
+
+// ─── Hooks & CI (etcd/postgres) ───
+{ kind: 'WebhookSubscription',     plural: 'webhooksubscriptions',     namespaced: true, storage: 'etcd' }
+{ kind: 'RunnerPool',              plural: 'runnerpools',              namespaced: true, storage: 'etcd' }
+{ kind: 'PullRequest',             plural: 'pullrequests',             namespaced: true, storage: 'postgres' }
+{ kind: 'Issue',                   plural: 'issues',                   namespaced: true, storage: 'postgres' }
+{ kind: 'Review',                  plural: 'reviews',                  namespaced: true, storage: 'postgres' }
+{ kind: 'Pipeline',                plural: 'pipelines',                namespaced: true, storage: 'postgres' }
+{ kind: 'Job',                     plural: 'jobs',                     namespaced: true, storage: 'postgres' }
+{ kind: 'WebhookDelivery',         plural: 'webhookdeliveries',        namespaced: true, storage: 'postgres' }
+
+// ─── KubeVela Delivery (kubevela storage) ───
+{ kind: 'KubeVelaApplication',              plural: 'applications',              group: 'core.oam.dev', namespaced: true, storage: 'kubevela' }
+{ kind: 'KubeVelaApplicationRevision',      plural: 'applicationrevisions',      group: 'core.oam.dev', namespaced: true, storage: 'kubevela' }
+{ kind: 'KubeVelaComponentDefinition',      plural: 'componentdefinitions',      group: 'core.oam.dev', namespaced: true, namespace: 'vela-system', storage: 'kubevela' }
+{ kind: 'KubeVelaWorkloadDefinition',       plural: 'workloaddefinitions',       group: 'core.oam.dev', namespaced: true, namespace: 'vela-system', storage: 'kubevela' }
+{ kind: 'KubeVelaTraitDefinition',          plural: 'traitdefinitions',          group: 'core.oam.dev', namespaced: true, namespace: 'vela-system', storage: 'kubevela' }
+{ kind: 'KubeVelaScopeDefinition',          plural: 'scopedefinitions',          group: 'core.oam.dev', namespaced: true, namespace: 'vela-system', storage: 'kubevela' }
+{ kind: 'KubeVelaPolicyDefinition',         plural: 'policydefinitions',         group: 'core.oam.dev', namespaced: true, namespace: 'vela-system', storage: 'kubevela' }
+{ kind: 'KubeVelaPolicy',                   plural: 'policies',                  group: 'core.oam.dev', namespaced: true, storage: 'kubevela' }
+{ kind: 'KubeVelaWorkflowStepDefinition',   plural: 'workflowstepdefinitions',   group: 'core.oam.dev', namespaced: true, namespace: 'vela-system', storage: 'kubevela' }
+{ kind: 'KubeVelaWorkflow',                 plural: 'workflows',                 group: 'core.oam.dev', namespaced: true, storage: 'kubevela' }
+{ kind: 'KubeVelaResourceTracker',          plural: 'resourcetrackers',          group: 'core.oam.dev', namespaced: false, storage: 'kubevela' }
+
+// ─── Views & Selectors (etcd) ───
+{ kind: 'View',                    plural: 'views',                    namespaced: true, storage: 'etcd' }
+{ kind: 'Selector',                plural: 'selectors',                namespaced: true, storage: 'etcd' }
+
+// ─── Agent Orchestration CRDs (etcd) ───
+{ kind: 'AgentStack',              plural: 'agentstacks',              namespaced: true, storage: 'etcd' }
+{ kind: 'AgentSubagent',           plural: 'agentsubagents',           namespaced: true, storage: 'etcd' }
+{ kind: 'AgentToolProfile',        plural: 'agenttoolprofiles',        namespaced: true, storage: 'etcd' }
+{ kind: 'AgentMcpServer',          plural: 'agentmcpservers',          namespaced: true, storage: 'etcd' }
+{ kind: 'AgentSkill',              plural: 'agentskills',              namespaced: true, storage: 'etcd' }
+{ kind: 'AgentTriggerRule',        plural: 'agenttriggerrules',        namespaced: true, storage: 'etcd' }
+{ kind: 'AgentContextLabel',       plural: 'agentcontextlabels',       namespaced: true, storage: 'etcd' }
+{ kind: 'KrateWorkspacePolicy',    plural: 'krateworkspacepolicies',   namespaced: true, storage: 'etcd' }
+{ kind: 'AgentServiceAccount',     plural: 'agentserviceaccounts',     namespaced: true, storage: 'etcd' }
+{ kind: 'AgentRoleBinding',        plural: 'agentrolebindings',        namespaced: true, storage: 'etcd' }
+{ kind: 'AgentSecretGrant',        plural: 'agentsecretgrants',        namespaced: true, storage: 'etcd' }
+{ kind: 'AgentConfigGrant',        plural: 'agentconfiggrants',        namespaced: true, storage: 'etcd' }
+{ kind: 'AgentAdapter',            plural: 'agentadapters',            namespaced: true, storage: 'etcd' }
+{ kind: 'AgentTransportBinding',   plural: 'agenttransportbindings',   namespaced: true, storage: 'etcd' }
+{ kind: 'AgentProviderConfig',     plural: 'agentproviderconfigs',     namespaced: true, storage: 'etcd' }
+{ kind: 'KrateProject',            plural: 'krateprojects',            namespaced: true, storage: 'etcd' }
+{ kind: 'AgentGatewayConfig',      plural: 'agentgatewayconfigs',      namespaced: true, storage: 'etcd' }
+{ kind: 'AgentMemoryRepository',   plural: 'agentmemoryrepositories',  namespaced: true, storage: 'etcd' }
+{ kind: 'AgentMemorySource',       plural: 'agentmemorysources',       namespaced: true, storage: 'etcd' }
+{ kind: 'AgentMemoryOntology',     plural: 'agentmemoryontologies',    namespaced: true, storage: 'etcd' }
+{ kind: 'AgentMemoryAssociation',  plural: 'agentmemoryassociations',  namespaced: true, storage: 'etcd' }
+
+// ─── Agent Aggregated Resources (postgres) ───
+{ kind: 'AgentDispatchRun',        plural: 'agentdispatchruns',        namespaced: true, storage: 'postgres' }
+{ kind: 'AgentDispatchAttempt',    plural: 'agentdispatchattempts',    namespaced: true, storage: 'postgres' }
+{ kind: 'AgentSession',            plural: 'agentsessions',            namespaced: true, storage: 'postgres' }
+{ kind: 'AgentContextBundle',      plural: 'agentcontextbundles',      namespaced: true, storage: 'postgres' }
+{ kind: 'KrateArtifact',           plural: 'krateartifacts',           namespaced: true, storage: 'postgres' }
+{ kind: 'AgentApproval',           plural: 'agentapprovals',           namespaced: true, storage: 'postgres' }
+{ kind: 'KrateWorkspace',          plural: 'krateworkspaces',          namespaced: true, storage: 'postgres' }
+{ kind: 'AgentTriggerExecution',   plural: 'agenttriggerexecutions',   namespaced: true, storage: 'postgres' }
+{ kind: 'KrateWorkspaceRuntime',   plural: 'krateworkspaceruntimes',   namespaced: true, storage: 'postgres' }
+{ kind: 'AgentSessionTranscript',  plural: 'agentsessiontranscripts',  namespaced: true, storage: 'postgres' }
+
+// ─── External Backend (etcd) ───
+{ kind: 'ExternalBackendProvider',     plural: 'externalbackendproviders',     namespaced: true, storage: 'etcd' }
+{ kind: 'ExternalBackendBinding',      plural: 'externalbackendbindings',      namespaced: true, storage: 'etcd' }
+{ kind: 'ExternalBackendSyncPolicy',   plural: 'externalbackendsyncpolicies',  namespaced: true, storage: 'etcd' }
+
+// ─── Core Kubernetes (excluded from snapshot — on-demand access only) ───
+{ kind: 'Secret',                  plural: 'secrets',                  group: '', namespaced: true, storage: 'core' }
+{ kind: 'ConfigMap',               plural: 'configmaps',               group: '', namespaced: true, storage: 'core' }
+```
+
+Additionally, `KYVERNO_RESOURCES` (10 entries, discovered separately):
+
+```javascript
+{ kind: 'KyvernoPolicy',                 plural: 'policies',                group: 'kyverno.io',            namespaced: true,  storage: 'kyverno',         namespace: KRATE_KYVERNO_POLICY_NAMESPACE }
+{ kind: 'KyvernoClusterPolicy',          plural: 'clusterpolicies',         group: 'kyverno.io',            namespaced: false, storage: 'kyverno' }
+{ kind: 'KyvernoValidatingPolicy',       plural: 'validatingpolicies',      group: 'policies.kyverno.io',   namespaced: false, storage: 'kyverno' }
+{ kind: 'KyvernoMutatingPolicy',         plural: 'mutatingpolicies',        group: 'policies.kyverno.io',   namespaced: false, storage: 'kyverno' }
+{ kind: 'KyvernoGeneratingPolicy',       plural: 'generatingpolicies',      group: 'policies.kyverno.io',   namespaced: false, storage: 'kyverno' }
+{ kind: 'KyvernoDeletingPolicy',         plural: 'deletingpolicies',        group: 'policies.kyverno.io',   namespaced: false, storage: 'kyverno' }
+{ kind: 'KyvernoImageValidatingPolicy',  plural: 'imagevalidatingpolicies', group: 'policies.kyverno.io',   namespaced: false, storage: 'kyverno' }
+{ kind: 'KyvernoPolicyException',        plural: 'policyexceptions',        group: 'policies.kyverno.io',   namespaced: true,  storage: 'kyverno',         namespace: KRATE_KYVERNO_POLICY_NAMESPACE }
+{ kind: 'PolicyReport',                  plural: 'policyreports',           group: 'wgpolicyk8s.io',        namespaced: true,  storage: 'kyverno-reports' }
+{ kind: 'ClusterPolicyReport',           plural: 'clusterpolicyreports',    group: 'wgpolicyk8s.io',        namespaced: false, storage: 'kyverno-reports' }
+```
+
+---
+
+## 6. Agent Dispatch State Machine
+
+> Source: `packages/krate/core/src/agent-dispatch-controller.js`, observed from controller-ui.js active filtering
+
+### 6.1 Phase Transitions
+
+```
+                    ┌────────────────────────────────────────────────────────────┐
+                    │                                                            │
+  ┌─────────┐   ┌──▼──────────────┐   ┌──────────┐   ┌─────────┐   ┌──────────▼─┐
+  │ Pending  │──▶│AwaitingApproval │──▶│  Queued  │──▶│ Running │──▶│ Completed  │
+  └─────────┘   └─────────────────┘   └──────────┘   └─────────┘   └────────────┘
+       │                  │                                │              │
+       │                  │ (denied)                       │              │
+       │                  ▼                                ▼              │
+       │            ┌──────────┐                     ┌──────────┐        │
+       └───────────▶│  Failed  │◀────────────────────│  Failed  │◀───────┘
+                    └──────────┘                     └──────────┘
+```
+
+### 6.2 Transition Triggers
+
+| From | To | Trigger | Conditions |
+|------|----|---------|-----------|
+| (new) | `Pending` | `createDispatchRun()` called | Valid stack reference, org resolved |
+| `Pending` | `AwaitingApproval` | Stack or workspace policy requires approval | `spec.requiresApproval: true` or KrateWorkspacePolicy matches |
+| `Pending` | `Queued` | No approval required | Direct dispatch allowed by permission review |
+| `AwaitingApproval` | `Queued` | `approveAgentAction()` invoked by authorized user | AgentApproval resource phase → `Approved` |
+| `AwaitingApproval` | `Failed` | `denyAgentAction()` invoked | AgentApproval resource phase → `Denied` |
+| `Queued` | `Running` | Runner pool assigns a runner | Runner created/reused via `scheduleJob()` (see §30 in architecture-v2.md) |
+| `Running` | `Completed` | Agent session reports success | Session status phase → `Completed` |
+| `Running` | `Failed` | Agent session reports failure or timeout | Session status phase → `Failed` or runner terminated |
+| `Pending` | `Failed` | Permission review denies dispatch | Missing role binding, workspace policy violation, or cross-org denial |
+
+### 6.3 Data Stored at Each Phase
+
+| Phase | Key Status Fields |
+|-------|-------------------|
+| `Pending` | `createdAt`, `stackRef`, `organizationRef`, `triggerRef?`, `requestedBy` |
+| `AwaitingApproval` | + `approvalRef` (name of AgentApproval resource), `awaitingSince` |
+| `Queued` | + `queuedAt`, `priority`, `runnerPoolRef` |
+| `Running` | + `startedAt`, `runnerId`, `sessionRef`, `workspaceRef`, `attemptNumber` |
+| `Completed` | + `completedAt`, `duration`, `artifacts[]`, `exitCode: 0` |
+| `Failed` | + `failedAt`, `duration?`, `lastError`, `retryable`, `exitCode?` |
+
+### 6.4 Retry Semantics
+
+- **New attempt:** A failed run can be retried by creating a new `AgentDispatchRun` with the same `stackRef` and an incremented `spec.attemptNumber`. The new run starts at `Pending`.
+- **Re-queue:** Not supported. Once a run leaves `Queued`, it cannot return to that phase. The runner controller handles low-level scheduling retries internally.
+- Each run's `AgentDispatchAttempt` resources track per-attempt history (one per execution cycle).
+
+---
+
+## 7. Workspace State Machine
+
+> Source: `packages/krate/core/src/agent-workspace-controller.js`
+
+### 7.1 Workspace Lifecycle Phases
+
+```
+  ┌─────────┐   ┌──────────────┐   ┌───────┐   ┌───────┐   ┌───────┐   ┌──────────┐   ┌──────────┐
+  │ Pending  │──▶│ Provisioning │──▶│ Ready │──▶│ InUse │──▶│ Ready │──▶│ Archiving│──▶│ Archived │
+  └─────────┘   └──────────────┘   └───────┘   └───────┘   └───────┘   └──────────┘   └──────────┘
+                                         │                       ▲
+                                         └───────────────────────┘
+                                           (released by run)
+```
+
+| Phase | Description | Duration |
+|-------|-------------|----------|
+| `Pending` | Workspace resource created, waiting for provisioner | Seconds |
+| `Provisioning` | PVC being created, git clone starting, runtime booting | 10-60s |
+| `Ready` | Workspace available for claiming by a dispatch run | Indefinite (warm pool) |
+| `InUse` | Claimed by an AgentDispatchRun, agent session active | Duration of run |
+| `Ready` (released) | Run completed, workspace returned to pool | Until next claim or TTL |
+| `Archiving` | Artifacts being collected, PVC snapshot taken | Seconds |
+| `Archived` | Terminal state. PVC released, metadata retained | Permanent |
+
+### 7.2 PVC Lifecycle
+
+| PVC Phase | Workspace Phase | Action |
+|-----------|-----------------|--------|
+| — | `Pending` | PVC does not exist yet |
+| `Pending` | `Provisioning` | PVC created with `storageClassName` and requested size |
+| `Bound` | `Ready` | PVC bound to a PV, filesystem mounted |
+| `Bound` | `InUse` | Same PVC, now mounted in runner pod |
+| `Bound` | `Archiving` | Snapshot taken if configured |
+| `Released` | `Archived` | PVC deleted or reclaimed by storage class |
+
+PVC naming convention: `krate-ws-${runId}` (generated by runner-controller, see architecture-v2.md §30.5).
+
+### 7.3 Git State (within workspace)
+
+| Git Phase | Description |
+|-----------|-------------|
+| `Cloning` | `git clone` in progress during Provisioning |
+| `Ready` | Clean worktree, all branches fetched |
+| `Dirty` | Agent has uncommitted changes (during InUse) |
+| `Synced` | Changes committed and pushed (during InUse or on release) |
+
+### 7.4 Codespace State (optional runtime container)
+
+| Codespace Phase | Trigger |
+|-----------------|---------|
+| `Stopped` | Workspace created but runtime not started |
+| `Starting` | Container runtime booting (image pull, env setup) |
+| `Running` | IDE/agent connected, dev server available |
+| `Stopping` | Graceful shutdown initiated (run complete or timeout) |
+
+### 7.5 Key Transitions
+
+| From | To | Trigger |
+|------|----|---------|
+| `Pending` → `Provisioning` | PVC creation initiated by workspace controller |
+| `Provisioning` → `Ready` | PVC bound + git clone complete + runtime healthy |
+| `Ready` → `InUse` | `scheduleJob()` claims workspace for a dispatch run |
+| `InUse` → `Ready` | Run completes, workspace released back to pool |
+| `Ready` → `Archiving` | TTL expired or explicit archive request |
+| `InUse` → `Archiving` | Run failed + workspace marked for cleanup |
+| `Archiving` → `Archived` | Artifacts saved, PVC released |
+
+---
+
+## 8. Memory Import State Machine
+
+> Source: `packages/krate/core/src/agent-memory-controller.js`, observed from controller-ui.js memoryImports filtering
+
+### 8.1 Lifecycle Phases
+
+```
+  ┌───────────┐   ┌───────────┐   ┌──────────────┐   ┌────────────┐   ┌─────────────────┐   ┌────────────────────────┐   ┌────────┐
+  │ Collected │──▶│ Redacting │──▶│ Normalizing  │──▶│ Validating │──▶│ AwaitingReview  │──▶│ Approved / Rejected    │──▶│ Merged │
+  └───────────┘   └───────────┘   └──────────────┘   └────────────┘   └─────────────────┘   └────────────────────────┘   └────────┘
+```
+
+### 8.2 Phase Descriptions
+
+| Phase | Description | Owner |
+|-------|-------------|-------|
+| `Collected` | Raw memory data extracted from a babysitter run or agent session transcript. Contains conversation fragments, decisions, tool outputs. | Automated (agent session completion handler) |
+| `Redacting` | PII and secrets are stripped. Credential patterns, email addresses, API keys, file paths with usernames are removed or masked. | Automated (redaction pipeline) |
+| `Normalizing` | Extracted facts are normalized into the ontology schema: entities, relationships, decisions, patterns. Deduplication against existing memory. | Automated (normalization engine) |
+| `Validating` | Schema validation of normalized memory entries. Cross-references checked against existing AgentMemoryAssociation resources. Confidence scores computed. | Automated (validation rules) |
+| `AwaitingReview` | Human review required. Low-confidence entries, novel ontology terms, or entries referencing sensitive resources are queued for approval. | Human reviewer |
+| `Approved` | Reviewer accepted the import. Ready for merge into the memory repository. | Human (via UI or API) |
+| `Rejected` | Reviewer rejected. Reasons recorded. Will not be merged. | Human (via UI or API) |
+| `Merged` | Terminal. Memory entries written to AgentMemoryRepository, associations created, ontology updated if needed. | Automated (merge pipeline) |
+
+### 8.3 Data at Each Phase
+
+| Phase | Key Fields |
+|-------|-----------|
+| `Collected` | `sourceRef` (session/run), `rawEntries[]`, `collectedAt`, `sourceType` |
+| `Redacting` | + `redactedFields[]`, `redactionRules` applied |
+| `Normalizing` | + `normalizedEntries[]`, `ontologyTerms[]`, `deduplicationResults` |
+| `Validating` | + `validationErrors[]`, `confidenceScores{}`, `crossRefResults` |
+| `AwaitingReview` | + `reviewRequestedAt`, `reviewerHint`, `flaggedEntries[]` |
+| `Approved` | + `approvedBy`, `approvedAt`, `approvalNotes` |
+| `Rejected` | + `rejectedBy`, `rejectedAt`, `rejectionReason` |
+| `Merged` | + `mergedAt`, `repositoryRef`, `createdAssociations[]`, `mergedEntryCount` |
+
+### 8.4 Transition Rules
+
+- `Collected → Redacting`: automatic, immediate after collection
+- `Redacting → Normalizing`: automatic after redaction pass completes
+- `Normalizing → Validating`: automatic after normalization
+- `Validating → AwaitingReview`: when any entry has confidence < threshold OR novel ontology term OR references sensitive resource
+- `Validating → Approved`: when all entries pass validation with high confidence (auto-approve path)
+- `AwaitingReview → Approved`: human calls approve endpoint
+- `AwaitingReview → Rejected`: human calls reject endpoint
+- `Approved → Merged`: automatic, writes to memory repository
+- `Rejected`: terminal (no further transitions)
+
+The controller-ui.js filters pending imports as: `memoryImports.filter(i => !i.status?.phase || i.status.phase === 'Pending' || i.status.phase === 'AwaitingReview')`
