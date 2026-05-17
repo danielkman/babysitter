@@ -363,7 +363,7 @@ function promptRequiresBabysitterCompletion(prompt: string | undefined): boolean
 }
 
 function promptInvokesBabysitterSlashCommand(prompt: string | undefined): boolean {
-  return typeof prompt === 'string' && /(?:^|\s)\/babysitter:[\w-]+/.test(prompt);
+  return typeof prompt === 'string' && /(?:^|\s)[/$]babysitter:[\w-]+/.test(prompt);
 }
 
 function buildBabysitterSkillFollowupPrompt(prompt: string | undefined): string {
