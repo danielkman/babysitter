@@ -228,19 +228,16 @@ runs:
           if [ -f "$REPO_ROOT/package.json" ] && node -e "process.exit(JSON.parse(require('fs').readFileSync('$REPO_ROOT/package.json','utf8')).scripts?.['generate:plugins'] ? 0 : 1)" 2>/dev/null; then
             cd "$REPO_ROOT" && npm run generate:plugins && cd "$INPUT_WORKING_DIRECTORY"
           fi
-          # Use local SDK
-          export PATH="$REPO_ROOT/packages/sdk/dist/cli:$PATH"
-          if ! command -v babysitter >/dev/null 2>&1; then
-            npm install -g "$REPO_ROOT/packages/sdk" 2>/dev/null || \
-              node "$REPO_ROOT/packages/sdk/dist/cli/main.js" harness:install-plugin "$INPUT_HARNESS" --workspace "$INPUT_WORKING_DIRECTORY" && exit 0
-          fi
+          # Use local SDK directly via node
+          BABYSITTER="node $REPO_ROOT/packages/sdk/dist/cli/main.js"
         else
           # External use — install from npm
           npm install -g @a5c-ai/babysitter-sdk
+          BABYSITTER="babysitter"
         fi
 
         # Install babysitter plugin into harness
-        babysitter harness:install-plugin "$INPUT_HARNESS" --workspace "$INPUT_WORKING_DIRECTORY"
+        $BABYSITTER harness:install-plugin "$INPUT_HARNESS" --workspace "$INPUT_WORKING_DIRECTORY"
 
         # Copy process file if provided
         if [ -n "$INPUT_PROCESS_FILE" ]; then
