@@ -237,7 +237,7 @@ function appendHarnessSessionArgs(plan: LaunchPlan, session: SessionArgs): void 
       break;
     case 'pi':
       if (session.prompt && !interactive && !session.bridgeInteractive) {
-        plan.args.push('-p', session.prompt);
+        plan.args.push('-p', session.prompt, '--mode', 'json');
       }
       break;
     case 'opencode':
