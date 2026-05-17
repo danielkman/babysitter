@@ -266,7 +266,10 @@ export async function runPrimaryLiveStackScenario(options: PrimaryLiveRunOptions
           try {
             const stat = await fs.stat(expectedFile);
             if (stat.size > 500) {
-              break;
+              const head = (await fs.readFile(expectedFile, 'utf8')).slice(0, 200);
+              if (!/^(ERROR|error|401|Unauthorized|failed|execvp)/m.test(head)) {
+                break;
+              }
             }
           } catch { /* file doesn't exist — fall through */ }
         }
@@ -693,7 +696,12 @@ async function validateAgentBehavior(
     } catch {
       // file not created
     }
-    if (fileExists && fileSize > 500) {
+    let fileContent = '';
+    if (fileExists) {
+      try { fileContent = await fs.readFile(expectedFile, 'utf8'); } catch { /* */ }
+    }
+    const hasRealContent = fileSize > 500 && !/^(ERROR|error|401|Unauthorized|failed|execvp)/m.test(fileContent.slice(0, 200));
+    if (fileExists && hasRealContent) {
       entries.push({ name: 'file-creation', status: 'passed', detail: `odyssey file created (${fileSize} bytes)` });
     } else if (fileExists) {
       entries.push({ name: 'file-creation', status: 'failed', detail: `odyssey file exists but too small (${fileSize} bytes — expected >500)` });

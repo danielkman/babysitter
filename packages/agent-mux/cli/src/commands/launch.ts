@@ -983,8 +983,8 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
       }
 
       // Generic OpenAI-compatible harnesses: set OPENAI_API_KEY + OPENAI_BASE_URL
-      // to route through the proxy for harnesses that use the openai-chat transport.
-      if (['cursor', 'hermes', 'omp', 'openclaw', 'opencode'].includes(plan.harness)) {
+      // to route through the proxy for harnesses that use the openai-chat/responses transport.
+      if (['codex', 'cursor', 'hermes', 'omp', 'openclaw', 'opencode'].includes(plan.harness)) {
         plan.env['OPENAI_API_KEY'] = proxyRuntime.authToken ?? 'proxy-token';
         plan.env['OPENAI_BASE_URL'] = `${proxyRuntime.url}/v1`;
         plan.env['OPENAI_API_BASE'] = `${proxyRuntime.url}/v1`;
