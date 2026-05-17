@@ -312,11 +312,20 @@ runs:
         set -euo pipefail
         AMUX="amux"
 
+        # Map harness names to amux aliases
+        AMUX_HARNESS="$INPUT_HARNESS"
+        case "$INPUT_HARNESS" in
+          claude-code) AMUX_HARNESS="claude" ;;
+          gemini-cli) AMUX_HARNESS="gemini" ;;
+          copilot-cli) AMUX_HARNESS="copilot" ;;
+          cursor-cli) AMUX_HARNESS="cursor" ;;
+        esac
+
         # Build command args
         ARGS=()
         if [ "$INPUT_COMMAND" = "launch" ] || [ "$INPUT_COMMAND" = "run" ]; then
           ARGS+=("$INPUT_COMMAND")
-          [ -n "$INPUT_HARNESS" ] && ARGS+=("$INPUT_HARNESS")
+          [ -n "$AMUX_HARNESS" ] && ARGS+=("$AMUX_HARNESS")
           [ -n "$INPUT_PROVIDER" ] && ARGS+=("$INPUT_PROVIDER")
         else
           ARGS+=("$INPUT_COMMAND")
