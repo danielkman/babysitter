@@ -29,6 +29,8 @@ jobs:
           provider: foundry
           model: gpt-5.5
           interaction-mode: non-interactive
+          babysitter-plugin: 'true'
+          babysitter-prompt-prefix: '/babysitter:yolo'
           max-turns: '15'
           prompt: |
             A Publish CI pipeline has failed. Your job is ONLY to triage — do NOT fix code.
@@ -45,11 +47,13 @@ jobs:
             3. Also search closed issues: `gh issue list --label "publish-failure" --state closed --json number,title,body`
             4. If an OPEN issue matches the same failure pattern:
                - Add a comment: "This failure occurred again in run [#${{ github.event.workflow_run.id }}](${{ github.event.workflow_run.html_url }}) on branch `${{ github.event.workflow_run.head_branch }}`"
+               - When commenting on existing issues, also add the 'automated-triage' label if not already present.
             5. If a CLOSED issue matches:
                - Reopen it with `gh issue reopen <number>`
                - Add a comment: "Regression: this failure recurred in run [#${{ github.event.workflow_run.id }}](${{ github.event.workflow_run.html_url }}) on branch `${{ github.event.workflow_run.head_branch }}`"
+               - When commenting on existing issues, also add the 'automated-triage' label if not already present.
             6. If NO matching issue exists:
-               - Create one with `gh issue create --label "publish-failure" --title "<brief failure description>" --body "<detailed context>"`
+               - Before creating an issue, add the appropriate labels. Use `gh issue create --label 'publish-failure,ci,automated-triage' --title "<brief failure description>" --body "<detailed context>"`
                - Include: which jobs/steps failed, error messages, branch, commit, and run link.
                - Do NOT include fix suggestions — just document the failure for triage.
           trigger-query: |

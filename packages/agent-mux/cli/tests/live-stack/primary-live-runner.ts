@@ -482,18 +482,21 @@ function buildPrompt(scenario: LiveStackScenario, traceId: string, env: Record<s
     const processMode = env['LIVE_STACK_PROCESS_MODE'] ?? 'predefined';
     if (processMode === 'create') {
       const createInstructions = [
-        coreTask + '.',
-        'Create a new babysitter process file at .a5c/processes/odyssey-live-test.mjs that orchestrates this task.',
-        'The process must use defineTask from @a5c-ai/babysitter-sdk and export an async process(inputs, ctx) function.',
-        'Structure it with: parallel steps (ctx.parallel.all), agent kind tasks for content generation, shell kind tasks for file I/O with expectedExitCode, and at least 3 iterations.',
-        'Reference packages/agent-mux/cli/tests/live-stack/fixtures/summarize-translate-test.mjs for the pattern — it uses sharded parallel writes, translations, assembly, and verification.',
-        'Look in the process library (.a5c/process-library/) for additional examples of process definitions.',
-        'Add a comment at the top of the file: // @reference summarize-translate-test.mjs, library/processes/shared/deterministic-quality-gate.js',
-        'Then use the process to complete the task.',
-      ].join(' ');
-      if (scenario.agent.agent === 'claude-code') return `/babysitter:yolo ${createInstructions}`;
-      if (scenario.agent.agent === 'codex') return `$babysitter:yolo ${createInstructions}`;
-      return `Invoke the babysitter:yolo command to: ${createInstructions}`;
+        'STEP 1 — MANDATORY BEFORE ANYTHING ELSE: Create a babysitter process file at .a5c/processes/odyssey-live-test.mjs.',
+        'Read packages/agent-mux/cli/tests/live-stack/fixtures/summarize-translate-test.mjs as a reference for the pattern.',
+        'Also look in the process library (.a5c/process-library/) for additional examples.',
+        'The process must: import defineTask from @a5c-ai/babysitter-sdk; export an async process(inputs, ctx) function;',
+        'use parallel steps (ctx.parallel.all); have agent kind tasks for content generation;',
+        'have shell kind tasks for file I/O with expectedExitCode; have at least 3 iterations.',
+        'The FIRST LINE of the file MUST be: // @reference summarize-translate-test.mjs, library/processes/shared/deterministic-quality-gate.js',
+        'Write this file to disk NOW before proceeding to step 2.',
+        '',
+        `STEP 2 — ONLY AFTER the process file exists: ${coreTask}.`,
+        'A process definition is available at .a5c/processes/odyssey-live-test.mjs',
+      ].join('\n');
+      if (scenario.agent.agent === 'claude-code') return `/babysitter:call ${createInstructions}`;
+      if (scenario.agent.agent === 'codex') return `$babysitter:call ${createInstructions}`;
+      return createInstructions;
     }
     const processHint = 'A process definition is available at .a5c/processes/summarize-translate-test.mjs';
     if (scenario.agent.agent === 'claude-code') return `/babysitter:yolo ${coreTask}. ${processHint}`;
