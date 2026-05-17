@@ -445,7 +445,7 @@ export async function getControllerSnapshot(options = {}) {
   const orgScopedDefinitions = snapshotResources.filter((definition) => !definition.platformScoped);
 
   for (const definition of platformScopedDefinitions) {
-    if (!discoveredPluralSet.has(`${definition.group || KRATE_API_GROUP}/${definition.plural}`)) continue;
+    if (!shouldListSnapshotDefinition(definition, discoveredPluralSet)) continue;
     const resourceNamespace = definition.namespace || namespace;
     const result = runKubectl(['get', apiResourceName(definition), ...namespaceArgs(definition, resourceNamespace), '-o', 'json', '--ignore-not-found'], { kubectl, timeoutMs, env, allowFailure: true });
     listResults.push({ definition, result });
@@ -454,7 +454,7 @@ export async function getControllerSnapshot(options = {}) {
 
   const orgNamespaces = organizationNamespaces(resources.Organization, resources.OrgNamespaceBinding, namespace);
   for (const definition of orgScopedDefinitions) {
-    if (!discoveredPluralSet.has(`${definition.group || KRATE_API_GROUP}/${definition.plural}`)) continue;
+    if (!shouldListSnapshotDefinition(definition, discoveredPluralSet)) continue;
     const namespaces = definition.namespaced === false ? [null] : [definition.namespace || null].filter(Boolean).concat(definition.namespace ? [] : orgNamespaces);
     resources[definition.kind] = namespaces.flatMap((resourceNamespace) => {
       const effectiveNamespace = resourceNamespace || namespace;
@@ -817,6 +817,12 @@ function organizationNamespaces(organizations = [], bindings = [], fallbackNames
   if (adminOrg) fallbackOrgs.add(orgNamespaceName(adminOrg));
   fallbackOrgs.add(orgNamespaceName(defaultOrg));
   return fallbackOrgs.size ? [...fallbackOrgs] : [fallbackNamespace];
+}
+
+function shouldListSnapshotDefinition(definition, discoveredPluralSet) {
+  const group = definition.group || KRATE_API_GROUP;
+  if (discoveredPluralSet.has(`${group}/${definition.plural}`)) return true;
+  return group === KRATE_API_GROUP;
 }
 
 function parseKubernetesList(stdout) {

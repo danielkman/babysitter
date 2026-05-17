@@ -329,6 +329,29 @@ test('Delegated identity route redirects localhost fallback even when Kubernetes
   }
 });
 
+
+
+test('controller UI model keeps namespace-scoped resources visible for their org', () => {
+  const model = createControllerUiModel({
+    source: 'kubernetes',
+    namespace: 'krate-system',
+    generatedAt: 'test-time',
+    kubectl: { available: true, context: 'kind-krate', errors: [] },
+    crds: [],
+    resources: {
+      Organization: [{ apiVersion: 'krate.a5c.ai/v1alpha1', kind: 'Organization', metadata: { name: 'default', namespace: 'krate-system' }, spec: { slug: 'default', namespaceName: 'krate-org-default' } }],
+      RunnerPool: [{ apiVersion: 'krate.a5c.ai/v1alpha1', kind: 'RunnerPool', metadata: { name: 'default', namespace: 'krate-org-default' }, spec: { image: 'ubuntu:24.04' } }]
+    },
+    events: [],
+    permissions: [],
+    storage: {},
+    commands: []
+  }, { organization: 'default' });
+
+  assert.equal(model.metrics.runnerPools, 1);
+  assert.deepEqual(model.resources.find((resource) => resource.kind === 'RunnerPool').names, ['default']);
+});
+
 test('Krate delivery resources surface through controller UI model', () => {
   const model = createControllerUiModel({
     source: 'kubernetes',

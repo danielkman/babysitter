@@ -212,7 +212,7 @@ export async function getControllerSnapshotAsync(options = {}) {
     // Fetch platform-scoped resources first so we can derive org namespaces
     const platformResults = await Promise.all(
       platformScopedDefs
-        .filter((d) => discoveredPluralSet.has(`${d.group || KRATE_API_GROUP}/${d.plural}`))
+        .filter((d) => shouldListSnapshotDefinition(d, discoveredPluralSet))
         .map(async (definition) => {
           const resourceNamespace = definition.namespace || namespace;
           const result = await runKubectlAsync(
@@ -232,7 +232,7 @@ export async function getControllerSnapshotAsync(options = {}) {
     // Fetch org-scoped resources in parallel
     const orgResults = await Promise.all(
       orgScopedDefs
-        .filter((d) => discoveredPluralSet.has(`${d.group || KRATE_API_GROUP}/${d.plural}`))
+        .filter((d) => shouldListSnapshotDefinition(d, discoveredPluralSet))
         .map(async (definition) => {
           const namespaces = definition.namespaced === false
             ? [null]
@@ -446,6 +446,12 @@ export function watchResourceChanges(callback, options = {}) {
 
 function namespaceArgs(definition, namespace) {
   return definition.namespaced === false ? [] : ['-n', namespace];
+}
+
+function shouldListSnapshotDefinition(definition, discoveredPluralSet) {
+  const group = definition.group || KRATE_API_GROUP;
+  if (discoveredPluralSet.has(`${group}/${definition.plural}`)) return true;
+  return group === KRATE_API_GROUP;
 }
 
 function parseKubernetesList(stdout) {

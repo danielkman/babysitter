@@ -37,6 +37,7 @@ const required = [
   'apps/web/app/api/auth/callback/[provider]/route.js',
   'apps/web/app/api/auth/logout/route.js',
   'apps/web/app/api/auth/delegated/route.js',
+  'apps/web/app/api/orgs/[org]/agents/events/stream/route.js',
   'src/api-controller.js',
   'src/kubernetes-resource-gateway.js',
   'src/kubernetes-controller.js',
@@ -136,9 +137,12 @@ for (const token of ['KrateControllerRecovery', 'KrateLoadingView', 'KRATE_LOADI
 for (const token of ['KrateRouteLoadingOverlay', 'krate-route-loading-refresh']) {
   if ((webUiSource() + files['apps/web/app/components/krate-loading.jsx']).includes(token)) failures.push(`route transitions must not render recovery loading UI token ${token}`);
 }
-if (!files['apps/web/app/loading.jsx'].includes('return null')) failures.push('route loading UI must stay silent during normal navigation');
+if (!files['apps/web/app/loading.jsx'].includes('KrateDelayedRouteLoading')) failures.push('route loading UI must use delayed non-overlay loading feedback');
 if ((webUiSource() + files['apps/web/app/components/krate-loading.jsx']).includes('Krate workspace degraded or empty')) failures.push('degraded workspace copy should be replaced by recovery loading UI');
 if ((webUiSource() + files['apps/web/app/components/krate-loading.jsx']).includes('window.location.reload')) failures.push('recovery loading UI must not reload the page');
+for (const token of ['text/event-stream', 'globalEventBus', 'KRATE_CONTROLLER_URL', "type: 'connected'"]) {
+  if (!files['apps/web/app/api/orgs/[org]/agents/events/stream/route.js'].includes(token)) failures.push(`events stream route missing ${token}`);
+}
 if (!/\.krateRecoveryOverlay\s*\{[\s\S]*?position:\s*fixed;[\s\S]*?inset:\s*0;/.test(files['apps/web/app/globals.css'])) failures.push('recovery loading UI must be fixed overlay');
 for (const token of ['duplex', 'KRATE_GITEA_HTTP_URL', 'fetch(target', 'degraded']) {
   if (!files['apps/web/app/api/git-proxy/route.js'].includes(token)) failures.push(`git proxy route missing ${token}`);

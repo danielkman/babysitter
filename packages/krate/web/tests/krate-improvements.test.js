@@ -76,10 +76,11 @@ test('recovery overlay progresses without covering normal route navigation', () 
   const loading = readWebFile('app', 'loading.jsx');
   const css = readWebFile('app', 'globals.css');
   const loader = readWebFile('app', 'components', 'krate-loading.jsx');
-  assert.match(loading, /return null/);
+  assert.match(loading, /KrateDelayedRouteLoading/);
   assert.doesNotMatch(loading, /KrateRouteLoadingOverlay/);
   assert.match(css, /\.krateRecoveryOverlay\s*\{[\s\S]*position:\s*fixed[\s\S]*inset:\s*0/);
   assert.match(loader, /export function KrateControllerRecovery/);
+  assert.match(loader, /export function KrateDelayedRouteLoading/);
   assert.doesNotMatch(loader, /export function KrateRouteLoadingOverlay/);
   assert.doesNotMatch(loader, /krate-route-loading-refresh/);
   assert.doesNotMatch(loader, /orgFromPathname/);
@@ -90,3 +91,12 @@ test('recovery overlay progresses without covering normal route navigation', () 
 });
 
 
+
+
+test('agents events stream route exists for EventSource consumers', () => {
+  const route = readWebFile('app', 'api', 'orgs', '[org]', 'agents', 'events', 'stream', 'route.js');
+  assert.match(route, /text\/event-stream/);
+  assert.match(route, /globalEventBus/);
+  assert.match(route, /KRATE_CONTROLLER_URL/);
+  assert.match(route, /type: 'connected'/);
+});

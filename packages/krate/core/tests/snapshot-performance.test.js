@@ -116,6 +116,41 @@ test('getControllerSnapshotAsync uses in-cluster service account instead of kube
     await rm(tempDir, { recursive: true, force: true });
   }
 });
+
+
+test('full async snapshot lists known Krate CRDs even when CRD discovery is empty', async () => {
+  const tempDir = await mkdtemp(path.join(tmpdir(), 'krate-known-crds-'));
+  const fakePath = path.join(tempDir, 'fake-kubectl.cjs');
+  const fakeScript = `
+const args = process.argv.slice(1);
+const joined = args.join(' ');
+const has = (value) => args.includes(value) || joined.includes(value);
+if (has('current-context')) { console.log('kind-krate'); process.exit(0); }
+if (has('version')) { console.log(JSON.stringify({ clientVersion: { gitVersion: 'v1.test' } })); process.exit(0); }
+if (has('apiservice')) { console.log(JSON.stringify({ metadata: { name: 'v1alpha1.krate.a5c.ai' } })); process.exit(0); }
+if (has('crd')) { console.error('crd discovery unavailable'); process.exit(1); }
+if (has('runnerpools.krate.a5c.ai')) {
+  console.log(JSON.stringify({ items: [{ apiVersion: 'krate.a5c.ai/v1alpha1', kind: 'RunnerPool', metadata: { name: 'default', namespace: 'krate-org-default', labels: { 'krate.a5c.ai/org': 'default' } }, spec: { organizationRef: 'default', image: 'ubuntu:24.04' } }] }));
+  process.exit(0);
+}
+console.log(JSON.stringify({ items: [] }));
+process.exit(0);
+`;
+
+  try {
+    await writeFile(fakePath, fakeScript);
+    const snapshot = await getControllerSnapshotAsync({
+      kubectl: process.execPath,
+      timeoutMs: 1000,
+      env: { KRATE_ORG: 'default', NODE_OPTIONS: `--require ${fakePath}` }
+    });
+    assert.equal(snapshot.resources.RunnerPool.length, 1);
+    assert.equal(snapshot.resources.RunnerPool[0].metadata.name, 'default');
+  } finally {
+    await rm(tempDir, { recursive: true, force: true });
+  }
+});
+
 // ---------------------------------------------------------------------------
 // getPartialSnapshot
 // ---------------------------------------------------------------------------

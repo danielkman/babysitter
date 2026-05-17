@@ -266,9 +266,10 @@ function filterResourceItemsForOrg(definition, items = [], org) {
 
 function filterByOrg(items = [], org) {
   if (!org) return items;
+  const orgNamespace = orgNamespaceName(org);
   return items.filter((item) => {
     const itemOrg = item.spec?.organizationRef || item.metadata?.labels?.[KRATE_ORG_LABEL];
-    return itemOrg === org;
+    return itemOrg === org || item.metadata?.namespace === orgNamespace;
   });
 }
 
