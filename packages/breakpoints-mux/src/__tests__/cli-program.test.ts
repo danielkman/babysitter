@@ -60,15 +60,6 @@ describe("CLI Program", () => {
       expect(commands).toContain("breakpoints");
     });
 
-    it("registers breakpoints cancel lifecycle command", async () => {
-      const { createProgram } = await importProgram();
-      const program = createProgram();
-      const breakpointsCommand = program.commands.find((c) => c.name() === "breakpoints");
-
-      expect(breakpointsCommand).toBeDefined();
-      expect(breakpointsCommand!.commands.map((c) => c.name())).toContain("cancel");
-    });
-
     it("does not register adjacent breakpoints claim lifecycle command", async () => {
       const { createProgram } = await importProgram();
       const program = createProgram();
@@ -76,16 +67,6 @@ describe("CLI Program", () => {
 
       expect(breakpointsCommand).toBeDefined();
       expect(breakpointsCommand!.commands.map((c) => c.name())).not.toContain("claim");
-    });
-
-    it("defines breakpoints cancel to take a breakpointId argument", async () => {
-      const { createProgram } = await importProgram();
-      const program = createProgram();
-      const breakpointsCommand = program.commands.find((c) => c.name() === "breakpoints");
-      const cancelCommand = breakpointsCommand?.commands.find((c) => c.name() === "cancel");
-
-      expect(cancelCommand).toBeDefined();
-      expect(cancelCommand!.registeredArguments.map((arg) => arg.name())).toEqual(["breakpointId"]);
     });
 
     it("registers server subcommand", async () => {

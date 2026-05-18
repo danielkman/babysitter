@@ -194,7 +194,7 @@ describe("Proven Breakpoints (Cryptographic Signing)", () => {
 
         const filePath = await saveTrustedPublicKey(publicKeyRecord, tmpDir);
 
-        expect(filePath).toContain(".keys/trusted/");
+        expect(filePath).toContain(path.join(".keys", "trusted"));
         expect(filePath).toContain(`${publicKeyRecord.metadata.fingerprint}.pub.json`);
 
         // Verify file exists
@@ -273,7 +273,7 @@ describe("Proven Breakpoints (Cryptographic Signing)", () => {
 
         const filePath = await savePrivateKey(privateKeyRecord, tmpDir);
 
-        expect(filePath).toContain(".keys/private/");
+        expect(filePath).toContain(path.join(".keys", "private"));
         expect(filePath).toContain(`${privateKeyRecord.fingerprint}.key.json`);
 
         const stat = await fs.stat(filePath);

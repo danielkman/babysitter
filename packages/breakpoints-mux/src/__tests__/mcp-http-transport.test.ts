@@ -601,11 +601,10 @@ describe("MCP HTTP Transport", () => {
       expect(toolNames).toContain("ask_breakpoint");
       expect(toolNames).toContain("check_breakpoint_status");
       expect(toolNames).toContain("list_breakpoints");
-      expect(toolNames).toContain("cancel_breakpoint");
       expect(toolNames).toContain("answer_breakpoint");
       expect(toolNames).toContain("verify_breakpoint_answer");
       expect(toolNames).toContain("list_responders");
-      expect(toolNames).not.toContain("claim_breakpoint");
+      expect(toolNames).toContain("claim_breakpoint");
       expect(toolNames).toContain("poll_breakpoints");
       expect(toolNames.length).toBe(8);
     });

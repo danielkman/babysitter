@@ -24,13 +24,13 @@ const mockGetUser = vi.fn().mockResolvedValue({ login: "testuser", name: "Test" 
 
 vi.mock("../client/index.js", () => ({
   DEFAULT_BMUX_SERVER_URL: "https://breakpoints-mux.a5c.ai/api/v1",
-  AuthClient: vi.fn().mockImplementation(() => ({
+  AuthClient: vi.fn().mockImplementation(function () { return {
     getUser: mockGetUser,
-  })),
-  ServerClient: vi.fn().mockImplementation((opts: Record<string, unknown>) => ({
+  }; }),
+  ServerClient: vi.fn().mockImplementation(function (opts: Record<string, unknown>) { return {
     baseUrl: opts.baseUrl,
     defaultHeaders: opts.defaultHeaders,
-  })),
+  }; }),
 }));
 
 async function importClientConfig() {

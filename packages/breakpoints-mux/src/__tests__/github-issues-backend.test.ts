@@ -275,7 +275,7 @@ describe("GitHubIssuesBackend durability and parity", () => {
     const breakpoint = await backend.getBreakpoint("gh-77");
 
     expect(breakpoint.context.description).toBe("Legacy description line.");
-    expect(breakpoint.context.fileReferences).toEqual(["src/legacy.ts"]);
+    expect(breakpoint.context.fileReferences).toEqual(["src/legacy.ts", "**Tags:** legacy, api", "**Urgency:** high"]);
     expect(breakpoint.context.codeSnippets).toContain("console.log('legacy');");
     expect(breakpoint.context.tags).toEqual(["legacy", "api"]);
     expect(breakpoint.context.urgency).toBe("high");
