@@ -32,6 +32,7 @@ jobs:
           provider: foundry
           model: gpt-5.5
           interaction-mode: bridged-hooks
+          babysitter-prompt-prefix: '$babysitter:yolo '
           babysitter-plugin: 'true'
           max-turns: '15'
           prompt: |

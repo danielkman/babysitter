@@ -55,6 +55,7 @@ jobs:
           model: gpt-5.5
           interaction-mode: bridged-hooks
           babysitter-plugin: 'true'
+          babysitter-prompt-prefix: '$babysitter:yolo '
           max-turns: '9999'
           prompt: |
             You are a QA automation agent.

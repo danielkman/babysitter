@@ -33,6 +33,7 @@ jobs:
           model: gpt-5.5
           interaction-mode: bridged-hooks
           babysitter-plugin: 'true'
+          babysitter-prompt-prefix: '$babysitter:yolo '
           max-turns: '15'
           prompt: |
             A Live Stack CI run has failed. Your job is ONLY to triage — do NOT fix code.

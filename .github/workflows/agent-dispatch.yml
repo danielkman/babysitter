@@ -52,7 +52,7 @@ jobs:
           interaction-mode: bridged-hooks
           babysitter-plugin: 'true'
           max-turns: '9999'
-          babysitter-prompt-prefix: 'babysitter:yolo'
+          babysitter-prompt-prefix: '$babysitter:yolo '
           prompt: |
             You are an autonomous coding agent.
             Trigger: ${{ github.event_name == 'workflow_dispatch' && 'manual dispatch' || format('/agent on #{0}', github.event.issue.number) }}
