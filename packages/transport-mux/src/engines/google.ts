@@ -80,7 +80,7 @@ function translateMessagesToGoogle(messages: CompletionRequest['messages'], sigS
 function buildGoogleBody(messages: CompletionRequest['messages'], tools?: unknown[], sigStore?: Map<string, string>): string {
   const body: Record<string, unknown> = { contents: translateMessagesToGoogle(messages, sigStore) };
   if (tools && tools.length > 0) {
-    body.tools = [{ functionDeclarations: tools.map((t: Record<string, unknown>) => { const fn = t.function as Record<string, unknown> | undefined; return { name: fn?.name ?? t.name, description: fn?.description ?? t.description, parameters: fn?.parameters ?? t.parameters }; }) }];
+    body.tools = [{ functionDeclarations: tools.map((t) => { const tool = t as Record<string, unknown>; const fn = tool.function as Record<string, unknown> | undefined; return { name: fn?.name ?? tool.name, description: fn?.description ?? tool.description, parameters: fn?.parameters ?? tool.parameters }; }) }];
   }
   return JSON.stringify(body);
 }
