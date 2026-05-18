@@ -89,18 +89,16 @@ jobs:
           # Workaround: npm ci on Windows-generated lockfile may miss linux optional deps
           npm install --no-save --ignore-scripts @rollup/rollup-linux-x64-gnu 2>/dev/null || true
 
-      - name: Restore build cache
+      - name: Restore framework cache
         uses: actions/cache@v5
         with:
           path: |
-            packages/**/tsconfig.tsbuildinfo
-            packages/**/.tsbuildinfo
             packages/agent-mux/webui/node_modules/.vite
             packages/atlas/webui/.next/cache
             packages/krate/web/.next/cache
-          key: build-${{ runner.os }}-${{ github.ref_name }}-${{ github.sha }}
+          key: framework-${{ runner.os }}-${{ github.ref_name }}-${{ github.sha }}
           restore-keys: |
-            build-${{ runner.os }}-${{ github.ref_name }}-
+            framework-${{ runner.os }}-${{ github.ref_name }}-
             build-${{ runner.os }}-
 
       - name: "Build phase 1: shared catalog foundation"
