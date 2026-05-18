@@ -1,3 +1,4 @@
+import * as path from "node:path";
 import { describe, expect, test, vi, beforeEach, afterEach } from "vitest";
 import {
   createProcessContext,
@@ -73,7 +74,7 @@ describe("ProcessContext runtime identity surface", () => {
 
     expect(context.runId).toBe("01TESTRUNID");
     expect(context.runDir).toBe("/tmp/01TESTRUNID");
-    expect(context.artifactsDir).toBe("/tmp/01TESTRUNID/artifacts");
+    expect(context.artifactsDir).toBe(path.join("/tmp/01TESTRUNID", "artifacts"));
   });
 
   test("artifactsDir is always <runDir>/artifacts regardless of runDir shape", () => {
@@ -92,8 +93,8 @@ describe("ProcessContext runtime identity surface", () => {
       replayCursor: new ReplayCursor(),
     });
 
-    expect(a.artifactsDir).toBe("/var/runs/run-a/artifacts");
-    expect(b.artifactsDir).toBe("/var/runs/run-b/artifacts");
+    expect(a.artifactsDir).toBe(path.join("/var/runs/run-a", "artifacts"));
+    expect(b.artifactsDir).toBe(path.join("/var/runs/run-b", "artifacts"));
   });
 });
 
