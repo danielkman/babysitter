@@ -549,6 +549,9 @@ jobs:
           set -euo pipefail
           mkdir -p artifacts/krate-logs
 
+      - name: Build krate Helm chart dependencies
+        run: helm dependency build packages/krate/charts 2>&1 || true
+
       - name: Test krate core
         run: |
           set -euo pipefail
@@ -2130,24 +2133,9 @@ jobs:
           kubectl -n "$KUBE_NAMESPACE" delete service krate --ignore-not-found
           kubectl -n "$KUBE_NAMESPACE" delete deployment krate --ignore-not-found
 
-      - name: Install KubeVela
+      - name: Build Helm chart dependencies
         if: steps.config.outputs.deploy_enabled == 'true'
-        run: |
-          helm repo add kubevela https://kubevela.github.io/charts 2>/dev/null || true
-          helm repo update kubevela 2>/dev/null || true
-          helm upgrade --install kubevela kubevela/vela-core \
-            --namespace vela-system --create-namespace \
-            --timeout 300s --wait 2>&1 || echo "::notice::KubeVela install skipped or already present"
-
-      - name: Install Kyverno
-        if: steps.config.outputs.deploy_enabled == 'true'
-        run: |
-          helm repo add kyverno https://kyverno.github.io/kyverno/ 2>/dev/null || true
-          helm repo update kyverno 2>/dev/null || true
-          helm upgrade --install kyverno kyverno/kyverno \
-            --namespace kyverno --create-namespace \
-            --set admissionController.replicas=1 \
-            --timeout 300s --wait 2>&1 || echo "::notice::Kyverno install skipped or already present"
+        run: helm dependency build packages/krate/charts 2>&1 || true
 
       - name: Update Krate CRDs
         if: steps.config.outputs.deploy_enabled == 'true'
@@ -2185,7 +2173,9 @@ jobs:
             --set demo.enabled=false \
             --set gitea.enabled=false \
             --set argocd.enabled=false \
+            --set kubevela.install=true \
             --set kubevela.enabled=true \
+            --set kyverno.install=false \
             --set "externalDependencies.kyverno.enabled=true" \
             --set "externalDependencies.kyverno.discoverExisting=true" \
             --set networkPolicy.enabled=false \

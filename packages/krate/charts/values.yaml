@@ -270,6 +270,9 @@ argocd:
 
 
 
+kyverno:
+  install: false
+
 agents:
   enabled: true
   agentMux:
@@ -277,6 +280,7 @@ agents:
     gateway: ""
 
 kubevela:
+  install: false
   enabled: true
   applicationName: krate-kubevela
   namespace: vela-system
