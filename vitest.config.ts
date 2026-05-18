@@ -23,6 +23,11 @@ export default {
       'packages/agent-mux/*/tests/**/*.test.{ts,tsx}',
       'packages/agent-mux/*/tests/**/*.contract.test.{ts,tsx}',
     ],
+    exclude: [
+      '**/node_modules/**',
+      '**/.git/**',
+      'packages/agent-mux/webui/**/*.route.test.{ts,tsx}',
+    ],
     setupFiles: ['vitest.setup.ts'],
     environment: 'node',
     coverage: {

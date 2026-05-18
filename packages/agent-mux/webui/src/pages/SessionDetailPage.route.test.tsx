@@ -149,7 +149,7 @@ function latestShellProps() {
   return capturedShellProps[capturedShellProps.length - 1] ?? null;
 }
 
-describe.skip('SessionDetailPage route shell wiring', () => {
+describe('SessionDetailPage route shell wiring', () => {
   beforeEach(() => {
     capturedShellProps.length = 0;
     mockNavigate.mockReset();
