@@ -50,6 +50,7 @@ jobs:
           provider: foundry
           model: gpt-5.5
           interaction-mode: non-interactive
+          babysitter-plugin: 'true'
           max-turns: '9999'
           prompt: |
             You are an autonomous coding agent.
