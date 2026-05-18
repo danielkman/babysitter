@@ -7,6 +7,11 @@ on:
       - develop
   workflow_dispatch:
     inputs:
+      ref:
+        description: 'Branch or ref to check out and test. Defaults to the dispatched ref (usually staging).'
+        required: false
+        type: string
+        default: ''
       matrix:
         description: 'JSON array of test combinations. Each entry: {agent, model, mode, install, live}. Empty = use push defaults.'
         required: false
@@ -37,6 +42,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
+          ref: ${{ inputs.ref || github.ref }}
           fetch-depth: 0
 
       - name: Setup Node.js
