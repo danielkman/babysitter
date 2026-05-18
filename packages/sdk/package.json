@@ -41,7 +41,6 @@
   "dependencies": {
     "@a5c-ai/agent-catalog": "5.0.0",
     "@a5c-ai/agent-mux": "^5.0.0",
-    "@a5c-ai/hooks-mux-cli": "^5.0.0",
     "@modelcontextprotocol/sdk": "^1.12.1",
     "@sinclair/typebox": "^0.34.48",
     "fs-extra": "^11.2.0",
@@ -50,6 +49,7 @@
     "zod": "^4.0.0"
   },
   "optionalDependencies": {
+    "@a5c-ai/hooks-mux-cli": "^5.0.0",
     "@vscode/ripgrep": "^1.15.9",
     "puppeteer": "^24.0.0"
   },
