@@ -227,10 +227,11 @@ runs:
           esac
         fi
 
-        # Copy process file if provided
+        # Copy process file if provided (skip if already in target dir)
         if [ -n "$INPUT_PROCESS_FILE" ]; then
           mkdir -p .a5c/processes
-          cp "$INPUT_PROCESS_FILE" .a5c/processes/
+          TARGET=".a5c/processes/$(basename "$INPUT_PROCESS_FILE")"
+          [ "$(realpath "$INPUT_PROCESS_FILE" 2>/dev/null)" = "$(realpath "$TARGET" 2>/dev/null)" ] || cp "$INPUT_PROCESS_FILE" .a5c/processes/
         fi
 
     - name: Install plugins (legacy)
