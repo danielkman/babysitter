@@ -177,7 +177,7 @@ If the issue is well-understood and ready for development:
 - Assign a5c-agent: gh issue edit ${args.issue.number} --add-assignee "a5c-agent"
 - Add ready-for-dev label: gh issue edit ${args.issue.number} --add-label "ready-for-dev"
   (create if needed: gh label create "ready-for-dev" --description "Triaged and ready for development" --color "0E8A16" 2>/dev/null || true)
-- Include "/agent ready for development" at the end of the comment.
+- Include "/plan ready for development" at the end of the comment so the planning agent can pick it up.
 
 If the issue needs more info, add "needs-info" label and ask questions instead.
 

@@ -1,7 +1,8 @@
 # Issue Triage Dispatch — research, label, prioritize, and prepare issues for development
 #
 # Usage:
-#   - Comment `/triage` on any issue
+#   - Automatically triggered when a new issue is opened
+#   - Comment `/triage` on any issue to re-triage
 #   - Or dispatch manually with an issue number
 #
 # The triage agent does NOT create PRs or write code. It researches, labels,
@@ -13,6 +14,8 @@ on:
   push:
     branches: [main, staging, develop]
     paths: ['.github/workflows/issue-triage-dispatch.yml']
+  issues:
+    types: [opened]
   issue_comment:
     types: [created]
   workflow_dispatch:
@@ -36,6 +39,7 @@ jobs:
   triage:
     if: >-
       (github.event_name == 'workflow_dispatch') ||
+      (github.event_name == 'issues' && github.event.action == 'opened') ||
       startsWith(github.event.comment.body, '/triage')
     runs-on: ubuntu-latest-l
     steps:
