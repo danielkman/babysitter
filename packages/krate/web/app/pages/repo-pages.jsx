@@ -277,7 +277,7 @@ function RepoSettingsPanel({ repository, model, org = 'default', repo }) {
 
 function DeploymentPipelineSection({ model, org, repositories, deploymentResource, releaseResource }) {
   const kubeVelaResources = (model.resources || []).filter((r) => String(r.kind || '').startsWith('KubeVela'));
-  const hasKubeVela = kubeVelaResources.some((r) => (r.count || 0) > 0) || model.delivery?.available;
+  const hasKubeVela = kubeVelaResources.length > 0 || model.delivery?.installed || model.delivery?.available;
   const firstRepo = repositories?.[0]?.metadata?.name || null;
   if (hasKubeVela) {
     return <DeploymentManager namespace={model.namespace} org={org} repositories={repositories.map(publicResource)} delivery={model.delivery} />;
@@ -287,7 +287,7 @@ function DeploymentPipelineSection({ model, org, repositories, deploymentResourc
 
 function KubeVelaRequiredBanner({ model }) {
   const kubeVelaResources = (model.resources || []).filter((r) => String(r.kind || '').startsWith('KubeVela'));
-  const hasKubeVela = kubeVelaResources.some((r) => (r.count || 0) > 0) || model.delivery?.available;
+  const hasKubeVela = kubeVelaResources.length > 0 || model.delivery?.installed || model.delivery?.available;
   if (hasKubeVela) return null;
   return <section className="card" style={{ borderLeft: '3px solid var(--color-info, #3b82f6)', marginBottom: '0.75rem' }}>
     <div className="cardTitle"><h3>KubeVela not detected</h3><StatusPill tone="neutral">optional dependency</StatusPill></div>

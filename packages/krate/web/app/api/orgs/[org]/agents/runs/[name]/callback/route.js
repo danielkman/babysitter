@@ -1,4 +1,4 @@
-import { createKrateApiController, orgNamespaceName } from '@a5c-ai/krate-sdk';
+import { createKrateApiController, orgNamespaceName, clearSnapshotCache } from '@a5c-ai/krate-sdk';
 import { errorResponse } from '../../../../../../../lib/api-errors.js';
 
 export const dynamic = 'force-dynamic';
@@ -54,6 +54,7 @@ export async function POST(request, { params }) {
     };
 
     await controller.applyResource(patched);
+    clearSnapshotCache();
 
     // 3. Persist transcript if provided
     if (transcript && Array.isArray(transcript) && transcript.length > 0) {
@@ -84,6 +85,7 @@ export async function POST(request, { params }) {
         },
       };
       await controller.applyResource(transcriptResource);
+      clearSnapshotCache();
     }
 
     // 4. Persist artifacts if provided
@@ -105,6 +107,7 @@ export async function POST(request, { params }) {
           },
         };
         await controller.applyResource(artifactResource);
+        clearSnapshotCache();
       }
     }
 

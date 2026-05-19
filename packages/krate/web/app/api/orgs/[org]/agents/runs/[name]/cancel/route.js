@@ -1,4 +1,4 @@
-import { createKrateApiController, orgNamespaceName } from '@a5c-ai/krate-sdk';
+import { createKrateApiController, orgNamespaceName, clearSnapshotCache } from '@a5c-ai/krate-sdk';
 import { withAuth } from '../../../../../../../lib/api-auth.js';
 import { errorResponse } from '../../../../../../../lib/api-errors.js';
 
@@ -25,6 +25,7 @@ export const POST = withAuth(async (_request, { params }) => {
       },
     };
     const result = await controller.applyResource(patched);
+    clearSnapshotCache();
     return Response.json({ error: false, run: result }, { status: 200, headers: { 'Cache-Control': 'no-store' } });
   } catch (err) {
     return errorResponse(err.message || 'Cancel failed', 500);
