@@ -296,6 +296,95 @@ describe("handleHookRun stop", () => {
     expect(output.decision).toBeUndefined();
   });
 
+  it("recovers a missing session state file for a hook-bound non-terminal run", async () => {
+    const sessionId = "recoverable-missing-session";
+    const runId = "recoverable-active-run";
+    const runsDir = path.join(tmpDir, "runs");
+    const runDir = path.join(runsDir, runId);
+    const journalDir = path.join(runDir, "journal");
+    await fs.mkdir(journalDir, { recursive: true });
+
+    await fs.writeFile(path.join(runDir, "run.json"), JSON.stringify({
+      schemaVersion: "2026.01.run-metadata",
+      runId,
+      processId: "test-process",
+      harness: "claude-code",
+      entrypoint: { importPath: "/tmp/test.js", exportName: "process" },
+      layoutVersion: "2026.01-storage-preview",
+      createdAt: new Date().toISOString(),
+    }));
+    await fs.writeFile(
+      path.join(journalDir, "000001.01ARZ3NDEKTSV4RRFFQ69G5FAV.json"),
+      JSON.stringify({
+        type: "RUN_CREATED",
+        recordedAt: new Date().toISOString(),
+        data: { runId, processId: "test-process", harness: "claude-code", sessionId },
+        checksum: "abc123",
+      }),
+    );
+
+    const transcriptPath = path.join(tmpDir, "transcript-recoverable.jsonl");
+    await fs.writeFile(transcriptPath, JSON.stringify({
+      type: "assistant",
+      message: { content: [{ type: "text", text: "Still working." }] },
+    }) + "\n");
+
+    const filePath = getSessionFilePath(stateDir, sessionId);
+    await expect(fs.access(filePath)).rejects.toThrow();
+
+    const code = await callWithStdin(
+      JSON.stringify({ session_id: sessionId, transcript_path: transcriptPath }),
+      { ...baseArgs, stateDir, runsDir },
+    );
+
+    expect(code).toBe(0);
+    const output = JSON.parse(getStdout().trim());
+    expect(output.decision).toBe("block");
+    const recovered = await readSessionFile(filePath);
+    expect(recovered.state.active).toBe(true);
+    expect(recovered.state.runId).toBe(runId);
+    expect(recovered.state.runDir).toBe(runDir);
+    expect(recovered.state.metadata?.recoveredFromMissingSessionFile).toBe("true");
+  });
+
+  it("fails loudly when missing-session recovery finds multiple active runs", async () => {
+    const sessionId = "ambiguous-missing-session";
+    const runsDir = path.join(tmpDir, "runs");
+
+    for (const runId of ["ambiguous-run-a", "ambiguous-run-b"]) {
+      const runDir = path.join(runsDir, runId);
+      const journalDir = path.join(runDir, "journal");
+      await fs.mkdir(journalDir, { recursive: true });
+      await fs.writeFile(path.join(runDir, "run.json"), JSON.stringify({
+        schemaVersion: "2026.01.run-metadata",
+        runId,
+        processId: "test-process",
+        harness: "claude-code",
+        entrypoint: { importPath: "/tmp/test.js", exportName: "process" },
+        layoutVersion: "2026.01-storage-preview",
+        createdAt: new Date().toISOString(),
+      }));
+      await fs.writeFile(
+        path.join(journalDir, `000001.${runId}.json`),
+        JSON.stringify({
+          type: "RUN_CREATED",
+          recordedAt: new Date().toISOString(),
+          data: { runId, processId: "test-process", harness: "claude-code", sessionId },
+          checksum: "abc123",
+        }),
+      );
+    }
+
+    const code = await callWithStdin(
+      JSON.stringify({ session_id: sessionId }),
+      { ...baseArgs, stateDir, runsDir },
+    );
+
+    expect(code).toBe(1);
+    expect(getStdout().trim()).toBe("{}");
+    expect(stderrChunks.join("")).toContain("Multiple active runs");
+  });
+
   it("allows exit when max iterations reached", async () => {
     const sessionId = "max-iter-session";
     const filePath = getSessionFilePath(stateDir, sessionId);

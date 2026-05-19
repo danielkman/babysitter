@@ -183,7 +183,18 @@ export async function runSessionCleanup(
 
     if (!dryRun) {
       try {
-        await writeSessionFile(filePath, { ...state, active: false }, prompt);
+        await writeSessionFile(filePath, {
+          ...state,
+          active: false,
+          metadata: {
+            ...(state.metadata ?? {}),
+            sessionCleanupReason: terminal === true ? "terminal_run" : "stale_session",
+            sessionCleanupSource: "session:cleanup",
+            sessionCleanupAt: new Date().toISOString(),
+            sessionCleanupStateFile: filePath,
+            ...(state.runId ? { sessionCleanupRunId: state.runId } : {}),
+          },
+        }, prompt);
         statesDeactivated.push(sessionId);
       } catch {
         // Best effort.

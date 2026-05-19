@@ -97,6 +97,8 @@ describe("runSessionCleanup", () => {
     expect(result.statesDeactivated).toContain("SESS-B");
     const inactiveContent = readFileSync(getSessionFilePath(stateDir, "SESS-B"), "utf8");
     expect(inactiveContent).toMatch(/active: false/);
+    expect(inactiveContent).toContain('metadata_sessionCleanupReason: "stale_session"');
+    expect(inactiveContent).toContain('metadata_sessionCleanupSource: "session:cleanup"');
     expect(inactiveContent).toContain("prompt-b");
   });
 
