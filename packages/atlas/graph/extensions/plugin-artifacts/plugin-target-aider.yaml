@@ -1,0 +1,32 @@
+nodeKind: PluginTarget
+id: plugin-target:aider
+attributes:
+  displayName: "Aider"
+  hostAgent: agent:aider
+  adapterFamily: shell-hook
+  manifestFormat: "n/a"
+  commandFormat: markdown-commands
+  hookRegistrationFormat: none
+  skillHandling: unsupported
+  marketplacePath: null
+  adapterName: aider
+  scriptVariants:
+    - bash
+  distribution:
+    - manual
+  distributionModel: workspace-generated
+  npmPublishable: false
+  installLayout:
+    harnessHomeRelative: ".aider"
+  packageMetadata:
+    moduleType: commonjs
+    binScriptExt: ".sh"
+    installLifecycle: none
+    activationMessage: restart
+    emitCjsWrappers: false
+  componentSupport:
+    agents: unsupported
+    context: unsupported
+edges:
+  hosted_by:
+    - target: agent:aider

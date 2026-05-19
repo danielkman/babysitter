@@ -124,6 +124,51 @@ describe("orchestrateIteration integration", () => {
     replayMetrics.forEach((entry) => expect(entry.runId as string).toBe(runId));
   });
 
+  test("returns waiting instead of crashing when ctx.task() is not awaited", async () => {
+    const processDir = path.join(tmpRoot, "processes-unawaited");
+    await fs.mkdir(processDir, { recursive: true });
+
+    // Write a process file that calls ctx.task() WITHOUT await (floating promise)
+    const processPath = path.join(processDir, "unawaited.mjs");
+    await fs.writeFile(
+      processPath,
+      `
+      const echoTask = {
+        id: "echo-task",
+        async build(args) {
+          return { kind: "node", title: "echo", metadata: args };
+        }
+      };
+
+      export async function process(inputs, ctx) {
+        // Deliberately NOT awaiting — this is the bug scenario
+        ctx.task(echoTask, { value: inputs.value });
+        return { done: true };
+      }
+      `,
+      "utf8",
+    );
+
+    const { runDir } = await createRunDir({
+      runsRoot: tmpRoot,
+      runId: "run-unawaited",
+      request: "unawaited-test",
+      processPath,
+      inputs: { value: 42 },
+    });
+
+    await appendEvent({ runDir, eventType: "RUN_CREATED", event: { runId: "run-unawaited" } });
+
+    // Should return "waiting" (detecting the stray EFFECT_REQUESTED in the
+    // journal) rather than crashing with an unhandled rejection or failing
+    // with a journal sequence gap.
+    const result = await orchestrateIteration({ runDir });
+    expect(result.status).toBe("waiting");
+    if (result.status === "waiting") {
+      expect(result.nextActions.length).toBeGreaterThan(0);
+    }
+  });
+
   test("completes replay correctly after cwd changes when the run was created from a relative runsDir", async () => {
     const workspace = await fs.mkdtemp(path.join(tmpRoot, "relative-run-workspace-"));
     const processPath = await writeProcessFile(workspace, "relative.mjs");

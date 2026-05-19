@@ -3,6 +3,7 @@ import { runTaskIntrinsic, TaskIntrinsicContext } from "./intrinsics/task";
 import { runBreakpointIntrinsic } from "./intrinsics/breakpoint";
 import { runSleepIntrinsic } from "./intrinsics/sleep";
 import { runOrchestratorTaskIntrinsic } from "./intrinsics/orchestratorTask";
+import { runSubprocessIntrinsic } from "./intrinsics/subprocess";
 import { runHookIntrinsic } from "./intrinsics/hook";
 import { callHook } from "../hooks/dispatcher";
 import { runParallelAll, runParallelMap } from "./intrinsics/parallel";
@@ -23,6 +24,8 @@ export interface ProcessContextInit extends Omit<TaskIntrinsicContext, "now"> {
   recordedLogSeqs?: Set<number>;
   /** When true, breakpoints are auto-approved without human interaction. */
   nonInteractive?: boolean;
+  /** Internal-only gate for babysitter-agent owned subprocess orchestration. */
+  subprocessSupport?: "disabled" | "babysitter-agent";
 }
 
 export interface InternalProcessContext extends TaskIntrinsicContext {
@@ -34,6 +37,7 @@ export interface InternalProcessContext extends TaskIntrinsicContext {
   recordedLogSeqs: Set<number>;
   /** When true, breakpoints are auto-approved without human interaction. */
   nonInteractive: boolean;
+  subprocessSupport: "disabled" | "babysitter-agent";
 }
 
 const contextStorage = new AsyncLocalStorage<InternalProcessContext>();
@@ -52,6 +56,7 @@ export function createProcessContext(init: ProcessContextInit): CreateProcessCon
     logSeq: 0,
     recordedLogSeqs: init.recordedLogSeqs ?? new Set(),
     nonInteractive: init.nonInteractive ?? false,
+    subprocessSupport: init.subprocessSupport ?? "disabled",
   };
 
   const parallelHelpers: ParallelHelpers = {
@@ -59,7 +64,20 @@ export function createProcessContext(init: ProcessContextInit): CreateProcessCon
     map: (items, fn) => runParallelMap(items, fn),
   };
 
+  // Per-run artifacts directory — created up-front so processes can write to
+  // ctx.artifactsDir from the first iteration without ENOENT. mkdir is
+  // idempotent (recursive); fire-and-forget so context construction stays
+  // synchronous in surface, and any race with parallel processes resolves to
+  // the same directory.
+  const artifactsDir = path.join(internal.runDir, "artifacts");
+  void fs.mkdir(artifactsDir, { recursive: true }).catch(() => {
+    // Never let bootstrap break orchestration.
+  });
+
   const processContext: ProcessContext = {
+    runId: internal.runId,
+    runDir: internal.runDir,
+    artifactsDir,
     now: () => internal.now(),
     task: (task, args, options) =>
       runTaskIntrinsic({
@@ -71,6 +89,7 @@ export function createProcessContext(init: ProcessContextInit): CreateProcessCon
     breakpoint: (payload, options) => runBreakpointIntrinsic(payload, internal, options),
     sleepUntil: (target, options) => runSleepIntrinsic(target, internal, options),
     orchestratorTask: (payload, options) => runOrchestratorTaskIntrinsic(payload, internal, options),
+    subprocess: (invocation, options) => runSubprocessIntrinsic(invocation, internal, options),
     hook: (hookType, payload, options) => runHookIntrinsic(hookType, payload, internal, options),
     parallel: parallelHelpers,
     // Always provide a callable logger to processes so `ctx.log(...)` never throws.

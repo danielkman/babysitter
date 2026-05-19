@@ -10,6 +10,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - No unreleased changes.
 
 
+## [5.0.0] - 2026-04-18
+- No notable changes.
+
+
+
+### Fixed
+- Restored the automatic stop-hook drive of `babysitter run:iterate` inside Claude Code and GitHub Copilot sessions. Two regressions had broken the chain: (a) `setBabysitterSessionIdInEnvFile` (and its Copilot twin) rewrote `CLAUDE_ENV_FILE`/`COPILOT_ENV_FILE` via `writeFileSync(tmp)+renameSync`, breaking the harness env-sourcing contract that relies on append-only writes to a stable inode; (b) the session-start PID-marker writer emitted `current-session-pid-<pid>` while the reader expected the slugged `current-session-claude-code-pid-<pid>`, causing the marker rail to always miss. The writer now goes through `getSessionMarkerPath()` so writer and reader agree, and the env-file helpers are append-only. The resolver's last-match regex already tolerates accumulated exports from repeated session rotation, so append-only is safe.
+- Inverted session-ID resolution precedence across all harness adapters to prefer the PID-scoped session marker (authoritative, tied to live ancestor Claude Code PID) over the inheritable `BABYSITTER_SESSION_ID` env var, which previously caused cross-session bleed when a parent shell had a stale export.
+- Env-file stale-line hazard: resolver uses last-match regex, tolerating the multiple `export BABYSITTER_SESSION_ID=...` lines that accumulate as `CLAUDE_ENV_FILE` is appended to across session rotation (/clear, re-init).
+- Replaced legacy `wmic` with a PowerShell `Get-CimInstance` fallback cascade for Windows 11 24H2+, where `wmic` has been removed from the base image.
+- Added `session:whoami` and `session:cleanup` commands, plus four new `/babysitter:doctor` checks covering session-binding provenance and liveness.
+- Added `BABYSITTER_TRUST_ENV_SESSION=1` escape hatch to retain legacy env-first precedence for CI workflows that deliberately export `BABYSITTER_SESSION_ID`.
+- Closes #130; related to previously-fixed #100, #107, #75.
+
+
 ## [0.0.187] - 2026-04-04
 - No notable changes.
 
