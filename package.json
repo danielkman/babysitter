@@ -7,6 +7,7 @@
   ],
   "scripts": {
     "verify:metadata": "node ./scripts/check-package-metadata.cjs",
+    "validate:processes": "node ./scripts/validate-process.mjs",
     "sync:sdk-command-templates": "node ./scripts/sync-sdk-command-templates.cjs",
     "check:sdk-command-templates": "node ./scripts/sync-sdk-command-templates.cjs --check",
     "sync:plugin-commands": "node ./scripts/sync-plugin-commands.cjs",
