@@ -148,7 +148,9 @@ export function buildPrimaryLiveStackCommands(
       prompt,
       '--max-turns',
       String(resolveLaunchMaxTurns(scenario)),
-      ...(isInteractive ? [] : ['--no-interactive', ...bridgeFlags(options.env)]),
+      ...(isInteractive
+        ? (process.stdin.isTTY ? [] : ['--no-interactive', '--bridge-interactive'])
+        : ['--no-interactive', ...bridgeFlags(options.env)]),
       ...harnessApprovalPassthrough(installTarget),
     ],
     options.cwd,
