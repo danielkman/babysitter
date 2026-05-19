@@ -1,4 +1,4 @@
-import { createKrateApiController, orgNamespaceName } from '@a5c-ai/krate-sdk';
+import { createKrateApiController, orgNamespaceName, clearSnapshotCache } from '@a5c-ai/krate-sdk';
 import { withAuth } from '../../../../../../lib/api-auth.js';
 import { errorResponse } from '../../../../../../lib/api-errors.js';
 
@@ -24,6 +24,7 @@ export const PATCH = withAuth(async (request, { params }) => {
     const patch = await request.json();
     const resource = mergeResourcePatch(existing, patch, { kind, name });
     const result = await controller.applyResourceForOrg(org, resource);
+    clearSnapshotCache();
     return Response.json(result, { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
     return errorResponse(error.message, error.message?.includes('not found') ? 404 : 400);
@@ -36,7 +37,9 @@ export const DELETE = withAuth(async (_request, { params }) => {
   const { org, kind, name } = await params;
   const controller = createKrateApiController({ namespace: orgNamespaceName(org) });
   try {
-    return Response.json(await controller.deleteResourceForOrg(org, kind, name), { headers: { 'Cache-Control': 'no-store' } });
+    const result = await controller.deleteResourceForOrg(org, kind, name);
+    clearSnapshotCache();
+    return Response.json(result, { headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
     return errorResponse(error.message, error.message?.includes('not found') ? 404 : 500);
   }

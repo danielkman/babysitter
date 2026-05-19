@@ -1,4 +1,4 @@
-import { createKrateApiController, orgNamespaceName } from '@a5c-ai/krate-sdk';
+import { createKrateApiController, orgNamespaceName, clearSnapshotCache } from '@a5c-ai/krate-sdk';
 import { withAuth } from '../../../../lib/api-auth.js';
 import { errorResponse } from '../../../../lib/api-errors.js';
 
@@ -44,6 +44,7 @@ export const POST = withAuth(async (request, { params }) => {
         metadata: { ...(body.metadata || {}), namespace: ns },
       };
       const result = await controller.applyResource(resource);
+      clearSnapshotCache();
       return Response.json(result, { status: 201 });
     }
 
@@ -53,6 +54,7 @@ export const POST = withAuth(async (request, { params }) => {
       metadata: { ...(body.metadata || {}), namespace: ns },
       spec: { ...(body.spec || {}), organizationRef: org },
     });
+    clearSnapshotCache();
     return Response.json(result, { status: 201 });
   } catch (error) {
     return errorResponse(error.message, 400);

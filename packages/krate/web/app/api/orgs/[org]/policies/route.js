@@ -1,4 +1,4 @@
-import { createKrateApiController, createControllerUiModel, orgNamespaceName } from '@a5c-ai/krate-sdk';
+import { createKrateApiController, createControllerUiModel, orgNamespaceName, clearSnapshotCache } from '@a5c-ai/krate-sdk';
 import { withAuth } from '../../../../lib/api-auth.js';
 import { errorResponse } from '../../../../lib/api-errors.js';
 
@@ -42,7 +42,9 @@ export const POST = withAuth(async (request, { params }) => {
         suspend: Boolean(input.suspend)
       }
     };
-    return Response.json(await controller.applyResource(resource), { status: 201, headers: { 'Cache-Control': 'no-store' } });
+    const result = await controller.applyResource(resource);
+    clearSnapshotCache();
+    return Response.json(result, { status: 201, headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
     return errorResponse(error.message, error.message?.includes('not found') ? 404 : 500);
   }
