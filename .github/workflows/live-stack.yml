@@ -43,6 +43,9 @@ jobs:
     runs-on: ${{ inputs.os || 'ubuntu-latest-l' }}
     permissions:
       contents: read
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
