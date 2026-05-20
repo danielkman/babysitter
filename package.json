@@ -112,7 +112,6 @@
     "webpackbar": "file:third_party/webpackbar"
   },
   "overrides": {
-    "commander": "^12.1.0",
     "webpackbar": "file:third_party/webpackbar",
     "@react-native/codegen": "0.85.3",
     "chromium-edge-launcher": "^2.0.1",
