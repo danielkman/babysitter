@@ -514,8 +514,8 @@ jobs:
               provider=$(grep -oP '(?<=\*\*Provider:\*\* ).*' "$report" | head -1 || echo "?")
               model=$(grep -oP '(?<=\*\*Model:\*\* ).*' "$report" | head -1 || echo "?")
               mode=$(echo "$dir" | grep -oP '(bridged-hooks|bridged-interactive|interactive|non-interactive)' | head -1 || echo "?")
-              proc_mode="predefined"
-              if grep -q 'process-creation' "$report" 2>/dev/null; then proc_mode="create"; fi
+              proc_mode=$(echo "$dir" | grep -oP '(?<=interactive-)(predefined|create|resume)' | head -1)
+              [ -z "$proc_mode" ] && proc_mode="predefined"
               failures=$(grep -c '✗' "$report" 2>/dev/null || true)
               passes=$(grep -c '✓' "$report" 2>/dev/null || true)
               dur_file=$(find "$dir" -name "duration-seconds.txt" | head -1)
