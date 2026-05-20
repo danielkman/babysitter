@@ -12,16 +12,16 @@ import {
 // Layer / facet definition tests
 // ---------------------------------------------------------------------------
 
-test('STACK_LAYERS has exactly 11 entries', () => {
-  assert.equal(STACK_LAYERS.length, 11);
+test('STACK_LAYERS has exactly 6 entries', () => {
+  assert.equal(STACK_LAYERS.length, 6);
 });
 
-test('COMPOSITION_FACETS has exactly 4 entries', () => {
-  assert.equal(COMPOSITION_FACETS.length, 4);
+test('COMPOSITION_FACETS has exactly 3 entries', () => {
+  assert.equal(COMPOSITION_FACETS.length, 3);
 });
 
-test('ALL_LAYER_DEFS combines layers and facets (15 total)', () => {
-  assert.equal(ALL_LAYER_DEFS.length, 15);
+test('ALL_LAYER_DEFS combines layers and facets (9 total)', () => {
+  assert.equal(ALL_LAYER_DEFS.length, 9);
 });
 
 test('each stack layer has key, label, position, and atlasKinds array', () => {
@@ -43,9 +43,9 @@ test('each composition facet has key, label, and atlasKinds array', () => {
   }
 });
 
-test('stack layer positions are sequential 1-11', () => {
+test('stack layer positions are sequential 1-6', () => {
   const positions = STACK_LAYERS.map((l) => l.position).sort((a, b) => a - b);
-  assert.deepEqual(positions, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+  assert.deepEqual(positions, [1, 2, 3, 4, 5, 6]);
 });
 
 test('layer keys are unique', () => {
@@ -62,11 +62,27 @@ test('layer 1 (Model) has expected atlasKinds', () => {
   assert.ok(modelLayer.atlasKinds.includes('SessionModel'));
 });
 
-test('facet:roles-and-teams has expected atlasKinds', () => {
-  const facet = COMPOSITION_FACETS.find((f) => f.key === 'facet:roles-and-teams');
+test('facet:agent-role has expected atlasKinds', () => {
+  const facet = COMPOSITION_FACETS.find((f) => f.key === 'facet:agent-role');
   assert.ok(facet);
   assert.ok(facet.atlasKinds.includes('Role'));
   assert.ok(facet.atlasKinds.includes('AgentTeam'));
+});
+
+test('layer:4-platform replaces old core/runtime/platform layers', () => {
+  const platform = STACK_LAYERS.find((l) => l.key === 'layer:4-platform');
+  assert.ok(platform);
+  assert.ok(platform.atlasKinds.includes('AgentProduct'));
+  assert.ok(platform.atlasKinds.includes('AgentRuntimeImpl'));
+  assert.ok(platform.atlasKinds.includes('AgentPlatformImpl'));
+  assert.ok(platform.atlasKinds.includes('AgentCoreImpl'));
+  assert.equal(platform.label, 'Platform');
+});
+
+test('execution, sandbox, presentation layers removed', () => {
+  assert.ok(!STACK_LAYERS.find((l) => l.key === 'layer:8-execution'));
+  assert.ok(!STACK_LAYERS.find((l) => l.key === 'layer:9-sandbox'));
+  assert.ok(!STACK_LAYERS.find((l) => l.key === 'layer:11-presentation'));
 });
 
 // ---------------------------------------------------------------------------

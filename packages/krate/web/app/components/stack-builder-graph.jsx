@@ -7,24 +7,18 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 // ---------------------------------------------------------------------------
 
 const STACK_LAYERS = [
-  { key: 'layer:1-model', label: 'Model', position: 1, atlasKinds: ['ModelFamily', 'ModelVersion', 'SessionModel'] },
-  { key: 'layer:2-provider', label: 'Provider', position: 2, atlasKinds: ['Provider', 'ModelProviderProduct', 'ModelProviderVersion'] },
-  { key: 'layer:3-transport', label: 'Transport', position: 3, atlasKinds: ['TransportProtocol', 'ModelTransportProtocol'] },
-  { key: 'layer:4-agent-core', label: 'Agent Core', position: 4, atlasKinds: ['AgentCoreImpl', 'Capability', 'CapabilitySupport'] },
-  { key: 'layer:5-agent-runtime', label: 'Agent Runtime', position: 5, atlasKinds: ['AgentProduct', 'AgentRuntimeImpl', 'AgentVersion', 'Subagent'] },
-  { key: 'layer:6-agent-platform', label: 'Agent Platform', position: 6, atlasKinds: ['AgentPlatformImpl', 'Platform', 'PlatformService'] },
-  { key: 'layer:7-workspace', label: 'Workspace', position: 7, atlasKinds: ['Workspace', 'Project', 'SharedContextSpec'] },
-  { key: 'layer:8-execution', label: 'Execution', position: 8, atlasKinds: ['Workflow', 'LibraryProcess', 'Phase', 'HookSurface'] },
-  { key: 'layer:9-sandbox', label: 'Sandbox', position: 9, atlasKinds: ['PermissionMode', 'DeploymentTarget'] },
-  { key: 'layer:10-interaction', label: 'Interaction', position: 10, atlasKinds: ['Tool', 'ToolDescriptor', 'ToolServer', 'PluginArtifact', 'MCPPrompt'] },
-  { key: 'layer:11-presentation', label: 'Presentation', position: 11, atlasKinds: ['AgentUIImpl', 'Page', 'APIEndpoint', 'Presentation'] },
+  { key: 'layer:1-model', label: 'Model', position: 1, atlasKinds: ['ModelFamily', 'ModelVersion', 'SessionModel'], description: 'LLM model family and version' },
+  { key: 'layer:2-provider', label: 'Provider', position: 2, atlasKinds: ['Provider', 'ModelProviderProduct', 'ModelProviderVersion'], description: 'Model API provider (Anthropic, OpenAI, Azure, etc.)' },
+  { key: 'layer:3-transport', label: 'Transport', position: 3, atlasKinds: ['TransportProtocol', 'ModelTransportProtocol'], description: 'Communication protocol (stdio, HTTP, WebSocket)' },
+  { key: 'layer:4-platform', label: 'Platform', position: 4, atlasKinds: ['AgentProduct', 'AgentRuntimeImpl', 'AgentPlatformImpl', 'AgentCoreImpl', 'Platform'], description: 'Agent platform target (agent-mux supported)' },
+  { key: 'layer:5-workspace', label: 'Workspace', position: 5, atlasKinds: ['Workspace', 'Project', 'SharedContextSpec'], description: 'Git workspace and project binding' },
+  { key: 'layer:6-interaction', label: 'Interaction', position: 6, atlasKinds: ['Tool', 'ToolDescriptor', 'ToolServer', 'PluginArtifact', 'MCPPrompt', 'MCPResource'], description: 'Tools, MCP servers, and interaction primitives' },
 ];
 
 const COMPOSITION_FACETS = [
-  { key: 'facet:roles-and-teams', label: 'Roles and Teams', atlasKinds: ['Role', 'Responsibility', 'OrgUnit', 'AgentTeam'] },
-  { key: 'facet:skills-and-capabilities', label: 'Skills and Capabilities', atlasKinds: ['Skill', 'LibrarySkill', 'SkillArea', 'Capability'] },
-  { key: 'facet:evaluation-and-governance', label: 'Evaluation and Governance', atlasKinds: ['Benchmark', 'TestSet', 'EvalRun'] },
-  { key: 'facet:environment-and-data', label: 'Environment and Data', atlasKinds: ['StackPart', 'VectorStore', 'MemoryStore'] },
+  { key: 'facet:agent-role', label: 'Agent Role', atlasKinds: ['Role', 'Responsibility', 'AgentTeam', 'OrgUnit'], description: 'Role-based identity for policies and permissions' },
+  { key: 'facet:skills-and-capabilities', label: 'Skills and Capabilities', atlasKinds: ['Skill', 'LibrarySkill', 'SkillArea', 'Capability'], description: 'Reusable skills and capability bundles' },
+  { key: 'facet:environment-and-data', label: 'Environment and Data', atlasKinds: ['StackPart', 'VectorStore', 'MemoryStore', 'KnowledgeBase', 'Dataset'], description: 'Data sources, memory stores, and environment' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -277,11 +271,12 @@ export function GraphStackBuilder({ org, atlasBaseUrl, existingStack = null }) {
       }
     }
 
-    // Derive conventional fields from selections
+    // Derive fields from layer selections
     const modelSelections = selections['layer:1-model'] || [];
     const providerSelections = selections['layer:2-provider'] || [];
-    const runtimeSelections = selections['layer:5-agent-runtime'] || [];
-    const interactionSelections = selections['layer:10-interaction'] || [];
+    const platformSelections = selections['layer:4-platform'] || [];
+    const interactionSelections = selections['layer:6-interaction'] || [];
+    const roleSelections = selections['facet:agent-role'] || [];
     const skillSelections = selections['facet:skills-and-capabilities'] || [];
 
     const resource = {
@@ -294,27 +289,34 @@ export function GraphStackBuilder({ org, atlasBaseUrl, existingStack = null }) {
         },
       },
       spec: {
-        baseAgent: runtimeSelections.find((r) => r.nodeKind === 'AgentProduct')?.id || 'claude-code',
-        adapter: providerSelections.find((r) => r.nodeKind === 'ModelProviderProduct')?.id || 'default',
+        // Platform: agent-mux supported target (claude-code, codex, gemini-cli, etc.)
+        baseAgent: platformSelections.find((r) => r.nodeKind === 'AgentProduct')?.id || 'claude-code',
+        adapter: platformSelections.find((r) => r.nodeKind === 'AgentPlatformImpl')?.id || 'default',
         runtimeIdentity: { serviceAccountRef: 'default' },
-        // Derive model from model layer
+        // Model from model layer
         ...(modelSelections.length ? { model: modelSelections[0].id } : {}),
-        // Derive provider from provider layer
+        // Provider from provider layer
         ...(providerSelections.length ? { provider: providerSelections[0].id } : {}),
         ...(displayName ? { displayName } : {}),
         ...(systemPrompt ? { systemPrompt } : {}),
         ...(developerPrompt ? { developerPrompt } : {}),
         ...(taskPrompt ? { taskPrompt } : {}),
         approvalMode: 'prompt',
+        // Agent role for policies and permissions
+        ...(roleSelections.length ? { agentRole: { refs: roleSelections.map((r) => ({ id: r.id, nodeKind: r.nodeKind, displayName: r.displayName })) } } : {}),
         // MCP server refs from interaction layer
-        ...(interactionSelections.filter((r) => r.nodeKind === 'ToolServer').length
-          ? { mcpServerRefs: interactionSelections.filter((r) => r.nodeKind === 'ToolServer').map((r) => r.id) }
+        ...(interactionSelections.filter((r) => r.nodeKind === 'ToolServer' || r.nodeKind === 'MCPPrompt').length
+          ? { mcpServerRefs: interactionSelections.filter((r) => r.nodeKind === 'ToolServer' || r.nodeKind === 'MCPPrompt').map((r) => r.id) }
+          : {}),
+        // Tool refs from interaction layer
+        ...(interactionSelections.filter((r) => r.nodeKind === 'Tool' || r.nodeKind === 'ToolDescriptor').length
+          ? { toolRefs: interactionSelections.filter((r) => r.nodeKind === 'Tool' || r.nodeKind === 'ToolDescriptor').map((r) => r.id) }
           : {}),
         // Skill refs from skills facet
         ...(skillSelections.length
           ? { skillRefs: skillSelections.map((r) => r.id) }
           : {}),
-        // Full Atlas layer bindings for graph-aware consumers
+        // Atlas layer bindings for graph-aware consumers
         atlasLayerBindings: layerBindings,
       },
     };

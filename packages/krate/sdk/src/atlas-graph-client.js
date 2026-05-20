@@ -12,24 +12,18 @@
 // ---------------------------------------------------------------------------
 
 export const STACK_LAYERS = [
-  { key: 'layer:1-model', label: 'Model', kind: 'stack-layer', position: 1, atlasKinds: ['ModelFamily', 'ModelVersion', 'SessionModel'] },
-  { key: 'layer:2-provider', label: 'Provider', kind: 'stack-layer', position: 2, atlasKinds: ['Provider', 'ModelProviderProduct', 'ModelProviderVersion'] },
-  { key: 'layer:3-transport', label: 'Transport', kind: 'stack-layer', position: 3, atlasKinds: ['TransportProtocol', 'ModelTransportProtocol'] },
-  { key: 'layer:4-agent-core', label: 'Agent Core', kind: 'stack-layer', position: 4, atlasKinds: ['AgentCoreImpl', 'Capability', 'CapabilitySupport'] },
-  { key: 'layer:5-agent-runtime', label: 'Agent Runtime', kind: 'stack-layer', position: 5, atlasKinds: ['AgentProduct', 'AgentRuntimeImpl', 'AgentVersion', 'Subagent'] },
-  { key: 'layer:6-agent-platform', label: 'Agent Platform', kind: 'stack-layer', position: 6, atlasKinds: ['AgentPlatformImpl', 'Platform', 'PlatformService'] },
-  { key: 'layer:7-workspace', label: 'Workspace', kind: 'stack-layer', position: 7, atlasKinds: ['Workspace', 'Project', 'SharedContextSpec'] },
-  { key: 'layer:8-execution', label: 'Execution', kind: 'stack-layer', position: 8, atlasKinds: ['Workflow', 'LibraryProcess', 'Phase', 'HookSurface'] },
-  { key: 'layer:9-sandbox', label: 'Sandbox', kind: 'stack-layer', position: 9, atlasKinds: ['PermissionMode', 'DeploymentTarget'] },
-  { key: 'layer:10-interaction', label: 'Interaction', kind: 'stack-layer', position: 10, atlasKinds: ['Tool', 'ToolDescriptor', 'ToolServer', 'PluginArtifact', 'MCPPrompt'] },
-  { key: 'layer:11-presentation', label: 'Presentation', kind: 'stack-layer', position: 11, atlasKinds: ['AgentUIImpl', 'Page', 'APIEndpoint', 'Presentation'] },
+  { key: 'layer:1-model', label: 'Model', kind: 'stack-layer', position: 1, atlasKinds: ['ModelFamily', 'ModelVersion', 'SessionModel'], description: 'LLM model family and version' },
+  { key: 'layer:2-provider', label: 'Provider', kind: 'stack-layer', position: 2, atlasKinds: ['Provider', 'ModelProviderProduct', 'ModelProviderVersion'], description: 'Model API provider (Anthropic, OpenAI, Azure, etc.)' },
+  { key: 'layer:3-transport', label: 'Transport', kind: 'stack-layer', position: 3, atlasKinds: ['TransportProtocol', 'ModelTransportProtocol'], description: 'Communication protocol (stdio, HTTP, WebSocket)' },
+  { key: 'layer:4-platform', label: 'Platform', kind: 'stack-layer', position: 4, atlasKinds: ['AgentProduct', 'AgentRuntimeImpl', 'AgentPlatformImpl', 'AgentCoreImpl', 'Platform'], description: 'Agent platform target (agent-mux supported agents only)' },
+  { key: 'layer:5-workspace', label: 'Workspace', kind: 'stack-layer', position: 5, atlasKinds: ['Workspace', 'Project', 'SharedContextSpec'], description: 'Git workspace and project binding' },
+  { key: 'layer:6-interaction', label: 'Interaction', kind: 'stack-layer', position: 6, atlasKinds: ['Tool', 'ToolDescriptor', 'ToolServer', 'PluginArtifact', 'MCPPrompt', 'MCPResource'], description: 'Tools, MCP servers, and interaction primitives' },
 ];
 
 export const COMPOSITION_FACETS = [
-  { key: 'facet:roles-and-teams', label: 'Roles and Teams', kind: 'composition-facet', atlasKinds: ['Role', 'Responsibility', 'OrgUnit', 'AgentTeam'] },
-  { key: 'facet:skills-and-capabilities', label: 'Skills and Capabilities', kind: 'composition-facet', atlasKinds: ['Skill', 'LibrarySkill', 'SkillArea', 'Capability'] },
-  { key: 'facet:evaluation-and-governance', label: 'Evaluation and Governance', kind: 'composition-facet', atlasKinds: ['Benchmark', 'TestSet', 'EvalRun'] },
-  { key: 'facet:environment-and-data', label: 'Environment and Data', kind: 'composition-facet', atlasKinds: ['StackPart', 'VectorStore', 'MemoryStore'] },
+  { key: 'facet:agent-role', label: 'Agent Role', kind: 'composition-facet', atlasKinds: ['Role', 'Responsibility', 'AgentTeam', 'OrgUnit'], description: 'Role-based identity for attaching policies, permissions, and approval gates' },
+  { key: 'facet:skills-and-capabilities', label: 'Skills and Capabilities', kind: 'composition-facet', atlasKinds: ['Skill', 'LibrarySkill', 'SkillArea', 'Capability'], description: 'Reusable skills and capability bundles' },
+  { key: 'facet:environment-and-data', label: 'Environment and Data', kind: 'composition-facet', atlasKinds: ['StackPart', 'VectorStore', 'MemoryStore', 'KnowledgeBase', 'Dataset'], description: 'Data sources, memory stores, and environment configuration' },
 ];
 
 export const ALL_LAYER_DEFS = [...STACK_LAYERS, ...COMPOSITION_FACETS];
