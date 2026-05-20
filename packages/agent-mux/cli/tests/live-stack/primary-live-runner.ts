@@ -32,6 +32,7 @@ export interface PrimaryLiveRunOptions {
   readonly cwd: string;
   readonly artifactsDir: string;
   readonly executeCommand: (execution: CommandExecution) => Promise<CommandResult>;
+  readonly executeLaunchCommand?: (execution: CommandExecution) => Promise<CommandResult>;
   readonly executeLiveProvider?: boolean;
   readonly requireRunnable?: boolean;
   readonly timeoutMs?: number;
@@ -269,7 +270,8 @@ export async function runPrimaryLiveStackScenario(options: PrimaryLiveRunOptions
   for (let cmdIdx = 0; cmdIdx < commands.length; cmdIdx++) {
     const command = commands[cmdIdx]!;
     const isLastCommand = cmdIdx === commands.length - 1;
-    const result = await options.executeCommand(command);
+    const executor = isLastCommand && options.executeLaunchCommand ? options.executeLaunchCommand : options.executeCommand;
+    const result = await executor(command);
     commandResults.push(result);
     await writeCommandTranscript(options.artifactsDir, scenario, commandResults);
     if (result.status !== 0) {

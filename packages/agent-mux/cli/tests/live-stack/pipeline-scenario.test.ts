@@ -18,9 +18,10 @@ describe('pipeline-owned live stack scenario execution', () => {
       env: process.env,
       executeLiveProvider: process.env['LIVE_STACK_RUN_MODEL_TESTS'] === '1',
       requireRunnable: requireLiveEvidence,
-      executeCommand: process.env['LIVE_STACK_INTERACTIVE'] === 'true' && !process.stdin.isTTY
+      executeCommand: executeChildProcessCommand,
+      executeLaunchCommand: process.env['LIVE_STACK_INTERACTIVE'] === 'true' && !process.stdin.isTTY
         ? executePtyCommand
-        : executeChildProcessCommand,
+        : undefined,
       timeoutMs: Number(process.env['LIVE_STACK_COMMAND_TIMEOUT_MS'] ?? 10 * 60 * 1000),
     });
 
