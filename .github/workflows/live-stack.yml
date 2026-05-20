@@ -134,7 +134,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: build-all-dist
-          path: ${RUNNER_TEMP}/build-all-dist.tar.gz
+          path: ${{ runner.temp }}/build-all-dist.tar.gz
           if-no-files-found: error
 
   setup:
@@ -338,7 +338,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: build-all-dist
-          path: /tmp
+          path: ${{ runner.temp }}
 
       - name: Extract build artifacts
         if: ${{ matrix.scenario.skip != 'true' }}
