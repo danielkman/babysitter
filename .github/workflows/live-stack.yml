@@ -252,7 +252,7 @@ jobs:
               }
 
               const claude = scenario('claude-code','claude',foundry);
-              const codex = scenario('codex','codex',foundry);
+              const codex = scenario('codex','codex',google);
               const pi = scenario('pi','pi',kimi);
 
               // Vanilla NI: claude+codex+pi NI
@@ -270,7 +270,7 @@ jobs:
               ];
 
               const claudeResume = scenario('claude-code','claude',foundry,'resume');
-              const codexResume = scenario('codex','codex',foundry,'resume');
+              const codexResume = scenario('codex','codex',google,'resume');
 
               // BP Interactive: claude+codex (predefined + resume)
               const bpInt = [
