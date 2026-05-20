@@ -60,6 +60,32 @@ describe("storage primitives", () => {
     expect(events[1].data.harness).toBe("pi");
   });
 
+  test("appendEvent serializes concurrent writes for the same run directory", async () => {
+    const { runDir } = await createRunDir({
+      runsRoot: tmpRoot,
+      runId: "run-concurrent-append",
+      request: "append-concurrently",
+      processPath: ".a5c/processes/foo.js",
+    });
+
+    const results = await Promise.all(
+      Array.from({ length: 25 }, (_, index) =>
+        appendEvent({
+          runDir,
+          eventType: "PROCESS_LOG",
+          event: { logSeq: index + 1, message: `log-${index + 1}` },
+        })
+      )
+    );
+
+    const resultSeqs = results.map((result) => result.seq).sort((a, b) => a - b);
+    expect(resultSeqs).toEqual(Array.from({ length: 25 }, (_, index) => index + 1));
+
+    const journal = await loadJournal(runDir);
+    expect(journal.map((event) => event.seq)).toEqual(resultSeqs);
+    expect(new Set(journal.map((event) => event.filename)).size).toBe(journal.length);
+  });
+
   test("disk usage + orphan detection", async () => {
     const { runDir } = await createRunDir({
       runsRoot: tmpRoot,

@@ -14,6 +14,27 @@ function formatSeq(seq: number) {
   return seq.toString().padStart(6, "0");
 }
 
+const appendQueues = new Map<string, Promise<void>>();
+
+async function withAppendQueue<T>(runDir: string, operation: () => Promise<T>): Promise<T> {
+  const key = path.resolve(runDir);
+  const previous = appendQueues.get(key) ?? Promise.resolve();
+  const next = previous.catch(() => undefined).then(operation);
+  const tail = next.then(
+    () => undefined,
+    () => undefined,
+  );
+  appendQueues.set(key, tail);
+
+  try {
+    return await next;
+  } finally {
+    if (appendQueues.get(key) === tail) {
+      appendQueues.delete(key);
+    }
+  }
+}
+
 async function getExistingSeqs(journalDir: string) {
   try {
     const entries = await fs.readdir(journalDir);
@@ -28,36 +49,38 @@ async function getExistingSeqs(journalDir: string) {
 }
 
 export async function appendEvent(opts: AppendEventOptions): Promise<AppendEventResult> {
-  const journalDir = getJournalDir(opts.runDir);
-  await warnIfICloudDrivePath(journalDir);
-  await fs.mkdir(journalDir, { recursive: true });
-  const seqs = await getExistingSeqs(journalDir);
-  const seq = (seqs.length ? Math.max(...seqs) : 0) + 1;
-  const ulid = nextUlid();
-  const filename = `${formatSeq(seq)}.${ulid}.json`;
-  const recordedAt = getClockIsoString();
-  const runHarness = await readRunHarness(opts.runDir);
-  const sessionId = resolveAmbientSessionId(runHarness);
+  return withAppendQueue(opts.runDir, async () => {
+    const journalDir = getJournalDir(opts.runDir);
+    await warnIfICloudDrivePath(journalDir);
+    await fs.mkdir(journalDir, { recursive: true });
+    const seqs = await getExistingSeqs(journalDir);
+    const seq = (seqs.length ? Math.max(...seqs) : 0) + 1;
+    const ulid = nextUlid();
+    const filename = `${formatSeq(seq)}.${ulid}.json`;
+    const recordedAt = getClockIsoString();
+    const runHarness = await readRunHarness(opts.runDir);
+    const sessionId = resolveAmbientSessionId(runHarness);
 
-  const eventData: JsonRecord = { ...opts.event };
-  if (runHarness && eventData.harness === undefined) {
-    eventData.harness = runHarness;
-  }
-  if (sessionId && eventData.sessionId === undefined) {
-    eventData.sessionId = sessionId;
-  }
+    const eventData: JsonRecord = { ...opts.event };
+    if (runHarness && eventData.harness === undefined) {
+      eventData.harness = runHarness;
+    }
+    if (sessionId && eventData.sessionId === undefined) {
+      eventData.sessionId = sessionId;
+    }
 
-  const eventPayload = withSdkVersion({
-    type: opts.eventType,
-    recordedAt,
-    data: eventData,
+    const eventPayload = withSdkVersion({
+      type: opts.eventType,
+      recordedAt,
+      data: eventData,
+    });
+    const contents = JSON.stringify(eventPayload, null, 2) + "\n";
+    const checksum = crypto.createHash("sha256").update(contents).digest("hex");
+    const payloadWithChecksum = JSON.stringify({ ...eventPayload, checksum }, null, 2) + "\n";
+    const targetPath = path.join(journalDir, filename);
+    await writeFileAtomic(targetPath, payloadWithChecksum);
+    return { seq, ulid, filename, checksum, path: targetPath, recordedAt };
   });
-  const contents = JSON.stringify(eventPayload, null, 2) + "\n";
-  const checksum = crypto.createHash("sha256").update(contents).digest("hex");
-  const payloadWithChecksum = JSON.stringify({ ...eventPayload, checksum }, null, 2) + "\n";
-  const targetPath = path.join(journalDir, filename);
-  await writeFileAtomic(targetPath, payloadWithChecksum);
-  return { seq, ulid, filename, checksum, path: targetPath, recordedAt };
 }
 
 async function readRunHarness(runDir: string): Promise<string | undefined> {
