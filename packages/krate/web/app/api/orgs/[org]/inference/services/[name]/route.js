@@ -1,6 +1,6 @@
 import { createKrateApiController, orgNamespaceName, clearSnapshotCache } from '@a5c-ai/krate-sdk';
 import { withAuth } from '../../../../../../lib/api-auth.js';
-import { errorResponse } from '../../../../../../lib/api-errors.js';
+import { errorResponse, invalidateApiCache } from '../../../../../../lib/api-errors.js';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,6 +26,7 @@ export const DELETE = withAuth(async (_request, { params }) => {
   try {
     await controller.deleteResource('KrateInferenceService', name);
     clearSnapshotCache();
+    invalidateApiCache();
     return Response.json({ deleted: true, name }, { status: 200, headers: { 'Cache-Control': 'no-store' } });
   } catch (err) {
     return errorResponse(err.message || 'Failed to delete inference service', 500);

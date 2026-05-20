@@ -1,6 +1,6 @@
 import { createKrateApiController, orgNamespaceName, clearSnapshotCache } from '@a5c-ai/krate-sdk';
 import { withAuth } from '../../../../lib/api-auth.js';
-import { errorResponse } from '../../../../lib/api-errors.js';
+import { errorResponse, invalidateApiCache } from '../../../../lib/api-errors.js';
 
 export const dynamic = 'force-dynamic';
 
@@ -45,6 +45,7 @@ export const POST = withAuth(async (request, { params }) => {
       };
       const result = await controller.applyResource(resource);
       clearSnapshotCache();
+    invalidateApiCache();
       return Response.json(result, { status: 201 });
     }
 
@@ -55,6 +56,7 @@ export const POST = withAuth(async (request, { params }) => {
       spec: { ...(body.spec || {}), organizationRef: org },
     });
     clearSnapshotCache();
+    invalidateApiCache();
     return Response.json(result, { status: 201 });
   } catch (error) {
     return errorResponse(error.message, 400);

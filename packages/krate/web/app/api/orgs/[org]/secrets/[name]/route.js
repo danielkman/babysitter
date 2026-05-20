@@ -1,6 +1,6 @@
 import { createKrateApiController, orgNamespaceName, clearSnapshotCache } from '@a5c-ai/krate-sdk';
 import { withAuth } from '../../../../../lib/api-auth.js';
-import { errorResponse } from '../../../../../lib/api-errors.js';
+import { errorResponse, invalidateApiCache } from '../../../../../lib/api-errors.js';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,18 +14,21 @@ export const DELETE = withAuth(async (request, { params }) => {
     if (type === 'secret') {
       const result = await controller.deleteResource('Secret', name);
       clearSnapshotCache();
+    invalidateApiCache();
       return Response.json(result);
     }
 
     if (type === 'configmap') {
       const result = await controller.deleteResource('ConfigMap', name);
       clearSnapshotCache();
+    invalidateApiCache();
       return Response.json(result);
     }
 
     // Default: delete AgentSecretGrant
     const result = await controller.deleteResource('AgentSecretGrant', name);
     clearSnapshotCache();
+    invalidateApiCache();
     return Response.json(result);
   } catch (error) {
     return errorResponse(error.message, 500);

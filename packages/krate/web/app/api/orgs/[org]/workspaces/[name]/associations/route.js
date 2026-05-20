@@ -1,6 +1,6 @@
 import { createKrateApiController, orgNamespaceName, clearSnapshotCache } from '@a5c-ai/krate-sdk';
 import { withAuth } from '../../../../../../lib/api-auth.js';
-import { errorResponse } from '../../../../../../lib/api-errors.js';
+import { errorResponse, invalidateApiCache } from '../../../../../../lib/api-errors.js';
 
 export const dynamic = 'force-dynamic';
 
@@ -45,6 +45,7 @@ export const POST = withAuth(async (request, { params }) => {
     // Persist updated workspace
     await controller.applyResource(result.workspace);
     clearSnapshotCache();
+    invalidateApiCache();
     return Response.json(result, { status: 201, headers: { 'Cache-Control': 'no-store' } });
   } catch (err) {
     return errorResponse(err.message || 'Failed to add association', 500);
@@ -72,6 +73,7 @@ export const DELETE = withAuth(async (request, { params }) => {
     // Persist updated workspace
     await controller.applyResource(result.workspace);
     clearSnapshotCache();
+    invalidateApiCache();
     return Response.json(result, { headers: { 'Cache-Control': 'no-store' } });
   } catch (err) {
     return errorResponse(err.message || 'Failed to remove association', 500);

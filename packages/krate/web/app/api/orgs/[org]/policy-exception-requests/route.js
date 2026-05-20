@@ -1,5 +1,6 @@
 import { createKrateApiController, createControllerUiModel, orgNamespaceName, clearSnapshotCache } from '@a5c-ai/krate-sdk';
 import { withAuth } from '../../../../lib/api-auth.js';
+import { invalidateApiCache } from '../../../../lib/api-errors.js';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,6 +44,7 @@ export const POST = withAuth(async (request, { params }) => {
     };
     const result = await controller.applyResource(resource);
     clearSnapshotCache();
+    invalidateApiCache();
     return Response.json(result, { status: 201, headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
     return Response.json({ error: 'operation_failed', message: error.message }, { status: error.message?.includes('not found') ? 404 : 500 });
