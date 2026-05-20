@@ -46,6 +46,12 @@ export const orgNavigationGroups = [
     ]
   },
   {
+    title: 'ML',
+    items: [
+      ['/inference', 'Inference', 'Model serving and inference endpoints']
+    ]
+  },
+  {
     title: 'Assistant',
     items: [
       ['/assistant', 'Assistant', 'AI assistant with krate tools']

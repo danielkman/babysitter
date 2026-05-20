@@ -205,6 +205,117 @@ function LayerSection({ layer, atlasProxyUrl, selected, onToggle }) {
 }
 
 // ---------------------------------------------------------------------------
+// Model Inference Section (KServe)
+// ---------------------------------------------------------------------------
+
+function ModelInferenceSection({ org, selectedInference, onSelectInference }) {
+  const [open, setOpen] = useState(false);
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedName, setSelectedName] = useState(selectedInference?.name || '');
+
+  useEffect(() => {
+    if (!open || services.length > 0) return;
+    setLoading(true);
+    fetch(`/api/orgs/${encodeURIComponent(org)}/inference/services`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data) setServices(data.items || (Array.isArray(data) ? data : []));
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [open, org, services.length]);
+
+  function handleSelect(name) {
+    setSelectedName(name);
+    if (!name) {
+      if (onSelectInference) onSelectInference(null);
+      return;
+    }
+    const svc = services.find(s => (s.metadata?.name || s.name) === name);
+    if (svc && onSelectInference) {
+      onSelectInference({
+        name,
+        endpoint: svc.status?.url || svc.status?.address?.url || '',
+        modelFormat: svc.spec?.predictor?.model?.modelFormat?.name || 'custom',
+        status: svc.status?.ready ? 'Ready' : 'Pending',
+      });
+    }
+  }
+
+  return (
+    <div style={{ marginBottom: '0.5rem' }}>
+      <div style={sectionHeaderStyle} onClick={() => setOpen(o => !o)}>
+        <span>
+          <strong>Model Inference</strong>
+          {selectedInference && (
+            <span style={{ ...badgeStyle, background: '#d1fae5', color: '#065f46', marginLeft: 8 }}>{selectedInference.name}</span>
+          )}
+        </span>
+        <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+          KServe inference services {open ? '▲' : '▼'}
+        </span>
+      </div>
+
+      {open && (
+        <div style={sectionBodyStyle}>
+          {loading && <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Loading inference services...</span>}
+
+          {!loading && services.length === 0 && (
+            <div style={{ fontSize: '0.8125rem', color: '#9ca3af' }}>
+              No inference services available.{' '}
+              <a href={`/orgs/${org}/inference`} style={{ color: '#2563eb', textDecoration: 'underline' }}>
+                Create one
+              </a>
+            </div>
+          )}
+
+          {services.length > 0 && (
+            <div>
+              <label style={labelStyle}>KServe Inference Service</label>
+              <select
+                style={inputStyle}
+                value={selectedName}
+                onChange={e => handleSelect(e.target.value)}
+              >
+                <option value="">-- None --</option>
+                {services.map(svc => {
+                  const n = svc.metadata?.name || svc.name;
+                  const fmt = svc.spec?.predictor?.model?.modelFormat?.name || 'custom';
+                  const ready = svc.status?.ready ? 'Ready' : 'Pending';
+                  return <option key={n} value={n}>{n} ({fmt}) [{ready}]</option>;
+                })}
+              </select>
+
+              {selectedInference && (
+                <div style={{ marginTop: '0.5rem', fontSize: '0.8125rem', color: '#374151', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                  <div>
+                    <strong>Endpoint:</strong>{' '}
+                    <code style={{ fontSize: '0.75rem', background: '#f3f4f6', padding: '1px 6px', borderRadius: 3 }}>
+                      {selectedInference.endpoint || 'Not ready'}
+                    </code>
+                  </div>
+                  <div>
+                    <strong>Format:</strong>{' '}
+                    <span style={badgeStyle}>{selectedInference.modelFormat}</span>
+                  </div>
+                  <div>
+                    <strong>Status:</strong>{' '}
+                    <span style={{ color: selectedInference.status === 'Ready' ? '#16a34a' : '#d97706' }}>
+                      {selectedInference.status}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Main component
 // ---------------------------------------------------------------------------
 
@@ -236,6 +347,9 @@ export function GraphStackBuilder({ org, atlasBaseUrl, existingStack = null }) {
 
   const [status, setStatus] = useState('idle');
   const [message, setMessage] = useState('');
+
+  // KServe inference service selection
+  const [selectedInference, setSelectedInference] = useState(null);
 
   // Use the proxy route to avoid CORS
   const atlasProxyUrl = '/api/atlas/search';
@@ -331,6 +445,15 @@ export function GraphStackBuilder({ org, atlasBaseUrl, existingStack = null }) {
           : {}),
         // Atlas layer bindings for graph-aware consumers
         atlasLayerBindings: layerBindings,
+        // KServe inference service binding
+        ...(selectedInference ? {
+          inference: {
+            provider: 'kserve',
+            service: selectedInference.name,
+            endpoint: selectedInference.endpoint,
+            modelFormat: selectedInference.modelFormat,
+          },
+        } : {}),
       },
     };
 
@@ -432,6 +555,18 @@ export function GraphStackBuilder({ org, atlasBaseUrl, existingStack = null }) {
                 onToggle={handleToggle}
               />
             ))}
+          </div>
+
+          {/* Model Inference (KServe) */}
+          <div>
+            <h4 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#1e293b', marginBottom: '0.5rem' }}>
+              Model Inference
+            </h4>
+            <ModelInferenceSection
+              org={org}
+              selectedInference={selectedInference}
+              onSelectInference={setSelectedInference}
+            />
           </div>
 
           {/* RBAC / Runtime Identity */}
