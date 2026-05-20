@@ -49,6 +49,7 @@ if (!skipBuild) {
   buildWorkspaceDependencies(target.manifest.name, new Set());
   buildWorkspace(target.manifest.name);
 }
+verifyWorkspaceRelease(target.manifest.name);
 run('npm', ['publish', '--workspace', target.manifest.name, '--access', 'public', '--tag', tag, '--ignore-scripts']);
 
 function hasFlag(name) {
@@ -149,4 +150,10 @@ function buildWorkspace(packageName) {
   const pkg = packages.get(packageName);
   if (!pkg?.manifest.scripts?.build) return;
   run('npm', ['run', 'build', '--workspace', packageName]);
+}
+
+function verifyWorkspaceRelease(packageName) {
+  const pkg = packages.get(packageName);
+  if (!pkg?.manifest.scripts?.['verify:release']) return;
+  run('npm', ['run', 'verify:release', '--workspace', packageName]);
 }
