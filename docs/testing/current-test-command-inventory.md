@@ -70,6 +70,7 @@ Status: Current. This inventory implements roadmap slice 0, "Inventory and namin
 | `@a5c-ai/babysitter-observer-dashboard` | `test:coverage` | No-model | coverage | Observer maintainers | `coverage/babysitter-observer-dashboard-test-coverage` | ci.yml observer-dashboard; publish.yml validate_observer_and_compiler |
 | `@a5c-ai/babysitter-observer-dashboard` | `test:e2e` | No-model | e2e | Observer maintainers | `e2e/babysitter-observer-dashboard-test-e2e` | ci.yml observer-dashboard; publish.yml validate_observer_and_compiler |
 | `@a5c-ai/babysitter-observer-dashboard` | `test:perf` | No-model | e2e | Observer maintainers | `e2e/babysitter-observer-dashboard-test-perf` | ci.yml observer-dashboard; publish.yml validate_observer_and_compiler |
+| `@a5c-ai/babysitter-observer-dashboard` | `verify:release` | No-model release gate | release-gate | Observer maintainers | `test-logs/babysitter-observer-dashboard-release-artifact.log` | package prepublishOnly; scripts/publish-package-from-tag.mjs |
 | `@a5c-ai/babysitter-sdk` | `check:command-templates` | No-model | static-check | SDK maintainers | `test-logs/babysitter-sdk-check-command-templates.log` | ci.yml packages-sdk/test; publish.yml validate_core |
 | `@a5c-ai/babysitter-sdk` | `lint` | No-model | static-check | SDK maintainers | `test-logs/babysitter-sdk-lint.log` | ci.yml packages-sdk/test; publish.yml validate_core |
 | `@a5c-ai/babysitter-sdk` | `smoke:cli` | No-model | smoke | SDK maintainers | `test-logs/babysitter-sdk-smoke-cli.log` | ci.yml packages-sdk/test; publish.yml validate_core |
@@ -144,6 +145,7 @@ Status: Current. This inventory implements roadmap slice 0, "Inventory and namin
 | `babysitter` | `test:hooks-mux` | No-model | unit-or-integration | CI maintainers | `test-logs/babysitter-test-hooks-mux.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
 | `babysitter` | `test:library` | No-model | unit-or-integration | CI maintainers | `test-logs/babysitter-test-library.log` | ci.yml test or package-local validation when package is touched |
 | `babysitter` | `test:observer` | No-model | unit-or-integration | CI maintainers | `test-logs/babysitter-test-observer.log` | ci.yml test or package-local validation when package is touched |
+| `babysitter` | `verify:observer-release` | No-model release gate | release-gate | CI maintainers | `release-logs/babysitter-verify-observer-release.log` | package-local validation and manual release checks |
 | `babysitter` | `test:realtime-flow` | No-model | unit-or-integration | CI maintainers | `test-logs/babysitter-test-realtime-flow.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
 | `babysitter` | `test:sdk` | No-model | unit-or-integration | CI maintainers | `test-logs/babysitter-test-sdk.log` | ci.yml packages-sdk/test; publish.yml validate_core |
 | `babysitter` | `verify:cloud-release` | No-model release gate | release-gate | CI maintainers | `release-logs/babysitter-verify-cloud-release.log` | publish.yml validate and publish gates |

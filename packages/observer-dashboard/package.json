@@ -50,8 +50,11 @@
   "scripts": {
     "dev": "next dev --port 4800",
     "dev:cli": "npx ts-node --skip-project src/cli.ts",
-    "build": "next build",
+    "build": "npm run build:app && npm run build:cli",
+    "build:app": "next build",
     "build:cli": "node -e \"const v=require('./package.json').version;require('esbuild').buildSync({entryPoints:['src/cli.ts'],bundle:true,platform:'node',target:'node18',outfile:'dist/cli.js',external:['next'],define:{'__CLI_VERSION__':JSON.stringify(v)}})\"",
+    "prepublishOnly": "npm run verify:release",
+    "verify:release": "node scripts/verify-release.mjs",
     "start": "next start --port 4800",
     "lint": "next lint",
     "pretest": "node scripts/ensure-local-deps.mjs",
