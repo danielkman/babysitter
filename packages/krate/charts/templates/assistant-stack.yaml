@@ -15,6 +15,8 @@ spec:
   model: claude-sonnet-4-20250514
   runtimeIdentity:
     serviceAccountRef: {{ include "krate.fullname" . }}
+    roleRef: {{ .Values.agents.assistantRole | default "edit" }}
+    namespace: {{ .Release.Namespace }}
   displayName: Krate Assistant
   systemPrompt: |
     You are the Krate Assistant — an AI agent embedded in the Krate platform.

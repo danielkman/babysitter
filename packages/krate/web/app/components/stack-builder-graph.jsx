@@ -11,14 +11,13 @@ const STACK_LAYERS = [
   { key: 'layer:2-provider', label: 'Provider', position: 2, atlasKinds: ['Provider', 'ModelProviderProduct', 'ModelProviderVersion'], description: 'Model API provider (Anthropic, OpenAI, Azure, etc.)' },
   { key: 'layer:3-transport', label: 'Transport', position: 3, atlasKinds: ['TransportProtocol', 'ModelTransportProtocol'], description: 'Communication protocol (stdio, HTTP, WebSocket)' },
   { key: 'layer:4-platform', label: 'Platform', position: 4, atlasKinds: ['AgentProduct', 'AgentRuntimeImpl', 'AgentPlatformImpl', 'AgentCoreImpl', 'Platform'], description: 'Agent platform target (agent-mux supported)' },
-  { key: 'layer:5-workspace', label: 'Workspace', position: 5, atlasKinds: ['Workspace', 'Project', 'SharedContextSpec'], description: 'Git workspace and project binding' },
-  { key: 'layer:6-interaction', label: 'Interaction', position: 6, atlasKinds: ['Tool', 'ToolDescriptor', 'ToolServer', 'PluginArtifact', 'MCPPrompt', 'MCPResource'], description: 'Tools, MCP servers, and interaction primitives' },
+  { key: 'layer:5-tools', label: 'Tools', position: 5, atlasKinds: ['Tool', 'ToolDescriptor', 'ToolServer', 'MCPPrompt', 'MCPResource'], description: 'Tools, MCP servers, and tool descriptors' },
+  { key: 'layer:6-plugins', label: 'Plugins', position: 6, atlasKinds: ['PluginArtifact', 'Plugin', 'PluginCommand', 'PluginSkill', 'PluginHook'], description: 'Plugins, commands, skills, and hooks' },
 ];
 
 const COMPOSITION_FACETS = [
   { key: 'facet:agent-role', label: 'Agent Role', atlasKinds: ['Role', 'Responsibility', 'AgentTeam', 'OrgUnit'], description: 'Role-based identity for policies and permissions' },
   { key: 'facet:skills-and-capabilities', label: 'Skills and Capabilities', atlasKinds: ['Skill', 'LibrarySkill', 'SkillArea', 'Capability'], description: 'Reusable skills and capability bundles' },
-  { key: 'facet:environment-and-data', label: 'Environment and Data', atlasKinds: ['StackPart', 'VectorStore', 'MemoryStore', 'KnowledgeBase', 'Dataset'], description: 'Data sources, memory stores, and environment' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -221,6 +220,11 @@ export function GraphStackBuilder({ org, atlasBaseUrl, existingStack = null }) {
   const [developerPrompt, setDeveloperPrompt] = useState(spec.developerPrompt || '');
   const [taskPrompt, setTaskPrompt] = useState(spec.taskPrompt || '');
 
+  // RBAC fields
+  const [serviceAccount, setServiceAccount] = useState(spec.runtimeIdentity?.serviceAccountRef || 'default');
+  const [role, setRole] = useState(spec.runtimeIdentity?.roleRef || 'edit');
+  const [rbacNamespace, setRbacNamespace] = useState(spec.runtimeIdentity?.namespace || `krate-org-${org}`);
+
   // Per-layer selections: { 'layer:1-model': [{ id, nodeKind, displayName, ... }], ... }
   const [selections, setSelections] = useState(() => {
     const init = {};
@@ -275,7 +279,8 @@ export function GraphStackBuilder({ org, atlasBaseUrl, existingStack = null }) {
     const modelSelections = selections['layer:1-model'] || [];
     const providerSelections = selections['layer:2-provider'] || [];
     const platformSelections = selections['layer:4-platform'] || [];
-    const interactionSelections = selections['layer:6-interaction'] || [];
+    const toolSelections = selections['layer:5-tools'] || [];
+    const pluginSelections = selections['layer:6-plugins'] || [];
     const roleSelections = selections['facet:agent-role'] || [];
     const skillSelections = selections['facet:skills-and-capabilities'] || [];
 
@@ -292,7 +297,11 @@ export function GraphStackBuilder({ org, atlasBaseUrl, existingStack = null }) {
         // Platform: agent-mux supported target (claude-code, codex, gemini-cli, etc.)
         baseAgent: platformSelections.find((r) => r.nodeKind === 'AgentProduct')?.id || 'claude-code',
         adapter: platformSelections.find((r) => r.nodeKind === 'AgentPlatformImpl')?.id || 'default',
-        runtimeIdentity: { serviceAccountRef: 'default' },
+        runtimeIdentity: {
+          serviceAccountRef: serviceAccount || 'default',
+          roleRef: role || 'edit',
+          namespace: rbacNamespace || `krate-org-${org}`,
+        },
         // Model from model layer
         ...(modelSelections.length ? { model: modelSelections[0].id } : {}),
         // Provider from provider layer
@@ -304,13 +313,17 @@ export function GraphStackBuilder({ org, atlasBaseUrl, existingStack = null }) {
         approvalMode: 'prompt',
         // Agent role for policies and permissions
         ...(roleSelections.length ? { agentRole: { refs: roleSelections.map((r) => ({ id: r.id, nodeKind: r.nodeKind, displayName: r.displayName })) } } : {}),
-        // MCP server refs from interaction layer
-        ...(interactionSelections.filter((r) => r.nodeKind === 'ToolServer' || r.nodeKind === 'MCPPrompt').length
-          ? { mcpServerRefs: interactionSelections.filter((r) => r.nodeKind === 'ToolServer' || r.nodeKind === 'MCPPrompt').map((r) => r.id) }
+        // MCP server refs from tools layer
+        ...(toolSelections.filter((r) => r.nodeKind === 'ToolServer' || r.nodeKind === 'MCPPrompt').length
+          ? { mcpServerRefs: toolSelections.filter((r) => r.nodeKind === 'ToolServer' || r.nodeKind === 'MCPPrompt').map((r) => r.id) }
           : {}),
-        // Tool refs from interaction layer
-        ...(interactionSelections.filter((r) => r.nodeKind === 'Tool' || r.nodeKind === 'ToolDescriptor').length
-          ? { toolRefs: interactionSelections.filter((r) => r.nodeKind === 'Tool' || r.nodeKind === 'ToolDescriptor').map((r) => r.id) }
+        // Tool refs from tools layer
+        ...(toolSelections.filter((r) => r.nodeKind === 'Tool' || r.nodeKind === 'ToolDescriptor').length
+          ? { toolRefs: toolSelections.filter((r) => r.nodeKind === 'Tool' || r.nodeKind === 'ToolDescriptor').map((r) => r.id) }
+          : {}),
+        // Plugin refs from plugins layer
+        ...(pluginSelections.length
+          ? { pluginRefs: pluginSelections.map((r) => r.id) }
           : {}),
         // Skill refs from skills facet
         ...(skillSelections.length
@@ -419,6 +432,53 @@ export function GraphStackBuilder({ org, atlasBaseUrl, existingStack = null }) {
                 onToggle={handleToggle}
               />
             ))}
+          </div>
+
+          {/* RBAC / Runtime Identity */}
+          <div>
+            <h4 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#1e293b', marginBottom: '0.5rem' }}>
+              Runtime Identity (RBAC)
+            </h4>
+            <div style={{ background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '0.5rem', padding: '1rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+                <div>
+                  <label style={labelStyle}>ServiceAccount</label>
+                  <input
+                    type="text"
+                    value={serviceAccount}
+                    onChange={(e) => setServiceAccount(e.target.value)}
+                    placeholder="default"
+                    style={inputStyle}
+                  />
+                  <small style={{ color: '#6b7280', fontSize: '0.75rem' }}>K8s ServiceAccount the agent runs as</small>
+                </div>
+                <div>
+                  <label style={labelStyle}>Role</label>
+                  <select
+                    value={role}
+                    onChange={(e) => setRole(e.target.value)}
+                    style={{ ...inputStyle, background: '#fff' }}
+                  >
+                    <option value="cluster-admin">cluster-admin</option>
+                    <option value="edit">edit</option>
+                    <option value="view">view</option>
+                    <option value="custom">custom</option>
+                  </select>
+                  <small style={{ color: '#6b7280', fontSize: '0.75rem' }}>ClusterRole or Role binding</small>
+                </div>
+                <div>
+                  <label style={labelStyle}>Namespace</label>
+                  <input
+                    type="text"
+                    value={rbacNamespace}
+                    onChange={(e) => setRbacNamespace(e.target.value)}
+                    placeholder={`krate-org-${org}`}
+                    style={inputStyle}
+                  />
+                  <small style={{ color: '#6b7280', fontSize: '0.75rem' }}>Scope for the role binding</small>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Prompts */}

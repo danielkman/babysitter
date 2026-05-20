@@ -16,12 +16,12 @@ test('STACK_LAYERS has exactly 6 entries', () => {
   assert.equal(STACK_LAYERS.length, 6);
 });
 
-test('COMPOSITION_FACETS has exactly 3 entries', () => {
-  assert.equal(COMPOSITION_FACETS.length, 3);
+test('COMPOSITION_FACETS has exactly 2 entries', () => {
+  assert.equal(COMPOSITION_FACETS.length, 2);
 });
 
-test('ALL_LAYER_DEFS combines layers and facets (9 total)', () => {
-  assert.equal(ALL_LAYER_DEFS.length, 9);
+test('ALL_LAYER_DEFS combines layers and facets (8 total)', () => {
+  assert.equal(ALL_LAYER_DEFS.length, 8);
 });
 
 test('each stack layer has key, label, position, and atlasKinds array', () => {
@@ -79,10 +79,40 @@ test('layer:4-platform replaces old core/runtime/platform layers', () => {
   assert.equal(platform.label, 'Platform');
 });
 
-test('execution, sandbox, presentation layers removed', () => {
+test('execution, sandbox, presentation, workspace, interaction layers removed', () => {
   assert.ok(!STACK_LAYERS.find((l) => l.key === 'layer:8-execution'));
   assert.ok(!STACK_LAYERS.find((l) => l.key === 'layer:9-sandbox'));
   assert.ok(!STACK_LAYERS.find((l) => l.key === 'layer:11-presentation'));
+  assert.ok(!STACK_LAYERS.find((l) => l.key === 'layer:5-workspace'));
+  assert.ok(!STACK_LAYERS.find((l) => l.key === 'layer:6-interaction'));
+});
+
+test('layer:5-tools has expected atlasKinds', () => {
+  const toolsLayer = STACK_LAYERS.find((l) => l.key === 'layer:5-tools');
+  assert.ok(toolsLayer);
+  assert.equal(toolsLayer.label, 'Tools');
+  assert.equal(toolsLayer.position, 5);
+  assert.ok(toolsLayer.atlasKinds.includes('Tool'));
+  assert.ok(toolsLayer.atlasKinds.includes('ToolDescriptor'));
+  assert.ok(toolsLayer.atlasKinds.includes('ToolServer'));
+  assert.ok(toolsLayer.atlasKinds.includes('MCPPrompt'));
+  assert.ok(toolsLayer.atlasKinds.includes('MCPResource'));
+});
+
+test('layer:6-plugins has expected atlasKinds', () => {
+  const pluginsLayer = STACK_LAYERS.find((l) => l.key === 'layer:6-plugins');
+  assert.ok(pluginsLayer);
+  assert.equal(pluginsLayer.label, 'Plugins');
+  assert.equal(pluginsLayer.position, 6);
+  assert.ok(pluginsLayer.atlasKinds.includes('PluginArtifact'));
+  assert.ok(pluginsLayer.atlasKinds.includes('Plugin'));
+  assert.ok(pluginsLayer.atlasKinds.includes('PluginCommand'));
+  assert.ok(pluginsLayer.atlasKinds.includes('PluginSkill'));
+  assert.ok(pluginsLayer.atlasKinds.includes('PluginHook'));
+});
+
+test('facet:environment-and-data has been removed', () => {
+  assert.ok(!COMPOSITION_FACETS.find((f) => f.key === 'facet:environment-and-data'));
 });
 
 // ---------------------------------------------------------------------------
