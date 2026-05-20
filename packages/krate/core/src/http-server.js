@@ -5,6 +5,7 @@ import { createKrateApiController } from './api-controller.js';
 import { createKubernetesResourceGateway } from './kubernetes-resource-gateway.js';
 import { orgNamespaceName } from './kubernetes-controller.js';
 import { globalEventBus } from './event-bus.js';
+import { clearSnapshotCache } from './snapshot-cache.js';
 
 const jsonHeaders = { 'content-type': 'application/json; charset=utf-8' };
 
@@ -13,6 +14,7 @@ export function createKrateHttpHandler({ runtime = createKrateRuntime(), control
     try {
       const url = new URL(request.url || '/', 'http://localhost');
       if (request.method === 'GET' && url.pathname === '/healthz') return send(response, 200, { ok: true, project: 'Krate' });
+      if (request.method === 'POST' && url.pathname === '/api/cache/invalidate') { clearSnapshotCache(); return send(response, 200, { ok: true, cleared: true }); }
       if (request.method === 'GET' && url.pathname === '/api/controller') return send(response, 200, createControllerUiModel(await controller.snapshot(), { organization: url.searchParams.get('org') || undefined }));
       if (url.pathname === '/api/orgs') {
         if (request.method === 'GET') return send(response, 200, { organizations: createControllerUiModel(await controller.snapshot()).orgs });
