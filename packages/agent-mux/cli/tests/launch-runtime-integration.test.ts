@@ -140,6 +140,8 @@ describe('launchCommand transport-mux integration', () => {
     expect(spawnMock).toHaveBeenCalledTimes(1);
     expect(spawnMock.mock.calls[0]?.[2]?.env['OPENAI_BASE_URL']).toBe('http://127.0.0.1:4010/v1');
     expect(spawnMock.mock.calls[0]?.[2]?.env['OPENAI_API_KEY']).toBe('runtime-token');
+    expect(spawnMock.mock.calls[0]?.[1]).toContain('-c');
+    expect(spawnMock.mock.calls[0]?.[1]).toContain('openai_base_url=http://127.0.0.1:4010/v1');
     expect(runtimeStop).toHaveBeenCalledTimes(1);
     expect(child.stdin.write).toHaveBeenCalledWith('hello\n');
     expect(child.stdin.end).toHaveBeenCalledTimes(1);

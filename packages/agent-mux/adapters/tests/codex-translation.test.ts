@@ -53,6 +53,8 @@ describe('translateForCodex', () => {
       }));
       expect(result.env['OPENAI_BASE_URL']).toBe('https://api.groq.com/openai');
       expect(result.env['OPENAI_API_KEY']).toBe('gsk-key');
+      expect(result.args).toContain('-c');
+      expect(result.args).toContain('openai_base_url=https://api.groq.com/openai');
       expect(result.proxyRequired).toBe(false);
     });
 
@@ -73,6 +75,7 @@ describe('translateForCodex', () => {
       }));
       expect(result.env['OPENAI_BASE_URL']).toBe('https://my-custom-endpoint.com/v1');
       expect(result.env['OPENAI_API_KEY']).toBe('custom-key');
+      expect(result.args).toContain('openai_base_url=https://my-custom-endpoint.com/v1');
     });
 
     it('omits OPENAI_BASE_URL when params.apiBase is absent', () => {

@@ -998,6 +998,9 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
         plan.env['OPENAI_API_KEY'] = proxyRuntime.authToken ?? 'proxy-token';
         plan.env['OPENAI_BASE_URL'] = `${proxyRuntime.url}/v1`;
         plan.env['OPENAI_API_BASE'] = `${proxyRuntime.url}/v1`;
+        if (plan.harness === 'codex') {
+          plan.args.push('-c', `openai_base_url=${proxyRuntime.url}/v1`);
+        }
         console.error(`[amux launch] ${plan.harness} proxy: OPENAI_BASE_URL=${proxyRuntime.url}/v1`);
       }
 

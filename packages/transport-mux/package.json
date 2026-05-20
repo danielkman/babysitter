@@ -81,6 +81,10 @@
   },
   "dependencies": {
     "@a5c-ai/agent-mux-core": "5.0.0",
-    "hono": "^4.12.14"
+    "hono": "^4.12.14",
+    "ws": "^8.20.0"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.18.1"
   }
 }

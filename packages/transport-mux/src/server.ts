@@ -2,6 +2,7 @@ import * as http from 'node:http';
 import { randomUUID } from 'node:crypto';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
+import { WebSocket, WebSocketServer } from 'ws';
 
 import { Hono } from 'hono';
 
@@ -66,23 +67,45 @@ class MetricsTracker {
   }
 }
 
-function isAuthorized(req: Request, authToken?: string): boolean {
+function firstHeaderValue(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function isAuthorizedHeaderValues(
+  apiKey: string | null | undefined,
+  authorization: string | null | undefined,
+  authToken?: string,
+): boolean {
   if (!authToken) {
     return true;
   }
 
-  const apiKey = req.headers.get('x-api-key');
   if (apiKey === authToken) {
     return true;
   }
 
-  const authorization = req.headers.get('authorization');
   if (!authorization) {
     return false;
   }
 
   const [scheme, value] = authorization.split(/\s+/, 2);
   return scheme?.toLowerCase() === 'bearer' && value === authToken;
+}
+
+function isAuthorized(req: Request, authToken?: string): boolean {
+  return isAuthorizedHeaderValues(
+    req.headers.get('x-api-key'),
+    req.headers.get('authorization'),
+    authToken,
+  );
+}
+
+function isAuthorizedUpgrade(req: http.IncomingMessage, authToken?: string): boolean {
+  return isAuthorizedHeaderValues(
+    firstHeaderValue(req.headers['x-api-key']),
+    firstHeaderValue(req.headers['authorization']),
+    authToken,
+  );
 }
 
 function parseMessageContent(content: unknown): string {
@@ -140,6 +163,12 @@ function normalizeInput(input: unknown): string {
       .join(' ');
   }
   return '';
+}
+
+function toRecord(value: unknown): Record<string, unknown> | undefined {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : undefined;
 }
 
 function usageShape(result: CompletionResult) {
@@ -672,6 +701,144 @@ function openAiResponsesStreamResponse(
   );
 }
 
+function completionResultToResponseEvent(result: CompletionResult, config: ProxyConfig): Record<string, unknown> {
+  return {
+    type: 'response.completed',
+    response: openAiResponsesResponse(result, config),
+  };
+}
+
+async function sendOpenAiResponsesWebSocketStream(
+  ws: WebSocket,
+  stream: AsyncIterable<CompletionStreamEvent>,
+  config: ProxyConfig,
+): Promise<void> {
+  const responseId = `resp_${randomUUID()}`;
+
+  ws.send(JSON.stringify({
+    type: 'response.created',
+    response: { id: responseId, object: 'response', status: 'in_progress', model: config.targetModel },
+  }));
+  ws.send(JSON.stringify({
+    type: 'response.output_item.added',
+    output_index: 0,
+    item: { type: 'message', role: 'assistant', content: [] },
+  }));
+  ws.send(JSON.stringify({
+    type: 'response.content_part.added',
+    output_index: 0,
+    content_index: 0,
+    part: { type: 'output_text', text: '' },
+  }));
+
+  for await (const event of stream) {
+    if (event.type === 'text-delta' && event.text) {
+      ws.send(JSON.stringify({
+        type: 'response.output_text.delta',
+        output_index: 0,
+        content_index: 0,
+        delta: event.text,
+      }));
+    } else if (event.type === 'tool-call') {
+      ws.send(JSON.stringify({
+        type: 'response.output_item.added',
+        output_index: 1,
+        item: {
+          type: 'function_call',
+          id: event.id,
+          call_id: event.id,
+          name: event.name,
+          arguments: event.arguments,
+          ...event.metadata,
+        },
+      }));
+      ws.send(JSON.stringify({
+        type: 'response.output_item.done',
+        output_index: 1,
+        item: {
+          type: 'function_call',
+          id: event.id,
+          call_id: event.id,
+          name: event.name,
+          arguments: event.arguments,
+          ...event.metadata,
+        },
+      }));
+    }
+  }
+
+  ws.send(JSON.stringify({
+    type: 'response.output_text.done',
+    output_index: 0,
+    content_index: 0,
+  }));
+  ws.send(JSON.stringify({
+    type: 'response.completed',
+    response: { id: responseId, object: 'response', status: 'completed', model: config.targetModel },
+  }));
+}
+
+async function handleOpenAiResponsesWebSocketMessage(
+  ws: WebSocket,
+  data: WebSocket.RawData,
+  config: ProxyConfig,
+  completionEngine: CompletionEngine | undefined,
+  metrics: MetricsTracker,
+): Promise<void> {
+  let envelope: unknown;
+  try {
+    envelope = JSON.parse(data.toString('utf8'));
+  } catch {
+    ws.send(JSON.stringify({ type: 'error', error: { message: 'WebSocket message must be valid JSON.' } }));
+    return;
+  }
+
+  if (!envelope || typeof envelope !== 'object') {
+    ws.send(JSON.stringify({ type: 'error', error: { message: 'WebSocket message must be a JSON object.' } }));
+    return;
+  }
+
+  const record = envelope as Record<string, unknown>;
+  if (record['type'] !== 'response.create') {
+    ws.send(JSON.stringify({ type: 'error', error: { message: `Unsupported WebSocket event type: ${String(record['type'])}` } }));
+    return;
+  }
+
+  const body = toRecord(record['response']) ?? toRecord(record['payload']) ?? record;
+  const plan: CompletionExecutionPlan = {
+    body,
+    request: buildCompletionRequest(body, 'openai-responses', true),
+    streamRequested: true,
+  };
+  plan.request.model = config.targetModel;
+
+  try {
+    if (!completionEngine) {
+      ws.send(JSON.stringify({ type: 'error', error: { message: 'Responses WebSocket requires a configured completion engine.' } }));
+      metrics.recordError();
+      return;
+    }
+    if (completionEngine.stream) {
+      await sendOpenAiResponsesWebSocketStream(
+        ws,
+        trackCompletionStream(completionEngine.stream(plan.request), metrics),
+        config,
+      );
+      return;
+    }
+
+    const result = await completionEngine.complete(plan.request);
+    metrics.record(result.usage.promptTokens, result.usage.completionTokens);
+    ws.send(JSON.stringify(completionResultToResponseEvent(result, config)));
+  } catch (error: unknown) {
+    metrics.recordError();
+    ws.send(JSON.stringify({
+      type: 'error',
+      error: { message: error instanceof Error ? error.message : String(error) },
+    }));
+  }
+}
+
 function googleStreamResponse(stream: AsyncIterable<CompletionStreamEvent>): Response {
   const encoder = new TextEncoder();
 
@@ -1173,6 +1340,7 @@ export async function startProxyServer(
   config: ProxyConfig,
   completionEngine?: CompletionEngine,
 ): Promise<RunningProxyServer> {
+  const webSocketMetrics = new MetricsTracker();
   const app = createTransportMuxApp({ config, completionEngine });
 
   const server = http.createServer((req, res) => {
@@ -1197,6 +1365,30 @@ export async function startProxyServer(
     });
   });
 
+  const webSocketServer = new WebSocketServer({ noServer: true });
+  server.on('upgrade', (req, socket, head) => {
+    const url = new URL(req.url ?? '/', `http://${config.host}:${config.port}`);
+    if (url.pathname !== '/v1/responses' || config.exposedTransport !== 'openai-responses') {
+      socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
+      socket.destroy();
+      return;
+    }
+    if (!isAuthorizedUpgrade(req, config.authToken)) {
+      socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
+      socket.destroy();
+      return;
+    }
+
+    webSocketServer.handleUpgrade(req, socket, head, (ws) => {
+      webSocketServer.emit('connection', ws, req);
+    });
+  });
+  webSocketServer.on('connection', (ws) => {
+    ws.on('message', (data) => {
+      void handleOpenAiResponsesWebSocketMessage(ws, data, config, completionEngine, webSocketMetrics);
+    });
+  });
+
   await new Promise<void>((resolve, reject) => {
     server.once('error', reject);
     server.listen(config.port, config.host, () => resolve());
@@ -1212,7 +1404,13 @@ export async function startProxyServer(
     port: address.port,
     async stop() {
       await new Promise<void>((resolve, reject) => {
-        server.close((error) => (error ? reject(error) : resolve()));
+        webSocketServer.close((wsError) => {
+          if (wsError) {
+            reject(wsError);
+            return;
+          }
+          server.close((error) => (error ? reject(error) : resolve()));
+        });
       });
     },
   };

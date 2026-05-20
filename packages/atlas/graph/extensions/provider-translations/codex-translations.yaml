@@ -84,10 +84,13 @@ attributes:
     - envVar: OPENAI_API_KEY
       source: auth.apiKey
       condition: present
-  args: []
+  args:
+    - "-c"
+    - "openai_base_url=${params.apiBase}"
   notes: >
-    OpenAI-compatible providers for Codex. Sets OPENAI_BASE_URL from
-    apiBase and passes API key directly.
+    OpenAI-compatible providers for Codex. Sets OPENAI_BASE_URL for older
+    Codex builds and passes `-c openai_base_url=...` for newer Codex builds
+    that deprecate or ignore project-local/env base URL routing.
 edges:
   translates_for:
     - target: agent:codex
@@ -105,7 +108,9 @@ attributes:
   args: []
   notes: >
     Default fallback for unsupported providers on Codex.
-    Routes through transport-mux proxy exposing OpenAI Responses transport.
+    Routes through transport-mux proxy exposing OpenAI Responses transport;
+    launcher must pass the proxy URL as `-c openai_base_url=...` in addition
+    to legacy OPENAI_BASE_URL env wiring.
 edges:
   translates_for:
     - target: agent:codex

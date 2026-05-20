@@ -9,6 +9,12 @@ attributes:
   bridges:
     - model-transport:anthropic-messages
     - model-transport:openai-responses
+  exposedEndpoints:
+    - "POST /v1/responses"
+    - "WebSocket /v1/responses"
+  routingRequirements:
+    - "Codex launchers must pass -c openai_base_url=<proxy>/v1 in addition to OPENAI_BASE_URL."
+    - "Responses WebSocket clients authenticate with Authorization: Bearer <proxy-token>."
   signsResponses: false
 edges:
   realizes:

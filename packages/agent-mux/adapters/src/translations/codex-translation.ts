@@ -5,6 +5,10 @@ export function translateForCodex(config: ProviderConfig): HarnessProviderTransl
   const env: Record<string, string> = {};
   const args: string[] = [];
 
+  const addOpenAiBaseUrlConfig = (apiBase: string): void => {
+    args.push('-c', `openai_base_url=${apiBase}`);
+  };
+
   switch (config.provider) {
     case 'openai':
       if (config.auth.apiKey) env['OPENAI_API_KEY'] = config.auth.apiKey;
@@ -36,7 +40,11 @@ export function translateForCodex(config: ProviderConfig): HarnessProviderTransl
     case 'cerebras':
     case 'sambanova':
     case 'openrouter':
-      if (config.params['apiBase']) env['OPENAI_BASE_URL'] = String(config.params['apiBase']);
+      if (config.params['apiBase']) {
+        const apiBase = String(config.params['apiBase']);
+        env['OPENAI_BASE_URL'] = apiBase;
+        addOpenAiBaseUrlConfig(apiBase);
+      }
       if (config.auth.apiKey) env['OPENAI_API_KEY'] = config.auth.apiKey;
       env['ANTHROPIC_API_KEY'] = '';
       return { env, args, proxyRequired: false };

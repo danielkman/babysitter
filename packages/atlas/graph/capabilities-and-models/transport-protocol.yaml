@@ -89,14 +89,20 @@ attributes:
   protocolKind: "http-json"
   interactive: "false"
   streaming: "true"
-  requestShape: "POST /v1/responses"
-  responseShape: "response"
+  requestShape: "POST /v1/responses or WebSocket response.create on /v1/responses"
+  responseShape: "response object or response.* event stream"
   codecCapabilities:
     supportsTools: true
     supportsStreaming: true
     supportsTokenCounting: true
     costTracking: true
     toolSchemaFormat: "openai"
+    supportsWebSocket: true
+  configRouting: |
+    Newer Codex clients prefer the top-level `openai_base_url` config key
+    supplied via user config or `-c openai_base_url=...`; project-local
+    `.codex/config.toml` routing keys can be ignored. Keep OPENAI_BASE_URL
+    only as a backward-compatible fallback.
   evidenceRefs:
     - "repo-transport-mux-readme"
     - "repo-transport-mux-migration"

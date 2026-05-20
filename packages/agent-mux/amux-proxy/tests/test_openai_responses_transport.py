@@ -1,6 +1,7 @@
 from __future__ import annotations
 import pytest
 from unittest.mock import patch, AsyncMock, MagicMock
+from fastapi.testclient import TestClient
 from httpx import ASGITransport, AsyncClient
 from amux_proxy.server import create_app
 from amux_proxy.config import ProxyConfig
@@ -100,3 +101,40 @@ async def test_wrong_token_rejected(client: AsyncClient) -> None:
         headers={"Authorization": "Bearer wrong-token"},
     )
     assert resp.status_code == 401
+
+
+def test_responses_websocket(config: ProxyConfig) -> None:
+    async def stream_response():
+        chunk = MagicMock()
+        chunk.choices = [MagicMock()]
+        chunk.choices[0].delta.content = "Proxy websocket response"
+        yield chunk
+
+    async def completion(*_args: object, **_kwargs: object):
+        return stream_response()
+
+    app = create_app(config)
+    with patch("litellm.acompletion", new=completion), TestClient(app) as test_client:
+        with test_client.websocket_connect(
+            "/v1/responses",
+            headers={"Authorization": "Bearer test-token"},
+        ) as websocket:
+            websocket.send_json(
+                {
+                    "type": "response.create",
+                    "model": "gpt-4o",
+                    "input": "hello",
+                }
+            )
+            seen: list[str] = []
+            for _ in range(4):
+                event = websocket.receive_json()
+                seen.append(event["type"])
+                if event["type"] == "response.output_text.delta":
+                    assert event["delta"] == "Proxy websocket response"
+                if event["type"] == "response.completed":
+                    break
+
+    assert "response.created" in seen
+    assert "response.output_text.delta" in seen
+    assert "response.completed" in seen
