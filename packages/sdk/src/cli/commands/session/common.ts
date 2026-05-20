@@ -1,4 +1,4 @@
-import { getGlobalStateDir } from "../../../config";
+import { normalizeSessionStateDir } from "../../../config";
 
 export interface SessionCommandScopeArgs {
   sessionId?: string;
@@ -23,7 +23,7 @@ export function emitSessionCommandError(
 }
 
 export function resolveSessionStateDir(stateDir?: string): string {
-  return stateDir ?? getGlobalStateDir();
+  return normalizeSessionStateDir(stateDir ?? process.env.BABYSITTER_STATE_DIR);
 }
 
 export function requireSessionScope(

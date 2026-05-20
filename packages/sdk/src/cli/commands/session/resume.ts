@@ -1,6 +1,6 @@
 import { promises as fs } from 'node:fs';
 import * as path from 'node:path';
-import { DEFAULTS, getGlobalStateDir, resolveExistingRunDir, resolveRunsDir } from '../../../config';
+import { DEFAULTS, resolveExistingRunDir, resolveRunsDir } from '../../../config';
 import { loadJournal } from '../../../storage/journal';
 import { countPendingEffectsFromJournal, deriveObservedRunState } from '../../../runtime/runLifecycleState';
 import {
@@ -10,6 +10,7 @@ import {
   getSessionFilePath,
   writeSessionFile,
 } from '../../../session';
+import { resolveSessionStateDir } from './common';
 
 export interface SessionResumeArgs {
   sessionId?: string;
@@ -48,7 +49,7 @@ export async function handleSessionResume(args: SessionResumeArgs): Promise<numb
     );
   }
 
-  const stateDir = args.stateDir ?? getGlobalStateDir();
+  const stateDir = resolveSessionStateDir(args.stateDir);
   const maxIterations = args.maxIterations ?? DEFAULTS.maxIterations;
   const runsDir = args.runsDir ?? resolveRunsDir();
   const runDir = resolveExistingRunDir(runId, { override: runsDir });
