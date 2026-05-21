@@ -63,7 +63,7 @@ jobs:
           node scripts/sync-workspace-versions.mjs --version "$TARGET_VERSION"
           npm run build --workspace=@a5c-ai/atlas
           npm run build --workspace=@a5c-ai/agent-catalog
-          npm run build --workspace=@a5c-ai/agent-plugins-mux
+          npm run build --workspace=@a5c-ai/extension-mux
           npm run generate:plugins
 
       - name: Sync generated plugin repositories

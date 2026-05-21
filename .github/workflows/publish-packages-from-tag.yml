@@ -107,7 +107,7 @@ jobs:
           run_many "Build core packages" \
             @a5c-ai/hooks-mux-core \
             @a5c-ai/agent-mux-core \
-            @a5c-ai/agent-plugins-mux
+            @a5c-ai/extension-mux
 
           run_many "Build leaf adapter packages" \
             @a5c-ai/agent-mux-adapters \
@@ -195,7 +195,7 @@ jobs:
           publish_many "Publish core packages" \
             @a5c-ai/hooks-mux-core \
             @a5c-ai/agent-mux-core \
-            @a5c-ai/agent-plugins-mux
+            @a5c-ai/extension-mux
 
           publish_many "Publish leaf adapter packages" \
             @a5c-ai/agent-mux-adapters \

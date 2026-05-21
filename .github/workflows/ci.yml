@@ -189,15 +189,15 @@ jobs:
           set -euo pipefail
           npm run test:e2e --workspace=@a5c-ai/agent-mux-webui 2>&1 | tee artifacts/test-logs/agent-mux-webui-browser-e2e.log
 
-      - name: Build agent-plugins-mux
+      - name: Build extension-mux
         run: |
           set -euo pipefail
-          npm run build --workspace=@a5c-ai/agent-plugins-mux 2>&1 | tee artifacts/test-logs/agent-plugins-mux-build.log
+          npm run build --workspace=@a5c-ai/extension-mux 2>&1 | tee artifacts/test-logs/extension-mux-build.log
 
-      - name: agent-plugins-mux tests
+      - name: extension-mux tests
         run: |
           set -euo pipefail
-          npm run test --workspace=@a5c-ai/agent-plugins-mux 2>&1 | tee artifacts/test-logs/agent-plugins-mux-tests.log
+          npm run test --workspace=@a5c-ai/extension-mux 2>&1 | tee artifacts/test-logs/extension-mux-tests.log
 
       - name: Build babysitter-harness
         run: |
@@ -275,7 +275,7 @@ jobs:
           Release-critical workspaces validated in other CI/release jobs:
           - @a5c-ai/babysitter-sdk -> test + packages-sdk + release/staging publish
           - @a5c-ai/breakpoints-mux -> test + release/staging publish
-          - @a5c-ai/agent-plugins-mux -> test + release/staging publish
+          - @a5c-ai/extension-mux -> test + release/staging publish
           - @a5c-ai/babysitter-observer-dashboard -> observer-dashboard + release/staging publish
           - @a5c-ai/cloud -> workspace-coverage + release/staging publish + deploy-hook paths
           - @a5c-ai/hooks-mux-* -> test + release/staging publish

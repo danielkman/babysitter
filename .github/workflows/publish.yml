@@ -135,7 +135,7 @@ jobs:
             wait
             npm run build --workspace=@a5c-ai/hooks-mux-cli
           '
-          run_bg npm run build --workspace=@a5c-ai/agent-plugins-mux
+          run_bg npm run build --workspace=@a5c-ai/extension-mux
           run_bg npm run build --workspace=@a5c-ai/triggers
           run_bg npm run build:observer
           run_bg npm run build:cloud
@@ -611,10 +611,10 @@ jobs:
           set -euo pipefail
           mkdir -p artifacts/observer-compiler-logs
 
-      - name: Test agent-plugins-mux
+      - name: Test extension-mux
         run: |
           set -euo pipefail
-          npm run test --workspace=@a5c-ai/agent-plugins-mux 2>&1 | tee artifacts/observer-compiler-logs/agent-plugins-mux-tests.log
+          npm run test --workspace=@a5c-ai/extension-mux 2>&1 | tee artifacts/observer-compiler-logs/extension-mux-tests.log
 
       - name: Generate unified plugin bundles
         run: |
@@ -914,9 +914,9 @@ jobs:
           - name: agent-mux-core
             build: npm run build --workspace=@a5c-ai/atlas && npm run build --workspace=@a5c-ai/agent-catalog && npm run build --workspace=@a5c-ai/agent-mux-observability && npm run build --workspace=@a5c-ai/agent-mux-core
             publish: npm publish --workspace=@a5c-ai/agent-mux-core --access public --tag "$NPM_TAG"
-          - name: agent-plugins-mux
-            build: npm run build --workspace=@a5c-ai/atlas && npm run build --workspace=@a5c-ai/agent-catalog && npm run build --workspace=@a5c-ai/agent-plugins-mux
-            publish: npm publish --workspace=@a5c-ai/agent-plugins-mux --access public --tag "$NPM_TAG"
+          - name: extension-mux
+            build: npm run build --workspace=@a5c-ai/atlas && npm run build --workspace=@a5c-ai/agent-catalog && npm run build --workspace=@a5c-ai/extension-mux
+            publish: npm publish --workspace=@a5c-ai/extension-mux --access public --tag "$NPM_TAG"
     steps:
       - name: Download publish workspace
         uses: actions/download-artifact@v8
