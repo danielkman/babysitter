@@ -668,7 +668,7 @@ describe('primary live stack runner contract', () => {
         const transcript = '{"type":"turn_end","message":{"stopReason":"toolUse"},"toolResults":[]}';
         await fs.mkdir(path.join(cwd, '.a5c-live-test'), { recursive: true });
         await fs.writeFile(path.join(cwd, '.a5c-live-test', `${traceId}-odyssey.md`), transcript.repeat(80));
-        return { status: 0, stdout: '', stderr: '[amux launch] Output bridged to artifact' };
+        return { status: 0, stdout: '', stderr: '[amux launch] agent wrote invalid transcript artifact' };
       },
     });
 
@@ -714,7 +714,7 @@ describe('primary live stack runner contract', () => {
         return {
           status: 143,
           stdout: transcript,
-          stderr: '[amux launch] exit=143 captured=3444 chunks=6\n[amux launch] Output bridged to artifact',
+          stderr: '[amux launch] exit=143 captured=3444 chunks=6',
         };
       },
     });
@@ -756,7 +756,7 @@ describe('primary live stack runner contract', () => {
         if (!command.args.includes('launch')) return { status: 0, stdout: '{}', stderr: '' };
         await fs.mkdir(path.join(cwd, '.a5c-live-test'), { recursive: true });
         await fs.writeFile(path.join(cwd, '.a5c-live-test', `${traceId}-odyssey.md`), 'terminal transcript without greek markdown\n'.repeat(80));
-        return { status: 0, stdout: 'terminal transcript without task output', stderr: '[amux launch] Output bridged to /tmp/out.md (2400 bytes)' };
+        return { status: 0, stdout: 'terminal transcript without task output', stderr: '[amux launch] agent wrote invalid transcript artifact' };
       },
     });
 

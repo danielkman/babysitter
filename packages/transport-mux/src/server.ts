@@ -476,6 +476,49 @@ function encodeSseChunk(prefix: string, payload: unknown): string {
   return `${prefix}${JSON.stringify(payload)}\n\n`;
 }
 
+function openAiResponsesUsage(result?: CompletionResult) {
+  if (!result) return null;
+  return {
+    input_tokens: result.usage.promptTokens,
+    output_tokens: result.usage.completionTokens,
+    total_tokens: result.usage.totalTokens,
+  };
+}
+
+function openAiResponsesMessageItem(itemId: string, text: string, status: 'in_progress' | 'completed') {
+  return {
+    id: itemId,
+    type: 'message',
+    status,
+    role: 'assistant',
+    content: status === 'completed'
+      ? [{ type: 'output_text', text, annotations: [] }]
+      : [],
+  };
+}
+
+function openAiResponsesShape(input: {
+  readonly id: string;
+  readonly createdAt: number;
+  readonly config: ProxyConfig;
+  readonly status: 'in_progress' | 'completed';
+  readonly output?: readonly unknown[];
+  readonly usage?: ReturnType<typeof openAiResponsesUsage>;
+}) {
+  return {
+    id: input.id,
+    object: 'response',
+    created_at: input.createdAt,
+    status: input.status,
+    model: input.config.targetModel,
+    output: input.output ?? [],
+    parallel_tool_calls: true,
+    tool_choice: 'auto',
+    tools: [],
+    usage: input.usage ?? null,
+  };
+}
+
 function anthropicStreamResponse(
   stream: AsyncIterable<CompletionStreamEvent>,
   config: ProxyConfig,
@@ -663,19 +706,22 @@ function openAiChatStreamResponse(
 
 function openAiResponsesStreamResponse(
   stream: AsyncIterable<CompletionStreamEvent>,
-  _config: ProxyConfig,
+  config: ProxyConfig,
 ): Response {
   const encoder = new TextEncoder();
   const responseId = `resp_${randomUUID()}`;
+  const itemId = `msg_${randomUUID()}`;
+  const createdAt = Math.floor(Date.now() / 1000);
 
   return new Response(
     new ReadableStream({
       async start(controller) {
+        let outputText = '';
         controller.enqueue(
           encoder.encode(
             encodeSseChunk('event: response.created\ndata: ', {
               type: 'response.created',
-              response: { id: responseId, status: 'in_progress' },
+              response: openAiResponsesShape({ id: responseId, createdAt, config, status: 'in_progress' }),
             }),
           ),
         );
@@ -684,7 +730,7 @@ function openAiResponsesStreamResponse(
             encodeSseChunk('event: response.output_item.added\ndata: ', {
               type: 'response.output_item.added',
               output_index: 0,
-              item: { type: 'message', role: 'assistant' },
+              item: openAiResponsesMessageItem(itemId, '', 'in_progress'),
             }),
           ),
         );
@@ -692,19 +738,22 @@ function openAiResponsesStreamResponse(
           encoder.encode(
             encodeSseChunk('event: response.content_part.added\ndata: ', {
               type: 'response.content_part.added',
+              item_id: itemId,
               output_index: 0,
               content_index: 0,
-              part: { type: 'output_text', text: '' },
+              part: { type: 'output_text', text: '', annotations: [] },
             }),
           ),
         );
 
         for await (const event of stream) {
           if (event.type === 'text-delta' && event.text) {
+            outputText += event.text;
             controller.enqueue(
               encoder.encode(
                 encodeSseChunk('event: response.output_text.delta\ndata: ', {
                   type: 'response.output_text.delta',
+                  item_id: itemId,
                   output_index: 0,
                   content_index: 0,
                   delta: event.text,
@@ -714,12 +763,35 @@ function openAiResponsesStreamResponse(
           }
         }
 
+        const messageItem = openAiResponsesMessageItem(itemId, outputText, 'completed');
         controller.enqueue(
           encoder.encode(
             encodeSseChunk('event: response.output_text.done\ndata: ', {
               type: 'response.output_text.done',
+              item_id: itemId,
               output_index: 0,
               content_index: 0,
+              text: outputText,
+            }),
+          ),
+        );
+        controller.enqueue(
+          encoder.encode(
+            encodeSseChunk('event: response.content_part.done\ndata: ', {
+              type: 'response.content_part.done',
+              item_id: itemId,
+              output_index: 0,
+              content_index: 0,
+              part: { type: 'output_text', text: outputText, annotations: [] },
+            }),
+          ),
+        );
+        controller.enqueue(
+          encoder.encode(
+            encodeSseChunk('event: response.output_item.done\ndata: ', {
+              type: 'response.output_item.done',
+              output_index: 0,
+              item: messageItem,
             }),
           ),
         );
@@ -727,7 +799,7 @@ function openAiResponsesStreamResponse(
           encoder.encode(
             encodeSseChunk('event: response.completed\ndata: ', {
               type: 'response.completed',
-              response: { id: responseId, status: 'completed' },
+              response: openAiResponsesShape({ id: responseId, createdAt, config, status: 'completed', output: [messageItem] }),
             }),
           ),
         );
@@ -751,27 +823,33 @@ async function sendOpenAiResponsesWebSocketStream(
   config: ProxyConfig,
 ): Promise<void> {
   const responseId = `resp_${randomUUID()}`;
+  const itemId = `msg_${randomUUID()}`;
+  const createdAt = Math.floor(Date.now() / 1000);
+  let outputText = '';
 
   ws.send(JSON.stringify({
     type: 'response.created',
-    response: { id: responseId, object: 'response', status: 'in_progress', model: config.targetModel },
+    response: openAiResponsesShape({ id: responseId, createdAt, config, status: 'in_progress' }),
   }));
   ws.send(JSON.stringify({
     type: 'response.output_item.added',
     output_index: 0,
-    item: { type: 'message', role: 'assistant', content: [] },
+    item: openAiResponsesMessageItem(itemId, '', 'in_progress'),
   }));
   ws.send(JSON.stringify({
     type: 'response.content_part.added',
+    item_id: itemId,
     output_index: 0,
     content_index: 0,
-    part: { type: 'output_text', text: '' },
+    part: { type: 'output_text', text: '', annotations: [] },
   }));
 
   for await (const event of stream) {
     if (event.type === 'text-delta' && event.text) {
+      outputText += event.text;
       ws.send(JSON.stringify({
         type: 'response.output_text.delta',
+        item_id: itemId,
         output_index: 0,
         content_index: 0,
         delta: event.text,
@@ -804,14 +882,29 @@ async function sendOpenAiResponsesWebSocketStream(
     }
   }
 
+  const messageItem = openAiResponsesMessageItem(itemId, outputText, 'completed');
   ws.send(JSON.stringify({
     type: 'response.output_text.done',
+    item_id: itemId,
     output_index: 0,
     content_index: 0,
+    text: outputText,
+  }));
+  ws.send(JSON.stringify({
+    type: 'response.content_part.done',
+    item_id: itemId,
+    output_index: 0,
+    content_index: 0,
+    part: { type: 'output_text', text: outputText, annotations: [] },
+  }));
+  ws.send(JSON.stringify({
+    type: 'response.output_item.done',
+    output_index: 0,
+    item: messageItem,
   }));
   ws.send(JSON.stringify({
     type: 'response.completed',
-    response: { id: responseId, object: 'response', status: 'completed', model: config.targetModel },
+    response: openAiResponsesShape({ id: responseId, createdAt, config, status: 'completed', output: [messageItem] }),
   }));
 }
 
@@ -1098,20 +1191,16 @@ function openAiChatResponse(result: CompletionResult, config: ProxyConfig) {
 }
 
 function openAiResponsesResponse(result: CompletionResult, config: ProxyConfig) {
-  return {
+  const createdAt = Math.floor(Date.now() / 1000);
+  const item = openAiResponsesMessageItem(`msg_${randomUUID()}`, result.text, 'completed');
+  return openAiResponsesShape({
     id: result.id,
-    object: 'response',
+    createdAt,
+    config,
     status: 'completed',
-    model: config.targetModel,
-    output: [
-      {
-        type: 'message',
-        role: 'assistant',
-        content: [{ type: 'output_text', text: result.text }],
-      },
-    ],
-    usage: usageShape(result),
-  };
+    output: [item],
+    usage: openAiResponsesUsage(result),
+  });
 }
 
 function googleResponse(result: CompletionResult) {

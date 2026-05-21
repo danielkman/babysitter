@@ -1482,31 +1482,6 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
   for (const cleanup of ptyCleanup.splice(0)) cleanup();
   if (ptyTerminationExpected && exitCode !== 0) exitCode = 0;
 
-  // Output-to-file bridge: write captured output to expected artifact path
-  // for agents without native file-writing tools (Pi, Hermes, etc.)
-  const capturedLen = capturedOutputChunks.reduce((a, c) => a + c.length, 0);
-  console.error(`[amux launch] exit=${exitCode} captured=${capturedLen} chunks=${capturedOutputChunks.length} prompt=${(prompt ?? '').slice(0, 60)}`);
-  if (capturedOutputChunks.length > 0) {
-    const bridgeArtifactPaths = extractPromptArtifactPaths(prompt, launchCwd);
-    console.error(`[amux launch] bridge paths: ${JSON.stringify(bridgeArtifactPaths)}`);
-    if (bridgeArtifactPaths.length > 0) {
-      const rawOutput = capturedOutputChunks.join('');
-      const cleanOutput = rawOutput.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '');
-      if (cleanOutput.length >= 200) {
-        const fsBridge = await import('node:fs/promises');
-        const { dirname: dirnameBridge } = await import('node:path');
-        for (const artifactPath of bridgeArtifactPaths) {
-          try { await fsBridge.access(artifactPath); continue; } catch { /* doesn't exist yet */ }
-          await fsBridge.mkdir(dirnameBridge(artifactPath), { recursive: true });
-          await fsBridge.writeFile(artifactPath, cleanOutput);
-          console.error(`[amux launch] Output bridged to ${artifactPath} (${cleanOutput.length} bytes)`);
-        }
-      } else {
-        console.error(`[amux launch] bridge did not write artifact: cleanOutput too short (${cleanOutput.length} < 200)`);
-      }
-    }
-  }
-
   process.off('SIGINT', forwardSignal);
   process.off('SIGTERM', forwardSignal);
 
