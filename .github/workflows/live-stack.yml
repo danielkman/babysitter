@@ -129,7 +129,9 @@ jobs:
       - name: Package dist directories
         run: |
           TEMP_DIR=$(echo "${RUNNER_TEMP}" | sed 's|\\|/|g')
-          find packages -path '*/dist' -type d | tar czf "${TEMP_DIR}/build-all-dist.tar.gz" --force-local -T -
+          TAR_LOCAL_FLAG=""
+          if [[ "$RUNNER_OS" == "Windows" ]]; then TAR_LOCAL_FLAG="--force-local"; fi
+          find packages -path '*/dist' -type d | tar czf "${TEMP_DIR}/build-all-dist.tar.gz" $TAR_LOCAL_FLAG -T -
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v7
@@ -335,7 +337,9 @@ jobs:
       - name: Extract build artifacts
         run: |
           TEMP_DIR=$(echo "${RUNNER_TEMP}" | sed 's|\\|/|g')
-          tar xzf "${TEMP_DIR}/build-all-dist.tar.gz" --force-local
+          TAR_LOCAL_FLAG=""
+          if [[ "$RUNNER_OS" == "Windows" ]]; then TAR_LOCAL_FLAG="--force-local"; fi
+          tar xzf "${TEMP_DIR}/build-all-dist.tar.gz" $TAR_LOCAL_FLAG
 
       - name: Install node-pty for TTY-based tool use
         run: npm install node-pty --no-save
