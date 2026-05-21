@@ -478,6 +478,97 @@ describe('primary live stack runner contract', () => {
     expect(hookCheck?.detail).toContain('run completed');
   });
 
+  it('accepts create-mode plugin lanes when Babysitter run proof exists without a persisted process file', async () => {
+    const cwd = await fs.mkdtemp(path.join(os.tmpdir(), 'live-stack-create-run-proof-'));
+    const artifactsDir = path.join(cwd, 'artifacts');
+    const traceId = 'trace-create-run-proof';
+    const runId = 'run-create-proof';
+
+    const result = await runPrimaryLiveStackScenario({
+      cwd,
+      artifactsDir,
+      executeLiveProvider: true,
+      env: {
+        AZURE_API_KEY: 'sk-live-secret',
+        AMUX_API_BASE: 'https://foundry.example.test',
+        LIVE_STACK_TRACE_ID: traceId,
+        LIVE_STACK_PROCESS_MODE: 'create',
+        LIVE_STACK_INTERACTIVE: 'false',
+        LIVE_STACK_BRIDGE_INTERACTIVE: 'true',
+        LIVE_STACK_BRIDGE_HOOKS: 'true',
+      },
+      executeCommand: async (command) => {
+        if (!command.args.includes('launch')) return { status: 0, stdout: '{}', stderr: '' };
+
+        await fs.mkdir(path.join(cwd, '.a5c-live-test'), { recursive: true });
+        await fs.writeFile(path.join(cwd, '.a5c-live-test', `${traceId}-odyssey.md`), '# Odyssey\n\n' + 'Greek text ΑΒΓ about Homer and Odyssey. '.repeat(80));
+        const runDir = path.join(cwd, '.a5c', 'runs', runId);
+        await fs.mkdir(path.join(runDir, 'journal'), { recursive: true });
+        await fs.writeFile(path.join(runDir, 'run.json'), JSON.stringify({ processId: 'processes/live-stack/summarize-translate-test', metadata: { completionProof: `${runId}-proof` } }));
+        await writeMinimalJournal(path.join(runDir, 'journal'), true);
+
+        return {
+          status: 0,
+          stdout: [
+            'agentMuxRunId: amux-run-1',
+            'agentMuxSessionId: amux-session-1',
+            `babysitterRunId: ${runId}`,
+            'babysitterEffectId: effect-1',
+            'hookEventId: hook-1',
+            'hookMuxEventId: hookmux-1',
+            `transportTraceId: ${traceId}`,
+          ].join('\n'),
+          stderr: '',
+        };
+      },
+    });
+
+    expect(result.status).toBe('passed');
+    expect(result.verifications?.find(v => v.name === 'process-creation')?.detail).toContain('run proof');
+  });
+
+  it('does not treat bridged auth errors as valid Odyssey artifacts', async () => {
+    const cwd = await fs.mkdtemp(path.join(os.tmpdir(), 'live-stack-bridged-auth-error-'));
+    const artifactsDir = path.join(cwd, 'artifacts');
+    const traceId = 'trace-bridged-auth-error';
+
+    const result = await runPrimaryLiveStackScenario({
+      cwd,
+      artifactsDir,
+      executeLiveProvider: true,
+      requireRunnable: true,
+      env: {
+        AZURE_API_KEY: 'sk-live-secret',
+        AMUX_API_BASE: 'https://foundry.example.test',
+        LIVE_STACK_TRACE_ID: traceId,
+        LIVE_STACK_PROCESS_MODE: 'create',
+        LIVE_STACK_SCENARIO_ID: 'live.agent-mux.codex.foundry-openai.gpt-5.5',
+        LIVE_STACK_AGENT_PATH: 'agent-mux',
+        LIVE_STACK_AGENT: 'codex',
+        LIVE_STACK_AMUX_AGENT: 'codex',
+        LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin',
+        LIVE_STACK_INSTALL_MODE: 'babysitter-plugin',
+        LIVE_STACK_PROVIDER: 'foundry-openai',
+        LIVE_STACK_AMUX_PROVIDER: 'foundry',
+        LIVE_STACK_MODEL: 'gpt-5.5',
+        LIVE_STACK_CREDENTIAL_MODE: 'github-org-secrets-and-vars',
+        LIVE_STACK_REQUIRED_ENV: 'AZURE_API_KEY,AMUX_API_BASE',
+        LIVE_STACK_LAYERS: 'babysitter-plugin',
+        LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId',
+        LIVE_STACK_EXPECTED_ARTIFACTS: 'agent-mux-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted',
+      },
+      executeCommand: async (command) => {
+        if (!command.args.includes('launch')) return { status: 0, stdout: '{}', stderr: '' };
+        await fs.mkdir(path.join(cwd, '.a5c-live-test'), { recursive: true });
+        await fs.writeFile(path.join(cwd, '.a5c-live-test', `${traceId}-odyssey.md`), 'ERROR: unexpected status 401 Unauthorized\n'.repeat(40));
+        return { status: 1, stdout: '', stderr: 'ERROR: unexpected status 401 Unauthorized: Unauthorized, url: http://127.0.0.1:46085/v1/responses' };
+      },
+    });
+
+    expect(result.status).toBe('skipped');
+    expect(result.skipReason).toContain('configured credentials were rejected');
+  });
+
   it('writes a redacted failed artifact when live output lacks required joined trace IDs', async () => {
     const artifactsDir = await fs.mkdtemp(path.join(os.tmpdir(), 'live-stack-artifacts-'));
     const result = await runPrimaryLiveStackScenario({
