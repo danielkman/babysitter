@@ -346,8 +346,11 @@ export async function runPrimaryLiveStackScenario(options: PrimaryLiveRunOptions
 
   await writeVerificationReport(options.artifactsDir, scenario, verifications, options.env, commandOutput);
 
+  const outputArtifactContent = traceId
+    ? await readLiveStackOutputArtifactContent(options.cwd, traceId)
+    : '';
   const skippableBehaviorReason = allFailures.length > 0
-    ? classifySkippableLiveProviderFailure({ status: 0, stdout: commandOutput, stderr: '' })
+    ? classifySkippableLiveProviderFailure({ status: 0, stdout: `${commandOutput}\n${outputArtifactContent}`, stderr: '' })
     : undefined;
   if (skippableBehaviorReason) {
     const artifactPath = await writeScenarioArtifact(options.artifactsDir, scenario, {
@@ -1049,6 +1052,14 @@ function isValidOdysseyArtifactContent(content: string): boolean {
   if (!/[\u0370-\u03ff]/u.test(content)) return false;
   if (!/^#{1,3}\s+/m.test(content)) return false;
   return /Odyssey|Homer|Ὀδύσσεια|Οδύσσεια|Οδυσσ/i.test(content);
+}
+
+async function readLiveStackOutputArtifactContent(cwd: string, traceId: string): Promise<string> {
+  try {
+    return await fs.readFile(path.join(cwd, '.a5c-live-test', `${traceId}-odyssey.md`), 'utf8');
+  } catch {
+    return '';
+  }
 }
 
 function redactCommands(commands: readonly CommandExecution[]): readonly CommandExecution[] {

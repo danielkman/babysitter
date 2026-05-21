@@ -645,7 +645,7 @@ describe('primary live stack runner contract', () => {
         const transcript = '{"type":"turn_end","message":{"stopReason":"toolUse"},"toolResults":[]}';
         await fs.mkdir(path.join(cwd, '.a5c-live-test'), { recursive: true });
         await fs.writeFile(path.join(cwd, '.a5c-live-test', `${traceId}-odyssey.md`), transcript.repeat(80));
-        return { status: 0, stdout: transcript, stderr: '' };
+        return { status: 0, stdout: '', stderr: '[amux launch] Output bridged to artifact' };
       },
     });
 
