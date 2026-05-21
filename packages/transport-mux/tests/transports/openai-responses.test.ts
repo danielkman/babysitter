@@ -67,6 +67,7 @@ describe('openai responses transport', () => {
     expect(body).toContain('event: response.output_text.delta');
     expect(body).toContain('Proxy response');
     expect(body).toContain('event: response.completed');
+    expect(body).toContain('data: [DONE]');
     expect(engine.requests[0]?.stream).toBe(true);
   });
 

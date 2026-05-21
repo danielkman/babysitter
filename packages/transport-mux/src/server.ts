@@ -803,6 +803,7 @@ function openAiResponsesStreamResponse(
             }),
           ),
         );
+        controller.enqueue(encoder.encode('data: [DONE]\n\n'));
         controller.close();
       },
     }),
