@@ -21,7 +21,7 @@ export function makeSpawnRunner(echo: boolean): SpawnRunner {
     new Promise((resolve, reject) => {
       const child = spawn(command, args, {
         stdio: ['ignore', 'pipe', 'pipe'],
-        shell: false,
+        shell: process.platform === 'win32',
         windowsHide: true,
       });
       let stdout = '';
