@@ -123,7 +123,7 @@ For the meta-schema (how a node-kind file is structured), see
 | `Blueprint` | markdown bundle agent reads to install/configure projects (a5c-flavored). Marketplaces a blueprint is published in are recorded via `sourced_from` to a `SourceRef` with `kind: git-marketplace` (the former dedicated `Marketplace` NodeKind was folded into `SourceRef` in the 2026-04-29 remodel). |
 | `ExtensionInterface` | a contract an extension fulfills (a5c-flavored: reliability-interface, memory-interface, …) |
 | `PluginArtifact` | a single deliverable file (manifest, command, hook script, MCP config, container image, …) emitted by a `PluginTarget` / `AgentVersion` |
-| `PluginTarget` | per-agent target spec used by the agent-plugins-mux / extension-mux to compile a `Plugin` / `PortableExtension` into a `NativeExtension` (manifest format, command format, install layout, package metadata, distribution model) |
+| `PluginTarget` | per-agent target spec used by the extension-mux / extension-mux to compile a `Plugin` / `PortableExtension` into a `NativeExtension` (manifest format, command format, install layout, package metadata, distribution model) |
 | `LSPServer` | language server bundled in a plugin (Claude Code `.lsp.json`) |
 | `BackgroundMonitor` | long-running monitor bundled in a plugin (Claude Code `monitors/monitors.json`) |
 | `BinaryProvider` | `bin/` executables added to `PATH` on install |

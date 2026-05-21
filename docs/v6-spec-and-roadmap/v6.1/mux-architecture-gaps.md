@@ -11,7 +11,7 @@ The Atlas graph defines **9 canonical muxes** as the bridging abstractions of th
 | `agent-config-mux` | config | Per-agent config/auth/install → unified ops | `agent-mux-cli` (install.ts), `agent-mux-adapters` |
 | `hooks-mux` | lifecycle-hook | Native hook names → canonical taxonomy | `hooks-mux-cli`, `hooks-mux-core`, `hooks-mux-adapter-*` |
 | `transport-mux` | inference | Wire protocols → canonical request/response | `transport-mux` |
-| `extension-mux` | plugin | Portable Extension → per-agent native formats | `agent-plugins-mux` |
+| `extension-mux` | plugin | Portable Extension → per-agent native formats | `extension-mux` |
 | `session-storage-mux` | storage | Session files at rest | `babysitter-sdk` (session module) |
 | `tasks-mux` | approval | Trust chain for breakpoint answers | `breakpoints-mux` |
 | `tool-mux` | tool-dispatch | Tool calls across MCP, CLI, hooks | No dedicated package |
@@ -127,7 +127,7 @@ The Atlas graph defines **9 canonical muxes** as the bridging abstractions of th
 
 ---
 
-### 6. extension-mux → `agent-plugins-mux`
+### 6. extension-mux → `extension-mux`
 
 **Graph description:** Compiles one Portable Extension manifest into per-agent native formats via per-target generators.
 
@@ -139,7 +139,7 @@ The Atlas graph defines **9 canonical muxes** as the bridging abstractions of th
 **Gaps:**
 | ID | Severity | Gap |
 |----|----------|-----|
-| M-EXTENSION-01 | S3 | Graph uses "extension-mux"; package is "agent-plugins-mux" — naming mismatch |
+| M-EXTENSION-01 | S3 | Graph uses "extension-mux"; package is "extension-mux" — naming mismatch |
 | M-EXTENSION-02 | S3 | "Portable Extension" concept exists in graph but API is "plugin manifest" in code |
 
 ---
@@ -207,7 +207,7 @@ The graph defines three implementation node kinds for the agent stack:
 |-----------|-------|---------|------|
 | AgentCoreImpl | L4 | `agent-core` | Unified agent loop (babysitter-native) |
 | AgentRuntimeImpl | L5 | `babysitter-agent` | Host process, CLI, seam contracts |
-| AgentPlatformImpl | L6 | `agent-plugins-mux` + `agent-catalog` | Extensions, distribution, ecosystem |
+| AgentPlatformImpl | L6 | `extension-mux` + `agent-catalog` | Extensions, distribution, ecosystem |
 
 But `agent-mux-core` also implements L4-L5 concerns (event dispatch, session management, adapter registry) without being an "AgentCoreImpl" in the graph.
 
@@ -239,5 +239,5 @@ But `agent-mux-core` also implements L4-L5 concerns (event dispatch, session man
 | P1 | transport-mux codec incomplete (M-TRANSPORT-01) | Tool schemas dropped, cost tracking missing |
 | P1 | agent-comm-mux event schema not formalized (M-COMM-02) | Each adapter emits different shapes |
 | P2 | agent-mux-core not represented in graph (decomposition gap) | Graph doesn't reflect reality |
-| P2 | extension-mux ≠ agent-plugins-mux naming (M-EXTENSION-01) | Confusing for contributors |
+| P2 | extension-mux ≠ extension-mux naming (M-EXTENSION-01) | Confusing for contributors |
 | P2 | tasks-mux ≠ breakpoints-mux naming (M-TASKS-01) | Confusing for contributors |

@@ -623,13 +623,13 @@ edges:
   - source-ref:mcp-servers-registry
 ---
 nodeKind: Claim
-id: claim:a5c-mcp-source-ref-source-ref-packages-agent-plugins-mux-ref
+id: claim:a5c-mcp-source-ref-source-ref-packages-extension-mux-ref
 attributes:
-  subjectId: source-ref:packages-agent-plugins-mux
+  subjectId: source-ref:packages-extension-mux
   attribute: ref
   value: main
   subjectKind: SourceRef
-  statement: source-ref:packages-agent-plugins-mux ref is main.
+  statement: source-ref:packages-extension-mux ref is main.
   confidence: medium
   provenanceKind: observation
   evidenceStrength: moderate
@@ -644,16 +644,16 @@ edges:
   backed_by_evidence:
   - evidence:a5c-mcp-source-ref-catalog-source-2026-05
   about_subject:
-  - source-ref:packages-agent-plugins-mux
+  - source-ref:packages-extension-mux
 ---
 nodeKind: Claim
-id: claim:a5c-mcp-source-ref-source-ref-packages-agent-plugins-mux-repourl
+id: claim:a5c-mcp-source-ref-source-ref-packages-extension-mux-repourl
 attributes:
-  subjectId: source-ref:packages-agent-plugins-mux
+  subjectId: source-ref:packages-extension-mux
   attribute: repoUrl
   value: https://github.com/a5c-ai/babysitter
   subjectKind: SourceRef
-  statement: source-ref:packages-agent-plugins-mux repoUrl is https://github.com/a5c-ai/babysitter.
+  statement: source-ref:packages-extension-mux repoUrl is https://github.com/a5c-ai/babysitter.
   confidence: medium
   provenanceKind: observation
   evidenceStrength: moderate
@@ -668,4 +668,4 @@ edges:
   backed_by_evidence:
   - evidence:a5c-mcp-source-ref-catalog-source-2026-05
   about_subject:
-  - source-ref:packages-agent-plugins-mux
+  - source-ref:packages-extension-mux

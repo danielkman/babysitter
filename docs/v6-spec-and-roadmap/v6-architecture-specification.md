@@ -109,7 +109,7 @@ The following may become real later, but are not part of the current normative t
 These names can remain as exploratory vocabulary, but they are not yet committed deliverables.
 Implementation plans may mention them only as exploratory labels or appendix material. They must not appear as phase deliverables, package-creation steps, or success criteria unless a later decision record explicitly promotes them into scope.
 
-That deferment does not mean metaplugins are absent from the current stack. V6 can describe metaplugins as a present-day capability abstraction over plugin and hook surfaces, including on legacy non-Babysitter agents. What is deferred is the standalone package vocabulary around them. The concrete delivery path that exists now is unified plugin authoring plus compiled per-harness bundles, with `agent-plugins-mux` acting as the compiler rather than the metaplugin layer itself.
+That deferment does not mean metaplugins are absent from the current stack. V6 can describe metaplugins as a present-day capability abstraction over plugin and hook surfaces, including on legacy non-Babysitter agents. What is deferred is the standalone package vocabulary around them. The concrete delivery path that exists now is unified plugin authoring plus compiled per-harness bundles, with `extension-mux` acting as the compiler rather than the metaplugin layer itself.
 
 ## 6. Decision Record Requirements
 
@@ -161,7 +161,7 @@ The slice should stop or roll back if:
 - define extraction gates and decision records,
 - document performance and security claims conservatively,
 - use plugin manifests and package outputs as reality checks for the compiler/toolchain.
-- document metaplugins as capability-level abstractions over plugin and hook surfaces, and document `agent-plugins-mux` as the compiler and distribution path for the concrete bundles those abstractions need on legacy non-Babysitter agents.
+- document metaplugins as capability-level abstractions over plugin and hook surfaces, and document `extension-mux` as the compiler and distribution path for the concrete bundles those abstractions need on legacy non-Babysitter agents.
 
 ### 8.2 Deferred
 

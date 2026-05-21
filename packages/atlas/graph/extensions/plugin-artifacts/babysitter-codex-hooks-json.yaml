@@ -11,7 +11,7 @@ attributes:
     - "shell-via-hooks-mux-cli"
   contextFiles:
     - plugins/babysitter-codex/hooks.json
-    - packages/agent-plugins-mux/src/targets/codex.ts
+    - packages/extension-mux/src/targets/codex.ts
 edges:
   emits_artifact:
     - target: plugin-target:codex

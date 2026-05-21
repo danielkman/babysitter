@@ -27,7 +27,7 @@ These workspaces ship public packages or release-facing operational behavior. Th
 | --- | --- | --- |
 | `packages/sdk` (`@a5c-ai/babysitter-sdk`) | Core SDK and CLI runtime | `.github/workflows/ci.yml` jobs `test` and `packages-sdk`, plus `publish.yml` and `publish-packages-from-tag.yml` |
 | `packages/breakpoints-mux` | Published breakpoint runtime | `.github/workflows/ci.yml` job `test`, plus `publish.yml` and `publish-packages-from-tag.yml` |
-| `packages/agent-plugins-mux` | Published plugin compiler/runtime package | `.github/workflows/ci.yml` job `test`, plus `publish.yml` and `publish-packages-from-tag.yml` |
+| `packages/extension-mux` | Published plugin compiler/runtime package | `.github/workflows/ci.yml` job `test`, plus `publish.yml` and `publish-packages-from-tag.yml` |
 | `packages/observer-dashboard` | Published observer dashboard package | `.github/workflows/ci.yml` job `observer-dashboard`, plus `publish.yml` and `publish-packages-from-tag.yml` |
 | `packages/hooks-mux/*` | Published hooks-mux packages | `.github/workflows/ci.yml` job `test`, plus `publish.yml` and `publish-packages-from-tag.yml` |
 | `packages/agent-mux/*` | Published agent-mux packages | `.github/workflows/ci.yml` job `test`, plus `publish.yml` and `publish-packages-from-tag.yml` |

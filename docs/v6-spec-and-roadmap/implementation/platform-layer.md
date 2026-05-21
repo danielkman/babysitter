@@ -31,7 +31,7 @@ The platform layer builds on the foundation by hardening plugin, session, and ex
 - Treat orchestration-plugin vocabulary as exploratory only unless a decision record changes its classification
 - Preserve process-library and SDK integration as present-day implementation surfaces
 
-If a future standalone package is ever pursued here, it should host proved composition logic rather than replace concrete plugin packaging. The current repository evidence still treats unified plugins and per-harness bundles as the install surfaces, with `agent-plugins-mux` compiling those outputs.
+If a future standalone package is ever pursued here, it should host proved composition logic rather than replace concrete plugin packaging. The current repository evidence still treats unified plugins and per-harness bundles as the install surfaces, with `extension-mux` compiling those outputs.
 
 ## Deliverables
 

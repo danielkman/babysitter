@@ -4282,7 +4282,7 @@ breaking them.
 - `agent-mux/core/src/host-detection.ts` — `getHostSignalMap`, `getHostMetadataFields`, `getHostDetectionRules`
 - `agent-mux/core/src/invocation.ts` — `getHarnessImages`, `lookupHarnessImage`
 - `hooks-mux/core/src/discovery/detector.ts` — `getHooksMuxDetectionRules`
-- `agent-plugins-mux/src/targets/index.ts` — `listPluginTargetDescriptors`, `getPluginTargetDescriptor`, `getHookNameMap` (mux generator critical)
+- `extension-mux/src/targets/index.ts` — `listPluginTargetDescriptors`, `getPluginTargetDescriptor`, `getHookNameMap` (mux generator critical)
 - `sdk/src/harness/discovery.ts` + `amuxFallbackMetadata.ts` — `getFallbackHarnessMetadata`, agent-version listings
 - `catalog/src/app/api/...` — `listCatalogAgents`, `listProcessDescriptors`, etc.
 
@@ -4311,12 +4311,12 @@ codegen — no concept is wholly missing. Cutover blocks on field-level
 backfill (~10 PluginTarget fields), 2 small data backfills, an id-alias
 shim, and a re-bundling adapter for HarnessFallbackMetadata. None of these
 are graph-design issues; they are migration mechanics. Verdict is yellow
-because shipping the cutover today would break agent-plugins-mux templates
+because shipping the cutover today would break extension-mux templates
 and `--mode docker` invocations.
 
 ### Top 3 blockers
 
-1. **PluginTarget field-set backfill** — agent-plugins-mux mux generator
+1. **PluginTarget field-set backfill** — extension-mux mux generator
    relies on 10+ flat string-token fields (e.g. `manifestFormat: "plugin.json
    + openclaw.plugin.json"`, `packageMetadata.binScriptExt: ".js"`) that drive
    per-harness adapter templates. Without them, the mux generator emits
@@ -4361,7 +4361,7 @@ and `--mode docker` invocations.
 
 catalog pass 91 closes the three blockers catalog pass 90 identified as preventing atlas from
 replacing the legacy `packages/agent-catalog/graph/` (consumed by
-`agent-mux/core`, `agent-plugins-mux`, `hooks-mux/core`).
+`agent-mux/core`, `extension-mux`, `hooks-mux/core`).
 
 ### Blocker #1: PluginTarget codegen field-set — CLOSED
 
@@ -4465,7 +4465,7 @@ referenced by mux-generator codegen per the catalog pass 90
 The 3 blockers catalog pass 90 flagged as preventing atlas from replacing the legacy
 graph are closed. atlas PluginTarget records now carry the legacy codegen
 field-set verbatim; harness image lookup has parity; the alias shim
-covers every record consumed by `agent-plugins-mux`,
+covers every record consumed by `extension-mux`,
 `agent-mux/core`, and `hooks-mux/core`.
 
 Residual amber items (NOT atlas-replacement blockers; tracked for
@@ -4596,7 +4596,7 @@ already lives at `sdk/src/harness/amuxFallbackMetadata.contract.test.ts`.
 ### Migration-readiness verdict — **COMPLETE**
 
 All five legacy `agent-catalog` SDK consumers (agent-mux,
-agent-plugins-mux, hooks-mux, sdk/harness/*, catalog API) now resolve
+extension-mux, hooks-mux, sdk/harness/*, catalog API) now resolve
 against the atlas graph: four directly via existing accessors with the atlas
 field-set in place, one (HarnessFallbackMetadata) via a thin frozen
 adapter spec. No graph data/schema gap remains; only the consumer-side
@@ -5010,7 +5010,7 @@ Top-level mux + catalog packages:
    `core`, `cli`, `gateway`, `tui`, `ui`, `webui`, `harness-mock`,
    `observability`, `sdk` (umbrella @a5c-ai/agent-mux), `adapters`.
    Plus 3 non-published dirs (`amux-proxy`, `meta`, `processes`).
-3. `agent-plugins-mux` — single package (already PackageSurface).
+3. `extension-mux` — single package (already PackageSurface).
 4. `hooks-mux` — single core package (already PackageSurface) + 9 adapter
    subdirs (claude/codex/copilot/cursor/gemini/oh-my-pi/openclaw/opencode/pi).
 5. `breakpoints-mux` — single package (already PackageSurface).
@@ -5031,7 +5031,7 @@ Top-level mux + catalog packages:
 | agent-mux/observability | 1 (PackageSurface missing) | YES post-catalog pass 96 |
 | agent-mux/sdk (@a5c-ai/agent-mux umbrella) | 1 (PackageSurface missing) | YES post-catalog pass 96 |
 | agent-mux/adapters | 1 (PackageSurface missing) | YES post-catalog pass 96 |
-| agent-plugins-mux | 0 | YES — PluginTargetDescriptor×17, schema/transform/emit modeled |
+| extension-mux | 0 | YES — PluginTargetDescriptor×17, schema/transform/emit modeled |
 | hooks-mux core | 0 | YES — HookMapping/HookSurface/MergePolicy/DecisionVerb covered |
 | breakpoints-mux | 0 | YES — BreakpointStrategy/ResponderProfile/HumanCheckpoint/DecisionMemory covered |
 | transport-mux | 0 | YES — all 8 SUPPORTED_TRANSPORTS covered as ModelTransportProtocol |
@@ -5090,7 +5090,7 @@ the package and path nodes report non-orphan after the catalog pass.
   BreakpointAnswer, DecisionMemory, HumanCheckpoint, BreakpointStatus are
   fully modeled as atlas NodeKinds. Internal-only types (BreakpointContext,
   BreakpointRouting) are payload shapes — out of scope.
-- **agent-plugins-mux internals**: schema.ts, transform.ts,
+- **extension-mux internals**: schema.ts, transform.ts,
   emit.ts, manifestGenerators.ts, resolve.ts are codegen pipeline modules.
   The catalog already exposes `PluginTargetDescriptor×17` which drives
   these files; the pipeline itself is wrapper-over-graph.

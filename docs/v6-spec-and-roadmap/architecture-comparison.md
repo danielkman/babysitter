@@ -52,7 +52,7 @@ Monolithic Package Structure
 │   └── pi/ (wrapper integration)
 └── Supporting packages
     ├── @a5c-ai/hooks-mux
-    ├── @a5c-ai/agent-plugins-mux
+    ├── @a5c-ai/extension-mux
     └── @a5c-ai/babysitter-sdk
 ```
 
@@ -63,7 +63,7 @@ Layered Architecture
 ├── Infrastructure Layer (Dispatch/Mux)
 │   ├── @a5c-ai/agent-mux (unchanged)
 │   ├── @a5c-ai/hooks-mux (evolved from hooks-mux)
-│   └── @a5c-ai/agent-plugins-mux (evolved from agent-plugins-mux)
+│   └── @a5c-ai/extension-mux (evolved from extension-mux)
 ├── Runtime Layer (Engine)
 │   └── @a5c-ai/agent-runtime (filesystem-free core)
 ├── Platform Layer (Persistence + Plugins)

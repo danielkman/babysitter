@@ -8,11 +8,11 @@ The current a5c.ai agent stack consists of:
 
 - **`@a5c-ai/agent-mux`** - Agent dispatch/multiplexing layer
 - **`@a5c-ai/hooks-mux`** - Hook normalization across harnesses  
-- **`@a5c-ai/agent-plugins-mux`** - Cross-harness plugin compiler
+- **`@a5c-ai/extension-mux`** - Cross-harness plugin compiler
 - **`@a5c-ai/babysitter-agent`** - Monolithic orchestration runtime
 - **`@a5c-ai/babysitter-sdk`** - Core SDK for orchestration
 
-The plugin side of the stack already exposes the pieces needed for metaplugins, but those pieces are not the metaplugin abstraction itself. `agent-plugins-mux` is the compiler that emits concrete plugin bundles for legacy non-Babysitter agents. The metaplugin layer is the capability being packaged across those bundles, such as memory systems, governance or policy engines, and discipline-enforcement concerns. First-party unified plugin sources such as `plugins/babysitter-unified` can carry parts of those concerns, but they are concrete plugin surfaces rather than the definition of metaplugins.
+The plugin side of the stack already exposes the pieces needed for metaplugins, but those pieces are not the metaplugin abstraction itself. `extension-mux` is the compiler that emits concrete plugin bundles for legacy non-Babysitter agents. The metaplugin layer is the capability being packaged across those bundles, such as memory systems, governance or policy engines, and discipline-enforcement concerns. First-party unified plugin sources such as `plugins/babysitter-unified` can carry parts of those concerns, but they are concrete plugin surfaces rather than the definition of metaplugins.
 
 ## Current Pain Points
 
@@ -37,7 +37,7 @@ The plugin side of the stack already exposes the pieces needed for metaplugins, 
 Current confusing terminology will be updated:
 - runtime binary: `babysitter-agent`
 - `hooks-mux` → `hooks-mux`
-- `agent-plugins-mux` → `agent-plugins-mux`
+- `extension-mux` → `extension-mux`
 
 This harmonization provides clearer naming that reflects the actual purpose of each package → [Package Specifications](package-specs.md)
 

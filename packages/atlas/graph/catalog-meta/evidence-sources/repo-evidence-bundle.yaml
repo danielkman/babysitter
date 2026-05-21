@@ -40,10 +40,10 @@ edges: {}
 nodeKind: EvidenceSource
 id: evidence:repo-target-index
 attributes:
-  displayName: "agent-plugins-mux target index"
+  displayName: "extension-mux target index"
   kindLabel: file
-  sourceUrl: "https://github.com/a5c-ai/babysitter/blob/main/packages/agent-plugins-mux/src/targets/index.ts"
-  filePath: "packages/agent-plugins-mux/src/targets/index.ts"
+  sourceUrl: "https://github.com/a5c-ai/babysitter/blob/main/packages/extension-mux/src/targets/index.ts"
+  filePath: "packages/extension-mux/src/targets/index.ts"
   trustLevel: trust-level:repo
   observedAt: "2026-04-23T00:00:00Z"
   observedBy: a5c-ai-team
@@ -53,10 +53,10 @@ edges: {}
 nodeKind: EvidenceSource
 id: evidence:repo-target-claude
 attributes:
-  displayName: "agent-plugins-mux target: claude-code"
+  displayName: "extension-mux target: claude-code"
   kindLabel: file
-  sourceUrl: "https://github.com/a5c-ai/babysitter/blob/main/packages/agent-plugins-mux/src/targets/claude-code.ts"
-  filePath: "packages/agent-plugins-mux/src/targets/claude-code.ts"
+  sourceUrl: "https://github.com/a5c-ai/babysitter/blob/main/packages/extension-mux/src/targets/claude-code.ts"
+  filePath: "packages/extension-mux/src/targets/claude-code.ts"
   trustLevel: trust-level:repo
   observedAt: "2026-04-23T00:00:00Z"
   observedBy: a5c-ai-team
@@ -65,10 +65,10 @@ edges: {}
 nodeKind: EvidenceSource
 id: evidence:repo-target-codex
 attributes:
-  displayName: "agent-plugins-mux target: codex"
+  displayName: "extension-mux target: codex"
   kindLabel: file
-  sourceUrl: "https://github.com/a5c-ai/babysitter/blob/main/packages/agent-plugins-mux/src/targets/codex.ts"
-  filePath: "packages/agent-plugins-mux/src/targets/codex.ts"
+  sourceUrl: "https://github.com/a5c-ai/babysitter/blob/main/packages/extension-mux/src/targets/codex.ts"
+  filePath: "packages/extension-mux/src/targets/codex.ts"
   trustLevel: trust-level:repo
   observedAt: "2026-04-23T00:00:00Z"
   observedBy: a5c-ai-team
@@ -77,10 +77,10 @@ edges: {}
 nodeKind: EvidenceSource
 id: evidence:repo-target-cursor
 attributes:
-  displayName: "agent-plugins-mux target: cursor"
+  displayName: "extension-mux target: cursor"
   kindLabel: file
-  sourceUrl: "https://github.com/a5c-ai/babysitter/blob/main/packages/agent-plugins-mux/src/targets/cursor.ts"
-  filePath: "packages/agent-plugins-mux/src/targets/cursor.ts"
+  sourceUrl: "https://github.com/a5c-ai/babysitter/blob/main/packages/extension-mux/src/targets/cursor.ts"
+  filePath: "packages/extension-mux/src/targets/cursor.ts"
   trustLevel: trust-level:repo
   observedAt: "2026-04-23T00:00:00Z"
   observedBy: a5c-ai-team
@@ -89,10 +89,10 @@ edges: {}
 nodeKind: EvidenceSource
 id: evidence:repo-target-gemini
 attributes:
-  displayName: "agent-plugins-mux target: gemini"
+  displayName: "extension-mux target: gemini"
   kindLabel: file
-  sourceUrl: "https://github.com/a5c-ai/babysitter/blob/main/packages/agent-plugins-mux/src/targets/gemini.ts"
-  filePath: "packages/agent-plugins-mux/src/targets/gemini.ts"
+  sourceUrl: "https://github.com/a5c-ai/babysitter/blob/main/packages/extension-mux/src/targets/gemini.ts"
+  filePath: "packages/extension-mux/src/targets/gemini.ts"
   trustLevel: trust-level:repo
   observedAt: "2026-04-23T00:00:00Z"
   observedBy: a5c-ai-team
@@ -101,10 +101,10 @@ edges: {}
 nodeKind: EvidenceSource
 id: evidence:repo-target-copilot
 attributes:
-  displayName: "agent-plugins-mux target: github-copilot"
+  displayName: "extension-mux target: github-copilot"
   kindLabel: file
-  sourceUrl: "https://github.com/a5c-ai/babysitter/blob/main/packages/agent-plugins-mux/src/targets/github-copilot.ts"
-  filePath: "packages/agent-plugins-mux/src/targets/github-copilot.ts"
+  sourceUrl: "https://github.com/a5c-ai/babysitter/blob/main/packages/extension-mux/src/targets/github-copilot.ts"
+  filePath: "packages/extension-mux/src/targets/github-copilot.ts"
   trustLevel: trust-level:repo
   observedAt: "2026-04-23T00:00:00Z"
   observedBy: a5c-ai-team
@@ -127,8 +127,8 @@ id: evidence:repo-codex-windows-hooks
 attributes:
   displayName: "Codex Windows shell-hook threshold (>=0.119.0)"
   kindLabel: file
-  sourceUrl: "https://github.com/a5c-ai/babysitter/blob/main/packages/agent-plugins-mux/src/targets/codex.ts"
-  filePath: "packages/agent-plugins-mux/src/targets/codex.ts"
+  sourceUrl: "https://github.com/a5c-ai/babysitter/blob/main/packages/extension-mux/src/targets/codex.ts"
+  filePath: "packages/extension-mux/src/targets/codex.ts"
   trustLevel: trust-level:repo
   observedAt: "2026-04-23T00:00:00Z"
   observedBy: a5c-ai-team

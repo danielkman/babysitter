@@ -47,7 +47,7 @@ function toScriptVariants(variants: string[] | undefined) {
   );
 }
 
-describe('agent-plugins-mux catalog target contract', () => {
+describe('extension-mux catalog target contract', () => {
   it('keeps the runtime registry in sync with graph-backed plugin target descriptors', () => {
     const descriptors = listPluginTargetDescriptors();
     const expectedTargets = descriptors.map((descriptor) => descriptor.targetId).sort();

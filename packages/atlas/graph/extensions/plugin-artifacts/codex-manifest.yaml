@@ -10,7 +10,7 @@ attributes:
   scriptVariants:
     - "package-json commands"
   contextFiles:
-    - packages/agent-plugins-mux/src/targets/codex.ts
+    - packages/extension-mux/src/targets/codex.ts
 edges:
   emits_artifact:
     - target: plugin-target:codex

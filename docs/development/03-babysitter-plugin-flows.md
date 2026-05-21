@@ -157,11 +157,11 @@ sequenceDiagram
 
 ## Plugin Generation
 
-`npm run generate:plugins` compiles unified plugin source into harness-specific distributions via the `agent-plugins-mux` compiler:
+`npm run generate:plugins` compiles unified plugin source into harness-specific distributions via the `extension-mux` compiler:
 
 ```mermaid
 graph TB
-    UPF["Unified Plugin Source<br/>(skills, hooks, commands)"] --> COMPILER["agent-plugins-mux compiler"]
+    UPF["Unified Plugin Source<br/>(skills, hooks, commands)"] --> COMPILER["extension-mux compiler"]
 
     COMPILER --> CC_OUT["artifacts/generated-plugins/claude-code/<br/>plugin.json + hooks.json + *.sh scripts"]
     COMPILER --> CX_OUT["artifacts/generated-plugins/codex/<br/>config + shell hooks"]

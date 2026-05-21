@@ -29,7 +29,7 @@ mux/sdk consumer that calls it.
 | `agent-mux/core/src/host-detection.ts` | `getHostSignalMap`, `getHostMetadataFields`, `getHostDetectionRules` | `DiscoverySignal` (scope=host-detection) | covered — atlas has 10 host-env DiscoverySignals under `extensions/discovery-signals/` with `metadataFields` + `consumer: agent-mux-core` | (e) shape |
 | `agent-mux/core/src/invocation.ts` | `getHarnessImages`, `lookupHarnessImage` | `PluginArtifact` filtered to `artifactKind=container-image` | partial — atlas has `PluginArtifact` instances but no `artifactKind=container-image` rows; legacy projection synthesizes `HarnessImageEntry` from artifact path + installerSurface | (a) missing data |
 | `hooks-mux/core/src/discovery/detector.ts` | `getHooksMuxDetectionRules` | `DiscoverySignal` (scope=hooks-mux) | **closed (catalog pass 92)** — 10 atlas DiscoverySignal rows scoped `hooks-mux` under `extensions/discovery-signals/*-hooks-mux*.yaml` (verbatim from legacy `discovery-signals-hooks.yaml`); schema gained `hooks-mux` scope, `all-present-with-absences` matchMode, and `absentSignals` field | covered |
-| `agent-plugins-mux/src/targets/index.ts` | `listPluginTargetDescriptors`, `getPluginTargetDescriptor`, `getHookNameMap` | `PluginTarget`, `HookMapping` | shape-divergent — atlas PluginTargets have `manifestPath`, `installLayout` (object with concrete keys: manifest/commands/agents/skills/hooks/mcp), `distribution` array, `adapterFamily`, `description`. Legacy descriptor needs: `targetId`, `adapterName`, `pluginRootEnvVar`, `pluginRootEnvVarForExtension`, `manifestFormat` (string token like "plugin.json + openclaw.plugin.json"), `commandFormat`, `skillHandling`, `hookRegistrationFormat`, `scriptVariants`, `distribution` (string), `distributionModel`, `marketplacePath`, `npmPublishable`, `installLayout.{harnessHomeRelative, pluginsDirRelative, marketplacePathRelative}`, `packageMetadata.{moduleType, binScriptExt, installLifecycle, activationMessage, extraPackageFiles, extraScripts, peerDependencyPackage, emitCjsWrappers}`, `componentSupport.{agents, context}` | (b) missing fields (8+ field-level) + (e) shape divergence |
+| `extension-mux/src/targets/index.ts` | `listPluginTargetDescriptors`, `getPluginTargetDescriptor`, `getHookNameMap` | `PluginTarget`, `HookMapping` | shape-divergent — atlas PluginTargets have `manifestPath`, `installLayout` (object with concrete keys: manifest/commands/agents/skills/hooks/mcp), `distribution` array, `adapterFamily`, `description`. Legacy descriptor needs: `targetId`, `adapterName`, `pluginRootEnvVar`, `pluginRootEnvVarForExtension`, `manifestFormat` (string token like "plugin.json + openclaw.plugin.json"), `commandFormat`, `skillHandling`, `hookRegistrationFormat`, `scriptVariants`, `distribution` (string), `distributionModel`, `marketplacePath`, `npmPublishable`, `installLayout.{harnessHomeRelative, pluginsDirRelative, marketplacePathRelative}`, `packageMetadata.{moduleType, binScriptExt, installLifecycle, activationMessage, extraPackageFiles, extraScripts, peerDependencyPackage, emitCjsWrappers}`, `componentSupport.{agents, context}` | (b) missing fields (8+ field-level) + (e) shape divergence |
 | `sdk/src/harness/discovery.ts` + `amuxFallbackMetadata.ts` | `getFallbackHarnessMetadata`, `listFallbackHarnessMetadata`, `listAgentVersions`, `getAgentVersion` | `AgentVersion`, HarnessFallbackMetadata projection | **consumer-adapter-required (catalog pass 92, path-b)** — atlas keeps the data normalized across AgentVersion + DiscoverySignal[host-detection] + SessionModel + Capability; the bundle is rebuilt by `agent-catalog/src/data.ts :: buildFallbackMetadata` (already a projection in legacy too — it never loaded a bundled record). Adapter spec frozen in `migration/projection-adapters.md` § 5. | covered (via consumer adapter) |
 | `agent-mux/core/tests/invocation.contract.test.ts` | (consumes harnessImages above) | — | — | — |
 | `catalog/src/app/api/...` | `listCatalogAgents`, `searchCatalogDiscovery` (process catalog) | `ProcessDescriptor`, `PackageSurface`, `PathDescriptor`, agent listings | covered for ProcessDescriptor (atlas has 24 records under `extensions/process-descriptors/`); agents covered as AgentVersion | (e) shape minor |
@@ -50,7 +50,7 @@ catalog pass 92 closed the two catalog pass 91 residuals: (1) hooks-mux-scope Di
 rows + `absentSignals` field/scope-enum extension; (2) HarnessFallbackMetadata
 adapter spec frozen (path-b: keep atlas normalized, adapter lives in
 `agent-catalog/src/data.ts`). All five projection consumers
-(`agent-mux`, `hooks-mux`, `agent-plugins-mux`, `sdk/harness/*`, catalog API)
+(`agent-mux`, `hooks-mux`, `extension-mux`, `sdk/harness/*`, catalog API)
 now resolve against the atlas graph either directly (consumers 1–4) or via a
 trivial spec'd adapter (consumer 5). No data/schema gap remains.
 
@@ -72,7 +72,7 @@ graph). Codegen will not break for *missing* concepts. It will break for:
    `getPluginTargetDescriptor('codex')`) will not match because atlas stores
    `plugin-target:codex` while legacy expects `pluginTarget:codex`. Aliases
    needed.
-2. **PluginTarget shape divergence** — agent-plugins-mux relies on 8+ flat
+2. **PluginTarget shape divergence** — extension-mux relies on 8+ flat
    string-token fields (`manifestFormat: "plugin.json + openclaw.plugin.json"`,
    `commandFormat: "markdown-commands"`, `packageMetadata.binScriptExt: ".js"`,
    etc.) that are not on the atlas PluginTarget node. These drive code-generation
@@ -129,7 +129,7 @@ catalog-faithful (codegen-ready).
 | `agent-mux/observability` | logger + telemetry library | PackageSurface + PathDescriptor (catalog pass 96-new) | GREEN |
 | `agent-mux/sdk` (umbrella @a5c-ai/agent-mux) | re-export + amux bin | PackageSurface + PathDescriptor (catalog pass 96-new) | GREEN |
 | `agent-mux/adapters` | per-harness adapters bundle | PackageSurface + PathDescriptor (catalog pass 96-new); adapter behavior on AgentRuntimeImpl | GREEN |
-| `agent-plugins-mux` | PluginTarget×17, schema/transform/emit | PluginTargetDescriptor + PackageSurface | GREEN |
+| `extension-mux` | PluginTarget×17, schema/transform/emit | PluginTargetDescriptor + PackageSurface | GREEN |
 | `hooks-mux/core` | HookMapping records, MergePolicy, DecisionVerb | HookMapping, HookSurface, MergePolicy, DecisionVerb | GREEN |
 | `breakpoints-mux` | Zod-defined breakpoint types | BreakpointStrategy, ResponderProfile, BreakpointAnswer, DecisionMemory, HumanCheckpoint | GREEN |
 | `transport-mux` | 8 SUPPORTED_TRANSPORTS | ModelTransportProtocol×8 (existing) | GREEN |

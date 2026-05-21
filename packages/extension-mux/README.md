@@ -1,17 +1,17 @@
-# @a5c-ai/agent-plugins-mux
+# @a5c-ai/extension-mux
 
 Cross-harness plugin compiler for converting a unified `plugin.json` source tree into harness-specific plugin packages.
 
 ## Install
 
 ```bash
-npm install @a5c-ai/agent-plugins-mux
+npm install @a5c-ai/extension-mux
 ```
 
 CLI usage:
 
 ```bash
-npx @a5c-ai/agent-plugins-mux agent-plugins-mux --help
+npx @a5c-ai/extension-mux extension-mux --help
 ```
 
 This package ships the built compiler in `dist/` and this package README for npm auditability.
@@ -35,7 +35,7 @@ import {
   compileAll,
   validateDirectory,
   validateSchema,
-} from "@a5c-ai/agent-plugins-mux";
+} from "@a5c-ai/extension-mux";
 ```
 
 The package exports the compiler pipeline and related types:
@@ -47,12 +47,12 @@ The package exports the compiler pipeline and related types:
 ## Validation
 
 ```bash
-npm run build --workspace=@a5c-ai/agent-plugins-mux
-npm run test --workspace=@a5c-ai/agent-plugins-mux
+npm run build --workspace=@a5c-ai/extension-mux
+npm run test --workspace=@a5c-ai/extension-mux
 npm run verify:metadata
-npm pack --json --dry-run --workspace=@a5c-ai/agent-plugins-mux
+npm pack --json --dry-run --workspace=@a5c-ai/extension-mux
 ```
 
 ## Release Expectations
 
-`@a5c-ai/agent-plugins-mux` is published from the central release workflows. Keep this README aligned with the actual command set and compiler exports, and keep `package.json#files` limited to the built compiler plus package documentation.
+`@a5c-ai/extension-mux` is published from the central release workflows. Keep this README aligned with the actual command set and compiler exports, and keep `package.json#files` limited to the built compiler plus package documentation.

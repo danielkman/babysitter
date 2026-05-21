@@ -639,7 +639,7 @@ third-party `PluginTarget`.
 
 ## NodeKind: `PluginTarget`
 
-The per-agent target spec used by the `agent-plugins-mux` / `extension-mux` to know
+The per-agent target spec used by the `extension-mux` / `extension-mux` to know
 *how* to compile a `Plugin` or `PortableExtension` into a `NativeExtension` for one
 specific agent host. A `PluginTarget` is the **target descriptor** — manifest format,
 command format, script variants, install layout, package metadata, distribution model.
@@ -657,7 +657,7 @@ Sourced from the legacy agent-catalog ontology
 | `targetId` | string | no | Stable target identifier; typically equals the id slug. Optional in atlas because `id` is the canonical handle (legacy schema marked it required). |
 | `displayName` | string | yes | Human-readable, e.g. `"Claude Code"`. |
 | `hostAgent` | ref<`AgentProduct`> | yes | The `AgentProduct` this target compiles for. |
-| `adapterName` | string | no | Internal adapter id used by `agent-plugins-mux` (e.g. `claude-code`, `codex`, `omp`). Legacy required; atlas optional pending evidence. |
+| `adapterName` | string | no | Internal adapter id used by `extension-mux` (e.g. `claude-code`, `codex`, `omp`). Legacy required; atlas optional pending evidence. |
 | `adapterFamily` | enum<claude-code-native,shell-hook,programmatic,extension-manifest> | yes | **Evidence-bound at vendor-doc-or-better.** Declared family the adapter belongs to. |
 | `manifestFormat` | string | no | **Evidence-bound at vendor-doc-or-better.** E.g. `"package.json + hooks.json"`, `"state-only"`, `"extension-manifest"`. Optional because some hosts (claude-code-native) use `manifestPath` only. |
 | `manifestPath` | string | no | Direct path to the host-specific manifest, e.g. `.claude-plugin/plugin.json`. |
@@ -684,7 +684,7 @@ Sourced from the legacy agent-catalog ontology
 | `hosted_by` | `AgentProduct` | N:1 | Mirrors `hostAgent`. Used by every imported example. |
 | `emits_artifact` | `PluginArtifact` | 1:N | Inverse of `PluginArtifact.targetId`. The set of artifacts a compiled extension for this target must produce. |
 | `pairs_with` | `PortableExtension` | N:N | Records that a `PortableExtension` compiles to this target via the extension-mux. |
-| `sourced_from` | `SourceRef` | N:1 | Source-of-truth for the target spec (typically `packages/agent-plugins-mux/src/targets/<adapter>.ts`). |
+| `sourced_from` | `SourceRef` | N:1 | Source-of-truth for the target spec (typically `packages/extension-mux/src/targets/<adapter>.ts`). |
 
 ### Evidence
 

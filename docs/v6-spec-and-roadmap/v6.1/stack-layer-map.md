@@ -84,13 +84,13 @@ The atlas graph defines 14 stack layers (`stack-layers` cluster). Each layer rep
 
 | Aspect | Value |
 |--------|-------|
-| Packages | `@a5c-ai/agent-plugins-mux`, `@a5c-ai/agent-catalog`, `@a5c-ai/babysitter-agent` |
+| Packages | `@a5c-ai/extension-mux`, `@a5c-ai/agent-catalog`, `@a5c-ai/babysitter-agent` |
 | Node Kinds | AgentPlatformImpl, Plugin, PluginTarget, PluginMarketplace, PluginArtifact (agent-stack + extensions) |
 | Graph Cluster | agent-stack, extensions |
 | Maturity | Partial — plugin compiler mature; deeper platform (team agents, marketplace identity) deferred |
 | Spec Coverage | v6.0 plugin-ecosystem.md |
 
-**Gap:** AgentPlatformImpl is defined in graph but has no standalone implementation package. Platform concerns are scattered across babysitter-agent, agent-plugins-mux, and agent-catalog.
+**Gap:** AgentPlatformImpl is defined in graph but has no standalone implementation package. Platform concerns are scattered across babysitter-agent, extension-mux, and agent-catalog.
 
 ---
 

@@ -949,7 +949,7 @@ nodeKinds:
   origin: universal
   prefix: plugin-target
   cluster: 7-extensions
-  purpose: 'Per-agent target spec used by the agent-plugins-mux / extension-mux to know
+  purpose: 'Per-agent target spec used by the extension-mux / extension-mux to know
 
     how to compile a portable Plugin (portability=portable|hybrid) into a
 
@@ -982,7 +982,7 @@ nodeKinds:
   - name: adapterName
     type: string
     required: false
-    notes: Internal adapter id used by agent-plugins-mux (e.g. claude-code, codex, omp); legacy required, v6 optional pending evidence.
+    notes: Internal adapter id used by extension-mux (e.g. claude-code, codex, omp); legacy required, v6 optional pending evidence.
   - name: adapterFamily
     type: enum<claude-code-native
     shell-hook: null

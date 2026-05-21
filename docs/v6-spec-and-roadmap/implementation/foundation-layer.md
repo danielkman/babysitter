@@ -22,7 +22,7 @@ The foundation layer establishes the minimum V6 base inside the current reposito
 ### Infrastructure Foundation
 
 **Compiler And Packaging Reality Checks**
-- Validate `agent-plugins-mux` and related packaging flows against real plugin manifests and generated outputs
+- Validate `extension-mux` and related packaging flows against real plugin manifests and generated outputs
 - Document import and ownership seams that already exist in the repo instead of inventing new package boundaries
 - Add compatibility notes for any rename or extraction candidate that survives Phase 0 decision framing
 

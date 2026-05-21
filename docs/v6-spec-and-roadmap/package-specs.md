@@ -108,7 +108,7 @@ For now, they should be treated as directional language only. Any one of them ne
 Deferred vocabulary refers only to possible future rename or re-scope targets, not to the current package itself. The current package remains `@a5c-ai/babysitter-agent` unless a later decision record promotes one of the deferred names into scope with an explicit migration plan.
 Implementation-phase documents must therefore describe work in current-package terms unless such a decision record has already promoted the deferred name into scope. A deferred package name is not a deliverable placeholder.
 
-This does not block metaplugins as an implemented pattern. In current V6 terms, metaplugins are higher-order capability abstractions over existing plugin and hook packaging surfaces, including on legacy non-Babysitter agents. The deferred item here is the standalone package name `@a5c-ai/agent-platform-meta-plugins`, not the ability to ship capability bundles for concerns like memory systems, governance, or policy enforcement. `@a5c-ai/agent-plugins-mux` remains the compiler that emits the concrete per-harness plugin outputs those metaplugins rely on.
+This does not block metaplugins as an implemented pattern. In current V6 terms, metaplugins are higher-order capability abstractions over existing plugin and hook packaging surfaces, including on legacy non-Babysitter agents. The deferred item here is the standalone package name `@a5c-ai/agent-platform-meta-plugins`, not the ability to ship capability bundles for concerns like memory systems, governance, or policy enforcement. `@a5c-ai/extension-mux` remains the compiler that emits the concrete per-harness plugin outputs those metaplugins rely on.
 
 ## 4. Responsibility Rules
 
@@ -152,7 +152,7 @@ The following spec patterns are explicitly rejected for the current V6 stage:
 - broad claims of plugin isolation or governance enforcement without implementation evidence,
 - marketplace-governance promises such as certification, revenue sharing, dispute handling, takedown programs, or automatic rollback without executable support,
 - describing metaplugins as unavailable until a future standalone package exists,
-- equating metaplugins with `agent-plugins-mux` or with any single concrete unified plugin bundle,
+- equating metaplugins with `extension-mux` or with any single concrete unified plugin bundle,
 - dependency graphs that imply committed packages without migration sequencing,
 - package lists that obscure which items are real versus hypothetical.
 

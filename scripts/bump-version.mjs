@@ -232,7 +232,7 @@ const workspaceManifestPaths = [
   "packages/sdk/package.json",
   "packages/babysitter/package.json",
   "packages/babysitter-agent/package.json",
-  "packages/agent-plugins-mux/package.json",
+  "packages/extension-mux/package.json",
   "packages/breakpoints-mux/package.json",
   "packages/babysitter-tui-plugins/package.json",
   "packages/cloud/package.json",

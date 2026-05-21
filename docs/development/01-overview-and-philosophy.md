@@ -133,7 +133,7 @@ graph TB
 | `packages/sdk` | Babysitter SDK: run lifecycle, session binding, MCP tools |
 | `packages/triggers` | GitHub Action: trigger evaluation + agent dispatch |
 | `packages/krate` | Kubernetes operator + web UI for cloud deployment |
-| `packages/agent-plugins-mux` | Plugin generator: unified source → per-harness distributions |
+| `packages/extension-mux` | Plugin generator: unified source → per-harness distributions |
 | `packages/babysitter-agent` | Standalone babysitter agent (internal harness) |
 
 ## Development Workflow

@@ -92,7 +92,7 @@ Observer tooling experiments, SDK language porting analysis, cradle gap closure.
 
 **Atlas migration** (2 runs) — monorepo migration from v6 repo, domain enrichment. Manual orchestration (no hook-driven continuation available).
 
-**Adapter refactoring** (1 run) — agent-plugins-mux per-harness adapter extraction. Partially manual.
+**Adapter refactoring** (1 run) — extension-mux per-harness adapter extraction. Partially manual.
 
 **SDK enhancements** (1 run) — version markers in run artifacts.
 

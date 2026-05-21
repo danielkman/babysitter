@@ -145,7 +145,7 @@ attributes:
 edges: {}
 ---
 nodeKind: SourceRef
-id: source-ref:packages-agent-plugins-mux
+id: source-ref:packages-extension-mux
 attributes:
   description: "packages/agent-plugins/mux"
   displayName: "packages/agent-plugins/mux"

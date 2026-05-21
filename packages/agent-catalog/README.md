@@ -112,6 +112,6 @@ npm run validate:evidence:freshness --workspace=@a5c-ai/agent-catalog
 - SDK fallback metadata integration: `packages/sdk/src/harness/amuxFallbackMetadata.contract.test.ts`
 - hooks-mux discovery integration: `packages/hooks-mux/core/src/discovery/__tests__/detector.contract.test.ts`
 - agent-mux integration: `packages/agent-mux/core/tests/host-detection.contract.test.ts`, `packages/agent-mux/core/tests/invocation.contract.test.ts`
-- agent-plugins-mux integration: `packages/agent-plugins-mux/src/__tests__/targets.contract.test.ts`
+- extension-mux integration: `packages/extension-mux/src/__tests__/targets.contract.test.ts`
 
 If a new consumer family or route starts importing `@a5c-ai/agent-catalog`, update this matrix and add its contract test to `test:agent-catalog-contracts` in the same change.

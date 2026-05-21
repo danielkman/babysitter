@@ -93,7 +93,7 @@ A `Mux` is treated as `ExtensionInterface` (a5c-flavored contract) plus implemen
 | session-storage-mux (#4) | a5c/02-muxes.md §4 | `ExtensionInterface` `iface:session-storage-mux` | ✅ | |
 | agent-config-mux (#5) | a5c/02-muxes.md §5 | `ExtensionInterface` `iface:agent-config-mux` | ✅ | |
 | hooks-mux (#6) | a5c/02-muxes.md §6 | `ExtensionInterface` `iface:hooks-mux`; `ProcessDescriptor` `pkg:@a5c-ai/hooks-mux` | ✅ | |
-| extension-mux (#7) | a5c/02-muxes.md §7 | `ExtensionInterface` `iface:extension-mux`; `ProcessDescriptor` `pkg:@a5c-ai/agent-plugins-mux` | ✅ | |
+| extension-mux (#7) | a5c/02-muxes.md §7 | `ExtensionInterface` `iface:extension-mux`; `ProcessDescriptor` `pkg:@a5c-ai/extension-mux` | ✅ | |
 | tool-mux (#8) | a5c/02-muxes.md §8 | `ExtensionInterface` `iface:tool-mux` | ✅ | |
 | tasks-mux (#9) | a5c/02-muxes.md §9 | `ExtensionInterface` `iface:tasks-mux`; `ProcessDescriptor` `pkg:@a5c-ai/breakpoints-mux` | ✅ | |
 | Mux native side / canonical side framing | a5c/02-muxes.md preamble | attributes `nativeProtocols` and `canonicalProtocol` on `ExtensionInterface` (kind=mux) | ✅ | |
@@ -468,7 +468,7 @@ A `Mux` is treated as `ExtensionInterface` (a5c-flavored contract) plus implemen
 | `@a5c-ai/babysitter-agent` | a5c/01-component-map.md, ADR-001 | covered above as AgentProduct | ✅ | |
 | `@a5c-ai/transport-mux` | a5c/01-component-map.md | `ProcessDescriptor` | ✅ | |
 | `@a5c-ai/hooks-mux` | a5c/01-component-map.md | `ProcessDescriptor` | ✅ | |
-| `@a5c-ai/agent-plugins-mux` | a5c/01-component-map.md | `ProcessDescriptor` | ✅ | |
+| `@a5c-ai/extension-mux` | a5c/01-component-map.md | `ProcessDescriptor` | ✅ | |
 | `@a5c-ai/breakpoints-mux` | a5c/01-component-map.md | `ProcessDescriptor` | ✅ | |
 | `@a5c-ai/babysitter-sdk` | a5c/01-component-map.md, 05-sdk.md | `ProcessDescriptor` | ✅ | |
 | `@a5c-ai/babysitter` (top-level npm) | a5c/01-component-map.md | `ProcessDescriptor` | ✅ | |

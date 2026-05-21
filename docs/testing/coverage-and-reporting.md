@@ -28,7 +28,7 @@ The long-term target is one repository coverage artifact with package-level sect
 - `@a5c-ai/transport-mux`,
 - the `@a5c-ai/agent-mux` package family,
 - the hooks-mux package family,
-- `@a5c-ai/agent-plugins-mux`,
+- `@a5c-ai/extension-mux`,
 - `@a5c-ai/cloud`,
 - docs/generator checks.
 

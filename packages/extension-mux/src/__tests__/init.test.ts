@@ -17,7 +17,7 @@ describe('scaffoldPlugin', () => {
     { template: 'full', name: 'starter-full' },
     { template: 'hooks-only', name: 'starter-hooks-only' },
   ] as const)('scaffolds %s and validates cleanly', ({ template, name }) => {
-    const outputDir = path.join(createTempDir('agent-plugins-mux-init-'), template);
+    const outputDir = path.join(createTempDir('extension-mux-init-'), template);
     const result = scaffoldPlugin({
       name,
       template,
@@ -35,14 +35,14 @@ describe('scaffoldPlugin', () => {
     const compileResult = compile({
       source: outputDir,
       target: 'claude-code',
-      output: path.join(createTempDir('agent-plugins-mux-compile-'), template),
+      output: path.join(createTempDir('extension-mux-compile-'), template),
     });
     expect(compileResult.status).not.toBe('error');
     expect(compileResult.emittedFiles.length).toBeGreaterThan(0);
   });
 
   it('runs the public init CLI flow', () => {
-    const outputDir = path.join(createTempDir('agent-plugins-mux-cli-'), 'scaffold');
+    const outputDir = path.join(createTempDir('extension-mux-cli-'), 'scaffold');
     const stdout: string[] = [];
     const stderr: string[] = [];
 

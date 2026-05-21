@@ -14,22 +14,22 @@ When a package implements something not in the graph → update the graph or rem
 
 Make npm package names and directory names match graph mux names.
 
-### 1.1 agent-plugins-mux → extension-mux
+### 1.1 extension-mux → extension-mux
 
 | Aspect | Current | Target |
 |--------|---------|--------|
 | Graph mux | `mux:extension-mux` | — |
-| npm name | `@a5c-ai/agent-plugins-mux` | `@a5c-ai/extension-mux` |
-| Directory | `packages/agent-plugins-mux/` | `packages/extension-mux/` |
+| npm name | `@a5c-ai/extension-mux` | `@a5c-ai/extension-mux` |
+| Directory | `packages/extension-mux/` | `packages/extension-mux/` |
 | Binary | (none) | (none) |
 
 **Tasks:**
-- [ ] Rename directory `packages/agent-plugins-mux/` → `packages/extension-mux/`
+- [ ] Rename directory `packages/extension-mux/` → `packages/extension-mux/`
 - [ ] Update `package.json` name to `@a5c-ai/extension-mux`
 - [ ] Update all workspace references in root `package.json`
 - [ ] Update all import paths across the monorepo
 - [ ] Update CI workflows referencing the old name
-- [ ] Publish `@a5c-ai/extension-mux` and deprecate `@a5c-ai/agent-plugins-mux` on npm
+- [ ] Publish `@a5c-ai/extension-mux` and deprecate `@a5c-ai/extension-mux` on npm
 - [ ] Update graph YAML to reference new package name in SourceRef nodes
 
 ### 1.2 breakpoints-mux → tasks-mux

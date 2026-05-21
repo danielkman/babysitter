@@ -15,7 +15,7 @@
 | Adapter self-registration calls | 10 | agent-mux/adapters | High |
 | hooks-mux adapter defaults + fallbacks | 40 | hooks-mux/adapter-* | High |
 | Dispatch switches (translate/launch/tui) | 11 | agent-mux/adapters + cli | Medium |
-| Adapter class→format maps | 9 | agent-plugins-mux | Medium |
+| Adapter class→format maps | 9 | extension-mux | Medium |
 | SDK prompt context factory names | 9 | sdk/harness | Medium |
 | CLI paths/capabilities | 5 | agent-mux/cli | Medium |
 | Model/host-detection registries | 6 | agent-mux/core | Medium |
@@ -95,7 +95,7 @@ case 'gemini': ...
 
 **Fix:** Launch config comes from catalog. Each agent's launch behavior is an Atlas attribute (`launchMode: 'cli-spawn' | 'sdk-connect' | 'websocket'`).
 
-### M3 — agent-plugins-mux adapter class→format maps (9 refs)
+### M3 — extension-mux adapter class→format maps (9 refs)
 
 ```typescript
 const ADAPTER_CLASS_BY_FORMAT = {
@@ -105,7 +105,7 @@ const ADAPTER_CLASS_BY_FORMAT = {
 };
 ```
 
-**File:** packages/agent-plugins-mux/src/targets/adapters/index.ts
+**File:** packages/extension-mux/src/targets/adapters/index.ts
 
 **Fix:** Self-registration pattern. Each adapter class registers itself by hookRegistrationFormat at import time. The index.ts barrel import triggers all registrations.
 

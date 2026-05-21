@@ -7,7 +7,7 @@ attributes:
   references:
     - "NodeKind:PluginTarget"
   description: |
-    Per-agent target spec used by the agent-plugins-mux / extension-mux to know
+    Per-agent target spec used by the extension-mux / extension-mux to know
 edges:
   applies_to:
     - target: domain:software-engineering

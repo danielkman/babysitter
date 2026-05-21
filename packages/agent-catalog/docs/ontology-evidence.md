@@ -42,7 +42,7 @@
 
 ## Evidence policy
 
-- repo-backed claims come from SDK fallback metadata, hooks-mux discovery, agent-mux host detection, agent-plugins-mux targets, transport-mux protocol/provider docs, and existing catalog/process surfaces
+- repo-backed claims come from SDK fallback metadata, hooks-mux discovery, agent-mux host detection, extension-mux targets, transport-mux protocol/provider docs, and existing catalog/process surfaces
 - web-backed claims are limited to first-party vendor docs already referenced by the graph evidence nodes
 - vendor-backed evidence is currently defined as `kindLabel: web` plus `trustLevel: official-web`
 - every vendor-backed `EvidenceSource` must declare:

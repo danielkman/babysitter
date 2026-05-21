@@ -196,8 +196,8 @@ Current V6-facing commands that can be cited today are:
 - `npm run build --workspace=@a5c-ai/breakpoints-mux`
 - `npm run typecheck --workspace=@a5c-ai/breakpoints-mux`
 - `npm run test --workspace=@a5c-ai/breakpoints-mux`
-- `npm run build --workspace=@a5c-ai/agent-plugins-mux`
-- `npm run test --workspace=@a5c-ai/agent-plugins-mux`
+- `npm run build --workspace=@a5c-ai/extension-mux`
+- `npm run test --workspace=@a5c-ai/extension-mux`
 - `npm run verify:metadata`
 - `npm run docs:qa`
 - `npm run validate:ci --prefix plugins/<plugin>`

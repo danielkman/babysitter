@@ -10,7 +10,7 @@ attributes:
   scriptVariants:
     - markdown-commands
   contextFiles:
-    - packages/agent-plugins-mux/src/targets/github-copilot.ts
+    - packages/extension-mux/src/targets/github-copilot.ts
 edges:
   emits_artifact:
     - target: plugin-target:copilot-cli

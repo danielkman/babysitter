@@ -61,7 +61,7 @@ The graph says babysitter-agent has Core, Runtime, Platform, and UI. The code sh
 |-------------|---------------|------------------|------------|
 | L4 AgentCoreImpl | `@a5c-ai/babysitter-sdk` (stays) | `packages/sdk/` | Nothing — SDK IS the core. agent-core package contents fold into SDK or babysitter-agent. |
 | L5 AgentRuntimeImpl | `@a5c-ai/babysitter-agent` (stays, slimmed) | `packages/babysitter-agent/` | Keep: daemon, session, harness bridge, runtime. Remove: things that belong in other layers. |
-| L6 AgentPlatformImpl | `@a5c-ai/extension-mux` (renamed from agent-plugins-mux) + `@a5c-ai/agent-catalog` | `packages/agent-plugins-mux/`, `packages/agent-catalog/` | Plugin compilation, skill discovery, marketplace |
+| L6 AgentPlatformImpl | `@a5c-ai/extension-mux` (renamed from extension-mux) + `@a5c-ai/agent-catalog` | `packages/extension-mux/`, `packages/agent-catalog/` | Plugin compilation, skill discovery, marketplace |
 | L11 AgentUIImpl | `@a5c-ai/babysitter-agent` CLI entry | `packages/babysitter-agent/src/cli/` | CLI stays in babysitter-agent — it's the binary |
 
 ### agent-core package fate
@@ -180,7 +180,7 @@ As described in graph-alignment-tasks.md Phase 1.3, split into graph-aligned sub
 
 ```
 1. Rename breakpoints-mux → tasks-mux
-2. Rename agent-plugins-mux → extension-mux  
+2. Rename extension-mux → extension-mux  
 3. Dissolve agent-core → tool-mux seed + babysitter-agent
    ↓
 4. Extract agent-launch-mux from agent-mux-cli
@@ -216,7 +216,7 @@ As described in graph-alignment-tasks.md Phase 1.3, split into graph-aligned sub
 | `@a5c-ai/agent-mux-observability` | Telemetry | Cross-cutting |
 | `@a5c-ai/hooks-mux-*` | `mux:hooks-mux` | Cross-cutting |
 | `@a5c-ai/transport-mux` | `mux:transport-mux` | L3 |
-| `@a5c-ai/extension-mux` | `mux:extension-mux` (renamed from agent-plugins-mux) | L6 |
+| `@a5c-ai/extension-mux` | `mux:extension-mux` (renamed from extension-mux) | L6 |
 | `@a5c-ai/tasks-mux` | `mux:tasks-mux` (renamed from breakpoints-mux) | L9, L14 |
 | `@a5c-ai/tool-mux` | `mux:tool-mux` (new, seeded from agent-core) | L8 |
 | `@a5c-ai/agent-catalog` | Knowledge catalog | L12 |
@@ -229,5 +229,5 @@ As described in graph-alignment-tasks.md Phase 1.3, split into graph-aligned sub
 **Dissolved:**
 - `@a5c-ai/agent-core` → absorbed into `@a5c-ai/tool-mux` (tools) + `@a5c-ai/babysitter-agent` (session/registry)
 - `@a5c-ai/agent-mux-adapters` → absorbed into `@a5c-ai/agent-config-mux`
-- `@a5c-ai/agent-plugins-mux` → renamed to `@a5c-ai/extension-mux`
+- `@a5c-ai/extension-mux` → renamed to `@a5c-ai/extension-mux`
 - `@a5c-ai/breakpoints-mux` → renamed to `@a5c-ai/tasks-mux`

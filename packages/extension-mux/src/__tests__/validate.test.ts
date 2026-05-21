@@ -65,7 +65,7 @@ describe('validateSchema', () => {
 
 describe('validate directory references', () => {
   function createPluginDir(files: Record<string, string>): string {
-    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'agent-plugins-mux-validate-'));
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'extension-mux-validate-'));
     for (const [relativePath, content] of Object.entries(files)) {
       const fullPath = path.join(dir, relativePath);
       fs.mkdirSync(path.dirname(fullPath), { recursive: true });

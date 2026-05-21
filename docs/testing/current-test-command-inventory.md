@@ -58,8 +58,8 @@ Status: Current. This inventory implements roadmap slice 0, "Inventory and namin
 | `@a5c-ai/agent-mux-webui` | `test:e2e:install` | No-model | e2e | Mux maintainers | `e2e/agent-mux-webui-test-e2e-install` | ci.yml test/workspace-coverage; publish.yml validate_mux |
 | `@a5c-ai/agent-mux-webui` | `test:realtime` | No-model | release-gate | Mux maintainers | `release-logs/agent-mux-webui-test-realtime.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
 | `@a5c-ai/agent-mux-webui` | `verify:release` | No-model release gate | release-gate | Mux maintainers | `release-logs/agent-mux-webui-verify-release.log` | publish.yml validate and publish gates |
-| `@a5c-ai/agent-plugins-mux` | `lint` | No-model | static-check | Mux maintainers | `test-logs/agent-plugins-mux-lint.log` | ci.yml test or package-local validation when package is touched |
-| `@a5c-ai/agent-plugins-mux` | `test` | No-model | unit-or-integration | Mux maintainers | `test-logs/agent-plugins-mux-test.log` | ci.yml test or package-local validation when package is touched |
+| `@a5c-ai/extension-mux` | `lint` | No-model | static-check | Mux maintainers | `test-logs/extension-mux-lint.log` | ci.yml test or package-local validation when package is touched |
+| `@a5c-ai/extension-mux` | `test` | No-model | unit-or-integration | Mux maintainers | `test-logs/extension-mux-test.log` | ci.yml test or package-local validation when package is touched |
 | `@a5c-ai/atlas` | `verify:library-metadata` | No-model | contract | Catalog/Atlas maintainers | `test-logs/atlas-verify-library-metadata.log` | ci.yml packages-sdk/test; publish.yml validate_core |
 | `@a5c-ai/babysitter` | `lint` | No-model | static-check | Owning package maintainer | `test-logs/babysitter-lint.log` | ci.yml test or package-local validation when package is touched |
 | `@a5c-ai/babysitter-agent` | `lint` | No-model | static-check | Runtime maintainers | `test-logs/babysitter-agent-lint.log` | ci.yml packages-sdk/test; publish.yml validate_core |
@@ -139,7 +139,7 @@ Status: Current. This inventory implements roadmap slice 0, "Inventory and namin
 | `babysitter` | `test:agent-mux` | No-model | unit-or-integration | CI maintainers | `test-logs/babysitter-test-agent-mux.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
 | `babysitter` | `test:e2e:agent-mux-hooks-mux` | No-model | integration | CI maintainers | `e2e/agent-mux-hooks-mux/*.jsonl` | publish.yml agent_mux_hooks_mux_e2e matrix for claude-code, codex, pi |
 | `babysitter` | `test:e2e:agent-mux-no-model-stack` | No-model | e2e | CI maintainers | `e2e/no-model-stack/*.jsonl`, `summary.json` | publish.yml no_model_mock_matrix across runtime, agent, and hook-mode dimensions |
-| `babysitter` | `test:agent-plugins-mux` | No-model | unit-or-integration | CI maintainers | `test-logs/babysitter-test-agent-plugins-mux.log` | ci.yml test or package-local validation when package is touched |
+| `babysitter` | `test:extension-mux` | No-model | unit-or-integration | CI maintainers | `test-logs/babysitter-test-extension-mux.log` | ci.yml test or package-local validation when package is touched |
 | `babysitter` | `test:architecture` | No-model | static-check | CI maintainers | `test-logs/babysitter-test-architecture.log` | ci.yml packages-sdk/test; publish.yml validate_core |
 | `babysitter` | `test:cloud` | No-model | unit-or-integration | CI maintainers | `test-logs/babysitter-test-cloud.log` | ci.yml test or package-local validation when package is touched |
 | `babysitter` | `test:hooks-mux` | No-model | unit-or-integration | CI maintainers | `test-logs/babysitter-test-hooks-mux.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |

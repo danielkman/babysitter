@@ -4,7 +4,7 @@ attributes:
   authoredAt: "2026-04-28T00:00:00Z"
   termId: term:plugin-target
   text: |
-    Per-agent target spec used by the agent-plugins-mux / extension-mux to know
+    Per-agent target spec used by the extension-mux / extension-mux to know
     how to compile a Plugin or PortableExtension into a NativeExtension for a
     particular agent host. Distinct from AgentPlatformImpl (the platform itself);
     PluginTarget is the *target descriptor* — manifest format, command format,

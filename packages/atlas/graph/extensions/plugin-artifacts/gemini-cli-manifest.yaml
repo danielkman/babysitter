@@ -10,7 +10,7 @@ attributes:
   scriptVariants:
     - extension-manifest
   contextFiles:
-    - packages/agent-plugins-mux/src/targets/gemini.ts
+    - packages/extension-mux/src/targets/gemini.ts
 edges:
   emits_artifact:
     - target: plugin-target:gemini-cli

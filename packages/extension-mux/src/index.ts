@@ -1,4 +1,4 @@
-// Public API for @a5c-ai/agent-plugins-mux
+// Public API for @a5c-ai/extension-mux
 
 export * from './types.js';
 export { A5C_PLUGIN_SCHEMA, validate as validateSchema } from './schema.js';

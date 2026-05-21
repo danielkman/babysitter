@@ -10,7 +10,7 @@ attributes:
   scriptVariants:
     - markdown-commands
   contextFiles:
-    - packages/agent-plugins-mux/src/targets/cursor.ts
+    - packages/extension-mux/src/targets/cursor.ts
 edges:
   emits_artifact:
     - target: plugin-target:cursor

@@ -4,7 +4,7 @@ This is the codegen team's checklist. Each adapter projects a atlas graph subset
 into the shape the legacy SDK accessor returns, so downstream mux generators
 can swap the underlying graph without rewriting templates.
 
-## 1. `PluginTargetDescriptor` (driver: `agent-plugins-mux`)
+## 1. `PluginTargetDescriptor` (driver: `extension-mux`)
 
 **Legacy shape (per `packages/agent-catalog/src/models.ts:467`):** flat record
 with `targetId`, `displayName`, `adapterName`, `pluginRootEnvVar`,

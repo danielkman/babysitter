@@ -10,11 +10,11 @@ attributes:
   scriptVariants:
     - markdown-commands
   contextFiles:
-    - packages/agent-plugins-mux/src/targets/claude-code.ts
+    - packages/extension-mux/src/targets/claude-code.ts
 edges:
   emits_artifact:
     - target: plugin-target:claude-code
   references_path:
     - target: path:claude-code-plugin-manifest
   sourced_from:
-    - target: source-ref:packages-agent-plugins-mux
+    - target: source-ref:packages-extension-mux

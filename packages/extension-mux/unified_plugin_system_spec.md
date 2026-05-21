@@ -34,9 +34,9 @@ Every time a command, skill, or hook changes in the canonical plugin, the change
 Replace manual synchronization with a deterministic compiler:
 
 ```bash
-npx @a5c-ai/agent-plugins-mux compile --target claude-code --output dist/claude-code
-npx @a5c-ai/agent-plugins-mux compile --target codex --output dist/codex
-npx @a5c-ai/agent-plugins-mux compile --target all --output dist/
+npx @a5c-ai/extension-mux compile --target claude-code --output dist/claude-code
+npx @a5c-ai/extension-mux compile --target codex --output dist/codex
+npx @a5c-ai/extension-mux compile --target all --output dist/
 ```
 
 ### Design Principles
@@ -2198,7 +2198,7 @@ bump-version.mjs
   +-- Update UPF source (a5c-plugin.json version, versions.json sdkVersion)
   |
   +-- Run compiler for each target
-  |     npx @a5c-ai/agent-plugins-mux compile --target all --output dist/
+  |     npx @a5c-ai/extension-mux compile --target all --output dist/
   |
   +-- Each dist/<target>/ has correct version in its manifest
 ```
@@ -2237,7 +2237,7 @@ jobs:
       - run: npm run build:sdk
 
       # Compile all targets
-      - run: npx @a5c-ai/agent-plugins-mux compile --target all --output dist/ --verify
+      - run: npx @a5c-ai/extension-mux compile --target all --output dist/ --verify
 
       # Publish npm packages
       - run: cd dist/codex && npm publish --access public
@@ -2319,8 +2319,8 @@ jobs:
 1. Run the compiler for each target and compare output against the existing plugin directory:
 
 ```bash
-npx @a5c-ai/agent-plugins-mux compile --target claude-code --output /tmp/test-claude-code
-npx @a5c-ai/agent-plugins-mux diff --target claude-code --existing plugins/babysitter/
+npx @a5c-ai/extension-mux compile --target claude-code --output /tmp/test-claude-code
+npx @a5c-ai/extension-mux diff --target claude-code --existing plugins/babysitter/
 ```
 
 2. Fix any discrepancies. The compiler output should match the existing plugins exactly (modulo whitespace/formatting).
@@ -2373,7 +2373,7 @@ npx @a5c-ai/agent-plugins-mux diff --target claude-code --existing plugins/babys
 Compile a UPF package for one or all targets.
 
 ```
-npx @a5c-ai/agent-plugins-mux compile --target <name|all> --output <dir> [options]
+npx @a5c-ai/extension-mux compile --target <name|all> --output <dir> [options]
 
 Options:
   --target <name>    Target harness name or "all" for all targets.
@@ -2391,13 +2391,13 @@ Options:
 
 ```bash
 # Compile for Claude Code
-npx @a5c-ai/agent-plugins-mux compile --target claude-code --output dist/claude-code
+npx @a5c-ai/extension-mux compile --target claude-code --output dist/claude-code
 
 # Compile all targets with verification
-npx @a5c-ai/agent-plugins-mux compile --target all --output dist/ --verify
+npx @a5c-ai/extension-mux compile --target all --output dist/ --verify
 
 # Dry run to see what would be emitted
-npx @a5c-ai/agent-plugins-mux compile --target gemini --output dist/gemini --dry-run --json
+npx @a5c-ai/extension-mux compile --target gemini --output dist/gemini --dry-run --json
 ```
 
 **Output (JSON mode):**
@@ -2429,7 +2429,7 @@ npx @a5c-ai/agent-plugins-mux compile --target gemini --output dist/gemini --dry
 Validate a UPF source package without compiling.
 
 ```
-npx @a5c-ai/agent-plugins-mux validate [options]
+npx @a5c-ai/extension-mux validate [options]
 
 Options:
   --source <dir>     UPF source directory (default: current directory).
@@ -2440,7 +2440,7 @@ Options:
 **Example:**
 
 ```bash
-npx @a5c-ai/agent-plugins-mux validate --source plugins/babysitter-unified --strict
+npx @a5c-ai/extension-mux validate --source plugins/babysitter-unified --strict
 ```
 
 ### 10.3 `diff`
@@ -2448,7 +2448,7 @@ npx @a5c-ai/agent-plugins-mux validate --source plugins/babysitter-unified --str
 Compare compiled output against an existing plugin directory.
 
 ```
-npx @a5c-ai/agent-plugins-mux diff --target <name> --existing <dir> [options]
+npx @a5c-ai/extension-mux diff --target <name> --existing <dir> [options]
 
 Options:
   --target <name>    Target harness name.
@@ -2460,7 +2460,7 @@ Options:
 **Example:**
 
 ```bash
-npx @a5c-ai/agent-plugins-mux diff --target codex --existing plugins/babysitter-codex
+npx @a5c-ai/extension-mux diff --target codex --existing plugins/babysitter-codex
 ```
 
 **Output:**
@@ -2480,7 +2480,7 @@ Files with differences:
 Scaffold a new UPF plugin.
 
 ```
-npx @a5c-ai/agent-plugins-mux init --name <name> [options]
+npx @a5c-ai/extension-mux init --name <name> [options]
 
 Options:
   --name <name>      Plugin name.
@@ -2491,7 +2491,7 @@ Options:
 **Example:**
 
 ```bash
-npx @a5c-ai/agent-plugins-mux init --name my-plugin --template full --output plugins/my-plugin
+npx @a5c-ai/extension-mux init --name my-plugin --template full --output plugins/my-plugin
 ```
 
 Creates:
@@ -2516,7 +2516,7 @@ plugins/my-plugin/
 Show available compilation targets and their capabilities.
 
 ```
-npx @a5c-ai/agent-plugins-mux list-targets [options]
+npx @a5c-ai/extension-mux list-targets [options]
 
 Options:
   --json             Output structured JSON.
@@ -2678,7 +2678,7 @@ Full compiler pipeline tests that compile a known UPF source and validate the co
 
 ```bash
 # Compile a test fixture UPF source for each target
-npx @a5c-ai/agent-plugins-mux compile --target all --source test/fixtures/test-plugin --output test/output --verify
+npx @a5c-ai/extension-mux compile --target all --source test/fixtures/test-plugin --output test/output --verify
 ```
 
 Integration test assertions:
@@ -2693,11 +2693,11 @@ Compiled output for each target is stored as committed snapshots. CI compares fr
 
 ```bash
 # Update snapshots (when intentional changes are made)
-npx @a5c-ai/agent-plugins-mux compile --target all --output test/snapshots --source test/fixtures/test-plugin
+npx @a5c-ai/extension-mux compile --target all --output test/snapshots --source test/fixtures/test-plugin
 
 # CI check: compile and compare (fails if output differs from snapshot)
-npx @a5c-ai/agent-plugins-mux compile --target all --output /tmp/test-output --source test/fixtures/test-plugin
-npx @a5c-ai/agent-plugins-mux diff --target all --existing test/snapshots
+npx @a5c-ai/extension-mux compile --target all --output /tmp/test-output --source test/fixtures/test-plugin
+npx @a5c-ai/extension-mux diff --target all --existing test/snapshots
 ```
 
 Snapshot tests catch unintentional changes to emitted output format, whitespace, field ordering, and file structure.
@@ -2708,9 +2708,9 @@ The `diff` CLI command (section 10.3) is the primary regression detection tool d
 
 ```bash
 # Compare compiled output against the hand-maintained plugin directory
-npx @a5c-ai/agent-plugins-mux diff --target codex --existing plugins/babysitter-codex
-npx @a5c-ai/agent-plugins-mux diff --target pi --existing plugins/babysitter-pi
-npx @a5c-ai/agent-plugins-mux diff --target all --existing plugins/
+npx @a5c-ai/extension-mux diff --target codex --existing plugins/babysitter-codex
+npx @a5c-ai/extension-mux diff --target pi --existing plugins/babysitter-pi
+npx @a5c-ai/extension-mux diff --target all --existing plugins/
 ```
 
 The diff command:

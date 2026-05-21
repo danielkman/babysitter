@@ -73,13 +73,13 @@ Work mainly in:
 
 Read:
 
-- `packages/agent-plugins-mux/unified_plugin_system_spec.md`
+- `packages/extension-mux/unified_plugin_system_spec.md`
 - `plugins/babysitter-unified/README.template.md`
 - per-harness plugin README files under `plugins/babysitter-unified/per-harness/`
 
 Work mainly in:
 
-- `packages/agent-plugins-mux`
+- `packages/extension-mux`
 - `plugins/babysitter-unified`
 - concrete bundles under `plugins/babysitter-*`
 
@@ -123,7 +123,7 @@ Use this rule of thumb:
 | Orchestration runtime behavior | `packages/sdk`, `packages/babysitter`, `packages/babysitter-agent` | V6 docs, CLI docs |
 | Harness dispatch behavior | `packages/agent-mux/*` and `docs/agent-mux/` | V6 integration docs |
 | Hook normalization | `packages/hooks-mux/*` | per-harness plugin docs |
-| Unified plugin packaging | `packages/agent-plugins-mux`, `plugins/babysitter-unified/` | install READMEs for concrete bundles |
+| Unified plugin packaging | `packages/extension-mux`, `plugins/babysitter-unified/` | install READMEs for concrete bundles |
 | Breakpoint routing | `packages/breakpoints-mux` | SDK integration docs |
 
 ## Practical Rules

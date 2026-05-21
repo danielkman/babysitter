@@ -39,7 +39,7 @@ export function diffTarget(options: DiffOptions): DiffResult {
     throw new Error(`Existing path must be a directory: ${existing}`);
   }
 
-  const tempBaseDir = fs.mkdtempSync(path.join(os.tmpdir(), 'agent-plugins-mux-diff-'));
+  const tempBaseDir = fs.mkdtempSync(path.join(os.tmpdir(), 'extension-mux-diff-'));
   const compiledDir = path.join(tempBaseDir, target);
 
   try {
