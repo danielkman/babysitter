@@ -72,7 +72,7 @@ jobs:
             2. Research the process library (.a5c/process-library/) for matching methodologies and specializations.
             3. Create a babysitter process definition (.mjs file) under .a5c/processes/ that encodes the plan as phases, tasks, breakpoints, and quality gates.
             4. Create a matching inputs JSON file under .a5c/processes/ with the concrete inputs for this task.
-            5. The process file should be ready to execute via `babysitter-agent call --process .a5c/processes/<file>.mjs#process`.
+            5. The process file should be ready to execute via `.a5c/processes/<file>.mjs#process`.
 
             OUTPUT — ONLY THESE ARTIFACTS:
             - .a5c/processes/<descriptive-name>.mjs — the process definition
