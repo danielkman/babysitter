@@ -3,7 +3,14 @@ import { describe, expect, it } from 'vitest';
 import { OpenAiChatCodec } from '../codecs/openai-chat.js';
 import { AnthropicCodec } from '../codecs/anthropic.js';
 import { GoogleCodec } from '../codecs/google.js';
-import { getCodec } from '../codecs/index.js';
+import { BedrockConverseCodec } from '../codecs/bedrock.js';
+import { OpenAiResponsesCodec } from '../codecs/openai-responses.js';
+import {
+  convertTools,
+  getCodec,
+  getCodecForDescriptor,
+  normalizeUsage,
+} from '../codecs/index.js';
 
 import type { CompletionResult } from '../types.js';
 
@@ -405,6 +412,32 @@ describe('getCodec', () => {
     expect(codec!.transportId).toBe('google');
   });
 
+  it('returns correct codec for openai-responses', () => {
+    const codec = getCodec('openai-responses');
+    expect(codec).toBeDefined();
+    expect(codec!.transportId).toBe('openai-responses');
+  });
+
+  it('returns correct codec for bedrock-converse and bedrock alias', () => {
+    expect(getCodec('bedrock-converse')?.transportId).toBe('bedrock-converse');
+    expect(getCodec('bedrock')?.transportId).toBe('bedrock-converse');
+  });
+
+  it('resolves codecs from atlas TransportDescriptor-like objects', () => {
+    const codec = getCodecForDescriptor({
+      transportId: 'transport-runtime:openai-responses',
+      codecCapabilities: {
+        supportsTools: true,
+        supportsStreaming: true,
+        supportsTokenCounting: false,
+        costTracking: true,
+        toolSchemaFormat: 'openai',
+      },
+    });
+
+    expect(codec?.transportId).toBe('openai-responses');
+  });
+
   it('returns undefined for unknown transport', () => {
     const codec = getCodec('unknown-transport');
     expect(codec).toBeUndefined();
@@ -413,5 +446,130 @@ describe('getCodec', () => {
   it('returns undefined for empty string', () => {
     const codec = getCodec('');
     expect(codec).toBeUndefined();
+  });
+});
+
+describe('OpenAiResponsesCodec', () => {
+  const codec = new OpenAiResponsesCodec();
+
+  it('round-trips input text, tools, result usage, and SSE chunks', () => {
+    const request = codec.decodeRequest({
+      model: 'gpt-4.1',
+      input: [
+        { type: 'message', role: 'user', content: [{ type: 'input_text', text: 'hello' }] },
+      ],
+      tools: [
+        {
+          type: 'function',
+          name: 'lookup',
+          description: 'Lookup data',
+          parameters: { type: 'object', properties: { id: { type: 'string' } } },
+        },
+      ],
+      stream: true,
+    });
+
+    expect(request.input).toBe('hello');
+    expect(request.messages).toEqual([{ role: 'user', content: 'hello' }]);
+    expect(codec.normalizeTools!(request.tools!)[0]).toMatchObject({ name: 'lookup' });
+
+    const encoded = codec.encodeResult(makeResult()) as Record<string, unknown>;
+    expect(encoded.object).toBe('response');
+    expect((encoded.usage as Record<string, unknown>).input_tokens).toBe(10);
+    expect((encoded.usage as Record<string, unknown>).output_tokens).toBe(5);
+
+    expect(codec.encodeStreamChunk({ type: 'text-delta', text: 'hi' })).toContain('response.output_text.delta');
+    expect(codec.encodeStreamChunk({ type: 'done', finishReason: 'stop' })).toContain('response.completed');
+  });
+});
+
+describe('BedrockConverseCodec', () => {
+  const codec = new BedrockConverseCodec();
+
+  it('round-trips Bedrock Converse messages, result usage, and NDJSON chunks', () => {
+    const request = codec.decodeRequest({
+      modelId: 'anthropic.claude-sonnet',
+      messages: [{ role: 'user', content: [{ text: 'hello' }] }],
+      toolConfig: {
+        tools: [
+          {
+            toolSpec: {
+              name: 'lookup',
+              description: 'Lookup data',
+              inputSchema: { json: { type: 'object', properties: { id: { type: 'string' } } } },
+            },
+          },
+        ],
+      },
+    });
+
+    expect(request.model).toBe('anthropic.claude-sonnet');
+    expect(request.messages).toEqual([{ role: 'user', content: 'hello' }]);
+    expect(codec.normalizeTools!(request.tools!)[0]).toMatchObject({ name: 'lookup' });
+
+    const encoded = codec.encodeResult(makeResult()) as Record<string, unknown>;
+    expect((encoded.usage as Record<string, unknown>).inputTokens).toBe(10);
+    expect((encoded.usage as Record<string, unknown>).outputTokens).toBe(5);
+
+    expect(codec.encodeStreamChunk({ type: 'text-delta', text: 'hi' })).toContain('contentBlockDelta');
+    expect(codec.encodeStreamChunk({ type: 'done', finishReason: 'stop' })).toContain('messageStop');
+  });
+});
+
+describe('tool schema translation and usage normalization', () => {
+  it('converts OpenAI tools to Anthropic and Google schema shapes', () => {
+    const openAiTools = [
+      {
+        type: 'function',
+        function: {
+          name: 'search',
+          description: 'Search',
+          parameters: { type: 'object', properties: { q: { type: 'string' } } },
+        },
+      },
+    ];
+
+    expect(convertTools(openAiTools, 'openai', 'anthropic')).toEqual([
+      {
+        name: 'search',
+        description: 'Search',
+        input_schema: { type: 'object', properties: { q: { type: 'string' } } },
+      },
+    ]);
+
+    expect(convertTools(openAiTools, 'openai', 'google')).toEqual([
+      {
+        functionDeclarations: [
+          {
+            name: 'search',
+            description: 'Search',
+            parameters: { type: 'object', properties: { q: { type: 'string' } } },
+          },
+        ],
+      },
+    ]);
+  });
+
+  it('normalizes OpenAI, Anthropic, Google, and Bedrock usage fields', () => {
+    expect(normalizeUsage({ prompt_tokens: 7, completion_tokens: 3 })).toEqual({
+      promptTokens: 7,
+      completionTokens: 3,
+      totalTokens: 10,
+    });
+    expect(normalizeUsage({ input_tokens: 11, output_tokens: 5 })).toEqual({
+      promptTokens: 11,
+      completionTokens: 5,
+      totalTokens: 16,
+    });
+    expect(normalizeUsage({ promptTokenCount: 13, candidatesTokenCount: 8 })).toEqual({
+      promptTokens: 13,
+      completionTokens: 8,
+      totalTokens: 21,
+    });
+    expect(normalizeUsage({ inputTokens: 17, outputTokens: 9 })).toEqual({
+      promptTokens: 17,
+      completionTokens: 9,
+      totalTokens: 26,
+    });
   });
 });

@@ -179,6 +179,17 @@ export class OpenAiChatCodec implements TransportCodec {
     return result;
   }
 
+  denormalizeTools(tools: NormalizedToolDefinition[]): unknown[] {
+    return tools.map((tool) => ({
+      type: 'function',
+      function: {
+        name: tool.name,
+        description: tool.description,
+        parameters: tool.parameters ?? { type: 'object', properties: {} },
+      },
+    }));
+  }
+
   extractCostRecord(result: CompletionResult): NormalizedCostRecord | undefined {
     if (!result.usage) {
       return undefined;

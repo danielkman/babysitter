@@ -6,6 +6,7 @@ import { WebSocket, WebSocketServer } from 'ws';
 
 import { Hono } from 'hono';
 
+import { getCodec } from './codecs/index.js';
 import type {
   CompletionEngine,
   CompletionRequest,
@@ -22,6 +23,7 @@ const STREAMING_TRANSPORTS = new Set<ProxyConfig['exposedTransport']>([
   'openai-chat',
   'openai-responses',
   'google',
+  'bedrock-converse',
   'passthrough',
 ]);
 
@@ -224,6 +226,41 @@ function buildCompletionRequest(
   stream: boolean,
   thoughtSignatureStore?: Map<string, string>,
 ): CompletionRequest {
+  const codec = getCodec(transport);
+  if (codec) {
+    const decoded = codec.decodeRequest(body);
+    const rawMessages = Array.isArray(body.messages)
+      ? body.messages
+      : Array.isArray(body.contents)
+        ? body.contents
+        : undefined;
+    const messages = rawMessages
+      ? decoded.messages.map((message, index) => {
+          const raw = rawMessages[index] as { content?: unknown; parts?: unknown } | undefined;
+          return {
+            ...message,
+            rawContent: message.rawContent ?? raw?.content ?? raw?.parts,
+          };
+        })
+      : decoded.messages;
+
+    return {
+      ...decoded,
+      transport,
+      messages,
+      model: typeof body.model === 'string'
+        ? body.model
+        : typeof body.modelId === 'string'
+          ? body.modelId
+          : decoded.model,
+      stream,
+      input: transport === 'openai-responses'
+        ? decoded.input ?? normalizeInput(body.input)
+        : decoded.input,
+      thoughtSignatureStore,
+    };
+  }
+
   const messages =
     transport === 'google' || transport === 'vertex-native'
       ? normalizeMessages(body.contents)
@@ -879,9 +916,38 @@ function renderStreamResponse(
       return openAiResponsesStreamResponse(stream, config);
     case 'google':
       return googleStreamResponse(stream);
+    case 'bedrock-converse':
+      return codecStreamResponse(transport, stream, 'application/x-ndjson; charset=utf-8');
     default:
       return createErrorResponse(`Streaming is not supported for ${transport}.`);
   }
+}
+
+function codecStreamResponse(
+  transport: ProxyConfig['exposedTransport'],
+  stream: AsyncIterable<CompletionStreamEvent>,
+  contentType: string,
+): Response {
+  const codec = getCodec(transport);
+  if (!codec) {
+    return createErrorResponse(`Streaming is not supported for ${transport}.`);
+  }
+  const encoder = new TextEncoder();
+
+  return new Response(
+    new ReadableStream({
+      async start(controller) {
+        for await (const event of stream) {
+          const chunk = codec.encodeStreamChunk(event);
+          if (chunk) {
+            controller.enqueue(encoder.encode(chunk));
+          }
+        }
+        controller.close();
+      },
+    }),
+    { headers: { 'content-type': contentType, 'cache-control': 'no-cache' } },
+  );
 }
 
 function trackCompletionStream(
