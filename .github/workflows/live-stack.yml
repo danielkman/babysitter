@@ -271,19 +271,20 @@ jobs:
 
               const claudeCreate = scenario('claude-code','claude',foundry,'create');
               const codexCreate = scenario('codex','codex',google,'create');
+              const piCreate = scenario('pi','pi',kimi,'create');
 
-              // BP Interactive: claude+codex (predefined + create)
+              // BP Interactive: claude+codex+pi (create only)
               const bpInt = [
-                {scenario: claude, interaction_mode: interactive, install_mode: bpInstall},
-                {scenario: codex, interaction_mode: interactive, install_mode: bpInstall},
                 {scenario: claudeCreate, interaction_mode: interactive, install_mode: bpInstall},
                 {scenario: codexCreate, interaction_mode: interactive, install_mode: bpInstall},
+                {scenario: piCreate, interaction_mode: interactive, install_mode: bpInstall},
               ];
 
-              // BP Bridged-hooks: claude+codex
+              // BP Bridged-hooks: claude+codex+pi (create only)
               const bpBridged = [
-                {scenario: claude, interaction_mode: bridgedHooks, install_mode: bpInstall},
-                {scenario: codex, interaction_mode: bridgedHooks, install_mode: bpInstall},
+                {scenario: claudeCreate, interaction_mode: bridgedHooks, install_mode: bpInstall},
+                {scenario: codexCreate, interaction_mode: bridgedHooks, install_mode: bpInstall},
+                {scenario: piCreate, interaction_mode: bridgedHooks, install_mode: bpInstall},
               ];
 
               const wrap = (arr) => JSON.stringify({include: arr});
