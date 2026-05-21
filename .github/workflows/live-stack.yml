@@ -528,7 +528,19 @@ jobs:
             report=$(find "$dir" -name "verification-report.md" | head -1)
             json_artifact=$(find "$dir" -name "live.agent-mux.*.json" | head -1)
 
-            if [ -n "$report" ] && [ -f "$report" ]; then
+            result_status=""
+            result_detail=""
+            if [ -n "$json_artifact" ] && [ -f "$json_artifact" ]; then
+              result_status=$(node -e "const d=JSON.parse(require('fs').readFileSync('$json_artifact','utf8')); console.log(d.status || '')" 2>/dev/null || echo "")
+              result_detail=$(node -e "const d=JSON.parse(require('fs').readFileSync('$json_artifact','utf8')); console.log(d.skipReason || d.failure || '')" 2>/dev/null || echo "")
+            fi
+
+            if [ "$result_status" = "skipped" ]; then
+              agent=$(node -e "const d=JSON.parse(require('fs').readFileSync('$json_artifact','utf8')); console.log(d.evidence?.scenarioId?.split('.')[2] || '?')" 2>/dev/null || echo "?")
+              provider=$(node -e "const d=JSON.parse(require('fs').readFileSync('$json_artifact','utf8')); console.log(d.evidence?.provider || '?')" 2>/dev/null || echo "?")
+              model=$(node -e "const d=JSON.parse(require('fs').readFileSync('$json_artifact','utf8')); console.log(d.evidence?.model || '?')" 2>/dev/null || echo "?")
+              status="⊘"; bp_skip=$((bp_skip + 1)); detail="${result_detail:-skipped}"
+            elif [ -n "$report" ] && [ -f "$report" ]; then
               agent=$(grep -oP '(?<=\*\*Agent:\*\* ).*' "$report" | head -1 || echo "?")
               provider=$(grep -oP '(?<=\*\*Provider:\*\* ).*' "$report" | head -1 || echo "?")
               model=$(grep -oP '(?<=\*\*Model:\*\* ).*' "$report" | head -1 || echo "?")
@@ -545,22 +557,16 @@ jobs:
               agent=$(node -e "const d=JSON.parse(require('fs').readFileSync('$json_artifact','utf8')); console.log(d.evidence?.scenarioId?.split('.')[2] || '?')" 2>/dev/null || echo "?")
               provider=$(node -e "const d=JSON.parse(require('fs').readFileSync('$json_artifact','utf8')); console.log(d.evidence?.provider || '?')" 2>/dev/null || echo "?")
               model=$(node -e "const d=JSON.parse(require('fs').readFileSync('$json_artifact','utf8')); console.log(d.evidence?.model || '?')" 2>/dev/null || echo "?")
-              result_status=$(node -e "const d=JSON.parse(require('fs').readFileSync('$json_artifact','utf8')); console.log(d.status || 'unknown')" 2>/dev/null || echo "unknown")
               if [ "$result_status" = "passed" ]; then
                 status="✅"; bp_pass=$((bp_pass + 1)); detail="passed (json)"
               else
-                status="❌"; bp_fail=$((bp_fail + 1)); detail="$result_status (json)"
+                status="❌"; bp_fail=$((bp_fail + 1)); detail="${result_status:-unknown} (json)"
               fi
             else
               agent="?"; provider="—"; model="—"
               status="⊘"; bp_skip=$((bp_skip + 1)); detail="no report"
             fi
             echo "| ${OS_LABEL} | ${agent} | ${provider} | ${model} | ${mode} | ${proc_mode} | ${runtime} | ${status} | ${detail} |" >> "$GITHUB_STEP_SUMMARY"
-            else
-              mode=$(echo "$dir" | grep -oP '(bridged-hooks|bridged-interactive|interactive|non-interactive)' | head -1 || echo "?")
-              echo "| ? | — | — | ${mode} | — | — | ⊘ | skipped |" >> "$GITHUB_STEP_SUMMARY"
-              bp_skip=$((bp_skip + 1))
-            fi
           done
 
           echo "" >> "$GITHUB_STEP_SUMMARY"
@@ -572,19 +578,31 @@ jobs:
           for dir in all-artifacts/live-stack-*-vanilla-*/ ; do
             [ -d "$dir" ] || continue
             report=$(find "$dir" -name "verification-report.md" | head -1)
-            if [ -n "$report" ] && [ -f "$report" ]; then
+            json_artifact=$(find "$dir" -name "live.agent-mux.*.json" | head -1)
+            result_status=""
+            result_detail=""
+            if [ -n "$json_artifact" ] && [ -f "$json_artifact" ]; then
+              result_status=$(node -e "const d=JSON.parse(require('fs').readFileSync('$json_artifact','utf8')); console.log(d.status || '')" 2>/dev/null || echo "")
+              result_detail=$(node -e "const d=JSON.parse(require('fs').readFileSync('$json_artifact','utf8')); console.log(d.skipReason || d.failure || '')" 2>/dev/null || echo "")
+            fi
+            mode=$(echo "$dir" | grep -oP '(bridged-hooks|bridged-interactive|interactive|non-interactive)' | head -1 || echo "?")
+            dur_file=$(find "$dir" -name "duration-seconds.txt" | head -1)
+            if [ -n "$dur_file" ] && [ -f "$dur_file" ]; then
+              dur_s=$(cat "$dur_file"); runtime="$((dur_s / 60))m$((dur_s % 60))s"
+            else
+              runtime="—"
+            fi
+            if [ "$result_status" = "skipped" ]; then
+              agent=$(node -e "const d=JSON.parse(require('fs').readFileSync('$json_artifact','utf8')); console.log(d.evidence?.scenarioId?.split('.')[2] || '?')" 2>/dev/null || echo "?")
+              provider=$(node -e "const d=JSON.parse(require('fs').readFileSync('$json_artifact','utf8')); console.log(d.evidence?.provider || '?')" 2>/dev/null || echo "?")
+              model=$(node -e "const d=JSON.parse(require('fs').readFileSync('$json_artifact','utf8')); console.log(d.evidence?.model || '?')" 2>/dev/null || echo "?")
+              status="⊘"; van_skip=$((van_skip + 1)); detail="${result_detail:-skipped}"
+            elif [ -n "$report" ] && [ -f "$report" ]; then
               agent=$(grep -oP '(?<=\*\*Agent:\*\* ).*' "$report" | head -1 || echo "?")
               provider=$(grep -oP '(?<=\*\*Provider:\*\* ).*' "$report" | head -1 || echo "?")
               model=$(grep -oP '(?<=\*\*Model:\*\* ).*' "$report" | head -1 || echo "?")
-              mode=$(echo "$dir" | grep -oP '(bridged-hooks|bridged-interactive|interactive|non-interactive)' | head -1 || echo "?")
               failures=$(grep -c '✗' "$report" 2>/dev/null || true)
               passes=$(grep -c '✓' "$report" 2>/dev/null || true)
-              dur_file=$(find "$dir" -name "duration-seconds.txt" | head -1)
-              if [ -n "$dur_file" ] && [ -f "$dur_file" ]; then
-                dur_s=$(cat "$dur_file"); runtime="$((dur_s / 60))m$((dur_s % 60))s"
-              else
-                runtime="—"
-              fi
               if [ "${failures:-0}" -gt 0 ]; then
                 status="❌"; van_fail=$((van_fail + 1))
                 detail=$(grep '✗' "$report" | head -1 | sed 's/.*| //;s/ |.*//' || echo "")
@@ -592,12 +610,20 @@ jobs:
                 status="✅"; van_pass=$((van_pass + 1))
                 detail="${passes:-0} checks"
               fi
-              echo "| ${OS_LABEL} | ${agent} | ${provider} | ${model} | ${mode} | ${runtime} | ${status} | ${detail} |" >> "$GITHUB_STEP_SUMMARY"
+            elif [ -n "$json_artifact" ] && [ -f "$json_artifact" ]; then
+              agent=$(node -e "const d=JSON.parse(require('fs').readFileSync('$json_artifact','utf8')); console.log(d.evidence?.scenarioId?.split('.')[2] || '?')" 2>/dev/null || echo "?")
+              provider=$(node -e "const d=JSON.parse(require('fs').readFileSync('$json_artifact','utf8')); console.log(d.evidence?.provider || '?')" 2>/dev/null || echo "?")
+              model=$(node -e "const d=JSON.parse(require('fs').readFileSync('$json_artifact','utf8')); console.log(d.evidence?.model || '?')" 2>/dev/null || echo "?")
+              if [ "$result_status" = "passed" ]; then
+                status="✅"; van_pass=$((van_pass + 1)); detail="passed (json)"
+              else
+                status="❌"; van_fail=$((van_fail + 1)); detail="${result_status:-unknown} (json)"
+              fi
             else
-              mode=$(echo "$dir" | grep -oP '(bridged-hooks|bridged-interactive|interactive|non-interactive)' | head -1 || echo "?")
-              echo "| ${OS_LABEL} | ? | — | — | ${mode} | — | ⊘ | skipped |" >> "$GITHUB_STEP_SUMMARY"
-              van_skip=$((van_skip + 1))
+              agent="?"; provider="—"; model="—"
+              status="⊘"; van_skip=$((van_skip + 1)); detail="no report"
             fi
+            echo "| ${OS_LABEL} | ${agent} | ${provider} | ${model} | ${mode} | ${runtime} | ${status} | ${detail} |" >> "$GITHUB_STEP_SUMMARY"
           done
 
           echo "" >> "$GITHUB_STEP_SUMMARY"
