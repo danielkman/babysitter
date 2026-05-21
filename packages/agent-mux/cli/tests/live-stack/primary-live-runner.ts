@@ -505,19 +505,23 @@ function buildPrompt(scenario: LiveStackScenario, traceId: string, env: Record<s
     if (processMode === 'create') {
       const createInstructions = [
         'STEP 1 — Read the skeleton at .a5c/processes/odyssey-live-test.skeleton.mjs.',
-        'Also read .a5c/processes/summarize-translate-test.mjs as a working reference.',
-        'Create .a5c/processes/odyssey-live-test.mjs by filling in the skeleton:',
+        'Create .a5c/processes/odyssey-live-test.mjs by filling in the skeleton.',
+        'Do NOT use any existing process file — you MUST write odyssey-live-test.mjs yourself.',
+        'Requirements:',
         '- Replace all <FILL> placeholders with real implementations',
+        '- import { defineTask } from "@a5c-ai/babysitter-sdk"',
+        '- export async function process(inputs, ctx) { ... }',
         '- Define at least 3 tasks using defineTask()',
         '- Use ctx.parallel.all() for concurrent work',
+        '- Include a // @reference comment listing process library paths you researched',
         '- Write the final markdown to <outputDir>/<traceId>-odyssey.md',
         '- The document must have 12 paragraph headings and Greek characters',
         'Write this file to disk before proceeding.',
         '',
-        'STEP 2 — Verify your process file: run `node -e "import(\'.a5c/processes/odyssey-live-test.mjs\').then(m => console.log(typeof m.process))"` — it must print "function".',
+        'STEP 2 — Verify: run `node -e "import(\'.a5c/processes/odyssey-live-test.mjs\').then(m => console.log(typeof m.process))"` — must print "function".',
         'If it fails, fix the syntax error and retry.',
         '',
-        `STEP 3 — ${coreTask}. Use the process you created at .a5c/processes/odyssey-live-test.mjs`,
+        `STEP 3 — ${coreTask}. Use ONLY the process at .a5c/processes/odyssey-live-test.mjs (the one you created).`,
       ].join('\n');
       if (scenario.agent.agent === 'claude-code') return `/babysitter:call ${createInstructions}`;
       if (scenario.agent.agent === 'codex') return `$babysitter:call ${createInstructions}`;
@@ -732,6 +736,7 @@ async function validateAgentBehavior(
   const entries: VerificationEntry[] = [];
   const isBabysitterAgent = scenario.agent.agent === 'babysitter-agent';
   const isBabysitterPlugin = scenario.agent.installMode === 'babysitter-plugin';
+  let deferredProcessCreation: string | undefined;
 
   // --- babysitter-agent: verify model responded with content ---
   if (isBabysitterAgent) {
@@ -772,7 +777,7 @@ async function validateAgentBehavior(
     entries.push({ name: 'file-creation', status: 'skipped', detail: 'no trace ID available' });
   }
 
-  // --- process-creation: verify @reference marker in created process file (create mode only) ---
+  // --- process-creation: verify agent created a process file (create mode only) ---
   const processMode = env['LIVE_STACK_PROCESS_MODE'] ?? 'predefined';
   if (isBabysitterPlugin && processMode === 'create') {
     const processFile = path.join(cwd, '.a5c', 'processes', 'odyssey-live-test.mjs');
@@ -968,6 +973,7 @@ async function validateAgentBehavior(
         entries.push(he);
       }
     }
+
   }
 
   return entries;
