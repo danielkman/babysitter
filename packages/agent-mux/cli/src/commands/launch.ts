@@ -287,6 +287,17 @@ async function resolveSpawnCommand(command: string, args: string[]): Promise<{ c
         if (existsSync(ps1)) {
           return { command: 'powershell.exe', args: ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', ps1, ...args], shell: false };
         }
+        const { readFileSync } = await import('node:fs');
+        try {
+          const cmdContent = readFileSync(resolved, 'utf8');
+          const jsMatch = cmdContent.match(/"([^"]+\.js)"/);
+          if (jsMatch?.[1]) {
+            const jsPath = require('node:path').resolve(require('node:path').dirname(resolved), jsMatch[1]);
+            if (existsSync(jsPath)) {
+              return { command: process.execPath, args: [jsPath, ...args], shell: false };
+            }
+          }
+        } catch { /* couldn't parse .cmd — fall through */ }
       }
       if (/\.exe$/i.test(resolved)) {
         return { command: resolved, args, shell: false };
