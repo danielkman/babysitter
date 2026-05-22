@@ -27,3 +27,12 @@ export * from "./cost";
 
 // Observability (moved from babysitter-agent)
 export * from "./observability";
+
+// Telemetry (L5 type stubs — issue #217)
+export * from "./telemetry";
+
+// Execution modes (L5 type stubs — issue #217)
+export * from "./execution";
+
+// Resource management (L5 type stubs — issue #217)
+export * from "./resources";
