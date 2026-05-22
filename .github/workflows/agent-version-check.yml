@@ -56,110 +56,84 @@ jobs:
             of all supported agent CLIs and update the atlas graph accordingly.
             ${{ inputs.dry_run == 'true' && 'DRY RUN: report findings but do NOT create PRs or issues.' || '' }}
 
-            ## Supported Agents
+            ## Step 0 — Discover Agents from Atlas Graph
 
-            Check each of these agent CLIs for their latest version:
+            Build the SDK and query agent-catalog to get all known agents with
+            their install methods:
 
-            | Agent | Install Command | npm Package |
-            |-------|----------------|-------------|
-            | Claude Code | `npm install -g @anthropic-ai/claude-code` | @anthropic-ai/claude-code |
-            | Codex | `npm install -g @openai/codex` | @openai/codex |
-            | Pi | `npm install -g @mariozechner/pi-coding-agent` | @mariozechner/pi-coding-agent |
-            | Hermes | `npm install -g @anthropic-ai/hermes` | @anthropic-ai/hermes |
-            | Gemini CLI | `npm install -g @anthropic-ai/gemini-cli` | @google/gemini-cli |
-            | Cursor Agent | `npm install -g cursor-agent` | cursor-agent |
-            | Aider | `pip install aider-chat` | aider-chat (PyPI) |
-            | OpenCode | `npm install -g opencode-ai` | opencode-ai |
-            | Goose | `npm install -g @anthropic-ai/goose` | @anthropic-ai/goose |
-            | Roo Code | `npm install -g @anthropic-ai/roo-code` | @anthropic-ai/roo-code |
+            ```bash
+            npm run build --workspace=@a5c-ai/atlas
+            npm run build --workspace=@a5c-ai/agent-catalog
+            node -e "
+              const { listPluginTargetDescriptors } = require('@a5c-ai/agent-catalog');
+              const targets = listPluginTargetDescriptors();
+              for (const t of targets) {
+                console.log(JSON.stringify({
+                  id: t.targetId,
+                  name: t.displayName,
+                  cli: t.cliCommand,
+                  externalPackage: t.externalPackageName,
+                  capabilities: t.harnessCapabilities,
+                }));
+              }
+            "
+            ```
+
+            Also discover install commands from the adapter source code:
+            ```bash
+            grep -r 'npm install -g\|pip install' packages/agent-mux/adapters/src/ | grep -v test | grep -v node_modules
+            ```
+
+            Build a table of all agents with their package names and install methods.
 
             ## Step 1 — Detect Current Versions
 
-            For each npm agent, run:
-            ```bash
-            npm view <package>@latest version 2>/dev/null || echo "NOT_FOUND"
-            ```
+            For each agent discovered in Step 0:
+            - If npm package: `npm view <package>@latest version 2>/dev/null`
+            - If pip package: search the web for latest version
+            - Also try `amux detect <agent> --json` to check if already installed
 
-            For aider (PyPI):
-            ```bash
-            pip index versions aider-chat 2>/dev/null | head -1 || echo "NOT_FOUND"
-            ```
-
-            Also search the web for recent release announcements for each agent
-            (e.g., "codex cli release notes", "claude code changelog").
-
-            Record: agent name, detected version, source (npm/pypi/web).
+            Search the web for recent release announcements for major agents
+            (codex, claude code, gemini cli, pi, cursor).
 
             ## Step 2 — Check Atlas Graph
 
-            For each detected version, check if it's already recorded:
+            For each detected version, check existing AgentVersion records:
             ```bash
-            grep -r "version.*<detected_version>" packages/atlas/graph/agent-stack/ || echo "NOT_IN_GRAPH"
+            find packages/atlas/graph/agent-stack -name "*.yaml" | xargs grep -l "AgentVersion" | head -20
             ```
-
-            Also check the AgentVersion YAML files:
-            ```bash
-            ls packages/atlas/graph/agent-stack/agent-versions/
-            cat packages/atlas/graph/agent-stack/agent-versions/<agent>*.yaml
-            ```
+            Read the relevant files to see what versions are already recorded.
 
             ## Step 3 — Update Graph for New Versions
 
             For each version NOT in the graph:
 
-            1. Create or update the AgentVersion YAML file at
-               `packages/atlas/graph/agent-stack/agent-versions/<agent>-<version>.yaml`
-               with the detected version, release date, and any known changes.
-
-            2. If release notes were found, extract key changes:
-               - New capabilities
-               - Breaking changes
-               - New CLI flags or behaviors
-               - Transport/API changes
-
-            3. Update the agent's PluginTarget if capabilities changed.
+            1. Create or update the AgentVersion YAML at
+               `packages/atlas/graph/agent-stack/agent-versions/`
+            2. If release notes found, extract key changes (capabilities,
+               breaking changes, CLI flags, transport/API changes)
+            3. Update the PluginTarget if capabilities changed
 
             ## Step 4 — Create PR
 
             If any graph changes were made:
-            1. Create a branch: `agent-versions/daily-<date>`
-            2. Commit all changes
-            3. Create a PR against staging with title:
-               "feat(graph): update agent versions — <date>"
-            4. Include a summary table of all version changes in the PR body
+            1. Create branch: `agent-versions/daily-$(date +%Y-%m-%d)`
+            2. Rebuild atlas index: `npm run build --workspace=@a5c-ai/atlas`
+            3. Commit and create PR against staging
 
             ## Step 5 — Open Issues for New Versions
 
-            For each NEW agent+version pair (not previously in graph):
-            1. Check if an issue already exists:
-               `gh issue list --label "agent-version-update" --search "<agent> <version>"`
-            2. If no existing issue, create one:
-               ```
-               gh issue create \
-                 --label "agent-version-update,graph-update" \
-                 --title "Assimilate <agent> v<version> into atlas graph" \
-                 --body "New version detected: <agent> v<version>
-
-               ## Tasks
-               - [ ] Review release notes and changelog
-               - [ ] Update AgentVersion record with full capability details
-               - [ ] Update PluginTarget if new capabilities or behaviors
-               - [ ] Update ProviderTranslation if transport changes
-               - [ ] Update HookMapping if hook behavior changes
-               - [ ] Update launchBehavior if CLI flag changes
-               - [ ] Run live-stack tests with new version
-               - [ ] Update adapter code if needed
-
-               Release notes: <url if found>
-               Detected version: <version>
-               Previous version: <previous if known>"
-               ```
+            For each NEW agent+version pair not previously in graph:
+            1. Check: `gh issue list --label "agent-version-update" --search "<agent> <version>"`
+            2. If none, create issue with label `agent-version-update,graph-update`
+               titled "Assimilate <agent> v<version> into atlas graph"
+               with tasks: review release notes, update AgentVersion, PluginTarget,
+               ProviderTranslation, HookMapping, launchBehavior, run live-stack,
+               update adapter code.
 
             ## Step 6 — Report
 
-            Print a summary table:
-            | Agent | Current | Previous | Status | Action |
-            |-------|---------|----------|--------|--------|
+            Print summary: Agent | Current | Previous | Status | Action
           trigger-query: ''
         env:
           AZURE_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
