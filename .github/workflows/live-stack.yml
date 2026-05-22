@@ -63,6 +63,7 @@ jobs:
         run: |
           npm ci
           npm install --no-save --ignore-scripts @rollup/rollup-linux-x64-gnu 2>/dev/null || true
+          npm install --no-save --ignore-scripts lightningcss-linux-x64-gnu 2>/dev/null || true
 
       - name: Restore framework cache
         uses: actions/cache@v5
@@ -122,7 +123,7 @@ jobs:
           npm run build --workspace=@a5c-ai/agent-mux-webui
           npm run build --workspace=@a5c-ai/babysitter-sdk
           (cd packages/agent-core && npx tsc --build --force tsconfig.json)
-          (cd packages/babysitter-agent && npx tsc --build tsconfig.json)
+          (cd packages/agent-platform && npx tsc --build tsconfig.json)
 
           wait_all
 
@@ -327,6 +328,7 @@ jobs:
         run: |
           npm ci
           npm install --no-save --ignore-scripts @rollup/rollup-linux-x64-gnu 2>/dev/null || true
+          npm install --no-save --ignore-scripts lightningcss-linux-x64-gnu 2>/dev/null || true
 
       - name: Download build artifacts
         uses: actions/download-artifact@v8
@@ -349,7 +351,7 @@ jobs:
           mkdir -p "$HOME/.local/bin"
           for pair in \
             "amux:packages/agent-mux/cli/dist/index.js" \
-            "babysitter-agent:packages/babysitter-agent/dist/cli/main.js" \
+            "agent-platform:packages/agent-platform/dist/cli/main.js" \
             "babysitter:packages/sdk/dist/cli/main.js" \
             "a5c-hooks-mux:packages/hooks-mux/cli/dist/index.js"
           do
@@ -392,7 +394,7 @@ jobs:
           LIVE_STACK_COMMAND_TIMEOUT_MS: '720000'
           LIVE_STACK_BABYSITTER_BIN: ${{ github.workspace }}/packages/sdk/dist/cli/main.js
           LIVE_STACK_AMUX_BIN: ${{ github.workspace }}/packages/agent-mux/cli/dist/index.js
-          LIVE_STACK_BABYSITTER_AGENT_BIN: ${{ github.workspace }}/packages/babysitter-agent/dist/cli/main.js
+          LIVE_STACK_AGENT_PLATFORM_BIN: ${{ github.workspace }}/packages/agent-platform/dist/cli/main.js
           AZURE_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           AMUX_API_BASE: https://${{ vars.AZURE_OPENAI_PROJECT_NAME }}.services.ai.azure.com
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
