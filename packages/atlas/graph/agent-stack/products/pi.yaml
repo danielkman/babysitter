@@ -2,8 +2,8 @@ nodeKind: AgentProduct
 id: agent:pi
 attributes:
   displayName: "Pi"
-  vendor: "Mario Zechner (@mariozechner)"
-  homepageUrl: "https://www.npmjs.com/package/@mariozechner/pi-coding-agent"
+  vendor: "earendil-works"
+  homepageUrl: "https://www.npmjs.com/package/@earendil-works/pi-coding-agent"
   primarySurface: cli
   supportTier: adapter-only
   productKind: full-cli-agent
@@ -29,6 +29,7 @@ attributes:
 edges:
   has_version:
     - agentVersion:pi:ge-0-0-0
+    - agentVersion:pi:ge-0-75-4
   composed_of:
     - target: language:typescript
       role: core
