@@ -765,6 +765,7 @@ function openAiResponsesStreamResponse(
           }
         } catch (streamError: unknown) {
           const errorMsg = streamError instanceof Error ? streamError.message : String(streamError);
+          console.error(`[transport-mux] SSE stream error: ${errorMsg}`);
           controller.enqueue(
             encoder.encode(
               encodeSseChunk('event: error\ndata: ', {
@@ -975,6 +976,8 @@ async function handleOpenAiResponsesWebSocketMessage(
     ws.send(JSON.stringify(completionResultToResponseEvent(result, config)));
   } catch (error: unknown) {
     metrics.recordError();
+    const errMsg = error instanceof Error ? error.message : String(error);
+    console.error(`[transport-mux] WebSocket completion error: ${errMsg}`);
     ws.send(JSON.stringify({
       type: 'error',
       error: { message: error instanceof Error ? error.message : String(error) },

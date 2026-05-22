@@ -860,8 +860,10 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
           // endpoint selection and should not affect the transport-mux proxy.
           const useVertexAi = plan.proxy.targetProvider === 'vertex';
           const { createGoogleCompletionEngine } = await import('./launch-completion-engine.js');
+          const googleApiBase = useVertexAi ? undefined
+            : (plan.proxy.apiBase && plan.proxy.apiBase.includes('googleapis.com') ? plan.proxy.apiBase : undefined);
           completionEngine = createGoogleCompletionEngine({
-            apiBase: useVertexAi ? undefined : plan.proxy.apiBase,
+            apiBase: googleApiBase,
             apiKey: googleApiKey,
             targetModel: plan.proxy.targetModel,
             provider: plan.proxy.targetProvider,
