@@ -274,10 +274,10 @@ async function resolveSpawnCommand(command: string, args: string[]): Promise<{ c
   const { execSync } = await import('node:child_process');
   const { existsSync } = await import('node:fs');
   try {
-    const resolved = execSync(`where ${command}`, { encoding: 'utf8', timeout: 5000 })
-      .split(/\r?\n/)
-      .map(l => l.trim())
-      .filter(Boolean)[0];
+    const whereOutput = execSync(`where ${command}`, { encoding: 'utf8', timeout: 5000 });
+    const allPaths = whereOutput.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    const resolved = allPaths[0];
+    console.error(`[amux launch] where ${command} → ${allPaths.join(', ')}`);
     if (resolved) {
       if (/\.js$/i.test(resolved)) {
         return { command: process.execPath, args: [resolved, ...args], shell: false };
@@ -302,8 +302,12 @@ async function resolveSpawnCommand(command: string, args: string[]): Promise<{ c
       if (/\.exe$/i.test(resolved)) {
         return { command: resolved, args, shell: false };
       }
+      // Resolved path has no recognized extension — try it directly without shell
+      return { command: resolved, args, shell: false };
     }
-  } catch { /* where failed — fall through */ }
+  } catch (err) {
+    console.error(`[amux launch] where ${command} failed: ${err instanceof Error ? err.message : err}`);
+  }
   return { command, args, shell: true };
 }
 
