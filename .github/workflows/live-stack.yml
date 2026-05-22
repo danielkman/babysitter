@@ -471,7 +471,7 @@ jobs:
       actions: read
     steps:
       - name: Download all live-stack artifacts
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v7
         with:
           pattern: live-stack-${{ github.run_id }}-*
           path: all-artifacts
@@ -482,6 +482,11 @@ jobs:
           RUN_ID: ${{ github.run_id }}
         run: |
           set -euo pipefail
+
+          echo "::group::Artifact directory structure"
+          find all-artifacts -maxdepth 3 -type f 2>/dev/null | head -50 || echo "all-artifacts not found or empty"
+          ls -la all-artifacts/ 2>/dev/null || echo "no all-artifacts dir"
+          echo "::endgroup::"
 
           echo "# Live Stack Report" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
