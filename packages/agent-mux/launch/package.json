@@ -1,31 +1,28 @@
 {
-  "name": "@a5c-ai/agent-mux-cli",
+  "name": "@a5c-ai/agent-launch-mux",
   "version": "5.0.0",
   "type": "module",
   "license": "MIT",
-  "description": "CLI binary (amux) for agent-mux",
+  "description": "Launch orchestration for agent-mux: plan resolution, proxy setup, harness spawning",
   "author": "a5c-ai",
-  "homepage": "https://github.com/a5c-ai/babysitter/tree/main/packages/agent-mux/cli#readme",
+  "homepage": "https://github.com/a5c-ai/babysitter/tree/main/packages/agent-mux/launch#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/a5c-ai/babysitter.git",
-    "directory": "packages/agent-mux/cli"
+    "directory": "packages/agent-mux/launch"
   },
   "bugs": {
     "url": "https://github.com/a5c-ai/babysitter/issues"
   },
   "keywords": [
     "agent-mux",
-    "amux",
-    "cli",
+    "launch",
+    "harness",
     "coding-agent",
     "ai"
   ],
   "engines": {
     "node": ">=20.9.0"
-  },
-  "bin": {
-    "amux": "./dist/index.js"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -35,12 +32,6 @@
       "import": {
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
-      }
-    },
-    "./bootstrap": {
-      "import": {
-        "types": "./dist/bootstrap.d.ts",
-        "default": "./dist/bootstrap.js"
       }
     }
   },
@@ -54,18 +45,14 @@
   },
   "scripts": {
     "build": "tsc --build && tsc --emitDeclarationOnly --declarationMap false -p tsconfig.json",
-    "test": "vitest run --config ../../../vitest.config.ts \"tests/**/*.test.ts\" \"tests/**/*.test.tsx\" \"src/**/*.test.ts\" \"src/**/*.test.tsx\"",
+    "test": "vitest run --config ../../../vitest.config.ts \"tests/**/*.test.ts\" \"src/**/*.test.ts\"",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@a5c-ai/agent-launch-mux": "5.0.0",
-    "@a5c-ai/agent-mux-gateway": "5.0.0",
     "@a5c-ai/agent-mux-core": "5.0.0",
     "@a5c-ai/agent-mux-adapters": "5.0.0",
-    "@a5c-ai/agent-mux-observability": "5.0.0",
-    "@a5c-ai/transport-mux": "5.0.0",
-    "qrcode-terminal": "^0.12.0",
-    "yaml": "^2.8.3"
+    "@a5c-ai/agent-catalog": "5.0.0",
+    "@a5c-ai/transport-mux": "5.0.0"
   },
   "optionalDependencies": {
     "node-pty": "^1.0.0"

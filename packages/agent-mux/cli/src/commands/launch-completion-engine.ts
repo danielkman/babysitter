@@ -1,8 +1,11 @@
 /**
- * Backward-compatibility re-exports.
+ * Completion engine — thin wrapper.
  *
- * The completion engine implementations now live in @a5c-ai/transport-mux.
- * This module re-exports them so existing import paths continue to work.
+ * The implementation now lives in @a5c-ai/agent-launch-mux.
+ * This module re-exports everything for backward compatibility.
  */
 
-export { createOpenAICompletionEngine, createGoogleCompletionEngine } from '@a5c-ai/transport-mux';
+export {
+  createOpenAICompletionEngine,
+  createGoogleCompletionEngine,
+} from '@a5c-ai/agent-launch-mux';
