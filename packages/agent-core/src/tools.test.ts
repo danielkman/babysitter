@@ -542,11 +542,11 @@ describe("agent-core tools", () => {
     }) as unknown as typeof childProcess.spawn);
 
     const sessionOneTools = getToolDefinitions(workspace, {
-      backgroundRegistry: new BackgroundProcessRegistry({ maxConcurrent: 1, spawnFn: mockSpawn }),
+      backgroundRegistry: new BackgroundProcessRegistry({ maxConcurrent: 1, spawnFn: mockSpawn as any}),
       onBackgroundComplete: sessionOneComplete,
     });
     const sessionTwoTools = getToolDefinitions(workspace, {
-      backgroundRegistry: new BackgroundProcessRegistry({ maxConcurrent: 2, spawnFn: mockSpawn }),
+      backgroundRegistry: new BackgroundProcessRegistry({ maxConcurrent: 2, spawnFn: mockSpawn as any}),
       onBackgroundComplete: sessionTwoComplete,
     });
     const sessionOneBash = sessionOneTools.find((tool) => tool.name === "bash");
@@ -641,7 +641,7 @@ describe("agent-core tools", () => {
     }) as unknown as typeof childProcess.spawn);
 
     const definitions = getToolDefinitions(workspace, {
-      backgroundRegistry: new BackgroundProcessRegistry({ maxConcurrent: 1, spawnFn: mockSpawn }),
+      backgroundRegistry: new BackgroundProcessRegistry({ maxConcurrent: 1, spawnFn: mockSpawn as any}),
     });
     const bashTool = definitions.find((tool) => tool.name === "bash");
     const listTool = definitions.find((tool) => tool.name === "background_list");
