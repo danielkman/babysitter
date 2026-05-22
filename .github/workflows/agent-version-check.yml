@@ -97,7 +97,7 @@ jobs:
             STEP 8: Print a final summary table covering ALL agents checked.
 
             IMPORTANT: You must cover every single agent in the graph, not just one or two.
-            Process them systematically in a loop. Do not stop after the first agent.
+            Process them systematically in a loop. Do not stop after the first agent. One PR for all the run.
           trigger-query: ''
         env:
           AZURE_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
