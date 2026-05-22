@@ -287,16 +287,27 @@ async function resolveSpawnCommand(command: string, args: string[]): Promise<{ c
         return { command: process.execPath, args: [resolved, ...args], shell: false };
       }
       if (/\.(cmd|bat)$/i.test(resolved)) {
-        // First try to find the .js entry point in the .cmd shim — spawn via
-        // node.exe directly to avoid cmd.exe/powershell argument mangling.
+        // Parse the .cmd shim to find the actual binary (.js or .exe) and
+        // spawn directly to avoid cmd.exe/powershell argument mangling.
         const { readFileSync } = await import('node:fs');
+        const pathMod = await import('node:path');
         try {
           const cmdContent = readFileSync(resolved, 'utf8');
+          // Look for .js entry point (node/npm packages)
           const jsMatch = cmdContent.match(/"([^"]+\.js)"/);
           if (jsMatch?.[1]) {
-            const jsPath = require('node:path').resolve(require('node:path').dirname(resolved), jsMatch[1]);
+            const jsPath = pathMod.resolve(pathMod.dirname(resolved), jsMatch[1]);
             if (existsSync(jsPath)) {
               return { command: process.execPath, args: [jsPath, ...args], shell: false };
+            }
+          }
+          // Look for .exe reference (Bun-compiled packages like Claude Code)
+          const exeMatch = cmdContent.match(/"([^"]+\.exe)"/);
+          if (exeMatch?.[1]) {
+            const exePath = pathMod.resolve(pathMod.dirname(resolved), exeMatch[1]);
+            if (existsSync(exePath)) {
+              console.error(`[amux launch] resolved .cmd → .exe: ${exePath}`);
+              return { command: exePath, args, shell: false };
             }
           }
         } catch { /* couldn't parse .cmd */ }
