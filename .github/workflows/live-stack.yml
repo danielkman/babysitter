@@ -69,7 +69,7 @@ jobs:
             NATIVE_PKGS="@rollup/rollup-darwin-arm64 @tailwindcss/oxide-darwin-arm64 lightningcss-darwin-arm64 @next/swc-darwin-arm64 @rolldown/binding-darwin-arm64 @unrs/resolver-binding-darwin-arm64"
           fi
           if [[ -n "$NATIVE_PKGS" ]]; then
-            npm install --no-save $NATIVE_PKGS || echo "WARNING: some native deps failed"
+            npm install --no-save $NATIVE_PKGS || echo "some native deps failed to install"
           fi
 
       - name: Restore framework cache
@@ -340,7 +340,7 @@ jobs:
           elif [[ "$RUNNER_OS" == "macOS" ]]; then
             NATIVE_PKGS="$NATIVE_PKGS @rollup/rollup-darwin-arm64 @tailwindcss/oxide-darwin-arm64 lightningcss-darwin-arm64 @next/swc-darwin-arm64 @rolldown/binding-darwin-arm64 @unrs/resolver-binding-darwin-arm64"
           fi
-          npm install --no-save $NATIVE_PKGS || echo "WARNING: some native deps failed"
+          npm install --no-save $NATIVE_PKGS || echo "some native deps failed to install"
 
       - name: Download build artifacts
         uses: actions/download-artifact@v8
@@ -356,7 +356,7 @@ jobs:
           tar xzf "${TEMP_DIR}/build-all-dist.tar.gz" $TAR_LOCAL_FLAG
 
       - name: Verify native deps
-        run: ls node_modules/@rolldown/ 2>/dev/null && echo "rolldown OK" || echo "WARNING: rolldown missing"
+        run: ls node_modules/@rolldown/ 2>/dev/null && echo "rolldown OK" || echo "rolldown missing"
 
       - name: Link workspace CLIs to PATH
         run: |
