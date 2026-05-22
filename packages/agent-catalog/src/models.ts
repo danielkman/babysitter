@@ -620,6 +620,7 @@ export interface PluginTargetDescriptor {
 export interface LaunchBehaviorDescriptor {
   promptDelivery: 'cli-flag' | 'exec-subcommand' | 'stdin';
   promptFlag?: string | null;
+  promptExtraFlags?: string[];
   execSubcommand?: string | null;
   resumeDelivery?: 'flag' | 'subcommand' | null;
   resumeFlag?: string | null;

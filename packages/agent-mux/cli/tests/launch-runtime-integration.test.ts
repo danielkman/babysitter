@@ -38,7 +38,7 @@ vi.mock('@a5c-ai/agent-catalog', () => ({
     const behaviors: Record<string, unknown> = {
       claude: { promptDelivery: 'cli-flag', promptFlag: '-p', stdinBehavior: 'close-after-prompt', selfExits: true, needsIdleKill: false, sessionIdFlag: '--session-id', maxTurnsFlag: '--max-turns', resumeDelivery: 'flag', resumeFlag: '--resume' },
       codex: { promptDelivery: 'exec-subcommand', execSubcommand: 'exec', stdinBehavior: 'close-after-prompt', selfExits: true, needsIdleKill: false, resumeDelivery: 'subcommand', resumeSubcommand: 'resume' },
-      pi: { promptDelivery: 'cli-flag', promptFlag: '-p', stdinBehavior: 'close-after-prompt', selfExits: false, needsIdleKill: true },
+      pi: { promptDelivery: 'cli-flag', promptFlag: '-p', promptExtraFlags: ['--mode', 'json'], stdinBehavior: 'close-after-prompt', selfExits: false, needsIdleKill: true },
       gemini: { promptDelivery: 'cli-flag', promptFlag: '--prompt', stdinBehavior: 'close-after-prompt', selfExits: true, needsIdleKill: false },
     };
     return behaviors[harness] ?? undefined;
@@ -167,13 +167,9 @@ describe('launchCommand transport-mux integration', () => {
     expect(spawnMock.mock.calls[0]?.[1]).toContain('model_providers.amux-proxy.wire_api="responses"');
     expect(runtimeStop).toHaveBeenCalledTimes(1);
     const spawnedArgs = spawnMock.mock.calls[0]?.[1] as string[];
-    if (process.platform === 'win32') {
-      expect(child.stdin.write).toHaveBeenCalledWith('hello\n');
-    } else {
-      expect(spawnedArgs).toContain('exec');
-      expect(spawnedArgs).toContain('hello');
-      expect(child.stdin.write).not.toHaveBeenCalled();
-    }
+    expect(spawnedArgs).toContain('exec');
+    expect(spawnedArgs).toContain('hello');
+    expect(child.stdin.write).not.toHaveBeenCalled();
     expect(child.stdin.end).toHaveBeenCalledTimes(1);
   });
 
@@ -246,13 +242,11 @@ describe('launchCommand transport-mux integration', () => {
       expect(code).toBe(0);
       expect(spawnMock).toHaveBeenCalledTimes(1);
       const spawnedArgs = spawnMock.mock.calls[0]?.[1] as string[];
-      if (process.platform === 'win32') {
-        expect(child.stdin.write).toHaveBeenCalledWith('write the file\n');
-      } else {
-        expect(spawnedArgs).toContain('-p');
-        expect(spawnedArgs).toContain('write the file');
-        expect(child.stdin.write).not.toHaveBeenCalled();
-      }
+      expect(spawnedArgs).toContain('-p');
+      expect(spawnedArgs).toContain('write the file');
+      expect(spawnedArgs).toContain('--mode');
+      expect(spawnedArgs).toContain('json');
+      expect(child.stdin.write).not.toHaveBeenCalled();
       expect(child.stdin.end).toHaveBeenCalledTimes(1);
       expect(runtimeStop).toHaveBeenCalledTimes(1);
     } finally {

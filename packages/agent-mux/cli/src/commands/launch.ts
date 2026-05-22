@@ -240,15 +240,10 @@ function appendHarnessSessionArgs(plan: LaunchPlan, session: SessionArgs): void 
       plan.args.push(lb.sessionIdFlag, session.sessionId);
     }
 
-    // Prompt delivery (non-interactive only for cli-flag/exec-subcommand).
-    // On Windows with shell:true, long prompts with special chars get mangled
-    // by cmd.exe, so fall back to stdin delivery.
-    const forceStdin = process.platform === 'win32';
+    // Prompt delivery (non-interactive only for cli-flag/exec-subcommand)
     if (session.prompt && !session.resumeId) {
-      if (forceStdin) {
-        // On Windows, all prompts go through stdin to avoid cmd.exe escaping issues
-      } else if (lb.promptDelivery === 'cli-flag' && lb.promptFlag && !interactive) {
-        plan.args.push(lb.promptFlag, session.prompt);
+      if (lb.promptDelivery === 'cli-flag' && lb.promptFlag && !interactive) {
+        plan.args.push(lb.promptFlag, session.prompt, ...(lb.promptExtraFlags ?? []));
       } else if (lb.promptDelivery === 'exec-subcommand' && lb.execSubcommand && !interactive) {
         plan.args.unshift(lb.execSubcommand, session.prompt);
       }
@@ -265,6 +260,40 @@ function appendHarnessSessionArgs(plan: LaunchPlan, session: SessionArgs): void 
     if (session.sessionId) plan.args.push('--session-id', session.sessionId);
     if (session.maxTurns) plan.args.push('--max-turns', String(session.maxTurns));
   }
+}
+
+// ---------------------------------------------------------------------------
+// Windows spawn resolution — find the actual binary so we don't need shell:true
+// which mangles arguments containing special characters.
+// ---------------------------------------------------------------------------
+
+async function resolveSpawnCommand(command: string, args: string[]): Promise<{ command: string; args: string[]; shell: boolean }> {
+  if (process.platform !== 'win32') {
+    return { command, args, shell: false };
+  }
+  const { execSync } = await import('node:child_process');
+  const { existsSync } = await import('node:fs');
+  try {
+    const resolved = execSync(`where ${command}`, { encoding: 'utf8', timeout: 5000 })
+      .split(/\r?\n/)
+      .map(l => l.trim())
+      .filter(Boolean)[0];
+    if (resolved) {
+      if (/\.js$/i.test(resolved)) {
+        return { command: process.execPath, args: [resolved, ...args], shell: false };
+      }
+      if (/\.(cmd|bat)$/i.test(resolved)) {
+        const ps1 = resolved.replace(/\.(cmd|bat)$/i, '.ps1');
+        if (existsSync(ps1)) {
+          return { command: 'powershell.exe', args: ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', ps1, ...args], shell: false };
+        }
+      }
+      if (/\.exe$/i.test(resolved)) {
+        return { command: resolved, args, shell: false };
+      }
+    }
+  } catch { /* where failed — fall through */ }
+  return { command, args, shell: true };
 }
 
 // ---------------------------------------------------------------------------
@@ -1382,13 +1411,14 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
     (child as any).__bridgeExitPromise = exitPromise;
   } else {
     // Non-interactive: plain spawn. Each harness handles non-interactive mode
-    // internally (claude -p, codex exec, gemini --prompt, pi stdin).
+    // internally (claude -p, codex exec, gemini --prompt, pi -p).
     const { spawn } = await import('node:child_process');
-    child = spawn(plan.command, plan.args, {
+    const resolvedSpawn = await resolveSpawnCommand(plan.command, plan.args);
+    child = spawn(resolvedSpawn.command, resolvedSpawn.args, {
       stdio: ['pipe', 'pipe', 'pipe'],
       env: { ...process.env, ...plan.env },
       cwd: launchCwd,
-      shell: process.platform === 'win32',
+      shell: resolvedSpawn.shell,
     });
     child.stderr?.on('data', (chunk: Buffer) => {
       process.stderr.write(chunk);

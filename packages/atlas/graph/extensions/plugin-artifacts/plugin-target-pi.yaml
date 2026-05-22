@@ -79,6 +79,7 @@ attributes:
   launchBehavior:
     promptDelivery: cli-flag
     promptFlag: "-p"
+    promptExtraFlags: ["--mode", "json"]
     execSubcommand: null
     resumeDelivery: null
     resumeFlag: null

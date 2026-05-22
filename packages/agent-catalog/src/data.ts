@@ -964,6 +964,7 @@ function buildPluginTargetDescriptors(_hooks: HookDescriptor[]): PluginTargetDes
         ? {
             promptDelivery: (valueAsString((node.launchBehavior as GraphNode).promptDelivery) as "cli-flag" | "exec-subcommand" | "stdin") || "stdin",
             promptFlag: valueAsString((node.launchBehavior as GraphNode).promptFlag) || null,
+            promptExtraFlags: stringArray((node.launchBehavior as GraphNode).promptExtraFlags),
             execSubcommand: valueAsString((node.launchBehavior as GraphNode).execSubcommand) || null,
             resumeDelivery: (valueAsString((node.launchBehavior as GraphNode).resumeDelivery) as "flag" | "subcommand" | null) || null,
             resumeFlag: valueAsString((node.launchBehavior as GraphNode).resumeFlag) || null,
