@@ -1367,6 +1367,7 @@ export function createTransportMuxApp({ config, completionEngine }: CreateTransp
   });
 
   app.post('/v1/responses', async (c) => {
+    console.error(`[transport-mux] POST /v1/responses (HTTP SSE)`);
     const plan = await createExecutionPlan(c.req.raw, 'openai-responses');
     if (plan instanceof Response) {
       return plan;
@@ -1539,12 +1540,15 @@ export async function startProxyServer(
   const webSocketServer = new WebSocketServer({ noServer: true });
   server.on('upgrade', (req, socket, head) => {
     const url = new URL(req.url ?? '/', `http://${config.host}:${config.port}`);
+    console.error(`[transport-mux] WebSocket upgrade: ${url.pathname} transport=${config.exposedTransport}`);
     if (url.pathname !== '/v1/responses' || config.exposedTransport !== 'openai-responses') {
+      console.error(`[transport-mux] WebSocket rejected: wrong path or transport`);
       socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
       socket.destroy();
       return;
     }
     if (!isAuthorizedUpgrade(req, config.authToken)) {
+      console.error(`[transport-mux] WebSocket rejected: unauthorized`);
       socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
       socket.destroy();
       return;
