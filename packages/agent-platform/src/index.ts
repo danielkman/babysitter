@@ -13,3 +13,4 @@ export * as storage from "./storage";
 export * as tasks from "./tasks";
 export * as processes from "./processes";
 export * as skills from "./skills";
+export * as plugins from "./plugins";
