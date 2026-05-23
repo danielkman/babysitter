@@ -61,7 +61,11 @@ export type {
   SubagentResult,
   SubagentInvocationOptions,
   SubagentInvoker,
+  InvokeFn,
+  ReviewFn,
+  OversightResult,
 } from "./subagent";
+export { SubagentInvokerImpl, OversightRunner } from "./subagent";
 export type {
   CompactionStrategyKind,
   PriorityCompactionStrategy,

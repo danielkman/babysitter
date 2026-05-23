@@ -6,3 +6,9 @@ export type {
   SubagentInvocationOptions,
   SubagentInvoker,
 } from "./types";
+
+export { SubagentInvokerImpl } from "./invoker";
+export type { InvokeFn } from "./invoker";
+
+export { OversightRunner } from "./oversight";
+export type { ReviewFn, OversightResult } from "./oversight";
