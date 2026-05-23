@@ -1468,8 +1468,10 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
         const flagIdx = resolvedSpawn.args.indexOf(launchBeh.promptFlag);
         if (flagIdx >= 0 && resolvedSpawn.args[flagIdx + 1] === prompt) {
           stdinPromptOverride = prompt;
-          resolvedSpawn.args.splice(flagIdx, 2);
-          // Keep extra flags (e.g. --mode json) but remove -p and prompt
+          // Remove the prompt value but keep the -p flag so the harness
+          // knows to read from stdin instead of entering interactive mode.
+          // Claude Code with -p but no argument reads stdin for the prompt.
+          resolvedSpawn.args.splice(flagIdx + 1, 1);
         }
       }
     }
