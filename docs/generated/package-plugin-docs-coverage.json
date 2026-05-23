@@ -97,6 +97,18 @@
       "note": "README is the canonical package-level contract."
     },
     {
+      "surface": "packages/agent-mux/config",
+      "packageName": "@a5c-ai/agent-config-mux",
+      "description": "Agent config mux — install, auth, host detection, adapter configuration",
+      "hasReadme": false,
+      "status": "Public family package",
+      "canonicalHome": "../packages/agent-mux/README.md",
+      "supporting": [
+        "./agent-mux/README.md"
+      ],
+      "note": "New package from agent-mux decomposition (#211)."
+    },
+    {
       "surface": "packages/agent-mux/core",
       "packageName": "@a5c-ai/agent-comm-mux",
       "description": "Core types, client, and stream engine for agent-mux",
@@ -107,6 +119,18 @@
         "./agent-mux/README.md"
       ],
       "note": "README is the canonical package-level contract."
+    },
+    {
+      "surface": "packages/agent-mux/launch",
+      "packageName": "@a5c-ai/agent-launch-mux",
+      "description": "Agent launch mux — spawn/lifecycle, PTY bridge, signal handling",
+      "hasReadme": false,
+      "status": "Public family package",
+      "canonicalHome": "../packages/agent-mux/README.md",
+      "supporting": [
+        "./agent-mux/README.md"
+      ],
+      "note": "New package from agent-mux decomposition (#211)."
     },
     {
       "surface": "packages/agent-mux/gateway",
