@@ -101,7 +101,7 @@ Each entry in the array defines one scenario:
 
 ### Models
 
-`foundry-gpt55`, `foundry-gpt54mini`, `google-gemini31`, `anthropic-sonnet46`, `foundry-kimi`
+`foundry-gpt55`, `foundry-gpt54mini`, `google-gemini31`, `anthropic-sonnet46`, `foundry-deepseek`
 
 ### Modes
 
