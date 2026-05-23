@@ -349,7 +349,7 @@ export async function executeChildProcessCommand(execution: CommandExecution): P
     const child = spawn(execution.command, execution.args, {
       cwd: execution.cwd,
       env: { ...process.env, ...execution.env },
-      shell: process.platform === 'win32',
+      shell: false,
       detached: process.platform !== 'win32',
       stdio: ['pipe', 'pipe', 'pipe'],
     });

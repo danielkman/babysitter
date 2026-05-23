@@ -338,8 +338,9 @@ async function resolveSpawnCommand(command: string, args: string[]): Promise<{ c
         // Node.js shell:true double-quoting (Node wraps in outer quotes for
         // cmd /s /c "...", which breaks inner escaped quotes in args).
         const quoteIfNeeded = (s: string) => s.includes(' ') || /[&|<>^()%!"',;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+        console.error(`[amux launch] .cmd fallback raw args (${args.length}): ${args.map((a, i) => `[${i}]=${a.length > 50 ? a.slice(0, 50) + '...' : a}`).join(' ')}`);
         const cmdLine = `${quoteIfNeeded(resolved)} ${args.map(quoteIfNeeded).join(' ')}`;
-        console.error(`[amux launch] .cmd fallback cmdLine (first 300): ${cmdLine.slice(0, 300)}`);
+        console.error(`[amux launch] .cmd fallback cmdLine (first 500): ${cmdLine.slice(0, 500)}`);
         return { command: process.env['ComSpec'] ?? 'cmd.exe', args: ['/c', cmdLine], shell: false };
       }
       if (/\.exe$/i.test(resolved)) {
