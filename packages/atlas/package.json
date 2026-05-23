@@ -63,5 +63,11 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "atlas": {
+    "layers": [
+      "cross-cutting"
+    ],
+    "muxes": []
   }
 }

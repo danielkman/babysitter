@@ -137,5 +137,12 @@
     "orchestration",
     "workflow",
     "agent-mux"
-  ]
+  ],
+  "atlas": {
+    "layers": [
+      "L5",
+      "L11"
+    ],
+    "muxes": []
+  }
 }

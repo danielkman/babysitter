@@ -51,5 +51,14 @@
   },
   "dependencies": {
     "@a5c-ai/agent-comm-mux": "5.0.0"
+  },
+  "atlas": {
+    "layers": [
+      "L5",
+      "L6"
+    ],
+    "muxes": [
+      "agent-config-mux"
+    ]
   }
 }

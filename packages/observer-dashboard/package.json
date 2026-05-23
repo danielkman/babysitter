@@ -103,5 +103,11 @@
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.0.18"
+  },
+  "atlas": {
+    "layers": [
+      "L6"
+    ],
+    "muxes": []
   }
 }

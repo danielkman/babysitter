@@ -86,5 +86,13 @@
   },
   "devDependencies": {
     "@types/react": "^19.1.0"
+  },
+  "atlas": {
+    "layers": [
+      "L6"
+    ],
+    "muxes": [
+      "agent-mux"
+    ]
   }
 }

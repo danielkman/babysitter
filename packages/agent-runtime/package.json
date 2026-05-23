@@ -36,10 +36,18 @@
   },
   "typesVersions": {
     "*": {
-      "daemon": ["dist/daemon/index.d.ts"],
-      "session": ["dist/session/index.d.ts"],
-      "cost": ["dist/cost/index.d.ts"],
-      "observability": ["dist/observability/index.d.ts"]
+      "daemon": [
+        "dist/daemon/index.d.ts"
+      ],
+      "session": [
+        "dist/session/index.d.ts"
+      ],
+      "cost": [
+        "dist/cost/index.d.ts"
+      ],
+      "observability": [
+        "dist/observability/index.d.ts"
+      ]
     }
   },
   "files": [
@@ -72,5 +80,11 @@
   "homepage": "https://github.com/a5c-ai/babysitter/tree/main/packages/agent-runtime#readme",
   "bugs": {
     "url": "https://github.com/a5c-ai/babysitter/issues"
+  },
+  "atlas": {
+    "layers": [
+      "L5"
+    ],
+    "muxes": []
   }
 }

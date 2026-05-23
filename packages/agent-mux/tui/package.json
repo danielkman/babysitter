@@ -73,5 +73,13 @@
   "devDependencies": {
     "@types/react": "^19.2.14",
     "ink-testing-library": "^4.0.0"
+  },
+  "atlas": {
+    "layers": [
+      "L6"
+    ],
+    "muxes": [
+      "agent-mux"
+    ]
   }
 }

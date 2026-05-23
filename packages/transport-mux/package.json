@@ -86,5 +86,13 @@
   },
   "devDependencies": {
     "@types/ws": "^8.18.1"
+  },
+  "atlas": {
+    "layers": [
+      "L3"
+    ],
+    "muxes": [
+      "transport-mux"
+    ]
   }
 }

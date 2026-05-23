@@ -82,5 +82,14 @@
     "eslint": "^9.39.4",
     "typescript": "^5.7.3",
     "vitest": "^4.1.6"
+  },
+  "atlas": {
+    "layers": [
+      "L9",
+      "L14"
+    ],
+    "muxes": [
+      "tasks-mux"
+    ]
   }
 }

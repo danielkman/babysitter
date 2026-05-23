@@ -52,5 +52,13 @@
   "devDependencies": {
     "typescript": "^5.4.5",
     "vitest": "^4.1.4"
+  },
+  "atlas": {
+    "layers": [
+      "cross-cutting"
+    ],
+    "muxes": [
+      "agent-mux"
+    ]
   }
 }

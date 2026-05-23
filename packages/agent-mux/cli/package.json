@@ -70,5 +70,13 @@
   },
   "optionalDependencies": {
     "node-pty": "^1.0.0"
+  },
+  "atlas": {
+    "layers": [
+      "L6"
+    ],
+    "muxes": [
+      "agent-mux"
+    ]
   }
 }

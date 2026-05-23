@@ -57,5 +57,15 @@
     "@a5c-ai/agent-comm-mux": "5.0.0",
     "@a5c-ai/agent-mux-adapters": "5.0.0",
     "@a5c-ai/agent-mux-cli": "5.0.0"
+  },
+  "atlas": {
+    "layers": [
+      "L4",
+      "L5",
+      "L6"
+    ],
+    "muxes": [
+      "agent-mux"
+    ]
   }
 }

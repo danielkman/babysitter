@@ -70,5 +70,13 @@
     "@types/react-dom": "^19.1.0",
     "@vitejs/plugin-react": "^6.0.1",
     "vite": "^8.0.0"
+  },
+  "atlas": {
+    "layers": [
+      "L6"
+    ],
+    "muxes": [
+      "agent-mux"
+    ]
   }
 }
