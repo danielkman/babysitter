@@ -894,13 +894,11 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
           || process.env['GOOGLE_API_KEY']
           || process.env['GEMINI_API_KEY'];
         if (googleApiKey) {
-          // Only use Vertex AI mode when the provider is explicitly 'vertex'.
-          // When targetProvider is 'google', the GOOGLE_API_KEY is a Google AI
-          // Studio key that authenticates against generativelanguage.googleapis.com,
-          // NOT against the Vertex AI endpoint (aiplatform.googleapis.com).
-          // The GOOGLE_GENAI_USE_VERTEXAI env var controls the Gemini CLI's own
-          // endpoint selection and should not affect the transport-mux proxy.
-          const useVertexAi = plan.proxy.targetProvider === 'vertex';
+          // Use Vertex AI mode when the provider is 'vertex' or when
+          // GOOGLE_GENAI_USE_VERTEXAI is set (indicates the key is for Vertex AI,
+          // not the Generative Language API).
+          const useVertexAi = plan.proxy.targetProvider === 'vertex'
+            || process.env['GOOGLE_GENAI_USE_VERTEXAI']?.toLowerCase() === 'true';
           const { createGoogleCompletionEngine } = await import('./completion-engine.js');
           const googleApiBase = useVertexAi ? undefined
             : (plan.proxy.apiBase && plan.proxy.apiBase.includes('googleapis.com') ? plan.proxy.apiBase : undefined);
