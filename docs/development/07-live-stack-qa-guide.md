@@ -101,7 +101,7 @@ Each entry in the array defines one scenario:
 
 ### Models
 
-`foundry-gpt55`, `google-gemini31`, `anthropic-sonnet46`, `foundry-kimi`
+`foundry-gpt55`, `foundry-gpt54mini`, `google-gemini31`, `anthropic-sonnet46`, `foundry-kimi`
 
 ### Modes
 
@@ -202,6 +202,31 @@ Test Claude Code against the Anthropic provider directly (bypasses foundry):
 ```json
 [{"agent":"claude","model":"anthropic-sonnet46","mode":"ni","install":"vanilla","live":true}]
 ```
+
+## QA Evidence Wiki
+
+Live-stack test results are tracked on the **[QA Evidence wiki page](https://github.com/a5c-ai/babysitter/wiki/QA-Evidence)**. This page maintains a comprehensive matrix of all agent/model/OS/mode combinations with links to passing CI jobs.
+
+### How to update the wiki
+
+1. After a successful live-stack run, find the passing job ID in the GitHub Actions UI or via CLI:
+   ```bash
+   gh api repos/a5c-ai/babysitter/actions/runs/<RUN_ID>/jobs \
+     --jq '.jobs[] | select(.conclusion == "success") | "\(.id)\t\(.name)"'
+   ```
+2. Clone the wiki repo: `git clone https://github.com/a5c-ai/babysitter.wiki.git`
+3. Edit `QA-Evidence.md` — replace `—` with `[PASS](https://github.com/a5c-ai/babysitter/actions/runs/<RUN_ID>/job/<JOB_ID>)` in the appropriate cell.
+4. Commit and push: `git add QA-Evidence.md && git commit -m "Add <description>" && git push`
+
+### Wiki structure
+
+The wiki organizes evidence by:
+- **Test type**: Vanilla NI, Vanilla BI, BP/Predefined Interactive, BP/Predefined Bridged-Hooks, BP/Create Interactive, BP/Create Bridged-Hooks, BP/Resume Interactive, BP/Resume Bridged-Hooks
+- **Model**: gpt-5.5, gpt-5.4-mini, claude-sonnet-4-6, gemini-3.5-flash, Kimi-K2.6
+- **Agent**: claude-code, codex, pi, gemini-cli, hermes, cursor-cli, copilot-cli, opencode
+- **OS**: Ubuntu, macOS, Windows
+
+Each cell links to a specific CI job that demonstrated a successful pass. The wiki also tracks key fixes applied during the stabilization effort.
 
 ## Reading Results
 
