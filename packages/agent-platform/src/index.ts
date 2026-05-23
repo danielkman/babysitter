@@ -11,3 +11,4 @@ export * from "./observability";
 export * as session from "./session";
 export * as storage from "./storage";
 export * as tasks from "./tasks";
+export * as skills from "./skills";
