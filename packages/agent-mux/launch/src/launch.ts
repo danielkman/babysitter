@@ -1528,6 +1528,9 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
   const launchBehavior = getLaunchBehavior(plan.harness);
   const promptInArgs = prompt ? plan.args.some(a => a === prompt) : false;
   const keepStdinOpen = launchBehavior?.stdinBehavior === 'keep-open';
+  if (!isInteractive && prompt) {
+    console.error(`[amux launch] stdin: promptInArgs=${promptInArgs} keepStdinOpen=${keepStdinOpen} hasStdin=${!!child.stdin} hasPty=${!!ptyProcess}`);
+  }
 
   if (prompt && child.stdin && !ptyProcess && !promptInArgs) {
     child.stdin.write(prompt + '\n');
