@@ -23,6 +23,9 @@ const packageFamilies = {
     "@a5c-ai/agent-mux-gateway",
     "@a5c-ai/agent-mux-observability",
     "@a5c-ai/agent-mux-harness-mock",
+    "@a5c-ai/agent-config-mux",
+    "@a5c-ai/agent-launch-mux",
+    "@a5c-ai/tool-mux",
     "@a5c-ai/transport-mux",
   ],
   "dispatch-surfaces": [

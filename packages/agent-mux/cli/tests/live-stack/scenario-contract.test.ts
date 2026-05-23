@@ -25,6 +25,7 @@ describe('live stack scenario contract primitives', () => {
       'npm run generate:plugins',
       'amux install claude',
       'npm install --global ./packages/sdk',
+      'npm install --global ./packages/hooks-mux/cli',
       'babysitter harness:install-plugin claude-code',
       'mkdir -p .a5c-live-test',
       'cp fixtures/summarize-translate-test.mjs .a5c/processes/',
