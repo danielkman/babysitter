@@ -1,0 +1,12 @@
+nodeKind: PackageSurface
+id: package:a5c-ai-agent-launch-mux
+attributes:
+  packageId: "@a5c-ai/agent-launch-mux"
+  packageName: "@a5c-ai/agent-launch-mux"
+  workspacePath: packages/agent-mux/launch
+  moduleType: typescript
+  surfaceKinds:
+    - session-launcher
+  sourceOfTruthRole: wrapper-over-graph
+  publishedTo: npm
+  versionPolicy: semver

@@ -1,0 +1,13 @@
+nodeKind: PackageSurface
+id: package:a5c-ai-agent-runtime
+attributes:
+  packageId: "@a5c-ai/agent-runtime"
+  packageName: "@a5c-ai/agent-runtime"
+  workspacePath: packages/agent-runtime
+  moduleType: typescript
+  surfaceKinds:
+    - agent-runtime
+    - host-adapter
+  sourceOfTruthRole: wrapper-over-graph
+  publishedTo: npm
+  versionPolicy: semver

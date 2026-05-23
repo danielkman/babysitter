@@ -1,0 +1,12 @@
+nodeKind: PackageSurface
+id: package:a5c-ai-agent-config-mux
+attributes:
+  packageId: "@a5c-ai/agent-config-mux"
+  packageName: "@a5c-ai/agent-config-mux"
+  workspacePath: packages/agent-mux/config
+  moduleType: typescript
+  surfaceKinds:
+    - config-discovery
+  sourceOfTruthRole: wrapper-over-graph
+  publishedTo: npm
+  versionPolicy: semver

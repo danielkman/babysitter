@@ -1,0 +1,13 @@
+nodeKind: PackageSurface
+id: package:a5c-ai-omni
+attributes:
+  packageId: "@a5c-ai/omni"
+  packageName: "@a5c-ai/omni"
+  workspacePath: packages/omni
+  moduleType: typescript
+  surfaceKinds:
+    - llm-client
+    - provider-facade
+  sourceOfTruthRole: wrapper-over-graph
+  publishedTo: npm
+  versionPolicy: semver

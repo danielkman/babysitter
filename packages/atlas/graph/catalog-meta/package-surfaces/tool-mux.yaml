@@ -1,0 +1,13 @@
+nodeKind: PackageSurface
+id: package:a5c-ai-tool-mux
+attributes:
+  packageId: "@a5c-ai/tool-mux"
+  packageName: "@a5c-ai/tool-mux"
+  workspacePath: packages/tool-mux
+  moduleType: typescript
+  surfaceKinds:
+    - tool-registry
+    - mcp-tool-routing
+  sourceOfTruthRole: wrapper-over-graph
+  publishedTo: npm
+  versionPolicy: semver

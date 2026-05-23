@@ -105,6 +105,31 @@ nodes:
     edges:
       source_of:
         - target: agent:babysitter-sdk
+  - id: source-ref:packages-tool-mux
+    kind: SourceRef
+    edges:
+      source_of:
+        - target: agent:agent-mux
+  - id: source-ref:packages-agent-launch-mux
+    kind: SourceRef
+    edges:
+      source_of:
+        - target: agent:agent-mux
+  - id: source-ref:packages-agent-config-mux
+    kind: SourceRef
+    edges:
+      source_of:
+        - target: agent:agent-mux
+  - id: source-ref:packages-agent-runtime
+    kind: SourceRef
+    edges:
+      source_of:
+        - target: agent:agent-platform
+  - id: source-ref:packages-omni
+    kind: SourceRef
+    edges:
+      source_of:
+        - target: agent:agent-platform
   - id: source-ref:context7-mcp
     kind: SourceRef
     edges:

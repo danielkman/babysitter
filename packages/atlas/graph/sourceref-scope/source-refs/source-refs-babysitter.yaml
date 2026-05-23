@@ -67,3 +67,53 @@ attributes:
   ref: main
   path: packages/sdk/src
   kind: git-path
+---
+nodeKind: SourceRef
+id: source-ref:packages-tool-mux
+attributes:
+  description: '@a5c-ai/tool-mux — unified tool-descriptor registry + MCP tool routing'
+  displayName: a5c-ai/babysitter — packages/tool-mux
+  repoUrl: https://github.com/a5c-ai/babysitter
+  ref: main
+  path: packages/tool-mux
+  kind: git-path
+---
+nodeKind: SourceRef
+id: source-ref:packages-agent-launch-mux
+attributes:
+  description: '@a5c-ai/agent-launch-mux — agent session launcher (spawn / attach / reconnect)'
+  displayName: a5c-ai/babysitter — packages/agent-mux/launch
+  repoUrl: https://github.com/a5c-ai/babysitter
+  ref: main
+  path: packages/agent-mux/launch
+  kind: git-path
+---
+nodeKind: SourceRef
+id: source-ref:packages-agent-config-mux
+attributes:
+  description: '@a5c-ai/agent-config-mux — agent configuration discovery + merging'
+  displayName: a5c-ai/babysitter — packages/agent-mux/config
+  repoUrl: https://github.com/a5c-ai/babysitter
+  ref: main
+  path: packages/agent-mux/config
+  kind: git-path
+---
+nodeKind: SourceRef
+id: source-ref:packages-agent-runtime
+attributes:
+  description: '@a5c-ai/agent-runtime — shared agent runtime types + host adapters'
+  displayName: a5c-ai/babysitter — packages/agent-runtime
+  repoUrl: https://github.com/a5c-ai/babysitter
+  ref: main
+  path: packages/agent-runtime
+  kind: git-path
+---
+nodeKind: SourceRef
+id: source-ref:packages-omni
+attributes:
+  description: '@a5c-ai/omni — omni-model client (provider-agnostic LLM facade)'
+  displayName: a5c-ai/babysitter — packages/omni
+  repoUrl: https://github.com/a5c-ai/babysitter
+  ref: main
+  path: packages/omni
+  kind: git-path
