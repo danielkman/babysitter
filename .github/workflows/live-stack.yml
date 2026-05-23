@@ -377,6 +377,11 @@ jobs:
 
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
+      - name: Remove agent skill directories from workspace
+        run: |
+          rm -rf .codex .claude/commands .gemini CLAUDE.md GEMINI.md AGENTS.md 2>/dev/null || true
+          echo "Cleaned agent skill directories to prevent test interference"
+
       - name: Run selected live stack E2E
         timeout-minutes: 18
         env:
