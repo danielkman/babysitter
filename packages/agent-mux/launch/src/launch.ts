@@ -1467,10 +1467,20 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
       if (launchBeh?.promptDelivery === 'cli-flag' && launchBeh.promptFlag) {
         const flagIdx = resolvedSpawn.args.indexOf(launchBeh.promptFlag);
         if (flagIdx >= 0 && resolvedSpawn.args[flagIdx + 1] === prompt) {
-          stdinPromptOverride = prompt;
-          // Replace the long prompt value with "-" (stdin convention) so
-          // the -p flag has a value but the real prompt is delivered via stdin.
-          resolvedSpawn.args[flagIdx + 1] = '-';
+          // Write prompt to temp file and pass file path for stdin redirection.
+          // Bun-compiled .exe binaries on Windows don't read piped stdin from
+          // Node.js child_process.spawn. Using cmd /c with < redirect instead.
+          const { writeFileSync } = await import('node:fs');
+          const { join } = await import('node:path');
+          const os = await import('node:os');
+          const promptFile = join(os.tmpdir(), `amux-prompt-${Date.now()}.txt`);
+          writeFileSync(promptFile, prompt);
+          // Rebuild as: cmd /c "<exe> <args...> < promptFile"
+          const exeCmd = `"${resolvedSpawn.command}" ${resolvedSpawn.args.map((a, i) => i === flagIdx + 1 ? '-' : `"${a}"`).join(' ')} < "${promptFile}"`;
+          resolvedSpawn.command = 'cmd';
+          resolvedSpawn.args = ['/c', exeCmd];
+          resolvedSpawn.shell = false;
+          console.error(`[amux launch] Windows prompt file: ${promptFile}`);
         }
       }
     }
