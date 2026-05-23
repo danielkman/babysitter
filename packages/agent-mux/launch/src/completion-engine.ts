@@ -5,4 +5,4 @@
  * This module re-exports them so existing import paths continue to work.
  */
 
-export { createOpenAICompletionEngine, createGoogleCompletionEngine } from '@a5c-ai/transport-mux';
+export { createOpenAICompletionEngine, createGoogleCompletionEngine, createAnthropicCompletionEngine } from '@a5c-ai/transport-mux';

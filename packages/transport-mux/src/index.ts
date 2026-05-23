@@ -17,6 +17,8 @@ export {
 export { createOpenAICompletionEngine } from './engines/openai.js';
 export { createGoogleCompletionEngine } from './engines/google.js';
 export type { GoogleCompletionEngineOptions } from './engines/google.js';
+export { createAnthropicCompletionEngine } from './engines/anthropic.js';
+export type { AnthropicCompletionEngineOptions } from './engines/anthropic.js';
 
 export const TRANSPORT_MUX_RUNTIME = {
   packageName: '@a5c-ai/transport-mux',

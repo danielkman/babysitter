@@ -950,6 +950,13 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
             useVertexAi,
           });
         }
+      } else if (plan.proxy.targetProvider === 'anthropic' && plan.proxy.apiKey) {
+        const { createAnthropicCompletionEngine } = await import('./completion-engine.js');
+        completionEngine = createAnthropicCompletionEngine({
+          apiBase: plan.proxy.apiBase,
+          apiKey: plan.proxy.apiKey,
+          targetModel: plan.proxy.targetModel,
+        });
       } else if (plan.proxy.apiBase && plan.proxy.apiKey) {
         const { createOpenAICompletionEngine } = await import('./completion-engine.js');
         completionEngine = createOpenAICompletionEngine({
