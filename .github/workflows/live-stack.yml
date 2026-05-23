@@ -192,7 +192,7 @@ jobs:
               };
               const models = {
                 'foundry-gpt55': {provider:'foundry-openai', amux_provider:'foundry', model:'gpt-5.5', required_env:'AZURE_API_KEY,AMUX_API_BASE'},
-                'google-gemini31': {provider:'google', amux_provider:'google', model:'gemini-3.1-pro-preview', required_env:'GOOGLE_API_KEY'},
+                'google-gemini31': {provider:'google', amux_provider:'google', model:'gemini-3.5-flash', required_env:'GOOGLE_API_KEY'},
                 'anthropic-sonnet46': {provider:'anthropic', amux_provider:'anthropic', model:'claude-sonnet-4-6', required_env:'ANTHROPIC_API_KEY'},
                 'foundry-kimi': {provider:'foundry-openai', amux_provider:'foundry', model:'Kimi-K2.6', required_env:'AZURE_API_KEY,AMUX_API_BASE'},
               };
@@ -245,7 +245,7 @@ jobs:
             # vanilla + BP, live
             node -e "
               const foundry = {provider:'foundry-openai', amux_provider:'foundry', model:'gpt-5.5', required_env:'AZURE_API_KEY,AMUX_API_BASE'};
-              const google = {provider:'google', amux_provider:'google', model:'gemini-3.1-pro-preview', required_env:'GOOGLE_API_KEY'};
+              const google = {provider:'google', amux_provider:'google', model:'gemini-3.5-flash', required_env:'GOOGLE_API_KEY'};
               const kimi = {provider:'foundry-openai', amux_provider:'foundry', model:'Kimi-K2.6', required_env:'AZURE_API_KEY,AMUX_API_BASE'};
               const vanillaInstall = {id:'vanilla', required_trace_ids:'agentMuxRunId,agentMuxSessionId,transportTraceId', expected_artifacts:'agent-mux-events,transport-mux-trace,provider-trace-redacted'};
               const bpInstall = {id:'babysitter-plugin', required_trace_ids:'agentMuxRunId,agentMuxSessionId,transportTraceId', expected_artifacts:'agent-mux-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted'};

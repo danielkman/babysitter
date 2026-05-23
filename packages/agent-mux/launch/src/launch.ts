@@ -267,6 +267,12 @@ function appendHarnessSessionArgs(plan: LaunchPlan, session: SessionArgs): void 
 // which mangles arguments containing special characters.
 // ---------------------------------------------------------------------------
 
+function escapeCmdArg(arg: string): string {
+  if (!/[\s&|<>^()%!"',;]/.test(arg)) return arg;
+  // Escape internal double quotes and wrap in double quotes for cmd.exe
+  return '"' + arg.replace(/"/g, '""') + '"';
+}
+
 async function resolveSpawnCommand(command: string, args: string[]): Promise<{ command: string; args: string[]; shell: boolean }> {
   if (process.platform !== 'win32') {
     return { command, args, shell: false };
@@ -309,12 +315,16 @@ async function resolveSpawnCommand(command: string, args: string[]): Promise<{ c
             const exePath = pathMod.resolve(pathMod.dirname(resolved), exeMatch[1]);
             if (existsSync(exePath)) {
               console.error(`[amux launch] resolved .cmd → .exe: ${exePath}`);
+              // The npm bin/claude.exe is a tiny shim that resolves relative to its
+              // parent package. Set env to help it find its dependencies.
               return { command: exePath, args, shell: false };
             }
           }
+          // If .exe shim found but didn't work on previous attempts,
+          // fall through to .cmd with escaped args
         } catch { /* couldn't parse .cmd */ }
-        // Fallback: use cmd.exe /c with the .cmd file
-        return { command: resolved, args, shell: true };
+        // Fallback: use cmd.exe with escaped args
+        return { command: resolved, args: args.map(escapeCmdArg), shell: true };
       }
       if (/\.exe$/i.test(resolved)) {
         return { command: resolved, args, shell: false };
@@ -325,7 +335,7 @@ async function resolveSpawnCommand(command: string, args: string[]): Promise<{ c
   } catch (err) {
     console.error(`[amux launch] where ${command} failed: ${err instanceof Error ? err.message : err}`);
   }
-  return { command, args, shell: true };
+  return { command, args: args.map(escapeCmdArg), shell: true };
 }
 
 // ---------------------------------------------------------------------------
@@ -1037,6 +1047,7 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
   let child: import('node:child_process').ChildProcess = null as any;
   let ptyProcess: any = null;
   let ptyTerminationExpected = false;
+  let stdinPromptOverride: string | undefined;
   const ptyCleanup: Array<() => void> = [];
   const capturedOutputChunks: string[] = [];
   const completePtyPrompt = () => {
@@ -1448,7 +1459,20 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
     // internally (claude -p, codex exec, gemini --prompt, pi -p).
     const { spawn } = await import('node:child_process');
     const resolvedSpawn = await resolveSpawnCommand(plan.command, plan.args);
-    console.error(`[amux launch] spawn: ${resolvedSpawn.command} shell=${resolvedSpawn.shell} args[0..2]=${resolvedSpawn.args.slice(0, 3).join(' ')} totalArgs=${resolvedSpawn.args.length}`);
+    // On Windows with shell:true, long prompts get mangled by cmd.exe.
+    // Move the prompt from -p flag to stdin delivery instead.
+    if (resolvedSpawn.shell && prompt) {
+      const launchBeh = getLaunchBehavior(plan.harness);
+      if (launchBeh?.promptDelivery === 'cli-flag' && launchBeh.promptFlag) {
+        const flagIdx = resolvedSpawn.args.indexOf(launchBeh.promptFlag);
+        if (flagIdx >= 0 && resolvedSpawn.args[flagIdx + 1] === prompt) {
+          stdinPromptOverride = prompt;
+          resolvedSpawn.args.splice(flagIdx, 2);
+          // Keep extra flags (e.g. --mode json) but remove -p and prompt
+        }
+      }
+    }
+    console.error(`[amux launch] spawn: ${resolvedSpawn.command} shell=${resolvedSpawn.shell} args[0..2]=${resolvedSpawn.args.slice(0, 3).join(' ')} totalArgs=${resolvedSpawn.args.length}${stdinPromptOverride ? ' (prompt→stdin)' : ''}`);
     child = spawn(resolvedSpawn.command, resolvedSpawn.args, {
       stdio: ['pipe', 'pipe', 'pipe'],
       env: { ...process.env, ...plan.env },
@@ -1526,13 +1550,15 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
   }
 
   const launchBehavior = getLaunchBehavior(plan.harness);
-  const promptInArgs = prompt ? plan.args.some(a => a === prompt) : false;
+  const effectivePrompt = stdinPromptOverride ?? prompt;
+  const promptInArgs = effectivePrompt ? plan.args.some(a => a === effectivePrompt) : false;
+  const needsStdinDelivery = stdinPromptOverride || !promptInArgs;
   const keepStdinOpen = launchBehavior?.stdinBehavior === 'keep-open';
-  if (!isInteractive && prompt) {
-    console.error(`[amux launch] stdin: promptInArgs=${promptInArgs} keepStdinOpen=${keepStdinOpen} hasStdin=${!!child.stdin} hasPty=${!!ptyProcess}`);
+  if (!isInteractive && effectivePrompt) {
+    console.error(`[amux launch] stdin: promptInArgs=${promptInArgs} stdinOverride=${!!stdinPromptOverride} keepStdinOpen=${keepStdinOpen}`);
   }
 
-  if (prompt && child.stdin && !ptyProcess && !promptInArgs) {
+  if (effectivePrompt && child.stdin && !ptyProcess && needsStdinDelivery) {
     child.stdin.write(prompt + '\n');
     if (!isInteractive && !keepStdinOpen) {
       child.stdin.end();
