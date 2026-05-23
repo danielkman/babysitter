@@ -1,0 +1,179 @@
+/**
+ * KubernetesExecutor — generates Kubernetes Job manifests from
+ * KubernetesExecutionConfig.
+ *
+ * This is a structural stub: it generates a valid Job YAML manifest and
+ * stores it on the handle. In production this would `kubectl apply` the
+ * manifest and poll for completion; here it creates a placeholder process
+ * to satisfy the handle contract.
+ */
+
+import { randomUUID } from "node:crypto";
+import type {
+  ExecutionHandle,
+  KubernetesExecutionConfig,
+} from "../types";
+import type { Executor } from "./local";
+
+// ---------------------------------------------------------------------------
+// Internal state
+// ---------------------------------------------------------------------------
+
+interface K8sEntry {
+  handle: MutableHandle;
+  config: KubernetesExecutionConfig;
+  /** The generated Job manifest YAML. */
+  manifest: string;
+}
+
+interface MutableHandle {
+  readonly id: string;
+  readonly mode: "kubernetes";
+  status: "running" | "stopped" | "failed";
+}
+
+// ---------------------------------------------------------------------------
+// Extended handle that carries the manifest
+// ---------------------------------------------------------------------------
+
+export interface KubernetesExecutionHandle extends ExecutionHandle {
+  readonly mode: "kubernetes";
+  /** The generated Kubernetes Job manifest (YAML string). */
+  readonly manifest: string;
+}
+
+// ---------------------------------------------------------------------------
+// KubernetesExecutor
+// ---------------------------------------------------------------------------
+
+export class KubernetesExecutor implements Executor<KubernetesExecutionConfig> {
+  private readonly entries = new Map<string, K8sEntry>();
+
+  async spawn(
+    command: string,
+    args: string[],
+    config: KubernetesExecutionConfig,
+  ): Promise<KubernetesExecutionHandle> {
+    const id = randomUUID();
+    const jobName = `babysitter-${id.slice(0, 8)}`;
+
+    const manifest = this._buildManifest(jobName, command, args, config);
+
+    const handle: MutableHandle = {
+      id,
+      mode: "kubernetes",
+      status: "running",
+    };
+
+    const entry: K8sEntry = { handle, config, manifest };
+    this.entries.set(id, entry);
+
+    // In production: kubectl apply -f - <<< manifest
+    // Stub: mark as running immediately.
+
+    return this._toPublicHandle(entry);
+  }
+
+  async attach(id: string): Promise<KubernetesExecutionHandle | undefined> {
+    const entry = this.entries.get(id);
+    if (!entry) return undefined;
+    return this._toPublicHandle(entry);
+  }
+
+  list(): KubernetesExecutionHandle[] {
+    return [...this.entries.values()].map((e) => this._toPublicHandle(e));
+  }
+
+  async destroy(id: string): Promise<void> {
+    const entry = this.entries.get(id);
+    if (!entry) return;
+
+    // In production: kubectl delete job <name> -n <namespace>
+    entry.handle.status = "stopped";
+    this.entries.delete(id);
+  }
+
+  // ---------- Manifest generation -------------------------------------------
+
+  /** Build a Kubernetes Job manifest YAML. */
+  _buildManifest(
+    jobName: string,
+    command: string,
+    args: string[],
+    config: KubernetesExecutionConfig,
+  ): string {
+    const resourceBlock = config.resources
+      ? this._resourcesYaml(config.resources)
+      : "";
+
+    const serviceAccountLine = config.serviceAccount
+      ? `      serviceAccountName: ${config.serviceAccount}\n`
+      : "";
+
+    const commandYaml = `          command: ${JSON.stringify([command, ...args])}`;
+
+    return [
+      `apiVersion: batch/v1`,
+      `kind: Job`,
+      `metadata:`,
+      `  name: ${jobName}`,
+      `  namespace: ${config.namespace}`,
+      `  labels:`,
+      `    app.kubernetes.io/managed-by: babysitter`,
+      `spec:`,
+      `  backoffLimit: 0`,
+      `  template:`,
+      `    spec:`,
+      serviceAccountLine ? serviceAccountLine.trimEnd() : null,
+      `      restartPolicy: Never`,
+      `      containers:`,
+      `        - name: main`,
+      `          image: ${config.image}`,
+      commandYaml,
+      resourceBlock || null,
+    ]
+      .filter((line): line is string => line !== null)
+      .join("\n");
+  }
+
+  /** Render a resources block for the container spec. */
+  private _resourcesYaml(resources: Record<string, string>): string {
+    const lines = Object.entries(resources).map(
+      ([key, value]) => `              ${key}: "${value}"`,
+    );
+    return [
+      `          resources:`,
+      `            requests:`,
+      ...lines,
+      `            limits:`,
+      ...lines,
+    ].join("\n");
+  }
+
+  // ---------- Handle --------------------------------------------------------
+
+  private _toPublicHandle(entry: K8sEntry): KubernetesExecutionHandle {
+    const self = this;
+    return {
+      get id() {
+        return entry.handle.id;
+      },
+      get mode() {
+        return entry.handle.mode;
+      },
+      get status() {
+        return entry.handle.status;
+      },
+      get manifest() {
+        return entry.manifest;
+      },
+      async attach() {
+        // In production: kubectl logs -f job/<name> -n <namespace>
+        // Stub: no-op.
+      },
+      async destroy() {
+        await self.destroy(entry.handle.id);
+      },
+    };
+  }
+}
