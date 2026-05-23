@@ -43,3 +43,10 @@ export type { NormalizedToolDefinition, CodecCapabilities } from './schema-trans
 
 export { NoopToolHookBridge } from './hooks.js';
 export type { ToolHookBridge, ToolHookResult } from './hooks.js';
+
+/* ------------------------------------------------------------------ */
+/*  MCP bridge                                                         */
+/* ------------------------------------------------------------------ */
+
+export { McpBridge } from './mcp-bridge.js';
+export type { McpTransport, McpServerConfig, McpToolDefinition } from './mcp-bridge.js';
