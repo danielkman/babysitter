@@ -973,6 +973,8 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
         port: plan.proxy.port,
         apiBase: plan.proxy.apiBase,
         completionEngine,
+        // Gemini CLI doesn't send auth headers/params — disable proxy auth for it
+        ...(plan.harness === 'gemini' ? { authToken: undefined } : {}),
       });
       proxyRuntime.applyHarnessEnv(plan.env);
       if (plan.env['ANTHROPIC_API_KEY']) {
