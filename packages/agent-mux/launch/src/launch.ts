@@ -1109,12 +1109,29 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
     // injected as initial stdin after the harness starts (like typing it in).
     try {
       const nodePty: any = await import('node-pty');
-      ptyProcess = nodePty.spawn(plan.command, plan.args, {
+      const resolved = await resolveSpawnCommand(plan.command, plan.args);
+      ptyProcess = nodePty.spawn(resolved.command, resolved.args, {
         name: 'xterm-256color',
         cols: process.stdout.columns || 80,
         rows: process.stdout.rows || 24,
         cwd: launchCwd,
         env: { ...process.env, ...plan.env } as Record<string, string>,
+      });
+      // Verify the PTY process actually started (posix_spawnp failures on macOS ARM64
+      // may throw synchronously or result in an immediate exit with no pid)
+      if (!ptyProcess || !ptyProcess.pid || ptyProcess.pid <= 0) {
+        throw new Error('node-pty spawn returned invalid process — falling back to stdio');
+      }
+      // Give the process 100ms to fail — posix_spawnp errors on macOS ARM64 sometimes
+      // manifest as immediate exit rather than a synchronous throw
+      await new Promise<void>((resolve, reject) => {
+        const timer = setTimeout(resolve, 100);
+        ptyProcess.onExit?.((e: { exitCode: number }) => {
+          if (e.exitCode !== 0) {
+            clearTimeout(timer);
+            reject(new Error(`PTY process exited immediately with code ${e.exitCode}`));
+          }
+        });
       });
 
       // End-of-turn detection: parse PTY output through adapter's event system
@@ -1260,8 +1277,11 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
 
       // Create a fake ChildProcess-like for signal handling
       child = { pid: ptyProcess.pid, kill: (sig: string) => ptyProcess.kill(sig) } as any;
-    } catch {
-      // node-pty not available, fall back to stdio inherit with stdin pipe for prompt injection
+    } catch (ptyError: unknown) {
+      // node-pty not available or posix_spawnp failed (macOS ARM64), fall back to stdio
+      const ptyMsg = ptyError instanceof Error ? ptyError.message : String(ptyError);
+      console.error(`[amux launch] PTY spawn failed (${process.platform}/${process.arch}): ${ptyMsg} — falling back to stdio`);
+      ptyProcess = null;
       const { spawn } = await import('node:child_process');
       child = spawn(plan.command, plan.args, {
         stdio: prompt ? ['pipe', 'inherit', 'inherit'] : 'inherit',
