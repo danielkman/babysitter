@@ -1152,6 +1152,7 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
       let interactiveOutputBuf = '';
       let interactiveApiKeyHandled = false;
       let interactiveBypassHandled = false;
+      let interactiveHooksTrustHandled = false;
       let babysitterSkillFollowupInjected = false;
       const maybeInjectBabysitterSkillFollowup = (output: string) => {
         if (babysitterSkillFollowupInjected || !promptInvokesBabysitterSlashCommand(prompt)) return;
@@ -1178,6 +1179,10 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
         if (!interactiveBypassHandled && stripped.includes('BypassPermissionsmode')) {
           interactiveBypassHandled = true;
           setTimeout(() => ptyProcess.write('\x1b[B\r'), 200);
+        }
+        if (!interactiveHooksTrustHandled && (stripped.includes('hooksneedreview') || stripped.includes('Hooksneedreview') || stripped.includes('Hookscanrunoutsidethesandbox'))) {
+          interactiveHooksTrustHandled = true;
+          setTimeout(() => ptyProcess.write('2\r'), 300);
         }
 
         maybeInjectBabysitterSkillFollowup(interactiveOutputBuf);
@@ -1356,6 +1361,7 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
     let eventCount = 0;
     let apiKeyPromptHandled = false;
     let bypassPromptHandled = false;
+    let hooksTrustHandled = false;
     let babysitterSkillFollowupInjected = false;
     const maybeInjectBabysitterSkillFollowup = (output: string) => {
       if (babysitterSkillFollowupInjected || !promptInvokesBabysitterSlashCommand(prompt)) return;
@@ -1404,6 +1410,13 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
         bypassPromptHandled = true;
         // Default is "No, exit". Send Down arrow + Enter to select "Yes, I accept".
         setTimeout(() => ptyProcess.write('\x1b[B\r'), 200);
+      }
+      // Codex hooks trust prompt: "Hooks can run outside the sandbox after you trust them"
+      // or "hooks are new or changed. Hooks need review"
+      if (!hooksTrustHandled && (stripped.includes('hooksneedreview') || stripped.includes('Hooksneedreview') || stripped.includes('Hookscanrunoutsidethesandbox'))) {
+        hooksTrustHandled = true;
+        // Send "2" to select "Trust all" option, then Enter
+        setTimeout(() => ptyProcess.write('2\r'), 300);
       }
 
       maybeInjectBabysitterSkillFollowup(outputBuf);
