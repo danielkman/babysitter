@@ -30,6 +30,10 @@ function ServiceAccountRow({ org, sa, onDeleted }) {
     if (!confirm(`Delete service account "${name}" and its role binding?`)) return;
     setDelStatus('deleting');
     try {
+      const rbName = `${name}-binding`;
+      fetch(`/api/orgs/${encodeURIComponent(org)}/resources/AgentRoleBinding/${encodeURIComponent(rbName)}`, {
+        method: 'DELETE',
+      }).catch(() => {});
       const res = await fetch(`/api/orgs/${encodeURIComponent(org)}/resources/AgentServiceAccount/${encodeURIComponent(name)}`, {
         method: 'DELETE',
       });

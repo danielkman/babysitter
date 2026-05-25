@@ -16,6 +16,7 @@ import { ApprovalModeToggle } from '../components/approval-mode-toggle.jsx';
 import { SessionShell } from '../components/session-shell.jsx';
 import { AgentSettingsForm } from '../components/agent-settings-form.jsx';
 import { StackActions } from '../components/stack-actions.jsx';
+import { StackEditForm } from '../components/stack-edit-form.jsx';
 import { ManualDispatchButton, RunActions } from '../components/run-actions.jsx';
 import { EnableDisableToggle, DeleteRuleButton } from '../components/rule-actions.jsx';
 import { ResourceActions, InlineCreateForm } from '../components/resource-crud-actions.jsx';
@@ -402,7 +403,13 @@ export async function AgentStackDetailPage({ org = null, name } = {}) {
           <dt>Adapter</dt><dd>{stack.spec?.adapter || 'default'}</dd>
           <dt>Runtime identity</dt><dd>{typeof stack.spec?.runtimeIdentity === 'object' ? (stack.spec.runtimeIdentity.serviceAccountRef || JSON.stringify(stack.spec.runtimeIdentity)) : (stack.spec?.runtimeIdentity || stack.spec?.identity || 'workspace')}</dd>
           <dt>Phase</dt><dd>{stack.status?.phase || 'Pending'}</dd>
-        </dl><div style={{ marginTop: 12 }}><StackActions org={activeOrg} stackName={name} /></div></> : <EmptyState title={`Stack ${name} not found`} text="This agent stack does not exist in the current workspace. Create it through Krate resource definitions." />}
+          {stack.spec?.displayName ? <><dt>Display name</dt><dd>{stack.spec.displayName}</dd></> : null}
+          {stack.spec?.description ? <><dt>Description</dt><dd>{stack.spec.description}</dd></> : null}
+          {stack.spec?.providerRef ? <><dt>Provider</dt><dd>{stack.spec.providerRef}</dd></> : null}
+          {stack.spec?.model ? <><dt>Model</dt><dd>{stack.spec.model}</dd></> : null}
+          {stack.spec?.maxTokens ? <><dt>Max tokens</dt><dd>{stack.spec.maxTokens}</dd></> : null}
+          {stack.spec?.budgetLimitUsd ? <><dt>Budget limit</dt><dd>${stack.spec.budgetLimitUsd}</dd></> : null}
+        </dl><StackEditForm org={activeOrg} stack={stack} /><div style={{ marginTop: 12 }}><StackActions org={activeOrg} stackName={name} /></div></> : <EmptyState title={`Stack ${name} not found`} text="This agent stack does not exist in the current workspace. Create it through Krate resource definitions." />}
       </div>
       <div className="stack">
         <div className="card">
