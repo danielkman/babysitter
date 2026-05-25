@@ -1368,7 +1368,8 @@ export function createTransportMuxApp({ config, completionEngine }: CreateTransp
 
   app.use('*', async (c, next) => {
     if (
-      c.req.path === '/health'
+      c.req.path === '/'
+      || c.req.path === '/health'
       || c.req.path === '/v1/models'
       || c.req.path === '/metrics'
       || c.req.path === '/cache/stats'
