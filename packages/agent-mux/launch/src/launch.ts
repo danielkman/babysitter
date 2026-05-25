@@ -1338,8 +1338,20 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
         env: { ...process.env, ...plan.env } as Record<string, string>,
       });
     } else {
-      // Fallback: child_process.spawn with piped stdio (same as NI path)
+      // Fallback: child_process.spawn with piped stdio (same as NI path).
+      // Without a PTY we can't type the prompt into a terminal, so inject
+      // it into the command args using the harness's NI delivery method.
       console.error(`[amux launch] bridge-interactive: PTY unavailable (${skipBridgePty ? 'macOS ARM64 CI skip' : 'import failed'}) — using child_process fallback`);
+      const fallbackLb = getLaunchBehavior(plan.harness);
+      const promptInArgs = prompt ? resolvedBridge.args.some(a => a === prompt) : true;
+      if (prompt && !promptInArgs && fallbackLb) {
+        if (fallbackLb.promptDelivery === 'cli-flag' && fallbackLb.promptFlag) {
+          resolvedBridge.args.push(fallbackLb.promptFlag, prompt, ...(fallbackLb.promptExtraFlags ?? []));
+        } else if (fallbackLb.promptDelivery === 'exec-subcommand' && fallbackLb.execSubcommand) {
+          resolvedBridge.args.unshift(fallbackLb.execSubcommand, prompt);
+        }
+        console.error(`[amux launch] BI fallback: injected prompt into args (${fallbackLb.promptDelivery})`);
+      }
       const { spawn } = await import('node:child_process');
       child = spawn(resolvedBridge.command, resolvedBridge.args, {
         stdio: ['pipe', 'pipe', 'pipe'],

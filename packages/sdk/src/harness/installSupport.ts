@@ -26,6 +26,7 @@ export async function execFilePromise(
         env: options.env,
         windowsHide: true,
         maxBuffer: 20 * 1024 * 1024,
+        shell: process.platform === 'win32',
       },
       (error, stdout, stderr) => {
         const execError = error as NodeJS.ErrnoException & { status?: number } | null;
