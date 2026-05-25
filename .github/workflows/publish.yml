@@ -1072,6 +1072,36 @@ jobs:
               npm run build --workspace=@a5c-ai/agent-mux-observability
               npm run build --workspace=@a5c-ai/agent-comm-mux
               npm run build --workspace=@a5c-ai/transport-mux
+          - name: agent-config-mux
+            workspace: '@a5c-ai/agent-config-mux'
+            build: |
+              set -euo pipefail
+              npm run build --workspace=@a5c-ai/atlas
+              npm run build --workspace=@a5c-ai/agent-catalog
+              npm run build --workspace=@a5c-ai/agent-mux-observability
+              npm run build --workspace=@a5c-ai/agent-comm-mux
+              npx tsc --build packages/agent-mux/config/tsconfig.json
+          - name: agent-launch-mux
+            workspace: '@a5c-ai/agent-launch-mux'
+            build: |
+              set -euo pipefail
+              npm run build --workspace=@a5c-ai/atlas
+              npm run build --workspace=@a5c-ai/agent-catalog
+              npm run build --workspace=@a5c-ai/agent-mux-observability
+              npm run build --workspace=@a5c-ai/agent-comm-mux
+              npm run build --workspace=@a5c-ai/agent-mux-adapters
+              npm run build --workspace=@a5c-ai/transport-mux
+              npx tsc --build packages/agent-mux/launch/tsconfig.json
+          - name: tool-mux
+            workspace: '@a5c-ai/tool-mux'
+            build: |
+              set -euo pipefail
+              npm run build --workspace=@a5c-ai/atlas
+              npm run build --workspace=@a5c-ai/agent-catalog
+              npm run build --workspace=@a5c-ai/agent-mux-observability
+              npm run build --workspace=@a5c-ai/agent-comm-mux
+              npm run build --workspace=@a5c-ai/transport-mux
+              npx tsc --build packages/tool-mux/tsconfig.json
     steps:
       - name: Download publish workspace
         uses: actions/download-artifact@v8

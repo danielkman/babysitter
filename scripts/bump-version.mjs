@@ -294,7 +294,10 @@ const agentMuxManifestPaths = [
   "packages/agent-mux/watch-watchos-app/package.json",
   "packages/agent-mux/watch-wearos-app/package.json",
   "packages/agent-mux/webui/package.json",
+  "packages/agent-mux/config/package.json",
+  "packages/agent-mux/launch/package.json",
   "packages/transport-mux/package.json",
+  "packages/tool-mux/package.json",
   "packages/triggers/package.json",
 ];
 
