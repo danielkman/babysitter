@@ -789,21 +789,22 @@ async function validateAgentBehavior(
   const isInteractiveInvocation = env['LIVE_STACK_INTERACTIVE'] === 'true' || env['LIVE_STACK_BRIDGE_INTERACTIVE'] === 'true';
   const isBridgeHooksMode = env['LIVE_STACK_BRIDGE_HOOKS'] === 'true';
   if (isBabysitterPlugin) {
-    // stop-hooks: check for hooks-mux log files
-    const hooksLogDir = path.join(cwd, '.a5c', 'logs', 'hooks');
-    let hooksLogsFound = false;
-    try {
-      const logEntries = await fs.readdir(hooksLogDir);
-      if (logEntries.length > 0) hooksLogsFound = true;
-    } catch {
-      const xdgHooksDir = path.join(
-        process.env['XDG_STATE_HOME'] ?? path.join(process.env['HOME'] ?? '/tmp', '.local', 'state'),
+    // stop-hooks: check for hooks-mux log files in all possible locations
+    const homeDir = process.env['HOME'] ?? process.env['USERPROFILE'] ?? '/tmp';
+    const hooksLogCandidates = [
+      path.join(cwd, '.a5c', 'logs', 'hooks'),
+      path.join(homeDir, '.a5c', 'logs', 'hooks'),
+      path.join(
+        process.env['XDG_STATE_HOME'] ?? path.join(homeDir, '.local', 'state'),
         'a5c-hooks', 'logs',
-      );
+      ),
+    ];
+    let hooksLogsFound = false;
+    for (const dir of hooksLogCandidates) {
       try {
-        const xdgEntries = await fs.readdir(xdgHooksDir);
-        if (xdgEntries.length > 0) hooksLogsFound = true;
-      } catch { /* */ }
+        const entries = await fs.readdir(dir);
+        if (entries.length > 0) { hooksLogsFound = true; break; }
+      } catch { /* dir doesn't exist */ }
     }
     // hooks-mux-session: check hooks-mux session logs and run journal for stop hook events
     // (run this before stop-hooks so journal evidence is available for both checks)
