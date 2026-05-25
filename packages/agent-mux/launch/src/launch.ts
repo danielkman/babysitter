@@ -1347,6 +1347,7 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
         cwd: launchCwd,
       });
       child.stderr?.on('data', (chunk: Buffer) => process.stderr.write(chunk));
+      child.stdout?.on('data', (chunk: Buffer) => process.stdout.write(chunk));
     }
 
     // Set up adapter + assembler for parsing PTY output into structured events

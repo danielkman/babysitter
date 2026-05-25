@@ -460,7 +460,7 @@ function withWorkspaceBinOnPath(env: Record<string, string | undefined>, cwd: st
 function buildPrompt(scenario: LiveStackScenario, traceId: string, env: Record<string, string | undefined>): string {
   const coreTask = scenario.agent.installMode === 'babysitter-plugin'
     ? `Write a concise 6-section summary of Homer's Odyssey, then add one Greek translation sentence after each section. Combine the English and Greek versions into one markdown document and save the entire result in a single file write to .a5c-live-test/${traceId}-odyssey.md`
-    : `Write a concise 6-section summary of Homer's Odyssey, then add one Greek translation sentence after each section. Combine the English and Greek versions into one markdown document and save the entire result in a single file write to .a5c-live-test/${traceId}-odyssey.md. The .a5c-live-test directory already exists; use file writing/editing tools only and do not run shell commands`;
+    : `Write a concise 6-section summary of Homer's Odyssey, then add one Greek translation sentence after each section. Combine the English and Greek versions into one markdown document and save the entire result in a single file write to .a5c-live-test/${traceId}-odyssey.md. The .a5c-live-test directory already exists.`;
 
   if (scenario.agent.agent === 'agent-platform') {
     return `Write a 12-paragraph summary of Homer's Odyssey, then translate each paragraph to Greek.`;
