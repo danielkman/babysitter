@@ -275,6 +275,8 @@ const workspaceManifestPaths = [
   "packages/hooks-mux/adapter-oh-my-pi/package.json",
   "packages/hooks-mux/adapter-opencode/package.json",
   "packages/hooks-mux/adapter-openclaw/package.json",
+  "packages/hooks-mux/adapter-hermes/package.json",
+  "packages/krate/core/package.json",
 ];
 
 const agentMuxManifestPaths = [
