@@ -48,9 +48,10 @@ function CopyableUrl({ url }) {
   );
 }
 
-function WebhookRow({ webhook, org, onPingResult }) {
+function WebhookRow({ webhook, org, onPingResult, onDeleted }) {
   const [pinging, setPinging] = useState(false);
   const [pingMsg, setPingMsg] = useState('');
+  const [deleting, setDeleting] = useState(false);
 
   const spec = webhook.spec || {};
   const events = spec.events || [];
@@ -111,6 +112,16 @@ function WebhookRow({ webhook, org, onPingResult }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '0.5rem' }}>
         <button onClick={sendPing} disabled={pinging} style={{ ...ghostStyle, opacity: pinging ? 0.6 : 1 }}>
           {pinging ? 'Sending...' : 'Send Test Ping'}
+        </button>
+        <button onClick={async () => {
+          if (!confirm(`Delete webhook "${webhook.metadata?.name}"?`)) return;
+          setDeleting(true);
+          try {
+            const res = await fetch(`/api/orgs/${encodeURIComponent(org)}/resources/ExternalWebhookConfig/${encodeURIComponent(webhook.metadata?.name)}`, { method: 'DELETE' });
+            if (res.ok) { if (onDeleted) onDeleted(webhook.metadata?.name); }
+          } catch {} finally { setDeleting(false); }
+        }} disabled={deleting} style={{ ...smallGhostStyle, color: '#dc2626', borderColor: '#fca5a5', opacity: deleting ? 0.6 : 1 }}>
+          {deleting ? 'Deleting...' : 'Delete'}
         </button>
         {pingMsg && (
           <span style={{ fontSize: 12, color: pingMsg.startsWith('Ping sent') ? '#16a34a' : '#dc2626', fontWeight: 500 }}>
@@ -327,7 +338,7 @@ export function WebhookManager({ org, webhooks = [] }) {
         </div>
       ) : (
         localWebhooks.map(wh => (
-          <WebhookRow key={wh.metadata?.name || Math.random()} webhook={wh} org={org} />
+          <WebhookRow key={wh.metadata?.name || Math.random()} webhook={wh} org={org} onDeleted={(name) => setLocalWebhooks(prev => prev.filter(w => w.metadata?.name !== name))} />
         ))
       )}
 

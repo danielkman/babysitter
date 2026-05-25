@@ -26,7 +26,7 @@ export function ResourceActions({ org, apiPath, actions = [], onMutated }) {
         response = await fetch(`/api/orgs/${encodeURIComponent(org)}/${apiPath}`, { method: 'DELETE' });
       } else {
         // terminate / archive → PATCH status
-        const newPhase = action === 'terminate' ? 'Terminated' : 'Archived';
+        const newPhase = action === 'terminate' ? 'Terminated' : action === 'revoke' ? 'Revoked' : 'Archived';
         response = await fetch(`/api/orgs/${encodeURIComponent(org)}/${apiPath}`, {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
@@ -37,6 +37,7 @@ export function ResourceActions({ org, apiPath, actions = [], onMutated }) {
       if (response.ok) {
         setDone(action);
         if (onMutated) onMutated(action, apiPath);
+        if (action === 'delete') setTimeout(() => window.location.reload(), 800);
       } else {
         setMessage(body.message || body.error || `${action} failed`);
       }
@@ -49,19 +50,19 @@ export function ResourceActions({ org, apiPath, actions = [], onMutated }) {
   }
 
   if (done) {
-    const labels = { terminate: 'Terminated', archive: 'Archived', delete: 'Deleted' };
+    const labels = { terminate: 'Terminated', archive: 'Archived', delete: 'Deleted', revoke: 'Revoked' };
     return <span style={{ color: '#9ca3af', fontSize: '0.75rem' }}>{labels[done] || done}</span>;
   }
 
   const buttonStyle = (variant) => {
     const base = { border: 'none', padding: '0.25rem 0.625rem', borderRadius: '4px', cursor: busy ? 'wait' : 'pointer', fontSize: '0.75rem', fontWeight: 600, opacity: busy ? 0.6 : 1 };
-    if (variant === 'terminate') return { ...base, background: 'var(--color-warn, #d97706)', color: '#fff' };
+    if (variant === 'terminate' || variant === 'revoke') return { ...base, background: 'var(--color-warn, #d97706)', color: '#fff' };
     if (variant === 'archive') return { ...base, background: 'var(--color-neutral, #6b7280)', color: '#fff' };
     if (variant === 'delete') return { ...base, background: 'transparent', border: '1px solid var(--color-danger, #cb2431)', color: 'var(--color-danger, #cb2431)' };
     return base;
   };
 
-  const actionLabel = { terminate: 'Terminate', archive: 'Archive', delete: 'Delete' };
+  const actionLabel = { terminate: 'Terminate', archive: 'Archive', delete: 'Delete', revoke: 'Revoke' };
 
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', flexWrap: 'wrap' }}>
@@ -181,8 +182,7 @@ export function InlineCreateForm({ org, namespace = 'krate-system', kind, apiVer
         setSubmitted(false);
         setInvalidFields({});
         formEl.reset();
-        // Auto-dismiss success after 3s
-        setTimeout(() => setMessage(''), 3000);
+        setTimeout(() => window.location.reload(), 1200);
       } else {
         setMessage(body.message || body.error || 'Create failed');
       }

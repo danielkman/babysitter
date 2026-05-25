@@ -748,7 +748,7 @@ export async function AgentWorkspacesPage({ org = null } = {}) {
           <small>{ws.spec?.branch || 'main'}</small>
           {ws.status?.runRef ? <small style={{ color: '#2563eb' }}>mounted: {ws.status.runRef}</small> : null}
         </a>
-        <ResourceActions org={activeOrg} apiPath={`agents/workspaces/${ws.metadata?.name}`} actions={ws.status?.phase === 'Archived' ? ['delete'] : ws.status?.phase === 'InUse' ? ['release', 'delete'] : ['sync', 'delete']} />
+        <ResourceActions org={activeOrg} apiPath={`resources/KrateWorkspace/${ws.metadata?.name}`} actions={ws.status?.phase === 'Archived' ? ['delete'] : ws.status?.phase === 'InUse' ? ['archive', 'delete'] : ['archive', 'delete']} />
       </div>)}</div> : <EmptyState title="No agent workspaces" text="Workspaces are provisioned when runs start. Configure agent stacks and dispatch runs to begin provisioning." info />}
     </div>
   </PageFrame>;
@@ -806,11 +806,16 @@ export async function AgentProjectsPage({ org = null } = {}) {
           const linkedStacks = (project.spec?.stackRefs || []).length || (stacks.filter((s) => s.spec?.projectRef === name).length);
           const phase = project.status?.phase || 'Active';
           const phaseTone = phase === 'Active' ? 'good' : phase === 'Archived' ? 'neutral' : 'warn';
-          return <a key={name} href={orgHref(activeOrg, `/agents/projects/${name}`)} className="card quickAction" style={{ textDecoration: 'none' }}>
-            <div className="cardTitle"><h3>{displayName}</h3><StatusPill tone={phaseTone}>{phase}</StatusPill></div>
-            <p style={{ color: '#6b7280', fontSize: '0.8125rem' }}>{project.spec?.description || 'No description'}</p>
-            <small>{linkedStacks} linked stack{linkedStacks === 1 ? '' : 's'}</small>
-          </a>;
+          return <div key={name} className="card quickAction" style={{ position: 'relative' }}>
+            <a href={orgHref(activeOrg, `/agents/projects/${name}`)} style={{ textDecoration: 'none', display: 'block' }}>
+              <div className="cardTitle"><h3>{displayName}</h3><StatusPill tone={phaseTone}>{phase}</StatusPill></div>
+              <p style={{ color: '#6b7280', fontSize: '0.8125rem' }}>{project.spec?.description || 'No description'}</p>
+              <small>{linkedStacks} linked stack{linkedStacks === 1 ? '' : 's'}</small>
+            </a>
+            <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.375rem' }}>
+              <ResourceActions org={activeOrg} apiPath={`resources/KrateProject/${name}`} actions={['archive', 'delete']} />
+            </div>
+          </div>;
         })}</section> : <EmptyState title="No projects yet" text="Projects organize agent work into boards with columns. Use the form to create your first project." />}
       </div>
       <InlineCreateForm
@@ -918,20 +923,18 @@ export async function AgentMemoryPage({ org = null } = {}) {
         </a>
       </section>
       <section className="routeGrid two" style={{ alignItems: 'start' }}>
-        <section className="routeGrid three" style={{ gridColumn: '1 / -1' }}>
-          <a href={orgHref(activeOrg, '/agents/memory/search')} className="card quickAction" style={{ textDecoration: 'none' }}>
-            <div className="cardTitle"><h3>Search memory</h3></div>
-            <p style={{ color: '#6b7280', fontSize: '0.8125rem' }}>Query structured records or full-text search across markdown documents.</p>
-          </a>
-          <a href={orgHref(activeOrg, '/agents/memory/imports')} className="card quickAction" style={{ textDecoration: 'none' }}>
-            <div className="cardTitle"><h3>Review imports</h3></div>
-            <p style={{ color: '#6b7280', fontSize: '0.8125rem' }}>Inspect pending memory imports from agent runs and sessions.</p>
-          </a>
-          <a href={orgHref(activeOrg, '/agents/memory/ontology')} className="card quickAction" style={{ textDecoration: 'none' }}>
-            <div className="cardTitle"><h3>Configure ontology</h3></div>
-            <p style={{ color: '#6b7280', fontSize: '0.8125rem' }}>Define node kinds, edge kinds, and graph schema for memory repositories.</p>
-          </a>
-        </section>
+        <div className="card">
+          <div className="cardTitle"><h3>Repositories</h3><StatusPill tone="good">{repoCount}</StatusPill></div>
+          <div className="resourceTable">{(memoryView.repositories?.items || []).map((repo) => {
+            const repoName = repo.metadata?.name;
+            return <div key={repoName} className="resourceRow" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+              <strong>{repoName}</strong>
+              <span style={{ color: '#6b7280', fontSize: '0.8125rem' }}>{repo.spec?.repoUrl || repo.spec?.description || ''}</span>
+              <StatusPill tone={repo.status?.phase === 'Active' ? 'good' : 'neutral'}>{repo.status?.phase || 'Unknown'}</StatusPill>
+              <ResourceActions org={activeOrg} apiPath={`resources/AgentMemoryRepository/${repoName}`} actions={['delete']} />
+            </div>;
+          })}</div>
+        </div>
         <InlineCreateForm
           org={activeOrg}
           kind="AgentMemoryRepository"
@@ -940,6 +943,20 @@ export async function AgentMemoryPage({ org = null } = {}) {
           buildSpec={buildMemoryRepoSpec}
           successText={(body) => `Added repository ${body.resource?.metadata?.name || ''}`}
         />
+      </section>
+      <section className="routeGrid three">
+        <a href={orgHref(activeOrg, '/agents/memory/search')} className="card quickAction" style={{ textDecoration: 'none' }}>
+          <div className="cardTitle"><h3>Search memory</h3></div>
+          <p style={{ color: '#6b7280', fontSize: '0.8125rem' }}>Query structured records or full-text search across markdown documents.</p>
+        </a>
+        <a href={orgHref(activeOrg, '/agents/memory/imports')} className="card quickAction" style={{ textDecoration: 'none' }}>
+          <div className="cardTitle"><h3>Review imports</h3></div>
+          <p style={{ color: '#6b7280', fontSize: '0.8125rem' }}>Inspect pending memory imports from agent runs and sessions.</p>
+        </a>
+        <a href={orgHref(activeOrg, '/agents/memory/ontology')} className="card quickAction" style={{ textDecoration: 'none' }}>
+          <div className="cardTitle"><h3>Configure ontology</h3></div>
+          <p style={{ color: '#6b7280', fontSize: '0.8125rem' }}>Define node kinds, edge kinds, and graph schema for memory repositories.</p>
+        </a>
       </section>
     </> : <section className="routeGrid two" style={{ alignItems: 'start' }}>
       <EmptyState title="No memory repositories configured" text="Memory repositories store structured knowledge extracted from agent runs. Add one using the form." />
@@ -1190,8 +1207,10 @@ export async function AgentSessionsPage({ org = null } = {}) {
           <small>{session.status?.updatedAt || session.metadata?.creationTimestamp || ''}</small>
         </a>
         {(session.status?.phase !== 'Terminated' && session.status?.phase !== 'Completed' && session.status?.phase !== 'Succeeded') ? (
-          <ResourceActions org={activeOrg} apiPath={`agents/sessions/${session.metadata?.name}`} actions={['terminate']} />
-        ) : null}
+          <ResourceActions org={activeOrg} apiPath={`resources/AgentSession/${session.metadata?.name}`} actions={['terminate']} />
+        ) : (
+          <ResourceActions org={activeOrg} apiPath={`resources/AgentSession/${session.metadata?.name}`} actions={['delete']} />
+        )}
       </div>)}</div> : <EmptyState title="No agent sessions" text="Sessions are created automatically when agents run. Configure agent stacks and trigger rules to start sessions." info />}
     </div>
   </PageFrame>;

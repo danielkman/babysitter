@@ -39,10 +39,11 @@ function ImportCard({ imp, org, onDecision }) {
     setLocalStatus(action === 'approve' ? 'approving' : 'rejecting');
     setLocalError('');
     try {
-      const res = await fetch(`/api/orgs/${org}/agents/memory/imports/${name}/${action}`, {
+      const newPhase = action === 'approve' ? 'Approved' : 'Rejected';
+      const res = await fetch(`/api/orgs/${encodeURIComponent(org)}/resources/AgentMemoryImport/${encodeURIComponent(name)}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
+        body: JSON.stringify({ status: { phase: newPhase, decidedAt: new Date().toISOString() } }),
       });
       if (res.ok) {
         setDecision(action);

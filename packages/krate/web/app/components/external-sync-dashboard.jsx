@@ -94,6 +94,7 @@ export function ExternalSyncDashboard({ org, bindings = [] }) {
         throw new Error(data.message || `HTTP ${res.status}`);
       }
       setSuccessMsg(`Sync triggered for ${bindingName}`);
+      setTimeout(() => window.location.reload(), 1500);
     } catch (err) {
       setError(err.message);
     } finally {

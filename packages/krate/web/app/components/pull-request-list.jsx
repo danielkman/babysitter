@@ -69,7 +69,7 @@ export function PullRequestList({ org, repo, pullRequests = [] }) {
     setMessage('');
     try {
       const newPhase = action === 'merge' ? 'Merged' : 'Closed';
-      const res = await fetch(`/api/orgs/${encodeURIComponent(org)}/resources/${encodeURIComponent(prName)}`, {
+      const res = await fetch(`/api/orgs/${encodeURIComponent(org)}/resources/PullRequest/${encodeURIComponent(prName)}`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ status: { phase: newPhase } }),

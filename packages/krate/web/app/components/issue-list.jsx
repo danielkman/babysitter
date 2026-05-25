@@ -78,7 +78,7 @@ export function IssueList({ org, repo, issues = [] }) {
     setBusy(true);
     setMessage('');
     try {
-      const res = await fetch(`/api/orgs/${encodeURIComponent(org)}/resources/${encodeURIComponent(issueName)}`, {
+      const res = await fetch(`/api/orgs/${encodeURIComponent(org)}/resources/Issue/${encodeURIComponent(issueName)}`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ status: { phase: targetStatus } }),

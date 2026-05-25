@@ -18,12 +18,9 @@ import { HealthMonitor } from '../components/health-monitor.jsx';
 function RepositoryHeader({ repo, repository, model }) {
   const visibility = repository?.spec?.visibility || 'private';
   const branch = repository?.spec?.defaultBranch || 'main';
-  const stars = repository ? 12 : 0;
-  const forks = repository ? 3 : 0;
   return <section className="repoHeader" aria-label="Repository header">
     <div className="repoTitleLine"><span className="repoOwner">krate</span><span>/</span><strong>{repo}</strong><StatusPill tone="neutral">{visibility}</StatusPill></div>
     <div className="repoMetaLine"><span>{branch}</span><span>{model.namespace}</span><span>{repository?.status?.phase || 'not connected'}</span></div>
-    <div className="repoHeaderActions"><span className="repoBadge">Watch</span><span className="repoBadge">Fork <span>{forks}</span></span><span className="repoBadge">Star <span>{stars}</span></span></div>
   </section>;
 }
 
@@ -221,7 +218,7 @@ function RepoSettingsPanel({ repository, model, org = 'default', repo }) {
                   <strong>{bpName}</strong>
                   <span>{Array.isArray(refs) ? refs.join(', ') : String(refs)}</span>
                   <StatusPill tone={phaseTone}>{phase}</StatusPill>
-                  <ResourceActions org={org} apiPath={`branchprotections/${bpName}`} actions={['delete']} />
+                  <ResourceActions org={org} apiPath={`resources/BranchProtection/${bpName}`} actions={['delete']} />
                 </div>
               );
             })}
@@ -266,7 +263,7 @@ function RepoSettingsPanel({ repository, model, org = 'default', repo }) {
                 <strong style={{ fontSize: '0.875rem' }}>Delete this repository</strong>
                 <p style={{ margin: '0.25rem 0 0', fontSize: '0.8125rem', color: '#6b7280' }}>Permanently delete <code>{repoName}</code> and all its data. This action cannot be undone.</p>
               </div>
-              <ResourceActions org={org} apiPath={`repositories/${repoName}`} actions={['delete']} />
+              <ResourceActions org={org} apiPath={`resources/Repository/${repoName}`} actions={['delete']} />
             </div>
           ) : null}
         </div>

@@ -264,22 +264,32 @@ export function RunnerPoolManager({ org = 'default', pools = [], onPoolChange = 
     }
   }
 
-  function handleScale(poolName, newWarm) {
+  async function handleScale(poolName, newWarm) {
     setLocalPools((prev) => prev.map((p) =>
       p.metadata?.name === poolName
         ? { ...p, spec: { ...p.spec, warmReplicas: newWarm } }
         : p
     ));
     onPoolChange?.({ name: poolName, warmReplicas: newWarm }, 'scaled');
+    fetch(`/api/orgs/${encodeURIComponent(org)}/resources/RunnerPool/${encodeURIComponent(poolName)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ spec: { warmReplicas: newWarm } }),
+    }).catch(() => {});
   }
 
-  function handleToggleAutoScale(poolName, enabled) {
+  async function handleToggleAutoScale(poolName, enabled) {
     setLocalPools((prev) => prev.map((p) =>
       p.metadata?.name === poolName
         ? { ...p, spec: { ...p.spec, autoScale: enabled } }
         : p
     ));
     onPoolChange?.({ name: poolName, autoScale: enabled }, 'auto-scale-toggled');
+    fetch(`/api/orgs/${encodeURIComponent(org)}/resources/RunnerPool/${encodeURIComponent(poolName)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ spec: { autoScale: enabled } }),
+    }).catch(() => {});
   }
 
   return (

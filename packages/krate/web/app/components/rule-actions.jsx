@@ -12,10 +12,10 @@ export function EnableDisableToggle({ org, ruleName, enabled = true }) {
     setError('');
     const nextEnabled = !currentEnabled;
     try {
-      const response = await fetch(`/api/orgs/${encodeURIComponent(org)}/agents/rules/${encodeURIComponent(ruleName)}`, {
+      const response = await fetch(`/api/orgs/${encodeURIComponent(org)}/resources/AgentTriggerRule/${encodeURIComponent(ruleName)}`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ enabled: nextEnabled })
+        body: JSON.stringify({ spec: { enabled: nextEnabled } })
       });
       const body = await response.json();
       if (response.ok && !body.error) {
@@ -69,7 +69,7 @@ export function DeleteRuleButton({ org, ruleName, onDeleted }) {
     setStatus('deleting');
     setError('');
     try {
-      const response = await fetch(`/api/orgs/${encodeURIComponent(org)}/agents/rules/${encodeURIComponent(ruleName)}`, {
+      const response = await fetch(`/api/orgs/${encodeURIComponent(org)}/resources/AgentTriggerRule/${encodeURIComponent(ruleName)}`, {
         method: 'DELETE'
       });
       const body = await response.json().catch(() => ({}));

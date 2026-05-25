@@ -110,7 +110,7 @@ export async function SSHKeysPage({ org = null } = {}) {
             <span className="pill neutral" style={{ fontSize: '0.75rem' }}>{scope}</span>
             <StatusPill tone={phaseTone}>{phase}</StatusPill>
             {fingerprint ? <small style={{ color: '#6b7280', fontFamily: 'monospace', fontSize: '0.75rem' }}>{fingerprint.substring(0, 20)}</small> : null}
-            <ResourceActions org={activeOrg} apiPath={`sshkeys/${name}`} actions={phase === 'Revoked' ? ['delete'] : ['revoke', 'delete']} />
+            <ResourceActions org={activeOrg} apiPath={`resources/SSHKey/${name}`} actions={phase === 'Revoked' ? ['delete'] : ['revoke', 'delete']} />
           </div>;
         })}</div> : <EmptyState title="No SSH keys" text="Add deploy keys for CI/CD pipelines, user SSH keys for developer access, or automation keys for agent workspaces." />}
       </div>
@@ -159,7 +159,7 @@ export async function RepositoryPermissionsPage({ org = null } = {}) {
               <span>{subject}</span>
               <span className="pill neutral" style={{ fontSize: '0.75rem' }}>{permission}</span>
               <StatusPill tone={phaseTone}>{phase}</StatusPill>
-              <ResourceActions org={activeOrg} apiPath={`repositorypermissions/${name}`} actions={phase === 'Revoked' ? ['delete'] : ['revoke', 'delete']} />
+              <ResourceActions org={activeOrg} apiPath={`resources/RepositoryPermission/${name}`} actions={phase === 'Revoked' ? ['delete'] : ['revoke', 'delete']} />
             </div>;
           })}
         </div> : <EmptyState title="No repository permissions" text="Grant collaborator or team access to repositories. Permissions are reconciled with the repository hosting platform." />}
@@ -203,7 +203,7 @@ export async function BranchProtectionPage({ org = null } = {}) {
               <strong>{name}</strong>
               <span>{Array.isArray(refs) ? refs.join(', ') : String(refs)}</span>
               <StatusPill tone={phaseTone}>{phase}</StatusPill>
-              <ResourceActions org={activeOrg} apiPath={`branchprotections/${name}`} actions={['delete']} />
+              <ResourceActions org={activeOrg} apiPath={`resources/BranchProtection/${name}`} actions={['delete']} />
             </div>;
           })}</div> : <EmptyState title="No branch protection rules" text="Add branch protection rules to enforce review requirements, status checks, and merge policies on protected branches." />}
         </div>
@@ -215,7 +215,7 @@ export async function BranchProtectionPage({ org = null } = {}) {
             return <div key={name} className="resourceRow">
               <strong>{name}</strong>
               <StatusPill tone={phase === 'Active' || phase === 'Ready' ? 'good' : 'neutral'}>{phase}</StatusPill>
-              <ResourceActions org={activeOrg} apiPath={`refpolicies/${name}`} actions={['delete']} />
+              <ResourceActions org={activeOrg} apiPath={`resources/RefPolicy/${name}`} actions={['delete']} />
             </div>;
           })}</div> : <p className="emptyText">No ref policies configured. Ref policies control force-push, signing requirements, and custom hook gates.</p>}
         </div>

@@ -125,7 +125,7 @@ export function ExternalProviderList({ org, providers = [], onAdd, addHref }) {
     setRemoving(name);
     setError('');
     try {
-      const res = await fetch(`/api/orgs/${encodeURIComponent(org)}/resources/${encodeURIComponent(name)}`, {
+      const res = await fetch(`/api/orgs/${encodeURIComponent(org)}/resources/ExternalBackendProvider/${encodeURIComponent(name)}`, {
         method: 'DELETE',
       });
       if (!res.ok) {

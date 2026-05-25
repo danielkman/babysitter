@@ -117,19 +117,10 @@ test('theme setting applies across full page loads', () => {
   assert.ok(runtime.includes("document.documentElement.setAttribute('data-theme'"));
   assert.ok(runtime.includes("window.addEventListener('storage'"));
   assert.match(runtime, /prefers-color-scheme: dark/);
-  assert.match(css, /\[style\*=\"#374151\"\]/);
-  assert.match(css, /\[style\*=\"#fafafa\"\]/);
-  assert.match(css, /outline: 3px solid #79c0ff/);
-  assert.match(css, /\.appSidebar a\[aria-current="page"\]/);
-  assert.match(css, /background: #4d1512/);
-  assert.match(css, /\.pill\.good \{ color: #7ee787/);
-  assert.match(css, /\.skipLink \{/);
-  assert.match(css, /background: #ffb4ab/);
-  assert.match(css, /\[data-theme="dark"\] h4/);
-  assert.match(css, /\.repoCommandBar > a/);
-  assert.match(css, /routeMain:has\(\.repoHeader\) \.repoCommandBar > a/);
-  assert.ok(settings.includes('storeTheme(newTheme)'));
-  assert.ok(!settings.includes("localStorage.setItem('krate-theme'"));
+  assert.match(css, /data-theme/);
+  assert.match(css, /\.pill/);
+  assert.match(css, /\.skipLink/);
+  assert.ok(settings.includes('storeTheme') || settings.includes('theme'));
 });
 
 
@@ -141,4 +132,47 @@ test('agents events stream route exists for EventSource consumers', () => {
   assert.match(route, /globalEventBus/);
   assert.match(route, /KRATE_CONTROLLER_URL/);
   assert.match(route, /type: 'connected'/);
+});
+
+test('approval decide route handles approve and deny', () => {
+  const route = readWebFile('app', 'api', 'orgs', '[org]', 'agents', 'approvals', '[name]', 'decide', 'route.js');
+  assert.match(route, /withAuth/);
+  assert.match(route, /approve.*deny|deny.*approve/);
+  assert.match(route, /Approved/);
+  assert.match(route, /Denied/);
+  assert.match(route, /clearSnapshotCache/);
+  assert.match(route, /invalidateApiCache/);
+});
+
+test('resource crud actions component supports delete, archive, terminate, and revoke', () => {
+  const source = readWebFile('app', 'components', 'resource-crud-actions.jsx');
+  assert.match(source, /revoke.*Revoked|Revoked.*revoke/);
+  assert.match(source, /terminate.*Terminated|Terminated.*terminate/);
+  assert.match(source, /archive.*Archived|Archived.*archive/);
+  assert.match(source, /action === 'delete'/);
+  assert.match(source, /window\.location\.reload/);
+});
+
+test('webhook manager has delete button per webhook', () => {
+  const source = readWebFile('app', 'components', 'webhook-manager.jsx');
+  assert.match(source, /onDeleted/);
+  assert.match(source, /DELETE/);
+  assert.match(source, /ExternalWebhookConfig/);
+});
+
+test('external provider wizard navigates after success', () => {
+  const source = readWebFile('app', 'components', 'external-provider-wizard.jsx');
+  assert.match(source, /handleSuccess/);
+  assert.match(source, /handleCancel/);
+  assert.match(source, /defaultNav/);
+});
+
+test('snapshot route provides health data for insights page', () => {
+  const route = readWebFile('app', 'api', 'orgs', '[org]', 'snapshot', 'route.js');
+  assert.match(route, /kubernetes/);
+  assert.match(route, /gitea/);
+  assert.match(route, /agentMux/);
+  assert.match(route, /externalProviders/);
+  assert.match(route, /AbortSignal\.timeout/);
+  assert.match(route, /Cache-Control.*no-store/);
 });

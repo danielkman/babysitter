@@ -258,6 +258,9 @@ function Step5Review({ name, providerType, hosting, baseUrl, interfaces, secretR
 }
 
 export function ExternalProviderWizard({ org, onCancel, onSuccess }) {
+  const defaultNav = () => { window.location.href = `/orgs/${encodeURIComponent(org)}/external`; };
+  const handleCancel = onCancel || defaultNav;
+  const handleSuccess = onSuccess || defaultNav;
   const [step, setStep] = useState(0);
   const [providerType, setProviderType] = useState('github');
   const [hosting, setHosting] = useState('saas');
@@ -299,7 +302,7 @@ export function ExternalProviderWizard({ org, onCancel, onSuccess }) {
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
         setStatus('idle');
-        onSuccess?.();
+        handleSuccess();
       } else {
         setErrorMsg(data.message || data.error || `HTTP ${res.status}`);
         setStatus('error');
@@ -330,7 +333,7 @@ export function ExternalProviderWizard({ org, onCancel, onSuccess }) {
       )}
 
       <div style={actionsStyle}>
-        <button style={btnSecondaryStyle} onClick={step === 0 ? onCancel : () => setStep(step - 1)}>
+        <button style={btnSecondaryStyle} onClick={step === 0 ? handleCancel : () => setStep(step - 1)}>
           {step === 0 ? 'Cancel' : 'Back'}
         </button>
         {step < TOTAL_STEPS - 1 ? (
