@@ -90,7 +90,7 @@ export class DroidAdapter extends BaseAgentAdapter {
     ],
     authFiles: ['.config/droid/config.json', '.droid/auth.json'],
     installMethods: [
-      { platform: 'all', type: 'npm', command: 'npm install -g @factory/droid-cli' },
+      { platform: 'all', type: 'npm', command: 'npm install -g @factory/cli' },
       { platform: 'darwin', type: 'brew', command: 'brew install factory/tap/droid' },
       { platform: 'all', type: 'curl', command: 'curl -fsSL https://get.factory.ai/droid | bash' },
     ],
@@ -385,7 +385,7 @@ export class DroidAdapter extends BaseAgentAdapter {
       providerName: 'Factory AI Droid',
       steps: [
         { step: 1, description: 'Sign up for Factory AI account', url: 'https://factory.ai/signup' },
-        { step: 2, description: 'Install Droid CLI', command: 'npm install -g @factory/droid-cli' },
+        { step: 2, description: 'Install Droid CLI', command: 'npm install -g @factory/cli' },
         { step: 3, description: 'Authenticate with Factory AI', command: 'droid auth login' },
         { step: 4, description: 'Verify authentication', command: 'droid whoami' },
       ],
