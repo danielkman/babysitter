@@ -2,7 +2,7 @@
 
 Adapters for the **OpenCode** multi-provider AI coding agent from [anomalyco/opencode](https://github.com/anomalyco/opencode).
 
-⚠️ **Important**: This is **not** the same as the deprecated `opencode-ai/opencode` project (now `charmbracelet/crush`). Agent-mux specifically supports the `anomalyco/opencode` implementation.
+⚠️ **Important**: This is **not** the same as the deprecated `opencode-ai/opencode` GitHub project (now `charmbracelet/crush`). Agent-mux supports the `anomalyco/opencode` implementation, whose canonical npm package is `opencode-ai`.
 
 ## Adapter Variants
 
@@ -28,7 +28,7 @@ amux install opencode
 ```
 
 Install methods:
-- npm: `npm install -g @anomalyco/opencode`
+- npm: `npm install -g opencode-ai`
 - brew (macOS): `brew install --cask opencode`
 - curl: `curl -fsSL https://opencode.ai/install | bash`
 

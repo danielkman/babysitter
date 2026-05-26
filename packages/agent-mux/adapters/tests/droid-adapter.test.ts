@@ -59,7 +59,7 @@ describe('DroidAdapter', () => {
       const caps = adapter.capabilities;
       expect(caps.installMethods).toHaveLength(3);
       expect(caps.installMethods[0].type).toBe('npm');
-      expect(caps.installMethods[0].command).toBe('npm install -g @factory/droid-cli');
+      expect(caps.installMethods[0].command).toBe('npm install -g @factory/cli');
     });
   });
 

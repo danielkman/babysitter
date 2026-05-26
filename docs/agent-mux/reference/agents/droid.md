@@ -10,7 +10,7 @@ Factory AI's enterprise-grade AI coding agent with terminal integration and soph
 
 ### NPM (Recommended)
 ```bash
-npm install -g @factory/droid-cli
+npm install -g @factory/cli
 ```
 
 ### Homebrew (macOS)

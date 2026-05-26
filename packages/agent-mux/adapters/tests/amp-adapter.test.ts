@@ -59,7 +59,7 @@ describe('AmpAdapter', () => {
       const caps = adapter.capabilities;
       expect(caps.installMethods).toHaveLength(3);
       expect(caps.installMethods[0].type).toBe('npm');
-      expect(caps.installMethods[0].command).toBe('npm install -g @sourcegraph/amp-cli');
+      expect(caps.installMethods[0].command).toBe('npm install -g @ampcode/cli');
     });
   });
 

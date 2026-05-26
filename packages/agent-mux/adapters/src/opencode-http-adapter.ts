@@ -96,7 +96,7 @@ export class OpenCodeHttpAdapter extends BaseRemoteAdapter {
     ],
     authFiles: ['.config/opencode/config.json', '.opencode/config.json'],
     installMethods: [
-      { platform: 'all', type: 'npm', command: 'npm install -g @anomalyco/opencode' },
+      { platform: 'all', type: 'npm', command: 'npm install -g opencode-ai' },
       { platform: 'darwin', type: 'brew', command: 'brew install --cask opencode' },
       { platform: 'all', type: 'curl', command: 'curl -fsSL https://opencode.ai/install | bash' },
     ],
@@ -443,4 +443,3 @@ export class OpenCodeHttpAdapter extends BaseRemoteAdapter {
     throw new Error(`OpenCode server did not become ready within ${timeoutMs}ms`);
   }
 }
-

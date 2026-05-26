@@ -54,7 +54,7 @@ edges:
 
       surface elicitation prompts. Marked `none` pending source review
 
-      of https://github.com/sst/opencode
+      of https://github.com/anomalyco/opencode
 
       '
   - target: capability:mcp-resource-links
@@ -64,7 +64,7 @@ edges:
 
       (introduced in MCP 2025-06-18). Marked `none` pending review of
 
-      https://github.com/sst/opencode
+      https://github.com/anomalyco/opencode
 
       '
   - target: capability:mcp-stdio
@@ -84,7 +84,7 @@ edges:
 
       to text. Marked `none` pending review of
 
-      https://github.com/sst/opencode
+      https://github.com/anomalyco/opencode
 
       '
   - target: capability:supports-mcp
