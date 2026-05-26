@@ -167,6 +167,44 @@ test('external provider wizard navigates after success', () => {
   assert.match(source, /defaultNav/);
 });
 
+test('stack builder graph splits tools into internal and external sub-sections', () => {
+  const source = readWebFile('app', 'components', 'stack-builder-graph.jsx');
+  // STACK_LAYERS should include subcategories on tools layer
+  assert.match(source, /subcategories/);
+  assert.match(source, /Internal Platform Tools/);
+  assert.match(source, /External Tools/);
+  // ToolsLayerSection component exists and is used for layers with subcategories
+  assert.match(source, /function ToolsLayerSection/);
+  assert.match(source, /function ToolSubSection/);
+  assert.match(source, /layer\.subcategories \?/);
+  // internalTools and externalTools in submit
+  assert.match(source, /internalTools:\s*\{\s*enabled:\s*true/);
+  assert.match(source, /externalTools:\s*\{/);
+  assert.match(source, /mcpServerRefs:/);
+  assert.match(source, /cliToolRefs:/);
+  assert.match(source, /openApiRefs:/);
+});
+
+test('stack builder graph includes memory repository section', () => {
+  const source = readWebFile('app', 'components', 'stack-builder-graph.jsx');
+  // MemoryRepositorySection component
+  assert.match(source, /function MemoryRepositorySection/);
+  assert.match(source, /AgentMemoryRepository/);
+  assert.match(source, /selectedMemoryRepos/);
+  assert.match(source, /handleToggleMemoryRepo/);
+  // memoryRepositoryRefs in submit payload
+  assert.match(source, /memoryRepositoryRefs:\s*selectedMemoryRepos\.map/);
+});
+
+test('stack edit form includes memory repository refs field', () => {
+  const source = readWebFile('app', 'components', 'stack-edit-form.jsx');
+  assert.match(source, /memoryRepositoryRefs/);
+  assert.match(source, /Memory repository refs/);
+  assert.match(source, /org-memory, shared-knowledge/);
+  // Save logic splits comma-separated refs
+  assert.match(source, /split\(','\)/);
+});
+
 test('snapshot route provides health data for insights page', () => {
   const route = readWebFile('app', 'api', 'orgs', '[org]', 'snapshot', 'route.js');
   assert.match(route, /kubernetes/);
