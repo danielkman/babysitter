@@ -36,14 +36,15 @@ interface ResolvedEndpoint {
 }
 
 function resolveEndpoint(options: AgentCoreSessionOptions): ResolvedEndpoint {
-  const model = options.model ?? "gpt-4o";
-
   const amuxProvider = process.env["AMUX_PROVIDER"];
   const amuxApiBase = process.env["AMUX_API_BASE"];
   const amuxApiKey = process.env["AMUX_API_KEY"];
+  const amuxModel = process.env["AMUX_MODEL"];
   const azureApiKey = process.env["AZURE_API_KEY"];
   const openaiApiKey = process.env["OPENAI_API_KEY"];
   const anthropicApiKey = process.env["ANTHROPIC_API_KEY"];
+
+  const model = options.model ?? amuxModel ?? "gpt-4o";
 
   if (amuxProvider === "foundry" || amuxProvider === "azure") {
     const apiBase = amuxApiBase ?? "";
@@ -198,6 +199,9 @@ export class AgentCoreSessionHandle {
       this.currentSessionId = sessionId;
 
       this.emit({ type: "session_start", sessionId });
+
+      const providerLabel = endpoint.isAnthropic ? "anthropic" : endpoint.isAzure ? "azure/foundry" : "openai";
+      process.stderr.write(`[agent-core] ${providerLabel} → ${endpoint.apiBase} model=${endpoint.model} timeout=${Math.round(effectiveTimeout / 1000)}s\n`);
 
       const result = await callCompletionApi(endpoint, messages, effectiveTimeout);
 
