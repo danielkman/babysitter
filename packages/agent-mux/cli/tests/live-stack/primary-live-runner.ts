@@ -165,8 +165,13 @@ export function buildPrimaryLiveStackCommands(
   );
 
   if (scenario.agent.installMode === 'vanilla') {
+    // Omni is a monorepo agent — already linked to PATH by the CI workflow.
+    // Other agents need amux install to fetch their CLI from npm.
+    const installCommands = installTarget === 'omni'
+      ? []
+      : [commandExecution(commandEnv, 'LIVE_STACK_AMUX_BIN', 'amux', ['install', installTarget, '--json'], options.cwd, SETUP_TIMEOUT_MS)];
     return [
-      commandExecution(commandEnv, 'LIVE_STACK_AMUX_BIN', 'amux', ['install', installTarget, '--json'], options.cwd, SETUP_TIMEOUT_MS),
+      ...installCommands,
       ensureLiveArtifactDirCommand(commandEnv, options.cwd),
       executionCommand,
     ];
