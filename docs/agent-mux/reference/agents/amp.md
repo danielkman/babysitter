@@ -10,7 +10,7 @@ Sourcegraph's agentic coding assistant with multi-model support and specialized 
 
 ### NPM (Recommended)
 ```bash
-npm install -g @sourcegraph/amp-cli
+npm install -g @ampcode/cli
 ```
 
 ### curl (Universal)

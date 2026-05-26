@@ -100,7 +100,7 @@ export class AmpAdapter extends BaseAgentAdapter {
       {
         platform: 'all',
         type: 'npm',
-        command: 'npm install -g @sourcegraph/amp-cli',
+        command: 'npm install -g @ampcode/cli',
       },
       {
         platform: 'linux',
@@ -412,7 +412,7 @@ export class AmpAdapter extends BaseAgentAdapter {
         {
           step: 2,
           description: 'Install the Amp CLI',
-          command: 'npm install -g @sourcegraph/amp-cli',
+          command: 'npm install -g @ampcode/cli',
         },
         {
           step: 3,
