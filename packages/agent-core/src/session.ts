@@ -46,11 +46,11 @@ function resolveEndpoint(options: AgentCoreSessionOptions): ResolvedEndpoint {
   const openaiModel = process.env["OPENAI_MODEL"];
   const anthropicApiKey = process.env["ANTHROPIC_API_KEY"];
 
-  const model = options.model ?? amuxModel ?? openaiModel ?? "gpt-4o";
+  const model = options.model || amuxModel || openaiModel || "gpt-4o";
 
   if (amuxProvider === "foundry" || amuxProvider === "azure") {
-    const apiBase = amuxApiBase ?? "";
-    const apiKey = amuxApiKey ?? azureApiKey ?? "";
+    const apiBase = amuxApiBase || "";
+    const apiKey = amuxApiKey || azureApiKey || "";
     return { apiBase: `${apiBase}/openai`, apiKey, model, isAzure: true, isAnthropic: false };
   }
 
@@ -61,7 +61,7 @@ function resolveEndpoint(options: AgentCoreSessionOptions): ResolvedEndpoint {
   }
 
   if (amuxApiBase) {
-    const apiKey = amuxApiKey ?? openaiApiKey ?? "";
+    const apiKey = amuxApiKey || openaiApiKey || "";
     return { apiBase: amuxApiBase, apiKey, model, isAzure: false, isAnthropic: false };
   }
 
