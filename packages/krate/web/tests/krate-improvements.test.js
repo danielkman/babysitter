@@ -86,12 +86,12 @@ test('recovery overlay progresses without covering normal route navigation', () 
   const css = readWebFile('app', 'globals.css');
   const loader = readWebFile('app', 'components', 'krate-loading.jsx');
   assert.match(loading, /routeLoading/);
-  assert.match(loading, /krateLoadingBar animated/);
+  assert.match(loading, /krateCircleLoader/);
   assert.doesNotMatch(loading, /KrateDelayedRouteLoading/);
   assert.doesNotMatch(loading, /KrateRouteLoadingOverlay/);
   assert.doesNotMatch(loading, /return null/);
   assert.match(css, /\.krateRecoveryOverlay\s*\{[\s\S]*position:\s*fixed[\s\S]*inset:\s*0/);
-  assert.match(css, /krateRouteLoadingProgress/);
+  assert.match(css, /krateCircleSpin/);
   assert.match(css, /krateRouteLoadingPhase/);
   assert.match(loader, /export function KrateControllerRecovery/);
   assert.doesNotMatch(loader, /export function KrateDelayedRouteLoading/);
