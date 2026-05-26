@@ -83,12 +83,15 @@ export async function appendHooksLog(
     entry.ctx = context;
   }
 
+  const logDir = getHooksLogDir();
+  const logPath = getHooksLogPath();
+  process.stderr.write(`[hooks-logger] writing to ${logPath} (home=${resolveHomeDir()})\n`);
   try {
-    const logDir = getHooksLogDir();
     fs.mkdirSync(logDir, { recursive: true });
-    fs.appendFileSync(getHooksLogPath(), JSON.stringify(entry) + '\n', 'utf8');
+    fs.appendFileSync(logPath, JSON.stringify(entry) + '\n', 'utf8');
+    process.stderr.write(`[hooks-logger] write OK\n`);
   } catch (err) {
-    process.stderr.write(`[hooks-logger] FAILED to write log: ${err instanceof Error ? err.message : String(err)} (dir=${getHooksLogDir()}, home=${process.env.HOME ?? 'unset'})\n`);
+    process.stderr.write(`[hooks-logger] FAILED: ${err instanceof Error ? err.message : String(err)}\n`);
   }
 }
 
