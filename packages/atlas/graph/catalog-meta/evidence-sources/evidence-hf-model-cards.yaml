@@ -19,6 +19,63 @@ edges:
     - trust-level:vendor-doc
 ---
 nodeKind: EvidenceSource
+id: evidence:hf-model-card-qwen3-coder-480b-a35b-instruct
+attributes:
+  displayName: "Hugging Face — Qwen/Qwen3-Coder-480B-A35B-Instruct model card"
+  kindLabel: web
+  trustLevel: trust-level:vendor-doc
+  sourceUrl: https://huggingface.co/Qwen/Qwen3-Coder-480B-A35B-Instruct
+  sourcePathOrUrl: https://huggingface.co/Qwen/Qwen3-Coder-480B-A35B-Instruct
+  locator: "model card — Qwen3-Coder 480B A35B Instruct"
+  capturedAt: "2026-05-26T00:00:00Z"
+  observedAt: "2026-05-26T00:00:00Z"
+  observedBy: a5c-ai-team
+  freshnessWindowDays: 90
+  reviewOwner: "@a5c-ai/catalog"
+  reviewedAt: "2026-05-26T00:00:00Z"
+edges:
+  has_trust_level:
+    - trust-level:vendor-doc
+---
+nodeKind: EvidenceSource
+id: evidence:hf-model-card-qwen3-coder-30b-a3b-instruct
+attributes:
+  displayName: "Hugging Face — Qwen/Qwen3-Coder-30B-A3B-Instruct model card"
+  kindLabel: web
+  trustLevel: trust-level:vendor-doc
+  sourceUrl: https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct
+  sourcePathOrUrl: https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct
+  locator: "model card — context length, non-thinking mode, tool calling"
+  capturedAt: "2026-05-26T00:00:00Z"
+  observedAt: "2026-05-26T00:00:00Z"
+  observedBy: a5c-ai-team
+  freshnessWindowDays: 90
+  reviewOwner: "@a5c-ai/catalog"
+  reviewedAt: "2026-05-26T00:00:00Z"
+edges:
+  has_trust_level:
+    - trust-level:vendor-doc
+---
+nodeKind: EvidenceSource
+id: evidence:hf-model-card-qwen3-coder-next
+attributes:
+  displayName: "Hugging Face — Qwen/Qwen3-Coder-Next model card"
+  kindLabel: web
+  trustLevel: trust-level:vendor-doc
+  sourceUrl: https://huggingface.co/Qwen/Qwen3-Coder-Next
+  sourcePathOrUrl: https://huggingface.co/Qwen/Qwen3-Coder-Next
+  locator: "model card — parameters, context length, tool calling"
+  capturedAt: "2026-05-26T00:00:00Z"
+  observedAt: "2026-05-26T00:00:00Z"
+  observedBy: a5c-ai-team
+  freshnessWindowDays: 90
+  reviewOwner: "@a5c-ai/catalog"
+  reviewedAt: "2026-05-26T00:00:00Z"
+edges:
+  has_trust_level:
+    - trust-level:vendor-doc
+---
+nodeKind: EvidenceSource
 id: evidence:hf-model-card-llama-3-1-70b-instruct
 attributes:
   displayName: "Hugging Face — meta-llama/Llama-3.1-70B-Instruct model card"

@@ -1,7 +1,7 @@
 nodeKind: ModelVersion
-id: model:qwen3-coder-480b-a35b-instruct@current
+id: model:qwen3-coder-next@current
 attributes:
-  displayName: "Qwen3 Coder 480B A35B Instruct"
+  displayName: "Qwen3-Coder-Next"
   costPerMTokInput: 0
   costPerMTokOutput: 0
   supportsExtendedThinking: false
@@ -10,6 +10,7 @@ attributes:
   versionRange: '>=3.0.0 <4.0.0'
   kind: code-completion
   contextWindowTokens: 262144
+  maxOutputTokens: 16384
   modalities:
     - text
   modalityDirections:
@@ -17,15 +18,16 @@ attributes:
       direction: input
     - kind: text
       direction: output
-  releaseDate: '2025-07-23'
+  releaseDate: '2026-02-04'
   lifecycleStatus: ga
-  lifecycleStatusChangedAt: '2025-07-23'
-  modelCardUrl: https://huggingface.co/Qwen/Qwen3-Coder-480B-A35B-Instruct
+  lifecycleStatusChangedAt: '2026-02-04'
+  modelCardUrl: https://huggingface.co/Qwen/Qwen3-Coder-Next
   supportsFineTuning: true
   fineTuningKind: full
   providerModelIds:
-    awsBedrockRuntime: qwen.qwen3-coder-480b-a35b-v1:0
-    awsBedrockMantle: qwen.qwen3-coder-480b-a35b-instruct
+    alibabaModelStudio: qwen3-coder-next
+    awsBedrockRuntime: qwen.qwen3-coder-next
+    awsBedrockMantle: qwen.qwen3-coder-next
   regions:
     - global
 edges:
@@ -38,9 +40,8 @@ edges:
   supersedes:
     - target: model:qwen-2-5-coder-32b@current
   served_by:
+    - provider:alibaba-cloud
     - provider:aws-bedrock
-    - provider:together-ai
-    - provider:fireworks-ai
   speaks:
     - model-transport:openai-compat
     - model-transport:bedrock-converse

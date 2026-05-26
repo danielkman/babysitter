@@ -17,6 +17,8 @@ attributes:
     invoke_model: "https://bedrock-runtime.{region}.amazonaws.com/model/{modelId}/invoke"
     converse: "https://bedrock-runtime.{region}.amazonaws.com/model/{modelId}/converse"
     converse_stream: "https://bedrock-runtime.{region}.amazonaws.com/model/{modelId}/converse-stream"
+    mantle_base: "https://bedrock-mantle.{region}.api.aws/v1"
+    mantle_chat_completions: "https://bedrock-mantle.{region}.api.aws/v1/chat/completions"
     bidirectional_stream: "https://bedrock-runtime.{region}.amazonaws.com/model/{modelId}/invoke-with-bidirectional-stream"
   pricing: |
     See https://aws.amazon.com/bedrock/pricing/ for region-specific pricing.
@@ -85,6 +87,8 @@ edges:
     - model:claude-mythos-preview@current
     - model:mistral-large-3@current
     - model:qwen3-coder-480b-a35b-instruct@current
+    - model:qwen3-coder-30b-a3b-instruct@current
+    - model:qwen3-coder-next@current
     - model:cohere-embed-v4-0@current
     - model:claude-opus-4-7@current
   supports:
