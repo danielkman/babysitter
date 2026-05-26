@@ -195,7 +195,7 @@ export class AgentCoreSessionHandle {
     }
 
     this.isActive = true;
-    const effectiveTimeout = timeout ?? this.options.timeout ?? DEFAULT_TIMEOUT_MS;
+    const effectiveTimeout = (timeout || this.options.timeout) || DEFAULT_TIMEOUT_MS;
     const start = Date.now();
 
     const followUps = this.queuedFollowUps;
