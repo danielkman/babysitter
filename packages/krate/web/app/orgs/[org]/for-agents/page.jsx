@@ -149,6 +149,32 @@ export default async function ForAgentsPage({ params }) {
         </div>
       </Section>
 
+      <Section title="Model Gateway">
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '1rem' }}>The Krate Model Gateway provides unified model routing through Envoy AI Gateway. Agents request models by logical name and the gateway routes to the correct backend -- either an internal KServe inference service or an external cloud LLM provider.</p>
+        <div className="resourceTable">
+          {[
+            ['Internal route', 'Routes to a KServe InferenceService on the cluster (sklearn, pytorch, huggingface, etc.)'],
+            ['External route', 'Routes to a cloud LLM endpoint (Anthropic, OpenAI, Azure OpenAI, Google Vertex, custom)'],
+            ['Unified catalog', 'GET /api/orgs/{org}/inference/catalog returns all available models regardless of backend'],
+            ['Logical names', 'Agents reference models by logical name; the gateway resolves endpoint, protocol, and auth'],
+            ['Rate limits', 'Per-route rate limiting (RPM / TPM) enforced at the gateway layer'],
+          ].map(([name, desc]) => <div key={name} className="resourceRow" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '0.75rem', alignItems: 'center' }}>
+            <code style={{ fontSize: '0.8rem', fontWeight: 600 }}>{name}</code>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{desc}</span>
+          </div>)}
+        </div>
+        <CodeBlock title="Example: list unified model catalog">{`curl -s http://localhost:3080/api/orgs/${activeOrg}/inference/catalog | jq '.models[].name'`}</CodeBlock>
+        <CodeBlock title="Example: create a model route">{`curl -X POST http://localhost:3080/api/orgs/${activeOrg}/inference/routes \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "modelName": "claude-3-5-sonnet",
+    "routeType": "external",
+    "provider": "anthropic",
+    "endpoint": "https://api.anthropic.com/v1",
+    "modelId": "claude-sonnet-4-20250514"
+  }'`}</CodeBlock>
+      </Section>
+
       <Section title="HTTP API">
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '1rem' }}>For direct API integration without MCP, the Krate HTTP API is available at <code>KRATE_CONTROLLER_URL</code> or via <code>krate serve</code>.</p>
         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>

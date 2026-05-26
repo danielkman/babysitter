@@ -555,16 +555,262 @@ function ServiceDetailPanel({ service, org, onClose }) {
   );
 }
 
+// ─── Model Route Sub-components ──────────────────────────────────────────────
+
+const ROUTE_TYPE_COLORS = { internal: '#2563eb', external: '#7c3aed' };
+const PROVIDER_COLORS = { kserve: '#2563eb', anthropic: '#d97706', openai: '#16a34a', 'azure-openai': '#0284c7', 'google-vertex': '#dc2626', custom: '#6b7280' };
+
+function RouteTypeBadge({ type }) {
+  const color = ROUTE_TYPE_COLORS[type] || '#6b7280';
+  return <span style={badgeStyle(color)}>{type || 'unknown'}</span>;
+}
+
+function ProviderBadge({ provider }) {
+  const color = PROVIDER_COLORS[provider] || '#6b7280';
+  return <span style={badgeStyle(color)}>{provider || 'unknown'}</span>;
+}
+
+function CatalogStatusPill({ status }) {
+  const color = status === 'available' ? '#16a34a' : '#d97706';
+  return (
+    <span style={{ ...badgeStyle(color), fontSize: '0.6875rem' }}>
+      <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: color, marginRight: 4, verticalAlign: 'middle' }} />
+      {status}
+    </span>
+  );
+}
+
+function ModelCatalogSection({ org }) {
+  const [catalog, setCatalog] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`/api/orgs/${org}/inference/catalog`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => setCatalog(data))
+      .catch(() => setCatalog(null))
+      .finally(() => setLoading(false));
+  }, [org]);
+
+  if (loading) return <div style={{ fontSize: '0.875rem', color: '#9ca3af', padding: '1rem', textAlign: 'center' }}>Loading catalog...</div>;
+  if (!catalog || !catalog.models?.length) return null;
+
+  const internalCount = catalog.models.filter(m => m.type === 'internal').length;
+  const externalCount = catalog.models.filter(m => m.type === 'external').length;
+
+  return (
+    <div style={{ marginBottom: '1.5rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+        <div>
+          <div style={{ fontWeight: 700, fontSize: '1rem' }}>Unified Model Catalog</div>
+          <div style={{ fontSize: '0.8125rem', color: '#6b7280' }}>{internalCount} internal + {externalCount} external models</div>
+        </div>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '0.625rem' }}>
+        {catalog.models.map((m, i) => (
+          <div key={m.name + '-' + i} style={{ ...cardStyle, padding: '0.75rem' }}>
+            <div style={{ fontWeight: 600, fontSize: '0.875rem' }}>{m.name}</div>
+            <div style={{ display: 'flex', gap: '0.375rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>
+              <ProviderBadge provider={m.provider} />
+              <RouteTypeBadge type={m.type} />
+              <CatalogStatusPill status={m.status} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ModelRouteCard({ route, onDelete }) {
+  const name = route.metadata?.name || route.name || 'unknown';
+  const spec = route.spec || {};
+  const routeType = spec.routeType || 'unknown';
+  const modelName = spec.modelName || name;
+  const provider = routeType === 'external' ? (spec.external?.provider || 'unknown') : 'kserve';
+  const enabled = spec.enabled !== false;
+  const createdAt = route.metadata?.creationTimestamp;
+
+  return (
+    <div style={{ ...cardStyle, opacity: enabled ? 1 : 0.6 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }}>
+        <span style={{ fontWeight: 700, fontSize: '0.9375rem' }}>{name}</span>
+        <div style={{ display: 'flex', gap: '0.375rem', alignItems: 'center' }}>
+          <RouteTypeBadge type={routeType} />
+          <ProviderBadge provider={provider} />
+          {!enabled && <span style={badgeStyle('#9ca3af')}>disabled</span>}
+        </div>
+      </div>
+      <div style={{ fontSize: '0.8125rem', color: '#374151' }}>
+        Model: <strong>{modelName}</strong>
+      </div>
+      {routeType === 'internal' && spec.inferenceServiceRef && (
+        <div style={{ fontSize: '0.8125rem', color: '#6b7280' }}>Service: {spec.inferenceServiceRef}</div>
+      )}
+      {routeType === 'external' && spec.external?.endpoint && (
+        <div style={{ fontSize: '0.8125rem', color: '#6b7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          Endpoint: {spec.external.endpoint}
+        </div>
+      )}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>{createdAt ? relativeTime(createdAt) : ''}</span>
+        <button style={btnStyle('#dc2626')} onClick={() => onDelete(route)}>Delete</button>
+      </div>
+    </div>
+  );
+}
+
+function CreateModelRouteForm({ services, onSubmit, onCancel, loading }) {
+  const [form, setForm] = useState({
+    modelName: '',
+    routeType: 'internal',
+    inferenceServiceRef: '',
+    protocol: 'v2',
+    provider: 'openai',
+    endpoint: '',
+    modelId: '',
+    authSecretRef: '',
+    priority: '',
+    rpmLimit: '',
+    tpmLimit: '',
+  });
+
+  const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.type === 'checkbox' ? e.target.checked : e.target.value }));
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const body = {
+      modelName: form.modelName,
+      routeType: form.routeType,
+    };
+    if (form.routeType === 'internal') {
+      body.inferenceServiceRef = form.inferenceServiceRef;
+      body.protocol = form.protocol;
+    } else {
+      body.provider = form.provider;
+      body.endpoint = form.endpoint;
+      body.modelId = form.modelId || form.modelName;
+      body.protocol = form.provider === 'anthropic' ? 'anthropic' : 'openai';
+      if (form.authSecretRef) body.authSecretRef = form.authSecretRef;
+    }
+    if (form.priority) body.priority = Number(form.priority);
+    if (form.rpmLimit || form.tpmLimit) {
+      body.rateLimits = {};
+      if (form.rpmLimit) body.rateLimits.requestsPerMinute = Number(form.rpmLimit);
+      if (form.tpmLimit) body.rateLimits.tokensPerMinute = Number(form.tpmLimit);
+    }
+    onSubmit(body);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      <div>
+        <label style={labelStyle}>Model Name *</label>
+        <input style={inputStyle} value={form.modelName} onChange={set('modelName')} required placeholder="claude-3-5-sonnet" />
+      </div>
+      <div>
+        <label style={labelStyle}>Route Type</label>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          {['internal', 'external'].map(t => (
+            <button
+              key={t}
+              type="button"
+              style={{
+                ...btnOutlineStyle,
+                background: form.routeType === t ? (t === 'internal' ? '#2563eb' : '#7c3aed') : '#fff',
+                color: form.routeType === t ? '#fff' : '#374151',
+                borderColor: form.routeType === t ? 'transparent' : '#d1d5db',
+              }}
+              onClick={() => setForm(f => ({ ...f, routeType: t }))}
+            >
+              {t.charAt(0).toUpperCase() + t.slice(1)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {form.routeType === 'internal' && (
+        <>
+          <div>
+            <label style={labelStyle}>Inference Service *</label>
+            <select style={inputStyle} value={form.inferenceServiceRef} onChange={set('inferenceServiceRef')} required>
+              <option value="">Select a service...</option>
+              {(services || []).map(svc => {
+                const n = svc.metadata?.name || svc.name;
+                return <option key={n} value={n}>{n}</option>;
+              })}
+            </select>
+          </div>
+          <div>
+            <label style={labelStyle}>Protocol</label>
+            <select style={inputStyle} value={form.protocol} onChange={set('protocol')}>
+              <option value="v2">V2 (gRPC/HTTP)</option>
+              <option value="v1">V1 (REST)</option>
+            </select>
+          </div>
+        </>
+      )}
+
+      {form.routeType === 'external' && (
+        <>
+          <div>
+            <label style={labelStyle}>Provider *</label>
+            <select style={inputStyle} value={form.provider} onChange={set('provider')}>
+              {['anthropic', 'openai', 'azure-openai', 'google-vertex', 'custom'].map(p => (
+                <option key={p} value={p}>{p}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label style={labelStyle}>Endpoint URL *</label>
+            <input style={inputStyle} value={form.endpoint} onChange={set('endpoint')} required placeholder="https://api.openai.com/v1" />
+          </div>
+          <div>
+            <label style={labelStyle}>Model ID</label>
+            <input style={inputStyle} value={form.modelId} onChange={set('modelId')} placeholder="gpt-4o (defaults to model name)" />
+          </div>
+          <div>
+            <label style={labelStyle}>Auth Secret Ref</label>
+            <input style={inputStyle} value={form.authSecretRef} onChange={set('authSecretRef')} placeholder="secret-name (AgentSecretGrant)" />
+          </div>
+        </>
+      )}
+
+      <div>
+        <label style={labelStyle}>Priority (optional)</label>
+        <input style={inputStyle} type="number" value={form.priority} onChange={set('priority')} placeholder="0" />
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+        <div>
+          <label style={labelStyle}>RPM Limit</label>
+          <input style={inputStyle} type="number" value={form.rpmLimit} onChange={set('rpmLimit')} placeholder="Optional" />
+        </div>
+        <div>
+          <label style={labelStyle}>TPM Limit</label>
+          <input style={inputStyle} type="number" value={form.tpmLimit} onChange={set('tpmLimit')} placeholder="Optional" />
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.25rem' }}>
+        <button type="submit" style={btnStyle()} disabled={loading}>{loading ? 'Creating...' : 'Create Route'}</button>
+        <button type="button" style={btnOutlineStyle} onClick={onCancel}>Cancel</button>
+      </div>
+    </form>
+  );
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export function InferenceServiceManager({ org, initialServiceName }) {
   const [services, setServices] = useState([]);
   const [runtimes, setRuntimes] = useState([]);
+  const [routes, setRoutes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('services');
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showRuntimeForm, setShowRuntimeForm] = useState(false);
+  const [showRouteForm, setShowRouteForm] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [createLoading, setCreateLoading] = useState(false);
   const [createError, setCreateError] = useState(null);
@@ -573,14 +819,17 @@ export function InferenceServiceManager({ org, initialServiceName }) {
     setLoading(true);
     setError(null);
     try {
-      const [svcRes, rtRes] = await Promise.all([
+      const [svcRes, rtRes, routeRes] = await Promise.all([
         fetch(`/api/orgs/${org}/inference/services`),
         fetch(`/api/orgs/${org}/inference/runtimes`),
+        fetch(`/api/orgs/${org}/inference/routes`),
       ]);
       const svcData = svcRes.ok ? await svcRes.json() : null;
       const rtData = rtRes.ok ? await rtRes.json() : null;
+      const routeData = routeRes.ok ? await routeRes.json() : null;
       setServices(svcData?.items || (Array.isArray(svcData) ? svcData : []));
       setRuntimes(rtData?.items || (Array.isArray(rtData) ? rtData : []));
+      setRoutes(routeData?.items || (Array.isArray(routeData) ? routeData : []));
 
       if (initialServiceName) {
         const found = (svcData?.items || []).find(s => (s.metadata?.name || s.name) === initialServiceName);
@@ -639,11 +888,45 @@ export function InferenceServiceManager({ org, initialServiceName }) {
     }
   };
 
+  const handleCreateRoute = async (body) => {
+    setCreateLoading(true);
+    setCreateError(null);
+    try {
+      const res = await fetch(`/api/orgs/${org}/inference/routes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || `Failed with status ${res.status}`);
+      }
+      setShowRouteForm(false);
+      await fetchData();
+    } catch (err) {
+      setCreateError(err.message);
+    } finally {
+      setCreateLoading(false);
+    }
+  };
+
   const handleDelete = async (service) => {
     const name = service.metadata?.name || service.name;
     if (!confirm(`Delete inference service "${name}"?`)) return;
     try {
       const res = await fetch(`/api/orgs/${org}/inference/services/${encodeURIComponent(name)}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Delete failed');
+      await fetchData();
+    } catch (err) {
+      alert(err.message || 'Delete failed');
+    }
+  };
+
+  const handleDeleteRoute = async (route) => {
+    const name = route.metadata?.name || route.name;
+    if (!confirm(`Delete model route "${name}"?`)) return;
+    try {
+      const res = await fetch(`/api/orgs/${org}/resources/KrateModelRoute/${encodeURIComponent(name)}`, { method: 'DELETE' });
       if (!res.ok) throw new Error('Delete failed');
       await fetchData();
     } catch (err) {
@@ -664,17 +947,24 @@ export function InferenceServiceManager({ org, initialServiceName }) {
 
   return (
     <div style={{ fontFamily: 'inherit' }}>
+      {/* Unified Model Catalog */}
+      <ModelCatalogSection org={org} />
+
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
         <div style={{ display: 'flex', borderBottom: '1px solid #e2e8f0' }}>
           <button style={tabStyle(activeTab === 'services')} onClick={() => setActiveTab('services')}>Services</button>
           <button style={tabStyle(activeTab === 'runtimes')} onClick={() => setActiveTab('runtimes')}>Runtimes</button>
+          <button style={tabStyle(activeTab === 'routes')} onClick={() => setActiveTab('routes')}>Model Routes</button>
         </div>
         {activeTab === 'services' && !showCreateForm && (
           <button style={btnStyle()} onClick={() => setShowCreateForm(true)}>+ Create Service</button>
         )}
         {activeTab === 'runtimes' && !showRuntimeForm && (
           <button style={btnStyle()} onClick={() => setShowRuntimeForm(true)}>+ Add Runtime</button>
+        )}
+        {activeTab === 'routes' && !showRouteForm && (
+          <button style={btnStyle()} onClick={() => setShowRouteForm(true)}>+ Create Model Route</button>
         )}
       </div>
 
@@ -758,6 +1048,45 @@ export function InferenceServiceManager({ org, initialServiceName }) {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '0.75rem' }}>
               {runtimes.map((rt, i) => (
                 <RuntimeCard key={rt.metadata?.name || i} runtime={rt} />
+              ))}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Model Routes Tab */}
+      {!loading && activeTab === 'routes' && (
+        <>
+          {showRouteForm && (
+            <div style={{ ...cardStyle, marginBottom: '1rem', background: '#f8fafc' }}>
+              <div style={{ fontWeight: 700, fontSize: '0.9375rem', marginBottom: '0.5rem' }}>Create Model Route</div>
+              {createError && (
+                <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '0.375rem', padding: '0.5rem', fontSize: '0.8125rem', color: '#dc2626', marginBottom: '0.5rem' }}>
+                  {createError}
+                </div>
+              )}
+              <CreateModelRouteForm
+                services={services}
+                onSubmit={handleCreateRoute}
+                onCancel={() => { setShowRouteForm(false); setCreateError(null); }}
+                loading={createLoading}
+              />
+            </div>
+          )}
+          {routes.length === 0 && !showRouteForm ? (
+            <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#9ca3af' }}>
+              <div style={{ fontSize: '1.5rem', marginBottom: '0.75rem' }}>No model routes</div>
+              <div style={{ fontSize: '0.875rem', marginBottom: '1rem' }}>Create a model route to map logical model names to internal services or external LLM endpoints.</div>
+              <button style={btnStyle()} onClick={() => setShowRouteForm(true)}>Create Model Route</button>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '0.75rem' }}>
+              {routes.map((route, i) => (
+                <ModelRouteCard
+                  key={route.metadata?.name || i}
+                  route={route}
+                  onDelete={handleDeleteRoute}
+                />
               ))}
             </div>
           )}

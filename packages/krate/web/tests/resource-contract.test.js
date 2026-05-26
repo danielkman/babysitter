@@ -243,3 +243,29 @@ test('inference service manager emits required KrateInferenceService fields', ()
     );
   }
 });
+
+// ── Contract: model route creation form sends required fields ────────────
+
+test('model route form emits required KrateModelRoute spec fields', () => {
+  const source = readFile('app', 'components', 'inference-service-manager.jsx');
+  const requiredFields = RESOURCE_DEFINITIONS.KrateModelRoute.requiredSpec;
+  for (const field of requiredFields) {
+    if (field === 'organizationRef') continue;
+    assert.ok(
+      source.includes(field),
+      `inference-service-manager.jsx does not reference required KrateModelRoute field: ${field}`
+    );
+  }
+});
+
+// ── Contract: model route API route emits required fields ────────────────
+
+test('model routes API route creates KrateModelRoute with required fields', () => {
+  const route = readFile('app', 'api', 'orgs', '[org]', 'inference', 'routes', 'route.js');
+  assert.match(route, /KrateModelRoute/);
+  assert.match(route, /modelName/);
+  assert.match(route, /routeType/);
+  assert.match(route, /organizationRef/);
+  assert.match(route, /clearSnapshotCache/);
+  assert.match(route, /invalidateApiCache/);
+});
