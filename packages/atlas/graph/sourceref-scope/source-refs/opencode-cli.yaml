@@ -3,7 +3,7 @@ id: source-ref:opencode-cli
 attributes:
   description: "OpenCode CLI"
   displayName: "OpenCode CLI"
-  repoUrl: https://github.com/sst/opencode
+  repoUrl: https://github.com/anomalyco/opencode
   ref: main
   path: "."
   packageManager: npm

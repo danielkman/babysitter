@@ -109,7 +109,7 @@ id: source-ref:opencode-github
 attributes:
   description: "OpenCode (GitHub)"
   displayName: "OpenCode (GitHub)"
-  repoUrl: https://github.com/sst/opencode
+  repoUrl: https://github.com/anomalyco/opencode
   ref: main
   path: "."
   kind: github-repo

@@ -411,9 +411,9 @@ id: claim:agent-github-source-ref-source-ref-opencode-github-repourl
 attributes:
   subjectId: source-ref:opencode-github
   attribute: repoUrl
-  value: https://github.com/sst/opencode
+  value: https://github.com/anomalyco/opencode
   subjectKind: SourceRef
-  statement: source-ref:opencode-github repoUrl is https://github.com/sst/opencode.
+  statement: source-ref:opencode-github repoUrl is https://github.com/anomalyco/opencode.
   confidence: medium
   provenanceKind: observation
   evidenceStrength: moderate
