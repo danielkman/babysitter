@@ -3,7 +3,7 @@ id: agent-core-impl:codex-sdk.core@current
 attributes:
   displayName: Codex SDK Core (current)
   agentVersionId: agent-version:codex-sdk@current
-  packageRef: source-ref:codex-github
+  packageRef: source-ref:openai-node-npm
   loopIteratorPolicy: process-function-driven
   loopIteratorNotes: |
     Host program calls `openai.chat.completions.create({stream:true})`
@@ -35,6 +35,9 @@ edges:
   composes:
   - target: agent:codex-sdk
     role: core
+  sourced_from:
+  - source-ref:openai-node-npm
+  - source-ref:openai-node-github
   speaks:
   - target: model-transport:openai-chat-completions
   - target: model-transport:openai-responses

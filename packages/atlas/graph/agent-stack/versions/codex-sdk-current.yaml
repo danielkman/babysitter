@@ -16,7 +16,9 @@ edges:
       role: core
     - target: agent-runtime-impl:codex-sdk.runtime@current
       role: runtime
-  sourced_from: []
+  sourced_from:
+    - source-ref:openai-node-npm
+    - source-ref:openai-node-github
   supports:
     - target: capability:can-multi-turn
       versionRange: '>=6.39.0'

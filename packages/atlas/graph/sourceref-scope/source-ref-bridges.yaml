@@ -60,6 +60,16 @@ nodes:
     edges:
       source_of:
         - target: agent:openai-agents-sdk
+  - id: source-ref:openai-node-npm
+    kind: SourceRef
+    edges:
+      source_of:
+        - target: agent:codex-sdk
+  - id: source-ref:openai-node-github
+    kind: SourceRef
+    edges:
+      source_of:
+        - target: agent:codex-sdk
   - id: source-ref:opencode-cli
     kind: SourceRef
     edges:
