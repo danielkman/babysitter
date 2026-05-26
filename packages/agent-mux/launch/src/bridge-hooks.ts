@@ -75,7 +75,8 @@ async function execCommand(
     console.error(`[bridge-hooks] exec: ${bin} ${args.join(' ')}`);
   }
 
-  const result = execFileSync(bin, args, {
+  const { spawnSync } = await import('node:child_process');
+  const proc = spawnSync(bin, args, {
     cwd: options.cwd,
     env: mergedEnv,
     encoding: 'utf-8',
@@ -84,8 +85,14 @@ async function execCommand(
     input: options.stdin,
     shell: process.platform === 'win32',
   });
-
-  return result;
+  // Forward child stderr so hooks-mux logger diagnostics are visible
+  if (proc.stderr) {
+    process.stderr.write(proc.stderr);
+  }
+  if (proc.status !== 0) {
+    throw new Error(`${bin} exited with ${proc.status}: ${proc.stderr || proc.stdout}`);
+  }
+  return proc.stdout;
 }
 
 async function getHookSupportLevel(
