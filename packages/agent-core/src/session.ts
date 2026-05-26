@@ -40,16 +40,24 @@ function resolveEndpoint(options: AgentCoreSessionOptions): ResolvedEndpoint {
   const amuxApiBase = process.env["AMUX_API_BASE"];
   const amuxApiKey = process.env["AMUX_API_KEY"];
   const amuxModel = process.env["AMUX_MODEL"];
-  const azureApiKey = process.env["AZURE_API_KEY"];
+  const azureApiKey = process.env["AZURE_API_KEY"] || process.env["AZURE_OPENAI_API_KEY"];
+  const azureProject = process.env["AZURE_OPENAI_PROJECT_NAME"];
   const openaiApiKey = process.env["OPENAI_API_KEY"];
+  const openaiModel = process.env["OPENAI_MODEL"];
   const anthropicApiKey = process.env["ANTHROPIC_API_KEY"];
 
-  const model = options.model ?? amuxModel ?? "gpt-4o";
+  const model = options.model ?? amuxModel ?? openaiModel ?? "gpt-4o";
 
   if (amuxProvider === "foundry" || amuxProvider === "azure") {
     const apiBase = amuxApiBase ?? "";
     const apiKey = amuxApiKey ?? azureApiKey ?? "";
     return { apiBase: `${apiBase}/openai`, apiKey, model, isAzure: true, isAnthropic: false };
+  }
+
+  // Azure OpenAI via AZURE_OPENAI_API_KEY + AZURE_OPENAI_PROJECT_NAME
+  if (azureApiKey && azureProject) {
+    const apiBase = `https://${azureProject}.services.ai.azure.com/openai`;
+    return { apiBase, apiKey: azureApiKey, model, isAzure: true, isAnthropic: false };
   }
 
   if (amuxApiBase) {
