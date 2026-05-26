@@ -66,7 +66,18 @@ function resolveEndpoint(options: AgentCoreSessionOptions): ResolvedEndpoint {
     return { apiBase: "https://api.anthropic.com", apiKey: anthropicApiKey, model: anthropicModel, isAzure: false, isAnthropic: true };
   }
 
-  return { apiBase: "https://api.openai.com/v1", apiKey: amuxApiKey ?? "", model, isAzure: false, isAnthropic: false };
+  if (!amuxApiKey) {
+    throw new Error(
+      "No API credentials found. Set one of: " +
+      "AMUX_PROVIDER + AMUX_API_BASE + AZURE_API_KEY (for Foundry/Azure), " +
+      "OPENAI_API_KEY (for OpenAI), " +
+      "ANTHROPIC_API_KEY (for Anthropic), " +
+      "or AMUX_API_BASE + AMUX_API_KEY (for custom endpoint). " +
+      "Alternatively, use --harness claude-code to route through an installed agent."
+    );
+  }
+
+  return { apiBase: "https://api.openai.com/v1", apiKey: amuxApiKey, model, isAzure: false, isAnthropic: false };
 }
 
 async function callCompletionApi(
