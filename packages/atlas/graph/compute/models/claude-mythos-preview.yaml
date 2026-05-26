@@ -4,6 +4,7 @@ attributes:
   displayName: "Claude Mythos Preview"
   costPerMTokInput: 0
   costPerMTokOutput: 0
+  pricingNotes: "Unknown for direct Anthropic API access; gated research preview access is not self-serve priced in public docs."
   supportsExtendedThinking: true
   supportsAdaptiveThinking: true
   supportsThinkingBudgetTokens: false
@@ -11,6 +12,14 @@ attributes:
   versionRange: '>=0.1.0 <1.0.0'
   kind: reasoning
   contextWindowTokens: 0
+  contextWindowNotes: "Unknown in public docs; do not infer from other Claude model families."
+  accessStatus: gated-research-preview
+  accessNotes: "Invitation-only/gated research preview for qualified safety and security research workflows."
+  capabilityTags:
+    - defensive-cybersecurity
+    - autonomous-coding
+    - long-running-agents
+    - vulnerability-discovery-evaluation
   modalities:
     - text
     - image
@@ -45,6 +54,15 @@ edges:
     - target: capability:adaptive-thinking
       versionRange: '>=0.1.0 <1.0.0'
       level: full
+      evidenceSourceIds:
+        - evidence:claude-mythos-preview-anthropic-red
     - target: capability:supports-tool-use
       versionRange: '>=0.1.0 <1.0.0'
       level: full
+      evidenceSourceIds:
+        - evidence:claude-mythos-preview-anthropic-models
+    - target: capability:extended-thinking
+      versionRange: '>=0.1.0 <1.0.0'
+      level: partial
+      evidenceSourceIds:
+        - evidence:claude-mythos-preview-anthropic-red
