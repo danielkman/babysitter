@@ -383,6 +383,11 @@ describe("agent-catalog graph-backed ontology", () => {
     expect(codexNode?.versionRange).toBe(">=0.119.0");
     expect(codexNode?.currentVersion).toBe("0.134.0");
     expect(codexNode?.releaseNotesUrl).toContain("rust-v0.134.0");
+    expect(codexNode?.assimilationNotes).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("managed network proxy environment"),
+      ]),
+    );
     expect(flags?.supportsSkills).toBe(true);
     expect(flags?.supportsAgentsMd).toBe(true);
     expect(flags?.supportsPlugins).toBe(true);

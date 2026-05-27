@@ -25,7 +25,7 @@ nodeKind: Claim
 id: claim:web-codex-0-134-release
 attributes:
   claimId: web-codex-0-134-release
-  statement: "Codex CLI 0.134.0 adds local conversation history search, makes --profile the primary profile selector, improves MCP HTTP OAuth setup, preserves and compacts connector schemas, allows concurrent read-only MCP tools, expands hook and extension context, and improves remote websocket recovery."
+  statement: "Codex CLI 0.134.0 adds local conversation history search, makes --profile the primary profile selector, improves MCP HTTP OAuth setup, preserves and compacts connector schemas, allows concurrent read-only MCP tools, expands hook and extension context, improves remote websocket recovery, and makes Node-based tools honor the managed network proxy environment."
   subjectKind: AgentVersion
   subjectId: "agentVersion:codex:ge-0-119-0"
   confidence: high
