@@ -6,6 +6,74 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [Unreleased] - 2026-05-26
+
+### feat
+- ca359f4a4 feat(krate): add Envoy AI Gateway dependency and KrateModelRoute CRD (Tal Muskal, 10 minutes ago)
+- 25ef6dd42 feat(omni): add omni agent as amux-launchable harness with live-stack support (Tal Muskal, 40 minutes ago)
+- b627b64c6 feat(krate-web): add For Agents documentation page with MCP setup guide (Tal Muskal, 57 minutes ago)
+- 80cdfa162 feat(krate): add resource contract tests and server-side validation (Tal Muskal, 63 minutes ago)
+- 11e906721 feat(krate-web): add internal tools catalog API endpoint (Tal Muskal, 11 hours ago)
+- b23aba63e feat(krate-web): split tools into internal/external sections, add memory repo selector (Tal Muskal, 11 hours ago)
+- 2b831488d feat(agent-core): add Azure OpenAI and OPENAI_MODEL env var support (Tal Muskal, 11 hours ago)
+- b6b2728f6 feat(krate): add tool categories and memory refs to AgentStack CRD (Tal Muskal, 11 hours ago)
+- 8ad1a61ad feat(atlas): model omni in atlas graph — product, version, 4 layer impls, presentation (Tal Muskal, 13 hours ago)
+- 2616b3e05 feat(loading): enhance loading view with circular animation and updated styles (Tal Muskal, 13 hours ago)
+
+### fix
+- 9ecb2859e fix(gemini-cli): add --yolo launch config for auto-approval in NI mode (Tal Muskal, 13 minutes ago)
+- 3451e5728 fix(live-stack): skip amux install for omni (already linked by CI workflow) (Tal Muskal, 26 minutes ago)
+- 541935650 fix(agent-platform): fix PI_PARENT_PROMPT_TIMEOUT_MS=0 causing instant abort (Tal Muskal, 42 minutes ago)
+- 8a704053a fix(krate): fix 4 resource schema mismatches caught by strengthened contract tests (Tal Muskal, 43 minutes ago)
+- 609071852 fix(bridge-hooks): resolve Windows .cmd/.sh to node+.js to avoid shell arg splitting (Tal Muskal, 5 hours ago)
+- dcae62db5 fix: remove duplicate execFileSync import (Tal Muskal, 11 hours ago)
+- 4e536a4b0 fix(bridge-hooks): resolve .cmd to .js on Windows to avoid shell arg splitting (Tal Muskal, 11 hours ago)
+- 79f1eafa3 fix(krate-web): simplify loading page to plain spinner (Tal Muskal, 11 hours ago)
+- fbed6eb64 fix(agent-core): auto-detect AZURE_OPENAI_API_KEY + AZURE_OPENAI_PROJECT_NAME (Tal Muskal, 11 hours ago)
+- 97faa5145 fix(krate-web): fix header line-break and reorganize sidebar hierarchy (Tal Muskal, 12 hours ago)
+- 7481423d8 fix(sdk): add --effect-id flag to CLI argument parser (#342) (Tal Muskal, 12 hours ago)
+- a1f2d6662 fix(live-stack): hooks-mux CI link pointed to dist/index.js (no-op) (Tal Muskal, 12 hours ago)
+- 7b0a3fa2c fix(live-stack): remove npm install -g hooks-mux-cli — shadows workspace link (Tal Muskal, 12 hours ago)
+- f13934632 fix(atlas): assimilate OMP 15.3.1 graph references (a5c-agent, 12 hours ago)
+- b559fb0d5 fix(amp): update CLI package metadata (a5c automation, 12 hours ago)
+- 50a115882 fix(graph): assimilate opencode 1.15.10 metadata (a5c-agent, 12 hours ago)
+- 799c572db fix(agent-core): fail fast with clear error when no API credentials found (Tal Muskal, 13 hours ago)
+- 9544b7053 fix(live-stack): force reinstall hooks-mux-cli to avoid stale cached version (Tal Muskal, 13 hours ago)
+- 35facab3c fix(agent-core): read AMUX_MODEL env var for Foundry default model (Tal Muskal, 13 hours ago)
+- 0fde14c96 fix(agent-core): add diagnostic details to session errors (Tal Muskal, 13 hours ago)
+- ffad3b464 fix(agent-core): add Anthropic Messages API support to agent-core session (Tal Muskal, 14 hours ago)
+- fd9be11b9 fix(hooks-mux): use sync file ops in logger to prevent async flush race (Tal Muskal, 14 hours ago)
+- 5f89747fc fix(bridge-hooks): always log hook invocation to stderr for CI debugging (Tal Muskal, 15 hours ago)
+- 016f0b0e8 fix(live-stack): update bridge-hooks tests for hooks-mux invoke path (Tal Muskal, 15 hours ago)
+
+### refactor
+- d2d6d00d5 refactor(agent-platform): extract agent-core-loop.ts from pi.ts (Tal Muskal, 15 minutes ago)
+- ff213e0aa refactor(agent-platform): rename PI_ timeout constants to generic agent-core names (Tal Muskal, 27 minutes ago)
+
+### ci
+- c1e442e06 feat(ci): add daily model version check workflow (Tal Muskal, 11 hours ago)
+
+### chore
+- 56adcc3aa chore: remove debug logging from hooks-mux logger and bridge-hooks (Tal Muskal, 4 hours ago)
+- 32f49fea9 Track latest model version updates (a5c-ai bot, 11 hours ago)
+- 9773c36d7 Assimilate Codex CLI 0.133.0 (a5c-ai agent, 12 hours ago)
+- 12e33408b Assimilate Pi 0.75.5 (a5c Agent, 12 hours ago)
+- c45488c0e Assimilate OpenAI SDK 6.39.0 metadata (a5c-ai-agent, 12 hours ago)
+- 1bde9a524 Assimilate GitHub Copilot CLI 1.0.54 (a5c agent, 12 hours ago)
+- a2a86329a chore(process): make publish step reproducible (a5c automation, 12 hours ago)
+- e45f8ec42 chore(process): support gh pr create output (a5c automation, 12 hours ago)
+- 06d49ad20 chore(atlas): record Claude Code 2.1.150 assimilation (a5c automation, 12 hours ago)
+- 465f2864a Assimilate OpenClaw 2026.5.22 metadata (a5c automation, 12 hours ago)
+- 79af09f60 debug(bridge-hooks): print spawnSync result details including stderr length (Tal Muskal, 12 hours ago)
+- b1c099c86 Assimilate Droid 0.132.1 (a5c agent, 12 hours ago)
+- 38ee186a9 chore(agent-mux): assimilate claude agent sdk 0.3.150 (a5c automation, 12 hours ago)
+- 8cc2cd527 Assimilate Qwen Code 0.16.1 (a5c Codex Agent, 12 hours ago)
+- 394e8f04f debug(hooks-mux): force stderr at top of appendHooksLog to verify binary + shouldLog (Tal Muskal, 13 hours ago)
+- d9e748b51 debug(hooks-mux): force stderr output to verify binary version in CI (Tal Muskal, 13 hours ago)
+- 3695338e0 debug(bridge-hooks): use spawnSync to capture and forward child stderr for #340 (Tal Muskal, 13 hours ago)
+- e6d41de8d debug(hooks-mux): log write failures to stderr for #340 diagnosis (Tal Muskal, 14 hours ago)
+- 608f4207b debug(live-stack): log hooks-mux search paths and results for #340 (Tal Muskal, 14 hours ago)
+
 ## [Unreleased] - 2026-05-25
 
 ### feat
