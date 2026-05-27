@@ -35,6 +35,42 @@ attributes:
         probes. Startup hot paths reuse channel catalog reads, immutable plugin
         metadata snapshots, plugin SDK alias maps, and skip irrelevant
         filesystem probes.
+      replyPathCacheCoverage:
+        - plugin
+        - channel
+        - session
+        - usage-cost
+        - warning
+        - scheduled-service
+        - filesystem
+      transcriptBackedSurfaces:
+        - meeting summaries
+        - source-provider chunks
+        - cleaned user turns
+        - media provenance
+        - Codex mirrors
+        - WebChat replies
+        - CLI/TUI replay
+      channelApprovals:
+        reactionApprovalChannels:
+          - Signal
+          - iMessage
+          - WhatsApp
+        talkControls: "Realtime Talk runs can be inspected, steered, cancelled, or followed up from Web UI and Discord voice."
+      browserSecurity:
+        browserSnapshots: "SSRF policy enforcement"
+        fetchedFiles: "wrapped as external content"
+        replyScrubbing: "serialized tool-call text is scrubbed from replies"
+      providerRecovery:
+        namedAuthProfiles: true
+        openaiSamplingParams: true
+        codexAppServerRecovery:
+          - resume
+          - timeout
+          - usage-limit
+        dynamicToolSchemaGuards: true
+        xaiUsageLimitSurfacing: true
+        ollamaTopPNormalization: true
       pluginSdk:
         - "Generic channel-message poll sender for channel plugins."
         - "Row-level session workflow helpers; loadSessionStore deprecated."
