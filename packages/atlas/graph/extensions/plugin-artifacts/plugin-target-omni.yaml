@@ -21,7 +21,7 @@ attributes:
     - npm-cli
   distributionModel: monorepo
   marketplacePath: null
-  npmPublishable: true
+  npmPublishable: false
   installLayout: null
   packageMetadata:
     moduleType: module
