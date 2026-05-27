@@ -26,10 +26,9 @@ dependencies:
     repository: https://kyverno.github.io/kyverno/
     condition: kyverno.install
     alias: kyverno-subchart
-  - name: envoy-ai-gateway
-    version: "~0.5"
-    repository: oci://docker.io/envoyproxy/ai-gateway-helm
-    condition: envoyAiGateway.install
+  # Envoy AI Gateway is deployed via Kustomize (not a Helm subchart).
+  # Install: kubectl apply -k "github.com/envoyproxy/ai-gateway/manifests?ref=main"
+  # The Krate chart manages KrateModelRoute CRDs that generate AIGatewayRoute configs.
 annotations:
   krate.a5c.ai/package-surface: mvp-model
   krate.a5c.ai/release-gate: npm-run-check

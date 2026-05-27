@@ -150,7 +150,9 @@ export default async function ForAgentsPage({ params }) {
       </Section>
 
       <Section title="Model Gateway">
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '1rem' }}>The Krate Model Gateway provides unified model routing through Envoy AI Gateway. Agents request models by logical name and the gateway routes to the correct backend -- either an internal KServe inference service or an external cloud LLM provider.</p>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '0.75rem' }}>The Krate Model Gateway provides unified model routing through Envoy AI Gateway. Agents request models by logical name and the gateway routes to the correct backend — either an internal KServe InferenceService or an external cloud LLM.</p>
+        <CodeBlock title="Install Envoy AI Gateway (prerequisite)">{`kubectl apply -k "github.com/envoyproxy/ai-gateway/manifests?ref=main"`}</CodeBlock>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginBottom: '1rem' }}>Krate manages KrateModelRoute resources that generate AIGatewayRoute configs automatically.</p>
         <div className="resourceTable">
           {[
             ['Internal route', 'Routes to a KServe InferenceService on the cluster (sklearn, pytorch, huggingface, etc.)'],

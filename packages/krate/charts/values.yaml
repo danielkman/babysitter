@@ -274,10 +274,10 @@ kyverno:
   install: false
 
 envoyAiGateway:
-  install: false
   enabled: true
   defaultBackend: "kserve"
   externalProviders: {}
+  # Install via: kubectl apply -k "github.com/envoyproxy/ai-gateway/manifests?ref=main"
 
 kserve:
   enabled: false
