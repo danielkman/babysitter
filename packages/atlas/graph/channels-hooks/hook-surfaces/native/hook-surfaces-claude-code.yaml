@@ -80,6 +80,26 @@ edges:
       attrs: { since: "1.0.0" }
 ---
 nodeKind: HookSurface
+id: hook-surface:claude.message-display
+attributes:
+  eventName: "MessageDisplay (Claude)"
+  displayName: "MessageDisplay (Claude)"
+  kind: native
+  originVendor: Anthropic
+  direction: event
+  blocking: false
+  family: shell-hook
+  description: |
+    Claude Agent SDK MessageDisplay hook. Fires for batches of assistant
+    message text as they are displayed and can replace the display-only delta.
+edges:
+  canonicalized_to:
+    - target: hook-surface:message-received
+  emits_hook:
+    - target: agentVersion:claude:ge-0-0-0
+      attrs: { since: "0.3.152" }
+---
+nodeKind: HookSurface
 id: hook-surface:claude.user-prompt-submit
 attributes:
   eventName: "UserPromptSubmit (Claude)"

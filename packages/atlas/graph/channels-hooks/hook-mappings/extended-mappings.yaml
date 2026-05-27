@@ -696,6 +696,29 @@ edges:
     - target: agentVersion:claude:ge-0-0-0
 ---
 nodeKind: HookMapping
+id: hook-mapping:claude-message-display-native
+attributes:
+  mappingId: hook-mapping:claude-message-display-native
+  hookId: hook-surface:claude.message-display
+  targetId: agentVersion:claude:ge-0-0-0
+  nativeName: MessageDisplay
+  versionRange: ">=0.3.152"
+  requiresRuntimeHooks: true
+  adapterFamily: claude
+  delivery: shell
+  blocking: false
+  supportLevel: supported
+  canonicalPhase: message.received
+  blockCapability: false
+  mutationCapability: true
+  scope: notification
+edges:
+  maps_hook:
+    - target: hook-surface:claude.message-display
+  emits_hook:
+    - target: agentVersion:claude:ge-0-0-0
+---
+nodeKind: HookMapping
 id: hook-mapping:claude-user-prompt-submit-native
 attributes:
   mappingId: hook-mapping:claude-user-prompt-submit-native
