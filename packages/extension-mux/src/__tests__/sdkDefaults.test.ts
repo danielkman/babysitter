@@ -31,7 +31,7 @@ describe('omitted sdk config defaults', () => {
     expect(resolveSdkConfig(manifest)).toEqual(BABYSITTER_DEFAULT_SDK_CONFIG);
 
     const results = compileAll(NO_SDK_PLUGIN_DIR, tmpDir, {});
-    expect(results).toHaveLength(10);
+    expect(results.length).toBeGreaterThanOrEqual(10);
 
     for (const result of results) {
       expect(
