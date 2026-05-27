@@ -221,6 +221,19 @@ describe("agent-catalog graph-backed ontology", () => {
     expect(evidence?.sourcePathOrUrl).toContain("anthropics/claude-code/releases/tag/v2.1.152");
   });
 
+  it("records Qwen Code 0.16.2 memory, skill, launch, and SDK timeout metadata", () => {
+    const graph = getCatalogGraphSnapshot();
+    const node = graph.nodes.find((entry) => entry.id === "agent-version:qwen@current");
+    const evidence = graph.nodes.find((entry) => entry.id === "evidence:qwen-code-release-v0-16-2");
+
+    expect(node?.versionRange).toBe(">=0.16.2");
+    expect(node?.releaseNotesUrl).toContain("QwenLM/qwen-code/releases/tag/v0.16.2");
+    expect(String(node?.assimilationNotes)).toContain("canUseTool timeouts");
+    expect(String(evidence?.notes)).toContain(".qwen/QWEN.local.md");
+    expect(String(evidence?.notes)).toContain("memory-leak-debug");
+    expect(String(evidence?.notes)).toContain("startup --worktree");
+  });
+
   it("includes agent-platform as a distinct non-harness runtime agent and records richer Claude web evidence", () => {
     const babysitterAgent = listAgentVersions().find((agent) => agent.agentId === "agent-platform");
     expect(babysitterAgent).toBeDefined();
