@@ -164,6 +164,7 @@ attributes:
     - "Read-only MCP tools can run concurrently when readOnlyHint is advertised."
     - "Extensions and hooks receive richer context, including conversation history for extension tools and subagent identity in hook inputs."
     - "Remote control reliability improved by reconnecting stale exec-server websocket clients, retrying after auth recovery, and retrying remote compaction v2 streams."
+    - "Node-based tools honor Codex's managed network proxy environment."
     - "Goals are default-on in 0.133.0 and backed by dedicated storage."
     - "codex remote-control is modeled as foreground readiness plus explicit start/stop lifecycle commands."
     - "Permission profiles expose list APIs, inheritance, requirements.toml support, runtime refresh, and stronger Windows sandbox integration."
