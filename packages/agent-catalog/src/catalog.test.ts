@@ -221,6 +221,32 @@ describe("agent-catalog graph-backed ontology", () => {
     expect(evidence?.sourcePathOrUrl).toContain("anthropics/claude-code/releases/tag/v2.1.152");
   });
 
+  it("records OMP 15.5.6 websocket and selector release metadata", () => {
+    const version = getAgentVersion("omp", "15.5.6");
+    const graph = getCatalogGraphSnapshot();
+    const node = graph.nodes.find((entry) => entry.id === "agentVersion:omp:ge-15-5-6");
+
+    expect(version?.versionRange).toBe(">=15.5.6");
+    expect(version?.sourcePackage).toBe("@oh-my-pi/pi-coding-agent");
+    expect(node?.releaseNotesUrl).toContain("can1357/oh-my-pi/releases/tag/v15.5.6");
+    expect(node?.installMethods).toContain("install:npm");
+    expect(node?.assimilationNotes).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("PI_CODEX_WEBSOCKET_MAX_IDLE_REUSE_MS"),
+        expect.stringContaining("stale response frames"),
+        expect.stringContaining("URL and directory selectors"),
+        expect.stringContaining("@oh-my-pi/pi-coding-agent"),
+      ]),
+    );
+
+    const evidence = getOntologyEvidenceSource("omp-15-5-6-release");
+    const evidenceNode = graph.nodes.find((entry) => entry.id === "evidence:omp-15-5-6-release");
+
+    expect(evidence?.sourcePathOrUrl).toContain("can1357/oh-my-pi/releases/tag/v15.5.6");
+    expect(evidenceNode?.notes).toContain("Codex WebSocket idle-reuse controls");
+    expect(evidenceNode?.notes).toContain("URL/directory selector parsing improvements");
+  });
+
   it("includes agent-platform as a distinct non-harness runtime agent and records richer Claude web evidence", () => {
     const babysitterAgent = listAgentVersions().find((agent) => agent.agentId === "agent-platform");
     expect(babysitterAgent).toBeDefined();
