@@ -29,6 +29,7 @@ import {
   getPluginTargetDescriptor,
   getPackageTopology,
   getPathDescriptor,
+  getProviderTranslation,
   getProviderModelTopology,
   getSubjectProvenance,
   getOntologyEvidenceManifest,
@@ -291,6 +292,33 @@ describe("agent-catalog graph-backed ontology", () => {
     );
   });
 
+  it("records Pi 0.76.0 session, RPC, retry, and Codex Responses header updates", () => {
+    const version = getAgentVersion("pi", "0.76.0");
+    const graph = getCatalogGraphSnapshot();
+    const node = graph.nodes.find((entry) => entry.id === "agentVersion:pi:ge-0-75-5");
+    const pluginTarget = getPluginTargetDescriptor("pi");
+    const openAiTranslation = getProviderTranslation("pi", "openai");
+
+    expect(version?.versionRange).toBe(">=0.76.0");
+    expect(node?.currentVersion).toBe("0.76.0");
+    expect(node?.releaseNotesUrl).toContain("earendil-works/pi/releases/tag/v0.76.0");
+    expect(node?.assimilationNotes).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("--session-id"),
+        expect.stringContaining("excludeFromContext"),
+        expect.stringContaining("retry.provider.maxRetries"),
+        expect.stringContaining("session-id"),
+      ]),
+    );
+
+    expect(pluginTarget?.launchBehavior?.sessionIdFlag).toBe("--session-id");
+    expect(openAiTranslation?.notes).toContain("retry.provider.maxRetries");
+    expect(JSON.stringify(graph.nodes.find((entry) => entry.id === "provider-translation:pi:openai"))).toContain("session-id");
+    expect(JSON.stringify(graph.nodes.find((entry) => entry.id === "provider-translation:pi:openai"))).toContain("session_id");
+
+    const evidence = getOntologyEvidenceSource("pi-0-76-0-release");
+    expect(evidence?.sourcePathOrUrl).toContain("earendil-works/pi/releases/tag/v0.76.0");
+  });
   it("records Gemini CLI 0.44.0 without splitting stable graph identity", () => {
     const version = getAgentVersion("gemini", "0.44.0");
     const graph = getCatalogGraphSnapshot();
