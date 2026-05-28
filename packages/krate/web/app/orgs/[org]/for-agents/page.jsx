@@ -23,6 +23,8 @@ const MCP_TOOLS = [
   { name: 'krate_model_catalog', description: 'List unified model catalog (internal + external)', params: 'org' },
   { name: 'krate_list_model_routes', description: 'List model routing rules', params: '—' },
   { name: 'krate_create_model_route', description: 'Create a model route for internal or external models', params: 'name, org, modelName, routeType' },
+  { name: 'krate_list_virtual_models', description: 'List virtual model abstractions', params: '—' },
+  { name: 'krate_create_virtual_model', description: 'Create a programmable virtual model with routing rules and hooks', params: 'name, org, modelName, routes' },
 ];
 
 const MCP_PROMPTS = [
@@ -90,7 +92,7 @@ export default async function ForAgentsPage({ params }) {
     }
   }
 }`}</CodeBlock>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: '0.5rem' }}>After adding the configuration, restart Claude Code. The agent will discover 17 tools, 3 prompts, and 3 resources.</p>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: '0.5rem' }}>After adding the configuration, restart Claude Code. The agent will discover 19 tools, 3 prompts, and 3 resources.</p>
       </Section>
 
       <Section title="Cursor / Windsurf / other MCP clients">
@@ -123,7 +125,7 @@ export default async function ForAgentsPage({ params }) {
         </div>
       </Section>
 
-      <Section title="MCP tools (17)">
+      <Section title="MCP tools (19)">
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '1rem' }}>These tools are available to any MCP-connected agent after running <code>krate mcp</code>.</p>
         <div className="resourceTable">
           {MCP_TOOLS.map((tool) => <div key={tool.name} className="resourceRow" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr 1fr', gap: '0.75rem', alignItems: 'center' }}>
@@ -182,6 +184,38 @@ export default async function ForAgentsPage({ params }) {
   }'`}</CodeBlock>
       </Section>
 
+      <Section title="Virtual Models">
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '0.75rem' }}>Virtual Models are programmable model abstractions that sit above Model Routes. They provide declarative routing rules, JS hooks for request/response transformation, session lifecycle management, weighted route selection, and observability injection.</p>
+        <div className="resourceTable">
+          {[
+            ['Routing rules', 'Declarative condition-based routing (field/operator/value) evaluated before weighted random selection'],
+            ['JS hooks', 'routeSelect, requestTransform, responseTransform, sessionLifecycle, observe hooks executed in sandboxed Function constructors'],
+            ['Session lifecycle', 'Max turns, escalation thresholds, and custom session event handling'],
+            ['Weighted routes', 'Traffic splitting across multiple model routes with configurable weights and priorities'],
+            ['Fallback chain', 'Ordered list of fallback route references when primary routing fails'],
+            ['Observability', 'Event bus integration for metrics, tracing, and custom observe hooks'],
+          ].map(([name, desc]) => <div key={name} className="resourceRow" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '0.75rem', alignItems: 'center' }}>
+            <code style={{ fontSize: '0.8rem', fontWeight: 600 }}>{name}</code>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{desc}</span>
+          </div>)}
+        </div>
+        <CodeBlock title="Example: create a virtual model">{`curl -X POST http://localhost:3080/api/orgs/${activeOrg}/inference/virtual-models \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "modelName": "smart-router",
+    "routes": [
+      { "modelRouteRef": "route-claude", "weight": 70 },
+      { "modelRouteRef": "route-gpt4", "weight": 30 }
+    ],
+    "rules": [{
+      "name": "code-tasks",
+      "conditions": [{ "field": "taskType", "operator": "eq", "value": "code" }],
+      "action": { "route": "route-claude" }
+    }],
+    "sessionConfig": { "enabled": true, "maxTurns": 10 }
+  }'`}</CodeBlock>
+      </Section>
+
       <Section title="HTTP API">
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '1rem' }}>For direct API integration without MCP, the Krate HTTP API is available at <code>KRATE_CONTROLLER_URL</code> or via <code>krate serve</code>.</p>
         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
@@ -198,6 +232,7 @@ krate mcp                # Start MCP server over stdio
 krate status             # Show workspace status
 krate models             # List model catalog (internal + external)
 krate routes             # List model routes
+krate virtual-models     # List virtual models
 krate stacks             # List agent stacks
 krate dispatch <stack>   # Dispatch an agent run
 krate apply <file>       # Apply a resource from YAML/JSON

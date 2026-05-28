@@ -1111,18 +1111,309 @@ function CreateModelRouteForm({ services, onSubmit, onCancel, loading }) {
   );
 }
 
+// ─── Virtual Model Sub-components ────────────────────────────────────────────
+
+function VirtualModelCard({ vm, onDelete }) {
+  const name = vm.metadata?.name || vm.name || 'unknown';
+  const spec = vm.spec || {};
+  const modelName = spec.modelName || name;
+  const routeCount = spec.routes?.length || 0;
+  const rulesCount = spec.rules?.length || 0;
+  const hasHooks = !!spec.hooks;
+  const sessionEnabled = !!spec.sessionConfig?.enabled;
+  const enabled = spec.enabled !== false;
+  const createdAt = vm.metadata?.creationTimestamp;
+
+  return (
+    <div style={{ ...cardStyle, opacity: enabled ? 1 : 0.6 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }}>
+        <span style={{ fontWeight: 700, fontSize: '0.9375rem' }}>{name}</span>
+        <div style={{ display: 'flex', gap: '0.375rem', alignItems: 'center' }}>
+          <span style={badgeStyle('#7c3aed')}>{routeCount} route{routeCount !== 1 ? 's' : ''}</span>
+          {rulesCount > 0 && <span style={badgeStyle('#2563eb')}>{rulesCount} rule{rulesCount !== 1 ? 's' : ''}</span>}
+          {hasHooks && <span style={badgeStyle('#d97706')}>hooks</span>}
+          {sessionEnabled && <span style={badgeStyle('#0891b2')}>session</span>}
+          {!enabled && <span style={badgeStyle('#9ca3af')}>disabled</span>}
+        </div>
+      </div>
+      <div style={{ fontSize: '0.8125rem', color: '#374151' }}>
+        Model: <strong>{modelName}</strong>
+      </div>
+      {spec.fallbackChain?.length > 0 && (
+        <div style={{ fontSize: '0.8125rem', color: '#6b7280' }}>Fallback: {spec.fallbackChain.join(' > ')}</div>
+      )}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>{createdAt ? relativeTime(createdAt) : ''}</span>
+        <button style={btnStyle('#dc2626')} onClick={() => onDelete(vm)}>Delete</button>
+      </div>
+    </div>
+  );
+}
+
+function CollapsibleSection({ title, children, defaultOpen = false }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div style={{ border: '1px solid #e2e8f0', borderRadius: '0.375rem', overflow: 'hidden' }}>
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        style={{ width: '100%', padding: '0.5rem 0.75rem', background: '#f8fafc', border: 'none', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8125rem', fontWeight: 600, color: '#374151' }}
+      >
+        {title}
+        <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>{open ? 'collapse' : 'expand'}</span>
+      </button>
+      {open && <div style={{ padding: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>{children}</div>}
+    </div>
+  );
+}
+
+function CreateVirtualModelForm({ routes: availableRoutes, onSubmit, onCancel, loading }) {
+  const [form, setForm] = useState({
+    modelName: '',
+    routes: [{ modelRouteRef: '', weight: 1, priority: 0 }],
+    fallbackChain: [],
+    rules: [],
+    hooks: { routeSelect: '', requestTransform: '', responseTransform: '', sessionLifecycle: '', observe: '' },
+    sessionEnabled: false,
+    maxTurns: 10,
+    escalationThreshold: 100000,
+  });
+
+  const setField = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.type === 'checkbox' ? e.target.checked : e.target.value }));
+
+  // Route management
+  const addRoute = () => setForm(f => ({ ...f, routes: [...f.routes, { modelRouteRef: '', weight: 1, priority: 0 }] }));
+  const removeRoute = (idx) => setForm(f => ({ ...f, routes: f.routes.filter((_, i) => i !== idx) }));
+  const updateRoute = (idx, field, value) => setForm(f => ({
+    ...f,
+    routes: f.routes.map((r, i) => i === idx ? { ...r, [field]: value } : r),
+  }));
+
+  // Fallback chain management
+  const addFallback = () => setForm(f => ({ ...f, fallbackChain: [...f.fallbackChain, ''] }));
+  const removeFallback = (idx) => setForm(f => ({ ...f, fallbackChain: f.fallbackChain.filter((_, i) => i !== idx) }));
+  const updateFallback = (idx, value) => setForm(f => ({
+    ...f,
+    fallbackChain: f.fallbackChain.map((v, i) => i === idx ? value : v),
+  }));
+
+  // Rules management
+  const addRule = () => setForm(f => ({
+    ...f,
+    rules: [...f.rules, { name: '', conditions: [{ field: '', operator: 'eq', value: '' }], action: { route: '' } }],
+  }));
+  const removeRule = (idx) => setForm(f => ({ ...f, rules: f.rules.filter((_, i) => i !== idx) }));
+  const updateRule = (idx, path, value) => setForm(f => {
+    const rules = [...f.rules];
+    const rule = { ...rules[idx] };
+    if (path === 'name') rule.name = value;
+    else if (path === 'action.route') rule.action = { ...rule.action, route: value };
+    rules[idx] = rule;
+    return { ...f, rules };
+  });
+  const addCondition = (ruleIdx) => setForm(f => {
+    const rules = [...f.rules];
+    rules[ruleIdx] = { ...rules[ruleIdx], conditions: [...rules[ruleIdx].conditions, { field: '', operator: 'eq', value: '' }] };
+    return { ...f, rules };
+  });
+  const removeCondition = (ruleIdx, condIdx) => setForm(f => {
+    const rules = [...f.rules];
+    rules[ruleIdx] = { ...rules[ruleIdx], conditions: rules[ruleIdx].conditions.filter((_, i) => i !== condIdx) };
+    return { ...f, rules };
+  });
+  const updateCondition = (ruleIdx, condIdx, field, value) => setForm(f => {
+    const rules = [...f.rules];
+    const conditions = [...rules[ruleIdx].conditions];
+    conditions[condIdx] = { ...conditions[condIdx], [field]: value };
+    rules[ruleIdx] = { ...rules[ruleIdx], conditions };
+    return { ...f, rules };
+  });
+
+  // Hooks management
+  const updateHook = (hookName, value) => setForm(f => ({
+    ...f,
+    hooks: { ...f.hooks, [hookName]: value },
+  }));
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const body = {
+      modelName: form.modelName,
+      routes: form.routes.filter(r => r.modelRouteRef).map(r => ({
+        modelRouteRef: r.modelRouteRef,
+        weight: Number(r.weight) || 1,
+        priority: Number(r.priority) || 0,
+      })),
+    };
+    if (form.fallbackChain.filter(Boolean).length > 0) {
+      body.fallbackChain = form.fallbackChain.filter(Boolean);
+    }
+    if (form.rules.length > 0) {
+      body.rules = form.rules.filter(r => r.name && r.conditions.length > 0).map(r => ({
+        name: r.name,
+        conditions: r.conditions.filter(c => c.field && c.operator).map(c => ({
+          field: c.field,
+          operator: c.operator,
+          value: c.value,
+        })),
+        action: r.action,
+      }));
+    }
+    const activeHooks = {};
+    for (const [k, v] of Object.entries(form.hooks)) {
+      if (v.trim()) activeHooks[k] = v.trim();
+    }
+    if (Object.keys(activeHooks).length > 0) {
+      body.hooks = activeHooks;
+    }
+    if (form.sessionEnabled) {
+      body.sessionConfig = {
+        enabled: true,
+        maxTurns: Number(form.maxTurns) || 10,
+        escalationThreshold: Number(form.escalationThreshold) || 100000,
+      };
+    }
+    onSubmit(body);
+  };
+
+  const routeOptions = (availableRoutes || []).map(r => r.metadata?.name || r.name).filter(Boolean);
+
+  return (
+    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      <div>
+        <label style={labelStyle}>Model Name *</label>
+        <input style={inputStyle} value={form.modelName} onChange={setField('modelName')} required placeholder="smart-router" />
+      </div>
+
+      {/* Routes */}
+      <div>
+        <label style={labelStyle}>Routes *</label>
+        {form.routes.map((route, idx) => (
+          <div key={idx} style={{ display: 'flex', gap: '0.375rem', marginBottom: '0.375rem', alignItems: 'center' }}>
+            <select style={{ ...inputStyle, flex: 2 }} value={route.modelRouteRef} onChange={(e) => updateRoute(idx, 'modelRouteRef', e.target.value)} required>
+              <option value="">Select route...</option>
+              {routeOptions.map(n => <option key={n} value={n}>{n}</option>)}
+            </select>
+            <input style={{ ...inputStyle, flex: 1 }} type="number" min="0" value={route.weight} onChange={(e) => updateRoute(idx, 'weight', e.target.value)} placeholder="Weight" title="Weight" />
+            <input style={{ ...inputStyle, flex: 1 }} type="number" min="0" value={route.priority} onChange={(e) => updateRoute(idx, 'priority', e.target.value)} placeholder="Priority" title="Priority" />
+            {form.routes.length > 1 && (
+              <button type="button" style={{ ...btnStyle('#dc2626'), padding: '0.375rem 0.5rem', fontSize: '0.75rem' }} onClick={() => removeRoute(idx)}>X</button>
+            )}
+          </div>
+        ))}
+        <button type="button" style={{ ...btnOutlineStyle, fontSize: '0.75rem', padding: '0.25rem 0.5rem' }} onClick={addRoute}>+ Add Route</button>
+      </div>
+
+      {/* Fallback Chain */}
+      <div>
+        <label style={labelStyle}>Fallback Chain</label>
+        {form.fallbackChain.map((ref, idx) => (
+          <div key={idx} style={{ display: 'flex', gap: '0.375rem', marginBottom: '0.375rem', alignItems: 'center' }}>
+            <select style={{ ...inputStyle, flex: 1 }} value={ref} onChange={(e) => updateFallback(idx, e.target.value)}>
+              <option value="">Select fallback...</option>
+              {routeOptions.map(n => <option key={n} value={n}>{n}</option>)}
+            </select>
+            <button type="button" style={{ ...btnStyle('#dc2626'), padding: '0.375rem 0.5rem', fontSize: '0.75rem' }} onClick={() => removeFallback(idx)}>X</button>
+          </div>
+        ))}
+        <button type="button" style={{ ...btnOutlineStyle, fontSize: '0.75rem', padding: '0.25rem 0.5rem' }} onClick={addFallback}>+ Add Fallback</button>
+      </div>
+
+      {/* Rules */}
+      <CollapsibleSection title={`Rules (${form.rules.length})`}>
+        {form.rules.map((rule, rIdx) => (
+          <div key={rIdx} style={{ ...cardStyle, padding: '0.75rem', background: '#f8fafc' }}>
+            <div style={{ display: 'flex', gap: '0.375rem', marginBottom: '0.5rem' }}>
+              <input style={{ ...inputStyle, flex: 2 }} value={rule.name} onChange={(e) => updateRule(rIdx, 'name', e.target.value)} placeholder="Rule name" />
+              <select style={{ ...inputStyle, flex: 2 }} value={rule.action.route} onChange={(e) => updateRule(rIdx, 'action.route', e.target.value)}>
+                <option value="">Action route...</option>
+                {routeOptions.map(n => <option key={n} value={n}>{n}</option>)}
+              </select>
+              <button type="button" style={{ ...btnStyle('#dc2626'), padding: '0.375rem 0.5rem', fontSize: '0.75rem' }} onClick={() => removeRule(rIdx)}>X</button>
+            </div>
+            <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280', marginBottom: '0.25rem' }}>Conditions:</div>
+            {rule.conditions.map((cond, cIdx) => (
+              <div key={cIdx} style={{ display: 'flex', gap: '0.25rem', marginBottom: '0.25rem', alignItems: 'center' }}>
+                <input style={{ ...inputStyle, flex: 1 }} value={cond.field} onChange={(e) => updateCondition(rIdx, cIdx, 'field', e.target.value)} placeholder="field" />
+                <select style={{ ...inputStyle, flex: 1 }} value={cond.operator} onChange={(e) => updateCondition(rIdx, cIdx, 'operator', e.target.value)}>
+                  {['eq', 'neq', 'gt', 'lt', 'gte', 'lte', 'in', 'contains', 'matches'].map(op => <option key={op} value={op}>{op}</option>)}
+                </select>
+                <input style={{ ...inputStyle, flex: 1 }} value={cond.value} onChange={(e) => updateCondition(rIdx, cIdx, 'value', e.target.value)} placeholder="value" />
+                {rule.conditions.length > 1 && (
+                  <button type="button" style={{ ...btnStyle('#dc2626'), padding: '0.25rem 0.375rem', fontSize: '0.6875rem' }} onClick={() => removeCondition(rIdx, cIdx)}>X</button>
+                )}
+              </div>
+            ))}
+            <button type="button" style={{ ...btnOutlineStyle, fontSize: '0.6875rem', padding: '0.2rem 0.375rem' }} onClick={() => addCondition(rIdx)}>+ Condition</button>
+          </div>
+        ))}
+        <button type="button" style={{ ...btnOutlineStyle, fontSize: '0.75rem', padding: '0.25rem 0.5rem' }} onClick={addRule}>+ Add Rule</button>
+      </CollapsibleSection>
+
+      {/* Hooks */}
+      <CollapsibleSection title="Hooks">
+        {[
+          ['routeSelect', 'return args.routes[0].modelRouteRef; // select route based on args.requestContext'],
+          ['requestTransform', 'return args.request; // modify outbound request'],
+          ['responseTransform', 'return args.response; // modify inbound response'],
+          ['sessionLifecycle', 'return { action: "continue" }; // handle session events via args.event, args.session'],
+          ['observe', '// side-effect only: log args.event, args.metrics, context.modelName'],
+        ].map(([hookName, placeholder]) => (
+          <div key={hookName}>
+            <label style={{ ...labelStyle, fontSize: '0.75rem' }}>{hookName}</label>
+            <textarea
+              style={{ ...inputStyle, height: '3.5rem', fontFamily: 'monospace', fontSize: '0.75rem', resize: 'vertical' }}
+              value={form.hooks[hookName]}
+              onChange={(e) => updateHook(hookName, e.target.value)}
+              placeholder={placeholder}
+            />
+          </div>
+        ))}
+      </CollapsibleSection>
+
+      {/* Session Config */}
+      <div>
+        <label style={labelStyle}>Session Config</label>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.375rem' }}>
+          <input type="checkbox" id="sessionEnabled" checked={form.sessionEnabled} onChange={setField('sessionEnabled')} />
+          <label htmlFor="sessionEnabled" style={{ fontSize: '0.875rem', cursor: 'pointer' }}>Enable session management</label>
+        </div>
+        {form.sessionEnabled && (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+            <div>
+              <label style={{ ...labelStyle, fontSize: '0.75rem' }}>Max Turns</label>
+              <input style={inputStyle} type="number" min="1" value={form.maxTurns} onChange={setField('maxTurns')} />
+            </div>
+            <div>
+              <label style={{ ...labelStyle, fontSize: '0.75rem' }}>Escalation Threshold</label>
+              <input style={inputStyle} type="number" min="1" value={form.escalationThreshold} onChange={setField('escalationThreshold')} />
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.25rem' }}>
+        <button type="submit" style={btnStyle()} disabled={loading}>{loading ? 'Creating...' : 'Create Virtual Model'}</button>
+        <button type="button" style={btnOutlineStyle} onClick={onCancel}>Cancel</button>
+      </div>
+    </form>
+  );
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export function InferenceServiceManager({ org, initialServiceName }) {
   const [services, setServices] = useState([]);
   const [runtimes, setRuntimes] = useState([]);
   const [routes, setRoutes] = useState([]);
+  const [virtualModels, setVirtualModels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('services');
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showRuntimeForm, setShowRuntimeForm] = useState(false);
   const [showRouteForm, setShowRouteForm] = useState(false);
+  const [showVirtualModelForm, setShowVirtualModelForm] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [createLoading, setCreateLoading] = useState(false);
   const [createError, setCreateError] = useState(null);
@@ -1131,17 +1422,20 @@ export function InferenceServiceManager({ org, initialServiceName }) {
     setLoading(true);
     setError(null);
     try {
-      const [svcRes, rtRes, routeRes] = await Promise.all([
+      const [svcRes, rtRes, routeRes, vmRes] = await Promise.all([
         fetch(`/api/orgs/${org}/inference/services`),
         fetch(`/api/orgs/${org}/inference/runtimes`),
         fetch(`/api/orgs/${org}/inference/routes`),
+        fetch(`/api/orgs/${org}/inference/virtual-models`),
       ]);
       const svcData = svcRes.ok ? await svcRes.json() : null;
       const rtData = rtRes.ok ? await rtRes.json() : null;
       const routeData = routeRes.ok ? await routeRes.json() : null;
+      const vmData = vmRes.ok ? await vmRes.json() : null;
       setServices(svcData?.items || (Array.isArray(svcData) ? svcData : []));
       setRuntimes(rtData?.items || (Array.isArray(rtData) ? rtData : []));
       setRoutes(routeData?.items || (Array.isArray(routeData) ? routeData : []));
+      setVirtualModels(vmData?.items || (Array.isArray(vmData) ? vmData : []));
 
       if (initialServiceName) {
         const found = (svcData?.items || []).find(s => (s.metadata?.name || s.name) === initialServiceName);
@@ -1234,11 +1528,45 @@ export function InferenceServiceManager({ org, initialServiceName }) {
     }
   };
 
+  const handleCreateVirtualModel = async (body) => {
+    setCreateLoading(true);
+    setCreateError(null);
+    try {
+      const res = await fetch(`/api/orgs/${org}/inference/virtual-models`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || `Failed with status ${res.status}`);
+      }
+      setShowVirtualModelForm(false);
+      await fetchData();
+    } catch (err) {
+      setCreateError(err.message);
+    } finally {
+      setCreateLoading(false);
+    }
+  };
+
   const handleDeleteRoute = async (route) => {
     const name = route.metadata?.name || route.name;
     if (!confirm(`Delete model route "${name}"?`)) return;
     try {
       const res = await fetch(`/api/orgs/${org}/resources/KrateModelRoute/${encodeURIComponent(name)}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Delete failed');
+      await fetchData();
+    } catch (err) {
+      alert(err.message || 'Delete failed');
+    }
+  };
+
+  const handleDeleteVirtualModel = async (vm) => {
+    const name = vm.metadata?.name || vm.name;
+    if (!confirm(`Delete virtual model "${name}"?`)) return;
+    try {
+      const res = await fetch(`/api/orgs/${org}/resources/KrateVirtualModel/${encodeURIComponent(name)}`, { method: 'DELETE' });
       if (!res.ok) throw new Error('Delete failed');
       await fetchData();
     } catch (err) {
@@ -1271,6 +1599,7 @@ export function InferenceServiceManager({ org, initialServiceName }) {
           <button style={tabStyle(activeTab === 'services')} onClick={() => setActiveTab('services')}>Services</button>
           <button style={tabStyle(activeTab === 'runtimes')} onClick={() => setActiveTab('runtimes')}>Runtimes</button>
           <button style={tabStyle(activeTab === 'routes')} onClick={() => setActiveTab('routes')}>Model Routes</button>
+          <button style={tabStyle(activeTab === 'virtual-models')} onClick={() => setActiveTab('virtual-models')}>Virtual Models</button>
         </div>
         {activeTab === 'services' && !showCreateForm && (
           <button style={btnStyle()} onClick={() => setShowCreateForm(true)}>+ Create Service</button>
@@ -1280,6 +1609,9 @@ export function InferenceServiceManager({ org, initialServiceName }) {
         )}
         {activeTab === 'routes' && !showRouteForm && (
           <button style={btnStyle()} onClick={() => setShowRouteForm(true)}>+ Create Model Route</button>
+        )}
+        {activeTab === 'virtual-models' && !showVirtualModelForm && (
+          <button style={btnStyle()} onClick={() => setShowVirtualModelForm(true)}>+ Create Virtual Model</button>
         )}
       </div>
 
@@ -1401,6 +1733,45 @@ export function InferenceServiceManager({ org, initialServiceName }) {
                   key={route.metadata?.name || i}
                   route={route}
                   onDelete={handleDeleteRoute}
+                />
+              ))}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Virtual Models Tab */}
+      {!loading && activeTab === 'virtual-models' && (
+        <>
+          {showVirtualModelForm && (
+            <div style={{ ...cardStyle, marginBottom: '1rem', background: '#f8fafc' }}>
+              <div style={{ fontWeight: 700, fontSize: '0.9375rem', marginBottom: '0.5rem' }}>Create Virtual Model</div>
+              {createError && (
+                <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '0.375rem', padding: '0.5rem', fontSize: '0.8125rem', color: '#dc2626', marginBottom: '0.5rem' }}>
+                  {createError}
+                </div>
+              )}
+              <CreateVirtualModelForm
+                routes={routes}
+                onSubmit={handleCreateVirtualModel}
+                onCancel={() => { setShowVirtualModelForm(false); setCreateError(null); }}
+                loading={createLoading}
+              />
+            </div>
+          )}
+          {virtualModels.length === 0 && !showVirtualModelForm ? (
+            <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#9ca3af' }}>
+              <div style={{ fontSize: '1.5rem', marginBottom: '0.75rem' }}>No virtual models</div>
+              <div style={{ fontSize: '0.875rem', marginBottom: '1rem' }}>Create a virtual model to add programmable routing rules, hooks, and session management over your model routes.</div>
+              <button style={btnStyle()} onClick={() => setShowVirtualModelForm(true)}>Create Virtual Model</button>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '0.75rem' }}>
+              {virtualModels.map((vm, i) => (
+                <VirtualModelCard
+                  key={vm.metadata?.name || i}
+                  vm={vm}
+                  onDelete={handleDeleteVirtualModel}
                 />
               ))}
             </div>

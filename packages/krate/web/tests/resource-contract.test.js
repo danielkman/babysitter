@@ -269,3 +269,29 @@ test('model routes API route creates KrateModelRoute with required fields', () =
   assert.match(route, /clearSnapshotCache/);
   assert.match(route, /invalidateApiCache/);
 });
+
+// ── Contract: virtual model form references required KrateVirtualModel fields ──
+
+test('virtual model form references required KrateVirtualModel fields', () => {
+  const source = readFile('app', 'components', 'inference-service-manager.jsx');
+  const requiredFields = RESOURCE_DEFINITIONS.KrateVirtualModel.requiredSpec;
+  for (const field of requiredFields) {
+    if (field === 'organizationRef') continue; // added by API route
+    assert.ok(
+      source.includes(field),
+      `inference-service-manager.jsx does not reference required KrateVirtualModel field: ${field}`
+    );
+  }
+});
+
+// ── Contract: virtual model API route emits required fields ────────────────
+
+test('virtual model API route creates KrateVirtualModel with required fields', () => {
+  const route = readFile('app', 'api', 'orgs', '[org]', 'inference', 'virtual-models', 'route.js');
+  assert.match(route, /KrateVirtualModel/);
+  assert.match(route, /modelName/);
+  assert.match(route, /routes/);
+  assert.match(route, /organizationRef/);
+  assert.match(route, /clearSnapshotCache/);
+  assert.match(route, /invalidateApiCache/);
+});

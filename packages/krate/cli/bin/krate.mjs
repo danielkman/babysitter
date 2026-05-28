@@ -12,6 +12,7 @@ const commands = {
   status: 'Show workspace status (org, resources, health)',
   models: 'List model catalog (internal + external)',
   routes: 'List model routes',
+  'virtual-models': 'List virtual models',
   stacks: 'List agent stacks',
   dispatch: 'Dispatch an agent run (requires --stack)',
   apply: 'Apply a resource from file (--file)',
@@ -292,6 +293,24 @@ async function cmdRoutes() {
   }
 }
 
+async function cmdVirtualModels() {
+  const controller = await getController();
+  const result = await controller.listResource('KrateVirtualModel');
+  const items = result?.items || [];
+  if (items.length === 0) {
+    console.log('No virtual models configured.');
+    return;
+  }
+  console.log(`${'NAME'.padEnd(28)} ${'MODEL'.padEnd(24)} ${'ROUTES'.padEnd(8)} ENABLED`);
+  for (const vm of items) {
+    const name = vm.metadata?.name || '-';
+    const modelName = vm.spec?.modelName || '-';
+    const routeCount = String(vm.spec?.routes?.length || 0);
+    const enabled = vm.spec?.enabled !== false ? 'yes' : 'no';
+    console.log(`${name.padEnd(28)} ${modelName.padEnd(24)} ${routeCount.padEnd(8)} ${enabled}`);
+  }
+}
+
 function cmdVersion() {
   console.log(`krate v${getVersion()}`);
 }
@@ -415,6 +434,8 @@ if (command === 'serve' || !command) {
   await cmdModels();
 } else if (command === 'routes') {
   await cmdRoutes();
+} else if (command === 'virtual-models') {
+  await cmdVirtualModels();
 } else if (command === 'stacks') {
   await cmdStacks();
 } else if (command === 'dispatch') {

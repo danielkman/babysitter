@@ -22,6 +22,8 @@ export const MCP_TOOLS = [
   { name: 'krate_model_catalog', description: 'List all available models (internal KServe + external cloud LLM) from the unified model catalog', inputSchema: { type: 'object', properties: { org: { type: 'string' } } } },
   { name: 'krate_list_model_routes', description: 'List KrateModelRoute resources for model routing', inputSchema: { type: 'object', properties: {} } },
   { name: 'krate_create_model_route', description: 'Create a KrateModelRoute for internal or external model routing', inputSchema: { type: 'object', properties: { name: { type: 'string' }, org: { type: 'string' }, modelName: { type: 'string' }, routeType: { type: 'string', enum: ['internal', 'external'] }, inferenceServiceRef: { type: 'string' }, provider: { type: 'string' }, endpoint: { type: 'string' }, modelId: { type: 'string' } }, required: ['name', 'org', 'modelName', 'routeType'] } },
+  { name: 'krate_list_virtual_models', description: 'List KrateVirtualModel resources for programmable model abstraction', inputSchema: { type: 'object', properties: {} } },
+  { name: 'krate_create_virtual_model', description: 'Create a KrateVirtualModel with declarative routing rules, hooks, and session config', inputSchema: { type: 'object', properties: { name: { type: 'string' }, org: { type: 'string' }, modelName: { type: 'string' }, routes: { type: 'array', items: { type: 'object', properties: { modelRouteRef: { type: 'string' }, weight: { type: 'number' }, priority: { type: 'number' } }, required: ['modelRouteRef'] } } }, required: ['name', 'org', 'modelName', 'routes'] } },
 ];
 
 export const MCP_PROMPTS = [
@@ -462,6 +464,23 @@ async function executeTool(controller, toolName, args) {
         kind: 'KrateModelRoute',
         metadata: { name: args.name, namespace: orgNamespaceName(args.org) },
         spec: routeSpec,
+      });
+    }
+
+    case 'krate_list_virtual_models':
+      return controller.listResource('KrateVirtualModel');
+
+    case 'krate_create_virtual_model': {
+      const vmSpec = {
+        organizationRef: args.org,
+        modelName: args.modelName,
+        routes: args.routes,
+      };
+      return controller.applyResource({
+        apiVersion: 'krate.a5c.ai/v1alpha1',
+        kind: 'KrateVirtualModel',
+        metadata: { name: args.name, namespace: orgNamespaceName(args.org) },
+        spec: vmSpec,
       });
     }
 

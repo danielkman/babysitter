@@ -2,7 +2,7 @@
  * CLI Integration Tests — Verify MCP server commands work together
  *
  * Tests the full MCP server protocol flow: initialize, tools/list, tools/call
- * with an apply+list round-trip and verification that all 17 tools are present.
+ * with an apply+list round-trip and verification that all 19 tools are present.
  */
 import assert from 'node:assert/strict';
 import test from 'node:test';
@@ -39,6 +39,7 @@ function createMockController() {
     async listResource(kind) {
       if (kind === 'Repository') return { items: repositories };
       if (kind === 'AgentStack') return { items: stacks };
+      if (kind === 'KrateVirtualModel') return { items: [] };
       return { items: [] };
     },
 
@@ -104,7 +105,7 @@ test('CLI integration: initialize → tools/list → krate_snapshot all succeed'
   const listResp = await server.handleMessage(rpc('tools/list'));
   assert.ok(listResp.result, 'tools/list must return a result');
   assert.ok(Array.isArray(listResp.result.tools), 'result.tools must be an array');
-  assert.equal(listResp.result.tools.length, 17, 'must list exactly 17 tools');
+  assert.equal(listResp.result.tools.length, 19, 'must list exactly 19 tools');
 
   // krate_snapshot
   const snapResp = await server.handleMessage(rpc('tools/call', {
@@ -159,9 +160,9 @@ test('CLI integration: krate_apply_resource → krate_list_resources round-trip'
 // Test 3: All 14 tools listed in tools/list
 // ---------------------------------------------------------------------------
 
-test('CLI integration: all 17 tools listed in MCP_TOOLS and tools/list', async () => {
+test('CLI integration: all 19 tools listed in MCP_TOOLS and tools/list', async () => {
   // MCP_TOOLS static array
-  assert.equal(MCP_TOOLS.length, 17, 'MCP_TOOLS must have exactly 17 entries');
+  assert.equal(MCP_TOOLS.length, 19, 'MCP_TOOLS must have exactly 19 entries');
 
   const expectedTools = [
     'krate_snapshot',
@@ -181,6 +182,8 @@ test('CLI integration: all 17 tools listed in MCP_TOOLS and tools/list', async (
     'krate_model_catalog',
     'krate_list_model_routes',
     'krate_create_model_route',
+    'krate_list_virtual_models',
+    'krate_create_virtual_model',
   ];
 
   const toolNames = MCP_TOOLS.map((t) => t.name);
@@ -191,7 +194,7 @@ test('CLI integration: all 17 tools listed in MCP_TOOLS and tools/list', async (
   // Also verify via tools/list response
   const server = createMcpServer({ controller: createMockController() });
   const resp = await server.handleMessage(rpc('tools/list'));
-  assert.equal(resp.result.tools.length, 17, 'tools/list must return exactly 17 tools');
+  assert.equal(resp.result.tools.length, 19, 'tools/list must return exactly 19 tools');
 
   const responsedNames = resp.result.tools.map((t) => t.name);
   assert.ok(responsedNames.includes('krate_snapshot'));

@@ -39,6 +39,7 @@ function createMockController(overrides = {}) {
     async listResource(kind) {
       if (kind === 'Repository') return { items: repositories };
       if (kind === 'AgentStack') return { items: stacks };
+      if (kind === 'KrateVirtualModel') return { items: [] };
       return { items: [] };
     },
 

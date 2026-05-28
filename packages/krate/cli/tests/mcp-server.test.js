@@ -31,6 +31,7 @@ function createMockController() {
     async listResource(kind) {
       if (kind === 'Repository') return { items: repositories };
       if (kind === 'AgentStack') return { items: stacks };
+      if (kind === 'KrateVirtualModel') return { items: [] };
       return { items: [] };
     },
 
@@ -77,8 +78,8 @@ function rpc(method, params = {}, id = 1) {
 // Tests
 // ---------------------------------------------------------------------------
 
-test('MCP_TOOLS array has 17 entries', () => {
-  assert.equal(MCP_TOOLS.length, 17);
+test('MCP_TOOLS array has 19 entries', () => {
+  assert.equal(MCP_TOOLS.length, 19);
   const names = MCP_TOOLS.map((t) => t.name);
   assert.ok(names.includes('krate_list_resources'));
   assert.ok(names.includes('krate_get_resource'));
@@ -94,6 +95,8 @@ test('MCP_TOOLS array has 17 entries', () => {
   assert.ok(names.includes('krate_sync_external'));
   assert.ok(names.includes('krate_resolve_conflict'));
   assert.ok(names.includes('krate_audit_query'));
+  assert.ok(names.includes('krate_list_virtual_models'));
+  assert.ok(names.includes('krate_create_virtual_model'));
 });
 
 test('createMcpServer returns object with start, stop, handleMessage', () => {
@@ -114,10 +117,10 @@ test('handleMessage initialize returns capabilities with tools', async () => {
   assert.equal(resp.result.protocolVersion, '2024-11-05');
 });
 
-test('handleMessage tools/list returns all 17 tool definitions', async () => {
+test('handleMessage tools/list returns all 19 tool definitions', async () => {
   const server = createMcpServer({ controller: createMockController() });
   const resp = await server.handleMessage(rpc('tools/list'));
-  assert.equal(resp.result.tools.length, 17);
+  assert.equal(resp.result.tools.length, 19);
   for (const tool of resp.result.tools) {
     assert.ok(tool.name, 'each tool has a name');
     assert.ok(tool.description, 'each tool has a description');
