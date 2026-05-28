@@ -52,6 +52,20 @@ import {
 
 const CATALOG_TEST_TIMEOUT_MS = 60_000;
 
+function slugifyVersionRange(versionRange: string): string {
+  return versionRange
+    .replace(/>=/g, "ge-")
+    .replace(/<=/g, "le-")
+    .replace(/>/g, "gt-")
+    .replace(/</g, "lt-")
+    .replace(/=/g, "eq-")
+    .replace(/\s+/g, "-")
+    .replace(/[^a-zA-Z0-9-]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "")
+    .toLowerCase();
+}
+
 describe("agent-catalog graph-backed ontology", () => {
   it("loads YAML graph metadata and schema", () => {
     expect(getCatalogGraphDocument().graphId).toBe("graph:agent-catalog");
@@ -82,6 +96,19 @@ describe("agent-catalog graph-backed ontology", () => {
     const codex = listAgentVersions().filter((agent) => agent.agentId === "codex");
     expect(codex).toHaveLength(2);
     expect(codex.map((agent) => agent.versionRange)).toContain(">=0.119.0");
+  });
+
+  it("keeps the Copilot AgentVersion id slug aligned with its versionRange slug", () => {
+    const graph = getCatalogGraphSnapshot();
+    const mismatches = graph.nodes
+      .filter((node) => node.kind === "AgentVersion" && node.agentId === "copilot")
+      .map((node) => ({
+        id: String(node.id),
+        expectedId: `agentVersion:${node.agentId}:${slugifyVersionRange(String(node.versionRange))}`,
+      }))
+      .filter((entry) => entry.id !== entry.expectedId);
+
+    expect(mismatches).toEqual([]);
   });
 
   it("exposes shared fallback metadata for sdk consumers", () => {
