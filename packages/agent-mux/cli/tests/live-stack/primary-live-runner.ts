@@ -139,7 +139,7 @@ export function buildPrimaryLiveStackCommands(
       scenario.model.amuxProvider,
       '--model',
       scenario.model.model,
-      '--with-proxy-if-needed',
+      '--with-proxy',
       '--proxy-log-level',
       'debug',
       '--session-id',
