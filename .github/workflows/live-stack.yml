@@ -448,6 +448,8 @@ jobs:
           GOOGLE_CLOUD_LOCATION: global
           GOOGLE_GENAI_USE_VERTEXAI: True
         run: |
+          # Verify omni can start
+          node packages/omni/dist/cli/main.js --help 2>&1 | head -3 || echo "OMNI STARTUP FAILED"
           START_TS=$(date +%s)
           npm run test:e2e:live-stack:pipeline
           npm run coverage:e2e:live-stack
