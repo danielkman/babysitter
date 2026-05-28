@@ -134,7 +134,7 @@ export class HermesAdapter extends BaseAgentAdapter {
     }
 
     if (options.approvalMode === 'yolo') {
-      args.push('--auto-approve');
+      args.push('--yolo');
     }
 
     args.push('--output-format', 'jsonl');

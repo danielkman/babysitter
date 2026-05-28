@@ -79,6 +79,9 @@ attributes:
   launchBehavior:
     promptDelivery: cli-flag
     promptFlag: "-z"
+    promptExtraFlags:
+      - "--output-format"
+      - "jsonl"
     execSubcommand: null
     resumeDelivery: null
     resumeFlag: null
