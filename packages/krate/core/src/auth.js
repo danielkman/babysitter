@@ -150,7 +150,9 @@ export async function registerLoginProfile({ controller, namespace, profile }) {
 
 export function createSessionCookie(config, profile, options = {}) {
   const secret = options.secret || process.env.KRATE_SESSION_SECRET || '';
-  const payload = Buffer.from(JSON.stringify({ provider: profile.provider, subject: profile.subject, user: profile.username || profile.email })).toString('base64url');
+  const maxAgeSeconds = options.maxAge || Number(process.env.KRATE_SESSION_MAX_AGE) || 86400;
+  const now = Math.floor(Date.now() / 1000);
+  const payload = Buffer.from(JSON.stringify({ provider: profile.provider, subject: profile.subject, user: profile.username || profile.email, iat: now, exp: now + maxAgeSeconds })).toString('base64url');
   let value;
   if (secret) {
     const signature = createHmac('sha256', secret).update(payload).digest('base64url');
@@ -198,6 +200,7 @@ export function parseSessionCookie(config, cookieValue, options = {}) {
     const subject = typeof session.subject === 'string' ? session.subject.trim() : '';
     const provider = typeof session.provider === 'string' ? session.provider.trim() : '';
     if (!user && !subject) return null;
+    if (session.exp && Math.floor(Date.now() / 1000) > session.exp) return null;
     return {
       cookieName: config.session.cookieName,
       provider: provider || 'krate',

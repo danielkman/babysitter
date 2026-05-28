@@ -413,6 +413,16 @@ export function EnhancedKanbanBoard({
       setDragOverCol(null);
       dragItemRef.current = null;
 
+      // Persist column change to backend
+      const issueName = item.metadata?.name;
+      if (issueName && org) {
+        fetch(`/api/orgs/${encodeURIComponent(org)}/resources/Issue/${encodeURIComponent(issueName)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: { column: targetColId } }),
+        }).catch(() => {});
+      }
+
       if (targetColId === 'in-progress' && !item.workspaceRef && !item.spec?.workspaceRef) {
         setPendingWorkspaceItem({ ...item, _column: targetColId });
       }

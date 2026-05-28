@@ -143,6 +143,23 @@ export function createResource(kind, metadata, spec = {}, status = {}) {
   };
 }
 
+const FIELD_TYPE_RULES = {
+  organizationRef: 'string', displayName: 'string', namespaceName: 'string',
+  baseAgent: 'string', adapter: 'string', provider: 'string', authType: 'string',
+  gatewayUrl: 'string', modelName: 'string', routeType: 'string', modelFormat: 'string',
+  storageUri: 'string', repository: 'string', title: 'string', email: 'string',
+  visibility: 'string', scope: 'string', key: 'string', subject: 'string',
+  roleRef: 'string', secretRef: 'string', purpose: 'string', endpoint: 'string',
+  providerType: 'string', adapterType: 'string', transport: 'string', protocol: 'string',
+  namespace: 'string', serviceAccountName: 'string', ontologyPath: 'string',
+  memoryRepository: 'string', repositoryRef: 'string', defaultBranch: 'string',
+  warmReplicas: 'number', maxReplicas: 'number', maxTurns: 'number',
+  runtimeIdentity: 'object', routes: 'array', sources: 'array', events: 'array',
+  requiredRoles: 'array', changes: 'array', include: 'array',
+  supportedModelFormats: 'array', containers: 'array', subjects: 'array',
+  permissions: 'array', refs: 'array', targetKinds: 'array',
+};
+
 export function validateResource(resource) {
   if (!resource || typeof resource !== 'object') throw new Error('resource must be an object');
   const definition = resourceDefinitionForKind(resource.kind);
@@ -153,8 +170,22 @@ export function validateResource(resource) {
   resource.metadata.labels ||= {};
   resource.metadata.annotations ||= {};
   for (const field of definition.requiredSpec) {
-    if (resource.spec[field] === undefined || resource.spec[field] === null || resource.spec[field] === '') {
+    const value = resource.spec[field];
+    if (value === undefined || value === null || value === '') {
       throw new Error(`${resource.kind} spec.${field} is required`);
+    }
+    const expectedType = FIELD_TYPE_RULES[field];
+    if (expectedType === 'string' && typeof value !== 'string') {
+      throw new Error(`${resource.kind} spec.${field} must be a string (got ${typeof value})`);
+    }
+    if (expectedType === 'number' && typeof value !== 'number') {
+      throw new Error(`${resource.kind} spec.${field} must be a number (got ${typeof value})`);
+    }
+    if (expectedType === 'array' && !Array.isArray(value)) {
+      throw new Error(`${resource.kind} spec.${field} must be an array (got ${typeof value})`);
+    }
+    if (expectedType === 'object' && (typeof value !== 'object' || Array.isArray(value))) {
+      throw new Error(`${resource.kind} spec.${field} must be an object (got ${Array.isArray(value) ? 'array' : typeof value})`);
     }
   }
   return resource;
