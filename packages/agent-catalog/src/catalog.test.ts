@@ -202,18 +202,18 @@ describe("agent-catalog graph-backed ontology", () => {
     expect(claims.get("repo-transport-mux-readme")?.status).toBe("provisional");
   });
 
-  it("records Claude Code 2.1.152 user-facing hook, skill, and plugin changes", () => {
-    const version = getAgentVersion("claude-code", "2.1.152");
+  it("records Claude Code current upstream release metadata", () => {
+    const version = getAgentVersion("claude-code", "2.1.153");
     const graph = getCatalogGraphSnapshot();
     const node = graph.nodes.find((entry) => entry.id === "agentVersion:claude:ge-0-0-0");
 
-    expect(version?.versionRange).toBe(">=2.1.152");
-    expect(node?.releaseNotesUrl).toContain("anthropics/claude-code/releases/tag/v2.1.152");
+    expect(version?.versionRange).toBe(">=2.1.153");
+    expect(node?.releaseNotesUrl).toContain("anthropics/claude-code/releases/tag/v2.1.153");
     expect(node?.assimilationNotes).toEqual(
       expect.arrayContaining([
-        expect.stringContaining("MessageDisplay hook event"),
-        expect.stringContaining("/reload-skills"),
-        expect.stringContaining("plugin marketplace remove accepts --scope"),
+        expect.stringContaining("skipLfs"),
+        expect.stringContaining("claude doctor shows the last update attempt result"),
+        expect.stringContaining("Subagent MCP handling now respects strict-mcp-config"),
       ]),
     );
 
@@ -257,26 +257,32 @@ describe("agent-catalog graph-backed ontology", () => {
     );
   });
 
-  it("records Droid CLI 0.135.0 graph metadata", () => {
+  it("records Gemini CLI 0.44.0 without splitting stable graph identity", () => {
+    const version = getAgentVersion("gemini", "0.44.0");
     const graph = getCatalogGraphSnapshot();
-    const node = graph.nodes.find((entry) => entry.id === "agent-version:droid@current");
+    const node = graph.nodes.find((entry) => entry.id === "agentVersion:gemini:ge-0-43-0");
 
-    expect(node?.versionRange).toBe(">=0.135.0");
-    expect(node?.currentVersion).toBe("0.135.0");
-    expect(node?.releaseNotesUrl).toContain("@factory/cli/v/0.135.0");
+    expect(version?.versionRange).toBe(">=0.43.0");
+    expect(node?.currentVersion).toBe("0.44.0");
+    expect(node?.releaseNotesUrl).toContain("google-gemini/gemini-cli/releases/tag/v0.44.0");
     expect(node?.assimilationNotes).toEqual(
       expect.arrayContaining([
-        expect.stringContaining(".factory/hooks.json"),
-        expect.stringContaining("os-sandboxing beta"),
-        expect.stringContaining("Factory Router"),
+        expect.stringContaining("Auto modes were merged into a single Auto mode"),
+        expect.stringContaining("Keychain auth now works for --list-sessions"),
+        expect.stringContaining("agent-tui and tui-tester"),
       ]),
     );
 
-    const evidence = getOntologyEvidenceSource("droid-cli-0-135-0-release");
-    expect(evidence?.sourcePathOrUrl).toContain("@factory/cli/v/0.135.0");
+    expect(graph.nodes.find((entry) => entry.id === "agentVersion:gemini:ge-0-44-0")).toBeUndefined();
+    expect(
+      listCliGraphEdges({
+        fromNodeId: "agentVersion:gemini:ge-0-43-0",
+        relation: "sourced_from",
+      }).map((edge) => edge.toNodeId),
+    ).toContain("evidence:gemini-cli-0-44-0-release");
 
-    const platform = listOntologyNodesByKind("AgentPlatformImpl").find((entry) => entry.id === "agent-platform-impl:droid.platform@current");
-    expect(JSON.stringify(platform)).toContain(".factory/hooks.json");
+    const evidence = getOntologyEvidenceSource("gemini-cli-0-44-0-release");
+    expect(evidence?.sourcePathOrUrl).toContain("google-gemini/gemini-cli/releases/tag/v0.44.0");
   });
 
   it("includes agent-platform as a distinct non-harness runtime agent and records richer Claude web evidence", () => {
