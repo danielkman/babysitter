@@ -57,6 +57,15 @@ async function runCliOrchestration(args: RunOrchestrationPhaseArgs): Promise<num
   const prompt = args.prompt ?? "";
   const model = args.model;
 
+  // Resolve babysitter CLI: prefer the SDK's dist/cli/main.js over global binary
+  let babysitterBin = "babysitter";
+  try {
+    const sdkCliPath = require.resolve("@a5c-ai/babysitter-sdk/dist/cli/main.js");
+    babysitterBin = `${process.execPath} ${sdkCliPath}`;
+  } catch {
+    // Fall back to global babysitter binary
+  }
+
   // Create run via CLI
   const createArgs = [
     "run:create",
@@ -70,7 +79,7 @@ async function runCliOrchestration(args: RunOrchestrationPhaseArgs): Promise<num
 
   let runDir: string;
   try {
-    const createResult = execSync(`babysitter ${createArgs.join(" ")}`, {
+    const createResult = execSync(`${babysitterBin} ${createArgs.join(" ")}`, {
       cwd: workspace,
       encoding: "utf8",
       timeout: 30_000,
@@ -93,7 +102,7 @@ async function runCliOrchestration(args: RunOrchestrationPhaseArgs): Promise<num
   const maxIterations = args.maxIterations ?? 20;
   for (let i = 1; i <= maxIterations; i++) {
     try {
-      const iterResult = execSync(`babysitter run:iterate "${runDir}" --json --iteration ${i}`, {
+      const iterResult = execSync(`${babysitterBin} run:iterate "${runDir}" --json --iteration ${i}`, {
         cwd: workspace,
         encoding: "utf8",
         timeout: 60_000,
@@ -117,7 +126,7 @@ async function runCliOrchestration(args: RunOrchestrationPhaseArgs): Promise<num
       // Handle pending effects
       if (parsed.nextActions?.length) {
         for (const action of parsed.nextActions) {
-          await resolveAndPostEffect(action, runDir, workspace, model);
+          await resolveAndPostEffect(action, runDir, workspace, model, babysitterBin);
         }
       } else if (parsed.status === "none") {
         if (!args.json) {
@@ -144,6 +153,7 @@ async function resolveAndPostEffect(
   runDir: string,
   workspace: string,
   model?: string,
+  babysitterBin = "babysitter",
 ): Promise<void> {
   const { execSync } = await import("node:child_process");
   const { createAgentCoreSession } = await import("../utils");
@@ -190,7 +200,7 @@ async function resolveAndPostEffect(
     await fs.mkdir(taskDir, { recursive: true });
     await fs.writeFile(path.join(taskDir, "output.json"), value);
     execSync(
-      `babysitter task:post "${runDir}" ${action.effectId} --status ok --value tasks/${action.effectId}/output.json --json`,
+      `${babysitterBin} task:post "${runDir}" ${action.effectId} --status ok --value tasks/${action.effectId}/output.json --json`,
       { cwd: workspace, encoding: "utf8", timeout: 30_000, env: { ...process.env } },
     );
   } catch {
