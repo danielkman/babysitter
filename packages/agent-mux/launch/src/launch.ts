@@ -1069,6 +1069,10 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
           });
           plan.env['HERMES_INFERENCE_PROVIDER'] = 'custom';
           plan.env['HERMES_INFERENCE_MODEL'] = plan.proxy?.targetModel ?? plan.model;
+          // Ensure hermes writes structured output to stdout (not just session log)
+          if (!plan.args.includes('--output-format')) {
+            plan.args.push('--output-format', 'jsonl');
+          }
         }
         console.error(`[amux launch] ${plan.harness} proxy: OPENAI_BASE_URL=${proxyRuntime.url}/v1`);
       }
