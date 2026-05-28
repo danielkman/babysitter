@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 
-const labelStyle = { display: 'block', fontWeight: 600, fontSize: '0.8125rem', marginBottom: '0.25rem', color: 'var(--ink-pigment)' };
-const descStyle = { fontSize: '0.75rem', color: 'var(--ink-ghost)', marginTop: '0.25rem' };
-const inputStyle = { width: '100%', padding: '0.5rem', borderRadius: '0.375rem', border: '1px solid var(--line)', fontSize: '0.875rem', boxSizing: 'border-box' };
+const labelStyle = { display: 'block', fontWeight: 600, fontSize: '0.8125rem', marginBottom: '0.25rem', color: 'var(--text)' };
+const descStyle = { fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.25rem' };
+const inputStyle = { width: '100%', padding: '0.5rem', borderRadius: '0.375rem', border: '1px solid var(--border)', fontSize: '0.875rem', boxSizing: 'border-box' };
 const buttonStyle = { padding: '8px 20px', borderRadius: 6, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 600 };
 const primaryStyle = { ...buttonStyle, backgroundColor: '#2563eb', color: '#fff' };
 const dangerStyle = { ...buttonStyle, backgroundColor: '#dc2626', color: '#fff' };
@@ -13,8 +13,8 @@ const disabledStyle = { ...primaryStyle, opacity: 0.5, cursor: 'not-allowed' };
 const sectionStyle = { display: 'flex', flexDirection: 'column', gap: '1.25rem' };
 const cardStyle = { display: 'flex', flexDirection: 'column', gap: '1rem' };
 const kvRowStyle = { display: 'grid', gridTemplateColumns: 'max-content minmax(0, 1fr)', gap: '6px 16px', alignItems: 'center', fontSize: '0.875rem' };
-const kvLabelStyle = { color: 'var(--ink-ghost)', fontFamily: 'var(--mono)', fontSize: '0.72rem', fontWeight: 800, letterSpacing: '.12em', textTransform: 'uppercase' };
-const kvValueStyle = { color: 'var(--ink-pigment)', overflowWrap: 'anywhere' };
+const kvLabelStyle = { color: 'var(--text-muted)', fontFamily: 'var(--mono)', fontSize: '0.72rem', fontWeight: 800, letterSpacing: '.12em', textTransform: 'uppercase' };
+const kvValueStyle = { color: 'var(--text)', overflowWrap: 'anywhere' };
 
 function StatusMsg({ status, message }) {
   if (!message) return null;

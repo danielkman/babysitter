@@ -161,7 +161,7 @@ export function NotificationBell({ org }) {
           padding: '0.25rem 0.5rem',
           borderRadius: '0.375rem',
           fontSize: '1.125rem',
-          color: 'var(--ink-pigment, #24292f)',
+          color: 'var(--text)',
           display: 'flex',
           alignItems: 'center',
           gap: '0.25rem',
@@ -211,7 +211,7 @@ export function NotificationBell({ org }) {
             padding: '0.75rem 1rem',
             borderBottom: '1px solid var(--line, #d0d7de)',
           }}>
-            <span style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--ink-pigment, #24292f)' }}>
+            <span style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--text)' }}>
               Notifications
               {connected && (
                 <span style={{ marginLeft: '0.5rem', display: 'inline-block', width: '6px', height: '6px', borderRadius: '50%', background: '#22c55e', verticalAlign: 'middle' }} title="Live" />
@@ -230,7 +230,7 @@ export function NotificationBell({ org }) {
 
           <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
             {visibleNotifications.length === 0 ? (
-              <div style={{ padding: '2rem 1rem', textAlign: 'center', color: 'var(--ink-ghost, #8c959f)', fontSize: '0.875rem' }}>
+              <div style={{ padding: '2rem 1rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.875rem' }}>
                 No notifications
               </div>
             ) : (
@@ -255,7 +255,7 @@ export function NotificationBell({ org }) {
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{
                       fontSize: '0.8125rem',
-                      color: 'var(--ink-pigment, #24292f)',
+                      color: 'var(--text)',
                       fontWeight: notif.read ? 400 : 600,
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
@@ -263,7 +263,7 @@ export function NotificationBell({ org }) {
                     }}>
                       {notif.title}
                     </div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--ink-ghost, #8c959f)', marginTop: '2px' }}>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
                       {timeAgo(notif.createdAt)}
                     </div>
                   </div>
@@ -277,7 +277,7 @@ export function NotificationBell({ org }) {
 
           {notifications.length > 10 && (
             <div style={{ padding: '0.5rem 1rem', borderTop: '1px solid var(--line, #d0d7de)', textAlign: 'center' }}>
-              <span style={{ fontSize: '0.75rem', color: 'var(--ink-ghost, #8c959f)' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                 Showing 10 of {notifications.length} notifications
               </span>
             </div>

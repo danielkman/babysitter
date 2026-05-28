@@ -10,13 +10,13 @@ const TABS = [
 
 const tabStyles = {
   bar: {
-    display: 'flex', gap: 0, borderBottom: '2px solid var(--line, rgba(91,56,23,.28))',
+    display: 'flex', gap: 0, borderBottom: '1px solid var(--border)',
     marginBottom: 16,
   },
   tab: (active) => ({
-    padding: '10px 20px', fontSize: 14, fontWeight: active ? 700 : 500, cursor: 'pointer',
-    background: 'transparent', border: 'none', borderBottom: active ? '2px solid var(--brass, #c98a3e)' : '2px solid transparent',
-    marginBottom: -2, color: active ? 'var(--text, #1b1611)' : 'var(--muted, #5a4e3c)',
+    padding: '10px 20px', fontSize: '0.85rem', fontWeight: active ? 700 : 500, cursor: 'pointer',
+    background: 'transparent', border: 'none', borderBottom: active ? '2px solid var(--accent, #2563eb)' : '2px solid transparent',
+    marginBottom: -1, color: active ? 'var(--text)' : 'var(--text-muted)',
   }),
   content: {
     minHeight: 500,

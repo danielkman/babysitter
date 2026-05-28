@@ -9,55 +9,55 @@ const OUTPUT_TYPES = [
 
 const styles = {
   container: { display: 'flex', flexDirection: 'column', gap: 16 },
-  fieldLabel: { display: 'block', fontWeight: 600, fontSize: 13, marginBottom: 4, color: 'var(--text, #1b1611)' },
+  fieldLabel: { display: 'block', fontWeight: 600, fontSize: 13, marginBottom: 4, color: 'var(--text)' },
   textarea: {
-    width: '100%', minHeight: 80, resize: 'vertical', border: '1px solid var(--line, rgba(91,56,23,.28))',
+    width: '100%', minHeight: 80, resize: 'vertical', border: '1px solid var(--border)',
     borderRadius: 6, padding: '10px 12px', fontSize: 14, fontFamily: 'var(--sans, system-ui, sans-serif)',
-    lineHeight: 1.4, background: 'var(--panel-strong, rgba(246,242,230,.98))', color: 'var(--text, #1b1611)',
+    lineHeight: 1.4, background: 'var(--bg)', color: 'var(--text)',
   },
   contextEditor: {
-    width: '100%', minHeight: 100, resize: 'vertical', border: '1px solid var(--line, rgba(91,56,23,.28))',
+    width: '100%', minHeight: 100, resize: 'vertical', border: '1px solid var(--border)',
     borderRadius: 6, padding: '10px 12px', fontSize: 12, fontFamily: 'var(--mono, monospace)',
-    lineHeight: 1.5, background: 'var(--ground-ink, #181624)', color: 'var(--glyph-bone, #f0e6d1)',
+    lineHeight: 1.5, background: 'var(--bg-code, #1e1e2e)', color: 'var(--text-code, #cdd6f4)',
   },
   select: {
-    padding: '6px 12px', borderRadius: 4, border: '1px solid var(--line, rgba(91,56,23,.28))',
-    fontSize: 13, background: 'var(--panel-strong, rgba(246,242,230,.98))', color: 'var(--text, #1b1611)',
+    padding: '6px 12px', borderRadius: 4, border: '1px solid var(--border)',
+    fontSize: 13, background: 'var(--bg)', color: 'var(--text)',
   },
   row: { display: 'flex', gap: 16, alignItems: 'flex-end', flexWrap: 'wrap' },
   generateBtn: (disabled) => ({
     padding: '10px 22px', fontSize: 14, fontWeight: 600, cursor: disabled ? 'not-allowed' : 'pointer',
-    background: disabled ? 'var(--ink-ghost, #8c7e65)' : 'var(--accent-viridian, #2f6f5e)',
+    background: disabled ? 'var(--text-faint)' : 'var(--accent, #2563eb)',
     color: '#fff', border: 'none', borderRadius: 6, opacity: disabled ? 0.6 : 1,
   }),
   resultBox: {
-    border: '1px solid var(--line, rgba(91,56,23,.28))', borderRadius: 8, overflow: 'hidden',
+    border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden',
   },
   resultHeader: {
     display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 14px',
-    borderBottom: '1px solid var(--line, rgba(91,56,23,.28))', background: 'var(--panel, rgba(255,251,244,.92))',
+    borderBottom: '1px solid var(--border)', background: 'var(--surface)',
   },
-  resultLabel: { fontWeight: 600, fontSize: 13, color: 'var(--text, #1b1611)' },
+  resultLabel: { fontWeight: 600, fontSize: 13, color: 'var(--text)' },
   actionBtn: {
     padding: '4px 10px', fontSize: 11, fontWeight: 600, cursor: 'pointer', borderRadius: 4,
-    border: '1px solid var(--line, rgba(91,56,23,.28))', background: 'transparent',
-    color: 'var(--text, #1b1611)',
+    border: '1px solid var(--border)', background: 'transparent',
+    color: 'var(--text)',
   },
   iframe: { width: '100%', height: 400, border: 'none', background: '#fff' },
   jsonView: {
     padding: '14px', fontFamily: 'var(--mono, monospace)', fontSize: 12,
-    background: 'var(--ground-ink, #181624)', color: 'var(--glyph-bone, #f0e6d1)',
+    background: 'var(--bg-code, #1e1e2e)', color: 'var(--text-code, #cdd6f4)',
     overflow: 'auto', maxHeight: 500, whiteSpace: 'pre-wrap', lineHeight: 1.5,
   },
   markdownView: {
-    padding: '14px 18px', fontSize: 14, lineHeight: 1.6, color: 'var(--text, #1b1611)',
-    background: 'var(--panel-strong, rgba(246,242,230,.98))', maxHeight: 500, overflow: 'auto',
+    padding: '14px 18px', fontSize: 14, lineHeight: 1.6, color: 'var(--text)',
+    background: 'var(--bg)', maxHeight: 500, overflow: 'auto',
   },
   error: {
     background: '#fef2f2', border: '1px solid var(--red, #c03a2b)', borderRadius: 8,
     padding: '8px 14px', color: 'var(--red, #c03a2b)', fontSize: 13,
   },
-  usage: { fontSize: 11, color: 'var(--muted, #5a4e3c)', marginTop: 6 },
+  usage: { fontSize: 11, color: 'var(--text-muted)', marginTop: 6 },
 };
 
 export function AssistantGenerate({ org, stacks = [] }) {

@@ -181,7 +181,7 @@ export function CommandPalette({ org, isOpen, onClose }) {
           cursor: 'pointer',
           textAlign: 'left',
           fontSize: '0.875rem',
-          color: 'var(--ink-pigment, #111)',
+          color: 'var(--text)',
         }}
       >
         <span style={{ fontWeight: 500 }}>{cmd.label}</span>
@@ -233,7 +233,7 @@ export function CommandPalette({ org, isOpen, onClose }) {
               outline: 'none',
               background: 'transparent',
               fontSize: '1rem',
-              color: 'var(--ink-pigment, #111)',
+              color: 'var(--text)',
             }}
             aria-label="Command palette search"
           />

@@ -213,7 +213,7 @@ export function GlobalSearch({ org }) {
                 cursor: 'pointer',
                 textAlign: 'left',
                 fontSize: '0.875rem',
-                color: 'var(--ink-pigment, #111)',
+                color: 'var(--text)',
               }}
             >
               <span style={{ color: 'var(--ink-muted, #9ca3af)', fontSize: '0.75rem' }}>↩</span>
@@ -265,7 +265,7 @@ export function GlobalSearch({ org }) {
                     cursor: 'pointer',
                     textAlign: 'left',
                     fontSize: '0.875rem',
-                    color: 'var(--ink-pigment, #111)',
+                    color: 'var(--text)',
                   }}
                 >
                   <span

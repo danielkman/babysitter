@@ -29,8 +29,8 @@ function StatusRow({ label, status, text }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', padding: '0.5rem 0', borderBottom: '1px solid var(--line, #d0d7de)' }}>
       <StatusDot status={status} />
-      <span style={{ flex: 1, fontSize: '0.875rem', color: 'var(--ink-pigment, #24292f)', fontWeight: 500 }}>{label}</span>
-      <span style={{ fontSize: '0.8125rem', color: 'var(--ink-ghost, #8c959f)' }}>{statusText}</span>
+      <span style={{ flex: 1, fontSize: '0.875rem', color: 'var(--text)', fontWeight: 500 }}>{label}</span>
+      <span style={{ fontSize: '0.8125rem', color: 'var(--text-muted)' }}>{statusText}</span>
     </div>
   );
 }
@@ -180,7 +180,7 @@ export function HealthMonitor({ org }) {
         padding: '1rem',
         borderBottom: '1px solid var(--line, #d0d7de)',
       }}>
-        <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: 'var(--ink-pigment, #24292f)' }}>
+        <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: 'var(--text)' }}>
           System Health
         </h3>
         <button
@@ -194,7 +194,7 @@ export function HealthMonitor({ org }) {
             background: 'var(--surface, #fff)',
             cursor: loading ? 'not-allowed' : 'pointer',
             fontSize: '0.75rem',
-            color: 'var(--ink-pigment, #24292f)',
+            color: 'var(--text)',
           }}
         >
           {loading ? 'Refreshing...' : 'Refresh'}
@@ -241,7 +241,7 @@ export function HealthMonitor({ org }) {
         borderTop: '1px solid var(--line, #d0d7de)',
         background: 'var(--surface-raised, #f6f8fa)',
         fontSize: '0.75rem',
-        color: 'var(--ink-ghost, #8c959f)',
+        color: 'var(--text-muted)',
       }}>
         <span>Last updated: {timeAgoSeconds(lastFetched)}</span>
         {latencyMs !== null && <span>Latency: {latencyMs}ms</span>}

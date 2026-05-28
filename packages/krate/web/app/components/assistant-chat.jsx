@@ -15,45 +15,45 @@ function timeAgo(ts) {
 const styles = {
   container: {
     display: 'flex', height: '100%', minHeight: 0, gap: 0,
-    fontFamily: 'var(--sans, system-ui, sans-serif)', color: 'var(--text, #1b1611)',
+    fontFamily: 'var(--sans, system-ui, sans-serif)', color: 'var(--text)',
   },
   sidebar: {
-    width: 240, flexShrink: 0, borderRight: '1px solid var(--line, rgba(91,56,23,.28))',
-    display: 'flex', flexDirection: 'column', background: 'var(--panel, rgba(255,251,244,.92))',
+    width: 240, flexShrink: 0, borderRight: '1px solid var(--border)',
+    display: 'flex', flexDirection: 'column', background: 'var(--surface)',
     overflow: 'hidden',
   },
   sidebarHeader: {
-    padding: '12px 14px', borderBottom: '1px solid var(--line, rgba(91,56,23,.28))',
+    padding: '12px 14px', borderBottom: '1px solid var(--border)',
     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
   },
-  sidebarTitle: { fontWeight: 700, fontSize: 13, color: 'var(--text, #1b1611)', margin: 0 },
+  sidebarTitle: { fontWeight: 700, fontSize: 13, color: 'var(--text)', margin: 0 },
   newBtn: {
     padding: '4px 10px', fontSize: 12, fontWeight: 600, cursor: 'pointer',
-    background: 'var(--brass, #c98a3e)', color: '#fff', border: 'none', borderRadius: 4,
+    background: 'var(--accent, #2563eb)', color: '#fff', border: 'none', borderRadius: 4,
   },
   sessionList: { flex: 1, overflow: 'auto', padding: '4px 0' },
   sessionItem: (active) => ({
     display: 'block', padding: '8px 14px', cursor: 'pointer', fontSize: 12,
-    background: active ? 'var(--card, rgba(91,56,23,.055))' : 'transparent',
-    borderLeft: active ? '3px solid var(--brass, #c98a3e)' : '3px solid transparent',
+    background: active ? 'var(--surface-raised)' : 'transparent',
+    borderLeft: active ? '3px solid var(--accent, #2563eb)' : '3px solid transparent',
     borderBottom: 'none', borderTop: 'none', borderRight: 'none',
-    textAlign: 'left', width: '100%', color: 'var(--text, #1b1611)',
+    textAlign: 'left', width: '100%', color: 'var(--text)',
   }),
   sessionLabel: { fontWeight: 600, fontSize: 12, display: 'block', marginBottom: 2 },
-  sessionMeta: { fontSize: 11, color: 'var(--muted, #5a4e3c)', display: 'block' },
+  sessionMeta: { fontSize: 11, color: 'var(--text-muted)', display: 'block' },
   sessionDelete: {
-    fontSize: 10, color: 'var(--red, #c03a2b)', cursor: 'pointer', float: 'right',
+    fontSize: 10, color: 'var(--danger)', cursor: 'pointer', float: 'right',
     background: 'none', border: 'none', padding: '0 4px', fontWeight: 700,
   },
   main: { flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, position: 'relative' },
   toolbar: {
-    padding: '8px 16px', borderBottom: '1px solid var(--line, rgba(91,56,23,.28))',
-    display: 'flex', alignItems: 'center', gap: 10, background: 'var(--panel, rgba(255,251,244,.92))',
+    padding: '8px 16px', borderBottom: '1px solid var(--border)',
+    display: 'flex', alignItems: 'center', gap: 10, background: 'var(--surface)',
   },
-  stackLabel: { fontSize: 12, fontWeight: 600, color: 'var(--muted, #5a4e3c)' },
+  stackLabel: { fontSize: 12, fontWeight: 600, color: 'var(--text-muted)' },
   stackSelect: {
-    padding: '4px 8px', borderRadius: 4, border: '1px solid var(--line, rgba(91,56,23,.28))',
-    fontSize: 12, background: 'var(--panel-strong, rgba(246,242,230,.98))', color: 'var(--text, #1b1611)',
+    padding: '4px 8px', borderRadius: 4, border: '1px solid var(--border)',
+    fontSize: 12, background: 'var(--bg)', color: 'var(--text)',
   },
   messages: {
     flex: 1, overflow: 'auto', padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 16,
@@ -67,30 +67,30 @@ const styles = {
   }),
   bubble: (isUser) => ({
     maxWidth: '78%', position: 'relative',
-    background: isUser ? 'var(--brass, #c98a3e)' : 'var(--card, rgba(91,56,23,.055))',
-    color: isUser ? '#fff' : 'var(--text, #1b1611)',
+    background: isUser ? 'var(--accent, #2563eb)' : 'var(--surface-raised)',
+    color: isUser ? '#fff' : 'var(--text)',
     borderRadius: isUser ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
     padding: '10px 14px', fontSize: 14, lineHeight: 1.55,
     wordBreak: 'break-word',
   }),
   bubbleError: {
     maxWidth: '78%', position: 'relative',
-    background: '#fef2f2', border: '1px solid var(--red, #c03a2b)',
-    color: 'var(--red, #c03a2b)',
+    background: '#fef2f2', border: '1px solid var(--danger)',
+    color: 'var(--danger)',
     borderRadius: '16px 16px 16px 4px',
     padding: '10px 14px', fontSize: 14, lineHeight: 1.55,
     wordBreak: 'break-word',
   },
   bubbleMeta: {
     display: 'flex', alignItems: 'center', gap: 8, marginTop: 4, fontSize: 11,
-    color: 'var(--muted, #5a4e3c)',
+    color: 'var(--text-muted)',
   },
   copyBtn: {
     background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px',
-    fontSize: 11, color: 'var(--muted, #5a4e3c)', borderRadius: 4,
+    fontSize: 11, color: 'var(--text-muted)', borderRadius: 4,
     transition: 'background .15s',
   },
-  copyBtnHover: { background: 'rgba(91,56,23,.1)' },
+  copyBtnHover: { background: 'var(--surface-overlay)' },
   /* ── code blocks ── */
   codeBlock: {
     background: '#181624', color: '#f0e6d1',
@@ -111,32 +111,32 @@ const styles = {
     display: 'inline-block', width: '2.5em', textAlign: 'right',
     marginRight: '1em', color: '#5a4e5a', userSelect: 'none', fontSize: 11,
   },
-  usage: { fontSize: 10, color: 'var(--muted, #5a4e3c)', marginTop: 2 },
+  usage: { fontSize: 10, color: 'var(--text-muted)', marginTop: 2 },
   /* ── input area ── */
   inputRow: {
-    padding: '12px 16px', borderTop: '1px solid var(--line, rgba(91,56,23,.28))',
+    padding: '12px 16px', borderTop: '1px solid var(--border)',
     display: 'flex', gap: 8, alignItems: 'flex-end',
-    background: 'var(--panel, rgba(255,251,244,.92))',
+    background: 'var(--surface)',
   },
   textarea: {
-    flex: 1, resize: 'none', border: '1px solid var(--line, rgba(91,56,23,.28))',
+    flex: 1, resize: 'none', border: '1px solid var(--border)',
     borderRadius: 8, padding: '10px 12px', fontSize: 14, fontFamily: 'var(--sans, system-ui, sans-serif)',
-    lineHeight: 1.4, background: 'var(--panel-strong, rgba(246,242,230,.98))', color: 'var(--text, #1b1611)',
+    lineHeight: 1.4, background: 'var(--bg)', color: 'var(--text)',
     outline: 'none', minHeight: 42, maxHeight: 160,
   },
   sendBtn: (disabled) => ({
     padding: '10px 18px', fontSize: 14, fontWeight: 600, cursor: disabled ? 'not-allowed' : 'pointer',
-    background: disabled ? 'var(--ink-ghost, #8c7e65)' : 'var(--brass, #c98a3e)', color: '#fff',
+    background: disabled ? 'var(--text-faint)' : 'var(--accent, #2563eb)', color: '#fff',
     border: 'none', borderRadius: 8, opacity: disabled ? 0.6 : 1, flexShrink: 0,
   }),
   /* ── empty state ── */
   empty: {
     flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-    color: 'var(--muted, #5a4e3c)', fontSize: 14, textAlign: 'center', padding: 40,
+    color: 'var(--text-muted)', fontSize: 14, textAlign: 'center', padding: 40,
   },
   emptyIcon: {
     width: 48, height: 48, borderRadius: '50%',
-    background: 'var(--card, rgba(91,56,23,.055))', display: 'flex', alignItems: 'center',
+    background: 'var(--surface-raised)', display: 'flex', alignItems: 'center',
     justifyContent: 'center', margin: '0 auto 16px', fontSize: 22,
   },
   /* ── thinking indicator ── */
@@ -144,20 +144,20 @@ const styles = {
     display: 'flex', alignItems: 'flex-start', gap: 8,
   },
   thinkingBubble: {
-    background: 'var(--card, rgba(91,56,23,.055))',
+    background: 'var(--surface-raised)',
     borderRadius: '16px 16px 16px 4px',
     padding: '12px 18px', display: 'flex', alignItems: 'center', gap: 6,
   },
   thinkingDot: (delay) => ({
     width: 7, height: 7, borderRadius: '50%',
-    background: 'var(--brass, #c98a3e)',
+    background: 'var(--accent, #2563eb)',
     animation: `krate-dot-pulse 1.4s ease-in-out ${delay}s infinite`,
   }),
   /* ── scroll-to-bottom ── */
   scrollBtn: {
     position: 'absolute', bottom: 80, right: 24,
     width: 36, height: 36, borderRadius: '50%',
-    background: 'var(--brass, #c98a3e)', color: '#fff',
+    background: 'var(--accent, #2563eb)', color: '#fff',
     border: 'none', cursor: 'pointer', fontSize: 16,
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     boxShadow: '0 2px 8px rgba(0,0,0,.18)',
@@ -165,12 +165,12 @@ const styles = {
   },
   /* ── error banner ── */
   errorBanner: {
-    background: '#fef2f2', border: '1px solid var(--red, #c03a2b)', borderRadius: 8,
-    padding: '8px 14px', color: 'var(--red, #c03a2b)', fontSize: 13, margin: '0 16px 8px',
+    background: '#fef2f2', border: '1px solid var(--danger)', borderRadius: 8,
+    padding: '8px 14px', color: 'var(--danger)', fontSize: 13, margin: '0 16px 8px',
     display: 'flex', alignItems: 'center', gap: 8,
   },
   errorDismiss: {
-    background: 'none', border: 'none', cursor: 'pointer', color: 'var(--red, #c03a2b)',
+    background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)',
     fontWeight: 700, fontSize: 14, marginLeft: 'auto', padding: '0 4px',
   },
 };
@@ -301,7 +301,7 @@ function renderMarkdown(text) {
 
       // Horizontal rule
       if (/^---+$/.test(line.trim())) {
-        elements.push(<hr key={`hr-${elements.length}`} style={{ border: 'none', borderTop: '1px solid var(--line, rgba(91,56,23,.18))', margin: '8px 0' }} />);
+        elements.push(<hr key={`hr-${elements.length}`} style={{ border: 'none', borderTop: '1px solid var(--border)', margin: '8px 0' }} />);
         continue;
       }
 
@@ -324,7 +324,7 @@ function renderInline(text) {
     if (seg.startsWith('`') && seg.endsWith('`')) {
       return (
         <code key={j} style={{
-          background: 'rgba(91,56,23,.1)', padding: '1px 5px', borderRadius: 3,
+          background: 'var(--surface-overlay)', padding: '1px 5px', borderRadius: 3,
           fontFamily: 'var(--mono, monospace)', fontSize: '0.88em',
         }}>
           {seg.slice(1, -1)}
@@ -368,7 +368,7 @@ function ApiKeyMessage() {
       <pre style={{ ...styles.codeBlock, marginTop: 8, padding: '10px 14px', fontSize: 12 }}>
         {`# Option 1: Environment variable\nexport ANTHROPIC_API_KEY=sk-ant-...\n\n# Option 2: Krate-specific key\nexport KRATE_ASSISTANT_API_KEY=sk-ant-...`}
       </pre>
-      <div style={{ fontSize: 12, marginTop: 6, color: '#5a4e3c' }}>
+      <div style={{ fontSize: 12, marginTop: 6, color: 'var(--text-muted)' }}>
         Then restart the Krate web server.
       </div>
     </div>
@@ -525,7 +525,7 @@ export function AssistantChat({ org, stacks = [] }) {
         </div>
         <div style={styles.sessionList}>
           {sessions.length === 0 && (
-            <div style={{ padding: '16px 14px', fontSize: 12, color: 'var(--muted, #5a4e3c)' }}>
+            <div style={{ padding: '16px 14px', fontSize: 12, color: 'var(--text-muted)' }}>
               No sessions yet. Click &quot;+ New&quot; or start typing to begin.
             </div>
           )}
@@ -548,7 +548,7 @@ export function AssistantChat({ org, stacks = [] }) {
             {stackOptions.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
           {activeSessionId && (
-            <span style={{ fontSize: 11, color: 'var(--muted, #5a4e3c)', marginLeft: 'auto' }}>Session: {activeSessionId.slice(0, 16)}...</span>
+            <span style={{ fontSize: 11, color: 'var(--text-muted)', marginLeft: 'auto' }}>Session: {activeSessionId.slice(0, 16)}...</span>
           )}
         </div>
 

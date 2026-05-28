@@ -13,12 +13,12 @@ const LOCALES = [
   { value: 'ja', label: 'Japanese (coming soon)' },
 ];
 
-const labelStyle = { display: 'block', fontWeight: 600, fontSize: '0.8125rem', marginBottom: '0.25rem', color: 'var(--ink-pigment)' };
-const descStyle = { fontSize: '0.75rem', color: 'var(--ink-ghost)', marginTop: '0.25rem' };
-const inputStyle = { width: '100%', padding: '0.5rem', borderRadius: '0.375rem', border: '1px solid var(--line)', fontSize: '0.875rem', boxSizing: 'border-box' };
+const labelStyle = { display: 'block', fontWeight: 600, fontSize: '0.8125rem', marginBottom: '0.25rem', color: 'var(--text)' };
+const descStyle = { fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.25rem' };
+const inputStyle = { width: '100%', padding: '0.5rem', borderRadius: '0.375rem', border: '1px solid var(--border)', fontSize: '0.875rem', boxSizing: 'border-box' };
 const selectStyle = { ...inputStyle };
 const radioGroupStyle = { display: 'flex', gap: '0.75rem', flexWrap: 'wrap' };
-const radioLabelStyle = { display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.875rem', cursor: 'pointer', color: 'var(--ink-pigment)' };
+const radioLabelStyle = { display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.875rem', cursor: 'pointer', color: 'var(--text)' };
 const sectionStyle = { display: 'flex', flexDirection: 'column', gap: '1.25rem' };
 const cardStyle = { display: 'flex', flexDirection: 'column', gap: '1rem' };
 
@@ -233,7 +233,7 @@ export function AppSettingsForm() {
             <button
               type="button"
               onClick={handleRequestDesktopPermission}
-              style={{ marginTop: '0.5rem', padding: '0.375rem 0.75rem', borderRadius: '0.375rem', border: '1px solid var(--line)', background: 'var(--surface)', cursor: 'pointer', fontSize: '0.8125rem', color: 'var(--ink-pigment)' }}
+              style={{ marginTop: '0.5rem', padding: '0.375rem 0.75rem', borderRadius: '0.375rem', border: '1px solid var(--border)', background: 'var(--surface)', cursor: 'pointer', fontSize: '0.8125rem', color: 'var(--text)' }}
             >
               Request desktop notifications permission
             </button>
@@ -242,7 +242,7 @@ export function AppSettingsForm() {
       </div>
 
       {saved && (
-        <div style={{ position: 'fixed', bottom: '1.5rem', right: '1.5rem', padding: '0.625rem 1.25rem', borderRadius: '0.5rem', background: 'var(--accent-viridian)', color: '#fff', fontWeight: 700, fontSize: '0.875rem', boxShadow: '0 4px 12px rgba(0,0,0,0.2)', zIndex: 50 }}>
+        <div style={{ position: 'fixed', bottom: '1.5rem', right: '1.5rem', padding: '0.625rem 1.25rem', borderRadius: '0.5rem', background: 'var(--accent, #2563eb)', color: '#fff', fontWeight: 700, fontSize: '0.875rem', boxShadow: '0 4px 12px rgba(0,0,0,0.2)', zIndex: 50 }}>
           Settings saved
         </div>
       )}

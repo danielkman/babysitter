@@ -133,7 +133,7 @@ export function ActivityFeed({ org }) {
         background: 'var(--surface, #fff)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--ink-pigment, #24292f)' }}>Activity</span>
+          <span style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--text)' }}>Activity</span>
           <span style={{
             width: '6px',
             height: '6px',
@@ -166,7 +166,7 @@ export function ActivityFeed({ org }) {
               borderRadius: '1rem',
               border: '1px solid var(--line, #d0d7de)',
               background: filter === key ? 'var(--accent, #0969da)' : 'transparent',
-              color: filter === key ? '#fff' : 'var(--ink-pigment, #24292f)',
+              color: filter === key ? '#fff' : 'var(--text)',
               cursor: 'pointer',
               fontSize: '0.75rem',
               fontWeight: filter === key ? 600 : 400,
@@ -182,7 +182,7 @@ export function ActivityFeed({ org }) {
       {/* Activity list */}
       <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
         {filtered.length === 0 ? (
-          <div style={{ padding: '2rem 1rem', textAlign: 'center', color: 'var(--ink-ghost, #8c959f)', fontSize: '0.875rem' }}>
+          <div style={{ padding: '2rem 1rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.875rem' }}>
             No activity yet. Events will appear here as they occur.
           </div>
         ) : (
@@ -199,12 +199,12 @@ export function ActivityFeed({ org }) {
             >
               <span style={{ fontSize: '1rem', flexShrink: 0, marginTop: '1px' }}>{item.icon}</span>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <span style={{ fontWeight: 600, color: 'var(--ink-pigment, #24292f)' }}>{item.label}</span>
+                <span style={{ fontWeight: 600, color: 'var(--text)' }}>{item.label}</span>
                 {' — '}
-                <span style={{ color: 'var(--ink-pigment, #24292f)', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <span style={{ color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {item.description}
                 </span>
-                <div style={{ fontSize: '0.6875rem', color: 'var(--ink-ghost, #8c959f)', marginTop: '2px' }}>
+                <div style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', marginTop: '2px' }}>
                   {timeAgo(item.timestamp)} · by <strong>{item.user}</strong>
                 </div>
               </div>
