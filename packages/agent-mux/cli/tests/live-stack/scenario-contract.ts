@@ -1,10 +1,10 @@
 export type LiveStackProvider = 'foundry-openai' | 'anthropic-direct' | 'google-vertex' | 'google';
 export type AgentMuxProviderId = 'foundry' | 'anthropic' | 'vertex' | 'google';
-export type LiveStackAgentPath = 'agent-mux' | 'agent-platform';
+export type LiveStackAgentPath = 'agent-mux' | 'agent-platform' | 'omni';
 export type LiveStackIntegrationType = 'third-party-plugin' | 'runtime-cli';
 export type LiveStackInstallMode = 'babysitter-plugin' | 'vanilla';
-export type LiveStackAgentId = 'claude-code' | 'codex' | 'gemini-cli' | 'pi' | 'agent-platform' | 'internal';
-export type LiveStackAgentMuxAgentId = 'claude' | 'codex' | 'gemini' | 'pi' | 'babysitter';
+export type LiveStackAgentId = 'claude-code' | 'codex' | 'gemini-cli' | 'pi' | 'agent-platform' | 'omni' | 'internal';
+export type LiveStackAgentMuxAgentId = 'claude' | 'codex' | 'gemini' | 'pi' | 'babysitter' | 'omni';
 
 export interface LiveStackModelEntry {
   readonly provider: LiveStackProvider;
@@ -197,6 +197,7 @@ export function assertEvidenceBundleComplete(scenario: LiveStackScenario, bundle
 
 function setupCommandsFor(agentPath: LiveStackAgentPath, agent: LiveStackAgentId, agentMuxAgent: LiveStackAgentMuxAgentId, installMode: LiveStackInstallMode): readonly string[] {
   if (agentPath === 'agent-platform') return ['agent-platform create-run --harness internal'];
+  if (agentPath === 'omni') return ['omni call'];
   if (installMode === 'vanilla') return [`amux install ${agentMuxAgent}`, agent === 'agent-platform' ? 'amux run babysitter' : `amux launch ${agentMuxAgent}`];
   return [
     'npm run generate:plugins',
@@ -221,6 +222,8 @@ function agentMuxAgentFor(agent: LiveStackAgentId): LiveStackAgentMuxAgentId {
       return agent;
     case 'agent-platform':
       return 'babysitter';
+    case 'omni':
+      return 'omni';
     case 'internal':
       return 'babysitter';
   }

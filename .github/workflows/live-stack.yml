@@ -200,7 +200,7 @@ jobs:
                 'omp': {agent:'omp', amux_agent:'omp'},
                 'droid': {agent:'droid', amux_agent:'droid'},
                 'amp': {agent:'amp', amux_agent:'amp'},
-                'omni': {agent:'omni', amux_agent:'omni'},
+                'omni': {agent:'omni', amux_agent:'omni', agent_path:'omni'},
               };
               const models = {
                 'foundry-gpt55': {provider:'foundry-openai', amux_provider:'foundry', model:'gpt-5.5', required_env:'AZURE_API_KEY,AMUX_API_BASE'},
@@ -225,8 +225,8 @@ jobs:
                 const m = models[entry.model] || models['foundry-gpt55'];
                 return {
                   id: 'live.agent-mux.' + a.agent + '.' + m.provider + '.' + m.model,
-                  agent_path: 'agent-mux', agent: a.agent, amux_agent: a.amux_agent,
-                  integration_type: 'third-party-plugin',
+                  agent_path: a.agent_path || 'agent-mux', agent: a.agent, amux_agent: a.amux_agent,
+                  integration_type: a.agent_path === 'omni' ? 'runtime-cli' : 'third-party-plugin',
                   provider: m.provider, amux_provider: m.amux_provider, model: m.model,
                   required_env: m.required_env, live: entry.live !== false,
                   process_mode: entry.process_mode || 'predefined',
@@ -427,6 +427,7 @@ jobs:
           LIVE_STACK_BABYSITTER_BIN: ${{ github.workspace }}/packages/sdk/dist/cli/main.js
           LIVE_STACK_AMUX_BIN: ${{ github.workspace }}/packages/agent-mux/cli/dist/index.js
           LIVE_STACK_AGENT_PLATFORM_BIN: ${{ github.workspace }}/packages/omni/dist/cli/main.js
+          LIVE_STACK_OMNI_BIN: ${{ github.workspace }}/packages/omni/dist/cli/main.js
           AZURE_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           AMUX_API_BASE: https://${{ vars.AZURE_OPENAI_PROJECT_NAME }}.services.ai.azure.com
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}

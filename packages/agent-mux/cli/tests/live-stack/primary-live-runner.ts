@@ -79,6 +79,12 @@ export function buildPrimaryLiveStackCommands(
     ];
   }
 
+  if (scenario.agent.agent === 'omni') {
+    return [
+      commandExecution(commandEnv, 'LIVE_STACK_OMNI_BIN', 'omni', ['call', '--model', scenario.model.model, '--prompt', prompt, '--json'], options.cwd, timeoutMs),
+    ];
+  }
+
   if (scenario.agent.agent === 'agent-platform') {
     const runCommand = commandExecution(
       { ...commandEnv, AMUX_PROVIDER: scenario.model.amuxProvider },
@@ -496,6 +502,10 @@ function buildPrompt(scenario: LiveStackScenario, traceId: string, env: Record<s
 
   if (scenario.agent.agent === 'agent-platform') {
     return `Write a 12-paragraph summary of Homer's Odyssey, then translate each paragraph to Greek.`;
+  }
+
+  if (scenario.agent.agent === 'omni') {
+    return `Write a concise summary of Homer's Odyssey and save it to .a5c-live-test/${traceId}-odyssey.md`;
   }
 
   if (scenario.agent.installMode === 'babysitter-plugin') {
