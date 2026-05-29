@@ -48,12 +48,13 @@ export function translateForOpenCode(config: ProviderConfig): HarnessProviderTra
     return { env, args, proxyRequired: false };
   }
 
-  const apiBase = config.params['apiBase'] ? String(config.params['apiBase']) : '';
+  // For providers without a bundled SDK (foundry, custom, etc.), route through
+  // the proxy and use @ai-sdk/openai which IS bundled in the opencode binary.
+  // The proxy handles auth translation (e.g. Azure api-key → Bearer token).
   env['OPENCODE_CONFIG_CONTENT'] = mergeWithExistingConfig(buildOpenCodeConfig(
-    '@ai-sdk/openai-compatible',
+    '@ai-sdk/openai',
     config.model,
-    apiBase ? { baseURL: apiBase } : undefined,
   ));
   if (config.auth.apiKey) env['OPENAI_API_KEY'] = config.auth.apiKey;
-  return { env, args, proxyRequired: false };
+  return { env, args, proxyRequired: true, proxyExposedTransport: 'openai-chat' as any };
 }
