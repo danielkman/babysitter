@@ -1057,14 +1057,6 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
           ]);
         }
         if (plan.harness === 'hermes') {
-          const hermesProxyBaseUrl = `${proxyRuntime.url}/v1`;
-          const hermesProxyApiKey = proxyRuntime.authToken ?? 'proxy-token';
-          plan.env['HERMES_HOME'] = await prepareHermesProxyConfig({
-            model: plan.proxy?.targetModel ?? plan.model,
-            baseUrl: hermesProxyBaseUrl,
-            apiKey: hermesProxyApiKey,
-          });
-          plan.env['HERMES_INFERENCE_PROVIDER'] = 'custom';
           plan.env['HERMES_INFERENCE_MODEL'] = plan.proxy?.targetModel ?? plan.model;
         }
         console.error(`[amux launch] ${plan.harness} proxy: OPENAI_BASE_URL=${proxyRuntime.url}/v1`);
