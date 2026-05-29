@@ -2,6 +2,8 @@
 
 Unmarked coupling, maintenance hazards, missing caveats, and dangerous zones. This is the map of places where a well-intentioned change will bite you.
 
+**Legend:** ~~strikethrough~~ = fixed/mitigated
+
 ---
 
 ## Hotspot Map
@@ -10,15 +12,15 @@ Files/modules that concentrate the most danger across multiple categories.
 
 | File | Categories | Top Risk |
 |------|-----------|----------|
-| `packages/agent-core/src/session.ts` | coupling, caveat, fallback | 8 env vars read with complex fallback chain, silent provider switching, 900s timeout unexplained |
-| `packages/agent-mux/core/src/provider-resolver.ts` | coupling, fallback | 6-level region chain, 5-level model chain, silent Google→Vertex upgrade |
-| `packages/agent-platform/src/harness/internal/createRun/orchestration/effects.ts` | hazard, coupling, caveat | Double-cast type assertions, process.env mutations, silent retry loop |
-| `packages/agent-platform/src/harness/piWrapper/moduleSupport.ts` | coupling, caveat, fallback | Azure env mutations, URL parse fallback, silent model synthesis |
-| `packages/agent-mux/core/src/spawn-runner.ts` | hazard, fallback | 8+ PTY kill failures swallowed, stdin write failures, zombie processes |
+| `packages/agent-core/src/session.ts` | coupling, caveat | 8 env vars read with complex fallback chain, 900s timeout unexplained *(model default + anthropic conversion now logged)* |
+| `packages/agent-mux/core/src/provider-resolver.ts` | coupling | 6-level region chain, 5-level model chain *(model source + Google→Vertex now logged)* |
+| `packages/agent-platform/src/harness/internal/createRun/orchestration/effects.ts` | hazard, coupling, caveat | Double-cast type assertions, process.env mutations *(retry loop now logged)* |
+| `packages/agent-platform/src/harness/piWrapper/moduleSupport.ts` | coupling, caveat | Azure env mutations *(URL parse + import error now logged)* |
+| `packages/agent-mux/core/src/spawn-runner.ts` | hazard | 8+ PTY kill/write failures *(4 now logged in spawn-runner)* |
 | `packages/agent-core/src/agenticTools/shared/process.ts` | caveat, hazard | Silent 50MB stdout truncation, ripgrep path cached at module load |
 | `packages/agent-mux/webui/src/lib/global-registry.ts` | coupling | globalThis shared mutable state, duplicated in observer-dashboard |
-| `packages/agent-platform/src/harness/internal/createRun/planProcess/phase.ts` | hazard, fallback | 3-layer recovery chain, process code extraction from any code block |
-| `packages/sdk/src/storage/journal.ts` | fallback, coupling | Append queue swallows previous errors, atomicity guarantee abandoned |
+| `packages/agent-platform/src/harness/internal/createRun/planProcess/phase.ts` | hazard | 3-layer recovery chain invisible without verbose *(code block extraction now rejects non-process blocks)* |
+| ~~`packages/sdk/src/storage/journal.ts`~~ | ~~fallback~~ | ~~Atomicity abandoned~~ → now throws on ENOENT. Queue errors logged. |
 | `packages/agent-mux/core/src/kanban.ts` | hazard | 2518 lines, 6+ sealed switch statements, stringly-typed status values |
 
 ---
@@ -98,10 +100,10 @@ The `-lc` vs `-c` difference means session.ts loads `.bashrc`/`.bash_profile` wh
 
 `getColumnName`, `getColumnWipLimit`, `getAllowedMoveStates`, `resolveKanbanWorkflowState`, `resolveKanbanStatusForWorkflowState`, `evaluateKanbanIssueMove` all switch on the same status values. Adding a new status requires updating 6+ functions with no exhaustiveness check.
 
-### Process definition extraction — any code block as fallback
+### ~~Process definition extraction — any code block as fallback~~
 **File:** `packages/agent-platform/src/harness/internal/createRun/planProcess/recovery.ts:33-106`
 
-If no valid process code block is found, `extractProcessDefinitionCodeBlock()` returns ANY code block in the text as fallback. Shell scripts, config snippets, or unrelated code could be extracted and executed as a process definition.
+**FIXED:** Non-process code blocks are now rejected (`return null`) instead of being extracted and executed.
 
 ### Validation uses triple-quote-style matching
 **File:** `packages/agent-platform/src/harness/internal/createRun/planProcess/validationSource.ts:294-300`
@@ -126,7 +128,7 @@ Three quote styles checked separately with hardcoded strings. Adding a new kind 
 ### File read silently capped at 10,000 lines
 **File:** `packages/agent-core/src/agenticTools/tools/fileSystem.ts:42-45`
 
-User requests 50,000 lines, gets 10,000. No indication in the response. Suggested: `// HERE BE DRAGONS: Read is capped at MAX_READ_LINES (10000). Requests for more are silently reduced.`
+User requests 50,000 lines, gets 10,000. No indication in the response.
 
 ### HTTP fetch response truncated at 50,000 chars
 **File:** `packages/agent-core/src/agenticTools/tools/execution.ts:136-140`
@@ -199,6 +201,6 @@ Hardcoded `/bin/bash` for non-Windows. macOS Catalina+ defaults to zsh. If bash 
 - **Re-export shims**: `agent-core/src/agenticTools/background/state.ts` re-exports from `agent-runtime` for backward compat (documented, but still fragile circular bridge)
 - **Deprecated-but-active**: 7 deprecated exports in `agent-core/src/types.ts` still consumed downstream. `SessionCreateArgs` deprecated in `agent-platform` but re-exported indefinitely
 - **Duplicate global registry**: `global-registry.ts` duplicated across webui and observer-dashboard with no shared module
-- **`noImplicitAny: false`** in `packages/agent-mux/gateway/tsconfig.json` — catch handlers receive `any`, no compile-time error validation
+- ~~**`noImplicitAny: false`** in `packages/agent-mux/gateway/tsconfig.json`~~ — **FIXED:** set to `true` along with `useUnknownInCatchVariables`
 - **`skipLibCheck: true`** in root `tsconfig.json` — dependency type incompatibilities invisible
 - **E2E gaps**: No end-to-end coverage for babysitter orchestration loop, hook-mux lifecycle, or trigger dispatching. Heavy reliance on unit tests
