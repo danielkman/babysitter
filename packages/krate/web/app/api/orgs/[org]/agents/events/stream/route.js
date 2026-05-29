@@ -1,4 +1,5 @@
 import { globalEventBus } from '@a5c-ai/krate-sdk';
+import { requireAuth } from '../../../../../../lib/api-auth.js';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,12 +23,17 @@ async function proxyControllerStream(org, request) {
     });
     if (!upstream.ok || !upstream.body) return null;
     return new Response(upstream.body, { headers: streamHeaders() });
-  } catch {
+  } catch (err) {
+    console.warn(`[agent-events-stream] upstream connection to ${target} failed:`, err.message);
     return null;
   }
 }
 
 export async function GET(request, { params }) {
+  const session = requireAuth(request);
+  if (!session) {
+    return Response.json({ error: 'unauthorized', message: 'Authentication required' }, { status: 401 });
+  }
   const { org } = await params;
   const upstream = await proxyControllerStream(org, request);
   if (upstream) return upstream;

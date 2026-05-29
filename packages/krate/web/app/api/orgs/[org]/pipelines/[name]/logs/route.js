@@ -1,9 +1,10 @@
 import { createKrateApiController, orgNamespaceName } from '@a5c-ai/krate-sdk';
+import { withAuth } from '../../../../../../lib/api-auth.js';
 import { errorResponse } from '../../../../../../lib/api-errors.js';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(request, { params }) {
+export const GET = withAuth(async function GET(request, { params }) {
   const { org, name } = await params;
   const controller = createKrateApiController({ namespace: orgNamespaceName(org) });
   try {
@@ -33,7 +34,7 @@ export async function GET(request, { params }) {
     const status = /not found|cross-org denial/i.test(message) ? 404 : 500;
     return errorResponse(message, status);
   }
-}
+});
 
 export function formatPipelineLogs(pipeline, jobs = []) {
   const name = pipeline?.metadata?.name || 'unknown-pipeline';

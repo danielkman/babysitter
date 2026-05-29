@@ -2,7 +2,7 @@
  * B3 + D1: External persistence + GitHub provider registration tests
  *
  * B3: sync/write/conflict controllers wire to CRDs via persistFn
- * D1: createDefaultProviderRegistry, createExternalBackendProvider
+ * D1: createDefaultProviderRegistry, createTypedProvider, createExternalBackendProvider (deprecated)
  */
 import assert from 'node:assert/strict';
 import test from 'node:test';
@@ -12,6 +12,7 @@ import { createWriteController } from '../src/external/write-controller.js';
 import { createConflictController } from '../src/external/conflict-controller.js';
 import {
   createDefaultProviderRegistry,
+  createTypedProvider,
   createExternalBackendProvider
 } from '../src/external/provider-resource-factory.js';
 
@@ -320,7 +321,7 @@ test('createExternalBackendProvider includes status with phase Pending', () => {
   assert.ok(resource.status.phase, 'status must have phase');
 });
 
-// Test D1-9 — integration: backend provider wizard flow
+// Test D1-9 — integration: backend provider wizard flow (deprecated path)
 test('createExternalBackendProvider followed by registry lookup works end-to-end', () => {
   const registry = createDefaultProviderRegistry();
 
@@ -336,5 +337,79 @@ test('createExternalBackendProvider followed by registry lookup works end-to-end
   // Verify adapter exists in registry for this provider type
   const adapter = registry.get(resource.spec.providerType);
   assert.ok(adapter, 'registry must have an adapter for the provider type in the CRD');
+  assert.equal(typeof adapter.descriptor, 'function', 'adapter must be usable');
+});
+
+// ---------------------------------------------------------------------------
+// D1: createTypedProvider — typed provider kinds
+// ---------------------------------------------------------------------------
+
+test('createTypedProvider creates a GitProvider resource', () => {
+  const resource = createTypedProvider('GitProvider', 'github', {
+    name: 'github-git',
+    organizationRef: 'acme',
+    endpoint: 'https://api.github.com',
+    secretRef: 'github-creds',
+  });
+
+  assert.ok(resource, 'must return a resource');
+  assert.equal(resource.apiVersion, 'krate.a5c.ai/v1alpha1');
+  assert.equal(resource.kind, 'GitProvider');
+  assert.equal(resource.metadata.name, 'github-git');
+  assert.equal(resource.spec.organizationRef, 'acme');
+  assert.equal(resource.spec.platform, 'github');
+  assert.equal(resource.spec.endpoint, 'https://api.github.com');
+  assert.equal(resource.spec.secretRef, 'github-creds');
+  assert.equal(resource.status.phase, 'Pending');
+});
+
+test('createTypedProvider creates CiProvider, IssueTrackerProvider, AppHostingProvider, ArtifactRegistryProvider', () => {
+  const kinds = ['CiProvider', 'IssueTrackerProvider', 'AppHostingProvider', 'ArtifactRegistryProvider'];
+  for (const kind of kinds) {
+    const resource = createTypedProvider(kind, 'gitlab', {
+      organizationRef: 'default',
+      endpoint: 'https://gitlab.com',
+    });
+    assert.equal(resource.kind, kind, `kind must be ${kind}`);
+    assert.equal(resource.spec.platform, 'gitlab');
+    assert.equal(resource.spec.endpoint, 'https://gitlab.com');
+  }
+});
+
+test('createTypedProvider throws on unknown kind', () => {
+  assert.throws(
+    () => createTypedProvider('BogusProvider', 'github', {}),
+    /unknown kind/
+  );
+});
+
+test('createTypedProvider throws on missing platform', () => {
+  assert.throws(
+    () => createTypedProvider('GitProvider', '', {}),
+    /platform is required/
+  );
+});
+
+test('createTypedProvider defaults name to platform-kind when name not provided', () => {
+  const resource = createTypedProvider('CiProvider', 'github', {});
+  assert.equal(resource.metadata.name, 'github-ciprovider');
+});
+
+test('createTypedProvider defaults namespace to default', () => {
+  const resource = createTypedProvider('GitProvider', 'github', {});
+  assert.equal(resource.metadata.namespace, 'default');
+});
+
+test('createTypedProvider with registry lookup works end-to-end', () => {
+  const registry = createDefaultProviderRegistry();
+  const resource = createTypedProvider('GitProvider', 'github', {
+    name: 'wizard-github-git',
+    namespace: 'krate-org-acme',
+    organizationRef: 'acme',
+    endpoint: 'https://api.github.com',
+  });
+
+  const adapter = registry.get(resource.spec.platform);
+  assert.ok(adapter, 'registry must have an adapter for the platform');
   assert.equal(typeof adapter.descriptor, 'function', 'adapter must be usable');
 });

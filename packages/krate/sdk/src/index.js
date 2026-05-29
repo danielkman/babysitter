@@ -63,6 +63,7 @@ export { createConflictController } from '../../core/src/external/conflict-contr
 // External Provider Registry & Factory
 export {
   createDefaultProviderRegistry,
+  createTypedProvider,
   createExternalBackendProvider
 } from '../../core/src/external/provider-resource-factory.js';
 

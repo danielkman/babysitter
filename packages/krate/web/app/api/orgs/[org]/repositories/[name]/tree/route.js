@@ -1,4 +1,5 @@
 import { createGiteaService } from '@a5c-ai/krate-sdk';
+import { withAuth } from '../../../../../../lib/api-auth.js';
 
 // Lazily created so the service is instantiated per-process rather than per-request
 let _service;
@@ -38,7 +39,7 @@ function filterToCurrentPath(fullTree, currentPath) {
   });
 }
 
-export async function GET(request, { params }) {
+export const GET = withAuth(async function GET(request, { params }) {
   const { org, name } = await params;
   const { searchParams } = new URL(request.url);
   const branch = searchParams.get('branch') || 'main';
@@ -79,4 +80,4 @@ export async function GET(request, { params }) {
     totalItems: tree.length,
     source: 'mock',
   });
-}
+});

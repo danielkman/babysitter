@@ -140,7 +140,7 @@ function LayerSection({ layer, atlasProxyUrl, selected, onToggle }) {
 
   return (
     <div style={{ marginBottom: '0.5rem' }}>
-      <div style={sectionHeaderStyle} onClick={handleToggleOpen}>
+      <div style={sectionHeaderStyle} onClick={handleToggleOpen} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleToggleOpen(); } }}>
         <span>
           <strong>{layer.label}</strong>
           {layer.position != null && (
@@ -176,6 +176,9 @@ function LayerSection({ layer, atlasProxyUrl, selected, onToggle }) {
                     key={hit.id}
                     style={isSelected ? cardSelectedStyle : cardStyle}
                     onClick={() => onToggle(layer.key, hit)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle(layer.key, hit); } }}
                   >
                     <div>
                       <strong style={{ fontSize: '0.8125rem' }}>{hit.displayName || hit.id}</strong>
@@ -205,6 +208,9 @@ function LayerSection({ layer, atlasProxyUrl, selected, onToggle }) {
                   <span
                     key={s.id}
                     onClick={() => onToggle(layer.key, s)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle(layer.key, s); } }}
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: 4,
                       fontSize: '0.75rem', padding: '2px 8px', borderRadius: '9999px',
@@ -241,7 +247,7 @@ function ToolsLayerSection({ layer, atlasProxyUrl, selected, onToggle }) {
 
   return (
     <div style={{ marginBottom: '0.5rem' }}>
-      <div style={sectionHeaderStyle} onClick={() => setOpen((o) => !o)}>
+      <div style={sectionHeaderStyle} onClick={() => setOpen((o) => !o)} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpen((o) => !o); } }}>
         <span>
           <strong>{layer.label}</strong>
           {layer.position != null && (
@@ -336,7 +342,7 @@ function ToolSubSection({ label, kinds, layerKey, atlasProxyUrl, selected, onTog
 
   return (
     <div>
-      <div style={subSectionHeaderStyle} onClick={handleToggleOpen}>
+      <div style={subSectionHeaderStyle} onClick={handleToggleOpen} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleToggleOpen(); } }}>
         <span>
           {label}
           {selectionCount > 0 && (
@@ -369,6 +375,9 @@ function ToolSubSection({ label, kinds, layerKey, atlasProxyUrl, selected, onTog
                     key={hit.id}
                     style={isSelected ? cardSelectedStyle : cardStyle}
                     onClick={() => onToggle(layerKey, hit)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle(layerKey, hit); } }}
                   >
                     <div>
                       <strong style={{ fontSize: '0.8125rem' }}>{hit.displayName || hit.id}</strong>
@@ -397,6 +406,9 @@ function ToolSubSection({ label, kinds, layerKey, atlasProxyUrl, selected, onTog
                   <span
                     key={s.id}
                     onClick={() => onToggle(layerKey, s)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle(layerKey, s); } }}
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: 4,
                       fontSize: '0.75rem', padding: '2px 8px', borderRadius: '9999px',
@@ -442,7 +454,7 @@ function MemoryRepositorySection({ org, selectedRepos, onToggleRepo }) {
 
   return (
     <div style={{ marginBottom: '0.5rem' }}>
-      <div style={sectionHeaderStyle} onClick={() => setOpen((o) => !o)}>
+      <div style={sectionHeaderStyle} onClick={() => setOpen((o) => !o)} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpen((o) => !o); } }}>
         <span>
           <strong>Memory</strong>
           {selectionCount > 0 && (
@@ -478,6 +490,9 @@ function MemoryRepositorySection({ org, selectedRepos, onToggleRepo }) {
                     key={repoName}
                     style={isSelected ? memoryToggleSelectedStyle : memoryToggleStyle}
                     onClick={() => onToggleRepo({ name: repoName, url: repoUrl })}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggleRepo({ name: repoName, url: repoUrl }); } }}
                   >
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                       <strong>{repoName}</strong>
@@ -553,7 +568,7 @@ function ModelInferenceSection({ org, selectedInference, onSelectInference }) {
 
   return (
     <div style={{ marginBottom: '0.5rem' }}>
-      <div style={sectionHeaderStyle} onClick={() => setOpen(o => !o)}>
+      <div style={sectionHeaderStyle} onClick={() => setOpen(o => !o)} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setOpen(o => !o); } }}>
         <span>
           <strong>Model Inference</strong>
           {selectedInference && (

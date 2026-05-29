@@ -1,4 +1,5 @@
 import { createGiteaService } from '@a5c-ai/krate-sdk';
+import { withAuth } from '../../../../../../../lib/api-auth.js';
 
 // Lazily created so the service is instantiated per-process rather than per-request
 let _service;
@@ -210,7 +211,7 @@ CMD ["node", "src/index.js"]
   );
 }
 
-export async function GET(request, { params }) {
+export const GET = withAuth(async function GET(request, { params }) {
   const { org, name, path: pathParts } = await params;
   const filePath = Array.isArray(pathParts) ? pathParts.join('/') : (pathParts || '');
   const { searchParams } = new URL(request.url);
@@ -285,4 +286,4 @@ export async function GET(request, { params }) {
     branch,
     source: 'mock',
   });
-}
+});

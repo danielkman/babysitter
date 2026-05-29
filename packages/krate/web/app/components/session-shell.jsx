@@ -77,6 +77,9 @@ function PanelHeader({ title, badge, collapsed, onToggle }) {
   return (
     <div
       onClick={onToggle}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle(); } }}
       style={{
         display: 'flex',
         alignItems: 'center',

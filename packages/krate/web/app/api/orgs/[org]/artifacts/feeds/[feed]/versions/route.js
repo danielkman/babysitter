@@ -1,9 +1,10 @@
 import { createKrateApiController, orgNamespaceName } from '@a5c-ai/krate-sdk';
+import { withAuth } from '../../../../../../../lib/api-auth.js';
 import { errorResponse } from '../../../../../../../lib/api-errors.js';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(_request, { params }) {
+export const GET = withAuth(async function GET(_request, { params }) {
   const { org, feed } = await params;
   const controller = createKrateApiController({ namespace: orgNamespaceName(org) });
   try {
@@ -15,4 +16,4 @@ export async function GET(_request, { params }) {
   } catch (error) {
     return errorResponse(error.message, error.message?.includes('not found') ? 404 : 500);
   }
-}
+});

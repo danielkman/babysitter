@@ -19,7 +19,7 @@ Krate is split into 4 packages under `packages/krate/`:
 
 ```bash
 npm run build     # Generate dist/ JSON snapshots
-npm test          # Unit + integration tests (node:test) — 1501 tests
+npm test          # Unit + integration tests (node:test) — 1668+ tests
 npm run e2e       # End-to-end package validation — 3 tests
 npm run smoke     # MVP smoke assertions — 21 checks
 npm run serve     # Start HTTP API on port 3080
@@ -35,7 +35,7 @@ node --test tests/*.test.js   # SDK export + integration tests — 78 tests
 ### CLI (`packages/krate/cli`)
 
 ```bash
-node --test tests/*.test.js   # CLI commands + MCP protocol tests — 51 tests
+node --test tests/*.test.js   # CLI commands + MCP protocol tests — 51+ tests
 krate serve                   # Start HTTP API server
 krate mcp                     # Start MCP (Model Context Protocol) server over stdio
 ```
@@ -45,7 +45,7 @@ krate mcp                     # Start MCP (Model Context Protocol) server over s
 ```bash
 npm run build     # Next.js production build (Turbopack)
 npm run dev       # Development server
-npm test          # Route and API utility tests — 64 tests
+npm test          # Route and API utility tests — 115 tests
 ```
 
 ## Architecture
@@ -61,7 +61,7 @@ npm test          # Route and API utility tests — 64 tests
 
 ## MCP Server Mode
 
-The CLI provides an MCP server (`krate mcp`) that exposes 14 tools, 3 prompts, and 2 resources over stdio:
+The CLI provides an MCP server (`krate mcp`) that exposes 19 tools, 3 prompts, and 3 resources over stdio:
 
 **Tools:**
 - `krate_snapshot` — org runtime snapshot
@@ -74,6 +74,16 @@ The CLI provides an MCP server (`krate mcp`) that exposes 14 tools, 3 prompts, a
 - `krate_sync_external` — trigger external sync
 - `krate_resolve_conflict` — resolve sync conflict
 - `krate_audit_query` — query audit events
+- `krate_model_catalog` — list available models and providers
+- `krate_list_model_routes` — list model routing configurations
+- `krate_create_model_route` — create a model route (Envoy AI Gateway)
+- `krate_list_virtual_models` — list virtual model abstractions
+- `krate_create_virtual_model` — create a virtual model
+
+**Resources:**
+- `krate://snapshot` — org runtime snapshot
+- `krate://resources` — resource listing
+- `krate://models` — model catalog and routing
 
 **CLI commands:** `krate serve`, `krate mcp`, `krate status`, `krate stacks`, `krate dispatch`, `krate apply`, `krate get`, `krate list`, `krate delete`, `krate version`
 
@@ -84,7 +94,7 @@ The CLI provides an MCP server (`krate mcp`) that exposes 14 tools, 3 prompts, a
 - SDK re-exports core helpers for web/CLI consumers; web imports from `@a5c-ai/krate-sdk`
 - Web console is in ../web/ (Next.js 16 + React 19)
 - Helm chart is in ../charts/ (not an npm workspace)
-- Resource taxonomy: 83 kinds across config (etcd) and aggregated (Postgres) storage, 75 CRDs
+- Resource taxonomy: 89 kinds across config (etcd) and aggregated (Postgres) storage (58 CONFIG + 31 AGGREGATED = 89 total CRDs)
 - Web console split into 7 modules (lib/krate-ui, lib/page-frame, pages/agent, pages/repo, pages/manage, pages/settings, pages/external)
 - Auth middleware on all mutating API routes
 - Async kubectl snapshot with stale-while-revalidate cache (30s TTL)
@@ -152,3 +162,42 @@ The dispatch flow:
 - Permission review with cross-org denial, workspace policy enforcement
 - External backend providers with GitHub adapter, webhook/sync/write/conflict controllers
 - K8s Job-based dispatch with callback result collection and hooks lifecycle events
+
+## Typed Providers
+
+Typed provider interfaces for external service integration:
+
+- **GitProvider** — Git hosting operations (clone, push, PR creation, branch management)
+- **CiProvider** — CI/CD pipeline triggering, status, and log retrieval
+- **IssueTrackerProvider** — Issue CRUD, label management, assignment
+- **AppHostingProvider** — Application deployment, scaling, environment management
+- **ArtifactRegistryProvider** — Package publish, version listing, feed management
+
+Each provider type defines a standard interface that backend adapters (GitHub, GitLab, Azure DevOps, etc.) implement. The provider config CRD (`AgentProviderConfig`) references a typed provider and its connection details.
+
+## KrateVirtualModel
+
+Programmable model abstraction layer (`virtual-model-controller.js`):
+
+- Declarative routing rules with condition evaluation (eq, neq, gt, lt, in, contains, matches)
+- Weighted random route selection across multiple model routes
+- JS hook execution in sandboxed `vm.Script` contexts (3s timeout) for:
+  - `routeSelect` — custom route selection logic
+  - `requestTransform` / `responseTransform` — request/response modification
+  - `sessionLifecycle` — session event handling
+  - `observe` — observability side-effects
+- Agentic lifecycle hooks: `onSessionStart`, `onSessionEnd`, `onTurnEnd`, `onPreToolUse`, `onPostToolUse`, `onUserPromptSubmit`, `onError`, `onCompact`
+- Session management with `maxTurns` and `escalationThreshold`
+- Fallback chain for route resolution
+- Reconciliation with route existence validation
+- **Key exports:** `createVirtualModelController`, `validateVirtualModel`, `VIRTUAL_MODEL_CONTROLLER_BOUNDARY`
+
+## KrateModelRoute and Envoy AI Gateway
+
+Model routing layer for LLM traffic management:
+
+- `KrateModelRoute` CRD defines upstream model endpoints with provider, model name, API key references, and rate limits
+- Envoy AI Gateway integration generates xDS configuration for model-level load balancing and traffic splitting
+- Virtual models reference model routes by name, enabling A/B testing, canary deployments, and cost-aware routing
+- MCP tools (`krate_create_model_route`, `krate_list_model_routes`) for programmatic route management
+- Route health tracking and automatic failover via fallback chains

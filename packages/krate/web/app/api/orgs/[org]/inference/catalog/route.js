@@ -1,9 +1,10 @@
 import { createKrateApiController, orgNamespaceName } from '@a5c-ai/krate-sdk';
+import { withAuth } from '../../../../../lib/api-auth.js';
 import { errorResponse } from '../../../../../lib/api-errors.js';
 
 export const dynamic = 'force-dynamic';
 
-export const GET = async (_request, { params }) => {
+export const GET = withAuth(async (_request, { params }) => {
   const { org } = await params;
   const controller = createKrateApiController({ namespace: orgNamespaceName(org) });
   try {
@@ -34,4 +35,4 @@ export const GET = async (_request, { params }) => {
   } catch (err) {
     return errorResponse(err.message || 'Failed to build model catalog', 500);
   }
-};
+});

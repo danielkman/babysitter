@@ -1,3 +1,5 @@
+import { withAuth } from '../../../../../../lib/api-auth.js';
+
 export const dynamic = 'force-dynamic';
 
 const INTERNAL_TOOLS_CATALOG = [
@@ -45,6 +47,6 @@ const INTERNAL_TOOLS_CATALOG = [
   },
 ];
 
-export async function GET() {
+export const GET = withAuth(async function GET() {
   return Response.json({ categories: INTERNAL_TOOLS_CATALOG }, { headers: { 'Cache-Control': 'public, max-age=3600' } });
-}
+});

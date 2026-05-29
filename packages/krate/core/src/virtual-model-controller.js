@@ -222,7 +222,8 @@ export function createVirtualModelController(options = {}) {
         const vmContext = vm.createContext(sandbox);
         script.runInContext(vmContext, { timeout: 3000 });
         return sandbox.result;
-      } catch {
+      } catch (err) {
+        console.warn(`[virtual-model-controller] hook execution error (${hookType}): ${err.message}`);
         return null;
       }
     },

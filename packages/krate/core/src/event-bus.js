@@ -11,7 +11,7 @@ const EVENT_LOG_DIR = process.env.KRATE_EVENT_LOG_DIR || join(process.env.HOME |
 const MAX_EVENTS = 1000;
 
 function ensureLogDir() {
-  try { if (!existsSync(EVENT_LOG_DIR)) mkdirSync(EVENT_LOG_DIR, { recursive: true }); } catch {}
+  try { if (!existsSync(EVENT_LOG_DIR)) mkdirSync(EVENT_LOG_DIR, { recursive: true }); } catch (err) { console.warn('[event-bus] failed to create event log directory:', err.message); }
 }
 
 function persistEvent(event) {
@@ -26,8 +26,8 @@ function persistEvent(event) {
       if (lines.length > MAX_EVENTS) {
         writeFileSync(logFile, lines.slice(-MAX_EVENTS).join('\n') + '\n');
       }
-    } catch {}
-  } catch {}
+    } catch (err) { console.warn('[event-bus] failed to truncate event log:', err.message); }
+  } catch (err) { console.warn('[event-bus] failed to persist event:', err.message); }
 }
 
 /**
