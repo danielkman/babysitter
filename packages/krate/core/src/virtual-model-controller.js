@@ -199,14 +199,26 @@ export function createVirtualModelController(options = {}) {
       if (!hookBody || typeof hookBody !== 'string') return null;
 
       try {
-        const sandbox = {
-          args: Object.freeze(JSON.parse(JSON.stringify(args || {}))),
-          context: Object.freeze(JSON.parse(JSON.stringify(context || {}))),
-          result: null,
-          JSON, Math, Date, String, Number, Array, Object, Boolean, RegExp,
-          parseInt, parseFloat, isNaN, isFinite, encodeURIComponent, decodeURIComponent,
-        };
-        const script = new vm.Script(`result = (function(args, context) { ${hookBody} })(args, context);`);
+        const safeArgs = JSON.parse(JSON.stringify(args || {}));
+        const safeCtx = JSON.parse(JSON.stringify(context || {}));
+        Object.setPrototypeOf(safeArgs, null);
+        Object.setPrototypeOf(safeCtx, null);
+        Object.freeze(safeArgs);
+        Object.freeze(safeCtx);
+        const sandbox = Object.create(null);
+        sandbox.args = safeArgs;
+        sandbox.context = safeCtx;
+        sandbox.result = null;
+        sandbox.JSON = JSON;
+        sandbox.Math = Math;
+        sandbox.Date = Date;
+        sandbox.parseInt = parseInt;
+        sandbox.parseFloat = parseFloat;
+        sandbox.isNaN = isNaN;
+        sandbox.isFinite = isFinite;
+        sandbox.encodeURIComponent = encodeURIComponent;
+        sandbox.decodeURIComponent = decodeURIComponent;
+        const script = new vm.Script(`result = (function(args, context) { "use strict"; ${hookBody} })(args, context);`);
         const vmContext = vm.createContext(sandbox);
         script.runInContext(vmContext, { timeout: 3000 });
         return sandbox.result;

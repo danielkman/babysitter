@@ -837,3 +837,41 @@ test('fireCompact returns null modified when no hook', () => {
   const result = controller.fireCompact(vm, 'summary', { id: 's1' });
   assert.equal(result.modified, null);
 });
+
+// ── Hook Sandbox Adversarial Tests ────────────────────────────────────────
+
+test('sandbox blocks access to process', () => {
+  const controller = createVirtualModelController();
+  const result = controller.executeHook('test', 'return typeof process', {}, {});
+  assert.ok(result === 'undefined' || result === undefined || result === null, 'process must not be accessible');
+});
+
+test('sandbox blocks access to require', () => {
+  const controller = createVirtualModelController();
+  const result = controller.executeHook('test', 'return typeof require', {}, {});
+  assert.ok(result === 'undefined' || result === undefined || result === null, 'require must not be accessible');
+});
+
+test('sandbox blocks access to globalThis properties', () => {
+  const controller = createVirtualModelController();
+  const result = controller.executeHook('test', 'try { return typeof globalThis.process } catch { return "blocked" }', {}, {});
+  assert.ok(result === 'undefined' || result === undefined || result === null || result === 'blocked', 'globalThis.process must not be accessible');
+});
+
+test('sandbox prevents prototype pollution', () => {
+  const controller = createVirtualModelController();
+  const result = controller.executeHook('test', 'try { args.__proto__.polluted = true; return args.polluted } catch { return null }', { clean: true }, {});
+  assert.ok(result === undefined || result === null, 'prototype pollution must be blocked (args are frozen)');
+});
+
+test('sandbox enforces timeout on infinite loops', () => {
+  const controller = createVirtualModelController();
+  const result = controller.executeHook('test', 'while(true){}', {}, {});
+  assert.equal(result, null, 'infinite loop must timeout and return null');
+});
+
+test('sandbox blocks constructor escape', () => {
+  const controller = createVirtualModelController();
+  const result = controller.executeHook('test', 'try { return this.constructor.constructor("return process")() } catch { return null }', {}, {});
+  assert.equal(result, null, 'constructor escape must be blocked');
+});
