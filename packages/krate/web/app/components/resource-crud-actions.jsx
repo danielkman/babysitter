@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { ConfirmDialog } from './confirm-dialog.jsx';
 
 /**
  * ResourceActions — terminate / archive / delete buttons for any resource.
@@ -68,38 +69,28 @@ export function ResourceActions({ org, apiPath, actions = [], onMutated }) {
 
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', flexWrap: 'wrap' }}>
-      {confirmAction ? (
-        <>
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => execute(confirmAction)}
-            style={buttonStyle(confirmAction)}
-          >
-            {busy ? 'Working...' : `Confirm ${confirmAction}`}
-          </button>
-          <button
-            type="button"
-            onClick={() => setConfirmAction(null)}
-            style={{ background: 'transparent', border: '1px solid #d1d5db', padding: '0.25rem 0.5rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.75rem' }}
-          >
-            Cancel
-          </button>
-        </>
-      ) : (
-        actions.map((action) => (
-          <button
-            key={action}
-            type="button"
-            disabled={busy}
-            onClick={() => setConfirmAction(action)}
-            style={buttonStyle(action)}
-          >
-            {actionLabel[action] || action}
-          </button>
-        ))
-      )}
+      {actions.map((action) => (
+        <button
+          key={action}
+          type="button"
+          disabled={busy}
+          onClick={() => setConfirmAction(action)}
+          style={buttonStyle(action)}
+        >
+          {busy && confirmAction === action ? 'Working...' : (actionLabel[action] || action)}
+        </button>
+      ))}
       {message ? <small style={{ color: 'var(--color-danger, #cb2431)', fontSize: '0.75rem' }}>{message}</small> : null}
+      <ConfirmDialog
+        open={!!confirmAction}
+        title={`${actionLabel[confirmAction] || confirmAction || ''} resource`}
+        message={`Are you sure you want to ${confirmAction || 'perform this action on'} this resource?`}
+        confirmLabel={actionLabel[confirmAction] || confirmAction || 'Confirm'}
+        cancelLabel="Cancel"
+        danger={confirmAction === 'delete' || confirmAction === 'terminate'}
+        onConfirm={() => execute(confirmAction)}
+        onCancel={() => setConfirmAction(null)}
+      />
     </span>
   );
 }

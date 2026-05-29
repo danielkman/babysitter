@@ -8,6 +8,8 @@ import { ModelRouteCard, CreateModelRouteForm } from './model-route-manager.jsx'
 import { VirtualModelCard, CreateVirtualModelForm } from './virtual-model-manager.jsx';
 import { CuratedModelCatalog, UnifiedModelCatalogSection } from './curated-model-catalog.jsx';
 import { Pagination } from './pagination.jsx';
+import { ConfirmDialog } from './confirm-dialog.jsx';
+import { dedupFetch } from '../lib/fetch-dedup.js';
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 //
@@ -31,6 +33,7 @@ export function InferenceServiceManager({ org, initialServiceName }) {
   const [selectedService, setSelectedService] = useState(null);
   const [createLoading, setCreateLoading] = useState(false);
   const [createError, setCreateError] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState(null); // { type, name, item }
 
   // Pagination state per resource type
   const [svcLimit, setSvcLimit] = useState(25);
@@ -51,10 +54,10 @@ export function InferenceServiceManager({ org, initialServiceName }) {
     setError(null);
     try {
       const [svcRes, rtRes, routeRes, vmRes] = await Promise.all([
-        fetch(`/api/orgs/${org}/inference/services?limit=${svcLimit}&offset=${svcOffset}`),
-        fetch(`/api/orgs/${org}/inference/runtimes?limit=${rtLimit}&offset=${rtOffset}`),
-        fetch(`/api/orgs/${org}/inference/routes?limit=${routeLimit}&offset=${routeOffset}`),
-        fetch(`/api/orgs/${org}/inference/virtual-models?limit=${vmLimit}&offset=${vmOffset}`),
+        dedupFetch(`/api/orgs/${org}/inference/services?limit=${svcLimit}&offset=${svcOffset}`),
+        dedupFetch(`/api/orgs/${org}/inference/runtimes?limit=${rtLimit}&offset=${rtOffset}`),
+        dedupFetch(`/api/orgs/${org}/inference/routes?limit=${routeLimit}&offset=${routeOffset}`),
+        dedupFetch(`/api/orgs/${org}/inference/virtual-models?limit=${vmLimit}&offset=${vmOffset}`),
       ]);
       const svcData = svcRes.ok ? await svcRes.json() : null;
       const rtData = rtRes.ok ? await rtRes.json() : null;
@@ -149,11 +152,21 @@ export function InferenceServiceManager({ org, initialServiceName }) {
     }
   };
 
-  const handleDelete = async (service) => {
+  const handleDelete = (service) => {
     const name = service.metadata?.name || service.name;
-    if (!confirm(`Delete inference service "${name}"?`)) return;
+    setDeleteConfirm({ type: 'service', name, item: service });
+  };
+
+  const executeDelete = async () => {
+    if (!deleteConfirm) return;
+    const { type, name } = deleteConfirm;
+    setDeleteConfirm(null);
     try {
-      const res = await fetch(`/api/orgs/${org}/inference/services/${encodeURIComponent(name)}`, { method: 'DELETE' });
+      let url;
+      if (type === 'service') url = `/api/orgs/${org}/inference/services/${encodeURIComponent(name)}`;
+      else if (type === 'route') url = `/api/orgs/${org}/resources/KrateModelRoute/${encodeURIComponent(name)}`;
+      else if (type === 'virtual-model') url = `/api/orgs/${org}/resources/KrateVirtualModel/${encodeURIComponent(name)}`;
+      const res = await fetch(url, { method: 'DELETE' });
       if (!res.ok) throw new Error('Delete failed');
       await fetchData();
     } catch (err) {
@@ -183,28 +196,14 @@ export function InferenceServiceManager({ org, initialServiceName }) {
     }
   };
 
-  const handleDeleteRoute = async (route) => {
+  const handleDeleteRoute = (route) => {
     const name = route.metadata?.name || route.name;
-    if (!confirm(`Delete model route "${name}"?`)) return;
-    try {
-      const res = await fetch(`/api/orgs/${org}/resources/KrateModelRoute/${encodeURIComponent(name)}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error('Delete failed');
-      await fetchData();
-    } catch (err) {
-      alert(err.message || 'Delete failed');
-    }
+    setDeleteConfirm({ type: 'route', name, item: route });
   };
 
-  const handleDeleteVirtualModel = async (vm) => {
+  const handleDeleteVirtualModel = (vm) => {
     const name = vm.metadata?.name || vm.name;
-    if (!confirm(`Delete virtual model "${name}"?`)) return;
-    try {
-      const res = await fetch(`/api/orgs/${org}/resources/KrateVirtualModel/${encodeURIComponent(name)}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error('Delete failed');
-      await fetchData();
-    } catch (err) {
-      alert(err.message || 'Delete failed');
-    }
+    setDeleteConfirm({ type: 'virtual-model', name, item: vm });
   };
 
   const tabStyle = (active) => ({
@@ -457,6 +456,18 @@ export function InferenceServiceManager({ org, initialServiceName }) {
           onClose={() => setSelectedService(null)}
         />
       )}
+
+      {/* Confirm Delete Dialog */}
+      <ConfirmDialog
+        open={!!deleteConfirm}
+        title={`Delete ${deleteConfirm?.type === 'virtual-model' ? 'virtual model' : deleteConfirm?.type || 'resource'}`}
+        message={`Are you sure you want to delete "${deleteConfirm?.name}"? This action cannot be undone.`}
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        danger
+        onConfirm={executeDelete}
+        onCancel={() => setDeleteConfirm(null)}
+      />
     </div>
   );
 }

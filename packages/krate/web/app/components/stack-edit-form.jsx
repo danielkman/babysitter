@@ -1,14 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import { useUnsavedChanges } from '../hooks/use-unsaved-changes.js';
 
 export function StackEditForm({ org, stack }) {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
-  const [fields, setFields] = useState({
+  const initialFields = useMemo(() => ({
     baseAgent: stack?.spec?.baseAgent || stack?.spec?.agent || '',
     adapter: stack?.spec?.adapter || '',
     displayName: stack?.spec?.displayName || '',
@@ -18,7 +19,12 @@ export function StackEditForm({ org, stack }) {
     maxTokens: stack?.spec?.maxTokens || '',
     budgetLimitUsd: stack?.spec?.budgetLimitUsd || '',
     memoryRepositoryRefs: (stack?.spec?.memoryRepositoryRefs || []).join(', '),
-  });
+  }), [stack]);
+
+  const [fields, setFields] = useState(initialFields);
+
+  const isDirty = editing && Object.keys(fields).some((k) => fields[k] !== initialFields[k]);
+  useUnsavedChanges(isDirty);
 
   function handleChange(field, value) {
     setFields((prev) => ({ ...prev, [field]: value }));
