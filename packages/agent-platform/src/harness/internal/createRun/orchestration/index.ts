@@ -66,12 +66,16 @@ async function runCliOrchestration(args: RunOrchestrationPhaseArgs): Promise<num
     // Fall back to global babysitter binary
   }
 
-  // Create run via CLI
+  // Create run via CLI — pass prompt both as metadata and as process inputs
+  const fsPromises = await import("node:fs/promises");
+  const inputsFile = path.join(workspace, `.a5c-omni-inputs-${Date.now()}.json`);
+  await fsPromises.writeFile(inputsFile, JSON.stringify({ prompt, request: prompt }));
   const createArgs = [
     "run:create",
     "--entry", `${path.resolve(processPath)}#process`,
     "--process-id", path.basename(processPath, path.extname(processPath)),
     "--prompt", prompt,
+    "--inputs", inputsFile,
     "--harness", "claude-code",
     "--json",
   ];
@@ -90,10 +94,12 @@ async function runCliOrchestration(args: RunOrchestrationPhaseArgs): Promise<num
     });
     const parsed = JSON.parse(createResult);
     runDir = parsed.runDir;
+    await fsPromises.unlink(inputsFile).catch(() => {});
     if (!args.json) {
       process.stderr.write(`\x1b[32mRun created:\x1b[0m ${runDir}\n`);
     }
   } catch (err) {
+    await fsPromises.unlink(inputsFile).catch(() => {});
     const msg = err instanceof Error ? err.message : String(err);
     if (!args.json) {
       process.stderr.write(`\x1b[31mFailed to create run:\x1b[0m ${msg}\n`);
