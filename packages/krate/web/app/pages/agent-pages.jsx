@@ -26,6 +26,15 @@ import { issueRepositoryRefs, issueProjectRefs } from '@a5c-ai/krate-sdk';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
+function phaseTone(phase) {
+  if (!phase || phase === 'Queued' || phase === 'Pending') return 'neutral';
+  if (phase === 'Active' || phase === 'Running') return 'warn';
+  if (phase === 'Completed' || phase === 'Succeeded') return 'good';
+  if (phase === 'Failed' || phase === 'Errored') return 'danger';
+  if (phase === 'Archived') return 'neutral';
+  return 'neutral';
+}
+
 function relativeTime(timestamp) {
   if (!timestamp) return '';
   try {
@@ -153,16 +162,17 @@ function FlowLane({ run, transcript }) {
   const runName = run?.metadata?.name || 'unknown';
   const stackName = run?.spec?.stackRef || run?.spec?.targetStack || null;
   const phase = run?.status?.phase || 'Pending';
-  const phaseTone = !phase || phase === 'Queued' || phase === 'Pending' ? 'neutral' : phase === 'Running' ? 'warn' : phase === 'Completed' || phase === 'Succeeded' ? 'good' : phase === 'Failed' ? 'danger' : 'neutral';
+  
   const messages = transcript?.spec?.messages || [];
   const segments = deriveSegments(messages);
-  const phaseColor = phaseTone === 'good' ? '#22c55e' : phaseTone === 'warn' ? '#f59e0b' : phaseTone === 'danger' ? '#ef4444' : '#94a3b8';
+  const tone = phaseTone(phase);
+  const phaseColor = tone === 'good' ? '#22c55e' : tone === 'warn' ? '#f59e0b' : tone === 'danger' ? '#ef4444' : '#94a3b8';
 
   return <div style={{ marginBottom: 12 }}>
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, fontSize: 13 }}>
       <strong title={runName} style={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{runName}</strong>
-      {stackName ? <span style={{ color: '#6b7280' }}>{stackName}</span> : null}
-      <StatusPill tone={phaseTone}>{phase}</StatusPill>
+      {stackName ? <span style={{ color: 'var(--text-muted)' }}>{stackName}</span> : null}
+      <StatusPill tone={tone}>{phase}</StatusPill>
     </div>
     <div style={{ display: 'flex', height: 28, borderRadius: 4, overflow: 'hidden', backgroundColor: '#f1f5f9' }}>
       {segments.length ? segments.map((seg, index) => {
@@ -440,13 +450,6 @@ export async function AgentRunsPage({ org = null, linkToDetail = false } = {}) {
   const activeOrg = ui.model.org?.slug || org || 'default';
   const agentView = ui.model.agents || { runs: { count: 0, items: [] }, stacks: { count: 0, items: [] } };
   const runs = agentView.runs.items || [];
-  const phaseTone = (phase) => {
-    if (!phase || phase === 'Queued' || phase === 'Pending') return 'neutral';
-    if (phase === 'Running') return 'warn';
-    if (phase === 'Completed' || phase === 'Succeeded') return 'good';
-    if (phase === 'Failed') return 'danger';
-    return 'neutral';
-  };
   const availableStacks = (agentView.stacks?.items || []).map(s => s.metadata?.name).filter(Boolean);
   return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/agents" eyebrow="agent dispatch runs" title="Dispatch runs" text="Track agent dispatch runs across stacks, repositories, and phases. Each run represents a dispatched agent task." actions={[['/agents', 'Overview'], ['/agents/stacks', 'Stacks']]} breadcrumbs={[['/', 'Krate'], ['/agents', 'Agents'], ['/agents/runs', 'Dispatch runs']]}>
     <DegradedBanner model={ui.model} />
@@ -484,13 +487,6 @@ export async function AgentRunDetailPage({ org = null, runId } = {}) {
   const sessionRef = run?.status?.sessionRef || run?.spec?.sessionRef || null;
   const runTranscript = runTranscripts.find((t) => t.spec?.sessionRef === sessionRef || t.spec?.runRef === runId) || null;
   const runTranscriptMessages = runTranscript?.spec?.messages || [];
-  const phaseTone = (phase) => {
-    if (!phase || phase === 'Queued' || phase === 'Pending') return 'neutral';
-    if (phase === 'Running') return 'warn';
-    if (phase === 'Completed' || phase === 'Succeeded') return 'good';
-    if (phase === 'Failed') return 'danger';
-    return 'neutral';
-  };
   const permissionTone = (decision) => {
     if (!decision) return 'neutral';
     if (decision === 'allowed' || decision === 'Allowed') return 'good';
@@ -760,13 +756,6 @@ export async function AgentWorkspacesPage({ org = null } = {}) {
   const activeOrg = ui.model.org?.slug || org || 'default';
   const agentView = ui.model.agents || { workspaces: { count: 0, items: [] } };
   const workspaces = agentView.workspaces?.items || [];
-  const phaseTone = (phase) => {
-    if (!phase || phase === 'Pending' || phase === 'Provisioning') return 'neutral';
-    if (phase === 'Active') return 'good';
-    if (phase === 'Archived') return 'warn';
-    if (phase === 'Failed') return 'danger';
-    return 'neutral';
-  };
   return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/agents" eyebrow="agent workspaces" title="Agent workspaces" text="Volume-backed git workspaces with PVC lifecycle, repo binding, and runner mount specs. Workspaces are reusable across runs." actions={[['/agents', 'Overview'], ['/agents/sessions', 'Sessions']]} breadcrumbs={[['/', 'Krate'], ['/agents', 'Agents'], ['/agents/workspaces', 'Workspaces']]}>
     <DegradedBanner model={ui.model} />
     <div className="card">
@@ -798,13 +787,6 @@ export async function AgentWorkspaceDetailPage({ org = null, workspaceId } = {})
   const boundSessions = workspace?.status?.boundSessions || [];
   const allWorkItemLinks = (ui.model.resources || []).find((r) => r.kind === 'WorkItemWorkspaceLink');
   const workItemLinks = (allWorkItemLinks?.items || []).filter((link) => link.spec?.workspace === workspaceId);
-  const phaseTone = (phase) => {
-    if (!phase || phase === 'Pending' || phase === 'Provisioning') return 'neutral';
-    if (phase === 'Active') return 'good';
-    if (phase === 'Archived') return 'warn';
-    if (phase === 'Failed') return 'danger';
-    return 'neutral';
-  };
   const truncatePath = (path, maxLen = 60) => {
     if (!path) return '—';
     return path.length > maxLen ? '…' + path.slice(path.length - maxLen + 1) : path;
@@ -838,11 +820,11 @@ export async function AgentProjectsPage({ org = null } = {}) {
           const displayName = project.spec?.displayName || name;
           const linkedStacks = (project.spec?.stackRefs || []).length || (stacks.filter((s) => s.spec?.projectRef === name).length);
           const phase = project.status?.phase || 'Active';
-          const phaseTone = phase === 'Active' ? 'good' : phase === 'Archived' ? 'neutral' : 'warn';
+          const projectTone = phase === 'Active' ? 'good' : phase === 'Archived' ? 'neutral' : 'warn';
           return <div key={name} className="card quickAction" style={{ position: 'relative' }}>
             <a href={orgHref(activeOrg, `/agents/projects/${name}`)} style={{ textDecoration: 'none', display: 'block' }}>
-              <div className="cardTitle"><h3>{displayName}</h3><StatusPill tone={phaseTone}>{phase}</StatusPill></div>
-              <p style={{ color: '#6b7280', fontSize: '0.8125rem' }}>{project.spec?.description || 'No description'}</p>
+              <div className="cardTitle"><h3>{displayName}</h3><StatusPill tone={projectTone}>{phase}</StatusPill></div>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.8125rem' }}>{project.spec?.description || 'No description'}</p>
               <small>{linkedStacks} linked stack{linkedStacks === 1 ? '' : 's'}</small>
             </a>
             <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.375rem' }}>
@@ -1213,13 +1195,6 @@ export async function AgentSessionsPage({ org = null } = {}) {
   const activeOrg = ui.model.org?.slug || org || 'default';
   const agentView = ui.model.agents || { sessions: { count: 0, items: [] } };
   const sessions = agentView.sessions?.items || [];
-  const phaseTone = (phase) => {
-    if (!phase || phase === 'Pending') return 'neutral';
-    if (phase === 'Active' || phase === 'Running') return 'warn';
-    if (phase === 'Completed' || phase === 'Succeeded') return 'good';
-    if (phase === 'Failed' || phase === 'Errored') return 'danger';
-    return 'neutral';
-  };
   return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/agents" eyebrow="agent sessions" title="Agent chat sessions" text="Each session represents an Agent Mux chat with lifecycle state, transcript, and cost tracking." actions={[['/agents', 'Overview'], ['/agents/stacks', 'Stacks'], ['/agents/runs', 'Dispatch runs']]} breadcrumbs={[['/', 'Krate'], ['/agents', 'Agents'], ['/agents/sessions', 'Sessions']]}>
     <DegradedBanner model={ui.model} />
     <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}><LiveUpdates org={activeOrg} /></div>
@@ -1261,13 +1236,6 @@ export async function AgentSessionDetailPage({ org = null, sessionId } = {}) {
   const allRuns = agentView.runs?.items || [];
   const allTranscripts = agentView.transcripts?.items || [];
   const sessionRuns = allRuns.filter((r) => r.status?.sessionRef === sessionId || r.spec?.sessionRef === sessionId || r.metadata?.name === dispatchRunName);
-  const phaseTone = (phase) => {
-    if (!phase || phase === 'Pending') return 'neutral';
-    if (phase === 'Active' || phase === 'Running') return 'warn';
-    if (phase === 'Completed' || phase === 'Succeeded') return 'good';
-    if (phase === 'Failed' || phase === 'Errored') return 'danger';
-    return 'neutral';
-  };
   return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/agents" eyebrow={`agent session / ${sessionId}`} title={sessionId || 'Session detail'} text={session ? `Agent session on ${stackName || 'unknown stack'} with phase ${session.status?.phase || 'Pending'}.` : 'This agent session was not found in the current workspace.'} actions={[['/agents/sessions', 'All sessions'], ['/agents/runs', 'Dispatch runs']]} breadcrumbs={[['/', 'Krate'], ['/agents', 'Agents'], ['/agents/sessions', 'Sessions'], [`/agents/sessions/${sessionId}`, sessionId || 'Detail']]}>
     <DegradedBanner model={ui.model} />
     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap', marginBottom: '0.75rem' }}>
