@@ -11,6 +11,12 @@ import {
   waitForProcessFile,
 } from "./paths";
 
+function normalizeProcessImports(source: string): string {
+  return source
+    .replace(/from\s+['"]babysitter-sdk['"]/g, 'from "@a5c-ai/babysitter-sdk"')
+    .replace(/from\s+['"]babysitter-sdk\/([^'"]+)['"]/g, 'from "@a5c-ai/babysitter-sdk/$1"');
+}
+
 function looksLikeProcessDefinitionSource(source: string): boolean {
   const normalized = source.trim();
   if (!normalized) {
@@ -147,7 +153,7 @@ async function recoverProcessDefinitionFromOutputs(args: {
     } catch {
       await fs.writeFile(pkgJsonPath, '{"type":"module"}\n', "utf8");
     }
-    await fs.writeFile(recoveredPath, extracted, "utf8");
+    await fs.writeFile(recoveredPath, normalizeProcessImports(extracted), "utf8");
     return {
       processPath: recoveredPath,
       summary: "Recovered process-definition output by writing recoverable JavaScript source returned by the agent.",
@@ -168,7 +174,7 @@ export async function applyRecoveredProcessDefinitionFromOutput(args: {
 
   const resolvedPath = path.resolve(args.processPath);
   await fs.mkdir(path.dirname(resolvedPath), { recursive: true });
-  await fs.writeFile(resolvedPath, extracted, "utf8");
+  await fs.writeFile(resolvedPath, normalizeProcessImports(extracted), "utf8");
   return true;
 }
 
