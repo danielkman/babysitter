@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { createGiteaService } from '@a5c-ai/krate-sdk';
 import { withAuth } from '../../../../../../lib/api-auth.js';
 

@@ -1,15 +1,16 @@
 'use client';
 
 import { useMemo, useState, useRef, useCallback, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-function useSuccessMessage() {
+function useSuccessMessage(router) {
   const [success, setSuccess] = useState(null);
   const timerRef = useRef(null);
   const showSuccess = useCallback((text, href) => {
     if (timerRef.current) clearTimeout(timerRef.current);
     setSuccess({ text, href });
-    timerRef.current = setTimeout(() => { setSuccess(null); window.location.reload(); }, 1500);
-  }, []);
+    timerRef.current = setTimeout(() => { setSuccess(null); router.refresh(); }, 1500);
+  }, [router]);
   useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current); }, []);
   return [success, showSuccess];
 }
@@ -20,9 +21,10 @@ function SuccessBanner({ success }) {
 }
 
 export function RepositoryManager({ namespace, org, repositories = [] }) {
+  const router = useRouter();
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
-  const [success, showSuccess] = useSuccessMessage();
+  const [success, showSuccess] = useSuccessMessage(router);
   const formRef = useRef(null);
   const repositoryNames = repositories.map((repository) => repository.metadata?.name).filter(Boolean);
 
@@ -86,9 +88,10 @@ export function RepositoryManager({ namespace, org, repositories = [] }) {
 
 
 export function DeploymentManager({ namespace, org, repositories = [], delivery = {} }) {
+  const router = useRouter();
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
-  const [success, showSuccess] = useSuccessMessage();
+  const [success, showSuccess] = useSuccessMessage(router);
   const deployFormRef = useRef(null);
   const repositoryNames = repositories.map((repository) => repository.metadata?.name).filter(Boolean);
   const deploymentNames = (delivery.applications || []).map((deployment) => deployment.name).filter(Boolean);
@@ -144,9 +147,10 @@ export function DeploymentManager({ namespace, org, repositories = [], delivery 
 }
 
 export function ResourceApplyPanel({ org = 'default', resource }) {
+  const router = useRouter();
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
-  const [success, showSuccess] = useSuccessMessage();
+  const [success, showSuccess] = useSuccessMessage(router);
   const initialJson = useMemo(() => sanitizePlan(JSON.stringify(resource, null, 2)), [resource]);
 
   if (!resource) return <div className="card applyPanel emptyState"><div className="cardTitle"><h3>Advanced resource editor</h3><span className="pill neutral">org action</span></div><p className="emptyText">No editable resource is selected yet. Use a guided page first, or open advanced details when you need direct editing.</p><textarea name="resource" value="No resource selected yet." rows={8} readOnly spellCheck="false" /><button type="button" disabled>Save changes</button></div>;

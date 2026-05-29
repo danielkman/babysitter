@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { statusTone } from '../lib/status-tones.js';
 
 const TYPED_PROVIDER_KINDS = ['GitProvider', 'CiProvider', 'IssueTrackerProvider', 'AppHostingProvider', 'ArtifactRegistryProvider'];
@@ -148,6 +149,7 @@ function PlatformGroupCard({ platform, providers, onDelete, removing }) {
 }
 
 export function ExternalProviderList({ org, providers = [], onAdd, addHref }) {
+  const router = useRouter();
   const [removing, setRemoving] = useState(null);
   const [error, setError] = useState('');
 
@@ -163,7 +165,7 @@ export function ExternalProviderList({ org, providers = [], onAdd, addHref }) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.message || `HTTP ${res.status}`);
       }
-      window.location.reload();
+      router.refresh();
     } catch (err) {
       setError(err.message);
       setRemoving(null);

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { statusTone } from '../lib/status-tones.js';
 
 // ── Install command templates ────────────────────────────────────────
@@ -629,6 +630,7 @@ function formatSize(bytes) {
 
 // ── Main export: ArtifactRegistryManager ─────────────────────────────
 export function ArtifactRegistryManager({ org, registries: initialRegistries = [], feeds: initialFeeds = [], externalProviders = [] }) {
+  const router = useRouter();
   const [registries, setRegistries] = useState(initialRegistries);
   const [feeds] = useState(initialFeeds);
   const [selectedRegistry, setSelectedRegistry] = useState(null);
@@ -638,7 +640,7 @@ export function ArtifactRegistryManager({ org, registries: initialRegistries = [
   function handleRegistryCreated(result) {
     const item = result?.items?.[0] || result;
     if (item?.metadata?.name) setRegistries((prev) => [...prev, item]);
-    else window.location.reload();
+    else router.refresh();
   }
 
   function handleSelectRegistry(registry) {

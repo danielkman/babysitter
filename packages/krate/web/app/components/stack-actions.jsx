@@ -1,7 +1,9 @@
 'use client';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export function StackActions({ org, stackName }) {
+  const router = useRouter();
   const [status, setStatus] = useState('idle');
   const [errorMsg, setErrorMsg] = useState(null);
 
@@ -44,7 +46,7 @@ export function StackActions({ org, stackName }) {
         setStatus('idle');
         return;
       }
-      window.location.reload();
+      router.refresh();
     } catch (err) {
       setErrorMsg(`Delete error: ${err.message}`);
       setStatus('idle');

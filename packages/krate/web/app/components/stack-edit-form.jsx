@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export function StackEditForm({ org, stack }) {
+  const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
@@ -46,7 +48,7 @@ export function StackEditForm({ org, stack }) {
       if (res.ok) {
         setMessage('Saved');
         setEditing(false);
-        setTimeout(() => window.location.reload(), 800);
+        setTimeout(() => router.refresh(), 800);
       } else {
         const data = await res.json().catch(() => ({}));
         setMessage(data.message || 'Save failed');

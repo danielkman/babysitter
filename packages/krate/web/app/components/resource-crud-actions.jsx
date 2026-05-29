@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 /**
  * ResourceActions — terminate / archive / delete buttons for any resource.
@@ -12,6 +13,7 @@ import { useState } from 'react';
  *   onMutated  {fn}       — called with (action, resourceName) after success
  */
 export function ResourceActions({ org, apiPath, actions = [], onMutated }) {
+  const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
   const [message, setMessage] = useState('');
@@ -37,7 +39,7 @@ export function ResourceActions({ org, apiPath, actions = [], onMutated }) {
       if (response.ok) {
         setDone(action);
         if (onMutated) onMutated(action, apiPath);
-        if (action === 'delete') setTimeout(() => window.location.reload(), 800);
+        if (action === 'delete') setTimeout(() => router.refresh(), 800);
       } else {
         setMessage(body.message || body.error || `${action} failed`);
       }
@@ -118,6 +120,7 @@ export function ResourceActions({ org, apiPath, actions = [], onMutated }) {
  *   successText {fn|str}  — (body) => string, or fixed string
  */
 export function InlineCreateForm({ org, namespace = 'krate-system', kind, apiVersion = 'krate.a5c.ai/v1alpha1', title, fields = [], successText, buildSpec }) {
+  const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
@@ -182,7 +185,7 @@ export function InlineCreateForm({ org, namespace = 'krate-system', kind, apiVer
         setSubmitted(false);
         setInvalidFields({});
         formEl.reset();
-        setTimeout(() => window.location.reload(), 1200);
+        setTimeout(() => router.refresh(), 1200);
       } else {
         setMessage(body.message || body.error || 'Create failed');
       }

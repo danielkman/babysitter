@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 
 const STATUS_TONE = {
   Ready: 'good',
@@ -76,6 +77,7 @@ function BindingRow({ binding, org, onSync }) {
 }
 
 export function ExternalSyncDashboard({ org, bindings = [] }) {
+  const router = useRouter();
   const [syncing, setSyncing] = useState(null);
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
@@ -95,13 +97,13 @@ export function ExternalSyncDashboard({ org, bindings = [] }) {
         throw new Error(data.message || `HTTP ${res.status}`);
       }
       setSuccessMsg(`Sync triggered for ${bindingName}`);
-      setTimeout(() => window.location.reload(), 1500);
+      setTimeout(() => router.refresh(), 1500);
     } catch (err) {
       setError(err.message);
     } finally {
       setSyncing(null);
     }
-  }, [org]);
+  }, [org, router]);
 
   const totalPendingWrites = bindings.reduce((sum, b) => sum + (b.status?.pendingWriteIntents || 0), 0);
   const totalConflicts = bindings.reduce((sum, b) => sum + (b.status?.openConflicts || 0), 0);

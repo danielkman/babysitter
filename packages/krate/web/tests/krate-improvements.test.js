@@ -149,7 +149,7 @@ test('resource crud actions component supports delete, archive, terminate, and r
   assert.match(source, /terminate.*Terminated|Terminated.*terminate/);
   assert.match(source, /archive.*Archived|Archived.*archive/);
   assert.match(source, /action === 'delete'/);
-  assert.match(source, /window\.location\.reload/);
+  assert.match(source, /router\.refresh/);
 });
 
 test('webhook manager has delete button per webhook', () => {
