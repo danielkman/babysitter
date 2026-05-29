@@ -1,3 +1,4 @@
+// Routes: /orgs/[org]/agents/workspaces, /agents/workspaces/[name] — agent workspace list and detail.
 import { loadKrateUi, orgHref, StatusPill, DegradedBanner, EmptyState } from '../lib/krate-ui.jsx';
 import { PageFrame } from '../lib/page-frame.jsx';
 import { WorkspacePanel } from '../components/workspace-panel.jsx';

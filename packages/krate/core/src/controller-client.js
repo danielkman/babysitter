@@ -13,7 +13,7 @@ export async function fetchControllerUiModel({ controllerUrl = process.env.KRATE
         const target = new URL('/api/controller', controllerUrl);
         if (organization) target.searchParams.set('org', organization);
         const signal = requestTimeoutMs > 0 && globalThis.AbortSignal?.timeout ? AbortSignal.timeout(requestTimeoutMs) : undefined;
-        const response = await fetchImpl(target, { cache: 'no-store', ...(signal ? { signal } : {}) });
+        const response = await fetchImpl(target, { cache: 'no-store', priority: 'high', ...(signal ? { signal } : {}) });
         if (!response.ok) throw new Error(`controller API ${response.status}`);
         const remoteModel = await response.json();
         if (localFallback && shouldFallbackFromRemoteModel(remoteModel)) {

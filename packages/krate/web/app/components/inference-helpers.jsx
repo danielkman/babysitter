@@ -157,8 +157,9 @@ export function StatusBadge({ status }) {
   );
 }
 
-export function CopyButton({ text }) {
+export function CopyButton({ text, label }) {
   const [copied, setCopied] = useState(false);
+  const displayLabel = label || 'Copy';
   const handleCopy = () => {
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
       navigator.clipboard.writeText(text).then(() => {
@@ -169,7 +170,7 @@ export function CopyButton({ text }) {
   };
   return (
     <button onClick={handleCopy} aria-label={`Copy ${text.length > 40 ? text.substring(0, 40) + '...' : text} to clipboard`} style={{ ...btnOutlineStyle, padding: '2px 8px', fontSize: '0.75rem' }}>
-      {copied ? 'Copied!' : 'Copy'}
+      {copied ? 'Copied!' : displayLabel}
     </button>
   );
 }

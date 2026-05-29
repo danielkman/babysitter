@@ -1,3 +1,4 @@
+// Routes: /orgs/[org]/repositories/*, /runs, /deployments, /inbox, /getting-started, /for-agents, etc. — repository, CI, and resource views.
 import { loadKrateUi, orgHref, modelHref, publicResource, resourceJson, sanitizeCopy, sanitizeAction, displayKind, displayRole, displayCommand, deploymentKind, StatusPill, DegradedBanner, EmptyState, InfoList, PlanCard, ResourceTable } from '../lib/krate-ui.jsx';
 import { PageFrame } from '../lib/page-frame.jsx';
 import { IssueWorkspace, IssueDetailView, issuesForScope, IssueDetailPage, IssueScopePage } from './agent-pages.jsx';

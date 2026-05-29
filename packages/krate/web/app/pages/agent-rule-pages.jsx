@@ -1,3 +1,4 @@
+// Routes: /orgs/[org]/agents/rules, /agents/rules/[name], /agents/rules/new — trigger rule management.
 import { loadKrateUi, orgHref, StatusPill, DegradedBanner, EmptyState } from '../lib/krate-ui.jsx';
 import { PageFrame } from '../lib/page-frame.jsx';
 import { TriggerRuleForm } from '../components/trigger-rule-form.jsx';

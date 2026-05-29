@@ -198,7 +198,7 @@ export function InlineCreateForm({ org, namespace = 'krate-system', kind, apiVer
     <div className="card managementCard">
       <div className="cardTitle"><h3>{title || `Create ${kind}`}</h3><span className="pill neutral">inline</span></div>
       <form onSubmit={handleSubmit} className="formGrid" noValidate>
-        {fields.map((field) => (
+        {fields.map((field, fieldIndex) => (
           <label key={field.name}>
             <span>
               {field.label || field.name}
@@ -226,6 +226,7 @@ export function InlineCreateForm({ org, namespace = 'krate-system', kind, apiVer
                 placeholder={field.placeholder || ''}
                 defaultValue={field.defaultValue || ''}
                 required={field.required !== false}
+                autoFocus={fieldIndex === 0}
                 aria-required={field.required !== false}
                 aria-invalid={submitted && !!invalidFields[field.name]}
                 style={inputBorderStyle(field.name)}

@@ -1,3 +1,4 @@
+// Routes: /orgs/[org]/settings, /settings/secrets — app preferences and user profile.
 import { loadKrateUi, DegradedBanner } from '../lib/krate-ui.jsx';
 import { PageFrame } from '../lib/page-frame.jsx';
 import { getSignedInUser } from '../lib/krate-ui.jsx';

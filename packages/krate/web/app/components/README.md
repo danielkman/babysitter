@@ -102,7 +102,7 @@ Reusable primitives, layout helpers, and cross-cutting utilities.
 - `tool-inspector.jsx`
 - `health-monitor.jsx`
 
-## pages/ (12 files)
+## pages/ (16 files)
 
 Page-level components, resource CRUD, issues, repos, and webhooks.
 
@@ -122,3 +122,16 @@ Page-level components, resource CRUD, issues, repos, and webhooks.
 - `run-actions.jsx`
 - `trigger-rule-form.jsx`
 - `webhook-manager.jsx`
+
+## Dependencies
+
+Which groups depend on which:
+
+- **pages/** depends on **shared/** (confirm-dialog, pagination, live-updates)
+- **agents/** depends on **shared/** (code-editor, live-updates) and **settings/** (agent-settings-form delegates to settings-gateway, settings-adapters, settings-providers, settings-rbac)
+- **inference/** is self-contained (inference-helpers provides shared styles/utils within the group)
+- **external/** is self-contained
+- **kanban/** is self-contained (kanban-enhanced and kanban-interactive compose kanban-card, kanban-column, kanban-filters)
+- **memory/** is self-contained
+- **workspace/** depends on **pages/** (resource-crud-actions for ResourceActions)
+- **shared/** has no intra-group dependencies except krate-loading (used by theme-runtime init)

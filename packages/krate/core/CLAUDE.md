@@ -57,6 +57,7 @@ npm test          # Route and API utility tests — 160 tests
 - Git layer (Gitea): Repository storage, branches, SSH keys
 - Agent layer: 12+ agent CRDs (stacks, runs, rules, sessions, memory, adapters, providers, projects, workspaces, approvals, permissions)
 - External backends: Provider adapters (GitHub first), webhook/sync/write/conflict controllers
+- Typed providers: GitProvider, CiProvider, IssueTrackerProvider, AppHostingProvider, ArtifactRegistryProvider — standard interfaces implemented by backend adapters
 - Observability: Audit controller, event streaming, cost tracking
 
 ## MCP Server Mode

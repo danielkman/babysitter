@@ -1,3 +1,4 @@
+// Routes: /orgs/[org]/agents/memory — agent memory repositories, ontology, and imports.
 import { loadKrateUi, orgHref, StatusPill, DegradedBanner, EmptyState } from '../lib/krate-ui.jsx';
 import { PageFrame } from '../lib/page-frame.jsx';
 import { MemorySearchForm } from '../components/memory-search-form.jsx';

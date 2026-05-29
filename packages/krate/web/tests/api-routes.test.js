@@ -138,6 +138,47 @@ test('loading.jsx files exist for major route groups', () => {
   }
 });
 
+// ── Module Existence & Export Tests ───────────────────────────────────────
+
+test('confirm-dialog.jsx exists and exports ConfirmDialog', () => {
+  const filePath = path.join(webRoot, 'app', 'components', 'confirm-dialog.jsx');
+  assert.ok(fs.existsSync(filePath), 'confirm-dialog.jsx must exist');
+  const content = fs.readFileSync(filePath, 'utf8');
+  assert.match(content, /export\s+function\s+ConfirmDialog/, 'must export ConfirmDialog');
+});
+
+test('fetch-dedup.js exists and exports dedupFetch', () => {
+  const filePath = path.join(webRoot, 'app', 'lib', 'fetch-dedup.js');
+  assert.ok(fs.existsSync(filePath), 'fetch-dedup.js must exist');
+  const content = fs.readFileSync(filePath, 'utf8');
+  assert.match(content, /export\s+function\s+dedupFetch/, 'must export dedupFetch');
+});
+
+test('use-unsaved-changes.js exists and exports useUnsavedChanges', () => {
+  const filePath = path.join(webRoot, 'app', 'hooks', 'use-unsaved-changes.js');
+  assert.ok(fs.existsSync(filePath), 'use-unsaved-changes.js must exist');
+  const content = fs.readFileSync(filePath, 'utf8');
+  assert.match(content, /export\s+function\s+useUnsavedChanges/, 'must export useUnsavedChanges');
+});
+
+test('agent-utils.js exports phaseTone, relativeTime, and deriveSegments', () => {
+  const filePath = path.join(webRoot, 'app', 'lib', 'agent-utils.js');
+  assert.ok(fs.existsSync(filePath), 'agent-utils.js must exist');
+  const content = fs.readFileSync(filePath, 'utf8');
+  assert.match(content, /export\s+function\s+phaseTone/, 'must export phaseTone');
+  assert.match(content, /export\s+function\s+relativeTime/, 'must export relativeTime');
+  assert.match(content, /export\s+function\s+deriveSegments/, 'must export deriveSegments');
+});
+
+test('components/index.js exists as barrel file', () => {
+  const filePath = path.join(webRoot, 'app', 'components', 'index.js');
+  assert.ok(fs.existsSync(filePath), 'components/index.js barrel file must exist');
+  const content = fs.readFileSync(filePath, 'utf8');
+  // A barrel file should have multiple re-exports
+  const exportCount = (content.match(/export\s*\{/g) || []).length;
+  assert.ok(exportCount >= 5, `barrel file should have at least 5 export blocks, got ${exportCount}`);
+});
+
 test('no staging URLs in production code', () => {
   const violations = [];
   function walk(dir) {

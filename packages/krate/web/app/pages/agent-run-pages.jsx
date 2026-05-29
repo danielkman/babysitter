@@ -1,8 +1,11 @@
+// Routes: /orgs/[org]/agents/runs, /agents/runs/[name] — dispatch run list and detail.
 import { loadKrateUi, orgHref, StatusPill, DegradedBanner, EmptyState } from '../lib/krate-ui.jsx';
+import { resourceToYaml } from '@a5c-ai/krate-sdk';
 import { PageFrame } from '../lib/page-frame.jsx';
 import { DispatchButton } from '../components/dispatch-button.jsx';
 import { LiveUpdates } from '../components/live-updates.jsx';
 import { ManualDispatchButton, RunActions } from '../components/run-actions.jsx';
+import { CopyButton } from '../components/inference-helpers.jsx';
 import { phaseTone, FlowVisualization } from './agent-helpers.jsx';
 
 export async function AgentRunsPage({ org = null, linkToDetail = false } = {}) {
@@ -68,8 +71,9 @@ export async function AgentRunDetailPage({ org = null, runId } = {}) {
         <div className="card">
           <div className="cardTitle"><h3>{runId}</h3><StatusPill tone={phaseTone(run.status?.phase)}>{run.status?.phase || 'Pending'}</StatusPill></div>
           {stackName ? <p>Agent stack: <a href={orgHref(activeOrg, `/agents/stacks/${stackName}`)}>{stackName}</a></p> : <p>Agent stack: not assigned</p>}
-          <div style={{ marginTop: '0.75rem' }}>
+          <div style={{ marginTop: '0.75rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
             <RunActions org={activeOrg} runName={runId} stackRef={stackName} phase={run.status?.phase} />
+            <CopyButton text={resourceToYaml(run)} label="Copy as YAML" />
           </div>
         </div>
       </section>

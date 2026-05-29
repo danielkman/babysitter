@@ -1,3 +1,4 @@
+// Routes: /orgs/[org]/agents/sessions, /agents/sessions/[name] — agent session list and live detail.
 import { loadKrateUi, orgHref, StatusPill, DegradedBanner, EmptyState } from '../lib/krate-ui.jsx';
 import { PageFrame } from '../lib/page-frame.jsx';
 import { LiveUpdates } from '../components/live-updates.jsx';

@@ -28,7 +28,7 @@ export async function GET(request, { params }) {
         const close = () => {
           if (closed) return;
           closed = true;
-          try { streamController.close(); } catch {}
+          try { streamController.close(); } catch (err) { console.warn('Stream close failed:', err.message || err); }
         };
         enqueue('krate', { type: 'SYNC', resource: resourcePath, namespace: controller.namespace });
         watcher = controller.watchResource(resourcePath, {

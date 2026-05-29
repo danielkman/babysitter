@@ -1,3 +1,4 @@
+// Routes: /orgs/[org]/assistant — AI assistant chat and structured generation.
 import { loadKrateUi, DegradedBanner } from '../lib/krate-ui.jsx';
 import { PageFrame } from '../lib/page-frame.jsx';
 import { AssistantChat } from '../components/assistant-chat.jsx';

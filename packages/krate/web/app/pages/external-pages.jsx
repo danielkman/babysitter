@@ -1,3 +1,4 @@
+// Routes: /orgs/[org]/external, /external/sync, /external/conflicts — external provider management.
 import { loadKrateUi, orgHref, DegradedBanner } from '../lib/krate-ui.jsx';
 import { PageFrame } from '../lib/page-frame.jsx';
 import { ExternalProviderList } from '../components/external-provider-list.jsx';

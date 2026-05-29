@@ -96,6 +96,7 @@ export function KeyboardShortcuts({ org }) {
   return (
     <div
       onClick={() => setShowHelp(false)}
+      aria-label="Close keyboard shortcuts"
       style={{
         position: 'fixed',
         inset: 0,
@@ -107,6 +108,9 @@ export function KeyboardShortcuts({ org }) {
       }}
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Keyboard shortcuts reference"
         onClick={(e) => e.stopPropagation()}
         style={{
           background: 'var(--surface, #fff)',

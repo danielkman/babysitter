@@ -1,3 +1,4 @@
+// Shared helpers, components, and constants used across all agent page modules.
 import { loadKrateUi, orgHref, modelHref, publicResource, resourceJson, sanitizeCopy, StatusPill, DegradedBanner, EmptyState, InfoList, PlanCard, ResourceTable } from '../lib/krate-ui.jsx';
 import { ToolCallInspector } from '../components/tool-inspector.jsx';
 import { IssueCreateForm, IssueEditor } from '../components/issue-editor.jsx';

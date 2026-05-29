@@ -17,6 +17,20 @@ export function withAuth(handler) {
       return Response.json({ error: 'unauthorized', message: 'Authentication required' }, { status: 401 });
     }
 
+    // CSRF double-submit check — mutating methods must include a session cookie
+    // AND either an X-Krate-Request header or a same-origin Content-Type header.
+    // Read-only methods (GET, HEAD, OPTIONS) skip this check entirely.
+    const method = request.method?.toUpperCase();
+    const isMutating = method !== 'GET' && method !== 'HEAD' && method !== 'OPTIONS';
+    if (isMutating) {
+      const hasCSRFHeader = request.headers.has('x-krate-request');
+      const contentType = request.headers.get('content-type') || '';
+      const hasJsonContentType = contentType.includes('application/json');
+      if (!hasCSRFHeader && !hasJsonContentType) {
+        return Response.json({ error: 'forbidden', message: 'Missing CSRF protection: include X-Krate-Request header or Content-Type: application/json' }, { status: 403 });
+      }
+    }
+
     // Org ownership check — verify the user's org access
     const params = context?.params ? await context.params : {};
     const org = params?.org;

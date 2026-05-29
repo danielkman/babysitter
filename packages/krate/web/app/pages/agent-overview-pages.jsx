@@ -1,10 +1,13 @@
+// Routes: /orgs/[org]/agents, /agents/stacks, /agents/stacks/[name], /agents/stacks/new — agent dashboard and stack management.
 import { loadKrateUi, orgHref, StatusPill, DegradedBanner, EmptyState, InfoList } from '../lib/krate-ui.jsx';
+import { resourceToYaml } from '@a5c-ai/krate-sdk';
 import { PageFrame } from '../lib/page-frame.jsx';
 import { DispatchButton } from '../components/dispatch-button.jsx';
 import { GraphStackBuilder } from '../components/stack-builder-graph.jsx';
 import { LiveUpdates } from '../components/live-updates.jsx';
 import { StackActions } from '../components/stack-actions.jsx';
 import { StackEditForm } from '../components/stack-edit-form.jsx';
+import { CopyButton } from '../components/inference-helpers.jsx';
 import { phaseTone } from './agent-helpers.jsx';
 
 export async function AgentsDashboardPage({ org = null } = {}) {
@@ -83,7 +86,7 @@ export async function AgentStackDetailPage({ org = null, name } = {}) {
           {stack.spec?.model ? <><dt>Model</dt><dd>{stack.spec.model}</dd></> : null}
           {stack.spec?.maxTokens ? <><dt>Max tokens</dt><dd>{stack.spec.maxTokens}</dd></> : null}
           {stack.spec?.budgetLimitUsd ? <><dt>Budget limit</dt><dd>${stack.spec.budgetLimitUsd}</dd></> : null}
-        </dl><StackEditForm org={activeOrg} stack={stack} /><div style={{ marginTop: 12 }}><StackActions org={activeOrg} stackName={name} /></div></> : <EmptyState title={`Stack ${name} not found`} text="This agent stack does not exist in the current workspace. Create it through Krate resource definitions." />}
+        </dl><StackEditForm org={activeOrg} stack={stack} /><div style={{ marginTop: 12, display: 'flex', gap: '0.5rem', alignItems: 'center' }}><StackActions org={activeOrg} stackName={name} /><CopyButton text={resourceToYaml(stack)} label="Copy as YAML" /></div></> : <EmptyState title={`Stack ${name} not found`} text="This agent stack does not exist in the current workspace. Create it through Krate resource definitions." />}
       </div>
       <div className="stack">
         <div className="card">

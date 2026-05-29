@@ -106,7 +106,7 @@ export function CreateModelRouteForm({ org, services, onSubmit, onCancel, loadin
             if (p && !seen.has(p)) { seen.add(p); merged.push(p); }
           }
         }
-      } catch {}
+      } catch (err) { console.warn('Failed to load AgentProviderConfig resources:', err.message || err); }
       // Fetch from Atlas graph (Provider kind)
       try {
         const res = await fetch(`/api/atlas/search?q=&kinds=Provider,ModelProviderProduct&limit=50`);
@@ -117,7 +117,7 @@ export function CreateModelRouteForm({ org, services, onSubmit, onCancel, loadin
             if (name && !seen.has(name)) { seen.add(name); merged.push(name); }
           }
         }
-      } catch {}
+      } catch (err) { console.warn('Failed to load Atlas provider data:', err.message || err); }
       if (!cancelled) setProviderOptions(merged);
     }
     if (org) loadProviders();

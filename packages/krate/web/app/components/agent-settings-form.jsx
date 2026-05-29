@@ -7,7 +7,7 @@ import { RbacSection } from './settings-rbac.jsx';
 
 export function AgentSettingsForm({ org, gateway, adapters, providers, secrets, serviceAccounts }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+    <div role="region" aria-label="Agent settings configuration" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       <GatewaySection org={org} gateway={gateway} />
       <AdaptersSection org={org} initialAdapters={adapters} />
       <ProvidersSection org={org} initialProviders={providers} secrets={secrets} />

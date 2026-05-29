@@ -25,7 +25,7 @@ export default async function CostsPage({ params }) {
 
   // Load persisted events and extract cost data
   let events = [];
-  try { events = loadPersistedEvents(500); } catch {}
+  try { events = loadPersistedEvents(500); } catch (err) { console.warn('Failed to load persisted cost events:', err.message || err); }
   const costEvents = events.filter(e =>
     e.type === 'virtual-model-observability' ||
     e.type === 'virtual-model-request' ||

@@ -17,12 +17,18 @@ import { errorResponse } from '../app/lib/api-errors.js';
 /**
  * Build a minimal Request-like object with a cookie header.
  * @param {string} cookieHeader - raw cookie header value (or empty string)
+ * @param {object} options - optional { method, extraHeaders }
  */
-function fakeRequest(cookieHeader = '') {
+function fakeRequest(cookieHeader = '', { method = 'GET', extraHeaders = {} } = {}) {
+  const hdrs = { cookie: cookieHeader, ...extraHeaders };
   return {
+    method,
     headers: {
       get(name) {
-        return name === 'cookie' ? cookieHeader : '';
+        return hdrs[name.toLowerCase()] || '';
+      },
+      has(name) {
+        return name.toLowerCase() in hdrs && !!hdrs[name.toLowerCase()];
       },
     },
   };
@@ -114,6 +120,50 @@ test('withAuth returns 401 when no session cookie present', async () => {
 
   const body = await response.json();
   assert.equal(body.error, 'unauthorized');
+});
+
+test('withAuth rejects mutating requests without CSRF protection', async () => {
+  const payload = encodeSession({ user: 'dave', provider: 'krate' });
+  const req = fakeRequest(`krate_session=${payload}`, { method: 'POST' });
+  const handler = async () => { throw new Error('should not be called'); };
+
+  const wrapped = withAuth(handler);
+  const response = await wrapped(req, {});
+  assert.equal(response.status, 403);
+  const body = await response.json();
+  assert.match(body.message, /CSRF/);
+});
+
+test('withAuth allows mutating requests with Content-Type: application/json', async () => {
+  const payload = encodeSession({ user: 'eve', provider: 'krate' });
+  const req = fakeRequest(`krate_session=${payload}`, { method: 'POST', extraHeaders: { 'content-type': 'application/json' } });
+
+  let calledWith = null;
+  const handler = async (request, context, session) => {
+    calledWith = session;
+    return new Response('ok');
+  };
+
+  const wrapped = withAuth(handler);
+  const response = await wrapped(req, {});
+  assert.ok(calledWith, 'handler should have been called');
+  assert.equal(response.status, 200);
+});
+
+test('withAuth allows mutating requests with X-Krate-Request header', async () => {
+  const payload = encodeSession({ user: 'frank', provider: 'krate' });
+  const req = fakeRequest(`krate_session=${payload}`, { method: 'DELETE', extraHeaders: { 'x-krate-request': '1' } });
+
+  let calledWith = null;
+  const handler = async (request, context, session) => {
+    calledWith = session;
+    return new Response('ok');
+  };
+
+  const wrapped = withAuth(handler);
+  const response = await wrapped(req, {});
+  assert.ok(calledWith, 'handler should have been called');
+  assert.equal(response.status, 200);
 });
 
 // ---------------------------------------------------------------------------

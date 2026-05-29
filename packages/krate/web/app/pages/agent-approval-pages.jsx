@@ -1,3 +1,4 @@
+// Routes: /orgs/[org]/agents/approvals — pending and resolved agent approval views.
 import { loadKrateUi, orgHref, StatusPill, DegradedBanner, EmptyState } from '../lib/krate-ui.jsx';
 import { PageFrame } from '../lib/page-frame.jsx';
 import { ApprovalDecisionButtons } from '../components/approval-actions.jsx';

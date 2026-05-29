@@ -119,7 +119,7 @@ function WebhookRow({ webhook, org, onPingResult, onDeleted }) {
           try {
             const res = await fetch(`/api/orgs/${encodeURIComponent(org)}/resources/ExternalWebhookConfig/${encodeURIComponent(webhook.metadata?.name)}`, { method: 'DELETE' });
             if (res.ok) { if (onDeleted) onDeleted(webhook.metadata?.name); }
-          } catch {} finally { setDeleting(false); }
+          } catch (err) { console.warn('Webhook delete failed:', err.message || err); } finally { setDeleting(false); }
         }} disabled={deleting} style={{ ...smallGhostStyle, color: 'var(--danger)', borderColor: '#fca5a5', opacity: deleting ? 0.6 : 1 }} aria-label={`Delete webhook ${webhook.metadata?.name || 'unnamed'}`}>
           {deleting ? 'Deleting...' : 'Delete'}
         </button>
