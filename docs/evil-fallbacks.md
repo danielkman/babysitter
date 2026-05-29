@@ -163,10 +163,10 @@ API key resolved from: direct input → AMUX_API_KEY → GOOGLE_API_KEY → GEMI
 **Region resolution — 6+ env vars** — `packages/agent-mux/core/src/provider-resolver.ts:113-114`
 `AMUX_REGION ?? GOOGLE_CLOUD_LOCATION ?? VERTEXAI_LOCATION ?? AWS_REGION ?? AWS_REGION_NAME ?? params.region`. Wrong region = wrong datacenter, no log.
 
-**Auth detection — `void e;` suppression** — `packages/agent-mux/cli/src/commands/doctor.ts:63-69`
+~~**Auth detection — `void e;` suppression**~~ **(logged)** — `packages/agent-mux/cli/src/commands/doctor.ts:63-69`
 Auth detection errors become `{ status: 'unauthenticated' }`. `void e;` explicitly suppresses the error.
 
-**GitHub API failures — empty result** — `packages/triggers-mux/src/enrich.ts:61-96`
+~~**GitHub API failures — empty result**~~ **(logged)** — `packages/triggers-mux/src/enrich.ts:61-96`
 Missing token, rate limits, HTTP errors all return `[]`. No distinction from "no changes."
 
 ### Medium
@@ -446,21 +446,21 @@ Pod cleanup spawn error and catch block both silenced.
 
 ### Critical
 
-**RBAC deletion — orphaned role bindings** — `packages/krate/web/app/components/settings-rbac.jsx:34-36`
+~~**RBAC deletion — orphaned role bindings**~~ **(logged)** — `packages/krate/web/app/components/settings-rbac.jsx:34-36`
 `fetch('/api/orgs/.../rolebindings', { method: 'DELETE' }).catch(() => {})`. Deletion failure = orphaned permissions. Security boundary violation.
 
-**SSE stream endpoint — triple null return** — `packages/krate/web/app/api/orgs/[org]/agents/events/stream/route.js:15,23,26`
+~~**SSE stream endpoint — triple null return**~~ **(logged)** — `packages/krate/web/app/api/orgs/[org]/agents/events/stream/route.js:15,23,26`
 Missing env var → `null`. Upstream error → `null`. Parse error → `null`. Client waits forever.
 
 ### High
 
-**Cache invalidation silently fails** — `packages/krate/web/app/lib/api-errors.js:9`
+~~**Cache invalidation silently fails**~~ **(logged)** — `packages/krate/web/app/lib/api-errors.js:9`
 `fetch('.../cache/invalidate', { method: 'POST' }).catch(() => {})`. Stale data circulates indefinitely.
 
-**Multiple component fetch `.catch(() => {})`** — `curated-model-catalog.jsx:117`, `runner-pool-manager.jsx:278,292`, `kanban-enhanced.jsx:423`, `stack-builder-graph.jsx:436,533`
+~~**Multiple component fetch `.catch(() => {})`**~~ **(logged)** — `curated-model-catalog.jsx:117`, `runner-pool-manager.jsx:278,292`, `kanban-enhanced.jsx:423`, `stack-builder-graph.jsx:436,533`
 Model deployments, runner scaling, status updates — all fire-and-forget. UI optimistically updates; backend silently fails.
 
-**Journal entry skipping** — `packages/babysitter-tui-plugins/src/data.ts:69,128,277`, `status-plugin.tsx:104`
+~~**Journal entry skipping**~~ **(logged)** — `packages/babysitter-tui-plugins/src/data.ts:69,128,277`, `status-plugin.tsx:104`
 `catch { // skip malformed journal entries }`. Run data silently lost. Audit trail gaps.
 
 ### Medium
@@ -483,10 +483,10 @@ Components disappear instead of showing error state.
 
 ### Critical
 
-**Gateway tsconfig — `noImplicitAny: false` + `useUnknownInCatchVariables: false`** — `packages/agent-mux/gateway/tsconfig.json:9-10`
+~~**Gateway tsconfig — `noImplicitAny: false` + `useUnknownInCatchVariables: false`**~~ **(hardened)** — `packages/agent-mux/gateway/tsconfig.json:9-10`
 Catch handlers receive `any` type. No compile-time validation of error handling. Wrong error properties accessed at runtime.
 
-**E2E tests continue-on-error on non-main** — `.github/workflows/publish.yml:343`
+~~**E2E tests continue-on-error on non-main**~~ **(hardened)** — `.github/workflows/publish.yml:343`
 `continue-on-error: ${{ github.ref_name != 'main' }}`. Broken code ships on staging.
 
 ### High
@@ -494,7 +494,7 @@ Catch handlers receive `any` type. No compile-time validation of error handling.
 **Native deps — `2>/dev/null || true` × 15+ locations** — `.github/workflows/ci.yml:34,73,264,345`, `generate-plugins.yml:42`, `sync-external-plugins.yml:48`, `staging-sync-plugin-commands.yml:42`, `live-stack.yml:82`, `live-stack-published.yml:216,220`
 Build succeeds with degraded native binaries. Rollup/SWC/Tailwind run in slow JS fallback. No CI signal.
 
-**Token generation continue-on-error** — `.github/workflows/qa-daily.yml:43`
+~~**Token generation continue-on-error**~~ **(hardened)** — `.github/workflows/qa-daily.yml:43`
 GitHub App token generation fails → falls back to `github.token`. Tests run with wrong permissions/quotas.
 
 ### Medium
