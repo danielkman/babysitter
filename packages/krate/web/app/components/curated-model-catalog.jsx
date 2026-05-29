@@ -17,11 +17,13 @@ export function UnifiedModelCatalogSection({ org }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
     fetch(`/api/orgs/${org}/inference/catalog`)
       .then(r => r.ok ? r.json() : null)
-      .then(data => setCatalog(data))
-      .catch((e) => { console.warn('[krate] unified catalog fetch failed:', e.message ?? e); setCatalog(null); })
-      .finally(() => setLoading(false));
+      .then(data => { if (!cancelled) setCatalog(data); })
+      .catch((e) => { console.warn('[krate] unified catalog fetch failed:', e.message ?? e); if (!cancelled) setCatalog(null); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
   }, [org]);
 
   if (loading) return <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)', padding: '1rem', textAlign: 'center' }}>Loading catalog...</div>;
