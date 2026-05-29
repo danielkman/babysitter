@@ -12,7 +12,10 @@ export async function AgentRunsPage({ org = null, linkToDetail = false } = {}) {
   const ui = await loadKrateUi(org);
   const activeOrg = ui.model.org?.slug || org || 'default';
   const agentView = ui.model.agents || { runs: { count: 0, items: [] }, stacks: { count: 0, items: [] } };
-  const runs = agentView.runs.items || [];
+  const allRuns = agentView.runs.items || [];
+  const PAGE_SIZE = 25;
+  const runs = allRuns.slice(0, PAGE_SIZE);
+  const hasMore = allRuns.length > PAGE_SIZE;
   const availableStacks = (agentView.stacks?.items || []).map(s => s.metadata?.name).filter(Boolean);
   return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/agents" eyebrow="agent dispatch runs" title="Dispatch runs" text="Track agent dispatch runs across stacks, repositories, and phases. Each run represents a dispatched agent task." actions={[['/agents', 'Overview'], ['/agents/stacks', 'Stacks']]} breadcrumbs={[['/', 'Krate'], ['/agents', 'Agents'], ['/agents/runs', 'Dispatch runs']]}>
     <DegradedBanner model={ui.model} />
@@ -22,7 +25,7 @@ export async function AgentRunsPage({ org = null, linkToDetail = false } = {}) {
       <LiveUpdates org={activeOrg} />
     </div>
     <div className="card">
-      <div className="cardTitle"><h2>Dispatch runs</h2><StatusPill tone={runs.length ? 'good' : 'neutral'}>{runs.length} runs</StatusPill></div>
+      <div className="cardTitle"><h2>Dispatch runs</h2><StatusPill tone={allRuns.length ? 'good' : 'neutral'}>{hasMore ? `${runs.length} of ${allRuns.length}` : allRuns.length} runs</StatusPill></div>
       {runs.length ? <ul className="resourceList runList">{runs.map((run) => <li key={run.metadata?.name}>
         {linkToDetail ? <a href={orgHref(activeOrg, `/agents/runs/${run.metadata?.name}`)}><strong>{run.metadata?.name}</strong></a> : <strong>{run.metadata?.name}</strong>}
         <StatusPill tone={phaseTone(run.status?.phase)}>{run.status?.phase || 'Pending'}</StatusPill>

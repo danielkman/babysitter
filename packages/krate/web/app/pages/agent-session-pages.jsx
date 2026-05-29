@@ -12,7 +12,10 @@ export async function AgentSessionsPage({ org = null } = {}) {
   const ui = await loadKrateUi(org);
   const activeOrg = ui.model.org?.slug || org || 'default';
   const agentView = ui.model.agents || { sessions: { count: 0, items: [] } };
-  const sessions = agentView.sessions?.items || [];
+  const allSessions = agentView.sessions?.items || [];
+  const PAGE_SIZE = 25;
+  const sessions = allSessions.slice(0, PAGE_SIZE);
+  const hasMore = allSessions.length > PAGE_SIZE;
   return <PageFrame org={activeOrg} orgs={ui.model.orgs} currentPath="/agents" eyebrow="agent sessions" title="Agent chat sessions" text="Each session represents an Agent Mux chat with lifecycle state, transcript, and cost tracking." actions={[['/agents', 'Overview'], ['/agents/stacks', 'Stacks'], ['/agents/runs', 'Dispatch runs']]} breadcrumbs={[['/', 'Krate'], ['/agents', 'Agents'], ['/agents/sessions', 'Sessions']]}>
     <DegradedBanner model={ui.model} />
     <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem' }}><LiveUpdates org={activeOrg} /></div>
