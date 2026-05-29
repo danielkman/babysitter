@@ -107,12 +107,15 @@ async function runCliOrchestration(args: RunOrchestrationPhaseArgs): Promise<num
   for (let i = 1; i <= maxIterations; i++) {
     process.stderr.write(`[omni-orchestration] iteration ${i}/${maxIterations} starting\n`);
     try {
-      const iterResult = execFileSync(babysitterCmd, [...babysitterPrefix, "run:iterate", runDir, "--json", "--iteration", String(i)], {
+      const iterArgs = [...babysitterPrefix, "run:iterate", runDir, "--json", "--iteration", String(i)];
+      process.stderr.write(`[omni-orchestration] exec: ${babysitterCmd} ${iterArgs.join(" ")}\n`);
+      const iterResult = execFileSync(babysitterCmd, iterArgs, {
         cwd: workspace,
         encoding: "utf8",
         timeout: 120_000,
         env: { ...process.env },
       });
+      process.stderr.write(`[omni-orchestration] iterate result: ${iterResult.slice(0, 500)}\n`);
       const parsed = JSON.parse(iterResult);
 
       if (parsed.status === "completed") {
