@@ -34,3 +34,8 @@ npm run verify:metadata
 - `.claude/settings.json` blocks direct edits to lockfiles; use npm or pnpm commands instead.
 - `.claude/settings.json` also auto-runs SDK lint autofix after TypeScript file edits.
 - If you need reviewer context, see `.claude/agents/code-reviewer.md` and `.claude/agents/sdk-api-documenter.md`.
+
+-----
+Important Rules:
+
+- fallbacks are evil and should be avoided at all costs. If you find yourself writing a fallback in any context, stop!
