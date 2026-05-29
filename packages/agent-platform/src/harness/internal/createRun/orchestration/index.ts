@@ -101,8 +101,9 @@ async function runCliOrchestration(args: RunOrchestrationPhaseArgs): Promise<num
     return 1;
   }
 
-  // Iterate loop
-  const maxIterations = args.maxIterations ?? 20;
+  // Iterate loop — cap at 20 for CLI orchestration regardless of caller
+  const maxIterations = Math.min(args.maxIterations ?? 20, 20);
+  let consecutiveNoEffects = 0;
   for (let i = 1; i <= maxIterations; i++) {
     process.stderr.write(`[omni-orchestration] iteration ${i}/${maxIterations} starting\n`);
     try {
@@ -129,6 +130,7 @@ async function runCliOrchestration(args: RunOrchestrationPhaseArgs): Promise<num
 
       // Handle pending effects
       if (parsed.nextActions?.length) {
+        consecutiveNoEffects = 0;
         process.stderr.write(`[omni-orchestration] iteration ${i}: ${parsed.nextActions.length} pending effects to resolve\n`);
         for (const action of parsed.nextActions) {
           process.stderr.write(`[omni-orchestration] resolving effect ${action.effectId} (${action.kind})\n`);
@@ -136,6 +138,13 @@ async function runCliOrchestration(args: RunOrchestrationPhaseArgs): Promise<num
           process.stderr.write(`[omni-orchestration] effect ${action.effectId} resolved\n`);
         }
       } else if (parsed.status === "none") {
+        consecutiveNoEffects++;
+        if (consecutiveNoEffects >= 3) {
+          if (!args.json) {
+            process.stderr.write(`\x1b[31mNo pending effects for ${consecutiveNoEffects} consecutive iterations — process may not be dispatching tasks.\x1b[0m\n`);
+          }
+          return 1;
+        }
         if (!args.json) {
           process.stderr.write(`\x1b[33mNo pending effects at iteration ${i}\x1b[0m\n`);
         }
