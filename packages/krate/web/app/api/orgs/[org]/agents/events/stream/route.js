@@ -13,7 +13,10 @@ function streamHeaders() {
 }
 
 async function proxyControllerStream(org, request) {
-  if (!process.env.KRATE_CONTROLLER_URL) return null;
+  if (!process.env.KRATE_CONTROLLER_URL) {
+    console.warn('[agent-events-stream] KRATE_CONTROLLER_URL not set, falling back to local event bus');
+    return null;
+  }
   const target = new URL(`/api/orgs/${org}/agents/events/stream`, process.env.KRATE_CONTROLLER_URL);
   try {
     const upstream = await fetch(target, {
@@ -21,7 +24,10 @@ async function proxyControllerStream(org, request) {
       headers: { Accept: 'text/event-stream' },
       signal: request.signal
     });
-    if (!upstream.ok || !upstream.body) return null;
+    if (!upstream.ok || !upstream.body) {
+      console.warn(`[agent-events-stream] upstream returned ${upstream.status} for ${target}, falling back to local event bus`);
+      return null;
+    }
     return new Response(upstream.body, { headers: streamHeaders() });
   } catch (err) {
     console.warn(`[agent-events-stream] upstream connection to ${target} failed:`, err.message);

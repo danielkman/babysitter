@@ -40,7 +40,6 @@ jobs:
     steps:
       - name: Generate a5c GitHub App token
         id: a5c-token
-        continue-on-error: true
         uses: a5c-ai/generate-token-action@main
 
       - uses: actions/checkout@v6
@@ -123,7 +122,6 @@ jobs:
     steps:
       - name: Generate a5c GitHub App token
         id: a5c-token
-        continue-on-error: true
         uses: a5c-ai/generate-token-action@main
 
       - uses: actions/checkout@v6
@@ -173,7 +171,6 @@ jobs:
     steps:
       - name: Generate a5c GitHub App token
         id: a5c-token
-        continue-on-error: true
         uses: a5c-ai/generate-token-action@main
 
       - uses: actions/checkout@v6
@@ -245,7 +242,6 @@ jobs:
     steps:
       - name: Generate a5c GitHub App token
         id: a5c-token
-        continue-on-error: true
         uses: a5c-ai/generate-token-action@main
 
       - uses: actions/checkout@v6

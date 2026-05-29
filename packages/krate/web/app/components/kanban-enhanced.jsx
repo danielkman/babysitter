@@ -131,7 +131,8 @@ export function EnhancedKanbanBoard({
             _patch: true,
             _projectRef: projectName,
           }),
-        }).catch(() => {
+        }).catch((err) => {
+          console.warn('[krate] board item column update failed:', err.message ?? err);
           setIssues((prev) =>
             prev.map((i) => {
               const iId = i.metadata?.name || i.spec?.title;
@@ -200,8 +201,8 @@ export function EnhancedKanbanBoard({
             return i;
           })
         );
-      } catch {
-        // Silently ignore — workspace creation is best-effort
+      } catch (err) {
+        console.warn('[krate] workspace creation failed:', err.message ?? err);
       } finally {
         setPendingWorkspaceItem(null);
       }

@@ -6,6 +6,6 @@ export function errorResponse(message, status = 500) {
 export function invalidateApiCache() {
   const controllerUrl = process.env.KRATE_CONTROLLER_URL;
   if (controllerUrl) {
-    fetch(`${controllerUrl}/api/cache/invalidate`, { method: 'POST' }).catch(() => {});
+    fetch(`${controllerUrl}/api/cache/invalidate`, { method: 'POST' }).catch((e) => console.warn('[krate] cache invalidation failed:', e.message ?? e));
   }
 }

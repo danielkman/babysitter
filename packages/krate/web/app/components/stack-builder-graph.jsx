@@ -99,7 +99,7 @@ function LayerSection({ layer, atlasProxyUrl, selected, onToggle }) {
         const data = await res.json();
         setResults(data.hits || data.instances || []);
       }
-    } catch { /* network error, keep empty */ }
+    } catch (err) { console.warn('[krate] atlas layer browse failed:', err.message ?? err); }
     setLoading(false);
     setInitialLoaded(true);
   }, [atlasProxyUrl, kindsParam, initialLoaded]);
@@ -121,7 +121,7 @@ function LayerSection({ layer, atlasProxyUrl, selected, onToggle }) {
           const data = await res.json();
           setResults(data.hits || []);
         }
-      } catch { /* keep previous results */ }
+      } catch (err) { console.warn('[krate] atlas layer search failed:', err.message ?? err); }
       setLoading(false);
     }, 300);
     return () => clearTimeout(debounceRef.current);
@@ -310,7 +310,7 @@ function ToolSubSection({ label, kinds, layerKey, atlasProxyUrl, selected, onTog
         const data = await res.json();
         setResults(data.hits || data.instances || []);
       }
-    } catch { /* network error */ }
+    } catch (err) { console.warn('[krate] atlas tool browse failed:', err.message ?? err); }
     setLoading(false);
     setInitialLoaded(true);
   }, [atlasProxyUrl, kindsParam, initialLoaded]);
@@ -328,7 +328,7 @@ function ToolSubSection({ label, kinds, layerKey, atlasProxyUrl, selected, onTog
           const data = await res.json();
           setResults(data.hits || []);
         }
-      } catch { /* keep previous */ }
+      } catch (err) { console.warn('[krate] atlas tool search failed:', err.message ?? err); }
       setLoading(false);
     }, 300);
     return () => clearTimeout(debounceRef.current);

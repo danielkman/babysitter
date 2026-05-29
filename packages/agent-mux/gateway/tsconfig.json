@@ -6,8 +6,8 @@
     "rootDir": "src",
     "outDir": "dist",
     "types": ["node"],
-    "noImplicitAny": false,
-    "useUnknownInCatchVariables": false
+    "noImplicitAny": true,
+    "useUnknownInCatchVariables": true
   },
   "include": ["src"],
   "references": [

@@ -65,7 +65,7 @@ async function buildReport(client: AgentMuxClient): Promise<DoctorReport> {
       auth = await adapter.detectAuth();
     } catch (e) {
       auth = { status: 'unauthenticated' };
-      void e;
+      process.stderr.write(`[amux] auth detection failed for ${adapter.agent}: ${e instanceof Error ? e.message : String(e)}\n`);
     }
 
     const configFiles: AgentReport['configFiles'] = [];

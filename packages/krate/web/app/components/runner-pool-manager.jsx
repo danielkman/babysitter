@@ -80,7 +80,8 @@ export function RunnerPoolManager({ org = 'default', pools = [], onPoolChange = 
       } else {
         setMessage('Failed to create pool — check API connectivity.');
       }
-    } catch {
+    } catch (err) {
+      console.warn('[krate] pool creation API failed, adding locally:', err.message ?? err);
       // Offline: add locally
       const newPool = { ...resource, status: { readyReplicas: form.warmReplicas, activeReplicas: 0 }, _runners: [] };
       setLocalPools((prev) => [...prev, newPool]);

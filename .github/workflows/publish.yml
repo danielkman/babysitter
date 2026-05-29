@@ -340,7 +340,6 @@ jobs:
       - validate_krate
       - validate_cloud
       - validate_observer_and_compiler
-    continue-on-error: ${{ github.ref_name != 'main' }}
     name: E2E Integration Tests
     runs-on: ubuntu-latest-l
     permissions:

@@ -66,8 +66,8 @@ async function readJournal(runDir: string): Promise<JournalEvent[]> {
         path.join(journalDir, file),
       )) as JournalEvent;
       events.push(event);
-    } catch {
-      // skip malformed journal entries
+    } catch (e) {
+      process.stderr.write(`[tui] skipping malformed journal entry: ${e instanceof Error ? e.message : String(e)}\n`);
     }
   }
 
@@ -125,8 +125,8 @@ export async function scanRuns(runsDir: string): Promise<RunSummary[]> {
         prompt: metadata.prompt as string | undefined,
         harness: metadata.harness as string | undefined,
       });
-    } catch {
-      // skip malformed runs
+    } catch (e) {
+      process.stderr.write(`[tui] skipping malformed run entry: ${e instanceof Error ? e.message : String(e)}\n`);
     }
   }
 
@@ -274,8 +274,8 @@ export async function scanRunCosts(runDir: string): Promise<CostSummary> {
         inputTokens += usage.input ?? 0;
         outputTokens += usage.output ?? 0;
       }
-    } catch {
-      // skip missing or malformed result files
+    } catch (e) {
+      process.stderr.write(`[tui] skipping malformed task result: ${e instanceof Error ? e.message : String(e)}\n`);
     }
   }
 

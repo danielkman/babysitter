@@ -101,8 +101,8 @@ function RunDetail({ run }: RunDetailProps) {
         const journal = await loadRunJournal(run.runDir);
         const extracted = extractEffects(journal);
         if (!cancelled) setEffects(extracted);
-      } catch {
-        // ignore errors loading journal
+      } catch (e) {
+        process.stderr.write(`[tui] failed to load journal for effects: ${e instanceof Error ? e.message : String(e)}\n`);
       }
       if (!cancelled) setLoading(false);
     })();
