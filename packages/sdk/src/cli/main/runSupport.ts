@@ -313,10 +313,19 @@ export async function validateProcessEntrypoint(
   let mod: ModuleExports;
   try {
     mod = await dynamicImportModule(moduleUrl);
-  } catch (error) {
-    throw new Error(
-      `Failed to load process module at ${resolvedPath}: ${error instanceof Error ? error.message : String(error)}`
-    );
+  } catch {
+    // ESM import may fail on some Node/CJS configurations.
+    // Retry with require() after clearing the cache.
+    try {
+      delete require.cache[require.resolve(resolvedPath)];
+    } catch { /* not cached */ }
+    try {
+      mod = require(resolvedPath) as ModuleExports;
+    } catch (error) {
+      throw new Error(
+        `Failed to load process module at ${resolvedPath}: ${error instanceof Error ? error.message : String(error)}`
+      );
+    }
   }
 
   const resolvedExportName = exportName ?? "process";
