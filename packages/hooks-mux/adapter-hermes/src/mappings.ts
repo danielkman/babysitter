@@ -38,6 +38,22 @@ const HERMES_FALLBACK_MAPPINGS: PhaseMapping[] = [
     scope: 'turn',
     notes: 'Hermes single onEvent hook, non-blocking post-direction.',
   },
+  {
+    canonicalPhase: 'session.start',
+    nativeHook: 'SessionStart',
+    supportLevel: 'emulated',
+    blockCapability: false,
+    mutationCapability: false,
+    scope: 'session',
+  },
+  {
+    canonicalPhase: 'turn.stop',
+    nativeHook: 'Stop',
+    supportLevel: 'emulated',
+    blockCapability: true,
+    mutationCapability: false,
+    scope: 'turn',
+  },
 ];
 
 function hookMappingToPhaseMapping(mapping: HookMappingDescriptor): PhaseMapping | null {
