@@ -89,7 +89,7 @@ describe('translateForHarness', () => {
       }));
       expect(result.env['OPENCODE_CONFIG_CONTENT']).toBeDefined();
       const cfg = JSON.parse(result.env['OPENCODE_CONFIG_CONTENT']!);
-      expect((cfg.provider as Record<string, unknown>)['amux']).toMatchObject({ npm: '@ai-sdk/anthropic' });
+      expect(cfg.model).toBe('anthropic/claude-sonnet-4');
     });
   });
 
