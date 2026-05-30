@@ -1098,23 +1098,29 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
   // Hermes: pass --provider and --model CLI flags for native provider support.
   // Runs outside the proxy block because hermes calls providers directly.
   if (plan.harness === 'hermes') {
+    const targetProvider = plan.proxy?.targetProvider ?? plan.provider ?? '';
+    const targetModel = plan.proxy?.targetModel ?? plan.model;
+    // For Azure Foundry: use custom provider with full deployment URL
+    // (hermes azure-foundry builds wrong path, getting 404).
+    // For other providers: use native hermes providers.
     const hermesProviderMap: Record<string, string> = {
-      'foundry': 'azure-foundry',
-      'foundry-openai': 'azure-foundry',
       'google': 'gemini',
       'anthropic': 'anthropic',
     };
-    const targetProvider = plan.proxy?.targetProvider ?? plan.provider ?? '';
     const hermesProvider = hermesProviderMap[targetProvider] ?? 'custom';
-    const targetModel = plan.proxy?.targetModel ?? plan.model;
+    let hermesBaseUrl: string | undefined;
+    let hermesApiKey: string | undefined;
+    if (targetProvider === 'foundry' || targetProvider === 'foundry-openai') {
+      const azureBase = process.env['AMUX_API_BASE'] ?? plan.env['AMUX_API_BASE'] ?? '';
+      hermesBaseUrl = azureBase ? `${azureBase}/openai/deployments/${targetModel}` : undefined;
+      hermesApiKey = process.env['AZURE_API_KEY'] ?? plan.env['AZURE_API_KEY'] ?? process.env['AZURE_OPENAI_API_KEY'] ?? '';
+    }
     plan.args.push('--provider', hermesProvider, '--model', targetModel);
-    const hermesBaseUrl = hermesProvider === 'azure-foundry'
-      ? (process.env['AMUX_API_BASE'] ?? plan.env['AMUX_API_BASE'] ?? '')
-      : undefined;
     await prepareHermesConfig({
       model: targetModel,
       provider: hermesProvider,
-      baseUrl: hermesBaseUrl || undefined,
+      baseUrl: hermesBaseUrl,
+      apiKey: hermesApiKey,
     });
     console.error(`[amux launch] hermes: provider=${hermesProvider} model=${targetModel} baseUrl=${hermesBaseUrl ?? 'default'}`);
   }
