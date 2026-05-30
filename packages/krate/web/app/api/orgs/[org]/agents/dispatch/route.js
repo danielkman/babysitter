@@ -1,4 +1,4 @@
-import { createKrateApiController, orgNamespaceName, clearSnapshotCache } from '@a5c-ai/krate-sdk';
+import { createKrateApiController, orgNamespaceName, clearSnapshotCache, globalEventBus } from '@a5c-ai/krate-sdk';
 import { withAuth } from '../../../../../lib/api-auth.js';
 import { errorResponse, invalidateApiCache } from '../../../../../lib/api-errors.js';
 
@@ -29,6 +29,7 @@ export const POST = withAuth(async (request, { params }) => {
     }
     clearSnapshotCache();
     invalidateApiCache();
+    globalEventBus.emit({ type: 'agent-dispatched', run: result.run || result, timestamp: new Date().toISOString() });
     return Response.json(result, { status: 201, headers: { 'Cache-Control': 'no-store' } });
   } catch (err) {
     return errorResponse(err.message || 'Dispatch failed', 500);

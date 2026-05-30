@@ -9,7 +9,12 @@ export const POST = withAuth(async (request, { params }) => {
   try {
     const controller = createKrateApiController({ namespace: orgNamespaceName(org) });
     const body = await request.json();
-    const result = await controller.resolveExternalConflict(id, body.strategy);
+    const result = await controller.resolveExternalConflict({
+      conflictName: id,
+      strategy: body.strategy,
+      resolvedValue: body.resolvedValue || {},
+      resources: body.resources || {}
+    });
     clearSnapshotCache();
     invalidateApiCache();
     return Response.json(result);
