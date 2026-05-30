@@ -1,6 +1,6 @@
-# Agent Layer Gaps — agent-core (L4), agent-runtime (L5), agent-platform (L6)
+# Agent Layer Gaps — Full Agent Stack
 
-Comprehensive inventory of missing capabilities, stub implementations, and architectural weaknesses.
+Comprehensive inventory of missing capabilities, stub implementations, and architectural weaknesses across agent-core (L4), agent-runtime (L5), agent-platform (L6), tasks-mux, tool-mux, transport-mux, and babysitter-sdk.
 
 ---
 
@@ -185,6 +185,149 @@ Comprehensive inventory of missing capabilities, stub implementations, and archi
 
 ---
 
+## tool-mux (Unified Tool Dispatch) — NOT INTEGRATED
+
+tool-mux provides ToolRegistry, ToolDispatcher (policy-driven routing), McpBridge, and schema translation for all providers (Anthropic, OpenAI, Google, Bedrock). None of it is wired into the agent stack.
+
+### Critical
+
+| Gap | Description |
+|-----|-------------|
+| Not used by agent-core | agent-core has DeferredToolRegistry (custom two-tier registry). tool-mux's ToolDispatcher would provide unified dispatch policy across builtin, MCP, and plugin tools. |
+| Not used by agent-platform | agent-platform has McpToolRegistry + McpToolExecutor (separate from tool-mux). No unified tool dispatch mechanism. |
+| 3 registries, no unification | DeferredToolRegistry (L4) + McpToolRegistry (L6) + ToolRegistry (tool-mux). Should be one system. |
+| Hook bridge is no-op | `ToolHookBridge` is `NoopToolHookBridge`. PreToolUse/PostToolUse hooks never fire. No hooks-mux integration. |
+| McpBridge is declarative-only | Registers MCP tool definitions but no runtime server lifecycle management. |
+| No dynamic routing | Policy rules are static. No context-aware routing (by runId, sessionId, caller, cost). |
+| No plugin tool type | DeferredToolRegistry handles plugins but tool-mux doesn't. |
+
+### Where it should plug in
+
+```
+agent-core tool_search/tool_fetch → tool-mux ToolRegistry (replaces DeferredToolRegistry)
+agent-core code_executor → tool-mux ToolDispatcher.dispatch() (policy routing)
+agent-platform MCP tools → tool-mux McpBridge (unified registration)
+hooks-mux PreToolUse/PostToolUse → tool-mux ToolHookBridge (permission/audit)
+```
+
+---
+
+## transport-mux (Protocol Translation) — PARTIALLY INTEGRATED
+
+transport-mux provides protocol translation (Anthropic↔OpenAI↔Google↔Bedrock↔Azure↔Vertex), codec system, completion engines with streaming, and an HTTP proxy runtime. Used by agent-mux launcher but disconnected from the rest of the agent stack.
+
+### Gaps
+
+| Gap | Description |
+|-----|-------------|
+| Cost feedback missing | Proxy extracts cost records per-request but never feeds them to SDK journal or L6 cost tracking. |
+| Session-unaware | Proxy is stateless. No runId/sessionId tracking. Can't trace requests through distributed orchestration. |
+| Codec discovery not pluggable | New providers require hardcoded codec registration. No plugin system. |
+| Not integrated with L6 | agent-platform reads some codec metadata but doesn't feed tool definitions back to codecs. |
+| "Provisional" cutover | Marked provisional in agent-catalog pending scorecard:migration gate. |
+
+### Where it should plug in
+
+```
+agent-mux launcher → transport-mux proxy (DONE — this works)
+transport-mux cost records → SDK journal appendEvent (MISSING — cost feedback loop)
+transport-mux request traces → L5 telemetry spans (MISSING — distributed tracing)
+transport-mux tool normalization → tool-mux schema translation (MISSING — should share)
+```
+
+---
+
+## babysitter-sdk (Foundation) — PARTIALLY LEVERAGED
+
+SDK provides the effect journal, replay engine, task system (defineTask/ctx.task), runtime lifecycle, state cache, MCP server, and CLI. It's the foundation that L5/L6 build on, but several SDK features are unused.
+
+### Gaps
+
+| Gap | Description |
+|-----|-------------|
+| SDK MCP server orphaned | `createBabysitterMcpServer()` exposes task/run/session tools but never registered in tool-mux McpBridge or L6 MCP client. |
+| SDK tasks ≠ tasks-mux | SDK has `defineTask()` / `ctx.task()`. tasks-mux has `BreakpointBackend`. Two separate task systems that don't know about each other. |
+| No subagent effect type | Journal tracks effects but has no entry type for cross-agent dispatch. agent-mux launches happen outside the journal. |
+| Effect execution scattered | SDK journals effects but actual execution is hardcoded per-type across agent-platform (file, code, web) and agent-mux (harness launch). No unified effect executor. |
+| No tool metadata in tasks | SDK tasks have descriptions but no JSON Schema parameters. agent-core's tool_fetch needs schemas for discovery. |
+| Hooks disconnected | SDK has hooks/runtime.ts but no connection to hooks-mux lifecycle events. |
+| Plugin registry parallel | SDK has plugin registry, agent-platform has separate plugin system. |
+
+### Where it should plug in
+
+```
+SDK MCP server → tool-mux McpBridge → agent-core tool discovery (MISSING)
+SDK defineTask → tasks-mux BreakpointBackend (MISSING — for human-in-the-loop tasks)
+SDK effect journal → subagent effect type → agent-mux adapter dispatch (MISSING)
+SDK hooks → hooks-mux lifecycle events (MISSING)
+SDK effect execution → unified executor → tool-mux dispatch (MISSING)
+```
+
+---
+
+## Omni → Agent-Mux Cross-Agent Dispatch (NOT IMPLEMENTED)
+
+Omni should be able to dispatch subtasks to external agents supported by agent-mux (claude-code, codex, gemini-cli, copilot, etc.) through the runtime. This enables an omni orchestration to delegate specialist work to the best available agent.
+
+### Missing Architecture
+
+```
+Current:
+  omni → agent-core session (direct API) → single model, no tool agents
+
+Needed:
+  omni → agent-platform effect dispatch
+    → SDK "subagent" effect type (journaled)
+    → tasks-mux routes to responder (agent-mux adapter)
+    → agent-mux adapter launches target agent (claude-code, codex, etc.)
+    → result posted back through tasks-mux → SDK journal
+    → orchestration continues with result
+```
+
+### Specific Gaps
+
+| Gap | Description |
+|-----|-------------|
+| No subagent effect type in SDK | Need `kind: "subagent"` with `{ targetAgent, prompt, model, timeout }` |
+| No agent-mux adapter selection in omni | omni doesn't know about agent-mux's adapter registry |
+| No tasks-mux routing for subagent dispatch | tasks-mux routes to human responders, not to agent-mux adapters |
+| No result collection from external agents | agent-mux launch returns stdout/stderr but no structured task result |
+| No cross-agent session context | Dispatched agent doesn't see parent's context, files, or journal |
+
+---
+
+## External Issue Tracker Integration (MISSING)
+
+tasks-mux should support pluggable external issue tracker backends for subtask tracking, syncing breakpoints bidirectionally with the team's project management tools.
+
+### Current State
+
+Only `GitHubIssuesBackend` exists. Basic mapping of breakpoints to GitHub issues.
+
+### Missing Backends
+
+| Backend | Priority | Description |
+|---------|----------|-------------|
+| Jira | High | REST API integration. Map breakpoints to Jira issues. Bidirectional sync. |
+| Linear | High | GraphQL API. Map to Linear issues. Automated status transitions. |
+| Generic REST | High | Configurable HTTP adapter for any REST-based tracker. |
+| Slack threads | Medium | Map breakpoints to Slack message threads for lightweight tracking. |
+| Trello | Low | Board/card mapping. |
+| Azure DevOps | Low | Work item integration. |
+
+### Missing Sync Capabilities
+
+| Gap | Description |
+|-----|-------------|
+| No bidirectional sync | GitHub Issues backend creates issues but doesn't sync status changes back. |
+| No conflict resolution | If issue is updated in both places, no merge strategy. |
+| No field mapping config | Fixed mapping. Can't customize which breakpoint fields map to which issue fields. |
+| No webhook listeners | Can't receive push notifications from external trackers on status change. |
+| No bulk sync | Can't sync all existing breakpoints to a tracker on first connect. |
+| No backend plugin system | Adding a backend requires code changes, not configuration. |
+
+---
+
 ## Cross-Layer Integration Gaps
 
 | Gap | Layers | Description |
@@ -200,6 +343,16 @@ Comprehensive inventory of missing capabilities, stub implementations, and archi
 | Breakpoint delegation disconnected | L6↔tasks-mux | agent-platform breakpoint system and tasks-mux backends are parallel implementations, not integrated |
 | MCP tools not registered | L6↔tasks-mux | tasks-mux MCP server has 8 tools but agent harness doesn't discover or register them |
 | Approval chains orphaned | L6↔tasks-mux | Sequential/quorum approval logic in L6 is not wired to tasks-mux routing/answering |
+| 3 separate tool registries | L4↔tool-mux↔L6 | DeferredToolRegistry (L4) + McpToolRegistry (L6) + ToolRegistry (tool-mux) — should be unified |
+| tool-mux dispatch not used | tool-mux↔L4 | ToolDispatcher exists with policy-driven routing but agent-core hardcodes tool execution |
+| tool-mux hooks stubbed | tool-mux↔hooks-mux | ToolHookBridge is NoopToolHookBridge. PreToolUse/PostToolUse never fire. |
+| No subagent effect type | SDK↔agent-mux | SDK journal has no effect type for cross-agent dispatch. agent-mux launches happen outside journal. |
+| SDK MCP server disconnected | SDK↔tool-mux↔L6 | SDK's `createBabysitterMcpServer()` never registered in tool-mux McpBridge or L6 MCP client |
+| SDK tasks ≠ tasks-mux | SDK↔tasks-mux | SDK has its own task system (defineTask, ctx.task). tasks-mux has BreakpointBackend. Neither knows about the other. |
+| transport-mux cost feedback missing | transport-mux↔SDK | Proxy extracts cost records but never feeds them back to SDK journal or L6 cost tracking |
+| transport-mux session-unaware | transport-mux↔L5 | Proxy is stateless. No runId/sessionId tracking for distributed observability. |
+| No cross-agent task dispatch | tasks-mux↔agent-mux | omni can't dispatch subtasks to external agents (claude-code, codex, etc.) via agent-mux adapters |
+| No external issue tracker sync | tasks-mux↔external | Only GitHub Issues backend. No Jira, Linear, or generic REST backend for pluggable subtask tracking. |
 
 ---
 
@@ -208,24 +361,30 @@ Comprehensive inventory of missing capabilities, stub implementations, and archi
 **P0 — Unblock production agent use:**
 1. Streaming responses in agent-core session
 2. Multi-turn conversation history
-3. Wire MCP into agent-platform orchestration
-4. Wire tasks-mux into agent stack (native tools for todo/task/ask/approve)
-5. Implement ConcurrentEffects (parallel within-harness)
-6. Token usage tracking end-to-end
+3. Unify tool registries: tool-mux ToolDispatcher replaces DeferredToolRegistry + McpToolRegistry
+4. Wire tasks-mux into agent stack (native tools: todo, task, ask, approve, assign)
+5. Wire MCP into agent-platform orchestration (connect tool-mux McpBridge)
+6. Implement ConcurrentEffects (parallel within-harness)
+7. Token usage tracking end-to-end (L4 → transport-mux → SDK journal → L6 cost)
 
 **P1 — Unblock platform features:**
-1. Structured output / JSON mode
-2. Vision/multimodal input
-3. Wire breakpoint delegation → tasks-mux backends
-4. Wire approval chains → tasks-mux routing
-5. Cost budget enforcement in orchestration
-6. Background effects (non-blocking dispatch)
-7. tasks-mux search/filter API + task priorities + dependencies
+1. Subagent effect type in SDK journal + omni → agent-mux adapter dispatch
+2. Structured output / JSON mode in agent-core
+3. Vision/multimodal input
+4. Wire breakpoint delegation → tasks-mux backends
+5. Wire approval chains → tasks-mux routing
+6. Cost budget enforcement in orchestration (transport-mux cost feedback → SDK)
+7. Background effects (non-blocking dispatch)
+8. tasks-mux search/filter API + priorities + dependencies
 
-**P2 — Production hardening:**
-1. K8s executor implementation
-2. Crash recovery + persistent queue in daemon
-3. Process isolation/sandboxing
-4. Distributed tracing (OTLP)
-5. Tool cancellation via AbortSignal
-6. tasks-mux notifications, escalation chains, approval workflows
+**P2 — Integration & hardening:**
+1. External issue tracker backends (Jira, Linear, generic REST) with bidirectional sync
+2. Omni cross-agent dispatch: tasks-mux routes subtasks to agent-mux adapters
+3. K8s executor implementation
+4. Crash recovery + persistent queue in daemon
+5. Process isolation/sandboxing
+6. Distributed tracing (transport-mux → L5 telemetry → OTLP export)
+7. Tool cancellation via AbortSignal
+8. tasks-mux notifications, escalation chains, backend plugin system
+9. SDK hooks → hooks-mux lifecycle wiring
+10. tool-mux hook bridge → hooks-mux PreToolUse/PostToolUse
