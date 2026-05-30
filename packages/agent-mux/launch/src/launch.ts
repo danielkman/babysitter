@@ -1105,12 +1105,19 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
     mkdirSync(join(launchCwd, '.a5c'), { recursive: true });
   }
 
-  // Hermes: pass --provider and --model CLI flags for native provider support.
-  // Runs outside the proxy block because hermes calls providers directly.
-  // On Windows, clear TERM to avoid prompt_toolkit NoConsoleScreenBufferError.
-  if (plan.harness === 'hermes' && process.platform === 'win32') {
-    plan.env['TERM'] = '';
-    plan.env['PYTHONUNBUFFERED'] = '1';
+  // Hermes: ensure pip user-bin is on PATH and configure platform-specific env.
+  if (plan.harness === 'hermes') {
+    const { homedir } = await import('node:os');
+    const { join } = await import('node:path');
+    const pipBin = join(homedir(), '.local', 'bin');
+    const currentPath = plan.env['PATH'] ?? process.env['PATH'] ?? '';
+    if (!currentPath.includes(pipBin)) {
+      plan.env['PATH'] = `${pipBin}${process.platform === 'win32' ? ';' : ':'}${currentPath}`;
+    }
+    if (process.platform === 'win32') {
+      plan.env['TERM'] = '';
+      plan.env['PYTHONUNBUFFERED'] = '1';
+    }
   }
   if (plan.harness === 'hermes') {
     const targetProvider = plan.proxy?.targetProvider ?? plan.provider ?? '';
