@@ -3,7 +3,8 @@ id: provider-translation:hermes:foundry
 attributes:
   harness: hermes
   provider: foundry
-  proxyRequired: false
+  proxyRequired: true
+  proxyExposedTransport: openai-chat
   envMapping:
     - envVar: AZURE_API_KEY
       source: auth.apiKey

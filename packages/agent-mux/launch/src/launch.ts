@@ -1100,29 +1100,24 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
   if (plan.harness === 'hermes') {
     const targetProvider = plan.proxy?.targetProvider ?? plan.provider ?? '';
     const targetModel = plan.proxy?.targetModel ?? plan.model;
-    // For Azure Foundry: use custom provider with full deployment URL
-    // (hermes azure-foundry builds wrong path, getting 404).
-    // For other providers: use native hermes providers.
+    // For providers that need proxy translation (foundry/Azure): use custom
+    // provider pointed at the local proxy. Hermes custom provider speaks
+    // OpenAI protocol; the proxy translates to Azure format.
+    // For native providers (gemini, anthropic): use hermes built-in.
     const hermesProviderMap: Record<string, string> = {
       'google': 'gemini',
       'anthropic': 'anthropic',
     };
     const hermesProvider = hermesProviderMap[targetProvider] ?? 'custom';
-    let hermesBaseUrl: string | undefined;
-    let hermesApiKey: string | undefined;
-    if (targetProvider === 'foundry' || targetProvider === 'foundry-openai') {
-      const azureBase = process.env['AMUX_API_BASE'] ?? plan.env['AMUX_API_BASE'] ?? '';
-      hermesBaseUrl = azureBase ? `${azureBase}/openai/deployments/${targetModel}` : undefined;
-      hermesApiKey = process.env['AZURE_API_KEY'] ?? plan.env['AZURE_API_KEY'] ?? process.env['AZURE_OPENAI_API_KEY'] ?? '';
-    }
+    const proxyUrl = proxyRuntime ? `${proxyRuntime.url}/v1` : undefined;
     plan.args.push('--provider', hermesProvider, '--model', targetModel);
     await prepareHermesConfig({
       model: targetModel,
       provider: hermesProvider,
-      baseUrl: hermesBaseUrl,
-      apiKey: hermesApiKey,
+      baseUrl: proxyUrl,
+      apiKey: proxyUrl ? 'proxy-token' : undefined,
     });
-    console.error(`[amux launch] hermes: provider=${hermesProvider} model=${targetModel} baseUrl=${hermesBaseUrl ?? 'default'}`);
+    console.error(`[amux launch] hermes: provider=${hermesProvider} model=${targetModel} baseUrl=${proxyUrl ?? 'default'}`);
   }
 
   // OpenCode: write config file from OPENCODE_CONFIG_CONTENT env var.
