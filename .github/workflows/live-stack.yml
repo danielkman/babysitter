@@ -464,6 +464,8 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           AZURE_FOUNDRY_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
         run: |
+          # Ensure pip user-bin is on PATH for hermes and other pip agents
+          export PATH="$HOME/.local/bin:$PATH"
           # Pre-create .a5c directory — omni atomic write needs it on Windows
           mkdir -p "$HOME/.a5c" .a5c 2>/dev/null || true
           # Verify omni can start — capture and echo output for debugging
