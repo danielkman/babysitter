@@ -1120,12 +1120,18 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
     console.error(`[amux launch] hermes: provider=${hermesProvider} model=${targetModel} baseUrl=${proxyUrl ?? 'default'}`);
   }
 
-  // OpenCode: write config file from OPENCODE_CONFIG_CONTENT env var.
-  // OpenCode reads opencode.json from the project root, not an env var.
+  // OpenCode: write config file and inject proxy URL if available.
   if (plan.harness === 'opencode' && plan.env['OPENCODE_CONFIG_CONTENT']) {
     const { writeFileSync, mkdirSync } = await import('node:fs');
     const { join } = await import('node:path');
-    const configContent = plan.env['OPENCODE_CONFIG_CONTENT'];
+    let configContent = plan.env['OPENCODE_CONFIG_CONTENT'];
+    // Inject proxy baseURL into config if proxy is running
+    if (proxyRuntime) {
+      const proxyBase = `${proxyRuntime.url}/v1`;
+      configContent = configContent.replace('"baseURL":""', `"baseURL":"${proxyBase}"`);
+      plan.env['OPENAI_API_KEY'] = proxyRuntime.authToken ?? 'proxy-token';
+      plan.env['OPENAI_BASE_URL'] = proxyBase;
+    }
     writeFileSync(join(launchCwd, 'opencode.json'), configContent);
     const homeConfig = join(process.env['HOME'] ?? process.env['USERPROFILE'] ?? '/tmp', '.config', 'opencode');
     mkdirSync(homeConfig, { recursive: true });
