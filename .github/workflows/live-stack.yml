@@ -220,19 +220,9 @@ jobs:
                 'vanilla': {id:'vanilla', required_trace_ids:'agentMuxRunId,agentMuxSessionId,transportTraceId', expected_artifacts:'agent-mux-events,transport-mux-trace,provider-trace-redacted'},
                 'bp': {id:'babysitter-plugin', required_trace_ids:'agentMuxRunId,agentMuxSessionId,transportTraceId', expected_artifacts:'agent-mux-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted'},
               };
-              function miniBpSupported(entry) {
-                if (entry.install !== 'bp') return true;
-                if ((entry.process_mode || 'predefined') !== 'resume') return false;
-                if (entry.mode === 'interactive') return entry.agent === 'codex' || entry.agent === 'pi';
-                if (entry.mode === 'bridged-hooks') return entry.agent === 'pi' && !String(process.env.LIVE_STACK_OS || '').startsWith('windows');
-                return false;
-              }
               function modelFor(entry) {
                 const selected = models[entry.model];
                 if (!selected) throw new Error(`Unknown model '${entry.model}' in matrix. Available: ${Object.keys(models).join(', ')}`);
-                if (selected.model === 'gpt-5.4-mini' && !miniBpSupported(entry)) {
-                  throw new Error(`gpt-5.4-mini is not supported for ${entry.agent}/${entry.mode}/${entry.install}. Use a different model or fix miniBpSupported().`);
-                }
                 return selected;
               }
 
