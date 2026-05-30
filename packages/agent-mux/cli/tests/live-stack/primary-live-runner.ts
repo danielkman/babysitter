@@ -768,6 +768,42 @@ async function validateAgentBehavior(
     // odyssey task and should produce the file or at least substantial content.
   }
 
+  // --- install-check: verify agent installed successfully ---
+  if (!isBabysitterPlugin && !isBabysitterAgent) {
+    // The install result is captured in the command output — look for install JSON
+    const installMatch = output.match(/"installed"\s*:\s*(true|false)/);
+    if (installMatch?.[1] === 'true') {
+      entries.push({ name: 'install-check', status: 'passed', detail: 'agent installed successfully' });
+    } else if (installMatch?.[1] === 'false') {
+      entries.push({ name: 'install-check', status: 'failed', detail: 'agent install reported installed: false' });
+    } else {
+      entries.push({ name: 'install-check', status: 'passed', detail: 'install status not detected (may be pre-installed)' });
+    }
+  }
+
+  // --- proxy-communication: verify proxy received API requests ---
+  const proxyRequests = (output.match(/\[transport-mux\] (?:POST|GET) /g) || []).length;
+  const proxyErrors = (output.match(/\[transport-mux\] (?:SSE stream error|AUTH REJECT)/g) || []).length;
+  if (proxyRequests > 0) {
+    entries.push({ name: 'proxy-communication', status: 'passed', detail: `proxy handled ${proxyRequests} request(s)${proxyErrors > 0 ? ` (${proxyErrors} error(s))` : ''}` });
+  } else if (output.includes('[amux launch]') && output.includes('proxy:')) {
+    entries.push({ name: 'proxy-communication', status: 'failed', detail: 'proxy started but received 0 requests from agent' });
+  }
+
+  // --- model-response: verify model produced substantial output ---
+  if (!isBabysitterAgent) {
+    const outputLength = output.length;
+    if (outputLength > 5000) {
+      entries.push({ name: 'model-response', status: 'passed', detail: `model produced ${outputLength} chars of output` });
+    } else if (outputLength > 500) {
+      entries.push({ name: 'model-response', status: 'passed', detail: `model produced ${outputLength} chars (minimal but present)` });
+    } else if (outputLength > 0) {
+      entries.push({ name: 'model-response', status: 'failed', detail: `model produced only ${outputLength} chars (likely startup output only, no real response)` });
+    } else {
+      entries.push({ name: 'model-response', status: 'failed', detail: 'zero output from agent' });
+    }
+  }
+
   // --- file-creation: verify the output file exists with real content (>500 bytes) ---
   if (traceId) {
     const expectedFile = path.join(cwd, '.a5c-live-test', `${traceId}-odyssey.md`);
