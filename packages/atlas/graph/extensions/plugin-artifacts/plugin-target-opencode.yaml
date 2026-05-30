@@ -85,8 +85,8 @@ attributes:
     sessionIdFlag: null
     maxTurnsFlag: null
     stdinBehavior: close-after-prompt
-    selfExits: true
-    needsIdleKill: false
+    selfExits: false
+    needsIdleKill: true
 
 edges:
   hosted_by:
