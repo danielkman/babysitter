@@ -231,7 +231,19 @@ Factors to weigh:
 
 Apply the priority label: gh issue edit ${args.issue.number} --add-label "priority:<level>"
 Create the label if needed: gh label create "priority:<level>" --description "<desc>" --color "<hex>" 2>/dev/null || true
-Return { level: "critical" | "high" | "medium" | "low", reasoning: string }.`,
+
+**Risk Analysis** for the suggested fix/change:
+- Assess the risk level: risk:critical, risk:high, risk:medium, risk:low
+- Consider: blast radius, reversibility, data safety, user-facing impact, dependency chain
+- For each risk identified, describe a specific mitigation strategy:
+  * How can the risk be reduced before implementation?
+  * What testing should be done?
+  * Should the change be feature-flagged or rolled out gradually?
+  * What rollback plan exists?
+- Apply risk label: gh issue edit ${args.issue.number} --add-label "risk:<level>"
+  Create if needed: gh label create "risk:<level>" --description "<desc>" --color "<hex>" 2>/dev/null || true
+
+Return { level: "critical" | "high" | "medium" | "low", reasoning: string, riskLevel: string, risks: [{risk: string, mitigation: string}] }.`,
     },
   };
 });
@@ -276,6 +288,10 @@ ${args.research.reproSteps || 'Not provided — needs reproduction steps'}
 
 **## Priority**: ${args.priority.level}
 - ${args.priority.reasoning}
+
+**## Risk Analysis**
+- **Risk Level**: ${args.priority.riskLevel}
+${args.priority.risks.map(r => `- **${r.risk}**\n  - Mitigation: ${r.mitigation}`).join('\n')}
 
 ---
 

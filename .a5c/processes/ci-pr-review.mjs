@@ -96,7 +96,16 @@ Classify each finding:
 - **minor**: nice-to-have (style, naming)
 - **debt**: follow-up issue (optimization, docs, cleanup)
 
-Return { blockers: number, majors: number, minors: number, debt: number, findings: [...] }.`,
+**Risk Assessment** for this PR:
+- Assign a risk level: risk:critical, risk:high, risk:medium, risk:low
+- Consider: blast radius (how many consumers affected), reversibility (can we revert easily?),
+  data safety (could this corrupt or lose data?), deployment risk (partial rollout safe?)
+- For each identified risk, specify a concrete mitigation:
+  * Pre-merge: what additional testing/review is needed?
+  * Deploy-time: feature flag, canary, gradual rollout?
+  * Post-merge: monitoring, alerting, rollback procedure?
+
+Return { blockers: number, majors: number, minors: number, debt: number, findings: [...], riskLevel: string, risks: [{risk: string, mitigation: string}] }.`,
     },
   };
 });
@@ -188,6 +197,7 @@ Review summary:
 - Majors: ${args.review.majors}
 - Minors: ${args.review.minors}
 - Debt items: ${args.review.debt}
+- Risk level: ${args.review.riskLevel}
 - Approach correct: ${args.challenge.approachCorrect}
 - QA: ${args.qaResult.passed ? 'PASSED' : 'FAILED/INCONCLUSIVE'}
 ${args.challenge.missingItems.length > 0 ? `- Missing items: ${args.challenge.missingItems.join(', ')}` : ''}
@@ -203,6 +213,7 @@ DECISION RULES (strict — no exceptions):
 
 Action: gh pr review ${args.pr.number} --request-changes --body "<detailed review>"
 Include: every blocker/major with file:line, what's wrong, how to fix.
+Include a **## Risk Assessment** section with: risk level, each identified risk and its mitigation strategy.
 
 **APPROVE + MERGE** if ALL of:
 - blockers = 0
@@ -216,6 +227,9 @@ Before merging:
 2. Post approving review: gh pr review ${args.pr.number} --approve --body "<summary>"
 3. Merge: gh pr merge ${args.pr.number} --squash --auto
 4. Post summary comment with: what was reviewed, findings, QA results, debt issues created.
+5. Include a **## Risk Assessment** section in the summary comment with:
+   - Risk level: ${args.review.riskLevel}
+   - Each identified risk and its concrete mitigation strategy
 
 **APPROVE without merge** if:
 - No blockers but majors exist that are judgment calls (not clear-cut)
