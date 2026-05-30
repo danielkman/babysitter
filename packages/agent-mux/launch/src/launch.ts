@@ -1095,6 +1095,16 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
     }
   }
 
+  // Omni: ensure $HOME/.a5c/ exists — omni's SDK writes package.json there
+  // on first run, and the atomic write fails on Windows if the dir is missing.
+  if (plan.harness === 'omni') {
+    const { mkdirSync } = await import('node:fs');
+    const { join } = await import('node:path');
+    const homeA5c = join(process.env['HOME'] ?? process.env['USERPROFILE'] ?? '/tmp', '.a5c');
+    mkdirSync(homeA5c, { recursive: true });
+    mkdirSync(join(launchCwd, '.a5c'), { recursive: true });
+  }
+
   // Hermes: pass --provider and --model CLI flags for native provider support.
   // Runs outside the proxy block because hermes calls providers directly.
   if (plan.harness === 'hermes') {
