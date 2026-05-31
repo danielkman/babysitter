@@ -224,6 +224,7 @@ export class BridgeHookEmulator {
     if (this.ctx.sessionId) envParts.push(`AGENT_SESSION_ID=${this.ctx.sessionId}`);
     if (this.ctx.env['LIVE_STACK_TRACE_ID']) envParts.push(`LIVE_STACK_TRACE_ID=${this.ctx.env['LIVE_STACK_TRACE_ID']}`);
     if (this.ctx.runsDir) envParts.push(`BABYSITTER_RUNS_DIR=${this.ctx.runsDir}`);
+    envParts.push(`LIVE_STACK_CWD=${this.ctx.cwd}`);
     const envPrefix = envParts.length > 0 ? envParts.join(' ') + ' ' : '';
     const handlerCommand = envPrefix + babysitterCmd.join(' ');
 

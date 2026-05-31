@@ -251,7 +251,8 @@ const verifyDocumentTask = defineTask('summarize-translate.verify-document', (ar
 
 export async function process(inputs, ctx) {
   const traceId = inputs?.traceId || globalThis.process?.env?.LIVE_STACK_TRACE_ID || 'unknown';
-  const outputDir = inputs?.outputDir || '.a5c-live-test';
+  const cwd = globalThis.process?.env?.LIVE_STACK_CWD || globalThis.process?.cwd?.() || '.';
+  const outputDir = inputs?.outputDir || `${cwd}/.a5c-live-test`;
   const filePath = `${outputDir}/${traceId}-odyssey.md`;
 
   const [, outline] = await ctx.parallel.all([
