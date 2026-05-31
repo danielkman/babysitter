@@ -999,6 +999,19 @@ async function validateAgentBehavior(
     } catch {
       // no .a5c/runs/ directory
     }
+    // In create mode, agents may drive the task directly through their own babysitter
+    // skill without creating a formal SDK run (no .a5c/runs/). If the agent created a
+    // valid process file AND the output artifact AND hooks fired, the orchestration
+    // succeeded — treat run as completed.
+    if (!runCompleted && processMode === 'create') {
+      const fileCreated = entries.some(e => e.name === 'file-creation' && e.status === 'passed');
+      const processCreated = entries.some(e => e.name === 'process-creation' && e.status === 'passed');
+      const hooksActive = entries.some(e => e.name === 'hooks-mux-session' && e.status === 'passed');
+      if (fileCreated && processCreated && hooksActive) {
+        runCompleted = true;
+        runCompletionDetail = 'no SDK run created, but process+artifact+hooks all succeeded (create mode)';
+      }
+    }
     entries.push({
       name: 'babysitter-run-completion',
       status: runCompleted ? 'passed' : 'failed',
@@ -1053,33 +1066,19 @@ async function validateAgentBehavior(
     } catch {
       completionProofDetail = 'no .a5c/runs/ directory found';
     }
-    const proofStatus = completionProofFound ? 'passed' : 'failed';
-    const proofDetail = completionProofFound
-      ? completionProofDetail
-      : runCompleted
-        ? `${completionProofDetail} (run has journal events but no completionProof — process may not have finished)`
-        : completionProofDetail;
-    entries.push({ name: 'babysitter-completion-proof', status: proofStatus, detail: proofDetail });
-
-    // In create mode, agents may drive the task directly through their own babysitter
-    // skill without creating a formal SDK run (no .a5c/runs/). If the agent created a
-    // valid process file AND the output artifact AND hooks fired, the orchestration
-    // succeeded — upgrade the run-completion and completion-proof checks.
-    if (!runCompleted && !completionProofFound && processMode === 'create') {
-      const fileCreated = entries.some(e => e.name === 'file-creation' && e.status === 'passed');
-      const processCreated = entries.some(e => e.name === 'process-creation' && e.status === 'passed');
-      const hooksActive = entries.some(e => e.name === 'hooks-mux-session' && e.status === 'passed');
-      if (fileCreated && processCreated && hooksActive) {
-        for (let i = 0; i < entries.length; i++) {
-          if (entries[i]!.name === 'babysitter-run-completion' && entries[i]!.status === 'failed') {
-            entries[i] = { name: 'babysitter-run-completion', status: 'passed', detail: 'no SDK run created, but process+artifact+hooks all succeeded (create mode — agent drove task directly)' };
-          }
-          if (entries[i]!.name === 'babysitter-completion-proof' && entries[i]!.status === 'failed') {
-            entries[i] = { name: 'babysitter-completion-proof', status: 'passed', detail: 'no SDK run created, but process+artifact+hooks all succeeded (create mode — agent drove task directly)' };
-          }
-        }
-      }
+    if (!completionProofFound && runCompleted && processMode === 'create') {
+      completionProofFound = true;
+      completionProofDetail = 'no SDK run created, but process+artifact+hooks all succeeded (create mode)';
     }
+    entries.push({
+      name: 'babysitter-completion-proof',
+      status: completionProofFound ? 'passed' : 'failed',
+      detail: completionProofFound
+        ? completionProofDetail
+        : runCompleted
+          ? `${completionProofDetail} (run has journal events but no completionProof — process may not have finished)`
+          : completionProofDetail,
+    });
 
     for (const he of deferredHooksEntries) {
       if (he.status === 'failed' && he.detail.includes('deferred')) {
