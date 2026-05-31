@@ -470,6 +470,12 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           AZURE_FOUNDRY_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
         run: |
+          # Verify Node 22 is active (setup-node should have set PATH)
+          echo "Node: $(node --version) at $(which node)"
+          if ! node --version | grep -q "^v22"; then
+            echo "::warning::Node version is not 22, fixing PATH"
+            export PATH="/opt/hostedtoolcache/node/22.22.3/x64/bin:$PATH"
+          fi
           # Ensure pip user-bin is on PATH for hermes and other pip agents (Linux + macOS paths)
           export PATH="$HOME/.local/bin:$HOME/Library/Python/3.12/bin:$HOME/Library/Python/3.11/bin:$PATH"
           # Pre-create .a5c directory — omni atomic write needs it on Windows
