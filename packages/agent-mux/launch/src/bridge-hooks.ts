@@ -235,9 +235,13 @@ export class BridgeHookEmulator {
       if (this.ctx.verbose) {
         console.error(`[bridge-hooks] exec: ${this.hooksMuxBin} ${args.join(' ')}`);
       }
+      const hookEnv = { ...this.ctx.env };
+      if (this.ctx.sessionId && !hookEnv['AGENT_SESSION_ID']) {
+        hookEnv['AGENT_SESSION_ID'] = this.ctx.sessionId;
+      }
       const result = await execCommand(this.hooksMuxBin, args, {
         cwd: this.ctx.cwd,
-        env: this.ctx.env,
+        env: hookEnv,
         verbose: this.ctx.verbose,
         stdin: JSON.stringify({ event: nativeEvent }),
       });
@@ -251,9 +255,13 @@ export class BridgeHookEmulator {
 
       // Fallback: direct babysitter hook:run
       console.error(`[bridge-hooks] falling back to: ${this.babysitterBin} ${babysitterCmd.slice(1).join(' ')}`);
+      const fallbackEnv = { ...this.ctx.env };
+      if (this.ctx.sessionId && !fallbackEnv['AGENT_SESSION_ID']) {
+        fallbackEnv['AGENT_SESSION_ID'] = this.ctx.sessionId;
+      }
       return await execCommand(this.babysitterBin, babysitterCmd.slice(1), {
         cwd: this.ctx.cwd,
-        env: this.ctx.env,
+        env: fallbackEnv,
         verbose: this.ctx.verbose,
       });
     }
