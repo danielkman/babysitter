@@ -218,9 +218,13 @@ export class BridgeHookEmulator {
     if (this.ctx.runsDir) {
       babysitterCmd.push('--runs-dir', this.ctx.runsDir);
     }
-    // Prepend AGENT_SESSION_ID to handler command so it reaches babysitter
+    // Prepend critical env vars to handler command so they reach babysitter
     // through the hooks-mux subprocess chain (env may not propagate).
-    const envPrefix = this.ctx.sessionId ? `AGENT_SESSION_ID=${this.ctx.sessionId} ` : '';
+    const envParts: string[] = [];
+    if (this.ctx.sessionId) envParts.push(`AGENT_SESSION_ID=${this.ctx.sessionId}`);
+    if (this.ctx.env['LIVE_STACK_TRACE_ID']) envParts.push(`LIVE_STACK_TRACE_ID=${this.ctx.env['LIVE_STACK_TRACE_ID']}`);
+    if (this.ctx.runsDir) envParts.push(`BABYSITTER_RUNS_DIR=${this.ctx.runsDir}`);
+    const envPrefix = envParts.length > 0 ? envParts.join(' ') + ' ' : '';
     const handlerCommand = envPrefix + babysitterCmd.join(' ');
 
     if (this.ctx.verbose) {
