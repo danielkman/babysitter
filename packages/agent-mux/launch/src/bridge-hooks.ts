@@ -45,6 +45,16 @@ function resolveHooksMuxBin(env: Record<string, string>): string {
   return env['HOOKS_MUX_BIN'] || 'a5c-hooks-mux';
 }
 
+/** Map amux agent name to the babysitter SDK harness name. */
+function harnessToSdkHarness(harness: string): string {
+  const map: Record<string, string> = {
+    'gemini': 'gemini-cli',
+    'copilot': 'copilot-cli',
+    'claude': 'claude-code',
+  };
+  return map[harness] ?? harness;
+}
+
 /** Map harness name to the hooks-mux adapter name. */
 function harnessToAdapter(harness: string): string {
   const map: Record<string, string> = {
@@ -194,11 +204,12 @@ export class BridgeHookEmulator {
       : nativeEvent.toLowerCase().replace(/([A-Z])/g, '-$1').replace(/^-/, '');
 
     // Build the babysitter hook:run command that the hook script would call
+    const sdkHarness = harnessToSdkHarness(this.ctx.harness);
     const babysitterCmd = [
       this.babysitterBin,
       'hook:run',
       '--hook-type', hookType,
-      '--harness', this.ctx.harness,
+      '--harness', sdkHarness,
       '--json',
     ];
     if (this.ctx.runsDir) {
