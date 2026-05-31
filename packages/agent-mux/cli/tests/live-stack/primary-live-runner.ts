@@ -76,8 +76,13 @@ export function buildPrimaryLiveStackCommands(
   if (scenario.agent.agent === 'omni') {
     commandEnv['BABYSITTER_RUNS_DIR'] = commandEnv['BABYSITTER_RUNS_DIR'] ?? path.join(options.cwd, '.a5c', 'runs');
     commandEnv['BABYSITTER_RUNS_SCOPE'] = commandEnv['BABYSITTER_RUNS_SCOPE'] ?? 'repo';
+    const fixturesDir = path.join(options.cwd, 'packages', 'agent-mux', 'cli', 'tests', 'live-stack', 'fixtures');
+    const processesDir = path.join(options.cwd, '.a5c', 'processes');
+    const copyFixture = { command: process.execPath, args: ['-e', `const fs=require("fs"),p=require("path");fs.mkdirSync(p.dirname(${JSON.stringify(path.join(processesDir, 'summarize-translate-test.mjs'))}),{recursive:true});fs.copyFileSync(${JSON.stringify(path.join(fixturesDir, 'summarize-translate-test.mjs'))},${JSON.stringify(path.join(processesDir, 'summarize-translate-test.mjs'))})`], env: commandEnv, cwd: options.cwd, timeoutMs: SETUP_TIMEOUT_MS };
     const omniArgs = ['call', '--model', scenario.model.model, '--workspace', options.cwd, '--process', '.a5c/processes/summarize-translate-test.mjs', '--prompt', prompt, '--json'];
     return [
+      ensureLiveArtifactDirCommand(commandEnv, options.cwd),
+      copyFixture,
       commandExecution(commandEnv, 'LIVE_STACK_OMNI_BIN', 'omni', omniArgs, options.cwd, timeoutMs),
     ];
   }
@@ -958,7 +963,8 @@ async function validateAgentBehavior(
       if (runEntries.length === 0) {
         runCompletionDetail = 'no runs created in .a5c/runs/';
       } else {
-        const MIN_JOURNAL_EVENTS = 7;
+        const processMode = env['LIVE_STACK_PROCESS_MODE'] ?? 'predefined';
+        const MIN_JOURNAL_EVENTS = processMode === 'create' ? 3 : 7;
         for (const entry of runEntries.slice(-5)) {
           const journalDir = path.join(runsDir, entry, 'journal');
           try {

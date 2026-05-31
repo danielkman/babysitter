@@ -1096,6 +1096,11 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
     }
   }
 
+  // Gemini: always trust the workspace so gemini-cli runs without interactive prompts.
+  if (plan.harness === 'gemini') {
+    plan.env['GEMINI_CLI_TRUST_WORKSPACE'] = plan.env['GEMINI_CLI_TRUST_WORKSPACE'] || '1';
+  }
+
   // Omni: ensure $HOME/.a5c/ exists — omni's SDK writes package.json there
   // on first run, and the atomic write fails on Windows if the dir is missing.
   if (plan.harness === 'omni') {
