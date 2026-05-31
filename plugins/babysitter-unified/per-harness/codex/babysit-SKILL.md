@@ -36,13 +36,13 @@ Make sure `jq` is installed and available in the path. If not, install it.
 Run the following command to get full orchestration instructions:
 
 ```bash
-$CLI instructions:babysit-skill --harness codex --interactive
+$CLI instructions:babysit-skill --harness {{harness}} --interactive
 ```
 
 For non-interactive runs (e.g., with `-p` flag or no question tool):
 
 ```bash
-$CLI instructions:babysit-skill --harness codex --no-interactive
+$CLI instructions:babysit-skill --harness {{harness}} --no-interactive
 ```
 
 Follow the instructions returned by the command above to orchestrate the run.

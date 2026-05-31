@@ -15,7 +15,7 @@ Follow the commands below exactly. but apply judgement and creativity to get the
 Read the SDK version from `versions.json` to ensure version compatibility:
 
 ```bash
-SDK_VERSION=$(node -e "try{console.log(JSON.parse(require('fs').readFileSync('${CODEX_PLUGIN_ROOT}/versions.json','utf8')).sdkVersion||'latest')}catch{console.log('latest')}")
+SDK_VERSION=$(node -e "try{console.log(JSON.parse(require('fs').readFileSync('${GEMINI_PLUGIN_ROOT}/versions.json','utf8')).sdkVersion||'latest')}catch{console.log('latest')}")
 npm i -g @a5c-ai/babysitter-sdk@$SDK_VERSION
 
 if command -v babysitter >/dev/null 2>&1 && babysitter --version >/dev/null 2>&1; then
@@ -36,13 +36,13 @@ Make sure `jq` is installed and available in the path. If not, install it.
 Run the following command to get full orchestration instructions:
 
 ```bash
-$CLI instructions:babysit-skill --harness codex --interactive
+$CLI instructions:babysit-skill --harness {{harness}} --interactive
 ```
 
 For non-interactive runs (e.g., with `-p` flag or no question tool):
 
 ```bash
-$CLI instructions:babysit-skill --harness codex --no-interactive
+$CLI instructions:babysit-skill --harness {{harness}} --no-interactive
 ```
 
 Follow the instructions returned by the command above to orchestrate the run.

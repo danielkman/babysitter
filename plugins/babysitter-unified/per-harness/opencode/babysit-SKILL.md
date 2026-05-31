@@ -32,13 +32,13 @@ If a stale or broken global shim fails with `MODULE_NOT_FOUND`, repair it with `
 Run the following command to get full orchestration instructions:
 
 ```bash
-$CLI instructions:babysit-skill --harness opencode --interactive
+$CLI instructions:babysit-skill --harness {{harness}} --interactive
 ```
 
 For non-interactive mode:
 
 ```bash
-$CLI instructions:babysit-skill --harness opencode --no-interactive
+$CLI instructions:babysit-skill --harness {{harness}} --no-interactive
 ```
 
 Follow the instructions returned by the command above to orchestrate the run.

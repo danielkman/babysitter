@@ -74,8 +74,11 @@ export function buildPrimaryLiveStackCommands(
   const prompt = buildPrompt(scenario, traceId, options.env);
 
   if (scenario.agent.agent === 'omni') {
+    commandEnv['BABYSITTER_RUNS_DIR'] = commandEnv['BABYSITTER_RUNS_DIR'] ?? path.join(options.cwd, '.a5c', 'runs');
+    commandEnv['BABYSITTER_RUNS_SCOPE'] = commandEnv['BABYSITTER_RUNS_SCOPE'] ?? 'repo';
+    const omniArgs = ['call', '--model', scenario.model.model, '--workspace', options.cwd, '--process', '.a5c/processes/summarize-translate-test.mjs', '--prompt', prompt, '--json'];
     return [
-      commandExecution(commandEnv, 'LIVE_STACK_OMNI_BIN', 'omni', ['call', '--model', scenario.model.model, '--prompt', prompt, '--json'], options.cwd, timeoutMs),
+      commandExecution(commandEnv, 'LIVE_STACK_OMNI_BIN', 'omni', omniArgs, options.cwd, timeoutMs),
     ];
   }
 
@@ -508,7 +511,7 @@ function buildPrompt(scenario: LiveStackScenario, traceId: string, env: Record<s
   }
 
   if (scenario.agent.agent === 'omni') {
-    return `Write a concise 6-section markdown summary of Homer's Odyssey with markdown headers (# and ##). After each section, add one sentence in Greek (using Greek alphabet characters). Save the entire result to .a5c-live-test/${traceId}-odyssey.md. The .a5c-live-test directory already exists.`;
+    return `Execute the summarize-translate-test process. Write a 12-paragraph summary of Homer's Odyssey, translate each paragraph to Greek, combine into a markdown document. The process handles orchestration — just provide high-quality content when prompted. Output goes to .a5c-live-test/${traceId}-odyssey.md.`;
   }
 
   if (scenario.agent.installMode === 'babysitter-plugin') {
@@ -756,7 +759,7 @@ async function validateAgentBehavior(
   env: Record<string, string | undefined>,
 ): Promise<VerificationEntry[]> {
   const entries: VerificationEntry[] = [];
-  const isBabysitterAgent = scenario.agent.agent === 'agent-platform';
+  const isBabysitterAgent = scenario.agent.agent === 'agent-platform' || scenario.agent.agent === 'omni';
   const isBabysitterPlugin = scenario.agent.installMode === 'babysitter-plugin';
 
   // --- agent-platform: verify model responded with content ---
@@ -822,12 +825,9 @@ async function validateAgentBehavior(
     if (fileExists) {
       try { fileContent = await fs.readFile(expectedFile, 'utf8'); } catch { /* */ }
     }
-    const isOmniAgent = scenario.agent.agent === 'omni';
-    const hasRealContent = isOmniAgent
-      ? isValidOmniArtifactContent(fileContent)
-      : isValidOdysseyArtifactContent(fileContent);
+    const hasRealContent = isValidOdysseyArtifactContent(fileContent);
     if (fileExists && hasRealContent) {
-      entries.push({ name: 'file-creation', status: 'passed', detail: `odyssey file created (${fileSize} bytes)${isOmniAgent ? ' (omni pipeline validation)' : ''}` });
+      entries.push({ name: 'file-creation', status: 'passed', detail: `odyssey file created (${fileSize} bytes)` });
     } else if (fileExists) {
       entries.push({ name: 'file-creation', status: 'failed', detail: `odyssey file exists but does not contain a valid Odyssey markdown artifact (${fileSize} bytes)` });
     } else {
@@ -855,12 +855,12 @@ async function validateAgentBehavior(
     }
   }
 
-  // --- babysitter-plugin: stop hooks, hooks-mux session, run completion, completion proof ---
+  // --- babysitter-plugin/omni: stop hooks, hooks-mux session, run completion, completion proof ---
   // All checks run in both TTY-backed and non-TTY modes.
   // stop-hooks is a warning (not failure) only when no TTY-backed invocation is used.
   const isInteractiveInvocation = env['LIVE_STACK_INTERACTIVE'] === 'true' || env['LIVE_STACK_BRIDGE_INTERACTIVE'] === 'true';
   const isBridgeHooksMode = env['LIVE_STACK_BRIDGE_HOOKS'] === 'true';
-  if (isBabysitterPlugin) {
+  if (isBabysitterPlugin || scenario.agent.agent === 'omni') {
     // stop-hooks: check for hooks-mux log files in all possible locations
     const homeDir = process.env['HOME'] ?? process.env['USERPROFILE'] ?? '/tmp';
     const hooksLogCandidates = [

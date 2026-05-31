@@ -18,6 +18,8 @@ import {
 import { getAdapter } from './targets/adapters/index.js';
 
 import {
+  buildTemplateVars,
+  interpolateTemplate,
   generatePs1Wrapper,
   generateJsBridge,
   generateTsHookStub,
@@ -116,7 +118,8 @@ function transformCommands(
       continue;
     }
 
-    const content = fs.readFileSync(fullPath, 'utf-8');
+    const vars = buildTemplateVars(manifest, targetProfile);
+    const content = interpolateTemplate(fs.readFileSync(fullPath, 'utf-8'), vars);
 
     if (targetProfile.commandFormat === 'toml') {
       // Convert to TOML (Gemini)
@@ -150,6 +153,8 @@ function transformSkills(
     return files;
   }
 
+  const vars = buildTemplateVars(manifest, targetProfile);
+
   // Always copy standalone skills
   if (manifest.skills && Array.isArray(manifest.skills)) {
     for (const skill of manifest.skills) {
@@ -157,7 +162,7 @@ function transformSkills(
       if (fs.existsSync(fullPath)) {
         files.push({
           path: skill.file,
-          content: fs.readFileSync(fullPath, 'utf-8'),
+          content: interpolateTemplate(fs.readFileSync(fullPath, 'utf-8'), vars),
         });
       }
     }
@@ -185,7 +190,7 @@ function transformSkills(
         continue;
       }
 
-      const content = fs.readFileSync(fullPath, 'utf-8');
+      const content = interpolateTemplate(fs.readFileSync(fullPath, 'utf-8'), vars);
       const derivedSkill = buildSkillFromCommand(basename, content);
 
       files.push({

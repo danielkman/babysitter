@@ -8,6 +8,8 @@ import { generateProgrammaticExtension } from './proxiedHookTemplates.js';
 import { generateCliBinScript, generateInstallScript, generateUninstallScript } from './binTemplates.js';
 import { generateInstallInstructions } from './installInstructions.js';
 import {
+  buildTemplateVars,
+  interpolateTemplate,
   generateTeamInstall,
   resolveExtraFiles,
 } from './transformHelpers.js';
@@ -368,6 +370,7 @@ export function generateExtraFiles(
   });
   // Emit target-override extraFiles
   const extraFiles = resolveExtraFiles(manifest, targetProfile);
+  const vars = buildTemplateVars(manifest, targetProfile);
   if (Object.keys(extraFiles).length > 0) {
     for (const [outputPath, value] of Object.entries(extraFiles)) {
       if (value.startsWith('file:')) {
@@ -384,12 +387,12 @@ export function generateExtraFiles(
           } else {
             files.push({
               path: outputPath,
-              content: fs.readFileSync(fullPath, 'utf-8'),
+              content: interpolateTemplate(fs.readFileSync(fullPath, 'utf-8'), vars),
             });
           }
         }
       } else {
-        files.push({ path: outputPath, content: value });
+        files.push({ path: outputPath, content: interpolateTemplate(value, vars) });
       }
     }
   }

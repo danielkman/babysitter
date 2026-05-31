@@ -36,7 +36,7 @@ Make sure `jq` is installed and available in the path. If not, install it.
 Run the following command to get full orchestration instructions:
 
 ```bash
-$CLI instructions:babysit-skill --harness cursor --json
+$CLI instructions:babysit-skill --harness {{harness}} --json
 ```
 
 Follow the instructions returned by the command above to orchestrate the run.

@@ -3,7 +3,7 @@
 
 import type { A5cPluginManifest, TargetProfile } from './types.js';
 
-function buildTemplateVars(
+export function buildTemplateVars(
   manifest: A5cPluginManifest,
   targetProfile: TargetProfile
 ): Record<string, string> {
@@ -14,11 +14,13 @@ function buildTemplateVars(
     target: targetProfile.name,
     targetName: targetProfile.name,
     targetDir,
+    harness: targetProfile.name,
+    pluginRootEnvVar: targetProfile.pluginRootEnvVar || 'PLUGIN_ROOT',
     ...overrideVars,
   };
 }
 
-function interpolateTemplate(
+export function interpolateTemplate(
   value: string,
   vars: Record<string, string>
 ): string {
