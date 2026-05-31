@@ -474,7 +474,14 @@ jobs:
           echo "Node: $(node --version) at $(which node)"
           if ! node --version | grep -q "^v22"; then
             echo "::warning::Node version is not 22, fixing PATH"
-            export PATH="/opt/hostedtoolcache/node/22.22.3/x64/bin:$PATH"
+            if [[ "$RUNNER_OS" == "Windows" ]]; then
+              NODE22=$(find /c/hostedtoolcache/windows/node/22.*/x64 -maxdepth 0 2>/dev/null | head -1)
+              if [[ -n "$NODE22" ]]; then export PATH="$NODE22:$PATH"; fi
+            else
+              NODE22=$(find /opt/hostedtoolcache/node/22.*/x64/bin -maxdepth 0 2>/dev/null | head -1)
+              if [[ -n "$NODE22" ]]; then export PATH="$NODE22:$PATH"; fi
+            fi
+            echo "Node after fix: $(node --version)"
           fi
           # Ensure pip user-bin is on PATH for hermes and other pip agents (Linux + macOS paths)
           export PATH="$HOME/.local/bin:$HOME/Library/Python/3.12/bin:$HOME/Library/Python/3.11/bin:$PATH"
