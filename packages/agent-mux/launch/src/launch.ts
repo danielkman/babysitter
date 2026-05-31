@@ -1096,9 +1096,12 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
     }
   }
 
-  // Gemini: always trust the workspace so gemini-cli runs without interactive prompts.
+  // Gemini: trust the workspace and skip the interactive trust prompt.
   if (plan.harness === 'gemini') {
-    plan.env['GEMINI_CLI_TRUST_WORKSPACE'] = plan.env['GEMINI_CLI_TRUST_WORKSPACE'] || '1';
+    plan.env['GEMINI_CLI_TRUST_WORKSPACE'] = 'true';
+    if (!plan.args.includes('--skip-trust')) {
+      plan.args.push('--skip-trust');
+    }
   }
 
   // Omni: ensure $HOME/.a5c/ exists — omni's SDK writes package.json there
