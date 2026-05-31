@@ -482,6 +482,7 @@ function buildCommandEnv(env: Record<string, string | undefined>, cwd: string): 
       PATH: withWorkspaceBinOnPath(env, cwd),
       NODE_PATH: [path.join(cwd, 'node_modules'), ...(() => { try { const { execSync } = require('child_process'); const p = execSync('npm root -g', { encoding: 'utf8' }).trim(); return p ? [p] : []; } catch { return []; } })()].join(path.delimiter),
       LIVE_STACK_TRACE_ID: traceId,
+      LIVE_STACK_OUTPUT_DIR: path.join(cwd, '.a5c-live-test'),
       LIVE_STACK_GENERATED_PLUGINS_DIR: env['LIVE_STACK_GENERATED_PLUGINS_DIR'] ?? path.join(cwd, 'artifacts', 'generated-plugins'),
       AGENT_SESSION_ID: env['AGENT_SESSION_ID'] ?? traceId,
       AGENT_TRUST_ENV_SESSION: '1',
