@@ -526,7 +526,8 @@ function buildPrompt(scenario: LiveStackScenario, traceId: string, env: Record<s
         `RUN the process: ${coreTask}. Use only .a5c/processes/odyssey-live-test.mjs, the process you created.`,
       ].join('\n');
       if (scenario.agent.agent === 'codex') return `$babysitter:yolo ${createInstructions}`;
-      return `/babysitter:yolo ${createInstructions}`;
+      if (scenario.agent.agent === 'claude-code') return `/babysitter:yolo ${createInstructions}`;
+      return `/yolo ${createInstructions}`;
     }
     if (processMode === 'resume') {
       const resumeRunId = env['LIVE_STACK_RESUME_RUN_ID'] ?? `resume-${traceId}`;
@@ -538,9 +539,7 @@ function buildPrompt(scenario: LiveStackScenario, traceId: string, env: Record<s
     const processHint = 'A process definition is available at .a5c/processes/summarize-translate-test.mjs';
     if (scenario.agent.agent === 'claude-code') return `/babysitter:yolo ${coreTask}. ${processHint}`;
     if (scenario.agent.agent === 'codex') return `$babysitter:yolo ${coreTask}. ${processHint}`;
-    if (scenario.agent.agent === 'gemini-cli') return `/babysitter:yolo ${coreTask}. ${processHint}`;
-    if (scenario.agent.agent === 'pi') return `Invoke the babysitter:yolo command to: ${coreTask}. ${processHint}`;
-    return `Run the babysitter process to complete this task. Execute this shell command: babysitter call --process .a5c/processes/summarize-translate-test.mjs --non-interactive --json --prompt "${coreTask}". The babysitter CLI is installed globally. ${processHint}`;
+    return `/yolo ${coreTask}. ${processHint}`;
   }
 
   return coreTask;
