@@ -58,9 +58,6 @@
     "readme": {
       "README.md": "file:per-harness/{{targetDir}}/README.md"
     },
-    "babysit-skill": {
-      "skills/babysit/SKILL.md": "file:per-harness/{{targetDir}}/babysit-SKILL.md"
-    },
     "agents-file": {
       "AGENTS.md": "file:per-harness/{{targetDir}}/AGENTS.md"
     },
@@ -143,7 +140,6 @@
     "codex": {
       "npmPackageName": "@a5c-ai/babysitter-codex",
       "extraFileSets": [
-        "babysit-skill",
         "codex-branding",
         "codex-support-files",
         "readme",
@@ -219,7 +215,6 @@
     },
     "cursor": {
       "extraFileSets": [
-        "babysit-skill",
         "readme"
       ],
       "harnessManifest": {
@@ -253,7 +248,6 @@
     "gemini": {
       "extraFileSets": [
         "gemini-surface",
-        "babysit-skill",
         "readme"
       ]
     },
@@ -264,7 +258,6 @@
       },
       "extraFileSets": [
         "agents-file",
-        "babysit-skill",
         "github-surface",
         "readme"
       ],
@@ -311,7 +304,6 @@
       "npmPackageName": "@a5c-ai/babysitter-pi",
       "extraFileSets": [
         "agents-file",
-        "babysit-skill",
         "pi-extension",
         "pi-support-files",
         "readme"
@@ -324,7 +316,6 @@
       },
       "extraFileSets": [
         "agents-file",
-        "babysit-skill",
         "pi-extension",
         "pi-support-files",
         "readme"
@@ -333,7 +324,6 @@
     "opencode": {
       "harnessInstallSurface": "per-harness/opencode/bin/install-surface.js",
       "extraFileSets": [
-        "babysit-skill",
         "opencode-surface",
         "readme"
       ],
@@ -358,7 +348,6 @@
     },
     "openclaw": {
       "extraFileSets": [
-        "babysit-skill",
         "openclaw-surface",
         "pi-extension",
         "readme"
