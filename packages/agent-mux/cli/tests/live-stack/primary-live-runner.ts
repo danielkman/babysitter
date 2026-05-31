@@ -525,9 +525,8 @@ function buildPrompt(scenario: LiveStackScenario, traceId: string, env: Record<s
         '',
         `RUN the process: ${coreTask}. Use only .a5c/processes/odyssey-live-test.mjs, the process you created.`,
       ].join('\n');
-      if (scenario.agent.agent === 'claude-code' || scenario.agent.agent === 'gemini-cli' || scenario.agent.agent === 'pi') return `/babysitter:yolo ${createInstructions}`;
       if (scenario.agent.agent === 'codex') return `$babysitter:yolo ${createInstructions}`;
-      return createInstructions;
+      return `/babysitter:yolo ${createInstructions}`;
     }
     if (processMode === 'resume') {
       const resumeRunId = env['LIVE_STACK_RESUME_RUN_ID'] ?? `resume-${traceId}`;
