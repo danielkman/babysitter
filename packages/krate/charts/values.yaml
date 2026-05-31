@@ -85,6 +85,7 @@ web:
 
 
 assistant:
+  existingSecret: ""
   anthropic:
     existingSecret: ""
     key: anthropic-api-key

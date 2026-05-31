@@ -460,6 +460,18 @@ spec:
                   key: {{ default "krate-assistant-api-key" $assistantKrate.key | quote }}
                   optional: true
             {{- end }}
+            {{- with .Values.assistant }}
+            {{- if .existingSecret }}
+            {{- range $key := list "AZURE_API_KEY" "AMUX_API_BASE" "KRATE_ASSISTANT_PROVIDER" "KRATE_ASSISTANT_MODEL" "OPENAI_API_KEY" "GOOGLE_API_KEY" }}
+            - name: {{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.assistant.existingSecret | quote }}
+                  key: {{ $key }}
+                  optional: true
+            {{- end }}
+            {{- end }}
+            {{- end }}
             - name: KRATE_AUTH_COOKIE_NAME
               value: {{ .Values.auth.session.cookieName | quote }}
             - name: KRATE_AUTH_DELEGATED_IDENTITY_ENABLED

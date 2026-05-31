@@ -2240,7 +2240,20 @@ jobs:
         env:
           KRATE_GITHUB_CLIENT_ID: ${{ vars.KRATE_GITHUB_CLIENT_ID }}
           KRATE_GITHUB_CLIENT_SECRET: ${{ secrets.KRATE_GITHUB_CLIENT_SECRET }}
+          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+          AZURE_OPENAI_PROJECT_NAME: ${{ vars.AZURE_OPENAI_PROJECT_NAME }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
         run: |
+          kubectl -n "$KUBE_NAMESPACE" create secret generic krate-assistant-keys \
+            --from-literal=AZURE_API_KEY="${AZURE_OPENAI_API_KEY}" \
+            --from-literal=AMUX_API_BASE="https://${AZURE_OPENAI_PROJECT_NAME}.services.ai.azure.com" \
+            --from-literal=KRATE_ASSISTANT_PROVIDER=openai \
+            --from-literal=KRATE_ASSISTANT_MODEL=gpt-5.5 \
+            --from-literal=OPENAI_API_KEY="${OPENAI_API_KEY}" \
+            --from-literal=GOOGLE_API_KEY="${GOOGLE_API_KEY}" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
           helm upgrade --install krate packages/krate/charts \
             --namespace "$KUBE_NAMESPACE" \
             --create-namespace \
@@ -2272,6 +2285,7 @@ jobs:
             --set "externalDependencies.kyverno.discoverExisting=true" \
             --set networkPolicy.enabled=false \
             --set apiService.enabled=false \
+            --set "assistant.existingSecret=krate-assistant-keys" \
             --timeout 300s \
             --wait
           # Force-delete pods stuck in Terminating

@@ -17,9 +17,9 @@ export const ASSISTANT_RUNTIME_BOUNDARY = {
  */
 export function defaultAssistantConfig() {
   return {
-    baseAgent: 'claude-code',
-    provider: 'anthropic',
-    model: 'claude-sonnet-4-20250514',
+    baseAgent: 'krate-assistant',
+    provider: process.env.KRATE_ASSISTANT_PROVIDER || 'openai',
+    model: process.env.KRATE_ASSISTANT_MODEL || 'gpt-5.5',
     systemPrompt: `You are the Krate Assistant — an AI agent embedded in the Krate Kubernetes-native forge. You help users manage repositories, agent stacks, workspaces, deployments, and policies. You have access to krate MCP tools for resource management and Atlas graph for knowledge queries.`,
     approvalMode: 'prompt',
   };
@@ -50,17 +50,27 @@ You have access to MCP tools for direct resource management. Be concise and help
  * @param {{ provider: string, model: string, messages: object[], tools?: object[], maxTokens?: number, responseFormat?: string, apiKey?: string, fetchImpl?: Function }} params
  * @returns {Promise<{ content: string, usage: object, stopReason?: string, toolCalls?: object[] }>}
  */
-export async function callModel({ provider, model, messages, tools, maxTokens, responseFormat, apiKey, fetchImpl } = {}) {
+export async function callModel({ provider, model, messages, tools, maxTokens, responseFormat, apiKey, baseUrl, fetchImpl } = {}) {
+  const resolvedProvider = provider || process.env.KRATE_ASSISTANT_PROVIDER || 'openai';
+
+  if (resolvedProvider === 'anthropic') {
+    return callAnthropicModel({ model, messages, tools, maxTokens, apiKey, fetchImpl });
+  }
+
+  return callOpenAICompatibleModel({ provider: resolvedProvider, model, messages, tools, maxTokens, apiKey, baseUrl, fetchImpl });
+}
+
+async function callAnthropicModel({ model, messages, tools, maxTokens, apiKey, fetchImpl }) {
   const resolvedKey = apiKey || process.env.ANTHROPIC_API_KEY || process.env.KRATE_ASSISTANT_API_KEY;
   if (!resolvedKey) {
-    return { content: 'Assistant API key not configured. Set ANTHROPIC_API_KEY or KRATE_ASSISTANT_API_KEY.', usage: {} };
+    return { content: 'Anthropic API key not configured. Set ANTHROPIC_API_KEY or KRATE_ASSISTANT_API_KEY.', usage: {} };
   }
 
   const systemMessage = messages.find(m => m.role === 'system');
   const nonSystemMessages = messages.filter(m => m.role !== 'system');
 
   const body = {
-    model,
+    model: model || 'claude-sonnet-4-6',
     max_tokens: maxTokens || 4096,
     messages: nonSystemMessages,
     ...(systemMessage ? { system: systemMessage.content } : {}),
@@ -89,6 +99,50 @@ export async function callModel({ provider, model, messages, tools, maxTokens, r
     };
   } catch (err) {
     return { content: `Error calling model: ${err.message}`, usage: {} };
+  }
+}
+
+async function callOpenAICompatibleModel({ provider, model, messages, tools, maxTokens, apiKey, baseUrl, fetchImpl }) {
+  const resolvedKey = apiKey || process.env.AZURE_API_KEY || process.env.OPENAI_API_KEY || process.env.KRATE_ASSISTANT_API_KEY;
+  const resolvedBase = baseUrl || process.env.KRATE_ASSISTANT_BASE_URL || process.env.AMUX_API_BASE;
+
+  if (!resolvedKey) {
+    return { content: `API key not configured for ${provider}. Set AZURE_API_KEY, OPENAI_API_KEY, or KRATE_ASSISTANT_API_KEY.`, usage: {} };
+  }
+  if (!resolvedBase) {
+    return { content: `Base URL not configured for ${provider}. Set KRATE_ASSISTANT_BASE_URL or AMUX_API_BASE.`, usage: {} };
+  }
+
+  const endpoint = resolvedBase.replace(/\/$/, '') + '/openai/deployments/' + (model || 'gpt-5.5') + '/chat/completions?api-version=2024-12-01-preview';
+
+  const body = {
+    messages,
+    max_tokens: maxTokens || 4096,
+    ...(tools?.length ? { tools: tools.map(t => ({ type: 'function', function: t })) } : {}),
+  };
+
+  const doFetch = fetchImpl || globalThis.fetch;
+
+  try {
+    const res = await doFetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'api-key': resolvedKey,
+      },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (!res.ok) return { content: data.error?.message || `${provider} API error: ${res.status}`, usage: {} };
+    const choice = data.choices?.[0]?.message;
+    return {
+      content: choice?.content || '',
+      usage: data.usage ? { input_tokens: data.usage.prompt_tokens, output_tokens: data.usage.completion_tokens } : {},
+      stopReason: data.choices?.[0]?.finish_reason,
+      toolCalls: choice?.tool_calls || [],
+    };
+  } catch (err) {
+    return { content: `Error calling ${provider} model: ${err.message}`, usage: {} };
   }
 }
 
