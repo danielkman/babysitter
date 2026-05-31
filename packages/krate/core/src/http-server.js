@@ -15,6 +15,9 @@ export function createKrateHttpHandler({ runtime = createKrateRuntime(), control
     try {
       const url = new URL(request.url || '/', 'http://localhost');
       if (request.method === 'GET' && url.pathname === '/healthz') {
+        if (url.searchParams.get('quick') === '1' || request.headers['x-readiness-probe']) {
+          return send(response, 200, { ok: true, project: 'Krate', status: 'alive' });
+        }
         const probes = await collectKrateHealthProbes({ timeoutMs: 3000, eventBus: globalEventBus, ...healthProbeOptions });
         const degraded = Object.values(probes).some((probe) => probe?.status === 'error');
         return send(response, 200, {

@@ -178,11 +178,11 @@ spec:
               containerPort: 3080
           readinessProbe:
             httpGet:
-              path: /healthz
+              path: /healthz?quick=1
               port: http
-            initialDelaySeconds: 5
-            periodSeconds: 15
-            timeoutSeconds: 5
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 2
 ---
 apiVersion: apps/v1
 kind: Deployment
