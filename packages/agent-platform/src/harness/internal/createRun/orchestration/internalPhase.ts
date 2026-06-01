@@ -482,8 +482,17 @@ export async function runInternalOrchestrationPhase(
           }
         }
         if (effectsResolved > 0) {
-          writeVerbose(`[phaseOrchestration host] auto-resolved ${effectsResolved} effects`);
+          const totalPending = state.pendingActions.size;
+          writeVerbose(`[phaseOrchestration host] auto-resolved ${effectsResolved} effects (${totalPending} still pending)`);
           consecutiveStalls = 0;
+          // If all effects resolved, auto-advance the run without prompting the model.
+          if (totalPending === 0) {
+            writeVerbose('[phaseOrchestration host] all effects auto-resolved — auto-advancing run');
+            await invokeTool(iterateTool, "babysitter_run_iterate");
+            if (ensureTerminalResult() !== null) break;
+            consecutiveTimeouts = 0;
+            consecutiveProcessErrorStalls = 0;
+          }
           continue;
         }
       }
