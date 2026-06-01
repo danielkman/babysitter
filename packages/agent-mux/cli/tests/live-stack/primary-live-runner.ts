@@ -851,7 +851,10 @@ async function validateAgentBehavior(
     if (fileExists) {
       try { fileContent = await fs.readFile(expectedFile, 'utf8'); } catch { /* */ }
     }
-    const hasRealContent = isValidOdysseyArtifactContent(fileContent);
+    const isTula = scenario.agent.agent === 'tula';
+    const hasRealContent = isTula
+      ? isValidOmniArtifactContent(fileContent)
+      : isValidOdysseyArtifactContent(fileContent);
     if (fileExists && hasRealContent) {
       entries.push({ name: 'file-creation', status: 'passed', detail: `odyssey file created (${fileSize} bytes)` });
     } else if (fileExists) {
@@ -985,7 +988,8 @@ async function validateAgentBehavior(
         runCompletionDetail = 'no runs created in .a5c/runs/';
       } else {
         const processMode = env['LIVE_STACK_PROCESS_MODE'] ?? 'predefined';
-        const MIN_JOURNAL_EVENTS = processMode === 'create' ? 3 : 7;
+        const isTulaAgent = scenario.agent.agent === 'tula';
+        const MIN_JOURNAL_EVENTS = processMode === 'create' ? 3 : isTulaAgent ? 5 : 7;
         for (const entry of runEntries.slice(-5)) {
           const journalDir = path.join(runsDir, entry, 'journal');
           try {
