@@ -111,7 +111,7 @@ export interface LaunchPlan {
   env: Record<string, string>;
 }
 
-export const PROMPT_ARTIFACT_MONITOR_TIMEOUT_MS = process.platform === 'win32' ? 1_500_000 : 900_000;
+export const PROMPT_ARTIFACT_MONITOR_TIMEOUT_MS = process.platform === 'win32' ? 2_700_000 : 900_000;
 
 // ---------------------------------------------------------------------------
 // Plan resolution
