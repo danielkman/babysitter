@@ -141,7 +141,7 @@ describe('BaseAgentAdapter.install (default)', () => {
     expect(res.command).toMatch(/@3\.1\.0$/);
   });
 
-  it('pins Gemini CLI install to the validated 0.43.x line', async () => {
+  it('installs Gemini CLI via npm without version pin by default', async () => {
     const adapter = new GeminiAdapter();
     const { spawner, calls } = spawnerFrom(() => ({ code: 0, stdout: '', stderr: '' }));
     adapter.setSpawner(spawner);
@@ -149,7 +149,6 @@ describe('BaseAgentAdapter.install (default)', () => {
     const res = await adapter.install({ dryRun: true });
 
     expect(res.command).toContain('npm install -g @google/gemini-cli');
-    expect(res.command).not.toBe('npm install -g @google/gemini-cli');
     expect(calls.length).toBe(0);
   });
 

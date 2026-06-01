@@ -18,8 +18,8 @@ export const ASSISTANT_RUNTIME_BOUNDARY = {
 export function defaultAssistantConfig() {
   return {
     baseAgent: 'krate-assistant',
-    provider: process.env.KRATE_ASSISTANT_PROVIDER || 'openai',
-    model: process.env.KRATE_ASSISTANT_MODEL || 'gpt-5.5',
+    provider: process.env.KRATE_ASSISTANT_PROVIDER || 'anthropic',
+    model: process.env.KRATE_ASSISTANT_MODEL || 'claude-sonnet-4-6',
     systemPrompt: `You are the Krate Assistant — an AI agent embedded in the Krate Kubernetes-native forge. You help users manage repositories, agent stacks, workspaces, deployments, and policies. You have access to krate MCP tools for resource management and Atlas graph for knowledge queries.`,
     approvalMode: 'prompt',
   };
@@ -51,7 +51,7 @@ You have access to MCP tools for direct resource management. Be concise and help
  * @returns {Promise<{ content: string, usage: object, stopReason?: string, toolCalls?: object[] }>}
  */
 export async function callModel({ provider, model, messages, tools, maxTokens, responseFormat, apiKey, baseUrl, fetchImpl } = {}) {
-  const resolvedProvider = provider || process.env.KRATE_ASSISTANT_PROVIDER || 'openai';
+  const resolvedProvider = provider || process.env.KRATE_ASSISTANT_PROVIDER || 'anthropic';
 
   if (resolvedProvider === 'anthropic') {
     return callAnthropicModel({ model, messages, tools, maxTokens, apiKey, fetchImpl });
