@@ -419,11 +419,13 @@ export async function runInternalOrchestrationPhase(
         continue;
       }
       // Auto-execute effects in the host — models struggle with the babysitter tool protocol.
+      // Handle shell effects via child_process, all other non-breakpoint effects via delegation.
       if (state.pendingActions.size > 0) {
         let effectsResolved = 0;
         for (const [effectId, action] of state.pendingActions) {
+          if (action.kind === 'breakpoint') continue;
           if (action.kind === 'shell') {
-            const shell = (action as any).shell;
+            const shell = (action as any).shell ?? (action as any).taskDef?.shell;
             if (!shell?.command) continue;
             writeVerbose(`[phaseOrchestration host] auto-executing shell effect ${effectId}: ${shell.command} ${(shell.args || []).slice(0, 2).join(' ')}`);
             try {
@@ -450,18 +452,18 @@ export async function runInternalOrchestrationPhase(
               });
               effectsResolved++;
             }
-          } else if (action.kind === 'agent') {
-            const agentSpec = (action as any).agent;
+          } else {
+            const agentSpec = (action as any).agent ?? (action as any).taskDef?.agent;
             const prompt = typeof agentSpec?.prompt === 'string'
               ? agentSpec.prompt
-              : JSON.stringify(agentSpec?.prompt ?? (action as any).title ?? 'Execute this task');
-            writeVerbose(`[phaseOrchestration host] auto-delegating agent effect ${effectId}: ${((action as any).title ?? '').slice(0, 80)}`);
+              : JSON.stringify(agentSpec?.prompt ?? (action as any).title ?? (action as any).label ?? 'Execute this task');
+            writeVerbose(`[phaseOrchestration host] auto-delegating ${action.kind} effect ${effectId}: ${((action as any).title ?? (action as any).label ?? '').slice(0, 80)}`);
             try {
               const delegated = await runDelegatedHarnessTask({
                 task: prompt,
                 workspace: args.workspace,
                 model: args.model,
-                timeout: 120_000,
+                timeout: 180_000,
               });
               await invokeTool(taskPostTool, 'babysitter_task_post_result', {
                 effectId,
@@ -471,7 +473,7 @@ export async function runInternalOrchestrationPhase(
               effectsResolved++;
             } catch (err: unknown) {
               const msg = err instanceof Error ? err.message : String(err);
-              writeVerbose(`[phaseOrchestration host] agent effect ${effectId} failed: ${msg}`);
+              writeVerbose(`[phaseOrchestration host] ${action.kind} effect ${effectId} failed: ${msg}`);
               await invokeTool(taskPostTool, 'babysitter_task_post_result', {
                 effectId,
                 status: 'error',
