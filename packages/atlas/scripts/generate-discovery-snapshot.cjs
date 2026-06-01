@@ -5,7 +5,7 @@ const path = require("node:path");
 
 const packageRoot = path.resolve(__dirname, "..");
 const distRoot = path.join(packageRoot, "dist");
-const discoveryModulePath = path.join(distRoot, "discovery.js");
+const discoveryModulePath = path.join(distRoot, "catalog", "discovery.js");
 const snapshotPath = path.join(distRoot, "discovery-snapshot.json");
 
 if (!fs.existsSync(discoveryModulePath)) {

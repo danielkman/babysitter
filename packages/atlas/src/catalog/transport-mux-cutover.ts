@@ -17,7 +17,7 @@ function uniqueStrings(values: string[]): string[] {
 }
 
 function repoRoot(): string {
-  return path.resolve(__dirname, "..", "..", "..");
+  return path.resolve(__dirname, "..", "..", "..", "..");
 }
 
 function readRepoFile(relativePath: string): string {

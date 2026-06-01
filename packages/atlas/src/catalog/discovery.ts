@@ -159,7 +159,7 @@ function clone<T>(value: T): T {
 }
 
 function packageRoot(): string {
-  return path.resolve(__dirname, "..");
+  return path.resolve(__dirname, "..", "..");
 }
 
 function repoRoot(): string {
@@ -787,7 +787,7 @@ function buildSnapshot(): CatalogDiscoverySnapshot {
   }
 
   throw new Error(
-    `Discovery assets unavailable for @a5c-ai/agent-catalog. Expected either repo library at ${libraryDir} or packaged snapshot at ${snapshotPath}.`,
+    `Discovery assets unavailable for @a5c-ai/atlas/catalog. Expected either repo library at ${libraryDir} or packaged snapshot at ${snapshotPath}.`,
   );
 }
 

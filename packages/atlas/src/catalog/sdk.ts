@@ -15,7 +15,7 @@ import {
   PLUGIN_TARGETS,
   getCatalogDataState,
 } from "./data";
-import { atlas } from "@a5c-ai/atlas";
+import { atlas } from "../index";
 import { getCatalogGraph, listGraphNodes, listRelationshipsByRelation } from "./atlas-bridge";
 import { effectiveTransportMuxClaimStatus, shouldSurfaceTransportProtocol } from "./transport-mux-cutover";
 import type {
@@ -1336,7 +1336,7 @@ export function getUiAgentCards(): UiAgentCard[] {
 // ---------------------------------------------------------------------------
 
 function packageRoot(): string {
-  return path.resolve(__dirname, "..");
+  return path.resolve(__dirname, "..", "..");
 }
 
 export function resolveCatalogGraphAssetPath(relativePath: string): string {
@@ -1506,7 +1506,7 @@ export interface LaunchConfigDescriptor {
 
 export function getLaunchConfig(harness: string, mode: string): LaunchConfigDescriptor | undefined {
   try {
-    const atlas = require('@a5c-ai/atlas') as { AtlasGraph: new (index: unknown) => { getAllRecords(): Array<Record<string, unknown>> }; getIndex(): unknown };
+    const atlas = require('../index') as { AtlasGraph: new (index: unknown) => { getAllRecords(): Array<Record<string, unknown>> }; getIndex(): unknown };
     const graph = new atlas.AtlasGraph(atlas.getIndex());
     const configId = `launch-config:${harness}.${mode}`;
     const record = graph.getAllRecords().find((r) => r.id === configId);

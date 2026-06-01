@@ -1,4 +1,4 @@
-import { atlas } from "@a5c-ai/atlas";
+import { atlas } from "../index";
 import { AGENT_CATALOG, GRAPH_DOCUMENT } from "./data";
 import { getNodeById, listGraphEdges, listGraphNodes, listOutgoingTargets } from "./atlas-bridge";
 import { effectiveTransportMuxClaimStatus } from "./transport-mux-cutover";

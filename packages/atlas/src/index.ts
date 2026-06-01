@@ -192,4 +192,3 @@ export const getNeighbors = (id: string, depth = 1): NeighborResult => atlas.get
 export const getDisplayName = (record: AtlasRecord | undefined): string => atlas.getDisplayName(record);
 export const searchRecords = (query: string, options?: { limit?: number; kind?: string; cluster?: string }): SearchHit[] => atlas.searchRecords(query, options);
 
-

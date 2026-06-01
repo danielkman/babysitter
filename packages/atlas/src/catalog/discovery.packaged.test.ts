@@ -4,7 +4,7 @@ import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-const PACKAGE_ROOT = path.resolve(__dirname, "..");
+const PACKAGE_ROOT = path.resolve(__dirname, "..", "..");
 const REPO_ROOT = path.resolve(PACKAGE_ROOT, "..", "..");
 const NPM_COMMAND = "npm";
 
@@ -44,6 +44,14 @@ function runNodeScript(cwd: string, lines: string[]): string {
   return exec("node", ["-e", lines.join("\n")], cwd);
 }
 
+function parseNpmPackJson(output: string): Array<{ filename: string; files?: Array<{ path: string }> }> {
+  const jsonStart = output.search(/(?:^|\n)\s*\[\s*\{/);
+  if (jsonStart === -1) {
+    throw new Error(`npm pack --json did not emit a JSON array: ${output}`);
+  }
+  return JSON.parse(output.slice(jsonStart).trim()) as Array<{ filename: string; files?: Array<{ path: string }> }>;
+}
+
 describe("agent-catalog packaged discovery", () => {
   let tempRoot = "";
   let consumerRoot = "";
@@ -53,10 +61,10 @@ describe("agent-catalog packaged discovery", () => {
   beforeAll(() => {
     tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "agent-catalog-packaged-"));
 
-    exec(NPM_COMMAND, ["run", "build", "--workspace=@a5c-ai/agent-catalog"], REPO_ROOT);
+    exec(NPM_COMMAND, ["run", "build", "--workspace=@a5c-ai/atlas"], REPO_ROOT);
 
     const packOutput = exec(NPM_COMMAND, ["pack", "--json"], PACKAGE_ROOT);
-    const [packResult] = JSON.parse(packOutput) as Array<{ filename: string; files?: Array<{ path: string }> }>;
+    const [packResult] = parseNpmPackJson(packOutput);
     packedTgzPath = path.join(PACKAGE_ROOT, packResult.filename);
     packedEntries = packResult.files ?? [];
 
@@ -74,14 +82,14 @@ describe("agent-catalog packaged discovery", () => {
 
   it("ships a packaged discovery snapshot", () => {
     expect(packedEntries.some((entry) => entry.path === "dist/discovery-snapshot.json")).toBe(true);
-    expect(packedEntries.some((entry) => entry.path === "index.js")).toBe(true);
-    expect(packedEntries.some((entry) => entry.path === "index.d.ts")).toBe(true);
+    expect(packedEntries.some((entry) => entry.path === "dist/index.js")).toBe(true);
+    expect(packedEntries.some((entry) => entry.path === "dist/index.d.ts")).toBe(true);
     expect(packedEntries.some((entry) => /\.test\.(?:js|d\.ts|d\.ts\.map)$/.test(entry.path))).toBe(false);
   });
 
   it("imports the broad package surface without touching graph or evidence assets", () => {
     const output = runNodeScript(consumerRoot, [
-      'const catalog = require("@a5c-ai/agent-catalog");',
+      'const catalog = require("@a5c-ai/atlas/catalog");',
       "process.stdout.write(JSON.stringify({",
       "  exportCount: Object.keys(catalog).length,",
       '  hasGraphCallsite: typeof catalog.getCatalogGraphDocument === "function",',
@@ -108,7 +116,7 @@ describe("agent-catalog packaged discovery", () => {
 
   it("loads non-empty discovery inventories from an installed tarball", () => {
     const output = runNodeScript(consumerRoot, [
-      'const catalog = require("@a5c-ai/agent-catalog");',
+      'const catalog = require("@a5c-ai/atlas/catalog");',
       "const snapshot = catalog.getCatalogDiscoverySnapshot();",
       "process.stdout.write(JSON.stringify({",
       "  counts: snapshot.counts,",
@@ -142,7 +150,7 @@ describe("agent-catalog packaged discovery", () => {
     fs.rmSync(path.join(installedRoot, "package.json"), { force: true });
 
     const output = runNodeScript(rootEntryConsumer, [
-      'const catalog = require("@a5c-ai/agent-catalog");',
+      'const catalog = require("@a5c-ai/atlas/catalog");',
       "process.stdout.write(JSON.stringify({",
       "  exportCount: Object.keys(catalog).length,",
       '  hasDiscoveryCallsite: typeof catalog.getCatalogDiscoverySnapshot === "function",',
@@ -160,16 +168,16 @@ describe("agent-catalog packaged discovery", () => {
 
 
   it("fails explicitly when packaged discovery assets are unavailable", () => {
-    const installedRoot = path.join(consumerRoot, "node_modules", "@a5c-ai", "agent-catalog");
+    const installedRoot = path.join(consumerRoot, "node_modules", "@a5c-ai", "atlas");
     const snapshotPath = path.join(installedRoot, "dist", "discovery-snapshot.json");
     fs.rmSync(snapshotPath, { force: true });
 
     expect(() =>
       runNodeScript(consumerRoot, [
-        'const catalog = require("@a5c-ai/agent-catalog");',
+        'const catalog = require("@a5c-ai/atlas/catalog");',
         "catalog.clearCatalogDiscoveryCache();",
         "catalog.getCatalogDiscoverySnapshot();",
       ]),
-    ).toThrowError(/Discovery assets unavailable for @a5c-ai\/agent-catalog/);
+    ).toThrowError(/Discovery assets unavailable for @a5c-ai\/atlas\/catalog/);
   });
 });

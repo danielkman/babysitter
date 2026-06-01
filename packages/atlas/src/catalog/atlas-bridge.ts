@@ -6,8 +6,8 @@
  * there is no fallback to local YAML files.
  */
 
-import { atlas } from "@a5c-ai/atlas";
-import type { AtlasRecord, Edge } from "@a5c-ai/atlas";
+import { atlas } from "../index";
+import type { AtlasRecord, Edge } from "../index";
 import type {
   CatalogGraph,
   GraphDocument,
