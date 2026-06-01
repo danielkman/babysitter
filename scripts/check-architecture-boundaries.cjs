@@ -13,7 +13,7 @@ const packageFamilies = {
     "@a5c-ai/agent-platform",
     "@a5c-ai/agent-core",
     "@a5c-ai/agent-runtime",
-    "@a5c-ai/omni",
+    "@a5c-ai/tula",
   ],
   "dispatch-core": [
     "@a5c-ai/agent-mux",
