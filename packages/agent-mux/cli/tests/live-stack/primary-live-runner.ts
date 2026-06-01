@@ -76,9 +76,13 @@ export function buildPrimaryLiveStackCommands(
   if (scenario.agent.agent === 'omni') {
     commandEnv['BABYSITTER_RUNS_DIR'] = commandEnv['BABYSITTER_RUNS_DIR'] ?? path.join(options.cwd, '.a5c', 'runs');
     commandEnv['BABYSITTER_RUNS_SCOPE'] = commandEnv['BABYSITTER_RUNS_SCOPE'] ?? 'repo';
-    const omniArgs = ['call', '--model', scenario.model.model, '--workspace', options.cwd, '--prompt', prompt, '--json'];
+    const fixturesDir = path.join(options.cwd, 'packages', 'agent-mux', 'cli', 'tests', 'live-stack', 'fixtures');
+    const processesDir = path.join(options.cwd, '.a5c', 'processes');
+    const copyFixture = { command: process.execPath, args: ['-e', `const fs=require("fs"),p=require("path");fs.mkdirSync(${JSON.stringify(processesDir)},{recursive:true});fs.copyFileSync(${JSON.stringify(path.join(fixturesDir, 'omni-simple-test.mjs'))},${JSON.stringify(path.join(processesDir, 'omni-simple-test.mjs'))})`], env: commandEnv, cwd: options.cwd, timeoutMs: SETUP_TIMEOUT_MS };
+    const omniArgs = ['call', '--model', scenario.model.model, '--workspace', options.cwd, '--process', '.a5c/processes/omni-simple-test.mjs', '--prompt', prompt, '--json'];
     return [
       ensureLiveArtifactDirCommand(commandEnv, options.cwd),
+      copyFixture,
       commandExecution(commandEnv, 'LIVE_STACK_OMNI_BIN', 'omni', omniArgs, options.cwd, timeoutMs),
     ];
   }
@@ -526,7 +530,7 @@ function buildPrompt(scenario: LiveStackScenario, traceId: string, env: Record<s
   }
 
   if (scenario.agent.agent === 'omni') {
-    return `Write a concise 6-section markdown summary of Homer's Odyssey with markdown headers (## for each section). After each section, add one sentence in Greek (using Greek alphabet characters). Save the entire result to .a5c-live-test/${traceId}-odyssey.md. The .a5c-live-test directory already exists.`;
+    return `Write a 6-section summary of Homer's Odyssey with Greek translations and save to .a5c-live-test/${traceId}-odyssey.md. The process at .a5c/processes/omni-simple-test.mjs handles the orchestration.`;
   }
 
   if (scenario.agent.installMode === 'babysitter-plugin') {
