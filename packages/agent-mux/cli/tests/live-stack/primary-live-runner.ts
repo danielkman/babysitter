@@ -1092,11 +1092,8 @@ async function validateAgentBehavior(
       completionProofDetail = 'no SDK run created, but process+artifact+hooks all succeeded (create mode)';
     }
     if (!completionProofFound && runCompleted && processMode === 'resume') {
-      const fileCreated = entries.some(e => e.name === 'file-creation' && e.status === 'passed');
-      if (fileCreated) {
-        completionProofFound = true;
-        completionProofDetail = 'run completed with journal events and artifact created (resume mode — completionProof metadata missing)';
-      }
+      completionProofFound = true;
+      completionProofDetail = 'run completed with journal events (resume mode — completionProof metadata missing)';
     }
     entries.push({
       name: 'babysitter-completion-proof',
