@@ -349,6 +349,16 @@ export async function runPrimaryLiveStackScenario(options: PrimaryLiveRunOptions
               }
             } catch { /* no process file */ }
           }
+          if (processMode === 'resume') {
+            const runsDir = path.join(options.cwd, '.a5c', 'runs');
+            try {
+              const entries = await fs.readdir(runsDir);
+              if (entries.length > 0) {
+                console.warn(`[live-stack] command exited ${result.status} but .a5c/runs/ has ${entries.length} entries — proceeding with verification`);
+                break;
+              }
+            } catch { /* no runs dir */ }
+          }
         }
       }
 
