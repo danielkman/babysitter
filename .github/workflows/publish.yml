@@ -2264,8 +2264,8 @@ jobs:
             --set-string "ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/ssl-redirect=true" \
             --set demo.enabled=false \
             --set gitea.enabled=true \
-            --set argocd.enabled=true \
-            --set kubevela.enabled=true \
+            --set argocd.enabled=false \
+            --set kubevela.enabled=false \
             --set "externalDependencies.kyverno.enabled=true" \
             --set "externalDependencies.kyverno.discoverExisting=true" \
             --set networkPolicy.enabled=false \
