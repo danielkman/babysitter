@@ -94,7 +94,7 @@ describe("verifyBreakpointResult", () => {
     expect(result.reason).toBe("verification disabled");
   });
 
-  it("returns verified:false when tasks-mux verifyAnswer is missing", async () => {
+  it("returns verified:false when agent-mux-tasks verifyAnswer is missing", async () => {
     vi.resetModules();
     vi.doMock("@a5c-ai/agent-mux-tasks/proven", () => ({
       verifyAnswer: undefined,
