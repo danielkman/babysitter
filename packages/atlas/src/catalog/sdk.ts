@@ -1587,8 +1587,12 @@ export function getInstallMethods(harness: string): ResolvedInstallMethod[] {
     return metadata.installCommands.map(c => ({ type: c.type, command: c.command }));
   }
   const agent = getAgentVersion(harness);
-  const node = resolveVersionNode(agentVersionNodes(harness));
-  const installRefs = node ? stringArray(node.installMethods) : [];
+  const nodes = agentVersionNodes(harness);
+  let installRefs: string[] = [];
+  for (const n of nodes) {
+    const refs = stringArray(n.installMethods);
+    if (refs.length > installRefs.length) installRefs = refs;
+  }
   const sourcePackage = agent?.sourcePackage ?? harness;
   return installRefs.map((ref: string) => {
     const type = ref.replace(/^install:/, '');
