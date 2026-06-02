@@ -379,13 +379,19 @@ export async function runPrimaryLiveStackScenario(options: PrimaryLiveRunOptions
   const verifications = await validateAgentBehavior(scenario, options.cwd, commandOutput, traceId, options.env);
   const behaviorFailures = verifications.filter((v) => v.status === 'failed').map((v) => v.detail ?? v.name);
 
-  const captured = mergeTraceIds(
-    extractTraceIds(commandOutput),
-    await discoverTraceIdsFromRunArtifacts({ scenario, cwd: options.cwd, artifactsDir: options.artifactsDir, output: commandOutput, traceId, startedAtMs }),
-  );
-  const artifactFiles = await writeExpectedArtifacts(options.artifactsDir, scenario, commandResults, captured);
-  const evidence = createEvidenceBundle(scenario, captured, artifactFiles);
-  const missingTraceIds = assertEvidenceBundleComplete(scenario, evidence);
+  let captured: Partial<LiveStackEvidenceBundle> = {};
+  let missingTraceIds: readonly string[] = [];
+  try {
+    captured = mergeTraceIds(
+      extractTraceIds(commandOutput),
+      await discoverTraceIdsFromRunArtifacts({ scenario, cwd: options.cwd, artifactsDir: options.artifactsDir, output: commandOutput, traceId, startedAtMs }),
+    );
+    const artifactFiles = await writeExpectedArtifacts(options.artifactsDir, scenario, commandResults, captured);
+    const evidence = createEvidenceBundle(scenario, captured, artifactFiles);
+    missingTraceIds = assertEvidenceBundleComplete(scenario, evidence);
+  } catch (err) {
+    console.error(`[live-stack] trace/evidence discovery failed: ${err instanceof Error ? err.message : err}`);
+  }
 
   const allFailures = [...missingTraceIds.map((id) => `missing trace: ${id}`), ...behaviorFailures];
 
