@@ -5,4 +5,3 @@ interface TruncatedIdProps {
 }
 export declare function TruncatedId({ id, chars, className }: TruncatedIdProps): import("react/jsx-runtime").JSX.Element;
 export {};
-//# sourceMappingURL=truncated-id.d.ts.map

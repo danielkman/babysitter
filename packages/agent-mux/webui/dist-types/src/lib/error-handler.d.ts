@@ -26,4 +26,3 @@ export interface NormalizedError {
  * - Anything else (null, undefined, number, object) → generic 500.
  */
 export declare function normalizeError(err: unknown): NormalizedError;
-//# sourceMappingURL=error-handler.d.ts.map

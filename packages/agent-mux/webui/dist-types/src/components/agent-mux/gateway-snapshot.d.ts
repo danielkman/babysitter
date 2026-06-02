@@ -11,4 +11,3 @@ export type GatewayBootstrapResponse = {
     };
 };
 export declare function loadGatewayBootstrapSnapshot(fetcher: (pathname: string) => Promise<unknown>): Promise<GatewayBootstrapResponse>;
-//# sourceMappingURL=gateway-snapshot.d.ts.map

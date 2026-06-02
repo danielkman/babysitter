@@ -49,4 +49,3 @@ type WorkspaceDetailShellProps = {
 };
 export declare function WorkspaceDetailShell(props: WorkspaceDetailShellProps): import("react/jsx-runtime").JSX.Element;
 export {};
-//# sourceMappingURL=workspace-detail-shell.d.ts.map

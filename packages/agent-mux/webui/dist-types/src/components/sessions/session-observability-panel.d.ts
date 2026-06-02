@@ -12,4 +12,3 @@ export declare function SessionObservabilityPanel(props: {
     flowModelOverride?: SessionFlowModel;
 }): import("react/jsx-runtime").JSX.Element;
 export {};
-//# sourceMappingURL=session-observability-panel.d.ts.map

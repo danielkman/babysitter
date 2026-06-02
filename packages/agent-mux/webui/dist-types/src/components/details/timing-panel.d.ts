@@ -7,4 +7,3 @@ interface TimingPanelProps {
 }
 export declare function TimingPanel({ task, runDuration, allTasks }: TimingPanelProps): import("react/jsx-runtime").JSX.Element;
 export {};
-//# sourceMappingURL=timing-panel.d.ts.map

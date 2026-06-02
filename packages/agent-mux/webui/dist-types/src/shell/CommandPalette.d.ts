@@ -8,4 +8,3 @@ export declare function CommandPalette(props: {
     open: boolean;
     onClose(): void;
 }): JSX.Element | null;
-//# sourceMappingURL=CommandPalette.d.ts.map

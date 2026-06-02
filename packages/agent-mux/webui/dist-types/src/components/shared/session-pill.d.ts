@@ -5,4 +5,3 @@ interface SessionPillProps {
 }
 export declare function SessionPill({ sessionId, active, className }: SessionPillProps): import("react/jsx-runtime").JSX.Element | null;
 export {};
-//# sourceMappingURL=session-pill.d.ts.map

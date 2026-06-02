@@ -24,4 +24,3 @@ export declare function ReviewPanel(props: {
         feedbackSource?: KanbanReviewFeedbackSource;
     }) => void | Promise<void>;
 }): import("react/jsx-runtime").JSX.Element;
-//# sourceMappingURL=review-panel.d.ts.map

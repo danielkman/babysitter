@@ -9,4 +9,3 @@ interface ProjectSectionProps {
 }
 export declare function ProjectSection({ projectName, runs: _initialRuns, selectedIndex, defaultExpanded: _defaultExpanded, statusFilter, enabled, }: ProjectSectionProps): import("react/jsx-runtime").JSX.Element;
 export {};
-//# sourceMappingURL=project-section.d.ts.map

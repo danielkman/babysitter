@@ -25,4 +25,3 @@ interface VirtualizedRunListProps {
  */
 export declare function VirtualizedRunList({ runs, className, maxHeight, renderItem, onStopRun, stoppingRunIds, }: VirtualizedRunListProps): import("react/jsx-runtime").JSX.Element;
 export {};
-//# sourceMappingURL=virtualized-run-list.d.ts.map

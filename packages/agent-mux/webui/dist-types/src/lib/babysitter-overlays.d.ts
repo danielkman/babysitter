@@ -72,4 +72,3 @@ export declare function buildRunHealthRecords(runs: Run[], nowMs?: number): RunH
 export declare function buildRunArtifactShortcuts(runs: Array<Record<string, unknown>>): RunArtifactShortcut[];
 export declare function buildSessionTimeline(runs: Array<Record<string, unknown>>, eventBuffers: Record<string, SessionEventBuffer | undefined>): SessionTimelineItem[];
 export {};
-//# sourceMappingURL=babysitter-overlays.d.ts.map

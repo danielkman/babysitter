@@ -171,4 +171,3 @@ export interface EventsResponse {
 export interface TaskDetailResponse {
     task: TaskDetail;
 }
-//# sourceMappingURL=index.d.ts.map

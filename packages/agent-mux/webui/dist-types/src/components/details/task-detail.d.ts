@@ -12,4 +12,3 @@ interface TaskDetailPanelProps {
 }
 export declare function TaskDetailPanel({ runId, effectId, activeTab, onTabChange, runDuration, allTasks, executionContexts, executionAudits, }: TaskDetailPanelProps): import("react/jsx-runtime").JSX.Element;
 export {};
-//# sourceMappingURL=task-detail.d.ts.map

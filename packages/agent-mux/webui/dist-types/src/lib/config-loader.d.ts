@@ -27,4 +27,3 @@ export declare function writeConfig(data: {
     hiddenProjects?: string[];
 }): Promise<void>;
 export declare function getConfig(): Promise<KanbanConfig>;
-//# sourceMappingURL=config-loader.d.ts.map

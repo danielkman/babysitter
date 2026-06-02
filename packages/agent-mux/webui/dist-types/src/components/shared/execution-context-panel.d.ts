@@ -6,4 +6,3 @@ export declare function ExecutionContextPanel(props: {
     className?: string;
     compact?: boolean;
 }): import("react/jsx-runtime").JSX.Element | null;
-//# sourceMappingURL=execution-context-panel.d.ts.map

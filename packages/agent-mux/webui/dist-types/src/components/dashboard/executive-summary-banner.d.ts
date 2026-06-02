@@ -15,4 +15,3 @@ interface ExecutiveSummaryBannerProps {
 }
 export declare function ExecutiveSummaryBanner({ metrics, onFilterChange, dismissed, onDismiss, }: ExecutiveSummaryBannerProps): import("react/jsx-runtime").JSX.Element | null;
 export {};
-//# sourceMappingURL=executive-summary-banner.d.ts.map

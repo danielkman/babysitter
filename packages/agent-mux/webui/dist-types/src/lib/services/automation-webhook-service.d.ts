@@ -42,4 +42,3 @@ export declare class AutomationWebhookService {
     deliver(input: AutomationWebhookDeliveryInput): Promise<AutomationWebhookDeliveryResponse>;
 }
 export {};
-//# sourceMappingURL=automation-webhook-service.d.ts.map

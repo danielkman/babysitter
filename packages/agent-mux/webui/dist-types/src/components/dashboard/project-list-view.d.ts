@@ -16,4 +16,3 @@ export interface ProjectListViewProps {
     stoppingRunIds?: Set<string>;
 }
 export declare function ProjectListView({ loading, error, filteredProjects, activeProjects, historyProjects, statusFilter, sortMode, cardStatusFilter, historyCollapsed, onHistoryCollapsedChange, onHideProject, onStopRun, stoppingRunIds, }: ProjectListViewProps): import("react/jsx-runtime").JSX.Element;
-//# sourceMappingURL=project-list-view.d.ts.map

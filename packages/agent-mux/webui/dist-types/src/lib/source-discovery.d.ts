@@ -8,4 +8,3 @@ export interface DiscoveredRun {
 export declare function invalidateDiscoveryCache(): void;
 export declare function discoverAllRunDirs(): Promise<DiscoveredRun[]>;
 export declare function discoverAllRunsParentDirs(): Promise<string[]>;
-//# sourceMappingURL=source-discovery.d.ts.map

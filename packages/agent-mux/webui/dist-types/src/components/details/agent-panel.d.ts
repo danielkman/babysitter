@@ -6,4 +6,3 @@ export declare function AgentPanel({ task, executionContexts, executionAudits, }
     executionContexts?: readonly KanbanExecutionContextEnvelope[];
     executionAudits?: readonly DispatchContextAuditRecord[];
 }): import("react/jsx-runtime").JSX.Element;
-//# sourceMappingURL=agent-panel.d.ts.map

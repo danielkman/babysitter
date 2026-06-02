@@ -39,4 +39,3 @@ type SessionWorkspaceShellProps = {
 };
 export declare function SessionWorkspaceShell(props: SessionWorkspaceShellProps): import("react/jsx-runtime").JSX.Element;
 export {};
-//# sourceMappingURL=session-workspace-shell.d.ts.map

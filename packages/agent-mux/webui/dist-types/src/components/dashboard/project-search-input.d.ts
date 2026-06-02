@@ -6,4 +6,3 @@ interface ProjectSearchInputProps {
 }
 export declare function ProjectSearchInput({ onSearch, debounceMs, className, placeholder }: ProjectSearchInputProps): import("react/jsx-runtime").JSX.Element;
 export {};
-//# sourceMappingURL=project-search-input.d.ts.map

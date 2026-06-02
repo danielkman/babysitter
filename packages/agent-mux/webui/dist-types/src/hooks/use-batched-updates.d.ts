@@ -32,4 +32,3 @@ export interface UseBatchedUpdatesOptions {
  */
 export declare function useBatchedUpdates(options?: UseBatchedUpdatesOptions): CatchUpState;
 export { BURST_WINDOW_MS, BURST_THRESHOLD, CATCHUP_HOLD_MS };
-//# sourceMappingURL=use-batched-updates.d.ts.map

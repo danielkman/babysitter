@@ -4,4 +4,3 @@ interface BreakpointBannerProps {
 }
 export declare function BreakpointBanner({ breakpointRuns }: BreakpointBannerProps): import("react/jsx-runtime").JSX.Element | null;
 export {};
-//# sourceMappingURL=breakpoint-banner.d.ts.map

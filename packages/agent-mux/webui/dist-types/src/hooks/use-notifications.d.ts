@@ -18,4 +18,3 @@ export declare function useNotifications(): {
     requestPermission: () => Promise<void>;
     permission: NotificationPermission;
 };
-//# sourceMappingURL=use-notifications.d.ts.map

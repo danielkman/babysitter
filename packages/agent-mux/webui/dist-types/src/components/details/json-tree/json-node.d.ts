@@ -23,4 +23,3 @@ interface JsonTreeViewProps {
 export declare function JsonTreeView({ data, defaultExpanded }: JsonTreeViewProps): import("react/jsx-runtime").JSX.Element;
 export { JsonNode };
 export type { JsonNodeProps, JsonTreeViewProps };
-//# sourceMappingURL=json-node.d.ts.map

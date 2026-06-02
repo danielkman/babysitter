@@ -34,4 +34,3 @@ export declare function parseRunDir(runPath: string, incremental?: IncrementalRu
 export declare function parseTaskDetail(runPath: string, effectId: string): Promise<TaskDetail | null>;
 export declare function getRunDigest(runPath: string): Promise<RunDigest>;
 export declare function getRunIds(runsPath: string): Promise<string[]>;
-//# sourceMappingURL=parser.d.ts.map

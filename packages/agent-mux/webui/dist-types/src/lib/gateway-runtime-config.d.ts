@@ -22,4 +22,3 @@ export declare function toPublicGatewayRuntimeConfig(config: GatewayRuntimeConfi
 export declare function buildGatewayTargetUrl(baseUrl: string, pathname: string, search?: string): string;
 export declare function gatewayProxyPath(pathname: string): string;
 export declare function extractBootstrapToken(payload: unknown): string | null;
-//# sourceMappingURL=gateway-runtime-config.d.ts.map

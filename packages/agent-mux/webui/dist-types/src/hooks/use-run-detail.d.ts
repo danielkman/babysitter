@@ -10,4 +10,3 @@ export declare function useTaskDetail(runId: string, effectId: string | null): {
     loading: boolean;
     error: string | null;
 };
-//# sourceMappingURL=use-run-detail.d.ts.map

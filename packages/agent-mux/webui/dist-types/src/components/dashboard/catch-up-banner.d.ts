@@ -17,4 +17,3 @@ export interface CatchUpBannerProps {
  * all pending changes.
  */
 export declare function CatchUpBanner({ catchUp, summary }: CatchUpBannerProps): import("react/jsx-runtime").JSX.Element | null;
-//# sourceMappingURL=catch-up-banner.d.ts.map

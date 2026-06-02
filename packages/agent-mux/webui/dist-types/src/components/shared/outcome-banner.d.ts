@@ -4,4 +4,3 @@ interface OutcomeBannerProps {
 }
 export declare function OutcomeBanner({ run }: OutcomeBannerProps): import("react/jsx-runtime").JSX.Element | null;
 export {};
-//# sourceMappingURL=outcome-banner.d.ts.map

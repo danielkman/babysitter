@@ -3,4 +3,3 @@ export declare function RequireGatewayAuth(props: {
     title?: string;
     body?: string;
 }): import("react/jsx-runtime").JSX.Element;
-//# sourceMappingURL=require-gateway-auth.d.ts.map

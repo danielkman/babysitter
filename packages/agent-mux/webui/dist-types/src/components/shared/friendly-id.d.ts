@@ -4,4 +4,3 @@ interface FriendlyIdProps {
 }
 export declare function FriendlyId({ id, className }: FriendlyIdProps): import("react/jsx-runtime").JSX.Element;
 export {};
-//# sourceMappingURL=friendly-id.d.ts.map

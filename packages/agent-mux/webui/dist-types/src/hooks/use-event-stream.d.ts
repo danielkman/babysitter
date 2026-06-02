@@ -14,4 +14,3 @@ export declare function useEventStream(): {
     error: string | null;
 };
 export {};
-//# sourceMappingURL=use-event-stream.d.ts.map

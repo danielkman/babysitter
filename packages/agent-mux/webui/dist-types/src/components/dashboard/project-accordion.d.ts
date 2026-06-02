@@ -6,4 +6,3 @@ interface ProjectAccordionProps {
 }
 export declare function ProjectAccordion({ projects, statusFilter, className }: ProjectAccordionProps): import("react/jsx-runtime").JSX.Element;
 export {};
-//# sourceMappingURL=project-accordion.d.ts.map

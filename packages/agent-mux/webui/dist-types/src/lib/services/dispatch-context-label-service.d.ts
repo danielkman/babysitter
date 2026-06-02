@@ -37,4 +37,3 @@ export declare class DispatchContextLabelService {
     deleteDispatchContextLabel(dispatchContextLabelId: string): Promise<DispatchContextLabelDeleteResult>;
 }
 export {};
-//# sourceMappingURL=dispatch-context-label-service.d.ts.map

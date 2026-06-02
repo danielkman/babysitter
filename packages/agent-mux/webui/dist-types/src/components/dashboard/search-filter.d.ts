@@ -10,4 +10,3 @@ interface SearchFilterProps {
 }
 export declare function SearchFilter({ search, onSearchChange, statusFilter, onStatusFilterChange, searchRef, groupByProject, onGroupByProjectChange }: SearchFilterProps): import("react/jsx-runtime").JSX.Element;
 export {};
-//# sourceMappingURL=search-filter.d.ts.map

@@ -7,4 +7,3 @@ interface NotificationPanelProps {
 }
 export declare function NotificationPanel({ open, notifications, onDismiss, onClose }: NotificationPanelProps): import("react/jsx-runtime").JSX.Element;
 export {};
-//# sourceMappingURL=notification-panel.d.ts.map

@@ -10,4 +10,3 @@ interface StepCardProps {
 }
 export declare const StepCard: import("react").NamedExoticComponent<StepCardProps>;
 export {};
-//# sourceMappingURL=step-card.d.ts.map

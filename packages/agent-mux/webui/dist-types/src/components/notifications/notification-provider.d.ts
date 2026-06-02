@@ -17,4 +17,3 @@ export declare function NotificationProvider({ children }: {
     children: ReactNode;
 }): import("react/jsx-runtime").JSX.Element;
 export {};
-//# sourceMappingURL=notification-provider.d.ts.map

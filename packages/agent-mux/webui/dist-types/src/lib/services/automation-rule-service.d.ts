@@ -95,4 +95,3 @@ export declare class AutomationRuleService {
     materializeEvent(ruleId: string, body: Record<string, unknown>): Promise<MaterializeAutomationEventResponse>;
 }
 export {};
-//# sourceMappingURL=automation-rule-service.d.ts.map

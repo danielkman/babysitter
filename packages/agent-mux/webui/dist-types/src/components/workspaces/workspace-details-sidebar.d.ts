@@ -35,4 +35,3 @@ export declare function WorkspaceDetailsSidebar(props: {
     }) => void;
 }): import("react/jsx-runtime").JSX.Element;
 export {};
-//# sourceMappingURL=workspace-details-sidebar.d.ts.map

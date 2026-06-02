@@ -5,4 +5,3 @@ interface BreakpointApprovalProps {
 }
 export declare function BreakpointApproval({ task, runId }: BreakpointApprovalProps): import("react/jsx-runtime").JSX.Element | null;
 export {};
-//# sourceMappingURL=breakpoint-approval.d.ts.map

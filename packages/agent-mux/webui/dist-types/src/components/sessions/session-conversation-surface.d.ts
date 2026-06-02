@@ -34,4 +34,3 @@ type SessionConversationSurfaceProps = {
 };
 export type { ComposerSubmitInput };
 export declare function SessionConversationSurface(props: SessionConversationSurfaceProps): import("react/jsx-runtime").JSX.Element;
-//# sourceMappingURL=session-conversation-surface.d.ts.map

@@ -11,4 +11,3 @@ interface TaskTagAutocompleteTextareaProps {
 }
 export declare function TaskTagAutocompleteTextarea({ value, onValueChange, taskTags, disabled, className, emptyText, renderTextarea, }: TaskTagAutocompleteTextareaProps): import("react/jsx-runtime").JSX.Element;
 export {};
-//# sourceMappingURL=task-tag-autocomplete-textarea.d.ts.map

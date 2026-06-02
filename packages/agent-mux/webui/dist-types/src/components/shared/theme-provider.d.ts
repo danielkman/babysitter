@@ -8,4 +8,3 @@ export declare function ThemeProvider(props: {
     children: React.ReactNode;
 }): import("react/jsx-runtime").JSX.Element;
 export {};
-//# sourceMappingURL=theme-provider.d.ts.map

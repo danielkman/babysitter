@@ -7,4 +7,3 @@
  * @returns The current animated value (integer)
  */
 export declare function useAnimatedNumber(target: number, duration?: number): number;
-//# sourceMappingURL=use-animated-number.d.ts.map

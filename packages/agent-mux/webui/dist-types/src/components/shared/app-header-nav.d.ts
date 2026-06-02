@@ -27,4 +27,3 @@ export declare const APP_HEADER_NAV_ITEMS: readonly [{
     readonly label: "Settings";
     readonly icon: import("react").ForwardRefExoticComponent<Omit<import("lucide-react").LucideProps, "ref"> & import("react").RefAttributes<SVGSVGElement>>;
 }];
-//# sourceMappingURL=app-header-nav.d.ts.map

@@ -109,4 +109,3 @@ export declare function useReviews(query?: ReviewQuery, interval?: number): {
     pendingArtifactId: string | null;
     selectedArtifact: (artifactId: string | null | undefined) => KanbanReviewArtifact | null;
 };
-//# sourceMappingURL=use-reviews.d.ts.map

@@ -9,4 +9,3 @@ interface ProjectHealthCardProps {
 }
 export declare function ProjectHealthCard({ project, statusFilter, sortMode, onHide, onStopRun, stoppingRunIds, }: ProjectHealthCardProps): import("react/jsx-runtime").JSX.Element;
 export {};
-//# sourceMappingURL=project-health-card.d.ts.map

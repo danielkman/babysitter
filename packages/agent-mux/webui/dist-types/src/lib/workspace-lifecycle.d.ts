@@ -66,4 +66,3 @@ export declare class WorkspaceLifecycleService {
     }): Promise<WorkspaceActionResult>;
 }
 export {};
-//# sourceMappingURL=workspace-lifecycle.d.ts.map

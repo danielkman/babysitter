@@ -5,4 +5,3 @@ interface EventItemProps {
 }
 export declare const EventItem: import("react").NamedExoticComponent<EventItemProps>;
 export {};
-//# sourceMappingURL=event-item.d.ts.map

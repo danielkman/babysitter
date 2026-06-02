@@ -7,4 +7,3 @@ interface PaginationControlsProps {
 }
 export declare function PaginationControls({ currentPage, totalItems, itemsPerPage, onPageChange, className }: PaginationControlsProps): import("react/jsx-runtime").JSX.Element | null;
 export {};
-//# sourceMappingURL=pagination-controls.d.ts.map

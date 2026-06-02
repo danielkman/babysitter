@@ -6,4 +6,3 @@ export interface KpiGridProps {
     onToggleFilter: (filter: DashboardStatusFilter) => void;
 }
 export declare function KpiGrid({ metrics, statusFilter, hasStaleRuns, onToggleFilter }: KpiGridProps): import("react/jsx-runtime").JSX.Element;
-//# sourceMappingURL=kpi-grid.d.ts.map

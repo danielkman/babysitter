@@ -34,4 +34,3 @@ export interface KanbanStorageDeps {
 export declare const defaultKanbanStorageDeps: KanbanStorageDeps;
 export declare function readKanbanStorageFile(deps: KanbanStorageDeps): Promise<KanbanStoragePayload | null>;
 export declare function writeKanbanStorageFile(deps: KanbanStorageDeps, payload: KanbanStoragePayload): Promise<void>;
-//# sourceMappingURL=kanban-storage.d.ts.map

@@ -28,4 +28,3 @@ export declare function WorkspacesPageContent(props: {
     mode?: WorkspaceSurfaceMode;
 }): import("react/jsx-runtime").JSX.Element;
 export {};
-//# sourceMappingURL=workspaces-page.d.ts.map

@@ -1,12 +1,8 @@
 /**
- * Typed GlobalRegistry — replaces raw `(globalThis as any).__key` casts with
- * type-safe accessors that persist across HMR reloads.
+ * Typed GlobalRegistry for the kanban (agent-mux webui) namespace.
  *
- * Usage:
- *   const cache = getGlobal('__kanban_run_cache__', () => new Map<string, CacheEntry>());
- *
- * The first call lazily initialises the value on `globalThis`; subsequent calls
- * (including after HMR) return the existing instance.
+ * Built on the generic {@link createGlobalRegistry} factory to avoid
+ * duplicating accessor logic across packages.
  */
 import type { EventEmitter } from "events";
 import type { FSWatcher } from "fs";
@@ -45,28 +41,6 @@ export interface GlobalRegistryMap {
 declare global {
     var __kanban_registry__: Partial<GlobalRegistryMap> | undefined;
 }
-/**
- * Return an HMR-safe global value, lazily initialising it via `factory` on
- * first access.
- *
- * The value is stored on `globalThis.__kanban_registry__` under the given
- * key so it survives hot-module reloads.
- *
- * @param key     One of the keys declared in {@link GlobalRegistryMap}.
- * @param factory Called once to create the initial value if it does not exist.
- * @returns       The (possibly pre-existing) value.
- */
-export declare function getGlobal<K extends keyof GlobalRegistryMap>(key: K, factory: () => GlobalRegistryMap[K]): GlobalRegistryMap[K];
-/**
- * Clear a single key from the global registry.
- *
- * Primarily useful during shutdown / test teardown.
- */
-export declare function clearGlobal<K extends keyof GlobalRegistryMap>(key: K): void;
-/**
- * Clear the entire global registry.
- *
- * Primarily useful in tests.
- */
-export declare function clearAllGlobals(): void;
-//# sourceMappingURL=global-registry.d.ts.map
+export declare const getGlobal: <K extends "__kanban_run_cache__" | "__kanban_watcher_events__" | "__kanban_watchers__" | "__kanban_server_events__" | "__kanban_sse_debounce__" | "__kanban_init__">(key: K, factory: () => GlobalRegistryMap[K]) => GlobalRegistryMap[K];
+export declare const clearGlobal: <K extends "__kanban_run_cache__" | "__kanban_watcher_events__" | "__kanban_watchers__" | "__kanban_server_events__" | "__kanban_sse_debounce__" | "__kanban_init__">(key: K) => void;
+export declare const clearAllGlobals: () => void;

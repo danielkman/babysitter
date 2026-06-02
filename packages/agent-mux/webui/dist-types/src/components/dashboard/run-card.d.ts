@@ -7,4 +7,3 @@ interface RunCardProps {
 }
 export declare const RunCard: import("react").NamedExoticComponent<RunCardProps>;
 export {};
-//# sourceMappingURL=run-card.d.ts.map

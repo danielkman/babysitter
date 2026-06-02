@@ -10,4 +10,3 @@ export declare function WorkspaceRuntimePanel(props: {
     className?: string;
     executionContexts?: readonly KanbanExecutionContextEnvelope[];
 }): import("react/jsx-runtime").JSX.Element;
-//# sourceMappingURL=workspace-runtime-panel.d.ts.map

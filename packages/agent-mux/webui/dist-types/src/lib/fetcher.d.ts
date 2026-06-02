@@ -68,4 +68,3 @@ export type FetchResult<T> = {
  * ```
  */
 export declare function resilientFetch<T>(url: string, options?: FetchOptions): Promise<FetchResult<T>>;
-//# sourceMappingURL=fetcher.d.ts.map

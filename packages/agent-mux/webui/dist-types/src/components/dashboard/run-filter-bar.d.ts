@@ -8,4 +8,3 @@ export interface RunFilterBarProps {
     filteredProjectCount: number;
 }
 export declare function RunFilterBar({ statusFilter, onStatusFilterChange, filterCounts, sortMode, onSortModeToggle, filteredProjectCount, }: RunFilterBarProps): import("react/jsx-runtime").JSX.Element;
-//# sourceMappingURL=run-filter-bar.d.ts.map

@@ -6,4 +6,3 @@ export interface Shortcut {
     description: string;
 }
 export declare function useKeyboard(shortcuts: Shortcut[]): void;
-//# sourceMappingURL=use-keyboard.d.ts.map

@@ -11,4 +11,3 @@ interface ParallelGroupProps {
  */
 export declare const ParallelGroup: import("react").NamedExoticComponent<ParallelGroupProps>;
 export {};
-//# sourceMappingURL=parallel-group.d.ts.map

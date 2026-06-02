@@ -40,4 +40,3 @@ export interface UseRunDashboardReturn {
     handleHideProject: (projectName: string) => void;
 }
 export declare function useRunDashboard(): UseRunDashboardReturn;
-//# sourceMappingURL=use-run-dashboard.d.ts.map

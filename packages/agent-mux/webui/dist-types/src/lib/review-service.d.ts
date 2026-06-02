@@ -61,4 +61,3 @@ export declare class ReviewService {
     }): Promise<KanbanReviewSnapshot>;
     applyAction(input: ReviewActionInput): Promise<KanbanReviewSnapshot>;
 }
-//# sourceMappingURL=review-service.d.ts.map

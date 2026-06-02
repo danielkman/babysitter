@@ -10,4 +10,3 @@ export interface DispatchContextAuditRecord {
 }
 export declare function findDispatchContextAuditsByRunId(snapshot: KanbanBacklogSnapshot | null | undefined, runId: string): DispatchContextAuditRecord[];
 export declare function findDispatchContextAuditsBySessionId(snapshot: KanbanBacklogSnapshot | null | undefined, sessionId: string): DispatchContextAuditRecord[];
-//# sourceMappingURL=dispatch-context-audit.d.ts.map

@@ -6,4 +6,3 @@ export declare function getStatusColor(status: string): string;
 export declare function getStatusBg(status: string): string;
 export declare function formatShortId(id: string, chars?: number): string;
 export declare function friendlyProcessName(processId: string): string;
-//# sourceMappingURL=utils.d.ts.map
