@@ -55,7 +55,7 @@ LOW extractable value for babysitter. The tool is narrowly focused on PDF slide 
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| PDF Editing Integration | NEW | Natural language PDF editing with Gemini 3 Pro Image and system dependencies | - | plugins/a5c/marketplace/plugins/pdf-editing-integration/ |
+| PDF Editing Integration | NEW | Natural language PDF editing with Gemini 3 Pro Image and system dependencies | - | plugins/a5c/marketplace/blueprints/pdf-editing-integration/ |
 
 ## Implicit Procedural Knowledge
 

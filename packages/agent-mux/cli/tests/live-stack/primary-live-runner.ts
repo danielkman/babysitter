@@ -102,8 +102,8 @@ export function buildPrimaryLiveStackCommands(
 
   if (scenario.agent.agent === 'agent-platform') {
     const runCommand = commandExecution(
-      { ...commandEnv, AMUX_PROVIDER: scenario.model.agentMuxProvider },
-      'LIVE_STACK_AMUX_BIN',
+      { ...commandEnv, AGENT_MUX_PROVIDER: scenario.model.agentMuxProvider },
+      'LIVE_STACK_AGENT_MUX_BIN',
       'amux',
       [
         'run',
@@ -129,14 +129,14 @@ export function buildPrimaryLiveStackCommands(
 
     if (scenario.agent.installMode === 'vanilla') {
       return [
-        commandExecution(commandEnv, 'LIVE_STACK_AMUX_BIN', 'amux', ['install', 'babysitter', '--json'], options.cwd, SETUP_TIMEOUT_MS),
+        commandExecution(commandEnv, 'LIVE_STACK_AGENT_MUX_BIN', 'amux', ['install', 'babysitter', '--json'], options.cwd, SETUP_TIMEOUT_MS),
         runCommand,
       ];
     }
 
     return [
       commandExecution(commandEnv, 'LIVE_STACK_NPM_BIN', 'npm', ['run', 'generate:plugins'], options.cwd, SETUP_TIMEOUT_MS),
-      commandExecution(commandEnv, 'LIVE_STACK_AMUX_BIN', 'amux', ['install', 'babysitter', '--json'], options.cwd, SETUP_TIMEOUT_MS),
+      commandExecution(commandEnv, 'LIVE_STACK_AGENT_MUX_BIN', 'amux', ['install', 'babysitter', '--json'], options.cwd, SETUP_TIMEOUT_MS),
       commandExecution(commandEnv, 'LIVE_STACK_NPM_BIN', 'npm', ['install', '--global', './packages/sdk'], options.cwd, SETUP_TIMEOUT_MS),
       generatedPluginInstallCommand(commandEnv, scenario, options.cwd, SETUP_TIMEOUT_MS),
       runCommand,
@@ -152,7 +152,7 @@ export function buildPrimaryLiveStackCommands(
   // need amux run's RuntimeHooks system.
   const executionCommand = commandExecution(
     commandEnv,
-    'LIVE_STACK_AMUX_BIN',
+    'LIVE_STACK_AGENT_MUX_BIN',
     'amux',
     [
       'launch',
@@ -190,7 +190,7 @@ export function buildPrimaryLiveStackCommands(
     // Other agents need amux install to fetch their CLI from npm.
     const installCommands = installTarget === 'tula'
       ? []
-      : [commandExecution(commandEnv, 'LIVE_STACK_AMUX_BIN', 'amux', ['install', installTarget, '--json'], options.cwd, SETUP_TIMEOUT_MS)];
+      : [commandExecution(commandEnv, 'LIVE_STACK_AGENT_MUX_BIN', 'amux', ['install', installTarget, '--json'], options.cwd, SETUP_TIMEOUT_MS)];
     return [
       ...installCommands,
       ensureLiveArtifactDirCommand(commandEnv, options.cwd),
@@ -201,7 +201,7 @@ export function buildPrimaryLiveStackCommands(
   const processMode = options.env['LIVE_STACK_PROCESS_MODE'] ?? 'predefined';
   const setupCommands = [
     commandExecution(commandEnv, 'LIVE_STACK_NPM_BIN', 'npm', ['run', 'generate:plugins'], options.cwd, SETUP_TIMEOUT_MS),
-    commandExecution(commandEnv, 'LIVE_STACK_AMUX_BIN', 'amux', ['install', installTarget, '--json'], options.cwd, SETUP_TIMEOUT_MS),
+    commandExecution(commandEnv, 'LIVE_STACK_AGENT_MUX_BIN', 'amux', ['install', installTarget, '--json'], options.cwd, SETUP_TIMEOUT_MS),
     commandExecution(commandEnv, 'LIVE_STACK_NPM_BIN', 'npm', ['install', '--global', './packages/sdk'], options.cwd, SETUP_TIMEOUT_MS),
     commandExecution(commandEnv, 'LIVE_STACK_NPM_BIN', 'npm', ['install', '--global', './packages/agent-mux/hooks/cli'], options.cwd, SETUP_TIMEOUT_MS),
     generatedPluginInstallCommand(commandEnv, scenario, options.cwd, SETUP_TIMEOUT_MS),

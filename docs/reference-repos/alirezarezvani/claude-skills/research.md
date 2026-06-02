@@ -104,4 +104,4 @@ VERY HIGH - Contains sophisticated business domain processes directly transferab
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Enterprise Automation Framework | NEW | Business process automation with Python tools and workflow orchestration | - | plugins/a5c/marketplace/plugins/enterprise-automation/ |
+| Enterprise Automation Framework | NEW | Business process automation with Python tools and workflow orchestration | - | plugins/a5c/marketplace/blueprints/enterprise-automation/ |

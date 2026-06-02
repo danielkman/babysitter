@@ -43,7 +43,7 @@ describe('SimpleLogger', () => {
 
   it('respects the configured log level threshold for parent and child loggers', () => {
     const write = vi.spyOn(process.stderr, 'write').mockReturnValue(true);
-    vi.stubEnv('AMUX_LOG_LEVEL', 'error');
+    vi.stubEnv('AGENT_MUX_LOG_LEVEL', 'error');
 
     const logger = createSimpleLogger({ service: 'agent-mux' });
     const child = logger.child({ component: 'worker' });

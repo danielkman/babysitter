@@ -119,6 +119,6 @@ N/A - This is not a harness framework repository.
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Code Quality Suite | NEW | Systematic code improvement processes including refactoring, security scanning, and quality gates | - | plugins/a5c/marketplace/plugins/code-quality-suite/ |
-| Data Engineering Toolkit | NEW | Data quality and processing workflows for data science projects | - | plugins/a5c/marketplace/plugins/data-engineering-toolkit/ |
-| Productivity Automation | NEW | Workflow automation and organization processes for general productivity | - | plugins/a5c/marketplace/plugins/productivity-automation/ |
+| Code Quality Suite | NEW | Systematic code improvement processes including refactoring, security scanning, and quality gates | - | plugins/a5c/marketplace/blueprints/code-quality-suite/ |
+| Data Engineering Toolkit | NEW | Data quality and processing workflows for data science projects | - | plugins/a5c/marketplace/blueprints/data-engineering-toolkit/ |
+| Productivity Automation | NEW | Workflow automation and organization processes for general productivity | - | plugins/a5c/marketplace/blueprints/productivity-automation/ |

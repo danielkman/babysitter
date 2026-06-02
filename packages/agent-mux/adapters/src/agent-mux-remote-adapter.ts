@@ -11,7 +11,7 @@
  * emits JSONL which we pass through unchanged.
  *
  * Configuration is read from RunOptions.env:
- *   AMUX_REMOTE_AGENT  — agent name to invoke on the remote (default: claude)
+ *   AGENT_MUX_REMOTE_AGENT  — agent name to invoke on the remote (default: claude)
  *
  * The transport-specific bits (host, identity file, docker image, ...) live
  * on `RunOptions.invocation` — not on this adapter.
@@ -109,7 +109,7 @@ export class AgentMuxRemoteAdapter extends BaseAgentAdapter {
   /** Resolve the remote agent name (which agent to invoke inside the nested amux). */
   private resolveRemoteAgent(options: RunOptions): string {
     const env = options.env ?? {};
-    return env['AMUX_REMOTE_AGENT'] ?? process.env['AMUX_REMOTE_AGENT'] ?? 'claude';
+    return env['AGENT_MUX_REMOTE_AGENT'] ?? process.env['AGENT_MUX_REMOTE_AGENT'] ?? 'claude';
   }
 
   /**
@@ -186,10 +186,10 @@ export class AgentMuxRemoteAdapter extends BaseAgentAdapter {
       steps: [
         { step: 1, description: 'Install amux on the target (local, remote SSH host, docker image, or k8s pod).' },
         { step: 2, description: 'Set RunOptions.invocation to select the transport (ssh/docker/k8s).' },
-        { step: 3, description: 'Optionally set AMUX_REMOTE_AGENT to choose which agent the nested amux invokes.' },
+        { step: 3, description: 'Optionally set AGENT_MUX_REMOTE_AGENT to choose which agent the nested amux invokes.' },
       ],
       envVars: [
-        { name: 'AMUX_REMOTE_AGENT', description: 'Agent to invoke on the remote (default: claude)', required: false },
+        { name: 'AGENT_MUX_REMOTE_AGENT', description: 'Agent to invoke on the remote (default: claude)', required: false },
       ],
       documentationUrls: [],
       verifyCommand: 'amux --version',

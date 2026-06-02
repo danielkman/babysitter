@@ -109,5 +109,5 @@ Generalized version of the Android RE pipeline applicable to extracting API surf
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Android Reverse Engineering Plugin | NEW | Android decompilation and API extraction with automatic dependency management | - | plugins/a5c/marketplace/plugins/android-reverse-engineering/ |
-| Dependency Auto-Installer Plugin | NEW | Cross-platform CLI tool dependency management with OS detection and install strategies | - | plugins/a5c/marketplace/plugins/dependency-auto-installer/ |
+| Android Reverse Engineering Plugin | NEW | Android decompilation and API extraction with automatic dependency management | - | plugins/a5c/marketplace/blueprints/android-reverse-engineering/ |
+| Dependency Auto-Installer Plugin | NEW | Cross-platform CLI tool dependency management with OS detection and install strategies | - | plugins/a5c/marketplace/blueprints/dependency-auto-installer/ |

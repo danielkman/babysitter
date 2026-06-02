@@ -107,6 +107,6 @@ Skills were discovered via GitHub Code Search for `filename:SKILL.md` and analyz
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Enterprise Quality Control | NEW | Quality assurance automation with rubric scoring | - | plugins/a5c/marketplace/plugins/enterprise-quality-control/ |
-| Brand Compliance Suite | NEW | Corporate branding automation and validation | - | plugins/a5c/marketplace/plugins/brand-compliance-suite/ |
-| Financial Analysis Toolkit | NEW | Investment-grade financial modeling and analysis | - | plugins/a5c/marketplace/plugins/financial-analysis-toolkit/ |
+| Enterprise Quality Control | NEW | Quality assurance automation with rubric scoring | - | plugins/a5c/marketplace/blueprints/enterprise-quality-control/ |
+| Brand Compliance Suite | NEW | Corporate branding automation and validation | - | plugins/a5c/marketplace/blueprints/brand-compliance-suite/ |
+| Financial Analysis Toolkit | NEW | Investment-grade financial modeling and analysis | - | plugins/a5c/marketplace/blueprints/financial-analysis-toolkit/ |

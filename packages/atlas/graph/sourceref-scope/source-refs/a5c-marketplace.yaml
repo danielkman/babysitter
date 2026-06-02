@@ -9,6 +9,6 @@ attributes:
   packageManager: git
   kind: git-marketplace
   notes: |
-    Root of the a5c.ai plugin marketplace. Each subdirectory under plugins/a5c/marketplace/plugins/<slug>/
+    Root of the a5c.ai plugin marketplace. Each subdirectory under plugins/a5c/marketplace/blueprints/<slug>/
     is a Blueprint with install.md, configure.md, uninstall.md.
 edges: {}

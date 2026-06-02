@@ -50,5 +50,5 @@ MEDIUM-HIGH VALUE. The parallel subagent pattern for large document processing m
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Pandoc Integration | NEW | Document format conversion via pandoc CLI tool | - | plugins/a5c/marketplace/plugins/pandoc-integration/ |
-| Calibre Integration | NEW | E-book format conversion and processing via calibre tools | - | plugins/a5c/marketplace/plugins/calibre-integration/ |
+| Pandoc Integration | NEW | Document format conversion via pandoc CLI tool | - | plugins/a5c/marketplace/blueprints/pandoc-integration/ |
+| Calibre Integration | NEW | E-book format conversion and processing via calibre tools | - | plugins/a5c/marketplace/blueprints/calibre-integration/ |

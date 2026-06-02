@@ -57,5 +57,5 @@ HIGH VALUE. The largest and most diverse skill collection in this batch. Several
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Datadog CLI Integration | NEW | Datadog monitoring and alerting CLI tool integration | - | plugins/a5c/marketplace/plugins/datadog-cli-integration/ |
-| Jira API Integration | NEW | Jira ticket management and project tracking via API | - | plugins/a5c/marketplace/plugins/jira-api-integration/ |
+| Datadog CLI Integration | NEW | Datadog monitoring and alerting CLI tool integration | - | plugins/a5c/marketplace/blueprints/datadog-cli-integration/ |
+| Jira API Integration | NEW | Jira ticket management and project tracking via API | - | plugins/a5c/marketplace/blueprints/jira-api-integration/ |

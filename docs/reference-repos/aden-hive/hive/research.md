@@ -57,4 +57,4 @@ Framework discovered through multi-agent harness search. Repository demonstrates
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Hive Production Bridge | NEW | Enterprise multi-agent harness integration | - | plugins/a5c/marketplace/plugins/hive-production-bridge/ |
+| Hive Production Bridge | NEW | Enterprise multi-agent harness integration | - | plugins/a5c/marketplace/blueprints/hive-production-bridge/ |

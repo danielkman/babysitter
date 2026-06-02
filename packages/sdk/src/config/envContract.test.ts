@@ -10,7 +10,7 @@ describe("env contract registry", () => {
   it("documents process-boundary env contracts centrally", () => {
     expect(configKeyToEnvVar("logLevel")).toBe(CONFIG_ENV_VARS.LOG_LEVEL);
     expect(ENV_VAR_CONTRACTS.azureOpenAi.baseUrl.name).toBe("AZURE_OPENAI_BASE_URL");
-    expect(ENV_VAR_CONTRACTS.agentMux.observabilityMode.name).toBe("AMUX_OBSERVABILITY_MODE");
+    expect(ENV_VAR_CONTRACTS.agentMux.observabilityMode.name).toBe("AGENT_MUX_OBSERVABILITY_MODE");
   });
 
   it("keeps global runtime config scoped instead of mutating process.env", () => {

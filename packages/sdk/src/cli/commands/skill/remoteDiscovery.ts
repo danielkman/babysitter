@@ -134,7 +134,7 @@ async function discoverWellKnown(url: string): Promise<SkillMetadata[]> {
 export async function fetchRemoteSkillSources(_pluginRoot: string): Promise<SkillMetadata[]> {
   const remoteSkills: SkillMetadata[] = [];
   const sources: Array<{ type: 'github' | 'well-known'; url: string }> = [
-    { type: 'github', url: 'https://github.com/a5c-ai/babysitter/tree/main/blueprints/babysitter-unified/skills' },
+    { type: 'github', url: 'https://github.com/a5c-ai/babysitter/tree/main/plugins/babysitter-unified/skills' },
   ];
 
   try {

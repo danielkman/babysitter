@@ -20,8 +20,8 @@ attributes:
     - "1:general-error:invalid proxy config (validateProxyConfig errors)"
   description: |
     Standalone bin that boots the transport-mux HTTP proxy. Reads
-    AMUX_PROXY_* env vars (createProxyConfig + readProxyConfigFromEnv),
-    auto-mints AMUX_PROXY_AUTH_TOKEN if missing, validates, then calls
+    AGENT_MUX_PROXY_* env vars (createProxyConfig + readProxyConfigFromEnv),
+    auto-mints AGENT_MUX_PROXY_AUTH_TOKEN if missing, validates, then calls
     startProxyServer to bridge an exposed transport (e.g. anthropic-
     messages) to a target provider/model.
     Source: packages/transport-mux/src/bin/amux-proxy.ts:1-69.

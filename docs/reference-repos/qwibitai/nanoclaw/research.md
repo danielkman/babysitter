@@ -123,9 +123,9 @@ The container-based security model and CLI automation patterns represent signifi
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Container Agent Security | UPGRADE | Enhanced security through container isolation | basic-security | plugins/a5c/marketplace/plugins/container-agent-security/ |
-| CLI Agent Framework | NEW | Terminal-based agent automation with runtime abstraction | - | plugins/a5c/marketplace/plugins/cli-agent-framework/ |
-| Multi-Platform Agent Bridge | NEW | Messaging platform integration for agents | - | plugins/a5c/marketplace/plugins/multi-platform-agent-bridge/ |
+| Container Agent Security | UPGRADE | Enhanced security through container isolation | basic-security | plugins/a5c/marketplace/blueprints/container-agent-security/ |
+| CLI Agent Framework | NEW | Terminal-based agent automation with runtime abstraction | - | plugins/a5c/marketplace/blueprints/cli-agent-framework/ |
+| Multi-Platform Agent Bridge | NEW | Messaging platform integration for agents | - | plugins/a5c/marketplace/blueprints/multi-platform-agent-bridge/ |
 
 ## Research Methodology Notes
 

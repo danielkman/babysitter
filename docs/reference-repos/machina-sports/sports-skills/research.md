@@ -105,4 +105,4 @@ Automated health monitoring process for multi-source data pipelines. Extracted f
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Sports Data Integration | NEW | Zero-API-key sports data access across 14+ sports with betting analytics and market integration | - | plugins/a5c/marketplace/plugins/sports-data-integration/ |
+| Sports Data Integration | NEW | Zero-API-key sports data access across 14+ sports with betting analytics and market integration | - | plugins/a5c/marketplace/blueprints/sports-data-integration/ |

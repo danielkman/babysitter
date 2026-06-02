@@ -131,7 +131,7 @@ const readArtifactsTask = defineTask('issue-484.read-artifacts', (args, taskCtx)
     command: [
       'set -euo pipefail',
       'git status --short',
-      'git diff -- . ":!.codex/**" ":!blueprints/babysitter/**" ":!.agents/plugins/marketplace.json"',
+      'git diff -- . ":!.codex/**" ":!plugins/babysitter/**" ":!.agents/plugins/marketplace.json"',
     ].join('\n'),
     expectedExitCode: 0,
     timeout: 60000,

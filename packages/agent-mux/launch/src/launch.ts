@@ -395,7 +395,7 @@ async function prepareHarnessAutomationState(harness: string, cwd: string, env: 
 }
 
 function isAutomationPreseedEnabled(env: Record<string, string>): boolean {
-  return env['AMUX_PRESEED_HARNESS_ONBOARDING'] === '1' || env['CI'] === 'true' || env['GITHUB_ACTIONS'] === 'true' || process.env['CI'] === 'true' || process.env['GITHUB_ACTIONS'] === 'true';
+  return env['AGENT_MUX_PRESEED_HARNESS_ONBOARDING'] === '1' || env['CI'] === 'true' || env['GITHUB_ACTIONS'] === 'true' || process.env['CI'] === 'true' || process.env['GITHUB_ACTIONS'] === 'true';
 }
 
 function automationHome(): string | undefined {
@@ -1025,18 +1025,18 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
         console.error(`[amux launch] Gemini proxy: GOOGLE_API_KEY=${(plan.env['GOOGLE_API_KEY'] ?? '').slice(0, 8)}..., endpoint=${proxyOrigin}`);
       }
 
-      // Tula (agent-core): set AMUX_* env vars to route through the proxy.
-      // Use AMUX_API_BASE (non-Azure mode) so agent-core sends Authorization: Bearer
+      // Tula (agent-core): set AGENT_MUX_* env vars to route through the proxy.
+      // Use AGENT_MUX_API_BASE (non-Azure mode) so agent-core sends Authorization: Bearer
       // instead of api-key header. The proxy validates Bearer tokens.
       if (plan.harness === 'tula') {
-        plan.env['AMUX_API_BASE'] = `${proxyRuntime.url}/v1`;
-        plan.env['AMUX_API_KEY'] = proxyRuntime.authToken ?? 'proxy-token';
-        plan.env['AMUX_MODEL'] = plan.proxy?.targetModel ?? plan.model ?? '';
+        plan.env['AGENT_MUX_API_BASE'] = `${proxyRuntime.url}/v1`;
+        plan.env['AGENT_MUX_API_KEY'] = proxyRuntime.authToken ?? 'proxy-token';
+        plan.env['AGENT_MUX_MODEL'] = plan.proxy?.targetModel ?? plan.model ?? '';
         // Clear Azure env vars to prevent agent-core from using Azure mode
         delete plan.env['AZURE_API_KEY'];
         delete plan.env['AZURE_OPENAI_API_KEY'];
         delete plan.env['AZURE_OPENAI_PROJECT_NAME'];
-        console.error(`[amux launch] Tula proxy: AMUX_API_BASE=${plan.env['AMUX_API_BASE']}, AMUX_MODEL=${plan.env['AMUX_MODEL']}`);
+        console.error(`[amux launch] Tula proxy: AGENT_MUX_API_BASE=${plan.env['AGENT_MUX_API_BASE']}, AGENT_MUX_MODEL=${plan.env['AGENT_MUX_MODEL']}`);
       }
 
       // Generic OpenAI-compatible harnesses: set OPENAI_API_KEY + OPENAI_BASE_URL

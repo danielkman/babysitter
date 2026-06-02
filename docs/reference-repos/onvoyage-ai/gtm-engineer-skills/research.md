@@ -54,4 +54,4 @@ HIGH VALUE for novel domain. AEO/GEO is an emerging discipline at the intersecti
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| AEO/GEO Site Audit Integration | NEW | External audit tool integration with aeo-audit.sh and framework detection | - | plugins/a5c/marketplace/plugins/aeo-geo-audit-integration/ |
+| AEO/GEO Site Audit Integration | NEW | External audit tool integration with aeo-audit.sh and framework detection | - | plugins/a5c/marketplace/blueprints/aeo-geo-audit-integration/ |

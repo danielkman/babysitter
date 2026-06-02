@@ -49,7 +49,7 @@ install.md-driven plugin that provides:
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Code Review Excellence | NEW | Multi-language code review setup with phased methodology and hooks | - | plugins/a5c/marketplace/plugins/code-review-excellence/ |
+| Code Review Excellence | NEW | Multi-language code review setup with phased methodology and hooks | - | plugins/a5c/marketplace/blueprints/code-review-excellence/ |
 
 ## Classification Rationale
 This is a cross-domain specialization (not a full dev methodology). The review process is applicable to any language/framework, so it fits in `specializations/shared/`. The language-specific guides are modular reference material.

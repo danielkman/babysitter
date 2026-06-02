@@ -85,7 +85,7 @@ The main integration seam is:
 
 The plugin and hook story spans multiple packages:
 
-- `blueprints/babysitter-unified/` is the canonical plugin authoring surface.
+- `plugins/babysitter-unified/` is the canonical plugin authoring surface.
 - `packages/extension-mux` is the compiler for harness-specific outputs.
 - `packages/agent-mux/hooks/*` normalizes hook contracts across harnesses.
 - per-harness plugin bundles remain the real installation surfaces users consume.

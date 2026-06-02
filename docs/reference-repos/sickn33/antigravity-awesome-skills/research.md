@@ -60,5 +60,5 @@ VERY HIGH - Contains the most sophisticated skill collection with advanced infra
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Antigravity Skill Distribution | NEW | Large skill collection management with metadata | - | plugins/a5c/marketplace/plugins/skill-distribution-manager/ |
-| Cross-Platform Skill Builder | NEW | Multi-harness compatible skill development | - | plugins/a5c/marketplace/plugins/cross-platform-skill-builder/ |
+| Antigravity Skill Distribution | NEW | Large skill collection management with metadata | - | plugins/a5c/marketplace/blueprints/skill-distribution-manager/ |
+| Cross-Platform Skill Builder | NEW | Multi-harness compatible skill development | - | plugins/a5c/marketplace/blueprints/cross-platform-skill-builder/ |

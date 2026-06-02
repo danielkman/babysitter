@@ -52,4 +52,4 @@ EXTREMELY HIGH VALUE for babysitter validation. This benchmark directly addresse
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Obedience Benchmark Integration | NEW | Direct integration with obedience-benchmark for continuous process validation | - | plugins/a5c/marketplace/plugins/obedience-benchmark-integration/ |
+| Obedience Benchmark Integration | NEW | Direct integration with obedience-benchmark for continuous process validation | - | plugins/a5c/marketplace/blueprints/obedience-benchmark-integration/ |

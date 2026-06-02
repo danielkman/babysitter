@@ -58,5 +58,5 @@ EXTREMELY HIGH VALUE for babysitter optimization. The 99% cost reduction claim w
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Lean-CTX Integration | NEW | Full integration with lean-ctx MCP server and optimization protocols | - | plugins/a5c/marketplace/plugins/lean-ctx-integration/ |
-| Token Dense Dialect Support | NEW | Implementation of TDD symbol shorthand for babysitter communications | - | plugins/a5c/marketplace/plugins/token-dense-dialect-support/ |
+| Lean-CTX Integration | NEW | Full integration with lean-ctx MCP server and optimization protocols | - | plugins/a5c/marketplace/blueprints/lean-ctx-integration/ |
+| Token Dense Dialect Support | NEW | Implementation of TDD symbol shorthand for babysitter communications | - | plugins/a5c/marketplace/blueprints/token-dense-dialect-support/ |

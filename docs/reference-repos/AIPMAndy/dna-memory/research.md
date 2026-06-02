@@ -45,7 +45,7 @@ Repo-specific: Python implementation, OpenClaw-specific installation paths, Chin
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Agent Memory System | UPGRADE | Enhance existing context/memory with three-tier architecture and decay patterns | claude-mem | plugins/a5c/marketplace/plugins/agent-memory-system/ |
+| Agent Memory System | UPGRADE | Enhance existing context/memory with three-tier architecture and decay patterns | claude-mem | plugins/a5c/marketplace/blueprints/agent-memory-system/ |
 
 ## Implicit Procedural Knowledge
 

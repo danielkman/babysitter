@@ -48,7 +48,7 @@ export interface AmuxAdapterMetadata {
 // Name mapping (babysitter harness name -> agent-mux adapter name)
 // ---------------------------------------------------------------------------
 
-const HARNESS_TO_AMUX_NAME: Record<string, string> = {
+const HARNESS_TO_AGENT_MUX_NAME: Record<string, string> = {
   "claude-code": "claude",
   "gemini-cli": "gemini",
   "github-copilot": "copilot",
@@ -56,7 +56,7 @@ const HARNESS_TO_AMUX_NAME: Record<string, string> = {
 };
 
 function mapHarnessName(name: string): string {
-  return HARNESS_TO_AMUX_NAME[name] || name;
+  return HARNESS_TO_AGENT_MUX_NAME[name] || name;
 }
 
 // ---------------------------------------------------------------------------

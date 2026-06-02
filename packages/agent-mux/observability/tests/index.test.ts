@@ -29,14 +29,14 @@ describe('Observability Integration', () => {
     }));
 
     // Test simple mode
-    process.env.AMUX_OBSERVABILITY_MODE = 'simple';
+    process.env.AGENT_MUX_OBSERVABILITY_MODE = 'simple';
     const { logger: loggerSimple, telemetry: telemetrySimple } = await import('../src/index.js');
     expect((loggerSimple as any).name).toBe('simple-logger');
     expect((telemetrySimple as any).name).toBe('simple-telemetry');
 
     // Reset modules to reload index.js with new env var
     vi.resetModules();
-    process.env.AMUX_OBSERVABILITY_MODE = 'full';
+    process.env.AGENT_MUX_OBSERVABILITY_MODE = 'full';
     const { logger: loggerFull, telemetry: telemetryFull } = await import('../src/index.js');
     expect((loggerFull as any).name).toBe('real-logger');
     expect((telemetryFull as any).name).toBe('real-telemetry');
@@ -64,14 +64,14 @@ describe('Observability Integration', () => {
       shutdownTelemetry: vi.fn(),
     }));
 
-    delete process.env.AMUX_OBSERVABILITY_MODE;
+    delete process.env.AGENT_MUX_OBSERVABILITY_MODE;
 
     const observability = await import('../src/index.js');
     expect((observability.logger as any).name).toBe('simple-logger');
 
     observability.setObservabilityMode('full');
 
-    expect(process.env.AMUX_OBSERVABILITY_MODE).toBeUndefined();
+    expect(process.env.AGENT_MUX_OBSERVABILITY_MODE).toBeUndefined();
     expect((observability.logger as any).name).toBe('real-logger');
   });
 });

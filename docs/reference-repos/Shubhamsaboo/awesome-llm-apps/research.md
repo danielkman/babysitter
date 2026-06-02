@@ -127,6 +127,6 @@ N/A - This is not a harness framework repository.
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Agent Skill Optimizer | NEW | ADK integration for process optimization | - | plugins/a5c/marketplace/plugins/agent-skill-optimizer/ |
-| Development Toolkit | UPGRADE | Enhanced debugging and code review | basic-security, agentsh | plugins/a5c/marketplace/plugins/development-toolkit/ |
-| Research Suite | NEW | Academic and deep research capabilities | - | plugins/a5c/marketplace/plugins/research-suite/ |
+| Agent Skill Optimizer | NEW | ADK integration for process optimization | - | plugins/a5c/marketplace/blueprints/agent-skill-optimizer/ |
+| Development Toolkit | UPGRADE | Enhanced debugging and code review | basic-security, agentsh | plugins/a5c/marketplace/blueprints/development-toolkit/ |
+| Research Suite | NEW | Academic and deep research capabilities | - | plugins/a5c/marketplace/blueprints/research-suite/ |

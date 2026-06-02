@@ -80,5 +80,5 @@ None directly extractable. The skills are instruction sets (reference material f
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Database Performance Audit | NEW | Database-agnostic performance audit with 8-category framework | - | plugins/a5c/marketplace/plugins/database-performance-audit/ |
-| Migration Review Automation | NEW | Pre-commit hooks and breakpoints for database migration review | - | plugins/a5c/marketplace/plugins/migration-review-automation/ |
+| Database Performance Audit | NEW | Database-agnostic performance audit with 8-category framework | - | plugins/a5c/marketplace/blueprints/database-performance-audit/ |
+| Migration Review Automation | NEW | Pre-commit hooks and breakpoints for database migration review | - | plugins/a5c/marketplace/blueprints/migration-review-automation/ |

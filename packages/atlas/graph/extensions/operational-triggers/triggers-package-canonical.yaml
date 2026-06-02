@@ -246,7 +246,7 @@ attributes:
   - Outputs event=<path-to-enriched-json> (action.yml:70)
   - Outputs exit-code=<amux exit code> (action.yml:73)
   - May install agent-mux harness + plugins side-effectfully before evaluation (action.yml:103-129)
-  - Sets AMUX_TRIGGER_EVENT_PATH env var for pre-run, amux, post-run steps
+  - Sets AGENT_MUX_TRIGGER_EVENT_PATH env var for pre-run, amux, post-run steps
   sourceCitation: 'packages/triggers-mux/action.yml (full composite action; inputs
 
     1-65, outputs 66-75, steps 77-232).

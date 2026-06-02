@@ -68,9 +68,9 @@ The process library is fetched and bound through the SDK CLI in
 
 After `install --workspace`, the important files are:
 
-- `.agents/blueprints/babysitter/.codex-plugin/plugin.json`
-- `.agents/blueprints/babysitter/skills/babysit/SKILL.md`
-- `.agents/blueprints/babysitter/hooks.json`
+- `.agents/plugins/babysitter/.codex-plugin/plugin.json`
+- `.agents/plugins/babysitter/skills/babysit/SKILL.md`
+- `.agents/plugins/babysitter/hooks.json`
 - `.codex/skills/`
 - `.codex/hooks/`
 - `.codex/hooks.json`
@@ -85,10 +85,10 @@ Verify the installed plugin bundle:
 
 ```bash
 npm ls -g @a5c-ai/babysitter-codex --depth=0
-test -f ~/.agents/blueprints/babysitter/.codex-plugin/plugin.json
-test -f ~/.agents/blueprints/babysitter/hooks.json
-test -f ~/.agents/blueprints/babysitter/hooks/babysitter-proxied-stop.sh
-test -f ~/.agents/blueprints/babysitter/skills/babysit/SKILL.md
+test -f ~/.agents/plugins/babysitter/.codex-plugin/plugin.json
+test -f ~/.agents/plugins/babysitter/hooks.json
+test -f ~/.agents/plugins/babysitter/hooks/babysitter-proxied-stop.sh
+test -f ~/.agents/plugins/babysitter/skills/babysit/SKILL.md
 test -f ~/.agents/plugins/marketplace.json
 ```
 

@@ -458,7 +458,7 @@ sourced from `repo-inspection` evidence on the tool server's source tree.
 An a5c-flavored markdown bundle the *agent* reads to install or configure a *project*.
 Blueprints are NOT extensions for an agent — they are project-level setup recipes that an
 agent executes (the SDK does not run them; the agent is the runtime). Concrete examples
-live in the a5c marketplace at `plugins/a5c/marketplace/plugins/<slug>/` in the babysitter
+live in the a5c marketplace at `plugins/a5c/marketplace/blueprints/<slug>/` in the babysitter
 repo: `a11y`, `basic-security`, `adr`, `auto-labeler`, `feature-flags`, `dora-metrics`,
 `db-migrations-safety`, `i18n`, `helm-chart`, `iac-quality`, `branch-protection`,
 `devcontainer`, `dependency-hygiene`, `data-privacy`, `community-health`, `changelog-enforcer`,

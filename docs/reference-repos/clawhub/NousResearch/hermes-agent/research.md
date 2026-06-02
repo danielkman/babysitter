@@ -103,7 +103,7 @@ NousResearch's Hermes Agent is a self-improving AI agent with a built-in learnin
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Hermes Gateway Bridge | NEW | Telegram/Discord/Slack integration for babysitter via Hermes Agent gateway | - | plugins/a5c/marketplace/plugins/hermes-gateway-bridge/ |
-| Trajectory Compression | NEW | Hermes-inspired trajectory compression for babysitter run journal optimization | - | plugins/a5c/marketplace/plugins/trajectory-compression/ |
-| Memory Backend Abstraction | NEW | Multi-backend memory persistence (mem0, honcho, etc.) for babysitter state | - | plugins/a5c/marketplace/plugins/memory-backend-abstraction/ |
-| Research Paper Assistant | NEW | Complete ML research paper pipeline with conference targeting and feedback loops | - | plugins/a5c/marketplace/plugins/research-paper-assistant/ |
+| Hermes Gateway Bridge | NEW | Telegram/Discord/Slack integration for babysitter via Hermes Agent gateway | - | plugins/a5c/marketplace/blueprints/hermes-gateway-bridge/ |
+| Trajectory Compression | NEW | Hermes-inspired trajectory compression for babysitter run journal optimization | - | plugins/a5c/marketplace/blueprints/trajectory-compression/ |
+| Memory Backend Abstraction | NEW | Multi-backend memory persistence (mem0, honcho, etc.) for babysitter state | - | plugins/a5c/marketplace/blueprints/memory-backend-abstraction/ |
+| Research Paper Assistant | NEW | Complete ML research paper pipeline with conference targeting and feedback loops | - | plugins/a5c/marketplace/blueprints/research-paper-assistant/ |

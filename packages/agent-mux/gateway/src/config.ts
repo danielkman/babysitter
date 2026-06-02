@@ -108,40 +108,40 @@ function resolveBootstrapAuthMode(value: string | null): BootstrapAuthMode {
 }
 
 export function resolveGatewayEnvConfig(env: NodeJS.ProcessEnv = process.env): Partial<GatewayConfig> {
-  const host = readTrimmed(env, 'AMUX_GATEWAY_HOST');
-  const port = parseNumber(env['AMUX_GATEWAY_PORT']);
-  const webuiRoot = readTrimmed(env, 'AMUX_GATEWAY_WEBUI_ROOT');
-  const enableWebui = parseBoolean(env['AMUX_GATEWAY_ENABLE_WEBUI']);
-  const tokenDbPath = readTrimmed(env, 'AMUX_GATEWAY_TOKEN_DB_PATH');
-  const eventLogDir = readTrimmed(env, 'AMUX_GATEWAY_EVENT_LOG_DIR');
+  const host = readTrimmed(env, 'AGENT_MUX_GATEWAY_HOST');
+  const port = parseNumber(env['AGENT_MUX_GATEWAY_PORT']);
+  const webuiRoot = readTrimmed(env, 'AGENT_MUX_GATEWAY_WEBUI_ROOT');
+  const enableWebui = parseBoolean(env['AGENT_MUX_GATEWAY_ENABLE_WEBUI']);
+  const tokenDbPath = readTrimmed(env, 'AGENT_MUX_GATEWAY_TOKEN_DB_PATH');
+  const eventLogDir = readTrimmed(env, 'AGENT_MUX_GATEWAY_EVENT_LOG_DIR');
   const mode = resolveBootstrapAuthMode(
     readTrimmed(
       env,
-      'AMUX_GATEWAY_AUTH_MODE',
-      'AMUX_GATEWAY_BOOTSTRAP_AUTH_MODE',
+      'AGENT_MUX_GATEWAY_AUTH_MODE',
+      'AGENT_MUX_GATEWAY_BOOTSTRAP_AUTH_MODE',
       'CLOUD_BOOTSTRAP_AUTH_MODE',
       'AUTH_MODE',
     ),
   );
   const adminUsername = readTrimmed(
     env,
-    'AMUX_GATEWAY_BOOTSTRAP_ADMIN_USERNAME',
+    'AGENT_MUX_GATEWAY_BOOTSTRAP_ADMIN_USERNAME',
     'CLOUD_BOOTSTRAP_ADMIN_USERNAME',
     'ADMIN_USERNAME',
   );
   const adminPassword = readTrimmed(
     env,
-    'AMUX_GATEWAY_BOOTSTRAP_ADMIN_PASSWORD',
+    'AGENT_MUX_GATEWAY_BOOTSTRAP_ADMIN_PASSWORD',
     'CLOUD_BOOTSTRAP_ADMIN_PASSWORD',
     'ADMIN_PASSWORD',
   );
   const tokenSeed = readTrimmed(
     env,
-    'AMUX_GATEWAY_BOOTSTRAP_TOKEN_SEED',
+    'AGENT_MUX_GATEWAY_BOOTSTRAP_TOKEN_SEED',
     'CLOUD_BOOTSTRAP_ADMIN_TOKEN_SEED',
     'ADMIN_TOKEN_SEED',
   );
-  const bootstrapTokenName = readTrimmed(env, 'AMUX_GATEWAY_BOOTSTRAP_TOKEN_NAME');
+  const bootstrapTokenName = readTrimmed(env, 'AGENT_MUX_GATEWAY_BOOTSTRAP_TOKEN_NAME');
 
   return {
     ...(host ? { host } : {}),

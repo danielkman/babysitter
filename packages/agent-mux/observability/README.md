@@ -25,7 +25,7 @@ The public surface includes:
 - compatibility exports `initializeTelemetry` and `shutdownTelemetry`
 - the shared logger and telemetry types
 
-Runtime mode is selected with `AMUX_OBSERVABILITY_MODE=full|simple`.
+Runtime mode is selected with `AGENT_MUX_OBSERVABILITY_MODE=full|simple`.
 
 ## Validation
 

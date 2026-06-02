@@ -238,10 +238,10 @@ interface ResolvedEndpoint {
 }
 
 function resolveEndpoint(options: AgentCoreSessionOptions): ResolvedEndpoint {
-  const agentMuxProvider = process.env["AMUX_PROVIDER"];
-  const agentMuxApiBase = process.env["AMUX_API_BASE"];
-  const agentMuxApiKey = process.env["AMUX_API_KEY"];
-  const agentMuxModel = process.env["AMUX_MODEL"];
+  const agentMuxProvider = process.env["AGENT_MUX_PROVIDER"];
+  const agentMuxApiBase = process.env["AGENT_MUX_API_BASE"];
+  const agentMuxApiKey = process.env["AGENT_MUX_API_KEY"];
+  const agentMuxModel = process.env["AGENT_MUX_MODEL"];
   const azureApiKey = process.env["AZURE_API_KEY"] || process.env["AZURE_OPENAI_API_KEY"];
   const azureProject = process.env["AZURE_OPENAI_PROJECT_NAME"];
   const openaiApiKey = process.env["OPENAI_API_KEY"];
@@ -285,10 +285,10 @@ function resolveEndpoint(options: AgentCoreSessionOptions): ResolvedEndpoint {
   if (!agentMuxApiKey) {
     throw new Error(
       "No API credentials found. Set one of: " +
-      "AMUX_PROVIDER + AMUX_API_BASE + AZURE_API_KEY (for Foundry/Azure), " +
+      "AGENT_MUX_PROVIDER + AGENT_MUX_API_BASE + AZURE_API_KEY (for Foundry/Azure), " +
       "OPENAI_API_KEY (for OpenAI), " +
       "ANTHROPIC_API_KEY (for Anthropic), " +
-      "or AMUX_API_BASE + AMUX_API_KEY (for custom endpoint). " +
+      "or AGENT_MUX_API_BASE + AGENT_MUX_API_KEY (for custom endpoint). " +
       "Alternatively, use --harness claude-code to route through an installed agent."
     );
   }

@@ -21,8 +21,8 @@ describe('cost alerts', () => {
   });
 
   it('plugin emits status when stream cost crosses threshold', () => {
-    const prev = process.env.AMUX_TUI_COST_ALERT;
-    process.env.AMUX_TUI_COST_ALERT = '0.1';
+    const prev = process.env.AGENT_MUX_TUI_COST_ALERT;
+    process.env.AGENT_MUX_TUI_COST_ALERT = '0.1';
     try {
       const stream = new EventStream();
       const emitted: { type: string; message?: string }[] = [];
@@ -41,14 +41,14 @@ describe('cost alerts', () => {
       expect(emitted).toHaveLength(1);
       expect(emitted[0]!.message).toMatch(/cost crossed/);
     } finally {
-      if (prev === undefined) delete process.env.AMUX_TUI_COST_ALERT;
-      else process.env.AMUX_TUI_COST_ALERT = prev;
+      if (prev === undefined) delete process.env.AGENT_MUX_TUI_COST_ALERT;
+      else process.env.AGENT_MUX_TUI_COST_ALERT = prev;
     }
   });
 
   it('does nothing when env var is unset/empty', () => {
-    const prev = process.env.AMUX_TUI_COST_ALERT;
-    process.env.AMUX_TUI_COST_ALERT = '';
+    const prev = process.env.AGENT_MUX_TUI_COST_ALERT;
+    process.env.AGENT_MUX_TUI_COST_ALERT = '';
     try {
       const stream = new EventStream();
       const emitted: unknown[] = [];
@@ -65,8 +65,8 @@ describe('cost alerts', () => {
       // default thresholds 1,5,10 still apply since '' is falsy → defaults used
       expect(emitted.length).toBeGreaterThan(0);
     } finally {
-      if (prev === undefined) delete process.env.AMUX_TUI_COST_ALERT;
-      else process.env.AMUX_TUI_COST_ALERT = prev;
+      if (prev === undefined) delete process.env.AGENT_MUX_TUI_COST_ALERT;
+      else process.env.AGENT_MUX_TUI_COST_ALERT = prev;
     }
   });
 });

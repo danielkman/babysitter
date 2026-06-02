@@ -37,7 +37,7 @@ MEDIUM VALUE. While the specific design language (Nothing) is niche, the skill d
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Design System Encoder | NEW | Encode arbitrary design systems into agent-consumable skill format with tokens and rules | - | plugins/a5c/marketplace/plugins/design-system-encoder/ |
+| Design System Encoder | NEW | Encode arbitrary design systems into agent-consumable skill format with tokens and rules | - | plugins/a5c/marketplace/blueprints/design-system-encoder/ |
 
 ## Patterns
 - **Three-layer visual hierarchy**: Every screen has exactly three layers of importance (primary/secondary/tertiary) with prescribed type scales and spacing. A squint test validates the hierarchy. Reusable across any UI design skill.

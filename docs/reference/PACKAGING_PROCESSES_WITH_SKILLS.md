@@ -549,7 +549,7 @@ The babysitter skill should reference packaged processes when orchestrating runs
 3. **Execution** - Use CLI to create and run packaged processes
 4. **Documentation** - Generate documentation from packaged processes
 
-See `blueprints/babysitter-unified/skills/babysit/SKILL.md` for integration details.
+See `plugins/babysitter-unified/skills/babysit/SKILL.md` for integration details.
 
 ---
 
@@ -635,8 +635,8 @@ See `blueprints/babysitter-unified/skills/babysit/SKILL.md` for integration deta
 
 ### Related Documentation
 
-- `blueprints/babysitter-unified/plugin.json` - Unified plugin source metadata
-- `blueprints/babysitter-unified/skills/babysit/SKILL.md` - Babysitter skill instructions
+- `plugins/babysitter-unified/plugin.json` - Unified plugin source metadata
+- `plugins/babysitter-unified/skills/babysit/SKILL.md` - Babysitter skill instructions
 - `packages/sdk/sdk.md` - SDK API reference
 
 ### CLI Commands

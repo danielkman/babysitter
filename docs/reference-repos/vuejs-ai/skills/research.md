@@ -61,5 +61,5 @@ Strong domain specialization candidate. The 8 skills form a cohesive Vue.js ecos
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Framework Detection | NEW | Auto-detect frontend framework and load appropriate domain skills | - | plugins/a5c/marketplace/plugins/framework-detection/ |
-| Vue DevTools Integration | NEW | Vue browser development tools API integration for debugging and profiling | - | plugins/a5c/marketplace/plugins/vue-devtools-integration/ |
+| Framework Detection | NEW | Auto-detect frontend framework and load appropriate domain skills | - | plugins/a5c/marketplace/blueprints/framework-detection/ |
+| Vue DevTools Integration | NEW | Vue browser development tools API integration for debugging and profiling | - | plugins/a5c/marketplace/blueprints/vue-devtools-integration/ |

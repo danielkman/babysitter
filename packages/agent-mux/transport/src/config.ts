@@ -31,14 +31,14 @@ export function createProxyConfig(overrides: Partial<ProxyConfig> = {}): ProxyCo
 
 export function readProxyConfigFromEnv(env: NodeJS.ProcessEnv = process.env): ProxyConfig {
   return createProxyConfig({
-    targetProvider: env.AMUX_PROXY_TARGET_PROVIDER,
-    targetModel: env.AMUX_PROXY_TARGET_MODEL,
-    exposedTransport: env.AMUX_PROXY_EXPOSED_TRANSPORT,
-    authToken: env.AMUX_PROXY_AUTH_TOKEN,
-    apiBase: env.AMUX_PROXY_API_BASE,
-    host: env.AMUX_PROXY_HOST || DEFAULT_HOST,
-    port: env.AMUX_PROXY_PORT ? Number(env.AMUX_PROXY_PORT) : DEFAULT_PORT,
-    stream: env.AMUX_PROXY_STREAM ? env.AMUX_PROXY_STREAM !== 'false' : DEFAULT_STREAM,
+    targetProvider: env.AGENT_MUX_PROXY_TARGET_PROVIDER,
+    targetModel: env.AGENT_MUX_PROXY_TARGET_MODEL,
+    exposedTransport: env.AGENT_MUX_PROXY_EXPOSED_TRANSPORT,
+    authToken: env.AGENT_MUX_PROXY_AUTH_TOKEN,
+    apiBase: env.AGENT_MUX_PROXY_API_BASE,
+    host: env.AGENT_MUX_PROXY_HOST || DEFAULT_HOST,
+    port: env.AGENT_MUX_PROXY_PORT ? Number(env.AGENT_MUX_PROXY_PORT) : DEFAULT_PORT,
+    stream: env.AGENT_MUX_PROXY_STREAM ? env.AGENT_MUX_PROXY_STREAM !== 'false' : DEFAULT_STREAM,
   });
 }
 
@@ -53,26 +53,26 @@ export function createProxyProcessEnv(overrides: Partial<ProxyConfig>, options: 
   });
 
   const env: Record<string, string> = {
-    AMUX_PROXY_TARGET_PROVIDER: config.targetProvider,
-    AMUX_PROXY_TARGET_MODEL: config.targetModel,
-    AMUX_PROXY_EXPOSED_TRANSPORT: config.exposedTransport,
-    AMUX_PROXY_PORT: String(config.port),
+    AGENT_MUX_PROXY_TARGET_PROVIDER: config.targetProvider,
+    AGENT_MUX_PROXY_TARGET_MODEL: config.targetModel,
+    AGENT_MUX_PROXY_EXPOSED_TRANSPORT: config.exposedTransport,
+    AGENT_MUX_PROXY_PORT: String(config.port),
   };
 
   if (config.authToken) {
-    env.AMUX_PROXY_AUTH_TOKEN = config.authToken;
+    env.AGENT_MUX_PROXY_AUTH_TOKEN = config.authToken;
   }
   if (config.apiBase) {
-    env.AMUX_PROXY_API_BASE = config.apiBase;
+    env.AGENT_MUX_PROXY_API_BASE = config.apiBase;
   }
   if (config.host && config.host !== DEFAULT_HOST) {
-    env.AMUX_PROXY_HOST = config.host;
+    env.AGENT_MUX_PROXY_HOST = config.host;
   }
   if (config.stream !== DEFAULT_STREAM) {
-    env.AMUX_PROXY_STREAM = String(config.stream);
+    env.AGENT_MUX_PROXY_STREAM = String(config.stream);
   }
   if (options.logLevel) {
-    env.AMUX_PROXY_LOG_LEVEL = options.logLevel;
+    env.AGENT_MUX_PROXY_LOG_LEVEL = options.logLevel;
   }
 
   return env;

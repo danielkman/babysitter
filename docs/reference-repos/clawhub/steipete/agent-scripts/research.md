@@ -88,9 +88,9 @@ MEDIUM extractable value. Many skills are Apple-ecosystem-specific (SwiftUI, Ins
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Web Search Integration (Brave) | NEW | Brave Search API integration for web search and page content extraction | - | plugins/a5c/marketplace/plugins/web-search-integration/ |
-| Cross-Model Validation Oracle | NEW | Second model opinion as quality gate with adversarial review pattern | - | plugins/a5c/marketplace/plugins/cross-model-validation-oracle/ |
-| Image Asset Generation | NEW | Gemini-powered image generation and editing with configurable resolutions | - | plugins/a5c/marketplace/plugins/image-asset-generation/ |
+| Web Search Integration (Brave) | NEW | Brave Search API integration for web search and page content extraction | - | plugins/a5c/marketplace/blueprints/web-search-integration/ |
+| Cross-Model Validation Oracle | NEW | Second model opinion as quality gate with adversarial review pattern | - | plugins/a5c/marketplace/blueprints/cross-model-validation-oracle/ |
+| Image Asset Generation | NEW | Gemini-powered image generation and editing with configurable resolutions | - | plugins/a5c/marketplace/blueprints/image-asset-generation/ |
 
 ## Implicit Procedural Knowledge
 

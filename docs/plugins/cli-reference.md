@@ -142,7 +142,7 @@ babysitter blueprints:list-plugins --marketplace-name babysitter-marketplace --g
       "description": "Core Babysitter blueprint for AI-assisted development",
       "latestVersion": "0.0.176",
       "versions": ["0.0.176", "0.0.175", "0.0.174"],
-      "packagePath": "blueprints/babysitter-unified",
+      "packagePath": "plugins/babysitter-unified",
       "tags": ["core", "development"],
       "author": "a5c-ai"
     }

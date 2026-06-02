@@ -46,4 +46,4 @@ HIGH VALUE for domain specialization. The skill demonstrates a gold-standard pat
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Swift Project Settings Hook | NEW | Automatic Package.swift/.pbxproj analysis on session start for Swift projects | - | plugins/a5c/marketplace/plugins/swift-project-settings-hook/ |
+| Swift Project Settings Hook | NEW | Automatic Package.swift/.pbxproj analysis on session start for Swift projects | - | plugins/a5c/marketplace/blueprints/swift-project-settings-hook/ |

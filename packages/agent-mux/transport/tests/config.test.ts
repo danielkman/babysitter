@@ -8,9 +8,9 @@ describe('transport-mux config', () => {
   });
 
   it('reads defaults from env', () => {
-    vi.stubEnv('AMUX_PROXY_TARGET_PROVIDER', 'bedrock');
-    vi.stubEnv('AMUX_PROXY_TARGET_MODEL', 'bedrock/anthropic.claude-sonnet-4');
-    vi.stubEnv('AMUX_PROXY_EXPOSED_TRANSPORT', 'anthropic');
+    vi.stubEnv('AGENT_MUX_PROXY_TARGET_PROVIDER', 'bedrock');
+    vi.stubEnv('AGENT_MUX_PROXY_TARGET_MODEL', 'bedrock/anthropic.claude-sonnet-4');
+    vi.stubEnv('AGENT_MUX_PROXY_EXPOSED_TRANSPORT', 'anthropic');
 
     const config = readProxyConfigFromEnv();
 
@@ -71,12 +71,12 @@ describe('transport-mux config', () => {
     );
 
     expect(env).toMatchObject({
-      AMUX_PROXY_TARGET_PROVIDER: 'bedrock',
-      AMUX_PROXY_TARGET_MODEL: 'bedrock/anthropic.claude-sonnet-4',
-      AMUX_PROXY_EXPOSED_TRANSPORT: 'anthropic',
-      AMUX_PROXY_PORT: '4317',
-      AMUX_PROXY_AUTH_TOKEN: 'test-token',
-      AMUX_PROXY_LOG_LEVEL: 'debug',
+      AGENT_MUX_PROXY_TARGET_PROVIDER: 'bedrock',
+      AGENT_MUX_PROXY_TARGET_MODEL: 'bedrock/anthropic.claude-sonnet-4',
+      AGENT_MUX_PROXY_EXPOSED_TRANSPORT: 'anthropic',
+      AGENT_MUX_PROXY_PORT: '4317',
+      AGENT_MUX_PROXY_AUTH_TOKEN: 'test-token',
+      AGENT_MUX_PROXY_LOG_LEVEL: 'debug',
     });
   });
 });

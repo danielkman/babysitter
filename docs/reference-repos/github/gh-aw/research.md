@@ -121,5 +121,5 @@ VERY HIGH - Contains official GitHub workflow orchestration patterns that are di
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Agentic GitHub Workflows | UPGRADE | Complete GitHub workflow automation beyond existing github-actions-cicd plugins | plugins/a5c/marketplace/plugins/github-actions-cicd-* | plugins/a5c/marketplace/plugins/agentic-github-workflows/ |
-| Error Recovery Suite | NEW | Robust error handling and recovery infrastructure with circuit breakers and monitoring | - | plugins/a5c/marketplace/plugins/error-recovery-suite/ |
+| Agentic GitHub Workflows | UPGRADE | Complete GitHub workflow automation beyond existing github-actions-cicd plugins | plugins/a5c/marketplace/blueprints/github-actions-cicd-* | plugins/a5c/marketplace/blueprints/agentic-github-workflows/ |
+| Error Recovery Suite | NEW | Robust error handling and recovery infrastructure with circuit breakers and monitoring | - | plugins/a5c/marketplace/blueprints/error-recovery-suite/ |

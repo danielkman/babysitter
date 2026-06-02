@@ -299,8 +299,8 @@ describe("cloud deployment plan", () => {
         required: true,
       },
     ]);
-    expect(providers.env.BABYSITTER_AGENT_AMUX_PROVIDERS_FILE_JSON).toContain("\"profiles\"");
-    expect(providers.env.BABYSITTER_AGENT_AMUX_MODEL_ROUTING_JSON).toContain("\"codex\"");
+    expect(providers.env.BABYSITTER_AGENT_AGENT_MUX_PROVIDERS_FILE_JSON).toContain("\"profiles\"");
+    expect(providers.env.BABYSITTER_AGENT_AGENT_MUX_MODEL_ROUTING_JSON).toContain("\"codex\"");
   });
 
   it("renders terraform for aks", () => {

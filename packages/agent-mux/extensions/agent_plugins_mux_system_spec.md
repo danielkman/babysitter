@@ -17,15 +17,15 @@ The babysitter project historically maintained multiple plugin directories under
 
 | Directory | Harness | Manual sync required |
 |-----------|---------|---------------------|
-| `blueprints/babysitter-unified/` | Unified source | Source of truth |
-| `blueprints/babysitter-unified/per-harness/codex/` | Codex overlay | Harness-specific source overlay |
-| `blueprints/babysitter-unified/per-harness/cursor/` | Cursor overlay | Harness-specific source overlay |
-| `blueprints/babysitter-unified/per-harness/gemini/` | Gemini CLI overlay | Harness-specific source overlay |
-| `blueprints/babysitter-unified/per-harness/github/` | GitHub Copilot overlay | Harness-specific source overlay |
-| `blueprints/babysitter-unified/per-harness/pi/` | Pi overlay | Harness-specific source overlay |
-| `blueprints/babysitter-unified/per-harness/omp/` | oh-my-pi overlay | Harness-specific source overlay |
-| `blueprints/babysitter-unified/per-harness/opencode/` | OpenCode overlay | Harness-specific source overlay |
-| `blueprints/babysitter-unified/per-harness/openclaw/` | OpenClaw overlay | Harness-specific source overlay |
+| `plugins/babysitter-unified/` | Unified source | Source of truth |
+| `plugins/babysitter-unified/per-harness/codex/` | Codex overlay | Harness-specific source overlay |
+| `plugins/babysitter-unified/per-harness/cursor/` | Cursor overlay | Harness-specific source overlay |
+| `plugins/babysitter-unified/per-harness/gemini/` | Gemini CLI overlay | Harness-specific source overlay |
+| `plugins/babysitter-unified/per-harness/github/` | GitHub Copilot overlay | Harness-specific source overlay |
+| `plugins/babysitter-unified/per-harness/pi/` | Pi overlay | Harness-specific source overlay |
+| `plugins/babysitter-unified/per-harness/omp/` | oh-my-pi overlay | Harness-specific source overlay |
+| `plugins/babysitter-unified/per-harness/opencode/` | OpenCode overlay | Harness-specific source overlay |
+| `plugins/babysitter-unified/per-harness/openclaw/` | OpenClaw overlay | Harness-specific source overlay |
 
 Every time a command, skill, or hook changes in the canonical plugin, the change must be manually propagated to all targets. The `scripts/plugin-command-sync-lib.cjs` library and per-target `sync-command-skills.js` scripts partially automate skill derivation, but the process is fragile and incomplete.
 
@@ -414,7 +414,7 @@ allowed-tools: Read, Grep, Write, Task, Bash, Edit, Grep, Glob, WebFetch, WebSea
 Invoke the babysitter:babysit skill (using the Skill tool) and follow its instructions (SKILL.md). but without any user interaction or breakpoints in the run.
 ```
 
-**Current codebase commands** (all in `blueprints/babysitter-unified/commands/`):
+**Current codebase commands** (all in `plugins/babysitter-unified/commands/`):
 `call.md`, `yolo.md`, `forever.md`, `plan.md`, `resume.md`, `help.md`, `observe.md`, `cleanup.md`, `plugins.md`, `project-install.md`, `user-install.md`, `contrib.md`, `retrospect.md`, `assimilate.md`, `doctor.md`
 
 ### 3.2 Skills (`skills/*/SKILL.md`)
@@ -1345,7 +1345,7 @@ Generation rules:
 
 The `COMMANDS` list is derived from the UPF `commands/` directory: take each `*.md` filename (without extension), excluding `babysit` and `babysitter` (which are registered separately as the primary entry points).
 
-**Reference implementation** (from the Pi per-harness source overlay under `blueprints/babysitter-unified/per-harness/pi/`):
+**Reference implementation** (from the Pi per-harness source overlay under `plugins/babysitter-unified/per-harness/pi/`):
 
 ```typescript
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
@@ -2267,9 +2267,9 @@ jobs:
 
 #### Phase 1: Create the UPF Source
 
-1. **Create `a5c-plugin.json`** in `blueprints/babysitter-unified/`.
+1. **Create `a5c-plugin.json`** in `plugins/babysitter-unified/`.
 
-2. **Base the manifest on `blueprints/babysitter-unified/plugin.json`**, which is already the superset:
+2. **Base the manifest on `plugins/babysitter-unified/plugin.json`**, which is already the superset:
 
 ```json
 {
@@ -2303,19 +2303,19 @@ jobs:
 }
 ```
 
-3. **Keep canonical files** in `blueprints/babysitter-unified/`:
+3. **Keep canonical files** in `plugins/babysitter-unified/`:
    - `commands/*.md` (already the source of truth)
    - `skills/babysit/SKILL.md` (standalone skill)
    - `hooks/*.sh` (handler scripts)
    - `versions.json`
 
-4. **Keep harness overlays** in `blueprints/babysitter-unified/per-harness/`:
-   - `blueprints/babysitter-unified/per-harness/gemini/GEMINI.md`
-   - `blueprints/babysitter-unified/per-harness/github/AGENTS.md`
+4. **Keep harness overlays** in `plugins/babysitter-unified/per-harness/`:
+   - `plugins/babysitter-unified/per-harness/gemini/GEMINI.md`
+   - `plugins/babysitter-unified/per-harness/github/AGENTS.md`
 
 5. **Keep target-specific overrides** in per-harness source overlays:
-   - Codex-specific files in `blueprints/babysitter-unified/per-harness/codex/`
-   - Pi extensions in `blueprints/babysitter-unified/per-harness/pi/`
+   - Codex-specific files in `plugins/babysitter-unified/per-harness/codex/`
+   - Pi extensions in `plugins/babysitter-unified/per-harness/pi/`
 
 #### Phase 2: Validate the Compiler
 
@@ -2345,13 +2345,13 @@ npx @a5c-ai/agent-mux-extensions diff --target claude-code --existing artifacts/
 
 | Current location | UPF role |
 |-----------------|----------|
-| `blueprints/babysitter-unified/plugin.json` | Base manifest for unified plugin compilation |
-| `blueprints/babysitter-unified/commands/*.md` | Canonical commands |
-| `blueprints/babysitter-unified/skills/babysit/SKILL.md` | Standalone skill |
-| `blueprints/babysitter-unified/hooks/*.sh` | Canonical hook handlers |
-| `blueprints/babysitter-unified/versions.json` | Canonical version pin |
-| `blueprints/babysitter-unified/per-harness/gemini/GEMINI.md` | Context file for Gemini target |
-| `blueprints/babysitter-unified/per-harness/github/AGENTS.md` | Context file for Copilot/Pi targets |
+| `plugins/babysitter-unified/plugin.json` | Base manifest for unified plugin compilation |
+| `plugins/babysitter-unified/commands/*.md` | Canonical commands |
+| `plugins/babysitter-unified/skills/babysit/SKILL.md` | Standalone skill |
+| `plugins/babysitter-unified/hooks/*.sh` | Canonical hook handlers |
+| `plugins/babysitter-unified/versions.json` | Canonical version pin |
+| `plugins/babysitter-unified/per-harness/gemini/GEMINI.md` | Context file for Gemini target |
+| `plugins/babysitter-unified/per-harness/github/AGENTS.md` | Context file for Copilot/Pi targets |
 | `scripts/plugin-command-sync-lib.cjs` | Logic absorbed into compiler |
 
 ### 9.3 What Gets Generated
@@ -2443,7 +2443,7 @@ Options:
 **Example:**
 
 ```bash
-npx @a5c-ai/agent-mux-extensions validate --source blueprints/babysitter-unified --strict
+npx @a5c-ai/agent-mux-extensions validate --source plugins/babysitter-unified --strict
 ```
 
 ### 10.3 `diff`

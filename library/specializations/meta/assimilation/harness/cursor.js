@@ -155,7 +155,7 @@ export async function process(inputs, ctx) {
   //   - Installation: /add-plugin command in Cursor (marketplace-first)
   // Skills may be embedded as .cursorrules, .cursor/rules/ entries, or as
   // MCP tool descriptions accessible via the plugin's MCP server.
-  // Commands: ALL 15 command files from blueprints/babysitter/commands/ must be
+  // Commands: ALL 15 command files from plugins/babysitter/commands/ must be
   // ported identically (assimilate, call, cleanup, contrib, doctor, forever,
   // help, observe, plan, plugins, project-install, resume, retrospect,
   // user-install, yolo). Commands are harness-agnostic.

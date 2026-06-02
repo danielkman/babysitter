@@ -90,5 +90,5 @@ Extremely high value -- the largest and most well-organized skill collection in 
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Jira/Confluence Integration | NEW | Bidirectional sync between babysitter runs and Atlassian tools via API | - | plugins/a5c/marketplace/plugins/jira-confluence-integration/ |
-| Figma Design Bridge | NEW | Figma API integration to import designs as implementation specifications | - | plugins/a5c/marketplace/plugins/figma-design-bridge/ |
+| Jira/Confluence Integration | NEW | Bidirectional sync between babysitter runs and Atlassian tools via API | - | plugins/a5c/marketplace/blueprints/jira-confluence-integration/ |
+| Figma Design Bridge | NEW | Figma API integration to import designs as implementation specifications | - | plugins/a5c/marketplace/blueprints/figma-design-bridge/ |

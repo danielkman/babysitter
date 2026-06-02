@@ -17,7 +17,7 @@ export async function tuiCommand(
         'Options:',
         '  --agent <name>            Default agent for new prompts (default: claude-code)',
         '  --user-plugins-dir <dir>  Override user-plugin discovery dir',
-        '                            (default: $AMUX_TUI_PLUGINS_DIR or ~/.amux/tui-plugins)',
+        '                            (default: $AGENT_MUX_TUI_PLUGINS_DIR or ~/.amux/tui-plugins)',
         '  --no-user-plugins         Skip discovering user plugins from the directory',
       ].join('\n') + '\n',
     );

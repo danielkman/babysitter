@@ -225,9 +225,9 @@ export function createLogger(config: LoggerConfig = {}): Logger {
  * Default logger instance.
  */
 export const logger = createLogger({
-  level: (process.env.AMUX_LOG_LEVEL as LogLevel) || 'info',
-  logFile: process.env.AMUX_LOG_FILE,
-  pretty: process.env.AMUX_LOG_PRETTY === 'true',
+  level: (process.env.AGENT_MUX_LOG_LEVEL as LogLevel) || 'info',
+  logFile: process.env.AGENT_MUX_LOG_FILE,
+  pretty: process.env.AGENT_MUX_LOG_PRETTY === 'true',
   baseContext: {
     version: process.env.npm_package_version || 'unknown',
   },

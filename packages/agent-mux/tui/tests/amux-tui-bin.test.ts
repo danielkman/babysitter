@@ -82,8 +82,8 @@ describe('agent-mux-tui binary entrypoint', () => {
     expect(renderedPlugins(render)).toEqual(['builtin:core']);
   });
 
-  it('honors AMUX_TUI_NO_USER_PLUGINS as an opt-out', async () => {
-    process.env.AMUX_TUI_NO_USER_PLUGINS = 'true';
+  it('honors AGENT_MUX_TUI_NO_USER_PLUGINS as an opt-out', async () => {
+    process.env.AGENT_MUX_TUI_NO_USER_PLUGINS = 'true';
     const { deps, render } = createDeps();
 
     await runWithArgs([], deps);
@@ -120,14 +120,14 @@ describe('agent-mux-tui binary entrypoint', () => {
       loadExternalPlugins: vi.fn(),
     }));
 
-    process.env.AMUX_LOG_LEVEL = 'debug';
-    process.env.AMUX_LOG_FILE = '/tmp/amux.log';
-    delete process.env.AMUX_OBSERVABILITY_MODE;
+    process.env.AGENT_MUX_LOG_LEVEL = 'debug';
+    process.env.AGENT_MUX_LOG_FILE = '/tmp/amux.log';
+    delete process.env.AGENT_MUX_OBSERVABILITY_MODE;
 
     const { configureLoggingFromEnv } = await import('../src/bin/agent-mux-tui.js');
     configureLoggingFromEnv();
 
-    expect(process.env.AMUX_OBSERVABILITY_MODE).toBeUndefined();
+    expect(process.env.AGENT_MUX_OBSERVABILITY_MODE).toBeUndefined();
     expect(setObservabilityMode).toHaveBeenCalledWith('full');
     expect(reconfigureLogger).toHaveBeenCalledWith({
       level: 'debug',

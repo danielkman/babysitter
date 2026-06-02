@@ -42,7 +42,7 @@ OpenClaw-specific search skills providing multi-source parallel search, content 
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Multi-Source Search Engine | NEW | Search task kind dispatching to multiple APIs (Brave/Exa/Tavily) with API key configuration | - | plugins/a5c/marketplace/plugins/multi-source-search-engine/ |
+| Multi-Source Search Engine | NEW | Search task kind dispatching to multiple APIs (Brave/Exa/Tavily) with API key configuration | - | plugins/a5c/marketplace/blueprints/multi-source-search-engine/ |
 
 ### SKIP
 - OpenClaw-specific skill loading mechanics

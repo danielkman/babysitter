@@ -46,5 +46,5 @@ Critical reference for understanding the agent skills specification that all oth
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Skill Validator | NEW | Validate SKILL.md files against official agentskills specification | - | plugins/a5c/marketplace/plugins/skill-validator/ |
-| Skill Conformance Checker | NEW | Audit installed skills for specification compliance and report deviations | - | plugins/a5c/marketplace/plugins/skill-conformance-checker/ |
+| Skill Validator | NEW | Validate SKILL.md files against official agentskills specification | - | plugins/a5c/marketplace/blueprints/skill-validator/ |
+| Skill Conformance Checker | NEW | Audit installed skills for specification compliance and report deviations | - | plugins/a5c/marketplace/blueprints/skill-conformance-checker/ |

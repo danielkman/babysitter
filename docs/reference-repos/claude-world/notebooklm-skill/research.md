@@ -70,7 +70,7 @@ The multi-phase pipeline pattern (Ingest -> Synthesize -> Create -> Publish) wit
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Research Automation | NEW | Automated research workflows with NotebookLM integration and MCP server setup | - | plugins/a5c/marketplace/plugins/research-automation/ |
+| Research Automation | NEW | Automated research workflows with NotebookLM integration and MCP server setup | - | plugins/a5c/marketplace/blueprints/research-automation/ |
 
 ## Implicit Procedural Knowledge
 

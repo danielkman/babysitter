@@ -33,8 +33,8 @@ export function applyTransportMuxToHarnessEnv(
   proxyUrl: string,
   authToken: string,
 ): Record<string, string> {
-  env['AMUX_PROXY_BASE_URL'] = proxyUrl;
-  env['AMUX_PROXY_AUTH_TOKEN'] = authToken;
+  env['AGENT_MUX_PROXY_BASE_URL'] = proxyUrl;
+  env['AGENT_MUX_PROXY_AUTH_TOKEN'] = authToken;
 
   switch (transport) {
     case 'anthropic':

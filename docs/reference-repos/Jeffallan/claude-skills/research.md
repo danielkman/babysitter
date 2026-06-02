@@ -163,6 +163,6 @@ Several skills contain procedural knowledge embedded in their constraints and re
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Chaos Engineering Toolkit | NEW | Litmus Chaos/toxiproxy integration with experiment orchestration and safety gates | - | plugins/a5c/marketplace/plugins/chaos-engineering-toolkit/ |
-| Security Audit Automation | UPGRADE | Enhanced security scanning with tool integration and automated finding classification | basic-security | plugins/a5c/marketplace/plugins/security-audit-automation/ |
-| Legacy Modernization Framework | NEW | Strangler fig migration orchestration with characterization testing and metric-gated rollback | - | plugins/a5c/marketplace/plugins/legacy-modernization-framework/ |
+| Chaos Engineering Toolkit | NEW | Litmus Chaos/toxiproxy integration with experiment orchestration and safety gates | - | plugins/a5c/marketplace/blueprints/chaos-engineering-toolkit/ |
+| Security Audit Automation | UPGRADE | Enhanced security scanning with tool integration and automated finding classification | basic-security | plugins/a5c/marketplace/blueprints/security-audit-automation/ |
+| Legacy Modernization Framework | NEW | Strangler fig migration orchestration with characterization testing and metric-gated rollback | - | plugins/a5c/marketplace/blueprints/legacy-modernization-framework/ |

@@ -44,14 +44,14 @@ describe('live stack scenario contract primitives', () => {
       LIVE_STACK_SCENARIO_ID: 'live.agent-platform.internal.foundry-openai.gpt-5.5',
       LIVE_STACK_AGENT_PATH: 'agent-platform',
       LIVE_STACK_AGENT: 'internal',
-      LIVE_STACK_AMUX_AGENT: 'babysitter',
+      LIVE_STACK_AGENT_MUX_AGENT: 'babysitter',
       LIVE_STACK_INTEGRATION_TYPE: 'runtime-cli',
       LIVE_STACK_INSTALL_MODE: 'babysitter-plugin',
       LIVE_STACK_PROVIDER: 'foundry-openai',
-      LIVE_STACK_AMUX_PROVIDER: 'foundry',
+      LIVE_STACK_AGENT_MUX_PROVIDER: 'foundry',
       LIVE_STACK_MODEL: 'gpt-5.5',
       LIVE_STACK_CREDENTIAL_MODE: 'github-org-secrets-and-vars',
-      LIVE_STACK_REQUIRED_ENV: 'AZURE_API_KEY,AMUX_API_BASE',
+      LIVE_STACK_REQUIRED_ENV: 'AZURE_API_KEY,AGENT_MUX_API_BASE',
       LIVE_STACK_LAYERS: 'agent-platform create-run,agent-core runtime session,provider/model trace',
       LIVE_STACK_REQUIRED_TRACE_IDS: 'babysitterRunId,babysitterEffectId',
       LIVE_STACK_EXPECTED_ARTIFACTS: 'babysitter-run-summary,babysitter-task-bundle,provider-trace-redacted',
@@ -68,14 +68,14 @@ describe('live stack scenario contract primitives', () => {
       LIVE_STACK_SCENARIO_ID: 'live.agent-mux.gemini.foundry-openai.gpt-5.5',
       LIVE_STACK_AGENT_PATH: 'agent-mux',
       LIVE_STACK_AGENT: 'gemini-cli',
-      LIVE_STACK_AMUX_AGENT: 'gemini',
+      LIVE_STACK_AGENT_MUX_AGENT: 'gemini',
       LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin',
       LIVE_STACK_INSTALL_MODE: 'vanilla',
       LIVE_STACK_PROVIDER: 'foundry-openai',
-      LIVE_STACK_AMUX_PROVIDER: 'foundry',
+      LIVE_STACK_AGENT_MUX_PROVIDER: 'foundry',
       LIVE_STACK_MODEL: 'gpt-5.5',
       LIVE_STACK_CREDENTIAL_MODE: 'github-org-secrets-and-vars',
-      LIVE_STACK_REQUIRED_ENV: 'AZURE_API_KEY,AMUX_API_BASE',
+      LIVE_STACK_REQUIRED_ENV: 'AZURE_API_KEY,AGENT_MUX_API_BASE',
       LIVE_STACK_LAYERS: 'agent-mux install,agent-mux invocation,transport-mux route,provider/model trace',
       LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId',
       LIVE_STACK_EXPECTED_ARTIFACTS: 'agent-mux-events,transport-mux-trace,provider-trace-redacted',
@@ -93,15 +93,15 @@ describe('live stack scenario contract primitives', () => {
       LIVE_STACK_SCENARIO_ID: 'live.agent-mux.agent-platform.foundry-openai.gpt-5.5',
       LIVE_STACK_AGENT_PATH: 'agent-mux',
       LIVE_STACK_AGENT: 'agent-platform',
-      LIVE_STACK_AMUX_AGENT: 'babysitter',
+      LIVE_STACK_AGENT_MUX_AGENT: 'babysitter',
       LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin',
       LIVE_STACK_BABYSITTER_HARNESS: 'agent-core',
       LIVE_STACK_INSTALL_MODE: 'vanilla',
       LIVE_STACK_PROVIDER: 'foundry-openai',
-      LIVE_STACK_AMUX_PROVIDER: 'foundry',
+      LIVE_STACK_AGENT_MUX_PROVIDER: 'foundry',
       LIVE_STACK_MODEL: 'gpt-5.5',
       LIVE_STACK_CREDENTIAL_MODE: 'github-org-secrets-and-vars',
-      LIVE_STACK_REQUIRED_ENV: 'AZURE_API_KEY,AMUX_API_BASE',
+      LIVE_STACK_REQUIRED_ENV: 'AZURE_API_KEY,AGENT_MUX_API_BASE',
       LIVE_STACK_LAYERS: 'agent-mux install,agent-mux invocation,agent-platform runtime,provider/model trace',
       LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId',
       LIVE_STACK_EXPECTED_ARTIFACTS: 'agent-mux-events,transport-mux-trace,provider-trace-redacted',
@@ -119,11 +119,11 @@ describe('live stack scenario contract primitives', () => {
       LIVE_STACK_SCENARIO_ID: 'live.agent-mux.claude-code.google.gemini-3.1-pro',
       LIVE_STACK_AGENT_PATH: 'agent-mux',
       LIVE_STACK_AGENT: 'claude-code',
-      LIVE_STACK_AMUX_AGENT: 'claude',
+      LIVE_STACK_AGENT_MUX_AGENT: 'claude',
       LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin',
       LIVE_STACK_INSTALL_MODE: 'vanilla',
       LIVE_STACK_PROVIDER: 'google',
-      LIVE_STACK_AMUX_PROVIDER: 'google',
+      LIVE_STACK_AGENT_MUX_PROVIDER: 'google',
       LIVE_STACK_MODEL: 'gemini-3.1-pro-preview',
       LIVE_STACK_CREDENTIAL_MODE: 'github-org-secrets-and-vars',
       LIVE_STACK_REQUIRED_ENV: 'GOOGLE_API_KEY',
@@ -145,7 +145,7 @@ describe('live stack scenario contract primitives', () => {
     expect(scenario.agent.agentPath).toBe('tula');
     expect(scenario.agent.babysitterHarness).toBe('tula');
     expect(scenario.agent.setupCommands).toEqual(['tula call']);
-    expect(scenario.model.requiredEnv).toEqual(['LIVE_STACK_EXTERNAL_AGENT', 'AZURE_API_KEY', 'AMUX_API_BASE']);
+    expect(scenario.model.requiredEnv).toEqual(['LIVE_STACK_EXTERNAL_AGENT', 'AZURE_API_KEY', 'AGENT_MUX_API_BASE']);
     expect(scenario.layers).toContain('tasks-mux responder routing');
     expect(scenario.layers).toContain('agent-mux claude-code adapter');
     expect(scenario.expectedArtifacts).toContain('external-agent-cost-event');
@@ -156,11 +156,11 @@ describe('live stack scenario contract primitives', () => {
 
     expect(getScenarioCapabilityStatus(scenario, {})).toEqual({
       runnable: false,
-      missingEnv: ['AZURE_API_KEY', 'AMUX_API_BASE'],
-      failureReason: 'missing live-model credential env: AZURE_API_KEY, AMUX_API_BASE',
+      missingEnv: ['AZURE_API_KEY', 'AGENT_MUX_API_BASE'],
+      failureReason: 'missing live-model credential env: AZURE_API_KEY, AGENT_MUX_API_BASE',
     });
 
-    expect(getScenarioCapabilityStatus(scenario, { AZURE_API_KEY: 'present', AMUX_API_BASE: 'https://example.services.ai.azure.com' })).toEqual({
+    expect(getScenarioCapabilityStatus(scenario, { AZURE_API_KEY: 'present', AGENT_MUX_API_BASE: 'https://example.services.ai.azure.com' })).toEqual({
       runnable: true,
       missingEnv: [],
     });

@@ -92,5 +92,5 @@ VERY HIGH - Contains authoritative prompt engineering methodologies that are dir
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Prompt Engineering Suite | NEW | Comprehensive prompt development and validation environment with testing frameworks | - | plugins/a5c/marketplace/plugins/prompt-engineering-suite/ |
-| LLM Evaluation Framework | NEW | Systematic LLM prompt testing and optimization with automated reporting | - | plugins/a5c/marketplace/plugins/llm-evaluation-framework/ |
+| Prompt Engineering Suite | NEW | Comprehensive prompt development and validation environment with testing frameworks | - | plugins/a5c/marketplace/blueprints/prompt-engineering-suite/ |
+| LLM Evaluation Framework | NEW | Systematic LLM prompt testing and optimization with automated reporting | - | plugins/a5c/marketplace/blueprints/llm-evaluation-framework/ |

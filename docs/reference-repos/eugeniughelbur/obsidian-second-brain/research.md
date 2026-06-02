@@ -73,8 +73,8 @@ None. Memory systems are plugins, not processes.
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Obsidian Second Brain Integration | UPGRADE | Comprehensive Obsidian vault management beyond existing basic integrations | plugins/a5c/marketplace/plugins/claude-mem/ | plugins/a5c/marketplace/plugins/obsidian-second-brain/ |
-| Vault Health Monitor | NEW | Periodic health checks for Obsidian vaults with automated quality monitoring | - | plugins/a5c/marketplace/plugins/vault-health-monitor/ |
+| Obsidian Second Brain Integration | UPGRADE | Comprehensive Obsidian vault management beyond existing basic integrations | plugins/a5c/marketplace/blueprints/claude-mem/ | plugins/a5c/marketplace/blueprints/obsidian-second-brain/ |
+| Vault Health Monitor | NEW | Periodic health checks for Obsidian vaults with automated quality monitoring | - | plugins/a5c/marketplace/blueprints/vault-health-monitor/ |
 
 ## Implicit Procedural Knowledge
 

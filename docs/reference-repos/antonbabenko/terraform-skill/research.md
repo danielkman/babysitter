@@ -55,7 +55,7 @@
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Terraform IaC Toolkit | NEW | Terraform module scaffolding with testing strategy and CI/CD generation | - | plugins/a5c/marketplace/plugins/terraform-iac-toolkit/ |
+| Terraform IaC Toolkit | NEW | Terraform module scaffolding with testing strategy and CI/CD generation | - | plugins/a5c/marketplace/blueprints/terraform-iac-toolkit/ |
 
 ### SKIP
 - Skill management (how they distribute via marketplace) -- SDK-covered

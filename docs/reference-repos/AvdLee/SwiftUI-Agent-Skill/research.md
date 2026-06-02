@@ -44,7 +44,7 @@ Moderate value. More sophisticated than the twostraws version due to the referen
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Living Reference Manager | NEW | Auto-updating reference file system for rapidly changing APIs and knowledge | - | plugins/a5c/marketplace/plugins/living-reference-manager/ |
+| Living Reference Manager | NEW | Auto-updating reference file system for rapidly changing APIs and knowledge | - | plugins/a5c/marketplace/blueprints/living-reference-manager/ |
 
 ## Patterns
 

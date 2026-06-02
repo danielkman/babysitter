@@ -100,8 +100,8 @@ Extracted from Axiom's app-store-submission skill and the chain of auditors that
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| iOS Development Skill Pack | NEW | Comprehensive iOS/macOS development with auditor agents, hooks, and Xcode integration | - | plugins/a5c/marketplace/plugins/ios-development-skill-pack/ |
-| Codebase Health Dashboard | NEW | Generic health monitoring with auto-detection, parallel auditors, and unified reporting | - | plugins/a5c/marketplace/plugins/codebase-health-dashboard/ |
+| iOS Development Skill Pack | NEW | Comprehensive iOS/macOS development with auditor agents, hooks, and Xcode integration | - | plugins/a5c/marketplace/blueprints/ios-development-skill-pack/ |
+| Codebase Health Dashboard | NEW | Generic health monitoring with auto-detection, parallel auditors, and unified reporting | - | plugins/a5c/marketplace/blueprints/codebase-health-dashboard/ |
 
 ## Implicit Procedural Knowledge
 

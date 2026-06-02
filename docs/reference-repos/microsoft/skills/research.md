@@ -94,5 +94,5 @@ HIGH - Contains well-documented Microsoft/Azure ecosystem processes that are dir
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Azure Development Suite | NEW | Comprehensive Azure development with CLI, deployment pipelines, and monitoring | - | plugins/a5c/marketplace/plugins/azure-development-suite/ |
-| Cloud Architecture Framework | NEW | Cloud architecture best practices with Well-Architected assessments and design patterns | - | plugins/a5c/marketplace/plugins/cloud-architecture-framework/ |
+| Azure Development Suite | NEW | Comprehensive Azure development with CLI, deployment pipelines, and monitoring | - | plugins/a5c/marketplace/blueprints/azure-development-suite/ |
+| Cloud Architecture Framework | NEW | Cloud architecture best practices with Well-Architected assessments and design patterns | - | plugins/a5c/marketplace/blueprints/cloud-architecture-framework/ |

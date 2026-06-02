@@ -5,6 +5,6 @@ attributes:
   displayName: "react-tdd skill source"
   repoUrl: https://github.com/a5c-ai/babysitter
   ref: main
-  path: blueprints/babysitter/skills/react-tdd
+  path: plugins/babysitter/skills/react-tdd
   kind: git-path
 edges: {}

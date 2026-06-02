@@ -5,9 +5,9 @@ attributes:
   description: |
     Install security processes, skills, agents and commands from the babysitter security-compliance
     library into your project. Includes post-install codebase security scan.
-  installMd: "@plugins/a5c/marketplace/plugins/basic-security/install.md"
-  configureMd: "@plugins/a5c/marketplace/plugins/basic-security/configure.md"
-  uninstallMd: "@plugins/a5c/marketplace/plugins/basic-security/uninstall.md"
+  installMd: "@plugins/a5c/marketplace/blueprints/basic-security/install.md"
+  configureMd: "@plugins/a5c/marketplace/blueprints/basic-security/configure.md"
+  uninstallMd: "@plugins/a5c/marketplace/blueprints/basic-security/uninstall.md"
   latestVersion: "1.0.0"
   versions: ["1.0.0"]
   tags: [security, compliance, audit, sast, vulnerability-management]

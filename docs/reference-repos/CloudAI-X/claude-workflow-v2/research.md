@@ -51,4 +51,4 @@ MEDIUM VALUE. The parallel execution skill is directly relevant to babysitter's 
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Architecture Decision Matrix | NEW | Interactive architecture pattern selection tool with team/project size inputs | - | plugins/a5c/marketplace/plugins/architecture-decision-matrix/ |
+| Architecture Decision Matrix | NEW | Interactive architecture pattern selection tool with team/project size inputs | - | plugins/a5c/marketplace/blueprints/architecture-decision-matrix/ |

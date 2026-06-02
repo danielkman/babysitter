@@ -54,7 +54,7 @@ LOW extractable value for babysitter. This is a domain-specific financial tradin
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Prediction Market Signal | NEW | Read-only market browsing and probability signal sourcing for research processes | - | plugins/a5c/marketplace/plugins/prediction-market-signal/ |
+| Prediction Market Signal | NEW | Read-only market browsing and probability signal sourcing for research processes | - | plugins/a5c/marketplace/blueprints/prediction-market-signal/ |
 
 ## Implicit Procedural Knowledge
 

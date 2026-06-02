@@ -189,7 +189,7 @@ attributes:
   conditional: "${{ steps.trigger.outputs.matched == 'true' && inputs.pre-run != '' }}"
   envVars:
     - "INPUT_PRE_RUN=${{ inputs.pre-run }}"
-    - "AMUX_TRIGGER_EVENT_PATH=${{ steps.trigger.outputs.event }}"
+    - "AGENT_MUX_TRIGGER_EVENT_PATH=${{ steps.trigger.outputs.event }}"
   runScript: |
     set -euo pipefail
     bash -euo pipefail -c "$INPUT_PRE_RUN"
@@ -223,7 +223,7 @@ attributes:
     - "INPUT_BABYSITTER_PREFIX=${{ inputs.babysitter-prompt-prefix }}"
     - "INPUT_ARGS=${{ inputs.args }}"
     - "INPUT_ARGS_JSON=${{ inputs.args-json }}"
-    - "AMUX_TRIGGER_EVENT_PATH=${{ steps.trigger.outputs.event }}"
+    - "AGENT_MUX_TRIGGER_EVENT_PATH=${{ steps.trigger.outputs.event }}"
   runScript: |
     set -euo pipefail
     REPO_ROOT=$(cd "$ACTION_ROOT/../.." && pwd)
@@ -285,7 +285,7 @@ attributes:
   conditional: "${{ steps.trigger.outputs.matched == 'true' && inputs.post-run != '' }}"
   envVars:
     - "INPUT_POST_RUN=${{ inputs.post-run }}"
-    - "AMUX_TRIGGER_EVENT_PATH=${{ steps.trigger.outputs.event }}"
+    - "AGENT_MUX_TRIGGER_EVENT_PATH=${{ steps.trigger.outputs.event }}"
   runScript: |
     set -euo pipefail
     bash -euo pipefail -c "$INPUT_POST_RUN"

@@ -24,7 +24,7 @@ export async function setupClaudeRuntimeHooks(
   return {
     env: {
       CLAUDE_CONFIG_DIR: config.dir,
-      AMUX_CLAUDE_HOOK_SOCKET: config.socketPath,
+      AGENT_MUX_CLAUDE_HOOK_SOCKET: config.socketPath,
     },
     cleanup: async () => {
       await server.close();

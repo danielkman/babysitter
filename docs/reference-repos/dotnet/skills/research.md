@@ -95,4 +95,4 @@ HIGH - Contains official .NET team processes that are directly transferable:
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| .NET Framework Upgrade | NEW | Systematic .NET framework upgrade setup with processes and tooling | - | plugins/a5c/marketplace/plugins/dotnet-framework-upgrade/ |
+| .NET Framework Upgrade | NEW | Systematic .NET framework upgrade setup with processes and tooling | - | plugins/a5c/marketplace/blueprints/dotnet-framework-upgrade/ |

@@ -112,19 +112,19 @@ export const ENV_VAR_CONTRACTS = {
   },
   agentMux: {
     logLevel: {
-      name: "AMUX_LOG_LEVEL",
+      name: "AGENT_MUX_LOG_LEVEL",
       valueType: "string",
       scope: "external-input",
       description: "Agent mux log level read as startup input; CLI flags should configure loggers directly.",
     },
     logFile: {
-      name: "AMUX_LOG_FILE",
+      name: "AGENT_MUX_LOG_FILE",
       valueType: "string",
       scope: "external-input",
       description: "Agent mux log file read as startup input; CLI flags should configure loggers directly.",
     },
     observabilityMode: {
-      name: "AMUX_OBSERVABILITY_MODE",
+      name: "AGENT_MUX_OBSERVABILITY_MODE",
       valueType: "string",
       scope: "external-input",
       description: "Agent mux observability mode read as startup input, not in-process mutable state.",

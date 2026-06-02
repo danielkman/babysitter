@@ -94,7 +94,7 @@ export async function process(inputs, ctx) {
   // Antigravity plugin structure: SKILL.md, workflows/, rules/, MCP config.
   // Plugin manifest: skills/hooks as path strings, no contextFileName field.
   // Skills map naturally to Antigravity's SKILL.md format.
-  // Commands: ALL 15 command files from blueprints/babysitter/commands/ must be
+  // Commands: ALL 15 command files from plugins/babysitter/commands/ must be
   // ported identically (harness-agnostic, invoke skills via Skill tool).
   // ==========================================================================
 

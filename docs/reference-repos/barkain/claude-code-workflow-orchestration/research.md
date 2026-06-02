@@ -118,7 +118,7 @@ The Claude Code-native architecture and adaptive delegation patterns represent c
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Hook-Based Orchestration Engine | NEW | Workflow enforcement with progressive nudging and token-efficient session management | - | plugins/a5c/marketplace/plugins/hook-based-orchestration-engine/ |
+| Hook-Based Orchestration Engine | NEW | Workflow enforcement with progressive nudging and token-efficient session management | - | plugins/a5c/marketplace/blueprints/hook-based-orchestration-engine/ |
 
 ## Research Methodology Notes
 

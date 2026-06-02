@@ -90,4 +90,4 @@ None - these are all pure methodology content, not tool integrations.
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Production Engineering Checklist | NEW | Install comprehensive pre-launch checklists and quality gates | - | plugins/a5c/marketplace/plugins/production-engineering-checklist/ |
+| Production Engineering Checklist | NEW | Install comprehensive pre-launch checklists and quality gates | - | plugins/a5c/marketplace/blueprints/production-engineering-checklist/ |

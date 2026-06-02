@@ -103,7 +103,7 @@ function readMatrixLane(): MatrixLane {
   }
 
   return {
-    agentMuxAgent: requiredEnv('AGENT_MUX_HOOKS_MUX_AMUX_AGENT'),
+    agentMuxAgent: requiredEnv('AGENT_MUX_HOOKS_MUX_AGENT_MUX_AGENT'),
     hooksAdapter: requiredEnv('AGENT_MUX_HOOKS_MUX_ADAPTER'),
     hookType: requiredEnv('AGENT_MUX_HOOKS_MUX_HOOK_TYPE'),
     nativeEvent: requiredEnv('AGENT_MUX_HOOKS_MUX_NATIVE_EVENT'),
@@ -150,7 +150,7 @@ process.stdin.on('end', () => {
     rawEventName: event.rawEventName,
     phase: event.phase,
     sessionId: event.execution?.sessionId ?? null,
-    agentMuxAgent: process.env.AMUX_AGENT_UNDER_TEST,
+    agentMuxAgent: process.env.AGENT_MUX_AGENT_UNDER_TEST,
   };
   fs.appendFileSync(${JSON.stringify(evidencePath)}, JSON.stringify(evidence) + '\\n', 'utf8');
   process.stdout.write(JSON.stringify({
@@ -179,7 +179,7 @@ process.stdin.on('end', () => {
     '--handler', handlerCommand,
     '--json',
   ], {
-    env: { ...process.env, AMUX_AGENT_UNDER_TEST: agentMuxPayload.agent ?? '' },
+    env: { ...process.env, AGENT_MUX_AGENT_UNDER_TEST: agentMuxPayload.agent ?? '' },
     stdio: ['pipe', 'pipe', 'pipe'],
   });
   let stdout = '';

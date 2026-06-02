@@ -60,7 +60,7 @@ Would map well to a babysitter process with:
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Prompt Engineering Suite | NEW | Advanced prompt engineering with tool routing, anti-pattern enforcement, and optimization | - | plugins/a5c/marketplace/plugins/prompt-engineering-suite/ |
+| Prompt Engineering Suite | NEW | Advanced prompt engineering with tool routing, anti-pattern enforcement, and optimization | - | plugins/a5c/marketplace/blueprints/prompt-engineering-suite/ |
 
 ## Classification Rationale
 Cross-domain (works for any AI tool/model), so fits in `specializations/shared/`. The tool-routing logic and anti-fabrication rules are unique contributions not found in the current process library.

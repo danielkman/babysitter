@@ -39,7 +39,7 @@ MEDIUM-HIGH -- The heterogeneous-reviewer pattern is directly extractable:
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Multi-Harness Review | NEW | Orchestrate review tasks across multiple AI harnesses with feedback synthesis | - | plugins/a5c/marketplace/plugins/multi-harness-review/ |
+| Multi-Harness Review | NEW | Orchestrate review tasks across multiple AI harnesses with feedback synthesis | - | plugins/a5c/marketplace/blueprints/multi-harness-review/ |
 
 ## Implicit Procedural Knowledge
 - Different model families find different categories of issues (coverage maximization through diversity)

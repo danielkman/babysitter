@@ -35,8 +35,8 @@ describe('transport-mux runtime', () => {
 
     expect(env['OPENAI_BASE_URL']).toBe(runtime.url);
     expect(env['OPENAI_API_KEY']).toBe(runtime.authToken);
-    expect(env['AMUX_PROXY_BASE_URL']).toBe(runtime.url);
-    expect(env['AMUX_PROXY_AUTH_TOKEN']).toBe(runtime.authToken);
+    expect(env['AGENT_MUX_PROXY_BASE_URL']).toBe(runtime.url);
+    expect(env['AGENT_MUX_PROXY_AUTH_TOKEN']).toBe(runtime.authToken);
 
     const response = await fetch(`${runtime.url}/v1/chat/completions`, {
       method: 'POST',

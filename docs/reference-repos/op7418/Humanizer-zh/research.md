@@ -33,7 +33,7 @@ None beyond what blader/humanizer covers.
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| N/A | DERIVATIVE | No additional plugin ideas beyond blader/humanizer coverage | plugins/a5c/marketplace/plugins/writing-humanizer/ | N/A |
+| N/A | DERIVATIVE | No additional plugin ideas beyond blader/humanizer coverage | plugins/a5c/marketplace/blueprints/writing-humanizer/ | N/A |
 
 ## Implicit Procedural Knowledge
 - Chinese-specific AI writing tells may differ from English patterns

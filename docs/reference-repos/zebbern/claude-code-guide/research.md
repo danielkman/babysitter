@@ -67,5 +67,5 @@ High value for security domain specialization extraction. The 29 pentesting/secu
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Security Scanner Integration | UPGRADE | Integrate security tools as task executors with structured result parsing | plugins/a5c/marketplace/plugins/basic-security/ | plugins/a5c/marketplace/plugins/security-scanner-integration/ |
-| Vulnerability Report Generator | NEW | Auto-generate structured vulnerability reports from security audit process runs | - | plugins/a5c/marketplace/plugins/vulnerability-report-generator/ |
+| Security Scanner Integration | UPGRADE | Integrate security tools as task executors with structured result parsing | plugins/a5c/marketplace/blueprints/basic-security/ | plugins/a5c/marketplace/blueprints/security-scanner-integration/ |
+| Vulnerability Report Generator | NEW | Auto-generate structured vulnerability reports from security audit process runs | - | plugins/a5c/marketplace/blueprints/vulnerability-report-generator/ |

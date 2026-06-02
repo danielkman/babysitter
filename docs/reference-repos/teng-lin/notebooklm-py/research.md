@@ -45,4 +45,4 @@ This is a legitimate tool-integration plugin (install.md-driven) that adds resea
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| NotebookLM Integration | NEW | NotebookLM API wrapper for research workflows with content generation capabilities | - | plugins/a5c/marketplace/plugins/notebooklm-integration/ |
+| NotebookLM Integration | NEW | NotebookLM API wrapper for research workflows with content generation capabilities | - | plugins/a5c/marketplace/blueprints/notebooklm-integration/ |

@@ -172,7 +172,7 @@ async function executeDiscoveredHooks(
 }
 
 /**
- * Find `blueprints/babysitter-unified/hooks/hook-dispatcher.sh` by walking up from cwd.
+ * Find `plugins/babysitter-unified/hooks/hook-dispatcher.sh` by walking up from cwd.
  * This allows running from nested projects/fixtures inside a mono-repo.
  *
  * First checks the active harness adapter for a harness-specific path

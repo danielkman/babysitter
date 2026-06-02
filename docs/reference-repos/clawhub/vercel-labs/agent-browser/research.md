@@ -69,9 +69,9 @@ HIGH extractable value. Browser automation is foundational for many processes. T
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Browser Automation Integration | UPGRADE | Native browser automation beyond existing dev-browser plugin | plugins/a5c/marketplace/plugins/dev-browser/ | plugins/a5c/marketplace/plugins/browser-automation-integration/ |
-| Visual Regression Testing | NEW | Screenshot-based visual regression testing with baseline comparison | - | plugins/a5c/marketplace/plugins/visual-regression-testing/ |
-| Electron App Automation | NEW | Desktop app automation for VS Code, Slack, Discord, Figma via accessibility tree | - | plugins/a5c/marketplace/plugins/electron-app-automation/ |
+| Browser Automation Integration | UPGRADE | Native browser automation beyond existing dev-browser plugin | plugins/a5c/marketplace/blueprints/dev-browser/ | plugins/a5c/marketplace/blueprints/browser-automation-integration/ |
+| Visual Regression Testing | NEW | Screenshot-based visual regression testing with baseline comparison | - | plugins/a5c/marketplace/blueprints/visual-regression-testing/ |
+| Electron App Automation | NEW | Desktop app automation for VS Code, Slack, Discord, Figma via accessibility tree | - | plugins/a5c/marketplace/blueprints/electron-app-automation/ |
 
 ## Implicit Procedural Knowledge
 

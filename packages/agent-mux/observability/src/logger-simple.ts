@@ -157,7 +157,7 @@ class SimpleLogger implements Logger {
  * Create a simple logger instance.
  */
 export function createSimpleLogger(baseContext?: LogContext): Logger {
-  return new SimpleLogger(baseContext, process.env.AMUX_LOG_LEVEL);
+  return new SimpleLogger(baseContext, process.env.AGENT_MUX_LOG_LEVEL);
 }
 
 /**

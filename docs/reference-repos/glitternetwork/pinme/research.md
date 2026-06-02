@@ -53,5 +53,5 @@ Moderate value. The deployment orchestration pattern (decision tree routing betw
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| IPFS Deployment Integration | NEW | IPFS CLI integration for decentralized hosting workflows | - | plugins/a5c/marketplace/plugins/ipfs-deployment-integration/ |
-| Multi-Platform Deployment Orchestrator | NEW | Deployment routing with Vercel, Cloudflare, IPFS integration based on project analysis | - | plugins/a5c/marketplace/plugins/multi-platform-deployment-orchestrator/ |
+| IPFS Deployment Integration | NEW | IPFS CLI integration for decentralized hosting workflows | - | plugins/a5c/marketplace/blueprints/ipfs-deployment-integration/ |
+| Multi-Platform Deployment Orchestrator | NEW | Deployment routing with Vercel, Cloudflare, IPFS integration based on project analysis | - | plugins/a5c/marketplace/blueprints/multi-platform-deployment-orchestrator/ |

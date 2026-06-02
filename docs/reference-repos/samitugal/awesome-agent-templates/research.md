@@ -60,5 +60,5 @@ Template collection discovered through agent marketplace analysis. Repository de
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Agent Template Generator | NEW | Generate standardized agent templates with community validation patterns | - | plugins/a5c/marketplace/plugins/agent-template-generator/ |
-| Template Quality Enforcer | NEW | Validate agent templates against standardization criteria and documentation requirements | - | plugins/a5c/marketplace/plugins/template-quality-enforcer/ |
+| Agent Template Generator | NEW | Generate standardized agent templates with community validation patterns | - | plugins/a5c/marketplace/blueprints/agent-template-generator/ |
+| Template Quality Enforcer | NEW | Validate agent templates against standardization criteria and documentation requirements | - | plugins/a5c/marketplace/blueprints/template-quality-enforcer/ |

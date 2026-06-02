@@ -111,4 +111,4 @@ HIGH - Contains alternative harness patterns and sophisticated agent template sy
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Agent Template Management | NEW | Systematic agent template creation, organization, and deployment with registry system | - | plugins/a5c/marketplace/plugins/agent-template-management/ |
+| Agent Template Management | NEW | Systematic agent template creation, organization, and deployment with registry system | - | plugins/a5c/marketplace/blueprints/agent-template-management/ |

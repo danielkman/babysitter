@@ -226,7 +226,7 @@ export const gatherAnswerDetailsTask = defineTask('gather-answer-details', (args
         answerContent: args.answerContent,
         docSection: args.docSection,
         additionalContext: args.additionalContext,
-        docSections: ['README.md', 'CLAUDE.md', 'CHANGELOG.md', 'packages/sdk/sdk.md', 'packages/sdk/README.md', 'blueprints/babysitter-unified/skills/babysit/SKILL.md']
+        docSections: ['README.md', 'CLAUDE.md', 'CHANGELOG.md', 'packages/sdk/sdk.md', 'packages/sdk/README.md', 'plugins/babysitter-unified/skills/babysit/SKILL.md']
       },
       instructions: [
         'Analyze the provided question and answer details',
@@ -273,7 +273,7 @@ export const searchExistingDocsTask = defineTask('search-existing-docs', (args, 
         searchPaths: [
           '*.md',
           'packages/sdk/**/*.md',
-          'blueprints/babysitter-unified/**/*.md',
+          'plugins/babysitter-unified/**/*.md',
           'docs/**/*'
         ]
       },

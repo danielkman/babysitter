@@ -53,5 +53,5 @@ A collection of finance-specific SKILL.md-based agent skills for stock analysis,
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Finance Data Connector | NEW | Financial data access via alphaear-stock and alphaear-news APIs with key configuration | - | plugins/a5c/marketplace/plugins/finance-data-connector/ |
-| Sentiment Analysis Integration | NEW | FinBERT scoring as babysitter task kind for sentiment-aware decision gates | - | plugins/a5c/marketplace/plugins/sentiment-analysis-integration/ |
+| Finance Data Connector | NEW | Financial data access via alphaear-stock and alphaear-news APIs with key configuration | - | plugins/a5c/marketplace/blueprints/finance-data-connector/ |
+| Sentiment Analysis Integration | NEW | FinBERT scoring as babysitter task kind for sentiment-aware decision gates | - | plugins/a5c/marketplace/blueprints/sentiment-analysis-integration/ |

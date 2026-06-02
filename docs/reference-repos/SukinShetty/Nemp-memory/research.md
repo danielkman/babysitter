@@ -37,4 +37,4 @@ Minimal -- likely standard memory persistence patterns.
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| NEMP Memory Integration | EXISTING | Memory persistence already covered by existing plugins | plugins/a5c/marketplace/plugins/claude-mem/ | N/A |
+| NEMP Memory Integration | EXISTING | Memory persistence already covered by existing plugins | plugins/a5c/marketplace/blueprints/claude-mem/ | N/A |

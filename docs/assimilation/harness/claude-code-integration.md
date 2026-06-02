@@ -772,7 +772,7 @@ Within each directory, scripts are sorted alphabetically and executed sequential
 
 ### Breakpoint Hook Dispatcher
 
-**Unified source hooks:** `blueprints/babysitter-unified/hooks/`
+**Unified source hooks:** `plugins/babysitter-unified/hooks/`
 
 A specialized dispatcher for breakpoint events. Same three-tier discovery as the generic dispatcher but specific to the `on-breakpoint` hook type. Receives breakpoint payload on stdin via `BREAKPOINT_PAYLOAD` environment variable.
 
@@ -1060,14 +1060,14 @@ babysitter hook:run --hook-type stop --harness claude-code
 
 | File | Role |
 |------|------|
-| `blueprints/babysitter-unified/plugin.json` | Unified source manifest used to generate harness-specific bundles |
+| `plugins/babysitter-unified/plugin.json` | Unified source manifest used to generate harness-specific bundles |
 | `artifacts/generated-plugins/claude-code/plugin.json` | Generated Claude Code plugin manifest |
 | `artifacts/generated-plugins/claude-code/hooks/hooks.json` | Claude Code hook registration file |
 | `artifacts/generated-plugins/claude-code/hooks/babysitter-proxied-session-start.sh` | Generated shell entry for SessionStart |
 | `artifacts/generated-plugins/claude-code/hooks/babysitter-proxied-stop.sh` | Generated shell entry for Stop |
 | `packages/sdk/src/hooks/dispatcher.ts` | SDK hook discovery for native babysitter lifecycle hooks |
-| `blueprints/babysitter-unified/hooks/` | Unified source hook implementations copied into generated bundles |
-| `blueprints/babysitter-unified/skills/babysit/SKILL.md` | Primary orchestration skill definition |
+| `plugins/babysitter-unified/hooks/` | Unified source hook implementations copied into generated bundles |
+| `plugins/babysitter-unified/skills/babysit/SKILL.md` | Primary orchestration skill definition |
 | `packages/sdk/src/harness/types.ts` | HarnessAdapter interface definition |
 | `packages/sdk/src/harness/claudeCode.ts` | Claude Code adapter (stop hook, session-start, binding) |
 | `packages/sdk/src/harness/nullAdapter.ts` | No-op fallback adapter |

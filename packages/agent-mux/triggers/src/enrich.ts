@@ -99,8 +99,8 @@ async function enrichGithubFromApi(event: NormalizedTriggerEvent, options: Enric
 }
 
 export async function enrichEvent(options: EnrichmentOptions = {}): Promise<NormalizedTriggerEvent> {
-  const backend = detectBackend(options.backend ?? process.env.AMUX_TRIGGER_BACKEND);
-  const eventName = options.eventName ?? process.env.GITHUB_EVENT_NAME ?? process.env.AMUX_TRIGGER_EVENT ?? 'webhook';
+  const backend = detectBackend(options.backend ?? process.env.AGENT_MUX_TRIGGER_BACKEND);
+  const eventName = options.eventName ?? process.env.GITHUB_EVENT_NAME ?? process.env.AGENT_MUX_TRIGGER_EVENT ?? 'webhook';
   const payload = await readPayload(options);
   const event = normalizeEvent(backend, eventName, payload);
   const cwd = options.cwd ?? process.env.GITHUB_WORKSPACE ?? process.cwd();

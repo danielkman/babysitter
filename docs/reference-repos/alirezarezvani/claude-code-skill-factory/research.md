@@ -35,7 +35,7 @@ MEDIUM VALUE. The meta-tooling aspect (generating skills) is interesting but lar
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Skill Quality Benchmark | NEW | Skill evaluation with quality criteria and scoring rubrics | - | plugins/a5c/marketplace/plugins/skill-quality-benchmark/ |
+| Skill Quality Benchmark | NEW | Skill evaluation with quality criteria and scoring rubrics | - | plugins/a5c/marketplace/blueprints/skill-quality-benchmark/ |
 
 ## Patterns
 - **Skill archetype taxonomy**: The factory implicitly defines skill archetypes: guide (TDD), factory (agent-factory, hook-factory, prompt-factory, slash-command-factory), analyzer (social-media, tech-stack), advisor (AWS, app-store-optimization), manager (scrum-master, ms365-tenant). Useful categorization.

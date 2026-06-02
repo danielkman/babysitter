@@ -339,7 +339,7 @@ export const captureFinalArtifactsTask = defineTask('issue-140.capture-final-art
       'sed -n "1,140p" packages/observer-dashboard/package.json',
       'printf "\\n--- observe skill ---\\n"',
       'sed -n "1,120p" .codex/skills/observe/SKILL.md 2>/dev/null || true',
-      'sed -n "1,120p" .agents/blueprints/babysitter/skills/observe/SKILL.md 2>/dev/null || true',
+      'sed -n "1,120p" .agents/plugins/babysitter/skills/observe/SKILL.md 2>/dev/null || true',
     ].join('\n'),
   },
   io: {

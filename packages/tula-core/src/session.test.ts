@@ -14,9 +14,9 @@ describe("AgentCoreSessionHandle", () => {
     vi.stubGlobal("fetch", mockFetch);
     vi.stubEnv("OPENAI_API_KEY", "test-key");
     // Clear provider env vars so tests use the stubbed OPENAI_API_KEY
-    vi.stubEnv("AMUX_PROVIDER", "");
-    vi.stubEnv("AMUX_API_BASE", "");
-    vi.stubEnv("AMUX_API_KEY", "");
+    vi.stubEnv("AGENT_MUX_PROVIDER", "");
+    vi.stubEnv("AGENT_MUX_API_BASE", "");
+    vi.stubEnv("AGENT_MUX_API_KEY", "");
     vi.stubEnv("AZURE_API_KEY", "");
     vi.stubEnv("AZURE_OPENAI_API_KEY", "");
     vi.stubEnv("AZURE_OPENAI_PROJECT_NAME", "");
@@ -228,8 +228,8 @@ describe("AgentCoreSessionHandle", () => {
   });
 
   it("maps Azure json_schema structured output with OpenAI-compatible response_format", async () => {
-    vi.stubEnv("AMUX_PROVIDER", "foundry");
-    vi.stubEnv("AMUX_API_BASE", "https://myresource.services.ai.azure.com");
+    vi.stubEnv("AGENT_MUX_PROVIDER", "foundry");
+    vi.stubEnv("AGENT_MUX_API_BASE", "https://myresource.services.ai.azure.com");
     vi.stubEnv("AZURE_API_KEY", "az-key-123");
 
     mockApiResponse('{"ok":true}');
@@ -345,9 +345,9 @@ describe("AgentCoreSessionHandle", () => {
     expect(result.validationError).toBe("$.answer must be number");
   });
 
-  it("routes to Azure foundry when AMUX_PROVIDER=foundry", async () => {
-    vi.stubEnv("AMUX_PROVIDER", "foundry");
-    vi.stubEnv("AMUX_API_BASE", "https://myresource.services.ai.azure.com");
+  it("routes to Azure foundry when AGENT_MUX_PROVIDER=foundry", async () => {
+    vi.stubEnv("AGENT_MUX_PROVIDER", "foundry");
+    vi.stubEnv("AGENT_MUX_API_BASE", "https://myresource.services.ai.azure.com");
     vi.stubEnv("AZURE_API_KEY", "az-key-123");
 
     mockApiResponse("azure response");

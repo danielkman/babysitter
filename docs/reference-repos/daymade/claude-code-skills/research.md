@@ -57,4 +57,4 @@ HIGH VALUE. The deep-research skill alone justifies high priority: it implements
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| ASR Transcription Integration | NEW | Automated Speech Recognition API integration for media processing workflows | - | plugins/a5c/marketplace/plugins/asr-transcription-integration/ |
+| ASR Transcription Integration | NEW | Automated Speech Recognition API integration for media processing workflows | - | plugins/a5c/marketplace/blueprints/asr-transcription-integration/ |

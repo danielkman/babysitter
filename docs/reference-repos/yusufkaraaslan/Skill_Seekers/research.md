@@ -63,5 +63,5 @@ Skill Seekers is a "data layer for AI systems" -- a universal preprocessing tool
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Documentation-to-Skill Converter Plugin | NEW | Skill Seekers wrapper for automated skill generation from documentation sources | - | plugins/a5c/marketplace/plugins/documentation-skill-converter/ |
-| Knowledge Asset Indexing Plugin | NEW | Multi-source preprocessing integration for process library knowledge extraction | - | plugins/a5c/marketplace/plugins/knowledge-asset-indexing/ |
+| Documentation-to-Skill Converter Plugin | NEW | Skill Seekers wrapper for automated skill generation from documentation sources | - | plugins/a5c/marketplace/blueprints/documentation-skill-converter/ |
+| Knowledge Asset Indexing Plugin | NEW | Multi-source preprocessing integration for process library knowledge extraction | - | plugins/a5c/marketplace/blueprints/knowledge-asset-indexing/ |

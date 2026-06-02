@@ -1,8 +1,8 @@
 /**
  * @process agent-mux/message-queueing-steering
  * @description Brownfield implementation and verification workflow for SDK/TUI message queueing and steering.
- * @skill babysitter:plan blueprints/babysitter/skills/plan/SKILL.md
- * @skill babysitter:retrospect blueprints/babysitter/skills/retrospect/SKILL.md
+ * @skill babysitter:plan plugins/babysitter/skills/plan/SKILL.md
+ * @skill babysitter:retrospect plugins/babysitter/skills/retrospect/SKILL.md
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

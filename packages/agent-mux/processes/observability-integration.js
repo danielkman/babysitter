@@ -1,7 +1,7 @@
 /**
  * @process agent-mux/observability-integration
  * @description Implement the logging and OpenTelemetry integration backlog item with phased delivery, verification, and review.
- * @skill babysit blueprints/babysitter/skills/babysit/SKILL.md
+ * @skill babysit plugins/babysitter/skills/babysit/SKILL.md
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

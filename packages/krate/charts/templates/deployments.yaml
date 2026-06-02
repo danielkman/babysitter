@@ -462,7 +462,7 @@ spec:
             {{- end }}
             {{- with .Values.assistant }}
             {{- if .existingSecret }}
-            {{- range $key := list "AZURE_API_KEY" "AMUX_API_BASE" "KRATE_ASSISTANT_PROVIDER" "KRATE_ASSISTANT_MODEL" "OPENAI_API_KEY" "GOOGLE_API_KEY" }}
+            {{- range $key := list "AZURE_API_KEY" "AGENT_MUX_API_BASE" "KRATE_ASSISTANT_PROVIDER" "KRATE_ASSISTANT_MODEL" "OPENAI_API_KEY" "GOOGLE_API_KEY" }}
             - name: {{ $key }}
               valueFrom:
                 secretKeyRef:

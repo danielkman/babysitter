@@ -195,8 +195,8 @@ function spawnBinary(options: {
     env: {
       ...process.env,
       HOME: options.homeDir,
-      AMUX_TUI_E2E_STATE_DIR: options.stateDir,
-      AMUX_TUI_NO_BUILTIN_ADAPTERS: '1',
+      AGENT_MUX_TUI_E2E_STATE_DIR: options.stateDir,
+      AGENT_MUX_TUI_NO_BUILTIN_ADAPTERS: '1',
       FORCE_COLOR: '0',
       NO_COLOR: '1',
       ...(options.env ?? {}),
@@ -228,10 +228,10 @@ describeBuiltBinary('real agent-mux-tui binary e2e', () => {
       homeDir,
       stateDir,
       env: {
-        AMUX_TUI_PLUGINS_DIR: pluginDir,
-        AMUX_TUI_INITIAL_VIEW: 'sessions',
-        AMUX_LOG_FILE: path.join(stateDir, 'amux.log'),
-        AMUX_LOG_LEVEL: 'error',
+        AGENT_MUX_TUI_PLUGINS_DIR: pluginDir,
+        AGENT_MUX_TUI_INITIAL_VIEW: 'sessions',
+        AGENT_MUX_LOG_FILE: path.join(stateDir, 'amux.log'),
+        AGENT_MUX_LOG_LEVEL: 'error',
       },
     });
 
@@ -295,8 +295,8 @@ describeBuiltBinary('real agent-mux-tui binary e2e', () => {
       homeDir,
       stateDir,
       env: {
-        AMUX_TUI_INITIAL_VIEW: 'sessions',
-        AMUX_TUI_NO_AUTO_PROMPT: '1',
+        AGENT_MUX_TUI_INITIAL_VIEW: 'sessions',
+        AGENT_MUX_TUI_NO_AUTO_PROMPT: '1',
       },
     });
 
@@ -324,8 +324,8 @@ describeBuiltBinary('real agent-mux-tui binary e2e', () => {
       stateDir,
       args: ['--user-plugins-dir', pluginDir],
       env: {
-        AMUX_TUI_INITIAL_VIEW: 'sessions',
-        AMUX_TUI_NO_AUTO_PROMPT: '1',
+        AGENT_MUX_TUI_INITIAL_VIEW: 'sessions',
+        AGENT_MUX_TUI_NO_AUTO_PROMPT: '1',
       },
     });
 
@@ -353,8 +353,8 @@ describeBuiltBinary('real agent-mux-tui binary e2e', () => {
       stateDir,
       args: ['--user-plugins-dir', pluginDir, '--no-user-plugins'],
       env: {
-        AMUX_TUI_INITIAL_VIEW: 'sessions',
-        AMUX_TUI_NO_AUTO_PROMPT: '1',
+        AGENT_MUX_TUI_INITIAL_VIEW: 'sessions',
+        AGENT_MUX_TUI_NO_AUTO_PROMPT: '1',
       },
     });
 
@@ -381,11 +381,11 @@ describeBuiltBinary('real agent-mux-tui binary e2e', () => {
       env: {
         ...process.env,
         HOME: homeDir,
-        AMUX_TUI_PLUGINS_DIR: pluginDir,
-        AMUX_TUI_INITIAL_VIEW: 'sessions',
-        AMUX_TUI_NO_BUILTIN_ADAPTERS: '1',
-        AMUX_TUI_NO_AUTO_PROMPT: '1',
-        AMUX_TUI_E2E_STATE_DIR: stateDir,
+        AGENT_MUX_TUI_PLUGINS_DIR: pluginDir,
+        AGENT_MUX_TUI_INITIAL_VIEW: 'sessions',
+        AGENT_MUX_TUI_NO_BUILTIN_ADAPTERS: '1',
+        AGENT_MUX_TUI_NO_AUTO_PROMPT: '1',
+        AGENT_MUX_TUI_E2E_STATE_DIR: stateDir,
         FORCE_COLOR: '0',
         NO_COLOR: '1',
       },

@@ -21,7 +21,7 @@ export function resolveCliLoggerConfig(
 ): CliLoggerConfig {
   const level = flags.logLevel
     ? normalizeLogLevel(flags.logLevel, flags.debug ? 'debug' : 'info')
-    : normalizeLogLevel(env['AMUX_LOG_LEVEL'], flags.debug ? 'debug' : 'info');
-  const logFile = flags.logFile ?? env['AMUX_LOG_FILE'];
+    : normalizeLogLevel(env['AGENT_MUX_LOG_LEVEL'], flags.debug ? 'debug' : 'info');
+  const logFile = flags.logFile ?? env['AGENT_MUX_LOG_FILE'];
   return logFile ? { level, logFile } : { level };
 }

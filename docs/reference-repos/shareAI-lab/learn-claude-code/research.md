@@ -69,6 +69,6 @@ None specific -- methodology content, not tool integration.
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Agent Design Assistant | NEW | Educational agent design methodology with capability minimalism and context hygiene principles | - | plugins/a5c/marketplace/plugins/agent-design-assistant/ |
-| MCP Development Suite | NEW | MCP server development toolkit with structured workflow and educational patterns | - | plugins/a5c/marketplace/plugins/mcp-development-suite/ |
-| Educational Harness Framework | NEW | Simplified harness architecture patterns for learning and documentation | - | plugins/a5c/marketplace/plugins/educational-harness-framework/ |
+| Agent Design Assistant | NEW | Educational agent design methodology with capability minimalism and context hygiene principles | - | plugins/a5c/marketplace/blueprints/agent-design-assistant/ |
+| MCP Development Suite | NEW | MCP server development toolkit with structured workflow and educational patterns | - | plugins/a5c/marketplace/blueprints/mcp-development-suite/ |
+| Educational Harness Framework | NEW | Simplified harness architecture patterns for learning and documentation | - | plugins/a5c/marketplace/blueprints/educational-harness-framework/ |

@@ -104,13 +104,13 @@ async function callAnthropicModel({ model, messages, tools, maxTokens, apiKey, f
 
 async function callOpenAICompatibleModel({ provider, model, messages, tools, maxTokens, apiKey, baseUrl, fetchImpl }) {
   const resolvedKey = apiKey || process.env.AZURE_API_KEY || process.env.OPENAI_API_KEY || process.env.KRATE_ASSISTANT_API_KEY;
-  const resolvedBase = baseUrl || process.env.KRATE_ASSISTANT_BASE_URL || process.env.AMUX_API_BASE;
+  const resolvedBase = baseUrl || process.env.KRATE_ASSISTANT_BASE_URL || process.env.AGENT_MUX_API_BASE;
 
   if (!resolvedKey) {
     return { content: `API key not configured for ${provider}. Set AZURE_API_KEY, OPENAI_API_KEY, or KRATE_ASSISTANT_API_KEY.`, usage: {} };
   }
   if (!resolvedBase) {
-    return { content: `Base URL not configured for ${provider}. Set KRATE_ASSISTANT_BASE_URL or AMUX_API_BASE.`, usage: {} };
+    return { content: `Base URL not configured for ${provider}. Set KRATE_ASSISTANT_BASE_URL or AGENT_MUX_API_BASE.`, usage: {} };
   }
 
   const endpoint = resolvedBase.replace(/\/$/, '') + '/openai/deployments/' + (model || 'gpt-5.5') + '/chat/completions?api-version=2024-12-01-preview';

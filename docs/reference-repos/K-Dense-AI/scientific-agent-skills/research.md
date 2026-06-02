@@ -127,8 +127,8 @@ Extremely high value for babysitter process library. The scientific workflows ar
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Scientific Database Gateway | NEW | Unified access to 78+ scientific databases | - | plugins/a5c/marketplace/plugins/scientific-database-gateway/ |
-| Lab Notebook Integration | NEW | Electronic lab notebook integration | - | plugins/a5c/marketplace/plugins/lab-notebook-integration/ |
-| Scientific Visualization Theme | NEW | Publication-quality visualization presets | - | plugins/a5c/marketplace/plugins/scientific-visualization-theme/ |
-| Citation Manager | NEW | Zotero integration and bibliography management | - | plugins/a5c/marketplace/plugins/citation-manager/ |
+| Scientific Database Gateway | NEW | Unified access to 78+ scientific databases | - | plugins/a5c/marketplace/blueprints/scientific-database-gateway/ |
+| Lab Notebook Integration | NEW | Electronic lab notebook integration | - | plugins/a5c/marketplace/blueprints/lab-notebook-integration/ |
+| Scientific Visualization Theme | NEW | Publication-quality visualization presets | - | plugins/a5c/marketplace/blueprints/scientific-visualization-theme/ |
+| Citation Manager | NEW | Zotero integration and bibliography management | - | plugins/a5c/marketplace/blueprints/citation-manager/ |
 - **GPU optimization patterns**: The optimize-for-gpu skill encodes knowledge about when and how to offload computation, relevant to any resource-intensive process orchestration.

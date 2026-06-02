@@ -114,5 +114,5 @@ A babysitter plugin that adds a `pre-commit` hook checking UI code against desig
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Design Intelligence Knowledge Base | NEW | CSV knowledge bases for UI/UX design decisions with searchable data | - | plugins/a5c/marketplace/plugins/design-intelligence/ |
-| Design System Linter | NEW | Pre-commit hook for UI code validation against design system rules | - | plugins/a5c/marketplace/plugins/design-system-linter/ |
+| Design Intelligence Knowledge Base | NEW | CSV knowledge bases for UI/UX design decisions with searchable data | - | plugins/a5c/marketplace/blueprints/design-intelligence/ |
+| Design System Linter | NEW | Pre-commit hook for UI code validation against design system rules | - | plugins/a5c/marketplace/blueprints/design-system-linter/ |

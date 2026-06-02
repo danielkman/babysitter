@@ -84,7 +84,7 @@ export {
 } from "./agentMux";
 
 export {
-  HARNESS_TO_AMUX_ADAPTER,
+  HARNESS_TO_AGENT_MUX_ADAPTER,
   mapHarnessToAmuxAdapter,
   hasAmuxAdapter,
 } from "./agentMux";

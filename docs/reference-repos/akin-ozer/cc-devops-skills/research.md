@@ -53,8 +53,8 @@ Already structured as a plugin with marketplace install support. Could be assimi
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| DevOps Config Generator | NEW | Infrastructure config generation and validation with safety gates | - | plugins/a5c/marketplace/plugins/devops-config-generator/ |
-| K8s Safety Toolkit | NEW | Safe Kubernetes debugging and management with confirmation gates | - | plugins/a5c/marketplace/plugins/k8s-safety-toolkit/ |
+| DevOps Config Generator | NEW | Infrastructure config generation and validation with safety gates | - | plugins/a5c/marketplace/blueprints/devops-config-generator/ |
+| K8s Safety Toolkit | NEW | Safe Kubernetes debugging and management with confirmation gates | - | plugins/a5c/marketplace/blueprints/k8s-safety-toolkit/ |
 
 ## Classification Rationale
 Domain-specific (DevOps), so `specializations/devops-sre-platform/`. The generator/validator pair pattern could also inform a shared methodology. Despite lower star count, the content quality and structural patterns are novel and well-executed.

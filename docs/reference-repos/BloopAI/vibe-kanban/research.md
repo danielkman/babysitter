@@ -94,5 +94,5 @@ A babysitter plugin that provisions isolated git worktrees for parallel task exe
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Kanban Board Dashboard Widget | NEW | Task visualization as kanban board in observer dashboard | - | plugins/a5c/marketplace/plugins/kanban-dashboard-widget/ |
-| Git Worktree Workspace Isolation | UPGRADE | Enhanced workspace isolation for parallel tasks | agentsh | plugins/a5c/marketplace/plugins/git-worktree-isolation/ |
+| Kanban Board Dashboard Widget | NEW | Task visualization as kanban board in observer dashboard | - | plugins/a5c/marketplace/blueprints/kanban-dashboard-widget/ |
+| Git Worktree Workspace Isolation | UPGRADE | Enhanced workspace isolation for parallel tasks | agentsh | plugins/a5c/marketplace/blueprints/git-worktree-isolation/ |

@@ -127,9 +127,9 @@ Could be codified as a process with mode selection and shared context building.
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Crash Analysis Toolkit | NEW | Function tracing, gcov coverage, line execution checking, rr-debugger integration | - | plugins/a5c/marketplace/plugins/crash-analysis-toolkit/ |
-| AFL Fuzzing Integration | NEW | American Fuzzy Lop fuzzing with corpus management and harness generation | - | plugins/a5c/marketplace/plugins/afl-fuzzing-integration/ |
-| CodeQL Security Analysis | NEW | CodeQL database creation and query execution with SARIF output parsing | - | plugins/a5c/marketplace/plugins/codeql-security-analysis/ |
+| Crash Analysis Toolkit | NEW | Function tracing, gcov coverage, line execution checking, rr-debugger integration | - | plugins/a5c/marketplace/blueprints/crash-analysis-toolkit/ |
+| AFL Fuzzing Integration | NEW | American Fuzzy Lop fuzzing with corpus management and harness generation | - | plugins/a5c/marketplace/blueprints/afl-fuzzing-integration/ |
+| CodeQL Security Analysis | NEW | CodeQL database creation and query execution with SARIF output parsing | - | plugins/a5c/marketplace/blueprints/codeql-security-analysis/ |
 
 ## Implicit Procedural Knowledge
 

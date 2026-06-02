@@ -253,8 +253,8 @@ describe('runCommand', () => {
   });
 
   it('launches .js mock harness paths through node', async () => {
-    const originalMockBin = process.env['AMUX_MOCK_HARNESS_BIN'];
-    process.env['AMUX_MOCK_HARNESS_BIN'] = '/tmp/mock-harness.js';
+    const originalMockBin = process.env['AGENT_MUX_MOCK_HARNESS_BIN'];
+    process.env['AGENT_MUX_MOCK_HARNESS_BIN'] = '/tmp/mock-harness.js';
 
     const registry = new Map<string, any>([
       ['openclaw', {
@@ -312,8 +312,8 @@ describe('runCommand', () => {
       );
       expect(code).toBe(ExitCode.SUCCESS);
     } finally {
-      if (originalMockBin === undefined) delete process.env['AMUX_MOCK_HARNESS_BIN'];
-      else process.env['AMUX_MOCK_HARNESS_BIN'] = originalMockBin;
+      if (originalMockBin === undefined) delete process.env['AGENT_MUX_MOCK_HARNESS_BIN'];
+      else process.env['AGENT_MUX_MOCK_HARNESS_BIN'] = originalMockBin;
     }
   });
 

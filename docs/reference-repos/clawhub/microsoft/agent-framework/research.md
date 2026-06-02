@@ -67,5 +67,5 @@ The codebase is too large (1500+ files) for deep extraction but worth studying s
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| A2A Protocol | NEW | Agent-to-Agent protocol support for cross-framework agent communication | - | plugins/a5c/marketplace/plugins/a2a-protocol/ |
-| Declarative Process | NEW | YAML/JSON-based process definition as alternative to JavaScript process files | - | plugins/a5c/marketplace/plugins/declarative-process/ |
+| A2A Protocol | NEW | Agent-to-Agent protocol support for cross-framework agent communication | - | plugins/a5c/marketplace/blueprints/a2a-protocol/ |
+| Declarative Process | NEW | YAML/JSON-based process definition as alternative to JavaScript process files | - | plugins/a5c/marketplace/blueprints/declarative-process/ |

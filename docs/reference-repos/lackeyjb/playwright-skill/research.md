@@ -56,4 +56,4 @@ skills/
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Browser Automation Plugin | POTENTIAL OVERLAP | Model-invoked Playwright automation with progressive disclosure | plugins/a5c/marketplace/plugins/dev-browser/ | plugins/a5c/marketplace/plugins/browser-automation-plugin/ |
+| Browser Automation Plugin | POTENTIAL OVERLAP | Model-invoked Playwright automation with progressive disclosure | plugins/a5c/marketplace/blueprints/dev-browser/ | plugins/a5c/marketplace/blueprints/browser-automation-plugin/ |

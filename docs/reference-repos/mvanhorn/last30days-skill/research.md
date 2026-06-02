@@ -61,7 +61,7 @@ fixtures/                 # Test fixtures
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Last30Days Research Integration | NEW | Multi-platform research aggregation with engagement scoring and synthesis | - | plugins/a5c/marketplace/plugins/last30days-research-integration/ |
+| Last30Days Research Integration | NEW | Multi-platform research aggregation with engagement scoring and synthesis | - | plugins/a5c/marketplace/blueprints/last30days-research-integration/ |
 
 ## Priority Assessment
 **LOW-MEDIUM** - The multi-source research synthesis methodology is conceptually interesting but the actual value is tightly coupled to the platform integrations (API keys, browser sessions). The methodology pattern (entity-resolve -> parallel-search -> engagement-score -> cluster-merge -> synthesize) could inform a generic research process, but it's thin without the platform access. Better as inspiration than a direct port.

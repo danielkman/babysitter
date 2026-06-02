@@ -48,8 +48,8 @@ None -- OMNI is a tool, not a workflow. Its value is entirely in plugin patterns
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Smart Output Filter | NEW | Hook-based output filter with TOML registry and RewindStore for lossless compression | - | plugins/a5c/marketplace/plugins/smart-output-filter/ |
-| Token Savings Dashboard | NEW | Compression stats enhancement with per-tool metrics and cost visualization | - | plugins/a5c/marketplace/plugins/token-savings-dashboard/ |
+| Smart Output Filter | NEW | Hook-based output filter with TOML registry and RewindStore for lossless compression | - | plugins/a5c/marketplace/blueprints/smart-output-filter/ |
+| Token Savings Dashboard | NEW | Compression stats enhancement with per-tool metrics and cost visualization | - | plugins/a5c/marketplace/blueprints/token-savings-dashboard/ |
 
 ## Implicit Procedural Knowledge
 

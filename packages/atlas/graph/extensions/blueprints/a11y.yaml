@@ -6,9 +6,9 @@ attributes:
     Install accessibility feedback loops — lint rules (jsx-a11y/vue-a11y/angular-eslint/htmlhint/djlint),
     pre-commit hooks, GitHub Actions workflow, and runtime scanning via Axe/Playwright, Lighthouse CI,
     or pa11y. Per-stack recommendations for React, Vue, Angular, plain HTML, and Python templates.
-  installMd: "@plugins/a5c/marketplace/plugins/a11y/install.md"
-  configureMd: "@plugins/a5c/marketplace/plugins/a11y/configure.md"
-  uninstallMd: "@plugins/a5c/marketplace/plugins/a11y/uninstall.md"
+  installMd: "@plugins/a5c/marketplace/blueprints/a11y/install.md"
+  configureMd: "@plugins/a5c/marketplace/blueprints/a11y/configure.md"
+  uninstallMd: "@plugins/a5c/marketplace/blueprints/a11y/uninstall.md"
   latestVersion: "1.0.0"
   versions: ["1.0.0"]
   tags: [accessibility, a11y, wcag, lint, ci, quality]

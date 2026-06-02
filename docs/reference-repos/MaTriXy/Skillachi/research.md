@@ -46,4 +46,4 @@ None - this is a benchmarking framework, not a tool integration opportunity.
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Benchmark Runner Integration | NEW | External benchmark execution and scoring integration | - | plugins/a5c/marketplace/plugins/benchmark-runner-integration/ |
+| Benchmark Runner Integration | NEW | External benchmark execution and scoring integration | - | plugins/a5c/marketplace/blueprints/benchmark-runner-integration/ |

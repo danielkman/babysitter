@@ -101,6 +101,6 @@ A babysitter plugin that uses graphify's knowledge graph to provide intelligent 
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Knowledge Graph Builder | NEW | Codebase knowledge graph generation and querying | - | plugins/a5c/marketplace/plugins/knowledge-graph-builder/ |
-| Codebase Architecture Visualizer | NEW | Interactive architecture visualization from knowledge graph | - | plugins/a5c/marketplace/plugins/architecture-visualizer/ |
-| Graph-Aware Code Navigation | NEW | Intelligent code navigation using knowledge graph | - | plugins/a5c/marketplace/plugins/graph-aware-navigation/ |
+| Knowledge Graph Builder | NEW | Codebase knowledge graph generation and querying | - | plugins/a5c/marketplace/blueprints/knowledge-graph-builder/ |
+| Codebase Architecture Visualizer | NEW | Interactive architecture visualization from knowledge graph | - | plugins/a5c/marketplace/blueprints/architecture-visualizer/ |
+| Graph-Aware Code Navigation | NEW | Intelligent code navigation using knowledge graph | - | plugins/a5c/marketplace/blueprints/graph-aware-navigation/ |

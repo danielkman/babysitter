@@ -36,7 +36,7 @@ LOW-MEDIUM -- The social media automation workflow pattern is extractable for sp
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Social Media Bridge | NEW | CLI-based social media automation with anti-detection and multi-platform support | - | plugins/a5c/marketplace/plugins/social-media-bridge/ |
+| Social Media Bridge | NEW | CLI-based social media automation with anti-detection and multi-platform support | - | plugins/a5c/marketplace/blueprints/social-media-bridge/ |
 
 ## Implicit Procedural Knowledge
 - Headless browser approach vs reverse-engineered API tradeoff

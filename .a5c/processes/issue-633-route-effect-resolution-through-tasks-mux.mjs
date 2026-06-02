@@ -237,7 +237,7 @@ export const runtimeCallPathTask = defineTask("issue-633/runtime-call-paths", (a
         "Include the SDK run-loop path through packages/sdk/src/runtime/orchestrateIteration.ts and related task intrinsic helpers.",
         "Include CLI run:iterate and task:post surfaces in packages/sdk.",
         "Include agent-platform internal createRun orchestration, especially resolveEffect and resolveAndPostEffect paths.",
-        "Include plugin stop-hook paths under plugins/babysitter and blueprints/babysitter-unified, plus SDK hook-run tests if those are the active handler surface.",
+        "Include plugin stop-hook paths under plugins/babysitter and plugins/babysitter-unified, plus SDK hook-run tests if those are the active handler surface.",
         "Include tasks-mux backend/router/export paths that can own routing decisions.",
         "Record runtimeCallPaths as file/function hops. Scope later edits only to live execution paths unless the spec proves a new seam is required.",
         "Do not modify source files in this phase.",

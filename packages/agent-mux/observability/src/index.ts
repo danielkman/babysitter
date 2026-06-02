@@ -42,7 +42,7 @@ export function setObservabilityMode(mode: ObservabilityMode | undefined): void 
 }
 
 function getMode(): ObservabilityMode {
-  return modeOverride ?? ((process.env.AMUX_OBSERVABILITY_MODE as ObservabilityMode) || 'simple');
+  return modeOverride ?? ((process.env.AGENT_MUX_OBSERVABILITY_MODE as ObservabilityMode) || 'simple');
 }
 
 // Exported Logger

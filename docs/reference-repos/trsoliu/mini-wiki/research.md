@@ -88,4 +88,4 @@ The wiki generation workflow is a genuine multi-phase process: project analysis 
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Wiki Generator | NEW | Automated project documentation generator with progressive scanning and quality gates | - | plugins/a5c/marketplace/plugins/wiki-generator/ |
+| Wiki Generator | NEW | Automated project documentation generator with progressive scanning and quality gates | - | plugins/a5c/marketplace/blueprints/wiki-generator/ |

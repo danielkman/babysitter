@@ -9,7 +9,7 @@ Search public GitHub repositories for SKILL.md files, classify each repo by arch
 
 ### Process Library Placement Rules
 
-Extracted processes go into the babysitter process library (`blueprints/babysitter/skills/babysit/process/`). Placement depends on scope:
+Extracted processes go into the babysitter process library (`plugins/babysitter/skills/babysit/process/`). Placement depends on scope:
 
 | What it is | Where it goes | Examples |
 |------------|---------------|---------|
@@ -236,18 +236,18 @@ that an AI agent executes to set up capabilities in a user's project>
   - Processes it would copy: <which process library entries>
   - Configs/hooks it would create: <ESLint rules, git hooks, CI/CD templates, etc.>
   - Source evidence: <what in the repo inspires this plugin idea>
-  - Marketplace placement: <plugins/a5c/marketplace/plugins/[category]/[plugin-name]/>
+  - Marketplace placement: <plugins/a5c/marketplace/blueprints/[category]/[plugin-name]/>
 
 ## Plugin Marketplace Mapping
 
-<Check existing marketplace plugins before proposing new ones. Map plugin ideas against current plugins/a5c/marketplace/plugins/ structure>
+<Check existing marketplace plugins before proposing new ones. Map plugin ideas against current plugins/a5c/marketplace/blueprints/ structure>
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Security Toolkit | UPGRADE | Enhance existing with new scanning processes | plugins/a5c/marketplace/plugins/basic-security/ | plugins/a5c/marketplace/plugins/security-toolkit/ |
-| Testing Suite | NEW | Comprehensive testing framework | - | plugins/a5c/marketplace/plugins/testing-suite/ |
+| Security Toolkit | UPGRADE | Enhance existing with new scanning processes | plugins/a5c/marketplace/blueprints/basic-security/ | plugins/a5c/marketplace/blueprints/security-toolkit/ |
+| Testing Suite | NEW | Comprehensive testing framework | - | plugins/a5c/marketplace/blueprints/testing-suite/ |
 
-**Example existing plugins** (from plugins/a5c/marketplace/plugins/):
+**Example existing plugins** (from plugins/a5c/marketplace/blueprints/):
 - `basic-security`, `agentsh`, `container-security` - Security tools and sandboxing
 - `claude-mem` - Memory and context management
 - `dev-browser` - Browser automation and tools integration

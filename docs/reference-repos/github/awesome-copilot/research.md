@@ -60,9 +60,9 @@ Extremely rich source of extractable domain processes. The PRD skill demonstrate
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Agent Supply Chain Security | UPGRADE | Enhanced dependency validation | basic-security | plugins/a5c/marketplace/plugins/agent-supply-chain-security/ |
-| PRD Generator | NEW | Multi-phase requirements gathering with stakeholder review | - | plugins/a5c/marketplace/plugins/prd-generator/ |
-| GitHub Actions Workflow Generator | UPGRADE | Enhanced CI/CD workflow automation | github-actions-cicd-* | plugins/a5c/marketplace/plugins/github-actions-enhanced/ |
-| Context Map Builder | NEW | Automated codebase context documentation | - | plugins/a5c/marketplace/plugins/context-map-builder/ |
-| Agentic Evaluation Suite | NEW | Agent skill performance benchmarking | - | plugins/a5c/marketplace/plugins/agentic-evaluation-suite/ |
-| CodeQL Integration | NEW | Security scanning with breakpoint-gated remediation | - | plugins/a5c/marketplace/plugins/codeql-integration/ |
+| Agent Supply Chain Security | UPGRADE | Enhanced dependency validation | basic-security | plugins/a5c/marketplace/blueprints/agent-supply-chain-security/ |
+| PRD Generator | NEW | Multi-phase requirements gathering with stakeholder review | - | plugins/a5c/marketplace/blueprints/prd-generator/ |
+| GitHub Actions Workflow Generator | UPGRADE | Enhanced CI/CD workflow automation | github-actions-cicd-* | plugins/a5c/marketplace/blueprints/github-actions-enhanced/ |
+| Context Map Builder | NEW | Automated codebase context documentation | - | plugins/a5c/marketplace/blueprints/context-map-builder/ |
+| Agentic Evaluation Suite | NEW | Agent skill performance benchmarking | - | plugins/a5c/marketplace/blueprints/agentic-evaluation-suite/ |
+| CodeQL Integration | NEW | Security scanning with breakpoint-gated remediation | - | plugins/a5c/marketplace/blueprints/codeql-integration/ |

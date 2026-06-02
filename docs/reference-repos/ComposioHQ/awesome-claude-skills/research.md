@@ -106,6 +106,6 @@ VERY HIGH - Contains the largest collection of systematic procedural skills with
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Composio Integration Suite | NEW | Comprehensive integration environment with 500+ app connections and MCP development tools | - | plugins/a5c/marketplace/plugins/composio-integration-suite/ |
-| Document Automation Suite | NEW | Multi-format document processing with AI-driven workflows and format converters | - | plugins/a5c/marketplace/plugins/document-automation-suite/ |
-| Skill Development Framework | NEW | Skill creation and management with systematic design patterns and testing frameworks | - | plugins/a5c/marketplace/plugins/skill-development-framework/ |
+| Composio Integration Suite | NEW | Comprehensive integration environment with 500+ app connections and MCP development tools | - | plugins/a5c/marketplace/blueprints/composio-integration-suite/ |
+| Document Automation Suite | NEW | Multi-format document processing with AI-driven workflows and format converters | - | plugins/a5c/marketplace/blueprints/document-automation-suite/ |
+| Skill Development Framework | NEW | Skill creation and management with systematic design patterns and testing frameworks | - | plugins/a5c/marketplace/blueprints/skill-development-framework/ |

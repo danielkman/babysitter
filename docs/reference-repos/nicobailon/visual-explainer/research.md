@@ -38,7 +38,7 @@ MEDIUM -- Plan audit visualization and project recap generation are useful for b
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Visual Reports Generator | NEW | HTML report generation from run data, journal events, and retrospection results | - | plugins/a5c/marketplace/plugins/visual-reports-generator/ |
+| Visual Reports Generator | NEW | HTML report generation from run data, journal events, and retrospection results | - | plugins/a5c/marketplace/blueprints/visual-reports-generator/ |
 
 ## Implicit Procedural Knowledge
 - HTML-as-artifact pattern: generating self-contained HTML pages as deliverables

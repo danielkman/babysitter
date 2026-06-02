@@ -6,9 +6,9 @@ attributes:
     Scaffold Architecture Decision Records — docs/adr/ tree, Michael Nygard (or MADR / Y-statement)
     template, adr-tools or log4brains installation, and a PR nudge bot that suggests creating an ADR
     when architecture-touching paths change (nudge only, never blocking).
-  installMd: "@plugins/a5c/marketplace/plugins/adr/install.md"
-  configureMd: "@plugins/a5c/marketplace/plugins/adr/configure.md"
-  uninstallMd: "@plugins/a5c/marketplace/plugins/adr/uninstall.md"
+  installMd: "@plugins/a5c/marketplace/blueprints/adr/install.md"
+  configureMd: "@plugins/a5c/marketplace/blueprints/adr/configure.md"
+  uninstallMd: "@plugins/a5c/marketplace/blueprints/adr/uninstall.md"
   latestVersion: "1.0.0"
   versions: ["1.0.0"]
   tags: [adr, architecture, documentation, decisions, log4brains, adr-tools]

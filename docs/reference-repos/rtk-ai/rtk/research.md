@@ -53,4 +53,4 @@ EXTREMELY HIGH VALUE for babysitter integration. The command output compression 
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| RTK Integration | NEW | Direct integration with RTK binary for command output compression in babysitter tasks | - | plugins/a5c/marketplace/plugins/rtk-integration/ |
+| RTK Integration | NEW | Direct integration with RTK binary for command output compression in babysitter tasks | - | plugins/a5c/marketplace/blueprints/rtk-integration/ |

@@ -14,8 +14,8 @@
     ".cursor-plugin/marketplace.json",
     ".agents/plugins/marketplace.json",
     ".github/plugin/marketplace.json",
-    "blueprints/babysitter-unified/plugin.json",
-    "blueprints/babysitter-unified/versions.json",
+    "plugins/babysitter-unified/plugin.json",
+    "plugins/babysitter-unified/versions.json",
     "packages/extension-mux/src/targets/adapters"
   ],
   "verificationCommands": [

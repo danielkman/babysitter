@@ -13,7 +13,7 @@ import { normalizeBuiltInHarnessName } from "../builtInHarness";
  * Maps agent-platform harness names to the
  * corresponding agent-mux adapter identifier.
  */
-export const HARNESS_TO_AMUX_ADAPTER: Readonly<Record<string, string>> = {
+export const HARNESS_TO_AGENT_MUX_ADAPTER: Readonly<Record<string, string>> = {
   "claude-code": "claude",
   "codex": "codex",
   "gemini-cli": "gemini",
@@ -39,11 +39,11 @@ export function mapHarnessToAmuxAdapter(harness: string): string {
       `Harness "${harness}" uses agent-core and cannot be invoked via agent-mux.`,
     );
   }
-  const adapter = HARNESS_TO_AMUX_ADAPTER[normalizedHarness];
+  const adapter = HARNESS_TO_AGENT_MUX_ADAPTER[normalizedHarness];
   if (!adapter) {
     throw new Error(
       `No agent-mux adapter mapping for harness "${harness}". ` +
-      `Known mappings: ${Object.keys(HARNESS_TO_AMUX_ADAPTER).join(", ")}`,
+      `Known mappings: ${Object.keys(HARNESS_TO_AGENT_MUX_ADAPTER).join(", ")}`,
     );
   }
   return adapter;
@@ -54,5 +54,5 @@ export function mapHarnessToAmuxAdapter(harness: string): string {
  */
 export function hasAmuxAdapter(harness: string): boolean {
   const normalizedHarness = normalizeBuiltInHarnessName(harness);
-  return normalizedHarness in HARNESS_TO_AMUX_ADAPTER;
+  return normalizedHarness in HARNESS_TO_AGENT_MUX_ADAPTER;
 }

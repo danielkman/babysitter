@@ -26,7 +26,7 @@ The easiest way to read the repo is by package family:
 - **Orchestration core**: `packages/sdk`, `packages/babysitter`, and `packages/tula-platform` own runs, replay, effect dispatch, CLI surfaces, and runtime orchestration behavior.
 - **Dispatch family**: `packages/agent-mux/*` owns harness-facing invocation, adapter normalization, gateway delivery, and shared user-facing agent interaction contracts.
 - **Support mux family**: `packages/agent-mux/hooks/*`, `packages/extension-mux`, and `packages/tasks-mux` own hook normalization, plugin compilation, and human approval routing.
-- **Distribution surfaces**: `blueprints/babysitter-unified/` is the canonical authoring surface, while `plugins/babysitter-*` remain the concrete installable compatibility bundles.
+- **Distribution surfaces**: `plugins/babysitter-unified/` is the canonical authoring surface, while `plugins/babysitter-*` remain the concrete installable compatibility bundles.
 - **Workflow content**: `library/`, project-local `.a5c/processes/`, and `~/.a5c` hold reusable processes, local process definitions, and active operational state.
 
 ## Current Operational Flow
@@ -34,7 +34,7 @@ The easiest way to read the repo is by package family:
 From an operator perspective, the live execution path is:
 
 1. A harness surface such as Codex, Claude Code, Cursor, Gemini, Copilot, Pi, or OpenCode loads a concrete plugin bundle from `plugins/babysitter-*`.
-2. That bundle is produced from the unified source in `blueprints/babysitter-unified/` with help from `packages/extension-mux` and, where relevant, `packages/agent-mux/hooks/*`.
+2. That bundle is produced from the unified source in `plugins/babysitter-unified/` with help from `packages/extension-mux` and, where relevant, `packages/agent-mux/hooks/*`.
 3. The harness integration reaches the operational CLI/runtime surface in `packages/babysitter` and `packages/tula-platform`.
 4. The CLI/runtime delegates run creation, replay, task lifecycle, journal/state handling, and process-library access to `packages/sdk`.
 5. The SDK executes workflows from `library/` or project-local `.a5c/processes/`, while `packages/tasks-mux` handles structured human approval routing when a process needs it.

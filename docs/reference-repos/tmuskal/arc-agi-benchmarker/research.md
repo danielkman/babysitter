@@ -53,4 +53,4 @@ HIGH VALUE for babysitter capability assessment. The ARC-AGI-3 benchmarking prov
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| ARC-AGI Integration | NEW | Integration with ARC-AGI benchmark suite for standardized capability assessment | arc-agi-benchmarker | plugins/a5c/marketplace/plugins/arc-agi-integration/ |
+| ARC-AGI Integration | NEW | Integration with ARC-AGI benchmark suite for standardized capability assessment | arc-agi-benchmarker | plugins/a5c/marketplace/blueprints/arc-agi-integration/ |

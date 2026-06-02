@@ -35,7 +35,7 @@ const traceCleanupRuntimeSurfaceTask = defineTask(
           'Determine whether per-task cleanup callbacks are feasible in the current task definition/serialization model; if not, explain the constraint and prefer ctx.onCleanup for this issue.',
           'Trace how task definitions are serialized so the implementation does not accidentally attempt to persist functions.',
           'Trace where runtime warnings or metrics can be emitted if <runDir>/work exists and is non-empty after a task resolves, is cancelled, or a run reaches a terminal path.',
-          'Check both blueprints/babysitter-unified/skills/babysit/SKILL.md and .codex/skills/babysit/SKILL.md for the /tmp-only convention documentation surface.',
+          'Check both plugins/babysitter-unified/skills/babysit/SKILL.md and .codex/skills/babysit/SKILL.md for the /tmp-only convention documentation surface.',
           'Do not edit files in this phase.',
           'Return JSON: { runtimeCallPaths: array, currentBehavior: object, feasibleContracts: array, recommendedContract: string, affectedFiles: array, testTargets: array, risks: array, confidence: number }.',
           '',

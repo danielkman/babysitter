@@ -69,8 +69,8 @@ HIGH extractable value. Google Workspace integration is a universal developer ne
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Google Workspace Integration | NEW | Comprehensive Google Workspace CLI with OAuth, multi-account, and command allowlists | - | plugins/a5c/marketplace/plugins/google-workspace-integration/ |
-| Agent Sandbox Command Allowlist | UPGRADE | Generalized command allowlist pattern beyond existing basic-security | plugins/a5c/marketplace/plugins/basic-security/ | plugins/a5c/marketplace/plugins/agent-sandbox-command-allowlist/ |
+| Google Workspace Integration | NEW | Comprehensive Google Workspace CLI with OAuth, multi-account, and command allowlists | - | plugins/a5c/marketplace/blueprints/google-workspace-integration/ |
+| Agent Sandbox Command Allowlist | UPGRADE | Generalized command allowlist pattern beyond existing basic-security | plugins/a5c/marketplace/blueprints/basic-security/ | plugins/a5c/marketplace/blueprints/agent-sandbox-command-allowlist/ |
 
 ## Implicit Procedural Knowledge
 

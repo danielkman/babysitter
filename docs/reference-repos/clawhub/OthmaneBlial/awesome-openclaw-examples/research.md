@@ -66,4 +66,4 @@ Key patterns:
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Workflow Catalog Browser | NEW | Browseable catalog of pre-built workflow templates with one-command instantiation | - | plugins/a5c/marketplace/plugins/workflow-catalog-browser/ |
+| Workflow Catalog Browser | NEW | Browseable catalog of pre-built workflow templates with one-command instantiation | - | plugins/a5c/marketplace/blueprints/workflow-catalog-browser/ |

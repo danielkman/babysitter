@@ -46,4 +46,4 @@ None directly extractable. The categorization taxonomy could inform process libr
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Skill Discovery Feed | NEW | Automated scraping of awesome-list repos for new skill discovery | - | plugins/a5c/marketplace/plugins/skill-discovery-feed/ |
+| Skill Discovery Feed | NEW | Automated scraping of awesome-list repos for new skill discovery | - | plugins/a5c/marketplace/blueprints/skill-discovery-feed/ |

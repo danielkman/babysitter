@@ -57,4 +57,4 @@ Framework discovered through conversational agent search. Repository demonstrate
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Parlant Conversation Bridge | NEW | Customer-facing dialogue management integration | - | plugins/a5c/marketplace/plugins/parlant-conversation-bridge/ |
+| Parlant Conversation Bridge | NEW | Customer-facing dialogue management integration | - | plugins/a5c/marketplace/blueprints/parlant-conversation-bridge/ |

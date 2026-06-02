@@ -32,5 +32,5 @@ jobs:
             action: agent-task
         env:
           AZURE_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
-          AMUX_API_BASE: ${{ vars.AZURE_OPENAI_ENDPOINT }}
+          AGENT_MUX_API_BASE: ${{ vars.AZURE_OPENAI_ENDPOINT }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -44,4 +44,4 @@ MEDIUM VALUE. The helper script architecture is well-designed: a Python template
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Tech Diagram Generator Plugin | NEW | Template-based diagram generation with validation and configurable styles | - | plugins/a5c/marketplace/plugins/tech-diagram-generator/ |
+| Tech Diagram Generator Plugin | NEW | Template-based diagram generation with validation and configurable styles | - | plugins/a5c/marketplace/blueprints/tech-diagram-generator/ |

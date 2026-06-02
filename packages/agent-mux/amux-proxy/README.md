@@ -29,9 +29,9 @@ Requires Python 3.11 or later.
 Claude Code speaks the Anthropic Messages API natively. `amux-proxy` exposes the same Anthropic API surface and forwards requests to Bedrock under the hood.
 
 ```bash
-AMUX_PROXY_TARGET_PROVIDER=bedrock \
-AMUX_PROXY_TARGET_MODEL="bedrock/anthropic.claude-sonnet-4-20250514-v1:0" \
-AMUX_PROXY_EXPOSED_TRANSPORT=anthropic \
+AGENT_MUX_PROXY_TARGET_PROVIDER=bedrock \
+AGENT_MUX_PROXY_TARGET_MODEL="bedrock/anthropic.claude-sonnet-4-20250514-v1:0" \
+AGENT_MUX_PROXY_EXPOSED_TRANSPORT=anthropic \
 AWS_REGION_NAME=us-east-1 \
 amux-proxy --port 8080
 
@@ -89,41 +89,41 @@ All configuration is via environment variables. CLI flags (`--target-provider`, 
 
 | Variable | Description | Example |
 |---|---|---|
-| `AMUX_PROXY_TARGET_PROVIDER` | LiteLLM provider prefix for the backend | `bedrock`, `vertex_ai`, `anthropic`, `ollama`, `groq` |
-| `AMUX_PROXY_TARGET_MODEL` | Model identifier in LiteLLM format | `bedrock/anthropic.claude-sonnet-4-20250514-v1:0` |
-| `AMUX_PROXY_EXPOSED_TRANSPORT` | Wire format to expose to the harness | `anthropic`, `openai-chat`, `openai-responses`, `google` |
+| `AGENT_MUX_PROXY_TARGET_PROVIDER` | LiteLLM provider prefix for the backend | `bedrock`, `vertex_ai`, `anthropic`, `ollama`, `groq` |
+| `AGENT_MUX_PROXY_TARGET_MODEL` | Model identifier in LiteLLM format | `bedrock/anthropic.claude-sonnet-4-20250514-v1:0` |
+| `AGENT_MUX_PROXY_EXPOSED_TRANSPORT` | Wire format to expose to the harness | `anthropic`, `openai-chat`, `openai-responses`, `google` |
 
 ### Network
 
 | Variable | Default | Description |
 |---|---|---|
-| `AMUX_PROXY_PORT` | `0` (OS-assigned) | Port to listen on. `0` lets the OS assign an ephemeral port, which is printed to stdout on startup. |
-| `AMUX_PROXY_HOST` | `127.0.0.1` | Bind address. Change to `0.0.0.0` only when running in an isolated container. |
+| `AGENT_MUX_PROXY_PORT` | `0` (OS-assigned) | Port to listen on. `0` lets the OS assign an ephemeral port, which is printed to stdout on startup. |
+| `AGENT_MUX_PROXY_HOST` | `127.0.0.1` | Bind address. Change to `0.0.0.0` only when running in an isolated container. |
 
 ### Auth
 
 | Variable | Default | Description |
 |---|---|---|
-| `AMUX_PROXY_AUTH_TOKEN` | (auto-generated UUID) | Bearer token that incoming requests must present. If unset, a random UUID is generated and printed to stderr on startup. |
+| `AGENT_MUX_PROXY_AUTH_TOKEN` | (auto-generated UUID) | Bearer token that incoming requests must present. If unset, a random UUID is generated and printed to stderr on startup. |
 
 ### Request Behavior
 
 | Variable | Default | Description |
 |---|---|---|
-| `AMUX_PROXY_LOG_LEVEL` | `warn` | Logging verbosity: `debug`, `info`, `warn`, `error`. |
-| `AMUX_PROXY_TIMEOUT` | `600` | Request timeout in seconds. |
-| `AMUX_PROXY_MAX_RETRIES` | `2` | Retries to the target provider on transient failures. |
-| `AMUX_PROXY_STREAM` | `true` | Enable streaming (SSE/NDJSON) responses. |
-| `AMUX_PROXY_DROP_UNSUPPORTED_PARAMS` | `true` | Silently drop parameters the target provider does not support. |
+| `AGENT_MUX_PROXY_LOG_LEVEL` | `warn` | Logging verbosity: `debug`, `info`, `warn`, `error`. |
+| `AGENT_MUX_PROXY_TIMEOUT` | `600` | Request timeout in seconds. |
+| `AGENT_MUX_PROXY_MAX_RETRIES` | `2` | Retries to the target provider on transient failures. |
+| `AGENT_MUX_PROXY_STREAM` | `true` | Enable streaming (SSE/NDJSON) responses. |
+| `AGENT_MUX_PROXY_DROP_UNSUPPORTED_PARAMS` | `true` | Silently drop parameters the target provider does not support. |
 
 ### Ollama (requires `amux-proxy[ollama]`)
 
 | Variable | Default | Description |
 |---|---|---|
-| `AMUX_PROXY_OLLAMA_AUTO_PULL` | `true` | Pull the model automatically if it is not available locally. |
-| `AMUX_PROXY_OLLAMA_HOST` | `http://localhost:11434` | Ollama server URL. |
-| `AMUX_PROXY_OLLAMA_MANAGE_SERVER` | `false` | Start and stop the Ollama server as part of the proxy lifecycle. |
-| `AMUX_PROXY_OLLAMA_KEEP_ALIVE` | `5m` | How long to keep the model loaded in memory after the last request. |
+| `AGENT_MUX_PROXY_OLLAMA_AUTO_PULL` | `true` | Pull the model automatically if it is not available locally. |
+| `AGENT_MUX_PROXY_OLLAMA_HOST` | `http://localhost:11434` | Ollama server URL. |
+| `AGENT_MUX_PROXY_OLLAMA_MANAGE_SERVER` | `false` | Start and stop the Ollama server as part of the proxy lifecycle. |
+| `AGENT_MUX_PROXY_OLLAMA_KEEP_ALIVE` | `5m` | How long to keep the model loaded in memory after the last request. |
 
 ### Provider Auth (standard LiteLLM variables)
 
@@ -167,12 +167,12 @@ All transports also expose:
 
 ```bash
 docker run --rm \
-  -e AMUX_PROXY_TARGET_PROVIDER=bedrock \
-  -e AMUX_PROXY_TARGET_MODEL="bedrock/anthropic.claude-sonnet-4-20250514-v1:0" \
-  -e AMUX_PROXY_EXPOSED_TRANSPORT=anthropic \
-  -e AMUX_PROXY_PORT=8080 \
-  -e AMUX_PROXY_HOST=0.0.0.0 \
-  -e AMUX_PROXY_AUTH_TOKEN=my-secret-token \
+  -e AGENT_MUX_PROXY_TARGET_PROVIDER=bedrock \
+  -e AGENT_MUX_PROXY_TARGET_MODEL="bedrock/anthropic.claude-sonnet-4-20250514-v1:0" \
+  -e AGENT_MUX_PROXY_EXPOSED_TRANSPORT=anthropic \
+  -e AGENT_MUX_PROXY_PORT=8080 \
+  -e AGENT_MUX_PROXY_HOST=0.0.0.0 \
+  -e AGENT_MUX_PROXY_AUTH_TOKEN=my-secret-token \
   -e AWS_REGION_NAME=us-east-1 \
   -e AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" \
   -e AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" \

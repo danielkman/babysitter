@@ -45,4 +45,4 @@ LOW-MEDIUM VALUE for process extraction. The skills are TanStack-ecosystem-speci
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| CLI Command Builder | NEW | Generic CLI wrapper with flag compatibility rules and deterministic command generation | - | plugins/a5c/marketplace/plugins/cli-command-builder/ |
+| CLI Command Builder | NEW | Generic CLI wrapper with flag compatibility rules and deterministic command generation | - | plugins/a5c/marketplace/blueprints/cli-command-builder/ |

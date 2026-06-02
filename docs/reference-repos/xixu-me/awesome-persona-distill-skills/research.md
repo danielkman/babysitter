@@ -48,4 +48,4 @@ Niche but interesting domain. Persona distillation is a specialized area of cont
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Persona Memory Plugin | UPGRADE | Store and retrieve distilled persona profiles for context injection | plugins/a5c/marketplace/plugins/claude-mem/ | plugins/a5c/marketplace/plugins/persona-memory/ |
+| Persona Memory Plugin | UPGRADE | Store and retrieve distilled persona profiles for context injection | plugins/a5c/marketplace/blueprints/claude-mem/ | plugins/a5c/marketplace/blueprints/persona-memory/ |

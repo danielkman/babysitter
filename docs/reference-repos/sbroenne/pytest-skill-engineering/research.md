@@ -91,6 +91,6 @@ Testing framework discovered through skill engineering ecosystem analysis. Repos
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| AI Skill Testing Framework | NEW | Pytest-based testing framework for MCP tools, prompts, agents with real LLM validation | - | plugins/a5c/marketplace/plugins/ai-skill-testing-framework/ |
-| Real LLM Validation Suite | NEW | Live model endpoint testing with authentic validation of AI skill implementations | - | plugins/a5c/marketplace/plugins/real-llm-validation-suite/ |
-| AI-Powered Test Analysis | NEW | Automated test result analysis with AI-generated feedback and improvement recommendations | - | plugins/a5c/marketplace/plugins/ai-powered-test-analysis/ |
+| AI Skill Testing Framework | NEW | Pytest-based testing framework for MCP tools, prompts, agents with real LLM validation | - | plugins/a5c/marketplace/blueprints/ai-skill-testing-framework/ |
+| Real LLM Validation Suite | NEW | Live model endpoint testing with authentic validation of AI skill implementations | - | plugins/a5c/marketplace/blueprints/real-llm-validation-suite/ |
+| AI-Powered Test Analysis | NEW | Automated test result analysis with AI-generated feedback and improvement recommendations | - | plugins/a5c/marketplace/blueprints/ai-powered-test-analysis/ |

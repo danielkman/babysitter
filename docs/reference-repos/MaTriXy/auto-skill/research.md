@@ -53,5 +53,5 @@ EXTREMELY HIGH VALUE for babysitter integration. The automatic skill generation 
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Pattern Discovery Integration | NEW | Monitor babysitter runs to identify repetitive patterns and suggest new processes | - | plugins/a5c/marketplace/plugins/pattern-discovery-integration/ |
-| External Skill Discovery | NEW | Integration with 27,000+ skill sources for process recommendation and discovery | - | plugins/a5c/marketplace/plugins/external-skill-discovery/ |
+| Pattern Discovery Integration | NEW | Monitor babysitter runs to identify repetitive patterns and suggest new processes | - | plugins/a5c/marketplace/blueprints/pattern-discovery-integration/ |
+| External Skill Discovery | NEW | Integration with 27,000+ skill sources for process recommendation and discovery | - | plugins/a5c/marketplace/blueprints/external-skill-discovery/ |

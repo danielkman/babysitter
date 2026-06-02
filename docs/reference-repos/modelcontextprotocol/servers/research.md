@@ -107,5 +107,5 @@ N/A - This is not a harness framework repository.
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| MCP Server Builder | NEW | Scaffold MCP servers with canonical patterns | - | plugins/a5c/marketplace/plugins/mcp-server-builder/ |
-| DevX Enhancement | UPGRADE | Enhance babysitter MCP integration with reference patterns | dev-browser | plugins/a5c/marketplace/plugins/mcp-devx-enhancement/ |
+| MCP Server Builder | NEW | Scaffold MCP servers with canonical patterns | - | plugins/a5c/marketplace/blueprints/mcp-server-builder/ |
+| DevX Enhancement | UPGRADE | Enhance babysitter MCP integration with reference patterns | dev-browser | plugins/a5c/marketplace/blueprints/mcp-devx-enhancement/ |

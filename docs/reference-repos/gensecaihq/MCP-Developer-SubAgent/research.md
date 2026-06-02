@@ -113,7 +113,7 @@ The MCP specialization and enterprise security patterns represent valuable appro
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| MCP Development Suite | NEW | Enterprise-grade MCP development with specialized sub-agents and security validation | - | plugins/a5c/marketplace/plugins/mcp-development-suite/ |
+| MCP Development Suite | NEW | Enterprise-grade MCP development with specialized sub-agents and security validation | - | plugins/a5c/marketplace/blueprints/mcp-development-suite/ |
 
 ## Research Methodology Notes
 

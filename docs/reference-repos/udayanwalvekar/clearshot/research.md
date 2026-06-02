@@ -61,4 +61,4 @@ The core 3-level analysis methodology (spatial grid mapping -> design system ext
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Clearshot | NEW | Screenshot intelligence for UI implementation with 3-level analysis protocol | - | plugins/a5c/marketplace/plugins/clearshot/ |
+| Clearshot | NEW | Screenshot intelligence for UI implementation with 3-level analysis protocol | - | plugins/a5c/marketplace/blueprints/clearshot/ |

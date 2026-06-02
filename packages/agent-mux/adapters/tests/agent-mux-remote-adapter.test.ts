@@ -41,7 +41,7 @@ describe('AgentMuxRemoteAdapter (transport-agnostic)', () => {
     const opts: RunOptions = {
       agent: 'agent-mux-remote',
       prompt: 'Hello remote',
-      env: { AMUX_REMOTE_AGENT: 'codex' },
+      env: { AGENT_MUX_REMOTE_AGENT: 'codex' },
     };
     const sa = adapter.buildSpawnArgs(opts);
     expect(sa.command).toBe('amux');
@@ -102,7 +102,7 @@ describe('AgentMuxRemoteAdapter × invocation modes', () => {
   const opts: RunOptions = {
     agent: 'agent-mux-remote',
     prompt: 'hi',
-    env: { AMUX_REMOTE_AGENT: 'claude' },
+    env: { AGENT_MUX_REMOTE_AGENT: 'claude' },
   };
 
   it('ssh invocation wraps the plain amux command with ssh', () => {

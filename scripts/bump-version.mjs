@@ -307,11 +307,11 @@ const pluginPackageManifestPaths = [
 ];
 
 const pluginManifestPaths = [
-  "blueprints/babysitter-unified/plugin.json",
+  "plugins/babysitter-unified/plugin.json",
 ];
 
 const versionsJsonPaths = [
-  "blueprints/babysitter-unified/versions.json",
+  "plugins/babysitter-unified/versions.json",
 ];
 
 const lockPaths = ["package-lock.json"];

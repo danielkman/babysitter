@@ -87,7 +87,7 @@ export async function process(inputs, ctx) {
   // Hooks and plugin manifest can be created in parallel with skill porting.
   // Plugin manifest: skills/hooks as path strings, no contextFileName field,
   // no inline objects for hooks.
-  // Commands: ALL 15 command files from blueprints/babysitter/commands/ must be
+  // Commands: ALL 15 command files from plugins/babysitter/commands/ must be
   // ported identically (harness-agnostic, invoke skills via Skill tool).
   // ==========================================================================
 

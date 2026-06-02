@@ -156,6 +156,6 @@ The architectural principles and orchestration patterns here could significantly
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Progressive Disclosure Engine | NEW | Token-efficient knowledge loading system | - | plugins/a5c/marketplace/plugins/progressive-disclosure-engine/ |
-| Context-Driven Development | NEW | Vision-to-implementation workflow automation | - | plugins/a5c/marketplace/plugins/context-driven-development/ |
-| Multi-Layer Quality Framework | NEW | Comprehensive quality evaluation with statistical rigor | - | plugins/a5c/marketplace/plugins/multi-layer-quality-framework/ |
+| Progressive Disclosure Engine | NEW | Token-efficient knowledge loading system | - | plugins/a5c/marketplace/blueprints/progressive-disclosure-engine/ |
+| Context-Driven Development | NEW | Vision-to-implementation workflow automation | - | plugins/a5c/marketplace/blueprints/context-driven-development/ |
+| Multi-Layer Quality Framework | NEW | Comprehensive quality evaluation with statistical rigor | - | plugins/a5c/marketplace/blueprints/multi-layer-quality-framework/ |

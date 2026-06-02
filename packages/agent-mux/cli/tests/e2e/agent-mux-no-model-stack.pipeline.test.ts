@@ -52,7 +52,7 @@ const HOOK_PAYLOADS: Record<string, { hookType: string; nativeEvent: string; exp
 describe('agent-mux no-model stack matrix', () => {
   const previousCwd = process.cwd();
   const previousEnv = captureEnv([
-    'HOME', 'USERPROFILE', 'XDG_STATE_HOME', 'PATH', 'Path', 'AMUX_PROFILE', 'AMUX_MOCK_HARNESS_BIN',
+    'HOME', 'USERPROFILE', 'XDG_STATE_HOME', 'PATH', 'Path', 'AGENT_MUX_PROFILE', 'AGENT_MUX_MOCK_HARNESS_BIN',
     'OPENAI_BASE_URL', 'OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'ANTHROPIC_BASE_URL', 'GEMINI_API_KEY', 'CODE_ASSIST_ENDPOINT',
   ]);
 
@@ -107,7 +107,7 @@ describe('agent-mux no-model stack matrix', () => {
     expect(installJson.data).toMatchObject({ agent: lane.agent, dryRun: true });
 
     if (lane.runtime === 'agent-mux-mocks') {
-      process.env['AMUX_MOCK_HARNESS_BIN'] = mockHarnessPath;
+      process.env['AGENT_MUX_MOCK_HARNESS_BIN'] = mockHarnessPath;
       const runOutput = await callMain([
         'run', lane.agent,
         '--profile', PROFILE_NAME,
@@ -243,12 +243,12 @@ import * as fs from 'node:fs';
 const args = process.argv.slice(2);
 const agentFlagIndex = args.indexOf('--agent');
 const agent = ${mockHarness ? `(agentFlagIndex >= 0 ? args[agentFlagIndex + 1] : ${JSON.stringify(defaultAgent)})` : `args[0] ?? ${JSON.stringify(defaultAgent)}`};
-const base = process.env.OPENAI_BASE_URL || process.env.AMUX_PROXY_BASE_URL || process.env.ANTHROPIC_BASE_URL || process.env.CODE_ASSIST_ENDPOINT;
+const base = process.env.OPENAI_BASE_URL || process.env.AGENT_MUX_PROXY_BASE_URL || process.env.ANTHROPIC_BASE_URL || process.env.CODE_ASSIST_ENDPOINT;
 if (!base) throw new Error('mock transport base URL was not provided');
 const normalizedBase = base.endsWith('/') ? base.slice(0, -1) : base;
 const response = await fetch(normalizedBase + '/v1/chat/completions', {
   method: 'POST',
-  headers: { 'content-type': 'application/json', authorization: 'Bearer ' + (process.env.OPENAI_API_KEY || process.env.AMUX_PROXY_AUTH_TOKEN || 'mock-token') },
+  headers: { 'content-type': 'application/json', authorization: 'Bearer ' + (process.env.OPENAI_API_KEY || process.env.AGENT_MUX_PROXY_AUTH_TOKEN || 'mock-token') },
   body: JSON.stringify({ model: 'mock-model', messages: [{ role: 'user', content: 'no-model stack probe for ' + agent }] }),
 });
 const body = await response.json();

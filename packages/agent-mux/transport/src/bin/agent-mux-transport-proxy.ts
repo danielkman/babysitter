@@ -24,7 +24,7 @@ async function main(): Promise<void> {
 
   const config = createProxyConfig({
     ...readProxyConfigFromEnv(),
-    authToken: process.env.AMUX_PROXY_AUTH_TOKEN || randomUUID(),
+    authToken: process.env.AGENT_MUX_PROXY_AUTH_TOKEN || randomUUID(),
   });
   const errors = validateProxyConfig(config);
 

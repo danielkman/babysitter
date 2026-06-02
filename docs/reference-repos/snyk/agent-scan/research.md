@@ -72,4 +72,4 @@ None directly extractable. The scanning workflow is a CLI tool, not a multi-step
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Skill Security Scanner | NEW | Pre-install security scanning with threat detection and breakpoint integration | - | plugins/a5c/marketplace/plugins/skill-security-scanner/ |
+| Skill Security Scanner | NEW | Pre-install security scanning with threat detection and breakpoint integration | - | plugins/a5c/marketplace/blueprints/skill-security-scanner/ |

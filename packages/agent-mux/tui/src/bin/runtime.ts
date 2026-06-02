@@ -27,7 +27,7 @@ export interface RuntimeDeps<TClient, TPlugin> {
 }
 
 export function userPluginsDisabled(env: NodeJS.ProcessEnv = process.env): boolean {
-  const value = env.AMUX_TUI_NO_USER_PLUGINS;
+  const value = env.AGENT_MUX_TUI_NO_USER_PLUGINS;
   return value === '1' || value === 'true';
 }
 
@@ -81,7 +81,7 @@ export function printHelp(stdout: NodeJS.WritableStream = process.stdout): void 
       '',
       'Options:',
       '  --user-plugins-dir <dir>  Override user-plugin discovery dir',
-      '                            (default: $AMUX_TUI_PLUGINS_DIR or ~/.amux/tui-plugins)',
+      '                            (default: $AGENT_MUX_TUI_PLUGINS_DIR or ~/.amux/tui-plugins)',
       '  --no-user-plugins         Skip discovering user plugins from the directory',
       '  -h, --help                Show this help',
     ].join('\n') + '\n',

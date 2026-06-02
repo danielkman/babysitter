@@ -38,8 +38,8 @@ function stubExecFile(response: string | Error): void {
 }
 
 beforeEach(() => {
-  delete process.env.AMUX_PROVIDER;
-  delete process.env.AMUX_MODEL;
+  delete process.env.AGENT_MUX_PROVIDER;
+  delete process.env.AGENT_MUX_MODEL;
   vi.useRealTimers();
   vi.restoreAllMocks();
   mockedExecFile.mockReset();
@@ -68,8 +68,8 @@ describe("discoverExternalAgents", () => {
   });
 
   it("discovers agents through an injected agent-mux module", async () => {
-    process.env.AMUX_PROVIDER = "codex";
-    process.env.AMUX_MODEL = "gpt-5.3-codex";
+    process.env.AGENT_MUX_PROVIDER = "codex";
+    process.env.AGENT_MUX_MODEL = "gpt-5.3-codex";
 
     _setExternalAgentDiscoveryModuleForTesting({
       createClient: () => ({
@@ -150,7 +150,7 @@ describe("discoverExternalAgents", () => {
 
   it("falls back to amux doctor --json when the module is unavailable", async () => {
     _setExternalAgentDiscoveryModuleForTesting(null);
-    process.env.AMUX_PROVIDER = "claude";
+    process.env.AGENT_MUX_PROVIDER = "claude";
 
     stubExecFile(JSON.stringify({
       ok: true,

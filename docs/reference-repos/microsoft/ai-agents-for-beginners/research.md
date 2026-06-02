@@ -94,4 +94,4 @@ VERY HIGH - Contains authoritative AI agent methodologies that are directly tran
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Multi-Agent Orchestration | NEW | Building and managing multi-agent systems with coordination frameworks | - | plugins/a5c/marketplace/plugins/multi-agent-orchestration/ |
+| Multi-Agent Orchestration | NEW | Building and managing multi-agent systems with coordination frameworks | - | plugins/a5c/marketplace/blueprints/multi-agent-orchestration/ |

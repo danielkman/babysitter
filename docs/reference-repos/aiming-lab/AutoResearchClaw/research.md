@@ -203,6 +203,6 @@ The 23-stage pipeline architecture and quality validation systems provide substa
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| OpenAlex API Integration | NEW | Academic literature search and citation data via OpenAlex API | - | plugins/a5c/marketplace/plugins/openalex-api-integration/ |
-| Semantic Scholar Integration | NEW | Research paper discovery and analysis via Semantic Scholar API | - | plugins/a5c/marketplace/plugins/semantic-scholar-integration/ |
-| ArXiv Integration | NEW | Preprint repository access and paper retrieval via arXiv API | - | plugins/a5c/marketplace/plugins/arxiv-integration/ |
+| OpenAlex API Integration | NEW | Academic literature search and citation data via OpenAlex API | - | plugins/a5c/marketplace/blueprints/openalex-api-integration/ |
+| Semantic Scholar Integration | NEW | Research paper discovery and analysis via Semantic Scholar API | - | plugins/a5c/marketplace/blueprints/semantic-scholar-integration/ |
+| ArXiv Integration | NEW | Preprint repository access and paper retrieval via arXiv API | - | plugins/a5c/marketplace/blueprints/arxiv-integration/ |

@@ -81,5 +81,5 @@ The selective install architecture (`install-plan.js` / `install-apply.js`) with
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Healthcare Compliance Suite | NEW | HIPAA/PHI compliance setup with validation processes | - | plugins/a5c/marketplace/plugins/healthcare-compliance/ |
-| Multi-Language Security Scanning | UPGRADE | Enhance existing security with language-specific scanners | basic-security | plugins/a5c/marketplace/plugins/multi-language-security/ |
+| Healthcare Compliance Suite | NEW | HIPAA/PHI compliance setup with validation processes | - | plugins/a5c/marketplace/blueprints/healthcare-compliance/ |
+| Multi-Language Security Scanning | UPGRADE | Enhance existing security with language-specific scanners | basic-security | plugins/a5c/marketplace/blueprints/multi-language-security/ |

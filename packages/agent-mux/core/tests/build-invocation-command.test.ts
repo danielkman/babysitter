@@ -111,8 +111,8 @@ describe('buildInvocationCommand', () => {
   });
 
   it('k8s mode transforms to `kubectl [-n ns] exec -i <pod> -- env K=V cmd args`', () => {
-    const prev = process.env['AMUX_K8S_POD'];
-    process.env['AMUX_K8S_POD'] = 'claude-pod-1';
+    const prev = process.env['AGENT_MUX_K8S_POD'];
+    process.env['AGENT_MUX_K8S_POD'] = 'claude-pod-1';
     try {
       const out = buildInvocationCommand(
         { mode: 'k8s', namespace: 'agents' },
@@ -134,19 +134,19 @@ describe('buildInvocationCommand', () => {
       const tail = out.args.slice(-3);
       expect(tail).toEqual(['claude', '--print', 'hello']);
     } finally {
-      if (prev === undefined) delete process.env['AMUX_K8S_POD'];
-      else process.env['AMUX_K8S_POD'] = prev;
+      if (prev === undefined) delete process.env['AGENT_MUX_K8S_POD'];
+      else process.env['AGENT_MUX_K8S_POD'] = prev;
     }
   });
 
-  it('k8s mode falls back to agent name when no AMUX_K8S_POD env set', () => {
-    const prev = process.env['AMUX_K8S_POD'];
-    delete process.env['AMUX_K8S_POD'];
+  it('k8s mode falls back to agent name when no AGENT_MUX_K8S_POD env set', () => {
+    const prev = process.env['AGENT_MUX_K8S_POD'];
+    delete process.env['AGENT_MUX_K8S_POD'];
     try {
       const out = buildInvocationCommand({ mode: 'k8s' }, baseSpawn, 'claude');
       expect(out.args).toContain('claude');
     } finally {
-      if (prev !== undefined) process.env['AMUX_K8S_POD'] = prev;
+      if (prev !== undefined) process.env['AGENT_MUX_K8S_POD'] = prev;
     }
   });
 
@@ -186,8 +186,8 @@ describe('buildInvocationCommand', () => {
 
   // ---- K8s ephemeral pod lifecycle (TBD 3 / spec 13) -----------------------
   it('k8s ephemeral mode uses `kubectl run --rm -i --restart=Never`', () => {
-    const prev = process.env['AMUX_K8S_POD'];
-    delete process.env['AMUX_K8S_POD'];
+    const prev = process.env['AGENT_MUX_K8S_POD'];
+    delete process.env['AGENT_MUX_K8S_POD'];
     try {
       const out = buildInvocationCommand(
         { mode: 'k8s', ephemeral: true, namespace: 'agents', image: 'my/img:1' },
@@ -206,7 +206,7 @@ describe('buildInvocationCommand', () => {
       const dashIdx = out.args.lastIndexOf('--');
       expect(out.args.slice(dashIdx + 1)).toEqual(['claude', '--print', 'hello']);
     } finally {
-      if (prev !== undefined) process.env['AMUX_K8S_POD'] = prev;
+      if (prev !== undefined) process.env['AGENT_MUX_K8S_POD'] = prev;
     }
   });
 
@@ -247,8 +247,8 @@ describe('buildInvocationCommand', () => {
   });
 
   it('k8s mode with explicit `pod` uses exec (no cleanup)', () => {
-    const prev = process.env['AMUX_K8S_POD'];
-    delete process.env['AMUX_K8S_POD'];
+    const prev = process.env['AGENT_MUX_K8S_POD'];
+    delete process.env['AGENT_MUX_K8S_POD'];
     try {
       const out = buildInvocationCommand(
         { mode: 'k8s', pod: 'fixed-pod', ephemeral: false, namespace: 'agents' },
@@ -260,7 +260,7 @@ describe('buildInvocationCommand', () => {
       expect(out.args).not.toContain('run');
       expect(out.cleanup).toBeUndefined();
     } finally {
-      if (prev !== undefined) process.env['AMUX_K8S_POD'] = prev;
+      if (prev !== undefined) process.env['AGENT_MUX_K8S_POD'] = prev;
     }
   });
 });

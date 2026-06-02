@@ -44,5 +44,5 @@ This is primarily a link aggregator/directory rather than a skills source itself
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Skills Directory Browser | NEW | Index and search awesome-agent-skills catalog | - | plugins/a5c/marketplace/plugins/skills-directory-browser/ |
-| Skills Onboarding Automation | NEW | Automated skill installation and validation from directory | - | plugins/a5c/marketplace/plugins/skills-onboarding-automation/ |
+| Skills Directory Browser | NEW | Index and search awesome-agent-skills catalog | - | plugins/a5c/marketplace/blueprints/skills-directory-browser/ |
+| Skills Onboarding Automation | NEW | Automated skill installation and validation from directory | - | plugins/a5c/marketplace/blueprints/skills-onboarding-automation/ |

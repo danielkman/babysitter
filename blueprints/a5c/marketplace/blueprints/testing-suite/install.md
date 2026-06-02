@@ -505,63 +505,63 @@ mkdir -p .a5c/processes/testing
 ### Core testing processes (always install):
 
 ```bash
-cp blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/test-strategy.js .a5c/processes/testing/
-cp blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/quality-gates.js .a5c/processes/testing/
-cp blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/flakiness-elimination.js .a5c/processes/testing/
+cp plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/test-strategy.js .a5c/processes/testing/
+cp plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/quality-gates.js .a5c/processes/testing/
+cp plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/flakiness-elimination.js .a5c/processes/testing/
 ```
 
 ### If unit/integration testing selected:
 
 ```bash
-cp blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/automation-framework.js .a5c/processes/testing/
-cp blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/test-data-management.js .a5c/processes/testing/
+cp plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/automation-framework.js .a5c/processes/testing/
+cp plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/test-data-management.js .a5c/processes/testing/
 ```
 
 ### If E2E testing selected:
 
 ```bash
-cp blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/e2e-test-suite.js .a5c/processes/testing/
-cp blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/cross-browser-testing.js .a5c/processes/testing/
-cp blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/environment-management.js .a5c/processes/testing/
+cp plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/e2e-test-suite.js .a5c/processes/testing/
+cp plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/cross-browser-testing.js .a5c/processes/testing/
+cp plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/environment-management.js .a5c/processes/testing/
 ```
 
 ### If Storybook selected:
 
 ```bash
-cp blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/visual-regression.js .a5c/processes/testing/
+cp plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/visual-regression.js .a5c/processes/testing/
 ```
 
 ### If API/contract testing selected:
 
 ```bash
-cp blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/api-testing.js .a5c/processes/testing/
-cp blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/contract-testing.js .a5c/processes/testing/
+cp plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/api-testing.js .a5c/processes/testing/
+cp plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/contract-testing.js .a5c/processes/testing/
 ```
 
 ### If performance testing selected:
 
 ```bash
-cp blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/performance-testing.js .a5c/processes/testing/
+cp plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/performance-testing.js .a5c/processes/testing/
 ```
 
 ### If TDD workflow selected:
 
 ```bash
-cp blueprints/babysitter/skills/babysit/process/methodologies/atdd-tdd/atdd-tdd.js .a5c/processes/testing/
+cp plugins/babysitter/skills/babysit/process/methodologies/atdd-tdd/atdd-tdd.js .a5c/processes/testing/
 ```
 
 ### If mutation testing selected:
 
 ```bash
-cp blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/mutation-testing.js .a5c/processes/testing/
+cp plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/mutation-testing.js .a5c/processes/testing/
 ```
 
 ### CI/CD testing integration (always, if CI/CD exists):
 
 ```bash
-cp blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/continuous-testing.js .a5c/processes/testing/
-cp blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/shift-left-testing.js .a5c/processes/testing/
-cp blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/metrics-dashboard.js .a5c/processes/testing/
+cp plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/continuous-testing.js .a5c/processes/testing/
+cp plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/shift-left-testing.js .a5c/processes/testing/
+cp plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/metrics-dashboard.js .a5c/processes/testing/
 ```
 
 ## Step 7: Copy Skills and Agents
@@ -571,19 +571,19 @@ mkdir -p .a5c/skills/testing
 mkdir -p .a5c/agents/testing
 
 # Copy QA skills
-ls blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/skills/
+ls plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/skills/
 # Copy relevant skills based on selections
 
 # Copy TDD skills
-cp -r blueprints/babysitter/skills/babysit/process/methodologies/atdd-tdd/skills/* .a5c/skills/testing/ 2>/dev/null || true
-cp -r blueprints/babysitter/skills/babysit/process/methodologies/superpowers/skills/test-driven-development .a5c/skills/testing/ 2>/dev/null || true
+cp -r plugins/babysitter/skills/babysit/process/methodologies/atdd-tdd/skills/* .a5c/skills/testing/ 2>/dev/null || true
+cp -r plugins/babysitter/skills/babysit/process/methodologies/superpowers/skills/test-driven-development .a5c/skills/testing/ 2>/dev/null || true
 
 # Copy QA agents
-ls blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/agents/
+ls plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/agents/
 # Copy relevant agents based on selections
 
 # Copy methodology agents (test runners, verifiers)
-cp -r blueprints/babysitter/skills/babysit/process/methodologies/gsd/agents/gsd-verifier .a5c/agents/testing/ 2>/dev/null || true
+cp -r plugins/babysitter/skills/babysit/process/methodologies/gsd/agents/gsd-verifier .a5c/agents/testing/ 2>/dev/null || true
 ```
 
 ## Step 8: Set Up CI/CD Test Pipeline
@@ -802,8 +802,8 @@ babysitter plugin:update-registry --plugin-name testing-suite --plugin-version 1
 
 ## Reference
 
-- QA Testing processes: `blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/`
-- TDD methodology: `blueprints/babysitter/skills/babysit/process/methodologies/atdd-tdd/`
-- Superpowers TDD: `blueprints/babysitter/skills/babysit/process/methodologies/superpowers/test-driven-development.js`
-- QA README: `blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/README.md`
-- Process backlog: `blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/processes-backlog.md`
+- QA Testing processes: `plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/`
+- TDD methodology: `plugins/babysitter/skills/babysit/process/methodologies/atdd-tdd/`
+- Superpowers TDD: `plugins/babysitter/skills/babysit/process/methodologies/superpowers/test-driven-development.js`
+- QA README: `plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/README.md`
+- Process backlog: `plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/processes-backlog.md`

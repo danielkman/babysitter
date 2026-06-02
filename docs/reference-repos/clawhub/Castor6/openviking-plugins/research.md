@@ -46,7 +46,7 @@ None -- memory is always a plugin in babysitter, never a process.
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Transparent Memory Plugin | UPGRADE | Enhanced auto-recall/auto-capture beyond existing claude-mem functionality | plugins/a5c/marketplace/plugins/claude-mem/ | plugins/a5c/marketplace/plugins/transparent-memory/ |
+| Transparent Memory Plugin | UPGRADE | Enhanced auto-recall/auto-capture beyond existing claude-mem functionality | plugins/a5c/marketplace/blueprints/claude-mem/ | plugins/a5c/marketplace/blueprints/transparent-memory/ |
 
 ## Implicit Procedural Knowledge
 

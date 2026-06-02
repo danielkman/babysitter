@@ -66,4 +66,4 @@ HIGH -- Multiple skills map directly to babysitter process methodology areas:
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Context Engineering Advisor | NEW | Analyze process definitions for context anti-patterns and optimization | - | plugins/a5c/marketplace/plugins/context-engineering-advisor/ |
+| Context Engineering Advisor | NEW | Analyze process definitions for context anti-patterns and optimization | - | plugins/a5c/marketplace/blueprints/context-engineering-advisor/ |

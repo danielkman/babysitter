@@ -64,8 +64,8 @@
       "targetTestFiles": [
         "docs/blueprints.md",
         "docs/plugins.md",
-        "blueprints/babysitter-unified/commands/blueprints.md",
-        "blueprints/babysitter/skills/blueprints/SKILL.md"
+        "plugins/babysitter-unified/commands/blueprints.md",
+        "plugins/babysitter/skills/blueprints/SKILL.md"
       ],
       "testCommand": "npm run docs:snippets && npm run docs:links && npm run check:sdk-command-templates",
       "verificationCommand": "npm run docs:snippets && npm run docs:links && npm run check:sdk-command-templates && npm run check:plugin-commands",

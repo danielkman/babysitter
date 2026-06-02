@@ -44,7 +44,7 @@ None -- PIM integration is a plugin concern, not a process.
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Apple PIM Integration | NEW | macOS Calendar/Reminders/Contacts/Mail integration with per-domain controls | - | plugins/a5c/marketplace/plugins/apple-pim-integration/ |
+| Apple PIM Integration | NEW | macOS Calendar/Reminders/Contacts/Mail integration with per-domain controls | - | plugins/a5c/marketplace/blueprints/apple-pim-integration/ |
 
 ## Implicit Procedural Knowledge
 

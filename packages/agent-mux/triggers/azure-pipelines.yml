@@ -180,14 +180,14 @@ steps:
       fi
       cd "$INPUT_WORKING_DIRECTORY"
       # Map adapter names to amux agent aliases
-      AMUX_AGENT="$INPUT_HARNESS"
+      AGENT_MUX_AGENT="$INPUT_HARNESS"
       case "$INPUT_HARNESS" in
-        claude-code) AMUX_AGENT="claude" ;;
-        gemini-cli) AMUX_AGENT="gemini" ;;
-        copilot-cli) AMUX_AGENT="copilot" ;;
-        cursor-cli) AMUX_AGENT="cursor" ;;
+        claude-code) AGENT_MUX_AGENT="claude" ;;
+        gemini-cli) AGENT_MUX_AGENT="gemini" ;;
+        copilot-cli) AGENT_MUX_AGENT="copilot" ;;
+        cursor-cli) AGENT_MUX_AGENT="cursor" ;;
       esac
-      amux install "$AMUX_AGENT" || true
+      amux install "$AGENT_MUX_AGENT" || true
     name: installHarness
     displayName: 'Install harness'
     condition: or(ne('${{ parameters.harness }}', ''), ne('${{ parameters.adapter }}', ''))
@@ -318,7 +318,7 @@ steps:
     workingDirectory: ${{ parameters.workingDirectory }}
     env:
       INPUT_PRE_RUN: ${{ parameters.preRun }}
-      AMUX_TRIGGER_EVENT_PATH: $(trigger.event)
+      AGENT_MUX_TRIGGER_EVENT_PATH: $(trigger.event)
 
   - bash: |
       set -euo pipefail
@@ -329,19 +329,19 @@ steps:
       AMUX="amux"
 
       # Map harness names to amux aliases
-      AMUX_HARNESS="$INPUT_HARNESS"
+      AGENT_MUX_HARNESS="$INPUT_HARNESS"
       case "$INPUT_HARNESS" in
-        claude-code) AMUX_HARNESS="claude" ;;
-        gemini-cli) AMUX_HARNESS="gemini" ;;
-        copilot-cli) AMUX_HARNESS="copilot" ;;
-        cursor-cli) AMUX_HARNESS="cursor" ;;
+        claude-code) AGENT_MUX_HARNESS="claude" ;;
+        gemini-cli) AGENT_MUX_HARNESS="gemini" ;;
+        copilot-cli) AGENT_MUX_HARNESS="copilot" ;;
+        cursor-cli) AGENT_MUX_HARNESS="cursor" ;;
       esac
 
       # Build command args
       ARGS=()
       if [ "$INPUT_COMMAND" = "launch" ] || [ "$INPUT_COMMAND" = "run" ]; then
         ARGS+=("$INPUT_COMMAND")
-        [ -n "$AMUX_HARNESS" ] && ARGS+=("$AMUX_HARNESS")
+        [ -n "$AGENT_MUX_HARNESS" ] && ARGS+=("$AGENT_MUX_HARNESS")
         [ -n "$INPUT_PROVIDER" ] && ARGS+=("$INPUT_PROVIDER")
       else
         ARGS+=("$INPUT_COMMAND")
@@ -422,7 +422,7 @@ steps:
       INPUT_BABYSITTER_PREFIX: ${{ parameters.babysitterPromptPrefix }}
       INPUT_ARGS: ${{ parameters.args }}
       INPUT_ARGS_JSON: ${{ parameters.argsJson }}
-      AMUX_TRIGGER_EVENT_PATH: $(trigger.event)
+      AGENT_MUX_TRIGGER_EVENT_PATH: $(trigger.event)
 
   - bash: |
       set -euo pipefail
@@ -433,7 +433,7 @@ steps:
     workingDirectory: ${{ parameters.workingDirectory }}
     env:
       INPUT_POST_RUN: ${{ parameters.postRun }}
-      AMUX_TRIGGER_EVENT_PATH: $(trigger.event)
+      AGENT_MUX_TRIGGER_EVENT_PATH: $(trigger.event)
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Conversion notes (action.yml → azure-pipelines.yml step template)

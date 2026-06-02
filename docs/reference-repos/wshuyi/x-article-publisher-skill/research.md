@@ -41,4 +41,4 @@ LOW-MEDIUM VALUE for process extraction. The skill is a specific integration pip
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Content Publisher Plugin | NEW | Generalized Markdown-to-platform publisher with Playwright automation and multi-platform support | - | plugins/a5c/marketplace/plugins/content-publisher/ |
+| Content Publisher Plugin | NEW | Generalized Markdown-to-platform publisher with Playwright automation and multi-platform support | - | plugins/a5c/marketplace/blueprints/content-publisher/ |

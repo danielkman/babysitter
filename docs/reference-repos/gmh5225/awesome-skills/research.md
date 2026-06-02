@@ -61,4 +61,4 @@ Skill collection discovered through multi-tool ecosystem analysis. Repository de
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Multi-Platform Skill Browser | NEW | Cross-tool skill discovery and compatibility assessment | - | plugins/a5c/marketplace/plugins/multi-platform-skill-browser/ |
+| Multi-Platform Skill Browser | NEW | Cross-tool skill discovery and compatibility assessment | - | plugins/a5c/marketplace/blueprints/multi-platform-skill-browser/ |

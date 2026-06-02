@@ -10,7 +10,7 @@ attributes:
   subcommandVerb: "enrich"
   flags:
     - "--backend:1:select trigger backend (github|gitlab|bitbucket|generic-webhook)"
-    - "--event:1:override eventName (defaults to GITHUB_EVENT_NAME or AMUX_TRIGGER_EVENT)"
+    - "--event:1:override eventName (defaults to GITHUB_EVENT_NAME or AGENT_MUX_TRIGGER_EVENT)"
     - "--event-path:1:override path to event payload JSON (defaults to GITHUB_EVENT_PATH)"
     - "--include-diff:0:opt into git-show-based unified-diff enrichment"
     - "--token:1:GitHub token (defaults to GITHUB_TOKEN env var)"

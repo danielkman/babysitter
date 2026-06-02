@@ -85,5 +85,5 @@ MEDIUM - Contains educational methodology and evaluation processes that are tran
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Agent Development Curriculum | NEW | Educational plugin for systematic agent learning | - | plugins/a5c/marketplace/plugins/agent-development-curriculum/ |
-| Agent Evaluation Suite | NEW | Comprehensive agent testing and observability | - | plugins/a5c/marketplace/plugins/agent-evaluation-suite/ |
+| Agent Development Curriculum | NEW | Educational plugin for systematic agent learning | - | plugins/a5c/marketplace/blueprints/agent-development-curriculum/ |
+| Agent Evaluation Suite | NEW | Comprehensive agent testing and observability | - | plugins/a5c/marketplace/blueprints/agent-evaluation-suite/ |

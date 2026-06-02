@@ -60,5 +60,5 @@ Framework discovered through harness architecture search. Repository demonstrate
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| LangGraph Workflow Bridge | NEW | LangGraph-based workflow coordination integration for babysitter | - | plugins/a5c/marketplace/plugins/langgraph-workflow-bridge/ |
-| LangChain Agent Integration | NEW | LangChain framework integration and compatibility layer | - | plugins/a5c/marketplace/plugins/langchain-agent-integration/ |
+| LangGraph Workflow Bridge | NEW | LangGraph-based workflow coordination integration for babysitter | - | plugins/a5c/marketplace/blueprints/langgraph-workflow-bridge/ |
+| LangChain Agent Integration | NEW | LangChain framework integration and compatibility layer | - | plugins/a5c/marketplace/blueprints/langchain-agent-integration/ |

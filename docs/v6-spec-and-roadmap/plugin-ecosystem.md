@@ -8,7 +8,7 @@ The current V6 plugin position is:
 
 - metaplugins are higher-order capability abstractions over plugin and hook surfaces,
 - on legacy non-Babysitter agents, `@a5c-ai/agent-mux-extensions` is the compiler and distribution path for the concrete plugin outputs those metaplugins need,
-- `blueprints/babysitter-unified/` is a first-party unified plugin source that can carry metaplugin concerns, not a synonym for metaplugins,
+- `plugins/babysitter-unified/` is a first-party unified plugin source that can carry metaplugin concerns, not a synonym for metaplugins,
 - memory systems, governance layers, policy engines, and discipline-enforcement bundles are in scope as metaplugin use cases.
 
 V6 does not require a future standalone meta-plugin host package before those use cases can be documented or shipped. The current install surface remains per-harness plugin bundles compiled from a unified source, while the metaplugin remains the capability-level abstraction above those bundles.

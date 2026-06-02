@@ -30,7 +30,7 @@ attributes:
   notes: |
     Special case: this AgentCoreImpl exists for ontology completeness but does not
     implement an agent loop. All Layer-3 (model transport) concerns are delegated
-    to whichever agent runs on the remote target (selected via AMUX_REMOTE_AGENT).
+    to whichever agent runs on the remote target (selected via AGENT_MUX_REMOTE_AGENT).
 edges:
   realizes:
     - target: layer:4-agent-core

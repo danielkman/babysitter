@@ -195,8 +195,8 @@ function buildK8sInvocation(
   agent: string,
   baseEnv: Record<string, string>,
 ): InvocationCommandWithCleanup {
-  // Existing-pod mode: explicit `pod` (or legacy AMUX_K8S_POD) and ephemeral not true.
-  const envPodOverride = process.env['AMUX_K8S_POD'];
+  // Existing-pod mode: explicit `pod` (or legacy AGENT_MUX_K8S_POD) and ephemeral not true.
+  const envPodOverride = process.env['AGENT_MUX_K8S_POD'];
   const wantsEphemeral = mode.ephemeral ?? (!mode.pod && !envPodOverride);
   const namespace = mode.namespace;
 

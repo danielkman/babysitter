@@ -84,7 +84,7 @@ npm install @a5c-ai/babysitter-sdk
 ```
 
 Babysitter supports multiple AI coding harnesses. Install the plugin for your harness of choice.
-In this repository, [`blueprints/babysitter-unified`](blueprints/babysitter-unified/plugin.json) is the only maintained plugin source; harness-specific bundles are generated during build/release and are not committed:
+In this repository, [`plugins/babysitter-unified`](plugins/babysitter-unified/plugin.json) is the only maintained plugin source; harness-specific bundles are generated during build/release and are not committed:
 
 ### Claude Code (recommended)
 
@@ -113,7 +113,7 @@ For Team and Enterprise org-managed installs, owners can add plugins through
 require a private or internal GitHub repository, so use a private/internal fork
 of this repo for that flow, or upload plugin ZIPs manually.
 
-[Plugin README](blueprints/babysitter-unified/per-harness/claude-code/README.md)
+[Plugin README](plugins/babysitter-unified/per-harness/claude-code/README.md)
 
 ### Codex CLI (Beta)
 
@@ -127,7 +127,7 @@ codex
 ```
 Navigate to the "babysitter" entry and select "Install".
 
-[Plugin README](blueprints/babysitter-unified/per-harness/codex/README.md)
+[Plugin README](plugins/babysitter-unified/per-harness/codex/README.md)
 
 ### Cursor IDE and CLI (Experimental)
 
@@ -137,7 +137,7 @@ Via the Cursor marketplace or the SDK helper:
 babysitter harness:install-plugin cursor
 ```
 
-[Plugin README](blueprints/babysitter-unified/per-harness/cursor/README.md)
+[Plugin README](plugins/babysitter-unified/per-harness/cursor/README.md)
 
 ### Gemini CLI (Experimental)
 
@@ -145,7 +145,7 @@ babysitter harness:install-plugin cursor
 babysitter harness:install-plugin gemini-cli
 ```
 
-[Plugin README](blueprints/babysitter-unified/per-harness/gemini/README.md)
+[Plugin README](plugins/babysitter-unified/per-harness/gemini/README.md)
 
 ### GitHub Copilot (Experimental)
 
@@ -155,7 +155,7 @@ Via the GitHub Copilot CLI marketplace, or:
 babysitter harness:install-plugin github-copilot
 ```
 
-[Plugin README](blueprints/babysitter-unified/per-harness/github/README.md)
+[Plugin README](plugins/babysitter-unified/per-harness/github/README.md)
 
 ### Pi (Experimental)
 
@@ -165,7 +165,7 @@ Native Pi plugin install:
 pi install npm:@a5c-ai/babysitter-pi
 ```
 
-[Plugin README](blueprints/babysitter-unified/per-harness/pi/README.md)
+[Plugin README](plugins/babysitter-unified/per-harness/pi/README.md)
 
 ### Oh-My-Pi (Experimental)
 
@@ -175,7 +175,7 @@ Native omp plugin install:
 omp plugin install @a5c-ai/babysitter-omp
 ```
 
-[Plugin README](blueprints/babysitter-unified/per-harness/omp/README.md)
+[Plugin README](plugins/babysitter-unified/per-harness/omp/README.md)
 
 ### OpenCode (Experimental)
 
@@ -185,7 +185,7 @@ babysitter harness:install-plugin opencode
 
 Use `--workspace /path/to/repo` to install into a project-local OpenCode plugin directory.
 
-[Plugin README](blueprints/babysitter-unified/per-harness/opencode/README.md)
+[Plugin README](plugins/babysitter-unified/per-harness/opencode/README.md)
 
 ### Internal Harness (No AI Coding Agent Required)
 

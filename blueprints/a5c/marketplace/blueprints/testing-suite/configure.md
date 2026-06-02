@@ -8,33 +8,33 @@ To add a testing layer that wasn't selected during install, copy the relevant pr
 ```bash
 npm install -D @playwright/test
 npx playwright install --with-deps
-cp blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/e2e-test-suite.js .a5c/processes/testing/
-cp blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/cross-browser-testing.js .a5c/processes/testing/
+cp plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/e2e-test-suite.js .a5c/processes/testing/
+cp plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/cross-browser-testing.js .a5c/processes/testing/
 ```
 
 ### Add Storybook:
 ```bash
 npx storybook@latest init
 npm install -D @storybook/test @storybook/test-runner @storybook/addon-coverage
-cp blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/visual-regression.js .a5c/processes/testing/
+cp plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/visual-regression.js .a5c/processes/testing/
 ```
 
 ### Add API/contract testing:
 ```bash
-cp blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/api-testing.js .a5c/processes/testing/
-cp blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/contract-testing.js .a5c/processes/testing/
+cp plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/api-testing.js .a5c/processes/testing/
+cp plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/contract-testing.js .a5c/processes/testing/
 ```
 
 ### Add performance testing:
 ```bash
 npm install -D k6  # or your preferred load testing tool
-cp blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/performance-testing.js .a5c/processes/testing/
+cp plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/performance-testing.js .a5c/processes/testing/
 ```
 
 ### Add mutation testing:
 ```bash
 npm install -D @stryker-mutator/core @stryker-mutator/vitest-runner  # adjust runner for your framework
-cp blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/mutation-testing.js .a5c/processes/testing/
+cp plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/mutation-testing.js .a5c/processes/testing/
 ```
 
 ## 2. Adjust Coverage Thresholds
@@ -189,8 +189,8 @@ rm .husky/pre-push  # or whichever hook
 If TDD was not selected during install:
 
 ```bash
-cp blueprints/babysitter/skills/babysit/process/methodologies/atdd-tdd/atdd-tdd.js .a5c/processes/testing/
-cp -r blueprints/babysitter/skills/babysit/process/methodologies/superpowers/skills/test-driven-development .a5c/skills/testing/
+cp plugins/babysitter/skills/babysit/process/methodologies/atdd-tdd/atdd-tdd.js .a5c/processes/testing/
+cp -r plugins/babysitter/skills/babysit/process/methodologies/superpowers/skills/test-driven-development .a5c/skills/testing/
 ```
 
 ## 8. Fix Flaky Tests
@@ -220,13 +220,13 @@ babysitter run:create \
 ## 10. Add Exploratory Testing Sessions
 
 ```bash
-cp blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/exploratory-testing.js .a5c/processes/testing/
+cp plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/exploratory-testing.js .a5c/processes/testing/
 ```
 
 ## 11. Set Up Test Metrics Dashboard
 
 ```bash
-cp blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/metrics-dashboard.js .a5c/processes/testing/
+cp plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/metrics-dashboard.js .a5c/processes/testing/
 
 babysitter run:create \
   --process-id test-metrics \
@@ -239,11 +239,11 @@ babysitter run:create \
 
 All available QA processes:
 ```bash
-ls blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/*.js
+ls plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/*.js
 ```
 
 QA skills and agents:
 ```bash
-ls blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/skills/
-ls blueprints/babysitter/skills/babysit/process/specializations/qa-testing-automation/agents/
+ls plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/skills/
+ls plugins/babysitter/skills/babysit/process/specializations/qa-testing-automation/agents/
 ```

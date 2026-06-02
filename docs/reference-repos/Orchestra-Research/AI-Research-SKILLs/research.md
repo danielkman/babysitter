@@ -62,7 +62,7 @@ The marketplace already has a `marketplace.json` with plugin structure. Could be
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| AI Research Skills Suite | NEW | Comprehensive AI research domain skills across 22 categories with orchestration | - | plugins/a5c/marketplace/plugins/ai-research-skills-suite/ |
+| AI Research Skills Suite | NEW | Comprehensive AI research domain skills across 22 categories with orchestration | - | plugins/a5c/marketplace/blueprints/ai-research-skills-suite/ |
 
 ## Classification
 - **Archetype**: Domain skill library with orchestration layer

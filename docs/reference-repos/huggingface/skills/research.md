@@ -100,4 +100,4 @@ HIGH - Contains official Hugging Face workflows that are directly transferable:
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Gradio App Builder | NEW | Rapid ML application prototyping with templates and deployment automation | - | plugins/a5c/marketplace/plugins/gradio-app-builder/ |
+| Gradio App Builder | NEW | Rapid ML application prototyping with templates and deployment automation | - | plugins/a5c/marketplace/blueprints/gradio-app-builder/ |

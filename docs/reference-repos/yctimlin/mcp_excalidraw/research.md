@@ -44,5 +44,5 @@ MEDIUM VALUE. The dual-interface pattern (MCP tools + REST API fallback) with ex
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Excalidraw Canvas Plugin | NEW | MCP server wrapper with automatic mode detection and canvas creation skills | - | plugins/a5c/marketplace/plugins/excalidraw-canvas/ |
-| Dual-Mode Tool Wrapper Template | NEW | Template for wrapping tools with both MCP and REST interfaces with format normalization | - | plugins/a5c/marketplace/plugins/dual-mode-tool-wrapper/ |
+| Excalidraw Canvas Plugin | NEW | MCP server wrapper with automatic mode detection and canvas creation skills | - | plugins/a5c/marketplace/blueprints/excalidraw-canvas/ |
+| Dual-Mode Tool Wrapper Template | NEW | Template for wrapping tools with both MCP and REST interfaces with format normalization | - | plugins/a5c/marketplace/blueprints/dual-mode-tool-wrapper/ |

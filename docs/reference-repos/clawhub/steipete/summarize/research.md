@@ -65,8 +65,8 @@ MEDIUM extractable value. The summarization itself is a common utility, but the 
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Content Summarization Engine | NEW | Multi-provider content summarization with CLI backend and cost-aware operation | - | plugins/a5c/marketplace/plugins/content-summarization-engine/ |
-| Local Daemon Bridge | NEW | Background service pattern for browser extension integration with token-based auth | - | plugins/a5c/marketplace/plugins/local-daemon-bridge/ |
+| Content Summarization Engine | NEW | Multi-provider content summarization with CLI backend and cost-aware operation | - | plugins/a5c/marketplace/blueprints/content-summarization-engine/ |
+| Local Daemon Bridge | NEW | Background service pattern for browser extension integration with token-based auth | - | plugins/a5c/marketplace/blueprints/local-daemon-bridge/ |
 
 ## Implicit Procedural Knowledge
 

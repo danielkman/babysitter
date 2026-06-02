@@ -100,4 +100,4 @@ None. The repo is pure methodology (Markdown files). No tool integrations or ins
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Architecture Quality Assessment | NEW | S.U.P.E.R scoring system implementation with traffic-light visualization and remediation prioritization | - | plugins/a5c/marketplace/plugins/architecture-quality-assessment/ |
+| Architecture Quality Assessment | NEW | S.U.P.E.R scoring system implementation with traffic-light visualization and remediation prioritization | - | plugins/a5c/marketplace/blueprints/architecture-quality-assessment/ |

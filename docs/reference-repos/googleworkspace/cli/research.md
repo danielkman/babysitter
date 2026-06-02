@@ -52,4 +52,4 @@ HIGH -- Persona workflow patterns are directly extractable:
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Google Workspace Bridge | NEW | Google Workspace automation within orchestrated processes | - | plugins/a5c/marketplace/plugins/google-workspace-bridge/ |
+| Google Workspace Bridge | NEW | Google Workspace automation within orchestrated processes | - | plugins/a5c/marketplace/blueprints/google-workspace-bridge/ |

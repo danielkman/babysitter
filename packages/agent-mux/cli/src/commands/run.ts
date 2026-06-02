@@ -369,7 +369,7 @@ function swapInMockAdapter(
   const original = client.adapters.get(agent);
   if (!original) return;
 
-  const mockBin = process.env['AMUX_MOCK_HARNESS_BIN'] ?? 'mock-harness';
+  const mockBin = process.env['AGENT_MUX_MOCK_HARNESS_BIN'] ?? 'mock-harness';
   const scenarioName = resolveMockScenarioName(agent, scenario);
   const mockExt = path.extname(mockBin).toLowerCase();
   const launchWithNode = ['.js', '.mjs', '.cjs'].includes(mockExt);

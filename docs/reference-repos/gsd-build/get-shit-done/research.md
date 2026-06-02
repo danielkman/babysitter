@@ -143,6 +143,6 @@ A babysitter plugin that optimizes prompting strategy based on the active model'
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Schema Drift Detector | NEW | ORM/API schema consistency validation | - | plugins/a5c/marketplace/plugins/schema-drift-detector/ |
-| Scope Reduction Auditor | NEW | Requirements coverage validation | - | plugins/a5c/marketplace/plugins/scope-reduction-auditor/ |
-| Thinking Model Optimizer | NEW | Adaptive prompting for different model capabilities | - | plugins/a5c/marketplace/plugins/thinking-model-optimizer/ |
+| Schema Drift Detector | NEW | ORM/API schema consistency validation | - | plugins/a5c/marketplace/blueprints/schema-drift-detector/ |
+| Scope Reduction Auditor | NEW | Requirements coverage validation | - | plugins/a5c/marketplace/blueprints/scope-reduction-auditor/ |
+| Thinking Model Optimizer | NEW | Adaptive prompting for different model capabilities | - | plugins/a5c/marketplace/blueprints/thinking-model-optimizer/ |

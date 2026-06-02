@@ -24,7 +24,7 @@ The reusable action at `packages/agent-mux/triggers/action.yml` supports all har
     prompt: Review this PR for bugs and style issues
   env:
     AZURE_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
-    AMUX_API_BASE: ${{ vars.AZURE_OPENAI_ENDPOINT }}
+    AGENT_MUX_API_BASE: ${{ vars.AZURE_OPENAI_ENDPOINT }}
 ```
 
 ## Supported Harnesses
@@ -99,7 +99,7 @@ The action uses `agent-mux launch` which handles provider resolution and proxy s
 ```yaml
 env:
   AZURE_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
-  AMUX_API_BASE: https://your-resource.services.ai.azure.com
+  AGENT_MUX_API_BASE: https://your-resource.services.ai.azure.com
 ```
 
 ### Google / Vertex AI

@@ -32,7 +32,7 @@ These workspaces ship public packages or release-facing operational behavior. Th
 | `packages/agent-mux/hooks/*` | Published hooks-mux packages | `.github/workflows/ci.yml` job `test`, plus `publish.yml` and `publish-packages-from-tag.yml` |
 | `packages/agent-mux/*` | Published agent-mux packages | `.github/workflows/ci.yml` job `test`, plus `publish.yml` and `publish-packages-from-tag.yml` |
 | `packages/transport-mux` | Published transport/proxy runtime package used by the agent-mux CLI/runtime chain | `.github/workflows/ci.yml` job `workspace-coverage` (`build` + `lint` + `typecheck` + `test` + `scorecard:migration`), plus `publish.yml` and `publish-packages-from-tag.yml` |
-| `packages/babysitter`, `blueprints/babysitter-unified`, and generated/published harness plugin packages | Published metapackage, canonical plugin source, and harness plugin packages | `.github/workflows/ci.yml` job `test`, plus `publish.yml` and `publish-packages-from-tag.yml` |
+| `packages/babysitter`, `plugins/babysitter-unified`, and generated/published harness plugin packages | Published metapackage, canonical plugin source, and harness plugin packages | `.github/workflows/ci.yml` job `test`, plus `publish.yml` and `publish-packages-from-tag.yml` |
 
 ## Public advanced/runtime packages
 

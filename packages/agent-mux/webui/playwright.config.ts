@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { defineConfig, devices } from "@playwright/test";
 
 const packageRoot = path.dirname(fileURLToPath(import.meta.url));
-const testPort = Number.parseInt(process.env.AMUX_WEBUI_E2E_PORT ?? "4175", 10);
+const testPort = Number.parseInt(process.env.AGENT_MUX_WEBUI_E2E_PORT ?? "4175", 10);
 
 export default defineConfig({
   testDir: path.join(packageRoot, "e2e", "tests"),
@@ -50,7 +50,7 @@ export default defineConfig({
     timeout: 120_000,
     env: {
       ...process.env,
-      AMUX_WEBUI_E2E_PORT: String(testPort),
+      AGENT_MUX_WEBUI_E2E_PORT: String(testPort),
     },
   },
 });

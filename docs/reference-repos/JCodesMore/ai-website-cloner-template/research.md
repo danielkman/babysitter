@@ -73,7 +73,7 @@ An exceptionally well-crafted skill definition (~400+ lines) with deep extractio
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Website Cloning Template | NEW | Multi-agent website reverse-engineering with parallel git worktree builders | - | plugins/a5c/marketplace/plugins/website-cloning-template/ |
+| Website Cloning Template | NEW | Multi-agent website reverse-engineering with parallel git worktree builders | - | plugins/a5c/marketplace/blueprints/website-cloning-template/ |
 
 ## Classification
 

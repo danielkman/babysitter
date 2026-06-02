@@ -91,13 +91,13 @@ function findMarketplacePluginEntry(manifest, pluginName) {
 }
 
 function verifyBabysitterPluginVersionSync() {
-  const versions = readJson('blueprints/babysitter-unified/versions.json');
-  const unifiedPlugin = readJson('blueprints/babysitter-unified/plugin.json');
+  const versions = readJson('plugins/babysitter-unified/versions.json');
+  const unifiedPlugin = readJson('plugins/babysitter-unified/plugin.json');
   const expectedVersion = versions.sdkVersion;
   if (typeof expectedVersion !== 'string' || expectedVersion.trim() === '') {
-    fail('blueprints/babysitter-unified/versions.json sdkVersion must be a non-empty string');
+    fail('plugins/babysitter-unified/versions.json sdkVersion must be a non-empty string');
   }
-  expectEqual(unifiedPlugin.version, expectedVersion, 'blueprints/babysitter-unified/plugin.json version');
+  expectEqual(unifiedPlugin.version, expectedVersion, 'plugins/babysitter-unified/plugin.json version');
 
   for (const manifestPath of [
     '.claude-plugin/marketplace.json',

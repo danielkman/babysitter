@@ -33,7 +33,7 @@ None with significant multi-step procedural value.
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Voice Breakpoint Notifications | NEW | Phone call integration for babysitter breakpoint notifications | - | plugins/a5c/marketplace/plugins/voice-breakpoint-notifications/ |
+| Voice Breakpoint Notifications | NEW | Phone call integration for babysitter breakpoint notifications | - | plugins/a5c/marketplace/blueprints/voice-breakpoint-notifications/ |
 
 ## Implicit Procedural Knowledge
 - Voice as a breakpoint notification channel

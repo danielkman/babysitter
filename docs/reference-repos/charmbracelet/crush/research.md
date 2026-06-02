@@ -67,5 +67,5 @@ None - framework rather than process repository.
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Crush Harness Adapter | NEW | Charmbracelet Crush integration for babysitter | - | plugins/a5c/marketplace/plugins/crush-harness-adapter/ |
-| Glamorous TUI Enhancement | NEW | Charmbracelet-style TUI improvements for observer dashboard | - | plugins/a5c/marketplace/plugins/glamorous-tui-enhancement/ |
+| Crush Harness Adapter | NEW | Charmbracelet Crush integration for babysitter | - | plugins/a5c/marketplace/blueprints/crush-harness-adapter/ |
+| Glamorous TUI Enhancement | NEW | Charmbracelet-style TUI improvements for observer dashboard | - | plugins/a5c/marketplace/blueprints/glamorous-tui-enhancement/ |

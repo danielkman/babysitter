@@ -80,7 +80,7 @@ Superpowers is already installed as a plugin in the babysitter project (skills a
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Superpowers Methodology Bridge | NEW | Convert superpowers skills to deterministic processes | - | plugins/a5c/marketplace/plugins/superpowers-bridge/ |
+| Superpowers Methodology Bridge | NEW | Convert superpowers skills to deterministic processes | - | plugins/a5c/marketplace/blueprints/superpowers-bridge/ |
 
 ### SKIP
 - using-superpowers meta-skill (skill-management)

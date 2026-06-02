@@ -52,7 +52,7 @@ This is the upstream source for the agent skills standard. The MCP builder skill
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| DevX MCP Builder | NEW | MCP server scaffolding with test harness | - | plugins/a5c/marketplace/plugins/mcp-builder/ |
-| Document Factory | NEW | Unified document generation with templates | - | plugins/a5c/marketplace/plugins/document-factory/ |
-| Webapp Testing | NEW | Playwright-based visual and functional testing | - | plugins/a5c/marketplace/plugins/webapp-testing/ |
-| Brand Guidelines Enforcer | NEW | UI validation against brand standards | - | plugins/a5c/marketplace/plugins/brand-enforcer/ |
+| DevX MCP Builder | NEW | MCP server scaffolding with test harness | - | plugins/a5c/marketplace/blueprints/mcp-builder/ |
+| Document Factory | NEW | Unified document generation with templates | - | plugins/a5c/marketplace/blueprints/document-factory/ |
+| Webapp Testing | NEW | Playwright-based visual and functional testing | - | plugins/a5c/marketplace/blueprints/webapp-testing/ |
+| Brand Guidelines Enforcer | NEW | UI validation against brand standards | - | plugins/a5c/marketplace/blueprints/brand-enforcer/ |

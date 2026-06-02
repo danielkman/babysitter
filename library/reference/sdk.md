@@ -906,7 +906,7 @@ Hooks are discovered in three locations (in priority order):
 
 1. **Per-repo**: `.a5c/hooks/<hook-type>/*.sh` (project-specific)
 2. **Per-user**: `~/.config/babysitter/hooks/<hook-type>/*.sh` (user-specific)
-3. **Plugin**: `blueprints/babysitter/hooks/<hook-type>/*.sh` (default logger hooks)
+3. **Plugin**: `plugins/babysitter/hooks/<hook-type>/*.sh` (default logger hooks)
 
 All matching hooks are executed in order. Hook failures are logged but do not break orchestration.
 
@@ -928,7 +928,7 @@ echo "Run $RUN_ID completed with status: $STATUS"
 
 Make it executable: `chmod +x .a5c/hooks/on-run-complete/notify.sh`
 
-For complete hook documentation, see `blueprints/babysitter/HOOKS.md`.
+For complete hook documentation, see `plugins/babysitter/HOOKS.md`.
 
 ---
 

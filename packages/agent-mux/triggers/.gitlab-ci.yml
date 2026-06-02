@@ -58,20 +58,20 @@
       fi
 
       # Build amux command
-      AMUX_ARGS="$AGENT_COMMAND $AGENT_HARNESS"
+      AGENT_MUX_ARGS="$AGENT_COMMAND $AGENT_HARNESS"
       if [ -n "$AGENT_PROVIDER" ]; then
-        AMUX_ARGS="$AMUX_ARGS $AGENT_PROVIDER"
+        AGENT_MUX_ARGS="$AGENT_MUX_ARGS $AGENT_PROVIDER"
       fi
       if [ -n "$AGENT_MODEL" ]; then
-        AMUX_ARGS="$AMUX_ARGS --model $AGENT_MODEL"
+        AGENT_MUX_ARGS="$AGENT_MUX_ARGS --model $AGENT_MODEL"
       fi
-      AMUX_ARGS="$AMUX_ARGS --max-turns $AGENT_MAX_TURNS"
+      AGENT_MUX_ARGS="$AGENT_MUX_ARGS --max-turns $AGENT_MAX_TURNS"
       if [ "$AGENT_INTERACTION_MODE" = "non-interactive" ]; then
-        AMUX_ARGS="$AMUX_ARGS --no-interactive"
+        AGENT_MUX_ARGS="$AGENT_MUX_ARGS --no-interactive"
       fi
       if [ -n "$AGENT_PROMPT" ]; then
-        AMUX_ARGS="$AMUX_ARGS --prompt \"$AGENT_PROMPT\""
+        AGENT_MUX_ARGS="$AGENT_MUX_ARGS --prompt \"$AGENT_PROMPT\""
       fi
 
-      echo "Running: amux $AMUX_ARGS"
-      eval amux $AMUX_ARGS
+      echo "Running: amux $AGENT_MUX_ARGS"
+      eval amux $AGENT_MUX_ARGS

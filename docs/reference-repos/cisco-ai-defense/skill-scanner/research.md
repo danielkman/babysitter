@@ -87,8 +87,8 @@ Both tools serve similar purposes. Key differences:
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Skill Security Scanner | UPGRADE | Enhanced security scanning with multi-engine detection and threat taxonomy | basic-security | plugins/a5c/marketplace/plugins/skill-security-scanner/ |
-| AI Threat Taxonomy Integration | NEW | Cisco AI Security Framework taxonomy for breakpoint auto-approval rules | - | plugins/a5c/marketplace/plugins/ai-threat-taxonomy/ |
+| Skill Security Scanner | UPGRADE | Enhanced security scanning with multi-engine detection and threat taxonomy | basic-security | plugins/a5c/marketplace/blueprints/skill-security-scanner/ |
+| AI Threat Taxonomy Integration | NEW | Cisco AI Security Framework taxonomy for breakpoint auto-approval rules | - | plugins/a5c/marketplace/blueprints/ai-threat-taxonomy/ |
 
 ## Skipped
 

@@ -49,7 +49,7 @@ import { telemetry } from '@a5c-ai/agent-mux-observability';
 
 describe('OTEL Tracing and Metrics Verification', () => {
   beforeEach(() => {
-    process.env.AMUX_OBSERVABILITY_MODE = 'full';
+    process.env.AGENT_MUX_OBSERVABILITY_MODE = 'full';
     vi.clearAllMocks();
   });
 

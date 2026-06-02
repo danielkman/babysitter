@@ -79,8 +79,8 @@
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| CTF Security Toolkit | NEW | Comprehensive CTF toolchain with challenge solving orchestration | - | plugins/a5c/marketplace/plugins/ctf-security-toolkit/ |
-| Binary Analysis Suite | UPGRADE | Enhanced binary analysis with reverse engineering and symbolic execution tools | basic-security | plugins/a5c/marketplace/plugins/binary-analysis-suite/ |
+| CTF Security Toolkit | NEW | Comprehensive CTF toolchain with challenge solving orchestration | - | plugins/a5c/marketplace/blueprints/ctf-security-toolkit/ |
+| Binary Analysis Suite | UPGRADE | Enhanced binary analysis with reverse engineering and symbolic execution tools | basic-security | plugins/a5c/marketplace/blueprints/binary-analysis-suite/ |
 
 ### SKIP
 - Individual technique encyclopedias (these are reference knowledge, not processes)

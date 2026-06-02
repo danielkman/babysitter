@@ -152,7 +152,7 @@ Blueprint `my-plugin` is installed at version `1.0.0`. A new version `1.2.0` is 
          "file": "1.1.0_to_1.2.0.js",
          "type": "js",
          "instructions": "// Process file content...",
-         "processFile": "/home/user/.a5c/blueprints/marketplaces/my-marketplace/plugins/my-plugin/migrations/1.1.0_to_1.2.0.js"
+         "processFile": "/home/user/.a5c/blueprints/marketplaces/my-marketplace/blueprints/my-plugin/migrations/1.1.0_to_1.2.0.js"
        }
      ]
    }

@@ -55,4 +55,4 @@ HIGH VALUE for babysitter enhancement patterns. The learning memory system, cont
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| OpenWolf Integration | NEW | Direct integration with OpenWolf middleware for enhanced babysitter context management | - | plugins/a5c/marketplace/plugins/openwolf-integration/ |
+| OpenWolf Integration | NEW | Direct integration with OpenWolf middleware for enhanced babysitter context management | - | plugins/a5c/marketplace/blueprints/openwolf-integration/ |

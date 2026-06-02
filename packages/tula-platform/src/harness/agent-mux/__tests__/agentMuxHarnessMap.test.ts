@@ -1,53 +1,53 @@
 import { describe, it, expect } from "vitest";
 import {
-  HARNESS_TO_AMUX_ADAPTER,
+  HARNESS_TO_AGENT_MUX_ADAPTER,
   mapHarnessToAmuxAdapter,
   hasAmuxAdapter,
 } from "./agentMuxHarnessMap";
 
-describe("HARNESS_TO_AMUX_ADAPTER", () => {
+describe("HARNESS_TO_AGENT_MUX_ADAPTER", () => {
   it("maps claude-code to claude", () => {
-    expect(HARNESS_TO_AMUX_ADAPTER["claude-code"]).toBe("claude");
+    expect(HARNESS_TO_AGENT_MUX_ADAPTER["claude-code"]).toBe("claude");
   });
 
   it("maps codex to codex", () => {
-    expect(HARNESS_TO_AMUX_ADAPTER["codex"]).toBe("codex");
+    expect(HARNESS_TO_AGENT_MUX_ADAPTER["codex"]).toBe("codex");
   });
 
   it("maps gemini-cli to gemini", () => {
-    expect(HARNESS_TO_AMUX_ADAPTER["gemini-cli"]).toBe("gemini");
+    expect(HARNESS_TO_AGENT_MUX_ADAPTER["gemini-cli"]).toBe("gemini");
   });
 
   it("maps github-copilot to copilot", () => {
-    expect(HARNESS_TO_AMUX_ADAPTER["github-copilot"]).toBe("copilot");
+    expect(HARNESS_TO_AGENT_MUX_ADAPTER["github-copilot"]).toBe("copilot");
   });
 
   it("maps cursor to cursor", () => {
-    expect(HARNESS_TO_AMUX_ADAPTER["cursor"]).toBe("cursor");
+    expect(HARNESS_TO_AGENT_MUX_ADAPTER["cursor"]).toBe("cursor");
   });
 
   it("maps opencode to opencode", () => {
-    expect(HARNESS_TO_AMUX_ADAPTER["opencode"]).toBe("opencode");
+    expect(HARNESS_TO_AGENT_MUX_ADAPTER["opencode"]).toBe("opencode");
   });
 
   it("maps openclaw to openclaw", () => {
-    expect(HARNESS_TO_AMUX_ADAPTER["openclaw"]).toBe("openclaw");
+    expect(HARNESS_TO_AGENT_MUX_ADAPTER["openclaw"]).toBe("openclaw");
   });
 
   it("maps oh-my-pi to omp", () => {
-    expect(HARNESS_TO_AMUX_ADAPTER["oh-my-pi"]).toBe("omp");
+    expect(HARNESS_TO_AGENT_MUX_ADAPTER["oh-my-pi"]).toBe("omp");
   });
 
   it("does not include pi", () => {
-    expect(HARNESS_TO_AMUX_ADAPTER["pi"]).toBeUndefined();
+    expect(HARNESS_TO_AGENT_MUX_ADAPTER["pi"]).toBeUndefined();
   });
 
   it("does not include agent-core", () => {
-    expect(HARNESS_TO_AMUX_ADAPTER["agent-core"]).toBeUndefined();
+    expect(HARNESS_TO_AGENT_MUX_ADAPTER["agent-core"]).toBeUndefined();
   });
 
   it("has exactly 9 entries", () => {
-    expect(Object.keys(HARNESS_TO_AMUX_ADAPTER)).toHaveLength(9);
+    expect(Object.keys(HARNESS_TO_AGENT_MUX_ADAPTER)).toHaveLength(9);
   });
 });
 

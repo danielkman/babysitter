@@ -62,5 +62,5 @@ Key architectural concepts:
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Symphony Bridge Integration | NEW | Issue tracker polling with babysitter run creation and WORKFLOW.md contract mapping | - | plugins/a5c/marketplace/plugins/symphony-bridge-integration/ |
-| Workspace Isolation Enhancement | UPGRADE | Enhanced workspace management beyond basic run directories | babysitter core run directories | plugins/a5c/marketplace/plugins/workspace-isolation-enhancement/ |
+| Symphony Bridge Integration | NEW | Issue tracker polling with babysitter run creation and WORKFLOW.md contract mapping | - | plugins/a5c/marketplace/blueprints/symphony-bridge-integration/ |
+| Workspace Isolation Enhancement | UPGRADE | Enhanced workspace management beyond basic run directories | babysitter core run directories | plugins/a5c/marketplace/blueprints/workspace-isolation-enhancement/ |

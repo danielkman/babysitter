@@ -11,8 +11,8 @@ attributes:
     - "shell-hooks"
     - "markdown-skills"
   contextFiles:
-    - blueprints/babysitter/plugin.json
-    - blueprints/babysitter/skills/babysit/SKILL.md
+    - plugins/babysitter/plugin.json
+    - plugins/babysitter/skills/babysit/SKILL.md
 edges:
   emits_artifact:
     - target: plugin-target:claude-code

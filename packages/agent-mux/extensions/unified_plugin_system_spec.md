@@ -17,7 +17,7 @@ The babysitter project currently maintains **9 separate plugin directories** und
 
 | Directory | Harness | Manual sync required |
 |-----------|---------|---------------------|
-| `blueprints/babysitter/` | Claude Code | Source of truth |
+| `plugins/babysitter/` | Claude Code | Source of truth |
 | `plugins/babysitter-codex/` | Codex | Skills derived from commands via `sync-command-skills.js` |
 | `plugins/babysitter-cursor/` | Cursor | Manual |
 | `plugins/babysitter-gemini/` | Gemini CLI | Commands converted to TOML |
@@ -413,7 +413,7 @@ allowed-tools: Read, Grep, Write, Task, Bash, Edit, Grep, Glob, WebFetch, WebSea
 Invoke the babysitter:babysit skill (using the Skill tool) and follow its instructions (SKILL.md). but without any user interaction or breakpoints in the run.
 ```
 
-**Current codebase commands** (all in `blueprints/babysitter/commands/`):
+**Current codebase commands** (all in `plugins/babysitter/commands/`):
 `call.md`, `yolo.md`, `forever.md`, `plan.md`, `resume.md`, `help.md`, `observe.md`, `cleanup.md`, `plugins.md`, `project-install.md`, `user-install.md`, `contrib.md`, `retrospect.md`, `assimilate.md`, `doctor.md`
 
 ### 3.2 Skills (`skills/*/SKILL.md`)
@@ -2264,9 +2264,9 @@ jobs:
 
 #### Phase 1: Create the UPF Source
 
-1. **Create `a5c-plugin.json`** in a new `blueprints/babysitter-unified/` directory (or reuse `blueprints/babysitter/`).
+1. **Create `a5c-plugin.json`** in a new `plugins/babysitter-unified/` directory (or reuse `plugins/babysitter/`).
 
-2. **Base the manifest on `blueprints/babysitter/plugin.json`**, which is already the superset:
+2. **Base the manifest on `plugins/babysitter/plugin.json`**, which is already the superset:
 
 ```json
 {
@@ -2300,7 +2300,7 @@ jobs:
 }
 ```
 
-3. **Copy canonical files** from `blueprints/babysitter/`:
+3. **Copy canonical files** from `plugins/babysitter/`:
    - `commands/*.md` (already the source of truth)
    - `skills/babysit/SKILL.md` (standalone skill)
    - `hooks/*.sh` (handler scripts)
@@ -2320,7 +2320,7 @@ jobs:
 
 ```bash
 npx @a5c-ai/agent-mux-extensions compile --target claude-code --output /tmp/test-claude-code
-npx @a5c-ai/agent-mux-extensions diff --target claude-code --existing blueprints/babysitter/
+npx @a5c-ai/agent-mux-extensions diff --target claude-code --existing plugins/babysitter/
 ```
 
 2. Fix any discrepancies. The compiler output should match the existing plugins exactly (modulo whitespace/formatting).
@@ -2342,11 +2342,11 @@ npx @a5c-ai/agent-mux-extensions diff --target claude-code --existing blueprints
 
 | Current location | UPF role |
 |-----------------|----------|
-| `blueprints/babysitter/plugin.json` | Base for `a5c-plugin.json` |
-| `blueprints/babysitter/commands/*.md` | Canonical commands (copied to UPF) |
-| `blueprints/babysitter/skills/babysit/SKILL.md` | Standalone skill (copied to UPF) |
-| `blueprints/babysitter/hooks/*.sh` | Canonical hook handlers (copied to UPF) |
-| `blueprints/babysitter/versions.json` | Canonical version pin (copied to UPF) |
+| `plugins/babysitter/plugin.json` | Base for `a5c-plugin.json` |
+| `plugins/babysitter/commands/*.md` | Canonical commands (copied to UPF) |
+| `plugins/babysitter/skills/babysit/SKILL.md` | Standalone skill (copied to UPF) |
+| `plugins/babysitter/hooks/*.sh` | Canonical hook handlers (copied to UPF) |
+| `plugins/babysitter/versions.json` | Canonical version pin (copied to UPF) |
 | `plugins/babysitter-gemini/GEMINI.md` | Context file for Gemini target |
 | `plugins/babysitter-github/AGENTS.md` | Context file for Copilot/Pi targets |
 | `scripts/plugin-command-sync-lib.cjs` | Logic absorbed into compiler |
@@ -2440,7 +2440,7 @@ Options:
 **Example:**
 
 ```bash
-npx @a5c-ai/agent-mux-extensions validate --source blueprints/babysitter-unified --strict
+npx @a5c-ai/agent-mux-extensions validate --source plugins/babysitter-unified --strict
 ```
 
 ### 10.3 `diff`

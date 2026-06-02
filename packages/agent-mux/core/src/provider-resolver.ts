@@ -24,7 +24,7 @@ function resolveProviderId(input: ResolveProviderInput): ProviderId {
     // Unknown provider name — pass through as 'custom'
     return 'custom';
   }
-  const envProvider = process.env['AMUX_PROVIDER'];
+  const envProvider = process.env['AGENT_MUX_PROVIDER'];
   if (envProvider && envProvider in PROVIDER_DEFAULTS) {
     return envProvider as ProviderId;
   }
@@ -33,7 +33,7 @@ function resolveProviderId(input: ResolveProviderInput): ProviderId {
 
 function resolveApiKey(providerId: ProviderId, explicit?: string): string | undefined {
   if (explicit) return explicit;
-  const agentMuxKey = process.env['AMUX_API_KEY'];
+  const agentMuxKey = process.env['AGENT_MUX_API_KEY'];
   if (agentMuxKey) return agentMuxKey;
   if (providerId === 'google') {
     return process.env['GOOGLE_API_KEY'] ?? process.env['GEMINI_API_KEY'];
@@ -82,7 +82,7 @@ function resolveAuth(providerId: ProviderId, input: ResolveProviderInput): Provi
 
 export function resolveProvider(input: ResolveProviderInput): ProviderConfig {
   // Load profile if specified
-  const profileName = input.profile ?? process.env['AMUX_PROFILE'];
+  const profileName = input.profile ?? process.env['AGENT_MUX_PROFILE'];
   const profile = profileName ? loadProfile(profileName) : null;
   const fileDefaults = loadProviderDefaults();
 
@@ -92,10 +92,10 @@ export function resolveProvider(input: ResolveProviderInput): ProviderConfig {
   const defaults = PROVIDER_DEFAULTS[providerId];
 
   const transport: TransportId = (input.transport ?? profile?.transport) as TransportId ?? defaults.transport;
-  const modelSource = input.model ? 'input' : process.env['AMUX_MODEL'] ? 'AMUX_MODEL' : profile?.model ? 'profile' : fileDefaults?.model ? 'defaults-file' : 'provider-default';
-  const rawModel = input.model ?? process.env['AMUX_MODEL'] ?? profile?.model ?? fileDefaults?.model ?? defaults.defaultModel;
+  const modelSource = input.model ? 'input' : process.env['AGENT_MUX_MODEL'] ? 'AGENT_MUX_MODEL' : profile?.model ? 'profile' : fileDefaults?.model ? 'defaults-file' : 'provider-default';
+  const rawModel = input.model ?? process.env['AGENT_MUX_MODEL'] ?? profile?.model ?? fileDefaults?.model ?? defaults.defaultModel;
   const model = translateModelId(rawModel, providerId);
-  if (process.env['AMUX_LOG_LEVEL'] === 'debug') {
+  if (process.env['AGENT_MUX_LOG_LEVEL'] === 'debug') {
     process.stderr.write(`[amux] resolved model=${model} from ${modelSource} (provider=${providerId})\n`);
   }
 
@@ -114,11 +114,11 @@ export function resolveProvider(input: ResolveProviderInput): ProviderConfig {
   if (profile?.params) {
     Object.assign(params, profile.params);
   }
-  const regionSource = input.region ? 'input' : process.env['AMUX_REGION'] ? 'AMUX_REGION' : process.env['GOOGLE_CLOUD_LOCATION'] ? 'GOOGLE_CLOUD_LOCATION' : process.env['VERTEXAI_LOCATION'] ? 'VERTEXAI_LOCATION' : process.env['AWS_REGION'] ? 'AWS_REGION' : process.env['AWS_REGION_NAME'] ? 'AWS_REGION_NAME' : params['region'] ? 'params' : 'none';
-  const region = input.region ?? process.env['AMUX_REGION'] ?? process.env['GOOGLE_CLOUD_LOCATION'] ?? process.env['VERTEXAI_LOCATION'] ?? process.env['AWS_REGION'] ?? process.env['AWS_REGION_NAME'] ?? params['region'] as string | undefined;
-  const project = input.project ?? process.env['AMUX_PROJECT'] ?? process.env['GOOGLE_CLOUD_PROJECT'] ?? process.env['VERTEXAI_PROJECT'] ?? params['project'];
+  const regionSource = input.region ? 'input' : process.env['AGENT_MUX_REGION'] ? 'AGENT_MUX_REGION' : process.env['GOOGLE_CLOUD_LOCATION'] ? 'GOOGLE_CLOUD_LOCATION' : process.env['VERTEXAI_LOCATION'] ? 'VERTEXAI_LOCATION' : process.env['AWS_REGION'] ? 'AWS_REGION' : process.env['AWS_REGION_NAME'] ? 'AWS_REGION_NAME' : params['region'] ? 'params' : 'none';
+  const region = input.region ?? process.env['AGENT_MUX_REGION'] ?? process.env['GOOGLE_CLOUD_LOCATION'] ?? process.env['VERTEXAI_LOCATION'] ?? process.env['AWS_REGION'] ?? process.env['AWS_REGION_NAME'] ?? params['region'] as string | undefined;
+  const project = input.project ?? process.env['AGENT_MUX_PROJECT'] ?? process.env['GOOGLE_CLOUD_PROJECT'] ?? process.env['VERTEXAI_PROJECT'] ?? params['project'];
   const providersUsingGenericApiBase = new Set(['foundry', 'azure', 'custom', 'local']);
-  const agentMuxApiBase = providersUsingGenericApiBase.has(providerId) ? process.env['AMUX_API_BASE'] : undefined;
+  const agentMuxApiBase = providersUsingGenericApiBase.has(providerId) ? process.env['AGENT_MUX_API_BASE'] : undefined;
   const apiBase = input.apiBase ?? agentMuxApiBase ?? params['apiBase'];
 
   if (region) params['region'] = region;

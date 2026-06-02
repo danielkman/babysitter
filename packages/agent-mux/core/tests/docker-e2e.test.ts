@@ -53,7 +53,7 @@ d('docker E2E (DOCKER_E2E=1)', () => {
     const spawnArgs: SpawnArgs = {
       command: 'echo',
       args: ['amux-docker-e2e-marker'],
-      env: { AMUX_E2E: '1' },
+      env: { AGENT_MUX_E2E: '1' },
       cwd: process.cwd(),
       usePty: false,
     };

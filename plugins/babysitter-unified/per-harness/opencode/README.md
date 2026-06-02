@@ -65,11 +65,11 @@ npx --yes @a5c-ai/babysitter-opencode install --workspace /path/to/project
 
 ```bash
 mkdir -p .opencode/plugins/babysitter
-cp -r node_modules/@a5c-ai/babysitter-opencode/hooks .opencode/blueprints/babysitter/
-cp -r node_modules/@a5c-ai/babysitter-opencode/skills .opencode/blueprints/babysitter/
-cp -r node_modules/@a5c-ai/babysitter-opencode/commands .opencode/blueprints/babysitter/
-cp node_modules/@a5c-ai/babysitter-opencode/plugin.json .opencode/blueprints/babysitter/
-cp node_modules/@a5c-ai/babysitter-opencode/versions.json .opencode/blueprints/babysitter/
+cp -r node_modules/@a5c-ai/babysitter-opencode/hooks .opencode/plugins/babysitter/
+cp -r node_modules/@a5c-ai/babysitter-opencode/skills .opencode/plugins/babysitter/
+cp -r node_modules/@a5c-ai/babysitter-opencode/commands .opencode/plugins/babysitter/
+cp node_modules/@a5c-ai/babysitter-opencode/plugin.json .opencode/plugins/babysitter/
+cp node_modules/@a5c-ai/babysitter-opencode/versions.json .opencode/plugins/babysitter/
 ```
 
 ## Uninstallation
@@ -88,7 +88,7 @@ babysitter-opencode uninstall --workspace /path/to/project
 
 When [Accomplish](https://github.com/accomplish-ai/accomplish) is installed,
 the installer automatically detects it and copies the plugin into Accomplish's
-OpenCode config directory (`<userDataPath>/opencode/blueprints/babysitter/`).
+OpenCode config directory (`<userDataPath>/opencode/plugins/babysitter/`).
 
 ```bash
 # Auto-detects Accomplish during standard install
@@ -189,10 +189,10 @@ posts the result via `babysitter task:post`.
 babysitter-opencode doctor
 
 # Or verify manually:
-test -f .opencode/blueprints/babysitter/index.js
-test -f .opencode/blueprints/babysitter/hooks/session-created.js
-test -f .opencode/blueprints/babysitter/hooks/shell-env.js
-test -f .opencode/blueprints/babysitter/skills/babysit/SKILL.md
+test -f .opencode/plugins/babysitter/index.js
+test -f .opencode/plugins/babysitter/hooks/session-created.js
+test -f .opencode/plugins/babysitter/hooks/shell-env.js
+test -f .opencode/plugins/babysitter/skills/babysit/SKILL.md
 
 # Verify SDK CLI
 babysitter --version

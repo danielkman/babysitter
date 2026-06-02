@@ -54,5 +54,5 @@ HIGH VALUE for domain specialization. The react-native-best-practices skill demo
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| React Native Profiler Integration | NEW | Metro bundler analysis, Flipper integration, and performance monitoring tools | - | plugins/a5c/marketplace/plugins/react-native-profiler-integration/ |
-| Performance Triage Framework | NEW | Generic performance optimization with customizable categories and impact ratings | - | plugins/a5c/marketplace/plugins/performance-triage-framework/ |
+| React Native Profiler Integration | NEW | Metro bundler analysis, Flipper integration, and performance monitoring tools | - | plugins/a5c/marketplace/blueprints/react-native-profiler-integration/ |
+| Performance Triage Framework | NEW | Generic performance optimization with customizable categories and impact ratings | - | plugins/a5c/marketplace/blueprints/performance-triage-framework/ |

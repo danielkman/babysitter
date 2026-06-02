@@ -69,4 +69,4 @@ Moderate extractable value. The Vue/Nuxt/Vite skills are ecosystem-specific. The
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Git Submodule Sync | NEW | Automatic syncing of vendored content from upstream repos via git submodules | - | plugins/a5c/marketplace/plugins/git-submodule-sync/ |
+| Git Submodule Sync | NEW | Automatic syncing of vendored content from upstream repos via git submodules | - | plugins/a5c/marketplace/blueprints/git-submodule-sync/ |

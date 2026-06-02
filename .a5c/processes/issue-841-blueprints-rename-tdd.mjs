@@ -516,7 +516,7 @@ export const readArtifactsTask = defineTask('issue-841.read-artifacts', (args, t
       "echo '## diff stat'",
       `git diff --stat origin/${args.baseBranch}...HEAD || git diff --stat`,
       "echo '## plugin/blueprint references in SDK CLI and SDK modules'",
-      "rg -n 'plugin|blueprint|plugins:|blueprints:|plugin:|blueprint:' packages/sdk/src docs/plugins.md docs/plugins docs/blueprints.md plugins/a5c blueprints plugins/babysitter blueprints/babysitter-unified 2>/dev/null || true",
+      "rg -n 'plugin|blueprint|plugins:|blueprints:|plugin:|blueprint:' packages/sdk/src docs/plugins.md docs/plugins docs/blueprints.md plugins/a5c blueprints plugins/babysitter plugins/babysitter-unified 2>/dev/null || true",
       '} | tee .a5c/artifacts/issue-841/artifacts-' + args.phase.id + '.md',
     ].join('\n'),
     expectedExitCode: 0,

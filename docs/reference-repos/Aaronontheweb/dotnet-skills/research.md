@@ -50,5 +50,5 @@ HIGH VALUE for domain specialization. This is the most authoritative .NET skills
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| CRAP Analysis Integration | NEW | Code quality analysis setup with coverage tooling and complexity metrics | - | plugins/a5c/marketplace/plugins/crap-analysis-integration/ |
-| Testcontainers Setup | NEW | Container infrastructure setup for .NET integration testing | - | plugins/a5c/marketplace/plugins/testcontainers-setup/ |
+| CRAP Analysis Integration | NEW | Code quality analysis setup with coverage tooling and complexity metrics | - | plugins/a5c/marketplace/blueprints/crap-analysis-integration/ |
+| Testcontainers Setup | NEW | Container infrastructure setup for .NET integration testing | - | plugins/a5c/marketplace/blueprints/testcontainers-setup/ |

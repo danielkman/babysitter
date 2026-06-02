@@ -63,4 +63,4 @@ MEDIUM - Contains educational methodology and prompt engineering techniques that
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| AI Development Onboarding | NEW | Educational plugin for systematic AI learning | - | plugins/a5c/marketplace/plugins/ai-development-onboarding/ |
+| AI Development Onboarding | NEW | Educational plugin for systematic AI learning | - | plugins/a5c/marketplace/blueprints/ai-development-onboarding/ |

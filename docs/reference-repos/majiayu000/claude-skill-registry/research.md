@@ -50,8 +50,8 @@ The formalized skill schema (`schema/skill.schema.json`) is the closest thing to
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Marketplace Security Gate | NEW | Security scanning for plugin installation with dangerous pattern detection | - | plugins/a5c/marketplace/plugins/marketplace-security-gate/ |
-| Skill Registry Browser | NEW | Browsing and installing skills from public registries with search and caching | - | plugins/a5c/marketplace/plugins/skill-registry-browser/ |
+| Marketplace Security Gate | NEW | Security scanning for plugin installation with dangerous pattern detection | - | plugins/a5c/marketplace/blueprints/marketplace-security-gate/ |
+| Skill Registry Browser | NEW | Browsing and installing skills from public registries with search and caching | - | plugins/a5c/marketplace/blueprints/skill-registry-browser/ |
 
 ## Implicit Procedural Knowledge
 

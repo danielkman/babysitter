@@ -39,7 +39,7 @@ MEDIUM -- The pattern detection checklist and voice calibration procedure could 
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Writing Humanizer | NEW | Post-processing hooks for content generation workflows with AI detection and rewriting | - | plugins/a5c/marketplace/plugins/writing-humanizer/ |
+| Writing Humanizer | NEW | Post-processing hooks for content generation workflows with AI detection and rewriting | - | plugins/a5c/marketplace/blueprints/writing-humanizer/ |
 
 ## Implicit Procedural Knowledge
 - The "two-pass anti-AI" technique: first ask "what makes this AI-generated?", then "fix those tells"

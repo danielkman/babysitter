@@ -68,5 +68,5 @@ High value as a domain specialization exemplar. The pipeline architecture is the
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Godot Integration | NEW | Godot CLI tools integration for project scaffolding and build automation | - | plugins/a5c/marketplace/plugins/godot-integration/ |
-| Screenshot QA Integration | NEW | Visual regression testing via screenshot capture and comparison tools | - | plugins/a5c/marketplace/plugins/screenshot-qa-integration/ |
+| Godot Integration | NEW | Godot CLI tools integration for project scaffolding and build automation | - | plugins/a5c/marketplace/blueprints/godot-integration/ |
+| Screenshot QA Integration | NEW | Visual regression testing via screenshot capture and comparison tools | - | plugins/a5c/marketplace/blueprints/screenshot-qa-integration/ |

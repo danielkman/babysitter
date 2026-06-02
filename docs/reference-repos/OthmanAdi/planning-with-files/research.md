@@ -92,5 +92,5 @@ A babysitter plugin that enables seamless session recovery after context window 
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Plan Persistence Integration | UPGRADE | Human-readable plan files alongside babysitter's internal journal | plugins/a5c/marketplace/plugins/claude-mem/ | plugins/a5c/marketplace/plugins/plan-persistence-integration/ |
-| Session Recovery Enhancement | UPGRADE | Enhanced session recovery across multiple IDE platforms | plugins/a5c/marketplace/plugins/claude-mem/ | plugins/a5c/marketplace/plugins/session-recovery-enhancement/ |
+| Plan Persistence Integration | UPGRADE | Human-readable plan files alongside babysitter's internal journal | plugins/a5c/marketplace/blueprints/claude-mem/ | plugins/a5c/marketplace/blueprints/plan-persistence-integration/ |
+| Session Recovery Enhancement | UPGRADE | Enhanced session recovery across multiple IDE platforms | plugins/a5c/marketplace/blueprints/claude-mem/ | plugins/a5c/marketplace/blueprints/session-recovery-enhancement/ |

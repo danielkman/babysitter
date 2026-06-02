@@ -69,7 +69,7 @@ interface CacheEntry {
 
 const CACHE_TTL_MS = 60_000;
 const DEFAULT_TIMEOUT_MS = 5_000;
-const AMUX_PACKAGE = "@a5c-ai/agent-mux";
+const AGENT_MUX_PACKAGE = "@a5c-ai/agent-mux";
 const UNAVAILABLE_RESULT: ExternalAgentDiscovery = {
   available: false,
   agents: [],
@@ -109,8 +109,8 @@ async function discoverViaModule(
     }
 
     const client = createClient({
-      defaultAgent: process.env.AMUX_PROVIDER,
-      defaultModel: process.env.AMUX_MODEL,
+      defaultAgent: process.env.AGENT_MUX_PROVIDER,
+      defaultModel: process.env.AGENT_MUX_MODEL,
       cwd: options.cwd,
     });
     const adapters = client?.adapters;
@@ -146,7 +146,7 @@ async function loadAmuxModule(): Promise<AmuxModuleLike | null> {
   }
 
   try {
-    return await import(AMUX_PACKAGE) as AmuxModuleLike;
+    return await import(AGENT_MUX_PACKAGE) as AmuxModuleLike;
   } catch {
     return null;
   }
@@ -283,7 +283,7 @@ function normalizeCliAgent(value: unknown): ExternalAgentInfo | null {
 }
 
 function defaultProvider(): string | null {
-  return nonEmptyString(process.env.AMUX_PROVIDER);
+  return nonEmptyString(process.env.AGENT_MUX_PROVIDER);
 }
 
 function defaultModel(client: AgentMuxClientLike, installedInfos: AmuxInstalledInfo[]): string | null {
@@ -316,7 +316,7 @@ function defaultModel(client: AgentMuxClientLike, installedInfos: AmuxInstalledI
 }
 
 function defaultModelFromEnv(): string | null {
-  return nonEmptyString(process.env.AMUX_MODEL);
+  return nonEmptyString(process.env.AGENT_MUX_MODEL);
 }
 
 function normalizeAgentName(value: unknown): string {

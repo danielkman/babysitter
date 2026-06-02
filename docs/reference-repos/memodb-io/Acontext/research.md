@@ -59,5 +59,5 @@ High conceptual value. The "skills as memory" paradigm aligns well with babysitt
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Memory Layer | NEW | Persistent skill-scoped memory that accumulates context across runs | claude-mem | plugins/a5c/marketplace/plugins/memory-layer/ |
-| Self-Evolving Skills Tracker | NEW | Track skill effectiveness and suggest refinements based on outcome patterns | - | plugins/a5c/marketplace/plugins/self-evolving-skills-tracker/ |
+| Memory Layer | NEW | Persistent skill-scoped memory that accumulates context across runs | claude-mem | plugins/a5c/marketplace/blueprints/memory-layer/ |
+| Self-Evolving Skills Tracker | NEW | Track skill effectiveness and suggest refinements based on outcome patterns | - | plugins/a5c/marketplace/blueprints/self-evolving-skills-tracker/ |

@@ -44,4 +44,4 @@ MEDIUM -- The skill-maker meta-pattern is the most extractable element. Domain w
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Lark Bridge | NEW | Lark/Feishu ecosystem integration | - | plugins/a5c/marketplace/plugins/lark-bridge/ |
+| Lark Bridge | NEW | Lark/Feishu ecosystem integration | - | plugins/a5c/marketplace/blueprints/lark-bridge/ |

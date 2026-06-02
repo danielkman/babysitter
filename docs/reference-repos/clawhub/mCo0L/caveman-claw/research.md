@@ -42,7 +42,7 @@ None.
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Terse Mode Toggle | POTENTIAL OVERLAP | Session-level terse response mode with conversation compression | babysitter compression system | plugins/a5c/marketplace/plugins/terse-mode-toggle/ |
+| Terse Mode Toggle | POTENTIAL OVERLAP | Session-level terse response mode with conversation compression | babysitter compression system | plugins/a5c/marketplace/blueprints/terse-mode-toggle/ |
 
 ## Implicit Procedural Knowledge
 

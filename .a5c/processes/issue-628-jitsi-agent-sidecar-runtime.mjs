@@ -373,7 +373,7 @@ const readArtifactsTask = defineTask('issue-628.read-artifacts', (args, taskCtx)
       role: 'implementation artifact analyst',
       task: 'Read final changed artifacts and summarize them for independent spec review.',
       instructions: [
-        'Inspect git status, git diff --stat, and the full relevant diff, excluding unrelated .agents/plugins/marketplace.json, .codex/**, and blueprints/babysitter/** changes.',
+        'Inspect git status, git diff --stat, and the full relevant diff, excluding unrelated .agents/plugins/marketplace.json, .codex/**, and plugins/babysitter/** changes.',
         'Search changed files and relevant packages for key runtime terms: jitsi-agent-sidecar, /tmp/jitsi-agent.sock, AGENT_SOCKET_PATH, JITSI_AGENT_SOCKET, JITSI_ROOM_URL, speak_tts, send_chat, raise_hand, lower_hand, get_transcript, get_participants, participant_joined, recording_started, Puppeteer, chromium, STT, TTS, VAD, preStop, SIGTERM, NDJSON.',
         'Do not edit files.',
         'Return JSON: { gitStatus: string[], diffStat: string, changedFiles: string[], artifactSummary: string, keyRuntimeMatches: object[], omittedOrUnrelatedChanges: string[] }.',

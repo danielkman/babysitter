@@ -85,7 +85,7 @@ Comprehensive collection of Agent Skills for optimizing web projects based on Go
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Web Quality Audit | NEW | Lighthouse/CWV audit integration with configurable thresholds and CI/CD hooks | - | plugins/a5c/marketplace/plugins/web-quality-audit/ |
+| Web Quality Audit | NEW | Lighthouse/CWV audit integration with configurable thresholds and CI/CD hooks | - | plugins/a5c/marketplace/blueprints/web-quality-audit/ |
 
 ## Skipped
 

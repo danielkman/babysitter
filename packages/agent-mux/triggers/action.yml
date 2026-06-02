@@ -183,14 +183,14 @@ runs:
         set -euo pipefail
         cd "$INPUT_WORKING_DIRECTORY"
         # Map adapter names to agent-mux agent aliases
-        AMUX_AGENT="$INPUT_HARNESS"
+        AGENT_MUX_AGENT="$INPUT_HARNESS"
         case "$INPUT_HARNESS" in
-          claude-code) AMUX_AGENT="claude" ;;
-          gemini-cli) AMUX_AGENT="gemini" ;;
-          copilot-cli) AMUX_AGENT="copilot" ;;
-          cursor-cli) AMUX_AGENT="cursor" ;;
+          claude-code) AGENT_MUX_AGENT="claude" ;;
+          gemini-cli) AGENT_MUX_AGENT="gemini" ;;
+          copilot-cli) AGENT_MUX_AGENT="copilot" ;;
+          cursor-cli) AGENT_MUX_AGENT="cursor" ;;
         esac
-        agent-mux install "$AMUX_AGENT" || true
+        agent-mux install "$AGENT_MUX_AGENT" || true
 
     - name: Install babysitter plugin
       if: ${{ inputs.babysitter-plugin == 'true' }}
@@ -296,7 +296,7 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       env:
         INPUT_PRE_RUN: ${{ inputs.pre-run }}
-        AMUX_TRIGGER_EVENT_PATH: ${{ steps.trigger.outputs.event }}
+        AGENT_MUX_TRIGGER_EVENT_PATH: ${{ steps.trigger.outputs.event }}
       run: |
         set -euo pipefail
         bash -euo pipefail -c "$INPUT_PRE_RUN"
@@ -321,25 +321,25 @@ runs:
         INPUT_BABYSITTER_PREFIX: ${{ inputs.babysitter-prompt-prefix }}
         INPUT_ARGS: ${{ inputs.args }}
         INPUT_ARGS_JSON: ${{ inputs.args-json }}
-        AMUX_TRIGGER_EVENT_PATH: ${{ steps.trigger.outputs.event }}
+        AGENT_MUX_TRIGGER_EVENT_PATH: ${{ steps.trigger.outputs.event }}
       run: |
         set -euo pipefail
         AMUX="agent-mux"
 
         # Map harness names to agent-mux aliases
-        AMUX_HARNESS="$INPUT_HARNESS"
+        AGENT_MUX_HARNESS="$INPUT_HARNESS"
         case "$INPUT_HARNESS" in
-          claude-code) AMUX_HARNESS="claude" ;;
-          gemini-cli) AMUX_HARNESS="gemini" ;;
-          copilot-cli) AMUX_HARNESS="copilot" ;;
-          cursor-cli) AMUX_HARNESS="cursor" ;;
+          claude-code) AGENT_MUX_HARNESS="claude" ;;
+          gemini-cli) AGENT_MUX_HARNESS="gemini" ;;
+          copilot-cli) AGENT_MUX_HARNESS="copilot" ;;
+          cursor-cli) AGENT_MUX_HARNESS="cursor" ;;
         esac
 
         # Build command args
         ARGS=()
         if [ "$INPUT_COMMAND" = "launch" ] || [ "$INPUT_COMMAND" = "run" ]; then
           ARGS+=("$INPUT_COMMAND")
-          [ -n "$AMUX_HARNESS" ] && ARGS+=("$AMUX_HARNESS")
+          [ -n "$AGENT_MUX_HARNESS" ] && ARGS+=("$AGENT_MUX_HARNESS")
           [ -n "$INPUT_PROVIDER" ] && ARGS+=("$INPUT_PROVIDER")
         else
           ARGS+=("$INPUT_COMMAND")
@@ -407,7 +407,7 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       env:
         INPUT_POST_RUN: ${{ inputs.post-run }}
-        AMUX_TRIGGER_EVENT_PATH: ${{ steps.trigger.outputs.event }}
+        AGENT_MUX_TRIGGER_EVENT_PATH: ${{ steps.trigger.outputs.event }}
       run: |
         set -euo pipefail
         bash -euo pipefail -c "$INPUT_POST_RUN"

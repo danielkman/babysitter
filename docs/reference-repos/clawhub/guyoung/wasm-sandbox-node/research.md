@@ -42,7 +42,7 @@ None -- sandboxing is a plugin concern, not a process.
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| WASM Sandbox Environment | UPGRADE | WebAssembly-based sandboxing beyond existing Docker/chroot approaches | plugins/a5c/marketplace/plugins/basic-security/ | plugins/a5c/marketplace/plugins/wasm-sandbox-environment/ |
+| WASM Sandbox Environment | UPGRADE | WebAssembly-based sandboxing beyond existing Docker/chroot approaches | plugins/a5c/marketplace/blueprints/basic-security/ | plugins/a5c/marketplace/blueprints/wasm-sandbox-environment/ |
 
 ## Implicit Procedural Knowledge
 

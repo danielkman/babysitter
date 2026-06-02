@@ -397,7 +397,7 @@ function resolvePassthroughApiBase(config: ProxyConfig, env: NodeJS.ProcessEnv =
     return config.apiBase;
   }
 
-  const legacyOverride = env.AMUX_PROXY_TARGET_API_BASE?.trim();
+  const legacyOverride = env.AGENT_MUX_PROXY_TARGET_API_BASE?.trim();
   if (legacyOverride) {
     return legacyOverride;
   }

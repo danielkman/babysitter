@@ -171,11 +171,11 @@ jobs:
                 'tula': {agent:'tula', amux_agent:'tula', agent_path:'tula'},
               };
               const models = {
-                'foundry-gpt55': {provider:'foundry-openai', amux_provider:'foundry', model:'gpt-5.5', required_env:'AZURE_API_KEY,AMUX_API_BASE'},
+                'foundry-gpt55': {provider:'foundry-openai', amux_provider:'foundry', model:'gpt-5.5', required_env:'AZURE_API_KEY,AGENT_MUX_API_BASE'},
                 'google-gemini31': {provider:'google', amux_provider:'google', model:'gemini-3.5-flash', required_env:'GOOGLE_API_KEY'},
                 'anthropic-sonnet46': {provider:'anthropic', amux_provider:'anthropic', model:'claude-sonnet-4-6', required_env:'ANTHROPIC_API_KEY'},
-                'foundry-deepseek': {provider:'foundry-openai', amux_provider:'foundry', model:'DeepSeek-V4-Pro', required_env:'AZURE_API_KEY,AMUX_API_BASE'},
-                'foundry-gpt54mini': {provider:'foundry-openai', amux_provider:'foundry', model:'gpt-5.4-mini', required_env:'AZURE_API_KEY,AMUX_API_BASE'},
+                'foundry-deepseek': {provider:'foundry-openai', amux_provider:'foundry', model:'DeepSeek-V4-Pro', required_env:'AZURE_API_KEY,AGENT_MUX_API_BASE'},
+                'foundry-gpt54mini': {provider:'foundry-openai', amux_provider:'foundry', model:'gpt-5.4-mini', required_env:'AZURE_API_KEY,AGENT_MUX_API_BASE'},
               };
               const modes = {
                 'ni': {id:'non-interactive', interactive:'false', bridge_interactive:'false', bridge_hooks:'false'},
@@ -233,9 +233,9 @@ jobs:
             # Claude Code (foundry-gpt55), Codex (google-gemini31), Pi (foundry-deepseek)
             # vanilla + BP, live
             node -e "
-              const foundry = {provider:'foundry-openai', amux_provider:'foundry', model:'gpt-5.5', required_env:'AZURE_API_KEY,AMUX_API_BASE'};
+              const foundry = {provider:'foundry-openai', amux_provider:'foundry', model:'gpt-5.5', required_env:'AZURE_API_KEY,AGENT_MUX_API_BASE'};
               const google = {provider:'google', amux_provider:'google', model:'gemini-3.5-flash', required_env:'GOOGLE_API_KEY'};
-              const deepseek = {provider:'foundry-openai', amux_provider:'foundry', model:'DeepSeek-V4-Pro', required_env:'AZURE_API_KEY,AMUX_API_BASE'};
+              const deepseek = {provider:'foundry-openai', amux_provider:'foundry', model:'DeepSeek-V4-Pro', required_env:'AZURE_API_KEY,AGENT_MUX_API_BASE'};
               const vanillaInstall = {id:'vanilla', required_trace_ids:'agentMuxRunId,agentMuxSessionId,transportTraceId', expected_artifacts:'agent-mux-events,transport-mux-trace,provider-trace-redacted'};
               const bpInstall = {id:'babysitter-plugin', required_trace_ids:'agentMuxRunId,agentMuxSessionId,transportTraceId', expected_artifacts:'agent-mux-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted'};
 
@@ -252,7 +252,7 @@ jobs:
               const codex = scenario('codex','codex',google);
               const pi = scenario('pi','pi',deepseek);
               // Tula is a runtime-cli agent with native babysitter support
-              const tulaScenario = {id:'live.agent-mux.tula.foundry-openai.gpt-5.5', agent_path:'tula', agent:'tula', amux_agent:'tula', integration_type:'runtime-cli', provider:'foundry-openai', amux_provider:'foundry', model:'gpt-5.5', required_env:'AZURE_API_KEY,AMUX_API_BASE', live:true, process_mode:'predefined'};
+              const tulaScenario = {id:'live.agent-mux.tula.foundry-openai.gpt-5.5', agent_path:'tula', agent:'tula', amux_agent:'tula', integration_type:'runtime-cli', provider:'foundry-openai', amux_provider:'foundry', model:'gpt-5.5', required_env:'AZURE_API_KEY,AGENT_MUX_API_BASE', live:true, process_mode:'predefined'};
 
               // Vanilla NI: claude+codex+pi+tula NI
               const vanillaNi = [
@@ -403,7 +403,7 @@ jobs:
           LIVE_STACK_SCENARIO_ID: ${{ matrix.scenario.id }}
           LIVE_STACK_AGENT_PATH: ${{ matrix.scenario.agent_path }}
           LIVE_STACK_AGENT: ${{ matrix.scenario.agent }}
-          LIVE_STACK_AMUX_AGENT: ${{ matrix.scenario.amux_agent }}
+          LIVE_STACK_AGENT_MUX_AGENT: ${{ matrix.scenario.amux_agent }}
           LIVE_STACK_INTEGRATION_TYPE: ${{ matrix.scenario.integration_type }}
           LIVE_STACK_BABYSITTER_HARNESS: ${{ matrix.scenario.babysitter_harness }}
           LIVE_STACK_INSTALL_MODE: ${{ matrix.install_mode.id }}
@@ -412,9 +412,9 @@ jobs:
           LIVE_STACK_INTERACTIVE: ${{ matrix.interaction_mode.interactive }}
           LIVE_STACK_BRIDGE_INTERACTIVE: ${{ matrix.interaction_mode.bridge_interactive }}
           LIVE_STACK_BRIDGE_HOOKS: ${{ matrix.interaction_mode.bridge_hooks }}
-          LIVE_STACK_USE_AMUX_RUN: 'false'
+          LIVE_STACK_USE_AGENT_MUX_RUN: 'false'
           LIVE_STACK_PROVIDER: ${{ matrix.scenario.provider }}
-          LIVE_STACK_AMUX_PROVIDER: ${{ matrix.scenario.amux_provider }}
+          LIVE_STACK_AGENT_MUX_PROVIDER: ${{ matrix.scenario.amux_provider }}
           LIVE_STACK_MODEL: ${{ matrix.scenario.model }}
           LIVE_STACK_CREDENTIAL_MODE: github-org-secrets-and-vars
           LIVE_STACK_REQUIRED_ENV: ${{ matrix.scenario.required_env }}
@@ -427,12 +427,12 @@ jobs:
           LIVE_STACK_TEST_TIMEOUT_MS: '3660000'
           LIVE_STACK_COMMAND_TIMEOUT_MS: '3600000'
           LIVE_STACK_BABYSITTER_BIN: ${{ github.workspace }}/packages/sdk/dist/cli/main.js
-          LIVE_STACK_AMUX_BIN: ${{ github.workspace }}/packages/agent-mux/cli/dist/index.js
+          LIVE_STACK_AGENT_MUX_BIN: ${{ github.workspace }}/packages/agent-mux/cli/dist/index.js
           LIVE_STACK_AGENT_PLATFORM_BIN: ${{ github.workspace }}/packages/tula/dist/cli/main.js
           LIVE_STACK_TULA_BIN: ${{ github.workspace }}/packages/tula/dist/cli/main.js
           AZURE_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
-          AMUX_API_BASE: https://${{ vars.AZURE_OPENAI_PROJECT_NAME }}.services.ai.azure.com
-          AMUX_PROVIDER: foundry
+          AGENT_MUX_API_BASE: https://${{ vars.AZURE_OPENAI_PROJECT_NAME }}.services.ai.azure.com
+          AGENT_MUX_PROVIDER: foundry
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           AZURE_OPENAI_PROJECT_NAME: ${{ vars.AZURE_OPENAI_PROJECT_NAME }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}

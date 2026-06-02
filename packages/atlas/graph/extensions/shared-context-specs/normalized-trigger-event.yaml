@@ -10,7 +10,7 @@ attributes:
   producerIface: "@a5c-ai/agent-mux-triggers backend normalizers (github|gitlab|bitbucket|generic-webhook)"
   consumerIfaces:
     - "@a5c-ai/agent-mux-triggers evaluateTrigger (packages/triggers-mux/src/query.ts:102)"
-    - "amux run pipeline (downstream pre-run, agent-mux, post-run via AMUX_TRIGGER_EVENT_PATH)"
+    - "amux run pipeline (downstream pre-run, agent-mux, post-run via AGENT_MUX_TRIGGER_EVENT_PATH)"
   fieldSchema:
     - "backend:enum<github|gitlab|bitbucket|generic-webhook>:required:Trigger backend the payload was normalized from"
     - "eventName:string:required:Backend-native event name (e.g. 'issue_comment','pull_request','push','merge_request','pullrequest:created','webhook')"

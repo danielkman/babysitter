@@ -114,5 +114,5 @@ Official AI agent skills from the Expo team for building, deploying, and debuggi
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Mobile Deployment | NEW | Multi-platform mobile build and store submission orchestration | - | plugins/a5c/marketplace/plugins/mobile-deployment/ |
-| Framework Upgrade Automation | NEW | SDK/framework upgrade with breaking changes analysis and incremental migration | - | plugins/a5c/marketplace/plugins/framework-upgrade-automation/ |
+| Mobile Deployment | NEW | Multi-platform mobile build and store submission orchestration | - | plugins/a5c/marketplace/blueprints/mobile-deployment/ |
+| Framework Upgrade Automation | NEW | SDK/framework upgrade with breaking changes analysis and incremental migration | - | plugins/a5c/marketplace/blueprints/framework-upgrade-automation/ |

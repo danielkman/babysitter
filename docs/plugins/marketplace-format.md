@@ -44,7 +44,7 @@ Each key in the `plugins` object is the plugin name (e.g., `"babysitter@a5c.ai"`
       "description": "Core Babysitter blueprint for AI-assisted development workflows",
       "latestVersion": "0.0.176",
       "versions": ["0.0.176", "0.0.175", "0.0.174"],
-      "packagePath": "blueprints/babysitter-unified",
+      "packagePath": "plugins/babysitter-unified",
       "tags": ["core", "development", "ai"],
       "author": "a5c-ai"
     },
@@ -86,7 +86,7 @@ babysitter-marketplace/
         1.1.0_to_1.2.0.md
 ```
 
-The `packagePath` field in each blueprint entry points to the relative path within the repository or marketplace checkout (for example, `"blueprints/babysitter-unified"` in this repo).
+The `packagePath` field in each blueprint entry points to the relative path within the repository or marketplace checkout (for example, `"plugins/babysitter-unified"` in this repo).
 
 ## Local Clone Structure
 

@@ -156,9 +156,9 @@ A plugin that tracks work items discovered during babysitter runs (bugs found, T
 
 | Plugin Idea | Marketplace Status | Action | Existing Plugin | Target Placement |
 |-------------|-------------------|--------|-----------------|------------------|
-| Persistent Task Memory | UPGRADE | Graph-based persistent task tracker beyond existing context/memory solutions | plugins/a5c/marketplace/plugins/claude-mem/ | plugins/a5c/marketplace/plugins/persistent-task-memory/ |
-| Workflow Template Library | NEW | Parameterized process template system with variable slots and instantiation | - | plugins/a5c/marketplace/plugins/workflow-template-library/ |
-| Side-Quest Discovery Tracker | NEW | Work item discovery tracking with blocker/deferrable classification during runs | - | plugins/a5c/marketplace/plugins/side-quest-discovery-tracker/ |
+| Persistent Task Memory | UPGRADE | Graph-based persistent task tracker beyond existing context/memory solutions | plugins/a5c/marketplace/blueprints/claude-mem/ | plugins/a5c/marketplace/blueprints/persistent-task-memory/ |
+| Workflow Template Library | NEW | Parameterized process template system with variable slots and instantiation | - | plugins/a5c/marketplace/blueprints/workflow-template-library/ |
+| Side-Quest Discovery Tracker | NEW | Work item discovery tracking with blocker/deferrable classification during runs | - | plugins/a5c/marketplace/blueprints/side-quest-discovery-tracker/ |
 
 ## Implicit Procedural Knowledge
 

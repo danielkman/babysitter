@@ -106,8 +106,8 @@ describe('resolveProvider', () => {
     expect(config.auth.command).toBe('get-token --scope llm');
   });
 
-  it('resolves from AMUX_PROVIDER env var', () => {
-    process.env['AMUX_PROVIDER'] = 'groq';
+  it('resolves from AGENT_MUX_PROVIDER env var', () => {
+    process.env['AGENT_MUX_PROVIDER'] = 'groq';
     process.env['GROQ_API_KEY'] = 'gsk-test';
     const config = resolveProvider({});
     expect(config.provider).toBe('groq');

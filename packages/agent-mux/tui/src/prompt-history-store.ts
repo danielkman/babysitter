@@ -5,7 +5,7 @@ import * as os from 'node:os';
 const MAX_ENTRIES = 200;
 
 export function defaultHistoryPath(): string {
-  if (process.env.AMUX_TUI_PROMPT_HISTORY) return process.env.AMUX_TUI_PROMPT_HISTORY;
+  if (process.env.AGENT_MUX_TUI_PROMPT_HISTORY) return process.env.AGENT_MUX_TUI_PROMPT_HISTORY;
   const home = os.homedir() || '.';
   return path.join(home, '.agent-mux', 'tui-prompt-history');
 }
