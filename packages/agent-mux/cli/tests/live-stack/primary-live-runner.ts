@@ -376,8 +376,15 @@ export async function runPrimaryLiveStackScenario(options: PrimaryLiveRunOptions
 
   // Behavioral validation: verify the agent actually used tools (created the requested file)
   const traceId = commands[0]?.env['LIVE_STACK_TRACE_ID'];
-  const verifications = await validateAgentBehavior(scenario, options.cwd, commandOutput, traceId, options.env);
-  const behaviorFailures = verifications.filter((v) => v.status === 'failed').map((v) => v.detail ?? v.name);
+  let verifications: VerificationEntry[] = [];
+  let behaviorFailures: string[] = [];
+  try {
+    verifications = await validateAgentBehavior(scenario, options.cwd, commandOutput, traceId, options.env);
+    behaviorFailures = verifications.filter((v) => v.status === 'failed').map((v) => v.detail ?? v.name);
+  } catch (err) {
+    console.error(`[live-stack] validateAgentBehavior crashed: ${err instanceof Error ? err.stack ?? err.message : err}`);
+    behaviorFailures = [`verification crashed: ${err instanceof Error ? err.message : String(err)}`];
+  }
 
   let captured: Partial<LiveStackEvidenceBundle> = {};
   let missingTraceIds: readonly string[] = [];
