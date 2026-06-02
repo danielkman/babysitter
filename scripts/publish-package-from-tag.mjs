@@ -50,7 +50,17 @@ if (!skipBuild) {
   buildWorkspace(target.manifest.name);
 }
 verifyWorkspaceRelease(target.manifest.name);
-run('npm', ['publish', '--workspace', target.manifest.name, '--access', 'public', '--tag', tag, '--ignore-scripts']);
+const publishResult = run('npm', ['publish', '--workspace', target.manifest.name, '--access', 'public', '--tag', tag, '--ignore-scripts'], { allowFailure: true, stdio: 'pipe' });
+if (publishResult.status !== 0) {
+  const stderr = (publishResult.stderr || '').toString();
+  if (stderr.includes('You cannot publish over the previously published')) {
+    console.log(`${packageSpec} was published by a concurrent job; ensuring dist-tag ${tag}.`);
+    run('npm', ['dist-tag', 'add', packageSpec, tag], { allowFailure: true });
+  } else {
+    console.error(stderr);
+    process.exit(publishResult.status || 1);
+  }
+}
 
 function hasFlag(name) {
   return process.argv.slice(2).includes(name);
