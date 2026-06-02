@@ -22,7 +22,7 @@
     ],
     "pluginSurfaces": [
       "plugins/babysitter",
-      "plugins/babysitter-unified"
+      "blueprints/babysitter-unified"
     ],
     "referenceDocs": [
       "docs/agent-mux-babysitter-integrations/tasks-mux-routing.md",

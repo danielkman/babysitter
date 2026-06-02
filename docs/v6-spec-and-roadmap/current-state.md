@@ -12,7 +12,7 @@ The current a5c.ai agent stack consists of:
 - **`@a5c-ai/tula-platform`** - Monolithic orchestration runtime
 - **`@a5c-ai/babysitter-sdk`** - Core SDK for orchestration
 
-The plugin side of the stack already exposes the pieces needed for metaplugins, but those pieces are not the metaplugin abstraction itself. `extension-mux` is the compiler that emits concrete plugin bundles for legacy non-Babysitter agents. The metaplugin layer is the capability being packaged across those bundles, such as memory systems, governance or policy engines, and discipline-enforcement concerns. First-party unified plugin sources such as `plugins/babysitter-unified` can carry parts of those concerns, but they are concrete plugin surfaces rather than the definition of metaplugins.
+The plugin side of the stack already exposes the pieces needed for metaplugins, but those pieces are not the metaplugin abstraction itself. `extension-mux` is the compiler that emits concrete plugin bundles for legacy non-Babysitter agents. The metaplugin layer is the capability being packaged across those bundles, such as memory systems, governance or policy engines, and discipline-enforcement concerns. First-party unified plugin sources such as `blueprints/babysitter-unified` can carry parts of those concerns, but they are concrete plugin surfaces rather than the definition of metaplugins.
 
 ## Current Pain Points
 

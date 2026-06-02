@@ -41,8 +41,8 @@ babysitter plugin:install babysitter --global
 ```
 
 This performs two installations in one step:
-1. Installs the OpenCode plugin to `~/.opencode/plugins/babysitter/` (standard OpenCode)
-2. Detects Accomplish and copies the plugin to `<accomplishDataDir>/opencode/plugins/babysitter/`
+1. Installs the OpenCode plugin to `~/.opencode/blueprints/babysitter/` (standard OpenCode)
+2. Detects Accomplish and copies the plugin to `<accomplishDataDir>/opencode/blueprints/babysitter/`
 
 ### Accomplish-only install
 
@@ -59,11 +59,11 @@ Copy the plugin bundle manually:
 
 ```bash
 # Determine your Accomplish data directory
-# macOS:   ~/Library/Application Support/Accomplish/opencode/plugins/babysitter/
-# Windows: %APPDATA%/Accomplish/opencode/plugins/babysitter/
-# Linux:   ~/.config/Accomplish/opencode/plugins/babysitter/
+# macOS:   ~/Library/Application Support/Accomplish/opencode/blueprints/babysitter/
+# Windows: %APPDATA%/Accomplish/opencode/blueprints/babysitter/
+# Linux:   ~/.config/Accomplish/opencode/blueprints/babysitter/
 
-cp -r artifacts/generated-plugins/opencode/* <accomplishDataDir>/opencode/plugins/babysitter/
+cp -r artifacts/generated-plugins/opencode/* <accomplishDataDir>/opencode/blueprints/babysitter/
 ```
 
 After any installation method, restart Accomplish to pick up the plugin.
@@ -188,9 +188,9 @@ This works without any changes to the Accomplish codebase. The user experience i
 
 **Steps**:
 1. Verify the plugin directory exists:
-   - macOS: `ls ~/Library/Application\ Support/Accomplish/opencode/plugins/babysitter/`
+   - macOS: `ls ~/Library/Application\ Support/Accomplish/opencode/blueprints/babysitter/`
    - Windows: `dir %APPDATA%\Accomplish\opencode\plugins\babysitter\`
-   - Linux: `ls ~/.config/Accomplish/opencode/plugins/babysitter/`
+   - Linux: `ls ~/.config/Accomplish/opencode/blueprints/babysitter/`
 2. Verify `index.js` and `plugin.json` exist in that directory
 3. Restart Accomplish completely (quit and relaunch, not just close the window)
 4. Check Accomplish logs for plugin loading errors
@@ -233,7 +233,7 @@ Verify Accomplish is setting this variable when spawning OpenCode. This is an Ac
 |-----------|------|---------|
 | OpenCode adapter | `packages/sdk/src/harness/opencode.ts` | Accomplish detection, `ACCOMPLISH_TASK_ID` handling, data dir resolution, session metadata |
 | Discovery module | `packages/sdk/src/harness/discovery.ts` | Caller detection via env vars including `ACCOMPLISH_TASK_ID` |
-| Generated OpenCode bundle | `artifacts/generated-plugins/opencode/` | Harness-specific plugin output generated from `plugins/babysitter-unified` |
+| Generated OpenCode bundle | `artifacts/generated-plugins/opencode/` | Harness-specific plugin output generated from `blueprints/babysitter-unified` |
 | Installer (shared) | `artifacts/generated-plugins/opencode/bin/install-shared.cjs` | Accomplish detection, plugin bundle copy, surface installation |
 | Installer (entry) | `artifacts/generated-plugins/opencode/bin/install.cjs` | CLI entry point with `--accomplish` flag |
 | `/babysitter` skill (Accomplish format) | `artifacts/generated-plugins/opencode/skills/babysit/SKILL.md` | Orchestration skill formatted for Accomplish's skill system |

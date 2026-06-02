@@ -162,7 +162,7 @@ export async function process(inputs, ctx) {
   //   - Skills adapted to work within gh extension invocation model
   //   - Plugin manifest: skills/hooks as path strings, no contextFileName
   // Or it may use config-based integration if Copilot supports it.
-  // Commands: ALL 15 command files from plugins/babysitter/commands/ must be
+  // Commands: ALL 15 command files from blueprints/babysitter/commands/ must be
   // ported identically (assimilate, call, cleanup, contrib, doctor, forever,
   // help, observe, plan, plugins, project-install, resume, retrospect,
   // user-install, yolo). Commands are harness-agnostic.

@@ -25,7 +25,7 @@
       "status": "Public plugin overview",
       "canonicalHome": "./plugins.md",
       "supporting": [
-        "../plugins/babysitter/README.md",
+        "../blueprints/babysitter/README.md",
         "../plugins/babysitter-codex/README.md"
       ],
       "note": "The docs-site plugin landing page is the canonical discovery entrypoint for harness plugin packages and plugin-system concepts."
@@ -574,7 +574,7 @@
       "description": "Claude Code harness plugin surface shipped from the repo plugin directory.",
       "hasReadme": true,
       "status": "Public harness plugin",
-      "canonicalHome": "../plugins/babysitter/README.md",
+      "canonicalHome": "../blueprints/babysitter/README.md",
       "supporting": [
         "./plugins.md"
       ],

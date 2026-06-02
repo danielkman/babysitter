@@ -153,7 +153,7 @@ Terms, abbreviations, file paths, and cross-codebase references used throughout 
 
 | Plugin | Path |
 |--------|------|
-| Claude Code plugin | `plugins/babysitter/` |
+| Claude Code plugin | `blueprints/babysitter/` |
 | Codex plugin | `plugins/babysitter-codex/` |
 | Cursor plugin | `plugins/babysitter-cursor/` |
 | Gemini plugin | `plugins/babysitter-gemini/` |

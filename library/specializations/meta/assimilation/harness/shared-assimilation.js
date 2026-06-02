@@ -29,7 +29,7 @@ import { defineTask } from '@a5c-ai/babysitter-sdk';
 // ---------------------------------------------------------------------------
 
 const referencePlugins = [
-  'plugins/babysitter/',            // Claude Code reference plugin (hooks, skills, commands)
+  'blueprints/babysitter/',            // Claude Code reference plugin (hooks, skills, commands)
   'plugins/babysitter-codex/',      // Codex reference plugin (skills, hooks, .codex-plugin/, sync-command-skills.js)
   'plugins/babysitter-cursor/',     // Cursor reference plugin (commands, skills, hooks, sync-command-surfaces.js)
   'plugins/babysitter-github/',     // GitHub reference plugin (commands, skills, hooks, sync-command-surfaces.js)
@@ -170,7 +170,7 @@ export const researchHarnessTask = defineTask('research-harness', (args, taskCtx
         'Research the babysitter repo FIRST and do not skip that step. Before any target-harness research, build an explicit understanding of how babysitter currently models adapters, hooks, discovery, invocation, sessions, plugin packaging, tests, and CI/CD.',
         'Treat the babysitter repo as the baseline architecture to map from. The harness-specific research happens only AFTER the babysitter side is understood in detail.',
         'BEFORE researching the target harness, study the existing Claude Code and Codex plugin implementations thoroughly:',
-        '  - Read plugins/babysitter/ end-to-end: plugin.json (hooks, skills, commands), hooks/ directory (session-start, stop, pre-tool-use, user-prompt-submit shell scripts), hooks/hooks.json, skills/babysit/SKILL.md, versions.json.',
+        '  - Read blueprints/babysitter/ end-to-end: plugin.json (hooks, skills, commands), hooks/ directory (session-start, stop, pre-tool-use, user-prompt-submit shell scripts), hooks/hooks.json, skills/babysit/SKILL.md, versions.json.',
         '  - Read plugins/babysitter-codex/ end-to-end: .codex-plugin/plugin.json, hooks.json, .app.json, skills/ directory (all 16 skills), versions.json.',
         '  - Read plugins/babysitter-pi/ end-to-end: package.json (omp field, bin scripts), extensions/, skills/babysitter/SKILL.md, versions.json, bin/ (cli.cjs, install.cjs, uninstall.cjs), scripts/setup.sh.',
         'Understand how each reference plugin: registers hooks, defines skills, handles installation/uninstallation, manages versions, and delegates to the SDK CLI.',
@@ -503,7 +503,7 @@ export const createPluginTask = defineTask('create-plugin', (args, taskCtx) => (
         `Create the plugin directory at ${args.pluginDir} with the correct manifest format for ${args.harnessName}.`,
         'Create the plugin manifest (plugin.json, .codex-plugin/plugin.json, or package.json) with correct metadata, hooks, skills, and commands references. The manifest format and location MUST match what the research phase verified from official documentation (manifest location, required fields, validation rules).',
         'Create hook scripts following the standard pattern: resolve plugin root, ensure CLI available, capture stdin, invoke babysitter hook:run, output JSON.',
-        'Hook scripts must follow the reference pattern in plugins/babysitter/hooks/ - they delegate to the SDK CLI, not implement logic directly.',
+        'Hook scripts must follow the reference pattern in blueprints/babysitter/hooks/ - they delegate to the SDK CLI, not implement logic directly.',
         'IMPORTANT: The hooks configuration file (hooks.json, settings.json, etc.) MUST use the exact format verified from research — including schema version field (e.g. "version": 1), correct hook type names (which may be camelCase, PascalCase, or kebab-case depending on harness), platform-specific script paths (bash, powershell, cmd), and any required fields (cwd, timeoutSec, matchers, etc.). Do NOT copy the hooks config format from another harness — use what the research phase discovered from official docs.',
         'Create a versions.json file with {"sdkVersion": "<current-version>"} for dependency management. This file MUST be maintained by CI — add it to scripts/bump-version.mjs (the versionsPath loop), .github/workflows/staging-publish.yml (the versions.json writer AND the git add step), and .github/workflows/release.yml (the git add step). Without CI integration, the file goes stale and the plugin falls back to "latest".',
         'Create any harness-specific config files (hooks.json, .app.json, config.toml, etc.).',
@@ -573,10 +573,10 @@ export const portSkillsTask = defineTask('port-skills', (args, taskCtx) => ({
         'If the harness uses AGENTS.md or GEMINI.md instead of individual SKILL.md files, create the appropriate format.',
 
         // ── COMMANDS DIRECTORY PORTING (CRITICAL) ──
-        'IMPORTANT: In addition to skills, you MUST also create a commands/ directory in the plugin with ALL 15 command files from the reference plugin. Read plugins/babysitter/commands/ and copy ALL files identically.',
+        'IMPORTANT: In addition to skills, you MUST also create a commands/ directory in the plugin with ALL 15 command files from the reference plugin. Read blueprints/babysitter/commands/ and copy ALL files identically.',
         'The 15 commands to port are: assimilate, call, cleanup, contrib, doctor, forever, help, observe, plan, plugins, project-install, resume, retrospect, user-install, yolo.',
         'Commands are harness-agnostic — they invoke skills via the Skill tool and do NOT contain harness-specific logic. Copy them identically from the reference plugin.',
-        'The commands/ directory structure must mirror plugins/babysitter/commands/ exactly. Each command file defines a slash command that users invoke (e.g. /babysit, /call, /doctor).',
+        'The commands/ directory structure must mirror blueprints/babysitter/commands/ exactly. Each command file defines a slash command that users invoke (e.g. /babysit, /call, /doctor).',
         'Verify that the plugin manifest references the commands/ directory so the harness can discover and register all commands.',
       ],
       outputFormat: 'JSON with skillsPorted, filesCreated, format, summary',
@@ -638,7 +638,7 @@ export const createInstallDistTask = defineTask('create-install-dist', (args, ta
         'The install scripts (bin/install.js) are for development/testing convenience, not the primary distribution mechanism.',
 
         // ── PLUGIN NAME AND INSTALL PATH CONVENTIONS (CRITICAL) ──
-        'The plugin MUST install to a directory named "babysitter" (NOT "babysitter-<harness>"). For example, Cursor plugins go to ~/.cursor/plugins/local/babysitter/, Codex plugins to ~/.codex/plugins/babysitter/, etc. The PLUGIN_NAME constant in install-shared.js must be "babysitter".',
+        'The plugin MUST install to a directory named "babysitter" (NOT "babysitter-<harness>"). For example, Cursor plugins go to ~/.cursor/plugins/local/babysitter/, Codex plugins to ~/.codex/blueprints/babysitter/, etc. The PLUGIN_NAME constant in install-shared.js must be "babysitter".',
         'The install script must verify the correct local plugin install path from the harness official docs. For example, Cursor requires ~/.cursor/plugins/local/ (not ~/.cursor/plugins/ directly). Each harness has its own convention — do NOT assume the path from other harnesses.',
         'Marketplace entries must use name: "babysitter" (not "babysitter-<harness>").',
         'Log prefixes in install/uninstall output should use "[babysitter]".',
@@ -1292,7 +1292,7 @@ export const setupCiCdTask = defineTask('setup-ci-cd', (args, taskCtx) => ({
         '  - The packages-sdk matrix job: 3 OS (ubuntu, macos, windows) × 2 Node (20, 22) with lint, build, test, smoke per combination',
         '  - How artifacts are structured: artifacts/test-logs/, _ci_artifacts/logs/{OS}/node{version}/',
         'Read .github/workflows/e2e-docker.yml thoroughly — understand:',
-        '  - Path triggers: which plugin directories trigger the workflow (plugins/babysitter/**, plugins/babysitter-codex/**)',
+        '  - Path triggers: which plugin directories trigger the workflow (blueprints/babysitter/**, plugins/babysitter-codex/**)',
         '  - The docker-e2e-tests job: structural tests (no API key), Azure OpenAI tests (gated on secrets)',
         '  - The codex-docker-e2e job: separate job for full Codex E2E with 90min timeout',
         '  - How test files are selected: vitest run with specific test file paths',
@@ -1428,14 +1428,14 @@ export const createSyncScriptTask = defineTask('create-sync-script', (args, task
         '    plugins/babysitter-cursor/scripts/sync-command-surfaces.js',
         '    plugins/babysitter-github/scripts/sync-command-surfaces.js',
         '    These scripts do TWO things:',
-        '      1. Mirror command .md files from plugins/babysitter/commands/ to the plugin\'s commands/ directory',
+        '      1. Mirror command .md files from blueprints/babysitter/commands/ to the plugin\'s commands/ directory',
         '      2. Derive skills from those mirrored commands (generate SKILL.md in skills/<name>/ from command .md)',
         '    Use this variant when the plugin has BOTH a commands/ directory AND a skills/ directory.',
         '',
         '  VARIANT B — "skills only" (used by babysitter-codex):',
         '    plugins/babysitter-codex/scripts/sync-command-skills.js',
         '    This script does ONE thing:',
-        '      1. Derive skills from canonical commands (generate SKILL.md in skills/<name>/ from plugins/babysitter/commands/<name>.md)',
+        '      1. Derive skills from canonical commands (generate SKILL.md in skills/<name>/ from blueprints/babysitter/commands/<name>.md)',
         '    Use this variant when the plugin has a skills/ directory but commands are NOT mirrored (they live only in the canonical plugin).',
         '',
         '  VARIANT C — "docs sync" (used by babysitter-pi):',

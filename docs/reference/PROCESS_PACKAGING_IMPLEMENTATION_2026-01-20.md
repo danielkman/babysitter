@@ -11,7 +11,7 @@
 This report originally documented a prototype that colocated example processes inside a skill package. The current public layout uses a different packaging model:
 
 - The built-in process library lives under `library/`.
-- The Babysitter plugin source provides skill instructions and plugin behavior under `plugins/babysitter-unified/`.
+- The Babysitter plugin source provides skill instructions and plugin behavior under `blueprints/babysitter-unified/`.
 - Project-local `.a5c/` directories contain copied or customized assets for a specific workspace.
 
 The canonical built-in source is no longer a plugin-internal `process/` directory.
@@ -35,13 +35,13 @@ Real examples in this repo include:
 
 ### 2. Plugin Package
 
-The plugin source lives under `plugins/babysitter-unified/`. It provides:
+The plugin source lives under `blueprints/babysitter-unified/`. It provides:
 
-- `plugins/babysitter-unified/skills/babysit/SKILL.md`
+- `blueprints/babysitter-unified/skills/babysit/SKILL.md`
 - plugin metadata and installation behavior
 - references and hook-related assets
 
-The plugin does not currently ship the full process tree inside `plugins/babysitter-unified/skills/babysit/`.
+The plugin does not currently ship the full process tree inside `blueprints/babysitter-unified/skills/babysit/`.
 
 ### 3. Project-Local Assets
 
@@ -103,7 +103,7 @@ If a team copies a built-in process into `.a5c/processes/`, they can update the 
 The January 2026 prototype assumed a skill could expose its own process tree as the public source of truth. The current guidance is:
 
 1. Point public documentation at `library/` for built-in processes.
-2. Treat `plugins/babysitter-unified/skills/babysit/SKILL.md` as the skill entry point, not the process library root.
+2. Treat `blueprints/babysitter-unified/skills/babysit/SKILL.md` as the skill entry point, not the process library root.
 3. Describe `.a5c/` paths only as project-local copies or overrides.
 4. Use `babysitter process-library:active --json` when you need to confirm the active bound library.
 

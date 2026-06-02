@@ -144,7 +144,7 @@ Hooks are discovered and executed in a specific priority order. All matching hoo
 
 1. **Per-repo hooks:** `.a5c/hooks/<hook-type>/*.sh`
 2. **Per-user hooks:** `~/.config/babysitter/hooks/<hook-type>/*.sh`
-3. **Plugin hooks:** `plugins/babysitter-unified/hooks/<hook-type>.sh`
+3. **Plugin hooks:** `blueprints/babysitter-unified/hooks/<hook-type>.sh`
 
 **Execution Order:**
 
@@ -469,7 +469,7 @@ jq -n \
 
 ## Hook Execution
 
-The SDK discovers per-repo and per-user runtime hooks directly. Harness entrypoints in the maintained plugin source live under `plugins/babysitter-unified/hooks/*.sh` and invoke `babysitter hook:run` for harness-specific lifecycle hooks such as `session-start` and `stop`.
+The SDK discovers per-repo and per-user runtime hooks directly. Harness entrypoints in the maintained plugin source live under `blueprints/babysitter-unified/hooks/*.sh` and invoke `babysitter hook:run` for harness-specific lifecycle hooks such as `session-start` and `stop`.
 
 ### Example Dispatcher Output
 
@@ -492,7 +492,7 @@ per-user:notify.sh:success
 
 The `hooks.json` file registers Claude Code hooks (SessionStart, Stop, PreToolUse, PostToolUse).
 
-**Location:** generated from `plugins/babysitter-unified/plugin.json`
+**Location:** generated from `blueprints/babysitter-unified/plugin.json`
 
 ```json
 {

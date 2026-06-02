@@ -104,12 +104,12 @@ After installation:
 git clone https://github.com/a5c-ai/babysitter.git ~/src/babysitter
 cd ~/src/babysitter
 
-# Generate the harness-specific plugin bundles from plugins/babysitter-unified
+# Generate the harness-specific plugin bundles from blueprints/babysitter-unified
 npm run generate:plugins
 
 # Install the generated Claude Code bundle
 mkdir -p ~/.claude/plugins/babysitter
-cp -r artifacts/generated-plugins/claude-code/* ~/.claude/plugins/babysitter/
+cp -r artifacts/generated-plugins/claude-code/* ~/.claude/blueprints/babysitter/
 ```
 
 ### Option C: Manual Installation from Source (Project-Local)
@@ -125,7 +125,7 @@ mkdir -p .claude/plugins
 
 # Copy the generated Claude Code bundle into the project-local plugins dir
 mkdir -p .claude/plugins/babysitter
-cp -r artifacts/generated-plugins/claude-code/* .claude/plugins/babysitter/
+cp -r artifacts/generated-plugins/claude-code/* .claude/blueprints/babysitter/
 ```
 
 ### Verify Installation
@@ -300,8 +300,8 @@ Babysitter uses quality gates to ensure work meets standards:
 **Symptom:** `/babysitter:call` doesn't work or skill not in `/skills` list
 
 **Solution:** Verify plugin installation:
-1. Check plugin directory exists: `ls ~/.claude/plugins/babysitter/`
-2. If you installed from source, re-run `npm run generate:plugins` before copying the bundle so the Claude Code files are generated from `plugins/babysitter-unified`
+1. Check plugin directory exists: `ls ~/.claude/blueprints/babysitter/`
+2. If you installed from source, re-run `npm run generate:plugins` before copying the bundle so the Claude Code files are generated from `blueprints/babysitter-unified`
 3. Restart Claude Code
 4. Run `/skills` again
 
@@ -340,7 +340,7 @@ choco install jq
 **Solution:** Make hook scripts executable:
 
 ```bash
-chmod +x plugins/babysitter-unified/hooks/*.sh
+chmod +x blueprints/babysitter-unified/hooks/*.sh
 ```
 
 ### Health Check
@@ -394,7 +394,7 @@ See the [Process Selection Guide](https://github.com/a5c-ai/babysitter/blob/main
 
 ### Advanced Topics
 
-- **[Unified Plugin Source](https://github.com/a5c-ai/babysitter/tree/main/plugins/babysitter-unified)** - Maintained plugin source tree
+- **[Unified Plugin Source](https://github.com/a5c-ai/babysitter/tree/main/blueprints/babysitter-unified)** - Maintained plugin source tree
 - **[Advanced Patterns](https://github.com/a5c-ai/babysitter/blob/main/docs/reference/ADVANCED_PATTERNS.md)** - Agent tasks, parallel execution
 - **[Troubleshooting Guide](https://github.com/a5c-ai/babysitter/blob/main/docs/reference/TROUBLESHOOTING.md)** - Comprehensive problem-solving
 

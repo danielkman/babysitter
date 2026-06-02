@@ -16,10 +16,10 @@ if (!targetVersion) {
 const packageJsonPaths = new Set(['package.json']);
 const localPackageNames = new Set();
 const pluginManifestPaths = [
-  'plugins/babysitter-unified/plugin.json',
+  'blueprints/babysitter-unified/plugin.json',
 ];
 const versionsJsonPaths = [
-  'plugins/babysitter-unified/versions.json',
+  'blueprints/babysitter-unified/versions.json',
 ];
 const dependencyFields = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies'];
 const skipDirs = new Set(['.git', '.a5c', 'node_modules', 'dist', 'build', 'coverage', 'artifacts', 'generated', 'examples']);

@@ -96,7 +96,7 @@ export async function process(inputs, ctx) {
   // Pi plugin uses package.json with pi-specific fields (skills/hooks as path
   // strings, no contextFileName field), extensions/ for lifecycle hooks,
   // skills/ for SKILL.md files, bin/ for CLI entry points.
-  // Commands: ALL 15 command files from plugins/babysitter/commands/ must be
+  // Commands: ALL 15 command files from blueprints/babysitter/commands/ must be
   // ported identically (harness-agnostic, invoke skills via Skill tool).
   // ==========================================================================
 

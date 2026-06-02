@@ -91,7 +91,7 @@ export async function process(inputs, ctx) {
   // ==========================================================================
   // PHASE 2: PLUGIN + SKILLS + COMMANDS
   // Plugin manifest: skills/hooks as path strings, no contextFileName field.
-  // Commands: ALL 15 command files from plugins/babysitter/commands/ must be
+  // Commands: ALL 15 command files from blueprints/babysitter/commands/ must be
   // ported identically (harness-agnostic, invoke skills via Skill tool).
   // ==========================================================================
 

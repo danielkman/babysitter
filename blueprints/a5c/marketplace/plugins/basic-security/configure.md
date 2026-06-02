@@ -9,7 +9,7 @@ This document covers how to customize the basic-security plugin after installati
 To add a process that was not included during initial installation, copy it from the security-compliance library:
 
 ```bash
-cp plugins/babysitter/skills/babysit/process/specializations/security-compliance/<process-name>.js .a5c/processes/security/<process-name>.js
+cp blueprints/babysitter/skills/babysit/process/specializations/security-compliance/<process-name>.js .a5c/processes/security/<process-name>.js
 ```
 
 ### Available Processes
@@ -61,7 +61,7 @@ Copy a skill from the library:
 
 ```bash
 mkdir -p .a5c/skills/security/<skill-name>/
-cp plugins/babysitter/skills/babysit/process/specializations/security-compliance/skills/<skill-name>/SKILL.md .a5c/skills/security/<skill-name>/SKILL.md
+cp blueprints/babysitter/skills/babysit/process/specializations/security-compliance/skills/<skill-name>/SKILL.md .a5c/skills/security/<skill-name>/SKILL.md
 ```
 
 ### Available Skills
@@ -97,7 +97,7 @@ Copy an agent from the library:
 
 ```bash
 mkdir -p .a5c/agents/security/<agent-name>/
-cp plugins/babysitter/skills/babysit/process/specializations/security-compliance/agents/<agent-name>/AGENT.md .a5c/agents/security/<agent-name>/AGENT.md
+cp blueprints/babysitter/skills/babysit/process/specializations/security-compliance/agents/<agent-name>/AGENT.md .a5c/agents/security/<agent-name>/AGENT.md
 ```
 
 ### Available Agents

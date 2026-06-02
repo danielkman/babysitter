@@ -40,7 +40,7 @@ const execFile = promisify(execFileCb);
 const ACTIVE_PROCESS_LIBRARY_FILENAME = "process-library.json";
 const DEFAULT_PROCESS_LIBRARY_REPO = "https://github.com/a5c-ai/babysitter.git";
 const DEFAULT_PROCESS_LIBRARY_SUBPATH = "library";
-const DEFAULT_PROCESS_LIBRARY_REFERENCE_SUBPATH = "plugins/babysitter/reference";
+const DEFAULT_PROCESS_LIBRARY_REFERENCE_SUBPATH = "blueprints/babysitter/reference";
 
 function resolveStateDir(stateDir?: string): string {
   if (stateDir && stateDir.trim()) return path.resolve(stateDir);

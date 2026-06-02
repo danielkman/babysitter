@@ -14,7 +14,7 @@ attributes:
 
     a5c marketplace (plugins/a5c/marketplace/) and the babysitter plugin
 
-    (plugins/babysitter/).
+    (blueprints/babysitter/).
 
     '
 ---

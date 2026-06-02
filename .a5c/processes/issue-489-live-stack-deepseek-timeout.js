@@ -133,7 +133,7 @@ const readArtifactsTask = defineTask('issue-489.read-artifacts', (args, taskCtx)
     command: [
       'set -euo pipefail',
       'git status --short',
-      'git diff -- . ":!.agents/plugins/marketplace.json" ":!.codex/skills/babysit/SKILL.md" ":!.codex/config.toml" ":!.codex/hooks.json" ":!.codex/hooks/**" ":!.codex/skills/**" ":!plugins/babysitter/**"',
+      'git diff -- . ":!.agents/plugins/marketplace.json" ":!.codex/skills/babysit/SKILL.md" ":!.codex/config.toml" ":!.codex/hooks.json" ":!.codex/hooks/**" ":!.codex/skills/**" ":!blueprints/babysitter/**"',
     ].join('\n'),
     expectedExitCode: 0,
     timeout: 30000,
@@ -181,7 +181,7 @@ const publishTask = defineTask('issue-489.publish', (args, taskCtx) => ({
     command: [
       'set -euo pipefail',
       'git add .a5c/processes/issue-489-live-stack-deepseek-timeout.js',
-      'git diff --name-only | rg -v "^(\\.agents/plugins/marketplace\\.json|\\.codex/skills/babysit/SKILL\\.md|\\.codex/config\\.toml|\\.codex/hooks\\.json|\\.codex/hooks/|\\.codex/skills/|plugins/babysitter/)" | while IFS= read -r path; do [ -n "$path" ] && git add "$path"; done',
+      'git diff --name-only | rg -v "^(\\.agents/plugins/marketplace\\.json|\\.codex/skills/babysit/SKILL\\.md|\\.codex/config\\.toml|\\.codex/hooks\\.json|\\.codex/hooks/|\\.codex/skills/|blueprints/babysitter/)" | while IFS= read -r path; do [ -n "$path" ] && git add "$path"; done',
       'if ! git diff --cached --quiet; then GIT_AUTHOR_NAME="a5c automation" GIT_AUTHOR_EMAIL="actions@users.noreply.github.com" GIT_COMMITTER_NAME="a5c automation" GIT_COMMITTER_EMAIL="actions@users.noreply.github.com" git commit -m "fix(live-stack): extend DeepSeek BP timeout"; fi',
       `git push -u origin ${args.branchName}`,
       `PR_URL="$(gh pr list --head ${args.branchName} --json url --jq '.[0].url // empty' 2>/dev/null || true)"`,

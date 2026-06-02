@@ -317,7 +317,7 @@ The Cursor marketplace manifest lives at `.cursor-plugin/plugin.json`:
     "email": "support@a5c.ai",
     "url": "https://github.com/a5c-ai/babysitter"
   },
-  "homepage": "https://github.com/a5c-ai/babysitter/tree/main/plugins/babysitter-unified/per-harness/cursor#readme",
+  "homepage": "https://github.com/a5c-ai/babysitter/tree/main/blueprints/babysitter-unified/per-harness/cursor#readme",
   "repository": "https://github.com/a5c-ai/babysitter",
   "license": "MIT",
   "skills": "skills/",

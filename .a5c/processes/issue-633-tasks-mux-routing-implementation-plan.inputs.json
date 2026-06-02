@@ -37,7 +37,7 @@
     ],
     "pluginSurfaces": [
       "plugins/babysitter",
-      "plugins/babysitter-unified"
+      "blueprints/babysitter-unified"
     ],
     "knownReusableFiles": [
       "packages/tasks-mux/src/router.ts",

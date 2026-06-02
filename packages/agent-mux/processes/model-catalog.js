@@ -1,8 +1,8 @@
 /**
  * @process agent-mux/model-catalog
  * @description Brownfield implementation and verification workflow for unified model catalog and model configuration management.
- * @skill babysitter:plan plugins/babysitter/skills/plan/SKILL.md
- * @skill babysitter:retrospect plugins/babysitter/skills/retrospect/SKILL.md
+ * @skill babysitter:plan blueprints/babysitter/skills/plan/SKILL.md
+ * @skill babysitter:retrospect blueprints/babysitter/skills/retrospect/SKILL.md
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

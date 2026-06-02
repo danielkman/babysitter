@@ -1,9 +1,9 @@
 /**
  * @process advanced-uis-foundation
  * @description Execute the first unblocking foundation wave from advanced-uis.md by scaffolding the gateway, ui, and webui packages and wiring them into the monorepo.
- * @skill react-native-dev plugins/babysitter/skills/babysit/process/specializations/mobile-development/skills/react-native-dev/SKILL.md
- * @skill zustand plugins/babysitter/skills/babysit/process/specializations/web-development/skills/zustand/SKILL.md
- * @agent react-native-expert plugins/babysitter/skills/babysit/process/specializations/mobile-development/agents/react-native-expert/AGENT.md
+ * @skill react-native-dev blueprints/babysitter/skills/babysit/process/specializations/mobile-development/skills/react-native-dev/SKILL.md
+ * @skill zustand blueprints/babysitter/skills/babysit/process/specializations/web-development/skills/zustand/SKILL.md
+ * @agent react-native-expert blueprints/babysitter/skills/babysit/process/specializations/mobile-development/agents/react-native-expert/AGENT.md
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

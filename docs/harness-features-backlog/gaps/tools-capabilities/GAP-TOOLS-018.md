@@ -25,8 +25,8 @@ A `PlanSchema` type defining structured plans with: ordered steps, estimated eff
 ## Key Files
 | Component | Path |
 |-----------|------|
-| Process definitions | `plugins/babysitter/skills/babysit/process/` |
-| GSD phases | `plugins/babysitter/skills/babysit/process/gsd/` |
+| Process definitions | `blueprints/babysitter/skills/babysit/process/` |
+| GSD phases | `blueprints/babysitter/skills/babysit/process/gsd/` |
 | Runtime | `packages/sdk/src/runtime/` |
 | Harness create-run | `packages/sdk/src/cli/` |
 

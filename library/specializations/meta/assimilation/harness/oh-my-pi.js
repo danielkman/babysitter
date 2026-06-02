@@ -102,7 +102,7 @@ export async function process(inputs, ctx) {
   // tool registration, skills/ for SKILL.md files, bin/ for CLI entry points.
   // Can also leverage TUI widget registration and status line integration
   // for babysitter run status display.
-  // Commands: ALL 15 command files from plugins/babysitter/commands/ must be
+  // Commands: ALL 15 command files from blueprints/babysitter/commands/ must be
   // ported identically (harness-agnostic, invoke skills via Skill tool).
   // ==========================================================================
 

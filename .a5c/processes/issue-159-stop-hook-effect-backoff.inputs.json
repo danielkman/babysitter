@@ -23,7 +23,7 @@
     "packages/sdk/src/storage/journal.ts",
     "packages/sdk/src/cli/commands/__tests__/hookRun.test.ts",
     "packages/sdk/src/harness/__tests__/harness.test.ts",
-    "plugins/babysitter-unified/hooks/stop.sh"
+    "blueprints/babysitter-unified/hooks/stop.sh"
   ],
   "relatedIssues": [
     158,
@@ -40,7 +40,7 @@
     "specializations/qa-testing-automation/quality-gates.js"
   ],
   "implementationFocus": [
-    "Implement the feature in the SDK shared stop-hook runtime rather than only in plugins/babysitter-unified/hooks/stop.sh, because that wrapper delegates to babysitter hook:run.",
+    "Implement the feature in the SDK shared stop-hook runtime rather than only in blueprints/babysitter-unified/hooks/stop.sh, because that wrapper delegates to babysitter hook:run.",
     "Identify the current pending effectId when run state is waiting and apply backoff per runId plus effectId.",
     "Use default delay semantics matching the issue: 10 seconds, 30 seconds, 90 seconds, then cap at 300 seconds.",
     "Expose BABYSITTER_HOOK_BACKOFF_BASE and BABYSITTER_HOOK_BACKOFF_CAP with defensive parsing.",

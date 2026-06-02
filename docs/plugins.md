@@ -14,7 +14,7 @@ Babysitter marketplace installables were renamed to [blueprints](blueprints.md).
 <!-- supported-harness-plugins:start -->
 ## Supported harness plugin packages
 
-`plugins/babysitter-unified/` is the only maintained source tree in this repo.
+`blueprints/babysitter-unified/` is the only maintained source tree in this repo.
 Harness-specific bundles are generated from it and published as npm packages or
 external plugin repos; they are not maintained as checked-in directories here.
 
@@ -22,15 +22,15 @@ Use this table when you need the canonical entrypoint for a specific Babysitter 
 
 | Surface | Canonical docs home | Status note |
 | --- | --- | --- |
-| `plugins/babysitter-unified` | [plugins/babysitter-unified/per-harness/claude-code/README.md](../plugins/babysitter-unified/per-harness/claude-code/README.md) | Canonical authoring source plus Claude Code surface. |
-| `@a5c-ai/babysitter-codex` | [plugins/babysitter-unified/per-harness/codex/README.md](../plugins/babysitter-unified/per-harness/codex/README.md) | Generated from the unified source; README is the canonical package-level contract. |
-| `@a5c-ai/babysitter-cursor` | [plugins/babysitter-unified/per-harness/cursor/README.md](../plugins/babysitter-unified/per-harness/cursor/README.md) | Generated from the unified source; README is the canonical package-level contract. |
-| `babysitter-gemini` | [plugins/babysitter-unified/per-harness/gemini/README.md](../plugins/babysitter-unified/per-harness/gemini/README.md) | Generated from the unified source; README is the canonical package-level contract. |
-| `babysitter-github` | [plugins/babysitter-unified/per-harness/github/README.md](../plugins/babysitter-unified/per-harness/github/README.md) | Generated from the unified source; README is the canonical package-level contract. |
-| `@a5c-ai/babysitter-omp` | [plugins/babysitter-unified/per-harness/omp/README.md](../plugins/babysitter-unified/per-harness/omp/README.md) | Generated from the unified source; README is the canonical package-level contract. |
-| `@a5c-ai/babysitter-openclaw` | [plugins/babysitter-unified/per-harness/openclaw/README.md](../plugins/babysitter-unified/per-harness/openclaw/README.md) | Generated from the unified source; README is the canonical package-level contract. |
-| `@a5c-ai/babysitter-opencode` | [plugins/babysitter-unified/per-harness/opencode/README.md](../plugins/babysitter-unified/per-harness/opencode/README.md) | Generated from the unified source; README is the canonical package-level contract. |
-| `@a5c-ai/babysitter-pi` | [plugins/babysitter-unified/per-harness/pi/README.md](../plugins/babysitter-unified/per-harness/pi/README.md) | Generated from the unified source; README is the canonical package-level contract. |
+| `blueprints/babysitter-unified` | [blueprints/babysitter-unified/per-harness/claude-code/README.md](../blueprints/babysitter-unified/per-harness/claude-code/README.md) | Canonical authoring source plus Claude Code surface. |
+| `@a5c-ai/babysitter-codex` | [blueprints/babysitter-unified/per-harness/codex/README.md](../blueprints/babysitter-unified/per-harness/codex/README.md) | Generated from the unified source; README is the canonical package-level contract. |
+| `@a5c-ai/babysitter-cursor` | [blueprints/babysitter-unified/per-harness/cursor/README.md](../blueprints/babysitter-unified/per-harness/cursor/README.md) | Generated from the unified source; README is the canonical package-level contract. |
+| `babysitter-gemini` | [blueprints/babysitter-unified/per-harness/gemini/README.md](../blueprints/babysitter-unified/per-harness/gemini/README.md) | Generated from the unified source; README is the canonical package-level contract. |
+| `babysitter-github` | [blueprints/babysitter-unified/per-harness/github/README.md](../blueprints/babysitter-unified/per-harness/github/README.md) | Generated from the unified source; README is the canonical package-level contract. |
+| `@a5c-ai/babysitter-omp` | [blueprints/babysitter-unified/per-harness/omp/README.md](../blueprints/babysitter-unified/per-harness/omp/README.md) | Generated from the unified source; README is the canonical package-level contract. |
+| `@a5c-ai/babysitter-openclaw` | [blueprints/babysitter-unified/per-harness/openclaw/README.md](../blueprints/babysitter-unified/per-harness/openclaw/README.md) | Generated from the unified source; README is the canonical package-level contract. |
+| `@a5c-ai/babysitter-opencode` | [blueprints/babysitter-unified/per-harness/opencode/README.md](../blueprints/babysitter-unified/per-harness/opencode/README.md) | Generated from the unified source; README is the canonical package-level contract. |
+| `@a5c-ai/babysitter-pi` | [blueprints/babysitter-unified/per-harness/pi/README.md](../blueprints/babysitter-unified/per-harness/pi/README.md) | Generated from the unified source; README is the canonical package-level contract. |
 <!-- supported-harness-plugins:end -->
 
 ## Bridge Flags for amux Launch
@@ -70,14 +70,14 @@ The blueprints rename does not change agent harness plugin concepts. These names
 
 ## Built-in Quality Gates
 
-The `babysitter-unified` plugin ships a small set of pre-deploy gates as flat command markdown files under `plugins/babysitter-unified/commands/`. Each command pairs a user-facing slash invocation with reusable process helpers, so the gate can be invoked manually or composed programmatically.
+The `babysitter-unified` plugin ships a small set of pre-deploy gates as flat command markdown files under `blueprints/babysitter-unified/commands/`. Each command pairs a user-facing slash invocation with reusable process helpers, so the gate can be invoked manually or composed programmatically.
 
 ### `babysitter:check-forbidden-markers`
 
 Pre-deploy substring grep for obsolete code paths that must never re-ship after a refactor or restart-from-baseline. Reads a project-local `scripts/forbidden-markers.txt` and scans built assets for forbidden markers.
 
 - Helper: `library/processes/shared/forbidden-markers-scanner.js`
-- Slash command: `plugins/babysitter-unified/commands/check-forbidden-markers.md`
+- Slash command: `blueprints/babysitter-unified/commands/check-forbidden-markers.md`
 
 ## Further Reading
 

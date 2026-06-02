@@ -102,7 +102,7 @@ A reusable instruction bundle, usually file-based, for performing a specialized 
 
 ### Unified Plugin
 
-The canonical plugin source under `plugins/babysitter-unified/`. It describes hooks, commands, skills, context files, and target-specific overrides that can be compiled into per-harness bundles.
+The canonical plugin source under `blueprints/babysitter-unified/`. It describes hooks, commands, skills, context files, and target-specific overrides that can be compiled into per-harness bundles.
 
 ### V6
 
@@ -110,14 +110,14 @@ The current architecture program for the stack. V6 is a documentation and valida
 
 ### Working Surface
 
-The actual surface a developer changes to implement a feature or fix: for example `packages/sdk`, `packages/agent-mux/adapters`, `packages/agent-mux/hooks/core`, or `plugins/babysitter-unified`. V6 prefers identifying the real working surface before proposing extra package layers.
+The actual surface a developer changes to implement a feature or fix: for example `packages/sdk`, `packages/agent-mux/adapters`, `packages/agent-mux/hooks/core`, or `blueprints/babysitter-unified`. V6 prefers identifying the real working surface before proposing extra package layers.
 
 ## Naming Rule
 
 When a term can refer to both a concept and a package, prefer these patterns:
 
 - Use lowercase prose for the concept: "the orchestration runtime", "the unified plugin".
-- Use exact package or path names for code ownership: `@a5c-ai/babysitter-sdk`, `packages/agent-mux/core`, `plugins/babysitter-unified`.
+- Use exact package or path names for code ownership: `@a5c-ai/babysitter-sdk`, `packages/agent-mux/core`, `blueprints/babysitter-unified`.
 - Treat speculative layer names such as "platform" or "application layer" as deferred vocabulary unless a V6 document explicitly marks them as normative.
 
 ---

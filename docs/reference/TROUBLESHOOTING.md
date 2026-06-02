@@ -154,7 +154,7 @@ $CLI run:iterate <runId> --json --iteration <n>
 
 ```bash
 ls -la .a5c/hooks/<hook-name>/
-ls -la plugins/babysitter-unified/hooks/<hook-name>.sh
+ls -la blueprints/babysitter-unified/hooks/<hook-name>.sh
 ```
 
 Hooks must have the executable bit set (`-rwxr-xr-x`).
@@ -164,7 +164,7 @@ Hooks must have the executable bit set (`-rwxr-xr-x`).
 Hooks are discovered in this priority order:
 1. `.a5c/hooks/<hook-name>/` (per-repo, highest priority)
 2. `~/.config/babysitter/hooks/<hook-name>/` (per-user)
-3. `plugins/babysitter-unified/hooks/<hook-name>.sh` (maintained plugin source)
+3. `blueprints/babysitter-unified/hooks/<hook-name>.sh` (maintained plugin source)
 
 **Step 3: Test hook manually**
 
@@ -177,13 +177,13 @@ echo '{"runId":"test-123","status":"completed"}' | .a5c/hooks/on-run-complete/my
 
 ```bash
 # Test the maintained plugin hook entrypoint
-echo '{"session_id":"test-123"}' | plugins/babysitter-unified/hooks/session-start.sh
+echo '{"session_id":"test-123"}' | blueprints/babysitter-unified/hooks/session-start.sh
 ```
 
 **Step 5: Check hook registration (for Claude Code hooks)**
 
 ```bash
-cat plugins/babysitter-unified/plugin.json | jq '.hooks'
+cat blueprints/babysitter-unified/plugin.json | jq '.hooks'
 ```
 
 ### Solution
@@ -192,7 +192,7 @@ cat plugins/babysitter-unified/plugin.json | jq '.hooks'
 
 ```bash
 chmod +x .a5c/hooks/<hook-name>/*.sh
-chmod +x plugins/babysitter-unified/hooks/*.sh
+chmod +x blueprints/babysitter-unified/hooks/*.sh
 ```
 
 **Fix hook script errors:**
@@ -403,7 +403,7 @@ echo "$AGENT_SESSION_ID"
 **Step 4: Check hook registration**
 
 ```bash
-cat plugins/babysitter-unified/plugin.json | jq '.hooks'
+cat blueprints/babysitter-unified/plugin.json | jq '.hooks'
 ```
 
 Should include both `SessionStart` and `Stop` hooks.
@@ -412,7 +412,7 @@ Should include both `SessionStart` and `Stop` hooks.
 
 ```bash
 echo '{"session_id":"test-123","transcript_path":"/tmp/test.jsonl"}' | \
-  plugins/babysitter-unified/hooks/stop.sh
+  blueprints/babysitter-unified/hooks/stop.sh
 ```
 
 ### Solution
@@ -439,7 +439,7 @@ Check:
 3. whether that file is writable
 4. whether the hook is executable:
    ```bash
-   chmod +x plugins/babysitter-unified/hooks/session-start.sh
+   chmod +x blueprints/babysitter-unified/hooks/session-start.sh
    ```
 
 **Iteration limit reached too quickly:**
@@ -529,7 +529,7 @@ npm exec --yes --package @a5c-ai/babysitter-sdk@latest -- babysitter --version
 **Step 4: Check plugin structure**
 
 ```bash
-ls -la plugins/babysitter-unified/
+ls -la blueprints/babysitter-unified/
 # Should contain: hooks/, skills/, per-harness/, plugin.json, versions.json
 ```
 
@@ -621,7 +621,7 @@ npm exec --yes --package @a5c-ai/babysitter-sdk@latest -- babysitter --version
 **Step 1: Check hook permissions**
 
 ```bash
-ls -la plugins/babysitter-unified/hooks/*.sh
+ls -la blueprints/babysitter-unified/hooks/*.sh
 ls -la .a5c/hooks/**/*.sh
 ```
 
@@ -637,7 +637,7 @@ ls -la .a5c/runs/
 ls -la ~/.a5c/state/
 
 # Plugin directory
-ls -la plugins/babysitter-unified/
+ls -la blueprints/babysitter-unified/
 ```
 
 **Step 3: Check file ownership**
@@ -664,7 +664,7 @@ touch ~/.a5c/state/.write-test && rm ~/.a5c/state/.write-test
 
 ```bash
 # Make all hooks executable
-chmod +x plugins/babysitter-unified/hooks/*.sh
+chmod +x blueprints/babysitter-unified/hooks/*.sh
 chmod +x .a5c/hooks/**/*.sh
 ```
 
@@ -688,7 +688,7 @@ chmod 755 ~/.a5c/state
 ```bash
 # Change ownership to current user
 sudo chown -R $(whoami) .a5c/
-sudo chown -R $(whoami) plugins/babysitter-unified/
+sudo chown -R $(whoami) blueprints/babysitter-unified/
 ```
 
 **SELinux/AppArmor issues (Linux):**
@@ -710,7 +710,7 @@ On Windows (Git Bash/WSL):
 ```bash
 # Git Bash may not preserve execute bits
 # Mark hooks as executable in git
-git update-index --chmod=+x plugins/babysitter-unified/hooks/*.sh
+git update-index --chmod=+x blueprints/babysitter-unified/hooks/*.sh
 ```
 
 ### Prevention
@@ -861,8 +861,8 @@ $CLI task:list <runId> --pending --json | jq '.tasks'
 
 ### Documentation
 
-- **Plugin Specification:** `plugins/babysitter-unified/plugin.json`
-- **Hooks Guide:** `plugins/babysitter-unified/skills/babysit/SKILL.md`
+- **Plugin Specification:** `blueprints/babysitter-unified/plugin.json`
+- **Hooks Guide:** `blueprints/babysitter-unified/skills/babysit/SKILL.md`
 - **SDK Reference:** `packages/sdk/sdk.md`
 - **In-Session Loops:** `packages/sdk/src/cli/commands/instructions.ts`
 

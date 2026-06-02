@@ -1,7 +1,7 @@
 /**
  * @process agent-mux/sessions-view-installed-agents-bugfix
  * @description Diagnose and fix the Sessions view bug where discovered installed agents do not surface sessions, using analysis, implementation, deterministic verification, and review convergence.
- * @skill babysit plugins/babysitter/skills/babysit/SKILL.md
+ * @skill babysit blueprints/babysitter/skills/babysit/SKILL.md
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

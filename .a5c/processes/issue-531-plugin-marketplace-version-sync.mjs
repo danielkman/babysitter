@@ -12,10 +12,10 @@
  *
  * Reuse-audit findings (REVIEW BEFORE PROCEEDING):
  * - Release version bumping already exists in scripts/bump-version.mjs, but the inspected path only updates .claude-plugin/marketplace.json directly.
- * - Workspace/plugin sync already exists in scripts/sync-workspace-versions.mjs, but the inspected path only updates plugins/babysitter-unified/plugin.json and plugins/babysitter-unified/versions.json.
- * - Plugin generation already resolves the unified plugin version from plugins/babysitter-unified/versions.json in scripts/generate-plugins.mjs and compares .claude-plugin/marketplace.json plus .agents/plugins/marketplace.json outputs.
+ * - Workspace/plugin sync already exists in scripts/sync-workspace-versions.mjs, but the inspected path only updates blueprints/babysitter-unified/plugin.json and blueprints/babysitter-unified/versions.json.
+ * - Plugin generation already resolves the unified plugin version from blueprints/babysitter-unified/versions.json in scripts/generate-plugins.mjs and compares .claude-plugin/marketplace.json plus .agents/plugins/marketplace.json outputs.
  * - Staging external plugin sync already derives a prerelease TARGET_VERSION in .github/workflows/sync-external-plugins.yml before running sync-workspace-versions and generate:plugins.
- * - Existing marketplace/install surfaces to reuse or inspect include .claude-plugin/marketplace.json, .cursor-plugin/marketplace.json, .agents/plugins/marketplace.json, the generated .github/plugin marketplace surface if present, plugins/babysitter-unified/plugin.json, and plugins/babysitter-unified/versions.json.
+ * - Existing marketplace/install surfaces to reuse or inspect include .claude-plugin/marketplace.json, .cursor-plugin/marketplace.json, .agents/plugins/marketplace.json, the generated .github/plugin marketplace surface if present, blueprints/babysitter-unified/plugin.json, and blueprints/babysitter-unified/versions.json.
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';
@@ -253,7 +253,7 @@ export const traceVersionSurfacesTask = defineTask('issue-531.trace-version-surf
         'Use the issue context and reuse audit as context:',
         JSON.stringify({ issueContext: args.issueContext, reuseAudit: args.reuseAudit }, null, 2),
         'Trace these runtimeCallPaths:',
-        '1. Manual release bump through scripts/bump-version.mjs into package manifests, plugins/babysitter-unified/plugin.json, versions.json, and marketplace manifests.',
+        '1. Manual release bump through scripts/bump-version.mjs into package manifests, blueprints/babysitter-unified/plugin.json, versions.json, and marketplace manifests.',
         '2. CI staging sync through .github/workflows/sync-external-plugins.yml into scripts/sync-workspace-versions.mjs, npm run generate:plugins, and scripts/sync-external-plugin-repos.mjs.',
         '3. Unified plugin generation through scripts/generate-plugins.mjs and packages/extension-mux target adapters into generated marketplace files.',
         '4. Claude update decision surface: marketplace version label compared against installed plugin cache/gitCommitSha.',
@@ -318,7 +318,7 @@ export const designFixTask = defineTask('issue-531.design-fix', (args, taskCtx) 
         }, null, 2),
         'The fix should make every published marketplace/install manifest that uses a version label receive the resolved release version.',
         'Prefer a shared manifest-sync helper inside existing scripts over duplicated one-off JSON mutation blocks if that reduces recurring drift.',
-        'Do not invent new release state. Use package.json, the explicit bump version, the workflow-derived TARGET_VERSION, or plugins/babysitter-unified/versions.json as already appropriate on each path.',
+        'Do not invent new release state. Use package.json, the explicit bump version, the workflow-derived TARGET_VERSION, or blueprints/babysitter-unified/versions.json as already appropriate on each path.',
         'Respect schemas that do not currently expose a plugin version field; decide whether to add one only if that surface uses it for update comparisons or generated output requires it.',
         'Return JSON: { designSummary, filesToChange, filesNotToChange, runtimeCallPaths, testPlan, rollbackPlan, maintainerDecisionNeeded, maintainerQuestion }.',
       ],
@@ -357,7 +357,7 @@ export const implementFixTask = defineTask('issue-531.implement-fix', (args, tas
         'Expected implementation direction:',
         '- Ensure scripts/bump-version.mjs updates all version-bearing marketplace/install manifests for Babysitter, not only .claude-plugin/marketplace.json.',
         '- Ensure scripts/sync-workspace-versions.mjs or the CI generation path updates the same source-of-truth version surfaces before generated external plugin output is produced.',
-        '- Ensure generated marketplace output keeps manifest version labels in lockstep with plugins/babysitter-unified/versions.json or the workflow-derived release version.',
+        '- Ensure generated marketplace output keeps manifest version labels in lockstep with blueprints/babysitter-unified/versions.json or the workflow-derived release version.',
         '- Add or extend deterministic checks that fail when content/generation advances but the manifest version label stays stale.',
         'Return JSON: { changedFiles, summary, rootCauseAddressed, testsAddedOrModified, verificationCommands, risks }.',
       ],

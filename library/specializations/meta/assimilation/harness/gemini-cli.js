@@ -106,7 +106,7 @@ export async function process(inputs, ctx) {
   // mcpServers, contextFileName. GEMINI.md for agent instructions.
   // Commands in TOML format: commands/<group>/<name>.toml with description
   // and prompt fields. Skills activated via activate_skill tool.
-  // Commands: ALL 15 command files from plugins/babysitter/commands/ must be
+  // Commands: ALL 15 command files from blueprints/babysitter/commands/ must be
   // ported identically (harness-agnostic, invoke skills via Skill tool).
   // ==========================================================================
 

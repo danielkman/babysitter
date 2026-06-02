@@ -4,7 +4,7 @@
  * @process processes/shared/tdd-triplet
  * @process processes/shared/completeness-gate
  * @description Brownfield TDD implementation process for issue #630: add the ResponderType system and task router to packages/tasks-mux.
- * @skill babysit plugins/babysitter/skills/babysit/SKILL.md
+ * @skill babysit blueprints/babysitter/skills/babysit/SKILL.md
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';

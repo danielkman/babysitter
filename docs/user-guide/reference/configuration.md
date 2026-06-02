@@ -208,7 +208,7 @@ Each run has the following structure:
 Location: Managed by Claude Code plugin system
 
 ```
-plugins/babysitter-unified/
+blueprints/babysitter-unified/
 ├── plugin.json           # Plugin manifest
 ├── versions.json         # Unified SDK/plugin version marker
 ├── skills/
@@ -325,7 +325,7 @@ Derived state cache. Rebuilt from journal if missing.
 
 Hook registration for Claude Code integration.
 
-**Location:** generated from `plugins/babysitter-unified/plugin.json`
+**Location:** generated from `blueprints/babysitter-unified/plugin.json`
 
 **Schema:**
 ```json
@@ -371,7 +371,7 @@ Hooks are discovered in priority order:
 
 1. **Per-repo hooks:** `.a5c/hooks/<hook-name>/*.sh`
 2. **Per-user hooks:** `~/.config/babysitter/hooks/<hook-name>/*.sh`
-3. **Plugin hooks:** `plugins/babysitter-unified/hooks/<hook-name>.sh`
+3. **Plugin hooks:** `blueprints/babysitter-unified/hooks/<hook-name>.sh`
 
 All executable files (`.sh`) in the hook directory are executed in lexicographic order.
 

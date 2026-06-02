@@ -7,7 +7,7 @@ import { existsSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync 
 import { join, relative, resolve, sep } from 'node:path';
 
 const ROOT = resolve(import.meta.dirname, '..');
-const UNIFIED_SOURCE = join(ROOT, 'plugins/babysitter-unified');
+const UNIFIED_SOURCE = join(ROOT, 'blueprints/babysitter-unified');
 const DEFAULT_OUTPUT = join(ROOT, 'artifacts', 'generated-plugins');
 const COMPILER_PKG = join(ROOT, 'packages/agent-mux/extensions');
 
@@ -46,7 +46,7 @@ function syncUnifiedPluginVersion() {
   }
   manifest.version = nextVersion;
   writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
-  console.log(`[generate] Synced plugins/babysitter-unified/plugin.json version -> ${nextVersion}`);
+  console.log(`[generate] Synced blueprints/babysitter-unified/plugin.json version -> ${nextVersion}`);
   return nextVersion;
 }
 

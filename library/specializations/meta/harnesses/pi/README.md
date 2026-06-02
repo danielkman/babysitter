@@ -547,8 +547,8 @@ Plugin installation targets:
 
 | Harness | Plugin Directory |
 |---------|-----------------|
-| Pi | `~/.pi/plugins/babysitter/` |
-| Oh-My-Pi | `~/.omp/plugins/babysitter/` |
+| Pi | `~/.pi/blueprints/babysitter/` |
+| Oh-My-Pi | `~/.omp/blueprints/babysitter/` |
 
 When `--workspace <dir>` is provided, the plugin installs into the project-local plugin directory instead.
 
