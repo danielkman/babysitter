@@ -12,11 +12,11 @@
       "fromPackage": "@a5c-ai/agent-core",
       "toPackage": "@a5c-ai/tula-core",
       "fromDirectory": "packages/agent-core",
-      "toDirectory": "packages/tula-core"
+      "toDirectory": "packages/tula/core"
     },
     "nonGoals": [
       "Do not rename @a5c-ai/agent-runtime or packages/agent-runtime in issue #836.",
-      "Do not rename @a5c-ai/tula-platform or packages/tula-platform in issue #836.",
+      "Do not rename @a5c-ai/tula-platform or packages/tula/platform in issue #836.",
       "Do not rename the agent-core runtime harness terminology unless it is specifically package/workspace identity.",
       "Do not change behavior of the agent runtime or harness invocation paths beyond references needed for the package rename."
     ]

@@ -43,22 +43,22 @@
       "note": "Public npm package for the Atlas catalog graph index and query SDK."
     },
     {
-      "surface": "packages/tula-core",
+      "surface": "packages/tula/core",
       "packageName": "@a5c-ai/tula-core",
       "description": "Tula core runtime and tool surface for Babysitter.",
       "hasReadme": true,
       "status": "Public advanced/runtime package",
-      "canonicalHome": "../packages/tula-core/README.md",
+      "canonicalHome": "../packages/tula/core/README.md",
       "supporting": [],
       "note": "Public runtime dependency package for advanced orchestration surfaces."
     },
     {
-      "surface": "packages/tula-runtime",
+      "surface": "packages/tula/runtime",
       "packageName": "@a5c-ai/tula-runtime",
       "description": "Agent runtime layer (L5) — daemon, session, resource management, telemetry.",
       "hasReadme": true,
       "status": "Public advanced/runtime package",
-      "canonicalHome": "../packages/tula-runtime/README.md",
+      "canonicalHome": "../packages/tula/runtime/README.md",
       "supporting": [],
       "note": "Public runtime dependency for L5 agent runtime concerns."
     },
@@ -319,19 +319,19 @@
       "note": "README is the canonical package-level contract."
     },
     {
-      "surface": "packages/tula-platform",
+      "surface": "packages/tula/platform",
       "packageName": "@a5c-ai/tula-platform",
       "description": "Agent Platform layer — harness integration, governance, CLI hosting, interaction, storage.",
       "hasReadme": true,
       "status": "Public advanced/runtime package",
-      "canonicalHome": "../packages/tula-platform/README.md",
+      "canonicalHome": "../packages/tula/platform/README.md",
       "supporting": [
         "../README.md"
       ],
       "note": "Public npm package, platform layer for agent orchestration."
     },
     {
-      "surface": "packages/tula",
+      "surface": "packages/tula/cli",
       "packageName": "@a5c-ai/tula",
       "description": "Tula — unified agent product integrating core, runtime, platform, and TUI.",
       "hasReadme": true,

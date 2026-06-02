@@ -48,9 +48,9 @@
     "packages/agent-core/src/session.test.ts",
     "packages/agent-core/src/index.ts",
     "packages/agent-core/README.md",
-    "packages/tula-platform/src/harness/types.ts",
-    "packages/tula-platform/src/harness/internal/createRun/agent-core-loop.ts",
-    "packages/tula-platform/src/harness/invoker.ts",
+    "packages/tula/platform/src/harness/types.ts",
+    "packages/tula/platform/src/harness/internal/createRun/agent-core-loop.ts",
+    "packages/tula/platform/src/harness/invoker.ts",
     "docs/agent-layer-gaps.md"
   ],
   "runtimeCallPathSeeds": [

@@ -188,7 +188,7 @@ runs:
 
         # Always use JSON output for CI parsing
         ARGS+=(--json)
-        CLI=(node "$ACTION_ROOT/packages/tula-platform/dist/cli/main.js" yolo)
+        CLI=(node "$ACTION_ROOT/packages/tula/platform/dist/cli/main.js" yolo)
 
         echo "::group::Babysitter Command"
         echo "${CLI[*]} ${ARGS[*]}"

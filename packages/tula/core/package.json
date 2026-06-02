@@ -42,9 +42,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/a5c-ai/babysitter.git",
-    "directory": "packages/tula-core"
+    "directory": "packages/tula/core"
   },
-  "homepage": "https://github.com/a5c-ai/babysitter/tree/main/packages/tula-core#readme",
+  "homepage": "https://github.com/a5c-ai/babysitter/tree/main/packages/tula/core#readme",
   "bugs": {
     "url": "https://github.com/a5c-ai/babysitter/issues"
   },

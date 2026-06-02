@@ -22,22 +22,22 @@
     "baseUrl": ".",
     "paths": {
       "@a5c-ai/tula-platform": [
-        "../tula-platform/src/index.ts"
+        "../platform/src/index.ts"
       ],
       "@a5c-ai/tula-platform/api": [
-        "../tula-platform/src/api/index.ts"
+        "../platform/src/api/index.ts"
       ],
       "@a5c-ai/tula-platform/daemon": [
-        "../tula-platform/src/daemon/index.ts"
+        "../platform/src/daemon/index.ts"
       ],
       "@a5c-ai/tula-platform/harness": [
-        "../tula-platform/src/harness/index.ts"
+        "../platform/src/harness/index.ts"
       ],
       "@a5c-ai/tula-platform/mcp/transport": [
-        "../tula-platform/src/mcp/transport/index.ts"
+        "../platform/src/mcp/transport/index.ts"
       ],
       "@a5c-ai/tula-platform/session": [
-        "../tula-platform/src/session/index.ts"
+        "../platform/src/session/index.ts"
       ]
     }
   },
@@ -54,13 +54,13 @@
       "path": "../sdk"
     },
     {
-      "path": "../tula-core"
+      "path": "../core"
     },
     {
-      "path": "../tula-runtime"
+      "path": "../runtime"
     },
     {
-      "path": "../tula-platform"
+      "path": "../platform"
     }
   ]
 }

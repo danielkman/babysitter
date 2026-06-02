@@ -17,7 +17,7 @@
   "sourceScope": {
     "primaryPackages": [
       "packages/sdk",
-      "packages/tula-platform",
+      "packages/tula/platform",
       "packages/tasks-mux"
     ],
     "pluginSurfaces": [

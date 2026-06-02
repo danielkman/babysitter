@@ -7,11 +7,11 @@ const repoRoot = path.resolve(__dirname, '..');
 const DOCS_SURFACE_PATH = 'docs/generated/package-plugin-docs-coverage.json';
 const BUGS_URL = 'https://github.com/a5c-ai/babysitter/issues';
 const REPOSITORY_URL = 'git+https://github.com/a5c-ai/babysitter.git';
-const TULA_CORE_SURFACE = 'packages/tula-core';
+const TULA_CORE_SURFACE = 'packages/tula/core';
 const TULA_CORE_PACKAGE = '@a5c-ai/tula-core';
 const OLD_AGENT_CORE_SURFACE = 'packages/agent-core';
 const OLD_AGENT_CORE_PACKAGE = '@a5c-ai/agent-core';
-const TULA_RUNTIME_SURFACE = 'packages/tula-runtime';
+const TULA_RUNTIME_SURFACE = 'packages/tula/runtime';
 const TULA_RUNTIME_PACKAGE = '@a5c-ai/tula-runtime';
 const OLD_AGENT_RUNTIME_SURFACE = ['packages', 'agent-runtime'].join('/');
 const OLD_AGENT_RUNTIME_PACKAGE = ['@a5c-ai', 'agent-runtime'].join('/');
@@ -182,8 +182,8 @@ function verifyTulaCoreRename() {
 
 function verifyTulaCoreDependents() {
   const packageJsonPaths = [
-    'packages/tula-platform/package.json',
-    'packages/tula/package.json',
+    'packages/tula/platform/package.json',
+    'packages/tula/cli/package.json',
   ];
   for (const packageJsonPath of packageJsonPaths) {
     const manifest = readJson(packageJsonPath);
@@ -193,27 +193,27 @@ function verifyTulaCoreDependents() {
   }
 
   const tsconfigPaths = [
-    'packages/tula-platform/tsconfig.json',
-    'packages/tula/tsconfig.json',
+    'packages/tula/platform/tsconfig.json',
+    'packages/tula/cli/tsconfig.json',
   ];
   for (const tsconfigPath of tsconfigPaths) {
     const config = readJson(tsconfigPath);
     const staleReference = (config.references || []).find((reference) => reference && reference.path === '../agent-core');
     if (staleReference) {
-      fail(`${tsconfigPath} must reference ../tula-core, not ../agent-core`);
+      fail(`${tsconfigPath} must reference ../core, not ../agent-core`);
     }
   }
 
   const staleImportFiles = [
-    'packages/tula-platform/src/harness/index.ts',
-    'packages/tula-platform/src/harness/internal/createRun/utils.ts',
-    'packages/tula-platform/src/harness/internal/createRun/planProcess/phaseHelpers.ts',
-    'packages/tula-platform/src/harness/internal/createRun/orchestration/internalTools.ts',
-    'packages/tula-platform/src/harness/internal/createRun/__tests__/createRun.test.ts',
-    'packages/tula-platform/src/harness/internal/createRun/__tests__/utils.test.ts',
-    'packages/tula-platform/src/harness/amux/__tests__/amuxInvokerWiring.test.ts',
-    'packages/tula/src/index.ts',
-    'packages/tula/src/cli/commands/harness/resumeRun.ts',
+    'packages/tula/platform/src/harness/index.ts',
+    'packages/tula/platform/src/harness/internal/createRun/utils.ts',
+    'packages/tula/platform/src/harness/internal/createRun/planProcess/phaseHelpers.ts',
+    'packages/tula/platform/src/harness/internal/createRun/orchestration/internalTools.ts',
+    'packages/tula/platform/src/harness/internal/createRun/__tests__/createRun.test.ts',
+    'packages/tula/platform/src/harness/internal/createRun/__tests__/utils.test.ts',
+    'packages/tula/platform/src/harness/agent-mux/__tests__/amuxInvokerWiring.test.ts',
+    'packages/tula/cli/src/index.ts',
+    'packages/tula/cli/src/cli/commands/harness/resumeRun.ts',
   ];
   for (const filePath of staleImportFiles) {
     const fullPath = path.join(repoRoot, filePath);
@@ -240,9 +240,9 @@ function verifyTulaCoreExternalSurfaces() {
     'docs/testing/agent-mux-and-runtime-e2e.md',
     'docs/testing/current-test-command-inventory.md',
     'docs/testing/stack-permutations.md',
-    'packages/tula/README.md',
+    'packages/tula/cli/README.md',
     'packages/atlas/graph/coverage-checklist.md',
-    'packages/atlas/graph/agent-stack/core-impls/tula-core-current.yaml',
+    'packages/atlas/graph/agent-stack/core-imp../core-current.yaml',
   ];
 
   for (const filePath of files) {
@@ -287,9 +287,9 @@ function verifyTulaRuntimeRename() {
 
 function verifyTulaRuntimeDependents() {
   const packageJsonPaths = [
-    'packages/tula-platform/package.json',
-    'packages/tula-core/package.json',
-    'packages/tula/package.json',
+    'packages/tula/platform/package.json',
+    'packages/tula/core/package.json',
+    'packages/tula/cli/package.json',
   ];
   for (const packageJsonPath of packageJsonPaths) {
     const manifest = readJson(packageJsonPath);
@@ -299,15 +299,15 @@ function verifyTulaRuntimeDependents() {
   }
 
   const tsconfigPaths = [
-    'packages/tula-platform/tsconfig.json',
-    'packages/tula/tsconfig.json',
+    'packages/tula/platform/tsconfig.json',
+    'packages/tula/cli/tsconfig.json',
   ];
   for (const tsconfigPath of tsconfigPaths) {
     const config = readJson(tsconfigPath);
     const staleRuntimeReference = `../${'agent-runtime'}`;
     const staleReference = (config.references || []).find((reference) => reference && reference.path === staleRuntimeReference);
     if (staleReference) {
-      fail(`${tsconfigPath} must reference ../tula-runtime, not ../agent-runtime`);
+      fail(`${tsconfigPath} must reference ../runtime, not ../agent-runtime`);
     }
   }
 }

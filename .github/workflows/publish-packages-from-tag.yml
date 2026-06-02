@@ -85,12 +85,12 @@ jobs:
 
           build_agent_core() {
             echo "Building @a5c-ai/tula-core without rebuilding runtime dependencies"
-            npx --no-install tsc --build packages/tula-core/tsconfig.json
+            npx --no-install tsc --build packages/tula/core/tsconfig.json
           }
 
           build_babysitter_agent() {
             echo "Building @a5c-ai/tula-platform without rebuilding runtime dependencies"
-            npx --no-install tsc --build packages/tula-platform/tsconfig.json
+            npx --no-install tsc --build packages/tula/platform/tsconfig.json
           }
 
           echo "Building @a5c-ai/atlas catalog foundation"

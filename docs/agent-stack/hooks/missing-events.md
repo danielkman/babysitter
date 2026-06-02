@@ -115,13 +115,13 @@ This file now tracks remaining runtime-emission gaps, plus `TeammateIdle`, which
 **Note:** Already handled as canonical phase `session.config_changed`; do not use `session.config_change`.
 **Status:** hooks-mux and agent-mux support blocking decisions for native Claude `ConfigChange`.
 **Where to fix:**
-- S../tula-platform: Add explicit config mutation emission only where a concrete config-write path owns the event.
+- S../platform: Add explicit config mutation emission only where a concrete config-write path owns the event.
 
 ## Priority 4 — Advanced (3 events)
 
 ### MessageDisplay
 **Note:** Formalized as `message.received` in hooks-mux and registered in agent-mux Claude runtime hooks.
-**Gap:** S../tula-platform streaming output emission remains separate from native Claude runtime hook dispatch.
+**Gap:** S../platform streaming output emission remains separate from native Claude runtime hook dispatch.
 **Where to fix:**
 - agent-platform: Emit during streaming output
 

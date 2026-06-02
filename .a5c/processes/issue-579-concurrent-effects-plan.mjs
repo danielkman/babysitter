@@ -33,16 +33,16 @@ const TARGET_FILES = [
   'packages/sdk/src/testing/__tests__/parallelHarness.test.ts',
   'packages/sdk/src/tasks/__tests__/batching.test.ts',
   'packages/sdk/src/tasks/__tests__/grouping.test.ts',
-  'packages/tula-platform/src/harness/internal.ts',
-  'packages/tula-platform/src/harness/internal/createRun/orchestration/dispatch.ts',
-  'packages/tula-platform/src/harness/internal/createRun/orchestration/effects.ts',
-  'packages/tula-platform/src/harness/internal/createRun/orchestration/externalPhase.ts',
-  'packages/tula-platform/src/harness/internal/createRun/orchestration/index.ts',
-  'packages/tula-platform/src/harness/internal/createRun/orchestration/internalPhase.ts',
-  'packages/tula-platform/src/harness/internal/createRun/orchestration/internalTools.ts',
-  'packages/tula-platform/src/harness/internal/createRun/orchestration/types.ts',
-  'packages/tula-platform/src/harness/internal/createRun/orchestration/__tests__/dispatch.test.ts',
-  'packages/tula-platform/src/harness/internal/createRun/__tests__/createRun.test.ts',
+  'packages/tula/platform/src/harness/internal.ts',
+  'packages/tula/platform/src/harness/internal/createRun/orchestration/dispatch.ts',
+  'packages/tula/platform/src/harness/internal/createRun/orchestration/effects.ts',
+  'packages/tula/platform/src/harness/internal/createRun/orchestration/externalPhase.ts',
+  'packages/tula/platform/src/harness/internal/createRun/orchestration/index.ts',
+  'packages/tula/platform/src/harness/internal/createRun/orchestration/internalPhase.ts',
+  'packages/tula/platform/src/harness/internal/createRun/orchestration/internalTools.ts',
+  'packages/tula/platform/src/harness/internal/createRun/orchestration/types.ts',
+  'packages/tula/platform/src/harness/internal/createRun/orchestration/__tests__/dispatch.test.ts',
+  'packages/tula/platform/src/harness/internal/createRun/__tests__/createRun.test.ts',
 ];
 
 const QUALITY_GATES = [
@@ -60,7 +60,7 @@ const QUALITY_GATES = [
 
 const VERIFICATION_COMMANDS = [
   'npm exec --yes --package=vitest -- vitest run --config vitest.config.ts packages/sdk/src/testing/__tests__/parallelHarness.test.ts packages/sdk/src/tasks/__tests__/grouping.test.ts packages/sdk/src/tasks/__tests__/batching.test.ts',
-  'npm exec --yes --package=vitest -- vitest run --config vitest.config.ts packages/tula-platform/src/harness/internal/createRun/orchestration/__tests__/dispatch.test.ts packages/tula-platform/src/harness/internal/createRun/__tests__/createRun.test.ts',
+  'npm exec --yes --package=vitest -- vitest run --config vitest.config.ts packages/tula/platform/src/harness/internal/createRun/orchestration/__tests__/dispatch.test.ts packages/tula/platform/src/harness/internal/createRun/__tests__/createRun.test.ts',
   'npm run build:sdk',
   'npm run build --workspace=@a5c-ai/tula-platform',
   'npm run test:sdk',

@@ -162,8 +162,8 @@ jobs:
           # agent-mux chain) are already built above — call tsc directly to avoid
           # redundant rebuilds through chained npm scripts.
           npm run build --workspace=@a5c-ai/babysitter-sdk
-          (cd packages/tula-core && npx tsc --build --force tsconfig.json)
-          (cd packages/tula-platform && npx tsc --build tsconfig.json)
+          (cd packages/tula/core && npx tsc --build --force tsconfig.json)
+          (cd packages/tula/platform && npx tsc --build tsconfig.json)
 
           wait_all
 
@@ -235,7 +235,7 @@ jobs:
       - name: tula-core tests
         run: |
           set -euo pipefail
-          npm run test --workspace=@a5c-ai/tula-core 2>&1 | tee artifacts/core-logs/tula-core-tests.log
+          npm run test --workspace=@a5c-ai/tula-core 2>&1 | tee artifacts/core-lo../core-tests.log
 
       - name: babysitter-harness tests
         run: |

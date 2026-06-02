@@ -113,7 +113,7 @@ describe("agent-platform seam contract", () => {
   test("anchors the seam contract in the V6 current-state doc", async () => {
     const currentStateDoc = await fs.readFile(currentStateDocPath, "utf8");
 
-    expect(currentStateDoc).toContain("`packages/tula-platform/src/seams/contract.ts`");
+    expect(currentStateDoc).toContain("`packages/tula/platform/src/seams/contract.ts`");
     expect(currentStateDoc).toContain("`runtime-foundation`");
     expect(currentStateDoc).toContain("`governance-control`");
     expect(currentStateDoc).toContain("`integration-bridges`");
@@ -125,7 +125,7 @@ describe("agent-platform seam contract", () => {
     const seamAdr = await fs.readFile(seamAdrPath, "utf8");
 
     expect(seamAdr).toContain("# ADR-001: Agent-Platform Seam Contract As The First Executable V6 Slice");
-    expect(seamAdr).toContain("`packages/tula-platform/src/seams/contract.ts`");
+    expect(seamAdr).toContain("`packages/tula/platform/src/seams/contract.ts`");
     expect(seamAdr).toContain("npm run verify:v6:seams");
     expect(seamAdr).toContain("`@a5c-ai/tula-platform`");
   });

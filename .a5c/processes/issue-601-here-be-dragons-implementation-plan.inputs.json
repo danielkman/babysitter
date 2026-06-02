@@ -67,9 +67,9 @@
   "targetEvidenceFiles": [
     "docs/here-be-dragons.md",
     "packages/agent-core/src/agenticTools/index.ts",
-    "packages/tula-platform/src/harness/piWrapper.ts",
+    "packages/tula/platform/src/harness/piWrapper.ts",
     "packages/agent-core/src/agenticTools/tools/execution.ts",
-    "packages/tula-platform/src/harness/agenticTools/tools/execution.ts",
+    "packages/tula/platform/src/harness/agenticTools/tools/execution.ts",
     "packages/agent-mux/ui/src/screens/SessionDetailScreen.test.tsx",
     "tsconfig.json",
     ".a5c/processes/issue-601-remaining-dragons-plan.mjs",

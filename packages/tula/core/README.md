@@ -303,4 +303,4 @@ For the shared runtime chain used by release-oriented workflows, run:
 npm run build:runtime
 ```
 
-Per [Workspace Validation Map](../../docs/workspace-validation.md), `packages/tula-core` is a public advanced/runtime package validated by `.github/workflows/ci.yml` job `test` and by the release/staging workflows. Keep README claims aligned with those validation paths rather than inventing package-specific CI jobs that do not exist.
+Per [Workspace Validation Map](../../docs/workspace-validation.md), `packages/tula/core` is a public advanced/runtime package validated by `.github/workflows/ci.yml` job `test` and by the release/staging workflows. Keep README claims aligned with those validation paths rather than inventing package-specific CI jobs that do not exist.

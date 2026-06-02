@@ -21,7 +21,7 @@ Tula re-exports the full public API from all layers and owns the single `tula` C
 npx @a5c-ai/tula <command> [options]
 
 # As a library
-import { createBabysitterAgentCli } from "@a5c-ai/tula/cli";
+import { createBabysitterAgentCli } from "@a5c-ai/tula";
 import { createAgentCoreSession } from "@a5c-ai/tula";
 ```
 

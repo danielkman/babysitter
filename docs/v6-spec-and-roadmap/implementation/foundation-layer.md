@@ -4,12 +4,12 @@
 
 ## Phase 1: Foundation Layer
 
-The foundation layer establishes the minimum V6 base inside the current repository shape. This phase clarifies seams, validation gates, and ownership in `packages/sdk`, `packages/tula-platform`, and `plugins/*`. It does not commit V6 to creating deferred top-level packages.
+The foundation layer establishes the minimum V6 base inside the current repository shape. This phase clarifies seams, validation gates, and ownership in `packages/sdk`, `packages/tula/platform`, and `plugins/*`. It does not commit V6 to creating deferred top-level packages.
 
 ### Current-Package Seam Clarification
 
 **Runtime And Session Boundaries**
-- Clarify which runtime concerns already belong to `packages/tula-platform`
+- Clarify which runtime concerns already belong to `packages/tula/platform`
 - Isolate Pi wrapper, session handling, and structured event concerns behind internal module seams before considering any package move
 - Reduce filesystem assumptions only where current commands and tests prove the change is safe
 - Record candidate extraction boundaries as ADR-backed slices rather than package commitments
@@ -28,7 +28,7 @@ The foundation layer establishes the minimum V6 base inside the current reposito
 
 **Platform Candidate Preparation**
 - Describe plugin-system responsibilities in current-package terms
-- Identify which platform concerns are internal `packages/sdk` or `packages/tula-platform` candidates versus actual `plugins/*` responsibilities
+- Identify which platform concerns are internal `packages/sdk` or `packages/tula/platform` candidates versus actual `plugins/*` responsibilities
 - Treat filesystem abstraction and plugin registration work as candidate slices only when they can be validated independently
 
 ## Deliverables

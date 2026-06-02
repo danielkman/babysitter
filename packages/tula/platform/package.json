@@ -138,9 +138,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/a5c-ai/babysitter.git",
-    "directory": "packages/tula-platform"
+    "directory": "packages/tula/platform"
   },
-  "homepage": "https://github.com/a5c-ai/babysitter/tree/main/packages/tula-platform#readme",
+  "homepage": "https://github.com/a5c-ai/babysitter/tree/main/packages/tula/platform#readme",
   "bugs": {
     "url": "https://github.com/a5c-ai/babysitter/issues"
   },

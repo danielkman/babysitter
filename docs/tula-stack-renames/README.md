@@ -6,9 +6,9 @@ The agent stack packages should be renamed to use the "tula" brand consistently.
 
 | Package | Target Package | Directory | Target Dir |
 |---------|---------------|-----------|-----------|
-| tula core | `@a5c-ai/tula-core` | `packages/tula-core/` | `packages/tula-core/` |
-| tula runtime | `@a5c-ai/tula-runtime` | `packages/tula-runtime/` | `packages/tula-runtime/` |
-| `@a5c-ai/tula-platform` | `@a5c-ai/tula-platform` | `packages/tula-platform/` | `packages/tula-platform/` |
+| tula core | `@a5c-ai/tula-core` | `packages/tula/core/` | `packages/tula/core/` |
+| tula runtime | `@a5c-ai/tula-runtime` | `packages/tula/runtime/` | `packages/tula/runtime/` |
+| `@a5c-ai/tula-platform` | `@a5c-ai/tula-platform` | `packages/tula/platform/` | `packages/tula/platform/` |
 | `@a5c-ai/tula` | `@a5c-ai/tula` (keep) | `packages/tula/` | `packages/tula/` (keep) |
 
 ## Scope
@@ -25,7 +25,7 @@ grep -rl "@a5c-ai/tula-platform" packages/ docs/ .github/ --include="*.ts" --inc
 Every import that targets a renamed package needs updating across the monorepo.
 
 ### CI/CD
-- `.github/workflows/ci.yml` — build steps reference `packages/tula-core`, `packages/tula-platform`, etc.
+- `.github/workflows/ci.yml` — build steps reference `packages/tula/core`, `packages/tula/platform`, etc.
 - `.github/workflows/publish.yml` — publish steps for each package
 - `.github/workflows/live-stack.yml` — build phases
 
@@ -41,7 +41,7 @@ Every import that targets a renamed package needs updating across the monorepo.
 
 1. tula core package rename is complete.
 2. tula runtime package rename is complete.
-3. `git mv packages/tula-platform packages/tula-platform`
+3. `git mv packages/tula/platform packages/tula/platform`
 4. tula core package references are updated across all files.
 5. tula runtime package references are updated across all files.
 6. Find-replace `@a5c-ai/tula-platform` → `@a5c-ai/tula-platform`

@@ -14,7 +14,7 @@ This directory documents a pragmatic V6 evolution for the Babysitter stack. The 
 The repository already contains the important building blocks:
 
 - `packages/sdk` is the stable center of gravity.
-- `packages/babysitter` and `packages/tula-platform` provide the CLI and agent runtime.
+- `packages/babysitter` and `packages/tula/platform` provide the CLI and agent runtime.
 - `plugins/` contains the real harness integrations and their packaging constraints.
 - The adversarial reviews show that a broad "split everything into many packages" plan is not yet justified.
 

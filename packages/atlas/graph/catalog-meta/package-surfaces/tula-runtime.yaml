@@ -3,7 +3,7 @@ id: package:a5c-ai-tula-runtime
 attributes:
   packageId: "@a5c-ai/tula-runtime"
   packageName: "@a5c-ai/tula-runtime"
-  workspacePath: packages/tula-runtime
+  workspacePath: packages/tula/runtime
   moduleType: typescript
   surfaceKinds:
     - agent-runtime
