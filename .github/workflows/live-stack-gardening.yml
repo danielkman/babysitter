@@ -50,7 +50,7 @@ jobs:
           git clone https://github.com/a5c-ai/babysitter.wiki.git /tmp/babysitter-wiki
           echo "Wiki cloned to /tmp/babysitter-wiki"
 
-      - uses: a5c-ai/babysitter/packages/triggers-mux@staging
+      - uses: a5c-ai/babysitter/packages/agent-mux/triggers@staging
         with:
           harness: codex
           provider: foundry

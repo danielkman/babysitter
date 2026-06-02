@@ -54,7 +54,7 @@ jobs:
           fetch-depth: 0
           token: ${{ steps.a5c-token.outputs.a5c_token || github.token }}
 
-      - uses: a5c-ai/babysitter/packages/triggers-mux@staging
+      - uses: a5c-ai/babysitter/packages/agent-mux/triggers@staging
         with:
           harness: codex
           provider: foundry
