@@ -8,7 +8,7 @@ export type LiveStackAgentMuxAgentId = 'claude' | 'codex' | 'gemini' | 'pi' | 'b
 
 export interface LiveStackModelEntry {
   readonly provider: LiveStackProvider;
-  readonly amuxProvider: AgentMuxProviderId;
+  readonly agentMuxProvider: AgentMuxProviderId;
   readonly model: string;
   readonly credentialMode: 'github-org-secrets-and-vars' | 'github-org-secrets';
   readonly requiredEnv: readonly string[];
@@ -63,7 +63,7 @@ export function primaryLiveStackScenario(): LiveStackScenario {
     integrationType: 'third-party-plugin',
     installMode: 'babysitter-plugin',
     provider: 'foundry-openai',
-    amuxProvider: 'foundry',
+    agentMuxProvider: 'foundry',
     model: 'gpt-5.5',
     credentialMode: 'github-org-secrets-and-vars',
     requiredEnv: ['AZURE_API_KEY', 'AMUX_API_BASE'],
@@ -103,7 +103,7 @@ export function externalAgentDispatchLiveStackScenario(): LiveStackScenario {
     babysitterHarness: 'tula',
     installMode: 'vanilla',
     provider: 'foundry-openai',
-    amuxProvider: 'foundry',
+    agentMuxProvider: 'foundry',
     model: 'gpt-5.5',
     credentialMode: 'github-org-secrets-and-vars',
     requiredEnv: ['LIVE_STACK_EXTERNAL_AGENT', 'AZURE_API_KEY', 'AMUX_API_BASE'],
@@ -136,7 +136,7 @@ export function liveStackScenarioFromEnv(env: Record<string, string | undefined>
     babysitterHarness: env['LIVE_STACK_BABYSITTER_HARNESS'],
     installMode: requiredEnvValue(env, 'LIVE_STACK_INSTALL_MODE') as LiveStackInstallMode,
     provider: requiredEnvValue(env, 'LIVE_STACK_PROVIDER') as LiveStackProvider,
-    amuxProvider: requiredEnvValue(env, 'LIVE_STACK_AMUX_PROVIDER') as AgentMuxProviderId,
+    agentMuxProvider: requiredEnvValue(env, 'LIVE_STACK_AMUX_PROVIDER') as AgentMuxProviderId,
     model: requiredEnvValue(env, 'LIVE_STACK_MODEL'),
     credentialMode: requiredEnvValue(env, 'LIVE_STACK_CREDENTIAL_MODE') as LiveStackModelEntry['credentialMode'],
     requiredEnv: listEnvValue(env, 'LIVE_STACK_REQUIRED_ENV'),
@@ -155,7 +155,7 @@ export function createLiveStackScenario(input: {
   readonly babysitterHarness?: string;
   readonly installMode: LiveStackInstallMode;
   readonly provider: LiveStackProvider;
-  readonly amuxProvider: AgentMuxProviderId;
+  readonly agentMuxProvider: AgentMuxProviderId;
   readonly model: string;
   readonly credentialMode: LiveStackModelEntry['credentialMode'];
   readonly requiredEnv: readonly string[];
@@ -169,7 +169,7 @@ export function createLiveStackScenario(input: {
     lane: 'model-backed-live',
     model: {
       provider: input.provider,
-      amuxProvider: input.amuxProvider,
+      agentMuxProvider: input.agentMuxProvider,
       model: input.model,
       credentialMode: input.credentialMode,
       requiredEnv: input.requiredEnv,

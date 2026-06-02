@@ -33,8 +33,8 @@ function resolveProviderId(input: ResolveProviderInput): ProviderId {
 
 function resolveApiKey(providerId: ProviderId, explicit?: string): string | undefined {
   if (explicit) return explicit;
-  const amuxKey = process.env['AMUX_API_KEY'];
-  if (amuxKey) return amuxKey;
+  const agentMuxKey = process.env['AMUX_API_KEY'];
+  if (agentMuxKey) return agentMuxKey;
   if (providerId === 'google') {
     return process.env['GOOGLE_API_KEY'] ?? process.env['GEMINI_API_KEY'];
   }
@@ -118,8 +118,8 @@ export function resolveProvider(input: ResolveProviderInput): ProviderConfig {
   const region = input.region ?? process.env['AMUX_REGION'] ?? process.env['GOOGLE_CLOUD_LOCATION'] ?? process.env['VERTEXAI_LOCATION'] ?? process.env['AWS_REGION'] ?? process.env['AWS_REGION_NAME'] ?? params['region'] as string | undefined;
   const project = input.project ?? process.env['AMUX_PROJECT'] ?? process.env['GOOGLE_CLOUD_PROJECT'] ?? process.env['VERTEXAI_PROJECT'] ?? params['project'];
   const providersUsingGenericApiBase = new Set(['foundry', 'azure', 'custom', 'local']);
-  const amuxApiBase = providersUsingGenericApiBase.has(providerId) ? process.env['AMUX_API_BASE'] : undefined;
-  const apiBase = input.apiBase ?? amuxApiBase ?? params['apiBase'];
+  const agentMuxApiBase = providersUsingGenericApiBase.has(providerId) ? process.env['AMUX_API_BASE'] : undefined;
+  const apiBase = input.apiBase ?? agentMuxApiBase ?? params['apiBase'];
 
   if (region) params['region'] = region;
   if (project) params['project'] = project;

@@ -88,25 +88,25 @@ interface AmuxAdapterRegistry {
   get(agent: string): AmuxAdapterHandle | undefined;
   installed(): Promise<AmuxInstalledInfo[]>;
 }
-interface AmuxClientLike {
+interface AgentMuxClientLike {
   adapters: AmuxAdapterRegistry;
 }
 
-let _clientPromise: Promise<AmuxClientLike> | null = null;
-let _amuxOverride:
-  | { createClient: (opts: Record<string, unknown>) => AmuxClientLike }
+let _clientPromise: Promise<AgentMuxClientLike> | null = null;
+let _agentMuxOverride:
+  | { createClient: (opts: Record<string, unknown>) => AgentMuxClientLike }
   | undefined;
 
-function requireAmux(): { createClient: (opts: Record<string, unknown>) => AmuxClientLike } {
-  if (_amuxOverride) {
-    return _amuxOverride;
+function requireAmux(): { createClient: (opts: Record<string, unknown>) => AgentMuxClientLike } {
+  if (_agentMuxOverride) {
+    return _agentMuxOverride;
   }
   // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment
-  const mod: { createClient: (opts: Record<string, unknown>) => AmuxClientLike } = require("@a5c-ai/agent-mux");
+  const mod: { createClient: (opts: Record<string, unknown>) => AgentMuxClientLike } = require("@a5c-ai/agent-mux");
   return mod;
 }
 
-async function getAmuxClient(): Promise<AmuxClientLike> {
+async function getAgentMuxClient(): Promise<AgentMuxClientLike> {
   if (!_clientPromise) {
     _clientPromise = Promise.resolve(requireAmux().createClient({}));
   }
@@ -123,7 +123,7 @@ async function getAmuxClient(): Promise<AmuxClientLike> {
  * Falls back to the legacy probe-based discovery if agent-mux is unavailable.
  */
 export async function discoverHarnessesViaAmux(): Promise<HarnessDiscoveryResult[]> {
-  const client = await getAmuxClient();
+  const client = await getAgentMuxClient();
   const installedList = await client.adapters.installed();
 
   const installedByAgent = new Map(
@@ -133,8 +133,8 @@ export async function discoverHarnessesViaAmux(): Promise<HarnessDiscoveryResult
   const results: HarnessDiscoveryResult[] = [];
 
   for (const spec of KNOWN_HARNESSES) {
-    const amuxName = HARNESS_TO_AMUX[spec.name];
-    if (!amuxName) {
+    const agentMuxName = HARNESS_TO_AMUX[spec.name];
+    if (!agentMuxName) {
       // No agent-mux mapping -- report as not installed
       results.push({
         name: spec.name,
@@ -147,7 +147,7 @@ export async function discoverHarnessesViaAmux(): Promise<HarnessDiscoveryResult
       continue;
     }
 
-    const info = installedByAgent.get(amuxName);
+    const info = installedByAgent.get(agentMuxName);
     results.push({
       name: spec.name,
       installed: info?.installed ?? false,
@@ -175,8 +175,8 @@ export async function installHarnessViaAmux(
   harnessName: string,
   options: HarnessInstallOptions,
 ): Promise<HarnessInstallResult> {
-  const amuxName = HARNESS_TO_AMUX[harnessName];
-  if (!amuxName) {
+  const agentMuxName = HARNESS_TO_AMUX[harnessName];
+  if (!agentMuxName) {
     return {
       harness: harnessName,
       success: false,
@@ -186,8 +186,8 @@ export async function installHarnessViaAmux(
     };
   }
 
-  const client = await getAmuxClient();
-  const adapter = client.adapters.get(amuxName);
+  const client = await getAgentMuxClient();
+  const adapter = client.adapters.get(agentMuxName);
 
   if (!adapter || !adapter.install) {
     const installer = HARNESS_CLI_INSTALLERS[harnessName];
@@ -205,7 +205,7 @@ export async function installHarnessViaAmux(
       success: false,
       status: "unsupported",
       installer: "agent-mux",
-      warning: `Agent-mux adapter "${amuxName}" does not support install().`,
+      warning: `Agent-mux adapter "${agentMuxName}" does not support install().`,
     };
   }
 
@@ -354,8 +354,8 @@ export function _resetAmuxInstallClientCache(): void {
  * @internal
  */
 export function _setAmuxInstallModuleForTesting(
-  mod: { createClient: (opts: Record<string, unknown>) => AmuxClientLike } | undefined,
+  mod: { createClient: (opts: Record<string, unknown>) => AgentMuxClientLike } | undefined,
 ): void {
-  _amuxOverride = mod;
+  _agentMuxOverride = mod;
   _clientPromise = null;
 }

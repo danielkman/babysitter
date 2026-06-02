@@ -6,7 +6,7 @@
  * outputs one JSON object per line to stdout so agent-mux's babysitter
  * adapter can parse our output as a normalised event stream.
  *
- * @module cli/amuxEventsFormatter
+ * @module cli/agentMuxEventsFormatter
  */
 
 import type { HarnessInvokeResult } from "@a5c-ai/tula-platform/harness";

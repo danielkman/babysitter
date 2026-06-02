@@ -5,19 +5,19 @@
  * Pi remains direct; agent-core/internal route through create-run orchestration.
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import type { AmuxClient, AmuxRunHandle, AmuxAgentEvent, AmuxInteractionChannel } from "../amuxTypes";
+import type { AgentMuxClient, AgentMuxRunHandle, AmuxAgentEvent, AmuxInteractionChannel } from "./agentMuxTypes";
 
 // ---------------------------------------------------------------------------
 // Mock modules before importing the code under test
 // ---------------------------------------------------------------------------
 
-// Mock the amuxClientFactory
-vi.mock("../amuxClientFactory", () => ({
-  getAmuxClient: vi.fn().mockResolvedValue(null),
+// Mock the agentMuxClientFactory
+vi.mock("../agentMuxClientFactory", () => ({
+  getAgentMuxClient: vi.fn().mockResolvedValue(null),
 }));
 
-// Mock the amuxBridge
-vi.mock("../amuxBridge", () => ({
+// Mock the agentMuxBridge
+vi.mock("../agentMuxBridge", () => ({
   invokeViaAgentMux: vi.fn(),
 }));
 
@@ -89,8 +89,8 @@ vi.mock("../../invoker/launch", () => ({
 }));
 
 import { invokeHarness } from "../../invoker";
-import { getAmuxClient } from "../amuxClientFactory";
-import { invokeViaAgentMux } from "../amuxBridge";
+import { getAgentMuxClient } from "../agentMuxClientFactory";
+import { invokeViaAgentMux } from "../agentMuxBridge";
 import { handleHarnessCreateRun } from "../../internal/createRun";
 import { createAgentCoreSession } from "@a5c-ai/tula-core";
 
@@ -98,7 +98,7 @@ import { createAgentCoreSession } from "@a5c-ai/tula-core";
 // Helpers
 // ---------------------------------------------------------------------------
 
-function createMockAmuxClient(output = "amux-output"): AmuxClient {
+function createMockAgentMuxClient(output = "amux-output"): AgentMuxClient {
   async function* emptyStream(): AsyncGenerator<AmuxAgentEvent> {
     yield {
       type: "text_delta",
@@ -111,7 +111,7 @@ function createMockAmuxClient(output = "amux-output"): AmuxClient {
   const interactions: AmuxInteractionChannel = {
     respond: vi.fn().mockResolvedValue(undefined),
   };
-  const handle: AmuxRunHandle = {
+  const handle: AgentMuxRunHandle = {
     events: emptyStream(),
     interactions,
     sessionId: "s-1",
@@ -137,8 +137,8 @@ afterEach(() => {
 
 describe("invokeHarness amux wiring", () => {
   it("routes external harnesses through amux exclusively", async () => {
-    const mockClient = createMockAmuxClient();
-    vi.mocked(getAmuxClient).mockResolvedValue(mockClient);
+    const mockClient = createMockAgentMuxClient();
+    vi.mocked(getAgentMuxClient).mockResolvedValue(mockClient);
     vi.mocked(invokeViaAgentMux).mockResolvedValue({
       success: true,
       output: "amux-result",
@@ -155,7 +155,7 @@ describe("invokeHarness amux wiring", () => {
       prompt: "test prompt",
     });
 
-    expect(getAmuxClient).toHaveBeenCalledOnce();
+    expect(getAgentMuxClient).toHaveBeenCalledOnce();
     expect(invokeViaAgentMux).toHaveBeenCalledOnce();
     expect(invokeViaAgentMux).toHaveBeenCalledWith(
       mockClient,
@@ -170,27 +170,27 @@ describe("invokeHarness amux wiring", () => {
       invokeHarness("unknown-harness", { prompt: "test" }),
     ).rejects.toThrow(/No agent-mux adapter/);
 
-    expect(getAmuxClient).not.toHaveBeenCalled();
+    expect(getAgentMuxClient).not.toHaveBeenCalled();
     expect(invokeViaAgentMux).not.toHaveBeenCalled();
   });
 
   it("uses direct invocation for pi harness even when amux is available", async () => {
-    const mockClient = createMockAmuxClient();
-    vi.mocked(getAmuxClient).mockResolvedValue(mockClient);
+    const mockClient = createMockAgentMuxClient();
+    vi.mocked(getAgentMuxClient).mockResolvedValue(mockClient);
 
     const result = await invokeHarness("pi", {
       prompt: "test prompt",
     });
 
     // Should not even check amux for pi -- goes through direct CLI path
-    expect(getAmuxClient).not.toHaveBeenCalled();
+    expect(getAgentMuxClient).not.toHaveBeenCalled();
     expect(invokeViaAgentMux).not.toHaveBeenCalled();
     expect(result.harness).toBe("pi");
   });
 
   it("routes agent-core harness through create-run orchestration even when amux is available", async () => {
-    const mockClient = createMockAmuxClient();
-    vi.mocked(getAmuxClient).mockResolvedValue(mockClient);
+    const mockClient = createMockAgentMuxClient();
+    vi.mocked(getAgentMuxClient).mockResolvedValue(mockClient);
 
     const result = await invokeHarness("agent-core", {
       prompt: "test prompt",
@@ -198,7 +198,7 @@ describe("invokeHarness amux wiring", () => {
       model: "gpt-test",
     });
 
-    expect(getAmuxClient).not.toHaveBeenCalled();
+    expect(getAgentMuxClient).not.toHaveBeenCalled();
     expect(invokeViaAgentMux).not.toHaveBeenCalled();
     expect(createAgentCoreSession).not.toHaveBeenCalled();
     expect(handleHarnessCreateRun).toHaveBeenCalledWith(expect.objectContaining({
@@ -216,14 +216,14 @@ describe("invokeHarness amux wiring", () => {
   });
 
   it("routes internal harness alias through create-run orchestration even when amux is available", async () => {
-    const mockClient = createMockAmuxClient();
-    vi.mocked(getAmuxClient).mockResolvedValue(mockClient);
+    const mockClient = createMockAgentMuxClient();
+    vi.mocked(getAgentMuxClient).mockResolvedValue(mockClient);
 
     const result = await invokeHarness("internal", {
       prompt: "test prompt",
     });
 
-    expect(getAmuxClient).not.toHaveBeenCalled();
+    expect(getAgentMuxClient).not.toHaveBeenCalled();
     expect(invokeViaAgentMux).not.toHaveBeenCalled();
     expect(createAgentCoreSession).not.toHaveBeenCalled();
     expect(handleHarnessCreateRun).toHaveBeenCalledWith(expect.objectContaining({
@@ -236,8 +236,8 @@ describe("invokeHarness amux wiring", () => {
   });
 
   it("routes codex through amux", async () => {
-    const mockClient = createMockAmuxClient();
-    vi.mocked(getAmuxClient).mockResolvedValue(mockClient);
+    const mockClient = createMockAgentMuxClient();
+    vi.mocked(getAgentMuxClient).mockResolvedValue(mockClient);
     vi.mocked(invokeViaAgentMux).mockResolvedValue({
       success: true,
       output: "amux-codex",

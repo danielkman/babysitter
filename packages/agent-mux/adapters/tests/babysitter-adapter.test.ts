@@ -380,14 +380,14 @@ describe('BabysitterAdapter', () => {
     });
 
     it('parses passthrough amux-format events with type and runId', () => {
-      const amuxEvent = {
+      const agentMuxEvent = {
         type: 'text_delta',
         runId: 'run-abc',
         agent: 'babysitter',
         timestamp: '2026-04-19T12:00:00Z',
         text: 'pass through',
       };
-      const result = adapter.parseEvent(JSON.stringify(amuxEvent), makeContext());
+      const result = adapter.parseEvent(JSON.stringify(agentMuxEvent), makeContext());
       const event = result as Record<string, unknown>;
       expect(event['type']).toBe('text_delta');
       expect(event['runId']).toBe('run-abc');

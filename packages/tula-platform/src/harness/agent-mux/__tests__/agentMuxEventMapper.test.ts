@@ -6,8 +6,8 @@ import {
   isInteractiveEvent,
   isErrorEvent,
   isSessionLifecycleEvent,
-} from "../amuxEventMapper";
-import type { AmuxAgentEvent } from "../amuxTypes";
+} from "../agentMuxEventMapper";
+import type { AmuxAgentEvent } from "./agentMuxTypes";
 
 function makeEvent(overrides: Partial<AmuxAgentEvent> = {}): AmuxAgentEvent {
   return {

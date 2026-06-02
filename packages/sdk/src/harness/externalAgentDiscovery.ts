@@ -53,13 +53,13 @@ interface AmuxModelRegistry {
   defaultModel?(agent: string): AmuxModelInfo | string | null;
 }
 
-interface AmuxClientLike {
+interface AgentMuxClientLike {
   adapters?: AmuxAdapterRegistry;
   models?: AmuxModelRegistry;
 }
 
 interface AmuxModuleLike {
-  createClient?(options?: Record<string, unknown>): AmuxClientLike;
+  createClient?(options?: Record<string, unknown>): AgentMuxClientLike;
 }
 
 interface CacheEntry {
@@ -286,7 +286,7 @@ function defaultProvider(): string | null {
   return nonEmptyString(process.env.AMUX_PROVIDER);
 }
 
-function defaultModel(client: AmuxClientLike, installedInfos: AmuxInstalledInfo[]): string | null {
+function defaultModel(client: AgentMuxClientLike, installedInfos: AmuxInstalledInfo[]): string | null {
   const envDefault = defaultModelFromEnv();
   if (envDefault) {
     return envDefault;

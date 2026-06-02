@@ -1,28 +1,28 @@
 /**
- * Factory for obtaining an AmuxClient instance.
+ * Factory for obtaining an AgentMuxClient instance.
  *
  * The package is a direct dependency, but some runtimes still cannot load the
  * full agent-mux graph (for example when a required Node built-in is absent).
  */
 
 import { builtinModules } from "node:module";
-import type { AmuxClient } from "./amuxTypes";
+import type { AgentMuxClient } from "./agentMuxTypes";
 
-let cachedClient: AmuxClient | null = null;
-let amuxOverride:
-  | { createClient: (options: Record<string, unknown>) => AmuxClient }
+let cachedClient: AgentMuxClient | null = null;
+let agentMuxOverride:
+  | { createClient: (options: Record<string, unknown>) => AgentMuxClient }
   | undefined;
 
 function hasNodeSqliteBuiltin(): boolean {
   return builtinModules.includes("node:sqlite") || builtinModules.includes("sqlite");
 }
 
-function requireAmux(): { createClient: (options: Record<string, unknown>) => AmuxClient } {
-  if (amuxOverride) {
-    return amuxOverride;
+function requireAmux(): { createClient: (options: Record<string, unknown>) => AgentMuxClient } {
+  if (agentMuxOverride) {
+    return agentMuxOverride;
   }
   // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment
-  const mod: { createClient: (options: Record<string, unknown>) => AmuxClient } = require("@a5c-ai/agent-mux");
+  const mod: { createClient: (options: Record<string, unknown>) => AgentMuxClient } = require("@a5c-ai/agent-mux");
   return mod;
 }
 
@@ -46,13 +46,13 @@ function normalizeAmuxLoadError(error: unknown): Error {
 }
 
 /**
- * Get or create the singleton AmuxClient.
+ * Get or create the singleton AgentMuxClient.
  */
-export function getAmuxClient(): Promise<AmuxClient> {
+export function getAgentMuxClient(): Promise<AgentMuxClient> {
   if (cachedClient) {
     return Promise.resolve(cachedClient);
   }
-  if (!amuxOverride && !hasNodeSqliteBuiltin()) {
+  if (!agentMuxOverride && !hasNodeSqliteBuiltin()) {
     throw normalizeAmuxLoadError(
       new Error("Missing required built-in module: node:sqlite"),
     );
@@ -74,9 +74,9 @@ export function getAmuxClient(): Promise<AmuxClient> {
 /**
  * Check whether agent-mux client can be created.
  */
-export async function isAmuxAvailable(): Promise<boolean> {
+export async function isAgentMuxAvailable(): Promise<boolean> {
   try {
-    await getAmuxClient();
+    await getAgentMuxClient();
     return true;
   } catch {
     return false;
@@ -87,7 +87,7 @@ export async function isAmuxAvailable(): Promise<boolean> {
  * Reset the cached client. For testing.
  * @internal
  */
-export function _resetAmuxClientCache(): void {
+export function _resetAgentMuxClientCache(): void {
   cachedClient = null;
 }
 
@@ -97,8 +97,8 @@ export function _resetAmuxClientCache(): void {
  * @internal
  */
 export function _setAmuxModuleForTesting(
-  mod: { createClient: (options: Record<string, unknown>) => AmuxClient } | undefined,
+  mod: { createClient: (options: Record<string, unknown>) => AgentMuxClient } | undefined,
 ): void {
-  amuxOverride = mod;
+  agentMuxOverride = mod;
   cachedClient = null;
 }

@@ -56,35 +56,35 @@ function foundryClaudeVanillaScenario(): LiveStackScenario {
 const CLAUDE_LIVE_MODEL_CASES = [
   {
     provider: 'foundry-openai',
-    amuxProvider: 'foundry',
+    agentMuxProvider: 'foundry',
     model: 'gpt-5.5',
     requiredEnv: 'AZURE_API_KEY,AMUX_API_BASE',
     credentials: { AZURE_API_KEY: 'sk-live-secret', AMUX_API_BASE: 'https://foundry.example.test' },
   },
   {
     provider: 'google',
-    amuxProvider: 'google',
+    agentMuxProvider: 'google',
     model: 'gemini-3.5-flash',
     requiredEnv: 'GOOGLE_API_KEY',
     credentials: { GOOGLE_API_KEY: 'google-secret' },
   },
   {
     provider: 'anthropic-direct',
-    amuxProvider: 'anthropic',
+    agentMuxProvider: 'anthropic',
     model: 'claude-sonnet-4-6',
     requiredEnv: 'ANTHROPIC_API_KEY',
     credentials: { ANTHROPIC_API_KEY: 'sk-ant-secret' },
   },
   {
     provider: 'foundry-openai',
-    amuxProvider: 'foundry',
+    agentMuxProvider: 'foundry',
     model: 'DeepSeek-V4-Pro',
     requiredEnv: 'AZURE_API_KEY,AMUX_API_BASE',
     credentials: { AZURE_API_KEY: 'sk-live-secret', AMUX_API_BASE: 'https://foundry.example.test' },
   },
   {
     provider: 'foundry-openai',
-    amuxProvider: 'foundry',
+    agentMuxProvider: 'foundry',
     model: 'gpt-5.4-mini',
     requiredEnv: 'AZURE_API_KEY,AMUX_API_BASE',
     credentials: { AZURE_API_KEY: 'sk-live-secret', AMUX_API_BASE: 'https://foundry.example.test' },
@@ -100,7 +100,7 @@ function claudeScenarioFor(modelCase: typeof CLAUDE_LIVE_MODEL_CASES[number], in
     LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin',
     LIVE_STACK_INSTALL_MODE: installMode,
     LIVE_STACK_PROVIDER: modelCase.provider,
-    LIVE_STACK_AMUX_PROVIDER: modelCase.amuxProvider,
+    LIVE_STACK_AMUX_PROVIDER: modelCase.agentMuxProvider,
     LIVE_STACK_MODEL: modelCase.model,
     LIVE_STACK_CREDENTIAL_MODE: 'github-org-secrets-and-vars',
     LIVE_STACK_REQUIRED_ENV: modelCase.requiredEnv,
@@ -243,32 +243,32 @@ describe('primary live stack runner contract', () => {
     const cases = [
       {
         agent: 'claude-code',
-        amuxAgent: 'claude',
+        agentMuxAgent: 'claude',
         prefix: /^\/(babysitter:)?yolo /,
       },
       {
         agent: 'codex',
-        amuxAgent: 'codex',
+        agentMuxAgent: 'codex',
         prefix: /^\$(babysitter:)?yolo /,
       },
       {
         agent: 'pi',
-        amuxAgent: 'pi',
+        agentMuxAgent: 'pi',
         prefix: /^\/(babysitter:)?yolo /,
       },
       {
         agent: 'gemini-cli',
-        amuxAgent: 'gemini',
+        agentMuxAgent: 'gemini',
         prefix: /^\/(babysitter:)?yolo /,
       },
     ] as const;
 
-    for (const { agent, amuxAgent, prefix } of cases) {
+    for (const { agent, agentMuxAgent, prefix } of cases) {
       const scenario = liveStackScenarioFromEnv({
         LIVE_STACK_SCENARIO_ID: `live.agent-mux.${agent}.foundry-openai.gpt-5.5`,
         LIVE_STACK_AGENT_PATH: 'agent-mux',
         LIVE_STACK_AGENT: agent,
-        LIVE_STACK_AMUX_AGENT: amuxAgent,
+        LIVE_STACK_AMUX_AGENT: agentMuxAgent,
         LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin',
         LIVE_STACK_INSTALL_MODE: 'babysitter-plugin',
         LIVE_STACK_PROVIDER: 'foundry-openai',
@@ -416,7 +416,7 @@ describe('primary live stack runner contract', () => {
 
         expect(launch?.args).toContain('launch');
         expect(launch?.args).toContain('claude');
-        expect(launch?.args).toContain(modelCase.amuxProvider);
+        expect(launch?.args).toContain(modelCase.agentMuxProvider);
         expect(launch?.args).toContain(modelCase.model);
         expect(launch?.args).toContain('--no-interactive');
         expect(launch?.args.some((a: string) => a.includes('proxy'))).toBe(true);

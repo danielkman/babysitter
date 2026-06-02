@@ -3,7 +3,7 @@ import {
   HARNESS_TO_AMUX_ADAPTER,
   mapHarnessToAmuxAdapter,
   hasAmuxAdapter,
-} from "../amuxHarnessMap";
+} from "./agentMuxHarnessMap";
 
 describe("HARNESS_TO_AMUX_ADAPTER", () => {
   it("maps claude-code to claude", () => {

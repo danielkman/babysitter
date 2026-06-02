@@ -6,7 +6,7 @@
 
 import { appendFileSync } from "node:fs";
 import { BaseHarnessAdapter, type AdapterConfig } from "../BaseAdapter";
-import { getAmuxAdapterMetadata } from "../amuxMetadata";
+import { getAmuxAdapterMetadata } from "../agentMuxMetadata";
 import { deriveAdapterConfig } from "../derivePromptContext";
 import {
   resolveSessionIdWithMarkerDetailed,

@@ -8,10 +8,10 @@
  *   - Webhook forwarding
  *   - Stop-hook orchestration loop
  *
- * @module harness/amux/amuxEventMapper
+ * @module harnes./agent-mux/agentMuxEventMapper
  */
 
-import type { AmuxAgentEvent } from "./amuxTypes";
+import type { AmuxAgentEvent } from "./agentMuxTypes";
 
 // ---------------------------------------------------------------------------
 // Babysitter internal event type

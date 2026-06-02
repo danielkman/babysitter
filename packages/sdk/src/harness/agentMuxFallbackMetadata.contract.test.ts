@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { listFallbackHarnessMetadata, getHostSignalMap } from "@a5c-ai/atlas/catalog";
-import { STATIC_FALLBACK_METADATA } from "./amuxFallbackMetadata";
+import { STATIC_FALLBACK_METADATA } from "./agentMuxFallbackMetadata";
 
 describe("sdk fallback metadata contract", () => {
   it("derives static fallback metadata from the agent-catalog export surface", () => {

@@ -5,7 +5,7 @@ import * as path from 'node:path';
 import { main } from '../../src/index.js';
 
 interface MatrixLane {
-  amuxAgent: string;
+  agentMuxAgent: string;
   hooksAdapter: string;
   hookType: string;
   nativeEvent: string;
@@ -47,7 +47,7 @@ describe('agent-mux hooks-mux no-SDK wiring matrix', () => {
 
     const evidenceDir = resolveEvidenceDir(repoRoot, process.env['AGENT_MUX_HOOKS_MUX_ARTIFACT_DIR']);
     await fs.mkdir(evidenceDir, { recursive: true });
-    const evidencePath = path.join(evidenceDir, `${sanitize(lane.amuxAgent)}-${sanitize(lane.hooksAdapter)}.jsonl`);
+    const evidencePath = path.join(evidenceDir, `${sanitize(lane.agentMuxAgent)}-${sanitize(lane.hooksAdapter)}.jsonl`);
     const handlerPath = path.join(cwd, 'hooks-mux-handler.mjs');
     const bridgePath = path.join(cwd, 'amux-to-hooks-mux-bridge.mjs');
 
@@ -55,14 +55,14 @@ describe('agent-mux hooks-mux no-SDK wiring matrix', () => {
     await fs.writeFile(bridgePath, bridgeScript(hooksMuxCli, lane.hooksAdapter, lane.nativeEvent, handlerPath), 'utf8');
 
     let stdout = captureStdout();
-    let code = await main(['hooks', lane.amuxAgent, 'discover', '--json']);
+    let code = await main(['hooks', lane.agentMuxAgent, 'discover', '--json']);
     stdout.restore();
     expect(code).toBe(0);
     expect(JSON.parse(stdout.text).ok).toBe(true);
 
     stdout = captureStdout();
     code = await main([
-      'hooks', lane.amuxAgent, 'add', lane.hookType,
+      'hooks', lane.agentMuxAgent, 'add', lane.hookType,
       '--handler', 'command',
       '--target', commandForNodeScript(bridgePath),
       '--id', 'hooks-mux-bridge',
@@ -73,7 +73,7 @@ describe('agent-mux hooks-mux no-SDK wiring matrix', () => {
 
     const stdin = mockStdin(JSON.stringify(lane.payload));
     stdout = captureStdout();
-    code = await main(['hooks', lane.amuxAgent, 'handle', lane.hookType]);
+    code = await main(['hooks', lane.agentMuxAgent, 'handle', lane.hookType]);
     stdout.restore();
     stdin.restore();
 
@@ -90,7 +90,7 @@ describe('agent-mux hooks-mux no-SDK wiring matrix', () => {
       adapter: lane.hooksAdapter,
       rawEventName: lane.nativeEvent,
       phase: lane.expectedPhase,
-      amuxAgent: lane.amuxAgent,
+      agentMuxAgent: lane.agentMuxAgent,
     });
   }, 30_000);
 });
@@ -103,7 +103,7 @@ function readMatrixLane(): MatrixLane {
   }
 
   return {
-    amuxAgent: requiredEnv('AGENT_MUX_HOOKS_MUX_AMUX_AGENT'),
+    agentMuxAgent: requiredEnv('AGENT_MUX_HOOKS_MUX_AMUX_AGENT'),
     hooksAdapter: requiredEnv('AGENT_MUX_HOOKS_MUX_ADAPTER'),
     hookType: requiredEnv('AGENT_MUX_HOOKS_MUX_HOOK_TYPE'),
     nativeEvent: requiredEnv('AGENT_MUX_HOOKS_MUX_NATIVE_EVENT'),
@@ -150,7 +150,7 @@ process.stdin.on('end', () => {
     rawEventName: event.rawEventName,
     phase: event.phase,
     sessionId: event.execution?.sessionId ?? null,
-    amuxAgent: process.env.AMUX_AGENT_UNDER_TEST,
+    agentMuxAgent: process.env.AMUX_AGENT_UNDER_TEST,
   };
   fs.appendFileSync(${JSON.stringify(evidencePath)}, JSON.stringify(evidence) + '\\n', 'utf8');
   process.stdout.write(JSON.stringify({
@@ -168,8 +168,8 @@ import { spawn } from 'node:child_process';
 const chunks = [];
 process.stdin.on('data', (chunk) => chunks.push(Buffer.from(chunk)));
 process.stdin.on('end', () => {
-  const amuxPayload = JSON.parse(Buffer.concat(chunks).toString('utf8'));
-  const nativePayload = amuxPayload.raw && typeof amuxPayload.raw === 'object' ? amuxPayload.raw : amuxPayload;
+  const agentMuxPayload = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+  const nativePayload = agentMuxPayload.raw && typeof agentMuxPayload.raw === 'object' ? agentMuxPayload.raw : agentMuxPayload;
   const handlerCommand = 'node ' + JSON.stringify(${JSON.stringify(path.basename(handlerPath))});
   const child = spawn(process.execPath, [
     ${JSON.stringify(hooksMuxCli)},
@@ -179,7 +179,7 @@ process.stdin.on('end', () => {
     '--handler', handlerCommand,
     '--json',
   ], {
-    env: { ...process.env, AMUX_AGENT_UNDER_TEST: amuxPayload.agent ?? '' },
+    env: { ...process.env, AMUX_AGENT_UNDER_TEST: agentMuxPayload.agent ?? '' },
     stdio: ['pipe', 'pipe', 'pipe'],
   });
   let stdout = '';

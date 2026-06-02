@@ -1,17 +1,17 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import {
-  getAmuxClient,
-  isAmuxAvailable,
-  _resetAmuxClientCache,
+  getAgentMuxClient,
+  isAgentMuxAvailable,
+  _resetAgentMuxClientCache,
   _setAmuxModuleForTesting,
-} from "../amuxClientFactory";
+} from "../agentMuxClientFactory";
 
 beforeEach(() => {
-  _resetAmuxClientCache();
+  _resetAgentMuxClientCache();
   _setAmuxModuleForTesting(undefined);
 });
 
-describe("getAmuxClient", () => {
+describe("getAgentMuxClient", () => {
   it("returns a client instance from an injected agent-mux module", async () => {
     const injectedClient = {
       run: () => {
@@ -22,7 +22,7 @@ describe("getAmuxClient", () => {
       createClient: () => injectedClient,
     });
 
-    const resolvedClient = await getAmuxClient();
+    const resolvedClient = await getAgentMuxClient();
 
     expect(resolvedClient).not.toBeNull();
     expect(resolvedClient).toBeDefined();
@@ -42,15 +42,15 @@ describe("getAmuxClient", () => {
       },
     });
 
-    const first = await getAmuxClient();
-    const second = await getAmuxClient();
+    const first = await getAgentMuxClient();
+    const second = await getAgentMuxClient();
 
     expect(first).toBe(second);
     expect(createCalls).toBe(1);
   });
 });
 
-describe("isAmuxAvailable", () => {
+describe("isAgentMuxAvailable", () => {
   it("returns false when the injected module cannot create a client", async () => {
     _setAmuxModuleForTesting({
       createClient: () => {
@@ -58,11 +58,11 @@ describe("isAmuxAvailable", () => {
       },
     });
 
-    await expect(isAmuxAvailable()).resolves.toBe(false);
+    await expect(isAgentMuxAvailable()).resolves.toBe(false);
   });
 });
 
-describe("_resetAmuxClientCache", () => {
+describe("_resetAgentMuxClientCache", () => {
   it("allows re-creation after reset", async () => {
     let createCalls = 0;
     _setAmuxModuleForTesting({
@@ -76,9 +76,9 @@ describe("_resetAmuxClientCache", () => {
       },
     });
 
-    const first = await getAmuxClient();
-    _resetAmuxClientCache();
-    const second = await getAmuxClient();
+    const first = await getAgentMuxClient();
+    _resetAgentMuxClientCache();
+    const second = await getAgentMuxClient();
 
     expect(first).not.toBe(second);
     expect(second).not.toBeNull();

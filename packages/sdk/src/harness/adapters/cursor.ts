@@ -9,7 +9,7 @@ import { buildStopHookContinuation } from "../hooks/stopHookContinuation";
 import { handleStopHookCommon } from "../hooks/stopHookHandler";
 import { HarnessCapability as Cap } from "../types";
 import { BaseHarnessAdapter, type AdapterConfig } from "../BaseAdapter";
-import { getAmuxAdapterMetadata } from "../amuxMetadata";
+import { getAmuxAdapterMetadata } from "../agentMuxMetadata";
 import { deriveAdapterConfig } from "../derivePromptContext";
 
 function buildConfig(): AdapterConfig {

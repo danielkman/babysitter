@@ -578,7 +578,7 @@ describe("agent-catalog graph-backed ontology", () => {
     try {
       const catalog = await import("./index");
       const transportMuxClaim = catalog.listOntologyClaims().find((claim) => claim.claimId === "repo-transport-mux-readme");
-      const amuxProxyAssertions = catalog
+      const agentMuxProxyAssertions = catalog
         .getCapabilitySupportAssertions()
         .filter((assertion) => assertion.subjectId === "transportRuntime:amux-proxy");
 
@@ -586,7 +586,7 @@ describe("agent-catalog graph-backed ontology", () => {
       expect(transportMuxClaim?.unresolvedGaps).toContain(
         "transport-mux document-backed runtime claims stay provisional until packages/transport-mux scorecard:migration is green.",
       );
-      expect(amuxProxyAssertions).toHaveLength(0);
+      expect(agentMuxProxyAssertions).toHaveLength(0);
     } finally {
       if (previousOverride === undefined) {
         delete process.env.A5C_AGENT_CATALOG_TRANSPORT_MUX_CUTOVER;

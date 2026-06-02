@@ -23,9 +23,9 @@ import {
   trackChild,
   untrackChild,
 } from "./invoker/processControl";
-import { getAmuxClient } from "./amux/amuxClientFactory";
-import { hasAmuxAdapter } from "./amux/amuxHarnessMap";
-import { invokeViaAgentMux } from "./amux/amuxBridge";
+import { getAgentMuxClient } from "./agentMux/agentMuxClientFactory";
+import { hasAmuxAdapter } from "./agent-mux/agentMuxHarnessMap";
+import { invokeViaAgentMux } from "./agentMux/agentMuxBridge";
 import { normalizeBuiltInHarnessName } from "./builtInHarness";
 
 // ---------------------------------------------------------------------------
@@ -137,8 +137,8 @@ export async function invokeHarness(
     );
   }
 
-  const amuxClient = await getAmuxClient();
-  return invokeViaAgentMux(amuxClient, harnessName, options);
+  const agentMuxClient = await getAgentMuxClient();
+  return invokeViaAgentMux(agentMuxClient, harnessName, options);
 }
 
 /**

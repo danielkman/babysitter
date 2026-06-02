@@ -5,7 +5,7 @@
  * that agent-platform consumes, without requiring TypeScript to resolve the
  * full @a5c-ai/agent-mux package during agent-platform compilation.
  *
- * @module harness/amux/amuxTypes
+ * @module harness/agent-mux/agentMuxTypes
  */
 
 // ---------------------------------------------------------------------------
@@ -13,9 +13,9 @@
 // ---------------------------------------------------------------------------
 
 /**
- * Options accepted by AmuxClient.run().
+ * Options accepted by AgentMuxClient.run().
  */
-export interface AmuxRunOptions {
+export interface AgentMuxRunOptions {
   agent: string;
   prompt: string;
   model?: string;
@@ -43,7 +43,7 @@ export interface AmuxRunOptions {
  * an EventEmitter, and a thenable (Promise<RunResult>). agent-platform
  * only needs the event stream, session metadata, and abort control.
  */
-export interface AmuxRunHandle {
+export interface AgentMuxRunHandle {
   /** Async-iterable stream of normalised agent events. */
   events: AsyncIterable<AmuxAgentEvent>;
   /** Channel for responding to interactive requests (approvals, inputs). */
@@ -106,9 +106,9 @@ export interface AmuxInteractionChannel {
  * The concrete agent-mux client has many more methods (adapters, models,
  * sessions, config, auth, profiles, plugins, detectHost).
  */
-export interface AmuxClient {
+export interface AgentMuxClient {
   /** Start an agent run and return a handle for streaming events. */
-  run(options: AmuxRunOptions): AmuxRunHandle;
+  run(options: AgentMuxRunOptions): AgentMuxRunHandle;
 }
 
 // ---------------------------------------------------------------------------
@@ -143,7 +143,7 @@ export interface AmuxAuthCheck {
  * Maps to the real client which has `.adapters` and `.auth`
  * sub-managers.
  */
-export interface AmuxClientWithDiscovery extends AmuxClient {
+export interface AgentMuxClientWithDiscovery extends AgentMuxClient {
   adapters: {
     list(): AmuxAdapterInfo[];
     detectInstallation(agent: string): Promise<AmuxAdapterInstallationCheck>;

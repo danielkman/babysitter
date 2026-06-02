@@ -17,7 +17,7 @@ describe('live stack scenario contract primitives', () => {
     const scenario = primaryLiveStackScenario();
 
     expect(scenario.scenarioId).toBe('live.agent-mux.claude-code.foundry-openai.gpt-5.5');
-    expect(scenario.model.amuxProvider).toBe('foundry');
+    expect(scenario.model.agentMuxProvider).toBe('foundry');
     expect(scenario.lane).toBe('model-backed-live');
     expect(scenario.agent.integrationType).toBe('third-party-plugin');
     expect(scenario.agent.installMode).toBe('babysitter-plugin');
@@ -133,7 +133,7 @@ describe('live stack scenario contract primitives', () => {
     });
 
     expect(scenario.model.provider).toBe('google');
-    expect(scenario.model.amuxProvider).toBe('google');
+    expect(scenario.model.agentMuxProvider).toBe('google');
     expect(scenario.model.model).toBe('gemini-3.1-pro-preview');
     expect(scenario.model.requiredEnv).toEqual(['GOOGLE_API_KEY']);
   });

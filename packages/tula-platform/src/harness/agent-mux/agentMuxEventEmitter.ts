@@ -6,10 +6,10 @@
  * {@link AmuxAgentEvent} shape so the agent-mux babysitter adapter's
  * `parseEvent()` can consume it directly.
  *
- * @module harness/amux/amuxEventEmitter
+ * @module harness/agent-mux/agentMuxEventEmitter
  */
 
-import type { AmuxAgentEvent } from "./amuxTypes";
+import type { AmuxAgentEvent } from "./agentMuxTypes";
 
 /**
  * Stateful emitter that writes agent-mux compatible JSONL events to stdout.

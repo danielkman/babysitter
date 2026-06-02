@@ -1,5 +1,5 @@
 /**
- * Tests for amuxStdinReader — verifies stdin JSONL parsing of
+ * Tests for agentMuxStdinReader — verifies stdin JSONL parsing of
  * interaction events from agent-mux.
  */
 import { describe, it, expect } from "vitest";
@@ -70,7 +70,7 @@ async function readFromLines(lines: string[]): Promise<AmuxInteractionEvent[]> {
   return results;
 }
 
-describe("amuxStdinReader parseLine", () => {
+describe("agentMuxStdinReader parseLine", () => {
   it("parses a valid approval_response", () => {
     const event = parseLine(
       JSON.stringify({ type: "approval_response", id: "bp-1", approved: true, response: "ok" }),

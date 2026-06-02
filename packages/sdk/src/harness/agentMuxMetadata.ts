@@ -1,6 +1,6 @@
 import { builtinModules } from "node:module";
 import { resolveRunsDir } from "../config";
-import { STATIC_FALLBACK_METADATA } from "./amuxFallbackMetadata";
+import { STATIC_FALLBACK_METADATA } from "./agentMuxFallbackMetadata";
 
 /**
  * Resolves adapter metadata from @a5c-ai/agent-mux when available.
@@ -91,7 +91,7 @@ interface AmuxRawCapabilities {
 }
 
 /** Minimal client shape. */
-interface AmuxClient {
+interface AgentMuxClient {
   adapters: AmuxAdapterRegistry;
 }
 
@@ -117,14 +117,14 @@ function getCache(): Map<string, AmuxAdapterMetadata> {
  * Results are cached for the lifetime of the process.
  */
 
-let _amuxOverride: Record<string, unknown> | undefined;
+let _agentMuxOverride: Record<string, unknown> | undefined;
 
 function hasNodeSqliteBuiltin(): boolean {
   return builtinModules.includes("node:sqlite") || builtinModules.includes("sqlite");
 }
 
 function requireAmux(): Record<string, unknown> {
-  if (_amuxOverride) return _amuxOverride;
+  if (_agentMuxOverride) return _agentMuxOverride;
   // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment
   const mod: Record<string, unknown> = require("@a5c-ai/agent-mux");
   return mod;
@@ -136,7 +136,7 @@ function requireAmux(): Record<string, unknown> {
  * @internal — test-only API, not part of the public surface.
  */
 export function _setAmuxModuleForTesting(mod: Record<string, unknown> | undefined): void {
-  _amuxOverride = mod;
+  _agentMuxOverride = mod;
 }
 
 function cloneMetadata(metadata: AmuxAdapterMetadata): AmuxAdapterMetadata {
@@ -147,12 +147,12 @@ function cloneMetadata(metadata: AmuxAdapterMetadata): AmuxAdapterMetadata {
   };
 }
 
-function getFallbackAdapterMetadata(harnessName: string, amuxName: string): AmuxAdapterMetadata {
-  const fallback = STATIC_FALLBACK_METADATA[amuxName];
+function getFallbackAdapterMetadata(harnessName: string, agentMuxName: string): AmuxAdapterMetadata {
+  const fallback = STATIC_FALLBACK_METADATA[agentMuxName];
   if (!fallback) {
     throw new Error(
       `No fallback adapter metadata is defined for harness "${harnessName}" ` +
-      `(agent-mux adapter "${amuxName}").`,
+      `(agent-mux adapter "${agentMuxName}").`,
     );
   }
   return cloneMetadata(fallback);
@@ -173,59 +173,59 @@ function shouldUseFallbackMetadata(error: unknown): boolean {
 
 export function getAmuxAdapterMetadata(harnessName: string): AmuxAdapterMetadata {
   const cache = getCache();
-  const amuxName = mapHarnessName(harnessName);
+  const agentMuxName = mapHarnessName(harnessName);
 
-  const cached = cache.get(amuxName);
+  const cached = cache.get(agentMuxName);
   if (cached) {
     return cached;
   }
 
   if (!hasNodeSqliteBuiltin()) {
-    const fallback = getFallbackAdapterMetadata(harnessName, amuxName);
-    cache.set(amuxName, fallback);
+    const fallback = getFallbackAdapterMetadata(harnessName, agentMuxName);
+    cache.set(agentMuxName, fallback);
     return fallback;
   }
 
   let amux: Record<string, unknown>;
-  let createClient: (() => AmuxClient) | undefined;
-  let registerBuiltInAdapters: ((client: AmuxClient) => void) | undefined;
+  let createClient: (() => AgentMuxClient) | undefined;
+  let registerBuiltInAdapters: ((client: AgentMuxClient) => void) | undefined;
 
   try {
     amux = requireAmux();
-    createClient = amux.createClient as (() => AmuxClient) | undefined;
-    registerBuiltInAdapters = amux.registerBuiltInAdapters as ((client: AmuxClient) => void) | undefined;
+    createClient = amux.createClient as (() => AgentMuxClient) | undefined;
+    registerBuiltInAdapters = amux.registerBuiltInAdapters as ((client: AgentMuxClient) => void) | undefined;
   } catch (error) {
     if (shouldUseFallbackMetadata(error)) {
-      const fallback = getFallbackAdapterMetadata(harnessName, amuxName);
-      cache.set(amuxName, fallback);
+      const fallback = getFallbackAdapterMetadata(harnessName, agentMuxName);
+      cache.set(agentMuxName, fallback);
       return fallback;
     }
     throw error;
   }
 
   if (!createClient || !registerBuiltInAdapters) {
-    const fallback = getFallbackAdapterMetadata(harnessName, amuxName);
-    cache.set(amuxName, fallback);
+    const fallback = getFallbackAdapterMetadata(harnessName, agentMuxName);
+    cache.set(agentMuxName, fallback);
     return fallback;
   }
 
-  let client: AmuxClient;
+  let client: AgentMuxClient;
   try {
     client = createClient();
     registerBuiltInAdapters(client);
   } catch (error) {
     if (shouldUseFallbackMetadata(error)) {
-      const fallback = getFallbackAdapterMetadata(harnessName, amuxName);
-      cache.set(amuxName, fallback);
+      const fallback = getFallbackAdapterMetadata(harnessName, agentMuxName);
+      cache.set(agentMuxName, fallback);
       return fallback;
     }
     throw error;
   }
 
-  const adapter = client.adapters.get(amuxName);
+  const adapter = client.adapters.get(agentMuxName);
   if (!adapter) {
     throw new Error(
-      `@a5c-ai/agent-mux does not have an adapter named "${amuxName}" ` +
+      `@a5c-ai/agent-mux does not have an adapter named "${agentMuxName}" ` +
       `(requested harness: "${harnessName}"). Available adapters may need updating.`,
     );
   }
@@ -233,7 +233,7 @@ export function getAmuxAdapterMetadata(harnessName: string): AmuxAdapterMetadata
   const caps = adapter.capabilities;
   if (!caps) {
     throw new Error(
-      `@a5c-ai/agent-mux adapter "${amuxName}" has no capabilities defined. ` +
+      `@a5c-ai/agent-mux adapter "${agentMuxName}" has no capabilities defined. ` +
       `Ensure @a5c-ai/agent-mux is up to date.`,
     );
   }
@@ -253,7 +253,7 @@ export function getAmuxAdapterMetadata(harnessName: string): AmuxAdapterMetadata
   );
 
   const metadata: AmuxAdapterMetadata = {
-    name: adapter.agent ?? amuxName,
+    name: adapter.agent ?? agentMuxName,
     hostEnvSignals: adapter.hostEnvSignals ?? [],
     capabilities: {
       supportsSkills: caps.supportsSkills ?? false,
@@ -273,7 +273,7 @@ export function getAmuxAdapterMetadata(harnessName: string): AmuxAdapterMetadata
       : resolveRunsDir(),
   };
 
-  cache.set(amuxName, metadata);
+  cache.set(agentMuxName, metadata);
   return metadata;
 }
 

@@ -1,7 +1,7 @@
 /**
  * Global vitest setup for @a5c-ai/babysitter-sdk.
  *
- * Injects a mock @a5c-ai/agent-mux module into amuxMetadata.ts.
+ * Injects a mock @a5c-ai/agent-mux module into agentMuxMetadata.ts.
  * agent-mux is ESM-only and cannot be require()'d in vitest's CJS
  * test resolution, so we provide matching adapter data directly.
  */
@@ -9,7 +9,7 @@ import { beforeAll, afterAll } from "vitest";
 import {
   _setAmuxModuleForTesting,
   clearAmuxMetadataCache,
-} from "./src/harness/amuxMetadata";
+} from "./src/harness/agentMuxMetadata";
 
 const ADAPTERS: Record<string, unknown> = {
   claude: {

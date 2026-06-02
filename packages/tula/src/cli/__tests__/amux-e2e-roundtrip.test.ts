@@ -2,20 +2,20 @@
  * End-to-end integration test verifying the full round-trip:
  *
  *   tula CLI (invokeViaAgentMux via agent-platform)
- *     -> mock AmuxClient event stream
+ *     -> mock AgentMuxClient event stream
  *     -> agent-platform event processing (text accumulation, cost, errors)
  *     -> formatResultAsAmuxEvents (JSONL output)
  *     -> parseable by agent-mux's babysitter adapter
  *
- * @module harness/amux/__tests__/e2e-roundtrip
+ * @module harnes./agent-mux/__tests__/e2e-roundtrip
  */
 
 import { describe, it, expect, vi } from "vitest";
 import { invokeViaAgentMux } from "@a5c-ai/tula-platform/harness";
-import { formatResultAsAmuxEvents } from "../amuxEventsFormatter";
+import { formatResultAsAmuxEvents } from "../agentMuxEventsFormatter";
 import type {
-  AmuxClient,
-  AmuxRunHandle,
+  AgentMuxClient,
+  AgentMuxRunHandle,
   AmuxAgentEvent,
   AmuxInteractionChannel,
 } from "@a5c-ai/tula-platform/harness";
@@ -44,8 +44,8 @@ function createMockInteractions(): AmuxInteractionChannel {
 
 function createMockClient(
   events: AmuxAgentEvent[],
-  handleOverrides: Partial<AmuxRunHandle> = {},
-): AmuxClient {
+  handleOverrides: Partial<AgentMuxRunHandle> = {},
+): AgentMuxClient {
   return {
     run: vi.fn().mockReturnValue({
       events: asyncIterableFrom(events),
@@ -180,7 +180,7 @@ describe("E2E: tula <-> agent-mux round-trip", () => {
       { type: "session_end", runId: "run-3", agent: "claude", timestamp: ts() },
     ];
 
-    const client: AmuxClient = {
+    const client: AgentMuxClient = {
       run: vi.fn().mockReturnValue({
         events: asyncIterableFrom(mockEvents),
         interactions: { respond: respondFn },

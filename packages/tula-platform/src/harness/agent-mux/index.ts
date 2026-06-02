@@ -2,29 +2,29 @@
  * agent-mux integration bridge for agent-platform.
  *
  * This module provides an alternative invocation path that delegates to
- * an AmuxClient rather than spawning harness CLIs directly. The existing
+ * an AgentMuxClient rather than spawning harness CLIs directly. The existing
  * invoker.ts is preserved as a fallback.
  *
  * @module harness/amux
  */
 
 export type {
-  AmuxRunOptions,
-  AmuxRunHandle,
+  AgentMuxRunOptions,
+  AgentMuxRunHandle,
   AmuxAgentEvent,
   AmuxInteractionChannel,
-  AmuxClient,
+  AgentMuxClient,
   AmuxAdapterInfo,
   AmuxAdapterInstallationCheck,
   AmuxAuthCheck,
-  AmuxClientWithDiscovery,
-} from "./amuxTypes";
+  AgentMuxClientWithDiscovery,
+} from "./agentMuxTypes";
 
 export {
   HARNESS_TO_AMUX_ADAPTER,
   mapHarnessToAmuxAdapter,
   hasAmuxAdapter,
-} from "./amuxHarnessMap";
+} from "./agentMuxHarnessMap";
 
 export {
   mapAmuxEvent,
@@ -35,25 +35,25 @@ export {
   isSessionLifecycleEvent,
   type BabysitterEvent,
   type BabysitterEventKind,
-} from "./amuxEventMapper";
+} from "./agentMuxEventMapper";
 
 export {
   invokeViaAgentMux,
   type AmuxBridgeOptions,
-  type AmuxBridgeResult,
+  type AgentMuxBridgeResult,
   type AmuxEventCallback,
-} from "./amuxBridge";
+} from "./agentMuxBridge";
 
 export {
-  getAmuxClient,
-  isAmuxAvailable,
-  _resetAmuxClientCache,
-} from "./amuxClientFactory";
+  getAgentMuxClient,
+  isAgentMuxAvailable,
+  _resetAgentMuxClientCache,
+} from "./agentMuxClientFactory";
 
-export { AmuxEventEmitter } from "./amuxEventEmitter";
+export { AmuxEventEmitter } from "./agentMuxEventEmitter";
 
 export {
   createAmuxStdinReader,
   waitForInteractionResponse,
   type AmuxInteractionEvent,
-} from "./amuxStdinReader";
+} from "./agentMuxStdinReader";

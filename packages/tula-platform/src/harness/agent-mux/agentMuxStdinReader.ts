@@ -6,7 +6,7 @@
  * `approval_response`, `input_response`). This module provides an
  * async-iterable reader that parses those events.
  *
- * @module harness/amux/amuxStdinReader
+ * @module harness/agent-mux/agentMuxStdinReader
  */
 
 import * as readline from "node:readline";

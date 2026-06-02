@@ -6,7 +6,7 @@
  * These tests are skipped when the tula CLI is not available on
  * PATH, so they are safe to run in any environment (CI or local).
  *
- * @module harness/amux/__tests__/live-integration
+ * @module harnes./agent-mux/__tests__/live-integration
  */
 
 import { describe, it, expect } from "vitest";

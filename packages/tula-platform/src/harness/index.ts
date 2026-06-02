@@ -45,7 +45,7 @@ export { invokeHarness, buildHarnessArgs, HARNESS_CLI_MAP } from "./invoker";
 export { buildLaunchSpec } from "./invoker/launch";
 export { createAgentCoreSession, type AgentCoreEventListener } from "@a5c-ai/tula-core";
 export type { AgentCoreSessionHandle } from "@a5c-ai/tula-core";
-export * as amux from "./amux";
+export * as amux from "./agentMux";
 export {
   handleHarnessCreateRun,
   handleSessionCreate,
@@ -75,16 +75,16 @@ export { normalizeBuiltInHarnessName } from "./builtInHarness";
 export {
   invokeViaAgentMux,
   type AmuxBridgeOptions,
-  type AmuxBridgeResult,
+  type AgentMuxBridgeResult,
   type AmuxEventCallback,
-  type AmuxClient,
-  type AmuxRunHandle,
+  type AgentMuxClient,
+  type AgentMuxRunHandle,
   type AmuxAgentEvent,
   type AmuxInteractionChannel,
-} from "./amux";
+} from "./agentMux";
 
 export {
   HARNESS_TO_AMUX_ADAPTER,
   mapHarnessToAmuxAdapter,
   hasAmuxAdapter,
-} from "./amux";
+} from "./agentMux";

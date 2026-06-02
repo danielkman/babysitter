@@ -3,7 +3,7 @@ import {
   _setAmuxModuleForTesting,
   clearAmuxMetadataCache,
   getAmuxAdapterMetadata,
-} from "../amuxMetadata";
+} from "../agentMuxMetadata";
 
 afterEach(() => {
   _setAmuxModuleForTesting(undefined);

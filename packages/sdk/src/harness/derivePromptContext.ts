@@ -5,7 +5,7 @@
  * with a single derivation function that reads capabilities from agent-mux.
  */
 
-import type { AmuxAdapterMetadata } from "./amuxMetadata";
+import type { AmuxAdapterMetadata } from "./agentMuxMetadata";
 import type { AdapterConfig } from "./BaseAdapter";
 import { HarnessCapability as Cap } from "./types";
 

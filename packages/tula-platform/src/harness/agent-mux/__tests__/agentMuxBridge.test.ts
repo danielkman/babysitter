@@ -1,11 +1,11 @@
 import { describe, it, expect, vi } from "vitest";
-import { invokeViaAgentMux } from "../amuxBridge";
+import { invokeViaAgentMux } from "../agentMuxBridge";
 import type {
-  AmuxClient,
-  AmuxRunHandle,
+  AgentMuxClient,
+  AgentMuxRunHandle,
   AmuxAgentEvent,
   AmuxInteractionChannel,
-} from "../amuxTypes";
+} from "./agentMuxTypes";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -37,8 +37,8 @@ function createMockInteractions(): AmuxInteractionChannel {
 
 function createMockClient(
   events: AmuxAgentEvent[],
-  handleOverrides: Partial<AmuxRunHandle> = {},
-): AmuxClient {
+  handleOverrides: Partial<AgentMuxRunHandle> = {},
+): AgentMuxClient {
   return {
     run: vi.fn().mockReturnValue({
       events: asyncIterableFrom(events),
@@ -225,7 +225,7 @@ describe("invokeViaAgentMux", () => {
 
   it("calls handle.abort() when signal is already aborted", async () => {
     const abortFn = vi.fn();
-    const client: AmuxClient = {
+    const client: AgentMuxClient = {
       run: vi.fn().mockReturnValue({
         events: asyncIterableFrom([]),
         interactions: createMockInteractions(),

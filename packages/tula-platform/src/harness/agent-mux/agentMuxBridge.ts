@@ -2,25 +2,25 @@
  * agent-mux integration bridge for agent-platform.
  *
  * Replaces the direct child-process invocation in `invoker.ts` for
- * external harnesses by delegating to an AmuxClient instance. The
+ * external harnesses by delegating to an AgentMuxClient instance. The
  * client is injected so agent-platform never imports @agent-mux/core
- * directly -- it only depends on the interfaces defined in amuxTypes.ts.
+ * directly -- it only depends on the interfaces defined in agentMuxTypes.ts.
  *
- * @module harness/amux/amuxBridge
+ * @module harnes./agent-mux/agentMuxBridge
  */
 
 import type { HarnessInvokeOptions, HarnessInvokeResult } from "../types";
 import type {
-  AmuxClient,
-  AmuxRunHandle,
-} from "./amuxTypes";
-import { mapHarnessToAmuxAdapter } from "./amuxHarnessMap";
+  AgentMuxClient,
+  AgentMuxRunHandle,
+} from "./agentMuxTypes";
+import { mapHarnessToAmuxAdapter } from "./agentMuxHarnessMap";
 import {
   mapAmuxEvent,
   isCostEvent,
   isErrorEvent,
   type BabysitterEvent,
-} from "./amuxEventMapper";
+} from "./agentMuxEventMapper";
 
 // ---------------------------------------------------------------------------
 // Bridge options
@@ -47,7 +47,7 @@ export interface AmuxBridgeOptions extends HarnessInvokeOptions {
  * Extended result that includes agent-mux-specific metadata on top of
  * the standard HarnessInvokeResult.
  */
-export interface AmuxBridgeResult extends HarnessInvokeResult {
+export interface AgentMuxBridgeResult extends HarnessInvokeResult {
   /** Session ID returned by agent-mux (for session resumption). */
   sessionId?: string;
   /** Accumulated cost from cost events. */
@@ -82,9 +82,9 @@ export type AmuxEventCallback = (event: BabysitterEvent) => void | Promise<void>
  *   3. Consumes the async event stream, mapping each AgentEvent to a
  *      BabysitterEvent.
  *   4. Accumulates text deltas, cost totals, and error state.
- *   5. Returns an AmuxBridgeResult compatible with HarnessInvokeResult.
+ *   5. Returns an AgentMuxBridgeResult compatible with HarnessInvokeResult.
  *
- * @param client      - AmuxClient instance (injected, no hard dep on @agent-mux/core).
+ * @param client      - AgentMuxClient instance (injected, no hard dep on @agent-mux/core).
  * @param harness     - babysitter harness name (e.g. "claude-code", "codex").
  * @param options     - Invocation options.
  * @param onEvent     - Optional per-event callback for live processing.
@@ -94,15 +94,15 @@ export type AmuxEventCallback = (event: BabysitterEvent) => void | Promise<void>
  * @throws {Error} if the harness has no agent-mux adapter mapping.
  */
 export async function invokeViaAgentMux(
-  client: AmuxClient,
+  client: AgentMuxClient,
   harness: string,
   options: AmuxBridgeOptions,
   onEvent?: AmuxEventCallback,
-): Promise<AmuxBridgeResult> {
+): Promise<AgentMuxBridgeResult> {
   const adapterName = mapHarnessToAmuxAdapter(harness);
   const startTime = Date.now();
 
-  const handle: AmuxRunHandle = client.run({
+  const handle: AgentMuxRunHandle = client.run({
     agent: adapterName,
     prompt: options.prompt,
     model: options.model,

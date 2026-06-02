@@ -238,24 +238,24 @@ interface ResolvedEndpoint {
 }
 
 function resolveEndpoint(options: AgentCoreSessionOptions): ResolvedEndpoint {
-  const amuxProvider = process.env["AMUX_PROVIDER"];
-  const amuxApiBase = process.env["AMUX_API_BASE"];
-  const amuxApiKey = process.env["AMUX_API_KEY"];
-  const amuxModel = process.env["AMUX_MODEL"];
+  const agentMuxProvider = process.env["AMUX_PROVIDER"];
+  const agentMuxApiBase = process.env["AMUX_API_BASE"];
+  const agentMuxApiKey = process.env["AMUX_API_KEY"];
+  const agentMuxModel = process.env["AMUX_MODEL"];
   const azureApiKey = process.env["AZURE_API_KEY"] || process.env["AZURE_OPENAI_API_KEY"];
   const azureProject = process.env["AZURE_OPENAI_PROJECT_NAME"];
   const openaiApiKey = process.env["OPENAI_API_KEY"];
   const openaiModel = process.env["OPENAI_MODEL"];
   const anthropicApiKey = process.env["ANTHROPIC_API_KEY"];
 
-  const model = options.model || amuxModel || openaiModel || "gpt-4o";
-  if (!options.model && !amuxModel && !openaiModel) {
+  const model = options.model || agentMuxModel || openaiModel || "gpt-4o";
+  if (!options.model && !agentMuxModel && !openaiModel) {
     process.stderr.write(`[agent-core] no model specified, defaulting to gpt-4o\n`);
   }
 
-  if (amuxProvider === "foundry" || amuxProvider === "azure") {
-    const apiBase = amuxApiBase || "";
-    const apiKey = amuxApiKey || azureApiKey || "";
+  if (agentMuxProvider === "foundry" || agentMuxProvider === "azure") {
+    const apiBase = agentMuxApiBase || "";
+    const apiKey = agentMuxApiKey || azureApiKey || "";
     return { apiBase: `${apiBase}/openai`, apiKey, model, isAzure: true, isAnthropic: false };
   }
 
@@ -265,9 +265,9 @@ function resolveEndpoint(options: AgentCoreSessionOptions): ResolvedEndpoint {
     return { apiBase, apiKey: azureApiKey, model, isAzure: true, isAnthropic: false };
   }
 
-  if (amuxApiBase) {
-    const apiKey = amuxApiKey || openaiApiKey || "";
-    return { apiBase: amuxApiBase, apiKey, model, isAzure: false, isAnthropic: false };
+  if (agentMuxApiBase) {
+    const apiKey = agentMuxApiKey || openaiApiKey || "";
+    return { apiBase: agentMuxApiBase, apiKey, model, isAzure: false, isAnthropic: false };
   }
 
   if (openaiApiKey) {
@@ -282,7 +282,7 @@ function resolveEndpoint(options: AgentCoreSessionOptions): ResolvedEndpoint {
     return { apiBase: "https://api.anthropic.com", apiKey: anthropicApiKey, model: anthropicModel, isAzure: false, isAnthropic: true };
   }
 
-  if (!amuxApiKey) {
+  if (!agentMuxApiKey) {
     throw new Error(
       "No API credentials found. Set one of: " +
       "AMUX_PROVIDER + AMUX_API_BASE + AZURE_API_KEY (for Foundry/Azure), " +
@@ -293,7 +293,7 @@ function resolveEndpoint(options: AgentCoreSessionOptions): ResolvedEndpoint {
     );
   }
 
-  return { apiBase: "https://api.openai.com/v1", apiKey: amuxApiKey, model, isAzure: false, isAnthropic: false };
+  return { apiBase: "https://api.openai.com/v1", apiKey: agentMuxApiKey, model, isAzure: false, isAnthropic: false };
 }
 
 function tokenEstimatorContextForEndpoint(endpoint: ResolvedEndpoint): TokenEstimatorContext {

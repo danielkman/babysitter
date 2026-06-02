@@ -102,7 +102,7 @@ export function buildPrimaryLiveStackCommands(
 
   if (scenario.agent.agent === 'agent-platform') {
     const runCommand = commandExecution(
-      { ...commandEnv, AMUX_PROVIDER: scenario.model.amuxProvider },
+      { ...commandEnv, AMUX_PROVIDER: scenario.model.agentMuxProvider },
       'LIVE_STACK_AMUX_BIN',
       'amux',
       [
@@ -157,7 +157,7 @@ export function buildPrimaryLiveStackCommands(
     [
       'launch',
       installTarget,
-      scenario.model.amuxProvider,
+      scenario.model.agentMuxProvider,
       '--model',
       scenario.model.model,
       '--with-proxy-if-needed',
