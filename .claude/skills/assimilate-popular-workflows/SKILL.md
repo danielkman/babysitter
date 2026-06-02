@@ -9,7 +9,7 @@ Search public GitHub repositories for SKILL.md files, classify each repo by arch
 
 ### Process Library Placement Rules
 
-Extracted processes go into the babysitter process library (`plugins/babysitter/skills/babysit/process/`). Placement depends on scope:
+Extracted processes go into the babysitter process library (`library/`). Placement depends on scope:
 
 | What it is | Where it goes | Examples |
 |------------|---------------|---------|

@@ -10,7 +10,7 @@ Create new process definitions for the babysitter event-sourced orchestration fr
 ## Quick Reference
 
 ```
-Processes live in: plugins/babysitter/skills/babysit/process/
+Processes live in: library/
 ├── methodologies/          # Reusable development approaches (TDD, BDD, Scrum, etc.)
 │   └── [name]/
 │       ├── README.md       # Documentation
@@ -37,10 +37,10 @@ Create foundational documentation:
 
 ```bash
 # Check existing specializations
-ls plugins/babysitter/skills/babysit/process/specializations/
+ls library/specializations/
 
 # Check methodologies
-ls plugins/babysitter/skills/babysit/process/methodologies/
+ls library/methodologies/
 ```
 
 **Create:**
@@ -432,7 +432,7 @@ return { analyses, summary: aggregated.summary };
 # Create a new run
 babysitter run:create \
   --process-id methodologies/my-process \
-  --entry ./plugins/babysitter/skills/babysit/process/methodologies/my-process.js#process \
+  --entry ./library/methodologies/my-process.js#process \
   --inputs ./test-inputs.json \
   --json
 
@@ -493,20 +493,20 @@ Ask the user:
 
 ```bash
 # Find similar processes
-ls plugins/babysitter/skills/babysit/process/methodologies/
-ls plugins/babysitter/skills/babysit/process/specializations/
+ls library/methodologies/
+ls library/specializations/
 
 # Read similar process for patterns
-cat plugins/babysitter/skills/babysit/process/methodologies/atdd-tdd/atdd-tdd.js | head -200
+cat library/methodologies/atdd-tdd/atdd-tdd.js | head -200
 
 # Check methodology README structure
-cat plugins/babysitter/skills/babysit/process/methodologies/atdd-tdd/README.md
+cat library/methodologies/atdd-tdd/README.md
 ```
 
 ### 3. Check Methodologies Backlog
 
 ```bash
-cat plugins/babysitter/skills/babysit/process/methodologies/backlog.md
+cat library/methodologies/backlog.md
 ```
 
 ### 4. Create the Process
@@ -630,9 +630,9 @@ This metadata connects the process to the atlas knowledge graph. A pre-build gen
 
 ## Resources
 
-- **SDK Reference**: `plugins/babysitter/skills/babysit/process/reference/sdk.md`
-- **Methodology Backlog**: `plugins/babysitter/skills/babysit/process/methodologies/backlog.md`
-- **Specializations Backlog**: `plugins/babysitter/skills/babysit/process/specializations/backlog.md`
-- **Example: ATDD/TDD**: `plugins/babysitter/skills/babysit/process/methodologies/atdd-tdd/`
-- **Example: Spec-Driven**: `plugins/babysitter/skills/babysit/process/methodologies/spec-driven-development.js`
+- **SDK Reference**: `library/reference/sdk.md`
+- **Methodology Backlog**: `library/methodologies/backlog.md`
+- **Specializations Backlog**: `library/specializations/backlog.md`
+- **Example: ATDD/TDD**: `library/methodologies/atdd-tdd/`
+- **Example: Spec-Driven**: `library/methodologies/spec-driven-development.js`
 - **README**: Root `README.md` for full framework documentation

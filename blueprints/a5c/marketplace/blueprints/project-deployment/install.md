@@ -63,7 +63,7 @@ Based on the interview answers, copy the appropriate process files from the baby
 
 ### Source directory:
 ```
-plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/
+library/specializations/devops-sre-platform/
 ```
 
 ### For Enterprise Cloud (Terraform + K8s + Helm):
@@ -72,20 +72,20 @@ plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/
 mkdir -p .a5c/processes/deployment
 
 # Core infrastructure
-cp plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/iac-implementation.js .a5c/processes/deployment/
-cp plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/iac-testing.js .a5c/processes/deployment/
-cp plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/kubernetes-setup.js .a5c/processes/deployment/
-cp plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/container-image-management.js .a5c/processes/deployment/
+cp library/specializations/devops-sre-platform/iac-implementation.js .a5c/processes/deployment/
+cp library/specializations/devops-sre-platform/iac-testing.js .a5c/processes/deployment/
+cp library/specializations/devops-sre-platform/kubernetes-setup.js .a5c/processes/deployment/
+cp library/specializations/devops-sre-platform/container-image-management.js .a5c/processes/deployment/
 
 # CI/CD
-cp plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/cicd-pipeline-setup.js .a5c/processes/deployment/
-cp plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/pipeline-optimization.js .a5c/processes/deployment/
+cp library/specializations/devops-sre-platform/cicd-pipeline-setup.js .a5c/processes/deployment/
+cp library/specializations/devops-sre-platform/pipeline-optimization.js .a5c/processes/deployment/
 
 # Production readiness
-cp plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/cloud-ha-architecture-plan.js .a5c/processes/deployment/
-cp plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/auto-scaling.js .a5c/processes/deployment/
-cp plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/secrets-management.js .a5c/processes/deployment/
-cp plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/monitoring-setup.js .a5c/processes/deployment/
+cp library/specializations/devops-sre-platform/cloud-ha-architecture-plan.js .a5c/processes/deployment/
+cp library/specializations/devops-sre-platform/auto-scaling.js .a5c/processes/deployment/
+cp library/specializations/devops-sre-platform/secrets-management.js .a5c/processes/deployment/
+cp library/specializations/devops-sre-platform/monitoring-setup.js .a5c/processes/deployment/
 ```
 
 Also copy the relevant skills:
@@ -94,19 +94,19 @@ mkdir -p .a5c/skills/deployment
 
 # Copy cloud-specific skill
 # For AWS:
-cp -r plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/skills/aws-cloud .a5c/skills/deployment/
+cp -r library/specializations/devops-sre-platform/skills/aws-cloud .a5c/skills/deployment/
 # For GCP:
-cp -r plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/skills/gcp-cloud .a5c/skills/deployment/
+cp -r library/specializations/devops-sre-platform/skills/gcp-cloud .a5c/skills/deployment/
 # For Azure:
-cp -r plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/skills/azure-cloud .a5c/skills/deployment/
+cp -r library/specializations/devops-sre-platform/skills/azure-cloud .a5c/skills/deployment/
 
 # Copy shared skills
-cp -r plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/skills/terraform-iac .a5c/skills/deployment/
-cp -r plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/skills/kubernetes-ops .a5c/skills/deployment/
-cp -r plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/skills/helm-charts .a5c/skills/deployment/
-cp -r plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/skills/cicd-pipelines .a5c/skills/deployment/
-cp -r plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/skills/secrets-management .a5c/skills/deployment/
-cp -r plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/skills/gitops .a5c/skills/deployment/
+cp -r library/specializations/devops-sre-platform/skills/terraform-iac .a5c/skills/deployment/
+cp -r library/specializations/devops-sre-platform/skills/kubernetes-ops .a5c/skills/deployment/
+cp -r library/specializations/devops-sre-platform/skills/helm-charts .a5c/skills/deployment/
+cp -r library/specializations/devops-sre-platform/skills/cicd-pipelines .a5c/skills/deployment/
+cp -r library/specializations/devops-sre-platform/skills/secrets-management .a5c/skills/deployment/
+cp -r library/specializations/devops-sre-platform/skills/gitops .a5c/skills/deployment/
 ```
 
 ### For Managed Platform (Vercel/Cloudflare + Supabase):
@@ -115,10 +115,10 @@ cp -r plugins/babysitter/skills/babysit/process/specializations/devops-sre-platf
 mkdir -p .a5c/processes/deployment
 
 # CI/CD pipeline (simplified)
-cp plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/cicd-pipeline-setup.js .a5c/processes/deployment/
+cp library/specializations/devops-sre-platform/cicd-pipeline-setup.js .a5c/processes/deployment/
 
 # Monitoring (lightweight)
-cp plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/monitoring-setup.js .a5c/processes/deployment/
+cp library/specializations/devops-sre-platform/monitoring-setup.js .a5c/processes/deployment/
 ```
 
 No IaC or K8s processes needed — the platform handles infrastructure. The install instructions should guide the user to:
@@ -132,13 +132,13 @@ No IaC or K8s processes needed — the platform handles infrastructure. The inst
 ```bash
 mkdir -p .a5c/processes/deployment
 
-cp plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/container-image-management.js .a5c/processes/deployment/
-cp plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/cicd-pipeline-setup.js .a5c/processes/deployment/
-cp plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/monitoring-setup.js .a5c/processes/deployment/
-cp plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/auto-scaling.js .a5c/processes/deployment/
+cp library/specializations/devops-sre-platform/container-image-management.js .a5c/processes/deployment/
+cp library/specializations/devops-sre-platform/cicd-pipeline-setup.js .a5c/processes/deployment/
+cp library/specializations/devops-sre-platform/monitoring-setup.js .a5c/processes/deployment/
+cp library/specializations/devops-sre-platform/auto-scaling.js .a5c/processes/deployment/
 
-cp -r plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/skills/container-images .a5c/skills/deployment/
-cp -r plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/skills/cicd-pipelines .a5c/skills/deployment/
+cp -r library/specializations/devops-sre-platform/skills/container-images .a5c/skills/deployment/
+cp -r library/specializations/devops-sre-platform/skills/cicd-pipelines .a5c/skills/deployment/
 ```
 
 ### For Serverless:
@@ -146,17 +146,17 @@ cp -r plugins/babysitter/skills/babysit/process/specializations/devops-sre-platf
 ```bash
 mkdir -p .a5c/processes/deployment
 
-cp plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/cicd-pipeline-setup.js .a5c/processes/deployment/
-cp plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/monitoring-setup.js .a5c/processes/deployment/
-cp plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/secrets-management.js .a5c/processes/deployment/
+cp library/specializations/devops-sre-platform/cicd-pipeline-setup.js .a5c/processes/deployment/
+cp library/specializations/devops-sre-platform/monitoring-setup.js .a5c/processes/deployment/
+cp library/specializations/devops-sre-platform/secrets-management.js .a5c/processes/deployment/
 ```
 
 ### From code-migration-modernization (if migrating to cloud):
 
 ```bash
 # If the project is being migrated from on-prem or between clouds
-cp plugins/babysitter/skills/babysit/process/specializations/code-migration-modernization/cloud-migration.js .a5c/processes/deployment/
-cp plugins/babysitter/skills/babysit/process/specializations/code-migration-modernization/containerization.js .a5c/processes/deployment/
+cp library/specializations/code-migration-modernization/cloud-migration.js .a5c/processes/deployment/
+cp library/specializations/code-migration-modernization/containerization.js .a5c/processes/deployment/
 ```
 
 ## Step 3: Copy Agents
@@ -168,10 +168,10 @@ mkdir -p .a5c/agents/deployment
 
 # For any approach — general devops agents
 # Check what agents exist at the source path:
-ls plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/agents/
+ls library/specializations/devops-sre-platform/agents/
 
 # Copy relevant ones, e.g.:
-cp -r plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/agents/* .a5c/agents/deployment/
+cp -r library/specializations/devops-sre-platform/agents/* .a5c/agents/deployment/
 ```
 
 ## Step 4: Generate Deployment Configuration Files
@@ -241,7 +241,7 @@ babysitter plugin:update-registry --plugin-name project-deployment --plugin-vers
 
 ## Reference
 
-- Process library: `plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/`
-- Skills: `plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/skills/`
-- Cloud migration: `plugins/babysitter/skills/babysit/process/specializations/code-migration-modernization/`
-- Example inputs: `plugins/babysitter/skills/babysit/process/specializations/devops-sre-platform/examples/`
+- Process library: `library/specializations/devops-sre-platform/`
+- Skills: `library/specializations/devops-sre-platform/skills/`
+- Cloud migration: `library/specializations/code-migration-modernization/`
+- Example inputs: `library/specializations/devops-sre-platform/examples/`

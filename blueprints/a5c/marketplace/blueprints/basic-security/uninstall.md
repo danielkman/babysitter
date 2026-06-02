@@ -154,6 +154,6 @@ All checks should report "OK". If any warnings appear, manually remove the remai
 ## Notes
 
 - Uninstalling does **not** delete any run history or scan results that were generated while the plugin was active. Those remain in `.a5c/runs/` and can be cleaned up separately if desired.
-- Uninstalling does **not** affect the source library at `plugins/babysitter/skills/babysit/process/specializations/security-compliance/`. The plugin can be reinstalled at any time.
+- Uninstalling does **not** affect the source library at `library/specializations/security-compliance/`. The plugin can be reinstalled at any time.
 - If you only want to remove specific categories rather than everything, see the **configure.md** instructions for selectively removing individual processes, skills, and agents.
 - If removing security git hooks leaves other hooks intact (e.g., testing-suite hooks), those will continue to work normally.

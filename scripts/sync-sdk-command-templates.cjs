@@ -17,9 +17,8 @@ const CHECK = process.argv.includes('--check');
 const REQUIRED_SKILL_COMMANDS = ['blueprints'];
 const PRIMARY_BLUEPRINT_COMMAND_SURFACES = [
   'README.md',
-  'plugins/babysitter/skills/help/SKILL.md',
-  'plugins/babysitter/skills/blueprints/SKILL.md',
   'plugins/babysitter-unified/commands/help.md',
+  'plugins/babysitter-unified/commands/blueprints.md',
   'plugins/babysitter-unified/per-harness/gemini/README.md',
   'plugins/babysitter-unified/per-harness/openclaw/README.md',
   'blueprints/a5c/marketplace/blueprints/welcome/install.md',

@@ -66,7 +66,7 @@ Record the user's selections. If they select "8" or "All", treat it as selecting
 
 For each selected category, copy the corresponding process `.js` files from the babysitter security-compliance library into the project.
 
-**Source directory:** `plugins/babysitter/skills/babysit/process/specializations/security-compliance/`
+**Source directory:** `library/specializations/security-compliance/`
 **Target directory:** `.a5c/processes/security/`
 
 First, create the target directory:
@@ -78,11 +78,11 @@ mkdir -p .a5c/processes/security/
 Then copy each process file for the selected categories. For example, if the user selected Core DevSecOps (category 1):
 
 ```bash
-cp plugins/babysitter/skills/babysit/process/specializations/security-compliance/codebase-security-audit.js .a5c/processes/security/codebase-security-audit.js
-cp plugins/babysitter/skills/babysit/process/specializations/security-compliance/secrets-management.js .a5c/processes/security/secrets-management.js
-cp plugins/babysitter/skills/babysit/process/specializations/security-compliance/sast-pipeline.js .a5c/processes/security/sast-pipeline.js
-cp plugins/babysitter/skills/babysit/process/specializations/security-compliance/sca-dependency-management.js .a5c/processes/security/sca-dependency-management.js
-cp plugins/babysitter/skills/babysit/process/specializations/security-compliance/vulnerability-management.js .a5c/processes/security/vulnerability-management.js
+cp library/specializations/security-compliance/codebase-security-audit.js .a5c/processes/security/codebase-security-audit.js
+cp library/specializations/security-compliance/secrets-management.js .a5c/processes/security/secrets-management.js
+cp library/specializations/security-compliance/sast-pipeline.js .a5c/processes/security/sast-pipeline.js
+cp library/specializations/security-compliance/sca-dependency-management.js .a5c/processes/security/sca-dependency-management.js
+cp library/specializations/security-compliance/vulnerability-management.js .a5c/processes/security/vulnerability-management.js
 ```
 
 Repeat for each selected category using the process file lists in Step 1.
@@ -104,14 +104,14 @@ Repeat for each selected category using the process file lists in Step 1.
 
 For each selected category, copy the skill directories from the library into the project.
 
-**Source directory:** `plugins/babysitter/skills/babysit/process/specializations/security-compliance/skills/`
+**Source directory:** `library/specializations/security-compliance/skills/`
 **Target directory:** `.a5c/skills/security/`
 
 For each skill in the selected categories, create the target directory and copy the `SKILL.md` file:
 
 ```bash
 mkdir -p .a5c/skills/security/<skill-name>/
-cp plugins/babysitter/skills/babysit/process/specializations/security-compliance/skills/<skill-name>/SKILL.md .a5c/skills/security/<skill-name>/SKILL.md
+cp library/specializations/security-compliance/skills/<skill-name>/SKILL.md .a5c/skills/security/<skill-name>/SKILL.md
 ```
 
 ### Full Skill-to-Category Mapping
@@ -129,16 +129,16 @@ For example, if the user selected Core DevSecOps (category 1):
 
 ```bash
 mkdir -p .a5c/skills/security/owasp-security-scanner/
-cp plugins/babysitter/skills/babysit/process/specializations/security-compliance/skills/owasp-security-scanner/SKILL.md .a5c/skills/security/owasp-security-scanner/SKILL.md
+cp library/specializations/security-compliance/skills/owasp-security-scanner/SKILL.md .a5c/skills/security/owasp-security-scanner/SKILL.md
 
 mkdir -p .a5c/skills/security/sast-analyzer/
-cp plugins/babysitter/skills/babysit/process/specializations/security-compliance/skills/sast-analyzer/SKILL.md .a5c/skills/security/sast-analyzer/SKILL.md
+cp library/specializations/security-compliance/skills/sast-analyzer/SKILL.md .a5c/skills/security/sast-analyzer/SKILL.md
 
 mkdir -p .a5c/skills/security/secret-detection-scanner/
-cp plugins/babysitter/skills/babysit/process/specializations/security-compliance/skills/secret-detection-scanner/SKILL.md .a5c/skills/security/secret-detection-scanner/SKILL.md
+cp library/specializations/security-compliance/skills/secret-detection-scanner/SKILL.md .a5c/skills/security/secret-detection-scanner/SKILL.md
 
 mkdir -p .a5c/skills/security/dependency-scanner/
-cp plugins/babysitter/skills/babysit/process/specializations/security-compliance/skills/dependency-scanner/SKILL.md .a5c/skills/security/dependency-scanner/SKILL.md
+cp library/specializations/security-compliance/skills/dependency-scanner/SKILL.md .a5c/skills/security/dependency-scanner/SKILL.md
 ```
 
 ---
@@ -147,14 +147,14 @@ cp plugins/babysitter/skills/babysit/process/specializations/security-compliance
 
 For each selected category, copy the agent directories from the library into the project.
 
-**Source directory:** `plugins/babysitter/skills/babysit/process/specializations/security-compliance/agents/`
+**Source directory:** `library/specializations/security-compliance/agents/`
 **Target directory:** `.a5c/agents/security/`
 
 For each agent in the selected categories, create the target directory and copy the `AGENT.md` file:
 
 ```bash
 mkdir -p .a5c/agents/security/<agent-name>/
-cp plugins/babysitter/skills/babysit/process/specializations/security-compliance/agents/<agent-name>/AGENT.md .a5c/agents/security/<agent-name>/AGENT.md
+cp library/specializations/security-compliance/agents/<agent-name>/AGENT.md .a5c/agents/security/<agent-name>/AGENT.md
 ```
 
 ### Full Agent-to-Category Mapping
@@ -172,10 +172,10 @@ For example, if the user selected Core DevSecOps (category 1):
 
 ```bash
 mkdir -p .a5c/agents/security/secure-code-reviewer-agent/
-cp plugins/babysitter/skills/babysit/process/specializations/security-compliance/agents/secure-code-reviewer-agent/AGENT.md .a5c/agents/security/secure-code-reviewer-agent/AGENT.md
+cp library/specializations/security-compliance/agents/secure-code-reviewer-agent/AGENT.md .a5c/agents/security/secure-code-reviewer-agent/AGENT.md
 
 mkdir -p .a5c/agents/security/vulnerability-triage-agent/
-cp plugins/babysitter/skills/babysit/process/specializations/security-compliance/agents/vulnerability-triage-agent/AGENT.md .a5c/agents/security/vulnerability-triage-agent/AGENT.md
+cp library/specializations/security-compliance/agents/vulnerability-triage-agent/AGENT.md .a5c/agents/security/vulnerability-triage-agent/AGENT.md
 ```
 
 ---
