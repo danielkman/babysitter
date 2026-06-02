@@ -214,9 +214,9 @@ function main() {
   assertPrimaryBlueprintCommandSurfaces();
 
   for (const name of REQUIRED_SKILL_COMMANDS) {
-    const skillPath = path.join(REPO_ROOT, 'plugins', 'babysitter', 'skills', name, 'SKILL.md');
-    if (!fs.existsSync(skillPath)) {
-      throw new Error(`Missing babysitter skill for ${name}: ${path.relative(REPO_ROOT, skillPath)}`);
+    const commandPath = path.join(REPO_ROOT, 'plugins', 'babysitter-unified', 'commands', `${name}.md`);
+    if (!fs.existsSync(commandPath)) {
+      throw new Error(`Missing babysitter command for ${name}: ${path.relative(REPO_ROOT, commandPath)}`);
     }
   }
 
