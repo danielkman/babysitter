@@ -402,6 +402,10 @@ jobs:
           if [[ "$RUNNER_OS" == "Windows" ]]; then TAR_LOCAL_FLAG="--force-local"; fi
           tar xzf "${TEMP_DIR}/build-all-dist.tar.gz" $TAR_LOCAL_FLAG
 
+      - name: Install Windows native deps
+        if: runner.os == 'Windows'
+        run: npm install --no-save @rolldown/binding-win32-x64-msvc @rollup/rollup-win32-x64-msvc @unrs/resolver-binding-win32-x64-msvc || echo "some native deps failed"
+
       - name: Verify native deps
         run: ls node_modules/@rolldown/ 2>/dev/null && echo "rolldown OK" || echo "rolldown missing"
 
