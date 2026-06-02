@@ -77,6 +77,8 @@ jobs:
             NATIVE_PKGS="@rollup/rollup-linux-x64-gnu @tailwindcss/oxide-linux-x64-gnu lightningcss-linux-x64-gnu @next/swc-linux-x64-gnu @rolldown/binding-linux-x64-gnu @unrs/resolver-binding-linux-x64-gnu"
           elif [[ "$RUNNER_OS" == "macOS" ]]; then
             NATIVE_PKGS="@rollup/rollup-darwin-arm64 @tailwindcss/oxide-darwin-arm64 lightningcss-darwin-arm64 @next/swc-darwin-arm64 @rolldown/binding-darwin-arm64 @unrs/resolver-binding-darwin-arm64"
+          elif [[ "$RUNNER_OS" == "Windows" ]]; then
+            NATIVE_PKGS="@rollup/rollup-win32-x64-msvc @tailwindcss/oxide-win32-x64-msvc lightningcss-win32-x64-msvc @rolldown/binding-win32-x64-msvc @unrs/resolver-binding-win32-x64-msvc"
           fi
           if [[ -n "$NATIVE_PKGS" ]]; then
             npm install --no-save $NATIVE_PKGS || echo "some native deps failed to install"
