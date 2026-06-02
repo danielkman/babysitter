@@ -87,6 +87,28 @@ export function buildPrimaryLiveStackCommands(
       const copyFixture = { command: process.execPath, args: ['-e', `const fs=require("fs"),p=require("path");fs.mkdirSync(${JSON.stringify(processesDir)},{recursive:true});fs.copyFileSync(${JSON.stringify(path.join(fixturesDir, 'tula-simple-test.mjs'))},${JSON.stringify(path.join(processesDir, 'tula-simple-test.mjs'))})`], env: commandEnv, cwd: options.cwd, timeoutMs: SETUP_TIMEOUT_MS };
       setupCommands.push(copyFixture);
       tulaArgs.push('--process', '.a5c/processes/tula-simple-test.mjs');
+    } else if (processMode === 'resume') {
+      const resumeRunId = `resume-${traceId}`;
+      const resumeRunDir = path.join(options.cwd, '.a5c', 'runs', resumeRunId);
+      const nodeFileCopy = (src: string, dest: string) =>
+        ({ command: process.execPath, args: ['-e', `const fs=require("fs"),p=require("path");fs.mkdirSync(p.dirname(${JSON.stringify(dest)}),{recursive:true});fs.copyFileSync(${JSON.stringify(src)},${JSON.stringify(dest)})`], env: commandEnv, cwd: options.cwd, timeoutMs: SETUP_TIMEOUT_MS });
+      setupCommands.push(
+        nodeFileCopy(path.join(fixturesDir, 'summarize-translate-test.mjs'), path.join(processesDir, 'summarize-translate-test.mjs')),
+        { command: process.execPath, args: ['-e', `
+const fs=require("fs"),p=require("path");
+const src=${JSON.stringify(path.join(fixturesDir, 'resume-run'))};
+const dest=${JSON.stringify(resumeRunDir)};
+const runId=${JSON.stringify(resumeRunId)};
+const traceId=${JSON.stringify(traceId)};
+function cpDir(s,d){fs.mkdirSync(d,{recursive:true});for(const e of fs.readdirSync(s,{withFileTypes:true})){const sp=p.join(s,e.name),dp=p.join(d,e.name);if(e.isDirectory())cpDir(sp,dp);else fs.copyFileSync(sp,dp)}}
+cpDir(src,dest);
+for(const f of fs.readdirSync(dest)){if(f.endsWith(".json")){const fp=p.join(dest,f);let c=fs.readFileSync(fp,"utf8");c=c.replace(/RESUME_FIXTURE_RUN/g,runId);fs.writeFileSync(fp,c)}}
+fs.writeFileSync(p.join(dest,"inputs.json"),JSON.stringify({traceId,outputDir:p.join(${JSON.stringify(options.cwd)},".a5c-live-test")}));
+`.replace(/\n/g, '')], env: commandEnv, cwd: options.cwd, timeoutMs: SETUP_TIMEOUT_MS },
+      );
+      tulaArgs.length = 0;
+      tulaArgs.push('resume', '--run-id', resumeRunId, '--model', scenario.model.model, '--workspace', options.cwd, '--process', '.a5c/processes/summarize-translate-test.mjs', '--json');
+      commandEnv['LIVE_STACK_RESUME_RUN_ID'] = resumeRunId;
     }
     return [
       ...setupCommands,
