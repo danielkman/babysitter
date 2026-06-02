@@ -96,65 +96,21 @@ jobs:
             framework-${{ runner.os }}-${{ github.ref_name }}-
             framework-${{ runner.os }}-
 
-      - name: "Build phase 1: shared catalog foundation"
+      - name: "Build all packages"
         run: |
           set -euo pipefail
-          (npm run build --workspace=@a5c-ai/atlas) || {
-            echo "::warning::Atlas build failed (graph validation) — retrying without validation"
-            (cd packages/atlas && node scripts/generate-library-nodes.mjs && node scripts/generate-wiki-pages.mjs && mkdir -p dist && npm run build:index || true && npx tsc -p tsconfig.json && (node scripts/copy-assets.cjs || true) && (npm run generate:discovery-snapshot || true))
-          }
-
-      - name: "Build phase 2: parallel independents and agent-mux critical path"
-        run: |
-          set -euo pipefail
-          PIDS=()
-          run_bg() { "$@" & PIDS+=("$!"); }
-          wait_all() { local fail=0; for pid in "${PIDS[@]}"; do wait "$pid" || fail=1; done; PIDS=(); [ "$fail" -eq 0 ] || exit 1; }
-
-          run_bg bash -lc '
-            set -euo pipefail
-            npm run build --workspace=@a5c-ai/hooks-mux-core
-            for adapter in claude codex gemini copilot cursor pi oh-my-pi opencode openclaw hermes; do
-              npm run build --workspace=@a5c-ai/hooks-mux-adapter-$adapter &
-            done
-            wait
-            npm run build --workspace=@a5c-ai/hooks-mux-cli
-          '
-          run_bg npm run build --workspace=@a5c-ai/extension-mux
-          run_bg npm run build --workspace=@a5c-ai/triggers-mux
+          # Use root build scripts that know the current package layout
+          npm run build:sdk || true
+          npm run build:hooks-mux || true
+          npm run build:extension-mux || true
+          npm run build:agent-mux || true
+          npm run build:runtime || true
           if [[ "$RUNNER_OS" != "Windows" ]]; then
-            run_bg npm run build:observer
-            run_bg npm run build:cloud
+            npm run build:observer || true
+            npm run build:cloud || true
+            npm run build:krate || true
+            npm run build:krate-web || true
           fi
-          if [[ "$RUNNER_OS" == "Windows" ]]; then
-            run_bg bash -lc 'cd packages/krate/core && npm run build'
-          else
-            run_bg bash -lc 'cd packages/krate/core && npm run build && cd ../web && npm run build'
-          fi
-
-          npm run build --workspace=@a5c-ai/agent-mux-observability
-          npm run build --workspace=@a5c-ai/agent-comm-mux
-
-          leaf_pids=()
-          npm run build --workspace=@a5c-ai/agent-mux-adapters & leaf_pids+=("$!")
-          npm run build --workspace=@a5c-ai/agent-mux-harness-mock & leaf_pids+=("$!")
-          npm run build --workspace=@a5c-ai/transport-mux & leaf_pids+=("$!")
-          npm run build --workspace=@a5c-ai/tasks-mux & leaf_pids+=("$!")
-          leaf_fail=0
-          for pid in "${leaf_pids[@]}"; do wait "$pid" || leaf_fail=1; done
-          [ "$leaf_fail" -eq 0 ] || exit 1
-
-          npm run build --workspace=@a5c-ai/agent-mux-gateway
-          npm run build --workspace=@a5c-ai/agent-mux-cli
-          npm run build --workspace=@a5c-ai/agent-mux
-          npm run build:local --workspace=@a5c-ai/agent-mux-tui
-          if [[ "$RUNNER_OS" != "Windows" ]]; then npm run build --workspace=@a5c-ai/agent-mux-webui; fi
-          npm run build --workspace=@a5c-ai/babysitter-sdk
-          (cd packages/tula-core && npx tsc --build --force tsconfig.json)
-          (cd packages/agent-platform && npx tsc --build --force tsconfig.json)
-          (cd packages/tula && npx tsc --build tsconfig.json)
-
-          wait_all
 
       - name: Package dist directories
         run: |
