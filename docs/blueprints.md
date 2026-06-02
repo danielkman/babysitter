@@ -7,7 +7,7 @@ category: guide
 
 # Babysitter Blueprints
 
-Babysitter blueprints are version-managed instruction packages distributed through a marketplace. They were previously called Babysitter plugins; the old `plugin:*` CLI commands remain as deprecated aliases for one release, but new documentation and command surfaces should use `blueprint:*`.
+Babysitter blueprints are version-managed instruction packages distributed through a marketplace. They were previously called Babysitter plugins; the old `plugin:*` CLI commands remain as deprecated aliases for one release, but new documentation and command surfaces should use `plugin:*`.
 
 Blueprints are not conventional software plugins. A blueprint is a set of markdown instructions or deterministic Babysitter process files that an AI agent reads and executes to install, configure, update, or remove a modular capability.
 
@@ -35,22 +35,22 @@ The SDK still reads legacy `.a5c/marketplaces/` clones for compatibility. New cl
 
 ```bash
 # Add the official marketplace
-babysitter blueprint:add-marketplace \
+babysitter plugin:add-marketplace \
   --marketplace-url https://github.com/a5c-ai/babysitter \
   --marketplace-path blueprints/a5c/marketplace \
   --global
 
 # See what is available
-babysitter blueprint:list-plugins --marketplace-name babysitter --global
+babysitter plugin:list-plugins --marketplace-name babysitter --global
 
 # Install a blueprint
-babysitter blueprint:install testing-suite --global
+babysitter plugin:install testing-suite --global
 
 # Reconfigure later
-babysitter blueprint:configure testing-suite --project
+babysitter plugin:configure testing-suite --project
 
 # Remove it
-babysitter blueprint:uninstall testing-suite --global
+babysitter plugin:uninstall testing-suite --global
 ```
 
 ## Command Reference
@@ -59,16 +59,16 @@ All commands accept `--json` for machine-readable output and `--global|--project
 
 | Command | Description |
 | --- | --- |
-| `blueprint:add-marketplace` | Clone a marketplace repository. |
-| `blueprint:update-marketplace` | Pull the latest marketplace changes. |
-| `blueprint:list-plugins` | List available blueprints in a marketplace. |
-| `blueprint:install` | Read install instructions for a blueprint. |
-| `blueprint:update` | Resolve migration instructions for an installed blueprint. |
-| `blueprint:configure` | Read configuration instructions for a blueprint. |
-| `blueprint:uninstall` | Read uninstall instructions for a blueprint. |
-| `blueprint:list-installed` | List installed blueprints. |
-| `blueprint:update-registry` | Register or update an installed blueprint entry. |
-| `blueprint:remove-from-registry` | Remove a blueprint registry entry. |
+| `plugin:add-marketplace` | Clone a marketplace repository. |
+| `plugin:update-marketplace` | Pull the latest marketplace changes. |
+| `plugin:list-plugins` | List available blueprints in a marketplace. |
+| `plugin:install` | Read install instructions for a blueprint. |
+| `plugin:update` | Resolve migration instructions for an installed blueprint. |
+| `plugin:configure` | Read configuration instructions for a blueprint. |
+| `plugin:uninstall` | Read uninstall instructions for a blueprint. |
+| `plugin:list-installed` | List installed blueprints. |
+| `plugin:update-registry` | Register or update an installed blueprint entry. |
+| `plugin:remove-from-registry` | Remove a blueprint registry entry. |
 
 Deprecated `plugin:*` aliases forward to these commands and print a deprecation warning in human-readable mode.
 

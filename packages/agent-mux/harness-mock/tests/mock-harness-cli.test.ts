@@ -192,7 +192,7 @@ describe('mock-harness runMockHarness', () => {
       { stdout: so.stream, stderr: se.stream },
     );
     expect(code).toBe(0);
-    expect(se.text()).toContain('mock-harness');
+    expect(se.text()).toContain('agent-mux-harness-mock');
     expect(se.text()).toContain('--agent <name>');
   });
 });
