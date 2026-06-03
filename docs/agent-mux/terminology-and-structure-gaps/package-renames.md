@@ -49,9 +49,6 @@ These are already under `packages/agent-mux/` but have inconsistent package name
 | `@a5c-ai/agent-mux-tui` | `@a5c-ai/agent-mux-tui` (keep) | `packages/agent-mux/tui/` |
 | `@a5c-ai/agent-mux-ui` | `@a5c-ai/agent-mux-ui` (keep) | `packages/agent-mux/ui/` |
 | `@a5c-ai/agent-mux-webui` | `@a5c-ai/agent-mux-webui` (keep) | `packages/agent-mux/webui/` |
-| `@a5c-ai/agent-mux-mobile-*` | keep | `packages/agent-mux/mobile-*/` |
-| `@a5c-ai/agent-mux-tv-*` | keep | `packages/agent-mux/tv-*/` |
-| `@a5c-ai/agent-mux-watch-*` | keep | `packages/agent-mux/watch-*/` |
 
 ## Summary
 
