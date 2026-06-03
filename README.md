@@ -62,7 +62,7 @@ Babysitter has a small package split:
 
 - `@a5c-ai/babysitter` is the recommended end-user install for the main `babysitter` CLI.
 - `@a5c-ai/babysitter-sdk` is the public SDK/library package and the underlying implementation behind the core CLI.
-- `@a5c-ai/tula-platform` is the optional runtime CLI for `agent-platform call`, `resume`, `start-server`, `tui`, and other orchestration/runtime commands.
+- `@a5c-ai/tula-platform` is the optional runtime CLI for `tula call`, `resume`, `start-server`, `tui`, and other orchestration/runtime commands.
 - Harness plugins such as `@a5c-ai/babysitter-codex` or `@a5c-ai/babysitter-cursor` integrate Babysitter into a specific host tool. They do not replace the core CLI packages.
 
 For most users, install the main CLI first:
@@ -117,15 +117,17 @@ of this repo for that flow, or upload plugin ZIPs manually.
 
 ### Codex CLI (Beta)
 
+Official marketplace install:
+
 ```bash
-babysitter harness:install-plugin codex
-codex
+codex plugin marketplace add a5c-ai/babysitter --ref staging --sparse .agents/plugins
 ```
 
+Or via the SDK helper:
+
+```bash
+babysitter harness:install-plugin codex
 ```
-/plugins
-```
-Navigate to the "babysitter" entry and select "Install".
 
 [Plugin README](plugins/babysitter-unified/per-harness/codex/README.md)
 
@@ -195,10 +197,10 @@ Babysitter ships with a built-in **internal harness** that runs processes progra
 npm install -g @a5c-ai/tula-platform
 
 # Run a process definition using the internal harness
-agent-platform call --harness internal --process .a5c/processes/my-process.js#process --workspace .
+tula call --harness internal --process .a5c/processes/my-process.js#process --workspace .
 
 # Or run a free-form prompt
-agent-platform call --harness internal --prompt "run lint and tests" --workspace .
+tula call --harness internal --prompt "run lint and tests" --workspace .
 ```
 
 The internal harness uses the SDK's built-in Pi execution engine directly. It supports all capabilities (Programmatic, SessionBinding, StopHook, HeadlessPrompt) and requires no external AI harness CLI.
@@ -216,7 +218,7 @@ npm ci
 npm run build:runtime
 ```
 
-`build:runtime` is the supported root entrypoint for release and CI validation. It builds the runtime graph in workspace order: SDK -> adapters SDK surface -> tula-core -> agent-platform.
+`build:runtime` is the supported root entrypoint for release and CI validation. It builds the runtime graph in workspace order: SDK -> adapters SDK surface -> tula-core -> tula-platform.
 
 Package-local validation is also supported:
 
@@ -227,7 +229,7 @@ npm run build --workspace=@a5c-ai/tula-platform
 
 Those package-local builds now use `tsc --build` project references where the runtime packages are owned in this workspace, and they explicitly bootstrap the `@a5c-ai/adapters` SDK chain through the root runtime scripts. Fresh-checkout validation no longer assumes prebuilt upstream `dist/` artifacts.
 
-`@a5c-ai/agent-catalog` is the internal ontology and discovery data-plane package consumed by SDK, adapters, hooks-mux, plugin tooling, and the catalog UI. It ships graph, evidence, and package-doc assets for workspace consumers, with its package-level contract documented in [`packages/agent-catalog/README.md`](packages/agent-catalog/README.md) and [`packages/agent-catalog/docs/ontology-evidence.md`](packages/agent-catalog/docs/ontology-evidence.md). Its validation path is `npm run ci:test --workspace=@a5c-ai/agent-catalog` rather than the central publish workflows.
+`@a5c-ai/atlas` provides the unified knowledge graph, ontology, and catalog data consumed by SDK, adapters, hooks, plugin tooling, and the catalog UI. The agent catalog surface is `@a5c-ai/atlas/catalog`. See [`packages/atlas/README.md`](packages/atlas/README.md).
 
 ### CLI Walkthrough Verification
 
@@ -328,39 +330,39 @@ npm install -g @a5c-ai/tula-platform
 
 ```bash
 # Run a process interactively via Claude Code (pauses at breakpoints)
-agent-platform call --harness claude-code --prompt "implement user authentication with TDD" --workspace .
+tula call --harness claude-code --prompt "implement user authentication with TDD" --workspace .
 
 # Run fully autonomous (no breakpoints)
-agent-platform yolo --harness claude-code --prompt "add pagination to the API" --workspace .
+tula yolo --harness claude-code --prompt "add pagination to the API" --workspace .
 
 # Plan only (stops after Phase 1)
-agent-platform plan --harness claude-code --prompt "implement feature X"
+tula plan --harness claude-code --prompt "implement feature X"
 
 # Run with the internal harness (no external AI agent needed)
-agent-platform call --harness internal --prompt "run lint and tests" --workspace .
+tula call --harness internal --prompt "run lint and tests" --workspace .
 ```
 
 ### Managing Runs
 
 ```bash
 # Resume an interrupted run
-agent-platform resume --run-id <runId> --harness claude-code --workspace .
+tula resume --run-id <runId> --harness claude-code --workspace .
 
 # Initialize or inspect orchestration session state
 babysitter session:init --session-id demo --state-dir .a5c --run-id <runId>
 babysitter session:state --session-id demo --state-dir .a5c
 
 # Start the MCP server owned by the agent runtime CLI
-agent-platform start-server --transport stdio
+tula start-server --transport stdio
 
 # Diagnose run health
-agent-platform doctor --run-id <runId>
+tula doctor --run-id <runId>
 
 # Analyze past runs for insights
-agent-platform retrospect --all --harness claude-code --workspace .
+tula retrospect --all --harness claude-code --workspace .
 
 # Clean up old runs
-agent-platform cleanup --keep-days 7 --harness claude-code --workspace .
+tula cleanup --keep-days 7 --harness claude-code --workspace .
 ```
 
 ### Harness Discovery
@@ -386,7 +388,7 @@ The `internal` harness is particularly useful for CI/CD and scripting because it
 
 ```bash
 # In a CI pipeline or script
-agent-platform call \
+tula call \
   --harness internal \
   --process .a5c/processes/lint-and-test.js#process \
   --workspace . \
@@ -402,10 +404,38 @@ It executes processes using the SDK's built-in engine, supports all effect types
 |---------|----------|------------|
 | `@a5c-ai/babysitter` | `babysitter` | Recommended human-facing install for the main CLI |
 | `@a5c-ai/babysitter-sdk` | `babysitter`, `babysitter-sdk`, `babysitter-mcp-server` | SDK/library usage and direct access to the core CLI implementation |
-| `@a5c-ai/tula-platform` | `agent-platform` | Optional runtime/orchestration commands (`call`, `resume`, `plan`, `start-server`, `tui`, `doctor`) |
+| `@a5c-ai/tula-platform` | `tula` | Optional runtime/orchestration commands (`call`, `resume`, `plan`, `start-server`, `tui`, `doctor`) |
 | `@a5c-ai/babysitter-<harness>` | Harness-specific installer or plugin binary | Integrating Babysitter into a specific host tool such as Codex, Cursor, Gemini CLI, Pi, or GitHub Copilot |
 
 The repository root `package.json` is workspace metadata for this monorepo. The public packages users install are the scoped packages above.
+
+### Monorepo Structure
+
+```
+packages/
+  tula/                   # Tula agent stack
+    cli/                  #   @a5c-ai/tula — CLI binary "tula"
+    core/                 #   @a5c-ai/tula-core — agent-core runtime
+    platform/             #   @a5c-ai/tula-platform — orchestration platform
+    runtime/              #   @a5c-ai/tula-runtime — agent runtime
+    ui/ webui/ tui/       #   UI surfaces (web console, terminal UI)
+  adapters/               # Adapter family
+    sdk/                  #   @a5c-ai/adapters — root SDK + CLI "adapters"
+    codecs/               #   @a5c-ai/adapters-codecs — harness codec impls
+    cli/                  #   @a5c-ai/adapters-cli
+    gateway/              #   @a5c-ai/adapters-gateway
+    hooks/                #   hooks-adapter-* (per-harness hook adapters)
+    core/ transport/ ...  #   comm-adapter, transport-adapter, etc.
+  atlas/                  # @a5c-ai/atlas — knowledge graph + catalog
+  sdk/                    # @a5c-ai/babysitter-sdk — core SDK
+  kradle/                 # @a5c-ai/kradle — Kubernetes-native forge
+    core/ sdk/ cli/ web/
+plugins/                  # Installable plugin packages
+  babysitter-unified/     #   Unified plugin for all harnesses
+blueprints/               # Blueprint marketplace registry
+  a5c/marketplace/
+library/                  # Process library (methodologies + specializations)
+```
 
 ---
 
@@ -494,7 +524,7 @@ This means a blueprint can do anything an AI agent can do: install npm packages,
 
 The official marketplace includes blueprints for **security** (gitleaks, ESLint security rules, audit processes), **testing** (Vitest/Playwright/pytest setup, coverage gates, TDD processes), **deployment** (Terraform, Helm, Dockerfiles, multi-environment pipelines), **themes** (sound effects, design systems, conversational personality), **CI/CD** (GitHub Actions workflows), and **rate limiting** (exponential backoff hooks).
 
-To manage blueprints, use the `/babysitter:blueprints` command inside your harness (or `babysitter blueprint:*` from the CLI). The agent reads the blueprint's install instructions, interviews you, analyzes your project, and executes the setup -- all within a babysitter orchestration run.
+To manage blueprints, use the `/babysitter:blueprints` command inside your harness (or `babysitter blueprints:*` from the CLI). The agent reads the blueprint's install instructions, interviews you, analyzes your project, and executes the setup -- all within a babysitter orchestration run.
 
 See the full [Blueprints documentation](docs/blueprints.md) for details on how installs work, the marketplace format, creating your own blueprints, and the migration system. Agent harness plugins are covered separately in [Plugins documentation](docs/plugins.md).
 
@@ -574,7 +604,7 @@ Toggle any layer with `babysitter compression:toggle <layer> <on|off>` or set in
 - [Troubleshooting](docs/user-guide/reference/troubleshooting.md)
 - [Security](docs/user-guide/reference/security.md)
 - [CLI Reference](docs/user-guide/reference/cli-reference.md)
-- [Agent Catalog Package Contract](packages/agent-catalog/README.md)
+- [Atlas Knowledge Graph](packages/atlas/README.md)
 
 ---
 
