@@ -107,7 +107,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "npm run build:runtime:agent-platform-deps --prefix ../../.. && tsc --build tsconfig.json",
+    "build": "npm run build:runtime:tula-platform-deps --prefix ../../.. && tsc --build tsconfig.json",
     "clean": "rimraf dist tsconfig.tsbuildinfo",
     "lint": "eslint \"src/**/*.ts\" --max-warnings=0",
     "test": "vitest run --config vitest.config.ts",
