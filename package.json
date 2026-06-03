@@ -36,6 +36,7 @@
     "packages/tula/ui",
     "packages/tula/webui",
     "packages/tula/web-app",
+    "packages/tula/desktop-app",
     "packages/tula/tui",
     "packages/tula/mobile-android-app",
     "packages/tula/mobile-ios-app",

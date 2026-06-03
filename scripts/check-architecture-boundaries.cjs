@@ -39,6 +39,7 @@ const packageFamilies = {
     "@a5c-ai/tula-tv-appletv-app",
     "@a5c-ai/tula-watch-watchos-app",
     "@a5c-ai/tula-watch-wearos-app",
+    "@a5c-ai/tula-desktop-app",
   ],
   "support-systems": [
     "@a5c-ai/extensions-adapter",
