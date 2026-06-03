@@ -13,7 +13,7 @@
   "include": ["src"],
   "references": [
     { "path": "../core" },
-    { "path": "../adapters" },
+    { "path": "../codecs" },
     { "path": "../transport" }
   ]
 }
