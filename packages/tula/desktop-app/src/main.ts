@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu } from 'electron';
+import { app, BrowserWindow, Menu, Tray, nativeImage } from 'electron';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -81,3 +81,32 @@ app.on('window-all-closed', () => {
     app.quit();
   }
 });
+
+// ---------------------------------------------------------------------------
+// System tray — stub (uncomment and supply a real icon path to activate)
+// ---------------------------------------------------------------------------
+// let tray: Tray | null = null;
+//
+// function createTray(): void {
+//   const icon = nativeImage.createFromPath(path.join(__dirname, 'assets', 'tray-icon.png'));
+//   tray = new Tray(icon.resize({ width: 16, height: 16 }));
+//   tray.setToolTip('Tula');
+//   tray.setContextMenu(
+//     Menu.buildFromTemplate([
+//       { label: 'Open Tula', click: () => { BrowserWindow.getAllWindows()[0]?.show(); } },
+//       { type: 'separator' },
+//       { label: 'Quit', role: 'quit' },
+//     ]),
+//   );
+// }
+
+// ---------------------------------------------------------------------------
+// Auto-updater — stub (wire electron-updater here when release channel is ready)
+// ---------------------------------------------------------------------------
+// import { autoUpdater } from 'electron-updater';
+//
+// function initAutoUpdater(): void {
+//   autoUpdater.checkForUpdatesAndNotify();
+//   autoUpdater.on('update-available', () => { /* notify renderer */ });
+//   autoUpdater.on('update-downloaded', () => { autoUpdater.quitAndInstall(); });
+// }

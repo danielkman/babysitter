@@ -1,13 +1,19 @@
 import { Routes, Route } from 'react-router-dom';
-
-function HomePage() {
-  return <div style={{ padding: '2rem' }}><h1>Tula</h1><p>Agent control and monitoring</p></div>;
-}
+import { AppShell } from './layout/AppShell.js';
+import { HomePage } from './pages/HomePage.js';
+import { SessionsPage } from './pages/SessionsPage.js';
+import { AgentsPage } from './pages/AgentsPage.js';
+import { KanbanPage } from './pages/KanbanPage.js';
 
 export function App() {
   return (
     <Routes>
-      <Route path="/" element={<HomePage />} />
+      <Route element={<AppShell />}>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/sessions" element={<SessionsPage />} />
+        <Route path="/agents" element={<AgentsPage />} />
+        <Route path="/kanban" element={<KanbanPage />} />
+      </Route>
     </Routes>
   );
 }
