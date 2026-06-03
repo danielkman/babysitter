@@ -398,7 +398,7 @@ jobs:
         uses: a5c-ai/generate-token-action@main
 
       - name: Run selected live stack E2E
-        timeout-minutes: 75
+        timeout-minutes: 90
         env:
           LIVE_STACK_SCENARIO_ID: ${{ matrix.scenario.id }}
           LIVE_STACK_AGENT_PATH: ${{ matrix.scenario.agent_path }}
