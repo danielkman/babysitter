@@ -76,7 +76,7 @@ graph TB
     subgraph "Entry Points"
         AMUX["amux CLI<br/>(agent-mux)"]
         TRIGGERS["Triggers<br/>(GitHub Action)"]
-        KRATE["Kradle<br/>(Kubernetes operator + web UI)"]
+        KRADLE["Kradle<br/>(Kubernetes operator + web UI)"]
     end
 
     subgraph "Orchestration"
@@ -105,7 +105,7 @@ graph TB
     DEV --> AMUX
     CI --> TRIGGERS
     TRIGGERS --> AMUX
-    KRATE --> AMUX
+    KRADLE --> AMUX
 
     AMUX --> CATALOG
     AMUX --> PROXY

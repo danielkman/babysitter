@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import { createAuthProviderConfig, listEnabledAuthProviders, parseSessionCookie, fetchControllerUiModel, createKrateApiController, orgNamespaceName, resourceToYaml } from '@a5c-ai/krate-sdk';
-import { KrateControllerRecovery } from '../components/shell/krate-loading.jsx';
+import { KrateControllerRecovery } from '../components/shell/kradle-loading.jsx';
 
 const ORG_HYDRATED_RESOURCE_KINDS = ['Repository', 'RunnerPool', 'Pipeline', 'Job', 'KrateProject', 'Issue', 'AgentPersona', 'AgentSoul', 'AgentAppearance', 'AgentVoiceProfile', 'AgentDefinition', 'AgentSkill', 'AgentStack'];
 

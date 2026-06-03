@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic';
 
-import { loadKrateUi, DegradedBanner } from '../../../lib/krate-ui.jsx';
+import { loadKrateUi, DegradedBanner } from '../../../lib/kradle-ui.jsx';
 import { PageFrame } from '../../../lib/page-frame.jsx';
 import { CURATED_MODELS, MODEL_CATEGORIES } from '../../../lib/model-catalog-data.js';
 

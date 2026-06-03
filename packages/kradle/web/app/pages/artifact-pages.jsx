@@ -1,5 +1,5 @@
 // Routes: /orgs/[org]/artifacts — artifact registries and feed management.
-import { loadKrateUi, DegradedBanner } from '../lib/krate-ui.jsx';
+import { loadKrateUi, DegradedBanner } from '../lib/kradle-ui.jsx';
 import { PageFrame } from '../lib/page-frame.jsx';
 import { ArtifactRegistryManager } from '../components/artifact-registry.jsx';
 

@@ -1,5 +1,5 @@
 // Routes: /orgs/[org]/agents/settings — gateway, adapter, provider, and RBAC configuration.
-import { loadKrateUi, orgHref, StatusPill, DegradedBanner } from '../lib/krate-ui.jsx';
+import { loadKrateUi, orgHref, StatusPill, DegradedBanner } from '../lib/kradle-ui.jsx';
 import { PageFrame } from '../lib/page-frame.jsx';
 import { AgentSettingsForm } from '../components/agent/agent-settings-form.jsx';
 

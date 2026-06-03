@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic';
 
-import { loadKrateUi, orgHref, StatusPill, DegradedBanner } from '../../../lib/krate-ui.jsx';
+import { loadKrateUi, orgHref, StatusPill, DegradedBanner } from '../../../lib/kradle-ui.jsx';
 import { PageFrame } from '../../../lib/page-frame.jsx';
 
 export const metadata = { title: 'For Agents | Krate' };

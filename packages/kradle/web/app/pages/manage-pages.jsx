@@ -1,6 +1,6 @@
 // Routes: /orgs/[org]/people, /access/*, /hooks-events, /runners-ci, /settings/*, /profile — org management.
 import { createAuthProviderConfig, listEnabledAuthProviders } from '@a5c-ai/krate-sdk';
-import { loadKrateUi, orgHref, publicResource, StatusPill, DegradedBanner, EmptyState } from '../lib/krate-ui.jsx';
+import { loadKrateUi, orgHref, publicResource, StatusPill, DegradedBanner, EmptyState } from '../lib/kradle-ui.jsx';
 import { PageFrame } from '../lib/page-frame.jsx';
 import { SectionPage } from './repo-pages.jsx';
 import { SecretManager } from '../components/settings/secret-manager.jsx';

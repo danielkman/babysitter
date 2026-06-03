@@ -46,7 +46,7 @@ test('repository code browser uses CodeMirror syntax highlighting', () => {
 });
 test('degraded Kradle UI renders recovery loader only for controller fetch failures', () => {
   const ui = readWebFile('app', 'lib', 'kradle-ui.jsx');
-  const loader = readWebFile('app', 'components', 'shell', 'kradle-loading.jsx');
+  const loader = readWebFile('app', 'components', 'shell', 'krate-loading.jsx');
   const controllerRoute = readWebFile('app', 'api', 'controller', 'route.js');
   assert.match(ui, /shouldShowControllerRecovery/);
   assert.doesNotMatch(ui, /localFallback: false/);
@@ -90,7 +90,7 @@ test('degraded Kradle UI renders recovery loader only for controller fetch failu
 test('recovery overlay progresses without covering normal route navigation', () => {
   const loading = readWebFile('app', 'loading.jsx');
   const css = readWebFile('app', 'globals.css');
-  const loader = readWebFile('app', 'components', 'shell', 'kradle-loading.jsx');
+  const loader = readWebFile('app', 'components', 'shell', 'krate-loading.jsx');
   assert.match(loading, /kradleSpinner/);
   assert.match(loading, /kradleLoadingLabel/);
   assert.doesNotMatch(loading, /KradleDelayedRouteLoading/);

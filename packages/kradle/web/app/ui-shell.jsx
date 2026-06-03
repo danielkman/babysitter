@@ -1,5 +1,5 @@
 // ui-shell.jsx — thin barrel re-exporting everything for backward compatibility.
-export * from './lib/krate-ui.jsx';
+export * from './lib/kradle-ui.jsx';
 export * from './lib/page-frame.jsx';
 export * from './pages/agent-pages.jsx';
 export * from './pages/repo-pages.jsx';

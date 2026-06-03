@@ -1,4 +1,4 @@
-import { loadKrateUi, DegradedBanner } from '../lib/krate-ui.jsx';
+import { loadKrateUi, DegradedBanner } from '../lib/kradle-ui.jsx';
 import { PageFrame } from '../lib/page-frame.jsx';
 import { JitsiCreateMeetingForm, JitsiMeetingExperience, JitsiMeetingManager, JitsiProviderConfig, JitsiRecordingList, JitsiTemplateForm } from '../components/index.js';
 

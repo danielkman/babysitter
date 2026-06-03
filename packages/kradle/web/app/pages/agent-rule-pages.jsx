@@ -1,5 +1,5 @@
 // Routes: /orgs/[org]/agents/rules, /agents/rules/[name], /agents/rules/new — trigger rule management.
-import { loadKrateUi, orgHref, StatusPill, DegradedBanner, EmptyState } from '../lib/krate-ui.jsx';
+import { loadKrateUi, orgHref, StatusPill, DegradedBanner, EmptyState } from '../lib/kradle-ui.jsx';
 import { PageFrame } from '../lib/page-frame.jsx';
 import { TriggerRuleForm } from '../components/agent/trigger-rule-form.jsx';
 import { TriggerRuleEditForm } from '../components/agent/trigger-rule-edit-form.jsx';

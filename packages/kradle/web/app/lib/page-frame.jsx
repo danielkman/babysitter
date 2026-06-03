@@ -1,4 +1,4 @@
-import { orgHref, orgNavigationGroups, getSignedInUser } from './krate-ui.jsx';
+import { orgHref, orgNavigationGroups, getSignedInUser } from './kradle-ui.jsx';
 import { GlobalSearch } from '../components/shell/global-search.jsx';
 import { NotificationBell } from '../components/shell/notification-bell.jsx';
 import { CommandPaletteWrapper } from '../components/shell/command-palette.jsx';

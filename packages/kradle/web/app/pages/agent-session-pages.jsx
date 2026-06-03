@@ -1,5 +1,5 @@
 // Routes: /orgs/[org]/agents/sessions, /agents/sessions/[name] — agent session list and live detail.
-import { loadKrateUi, orgHref, StatusPill, DegradedBanner, EmptyState } from '../lib/krate-ui.jsx';
+import { loadKrateUi, orgHref, StatusPill, DegradedBanner, EmptyState } from '../lib/kradle-ui.jsx';
 import { PageFrame } from '../lib/page-frame.jsx';
 import { LiveUpdates } from '../components/agent/live-updates.jsx';
 import { ApprovalModeToggle } from '../components/agent/approval-mode-toggle.jsx';

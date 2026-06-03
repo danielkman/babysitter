@@ -1,5 +1,5 @@
 // Routes: /orgs/[org]/agents/approvals — pending and resolved agent approval views.
-import { loadKrateUi, orgHref, StatusPill, DegradedBanner, EmptyState } from '../lib/krate-ui.jsx';
+import { loadKrateUi, orgHref, StatusPill, DegradedBanner, EmptyState } from '../lib/kradle-ui.jsx';
 import { PageFrame } from '../lib/page-frame.jsx';
 import { ApprovalDecisionButtons } from '../components/agent/approval-actions.jsx';
 import { LiveUpdates } from '../components/agent/live-updates.jsx';

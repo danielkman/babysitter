@@ -1,5 +1,5 @@
 // Routes: /orgs/[org]/agents/directory and profile/create child pages.
-import { loadKrateUi, orgHref, DegradedBanner, EmptyState } from '../lib/krate-ui.jsx';
+import { loadKrateUi, orgHref, DegradedBanner, EmptyState } from '../lib/kradle-ui.jsx';
 import { PageFrame } from '../lib/page-frame.jsx';
 import { buildAgentIdentityProfiles, resourceItems } from '../lib/agent-identity.js';
 import { AgentCreateWizard } from '../components/agent/agent-create-wizard.jsx';

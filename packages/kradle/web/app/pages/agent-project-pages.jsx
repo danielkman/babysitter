@@ -1,5 +1,5 @@
 // Routes: /orgs/[org]/agents/projects, /agents/projects/[name] — agent project boards and issue triage.
-import { loadKrateUi, orgHref, StatusPill, DegradedBanner, EmptyState } from '../lib/krate-ui.jsx';
+import { loadKrateUi, orgHref, StatusPill, DegradedBanner, EmptyState } from '../lib/kradle-ui.jsx';
 import { PageFrame } from '../lib/page-frame.jsx';
 import { EnhancedKanbanBoard } from '../components/kanban/kanban-enhanced.jsx';
 import { ProjectEditForm } from '../components/agent/project-edit-form.jsx';

@@ -133,7 +133,7 @@ export function DeploymentPipeline({ org = 'default', repository = null, kubeVel
             organizationRef: org,
             repository: repository || 'app',
             ref: 'main',
-            actor: 'krate-ui',
+            actor: 'kradle-ui',
             steps: STAGES.map((s) => s.toLowerCase()),
             environment: env
           }
@@ -186,7 +186,7 @@ export function DeploymentPipeline({ org = 'default', repository = null, kubeVel
             organizationRef: org,
             repository: repository || 'app',
             ref: 'main',
-            actor: 'krate-ui',
+            actor: 'kradle-ui',
             steps: ['deploy'],
             environment: env,
             parentPipeline: pipelineId || null,
@@ -228,7 +228,7 @@ export function DeploymentPipeline({ org = 'default', repository = null, kubeVel
             organizationRef: org,
             repository: repository || 'app',
             ref: 'main',
-            actor: 'krate-ui',
+            actor: 'kradle-ui',
             steps: ['rollback'],
             environment: env
           }
