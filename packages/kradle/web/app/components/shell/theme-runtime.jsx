@@ -14,7 +14,7 @@ export function readStoredTheme(fallback = 'light') {
   }
 }
 
-export function resolveKrateTheme(theme) {
+export function resolveKradleTheme(theme) {
   if (typeof window !== 'undefined' && theme === 'system') {
     return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   }
@@ -23,7 +23,7 @@ export function resolveKrateTheme(theme) {
 
 export function applyTheme(theme = readStoredTheme()) {
   if (typeof document === 'undefined') return;
-  const resolvedTheme = resolveKrateTheme(theme);
+  const resolvedTheme = resolveKradleTheme(theme);
   document.documentElement.setAttribute('data-theme', resolvedTheme);
   document.documentElement.style.colorScheme = resolvedTheme;
 }

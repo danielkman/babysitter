@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import { createAuthProviderConfig, listEnabledAuthProviders, parseSessionCookie, fetchControllerUiModel, createKradleApiController, orgNamespaceName, resourceToYaml } from '@a5c-ai/kradle-sdk';
-import { KrateControllerRecovery } from '../components/shell/kradle-loading.jsx';
+import { KradleControllerRecovery } from '../components/shell/kradle-loading.jsx';
 
 const ORG_HYDRATED_RESOURCE_KINDS = ['Repository', 'RunnerPool', 'Pipeline', 'Job', 'KrateProject', 'Issue', 'AgentPersona', 'AgentSoul', 'AgentAppearance', 'AgentVoiceProfile', 'AgentDefinition', 'AgentSkill', 'AgentStack'];
 
@@ -313,7 +313,7 @@ export function shouldShowControllerRecovery(model) {
 
 export function DegradedBanner({ model }) {
   if (!shouldShowControllerRecovery(model)) return null;
-  return <KrateControllerRecovery org={model.org?.slug || 'default'} />;
+  return <KradleControllerRecovery org={model.org?.slug || 'default'} />;
 }
 
 export function InfoList({ title, items }) {

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 
-export const KRATE_LOADING_MESSAGES = [
+export const KRADLE_LOADING_MESSAGES = [
   'Connecting to the Krate workspace',
   'Checking controller health',
   'Refreshing organization resources',
@@ -31,11 +31,11 @@ function useKrateLoadingProgress() {
   }, []);
 
   const shownProgress = Math.round(progress);
-  const phase = KRATE_LOADING_MESSAGES[tick % KRATE_LOADING_MESSAGES.length];
+  const phase = KRADLE_LOADING_MESSAGES[tick % KRADLE_LOADING_MESSAGES.length];
   return { dots, phase, shownProgress };
 }
 
-export function KrateLoadingView({
+export function KradleLoadingView({
   title = 'Loading Krate workspace',
   subtitle = 'Fetching the latest workspace state.',
   detail = 'This page updates automatically while Krate reconnects.',
@@ -79,7 +79,7 @@ function refreshCurrentRoute(router, refreshKey, cooldownMs) {
   }
 }
 
-export function KrateControllerRecovery({ org = 'default', pollMs = 2500 }) {
+export function KradleControllerRecovery({ org = 'default', pollMs = 2500 }) {
   const router = useRouter();
   const pathname = usePathname();
   const [detail, setDetail] = useState('Polling the controller until the workspace responds.');
@@ -129,7 +129,7 @@ export function KrateControllerRecovery({ org = 'default', pollMs = 2500 }) {
 
   return (
     <div className="krateRecoveryOverlay">
-      <KrateLoadingView
+      <KradleLoadingView
         title="Reconnecting Krate workspace"
         subtitle=""
         detail={detail}
