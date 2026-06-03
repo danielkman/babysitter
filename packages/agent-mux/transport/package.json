@@ -76,8 +76,8 @@
     "lint": "eslint \"src/**/*.ts\" --max-warnings=0",
     "scorecard:migration": "node ./scripts/migration-scorecard.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test:unit": "vitest run --root ../.. --config vitest.config.ts packages/agent-mux/transport/tests",
-    "test:e2e": "vitest run --root ../.. --config vitest.config.ts packages/agent-mux/transport/tests/e2e",
+    "test:unit": "vitest run --root ../../.. --config vitest.config.ts packages/agent-mux/transport/tests",
+    "test:e2e": "vitest run --root ../../.. --config vitest.config.ts packages/agent-mux/transport/tests/e2e",
     "test": "npm run test:unit && npm run test:e2e"
   },
   "dependencies": {

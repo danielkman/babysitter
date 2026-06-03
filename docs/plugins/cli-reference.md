@@ -106,14 +106,14 @@ babysitter blueprints:update-marketplace --marketplace-name babysitter-marketpla
 
 ---
 
-## blueprints:list-plugins
+## blueprints:list
 
 Lists all blueprints available in a marketplace manifest.
 
 ### Usage
 
 ```
-babysitter blueprints:list-plugins --marketplace-name <name> --global|--project [--json] [--verbose]
+babysitter blueprints:list --marketplace-name <name> --global|--project [--json] [--verbose]
 ```
 
 ### Required Flags
@@ -126,7 +126,7 @@ babysitter blueprints:list-plugins --marketplace-name <name> --global|--project 
 ### Example
 
 ```bash
-babysitter blueprints:list-plugins --marketplace-name babysitter-marketplace --global --json
+babysitter blueprints:list --marketplace-name babysitter-marketplace --global --json
 ```
 
 ### JSON Output

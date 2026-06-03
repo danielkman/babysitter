@@ -235,7 +235,7 @@ jobs:
       - name: tula-core tests
         run: |
           set -euo pipefail
-          npm run test --workspace=@a5c-ai/tula-core 2>&1 | tee artifacts/core-lo../core-tests.log
+          npm run test --workspace=@a5c-ai/tula-core 2>&1 | tee artifacts/core-logs/core-tests.log
 
       - name: babysitter-harness tests
         run: |

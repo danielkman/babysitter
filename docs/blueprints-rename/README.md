@@ -24,7 +24,6 @@ plugins/a5c/babysitter/ → blueprints/a5c/babysitter/
 | `babysitter blueprints:install` | `babysitter blueprints:install` |
 | `babysitter blueprints:update` | `babysitter blueprints:update` |
 | `babysitter blueprints:uninstall` | `babysitter blueprints:uninstall` |
-| `babysitter blueprints:create` | `babysitter blueprints:create` |
 | `babysitter blueprints:marketplace` | `babysitter blueprints:marketplace` |
 
 ### SDK Source
