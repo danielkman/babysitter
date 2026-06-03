@@ -76,7 +76,7 @@ inputs:
     description: Alias for harness (backward compatibility).
     required: false
   plugins:
-    description: Newline-delimited plugin specs installed after harness setup. Each line is passed to agent-mux plugin install <adapter> <plugin>.
+    description: Newline-delimited plugin specs installed after harness setup. Each line is passed to amux plugin install <adapter> <plugin>.
     required: false
 
   # ── Trigger evaluation ───────────────────────────────────────────────
@@ -169,9 +169,9 @@ runs:
       run: |
         set -euo pipefail
         echo "Installing @a5c-ai packages with tag: $NPM_TAG"
-        npm install -g --legacy-peer-deps @a5c-ai/agent-mux@$NPM_TAG @a5c-ai/babysitter-sdk@$NPM_TAG @a5c-ai/agent-mux-triggers@$NPM_TAG
-        npm install -g --legacy-peer-deps @a5c-ai/agent-mux-hooks-cli@$NPM_TAG 2>/dev/null || echo "agent-mux-hooks-cli install skipped (optional)"
-        which agent-mux && agent-mux --version || { echo "ERROR: agent-mux not found after install"; exit 1; }
+        npm install -g --legacy-peer-deps @a5c-ai/agent-mux-cli@$NPM_TAG @a5c-ai/babysitter-sdk@$NPM_TAG @a5c-ai/triggers@$NPM_TAG
+        npm install -g --legacy-peer-deps @a5c-ai/hooks-mux-cli@$NPM_TAG 2>/dev/null || echo "hooks-mux-cli install skipped (optional)"
+        which amux && amux --version || { echo "ERROR: amux not found after install"; exit 1; }
 
     - name: Install harness
       if: ${{ inputs.harness != '' || inputs.adapter != '' }}
@@ -190,7 +190,7 @@ runs:
           copilot-cli) AGENT_MUX_AGENT="copilot" ;;
           cursor-cli) AGENT_MUX_AGENT="cursor" ;;
         esac
-        agent-mux install "$AGENT_MUX_AGENT" || true
+        amux install "$AGENT_MUX_AGENT" || true
 
     - name: Install babysitter plugin
       if: ${{ inputs.babysitter-plugin == 'true' }}
@@ -245,7 +245,7 @@ runs:
         set -euo pipefail
         while IFS= read -r plugin; do
           [ -z "$plugin" ] && continue
-          agent-mux plugin install "$INPUT_ADAPTER" "$plugin"
+          amux plugin install "$INPUT_ADAPTER" "$plugin"
         done <<< "$INPUT_PLUGINS"
 
     - name: Evaluate trigger
@@ -265,14 +265,14 @@ runs:
         if [ "$INPUT_INCLUDE_DIFF" = "true" ]; then
           INCLUDE_DIFF_ARGS+=(--include-diff)
         fi
-        agent-mux-triggers enrich \
+        amux-triggers enrich \
           --backend "$INPUT_TRIGGER_BACKEND" \
           --token "$EFFECTIVE_GITHUB_TOKEN" \
           "${INCLUDE_DIFF_ARGS[@]}" \
           --output "$EVENT_FILE"
         if [ -z "$INPUT_TRIGGER_QUERY" ]; then
           echo '{"matched":true,"reasons":["no trigger query configured"]}' > "$RESULT_FILE"
-        elif agent-mux-triggers evaluate \
+        elif amux-triggers evaluate \
           --backend "$INPUT_TRIGGER_BACKEND" \
           --query "$INPUT_TRIGGER_QUERY" \
           --token "$EFFECTIVE_GITHUB_TOKEN" \
@@ -324,7 +324,7 @@ runs:
         AGENT_MUX_TRIGGER_EVENT_PATH: ${{ steps.trigger.outputs.event }}
       run: |
         set -euo pipefail
-        AMUX="agent-mux"
+        AMUX="amux"
 
         # Map harness names to agent-mux aliases
         AGENT_MUX_HARNESS="$INPUT_HARNESS"
