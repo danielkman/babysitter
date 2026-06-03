@@ -9,7 +9,7 @@ attributes:
   description: |
     Default launch recipe for the a5c agent (the babysitter monorepo). Spawns
     the `a5c` / `babysitter` CLI with no extra argv and no environment overrides.
-    a5c does not bind a single model — model selection flows through agent-mux
+    a5c does not bind a single model — model selection flows through adapters
     to the harness chosen at run-create time (e.g. `--harness claude-code`).
     The orchestrator stamps an AGENT_SESSION_ID into the harness env file so
     the bridged session is PID-scoped to the orchestrator's run.

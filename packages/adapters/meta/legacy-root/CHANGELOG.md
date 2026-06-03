@@ -12,7 +12,7 @@ All notable changes to `@a5c-ai/adapters` are recorded here. Dates are ISO-8601.
 - **`install()` / `update()` / `detectInstallation()`** optional methods on `AgentAdapter`, with `AdapterInstallOptions`, `AdapterUpdateOptions`, `InstallResult`, `DetectInstallationResult`, and a pluggable `Spawner`.
 - **CLI commands**: `adapters install`, `adapters update`, `adapters detect`, `adapters detect-host`, `adapters remote install|update`. `adapters remote` drives a four-step bootstrap (probe -> adapters install -> harness install -> verify) through any invocation mode.
 - **Host detection** — `AgentMuxClient.detectHost()` and `detectHostHarness()` aggregate per-adapter `hostEnvSignals` with default env-var catalog to report when the current process is running under a known harness.
-- **`agent-mux-remote` adapter** — a transport-agnostic adapter that emits plain `adapters run ...` spawn args to be wrapped with any `InvocationMode`, enabling nested adapters execution over docker/ssh/k8s.
+- **`adapters-remote` adapter** — a transport-agnostic adapter that emits plain `adapters run ...` spawn args to be wrapped with any `InvocationMode`, enabling nested adapters execution over docker/ssh/k8s.
 - **Session manager I/O** — full-text `search()`, `export(format = 'json' | 'jsonl' | 'markdown')`, and structural `diff()`. Each adapter owns its session directory (see README table). The placeholder `watch()` API was removed instead of shipping synthetic deltas.
 - **`@a5c-ai/adapters-harness-mock`** package — `MockProcess`, `WorkspaceSandbox`, pre-built `HarnessScenario` library, and a `probe` utility for capturing behavior profiles from real harnesses. See [docs/14-harness-mock.md](docs/14-harness-mock.md).
 - **Dockerfile** at repo root using `adapters install` with an overridable `HARNESSES` build-arg.
@@ -25,7 +25,7 @@ All notable changes to `@a5c-ai/adapters` are recorded here. Dates are ISO-8601.
 - Spec 11 (`11-process-lifecycle-and-platform.md`) updated: single-process `node:child_process.spawn`, Unix `detached: true` + `process.kill(-pid, sig)` for group kills, Windows relying on native process tree + `taskkill /T` fallback.
 - Spec 10 (CLI reference) updated with `install`, `update`, `detect`, `detect-host`, and the `remote install|update` subcommand.
 - Spec 5 (adapter system) updated with install/update/detect surface and `hostEnvSignals`.
-- Spec 12 (built-in adapters) updated with the 11th adapter (`agent-mux-remote`) and per-adapter session directories.
+- Spec 12 (built-in adapters) updated with the 11th adapter (`adapters-remote`) and per-adapter session directories.
 - Spec 7 (session manager) updated to describe the read-only session surface: list/get/search/export/diff plus explicit omission of live watch semantics.
 - Spec 8 (config & auth) updated: hermes config is YAML; session files are written atomically via tmp + rename in `adapters/session-fs.ts`.
 

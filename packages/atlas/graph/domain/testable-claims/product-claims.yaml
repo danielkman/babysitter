@@ -680,21 +680,21 @@ edges:
     - agent:claude-sh
 ---
 nodeKind: TestableClaim
-id: claim:agent-mux-bridges-transport
+id: claim:adapters-bridges-transport
 attributes:
   displayName: "Agent-mux bridges to remote agents via transport"
   description: |
-    Agent-mux (agent:agent-mux) has used_by edges from multiple
+    Agent-mux (agent:adapters) has used_by edges from multiple
     transport protocols (anthropic, openai-chat, openai-responses),
     confirming its multi-transport bridging capability.
   testStatus: passing
   testType: unit
-  testCommand: "node -e \"const i=JSON.parse(require('fs').readFileSync('packages/atlas/src/index.json','utf8'));const edges=i.edges.filter(e=>e.to==='agent:agent-mux'&&e.kind==='used_by');process.exit(edges.length>=2?0:1)\""
+  testCommand: "node -e \"const i=JSON.parse(require('fs').readFileSync('packages/atlas/src/index.json','utf8'));const edges=i.edges.filter(e=>e.to==='agent:adapters'&&e.kind==='used_by');process.exit(edges.length>=2?0:1)\""
   category: graph-integrity
   priority: medium
 edges:
   asserts_about:
-    - agent:agent-mux
+    - agent:adapters
 ---
 nodeKind: TestableClaim
 id: claim:a5c-has-core-platform-runtime
@@ -782,17 +782,17 @@ edges:
     - agent:pi
 ---
 nodeKind: TestableClaim
-id: claim:agent-mux-remote-has-source-ref
+id: claim:adapters-remote-has-source-ref
 attributes:
   displayName: "Agent-mux-remote has source reference"
   description: |
-    Agent-mux-remote (agent:agent-mux-remote) has a source_of edge
+    Agent-mux-remote (agent:adapters-remote) has a source_of edge
     pointing to it, confirming proper source provenance tracking.
   testStatus: passing
   testType: unit
-  testCommand: "node -e \"const i=JSON.parse(require('fs').readFileSync('packages/atlas/src/index.json','utf8'));process.exit(i.edges.some(e=>e.to==='agent:agent-mux-remote'&&e.kind==='source_of')?0:1)\""
+  testCommand: "node -e \"const i=JSON.parse(require('fs').readFileSync('packages/atlas/src/index.json','utf8'));process.exit(i.edges.some(e=>e.to==='agent:adapters-remote'&&e.kind==='source_of')?0:1)\""
   category: graph-integrity
   priority: low
 edges:
   asserts_about:
-    - agent:agent-mux-remote
+    - agent:adapters-remote

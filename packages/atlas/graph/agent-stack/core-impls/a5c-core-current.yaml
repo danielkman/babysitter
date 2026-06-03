@@ -9,7 +9,7 @@ attributes:
     a5c's core is modeled as a native compatibility layer for agent loops, not
     as a wrapper built on top of Pi or any single backend. It can present the
     Pi-compatible serialized tool-use loop while also normalizing Claude Code,
-    Codex, Gemini, OpenCode, LangGraph/custom graph, and agent-mux style loop
+    Codex, Gemini, OpenCode, LangGraph/custom graph, and adapters style loop
     semantics behind the same AgentCoreImpl contract.
   contextManagementStrategy: platform-managed
   compactionTriggerNotes: |

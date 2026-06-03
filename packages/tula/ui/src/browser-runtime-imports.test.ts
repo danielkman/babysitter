@@ -11,7 +11,7 @@ const runtimeImportFiles = [
   'components/HookApprovalPrompt.tsx',
 ];
 
-describe('agent-mux-ui browser runtime imports', () => {
+describe('adapters-ui browser runtime imports', () => {
   it('loads classifyTool from the browser-safe core entry', () => {
     for (const relativePath of runtimeImportFiles) {
       const source = fs.readFileSync(path.join(srcRoot, relativePath), 'utf8');

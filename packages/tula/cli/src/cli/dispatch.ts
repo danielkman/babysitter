@@ -257,7 +257,7 @@ async function handleHarnessInvoke(parsed: HarnessParsedArgs): Promise<number> {
     timeout: parsed.timeout ? Number(parsed.timeout) : undefined,
   });
 
-  // adapters-events output format: JSONL compatible with agent-mux event stream
+  // adapters-events output format: JSONL compatible with adapters event stream
   if (parsed.outputFormat === "adapters-events") {
     const lines = formatResultAsAmuxEvents(normalizedHarnessName, result);
     for (const line of lines) {

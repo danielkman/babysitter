@@ -162,7 +162,7 @@ The v6.1-graph-alignment.mjs process should be extended with:
 
 | New Phase | Capabilities | Depends On |
 |-----------|-------------|------------|
-| Phase 6: Core loop upgrade | Multi-strategy loop, subagent orchestration, context management | Phase 1.3 (agent-mux decomposition) |
+| Phase 6: Core loop upgrade | Multi-strategy loop, subagent orchestration, context management | Phase 1.3 (adapters decomposition) |
 | Phase 7: Runtime hardening | Token budgets, cost tracking, health monitoring, graceful shutdown | Phase 3.1 (lifecycle), Phase 2.1 (tool-mux) |
 | Phase 8: Platform maturation | Skill routing, process recommendation, plugin sandboxing | Phase 1.1 (extension-mux), Phase 1.2 (tasks-mux) |
 | Phase 9: Execution modes | Docker, SSH, K8s execution | Phase 3.1 (9-state lifecycle) |

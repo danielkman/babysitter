@@ -87,7 +87,7 @@ async function initializeWorkspaceRepo() {
 
   await fs.writeFile(
     path.join(workspacePath, "README.md"),
-    "# agent-mux webui e2e fixture\n\nThis workspace is used by the Playwright browser suite.\n",
+    "# adapters webui e2e fixture\n\nThis workspace is used by the Playwright browser suite.\n",
     "utf8",
   );
   await fs.writeFile(
@@ -105,7 +105,7 @@ async function initializeWorkspaceRepo() {
   await execGit(["config", "user.email", "e2e@example.com"], workspacePath);
   await execGit(["config", "user.name", "Agent Mux E2E"], workspacePath);
   await execGit(["add", "."], workspacePath);
-  await execGit(["commit", "-m", "Seed agent-mux webui e2e fixture"], workspacePath);
+  await execGit(["commit", "-m", "Seed adapters webui e2e fixture"], workspacePath);
   await execGit(["checkout", "-b", "vk/kanban-gap-007"], workspacePath);
 
   await fs.mkdir(path.dirname(workspaceRegistryPath), { recursive: true });
@@ -562,7 +562,7 @@ async function main() {
     void shutdown("SIGTERM");
   });
 
-  console.log(`agent-mux webui e2e gateway ready at ${baseUrl}`);
+  console.log(`adapters webui e2e gateway ready at ${baseUrl}`);
   setInterval(() => {}, 60_000).unref();
 }
 

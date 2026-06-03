@@ -43,7 +43,7 @@ Comprehensive inventory of missing capabilities, stub implementations, and archi
 | No caching anywhere | Tool results, web fetches, schema fetches — nothing cached |
 | Hardcoded limits | 50MB output, 120s bash, 30s search — not configurable |
 | 7 test files for 59 sources | Agentic tools, error paths, loop strategies untested |
-| Endpoint resolution duplicates agent-mux | Provider handling reimplemented instead of shared |
+| Endpoint resolution duplicates adapters | Provider handling reimplemented instead of shared |
 
 ---
 
@@ -210,7 +210,7 @@ hooks-mux PreToolUse/PostToolUse → tool-mux ToolHookBridge (permission/audit)
 
 ## transport-mux (Protocol Translation) — PARTIALLY INTEGRATED
 
-transport-mux provides protocol translation (Anthropic↔OpenAI↔Google↔Bedrock↔Azure↔Vertex), codec system, completion engines with streaming, and an HTTP proxy runtime. Used by agent-mux launcher but disconnected from the rest of the agent stack.
+transport-mux provides protocol translation (Anthropic↔OpenAI↔Google↔Bedrock↔Azure↔Vertex), codec system, completion engines with streaming, and an HTTP proxy runtime. Used by adapters launcher but disconnected from the rest of the agent stack.
 
 ### Gaps
 
@@ -225,7 +225,7 @@ transport-mux provides protocol translation (Anthropic↔OpenAI↔Google↔Bedro
 ### Where it should plug in
 
 ```
-agent-mux launcher → transport-mux proxy (DONE — this works)
+adapters launcher → transport-mux proxy (DONE — this works)
 transport-mux cost records → SDK journal appendEvent (MISSING — cost feedback loop)
 transport-mux request traces → L5 telemetry spans (MISSING — distributed tracing)
 transport-mux tool normalization → tool-mux schema translation (MISSING — should share)
@@ -243,8 +243,8 @@ SDK provides the effect journal, replay engine, task system (defineTask/ctx.task
 |-----|-------------|
 | SDK MCP server orphaned | `createBabysitterMcpServer()` exposes task/run/session tools but never registered in tool-mux McpBridge or L6 MCP client. |
 | SDK tasks ≠ tasks-mux | SDK has `defineTask()` / `ctx.task()`. tasks-mux has `BreakpointBackend`. Two separate task systems that don't know about each other. |
-| No subagent effect type | Journal tracks effects but has no entry type for cross-agent dispatch. agent-mux launches happen outside the journal. |
-| Effect execution scattered | SDK journals effects but actual execution is hardcoded per-type across agent-platform (file, code, web) and agent-mux (harness launch). No unified effect executor. |
+| No subagent effect type | Journal tracks effects but has no entry type for cross-agent dispatch. adapters launches happen outside the journal. |
+| Effect execution scattered | SDK journals effects but actual execution is hardcoded per-type across agent-platform (file, code, web) and adapters (harness launch). No unified effect executor. |
 | No tool metadata in tasks | SDK tasks have descriptions but no JSON Schema parameters. agent-core's tool_fetch needs schemas for discovery. |
 | Hooks disconnected | SDK has hooks/runtime.ts but no connection to hooks-mux lifecycle events. |
 | Plugin registry parallel | SDK has plugin registry, agent-platform has separate plugin system. |
@@ -254,7 +254,7 @@ SDK provides the effect journal, replay engine, task system (defineTask/ctx.task
 ```
 SDK MCP server → tool-mux McpBridge → agent-core tool discovery (MISSING)
 SDK defineTask → tasks-mux BreakpointBackend (MISSING — for human-in-the-loop tasks)
-SDK effect journal → subagent effect type → agent-mux adapter dispatch (MISSING)
+SDK effect journal → subagent effect type → adapters adapter dispatch (MISSING)
 SDK hooks → hooks-mux lifecycle events (MISSING)
 SDK effect execution → unified executor → tool-mux dispatch (MISSING)
 ```
@@ -263,7 +263,7 @@ SDK effect execution → unified executor → tool-mux dispatch (MISSING)
 
 ## Tula → Agent-Mux Cross-Agent Dispatch (NOT IMPLEMENTED)
 
-Tula should be able to dispatch subtasks to external agents supported by agent-mux (claude-code, codex, gemini-cli, copilot, etc.) through the runtime. This enables an tula orchestration to delegate specialist work to the best available agent.
+Tula should be able to dispatch subtasks to external agents supported by adapters (claude-code, codex, gemini-cli, copilot, etc.) through the runtime. This enables an tula orchestration to delegate specialist work to the best available agent.
 
 ### Missing Architecture
 
@@ -274,8 +274,8 @@ Current:
 Needed:
   tula → agent-platform effect dispatch
     → SDK "subagent" effect type (journaled)
-    → tasks-mux routes to responder (agent-mux adapter)
-    → agent-mux adapter launches target agent (claude-code, codex, etc.)
+    → tasks-mux routes to responder (adapters adapter)
+    → adapters adapter launches target agent (claude-code, codex, etc.)
     → result posted back through tasks-mux → SDK journal
     → orchestration continues with result
 ```
@@ -285,9 +285,9 @@ Needed:
 | Gap | Description |
 |-----|-------------|
 | No subagent effect type in SDK | Need `kind: "subagent"` with `{ targetAgent, prompt, model, timeout }` |
-| No agent-mux adapter selection in tula | tula doesn't know about agent-mux's adapter registry |
-| No tasks-mux routing for subagent dispatch | tasks-mux routes to human responders, not to agent-mux adapters |
-| No result collection from external agents | agent-mux launch returns stdout/stderr but no structured task result |
+| No adapters adapter selection in tula | tula doesn't know about adapters's adapter registry |
+| No tasks-mux routing for subagent dispatch | tasks-mux routes to human responders, not to adapters adapters |
+| No result collection from external agents | adapters launch returns stdout/stderr but no structured task result |
 | No cross-agent session context | Dispatched agent doesn't see parent's context, files, or journal |
 
 ---
@@ -330,7 +330,7 @@ Only `GitHubIssuesBackend` exists. Basic mapping of breakpoints to GitHub issues
 |-----|--------|-------------|
 | ~~Background process registry duplicated~~ | ~~L4↔L5~~ | ~~Same code in 5 files across agent-core, agent-runtime, agent-platform~~ → runtime now owns the registry/state; core and platform keep shims |
 | ~~Shell invocation duplicated~~ | ~~L4↔L5↔L6~~ | ~~5 locations with different flags (now unified but still duplicated)~~ → runtime now owns the shell argv contract |
-| Endpoint resolution duplicated | L4↔agent-mux | agent-core reimplements provider handling that agent-mux owns |
+| Endpoint resolution duplicated | L4↔adapters | agent-core reimplements provider handling that adapters owns |
 | Cost tracking disconnected | L4→L5→L6 | Token usage parsed in L4, budgets in L5, enforcement supposed in L6 — none connected |
 | Session state fragmented | L5↔L6 | Runtime has session types, platform has session management — not integrated |
 | Telemetry isolated | L5 | In-memory only, never exported to L6 or external systems |
@@ -342,12 +342,12 @@ Only `GitHubIssuesBackend` exists. Basic mapping of breakpoints to GitHub issues
 | 3 separate tool registries | L4↔tool-mux↔L6 | DeferredToolRegistry (L4) + McpToolRegistry (L6) + ToolRegistry (tool-mux) — should be unified |
 | tool-mux dispatch not used | tool-mux↔L4 | ToolDispatcher exists with policy-driven routing but agent-core hardcodes tool execution |
 | tool-mux hooks stubbed | tool-mux↔hooks-mux | ToolHookBridge is NoopToolHookBridge. PreToolUse/PostToolUse never fire. |
-| No subagent effect type | SDK↔agent-mux | SDK journal has no effect type for cross-agent dispatch. agent-mux launches happen outside journal. |
+| No subagent effect type | SDK↔adapters | SDK journal has no effect type for cross-agent dispatch. adapters launches happen outside journal. |
 | SDK MCP server disconnected | SDK↔tool-mux↔L6 | SDK's `createBabysitterMcpServer()` never registered in tool-mux McpBridge or L6 MCP client |
 | SDK tasks ≠ tasks-mux | SDK↔tasks-mux | SDK has its own task system (defineTask, ctx.task). tasks-mux has BreakpointBackend. Neither knows about the other. |
 | transport-mux cost feedback missing | transport-mux↔SDK | Proxy extracts cost records but never feeds them back to SDK journal or L6 cost tracking |
 | transport-mux session-unaware | transport-mux↔L5 | Proxy is stateless. No runId/sessionId tracking for distributed observability. |
-| No cross-agent task dispatch | tasks-mux↔agent-mux | tula can't dispatch subtasks to external agents (claude-code, codex, etc.) via agent-mux adapters |
+| No cross-agent task dispatch | tasks-mux↔adapters | tula can't dispatch subtasks to external agents (claude-code, codex, etc.) via adapters adapters |
 | No external issue tracker sync | tasks-mux↔external | Only GitHub Issues backend. No Jira, Linear, or generic REST backend for pluggable subtask tracking. |
 
 ---
@@ -364,7 +364,7 @@ Only `GitHubIssuesBackend` exists. Basic mapping of breakpoints to GitHub issues
 7. Token usage tracking end-to-end (L4 → transport-mux → SDK journal → L6 cost)
 
 **P1 — Unblock platform features:**
-1. Subagent effect type in SDK journal + tula → agent-mux adapter dispatch
+1. Subagent effect type in SDK journal + tula → adapters adapter dispatch
 2. Structured output / JSON mode hardening in agent-core (full schema validator coverage and streaming coordination)
 3. Vision/multimodal input follow-through (#575 streaming responses, #588 image-bearing `ToolResult`)
 4. Wire breakpoint delegation → tasks-mux backends
@@ -375,7 +375,7 @@ Only `GitHubIssuesBackend` exists. Basic mapping of breakpoints to GitHub issues
 
 **P2 — Integration & hardening:**
 1. External issue tracker backends (Jira, Linear, generic REST) with bidirectional sync
-2. Tula cross-agent dispatch: tasks-mux routes subtasks to agent-mux adapters
+2. Tula cross-agent dispatch: tasks-mux routes subtasks to adapters adapters
 3. K8s executor implementation
 4. Crash recovery + persistent queue in daemon
 5. Process isolation/sandboxing

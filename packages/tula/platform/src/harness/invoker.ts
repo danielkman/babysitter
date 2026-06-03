@@ -1,7 +1,7 @@
 /**
  * Harness invoker module.
  *
- * External harnesses are routed through agent-mux exclusively.
+ * External harnesses are routed through adapters exclusively.
  * Pi uses direct CLI subprocess invocation. The "agent-core" programmatic
  * harness routes through agent-platform create-run orchestration so the full
  * internal tool stack is available.
@@ -23,20 +23,20 @@ import {
   trackChild,
   untrackChild,
 } from "./invoker/processControl";
-import { getAgentMuxClient } from "./agent-mux/agentMuxClientFactory";
-import { hasAmuxAdapter } from "./agent-mux/agentMuxHarnessMap";
-import { invokeViaAgentMux } from "./agent-mux/agentMuxBridge";
+import { getAgentMuxClient } from "./adapters/agentMuxClientFactory";
+import { hasAmuxAdapter } from "./adapters/agentMuxHarnessMap";
+import { invokeViaAgentMux } from "./adapters/agentMuxBridge";
 import { normalizeBuiltInHarnessName } from "./builtInHarness";
 
 // ---------------------------------------------------------------------------
-// CLI mapping — Pi only (external harnesses use agent-mux adapters)
+// CLI mapping — Pi only (external harnesses use adapters adapters)
 // ---------------------------------------------------------------------------
 
 /**
  * Mapping from harness identifier to CLI command and flag details.
  *
  * Only Pi retains a direct CLI mapping. All other (external) harnesses are
- * routed through agent-mux adapters via {@link invokeViaAgentMux}.
+ * routed through adapters adapters via {@link invokeViaAgentMux}.
  */
 export const HARNESS_CLI_MAP: Readonly<Record<string, HarnessCliSpec>> = {
   pi: { cli: "pi", workspaceFlag: "--workspace", supportsModel: true, promptStyle: "flag" },
@@ -108,12 +108,12 @@ const DEFAULT_TIMEOUT_MS = 900_000;
 /**
  * Invokes a harness CLI and returns the result.
  *
- * The function first attempts to route through agent-mux (if @agent-mux/core
- * is installed and the harness has an adapters adapter mapping). When agent-mux
+ * The function first attempts to route through adapters (if @adapters/core
+ * is installed and the harness has an adapters adapter mapping). When adapters
  * is unavailable, it falls back to direct child-process invocation.
  *
  * Pi uses direct invocation and agent-core uses create-run orchestration;
- * neither is routed through agent-mux.
+ * neither is routed through adapters.
  *
  * @throws {BabysitterRuntimeError} if the harness is unknown or the CLI is
  *   not installed.
@@ -128,11 +128,11 @@ export async function invokeHarness(
     return invokeHarnessDirect(harnessName, options);
   }
 
-  // External harnesses go through agent-mux
+  // External harnesses go through adapters
   if (!hasAmuxAdapter(harnessName)) {
     throw new BabysitterRuntimeError(
       "UnknownHarnessError",
-      `No agent-mux adapter for harness "${name}". External harnesses must have an agent-mux mapping.`,
+      `No adapters adapter for harness "${name}". External harnesses must have an adapters mapping.`,
       { category: ErrorCategory.Configuration },
     );
   }
@@ -146,7 +146,7 @@ export async function invokeHarness(
  *
  * Pi uses CLI subprocess via `child_process.execFile`. "agent-core" delegates
  * to create-run orchestration rather than a bare session. External harnesses
- * should never reach this function -- they are routed through agent-mux in
+ * should never reach this function -- they are routed through adapters in
  * {@link invokeHarness}.
  *
  * @throws {BabysitterRuntimeError} if the harness is unknown or the CLI is

@@ -323,8 +323,8 @@ const fixCrossSpecIssuesTask = defineTask('fix-cross-spec-issues', (args, taskCt
 
 export async function process(inputs, ctx) {
   const {
-    scopeFile = 'C:/work/agent-mux/agent-mux-scope.md',
-    outputDir = 'C:/work/agent-mux/docs',
+    scopeFile = 'C:/work/adapters/adapters-scope.md',
+    outputDir = 'C:/work/adapters/docs',
     targetScore = 99,
     maxIterations = 5,
   } = inputs;

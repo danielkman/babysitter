@@ -173,8 +173,8 @@ describe('CodexWebSocketAdapter', () => {
 
     const connection = await adapter.connect({
       agent: 'codex-websocket',
-      prompt: 'hello from agent-mux',
-      cwd: 'C:/work/agent-mux',
+      prompt: 'hello from adapters',
+      cwd: 'C:/work/adapters',
       model: 'o4-mini',
       approvalMode: 'yolo',
       sessionId: 'session-123',
@@ -184,8 +184,8 @@ describe('CodexWebSocketAdapter', () => {
     expect(connection.connectionType).toBe('websocket');
     expect(mockConnectionInstances[0]?.options).toMatchObject({
       websocketUrl: 'ws://127.0.0.1:32150',
-      prompt: 'hello from agent-mux',
-      cwd: 'C:/work/agent-mux',
+      prompt: 'hello from adapters',
+      cwd: 'C:/work/adapters',
       requestedModel: 'o4-mini',
       approvalMode: 'yolo',
       sessionId: 'session-123',

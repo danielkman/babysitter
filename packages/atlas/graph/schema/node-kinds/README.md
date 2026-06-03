@@ -47,7 +47,7 @@ For the meta-schema (how a node-kind file is structured), see
 | `LaunchConfig` | named spawn recipe |
 | `SessionModel` | the persistence/control-plane/structured-transport triple |
 | `AgentTeam` | named multi-agent team (set of `AgentVersion`s with role assignments + cooperation policy) |
-| `Mux` | reified multiplexer entity (agent-mux, hooks-mux, plugins-mux, …) modeled as a first-class node so policies and decisions are queryable |
+| `Mux` | reified multiplexer entity (adapters, hooks-mux, plugins-mux, …) modeled as a first-class node so policies and decisions are queryable |
 | `MemoryHierarchy` | layered memory model declared by an `AgentRuntimeImpl` (working / session / cross-session / cross-project tiers) |
 | `BackgroundConsolidation` | scheduled compaction/summarization job that runs over a `Session` or `MemoryHierarchy` to reduce state |
 | `ConsolidationLock` | mutual-exclusion record for an in-flight `BackgroundConsolidation` so concurrent runs do not double-write |
@@ -209,7 +209,7 @@ For the meta-schema (how a node-kind file is structured), see
 | `PathDescriptor` | typed pointer to a host filesystem path (run dir, session dir, MCP config, plugin scope, vendor auth) |
 | `PackageSurface` | workspace package tracking (module type, surface kinds, source-of-truth role, publish target) |
 | `CiSurface` | CI/CD spec for a `PackageSurface` (scripts, publish strategy, release channels, validation, artifact expectations) |
-| `DiscoverySignal` | host-detection signal (env var, binary on PATH, file presence, registry key, argv match, exit code, combination) used by `agent-mux` to detect installed / active agent harnesses |
+| `DiscoverySignal` | host-detection signal (env var, binary on PATH, file presence, registry key, argv match, exit code, combination) used by `adapters` to detect installed / active agent harnesses |
 | `DeploymentTarget` | named Kubernetes / minikube cluster target the babysitter cloud package deploys onto (minikube / existing / EKS / AKS / GKE) — drives terraform + manifest apply |
 | `RunJournalEvent` | enum of run journal event names emitted by the babysitter runtime (RUN_CREATED, EFFECT_REQUESTED / RESOLVED / CANCELLED / PROGRESS, RUN_COMPLETED / FAILED, COST_TRACKED, STOP_HOOK_INVOKED) — categorized + terminal-flagged |
 | `SharedContextSpec` (stub) | shape of an a5c shared-context fabric record — full spec Phase 2 |

@@ -10,7 +10,7 @@
     "npm run test --workspace=@a5c-ai/tula-platform",
     "npm run test:realtime --workspace=@a5c-ai/tula-ui",
     "npm run build:runtime",
-    "npm run test:agent-mux",
+    "npm run test:adapters",
     "npm run verify:metadata",
     "git diff --check",
     "if rg -n \"it\\.skip\\(\" packages/adapters/ui/src/screens/SessionDetailScreen.test.tsx; then echo \"Unexplained SessionDetailScreen skipped tests remain\" >&2; exit 1; fi"

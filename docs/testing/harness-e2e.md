@@ -1,6 +1,6 @@
 ---
 title: Harness And Plugin E2E
-description: Separate SDK harness setup, agent-mux plugin/session E2E, and agent-platform runtime E2E boundaries.
+description: Separate SDK harness setup, adapters plugin/session E2E, and agent-platform runtime E2E boundaries.
 last_updated: 2026-05-07
 ---
 
@@ -9,9 +9,9 @@ last_updated: 2026-05-07
 This document covers harness setup and plugin-enabled sessions. It intentionally separates two different integration types:
 
 1. **SDK harness/plugin setup integration** uses `babysitter harness:install` and `babysitter harness:install-plugin`.
-2. **Agent-mux plugin/session E2E** starts an agent session through `agent-mux` and verifies plugin behavior inside that session.
+2. **Agent-mux plugin/session E2E** starts an agent session through `adapters` and verifies plugin behavior inside that session.
 
-`agent-platform` runtime E2E is a third path and is covered in [Agent Mux And Runtime E2E](./agent-mux-and-runtime-e2e.md). It must not require `harness:install` or `harness:install-plugin` steps.
+`agent-platform` runtime E2E is a third path and is covered in [Agent Mux And Runtime E2E](./adapters-and-runtime-e2e.md). It must not require `harness:install` or `harness:install-plugin` steps.
 
 ## Path A: SDK Harness And Plugin Setup
 
@@ -34,29 +34,29 @@ babysitter list --json
 | Repeated plugin install | Manifest remains idempotent and contains no duplicate plugin entries |
 | Generic `plugin:install babysitter` | Project plugin registry entry is present when that path is selected |
 
-The SDK installer path may delegate harness CLI install to agent-mux adapter install support internally, but the public test claim remains installer coverage.
+The SDK installer path may delegate harness CLI install to adapters adapter install support internally, but the public test claim remains installer coverage.
 
 ## Path B: Agent-Mux Plugin And Session E2E
 
-This path tests a real or mocked agent session controlled by `agent-mux`. It should use `adapters run <agent>` or `createClient().run({ agent })`, not `agent-platform call`.
+This path tests a real or mocked agent session controlled by `adapters`. It should use `adapters run <agent>` or `createClient().run({ agent })`, not `agent-platform call`.
 
 | Phase | Required action | Required assertions |
 | --- | --- | --- |
 | Capability gate | Read adapter capabilities for the target agent | Plugin-manager tests run only when `supportsPlugins` is true; otherwise the job records a skip/capability error |
 | Plugin precondition | Install or verify the Babysitter harness plugin with the correct native or SDK installer for that harness | Manifest or registry has the Babysitter plugin exactly once |
-| Start agent-mux session | Run `adapters run <agent> --prompt <fixture>` or equivalent SDK call | Event stream has `session_start`, content/tool/hook events as applicable, and `session_end` |
+| Start adapters session | Run `adapters run <agent> --prompt <fixture>` or equivalent SDK call | Event stream has `session_start`, content/tool/hook events as applicable, and `session_end` |
 | Invoke Babysitter plugin command | Prompt issues `/babysitter:call` or the harness-equivalent Babysitter command inside the agent session | A Babysitter run ID is produced and can be inspected with SDK run commands |
 | Verify process lifecycle | Inspect run status/events after the session returns | Process was created, ran, posted at least one result, and reached `completed` |
-| Verify hook behavior | Inspect normalized hook logs or agent-mux runtime-hook events | Stop hook fired, continuation/stop decision was honored, and no plugin bypass path was used |
+| Verify hook behavior | Inspect normalized hook logs or adapters runtime-hook events | Stop hook fired, continuation/stop decision was honored, and no plugin bypass path was used |
 
 ### Adapter-Specific Rules
 
 | Target | Rule |
 | --- | --- |
-| Claude Code | Valid for agent-mux session, plugin-manager coverage where adapter supports it, and live stop-hook/plugin behavior |
-| Codex | Valid for agent-mux session coverage, but plugin-manager install must be capability-gated because the current Codex adapter reports `supportsPlugins: false` |
+| Claude Code | Valid for adapters session, plugin-manager coverage where adapter supports it, and live stop-hook/plugin behavior |
+| Codex | Valid for adapters session coverage, but plugin-manager install must be capability-gated because the current Codex adapter reports `supportsPlugins: false` |
 | Gemini/Copilot/Cursor/OpenCode/OpenClaw/Oh-My-Pi | Include in setup smoke first; promote to plugin E2E only after adapter capability and plugin installer evidence exists |
-| Pi/agent-core | Not an agent-mux external-harness plugin path |
+| Pi/agent-core | Not an adapters external-harness plugin path |
 
 ## Path C: Babysitter-Agent Runtime E2E
 
@@ -77,7 +77,7 @@ Required assertions:
 - run is created when the command is `call/create-run`,
 - task effects are emitted and posted for process runs,
 - run reaches a terminal state,
-- agent-mux bridge events are present only when the selected external harness uses the bridge,
+- adapters bridge events are present only when the selected external harness uses the bridge,
 - artifacts are redacted and include run ID, session ID, backend/harness name, model/provider metadata, and command transcript.
 
 ## Failure Policy
@@ -85,7 +85,7 @@ Required assertions:
 - Missing credentials should skip model-backed jobs before any provider call begins.
 - A selected setup job should fail if installer preconditions are unavailable.
 - A selected agent-platform runtime job should fail if it tries to run installer commands.
-- Use of the deprecated `babysitter harness:call` alias in new runtime tests should fail review; use `agent-platform call` for agent-platform runtime or `adapters run` for agent-mux session E2E.
+- Use of the deprecated `babysitter harness:call` alias in new runtime tests should fail review; use `agent-platform call` for agent-platform runtime or `adapters run` for adapters session E2E.
 - Any log containing a raw secret must fail the job and block artifact upload until redaction is fixed.
 
 ## `install-plugins` Wrapper Acceptance Criteria

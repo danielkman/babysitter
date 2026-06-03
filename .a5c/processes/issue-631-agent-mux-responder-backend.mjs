@@ -1,6 +1,6 @@
 /**
- * @process repo/issue-631-agent-mux-responder-backend
- * @description Implement issue #631: tasks-mux AgentMuxResponderBackend dispatching agent responder tasks to agent-mux adapters.
+ * @process repo/issue-631-adapters-responder-backend
+ * @description Implement issue #631: tasks-mux AgentMuxResponderBackend dispatching agent responder tasks to adapters adapters.
  * @inputs {
  *   issueNumber: number,
  *   baseBranch: string,
@@ -21,9 +21,9 @@
  *
  * Reuse-audit findings (REVIEW BEFORE PROCEEDING):
  * - Existing backend contract: packages/tasks-mux/src/backend.ts exposes BreakpointBackend, SubmitBreakpointParams, WaitForAnswerOptions, and BreakpointWaitResult.
- * - Existing backend registry: packages/tasks-mux/src/backends/index.ts registers git-native, github-issues, and server; agent-mux is absent.
+ * - Existing backend registry: packages/tasks-mux/src/backends/index.ts registers git-native, github-issues, and server; adapters is absent.
  * - Existing types: packages/tasks-mux/src/types.ts has BreakpointRouting/BackendConfig schemas but no ResponderType or agent backend config on staging.
- * - Existing agent-mux seam: packages/adapters/core/src/client.ts exports createClient(); AgentMuxClient.run() returns a thenable RunHandle.
+ * - Existing adapters seam: packages/adapters/core/src/client.ts exports createClient(); AgentMuxClient.run() returns a thenable RunHandle.
  * - Existing run result surface: packages/adapters/core/src/run-handle.ts exposes RunResult.text, cost, tokenUsage, exitReason, and error.
  * - No local .a5c/process-library directory exists; matching methodologies were found in /home/runner/.a5c/process-library/babysitter-repo/library.
  * - The issue body mentions amuxBridge/getAmuxClient, but repo search on staging did not find that seam. Prefer current @a5c-ai/adapters API unless #630/#604 descendants add a stable bridge before execution.
@@ -52,7 +52,7 @@ const phase0ReuseAuditTask = defineTask('issue-631.phase0-reuse-audit', (args, t
         'Read the issue and comments for the current implementation constraints.',
         'Render a section named exactly: Reuse-audit findings (REVIEW BEFORE PROCEEDING).',
         'Check whether dependency issue #630 has landed on this branch by inspecting tasks-mux responder type/config changes.',
-        'Scan these surfaces: packages/tasks-mux/src/backend.ts, packages/tasks-mux/src/types.ts, packages/tasks-mux/src/backends/index.ts, packages/tasks-mux/src/index.ts, packages/tasks-mux/package.json, packages/adapters/core/src/client.ts, packages/adapters/core/src/run-handle.ts, docs/agent-mux-babysitter-integrations/tasks-mux-routing.md.',
+        'Scan these surfaces: packages/tasks-mux/src/backend.ts, packages/tasks-mux/src/types.ts, packages/tasks-mux/src/backends/index.ts, packages/tasks-mux/src/index.ts, packages/tasks-mux/package.json, packages/adapters/core/src/client.ts, packages/adapters/core/src/run-handle.ts, docs/adapters-babysitter-integrations/tasks-mux-routing.md.',
         'Search for amuxBridge/getAmuxClient. If absent, plan against createClient()/AgentMuxClient.run()/await RunHandle.',
         'Identify dependency-direction risk before adding @a5c-ai/adapters to @a5c-ai/tasks-mux.',
         'Return JSON with: findings, dependencyState, availableIntegrationSeams, selectedSeam, affectedFiles, risks, blockerIfAny.',
@@ -77,13 +77,13 @@ const phase1ContractTask = defineTask('issue-631.phase1-contract-tests', (args, 
       task: 'Add failing tests for AgentMuxResponderBackend before production implementation.',
       instructions: [
         'Edit only test and type-surface files required for RED tests.',
-        'Create packages/tasks-mux/src/backends/__tests__/agent-mux.test.ts unless the repo test layout strongly prefers packages/tasks-mux/src/__tests__/agent-mux-backend.test.ts; document the chosen layout.',
-        'Mock the agent-mux client seam, do not spawn real adapters.',
+        'Create packages/tasks-mux/src/backends/__tests__/adapters.test.ts unless the repo test layout strongly prefers packages/tasks-mux/src/__tests__/adapters-backend.test.ts; document the chosen layout.',
+        'Mock the adapters client seam, do not spawn real adapters.',
         'Cover successful synchronous resolution: submitBreakpoint dispatches an agent run, awaits the RunHandle, creates an answered Breakpoint, stores/returns an answer, and waitForAnswer returns immediately.',
         'Cover run option mapping: agent/adapter, prompt text, model, cwd, timeout, collectEvents/tags where supported by current types.',
         'Cover cost/token metadata mapping from RunResult and cost events without inventing an unsupported public schema; if metadata requires a type extension, make the test express that extension explicitly.',
         'Cover errors: adapter not installed/unknown, authentication failure, run timeout, aborted wait signal, non-success exitReason/error.',
-        'Cover registry/schema export expectations for backend type "agent-mux".',
+        'Cover registry/schema export expectations for backend type "adapters".',
         'Run the focused test command and confirm the new tests fail for missing implementation, not setup errors.',
         'Return JSON with: testFiles, behaviorsCovered, redCommand, redResultSummary, typeSurfaceChangesNeeded, risks.',
       ],
@@ -102,7 +102,7 @@ const phase1ContractTask = defineTask('issue-631.phase1-contract-tests', (args, 
 const phase2BackendTask = defineTask('issue-631.phase2-backend-implementation', (args, taskCtx) => ({
   kind: 'agent',
   title: 'Phase 2 - Implement AgentMuxResponderBackend',
-  labels: ['issue-631', 'phase-2', 'implementation', 'agent-mux', 'tasks-mux'],
+  labels: ['issue-631', 'phase-2', 'implementation', 'adapters', 'tasks-mux'],
   agent: {
     name: 'tasks-mux-backend-implementer',
     prompt: {
@@ -110,12 +110,12 @@ const phase2BackendTask = defineTask('issue-631.phase2-backend-implementation', 
       task: 'Implement AgentMuxResponderBackend to satisfy the RED tests and current BreakpointBackend contract.',
       instructions: [
         'Keep implementation scoped to issue #631.',
-        'Create packages/tasks-mux/src/backends/agent-mux.ts.',
+        'Create packages/tasks-mux/src/backends/adapters.ts.',
         'Implement the full BreakpointBackend interface: submitBreakpoint, getBreakpoint, waitForAnswer, listPendingBreakpoints, answerBreakpoint, cancelBreakpoint, and listResponders if the selected seam supports discovery.',
-        'Use dependency injection for the agent-mux client/factory so tests can mock it and production can use createClient() or a newly available bridge seam.',
+        'Use dependency injection for the adapters client/factory so tests can mock it and production can use createClient() or a newly available bridge seam.',
         'If #630 responder type work has landed, integrate with its ResponderType/backend config types. If not, add the smallest forward-compatible AgentMuxBackendConfig and routing metadata extension needed by this backend without implementing the whole #630 scope.',
         'Do not copy design-doc pseudo fields blindly. Map from current SubmitBreakpointParams.text/context/routing and typed backend config.',
-        'Run agent-mux with non-interactive/yolo-safe defaults only when appropriate for an agent responder backend, and pass explicit timeout/abort handling.',
+        'Run adapters with non-interactive/yolo-safe defaults only when appropriate for an agent responder backend, and pass explicit timeout/abort handling.',
         'Model answer fields deterministically: responderId/name, text from RunResult.text, confidence default, references from result/events only if present, selectedAnswer, status answered/completed semantics, created/updated/expires timestamps.',
         'Preserve lifecycle methods: getBreakpoint retrieves stored in-memory result for synchronous runs; waitForAnswer is immediate for completed dispatches; cancellation/abort handles pending dispatches if possible.',
         'Map adapter missing, not authenticated, timeout, crash, and validation errors to actionable Error messages or typed backend errors consistent with existing tasks-mux patterns.',
@@ -142,10 +142,10 @@ const phase3WiringTask = defineTask('issue-631.phase3-registry-and-exports', (ar
     name: 'tasks-mux-package-surface-maintainer',
     prompt: {
       role: 'TypeScript package surface maintainer',
-      task: 'Register and export the agent-mux backend without breaking existing tasks-mux consumers.',
+      task: 'Register and export the adapters backend without breaking existing tasks-mux consumers.',
       instructions: [
         'Edit only the package surface files needed for the backend to be usable.',
-        'Register backendFactories.set("agent-mux", ...) in packages/tasks-mux/src/backends/index.ts.',
+        'Register backendFactories.set("adapters", ...) in packages/tasks-mux/src/backends/index.ts.',
         'Export AgentMuxResponderBackend and any config/error types from backends/index.ts and package root if consistent with existing backend exports.',
         'Update BackendConfigSchema only if a direct backend config type is required; keep discriminated unions backward compatible.',
         'Add @a5c-ai/adapters dependency to packages/tasks-mux/package.json only after confirming no workspace dependency cycle; otherwise use a dynamic import/injected factory seam and document why.',
@@ -176,7 +176,7 @@ const phase4QualityGateTask = defineTask('issue-631.phase4-quality-gates', (args
       task: 'Verify issue #631 implementation with fresh evidence and fix scoped failures.',
       instructions: [
         'Run the focused and package-level verification commands listed in inputs.',
-        'At minimum verify: new backend tests, full tasks-mux tests, tasks-mux typecheck/build, relevant agent-mux type compatibility if a new dependency/import was added, root metadata verification, and git diff --check.',
+        'At minimum verify: new backend tests, full tasks-mux tests, tasks-mux typecheck/build, relevant adapters type compatibility if a new dependency/import was added, root metadata verification, and git diff --check.',
         'Read complete failures before changing code. Fix only issue #631-related failures.',
         'Confirm the RED tests from Phase 1 now pass.',
         'Check no implementation source files outside the intended surfaces were modified without a documented reason.',
@@ -202,7 +202,7 @@ const phase5ReviewTask = defineTask('issue-631.phase5-adversarial-review', (args
   title: 'Phase 5 - Adversarial implementation review',
   labels: ['issue-631', 'phase-5', 'review', 'quality-gate'],
   agent: {
-    name: 'tasks-mux-agent-mux-reviewer',
+    name: 'tasks-mux-adapters-reviewer',
     prompt: {
       role: 'adversarial reviewer for TypeScript SDK integration work',
       task: 'Review the final diff for issue #631 against the issue, triage notes, and current code surfaces.',
@@ -263,19 +263,19 @@ export async function process(inputs, ctx) {
   const processInputs = {
     issueNumber: inputs?.issueNumber ?? 631,
     baseBranch: inputs?.baseBranch ?? 'staging',
-    branchName: inputs?.branchName ?? 'agent/issue-631-agent-mux-responder-backend',
+    branchName: inputs?.branchName ?? 'agent/issue-631-adapters-responder-backend',
     dependencyIssues: inputs?.dependencyIssues ?? [630, 604, 633],
-    designDoc: inputs?.designDoc ?? 'docs/agent-mux-babysitter-integrations/tasks-mux-routing.md',
+    designDoc: inputs?.designDoc ?? 'docs/adapters-babysitter-integrations/tasks-mux-routing.md',
     targetFiles: inputs?.targetFiles ?? [
-      'packages/tasks-mux/src/backends/agent-mux.ts',
-      'packages/tasks-mux/src/backends/__tests__/agent-mux.test.ts',
+      'packages/tasks-mux/src/backends/adapters.ts',
+      'packages/tasks-mux/src/backends/__tests__/adapters.test.ts',
       'packages/tasks-mux/src/backends/index.ts',
       'packages/tasks-mux/src/index.ts',
       'packages/tasks-mux/src/types.ts',
       'packages/tasks-mux/package.json',
     ],
     verificationCommands: inputs?.verificationCommands ?? [
-      'npm exec --workspace=@a5c-ai/tasks-mux -- vitest run src/backends/__tests__/agent-mux.test.ts',
+      'npm exec --workspace=@a5c-ai/tasks-mux -- vitest run src/backends/__tests__/adapters.test.ts',
       'npm run test --workspace=@a5c-ai/tasks-mux',
       'npm run typecheck --workspace=@a5c-ai/tasks-mux',
       'npm run build --workspace=@a5c-ai/tasks-mux',
@@ -347,7 +347,7 @@ export async function process(inputs, ctx) {
   return {
     success: Boolean(review?.approved ?? true),
     issueNumber: processInputs.issueNumber,
-    process: '.a5c/processes/issue-631-agent-mux-responder-backend.mjs#process',
+    process: '.a5c/processes/issue-631-adapters-responder-backend.mjs#process',
     inputs: processInputs,
     phases: {
       reuseAudit,
@@ -361,8 +361,8 @@ export async function process(inputs, ctx) {
     changedFiles: [
       ...new Set([
         ...processInputs.targetFiles,
-        '.a5c/processes/issue-631-agent-mux-responder-backend.mjs',
-        '.a5c/processes/issue-631-agent-mux-responder-backend.inputs.json',
+        '.a5c/processes/issue-631-adapters-responder-backend.mjs',
+        '.a5c/processes/issue-631-adapters-responder-backend.inputs.json',
       ]),
     ],
     verification,

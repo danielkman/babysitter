@@ -5,7 +5,7 @@
  * desired invocation mode (local/docker/ssh/k8s) via
  * `buildInvocationCommand()`.
  *
- * This lets agent-mux nest: a local adapters invocation dispatches to a second
+ * This lets adapters nest: a local adapters invocation dispatches to a second
  * adapters executing in a docker container, on a remote SSH host, or in a k8s
  * pod. All structured events are forwarded verbatim — the remote `adapters run`
  * emits JSONL which we pass through unchanged.
@@ -36,19 +36,19 @@ import { createVirtualRuntimeHookCapabilities } from './shared/runtime-hooks-vir
 
 export class AgentMuxRemoteAdapter extends BaseAgentAdapter {
   readonly agent: string;
-  readonly displayName = 'agent-mux (remote via invocation mode)';
+  readonly displayName = 'adapters (remote via invocation mode)';
   readonly cliCommand: string;
   readonly minVersion = '0.1.0';
 
   constructor(agent?: string, cliCommand?: string) {
     super();
-    this.agent = agent ?? this.constructor.name.replace(/Adapter$/, '').toLowerCase().replace(/agentmuxremote/, 'agent-mux-remote');
+    this.agent = agent ?? this.constructor.name.replace(/Adapter$/, '').toLowerCase().replace(/agentmuxremote/, 'adapters-remote');
     this.cliCommand = cliCommand ?? 'adapters';
   }
   readonly hostEnvSignals = [] as const;
 
   readonly capabilities: AgentCapabilities = {
-    agent: 'agent-mux-remote',
+    agent: 'adapters-remote',
     canResume: true,
     canFork: false,
     supportsMultiTurn: true,
@@ -98,7 +98,7 @@ export class AgentMuxRemoteAdapter extends BaseAgentAdapter {
   readonly defaultModelId = undefined;
 
   readonly configSchema: AgentConfigSchema = {
-    agent: 'agent-mux-remote',
+    agent: 'adapters-remote',
     version: 1,
     fields: [],
     configFilePaths: [],
@@ -181,8 +181,8 @@ export class AgentMuxRemoteAdapter extends BaseAgentAdapter {
 
   getAuthGuidance(): AuthSetupGuidance {
     return {
-      agent: 'agent-mux-remote',
-      providerName: 'agent-mux (remote)',
+      agent: 'adapters-remote',
+      providerName: 'adapters (remote)',
       steps: [
         { step: 1, description: 'Install adapters on the target (local, remote SSH host, docker image, or k8s pod).' },
         { step: 2, description: 'Set RunOptions.invocation to select the transport (ssh/docker/k8s).' },
@@ -201,7 +201,7 @@ export class AgentMuxRemoteAdapter extends BaseAgentAdapter {
   }
 
   async parseSessionFile(_filePath: string): Promise<Session> {
-    throw new Error('agent-mux-remote does not store sessions locally; use `adapters sessions list` on the remote.');
+    throw new Error('adapters-remote does not store sessions locally; use `adapters sessions list` on the remote.');
   }
 
   /** List remote sessions via plain `adapters sessions list --json` (transport is external). */
@@ -227,7 +227,7 @@ export class AgentMuxRemoteAdapter extends BaseAgentAdapter {
   }
 
   async readConfig(_cwd?: string): Promise<AgentConfig> {
-    return { agent: 'agent-mux-remote', source: 'global' };
+    return { agent: 'adapters-remote', source: 'global' };
   }
 
   async writeConfig(_config: Partial<AgentConfig>, _cwd?: string): Promise<void> {

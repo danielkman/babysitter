@@ -1,6 +1,6 @@
 /**
  * @process claude-server-mode-transport
- * @description Implement and validate a real Claude server-mode / channels transport in agent-mux with explicit research, integration, verification, and adversarial review.
+ * @description Implement and validate a real Claude server-mode / channels transport in adapters with explicit research, integration, verification, and adversarial review.
  */
 
 import { defineTask } from '@a5c-ai/babysitter-sdk';
@@ -13,7 +13,7 @@ const researchTask = defineTask('research-claude-server-mode', (args, taskCtx) =
     name: 'general-purpose',
     prompt: {
       role: 'Senior integration architect',
-      task: 'Research the current Claude transport gap in agent-mux and define the exact implementation contract for a real server-mode / channels transport.',
+      task: 'Research the current Claude transport gap in adapters and define the exact implementation contract for a real server-mode / channels transport.',
       context: {
         workspaceRoot: args.workspaceRoot,
         scope: args.scope,
@@ -48,7 +48,7 @@ const implementTask = defineTask('implement-claude-server-mode', (args, taskCtx)
     name: 'general-purpose',
     prompt: {
       role: 'Senior TypeScript full-stack engineer',
-      task: 'Implement the Claude server-mode / channels transport changes in agent-mux.',
+      task: 'Implement the Claude server-mode / channels transport changes in adapters.',
       context: {
         workspaceRoot: args.workspaceRoot,
         scope: args.scope,
@@ -166,8 +166,8 @@ const browserProofTask = defineTask('browser-proof-if-applicable', (args, taskCt
 }));
 
 export async function process(inputs = {}, ctx) {
-  const workspaceRoot = inputs.workspaceRoot ?? 'C:/work/agent-mux';
-  const scope = inputs.scope ?? 'Implement real Claude server-mode / channels transport support in agent-mux.';
+  const workspaceRoot = inputs.workspaceRoot ?? 'C:/work/adapters';
+  const scope = inputs.scope ?? 'Implement real Claude server-mode / channels transport support in adapters.';
   const targetScore = Number(inputs.targetScore ?? 95);
   const maxRefinementPasses = Number(inputs.maxRefinementPasses ?? 3);
 

@@ -5,7 +5,7 @@ attributes:
   kind: tui
   description: |
     Terminal UI bundled with the Pi CLI agent. Surfaced through the
-    agent-mux adapter for v6.
+    adapters adapter for v6.
   renderingTechnology: terminal-emulator
   themeSupport: none
   accessibilitySupport: basic

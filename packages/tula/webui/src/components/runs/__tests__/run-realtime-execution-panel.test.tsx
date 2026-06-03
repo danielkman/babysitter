@@ -14,11 +14,11 @@ vi.mock("zustand", () => ({
   useStore: <T,>(store: T, selector: (state: T) => unknown) => selector(store),
 }));
 
-vi.mock("@/components/agent-mux/gateway-provider", () => ({
+vi.mock("@/components/adapters/gateway-provider", () => ({
   useGatewayAuth: () => mockUseGatewayAuth(),
 }));
 
-vi.mock("@/lib/agent-mux-ui", () => ({
+vi.mock("@/lib/adapters-ui", () => ({
   useGateway: () => mockUseGateway(),
 }));
 
@@ -65,7 +65,7 @@ describe("RunRealtimeExecutionPanel", () => {
     render(<RunRealtimeExecutionPanel run={run} />);
 
     expect(screen.getByTestId("run-realtime-auth-required")).toHaveTextContent(
-      "Connect agent-mux to load the reconstructed flow",
+      "Connect adapters to load the reconstructed flow",
     );
   });
 

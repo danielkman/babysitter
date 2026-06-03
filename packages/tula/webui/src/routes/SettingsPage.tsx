@@ -13,7 +13,7 @@ import { Activity, AlertTriangle, Boxes, Cpu, Network, ServerCog, ShieldCheck, U
 import { Link, useNavigate } from "react-router-dom-v6";
 import { useStore } from "zustand";
 
-import { useGatewayAuth } from "@/components/agent-mux/gateway-provider";
+import { useGatewayAuth } from "@/components/adapters/gateway-provider";
 import { useNotificationContext } from "@/components/notifications/notification-provider";
 import { PageSection, PageShell } from "@/components/shared/page-shell";
 import { SHORTCUT_SECTION_LABELS, SHORTCUTS } from "@/components/shared/shortcuts-help";
@@ -30,7 +30,7 @@ import {
   useBacklog,
 } from "@/hooks/use-backlog";
 import { resilientFetch } from "@/lib/fetcher";
-import { useConnection, useGateway } from "@/lib/agent-mux-ui";
+import { useConnection, useGateway } from "@/lib/adapters-ui";
 
 interface DispatchContextLabelFormState {
   key: string;

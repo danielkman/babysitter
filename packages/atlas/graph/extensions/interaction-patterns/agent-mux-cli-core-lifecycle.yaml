@@ -1,6 +1,6 @@
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-run
+id: interaction-primitive:adapters-cli-run
 attributes:
   displayName: "adapters run"
   kind: cli-subcommand
@@ -68,7 +68,7 @@ attributes:
     packages/adapters/cli/src/commands/run.ts:188-313.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-install
+id: interaction-primitive:adapters-cli-install
 attributes:
   displayName: "adapters install"
   kind: cli-subcommand
@@ -91,7 +91,7 @@ attributes:
     packages/adapters/cli/src/commands/install.ts:60-195.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-update
+id: interaction-primitive:adapters-cli-update
 attributes:
   displayName: "adapters update"
   kind: cli-subcommand
@@ -111,7 +111,7 @@ attributes:
     Source: packages/adapters/cli/src/commands/install.ts:201-262.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-detect
+id: interaction-primitive:adapters-cli-detect
 attributes:
   displayName: "adapters detect"
   kind: cli-subcommand
@@ -131,7 +131,7 @@ attributes:
     packages/adapters/cli/src/commands/install.ts:268-401.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-uninstall
+id: interaction-primitive:adapters-cli-uninstall
 attributes:
   displayName: "adapters uninstall"
   kind: cli-subcommand
@@ -149,7 +149,7 @@ attributes:
     Source: packages/adapters/cli/src/commands/install.ts:407-473.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-adapters-list
+id: interaction-primitive:adapters-cli-adapters-list
 attributes:
   displayName: "adapters adapters list"
   kind: cli-subcommand
@@ -165,7 +165,7 @@ attributes:
     Source: packages/adapters/cli/src/commands/adapters.ts:58-78.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-adapters-detect
+id: interaction-primitive:adapters-cli-adapters-detect
 attributes:
   displayName: "adapters adapters detect"
   kind: cli-subcommand
@@ -183,7 +183,7 @@ attributes:
     packages/adapters/cli/src/commands/adapters.ts:80-107.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-adapters-info
+id: interaction-primitive:adapters-cli-adapters-info
 attributes:
   displayName: "adapters adapters info"
   kind: cli-subcommand
@@ -200,7 +200,7 @@ attributes:
     packages/adapters/cli/src/commands/adapters.ts:109-127.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-models-list
+id: interaction-primitive:adapters-cli-models-list
 attributes:
   displayName: "adapters models list"
   kind: cli-subcommand
@@ -217,7 +217,7 @@ attributes:
     packages/adapters/cli/src/commands/models.ts:111-142.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-models-info
+id: interaction-primitive:adapters-cli-models-info
 attributes:
   displayName: "adapters models info"
   kind: cli-subcommand
@@ -235,7 +235,7 @@ attributes:
     packages/adapters/cli/src/commands/models.ts:144-168.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-models-refresh
+id: interaction-primitive:adapters-cli-models-refresh
 attributes:
   displayName: "adapters models refresh"
   kind: cli-subcommand
@@ -252,7 +252,7 @@ attributes:
     packages/adapters/cli/src/commands/models.ts:170-185.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-models-current
+id: interaction-primitive:adapters-cli-models-current
 attributes:
   displayName: "adapters models current"
   kind: cli-subcommand
@@ -269,7 +269,7 @@ attributes:
     packages/adapters/cli/src/commands/models.ts:187-220.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-models-set
+id: interaction-primitive:adapters-cli-models-set
 attributes:
   displayName: "adapters models set"
   kind: cli-subcommand

@@ -6,9 +6,9 @@ The Atlas graph defines **9 canonical muxes** as the bridging abstractions of th
 
 | Graph Mux | Protocol Type | Canonical Side | Package(s) |
 |-----------|--------------|----------------|------------|
-| `agent-launch-mux` | spawn | InvocationOptions → SpawnArgs → lifecycle | `agent-mux-cli` (launch.ts) |
+| `agent-launch-mux` | spawn | InvocationOptions → SpawnArgs → lifecycle | `adapters-cli` (launch.ts) |
 | `agent-comm-mux` | event-stream | Harness-specific events → canonical shape | `agent-comm-mux` (client.ts) |
-| `agent-config-mux` | config | Per-agent config/auth/install → unified ops | `agent-mux-cli` (install.ts), `agent-mux-adapters` |
+| `agent-config-mux` | config | Per-agent config/auth/install → unified ops | `adapters-cli` (install.ts), `adapters-adapters` |
 | `hooks-mux` | lifecycle-hook | Native hook names → canonical taxonomy | `hooks-mux-cli`, `hooks-mux-core`, `hooks-mux-adapter-*` |
 | `transport-mux` | inference | Wire protocols → canonical request/response | `transport-mux` |
 | `extension-mux` | plugin | Portable Extension → per-agent native formats | `extension-mux` |
@@ -20,7 +20,7 @@ The Atlas graph defines **9 canonical muxes** as the bridging abstractions of th
 
 ## Mux-to-Package Detailed Mapping
 
-### 1. agent-launch-mux → `agent-mux-cli/src/commands/launch.ts`
+### 1. agent-launch-mux → `adapters-cli/src/commands/launch.ts`
 
 **Graph description:** Spawns and supervises Invocations across all supported agent products. Owns the 9-state Invocation lifecycle (spawned → running → paused → interrupted → aborted | timed-out | completed | crashed | killed).
 
@@ -61,7 +61,7 @@ The Atlas graph defines **9 canonical muxes** as the bridging abstractions of th
 **Implementation reality:**
 - `AgentMuxClient` in agent-comm-mux handles event streaming
 - Events are normalized to a common shape across harnesses
-- Session-flow projections in agent-mux-ui consume these events
+- Session-flow projections in adapters-ui consume these events
 
 **Gaps:**
 | ID | Severity | Gap |
@@ -71,13 +71,13 @@ The Atlas graph defines **9 canonical muxes** as the bridging abstractions of th
 
 ---
 
-### 3. agent-config-mux → `agent-mux-cli` + `agent-mux-adapters`
+### 3. agent-config-mux → `adapters-cli` + `adapters-adapters`
 
 **Graph description:** Wraps each agent's idiosyncratic config/auth/install conventions into one set of operations callable from orchestrator or user.
 
 **Implementation reality:**
 - `install.ts` handles install/uninstall/update/detect per adapter
-- Each adapter in `agent-mux-adapters` defines install methods, config paths
+- Each adapter in `adapters-adapters` defines install methods, config paths
 - `agent-catalog` provides install metadata from the graph
 
 **Gaps:**
@@ -211,22 +211,22 @@ The graph defines three implementation node kinds for the agent stack:
 
 But `agent-comm-mux` also implements L4-L5 concerns (event dispatch, session management, adapter registry) without being an "AgentCoreImpl" in the graph.
 
-**Gap:** `agent-comm-mux` is the de facto agent core for harness-mediated scenarios but isn't represented as an AgentCoreImpl in the graph. The graph has `agent:agent-mux` as an AgentProduct but its internal decomposition (core/cli/adapters/gateway/tui/ui) isn't modeled.
+**Gap:** `agent-comm-mux` is the de facto agent core for harness-mediated scenarios but isn't represented as an AgentCoreImpl in the graph. The graph has `agent:adapters` as an AgentProduct but its internal decomposition (core/cli/adapters/gateway/tui/ui) isn't modeled.
 
 ### Package Decomposition vs Graph Model
 
-| agent-mux Package | Graph Mux | Graph Layer | Notes |
+| adapters Package | Graph Mux | Graph Layer | Notes |
 |-------------------|-----------|-------------|-------|
 | agent-comm-mux | agent-comm-mux | L4-L5 | Event streaming, client, types |
-| agent-mux-cli | agent-launch-mux + agent-config-mux | L5-L10 | Launch, install, detect |
-| agent-mux-adapters | (part of agent-config-mux) | L5 | Per-harness adapters |
-| agent-mux-gateway | (no direct mux) | L6 | Remote API surface |
-| agent-mux-tui | (no direct mux) | L11 | TUI presentation |
-| agent-mux-ui | (no direct mux) | L11 | Shared UI |
-| agent-mux-webui | (no direct mux) | L11 | Web presentation |
-| agent-mux-observability | (no direct mux) | Cross-cutting | Logging, telemetry |
+| adapters-cli | agent-launch-mux + agent-config-mux | L5-L10 | Launch, install, detect |
+| adapters-adapters | (part of agent-config-mux) | L5 | Per-harness adapters |
+| adapters-gateway | (no direct mux) | L6 | Remote API surface |
+| adapters-tui | (no direct mux) | L11 | TUI presentation |
+| adapters-ui | (no direct mux) | L11 | Shared UI |
+| adapters-webui | (no direct mux) | L11 | Web presentation |
+| adapters-observability | (no direct mux) | Cross-cutting | Logging, telemetry |
 
-**Gap:** 4 of 7 agent-mux packages have no corresponding mux in the graph. They implement presentation (L11) and observability concerns that the mux model doesn't cover.
+**Gap:** 4 of 7 adapters packages have no corresponding mux in the graph. They implement presentation (L11) and observability concerns that the mux model doesn't cover.
 
 ---
 

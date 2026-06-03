@@ -5,11 +5,11 @@ nodes:
     edges:
       source_of:
         - target: agent:babysitter
-  - id: source-ref:agent-mux-remote
+  - id: source-ref:adapters-remote
     kind: SourceRef
     edges:
       source_of:
-        - target: agent:agent-mux-remote
+        - target: agent:adapters-remote
   - id: source-ref:anthropic-skills-skill-creator
     kind: SourceRef
     edges:
@@ -109,7 +109,7 @@ nodes:
     kind: SourceRef
     edges:
       source_of:
-        - target: agent:agent-mux
+        - target: agent:adapters
   - id: source-ref:babysitter-sdk
     kind: SourceRef
     edges:
@@ -119,17 +119,17 @@ nodes:
     kind: SourceRef
     edges:
       source_of:
-        - target: agent:agent-mux
+        - target: agent:adapters
   - id: source-ref:packages-agent-launch-mux
     kind: SourceRef
     edges:
       source_of:
-        - target: agent:agent-mux
+        - target: agent:adapters
   - id: source-ref:packages-agent-config-mux
     kind: SourceRef
     edges:
       source_of:
-        - target: agent:agent-mux
+        - target: agent:adapters
   - id: source-ref:packages-tula-runtime
     kind: SourceRef
     edges:

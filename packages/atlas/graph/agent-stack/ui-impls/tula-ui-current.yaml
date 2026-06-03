@@ -11,8 +11,8 @@ attributes:
   accessibilitySupport: basic
   notes: |
     tula's user-facing surface is its CLI binary (`tula`). The CLI wraps
-    agent-platform and agent-mux surfaces. Operator UIs (TUI, web, mobile)
-    are delivered via the agent-mux package family.
+    agent-platform and adapters surfaces. Operator UIs (TUI, web, mobile)
+    are delivered via the adapters package family.
 edges:
   realizes:
     - target: layer:11-presentation

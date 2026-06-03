@@ -2,7 +2,7 @@
  * Core types for @a5c-ai/adapters.
  *
  * Defines all foundational type aliases, interfaces, and union types
- * used across the agent-mux system.
+ * used across the adapters system.
  */
 
 // ---------------------------------------------------------------------------
@@ -20,7 +20,7 @@ export type AgentName = string;
 // Error Codes (§3.1)
 // ---------------------------------------------------------------------------
 
-/** Machine-readable error codes defined by agent-mux. */
+/** Machine-readable error codes defined by adapters. */
 export type ErrorCode =
   | 'CAPABILITY_ERROR'
   | 'VALIDATION_ERROR'
@@ -84,13 +84,13 @@ export interface BaseEvent {
   agent: AgentName;
 
   /**
-   * Unix epoch milliseconds when this event was created by agent-mux.
+   * Unix epoch milliseconds when this event was created by adapters.
    * This is the parse time, not the agent's internal timestamp.
    */
   timestamp: number;
 
   /**
-   * Origin of the event inside agent-mux.
+   * Origin of the event inside adapters.
    * Omitted for legacy agent-originated events.
    */
   source?: string;
@@ -108,7 +108,7 @@ export interface BaseEvent {
 // Global Configuration (§4.1.2)
 // ---------------------------------------------------------------------------
 
-/** Schema for `~/.agent-mux/config.json`. */
+/** Schema for `~/.adapters/config.json`. */
 export interface GlobalConfig {
   /**
    * Default agent used when `RunOptions.agent` is not specified
@@ -154,7 +154,7 @@ export interface GlobalConfig {
 // Auth Hints (§4.1.4)
 // ---------------------------------------------------------------------------
 
-/** Schema for `~/.agent-mux/auth-hints.json`. */
+/** Schema for `~/.adapters/auth-hints.json`. */
 export interface AuthHintsFile {
   /** Schema version for forward compatibility. */
   version: 1;
@@ -185,7 +185,7 @@ export interface AuthHintEntry {
 // Run Index (§4.2.3)
 // ---------------------------------------------------------------------------
 
-/** A single entry in `.agent-mux/run-index.jsonl`. */
+/** A single entry in `.adapters/run-index.jsonl`. */
 export interface RunIndexEntry {
   /** Schema version for the entry format. */
   v: 1;

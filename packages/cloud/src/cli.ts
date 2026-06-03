@@ -166,7 +166,7 @@ function printAgentInstallResult(io: CliIo, result: AgentInstallPlan | AgentInst
   }
 
   for (const step of result.steps) {
-    io.stdout(`${step.target}: agent-mux`);
+    io.stdout(`${step.target}: adapters`);
     if (step.pluginInstall) {
       io.stdout(` + plugin (${step.pluginInstall.scope})`);
     }

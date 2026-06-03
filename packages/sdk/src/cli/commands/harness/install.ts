@@ -67,7 +67,7 @@ function requireHarnessName(
 }
 
 /**
- * Install a harness CLI via agent-mux.
+ * Install a harness CLI via adapters.
  */
 export async function handleHarnessInstall(args: HarnessInstallCommandArgs): Promise<number> {
   const harnessName = requireHarnessName(args.harnessName, "harness:install");

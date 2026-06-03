@@ -2,7 +2,7 @@
 
 ## Summary
 
-Update process creation prompts, templates, and validation to expose external agent capabilities when agent-mux is detected. The LLM authoring the process should know what agents are available and how to use them.
+Update process creation prompts, templates, and validation to expose external agent capabilities when adapters is detected. The LLM authoring the process should know what agents are available and how to use them.
 
 ## Prompt Context Injection
 
@@ -23,7 +23,7 @@ if (externalAgents.available && externalAgents.agents.some(a => a.installed)) {
 
   promptContext.externalAgentsSection = [
     '',
-    'Available external agents (via agent-mux):',
+    'Available external agents (via adapters):',
     agentList,
     '',
     'You may delegate specialist work to these agents using external agent tasks:',
@@ -76,13 +76,13 @@ if (kind === "agent" && properties.has("agent")) {
 
 ### `packages/tula/platform/src/harness/internal/createRun/planProcess/validation.ts`
 
-In `validateProcessExport()`, don't reject processes that reference external agents even if agent-mux is not installed at validation time (it may be available at execution time):
+In `validateProcessExport()`, don't reject processes that reference external agents even if adapters is not installed at validation time (it may be available at execution time):
 
 ```typescript
 // After existing validation:
-// Warn (don't error) about external agent tasks when agent-mux not detected
+// Warn (don't error) about external agent tasks when adapters not detected
 if (hasExternalAgentTasks(source) && !externalAgentsAvailable) {
-  console.warn('[babysitter] process uses external agent tasks but agent-mux is not detected');
+  console.warn('[babysitter] process uses external agent tasks but adapters is not detected');
 }
 ```
 
@@ -92,7 +92,7 @@ Update `packages/tula/platform/src/harness/internal/createRun/planProcess/phase.
 
 ```
 - External agent tasks must use kind: "agent" with agent: { responderType: "agent", adapter: "..." }
-- The adapter field must be a valid agent-mux adapter name
+- The adapter field must be a valid adapters adapter name
 ```
 
 ## Files to Modify
@@ -111,4 +111,4 @@ Update `packages/tula/platform/src/harness/internal/createRun/planProcess/phase.
 |------|--------|
 | `docs/agent-reference/process-authoring.md` | Add external agent task section |
 | `docs/agent-reference/command-surfaces.md` | Document external agent dispatch |
-| `docs/plugins.md` | Note agent-mux integration |
+| `docs/plugins.md` | Note adapters integration |

@@ -150,7 +150,7 @@ Now logs tool name and error message before converting to result object.
 
 ---
 
-## Agent Mux Family (packages/agent-mux, agent-launch-mux, triggers-mux, tool-mux)
+## Agent Mux Family (packages/adapters, agent-launch-mux, triggers-mux, tool-mux)
 
 ### High
 
@@ -419,7 +419,7 @@ Three `fs.rm().catch(() => {})` calls. Filesystem leaks accumulate.
 **Auth detection → 'unknown'** — `packages/adapters/core/src/adapter-registry.ts:155-157` **(logged)**
 Auth detection failure now logged with agent name before marking 'unknown'.
 
-**Remote agent fallback → 'claude'** — `packages/adapters/adapters/src/agent-mux-remote-adapter.ts:112`
+**Remote agent fallback → 'claude'** — `packages/adapters/adapters/src/adapters-remote-adapter.ts:112`
 `env['AMUX_REMOTE_AGENT'] ?? process.env['AMUX_REMOTE_AGENT'] ?? 'claude'`. Silent default.
 
 **Binary resolution fallbacks** — `packages/adapters/launch/src/bridge-hooks.ts:41-46`

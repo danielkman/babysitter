@@ -1,4 +1,4 @@
-# agent-mux
+# adapters
 
 `@a5c-ai/adapters` is a unified TypeScript SDK and CLI (`adapters`) for driving heterogeneous coding-agent harnesses — Claude Code, Codex, Gemini, Copilot, Cursor, OpenCode, OpenCode HTTP, pi, omp, openclaw, hermes, qwen — through one contract.
 
@@ -62,7 +62,7 @@ await handle.done;
 | `openclaw` | `openclaw` | `~/.openclaw/sessions` |
 | `hermes` | `hermes` | `~/.hermes/sessions` |
 | `qwen` | `qwen` | `~/.qwen/sessions` |
-| `agent-mux-remote` | `adapters` | (transport-delegated) |
+| `adapters-remote` | `adapters` | (transport-delegated) |
 
 Install or update any of them through `adapters`:
 
@@ -269,10 +269,10 @@ See [docs/14-harness-mock.md](docs/14-harness-mock.md).
 ### OpenCode Project Distinction
 
 **Note**: There are two different projects named "OpenCode":
-- ✅ **Supported**: [anomalyco/opencode](https://github.com/anomalyco/opencode) - This is the OpenCode project that agent-mux supports
-- ❌ **Not supported**: `opencode-ai/opencode` (renamed to [charmbracelet/crush](https://github.com/charmbracelet/crush)) - This project is **not supported** by agent-mux
+- ✅ **Supported**: [anomalyco/opencode](https://github.com/anomalyco/opencode) - This is the OpenCode project that adapters supports
+- ❌ **Not supported**: `opencode-ai/opencode` (renamed to [charmbracelet/crush](https://github.com/charmbracelet/crush)) - This project is **not supported** by adapters
 
-When referring to OpenCode in agent-mux documentation and code, we always mean the anomalyco/opencode project.
+When referring to OpenCode in adapters documentation and code, we always mean the anomalyco/opencode project.
 
 ## Contributing
 

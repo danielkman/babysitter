@@ -29,7 +29,7 @@ function NotificationBridge(): null {
       // Desktop notification when tab is not visible
       if (typeof document !== 'undefined' && document.visibilityState !== 'visible') {
         showDesktopHookNotification({
-          title: 'agent-mux hook approval',
+          title: 'adapters hook approval',
           body: `${hook.hookKind} requires attention`,
           onClick: () => navigate('/inbox'),
         });

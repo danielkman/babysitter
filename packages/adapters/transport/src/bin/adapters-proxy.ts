@@ -1,4 +1,4 @@
 #!/usr/bin/env node
 
-process.stderr.write('[agent-mux] "adapters-proxy" is deprecated, use "agent-mux-transport-proxy" instead.\n');
-await import('./agent-mux-transport-proxy.js');
+process.stderr.write('[adapters] "adapters-proxy" is deprecated, use "adapters-transport-proxy" instead.\n');
+await import('./adapters-transport-proxy.js');

@@ -1,7 +1,7 @@
 # Claude Server-Mode Transport Process
 
 Scope:
-- Implement the first remaining gap from the current agent-mux roadmap: a real Claude server-mode / channels transport path.
+- Implement the first remaining gap from the current adapters roadmap: a real Claude server-mode / channels transport path.
 
 Phases:
 1. Research current Claude docs and current repo transport semantics.

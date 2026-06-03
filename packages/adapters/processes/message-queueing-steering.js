@@ -1,5 +1,5 @@
 /**
- * @process agent-mux/message-queueing-steering
+ * @process adapters/message-queueing-steering
  * @description Brownfield implementation and verification workflow for SDK/TUI message queueing and steering.
  * @skill babysitter:plan plugins/babysitter/skills/plan/SKILL.md
  * @skill babysitter:retrospect plugins/babysitter/skills/retrospect/SKILL.md
@@ -58,7 +58,7 @@ const planTask = defineTask('plan-queueing-steering', (args, taskCtx) => ({
     name: 'general-purpose',
     prompt: {
       role: 'Senior TypeScript monorepo engineer',
-      task: 'Plan the brownfield implementation for message queueing and steering in agent-mux without changing scope.',
+      task: 'Plan the brownfield implementation for message queueing and steering in adapters without changing scope.',
       context: {
         projectRoot: args.projectRoot,
         specVerbatim: args.specVerbatim,
@@ -250,7 +250,7 @@ const reviewTask = defineTask('acceptance-review', (args, taskCtx) => ({
 }));
 
 export async function process(inputs = {}, ctx) {
-  const projectRoot = inputs.projectRoot ?? 'C:/work/agent-mux';
+  const projectRoot = inputs.projectRoot ?? 'C:/work/adapters';
   const specPath = inputs.specPath ?? 'todos.md';
   const capabilityMatrixPath = inputs.capabilityMatrixPath ?? 'docs/19-capabilities-matrix.md';
   const maxAttempts = inputs.maxAttempts ?? 2;

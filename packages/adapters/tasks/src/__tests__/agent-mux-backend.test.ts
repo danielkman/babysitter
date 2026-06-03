@@ -3,13 +3,13 @@ import type { SubmitBreakpointParams, WaitForAnswerOptions } from "../backend.js
 import {
   AgentMuxResponderBackend,
   AgentMuxResponderBackendError,
-} from "../backends/agent-mux.js";
+} from "../backends/adapters.js";
 import type {
   AgentMuxClientLike,
   AgentMuxResponderBackendConfig,
   AgentMuxRunHandleLike,
   AgentMuxRunResult,
-} from "../backends/agent-mux.js";
+} from "../backends/adapters.js";
 import {
   AgentMuxBackendConfigSchema,
   BackendConfigSchema,
@@ -113,7 +113,7 @@ function makeBackend(
 }
 
 describe("AgentMuxResponderBackend", () => {
-  it("dispatches to agent-mux synchronously and stores the answered breakpoint", async () => {
+  it("dispatches to adapters synchronously and stores the answered breakpoint", async () => {
     const runHandle = makeRunHandle(makeRunResult());
     const client = makeClient(runHandle);
     const backend = makeBackend({}, client);
@@ -179,7 +179,7 @@ describe("AgentMuxResponderBackend", () => {
     }));
   });
 
-  it("uses routing adapter when task routing targets an agent-mux adapter", async () => {
+  it("uses routing adapter when task routing targets an adapters adapter", async () => {
     const runHandle = makeRunHandle(makeRunResult({ agent: "codex" }));
     const client = makeClient(runHandle);
     const backend = new AgentMuxResponderBackend({
@@ -207,7 +207,7 @@ describe("AgentMuxResponderBackend", () => {
     }));
   });
 
-  it("records agent-mux cost, token, run, and event metadata in breakpoint context", async () => {
+  it("records adapters cost, token, run, and event metadata in breakpoint context", async () => {
     const backend = makeBackend({}, makeClient(makeRunHandle(makeRunResult())));
 
     const breakpoint = await backend.submitBreakpoint(makeSubmitParams());
@@ -242,7 +242,7 @@ describe("AgentMuxResponderBackend", () => {
       }),
     });
     await expect(adapterBackend.submitBreakpoint(makeSubmitParams()))
-      .rejects.toThrow(/agent-mux adapter is not installed or unknown/i);
+      .rejects.toThrow(/adapters adapter is not installed or unknown/i);
 
     const authBackend = makeBackend({}, {
       run: vi.fn(() => {
@@ -252,7 +252,7 @@ describe("AgentMuxResponderBackend", () => {
       }),
     });
     await expect(authBackend.submitBreakpoint(makeSubmitParams()))
-      .rejects.toThrow(/agent-mux authentication failed/i);
+      .rejects.toThrow(/adapters authentication failed/i);
 
     const failedBackend = makeBackend({}, makeClient(makeRunHandle(makeRunResult({
       exitCode: 1,
@@ -265,7 +265,7 @@ describe("AgentMuxResponderBackend", () => {
       },
     }))));
     await expect(failedBackend.submitBreakpoint(makeSubmitParams()))
-      .rejects.toThrow(/agent-mux run failed.*agent crashed/i);
+      .rejects.toThrow(/adapters run failed.*agent crashed/i);
 
     vi.useFakeTimers();
     try {
@@ -280,7 +280,7 @@ describe("AgentMuxResponderBackend", () => {
           presentToUser: false,
         },
       }));
-      const timeoutExpectation = expect(timeoutPromise).rejects.toThrow(/agent-mux run timed out/i);
+      const timeoutExpectation = expect(timeoutPromise).rejects.toThrow(/adapters run timed out/i);
 
       await vi.advanceTimersByTimeAsync(6);
       await timeoutExpectation;
@@ -322,20 +322,20 @@ describe("AgentMuxResponderBackend", () => {
       .catch((err: unknown) => err);
     expect(pending).toBeInstanceOf(AgentMuxResponderBackendError);
 
-    expect(listRegisteredBackends()).toContain("agent-mux");
-    expect(createBackend("agent-mux", {
-      type: "agent-mux",
+    expect(listRegisteredBackends()).toContain("adapters");
+    expect(createBackend("adapters", {
+      type: "adapters",
       agent: "codex",
-    }).name).toBe("agent-mux");
+    }).name).toBe("adapters");
     expect(AgentMuxBackendConfigSchema.safeParse({
-      type: "agent-mux",
+      type: "adapters",
       adapter: "codex",
       model: "gpt-5.3-codex",
       timeoutMs: 30_000,
       collectEvents: true,
     }).success).toBe(true);
     expect(BackendConfigSchema.safeParse({
-      type: "agent-mux",
+      type: "adapters",
       agent: "codex",
     }).success).toBe(true);
   });

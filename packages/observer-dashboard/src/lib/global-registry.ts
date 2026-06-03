@@ -5,7 +5,7 @@
  * duplicating accessor logic across packages.
  *
  * Uses a separate `__observer_registry__` globalThis key to avoid collision
- * with the kanban registry used by agent-mux.
+ * with the kanban registry used by adapters.
  */
 
 import type { EventEmitter } from "events";

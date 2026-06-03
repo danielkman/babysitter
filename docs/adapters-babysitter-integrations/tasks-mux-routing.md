@@ -2,7 +2,7 @@
 
 ## Motivation
 
-Instead of the SDK talking to agent-mux directly, **tasks-mux** becomes the single routing layer for all task dispatch — human responders, agent-mux adapters, and external issue trackers. The SDK only needs to know about tasks-mux.
+Instead of the SDK talking to adapters directly, **tasks-mux** becomes the single routing layer for all task dispatch — human responders, adapters adapters, and external issue trackers. The SDK only needs to know about tasks-mux.
 
 This is better because:
 - One routing system for all task types (human, agent, external)
@@ -20,7 +20,7 @@ SDK process: ctx.task(myTask)
 tasks-mux routes by responder type:
   ├─ type: "internal"  → agent-core session (direct API call)
   ├─ type: "human"     → breakpoint → human responder (existing)
-  ├─ type: "agent"     → agent-mux adapter (claude-code, codex, etc.)
+  ├─ type: "agent"     → adapters adapter (claude-code, codex, etc.)
   ├─ type: "tracker"   → external issue tracker (Jira, Linear, GitHub Issues)
   └─ type: "auto"      → tasks-mux picks best available responder
 ```
@@ -42,7 +42,7 @@ interface Responder {
   name: string;
   capabilities: string[];
   // Agent-specific:
-  adapter?: string;        // agent-mux adapter name
+  adapter?: string;        // adapters adapter name
   model?: string;          // default model
   provider?: string;       // default provider
   // Tracker-specific:
@@ -53,14 +53,14 @@ interface Responder {
 
 ### 2. tasks-mux: Agent Responder Backend
 
-New backend that wraps agent-mux:
+New backend that wraps adapters:
 
 ```typescript
-// packages/tasks-mux/src/backends/agent-mux.ts
+// packages/tasks-mux/src/backends/adapters.ts
 
 class AgentMuxResponderBackend implements BreakpointBackend {
   async submitBreakpoint(params: SubmitBreakpointParams): Promise<Breakpoint> {
-    // Route to agent-mux adapter
+    // Route to adapters adapter
     const amuxClient = await getAmuxClient();
     const handle = await amuxClient.run({
       agent: params.routing.targetAdapter,
@@ -90,7 +90,7 @@ class AgentMuxResponderBackend implements BreakpointBackend {
 
 ### 3. SDK: Task Definition Routes Through tasks-mux
 
-Replace direct agent-mux references with tasks-mux routing:
+Replace direct adapters references with tasks-mux routing:
 
 ```javascript
 // Process definition — routes through tasks-mux
@@ -100,9 +100,9 @@ const reviewTask = defineTask("review", (args) => ({
   agent: {
     prompt: "Review the changes...",
     // Routing handled by tasks-mux, not SDK:
-    responderType: "agent",     // tasks-mux routes to agent-mux
+    responderType: "agent",     // tasks-mux routes to adapters
     adapter: "claude-code",     // hint for tasks-mux routing
-    fallbackType: "internal",   // if agent-mux unavailable, use internal
+    fallbackType: "internal",   // if adapters unavailable, use internal
   },
 }));
 
@@ -168,7 +168,7 @@ async function matchAgentResponder(task: TaskDef, context: RoutingContext): Prom
     if (task.agent?.fallbackType === "internal") {
       return { id: "agent-core", type: "internal", name: "Internal (fallback)", capabilities: ["text"] };
     }
-    throw new Error("No agent responders available (agent-mux not installed)");
+    throw new Error("No agent responders available (adapters not installed)");
   }
   
   const preferred = task.agent?.adapter;
@@ -204,7 +204,7 @@ New:
 
 In plugin mode (babysitter running inside claude-code), tasks-mux routing is the same:
 - Internal tasks → delegated to host agent (via stop-hook)
-- Agent tasks → resolved internally by tasks-mux → agent-mux → external agent
+- Agent tasks → resolved internally by tasks-mux → adapters → external agent
 - Human tasks → routed to tasks-mux breakpoint system
 - Tracker tasks → synced to external tracker
 
@@ -212,7 +212,7 @@ The stop-hook handler queries tasks-mux for task routing before deciding what to
 
 ## Benefits Over Direct Integration
 
-| Concern | Direct agent-mux | Through tasks-mux |
+| Concern | Direct adapters | Through tasks-mux |
 |---------|-----------------|-------------------|
 | Task priorities | Not supported | Built-in (when added to tasks-mux) |
 | Dependencies | Not supported | Built-in (when added) |
@@ -226,7 +226,7 @@ The stop-hook handler queries tasks-mux for task routing before deciding what to
 ## Migration Path
 
 1. **Phase 1:** Add agent responder type to tasks-mux + AgentMuxResponderBackend
-2. **Phase 2:** SDK routes through tasks-mux instead of direct agent-mux
+2. **Phase 2:** SDK routes through tasks-mux instead of direct adapters
 3. **Phase 3:** Add tracker responder type for external issue trackers
 4. **Phase 4:** Add "auto" routing with capability-based responder matching
 5. **Phase 5:** Add priorities, dependencies, SLA across all responder types
@@ -235,10 +235,10 @@ The stop-hook handler queries tasks-mux for task routing before deciding what to
 
 | File | Description |
 |------|-------------|
-| `packages/tasks-mux/src/backends/agent-mux.ts` | Agent-mux responder backend |
+| `packages/tasks-mux/src/backends/adapters.ts` | Agent-mux responder backend |
 | `packages/tasks-mux/src/router.ts` | Task routing logic |
 | `packages/tasks-mux/src/responders/types.ts` | Extended responder types |
-| `packages/tasks-mux/src/backends/__tests__/agent-mux.test.ts` | Tests |
+| `packages/tasks-mux/src/backends/__tests__/adapters.test.ts` | Tests |
 
 ## Files to Modify
 

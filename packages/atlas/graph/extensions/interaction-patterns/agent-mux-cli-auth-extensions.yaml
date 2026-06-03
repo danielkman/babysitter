@@ -1,6 +1,6 @@
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-auth-check
+id: interaction-primitive:adapters-cli-auth-check
 attributes:
   displayName: "adapters auth check"
   kind: cli-subcommand
@@ -17,7 +17,7 @@ attributes:
     Source: packages/adapters/cli/src/commands/auth.ts:55-101.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-auth-setup
+id: interaction-primitive:adapters-cli-auth-setup
 attributes:
   displayName: "adapters auth setup"
   kind: cli-subcommand
@@ -35,7 +35,7 @@ attributes:
     Source: packages/adapters/cli/src/commands/auth.ts:103-138.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-plugin-list
+id: interaction-primitive:adapters-cli-plugin-list
 attributes:
   displayName: "adapters plugin list"
   kind: cli-subcommand
@@ -53,7 +53,7 @@ attributes:
     packages/adapters/cli/src/commands/plugin.ts:12-99.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-plugin-install
+id: interaction-primitive:adapters-cli-plugin-install
 attributes:
   displayName: "adapters plugin install"
   kind: cli-subcommand
@@ -71,7 +71,7 @@ attributes:
     packages/adapters/cli/src/commands/plugin.ts:12-99.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-plugin-enable
+id: interaction-primitive:adapters-cli-plugin-enable
 attributes:
   displayName: "adapters plugin enable"
   kind: cli-subcommand
@@ -89,7 +89,7 @@ attributes:
     packages/adapters/cli/src/commands/plugin.ts:12-99.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-plugin-disable
+id: interaction-primitive:adapters-cli-plugin-disable
 attributes:
   displayName: "adapters plugin disable"
   kind: cli-subcommand
@@ -107,7 +107,7 @@ attributes:
     packages/adapters/cli/src/commands/plugin.ts:12-99.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-plugin-marketplace
+id: interaction-primitive:adapters-cli-plugin-marketplace
 attributes:
   displayName: "adapters plugin marketplace"
   kind: cli-subcommand
@@ -125,7 +125,7 @@ attributes:
     packages/adapters/cli/src/commands/plugin.ts:12-99.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-mcp-list
+id: interaction-primitive:adapters-cli-mcp-list
 attributes:
   displayName: "adapters mcp list"
   kind: cli-subcommand
@@ -144,7 +144,7 @@ attributes:
     packages/adapters/cli/src/commands/mcp.ts:50-74.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-mcp-install
+id: interaction-primitive:adapters-cli-mcp-install
 attributes:
   displayName: "adapters mcp install"
   kind: cli-subcommand
@@ -162,7 +162,7 @@ attributes:
     packages/adapters/cli/src/commands/mcp.ts:75-84.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-mcp-uninstall
+id: interaction-primitive:adapters-cli-mcp-uninstall
 attributes:
   displayName: "adapters mcp uninstall"
   kind: cli-subcommand
@@ -179,7 +179,7 @@ attributes:
     packages/adapters/cli/src/commands/mcp.ts:85-94.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-skill-list
+id: interaction-primitive:adapters-cli-skill-list
 attributes:
   displayName: "adapters skill list"
   kind: cli-subcommand
@@ -197,7 +197,7 @@ attributes:
     packages/adapters/cli/src/commands/skill.ts:124-145.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-skill-add
+id: interaction-primitive:adapters-cli-skill-add
 attributes:
   displayName: "adapters skill add"
   kind: cli-subcommand
@@ -218,7 +218,7 @@ attributes:
     packages/adapters/cli/src/commands/skill.ts:147-176.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-skill-remove
+id: interaction-primitive:adapters-cli-skill-remove
 attributes:
   displayName: "adapters skill remove"
   kind: cli-subcommand
@@ -237,7 +237,7 @@ attributes:
     packages/adapters/cli/src/commands/skill.ts:178-197.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-skill-where
+id: interaction-primitive:adapters-cli-skill-where
 attributes:
   displayName: "adapters skill where"
   kind: cli-subcommand
@@ -253,7 +253,7 @@ attributes:
     packages/adapters/cli/src/commands/skill.ts:113-122.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-skill-agents
+id: interaction-primitive:adapters-cli-skill-agents
 attributes:
   displayName: "adapters skill agents"
   kind: cli-subcommand
@@ -268,7 +268,7 @@ attributes:
     packages/adapters/cli/src/commands/skill.ts:91-96.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-agent-list
+id: interaction-primitive:adapters-cli-agent-list
 attributes:
   displayName: "adapters agent list"
   kind: cli-subcommand
@@ -286,7 +286,7 @@ attributes:
     packages/adapters/cli/src/commands/agent.ts:143-151.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-agent-add
+id: interaction-primitive:adapters-cli-agent-add
 attributes:
   displayName: "adapters agent add"
   kind: cli-subcommand
@@ -307,7 +307,7 @@ attributes:
     Source: packages/adapters/cli/src/commands/agent.ts:153-183.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-agent-remove
+id: interaction-primitive:adapters-cli-agent-remove
 attributes:
   displayName: "adapters agent remove"
   kind: cli-subcommand
@@ -326,7 +326,7 @@ attributes:
     packages/adapters/cli/src/commands/agent.ts:185-204.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-agent-where
+id: interaction-primitive:adapters-cli-agent-where
 attributes:
   displayName: "adapters agent where"
   kind: cli-subcommand
@@ -342,7 +342,7 @@ attributes:
     packages/adapters/cli/src/commands/agent.ts:132-141.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-agent-agents
+id: interaction-primitive:adapters-cli-agent-agents
 attributes:
   displayName: "adapters agent agents"
   kind: cli-subcommand

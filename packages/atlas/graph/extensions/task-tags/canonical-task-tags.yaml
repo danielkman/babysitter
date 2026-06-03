@@ -27,19 +27,19 @@ attributes:
 edges: {}
 ---
 nodeKind: TaskTag
-id: task-tag:agent-mux-frontend
+id: task-tag:adapters-frontend
 attributes:
-  displayName: frontend (agent-mux)
+  displayName: frontend (adapters)
   name: frontend
   key: frontend
   scope: project
-  scopeId: project:agent-mux
-  description: Frontend (webui / ui) work within the agent-mux project.
+  scopeId: project:adapters
+  description: Frontend (webui / ui) work within the adapters project.
   color: '#0ea5e9'
   order: 5
 edges:
   scoped_to_project:
-  - target: project:agent-mux
+  - target: project:adapters
 ---
 nodeKind: TaskTag
 id: task-tag:security-review

@@ -1,13 +1,13 @@
 ---
 nodeKind: PathDescriptor
-id: path:agent-mux-cli
+id: path:adapters-cli
 attributes:
-  pathId: path:agent-mux-cli
-  displayName: "agent-mux CLI workspace"
+  pathId: path:adapters-cli
+  displayName: "adapters CLI workspace"
   path: "packages/adapters/cli"
   pathKind: source-of-truth-dir
   ownerKind: PackageSurface
-  ownerId: package:a5c-ai-agent-mux-cli
+  ownerId: package:a5c-ai-adapters-cli
   platform: repo
   scope: project
   evaluationContext: project
@@ -15,14 +15,14 @@ attributes:
   notes: adapters CLI bin entrypoint package.
 ---
 nodeKind: PathDescriptor
-id: path:agent-mux-gateway
+id: path:adapters-gateway
 attributes:
-  pathId: path:agent-mux-gateway
-  displayName: "agent-mux gateway workspace"
+  pathId: path:adapters-gateway
+  displayName: "adapters gateway workspace"
   path: "packages/adapters/gateway"
   pathKind: source-of-truth-dir
   ownerKind: PackageSurface
-  ownerId: package:a5c-ai-agent-mux-gateway
+  ownerId: package:a5c-ai-adapters-gateway
   platform: repo
   scope: project
   evaluationContext: project
@@ -30,14 +30,14 @@ attributes:
   notes: HTTP gateway / fanout server.
 ---
 nodeKind: PathDescriptor
-id: path:agent-mux-tui
+id: path:adapters-tui
 attributes:
-  pathId: path:agent-mux-tui
-  displayName: "agent-mux TUI workspace"
+  pathId: path:adapters-tui
+  displayName: "adapters TUI workspace"
   path: "packages/adapters/tui"
   pathKind: source-of-truth-dir
   ownerKind: PackageSurface
-  ownerId: package:a5c-ai-agent-mux-tui
+  ownerId: package:a5c-ai-adapters-tui
   platform: repo
   scope: project
   evaluationContext: project
@@ -45,14 +45,14 @@ attributes:
   notes: Ink-based adapters-tui bin entrypoint.
 ---
 nodeKind: PathDescriptor
-id: path:agent-mux-ui
+id: path:adapters-ui
 attributes:
-  pathId: path:agent-mux-ui
-  displayName: "agent-mux UI shared workspace"
+  pathId: path:adapters-ui
+  displayName: "adapters UI shared workspace"
   path: "packages/adapters/ui"
   pathKind: source-of-truth-dir
   ownerKind: PackageSurface
-  ownerId: package:a5c-ai-agent-mux-ui
+  ownerId: package:a5c-ai-adapters-ui
   platform: repo
   scope: project
   evaluationContext: project
@@ -60,29 +60,29 @@ attributes:
   notes: Cross-platform UI components and session-flow.
 ---
 nodeKind: PathDescriptor
-id: path:agent-mux-webui
+id: path:adapters-webui
 attributes:
-  pathId: path:agent-mux-webui
-  displayName: "agent-mux Web UI workspace"
+  pathId: path:adapters-webui
+  displayName: "adapters Web UI workspace"
   path: "packages/adapters/webui"
   pathKind: source-of-truth-dir
   ownerKind: PackageSurface
-  ownerId: package:a5c-ai-agent-mux-webui
+  ownerId: package:a5c-ai-adapters-webui
   platform: repo
   scope: project
   evaluationContext: project
   expansion: literal
-  notes: Browser-based agent-mux web UI.
+  notes: Browser-based adapters web UI.
 ---
 nodeKind: PathDescriptor
-id: path:agent-mux-harness-mock
+id: path:adapters-harness-mock
 attributes:
-  pathId: path:agent-mux-harness-mock
-  displayName: "agent-mux harness mock workspace"
+  pathId: path:adapters-harness-mock
+  displayName: "adapters harness mock workspace"
   path: "packages/adapters/harness-mock"
   pathKind: source-of-truth-dir
   ownerKind: PackageSurface
-  ownerId: package:a5c-ai-agent-mux-harness-mock
+  ownerId: package:a5c-ai-adapters-harness-mock
   platform: repo
   scope: project
   evaluationContext: project
@@ -90,14 +90,14 @@ attributes:
   notes: Mock harness emulator for adapter tests.
 ---
 nodeKind: PathDescriptor
-id: path:agent-mux-observability
+id: path:adapters-observability
 attributes:
-  pathId: path:agent-mux-observability
-  displayName: "agent-mux observability workspace"
+  pathId: path:adapters-observability
+  displayName: "adapters observability workspace"
   path: "packages/adapters/observability"
   pathKind: source-of-truth-dir
   ownerKind: PackageSurface
-  ownerId: package:a5c-ai-agent-mux-observability
+  ownerId: package:a5c-ai-adapters-observability
   platform: repo
   scope: project
   evaluationContext: project
@@ -105,14 +105,14 @@ attributes:
   notes: Logger and telemetry library.
 ---
 nodeKind: PathDescriptor
-id: path:agent-mux-sdk
+id: path:adapters-sdk
 attributes:
-  pathId: path:agent-mux-sdk
-  displayName: "agent-mux umbrella SDK workspace"
+  pathId: path:adapters-sdk
+  displayName: "adapters umbrella SDK workspace"
   path: "packages/adapters/sdk"
   pathKind: source-of-truth-dir
   ownerKind: PackageSurface
-  ownerId: package:a5c-ai-agent-mux
+  ownerId: package:a5c-ai-adapters
   platform: repo
   scope: project
   evaluationContext: project
@@ -120,14 +120,14 @@ attributes:
   notes: Umbrella @a5c-ai/adapters re-export with adapters bin.
 ---
 nodeKind: PathDescriptor
-id: path:agent-mux-adapters
+id: path:adapters-adapters
 attributes:
-  pathId: path:agent-mux-adapters
-  displayName: "agent-mux adapters workspace"
+  pathId: path:adapters-adapters
+  displayName: "adapters adapters workspace"
   path: "packages/adapters/adapters"
   pathKind: source-of-truth-dir
   ownerKind: PackageSurface
-  ownerId: package:a5c-ai-agent-mux-adapters
+  ownerId: package:a5c-ai-adapters-adapters
   platform: repo
   scope: project
   evaluationContext: project

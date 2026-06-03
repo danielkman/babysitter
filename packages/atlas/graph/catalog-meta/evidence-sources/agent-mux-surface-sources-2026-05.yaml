@@ -1,7 +1,7 @@
 nodeKind: EvidenceSource
-id: evidence:agent-mux-tui-package-source
+id: evidence:adapters-tui-package-source
 attributes:
-  displayName: agent-mux TUI package source
+  displayName: adapters TUI package source
   kindLabel: file
   trustLevel: trust-level:repo
   sourceUrl: https://github.com/a5c-ai/babysitter/blob/main/packages/adapters/tui/package.json
@@ -19,9 +19,9 @@ edges:
     - trust-level:repo
 ---
 nodeKind: EvidenceSource
-id: evidence:agent-mux-tui-primitives-source
+id: evidence:adapters-tui-primitives-source
 attributes:
-  displayName: agent-mux TUI interaction primitive source
+  displayName: adapters TUI interaction primitive source
   kindLabel: file
   trustLevel: trust-level:repo
   sourceUrl: https://github.com/a5c-ai/babysitter/blob/main/packages/adapters/tui/src/command-palette.tsx
@@ -39,9 +39,9 @@ edges:
     - trust-level:repo
 ---
 nodeKind: EvidenceSource
-id: evidence:agent-mux-cli-package-source
+id: evidence:adapters-cli-package-source
 attributes:
-  displayName: agent-mux CLI package source
+  displayName: adapters CLI package source
   kindLabel: file
   trustLevel: trust-level:repo
   sourceUrl: https://github.com/a5c-ai/babysitter/blob/main/packages/adapters/cli/package.json
@@ -59,9 +59,9 @@ edges:
     - trust-level:repo
 ---
 nodeKind: EvidenceSource
-id: evidence:agent-mux-cli-command-source
+id: evidence:adapters-cli-command-source
 attributes:
-  displayName: agent-mux CLI command source
+  displayName: adapters CLI command source
   kindLabel: file
   trustLevel: trust-level:repo
   sourceUrl: https://github.com/a5c-ai/babysitter/blob/main/packages/adapters/cli/src/commands
@@ -119,9 +119,9 @@ edges:
     - trust-level:repo
 ---
 nodeKind: EvidenceSource
-id: evidence:agent-mux-gateway-package-source
+id: evidence:adapters-gateway-package-source
 attributes:
-  displayName: agent-mux gateway package source
+  displayName: adapters gateway package source
   kindLabel: file
   trustLevel: trust-level:repo
   sourceUrl: https://github.com/a5c-ai/babysitter/blob/main/packages/adapters/gateway/package.json
@@ -139,9 +139,9 @@ edges:
     - trust-level:repo
 ---
 nodeKind: EvidenceSource
-id: evidence:agent-mux-gateway-endpoint-source
+id: evidence:adapters-gateway-endpoint-source
 attributes:
-  displayName: agent-mux gateway endpoint source
+  displayName: adapters gateway endpoint source
   kindLabel: file
   trustLevel: trust-level:repo
   sourceUrl: https://github.com/a5c-ai/babysitter/blob/main/packages/adapters/gateway/src/server.ts

@@ -38,9 +38,9 @@ edges:
     - trust-level:repo
 ---
 nodeKind: EvidenceSource
-id: evidence:agent-mux-harness-mock-package-source
+id: evidence:adapters-harness-mock-package-source
 attributes:
-  displayName: agent-mux harness-mock package source
+  displayName: adapters harness-mock package source
   kindLabel: file
   trustLevel: trust-level:repo
   sourceUrl: https://github.com/a5c-ai/babysitter/blob/main/packages/adapters/harness-mock/package.json
@@ -58,9 +58,9 @@ edges:
     - trust-level:repo
 ---
 nodeKind: EvidenceSource
-id: evidence:agent-mux-harness-mock-scenarios-source
+id: evidence:adapters-harness-mock-scenarios-source
 attributes:
-  displayName: agent-mux harness-mock scenario source
+  displayName: adapters harness-mock scenario source
   kindLabel: file
   trustLevel: trust-level:repo
   sourceUrl: https://github.com/a5c-ai/babysitter/blob/main/packages/adapters/harness-mock/src/scenarios/interactive.ts

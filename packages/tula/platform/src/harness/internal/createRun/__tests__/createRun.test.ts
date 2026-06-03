@@ -3160,7 +3160,7 @@ describe("handleHarnessCreateRun", () => {
       expect(existsSync(currentStatePath) || existsSync(leakedStatePath)).toBe(true);
     });
 
-    it("persists wrapped worktree metadata in session context when the workspace is an agent-mux workspace", async () => {
+    it("persists wrapped worktree metadata in session context when the workspace is an adapters workspace", async () => {
       const globalStateRoot = await fs.mkdtemp(path.join(os.tmpdir(), "harness-create-run-worktree-state-"));
       const tempHome = await fs.mkdtemp(path.join(os.tmpdir(), "harness-create-run-worktree-home-"));
       const repoDir = await fs.mkdtemp(path.join(os.tmpdir(), "harness-create-run-worktree-repo-"));

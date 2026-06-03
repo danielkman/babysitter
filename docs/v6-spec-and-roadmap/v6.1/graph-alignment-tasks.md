@@ -51,30 +51,30 @@ Make npm package names and directory names match graph mux names.
 - [ ] Publish `@a5c-ai/tasks-adapter` and deprecate `@a5c-ai/tasks-adapter`
 - [ ] Update graph YAML SourceRef nodes
 
-### 1.3 agent-mux decomposition — align sub-packages to graph muxes
+### 1.3 adapters decomposition — align sub-packages to graph muxes
 
-The graph defines 3 muxes inside what's currently the agent-mux monolith:
+The graph defines 3 muxes inside what's currently the adapters monolith:
 - `agent-launch-mux` (spawn/lifecycle)
 - `agent-comm-mux` (event streaming)
 - `agent-config-mux` (install/config/auth)
 
 Currently these are split differently:
 - `agent-comm-mux` = agent-comm-mux + types
-- `agent-mux-cli` = agent-launch-mux + agent-config-mux + interaction
-- `agent-mux-adapters` = part of agent-config-mux
+- `adapters-cli` = agent-launch-mux + agent-config-mux + interaction
+- `adapters-adapters` = part of agent-config-mux
 
 **Tasks:**
-- [ ] Extract `agent-launch-mux` from `agent-mux-cli/src/commands/launch.ts` into `packages/adapters/launch/`
+- [ ] Extract `agent-launch-mux` from `adapters-cli/src/commands/launch.ts` into `packages/adapters/launch/`
   - npm: `@a5c-ai/launch-adapter`
   - Owns: InvocationOptions, SpawnArgs, process lifecycle, signal propagation, retry
-- [ ] Extract `agent-config-mux` from `agent-mux-cli/src/commands/install*.ts` + `agent-mux-adapters/` into `packages/adapters/config/`
+- [ ] Extract `agent-config-mux` from `adapters-cli/src/commands/install*.ts` + `adapters-adapters/` into `packages/adapters/config/`
   - npm: `@a5c-ai/config-adapter`
   - Owns: install, uninstall, update, detect, auth verification per adapter
 - [ ] Rename `agent-comm-mux` to `agent-comm-mux`
   - npm: `@a5c-ai/comm-adapter`
   - Owns: event streaming, client, canonical event schema
-- [ ] Keep `agent-mux-cli` as the composition CLI (`adapters`) that wires the 3 muxes together
-- [ ] Keep `agent-mux-gateway`, `agent-mux-tui`, `agent-mux-ui`, `agent-mux-webui` as presentation packages (they consume muxes)
+- [ ] Keep `adapters-cli` as the composition CLI (`adapters`) that wires the 3 muxes together
+- [ ] Keep `adapters-gateway`, `adapters-tui`, `adapters-ui`, `adapters-webui` as presentation packages (they consume muxes)
 
 ### 1.4 sdk → orchestration-mux (or keep as-is)
 
@@ -185,13 +185,13 @@ Graph defines this as a mux (multiple backends). Current: filesystem only.
 
 Update the atlas graph to reflect actual code structure.
 
-### 4.1 Add agent-mux internal decomposition to graph
+### 4.1 Add adapters internal decomposition to graph
 
 **Tasks:**
 - [ ] Add `AgentCoreImpl` record for agent-comm-mux / agent-comm-mux
-- [ ] Add `AgentRuntimeImpl` record for agent-mux-cli (as composition runtime)
-- [ ] Link Presentation records to their implementing packages (agent-mux-tui, agent-mux-ui, agent-mux-webui)
-- [ ] Add SourceRef nodes for each agent-mux sub-package
+- [ ] Add `AgentRuntimeImpl` record for adapters-cli (as composition runtime)
+- [ ] Link Presentation records to their implementing packages (adapters-tui, adapters-ui, adapters-webui)
+- [ ] Add SourceRef nodes for each adapters sub-package
 
 ### 4.2 Move misplaced node kinds to correct clusters
 
@@ -231,7 +231,7 @@ Phase 1.2 (tasks-mux rename)
 Phase 2.1 (tool-mux create) — can start in parallel with renames
 Phase 2.2 (event schema) — can start in parallel
   ↓
-Phase 1.3 (agent-mux decomposition) — biggest refactor, do after renames settle
+Phase 1.3 (adapters decomposition) — biggest refactor, do after renames settle
   ↓
 Phase 3.1 (9-state lifecycle) — depends on agent-launch-mux extraction
 Phase 3.2 (codec architecture) — independent
@@ -248,7 +248,7 @@ Phase 5 (metadata) — do last, sweep pass
 |-------|-------|--------|------|
 | 1.1 extension-mux rename | 7 | Medium | Low (rename + deprecate) |
 | 1.2 tasks-mux rename | 8 | Medium | Low |
-| 1.3 agent-mux decomposition | 5 | **Large** | Medium (API surface changes) |
+| 1.3 adapters decomposition | 5 | **Large** | Medium (API surface changes) |
 | 1.4 SDK annotation | 2 | Small | None |
 | 1.5 agent-platform annotation | 2 | Small | None |
 | 2.1 tool-mux package | 6 | **Large** | Medium (new abstraction) |

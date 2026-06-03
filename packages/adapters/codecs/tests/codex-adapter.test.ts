@@ -244,7 +244,7 @@ describe('CodexAdapter', () => {
             id: 'cmd-1',
             type: 'command_execution',
             command: 'pwd',
-            aggregated_output: 'C:/work/agent-mux',
+            aggregated_output: 'C:/work/adapters',
           },
         }),
         makeContext(),
@@ -253,7 +253,7 @@ describe('CodexAdapter', () => {
       expect(event.type).toBe('tool_result');
       expect(event.toolCallId).toBe('cmd-1');
       expect(event.toolName).toBe('pwd');
-      expect(event.output).toContain('agent-mux');
+      expect(event.output).toContain('adapters');
     });
 
     it('parses error events', () => {
@@ -351,7 +351,7 @@ describe('CodexAdapter', () => {
               type: 'session_meta',
               payload: {
                 id: 'native-session-1',
-                cwd: 'C:\\work\\agent-mux',
+                cwd: 'C:\\work\\adapters',
               },
             }),
             JSON.stringify({
@@ -382,7 +382,7 @@ describe('CodexAdapter', () => {
               payload: {
                 type: 'function_call_output',
                 call_id: 'call-1',
-                output: 'C:\\\\work\\\\agent-mux',
+                output: 'C:\\\\work\\\\adapters',
               },
             }),
             JSON.stringify({
@@ -399,7 +399,7 @@ describe('CodexAdapter', () => {
 
         const session = await adapter.parseSessionFile(sessionPath);
         expect(session.sessionId).toBe('example');
-        expect(session.cwd).toBe('C:\\work\\agent-mux');
+        expect(session.cwd).toBe('C:\\work\\adapters');
         expect(session.model).toBe('gpt-5.4');
         expect(session.messages).toHaveLength(4);
         expect(session.messages[0]).toMatchObject({
@@ -421,7 +421,7 @@ describe('CodexAdapter', () => {
           toolResult: {
             toolCallId: 'call-1',
             toolName: 'shell_command',
-            output: 'C:\\\\work\\\\agent-mux',
+            output: 'C:\\\\work\\\\adapters',
           },
         });
         expect(session.messages[3]).toMatchObject({

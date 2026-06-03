@@ -131,8 +131,8 @@ describe("resolveEffect tasks-mux routing", () => {
   it("delegates routable agent effects through tasks-mux AgentMuxResponderBackend", async () => {
     taskMuxMock.routeTask.mockReturnValue({
       responderType: "agent",
-      route: "agent-mux",
-      backend: "agent-mux",
+      route: "adapters",
+      backend: "adapters",
       responder: { id: "codex", adapter: "codex", model: "gpt-5.4" },
     });
     taskMuxMock.submitBreakpoint.mockResolvedValue({
@@ -211,11 +211,11 @@ describe("resolveEffect tasks-mux routing", () => {
   it("falls back to internal agent resolution when external agent dispatch fails with fallback enabled", async () => {
     taskMuxMock.routeTask.mockReturnValue({
       responderType: "agent",
-      route: "agent-mux",
-      backend: "agent-mux",
+      route: "adapters",
+      backend: "adapters",
       responder: { id: "codex", adapter: "codex", model: "gpt-5.4" },
     });
-    taskMuxMock.submitBreakpoint.mockRejectedValue(new Error("agent-mux unavailable"));
+    taskMuxMock.submitBreakpoint.mockRejectedValue(new Error("adapters unavailable"));
     const piSession = {
       prompt: vi.fn(async () => ({
         success: true,
@@ -255,8 +255,8 @@ describe("resolveEffect tasks-mux routing", () => {
   it("returns an error when external agent dispatch fails without fallback enabled", async () => {
     taskMuxMock.routeTask.mockReturnValue({
       responderType: "agent",
-      route: "agent-mux",
-      backend: "agent-mux",
+      route: "adapters",
+      backend: "adapters",
       responder: { id: "codex", adapter: "codex" },
     });
     taskMuxMock.submitBreakpoint.mockRejectedValue(new Error("auth failed"));
@@ -287,8 +287,8 @@ describe("resolveEffect tasks-mux routing", () => {
   it("delegates legacy CLI resolveAndPostEffect agent routing through tasks-mux", async () => {
     taskMuxMock.routeTask.mockReturnValue({
       responderType: "agent",
-      route: "agent-mux",
-      backend: "agent-mux",
+      route: "adapters",
+      backend: "adapters",
       responder: { id: "codex", adapter: "codex", model: "gpt-5.4" },
     });
     taskMuxMock.submitBreakpoint.mockResolvedValue({

@@ -10,7 +10,7 @@ attributes:
   stackScope: full
   description: |
     Python CLI coding agent distributed via PyPI. Integrated into the v6
-    catalog through the agent-mux adapter; ships a YAML config at
+    catalog through the adapters adapter; ships a YAML config at
     `~/.hermes/cli-config.yaml` and a skill directory under `~/.hermes/skills/`.
 edges:
   has_version:

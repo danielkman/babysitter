@@ -79,59 +79,59 @@ export interface AgentCoreSessionEvent {
 }
 
 export interface AgentCoreSessionOptions extends AgentCoreStructuredOutputOptions {
-  /** Working directory forwarded to agent-mux as `cwd`. */
+  /** Working directory forwarded to adapters as `cwd`. */
   workspace?: string;
-  /** Model identifier forwarded to agent-mux as `model`. */
+  /** Model identifier forwarded to adapters as `model`. */
   model?: string;
-  /** Prompt timeout in milliseconds forwarded to agent-mux as `timeout`. */
+  /** Prompt timeout in milliseconds forwarded to adapters as `timeout`. */
   timeout?: number;
   /** Maximum persisted history entries retained on the session handle. Defaults to 20. */
   maxHistoryTurns?: number;
   /** Maximum estimated tokens from prior history sent with a prompt. */
   maxHistoryTokens?: number;
-  /** Translated to agent-mux `thinkingEffort`. */
+  /** Translated to adapters `thinkingEffort`. */
   thinkingLevel?: "minimal" | "low" | "medium" | "high" | "xhigh";
   /**
-   * @deprecated Ignored by the agent-mux-backed agent-core runtime.
-   * Use agent-mux-specific configuration, or the PI wrapper in
+   * @deprecated Ignored by the adapters-backed agent-core runtime.
+   * Use adapters-specific configuration, or the PI wrapper in
    * `@a5c-ai/tula-platform`, if you still need tool-surface control.
    */
   toolsMode?: "default" | "coding" | "readonly";
   /**
-   * @deprecated Ignored by the agent-mux-backed agent-core runtime.
+   * @deprecated Ignored by the adapters-backed agent-core runtime.
    * Use `createAgentCoreToolDefinitions()` in the host integration or the PI
    * wrapper in `@a5c-ai/tula-platform` for custom tool injection.
    */
   customTools?: unknown[];
   /** Enables interactive approval mode when a host UI context is present. */
   uiContext?: unknown;
-  /** Base system prompt text forwarded to agent-mux. */
+  /** Base system prompt text forwarded to adapters. */
   systemPrompt?: string;
   /** Additional system prompt segments appended before dispatch. */
   appendSystemPrompt?: string[];
   /**
-   * @deprecated Ignored by the agent-mux-backed agent-core runtime.
+   * @deprecated Ignored by the adapters-backed agent-core runtime.
    * Use the PI wrapper in `@a5c-ai/tula-platform` if you still need
    * extension and skills isolation controls.
    */
   isolated?: boolean;
   /**
-   * @deprecated Ignored by the agent-mux-backed agent-core runtime.
-   * Session persistence is controlled by the selected agent-mux backend.
+   * @deprecated Ignored by the adapters-backed agent-core runtime.
+   * Session persistence is controlled by the selected adapters backend.
    */
   ephemeral?: boolean;
   /**
-   * @deprecated Ignored by the agent-mux-backed agent-core runtime.
-   * Sandbox behavior now belongs to the selected agent-mux backend.
+   * @deprecated Ignored by the adapters-backed agent-core runtime.
+   * Sandbox behavior now belongs to the selected adapters backend.
    */
   bashSandbox?: "auto" | "secure" | "local";
   /**
-   * @deprecated Ignored by the agent-mux-backed agent-core runtime.
-   * Compaction behavior now belongs to the selected agent-mux backend.
+   * @deprecated Ignored by the adapters-backed agent-core runtime.
+   * Compaction behavior now belongs to the selected adapters backend.
    */
   enableCompaction?: boolean;
   /**
-   * @deprecated Ignored by the agent-mux-backed agent-core runtime.
+   * @deprecated Ignored by the adapters-backed agent-core runtime.
    * Use the target backend's native configuration if you need a custom agents
    * directory.
    */

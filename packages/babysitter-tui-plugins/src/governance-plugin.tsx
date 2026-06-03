@@ -1,5 +1,5 @@
 /**
- * babysitter-governance-plugin -- Shows governance/permission decisions in agent-mux TUI.
+ * babysitter-governance-plugin -- Shows governance/permission decisions in adapters TUI.
  *
  * Registers:
  * - A "Governance" view showing breakpoint approval history and auto-approval rules

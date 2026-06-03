@@ -48,7 +48,7 @@ The current `tasks-mux` package still exposes human breakpoint-oriented responde
 | Planned coverage | Target file | Status |
 | --- | --- | --- |
 | ResponderType routing: internal, human, agent, tracker, auto | `packages/tasks-mux/src/__tests__/responder-routing.test.ts` | Blocked by #630. |
-| Agent-mux responder backend | `packages/tasks-mux/src/__tests__/agent-mux-responder-backend.test.ts` | Blocked by #631. |
+| Agent-mux responder backend | `packages/tasks-mux/src/__tests__/adapters-responder-backend.test.ts` | Blocked by #631. |
 | External tracker backend | `packages/tasks-mux/src/__tests__/external-tracker-backend.test.ts` | Blocked by #632. |
 | tasks-mux harness integration | `packages/tasks-mux/src/__tests__/harness-integration.test.ts` | Blocked by #630 and #633. |
 | SDK external agent discovery | `packages/sdk/src/harness/__tests__/externalAgentDiscovery.test.ts` | Blocked by #602. |

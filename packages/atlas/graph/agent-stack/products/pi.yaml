@@ -11,7 +11,7 @@ attributes:
   repoUrl: "https://github.com/earendil-works/pi"
   description: |
     Pi is a terminal coding agent from earendil-works/pi, integrated into
-    the v6 catalog through the agent-mux adapter. The repo is structured
+    the v6 catalog through the adapters adapter. The repo is structured
     as a multi-package workspace:
 
     - packages/ai — AI provider abstraction layer supporting Anthropic,

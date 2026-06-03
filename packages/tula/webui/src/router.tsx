@@ -58,7 +58,7 @@ function AuthPendingScreen(): JSX.Element {
   return (
     <main className="login-page">
       <section className="login-card auth-card">
-        <p className="eyebrow">agent-mux webui</p>
+        <p className="eyebrow">adapters webui</p>
         <h1>Checking gateway access</h1>
         <p className="lede auth-note">
           Reconnecting to the saved gateway before loading live sessions, workspaces, and dispatch activity.

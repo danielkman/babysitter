@@ -7,7 +7,7 @@ This package implements the spec in [SPEC.md](./SPEC.md) with:
 - environment-aware config loading and validation
 - deployment plan construction
 - Terraform rendering for Minikube, existing clusters, EKS, AKS, and GKE
-- Kubernetes manifest rendering for `kanban`, `agent-mux-gateway`, and optional `agent-platform`
+- Kubernetes manifest rendering for `kanban`, `adapters-gateway`, and optional `agent-platform`
 - install, upgrade, status, auth bootstrap, provider configuration, and agent install workflows
 - a `cloud` CLI built on the SDK
 

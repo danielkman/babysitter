@@ -1,5 +1,5 @@
 {
-  "projectRoot": "C:/work/agent-mux",
+  "projectRoot": "C:/work/adapters",
   "specPath": "todos.md",
   "capabilityMatrixPath": "docs/19-capabilities-matrix.md",
   "maxAttempts": 2

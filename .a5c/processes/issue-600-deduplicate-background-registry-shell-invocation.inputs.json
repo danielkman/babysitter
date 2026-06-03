@@ -82,7 +82,7 @@
     "Endpoint resolution and SDK plugin registry duplication are assessed only as related context and are not implemented in this PR unless unavoidable."
   ],
   "nonGoals": [
-    "Do not redesign endpoint resolution across agent-core and agent-mux.",
+    "Do not redesign endpoint resolution across agent-core and adapters.",
     "Do not unify the SDK plugin registry with the agent-platform plugin system in this issue.",
     "Do not change the user-facing bash tool contract beyond removing internal duplication.",
     "Do not change shell quoting semantics, shell:false behavior, or the choice of /bin/bash on non-Windows as part of this refactor.",

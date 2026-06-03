@@ -93,7 +93,7 @@ function evaluateTransportMuxCutover(): boolean {
     countFiles("packages/transport-mux/tests/e2e", ".ts");
 
   const docsHonestyChecks = [
-    containsAll(readmeDoc, ["published transport/proxy runtime seam", "used by the agent-mux launcher"]),
+    containsAll(readmeDoc, ["published transport/proxy runtime seam", "used by the adapters launcher"]),
     containsAll(readmeDoc, ["published npm deliverable", "public runtime surface"]),
     containsAll(migrationDoc, [
       "published transport/proxy runtime seam",

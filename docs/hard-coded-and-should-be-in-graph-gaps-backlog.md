@@ -11,22 +11,22 @@
 
 | Category | Count | Package | Severity |
 |----------|-------|---------|----------|
-| Adapter self-identity defaults | 38 | agent-mux/adapters | High |
-| Adapter self-registration calls | 10 | agent-mux/adapters | High |
+| Adapter self-identity defaults | 38 | adapters/adapters | High |
+| Adapter self-registration calls | 10 | adapters/adapters | High |
 | hooks-mux adapter defaults + fallbacks | 40 | hooks-mux/adapter-* | High |
-| Dispatch switches (translate/launch/tui) | 11 | agent-mux/adapters + cli | Medium |
+| Dispatch switches (translate/launch/tui) | 11 | adapters/adapters + cli | Medium |
 | Adapter class→format maps | 9 | extension-mux | Medium |
 | SDK prompt context factory names | 9 | sdk/harness | Medium |
-| CLI paths/capabilities | 5 | agent-mux/cli | Medium |
-| Model/host-detection registries | 6 | agent-mux/core | Medium |
-| agent-mux CJS process scripts | 18 | agent-mux/processes | Low |
-| Test mock scenarios | 55 | agent-mux/harness-mock | Low |
+| CLI paths/capabilities | 5 | adapters/cli | Medium |
+| Model/host-detection registries | 6 | adapters/core | Medium |
+| adapters CJS process scripts | 18 | adapters/processes | Low |
+| Test mock scenarios | 55 | adapters/harness-mock | Low |
 
 ---
 
 ## HIGH: Adapter Identity & Registration (88 refs)
 
-### H1 — agent-mux adapter self-identity (38 refs)
+### H1 — adapters adapter self-identity (38 refs)
 
 Each adapter class hardcodes its own `agent` and `cliCommand`:
 ```typescript
@@ -34,7 +34,7 @@ readonly agent: string = 'claude';
 readonly cliCommand: string = 'claude';
 ```
 
-**Files:** claude-adapter.ts, codex-adapter.ts, cursor-adapter.ts, gemini-adapter.ts, copilot-adapter.ts, pi-adapter.ts, pi-sdk-adapter.ts, omp-adapter.ts, opencode-adapter.ts, opencode-http-adapter.ts, openclaw-adapter.ts, droid-adapter.ts, amp-adapter.ts, hermes-adapter.ts, qwen-adapter.ts, codex-sdk-adapter.ts, codex-websocket-adapter.ts, claude-agent-sdk-adapter.ts, claude-remote-control-adapter.ts, babysitter-adapter.ts, agent-mux-remote-adapter.ts
+**Files:** claude-adapter.ts, codex-adapter.ts, cursor-adapter.ts, gemini-adapter.ts, copilot-adapter.ts, pi-adapter.ts, pi-sdk-adapter.ts, omp-adapter.ts, opencode-adapter.ts, opencode-http-adapter.ts, openclaw-adapter.ts, droid-adapter.ts, amp-adapter.ts, hermes-adapter.ts, qwen-adapter.ts, codex-sdk-adapter.ts, codex-websocket-adapter.ts, claude-agent-sdk-adapter.ts, claude-remote-control-adapter.ts, babysitter-adapter.ts, adapters-remote-adapter.ts
 
 **Fix:** Constructor injection. Each adapter accepts `agent` and `cliCommand` as constructor params. The self-registration call provides these from the catalog:
 ```typescript
@@ -44,7 +44,7 @@ registerAdapterFactory(target.adapterName, () => new ClaudeAdapter(target.adapte
 
 **Atlas data needed:** Already available — `adapterName` and `cliCommand` on PluginTarget.
 
-### H2 — agent-mux self-registration calls (10 refs)
+### H2 — adapters self-registration calls (10 refs)
 
 ```typescript
 registerAdapterFactory('claude', () => new ClaudeAdapter());
@@ -120,7 +120,7 @@ export function createCursorContext(overrides?) { ... }
 
 **Fix:** Already partially addressed — `createPromptContextFromCatalog()` exists. Remove the named factory functions entirely. Callers should use `createPromptContextFromCatalog(targetId)`.
 
-### M5 — agent-mux core registries (6 refs)
+### M5 — adapters core registries (6 refs)
 
 - `model-registry.ts` — per-agent default model mappings
 - `host-detection.ts` — host detection signals
@@ -129,7 +129,7 @@ export function createCursorContext(overrides?) { ... }
 
 **Fix:** Model registries and host detection should come from Atlas AgentVersion/PluginTarget records. Add `defaultModelId`, `spawnConfig` fields to Atlas.
 
-### M6 — agent-mux CLI paths/capabilities (5 refs)
+### M6 — adapters CLI paths/capabilities (5 refs)
 
 - `agent-subagent-paths.ts` — per-agent subagent path resolution
 - `agent-skill-paths.ts` — per-agent skill path resolution
@@ -141,7 +141,7 @@ export function createCursorContext(overrides?) { ... }
 
 ## LOW: Scripts & Test Infrastructure (73 refs)
 
-### L1 — agent-mux CJS process scripts (18 refs)
+### L1 — adapters CJS process scripts (18 refs)
 
 ```
 fix-enums.cjs, fix-enums2.cjs, fix-capabilities.cjs, fix-adapters.cjs,
@@ -187,7 +187,7 @@ per-agent.ts, probe.ts, types.ts, scenarios.ts, hooks.ts, errors.ts, interactive
 | Provider support matrix | ✅ |
 | hooks-mux adapter capabilities → Atlas (11 fields) | ✅ |
 | hooks-mux phase mappings → Atlas (4 fields on HookMapping) | ✅ |
-| Pattern C: self-registering agent-mux adapters | ✅ |
+| Pattern C: self-registering adapters adapters | ✅ |
 | 329 harness name literals → parameterized | ✅ |
 | agent-catalog: pure Atlas wrapper (no graph/, evidence/, assets.ts) | ✅ |
 | packages/catalog removed | ✅ |

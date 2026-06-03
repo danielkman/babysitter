@@ -1,11 +1,11 @@
 // Virtual Model Hook Bridge
-// Bridges KradleVirtualModel CRD hooks to the agent-mux hook dispatcher.
+// Bridges KradleVirtualModel CRD hooks to the adapters hook dispatcher.
 
 import { createVirtualModelController } from './virtual-model-controller.js';
 
 export const VIRTUAL_MODEL_HOOK_BRIDGE_BOUNDARY = {
   role: 'virtual-model-hook-bridge',
-  scope: 'Bridge between KradleVirtualModel CRD hooks and agent-mux hook dispatcher',
+  scope: 'Bridge between KradleVirtualModel CRD hooks and adapters hook dispatcher',
   owns: ['virtual model matching', 'hook type mapping', 'result format conversion'],
   delegatesTo: ['virtual-model-controller', 'resource-model'],
   mustNotOwn: ['hook dispatch orchestration', 'model invocation']

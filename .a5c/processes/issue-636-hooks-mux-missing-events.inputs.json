@@ -260,7 +260,7 @@
     "npm run build:hooks-mux",
     "npm run test:hooks-mux",
     "npm run lint:hooks-mux",
-    "npm run build:agent-mux",
+    "npm run build:adapters",
     "npm run build:sdk",
     "npm run test:sdk",
     "npm run verify:metadata",

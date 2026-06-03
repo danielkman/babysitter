@@ -30,7 +30,7 @@ export const TRANSPORT_MUX_RUNTIME = {
   launcherIntegrated: true,
   cutoverComplete: false,
   ownsReleaseSurface: false,
-  executable: 'agent-mux-transport-proxy',
+  executable: 'adapters-transport-proxy',
 } as const;
 
 export const TRANSPORT_MUX_PACKAGE = TRANSPORT_MUX_RUNTIME.packageName;

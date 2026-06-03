@@ -6,7 +6,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "agent-mux-extensions": "./dist/cli.js",
+    "adapters-extensions": "./dist/cli.js",
     "extension-mux": "./dist/extension-mux.js"
   },
   "scripts": {

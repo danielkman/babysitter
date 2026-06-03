@@ -16,7 +16,7 @@
       "packages/sdk/src/prompts/compose.ts",
       "packages/sdk/src/prompts/parts",
       "packages/sdk/src/prompts/templates",
-      "docs/agent-mux-babysitter-integrations/plugin-mode.md"
+      "docs/adapters-babysitter-integrations/plugin-mode.md"
     ],
     "acceptanceCriteria": [
       "Host tool inventory is structured and optional/additive on the serialized adapter capability contract.",

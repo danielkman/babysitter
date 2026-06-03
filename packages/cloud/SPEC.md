@@ -22,7 +22,7 @@ The package is responsible for making the repo's deployable utilities work toget
    - existing Kubernetes cluster
    - newly created managed cluster on EKS, AKS, or GKE
 3. Support install, upgrade, reconfigure, and drift-aware reconciliation.
-4. Make `agent-mux` Kubernetes mode a first-class deployment option.
+4. Make `adapters` Kubernetes mode a first-class deployment option.
 5. Optionally configure `agent-platform` providers and model routing.
 6. Optionally install agent binaries and their Babysitter plugins when the target runtime needs them.
 7. Provide a non-local authentication bootstrap path, including a default admin password flow.
@@ -30,7 +30,7 @@ The package is responsible for making the repo's deployable utilities work toget
 
 ## 3. Non-Goals
 
-- Replacing deep runtime logic that belongs in `agent-mux`, `kanban`, or `agent-platform`
+- Replacing deep runtime logic that belongs in `adapters`, `kanban`, or `agent-platform`
 - Becoming a general-purpose IaC framework outside this monorepo
 - Owning application business logic for kanban, gateway, or Babysitter orchestration
 - Hiding provider credentials inside the repo; secrets must come from the environment, secret stores, or explicit config files
@@ -47,7 +47,7 @@ The package is responsible for making the repo's deployable utilities work toget
 The baseline topology is:
 
 - `kanban` exposed as the primary web UI
-- `agent-mux-gateway` exposed as the session/control gateway for UI and agents
+- `adapters-gateway` exposed as the session/control gateway for UI and agents
 - persistent storage for gateway token/event state
 - shared config and secret wiring between gateway, kanban, and optional agent services
 - ingress/service definitions so the components work together in-cluster without manual URL/token patching
@@ -133,7 +133,7 @@ packages/cloud/
       render.ts
     adapters/
       kanban.ts
-      agent-mux-gateway.ts
+      adapters-gateway.ts
       agent-platform.ts
   tests/
     unit/
@@ -272,7 +272,7 @@ The deployment package must own the cross-service wiring:
 - kanban receives the gateway base URL automatically
 - gateway receives storage paths and auth bootstrap config automatically
 - optional agent-platform receives gateway URL, provider config, and model config automatically
-- agent-mux Kubernetes invocation mode is selectable in generated runtime config
+- adapters Kubernetes invocation mode is selectable in generated runtime config
 
 ### 10.3 Auth Bootstrap
 
@@ -320,7 +320,7 @@ This should be represented as declarative config, not one-off shell scripts.
 
 Open dependency:
 
-- some provider/model automation may require new non-interactive config surfaces in `agent-platform` and/or `agent-mux`
+- some provider/model automation may require new non-interactive config surfaces in `agent-platform` and/or `adapters`
 
 ## 13. Optional Agent + Plugin Installation
 
@@ -401,17 +401,17 @@ Suggested minimum scripts:
 - gateway auth/runtime semantics
 - kanban application behavior
 - agent-platform orchestration/runtime behavior
-- agent-mux adapter capabilities and installation semantics
+- adapters adapter capabilities and installation semantics
 
 ## 17. Dependency Gaps Identified During Spec
 
 The following areas should be tracked outside `packages/cloud` implementation:
 
-1. `agent-mux-gateway` needs a bootstrap admin/password-based auth story suitable for cloud deployments.
+1. `adapters-gateway` needs a bootstrap admin/password-based auth story suitable for cloud deployments.
    Tracking: `ACA-234`
 2. `kanban` needs cloud bootstrap behavior so it can connect to a provisioned gateway without manual local-storage token pasting as the only path.
    Tracking: `ACA-235`
-3. `agent-platform` and/or `agent-mux` need stronger non-interactive provider/model and harness/plugin installation/configuration surfaces.
+3. `agent-platform` and/or `adapters` need stronger non-interactive provider/model and harness/plugin installation/configuration surfaces.
    Tracking: `ACA-236`
 4. Root CI/release automation needs explicit support for the new cloud workspace.
    Tracking: `ACA-237`

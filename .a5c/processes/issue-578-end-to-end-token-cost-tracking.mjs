@@ -14,8 +14,8 @@
  * - library/processes/shared/runtime-call-tracer.js
  * - library/processes/shared/deterministic-quality-gate.js
  * - docs/agent-layer-gaps.md
- * - docs/agent-mux/tutorials/cost-tracking.md
- * - docs/agent-mux-babysitter-integrations/effect-resolution.md
+ * - docs/adapters/tutorials/cost-tracking.md
+ * - docs/adapters-babysitter-integrations/effect-resolution.md
  *
  * Note: .a5c/process-library/ was not present in this checkout. The active
  * process library is under library/, so this process borrows its TDD,

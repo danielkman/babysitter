@@ -22,7 +22,7 @@ parameters:
   - name: command
     type: string
     default: 'launch'
-    displayName: 'agent-mux command to execute after trigger evaluation.'
+    displayName: 'adapters command to execute after trigger evaluation.'
   - name: harness
     type: string
     default: ''
@@ -90,7 +90,7 @@ parameters:
   - name: triggerQuery
     type: string
     default: ''
-    displayName: 'Query used to decide whether agent-mux should run.'
+    displayName: 'Query used to decide whether adapters should run.'
   - name: includeDiff
     type: string
     default: 'true'
@@ -98,7 +98,7 @@ parameters:
   - name: useA5cTokenExchange
     type: string
     default: 'false'
-    displayName: 'Use a5c-ai/generate-token-action@main before trigger enrichment and agent-mux. (No Azure equivalent — see notes.)'
+    displayName: 'Use a5c-ai/generate-token-action@main before trigger enrichment and adapters. (No Azure equivalent — see notes.)'
   - name: githubToken
     type: string
     default: '$(System.AccessToken)'
@@ -269,8 +269,8 @@ steps:
       if [ -z "${EFFECTIVE_GITHUB_TOKEN:-}" ]; then
         EFFECTIVE_GITHUB_TOKEN="$INPUT_GITHUB_TOKEN"
       fi
-      EVENT_FILE="$(Agent.TempDirectory)/agent-mux-event.json"
-      RESULT_FILE="$(Agent.TempDirectory)/agent-mux-trigger.json"
+      EVENT_FILE="$(Agent.TempDirectory)/adapters-event.json"
+      RESULT_FILE="$(Agent.TempDirectory)/adapters-trigger.json"
       INCLUDE_DIFF_ARGS=()
       if [ "$INPUT_INCLUDE_DIFF" = "true" ]; then
         INCLUDE_DIFF_ARGS+=(--include-diff)
@@ -403,7 +403,7 @@ steps:
       fi
       echo "##[endgroup]"
     name: adapters
-    displayName: 'Run agent-mux'
+    displayName: 'Run adapters'
     condition: eq(variables['trigger.matched'], 'true')
     workingDirectory: ${{ parameters.workingDirectory }}
     env:
@@ -520,7 +520,7 @@ steps:
 #   App private key in a key vault, etc.), replace the body of that step.
 #
 # Log group directives:
-#   GH `::group::` / `::endgroup::` (used in Run agent-mux) translate to
+#   GH `::group::` / `::endgroup::` (used in Run adapters) translate to
 #   `##[group]` / `##[endgroup]` on Azure Pipelines, which collapse the section
 #   in the build log UI.
 #

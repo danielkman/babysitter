@@ -26,7 +26,7 @@ const packageDirs = [
   'packages/babysitter-tui-plugins',
   'packages/adapters/core', 'packages/adapters/cli', 'packages/adapters/adapters',
   'packages/adapters/gateway', 'packages/adapters/tui', 'packages/adapters/ui',
-  'packages/adapters/webui', 'packages/agent-mux',
+  'packages/adapters/webui', 'packages/adapters',
   'packages/adapters/observability',
   'packages/adapters/hooks/core', 'packages/adapters/hooks/cli',
   'packages/kradle/core',

@@ -5,9 +5,9 @@ This document tracks the remaining board-, issue-, and workspace-first product g
 ## Current Intent
 
 - keep the primary browser shell in `packages/adapters/webui`
-- keep shared runtime, API, and transport concerns in the existing `agent-mux` packages
+- keep shared runtime, API, and transport concerns in the existing `adapters` packages
 - avoid reviving the deprecated standalone kanban package as a maintained release surface
-- extend shared `agent-mux` seams directly when missing capability blocks the UI
+- extend shared `adapters` seams directly when missing capability blocks the UI
 
 ## Target Product Model
 
@@ -33,7 +33,7 @@ What this means in practice:
 - live Babysitter run dashboard and detail views
 - SSE-backed status updates and cached run parsing
 - breakpoint visibility and approval flows
-- agent-mux gateway login, session list, session detail, and new-session flows
+- adapters gateway login, session list, session detail, and new-session flows
 - inbox and tool-call interaction surfaces
 - Babysitter-specific settings and status framing
 
@@ -42,4 +42,4 @@ What this means in practice:
 - deepen shared issue/project system-of-record APIs rather than relying on seeded local data
 - finish richer authoring flows for issue decomposition, planning, and execution context
 - continue exposing review, PR, and workspace control from shared APIs while composing the browser UX here
-- keep package/release/docs metadata aligned so only the agent-mux surfaces remain first-class
+- keep package/release/docs metadata aligned so only the adapters surfaces remain first-class

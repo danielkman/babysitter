@@ -331,7 +331,7 @@ events for a package's CI pipeline.
 ## NodeKind: `DiscoverySignal`
 
 A host-detection signal — env var, binary on PATH, file presence, registry key,
-argv match, exit code, or a combination — used by `agent-mux` to detect whether a
+argv match, exit code, or a combination — used by `adapters` to detect whether a
 particular agent harness is the active host or installed on the machine.
 
 Sourced from the legacy agent-catalog ontology
@@ -349,7 +349,7 @@ and the runtime probe in
 | `key` | string | yes | Lookup key — agent slug, env-var name, or binary basename. |
 | `matchMode` | enum<exact,substring,regex,semver-range,contains-array,any,all> | yes | How `signals` are evaluated. atlas adds `any`/`all` set-quantifiers to cover the imported `env-any` mode. |
 | `confidence` | enum<low,medium,high> | yes | Detector confidence when this signal fires alone. |
-| `scope` | enum<user,system,shell,process,host-detection> | yes | Lexical scope of the signal. atlas retains the legacy lexical scopes plus `host-detection` as used by `agent-mux/core`. |
+| `scope` | enum<user,system,shell,process,host-detection> | yes | Lexical scope of the signal. atlas retains the legacy lexical scopes plus `host-detection` as used by `adapters/core`. |
 | `signals` | list<string> | yes | Concrete probes the signal evaluates (env var names, binary names, file paths, argv tokens). |
 | `argvMatches` | list<string> | no | Argv tokens this signal matches when `scope = host-detection`. Optional in atlas (legacy schema marked required but several imported signals omit it). |
 | `consumer` | string | no | Subsystem that consumes the signal (e.g. `agent-comm-mux`). |

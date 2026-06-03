@@ -1,6 +1,6 @@
 # @a5c-ai/tula-ui
 
-Shared client, store, hooks, protocol types, realtime session-flow projection helpers, and cross-surface UI primitives for `agent-mux`.
+Shared client, store, hooks, protocol types, realtime session-flow projection helpers, and cross-surface UI primitives for `adapters`.
 
 ## Install
 

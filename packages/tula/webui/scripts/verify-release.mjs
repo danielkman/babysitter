@@ -108,7 +108,7 @@ function main() {
     packEntries,
   });
 
-  console.log('agent-mux-webui release verification passed');
+  console.log('adapters-webui release verification passed');
 }
 
 if (process.argv[1] === __filename) {

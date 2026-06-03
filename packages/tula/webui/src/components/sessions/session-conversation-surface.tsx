@@ -21,7 +21,7 @@ import { TaskTagAutocompleteTextarea } from "@/components/task-tags/task-tag-aut
 import { Button, Select } from "@a5c-ai/compendium";
 import { useTaskTags } from "@/hooks/use-task-tags";
 import { cx } from "@a5c-ai/compendium";
-import { useGateway } from "@/lib/agent-mux-ui";
+import { useGateway } from "@/lib/adapters-ui";
 
 type EventBuffer = {
   events: Array<Record<string, unknown>>;

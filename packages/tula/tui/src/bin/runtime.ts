@@ -75,9 +75,9 @@ export function parseArgs(argv: string[]): CliOptions {
 export function printHelp(stdout: NodeJS.WritableStream = process.stdout): void {
   stdout.write(
     [
-      'Usage: agent-mux-tui [options]',
+      'Usage: adapters-tui [options]',
       '',
-      'Launch the Ink-based agent-mux TUI.',
+      'Launch the Ink-based adapters TUI.',
       '',
       'Options:',
       '  --user-plugins-dir <dir>  Override user-plugin discovery dir',
@@ -109,12 +109,12 @@ export async function runWithArgs<TClient, TPlugin>(
       plugins.push(...external.plugins);
       for (const error of external.errors) {
         (deps.stderr ?? process.stderr).write(
-          `agent-mux-tui: failed to load plugin from ${error.source}: ${error.error}\n`,
+          `adapters-tui: failed to load plugin from ${error.source}: ${error.error}\n`,
         );
       }
     } catch (error) {
       (deps.stderr ?? process.stderr).write(
-        `agent-mux-tui: external plugin discovery failed: ${(error as Error).message}\n`,
+        `adapters-tui: external plugin discovery failed: ${(error as Error).message}\n`,
       );
     }
   }

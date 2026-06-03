@@ -1,10 +1,10 @@
-# agent-mux-gui — Implementation Playbook
+# adapters-gui — Implementation Playbook
 
 Status: draft · Last updated: 2026-04-12
 
-This is the developer-facing guide for implementing **agent-mux-gui**: the full graphical control surface for `agent-mux`. For the architectural context behind each package, read the numbered specs `docs/20`–`docs/30`. This playbook tells you what to build, where, in what order.
+This is the developer-facing guide for implementing **adapters-gui**: the full graphical control surface for `adapters`. For the architectural context behind each package, read the numbered specs `docs/20`–`docs/30`. This playbook tells you what to build, where, in what order.
 
-agent-mux-gui is the umbrella for every non-CLI, non-TUI way to drive agent-mux:
+adapters-gui is the umbrella for every non-CLI, non-TUI way to drive adapters:
 
 - **gateway** — protocol server that exposes `AgentMuxClient` to remote clients
 - **ui** — shared React/React-Native client library
@@ -283,7 +283,7 @@ Unblocks: approvalPreview variants in T2.6, destructive-only gating in spec 25, 
 
 ## 4. M2 — webui (TUI parity)
 
-Goal: `http://localhost:7878/` in a browser is a full-featured agent-mux client matching `@a5c-ai/tula-tui` feature-for-feature. This milestone also lands the `ui` package, which every React/RN surface downstream depends on.
+Goal: `http://localhost:7878/` in a browser is a full-featured adapters client matching `@a5c-ai/tula-tui` feature-for-feature. This milestone also lands the `ui` package, which every React/RN surface downstream depends on.
 
 ### T2.1 — `ui` package skeleton + protocol sync
 

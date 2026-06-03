@@ -12,7 +12,7 @@ import {
 // ---------------------------------------------------------------------------
 // Virtual Model Hook Bridge Tests
 //
-// Verifies the bridge between KradleVirtualModel CRD hooks and the agent-mux
+// Verifies the bridge between KradleVirtualModel CRD hooks and the adapters
 // hook dispatcher, including model matching, hook type mapping, and result
 // format conversion.
 // ---------------------------------------------------------------------------

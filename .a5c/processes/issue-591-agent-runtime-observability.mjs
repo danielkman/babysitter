@@ -218,7 +218,7 @@ export const reuseAuditTask = defineTask('issue-591.reuse-audit', (args, taskCtx
         'Render a section titled exactly: Reuse-audit findings (REVIEW BEFORE PROCEEDING).',
         'Extract keyword nouns and verbs from the issue: structured logging, log levels, filtering, rotation, sampling, health snapshots, percentiles, Prometheus, CloudWatch, webhook alerts, diagnostics API, health endpoint, metrics endpoint, config endpoint, queue endpoint, OTLP, W3C trace context, traceparent, correlation IDs, InMemoryTelemetryProvider.',
         'Scan the current repo for matching migrations, API routes, environment variables, SDK dependencies, package exports, and imports. Honor .a5c/reuse-audit.json if present.',
-        'Inspect packages/agent-runtime first, then follow imports to agent-platform, transport-mux, agent-mux observability, SDK journal/cost code, and docs/agent-layer-gaps.md.',
+        'Inspect packages/agent-runtime first, then follow imports to agent-platform, transport-mux, adapters observability, SDK journal/cost code, and docs/agent-layer-gaps.md.',
         'Call out existing infrastructure to reuse and areas where no matching existing infrastructure was found.',
         'Do not edit files.',
         'Return JSON: { renderedFindings, keywords, existingInfrastructure, reusableModules, dependencyFindings, envVars, endpointFindings, gapsStillOpen, noMatchNotes, risksForNewInfrastructure }.',

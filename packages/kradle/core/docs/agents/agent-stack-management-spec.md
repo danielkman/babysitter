@@ -67,7 +67,7 @@ Reusable definition of a runnable agent configuration.
 Important fields:
 
 - `spec.displayName`;
-- `spec.baseAgent`: `claude-code`, `codex`, `gemini`, `opencode`, `babysitter`, `agent-mux-remote`, external;
+- `spec.baseAgent`: `claude-code`, `codex`, `gemini`, `opencode`, `babysitter`, `adapters-remote`, external;
 - `spec.adapter`: Agent Mux adapter ID or gateway route;
 - `spec.model` and `spec.provider`;
 - `spec.prompt`: default system/developer/task framing;

@@ -1,7 +1,7 @@
 nodeKind: BacklogSnapshot
-id: backlog-snapshot:agent-mux-2026-05-02
+id: backlog-snapshot:adapters-2026-05-02
 attributes:
-  displayName: "agent-mux backlog — 2026-05-02"
+  displayName: "adapters backlog — 2026-05-02"
   generatedAt: "2026-05-02T00:00:00Z"
   issueCount: 27
   priorityScheme: int
@@ -10,7 +10,7 @@ attributes:
   hasAcceptanceCriteriaData: true
 edges:
   snapshots_project_backlog:
-    - target: project:agent-mux
+    - target: project:adapters
 ---
 nodeKind: BacklogSnapshot
 id: backlog-snapshot:babysitter-2026-05-02

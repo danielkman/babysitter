@@ -221,7 +221,7 @@ export interface HarnessAdapter {
 
   /**
    * Install the harness CLI itself.
-   * @deprecated Harness installation is now delegated to agent-mux. Use
+   * @deprecated Harness installation is now delegated to adapters. Use
    *   `installHarnessViaAmux()` from `./install.ts` instead.
    */
   installHarness?(options: HarnessInstallOptions): Promise<HarnessInstallResult>;

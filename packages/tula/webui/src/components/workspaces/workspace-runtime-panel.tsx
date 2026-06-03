@@ -204,7 +204,7 @@ export function WorkspaceRuntimePanel(props: {
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">Runtime surfaces</p>
           <h3 className="mt-2 text-xl font-semibold tracking-tight">Preview, logs, inspect, and dev server</h3>
           <p className="mt-2 text-sm text-foreground-muted">
-            Derived from agent-mux session state and recent run events.
+            Derived from adapters session state and recent run events.
             {props.sessionId ? ` Session ${props.sessionId}.` : ""}
           </p>
         </div>
@@ -572,7 +572,7 @@ export function WorkspaceRuntimePanel(props: {
           />
           <article className="rounded-2xl border border-border bg-background/70 p-4 text-sm text-foreground-muted">
             The inspect surface keeps the workspace path, preview origin, terminal activity, dev-server status,
-            and process logs visible together so the kanban UI can act as the shell while runtime ownership remains in `agent-mux`.
+            and process logs visible together so the kanban UI can act as the shell while runtime ownership remains in `adapters`.
           </article>
         </div>) },
       ]} />

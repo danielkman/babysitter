@@ -2,7 +2,7 @@
 
 ## Target Todo
 
-`[ ] Logging and opentelemetry integration: implement logging and telemetry in the agent-mux, to track the usage, performance, and errors of the system. this can be done using a tool like Winston or Pino for logging, and OpenTelemetry for telemetry. make sure to log important events and errors, and to collect relevant metrics for monitoring and debugging purposes.`
+`[ ] Logging and opentelemetry integration: implement logging and telemetry in the adapters, to track the usage, performance, and errors of the system. this can be done using a tool like Winston or Pino for logging, and OpenTelemetry for telemetry. make sure to log important events and errors, and to collect relevant metrics for monitoring and debugging purposes.`
 
 ## Overview
 

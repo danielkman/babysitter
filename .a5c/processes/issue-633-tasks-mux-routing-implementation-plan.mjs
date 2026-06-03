@@ -23,9 +23,9 @@
  * - docs/agent-reference/process-authoring.md
  *
  * Reuse-audit findings (REVIEW BEFORE PROCEEDING):
- * - Design docs already exist under docs/agent-mux-babysitter-integrations/, including tasks-mux-routing.md, effect-resolution.md, and testing.md.
+ * - Design docs already exist under docs/adapters-babysitter-integrations/, including tasks-mux-routing.md, effect-resolution.md, and testing.md.
  * - tasks-mux already exposes ResponderType, routeTask, AgentMuxResponderBackend, ExternalTrackerBackend, and BreakpointBackend seams on the current checkout.
- * - Current staging has routeTask in packages/tasks-mux/src/router.ts, AgentMuxResponderBackend in packages/tasks-mux/src/backends/agent-mux.ts, and ExternalTrackerBackend in packages/tasks-mux/src/backends/external-tracker.ts.
+ * - Current staging has routeTask in packages/tasks-mux/src/router.ts, AgentMuxResponderBackend in packages/tasks-mux/src/backends/adapters.ts, and ExternalTrackerBackend in packages/tasks-mux/src/backends/external-tracker.ts.
  * - Current staging has agent-platform resolveEffect delegating routable agent effects through tasks-mux in packages/tula/platform/src/harness/internal/createRun/orchestration/effects.ts.
  * - agent-platform already imports/mocks routeTask and AgentMuxResponderBackend in createRun orchestration tests, so implementation must audit current behavior before adding duplicate routing layers.
  * - SDK stop-hook continuation already references routeTask/isHostDelegableRoute, so plugin-mode work should be verified against that live path rather than recreating a separate decision path.
@@ -51,9 +51,9 @@ export async function process(inputs, ctx) {
     baseBranch = "staging",
     dependencyIssues = [630, 631],
     designDocs = [
-      "docs/agent-mux-babysitter-integrations/tasks-mux-routing.md",
-      "docs/agent-mux-babysitter-integrations/effect-resolution.md",
-      "docs/agent-mux-babysitter-integrations/testing.md",
+      "docs/adapters-babysitter-integrations/tasks-mux-routing.md",
+      "docs/adapters-babysitter-integrations/effect-resolution.md",
+      "docs/adapters-babysitter-integrations/testing.md",
     ],
     maxImplementationIterations = 2,
     verificationCommands = [],
@@ -197,7 +197,7 @@ export const readIssueAndDesignContextTask = defineTask("issue-633.read-issue-an
         "Use gh issue view for issue #633 and dependency issues #630 and #631.",
         "Capture the issue title, labels, body, comments, dependency correction comments, existing plan PR comments, and any implementation-complete comments.",
         "Read each design doc path from inputs and summarize only the parts that affect task routing through tasks-mux.",
-        "Explicitly distinguish stale design-doc direct agent-mux language from the current issue requirement: tasks-mux owns routing decisions.",
+        "Explicitly distinguish stale design-doc direct adapters language from the current issue requirement: tasks-mux owns routing decisions.",
         "Return JSON with issueSummary, dependencyStatus, currentComments, designRequirements, staleOrSupersededRequirements, and artifactPath.",
       ],
       context: args,
@@ -218,7 +218,7 @@ export const reuseAndCompletionAuditTask = defineTask("issue-633.reuse-and-compl
       instructions: [
         "Start the report with exactly: Reuse-audit findings (REVIEW BEFORE PROCEEDING).",
         "Do not edit files in this phase.",
-        "Extract keywords: tasks-mux, routeTask, ResponderType, AgentMuxResponderBackend, BreakpointBackend, ExternalTrackerBackend, orchestrateIteration, resolveAndPostEffect, stop-hook, agent-core, agent-mux, tracker, human, internal.",
+        "Extract keywords: tasks-mux, routeTask, ResponderType, AgentMuxResponderBackend, BreakpointBackend, ExternalTrackerBackend, orchestrateIteration, resolveAndPostEffect, stop-hook, agent-core, adapters, tracker, human, internal.",
         "Scan package dependencies and imports in packages/tasks-mux, packages/sdk, packages/tula/platform, plugins/babysitter, and plugins/babysitter-unified.",
         "Scan environment variables relevant to ADAPTERS, BMUX, AGENT_SESSION_ID, AGENT_PLUGIN_ROOT, and AGENT_CAPABILITIES_JSON.",
         "Scan docs and tests for existing tasks-mux routing coverage.",
@@ -272,7 +272,7 @@ export const authorGapPlanTask = defineTask("issue-633.author-gap-plan", (args, 
         "Plan tasks-mux as the single routing decision layer for internal, agent, human, tracker, and auto/unavailable responder flows.",
         "Plan SDK and agent-platform changes only on traced live execution paths.",
         "Plan plugin stop-hook behavior to query tasks-mux before host delegation decisions.",
-        "Avoid new direct SDK-to-agent-mux or agent-platform-to-agent-mux routing paths for task effects.",
+        "Avoid new direct SDK-to-adapters or agent-platform-to-adapters routing paths for task effects.",
         "Avoid package dependency cycles; prefer existing tasks-mux exports and dynamic/import-local seams where needed.",
         "Return JSON with phases, acceptanceCriteria, sourceChanges, testChanges, nonGoals, risks, rollbackNotes, and artifactPath.",
       ],
@@ -293,7 +293,7 @@ export const reviewGapPlanTask = defineTask("issue-633.review-gap-plan", (args, 
       task: "Review the implementation plan for drift, duplication, dependency mistakes, and missing #633 acceptance coverage.",
       instructions: [
         "Reject plans that duplicate existing tasks-mux routing infrastructure instead of extending or verifying it.",
-        "Reject direct task-effect routing to agent-mux outside tasks-mux.",
+        "Reject direct task-effect routing to adapters outside tasks-mux.",
         "Reject source changes outside traced live call paths unless the plan justifies a new seam from the issue or design docs.",
         "Verify the plan accounts for issue comments saying dependencies changed to #630 and #631 and implementation may already exist in PR #685.",
         "Set requiresOwnerDecision only for real dependency, merge-state, or scope ambiguity.",
@@ -321,8 +321,8 @@ export const authorRegressionTestsTask = defineTask("issue-633.author-regression
         "Cover agent-platform effect resolution delegating routable task effects through tasks-mux and preserving result/error posting semantics.",
         "Cover plugin stop-hook continuation using tasks-mux route decisions before deciding host delegation.",
         "Cover SDK-facing task metadata preservation only if reuse audit finds an uncovered gap.",
-        "Add guard assertions that fail when SDK or agent-platform bypass tasks-mux to route task effects directly to agent-mux.",
-        "Use mocks for agent-mux, human responders, and external trackers.",
+        "Add guard assertions that fail when SDK or agent-platform bypass tasks-mux to route task effects directly to adapters.",
+        "Use mocks for adapters, human responders, and external trackers.",
         "Return JSON with testsAdded, testsModified, behaviorsCovered, expectedRedOrHardeningResults, focusedCommands, and artifactPath.",
       ],
       context: args,

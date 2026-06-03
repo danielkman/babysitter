@@ -104,7 +104,7 @@ jobs:
           npm run build --workspace=@a5c-ai/tasks-adapter
 
 
-      - name: "Build phase 2: parallel independents and agent-mux critical path"
+      - name: "Build phase 2: parallel independents and adapters critical path"
         run: |
           set -euo pipefail
           PIDS=()
@@ -137,7 +137,7 @@ jobs:
           run_bg npm run build:cloud
           run_bg bash -lc 'cd packages/kradle/core && npm run build && cd ../web && npm run build'
 
-          # agent-mux critical path (sequential — each depends on previous)
+          # adapters critical path (sequential — each depends on previous)
           npm run build --workspace=@a5c-ai/adapters-observability
           npm run build --workspace=@a5c-ai/comm-adapter
 
@@ -155,11 +155,11 @@ jobs:
           npm run build --workspace=@a5c-ai/adapters-cli
           npm run build --workspace=@a5c-ai/adapters
           npm run build:local --workspace=@a5c-ai/tula-tui
-          # webui depends on core + ui — must be after agent-mux chain
+          # webui depends on core + ui — must be after adapters chain
           npm run build --workspace=@a5c-ai/tula-webui
 
           # SDK, agent-core, agent-platform: prerequisites (atlas,
-          # agent-mux chain) are already built above — call tsc directly to avoid
+          # adapters chain) are already built above — call tsc directly to avoid
           # redundant rebuilds through chained npm scripts.
           npm run build --workspace=@a5c-ai/babysitter-sdk
           (cd packages/tula/core && npx tsc --build --force tsconfig.json)
@@ -306,23 +306,23 @@ jobs:
           echo "Atlas dist/index.json: $(wc -c < packages/atlas/dist/index.json) bytes"
           node -e "const i=require('./packages/atlas/dist/index.json'); console.log('Atlas records:', Object.keys(i.records).length, 'edges:', i.edges.length)"
 
-      - name: agent-mux package tests
+      - name: adapters package tests
         run: |
           set -euo pipefail
-          node scripts/agent-mux-build.cjs test packages/adapters/observability 2>&1 | tee artifacts/mux-logs/agent-mux-observability-tests.log
-          node scripts/agent-mux-build.cjs test packages/adapters/core 2>&1 | tee artifacts/mux-logs/agent-comm-mux-tests.log
-          node scripts/agent-mux-build.cjs test packages/adapters/adapters 2>&1 | tee artifacts/mux-logs/agent-mux-adapters-tests.log
-          node scripts/agent-mux-build.cjs test packages/adapters/harness-mock 2>&1 | tee artifacts/mux-logs/agent-mux-harness-mock-tests.log
-          node scripts/agent-mux-build.cjs test packages/adapters/gateway 2>&1 | tee artifacts/mux-logs/agent-mux-gateway-tests.log
-          node scripts/agent-mux-build.cjs test packages/adapters/cli 2>&1 | tee artifacts/mux-logs/agent-mux-cli-tests.log
-          node scripts/agent-mux-build.cjs test packages/adapters/sdk 2>&1 | tee artifacts/mux-logs/agent-mux-sdk-tests.log
+          node scripts/adapters-build.cjs test packages/adapters/observability 2>&1 | tee artifacts/mux-logs/adapters-observability-tests.log
+          node scripts/adapters-build.cjs test packages/adapters/core 2>&1 | tee artifacts/mux-logs/agent-comm-mux-tests.log
+          node scripts/adapters-build.cjs test packages/adapters/adapters 2>&1 | tee artifacts/mux-logs/adapters-adapters-tests.log
+          node scripts/adapters-build.cjs test packages/adapters/harness-mock 2>&1 | tee artifacts/mux-logs/adapters-harness-mock-tests.log
+          node scripts/adapters-build.cjs test packages/adapters/gateway 2>&1 | tee artifacts/mux-logs/adapters-gateway-tests.log
+          node scripts/adapters-build.cjs test packages/adapters/cli 2>&1 | tee artifacts/mux-logs/adapters-cli-tests.log
+          node scripts/adapters-build.cjs test packages/adapters/sdk 2>&1 | tee artifacts/mux-logs/adapters-sdk-tests.log
           npm run test:unit --workspace=@a5c-ai/triggers-adapter 2>&1 | tee artifacts/mux-logs/triggers-tests.log
 
-      - name: Verify non-realtime agent-mux release artifacts
+      - name: Verify non-realtime adapters release artifacts
         run: |
           set -euo pipefail
           npm run verify:release --workspace=@a5c-ai/comm-adapter 2>&1 | tee artifacts/mux-logs/agent-comm-mux-release.log
-          npm run verify:release --workspace=@a5c-ai/tula-tui 2>&1 | tee artifacts/mux-logs/agent-mux-tui-release.log
+          npm run verify:release --workspace=@a5c-ai/tula-tui 2>&1 | tee artifacts/mux-logs/adapters-tui-release.log
 
       - name: Validate transport-mux runtime owner
         run: |
@@ -409,7 +409,7 @@ jobs:
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: agent-mux webui browser e2e
+      - name: adapters webui browser e2e
         run: npm run test:e2e --workspace=@a5c-ai/tula-webui
 
       - name: Upload e2e logs
@@ -596,10 +596,10 @@ jobs:
           set -euo pipefail
           mkdir -p artifacts/observer-compiler-logs
 
-      - name: Test agent-mux-extensions
+      - name: Test adapters-extensions
         run: |
           set -euo pipefail
-          npm run test --workspace=@a5c-ai/extensions-adapter 2>&1 | tee artifacts/observer-compiler-logs/agent-mux-extensions-tests.log
+          npm run test --workspace=@a5c-ai/extensions-adapter 2>&1 | tee artifacts/observer-compiler-logs/adapters-extensions-tests.log
 
       - name: Generate unified plugin bundles
         run: |
@@ -789,10 +789,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: agent-mux-tasks
+          - name: adapters-tasks
             build: npm run build --workspace=@a5c-ai/tasks-adapter
             publish: npm publish --workspace=@a5c-ai/tasks-adapter --access public --tag "$NPM_TAG"
-          - name: agent-mux-observability
+          - name: adapters-observability
             build: npm run build --workspace=@a5c-ai/adapters-observability
             publish: npm publish --workspace=@a5c-ai/adapters-observability --access public --tag "$NPM_TAG"
           - name: triggers
@@ -869,7 +869,7 @@ jobs:
           - name: agent-comm-mux
             build: npm run build --workspace=@a5c-ai/atlas && npm run build --workspace=@a5c-ai/adapters-observability && npm run build --workspace=@a5c-ai/comm-adapter
             publish: npm publish --workspace=@a5c-ai/comm-adapter --access public --tag "$NPM_TAG"
-          - name: agent-mux-extensions
+          - name: adapters-extensions
             build: npm run build --workspace=@a5c-ai/atlas && npm run build --workspace=@a5c-ai/extensions-adapter
             publish: npm publish --workspace=@a5c-ai/extensions-adapter --access public --tag "$NPM_TAG"
     steps:
@@ -1045,7 +1045,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: agent-mux-adapters
+          - name: adapters-adapters
             workspace: '@a5c-ai/adapters-codecs'
             build: |
               set -euo pipefail
@@ -1053,7 +1053,7 @@ jobs:
               npm run build --workspace=@a5c-ai/adapters-observability
               npm run build --workspace=@a5c-ai/comm-adapter
               npm run build --workspace=@a5c-ai/adapters-codecs
-          - name: agent-mux-harness-mock
+          - name: adapters-harness-mock
             workspace: '@a5c-ai/adapters-harness-mock'
             build: |
               set -euo pipefail
@@ -1176,7 +1176,7 @@ jobs:
           npm ci
           npm install --no-save --ignore-scripts @rollup/rollup-linux-x64-gnu @rolldown/binding-linux-x64-gnu @tailwindcss/oxide-linux-x64-gnu lightningcss-linux-x64-gnu @next/swc-linux-x64-gnu @unrs/resolver-binding-linux-x64-gnu 2>/dev/null || true
 
-      - name: Build agent-mux gateway workspace
+      - name: Build adapters gateway workspace
         run: |
           set -euo pipefail
           npm run build --workspace=@a5c-ai/atlas
@@ -1185,7 +1185,7 @@ jobs:
           npm run build --workspace=@a5c-ai/adapters-codecs
           npm run build --workspace=@a5c-ai/adapters-gateway
 
-      - name: Publish agent-mux gateway
+      - name: Publish adapters gateway
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --workspace=@a5c-ai/adapters-gateway --access public --tag "$NPM_TAG"
@@ -1217,7 +1217,7 @@ jobs:
           registry-url: https://registry.npmjs.org/
           token: ${{ secrets.NPM_TOKEN }}
 
-      - name: Build agent-mux CLI workspace
+      - name: Build adapters CLI workspace
         run: |
           set -euo pipefail
           npm ci
@@ -1230,7 +1230,7 @@ jobs:
           npm run build --workspace=@a5c-ai/transport-adapter
           npm run build --workspace=@a5c-ai/adapters-cli
 
-      - name: Publish agent-mux CLI
+      - name: Publish adapters CLI
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --workspace=@a5c-ai/adapters-cli --access public --tag "$NPM_TAG"
@@ -1274,7 +1274,7 @@ jobs:
           npm ci
           npm install --no-save --ignore-scripts @rollup/rollup-linux-x64-gnu @rolldown/binding-linux-x64-gnu @tailwindcss/oxide-linux-x64-gnu lightningcss-linux-x64-gnu @next/swc-linux-x64-gnu @unrs/resolver-binding-linux-x64-gnu 2>/dev/null || true
 
-      - name: Build agent-mux root workspace
+      - name: Build adapters root workspace
         run: |
           set -euo pipefail
           npm run build --workspace=@a5c-ai/atlas
@@ -1286,7 +1286,7 @@ jobs:
           npm run build --workspace=@a5c-ai/adapters-cli
           npm run build --workspace=@a5c-ai/adapters
 
-      - name: Publish agent-mux root
+      - name: Publish adapters root
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --workspace=@a5c-ai/adapters --access public --tag "$NPM_TAG"
@@ -1330,7 +1330,7 @@ jobs:
           npm ci
           npm install --no-save --ignore-scripts @rollup/rollup-linux-x64-gnu @rolldown/binding-linux-x64-gnu @tailwindcss/oxide-linux-x64-gnu lightningcss-linux-x64-gnu @next/swc-linux-x64-gnu @unrs/resolver-binding-linux-x64-gnu 2>/dev/null || true
 
-      - name: Build agent-mux TUI workspace
+      - name: Build adapters TUI workspace
         run: |
           set -euo pipefail
           npm run build --workspace=@a5c-ai/atlas
@@ -1343,7 +1343,7 @@ jobs:
           npm run build --workspace=@a5c-ai/adapters
           npm run build:local --workspace=@a5c-ai/tula-tui
 
-      - name: Publish agent-mux TUI
+      - name: Publish adapters TUI
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --workspace=@a5c-ai/tula-tui --access public --tag "$NPM_TAG"
@@ -1390,10 +1390,10 @@ jobs:
       - name: Build SDK workspace
         run: |
           set -euo pipefail
-          # atlas must be built first because the agent-mux chain imports atlas/catalog
+          # atlas must be built first because the adapters chain imports atlas/catalog
           npm run build --workspace=@a5c-ai/atlas
           npm run build --workspace=@a5c-ai/tasks-adapter
-          node scripts/agent-mux-build.cjs build packages/adapters/sdk
+          node scripts/adapters-build.cjs build packages/adapters/sdk
           npm run build:sdk
 
       - name: Verify SDK package health
@@ -1448,7 +1448,7 @@ jobs:
           set -euo pipefail
           npm run build --workspace=@a5c-ai/atlas
           npm run build --workspace=@a5c-ai/tasks-adapter
-          node scripts/agent-mux-build.cjs build packages/adapters/sdk
+          node scripts/adapters-build.cjs build packages/adapters/sdk
           npm run build:sdk
           npm run build --workspace=@a5c-ai/tula-core
 
@@ -1501,7 +1501,7 @@ jobs:
           set -euo pipefail
           npm run build --workspace=@a5c-ai/atlas
           npm run build --workspace=@a5c-ai/tasks-adapter
-          node scripts/agent-mux-build.cjs build packages/adapters/sdk
+          node scripts/adapters-build.cjs build packages/adapters/sdk
           npm run build:sdk
           npm run build --workspace=@a5c-ai/tula-core
           npm run build --workspace=@a5c-ai/tula-platform
@@ -1548,7 +1548,7 @@ jobs:
           set -euo pipefail
           npm run build --workspace=@a5c-ai/atlas
           npm run build --workspace=@a5c-ai/tasks-adapter
-          node scripts/agent-mux-build.cjs build packages/adapters/sdk
+          node scripts/adapters-build.cjs build packages/adapters/sdk
           npm run build:sdk
           npm run build --workspace=@a5c-ai/tula-core
           npm run build --workspace=@a5c-ai/tula-runtime
@@ -1595,7 +1595,7 @@ jobs:
           set -euo pipefail
           npm run build --workspace=@a5c-ai/atlas
           npm run build --workspace=@a5c-ai/tasks-adapter
-          node scripts/agent-mux-build.cjs build packages/adapters/sdk
+          node scripts/adapters-build.cjs build packages/adapters/sdk
           npm run build:sdk
           npm run build --workspace=@a5c-ai/tula-core
           npm run build --workspace=@a5c-ai/tula-runtime

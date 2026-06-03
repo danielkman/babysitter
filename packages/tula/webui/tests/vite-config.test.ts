@@ -9,7 +9,7 @@ const expectedCatalogAlias = path.resolve(packageRoot, '..', '..', '..', 'atlas'
 const expectedCoreAlias = path.resolve(packageRoot, '..', '..', 'core', 'src', 'index.ts');
 const expectedCoreBrowserAlias = path.resolve(packageRoot, '..', '..', 'core', 'src', 'browser.ts');
 
-describe('agent-mux webui vite config', () => {
+describe('adapters webui vite config', () => {
   it('resolves agent catalog imports to workspace source during dev', () => {
     const aliases = config.resolve?.alias;
     expect(aliases).toBeTruthy();

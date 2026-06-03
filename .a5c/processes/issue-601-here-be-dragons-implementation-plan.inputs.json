@@ -11,7 +11,7 @@
     "P2",
     "agent-core",
     "agent-platform",
-    "agent-mux",
+    "adapters",
     "testing",
     "refactor",
     "effort:large",
@@ -60,7 +60,7 @@
     "portable shell selection while preserving explicit bash opt-in",
     "unexplained SessionDetailScreen skipped UI tests",
     "root skipLibCheck disposition",
-    "agent-mux orchestration, hook-mux lifecycle, and trigger dispatch E2E coverage gaps",
+    "adapters orchestration, hook-mux lifecycle, and trigger dispatch E2E coverage gaps",
     "duplicated utility patterns around platform detection, path normalization, and config loading",
     "docs/here-be-dragons.md caveat accuracy"
   ],
@@ -80,7 +80,7 @@
     "npm run test --workspace=@a5c-ai/tula-platform",
     "npm run test:realtime --workspace=@a5c-ai/tula-ui",
     "npm run build:runtime",
-    "npm run test:agent-mux",
+    "npm run test:adapters",
     "npm run verify:metadata",
     "git diff --check"
   ],

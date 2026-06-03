@@ -1,23 +1,23 @@
 {
   "issueNumber": 631,
   "baseBranch": "staging",
-  "branchName": "agent/issue-631-agent-mux-responder-backend",
+  "branchName": "agent/issue-631-adapters-responder-backend",
   "dependencyIssues": [
     630,
     604,
     633
   ],
-  "designDoc": "docs/agent-mux-babysitter-integrations/tasks-mux-routing.md",
+  "designDoc": "docs/adapters-babysitter-integrations/tasks-mux-routing.md",
   "targetFiles": [
-    "packages/tasks-mux/src/backends/agent-mux.ts",
-    "packages/tasks-mux/src/backends/__tests__/agent-mux.test.ts",
+    "packages/tasks-mux/src/backends/adapters.ts",
+    "packages/tasks-mux/src/backends/__tests__/adapters.test.ts",
     "packages/tasks-mux/src/backends/index.ts",
     "packages/tasks-mux/src/index.ts",
     "packages/tasks-mux/src/types.ts",
     "packages/tasks-mux/package.json"
   ],
   "verificationCommands": [
-    "npm exec --workspace=@a5c-ai/tasks-mux -- vitest run src/backends/__tests__/agent-mux.test.ts",
+    "npm exec --workspace=@a5c-ai/tasks-mux -- vitest run src/backends/__tests__/adapters.test.ts",
     "npm run test --workspace=@a5c-ai/tasks-mux",
     "npm run typecheck --workspace=@a5c-ai/tasks-mux",
     "npm run build --workspace=@a5c-ai/tasks-mux",

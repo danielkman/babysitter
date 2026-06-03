@@ -28,7 +28,7 @@ function describeControlPlane(controlPlane: unknown): string {
     case 'mcp-mediated':
       return 'Live session owner: host-mediated channel.';
     default:
-      return 'Live session owner: agent-mux managed process or SDK.';
+      return 'Live session owner: adapters managed process or SDK.';
   }
 }
 

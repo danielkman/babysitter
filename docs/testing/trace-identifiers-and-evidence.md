@@ -1,6 +1,6 @@
 ---
 title: Trace Identifiers And Evidence
-description: Identifiers, logs, files, and artifacts required to correlate primary E2E flows across agent-mux, agent-platform, Babysitter SDK, hooks-mux, and transport-mux.
+description: Identifiers, logs, files, and artifacts required to correlate primary E2E flows across adapters, agent-platform, Babysitter SDK, hooks-mux, and transport-mux.
 last_updated: 2026-05-07
 ---
 
@@ -12,7 +12,7 @@ Use this document as the evidence checklist for tests described in [Primary Flow
 
 | Identifier | Owner | Where it appears | Why it matters |
 | --- | --- | --- | --- |
-| `agentMuxRunId` / `runId` | Agent-mux | CLI result, gateway runtime state, event log filename or event body | Joins agent-mux session events to launch/transport evidence |
+| `agentMuxRunId` / `runId` | Agent-mux | CLI result, gateway runtime state, event log filename or event body | Joins adapters session events to launch/transport evidence |
 | `agentMuxSessionId` / `sessionId` | Agent-mux/external harness | CLI args, session runtime, harness transcript | Proves continuity across prompts, plugin command, and hook events |
 | `babysitterRunId` / SDK `runId` | Babysitter SDK and agent-platform | `run:create` output, `.a5c/runs/<runId>/`, `agent-platform` progress events | Primary key for SDK journal, tasks, and terminal state |
 | `runDir` | Babysitter SDK | `run:create` output, `agent-platform` progress events | Filesystem root for journal, tasks, outputs, and replay state |
@@ -22,7 +22,7 @@ Use this document as the evidence checklist for tests described in [Primary Flow
 | `UnifiedHookEvent.execution.sessionId` | Hooks-mux | Normalized hook event JSON | Joins native hook event to agent or Babysitter session |
 | `UnifiedHookEvent.execution.toolCallId` | Hooks-mux/native harness | Tool hook payloads and normalized event | Joins tool call ready/result pairs and handler decisions |
 | `event.seq` | Agent-mux gateway event log | `packages/adapters/gateway/src/runs/event-log.ts` event entries | Orders session events and detects gaps/truncation |
-| Transport request/trace ID | Transport-mux | Proxy request logs, trace query/headers, upstream metadata | Joins provider request/stream to agent-mux launch/session |
+| Transport request/trace ID | Transport-mux | Proxy request logs, trace query/headers, upstream metadata | Joins provider request/stream to adapters launch/session |
 
 ## Environment And Hook Context
 
@@ -45,7 +45,7 @@ Use this document as the evidence checklist for tests described in [Primary Flow
 
 A passing artifact bundle should include:
 
-- `agent-mux` invocation: command, selected adapter, model, cwd, prompt digest, `runId`, session mode.
+- `adapters` invocation: command, selected adapter, model, cwd, prompt digest, `runId`, session mode.
 - Agent-mux event log: ordered `seq`, `ts`, `source`, event type, session/run IDs, terminal event.
 - Harness/plugin setup: `babysitter harness:install <harness>` and `babysitter harness:install-plugin <harness>` output or a cached precondition artifact.
 - Plugin command transcript: user command such as `/babysitter:call`, plugin dispatch evidence, assistant/tool result.
@@ -92,7 +92,7 @@ A passing artifact bundle should include:
 - Agent-mux launch decision: native provider vs transport proxy, `proxyNeeded`, reason, route, and redacted env diff.
 - Transport-mux route request: method, path, query/trace flag, upstream target, status code.
 - Stream evidence: first byte/event, at least one delta, final event, cancellation/timeout case where applicable.
-- Correlation to agent-mux `runId` or session ID.
+- Correlation to adapters `runId` or session ID.
 - Explicit statement that Babysitter completion is out of scope unless a `babysitterRunId` and SDK terminal state are also present.
 
 ## Redaction Rules
@@ -108,10 +108,10 @@ A passing artifact bundle should include:
 | --- | --- | --- |
 | Setup failure | Harness/plugin install fails | Mark setup lane failed; do not claim runtime E2E attempted |
 | Capability skip | Codex plugin manager unsupported | Mark skipped with adapter capability artifact |
-| Session correlation failure | Hook event session ID differs from agent-mux session ID | Fail E2E and attach both IDs plus raw/normalized hook evidence |
+| Session correlation failure | Hook event session ID differs from adapters session ID | Fail E2E and attach both IDs plus raw/normalized hook evidence |
 | SDK run failure | `run:iterate` emits `RUN_FAILED` | Fail Babysitter run path; attach journal and last effect result |
 | Hook normalization failure | Native event maps to wrong phase/support level | Fail hooks-mux lane; attach raw payload and `UnifiedHookEvent` |
-| Transport failure | Proxy stream times out or loses final event | Fail transport lane; attach route trace and agent-mux session state |
+| Transport failure | Proxy stream times out or loses final event | Fail transport lane; attach route trace and adapters session state |
 | Provider failure | Live model returns auth/quota error | Mark model-backed infra failure; keep no-model lane separate |
 
 ## Minimal Artifact Naming
@@ -120,7 +120,7 @@ Use deterministic artifact names so CI and local runs can be compared:
 
 | Artifact | Suggested name |
 | --- | --- |
-| Agent-mux event log | `agent-mux-events-<agentMuxRunId>.ndjson` |
+| Agent-mux event log | `adapters-events-<agentMuxRunId>.ndjson` |
 | Babysitter run summary | `babysitter-run-<babysitterRunId>.json` |
 | Babysitter task bundle | `babysitter-tasks-<babysitterRunId>.json` |
 | Hook normalized event | `hooks-mux-<adapter>-<nativeEvent>-<sessionId>.json` |
@@ -132,7 +132,7 @@ Use deterministic artifact names so CI and local runs can be compared:
 
 Before a scenario is labeled complete, verify:
 
-- [ ] The primary path is declared: agent-mux plugin, agent-platform runtime, SDK run loop, hooks-mux fixture, or transport-mux route.
+- [ ] The primary path is declared: adapters plugin, agent-platform runtime, SDK run loop, hooks-mux fixture, or transport-mux route.
 - [ ] All required identifiers for that path are present and joinable.
 - [ ] The terminal condition is owned by the correct layer.
 - [ ] Any capability gate or model credential requirement is explicit.

@@ -1,4 +1,4 @@
-# Contributing to agent-mux
+# Contributing to adapters
 
 Thanks for your interest. This doc covers local dev setup and the manual release flow.
 
@@ -24,7 +24,7 @@ npm run hooks:install
 - `packages/core` — `@a5c-ai/comm-adapter`
 - `packages/adapters` — `@a5c-ai/adapters-codecs`
 - `packages/cli` — `@a5c-ai/adapters-cli` (the `adapters` binary)
-- `packages/agent-mux` — `@a5c-ai/adapters` (meta-package re-exporting the above)
+- `packages/adapters` — `@a5c-ai/adapters` (meta-package re-exporting the above)
 - `packages/harness-mock` — `@a5c-ai/adapters-harness-mock`
 
 Specs live in [`docs/`](docs/) (numbered 01–14) and are the source of truth for API shape and behavior.
@@ -43,7 +43,7 @@ All five packages ship in lock-step (configured as a `fixed` group in `.changese
 
 1. **Decide the new version.** All five packages ship in lock-step at the same version. Follow semver relative to the last release.
 2. **Bump every package.**
-   - Update `version` in each of `packages/{core,adapters,cli,agent-mux,harness-mock}/package.json`.
+   - Update `version` in each of `packages/{core,adapters,cli,adapters,harness-mock}/package.json`.
    - Update every workspace cross-dependency pin (`@a5c-ai/comm-adapter`, `-adapters`, `-cli`) to the new version in the packages that depend on them.
 3. **Update `CHANGELOG.md`** with a short summary per package (or a single combined entry).
 4. **Verify locally.**
@@ -65,11 +65,11 @@ All five packages ship in lock-step (configured as a `fixed` group in `.changese
    - Or trigger `publish.yml` manually via `workflow_dispatch`.
    - Or publish locally:
      ```bash
-     # in each package dir, in dependency order: core → adapters → cli → agent-mux, then harness-mock
+     # in each package dir, in dependency order: core → adapters → cli → adapters, then harness-mock
      (cd packages/core && npm publish)
      (cd packages/adapters && npm publish)
      (cd packages/cli && npm publish)
-     (cd packages/agent-mux && npm publish)
+     (cd packages/adapters && npm publish)
      (cd packages/harness-mock && npm publish)
      ```
      Each package has `"publishConfig": { "access": "public" }` and a `prepublishOnly` that runs the build.

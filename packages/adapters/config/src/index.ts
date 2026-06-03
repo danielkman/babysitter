@@ -2,7 +2,7 @@
  * @a5c-ai/config-adapter
  *
  * Install, config, auth, host-detection, and adapter-listing logic
- * for agent-mux. Extracted from the CLI package so these capabilities
+ * for adapters. Extracted from the CLI package so these capabilities
  * can be consumed programmatically without pulling in the full CLI.
  */
 

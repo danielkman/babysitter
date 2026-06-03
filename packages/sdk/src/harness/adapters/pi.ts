@@ -1,7 +1,7 @@
 /**
  * Pi harness adapter.
  *
- * Derives all behavior from BaseHarnessAdapter + agent-mux metadata.
+ * Derives all behavior from BaseHarnessAdapter + adapters metadata.
  */
 
 import { HarnessCapability as Cap } from "../types";

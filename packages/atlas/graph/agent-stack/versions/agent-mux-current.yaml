@@ -1,7 +1,7 @@
 nodeKind: AgentVersion
-id: agent-version:agent-mux@current
+id: agent-version:adapters@current
 attributes:
-  agentProductId: agent:agent-mux
+  agentProductId: agent:adapters
   versionRange: ">=0.4.9"
   releasedAt: "2025-01-01"
   cliCommand: "adapters"
@@ -10,34 +10,34 @@ attributes:
   minSchemaVersion: "6.0.0"
 edges:
   version_of:
-    - agent:agent-mux
+    - agent:adapters
   composed_of:
-    - target: agent-core-impl:agent-mux.core@current
+    - target: agent-core-impl:adapters.core@current
       role: core
-    - target: agent-runtime-impl:agent-mux.runtime@current
+    - target: agent-runtime-impl:adapters.runtime@current
       role: runtime
-    - target: agent-platform-impl:agent-mux.platform@current
+    - target: agent-platform-impl:adapters.platform@current
       role: platform
-    - target: agent-ui-impl:agent-mux.ui@current
+    - target: agent-ui-impl:adapters.ui@current
       role: ui
   sourced_from: []
   supports:
     - target: capability:can-multi-turn
       versionRange: '>=0.4.9'
       level: full
-      notes: agent-mux orchestrates multi-turn agent sessions across multiple harnesses.
+      notes: adapters orchestrates multi-turn agent sessions across multiple harnesses.
     - target: capability:supports-text-streaming
       versionRange: '>=0.4.9'
       level: full
-      notes: agent-mux streams text output from underlying agents.
+      notes: adapters streams text output from underlying agents.
     - target: capability:supports-mcp
       versionRange: '>=0.4.9'
       level: full
-      notes: agent-mux integrates with MCP servers for tool dispatch.
+      notes: adapters integrates with MCP servers for tool dispatch.
     - target: capability:supports-subagent-dispatch
       versionRange: '>=0.4.9'
       level: full
-      notes: agent-mux dispatches work to subagent harnesses.
+      notes: adapters dispatches work to subagent harnesses.
   uses_memory_system:
     - target: memory-system:claude-code-auto-memory
     - target: memory-system:instruction-file-hierarchy

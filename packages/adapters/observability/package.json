@@ -1,7 +1,7 @@
 {
   "name": "@a5c-ai/adapters-observability",
   "version": "5.0.0",
-  "description": "Logging and telemetry infrastructure for agent-mux",
+  "description": "Logging and telemetry infrastructure for adapters",
   "keywords": [
     "logging",
     "telemetry",
@@ -58,7 +58,7 @@
       "cross-cutting"
     ],
     "muxes": [
-      "agent-mux"
+      "adapters"
     ]
   }
 }

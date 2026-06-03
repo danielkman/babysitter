@@ -1,5 +1,5 @@
 /**
- * @process agent-mux/observability-integration
+ * @process adapters/observability-integration
  * @description Implement the logging and OpenTelemetry integration backlog item with phased delivery, verification, and review.
  * @skill babysit plugins/babysitter/skills/babysit/SKILL.md
  */
@@ -224,9 +224,9 @@ const markObservabilityTodoDoneTask = defineTask('mark-observability-todo-done',
 
 export async function process(inputs, ctx) {
   const {
-    projectRoot = 'C:/work/agent-mux',
-    todoFile = 'C:/work/agent-mux/todos.md',
-    todoText = 'Logging and opentelemetry integration: implement logging and telemetry in the agent-mux, to track the usage, performance, and errors of the system. this can be done using a tool like Winston or Pino for logging, and OpenTelemetry for telemetry. make sure to log important events and errors, and to collect relevant metrics for monitoring and debugging purposes.',
+    projectRoot = 'C:/work/adapters',
+    todoFile = 'C:/work/adapters/todos.md',
+    todoText = 'Logging and opentelemetry integration: implement logging and telemetry in the adapters, to track the usage, performance, and errors of the system. this can be done using a tool like Winston or Pino for logging, and OpenTelemetry for telemetry. make sure to log important events and errors, and to collect relevant metrics for monitoring and debugging purposes.',
     targetScore = 90,
     maxIterationsPerPhase = 3,
     defaultVerificationCommands = ['npm run build', 'npm test', 'npm run lint'],

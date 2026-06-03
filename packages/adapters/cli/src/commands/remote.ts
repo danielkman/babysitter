@@ -160,7 +160,7 @@ export async function remoteCommand(
 
   const runStep = async (step: string, cmd: string, cmdArgs: string[]): Promise<{ code: number; stdout: string; stderr: string }> => {
     const spawnArgs = makeSpawnArgs(cmd, cmdArgs, cwd);
-    const inv = buildInvocationCommand(invocation, spawnArgs, 'agent-mux-remote');
+    const inv = buildInvocationCommand(invocation, spawnArgs, 'adapters-remote');
     const entry: { step: string; command: string; args: string[]; result?: { code: number; stdout: string; stderr: string } } = { step, command: inv.command, args: inv.args };
     steps.push(entry);
     if (dryRun) {

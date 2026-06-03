@@ -1,5 +1,5 @@
 nodeKind: PackageSurface
-id: package:a5c-ai-agent-mux
+id: package:a5c-ai-adapters
 attributes:
   packageId: "@a5c-ai/adapters"
   packageName: "@a5c-ai/adapters"
@@ -15,4 +15,4 @@ attributes:
   # Source: packages/adapters/sdk/package.json (name @a5c-ai/adapters, version 0.4.9, bin.adapters)
 edges:
   references_path:
-    - target: path:agent-mux-sdk
+    - target: path:adapters-sdk

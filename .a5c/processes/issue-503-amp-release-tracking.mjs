@@ -22,7 +22,7 @@ const collectSpecTask = defineTask('issue-503.collect-spec', (args, taskCtx) => 
       `gh issue view ${args.issueNumber} --json title,body,labels,comments`,
       `gh pr list --state open --search "${args.issueNumber} in:body OR #${args.issueNumber} in:body OR ${args.issueNumber} in:title" --json number,title,headRefName,baseRefName,url,body`,
       `npm view @ampcode/cli@${args.targetVersion} version dist.tarball --json`,
-      `rg -n "${args.previousVersion}|${args.targetVersion}|@ampcode/cli|releaseNotesUrl|assimilationNotes" packages/atlas/graph/agent-stack/versions/amp-current.yaml packages/atlas/graph/tests/claims/amp-current-release-tracking.test.cjs docs/agent-mux/reference/agents/amp.md packages/agent-catalog || true`,
+      `rg -n "${args.previousVersion}|${args.targetVersion}|@ampcode/cli|releaseNotesUrl|assimilationNotes" packages/atlas/graph/agent-stack/versions/amp-current.yaml packages/atlas/graph/tests/claims/amp-current-release-tracking.test.cjs docs/adapters/reference/agents/amp.md packages/agent-catalog || true`,
       'git status --short --branch',
     ].join('\n'),
     expectedExitCode: 0,

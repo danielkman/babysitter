@@ -479,13 +479,13 @@ edges:
   - source-ref:pi-github
 ---
 nodeKind: Claim
-id: claim:agent-github-source-ref-source-ref-agent-mux-github-ref
+id: claim:agent-github-source-ref-source-ref-adapters-github-ref
 attributes:
-  subjectId: source-ref:agent-mux-github
+  subjectId: source-ref:adapters-github
   attribute: ref
   value: main
   subjectKind: SourceRef
-  statement: source-ref:agent-mux-github ref is main.
+  statement: source-ref:adapters-github ref is main.
   confidence: medium
   provenanceKind: observation
   evidenceStrength: moderate
@@ -500,16 +500,16 @@ edges:
   backed_by_evidence:
   - evidence:agent-github-source-ref-catalog-source-2026-05
   about_subject:
-  - source-ref:agent-mux-github
+  - source-ref:adapters-github
 ---
 nodeKind: Claim
-id: claim:agent-github-source-ref-source-ref-agent-mux-github-repourl
+id: claim:agent-github-source-ref-source-ref-adapters-github-repourl
 attributes:
-  subjectId: source-ref:agent-mux-github
+  subjectId: source-ref:adapters-github
   attribute: repoUrl
-  value: https://github.com/a5c-ai/agent-mux
+  value: https://github.com/a5c-ai/adapters
   subjectKind: SourceRef
-  statement: source-ref:agent-mux-github repoUrl is https://github.com/a5c-ai/agent-mux.
+  statement: source-ref:adapters-github repoUrl is https://github.com/a5c-ai/adapters.
   confidence: medium
   provenanceKind: observation
   evidenceStrength: moderate
@@ -524,4 +524,4 @@ edges:
   backed_by_evidence:
   - evidence:agent-github-source-ref-catalog-source-2026-05
   about_subject:
-  - source-ref:agent-mux-github
+  - source-ref:adapters-github

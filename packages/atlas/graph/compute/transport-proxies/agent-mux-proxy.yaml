@@ -1,5 +1,5 @@
 nodeKind: TransportProxy
-id: transport-proxy:agent-mux-proxy
+id: transport-proxy:adapters-proxy
 attributes:
   capabilities: []
   displayName: "Agent-Mux Proxy"

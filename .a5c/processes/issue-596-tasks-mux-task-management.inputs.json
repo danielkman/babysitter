@@ -46,7 +46,7 @@
     "packages/tasks-mux/src/backends/server.ts",
     "packages/tasks-mux/src/backends/github-issues.ts",
     "packages/tasks-mux/src/backends/external-tracker.ts",
-    "packages/tasks-mux/src/backends/agent-mux.ts",
+    "packages/tasks-mux/src/backends/adapters.ts",
     "packages/tasks-mux/src/backends/index.ts",
     "packages/tasks-mux/src/cli/program.ts",
     "packages/tasks-mux/src/cli/commands",
@@ -61,7 +61,7 @@
   ],
   "referenceProcesses": [
     ".a5c/processes/issue-606-tasks-mux-integration-tests.mjs",
-    ".a5c/processes/issue-631-agent-mux-responder-backend.mjs",
+    ".a5c/processes/issue-631-adapters-responder-backend.mjs",
     ".a5c/processes/issue-633-route-effect-resolution-through-tasks-mux.mjs",
     ".a5c/processes/issue-635-sdk-task-responder-type-plan.mjs",
     ".a5c/processes/tasks-mux-external-tracker-backend.mjs",
@@ -102,7 +102,7 @@
     },
     {
       "area": "related tasks-mux infrastructure",
-      "finding": "Responder type, external-tracker backend, agent-mux backend, server backend, GitHub Issues backend, CLI, MCP, and tests already exist on staging.",
+      "finding": "Responder type, external-tracker backend, adapters backend, server backend, GitHub Issues backend, CLI, MCP, and tests already exist on staging.",
       "planImpact": "Do not recreate tracker or agent routing infrastructure; integrate through current public seams and capability tests."
     },
     {
@@ -116,7 +116,7 @@
     "Phase 1: additive architecture and compatibility design",
     "Phase 2: failing acceptance, compatibility, backend capability, CLI, and MCP tests",
     "Phase 3: core schemas, state machine validation, backend contract, typed unsupported features",
-    "Phase 4: git-native implementation and backend parity/capability reporting for server, GitHub Issues, external-tracker, and agent-mux",
+    "Phase 4: git-native implementation and backend parity/capability reporting for server, GitHub Issues, external-tracker, and adapters",
     "Phase 5: CLI, MCP, README, docs, and package surface parity",
     "Phase 6: disabled-by-default notification/escalation/form providers plus audit, metrics, export, and backup guardrails",
     "Phase 7: quality gates, adversarial review, and final acceptance"
@@ -133,7 +133,7 @@
     "Reuse-audit findings are reviewed before implementation and new infrastructure reuses existing tasks-mux seams where available.",
     "All issue-requested capabilities are implemented with tests or explicitly unsupported/deferred with rationale and follow-up references.",
     "Existing breakpoint JSON, proven answers, CLI commands, MCP tools, and backend consumers remain backward compatible.",
-    "Shared backend capability tests cover git-native plus server, GitHub Issues, external-tracker, and agent-mux parity or typed unsupported-feature behavior.",
+    "Shared backend capability tests cover git-native plus server, GitHub Issues, external-tracker, and adapters parity or typed unsupported-feature behavior.",
     "Search/filter and bulk operations include pagination, sorting, partial failure, idempotency, and malformed-record handling tests.",
     "State transition validation rejects invalid transitions and records history/audit entries for valid mutations.",
     "CLI and MCP surfaces have parity tests, stable JSON output, and README/documentation coverage.",
@@ -146,7 +146,7 @@
     "Do not enable real external notification or escalation delivery by default.",
     "Do not remove or break existing breakpoint routing, proven answers, current CLI/MCP commands, or backend JSON files.",
     "Do not require Slack, Discord, email, webhook, tracker, or agent credentials for the default test suite.",
-    "Do not duplicate external-tracker or agent-mux infrastructure that already exists on staging."
+    "Do not duplicate external-tracker or adapters infrastructure that already exists on staging."
   ],
   "planningNotes": {
     "processShape": "Flat phased feature implementation with ATDD/TDD and quality convergence. The gap is known, so a hypotheses tree is unnecessary.",

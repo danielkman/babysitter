@@ -26,7 +26,7 @@ describe('@a5c-ai/adapters meta package', () => {
     const client = adapters.createClient();
     adapters.registerBuiltInAdapters(client);
     const names = client.adapters.list().map((a) => a.agent);
-    for (const a of ['claude','codex','gemini','copilot','cursor','opencode','pi','omp','openclaw','hermes','agent-mux-remote','qwen','babysitter']) {
+    for (const a of ['claude','codex','gemini','copilot','cursor','opencode','pi','omp','openclaw','hermes','adapters-remote','qwen','babysitter']) {
       expect(names).toContain(a);
     }
   });

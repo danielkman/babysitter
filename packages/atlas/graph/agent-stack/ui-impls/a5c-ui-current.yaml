@@ -12,7 +12,7 @@ attributes:
   accessibilitySupport: basic
   notes: |
     a5c ships both a TUI and a CLI presentation; user-facing primitives are
-    slash-style commands. Some flows delegate via agent-mux to upstream agents.
+    slash-style commands. Some flows delegate via adapters to upstream agents.
 edges:
   realizes:
     - target: layer:11-presentation

@@ -102,4 +102,4 @@ edges:
   spoken_by:
     - model:claude-opus-4-7@current
   bridged_by:
-    - transport-proxy:agent-mux-proxy
+    - transport-proxy:adapters-proxy

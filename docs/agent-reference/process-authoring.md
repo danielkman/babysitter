@@ -38,7 +38,7 @@ export const summarizeTask = defineTask("summarize-docs", () => ({
 ```
 
 Use an external agent responder only when the work benefits from another
-agent-mux adapter: for example, tool-heavy code editing, browser or shell access,
+adapters adapter: for example, tool-heavy code editing, browser or shell access,
 a specialist harness, or an isolated conversation context. The current
 tasks-mux routing model uses `responderType: "agent"` plus an `adapter` routing
 hint on the agent task.
@@ -65,9 +65,9 @@ export const implementationReviewTask = defineTask("implementation-review", () =
 External agent responders require `adapter`; `model`, `provider`, `timeout`,
 `approvalMode`, and `maxTurns` are optional routing hints passed through to the
 agent responder when the backend supports them. `fallbackType: "internal"`
-means the task may degrade to the normal internal agent path when agent-mux or
+means the task may degrade to the normal internal agent path when adapters or
 the preferred adapter is unavailable. Without an explicit fallback, a missing
-agent-mux install, missing adapter, authentication failure, timeout, or adapter
+adapters install, missing adapter, authentication failure, timeout, or adapter
 crash should surface as a failed task result rather than silently changing
 responders.
 

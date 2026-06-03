@@ -2,7 +2,7 @@ import { createKubernetesResourceGateway } from './kubernetes-resource-gateway.j
 import { clearSnapshotCache } from './snapshot-cache.js';
 import { createPermissionReviewer } from './agent-permission-review.js';
 import { createAgentDispatchController } from './agent-dispatch-controller.js';
-import { createAgentMuxClient } from './agent-mux-client.js';
+import { createAgentMuxClient } from './adapters-client.js';
 import { createAgentApprovalController } from './agent-approval-controller.js';
 import { createAgentTriggerController } from './agent-trigger-controller.js';
 import { createAgentWorkspaceController } from './agent-workspace-controller.js';

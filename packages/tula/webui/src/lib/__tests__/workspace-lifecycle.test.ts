@@ -129,7 +129,7 @@ describe("WorkspaceLifecycleService", () => {
     vi.restoreAllMocks();
   });
 
-  it("lists workspaces from git worktrees, agent-mux sessions, and Babysitter runs", async () => {
+  it("lists workspaces from git worktrees, adapters sessions, and Babysitter runs", async () => {
     const service = new WorkspaceLifecycleService(createDeps());
     const sessions: WorkspaceSessionSnapshot[] = [
       {

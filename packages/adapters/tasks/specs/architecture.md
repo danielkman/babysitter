@@ -1,11 +1,11 @@
-# agent-mux-tasks Architecture Specification
+# adapters-tasks Architecture Specification
 
 ## Version and Identity
 
 - Package: `@a5c-ai/tasks-adapter`
 - Package version: `5.0.0`
 - CLI surface version: `5.0.0`
-- MCP server identity: `agent-mux-tasks@0.1.0`
+- MCP server identity: `adapters-tasks@0.1.0`
 - Status: current packaged surface reference
 - Date: 2026-04-27
 
@@ -43,30 +43,30 @@ Source layout:
 
 ## Current CLI Surface
 
-The packaged CLI program name and npm bin name are both `agent-mux-tasks`.
+The packaged CLI program name and npm bin name are both `adapters-tasks`.
 
 Supported command paths:
 
-- `agent-mux-tasks ask`
-- `agent-mux-tasks responders list`
-- `agent-mux-tasks responders show <responderId>`
-- `agent-mux-tasks breakpoints pending --responder <responderId>`
-- `agent-mux-tasks breakpoints answer <breakpointId> --answer <text> --responder <responderId> [--confidence <0-100>]`
-- `agent-mux-tasks breakpoints status <breakpointId>`
-- `agent-mux-tasks breakpoints poll <breakpointId> [--timeout <seconds>] [--interval <seconds>]`
-- `agent-mux-tasks tasks search [--query <text>] [--status <csv>] [--priority <csv>] [--assignee <id>]`
-- `agent-mux-tasks tasks assign <taskId> --assignee <id> [--assignee-name <name>]`
-- `agent-mux-tasks tasks approve <taskId> --responder <id> --responder-name <name> --text <text>`
-- `agent-mux-tasks tasks close <taskId> [--message <text>]`
-- `agent-mux-tasks tasks cancel <taskId>`
-- `agent-mux-tasks tasks transition <taskId> --status <status> [--message <text>]`
-- `agent-mux-tasks tasks comment <taskId> --author <id> --text <text>`
-- `agent-mux-tasks tasks bulk --ids <csv> --action <approve|close|cancel|reassign|transition>`
-- `agent-mux-tasks tasks stats`
-- `agent-mux-tasks tasks export`
-- `agent-mux-tasks responder-loop --responder <responderId> [--interval <seconds>] [--once]`
-- `agent-mux-tasks server start`
-- `agent-mux-tasks auth login|logout|status|server set|server clear|token set|token clear|keygen|key-push|keys`
+- `adapters-tasks ask`
+- `adapters-tasks responders list`
+- `adapters-tasks responders show <responderId>`
+- `adapters-tasks breakpoints pending --responder <responderId>`
+- `adapters-tasks breakpoints answer <breakpointId> --answer <text> --responder <responderId> [--confidence <0-100>]`
+- `adapters-tasks breakpoints status <breakpointId>`
+- `adapters-tasks breakpoints poll <breakpointId> [--timeout <seconds>] [--interval <seconds>]`
+- `adapters-tasks tasks search [--query <text>] [--status <csv>] [--priority <csv>] [--assignee <id>]`
+- `adapters-tasks tasks assign <taskId> --assignee <id> [--assignee-name <name>]`
+- `adapters-tasks tasks approve <taskId> --responder <id> --responder-name <name> --text <text>`
+- `adapters-tasks tasks close <taskId> [--message <text>]`
+- `adapters-tasks tasks cancel <taskId>`
+- `adapters-tasks tasks transition <taskId> --status <status> [--message <text>]`
+- `adapters-tasks tasks comment <taskId> --author <id> --text <text>`
+- `adapters-tasks tasks bulk --ids <csv> --action <approve|close|cancel|reassign|transition>`
+- `adapters-tasks tasks stats`
+- `adapters-tasks tasks export`
+- `adapters-tasks responder-loop --responder <responderId> [--interval <seconds>] [--once]`
+- `adapters-tasks server start`
+- `adapters-tasks auth login|logout|status|server set|server clear|token set|token clear|keygen|key-push|keys`
 
 Global options on the top-level program:
 
@@ -106,7 +106,7 @@ The stdio MCP server registers these tools:
 
 `Breakpoint` remains the canonical persisted shape. Task-management fields are additive: `priority`, `dependsOn`, `assigneeId`, `assigneeName`, `comments`, `history`, `auditLog`, `forms`, `formSubmissions`, `sla`, `metrics`, `notifications`, and `escalation`. Existing breakpoint JSON without these fields remains valid and receives defaults when parsed.
 
-The git-native backend implements the local durable task-management contract: search/filter/sort/pagination, assignment/reassignment, validated lifecycle transitions, discussion comments, history/audit append, bulk operations with per-item results, metrics grouped by status/priority, and redacted export. Server, GitHub Issues, external-tracker, and agent-mux backends expose capability metadata and should return explicit unsupported-feature errors for operations that cannot be mapped safely.
+The git-native backend implements the local durable task-management contract: search/filter/sort/pagination, assignment/reassignment, validated lifecycle transitions, discussion comments, history/audit append, bulk operations with per-item results, metrics grouped by status/priority, and redacted export. Server, GitHub Issues, external-tracker, and adapters backends expose capability metadata and should return explicit unsupported-feature errors for operations that cannot be mapped safely.
 
 ## Packaging Facts
 
@@ -120,7 +120,7 @@ The package surface intentionally separates published runtime files from reposit
 
 Documentation in this package must stay aligned with:
 
-- the CLI bin name `agent-mux-tasks`
+- the CLI bin name `adapters-tasks`
 - the CLI version and package version `5.0.0`
 - the MCP server identity version `0.1.0`
 - the current command tree in `src/cli/program.ts`

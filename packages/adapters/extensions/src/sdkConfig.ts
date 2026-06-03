@@ -20,7 +20,7 @@ export const BABYSITTER_DEFAULT_SDK_CONFIG: Readonly<SdkConfig> = {
   package: '@a5c-ai/babysitter-sdk',
   cli: 'babysitter',
   proxyPackage: '@a5c-ai/hooks-adapter-cli',
-  proxyBinary: 'agent-mux-hooks',
+  proxyBinary: 'adapters-hooks',
   scope: '@a5c-ai',
   envPrefix: 'BABYSITTER',
   stateDir: '.a5c',

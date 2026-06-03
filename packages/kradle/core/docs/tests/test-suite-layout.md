@@ -48,7 +48,7 @@ tests/
   helpers/
     fake-kubernetes.js
     fake-gitea.js
-    fake-agent-mux.js
+    fake-adapters.js
     fake-memory-repo.js
     assertions.js
 ```

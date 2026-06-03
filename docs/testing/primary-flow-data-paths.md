@@ -1,6 +1,6 @@
 ---
 title: Primary Flow Data Paths
-description: Data-path map for the primary agent-mux, agent-platform, SDK run, hooks-mux, and transport-mux flows covered by the rebuilt E2E strategy.
+description: Data-path map for the primary adapters, agent-platform, SDK run, hooks-mux, and transport-mux flows covered by the rebuilt E2E strategy.
 last_updated: 2026-05-07
 ---
 
@@ -14,9 +14,9 @@ The primary configuration has two valid runtime paths and one shared hook/trace 
 
 | Path | Primary target | What it proves | What it must not claim |
 | --- | --- | --- | --- |
-| Agent-mux plugin path | Claude Code first; Codex only when capability-gated plugin support is available | A real external harness session can be launched through `agent-mux`, the Babysitter plugin can run a `/babysitter:call`-style session command, and the resulting Babysitter run reaches a terminal state | It does not prove `agent-platform` runtime orchestration and does not use `agent-platform create-run` |
+| Agent-mux plugin path | Claude Code first; Codex only when capability-gated plugin support is available | A real external harness session can be launched through `adapters`, the Babysitter plugin can run a `/babysitter:call`-style session command, and the resulting Babysitter run reaches a terminal state | It does not prove `agent-platform` runtime orchestration and does not use `agent-platform create-run` |
 | Babysitter-agent runtime path | `agent-platform call` / `agent-platform create-run` with `agent-core` internal backend, plus external-harness bridge where selected | The runtime can understand intent, create or reuse a process, create and bind a Babysitter SDK run, iterate effects, resolve tasks, and complete | It does not install external harness plugins; `babysitter harness:install` belongs to SDK setup, not this path |
-| Hooks and transport layer | `hooks-mux` and `transport-mux` alongside either runtime path | Native hook payloads normalize into `UnifiedHookEvent`, handlers receive traceable env/stdin, and provider traffic can be proxied/recorded where configured | Hooks-mux does not own agent-mux sessions; transport-mux does not own Babysitter run state |
+| Hooks and transport layer | `hooks-mux` and `transport-mux` alongside either runtime path | Native hook payloads normalize into `UnifiedHookEvent`, handlers receive traceable env/stdin, and provider traffic can be proxied/recorded where configured | Hooks-mux does not own adapters sessions; transport-mux does not own Babysitter run state |
 
 ## Flow A: Agent-Mux Plugin Session To Babysitter Run
 
@@ -26,13 +26,13 @@ This is the primary plugin E2E for Claude Code. Codex uses the same shape only a
 operator / CI
   -> babysitter harness:install claude
   -> babysitter harness:install-plugin claude
-  -> agent-mux CLI (`adapters run` or launch path)
-  -> agent-mux adapter/runtime session
+  -> adapters CLI (`adapters run` or launch path)
+  -> adapters adapter/runtime session
   -> external harness process (Claude Code primary)
   -> Babysitter plugin command inside the harness session
   -> Babysitter SDK run creation / iteration
   -> hooks-mux native hook normalization and stop-hook evidence
-  -> terminal Babysitter run state and agent-mux event log evidence
+  -> terminal Babysitter run state and adapters event log evidence
 ```
 
 ### Data Path
@@ -40,7 +40,7 @@ operator / CI
 | Step | Boundary | Data passed | Required evidence |
 | --- | --- | --- | --- |
 | 1 | SDK setup CLI | Harness name and plugin target via `babysitter harness:install` and `babysitter harness:install-plugin` | Install JSON or log, installed plugin path, marketplace/registry entry, idempotency result |
-| 2 | Agent-mux invocation | Agent name, prompt, `--session`, `--run-id`, cwd/env/model flags from `packages/adapters/cli/src/commands/run.ts` | `agent-mux` run ID, selected adapter, cwd, model, prompt digest, session mode |
+| 2 | Agent-mux invocation | Agent name, prompt, `--session`, `--run-id`, cwd/env/model flags from `packages/adapters/cli/src/commands/run.ts` | `adapters` run ID, selected adapter, cwd, model, prompt digest, session mode |
 | 3 | Agent-mux gateway/runtime | Session runtime and event log under `packages/adapters/gateway/src/runs/session-runtime.ts` and `packages/adapters/gateway/src/runs/event-log.ts` | Event-log file or API events with monotonic `seq`, `source`, `ts`, event type, `runId` |
 | 4 | External harness | Native harness session ID, native hook payloads, tool calls, stop/session events | Harness transcript/session ID, native hook payload fixture or redacted live artifact |
 | 5 | Babysitter plugin command | `/babysitter:call` or equivalent Babysitter-enabled session command posted in the harness | Assistant/tool transcript showing command, plugin dispatch evidence, created Babysitter `runId` |
@@ -49,7 +49,7 @@ operator / CI
 
 ### Assertions
 
-- The agent-mux `runId` and session ID are recorded before the Babysitter plugin command runs.
+- The adapters `runId` and session ID are recorded before the Babysitter plugin command runs.
 - The Babysitter plugin command creates or resumes exactly one Babysitter `runId` for the scenario.
 - The Babysitter `runId` appears in final output and maps to an existing `.a5c/runs/<runId>/` directory.
 - At least one hook artifact proves stop/session handling, not just assistant text.
@@ -57,7 +57,7 @@ operator / CI
 
 ## Flow B: Babysitter-Agent Runtime Create-Run
 
-This path tests `@a5c-ai/tula-platform` as the runtime owner. It is separate from agent-mux plugin setup.
+This path tests `@a5c-ai/tula-platform` as the runtime owner. It is separate from adapters plugin setup.
 
 ```text
 operator / CI
@@ -151,21 +151,21 @@ native harness hook payload on stdin
 ### Assertions
 
 - Tests assert both raw native event and canonical `phase`.
-- `UnifiedHookEvent.execution.sessionId` matches the session used by agent-mux or Babysitter where the flow crosses that boundary.
+- `UnifiedHookEvent.execution.sessionId` matches the session used by adapters or Babysitter where the flow crosses that boundary.
 - Stop-hook tests assert recursion guard/stop behavior explicitly.
 - Handler env contains `AGENT_SESSION_ID` and `AGENT_ADAPTER`; sensitive provider keys are redacted from artifacts.
 
 ## Flow E: Transport-Mux Assisted Agent-Mux Launch
 
-Transport-mux belongs to provider/proxy transport, not Babysitter run state. The primary E2E use is to prove that an agent-mux launch can route provider traffic through a configured transport proxy and still complete a model-backed session.
+Transport-mux belongs to provider/proxy transport, not Babysitter run state. The primary E2E use is to prove that an adapters launch can route provider traffic through a configured transport proxy and still complete a model-backed session.
 
 ```text
-agent-mux launch/run
+adapters launch/run
   -> launch decision: native provider vs transport-mux proxy
   -> transport-mux HTTP/SSE route
   -> upstream provider or mock transport
   -> streamed/non-streamed response
-  -> agent-mux session event log
+  -> adapters session event log
   -> optional hooks-mux events from harness runtime
 ```
 
@@ -173,7 +173,7 @@ agent-mux launch/run
 
 - Agent-mux launch evidence includes `proxyNeeded`/`proxyReason` or equivalent launch decision metadata.
 - Transport evidence includes route, upstream target, status code, stream completion/cancellation, timeout behavior, and redacted auth metadata.
-- The transport trace is correlated to an agent-mux `runId` or session ID.
+- The transport trace is correlated to an adapters `runId` or session ID.
 - The transport test does not claim Babysitter completion unless a Babysitter run ID and terminal SDK state are also present.
 
 ## Valid Primary Test Set
@@ -186,9 +186,9 @@ agent-mux launch/run
 | PF-4 | Agent-mux mock session | No-model | `runId`, session event log, ordered events, terminal session output |
 | PF-5 | Transport-mux mock route | No-model | Proxy route roundtrip, stream and non-stream artifacts, timeout/cancel fixture |
 | PF-6 | Babysitter-agent internal | Model-backed or controlled fake model | `agent-platform call/create-run`, `agent-core` backend, SDK run terminal state |
-| PF-7 | Agent-mux + Claude + Babysitter plugin | Model-backed | Harness/plugin installed, `/babysitter:call`, agent-mux session log, SDK run terminal state, stop hook evidence |
+| PF-7 | Agent-mux + Claude + Babysitter plugin | Model-backed | Harness/plugin installed, `/babysitter:call`, adapters session log, SDK run terminal state, stop hook evidence |
 | PF-8 | Agent-mux + Codex + Babysitter plugin | Capability-gated model-backed | Same as PF-7 only after plugin support is proven; otherwise skip evidence must cite capability gate |
-| PF-9 | Agent-mux + transport-mux live stream | Model-backed | Launch decision, proxy trace, streamed response, agent-mux session completion |
+| PF-9 | Agent-mux + transport-mux live stream | Model-backed | Launch decision, proxy trace, streamed response, adapters session completion |
 
 ## Source Map
 

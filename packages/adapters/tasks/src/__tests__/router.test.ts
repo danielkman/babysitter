@@ -10,7 +10,7 @@ describe("routeTask", () => {
     expect(isHostDelegableRoute(decision)).toBe(true);
   });
 
-  it("routes explicit agent responder tasks to agent-mux", () => {
+  it("routes explicit agent responder tasks to adapters", () => {
     const decision = routeTask({
       kind: "agent",
       agent: {
@@ -21,12 +21,12 @@ describe("routeTask", () => {
     });
 
     expect(decision.responderType).toBe("agent");
-    expect(decision.route).toBe("agent-mux");
+    expect(decision.route).toBe("adapters");
     expect(decision.responder.adapter).toBe("codex");
     expect(isHostDelegableRoute(decision)).toBe(false);
   });
 
-  it("routes external agent tasks to agent-mux", () => {
+  it("routes external agent tasks to adapters", () => {
     const decision = routeTask({
       kind: "agent",
       agent: {
@@ -37,7 +37,7 @@ describe("routeTask", () => {
     });
 
     expect(decision.responderType).toBe("agent");
-    expect(decision.route).toBe("agent-mux");
+    expect(decision.route).toBe("adapters");
     expect(decision.responder.adapter).toBe("codex");
   });
 

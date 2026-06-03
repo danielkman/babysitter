@@ -73,7 +73,7 @@ async function authenticatePage(page: Page, request: APIRequestContext, testInfo
   }, auth);
 }
 
-test.describe("agent-mux webui e2e", () => {
+test.describe("adapters webui e2e", () => {
   test("workspaces keeps its shell stable before an authenticated session is established", async ({ page }) => {
     await page.goto("/workspaces", { waitUntil: "domcontentloaded" });
 

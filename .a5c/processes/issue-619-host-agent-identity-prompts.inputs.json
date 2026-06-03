@@ -15,7 +15,7 @@
     "packages/sdk/src/harness/unified/__tests__/e2e-integration.test.ts",
     "packages/sdk/src/prompts/types.ts",
     "packages/sdk/src/prompts/contextShared.ts",
-    "docs/agent-mux-babysitter-integrations/plugin-mode.md"
+    "docs/adapters-babysitter-integrations/plugin-mode.md"
   ],
   "relatedIssues": [605, 616, 602],
   "verificationCommands": [

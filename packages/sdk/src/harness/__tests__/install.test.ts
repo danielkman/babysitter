@@ -17,7 +17,7 @@ afterEach(() => {
 });
 
 describe("install adapters bridge", () => {
-  it("discovers harnesses from an injected agent-mux module", async () => {
+  it("discovers harnesses from an injected adapters module", async () => {
     _setAmuxInstallModuleForTesting({
       createClient: () => ({
         adapters: {
@@ -46,7 +46,7 @@ describe("install adapters bridge", () => {
     });
   });
 
-  it("installs a mapped harness via an injected agent-mux module", async () => {
+  it("installs a mapped harness via an injected adapters module", async () => {
     _setAmuxInstallModuleForTesting({
       createClient: () => ({
         adapters: {
@@ -79,7 +79,7 @@ describe("install adapters bridge", () => {
     });
   });
 
-  it("falls back to npm CLI installers when agent-mux has no install hook", async () => {
+  it("falls back to npm CLI installers when adapters has no install hook", async () => {
     _setAmuxInstallModuleForTesting({
       createClient: () => ({
         adapters: {

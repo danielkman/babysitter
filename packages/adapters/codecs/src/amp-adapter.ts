@@ -462,10 +462,10 @@ export class AmpAdapter extends BaseAgentAdapter {
     _pluginId: string,
     _options?: PluginInstallOptions,
   ): Promise<InstalledPlugin> {
-    throw new Error('Amp does not support plugin installation via agent-mux');
+    throw new Error('Amp does not support plugin installation via adapters');
   }
 
   async uninstallPlugin(_pluginId: string): Promise<void> {
-    throw new Error('Amp does not support plugin uninstallation via agent-mux');
+    throw new Error('Amp does not support plugin uninstallation via adapters');
   }
 }

@@ -189,7 +189,7 @@ export function configureProviders(config: CloudConfig): ProviderConfigurationRe
   env.BABYSITTER_AGENT_AGENT_MUX_PROVIDERS_FILE_PATH = automation.filePath;
   env.BABYSITTER_AGENT_AGENT_MUX_PROVIDERS_FILE_JSON = JSON.stringify(automation.providersFile);
   env.BABYSITTER_AGENT_AGENT_MUX_MODEL_ROUTING_JSON = JSON.stringify(automation.modelRouting);
-  summary.push(`agent-mux provider config: ${automation.filePath}`);
+  summary.push(`adapters provider config: ${automation.filePath}`);
 
   return {
     manifests,

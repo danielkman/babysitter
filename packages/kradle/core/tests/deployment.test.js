@@ -187,7 +187,7 @@ test('staging service env vars are opt-in and render secret references without p
     '--set', 'gitea.httpUrl=http://gitea-http.kradle-system.svc.cluster.local:3000/kradle',
     '--set', 'gitea.token.existingSecret=kradle-gitea-token',
     '--set', 'gitea.token.key=token',
-    '--set', 'agentMux.url=http://agent-mux.kradle-system.svc.cluster.local:8080',
+    '--set', 'agentMux.url=http://adapters.kradle-system.svc.cluster.local:8080',
     '--set', 'agentMux.gatewayUrl=http://agent-gateway.kradle-system.svc.cluster.local:8080',
     '--set', 'assistant.anthropic.existingSecret=kradle-assistant',
     '--set', 'assistant.anthropic.key=anthropic-api-key',
@@ -199,7 +199,7 @@ test('staging service env vars are opt-in and render secret references without p
   assert.match(configured, /name: KRADLE_GITEA_TOKEN[\s\S]*?secretKeyRef:[\s\S]*?name: "kradle-gitea-token"[\s\S]*?key: "token"[\s\S]*?optional: true/);
   assert.match(configured, /name: ANTHROPIC_API_KEY[\s\S]*?secretKeyRef:[\s\S]*?name: "kradle-assistant"[\s\S]*?key: "anthropic-api-key"[\s\S]*?optional: true/);
   assert.match(configured, /name: KRADLE_ASSISTANT_API_KEY[\s\S]*?secretKeyRef:[\s\S]*?name: "kradle-assistant"[\s\S]*?key: "kradle-assistant-api-key"[\s\S]*?optional: true/);
-  assert.match(configured, /name: AGENT_MUX_URL\s+value: "http:\/\/agent-mux\.kradle-system\.svc\.cluster\.local:8080"/);
+  assert.match(configured, /name: AGENT_MUX_URL\s+value: "http:\/\/adapters\.kradle-system\.svc\.cluster\.local:8080"/);
   assert.match(configured, /name: AGENT_GATEWAY_URL\s+value: "http:\/\/agent-gateway\.kradle-system\.svc\.cluster\.local:8080"/);
   assert.doesNotMatch(configured, /sk-ant-|ghp_|github_pat_|glpat-|AKIA[0-9A-Z]{16}/);
 });

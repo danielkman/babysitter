@@ -50,7 +50,7 @@ const verifyTask = defineTask('verify-matrix', (args, taskCtx) => ({
 }));
 
 export default async function dockerE2eMatrix(ctx) {
-  const adapters = ['claude','codex','cursor','gemini','opencode','openclaw','copilot','hermes','pi','omp','agent-mux-remote'];
+  const adapters = ['claude','codex','cursor','gemini','opencode','openclaw','copilot','hermes','pi','omp','adapters-remote'];
   await ctx.run(expandMatrixTask, { adapters });
   await ctx.run(verifyTask, {});
   return { ok: true };

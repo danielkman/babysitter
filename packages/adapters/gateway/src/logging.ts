@@ -7,7 +7,7 @@ export interface GatewayLogger {
 
 function write(level: 'debug' | 'info' | 'warn' | 'error', message: string, meta?: Record<string, unknown>): void {
   const suffix = meta ? ` ${JSON.stringify(meta)}` : '';
-  const line = `[agent-mux-gateway:${level}] ${message}${suffix}`;
+  const line = `[adapters-gateway:${level}] ${message}${suffix}`;
   process.stderr.write(`${line}\n`);
 }
 

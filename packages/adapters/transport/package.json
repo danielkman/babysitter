@@ -3,7 +3,7 @@
   "version": "5.0.0",
   "type": "module",
   "license": "MIT",
-  "description": "Transport/proxy runtime seam for agent-mux launcher bridging",
+  "description": "Transport/proxy runtime seam for adapters launcher bridging",
   "author": "a5c-ai",
   "homepage": "https://github.com/a5c-ai/babysitter/tree/main/packages/adapters/transport#readme",
   "repository": {
@@ -15,7 +15,7 @@
     "url": "https://github.com/a5c-ai/babysitter/issues"
   },
   "keywords": [
-    "agent-mux",
+    "adapters",
     "transport",
     "provider",
     "proxy",
@@ -28,7 +28,7 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "agent-mux-transport-proxy": "./dist/bin/agent-mux-transport-proxy.js",
+    "adapters-transport-proxy": "./dist/bin/adapters-transport-proxy.js",
     "adapters-proxy": "./dist/bin/adapters-proxy.js"
   },
   "exports": {

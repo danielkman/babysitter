@@ -34,7 +34,7 @@ export type TaskRouteDecision =
   | {
       responderType: "agent";
       responder: RoutedResponder;
-      route: "agent-mux";
+      route: "adapters";
       backend?: BreakpointBackend;
       reason: string;
     }
@@ -199,11 +199,11 @@ function agentDecision(
 ): TaskRouteDecision {
   return {
     responderType: "agent",
-    route: "agent-mux",
+    route: "adapters",
     backend: context.agentBackend,
     reason,
     responder: responder ?? {
-      id: hints.adapter ?? "agent-mux",
+      id: hints.adapter ?? "adapters",
       type: "agent",
       name: hints.adapter ?? "AgentMux Responder",
       title: "AgentMux Responder",

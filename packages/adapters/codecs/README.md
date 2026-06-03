@@ -1,6 +1,6 @@
 # @a5c-ai/adapters-codecs
 
-Built-in agent adapters for [agent-mux](https://github.com/a5c-ai/agent-mux): `claude`, `claude-agent-sdk`, `codex`, `codex-sdk`, `codex-websocket`, `gemini`, `copilot`, `cursor`, `opencode`, `opencode-http`, `pi`, `pi-sdk`, `omp`, `openclaw`, `hermes`, `amp`, `droid`, `qwen`, plus a remote `agent-mux` adapter.
+Built-in agent adapters for [adapters](https://github.com/a5c-ai/adapters): `claude`, `claude-agent-sdk`, `codex`, `codex-sdk`, `codex-websocket`, `gemini`, `copilot`, `cursor`, `opencode`, `opencode-http`, `pi`, `pi-sdk`, `omp`, `openclaw`, `hermes`, `amp`, `droid`, `qwen`, plus a remote `adapters` adapter.
 
 Mock infrastructure is not part of this package anymore. Import subprocess, SDK, HTTP, and WebSocket mocks from `@a5c-ai/adapters-harness-mock`.
 
@@ -21,7 +21,7 @@ import { defaultRegistry } from '@a5c-ai/comm-adapter';
 registerBuiltinAdapters(defaultRegistry);
 ```
 
-See the [repository README](https://github.com/a5c-ai/agent-mux#readme) for full documentation.
+See the [repository README](https://github.com/a5c-ai/adapters#readme) for full documentation.
 
 ## License
 

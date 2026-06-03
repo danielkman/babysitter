@@ -2,8 +2,8 @@
  * Profile management for @a5c-ai/adapters.
  *
  * Profiles are named RunOptions presets stored as JSON files in the
- * global config directory (`~/.agent-mux/profiles/`) or the project
- * config directory (`.agent-mux/profiles/`).
+ * global config directory (`~/.adapters/profiles/`) or the project
+ * config directory (`.adapters/profiles/`).
  *
  * @see 02-run-options-and-profiles.md §10
  */

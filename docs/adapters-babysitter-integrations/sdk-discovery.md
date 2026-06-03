@@ -2,7 +2,7 @@
 
 ## Summary
 
-Add an optional discovery layer to the SDK that detects agent-mux availability and queries installed agents, supported models, and capabilities. This data feeds into process creation context.
+Add an optional discovery layer to the SDK that detects adapters availability and queries installed agents, supported models, and capabilities. This data feeds into process creation context.
 
 ## API Design
 
@@ -20,7 +20,7 @@ interface ExternalAgentInfo {
 }
 
 interface ExternalAgentDiscovery {
-  available: boolean;                 // is agent-mux installed?
+  available: boolean;                 // is adapters installed?
   agents: ExternalAgentInfo[];        // discovered agents
   defaultProvider: string | null;     // AMUX_PROVIDER env
   defaultModel: string | null;        // AMUX_MODEL env
@@ -73,7 +73,7 @@ const promptContext = buildPromptContext({
 The process creation prompt then includes:
 
 ```
-Available external agents (via agent-mux):
+Available external agents (via adapters):
 - claude-code (installed, authenticated) — file-edit, bash, browser
 - codex (installed, authenticated) — file-edit, bash
 - gemini-cli (installed, not authenticated)
@@ -83,5 +83,5 @@ You may use `external: true` agent tasks to delegate work to these agents.
 
 ## Dependencies
 
-- SDK has **no hard dependency** on agent-mux. Discovery uses dynamic import with fallback.
-- At runtime, agent-mux is only needed if external tasks are actually dispatched.
+- SDK has **no hard dependency** on adapters. Discovery uses dynamic import with fallback.
+- At runtime, adapters is only needed if external tasks are actually dispatched.

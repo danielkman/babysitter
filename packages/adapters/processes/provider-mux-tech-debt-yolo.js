@@ -20,7 +20,7 @@ const tier0Task = defineTask('tier0-cleanup', (args, taskCtx) => ({
       task: 'Execute 11 cleanup and fix tasks across TypeScript and Python.',
       context: { workspaceRoot: args.workspaceRoot, attempt: args.attempt ?? 1, feedback: args.feedback ?? null },
       instructions: [
-        'Work from: ' + (args.workspaceRoot || 'C:/work/agent-mux'),
+        'Work from: ' + (args.workspaceRoot || 'C:/work/adapters'),
         'Read each file before editing. Run tests after changes. Commit each logical group.',
         '',
         '## 1. Delete dead OllamaManager',
@@ -134,7 +134,7 @@ const tier1Task = defineTask('tier1-core-infra', (args, taskCtx) => ({
       task: 'Execute 8 core infrastructure tasks.',
       context: { workspaceRoot: args.workspaceRoot, attempt: args.attempt ?? 1, feedback: args.feedback ?? null },
       instructions: [
-        'Work from: ' + (args.workspaceRoot || 'C:/work/agent-mux'),
+        'Work from: ' + (args.workspaceRoot || 'C:/work/adapters'),
         'Read each file before editing. Run tests after changes. Commit each logical group.',
         '',
         '## 12. Fix Python CI env',
@@ -236,7 +236,7 @@ const tier2Task = defineTask('tier2-transports-providers', (args, taskCtx) => ({
       task: 'Implement 4 cloud-provider transport endpoints and 4 provider coverage items.',
       context: { workspaceRoot: args.workspaceRoot, attempt: args.attempt ?? 1, feedback: args.feedback ?? null },
       instructions: [
-        'Work from: ' + (args.workspaceRoot || 'C:/work/agent-mux'),
+        'Work from: ' + (args.workspaceRoot || 'C:/work/adapters'),
         '',
         '## 20. Passthrough transport',
         'Create packages/adapters/adapters-proxy/src/adapters_proxy/transports/passthrough.py:',
@@ -305,7 +305,7 @@ const tier4Task = defineTask('tier4-harness-translators', (args, taskCtx) => ({
       task: 'Complete harness translator coverage for all agents.',
       context: { workspaceRoot: args.workspaceRoot, attempt: args.attempt ?? 1, feedback: args.feedback ?? null },
       instructions: [
-        'Work from: ' + (args.workspaceRoot || 'C:/work/agent-mux'),
+        'Work from: ' + (args.workspaceRoot || 'C:/work/adapters'),
         '',
         '## 28. Claude: CLAUDE_CODE_AUTO_COMPACT_WINDOW',
         'In packages/adapters/adapters/src/translations/claude-translation.ts, in the ollama case:',
@@ -370,7 +370,7 @@ const verifyTask = defineTask('verify-all', (args, taskCtx) => ({
 // ──────────────────────────────────────────────────────────────────
 
 export async function process(inputs = {}, ctx) {
-  const workspaceRoot = inputs.workspaceRoot ?? 'C:/work/agent-mux';
+  const workspaceRoot = inputs.workspaceRoot ?? 'C:/work/adapters';
 
   const t0 = await ctx.task(tier0Task, { workspaceRoot });
   const t1 = await ctx.task(tier1Task, { workspaceRoot });

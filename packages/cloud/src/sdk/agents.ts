@@ -23,15 +23,15 @@ const HARNESS_PLUGIN_PACKAGES: Partial<Record<CanonicalHarnessTarget, string>> =
 };
 
 export const SUPPORTED_AGENT_INSTALL_TARGETS: readonly SupportedHarnessInstallTarget[] = [
-  { target: "claude-code", harnessInstaller: "agent-mux", pluginScopes: [] },
-  { target: "codex", harnessInstaller: "agent-mux", pluginScopes: ["global", "workspace"], pluginInstallerPackage: HARNESS_PLUGIN_PACKAGES.codex },
-  { target: "cursor", harnessInstaller: "agent-mux", pluginScopes: ["global", "workspace"], pluginInstallerPackage: HARNESS_PLUGIN_PACKAGES.cursor },
-  { target: "gemini-cli", harnessInstaller: "agent-mux", pluginScopes: ["global", "workspace"], pluginInstallerPackage: HARNESS_PLUGIN_PACKAGES["gemini-cli"] },
-  { target: "github-copilot", aliases: ["copilot"], harnessInstaller: "agent-mux", pluginScopes: ["global", "workspace"], pluginInstallerPackage: HARNESS_PLUGIN_PACKAGES["github-copilot"] },
-  { target: "oh-my-pi", harnessInstaller: "agent-mux", pluginScopes: ["global", "workspace"], pluginInstallerPackage: HARNESS_PLUGIN_PACKAGES["oh-my-pi"] },
-  { target: "openclaw", harnessInstaller: "agent-mux", pluginScopes: ["global", "workspace"], pluginInstallerPackage: HARNESS_PLUGIN_PACKAGES.openclaw },
-  { target: "opencode", harnessInstaller: "agent-mux", pluginScopes: ["global", "workspace"], pluginInstallerPackage: HARNESS_PLUGIN_PACKAGES.opencode },
-  { target: "pi", harnessInstaller: "agent-mux", pluginScopes: ["global", "workspace"], pluginInstallerPackage: HARNESS_PLUGIN_PACKAGES.pi },
+  { target: "claude-code", harnessInstaller: "adapters", pluginScopes: [] },
+  { target: "codex", harnessInstaller: "adapters", pluginScopes: ["global", "workspace"], pluginInstallerPackage: HARNESS_PLUGIN_PACKAGES.codex },
+  { target: "cursor", harnessInstaller: "adapters", pluginScopes: ["global", "workspace"], pluginInstallerPackage: HARNESS_PLUGIN_PACKAGES.cursor },
+  { target: "gemini-cli", harnessInstaller: "adapters", pluginScopes: ["global", "workspace"], pluginInstallerPackage: HARNESS_PLUGIN_PACKAGES["gemini-cli"] },
+  { target: "github-copilot", aliases: ["copilot"], harnessInstaller: "adapters", pluginScopes: ["global", "workspace"], pluginInstallerPackage: HARNESS_PLUGIN_PACKAGES["github-copilot"] },
+  { target: "oh-my-pi", harnessInstaller: "adapters", pluginScopes: ["global", "workspace"], pluginInstallerPackage: HARNESS_PLUGIN_PACKAGES["oh-my-pi"] },
+  { target: "openclaw", harnessInstaller: "adapters", pluginScopes: ["global", "workspace"], pluginInstallerPackage: HARNESS_PLUGIN_PACKAGES.openclaw },
+  { target: "opencode", harnessInstaller: "adapters", pluginScopes: ["global", "workspace"], pluginInstallerPackage: HARNESS_PLUGIN_PACKAGES.opencode },
+  { target: "pi", harnessInstaller: "adapters", pluginScopes: ["global", "workspace"], pluginInstallerPackage: HARNESS_PLUGIN_PACKAGES.pi },
 ];
 
 function normalizeHarnessTarget(target: HarnessTarget): CanonicalHarnessTarget {
@@ -45,7 +45,7 @@ function buildStep(target: HarnessTarget, installPlugin: boolean, scope: "global
   return {
     requestedTarget: target,
     target: canonicalTarget,
-    harnessInstaller: "agent-mux",
+    harnessInstaller: "adapters",
     ...(installPlugin && installerPackage ? {
       pluginInstall: {
         installerPackage,

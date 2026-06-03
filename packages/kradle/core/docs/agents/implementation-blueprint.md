@@ -51,7 +51,7 @@ The target experience is repository-native and GitHub-like: agents appear inside
   - Validate Secret/ConfigMap grants, tool-secret and skill-secret requirements, ConfigMap injection, rotation impact, and missing-permission warnings.
 - New `src/agent-permission-review.js`
   - Produce a deterministic permission review for stack save, trigger dry-run, dispatch creation, and launch attempts.
-- New `src/agent-mux-client.js`
+- New `src/adapters-client.js`
   - Thin adapter around Agent Mux gateway/client for capability lookup, launch, stream, continue, cancel, retry, fork, resume, and approval forwarding.
 
 ### UI app routes
@@ -149,7 +149,7 @@ Use these companion docs before writing code:
 - [Acceptance test matrix](./acceptance-test-matrix.md) for implementation gates.
 - [Storage and migration spec](./storage-migration-spec.md) for persistence, indexing, snapshots, retention, and migrations.
 - [Chart and packaging spec](./chart-packaging-spec.md) for Helm values, CRDs, RBAC, deployments, examples, and package validation.
-- [Agent Mux adapter contract](./agent-mux-adapter-contract.md) for capability discovery, launch, event normalization, and UI embedding.
+- [Agent Mux adapter contract](./adapters-adapter-contract.md) for capability discovery, launch, event normalization, and UI embedding.
 - [Implementation rollout slices](./implementation-rollout-slices.md) for incremental delivery order.
 - [Context assembly and prompt safety spec](./context-assembly-spec.md) for prompt/source/redaction/digest handling.
 - [Observability and audit spec](./observability-audit-spec.md) for events, metrics, traces, audit records, and alerts.
@@ -206,7 +206,7 @@ WebhookDelivery / CI event / issue or PR event / manual UI action
   -> native RBAC + SecretGrant + ConfigGrant admission
   -> AgentDispatchRun
   -> AgentDispatchAttempt
-  -> agent-mux-client
+  -> adapters-client
   -> Agent Mux run/session
   -> stream/event reconciliation
   -> AgentApproval / AgentArtifact / AgentWorkspace / WorkItem links

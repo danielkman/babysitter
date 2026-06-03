@@ -810,13 +810,13 @@ that mirror those FKs as first-class graph edges.
 | `child_issue_of_decomposition` | `Issue` | `IssueDecomposition` | N:1 | `has_child_issue` | A child issue belongs to one decomposition (replaces `IssueDecomposition.childIssueIds` list). |
 | `projects_session` | `SessionFlowProjection` | `Session` | N:1 | `has_flow_projection` | Replaces `SessionFlowProjection.sessionId`. |
 | `recorded_attention` | `Session` | `FileAttention` | 1:N | `attention_recorded_in` | Replaces `FileAttention.sessionId`. (`FileAttention` records a path string; atlas has no `File` NodeKind — this is the only edge needed.) |
-| `paired_to` | `DevicePair` | `AgentVersion` | N:1 | `has_device_pair` | A paired mobile/desktop device is bound to a specific remote-control AgentVersion (e.g. `agent-mux` mobile ↔ `agent-mux-remote`). |
+| `paired_to` | `DevicePair` | `AgentVersion` | N:1 | `has_device_pair` | A paired mobile/desktop device is bound to a specific remote-control AgentVersion (e.g. `adapters` mobile ↔ `adapters-remote`). |
 | `has_lane` | `SessionFlowProjection` | `AgentFlowLane` | 1:N | `lane_of_projection` | catalog pass 39 — replaces inline lanes attribute on `SessionFlowProjection`. |
 | `contains_segment` | `AgentFlowLane` | `AgentFlowSegment` | 1:N | `segment_in_lane` | catalog pass 39 — replaces inline segments attribute. |
 | `projects_span` | `AgentFlowSegment` | `Span` | N:1 | `projected_by_segment` | catalog pass 39 — observability bridge from a flow segment to its underlying tracing Span. |
 
 All catalog pass 33 edges carry `origin: universal` except `paired_to` /
-`has_device_pair`, which are `origin: derived` (DevicePair / agent-mux-style
+`has_device_pair`, which are `origin: derived` (DevicePair / adapters-style
 remote-control surfaces are vendor-specific).
 
 `incomingEdges` / `outgoingEdges` lists were updated on both endpoints of each

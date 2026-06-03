@@ -51,11 +51,11 @@ attributes:
 nodeKind: SourceRef
 id: source-ref:agent-platform-mux-reference
 attributes:
-  description: Babysitter agent-mux reference docs (invocation modes, hooks, runtime semantics)
-  displayName: a5c-ai/babysitter — docs/agent-mux/reference
+  description: Babysitter adapters reference docs (invocation modes, hooks, runtime semantics)
+  displayName: a5c-ai/babysitter — docs/adapters/reference
   repoUrl: https://github.com/a5c-ai/babysitter
   ref: main
-  path: docs/agent-mux/reference
+  path: docs/adapters/reference
   kind: git-path
 ---
 nodeKind: SourceRef

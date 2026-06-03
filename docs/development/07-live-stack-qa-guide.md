@@ -89,7 +89,7 @@ Each entry in the array defines one scenario:
 | `agent` | yes | Harness adapter name (see Available Axes below) |
 | `model` | yes | Model provider and identifier |
 | `mode` | yes | Interaction mode |
-| `install` | yes | `vanilla` for agent-mux only, `bp` for babysitter-plugin |
+| `install` | yes | `vanilla` for adapters only, `bp` for babysitter-plugin |
 | `live` | yes | `true` for real model calls, `false` for mock/dry-run |
 | `process_mode` | bp only | `predefined`, `create`, or `resume` |
 
@@ -116,7 +116,7 @@ Each entry in the array defines one scenario:
 
 | Value | Description |
 |-------|-------------|
-| `vanilla` | Installs agent-mux only; tests raw harness adapter compatibility |
+| `vanilla` | Installs adapters only; tests raw harness adapter compatibility |
 | `bp` | Installs babysitter-plugin; tests full plugin integration |
 
 ### Process Mode (BP only)

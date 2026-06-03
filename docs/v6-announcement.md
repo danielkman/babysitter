@@ -35,7 +35,7 @@ It ships over 20 sub-packages: `core`, `adapters`, `cli`, `gateway`, `sdk`, `web
 - **Native platform apps**: React Native mobile (iOS and Android), TV apps (AndroidTV and AppleTV), watch apps (WatchOS SwiftUI and WearOS Compose).
 - **WebUI**: Kanban boards, workspace shells, and session chat, migrated from Radix/Tailwind to the new Compendium design system.
 - **Core entry points**: Separate exports for `browser`, `kanban`, and `automation` let consumers tree-shake to exactly the surface they need.
-- **adapters-proxy**: A standalone CLI binary for proxying agent-mux sessions through transport layers.
+- **adapters-proxy**: A standalone CLI binary for proxying adapters sessions through transport layers.
 
 ### Atlas
 
@@ -126,7 +126,7 @@ npx babysitter-observer-dashboard
 
 ### Transport Mux
 
-Transport Mux (28 files, 4K lines) is a lightweight transport and proxy runtime built on Hono. It bridges agent-mux sessions to provider backends and handles provider-backed token counting.
+Transport Mux (28 files, 4K lines) is a lightweight transport and proxy runtime built on Hono. It bridges adapters sessions to provider backends and handles provider-backed token counting.
 
 - Built on Hono for minimal footprint.
 - `adapters-proxy` CLI binary for standalone operation.
@@ -210,7 +210,7 @@ Five architectural decisions define v6:
 | **Version 0.0.175 to 5.0.0** | Update your `package.json` range. `^0.0.x` will not resolve to 5.x. |
 | **License: UNLICENSED to MIT** | No action required. Your usage rights are now broader. |
 | **CLI split: `babysitter` / `agent-platform`** | Orchestration commands (`call`, `yolo`, `resume`, `plan`, `forever`) now live in `agent-platform`. Update scripts and CI configs. |
-| **`BABYSITTER_SESSION_ID` to `AGENT_SESSION_ID`** | Rename the env var in your CI configs. The SDK no longer reads the old name; agent-mux still recognizes it as a detection signal. |
+| **`BABYSITTER_SESSION_ID` to `AGENT_SESSION_ID`** | Rename the env var in your CI configs. The SDK no longer reads the old name; adapters still recognizes it as a detection signal. |
 | **PID-scoped session resolution** | Sessions are now resolved via PID-scoped markers by default. Set `BABYSITTER_TRUST_ENV_SESSION=1` to restore env-var-first behavior in CI. |
 | **`.a5c/functions/` removed** | Migrate to the current effect and hook APIs. The old function API is gone. |
 | **Paperclip VS Code extension removed** | Use Breakpoints Mux or Observer Dashboard for in-IDE observability. |

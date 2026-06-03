@@ -1658,7 +1658,7 @@ attributes:
   notes: "anthropic"
   evidenceRefs:
     - "repo-sdk-fallback"
-    - "repo-agent-mux-host"
+    - "repo-adapters-host"
     - "web-anthropic-claude-code"
 edges:
   capability_of_version:
@@ -1678,7 +1678,7 @@ attributes:
   notes: "anthropic"
   evidenceRefs:
     - "repo-sdk-fallback"
-    - "repo-agent-mux-host"
+    - "repo-adapters-host"
     - "web-anthropic-claude-code"
 edges:
   capability_of_version:
@@ -1778,7 +1778,7 @@ attributes:
   notes: "Interactive terminal CLI runtime"
   evidenceRefs:
     - "repo-sdk-fallback"
-    - "repo-agent-mux-host"
+    - "repo-adapters-host"
 edges:
   evidences_capability:
     - target: capability:interactive-mode
@@ -1795,7 +1795,7 @@ attributes:
   notes: "Interactive terminal CLI runtime"
   evidenceRefs:
     - "repo-sdk-fallback"
-    - "repo-agent-mux-host"
+    - "repo-adapters-host"
 edges:
   evidences_capability:
     - target: capability:stdin-injection

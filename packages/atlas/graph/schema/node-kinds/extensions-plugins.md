@@ -944,7 +944,7 @@ A record of which files an agent read or wrote during a session.
 
 ## NodeKind: `DevicePair`
 
-A paired remote device (typically mobile) bound to an agent-mux gateway account.
+A paired remote device (typically mobile) bound to an adapters gateway account.
 
 | Attribute | Type | Required | Notes |
 |---|---|---|---|
@@ -1033,7 +1033,7 @@ points at `subagent:babysitter-define-task` instead of the
 
 ## catalog pass 52 — Kanban TaskTag and Label NodeKinds
 
-catalog pass 52 extracts canonical kanban entities from agent-mux's
+catalog pass 52 extracts canonical kanban entities from adapters's
 `packages/adapters/core/src/kanban.ts` (real production source).
 
 ### TaskTag

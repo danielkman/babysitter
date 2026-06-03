@@ -13,7 +13,7 @@ vi.mock("@a5c-ai/tasks-adapter", () => {
     async submitBreakpoint(params: Record<string, unknown>) {
       return {
         answers: [{
-          text: `agent-mux answer for ${String((params.context as Record<string, unknown> | undefined)?.description ?? "task")}`,
+          text: `adapters answer for ${String((params.context as Record<string, unknown> | undefined)?.description ?? "task")}`,
           responderId: String(this.config.adapter ?? "codex"),
           responderName: String(this.config.adapter ?? "codex"),
         }],
@@ -38,7 +38,7 @@ vi.mock("@a5c-ai/tasks-adapter", () => {
     if (task.kind === "agent" && (responderType === "agent" || task.agent?.external === true)) {
       return {
         responderType: "agent",
-        route: "agent-mux",
+        route: "adapters",
         responder: {
           id: String(task.agent?.adapter ?? task.metadata?.adapter ?? "codex"),
           adapter: String(task.agent?.adapter ?? task.metadata?.adapter ?? "codex"),
@@ -117,7 +117,7 @@ export async function process(_inputs, ctx) {
       status: "ok",
     });
     expect(events.find((event) => event.type === "COST_TRACKED")?.data).toMatchObject({
-      source: "tasks-mux:agent-mux",
+      source: "tasks-mux:adapters",
       inputTokens: 10,
       outputTokens: 5,
       costUsd: 0.001,
@@ -126,6 +126,6 @@ export async function process(_inputs, ctx) {
     const second = await runIterate({ runDir: run.runDir, json: true });
     expect(second.status).toBe("completed");
     const output = JSON.parse(await fs.readFile(path.join(run.runDir, "state", "output.json"), "utf8"));
-    expect(output).toBe("agent-mux answer for External agent");
+    expect(output).toBe("adapters answer for External agent");
   });
 });

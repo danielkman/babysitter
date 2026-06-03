@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Report a problem with agent-mux
+about: Report a problem with adapters
 labels: bug
 ---
 
@@ -20,10 +20,10 @@ labels: bug
 
 ## Environment
 
-- agent-mux version: <!-- `adapters --version` -->
+- adapters version: <!-- `adapters --version` -->
 - Node: <!-- `node -v` -->
 - OS:
-- Agent (if adapter-specific): claude / codex / cursor / gemini / opencode / openclaw / copilot / hermes / pi / omp / agent-mux-remote
+- Agent (if adapter-specific): claude / codex / cursor / gemini / opencode / openclaw / copilot / hermes / pi / omp / adapters-remote
 
 ## Logs
 

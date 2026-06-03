@@ -17,11 +17,11 @@ Both the SDK and CLI are first-class surfaces that share the same core layer and
 
 ---
 
-## 2. What agent-mux is
+## 2. What adapters is
 
 A unified dispatch and introspection layer for local CLI-based AI coding agents. Any orchestrator (Paperclip, vibe-kanban, custom pipelines) or developer script that needs to drive, configure, inspect, or install one of the supported agents gets a single, well-typed interface instead of reimplementing subprocess management, output parsing, session state, config I/O, cost tracking, auth detection, capability discovery, and plugin management for each one independently.
 
-**What agent-mux is not:** an orchestrator, a task manager, a UI, a database, or a remote API proxy. It is infrastructure. Consumers build those things on top.
+**What adapters is not:** an orchestrator, a task manager, a UI, a database, or a remote API proxy. It is infrastructure. Consumers build those things on top.
 
 ---
 
@@ -29,17 +29,17 @@ A unified dispatch and introspection layer for local CLI-based AI coding agents.
 
 **Agent** — a local CLI-based AI coding agent that can be spawned as a subprocess. Examples: `claude`, `codex`, `gemini`, `pi`, `omp`, `opencode`, `openclaw`, `copilot`.
 
-**Adapter** — agent-mux's internal representation of a specific agent. Knows everything about it: how to install it, how to spawn it, where its files live, how to parse its output, what it can do, and how its plugin system works.
+**Adapter** — adapters's internal representation of a specific agent. Knows everything about it: how to install it, how to spawn it, where its files live, how to parse its output, what it can do, and how its plugin system works.
 
 **Run** — a single invocation of an agent. Represented by a `RunHandle`. Async, event-streaming, concurrency-safe.
 
-**Session** — the agent's own persistent record of a conversation. Stored in the agent's native format and location. agent-mux reads these on demand; it does not own or replicate them.
+**Session** — the agent's own persistent record of a conversation. Stored in the agent's native format and location. adapters reads these on demand; it does not own or replicate them.
 
 **Event** — a typed, normalized unit of output from a run. Emitted on the `RunHandle`. All agent-specific output formats are parsed into the unified `AgentEvent` union type.
 
 **Capabilities** — a structured manifest of what an agent adapter (and each of its models) can do. Used for consumer-side feature-gating.
 
-**Profile** — a named set of `RunOptions` stored in `~/.agent-mux/` or `.agent-mux/`. Consumers can switch profiles without changing code.
+**Profile** — a named set of `RunOptions` stored in `~/.adapters/` or `.adapters/`. Consumers can switch profiles without changing code.
 
 **Plugin** — an extension to an agent's capabilities (skills, tools, themes, MCP servers, channel connectors, etc.). Plugin support is agent-specific and gated by capabilities. Managed through a unified `adapters plugins` interface.
 
@@ -49,9 +49,9 @@ A unified dispatch and introspection layer for local CLI-based AI coding agents.
 
 Two directories. Project overrides global.
 
-### Global: `~/.agent-mux/`
+### Global: `~/.adapters/`
 ```
-~/.agent-mux/
+~/.adapters/
   config.json          # Global SDK defaults (default agent, approval mode, timeout, etc.)
   profiles/            # Named RunOptions presets shared across all projects
     fast.json
@@ -59,15 +59,15 @@ Two directories. Project overrides global.
   auth-hints.json      # Cached auth state hints per agent (read-only cache, not credentials)
 ```
 
-### Project-local: `.agent-mux/` (in project root)
+### Project-local: `.adapters/` (in project root)
 ```
-.agent-mux/
+.adapters/
   config.json          # Project-level overrides of global config
   profiles/            # Project-specific profiles (override or extend global ones)
   run-index.jsonl      # Append-only run log: runId, agent, model, sessionId, cost, timestamp, tags
 ```
 
-The `run-index.jsonl` is the only persistent record agent-mux writes. It maps `RunHandle` identities to the native session IDs of each agent, enabling cross-agent cost roll-ups and session lookups without owning actual session data.
+The `run-index.jsonl` is the only persistent record adapters writes. It maps `RunHandle` identities to the native session IDs of each agent, enabling cross-agent cost roll-ups and session lookups without owning actual session data.
 
 ---
 
@@ -85,8 +85,8 @@ const mux = createClient({
   inactivityTimeout?: number,                   // ms
   retryPolicy?: RetryPolicy,
   stream?: boolean | 'auto',                    // default: 'auto'
-  configDir?: string,                           // override ~/.agent-mux/
-  projectConfigDir?: string,                    // override .agent-mux/
+  configDir?: string,                           // override ~/.adapters/
+  projectConfigDir?: string,                    // override .adapters/
 })
 
 // Top-level namespaces:
@@ -164,7 +164,7 @@ interface RunOptions {
   // Retry
   retryPolicy?: RetryPolicy
 
-  // Metadata (stored in .agent-mux/run-index.jsonl, not sent to agent)
+  // Metadata (stored in .adapters/run-index.jsonl, not sent to agent)
   runId?: string
   tags?: string[]
   projectId?: string
@@ -908,8 +908,8 @@ adapters [command] [flags]
   --model, -m       Model ID
   --json            Output as JSONL event stream
   --debug           Include raw event output
-  --config-dir      Override ~/.agent-mux/
-  --project-dir     Override .agent-mux/
+  --config-dir      Override ~/.adapters/
+  --project-dir     Override .adapters/
   --no-color
 ```
 
@@ -1090,7 +1090,7 @@ adapters auth setup <agent>
 
 ### `adapters init`
 ```
-adapters init    # Create .agent-mux/ in current directory with defaults
+adapters init    # Create .adapters/ in current directory with defaults
 ```
 
 ### Pipe / stdin

@@ -225,14 +225,14 @@ export type { ServerBreakpointBackendConfig } from "./backends/server.js";
 export {
   AgentMuxResponderBackend,
   AgentMuxResponderBackendError,
-} from "./backends/agent-mux.js";
+} from "./backends/adapters.js";
 export type {
   AgentMuxClientLike,
   AgentMuxResponderBackendConfig,
   AgentMuxRunHandleLike,
   AgentMuxRunOptions,
   AgentMuxRunResult,
-} from "./backends/agent-mux.js";
+} from "./backends/adapters.js";
 
 // ── Proven Breakpoints ──────────────────────────────────────────────
 export {

@@ -1,5 +1,5 @@
 /**
- * babysitter-status-plugin -- Shows babysitter run status in agent-mux TUI.
+ * babysitter-status-plugin -- Shows babysitter run status in adapters TUI.
  *
  * Registers:
  * - A "Babysitter" view showing run list with state, iteration, pending effects

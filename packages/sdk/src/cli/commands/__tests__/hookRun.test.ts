@@ -30,7 +30,7 @@ vi.mock("@a5c-ai/tasks-adapter", () => {
     async submitBreakpoint(params: Record<string, unknown>) {
       return {
         answers: [{
-          text: `agent-mux answer for ${String((params.context as Record<string, unknown> | undefined)?.description ?? "task")}`,
+          text: `adapters answer for ${String((params.context as Record<string, unknown> | undefined)?.description ?? "task")}`,
           responderId: String(this.config.adapter ?? "codex"),
           responderName: String(this.config.adapter ?? "codex"),
         }],
@@ -55,7 +55,7 @@ vi.mock("@a5c-ai/tasks-adapter", () => {
     if (task.kind === "agent" && (responderType === "agent" || task.agent?.external === true)) {
       return {
         responderType: "agent",
-        route: "agent-mux",
+        route: "adapters",
         responder: {
           id: String(task.agent?.adapter ?? task.metadata?.adapter ?? "codex"),
           adapter: String(task.agent?.adapter ?? task.metadata?.adapter ?? "codex"),
@@ -904,7 +904,7 @@ describe("handleHookRun stop", () => {
     });
     expect(routedAgentEvents.find((event) => event.type === "COST_TRACKED")?.data).toMatchObject({
       effectId: "routed-agent",
-      source: "tasks-mux:agent-mux",
+      source: "tasks-mux:adapters",
       costUsd: 0.001,
     });
 

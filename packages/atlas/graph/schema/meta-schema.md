@@ -343,7 +343,7 @@ current prefix registration (ChildSession as first-class lifecycle entity):
 | `ChildSession` | `child-session` | 6-lifecycle |
 
 current prefix registration (kanban entities extracted from
-agent-mux's `packages/adapters/core/src/kanban.ts`):
+adapters's `packages/adapters/core/src/kanban.ts`):
 
 | NodeKind | Prefix | Cluster |
 |---|---|---|

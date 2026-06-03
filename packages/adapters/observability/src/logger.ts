@@ -1,5 +1,5 @@
 /**
- * Structured logging with Pino for agent-mux.
+ * Structured logging with Pino for adapters.
  *
  * Provides contextual logging for agents, runs, sessions, and operations
  * with configurable output formats and log levels.
@@ -191,7 +191,7 @@ export function createLogger(config: LoggerConfig = {}): Logger {
     base: {
       pid: process.pid,
       hostname: process.env.HOSTNAME || 'unknown',
-      service: 'agent-mux',
+      service: 'adapters',
       ...config.baseContext,
     },
     ...config.pinoOptions,

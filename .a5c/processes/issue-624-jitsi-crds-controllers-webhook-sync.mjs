@@ -240,7 +240,7 @@ export const traceCurrentImplementationGapsTask = defineTask('issue-624.trace-cu
         'Do not implement changes in this task.',
         ...specReadInstructions(args),
         'Start from the reuse audit and read source files directly. Do not rely only on filenames or tests.',
-        'Trace resource-model definitions, generic resource APIs, Jitsi web service helpers, /api/orgs/[org]/jitsi routes, external/sync-controller.js, external/webhook-controller.js, event-bus.js, agent-dispatch-controller.js, agent-mux-client.js, core and SDK exports, chart CRD manifests, and package tests.',
+        'Trace resource-model definitions, generic resource APIs, Jitsi web service helpers, /api/orgs/[org]/jitsi routes, external/sync-controller.js, external/webhook-controller.js, event-bus.js, agent-dispatch-controller.js, adapters-client.js, core and SDK exports, chart CRD manifests, and package tests.',
         'Classify each requested surface as complete, partial, missing, or out of scope: JitsiMeetProvider, JitsiMeetingTemplate, JitsiMeeting, JitsiRecording, chart CRDs, jitsi-meeting-controller.js, jitsi-sync-controller.js, jitsi-agent-bridge.js, webhook ingest, event bus events, and package exports.',
         'Confirm whether current web/CLI Jitsi code is issue #625/#627 work that should remain compatible but not drive this issue beyond its backend/platform scope.',
         'Return JSON: { baselineSummary, runtimeCallPaths, gapMatrix, implementationSurfaces, filesLikelyToEdit, filesToAvoid, dependencyNotes, needsOwnerDecision, ownerDecisionQuestion, testTargets, verificationCommands }.',

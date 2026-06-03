@@ -2,14 +2,14 @@ import { describe, expect, it, vi } from "vitest";
 import {
   AgentMuxResponderBackend,
   AgentMuxResponderBackendError,
-} from "../backends/agent-mux.js";
+} from "../backends/adapters.js";
 
 describe("issue #606 AgentMuxResponderBackend contract", () => {
   it("requires an agent or adapter before dispatch can be configured", () => {
     expect(() => new AgentMuxResponderBackend({} as never)).toThrow(AgentMuxResponderBackendError);
   });
 
-  it("maps a mock agent-mux client response to a breakpoint answer", async () => {
+  it("maps a mock adapters client response to a breakpoint answer", async () => {
     const handle = {
       runId: "adapters-run-1",
       agent: "codex",

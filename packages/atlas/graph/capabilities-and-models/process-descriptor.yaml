@@ -32,12 +32,12 @@ edges:
     - target: path:catalog-process-entry
 ---
 nodeKind: ProcessDescriptor
-id: process:agent-mux/model-catalog
+id: process:adapters/model-catalog
 attributes:
-  processId: "agent-mux/model-catalog"
+  processId: "adapters/model-catalog"
   displayName: "Agent Mux Model Catalog"
   category: "catalog"
-  description: "Brownfield workflow for model catalog and model configuration management inside agent-mux."
+  description: "Brownfield workflow for model catalog and model configuration management inside adapters."
   paths:
     - "packages/adapters/processes/model-catalog.js"
   inputs: []
@@ -46,4 +46,4 @@ attributes:
   executionKinds:
     - "babysitter-process"
   evidenceRefs:
-    - "repo-agent-mux-model-catalog"
+    - "repo-adapters-model-catalog"

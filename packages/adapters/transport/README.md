@@ -1,16 +1,16 @@
 # transport-mux
 
-`transport-mux` is the published transport/proxy runtime seam used by the agent-mux launcher and related runtime consumers.
+`transport-mux` is the published transport/proxy runtime seam used by the adapters launcher and related runtime consumers.
 
 <!-- docs-status:start -->
 > Status: Public family package.
 > Canonical docs home: [Package and Plugin Docs Map](../../docs/package-and-plugin-map.md).
-> This README defines the package contract for the published transport/proxy runtime seam used by agent-mux.
+> This README defines the package contract for the published transport/proxy runtime seam used by adapters.
 <!-- docs-status:end -->
 
 ## Current status
 
-This workspace carries the runtime, tests, and package entrypoints used by published agent-mux packages. It is expected to be installable from npm alongside the rest of the public agent-mux family.
+This workspace carries the runtime, tests, and package entrypoints used by published adapters packages. It is expected to be installable from npm alongside the rest of the public adapters family.
 
 ## Intended seam
 
@@ -25,7 +25,7 @@ Historical references still exist under `packages/adapters/adapters-proxy`, but 
 
 ## What this package means right now
 
-- it is a published npm deliverable used by the agent-mux CLI/runtime stack
+- it is a published npm deliverable used by the adapters CLI/runtime stack
 - `src/config.ts`, `src/server.ts`, `src/runtime.ts`, and `src/types.ts` provide the transport/proxy runtime seam consumed by launcher flows
 - package entrypoints and the `adapters-proxy` bin are part of the public runtime surface
 - the docs capture the protocol/provider split and the current runtime boundary

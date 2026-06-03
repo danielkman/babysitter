@@ -28,7 +28,7 @@ Move `src/kanban/lib/*` → `src/lib/`, `src/kanban/types/*` → `src/types/`. U
 
 This is the biggest remaining task:
 
-1. Move `src/kanban/components/*` → `src/components/` (all subdirs: shared, dashboard, details, pipeline, events, breakpoint, review, notifications, sessions, runs, workspaces, automations, task-tags, agent-mux, providers)
+1. Move `src/kanban/components/*` → `src/components/` (all subdirs: shared, dashboard, details, pipeline, events, breakpoint, review, notifications, sessions, runs, workspaces, automations, task-tags, adapters, providers)
 2. Replace all `next/link` imports with React Router `Link` (change `href` prop to `to`)
 3. Replace all `next/navigation` imports with React Router hooks (`useNavigate`, `useLocation`, `useSearchParams`)
 4. Update Vite alias: change `@/` from `src/kanban/` to `src/`

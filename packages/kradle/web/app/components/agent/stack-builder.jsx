@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-const BASE_AGENTS = ['claude-code', 'codex', 'gemini', 'opencode', 'babysitter', 'agent-mux-remote'];
+const BASE_AGENTS = ['claude-code', 'codex', 'gemini', 'opencode', 'babysitter', 'adapters-remote'];
 const APPROVAL_MODES = ['prompt', 'deny', 'yolo', 'policy-derived'];
 
 const labelStyle = { display: 'block', fontWeight: 600, fontSize: '0.8125rem', marginBottom: '0.25rem' };

@@ -1,19 +1,19 @@
-# agent-platform ← agent-mux Integration Spec
+# agent-platform ← adapters Integration Spec
 
 ## 1. Overview
 
-agent-platform replaces its custom harness invocation layer (`invoker.ts`, `HARNESS_CLI_MAP`, per-harness subprocess management) with `@agent-mux/core` as a **programmatic library dependency**. agent-mux handles subprocess spawning, event parsing, and session management for all external harnesses. agent-platform keeps its orchestration, governance, Pi wrapper, session history, and webhooks.
+agent-platform replaces its custom harness invocation layer (`invoker.ts`, `HARNESS_CLI_MAP`, per-harness subprocess management) with `@adapters/core` as a **programmatic library dependency**. adapters handles subprocess spawning, event parsing, and session management for all external harnesses. agent-platform keeps its orchestration, governance, Pi wrapper, session history, and webhooks.
 
 ### What changes
 
 | Current | After |
 |---------|-------|
 | `invoker.ts` spawns CLIs directly via child_process | Calls `agentMuxClient.run()` programmatically |
-| `HARNESS_CLI_MAP` maps harness names to CLI flags | agent-mux adapters handle per-harness differences |
-| Custom stdout/stderr chunk parsing per harness | Receives normalized `AgentEvent` stream from agent-mux |
-| `processControl.ts` tracks child processes | agent-mux `ProcessTracker` handles lifecycle |
-| `dashboard/` renders TUI with custom Ink components | Delegates to agent-mux-tui (babysitter provides plugins) |
-| `LaunchSpec` building for different platforms | agent-mux `SpawnArgs` + `InvocationMode` (local/docker/ssh/k8s) |
+| `HARNESS_CLI_MAP` maps harness names to CLI flags | adapters adapters handle per-harness differences |
+| Custom stdout/stderr chunk parsing per harness | Receives normalized `AgentEvent` stream from adapters |
+| `processControl.ts` tracks child processes | adapters `ProcessTracker` handles lifecycle |
+| `dashboard/` renders TUI with custom Ink components | Delegates to adapters-tui (babysitter provides plugins) |
+| `LaunchSpec` building for different platforms | adapters `SpawnArgs` + `InvocationMode` (local/docker/ssh/k8s) |
 
 ### What stays
 
@@ -23,10 +23,10 @@ agent-platform replaces its custom harness invocation layer (`invoker.ts`, `HARN
 | `governance/` | Babysitter-specific permission/sandbox system |
 | `session/` (history, decisions, cost) | Babysitter orchestration state |
 | `observability/webhooks.ts` | Babysitter-specific event forwarding |
-| `interaction/` | Babysitter-specific approval UX (wraps agent-mux interaction channel) |
+| `interaction/` | Babysitter-specific approval UX (wraps adapters interaction channel) |
 | `agentic-tools/` | SDK-level features, not harness concern |
 | `tasks/` | SDK-level task orchestration |
-| `cost/` | Babysitter-specific cost journaling (consumes agent-mux cost events) |
+| `cost/` | Babysitter-specific cost journaling (consumes adapters cost events) |
 | `api/` | Babysitter HTTP API for runs/effects/breakpoints |
 
 ---
@@ -36,13 +36,13 @@ agent-platform replaces its custom harness invocation layer (`invoker.ts`, `HARN
 ```json
 {
   "dependencies": {
-    "@agent-mux/core": "^1.0.0",
-    "@agent-mux/adapters": "^1.0.0"
+    "@adapters/core": "^1.0.0",
+    "@adapters/adapters": "^1.0.0"
   }
 }
 ```
 
-agent-platform imports agent-mux as a library. No CLI subprocess.
+agent-platform imports adapters as a library. No CLI subprocess.
 
 ---
 
@@ -51,7 +51,7 @@ agent-platform imports agent-mux as a library. No CLI subprocess.
 ### 3.1 Client Initialization
 
 ```typescript
-import { AgentMuxClient } from '@agent-mux/core';
+import { AgentMuxClient } from '@adapters/core';
 
 // In agent-platform startup:
 const amuxClient = new AgentMuxClient({
@@ -80,7 +80,7 @@ const result = await invokeHarness('claude-code', {
 **After:**
 ```typescript
 // harness/amuxBridge.ts
-import { AgentMuxClient, RunHandle, AgentEvent } from '@agent-mux/core';
+import { AgentMuxClient, RunHandle, AgentEvent } from '@adapters/core';
 
 export async function invokeViaAgentMux(
   client: AgentMuxClient,
@@ -169,14 +169,14 @@ const HARNESS_TO_ADAPTER: Record<string, string> = {
 };
 
 function mapHarnessToAdapter(harness: string): string {
-  if (harness === 'pi') throw new Error('Pi uses piWrapper, not agent-mux');
+  if (harness === 'pi') throw new Error('Pi uses piWrapper, not adapters');
   return HARNESS_TO_ADAPTER[harness] || harness;
 }
 ```
 
 ### 3.4 Event Stream Consumption
 
-agent-platform subscribes to agent-mux's `AgentEvent` stream and maps events to its own concerns:
+agent-platform subscribes to adapters's `AgentEvent` stream and maps events to its own concerns:
 
 | AgentEvent type | agent-platform action |
 |----------------|--------------------------|
@@ -197,7 +197,7 @@ agent-platform subscribes to agent-mux's `AgentEvent` stream and maps events to 
 For interactive babysitter orchestration (the stop-hook loop):
 
 ```typescript
-// babysitter stop-hook loop using agent-mux
+// babysitter stop-hook loop using adapters
 async function runOrchestrationLoop(client: AgentMuxClient, runState: RunState) {
   while (runState.iteration < runState.maxIterations) {
     const handle = client.run({
@@ -253,13 +253,13 @@ for (const adapter of adapters) {
 
 agent-platform has `dashboard/` with Ink components: StatusBadge, StatusLine, custom views.
 
-### 4.2 After: agent-mux-tui Plugins
+### 4.2 After: adapters-tui Plugins
 
-Create `@a5c-ai/babysitter-tui-plugins` package that provides agent-mux-tui plugins:
+Create `@a5c-ai/babysitter-tui-plugins` package that provides adapters-tui plugins:
 
 ```typescript
 // babysitter-tui-plugins/src/status-badge.ts
-import { TuiPlugin } from '@agent-mux/tui';
+import { TuiPlugin } from '@adapters/tui';
 
 export const babysitterStatusPlugin: TuiPlugin = {
   name: 'babysitter-status',
@@ -278,8 +278,8 @@ export const babysitterStatusPlugin: TuiPlugin = {
 ### 4.3 Data Flow
 
 ```
-agent-mux event stream
-  → agent-mux-tui renders base UI
+adapters event stream
+  → adapters-tui renders base UI
   → babysitter-tui-plugins add:
     - Governance status panel
     - Iteration counter
@@ -294,10 +294,10 @@ agent-mux event stream
 
 ```
 src/harness/invoker.ts                    → replaced by amuxBridge.ts
-src/harness/invoker/launch.ts             → replaced by agent-mux SpawnArgs
-src/harness/invoker/processControl.ts     → replaced by agent-mux ProcessTracker
+src/harness/invoker/launch.ts             → replaced by adapters SpawnArgs
+src/harness/invoker/processControl.ts     → replaced by adapters ProcessTracker
 src/harness/types.ts (partial)            → HARNESS_CLI_MAP, HarnessInvokeOptions removed
-src/dashboard/                            → replaced by agent-mux-tui plugins
+src/dashboard/                            → replaced by adapters-tui plugins
 ```
 
 ## 6. Files to Create
@@ -314,10 +314,10 @@ src/harness/amuxInteractionBridge.ts      → InteractionChannel → governance 
 src/harness/piWrapper/**                  → stays (programmatic Pi)
 src/harness/piSecureSandbox.ts            → stays
 src/governance/**                         → stays
-src/session/**                            → stays (consumes agent-mux events)
-src/cost/**                               → stays (consumes agent-mux cost events)
+src/session/**                            → stays (consumes adapters events)
+src/cost/**                               → stays (consumes adapters cost events)
 src/observability/webhooks.ts             → stays
-src/interaction/**                        → stays (wraps agent-mux interaction)
+src/interaction/**                        → stays (wraps adapters interaction)
 src/api/**                                → stays
 src/tasks/**                              → stays
 src/agentic-tools/**                      → stays

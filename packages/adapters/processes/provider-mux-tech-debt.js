@@ -17,7 +17,7 @@ const tsQualityTask = defineTask('ts-quality-improvements', (args, taskCtx) => (
     name: 'general-purpose',
     prompt: {
       role: 'Senior TypeScript engineer',
-      task: 'Implement 4 quality improvements in the agent-mux provider-mux system.',
+      task: 'Implement 4 quality improvements in the adapters provider-mux system.',
       context: {
         workspaceRoot: args.workspaceRoot,
         feedback: args.feedback ?? null,
@@ -117,7 +117,7 @@ const cliExtensionsTask = defineTask('cli-extensions', (args, taskCtx) => ({
     name: 'general-purpose',
     prompt: {
       role: 'Senior TypeScript engineer',
-      task: 'Implement 3 CLI improvements for the agent-mux provider-mux system.',
+      task: 'Implement 3 CLI improvements for the adapters provider-mux system.',
       context: {
         workspaceRoot: args.workspaceRoot,
         feedback: args.feedback ?? null,
@@ -218,7 +218,7 @@ const reviewTask = defineTask('review-tech-debt', (args, taskCtx) => ({
 // ──────────────────────────────────────────────────────────────────
 
 export async function process(inputs = {}, ctx) {
-  const workspaceRoot = inputs.workspaceRoot ?? 'C:/work/agent-mux';
+  const workspaceRoot = inputs.workspaceRoot ?? 'C:/work/adapters';
   const targetScore = Number(inputs.targetScore ?? 85);
   const maxRefinements = Number(inputs.maxRefinements ?? 2);
 

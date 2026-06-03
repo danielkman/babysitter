@@ -11,8 +11,8 @@ Claude Code supports 5 hook handler types. hooks-mux core now models and dispatc
 | `command` | ✅ Shell subprocess | ✅ hooks-mux runner.ts | — |
 | `http` | ✅ POST to webhook URL | ✅ hooks-mux core | Platform policy may still restrict private URLs; local/private endpoints require explicit opt-in |
 | `mcp_tool` | ✅ Call MCP server tool | Partial | hooks-mux has the typed handler and injectable executor seam; live tool-mux/MCP registry wiring remains tied to #576 |
-| `prompt` | ✅ LLM evaluates prompt | Partial | hooks-mux has the typed handler and bounded executor seam; host model invocation must be supplied by agent-platform/agent-mux |
-| `agent` | ✅ Spawn subagent to evaluate | Partial | hooks-mux has the typed handler and bounded executor seam; host agent spawning must be supplied by agent-platform/agent-mux |
+| `prompt` | ✅ LLM evaluates prompt | Partial | hooks-mux has the typed handler and bounded executor seam; host model invocation must be supplied by agent-platform/adapters |
+| `agent` | ✅ Spawn subagent to evaluate | Partial | hooks-mux has the typed handler and bounded executor seam; host agent spawning must be supplied by agent-platform/adapters |
 
 ### Implemented
 
@@ -27,7 +27,7 @@ Claude Code supports 5 hook handler types. hooks-mux core now models and dispatc
 ### Remaining integration work
 
 **agent-platform:**
-- `src/harness/adapters/amuxBridge.ts` already forwards opaque hook config to agent-mux. Live `mcp_tool`, `prompt`, and `agent` execution still needs platform wiring that supplies hooks-mux executor seams from the unified tool registry/model/agent invocation surfaces.
+- `src/harness/adapters/amuxBridge.ts` already forwards opaque hook config to adapters. Live `mcp_tool`, `prompt`, and `agent` execution still needs platform wiring that supplies hooks-mux executor seams from the unified tool registry/model/agent invocation surfaces.
 
 ## 2. Decision Types (3 missing)
 

@@ -32,7 +32,7 @@ The atlas graph defines 14 stack layers (`stack-layers` cluster). Each layer rep
 | Maturity | Partial — provider routing implemented in transport-mux proxy |
 | Spec Coverage | v6.0 package-specs.md mentions transport-mux |
 
-**Gap:** Provider concepts are split between transport-mux (proxy) and agent-mux-cli (provider translation). No unified provider abstraction package.
+**Gap:** Provider concepts are split between transport-mux (proxy) and adapters-cli (provider translation). No unified provider abstraction package.
 
 ---
 

@@ -1,6 +1,6 @@
 /**
  * @process execute-advanced-uis-playbook
- * @description Execute the implementation playbook in advanced-uis.md for agent-mux-gui (milestone/task-driven, quality-gated).
+ * @description Execute the implementation playbook in advanced-uis.md for adapters-gui (milestone/task-driven, quality-gated).
  *
  * @agent general-purpose (default)
  *

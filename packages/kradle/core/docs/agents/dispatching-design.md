@@ -132,7 +132,7 @@ Agent Mux owns:
 
 Adapter module proposal:
 
-- `src/agent-mux-client.js`
+- `src/adapters-client.js`
 
 Responsibilities:
 
@@ -153,7 +153,7 @@ Responsibilities:
 - `src/hooks-events.js`: normalize webhook, CI, issue, PR, label, comment, push, tag, schedule, and repository-dispatch events.
 - `src/agent-trigger-rules.js`: evaluate triggers, lifecycle, dry-run, dedupe, and concurrency.
 - `src/agent-context-bundles.js`: assemble bounded/redacted repo, issue, PR, CI, artifact, tool, skill, and context-label context.
-- `src/agent-mux-client.js`: call Agent Mux gateway/client.
+- `src/adapters-client.js`: call Agent Mux gateway/client.
 - `src/agent-dispatch-runs.js`: reconcile Kradle dispatch resources with Agent Mux sessions/runs.
 - `src/runners-ci.js`: place dispatch attempts on runner pools or configured external Agent Mux execution.
 - `src/controller-ui.js`: project agent stack and dispatch graph into UI view models.

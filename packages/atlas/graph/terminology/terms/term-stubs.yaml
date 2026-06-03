@@ -1,11 +1,11 @@
 nodeKind: Term
-id: term:agent-mux-run
+id: term:adapters-run
 attributes:
   canonicalDefinitionId: definition:invocation.canonical
-  displayName: "agent-mux run"
+  displayName: "adapters run"
   kind: concept
   description: |
-    Legacy term for an Invocation in the agent-mux harness; mapped to
+    Legacy term for an Invocation in the adapters harness; mapped to
     the canonical `Invocation` node kind via terminology/synonyms/.
 edges:
   applies_to:

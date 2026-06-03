@@ -6,13 +6,13 @@ import { STATIC_FALLBACK_METADATA } from "./agentMuxFallbackMetadata";
  * Resolves adapter metadata from @a5c-ai/adapters when available.
  *
  * Some environments used by validation and CI can load the babysitter SDK but
- * cannot load the full agent-mux runtime graph. In those cases we fall back to
+ * cannot load the full adapters runtime graph. In those cases we fall back to
  * a static metadata table so harness adapters can still resolve activation
  * signals, prompt capabilities, and session binding behavior.
  */
 
 /**
- * Subset of agent-mux AgentCapabilities relevant to babysitter orchestration.
+ * Subset of adapters AgentCapabilities relevant to babysitter orchestration.
  */
 export interface AmuxCapabilitiesSubset {
   supportsSkills: boolean;
@@ -31,10 +31,10 @@ export interface AmuxCapabilitiesSubset {
 }
 
 /**
- * Metadata resolved from an agent-mux adapter instance.
+ * Metadata resolved from an adapters adapter instance.
  */
 export interface AmuxAdapterMetadata {
-  /** The agent name in agent-mux (e.g. 'claude', 'codex', 'gemini'). */
+  /** The agent name in adapters (e.g. 'claude', 'codex', 'gemini'). */
   name: string;
   /** Env vars that indicate this harness is active. */
   hostEnvSignals: readonly string[];
@@ -45,7 +45,7 @@ export interface AmuxAdapterMetadata {
 }
 
 // ---------------------------------------------------------------------------
-// Name mapping (babysitter harness name -> agent-mux adapter name)
+// Name mapping (babysitter harness name -> adapters adapter name)
 // ---------------------------------------------------------------------------
 
 const HARNESS_TO_AGENT_MUX_NAME: Record<string, string> = {
@@ -68,7 +68,7 @@ interface AmuxAdapterRegistry {
   get(agent: string): AmuxRawAdapter | undefined;
 }
 
-/** Minimal adapter shape we read from agent-mux. */
+/** Minimal adapter shape we read from adapters. */
 interface AmuxRawAdapter {
   agent?: string;
   hostEnvSignals?: readonly string[];
@@ -109,7 +109,7 @@ function getCache(): Map<string, AmuxAdapterMetadata> {
 }
 
 /**
- * Get metadata for a harness from agent-mux's adapter registry.
+ * Get metadata for a harness from adapters's adapter registry.
  *
  * @a5c-ai/adapters is a hard dependency — this function throws if it is
  * missing, broken, or does not contain the requested adapter.
@@ -131,7 +131,7 @@ function requireAmux(): Record<string, unknown> {
 }
 
 /**
- * Override the agent-mux module for testing.
+ * Override the adapters module for testing.
  * Pass `undefined` to restore require-based resolution.
  * @internal — test-only API, not part of the public surface.
  */
@@ -152,7 +152,7 @@ function getFallbackAdapterMetadata(harnessName: string, agentMuxName: string): 
   if (!fallback) {
     throw new Error(
       `No fallback adapter metadata is defined for harness "${harnessName}" ` +
-      `(agent-mux adapter "${agentMuxName}").`,
+      `(adapters adapter "${agentMuxName}").`,
     );
   }
   return cloneMetadata(fallback);

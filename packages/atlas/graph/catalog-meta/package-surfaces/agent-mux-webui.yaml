@@ -1,5 +1,5 @@
 nodeKind: PackageSurface
-id: package:a5c-ai-agent-mux-webui
+id: package:a5c-ai-adapters-webui
 attributes:
   packageId: "@a5c-ai/tula-webui"
   packageName: "@a5c-ai/tula-webui"
@@ -14,4 +14,4 @@ attributes:
   # Source: packages/adapters/webui/package.json (name, version 0.4.9)
 edges:
   references_path:
-    - target: path:agent-mux-webui
+    - target: path:adapters-webui

@@ -1,5 +1,5 @@
 /**
- * Lightweight CLI helper utilities extracted from agent-mux-cli.
+ * Lightweight CLI helper utilities extracted from adapters-cli.
  *
  * These are self-contained copies of the flag-parsing helpers, exit codes,
  * and output helpers that the launch module needs, avoiding a circular

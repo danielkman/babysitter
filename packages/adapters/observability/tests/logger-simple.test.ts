@@ -9,7 +9,7 @@ describe('SimpleLogger', () => {
 
   it('writes structured log entries with merged context', () => {
     const write = vi.spyOn(process.stderr, 'write').mockReturnValue(true);
-    const logger = createSimpleLogger({ service: 'agent-mux', version: '1.2.3' });
+    const logger = createSimpleLogger({ service: 'adapters', version: '1.2.3' });
 
     logger.info({ runId: 'run-1', duration: 12 }, 'hello');
 
@@ -18,7 +18,7 @@ describe('SimpleLogger', () => {
     expect(entry).toMatchObject({
       level: 'info',
       msg: 'hello',
-      service: 'agent-mux',
+      service: 'adapters',
       version: '1.2.3',
       runId: 'run-1',
       duration: 12,
@@ -28,7 +28,7 @@ describe('SimpleLogger', () => {
 
   it('keeps base context when creating child loggers', () => {
     const write = vi.spyOn(process.stderr, 'write').mockReturnValue(true);
-    const logger = createSimpleLogger({ service: 'agent-mux' }).child({ component: 'worker' });
+    const logger = createSimpleLogger({ service: 'adapters' }).child({ component: 'worker' });
 
     logger.warn('child-message');
 
@@ -36,7 +36,7 @@ describe('SimpleLogger', () => {
     expect(entry).toMatchObject({
       level: 'warn',
       msg: 'child-message',
-      service: 'agent-mux',
+      service: 'adapters',
       component: 'worker',
     });
   });
@@ -45,7 +45,7 @@ describe('SimpleLogger', () => {
     const write = vi.spyOn(process.stderr, 'write').mockReturnValue(true);
     vi.stubEnv('AGENT_MUX_LOG_LEVEL', 'error');
 
-    const logger = createSimpleLogger({ service: 'agent-mux' });
+    const logger = createSimpleLogger({ service: 'adapters' });
     const child = logger.child({ component: 'worker' });
 
     logger.debug({ runId: 'run-1' }, 'debug should be dropped');
@@ -57,7 +57,7 @@ describe('SimpleLogger', () => {
     expect(entry).toMatchObject({
       level: 'error',
       msg: 'error should remain',
-      service: 'agent-mux',
+      service: 'adapters',
       component: 'worker',
       runId: 'run-1',
     });

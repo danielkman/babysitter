@@ -41,7 +41,7 @@ describe("issue #606 tasks-mux effect routing", () => {
   it("routes standalone agent effects through tasks-mux AgentMuxResponderBackend", async () => {
     taskMuxMock.routeTask.mockReturnValue({
       responderType: "agent",
-      route: "agent-mux",
+      route: "adapters",
       responder: { id: "codex", adapter: "codex", model: "gpt-5.4" },
     });
     taskMuxMock.submitBreakpoint.mockResolvedValue({
@@ -122,7 +122,7 @@ describe("issue #606 tasks-mux effect routing", () => {
   it("routes legacy CLI effect posting through tasks-mux", async () => {
     taskMuxMock.routeTask.mockReturnValue({
       responderType: "agent",
-      route: "agent-mux",
+      route: "adapters",
       responder: { id: "codex", adapter: "codex", model: "gpt-5.4" },
     });
     taskMuxMock.submitBreakpoint.mockResolvedValue({

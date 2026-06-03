@@ -36,8 +36,8 @@ attributes:
   - git-diff-unified
   sideEffects:
   - Sets GITHUB_OUTPUT matched=true|false (action.yml:170)
-  - Writes enriched event JSON to RUNNER_TEMP/agent-mux-event.json
-  - Writes evaluation result JSON to RUNNER_TEMP/agent-mux-trigger.json
+  - Writes enriched event JSON to RUNNER_TEMP/adapters-event.json
+  - Writes evaluation result JSON to RUNNER_TEMP/adapters-trigger.json
   - On match runs pre-run, then `adapters <command>`, then post-run (action.yml:174-232)
   sourceCitation: 'packages/triggers-mux/src/backends/github.ts:4 (normalizeGithub),
 
@@ -215,7 +215,7 @@ attributes:
 
     (foundry, google, anthropic, bedrock, openai). Steps: setup-node →
 
-    optional a5c GitHub App token exchange → npm ci + build agent-mux +
+    optional a5c GitHub App token exchange → npm ci + build adapters +
 
     build @a5c-ai/triggers-adapter → optional `adapters install <harness>` →
 
@@ -245,7 +245,7 @@ attributes:
   - Outputs matched=true|false on the step (action.yml:67)
   - Outputs event=<path-to-enriched-json> (action.yml:70)
   - Outputs exit-code=<adapters exit code> (action.yml:73)
-  - May install agent-mux harness + plugins side-effectfully before evaluation (action.yml:103-129)
+  - May install adapters harness + plugins side-effectfully before evaluation (action.yml:103-129)
   - Sets AGENT_MUX_TRIGGER_EVENT_PATH env var for pre-run, adapters, post-run steps
   sourceCitation: 'packages/triggers-mux/action.yml (full composite action; inputs
 

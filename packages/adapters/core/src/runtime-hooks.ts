@@ -1,7 +1,7 @@
 import type { AgentEvent } from './events.js';
 import type { RuntimeHookDispatcher } from './runtime-hook-dispatcher.js';
 
-/** Runtime hook kinds supported by agent-mux. */
+/** Runtime hook kinds supported by adapters. */
 export type RuntimeHookKind =
   | 'preToolUse'
   | 'postToolUse'

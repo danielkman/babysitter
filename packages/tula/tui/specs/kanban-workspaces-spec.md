@@ -48,7 +48,7 @@ The current TUI architecture is plugin-first:
 - built-in plugin ordering: `packages/adapters/tui/src/index.ts`
 - top-level shell and routing: `packages/adapters/tui/src/app.tsx`
 - command palette: `packages/adapters/tui/src/command-palette.tsx`
-- binary bootstrap: `packages/adapters/tui/src/bin/agent-mux-tui.tsx`
+- binary bootstrap: `packages/adapters/tui/src/bin/adapters-tui.tsx`
 
 ### Shared kanban contract
 
@@ -232,20 +232,20 @@ The implementation must keep the documentation honest about current behavior.
 
 That means:
 
-- normative current-behavior docs under `docs/agent-mux/reference/` should not claim the views exist before implementation lands
-- proposal-stage material belongs in `docs/agent-mux/archive/design/`
+- normative current-behavior docs under `docs/adapters/reference/` should not claim the views exist before implementation lands
+- proposal-stage material belongs in `docs/adapters/archive/design/`
 - package-level README content may reference the planning artifacts, but must clearly mark them as planned work until the runtime surface exists
 
 ## Testing and CI/CD Contract
 
 ### Package-level expectations
 
-Implementation work derived from this spec must keep the agent-mux and kanban validation surfaces green.
+Implementation work derived from this spec must keep the adapters and kanban validation surfaces green.
 
 Relevant package-level commands include:
 
-- `npm run build:agent-mux`
-- `npm run test:agent-mux`
+- `npm run build:adapters`
+- `npm run test:adapters`
 - `npm run build:kanban`
 - `npm run build:cli --workspace=@a5c-ai/kanban`
 - `npm run verify:release --workspace=@a5c-ai/kanban`
@@ -261,7 +261,7 @@ The feature must stay compatible with:
 
 Implications to plan for:
 
-- `@a5c-ai/tula-tui` remains part of the `build:agent-mux` and `test:agent-mux` surface
+- `@a5c-ai/tula-tui` remains part of the `build:adapters` and `test:adapters` surface
 - `@a5c-ai/kanban` remains part of the release/staging build, test, verify, and pack/publish surfaces
 - any new TUI spec assets linked from the package README should remain available in the packed package surface
 
@@ -276,7 +276,7 @@ If that publish-surface decision changes later, the README links and this specif
 The feature plan is implementation-ready only when all of the following are true:
 
 1. The TUI is specified as a consumer of existing kanban/workspace control-plane seams, not as a second backlog/worktree owner.
-2. The spec names the specific package and file seams expected to change across `agent-mux/tui`, `agent-mux/core`, and `kanban`.
+2. The spec names the specific package and file seams expected to change across `adapters/tui`, `adapters/core`, and `kanban`.
 3. The spec defines both kanban and workspace/worktree view responsibilities.
 4. The spec covers management actions, not just passive read-only views.
 5. The spec captures navigation, hotkey, and command-palette implications for the current TUI plugin contract.

@@ -197,7 +197,7 @@ ${!args.critique.reporterAnalysisCorrect ? `NOTE: The reporter's analysis may be
 
 Apply labels for:
 - Type: bug, feature, enhancement, question, documentation, refactor, test
-- Component: sdk, agent-mux, transport-mux, hooks-mux, breakpoints-mux, atlas, agent-catalog, triggers, ci, plugins
+- Component: sdk, adapters, transport-mux, hooks-mux, breakpoints-mux, atlas, agent-catalog, triggers, ci, plugins
 - Effort: effort:small, effort:medium, effort:large
 ${args.critique.outOfScope ? '- Scope: out-of-scope' : ''}
 ${!args.critique.isValidIssue ? '- Status: invalid, wontfix, or needs-info' : ''}

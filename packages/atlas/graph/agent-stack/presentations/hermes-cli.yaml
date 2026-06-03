@@ -5,7 +5,7 @@ attributes:
   kind: tui
   description: |
     Terminal interface bundled with the Hermes Python CLI agent. Surfaced
-    through the agent-mux adapter for v6.
+    through the adapters adapter for v6.
   renderingTechnology: terminal-emulator
   themeSupport: none
   accessibilitySupport: basic

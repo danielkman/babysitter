@@ -40,7 +40,7 @@ nodeKinds:
       library exposing core+runtime, consumer provides platform/UI. `app-server` =
       server providing core+runtime+platform (no UI; consumer is another client
       like Symphony). `transport-bridge` = headless adapter relaying to a remote
-      agent (e.g. agent-mux-remote). `headless-runtime` = process orchestrator
+      agent (e.g. adapters-remote). `headless-runtime` = process orchestrator
       without chat-loop (e.g. babysitter).
   - name: stackScope
     type: enum<full,core-runtime-platform,core-runtime,core-only>

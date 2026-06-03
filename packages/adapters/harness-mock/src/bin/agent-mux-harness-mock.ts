@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * agent-mux-harness-mock — CLI binary that replays a mock scenario to stdout/stderr.
+ * adapters-harness-mock — CLI binary that replays a mock scenario to stdout/stderr.
  *
  * Flags:
  *   --scenario <name>    Scenario id (see `--list`).
@@ -119,9 +119,9 @@ export async function runMockHarness(
 
 function helpText(): string {
   return [
-    'agent-mux-harness-mock — replay a mock agent scenario.',
+    'adapters-harness-mock — replay a mock agent scenario.',
     '',
-    'Usage: agent-mux-harness-mock --scenario <name> [--agent <name>] [flags]',
+    'Usage: adapters-harness-mock --scenario <name> [--agent <name>] [flags]',
     '',
     'Flags:',
     '  --scenario <name>   Scenario id (try --list); bare names resolve within --agent',
@@ -143,7 +143,7 @@ const invokedAsScript = (() => {
     if (!argv1) return false;
     // Match on known filename fragment rather than import.meta.url, which
     // requires ESM-only syntax that plays poorly with the tsconfig setup.
-    return /agent-mux-harness-mock(\.js|\.ts)?$/.test(argv1);
+    return /adapters-harness-mock(\.js|\.ts)?$/.test(argv1);
   } catch {
     return false;
   }
@@ -154,7 +154,7 @@ if (invokedAsScript) {
   runMockHarness(args).then(
     (code) => { process.exit(code); },
     (err) => {
-      process.stderr.write(`agent-mux-harness-mock failed: ${(err as Error).message}\n`);
+      process.stderr.write(`adapters-harness-mock failed: ${(err as Error).message}\n`);
       process.exit(1);
     },
   );

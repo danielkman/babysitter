@@ -115,7 +115,7 @@ vi.mock("@/hooks/use-backlog", () => ({
   useBacklog: () => mockUseBacklog(),
 }));
 
-vi.mock("@/lib/agent-mux-ui", () => ({
+vi.mock("@/lib/adapters-ui", () => ({
   useGateway: () => ({
     client: { request: vi.fn() },
     store: gatewayStore,

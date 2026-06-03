@@ -109,7 +109,7 @@ const verifyTask = defineTask('issue-484.verify', (args, taskCtx) => ({
     command: [
       'set -euo pipefail',
       'git diff --check',
-      'node scripts/agent-mux-build.cjs test packages/adapters/cli -- packages/adapters/cli/tests/live-stack/primary-live-runner.test.ts',
+      'node scripts/adapters-build.cjs test packages/adapters/cli -- packages/adapters/cli/tests/live-stack/primary-live-runner.test.ts',
       'npm run build:sdk',
       'HOME="$(mktemp -d)" npm run test:sdk',
       'npm run verify:metadata',
@@ -208,7 +208,7 @@ const publishTask = defineTask('issue-484.publish', (args, taskCtx) => ({
       ``,
       `Fix: create-mode plugin prompts now use babysitter:yolo for claude-code, codex, and pi, and validation no longer requires implementation-specific parallelism.`,
       ``,
-      `Verification: node scripts/agent-mux-build.cjs test packages/adapters/cli -- packages/adapters/cli/tests/live-stack/primary-live-runner.test.ts; npm run build:sdk; HOME=<tmp> npm run test:sdk; npm run verify:metadata.`,
+      `Verification: node scripts/adapters-build.cjs test packages/adapters/cli -- packages/adapters/cli/tests/live-stack/primary-live-runner.test.ts; npm run build:sdk; HOME=<tmp> npm run test:sdk; npm run verify:metadata.`,
       `COMMENT`,
       `printf '\\nPR: %s\\n' "$PR_URL" >> "$COMMENT_BODY"`,
       `gh issue comment ${args.issueNumber} --body-file "$COMMENT_BODY"`,

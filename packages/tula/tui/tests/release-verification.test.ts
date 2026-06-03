@@ -12,8 +12,8 @@ const baseManifest = {
   },
   files: ['dist', 'specs', 'README.md', 'LICENSE'],
   bin: {
-    'agent-mux-tui': './dist/bin/agent-mux-tui.js',
-    'agent-mux-tui': './dist/bin/agent-mux-tui.js',
+    'adapters-tui': './dist/bin/adapters-tui.js',
+    'adapters-tui': './dist/bin/adapters-tui.js',
   },
   exports: {
     './plugin': {
@@ -24,8 +24,8 @@ const baseManifest = {
     },
   },
   scripts: {
-    build: 'cd ../../.. && node scripts/agent-mux-build.cjs build packages/adapters/tui',
-    test: 'cd ../../.. && node scripts/agent-mux-build.cjs test packages/adapters/tui',
+    build: 'cd ../../.. && node scripts/adapters-build.cjs build packages/adapters/tui',
+    test: 'cd ../../.. && node scripts/adapters-build.cjs test packages/adapters/tui',
     'verify:release': 'node ./scripts/verify-release.mjs',
     prepublishOnly: 'npm run build && npm run verify:release',
   },
@@ -38,21 +38,21 @@ const basePackEntries = [
   { path: 'dist/index.d.ts' },
   { path: 'dist/plugin.js' },
   { path: 'dist/plugin.d.ts' },
-  { path: 'dist/bin/agent-mux-tui.js' },
-  { path: 'dist/bin/agent-mux-tui.js' },
+  { path: 'dist/bin/adapters-tui.js' },
+  { path: 'dist/bin/adapters-tui.js' },
   { path: 'specs/kanban-workspaces-spec.md' },
   { path: 'specs/kanban-workspaces-subtasks.md' },
 ];
 
 function withPackageRoot(run: (packageRoot: string) => void): void {
-  const packageRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'agent-mux-tui-release-'));
+  const packageRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'adapters-tui-release-'));
   fs.mkdirSync(path.join(packageRoot, 'dist', 'bin'), { recursive: true });
   fs.writeFileSync(path.join(packageRoot, 'dist', 'index.js'), 'export {};');
   fs.writeFileSync(path.join(packageRoot, 'dist', 'index.d.ts'), 'export {};');
   fs.writeFileSync(path.join(packageRoot, 'dist', 'plugin.js'), 'export {};');
   fs.writeFileSync(path.join(packageRoot, 'dist', 'plugin.d.ts'), 'export {};');
-  fs.writeFileSync(path.join(packageRoot, 'dist', 'bin', 'agent-mux-tui.js'), 'export {};');
-  fs.writeFileSync(path.join(packageRoot, 'dist', 'bin', 'agent-mux-tui.js'), 'export {};');
+  fs.writeFileSync(path.join(packageRoot, 'dist', 'bin', 'adapters-tui.js'), 'export {};');
+  fs.writeFileSync(path.join(packageRoot, 'dist', 'bin', 'adapters-tui.js'), 'export {};');
   fs.writeFileSync(
     path.join(packageRoot, 'README.md'),
     [

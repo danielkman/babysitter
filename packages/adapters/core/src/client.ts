@@ -103,7 +103,7 @@ export type { PluginManager } from './plugin-manager.js';
 // AgentMuxClient
 // ---------------------------------------------------------------------------
 
-/** The main entry point for interacting with agent-mux. */
+/** The main entry point for interacting with adapters. */
 export class AgentMuxClient {
   /** Resolved storage paths. */
   readonly storagePaths: StoragePaths;

@@ -2,11 +2,11 @@
 
 This README is the canonical package documentation for `@a5c-ai/adapters-harness-mock`.
 Canonical package doc path: `packages/adapters/harness-mock/README.md`.
-The repository reference mirror lives at `docs/agent-mux/reference/14-harness-mock.md` and
+The repository reference mirror lives at `docs/adapters/reference/14-harness-mock.md` and
 should match this file.
 
 `@a5c-ai/adapters-harness-mock` is the public test-fixture package at
-`packages/adapters/harness-mock/` for agent-mux harness simulations. It covers four
+`packages/adapters/harness-mock/` for adapters harness simulations. It covers four
 execution shapes:
 
 - subprocess fixtures and parser-backed scenario registries for the current CLI harness matrix
@@ -28,15 +28,15 @@ Requires Node.js `>=20.9.0`.
 ## CLI
 
 ```bash
-agent-mux-harness-mock --list
-agent-mux-harness-mock --agent claude --list
-agent-mux-harness-mock --scenario claude:stream-json
-agent-mux-harness-mock --agent cursor --scenario error
+adapters-harness-mock --list
+adapters-harness-mock --agent claude --list
+adapters-harness-mock --scenario claude:stream-json
+adapters-harness-mock --agent cursor --scenario error
 ```
 
 `--agent <name>` filters `--list` to `<name>:*` scenarios and lets bare
 `--scenario` values resolve within that prefix. For example,
-`agent-mux-harness-mock --agent cursor --scenario error` resolves `cursor:error`.
+`adapters-harness-mock --agent cursor --scenario error` resolves `cursor:error`.
 
 ## Supported Surfaces
 
@@ -49,7 +49,7 @@ The subprocess surface is centered on these exports:
 - `SUBPROCESS_SCENARIO_EXPECTATIONS`
 - `resolveScenario(name)`
 - `listScenarioNames()`
-- `agent-mux-harness-mock --list`
+- `adapters-harness-mock --list`
 
 The canonical subprocess harness keys are:
 `claude`, `codex`, `gemini`, `copilot`, `cursor`, `opencode`, `pi`, `omp`,

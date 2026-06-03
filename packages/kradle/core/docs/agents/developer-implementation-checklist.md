@@ -96,7 +96,7 @@ npm run ui:validate
 Files:
 
 - `src/agent-stack-controller.js`
-- `src/agent-mux-client.js` for capability lookup only;
+- `src/adapters-client.js` for capability lookup only;
 - `apps/web/app/agents/stacks/page.jsx`;
 - API routes under `apps/web/app/api/agents/stacks`.
 
@@ -144,7 +144,7 @@ npm run ui:validate
 
 Files:
 
-- `src/agent-mux-client.js`
+- `src/adapters-client.js`
 - `src/agent-dispatch-controller.js`
 - `apps/web/app/agents/runs/[run]/page.jsx`
 - Agent Mux embed components.
@@ -160,7 +160,7 @@ Tasks:
 Validation:
 
 ```powershell
-npm test -- --test-name-pattern agent-mux
+npm test -- --test-name-pattern adapters
 npm run ui:validate
 ```
 

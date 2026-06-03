@@ -1641,7 +1641,7 @@ nodeKinds:
 - id: node:project
   name: Project
   origin: derived
-  originContext: agent-mux webui — planning grouping above Workspace; an Issue belongs to a Project, a Project may map to one or more Workspaces
+  originContext: adapters webui — planning grouping above Workspace; an Issue belongs to a Project, a Project may map to one or more Workspaces
   prefix: project
   cluster: 7-extensions
   purpose: a planning/grouping unit that gathers issues, board snapshots, and workspaces under a single product or initiative
@@ -1655,7 +1655,7 @@ nodeKinds:
   - name: slug
     type: string
     required: false
-    notes: Short kebab-case identifier used in URLs (e.g. agent-mux).
+    notes: Short kebab-case identifier used in URLs (e.g. adapters).
   - name: description
     type: markdown
     required: false
@@ -1690,7 +1690,7 @@ nodeKinds:
 - id: node:board-snapshot
   name: BoardSnapshot
   origin: derived
-  originContext: agent-mux webui (KanbanLayout, dashboard/backlog-overview) — point-in-time projection of a kanban board (columns, swimlanes, WIP)
+  originContext: adapters webui (KanbanLayout, dashboard/backlog-overview) — point-in-time projection of a kanban board (columns, swimlanes, WIP)
   prefix: board-snapshot
   cluster: 7-extensions
   purpose: a point-in-time projection of a kanban board (its columns, swimlanes, WIP policies, and current issue placement)
@@ -1732,7 +1732,7 @@ nodeKinds:
 - id: node:board-column
   name: BoardColumn
   origin: derived
-  originContext: agent-mux webui (KanbanLayout) — a single workflow column on a board, with optional WIP limit
+  originContext: adapters webui (KanbanLayout) — a single workflow column on a board, with optional WIP limit
   prefix: board-column
   cluster: 7-extensions
   purpose: a single workflow column on a kanban board (e.g. Backlog / In Progress / In Review / Done)
@@ -1769,7 +1769,7 @@ nodeKinds:
 - id: node:backlog-snapshot
   name: BacklogSnapshot
   origin: derived
-  originContext: agent-mux webui (dashboard/backlog-overview) — point-in-time backlog projection with priority, dependencies, decomposition
+  originContext: adapters webui (dashboard/backlog-overview) — point-in-time backlog projection with priority, dependencies, decomposition
   prefix: backlog-snapshot
   cluster: 7-extensions
   purpose: a point-in-time projection of a project's backlog with priority ordering, dependency, decomposition, and acceptance-criteria coverage
@@ -1808,7 +1808,7 @@ nodeKinds:
 - id: node:acceptance-criterion
   name: AcceptanceCriterion
   origin: derived
-  originContext: agent-mux webui — first-class entity per gaps-and-debt 'issue-first orchestration shell' target product model
+  originContext: adapters webui — first-class entity per gaps-and-debt 'issue-first orchestration shell' target product model
   prefix: acceptance-criterion
   cluster: 7-extensions
   purpose: a single acceptance-criterion attached to an issue (a checkable predicate that must hold for the issue to be considered done)
@@ -1841,7 +1841,7 @@ nodeKinds:
 - id: node:issue-decomposition
   name: IssueDecomposition
   origin: derived
-  originContext: agent-mux webui — issue→subtask linkage so decomposition is queryable as a graph entity, not opaque markdown
+  originContext: adapters webui — issue→subtask linkage so decomposition is queryable as a graph entity, not opaque markdown
   prefix: issue-decomposition
   cluster: 7-extensions
   purpose: a parent-issue→child-issue decomposition (one issue split into typed subtasks, with strategy and ordering)
@@ -2026,7 +2026,7 @@ nodeKinds:
   originContext: packages/adapters/webui/src/pages/PairDevicePage.tsx — paired mobile device for a remote-control surface
   prefix: device-pair
   cluster: 7-extensions
-  purpose: a paired remote device (typically mobile) bound to an agent-mux gateway account for push notifications and remote session control
+  purpose: a paired remote device (typically mobile) bound to an adapters gateway account for push notifications and remote session control
   attributes:
   - name: id
     type: id
@@ -2062,7 +2062,7 @@ nodeKinds:
 - id: node:task-tag
   name: TaskTag
   origin: derived
-  originContext: catalog pass 52 / agent-mux KanbanTaskTag (packages/adapters/core/src/kanban.ts) — user-defined free-form team-vocabulary tag attached to issues / board entries
+  originContext: catalog pass 52 / adapters KanbanTaskTag (packages/adapters/core/src/kanban.ts) — user-defined free-form team-vocabulary tag attached to issues / board entries
   prefix: task-tag
   cluster: 7-extensions
   purpose: a user-defined tag attached to an Issue, BoardSnapshot entry, or other kanban work-item; distinct from Label (system/repo classification with color), TaskTags are typically free-form team vocabulary (e.g. needs-design, frontend, tech-debt) scoped to global / project / workspace
@@ -2114,7 +2114,7 @@ nodeKinds:
 - id: node:label
   name: Label
   origin: derived
-  originContext: catalog pass 52 / agent-mux KanbanLabel (packages/adapters/core/src/kanban.ts) — repo / board-scoped classification with color
+  originContext: catalog pass 52 / adapters KanbanLabel (packages/adapters/core/src/kanban.ts) — repo / board-scoped classification with color
   prefix: label
   cluster: 7-extensions
   purpose: a repository or board-scoped classification with color + name (parallel to GitHub/GitLab labels); distinct from TaskTag (free-form team vocabulary) — Labels are typically owned by a Project or Repository

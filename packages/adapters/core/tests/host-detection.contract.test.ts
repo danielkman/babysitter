@@ -10,7 +10,7 @@ function envForSignals(signals: readonly string[]): NodeJS.ProcessEnv {
   return Object.fromEntries(signals.map((signal) => [signal, `${signal.toLowerCase()}-value`]));
 }
 
-describe('agent-mux host detection contract', () => {
+describe('adapters host detection contract', () => {
   it('detects every graph-backed host signal mapping through the consumer boundary', () => {
     for (const [agent, signals] of Object.entries(getHostSignalMap())) {
       const signal = signals[0];

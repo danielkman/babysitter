@@ -1,6 +1,6 @@
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-hooks-discover
+id: interaction-primitive:adapters-cli-hooks-discover
 attributes:
   displayName: "adapters hooks <agent> discover"
   kind: cli-subcommand
@@ -15,7 +15,7 @@ attributes:
     packages/adapters/cli/src/commands/hooks.ts:89-104.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-hooks-list
+id: interaction-primitive:adapters-cli-hooks-list
 attributes:
   displayName: "adapters hooks <agent> list"
   kind: cli-subcommand
@@ -30,7 +30,7 @@ attributes:
     Source: packages/adapters/cli/src/commands/hooks.ts:106-129.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-hooks-add
+id: interaction-primitive:adapters-cli-hooks-add
 attributes:
   displayName: "adapters hooks <agent> add"
   kind: cli-subcommand
@@ -51,7 +51,7 @@ attributes:
     packages/adapters/cli/src/commands/hooks.ts:131-162.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-hooks-remove
+id: interaction-primitive:adapters-cli-hooks-remove
 attributes:
   displayName: "adapters hooks <agent> remove"
   kind: cli-subcommand
@@ -70,7 +70,7 @@ attributes:
     packages/adapters/cli/src/commands/hooks.ts:164-182.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-hooks-set
+id: interaction-primitive:adapters-cli-hooks-set
 attributes:
   displayName: "adapters hooks <agent> set"
   kind: cli-subcommand
@@ -90,7 +90,7 @@ attributes:
     packages/adapters/cli/src/commands/hooks.ts:184-212.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-hooks-handle
+id: interaction-primitive:adapters-cli-hooks-handle
 attributes:
   displayName: "adapters hooks <agent> handle"
   kind: cli-subcommand
@@ -107,7 +107,7 @@ attributes:
     packages/adapters/cli/src/commands/hooks.ts:214-239.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-gateway-serve
+id: interaction-primitive:adapters-cli-gateway-serve
 attributes:
   displayName: "adapters gateway serve"
   kind: cli-subcommand
@@ -123,11 +123,11 @@ attributes:
   subcommandExitCodes:
     - "0:success:gateway shut down cleanly on SIGINT/SIGTERM"
   description: |
-    Start the agent-mux gateway HTTP/WebSocket service. Source:
+    Start the adapters gateway HTTP/WebSocket service. Source:
     packages/adapters/cli/src/commands/gateway/serve.ts:30-80.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-gateway-status
+id: interaction-primitive:adapters-cli-gateway-status
 attributes:
   displayName: "adapters gateway status"
   kind: cli-subcommand
@@ -144,7 +144,7 @@ attributes:
     packages/adapters/cli/src/commands/gateway/status.ts:6-27.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-gateway-tokens-list
+id: interaction-primitive:adapters-cli-gateway-tokens-list
 attributes:
   displayName: "adapters gateway tokens list"
   kind: cli-subcommand
@@ -160,7 +160,7 @@ attributes:
     packages/adapters/cli/src/commands/gateway/tokens.ts:44-61.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-gateway-tokens-create
+id: interaction-primitive:adapters-cli-gateway-tokens-create
 attributes:
   displayName: "adapters gateway tokens create"
   kind: cli-subcommand
@@ -181,7 +181,7 @@ attributes:
     packages/adapters/cli/src/commands/gateway/tokens.ts:63-79.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-gateway-tokens-revoke
+id: interaction-primitive:adapters-cli-gateway-tokens-revoke
 attributes:
   displayName: "adapters gateway tokens revoke"
   kind: cli-subcommand
@@ -200,7 +200,7 @@ attributes:
     packages/adapters/cli/src/commands/gateway/tokens.ts:81-94.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-help
+id: interaction-primitive:adapters-cli-help
 attributes:
   displayName: "adapters help"
   kind: cli-subcommand
@@ -216,7 +216,7 @@ attributes:
     Source: packages/adapters/cli/src/commands/help.ts:21-498.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-version
+id: interaction-primitive:adapters-cli-version
 attributes:
   displayName: "adapters version"
   kind: cli-subcommand

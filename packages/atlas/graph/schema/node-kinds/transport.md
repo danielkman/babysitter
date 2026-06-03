@@ -269,7 +269,7 @@ Output-direction modalities (TTS, image-gen, audio-gen) are now first-class on `
 
 | Attribute | Type | Required | Notes |
 |---|---|---|---|
-| `id` | id | yes | E.g., `transport-proxy:agent-mux-proxy`. |
+| `id` | id | yes | E.g., `transport-proxy:adapters-proxy`. |
 | `displayName` | string | yes | Human-readable label. |
 | `kinds` | list<enum<routing,recording,integrity,local-model,compression,rate-limit,observability>> | yes | One or more proxy roles; a single proxy commonly fulfils several. |
 | `bridges` | list<ref<ModelTransportProtocol>> | yes | The set of protocols the proxy can speak. When the proxy translates, the source and target are both members of this list and the per-edge `direction` attribute on `bridges` (see `../../schema/edge-kinds.md`) records which is source vs. target. |
@@ -390,7 +390,7 @@ Distinct from `AgentHostTransport` (the agent's own host) and
 ```
 
 ```yaml
-- id: transport-proxy:agent-mux-proxy
+- id: transport-proxy:adapters-proxy
   displayName: "Agent-Mux Proxy"
   kinds: [routing, observability]
   bridges:

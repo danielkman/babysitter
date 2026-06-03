@@ -36,7 +36,7 @@
     }
   },
   "bin": {
-    "agent-mux-tasks": "./dist/cli/index.js",
+    "adapters-tasks": "./dist/cli/index.js",
     "tasks-mux": "./dist/cli/tasks-mux.js"
   },
   "files": [

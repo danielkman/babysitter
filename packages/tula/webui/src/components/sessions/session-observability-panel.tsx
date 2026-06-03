@@ -388,7 +388,7 @@ export function SessionObservabilityPanel(props: {
           <article className="rounded-2xl border border-border bg-background/70 p-4 text-sm text-foreground-muted">
             <div className="inline-flex items-center gap-2 text-foreground">
               <CheckCircle2 className="h-4 w-4 text-success" />
-              Kanban now shows the same reconstructed realtime execution story as agent-mux instead of a reduced overlay summary.
+              Kanban now shows the same reconstructed realtime execution story as adapters instead of a reduced overlay summary.
             </div>
           </article>
         </aside>

@@ -3,7 +3,7 @@
   "version": "5.0.0",
   "type": "module",
   "license": "MIT",
-  "description": "Browser app for agent-mux gateway control, monitoring, and realtime session-detail flow inspection",
+  "description": "Browser app for adapters gateway control, monitoring, and realtime session-detail flow inspection",
   "author": "a5c-ai",
   "homepage": "https://github.com/a5c-ai/babysitter/tree/main/packages/tula/webui#readme",
   "repository": {
@@ -15,7 +15,7 @@
     "url": "https://github.com/a5c-ai/babysitter/issues"
   },
   "keywords": [
-    "agent-mux",
+    "adapters",
     "webui",
     "session-flow",
     "timeline",
@@ -76,7 +76,7 @@
       "L6"
     ],
     "muxes": [
-      "agent-mux"
+      "adapters"
     ]
   }
 }

@@ -7,7 +7,7 @@ const OLD_PACKAGE = "@a5c-ai/agent-catalog";
 const OLD_WORKSPACE_PATH = "packages/agent-catalog";
 
 const ACTIVE_DOC_AND_METADATA_FILES = [
-  "docs/agent-mux/reference/01-core-types-and-client.md",
+  "docs/adapters/reference/01-core-types-and-client.md",
   "docs/atlas-catalog-unification/README.md",
   "docs/development/01-overview-and-philosophy.md",
   "docs/development/02-atlas-graph-and-agent-catalog.md",

@@ -1,6 +1,6 @@
 # Agent-Mux ↔ Babysitter Integration
 
-Design documents for integrating agent-mux capabilities into the babysitter SDK, enabling processes to discover available agents/models and dispatch work to external harnesses.
+Design documents for integrating adapters capabilities into the babysitter SDK, enabling processes to discover available agents/models and dispatch work to external harnesses.
 
 ## Documents
 
@@ -9,9 +9,9 @@ Design documents for integrating agent-mux capabilities into the babysitter SDK,
 2. [**tasks-mux-routing.md**](./tasks-mux-routing.md) — **Core design:** tasks-mux as unified routing hub for all task types (human, agent, tracker, internal) — covers both standalone and plugin modes
 
 ### Standalone Mode (tula, agent-platform CLI)
-3. [**sdk-discovery.md**](./sdk-discovery.md) — SDK-level agent-mux discovery (harnesses, models, capabilities)
-4. [**external-agent-tasks.md**](./external-agent-tasks.md) — New `agent` task kind with `external` flag for agent-mux dispatch
-5. [**effect-resolution.md**](./effect-resolution.md) — Effect resolution pipeline changes (SDK → tasks-mux → agent-mux)
+3. [**sdk-discovery.md**](./sdk-discovery.md) — SDK-level adapters discovery (harnesses, models, capabilities)
+4. [**external-agent-tasks.md**](./external-agent-tasks.md) — New `agent` task kind with `external` flag for adapters dispatch
+5. [**effect-resolution.md**](./effect-resolution.md) — Effect resolution pipeline changes (SDK → tasks-mux → adapters)
 6. [**process-authoring.md**](./process-authoring.md) — Process creation instruction updates (prompts, templates, validation)
 
 ### Plugin Mode (babysitter running inside claude-code, codex, gemini-cli, etc.)

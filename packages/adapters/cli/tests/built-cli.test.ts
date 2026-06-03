@@ -51,7 +51,7 @@ suite('built CLI (dist/index.js)', () => {
     expect(parsed.data.length).toBeGreaterThanOrEqual(11);
     const agents = parsed.data.map((a: { agent: string }) => a.agent).sort();
     expect(agents).toEqual(expect.arrayContaining([
-      'agent-mux-remote',
+      'adapters-remote',
       'claude',
       'codex',
       'copilot',

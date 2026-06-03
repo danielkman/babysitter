@@ -5,7 +5,7 @@ const path = require("node:path");
 const { execFileSync } = require("node:child_process");
 
 const rootDir = path.resolve(__dirname, "..");
-const specPath = "docs/agent-mux/terminology-and-structure-gaps/package-renames.md";
+const specPath = "docs/adapters/terminology-and-structure-gaps/package-renames.md";
 const selfPath = "scripts/check-package-renames.cjs";
 
 function readFile(relativePath) {

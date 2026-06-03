@@ -1,60 +1,60 @@
 nodeKind: AgentUIImpl
-id: agent-ui-impl:agent-mux.ui@current
+id: agent-ui-impl:adapters.ui@current
 attributes:
-  displayName: "agent-mux UI (current) — multi-surface"
-  agentVersionId: agent-version:agent-mux@current
-  packageRef: source-ref:agent-mux-github
+  displayName: "adapters UI (current) — multi-surface"
+  agentVersionId: agent-version:adapters@current
+  packageRef: source-ref:adapters-github
   uiKind: multi-surface
   presentationsBundled:
-    - presentation:agent-mux-tui
-    - presentation:agent-mux-cli
-    - presentation:agent-mux-webui
-    - presentation:agent-mux-mobile-ios
-    - presentation:agent-mux-mobile-android
-    - presentation:agent-mux-tv-androidtv
-    - presentation:agent-mux-tv-appletv
-    - presentation:agent-mux-watch-watchos
-    - presentation:agent-mux-watch-wearos
+    - presentation:adapters-tui
+    - presentation:adapters-cli
+    - presentation:adapters-webui
+    - presentation:adapters-mobile-ios
+    - presentation:adapters-mobile-android
+    - presentation:adapters-tv-androidtv
+    - presentation:adapters-tv-appletv
+    - presentation:adapters-watch-watchos
+    - presentation:adapters-watch-wearos
   themeSupport: full-customizable
   accessibilitySupport: wcag-aa
   notes: |
-    agent-mux is a multi-surface UI suite. Each presentation is its own
+    adapters is a multi-surface UI suite. Each presentation is its own
     package (tui, cli, webui, mobile-{ios,android}, tv-{androidtv,appletv},
-    watch-{watchos,wearos}). All surfaces share the agent-mux ui package
+    watch-{watchos,wearos}). All surfaces share the adapters ui package
     (`@a5c-ai/tula-ui`) for client + protocol + session-flow projection.
 edges:
   realizes:
     - target: layer:11-presentation
   bundled_with:
-    - target: presentation:agent-mux-tui
-    - target: presentation:agent-mux-cli
-    - target: presentation:agent-mux-webui
-    - target: presentation:agent-mux-mobile-ios
-    - target: presentation:agent-mux-mobile-android
-    - target: presentation:agent-mux-tv-androidtv
-    - target: presentation:agent-mux-tv-appletv
-    - target: presentation:agent-mux-watch-watchos
-    - target: presentation:agent-mux-watch-wearos
+    - target: presentation:adapters-tui
+    - target: presentation:adapters-cli
+    - target: presentation:adapters-webui
+    - target: presentation:adapters-mobile-ios
+    - target: presentation:adapters-mobile-android
+    - target: presentation:adapters-tv-androidtv
+    - target: presentation:adapters-tv-appletv
+    - target: presentation:adapters-watch-watchos
+    - target: presentation:adapters-watch-wearos
   supports_interaction_primitive:
-    - target: interaction-primitive:agent-mux-kanban-board
+    - target: interaction-primitive:adapters-kanban-board
       attributes: { mechanism: ui-control }
-    - target: interaction-primitive:agent-mux-hook-inbox
+    - target: interaction-primitive:adapters-hook-inbox
       attributes: { mechanism: ui-control }
-    - target: interaction-primitive:agent-mux-session-list
+    - target: interaction-primitive:adapters-session-list
       attributes: { mechanism: ui-control }
-    - target: interaction-primitive:agent-mux-session-detail
+    - target: interaction-primitive:adapters-session-detail
       attributes: { mechanism: ui-control }
-    - target: interaction-primitive:agent-mux-new-run
+    - target: interaction-primitive:adapters-new-run
       attributes: { mechanism: ui-control }
-    - target: interaction-primitive:agent-mux-pair-device
+    - target: interaction-primitive:adapters-pair-device
       attributes: { mechanism: ui-control }
-    - target: interaction-primitive:agent-mux-workspace-detail
+    - target: interaction-primitive:adapters-workspace-detail
       attributes: { mechanism: ui-control }
-    - target: interaction-primitive:agent-mux-breakpoint-approval
+    - target: interaction-primitive:adapters-breakpoint-approval
       attributes: { mechanism: ui-control }
-    - target: interaction-primitive:agent-mux-tool-call-interaction
+    - target: interaction-primitive:adapters-tool-call-interaction
       attributes: { mechanism: ui-control }
-    - target: interaction-primitive:agent-mux-prompt-history
+    - target: interaction-primitive:adapters-prompt-history
       attributes: { mechanism: ui-control }
     - target: interaction-primitive:command-palette
       attributes: { mechanism: keybinding, invocationToken: "Cmd+K" }
@@ -62,183 +62,183 @@ edges:
       attributes: { mechanism: ui-control }
     - target: interaction-primitive:prompt-input
       attributes: { mechanism: ui-control }
-    - target: interaction-primitive:agent-mux-cli-auth-check
+    - target: interaction-primitive:adapters-cli-auth-check
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-auth-setup
+    - target: interaction-primitive:adapters-cli-auth-setup
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-plugin-list
+    - target: interaction-primitive:adapters-cli-plugin-list
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-plugin-install
+    - target: interaction-primitive:adapters-cli-plugin-install
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-plugin-enable
+    - target: interaction-primitive:adapters-cli-plugin-enable
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-plugin-disable
+    - target: interaction-primitive:adapters-cli-plugin-disable
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-plugin-marketplace
+    - target: interaction-primitive:adapters-cli-plugin-marketplace
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-mcp-list
+    - target: interaction-primitive:adapters-cli-mcp-list
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-mcp-install
+    - target: interaction-primitive:adapters-cli-mcp-install
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-mcp-uninstall
+    - target: interaction-primitive:adapters-cli-mcp-uninstall
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-skill-list
+    - target: interaction-primitive:adapters-cli-skill-list
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-skill-add
+    - target: interaction-primitive:adapters-cli-skill-add
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-skill-remove
+    - target: interaction-primitive:adapters-cli-skill-remove
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-skill-where
+    - target: interaction-primitive:adapters-cli-skill-where
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-skill-agents
+    - target: interaction-primitive:adapters-cli-skill-agents
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-agent-list
+    - target: interaction-primitive:adapters-cli-agent-list
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-agent-add
+    - target: interaction-primitive:adapters-cli-agent-add
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-agent-remove
+    - target: interaction-primitive:adapters-cli-agent-remove
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-agent-where
+    - target: interaction-primitive:adapters-cli-agent-where
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-agent-agents
+    - target: interaction-primitive:adapters-cli-agent-agents
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-run
+    - target: interaction-primitive:adapters-cli-run
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-install
+    - target: interaction-primitive:adapters-cli-install
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-update
+    - target: interaction-primitive:adapters-cli-update
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-detect
+    - target: interaction-primitive:adapters-cli-detect
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-uninstall
+    - target: interaction-primitive:adapters-cli-uninstall
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-adapters-list
+    - target: interaction-primitive:adapters-cli-adapters-list
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-adapters-detect
+    - target: interaction-primitive:adapters-cli-adapters-detect
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-adapters-info
+    - target: interaction-primitive:adapters-cli-adapters-info
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-models-list
+    - target: interaction-primitive:adapters-cli-models-list
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-models-info
+    - target: interaction-primitive:adapters-cli-models-info
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-models-refresh
+    - target: interaction-primitive:adapters-cli-models-refresh
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-models-current
+    - target: interaction-primitive:adapters-cli-models-current
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-models-set
+    - target: interaction-primitive:adapters-cli-models-set
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-hooks-discover
+    - target: interaction-primitive:adapters-cli-hooks-discover
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-hooks-list
+    - target: interaction-primitive:adapters-cli-hooks-list
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-hooks-add
+    - target: interaction-primitive:adapters-cli-hooks-add
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-hooks-remove
+    - target: interaction-primitive:adapters-cli-hooks-remove
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-hooks-set
+    - target: interaction-primitive:adapters-cli-hooks-set
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-hooks-handle
+    - target: interaction-primitive:adapters-cli-hooks-handle
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-gateway-serve
+    - target: interaction-primitive:adapters-cli-gateway-serve
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-gateway-status
+    - target: interaction-primitive:adapters-cli-gateway-status
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-gateway-tokens-list
+    - target: interaction-primitive:adapters-cli-gateway-tokens-list
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-gateway-tokens-create
+    - target: interaction-primitive:adapters-cli-gateway-tokens-create
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-gateway-tokens-revoke
+    - target: interaction-primitive:adapters-cli-gateway-tokens-revoke
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-help
+    - target: interaction-primitive:adapters-cli-help
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-version
+    - target: interaction-primitive:adapters-cli-version
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-sessions-list
+    - target: interaction-primitive:adapters-cli-sessions-list
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-sessions-show
+    - target: interaction-primitive:adapters-cli-sessions-show
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-sessions-search
+    - target: interaction-primitive:adapters-cli-sessions-search
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-sessions-export
+    - target: interaction-primitive:adapters-cli-sessions-export
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-sessions-cost
+    - target: interaction-primitive:adapters-cli-sessions-cost
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-config-get
+    - target: interaction-primitive:adapters-cli-config-get
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-config-set
+    - target: interaction-primitive:adapters-cli-config-set
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-config-schema
+    - target: interaction-primitive:adapters-cli-config-schema
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-config-validate
+    - target: interaction-primitive:adapters-cli-config-validate
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-config-reload
+    - target: interaction-primitive:adapters-cli-config-reload
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-profiles-list
+    - target: interaction-primitive:adapters-cli-profiles-list
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-profiles-show
+    - target: interaction-primitive:adapters-cli-profiles-show
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-profiles-set
+    - target: interaction-primitive:adapters-cli-profiles-set
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-profiles-delete
+    - target: interaction-primitive:adapters-cli-profiles-delete
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-profiles-apply
+    - target: interaction-primitive:adapters-cli-profiles-apply
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-workspaces-list
+    - target: interaction-primitive:adapters-cli-workspaces-list
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-workspaces-create
+    - target: interaction-primitive:adapters-cli-workspaces-create
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-workspaces-archive
+    - target: interaction-primitive:adapters-cli-workspaces-archive
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-workspaces-cleanup
+    - target: interaction-primitive:adapters-cli-workspaces-cleanup
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-workspaces-recover
+    - target: interaction-primitive:adapters-cli-workspaces-recover
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-workspaces-delete
+    - target: interaction-primitive:adapters-cli-workspaces-delete
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-workspaces-sync-sessions
+    - target: interaction-primitive:adapters-cli-workspaces-sync-sessions
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-launch
+    - target: interaction-primitive:adapters-cli-launch
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-detect-host
+    - target: interaction-primitive:adapters-cli-detect-host
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-doctor
+    - target: interaction-primitive:adapters-cli-doctor
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-tui
+    - target: interaction-primitive:adapters-cli-tui
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-remote-install
+    - target: interaction-primitive:adapters-cli-remote-install
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-cli-remote-update
+    - target: interaction-primitive:adapters-cli-remote-update
       attributes: { mechanism: cli-subcommand }
-    - target: interaction-primitive:agent-mux-harness-mock-error-rate-limit
+    - target: interaction-primitive:adapters-harness-mock-error-rate-limit
       attributes: { mechanism: harness-mock }
-    - target: interaction-primitive:agent-mux-harness-mock-error-auth-required
+    - target: interaction-primitive:adapters-harness-mock-error-auth-required
       attributes: { mechanism: harness-mock }
-    - target: interaction-primitive:agent-mux-harness-mock-error-crash
+    - target: interaction-primitive:adapters-harness-mock-error-crash
       attributes: { mechanism: harness-mock }
-    - target: interaction-primitive:agent-mux-harness-mock-error-timeout
+    - target: interaction-primitive:adapters-harness-mock-error-timeout
       attributes: { mechanism: harness-mock }
-    - target: interaction-primitive:agent-mux-harness-mock-error-oom
+    - target: interaction-primitive:adapters-harness-mock-error-oom
       attributes: { mechanism: harness-mock }
-    - target: interaction-primitive:agent-mux-harness-mock-runtime-hook-allow-bash
+    - target: interaction-primitive:adapters-harness-mock-runtime-hook-allow-bash
       attributes: { mechanism: harness-mock }
-    - target: interaction-primitive:agent-mux-harness-mock-runtime-hook-deny-write
+    - target: interaction-primitive:adapters-harness-mock-runtime-hook-deny-write
       attributes: { mechanism: harness-mock }
-    - target: interaction-primitive:agent-mux-harness-mock-runtime-hook-timeout
+    - target: interaction-primitive:adapters-harness-mock-runtime-hook-timeout
       attributes: { mechanism: harness-mock }
-    - target: interaction-primitive:agent-mux-harness-mock-interactive-yolo
+    - target: interaction-primitive:adapters-harness-mock-interactive-yolo
       attributes: { mechanism: harness-mock }
-    - target: interaction-primitive:agent-mux-harness-mock-interactive-prompt
+    - target: interaction-primitive:adapters-harness-mock-interactive-prompt
       attributes: { mechanism: harness-mock }
-    - target: interaction-primitive:agent-mux-harness-mock-interactive-deny
+    - target: interaction-primitive:adapters-harness-mock-interactive-deny
       attributes: { mechanism: harness-mock }
-    - target: interaction-primitive:agent-mux-harness-mock-interactive-timeout
+    - target: interaction-primitive:adapters-harness-mock-interactive-timeout
       attributes: { mechanism: harness-mock }
-    - target: interaction-primitive:agent-mux-tui-command-palette
+    - target: interaction-primitive:adapters-tui-command-palette
       attributes: { mechanism: ui-control }
-    - target: interaction-primitive:agent-mux-tui-prompt-input
+    - target: interaction-primitive:adapters-tui-prompt-input
       attributes: { mechanism: ui-control }
-    - target: interaction-primitive:agent-mux-tui-model-picker
+    - target: interaction-primitive:adapters-tui-model-picker
       attributes: { mechanism: ui-control }
     - target: interaction-primitive:transport-mux-adapters-proxy
       attributes: { mechanism: cli-subcommand }

@@ -16,7 +16,7 @@ export interface LaunchSpec {
  * Build a LaunchSpec for spawning a harness CLI.
  *
  * Only Pi uses direct CLI invocation. External harnesses are routed
- * through agent-mux and never reach this function.
+ * through adapters and never reach this function.
  */
 export function buildLaunchSpec(
   _name: string,

@@ -86,7 +86,7 @@ Core handle methods:
 
 Session behavior that matters to host integrations:
 
-- Agent-core reuses the `sessionId` learned from prior runs, so later prompts continue the same agent-mux session when the backend supports it.
+- Agent-core reuses the `sessionId` learned from prior runs, so later prompts continue the same adapters session when the backend supports it.
 - Agent-core also keeps successful user/assistant turns on the session handle and includes bounded prior history in later direct provider prompts. System prompts are rebuilt from options for each request and are not stored in mutable history.
 - Failed prompts, timed-out requests, aborted requests, and malformed streams do not append partial assistant output to history.
 - Concurrent `prompt()` calls on the same handle are rejected.
@@ -97,16 +97,16 @@ Session behavior that matters to host integrations:
 
 | Option | Runtime effect |
 | --- | --- |
-| `workspace` | Forwarded to agent-mux as `cwd`. |
-| `model` | Forwarded to agent-mux as `model`. |
-| `timeout` | Forwarded to agent-mux as `timeout`. |
+| `workspace` | Forwarded to adapters as `cwd`. |
+| `model` | Forwarded to adapters as `model`. |
+| `timeout` | Forwarded to adapters as `timeout`. |
 | `maxHistoryTurns` | Maximum persisted user/assistant history entries retained on the session handle. Defaults to 20. |
 | `maxHistoryTokens` | Maximum estimated tokens from prior history sent with a prompt. Uses the package's provider/model-aware rough token estimator and drops oldest entries first. |
-| `thinkingLevel` | Translated to agent-mux `thinkingEffort` (`minimal`/`low` -> `low`, `medium` -> `medium`, `high` -> `high`, `xhigh` -> `max`). |
+| `thinkingLevel` | Translated to adapters `thinkingEffort` (`minimal`/`low` -> `low`, `medium` -> `medium`, `high` -> `high`, `xhigh` -> `max`). |
 | `systemPrompt` | Used as the base `systemPrompt`. |
 | `appendSystemPrompt` | Appended to the final `systemPrompt` before dispatch. |
 | `uiContext` | Switches run approval mode to `prompt`; when omitted, tula-core uses `yolo`. |
-| `backend` | Selects the agent-mux adapter/backend forwarded as `agent`. |
+| `backend` | Selects the adapters adapter/backend forwarded as `agent`. |
 | `outputFormat` | Optional structured-output mode: `text`, `json_object`, or `json_schema`. |
 | `outputSchema` | JSON Schema used when `outputFormat` is `json_schema`. |
 | `outputSchemaName` | Provider-visible schema name. Defaults to `agent_core_response`. |
@@ -175,7 +175,7 @@ These fields remain on `AgentCoreSessionOptions` for compatibility, but the curr
 | `toolsMode` | Deprecated, ignored by tula-core | Use backend-native configuration, or the PI wrapper in `@a5c-ai/tula-platform`, if you still need tool-surface control. |
 | `customTools` | Deprecated, ignored by tula-core | Register host-side tools with `createAgentCoreToolDefinitions()` or use the PI wrapper for runtime custom-tool injection. |
 | `isolated` | Deprecated, ignored by tula-core | Use the PI wrapper if you still need extension/skills isolation controls. |
-| `ephemeral` | Deprecated, ignored by tula-core | Session persistence is determined by the selected agent-mux backend. |
+| `ephemeral` | Deprecated, ignored by tula-core | Session persistence is determined by the selected adapters backend. |
 | `bashSandbox` | Deprecated, ignored by tula-core | Sandbox behavior belongs to the selected backend. |
 | `enableCompaction` | Deprecated, ignored by tula-core | Compaction behavior belongs to the selected backend/runtime. |
 | `agentDir` | Deprecated, ignored by tula-core | Configure agent directories through the target backend instead. |

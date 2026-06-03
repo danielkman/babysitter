@@ -93,12 +93,12 @@ attributes:
   displayName: "Invocation Mode"
   kind: concept
   description: |
-    Selects where a harness subprocess runs. agent-mux defines four
+    Selects where a harness subprocess runs. adapters defines four
     modes — local (default), docker (`docker run --rm -i ...`), ssh
     (`ssh ... -- 'cd <cwd> && cmd ...'`), and k8s (`kubectl exec -i
     <pod> -- ...`). The adapter contract emits a mode-agnostic
     SpawnArgs which a pure transform rewrites for the chosen host.
-    Source: docs/agent-mux/reference/13-invocation-modes.md.
+    Source: docs/adapters/reference/13-invocation-modes.md.
 edges:
   related_to:
     - target: term:agentic-loop
@@ -109,11 +109,11 @@ attributes:
   displayName: "Unified Hook Payload"
   kind: concept
   description: |
-    Harness-agnostic normalised hook payload emitted by agent-mux:
+    Harness-agnostic normalised hook payload emitted by adapters:
     `{ agent, hookType, sessionId, timestamp, data, raw }`. `data`
     surfaces fields like `tool_name`, `tool_input`, `prompt`; `raw`
     preserves the original per-harness payload for bidirectional
-    round-tripping. Source: docs/agent-mux/reference/15-hooks.md.
+    round-tripping. Source: docs/adapters/reference/15-hooks.md.
 edges:
   related_to:
     - target: term:hook-registration
@@ -124,10 +124,10 @@ attributes:
   displayName: "Unified Hook Result"
   kind: concept
   description: |
-    Hook handler return value in agent-mux's unified hook system —
+    Hook handler return value in adapters's unified hook system —
     `{ decision: allow|deny|modify, message?, modifiedInput?, stdout?,
     exitCode? }`. `deny` maps to exit code 2, the convention shared by
-    most harnesses. Source: docs/agent-mux/reference/15-hooks.md.
+    most harnesses. Source: docs/adapters/reference/15-hooks.md.
 edges:
   related_to:
     - target: term:hook-registration
@@ -143,7 +143,7 @@ attributes:
     registrations override global registrations matched by `id`.
     Handlers are one of `builtin` (in-process), `command` (shell
     command), or `script` (executable). Source:
-    docs/agent-mux/reference/15-hooks.md.
+    docs/adapters/reference/15-hooks.md.
 edges:
   related_to:
     - target: term:unified-hook-payload
@@ -159,7 +159,7 @@ attributes:
     shell? }`. The pure `buildInvocationCommand()` transform rewrites
     SpawnArgs into the concrete host command for the chosen
     InvocationMode. Source:
-    docs/agent-mux/reference/13-invocation-modes.md +
+    docs/adapters/reference/13-invocation-modes.md +
     packages/core/src/spawn-invocation.ts.
 edges:
   related_to:

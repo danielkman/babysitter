@@ -27,7 +27,7 @@ export function LoginPage(): JSX.Element {
     return (
       <main className="login-page">
         <section className="login-card auth-card">
-          <p className="eyebrow">agent-mux webui</p>
+          <p className="eyebrow">adapters webui</p>
           <h1>Checking saved gateway access</h1>
           <p className="lede auth-note">
             Revalidating the stored gateway token before reconnecting this browser to the gateway.
@@ -54,7 +54,7 @@ export function LoginPage(): JSX.Element {
   return (
     <main className="login-page">
       <section className="login-card auth-card">
-        <p className="eyebrow">agent-mux webui</p>
+        <p className="eyebrow">adapters webui</p>
         <h1>Attach to your gateway</h1>
         <p className="lede auth-note">
           The token is stored in <code>localStorage.adapters.webui.auth</code>. That is convenient and

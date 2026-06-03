@@ -1,13 +1,13 @@
 {
   "issueNumber": 831,
   "baseBranch": "staging",
-  "implementationBranch": "issue-831-agent-mux-directory-moves",
+  "implementationBranch": "issue-831-adapters-directory-moves",
   "targetQuality": 90,
   "maxIterationsPerPhase": 4,
   "designDocs": [
-    "docs/agent-mux/terminology-and-structure-gaps/README.md",
-    "docs/agent-mux/terminology-and-structure-gaps/directory-moves.md",
-    "docs/agent-mux/terminology-and-structure-gaps/package-renames.md",
+    "docs/adapters/terminology-and-structure-gaps/README.md",
+    "docs/adapters/terminology-and-structure-gaps/directory-moves.md",
+    "docs/adapters/terminology-and-structure-gaps/package-renames.md",
     "docs/agent-reference/process-authoring.md",
     "docs/agent-reference/repo-map.md",
     "docs/agent-reference/runtime-and-layout.md"
@@ -133,15 +133,15 @@
     },
     {
       "from": "packages/adapters/meta/config/adapters",
-      "to": "packages/adapters/meta/config/agent-mux"
+      "to": "packages/adapters/meta/config/adapters"
     }
   ],
   "verificationCommands": [
     "npm install --package-lock-only",
     "npm run verify:metadata",
     "npm run validate:processes",
-    "npm run build:agent-mux",
-    "npm run test:agent-mux",
+    "npm run build:adapters",
+    "npm run test:adapters",
     "npm run build:hooks-mux",
     "npm run test:hooks-mux",
     "npm run build:extension-mux",
@@ -152,7 +152,7 @@
     "npm run docs:links",
     "rg -n \"packages/(transport-mux|extension-mux|triggers-mux|tasks-mux|tool-mux|hooks-mux)\" package.json tsconfig.json package-lock.json .github docs packages --glob '!**/node_modules/**' --glob '!**/dist/**'",
     "rg -n \"@a5c-ai/(transport-mux|extension-mux|triggers-mux|tasks-mux|tool-mux|hooks-mux-)\" package.json package-lock.json packages docs .github --glob '!**/node_modules/**' --glob '!**/dist/**'",
-    "test -d packages/adapters/transport && test -d packages/adapters/extensions && test -d packages/adapters/triggers && test -d packages/adapters/tasks && test -d packages/adapters/tools && test -d packages/adapters/hooks && test -d packages/adapters/transport-proxy && test -d packages/adapters/meta/config/agent-mux"
+    "test -d packages/adapters/transport && test -d packages/adapters/extensions && test -d packages/adapters/triggers && test -d packages/adapters/tasks && test -d packages/adapters/tools && test -d packages/adapters/hooks && test -d packages/adapters/transport-proxy && test -d packages/adapters/meta/config/adapters"
   ],
   "phaseSpecs": [
     {
@@ -170,7 +170,7 @@
         "Old top-level directories are absent and target directories are present.",
         "Root workspaces include target directories without relying on stale top-level package paths.",
         "Root tsconfig references point at target directories.",
-        "Package names and internal package references are consistent with the target agent-mux naming contract.",
+        "Package names and internal package references are consistent with the target adapters naming contract.",
         "Narrow package build/test commands pass for the five moved packages."
       ],
       "testFocus": [
@@ -180,7 +180,7 @@
       ],
       "verification": [
         "npm run verify:metadata",
-        "npm run build:agent-mux",
+        "npm run build:adapters",
         "npm run build --workspace=@a5c-ai/transport-adapter",
         "npm run build --workspace=@a5c-ai/extensions-adapter",
         "npm run build --workspace=@a5c-ai/triggers-adapter",
@@ -191,10 +191,10 @@
     },
     {
       "id": "phase-2-hooks-mux-move",
-      "title": "Move hooks-mux umbrella under agent-mux/hooks",
+      "title": "Move hooks-mux umbrella under adapters/hooks",
       "scope": [
         "Move packages/hooks-mux to packages/adapters/hooks.",
-        "Preserve all 12 hooks-mux subpackages as agent-mux hooks subpackages.",
+        "Preserve all 12 hooks-mux subpackages as adapters hooks subpackages.",
         "Rename hooks package names to @a5c-ai/adapters-hooks-* when required by the referenced package-renames doc.",
         "Update hooks build/test/lint helper scripts and workspace references."
       ],
@@ -253,18 +253,18 @@
       ]
     },
     {
-      "id": "phase-4-legacy-agent-mux-directory-renames",
+      "id": "phase-4-legacy-adapters-directory-renames",
       "title": "Rename legacy adapters directories",
       "scope": [
         "Move packages/adapters/adapters-proxy to packages/adapters/transport-proxy.",
-        "Move packages/adapters/meta/config/adapters to packages/adapters/meta/config/agent-mux.",
+        "Move packages/adapters/meta/config/adapters to packages/adapters/meta/config/adapters.",
         "Update Python package path references, README/docs, Docker files, package metadata, workflows, atlas graph, and tests affected by those directory moves.",
         "Avoid broad code identifier or environment variable cleanup unless directly required for these directory renames."
       ],
       "acceptance": [
         "Legacy adapters directory paths are absent and new target paths are present.",
         "Proxy tests and docs refer to transport-proxy path terminology where path-specific.",
-        "Config fixture paths refer to agent-mux, not adapters, where path-specific.",
+        "Config fixture paths refer to adapters, not adapters, where path-specific.",
         "No active reference to packages/adapters/adapters-proxy or packages/adapters/meta/config/adapters remains."
       ],
       "testFocus": [
@@ -276,7 +276,7 @@
         "npm run verify:metadata",
         "pytest packages/adapters/transport-proxy/tests",
         "rg -n \"packages/adapters/(adapters-proxy|meta/config/adapters)|adapters-proxy\" packages docs .github package.json package-lock.json --glob '!**/node_modules/**' --glob '!**/dist/**'",
-        "test -d packages/adapters/transport-proxy && test -d packages/adapters/meta/config/agent-mux"
+        "test -d packages/adapters/transport-proxy && test -d packages/adapters/meta/config/adapters"
       ]
     },
     {
@@ -304,8 +304,8 @@
         "npm run verify:metadata",
         "npm run validate:processes",
         "npm run build:sdk",
-        "npm run build:agent-mux",
-        "npm run test:agent-mux",
+        "npm run build:adapters",
+        "npm run test:adapters",
         "npm run build:hooks-mux",
         "npm run test:hooks-mux",
         "npm run build:extension-mux",

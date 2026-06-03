@@ -58,7 +58,7 @@ agent routing hint: `agent.responderType: "agent"` plus a required `adapter`.
 During orchestration, tasks-mux chooses the responder backend. Internal
 responders continue through the normal agent-core path, human responders use the
 breakpoint path, and agent responders route to `AgentMuxResponderBackend`, which
-uses agent-mux and the lower-level `amuxBridge` integration.
+uses adapters and the lower-level `amuxBridge` integration.
 
 The command surfaces involved are split by responsibility:
 
@@ -67,13 +67,13 @@ The command surfaces involved are split by responsibility:
 | `babysitter run:create`, `run:iterate`, `task:list`, `task:post` | Create and replay the run, inspect pending effects, and post resolved task results. |
 | `babysitter process-library:active`, `skill:discover`, `profile:*` | Gather process-authoring context, available skills, and user/project preferences before deciding whether an external responder is appropriate. |
 | `tula discover`, `tula list`, `tula invoke` | Human-facing discovery and invocation surface for available runtime agents and services. |
-| `adapters doctor`, `adapters launch`, `adapters auth`, `adapters install` | agent-mux checks and adapter operations. See the agent-mux reference for the exact CLI flags. |
+| `adapters doctor`, `adapters launch`, `adapters auth`, `adapters install` | adapters checks and adapter operations. See the adapters reference for the exact CLI flags. |
 
 Troubleshooting common external agent failures:
 
 | Scenario | Expected behavior |
 | --- | --- |
-| agent-mux is missing | If the task explicitly allows internal fallback, route internally; otherwise fail the task with an unavailable agent-mux error. |
+| adapters is missing | If the task explicitly allows internal fallback, route internally; otherwise fail the task with an unavailable adapters error. |
 | Adapter is missing | Fail with an adapter-not-installed message and install guidance for the selected adapter. |
 | Adapter is unauthenticated | Fail with an authentication message and run the adapter auth flow before retrying. |
 | Task times out | Fail the task with timeout details; include partial output only when the responder backend provides it. |

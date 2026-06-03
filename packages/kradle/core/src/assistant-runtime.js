@@ -7,7 +7,7 @@ export const ASSISTANT_RUNTIME_BOUNDARY = {
   role: 'assistant-runtime',
   scope: 'In-process agent runtime for chat sessions and structured agentic calls via AgentStack CRDs',
   owns: ['chat sessions', 'message history', 'model API calls', 'structured agentic calls', 'session lifecycle'],
-  delegatesTo: ['resource-model', 'agent-stack-controller', 'agent-mux-client'],
+  delegatesTo: ['resource-model', 'agent-stack-controller', 'adapters-client'],
   mustNotOwn: ['secret values', 'K8s Job dispatch', 'resource persistence'],
 };
 

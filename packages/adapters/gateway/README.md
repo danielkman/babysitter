@@ -1,7 +1,7 @@
 # @a5c-ai/adapters-gateway
 
 `@a5c-ai/adapters-gateway` is the package scaffold for remote and browser-facing
-agent-mux surfaces.
+adapters surfaces.
 
 Current scope:
 

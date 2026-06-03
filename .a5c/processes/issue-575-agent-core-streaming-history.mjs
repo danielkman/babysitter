@@ -228,7 +228,7 @@ export const reuseAuditTask = defineTask('issue-575.reuse-audit', (args, taskCtx
         'Do not edit files.',
         'Render a section titled exactly: Reuse-audit findings (REVIEW BEFORE PROCEEDING).',
         'Use these keywords and variants: streaming, stream, SSE, text/event-stream, ReadableStream, chat/completions, /v1/messages, content_block_delta, message_delta, [DONE], history, conversation, messages, multi-turn, turn trimming, token estimate, getHistory, clearHistory, followUp, steer.',
-        'Scan packages/agent-core, packages/transport-mux, packages/agent-mux, packages/tula/platform, docs, and .a5c/processes. Note that `.a5c/process-library/` may be absent; report whether it exists.',
+        'Scan packages/agent-core, packages/transport-mux, packages/adapters, packages/tula/platform, docs, and .a5c/processes. Note that `.a5c/process-library/` may be absent; report whether it exists.',
         'Identify reusable parser logic or fixtures, compatible token-estimation helpers, current public API boundaries, and tests that already lock in old behavior.',
         'Return JSON: { processLibraryStatus, reusableImplementations, reusableTests, apiBoundaries, oldBehaviorTests, noNewInfrastructureNotes, risks }.',
       ],

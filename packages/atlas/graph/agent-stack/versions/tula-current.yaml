@@ -34,7 +34,7 @@ edges:
     - target: capability:supports-mcp
       versionRange: '>=5.0.0'
       level: full
-      notes: tula integrates with MCP servers via agent-platform and agent-mux.
+      notes: tula integrates with MCP servers via agent-platform and adapters.
     - target: capability:supports-subagent-dispatch
       versionRange: '>=5.0.0'
       level: full

@@ -6,7 +6,7 @@ attributes:
   kind: tui
   description: |
     Terminal UI bundled with the a5c agent. Renders streaming output from the
-    bridged backend (via agent-mux), tool-use blocks, marketplace skill
+    bridged backend (via adapters), tool-use blocks, marketplace skill
     invocations, and a5c plugin slash commands in a full-screen ink-based
     shell.
   renderingTechnology: vte

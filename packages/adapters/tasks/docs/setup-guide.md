@@ -60,12 +60,12 @@ npm run test:packaged-surface-parity --workspace=@a5c-ai/tasks-adapter
 
 ## CLI Setup
 
-The bin name is `agent-mux-tasks`.
+The bin name is `adapters-tasks`.
 
 ```bash
-agent-mux-tasks --help
-agent-mux-tasks responders list
-agent-mux-tasks responders show security-responder
+adapters-tasks --help
+adapters-tasks responders list
+adapters-tasks responders show security-responder
 ```
 
 Global CLI options:
@@ -81,14 +81,14 @@ Responder profiles are resolved from `.a5c/responder/` by default. You can overr
 
 ## MCP Server Setup
 
-`agent-mux-tasks server start` launches the packaged MCP server over stdio. That is the supported CLI entrypoint for editor and agent integrations.
+`adapters-tasks server start` launches the packaged MCP server over stdio. That is the supported CLI entrypoint for editor and agent integrations.
 
 Using the published package:
 
 ```json
 {
   "mcpServers": {
-    "agent-mux-tasks": {
+    "adapters-tasks": {
       "command": "npx",
       "args": ["-y", "@a5c-ai/tasks-adapter", "server", "start"]
     }
@@ -101,7 +101,7 @@ Using a local monorepo checkout after building the package:
 ```json
 {
   "mcpServers": {
-    "agent-mux-tasks": {
+    "adapters-tasks": {
       "command": "node",
       "args": ["packages/adapters/tasks/dist/cli/index.js", "server", "start"]
     }
@@ -135,7 +135,7 @@ CLI and MCP clients resolve connection settings in this order:
 - `--server-url`
 - `BMUX_SERVER_URL`
 - `SERVER_URL`
-- `~/.agent-mux-tasks/config.json`
+- `~/.adapters-tasks/config.json`
 - default server URL baked into the client
 
 Bearer tokens resolve in this order:
@@ -143,15 +143,15 @@ Bearer tokens resolve in this order:
 - `--auth-token`
 - `BMUX_AUTH_TOKEN`
 - `AUTH_TOKEN`
-- `~/.agent-mux-tasks/config.json`
-- `~/.agent-mux-tasks/auth.json`
+- `~/.adapters-tasks/config.json`
+- `~/.adapters-tasks/auth.json`
 
 Shared auth commands:
 
 ```bash
-agent-mux-tasks auth status
-agent-mux-tasks auth server set https://agent-mux-tasks.example.com
-agent-mux-tasks auth token set <token>
+adapters-tasks auth status
+adapters-tasks auth server set https://adapters-tasks.example.com
+adapters-tasks auth token set <token>
 ```
 
 ## Responder Bootstrap
@@ -159,12 +159,12 @@ agent-mux-tasks auth token set <token>
 Create responder profiles under `.a5c/responder/<responderId>.json`, then validate them with:
 
 ```bash
-agent-mux-tasks responders show <responderId>
+adapters-tasks responders show <responderId>
 ```
 
 Use these CLI commands once profiles exist:
 
 ```bash
-agent-mux-tasks breakpoints pending --responder <responderId>
-agent-mux-tasks responder-loop --responder <responderId> --once
+adapters-tasks breakpoints pending --responder <responderId>
+adapters-tasks responder-loop --responder <responderId> --once
 ```

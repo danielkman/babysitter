@@ -150,7 +150,7 @@ gitea:
     existingSecret: kradle-gitea-token
     key: token
 agentMux:
-  url: http://agent-mux.kradle-system.svc.cluster.local:8080
+  url: http://adapters.kradle-system.svc.cluster.local:8080
   gatewayUrl: http://agent-gateway.kradle-system.svc.cluster.local:8080
 ```
 

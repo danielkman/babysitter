@@ -98,7 +98,7 @@ const config = {
             { to: '/docs/user-guide/', label: 'User Guide', position: 'left' },
             { to: '/docs/assimilation/', label: 'Integrations', position: 'left' },
             { to: '/docs/plugins', label: 'Plugins', position: 'left' },
-            { to: '/docs/agent-mux/', label: 'Agent Mux', position: 'left' },
+            { to: '/docs/adapters/', label: 'Agent Mux', position: 'left' },
             {
               href: 'https://github.com/a5c-ai/babysitter',
               label: 'GitHub',
@@ -148,7 +148,7 @@ const config = {
                 { label: 'Harness Integration', to: '/docs/assimilation/harness/' },
                 { label: 'GitHub Actions', to: '/docs/github-actions-setup-babysitter' },
                 { label: 'Plugins', to: '/docs/plugins' },
-                { label: 'Agent Mux', to: '/docs/agent-mux/' }
+                { label: 'Agent Mux', to: '/docs/adapters/' }
               ]
             },
             {

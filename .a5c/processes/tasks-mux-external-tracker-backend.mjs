@@ -375,7 +375,7 @@ export async function process(inputs, ctx) {
     body: inputs?.issueBody,
     comments: inputs?.issueComments ?? [],
     latestDependencyNote: inputs?.latestDependencyNote ?? 'Latest issue comment says this depends on #630 for the ResponderType system.',
-    designDoc: inputs?.designDoc ?? 'docs/agent-mux-babysitter-integrations/tasks-mux-routing.md',
+    designDoc: inputs?.designDoc ?? 'docs/adapters-babysitter-integrations/tasks-mux-routing.md',
     userRequest: inputs?.userRequest,
   };
 

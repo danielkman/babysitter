@@ -216,7 +216,7 @@ npm ci
 npm run build:runtime
 ```
 
-`build:runtime` is the supported root entrypoint for release and CI validation. It builds the runtime graph in workspace order: SDK -> agent-mux SDK surface -> tula-core -> agent-platform.
+`build:runtime` is the supported root entrypoint for release and CI validation. It builds the runtime graph in workspace order: SDK -> adapters SDK surface -> tula-core -> agent-platform.
 
 Package-local validation is also supported:
 
@@ -227,7 +227,7 @@ npm run build --workspace=@a5c-ai/tula-platform
 
 Those package-local builds now use `tsc --build` project references where the runtime packages are owned in this workspace, and they explicitly bootstrap the `@a5c-ai/adapters` SDK chain through the root runtime scripts. Fresh-checkout validation no longer assumes prebuilt upstream `dist/` artifacts.
 
-`@a5c-ai/agent-catalog` is the internal ontology and discovery data-plane package consumed by SDK, agent-mux, hooks-mux, plugin tooling, and the catalog UI. It ships graph, evidence, and package-doc assets for workspace consumers, with its package-level contract documented in [`packages/agent-catalog/README.md`](packages/agent-catalog/README.md) and [`packages/agent-catalog/docs/ontology-evidence.md`](packages/agent-catalog/docs/ontology-evidence.md). Its validation path is `npm run ci:test --workspace=@a5c-ai/agent-catalog` rather than the central publish workflows.
+`@a5c-ai/agent-catalog` is the internal ontology and discovery data-plane package consumed by SDK, adapters, hooks-mux, plugin tooling, and the catalog UI. It ships graph, evidence, and package-doc assets for workspace consumers, with its package-level contract documented in [`packages/agent-catalog/README.md`](packages/agent-catalog/README.md) and [`packages/agent-catalog/docs/ontology-evidence.md`](packages/agent-catalog/docs/ontology-evidence.md). Its validation path is `npm run ci:test --workspace=@a5c-ai/agent-catalog` rather than the central publish workflows.
 
 ### CLI Walkthrough Verification
 

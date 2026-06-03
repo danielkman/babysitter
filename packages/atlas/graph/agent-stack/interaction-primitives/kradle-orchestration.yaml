@@ -14,7 +14,7 @@ attributes:
   description: |
     Dispatch a coding agent to work on a Kradle-managed repository.
     Creates an AgentDispatchRun (appears as a CI Job), assembles a
-    context bundle with repo state and policy, binds to agent-mux
+    context bundle with repo state and policy, binds to adapters
     for session management, and provisions an isolated Git worktree.
     Supports manual dispatch from UI/API and auto-dispatch via triggers.
   kind: dispatch

@@ -110,7 +110,7 @@ describe('logger.ts', () => {
 
     const fileLogger = mod.createLogger({
       pretty: false,
-      logFile: '/tmp/agent-mux.log',
+      logFile: '/tmp/adapters.log',
     });
     fileLogger.info('before');
 
@@ -120,7 +120,7 @@ describe('logger.ts', () => {
     mod.reconfigureLogger({ level: 'debug' });
     mod.logger.info('after');
 
-    expect(destination).toHaveBeenCalledWith('/tmp/agent-mux.log');
+    expect(destination).toHaveBeenCalledWith('/tmp/adapters.log');
     expect(rootLogger.child).toHaveBeenCalledWith({ component: 'component', runId: 'run-2' });
     expect(rootLogger.child).toHaveBeenCalledWith({
       runId: 'run-3',

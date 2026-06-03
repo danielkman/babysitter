@@ -15,10 +15,10 @@ import * as fs from 'node:fs';
 
 /** Resolved paths for both global and project storage directories. */
 export interface StoragePaths {
-  /** Absolute path to the global config directory (e.g., ~/.agent-mux). */
+  /** Absolute path to the global config directory (e.g., ~/.adapters). */
   readonly configDir: string;
 
-  /** Absolute path to the project config directory (e.g., .agent-mux). */
+  /** Absolute path to the project config directory (e.g., .adapters). */
   readonly projectConfigDir: string;
 
   /** Absolute path to the global config.json file. */
@@ -63,13 +63,13 @@ export interface StoragePathOptions {
  * Resolution order for the global config directory:
  * 1. `options.configDir` if provided.
  * 2. `AGENT_MUX_CONFIG_DIR` environment variable if set.
- * 3. `path.join(os.homedir(), '.agent-mux')`.
+ * 3. `path.join(os.homedir(), '.adapters')`.
  *
  * Resolution order for the project config directory:
  * 1. `options.projectConfigDir` if provided.
  * 2. `AGENT_MUX_PROJECT_DIR` environment variable if set.
- * 3. Walk up from `process.cwd()` looking for a `.agent-mux/` directory.
- * 4. If not found, use `path.join(process.cwd(), '.agent-mux')`.
+ * 3. Walk up from `process.cwd()` looking for a `.adapters/` directory.
+ * 4. If not found, use `path.join(process.cwd(), '.adapters')`.
  */
 export function resolveStoragePaths(options?: StoragePathOptions): StoragePaths {
   const configDir = resolveConfigDir(options?.configDir);
@@ -101,7 +101,7 @@ function resolveConfigDir(override?: string): string {
     return path.resolve(envDir);
   }
 
-  return path.join(os.homedir(), '.agent-mux');
+  return path.join(os.homedir(), '.adapters');
 }
 
 function resolveProjectConfigDir(override?: string): string {
@@ -118,14 +118,14 @@ function resolveProjectConfigDir(override?: string): string {
 }
 
 /**
- * Walk up the directory tree from `startDir` looking for a `.agent-mux/`
- * directory. If not found, defaults to `startDir/.agent-mux`.
+ * Walk up the directory tree from `startDir` looking for a `.adapters/`
+ * directory. If not found, defaults to `startDir/.adapters`.
  */
 function walkUpForAgentMux(startDir: string): string {
   let current = path.resolve(startDir);
 
   while (true) {
-    const candidate = path.join(current, '.agent-mux');
+    const candidate = path.join(current, '.adapters');
     try {
       const stat = fs.statSync(candidate);
       if (stat.isDirectory()) {
@@ -137,9 +137,9 @@ function walkUpForAgentMux(startDir: string): string {
 
     const parent = path.dirname(current);
     if (parent === current) {
-      // Reached the filesystem root without finding .agent-mux/.
-      // Default to cwd/.agent-mux.
-      return path.join(startDir, '.agent-mux');
+      // Reached the filesystem root without finding .adapters/.
+      // Default to cwd/.adapters.
+      return path.join(startDir, '.adapters');
     }
     current = parent;
   }

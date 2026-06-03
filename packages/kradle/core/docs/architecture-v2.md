@@ -132,7 +132,7 @@ graph LR
     DISPATCH --> PERM
     DISPATCH --> STACK[agent-stack-controller]
     DISPATCH --> CONTEXT[agent-context-bundles]
-    DISPATCH --> MUX[agent-mux-client]
+    DISPATCH --> MUX[adapters-client]
     DISPATCH --> MEMORY_CTRL
     DISPATCH --> APPROVAL
     DISPATCH --> WORKSPACE
@@ -2751,7 +2751,7 @@ export const ARTIFACT_REGISTRY_CONTROLLER_BOUNDARY = {
 export const ASSISTANT_RUNTIME_BOUNDARY = {
   role: 'assistant-runtime',
   owns: ['chat sessions', 'message history', 'model API calls', 'structured agentic calls', 'session lifecycle'],
-  delegatesTo: ['resource-model', 'agent-stack-controller', 'agent-mux-client'],
+  delegatesTo: ['resource-model', 'agent-stack-controller', 'adapters-client'],
   mustNotOwn: ['secret values', 'K8s Job dispatch', 'resource persistence'],
 };
 ```

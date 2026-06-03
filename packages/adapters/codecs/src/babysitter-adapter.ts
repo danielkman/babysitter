@@ -180,7 +180,7 @@ export class BabysitterAdapter extends BaseAgentAdapter {
     const base = { runId: context.runId, agent: this.agent, timestamp: ts };
 
     // babysitter outputs structured JSON with a 'type' field
-    // matching agent-mux event types when --output-format adapters-events is used
+    // matching adapters event types when --output-format adapters-events is used
     if (obj['type'] && obj['runId']) {
       return obj as unknown as AgentEvent;
     }
@@ -378,6 +378,6 @@ export class BabysitterAdapter extends BaseAgentAdapter {
 
   async writeConfig(config: Partial<AgentConfig>, _cwd?: string): Promise<void> {
     // Babysitter config is managed by the babysitter CLI itself.
-    // No-op in the agent-mux adapter.
+    // No-op in the adapters adapter.
   }
 }

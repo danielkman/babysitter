@@ -41,6 +41,6 @@ edges:
   - target: capability:supports-plugins
     versionRange: '>=1.0.0'
     level: none
-    notes: 'MCP-only extensibility per agent-mux ref.
+    notes: 'MCP-only extensibility per adapters ref.
 
       '

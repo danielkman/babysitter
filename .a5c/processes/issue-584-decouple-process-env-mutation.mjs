@@ -1,6 +1,6 @@
 /**
  * @process repo/issue-584-decouple-process-env-mutation
- * @description Implementation process for issue #584: decouple hidden process.env mutation across agent-core, agent-platform, and agent-mux.
+ * @description Implementation process for issue #584: decouple hidden process.env mutation across agent-core, agent-platform, and adapters.
  * @inputs { issueNumber: number, baseBranch: string, targetBranch: string, maxIterations?: number, targetFiles: string[], mutationFiles: string[], regressionTestFiles: string[], verificationCommands: string[] }
  * @outputs { success: boolean, phases: string[], reuseAudit: object, runtimeCallPaths: string[], changedFiles: string[], verification: object, review: object }
  *
@@ -337,7 +337,7 @@ export const traceRuntimeConfigPathsTask = defineTask('issue-584.trace-runtime-c
         JSON.stringify(args.reuseAudit, null, 2),
         '---',
         'Do not edit files in this task.',
-        'Trace writer-to-reader paths for Azure OpenAI defaults, agent-core config state, agent-platform config state, and agent-mux CLI logging flags.',
+        'Trace writer-to-reader paths for Azure OpenAI defaults, agent-core config state, agent-platform config state, and adapters CLI logging flags.',
         'Classify each process.env use as one of: external process boundary, compatibility read, hidden in-process mutable config, test-only fixture, or unrelated.',
         'Identify package-boundary constraints and any import-cycle risks before proposing a shared registry or state helper.',
         'Return JSON: { rootCause: string, runtimeCallPaths: string[], allowedEnvBoundaries: string[], mutationSitesToRemove: string[], affectedFiles: string[], proposedContractLocations: string[], risks: string[], outOfScope: string[] }.',
@@ -369,7 +369,7 @@ export const authorRegressionTestPlanTask = defineTask('issue-584.author-regress
         JSON.stringify(args.runtimeTrace, null, 2),
         '---',
         'Do not read files under implementation directories when deciding acceptance criteria. Use the spec and runtime trace above.',
-        'Plan concrete regression tests for Azure OpenAI default synthesis without permanent env mutation, global/run-scoped config behavior without hidden env writes, agent-mux logging configuration without AMUX_* mutation, and package-boundary compatibility.',
+        'Plan concrete regression tests for Azure OpenAI default synthesis without permanent env mutation, global/run-scoped config behavior without hidden env writes, adapters logging configuration without AMUX_* mutation, and package-boundary compatibility.',
         'Use or create the test files listed in inputs unless adjacent existing tests are demonstrably a better fit.',
         'Return JSON: { testFiles: string[], redPhaseCommands: string[], coverageMatrix: object[], expectedInitialFailures: string[], risks: string[] }.',
       ],

@@ -11,7 +11,7 @@ import type { StoragePaths } from '../src/index.js';
 
 /** Create a temporary directory and return StoragePaths pointing to it. */
 function makeTmpPaths(): { paths: StoragePaths; tmpDir: string } {
-  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'agent-mux-test-'));
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'adapters-test-'));
   const configDir = path.join(tmpDir, 'global');
   const projectConfigDir = path.join(tmpDir, 'project');
 

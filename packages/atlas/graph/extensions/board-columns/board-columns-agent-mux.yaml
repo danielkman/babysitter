@@ -1,5 +1,5 @@
 nodeKind: BoardColumn
-id: board-column:agent-mux-backlog
+id: board-column:adapters-backlog
 attributes:
   displayName: "Backlog"
   order: 1
@@ -7,10 +7,10 @@ attributes:
   terminalForCompleted: false
 edges:
   column_of:
-    - target: board-snapshot:agent-mux-2026-05-02
+    - target: board-snapshot:adapters-2026-05-02
 ---
 nodeKind: BoardColumn
-id: board-column:agent-mux-in-progress
+id: board-column:adapters-in-progress
 attributes:
   displayName: "In Progress"
   order: 2
@@ -19,10 +19,10 @@ attributes:
   terminalForCompleted: false
 edges:
   column_of:
-    - target: board-snapshot:agent-mux-2026-05-02
+    - target: board-snapshot:adapters-2026-05-02
 ---
 nodeKind: BoardColumn
-id: board-column:agent-mux-in-review
+id: board-column:adapters-in-review
 attributes:
   displayName: "In Review"
   order: 3
@@ -31,10 +31,10 @@ attributes:
   terminalForCompleted: false
 edges:
   column_of:
-    - target: board-snapshot:agent-mux-2026-05-02
+    - target: board-snapshot:adapters-2026-05-02
 ---
 nodeKind: BoardColumn
-id: board-column:agent-mux-done
+id: board-column:adapters-done
 attributes:
   displayName: "Done"
   order: 4
@@ -42,4 +42,4 @@ attributes:
   terminalForCompleted: true
 edges:
   column_of:
-    - target: board-snapshot:agent-mux-2026-05-02
+    - target: board-snapshot:adapters-2026-05-02

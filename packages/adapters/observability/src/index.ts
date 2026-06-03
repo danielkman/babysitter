@@ -1,7 +1,7 @@
 /**
  * @a5c-ai/adapters-observability
  *
- * Observability infrastructure for agent-mux.
+ * Observability infrastructure for adapters.
  * Provides structured logging and telemetry with switchable implementations.
  */
 

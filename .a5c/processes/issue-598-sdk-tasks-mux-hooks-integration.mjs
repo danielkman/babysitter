@@ -7,7 +7,7 @@
  * Reuse-audit findings (REVIEW BEFORE PROCEEDING):
  * - Issue #598 is an integration umbrella spanning SDK effect/task surfaces, tasks-mux routing, tool-mux dispatch, hooks-mux lifecycle wiring, MCP registration, and plugin registry ownership.
  * - Issue comments update the architecture: unified effect execution routes through tasks-mux (#633), not a standalone SDK executor.
- * - Matching existing infrastructure exists in SDK task/effect serialization, SDK runtime hooks, SDK MCP task tools, tasks-mux responder routing/backends, tool-mux ToolRegistry/ToolDispatcher/McpBridge/ToolHookBridge, hooks-mux normalized lifecycle APIs, agent-core DeferredToolRegistry, agent-platform McpToolRegistry/McpToolExecutor, and SDK/agent-mux plugin registries.
+ * - Matching existing infrastructure exists in SDK task/effect serialization, SDK runtime hooks, SDK MCP task tools, tasks-mux responder routing/backends, tool-mux ToolRegistry/ToolDispatcher/McpBridge/ToolHookBridge, hooks-mux normalized lifecycle APIs, agent-core DeferredToolRegistry, agent-platform McpToolRegistry/McpToolExecutor, and SDK/adapters plugin registries.
  * - Repo-local .a5c/process-library was not present while this plan was authored. Matching methodology references were found under /home/runner/.a5c/process-library/babysitter-repo/library: atdd-tdd, process-hardening, verification-before-completion, planning-with-files, sdk-architecture-design, sdk-testing-strategy, plugin-extension-architecture, and backward-compatibility-management.
  * - This process intentionally uses agent tasks instead of shell tasks to honor the repo-specific babysitter:call override. Verification agents still run concrete commands and report exact exit codes.
  *
@@ -282,7 +282,7 @@ export const readIssueAndReuseAuditTask = defineTask('issue-598/read-issue-and-r
       instructions: [
         `Run and read: gh issue view ${args.issueNumber} --json title,body,labels,comments`,
         `If #${args.issueNumber} is a PR rather than an issue, also run and read: gh pr view ${args.issueNumber} --json files,title,body,comments`,
-        'Read docs/agent-layer-gaps.md, docs/agent-reference/process-authoring.md, docs/agent-reference/command-surfaces.md, docs/agent-mux-babysitter-integrations/tasks-mux-routing.md, docs/agent-mux-babysitter-integrations/effect-resolution.md, docs/agent-mux-babysitter-integrations/external-agent-tasks.md, and docs/plugins.md.',
+        'Read docs/agent-layer-gaps.md, docs/agent-reference/process-authoring.md, docs/agent-reference/command-surfaces.md, docs/adapters-babysitter-integrations/tasks-mux-routing.md, docs/adapters-babysitter-integrations/effect-resolution.md, docs/adapters-babysitter-integrations/external-agent-tasks.md, and docs/plugins.md.',
         'Research process-library guidance. The prompt requested .a5c/process-library; if absent, record that fact and use the active user-level process-library under /home/runner/.a5c/process-library/babysitter-repo/library.',
         'Extract keyword nouns and verbs from the issue: SDK, effect execution, tasks-mux, tool-mux, hooks-mux, PreToolUse, PostToolUse, lifecycle, JSON Schema parameters, MCP, plugin registry, DeferredToolRegistry, McpToolRegistry, ToolDispatcher, McpBridge, TaskDef, callRuntimeHook.',
         'Scan for matching existing migrations, API routes, environment variables, SDK dependencies, imports, tests, registries, and runtime call sites.',
@@ -322,7 +322,7 @@ export const traceRuntimePathsTask = defineTask('issue-598/trace-runtime-paths',
         'Use the context and reuse audit below as source material.',
         JSON.stringify(args.context ?? {}, null, 2),
         'Do not edit files.',
-        'Trace file/function hops for: SDK ctx.task and task definition serialization; run iteration and task:post result commit; SDK MCP task discovery; tasks-mux responder routing and backends; tool-mux ToolRegistry, ToolDispatcher, McpBridge, and ToolHookBridge; agent-core DeferredToolRegistry/tool_fetch/tool_search; agent-platform McpToolRegistry/McpToolExecutor and orchestration effect paths; hooks-mux normalized lifecycle APIs and adapters; SDK runtime hook dispatch; SDK plugin registry and agent-mux plugin manager surfaces.',
+        'Trace file/function hops for: SDK ctx.task and task definition serialization; run iteration and task:post result commit; SDK MCP task discovery; tasks-mux responder routing and backends; tool-mux ToolRegistry, ToolDispatcher, McpBridge, and ToolHookBridge; agent-core DeferredToolRegistry/tool_fetch/tool_search; agent-platform McpToolRegistry/McpToolExecutor and orchestration effect paths; hooks-mux normalized lifecycle APIs and adapters; SDK runtime hook dispatch; SDK plugin registry and adapters plugin manager surfaces.',
         'Separate live call paths from documentation-only or stale design paths.',
         'Identify files that should not be edited because they are off path or belong to related but separate issues.',
       ],
@@ -360,7 +360,7 @@ export const authorIntegrationContractTask = defineTask('issue-598/author-integr
         'Define additive TaskDef/task.json JSON Schema parameter metadata needed for tool discovery and historical replay compatibility.',
         'Define how SDK MCP task discovery registers through tool-mux McpBridge and how tool-mux ToolDispatcher mediates concrete dispatch.',
         'Define a hooks-mux-backed ToolHookBridge for PreToolUse/PostToolUse and a mapping from SDK runtime lifecycle hooks to hooks-mux phases.',
-        'Define the plugin registry ownership boundary between SDK plugin registry flows and agent-platform/agent-mux plugin systems, including migration compatibility expectations.',
+        'Define the plugin registry ownership boundary between SDK plugin registry flows and agent-platform/adapters plugin systems, including migration compatibility expectations.',
         'State package dependency direction and any adapter/interface needed to avoid cycles.',
         'Set needsMaintainerDecision true only if a specific ambiguity cannot be resolved from issue comments and existing docs.',
       ],
@@ -500,7 +500,7 @@ export const implementPluginRegistrySliceTask = defineTask('issue-598/implement-
     name: 'plugin-registry-compatibility-implementer',
     prompt: {
       role: 'senior plugin platform engineer',
-      task: 'Reconcile SDK plugin registry responsibilities with platform and agent-mux plugin flows.',
+      task: 'Reconcile SDK plugin registry responsibilities with platform and adapters plugin flows.',
       instructions: [
         'Edit the repository directly, preserving unrelated worktree changes.',
         'Identify the minimal ownership boundary needed for issue #598. Do not rewrite unrelated marketplace or install flows.',
@@ -527,7 +527,7 @@ export const runVerificationGateTask = defineTask('issue-598/run-verification-ga
         'Run the verification commands listed below unless a command is unavailable. Record exact exit code, command, and a concise failure summary for every command.',
         JSON.stringify(args.verificationCommands ?? [], null, 2),
         'Also run git diff --check.',
-        'Run source audits that fail if the implementation adds a standalone SDK effect executor or direct agent-mux bypass for routable SDK effects.',
+        'Run source audits that fail if the implementation adds a standalone SDK effect executor or direct adapters bypass for routable SDK effects.',
         'Do not mark verification as passed unless all required commands and audits pass.',
         'If a command is skipped, provide the exact reason and residual risk.',
       ],
@@ -561,7 +561,7 @@ export const reviewImplementationTask = defineTask('issue-598/review-implementat
         'Use a code-review stance. Findings first, ordered by severity, with file and line references.',
         'Block on regressions in task replay compatibility, tasks-mux routing authority, tool-mux dispatch mediation, hooks-mux lifecycle semantics, MCP discovery, plugin registry compatibility, or package dependency cycles.',
         'Verify tests are meaningful and would fail on the previous behavior.',
-        'Verify source audits rule out standalone SDK executor drift and direct agent-mux bypasses for routable task effects.',
+        'Verify source audits rule out standalone SDK executor drift and direct adapters bypasses for routable task effects.',
         JSON.stringify({ contract: args.contract, tests: args.tests, verification: args.verification }, null, 2),
       ],
     },

@@ -223,7 +223,7 @@ SUBAGENT_SOURCES = [
 SOURCE_REFS_SPLIT = {
     "source-refs-agent-products.yaml": ["source-ref:zed-app","source-ref:windsurf-app","source-ref:openhands","source-ref:warp-app","source-ref:cline-app"],
     "source-refs-mcp-servers.yaml": ["source-ref:context7-mcp","source-ref:tavily-mcp","source-ref:firecrawl-mcp"],
-    "source-refs-babysitter.yaml": ["source-ref:babysitter-plugin","source-ref:babysitter-codex-plugin","source-ref:babysitter-process-library","source-ref:babysitter-articles","source-ref:babysitter-agent-mux-reference","source-ref:babysitter-sdk"],
+    "source-refs-babysitter.yaml": ["source-ref:babysitter-plugin","source-ref:babysitter-codex-plugin","source-ref:babysitter-process-library","source-ref:babysitter-articles","source-ref:babysitter-adapters-reference","source-ref:babysitter-sdk"],
 }
 SOURCE_REF_SOURCES = [
     "sourceref-scope/source-refs/wave-5-source-refs.yaml",

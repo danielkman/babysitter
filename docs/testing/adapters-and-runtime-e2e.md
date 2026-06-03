@@ -6,7 +6,7 @@ last_updated: 2026-05-07
 
 # Agent Mux And Runtime E2E
 
-This strategy covers runtime paths after setup is already satisfied. It separates agent-mux sessions, transport carriers, tula-core programmatic sessions, and `@a5c-ai/tula-platform` orchestration. Harness/plugin install coverage lives in [Harness And Plugin E2E](./harness-e2e.md), not in agent-platform runtime E2E.
+This strategy covers runtime paths after setup is already satisfied. It separates adapters sessions, transport carriers, tula-core programmatic sessions, and `@a5c-ai/tula-platform` orchestration. Harness/plugin install coverage lives in [Harness And Plugin E2E](./harness-e2e.md), not in agent-platform runtime E2E.
 
 ## Stack Scopes
 
@@ -14,8 +14,8 @@ This strategy covers runtime paths after setup is already satisfied. It separate
 | --- | --- | --- | --- |
 | Protocol and event contracts | `packages/adapters/core`, `packages/adapters/gateway`, `packages/transport-mux` | Schema, event ordering, session lifecycle, error envelopes, reconnect behavior | Real event streams from Codex and Claude Code sessions match protocol contracts |
 | Adapter translation | `packages/adapters/adapters` | Prompt normalization, tool-call mapping, stop reasons, model selection, fallback behavior with mock adapters | Live Codex and Claude Code adapters translate real provider output into mux events |
-| Transport runtime | `packages/transport-mux` | Route matrix, proxy auth, protocol codecs, runtime env injection, passthrough forwarding, subprocess lifecycle, stream cancellation, timeout/error paths, metrics/cache snapshots | Transport-mux carries traffic for a real external harness through agent-mux launch and for an tula-core-backed stream |
-| Agent-core bridge | `packages/tula/core` | Programmatic session creation, mock provider responses, cancellation, usage accounting | Agent-core invokes a real provider and returns events compatible with agent-mux and agent-platform |
+| Transport runtime | `packages/transport-mux` | Route matrix, proxy auth, protocol codecs, runtime env injection, passthrough forwarding, subprocess lifecycle, stream cancellation, timeout/error paths, metrics/cache snapshots | Transport-mux carries traffic for a real external harness through adapters launch and for an tula-core-backed stream |
+| Agent-core bridge | `packages/tula/core` | Programmatic session creation, mock provider responses, cancellation, usage accounting | Agent-core invokes a real provider and returns events compatible with adapters and agent-platform |
 | Hooks muxes | `packages/adapters/hooks/*` | Adapter normalization, hook payload fixtures, CLI execution, approval/deny/error events | Real harness hook payloads from Codex and Claude Code normalize to the same hook contract |
 | Babysitter-agent runtime | `packages/tula/platform` | Seam contract, phase orchestration, planner/executor mocks, run journal state, task posting, selected backend | `agent-platform call/create-run/invoke` uses preinstalled or mocked backends; no harness install or plugin install steps are part of this E2E |
 | User surfaces | `packages/adapters/webui`, `packages/adapters/ui`, `packages/adapters/tui` | Playwright/Vitest against mock gateway and fixture sessions | Optional manual/live smoke against a model-backed gateway session |
@@ -26,8 +26,8 @@ The no-model runtime suite should be built first. It should include:
 
 - `transport-mux` unit and E2E tests using local HTTP/subprocess fixtures for every supported exposed transport route.
 - `transport-mux` runtime tests for `startTransportMuxRuntime`, `applyTransportMuxToHarnessEnv`, proxy auth, redacted env diffs, metrics, cache stats, passthrough path/query preservation, invalid JSON, and upstream failure mapping.
-- `agent-mux` launch-plan tests for proxy forced, proxy if-needed, native/no-proxy, and proxy-forbidden cases so launch coverage proves the transport-mux decision seam.
-- `agent-mux` gateway/session tests using existing mock harness scenarios.
+- `adapters` launch-plan tests for proxy forced, proxy if-needed, native/no-proxy, and proxy-forbidden cases so launch coverage proves the transport-mux decision seam.
+- `adapters` gateway/session tests using existing mock harness scenarios.
 - Adapter translation tests for Codex, Claude Code, and tula-core-style event streams.
 - `agent-platform` seam and orchestration tests with mocked planner/executor calls.
 - WebUI and TUI session tests using fixture transcripts and mock gateway responses.
@@ -47,7 +47,7 @@ npm run test:e2e --workspace=@a5c-ai/tula-webui
 
 ## Transport-Mux Coverage Matrix
 
-Transport-mux coverage has to prove the proxy/runtime seam directly before it is used as evidence for agent-mux or agent-platform paths.
+Transport-mux coverage has to prove the proxy/runtime seam directly before it is used as evidence for adapters or agent-platform paths.
 
 ### No-Model Transport Coverage
 
@@ -66,7 +66,7 @@ Transport-mux coverage has to prove the proxy/runtime seam directly before it is
 | --- | --- | --- |
 | Tula-core stream bridge | `tula-core` provider backend -> transport-mux -> fixture consumer | Real or credential-gated stream deltas, final event, cancellation/timeout, and usage metadata survive the proxy layer |
 | External harness bridge | `adapters launch <harness> <provider> --with-proxy*` -> transport-mux -> target provider | Harness receives proxy env, provider endpoint is not called directly by the harness, sentinel prompt completes, metrics show traffic |
-| Babysitter-agent precondition bridge | `agent-platform` external-harness path only when it delegates through agent-mux and the selected harness requires proxy translation | Transport-mux artifacts are supporting evidence for the bridge, while Babysitter run creation/task posting remains asserted by agent-platform tests |
+| Babysitter-agent precondition bridge | `agent-platform` external-harness path only when it delegates through adapters and the selected harness requires proxy translation | Transport-mux artifacts are supporting evidence for the bridge, while Babysitter run creation/task posting remains asserted by agent-platform tests |
 
 ### Invalid Transport Claims
 
@@ -81,7 +81,7 @@ Transport-mux coverage has to prove the proxy/runtime seam directly before it is
 The `Publish` workflow runs external-harness live E2E through a workflow-owned install-mode axis:
 
 - `babysitter-plugin` generates plugin artifacts, installs the target with `adapters install`, installs the local Babysitter SDK, installs the Babysitter plugin for the harness, then launches through `adapters launch` with a `/babysitter:call` prompt.
-- `vanilla` installs the target with `adapters install`, launches through `adapters launch`, and uses a non-plugin prompt so it proves agent-mux/transport/provider behavior; the vanilla `agent-platform` rows use the `babysitter` adapter with `BABYSITTER_HARNESS=tula-core`.
+- `vanilla` installs the target with `adapters install`, launches through `adapters launch`, and uses a non-plugin prompt so it proves adapters/transport/provider behavior; the vanilla `agent-platform` rows use the `babysitter` adapter with `BABYSITTER_HARNESS=tula-core`.
 - Both modes use the same target mapping: `claude-code -> claude`, `codex -> codex`, `gemini-cli -> gemini`, `pi -> pi`, and vanilla-only `agent-platform -> babysitter`.
 
 ## Model-Backed Runtime Suite
@@ -90,7 +90,7 @@ The model-backed suite should prove that real providers and real harnesses behav
 
 | Test | Required real dependency | Assertion focus |
 | --- | --- | --- |
-| Transport-mux + external harness through agent-mux | Claude Code or Codex-compatible harness, provider credential, and `adapters launch --with-proxy` or `--with-proxy-if-needed` | Launch starts transport-mux, harness receives proxy env, sentinel traffic uses proxy routes, stream completes, metrics snapshot increments |
+| Transport-mux + external harness through adapters | Claude Code or Codex-compatible harness, provider credential, and `adapters launch --with-proxy` or `--with-proxy-if-needed` | Launch starts transport-mux, harness receives proxy env, sentinel traffic uses proxy routes, stream completes, metrics snapshot increments |
 | Transport-mux + tula-core | Provider credential for tula-core backend | Agent-core deltas/final events travel through transport-mux without adapter-only assumptions, including cancellation or timeout evidence |
 | Agent-mux + Codex adapter | Codex CLI or configured Codex runtime and OpenAI credential | Codex output maps to mux protocol events, including final message and usage metadata when available |
 | Agent-mux + Claude Code adapter | Claude Code CLI plus Foundry/OpenAI credential through transport-mux | Claude Code output maps to mux protocol events while model traffic is proxied to GPT-5.5, including tool-call and stop metadata when available |
@@ -104,10 +104,10 @@ Runtime tests must declare which entry path they exercise:
 
 | Path | Entry point | Valid backend combinations | Assertions |
 | --- | --- | --- | --- |
-| Agent-mux session | `adapters run <agent>` or `createClient().run` | Mock adapter, Claude, Codex, Gemini, Cursor, OpenCode, agent-mux `babysitter` adapter where registered | Session start/end, event ordering, provider/model config, runtime hooks, capability-gated plugin events |
+| Agent-mux session | `adapters run <agent>` or `createClient().run` | Mock adapter, Claude, Codex, Gemini, Cursor, OpenCode, adapters `babysitter` adapter where registered | Session start/end, event ordering, provider/model config, runtime hooks, capability-gated plugin events |
 | Babysitter-agent internal runtime | `agent-platform call/create-run --harness tula-core` | Tula-core backend with mocked or live model provider | Run creation, planning, task posting, terminal state, redacted model trace |
 | Babysitter-agent external-harness bridge | `agent-platform call/invoke --harness <external>` | Harness names mapped in `amuxHarnessMap`; excludes `pi` and `tula-core` | Agent-mux mapped events, session ID, result, selected harness, no install commands |
-| Transport runtime | transport-mux around tula-core or agent-mux-launched external harness traffic | Local route fixture, tula-core stream, external harness stream | Route/codec contract, proxy auth, env injection, launch proxy decision, framing, reconnect, cancellation, timeout, backpressure, metrics/cache artifact |
+| Transport runtime | transport-mux around tula-core or adapters-launched external harness traffic | Local route fixture, tula-core stream, external harness stream | Route/codec contract, proxy auth, env injection, launch proxy decision, framing, reconnect, cancellation, timeout, backpressure, metrics/cache artifact |
 
 Do not fold plugin setup into the agent-platform runtime assertions. If a runtime job needs an installed external harness or plugin, that is a precondition supplied by a setup job and recorded separately.
 
@@ -146,6 +146,6 @@ Hooks-mux tests should cover both adapter-local behavior and end-to-end event co
 - CLI execution preserves stdin/stdout/stderr boundaries and exit codes,
 - approval, denial, timeout, and malformed-payload cases are fixture-backed,
 - Codex and Claude Code live hook payloads can be redacted and replayed as no-model fixtures,
-- agent-mux UI and TUI approval surfaces consume the same normalized hook events.
+- adapters UI and TUI approval surfaces consume the same normalized hook events.
 
 Hooks-mux live coverage should not be promoted until the no-model fixture suite covers the same event types.

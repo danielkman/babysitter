@@ -10,7 +10,7 @@ This meta-package re-exports `@a5c-ai/comm-adapter`, `@a5c-ai/adapters-codecs`, 
 npm install @a5c-ai/adapters
 ```
 
-The `agent-mux` CLI is available via this package (`npx agent-mux --help`).
+The `adapters` CLI is available via this package (`npx adapters --help`).
 
 Requires Node.js >= 20.9.0. ESM-first.
 
@@ -25,7 +25,7 @@ for await (const event of client.run({ agent: 'claude-code', prompt: 'hello' }))
 }
 ```
 
-See the [repository README](https://github.com/a5c-ai/agent-mux#readme) for the full guide.
+See the [repository README](https://github.com/a5c-ai/adapters#readme) for the full guide.
 
 ## License
 

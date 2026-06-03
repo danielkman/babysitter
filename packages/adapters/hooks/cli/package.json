@@ -7,7 +7,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "agent-mux-hooks": "dist/cli/main.js",
+    "adapters-hooks": "dist/cli/main.js",
     "a5c-hooks-mux": "dist/cli/a5c-hooks-mux.js"
   },
   "publishConfig": {

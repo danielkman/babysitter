@@ -99,7 +99,7 @@ export function GatewaySection({ org, gateway }) {
               type="url"
               value={url}
               onChange={e => setUrl(e.target.value)}
-              placeholder="https://agent-mux.example.com"
+              placeholder="https://adapters.example.com"
               required
               aria-required="true"
               style={inputStyle}

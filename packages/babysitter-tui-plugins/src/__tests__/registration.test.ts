@@ -2,7 +2,7 @@
  * Tests that plugins register the expected views, event renderers, and commands.
  *
  * Uses a mock TuiContext to capture registrations without needing a real
- * agent-mux client.
+ * adapters client.
  */
 
 import { describe, it, expect, vi } from 'vitest';

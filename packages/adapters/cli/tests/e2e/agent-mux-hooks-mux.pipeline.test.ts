@@ -15,7 +15,7 @@ interface MatrixLane {
 
 const matrixIt = process.env['AGENT_MUX_HOOKS_MUX_MATRIX'] === '1' ? it : it.skip;
 
-describe('agent-mux hooks-mux no-SDK wiring matrix', () => {
+describe('adapters hooks-mux no-SDK wiring matrix', () => {
   let cwd: string;
   let home: string;
   const previousCwd = process.cwd();
@@ -126,7 +126,7 @@ function restoreEnv(name: string, value: string | undefined): void {
 }
 
 function resolveEvidenceDir(repoRoot: string, configuredDir: string | undefined): string {
-  if (!configuredDir) return path.join(repoRoot, 'artifacts', 'agent-mux-hooks-mux');
+  if (!configuredDir) return path.join(repoRoot, 'artifacts', 'adapters-hooks-mux');
   return path.isAbsolute(configuredDir) ? configuredDir : path.join(repoRoot, configuredDir);
 }
 

@@ -1,6 +1,6 @@
 /**
  * @process repo/issue-636-hooks-mux-missing-events
- * @description Implement issue #636: complete and verify the 13 missing/partial hook event surfaces across hooks-mux, agent-mux runtime hooks, SDK, and docs.
+ * @description Implement issue #636: complete and verify the 13 missing/partial hook event surfaces across hooks-mux, adapters runtime hooks, SDK, and docs.
  * @inputs { issueNumber: number, baseBranch: string, branchName: string, targetEvents: object[], targetFiles: string[], verificationCommands: string[] }
  * @outputs { success: boolean, phases: string[], changedFiles: string[], verification: object, review: object, delivery: object }
  *
@@ -11,7 +11,7 @@
  * - Issue #636 has prior merged planning/implementation PRs (#643, #696), an open refreshed plan PR (#720), and a later issue-thread comment saying
  *   implementation tracking moved to PRs. Treat issue status and PR state as part of the first-phase audit before executing implementation work.
  * - Matching existing infrastructure found in hooks-mux canonical lifecycle types, Claude adapter catalog-backed mappings, normalizer/renderer tests,
- *   atlas hook mappings, agent-catalog SDK descriptors, agent-mux Claude runtime hook shim/socket registration, SDK runtime hook dispatch,
+ *   atlas hook mappings, agent-catalog SDK descriptors, adapters Claude runtime hook shim/socket registration, SDK runtime hook dispatch,
  *   task intrinsic/result commit paths, and agent-platform orchestration effects.
  * - `.a5c/process-library/` was not present in this checkout when this plan was refreshed; matching process-library methodology guidance was found under
  *   `library/methodologies/atdd-tdd/atdd-tdd.js`, `library/methodologies/process-hardening/process-hardening-patterns.js`, and
@@ -63,9 +63,9 @@ const readIssueAndReuseAuditTask = defineTask('issue-636.read-issue-and-reuse-au
         'Check the latest issue-thread state, including whether the issue was closed as tracked elsewhere, before deciding whether execution should continue, narrow scope, or only refresh stale docs/tests.',
         'Research process-library guidance. The prompt requested .a5c/process-library/; if that directory is absent, record that fact and use the checked-in library/ methodologies that match this task.',
         'Run the repo-specific plan reuse audit from docs/agent-reference/process-authoring.md before drafting implementation work.',
-        'Extract keyword nouns and verbs from the issue and scan existing migrations, APIs, SDK dependencies, imports, atlas hook mappings, canonical phase types, adapters, normalizers, renderers, CLI invoke tests, agent-mux Claude runtime hook shim/socket registration, SDK runtime hook dispatch, task effect handling, and instruction discovery code.',
+        'Extract keyword nouns and verbs from the issue and scan existing migrations, APIs, SDK dependencies, imports, atlas hook mappings, canonical phase types, adapters, normalizers, renderers, CLI invoke tests, adapters Claude runtime hook shim/socket registration, SDK runtime hook dispatch, task effect handling, and instruction discovery code.',
         'Render a section exactly titled: Reuse-audit findings (REVIEW BEFORE PROCEEDING). Include matching existing infrastructure and note explicitly if no matching infrastructure exists for a target surface.',
-        'Produce a current-state support matrix for every target event with columns: canonical phase, atlas/catalog mapping, hooks-mux core, Claude adapter normalize/render, CLI invoke, agent-mux runtime registration, S../platform emission, docs status, and test coverage.',
+        'Produce a current-state support matrix for every target event with columns: canonical phase, atlas/catalog mapping, hooks-mux core, Claude adapter normalize/render, CLI invoke, adapters runtime registration, S../platform emission, docs status, and test coverage.',
         'Do not edit files.',
         'Return JSON: { title, labels, issueBody, comments, priorPRs, referencedDocs, processLibraryFindings, reuseAudit, currentStateMatrix, acceptanceCriteria, eventInventory, likelyFiles, knownAmbiguities, nonGoals }.',
       ],
@@ -91,7 +91,7 @@ const reconcileContractTask = defineTask('issue-636.reconcile-hook-contract', (a
         JSON.stringify(args.context, null, 2),
         'Target events from process inputs:',
         JSON.stringify(args.targetEvents, null, 2),
-        'Reconcile docs/agent-stack/hooks/missing-events.md with the current-state matrix, atlas graph mappings under packages/atlas/graph/channels-hooks/, generated agent-catalog descriptor behavior, and agent-mux Claude runtime hook registration.',
+        'Reconcile docs/agent-stack/hooks/missing-events.md with the current-state matrix, atlas graph mappings under packages/atlas/graph/channels-hooks/, generated agent-catalog descriptor behavior, and adapters Claude runtime hook registration.',
         'Pay special attention to known conflicts: PostToolUseFailure blockability, PostToolBatch blockability, and ConfigChange canonical spelling (session.config_changed vs session.config_change).',
         'For each event, define canonical phase, native name, scope, block capability, mutation/additionalContext support, payload keys, matcher fields, renderer behavior, and whether runtime emission outside hooks-mux is required.',
         'Prefer existing canonical names in docs/agent-stack/hooks/missing-events.md when atlas data conflicts, but flag any conflict that could break generated catalog consumers.',
@@ -120,7 +120,7 @@ const authorRegressionTestsTask = defineTask('issue-636.author-regression-tests'
         'Edit only test files, fixture files, and generated snapshot/metadata fixtures in this task.',
         'Use the reconciled contract below:',
         JSON.stringify(args.contract, null, 2),
-        'Cover canonical phase union validity, Claude mapping presence, block/mutation capabilities, payload normalization, renderer behavior for blockable/non-blockable outputs, CLI invoke inference where applicable, agent-mux Claude runtime hook registration/socket dispatch, and compatibility fixtures.',
+        'Cover canonical phase union validity, Claude mapping presence, block/mutation capabilities, payload normalization, renderer behavior for blockable/non-blockable outputs, CLI invoke inference where applicable, adapters Claude runtime hook registration/socket dispatch, and compatibility fixtures.',
         'Add tests in existing co-located suites rather than creating a new harness unless current structure requires it.',
         'Tests should prove real remaining gaps from issue #636. If a target event is already covered on staging, record the existing evidence instead of duplicating tests.',
         'Do not implement production code in this task.',
@@ -201,7 +201,7 @@ const verifyTask = defineTask('issue-636.verify', (args, taskCtx) => ({
       instructions: [
         'Run the verification commands exactly as listed unless a command is unavailable; if unavailable, record the exact blocker and choose the closest targeted command.',
         JSON.stringify(args.verificationCommands, null, 2),
-        'At minimum verify hooks-mux build/test/lint, agent-mux build or targeted runtime-hook tests when agent-mux surfaces changed, SDK build/test for runtime emission changes, metadata/catalog generation checks, and git diff --check.',
+        'At minimum verify hooks-mux build/test/lint, adapters build or targeted runtime-hook tests when adapters surfaces changed, SDK build/test for runtime emission changes, metadata/catalog generation checks, and git diff --check.',
         'Read full command output, record exit codes, and count failures. Do not summarize a failing command as passed.',
         'Also verify that every target event has explicit test coverage or recorded existing evidence, and that coverage-matrix/missing-events docs remain accurate or are updated if implementation changes their status.',
         'Return JSON: { passed, commandResults, eventCoverage, docsStatus, evidenceGaps, changedFiles }.',
@@ -298,7 +298,7 @@ export async function process(inputs, ctx) {
     'npm run build:hooks-mux',
     'npm run test:hooks-mux',
     'npm run lint:hooks-mux',
-    'npm run build:agent-mux',
+    'npm run build:adapters',
     'npm run build:sdk',
     'npm run test:sdk',
     'npm run verify:metadata',

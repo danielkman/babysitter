@@ -283,7 +283,7 @@ export const reuseAuditTask = defineTask('issue-608.reuse-audit', (args, taskCtx
       instructions: [
         'Extract keyword nouns and verbs from issue #608: staging, env vars, ANTHROPIC_API_KEY, KRADLE_ASSISTANT_API_KEY, KRADLE_GITEA_HTTP_URL, KRADLE_GITEA_TOKEN, AGENT_MUX_URL, AGENT_GATEWAY_URL, Helm, chart, values, deployments, secrets.',
         'Search for matching chart values, deployment env blocks, Kubernetes secrets, API routes, SDK dependencies, docs, tests, and imports.',
-        'Read at minimum packages/kradle/docs/gaps/staging-status.md, packages/kradle/docs/gaps/infrastructure-deps.md, packages/kradle/charts/values.yaml, packages/kradle/charts/templates/deployments.yaml, packages/kradle/charts/templates/gitea.yaml, packages/kradle/core/src/gitea-service.js, packages/kradle/core/src/assistant-runtime.js, packages/kradle/core/src/agent-mux-client.js, and packages/kradle/web/app/api/orgs/[org]/snapshot/route.js.',
+        'Read at minimum packages/kradle/docs/gaps/staging-status.md, packages/kradle/docs/gaps/infrastructure-deps.md, packages/kradle/charts/values.yaml, packages/kradle/charts/templates/deployments.yaml, packages/kradle/charts/templates/gitea.yaml, packages/kradle/core/src/gitea-service.js, packages/kradle/core/src/assistant-runtime.js, packages/kradle/core/src/adapters-client.js, and packages/kradle/web/app/api/orgs/[org]/snapshot/route.js.',
         'Render a "Reuse-audit findings (REVIEW BEFORE PROCEEDING)" section in the output.',
         'Do not read or print secret values. Record only secret names, key names, and whether references exist.',
         'Return JSON: { findingsMarkdown, matchingInfrastructure, missingInfrastructure, envVarMatrix, reusableTests, noNewInfrastructureNeeded, filesRead }.',

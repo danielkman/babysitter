@@ -1,5 +1,5 @@
 /**
- * @process agent-mux/model-catalog
+ * @process adapters/model-catalog
  * @description Brownfield implementation and verification workflow for unified model catalog and model configuration management.
  * @skill babysitter:plan plugins/babysitter/skills/plan/SKILL.md
  * @skill babysitter:retrospect plugins/babysitter/skills/retrospect/SKILL.md
@@ -105,7 +105,7 @@ const planTask = defineTask('plan-model-catalog', (args, taskCtx) => ({
     name: 'general-purpose',
     prompt: {
       role: 'Senior TypeScript monorepo engineer',
-      task: 'Plan the brownfield implementation for unified model catalog and model configuration management in agent-mux without changing scope.',
+      task: 'Plan the brownfield implementation for unified model catalog and model configuration management in adapters without changing scope.',
       context: {
         projectRoot: args.projectRoot,
         specVerbatim: args.specVerbatim,
@@ -300,7 +300,7 @@ const reviewTask = defineTask('acceptance-review', (args, taskCtx) => ({
 }));
 
 export async function process(inputs = {}, ctx) {
-  const projectRoot = inputs.projectRoot ?? 'C:/work/agent-mux';
+  const projectRoot = inputs.projectRoot ?? 'C:/work/adapters';
   const specPath = inputs.specPath ?? 'todos.md';
   const maxAttempts = inputs.maxAttempts ?? 2;
 

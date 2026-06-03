@@ -26,10 +26,10 @@ describe('resolveStoragePaths', () => {
       expect(result.configDir).toBe(path.resolve('/option/config'));
     });
 
-    it('defaults to ~/.agent-mux when no override', () => {
+    it('defaults to ~/.adapters when no override', () => {
       vi.stubEnv('AGENT_MUX_CONFIG_DIR', '');
       const result = resolveStoragePaths();
-      expect(result.configDir).toBe(path.join(os.homedir(), '.agent-mux'));
+      expect(result.configDir).toBe(path.join(os.homedir(), '.adapters'));
     });
   });
 
@@ -53,13 +53,13 @@ describe('resolveStoragePaths', () => {
       expect(result.projectConfigDir).toBe(path.resolve('/option/project'));
     });
 
-    it('defaults to cwd/.agent-mux when no .agent-mux dir found', () => {
+    it('defaults to cwd/.adapters when no .adapters dir found', () => {
       vi.stubEnv('AGENT_MUX_PROJECT_DIR', '');
       const result = resolveStoragePaths();
-      // The walk-up may or may not find a .agent-mux dir;
-      // it should always return an absolute path ending in .agent-mux
+      // The walk-up may or may not find a .adapters dir;
+      // it should always return an absolute path ending in .adapters
       expect(path.isAbsolute(result.projectConfigDir)).toBe(true);
-      expect(result.projectConfigDir).toMatch(/\.agent-mux$/);
+      expect(result.projectConfigDir).toMatch(/\.adapters$/);
     });
   });
 

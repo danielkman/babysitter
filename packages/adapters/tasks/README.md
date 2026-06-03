@@ -13,10 +13,10 @@ npx --yes @a5c-ai/tasks-adapter --help
 
 ## CLI
 
-The published executable is `agent-mux-tasks`. The supported consumer workflow is either:
+The published executable is `adapters-tasks`. The supported consumer workflow is either:
 
 - run the published package with `npx --yes @a5c-ai/tasks-adapter ...`
-- install `@a5c-ai/tasks-adapter` and invoke `agent-mux-tasks ...`
+- install `@a5c-ai/tasks-adapter` and invoke `adapters-tasks ...`
 
 ```bash
 npx --yes @a5c-ai/tasks-adapter --help
@@ -28,33 +28,33 @@ npx --yes @a5c-ai/tasks-adapter server start
 If the published package is already installed locally or globally, use the bin directly:
 
 ```bash
-agent-mux-tasks --help
-agent-mux-tasks auth server set https://tasks-mux.a5c.ai
-agent-mux-tasks auth login
+adapters-tasks --help
+adapters-tasks auth server set https://tasks-mux.a5c.ai
+adapters-tasks auth login
 ```
 
 Current CLI commands:
 
-- `agent-mux-tasks ask`
-- `agent-mux-tasks responders list`
-- `agent-mux-tasks responders show <responderId>`
-- `agent-mux-tasks breakpoints pending --responder <responderId>`
-- `agent-mux-tasks breakpoints answer <breakpointId> --answer <text> --responder <responderId> [--confidence <0-100>]`
-- `agent-mux-tasks breakpoints status <breakpointId>`
-- `agent-mux-tasks breakpoints poll <breakpointId> [--timeout <seconds>] [--interval <seconds>]`
-- `agent-mux-tasks tasks search [--query <text>] [--status <csv>] [--priority <csv>] [--assignee <id>]`
-- `agent-mux-tasks tasks assign <taskId> --assignee <id> [--assignee-name <name>]`
-- `agent-mux-tasks tasks approve <taskId> --responder <id> --responder-name <name> --text <text>`
-- `agent-mux-tasks tasks close <taskId> [--message <text>]`
-- `agent-mux-tasks tasks cancel <taskId>`
-- `agent-mux-tasks tasks transition <taskId> --status <status> [--message <text>]`
-- `agent-mux-tasks tasks comment <taskId> --author <id> --text <text>`
-- `agent-mux-tasks tasks bulk --ids <csv> --action <approve|close|cancel|reassign|transition>`
-- `agent-mux-tasks tasks stats`
-- `agent-mux-tasks tasks export`
-- `agent-mux-tasks responder-loop --responder <responderId> [--interval <seconds>] [--once]`
-- `agent-mux-tasks server start`
-- `agent-mux-tasks auth login|logout|status|server set|server clear|token set|token clear|keygen|key-push|keys`
+- `adapters-tasks ask`
+- `adapters-tasks responders list`
+- `adapters-tasks responders show <responderId>`
+- `adapters-tasks breakpoints pending --responder <responderId>`
+- `adapters-tasks breakpoints answer <breakpointId> --answer <text> --responder <responderId> [--confidence <0-100>]`
+- `adapters-tasks breakpoints status <breakpointId>`
+- `adapters-tasks breakpoints poll <breakpointId> [--timeout <seconds>] [--interval <seconds>]`
+- `adapters-tasks tasks search [--query <text>] [--status <csv>] [--priority <csv>] [--assignee <id>]`
+- `adapters-tasks tasks assign <taskId> --assignee <id> [--assignee-name <name>]`
+- `adapters-tasks tasks approve <taskId> --responder <id> --responder-name <name> --text <text>`
+- `adapters-tasks tasks close <taskId> [--message <text>]`
+- `adapters-tasks tasks cancel <taskId>`
+- `adapters-tasks tasks transition <taskId> --status <status> [--message <text>]`
+- `adapters-tasks tasks comment <taskId> --author <id> --text <text>`
+- `adapters-tasks tasks bulk --ids <csv> --action <approve|close|cancel|reassign|transition>`
+- `adapters-tasks tasks stats`
+- `adapters-tasks tasks export`
+- `adapters-tasks responder-loop --responder <responderId> [--interval <seconds>] [--once]`
+- `adapters-tasks server start`
+- `adapters-tasks auth login|logout|status|server set|server clear|token set|token clear|keygen|key-push|keys`
 
 The `tasks` command group is backed by the local git-native backend and supports additive task-management fields on breakpoint JSON: `priority`, `dependsOn`, `assigneeId`, comments, history, audit log, metrics, and redacted export data. Existing breakpoint files without these fields remain valid.
 

@@ -34,7 +34,7 @@
     "636": {
       "title": "hooks-mux: implement 13 missing hook events (tool, turn, task, session lifecycle)",
       "relationship": "Issue #636 is related and partly foundational for missing events/matcher patterns; it blocks or informs #637.",
-      "summary": "Reconcile canonical hook event contract across hooks-mux, atlas/catalog data, agent-mux, SDK runtime hooks, and agent-platform dispatch. Runtime emission support must be separated from mapping-only support."
+      "summary": "Reconcile canonical hook event contract across hooks-mux, atlas/catalog data, adapters, SDK runtime hooks, and agent-platform dispatch. Runtime emission support must be separated from mapping-only support."
     }
   },
   "reuseAuditScanRoots": [

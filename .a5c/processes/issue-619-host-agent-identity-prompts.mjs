@@ -6,7 +6,7 @@
  *
  * References used while authoring:
  * - docs/agent-reference/process-authoring.md
- * - docs/agent-mux-babysitter-integrations/plugin-mode.md
+ * - docs/adapters-babysitter-integrations/plugin-mode.md
  * - .a5c/processes/sdk-runtime-bugfix.js
  * - .a5c/processes/issue-170-claude-code-run-create-first-iteration.mjs
  * - /home/runner/.a5c/process-library/babysitter-repo/library/tdd-quality-convergence.js
@@ -235,7 +235,7 @@ export const readIssueContextTask = defineTask('issue-619.read-issue-context', (
         `If #${args.inputs.issueNumber} is a PR rather than an issue, also run: gh pr view ${args.inputs.issueNumber} --json files,title,body,comments`,
         'Use the issue body, all comments, and labels as the source of truth. Preserve enough raw issue/comment text for downstream prompt reviewers to compare directly.',
         'Read related issues listed in inputs only enough to preserve boundaries and sequencing. Do not expand this run into unrelated external-agent discovery, task cancellation, or subprocess support work.',
-        'Read docs/agent-mux-babysitter-integrations/plugin-mode.md section 6 and use it as design context.',
+        'Read docs/adapters-babysitter-integrations/plugin-mode.md section 6 and use it as design context.',
         'Include the reuse-audit findings in the output and note any existing infrastructure that should be reused.',
         'Return JSON: { title, labels, rawIssue, comments, relatedIssues, acceptanceCriteria, implementationHints, nonGoals, priority, risks, targetFilesFromIssue, reuseAuditSummary }.',
       ],

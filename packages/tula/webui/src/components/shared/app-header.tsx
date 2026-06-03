@@ -7,7 +7,7 @@ import { LogoWordmark } from "@a5c-ai/compendium";
 import { Bell, Columns3, Github, Menu, Moon, Settings2, Sun, Wifi, WifiOff } from "lucide-react";
 
 import { Button } from "@a5c-ai/compendium";
-import { useGatewayAuth } from "@/components/agent-mux/gateway-provider";
+import { useGatewayAuth } from "@/components/adapters/gateway-provider";
 import { NotificationPanel } from "@/components/notifications/notification-panel";
 import { useNotificationContext } from "@/components/notifications/notification-provider";
 import { useEventStream } from "@/hooks/use-event-stream";
@@ -47,7 +47,7 @@ export function AppHeader() {
                   <span className="text-sm font-semibold tracking-tight">Kanban</span>
                 </div>
                 <div className="truncate text-xs text-foreground-muted">
-                  agent-mux sessions + babysitter dispatches
+                  adapters sessions + babysitter dispatches
                 </div>
               </div>
             </Link>

@@ -1,4 +1,4 @@
-# agent-mux Implementation Process
+# adapters Implementation Process
 
 ## Overview
 

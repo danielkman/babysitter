@@ -415,7 +415,7 @@ export function DispatchDetailPage(): JSX.Element {
             <strong>The gateway is terminating this dispatch now.</strong>
             <p className="muted-copy mt-2">
               Subprocess-backed dispatches receive a terminate signal and are force-killed if they do not exit.
-              In-process agent-mux loops are aborted through the same control path.
+              In-process adapters loops are aborted through the same control path.
             </p>
           </div>
         ) : null}

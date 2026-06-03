@@ -1,5 +1,5 @@
 nodeKind: PackageSurface
-id: package:a5c-ai-agent-mux-tui
+id: package:a5c-ai-adapters-tui
 attributes:
   packageId: "@a5c-ai/tula-tui"
   packageName: "@a5c-ai/tula-tui"
@@ -13,8 +13,8 @@ attributes:
   versionPolicy: semver
 edges:
   references_path:
-    - target: path:agent-mux-tui
+    - target: path:adapters-tui
   exposes_subcommand:
-    - target: interaction-primitive:agent-mux-tui-command-palette
-    - target: interaction-primitive:agent-mux-tui-prompt-input
-    - target: interaction-primitive:agent-mux-tui-model-picker
+    - target: interaction-primitive:adapters-tui-command-palette
+    - target: interaction-primitive:adapters-tui-prompt-input
+    - target: interaction-primitive:adapters-tui-model-picker

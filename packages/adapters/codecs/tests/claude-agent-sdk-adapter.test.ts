@@ -120,7 +120,7 @@ describe('ClaudeAgentSdkAdapter', () => {
     expect(adapter.configSchema.supportsProjectConfig).toBe(true);
   });
 
-  it('maps a real SDK message stream into agent-mux events', async () => {
+  it('maps a real SDK message stream into adapters events', async () => {
     const run = adapter.execute({
       agent: 'claude-agent-sdk',
       prompt: 'say hello',

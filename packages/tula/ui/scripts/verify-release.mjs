@@ -102,7 +102,7 @@ function main() {
     packEntries,
   });
 
-  console.log('agent-mux-ui release verification passed');
+  console.log('adapters-ui release verification passed');
 }
 
 if (process.argv[1] === __filename) {

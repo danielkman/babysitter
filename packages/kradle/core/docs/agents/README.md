@@ -23,7 +23,7 @@ No controller, UI, API, CRD, runner, or workflow implementation is part of this 
 - [UI/UX system spec](./ui-ux-system-spec.md) maps agent screens and interactions to app routes, custom resources, aggregated resources, controllers, API actions, and watch streams.
 - [Integration design](./dispatching-design.md) defines the proposed Kradle resources, trigger flow, work-item/session/workspace associations, chat/run UX, and implementation phases.
 - [CI orchestration spec](./ci-orchestration-spec.md) keeps the CI-specific failed-check, repair, flaky-test, and release-gate requirements.
-- [Source map](./agent-mux-source-map.md) maps relevant Babysitter Agent Mux paths, Kradle CI paths, and repo docs to inspect before implementation.
+- [Source map](./adapters-source-map.md) maps relevant Babysitter Agent Mux paths, Kradle CI paths, and repo docs to inspect before implementation.
 - [Implementation blueprint](./implementation-blueprint.md) maps the specs onto concrete Kradle source files, controllers, routes, CRDs, API endpoints, rollout order, and tests.
 - [Resource contract examples](./resource-contract-examples.md) provides implementation-ready YAML and JSON examples for stacks, subagents, tools, MCP, skills, triggers, dispatches, approvals, and work-item links.
 - [RBAC, service account, secret, and config management spec](./rbac-secrets-management-spec.md) defines native Kubernetes Roles, RoleBindings, ServiceAccounts, permission review, Secret grants, ConfigMap grants, audit, drift handling, and UI permission management for agents, runners, tools, skills, and users.
@@ -35,7 +35,7 @@ No controller, UI, API, CRD, runner, or workflow implementation is part of this 
 - [Acceptance test matrix](./acceptance-test-matrix.md) maps resources, controllers, APIs, UI, e2e flows, and package/chart validation to concrete acceptance gates.
 - [Storage and migration spec](./storage-migration-spec.md) defines etcd/Postgres/object-storage/native-Kubernetes storage boundaries, snapshots, indexes, retention, and migrations.
 - [Chart and packaging spec](./chart-packaging-spec.md) maps agent features into Helm values, CRDs, RBAC, deployments, NetworkPolicy, examples, and package validation.
-- [Agent Mux adapter contract](./agent-mux-adapter-contract.md) defines the launch/capability/event/session boundary between Kradle and Agent Mux.
+- [Agent Mux adapter contract](./adapters-adapter-contract.md) defines the launch/capability/event/session boundary between Kradle and Agent Mux.
 - [Implementation rollout slices](./implementation-rollout-slices.md) sequences docs, resources, UI, permission review, stack registry, dispatch, Agent Mux binding, approvals, triggers, workspaces, and hardening.
 - [Context assembly and prompt safety spec](./context-assembly-spec.md) defines prompt layers, source provenance, redaction, context labels, bundle snapshots, and preview requirements.
 - [Observability and audit spec](./observability-audit-spec.md) defines metrics, events, traces, audit records, alerts, and run-detail projections.

@@ -29,7 +29,7 @@ attributes:
   notes: |
     tula's core layer composes tula-core and babysitter-sdk to provide the
     loop, context, and transport primitives. The binary adds CLI entrypoints,
-    barrel exports, and agent-mux bridging on top.
+    barrel exports, and adapters bridging on top.
 edges:
   realizes:
     - target: layer:4-agent-core

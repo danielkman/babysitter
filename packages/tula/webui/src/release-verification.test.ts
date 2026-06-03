@@ -30,7 +30,7 @@ const basePackEntries = [
 ];
 
 function withPackageRoot(run: (packageRoot: string) => void): void {
-  const packageRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'agent-mux-webui-release-'));
+  const packageRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'adapters-webui-release-'));
   fs.mkdirSync(path.join(packageRoot, 'dist', 'assets'), { recursive: true });
   fs.mkdirSync(path.join(packageRoot, 'dist-types', 'src'), { recursive: true });
   fs.mkdirSync(path.join(packageRoot, 'public'), { recursive: true });

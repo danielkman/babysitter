@@ -103,7 +103,7 @@
     "packages/hooks-mux/adapter-claude/src",
     "packages/tula/platform/src/harness",
     "packages/tula/platform/src/session",
-    "packages/agent-mux",
+    "packages/adapters",
     "packages/agent-catalog/src",
     "packages/atlas/graph"
   ],

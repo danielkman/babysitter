@@ -13,7 +13,7 @@ attributes:
     - "ANTHROPIC_API_KEY"
   evidenceRefs:
     - "repo-sdk-fallback"
-    - "repo-agent-mux-host"
+    - "repo-adapters-host"
     - "web-anthropic-claude-code"
 edges:
   has_version:

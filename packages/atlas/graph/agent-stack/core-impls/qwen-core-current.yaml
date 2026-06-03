@@ -24,7 +24,7 @@ attributes:
     Qwen Code does not advertise subagent dispatch (supportsSubagentDispatch
     is false in the adapter's capabilities). Upstream 0.16.2 does limit
     background-agent concurrency for its native parallel fan-out UI/runtime
-    paths; agent-mux still does not expose those paths as subagent dispatch.
+    paths; adapters still does not expose those paths as subagent dispatch.
   resultSynthesisPolicy: model-direct
   resultSynthesisNotes: |
     Final text is streamed via the OpenAI-compatible streaming protocol.

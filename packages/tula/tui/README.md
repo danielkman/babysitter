@@ -1,6 +1,6 @@
 # @a5c-ai/tula-tui
 
-Ink-based TUI for agent-mux with a plugin-first architecture. Almost everything
+Ink-based TUI for adapters with a plugin-first architecture. Almost everything
 (message renderers, tool-call cards, diff views, session manager, chat) ships
 as a plugin. The host package only provides the Ink process, view router, and
 the SDK-injected `TuiContext`.
@@ -9,14 +9,14 @@ the SDK-injected `TuiContext`.
 
 ```bash
 npm i -g @a5c-ai/tula-tui
-agent-mux-tui
+adapters-tui
 ```
 
 ## Development
 
 Package-level `build` and `test` scripts are routed through the repo-root
-`scripts/agent-mux-build.cjs` helper so `@a5c-ai/tula-tui` runs with its
-agent-mux prerequisites built in dependency order and its tests executed from
+`scripts/adapters-build.cjs` helper so `@a5c-ai/tula-tui` runs with its
+adapters prerequisites built in dependency order and its tests executed from
 the repo root. Use `npm run build:local --workspace=@a5c-ai/tula-tui`
 when you only want the package-local TypeScript compile.
 
@@ -39,7 +39,7 @@ shared kanban/workspace control plane.
 - Spec: [`specs/kanban-workspaces-spec.md`](specs/kanban-workspaces-spec.md)
 - Backlog decomposition: [`specs/kanban-workspaces-subtasks.md`](specs/kanban-workspaces-subtasks.md)
 - Cross-package design note:
-  [`../../docs/agent-mux/archive/design/20-tui-kanban-workspaces.md`](../../docs/agent-mux/archive/design/20-tui-kanban-workspaces.md)
+  [`../../docs/adapters/archive/design/20-tui-kanban-workspaces.md`](../../docs/adapters/archive/design/20-tui-kanban-workspaces.md)
 
 The planning documents remain useful design references for follow-on expansion
 of both surfaces.

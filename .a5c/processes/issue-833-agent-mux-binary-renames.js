@@ -1,6 +1,6 @@
 /**
- * @process repo/issue-833-agent-mux-binary-renames
- * @description TDD migration for agent-mux CLI binary renames with deprecated aliases.
+ * @process repo/issue-833-adapters-binary-renames
+ * @description TDD migration for adapters CLI binary renames with deprecated aliases.
  * @inputs { issueNumber?: number, branchName?: string, baseBranch?: string }
  * @outputs { success: boolean, changedFiles: string[], verification: object, publish: object }
  *
@@ -17,18 +17,18 @@ import { defineTask } from '@a5c-ai/babysitter-sdk';
 const readContextTask = defineTask('issue-833.read-context', (args, taskCtx) => ({
   kind: 'shell',
   title: 'Read issue #833, binary rename spec, and current CLI surfaces',
-  labels: ['issue-833', 'context', 'agent-mux', 'binary-renames'],
+  labels: ['issue-833', 'context', 'adapters', 'binary-renames'],
   shell: {
     command: [
       'set -euo pipefail',
       `gh issue view ${args.issueNumber} --json title,body,labels,comments`,
       `gh pr list --state open --search "${args.issueNumber} in:body OR #${args.issueNumber} in:body OR ${args.issueNumber} in:title" --json number,title,headRefName,baseRefName,url,body,isDraft`,
       'printf "\\n--- binary rename spec ---\\n"',
-      'cat docs/agent-mux/terminology-and-structure-gaps/binary-renames.md',
+      'cat docs/adapters/terminology-and-structure-gaps/binary-renames.md',
       'printf "\\n--- current published bins ---\\n"',
       'find packages -path "*/package.json" -print | sort | xargs node -e "const fs=require(\\"fs\\"); for (const f of process.argv.slice(1)) { const p=JSON.parse(fs.readFileSync(f,\\"utf8\\")); if (p.bin) console.log(f, JSON.stringify({name:p.name,bin:p.bin})); }"',
       'printf "\\n--- relevant stale command references ---\\n"',
-      'rg -n "adapters|adapters-proxy|adapters-tui|a5c-hooks-mux|extension-mux|triggers-mux|tasks-mux|mock-harness|agent-mux-transport-proxy|agent-mux-hooks|agent-mux-extensions|agent-mux-triggers|agent-mux-tasks|agent-mux-harness-mock" packages scripts docs .github package.json tsconfig.json -g "package.json" -g "*.ts" -g "*.tsx" -g "*.js" -g "*.mjs" -g "*.cjs" -g "*.md" -g "*.json" -g "*.yml" -g "*.yaml" | head -2000',
+      'rg -n "adapters|adapters-proxy|adapters-tui|a5c-hooks-mux|extension-mux|triggers-mux|tasks-mux|mock-harness|adapters-transport-proxy|adapters-hooks|adapters-extensions|adapters-triggers|adapters-tasks|adapters-harness-mock" packages scripts docs .github package.json tsconfig.json -g "package.json" -g "*.ts" -g "*.tsx" -g "*.js" -g "*.mjs" -g "*.cjs" -g "*.md" -g "*.json" -g "*.yml" -g "*.yaml" | head -2000',
     ].join('\n'),
     expectedExitCode: 0,
     timeout: 180000,
@@ -57,7 +57,7 @@ const writeFailingTestsTask = defineTask('issue-833.write-failing-tests', (args,
         'Read files before editing them.',
         'Preserve unrelated local worktree changes.',
         'Add a deterministic test/check that validates every binary mapping from the spec.',
-        'The check must require canonical agent-mux binary names and deprecated legacy aliases.',
+        'The check must require canonical adapters binary names and deprecated legacy aliases.',
         'The check must verify a deprecation warning path/message for aliases.',
         'Wire the check into package.json so it can be run with npm run test:binary-renames.',
         'Run npm run test:binary-renames and confirm it fails before implementation.',
@@ -95,7 +95,7 @@ const commitTestsTask = defineTask('issue-833.commit-tests', (args, taskCtx) => 
       'set -euo pipefail',
       'git status --short',
       'git add package.json scripts/check-binary-renames.cjs',
-      'if ! git diff --cached --quiet; then GIT_AUTHOR_NAME="a5c automation" GIT_AUTHOR_EMAIL="actions@users.noreply.github.com" GIT_COMMITTER_NAME="a5c automation" GIT_COMMITTER_EMAIL="actions@users.noreply.github.com" git commit -m "test(agent-mux): pin binary rename contract"; fi',
+      'if ! git diff --cached --quiet; then GIT_AUTHOR_NAME="a5c automation" GIT_AUTHOR_EMAIL="actions@users.noreply.github.com" GIT_COMMITTER_NAME="a5c automation" GIT_COMMITTER_EMAIL="actions@users.noreply.github.com" git commit -m "test(adapters): pin binary rename contract"; fi',
     ].join('\n'),
     expectedExitCode: 0,
     timeout: 180000,
@@ -108,8 +108,8 @@ const commitTestsTask = defineTask('issue-833.commit-tests', (args, taskCtx) => 
 
 const implementTask = defineTask('issue-833.implement-binary-renames', (args, taskCtx) => ({
   kind: 'agent',
-  title: 'Implement agent-mux binary renames and deprecated aliases',
-  labels: ['issue-833', 'implementation', 'agent-mux'],
+  title: 'Implement adapters binary renames and deprecated aliases',
+  labels: ['issue-833', 'implementation', 'adapters'],
   agent: {
     name: 'implementation-engineer',
     prompt: {
@@ -131,8 +131,8 @@ const implementTask = defineTask('issue-833.implement-binary-renames', (args, ta
         'Use git mv for renamed bin entrypoint files when paths are renamed.',
         'Use find-replace for import/path references after renames.',
         'Update package bin maps, deprecated alias wrappers, docs/tests, tsconfig references, package.json workspaces, CI workflows, and architecture boundary checks where relevant.',
-        'Resolve duplicate agent-mux binary ownership: keep @a5c-ai/adapters as canonical owner and keep @a5c-ai/adapters-cli on legacy adapters alias only if needed to avoid publishing the same canonical bin twice.',
-        'Make aliases print warnings like [agent-mux] "old-name" is deprecated, use "new-name" instead.',
+        'Resolve duplicate adapters binary ownership: keep @a5c-ai/adapters as canonical owner and keep @a5c-ai/adapters-cli on legacy adapters alias only if needed to avoid publishing the same canonical bin twice.',
+        'Make aliases print warnings like [adapters] "old-name" is deprecated, use "new-name" instead.',
         'Run npm run test:binary-renames and make it pass.',
         'Return JSON: { changedFiles: string[], summary: string, verificationNotes: string[], commitMessage: string }.',
       ],
@@ -147,7 +147,7 @@ const implementTask = defineTask('issue-833.implement-binary-renames', (args, ta
 const verifyTask = defineTask('issue-833.verify', (args, taskCtx) => ({
   kind: 'shell',
   title: 'Verify binary rename migration',
-  labels: ['issue-833', 'verification', 'agent-mux'],
+  labels: ['issue-833', 'verification', 'adapters'],
   shell: {
     command: [
       'set -euo pipefail',
@@ -234,7 +234,7 @@ const commitImplementationTask = defineTask('issue-833.commit-implementation', (
       'git add packages/adapters/cli packages/adapters/extensions packages/adapters/harness-mock packages/adapters/hooks/cli packages/adapters/sdk packages/adapters/tasks packages/adapters/transport packages/adapters/triggers packages/adapters/tui',
       'git add packages/sdk/src/breakpoints/__tests__/proven-verification.test.ts',
       'git add docs .github scripts tsconfig.json || true',
-      'if ! git diff --cached --quiet; then GIT_AUTHOR_NAME="a5c automation" GIT_AUTHOR_EMAIL="actions@users.noreply.github.com" GIT_COMMITTER_NAME="a5c automation" GIT_COMMITTER_EMAIL="actions@users.noreply.github.com" git commit -m "feat(agent-mux): rename CLI binaries"; fi',
+      'if ! git diff --cached --quiet; then GIT_AUTHOR_NAME="a5c automation" GIT_AUTHOR_EMAIL="actions@users.noreply.github.com" GIT_COMMITTER_NAME="a5c automation" GIT_COMMITTER_EMAIL="actions@users.noreply.github.com" git commit -m "feat(adapters): rename CLI binaries"; fi',
     ].join('\n'),
     expectedExitCode: 0,
     timeout: 180000,
@@ -254,12 +254,12 @@ const publishTask = defineTask('issue-833.publish', (args, taskCtx) => ({
       'set -euo pipefail',
       `branch="${args.branchName}"`,
       `base="${args.baseBranch}"`,
-      'git add -f .a5c/processes/issue-833-agent-mux-binary-renames.js .a5c/processes/issue-833-agent-mux-binary-renames.inputs.json',
-      'if ! git diff --cached --quiet; then GIT_AUTHOR_NAME="a5c automation" GIT_AUTHOR_EMAIL="actions@users.noreply.github.com" GIT_COMMITTER_NAME="a5c automation" GIT_COMMITTER_EMAIL="actions@users.noreply.github.com" git commit -m "chore(agent-mux): record issue 833 process"; fi',
+      'git add -f .a5c/processes/issue-833-adapters-binary-renames.js .a5c/processes/issue-833-adapters-binary-renames.inputs.json',
+      'if ! git diff --cached --quiet; then GIT_AUTHOR_NAME="a5c automation" GIT_AUTHOR_EMAIL="actions@users.noreply.github.com" GIT_COMMITTER_NAME="a5c automation" GIT_COMMITTER_EMAIL="actions@users.noreply.github.com" git commit -m "chore(adapters): record issue 833 process"; fi',
       'git push -u origin "$branch"',
       'pr_url="$(gh pr list --head "$branch" --json url --jq \'.[0].url // empty\' 2>/dev/null || true)"',
-      `if [ -z "$pr_url" ]; then pr_url="$(gh pr create --draft --base "$base" --head "$branch" --title "Rename agent-mux CLI binaries" --body "Closes #${args.issueNumber}\\n\\nImplements the binary rename mapping from docs/agent-mux/terminology-and-structure-gaps/binary-renames.md while keeping deprecated legacy aliases for one major version.\\n\\nVerification:\\n- npm run test:binary-renames\\n- npm run verify:metadata\\n- npm run build:sdk\\n- node ./scripts/check-architecture-boundaries.cjs\\n- git diff --check")"; fi`,
-      `gh issue comment ${args.issueNumber} --body "$(printf 'Implemented the agent-mux binary rename migration and opened a draft PR.\\n\\n- Added a binary rename contract check: npm run test:binary-renames\\n- Renamed canonical package bin entries to the agent-mux-* convention.\\n- Kept legacy command aliases with deprecation warnings for one major version.\\n- Ran metadata, SDK build, architecture-boundary, and diff checks locally.\\n\\nPR: %s' "$pr_url")"`,
+      `if [ -z "$pr_url" ]; then pr_url="$(gh pr create --draft --base "$base" --head "$branch" --title "Rename adapters CLI binaries" --body "Closes #${args.issueNumber}\\n\\nImplements the binary rename mapping from docs/adapters/terminology-and-structure-gaps/binary-renames.md while keeping deprecated legacy aliases for one major version.\\n\\nVerification:\\n- npm run test:binary-renames\\n- npm run verify:metadata\\n- npm run build:sdk\\n- node ./scripts/check-architecture-boundaries.cjs\\n- git diff --check")"; fi`,
+      `gh issue comment ${args.issueNumber} --body "$(printf 'Implemented the adapters binary rename migration and opened a draft PR.\\n\\n- Added a binary rename contract check: npm run test:binary-renames\\n- Renamed canonical package bin entries to the adapters-* convention.\\n- Kept legacy command aliases with deprecation warnings for one major version.\\n- Ran metadata, SDK build, architecture-boundary, and diff checks locally.\\n\\nPR: %s' "$pr_url")"`,
       'printf "%s\\n" "$pr_url"',
     ].join('\n'),
     expectedExitCode: 0,

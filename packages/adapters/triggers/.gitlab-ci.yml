@@ -7,14 +7,14 @@
 #       file: 'packages/triggers-mux/.gitlab-ci.yml'
 #
 #   agent-review:
-#     extends: .agent-mux-trigger
+#     extends: .adapters-trigger
 #     variables:
 #       AGENT_HARNESS: claude
 #       AGENT_PROMPT: "Review the merge request changes"
 #       AGENT_PROVIDER: foundry
 #       AGENT_MODEL: gpt-5.5
 
-.agent-mux-trigger:
+.adapters-trigger:
   image: node:22
   variables:
     AGENT_HARNESS: ""

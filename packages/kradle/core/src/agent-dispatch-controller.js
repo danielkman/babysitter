@@ -5,7 +5,7 @@ import { composeAgentPrompt } from './agent-prompt-composition.js';
 import { legacyAgentStackIdentityWarning } from './agent-identity-migration.js';
 import { assembleContextBundle } from './agent-context-bundles.js';
 import { createResource, clone } from './resource-model.js';
-import { createAgentMuxClient } from './agent-mux-client.js';
+import { createAgentMuxClient } from './adapters-client.js';
 import { createAgentMemoryController } from './agent-memory-controller.js';
 import { createAgentApprovalController } from './agent-approval-controller.js';
 import { createAgentWorkspaceController } from './agent-workspace-controller.js';
@@ -35,7 +35,7 @@ export const AGENT_DISPATCH_CONTROLLER_BOUNDARY = {
   role: 'agent-dispatch-controller',
   scope: 'Manual dispatch orchestration with permission gating, context assembly, workspace provisioning, stack resolution, K8s Job dispatch, and event persistence',
   owns: ['dispatch creation', 'attempt lifecycle', 'K8s Job dispatch binding', 'workspace provisioning', 'stack resolution', 'session event persistence'],
-  delegatesTo: ['agent-permission-review', 'agent-stack-controller', 'agent-context-bundles', 'agent-mux-client', 'agent-memory-controller', 'agent-approval-controller', 'agent-workspace-controller'],
+  delegatesTo: ['agent-permission-review', 'agent-stack-controller', 'agent-context-bundles', 'adapters-client', 'agent-memory-controller', 'agent-approval-controller', 'agent-workspace-controller'],
   mustNotOwn: ['secret values', 'UI rendering']
 };
 
@@ -60,7 +60,7 @@ export function createAgentDispatchController(options = {}) {
     role: 'agent-dispatch-controller',
 
     /**
-     * Resolve an AgentStack CRD into a concrete execution config for agent-mux.
+     * Resolve an AgentStack CRD into a concrete execution config for adapters.
      *
      * @param {object} stack - AgentStack resource
      * @param {{ organizationRef?: string }} opts
@@ -137,7 +137,7 @@ export function createAgentDispatchController(options = {}) {
     },
 
     /**
-     * Persist a session event from an agent-mux session.
+     * Persist a session event from an adapters session.
      * Appends to the transcript, updates the dispatch attempt status,
      * marks the run as Completed/Failed on terminal events, and emits to event bus.
      *

@@ -18,11 +18,11 @@ attributes:
   examples:
     - LangGraph checkpointer/store, thread state, interrupts, streaming runtime.
     - Claude Code/Codex/Gemini CLI process runtimes.
-    - a5c unified runtime, Pi-compatible session profiles, agent-mux remote runtime.
+    - a5c unified runtime, Pi-compatible session profiles, adapters remote runtime.
     - Built-in file/shell/search tools, approval gates, session files.
   fitNotes: |
     Frameworks can leave runtime to the host app; CLI products often combine
     core and runtime in one binary. a5c runtime is modeled as a unified
     same-layer implementation that can map Pi, Claude, Codex, LangGraph, and
-    agent-mux runtime profiles without depending on one of them.
+    adapters runtime profiles without depending on one of them.
 edges: {}

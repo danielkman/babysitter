@@ -60,7 +60,7 @@ attributes:
   description: |
     Approve a breakpoint task that the orchestrator paused on. Mechanically
     a `babysitter task:post --status ok` against a `kind: breakpoint` task,
-    or a UI control in agent-mux/observer surfaces.
+    or a UI control in adapters/observer surfaces.
   kind: editor-ui
   surface: editor-ui
   category: interaction-primitive-category:approval

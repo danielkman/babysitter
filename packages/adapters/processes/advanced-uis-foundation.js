@@ -156,8 +156,8 @@ const reviewTask = defineTask('review-foundation-wave', (args, taskCtx) => ({
 
 export async function process(inputs, ctx) {
   const {
-    projectRoot = 'C:/work/agent-mux',
-    playbookPath = 'C:/work/agent-mux/advanced-uis.md',
+    projectRoot = 'C:/work/adapters',
+    playbookPath = 'C:/work/adapters/advanced-uis.md',
   } = inputs;
 
   const playbook = await ctx.task(readPlaybookTask, { playbookPath });

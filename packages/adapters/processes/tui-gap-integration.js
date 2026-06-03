@@ -1,6 +1,6 @@
 /**
  * @process tui-gap-integration
- * @description Iteratively close the gaps between @a5c-ai/tula-tui and the full agent-mux SDK surface.
+ * @description Iteratively close the gaps between @a5c-ai/tula-tui and the full adapters SDK surface.
  *   TDD, spec-docs-synced, with adversarial reviews per gap.
  */
 
@@ -12,13 +12,13 @@ import { defineTask } from '@a5c-ai/babysitter-sdk';
 
 const mapGapsTask = defineTask('map-tui-gaps', (args, taskCtx) => ({
   kind: 'agent',
-  title: 'Map TUI ↔ agent-mux SDK integration gaps',
+  title: 'Map TUI ↔ adapters SDK integration gaps',
   execution: { model: 'claude-opus-4-6' },
   agent: {
     name: 'general-purpose',
     prompt: {
       role: 'Senior TypeScript / TUI architect auditing a plugin-first Ink TUI against a coding-agent SDK',
-      task: 'Produce a prioritized gap list between packages/adapters/tui and the agent-mux SDK.',
+      task: 'Produce a prioritized gap list between packages/adapters/tui and the adapters SDK.',
       context: {
         projectRoot: args.projectRoot,
         tuiPackage: 'packages/adapters/tui',
@@ -92,7 +92,7 @@ const implementTask = defineTask('implement-gap', (args, taskCtx) => ({
   agent: {
     name: 'general-purpose',
     prompt: {
-      role: 'Senior Ink/React + TypeScript engineer implementing an agent-mux TUI plugin',
+      role: 'Senior Ink/React + TypeScript engineer implementing an adapters TUI plugin',
       task: `Implement gap "${args.gap.title}" so the failing tests pass and acceptance criteria are met.`,
       context: {
         gap: args.gap,
@@ -200,7 +200,7 @@ const docsSyncTask = defineTask('sync-docs', (args, taskCtx) => ({
         'If a new AgentEvent renderer was added, make sure docs/04-agent-events.md lists the event it consumes (if missing from that doc, add it).',
         'Update docs/README.md "Features" section if the gap adds a user-visible capability.',
         'If new plugin.ts exports were added, describe them in packages/adapters/tui/README.md.',
-        'Do NOT invent new agent-mux features — only document what was actually implemented.',
+        'Do NOT invent new adapters features — only document what was actually implemented.',
         'Return { docsChanged: string[] }.',
       ],
       outputFormat: 'JSON',

@@ -11,9 +11,9 @@ architectural trade-offs, and system nuances for the Kradle project.
 
 #### What Kradle Imports from @a5c-ai/adapters
 
-Kradle does not import agent-mux as an npm dependency. Instead, it communicates
-with the agent-mux gateway over HTTP. The integration surface lives entirely
-within `core/src/agent-mux-client.js`, which provides:
+Kradle does not import adapters as an npm dependency. Instead, it communicates
+with the adapters gateway over HTTP. The integration surface lives entirely
+within `core/src/adapters-client.js`, which provides:
 
 - **queryCapabilities(adapter)** -- GET `/api/v1/agents/{adapter}/capabilities`
 - **launchSession({stack, contextBundle, permissionSnapshot, workspace})** -- POST `/api/v1/sessions`
@@ -26,14 +26,14 @@ The boundary declaration (`AGENT_MUX_CLIENT_BOUNDARY`) explicitly states:
 - Delegates to: resource-model (for creating AgentSessionTranscript resources)
 - Must not own: secret values, permission review, resource persistence
 
-#### How agent-mux-client.js Connects to the Gateway
+#### How adapters-client.js Connects to the Gateway
 
 Connection is HTTP-only, using Node.js built-in `node:http` / `node:https`.
 Zero external fetch or HTTP client dependencies. The internal `httpRequest()`
 helper performs raw `transport.request()` calls with JSON serialization.
 
 Connection parameters:
-- `gateway` string -- full base URL (e.g. `http://agent-mux-gateway:8080`)
+- `gateway` string -- full base URL (e.g. `http://adapters-gateway:8080`)
 - `enabled` boolean -- client methods return `null` early when disabled
 - Timeout: 30s default per request
 - Protocol: auto-detected from URL scheme (http:// vs https://)
@@ -46,7 +46,7 @@ SSE streaming uses a persistent HTTP connection with:
 
 #### What Works WITHOUT Agent-Mux
 
-The following subsystems are fully operational without agent-mux:
+The following subsystems are fully operational without adapters:
 
 1. **Resource CRUD** -- All 76 resource kinds can be created, listed, updated, deleted via kubectl
 2. **Web Console** -- All 57 pages render; agent dispatch pages show "gateway unavailable" state
@@ -55,7 +55,7 @@ The following subsystems are fully operational without agent-mux:
 5. **Memory System** -- AgentMemoryRepository, Source, Ontology, Query, Import all operate on CRDs
 6. **Workspace Provisioning** -- KradleWorkspace PVC specs, git ops, codespace generation
 7. **External Backends** -- Provider registration, webhook delivery, sync events
-8. **Audit Logging** -- Audit controller records all mutations regardless of agent-mux state
+8. **Audit Logging** -- Audit controller records all mutations regardless of adapters state
 9. **Policy Engine** -- Kyverno integration, PolicyProfile, PolicyBinding
 10. **Runner Pool Management** -- RunnerPool specs, scheduling policies
 11. **Notification System** -- Resource-change notifications via event bus
@@ -81,11 +81,11 @@ Helm values.yaml:
   agents:
     agentMux:
       enabled: false      # Must be true for integration
-      gateway: ""         # Full URL to agent-mux gateway
+      gateway: ""         # Full URL to adapters gateway
 
   --> Rendered into Deployment env:
       KRADLE_AGENT_MUX_ENABLED=true
-      KRADLE_AGENT_MUX_GATEWAY=http://agent-mux-gateway:8080
+      KRADLE_AGENT_MUX_GATEWAY=http://adapters-gateway:8080
 
   --> Read by API controller initialization:
       createAgentMuxClient({
@@ -97,7 +97,7 @@ Helm values.yaml:
       spec.gatewayUrl (for UI display and runtime reconfiguration)
 ```
 
-The web container does NOT communicate with agent-mux directly. All agent
+The web container does NOT communicate with adapters directly. All agent
 operations route through the API container's `/api/agents/*` endpoints, which
 delegate to the mux client instance.
 
@@ -125,7 +125,7 @@ protocol translation between different agent communication channels:
 - **websocket** -- bidirectional streaming for persistent connections
 - **unix** -- Unix domain socket for same-host agents
 
-The transport-mux runtime sits between the agent-mux gateway and the actual
+The transport-mux runtime sits between the adapters gateway and the actual
 agent process, handling message framing, connection lifecycle, and protocol
 negotiation.
 
@@ -601,7 +601,7 @@ does not perform the **runtime execution**. This is by design -- kradle is the
 
 - `AgentStack` CRD captures: baseAgent, adapter, model, prompt, tools, MCP servers, skills
 - The stack controller reconciles readiness conditions (capability resolution, MCP health)
-- But it never actually calls agent-mux to instantiate the adapter
+- But it never actually calls adapters to instantiate the adapter
 - The gap: creating an AgentStack does not start anything
 
 #### AgentDispatchRun Created but Agent Not Spawned by Kradle
@@ -609,7 +609,7 @@ does not perform the **runtime execution**. This is by design -- kradle is the
 - `AgentDispatchRun` CRD captures: repository, sourceRefs, agentStack, taskKind
 - Status tracks: Queued, Running, Completed, Failed
 - The dispatch controller creates the resource and validates the spec
-- But the actual agent spawn happens in agent-mux (triggered by external controller)
+- But the actual agent spawn happens in adapters (triggered by external controller)
 - The gap: dispatch resource exists immediately, execution happens later
 
 #### KradleWorkspace Generates Pod Specs but Doesn't Execute Them
@@ -639,7 +639,7 @@ This pattern is intentional Kubernetes-native architecture:
 
 This separation enables:
 - Independent scaling of control plane vs execution plane
-- Pluggable execution backends (swap agent-mux implementation)
+- Pluggable execution backends (swap adapters implementation)
 - GitOps-compatible declarative management
 - Clear audit trail (every intent is a persisted resource)
 

@@ -42,8 +42,8 @@ Work mainly in:
 
 Read:
 
-- [docs/agent-mux/README](https://github.com/a5c-ai/babysitter/blob/main/docs/agent-mux/README.md)
-- [Agent-Mux Integration](agent-mux-integration.md)
+- [docs/adapters/README](https://github.com/a5c-ai/babysitter/blob/main/docs/adapters/README.md)
+- [Agent-Mux Integration](adapters-integration.md)
 - [Unified Stack Architecture](unified-stack-architecture.md)
 
 Work mainly in:
@@ -60,7 +60,7 @@ Read:
 
 - `packages/adapters/hooks/README.md`
 - `packages/adapters/hooks/ARCHITECTURE.md`
-- [Agent-Mux Integration](agent-mux-integration.md)
+- [Agent-Mux Integration](adapters-integration.md)
 
 Work mainly in:
 
@@ -121,7 +121,7 @@ Use this rule of thumb:
 |---|---|---|
 | V6 architecture scope | `docs/v6-spec-and-roadmap/` | package READMEs, adversarial analyses |
 | Orchestration runtime behavior | `packages/sdk`, `packages/babysitter`, `packages/tula/platform` | V6 docs, CLI docs |
-| Harness dispatch behavior | `packages/adapters/*` and `docs/agent-mux/` | V6 integration docs |
+| Harness dispatch behavior | `packages/adapters/*` and `docs/adapters/` | V6 integration docs |
 | Hook normalization | `packages/adapters/hooks/*` | per-harness plugin docs |
 | Unified plugin packaging | `packages/extension-mux`, `plugins/babysitter-unified/` | install READMEs for concrete bundles |
 | Breakpoint routing | `packages/tasks-mux` | SDK integration docs |

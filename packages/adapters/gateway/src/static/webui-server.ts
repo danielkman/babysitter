@@ -79,7 +79,7 @@ export async function serveWebuiRequest(
 ): Promise<Response | null> {
   if (!webuiRoot) {
     return new Response(
-      'agent-mux webui is not installed. Install @a5c-ai/tula-webui or pass --webui /path/to/dist.',
+      'adapters webui is not installed. Install @a5c-ai/tula-webui or pass --webui /path/to/dist.',
       { status: 404, headers: { 'content-type': 'text/plain; charset=utf-8' } },
     );
   }

@@ -31,7 +31,7 @@ attributes:
     - "--worktree"
     notes: |
       Qwen Code 0.16.2 adds a startup --worktree flag with symlinkDirectories
-      and PR-ref support. agent-mux does not yet have a typed RunOptions
+      and PR-ref support. adapters does not yet have a typed RunOptions
       worktree field, so this is tracked as launch metadata for future adapter
       wiring.
   headlessModeNotes: |

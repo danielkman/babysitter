@@ -30,7 +30,7 @@ The application layer applies the earlier seam work to user-facing capabilities 
 - Integrate capability slices through current plugin, SDK, and process-library surfaces
 
 **Agent-Mux Integration**
-- Integrate agent-mux packages from repository unification → [Agent-Mux Integration](../agent-mux-integration.md)
+- Integrate adapters packages from repository unification → [Agent-Mux Integration](../adapters-integration.md)
 - Maintain API compatibility during transition period
 - Consolidate UI components (web, mobile, TUI) with unified architecture
 - Preserve platform-specific applications with updated integration
@@ -77,4 +77,4 @@ This phase does not create a replacement `@a5c-ai/tula-platform`, does not assum
 
 ---
 
-**Related Documents**: [Platform Layer](platform-layer.md) | [Agent-Mux Integration](../agent-mux-integration.md) | [Security Architecture](../security-architecture.md)
+**Related Documents**: [Platform Layer](platform-layer.md) | [Agent-Mux Integration](../adapters-integration.md) | [Security Architecture](../security-architecture.md)

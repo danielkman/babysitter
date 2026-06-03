@@ -53,7 +53,7 @@ edges:
   - target: capability:parallel-tool-calls
     versionRange: '>=1.0.0'
     level: full
-    notes: 'OpenClaw supports parallel tool calls per agent-mux ref.
+    notes: 'OpenClaw supports parallel tool calls per adapters ref.
 
       '
   - target: capability:streaming

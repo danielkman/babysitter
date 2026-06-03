@@ -366,7 +366,7 @@ describe("cloud deployment plan", () => {
       {
         requestedTarget: "copilot",
         target: "github-copilot",
-        harnessInstaller: "agent-mux",
+        harnessInstaller: "adapters",
         pluginInstall: {
           installerPackage: "@a5c-ai/babysitter-github",
           scope: "workspace",
@@ -375,7 +375,7 @@ describe("cloud deployment plan", () => {
       {
         requestedTarget: "codex",
         target: "codex",
-        harnessInstaller: "agent-mux",
+        harnessInstaller: "adapters",
         pluginInstall: {
           installerPackage: "@a5c-ai/babysitter-codex",
           scope: "workspace",

@@ -191,8 +191,8 @@ Current V6-facing commands that can be cited today are:
 - `npm run test:sdk`
 - `npm run build:hooks-mux`
 - `npm run test:hooks-mux`
-- `npm run build:agent-mux`
-- `npm run test:agent-mux`
+- `npm run build:adapters`
+- `npm run test:adapters`
 - `npm run build --workspace=@a5c-ai/tasks-adapter`
 - `npm run typecheck --workspace=@a5c-ai/tasks-adapter`
 - `npm run test --workspace=@a5c-ai/tasks-adapter`

@@ -12,7 +12,7 @@ export async function tuiCommand(
       [
         'Usage: adapters tui [--agent <name>]',
         '',
-        'Launches the Ink-based agent-mux TUI with the default plugin set.',
+        'Launches the Ink-based adapters TUI with the default plugin set.',
         '',
         'Options:',
         '  --agent <name>            Default agent for new prompts (default: claude-code)',

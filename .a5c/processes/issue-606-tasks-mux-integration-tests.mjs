@@ -380,7 +380,7 @@ const buildTestMatrixTask = defineTask('issue-606/build-test-matrix', (args, tas
     name: 'test-engineer',
     prompt: [
       'Create a test matrix for issue #606 and map each row to target test files.',
-      'Prioritize tasks-mux responder routing, plugin-mode routing, standalone routing, fallback routing, mock agent-mux, tracker backend, validation/prompt coverage, and gated live-stack coverage only where supported by the spec.',
+      'Prioritize tasks-mux responder routing, plugin-mode routing, standalone routing, fallback routing, mock adapters, tracker backend, validation/prompt coverage, and gated live-stack coverage only where supported by the spec.',
       'Write artifacts/issue-606/test-matrix.md.',
       'Return JSON with testRows, targetFiles, fixtures, mocks, qualityGates, and deferredItems.',
       'Do not edit source or test files in this task.',

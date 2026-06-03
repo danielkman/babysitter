@@ -51,7 +51,7 @@ export function Sidebar(): JSX.Element {
   return (
     <aside className="app-sidebar">
       <div className="app-sidebar__brand">
-        <p className="app-sidebar__label">agent-mux</p>
+        <p className="app-sidebar__label">adapters</p>
         <h1 className="app-sidebar__title">Operate</h1>
         <div className="app-sidebar__mini-status">
           <span className="connection-pill">{activeSessions} live</span>

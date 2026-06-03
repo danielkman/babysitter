@@ -2916,7 +2916,7 @@ edgeKinds:
 - id: edge:has-device-pair
   name: has_device_pair
   origin: derived
-  originContext: agent-mux webui — inverse of paired_to
+  originContext: adapters webui — inverse of paired_to
   description: inverse of paired_to — an AgentVersion may have one or more DevicePairs paired to it
   source:
   - AgentVersion

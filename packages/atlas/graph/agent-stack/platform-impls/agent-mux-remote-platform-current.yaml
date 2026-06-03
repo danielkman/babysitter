@@ -1,10 +1,10 @@
 nodeKind: AgentPlatformImpl
-id: agent-platform-impl:agent-mux-remote.platform@current
+id: agent-platform-impl:adapters-remote.platform@current
 attributes:
-  displayName: agent-mux-remote Platform (current) — MCP broker only
-  agentVersionId: agent-version:agent-mux-remote@current
+  displayName: adapters-remote Platform (current) — MCP broker only
+  agentVersionId: agent-version:adapters-remote@current
   subagentDefinitionFormat: none
-  packageRef: source-ref:agent-mux-github
+  packageRef: source-ref:adapters-github
   nativeExtensionFormat: none
   nativeExtensionManifestPath: ''
   nativeExtensionsDirectoryPath: []
@@ -21,7 +21,7 @@ attributes:
   updateChannelMechanism: npm
   supportedChannelKinds:
   - mcp-channel
-  notes: 'Special case: agent-mux-remote is a *transport-only* meta-adapter. It brokers
+  notes: 'Special case: adapters-remote is a *transport-only* meta-adapter. It brokers
 
     MCP and proxies events but does not host plugins, skills, slash commands, or
 
@@ -34,7 +34,7 @@ edges:
   realizes:
     - target: layer:6-agent-platform
   composes:
-  - target: agent:agent-mux-remote
+  - target: agent:adapters-remote
     role: platform
   bundles: []
   supports:
@@ -42,7 +42,7 @@ edges:
     versionRange: '*'
     level: full
     evidenceSourceIds:
-    - evidence:repo-agent-mux-host
+    - evidence:repo-adapters-host
   - target: capability:can-resume
     versionRange: '>=1.0.0'
     level: partial
@@ -52,13 +52,13 @@ edges:
   - target: capability:streaming
     versionRange: '*'
     level: full
-    notes: 'agent-mux-remote forwards streaming events from the underlying
+    notes: 'adapters-remote forwards streaming events from the underlying
 
       upstream agent through the remote channel.
 
       '
     evidenceSourceIds:
-    - evidence:repo-agent-mux-host
+    - evidence:repo-adapters-host
   - target: capability:supports-mcp
     versionRange: '>=1.0.0'
     level: full

@@ -159,9 +159,9 @@ edges:
     - target: memory-store:symphony-prompt-cache
     - target: memory-store:symphony-knowledge-graph
   has_device_pair:
-    - target: device-pair:agent-mux-mobile-ios
-    - target: device-pair:agent-mux-mobile-android
-    - target: device-pair:agent-mux-web-desktop
+    - target: device-pair:adapters-mobile-ios
+    - target: device-pair:adapters-mobile-android
+    - target: device-pair:adapters-web-desktop
   governs_template:
     - target: prompt-template:few-shot-classification
   versioned_via:

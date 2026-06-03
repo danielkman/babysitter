@@ -14,7 +14,7 @@ import { Value } from '@sinclair/typebox/value';
 // Shared sub-schemas
 // ---------------------------------------------------------------------------
 
-/** Machine-readable error codes defined by agent-mux (from types.ts). */
+/** Machine-readable error codes defined by adapters (from types.ts). */
 export const ErrorCodeSchema = Type.Union([
   Type.Literal('CAPABILITY_ERROR'),
   Type.Literal('VALIDATION_ERROR'),

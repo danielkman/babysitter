@@ -1,6 +1,6 @@
 export type LiveStackProvider = 'foundry-openai' | 'anthropic-direct' | 'google-vertex' | 'google';
 export type AgentMuxProviderId = 'foundry' | 'anthropic' | 'vertex' | 'google';
-export type LiveStackAgentPath = 'agent-mux' | 'agent-platform' | 'tula';
+export type LiveStackAgentPath = 'adapters' | 'agent-platform' | 'tula';
 export type LiveStackIntegrationType = 'third-party-plugin' | 'runtime-cli';
 export type LiveStackInstallMode = 'babysitter-plugin' | 'vanilla';
 export type LiveStackAgentId = 'claude-code' | 'codex' | 'gemini-cli' | 'pi' | 'agent-platform' | 'tula' | 'internal';
@@ -56,8 +56,8 @@ export interface LiveStackEvidenceBundle {
 
 export function primaryLiveStackScenario(): LiveStackScenario {
   return createLiveStackScenario({
-    scenarioId: 'live.agent-mux.claude-code.foundry-openai.gpt-5.5',
-    agentPath: 'agent-mux',
+    scenarioId: 'live.adapters.claude-code.foundry-openai.gpt-5.5',
+    agentPath: 'adapters',
     agent: 'claude-code',
     agentMuxAgent: 'claude',
     integrationType: 'third-party-plugin',
@@ -68,8 +68,8 @@ export function primaryLiveStackScenario(): LiveStackScenario {
     credentialMode: 'github-org-secrets-and-vars',
     requiredEnv: ['AZURE_API_KEY', 'AGENT_MUX_API_BASE'],
     layers: [
-      'agent-mux install',
-      'agent-mux invocation',
+      'adapters install',
+      'adapters invocation',
       'generated Babysitter plugin package',
       'Babysitter SDK installation',
       'plugin babysitter command dispatch',
@@ -81,7 +81,7 @@ export function primaryLiveStackScenario(): LiveStackScenario {
     ],
     requiredTraceIds: ['agentMuxRunId', 'agentMuxSessionId', 'babysitterRunId', 'babysitterEffectId', 'hookEventId', 'hookMuxEventId', 'transportTraceId'],
     expectedArtifacts: [
-      'agent-mux-events',
+      'adapters-events',
       'plugin-command-transcript',
       'babysitter-run-summary',
       'babysitter-task-bundle',
@@ -110,7 +110,7 @@ export function externalAgentDispatchLiveStackScenario(): LiveStackScenario {
     layers: [
       'tula runtime-cli',
       'tasks-mux responder routing',
-      'agent-mux claude-code adapter',
+      'adapters claude-code adapter',
       'external agent cost event',
       'provider/model trace',
     ],
@@ -118,7 +118,7 @@ export function externalAgentDispatchLiveStackScenario(): LiveStackScenario {
     expectedArtifacts: [
       'babysitter-run-summary',
       'babysitter-task-bundle',
-      'agent-mux-events',
+      'adapters-events',
       'external-agent-cost-event',
       'provider-trace-redacted',
     ],

@@ -17,7 +17,7 @@ attributes:
   notes: |
     Kradle's platform layer provides the governance and extension model
     for agent work on Kradle-managed repositories. NOT an agent runtime —
-    Kradle delegates agent execution to agent-mux. This impl covers:
+    Kradle delegates agent execution to adapters. This impl covers:
 
     - Agent Stack CRDs: AgentStack, AgentSubagent, AgentToolProfile,
       AgentMcpServer, AgentSkill — declarative agent configuration

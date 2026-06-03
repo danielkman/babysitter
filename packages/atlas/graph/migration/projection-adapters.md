@@ -47,7 +47,7 @@ PluginTarget nodes (preserves atlas's normalized shape for everything else,
 but treats codegen-template tokens as first-class node attributes).
 Without this, the mux generator cannot emit working adapter scripts.
 
-## 2. `HarnessImageEntry` (driver: `agent-mux/core/invocation.ts`)
+## 2. `HarnessImageEntry` (driver: `adapters/core/invocation.ts`)
 
 **Legacy shape:** `{ harness, image, tag?, preinstalled }`.
 
@@ -80,7 +80,7 @@ legacy `discovery-signals-hooks.yaml`). Schema additions in catalog pass 92:
 and maps `{ adapter ← key, confidence, signals, absentSignals }` — already
 implemented and now resolves data on the atlas graph.
 
-## 4. `HostSignalMap` + `HostMetadataField[]` (driver: `agent-mux/core/host-detection.ts`)
+## 4. `HostSignalMap` + `HostMetadataField[]` (driver: `adapters/core/host-detection.ts`)
 
 **Legacy shape:** two separate accessors —
 `getHostSignalMap(): Record<agent, string[]>` and

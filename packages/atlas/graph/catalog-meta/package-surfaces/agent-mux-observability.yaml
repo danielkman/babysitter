@@ -1,5 +1,5 @@
 nodeKind: PackageSurface
-id: package:a5c-ai-agent-mux-observability
+id: package:a5c-ai-adapters-observability
 attributes:
   packageId: "@a5c-ai/adapters-observability"
   packageName: "@a5c-ai/adapters-observability"
@@ -15,13 +15,13 @@ attributes:
   # Source: packages/adapters/observability/package.json (name, version 0.4.9)
 edges:
   references_path:
-    - target: path:agent-mux-observability
+    - target: path:adapters-observability
   # Public LogLevel / CostInfo / LogContext / Logger / Telemetry types
   # modeled as SharedContextSpec records.
   # Source: packages/adapters/observability/src/types.ts.
   has_payload_schema:
-    - target: shared-context-spec:agent-mux-observability-log-level
-    - target: shared-context-spec:agent-mux-observability-cost-info
-    - target: shared-context-spec:agent-mux-observability-log-context
-    - target: shared-context-spec:agent-mux-observability-logger-iface
-    - target: shared-context-spec:agent-mux-observability-telemetry-iface
+    - target: shared-context-spec:adapters-observability-log-level
+    - target: shared-context-spec:adapters-observability-cost-info
+    - target: shared-context-spec:adapters-observability-log-context
+    - target: shared-context-spec:adapters-observability-logger-iface
+    - target: shared-context-spec:adapters-observability-telemetry-iface

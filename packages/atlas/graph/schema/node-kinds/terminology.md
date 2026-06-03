@@ -89,7 +89,7 @@ SHOULD carry `firstUseEvidenceId` at **vendor-doc-or-better**.
 ## NodeKind: `Definition`
 
 A definition of a `Term`. A term may carry many definitions for different
-contexts — e.g., "session" in MCP vs. in agent-mux.
+contexts — e.g., "session" in MCP vs. in adapters.
 
 ### Attributes
 
@@ -249,12 +249,12 @@ abbreviations) SHOULD reference the term's `firstUseEvidenceId`.
     journaled, spanning many Invocations.
   inContext: node:run
   authoredAt: "2026-04-01T00:00:00Z"
-- id: definition:run-agent-mux-deprecated
+- id: definition:run-adapters-deprecated
   termId: term:run
   text: |
-    (Deprecated) In agent-mux 0.x, "Run" referred to a single Invocation. This
+    (Deprecated) In adapters 0.x, "Run" referred to a single Invocation. This
     usage has been replaced by `term:invocation`.
-  inContext: agent:agent-mux
+  inContext: agent:adapters
   authoredAt: "2026-04-01T00:00:00Z"
 ```
 
@@ -276,11 +276,11 @@ abbreviations) SHOULD reference the term's `firstUseEvidenceId`.
 ```
 
 ```yaml
-# A Synonym between agent-mux Run and Invocation, direction=a-to-b
-- id: synonym:agent-mux-run-to-invocation
+# A Synonym between adapters Run and Invocation, direction=a-to-b
+- id: synonym:adapters-run-to-invocation
   termAId: term:run
   termBId: term:invocation
-  inContext: agent:agent-mux
+  inContext: agent:adapters
   direction: a-to-b
 ```
 

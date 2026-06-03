@@ -7,7 +7,7 @@ import { SUBPROCESS_HARNESS_PROFILES } from '../src/scenarios/per-agent.ts';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const packageRoot = path.resolve(__dirname, '..');
 const readmePath = path.join(packageRoot, 'README.md');
-const referenceDocPath = path.resolve(packageRoot, '../../../docs/agent-mux/reference/14-harness-mock.md');
+const referenceDocPath = path.resolve(packageRoot, '../../../docs/adapters/reference/14-harness-mock.md');
 
 const DOC_CONTRACT = {
   sourceOfTruthPath: 'packages/adapters/harness-mock/README.md',

@@ -22,7 +22,7 @@ Complete inventory of gaps between the Atlas graph (source of truth) and the cur
 
 | ID | Severity | Gap | Description |
 |----|----------|-----|-------------|
-| G-L2-01 | S2 | Provider abstraction fragmented | Provider concepts are split: transport-mux owns the proxy, agent-mux-cli owns provider translation, agent-catalog owns provider metadata. No unified provider interface. |
+| G-L2-01 | S2 | Provider abstraction fragmented | Provider concepts are split: transport-mux owns the proxy, adapters-cli owns provider translation, agent-catalog owns provider metadata. No unified provider interface. |
 | G-L2-02 | S2 | ProviderTranslation in extensions cluster | ProviderTranslation records describe how to route provider X through transport Y, but they're in `extensions` rather than a dedicated provider cluster. |
 
 ### L3: Transport — Codec Architecture Incomplete
@@ -74,7 +74,7 @@ Complete inventory of gaps between the Atlas graph (source of truth) and the cur
 
 | ID | Severity | Gap | Description |
 |----|----------|-----|-------------|
-| G-L1011-01 | S3 | Mobile/TV/watch platforms are stubs | agent-mux has mobile-android-app, mobile-ios-app, tv-*, watch-* directories but they're scaffolds, not production apps. |
+| G-L1011-01 | S3 | Mobile/TV/watch platforms are stubs | adapters has mobile-android-app, mobile-ios-app, tv-*, watch-* directories but they're scaffolds, not production apps. |
 
 ### L12: Knowledge Fabric — Catalog Exists, Memory Deferred
 

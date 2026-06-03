@@ -28,7 +28,7 @@ export * from './agent-persona-controller.js';
 export * from './agent-prompt-composition.js';
 export * from './agent-identity-migration.js';
 export * from './agent-context-bundles.js';
-export * from './agent-mux-client.js';
+export * from './adapters-client.js';
 export * from './agent-dispatch-controller.js';
 export * from './jitsi-meeting-controller.js';
 export * from './jitsi-sync-controller.js';

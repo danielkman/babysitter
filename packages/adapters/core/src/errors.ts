@@ -11,7 +11,7 @@ import type { AgentName, ErrorCode, ValidationFieldError } from './types.js';
 // ---------------------------------------------------------------------------
 
 /**
- * Base error class for all agent-mux errors.
+ * Base error class for all adapters errors.
  * Provides a machine-readable `code` and a `recoverable` flag.
  */
 export class AgentMuxError extends Error {

@@ -1,4 +1,4 @@
-# Bitbucket Pipelines template for agent-mux-triggers — run coding agents from Bitbucket.
+# Bitbucket Pipelines template for adapters-triggers — run coding agents from Bitbucket.
 #
 # Usage: copy this into your bitbucket-pipelines.yml or reference as a pipe.
 #
@@ -17,7 +17,7 @@ image: node:22
 
 definitions:
   steps:
-    - step: &agent-mux-trigger
+    - step: &adapters-trigger
         name: Agent Mux Trigger
         caches:
           - node
@@ -39,12 +39,12 @@ definitions:
               if [ "${AGENT_INCLUDE_DIFF:-false}" = "true" ]; then
                 DIFF_ARGS="--include-diff"
               fi
-              agent-mux-triggers enrich \
+              adapters-triggers enrich \
                 --backend bitbucket \
                 --token "$BITBUCKET_TOKEN" \
                 $DIFF_ARGS \
                 --output "$EVENT_FILE"
-              if ! agent-mux-triggers evaluate \
+              if ! adapters-triggers evaluate \
                 --backend bitbucket \
                 --query "$AGENT_TRIGGER_QUERY" \
                 --token "$BITBUCKET_TOKEN" \
@@ -55,14 +55,14 @@ definitions:
               fi
             fi
 
-            # Build and run agent-mux command
+            # Build and run adapters command
             HARNESS="${AGENT_HARNESS:-claude}"
             PROVIDER="${AGENT_PROVIDER:-}"
             MODEL="${AGENT_MODEL:-}"
             PROMPT="${AGENT_PROMPT:-}"
             MAX_TURNS="${AGENT_MAX_TURNS:-15}"
 
-            CMD="agent-mux ${AGENT_COMMAND:-launch} $HARNESS"
+            CMD="adapters ${AGENT_COMMAND:-launch} $HARNESS"
             [ -n "$PROVIDER" ] && CMD="$CMD $PROVIDER"
             [ -n "$MODEL" ] && CMD="$CMD --model $MODEL"
             CMD="$CMD --max-turns $MAX_TURNS --no-interactive"

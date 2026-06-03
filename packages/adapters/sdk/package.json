@@ -15,7 +15,7 @@
     "url": "https://github.com/a5c-ai/babysitter/issues"
   },
   "keywords": [
-    "agent-mux",
+    "adapters",
     "adapters",
     "claude",
     "codex",
@@ -31,7 +31,7 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "agent-mux": "./dist/bin/agent-mux.js",
+    "adapters": "./dist/bin/adapters.js",
     "adapters": "./dist/bin/adapters.js"
   },
   "exports": {
@@ -66,7 +66,7 @@
       "L6"
     ],
     "muxes": [
-      "agent-mux"
+      "adapters"
     ]
   }
 }

@@ -374,7 +374,7 @@ export class OpenCodeHttpAdapter extends BaseRemoteAdapter {
       // File doesn't exist or is invalid, start with empty config
     }
 
-    // Remove agent-mux specific fields before writing
+    // Remove adapters specific fields before writing
     const { agent: _a, source: _s, filePaths: _fp, ...rest } = config as Record<string, unknown>;
     void _a; void _s; void _fp;
 

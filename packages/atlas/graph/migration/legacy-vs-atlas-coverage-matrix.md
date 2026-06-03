@@ -26,12 +26,12 @@ mux/sdk consumer that calls it.
 
 | Consumer (file) | Legacy SDK accessor | NodeKinds touched | atlas coverage | Bucket |
 | --- | --- | --- | --- | --- |
-| `agent-mux/core/src/host-detection.ts` | `getHostSignalMap`, `getHostMetadataFields`, `getHostDetectionRules` | `DiscoverySignal` (scope=host-detection) | covered — atlas has 10 host-env DiscoverySignals under `extensions/discovery-signals/` with `metadataFields` + `consumer: agent-comm-mux` | (e) shape |
-| `agent-mux/core/src/invocation.ts` | `getHarnessImages`, `lookupHarnessImage` | `PluginArtifact` filtered to `artifactKind=container-image` | partial — atlas has `PluginArtifact` instances but no `artifactKind=container-image` rows; legacy projection synthesizes `HarnessImageEntry` from artifact path + installerSurface | (a) missing data |
+| `adapters/core/src/host-detection.ts` | `getHostSignalMap`, `getHostMetadataFields`, `getHostDetectionRules` | `DiscoverySignal` (scope=host-detection) | covered — atlas has 10 host-env DiscoverySignals under `extensions/discovery-signals/` with `metadataFields` + `consumer: agent-comm-mux` | (e) shape |
+| `adapters/core/src/invocation.ts` | `getHarnessImages`, `lookupHarnessImage` | `PluginArtifact` filtered to `artifactKind=container-image` | partial — atlas has `PluginArtifact` instances but no `artifactKind=container-image` rows; legacy projection synthesizes `HarnessImageEntry` from artifact path + installerSurface | (a) missing data |
 | `hooks-mux/core/src/discovery/detector.ts` | `getHooksMuxDetectionRules` | `DiscoverySignal` (scope=hooks-mux) | **closed (catalog pass 92)** — 10 atlas DiscoverySignal rows scoped `hooks-mux` under `extensions/discovery-signals/*-hooks-mux*.yaml` (verbatim from legacy `discovery-signals-hooks.yaml`); schema gained `hooks-mux` scope, `all-present-with-absences` matchMode, and `absentSignals` field | covered |
 | `extension-mux/src/targets/index.ts` | `listPluginTargetDescriptors`, `getPluginTargetDescriptor`, `getHookNameMap` | `PluginTarget`, `HookMapping` | shape-divergent — atlas PluginTargets have `manifestPath`, `installLayout` (object with concrete keys: manifest/commands/agents/skills/hooks/mcp), `distribution` array, `adapterFamily`, `description`. Legacy descriptor needs: `targetId`, `adapterName`, `pluginRootEnvVar`, `pluginRootEnvVarForExtension`, `manifestFormat` (string token like "plugin.json + openclaw.plugin.json"), `commandFormat`, `skillHandling`, `hookRegistrationFormat`, `scriptVariants`, `distribution` (string), `distributionModel`, `marketplacePath`, `npmPublishable`, `installLayout.{harnessHomeRelative, pluginsDirRelative, marketplacePathRelative}`, `packageMetadata.{moduleType, binScriptExt, installLifecycle, activationMessage, extraPackageFiles, extraScripts, peerDependencyPackage, emitCjsWrappers}`, `componentSupport.{agents, context}` | (b) missing fields (8+ field-level) + (e) shape divergence |
 | `sdk/src/harness/discovery.ts` + `amuxFallbackMetadata.ts` | `getFallbackHarnessMetadata`, `listFallbackHarnessMetadata`, `listAgentVersions`, `getAgentVersion` | `AgentVersion`, HarnessFallbackMetadata projection | **consumer-adapter-required (catalog pass 92, path-b)** — atlas keeps the data normalized across AgentVersion + DiscoverySignal[host-detection] + SessionModel + Capability; the bundle is rebuilt by `agent-catalog/src/data.ts :: buildFallbackMetadata` (already a projection in legacy too — it never loaded a bundled record). Adapter spec frozen in `migration/projection-adapters.md` § 5. | covered (via consumer adapter) |
-| `agent-mux/core/tests/invocation.contract.test.ts` | (consumes harnessImages above) | — | — | — |
+| `adapters/core/tests/invocation.contract.test.ts` | (consumes harnessImages above) | — | — | — |
 | `catalog/src/app/api/...` | `listCatalogAgents`, `searchCatalogDiscovery` (process catalog) | `ProcessDescriptor`, `PackageSurface`, `PathDescriptor`, agent listings | covered for ProcessDescriptor (atlas has 24 records under `extensions/process-descriptors/`); agents covered as AgentVersion | (e) shape minor |
 
 ## Bucket totals (per consumer)
@@ -50,7 +50,7 @@ catalog pass 92 closed the two catalog pass 91 residuals: (1) hooks-mux-scope Di
 rows + `absentSignals` field/scope-enum extension; (2) HarnessFallbackMetadata
 adapter spec frozen (path-b: keep atlas normalized, adapter lives in
 `agent-catalog/src/data.ts`). All five projection consumers
-(`agent-mux`, `hooks-mux`, `extension-mux`, `sdk/harness/*`, catalog API)
+(`adapters`, `hooks-mux`, `extension-mux`, `sdk/harness/*`, catalog API)
 now resolve against the atlas graph either directly (consumers 1–4) or via a
 trivial spec'd adapter (consumer 5). No data/schema gap remains.
 
@@ -119,23 +119,23 @@ catalog-faithful (codegen-ready).
 | Package | Internal concepts | atlas NodeKind(s) used | Status |
 | --- | --- | --- | --- |
 | `agent-catalog` | exports, projection types | PackageSurface + all NodeKinds it projects | GREEN |
-| `agent-mux/core` | adapter-registry, capabilities, host-detection, hook-catalog, hook-dispatcher, builtin-hooks | AgentRuntimeImpl, AgentCapabilities (Capability), HostDetectionRule, HookSurface, HookMapping; builtin-hooks runtime-only (out of scope) | GREEN |
-| `agent-mux/cli` | adapters bin entrypoint | PackageSurface + PathDescriptor (catalog pass 96-new) | GREEN |
-| `agent-mux/gateway` | HTTP gateway, fanout server, kanban control plane | PackageSurface + PathDescriptor (catalog pass 96-new) | GREEN |
-| `agent-mux/tui` | Ink TUI + plugins | PackageSurface + PathDescriptor (catalog pass 96-new) | GREEN |
-| `agent-mux/ui` | shared React/RN components, session-flow | PackageSurface + PathDescriptor (catalog pass 96-new) | GREEN |
-| `agent-mux/webui` | browser app | PackageSurface + PathDescriptor (catalog pass 96-new) | GREEN |
-| `agent-mux/harness-mock` | mock harness emulator | PackageSurface + PathDescriptor (catalog pass 96-new) | GREEN |
-| `agent-mux/observability` | logger + telemetry library | PackageSurface + PathDescriptor (catalog pass 96-new) | GREEN |
-| `agent-mux/sdk` (umbrella @a5c-ai/adapters) | re-export + adapters bin | PackageSurface + PathDescriptor (catalog pass 96-new) | GREEN |
-| `agent-mux/adapters` | per-harness adapters bundle | PackageSurface + PathDescriptor (catalog pass 96-new); adapter behavior on AgentRuntimeImpl | GREEN |
+| `adapters/core` | adapter-registry, capabilities, host-detection, hook-catalog, hook-dispatcher, builtin-hooks | AgentRuntimeImpl, AgentCapabilities (Capability), HostDetectionRule, HookSurface, HookMapping; builtin-hooks runtime-only (out of scope) | GREEN |
+| `adapters/cli` | adapters bin entrypoint | PackageSurface + PathDescriptor (catalog pass 96-new) | GREEN |
+| `adapters/gateway` | HTTP gateway, fanout server, kanban control plane | PackageSurface + PathDescriptor (catalog pass 96-new) | GREEN |
+| `adapters/tui` | Ink TUI + plugins | PackageSurface + PathDescriptor (catalog pass 96-new) | GREEN |
+| `adapters/ui` | shared React/RN components, session-flow | PackageSurface + PathDescriptor (catalog pass 96-new) | GREEN |
+| `adapters/webui` | browser app | PackageSurface + PathDescriptor (catalog pass 96-new) | GREEN |
+| `adapters/harness-mock` | mock harness emulator | PackageSurface + PathDescriptor (catalog pass 96-new) | GREEN |
+| `adapters/observability` | logger + telemetry library | PackageSurface + PathDescriptor (catalog pass 96-new) | GREEN |
+| `adapters/sdk` (umbrella @a5c-ai/adapters) | re-export + adapters bin | PackageSurface + PathDescriptor (catalog pass 96-new) | GREEN |
+| `adapters/adapters` | per-harness adapters bundle | PackageSurface + PathDescriptor (catalog pass 96-new); adapter behavior on AgentRuntimeImpl | GREEN |
 | `extension-mux` | PluginTarget×17, schema/transform/emit | PluginTargetDescriptor + PackageSurface | GREEN |
 | `hooks-mux/core` | HookMapping records, MergePolicy, DecisionVerb | HookMapping, HookSurface, MergePolicy, DecisionVerb | GREEN |
 | `tasks-mux` | Zod-defined breakpoint types | BreakpointStrategy, ResponderProfile, BreakpointAnswer, DecisionMemory, HumanCheckpoint | GREEN |
 | `transport-mux` | 8 SUPPORTED_TRANSPORTS | ModelTransportProtocol×8 (existing) | GREEN |
 
-Out-of-scope dirs (no `package.json`): `agent-mux/adapters-proxy`,
-`agent-mux/meta`, `agent-mux/processes` — non-published source directories
+Out-of-scope dirs (no `package.json`): `adapters/adapters-proxy`,
+`adapters/meta`, `adapters/processes` — non-published source directories
 under the umbrella package, not catalog-modelable.
 
 Internal codegen-only modules (transform pipelines, runtime hook
@@ -153,7 +153,7 @@ agent-platform.
 | Package | catalog pass 98 delta |
 | --- | --- |
 | `tasks-mux` | 17 leaf CLI subcommand records authored (auth login/logout/status/keygen/key-push/keys/server set/server clear/token set/token clear; breakpoints pending/answer/status/poll; responders list/show; server start) + 8 outbound-client APIEndpoint records (POST/GET/DELETE under /api/v1/{questions,experts,...}). |
-| `agent-mux/harness-mock` | 5 `error:*` + 3 `runtimeHook*` scenarios promoted from data fixtures to InteractionPrimitive[mock-scenario]. |
+| `adapters/harness-mock` | 5 `error:*` + 3 `runtimeHook*` scenarios promoted from data fixtures to InteractionPrimitive[mock-scenario]. |
 | `babysitter-sdk` | PackageSurface enriched with bins (babysitter, babysitter-sdk, babysitter-mcp-server) + 12 top-level CLI command-group records spanning run:/task:/session:/plugin:/skill:/process-library:/profile:/instructions:/compression:/breakpoint:/hook:/mcp-server. |
 | `agent-platform` | PackageSurface enriched with bin (babysitter-harness) + harness-runtime command-set primitive (HARNESS_RUNTIME_COMMANDS literal). |
 | `babysitter` (metapackage) | Confirmed wrapper-over-graph (bin/babysitter.js aliases babysitter-sdk CLI); existing PackageSurface remains accurate. |
@@ -170,9 +170,9 @@ left as graph-visible placeholders rather than silent gaps:
 | Cursor `.mdc` FrontmatterField | deferred-work:frontmatter-cursor-mdc | open (appliesTo enum design) |
 | Codex `AGENTS.md` FrontmatterField | deferred-work:frontmatter-codex-agents-md | abandoned (not-applicable; no frontmatter) |
 | babysitter `defineTask` task-schema fields | deferred-work:task-schema-field-define-task | open (NodeKind decision) |
-| agent-mux/adapters per-harness dispatch | deferred-work:agent-mux-adapters-per-harness-dispatch | abandoned (wrapper-over-graph per catalog pass 96) |
+| adapters/adapters per-harness dispatch | deferred-work:adapters-adapters-per-harness-dispatch | abandoned (wrapper-over-graph per catalog pass 96) |
 | agent-catalog public library functions | deferred-work:agent-catalog-library-functions | abandoned (projection-over-graph) |
-| agent-mux/ui + webui React components | deferred-work:agent-mux-ui-webui-react-components | abandoned (presentation-only per catalog pass 97c) |
+| adapters/ui + webui React components | deferred-work:adapters-ui-webui-react-components | abandoned (presentation-only per catalog pass 97c) |
 | transport-mux runtime.ts programmatic API | deferred-work:transport-mux-runtime-programmatic-api | abandoned (wrapper-over-graph) |
 | hooks-mux internal helpers | deferred-work:hooks-mux-internals-helpers | abandoned (private code) |
 

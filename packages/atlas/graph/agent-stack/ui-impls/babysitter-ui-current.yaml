@@ -1,30 +1,30 @@
 nodeKind: AgentUIImpl
 id: agent-ui-impl:babysitter.ui@current
 attributes:
-  displayName: "babysitter UI (current) — agent-mux + agent-platform CLI"
+  displayName: "babysitter UI (current) — adapters + agent-platform CLI"
   agentVersionId: agent-version:babysitter@current
   packageRef: source-ref:babysitter-github
   uiKind: multi-surface
   presentationsBundled:
-    - presentation:agent-mux-tui
-    - presentation:agent-mux-cli
-    - presentation:agent-mux-webui
-    - presentation:agent-mux-mobile-ios
-    - presentation:agent-mux-mobile-android
-    - presentation:agent-mux-tv-androidtv
-    - presentation:agent-mux-tv-appletv
-    - presentation:agent-mux-watch-watchos
-    - presentation:agent-mux-watch-wearos
+    - presentation:adapters-tui
+    - presentation:adapters-cli
+    - presentation:adapters-webui
+    - presentation:adapters-mobile-ios
+    - presentation:adapters-mobile-android
+    - presentation:adapters-tv-androidtv
+    - presentation:adapters-tv-appletv
+    - presentation:adapters-watch-watchos
+    - presentation:adapters-watch-wearos
     - presentation:agent-platform-cli
   themeSupport: full-customizable
   accessibilitySupport: wcag-aa
   notes: |
     babysitter is a multi-surface suite. The user-facing UI is delivered by
-    the agent-mux package family (TUI / web / mobile / TV / watch) and the
+    the adapters package family (TUI / web / mobile / TV / watch) and the
     agent-platform CLI binary. Programmatic consumers use the babysitter
     SDK directly (no UI). This AgentUIImpl aggregates all UI surfaces
     available to babysitter operators. The constituent products
-    (`agent:babysitter-sdk`, `agent:agent-platform`, `agent:agent-mux`)
+    (`agent:babysitter-sdk`, `agent:agent-platform`, `agent:adapters`)
     are sibling AgentProducts that compose into the same babysitter
     umbrella narrative.
 edges:
@@ -67,16 +67,16 @@ edges:
     - target: interaction-primitive:babysitter-mcp-server
       attributes:
         mechanism: mcp-tool
-    - target: interaction-primitive:agent-mux-kanban-board
+    - target: interaction-primitive:adapters-kanban-board
       attributes:
         mechanism: ui-control
-    - target: interaction-primitive:agent-mux-hook-inbox
+    - target: interaction-primitive:adapters-hook-inbox
       attributes:
         mechanism: ui-control
-    - target: interaction-primitive:agent-mux-session-list
+    - target: interaction-primitive:adapters-session-list
       attributes:
         mechanism: ui-control
-    - target: interaction-primitive:agent-mux-session-detail
+    - target: interaction-primitive:adapters-session-detail
       attributes:
         mechanism: ui-control
     - target: interaction-primitive:babysitter-forever

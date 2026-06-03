@@ -52,6 +52,6 @@ Every import that targets a renamed package needs updating across the monorepo.
 
 ## Notes
 
-- The `agent-mux` family keeps its name (it's the multiplexer for ALL agents, not just tula)
+- The `adapters` family keeps its name (it's the multiplexer for ALL agents, not just tula)
 - `babysitter-sdk` keeps its name (it's the SDK for the babysitter orchestration engine)
 - Only the L4/L5/L6 stack packages that ARE tula get renamed

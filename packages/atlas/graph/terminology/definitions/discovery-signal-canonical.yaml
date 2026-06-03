@@ -5,7 +5,7 @@ attributes:
   termId: term:discovery-signal
   text: |
     Host-detection signal — env var, binary on PATH, file presence, registry
-    key, argv match, exit code, or a combination — used by agent-mux to detect
+    key, argv match, exit code, or a combination — used by adapters to detect
     whether a particular agent harness is the active host (or installed on the
     machine). Sourced from the legacy agent-catalog ontology
     (packages/agent-catalog/graph/schema/ontology-schema.yaml :: DiscoverySignal)

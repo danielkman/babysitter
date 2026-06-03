@@ -140,7 +140,7 @@ const traceRuntimeTask = defineTask('issue-628.trace-runtime', (args, taskCtx) =
         'Read the repository directly.',
         'Do not edit files.',
         'Use the SPEC, REUSE-AUDIT, and PROCESS-LIBRARY RESEARCH blocks as authoritative context.',
-        'Map the runtime path from meeting-aware AgentStack/AgentDispatchRun inputs through controller dispatch, agent-mux Job creation, Helm values, container env vars, shared volumes, and tests.',
+        'Map the runtime path from meeting-aware AgentStack/AgentDispatchRun inputs through controller dispatch, adapters Job creation, Helm values, container env vars, shared volumes, and tests.',
         'Identify which files are docs-only contract surfaces and which files are executable runtime surfaces.',
         'Return JSON: { runtimeCallPaths: string[], existingInfrastructure: string[], implementationSurfaces: string[], nonGoals: string[], risks: string[] }.',
         '',

@@ -16,7 +16,7 @@
     "risk:high"
   ],
   "userRequest": "Create implementation plan for issue #632: tasks-mux: ExternalTrackerBackend -- sync tasks to Jira/Linear/REST. Note: this depends on foundational work that is being implemented in parallel.",
-  "issueBody": "New backend that syncs tasks to external issue trackers as a responder type. Deliverables: ExternalTrackerBackend implementing BreakpointBackend; pluggable tracker adapters: GitHubIssues (existing), Jira (new), Linear (new), GenericREST (new); bidirectional sync: task state changes flow both ways; webhook listener for push notifications from trackers; field mapping configuration. Depends on #620 in original body, but latest comment updates dependency to #630. Related/supersedes #583. Design: docs/agent-mux-babysitter-integrations/tasks-mux-routing.md",
+  "issueBody": "New backend that syncs tasks to external issue trackers as a responder type. Deliverables: ExternalTrackerBackend implementing BreakpointBackend; pluggable tracker adapters: GitHubIssues (existing), Jira (new), Linear (new), GenericREST (new); bidirectional sync: task state changes flow both ways; webhook listener for push notifications from trackers; field mapping configuration. Depends on #620 in original body, but latest comment updates dependency to #630. Related/supersedes #583. Design: docs/adapters-babysitter-integrations/tasks-mux-routing.md",
   "issueComments": [
     {
       "author": "tmuskal",
@@ -45,10 +45,10 @@
       "Existing human responder and BreakpointBackend behavior remains compatible."
     ]
   },
-  "designDoc": "docs/agent-mux-babysitter-integrations/tasks-mux-routing.md",
+  "designDoc": "docs/adapters-babysitter-integrations/tasks-mux-routing.md",
   "docs": [
     "docs/agent-reference/process-authoring.md",
-    "docs/agent-mux-babysitter-integrations/tasks-mux-routing.md",
+    "docs/adapters-babysitter-integrations/tasks-mux-routing.md",
     "docs/agent-layer-gaps.md",
     "docs/testing/quality-gates.md",
     "packages/tasks-mux/README.md",

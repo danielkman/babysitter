@@ -17,7 +17,7 @@ metadata:
 spec:
   displayName: Claude Code CI Repair
   baseAgent: claude-code
-  adapter: agent-mux.claude-code
+  adapter: adapters.claude-code
   provider: anthropic
   model: claude-sonnet-4-5
   approvalMode: prompt

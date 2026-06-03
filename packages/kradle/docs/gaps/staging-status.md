@@ -55,7 +55,7 @@ Without the Agent Mux Gateway:
 - No transcripts are generated
 - The entire runs → sessions → transcripts pipeline is inert
 
-**Fix:** Deploy the agent-mux gateway and set `AGENT_MUX_URL` in the web deployment.
+**Fix:** Deploy the adapters gateway and set `AGENT_MUX_URL` in the web deployment.
 
 ### Real-Time Events
 - SSE endpoint emits resource events and supports replay cursors via `Last-Event-ID` or `?cursor=...` ✓

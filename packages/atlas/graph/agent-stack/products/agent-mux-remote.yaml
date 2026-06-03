@@ -1,7 +1,7 @@
 nodeKind: AgentProduct
-id: agent:agent-mux-remote
+id: agent:adapters-remote
 attributes:
-  displayName: "agent-mux-remote"
+  displayName: "adapters-remote"
   vendor: "a5c-ai"
   homepageUrl: "https://www.npmjs.com/package/@a5c-ai/adapters"
   primarySurface: sdk
@@ -16,4 +16,4 @@ attributes:
     platform features are supplied by the remote target.
 edges:
   has_version:
-    - agent-version:agent-mux-remote@current
+    - agent-version:adapters-remote@current

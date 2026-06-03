@@ -1,5 +1,5 @@
 /**
- * Typed GlobalRegistry for the kanban (agent-mux gateway) namespace.
+ * Typed GlobalRegistry for the kanban (adapters gateway) namespace.
  *
  * Built on the generic {@link createGlobalRegistry} factory to avoid
  * duplicating accessor logic across packages.

@@ -76,8 +76,8 @@
     "docs/agent-reference/process-authoring.md",
     "docs/user-guide/features/process-library.md",
     "docs/agent-layer-gaps.md",
-    "docs/agent-mux/tutorials/cost-tracking.md",
-    "docs/agent-mux-babysitter-integrations/effect-resolution.md"
+    "docs/adapters/tutorials/cost-tracking.md",
+    "docs/adapters-babysitter-integrations/effect-resolution.md"
   ],
   "constraints": [
     "Do not expand scope to full streaming/history work from #575 except where needed to avoid double-counting streaming final usage events.",
@@ -104,8 +104,8 @@
     "packages/tula/platform/src/cost/**",
     "packages/tula/platform/src/harness/**",
     "docs/agent-layer-gaps.md",
-    "docs/agent-mux/tutorials/cost-tracking.md",
-    "docs/agent-mux-babysitter-integrations/effect-resolution.md"
+    "docs/adapters/tutorials/cost-tracking.md",
+    "docs/adapters-babysitter-integrations/effect-resolution.md"
   ],
   "maxVerificationAttempts": 3
 }

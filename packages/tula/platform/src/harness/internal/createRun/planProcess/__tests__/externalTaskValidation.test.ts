@@ -82,8 +82,8 @@ describe("issue #606 external responder process validation", () => {
     );
   });
 
-  it("warns instead of failing when agent responder tasks are valid but agent-mux is unavailable", async () => {
-    const processPath = path.join(tmpDir, "unavailable-agent-mux-process.mjs");
+  it("warns instead of failing when agent responder tasks are valid but adapters is unavailable", async () => {
+    const processPath = path.join(tmpDir, "unavailable-adapters-process.mjs");
     _setDiscoverExternalAgentsForValidationTesting(async () => ({
       available: false,
       agents: [],
@@ -97,7 +97,7 @@ describe("issue #606 external responder process validation", () => {
       `
       import { defineTask } from "@a5c-ai/babysitter-sdk";
 
-      const externalReview = defineTask("issue-606/unavailable-agent-mux", () => ({
+      const externalReview = defineTask("issue-606/unavailable-adapters", () => ({
         kind: "agent",
         title: "External review",
         agent: {

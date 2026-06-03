@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-export * from './agent-mux-harness-mock.js';
+export * from './adapters-harness-mock.js';
 
-import { parseArgs, runMockHarness } from './agent-mux-harness-mock.js';
+import { parseArgs, runMockHarness } from './adapters-harness-mock.js';
 
 const invokedAsScript = (() => {
   try {
@@ -15,7 +15,7 @@ const invokedAsScript = (() => {
 })();
 
 if (invokedAsScript) {
-  process.stderr.write('[agent-mux] "mock-harness" is deprecated, use "agent-mux-harness-mock" instead.\n');
+  process.stderr.write('[adapters] "mock-harness" is deprecated, use "adapters-harness-mock" instead.\n');
   const args = parseArgs(process.argv.slice(2));
   runMockHarness(args).then(
     (code) => {

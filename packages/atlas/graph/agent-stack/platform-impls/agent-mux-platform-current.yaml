@@ -1,9 +1,9 @@
 nodeKind: AgentPlatformImpl
-id: agent-platform-impl:agent-mux.platform@current
+id: agent-platform-impl:adapters.platform@current
 attributes:
-  displayName: "agent-mux Platform (current) — surface registry"
-  agentVersionId: agent-version:agent-mux@current
-  packageRef: source-ref:agent-mux-github
+  displayName: "adapters Platform (current) — surface registry"
+  agentVersionId: agent-version:adapters@current
+  packageRef: source-ref:adapters-github
   subagentDefinitionFormat: none
   nativeExtensionFormat: none
   nativeExtensionManifestPath: ''
@@ -22,7 +22,7 @@ attributes:
   supportedChannelKinds:
     - mcp-channel
   notes: |
-    agent-mux platform layer registers the bundled multi-surface
+    adapters platform layer registers the bundled multi-surface
     presentations (TUI, CLI, webui, mobile-{ios,android}, tv-*, watch-*)
     and brokers MCP through to the bridged remote agent. Plugins,
     skills, slash commands, and subagents live with the remote target.
@@ -30,7 +30,7 @@ edges:
   realizes:
     - target: layer:6-agent-platform
   composes:
-    - target: agent:agent-mux
+    - target: agent:adapters
       role: platform
   bundles: []
   supports:

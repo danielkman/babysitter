@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "AgentMux TV",
-    "slug": "agent-mux-tv",
+    "slug": "adapters-tv",
     "scheme": "agentmux-tv",
     "version": "0.0.0",
     "orientation": "landscape",

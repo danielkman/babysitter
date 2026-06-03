@@ -42,7 +42,7 @@ const auditRepoSurfaceTask = defineTask('issue-324.audit-repo-surface', () => ({
   kind: 'shell',
   title: 'Audit Droid repo metadata surface',
   command: [
-    'rg -n "@factory/droid-cli|@factory/cli|agent-version:droid@current|droid-adapter|installMethods" packages/agent-mux packages/atlas docs/agent-mux/reference/agents/droid.md',
+    'rg -n "@factory/droid-cli|@factory/cli|agent-version:droid@current|droid-adapter|installMethods" packages/adapters packages/atlas docs/adapters/reference/agents/droid.md',
     'sed -n "1,80p" packages/atlas/graph/agent-stack/versions/droid-current.yaml',
   ].join('\n'),
   expectedExitCode: 0,
@@ -89,7 +89,7 @@ const implementDroidAssimilationTask = defineTask('issue-324.implement-droid-ass
 const verifyNoStalePackageTask = defineTask('issue-324.verify-no-stale-package', ({ stalePackage }) => ({
   kind: 'shell',
   title: 'Verify stale package references are gone from live Droid surfaces',
-  command: `if rg -n "${stalePackage}" packages/adapters/adapters/src/droid-adapter.ts packages/adapters/adapters/tests/droid-adapter.test.ts docs/agent-mux/reference/agents/droid.md; then exit 1; fi`,
+  command: `if rg -n "${stalePackage}" packages/adapters/adapters/src/droid-adapter.ts packages/adapters/adapters/tests/droid-adapter.test.ts docs/adapters/reference/agents/droid.md; then exit 1; fi`,
   expectedExitCode: 0,
   labels: ['verification', 'grep'],
 }));
@@ -98,7 +98,7 @@ const verifyCanonicalPackageTask = defineTask('issue-324.verify-canonical-packag
   kind: 'shell',
   title: 'Verify canonical Droid package metadata',
   command: [
-    `rg -n "${targetPackage}" packages/adapters/adapters/src/droid-adapter.ts packages/adapters/adapters/tests/droid-adapter.test.ts docs/agent-mux/reference/agents/droid.md packages/atlas/graph/agent-stack/versions/droid-current.yaml`,
+    `rg -n "${targetPackage}" packages/adapters/adapters/src/droid-adapter.ts packages/adapters/adapters/tests/droid-adapter.test.ts docs/adapters/reference/agents/droid.md packages/atlas/graph/agent-stack/versions/droid-current.yaml`,
     `rg -n ">=${targetVersion}|${targetVersion}" packages/atlas/graph/agent-stack/versions/droid-current.yaml`,
   ].join('\n'),
   expectedExitCode: 0,
@@ -116,7 +116,7 @@ const runQualityCommandTask = defineTask('issue-324.run-quality-command', ({ com
 const summarizeDiffTask = defineTask('issue-324.summarize-diff', () => ({
   kind: 'shell',
   title: 'Summarize final diff',
-  command: 'git diff -- packages/adapters/adapters/src/droid-adapter.ts packages/adapters/adapters/tests/droid-adapter.test.ts docs/agent-mux/reference/agents/droid.md packages/atlas/graph/agent-stack/versions/droid-current.yaml',
+  command: 'git diff -- packages/adapters/adapters/src/droid-adapter.ts packages/adapters/adapters/tests/droid-adapter.test.ts docs/adapters/reference/agents/droid.md packages/atlas/graph/agent-stack/versions/droid-current.yaml',
   expectedExitCode: 0,
   labels: ['git', 'review'],
 }));

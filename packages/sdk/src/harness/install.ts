@@ -1,5 +1,5 @@
 /**
- * Harness installation and discovery via agent-mux delegation.
+ * Harness installation and discovery via adapters delegation.
  *
  * Instead of maintaining per-harness install logic in babysitter, we delegate
  * to @a5c-ai/adapters which already has comprehensive adapter detection,
@@ -17,7 +17,7 @@ import { join } from "node:path";
 import { execFilePromise, installCliViaNpm, renderCommand, runPackageBinaryViaNpx } from "./installSupport";
 
 // ---------------------------------------------------------------------------
-// Agent name mapping (babysitter harness name -> agent-mux adapter name)
+// Agent name mapping (babysitter harness name -> adapters adapter name)
 // ---------------------------------------------------------------------------
 
 const HARNESS_TO_AMUX: Readonly<Record<string, string>> = {
@@ -114,13 +114,13 @@ async function getAgentMuxClient(): Promise<AgentMuxClientLike> {
 }
 
 // ---------------------------------------------------------------------------
-// Discovery via agent-mux
+// Discovery via adapters
 // ---------------------------------------------------------------------------
 
 /**
- * Discovers installed harnesses by delegating to agent-mux's adapter registry.
+ * Discovers installed harnesses by delegating to adapters's adapter registry.
  *
- * Falls back to the legacy probe-based discovery if agent-mux is unavailable.
+ * Falls back to the legacy probe-based discovery if adapters is unavailable.
  */
 export async function discoverHarnessesViaAmux(): Promise<HarnessDiscoveryResult[]> {
   const client = await getAgentMuxClient();
@@ -135,7 +135,7 @@ export async function discoverHarnessesViaAmux(): Promise<HarnessDiscoveryResult
   for (const spec of KNOWN_HARNESSES) {
     const agentMuxName = HARNESS_TO_AMUX[spec.name];
     if (!agentMuxName) {
-      // No agent-mux mapping -- report as not installed
+      // No adapters mapping -- report as not installed
       results.push({
         name: spec.name,
         installed: false,
@@ -154,7 +154,7 @@ export async function discoverHarnessesViaAmux(): Promise<HarnessDiscoveryResult
       version: info?.version ?? undefined,
       cliPath: info?.cliPath ?? undefined,
       cliCommand: spec.cli,
-      configFound: false, // agent-mux doesn't track config dirs
+      configFound: false, // adapters doesn't track config dirs
       capabilities: spec.capabilities,
       platform: process.platform,
     });
@@ -165,11 +165,11 @@ export async function discoverHarnessesViaAmux(): Promise<HarnessDiscoveryResult
 }
 
 // ---------------------------------------------------------------------------
-// Installation via agent-mux
+// Installation via adapters
 // ---------------------------------------------------------------------------
 
 /**
- * Install a harness CLI by delegating to agent-mux's adapter install().
+ * Install a harness CLI by delegating to adapters's adapter install().
  */
 export async function installHarnessViaAmux(
   harnessName: string,
@@ -181,8 +181,8 @@ export async function installHarnessViaAmux(
       harness: harnessName,
       success: false,
       status: "unsupported",
-      installer: "agent-mux",
-      warning: `No agent-mux adapter mapping for "${harnessName}". Cannot install via agent-mux.`,
+      installer: "adapters",
+      warning: `No adapters adapter mapping for "${harnessName}". Cannot install via adapters.`,
     };
   }
 
@@ -204,7 +204,7 @@ export async function installHarnessViaAmux(
       harness: harnessName,
       success: false,
       status: "unsupported",
-      installer: "agent-mux",
+      installer: "adapters",
       warning: `Agent-mux adapter "${agentMuxName}" does not support install().`,
     };
   }
@@ -219,7 +219,7 @@ export async function installHarnessViaAmux(
     dryRun: options.dryRun || undefined,
     success: result.ok,
     status: options.dryRun ? "planned" : result.ok ? "installed" : "failed",
-    installer: "agent-mux",
+    installer: "adapters",
     summary: result.message ?? (result.ok ? `Installed ${harnessName}` : `Failed to install ${harnessName}`),
     command: result.command || undefined,
     output: [result.stdout, result.stderr].filter(Boolean).join("\n") || undefined,
@@ -349,7 +349,7 @@ export function _resetAmuxInstallClientCache(): void {
 }
 
 /**
- * Override the agent-mux module for testing.
+ * Override the adapters module for testing.
  * Pass `undefined` to restore require-based resolution.
  * @internal
  */

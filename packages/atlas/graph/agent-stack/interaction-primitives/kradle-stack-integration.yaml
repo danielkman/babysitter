@@ -1,12 +1,12 @@
-# How Kradle fits into the agentic stack alongside agent-mux and babysitter.
-# Kradle owns the repository/policy/dispatch plane; agent-mux owns the session
+# How Kradle fits into the agentic stack alongside adapters and babysitter.
+# Kradle owns the repository/policy/dispatch plane; adapters owns the session
 # plane; babysitter owns the process orchestration plane.
 
 # ═══════════════════════════════════════════
 # Cross-product orchestration flow
 # ═══════════════════════════════════════════
 
-# Kradle's orchestration primitives connect to agent-mux and babysitter
+# Kradle's orchestration primitives connect to adapters and babysitter
 # primitives to form the full dispatch→execute→merge flow.
 ---
 nodeKind: OrchestrationPrimitive
@@ -15,8 +15,8 @@ attributes:
   displayName: "Kradle→Agent Mux Handoff"
   description: |
     After Kradle assembles context and provisions a workspace, it hands
-    off to agent-mux for the actual agent session. Kradle creates the
-    dispatch run, agent-mux manages the chat/tool loop, and Kradle
+    off to adapters for the actual agent session. Kradle creates the
+    dispatch run, adapters manages the chat/tool loop, and Kradle
     receives the artifacts back when the session completes. This is
     the boundary between the forge plane and the agent execution plane.
   kind: session-lifecycle

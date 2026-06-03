@@ -1,8 +1,8 @@
 {
-  "scope": "Implement the first missing gap in agent-mux: a real Claude server-mode / channels transport path, including adapter/core/gateway integration, honest capability semantics, focused tests, and documentation updates.",
+  "scope": "Implement the first missing gap in adapters: a real Claude server-mode / channels transport path, including adapter/core/gateway integration, honest capability semantics, focused tests, and documentation updates.",
   "targetScore": 95,
   "maxRefinementPasses": 3,
-  "workspaceRoot": "C:/work/agent-mux",
+  "workspaceRoot": "C:/work/adapters",
   "researchInputs": {
     "docsToCheck": [
       "https://code.claude.com/docs/en/channels",

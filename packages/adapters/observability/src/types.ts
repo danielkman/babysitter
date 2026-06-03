@@ -1,5 +1,5 @@
 /**
- * Common types and interfaces for agent-mux observability.
+ * Common types and interfaces for adapters observability.
  */
 
 /**
@@ -52,7 +52,7 @@ export interface LogContext {
 }
 
 /**
- * Logger interface for agent-mux.
+ * Logger interface for adapters.
  */
 export interface Logger {
   level: string;
@@ -97,7 +97,7 @@ export interface Logger {
 }
 
 /**
- * Telemetry interface for agent-mux.
+ * Telemetry interface for adapters.
  */
 export interface Telemetry {
   /** Record agent run start */

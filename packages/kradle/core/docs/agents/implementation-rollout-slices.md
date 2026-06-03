@@ -121,7 +121,7 @@ Tests:
 
 Deliverables:
 
-- add `src/agent-mux-client.js`;
+- add `src/adapters-client.js`;
 - launch Agent Mux run/session;
 - bind IDs to attempts;
 - stream events into run detail;

@@ -15,7 +15,7 @@ const analyzeTask = defineTask("analyze", (args) => ({
 }));
 ```
 
-### New (external via agent-mux)
+### New (external via adapters)
 ```javascript
 const reviewTask = defineTask("review", (args) => ({
   kind: "agent",
@@ -23,8 +23,8 @@ const reviewTask = defineTask("review", (args) => ({
   agent: {
     name: "Code Reviewer",
     prompt: "Review the changes in the working directory...",
-    responderType: "agent",   // tasks-mux routes to agent-mux
-    adapter: "claude-code",   // NEW — which agent-mux adapter
+    responderType: "agent",   // tasks-mux routes to adapters
+    adapter: "claude-code",   // NEW — which adapters adapter
     model: "claude-sonnet-4-6", // optional — model override
     provider: "anthropic",    // optional — provider override
     timeoutMs: 300_000,       // optional — per-task timeout
@@ -59,7 +59,7 @@ interface AgentTaskOptions {
   prompt: string | { instructions: string[] };
   outputSchema?: Record<string, unknown>;
   responderType?: "internal" | "human" | "agent" | "tracker" | "auto";
-  adapter?: string;           // agent-mux adapter name
+  adapter?: string;           // adapters adapter name
   fallbackType?: "internal" | "human" | "agent" | "tracker" | "auto";
   model?: string;             // model override
   provider?: string;          // provider override

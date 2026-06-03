@@ -1,19 +1,19 @@
-# agent-mux ← babysitter-harness Adapter Spec
+# adapters ← babysitter-harness Adapter Spec
 
 ## 1. Overview
 
-agent-mux adds a `babysitter` adapter that allows agent-mux users to target babysitter-harness as an agent. When someone runs `adapters run --agent babysitter --prompt "..."`, agent-mux spawns the babysitter CLI as a subprocess, streams its output as normalized `AgentEvent`s, and handles interaction (approvals, input).
+adapters adds a `babysitter` adapter that allows adapters users to target babysitter-harness as an agent. When someone runs `adapters run --agent babysitter --prompt "..."`, adapters spawns the babysitter CLI as a subprocess, streams its output as normalized `AgentEvent`s, and handles interaction (approvals, input).
 
-This is the **reverse direction** of the babysitter-harness integration — where babysitter-harness consumes agent-mux as a library, the babysitter adapter lets agent-mux consume babysitter as a target.
+This is the **reverse direction** of the babysitter-harness integration — where babysitter-harness consumes adapters as a library, the babysitter adapter lets adapters consume babysitter as a target.
 
 ---
 
 ## 2. Why
 
-- Users of agent-mux who want babysitter orchestration capabilities can target `babysitter` as an agent
-- agent-mux TUI can display babysitter runs alongside other agents
-- agent-mux session management can track babysitter sessions
-- Remote invocation (Docker/SSH/K8s) of babysitter becomes possible via agent-mux's invocation modes
+- Users of adapters who want babysitter orchestration capabilities can target `babysitter` as an agent
+- adapters TUI can display babysitter runs alongside other agents
+- adapters session management can track babysitter sessions
+- Remote invocation (Docker/SSH/K8s) of babysitter becomes possible via adapters's invocation modes
 
 ---
 
@@ -29,7 +29,7 @@ packages/adapters/src/babysitter-adapter.ts
 
 ```typescript
 import { BaseAdapter } from './base-adapter';
-import type { SpawnArgs, AgentCapabilities, ModelCapabilities, AgentConfig } from '@agent-mux/core';
+import type { SpawnArgs, AgentCapabilities, ModelCapabilities, AgentConfig } from '@adapters/core';
 
 export class BabysitterAdapter extends BaseAdapter {
   readonly agent = 'babysitter' as const;
@@ -177,7 +177,7 @@ async buildSpawnArgs(options: RunOptions): Promise<SpawnArgs> {
 
 ### 3.5 Event Parsing
 
-babysitter-harness must output events in agent-mux JSONL format. The adapter parses each line:
+babysitter-harness must output events in adapters JSONL format. The adapter parses each line:
 
 ```typescript
 parseEvent(line: string, context: ParseContext): AgentEvent | null {
@@ -185,7 +185,7 @@ parseEvent(line: string, context: ParseContext): AgentEvent | null {
     const data = JSON.parse(line);
 
     // babysitter outputs structured JSON with a 'type' field
-    // matching agent-mux event types
+    // matching adapters event types
     if (data.type && data.runId) {
       return data as AgentEvent;
     }
@@ -281,7 +281,7 @@ getAuthGuidance(): AuthSetupGuidance {
 
 ## 4. babysitter-harness Output Format
 
-For agent-mux to parse babysitter output, babysitter-harness must support outputting agent-mux compatible JSONL events.
+For adapters to parse babysitter output, babysitter-harness must support outputting adapters compatible JSONL events.
 
 ### 4.1 Output Mode Flag
 
@@ -306,7 +306,7 @@ When `--output-format adapters-events` is set, babysitter-harness outputs one `A
 
 ### 4.2 Event Mapping
 
-babysitter-harness maps its internal events to agent-mux event types:
+babysitter-harness maps its internal events to adapters event types:
 
 | babysitter internal | AgentEvent type |
 |--------------------|-----------------|
@@ -349,7 +349,7 @@ export { BabysitterAdapter } from './babysitter-adapter';
 In `packages/core/src/adapter-registry.ts`, add to default adapters:
 
 ```typescript
-import { BabysitterAdapter } from '@agent-mux/adapters';
+import { BabysitterAdapter } from '@adapters/adapters';
 
 const DEFAULT_ADAPTERS = [
   // ... existing adapters
@@ -360,7 +360,7 @@ const DEFAULT_ADAPTERS = [
 ### 5.2 CLI Usage
 
 ```bash
-# Run babysitter via agent-mux
+# Run babysitter via adapters
 adapters run --agent babysitter --prompt "Fix all lint errors" --env BABYSITTER_HARNESS=claude-code
 
 # List babysitter sessions
@@ -375,21 +375,21 @@ adapters run --agent babysitter --prompt "..." --invocation docker --image babys
 
 ### 5.3 TUI Integration
 
-When running babysitter through agent-mux TUI:
+When running babysitter through adapters TUI:
 
 ```bash
 adapters tui --agent babysitter
 ```
 
-The TUI displays babysitter events using the standard agent-mux event renderers. babysitter-specific information (iteration count, pending effects, governance decisions) can be displayed via babysitter TUI plugins if installed.
+The TUI displays babysitter events using the standard adapters event renderers. babysitter-specific information (iteration count, pending effects, governance decisions) can be displayed via babysitter TUI plugins if installed.
 
 ---
 
-## 6. Gaps in agent-mux That Need Filling
+## 6. Gaps in adapters That Need Filling
 
 ### 6.1 Multi-Turn Orchestration Awareness
 
-agent-mux's `maxTurns` is a simple counter. babysitter's orchestration model is richer (journal-based, effect-driven, quality-gated). The adapter should:
+adapters's `maxTurns` is a simple counter. babysitter's orchestration model is richer (journal-based, effect-driven, quality-gated). The adapter should:
 
 - Map `maxTurns` → `BABYSITTER_MAX_ITERATIONS`
 - Emit `turn_start`/`turn_end` events at iteration boundaries
@@ -397,7 +397,7 @@ agent-mux's `maxTurns` is a simple counter. babysitter's orchestration model is 
 
 ### 6.2 Process Library / Skill Discovery
 
-When targeting babysitter, agent-mux's skill discovery should delegate to babysitter:
+When targeting babysitter, adapters's skill discovery should delegate to babysitter:
 
 ```bash
 adapters skills --agent babysitter
@@ -406,7 +406,7 @@ adapters skills --agent babysitter
 
 ### 6.3 Run State Introspection
 
-agent-mux sessions are message-based. babysitter runs are journal-based. The adapter's `parseSessionFile()` should:
+adapters sessions are message-based. babysitter runs are journal-based. The adapter's `parseSessionFile()` should:
 
 - Read `run.json` for metadata
 - Read journal events for message history

@@ -30,7 +30,7 @@ export { PiSdkAdapter } from './pi-sdk-adapter.js';
 export { OmpAdapter } from './omp-adapter.js';
 export { OpenClawAdapter } from './openclaw-adapter.js';
 export { HermesAdapter } from './hermes-adapter.js';
-export { AgentMuxRemoteAdapter } from './agent-mux-remote-adapter.js';
+export { AgentMuxRemoteAdapter } from './adapters-remote-adapter.js';
 export { QwenAdapter } from './qwen-adapter.js';
 export { BabysitterAdapter } from './babysitter-adapter.js';
 

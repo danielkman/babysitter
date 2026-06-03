@@ -74,7 +74,7 @@ graph TB
     end
 
     subgraph "Entry Points"
-        ADAPTERS["adapters CLI<br/>(agent-mux)"]
+        ADAPTERS["adapters CLI<br/>(adapters)"]
         TRIGGERS["Triggers<br/>(GitHub Action)"]
         KRADLE["Kradle<br/>(Kubernetes operator + web UI)"]
     end

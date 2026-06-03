@@ -8,7 +8,7 @@ import {
   lookupHarnessImage,
 } from "../src/invocation.js";
 
-describe("agent-mux invocation catalog contract", () => {
+describe("adapters invocation catalog contract", () => {
   it("re-exports the graph-backed harness image catalog verbatim", () => {
     expect(HARNESS_IMAGE_CATALOG).toEqual(getHarnessImages());
   });

@@ -5,7 +5,7 @@ attributes:
   kind: tui
   description: |
     Terminal UI bundled with the OMP (oh-my-pi) community fork. Surfaced
-    through the agent-mux adapter for v6.
+    through the adapters adapter for v6.
   renderingTechnology: vte
   themeSupport: none
   accessibilitySupport: basic

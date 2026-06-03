@@ -85,7 +85,7 @@ async function runProgrammatic(
       if (!adapter.capabilities.supportsStdinInjection || typeof stream?.send !== 'function') {
         throw new AgentMuxError(
           'STDIN_NOT_AVAILABLE',
-          `${adapter.agent} does not support live prompt injection in the current agent-mux transport`,
+          `${adapter.agent} does not support live prompt injection in the current adapters transport`,
           false,
         );
       }
@@ -96,7 +96,7 @@ async function runProgrammatic(
       if (typeof stream?.respond !== 'function') {
         throw new AgentMuxError(
           'STDIN_NOT_AVAILABLE',
-          `${adapter.agent} does not support live interaction responses in the current agent-mux transport`,
+          `${adapter.agent} does not support live interaction responses in the current adapters transport`,
           false,
         );
       }

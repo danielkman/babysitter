@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { normalizeEvent } from '../src/backends/index.js';
 import { evaluateTrigger, matchesGlob, parseQuery } from '../src/query.js';
 
-describe('agent-mux trigger evaluation', () => {
+describe('adapters trigger evaluation', () => {
   it('matches issue comments by event and mention text', () => {
     const event = normalizeEvent('github', 'issue_comment', {
       action: 'created',

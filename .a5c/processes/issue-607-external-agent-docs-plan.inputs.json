@@ -8,10 +8,10 @@
     "docs/plugins.md"
   ],
   "sourceDocs": [
-    "docs/agent-mux-babysitter-integrations/external-agent-tasks.md",
-    "docs/agent-mux-babysitter-integrations/process-authoring.md",
-    "docs/agent-mux-babysitter-integrations/effect-resolution.md",
-    "docs/agent-mux-babysitter-integrations/plugin-mode.md"
+    "docs/adapters-babysitter-integrations/external-agent-tasks.md",
+    "docs/adapters-babysitter-integrations/process-authoring.md",
+    "docs/adapters-babysitter-integrations/effect-resolution.md",
+    "docs/adapters-babysitter-integrations/plugin-mode.md"
   ],
   "relatedIssues": [
     602,
@@ -25,16 +25,16 @@
     "required adapter and optional model/provider/timeout/approvalMode/maxTurns fields",
     "fallbackToInternal behavior and non-fallback failure behavior",
     "external agent dispatch notes in docs/agent-reference/command-surfaces.md",
-    "agent-mux/amuxBridge routing overview",
+    "adapters/amuxBridge routing overview",
     "common failure modes and troubleshooting",
-    "short plugin-mode agent-mux integration note in docs/plugins.md"
+    "short plugin-mode adapters integration note in docs/plugins.md"
   ],
   "qualityGateCommands": [
     "npm run docs:lint",
     "npm run docs:snippets"
   ],
   "targetedChecks": [
-    "rg -n \"external agent|agent\\.external|external: true|fallbackToInternal|agent-mux|amuxBridge|adapter\" docs/agent-reference/process-authoring.md docs/agent-reference/command-surfaces.md docs/plugins.md",
+    "rg -n \"external agent|agent\\.external|external: true|fallbackToInternal|adapters|amuxBridge|adapter\" docs/agent-reference/process-authoring.md docs/agent-reference/command-surfaces.md docs/plugins.md",
     "git diff --check",
     "git diff --name-only"
   ]

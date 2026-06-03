@@ -19,7 +19,7 @@ import {
 function makeGatewayConfig(name, overrides = {}) {
   return createResource('AgentGatewayConfig', { name, namespace: 'kradle-org-default' }, {
     organizationRef: 'default',
-    endpointUrl: 'https://agent-mux.example.com/v1',
+    endpointUrl: 'https://adapters.example.com/v1',
     ...overrides
   });
 }
@@ -63,7 +63,7 @@ test('validate rejects config with missing name', () => {
     apiVersion: 'kradle.a5c.ai/v1alpha1',
     kind: 'AgentGatewayConfig',
     metadata: { namespace: 'kradle-org-default', labels: {}, annotations: {} },
-    spec: { organizationRef: 'default', endpointUrl: 'https://agent-mux.example.com/v1' },
+    spec: { organizationRef: 'default', endpointUrl: 'https://adapters.example.com/v1' },
     status: {}
   };
   const result = controller.validate(config);
@@ -100,7 +100,7 @@ test('validate rejects config with missing endpointUrl', () => {
 
 test('validate rejects config with invalid endpointUrl protocol', () => {
   const controller = createAgentGatewayConfigController();
-  const config = makeGatewayConfig('bad-url-gateway', { endpointUrl: 'ftp://agent-mux.example.com' });
+  const config = makeGatewayConfig('bad-url-gateway', { endpointUrl: 'ftp://adapters.example.com' });
   const result = controller.validate(config);
 
   assert.equal(result.valid, false, 'config with unsupported URL protocol must fail validation');
@@ -117,7 +117,7 @@ test('validate rejects config with invalid endpointUrl protocol', () => {
 
 test('validate accepts config with wss:// endpoint URL', () => {
   const controller = createAgentGatewayConfigController();
-  const config = makeGatewayConfig('ws-gateway', { endpointUrl: 'wss://agent-mux.example.com/connect' });
+  const config = makeGatewayConfig('ws-gateway', { endpointUrl: 'wss://adapters.example.com/connect' });
   const result = controller.validate(config);
 
   assert.equal(result.valid, true, 'config with wss:// endpoint must pass validation');

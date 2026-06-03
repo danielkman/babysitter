@@ -1,5 +1,5 @@
 /**
- * Simple structured logging for agent-mux.
+ * Simple structured logging for adapters.
  * Provides basic logging capabilities without complex dependencies.
  */
 
@@ -164,7 +164,7 @@ export function createSimpleLogger(baseContext?: LogContext): Logger {
  * Default logger instance.
  */
 export const logger = createSimpleLogger({
-  service: 'agent-mux',
+  service: 'adapters',
   version: process.env.npm_package_version || 'unknown',
 });
 

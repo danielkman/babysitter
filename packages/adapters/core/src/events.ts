@@ -403,7 +403,7 @@ import type {
 // ---------------------------------------------------------------------------
 
 /**
- * The complete discriminated union of all 67 event types emitted by agent-mux.
+ * The complete discriminated union of all 67 event types emitted by adapters.
  *
  * The `type` field is the discriminant. TypeScript narrowing works out of
  * the box: `if (event.type === 'text_delta') { event.delta; /* TextDeltaEvent *\/ }`

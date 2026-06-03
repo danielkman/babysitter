@@ -155,7 +155,7 @@ export class CodexWebSocketConnection implements WebSocketConnection {
     this.connected = true;
 
     await this.request('initialize', {
-      clientInfo: { name: 'agent-mux', version: '0.4.0' },
+      clientInfo: { name: 'adapters', version: '0.4.0' },
       capabilities: {
         experimentalApi: true,
       },

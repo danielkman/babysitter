@@ -45,7 +45,7 @@
       "packages/kradle/core/src/jitsi-agent-bridge.js",
       "packages/kradle/core/src/event-bus.js",
       "packages/kradle/core/src/agent-dispatch-controller.js",
-      "packages/kradle/core/src/agent-mux-client.js",
+      "packages/kradle/core/src/adapters-client.js",
       "packages/kradle/core/src/index.js"
     ],
     "webFiles": [

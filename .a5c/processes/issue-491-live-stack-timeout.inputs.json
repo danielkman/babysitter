@@ -3,7 +3,7 @@
   "baseBranch": "staging",
   "branchName": "agent/issue-491",
   "title": "Live-stack: BI Windows mini/DeepSeek too slow for 600s artifact monitor timeout",
-  "labels": ["bug", "effort:small", "ci", "agent-mux", "live-stack", "priority:low"],
+  "labels": ["bug", "effort:small", "ci", "adapters", "live-stack", "priority:low"],
   "processLibrarySources": {
     "requestedPath": ".a5c/process-library",
     "requestedPathStatus": "Not present in this checkout.",
@@ -13,7 +13,7 @@
       ".a5c/processes/issue-367-global-babysitter-shim-preflight.mjs"
     ]
   },
-  "summary": "Raise the agent-mux prompt artifact completion monitor timeout from 600s to 900s after maintainer decision on issue #491.",
+  "summary": "Raise the adapters prompt artifact completion monitor timeout from 600s to 900s after maintainer decision on issue #491.",
   "targetFiles": [
     "packages/adapters/launch/src/launch.ts",
     "packages/adapters/cli/src/commands/launch.ts",

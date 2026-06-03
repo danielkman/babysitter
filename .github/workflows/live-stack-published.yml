@@ -99,8 +99,8 @@ jobs:
                 'bridged-hooks': {id:'bridged-hooks', interactive:'false', bridge_interactive:'true', bridge_hooks:'true'},
               };
               const installModes = {
-                'vanilla': {id:'vanilla', required_trace_ids:'agentMuxRunId,agentMuxSessionId,transportTraceId', expected_artifacts:'agent-mux-events,transport-mux-trace,provider-trace-redacted'},
-                'bp': {id:'babysitter-plugin', required_trace_ids:'agentMuxRunId,agentMuxSessionId,transportTraceId', expected_artifacts:'agent-mux-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted'},
+                'vanilla': {id:'vanilla', required_trace_ids:'agentMuxRunId,agentMuxSessionId,transportTraceId', expected_artifacts:'adapters-events,transport-mux-trace,provider-trace-redacted'},
+                'bp': {id:'babysitter-plugin', required_trace_ids:'agentMuxRunId,agentMuxSessionId,transportTraceId', expected_artifacts:'adapters-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted'},
               };
               function miniBpSupported(entry) {
                 if (entry.install !== 'bp') return true;
@@ -117,8 +117,8 @@ jobs:
                 const a = agents[entry.agent] || {agent: entry.agent, adapters_agent: entry.agent};
                 const m = modelFor(entry);
                 return {
-                  id: 'live.agent-mux.' + a.agent + '.' + m.provider + '.' + m.model,
-                  agent_path: 'agent-mux', agent: a.agent, adapters_agent: a.adapters_agent,
+                  id: 'live.adapters.' + a.agent + '.' + m.provider + '.' + m.model,
+                  agent_path: 'adapters', agent: a.agent, adapters_agent: a.adapters_agent,
                   integration_type: 'third-party-plugin',
                   provider: m.provider, adapters_provider: m.adapters_provider, model: m.model,
                   required_env: m.required_env, live: entry.live !== false,
@@ -147,10 +147,10 @@ jobs:
             # Default: claude+codex+pi vanilla NI with gpt-5.5
             node -e "
               const foundry = {provider:'foundry-openai', adapters_provider:'foundry', model:'gpt-5.5', required_env:'AZURE_API_KEY,AGENT_MUX_API_BASE'};
-              const vanillaInstall = {id:'vanilla', required_trace_ids:'agentMuxRunId,agentMuxSessionId,transportTraceId', expected_artifacts:'agent-mux-events,transport-mux-trace,provider-trace-redacted'};
+              const vanillaInstall = {id:'vanilla', required_trace_ids:'agentMuxRunId,agentMuxSessionId,transportTraceId', expected_artifacts:'adapters-events,transport-mux-trace,provider-trace-redacted'};
               const ni = {id:'non-interactive', interactive:'false', bridge_interactive:'false', bridge_hooks:'false'};
               function scenario(agent, adapters_agent, m) {
-                return {id:'live.agent-mux.'+agent+'.'+m.provider+'.'+m.model, agent_path:'agent-mux', agent, adapters_agent, integration_type:'third-party-plugin', provider:m.provider, adapters_provider:m.adapters_provider, model:m.model, required_env:m.required_env, live:true, process_mode:'predefined'};
+                return {id:'live.adapters.'+agent+'.'+m.provider+'.'+m.model, agent_path:'adapters', agent, adapters_agent, integration_type:'third-party-plugin', provider:m.provider, adapters_provider:m.adapters_provider, model:m.model, required_env:m.required_env, live:true, process_mode:'predefined'};
               }
               const vanillaNi = [
                 {scenario: scenario('claude-code','claude',foundry), interaction_mode: ni, install_mode: vanillaInstall},
@@ -203,7 +203,7 @@ jobs:
           set -euo pipefail
           echo "Installing published packages with tag: @${NPM_TAG}"
 
-          # Install the agent-mux CLI (includes transport-mux, atlas catalog, etc.)
+          # Install the adapters CLI (includes transport-mux, atlas catalog, etc.)
           npm install -g @a5c-ai/adapters@${NPM_TAG}
 
           # Install the babysitter SDK CLI
@@ -221,13 +221,13 @@ jobs:
 
           # Verify installations
           echo "--- Installed versions ---"
-          agent-mux --version 2>/dev/null || echo "agent-mux: not found"
+          adapters --version 2>/dev/null || echo "adapters: not found"
           babysitter --version 2>/dev/null || echo "babysitter: not found"
 
       - name: Install harness agents
         run: |
-          # Install agent CLIs via agent-mux
-          agent-mux install ${{ matrix.scenario.adapters_agent }} --json || echo "Agent install via agent-mux failed, trying direct..."
+          # Install agent CLIs via adapters
+          adapters install ${{ matrix.scenario.adapters_agent }} --json || echo "Agent install via adapters failed, trying direct..."
 
           # Ensure pip user-bin is on PATH
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"

@@ -10,7 +10,7 @@ attributes:
   stackScope: full
   description: |
     Community fork of Pi (oh-my-pi) — a terminal coding agent surfaced
-    through the v6 catalog via the agent-mux adapter. Inherits Pi's
+    through the v6 catalog via the adapters adapter. Inherits Pi's
     plugin shape but maintained independently.
 edges:
   has_version:

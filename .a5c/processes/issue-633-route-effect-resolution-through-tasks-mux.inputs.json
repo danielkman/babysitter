@@ -1,7 +1,7 @@
 {
   "issueNumber": 633,
   "branch": "staging",
-  "designDocPath": "docs/agent-mux-babysitter-integrations/tasks-mux-routing.md",
+  "designDocPath": "docs/adapters-babysitter-integrations/tasks-mux-routing.md",
   "dependencyIssues": [630, 631],
   "targetQuality": 90,
   "maxImplementationIterations": 3,
@@ -25,10 +25,10 @@
       "plugins/babysitter-unified"
     ],
     "referenceDocs": [
-      "docs/agent-mux-babysitter-integrations/tasks-mux-routing.md",
-      "docs/agent-mux-babysitter-integrations/effect-resolution.md",
-      "docs/agent-mux-babysitter-integrations/plugin-mode.md",
-      "docs/agent-mux-babysitter-integrations/testing.md"
+      "docs/adapters-babysitter-integrations/tasks-mux-routing.md",
+      "docs/adapters-babysitter-integrations/effect-resolution.md",
+      "docs/adapters-babysitter-integrations/plugin-mode.md",
+      "docs/adapters-babysitter-integrations/testing.md"
     ]
   },
   "acceptanceFocus": [
@@ -39,7 +39,7 @@
     "agent responder tasks route through AgentMuxResponderBackend",
     "human responder tasks route through BreakpointBackend",
     "tracker responder tasks route through ExternalTrackerBackend when available or fail with explicit unsupported/unavailable evidence",
-    "tests prevent direct SDK or agent-platform bypass routing to agent-mux for task effects"
+    "tests prevent direct SDK or agent-platform bypass routing to adapters for task effects"
   ],
   "planningNotes": {
     "issueDependencyCorrection": "Issue #633 body references #620/#621, but the latest issue comment states dependencies are #630 and #631.",

@@ -11,7 +11,7 @@ afterEach(() => {
 });
 
 describe("getAmuxAdapterMetadata", () => {
-  it("falls back to static metadata when agent-mux exports are unavailable", () => {
+  it("falls back to static metadata when adapters exports are unavailable", () => {
     _setAmuxModuleForTesting({});
 
     const metadata = getAmuxAdapterMetadata("claude-code");

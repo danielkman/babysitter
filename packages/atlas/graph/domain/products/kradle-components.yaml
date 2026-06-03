@@ -333,7 +333,7 @@ edges:
       notes: "Kradle webhook bus component"
 ---
 nodeKind: StackPart
-id: stack-part:kradle-agent-mux-client
+id: stack-part:kradle-adapters-client
 attributes:
   displayName: "Kradle Agent Mux Client"
   category: api
@@ -352,7 +352,7 @@ edges:
     - target: platform:kradle
       notes: "Kradle Agent Mux client component"
   implemented_by:
-    - target: agent:agent-mux
+    - target: agent:adapters
       notes: "Communicates with Agent Mux gateway"
 
 # ---------------------------------------------------------------------------
@@ -967,16 +967,16 @@ edges:
     - platform:kradle
 ---
 nodeKind: TestableClaim
-id: claim:kradle-integrates-with-agent-mux
+id: claim:kradle-integrates-with-adapters
 attributes:
   displayName: "Kradle integrates with Agent Mux"
   description: |
     Verifies that platform:kradle has an integrates_with edge pointing
-    to agent:agent-mux, confirming the agent dispatch integration
+    to agent:adapters, confirming the agent dispatch integration
     path is modeled in the graph.
   testStatus: untested
   testType: unit
-  testCommand: "node -e \"const i=JSON.parse(require('fs').readFileSync('packages/atlas/src/index.json','utf8'));process.exit(i.edges.some(e=>e.from==='platform:kradle'&&e.kind==='integrates_with'&&e.to==='agent:agent-mux')?0:1)\""
+  testCommand: "node -e \"const i=JSON.parse(require('fs').readFileSync('packages/atlas/src/index.json','utf8'));process.exit(i.edges.some(e=>e.from==='platform:kradle'&&e.kind==='integrates_with'&&e.to==='agent:adapters')?0:1)\""
   category: graph-integrity
   priority: high
 edges:

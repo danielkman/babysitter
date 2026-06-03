@@ -2,7 +2,7 @@
 
 import { main } from './cli.js';
 
-process.stderr.write('[agent-mux] "triggers-mux" is deprecated, use "agent-mux-triggers" instead.\n');
+process.stderr.write('[adapters] "triggers-mux" is deprecated, use "adapters-triggers" instead.\n');
 main().then((code) => {
   process.exitCode = code;
 }).catch((error: unknown) => {

@@ -222,7 +222,7 @@ export async function validateProcessExport(filePath: string): Promise<void> {
         category: ErrorCategory.Validation,
         nextSteps: [
           "Agent responder tasks must use kind: \"agent\" with agent.responderType: \"agent\"",
-          "Set agent.adapter to a non-empty agent-mux adapter name such as \"codex\" or \"claude-code\"",
+          "Set agent.adapter to a non-empty adapters adapter name such as \"codex\" or \"claude-code\"",
           "If adapter routing is optional, set fallbackType: \"internal\" but keep adapter present for the preferred agent responder",
         ],
       },
@@ -235,10 +235,10 @@ export async function validateProcessExport(filePath: string): Promise<void> {
         timeout: 1000,
       });
       if (!externalAgents.available) {
-        console.warn("[babysitter] process uses agent responder tasks but agent-mux is not detected; validation will continue");
+        console.warn("[babysitter] process uses agent responder tasks but adapters is not detected; validation will continue");
       }
     } catch {
-      console.warn("[babysitter] process uses agent responder tasks but agent-mux discovery failed; validation will continue");
+      console.warn("[babysitter] process uses agent responder tasks but adapters discovery failed; validation will continue");
     }
   }
   const agentTaskIds = getDefineTaskIdsByKind(source, "agent");

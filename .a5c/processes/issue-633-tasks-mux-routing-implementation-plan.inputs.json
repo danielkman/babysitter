@@ -3,10 +3,10 @@
   "baseBranch": "staging",
   "dependencyIssues": [630, 631],
   "designDocs": [
-    "docs/agent-mux-babysitter-integrations/tasks-mux-routing.md",
-    "docs/agent-mux-babysitter-integrations/effect-resolution.md",
-    "docs/agent-mux-babysitter-integrations/testing.md",
-    "docs/agent-mux-babysitter-integrations/overview.md"
+    "docs/adapters-babysitter-integrations/tasks-mux-routing.md",
+    "docs/adapters-babysitter-integrations/effect-resolution.md",
+    "docs/adapters-babysitter-integrations/testing.md",
+    "docs/adapters-babysitter-integrations/overview.md"
   ],
   "maxImplementationIterations": 2,
   "verificationCommands": [
@@ -20,14 +20,14 @@
     "git diff --check"
   ],
   "routingAcceptance": [
-    "SDK task effect resolution must delegate routable task decisions through tasks-mux rather than direct agent-mux dispatch.",
+    "SDK task effect resolution must delegate routable task decisions through tasks-mux rather than direct adapters dispatch.",
     "agent-platform CLI orchestration, including resolveAndPostEffect, must delegate routing decisions to tasks-mux.",
     "Plugin stop-hook continuation must query tasks-mux before deciding host-agent delegation.",
     "Internal responder effects must route to the agent-core path through tasks-mux.",
     "Agent responder effects must route through AgentMuxResponderBackend.",
     "Human responder effects must route through BreakpointBackend.",
     "Tracker responder effects must route through ExternalTrackerBackend when configured, or produce explicit unavailable evidence when not configured.",
-    "Tests must prevent direct SDK or agent-platform bypass routing to agent-mux for task effects."
+    "Tests must prevent direct SDK or agent-platform bypass routing to adapters for task effects."
   ],
   "sourceScope": {
     "primaryPackages": [
@@ -42,7 +42,7 @@
     "knownReusableFiles": [
       "packages/tasks-mux/src/router.ts",
       "packages/tasks-mux/src/types.ts",
-      "packages/tasks-mux/src/backends/agent-mux.ts",
+      "packages/tasks-mux/src/backends/adapters.ts",
       "packages/tasks-mux/src/backends/external-tracker.ts",
       "packages/tasks-mux/src/backends/index.ts",
       "packages/sdk/src/harness/hooks/stopHookContinuation.ts",
@@ -57,7 +57,7 @@
     "currentIssueCommentState": "Issue #633 contains a comment that implementation is complete in PR #685; execution should verify current checkout state before adding or changing implementation code.",
     "currentStagingEvidence": [
       "packages/tasks-mux/src/router.ts exposes routeTask and route decisions for internal, human, agent, tracker, and auto.",
-      "packages/tasks-mux/src/backends/agent-mux.ts exposes AgentMuxResponderBackend.",
+      "packages/tasks-mux/src/backends/adapters.ts exposes AgentMuxResponderBackend.",
       "packages/tasks-mux/src/backends/external-tracker.ts exposes ExternalTrackerBackend.",
       "packages/tula/platform/src/harness/internal/createRun/orchestration/effects.ts contains resolveViaTasksMuxIfRoutable.",
       "packages/sdk/src/harness/hooks/stopHookContinuation.ts imports routeTask/isHostDelegableRoute before host delegation.",

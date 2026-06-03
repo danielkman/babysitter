@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     # Only run on the canonical repo and when the required API key secret is available.
     # (On forks / without secrets, this job is silently skipped.)
-    if: github.repository == 'a5c-ai/agent-mux' && vars.HARNESS_PROBE_ENABLED == 'true'
+    if: github.repository == 'a5c-ai/adapters' && vars.HARNESS_PROBE_ENABLED == 'true'
 
     steps:
       - uses: actions/checkout@v4

@@ -2,7 +2,7 @@
 
 ## Summary
 
-When a process dispatches an `agent` task with `external: true`, the effect resolution pipeline must route through agent-mux instead of the internal agent-core session. Most of the infrastructure already exists in agent-platform's amuxBridge.
+When a process dispatches an `agent` task with `external: true`, the effect resolution pipeline must route through adapters instead of the internal agent-core session. Most of the infrastructure already exists in agent-platform's amuxBridge.
 
 ## Current Pipeline
 
@@ -46,14 +46,14 @@ async function resolveExternalAgentEffect(
     ? agentDef.prompt
     : agentDef.prompt?.instructions?.join("\n") ?? action.taskDef?.title ?? "";
 
-  // Check agent-mux availability
+  // Check adapters availability
   const amuxClient = await getAmuxClient();
   if (!amuxClient) {
     if (agentDef.fallbackToInternal) {
-      process.stderr.write(`[babysitter] agent-mux not available, falling back to internal for ${adapter}\n`);
+      process.stderr.write(`[babysitter] adapters not available, falling back to internal for ${adapter}\n`);
       return resolveInternalAgentEffect(action, args);
     }
-    return { status: "error", error: `agent-mux not available — cannot dispatch to ${adapter}` };
+    return { status: "error", error: `adapters not available — cannot dispatch to ${adapter}` };
   }
 
   // Dispatch via amuxBridge (already exists)
@@ -94,7 +94,7 @@ In `packages/tula/platform/src/harness/internal/createRun/orchestration/index.ts
 
 ```typescript
 if (action.kind === "agent" && action.taskDef?.agent?.external) {
-  // Route through agent-mux instead of internal agent-core session
+  // Route through adapters instead of internal agent-core session
   const agentDef = action.taskDef.agent;
   const adapter = agentDef.adapter ?? agentDef.name;
   const prompt = typeof agentDef.prompt === "string" ? agentDef.prompt : /* ... */;
@@ -130,7 +130,7 @@ The amuxBridge in agent-platform already handles:
 - Harness → adapter name mapping (`amuxHarnessMap.ts`)
 - Agent-mux client lifecycle (`amuxClientFactory.ts`)
 - Event streaming and mapping (`amuxEventMapper.ts`)
-- Cost tracking from agent-mux events
+- Cost tracking from adapters events
 - Session ID management
 
 This means ~80% of the effect resolution code is already written. The new code is primarily routing logic to detect external tasks and call the existing bridge.
@@ -139,7 +139,7 @@ This means ~80% of the effect resolution code is already written. The new code i
 
 | Scenario | Behavior |
 |----------|----------|
-| agent-mux not installed | If `fallbackToInternal: true`, use agent-core. Otherwise, return error result. |
+| adapters not installed | If `fallbackToInternal: true`, use agent-core. Otherwise, return error result. |
 | Adapter not installed | Return error with message: "adapter X not installed. Run `adapters install X`" |
 | Adapter not authenticated | Return error with message: "adapter X not authenticated. Run `adapters auth X`" |
 | Agent times out | Return error with timeout details. Partial output included if available. |

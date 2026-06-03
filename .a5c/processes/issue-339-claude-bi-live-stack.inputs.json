@@ -51,7 +51,7 @@
       { "agent": "claude", "model": "anthropic-sonnet46", "mode": "bridged-hooks", "install": "bp", "live": true }
     ],
     "artifactChecklist": [
-      "agent-mux-events",
+      "adapters-events",
       "transport-mux-trace",
       "provider-trace-redacted",
       "plugin-command-transcript for babysitter-plugin lanes",

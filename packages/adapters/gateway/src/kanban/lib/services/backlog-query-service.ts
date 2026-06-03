@@ -815,7 +815,7 @@ const defaultProjects: readonly BacklogSeedProject[] = [
     key: 'KANBAN',
     name: 'Kanban App',
     description:
-      'Board-, issue-, and workspace-first orchestration surface for Babysitter and agent-mux.',
+      'Board-, issue-, and workspace-first orchestration surface for Babysitter and adapters.',
     issueIds: [
       'KANBAN-DEBT-003',
       'KANBAN-GAP-001',
@@ -885,7 +885,7 @@ const defaultIssues: readonly BacklogSeedIssue[] = [
     summary:
       'Define the target product model explicitly and track the remaining work as board-product capabilities instead of treating the package as observability-first.',
     description:
-      'The browser product shell now lives in `packages/adapters/webui`, with shared runtime and API ownership in the surrounding agent-mux packages. The unresolved work is deeper product capability, not cosmetic renaming.',
+      'The browser product shell now lives in `packages/adapters/webui`, with shared runtime and API ownership in the surrounding adapters packages. The unresolved work is deeper product capability, not cosmetic renaming.',
     status: 'review',
     priority: 'high',
     labels: [debtLabel],
@@ -968,7 +968,7 @@ const defaultIssues: readonly BacklogSeedIssue[] = [
       },
       {
         id: 'KANBAN-GAP-001-ac-4',
-        title: 'Prefer shared agent-mux or service-layer primitives instead of kanban-only models.',
+        title: 'Prefer shared adapters or service-layer primitives instead of kanban-only models.',
         satisfied: false,
       },
     ],
@@ -1071,7 +1071,7 @@ const defaultIssues: readonly BacklogSeedIssue[] = [
     id: 'KANBAN-GAP-001-D',
     key: 'KANBAN-GAP-001-D',
     projectId: PROJECT_ID,
-    title: 'Prefer a shared agent-mux service seam for the model',
+    title: 'Prefer a shared adapters service seam for the model',
     status: 'ready',
     priority: 'high',
     labels: [debtLabel],
@@ -1124,7 +1124,7 @@ const defaultIssues: readonly BacklogSeedIssue[] = [
     decomposition: [
       {
         id: 'KANBAN-GAP-002-decomp-1',
-        title: 'Add shared board primitives in agent-mux core.',
+        title: 'Add shared board primitives in adapters core.',
         kind: 'implementation',
         status: 'ready',
       },
@@ -1204,7 +1204,7 @@ const defaultIssues: readonly BacklogSeedIssue[] = [
     decomposition: [
       {
         id: 'KANBAN-GAP-004-decomp-1',
-        title: 'Extend shared review and diff types in agent-mux core.',
+        title: 'Extend shared review and diff types in adapters core.',
         kind: 'implementation',
         status: 'ready',
       },

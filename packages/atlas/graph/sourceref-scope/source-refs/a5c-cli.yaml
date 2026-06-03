@@ -10,5 +10,5 @@ attributes:
   kind: npm-package
   notes: |
     @a5c-ai/agent npm package. The a5c TUI+CLI bridges to remote agents via
-    agent-mux and adds a5c-specific plugin/skill/blueprint plumbing on top.
+    adapters and adds a5c-specific plugin/skill/blueprint plumbing on top.
 edges: {}

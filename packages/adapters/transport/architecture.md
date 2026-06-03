@@ -171,7 +171,7 @@ but never raw protocol-specific payloads across the layer boundary.
 
 ### Control plane
 
-1. `agent-mux` resolves canonical provider config.
+1. `adapters` resolves canonical provider config.
 2. `translate-for-harness.ts` decides the exposed protocol expected by the harness.
 3. `launch.ts` starts the `transport-mux` runtime when a proxy bridge is needed.
 4. `transport-mux` boots the protocol codec and provider adapter implied by that config.
@@ -370,7 +370,7 @@ runtime.applyHarnessEnv(env);
 await runtime.stop();
 ```
 
-Use this when `agent-mux` needs the package-owned runtime to serve a harness-facing transport surface directly.
+Use this when `adapters` needs the package-owned runtime to serve a harness-facing transport surface directly.
 
 ## Capability negotiation
 

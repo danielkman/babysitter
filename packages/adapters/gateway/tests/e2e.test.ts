@@ -464,7 +464,7 @@ describe('gateway end-to-end', () => {
           thinkingTokens: 111,
           cachedTokens: 222,
         },
-        cwd: 'C:\\work\\agent-mux',
+        cwd: 'C:\\work\\adapters',
       },
     ]);
     fakeClient.nativeSessionDetails.set('codex:native-codex-session', {
@@ -481,7 +481,7 @@ describe('gateway end-to-end', () => {
         thinkingTokens: 111,
         cachedTokens: 222,
       },
-      cwd: 'C:\\work\\agent-mux',
+      cwd: 'C:\\work\\adapters',
       messages: [
         { role: 'user', content: 'hello from disk' },
         { role: 'assistant', content: 'hello back', thinking: 'checking disk transcript' },
@@ -528,7 +528,7 @@ describe('gateway end-to-end', () => {
               thinkingTokens: 111,
               cachedTokens: 222,
             },
-            cwd: 'C:\\work\\agent-mux',
+            cwd: 'C:\\work\\adapters',
             source: 'native',
           }),
         ]),

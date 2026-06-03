@@ -1,7 +1,7 @@
 nodeKind: DevicePair
-id: device-pair:agent-mux-mobile-ios
+id: device-pair:adapters-mobile-ios
 attributes:
-  displayName: "agent-mux mobile (iOS) paired device"
+  displayName: "adapters mobile (iOS) paired device"
   deviceKind: mobile
   platform: ios
   pairingMethod: qr-code
@@ -10,9 +10,9 @@ attributes:
   revoked: false
 ---
 nodeKind: DevicePair
-id: device-pair:agent-mux-mobile-android
+id: device-pair:adapters-mobile-android
 attributes:
-  displayName: "agent-mux mobile (Android) paired device"
+  displayName: "adapters mobile (Android) paired device"
   deviceKind: mobile
   platform: android
   pairingMethod: short-code
@@ -21,9 +21,9 @@ attributes:
   revoked: false
 ---
 nodeKind: DevicePair
-id: device-pair:agent-mux-web-desktop
+id: device-pair:adapters-web-desktop
 attributes:
-  displayName: "agent-mux web desktop paired session"
+  displayName: "adapters web desktop paired session"
   deviceKind: desktop
   platform: web
   pairingMethod: oauth

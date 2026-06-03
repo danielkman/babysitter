@@ -35,7 +35,7 @@ graph TB
     subgraph "Mux Layer"
         HM -->|"canonical events"| SDK
         TM -->|"normalized protocol"| UPSTREAM["Any Provider<br/>(Anthropic, OpenAI, Google, Azure)"]
-        AM["agent-mux"] -->|"launch + proxy"| HARNESS
+        AM["adapters"] -->|"launch + proxy"| HARNESS
     end
 
     subgraph "Orchestration Layer"
@@ -51,7 +51,7 @@ Each layer solves a specific interoperability problem:
 |-----|---------|----------|
 | **hooks-mux** | Each harness has different hook event names, payloads, output formats | Normalizes native events to canonical phases, runs unified handlers, renders results back to harness format |
 | **transport-mux** | Harnesses speak different API protocols (Anthropic, OpenAI, Google) | HTTP proxy translates between the harness's native protocol and any upstream provider |
-| **agent-mux** | Harnesses have different CLI surfaces, capabilities, plugin loading | Unified `adapters launch` resolves provider config, starts proxy if needed, spawns harness with correct args |
+| **adapters** | Harnesses have different CLI surfaces, capabilities, plugin loading | Unified `adapters launch` resolves provider config, starts proxy if needed, spawns harness with correct args |
 
 ---
 
@@ -130,7 +130,7 @@ graph LR
 
 **When proxy is needed:** Determined by `translateForHarness()` — if the harness adapter declares `proxyRequired: true` for a given provider, transport-mux bridges the gap.
 
-### agent-mux: Unified Launch Surface
+### adapters: Unified Launch Surface
 
 `adapters launch` resolves provider config, decides if a proxy is needed, prepares harness automation state, and spawns the harness:
 

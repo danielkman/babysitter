@@ -78,7 +78,7 @@ export function buildPrimaryLiveStackCommands(
   if (scenario.agent.agent === 'tula' && scenario.agent.installMode === 'babysitter-plugin') {
     commandEnv['BABYSITTER_RUNS_DIR'] = commandEnv['BABYSITTER_RUNS_DIR'] ?? path.join(options.cwd, '.a5c', 'runs');
     commandEnv['BABYSITTER_RUNS_SCOPE'] = commandEnv['BABYSITTER_RUNS_SCOPE'] ?? 'repo';
-    const fixturesDir = path.join(options.cwd, 'packages', 'agent-mux', 'cli', 'tests', 'live-stack', 'fixtures');
+    const fixturesDir = path.join(options.cwd, 'packages', 'adapters', 'cli', 'tests', 'live-stack', 'fixtures');
     const processesDir = path.join(options.cwd, '.a5c', 'processes');
     const processMode = options.env['LIVE_STACK_PROCESS_MODE'] ?? 'predefined';
     const setupCommands: CommandExecution[] = [ensureLiveArtifactDirCommand(commandEnv, options.cwd)];
@@ -229,7 +229,7 @@ fs.writeFileSync(p.join(dest,"inputs.json"),JSON.stringify({traceId,outputDir:p.
     generatedPluginInstallCommand(commandEnv, scenario, options.cwd, SETUP_TIMEOUT_MS),
     ensureLiveArtifactDirCommand(commandEnv, options.cwd),
   ];
-  const fixturesDir = path.join(options.cwd, 'packages', 'agent-mux', 'cli', 'tests', 'live-stack', 'fixtures');
+  const fixturesDir = path.join(options.cwd, 'packages', 'adapters', 'cli', 'tests', 'live-stack', 'fixtures');
   const processesDir = path.join(options.cwd, '.a5c', 'processes');
   // Cross-platform file operations — bash backslash paths break on Windows
   const nodeFileCopy = (src: string, dest: string) =>
@@ -779,7 +779,7 @@ async function writeExpectedArtifacts(
   captured: Partial<LiveStackEvidenceBundle>,
 ): Promise<Record<string, string>> {
   const artifactFiles = Object.fromEntries(scenario.expectedArtifacts.map((name) => [name, path.join(artifactsDir, `${name}.json`)]));
-  await writeJsonIfMissing(artifactFiles['agent-mux-events'], { scenarioId: scenario.scenarioId, agentMuxRunId: captured.agentMuxRunId, agentMuxSessionId: captured.agentMuxSessionId, commandCount: commandResults.length });
+  await writeJsonIfMissing(artifactFiles['adapters-events'], { scenarioId: scenario.scenarioId, agentMuxRunId: captured.agentMuxRunId, agentMuxSessionId: captured.agentMuxSessionId, commandCount: commandResults.length });
   await writeJsonIfMissing(artifactFiles['plugin-command-transcript'], { scenarioId: scenario.scenarioId, commandResults });
   await writeJsonIfMissing(artifactFiles['transport-mux-trace'], { scenarioId: scenario.scenarioId, transportTraceId: captured.transportTraceId, provider: scenario.model.provider, model: scenario.model.model });
   await writeJsonIfMissing(artifactFiles['provider-trace-redacted'], { scenarioId: scenario.scenarioId, provider: scenario.model.provider, model: scenario.model.model, transportTraceId: captured.transportTraceId, status: 'command-completed' });

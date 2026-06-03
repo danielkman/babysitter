@@ -1,5 +1,5 @@
 /**
- * @process agent-mux-implementation
+ * @process adapters-implementation
  * @description Iterative spec-driven TDD implementation of @a5c-ai/adapters with adversarial review convergence
  */
 
@@ -355,9 +355,9 @@ const PHASES = [
 
 export async function process(inputs, ctx) {
   const {
-    scopeFile = 'C:/work/agent-mux/agent-mux-scope.md',
-    projectRoot = 'C:/work/agent-mux',
-    specDir = 'C:/work/agent-mux/docs',
+    scopeFile = 'C:/work/adapters/adapters-scope.md',
+    projectRoot = 'C:/work/adapters',
+    specDir = 'C:/work/adapters/docs',
     targetScore = 99,
     maxIterationsPerPhase = 10,
   } = inputs;
@@ -367,7 +367,7 @@ export async function process(inputs, ctx) {
   const phaseResults = [];
   const allSpecs = PHASES.flatMap(p => p.specs).filter((s, i, a) => a.indexOf(s) === i);
 
-  ctx.log('info', `Starting agent-mux implementation. ${PHASES.length} phases, target: ${targetScore}%`);
+  ctx.log('info', `Starting adapters implementation. ${PHASES.length} phases, target: ${targetScore}%`);
 
   // ============================================================================
   // PROJECT SETUP (Phase 0)

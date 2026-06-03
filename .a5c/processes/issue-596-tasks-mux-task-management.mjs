@@ -24,7 +24,7 @@
  * - packages/tasks-mux/src/types.ts currently has BreakpointStatus values pending/routed/claimed/answered/completed/expired/cancelled and Urgency low/medium/high, but not task priority low/medium/high/critical or assigned/in-progress/blocked/escalated.
  * - packages/tasks-mux/src/backend.ts exposes breakpoint operations only: submit/get/wait/listPending/answer/cancel/listResponders/claim. It has no task search, bulk mutation, dependency, comment, history, metrics, audit, export, notification, escalation, or form contract.
  * - packages/tasks-mux/src/backends/git-native.ts persists .breakpoints JSON and scans files for pending breakpoints. It can be extended, but indexing/search must remain compatible with existing JSON files.
- * - Later tasks-mux work is present on staging: responder types, external-tracker backend, and agent-mux backend now exist. Reuse those seams; do not recreate tracker or agent routing infrastructure.
+ * - Later tasks-mux work is present on staging: responder types, external-tracker backend, and adapters backend now exist. Reuse those seams; do not recreate tracker or agent routing infrastructure.
  * - docs/agent-layer-gaps.md still lists issue #596 capabilities as open platform gaps.
  *
  * @process methodologies/atdd-tdd
@@ -318,7 +318,7 @@ export const designArchitectureTask = defineTask('issue-596.design-architecture'
         'Decide canonical naming for task priority, dependency, lifecycle status, assignment, comments, history, metrics, audit, export, forms, notifications, and escalation.',
         'Separate required core primitives from optional provider integrations. Notification and escalation providers must be disabled by default and credential-safe.',
         'Define state-transition validation rules including terminal statuses and allowed transitions for pending/routed/claimed/answered/completed/expired/cancelled plus assigned/in-progress/blocked/escalated.',
-        'Define backend capability behavior for git-native, server, GitHub Issues, external-tracker, and agent-mux. Unsupported capabilities must return explicit typed errors rather than silent no-ops.',
+        'Define backend capability behavior for git-native, server, GitHub Issues, external-tracker, and adapters. Unsupported capabilities must return explicit typed errors rather than silent no-ops.',
         'Define search/filter semantics, pagination/sorting defaults, and bulk operation result shape with per-item success/error details.',
         'Return JSON with architectureSummary, newTypes, backendInterfaceExtensions, compatibilityPlan, migrationPlan, providerPlan, openDecisions, and implementationSlices.',
       ],
@@ -341,7 +341,7 @@ export const authorTestsFirstPlanTask = defineTask('issue-596.tests-first-plan',
         'Author tests before production code changes.',
         'Cover schema parsing/defaulting for priorities, dependencies, statuses, assignments, history, comments, forms, metrics, audit, export metadata, notifications, and escalation config.',
         'Cover backward compatibility fixtures for existing breakpoint JSON without new fields.',
-        'Cover backend contract tests using a shared capability suite for git-native, server, GitHub Issues, external-tracker, and agent-mux where applicable.',
+        'Cover backend contract tests using a shared capability suite for git-native, server, GitHub Issues, external-tracker, and adapters where applicable.',
         'Cover search/filter combinations including status, priority, assignee/responder, tags/domains, text query, dependency state, created/updated ranges, sorting, and pagination.',
         'Cover bulk approve/close/reassign partial failure behavior and idempotency.',
         'Cover invalid state transitions, dependency blocking, history/audit append behavior, comments, SLA metrics, export/backup redaction, and provider disabled-by-default behavior.',
@@ -394,7 +394,7 @@ export const implementBackendParityTask = defineTask('issue-596.implement-backen
         'Use structured JSON parsing and typed helpers, not ad hoc string parsing.',
         'Implement search/filter and bulk operations efficiently enough for git-native, while preserving deterministic output and malformed-file tolerance.',
         'Map server and GitHub Issues backends to the new contract where possible; for unsupported operations, expose explicit unsupported capability errors and tests.',
-        'Integrate with external-tracker and agent-mux only through their current public seams. Do not duplicate tracker or agent routing code.',
+        'Integrate with external-tracker and adapters only through their current public seams. Do not duplicate tracker or agent routing code.',
         'Ensure dependency blocking and escalation timeout behavior are deterministic and testable without real credentials or external network calls.',
         'Return JSON with changedFiles, backendCapabilityMatrix, compatibilityFixtures, commandsRun, and unsupportedCapabilities.',
       ],

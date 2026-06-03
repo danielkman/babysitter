@@ -1,6 +1,6 @@
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-workspaces-list
+id: interaction-primitive:adapters-cli-workspaces-list
 attributes:
   displayName: "adapters workspaces list"
   kind: cli-subcommand
@@ -16,7 +16,7 @@ attributes:
     packages/adapters/cli/src/commands/workspaces.ts:54-72.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-workspaces-create
+id: interaction-primitive:adapters-cli-workspaces-create
 attributes:
   displayName: "adapters workspaces create"
   kind: cli-subcommand
@@ -38,7 +38,7 @@ attributes:
     Source: packages/adapters/cli/src/commands/workspaces.ts:73-99.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-workspaces-archive
+id: interaction-primitive:adapters-cli-workspaces-archive
 attributes:
   displayName: "adapters workspaces archive"
   kind: cli-subcommand
@@ -55,7 +55,7 @@ attributes:
     packages/adapters/cli/src/commands/workspaces.ts:100-110.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-workspaces-cleanup
+id: interaction-primitive:adapters-cli-workspaces-cleanup
 attributes:
   displayName: "adapters workspaces cleanup"
   kind: cli-subcommand
@@ -72,7 +72,7 @@ attributes:
     packages/adapters/cli/src/commands/workspaces.ts:111-122.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-workspaces-recover
+id: interaction-primitive:adapters-cli-workspaces-recover
 attributes:
   displayName: "adapters workspaces recover"
   kind: cli-subcommand
@@ -89,7 +89,7 @@ attributes:
     packages/adapters/cli/src/commands/workspaces.ts:123-134.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-workspaces-delete
+id: interaction-primitive:adapters-cli-workspaces-delete
 attributes:
   displayName: "adapters workspaces delete"
   kind: cli-subcommand
@@ -107,7 +107,7 @@ attributes:
     Source: packages/adapters/cli/src/commands/workspaces.ts:135-147.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-workspaces-sync-sessions
+id: interaction-primitive:adapters-cli-workspaces-sync-sessions
 attributes:
   displayName: "adapters workspaces sync-sessions"
   kind: cli-subcommand
@@ -124,7 +124,7 @@ attributes:
     packages/adapters/cli/src/commands/workspaces.ts:148-155.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-launch
+id: interaction-primitive:adapters-cli-launch
 attributes:
   displayName: "adapters launch"
   kind: cli-subcommand
@@ -171,7 +171,7 @@ attributes:
     packages/adapters/cli/src/commands/launch.ts:268-580.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-detect-host
+id: interaction-primitive:adapters-cli-detect-host
 attributes:
   displayName: "adapters detect-host"
   kind: cli-subcommand
@@ -186,7 +186,7 @@ attributes:
     packages/adapters/cli/src/commands/detect-host.ts:13-39.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-doctor
+id: interaction-primitive:adapters-cli-doctor
 attributes:
   displayName: "adapters doctor"
   kind: cli-subcommand
@@ -202,7 +202,7 @@ attributes:
     packages/adapters/cli/src/commands/doctor.ts:136-150.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-tui
+id: interaction-primitive:adapters-cli-tui
 attributes:
   displayName: "adapters tui"
   kind: cli-subcommand
@@ -217,11 +217,11 @@ attributes:
     - "0:success:TUI exited normally"
     - "1:general-error:@a5c-ai/tula-tui not installed"
   description: |
-    Launch the Ink-based agent-mux TUI with built-in plus user plugins.
+    Launch the Ink-based adapters TUI with built-in plus user plugins.
     Source: packages/adapters/cli/src/commands/tui.ts:6-77.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-remote-install
+id: interaction-primitive:adapters-cli-remote-install
 attributes:
   displayName: "adapters remote install"
   kind: cli-subcommand
@@ -248,7 +248,7 @@ attributes:
     packages/adapters/cli/src/commands/remote.ts:121-234.
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-cli-remote-update
+id: interaction-primitive:adapters-cli-remote-update
 attributes:
   displayName: "adapters remote update"
   kind: cli-subcommand

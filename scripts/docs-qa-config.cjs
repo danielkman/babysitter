@@ -29,8 +29,8 @@ const publishedDocsExcludePatterns = [
   "user-guide/03-information-architecture.md",
   "user-guide/BEST-PRACTICES.md",
   "user-guide/SUMMARY.md",
-  "agent-mux/research/**",
-  "agent-mux/superpowers/plans/**",
+  "adapters/research/**",
+  "adapters/superpowers/plans/**",
   "reference/COMMANDS_AND_HOOKS_VERIFICATION_2026-01-20.md",
   "reference/GENERALIZED_HOOK_SYSTEM_IMPLEMENTATION.md",
   "reference/HOOK_DRIVEN_ORCHESTRATION.md",
@@ -50,8 +50,8 @@ const historicalDocPrefixes = [
   "docs/reference-repos/",
   "docs/retrospectives/",
   "docs/harness-features-backlog/",
-  "docs/agent-mux/research/",
-  "docs/agent-mux/superpowers/plans/",
+  "docs/adapters/research/",
+  "docs/adapters/superpowers/plans/",
 ];
 
 const historicalDocFiles = [
@@ -76,10 +76,10 @@ const publishedLandingPages = [
   "docs/user-guide/tutorials/index.md",
   "docs/user-guide/features/index.md",
   "docs/user-guide/reference/index.md",
-  "docs/agent-mux/README.md",
-  "docs/agent-mux/tutorials/README.md",
-  "docs/agent-mux/reference/README.md",
-  "docs/agent-mux/archive/README.md",
+  "docs/adapters/README.md",
+  "docs/adapters/tutorials/README.md",
+  "docs/adapters/reference/README.md",
+  "docs/adapters/archive/README.md",
   "docs/assimilation/index.md",
   "docs/assimilation/harness/index.md",
   "docs/plugins.md",
@@ -99,7 +99,7 @@ const requiredPublishedFrontmatterDocs = [
 
 const futurePackageReferencePrefixes = [
   "docs/v6-spec-and-roadmap/",
-  "docs/agent-mux/terminology-and-structure-gaps/",
+  "docs/adapters/terminology-and-structure-gaps/",
   "docs/daily-updates/",
 ];
 

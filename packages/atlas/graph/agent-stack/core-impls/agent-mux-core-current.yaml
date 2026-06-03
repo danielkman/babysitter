@@ -1,27 +1,27 @@
 nodeKind: AgentCoreImpl
-id: agent-core-impl:agent-mux.core@current
+id: agent-core-impl:adapters.core@current
 attributes:
-  displayName: "agent-mux Core (current) — bridge to remote agent loop"
-  agentVersionId: agent-version:agent-mux@current
-  packageRef: source-ref:agent-mux-github
+  displayName: "adapters Core (current) — bridge to remote agent loop"
+  agentVersionId: agent-version:adapters@current
+  packageRef: source-ref:adapters-github
   loopIteratorPolicy: delegated-to-remote
   loopIteratorNotes: |
-    agent-mux does not host its own model loop. The agent-mux core proxies
+    adapters does not host its own model loop. The adapters core proxies
     a normalized event stream from whichever bridged remote agent is
     selected (claude-code, codex, etc.) and projects it onto the
     multi-surface UI suite.
   contextManagementStrategy: delegated-to-remote
   compactionTriggerNotes: |
-    Whatever the bridged remote agent does. agent-mux performs no local
+    Whatever the bridged remote agent does. adapters performs no local
     compaction.
   subagentInvokerPolicy: delegated-to-remote
   subagentInvokerNotes: |
     Subagent semantics are emitted by the bridged remote agent and
-    proxied verbatim through agent-mux.
+    proxied verbatim through adapters.
   resultSynthesisPolicy: delegated-to-remote
   resultSynthesisNotes: |
     Final responses are produced by the bridged remote agent and forwarded
-    by agent-mux to the active surface (TUI/web/mobile/...).
+    by adapters to the active surface (TUI/web/mobile/...).
   stopDetectionStrategy: delegated-to-remote
   transportClientLibrary: none
   supportedTransportProtocols: []
@@ -29,14 +29,14 @@ attributes:
   streamingFidelity: full
   thinkingChannelHandling: delegated-to-remote
   notes: |
-    agent-mux is a multi-surface UI suite, not an agent loop. The core
+    adapters is a multi-surface UI suite, not an agent loop. The core
     layer is a thin event projection / session-state cache feeding the
     bundled presentations.
 edges:
   realizes:
     - target: layer:4-agent-core
   composes:
-    - target: agent:agent-mux
+    - target: agent:adapters
       role: core
   speaks: []
   supports_orchestration_primitive:

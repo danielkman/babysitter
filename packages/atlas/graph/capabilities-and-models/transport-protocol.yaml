@@ -11,7 +11,7 @@ attributes:
   responseShape: "stdout / terminal session"
   evidenceRefs:
     - "repo-sdk-fallback"
-    - "repo-agent-mux-host"
+    - "repo-adapters-host"
 ---
 nodeKind: TransportProtocol
 id: transportProtocol:shell-hook-runtime
@@ -51,7 +51,7 @@ attributes:
     - "repo-transport-mux-scorecard"
 edges:
   used_by:
-    - target: agent:agent-mux
+    - target: agent:adapters
 
 ---
 nodeKind: TransportProtocol
@@ -77,7 +77,7 @@ attributes:
     - "repo-transport-mux-scorecard"
 edges:
   used_by:
-    - target: agent:agent-mux
+    - target: agent:adapters
 
 ---
 nodeKind: TransportProtocol
@@ -109,7 +109,7 @@ attributes:
     - "repo-transport-mux-scorecard"
 edges:
   used_by:
-    - target: agent:agent-mux
+    - target: agent:adapters
 
 ---
 nodeKind: TransportProtocol
@@ -135,7 +135,7 @@ attributes:
     - "repo-transport-mux-scorecard"
 edges:
   used_by:
-    - target: agent:agent-mux
+    - target: agent:adapters
 
 ---
 nodeKind: TransportProtocol
@@ -160,7 +160,7 @@ attributes:
     - "repo-transport-mux-scorecard"
 edges:
   used_by:
-    - target: agent:agent-mux
+    - target: agent:adapters
 
 ---
 nodeKind: TransportProtocol
@@ -186,7 +186,7 @@ attributes:
     - "repo-transport-mux-scorecard"
 edges:
   used_by:
-    - target: agent:agent-mux
+    - target: agent:adapters
 
 ---
 nodeKind: TransportProtocol
@@ -212,7 +212,7 @@ attributes:
     - "repo-transport-mux-scorecard"
 edges:
   used_by:
-    - target: agent:agent-mux
+    - target: agent:adapters
 
 ---
 nodeKind: TransportProtocol
@@ -239,4 +239,4 @@ attributes:
 
 edges:
   used_by:
-    - target: agent:agent-mux
+    - target: agent:adapters

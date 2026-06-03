@@ -211,7 +211,7 @@ function verifyTulaCoreDependents() {
     'packages/tula/platform/src/harness/internal/createRun/orchestration/internalTools.ts',
     'packages/tula/platform/src/harness/internal/createRun/__tests__/createRun.test.ts',
     'packages/tula/platform/src/harness/internal/createRun/__tests__/utils.test.ts',
-    'packages/tula/platform/src/harness/agent-mux/__tests__/amuxInvokerWiring.test.ts',
+    'packages/tula/platform/src/harness/adapters/__tests__/amuxInvokerWiring.test.ts',
     'packages/tula/cli/src/index.ts',
     'packages/tula/cli/src/cli/commands/harness/resumeRun.ts',
   ];
@@ -237,7 +237,7 @@ function verifyTulaCoreExternalSurfaces() {
     '.github/workflows/live-stack.yml',
     'docs/workspace-validation.md',
     'docs/package-and-plugin-map.md',
-    'docs/testing/agent-mux-and-runtime-e2e.md',
+    'docs/testing/adapters-and-runtime-e2e.md',
     'docs/testing/current-test-command-inventory.md',
     'docs/testing/stack-permutations.md',
     'packages/tula/cli/README.md',
@@ -424,7 +424,7 @@ function verifyTopLevelAgentMuxPackageMoves() {
 
   for (const move of TOP_LEVEL_AGENT_MUX_PACKAGE_MOVES) {
     if (pathExists(move.oldPath)) {
-      fail(`${move.oldPath} must be moved under packages/agent-mux`);
+      fail(`${move.oldPath} must be moved under packages/adapters`);
     }
 
     if (!packageExists(move.newPath)) {

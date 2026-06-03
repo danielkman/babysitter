@@ -27,7 +27,7 @@
     "packages/sdk/src/runtime/orchestrateIteration.ts",
     "packages/sdk/src/storage/types.ts",
     "packages/sdk/src/cli/main/taskCommands.ts",
-    "docs/agent-mux-babysitter-integrations/plugin-mode.md"
+    "docs/adapters-babysitter-integrations/plugin-mode.md"
   ],
   "processLibraryReferences": [
     "docs/agent-reference/process-authoring.md",

@@ -10,7 +10,7 @@
     "ready-for-dev",
     "plugins",
     "priority:medium",
-    "agent-mux",
+    "adapters",
     "transport-mux",
     "effort:large",
     "P2",
@@ -110,7 +110,7 @@
   ],
   "acceptanceCriteria": [
     "Reuse-audit findings are rendered before design or implementation work.",
-    "Runtime call paths are recorded for buffered HTTP, streaming SSE, WebSocket, passthrough, SDK journal, agent-mux context, codec lookup, and tool schema normalization.",
+    "Runtime call paths are recorded for buffered HTTP, streaming SSE, WebSocket, passthrough, SDK journal, adapters context, codec lookup, and tool schema normalization.",
     "Tests are authored before production implementation changes and red failures are verified against issue #599 behavior.",
     "Cost feedback emits exactly once per usage-bearing buffered completion or final streaming done event.",
     "Cost feedback reaches SDK journal or its narrow adapter using idempotency semantics and feeds run/effect/session cost consumers where applicable.",

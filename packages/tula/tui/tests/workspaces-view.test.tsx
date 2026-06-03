@@ -60,7 +60,7 @@ function makeInventory() {
             {
               runId: 'run-kw3',
               status: 'waiting',
-              projectName: 'agent-mux-tui',
+              projectName: 'adapters-tui',
             },
           ],
         },
@@ -93,7 +93,7 @@ function makeInventory() {
             issueId: 'issue-1',
             issueKey: 'AMTUI-KW-3',
             issueTitle: 'Implement the workspaces view',
-            projectId: 'agent-mux',
+            projectId: 'adapters',
             projectKey: 'AMTUI',
             projectName: 'Agent Mux TUI',
             linkedAt: '2026-04-27T06:30:00.000Z',

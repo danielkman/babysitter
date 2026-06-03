@@ -19,10 +19,10 @@
     "docs/agent-layer-gaps.md",
     "docs/agent-reference/process-authoring.md",
     "docs/agent-reference/command-surfaces.md",
-    "docs/agent-mux-babysitter-integrations/overview.md",
-    "docs/agent-mux-babysitter-integrations/tasks-mux-routing.md",
-    "docs/agent-mux-babysitter-integrations/external-agent-tasks.md",
-    "docs/agent-mux-babysitter-integrations/testing.md",
+    "docs/adapters-babysitter-integrations/overview.md",
+    "docs/adapters-babysitter-integrations/tasks-mux-routing.md",
+    "docs/adapters-babysitter-integrations/external-agent-tasks.md",
+    "docs/adapters-babysitter-integrations/testing.md",
     "docs/plugins.md"
   ],
   "expectedNativeTools": [
@@ -36,7 +36,7 @@
     "packages/tasks-mux/src/router.ts",
     "packages/tasks-mux/src/backend.ts",
     "packages/tasks-mux/src/backends/index.ts",
-    "packages/tasks-mux/src/backends/agent-mux.ts",
+    "packages/tasks-mux/src/backends/adapters.ts",
     "packages/tasks-mux/src/backends/external-tracker.ts",
     "packages/tasks-mux/src/mcp/server.ts",
     "packages/tasks-mux/src/mcp/tools/ask-breakpoint.ts",
@@ -45,7 +45,7 @@
     "packages/tasks-mux/src/mcp/tools/list-responders.ts",
     "packages/tasks-mux/src/index.ts",
     "packages/tasks-mux/src/__tests__/router.test.ts",
-    "packages/tasks-mux/src/__tests__/agent-mux-backend.test.ts",
+    "packages/tasks-mux/src/__tests__/adapters-backend.test.ts",
     "packages/tasks-mux/src/__tests__/external-tracker-backend.test.ts",
     "packages/agent-core/src/agenticTools/index.ts",
     "packages/agent-core/src/agenticTools/tools.ts",
@@ -68,7 +68,7 @@
     "packages/sdk/src/cli/commands/__tests__/hookRun.test.ts"
   ],
   "verificationCommands": [
-    "npm exec --workspace=@a5c-ai/tasks-mux -- vitest run src/__tests__/router.test.ts src/__tests__/agent-mux-backend.test.ts src/__tests__/external-tracker-backend.test.ts",
+    "npm exec --workspace=@a5c-ai/tasks-mux -- vitest run src/__tests__/router.test.ts src/__tests__/adapters-backend.test.ts src/__tests__/external-tracker-backend.test.ts",
     "npm run test --workspace=@a5c-ai/tasks-mux",
     "npm run typecheck --workspace=@a5c-ai/tasks-mux",
     "npm run lint --workspace=@a5c-ai/tasks-mux",
@@ -90,7 +90,7 @@
   ],
   "acceptanceNotes": [
     "Treat #577 as the parent integration issue and do not duplicate already-landed #630/#631/#633/#635 infrastructure unless the runtime audit proves a gap.",
-    "The remaining plan should make tasks-mux the unified routing hub for native built-in tools, MCP access, breakpoint delegation, approval chains, SDK human-in-loop task effects, and agent-mux-backed subtask dispatch.",
+    "The remaining plan should make tasks-mux the unified routing hub for native built-in tools, MCP access, breakpoint delegation, approval chains, SDK human-in-loop task effects, and adapters-backed subtask dispatch.",
     "Keep breakpoints sparse and use them only for genuine maintainer-level architecture or compatibility ambiguity."
   ]
 }

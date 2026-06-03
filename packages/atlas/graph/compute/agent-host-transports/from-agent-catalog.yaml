@@ -7,7 +7,7 @@ attributes:
     The agent runs as an interactive CLI in a pseudo-terminal: stdin
     is a TTY, stdout/stderr render ANSI sequences, and the host can
     inject keystrokes (including raw-mode bindings) and observe the
-    rendered terminal session. Used by agent-mux when wrapping
+    rendered terminal session. Used by adapters when wrapping
     interactive harnesses such as Claude Code, Codex, Cursor CLI,
     Gemini CLI, and Copilot CLI.
   inboundMessageFormat: |

@@ -36,8 +36,8 @@ async function main(): Promise<void> {
     return;
   }
 
-  process.stderr.write(`[agent-mux-transport-proxy] Transport: ${config.exposedTransport} -> ${config.targetProvider}\n`);
-  process.stderr.write(`[agent-mux-transport-proxy] Model: ${config.targetModel}\n`);
+  process.stderr.write(`[adapters-transport-proxy] Transport: ${config.exposedTransport} -> ${config.targetProvider}\n`);
+  process.stderr.write(`[adapters-transport-proxy] Model: ${config.targetModel}\n`);
 
   const server = await startProxyServer(config);
   process.stdout.write(
@@ -56,7 +56,7 @@ async function main(): Promise<void> {
     }
     stopping = true;
     if (signal) {
-      process.stderr.write(`[agent-mux-transport-proxy] Received ${signal}, shutting down\n`);
+      process.stderr.write(`[adapters-transport-proxy] Received ${signal}, shutting down\n`);
     }
     await server.stop();
     process.exit(0);

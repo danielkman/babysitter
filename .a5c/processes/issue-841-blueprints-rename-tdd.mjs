@@ -25,7 +25,7 @@
  * - CLI plugin command dispatch already exists in packages/sdk/src/cli/main/program.ts, packages/sdk/src/cli/main/dispatchRunSession.ts, packages/sdk/src/cli/main/argFlagParsers.ts, packages/sdk/src/cli/main/argPositionals.ts, packages/sdk/src/cli/main/usage.ts, and packages/sdk/src/cli/commands/plugin/**.
  * - Marketplace package data already exists under plugins/a5c/marketplace/ and should be moved/renamed rather than regenerated from scratch.
  * - Existing documentation surfaces include docs/plugins.md and docs/plugins/**; docs/blueprints-rename/README.md requires splitting babysitter blueprint docs from agent plugin docs.
- * - Agent plugin systems are separate and must stay named plugins: packages/extension-mux/**, packages/hooks-mux/**, .claude/plugins/**, CLAUDE_PLUGIN_ROOT, PI_PLUGIN_ROOT, and agent-mux plugin UI internals.
+ * - Agent plugin systems are separate and must stay named plugins: packages/extension-mux/**, packages/hooks-mux/**, .claude/plugins/**, CLAUDE_PLUGIN_ROOT, PI_PLUGIN_ROOT, and adapters plugin UI internals.
  * - Relevant process-library patterns found: tdd-quality-convergence.js, shared/tdd-triplet.js, gsd/iterative-convergence.js, and planning-with-files.
  */
 

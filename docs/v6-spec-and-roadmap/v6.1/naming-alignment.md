@@ -17,23 +17,23 @@ The graph uses clean layer names (Model, Provider, Transport, Agent-Core, Agent-
 
 **Recommendation:** No rename needed for published packages (breaking change). Internal docs should use graph layer names when referring to architectural concerns, "babysitter" when referring to the product/project.
 
-### 2. "agent-mux" Scope Sprawl
+### 2. "adapters" Scope Sprawl
 
-The graph has distinct layers (Core, Runtime, Platform, Interaction, Presentation) but `agent-mux` is used as a prefix for 7+ packages spanning multiple layers:
+The graph has distinct layers (Core, Runtime, Platform, Interaction, Presentation) but `adapters` is used as a prefix for 7+ packages spanning multiple layers:
 
 | Package | Graph Layer | Role |
 |---------|-------------|------|
 | `agent-comm-mux` | L4 Agent-Core, L5 Agent-Runtime | Core types + runtime utilities |
-| `agent-mux-adapters` | L5 Agent-Runtime | Harness adapter implementations |
-| `agent-mux-cli` | L10 Interaction | CLI entry point |
-| `agent-mux-gateway` | L6 Agent-Platform | Remote API surface |
-| `agent-mux-tui` | L11 Presentation | TUI rendering |
-| `agent-mux-ui` | L11 Presentation | Shared UI foundation |
-| `agent-mux-webui` | L11 Presentation | Web UI |
+| `adapters-adapters` | L5 Agent-Runtime | Harness adapter implementations |
+| `adapters-cli` | L10 Interaction | CLI entry point |
+| `adapters-gateway` | L6 Agent-Platform | Remote API surface |
+| `adapters-tui` | L11 Presentation | TUI rendering |
+| `adapters-ui` | L11 Presentation | Shared UI foundation |
+| `adapters-webui` | L11 Presentation | Web UI |
 
-The `agent-mux` prefix implies "agent multiplexing" but most packages don't multiplex — they implement specific layers.
+The `adapters` prefix implies "agent multiplexing" but most packages don't multiplex — they implement specific layers.
 
-**Recommendation:** Accept as-is for v6.1. The `agent-mux` prefix is an organizational grouping, not an architectural claim. Future packages should use layer-aligned names when the concern is clearly in one layer.
+**Recommendation:** Accept as-is for v6.1. The `adapters` prefix is an organizational grouping, not an architectural claim. Future packages should use layer-aligned names when the concern is clearly in one layer.
 
 ### 3. "hooks-mux" vs Graph Concepts
 
@@ -49,7 +49,7 @@ The graph defines `HookSurface`, `HookMapping`, `Channel` (channels-hooks cluste
 
 ### 4. "transport-mux" vs Layer 3
 
-The graph layer is "Transport" but the package is `transport-mux`. The "mux" suffix is consistent with hooks-mux and agent-mux but the graph doesn't use "mux" anywhere.
+The graph layer is "Transport" but the package is `transport-mux`. The "mux" suffix is consistent with hooks-mux and adapters but the graph doesn't use "mux" anywhere.
 
 **Recommendation:** Accept. The `-mux` suffix is a codebase convention for packages that bridge multiple implementations.
 
@@ -72,7 +72,7 @@ These graph node kinds in the agent-stack cluster have no corresponding package:
 |-----------|-------|--------|
 | `CapabilityProfile` | L4-L5 | Defined in graph; no runtime implementation |
 | `SessionModel` | L5 | Defined in graph; session persistence is in babysitter-sdk/session |
-| `LaunchConfig` | L5-L6 | Defined in graph; launch configs are in agent-catalog, resolved by agent-mux-cli |
+| `LaunchConfig` | L5-L6 | Defined in graph; launch configs are in agent-catalog, resolved by adapters-cli |
 | `KnowledgeFabricImpl` | L12 | Defined in graph; no implementation package |
 
 ## Naming Convention Guidelines for v6.1

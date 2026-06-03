@@ -20,7 +20,7 @@ const tier5Task = defineTask('tier5-launch-orchestration', (args, taskCtx) => ({
       task: 'Implement 3 launch orchestration improvements.',
       context: { workspaceRoot: args.workspaceRoot },
       instructions: [
-        'Work from: ' + (args.workspaceRoot || 'C:/work/agent-mux'),
+        'Work from: ' + (args.workspaceRoot || 'C:/work/adapters'),
         'Read each file before editing. Commit each item.',
         '',
         '## 33. End-to-end Ollama lifecycle in adapters launch',
@@ -139,7 +139,7 @@ const tier6Task = defineTask('tier6-test-coverage', (args, taskCtx) => ({
       task: 'Write comprehensive tests for the adapters-proxy Python package and TS launch command.',
       context: { workspaceRoot: args.workspaceRoot },
       instructions: [
-        'Work from: ' + (args.workspaceRoot || 'C:/work/agent-mux'),
+        'Work from: ' + (args.workspaceRoot || 'C:/work/adapters'),
         '',
         '## 36. Python transport endpoint tests',
         'Create test files for each transport. Use httpx AsyncClient with ASGITransport to test FastAPI endpoints.',
@@ -302,7 +302,7 @@ const verifyTask = defineTask('verify-all', (args, taskCtx) => ({
 // ──────────────────────────────────────────────────────────────────
 
 export async function process(inputs = {}, ctx) {
-  const workspaceRoot = inputs.workspaceRoot ?? 'C:/work/agent-mux';
+  const workspaceRoot = inputs.workspaceRoot ?? 'C:/work/adapters';
 
   const t5 = await ctx.task(tier5Task, { workspaceRoot });
   const t6 = await ctx.task(tier6Task, { workspaceRoot });

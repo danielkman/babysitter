@@ -4,16 +4,16 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const rootDir = path.resolve(__dirname, "..");
-const specPath = "docs/agent-mux/terminology-and-structure-gaps/binary-renames.md";
-const warningPrefix = "[agent-mux]";
+const specPath = "docs/adapters/terminology-and-structure-gaps/binary-renames.md";
+const warningPrefix = "[adapters]";
 
 const binaryRenames = [
   {
     packageName: "@a5c-ai/adapters",
     manifestPath: "packages/adapters/sdk/package.json",
-    canonicalBin: "agent-mux",
-    canonicalTarget: "./dist/bin/agent-mux.js",
-    canonicalSource: "packages/adapters/sdk/src/bin/agent-mux.ts",
+    canonicalBin: "adapters",
+    canonicalTarget: "./dist/bin/adapters.js",
+    canonicalSource: "packages/adapters/sdk/src/bin/adapters.ts",
     legacyBin: "adapters",
     legacyTarget: "./dist/bin/adapters.js",
     legacySource: "packages/adapters/sdk/src/bin/adapters.ts",
@@ -26,9 +26,9 @@ const binaryRenames = [
   {
     packageName: "@a5c-ai/transport-adapter",
     manifestPath: "packages/adapters/transport/package.json",
-    canonicalBin: "agent-mux-transport-proxy",
-    canonicalTarget: "./dist/bin/agent-mux-transport-proxy.js",
-    canonicalSource: "packages/adapters/transport/src/bin/agent-mux-transport-proxy.ts",
+    canonicalBin: "adapters-transport-proxy",
+    canonicalTarget: "./dist/bin/adapters-transport-proxy.js",
+    canonicalSource: "packages/adapters/transport/src/bin/adapters-transport-proxy.ts",
     legacyBin: "adapters-proxy",
     legacyTarget: "./dist/bin/adapters-proxy.js",
     legacySource: "packages/adapters/transport/src/bin/adapters-proxy.ts",
@@ -36,9 +36,9 @@ const binaryRenames = [
   {
     packageName: "@a5c-ai/tula-tui",
     manifestPath: "packages/adapters/tui/package.json",
-    canonicalBin: "agent-mux-tui",
-    canonicalTarget: "./dist/bin/agent-mux-tui.js",
-    canonicalSource: "packages/adapters/tui/src/bin/agent-mux-tui.tsx",
+    canonicalBin: "adapters-tui",
+    canonicalTarget: "./dist/bin/adapters-tui.js",
+    canonicalSource: "packages/adapters/tui/src/bin/adapters-tui.tsx",
     legacyBin: "adapters-tui",
     legacyTarget: "./dist/bin/adapters-tui.js",
     legacySource: "packages/adapters/tui/src/bin/adapters-tui.tsx",
@@ -46,7 +46,7 @@ const binaryRenames = [
   {
     packageName: "@a5c-ai/hooks-adapter-cli",
     manifestPath: "packages/adapters/hooks/cli/package.json",
-    canonicalBin: "agent-mux-hooks",
+    canonicalBin: "adapters-hooks",
     canonicalTarget: "dist/cli/main.js",
     canonicalSource: "packages/adapters/hooks/cli/src/index.ts",
     legacyBin: "a5c-hooks-mux",
@@ -56,7 +56,7 @@ const binaryRenames = [
   {
     packageName: "@a5c-ai/extensions-adapter",
     manifestPath: "packages/adapters/extensions/package.json",
-    canonicalBin: "agent-mux-extensions",
+    canonicalBin: "adapters-extensions",
     canonicalTarget: "./dist/cli.js",
     canonicalSource: "packages/adapters/extensions/src/cli.ts",
     legacyBin: "extension-mux",
@@ -66,7 +66,7 @@ const binaryRenames = [
   {
     packageName: "@a5c-ai/triggers-adapter",
     manifestPath: "packages/adapters/triggers/package.json",
-    canonicalBin: "agent-mux-triggers",
+    canonicalBin: "adapters-triggers",
     canonicalTarget: "./dist/cli.js",
     canonicalSource: "packages/adapters/triggers/src/cli.ts",
     legacyBin: "triggers-mux",
@@ -76,7 +76,7 @@ const binaryRenames = [
   {
     packageName: "@a5c-ai/tasks-adapter",
     manifestPath: "packages/adapters/tasks/package.json",
-    canonicalBin: "agent-mux-tasks",
+    canonicalBin: "adapters-tasks",
     canonicalTarget: "./dist/cli/index.js",
     canonicalSource: "packages/adapters/tasks/src/cli/index.ts",
     legacyBin: "tasks-mux",
@@ -86,9 +86,9 @@ const binaryRenames = [
   {
     packageName: "@a5c-ai/adapters-harness-mock",
     manifestPath: "packages/adapters/harness-mock/package.json",
-    canonicalBin: "agent-mux-harness-mock",
-    canonicalTarget: "./dist/bin/agent-mux-harness-mock.js",
-    canonicalSource: "packages/adapters/harness-mock/src/bin/agent-mux-harness-mock.ts",
+    canonicalBin: "adapters-harness-mock",
+    canonicalTarget: "./dist/bin/adapters-harness-mock.js",
+    canonicalSource: "packages/adapters/harness-mock/src/bin/adapters-harness-mock.ts",
     legacyBin: "mock-harness",
     legacyTarget: "./dist/bin/mock-harness.js",
     legacySource: "packages/adapters/harness-mock/src/bin/mock-harness.ts",
@@ -135,8 +135,8 @@ function validateManifest(rename, errors, canonicalOwners) {
     if (Object.keys(bin).length > 0) {
       errors.push(`${rename.manifestPath} must not publish bins directly; ${rename.delegatedTo} owns the published CLI binaries.`);
     }
-    if (Object.prototype.hasOwnProperty.call(bin, "agent-mux")) {
-      errors.push(`${rename.manifestPath} must not publish duplicate canonical agent-mux; ${rename.delegatedTo} owns it.`);
+    if (Object.prototype.hasOwnProperty.call(bin, "adapters")) {
+      errors.push(`${rename.manifestPath} must not publish duplicate canonical adapters; ${rename.delegatedTo} owns it.`);
     }
     return;
   }

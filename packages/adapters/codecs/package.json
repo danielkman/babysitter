@@ -3,7 +3,7 @@
   "version": "5.0.0",
   "type": "module",
   "license": "MIT",
-  "description": "Built-in agent adapters for agent-mux",
+  "description": "Built-in agent adapters for adapters",
   "author": "a5c-ai",
   "homepage": "https://github.com/a5c-ai/babysitter/tree/main/packages/adapters/codecs#readme",
   "repository": {
@@ -15,7 +15,7 @@
     "url": "https://github.com/a5c-ai/babysitter/issues"
   },
   "keywords": [
-    "agent-mux",
+    "adapters",
     "adapters",
     "claude-code",
     "codex",
@@ -62,7 +62,7 @@
       "L5"
     ],
     "muxes": [
-      "agent-mux"
+      "adapters"
     ]
   }
 }

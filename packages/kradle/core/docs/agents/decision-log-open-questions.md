@@ -87,7 +87,7 @@ Question:
 
 Default recommendation:
 
-- Treat it as external gateway first. Keep `src/agent-mux-client.js` thin so deployment mode can change.
+- Treat it as external gateway first. Keep `src/adapters-client.js` thin so deployment mode can change.
 
 ### Secret materialization boundary
 

@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Migrate the agent-mux webui from mixed Radix/Tailwind/hand-rolled CSS to compendium as sole design system. Remove deprecated kanban package dependency. Fix all broken layouts and overlays.
+**Goal:** Migrate the adapters webui from mixed Radix/Tailwind/hand-rolled CSS to compendium as sole design system. Remove deprecated kanban package dependency. Fix all broken layouts and overlays.
 
 **Architecture:** Two layers — compendium provides all UI primitives and design tokens; the webui owns pages, hooks, services, and types directly. No Radix UI, no Tailwind, no Next.js shims.
 
@@ -356,7 +356,7 @@ import { cx } from '@a5c-ai/compendium';
 export function Sidebar(): JSX.Element {
   return (
     <aside className="tkc-panel" style={{ width: 240, padding: '24px 16px', display: 'flex', flexDirection: 'column', gap: 8, borderRight: '1px solid var(--tkc-rule)', flexShrink: 0 }}>
-      <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--tkc-ink-soft)', margin: '0 0 4px 8px' }}>agent-mux</p>
+      <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--tkc-ink-soft)', margin: '0 0 4px 8px' }}>adapters</p>
       <nav style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         {[
           { to: '/projects', label: 'Projects' },
@@ -926,7 +926,7 @@ Move remaining page components and shared components out of the kanban directory
 - [ ] **Step 1: Move component directories**
 
 ```bash
-mkdir -p src/components/{shared,dashboard,details,pipeline,events,breakpoint,review,notifications,sessions,runs,workspaces,automations,task-tags,agent-mux}
+mkdir -p src/components/{shared,dashboard,details,pipeline,events,breakpoint,review,notifications,sessions,runs,workspaces,automations,task-tags,adapters}
 # Copy each component group
 cp -r src/kanban/components/shared/* src/components/shared/
 cp -r src/kanban/components/dashboard/* src/components/dashboard/
@@ -941,7 +941,7 @@ cp -r src/kanban/components/runs/* src/components/runs/
 cp -r src/kanban/components/workspaces/* src/components/workspaces/
 cp -r src/kanban/components/automations/* src/components/automations/
 cp -r src/kanban/components/task-tags/* src/components/task-tags/
-cp -r src/kanban/components/agent-mux/* src/components/agent-mux/
+cp -r src/kanban/components/adapters/* src/components/adapters/
 cp -r src/kanban/components/providers/* src/components/providers/
 ```
 

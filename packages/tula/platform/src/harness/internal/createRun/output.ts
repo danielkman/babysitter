@@ -25,7 +25,7 @@ export const PROCESS_LIBRARY_SEARCH_DEFAULT_LIMIT = 12;
 
 /**
  * Harness selection priority. Pi / built-in programmatic harnesses are preferred;
- * external harnesses are discovered dynamically via agent-mux.
+ * external harnesses are discovered dynamically via adapters.
  */
 const HARNESS_PRIORITY: readonly string[] = [
   "agent-core",
@@ -95,7 +95,7 @@ export function emitProgress(
   const mode = resolveOutputMode(json, outputMode);
   if (mode === "tui") return;
 
-  // adapters-events mode: translate progress payloads to agent-mux JSONL events
+  // adapters-events mode: translate progress payloads to adapters JSONL events
   if (mode === "adapters-events") {
     emitProgressAsAmuxEvent(payload);
     return;
@@ -372,11 +372,11 @@ export function selectHarness(
 // ---------------------------------------------------------------------------
 
 /**
- * Translate an internal ProgressPayload to an agent-mux compatible JSONL
+ * Translate an internal ProgressPayload to an adapters compatible JSONL
  * event and write it to stdout.
  *
  * This function maps the agent-platform internal progress structure to
- * the event types that the agent-mux babysitter adapter's `parseEvent()`
+ * the event types that the adapters babysitter adapter's `parseEvent()`
  * understands: `session_start`, `turn_start`, `turn_end`, `tool_call_start`,
  * `tool_result`, `text_delta`, `error`, `session_end`.
  */

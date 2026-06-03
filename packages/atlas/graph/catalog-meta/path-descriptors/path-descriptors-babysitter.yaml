@@ -173,7 +173,7 @@ nodeKind: PathDescriptor
 id: path:adapters-hooks-project
 attributes:
   pathId: adapters-hooks-project
-  displayName: agent-mux project hooks registry
+  displayName: adapters project hooks registry
   path: .adapters/hooks.json
   pathKind: config-file
   ownerKind: GraphDocument
@@ -182,13 +182,13 @@ attributes:
   scope: project
   evaluationContext: project
   expansion: literal
-  notes: 'Project-scope hook-registration store consumed by agent-mux''s
+  notes: 'Project-scope hook-registration store consumed by adapters''s
 
     unified hook system. Maps `(agent, hookType) → handler(target)`;
 
     overrides matching ids in the global ~/.adapters/hooks.json. Source:
 
-    docs/agent-mux/reference/15-hooks.md.
+    docs/adapters/reference/15-hooks.md.
 
     '
 ---
@@ -196,7 +196,7 @@ nodeKind: PathDescriptor
 id: path:adapters-hooks-global
 attributes:
   pathId: adapters-hooks-global
-  displayName: agent-mux global hooks registry
+  displayName: adapters global hooks registry
   path: ~/.adapters/hooks.json
   pathKind: config-file
   ownerKind: GraphDocument
@@ -205,10 +205,10 @@ attributes:
   scope: user
   evaluationContext: user
   expansion: home
-  notes: 'User-scope hook registrations for agent-mux; overridden per-id
+  notes: 'User-scope hook registrations for adapters; overridden per-id
 
     by `.adapters/hooks.json` (project). Source:
 
-    docs/agent-mux/reference/15-hooks.md.
+    docs/adapters/reference/15-hooks.md.
 
     '

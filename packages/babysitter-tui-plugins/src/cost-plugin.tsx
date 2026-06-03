@@ -1,5 +1,5 @@
 /**
- * babysitter-cost-plugin -- Shows babysitter cost tracking in agent-mux TUI.
+ * babysitter-cost-plugin -- Shows babysitter cost tracking in adapters TUI.
  *
  * Registers:
  * - A "Babysitter Cost" view showing aggregated cost across runs
@@ -62,7 +62,7 @@ function BabysitterCostView({ active, eventStream }: TuiViewProps) {
 
   const runsDir = resolveRunsDir();
 
-  // Track cost events from the live agent-mux event stream
+  // Track cost events from the live adapters event stream
   useEffect(() => {
     // Replay existing events
     for (const ev of eventStream.snapshot()) {

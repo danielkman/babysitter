@@ -36,7 +36,7 @@ This matrix maps product requirements to resources, controllers, UI surfaces, do
 | `src/agent-stack-controller.js` | stack spec, tools spec, RBAC spec |
 | `src/agent-context-bundles.js` | context assembly spec |
 | `src/agent-dispatch-controller.js` | controller reconciliation, adapter contract, MVP |
-| `src/agent-mux-client.js` | Agent Mux adapter contract |
+| `src/adapters-client.js` | Agent Mux adapter contract |
 | `src/agent-trigger-controller.js` | CI spec, controller reconciliation |
 | `src/agent-workspace-controller.js` | workspace lifecycle spec |
 | `src/agent-approval-controller.js` | artifacts/write-back spec |

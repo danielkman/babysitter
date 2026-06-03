@@ -1,6 +1,6 @@
 # @a5c-ai/adapters-observability
 
-Structured logging and telemetry primitives for `agent-mux`.
+Structured logging and telemetry primitives for `adapters`.
 
 ## Install
 
@@ -38,4 +38,4 @@ npm pack --json --dry-run --workspace=@a5c-ai/adapters-observability
 
 ## Release Expectations
 
-This is a public package in the central `agent-mux` release set. Keep the README aligned with the exported logging and telemetry seams, and keep the publish surface constrained to `dist/` plus package documentation.
+This is a public package in the central `adapters` release set. Keep the README aligned with the exported logging and telemetry seams, and keep the publish surface constrained to `dist/` plus package documentation.

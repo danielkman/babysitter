@@ -109,7 +109,7 @@ async function createManualDispatch({ agentStack, meetingRef, ...rest }) {
 
 ### Agent Mux Client Changes
 
-In `agent-mux-client.js`, add Jitsi sidecar to Job spec:
+In `adapters-client.js`, add Jitsi sidecar to Job spec:
 
 ```javascript
 function createAgentJob({ run, stack, workspace, namespace }) {

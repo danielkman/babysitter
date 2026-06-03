@@ -81,7 +81,7 @@ describe('TelemetryManager', () => {
     const { counters, histograms, gauges, tracer, span, NodeSDK } = installTelemetryMocks();
     const mod = await import('../src/telemetry.js');
     const telemetry = new mod.TelemetryManager({
-      serviceName: 'agent-mux',
+      serviceName: 'adapters',
       serviceVersion: '1.0.0',
       baseAttributes: { env: 'test' },
     });

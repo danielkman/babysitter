@@ -80,7 +80,7 @@ async function runRemote(
       if (!adapter.capabilities.supportsStdinInjection) {
         throw new AgentMuxError(
           'STDIN_NOT_AVAILABLE',
-          `${adapter.agent} does not support live prompt injection in the current agent-mux transport`,
+          `${adapter.agent} does not support live prompt injection in the current adapters transport`,
           false,
         );
       }

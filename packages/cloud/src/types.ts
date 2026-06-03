@@ -290,7 +290,7 @@ export interface HarnessInstallOperationResult {
 export interface SupportedHarnessInstallTarget {
   readonly target: CanonicalHarnessTarget;
   readonly aliases?: readonly HarnessTarget[];
-  readonly harnessInstaller: "agent-mux";
+  readonly harnessInstaller: "adapters";
   readonly pluginInstallerPackage?: string;
   readonly pluginScopes: readonly AutomationScope[];
 }
@@ -298,7 +298,7 @@ export interface SupportedHarnessInstallTarget {
 export interface AgentInstallStep {
   readonly requestedTarget: HarnessTarget;
   readonly target: CanonicalHarnessTarget;
-  readonly harnessInstaller: "agent-mux";
+  readonly harnessInstaller: "adapters";
   readonly pluginInstall?: {
     readonly installerPackage: string;
     readonly scope: AutomationScope;

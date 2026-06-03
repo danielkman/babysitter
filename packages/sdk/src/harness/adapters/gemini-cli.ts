@@ -1,7 +1,7 @@
 /**
  * Gemini CLI harness adapter.
  *
- * Derives all behavior from BaseHarnessAdapter + agent-mux metadata.
+ * Derives all behavior from BaseHarnessAdapter + adapters metadata.
  */
 
 import { BaseHarnessAdapter, type AdapterConfig } from "../BaseAdapter";

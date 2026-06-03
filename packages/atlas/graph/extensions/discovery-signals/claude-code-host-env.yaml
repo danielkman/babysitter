@@ -19,7 +19,7 @@ attributes:
     - { key: session_id, envVars: [CLAUDE_CODE_SESSION_ID] }
     - { key: env_file,   envVars: [CLAUDE_ENV_FILE] }
     - { key: project_dir, envVars: [CLAUDE_PROJECT_DIR] }
-  notes: Host harness detection signals used by agent-mux.
+  notes: Host harness detection signals used by adapters.
 edges:
   applies_to:
     - target: agent:claude-code

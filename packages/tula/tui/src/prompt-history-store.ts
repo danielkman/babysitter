@@ -7,7 +7,7 @@ const MAX_ENTRIES = 200;
 export function defaultHistoryPath(): string {
   if (process.env.AGENT_MUX_TUI_PROMPT_HISTORY) return process.env.AGENT_MUX_TUI_PROMPT_HISTORY;
   const home = os.homedir() || '.';
-  return path.join(home, '.agent-mux', 'tui-prompt-history');
+  return path.join(home, '.adapters', 'tui-prompt-history');
 }
 
 export function loadHistory(filePath: string = defaultHistoryPath()): string[] {

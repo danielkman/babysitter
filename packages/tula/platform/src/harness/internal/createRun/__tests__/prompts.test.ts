@@ -140,7 +140,7 @@ describe("harnessPrompts", () => {
 
     expect(prompt).toContain("Available responder context:");
     expect(prompt).toContain("Supported `agent.responderType` values: internal, human, agent, tracker, auto.");
-    expect(prompt).toContain("Available agent responders (agent-mux):");
+    expect(prompt).toContain("Available agent responders (adapters):");
     expect(prompt).toContain("codex (Codex) | authenticated | capabilities=file-edit,bash");
     expect(prompt).not.toContain("gemini-cli (Gemini CLI)");
     expect(prompt).toContain("responderType: \"agent\"");

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * `agent-mux` bin shim for the meta-package `@a5c-ai/adapters`.
+ * `adapters` bin shim for the meta-package `@a5c-ai/adapters`.
  * Explicitly calls the CLI's main() instead of relying on its
  * import-time self-run heuristic.
  */

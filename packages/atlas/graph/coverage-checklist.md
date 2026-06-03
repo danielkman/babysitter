@@ -88,7 +88,7 @@ A `Mux` is treated as `ExtensionInterface` (a5c-flavored contract) plus implemen
 |---|---|---|---|---|
 | Mux concept (a5c-coinage) | a5c/00-overview.md, 02-muxes.md | `Term` `term:mux` `kind=concept`; `Synonym` of industry `adapter`/`gateway`/`bridge` | ✅ | |
 | transport-mux (#1) | a5c/02-muxes.md §1 | `ExtensionInterface` `iface:transport-mux`; `ProcessDescriptor` `pkg:@a5c-ai/transport-adapter` | ✅ | |
-| agent-launch-mux (#2) | a5c/02-muxes.md §2 | `ExtensionInterface` `iface:agent-launch-mux`; realized in `agent-mux/core` + adapters | ✅ | |
+| agent-launch-mux (#2) | a5c/02-muxes.md §2 | `ExtensionInterface` `iface:agent-launch-mux`; realized in `adapters/core` + adapters | ✅ | |
 | agent-comm-mux (#3) | a5c/02-muxes.md §3 | `ExtensionInterface` `iface:agent-comm-mux` | ✅ | |
 | session-storage-mux (#4) | a5c/02-muxes.md §4 | `ExtensionInterface` `iface:session-storage-mux` | ✅ | |
 | agent-config-mux (#5) | a5c/02-muxes.md §5 | `ExtensionInterface` `iface:agent-config-mux` | ✅ | |
@@ -476,7 +476,7 @@ A `Mux` is treated as `ExtensionInterface` (a5c-flavored contract) plus implemen
 | `@a5c-ai/cloud` | a5c/01-component-map.md | `ProcessDescriptor` | ✅ | |
 | `@a5c-ai/observer-dashboard` | a5c/01-component-map.md | `ProcessDescriptor` | ✅ | |
 | `@a5c-ai/kanban` | a5c/01-component-map.md | `ProcessDescriptor` | ✅ | |
-| Adapter list (~20 adapters under `agent-mux/adapters/src/`) | a5c/01-component-map.md | one `ProcessDescriptor` each; some without `AgentProduct` flagged via Claim | ✅ | |
+| Adapter list (~20 adapters under `adapters/adapters/src/`) | a5c/01-component-map.md | one `ProcessDescriptor` each; some without `AgentProduct` flagged via Claim | ✅ | |
 
 ### Terminology (every named concept in legacy as a `Term`)
 
@@ -575,7 +575,7 @@ Concepts deliberately left out of the schema, with reason. Each row corresponds 
 | Specific vendor SDKs as canonical shape | universal/04-protocols.md §12 | vendor SDKs are reference implementations, not canonical shapes |
 | Specific Trust Chain composition (universal scope only) | universal/07-cross-cutting.md §2 | universal docs document only building blocks; chain composition is implementation-specific (a5c is one such composition) |
 | Concrete sandbox-implementation internals (firecracker mem layout, seccomp BPF programs, etc.) | universal/02-stack.md §Layer 9, a5c/03-extension-interfaces.md §8 | implementation detail of `sandbox-interface` impls; not a schema concern |
-| Runbooks for k8s deployment of agent-mux-gateway | a5c/01-component-map.md | runtime/deployment concern |
+| Runbooks for k8s deployment of adapters-gateway | a5c/01-component-map.md | runtime/deployment concern |
 | Per-vendor secret-store backend SDKs (Vault SDK calls, AWS SM SDK calls, …) | universal/07-cross-cutting.md §3 | implementation of `secrets-interface` backends; backends are catalog data, but their SDK details are not |
 | Settings files as plugins | universal/05-plugins-and-extensions.md §10 | configuration, not extension content |
 | Industry hook event-name standard | universal/06-channels-sessions-hooks.md §3 | does not exist; per-product event names are recorded as `HookMapping`, no canonical universal cross-product event-name standard claimed |
@@ -591,7 +591,7 @@ OpenQuestion entries that need data or decision before a claim can be made. Each
 | Question | Owner | Raised at | Notes |
 |---|---|---|---|
 | Is "Comm-Mode" fully retired or does it survive as a synonym? | tbd | Phase 1 | Resolved: `Term term:comm-mode` `replaces` `Agent Host Transport`, kept as deprecated synonym. Closed; row kept for traceability. |
-| What is the canonical name of the agent-mux Run → Invocation rename in user-facing docs? | tbd | Phase 1 | Resolved: "Invocation" everywhere; "Run" reserved for babysitter Process Run. Closed. |
+| What is the canonical name of the adapters Run → Invocation rename in user-facing docs? | tbd | Phase 1 | Resolved: "Invocation" everywhere; "Run" reserved for babysitter Process Run. Closed. |
 | Should "Shared Context" be a NodeKind or remain a structured Claim? | tbd (defer to Phase 2) | Phase 1 | Currently a `Term` + structured `Claim` attached to `iface:reliability-interface`. Promotion-criterion: if Phase-2 cross-extension query patterns demand graph-level traversal of shared-context bindings (e.g., "all extensions that read scope `per-run`"), promote to `SharedContextSpec` NodeKind. Deferred — depends on extension catalog growth. Owner: graph maintainers. |
 
 | How do live agent-catalog 22 NodeKinds collapse into atlas schema NodeKinds? (e.g. `TransportProtocol` + `TransportRuntime` vs atlas `ModelTransportProtocol`) | tbd | Phase 1 | Resolved: atlas expanded to 99 NodeKinds across 14 clusters (Cluster 0–13). The legacy 22 collapse as: legacy `TransportProtocol`+`TransportRuntime` → atlas `ModelTransportProtocol` (+ `Provider` for the runtime endpoint); legacy `Harness` → atlas `AgentRuntimeImpl` (+ `AgentCoreImpl`/`AgentPlatformImpl` split); legacy `Tool` → atlas `ToolDescriptor`+`ToolServer`; legacy `Plugin` stays as `Plugin` but gains `NativeExtension`/`ExtensionInterface`. Mapping table tracked in `./schema/node-kinds/README.md`. Closed. |

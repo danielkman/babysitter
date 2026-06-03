@@ -34,9 +34,9 @@ edges:
 nodeKind: GithubActionStep
 id: github-action-step:triggers-action-build-runtime
 attributes:
-  displayName: "adapters-triggers action step 3: Build agent-mux action runtime"
+  displayName: "adapters-triggers action step 3: Build adapters action runtime"
   order: 3
-  stepName: "Build agent-mux action runtime"
+  stepName: "Build adapters action runtime"
   shell: bash
   envVars:
     - "ACTION_ROOT=${{ github.action_path }}"
@@ -45,7 +45,7 @@ attributes:
     REPO_ROOT=$(cd "$ACTION_ROOT/../.." && pwd)
     cd "$REPO_ROOT"
     npm ci
-    npm run build:agent-mux
+    npm run build:adapters
     npm run build --workspace=@a5c-ai/triggers-adapter
   sourceCitation: "packages/triggers-mux/action.yml:91-101"
 edges:
@@ -143,8 +143,8 @@ attributes:
   runScript: |
     set -euo pipefail
     REPO_ROOT=$(cd "$ACTION_ROOT/../.." && pwd)
-    EVENT_FILE="$RUNNER_TEMP/agent-mux-event.json"
-    RESULT_FILE="$RUNNER_TEMP/agent-mux-trigger.json"
+    EVENT_FILE="$RUNNER_TEMP/adapters-event.json"
+    RESULT_FILE="$RUNNER_TEMP/adapters-trigger.json"
     INCLUDE_DIFF_ARGS=()
     if [ "$INPUT_INCLUDE_DIFF" = "true" ]; then
       INCLUDE_DIFF_ARGS+=(--include-diff)
@@ -201,9 +201,9 @@ edges:
 nodeKind: GithubActionStep
 id: github-action-step:triggers-action-run-adapters
 attributes:
-  displayName: "adapters-triggers action step 9: Run agent-mux"
+  displayName: "adapters-triggers action step 9: Run adapters"
   order: 9
-  stepName: "Run agent-mux"
+  stepName: "Run adapters"
   shell: bash
   stepId: "adapters"
   workingDirectory: "${{ inputs.working-directory }}"

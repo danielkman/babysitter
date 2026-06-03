@@ -1,6 +1,6 @@
-# Agent Stack Decomposition — agent-platform, agent-core, SDK, and agent-mux
+# Agent Stack Decomposition — agent-platform, agent-core, SDK, and adapters
 
-The atlas graph models two AgentProducts (`agent-platform`, `agent-mux`) each decomposed into Core/Runtime/Platform/UI implementations. This document maps the graph's decomposition to the actual packages and identifies what needs to change.
+The atlas graph models two AgentProducts (`agent-platform`, `adapters`) each decomposed into Core/Runtime/Platform/UI implementations. This document maps the graph's decomposition to the actual packages and identifies what needs to change.
 
 ## Graph Model: Two Agent Products
 
@@ -15,18 +15,18 @@ The graph decomposes `agent:agent-platform` into 4 implementation layers:
 | `agent-platform-impl:agent-platform.platform@current` | AgentPlatformImpl | L6 | defineTask + plugin/skill registry |
 | `agent-ui-impl:agent-platform.ui@current` | AgentUIImpl | L11 | CLI binary presentation |
 
-### agent-mux (full-cli-agent + remote)
+### adapters (full-cli-agent + remote)
 
-The graph has `agent:agent-mux` and `agent:agent-mux-remote`:
+The graph has `agent:adapters` and `agent:adapters-remote`:
 
 | Graph Node | Kind | Description |
 |-----------|------|-------------|
-| `agent-core-impl:agent-mux-remote.core@current` | AgentCoreImpl | Transport-only delegator |
-| `presentation:agent-mux-tui` | Presentation | TUI |
-| `presentation:agent-mux-cli` | Presentation | CLI |
-| `presentation:agent-mux-webui` | Presentation | Web UI |
-| `presentation:agent-mux-mobile-ios` | Presentation | iOS |
-| `presentation:agent-mux-mobile-android` | Presentation | Android |
+| `agent-core-impl:adapters-remote.core@current` | AgentCoreImpl | Transport-only delegator |
+| `presentation:adapters-tui` | Presentation | TUI |
+| `presentation:adapters-cli` | Presentation | CLI |
+| `presentation:adapters-webui` | Presentation | Web UI |
+| `presentation:adapters-mobile-ios` | Presentation | iOS |
+| `presentation:adapters-mobile-android` | Presentation | Android |
 | + 4 more (TV, watch) | Presentation | ... |
 
 ---
@@ -158,21 +158,21 @@ The SDK is intentionally monolithic. Don't split it — annotate what graph conc
 - [ ] Add module-level JSDoc comments referencing graph layer and node kind
 - [ ] Create `docs/sdk-layer-map.md` documenting which source directory maps to which layer
 
-### T4: agent-mux internal decomposition
+### T4: adapters internal decomposition
 
 As described in graph-alignment-tasks.md Phase 1.3, split into graph-aligned sub-packages:
 
 | Current | Target | Graph Mux |
 |---------|--------|-----------|
-| `agent-mux/core` | `agent-mux/comm` (or `agent-comm-mux`) | `mux:agent-comm-mux` |
-| `agent-mux/cli` launch.ts | `agent-mux/launch` | `mux:agent-launch-mux` |
-| `agent-mux/cli` install.ts + `agent-mux/adapters` | `agent-mux/config` | `mux:agent-config-mux` |
-| `agent-mux/cli` (composition) | `agent-mux/cli` (thin, wires muxes) | No mux — composition |
-| `agent-mux/gateway` | `agent-mux/gateway` | No mux — presentation |
-| `agent-mux/tui` | `agent-mux/tui` | No mux — presentation |
-| `agent-mux/ui` | `agent-mux/ui` | No mux — presentation |
-| `agent-mux/webui` | `agent-mux/webui` | No mux — presentation |
-| `agent-mux/observability` | `agent-mux/observability` | No mux — cross-cutting |
+| `adapters/core` | `adapters/comm` (or `agent-comm-mux`) | `mux:agent-comm-mux` |
+| `adapters/cli` launch.ts | `adapters/launch` | `mux:agent-launch-mux` |
+| `adapters/cli` install.ts + `adapters/adapters` | `adapters/config` | `mux:agent-config-mux` |
+| `adapters/cli` (composition) | `adapters/cli` (thin, wires muxes) | No mux — composition |
+| `adapters/gateway` | `adapters/gateway` | No mux — presentation |
+| `adapters/tui` | `adapters/tui` | No mux — presentation |
+| `adapters/ui` | `adapters/ui` | No mux — presentation |
+| `adapters/webui` | `adapters/webui` | No mux — presentation |
+| `adapters/observability` | `adapters/observability` | No mux — cross-cutting |
 
 ---
 
@@ -183,8 +183,8 @@ As described in graph-alignment-tasks.md Phase 1.3, split into graph-aligned sub
 2. Rename extension-mux → extension-mux  
 3. Dissolve agent-core → tool-mux seed + agent-platform
    ↓
-4. Extract agent-launch-mux from agent-mux-cli
-5. Extract agent-config-mux from agent-mux-cli + agent-mux-adapters
+4. Extract agent-launch-mux from adapters-cli
+5. Extract agent-config-mux from adapters-cli + adapters-adapters
 6. Rename agent-comm-mux → agent-comm-mux
    ↓
 7. Annotate babysitter-sdk with layer metadata

@@ -24,7 +24,7 @@
  *   work to duplicate inside the umbrella stream.
  * - Matching existing infrastructure includes docs/here-be-dragons.md, agent-core
  *   tool lifecycle code, agent-platform piWrapper code, agent-core/platform shell
- *   execution helpers, agent-mux SessionDetailScreen tests, root tsconfig, and
+ *   execution helpers, adapters SessionDetailScreen tests, root tsconfig, and
  *   package-level npm scripts. No new migrations, routes, SDK dependencies, or
  *   environment variables are expected.
  *
@@ -417,7 +417,7 @@ export const runVerificationGateTask = defineTask('issue-601.run-verification-ga
       'npm run test --workspace=@a5c-ai/tula-platform',
       'npm run test:realtime --workspace=@a5c-ai/tula-ui',
       'npm run build:runtime',
-      'npm run test:agent-mux',
+      'npm run test:adapters',
       'npm run verify:metadata',
       'git diff --check',
       'if rg -n "it\\.skip\\(" packages/adapters/ui/src/screens/SessionDetailScreen.test.tsx; then',

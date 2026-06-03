@@ -1,11 +1,11 @@
-# CircleCI config template for agent-mux-triggers — run coding agents from CircleCI.
+# CircleCI config template for adapters-triggers — run coding agents from CircleCI.
 #
-# Usage: add the agent-mux-trigger job to your .circleci/config.yml
+# Usage: add the adapters-trigger job to your .circleci/config.yml
 #
 # workflows:
 #   agent-review:
 #     jobs:
-#       - agent-mux-trigger:
+#       - adapters-trigger:
 #           harness: claude
 #           prompt: "Review the changes"
 
@@ -18,14 +18,14 @@ executors:
     working_directory: ~/project
 
 commands:
-  install-agent-mux:
+  install-adapters:
     parameters:
       npm-tag:
         type: string
         default: staging
     steps:
       - run:
-          name: Install agent-mux toolchain
+          name: Install adapters toolchain
           command: |
             npm install -g --legacy-peer-deps \
               @a5c-ai/adapters-cli@<< parameters.npm-tag >> \
@@ -53,12 +53,12 @@ commands:
                   if [ "<< parameters.include-diff >>" = "true" ]; then
                     DIFF_ARGS="--include-diff"
                   fi
-                  agent-mux-triggers enrich \
+                  adapters-triggers enrich \
                     --backend github \
                     --token "$GITHUB_TOKEN" \
                     $DIFF_ARGS \
                     --output "$EVENT_FILE"
-                  if ! agent-mux-triggers evaluate \
+                  if ! adapters-triggers evaluate \
                     --backend github \
                     --query "<< parameters.query >>" \
                     --token "$GITHUB_TOKEN" \
@@ -69,7 +69,7 @@ commands:
                   fi
 
 jobs:
-  agent-mux-trigger:
+  adapters-trigger:
     parameters:
       harness:
         type: string
@@ -100,7 +100,7 @@ jobs:
     executor: node
     steps:
       - checkout
-      - install-agent-mux:
+      - install-adapters:
           npm-tag: << parameters.npm-tag >>
       - evaluate-trigger:
           query: << parameters.trigger-query >>
@@ -108,7 +108,7 @@ jobs:
       - run:
           name: Run agent
           command: |
-            CMD="agent-mux << parameters.command >> << parameters.harness >>"
+            CMD="adapters << parameters.command >> << parameters.harness >>"
             [ -n "<< parameters.provider >>" ] && CMD="$CMD << parameters.provider >>"
             [ -n "<< parameters.model >>" ] && CMD="$CMD --model << parameters.model >>"
             CMD="$CMD --max-turns << parameters.max-turns >> --no-interactive"

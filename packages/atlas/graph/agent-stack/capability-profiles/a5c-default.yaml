@@ -9,7 +9,7 @@ attributes:
     a5c is a harness-agnostic orchestration substrate: it does not host its
     own model loop directly, instead delegating model interaction to a
     bridged backend harness (Claude Code, Codex, Gemini, OpenCode, etc.) via
-    agent-mux. Its native capabilities are orchestration primitives —
+    adapters. Its native capabilities are orchestration primitives —
     multi-harness mediation, PID-scoped session binding, journal-based
     effect/breakpoint mediation, and skill/plugin/process composition —
     rather than direct model-loop capabilities. Capabilities the bridged
@@ -24,13 +24,13 @@ attributes:
         / yolo CLI flags).
       - packages/sdk/src/cli/commands/instructions.ts (PID-scoped AGENT_SESSION_ID
         marker semantics).
-      - packages/agent-mux (multi-harness mediation runtime).
+      - packages/adapters (multi-harness mediation runtime).
   overrides:
     capability:supports-tool-use:
       enabled: true
       level: full
       note: |
-        Delegated through agent-mux to whichever harness the run is bound to.
+        Delegated through adapters to whichever harness the run is bound to.
     capability:supports-mcp:
       enabled: true
       level: full

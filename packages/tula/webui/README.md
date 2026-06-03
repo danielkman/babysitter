@@ -1,6 +1,6 @@
 # @a5c-ai/tula-webui
 
-Browser application package for `agent-mux` gateway control, monitoring, and realtime session-detail inspection.
+Browser application package for `adapters` gateway control, monitoring, and realtime session-detail inspection.
 
 ## Install
 
@@ -57,4 +57,4 @@ For release review, verify that the built app still includes the session-detail 
 
 ## Release Expectations
 
-`@a5c-ai/tula-webui` is part of the central `agent-mux` release set. Keep this README aligned with the packaged app surface, including the session-detail realtime view, and update `package.json#files` whenever the shipped app layout changes.
+`@a5c-ai/tula-webui` is part of the central `adapters` release set. Keep this README aligned with the packaged app surface, including the session-detail realtime view, and update `package.json#files` whenever the shipped app layout changes.

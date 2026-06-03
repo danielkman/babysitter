@@ -1,11 +1,11 @@
-# agent-mux-remote
+# adapters-remote
 
 Meta-adapter that invokes `adapters` on a **remote target** (SSH host, Docker container, or Kubernetes pod) and bridges its event stream back to the local client. Useful for running any supported agent in an isolated or remote environment.
 
 ## Install
 
 ```bash
-adapters install agent-mux-remote
+adapters install adapters-remote
 ```
 
 Supported on macOS, Linux and Windows.
@@ -25,14 +25,14 @@ The adapter itself has no credentials of its own.
 
 ```bash
 AMUX_REMOTE_AGENT=claude \
-  adapters run agent-mux-remote --prompt "Hello from a container"
+  adapters run adapters-remote --prompt "Hello from a container"
 ```
 
 Or explicitly:
 
 ```ts
 await client.run({
-  agent: 'agent-mux-remote',
+  agent: 'adapters-remote',
   prompt: 'Hello',
   invocationMode: { kind: 'docker', image: 'my/adapters:latest' },
   env: { AMUX_REMOTE_AGENT: 'claude' },
@@ -60,8 +60,8 @@ Plugin support: **no**. Use MCP servers for extensibility.
 
 ### MCP Servers
 ```bash
-adapters mcp install agent-mux-remote <mcp-server>
-adapters mcp list agent-mux-remote
+adapters mcp install adapters-remote <mcp-server>
+adapters mcp list adapters-remote
 ```
 
 Registry: https://modelcontextprotocol.io

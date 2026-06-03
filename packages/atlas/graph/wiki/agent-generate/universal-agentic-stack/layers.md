@@ -211,7 +211,7 @@ identity. Realized by `AgentRuntimeImpl` instances.
 - Examples:
   - LangGraph checkpointer/store, thread state, interrupts, streaming runtime.
   - Claude Code/Codex/Gemini CLI process runtimes.
-  - a5c unified runtime, Pi-compatible session profiles, agent-mux remote runtime.
+  - a5c unified runtime, Pi-compatible session profiles, adapters remote runtime.
   - Built-in file/shell/search tools, approval gates, session files.
 - Not this:
   - a package installer or marketplace
@@ -219,7 +219,7 @@ identity. Realized by `AgentRuntimeImpl` instances.
 - Fit note: Frameworks can leave runtime to the host app; CLI products often combine
 core and runtime in one binary. a5c runtime is modeled as a unified
 same-layer implementation that can map Pi, Claude, Codex, LangGraph, and
-agent-mux runtime profiles without depending on one of them.
+adapters runtime profiles without depending on one of them.
 - Source: `graph/stack-layers/layers/layer-5-agent-runtime.yaml`
 
 ## Layer 4: Agent-Core

@@ -1,5 +1,5 @@
 nodeKind: PackageSurface
-id: package:a5c-ai-agent-mux-ui
+id: package:a5c-ai-adapters-ui
 attributes:
   packageId: "@a5c-ai/tula-ui"
   packageName: "@a5c-ai/tula-ui"
@@ -14,4 +14,4 @@ attributes:
   # Source: packages/adapters/ui/package.json (name, version 0.4.9)
 edges:
   references_path:
-    - target: path:agent-mux-ui
+    - target: path:adapters-ui

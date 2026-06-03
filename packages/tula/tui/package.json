@@ -3,7 +3,7 @@
   "version": "5.0.0",
   "type": "module",
   "license": "MIT",
-  "description": "Extensible Ink-based TUI for agent-mux, with a plugin-first architecture",
+  "description": "Extensible Ink-based TUI for adapters, with a plugin-first architecture",
   "author": "a5c-ai",
   "homepage": "https://github.com/a5c-ai/babysitter/tree/main/packages/tula/tui#readme",
   "repository": {
@@ -15,7 +15,7 @@
     "url": "https://github.com/a5c-ai/babysitter/issues"
   },
   "keywords": [
-    "agent-mux",
+    "adapters",
     "tui",
     "ink",
     "react",
@@ -25,7 +25,7 @@
     "node": ">=20.9.0"
   },
   "bin": {
-    "agent-mux-tui": "./dist/bin/agent-mux-tui.js",
+    "adapters-tui": "./dist/bin/adapters-tui.js",
     "adapters-tui": "./dist/bin/adapters-tui.js"
   },
   "main": "./dist/index.js",
@@ -55,11 +55,11 @@
     "access": "public"
   },
   "scripts": {
-    "build": "cd ../../.. && node scripts/agent-mux-build.cjs build packages/adapters/tui",
+    "build": "cd ../../.. && node scripts/adapters-build.cjs build packages/adapters/tui",
     "build:local": "tsc --build && tsc --emitDeclarationOnly --declarationMap false -p tsconfig.json",
-    "start": "node ./dist/bin/agent-mux-tui.js",
+    "start": "node ./dist/bin/adapters-tui.js",
     "dev": "npm run build && npm start",
-    "test": "cd ../../.. && node scripts/agent-mux-build.cjs test packages/adapters/tui",
+    "test": "cd ../../.. && node scripts/adapters-build.cjs test packages/adapters/tui",
     "verify:release": "node ./scripts/verify-release.mjs",
     "prepublishOnly": "npm run build && npm run verify:release"
   },
@@ -80,7 +80,7 @@
       "L6"
     ],
     "muxes": [
-      "agent-mux"
+      "adapters"
     ]
   }
 }

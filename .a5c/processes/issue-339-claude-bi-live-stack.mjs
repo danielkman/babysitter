@@ -20,7 +20,7 @@ import { defineTask } from '@a5c-ai/babysitter-sdk';
 const readContextTask = defineTask('issue-339.read-runtime-context', (args, taskCtx) => ({
   kind: 'shell',
   title: 'Read issue and runtime context',
-  labels: ['issue-339', 'context', 'live-stack', 'agent-mux'],
+  labels: ['issue-339', 'context', 'live-stack', 'adapters'],
   shell: {
     command: [
       'set -euo pipefail',
@@ -54,7 +54,7 @@ const readContextTask = defineTask('issue-339.read-runtime-context', (args, task
 const diagnoseTask = defineTask('issue-339.diagnose-claude-bi-fallback', (args, taskCtx) => ({
   kind: 'agent',
   title: 'Diagnose claude-code BI fallback failure',
-  labels: ['issue-339', 'diagnosis', 'agent-mux', 'transport-mux'],
+  labels: ['issue-339', 'diagnosis', 'adapters', 'transport-mux'],
   agent: {
     name: 'claude-bi-fallback-diagnoser',
     prompt: {
@@ -144,7 +144,7 @@ const redGateTask = defineTask('issue-339.red-test-gate', (args, taskCtx) => ({
 const implementFixTask = defineTask('issue-339.implement-fix', (args, taskCtx) => ({
   kind: 'agent',
   title: 'Implement focused claude-code BI fix',
-  labels: ['issue-339', 'implementation', 'agent-mux'],
+  labels: ['issue-339', 'implementation', 'adapters'],
   agent: {
     name: 'claude-bi-fallback-implementer',
     prompt: {
@@ -270,7 +270,7 @@ const liveVerificationPlanTask = defineTask('issue-339.live-stack-verification-p
         'Produce a concise plan to dispatch Ubuntu and Windows Live Stack workflow runs for claude-code across the listed model matrix.',
         'Include NI control cells, bridged-interactive cells, and bridged-hooks plugin cells where listed.',
         'Acceptance: Ubuntu and Windows claude-code bridged lanes pass for all requested models, or any failure is proven unrelated by artifacts.',
-        'List artifacts to inspect: agent-mux-events, transport-mux-trace, provider-trace-redacted, plugin-command-transcript when applicable, and Live Stack reports.',
+        'List artifacts to inspect: adapters-events, transport-mux-trace, provider-trace-redacted, plugin-command-transcript when applicable, and Live Stack reports.',
         'Return JSON: { commands: string[], acceptanceCriteria: string[], artifactChecklist: string[], blockingNotes: string[] }.',
       ],
     },

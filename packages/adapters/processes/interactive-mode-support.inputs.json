@@ -1,6 +1,6 @@
 {
-  "repoRoot": "C:/work/agent-mux",
-  "todoFile": "C:/work/agent-mux/todos.md",
+  "repoRoot": "C:/work/adapters",
+  "todoFile": "C:/work/adapters/todos.md",
   "todoLine": 40,
   "targetHarnesses": [
     "codex",

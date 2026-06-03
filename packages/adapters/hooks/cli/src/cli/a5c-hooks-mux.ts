@@ -3,7 +3,7 @@
 import { createHooksLogger } from './hooks-logger';
 import { main } from './main';
 
-process.stderr.write('[agent-mux] "a5c-hooks-mux" is deprecated, use "agent-mux-hooks" instead.\n');
+process.stderr.write('[adapters] "a5c-hooks-mux" is deprecated, use "adapters-hooks" instead.\n');
 
 const logger = createHooksLogger('a5c-hooks-mux');
 main().catch((err: unknown) => {

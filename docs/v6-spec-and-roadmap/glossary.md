@@ -4,13 +4,13 @@
 
 ## Purpose
 
-This glossary defines the canonical terms used across the V6 documents. It exists to keep the unified Babysitter, agent-mux, and mux-support packages described with one vocabulary.
+This glossary defines the canonical terms used across the V6 documents. It exists to keep the unified Babysitter, adapters, and mux-support packages described with one vocabulary.
 
 ## Terms
 
 ### Adapter
 
-A harness-specific implementation that translates one external tool's behavior into a shared contract. In `agent-mux`, adapters normalize spawn args, sessions, auth, and event parsing. In `hooks-mux`, adapters normalize hook payloads across harnesses.
+A harness-specific implementation that translates one external tool's behavior into a shared contract. In `adapters`, adapters normalize spawn args, sessions, auth, and event parsing. In `hooks-mux`, adapters normalize hook payloads across harnesses.
 
 ### Agent
 
@@ -58,7 +58,7 @@ A unit of external work requested by a process during replay. Common effect kind
 
 ### Harness
 
-An external coding environment or CLI such as Codex, Claude Code, Cursor, Gemini CLI, Copilot, Pi, or OpenCode. Harnesses are the execution environments Babysitter and agent-mux integrate with.
+An external coding environment or CLI such as Codex, Claude Code, Cursor, Gemini CLI, Copilot, Pi, or OpenCode. Harnesses are the execution environments Babysitter and adapters integrate with.
 
 ### Hook
 
@@ -70,7 +70,7 @@ The hook normalization layer. It provides canonical schemas, a merge engine, CLI
 
 ### Invocation Mode
 
-The environment in which an agent run executes, such as local, docker, ssh, or k8s. This is an `agent-mux` dispatch concern, not a Babysitter run-type concept.
+The environment in which an agent run executes, such as local, docker, ssh, or k8s. This is an `adapters` dispatch concern, not a Babysitter run-type concept.
 
 ### Metaplugin
 

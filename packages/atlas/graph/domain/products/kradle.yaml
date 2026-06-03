@@ -28,7 +28,7 @@ attributes:
         high-volume mutable state (repositories, pull requests, issues,
         reviews, pipelines, agent sessions, memory snapshots).
       - Integration plane: webhooks, Gitea sync, Zoekt code search,
-        Kyverno policy engine, ArgoCD GitOps, and agent-mux dispatch.
+        Kyverno policy engine, ArgoCD GitOps, and adapters dispatch.
 
     Key properties:
       - Org-scoped tenancy: every resource belongs to an Organization.
@@ -42,8 +42,8 @@ edges:
   integrates_with:
     - target: platform:kubernetes
       notes: "Core runtime — all resources are K8s API objects"
-    - target: agent:agent-mux
-      notes: "Agent dispatch uses agent-mux transport for coding agent sessions"
+    - target: agent:adapters
+      notes: "Agent dispatch uses adapters transport for coding agent sessions"
     - target: agent:babysitter
       notes: "Babysitter orchestrates multi-step workflows within Kradle"
     - target: tool:docker
@@ -163,13 +163,13 @@ attributes:
   description: |
     Agent orchestration services: AgentStack definitions, dispatch runs,
     trigger rules, approval gates, workspace provisioning, context
-    assembly, and agent-mux session binding. Enables coding agents to
+    assembly, and adapters session binding. Enables coding agents to
     work on Kradle-hosted repositories with full RBAC governance.
 edges:
   part_of:
     - platform:kradle
   integrates_with:
-    - target: agent:agent-mux
+    - target: agent:adapters
 ---
 nodeKind: PlatformService
 id: platform-service:kradle-company-brain
@@ -672,7 +672,7 @@ attributes:
     Handles the full dispatch lifecycle: creating AgentDispatchRun
     resources, performing permission review against org policies,
     assembling the context bundle (repo checkout, memory snapshots,
-    CLAUDE.md), launching the agent as a Kubernetes Job via agent-mux,
+    CLAUDE.md), launching the agent as a Kubernetes Job via adapters,
     streaming session output, and collecting results. Supports manual
     dispatch (via UI or kubectl), PR-triggered dispatch, and
     scheduled dispatch via CronJob resources.
@@ -683,7 +683,7 @@ attributes:
   npmPackage: '@a5c-ai/kradle-cli'
 edges:
   integrates_with:
-    - target: agent:agent-mux
+    - target: agent:adapters
     - target: agent:babysitter
     - target: tool:kubernetes
   lib_applies_to_domain:
@@ -1121,7 +1121,7 @@ attributes:
        specified branch, injects CLAUDE.md and relevant memory snapshots
        from the company brain, and prepares the agent workspace container.
     4. Agent-mux launch: The dispatch controller creates a Kubernetes Job
-       running the agent-mux container with the selected coding agent
+       running the adapters container with the selected coding agent
        (Claude Code, Codex, etc.). The session streams output back via SSE.
     5. Completion: On agent completion, results are collected — files
        modified, PR created/updated, tests run. A memory snapshot is

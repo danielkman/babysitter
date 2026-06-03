@@ -42,7 +42,7 @@ const docsHonestyChecks = [
     name: 'README marks transport-mux as the published runtime seam',
     ok: containsAll(readmeDoc, [
       'published transport/proxy runtime seam',
-      'used by the agent-mux launcher',
+      'used by the adapters launcher',
     ]),
   },
   {

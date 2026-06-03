@@ -40,18 +40,18 @@ When launching agents through `adapters launch`, two bridge flags control how Ba
 - `--bridge-interactive` enables an interactive bridge layer that proxies stdin/stdout through an intermediary capable of injecting Babysitter hook responses and orchestration signals while preserving the harness's native TUI.
 - `--bridge-hooks` enables hook bridging. The bridge intercepts hook lifecycle events and forwards them to the Babysitter session-start hook.
 
-The `hookSupport` and `bridgeCapabilities` attributes in the atlas graph agent version nodes describe which harnesses support these flags natively. See the [adapters CLI reference](agent-mux/reference/10-cli-reference.md) for the full flag table.
+The `hookSupport` and `bridgeCapabilities` attributes in the atlas graph agent version nodes describe which harnesses support these flags natively. See the [adapters CLI reference](adapters/reference/10-cli-reference.md) for the full flag table.
 
 ## Plugin Mode And External Responders
 
 When Babysitter runs inside a host agent plugin, most effects are host-resolvable: the host agent can edit files, run approved tools, answer breakpoints, and post task results back to the run.
 
-External agent responder effects are different. A process can mark an agent task with `responderType: "agent"` and an agent-mux `adapter`; tasks-mux then resolves that effect through agent-mux instead of handing it back to the host as ordinary tool work.
+External agent responder effects are different. A process can mark an agent task with `responderType: "agent"` and an adapters `adapter`; tasks-mux then resolves that effect through adapters instead of handing it back to the host as ordinary tool work.
 
 This keeps the plugin contract small:
 
 - Host-resolvable effects stay with the current host agent.
-- External agent responder effects route through tasks-mux, agent-mux, and the `amuxBridge` integration.
+- External agent responder effects route through tasks-mux, adapters, and the `amuxBridge` integration.
 - Fallback to the internal agent path must be explicit, using the current fallback field documented in the agent-reference docs.
 
 For task shape, fallback behavior, and troubleshooting, see [Process Authoring Policy](agent-reference/process-authoring.md#agent-task-responders) and [Command Surfaces](agent-reference/command-surfaces.md#external-agent-dispatch).

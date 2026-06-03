@@ -13,7 +13,7 @@ const METADATA_FILES = [
   "docs/workspace-validation.md",
   "docs/package-and-plugin-map.md",
   "docs/release-pipeline.md",
-  "scripts/agent-mux-build.cjs",
+  "scripts/adapters-build.cjs",
   "scripts/bump-version.mjs",
   "scripts/check-architecture-boundaries.cjs",
   "scripts/fix-broken-latest-tags.mjs",

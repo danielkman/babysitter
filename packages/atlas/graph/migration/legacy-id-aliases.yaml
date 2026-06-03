@@ -250,7 +250,7 @@ aliases:
   # ─────────────────────────────────────────────────────────────────
   # NodeKind: ProcessDescriptor
   # ─────────────────────────────────────────────────────────────────
-  - { legacyId: "process:agent-mux/model-catalog",                 v6Id: "process-descriptor:agent-mux-model-catalog",            nodeKind: ProcessDescriptor }
+  - { legacyId: "process:adapters/model-catalog",                 v6Id: "process-descriptor:adapters-model-catalog",            nodeKind: ProcessDescriptor }
   - { legacyId: "process:packages/catalog/process-library-catalog", v6Id: "process-descriptor:catalog-process-library-catalog",    nodeKind: ProcessDescriptor }
 
   # ─────────────────────────────────────────────────────────────────

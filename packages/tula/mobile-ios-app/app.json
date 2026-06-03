@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "AgentMux iOS",
-    "slug": "agent-mux-ios",
+    "slug": "adapters-ios",
     "scheme": "agentmux",
     "version": "0.0.0",
     "orientation": "portrait",

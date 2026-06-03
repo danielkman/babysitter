@@ -156,7 +156,7 @@ nodeKinds:
     type: enum<agentsh,docker,firecracker,gvisor,kata,wasm-time,qemu,none>
     required: false
     evidence: vendor-doc-or-better
-    notes: Concrete tool that enforces the sandbox for this execution. `agentsh`=agent-mux per-task wrapper; `docker`=docker/podman; `firecracker`=AWS micro-VM; `gvisor`=user-space kernel; `kata`=kata-containers; `wasm-time`=wasmtime; `qemu`=full QEMU. `none`=relies solely on host.
+    notes: Concrete tool that enforces the sandbox for this execution. `agentsh`=adapters per-task wrapper; `docker`=docker/podman; `firecracker`=AWS micro-VM; `gvisor`=user-space kernel; `kata`=kata-containers; `wasm-time`=wasmtime; `qemu`=full QEMU. `none`=relies solely on host.
   incomingEdges:
   - runs_via
   outgoingEdges:

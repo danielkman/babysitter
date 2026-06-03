@@ -459,7 +459,7 @@ id: kubernetes-crd-kind:kradle-agent-adapter
 attributes:
   displayName: Kradle AgentAdapter
   description: AgentAdapter declares an adapter for a concrete agent implementation so Kradle can dispatch through
-    agent-mux without becoming an agent runtime. It is owned by the agent-dispatch service and participates in governed
+    adapters without becoming an agent runtime. It is owned by the agent-dispatch service and participates in governed
     agent execution. Atlas models it as a agent CRD with Namespaced scope, v1alpha1 storage version, and source-backed
     Kubernetes API metadata so controller, policy, UI/API, and provider edges can target the exact resource kind.
   apiGroup: kradle.a5c.ai

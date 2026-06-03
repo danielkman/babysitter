@@ -16,7 +16,7 @@ attributes:
   notes: |
     Kradle's knowledge fabric implementation: the Company Brain. Provides
     persistent organizational memory that spans agent sessions, dispatch
-    runs, and team members. NOT session-level memory (that's agent-mux) —
+    runs, and team members. NOT session-level memory (that's adapters) —
     this is institutional knowledge at the org scope.
 
     Resources:

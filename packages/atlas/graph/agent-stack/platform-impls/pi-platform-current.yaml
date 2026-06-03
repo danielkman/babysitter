@@ -42,7 +42,7 @@ edges:
     versionRange: '>=1.0.0'
     level: none
     notes: |
-      Pi exposes only MCP servers for extensibility (per agent-mux ref). Task
+      Pi exposes only MCP servers for extensibility (per adapters ref). Task
       brief mentions a marketplace; reconcile TODO.
   - target: capability:skills
     versionRange: '>=0.0.0'

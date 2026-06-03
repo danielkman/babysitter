@@ -1,5 +1,5 @@
 /**
- * OpenTelemetry integration for agent-mux.
+ * OpenTelemetry integration for adapters.
  *
  * Provides metrics, tracing, and observability for agent operations,
  * performance monitoring, and error tracking.
@@ -67,7 +67,7 @@ export interface AgentMuxMetrics {
 }
 
 /**
- * Telemetry manager for agent-mux observability.
+ * Telemetry manager for adapters observability.
  */
 export class TelemetryManager implements Telemetry {
   private sdk: NodeSDK | null = null;
@@ -78,7 +78,7 @@ export class TelemetryManager implements Telemetry {
 
   constructor(config: TelemetryConfig = {}) {
     this.config = {
-      serviceName: 'agent-mux',
+      serviceName: 'adapters',
       serviceVersion: process.env.npm_package_version || '0.0.0',
       enableTracing: true,
       enableMetrics: true,
@@ -385,7 +385,7 @@ export class TelemetryManager implements Telemetry {
  * Default telemetry manager instance.
  */
 export const telemetry = new TelemetryManager({
-  serviceName: process.env.OTEL_SERVICE_NAME || 'agent-mux',
+  serviceName: process.env.OTEL_SERVICE_NAME || 'adapters',
   serviceVersion: process.env.npm_package_version,
   enableTracing: process.env.OTEL_TRACES_EXPORTER !== 'none',
   enableMetrics: process.env.OTEL_METRICS_EXPORTER !== 'none',

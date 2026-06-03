@@ -16,7 +16,7 @@
   "summary": "Implement the narrowed task-management primitives needed before tasks-mux can serve as the unified routing hub: canonical priority, dependsOn, searchBreakpoints, status history, bulk operations, state-machine validation, and audit logging.",
   "designDocs": [
     "docs/agent-layer-gaps.md",
-    "docs/agent-mux-babysitter-integrations/tasks-mux-routing.md",
+    "docs/adapters-babysitter-integrations/tasks-mux-routing.md",
     "docs/agent-reference/process-authoring.md",
     "packages/tasks-mux/specs/architecture.md",
     "packages/tasks-mux/README.md"

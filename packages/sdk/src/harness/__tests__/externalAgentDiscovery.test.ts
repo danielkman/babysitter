@@ -55,7 +55,7 @@ afterEach(() => {
 });
 
 describe("discoverExternalAgents", () => {
-  it("returns unavailable when neither agent-mux nor adapters doctor is available", async () => {
+  it("returns unavailable when neither adapters nor adapters doctor is available", async () => {
     _setExternalAgentDiscoveryModuleForTesting(null);
     stubExecFile(new Error("adapters not found"));
 
@@ -67,7 +67,7 @@ describe("discoverExternalAgents", () => {
     });
   });
 
-  it("discovers agents through an injected agent-mux module", async () => {
+  it("discovers agents through an injected adapters module", async () => {
     process.env.AGENT_MUX_PROVIDER = "codex";
     process.env.AGENT_MUX_MODEL = "gpt-5.3-codex";
 

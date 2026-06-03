@@ -9,7 +9,7 @@ branding:
 inputs:
   # ── Core inputs ──────────────────────────────────────────────────────
   command:
-    description: agent-mux command to execute after trigger evaluation.
+    description: adapters command to execute after trigger evaluation.
     required: false
     default: launch
   harness:
@@ -67,16 +67,16 @@ inputs:
 
   # ── Legacy / compatibility ───────────────────────────────────────────
   args:
-    description: Space-delimited fallback arguments passed to agent-mux after the command.
+    description: Space-delimited fallback arguments passed to adapters after the command.
     required: false
   args-json:
-    description: JSON string array of additional arguments passed to agent-mux after the command. Prefer this for values containing spaces or shell-sensitive characters.
+    description: JSON string array of additional arguments passed to adapters after the command. Prefer this for values containing spaces or shell-sensitive characters.
     required: false
   adapter:
     description: Alias for harness (backward compatibility).
     required: false
   plugins:
-    description: Newline-delimited plugin specs installed after harness setup. Each line is passed to agent-mux plugin install <adapter> <plugin>.
+    description: Newline-delimited plugin specs installed after harness setup. Each line is passed to adapters plugin install <adapter> <plugin>.
     required: false
 
   # ── Trigger evaluation ───────────────────────────────────────────────
@@ -85,7 +85,7 @@ inputs:
     required: false
     default: github
   trigger-query:
-    description: Query used to decide whether agent-mux should run.
+    description: Query used to decide whether adapters should run.
     required: false
   include-diff:
     description: Include local git diff patches in trigger enrichment.
@@ -94,7 +94,7 @@ inputs:
 
   # ── Auth / tokens ────────────────────────────────────────────────────
   use-a5c-token-exchange:
-    description: Use a5c-ai/generate-token-action@main before running trigger enrichment and agent-mux.
+    description: Use a5c-ai/generate-token-action@main before running trigger enrichment and adapters.
     required: false
     default: 'false'
   github-token:
@@ -108,14 +108,14 @@ inputs:
     required: false
     default: '22'
   working-directory:
-    description: Working directory for agent-mux execution.
+    description: Working directory for adapters execution.
     required: false
     default: ${{ github.workspace }}
   pre-run:
-    description: Optional shell commands to run after trigger match and before agent-mux.
+    description: Optional shell commands to run after trigger match and before adapters.
     required: false
   post-run:
-    description: Optional shell commands to run after agent-mux when trigger matched.
+    description: Optional shell commands to run after adapters when trigger matched.
     required: false
 
 outputs:
@@ -126,7 +126,7 @@ outputs:
     description: Path to enriched event JSON.
     value: ${{ steps.trigger.outputs.event }}
   exit-code:
-    description: agent-mux exit code. Empty when trigger did not match.
+    description: adapters exit code. Empty when trigger did not match.
     value: ${{ steps.adapters.outputs.exit-code }}
 
 runs:
@@ -170,8 +170,8 @@ runs:
         set -euo pipefail
         echo "Installing @a5c-ai packages with tag: $NPM_TAG"
         npm install -g --legacy-peer-deps @a5c-ai/adapters@$NPM_TAG @a5c-ai/babysitter-sdk@$NPM_TAG @a5c-ai/triggers-adapter@$NPM_TAG
-        npm install -g --legacy-peer-deps @a5c-ai/hooks-adapter-cli@$NPM_TAG 2>/dev/null || echo "agent-mux-hooks-cli install skipped (optional)"
-        which agent-mux && agent-mux --version || { echo "ERROR: agent-mux not found after install"; exit 1; }
+        npm install -g --legacy-peer-deps @a5c-ai/hooks-adapter-cli@$NPM_TAG 2>/dev/null || echo "adapters-hooks-cli install skipped (optional)"
+        which adapters && adapters --version || { echo "ERROR: adapters not found after install"; exit 1; }
 
     - name: Install harness
       if: ${{ inputs.harness != '' || inputs.adapter != '' }}
@@ -182,7 +182,7 @@ runs:
       run: |
         set -euo pipefail
         cd "$INPUT_WORKING_DIRECTORY"
-        # Map adapter names to agent-mux agent aliases
+        # Map adapter names to adapters agent aliases
         AGENT_MUX_AGENT="$INPUT_HARNESS"
         case "$INPUT_HARNESS" in
           claude-code) AGENT_MUX_AGENT="claude" ;;
@@ -190,7 +190,7 @@ runs:
           copilot-cli) AGENT_MUX_AGENT="copilot" ;;
           cursor-cli) AGENT_MUX_AGENT="cursor" ;;
         esac
-        agent-mux install "$AGENT_MUX_AGENT" || true
+        adapters install "$AGENT_MUX_AGENT" || true
 
     - name: Install babysitter plugin
       if: ${{ inputs.babysitter-plugin == 'true' }}
@@ -245,7 +245,7 @@ runs:
         set -euo pipefail
         while IFS= read -r plugin; do
           [ -z "$plugin" ] && continue
-          agent-mux plugin install "$INPUT_ADAPTER" "$plugin"
+          adapters plugin install "$INPUT_ADAPTER" "$plugin"
         done <<< "$INPUT_PLUGINS"
 
     - name: Evaluate trigger
@@ -259,20 +259,20 @@ runs:
         EFFECTIVE_GITHUB_TOKEN: ${{ steps.a5c-token.outputs.a5c_token || inputs.github-token }}
       run: |
         set -euo pipefail
-        EVENT_FILE="$RUNNER_TEMP/agent-mux-event.json"
-        RESULT_FILE="$RUNNER_TEMP/agent-mux-trigger.json"
+        EVENT_FILE="$RUNNER_TEMP/adapters-event.json"
+        RESULT_FILE="$RUNNER_TEMP/adapters-trigger.json"
         INCLUDE_DIFF_ARGS=()
         if [ "$INPUT_INCLUDE_DIFF" = "true" ]; then
           INCLUDE_DIFF_ARGS+=(--include-diff)
         fi
-        agent-mux-triggers enrich \
+        adapters-triggers enrich \
           --backend "$INPUT_TRIGGER_BACKEND" \
           --token "$EFFECTIVE_GITHUB_TOKEN" \
           "${INCLUDE_DIFF_ARGS[@]}" \
           --output "$EVENT_FILE"
         if [ -z "$INPUT_TRIGGER_QUERY" ]; then
           echo '{"matched":true,"reasons":["no trigger query configured"]}' > "$RESULT_FILE"
-        elif agent-mux-triggers evaluate \
+        elif adapters-triggers evaluate \
           --backend "$INPUT_TRIGGER_BACKEND" \
           --query "$INPUT_TRIGGER_QUERY" \
           --token "$EFFECTIVE_GITHUB_TOKEN" \
@@ -301,7 +301,7 @@ runs:
         set -euo pipefail
         bash -euo pipefail -c "$INPUT_PRE_RUN"
 
-    - name: Run agent-mux
+    - name: Run adapters
       id: adapters
       if: ${{ steps.trigger.outputs.matched == 'true' }}
       shell: bash
@@ -324,9 +324,9 @@ runs:
         AGENT_MUX_TRIGGER_EVENT_PATH: ${{ steps.trigger.outputs.event }}
       run: |
         set -euo pipefail
-        ADAPTERS="agent-mux"
+        ADAPTERS="adapters"
 
-        # Map harness names to agent-mux aliases
+        # Map harness names to adapters aliases
         AGENT_MUX_HARNESS="$INPUT_HARNESS"
         case "$INPUT_HARNESS" in
           claude-code) AGENT_MUX_HARNESS="claude" ;;
@@ -391,7 +391,7 @@ runs:
           ARGS+=("${EXTRA_ARGS[@]}")
         fi
 
-        echo "::group::agent-mux ${ARGS[*]}"
+        echo "::group::adapters ${ARGS[*]}"
         if $ADAPTERS "${ARGS[@]}"; then
           echo "exit-code=0" >> "$GITHUB_OUTPUT"
         else

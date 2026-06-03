@@ -46,7 +46,7 @@
     "core": [
       "packages/kradle/core/src/agent-stack-controller.js",
       "packages/kradle/core/src/agent-dispatch-controller.js",
-      "packages/kradle/core/src/agent-mux-client.js",
+      "packages/kradle/core/src/adapters-client.js",
       "packages/kradle/core/src/api-controller.js",
       "packages/kradle/core/src/resource-model.js"
     ],
@@ -72,7 +72,7 @@
     "tests": [
       "packages/kradle/core/tests/agent-stack-controller.test.js",
       "packages/kradle/core/tests/agent-dispatch-controller.test.js",
-      "packages/kradle/core/tests/agent-mux-client.test.js",
+      "packages/kradle/core/tests/adapters-client.test.js",
       "packages/kradle/core/tests/jitsi-resource-model.test.js",
       "packages/kradle/cli/tests/jitsi-mcp-tools.test.js",
       "packages/kradle/web/e2e/resource-crud.spec.js",
@@ -106,7 +106,7 @@
   ],
   "focusedVerificationCandidates": [
     "node --test packages/kradle/core/tests/agent-dispatch-controller.test.js",
-    "node --test packages/kradle/core/tests/agent-mux-client.test.js",
+    "node --test packages/kradle/core/tests/adapters-client.test.js",
     "node --test packages/kradle/core/tests/agent-stack-controller.test.js",
     "node --test packages/kradle/core/tests/jitsi-resource-model.test.js",
     "node --test packages/kradle/cli/tests/jitsi-mcp-tools.test.js",

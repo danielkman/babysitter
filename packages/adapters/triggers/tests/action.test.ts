@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { evaluateActionTrigger } from '../src/action.js';
 
-describe('agent-mux action trigger flow', () => {
+describe('adapters action trigger flow', () => {
   it('evaluates an event payload from disk like the composite action', async () => {
     const dir = await mkdtemp(join(tmpdir(), 'adapters-trigger-'));
     const eventPath = join(dir, 'event.json');

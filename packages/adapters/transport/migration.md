@@ -2,7 +2,7 @@
 
 ## Current status
 
-`packages/adapters/transport` is the published transport/proxy runtime seam used by the agent-mux release and staging pipelines. `adapters launch` imports it as part of the public install chain.
+`packages/adapters/transport` is the published transport/proxy runtime seam used by the adapters release and staging pipelines. `adapters launch` imports it as part of the public install chain.
 
 ## Why this file exists
 
@@ -10,7 +10,7 @@ This file records the current release-owner policy, the remaining historical ref
 
 ## Current artifact policy
 
-- `@a5c-ai/transport-adapter` is a public package in the agent-mux family.
+- `@a5c-ai/transport-adapter` is a public package in the adapters family.
 - Package metadata must stay publishable and must accurately cover the shipped entrypoints.
 - Docs must describe this package as the active JS transport/proxy runtime seam for published launcher flows.
 - Referenced packaged artifacts must exist locally and be covered by the publish surface.

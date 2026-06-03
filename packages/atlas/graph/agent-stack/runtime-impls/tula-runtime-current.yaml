@@ -30,7 +30,7 @@ attributes:
   notes: |
     tula runtime composes agent-runtime and babysitter-sdk runtime (journal-
     replay, breakpoint policy engine, harness adapters) into a unified
-    runtime surface. Adds agent-mux bridging for multi-harness dispatch.
+    runtime surface. Adds adapters bridging for multi-harness dispatch.
 edges:
   realizes:
     - target: layer:5-agent-runtime

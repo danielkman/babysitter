@@ -42,7 +42,7 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
 }
 
 /**
- * Deep merge two objects according to agent-mux merge semantics:
+ * Deep merge two objects according to adapters merge semantics:
  *
  * - Scalars: override replaces base.
  * - Arrays: override replaces base (no concatenation).

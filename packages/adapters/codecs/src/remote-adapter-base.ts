@@ -133,12 +133,12 @@ export abstract class BaseRemoteAdapter implements RemoteAdapter {
   async cleanup(): Promise<void> {
     // Close all active connections
     const connectionPromises = Array.from(this.activeConnections.values()).map(
-      connection => connection.close().catch((e) => { process.stderr.write(`[agent-mux] adapter connection cleanup failed: ${e instanceof Error ? e.message : String(e)}\n`); })
+      connection => connection.close().catch((e) => { process.stderr.write(`[adapters] adapter connection cleanup failed: ${e instanceof Error ? e.message : String(e)}\n`); })
     );
 
     // Stop all managed servers
     const serverPromises = Array.from(this.managedServers.values()).map(
-      server => this.stopServer?.(server).catch((e) => { process.stderr.write(`[agent-mux] adapter server cleanup failed: ${e instanceof Error ? e.message : String(e)}\n`); })
+      server => this.stopServer?.(server).catch((e) => { process.stderr.write(`[adapters] adapter server cleanup failed: ${e instanceof Error ? e.message : String(e)}\n`); })
     );
 
     await Promise.all([...connectionPromises, ...serverPromises]);

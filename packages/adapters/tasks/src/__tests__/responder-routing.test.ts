@@ -15,7 +15,7 @@ describe("issue #606 responder routing matrix", () => {
 
     expect(routeTask({ kind: "agent", agent: { responderType: "agent", adapter: "codex" } })).toMatchObject({
       responderType: "agent",
-      route: "agent-mux",
+      route: "adapters",
       responder: { adapter: "codex" },
     });
 
@@ -43,7 +43,7 @@ describe("issue #606 responder routing matrix", () => {
       },
     )).toMatchObject({
       responderType: "agent",
-      route: "agent-mux",
+      route: "adapters",
       responder: { id: "codex" },
     });
   });
@@ -88,7 +88,7 @@ describe("issue #606 responder routing matrix", () => {
   });
 
   it("does not fallback when a matching agent responder or agent backend is available", () => {
-    const backend = { name: "agent-mux", submitBreakpoint: vi.fn() } as never;
+    const backend = { name: "adapters", submitBreakpoint: vi.fn() } as never;
 
     expect(routeTask(
       {
@@ -102,7 +102,7 @@ describe("issue #606 responder routing matrix", () => {
       { agentBackend: backend },
     )).toMatchObject({
       responderType: "agent",
-      route: "agent-mux",
+      route: "adapters",
       backend,
     });
     expect(isHostDelegableRoute(routeTask(

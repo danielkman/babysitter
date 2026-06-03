@@ -2,7 +2,7 @@ nodeKind: Claim
 id: claim:source-provenance-agent-stack-products-hermes-yaml
 attributes:
   subjectKind: AgentProduct
-  statement: docs/agent-mux/reference/agents/hermes.md is the migrated source reference
+  statement: docs/adapters/reference/agents/hermes.md is the migrated source reference
     for AgentProduct agent:hermes.
   confidence: medium
   provenanceKind: migrated-source-comment
@@ -10,7 +10,7 @@ attributes:
   status: accepted
   subjectId: agent:hermes
   attribute: source
-  value: docs/agent-mux/reference/agents/hermes.md
+  value: docs/adapters/reference/agents/hermes.md
   evidenceSourceIds:
   - evidence:source-provenance-hermes-product-doc
   claimedAt: '2026-05-04T00:00:00Z'

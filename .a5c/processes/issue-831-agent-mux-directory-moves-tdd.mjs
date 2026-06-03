@@ -1,6 +1,6 @@
 /**
- * @process repo/issue-831-agent-mux-directory-moves-tdd
- * @description TDD, spec-driven convergence plan for moving mux packages under packages/agent-mux for issue #831.
+ * @process repo/issue-831-adapters-directory-moves-tdd
+ * @description TDD, spec-driven convergence plan for moving mux packages under packages/adapters for issue #831.
  * @inputs {
  *   issueNumber: number,
  *   baseBranch: string,
@@ -25,10 +25,10 @@
  * }
  *
  * Research basis:
- * - Issue #831: move transport-mux, extension-mux, triggers-mux, tasks-mux, tool-mux, and hooks-mux under packages/agent-mux.
- * - docs/agent-mux/terminology-and-structure-gaps/directory-moves.md
- * - docs/agent-mux/terminology-and-structure-gaps/package-renames.md
- * - docs/agent-mux/terminology-and-structure-gaps/README.md
+ * - Issue #831: move transport-mux, extension-mux, triggers-mux, tasks-mux, tool-mux, and hooks-mux under packages/adapters.
+ * - docs/adapters/terminology-and-structure-gaps/directory-moves.md
+ * - docs/adapters/terminology-and-structure-gaps/package-renames.md
+ * - docs/adapters/terminology-and-structure-gaps/README.md
  * - docs/agent-reference/process-authoring.md
  * - /home/runner/.a5c/process-library/babysitter-repo/library/tdd-quality-convergence.js
  * - /home/runner/.a5c/process-library/babysitter-repo/library/tdd-quality-convergence.md
@@ -203,7 +203,7 @@ export async function process(inputs, ctx) {
         },
       }, {
         breakpointId: `issue-831.${phaseSpec.id}.non-convergence`,
-        tags: ["issue-831", "agent-mux", "quality-gate"],
+        tags: ["issue-831", "adapters", "quality-gate"],
         strategy: "single",
       });
     }
@@ -259,7 +259,7 @@ export async function process(inputs, ctx) {
     success,
     issueNumber,
     baseBranch: inputs.baseBranch ?? "staging",
-    implementationBranch: inputs.implementationBranch ?? "issue-831-agent-mux-directory-moves",
+    implementationBranch: inputs.implementationBranch ?? "issue-831-adapters-directory-moves",
     targetQuality,
     maxIterationsPerPhase,
     issueContext: valueOf(issueContext),
@@ -308,7 +308,7 @@ export const reuseAuditTask = defineTask("issue-831/reuse-audit", (args) => ({
         "Start the report with exactly: Reuse-audit findings (REVIEW BEFORE PROCEEDING).",
         "Extract keywords: transport-mux, extension-mux, triggers-mux, tasks-mux, tool-mux, hooks-mux, adapters-proxy, package workspaces, tsconfig references, CI workflows, atlas graph, package-lock, import paths.",
         "Scan package.json, tsconfig.json, scripts, .github/workflows, packages/atlas/graph, docs, and each target package package.json/tsconfig.",
-        "Identify existing helper scripts such as scripts/agent-mux-build.cjs and scripts/hooks-mux-build.cjs that may need path updates or can be reused for verification.",
+        "Identify existing helper scripts such as scripts/adapters-build.cjs and scripts/hooks-mux-build.cjs that may need path updates or can be reused for verification.",
         "Record all source and target directories, package names, bin names, workspace globs, and references that must change.",
         "Do not edit repository files in this phase.",
         "Return JSON with findings, currentLayout, targetLayout, reusableInfrastructure, referenceSurfaces, likelyTestLocations, risks, and blockers.",

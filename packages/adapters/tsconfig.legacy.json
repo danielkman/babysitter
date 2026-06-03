@@ -17,7 +17,7 @@
     { "path": "packages/core" },
     { "path": "packages/adapters" },
     { "path": "packages/cli" },
-    { "path": "packages/agent-mux" },
+    { "path": "packages/adapters" },
     { "path": "packages/gateway" },
     { "path": "packages/ui" },
     { "path": "packages/mobile-ios-app" },

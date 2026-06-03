@@ -14,7 +14,7 @@ attributes:
   regionConstraints: []
   evidenceRefs:
     - "repo-sdk-fallback"
-    - "repo-agent-mux-host"
+    - "repo-adapters-host"
     - "web-anthropic-claude-code"
 ---
 nodeKind: ModelProviderVersion

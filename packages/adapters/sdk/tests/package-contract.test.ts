@@ -37,7 +37,7 @@ describe('@a5c-ai/adapters package contract', () => {
     const stdout = runNode([
       '--input-type=module',
       '-e',
-      "const mod = await import('@a5c-ai/adapters'); if (typeof mod.createClient !== 'function' || typeof mod.registerBuiltInAdapters !== 'function') { throw new Error('agent-mux import contract failed'); } console.log('ok');",
+      "const mod = await import('@a5c-ai/adapters'); if (typeof mod.createClient !== 'function' || typeof mod.registerBuiltInAdapters !== 'function') { throw new Error('adapters import contract failed'); } console.log('ok');",
     ]);
 
     expect(stdout.trim()).toBe('ok');
@@ -46,7 +46,7 @@ describe('@a5c-ai/adapters package contract', () => {
   it('loads through require()', () => {
     const stdout = runNode([
       '-e',
-      "const mod = require('@a5c-ai/adapters'); if (typeof mod.createClient !== 'function' || typeof mod.registerBuiltInAdapters !== 'function') { throw new Error('agent-mux require contract failed'); } console.log('ok');",
+      "const mod = require('@a5c-ai/adapters'); if (typeof mod.createClient !== 'function' || typeof mod.registerBuiltInAdapters !== 'function') { throw new Error('adapters require contract failed'); } console.log('ok');",
     ]);
 
     expect(stdout.trim()).toBe('ok');

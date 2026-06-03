@@ -22,7 +22,7 @@ export type ModelProtocol = 'chat' | 'responses' | 'messages' | 'custom';
 export type ModelDeployment = 'hosted' | 'local' | 'gateway' | 'hybrid';
 
 /**
- * How agent-mux can execute additional turns for a structured session.
+ * How adapters can execute additional turns for a structured session.
  *
  * `restart-per-turn` means each user turn requires a fresh invocation or
  * reconnect that resumes the same native session.
@@ -34,8 +34,8 @@ export type StructuredSessionTransport = 'none' | 'restart-per-turn' | 'persiste
 /**
  * Who owns the live session control plane behind an adapter.
  *
- * `self-managed` means agent-mux directly owns the subprocess / SDK lifecycle.
- * `external-host` means agent-mux talks to another long-lived host surface
+ * `self-managed` means adapters directly owns the subprocess / SDK lifecycle.
+ * `external-host` means adapters talks to another long-lived host surface
  * (app-server, HTTP server, remote wrapper) that owns the session.
  * `mcp-mediated` means a third-party host mediates the live session over MCP or
  * a similar host-managed channel.
@@ -159,7 +159,7 @@ export interface AgentCapabilities {
   supportsStructuredOutput: boolean;
 
   /**
-   * How agent-mux can drive structured multi-turn sessions for this adapter.
+   * How adapters can drive structured multi-turn sessions for this adapter.
    * Distinguishes resumable one-turn CLI flows from truly persistent live
    * structured sessions.
    */
@@ -195,7 +195,7 @@ export interface AgentCapabilities {
   /** Whether the agent has an interactive REPL mode. */
   supportsInteractiveMode: boolean;
 
-  /** Whether agent-mux can inject text into the agent's stdin mid-run. */
+  /** Whether adapters can inject text into the agent's stdin mid-run. */
   supportsStdinInjection: boolean;
 
   // ── Multimodal ──────────────────────────────────────────────────────

@@ -1,13 +1,13 @@
 ---
 nodeKind: Presentation
-id: presentation:agent-mux-tui
+id: presentation:adapters-tui
 attributes:
-  displayName: "agent-mux TUI"
+  displayName: "adapters TUI"
   kind: tui
   description: |
-    Terminal UI for agent-mux sessions. Renders agent runs, slash commands,
+    Terminal UI for adapters sessions. Renders agent runs, slash commands,
     and breakpoint approvals in an ink-based full-screen terminal shell;
-    bridges to remote agents (claude-code, codex, etc.) via the agent-mux
+    bridges to remote agents (claude-code, codex, etc.) via the adapters
     transport.
   renderingTechnology: terminal-emulator
   themeSupport: light-dark
@@ -19,12 +19,12 @@ attributes:
 edges: {}
 ---
 nodeKind: Presentation
-id: presentation:agent-mux-cli
+id: presentation:adapters-cli
 attributes:
-  displayName: "agent-mux CLI"
+  displayName: "adapters CLI"
   kind: cli
   description: |
-    Non-interactive CLI surface of agent-mux. Scriptable `adapters run --json`
+    Non-interactive CLI surface of adapters. Scriptable `adapters run --json`
     invocation that proxies events from the bridged remote agent and exits
     on session end. Used in CI and headless automation.
   themeSupport: none
@@ -36,14 +36,14 @@ attributes:
 edges: {}
 ---
 nodeKind: Presentation
-id: presentation:agent-mux-webui
+id: presentation:adapters-webui
 attributes:
-  displayName: "agent-mux Web UI"
+  displayName: "adapters Web UI"
   kind: web
   description: |
-    Browser-based control surface for agent-mux sessions. Next.js / React
+    Browser-based control surface for adapters sessions. Next.js / React
     web app rendering a session list, run detail panel, kanban board, and
-    real-time hook/breakpoint inbox driven by the agent-mux gateway.
+    real-time hook/breakpoint inbox driven by the adapters gateway.
   renderingTechnology: next-js
   themeSupport: full-customizable
   accessibilitySupport: wcag-aa
@@ -54,13 +54,13 @@ attributes:
 edges: {}
 ---
 nodeKind: Presentation
-id: presentation:agent-mux-mobile-ios
+id: presentation:adapters-mobile-ios
 attributes:
-  displayName: "agent-mux iOS app"
+  displayName: "adapters iOS app"
   kind: mobile
   description: |
-    iOS mobile app for agent-mux. React Native client that connects to the
-    agent-mux gateway, surfaces session activity, accepts breakpoints, and
+    iOS mobile app for adapters. React Native client that connects to the
+    adapters gateway, surfaces session activity, accepts breakpoints, and
     streams agent output on the go.
   renderingTechnology: react-native
   themeSupport: light-dark
@@ -72,13 +72,13 @@ attributes:
 edges: {}
 ---
 nodeKind: Presentation
-id: presentation:agent-mux-mobile-android
+id: presentation:adapters-mobile-android
 attributes:
-  displayName: "agent-mux Android app"
+  displayName: "adapters Android app"
   kind: mobile
   description: |
-    Android mobile app for agent-mux. React Native client that connects to
-    the agent-mux gateway, surfaces session activity, accepts breakpoints,
+    Android mobile app for adapters. React Native client that connects to
+    the adapters gateway, surfaces session activity, accepts breakpoints,
     and streams agent output on the go.
   renderingTechnology: react-native
   themeSupport: light-dark
@@ -90,12 +90,12 @@ attributes:
 edges: {}
 ---
 nodeKind: Presentation
-id: presentation:agent-mux-tv-androidtv
+id: presentation:adapters-tv-androidtv
 attributes:
-  displayName: "agent-mux Android TV app"
+  displayName: "adapters Android TV app"
   kind: tv
   description: |
-    Android TV / Google TV app for agent-mux. Lean-back, remote-control
+    Android TV / Google TV app for adapters. Lean-back, remote-control
     optimized view of session activity and run progress, suitable for
     monitoring long-running agent runs from a couch.
   renderingTechnology: react-native
@@ -108,12 +108,12 @@ attributes:
 edges: {}
 ---
 nodeKind: Presentation
-id: presentation:agent-mux-tv-appletv
+id: presentation:adapters-tv-appletv
 attributes:
-  displayName: "agent-mux Apple TV app"
+  displayName: "adapters Apple TV app"
   kind: tv
   description: |
-    Apple TV (tvOS) app for agent-mux. Lean-back, remote-control optimized
+    Apple TV (tvOS) app for adapters. Lean-back, remote-control optimized
     view of session activity and run progress for monitoring long-running
     agent runs from a couch.
   renderingTechnology: react-native
@@ -126,12 +126,12 @@ attributes:
 edges: {}
 ---
 nodeKind: Presentation
-id: presentation:agent-mux-watch-watchos
+id: presentation:adapters-watch-watchos
 attributes:
-  displayName: "agent-mux watchOS app"
+  displayName: "adapters watchOS app"
   kind: watch
   description: |
-    Apple Watch (watchOS) companion app for agent-mux. Glanceable run
+    Apple Watch (watchOS) companion app for adapters. Glanceable run
     status, breakpoint approval taps, and complications surfacing the
     state of in-flight agent sessions.
   renderingTechnology: react-native
@@ -144,12 +144,12 @@ attributes:
 edges: {}
 ---
 nodeKind: Presentation
-id: presentation:agent-mux-watch-wearos
+id: presentation:adapters-watch-wearos
 attributes:
-  displayName: "agent-mux Wear OS app"
+  displayName: "adapters Wear OS app"
   kind: watch
   description: |
-    Wear OS companion app for agent-mux. Glanceable run status, breakpoint
+    Wear OS companion app for adapters. Glanceable run status, breakpoint
     approval taps, and tiles surfacing the state of in-flight agent
     sessions.
   renderingTechnology: react-native

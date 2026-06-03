@@ -1,5 +1,5 @@
 /**
- * @process agent-mux/sessions-view-installed-agents-bugfix
+ * @process adapters/sessions-view-installed-agents-bugfix
  * @description Diagnose and fix the Sessions view bug where discovered installed agents do not surface sessions, using analysis, implementation, deterministic verification, and review convergence.
  * @skill babysit plugins/babysitter/skills/babysit/SKILL.md
  */
@@ -13,7 +13,7 @@ const analyzeSessionsBugTask = defineTask('analyze-sessions-bug', (args, taskCtx
   agent: {
     name: 'general-purpose',
     prompt: {
-      role: 'Staff engineer debugging agent-mux session discovery and TUI behavior',
+      role: 'Staff engineer debugging adapters session discovery and TUI behavior',
       task: 'Inspect the current implementation and determine why sessions are not appearing for discovered installed agents such as claude and codex.',
       context: {
         projectRoot: args.projectRoot,
@@ -165,7 +165,7 @@ const reviewSessionsBugfixTask = defineTask('review-sessions-bugfix', (args, tas
 
 export async function process(inputs, ctx) {
   const {
-    projectRoot = 'C:/work/agent-mux',
+    projectRoot = 'C:/work/adapters',
     bugDescription = 'Sessions are not showing in the Sessions view for discovered installed agents such as claude and codex.',
     targetScore = 90,
     maxAttempts = 2,

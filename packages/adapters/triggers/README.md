@@ -1,6 +1,6 @@
 # @a5c-ai/triggers-adapter
 
-Trigger glue for running any coding agent from CI. Normalizes GitHub, GitLab, Bitbucket, and generic webhook payloads into one event shape, enriches GitHub events with changed files and optional diffs, and evaluates compact trigger queries before launching agent-mux.
+Trigger glue for running any coding agent from CI. Normalizes GitHub, GitLab, Bitbucket, and generic webhook payloads into one event shape, enriches GitHub events with changed files and optional diffs, and evaluates compact trigger queries before launching adapters.
 
 ## CLI
 
@@ -93,7 +93,7 @@ Each harness uses a different prefix to invoke the babysitter skill:
 
 ## Provider Configuration
 
-The action uses `agent-mux launch` which handles provider resolution and proxy setup automatically. Set credentials via environment variables:
+The action uses `adapters launch` which handles provider resolution and proxy setup automatically. Set credentials via environment variables:
 
 ### Azure Foundry (OpenAI)
 ```yaml

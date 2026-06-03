@@ -77,7 +77,7 @@ const gatewayStore = createStore(() => ({
   },
 }));
 
-vi.mock("@/lib/agent-mux-ui", () => ({
+vi.mock("@/lib/adapters-ui", () => ({
   useGateway: () => ({
     store: gatewayStore,
   }),

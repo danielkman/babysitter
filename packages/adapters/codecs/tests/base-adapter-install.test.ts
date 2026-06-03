@@ -1,6 +1,6 @@
 /**
  * Tests for BaseAgentAdapter install/update/detectInstallation defaults
- * and per-adapter overrides (claude, gemini, cursor, agent-mux-remote).
+ * and per-adapter overrides (claude, gemini, cursor, adapters-remote).
  */
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import type { Spawner } from '@a5c-ai/comm-adapter';

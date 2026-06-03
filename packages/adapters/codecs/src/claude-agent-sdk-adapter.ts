@@ -320,7 +320,7 @@ export class ClaudeAgentSdkAdapter extends BaseProgrammaticAdapter {
         }
 
         if (options.attachments?.some((attachment) => !this.isImageAttachment(attachment.mimeType, attachment.filePath, attachment.url))) {
-          queueError('CAPABILITY_ERROR', 'claude-agent-sdk currently supports only image attachments through agent-mux');
+          queueError('CAPABILITY_ERROR', 'claude-agent-sdk currently supports only image attachments through adapters');
           return;
         }
 

@@ -5,8 +5,8 @@
 ### 1. SDK Unit Tests
 
 **Discovery tests** (`packages/sdk/src/harness/__tests__/externalAgentDiscovery.test.ts`):
-- Returns `{ available: false }` when agent-mux not importable
-- Returns agent list when agent-mux module available (mock adapter-registry)
+- Returns `{ available: false }` when adapters not importable
+- Returns agent list when adapters module available (mock adapter-registry)
 - Caches results for 60s, respects `force: true`
 - Handles timeout gracefully (returns empty on timeout)
 - Falls back to CLI (`adapters doctor --json`) when module import fails
@@ -26,8 +26,8 @@ unit tests only validate task definition shape, validation, and serialization.
 
 **Effect resolution tests** (`packages/tula/platform/src/harness/internal/createRun/orchestration/__tests__/externalAgentEffect.test.ts`):
 - External agent effect routes to amuxBridge
-- Returns error when agent-mux not available and `fallbackType` is not set
-- Falls back to internal when agent-mux not available and `fallbackType: "internal"` is set
+- Returns error when adapters not available and `fallbackType` is not set
+- Falls back to internal when adapters not available and `fallbackType: "internal"` is set
 - Adapter not installed → clear error message with install hint
 - Adapter not authenticated → clear error message
 - Agent timeout → error with partial output
@@ -41,7 +41,7 @@ unit tests only validate task definition shape, validation, and serialization.
 
 **Validation tests** (`packages/tula/platform/src/harness/internal/createRun/planProcess/__tests__/validation.test.ts`):
 - Processes with external agent tasks pass validation
-- Warning (not error) when agent-mux not detected but process uses external tasks
+- Warning (not error) when adapters not detected but process uses external tasks
 - Conformance repair includes external agent task format
 
 **Prompt tests** (`packages/tula/platform/src/harness/internal/createRun/planProcess/__tests__/phase.test.ts`):
@@ -51,9 +51,9 @@ unit tests only validate task definition shape, validation, and serialization.
 
 ### 3. Integration Tests
 
-**E2E with mock agent-mux** (`packages/tula/platform/src/harness/__tests__/e2e-external-agent.test.ts`):
+**E2E with mock adapters** (`packages/tula/platform/src/harness/__tests__/e2e-external-agent.test.ts`):
 - Process defines external agent task → dispatches → mock agent returns → process completes
-- Process with `fallbackType: "internal"` → mock agent-mux unavailable → falls back to agent-core
+- Process with `fallbackType: "internal"` → mock adapters unavailable → falls back to agent-core
 - Cost tracking flows through journal
 
 **Live-stack addition** (`.github/workflows/live-stack.yml`):
@@ -69,7 +69,7 @@ unit tests only validate task definition shape, validation, and serialization.
 
 ## Test Fixtures
 
-### Mock agent-mux adapter registry
+### Mock adapters adapter registry
 ```typescript
 const mockRegistry = {
   list: () => [

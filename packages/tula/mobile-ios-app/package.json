@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "license": "MIT",
-  "description": "Expo-based iOS companion app for agent-mux",
+  "description": "Expo-based iOS companion app for adapters",
   "main": "src/index.tsx",
   "scripts": {
     "build": "tsc --build",

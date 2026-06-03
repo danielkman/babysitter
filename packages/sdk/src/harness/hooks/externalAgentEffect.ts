@@ -264,8 +264,8 @@ async function appendAgentMuxCostEvent(args: {
     effectId: args.effectId,
     taskId: args.taskId,
     taskKind: "agent",
-    source: "tasks-mux:agent-mux",
-    idempotencyKey: `tasks-mux:agent-mux:${args.effectId}`,
+    source: "tasks-mux:adapters",
+    idempotencyKey: `tasks-mux:adapters:${args.effectId}`,
     durationMs: firstNumber(args.agentMux.durationMs),
     costUsd,
   });

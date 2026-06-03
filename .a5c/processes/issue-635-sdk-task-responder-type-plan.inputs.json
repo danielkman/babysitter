@@ -25,11 +25,11 @@
     603
   ],
   "relatedDesignDocs": [
-    "docs/agent-mux-babysitter-integrations/tasks-mux-routing.md",
-    "docs/agent-mux-babysitter-integrations/external-agent-tasks.md",
-    "docs/agent-mux-babysitter-integrations/overview.md",
-    "docs/agent-mux-babysitter-integrations/testing.md",
-    "docs/agent-mux-babysitter-integrations/process-authoring.md"
+    "docs/adapters-babysitter-integrations/tasks-mux-routing.md",
+    "docs/adapters-babysitter-integrations/external-agent-tasks.md",
+    "docs/adapters-babysitter-integrations/overview.md",
+    "docs/adapters-babysitter-integrations/testing.md",
+    "docs/adapters-babysitter-integrations/process-authoring.md"
   ],
   "targetFiles": [
     "packages/sdk/src/tasks/types.ts",
@@ -41,10 +41,10 @@
     "packages/sdk/src/tasks/__tests__/kinds.test.ts",
     "packages/sdk/src/test-fixtures/kinds.ts",
     "packages/sdk/src/index.ts",
-    "docs/agent-mux-babysitter-integrations/tasks-mux-routing.md",
-    "docs/agent-mux-babysitter-integrations/external-agent-tasks.md",
-    "docs/agent-mux-babysitter-integrations/testing.md",
-    "docs/agent-mux-babysitter-integrations/process-authoring.md"
+    "docs/adapters-babysitter-integrations/tasks-mux-routing.md",
+    "docs/adapters-babysitter-integrations/external-agent-tasks.md",
+    "docs/adapters-babysitter-integrations/testing.md",
+    "docs/adapters-babysitter-integrations/process-authoring.md"
   ],
   "acceptanceCriteria": [
     "Add a public ResponderType type and typed AgentTaskOptions for TaskDef.agent.",

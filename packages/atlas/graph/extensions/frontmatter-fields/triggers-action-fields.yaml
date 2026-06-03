@@ -10,7 +10,7 @@ attributes:
   required: "no"
   defaultValue: "launch"
   appliesTo: github-action-input
-  description: "agent-mux command to execute after trigger evaluation."
+  description: "adapters command to execute after trigger evaluation."
 ---
 nodeKind: FrontmatterField
 id: frontmatter-field:triggers-action-input-args
@@ -210,7 +210,7 @@ attributes:
   valueType: string
   required: "no"
   appliesTo: github-action-input
-  description: "Query used to decide whether agent-mux should run."
+  description: "Query used to decide whether adapters should run."
 ---
 nodeKind: FrontmatterField
 id: frontmatter-field:triggers-action-input-include-diff
@@ -232,7 +232,7 @@ attributes:
   required: "no"
   defaultValue: "false"
   appliesTo: github-action-input
-  description: "Use a5c-ai/generate-token-action@main before running trigger enrichment and agent-mux."
+  description: "Use a5c-ai/generate-token-action@main before running trigger enrichment and adapters."
 ---
 nodeKind: FrontmatterField
 id: frontmatter-field:triggers-action-input-github-token
@@ -319,5 +319,5 @@ attributes:
   required: "no"
   defaultValue: "${{ steps.adapters.outputs.exit-code }}"
   appliesTo: github-action-output
-  description: "agent-mux exit code. Empty when trigger did not match."
+  description: "adapters exit code. Empty when trigger did not match."
 

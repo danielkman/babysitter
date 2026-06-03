@@ -10,8 +10,8 @@ Every implementation subtask should instruct the implementer to build and use a 
 
 Relevant references:
 
-- `.a5c/processes/agent-mux-tui-kanban-workspaces-planning.js`
-- `.a5c/processes/specs/agent-mux-tui-kanban-workspaces-planning-request.md`
+- `.a5c/processes/adapters-tui-kanban-workspaces-planning.js`
+- `.a5c/processes/specs/adapters-tui-kanban-workspaces-planning-request.md`
 - `library/methodologies/spec-kit/spec-kit-specification.js`
 - `library/methodologies/spec-kit/spec-kit-planning.js`
 - `library/methodologies/spec-kit/skills/specification-writing/SKILL.md`
@@ -30,7 +30,7 @@ Relevant references:
 
 Title:
 
-- `[AMTUI-KW-1] Add the kanban/workspaces integration contract and control-plane adapter seam to agent-mux-tui`
+- `[AMTUI-KW-1] Add the kanban/workspaces integration contract and control-plane adapter seam to adapters-tui`
 
 Dependencies:
 
@@ -56,7 +56,7 @@ Description:
 
 Title:
 
-- `[AMTUI-KW-2] Implement the kanban view plugins, issue navigation, and backlog actions in agent-mux-tui`
+- `[AMTUI-KW-2] Implement the kanban view plugins, issue navigation, and backlog actions in adapters-tui`
 
 Dependencies:
 
@@ -81,7 +81,7 @@ Description:
 
 Title:
 
-- `[AMTUI-KW-3] Implement the workspaces view and worktree-aware lifecycle actions in agent-mux-tui`
+- `[AMTUI-KW-3] Implement the workspaces view and worktree-aware lifecycle actions in adapters-tui`
 
 Dependencies:
 
@@ -119,7 +119,7 @@ References:
 - `packages/adapters/tui/src/command-palette.tsx`
 - `packages/adapters/tui/tests/view-contract.test.ts`
 - `packages/adapters/tui/README.md`
-- `docs/agent-mux/archive/design/20-tui-kanban-workspaces.md`
+- `docs/adapters/archive/design/20-tui-kanban-workspaces.md`
 
 Description:
 
@@ -153,7 +153,7 @@ References:
 Description:
 
 - Add the tests, package metadata, and CI/release checks needed to keep the new views compatible with both the `@a5c-ai/tula-tui` and `@a5c-ai/kanban` release surfaces.
-- Confirm that any new spec assets linked from the TUI README remain part of the packed package surface, and that the feature does not regress the existing `build:agent-mux`, `test:agent-mux`, `build:kanban`, `verify:release`, and staging/release publish workflows.
+- Confirm that any new spec assets linked from the TUI README remain part of the packed package surface, and that the feature does not regress the existing `build:adapters`, `test:adapters`, `build:kanban`, `verify:release`, and staging/release publish workflows.
 - The implementation process should cite `quality-checklist`, `adversarial-review`, and CI/CD-oriented library references, and it should close with an explicit verification summary rather than stopping at code changes.
 
 ## Dependency Graph

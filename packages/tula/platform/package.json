@@ -149,7 +149,7 @@
     "agent",
     "orchestration",
     "workflow",
-    "agent-mux"
+    "adapters"
   ],
   "atlas": {
     "layers": [

@@ -1,6 +1,6 @@
 "use client";
 import { ToastProvider } from "@a5c-ai/compendium";
-import { GatewayProvider } from "@/components/agent-mux/gateway-provider";
+import { GatewayProvider } from "@/components/adapters/gateway-provider";
 import { ThemeProvider } from "@/components/shared/theme-provider";
 import { NotificationProvider } from "@/components/notifications/notification-provider";
 import { EventStreamProvider } from "@/components/providers/event-stream-provider";

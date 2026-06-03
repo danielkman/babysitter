@@ -4,7 +4,7 @@
 
 ## Purpose
 
-This document explains how the already-unified Babysitter and agent-mux stack fits together in the current monorepo. It is a map of today's executable system, not a promise of a larger future decomposition.
+This document explains how the already-unified Babysitter and adapters stack fits together in the current monorepo. It is a map of today's executable system, not a promise of a larger future decomposition.
 
 ## Architecture Stance
 
@@ -31,7 +31,7 @@ flowchart TD
   LIB[Process library and project processes<br/>library/, .a5c/processes, ~/.a5c]
   BP[tasks-mux<br/>human approval routing]
   APM[extension-mux<br/>plugin compilation]
-  ADAPTERS[agent-mux packages<br/>core, adapters, cli, sdk, gateway]
+  ADAPTERS[adapters packages<br/>core, adapters, cli, sdk, gateway]
   UI[User surfaces<br/>TUI, web UI, mobile, docs]
 
   U --> APM
@@ -73,7 +73,7 @@ Owned primarily by:
 - `packages/adapters/harness-mock`
 - `packages/adapters/observability`
 
-This layer knows how to talk to different harnesses and normalize them into a shared agent-running contract. It is complementary to Babysitter rather than a replacement for it: Babysitter orchestrates process execution; agent-mux dispatches and normalizes harness interaction.
+This layer knows how to talk to different harnesses and normalize them into a shared agent-running contract. It is complementary to Babysitter rather than a replacement for it: Babysitter orchestrates process execution; adapters dispatches and normalizes harness interaction.
 
 ### 3. Cross-Harness Support Systems
 
@@ -150,7 +150,7 @@ Harnesses are reached through plugin bundles, lifecycle hooks, and session bindi
 The key boundary is orchestration versus dispatch:
 
 - Babysitter owns process execution, runs, replay, and effect lifecycles.
-- agent-mux owns adapter-level normalization, event streams, invocation modes, and harness interaction surfaces.
+- adapters owns adapter-level normalization, event streams, invocation modes, and harness interaction surfaces.
 
 ### Unified Plugin ↔ Per-Harness Bundles
 
@@ -170,9 +170,9 @@ That command matters because V6 is supposed to promote real seams with active ch
 
 ## What Is Normative Now
 
-- The monorepo already contains Babysitter, agent-mux, hooks-mux, extension-mux, and tasks-mux.
+- The monorepo already contains Babysitter, adapters, hooks-mux, extension-mux, and tasks-mux.
 - `packages/sdk` is still the main center of gravity.
-- agent-mux is already integrated as repo content, workspace packages, and documentation.
+- adapters is already integrated as repo content, workspace packages, and documentation.
 - Unified plugin authoring coexists with per-harness plugin bundles.
 - Metaplugins are a current capability-layer concept over plugin and hook surfaces, with `extension-mux` serving as the concrete bundle compiler for legacy non-Babysitter agents.
 - `npm run verify:v6:seams` is the active repo validation cue for the first executable V6 seam contract.
@@ -204,4 +204,4 @@ If the answer is only "vocabulary", it is not yet architecture.
 
 ---
 
-**Related Documents**: [System Overview](system-overview.md) | [Package Specifications](package-specs.md) | [Agent-Mux Integration](agent-mux-integration.md)
+**Related Documents**: [System Overview](system-overview.md) | [Package Specifications](package-specs.md) | [Agent-Mux Integration](adapters-integration.md)

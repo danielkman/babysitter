@@ -12,9 +12,9 @@ attributes:
 edges: {}
 ---
 nodeKind: EvidenceSource
-id: evidence:repo-agent-mux-host
+id: evidence:repo-adapters-host
 attributes:
-  displayName: "agent-mux host detection"
+  displayName: "adapters host detection"
   kindLabel: file
   sourceUrl: "https://github.com/a5c-ai/babysitter/blob/main/packages/adapters/core/src/host-detection.ts"
   filePath: "packages/adapters/core/src/host-detection.ts"

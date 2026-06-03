@@ -80,13 +80,13 @@ services:
       USE_MOCK_HARNESS: "true"
     command: ["run", "omp", "--use-mock-harness", "--mock-scenario", "omp-basic", "hello"]
 
-  mock-e2e-agent-mux-remote:
+  mock-e2e-adapters-remote:
     build:
       context: ../..
       dockerfile: docker/e2e/Dockerfile.mock
     environment:
       USE_MOCK_HARNESS: "true"
-    command: ["run", "agent-mux-remote", "--use-mock-harness", "--mock-scenario", "agent-mux-remote-basic", "hello"]
+    command: ["run", "adapters-remote", "--use-mock-harness", "--mock-scenario", "adapters-remote-basic", "hello"]
 
   # New adapters added in recent implementations
   mock-e2e-droid:
@@ -235,13 +235,13 @@ services:
       OMP_API_KEY: ${OMP_API_KEY:-}
     command: ["run", "omp", "--prompt", "say hi"]
 
-  real-e2e-agent-mux-remote:
+  real-e2e-adapters-remote:
     build:
       context: ../..
       dockerfile: docker/e2e/Dockerfile.real
     environment:
       AGENT_MUX_REMOTE_URL: ${AGENT_MUX_REMOTE_URL:-}
-    command: ["run", "agent-mux-remote", "--prompt", "say hi"]
+    command: ["run", "adapters-remote", "--prompt", "say hi"]
 
   # New adapters added in recent implementations
   real-e2e-droid:

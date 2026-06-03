@@ -5,10 +5,10 @@ import { useEffect, useMemo } from "react";
 import { useStore } from "zustand";
 import type { WorkspaceRuntimeSurface } from "@a5c-ai/comm-adapter";
 
-import { useGatewayAuth } from "@/components/agent-mux/gateway-provider";
+import { useGatewayAuth } from "@/components/adapters/gateway-provider";
 import { SessionObservabilityPanel } from "@/components/sessions/session-observability-panel";
 import type { Run } from "@/types";
-import { useGateway } from "@/lib/agent-mux-ui";
+import { useGateway } from "@/lib/adapters-ui";
 
 type EventBuffer = {
   events: Array<Record<string, unknown>>;
@@ -24,7 +24,7 @@ export function RunRealtimeExecutionPanel(props: { run: Run }) {
         className="rounded-3xl border border-border bg-card p-6 shadow-lg"
       >
         <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">Realtime execution</p>
-        <h3 className="mt-2 text-2xl font-semibold tracking-tight">Connect agent-mux to load the reconstructed flow</h3>
+        <h3 className="mt-2 text-2xl font-semibold tracking-tight">Connect adapters to load the reconstructed flow</h3>
         <p className="mt-3 max-w-2xl text-sm leading-6 text-foreground-muted">
           The flow, timeline, transcript, and file-attention views come from the live gateway event buffer for this
           run. Connect the gateway to inspect the same reconstructed execution narrative available on session pages.

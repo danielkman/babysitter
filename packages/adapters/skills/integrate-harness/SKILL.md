@@ -1,11 +1,11 @@
 ---
 name: integrate-harness
-description: Use when adding a new agent harness (CLI-based coding agent) adapter to agent-mux. Covers capability audit, adapter scaffold, session parsing, auth detection, hooks/plugins wiring, tests, and docs.
+description: Use when adding a new agent harness (CLI-based coding agent) adapter to adapters. Covers capability audit, adapter scaffold, session parsing, auth detection, hooks/plugins wiring, tests, and docs.
 ---
 
 # integrate-harness
 
-Goal: produce a production-quality `XAdapter extends BaseAgentAdapter` with full test coverage and documentation, matching the level of the existing 11 adapters (claude, codex, cursor, gemini, opencode, openclaw, copilot, hermes, pi, omp, agent-mux-remote).
+Goal: produce a production-quality `XAdapter extends BaseAgentAdapter` with full test coverage and documentation, matching the level of the existing 11 adapters (claude, codex, cursor, gemini, opencode, openclaw, copilot, hermes, pi, omp, adapters-remote).
 
 ## Checklist
 

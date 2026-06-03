@@ -141,7 +141,7 @@ export async function checkCliAvailable(
  * @returns An array of discovery results sorted alphabetically by harness name.
  */
 export async function discoverHarnesses(): Promise<HarnessDiscoveryResult[]> {
-  // Try agent-mux first -- it has richer detection and caching.
+  // Try adapters first -- it has richer detection and caching.
   try {
     return await discoverHarnessesViaAmux();
   } catch (e) {
@@ -153,7 +153,7 @@ export async function discoverHarnesses(): Promise<HarnessDiscoveryResult[]> {
 
 /**
  * Legacy discovery: probes each known harness CLI via `which`/`where` in
- * parallel.  Used as fallback when agent-mux is unavailable.
+ * parallel.  Used as fallback when adapters is unavailable.
  */
 async function discoverHarnessesLegacy(): Promise<HarnessDiscoveryResult[]> {
   const settled = await Promise.allSettled(

@@ -100,7 +100,7 @@ Condition types should be stable enums. `message` is for humans and must not be 
 
 ```yaml
 baseAgent: claude-code
-adapter: agent-mux.claude-code
+adapter: adapters.claude-code
 provider: anthropic
 model: claude-sonnet-4-5
 prompt:

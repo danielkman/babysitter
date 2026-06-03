@@ -2,11 +2,11 @@
 
 This README is the canonical package documentation for `@a5c-ai/comm-adapter`.
 Canonical package doc path: `packages/adapters/core/README.md`.
-The repository reference mirror lives at `docs/agent-mux/reference/01-core-types-and-client.md` and
+The repository reference mirror lives at `docs/adapters/reference/01-core-types-and-client.md` and
 should match this file for package identity, runtime dependencies, and import guidance.
 
 `@a5c-ai/comm-adapter` is the public Node.js core runtime package at
-`packages/adapters/core/` for agent-mux. It ships:
+`packages/adapters/core/` for adapters. It ships:
 
 - the main Node entrypoint with `AgentMuxClient`, `createClient`, normalized events,
   run/session/config/auth/plugin contracts, provider and hook helpers, workspace
@@ -90,8 +90,8 @@ artifacts.
 
 ## Docs
 
-- [Agent Mux docs](../../../docs/agent-mux/README.md)
-- [Reference mirror](../../../docs/agent-mux/reference/01-core-types-and-client.md)
+- [Agent Mux docs](../../../docs/adapters/README.md)
+- [Reference mirror](../../../docs/adapters/reference/01-core-types-and-client.md)
 - [Package family entrypoint](../README.md)
 
 ## License

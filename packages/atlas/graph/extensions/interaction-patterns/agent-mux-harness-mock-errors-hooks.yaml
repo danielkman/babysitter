@@ -7,7 +7,7 @@
 # Wired via @a5c-ai/adapters-harness-mock PackageSurface
 # `exposes_subcommand` edge.
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-harness-mock-error-rate-limit
+id: interaction-primitive:adapters-harness-mock-error-rate-limit
 attributes:
   displayName: "harness-mock error:rate-limit (claude-code)"
   kind: mock-scenario
@@ -20,7 +20,7 @@ attributes:
     (rateLimitClaude; ERROR_SCENARIOS['rate-limit']).
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-harness-mock-error-auth-required
+id: interaction-primitive:adapters-harness-mock-error-auth-required
 attributes:
   displayName: "harness-mock error:auth-required (codex)"
   kind: mock-scenario
@@ -32,7 +32,7 @@ attributes:
     (authRequiredCodex; ERROR_SCENARIOS['auth-required']).
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-harness-mock-error-crash
+id: interaction-primitive:adapters-harness-mock-error-crash
 attributes:
   displayName: "harness-mock error:crash (claude-code)"
   kind: mock-scenario
@@ -44,7 +44,7 @@ attributes:
     (crashClaude; ERROR_SCENARIOS.crash).
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-harness-mock-error-timeout
+id: interaction-primitive:adapters-harness-mock-error-timeout
 attributes:
   displayName: "harness-mock error:timeout (gemini)"
   kind: mock-scenario
@@ -57,7 +57,7 @@ attributes:
     (timeoutGemini; ERROR_SCENARIOS.timeout).
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-harness-mock-error-oom
+id: interaction-primitive:adapters-harness-mock-error-oom
 attributes:
   displayName: "harness-mock error:oom (claude-code)"
   kind: mock-scenario
@@ -70,7 +70,7 @@ attributes:
     (oomClaude; ERROR_SCENARIOS.oom).
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-harness-mock-runtime-hook-allow-bash
+id: interaction-primitive:adapters-harness-mock-runtime-hook-allow-bash
 attributes:
   displayName: "harness-mock runtimeHookAllowBash (claude-code)"
   kind: mock-scenario
@@ -83,7 +83,7 @@ attributes:
     (RUNTIME_HOOK_SCENARIOS.runtimeHookAllowBash).
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-harness-mock-runtime-hook-deny-write
+id: interaction-primitive:adapters-harness-mock-runtime-hook-deny-write
 attributes:
   displayName: "harness-mock runtimeHookDenyWrite (claude-code)"
   kind: mock-scenario
@@ -96,7 +96,7 @@ attributes:
     (RUNTIME_HOOK_SCENARIOS.runtimeHookDenyWrite).
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-harness-mock-runtime-hook-timeout
+id: interaction-primitive:adapters-harness-mock-runtime-hook-timeout
 attributes:
   displayName: "harness-mock runtimeHookTimeout (claude-code)"
   kind: mock-scenario

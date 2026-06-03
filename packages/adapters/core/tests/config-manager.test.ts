@@ -92,7 +92,7 @@ function mockAdapter(
 }
 
 function makeTmpPaths(): { paths: StoragePaths; tmpDir: string } {
-  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'agent-mux-cfg-'));
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'adapters-cfg-'));
   const configDir = path.join(tmpDir, 'global');
   const projectConfigDir = path.join(tmpDir, 'project');
 

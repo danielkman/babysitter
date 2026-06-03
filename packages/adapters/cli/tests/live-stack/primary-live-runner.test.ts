@@ -36,8 +36,8 @@ async function writeMinimalJournal(journalDir: string, completed: boolean): Prom
 
 function foundryClaudeVanillaScenario(): LiveStackScenario {
   return liveStackScenarioFromEnv({
-    LIVE_STACK_SCENARIO_ID: 'live.agent-mux.claude-code.foundry-openai.gpt-5.5',
-    LIVE_STACK_AGENT_PATH: 'agent-mux',
+    LIVE_STACK_SCENARIO_ID: 'live.adapters.claude-code.foundry-openai.gpt-5.5',
+    LIVE_STACK_AGENT_PATH: 'adapters',
     LIVE_STACK_AGENT: 'claude-code',
     LIVE_STACK_AGENT_MUX_AGENT: 'claude',
     LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin',
@@ -47,9 +47,9 @@ function foundryClaudeVanillaScenario(): LiveStackScenario {
     LIVE_STACK_MODEL: 'gpt-5.5',
     LIVE_STACK_CREDENTIAL_MODE: 'github-org-secrets-and-vars',
     LIVE_STACK_REQUIRED_ENV: 'AZURE_API_KEY,AGENT_MUX_API_BASE',
-    LIVE_STACK_LAYERS: 'agent-mux install,agent-mux invocation,transport-mux route,provider/model trace',
+    LIVE_STACK_LAYERS: 'adapters install,adapters invocation,transport-mux route,provider/model trace',
     LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId',
-    LIVE_STACK_EXPECTED_ARTIFACTS: 'agent-mux-events,transport-mux-trace,provider-trace-redacted',
+    LIVE_STACK_EXPECTED_ARTIFACTS: 'adapters-events,transport-mux-trace,provider-trace-redacted',
   });
 }
 
@@ -93,8 +93,8 @@ const CLAUDE_LIVE_MODEL_CASES = [
 
 function claudeScenarioFor(modelCase: typeof CLAUDE_LIVE_MODEL_CASES[number], installMode: 'vanilla' | 'babysitter-plugin'): LiveStackScenario {
   return liveStackScenarioFromEnv({
-    LIVE_STACK_SCENARIO_ID: `live.agent-mux.claude-code.${modelCase.provider}.${modelCase.model}`,
-    LIVE_STACK_AGENT_PATH: 'agent-mux',
+    LIVE_STACK_SCENARIO_ID: `live.adapters.claude-code.${modelCase.provider}.${modelCase.model}`,
+    LIVE_STACK_AGENT_PATH: 'adapters',
     LIVE_STACK_AGENT: 'claude-code',
     LIVE_STACK_AGENT_MUX_AGENT: 'claude',
     LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin',
@@ -107,15 +107,15 @@ function claudeScenarioFor(modelCase: typeof CLAUDE_LIVE_MODEL_CASES[number], in
     LIVE_STACK_LAYERS: installMode,
     LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId',
     LIVE_STACK_EXPECTED_ARTIFACTS: installMode === 'babysitter-plugin'
-      ? 'agent-mux-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted'
-      : 'agent-mux-events,transport-mux-trace,provider-trace-redacted',
+      ? 'adapters-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted'
+      : 'adapters-events,transport-mux-trace,provider-trace-redacted',
   });
 }
 
 function geminiPluginScenario(model = 'gemini-3.5-flash'): LiveStackScenario {
   return liveStackScenarioFromEnv({
-    LIVE_STACK_SCENARIO_ID: `live.agent-mux.gemini-cli.google.${model}`,
-    LIVE_STACK_AGENT_PATH: 'agent-mux',
+    LIVE_STACK_SCENARIO_ID: `live.adapters.gemini-cli.google.${model}`,
+    LIVE_STACK_AGENT_PATH: 'adapters',
     LIVE_STACK_AGENT: 'gemini-cli',
     LIVE_STACK_AGENT_MUX_AGENT: 'gemini',
     LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin',
@@ -127,7 +127,7 @@ function geminiPluginScenario(model = 'gemini-3.5-flash'): LiveStackScenario {
     LIVE_STACK_REQUIRED_ENV: 'GOOGLE_API_KEY',
     LIVE_STACK_LAYERS: 'babysitter-plugin',
     LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId',
-    LIVE_STACK_EXPECTED_ARTIFACTS: 'agent-mux-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted',
+    LIVE_STACK_EXPECTED_ARTIFACTS: 'adapters-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted',
   });
 }
 
@@ -174,8 +174,8 @@ describe('primary live stack runner contract', () => {
     expect(claudePrompt).not.toContain('Use the babysitter skill');
 
     const codexScenario = liveStackScenarioFromEnv({
-      LIVE_STACK_SCENARIO_ID: 'live.agent-mux.codex.foundry-openai.gpt-5.5',
-      LIVE_STACK_AGENT_PATH: 'agent-mux',
+      LIVE_STACK_SCENARIO_ID: 'live.adapters.codex.foundry-openai.gpt-5.5',
+      LIVE_STACK_AGENT_PATH: 'adapters',
       LIVE_STACK_AGENT: 'codex',
       LIVE_STACK_AGENT_MUX_AGENT: 'codex',
       LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin',
@@ -187,7 +187,7 @@ describe('primary live stack runner contract', () => {
       LIVE_STACK_REQUIRED_ENV: 'AZURE_API_KEY,AGENT_MUX_API_BASE',
       LIVE_STACK_LAYERS: 'babysitter-plugin',
       LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId',
-      LIVE_STACK_EXPECTED_ARTIFACTS: 'agent-mux-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted',
+      LIVE_STACK_EXPECTED_ARTIFACTS: 'adapters-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted',
     });
     const codexCommands = buildPrimaryLiveStackCommands(codexScenario, {
       cwd: '/repo',
@@ -216,8 +216,8 @@ describe('primary live stack runner contract', () => {
 
   it('invokes non-interactive Babysitter orchestration for pi create-mode plugin lanes', () => {
     const piScenario = liveStackScenarioFromEnv({
-      LIVE_STACK_SCENARIO_ID: 'live.agent-mux.pi.foundry-openai.Kimi-K2.6',
-      LIVE_STACK_AGENT_PATH: 'agent-mux',
+      LIVE_STACK_SCENARIO_ID: 'live.adapters.pi.foundry-openai.Kimi-K2.6',
+      LIVE_STACK_AGENT_PATH: 'adapters',
       LIVE_STACK_AGENT: 'pi',
       LIVE_STACK_AGENT_MUX_AGENT: 'pi',
       LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin',
@@ -229,7 +229,7 @@ describe('primary live stack runner contract', () => {
       LIVE_STACK_REQUIRED_ENV: 'AZURE_API_KEY,AGENT_MUX_API_BASE',
       LIVE_STACK_LAYERS: 'babysitter-plugin',
       LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId',
-      LIVE_STACK_EXPECTED_ARTIFACTS: 'agent-mux-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted',
+      LIVE_STACK_EXPECTED_ARTIFACTS: 'adapters-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted',
     });
 
     const piPrompt = promptFor(piScenario, { LIVE_STACK_PROCESS_MODE: 'create' });
@@ -265,8 +265,8 @@ describe('primary live stack runner contract', () => {
 
     for (const { agent, agentMuxAgent, prefix } of cases) {
       const scenario = liveStackScenarioFromEnv({
-        LIVE_STACK_SCENARIO_ID: `live.agent-mux.${agent}.foundry-openai.gpt-5.5`,
-        LIVE_STACK_AGENT_PATH: 'agent-mux',
+        LIVE_STACK_SCENARIO_ID: `live.adapters.${agent}.foundry-openai.gpt-5.5`,
+        LIVE_STACK_AGENT_PATH: 'adapters',
         LIVE_STACK_AGENT: agent,
         LIVE_STACK_AGENT_MUX_AGENT: agentMuxAgent,
         LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin',
@@ -278,7 +278,7 @@ describe('primary live stack runner contract', () => {
         LIVE_STACK_REQUIRED_ENV: 'AZURE_API_KEY,AGENT_MUX_API_BASE',
         LIVE_STACK_LAYERS: 'babysitter-plugin',
         LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId',
-        LIVE_STACK_EXPECTED_ARTIFACTS: 'agent-mux-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted',
+        LIVE_STACK_EXPECTED_ARTIFACTS: 'adapters-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted',
       });
 
       const prompt = promptFor(scenario, { LIVE_STACK_PROCESS_MODE: 'create' });
@@ -336,8 +336,8 @@ describe('primary live stack runner contract', () => {
   it('keeps the full Odyssey task for non-TTY live prompts', () => {
     const claudePrompt = promptFor(foundryClaudeVanillaScenario());
     const codexPrompt = promptFor(liveStackScenarioFromEnv({
-      LIVE_STACK_SCENARIO_ID: 'live.agent-mux.codex.foundry-openai.gpt-5.5',
-      LIVE_STACK_AGENT_PATH: 'agent-mux',
+      LIVE_STACK_SCENARIO_ID: 'live.adapters.codex.foundry-openai.gpt-5.5',
+      LIVE_STACK_AGENT_PATH: 'adapters',
       LIVE_STACK_AGENT: 'codex',
       LIVE_STACK_AGENT_MUX_AGENT: 'codex',
       LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin',
@@ -349,7 +349,7 @@ describe('primary live stack runner contract', () => {
       LIVE_STACK_REQUIRED_ENV: 'AZURE_API_KEY,AGENT_MUX_API_BASE',
       LIVE_STACK_LAYERS: 'babysitter-plugin',
       LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId',
-      LIVE_STACK_EXPECTED_ARTIFACTS: 'agent-mux-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted',
+      LIVE_STACK_EXPECTED_ARTIFACTS: 'adapters-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted',
     }));
 
     for (const prompt of [claudePrompt, codexPrompt]) {
@@ -483,8 +483,8 @@ describe('primary live stack runner contract', () => {
 
   it('passes explicit Google env to Gemini 3.1 Pro live lanes', () => {
     const scenario = liveStackScenarioFromEnv({
-      LIVE_STACK_SCENARIO_ID: 'live.agent-mux.claude-code.google.gemini-3.1-pro',
-      LIVE_STACK_AGENT_PATH: 'agent-mux',
+      LIVE_STACK_SCENARIO_ID: 'live.adapters.claude-code.google.gemini-3.1-pro',
+      LIVE_STACK_AGENT_PATH: 'adapters',
       LIVE_STACK_AGENT: 'claude-code',
       LIVE_STACK_AGENT_MUX_AGENT: 'claude',
       LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin',
@@ -494,9 +494,9 @@ describe('primary live stack runner contract', () => {
       LIVE_STACK_MODEL: 'gemini-3.1-pro-preview',
       LIVE_STACK_CREDENTIAL_MODE: 'github-org-secrets-and-vars',
       LIVE_STACK_REQUIRED_ENV: 'GOOGLE_API_KEY',
-      LIVE_STACK_LAYERS: 'agent-mux install,agent-mux invocation,transport-mux route,provider/model trace',
+      LIVE_STACK_LAYERS: 'adapters install,adapters invocation,transport-mux route,provider/model trace',
       LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId',
-      LIVE_STACK_EXPECTED_ARTIFACTS: 'agent-mux-events,transport-mux-trace,provider-trace-redacted',
+      LIVE_STACK_EXPECTED_ARTIFACTS: 'adapters-events,transport-mux-trace,provider-trace-redacted',
     });
     const commands = buildPrimaryLiveStackCommands(scenario, {
       cwd: '/repo',
@@ -762,8 +762,8 @@ describe('primary live stack runner contract', () => {
       env: {
         GOOGLE_API_KEY: 'google-secret',
         LIVE_STACK_TRACE_ID: traceId,
-        LIVE_STACK_SCENARIO_ID: 'live.agent-mux.gemini-cli.google.gemini-3.5-flash',
-        LIVE_STACK_AGENT_PATH: 'agent-mux',
+        LIVE_STACK_SCENARIO_ID: 'live.adapters.gemini-cli.google.gemini-3.5-flash',
+        LIVE_STACK_AGENT_PATH: 'adapters',
         LIVE_STACK_AGENT: 'gemini-cli',
         LIVE_STACK_AGENT_MUX_AGENT: 'gemini',
         LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin',
@@ -775,7 +775,7 @@ describe('primary live stack runner contract', () => {
         LIVE_STACK_REQUIRED_ENV: 'GOOGLE_API_KEY',
         LIVE_STACK_LAYERS: 'babysitter-plugin',
         LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId',
-        LIVE_STACK_EXPECTED_ARTIFACTS: 'agent-mux-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted',
+        LIVE_STACK_EXPECTED_ARTIFACTS: 'adapters-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted',
       },
       executeCommand: async (command) => {
         if (!command.args.includes('launch')) return { status: 0, stdout: '{}', stderr: '' };
@@ -942,8 +942,8 @@ describe('primary live stack runner contract', () => {
         AGENT_MUX_API_BASE: 'https://foundry.example.test',
         LIVE_STACK_TRACE_ID: traceId,
         LIVE_STACK_PROCESS_MODE: 'create',
-        LIVE_STACK_SCENARIO_ID: 'live.agent-mux.codex.foundry-openai.gpt-5.5',
-        LIVE_STACK_AGENT_PATH: 'agent-mux',
+        LIVE_STACK_SCENARIO_ID: 'live.adapters.codex.foundry-openai.gpt-5.5',
+        LIVE_STACK_AGENT_PATH: 'adapters',
         LIVE_STACK_AGENT: 'codex',
         LIVE_STACK_AGENT_MUX_AGENT: 'codex',
         LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin',
@@ -955,7 +955,7 @@ describe('primary live stack runner contract', () => {
         LIVE_STACK_REQUIRED_ENV: 'AZURE_API_KEY,AGENT_MUX_API_BASE',
         LIVE_STACK_LAYERS: 'babysitter-plugin',
         LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId',
-        LIVE_STACK_EXPECTED_ARTIFACTS: 'agent-mux-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted',
+        LIVE_STACK_EXPECTED_ARTIFACTS: 'adapters-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted',
       },
       executeCommand: async (command) => {
         if (!command.args.includes('launch')) return { status: 0, stdout: '{}', stderr: '' };
@@ -983,8 +983,8 @@ describe('primary live stack runner contract', () => {
         GOOGLE_API_KEY: 'google-secret',
         LIVE_STACK_TRACE_ID: traceId,
         LIVE_STACK_PROCESS_MODE: 'create',
-        LIVE_STACK_SCENARIO_ID: 'live.agent-mux.codex.google.gemini-3.1-pro-preview',
-        LIVE_STACK_AGENT_PATH: 'agent-mux',
+        LIVE_STACK_SCENARIO_ID: 'live.adapters.codex.google.gemini-3.1-pro-preview',
+        LIVE_STACK_AGENT_PATH: 'adapters',
         LIVE_STACK_AGENT: 'codex',
         LIVE_STACK_AGENT_MUX_AGENT: 'codex',
         LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin',
@@ -996,7 +996,7 @@ describe('primary live stack runner contract', () => {
         LIVE_STACK_REQUIRED_ENV: 'GOOGLE_API_KEY',
         LIVE_STACK_LAYERS: 'babysitter-plugin',
         LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId',
-        LIVE_STACK_EXPECTED_ARTIFACTS: 'agent-mux-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted',
+        LIVE_STACK_EXPECTED_ARTIFACTS: 'adapters-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted',
       },
       executeCommand: async (command) => {
         if (!command.args.includes('launch')) return { status: 0, stdout: '{}', stderr: '' };
@@ -1025,8 +1025,8 @@ describe('primary live stack runner contract', () => {
         AGENT_MUX_API_BASE: 'https://foundry.example.test',
         LIVE_STACK_TRACE_ID: traceId,
         LIVE_STACK_PROCESS_MODE: 'create',
-        LIVE_STACK_SCENARIO_ID: 'live.agent-mux.pi.foundry-openai.Kimi-K2.6',
-        LIVE_STACK_AGENT_PATH: 'agent-mux',
+        LIVE_STACK_SCENARIO_ID: 'live.adapters.pi.foundry-openai.Kimi-K2.6',
+        LIVE_STACK_AGENT_PATH: 'adapters',
         LIVE_STACK_AGENT: 'pi',
         LIVE_STACK_AGENT_MUX_AGENT: 'pi',
         LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin',
@@ -1038,7 +1038,7 @@ describe('primary live stack runner contract', () => {
         LIVE_STACK_REQUIRED_ENV: 'AZURE_API_KEY,AGENT_MUX_API_BASE',
         LIVE_STACK_LAYERS: 'babysitter-plugin',
         LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId',
-        LIVE_STACK_EXPECTED_ARTIFACTS: 'agent-mux-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted',
+        LIVE_STACK_EXPECTED_ARTIFACTS: 'adapters-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted',
       },
       executeCommand: async (command) => {
         if (!command.args.includes('launch')) return { status: 0, stdout: '{}', stderr: '' };
@@ -1068,8 +1068,8 @@ describe('primary live stack runner contract', () => {
         AGENT_MUX_API_BASE: 'https://foundry.example.test',
         LIVE_STACK_TRACE_ID: traceId,
         LIVE_STACK_PROCESS_MODE: 'create',
-        LIVE_STACK_SCENARIO_ID: 'live.agent-mux.pi.foundry-openai.Kimi-K2.6',
-        LIVE_STACK_AGENT_PATH: 'agent-mux',
+        LIVE_STACK_SCENARIO_ID: 'live.adapters.pi.foundry-openai.Kimi-K2.6',
+        LIVE_STACK_AGENT_PATH: 'adapters',
         LIVE_STACK_AGENT: 'pi',
         LIVE_STACK_AGENT_MUX_AGENT: 'pi',
         LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin',
@@ -1081,7 +1081,7 @@ describe('primary live stack runner contract', () => {
         LIVE_STACK_REQUIRED_ENV: 'AZURE_API_KEY,AGENT_MUX_API_BASE',
         LIVE_STACK_LAYERS: 'babysitter-plugin',
         LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId',
-        LIVE_STACK_EXPECTED_ARTIFACTS: 'agent-mux-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted',
+        LIVE_STACK_EXPECTED_ARTIFACTS: 'adapters-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted',
       },
       executeCommand: async (command) => {
         if (!command.args.includes('launch')) return { status: 0, stdout: '{}', stderr: '' };
@@ -1114,8 +1114,8 @@ describe('primary live stack runner contract', () => {
         GOOGLE_API_KEY: 'google-secret',
         LIVE_STACK_TRACE_ID: traceId,
         LIVE_STACK_PROCESS_MODE: 'create',
-        LIVE_STACK_SCENARIO_ID: 'live.agent-mux.codex.google.gemini-3.1-pro-preview',
-        LIVE_STACK_AGENT_PATH: 'agent-mux',
+        LIVE_STACK_SCENARIO_ID: 'live.adapters.codex.google.gemini-3.1-pro-preview',
+        LIVE_STACK_AGENT_PATH: 'adapters',
         LIVE_STACK_AGENT: 'codex',
         LIVE_STACK_AGENT_MUX_AGENT: 'codex',
         LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin',
@@ -1127,7 +1127,7 @@ describe('primary live stack runner contract', () => {
         LIVE_STACK_REQUIRED_ENV: 'GOOGLE_API_KEY',
         LIVE_STACK_LAYERS: 'babysitter-plugin',
         LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId',
-        LIVE_STACK_EXPECTED_ARTIFACTS: 'agent-mux-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted',
+        LIVE_STACK_EXPECTED_ARTIFACTS: 'adapters-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted',
       },
       executeCommand: async (command) => {
         if (!command.args.includes('launch')) return { status: 0, stdout: '{}', stderr: '' };
@@ -1169,7 +1169,7 @@ describe('primary live stack runner contract', () => {
       cwd: process.cwd(),
       artifactsDir,
       executeLiveProvider: true,
-      env: { ANTHROPIC_API_KEY: 'sk-ant-secret', LIVE_STACK_TRACE_ID: 'trace-1', LIVE_STACK_SCENARIO_ID: 'live.agent-mux.claude-code.anthropic-direct.sonnet', LIVE_STACK_AGENT_PATH: 'agent-mux', LIVE_STACK_AGENT: 'claude-code', LIVE_STACK_AGENT_MUX_AGENT: 'claude', LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin', LIVE_STACK_INSTALL_MODE: 'vanilla', LIVE_STACK_PROVIDER: 'anthropic-direct', LIVE_STACK_AGENT_MUX_PROVIDER: 'anthropic', LIVE_STACK_MODEL: 'sonnet', LIVE_STACK_CREDENTIAL_MODE: 'github-org-secrets', LIVE_STACK_REQUIRED_ENV: 'ANTHROPIC_API_KEY', LIVE_STACK_LAYERS: 'agent-mux install,agent-mux invocation,transport-mux route,provider/model trace', LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId', LIVE_STACK_EXPECTED_ARTIFACTS: 'agent-mux-events,transport-mux-trace,provider-trace-redacted' },
+      env: { ANTHROPIC_API_KEY: 'sk-ant-secret', LIVE_STACK_TRACE_ID: 'trace-1', LIVE_STACK_SCENARIO_ID: 'live.adapters.claude-code.anthropic-direct.sonnet', LIVE_STACK_AGENT_PATH: 'adapters', LIVE_STACK_AGENT: 'claude-code', LIVE_STACK_AGENT_MUX_AGENT: 'claude', LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin', LIVE_STACK_INSTALL_MODE: 'vanilla', LIVE_STACK_PROVIDER: 'anthropic-direct', LIVE_STACK_AGENT_MUX_PROVIDER: 'anthropic', LIVE_STACK_MODEL: 'sonnet', LIVE_STACK_CREDENTIAL_MODE: 'github-org-secrets', LIVE_STACK_REQUIRED_ENV: 'ANTHROPIC_API_KEY', LIVE_STACK_LAYERS: 'adapters install,adapters invocation,transport-mux route,provider/model trace', LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId', LIVE_STACK_EXPECTED_ARTIFACTS: 'adapters-events,transport-mux-trace,provider-trace-redacted' },
       executeCommand: async (command) => command.args.includes('install')
         ? { status: 0, stdout: '{"ok":true}', stderr: '' }
         : { status: 1, stdout: 'Credit balance is too low', stderr: '' },
@@ -1186,7 +1186,7 @@ describe('primary live stack runner contract', () => {
       cwd: process.cwd(),
       artifactsDir,
       executeLiveProvider: true,
-      env: { AZURE_API_KEY: 'sk-live-secret', AGENT_MUX_API_BASE: 'https://foundry.example.test', LIVE_STACK_TRACE_ID: 'trace-1', LIVE_STACK_SCENARIO_ID: 'live.agent-mux.pi.foundry-openai.gpt-5.5', LIVE_STACK_AGENT_PATH: 'agent-mux', LIVE_STACK_AGENT: 'pi', LIVE_STACK_AGENT_MUX_AGENT: 'pi', LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin', LIVE_STACK_INSTALL_MODE: 'vanilla', LIVE_STACK_PROVIDER: 'foundry-openai', LIVE_STACK_AGENT_MUX_PROVIDER: 'foundry', LIVE_STACK_MODEL: 'gpt-5.5', LIVE_STACK_CREDENTIAL_MODE: 'github-org-secrets-and-vars', LIVE_STACK_REQUIRED_ENV: 'AZURE_API_KEY,AGENT_MUX_API_BASE', LIVE_STACK_LAYERS: 'agent-mux install,agent-mux invocation,transport-mux route,provider/model trace', LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId', LIVE_STACK_EXPECTED_ARTIFACTS: 'agent-mux-events,transport-mux-trace,provider-trace-redacted' },
+      env: { AZURE_API_KEY: 'sk-live-secret', AGENT_MUX_API_BASE: 'https://foundry.example.test', LIVE_STACK_TRACE_ID: 'trace-1', LIVE_STACK_SCENARIO_ID: 'live.adapters.pi.foundry-openai.gpt-5.5', LIVE_STACK_AGENT_PATH: 'adapters', LIVE_STACK_AGENT: 'pi', LIVE_STACK_AGENT_MUX_AGENT: 'pi', LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin', LIVE_STACK_INSTALL_MODE: 'vanilla', LIVE_STACK_PROVIDER: 'foundry-openai', LIVE_STACK_AGENT_MUX_PROVIDER: 'foundry', LIVE_STACK_MODEL: 'gpt-5.5', LIVE_STACK_CREDENTIAL_MODE: 'github-org-secrets-and-vars', LIVE_STACK_REQUIRED_ENV: 'AZURE_API_KEY,AGENT_MUX_API_BASE', LIVE_STACK_LAYERS: 'adapters install,adapters invocation,transport-mux route,provider/model trace', LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId', LIVE_STACK_EXPECTED_ARTIFACTS: 'adapters-events,transport-mux-trace,provider-trace-redacted' },
       executeCommand: async (command) => command.args.includes('install')
         ? { status: 0, stdout: '{"ok":true}', stderr: '' }
         : { status: 1, stdout: '', stderr: '401 Incorrect API key provided: sk-incorrect' },
@@ -1207,8 +1207,8 @@ describe('primary live stack runner contract', () => {
         AZURE_API_KEY: 'sk-live-secret',
         AGENT_MUX_API_BASE: 'https://foundry.example.test',
         LIVE_STACK_TRACE_ID: 'trace-1',
-        LIVE_STACK_SCENARIO_ID: 'live.agent-mux.codex.foundry-openai.gpt-5.5',
-        LIVE_STACK_AGENT_PATH: 'agent-mux',
+        LIVE_STACK_SCENARIO_ID: 'live.adapters.codex.foundry-openai.gpt-5.5',
+        LIVE_STACK_AGENT_PATH: 'adapters',
         LIVE_STACK_AGENT: 'codex',
         LIVE_STACK_AGENT_MUX_AGENT: 'codex',
         LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin',
@@ -1218,9 +1218,9 @@ describe('primary live stack runner contract', () => {
         LIVE_STACK_MODEL: 'gpt-5.5',
         LIVE_STACK_CREDENTIAL_MODE: 'github-org-secrets-and-vars',
         LIVE_STACK_REQUIRED_ENV: 'AZURE_API_KEY,AGENT_MUX_API_BASE',
-        LIVE_STACK_LAYERS: 'agent-mux install,agent-mux invocation,vanilla agent prompt,transport-mux route,provider/model trace',
+        LIVE_STACK_LAYERS: 'adapters install,adapters invocation,vanilla agent prompt,transport-mux route,provider/model trace',
         LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId',
-        LIVE_STACK_EXPECTED_ARTIFACTS: 'agent-mux-events,transport-mux-trace,provider-trace-redacted',
+        LIVE_STACK_EXPECTED_ARTIFACTS: 'adapters-events,transport-mux-trace,provider-trace-redacted',
       },
       executeCommand: async (command) => command.args.includes('install')
         ? { status: 0, stdout: '{"ok":true}', stderr: '' }

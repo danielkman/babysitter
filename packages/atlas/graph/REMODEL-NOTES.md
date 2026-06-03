@@ -441,7 +441,7 @@ edges:
 
 All edges are `origin: universal` except `paired_to` / `has_device_pair`,
 which are `origin: derived` (the DevicePair / remote-control surface is
-vendor-specific to agent-mux-style products).
+vendor-specific to adapters-style products).
 
 `incomingEdges` / `outgoingEdges` lists were updated on both endpoints —
 the 9 catalog pass 32 NodeKinds plus the four cross-cluster targets they reference
@@ -676,7 +676,7 @@ Deprecated-bridge Term and Synonym files (3):
 - `graph/terminology/synonyms/evidence-to-evidence-source.yaml`
 
 Deprecated Definition (1):
-- `graph/terminology/definitions/run-deprecated-agent-mux.yaml`
+- `graph/terminology/definitions/run-deprecated-adapters.yaml`
 
 Deprecated alias-stub example files (4):
 - `graph/agent-stack/versions/codex-0-x.yaml`
@@ -835,8 +835,8 @@ the live schema, so nothing to remove:
 
 Example file cleanup — FK lines removed from these multi-doc YAMLs:
 
-- `examples/extensions/board-snapshots/board-snapshots-agent-mux.yaml` (2 docs)
-- `examples/extensions/backlog-snapshots/backlog-snapshots-agent-mux.yaml` (2 docs)
+- `examples/extensions/board-snapshots/board-snapshots-adapters.yaml` (2 docs)
+- `examples/extensions/backlog-snapshots/backlog-snapshots-adapters.yaml` (2 docs)
 - `examples/extensions/acceptance-criteria/acceptance-criteria-aca-390.yaml` (3 docs)
 - `examples/extensions/issue-decompositions/issue-decompositions-symphony.yaml` (2 docs)
 
@@ -1014,7 +1014,7 @@ to the UI layer, not the platform layer.
 - Authored 16 `AgentUIImpl` example files under
   `graph/agent-stack/ui-impls/<slug>-ui-current.yaml` for the canonical agents
   (claude-code, codex, gemini-cli, copilot-cli, cursor, opencode, openclaw,
-  omp, hermes, pi, qwen, amp, droid, agent-mux-remote, a5c, babysitter).
+  omp, hermes, pi, qwen, amp, droid, adapters-remote, a5c, babysitter).
 - Updated 16 `AgentVersion` example files: each `composed_of` array now carries
   a 4th entry `{ target: agent-ui-impl:<slug>.ui@current, role: ui }`.
 - Cleaned 16 `AgentPlatformImpl` example files: dropped the two attribute
@@ -1092,7 +1092,7 @@ All 17 existing `AgentProduct` files now declare both attributes:
 | qwen | full-cli-agent | full |
 | amp | full-cli-agent | full |
 | droid | full-cli-agent | full |
-| agent-mux-remote | transport-bridge | core-runtime-platform |
+| adapters-remote | transport-bridge | core-runtime-platform |
 | a5c | full-cli-agent | full |
 | babysitter | headless-runtime | core-runtime-platform |
 | extended-products (16 sub-docs) | per-doc — full-cli-agent / ide-extension-agent / web-agent | full |
@@ -1155,28 +1155,28 @@ partial-stack files; identical pattern to existing catalog pass 30 entries).
 
 Restructured `agent:babysitter` from a headless single-product into a
 multi-surface umbrella. Authored sibling products for the babysitter SDK,
-the agent-platform CLI binary, and the agent-mux multi-surface UI
-suite, plus a per-surface Presentation set for agent-mux.
+the agent-platform CLI binary, and the adapters multi-surface UI
+suite, plus a per-surface Presentation set for adapters.
 
 ### Schema additions
 
 - `Presentation.kind` enum extended: added `tv` and `watch` to support
-  agent-mux Apple TV / Android TV / watchOS / Wear OS surfaces.
+  adapters Apple TV / Android TV / watchOS / Wear OS surfaces.
   (`schema/node-kinds/surfacing-path.yaml`.)
 
 ### New Presentations (10)
 
-`graph/agent-stack/presentations/agent-mux-presentations.yaml` (multi-doc):
+`graph/agent-stack/presentations/adapters-presentations.yaml` (multi-doc):
 
-- `presentation:agent-mux-tui` (kind: tui)
-- `presentation:agent-mux-cli` (kind: cli)
-- `presentation:agent-mux-webui` (kind: web, next-js)
-- `presentation:agent-mux-mobile-ios` (kind: mobile, react-native)
-- `presentation:agent-mux-mobile-android` (kind: mobile, react-native)
-- `presentation:agent-mux-tv-androidtv` (kind: tv)
-- `presentation:agent-mux-tv-appletv` (kind: tv)
-- `presentation:agent-mux-watch-watchos` (kind: watch)
-- `presentation:agent-mux-watch-wearos` (kind: watch)
+- `presentation:adapters-tui` (kind: tui)
+- `presentation:adapters-cli` (kind: cli)
+- `presentation:adapters-webui` (kind: web, next-js)
+- `presentation:adapters-mobile-ios` (kind: mobile, react-native)
+- `presentation:adapters-mobile-android` (kind: mobile, react-native)
+- `presentation:adapters-tv-androidtv` (kind: tv)
+- `presentation:adapters-tv-appletv` (kind: tv)
+- `presentation:adapters-watch-watchos` (kind: watch)
+- `presentation:adapters-watch-wearos` (kind: watch)
 
 `graph/agent-stack/presentatio../platform-presentation.yaml`:
 
@@ -1186,13 +1186,13 @@ suite, plus a per-surface Presentation set for agent-mux.
 
 | Product | productKind | stackScope | impls |
 |---|---|---|---|
-| agent:agent-mux | multi-surface-suite | full | core, runtime, platform, ui |
+| agent:adapters | multi-surface-suite | full | core, runtime, platform, ui |
 | agent:babysitter-sdk | sdk | core-runtime | core, runtime |
 | agent:agent-platform | full-cli-agent | full | core, runtime, platform, ui |
 
-`agent:agent-mux` is distinct from the pre-existing `agent:agent-mux-remote`
+`agent:adapters` is distinct from the pre-existing `agent:adapters-remote`
 (transport-only adapter); the new product is the broader multi-surface UI
-suite that uses the agent-mux transport to bridge to remote agents.
+suite that uses the adapters transport to bridge to remote agents.
 
 ### babysitter restructure
 
@@ -1201,12 +1201,12 @@ suite that uses the agent-mux transport to bridge to remote agents.
 - Description rewritten to describe the umbrella nature; sibling products
   carry per-surface detail.
 - `agent-ui-impl:babysitter.ui@current` rewritten from `headless` to
-  `multi-surface` and now bundles all 9 agent-mux presentations plus
+  `multi-surface` and now bundles all 9 adapters presentations plus
   `presentation:agent-platform-cli`.
 - `agent-version:babysitter@current.composed_of` left untouched —
   babysitter's own core/runtime/platform/ui impls remain the canonical
   composition; `agent:babysitter-sdk` / `agent:agent-platform` /
-  `agent:agent-mux` are sibling AgentProducts that complement (not
+  `agent:adapters` are sibling AgentProducts that complement (not
   replace) babysitter's stack.
 
 ### Validator delta
@@ -1220,10 +1220,10 @@ identical pattern to catalog pass 43 partial-stack additions).
 
 ### Outstanding TODOs
 
-- `releasedAt` placeholders on `agent-mux@current`, `babysitter-sdk@current`,
+- `releasedAt` placeholders on `adapters@current`, `babysitter-sdk@current`,
   `agent-platform@current` — confirm with vendor docs.
 - `bundleSize` placeholders on all 10 new Presentations.
-- `interactionPrimitivesSupported: []` on `agent-mux.ui@current`,
+- `interactionPrimitivesSupported: []` on `adapters.ui@current`,
   `agent-platform.ui@current`, and the rewritten `babysitter.ui@current`
   — to be enumerated (slash commands, model picker, prompt input,
   command palette, session list, run detail, kanban board, hook inbox,
@@ -1259,7 +1259,7 @@ UI mechanisms expose primitives in fundamentally different ways:
 The flat list attribute was scaffolding before edges existed (catalog pass 37 clean-break policy).
 Removed from `AgentUIImpl` schema and from the meta-registry. Top-6 canonical UIs
 (claude-code, codex, gemini-cli, copilot-cli, cursor, opencode) migrated to edge form.
-Other UIs (omp, openclaw, hermes, pi, qwen, amp, droid, agent-mux, agent-mux-remote, a5c,
+Other UIs (omp, openclaw, hermes, pi, qwen, amp, droid, adapters, adapters-remote, a5c,
 babysitter, agent-platform) carry `# TODO: enumerate interaction primitives` comments
 in their `edges:` block — data not yet well-known.
 
@@ -1292,13 +1292,13 @@ relates to the parent's. Two new optional attributes on `AgentRuntimeImpl`:
 - `subagentToolScopePolicy: enum<inherit-parent,explicit-allowlist,fresh-defaults,none>`
 
 Backfilled on canonical agents (claude-code, codex, gemini-cli, copilot-cli, cursor,
-opencode, agent-mux-remote, babysitter, agent-platform, a5c). Codex toolScopePolicy
+opencode, adapters-remote, babysitter, agent-platform, a5c). Codex toolScopePolicy
 is annotated with a `# TODO: verify` — could be `inherit-parent` or `fresh-defaults`.
 
 ### Open TODOs out of catalog pass 45
 
 - Enumerate interaction primitives for the 12 non-top-6 AgentUIImpls
-  (omp, openclaw, hermes, pi, qwen, amp, droid, agent-mux, agent-mux-remote, a5c,
+  (omp, openclaw, hermes, pi, qwen, amp, droid, adapters, adapters-remote, a5c,
   babysitter, agent-platform).
 - Verify codex `subagentToolScopePolicy` (inherit-parent vs fresh-defaults).
 - Decide whether to grow `InteractionPrimitiveCategory` enum to include
@@ -1309,7 +1309,7 @@ is annotated with a `# TODO: verify` — could be `inherit-parent` or `fresh-def
 
 ---
 
-## catalog pass 46 — InteractionPrimitiveCategory enum extension + babysitter/agent-mux/a5c primitives
+## catalog pass 46 — InteractionPrimitiveCategory enum extension + babysitter/adapters/a5c primitives
 
 Extended `InteractionPrimitiveCategory` enum from 8 to 12 values to address the
 catalog pass 45 open TODO ("decide whether to grow `InteractionPrimitiveCategory` enum
@@ -1346,7 +1346,7 @@ Re-bound 8 existing primitives whose catalog pass 1 categories were suboptimal:
 `plan-review` retained `approval` — JUDGE: plan-review *is* approve-the-plan,
 not a question-asking primitive.
 
-### 46.3 — Babysitter / agent-mux / a5c primitive bundles
+### 46.3 — Babysitter / adapters / a5c primitive bundles
 
 Authored three new primitive bundles in
 `graph/agent-stack/interaction-primitives/`:
@@ -1354,7 +1354,7 @@ Authored three new primitive bundles in
 - `babysitter-primitives.yaml` (10 primitives) — run-create, run-iterate,
   task-post, breakpoint-approve, observer-dashboard, doctor, mcp-server,
   plan, yolo, resume.
-- `agent-mux-primitives.yaml` (10 primitives) — kanban-board, hook-inbox,
+- `adapters-primitives.yaml` (10 primitives) — kanban-board, hook-inbox,
   session-list, session-detail, new-run, pair-device, workspace-detail,
   breakpoint-approval, tool-call-interaction, prompt-history.
 - `a5c-primitives.yaml` (3 primitives) — blueprint-install, blueprint-configure,
@@ -1371,12 +1371,12 @@ Replaced the `# TODO: enumerate interaction primitives` comment with concrete
 `supports_interaction_primitive` edge sets in:
 
 - `babysitter-ui-current.yaml` — 12 primitives (8 babysitter + 4 aggregated
-  agent-mux navigation primitives, since babysitter UI = agent-mux + agent-platform).
+  adapters navigation primitives, since babysitter UI = adapters + agent-platform).
 - `agent-platform-ui-current.yaml` — 5 primitives, all `mechanism: native-api`
   (CLI subcommands).
-- `agent-mux-ui-current.yaml` — 13 primitives (10 agent-mux + 3 canonical:
+- `adapters-ui-current.yaml` — 13 primitives (10 adapters + 3 canonical:
   command-palette, model-picker, prompt-input).
-- `agent-mux-remote-ui-current.yaml` — explicit empty list with delegation
+- `adapters-remote-ui-current.yaml` — explicit empty list with delegation
   comment (transport-only variant has no UI).
 - `a5c-ui-current.yaml` — 5 primitives (3 a5c + 2 canonical delegations).
 
@@ -1488,7 +1488,7 @@ Total `supports_interaction_primitive` edges added: **54**
 - `packages/adapters/adapters/src/amp-adapter.ts` (L1-150)
 - `packages/adapters/adapters/src/droid-adapter.ts` (L1-150)
 
-All adapter source is read-only for this pass; no agent-mux source edits.
+All adapter source is read-only for this pass; no adapters source edits.
 
 ### TODO — agent-specific primitives to author in a future pass
 
@@ -1808,7 +1808,7 @@ distinction so future authors don't repeat the catalog pass 50 mistake.
 ### Source
 
 Real production source: `packages/adapters/core/src/kanban.ts` (2518
-lines) — the canonical kanban schema for the agent-mux project.
+lines) — the canonical kanban schema for the adapters project.
 catalog pass 52 extracts four entities into first-class catalog NodeKinds,
 mirroring the kanban interfaces:
 
@@ -1864,7 +1864,7 @@ extended with `owns_label` and `has_activity_entry`.
 ### Examples authored
 
 - `graph/extensions/task-tags/canonical-task-tags.yaml` — 5 tags
-  (tech-debt, needs-design, agent-mux-frontend, security-review,
+  (tech-debt, needs-design, adapters-frontend, security-review,
   graph-catalog pass 52).
 - `graph/extensions/labels/canonical-labels.yaml` — 4 labels (bug,
   enhancement, documentation, good-first-issue).
@@ -1872,7 +1872,7 @@ extended with `owns_label` and `has_activity_entry`.
   — 4 entries (issue-moved, decomposition-added, run-dispatched,
   board-snapshot-generated) referencing existing canonical
   `issue:linear-aca-390`, `issue:github-1234`, and
-  `board-snapshot:agent-mux-2026-05-02`.
+  `board-snapshot:adapters-2026-05-02`.
 - `graph/extensions/issue-dispatch-states/example-dispatch-states.yaml`
   — 4 dispatch states covering each `readiness` value.
 
@@ -1892,7 +1892,7 @@ markdown parity edits to `extensions-plugins.md`, `lifecycle.md`,
   when that RunAttempt example is authored.
 - `ActivityEntry` actor ids (`role:maintainer`,
   `agent-version:claude-code-opus-4-7`,
-  `system:agent-mux-orchestrator`) are stored as attribute strings
+  `system:adapters-orchestrator`) are stored as attribute strings
   rather than graph edges; promote to edges in a follow-up pass if
   canonical Role / AgentVersion / system-actor examples are added.
 
@@ -2400,7 +2400,7 @@ that the reference-data tail is expected.
 | Category | Wirings | Mechanism |
 | --- | --- | --- |
 | Benchmark → SkillArea (`covers`) | 15 | `covers` edges added on the 15 orphan benchmarks (knowledge / reasoning / safety / tool-use / leaderboards) |
-| Presentation ← AgentUIImpl (`bundled_with`) | 10 | 9 agent-mux surfaces wired from `agent-ui-impl:agent-mux.ui@current`; 1 `presentation:agent-platform-cli` wired from `agent-ui-impl:agent-platform.ui@current` |
+| Presentation ← AgentUIImpl (`bundled_with`) | 10 | 9 adapters surfaces wired from `agent-ui-impl:adapters.ui@current`; 1 `presentation:agent-platform-cli` wired from `agent-ui-impl:agent-platform.ui@current` |
 | HookSurface ← HookMapping (`maps_hook`) | 6 | New file `graph/channels-hooks/hook-mappings/babysitter-canonical.yaml` adds 6 HookMappings binding the canonical surfaces (start, done, wake, phase-change, phase-change-check, decision-point) to `agent-version:babysitter@current` |
 | ObservabilityBackend ← AgentRuntimeImpl (`emits_signals_to`) | 6 | `agent-runtime-impl:claude-code.runtime@1.x` now `emits_signals_to` the 6 orphan obs backends (datadog / grafana-cloud / splunk / new-relic / prometheus / jaeger). Speculative — backends are reference impls, not vendor commitments |
 | ProcessDescriptor ← PackageSurface (`surfaces_process`) | 21 | `package:a5c-ai-babysitter` `surfaces_process` the 21 orphan a5c-marketplace process descriptors |
@@ -4073,7 +4073,7 @@ files):
    Refs: `packages/sdk/src/runtime/replay/effectIndex.ts`,
    `packages/sdk/src/storage/types.ts`.
 2. `deferred-work:a5c-effort-level-mapping` — effort-level passthrough vs
-   silent on dimension is undecided. Refs: `packages/agent-mux`.
+   silent on dimension is undecided. Refs: `packages/adapters`.
 3. `deferred-work:a5c-output-guard` — refusal/AUP layer is harness-contributed;
    modeling pattern undecided.
 
@@ -4279,8 +4279,8 @@ breaking them.
 
 ### Top consumers identified (mux + sdk codegen)
 
-- `agent-mux/core/src/host-detection.ts` — `getHostSignalMap`, `getHostMetadataFields`, `getHostDetectionRules`
-- `agent-mux/core/src/invocation.ts` — `getHarnessImages`, `lookupHarnessImage`
+- `adapters/core/src/host-detection.ts` — `getHostSignalMap`, `getHostMetadataFields`, `getHostDetectionRules`
+- `adapters/core/src/invocation.ts` — `getHarnessImages`, `lookupHarnessImage`
 - `hooks-mux/core/src/discovery/detector.ts` — `getHooksMuxDetectionRules`
 - `extension-mux/src/targets/index.ts` — `listPluginTargetDescriptors`, `getPluginTargetDescriptor`, `getHookNameMap` (mux generator critical)
 - `sdk/src/harness/discovery.ts` + `amuxFallbackMetadata.ts` — `getFallbackHarnessMetadata`, agent-version listings
@@ -4361,7 +4361,7 @@ and `--mode docker` invocations.
 
 catalog pass 91 closes the three blockers catalog pass 90 identified as preventing atlas from
 replacing the legacy `packages/agent-catalog/graph/` (consumed by
-`agent-mux/core`, `extension-mux`, `hooks-mux/core`).
+`adapters/core`, `extension-mux`, `hooks-mux/core`).
 
 ### Blocker #1: PluginTarget codegen field-set — CLOSED
 
@@ -4405,7 +4405,7 @@ PluginArtifact rows (was 5):
 
 Each new row wires an `emits_artifact` edge to its corresponding
 `plugin-target:<slug>` record. `getHarnessImages()` /
-`lookupHarnessImage()` in `agent-mux/core/src/invocation.ts` now have
+`lookupHarnessImage()` in `adapters/core/src/invocation.ts` now have
 parity with legacy.
 
 ### Blocker #3: Legacy ↔ atlas id-alias map — CLOSED (Path (a))
@@ -4466,7 +4466,7 @@ The 3 blockers catalog pass 90 flagged as preventing atlas from replacing the le
 graph are closed. atlas PluginTarget records now carry the legacy codegen
 field-set verbatim; harness image lookup has parity; the alias shim
 covers every record consumed by `extension-mux`,
-`agent-mux/core`, and `hooks-mux/core`.
+`adapters/core`, and `hooks-mux/core`.
 
 Residual amber items (NOT atlas-replacement blockers; tracked for
 future passes):
@@ -4595,7 +4595,7 @@ already lives at `sdk/src/harness/amuxFallbackMetadata.contract.test.ts`.
 
 ### Migration-readiness verdict — **COMPLETE**
 
-All five legacy `agent-catalog` SDK consumers (agent-mux,
+All five legacy `agent-catalog` SDK consumers (adapters,
 extension-mux, hooks-mux, sdk/harness/*, catalog API) now resolve
 against the atlas graph: four directly via existing accessors with the atlas
 field-set in place, one (HarnessFallbackMetadata) via a thin frozen
@@ -4787,7 +4787,7 @@ variants plus the reusable composite GitHub Action.
   enrichment → `evaluateTrigger` against compact key:value query →
   exit 0 (matched) / 78 (skip) / non-zero (error); GH Action wraps
   this with harness/plugin install + pre-run/adapters/post-run.
-- Key integration points: GitHub Actions composite, agent-mux CLI
+- Key integration points: GitHub Actions composite, adapters CLI
   (`packages/adapters/sdk/dist/bin/adapters.js`), babysitter platform
   (workspace consumer).
 
@@ -4994,11 +4994,11 @@ which are stylistic, not behavioral.
 | parse errors | n/a | 0 | clean |
 
 
-## Catalog pass 96 — agent-mux subpackage deep audit (catalog pass 96, 2026-05-04)
+## Catalog pass 96 — adapters subpackage deep audit (catalog pass 96, 2026-05-04)
 
 catalog pass 96 deepens per-package coverage of the babysitter monorepo's mux
 ecosystem. catalog pass 90/catalog pass 91/catalog pass 92 audited the user-facing surfaces; catalog pass 94/catalog pass 95 deep-dove
-on triggers; catalog pass 96 walks each `packages/*-mux` and `agent-mux/*` subpackage
+on triggers; catalog pass 96 walks each `packages/*-mux` and `adapters/*` subpackage
 and verifies catalog-faithful coverage of internal concepts so any of them
 can be regenerated from the atlas graph.
 
@@ -5006,7 +5006,7 @@ can be regenerated from the atlas graph.
 
 Top-level mux + catalog packages:
 1. `agent-catalog` — graph + SDK projection layer (already PackageSurface).
-2. `agent-mux` — multi-subpackage tree (9 subpackages with package.json):
+2. `adapters` — multi-subpackage tree (9 subpackages with package.json):
    `core`, `cli`, `gateway`, `tui`, `ui`, `webui`, `harness-mock`,
    `observability`, `sdk` (umbrella @a5c-ai/adapters), `adapters`.
    Plus 3 non-published dirs (`adapters-proxy`, `meta`, `processes`).
@@ -5021,16 +5021,16 @@ Top-level mux + catalog packages:
 | Package | Internal gaps | Codegen-ready |
 | --- | --- | --- |
 | agent-catalog | 0 | YES — types fully re-exported via existing models/sdk projection |
-| agent-mux/core | 0 | YES — HookSurface×9, HookMapping×N, HostDetectionRule, HarnessImage all present |
-| agent-mux/cli | 1 (PackageSurface missing) | YES post-catalog pass 96 |
-| agent-mux/gateway | 1 (PackageSurface missing) | YES post-catalog pass 96 |
-| agent-mux/tui | 1 (PackageSurface missing) | YES post-catalog pass 96 |
-| agent-mux/ui | 1 (PackageSurface missing) | YES post-catalog pass 96 |
-| agent-mux/webui | 1 (PackageSurface missing) | YES post-catalog pass 96 |
-| agent-mux/harness-mock | 1 (PackageSurface missing) | YES post-catalog pass 96 |
-| agent-mux/observability | 1 (PackageSurface missing) | YES post-catalog pass 96 |
-| agent-mux/sdk (@a5c-ai/adapters umbrella) | 1 (PackageSurface missing) | YES post-catalog pass 96 |
-| agent-mux/adapters | 1 (PackageSurface missing) | YES post-catalog pass 96 |
+| adapters/core | 0 | YES — HookSurface×9, HookMapping×N, HostDetectionRule, HarnessImage all present |
+| adapters/cli | 1 (PackageSurface missing) | YES post-catalog pass 96 |
+| adapters/gateway | 1 (PackageSurface missing) | YES post-catalog pass 96 |
+| adapters/tui | 1 (PackageSurface missing) | YES post-catalog pass 96 |
+| adapters/ui | 1 (PackageSurface missing) | YES post-catalog pass 96 |
+| adapters/webui | 1 (PackageSurface missing) | YES post-catalog pass 96 |
+| adapters/harness-mock | 1 (PackageSurface missing) | YES post-catalog pass 96 |
+| adapters/observability | 1 (PackageSurface missing) | YES post-catalog pass 96 |
+| adapters/sdk (@a5c-ai/adapters umbrella) | 1 (PackageSurface missing) | YES post-catalog pass 96 |
+| adapters/adapters | 1 (PackageSurface missing) | YES post-catalog pass 96 |
 | extension-mux | 0 | YES — PluginTargetDescriptor×17, schema/transform/emit modeled |
 | hooks-mux core | 0 | YES — HookMapping/HookSurface/MergePolicy/DecisionVerb covered |
 | tasks-mux | 0 | YES — BreakpointStrategy/ResponderProfile/HumanCheckpoint/DecisionMemory covered |
@@ -5048,13 +5048,13 @@ Top-level mux + catalog packages:
 
 ### Instances authored
 
-- PackageSurface: 9 new (one per agent-mux subpackage with a package.json):
-  `package:a5c-ai-agent-mux-cli`, `-gateway`, `-tui`, `-ui`, `-webui`,
+- PackageSurface: 9 new (one per adapters subpackage with a package.json):
+  `package:a5c-ai-adapters-cli`, `-gateway`, `-tui`, `-ui`, `-webui`,
   `-harness-mock`, `-observability`, `-adapters`, plus the umbrella
-  `package:a5c-ai-agent-mux` (sdk dir).
+  `package:a5c-ai-adapters` (sdk dir).
 - PathDescriptor: 9 new (one per new PackageSurface, ownerKind:
   PackageSurface). Filed in
-  `graph/catalog-meta/path-descriptors/agent-mux-subpackages.yaml`.
+  `graph/catalog-meta/path-descriptors/adapters-subpackages.yaml`.
 
 ### Edges wired (count by kind, new this catalog pass)
 
@@ -5067,17 +5067,17 @@ the package and path nodes report non-orphan after the catalog pass.
 
 ### Modeling decisions
 
-- **Concrete deferral**: agent-mux/`adapters-proxy`, `meta`, and `processes`
+- **Concrete deferral**: adapters/`adapters-proxy`, `meta`, and `processes`
   have no `package.json` — they are non-published source directories.
   Out of scope for PackageSurface modeling (no publish surface to track).
   Their content (proxy-server logic, build metadata, process JSON)
-  surfaces through the parent `package:a5c-ai-agent-mux` umbrella.
+  surfaces through the parent `package:a5c-ai-adapters` umbrella.
 - **HOOK_CATALOG, builtin-hooks, host-detection are pure projections**:
-  `agent-mux/core/src/hook-catalog.ts` projects HookSurface×9 (claude,
+  `adapters/core/src/hook-catalog.ts` projects HookSurface×9 (claude,
   codex, gemini, copilot, cursor, opencode, pi, omp, openclaw, hermes)
   already in `graph/channels-hooks/hook-surfaces/native/`. The 3 builtin
   hooks (`log`, `trace`, `claude.session-capture`) in
-  `agent-mux/core/src/builtin-hooks.ts` are runtime-bundled defaults, not
+  `adapters/core/src/builtin-hooks.ts` are runtime-bundled defaults, not
   user-facing extension surfaces — out of scope for graph (not
   installable, not configurable, not catalog-driven).
 - **transport-mux SUPPORTED_TRANSPORTS**: All 8 (anthropic, openai-chat,
@@ -5135,7 +5135,7 @@ mux subpackage has a graph record.
 
 ### Top remaining gaps
 
-None for codegen-readiness. The agent-mux umbrella tree's three
+None for codegen-readiness. The adapters umbrella tree's three
 non-published dirs (`adapters-proxy`, `meta`, `processes`) are intentionally
 unmodeled (no publish surface). If a future catalog pass promotes any of them to
 publishable packages, they'll need PackageSurface + PathDescriptor records
@@ -5144,11 +5144,11 @@ following the catalog pass 96 pattern.
 ## catalog pass 97a — `adapters` CLI subcommand catalog
 
 Authored 74 `InteractionPrimitive[kind=cli-subcommand]` records under
-`graph/extensions/interaction-patterns/agent-mux-cli-subcommands.yaml`,
+`graph/extensions/interaction-patterns/adapters-cli-subcommands.yaml`,
 covering every leaf subcommand of `adapters` (per
 `packages/adapters/cli/src/commands/*.ts` + `commands/gateway/*.ts`).
 Wired each as `exposes_subcommand` from
-`package:a5c-ai-agent-mux-cli` (catalog pass 96). Each record carries
+`package:a5c-ai-adapters-cli` (catalog pass 96). Each record carries
 `parentBin: adapters`, `subcommandVerb`, per-subcommand `flags` list
 (`<flag>:<arity>:<purpose>`), and `subcommandExitCodes` distilled from
 `packages/adapters/cli/src/exit-codes.ts:10-27` plus
@@ -5170,11 +5170,11 @@ citation in the catalog pass 95 style.
 
 ## catalog pass 97c — remaining mux surface decomposition
 
-Decomposed the 6 mux PackageSurfaces from catalog pass 96 (agent-mux/tui,
-agent-mux/observability, agent-mux/harness-mock, transport-mux,
+Decomposed the 6 mux PackageSurfaces from catalog pass 96 (adapters/tui,
+adapters/observability, adapters/harness-mock, transport-mux,
 tasks-mux, hooks-mux/core) into 40 graph records.
 
-- 3 InteractionPrimitive[kind=tui-command] (agent-mux/tui:
+- 3 InteractionPrimitive[kind=tui-command] (adapters/tui:
   command-palette, prompt-input, model-picker)
 - 5 SharedContextSpec for @a5c-ai/adapters-observability public types
   (LogLevel, CostInfo, LogContext, Logger, Telemetry)
@@ -5195,7 +5195,7 @@ tasks-mux, hooks-mux/core) into 40 graph records.
 Schema delta: widened `InteractionPrimitive.kind` enum to add
 `tui-command` and `mock-scenario` (schema/node-kinds/surfacing-path.yaml
 node:interaction-primitive). Each new enum value activated ≥1 time via
-the agent-mux-tui and agent-mux-harness-mock PackageSurface
+the adapters-tui and adapters-harness-mock PackageSurface
 `exposes_subcommand` edges. No new NodeKinds, no new EdgeKinds.
 
 `exposes_subcommand` source already accepted PackageSurface (catalog pass 95/97a);
@@ -5233,9 +5233,9 @@ itself with n=0).
 | harness-mock error + runtime-hook scenarios (catalog pass 97c) | authored | 8 InteractionPrimitive[mock-scenario]: 5 error:* + 3 runtimeHook* |
 | transport-mux runtime.ts programmatic API (catalog pass 97c) | structured-deferral | deferred-work:transport-mux-runtime-programmatic-api (status: abandoned, wrapper-over-graph evidence) |
 | hooks-mux internals helpers (catalog pass 97c) | structured-deferral | deferred-work:hooks-mux-internals-helpers (status: abandoned, private-helpers evidence) |
-| agent-mux/adapters per-harness dispatch (catalog pass 97 explicit list) | structured-deferral | deferred-work:agent-mux-adapters-per-harness-dispatch (status: abandoned, wrapper-over-graph per catalog pass 96) |
-| agent-mux/sdk umbrella (catalog pass 97 list) | confirmed wrapper | existing PackageSurface accurate |
-| agent-mux/ui + webui (catalog pass 97 list) | structured-deferral | deferred-work:agent-mux-ui-webui-react-components (status: abandoned, presentation-only) |
+| adapters/adapters per-harness dispatch (catalog pass 97 explicit list) | structured-deferral | deferred-work:adapters-adapters-per-harness-dispatch (status: abandoned, wrapper-over-graph per catalog pass 96) |
+| adapters/sdk umbrella (catalog pass 97 list) | confirmed wrapper | existing PackageSurface accurate |
+| adapters/ui + webui (catalog pass 97 list) | structured-deferral | deferred-work:adapters-ui-webui-react-components (status: abandoned, presentation-only) |
 | agent-catalog package (catalog pass 97 list) | structured-deferral | deferred-work:agent-catalog-library-functions (status: abandoned, projection-over-graph) |
 | babysitter platform packages (catalog pass 97 list) | partial-authored | PackageSurface enriched + 13 InteractionPrimitive command-group records (run / task / session / plugin / skill / process-library / profile / instructions / compression / breakpoint / hook / harness-runtime / mcp-server) wired to babysitter-sdk + agent-platform surfaces |
 | JournalEvent for LangGraph (catalog pass 93) | structured-deferral | deferred-work:journal-event-langgraph (status: open, needs vendor evidence) |
@@ -5283,9 +5283,9 @@ itself with n=0).
 evidence in the `reason` and `resolutionNotes` attributes):
 
 - deferred-work:frontmatter-codex-agents-md
-- deferred-work:agent-mux-adapters-per-harness-dispatch
+- deferred-work:adapters-adapters-per-harness-dispatch
 - deferred-work:agent-catalog-library-functions
-- deferred-work:agent-mux-ui-webui-react-components
+- deferred-work:adapters-ui-webui-react-components
 - deferred-work:transport-mux-runtime-programmatic-api
 - deferred-work:hooks-mux-internals-helpers
 
@@ -5347,12 +5347,12 @@ catalog pass but cheap to unblock individually.
 ### Files touched (catalog pass 98)
 
 - graph/extensions/interaction-patterns/tasks-mux-cli-leaves.yaml (new)
-- graph/extensions/interaction-patterns/agent-mux-harness-mock-errors-hooks.yaml (new)
+- graph/extensions/interaction-patterns/adapters-harness-mock-errors-hooks.yaml (new)
 - graph/extensions/interaction-patterns/babysitter-sdk-cli.yaml (new)
 - graph/extensions/api-endpoints/tasks-mux-server-client.yaml (new)
 - concrete graph records replacing deferred work (new - 14 deferred work records)
 - graph/catalog-meta/package-surfaces/tasks-mux.yaml (extended exposes_subcommand + exposes_endpoint)
-- graph/catalog-meta/package-surfaces/agent-mux-harness-mock.yaml (extended exposes_subcommand)
+- graph/catalog-meta/package-surfaces/adapters-harness-mock.yaml (extended exposes_subcommand)
 - graph/catalog-meta/package-surfaces/babysitter-sdk.yaml (rewritten with bins + 12 subcommand groups)
 - graph/catalog-meta/package-surfac../platform.yaml (rewritten with babysitter-harness bin)
 - migration/legacy-vs-atlas-coverage-matrix.md (catalog pass 98 section appended)
@@ -5558,9 +5558,9 @@ activated 20 times across 3 vendors — well above the ≥1 minimum.
 | deferred-node:frontmatter-cursor-mdc | resolved (W99) | resolved |
 | deferred-node:frontmatter-codex-agents-md | abandoned | abandoned |
 | deferred-node:task-schema-field-define-task | resolved (W99) | resolved |
-| deferred-node:agent-mux-adapters-per-harness-dispatch | abandoned | abandoned |
+| deferred-node:adapters-adapters-per-harness-dispatch | abandoned | abandoned |
 | deferred-node:agent-catalog-library-functions | abandoned | abandoned |
-| deferred-node:agent-mux-ui-webui-react-components | abandoned | abandoned |
+| deferred-node:adapters-ui-webui-react-components | abandoned | abandoned |
 | deferred-node:transport-mux-runtime-programmatic-api | abandoned | abandoned |
 | deferred-node:hooks-mux-internals-helpers | abandoned | abandoned |
 

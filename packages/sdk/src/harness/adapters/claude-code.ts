@@ -1,7 +1,7 @@
 /**
  * Claude Code harness adapter.
  *
- * Derives all behavior from BaseHarnessAdapter + agent-mux metadata.
+ * Derives all behavior from BaseHarnessAdapter + adapters metadata.
  */
 
 import { appendFileSync } from "node:fs";

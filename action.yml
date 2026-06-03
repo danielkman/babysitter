@@ -113,7 +113,7 @@ runs:
         # Workaround: npm ci may miss linux optional deps needed by bundled builds.
         npm install --no-save @rollup/rollup-linux-x64-gnu 2>/dev/null || true
         npm run build:sdk
-        npm run build:agent-mux
+        npm run build:adapters
         npm run build --workspace=@a5c-ai/tula-core
         npm run build --workspace=@a5c-ai/tula-platform
 

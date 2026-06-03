@@ -1,6 +1,6 @@
 # Git hooks
 
-Local git hooks for agent-mux. No `husky` dependency — just a shell script
+Local git hooks for adapters. No `husky` dependency — just a shell script
 in this directory plus a one-line `git config` to point git at it.
 
 ## Install

@@ -20,7 +20,7 @@ Controllers use three persistence patterns:
 | auth | auth.js | registerLoginProfile | applyResource for User + IdentityMapping |
 | agent-dispatch | agent-dispatch-controller.js | createManualDispatch, persistSessionEvent | applyResource for AgentDispatchRun, AgentDispatchAttempt |
 | agent-approval | agent-approval-controller.js | persistApproval, recordDecision | applyResource for AgentApproval |
-| agent-mux-client | agent-mux-client.js | submitAgentJob, deleteJob | resourceGateway.apply/delete for K8s Jobs |
+| adapters-client | adapters-client.js | submitAgentJob, deleteJob | resourceGateway.apply/delete for K8s Jobs |
 | agent-writeback | agent-writeback-controller.js | persistWriteIntent, executeWriteIntent | applyResource + gateway.pushBranch/mergePr |
 | gitea-backend | gitea-backend.js | create*, add*, protect* (13+ methods) | Gitea REST API |
 | event-bus | event-bus.js | emit → persistEvent | JSONL file write (~/.kradle/events/) |

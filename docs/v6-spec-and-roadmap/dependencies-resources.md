@@ -1,10 +1,10 @@
 # Dependencies & Resources
 
-→ [Documentation Index](README.md) | Related: [Implementation Roadmap](v6-implementation-roadmap.md) | [Agent-Mux Integration](agent-mux-integration.md)
+→ [Documentation Index](README.md) | Related: [Implementation Roadmap](v6-implementation-roadmap.md) | [Agent-Mux Integration](adapters-integration.md)
 
 ## Internal Dependencies
 
-**Agent-mux Integration**: API compatibility maintenance during repository unification → [Agent-Mux Integration](agent-mux-integration.md)
+**Agent-mux Integration**: API compatibility maintenance during repository unification → [Agent-Mux Integration](adapters-integration.md)
 
 **Plugin Ecosystem**: Plugin development standards coordination → [Plugin Ecosystem](plugin-ecosystem.md)
 

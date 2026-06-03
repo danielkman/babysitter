@@ -160,7 +160,7 @@ async function runOnce(
         stdin: null,
         stdout: null,
         stderr: null,
-        kill: (sig?: string) => { try { ptyProcess.kill(sig); } catch (e) { process.stderr.write(`[agent-mux] PTY kill failed: ${e instanceof Error ? e.message : String(e)}\n`); } },
+        kill: (sig?: string) => { try { ptyProcess.kill(sig); } catch (e) { process.stderr.write(`[adapters] PTY kill failed: ${e instanceof Error ? e.message : String(e)}\n`); } },
         on: (event: string, cb: (...args: any[]) => void) => {
           if (event === 'close' || event === 'exit') {
             ptyProcess.onExit((e: { exitCode: number; signal?: number }) => cb(e.exitCode, e.signal));
@@ -334,7 +334,7 @@ async function runOnce(
     if ((process.stdin as any).isTTY) (process.stdin as any).setRawMode(true);
     process.stdin.resume();
     process.stdin.on('data', (data: Buffer) => {
-      try { ptyProcess.write(data.toString()); } catch (e) { process.stderr.write(`[agent-mux] PTY stdin write failed: ${e instanceof Error ? e.message : String(e)}\n`); }
+      try { ptyProcess.write(data.toString()); } catch (e) { process.stderr.write(`[adapters] PTY stdin write failed: ${e instanceof Error ? e.message : String(e)}\n`); }
     });
     // Handle terminal resize
     process.stdout.on('resize', () => {
@@ -352,7 +352,7 @@ async function runOnce(
       if (response.type === 'approve') text = 'y\n';
       else if (response.type === 'deny') text = 'n\n';
       else if (response.type === 'text') text = (response.text ?? '') + '\n';
-      try { ptyProcess.write(text); } catch (e) { process.stderr.write(`[agent-mux] PTY interaction write failed: ${e instanceof Error ? e.message : String(e)}\n`); }
+      try { ptyProcess.write(text); } catch (e) { process.stderr.write(`[adapters] PTY interaction write failed: ${e instanceof Error ? e.message : String(e)}\n`); }
       return;
     }
     if (!child!.stdin || child!.stdin.destroyed) return;
@@ -363,7 +363,7 @@ async function runOnce(
     try {
       child.stdin.write(text);
     } catch (e) {
-      process.stderr.write(`[agent-mux] child stdin write failed: ${e instanceof Error ? e.message : String(e)}\n`);
+      process.stderr.write(`[adapters] child stdin write failed: ${e instanceof Error ? e.message : String(e)}\n`);
     }
   });
 

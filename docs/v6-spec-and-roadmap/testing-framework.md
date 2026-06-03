@@ -20,7 +20,7 @@ The current repository provides these concrete validation commands and workflow 
 | --- | --- | --- |
 | SDK correctness | `npm run lint --workspace=@a5c-ai/babysitter-sdk`, `npm run build:sdk`, `npm run test:sdk` | TypeScript linting, buildability, and SDK test coverage for the current package surface |
 | Hooks mux | `npm run build:hooks-mux`, `npm run test:hooks-mux` | Build and test coverage for the current hooks-mux packages |
-| Agent mux | `npm run build:agent-mux`, `npm run test:agent-mux` | Build and test coverage for the current agent-mux packages |
+| Agent mux | `npm run build:adapters`, `npm run test:adapters` | Build and test coverage for the current adapters packages |
 | Agent plugins mux | `npm run build --workspace=@a5c-ai/extensions-adapter`, `npm run test --workspace=@a5c-ai/extensions-adapter` | Build and test coverage for the current compiler package |
 | Breakpoints mux | `npm run build --workspace=@a5c-ai/tasks-adapter`, `npm run typecheck --workspace=@a5c-ai/tasks-adapter`, `npm run test --workspace=@a5c-ai/tasks-adapter` | Build, typecheck, and test coverage for the current breakpoints workspace |
 | Architecture boundaries | `npm run test:architecture` | Enforces the `@a5c-ai/tula-platform` seam contract and repo package-family dependency rules for the current orchestration, dispatch, support, consumer, and distribution surfaces |
@@ -47,7 +47,7 @@ The nearest concrete validations available now are:
 
 - SDK/package tests for the current runtime and CLI surface,
 - `npm run test:architecture` for the current seam contract and documented package-family dependency boundaries,
-- hooks-mux and agent-mux build/test commands for the current integration seams,
+- hooks-mux and adapters build/test commands for the current integration seams,
 - plugin `validate:ci` checks for packaged plugin behavior,
 - docs QA and metadata checks for publication hygiene.
 

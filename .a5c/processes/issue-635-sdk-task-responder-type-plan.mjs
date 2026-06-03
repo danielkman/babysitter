@@ -6,8 +6,8 @@
  *
  * References used while authoring:
  * - docs/agent-reference/process-authoring.md
- * - docs/agent-mux-babysitter-integrations/tasks-mux-routing.md
- * - docs/agent-mux-babysitter-integrations/external-agent-tasks.md
+ * - docs/adapters-babysitter-integrations/tasks-mux-routing.md
+ * - docs/adapters-babysitter-integrations/external-agent-tasks.md
  * - packages/sdk/src/tasks/types.ts
  * - packages/sdk/src/tasks/defineTask.ts
  * - packages/sdk/src/tasks/kinds/index.ts
@@ -200,7 +200,7 @@ export const readIssueContextTask = defineTask('issue-635.read-issue-context', (
         `Confirm #${args.issueNumber} is not a PR with: gh pr view ${args.issueNumber} --json files,title,body,comments`,
         'Read all issue comments and labels carefully. Treat the issue and comments as the source of truth.',
         'Inspect the related issues mentioned in the issue only enough to determine scope boundaries, especially #603, #620, and #630.',
-        'Inspect these docs for the intended API and migration direction: docs/agent-mux-babysitter-integrations/tasks-mux-routing.md, docs/agent-mux-babysitter-integrations/external-agent-tasks.md, docs/agent-mux-babysitter-integrations/overview.md, docs/agent-mux-babysitter-integrations/testing.md.',
+        'Inspect these docs for the intended API and migration direction: docs/adapters-babysitter-integrations/tasks-mux-routing.md, docs/adapters-babysitter-integrations/external-agent-tasks.md, docs/adapters-babysitter-integrations/overview.md, docs/adapters-babysitter-integrations/testing.md.',
         'Inspect these current code/test files first, then follow exports/imports as needed:',
         JSON.stringify(args.targetFiles ?? [], null, 2),
         'Identify every current SDK task helper/export/test surface that must change, and explicitly separate #635 SDK work from tasks-mux consumption work in #630/#620.',

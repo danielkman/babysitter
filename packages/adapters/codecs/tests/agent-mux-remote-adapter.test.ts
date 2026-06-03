@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { StreamAssembler, buildInvocationCommand } from '@a5c-ai/comm-adapter';
 import type { ParseContext, RunOptions } from '@a5c-ai/comm-adapter';
-import { AgentMuxRemoteAdapter } from '../src/agent-mux-remote-adapter.js';
+import { AgentMuxRemoteAdapter } from '../src/adapters-remote-adapter.js';
 
 function makeContext(overrides?: Partial<ParseContext>): ParseContext {
   return {
     runId: 'test-run-remote',
-    agent: 'agent-mux-remote',
+    agent: 'adapters-remote',
     sessionId: undefined,
     turnIndex: 0,
     debug: false,
@@ -32,14 +32,14 @@ describe('AgentMuxRemoteAdapter (transport-agnostic)', () => {
     process.env = { ...prevEnv };
   });
 
-  it('has identity agent-mux-remote and cliCommand=adapters', () => {
-    expect(adapter.agent).toBe('agent-mux-remote');
+  it('has identity adapters-remote and cliCommand=adapters', () => {
+    expect(adapter.agent).toBe('adapters-remote');
     expect(adapter.cliCommand).toBe('adapters');
   });
 
   it('buildSpawnArgs produces plain `adapters run ...` (no ssh in adapter)', () => {
     const opts: RunOptions = {
-      agent: 'agent-mux-remote',
+      agent: 'adapters-remote',
       prompt: 'Hello remote',
       env: { AGENT_MUX_REMOTE_AGENT: 'codex' },
     };
@@ -56,13 +56,13 @@ describe('AgentMuxRemoteAdapter (transport-agnostic)', () => {
   });
 
   it('buildSpawnArgs defaults remote agent to claude', () => {
-    const sa = adapter.buildSpawnArgs({ agent: 'agent-mux-remote', prompt: 'p' });
+    const sa = adapter.buildSpawnArgs({ agent: 'adapters-remote', prompt: 'p' });
     expect(sa.args).toContain('claude');
   });
 
   it('buildSpawnArgs forwards --yolo when approvalMode is yolo', () => {
     const sa = adapter.buildSpawnArgs({
-      agent: 'agent-mux-remote',
+      agent: 'adapters-remote',
       prompt: 'p',
       approvalMode: 'yolo',
     });
@@ -81,7 +81,7 @@ describe('AgentMuxRemoteAdapter (transport-agnostic)', () => {
     const ev = adapter.parseEvent(line, ctx) as Record<string, unknown>;
     expect(ev).toBeTruthy();
     expect(ev['type']).toBe('text_delta');
-    expect(ev['agent']).toBe('agent-mux-remote');
+    expect(ev['agent']).toBe('adapters-remote');
     expect(ev['delta']).toBe('hello');
   });
 
@@ -100,7 +100,7 @@ describe('AgentMuxRemoteAdapter (transport-agnostic)', () => {
 describe('AgentMuxRemoteAdapter × invocation modes', () => {
   const adapter = new AgentMuxRemoteAdapter();
   const opts: RunOptions = {
-    agent: 'agent-mux-remote',
+    agent: 'adapters-remote',
     prompt: 'hi',
     env: { AGENT_MUX_REMOTE_AGENT: 'claude' },
   };
@@ -123,13 +123,13 @@ describe('AgentMuxRemoteAdapter × invocation modes', () => {
   it('docker invocation wraps the plain adapters command with docker run', () => {
     const sa = adapter.buildSpawnArgs(opts);
     const inv = buildInvocationCommand(
-      { mode: 'docker', image: 'ghcr.io/a5c-ai/agent-mux:latest' },
+      { mode: 'docker', image: 'ghcr.io/a5c-ai/adapters:latest' },
       sa,
       adapter.agent,
     );
     expect(inv.command).toBe('docker');
     expect(inv.args[0]).toBe('run');
-    expect(inv.args).toContain('ghcr.io/a5c-ai/agent-mux:latest');
+    expect(inv.args).toContain('ghcr.io/a5c-ai/adapters:latest');
     expect(inv.args).toContain('adapters');
   });
 

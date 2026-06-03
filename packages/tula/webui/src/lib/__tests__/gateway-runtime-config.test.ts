@@ -11,14 +11,14 @@ describe("gateway runtime config", () => {
   it("prefers explicit browser and proxy gateway urls", () => {
     const config = resolveGatewayRuntimeConfig({
       KANBAN_DEFAULT_GATEWAY_URL: "https://gateway.staging.a5c.ai/",
-      KANBAN_GATEWAY_PROXY_URL: "http://agent-mux-gateway:7878/",
+      KANBAN_GATEWAY_PROXY_URL: "http://adapters-gateway:7878/",
       KANBAN_GATEWAY_AUTH_MODE: "bootstrap-admin",
       KANBAN_BOOTSTRAP_ADMIN_USERNAME: "admin",
       KANBAN_GATEWAY_BOOTSTRAP_LOGIN_PATH: "/api/bootstrap/login",
     });
 
     expect(config.defaultGatewayUrl).toBe("https://gateway.staging.a5c.ai");
-    expect(config.proxyGatewayUrl).toBe("http://agent-mux-gateway:7878");
+    expect(config.proxyGatewayUrl).toBe("http://adapters-gateway:7878");
     expect(config.authMode).toBe("bootstrap-admin");
     expect(config.bootstrapAdminUsername).toBe("admin");
     expect(config.bootstrapLoginPath).toBe("/api/bootstrap/login");

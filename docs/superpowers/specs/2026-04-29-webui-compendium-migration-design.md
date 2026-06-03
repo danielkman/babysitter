@@ -1,6 +1,6 @@
 # WebUI Compendium Migration Design
 
-Migrate the agent-mux webui from its current mixed styling system (Radix UI + Tailwind + hand-rolled CSS + partial compendium) to compendium as the sole design system. Remove the deprecated kanban package dependency. Fix all broken layouts, overlays, and usability issues.
+Migrate the adapters webui from its current mixed styling system (Radix UI + Tailwind + hand-rolled CSS + partial compendium) to compendium as the sole design system. Remove the deprecated kanban package dependency. Fix all broken layouts, overlays, and usability issues.
 
 ## Context
 

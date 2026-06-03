@@ -666,7 +666,7 @@ export const ExternalTrackerBackendConfigSchema = z.object({
 export type ExternalTrackerBackendConfig = z.infer<typeof ExternalTrackerBackendConfigSchema>;
 
 export const AgentMuxBackendConfigSchema = z.object({
-  type: z.literal("agent-mux"),
+  type: z.literal("adapters"),
   agent: z.string().min(1).optional(),
   adapter: z.string().min(1).optional(),
   model: z.string().min(1).optional(),

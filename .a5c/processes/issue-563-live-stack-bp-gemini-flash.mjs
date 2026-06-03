@@ -125,7 +125,7 @@ const verifyTask = defineTask('issue-563.verify', (args, taskCtx) => ({
     command: [
       'set -euo pipefail',
       'git diff --check',
-      'node scripts/agent-mux-build.cjs test packages/adapters/cli -- packages/adapters/cli/tests/live-stack/primary-live-runner.test.ts packages/adapters/cli/tests/live-stack/scenario-contract.test.ts',
+      'node scripts/adapters-build.cjs test packages/adapters/cli -- packages/adapters/cli/tests/live-stack/primary-live-runner.test.ts packages/adapters/cli/tests/live-stack/scenario-contract.test.ts',
       'npm run build --workspace=@a5c-ai/atlas',
       'npm run build --workspace=@a5c-ai/agent-catalog',
       'npm run build --workspace=@a5c-ai/adapters-observability',

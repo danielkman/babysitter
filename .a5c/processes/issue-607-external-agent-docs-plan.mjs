@@ -11,10 +11,10 @@
  * - docs/agent-reference/process-authoring.md
  * - docs/agent-reference/command-surfaces.md
  * - docs/plugins.md
- * - docs/agent-mux-babysitter-integrations/external-agent-tasks.md
- * - docs/agent-mux-babysitter-integrations/process-authoring.md
- * - docs/agent-mux-babysitter-integrations/effect-resolution.md
- * - docs/agent-mux-babysitter-integrations/plugin-mode.md
+ * - docs/adapters-babysitter-integrations/external-agent-tasks.md
+ * - docs/adapters-babysitter-integrations/process-authoring.md
+ * - docs/adapters-babysitter-integrations/effect-resolution.md
+ * - docs/adapters-babysitter-integrations/plugin-mode.md
  *
  * @process methodologies/planning-with-files/planning-orchestrator
  * @process specializations/collaboration/github/branch-policies
@@ -31,10 +31,10 @@ const DEFAULT_TARGET_FILES = [
 ];
 
 const DEFAULT_SOURCE_DOCS = [
-  'docs/agent-mux-babysitter-integrations/external-agent-tasks.md',
-  'docs/agent-mux-babysitter-integrations/process-authoring.md',
-  'docs/agent-mux-babysitter-integrations/effect-resolution.md',
-  'docs/agent-mux-babysitter-integrations/plugin-mode.md',
+  'docs/adapters-babysitter-integrations/external-agent-tasks.md',
+  'docs/adapters-babysitter-integrations/process-authoring.md',
+  'docs/adapters-babysitter-integrations/effect-resolution.md',
+  'docs/adapters-babysitter-integrations/plugin-mode.md',
 ];
 
 function valueOf(result, fallback = {}) {
@@ -150,7 +150,7 @@ export async function process(inputs, ctx) {
 export const collectContextTask = defineTask('issue-607.collect-context', (args, taskCtx) => ({
   kind: 'agent',
   title: 'Collect issue and documentation context',
-  labels: ['issue-607', 'documentation', 'agent-mux', 'context'],
+  labels: ['issue-607', 'documentation', 'adapters', 'context'],
   agent: {
     name: 'external-agent-docs-context-researcher',
     prompt: {
@@ -186,7 +186,7 @@ export const draftEditPlanTask = defineTask('issue-607.draft-edit-plan', (args, 
         'Use the collected context as the source of truth and re-open the target docs before planning edits.',
         'Plan concise contributor-facing edits, not a copy of the design documents.',
         'Plan updates for docs/agent-reference/process-authoring.md covering internal kind: "agent" tasks versus agent.external: true tasks, required adapter, optional model/provider/timeout/approvalMode/maxTurns fields, fallbackToInternal behavior, and when internal agents are preferable.',
-        'Plan updates for docs/agent-reference/command-surfaces.md covering external-agent dispatch through agent-mux/amuxBridge, discovery and orchestration command surfaces, and failure modes: agent-mux missing, adapter missing, auth failure, timeout, and agent crash.',
+        'Plan updates for docs/agent-reference/command-surfaces.md covering external-agent dispatch through adapters/amuxBridge, discovery and orchestration command surfaces, and failure modes: adapters missing, adapter missing, auth failure, timeout, and agent crash.',
         'Plan updates for docs/plugins.md as a short plugin-mode integration note that distinguishes host-resolvable effects from external-agent effects and links back to agent-reference docs.',
         'Plan examples that show internal and external task patterns side by side.',
         'Keep scope to these target docs unless the context reveals a directly necessary generated-doc update.',
@@ -217,9 +217,9 @@ export const implementDocsTask = defineTask('issue-607.implement-docs', (args, t
         'Modify only these files unless a generated-doc check proves another docs artifact is directly required: ' + args.targetFiles.join(', ') + '.',
         'Use the design docs as source material, but keep the target docs concise and contributor-facing.',
         'Add examples for internal agent tasks and external agent tasks without encouraging external agents for simple text-only work.',
-        'Document fallbackToInternal as graceful degradation when agent-mux or a preferred adapter is unavailable, and state the failure behavior when fallback is not enabled.',
-        'Document troubleshooting for missing agent-mux, missing adapter, unauthenticated adapter, timeout, and crash scenarios.',
-        'Update docs/plugins.md with a short agent-mux/plugin-mode note and avoid duplicating the full agent-reference explanation.',
+        'Document fallbackToInternal as graceful degradation when adapters or a preferred adapter is unavailable, and state the failure behavior when fallback is not enabled.',
+        'Document troubleshooting for missing adapters, missing adapter, unauthenticated adapter, timeout, and crash scenarios.',
+        'Update docs/plugins.md with a short adapters/plugin-mode note and avoid duplicating the full agent-reference explanation.',
         'Do not modify runtime code, tests, package metadata, generated docs, or unrelated docs.',
         'Return JSON: { changedFiles: string[], summary: string, notableDecisions: string[], unresolvedItems: string[] }.',
         '',
@@ -245,9 +245,9 @@ export const qualityGateTask = defineTask('issue-607.quality-gates', (args, task
       task: 'Verify the docs update is correct, scoped, and mechanically clean.',
       instructions: [
         'Inspect the final diff for only these files: ' + args.targetFiles.join(', ') + '.',
-        'Verify all issue #607 deliverables are covered: external agent task section, external dispatch command-surface notes, plugin-mode agent-mux note, internal vs external examples, fallbackToInternal, error scenarios, and troubleshooting.',
+        'Verify all issue #607 deliverables are covered: external agent task section, external dispatch command-surface notes, plugin-mode adapters note, internal vs external examples, fallbackToInternal, error scenarios, and troubleshooting.',
         'Run the smallest practical docs checks for this change. Prefer npm run docs:lint and npm run docs:snippets; run broader docs:qa if failures suggest generated or link issues.',
-        'Run targeted grep checks for external agent, agent-mux, fallbackToInternal, adapter, amuxBridge or agent.external across the target docs.',
+        'Run targeted grep checks for external agent, adapters, fallbackToInternal, adapter, amuxBridge or agent.external across the target docs.',
         'Confirm no runtime source files were modified.',
         'Return JSON: { passed: boolean, commandsRun: array, coverage: object, failures: array, changedFiles: array }.',
         '',

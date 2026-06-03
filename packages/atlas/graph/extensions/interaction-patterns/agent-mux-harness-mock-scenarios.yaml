@@ -1,5 +1,5 @@
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-harness-mock-interactive-yolo
+id: interaction-primitive:adapters-harness-mock-interactive-yolo
 attributes:
   displayName: "harness-mock interactive:yolo"
   kind: mock-scenario
@@ -12,7 +12,7 @@ attributes:
     (mode='yolo'; INTERACTION_SCENARIOS.yolo).
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-harness-mock-interactive-prompt
+id: interaction-primitive:adapters-harness-mock-interactive-prompt
 attributes:
   displayName: "harness-mock interactive:prompt"
   kind: mock-scenario
@@ -25,7 +25,7 @@ attributes:
     (mode='prompt'; INTERACTION_SCENARIOS.prompt).
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-harness-mock-interactive-deny
+id: interaction-primitive:adapters-harness-mock-interactive-deny
 attributes:
   displayName: "harness-mock interactive:deny"
   kind: mock-scenario
@@ -38,7 +38,7 @@ attributes:
     (mode='deny'; INTERACTION_SCENARIOS.deny).
 ---
 nodeKind: InteractionPrimitive
-id: interaction-primitive:agent-mux-harness-mock-interactive-timeout
+id: interaction-primitive:adapters-harness-mock-interactive-timeout
 attributes:
   displayName: "harness-mock interactive:timeout"
   kind: mock-scenario

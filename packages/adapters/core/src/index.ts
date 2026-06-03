@@ -1,7 +1,7 @@
 /**
  * @a5c-ai/comm-adapter
  *
- * Core runtime, types, and utilities for agent-mux.
+ * Core runtime, types, and utilities for adapters.
  * Runtime deps: @a5c-ai/atlas/catalog and @a5c-ai/adapters-observability.
  */
 

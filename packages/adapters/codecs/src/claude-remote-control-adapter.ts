@@ -451,7 +451,7 @@ export class ClaudeRemoteControlAdapter extends BaseProgrammaticAdapter {
             ...options.env,
             CI: '1',
           };
-          const defaultName = `agent-mux ${path.basename(cwd) || 'session'}`;
+          const defaultName = `adapters ${path.basename(cwd) || 'session'}`;
           const args = [
             'remote-control',
             '--spawn',

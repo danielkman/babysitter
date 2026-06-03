@@ -1,7 +1,7 @@
 /**
  * Types for the harness mock/simulator.
  *
- * A "harness" is a CLI tool (claude-code, codex, etc.) that agent-mux
+ * A "harness" is a CLI tool (claude-code, codex, etc.) that adapters
  * invokes as a subprocess. This package simulates harness behavior for
  * testing without requiring the real CLI tools to be installed.
  */
@@ -145,9 +145,9 @@ export interface StdinInteraction {
 // Event simulation
 // ---------------------------------------------------------------------------
 
-/** A simulated agent event (matching the agent-mux event schema). */
+/** A simulated agent event (matching the adapters event schema). */
 export interface MockEvent {
-  /** Event type matching the agent-mux event taxonomy. */
+  /** Event type matching the adapters event taxonomy. */
   type: string;
 
   /** Delay before emitting this event (ms, relative to previous). */

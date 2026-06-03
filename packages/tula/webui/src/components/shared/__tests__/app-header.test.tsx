@@ -21,7 +21,7 @@ vi.mock("@a5c-ai/compendium", () => ({
   cx: (...args: unknown[]) => args.filter(Boolean).join(" "),
 }));
 
-vi.mock("@/components/agent-mux/gateway-provider", () => ({
+vi.mock("@/components/adapters/gateway-provider", () => ({
   useGatewayAuth: () => ({
     isAuthenticated: false,
   }),

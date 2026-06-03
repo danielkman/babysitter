@@ -3,7 +3,7 @@
   "version": "5.0.0",
   "type": "module",
   "license": "MIT",
-  "description": "Mock harness simulator for testing agent-mux adapters — simulates claude-code, codex, and other CLI harnesses",
+  "description": "Mock harness simulator for testing adapters adapters — simulates claude-code, codex, and other CLI harnesses",
   "author": "a5c-ai",
   "homepage": "https://github.com/a5c-ai/babysitter/tree/main/packages/adapters/harness-mock#readme",
   "repository": {
@@ -15,7 +15,7 @@
     "url": "https://github.com/a5c-ai/babysitter/issues"
   },
   "keywords": [
-    "agent-mux",
+    "adapters",
     "mock",
     "harness",
     "testing",
@@ -42,7 +42,7 @@
     "LICENSE"
   ],
   "bin": {
-    "agent-mux-harness-mock": "./dist/bin/agent-mux-harness-mock.js",
+    "adapters-harness-mock": "./dist/bin/adapters-harness-mock.js",
     "mock-harness": "./dist/bin/mock-harness.js"
   },
   "publishConfig": {
@@ -65,7 +65,7 @@
       "L5"
     ],
     "muxes": [
-      "agent-mux"
+      "adapters"
     ]
   }
 }

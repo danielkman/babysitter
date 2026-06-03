@@ -222,7 +222,7 @@ describe('verifyAgentMuxCoreRelease', () => {
           manifest: baseManifest,
           packEntries: basePackEntries,
         })
-      ).toThrow(/agent-mux-comm\/automation/);
+      ).toThrow(/adapters-comm\/automation/);
     });
   });
 });

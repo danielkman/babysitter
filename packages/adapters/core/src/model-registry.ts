@@ -287,6 +287,6 @@ const DEFAULT_MODEL_METADATA: Record<string, Pick<ModelCapabilities, 'provider' 
   pi: { provider: 'configurable', protocol: 'chat', deployment: 'hybrid', supportsLocalModels: true },
   'pi-sdk': { provider: 'configurable', protocol: 'chat', deployment: 'hybrid', supportsLocalModels: true },
   qwen: { provider: 'alibaba', protocol: 'chat', deployment: 'hosted', supportsLocalModels: false },
-  'agent-mux-remote': { provider: 'delegated', protocol: 'custom', deployment: 'gateway', supportsLocalModels: false },
+  'adapters-remote': { provider: 'delegated', protocol: 'custom', deployment: 'gateway', supportsLocalModels: false },
   fallback: { provider: 'unknown', protocol: 'custom', deployment: 'hosted', supportsLocalModels: false },
 };

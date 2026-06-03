@@ -1,6 +1,6 @@
 /**
  * @process reference-parity-research
- * @description Research external adapter references and produce parity/gap analysis vs agent-mux.
+ * @description Research external adapter references and produce parity/gap analysis vs adapters.
  *
  * Status: INITIAL PASS COMPLETE — see docs/16-reference-comparison.md.
  * This process re-runs the analysis deeply, file-by-file, for each reference.

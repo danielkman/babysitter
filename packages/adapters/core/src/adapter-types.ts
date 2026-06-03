@@ -1,7 +1,7 @@
 /**
  * Multi-type adapter architecture interfaces.
  *
- * Extends agent-mux to support subprocess, remote (HTTP/WebSocket), and
+ * Extends adapters to support subprocess, remote (HTTP/WebSocket), and
  * programmatic (SDK) adapter types beyond the original subprocess-only model.
  *
  * @see ../../../docs/18-multi-adapter-architecture.md
@@ -73,7 +73,7 @@ export interface BaseAgentAdapterInterface {
 import type { AgentAdapter as LegacyAgentAdapter } from './adapter.js';
 
 /**
- * Subprocess-based adapter (traditional agent-mux model).
+ * Subprocess-based adapter (traditional adapters model).
  * Spawns CLI process and parses line-based output.
  */
 export interface SubprocessAdapter extends LegacyAgentAdapter {

@@ -30,8 +30,8 @@ These workspaces ship public packages or release-facing operational behavior. Th
 | `packages/extension-mux` | Published plugin compiler/runtime package | `.github/workflows/ci.yml` job `test`, plus `publish.yml` and `publish-packages-from-tag.yml` |
 | `packages/observer-dashboard` | Published observer dashboard package | `.github/workflows/ci.yml` job `observer-dashboard`, plus `publish.yml` and `publish-packages-from-tag.yml` |
 | `packages/adapters/hooks/*` | Published hooks-mux packages | `.github/workflows/ci.yml` job `test`, plus `publish.yml` and `publish-packages-from-tag.yml` |
-| `packages/adapters/*` | Published agent-mux packages | `.github/workflows/ci.yml` job `test`, plus `publish.yml` and `publish-packages-from-tag.yml` |
-| `packages/transport-mux` | Published transport/proxy runtime package used by the agent-mux CLI/runtime chain | `.github/workflows/ci.yml` job `workspace-coverage` (`build` + `lint` + `typecheck` + `test` + `scorecard:migration`), plus `publish.yml` and `publish-packages-from-tag.yml` |
+| `packages/adapters/*` | Published adapters packages | `.github/workflows/ci.yml` job `test`, plus `publish.yml` and `publish-packages-from-tag.yml` |
+| `packages/transport-mux` | Published transport/proxy runtime package used by the adapters CLI/runtime chain | `.github/workflows/ci.yml` job `workspace-coverage` (`build` + `lint` + `typecheck` + `test` + `scorecard:migration`), plus `publish.yml` and `publish-packages-from-tag.yml` |
 | `packages/babysitter`, `plugins/babysitter-unified`, and generated/published harness plugin packages | Published metapackage, canonical plugin source, and harness plugin packages | `.github/workflows/ci.yml` job `test`, plus `publish.yml` and `publish-packages-from-tag.yml` |
 
 ## Public advanced/runtime packages
@@ -42,7 +42,7 @@ These packages are publicly installable, but their canonical docs live primarily
 | --- | --- | --- |
 | `packages/tula/platform` | Public runtime CLI for headless/orchestrated/operator workflows; not the default first-stop end-user entrypoint | `.github/workflows/ci.yml` job `test`, plus `publish.yml` and `publish-packages-from-tag.yml` runtime build/test validation |
 | `packages/tula/core` | Public advanced/runtime dependency package consumed by `@a5c-ai/tula-platform` and runtime orchestration flows | `.github/workflows/ci.yml` job `test`, plus `publish.yml` and `publish-packages-from-tag.yml` |
-| `packages/atlas` (`./catalog` export) | Public graph/evidence catalog surface consumed by SDK, agent-mux, hooks-mux, plugin compiler, and catalog-adjacent tooling | `.github/workflows/ci.yml` job `test` (`npm run build --workspace=@a5c-ai/atlas` and `npm run test:atlas-catalog-contracts`), plus `publish.yml` and `publish-packages-from-tag.yml` |
+| `packages/atlas` (`./catalog` export) | Public graph/evidence catalog surface consumed by SDK, adapters, hooks-mux, plugin compiler, and catalog-adjacent tooling | `.github/workflows/ci.yml` job `test` (`npm run build --workspace=@a5c-ai/atlas` and `npm run test:atlas-catalog-contracts`), plus `publish.yml` and `publish-packages-from-tag.yml` |
 
 ## Internal-only active workspaces
 

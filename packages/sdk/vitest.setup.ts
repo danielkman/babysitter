@@ -2,7 +2,7 @@
  * Global vitest setup for @a5c-ai/babysitter-sdk.
  *
  * Injects a mock @a5c-ai/adapters module into agentMuxMetadata.ts.
- * agent-mux is ESM-only and cannot be require()'d in vitest's CJS
+ * adapters is ESM-only and cannot be require()'d in vitest's CJS
  * test resolution, so we provide matching adapter data directly.
  */
 import { beforeAll, afterAll } from "vitest";

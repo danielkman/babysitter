@@ -34,7 +34,7 @@
   },
   "references": {
     "issue": "https://github.com/a5c-ai/babysitter/issues/618",
-    "designDoc": "docs/agent-mux-babysitter-integrations/plugin-mode.md",
+    "designDoc": "docs/adapters-babysitter-integrations/plugin-mode.md",
     "relatedIssues": [
       593,
       590

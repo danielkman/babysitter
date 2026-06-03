@@ -26,16 +26,16 @@ SDK journals resolution → next iteration
 
 ## Gaps
 
-### 1. No agent-mux dispatch from plugin mode
+### 1. No adapters dispatch from plugin mode
 
 **Current:** When babysitter runs as a plugin inside claude-code, it can only delegate effects to claude-code itself. It cannot ask codex or gemini-cli to do something.
 
-**Needed:** Process definitions running in plugin mode should be able to create `external: true` agent tasks that dispatch through agent-mux, just like the standalone tula path.
+**Needed:** Process definitions running in plugin mode should be able to create `external: true` agent tasks that dispatch through adapters, just like the standalone tula path.
 
 **Implementation:**
 - The stop-hook handler must distinguish between "host-resolvable" effects and "external agent" effects
 - Host-resolvable effects: file edits, bash, breakpoints → delegated to host agent
-- External agent effects: `kind: "agent", agent.external: true` → resolved by babysitter itself via agent-mux
+- External agent effects: `kind: "agent", agent.external: true` → resolved by babysitter itself via adapters
 - The SDK's `stopHookHandler.ts` needs a branch: if effect is external-agent, resolve it internally before returning control to host
 
 **Files affected:**
@@ -114,7 +114,7 @@ Process running in claude-code plugin:
   Stop-hook handler detects external effect
     ↓
   Instead of delegating to host, resolves internally:
-    - Checks agent-mux availability
+    - Checks adapters availability
     - Calls amuxBridge.invokeViaAgentMux("codex", { prompt, model })
     - Journals result + cost
     ↓
@@ -123,7 +123,7 @@ Process running in claude-code plugin:
   Host sees only remaining host-resolvable effects
 ```
 
-This means external dispatch is **transparent to the host agent** — the host never needs to know about agent-mux.
+This means external dispatch is **transparent to the host agent** — the host never needs to know about adapters.
 
 ## Test Strategy
 

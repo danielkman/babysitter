@@ -13,8 +13,8 @@ import { GitHubIssuesBackend } from "./github-issues.js";
 import { ExternalTrackerBackend } from "./external-tracker.js";
 import { ServerBreakpointBackend } from "./server.js";
 import type { ServerBreakpointBackendConfig } from "./server.js";
-import { AgentMuxResponderBackend } from "./agent-mux.js";
-import type { AgentMuxResponderBackendConfig } from "./agent-mux.js";
+import { AgentMuxResponderBackend } from "./adapters.js";
+import type { AgentMuxResponderBackendConfig } from "./adapters.js";
 export { ServerBreakpointBackend, ServerBackendError } from "./server.js";
 export type { ServerBreakpointBackendConfig } from "./server.js";
 export {
@@ -37,14 +37,14 @@ export type {
 export {
   AgentMuxResponderBackend,
   AgentMuxResponderBackendError,
-} from "./agent-mux.js";
+} from "./adapters.js";
 export type {
   AgentMuxClientLike,
   AgentMuxResponderBackendConfig,
   AgentMuxRunHandleLike,
   AgentMuxRunOptions,
   AgentMuxRunResult,
-} from "./agent-mux.js";
+} from "./adapters.js";
 
 /**
  * Factory function type for creating backends from config.
@@ -71,8 +71,8 @@ backendFactories.set("external-tracker", (config) => {
   return new ExternalTrackerBackend(config as ExternalTrackerBackendConfig);
 });
 
-// Register the agent-mux responder backend
-backendFactories.set("agent-mux", (config) => {
+// Register the adapters responder backend
+backendFactories.set("adapters", (config) => {
   return new AgentMuxResponderBackend(config as unknown as AgentMuxResponderBackendConfig & AgentMuxBackendConfig);
 });
 

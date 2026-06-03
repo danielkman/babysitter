@@ -25,9 +25,9 @@ const reuseAuditTask = defineTask(
   async ({ issueContext, targetFiles }) => ({
     kind: 'agent',
     title: 'Reuse audit for kanban exhaustiveness work',
-    labels: ['issue-586', 'agent-mux', 'reuse-audit', 'phase:research'],
+    labels: ['issue-586', 'adapters', 'reuse-audit', 'phase:research'],
     agent: {
-      name: 'agent-mux-reuse-auditor',
+      name: 'adapters-reuse-auditor',
       prompt: {
         role: 'senior TypeScript maintainer',
         task: 'Run Phase 0 reuse audit before implementation planning continues.',
@@ -54,11 +54,11 @@ const traceKanbanPathTask = defineTask(
   async ({ issueContext, reuseAudit, targetFiles, testFiles }) => ({
     kind: 'agent',
     title: 'Trace kanban status and workflow-state paths',
-    labels: ['issue-586', 'agent-mux', 'kanban', 'phase:research'],
+    labels: ['issue-586', 'adapters', 'kanban', 'phase:research'],
     agent: {
-      name: 'agent-mux-kanban-researcher',
+      name: 'adapters-kanban-researcher',
       prompt: {
-        role: 'senior agent-mux engineer',
+        role: 'senior adapters engineer',
         task: 'Trace the live kanban status/workflow-state call paths and identify the narrow change surface.',
         instructions: [
           'Use the issue context as the acceptance spec.',
@@ -90,9 +90,9 @@ const authorRegressionTestsTask = defineTask(
   async ({ issueContext, research, testFiles }) => ({
     kind: 'agent',
     title: 'Author kanban exhaustiveness regression tests',
-    labels: ['issue-586', 'agent-mux', 'tdd', 'phase:red'],
+    labels: ['issue-586', 'adapters', 'tdd', 'phase:red'],
     agent: {
-      name: 'agent-mux-kanban-test-author',
+      name: 'adapters-kanban-test-author',
       prompt: {
         role: 'senior TypeScript test engineer',
         task: 'Add focused tests that lock down kanban status/workflow-state mapping coverage before production edits.',
@@ -127,9 +127,9 @@ const implementExhaustivenessTask = defineTask(
   async ({ issueContext, research, regression, verificationFeedback }) => ({
     kind: 'agent',
     title: 'Implement kanban exhaustiveness checks',
-    labels: ['issue-586', 'agent-mux', 'implementation', 'phase:green'],
+    labels: ['issue-586', 'adapters', 'implementation', 'phase:green'],
     agent: {
-      name: 'agent-mux-kanban-implementer',
+      name: 'adapters-kanban-implementer',
       prompt: {
         role: 'senior TypeScript maintainer',
         task: 'Implement the narrow kanban exhaustiveness guardrails for issue #586.',
@@ -166,16 +166,16 @@ const verifyQualityGateTask = defineTask(
   async ({ issueContext, implementation, regression, qualityCommands, targetFiles, testFiles }) => ({
     kind: 'agent',
     title: 'Verify kanban exhaustiveness quality gates',
-    labels: ['issue-586', 'agent-mux', 'verification', 'phase:quality-gate'],
+    labels: ['issue-586', 'adapters', 'verification', 'phase:quality-gate'],
     agent: {
-      name: 'agent-mux-kanban-verifier',
+      name: 'adapters-kanban-verifier',
       prompt: {
         role: 'senior TypeScript verifier',
         task: 'Run and interpret the quality gates for the issue #586 implementation.',
         instructions: [
           'Run the listed commands from the repository root and report exact pass/fail status.',
           'Confirm the kanban tests pass.',
-          'Confirm the agent-mux core build/typecheck passes.',
+          'Confirm the adapters core build/typecheck passes.',
           'Inspect the final diff for accidental source changes outside the issue scope.',
           'Verify there is no broad default in resolveKanbanWorkflowState that silently routes unknown issue statuses to todo.',
           'Verify every KanbanIssueStatus and KanbanWorkflowState mapping site has an exhaustive guardrail.',
@@ -206,9 +206,9 @@ const reviewTask = defineTask(
   async ({ issueContext, reuseAudit, research, regression, implementation, qualityGate }) => ({
     kind: 'agent',
     title: 'Review kanban exhaustiveness implementation',
-    labels: ['issue-586', 'agent-mux', 'review', 'phase:review'],
+    labels: ['issue-586', 'adapters', 'review', 'phase:review'],
     agent: {
-      name: 'agent-mux-kanban-reviewer',
+      name: 'adapters-kanban-reviewer',
       prompt: {
         role: 'senior TypeScript code reviewer',
         task: 'Review the final changes for issue #586 against the issue spec and quality gate results.',
@@ -259,7 +259,7 @@ export async function process(inputs, ctx) {
   const qualityCommands = inputs?.qualityCommands ?? [
     'npm run test --workspace=@a5c-ai/agent-comm-mux -- packages/adapters/core/tests/kanban.test.ts',
     'npm run build --workspace=@a5c-ai/agent-comm-mux',
-    'npm run test:agent-mux',
+    'npm run test:adapters',
   ];
   const maxVerificationAttempts = inputs?.maxVerificationAttempts ?? 2;
 

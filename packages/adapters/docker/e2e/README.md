@@ -20,7 +20,7 @@ One service per adapter. Each runs `run <agent> --use-mock-harness
 | `mock-e2e-hermes`               | hermes             | Hermes AI CLI            |
 | `mock-e2e-pi`                   | pi                 | Inflection Pi CLI        |
 | `mock-e2e-omp`                  | omp                | OMP CLI                  |
-| `mock-e2e-agent-mux-remote`     | agent-mux-remote   | Remote agent-mux         |
+| `mock-e2e-adapters-remote`     | adapters-remote   | Remote adapters         |
 | `mock-e2e-droid`                | droid              | Factory Droid CLI        |
 | `mock-e2e-amp`                  | amp                | Sourcegraph Amp CLI      |
 | `mock-e2e-qwen`                 | qwen               | Qwen CLI                 |
@@ -53,7 +53,7 @@ One service per adapter whose real CLI is installable via npm.
 | `real-e2e-hermes`           | hermes             | `HERMES_API_KEY`          |
 | `real-e2e-pi`               | pi                 | `INFLECTION_API_KEY`      |
 | `real-e2e-omp`              | omp                | `OMP_API_KEY`             |
-| `real-e2e-agent-mux-remote` | agent-mux-remote   | `AGENT_MUX_REMOTE_URL`    |
+| `real-e2e-adapters-remote` | adapters-remote   | `AGENT_MUX_REMOTE_URL`    |
 | `real-e2e-droid`            | droid              | `DROID_API_KEY`           |
 | `real-e2e-amp`              | amp                | `SOURCEGRAPH_ACCESS_TOKEN`|
 | `real-e2e-qwen`             | qwen               | `QWEN_API_KEY`            |

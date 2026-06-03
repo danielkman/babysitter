@@ -84,7 +84,7 @@ Observer tooling experiments, SDK language porting analysis, cradle gap closure.
 
 ### Run Categories (2026-04-30 to 2026-05-06)
 
-**agent-mux webui convergence** (5 runs) — iterative compendium design kit migration with live gateway validation. Multi-batch approach, each run picking up where the last left off.
+**adapters webui convergence** (5 runs) — iterative compendium design kit migration with live gateway validation. Multi-batch approach, each run picking up where the last left off.
 
 **Release infrastructure** (4 runs) — release-artifact-reproducibility migration needed 4 attempts to converge. Publish tag fixes, version sync across external plugin repos.
 

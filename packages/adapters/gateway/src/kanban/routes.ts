@@ -331,7 +331,7 @@ async function approveBreakpointEffect(runId: string, effectId: string, answer: 
     value: {
       answer: answer.trim(),
       approvedAt: now,
-      approvedBy: 'agent-mux-webui',
+      approvedBy: 'adapters-webui',
     },
     startedAt: now,
     finishedAt: now,

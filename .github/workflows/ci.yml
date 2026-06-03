@@ -92,10 +92,10 @@ jobs:
           set -euo pipefail
           npm run test:architecture 2>&1 | tee artifacts/test-logs/architecture.log
 
-      - name: Build agent-mux-tasks
+      - name: Build adapters-tasks
         run: |
           set -euo pipefail
-          npm run build --workspace=@a5c-ai/tasks-adapter 2>&1 | tee artifacts/test-logs/agent-mux-tasks-build.log
+          npm run build --workspace=@a5c-ai/tasks-adapter 2>&1 | tee artifacts/test-logs/adapters-tasks-build.log
 
       - name: Build runtime graph
         run: |
@@ -107,15 +107,15 @@ jobs:
           set -euo pipefail
           npm run test:sdk 2>&1 | tee artifacts/test-logs/unit-tests.log
 
-      - name: Typecheck agent-mux-tasks
+      - name: Typecheck adapters-tasks
         run: |
           set -euo pipefail
-          npm run typecheck --workspace=@a5c-ai/tasks-adapter 2>&1 | tee artifacts/test-logs/agent-mux-tasks-typecheck.log
+          npm run typecheck --workspace=@a5c-ai/tasks-adapter 2>&1 | tee artifacts/test-logs/adapters-tasks-typecheck.log
 
-      - name: agent-mux-tasks tests
+      - name: adapters-tasks tests
         run: |
           set -euo pipefail
-          npm run test --workspace=@a5c-ai/tasks-adapter 2>&1 | tee artifacts/test-logs/agent-mux-tasks-tests.log
+          npm run test --workspace=@a5c-ai/tasks-adapter 2>&1 | tee artifacts/test-logs/adapters-tasks-tests.log
 
       - name: Build hooks-mux
         run: |
@@ -127,10 +127,10 @@ jobs:
           set -euo pipefail
           npm run test:hooks-mux 2>&1 | tee artifacts/test-logs/hooks-mux-tests.log
 
-      - name: Build agent-mux packages
+      - name: Build adapters packages
         run: |
           set -euo pipefail
-          npm run build:agent-mux 2>&1 | tee artifacts/test-logs/agent-mux-build.log
+          npm run build:adapters 2>&1 | tee artifacts/test-logs/adapters-build.log
 
       - name: Build Atlas packages
         run: |
@@ -157,10 +157,10 @@ jobs:
           set -euo pipefail
           npm run test:coverage --workspace=@a5c-ai/triggers-adapter 2>&1 | tee artifacts/test-logs/triggers-coverage.log
 
-      - name: agent-mux-tui release verification
+      - name: adapters-tui release verification
         run: |
           set -euo pipefail
-          npm run verify:release --workspace=@a5c-ai/tula-tui 2>&1 | tee artifacts/test-logs/agent-mux-tui-release.log
+          npm run verify:release --workspace=@a5c-ai/tula-tui 2>&1 | tee artifacts/test-logs/adapters-tui-release.log
 
       - name: agent-comm-mux release verification
         run: |
@@ -185,22 +185,22 @@ jobs:
       - name: Install Playwright Chromium
         run: |
           set -euo pipefail
-          npx playwright install --with-deps chromium 2>&1 | tee artifacts/test-logs/agent-mux-webui-playwright-install.log
+          npx playwright install --with-deps chromium 2>&1 | tee artifacts/test-logs/adapters-webui-playwright-install.log
 
-      - name: agent-mux webui browser e2e
+      - name: adapters webui browser e2e
         run: |
           set -euo pipefail
-          npm run test:e2e --workspace=@a5c-ai/tula-webui 2>&1 | tee artifacts/test-logs/agent-mux-webui-browser-e2e.log
+          npm run test:e2e --workspace=@a5c-ai/tula-webui 2>&1 | tee artifacts/test-logs/adapters-webui-browser-e2e.log
 
-      - name: Build agent-mux-extensions
+      - name: Build adapters-extensions
         run: |
           set -euo pipefail
-          npm run build --workspace=@a5c-ai/extensions-adapter 2>&1 | tee artifacts/test-logs/agent-mux-extensions-build.log
+          npm run build --workspace=@a5c-ai/extensions-adapter 2>&1 | tee artifacts/test-logs/adapters-extensions-build.log
 
-      - name: agent-mux-extensions tests
+      - name: adapters-extensions tests
         run: |
           set -euo pipefail
-          npm run test --workspace=@a5c-ai/extensions-adapter 2>&1 | tee artifacts/test-logs/agent-mux-extensions-tests.log
+          npm run test --workspace=@a5c-ai/extensions-adapter 2>&1 | tee artifacts/test-logs/adapters-extensions-tests.log
 
       - name: Build babysitter-harness
         run: |
@@ -236,7 +236,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: agent-mux-webui-playwright-artifacts
+          name: adapters-webui-playwright-artifacts
           path: |
             packages/adapters/webui/.tmp/playwright-report
             packages/adapters/webui/.tmp/playwright-test-results

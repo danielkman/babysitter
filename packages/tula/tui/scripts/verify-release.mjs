@@ -12,7 +12,7 @@ const REQUIRED_BUILD_PATHS = [
   'dist/index.d.ts',
   'dist/plugin.js',
   'dist/plugin.d.ts',
-  'dist/bin/agent-mux-tui.js',
+  'dist/bin/adapters-tui.js',
   'dist/bin/adapters-tui.js',
 ];
 
@@ -23,7 +23,7 @@ const REQUIRED_PACKED_PATHS = [
   'dist/index.d.ts',
   'dist/plugin.js',
   'dist/plugin.d.ts',
-  'dist/bin/agent-mux-tui.js',
+  'dist/bin/adapters-tui.js',
   'dist/bin/adapters-tui.js',
   'specs/kanban-workspaces-spec.md',
   'specs/kanban-workspaces-subtasks.md',
@@ -64,12 +64,12 @@ export function verifyAgentMuxTuiRelease({ packageRoot, manifest, packEntries })
     'packages/adapters/tui/package.json files must keep shipping specs/'
   );
   expect(
-    scripts.build === 'cd ../../.. && node scripts/agent-mux-build.cjs build packages/adapters/tui',
-    'packages/adapters/tui/package.json build must stay routed through scripts/agent-mux-build.cjs'
+    scripts.build === 'cd ../../.. && node scripts/adapters-build.cjs build packages/adapters/tui',
+    'packages/adapters/tui/package.json build must stay routed through scripts/adapters-build.cjs'
   );
   expect(
-    scripts.test === 'cd ../../.. && node scripts/agent-mux-build.cjs test packages/adapters/tui',
-    'packages/adapters/tui/package.json test must stay routed through scripts/agent-mux-build.cjs'
+    scripts.test === 'cd ../../.. && node scripts/adapters-build.cjs test packages/adapters/tui',
+    'packages/adapters/tui/package.json test must stay routed through scripts/adapters-build.cjs'
   );
   expect(
     scripts['verify:release'] === 'node ./scripts/verify-release.mjs',
@@ -80,8 +80,8 @@ export function verifyAgentMuxTuiRelease({ packageRoot, manifest, packEntries })
     'packages/adapters/tui/package.json prepublishOnly must build the package and run verify:release'
   );
   expect(
-    manifest.bin?.['agent-mux-tui'] === './dist/bin/agent-mux-tui.js',
-    'packages/adapters/tui/package.json bin.agent-mux-tui must point to ./dist/bin/agent-mux-tui.js'
+    manifest.bin?.['adapters-tui'] === './dist/bin/adapters-tui.js',
+    'packages/adapters/tui/package.json bin.adapters-tui must point to ./dist/bin/adapters-tui.js'
   );
   expect(
     manifest.bin?.['adapters-tui'] === './dist/bin/adapters-tui.js',
@@ -135,7 +135,7 @@ function main() {
     packEntries,
   });
 
-  console.log('agent-mux-tui release verification passed');
+  console.log('adapters-tui release verification passed');
 }
 
 if (process.argv[1] === __filename) {

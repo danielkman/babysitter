@@ -74,7 +74,7 @@ export interface AgentMuxClientLike {
 }
 
 export interface AgentMuxResponderBackendConfig {
-  type?: "agent-mux";
+  type?: "adapters";
   agent?: string;
   adapter?: string;
   model?: string;
@@ -101,7 +101,7 @@ export class AgentMuxResponderBackendError extends Error {
 }
 
 export class AgentMuxResponderBackend implements BreakpointBackend {
-  readonly name = "agent-mux";
+  readonly name = "adapters";
 
   private readonly breakpoints = new Map<string, Breakpoint>();
   private readonly client?: AgentMuxClientLike;
@@ -135,7 +135,7 @@ export class AgentMuxResponderBackend implements BreakpointBackend {
       ?? params.routing.targetResponders[0]
       ?? this.config.adapter
       ?? this.config.agent
-      ?? "agent-mux";
+      ?? "adapters";
 
     const runOptions: AgentMuxRunOptions = {
       agent,
@@ -212,7 +212,7 @@ export class AgentMuxResponderBackend implements BreakpointBackend {
   }> {
     const started = Date.now();
     if (options.signal?.aborted) {
-      throw new AgentMuxResponderBackendError("ABORTED", "Waiting for agent-mux answer was aborted.");
+      throw new AgentMuxResponderBackendError("ABORTED", "Waiting for adapters answer was aborted.");
     }
 
     const breakpoint = await this.getBreakpoint(id);
@@ -282,7 +282,7 @@ export class AgentMuxResponderBackend implements BreakpointBackend {
   }
 
   async listResponders(): Promise<ResponderProfile[]> {
-    const agent = this.config.agent ?? this.config.adapter ?? "agent-mux";
+    const agent = this.config.agent ?? this.config.adapter ?? "adapters";
     return [
       {
         id: agent,
@@ -291,7 +291,7 @@ export class AgentMuxResponderBackend implements BreakpointBackend {
         title: "Agent mux responder",
         capabilities: ["text", "code", "automation", agent],
         domains: [],
-        tags: ["agent-mux", agent],
+        tags: ["adapters", agent],
         availability: true,
         responseTimeSla: (this.config.timeoutMs ?? 30_000) / 1000,
         adapter: this.config.adapter,

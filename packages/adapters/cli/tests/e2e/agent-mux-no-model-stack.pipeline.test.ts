@@ -7,7 +7,7 @@ import { startTransportMuxRuntime, type CompletionEngine, type CompletionRequest
 
 interface MatrixLane {
   agent: string;
-  runtime: 'agent-mux-mocks' | 'real-agent';
+  runtime: 'adapters-mocks' | 'real-agent';
   hooks: 'hooks-mux' | 'none';
 }
 
@@ -49,7 +49,7 @@ const HOOK_PAYLOADS: Record<string, { hookType: string; nativeEvent: string; exp
   },
 };
 
-describe('agent-mux no-model stack matrix', () => {
+describe('adapters no-model stack matrix', () => {
   const previousCwd = process.cwd();
   const previousEnv = captureEnv([
     'HOME', 'USERPROFILE', 'XDG_STATE_HOME', 'PATH', 'Path', 'AGENT_MUX_PROFILE', 'AGENT_MUX_MOCK_HARNESS_BIN',
@@ -106,7 +106,7 @@ describe('agent-mux no-model stack matrix', () => {
     expect(installJson.ok).toBe(true);
     expect(installJson.data).toMatchObject({ agent: lane.agent, dryRun: true });
 
-    if (lane.runtime === 'agent-mux-mocks') {
+    if (lane.runtime === 'adapters-mocks') {
       process.env['AGENT_MUX_MOCK_HARNESS_BIN'] = mockHarnessPath;
       const runOutput = await callMain([
         'run', lane.agent,
@@ -156,7 +156,7 @@ function readMatrixLane(): MatrixLane {
   if (!['claude', 'codex', 'pi', 'gemini'].includes(agent)) {
     throw new Error(`Unsupported NO_MODEL_STACK_AGENT: ${agent}`);
   }
-  if (runtime !== 'agent-mux-mocks' && runtime !== 'real-agent') {
+  if (runtime !== 'adapters-mocks' && runtime !== 'real-agent') {
     throw new Error(`Unsupported NO_MODEL_STACK_RUNTIME: ${runtime}`);
   }
   if (hooks !== 'hooks-mux' && hooks !== 'none') {
@@ -197,7 +197,7 @@ async function writeProviderProfile(agent: string, runtimeUrl: string): Promise<
 }
 
 async function writeRunProfile(agent: string): Promise<void> {
-  const profilePath = path.join(cwd, '.agent-mux', 'profiles', `${PROFILE_NAME}.json`);
+  const profilePath = path.join(cwd, '.adapters', 'profiles', `${PROFILE_NAME}.json`);
   await fs.mkdir(path.dirname(profilePath), { recursive: true });
   await fs.writeFile(profilePath, JSON.stringify({ agent, model: 'mock-model', outputFormat: 'jsonl', timeout: 15_000 }, null, 2), 'utf8');
 }

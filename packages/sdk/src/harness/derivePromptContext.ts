@@ -1,8 +1,8 @@
 /**
- * Derive prompt context and adapter config from agent-mux adapter capabilities.
+ * Derive prompt context and adapter config from adapters adapter capabilities.
  *
  * Replaces per-harness prompt context factories in hooks/promptContexts.ts
- * with a single derivation function that reads capabilities from agent-mux.
+ * with a single derivation function that reads capabilities from adapters.
  */
 
 import type { AmuxAdapterMetadata } from "./agentMuxMetadata";
@@ -14,7 +14,7 @@ import { HarnessCapability as Cap } from "./types";
 // ---------------------------------------------------------------------------
 
 /**
- * Derive the prompt capabilities list from agent-mux metadata.
+ * Derive the prompt capabilities list from adapters metadata.
  */
 export function derivePromptCapabilities(metadata: AmuxAdapterMetadata): string[] {
   const caps: string[] = [];
@@ -50,7 +50,7 @@ export function derivePromptCapabilities(metadata: AmuxAdapterMetadata): string[
 // ---------------------------------------------------------------------------
 
 /**
- * Derive babysitter HarnessCapability[] from agent-mux capabilities.
+ * Derive babysitter HarnessCapability[] from adapters capabilities.
  */
 export function deriveHarnessCapabilities(metadata: AmuxAdapterMetadata): Cap[] {
   const caps: Cap[] = [];
@@ -101,7 +101,7 @@ export function deriveActivationEnvVars(
 // ---------------------------------------------------------------------------
 
 /**
- * Options for deriving an AdapterConfig from agent-mux metadata.
+ * Options for deriving an AdapterConfig from adapters metadata.
  * Allows per-adapter overrides for fields that cannot be derived.
  */
 export interface DeriveConfigOptions {
@@ -150,7 +150,7 @@ export interface DeriveConfigOptions {
 }
 
 /**
- * Derive a full AdapterConfig from agent-mux metadata + per-adapter overrides.
+ * Derive a full AdapterConfig from adapters metadata + per-adapter overrides.
  */
 export function deriveAdapterConfig(
   metadata: AmuxAdapterMetadata,

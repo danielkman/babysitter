@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "AgentMux Android TV",
-    "slug": "agent-mux-android-tv",
+    "slug": "adapters-android-tv",
     "scheme": "agentmux-android-tv",
     "version": "0.0.0",
     "orientation": "landscape",

@@ -19,8 +19,8 @@ describe("issue #606 mocked tasks-mux external agent e2e", () => {
   it("dispatches a process-defined agent responder task through mock tasks-mux and returns the answer", async () => {
     taskMuxMock.routeTask.mockReturnValue({
       responderType: "agent",
-      route: "agent-mux",
-      backend: "agent-mux",
+      route: "adapters",
+      backend: "adapters",
       responder: { id: "codex", adapter: "codex", model: "gpt-5.4" },
     });
     taskMuxMock.submitBreakpoint.mockResolvedValue({

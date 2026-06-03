@@ -1,5 +1,5 @@
 /**
- * @process agent-mux-interactive-mode-support
+ * @process adapters-interactive-mode-support
  * @description Spec-driven repair and verification loop for interactive harness mode, including ANSI transcript fallback when structured JSON is unavailable.
  */
 
@@ -234,8 +234,8 @@ const adversarialReviewTask = defineTask('adversarial-review', (args, taskCtx) =
 }));
 
 export async function process(inputs, ctx) {
-  const repoRoot = inputs.repoRoot ?? 'C:/work/agent-mux';
-  const todoFile = inputs.todoFile ?? 'C:/work/agent-mux/todos.md';
+  const repoRoot = inputs.repoRoot ?? 'C:/work/adapters';
+  const todoFile = inputs.todoFile ?? 'C:/work/adapters/todos.md';
   const todoLine = inputs.todoLine ?? 40;
   const targetHarnesses = inputs.targetHarnesses ?? ['codex', 'claude', 'claude-code', 'opencode'];
   const maxReviewLoops = inputs.maxReviewLoops ?? 3;

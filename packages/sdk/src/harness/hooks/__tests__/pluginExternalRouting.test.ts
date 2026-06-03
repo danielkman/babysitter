@@ -27,7 +27,7 @@ describe("plugin tasks-mux external routing classification", () => {
     `) as { responderType: string; route: string; delegable: boolean };
 
     expect(result.responderType).toBe("agent");
-    expect(result.route).toBe("agent-mux");
+    expect(result.route).toBe("adapters");
     expect(result.delegable).toBe(false);
   });
 

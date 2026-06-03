@@ -4,7 +4,7 @@ import { resolveSessionIdWithMarker } from "@a5c-ai/babysitter-sdk";
  * Mapping of harness identifiers to their native session environment variables.
  *
  * Only Pi-specific env vars are kept here. External harness session discovery
- * is handled by agent-mux session management.
+ * is handled by adapters session management.
  */
 export const HARNESS_ENV_VARS: Record<string, string[]> = {
   "pi": ["PI_SESSION_ID"],
@@ -22,7 +22,7 @@ export const HARNESS_ENV_VARS: Record<string, string[]> = {
  *   2. AGENT_SESSION_ID
  *   3. PID-scoped marker for the given harness (fallback only)
  *
- * External harness session discovery is delegated to agent-mux.
+ * External harness session discovery is delegated to adapters.
  */
 export function resolveAmbientSessionId(harness?: string): string | undefined {
   if (!harness) {

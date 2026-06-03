@@ -53,4 +53,4 @@ edges:
   realizes:
     - target: layer:3-transport
   bridged_by:
-    - transport-proxy:agent-mux-proxy
+    - transport-proxy:adapters-proxy

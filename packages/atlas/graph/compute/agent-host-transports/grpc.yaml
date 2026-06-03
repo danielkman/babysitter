@@ -25,4 +25,4 @@ attributes:
     None — gRPC is a structured RPC transport, not a terminal substrate.
 edges:
   used_by:
-    - agent-version:agent-mux-remote@current
+    - agent-version:adapters-remote@current

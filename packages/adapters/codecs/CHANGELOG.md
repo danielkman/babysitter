@@ -18,7 +18,7 @@
   - Fixed event parsing for OpenCode's JSON output format
   - Updated documentation to clarify distinction from deprecated project
 
-  This ensures agent-mux works with the actively maintained OpenCode implementation that has 142k+ GitHub stars.
+  This ensures adapters works with the actively maintained OpenCode implementation that has 142k+ GitHub stars.
 
 ### Patch Changes
 

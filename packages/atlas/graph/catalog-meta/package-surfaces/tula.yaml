@@ -15,7 +15,7 @@ attributes:
   publishedTo: npm
   versionPolicy: semver
   # Source: packages/tula/package.json (exports ./cli barrel + root barrel).
-  # Bin: tula. Composes agent-core, agent-runtime, agent-platform, agent-mux,
+  # Bin: tula. Composes agent-core, agent-runtime, agent-platform, adapters,
   # and babysitter-sdk into a single installable product.
 edges:
   references_path:

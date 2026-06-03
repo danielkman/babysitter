@@ -307,7 +307,7 @@ describe("OhMyPiAdapter", () => {
   });
 });
 
-// Pi install helpers removed -- installPiPlugin moved to agent-mux.
+// Pi install helpers removed -- installPiPlugin moved to adapters.
 
 // ---------------------------------------------------------------------------
 // NullAdapter

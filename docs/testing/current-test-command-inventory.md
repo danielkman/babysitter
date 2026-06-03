@@ -30,29 +30,29 @@ Status: Current. This inventory implements roadmap slice 0, "Inventory and namin
 | --- | --- | --- | --- | --- | --- | --- |
 | `@a5c-ai/atlas/catalog` | `test:atlas-catalog-contracts` | No-model | contract | Catalog/Atlas maintainers | `test-logs/atlas-catalog-contracts.log` | ci.yml test or package-local validation when catalog surface is touched |
 | `@a5c-ai/tula-core` | `test` | No-model | unit-or-integration | Runtime maintainers | `test-lo../core-test.log` | ci.yml packages-sdk/test; publish.yml validate_core |
-| `@a5c-ai/adapters` | `test` | No-model | unit-or-integration | Mux maintainers | `test-logs/agent-mux-test.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
-| `@a5c-ai/adapters-codecs` | `test` | No-model | unit-or-integration | Mux maintainers | `test-logs/agent-mux-adapters-test.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
-| `@a5c-ai/adapters-cli` | `test` | No-model | unit-or-integration | Mux maintainers | `test-logs/agent-mux-cli-test.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
+| `@a5c-ai/adapters` | `test` | No-model | unit-or-integration | Mux maintainers | `test-logs/adapters-test.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
+| `@a5c-ai/adapters-codecs` | `test` | No-model | unit-or-integration | Mux maintainers | `test-logs/adapters-adapters-test.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
+| `@a5c-ai/adapters-cli` | `test` | No-model | unit-or-integration | Mux maintainers | `test-logs/adapters-cli-test.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
 | `@a5c-ai/comm-adapter` | `prepublishOnly` | No-model release gate | release-gate | Mux maintainers | `release-logs/agent-comm-mux-prepublishonly.log` | publish.yml validate and publish gates |
 | `@a5c-ai/comm-adapter` | `test` | No-model | unit-or-integration | Mux maintainers | `test-logs/agent-comm-mux-test.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
 | `@a5c-ai/comm-adapter` | `verify:release` | No-model release gate | release-gate | Mux maintainers | `release-logs/agent-comm-mux-verify-release.log` | publish.yml validate and publish gates |
-| `@a5c-ai/adapters-gateway` | `test` | No-model | e2e | Mux maintainers | `e2e/agent-mux-gateway-test` | ci.yml test/workspace-coverage; publish.yml validate_mux |
-| `@a5c-ai/adapters-harness-mock` | `test` | No-model | unit-or-integration | Mux maintainers | `test-logs/agent-mux-harness-mock-test.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
-| `@a5c-ai/adapters-observability` | `test` | No-model | unit-or-integration | Mux maintainers | `test-logs/agent-mux-observability-test.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
-| `@a5c-ai/tula-tui` | `prepublishOnly` | No-model release gate | release-gate | Mux maintainers | `release-logs/agent-mux-tui-prepublishonly.log` | publish.yml validate and publish gates |
-| `@a5c-ai/tula-tui` | `test` | No-model | unit-or-integration | Mux maintainers | `test-logs/agent-mux-tui-test.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
-| `@a5c-ai/tula-tui` | `verify:release` | No-model release gate | release-gate | Mux maintainers | `release-logs/agent-mux-tui-verify-release.log` | publish.yml validate and publish gates |
-| `@a5c-ai/tula-ui` | `prepublishOnly` | No-model release gate | release-gate | Mux maintainers | `release-logs/agent-mux-ui-prepublishonly.log` | publish.yml validate and publish gates |
-| `@a5c-ai/tula-ui` | `test` | No-model | unit-or-integration | Mux maintainers | `test-logs/agent-mux-ui-test.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
-| `@a5c-ai/tula-ui` | `test:realtime` | No-model | release-gate | Mux maintainers | `release-logs/agent-mux-ui-test-realtime.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
-| `@a5c-ai/tula-ui` | `verify:release` | No-model release gate | release-gate | Mux maintainers | `release-logs/agent-mux-ui-verify-release.log` | publish.yml validate and publish gates |
-| `@a5c-ai/tula-webui` | `prepublishOnly` | No-model release gate | release-gate | Mux maintainers | `release-logs/agent-mux-webui-prepublishonly.log` | publish.yml validate and publish gates |
-| `@a5c-ai/tula-webui` | `test` | No-model | unit-or-integration | Mux maintainers | `test-logs/agent-mux-webui-test.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
-| `@a5c-ai/tula-webui` | `test:e2e` | No-model | e2e | Mux maintainers | `e2e/agent-mux-webui-test-e2e` | ci.yml test/workspace-coverage; publish.yml validate_mux |
-| `@a5c-ai/tula-webui` | `test:e2e:headed` | No-model | e2e | Mux maintainers | `e2e/agent-mux-webui-test-e2e-headed` | ci.yml test/workspace-coverage; publish.yml validate_mux |
-| `@a5c-ai/tula-webui` | `test:e2e:install` | No-model | e2e | Mux maintainers | `e2e/agent-mux-webui-test-e2e-install` | ci.yml test/workspace-coverage; publish.yml validate_mux |
-| `@a5c-ai/tula-webui` | `test:realtime` | No-model | release-gate | Mux maintainers | `release-logs/agent-mux-webui-test-realtime.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
-| `@a5c-ai/tula-webui` | `verify:release` | No-model release gate | release-gate | Mux maintainers | `release-logs/agent-mux-webui-verify-release.log` | publish.yml validate and publish gates |
+| `@a5c-ai/adapters-gateway` | `test` | No-model | e2e | Mux maintainers | `e2e/adapters-gateway-test` | ci.yml test/workspace-coverage; publish.yml validate_mux |
+| `@a5c-ai/adapters-harness-mock` | `test` | No-model | unit-or-integration | Mux maintainers | `test-logs/adapters-harness-mock-test.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
+| `@a5c-ai/adapters-observability` | `test` | No-model | unit-or-integration | Mux maintainers | `test-logs/adapters-observability-test.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
+| `@a5c-ai/tula-tui` | `prepublishOnly` | No-model release gate | release-gate | Mux maintainers | `release-logs/adapters-tui-prepublishonly.log` | publish.yml validate and publish gates |
+| `@a5c-ai/tula-tui` | `test` | No-model | unit-or-integration | Mux maintainers | `test-logs/adapters-tui-test.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
+| `@a5c-ai/tula-tui` | `verify:release` | No-model release gate | release-gate | Mux maintainers | `release-logs/adapters-tui-verify-release.log` | publish.yml validate and publish gates |
+| `@a5c-ai/tula-ui` | `prepublishOnly` | No-model release gate | release-gate | Mux maintainers | `release-logs/adapters-ui-prepublishonly.log` | publish.yml validate and publish gates |
+| `@a5c-ai/tula-ui` | `test` | No-model | unit-or-integration | Mux maintainers | `test-logs/adapters-ui-test.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
+| `@a5c-ai/tula-ui` | `test:realtime` | No-model | release-gate | Mux maintainers | `release-logs/adapters-ui-test-realtime.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
+| `@a5c-ai/tula-ui` | `verify:release` | No-model release gate | release-gate | Mux maintainers | `release-logs/adapters-ui-verify-release.log` | publish.yml validate and publish gates |
+| `@a5c-ai/tula-webui` | `prepublishOnly` | No-model release gate | release-gate | Mux maintainers | `release-logs/adapters-webui-prepublishonly.log` | publish.yml validate and publish gates |
+| `@a5c-ai/tula-webui` | `test` | No-model | unit-or-integration | Mux maintainers | `test-logs/adapters-webui-test.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
+| `@a5c-ai/tula-webui` | `test:e2e` | No-model | e2e | Mux maintainers | `e2e/adapters-webui-test-e2e` | ci.yml test/workspace-coverage; publish.yml validate_mux |
+| `@a5c-ai/tula-webui` | `test:e2e:headed` | No-model | e2e | Mux maintainers | `e2e/adapters-webui-test-e2e-headed` | ci.yml test/workspace-coverage; publish.yml validate_mux |
+| `@a5c-ai/tula-webui` | `test:e2e:install` | No-model | e2e | Mux maintainers | `e2e/adapters-webui-test-e2e-install` | ci.yml test/workspace-coverage; publish.yml validate_mux |
+| `@a5c-ai/tula-webui` | `test:realtime` | No-model | release-gate | Mux maintainers | `release-logs/adapters-webui-test-realtime.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
+| `@a5c-ai/tula-webui` | `verify:release` | No-model release gate | release-gate | Mux maintainers | `release-logs/adapters-webui-verify-release.log` | publish.yml validate and publish gates |
 | `@a5c-ai/extensions-adapter` | `lint` | No-model | static-check | Mux maintainers | `test-logs/extension-mux-lint.log` | ci.yml test or package-local validation when package is touched |
 | `@a5c-ai/extensions-adapter` | `test` | No-model | unit-or-integration | Mux maintainers | `test-logs/extension-mux-test.log` | ci.yml test or package-local validation when package is touched |
 | `@a5c-ai/atlas` | `verify:library-metadata` | No-model | contract | Catalog/Atlas maintainers | `test-logs/atlas-verify-library-metadata.log` | ci.yml packages-sdk/test; publish.yml validate_core |
@@ -131,9 +131,9 @@ Status: Current. This inventory implements roadmap slice 0, "Inventory and namin
 | `babysitter` | `docs:snippets` | No-model | static-check | CI maintainers | `test-logs/babysitter-docs-snippets.log` | ci.yml docs-quality; publish.yml deploy_docs_site; docs-only PRs |
 | `babysitter` | `lint:hooks-mux` | No-model | static-check | CI maintainers | `test-logs/babysitter-lint-hooks-mux.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
 | `babysitter` | `test:atlas-catalog-contracts` | No-model | contract | CI maintainers | `test-logs/babysitter-test-atlas-catalog-contracts.log` | ci.yml test or package-local validation when catalog surface is touched |
-| `babysitter` | `test:agent-mux` | No-model | unit-or-integration | CI maintainers | `test-logs/babysitter-test-agent-mux.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
-| `babysitter` | `test:e2e:agent-mux-hooks-mux` | No-model | integration | CI maintainers | `e2e/agent-mux-hooks-mux/*.jsonl` | publish.yml agent_mux_hooks_mux_e2e matrix for claude-code, codex, pi |
-| `babysitter` | `test:e2e:agent-mux-no-model-stack` | No-model | e2e | CI maintainers | `e2e/no-model-stack/*.jsonl`, `summary.json` | publish.yml no_model_mock_matrix across runtime, agent, and hook-mode dimensions |
+| `babysitter` | `test:adapters` | No-model | unit-or-integration | CI maintainers | `test-logs/babysitter-test-adapters.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
+| `babysitter` | `test:e2e:adapters-hooks-mux` | No-model | integration | CI maintainers | `e2e/adapters-hooks-mux/*.jsonl` | publish.yml agent_mux_hooks_mux_e2e matrix for claude-code, codex, pi |
+| `babysitter` | `test:e2e:adapters-no-model-stack` | No-model | e2e | CI maintainers | `e2e/no-model-stack/*.jsonl`, `summary.json` | publish.yml no_model_mock_matrix across runtime, agent, and hook-mode dimensions |
 | `babysitter` | `test:extension-mux` | No-model | unit-or-integration | CI maintainers | `test-logs/babysitter-test-extension-mux.log` | ci.yml test or package-local validation when package is touched |
 | `babysitter` | `test:architecture` | No-model | static-check | CI maintainers | `test-logs/babysitter-test-architecture.log` | ci.yml packages-sdk/test; publish.yml validate_core |
 | `babysitter` | `test:cloud` | No-model | unit-or-integration | CI maintainers | `test-logs/babysitter-test-cloud.log` | ci.yml test or package-local validation when package is touched |

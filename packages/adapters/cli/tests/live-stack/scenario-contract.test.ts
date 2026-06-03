@@ -13,10 +13,10 @@ import {
 } from './scenario-contract';
 
 describe('live stack scenario contract primitives', () => {
-  it('declares the primary no-mock agent-mux Claude Code transport flow', () => {
+  it('declares the primary no-mock adapters Claude Code transport flow', () => {
     const scenario = primaryLiveStackScenario();
 
-    expect(scenario.scenarioId).toBe('live.agent-mux.claude-code.foundry-openai.gpt-5.5');
+    expect(scenario.scenarioId).toBe('live.adapters.claude-code.foundry-openai.gpt-5.5');
     expect(scenario.model.agentMuxProvider).toBe('foundry');
     expect(scenario.lane).toBe('model-backed-live');
     expect(scenario.agent.integrationType).toBe('third-party-plugin');
@@ -65,8 +65,8 @@ describe('live stack scenario contract primitives', () => {
 
   it('accepts pipeline-selected vanilla install mode without Babysitter lifecycle trace requirements', () => {
     const scenario = liveStackScenarioFromEnv({
-      LIVE_STACK_SCENARIO_ID: 'live.agent-mux.gemini.foundry-openai.gpt-5.5',
-      LIVE_STACK_AGENT_PATH: 'agent-mux',
+      LIVE_STACK_SCENARIO_ID: 'live.adapters.gemini.foundry-openai.gpt-5.5',
+      LIVE_STACK_AGENT_PATH: 'adapters',
       LIVE_STACK_AGENT: 'gemini-cli',
       LIVE_STACK_AGENT_MUX_AGENT: 'gemini',
       LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin',
@@ -76,9 +76,9 @@ describe('live stack scenario contract primitives', () => {
       LIVE_STACK_MODEL: 'gpt-5.5',
       LIVE_STACK_CREDENTIAL_MODE: 'github-org-secrets-and-vars',
       LIVE_STACK_REQUIRED_ENV: 'AZURE_API_KEY,AGENT_MUX_API_BASE',
-      LIVE_STACK_LAYERS: 'agent-mux install,agent-mux invocation,transport-mux route,provider/model trace',
+      LIVE_STACK_LAYERS: 'adapters install,adapters invocation,transport-mux route,provider/model trace',
       LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId',
-      LIVE_STACK_EXPECTED_ARTIFACTS: 'agent-mux-events,transport-mux-trace,provider-trace-redacted',
+      LIVE_STACK_EXPECTED_ARTIFACTS: 'adapters-events,transport-mux-trace,provider-trace-redacted',
     });
 
     expect(scenario.agent.installMode).toBe('vanilla');
@@ -88,10 +88,10 @@ describe('live stack scenario contract primitives', () => {
   });
 
 
-  it('accepts pipeline-selected agent-platform vanilla scenarios through agent-mux', () => {
+  it('accepts pipeline-selected agent-platform vanilla scenarios through adapters', () => {
     const scenario = liveStackScenarioFromEnv({
-      LIVE_STACK_SCENARIO_ID: 'live.agent-mux.agent-platform.foundry-openai.gpt-5.5',
-      LIVE_STACK_AGENT_PATH: 'agent-mux',
+      LIVE_STACK_SCENARIO_ID: 'live.adapters.agent-platform.foundry-openai.gpt-5.5',
+      LIVE_STACK_AGENT_PATH: 'adapters',
       LIVE_STACK_AGENT: 'agent-platform',
       LIVE_STACK_AGENT_MUX_AGENT: 'babysitter',
       LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin',
@@ -102,9 +102,9 @@ describe('live stack scenario contract primitives', () => {
       LIVE_STACK_MODEL: 'gpt-5.5',
       LIVE_STACK_CREDENTIAL_MODE: 'github-org-secrets-and-vars',
       LIVE_STACK_REQUIRED_ENV: 'AZURE_API_KEY,AGENT_MUX_API_BASE',
-      LIVE_STACK_LAYERS: 'agent-mux install,agent-mux invocation,agent-platform runtime,provider/model trace',
+      LIVE_STACK_LAYERS: 'adapters install,adapters invocation,agent-platform runtime,provider/model trace',
       LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId',
-      LIVE_STACK_EXPECTED_ARTIFACTS: 'agent-mux-events,transport-mux-trace,provider-trace-redacted',
+      LIVE_STACK_EXPECTED_ARTIFACTS: 'adapters-events,transport-mux-trace,provider-trace-redacted',
     });
 
     expect(scenario.agent.agent).toBe('agent-platform');
@@ -116,8 +116,8 @@ describe('live stack scenario contract primitives', () => {
 
   it('accepts pipeline-selected Google Gemini scenarios', () => {
     const scenario = liveStackScenarioFromEnv({
-      LIVE_STACK_SCENARIO_ID: 'live.agent-mux.claude-code.google.gemini-3.1-pro',
-      LIVE_STACK_AGENT_PATH: 'agent-mux',
+      LIVE_STACK_SCENARIO_ID: 'live.adapters.claude-code.google.gemini-3.1-pro',
+      LIVE_STACK_AGENT_PATH: 'adapters',
       LIVE_STACK_AGENT: 'claude-code',
       LIVE_STACK_AGENT_MUX_AGENT: 'claude',
       LIVE_STACK_INTEGRATION_TYPE: 'third-party-plugin',
@@ -127,9 +127,9 @@ describe('live stack scenario contract primitives', () => {
       LIVE_STACK_MODEL: 'gemini-3.1-pro-preview',
       LIVE_STACK_CREDENTIAL_MODE: 'github-org-secrets-and-vars',
       LIVE_STACK_REQUIRED_ENV: 'GOOGLE_API_KEY',
-      LIVE_STACK_LAYERS: 'agent-mux install,agent-mux invocation,transport-mux route,provider/model trace',
+      LIVE_STACK_LAYERS: 'adapters install,adapters invocation,transport-mux route,provider/model trace',
       LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId',
-      LIVE_STACK_EXPECTED_ARTIFACTS: 'agent-mux-events,transport-mux-trace,provider-trace-redacted',
+      LIVE_STACK_EXPECTED_ARTIFACTS: 'adapters-events,transport-mux-trace,provider-trace-redacted',
     });
 
     expect(scenario.model.provider).toBe('google');
@@ -147,7 +147,7 @@ describe('live stack scenario contract primitives', () => {
     expect(scenario.agent.setupCommands).toEqual(['tula call']);
     expect(scenario.model.requiredEnv).toEqual(['LIVE_STACK_EXTERNAL_AGENT', 'AZURE_API_KEY', 'AGENT_MUX_API_BASE']);
     expect(scenario.layers).toContain('tasks-mux responder routing');
-    expect(scenario.layers).toContain('agent-mux claude-code adapter');
+    expect(scenario.layers).toContain('adapters claude-code adapter');
     expect(scenario.expectedArtifacts).toContain('external-agent-cost-event');
   });
 
@@ -171,7 +171,7 @@ describe('live stack scenario contract primitives', () => {
     const incompleteBundle = createEvidenceBundle(
       scenario,
       { agentMuxRunId: 'adapters-run-1', agentMuxSessionId: 'adapters-session-1' },
-      { 'agent-mux-events': 'artifacts/live-stack/agent-mux-events-adapters-run-1.ndjson' },
+      { 'adapters-events': 'artifacts/live-stack/adapters-events-adapters-run-1.ndjson' },
     );
 
     expect(assertEvidenceBundleComplete(scenario, incompleteBundle)).toEqual([

@@ -99,17 +99,17 @@ export function formatResponderContext(context: HarnessPromptContext): string[] 
   const agentAvailability = context.externalAgents?.available === true
     ? installedAgents.length > 0
       ? installedAgents.map(formatAgentResponder)
-      : ["- agent-mux is available, but no installed agent responders were discovered."]
-    : ["- No agent-mux agent responders were discovered in this planning environment."];
+      : ["- adapters is available, but no installed agent responders were discovered."]
+    : ["- No adapters agent responders were discovered in this planning environment."];
 
   return [
     "Available responder context:",
     "- Supported `agent.responderType` values: internal, human, agent, tracker, auto.",
     "- Omit `agent.responderType` for the default internal agent-core worker.",
-    "- Use `agent.responderType: \"agent\"` only when a task should route to an installed agent-mux adapter.",
+    "- Use `agent.responderType: \"agent\"` only when a task should route to an installed adapters adapter.",
     "- Agent responder tasks require a non-empty `agent.adapter` value. Prefer `fallbackType: \"internal\"` only when internal execution is an acceptable degradation.",
     "- Do not confuse the host agent identity with an agent responder adapter; host context describes the current planner, while adapter chooses a routed task executor.",
-    "Available agent responders (agent-mux):",
+    "Available agent responders (adapters):",
     ...agentAvailability,
     "Agent responder task shape:",
     "```javascript",
@@ -224,7 +224,7 @@ function formatHarnessAssignmentGuidance(context: HarnessPromptContext): string[
     "- Shell effects run through the internal agent-core worker even when orchestration is bound to an external CLI harness. Keep shell work on that worker by default.",
     "- Do not set `task.metadata.bashSandbox`, `task.metadata.isolated`, or `task.metadata.enableCompaction` for ordinary internal agent-core work. Leave them unset unless the task truly requires stronger guardrails or long-running compaction.",
     "- For risky shell or system-changing subtasks that truly need stronger guardrails, encode them explicitly in task metadata: `bashSandbox: \"secure\"` to opt into AgentSH, `isolated: true` to disable repo/global extensions and skills, and `enableCompaction: true` when a long-running internal worker needs compaction.",
-    "- Treat external CLI harnesses (resolved via agent-mux) as text-agent harnesses. Use them only when their behavior is materially better for that task.",
+    "- Treat external CLI harnesses (resolved via adapters) as text-agent harnesses. Use them only when their behavior is materially better for that task.",
     "- Tasks may include an `execution` field with `model`, `harness`, and `permissions`. `execution.model` is universal (plugins and the built-in harness). `execution.harness` and `execution.permissions` are internal harness routing/guardrail hints, not a universal plugin contract.",
     "- Do not treat `execution.permissions` as a cross-harness security boundary. Plugin targets may ignore it entirely, so route security-sensitive work through an execution path whose enforcement you actually control.",
     "- External CLI harnesses do not inherit AgentSH protection for their own internal shell or tool execution. Route security-sensitive shell work through the internal agent-core worker instead of assuming the external harness is guarded.",

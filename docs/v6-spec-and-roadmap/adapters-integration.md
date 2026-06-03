@@ -4,11 +4,11 @@
 
 ## Integration Overview
 
-`agent-mux` is already part of this monorepo under `packages/adapters/*`. The V6 task is not to speculate about a future migration from a separate checkout. The V6 task is to describe how the dispatch layer, orchestration layer, hook normalization layer, and plugin packaging surfaces fit together now.
+`adapters` is already part of this monorepo under `packages/adapters/*`. The V6 task is not to speculate about a future migration from a separate checkout. The V6 task is to describe how the dispatch layer, orchestration layer, hook normalization layer, and plugin packaging surfaces fit together now.
 
 ## Current Repository Reality
 
-The integrated `agent-mux` package family includes:
+The integrated `adapters` package family includes:
 
 ### Core Infrastructure
 
@@ -44,7 +44,7 @@ The integrated `agent-mux` package family includes:
 Agent-mux is the dispatch layer, not the orchestration core.
 
 - Babysitter owns runs, replay, effect lifecycles, process execution, and CLI orchestration.
-- agent-mux owns harness-facing adapter behavior, normalized event streams, invocation modes, and agent-running APIs.
+- adapters owns harness-facing adapter behavior, normalized event streams, invocation modes, and agent-running APIs.
 - `hooks-mux` normalizes hook payloads across harnesses.
 - `extension-mux` compiles the unified plugin authoring surface into harness-specific bundles.
 - `tasks-mux` handles routed human approval and response flows when those are needed.
@@ -55,12 +55,12 @@ This means the integration is already a package-and-boundary question inside one
 
 V6 currently commits to:
 
-- documenting the actual responsibility split between Babysitter and agent-mux,
+- documenting the actual responsibility split between Babysitter and adapters,
 - using the current package layout as the source of truth,
 - improving naming, validation, and docs around the existing seams,
 - avoiding claims that a deeper runtime/platform/application decomposition is already decided.
 
-V6 does not currently commit to forcing agent-mux into a new package hierarchy just because those names are possible to imagine.
+V6 does not currently commit to forcing adapters into a new package hierarchy just because those names are possible to imagine.
 
 ## Integration Points That Matter Today
 
@@ -72,14 +72,14 @@ The monorepo root includes:
 - `packages/adapters/*`
 - `packages/adapters/hooks/*`
 
-That workspace layout is already evidence that agent-mux is part of the repo's current operating model.
+That workspace layout is already evidence that adapters is part of the repo's current operating model.
 
 ### 2. Orchestration To Dispatch Boundary
 
 The main integration seam is:
 
 - Babysitter tells the system what work to do and in what order.
-- agent-mux knows how to execute harness-facing agent work consistently.
+- adapters knows how to execute harness-facing agent work consistently.
 
 ### 3. Hooks And Plugin Distribution
 
@@ -94,14 +94,14 @@ For V6, this package set is the concrete delivery path for metaplugins on legacy
 
 ### 4. UI And Surface Consumption
 
-The agent-mux UI, TUI, mobile, TV, and watch packages are downstream consumers of the dispatch layer. They are part of the stack, but they do not redefine the architectural center of V6.
+The adapters UI, TUI, mobile, TV, and watch packages are downstream consumers of the dispatch layer. They are part of the stack, but they do not redefine the architectural center of V6.
 
 ## Deferred Questions
 
 These may still become important later, but V6 does not treat them as settled:
 
 - whether any deeper package split is justified inside `agent-platform`,
-- whether some agent-mux support subsystems should be promoted into stronger standalone boundaries,
+- whether some adapters support subsystems should be promoted into stronger standalone boundaries,
 - whether future naming should formalize a larger runtime/platform/application vocabulary.
 
 ## Practical Reading Order
@@ -110,7 +110,7 @@ For the current integrated story, read:
 
 1. [Unified Stack Architecture](unified-stack-architecture.md)
 2. [Package Specifications](package-specs.md)
-3. [docs/agent-mux/README](https://github.com/a5c-ai/babysitter/blob/main/docs/agent-mux/README.md)
+3. [docs/adapters/README](https://github.com/a5c-ai/babysitter/blob/main/docs/adapters/README.md)
 4. `packages/adapters/README.md`
 
 ---

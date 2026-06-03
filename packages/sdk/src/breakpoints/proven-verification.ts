@@ -2,7 +2,7 @@
  * Optional integration with @a5c-ai/tasks-adapter proven subsystem.
  *
  * Provides cryptographic verification of breakpoint answers when the
- * agent-mux-tasks package is available as an optional peer dependency.
+ * adapters-tasks package is available as an optional peer dependency.
  * Never throws -- always returns a graceful result.
  */
 
@@ -12,7 +12,7 @@
 export interface BreakpointVerificationConfig {
   /** Whether verification is enabled. When false, verification is skipped. */
   enabled: boolean;
-  /** Directory containing trusted public keys. Passed to agent-mux-tasks verifyAnswer. */
+  /** Directory containing trusted public keys. Passed to adapters-tasks verifyAnswer. */
   trustedKeysDir?: string;
 }
 
@@ -22,7 +22,7 @@ export interface BreakpointVerificationConfig {
 export interface BreakpointVerificationResult {
   /** Whether the answer was successfully verified as authentic. */
   verified: boolean;
-  /** Detailed verification result from agent-mux-tasks (when available). */
+  /** Detailed verification result from adapters-tasks (when available). */
   verificationResult?: {
     valid: boolean;
     publicKeyFingerprint?: string;
@@ -57,9 +57,9 @@ export function hasSignatureFields(result: Record<string, unknown>): boolean {
 
 /**
  * Verify a breakpoint result's cryptographic signature using the
- * agent-mux-tasks proven subsystem.
+ * adapters-tasks proven subsystem.
  *
- * This function never throws. If agent-mux-tasks is not installed,
+ * This function never throws. If adapters-tasks is not installed,
  * verification is disabled, or the result is unsigned, it returns
  * a graceful { verified: false } result with an explanatory reason.
  *
@@ -82,7 +82,7 @@ export async function verifyBreakpointResult(
     return { verified: false, reason: "result is not signed" };
   }
 
-  // Attempt to dynamically import agent-mux-tasks proven subsystem.
+  // Attempt to dynamically import adapters-tasks proven subsystem.
   // The module is an optional peer dependency -- the import may fail at runtime.
   // We use a string variable to prevent TypeScript from statically resolving the import.
   try {
@@ -105,7 +105,7 @@ export async function verifyBreakpointResult(
     if (typeof verifyAnswer !== "function") {
       return {
         verified: false,
-        reason: "agent-mux-tasks/proven does not export verifyAnswer",
+        reason: "adapters-tasks/proven does not export verifyAnswer",
       };
     }
 
@@ -119,7 +119,7 @@ export async function verifyBreakpointResult(
       verificationResult,
     };
   } catch (err: unknown) {
-    // Dynamic import failed -- agent-mux-tasks is not installed or broken
+    // Dynamic import failed -- adapters-tasks is not installed or broken
     const message =
       err instanceof Error ? err.message : String(err);
 
