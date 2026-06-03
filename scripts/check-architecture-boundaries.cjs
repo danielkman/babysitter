@@ -60,7 +60,6 @@ const packageFamilies = {
   "downstream-consumers": [
     "@a5c-ai/babysitter-observer-dashboard",
     "@a5c-ai/tula-tui-plugins",
-    "@a5c-ai/cloud",
   ],
   "atlas-family": [
     "@a5c-ai/atlas-webui",
@@ -71,6 +70,7 @@ const packageFamilies = {
     "@a5c-ai/kradle-cli",
     "@a5c-ai/kradle-web",
     "@a5c-ai/kradle-jitsi-agent-sidecar",
+    "@a5c-ai/kradle-installer",
   ],
 };
 
