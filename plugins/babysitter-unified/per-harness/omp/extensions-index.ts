@@ -1,7 +1,7 @@
 import type { ExtensionAPI } from "@oh-my-pi/pi-coding-agent";
 import { execSync } from "child_process";
 import * as path from "path";
-import { initI18n, t } from "./extensions-i18n.js";
+import { initI18n, t } from "./i18n.js";
 
 const PLUGIN_ROOT = path.resolve(__dirname, "..");
 
