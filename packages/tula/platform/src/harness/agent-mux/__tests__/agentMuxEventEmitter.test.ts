@@ -4,7 +4,7 @@
  * adapter's parseEvent() expects.
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { AmuxEventEmitter } from "./agentMuxEventEmitter";
+import { AmuxEventEmitter } from "../agentMuxEventEmitter";
 
 // Capture stdout writes
 let stdoutWrites: string[];

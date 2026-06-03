@@ -7,7 +7,7 @@ import {
   isErrorEvent,
   isSessionLifecycleEvent,
 } from "../agentMuxEventMapper";
-import type { AmuxAgentEvent } from "./agentMuxTypes";
+import type { AmuxAgentEvent } from "../agentMuxTypes";
 
 function makeEvent(overrides: Partial<AmuxAgentEvent> = {}): AmuxAgentEvent {
   return {

@@ -5,7 +5,7 @@ import type {
   AgentMuxRunHandle,
   AmuxAgentEvent,
   AmuxInteractionChannel,
-} from "./agentMuxTypes";
+} from "../agentMuxTypes";
 
 // ---------------------------------------------------------------------------
 // Helpers

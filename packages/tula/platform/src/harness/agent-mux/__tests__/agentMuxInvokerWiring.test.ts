@@ -5,7 +5,7 @@
  * Pi remains direct; agent-core/internal route through create-run orchestration.
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import type { AgentMuxClient, AgentMuxRunHandle, AmuxAgentEvent, AmuxInteractionChannel } from "./agentMuxTypes";
+import type { AgentMuxClient, AgentMuxRunHandle, AmuxAgentEvent, AmuxInteractionChannel } from "../agentMuxTypes";
 
 // ---------------------------------------------------------------------------
 // Mock modules before importing the code under test

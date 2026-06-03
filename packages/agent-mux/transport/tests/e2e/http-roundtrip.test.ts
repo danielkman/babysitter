@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { HttpServerMock, createScriptableTransportBuilder } from '../../../agent-mux/harness-mock/src/index.js';
+import { HttpServerMock, createScriptableTransportBuilder } from '../../../harness-mock/src/index.js';
 
 import { createProxyConfig } from '../../src/config.js';
 import { startProxyServer, type RunningProxyServer } from '../../src/server.js';
