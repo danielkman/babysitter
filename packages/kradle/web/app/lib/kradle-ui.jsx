@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers';
-import { createAuthProviderConfig, listEnabledAuthProviders, parseSessionCookie, fetchControllerUiModel, createKrateApiController, orgNamespaceName, resourceToYaml } from '@a5c-ai/kradle-sdk';
+import { createAuthProviderConfig, listEnabledAuthProviders, parseSessionCookie, fetchControllerUiModel, createKradleApiController, orgNamespaceName, resourceToYaml } from '@a5c-ai/kradle-sdk';
 import { KrateControllerRecovery } from '../components/shell/kradle-loading.jsx';
 
 const ORG_HYDRATED_RESOURCE_KINDS = ['Repository', 'RunnerPool', 'Pipeline', 'Job', 'KrateProject', 'Issue', 'AgentPersona', 'AgentSoul', 'AgentAppearance', 'AgentVoiceProfile', 'AgentDefinition', 'AgentSkill', 'AgentStack'];
@@ -254,7 +254,7 @@ async function hydrateEmptyOrgResources(resourceByKind, org, kinds) {
   const missingKinds = kinds.filter((kind) => !(resourceByKind.get(kind)?.items?.length));
   if (!missingKinds.length) return;
   try {
-    const controller = createKrateApiController({ namespace: orgNamespaceName(org) });
+    const controller = createKradleApiController({ namespace: orgNamespaceName(org) });
     await Promise.all(missingKinds.map(async (kind) => {
       const result = await controller.listResourceForOrg(org, kind);
       const items = Array.isArray(result?.items) ? result.items : [];
