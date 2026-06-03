@@ -189,7 +189,7 @@ export function ResourceApplyPanel({ org = 'default', resource }) {
 function sanitizePlan(value) {
   return String(value || '')
     .replace(/KubeVela/g, 'Krate')
-    .replace(/OAM/g, 'Krate deployment')
+    .replace(/OAM/g, 'Kradle deployment')
     .replace(/Gitea/g, 'Krate repositories')
     .replace(/gitea/g, 'Krate repositories')
     .replace(/Argo CD/g, 'Krate release sync')
