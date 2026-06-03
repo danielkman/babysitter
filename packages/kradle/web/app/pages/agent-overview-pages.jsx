@@ -1,6 +1,6 @@
 // Routes: /orgs/[org]/agents, /agents/stacks, /agents/stacks/[name], /agents/stacks/new — agent dashboard and stack management.
 import { loadKrateUi, orgHref, StatusPill, DegradedBanner, EmptyState, InfoList } from '../lib/kradle-ui.jsx';
-import { resourceToYaml } from '@a5c-ai/krate-sdk';
+import { resourceToYaml } from '@a5c-ai/kradle-sdk';
 import { PageFrame } from '../lib/page-frame.jsx';
 import { DispatchButton } from '../components/agent/dispatch-button.jsx';
 import { GraphStackBuilder } from '../components/agent/stack-builder-graph.jsx';

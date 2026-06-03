@@ -73,7 +73,7 @@ export default async function ForAgentsPage({ params }) {
 
       <Section title="Quick start">
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '1rem' }}>Install the Krate CLI, then start the MCP server. Any MCP-compatible agent (Claude Code, Cursor, Windsurf, etc.) can connect over stdio.</p>
-        <CodeBlock title="Install">npm install -g @a5c-ai/krate-cli</CodeBlock>
+        <CodeBlock title="Install">npm install -g @a5c-ai/kradle-cli</CodeBlock>
         <CodeBlock title="Start MCP server">krate mcp</CodeBlock>
         <CodeBlock title="Start HTTP API server">krate serve</CodeBlock>
       </Section>

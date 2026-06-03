@@ -1,6 +1,6 @@
 // Routes: /orgs/[org]/agents/runs, /agents/runs/[name] — dispatch run list and detail.
 import { loadKrateUi, orgHref, StatusPill, DegradedBanner, EmptyState } from '../lib/kradle-ui.jsx';
-import { resourceToYaml } from '@a5c-ai/krate-sdk';
+import { resourceToYaml } from '@a5c-ai/kradle-sdk';
 import { PageFrame } from '../lib/page-frame.jsx';
 import { DispatchButton } from '../components/agent/dispatch-button.jsx';
 import { LiveUpdates } from '../components/agent/live-updates.jsx';

@@ -3,7 +3,7 @@ import { loadKrateUi, orgHref, modelHref, publicResource, resourceJson, sanitize
 import { ToolCallInspector } from '../components/observability/tool-inspector.jsx';
 import { IssueCreateForm, IssueEditor } from '../components/repo/issue-editor.jsx';
 import { ResourceApplyPanel } from '../components/resource-actions.jsx';
-import { issueRepositoryRefs, issueProjectRefs } from '@a5c-ai/krate-sdk';
+import { issueRepositoryRefs, issueProjectRefs } from '@a5c-ai/kradle-sdk';
 
 // ── Re-export shared helpers from the canonical source ──────────────────────
 export {

@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic';
 
 import { loadKrateUi, orgHref, StatusPill, DegradedBanner } from '../../../lib/kradle-ui.jsx';
 import { PageFrame } from '../../../lib/page-frame.jsx';
-import { loadPersistedEvents } from '@a5c-ai/krate-sdk';
+import { loadPersistedEvents } from '@a5c-ai/kradle-sdk';
 
 export const metadata = { title: 'Costs | Krate' };
 
