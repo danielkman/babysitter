@@ -22,7 +22,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "npm run build:runtime:tula-core-deps --prefix ../.. && tsc --build --force tsconfig.json",
+    "build": "npm run build:runtime:tula-core-deps --prefix ../../.. && tsc --build --force tsconfig.json",
     "clean": "rimraf dist tsconfig.tsbuildinfo",
     "test": "vitest run --config vitest.config.ts"
   },

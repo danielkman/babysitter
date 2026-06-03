@@ -30,7 +30,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "npm run build:runtime --prefix ../.. && tsc --build tsconfig.json",
+    "build": "npm run build:runtime --prefix ../../.. && tsc --build tsconfig.json",
     "clean": "rimraf dist tsconfig.tsbuildinfo",
     "test": "vitest run --config vitest.config.ts"
   },
