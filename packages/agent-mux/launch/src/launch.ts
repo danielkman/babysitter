@@ -1824,10 +1824,10 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
       });
       (child as any).__bridgeExitPromise = exitPromise;
     }
-  } else if (process.platform === 'win32' && plan.harness === 'hermes' && !bridgeHooks) {
-    // Hermes on Windows NI (non-bridge): use ConPTY so prompt_toolkit gets a console.
-    // In bridge-hooks mode, skip ConPTY — sitecustomize.py bridges real stdin to
-    // PosixPipeInput via a daemon thread, making stdio pipes work without ConPTY overhead.
+  } else if (process.platform === 'win32' && plan.harness === 'hermes') {
+    // Hermes on Windows: always use ConPTY. prompt_toolkit's Win32Input needs a
+    // real console. The stdin bridge (PosixPipeInput) hangs on Windows.
+    // ConPTY is slow but functional — BP/Resume completes in ~67 min.
     try {
       const nodePty: any = await import('node-pty');
       const resolved = await resolveSpawnCommand(plan.command, plan.args);
