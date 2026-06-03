@@ -125,11 +125,11 @@ graph TB
 |---------|------|
 | `packages/atlas` | Knowledge graph: YAML definitions → JSON index |
 | `@a5c-ai/atlas/catalog` | Query API over the atlas graph |
-| `packages/agent-mux/cli` | `amux` CLI: launch, install, run |
-| `packages/agent-mux/adapters` | Per-harness thin wrappers (data from graph) |
-| `packages/agent-mux/core` | Provider resolver, workspace service |
+| `packages/adapters/cli` | `amux` CLI: launch, install, run |
+| `packages/adapters/adapters` | Per-harness thin wrappers (data from graph) |
+| `packages/adapters/core` | Provider resolver, workspace service |
 | `packages/transport-mux` | HTTP proxy: protocol translation between harness ↔ provider |
-| `packages/agent-mux/hooks` | Hook normalization: native events → canonical phases |
+| `packages/adapters/hooks` | Hook normalization: native events → canonical phases |
 | `packages/sdk` | Babysitter SDK: run lifecycle, session binding, MCP tools |
 | `packages/triggers-mux` | GitHub Action: trigger evaluation + agent dispatch |
 | `packages/kradle` | Kubernetes operator + web UI for cloud deployment |

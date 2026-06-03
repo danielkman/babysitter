@@ -993,7 +993,7 @@ The `amux-proxy` package lives at `packages/amux-proxy/` within the agent-mux mo
 - It has its own `pyproject.toml` (not managed by npm workspaces)
 - It has its own CI workflows (triggered by path filters)
 - It is published to PyPI independently
-- The `@a5c-ai/agent-mux-cli` package lists `amux-proxy` as a suggested dependency with install guidance
+- The `@a5c-ai/adapters-cli` package lists `amux-proxy` as a suggested dependency with install guidance
 - `amux launch --with-proxy-if-needed` detects `amux-proxy` availability via `which amux-proxy` or `python -m amux_proxy --version`
 
 ### 14.1 Installation

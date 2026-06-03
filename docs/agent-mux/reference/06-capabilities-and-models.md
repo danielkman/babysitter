@@ -1,6 +1,6 @@
 # Agent Capabilities, Model Registry, and Thinking Normalization
 
-**Specification v1.0** | `@a5c-ai/agent-mux`
+**Specification v1.0** | `@a5c-ai/adapters`
 
 > **Note:** hermes-agent is included as a 10th supported agent per project requirements, extending the original scope's 9 agents. All ten built-in agents (claude, codex, gemini, copilot, cursor, opencode, pi, omp, openclaw, hermes) share the same capability and model interfaces defined here.
 

@@ -28,7 +28,7 @@ amux run claude --prompt "Summarize README.md"
 Programmatic:
 
 ```ts
-import { createClient } from '@a5c-ai/agent-mux';
+import { createClient } from '@a5c-ai/adapters';
 const client = createClient();
 const handle = await client.run({ agent: 'claude', prompt: 'Hello' });
 for await (const ev of handle.events()) console.log(ev);

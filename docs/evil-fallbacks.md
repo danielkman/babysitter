@@ -154,16 +154,16 @@ Now logs tool name and error message before converting to result object.
 
 ### High
 
-**Provider resolution — 5-level model fallback** — `packages/agent-mux/core/src/provider-resolver.ts:94-96` **(logged)**
+**Provider resolution — 5-level model fallback** — `packages/adapters/core/src/provider-resolver.ts:94-96` **(logged)**
 Now logs which source was selected (input/AMUX_MODEL/profile/defaults-file/provider-default) at debug level.
 
-**Credential cascade — silent switching** — `packages/agent-mux/core/src/provider-resolver.ts:34-49`
+**Credential cascade — silent switching** — `packages/adapters/core/src/provider-resolver.ts:34-49`
 API key resolved from: direct input → AMUX_API_KEY → GOOGLE_API_KEY → GEMINI_API_KEY → provider envKey. No indication which credential is active.
 
-**Region resolution — 6+ env vars** — `packages/agent-mux/core/src/provider-resolver.ts:113-114`
+**Region resolution — 6+ env vars** — `packages/adapters/core/src/provider-resolver.ts:113-114`
 `AMUX_REGION ?? GOOGLE_CLOUD_LOCATION ?? VERTEXAI_LOCATION ?? AWS_REGION ?? AWS_REGION_NAME ?? params.region`. Wrong region = wrong datacenter, no log.
 
-~~**Auth detection — `void e;` suppression**~~ **(logged)** — `packages/agent-mux/cli/src/commands/doctor.ts:63-69`
+~~**Auth detection — `void e;` suppression**~~ **(logged)** — `packages/adapters/cli/src/commands/doctor.ts:63-69`
 Auth detection errors become `{ status: 'unauthenticated' }`. `void e;` explicitly suppresses the error.
 
 ~~**GitHub API failures — empty result**~~ **(logged)** — `packages/triggers-mux/src/enrich.ts:61-96`
@@ -171,25 +171,25 @@ Missing token, rate limits, HTTP errors all return `[]`. No distinction from "no
 
 ### Medium
 
-**Google → Vertex silent upgrade** — `packages/agent-mux/core/src/provider-resolver.ts:124-126` **(logged)**
+**Google → Vertex silent upgrade** — `packages/adapters/core/src/provider-resolver.ts:124-126` **(logged)**
 Now always logs the upgrade with reason (project name or env var value).
 
-**Profile precedence hidden** — `packages/agent-mux/core/src/provider-profiles.ts:135-170`
+**Profile precedence hidden** — `packages/adapters/core/src/provider-profiles.ts:135-170`
 Project-level file silently shadows global-level. No indication which is active.
 
-**Unknown provider → 'custom'** — `packages/agent-mux/core/src/provider-resolver.ts:25`
+**Unknown provider → 'custom'** — `packages/adapters/core/src/provider-resolver.ts:25`
 Unknown provider IDs silently become 'custom' with no warning.
 
 **Trigger backend detection → 'github'** — `packages/triggers-mux/src/enrich.ts:9-12`
 Unknown backends silently default to 'github'.
 
-**Adapter registration — skip on error** — `packages/agent-mux/cli/src/bootstrap.ts:73-85`
+**Adapter registration — skip on error** — `packages/adapters/cli/src/bootstrap.ts:73-85`
 Failed adapters silently skipped during startup. Only stderr log, not captured by logging system.
 
-**Plugin capability detection — catch all** — `packages/agent-mux/cli/src/lib/agent-capabilities.ts:58-71`
+**Plugin capability detection — catch all** — `packages/adapters/cli/src/lib/agent-capabilities.ts:58-71`
 Command execution timeout/error → `{ supportsPlugins: false }`. No distinction from "not installed."
 
-**Gateway shutdown — void suppression** — `packages/agent-mux/cli/src/commands/gateway/serve.ts:75-76`
+**Gateway shutdown — void suppression** — `packages/adapters/cli/src/commands/gateway/serve.ts:75-76`
 `process.once('SIGINT', () => void finish())`. Shutdown errors completely suppressed. Could leave zombie processes.
 
 **Git enrichment — empty changes** — `packages/triggers-mux/src/enrich.ts:30-42`
@@ -216,18 +216,18 @@ Now throws `Error('Unknown mode ...')`.
 ~~**Unknown install → vanilla**~~ — `.github/workflows/live-stack.yml:252` **(hardened)**
 Now throws `Error('Unknown install mode ...')`.
 
-~~**Hooks "pending" cast to "passed"**~~ — `packages/agent-mux/cli/tests/live-stack/primary-live-runner.ts:889-909` **(hardened)**
+~~**Hooks "pending" cast to "passed"**~~ — `packages/adapters/cli/tests/live-stack/primary-live-runner.ts:889-909` **(hardened)**
 Removed `'pending' as 'passed'` type lie. Deferred hooks now start as `'failed'` with explicit upgrade path.
 
-**Non-zero exit tolerated** — `packages/agent-mux/cli/tests/live-stack/primary-live-runner.ts:306-326`
+**Non-zero exit tolerated** — `packages/adapters/cli/tests/live-stack/primary-live-runner.ts:306-326`
 Exit code 1 acceptable if artifact file exists. Crashes after partial output still pass.
 
 ### Medium
 
-~~**3-event journal = "completed"**~~ — `packages/agent-mux/cli/tests/live-stack/primary-live-runner.ts:919-930` **(hardened)**
+~~**3-event journal = "completed"**~~ — `packages/adapters/cli/tests/live-stack/primary-live-runner.ts:919-930` **(hardened)**
 `MIN_JOURNAL_EVENTS` raised from 3 to 5. Journal events alone no longer count as completion proof.
 
-**Odyssey validation is weak** — `packages/agent-mux/cli/tests/live-stack/primary-live-runner.ts:1025-1031`
+**Odyssey validation is weak** — `packages/adapters/cli/tests/live-stack/primary-live-runner.ts:1025-1031`
 Only checks: >500 bytes, no error strings, has Greek chars, has markdown headers, mentions "Odyssey." Easily gamed.
 
 **JSON parse errors → `2>/dev/null`** — `.github/workflows/live-stack.yml:578,595-597`
@@ -242,10 +242,10 @@ Malformed artifacts silently produce empty strings. Report shows "—" with no e
 **Tula startup check — non-fatal** — `.github/workflows/live-stack.yml:454-456`
 Tula binary can't start → test proceeds anyway. Later failures attributed to test logic.
 
-**Run evidence files — silent skip** — `packages/agent-mux/cli/tests/live-stack/primary-live-runner.ts:630-635`
+**Run evidence files — silent skip** — `packages/adapters/cli/tests/live-stack/primary-live-runner.ts:630-635`
 Missing run metadata files silently skipped. Incomplete trace ID evidence.
 
-**Task directory errors → empty** — `packages/agent-mux/cli/tests/live-stack/primary-live-runner.ts:649-655`
+**Task directory errors → empty** — `packages/adapters/cli/tests/live-stack/primary-live-runner.ts:649-655`
 Missing tasks directory returns `[]`. Failed runs look like "no tasks created."
 
 ---
@@ -385,59 +385,59 @@ File read, JSON parse, and validation errors all collapse to `undefined`. Missin
 
 ### Critical
 
-**Config write serialization — previous error swallowed** — `packages/agent-mux/core/src/config-manager.ts:161` **(logged)**
+**Config write serialization — previous error swallowed** — `packages/adapters/core/src/config-manager.ts:161` **(logged)**
 `prev.catch(() => undefined).then(fn)`. Previous write error swallowed, next write proceeds. Race conditions possible.
 
 ### High
 
-**PTY/subprocess kill failures — 8+ locations** — `packages/agent-mux/core/src/spawn-runner.ts:163`, `packages/agent-mux/launch/src/launch.ts` (multiple) **(logged — spawn-runner)**
+**PTY/subprocess kill failures — 8+ locations** — `packages/adapters/core/src/spawn-runner.ts:163`, `packages/adapters/launch/src/launch.ts` (multiple) **(logged — spawn-runner)**
 `try { ptyProcess.kill(sig); } catch { /* */ }`. Failed process termination = zombie processes remain alive.
 
-**stdin write failures — input lost** — `packages/agent-mux/core/src/spawn-runner.ts:337,355,365`
+**stdin write failures — input lost** — `packages/adapters/core/src/spawn-runner.ts:337,355,365`
 User input and interaction responses silently discarded on write failure.
 
-**Connection/server cleanup — resource leaks** — `packages/agent-mux/adapters/src/remote-adapter-base.ts:136,141` **(logged)**
+**Connection/server cleanup — resource leaks** — `packages/adapters/adapters/src/remote-adapter-base.ts:136,141` **(logged)**
 `connection.close().catch(() => {})`, `stopServer?.().catch(() => {})`. Connections and servers leak.
 
-**Ephemeral config cleanup** — `packages/agent-mux/adapters/src/claude-code/runtime-hooks/ephemeral-config.ts:112,117,130` **(logged)**
+**Ephemeral config cleanup** — `packages/adapters/adapters/src/claude-code/runtime-hooks/ephemeral-config.ts:112,117,130` **(logged)**
 Three `fs.rm().catch(() => {})` calls. Filesystem leaks accumulate.
 
-**Hook event chain failure** — `packages/agent-mux/core/src/spawn-runtime-hooks.ts:145` **(logged)**
+**Hook event chain failure** — `packages/adapters/core/src/spawn-runtime-hooks.ts:145` **(logged)**
 `await eventChain.catch(() => {})`. Hook dispatch failures silently ignored.
 
-**Adapter installation detection → null** — `packages/agent-mux/core/src/adapter-registry.ts:160`, `packages/agent-mux/core/src/spawn-runner-utils.ts:66` **(logged — adapter-registry)**
+**Adapter installation detection → null** — `packages/adapters/core/src/adapter-registry.ts:160`, `packages/adapters/core/src/spawn-runner-utils.ts:66` **(logged — adapter-registry)**
 `.catch(() => null)`. Detection error indistinguishable from "not installed."
 
-**Keytar import failure → null** — `packages/agent-mux/adapters/src/auth-config.ts:179`
+**Keytar import failure → null** — `packages/adapters/adapters/src/auth-config.ts:179`
 `.catch(() => null)`. Password store access disabled silently.
 
-**Gateway JSON parse → empty object** — `packages/agent-mux/gateway/src/kanban/routes.ts:1494` **(logged)**
+**Gateway JSON parse → empty object** — `packages/adapters/gateway/src/kanban/routes.ts:1494` **(logged)**
 `.catch(() => ({}))`. API response parse failure → empty object.
 
 ### Medium
 
-**Auth detection → 'unknown'** — `packages/agent-mux/core/src/adapter-registry.ts:155-157` **(logged)**
+**Auth detection → 'unknown'** — `packages/adapters/core/src/adapter-registry.ts:155-157` **(logged)**
 Auth detection failure now logged with agent name before marking 'unknown'.
 
-**Remote agent fallback → 'claude'** — `packages/agent-mux/adapters/src/agent-mux-remote-adapter.ts:112`
+**Remote agent fallback → 'claude'** — `packages/adapters/adapters/src/agent-mux-remote-adapter.ts:112`
 `env['AMUX_REMOTE_AGENT'] ?? process.env['AMUX_REMOTE_AGENT'] ?? 'claude'`. Silent default.
 
-**Binary resolution fallbacks** — `packages/agent-mux/launch/src/bridge-hooks.ts:41-46`
+**Binary resolution fallbacks** — `packages/adapters/launch/src/bridge-hooks.ts:41-46`
 `env['BABYSITTER_BIN'] || 'babysitter'`, `env['HOOKS_MUX_BIN'] || 'a5c-hooks-mux'`. Wrong tool version possible.
 
-**Bridge hook .cmd shim parsing** — `packages/agent-mux/launch/src/bridge-hooks.ts:109,121`
+**Bridge hook .cmd shim parsing** — `packages/adapters/launch/src/bridge-hooks.ts:109,121`
 `catch { /* not found */ }` × 2. Falls back to `shell: true` which changes execution semantics.
 
-**Mobile connection failure — void** — `packages/agent-mux/mobile-ios-app/src/providers/GatewayProvider.tsx:107`, `mobile-android-app` same
+**Mobile connection failure — void** — `packages/adapters/mobile-ios-app/src/providers/GatewayProvider.tsx:107`, `mobile-android-app` same
 `void client.connect().catch(() => undefined)`. Connection failure invisible to user.
 
-**Cost/token extraction → 0** — `packages/agent-mux/adapters/src/base-adapter-helpers.ts:32-38`
+**Cost/token extraction → 0** — `packages/adapters/adapters/src/base-adapter-helpers.ts:32-38`
 `extractNumber(...) ?? 0`. Missing cost data zeroed out instead of flagged.
 
 **WebUI fetch parse → null** — Multiple webui components (automations, workspaces, dashboard)
 `.catch(() => null)` on `.json()` calls. API response loss.
 
-**K8s cleanup best-effort** — `packages/agent-mux/core/src/spawn-invocation.ts:177,180`
+**K8s cleanup best-effort** — `packages/adapters/core/src/spawn-invocation.ts:177,180`
 Pod cleanup spawn error and catch block both silenced.
 
 ---
@@ -483,7 +483,7 @@ Components disappear instead of showing error state.
 
 ### Critical
 
-~~**Gateway tsconfig — `noImplicitAny: false` + `useUnknownInCatchVariables: false`**~~ **(hardened)** — `packages/agent-mux/gateway/tsconfig.json:9-10`
+~~**Gateway tsconfig — `noImplicitAny: false` + `useUnknownInCatchVariables: false`**~~ **(hardened)** — `packages/adapters/gateway/tsconfig.json:9-10`
 Catch handlers receive `any` type. No compile-time validation of error handling. Wrong error properties accessed at runtime.
 
 ~~**E2E tests continue-on-error on non-main**~~ **(hardened)** — `.github/workflows/publish.yml:343`

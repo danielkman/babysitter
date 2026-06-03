@@ -87,15 +87,15 @@ A `Mux` is treated as `ExtensionInterface` (a5c-flavored contract) plus implemen
 | Concept | Source | Schema mapping | Status | Notes |
 |---|---|---|---|---|
 | Mux concept (a5c-coinage) | a5c/00-overview.md, 02-muxes.md | `Term` `term:mux` `kind=concept`; `Synonym` of industry `adapter`/`gateway`/`bridge` | ✅ | |
-| transport-mux (#1) | a5c/02-muxes.md §1 | `ExtensionInterface` `iface:transport-mux`; `ProcessDescriptor` `pkg:@a5c-ai/agent-mux-transport` | ✅ | |
+| transport-mux (#1) | a5c/02-muxes.md §1 | `ExtensionInterface` `iface:transport-mux`; `ProcessDescriptor` `pkg:@a5c-ai/adapters-transport` | ✅ | |
 | agent-launch-mux (#2) | a5c/02-muxes.md §2 | `ExtensionInterface` `iface:agent-launch-mux`; realized in `agent-mux/core` + adapters | ✅ | |
 | agent-comm-mux (#3) | a5c/02-muxes.md §3 | `ExtensionInterface` `iface:agent-comm-mux` | ✅ | |
 | session-storage-mux (#4) | a5c/02-muxes.md §4 | `ExtensionInterface` `iface:session-storage-mux` | ✅ | |
 | agent-config-mux (#5) | a5c/02-muxes.md §5 | `ExtensionInterface` `iface:agent-config-mux` | ✅ | |
-| hooks-mux (#6) | a5c/02-muxes.md §6 | `ExtensionInterface` `iface:hooks-mux`; `ProcessDescriptor` `pkg:@a5c-ai/agent-mux-hooks-cli` | ✅ | |
-| extension-mux (#7) | a5c/02-muxes.md §7 | `ExtensionInterface` `iface:extension-mux`; `ProcessDescriptor` `pkg:@a5c-ai/agent-mux-extensions` | ✅ | |
+| hooks-mux (#6) | a5c/02-muxes.md §6 | `ExtensionInterface` `iface:hooks-mux`; `ProcessDescriptor` `pkg:@a5c-ai/adapters-hooks-cli` | ✅ | |
+| extension-mux (#7) | a5c/02-muxes.md §7 | `ExtensionInterface` `iface:extension-mux`; `ProcessDescriptor` `pkg:@a5c-ai/adapters-extensions` | ✅ | |
 | tool-mux (#8) | a5c/02-muxes.md §8 | `ExtensionInterface` `iface:tool-mux` | ✅ | |
-| tasks-mux (#9) | a5c/02-muxes.md §9 | `ExtensionInterface` `iface:tasks-mux`; `ProcessDescriptor` `pkg:@a5c-ai/agent-mux-tasks` | ✅ | |
+| tasks-mux (#9) | a5c/02-muxes.md §9 | `ExtensionInterface` `iface:tasks-mux`; `ProcessDescriptor` `pkg:@a5c-ai/adapters-tasks` | ✅ | |
 | Mux native side / canonical side framing | a5c/02-muxes.md preamble | attributes `nativeProtocols` and `canonicalProtocol` on `ExtensionInterface` (kind=mux) | ✅ | |
 | "What is not a mux" rejected list (identity, secrets, memory, trust, policy, blueprints, install, events, observability) | a5c/02-muxes.md §What is not a mux | each captured as `Term` with note + `replaces` to corresponding `ExtensionInterface` (or `OutOfScopeReason`) | ✅ | |
 | Mux bridging concerns (per-mux: spawn args, env-vars, signal propagation, etc.) | a5c/02-muxes.md (each section) | attributes on `ExtensionInterface` (kind=mux) `bridgingConcerns[]` | ✅ | |
@@ -274,7 +274,7 @@ A `Mux` is treated as `ExtensionInterface` (a5c-flavored contract) plus implemen
 | Provenance & ontology tags on plugins (SourceRef, Domain/Specialization/Topic/Language/Framework/StackProfile, Role/Responsibility, ScopeBoundary) | universal/05-plugins-and-extensions.md §11 | covered in cluster 9, 10, 13 | ✅ | |
 | Portable Extension manifest fields (name, version, implements, hooks, hookFilePattern, hookConfig, targets, content/{skills,subagents,toolServers}) | a5c/07-extensions.md | attribute schema on `PortableExtension` | ✅ | |
 | `implements:` extension-interface declaration | a5c/07-extensions.md | edge `PortableExtension implements ExtensionInterface` | ✅ | |
-| Hook proxy command resolution (`Stop: proxy` → `npx @a5c-ai/agent-mux-hooks-cli`) | a5c/07-extensions.md, 02-muxes.md §7 | attribute `PortableExtension.hookProxyCommand` | ✅ | |
+| Hook proxy command resolution (`Stop: proxy` → `npx @a5c-ai/adapters-hooks-cli`) | a5c/07-extensions.md, 02-muxes.md §7 | attribute `PortableExtension.hookProxyCommand` | ✅ | |
 | A5c-specific extension lifecycle (resolution+interface parsing, compilation through extension-mux, registration with resolver, hook proxying) | a5c/07-extensions.md | recorded on `PortableExtension.lifecycle` | ✅ | |
 | Old vocabulary mapping (agent-native plugin / agent plugin / uniplugin / metaplugin / babysitter plugin / Agent-Recipe / harness extension / skill-directory plugin / MCP server install) | a5c/07-extensions.md | `Term.replaces` chain to canonical shapes | ✅ | |
 
@@ -369,7 +369,7 @@ A `Mux` is treated as `ExtensionInterface` (a5c-flavored contract) plus implemen
 | Backend list (env vars, OS keychain [macOS Keychain/Windows DPAPI/Linux libsecret], HashiCorp Vault, AWS Secrets Manager, GCP Secret Manager, Azure Key Vault, Infisical, Doppler, OpenBao, sops, 1Password CLI, direnv) | universal/07-cross-cutting.md §3 | enum `SecretStoreBackend`; one `Term` per | ✅ | |
 | Vendor specifics (`ANTHROPIC_API_KEY`, Claude Code OAuth/browser-login token paths; `OPENAI_API_KEY`, `~/.codex/auth.json`; `GOOGLE_API_KEY`, GCP ADC; `GITHUB_TOKEN`/`gh auth login`) | universal/07-cross-cutting.md §3 | `PathDescriptor` and `AuthMethodDescriptor` on each `AgentVersion`/`Provider` | ✅ | |
 | Operations (`secrets.get(name, scope)`, redaction, audit log, scope-bound) | universal/07-cross-cutting.md §3, a5c/03-extension-interfaces.md §3 | surface attribute on `iface:secrets-interface` | ✅ | |
-| Live binding (`packages/agent-mux/core/src/auth-types.ts` AuthMethodDescriptor, authFiles[]) | universal/07-cross-cutting.md §3, a5c/02-muxes.md §5 | `Claim.liveStatus=partial` on `iface:secrets-interface` | ✅ | |
+| Live binding (`packages/adapters/core/src/auth-types.ts` AuthMethodDescriptor, authFiles[]) | universal/07-cross-cutting.md §3, a5c/02-muxes.md §5 | `Claim.liveStatus=partial` on `iface:secrets-interface` | ✅ | |
 | Auth methods (api-key env-var, OAuth 2.0 file, OAuth device flow RFC 8628, browser-login session-token files, gh-auth state, OS-keychain credentials, service-account JSON, IAM role) | universal/04-protocols.md §9, a5c/02-muxes.md §5 | enum `AuthMethod`; `Term` per | ✅ | |
 
 ### Protocols
@@ -464,12 +464,12 @@ A `Mux` is treated as `ExtensionInterface` (a5c-flavored contract) plus implemen
 | `@a5c-ai/atlas/catalog` | a5c/01-component-map.md | `PackageSurface` + `CiSurface` (both populated; example: graph/catalog-meta/package-surfaces/agent-catalog.yaml) | ✅ | promoted from stub |
 | `@a5c-ai/catalog` (UI) | a5c/01-component-map.md | `PackageSurface` + `CiSurface` | ✅ | |
 | `@a5c-ai/tula-core` | a5c/01-component-map.md | `PackageSurface` | ✅ | |
-| `@a5c-ai/agent-mux-comm/adapters/cli/sdk/gateway/harness-mock/observability/tui/webui` | a5c/01-component-map.md | one `PackageSurface` each | ✅ | |
+| `@a5c-ai/adapters-comm/adapters/cli/sdk/gateway/harness-mock/observability/tui/webui` | a5c/01-component-map.md | one `PackageSurface` each | ✅ | |
 | `@a5c-ai/tula-platform` | a5c/01-component-map.md, ADR-001 | covered above as AgentProduct | ✅ | |
-| `@a5c-ai/agent-mux-transport` | a5c/01-component-map.md | `ProcessDescriptor` | ✅ | |
-| `@a5c-ai/agent-mux-hooks-cli` | a5c/01-component-map.md | `ProcessDescriptor` | ✅ | |
-| `@a5c-ai/agent-mux-extensions` | a5c/01-component-map.md | `ProcessDescriptor` | ✅ | |
-| `@a5c-ai/agent-mux-tasks` | a5c/01-component-map.md | `ProcessDescriptor` | ✅ | |
+| `@a5c-ai/adapters-transport` | a5c/01-component-map.md | `ProcessDescriptor` | ✅ | |
+| `@a5c-ai/adapters-hooks-cli` | a5c/01-component-map.md | `ProcessDescriptor` | ✅ | |
+| `@a5c-ai/adapters-extensions` | a5c/01-component-map.md | `ProcessDescriptor` | ✅ | |
+| `@a5c-ai/adapters-tasks` | a5c/01-component-map.md | `ProcessDescriptor` | ✅ | |
 | `@a5c-ai/babysitter-sdk` | a5c/01-component-map.md, 05-sdk.md | `ProcessDescriptor` | ✅ | |
 | `@a5c-ai/babysitter` (top-level npm) | a5c/01-component-map.md | `ProcessDescriptor` | ✅ | |
 | `@a5c-ai/babysitter-tui-plugins` | a5c/01-component-map.md | `ProcessDescriptor` | ✅ | |

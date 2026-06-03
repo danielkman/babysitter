@@ -45,7 +45,7 @@ attributes:
     - SessionBinding
     - StopHook
     - HeadlessPrompt
-  adapterModule: "@a5c-ai/agent-mux-adapters/gemini-adapter"
+  adapterModule: "@a5c-ai/adapters-codecs/gemini-adapter"
   externalRepo: "a5c-ai/babysitter-gemini"
   externalPackageName: "@a5c-ai/babysitter-gemini"
   generatedSourceDir: "gemini-cli"

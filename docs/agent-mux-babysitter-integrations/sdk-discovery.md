@@ -33,7 +33,7 @@ export async function discoverExternalAgents(
 
 ### Detection Strategy
 
-1. **Check if `@a5c-ai/agent-mux` is importable** — same pattern as `isAmuxAvailable()` in agent-platform
+1. **Check if `@a5c-ai/adapters` is importable** — same pattern as `isAmuxAvailable()` in agent-platform
 2. **If importable:** call `adapterRegistry.list()` and `adapterRegistry.installed()` to get agent info
 3. **If not importable:** try `amux doctor --json` via `execFileSync` (CLI fallback)
 4. **If neither works:** return `{ available: false, agents: [], ... }`

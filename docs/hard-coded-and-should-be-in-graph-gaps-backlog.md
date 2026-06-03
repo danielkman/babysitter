@@ -80,7 +80,7 @@ switch (agent) {
 }
 ```
 
-**File:** packages/agent-mux/adapters/src/translate-for-harness.ts
+**File:** packages/adapters/adapters/src/translate-for-harness.ts
 
 **Fix:** Each translation function self-registers in a `TRANSLATION_REGISTRY` map at import time (same pattern as adapter self-registration). The switch becomes a map lookup. Add `translationStrategy` field to Atlas PluginTarget if needed for grouping (e.g., codex-sdk uses the same translation as codex).
 
@@ -91,7 +91,7 @@ case 'codex': ...
 case 'gemini': ...
 ```
 
-**Files:** packages/agent-mux/cli/src/commands/launch.ts, tui.ts, remote.ts
+**Files:** packages/adapters/cli/src/commands/launch.ts, tui.ts, remote.ts
 
 **Fix:** Launch config comes from catalog. Each agent's launch behavior is an Atlas attribute (`launchMode: 'cli-spawn' | 'sdk-connect' | 'websocket'`).
 

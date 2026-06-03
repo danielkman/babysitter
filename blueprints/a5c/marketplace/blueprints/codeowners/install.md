@@ -96,7 +96,7 @@ Final format at `.github/CODEOWNERS`:
 
 # Packages
 /packages/sdk/                   @org/sdk-team
-/packages/agent-mux/cli/                   @org/sdk-team
+/packages/adapters/cli/                   @org/sdk-team
 /packages/catalog/               @org/frontend
 
 # Docs

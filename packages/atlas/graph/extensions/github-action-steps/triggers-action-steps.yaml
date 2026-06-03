@@ -46,7 +46,7 @@ attributes:
     cd "$REPO_ROOT"
     npm ci
     npm run build:agent-mux
-    npm run build --workspace=@a5c-ai/agent-mux-triggers
+    npm run build --workspace=@a5c-ai/adapters-triggers
   sourceCitation: "packages/triggers-mux/action.yml:91-101"
 edges:
   executed_by_trigger:
@@ -68,7 +68,7 @@ attributes:
     set -euo pipefail
     REPO_ROOT=$(cd "$ACTION_ROOT/../.." && pwd)
     cd "$INPUT_WORKING_DIRECTORY"
-    node "$REPO_ROOT/packages/agent-mux/cli/dist/index.js" install "$INPUT_HARNESS" || true
+    node "$REPO_ROOT/packages/adapters/cli/dist/index.js" install "$INPUT_HARNESS" || true
   sourceCitation: "packages/triggers-mux/action.yml:158-169"
 edges:
   executed_by_trigger:
@@ -119,7 +119,7 @@ attributes:
     REPO_ROOT=$(cd "$ACTION_ROOT/../.." && pwd)
     while IFS= read -r plugin; do
       [ -z "$plugin" ] && continue
-      node "$REPO_ROOT/packages/agent-mux/cli/dist/index.js" plugin install "$INPUT_ADAPTER" "$plugin"
+      node "$REPO_ROOT/packages/adapters/cli/dist/index.js" plugin install "$INPUT_ADAPTER" "$plugin"
     done <<< "$INPUT_PLUGINS"
   sourceCitation: "packages/triggers-mux/action.yml:201-211"
 edges:
@@ -227,7 +227,7 @@ attributes:
   runScript: |
     set -euo pipefail
     REPO_ROOT=$(cd "$ACTION_ROOT/../.." && pwd)
-    AMUX="node $REPO_ROOT/packages/agent-mux/cli/dist/index.js"
+    AMUX="node $REPO_ROOT/packages/adapters/cli/dist/index.js"
     ARGS=()
     if [ "$INPUT_COMMAND" = "launch" ] || [ "$INPUT_COMMAND" = "run" ]; then
       ARGS+=("$INPUT_COMMAND")

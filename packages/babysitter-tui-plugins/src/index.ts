@@ -45,7 +45,7 @@ export {
 import { babysitterStatusPlugin } from './status-plugin.js';
 import { babysitterCostPlugin } from './cost-plugin.js';
 import { babysitterGovernancePlugin } from './governance-plugin.js';
-import type { TuiPlugin } from '@a5c-ai/agent-mux-tui/plugin';
+import type { TuiPlugin } from '@a5c-ai/tula-tui/plugin';
 
 export const babysitterPlugins: TuiPlugin[] = [
   babysitterStatusPlugin,

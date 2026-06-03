@@ -4,7 +4,7 @@ attributes:
   subjectId: package:a5c-ai-agent-mux-tui
   subjectKind: PackageSurface
   attribute: surfaceKinds
-  value: '@a5c-ai/agent-mux-tui is modeled as a TUI and bin-entrypoint package surface.'
+  value: '@a5c-ai/tula-tui is modeled as a TUI and bin-entrypoint package surface.'
   statement: The agent-mux TUI package surface is grounded in its package metadata and amux-tui binary entrypoint.
   evidenceSourceIds:
     - evidence:agent-mux-tui-package-source
@@ -50,7 +50,7 @@ attributes:
   subjectId: package:a5c-ai-agent-mux-cli
   subjectKind: PackageSurface
   attribute: surfaceKinds
-  value: '@a5c-ai/agent-mux-cli is modeled as a CLI and bin-entrypoint package surface.'
+  value: '@a5c-ai/adapters-cli is modeled as a CLI and bin-entrypoint package surface.'
   statement: The agent-mux CLI package surface is grounded in its package metadata and amux binary entrypoint.
   evidenceSourceIds:
     - evidence:agent-mux-cli-package-source
@@ -96,7 +96,7 @@ attributes:
   subjectId: package:a5c-ai-hooks-mux-core
   subjectKind: PackageSurface
   attribute: surfaceKinds
-  value: '@a5c-ai/agent-mux-hooks-core is modeled as the package surface exposing normalized hook payload schemas.'
+  value: '@a5c-ai/adapters-hooks-core is modeled as the package surface exposing normalized hook payload schemas.'
   statement: The hooks-mux core package surface is grounded in package metadata and core package source files.
   evidenceSourceIds:
     - evidence:hooks-mux-core-package-source
@@ -142,7 +142,7 @@ attributes:
   subjectId: package:a5c-ai-agent-mux-gateway
   subjectKind: PackageSurface
   attribute: surfaceKinds
-  value: '@a5c-ai/agent-mux-gateway is modeled as the package surface exposing gateway HTTP, WebSocket, and Kanban APIs.'
+  value: '@a5c-ai/adapters-gateway is modeled as the package surface exposing gateway HTTP, WebSocket, and Kanban APIs.'
   statement: The agent-mux gateway package surface is grounded in package metadata and gateway source files.
   evidenceSourceIds:
     - evidence:agent-mux-gateway-package-source
@@ -188,7 +188,7 @@ attributes:
   subjectId: package:a5c-ai-tasks-mux
   subjectKind: PackageSurface
   attribute: surfaceKinds
-  value: '@a5c-ai/agent-mux-tasks is modeled as a breakpoint-runtime package surface.'
+  value: '@a5c-ai/adapters-tasks is modeled as a breakpoint-runtime package surface.'
   statement: The tasks-mux package surface is grounded in package metadata and runtime source files.
   evidenceSourceIds:
     - evidence:tasks-mux-package-source

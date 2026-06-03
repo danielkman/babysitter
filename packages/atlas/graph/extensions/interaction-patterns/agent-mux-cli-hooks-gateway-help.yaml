@@ -12,7 +12,7 @@ attributes:
     - "0:success:hook catalog printed"
   description: |
     List native hook types supported by the harness. Source:
-    packages/agent-mux/cli/src/commands/hooks.ts:89-104.
+    packages/adapters/cli/src/commands/hooks.ts:89-104.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-hooks-list
@@ -27,7 +27,7 @@ attributes:
     - "0:success:registered hooks printed"
   description: |
     List registered hooks (project + global) for an agent (or `*`).
-    Source: packages/agent-mux/cli/src/commands/hooks.ts:106-129.
+    Source: packages/adapters/cli/src/commands/hooks.ts:106-129.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-hooks-add
@@ -48,7 +48,7 @@ attributes:
     - "2:usage-error:missing hookType"
   description: |
     Register a hook entry (project or global) for an agent. Source:
-    packages/agent-mux/cli/src/commands/hooks.ts:131-162.
+    packages/adapters/cli/src/commands/hooks.ts:131-162.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-hooks-remove
@@ -67,7 +67,7 @@ attributes:
     - "2:usage-error:missing id"
   description: |
     Remove a registered hook by id. Source:
-    packages/agent-mux/cli/src/commands/hooks.ts:164-182.
+    packages/adapters/cli/src/commands/hooks.ts:164-182.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-hooks-set
@@ -87,7 +87,7 @@ attributes:
     - "2:usage-error:missing id"
   description: |
     Mutate a hook entry's priority/enabled/target. Source:
-    packages/agent-mux/cli/src/commands/hooks.ts:184-212.
+    packages/adapters/cli/src/commands/hooks.ts:184-212.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-hooks-handle
@@ -104,7 +104,7 @@ attributes:
   description: |
     Read a JSON payload on stdin, dispatch through HookDispatcher, emit
     formatHookResult stdout + exit-code. Source:
-    packages/agent-mux/cli/src/commands/hooks.ts:214-239.
+    packages/adapters/cli/src/commands/hooks.ts:214-239.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-gateway-serve
@@ -124,7 +124,7 @@ attributes:
     - "0:success:gateway shut down cleanly on SIGINT/SIGTERM"
   description: |
     Start the agent-mux gateway HTTP/WebSocket service. Source:
-    packages/agent-mux/cli/src/commands/gateway/serve.ts:30-80.
+    packages/adapters/cli/src/commands/gateway/serve.ts:30-80.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-gateway-status
@@ -141,7 +141,7 @@ attributes:
     - "1:general-error:health check non-2xx"
   description: |
     Probe a running gateway's `/healthz` endpoint. Source:
-    packages/agent-mux/cli/src/commands/gateway/status.ts:6-27.
+    packages/adapters/cli/src/commands/gateway/status.ts:6-27.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-gateway-tokens-list
@@ -157,7 +157,7 @@ attributes:
     - "0:success:tokens printed"
   description: |
     List gateway access tokens. Source:
-    packages/agent-mux/cli/src/commands/gateway/tokens.ts:44-61.
+    packages/adapters/cli/src/commands/gateway/tokens.ts:44-61.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-gateway-tokens-create
@@ -178,7 +178,7 @@ attributes:
   description: |
     Create a new gateway access token (optionally render QR for mobile
     onboarding). Source:
-    packages/agent-mux/cli/src/commands/gateway/tokens.ts:63-79.
+    packages/adapters/cli/src/commands/gateway/tokens.ts:63-79.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-gateway-tokens-revoke
@@ -197,7 +197,7 @@ attributes:
     - "2:usage-error:missing token id"
   description: |
     Revoke a gateway access token by id. Source:
-    packages/agent-mux/cli/src/commands/gateway/tokens.ts:81-94.
+    packages/adapters/cli/src/commands/gateway/tokens.ts:81-94.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-help
@@ -213,7 +213,7 @@ attributes:
     - "0:success:help text printed"
   description: |
     Print top-level help (or per-command help if a command name follows).
-    Source: packages/agent-mux/cli/src/commands/help.ts:21-498.
+    Source: packages/adapters/cli/src/commands/help.ts:21-498.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-version
@@ -229,4 +229,4 @@ attributes:
     - "0:success:version printed"
   description: |
     Print the CLI version (read from package.json at runtime). Source:
-    packages/agent-mux/cli/src/commands/help.ts:500-505.
+    packages/adapters/cli/src/commands/help.ts:500-505.

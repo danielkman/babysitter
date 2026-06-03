@@ -1,6 +1,6 @@
 # Built-in Adapter Implementations
 
-**Specification v1.0** | `@a5c-ai/agent-mux`
+**Specification v1.0** | `@a5c-ai/adapters`
 
 > **SCOPE EXTENSION:** hermes-agent (`@NousResearch/hermes-agent`) is included as a 10th supported agent per explicit project requirements from the project owner. It extends the original scope document's 9 built-in agents. All hermes-specific content in this spec is marked with this same scope extension note.
 >
@@ -10,7 +10,7 @@
 
 ## 1. Overview
 
-This specification defines the implementation details for all 13 built-in adapter implementations in `@a5c-ai/agent-mux`. Each adapter extends `BaseAgentAdapter` (spec 05 §4) and translates between the unified `AgentAdapter` interface and the native CLI of its target agent.
+This specification defines the implementation details for all 13 built-in adapter implementations in `@a5c-ai/adapters`. Each adapter extends `BaseAgentAdapter` (spec 05 §4) and translates between the unified `AgentAdapter` interface and the native CLI of its target agent.
 
 This is the reference document for adapter authors and consumers who need to understand per-agent behavioral differences. It covers CLI arguments, event parsing, session formats, thinking normalization, install methods, auth detection, plugin delegation, and platform-specific notes for each adapter.
 

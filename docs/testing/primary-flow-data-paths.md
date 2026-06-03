@@ -40,8 +40,8 @@ operator / CI
 | Step | Boundary | Data passed | Required evidence |
 | --- | --- | --- | --- |
 | 1 | SDK setup CLI | Harness name and plugin target via `babysitter harness:install` and `babysitter harness:install-plugin` | Install JSON or log, installed plugin path, marketplace/registry entry, idempotency result |
-| 2 | Agent-mux invocation | Agent name, prompt, `--session`, `--run-id`, cwd/env/model flags from `packages/agent-mux/cli/src/commands/run.ts` | `agent-mux` run ID, selected adapter, cwd, model, prompt digest, session mode |
-| 3 | Agent-mux gateway/runtime | Session runtime and event log under `packages/agent-mux/gateway/src/runs/session-runtime.ts` and `packages/agent-mux/gateway/src/runs/event-log.ts` | Event-log file or API events with monotonic `seq`, `source`, `ts`, event type, `runId` |
+| 2 | Agent-mux invocation | Agent name, prompt, `--session`, `--run-id`, cwd/env/model flags from `packages/adapters/cli/src/commands/run.ts` | `agent-mux` run ID, selected adapter, cwd, model, prompt digest, session mode |
+| 3 | Agent-mux gateway/runtime | Session runtime and event log under `packages/adapters/gateway/src/runs/session-runtime.ts` and `packages/adapters/gateway/src/runs/event-log.ts` | Event-log file or API events with monotonic `seq`, `source`, `ts`, event type, `runId` |
 | 4 | External harness | Native harness session ID, native hook payloads, tool calls, stop/session events | Harness transcript/session ID, native hook payload fixture or redacted live artifact |
 | 5 | Babysitter plugin command | `/babysitter:call` or equivalent Babysitter-enabled session command posted in the harness | Assistant/tool transcript showing command, plugin dispatch evidence, created Babysitter `runId` |
 | 6 | SDK run loop | `run:create`, `run:iterate`, pending effects, `task:post`, terminal completion | `.a5c/runs/<runId>/`, journal/events, `tasks/<effectId>/result.json`, terminal status |
@@ -141,9 +141,9 @@ native harness hook payload on stdin
 | Step | Boundary | Data passed | Required evidence |
 | --- | --- | --- | --- |
 | 1 | Native hook | Claude/Codex/Gemini/etc. JSON stdin and native event name | Raw hook payload fixture or redacted live payload |
-| 2 | CLI entry | `bootstrap`, `invoke`, or `exec` in `packages/agent-mux/hooks/cli/src/cli/commands` | CLI args, adapter name, native event, explicit session override if any |
+| 2 | CLI entry | `bootstrap`, `invoke`, or `exec` in `packages/adapters/hooks/cli/src/cli/commands` | CLI args, adapter name, native event, explicit session override if any |
 | 3 | Adapter load | `loadAdapter` resolves package and capabilities | Adapter name, capability JSON, phase mappings |
-| 4 | Normalize | Adapter builds `UnifiedHookEvent` from `packages/agent-mux/hooks/core/src/types/event.ts` | `version`, `adapter`, `phase`, `rawEventName`, `supportLevel`, `execution.*` |
+| 4 | Normalize | Adapter builds `UnifiedHookEvent` from `packages/adapters/hooks/core/src/types/event.ts` | `version`, `adapter`, `phase`, `rawEventName`, `supportLevel`, `execution.*` |
 | 5 | Handler execution | `runPlan` injects event on stdin and context env into child handlers | Handler command, `HOOKS_PROXY_EVENT`, `AGENT_SESSION_ID`, `AGENT_ADAPTER`, timeout/result |
 | 6 | Merge and persist | Merge result updates session persisted env/context vars | `persistEnv`, `contextVars`, `unsetEnv`, session file diff |
 | 7 | Render | Adapter renderer writes native hook output | Native decision/output JSON and dropped/degraded fields |
@@ -194,8 +194,8 @@ agent-mux launch/run
 
 | Area | Source files to inspect first |
 | --- | --- |
-| Agent-mux CLI and sessions | `packages/agent-mux/cli/src/commands/run.ts`, `packages/agent-mux/cli/src/commands/launch.ts`, `packages/agent-mux/gateway/src/runs/session-runtime.ts`, `packages/agent-mux/gateway/src/runs/event-log.ts` |
+| Agent-mux CLI and sessions | `packages/adapters/cli/src/commands/run.ts`, `packages/adapters/cli/src/commands/launch.ts`, `packages/adapters/gateway/src/runs/session-runtime.ts`, `packages/adapters/gateway/src/runs/event-log.ts` |
 | Babysitter-agent runtime | `packages/tula/platform/src/cli/dispatch.ts`, `packages/tula/platform/src/cli/commands/harness/createRun.ts`, `packages/tula/platform/src/harness/internal/createRun/index.ts`, `packages/tula/platform/src/harness/internal/createRun/orchestration/effects.ts` |
 | SDK run/session loop | `packages/sdk/src/cli/main/runCreate.ts`, `packages/sdk/src/cli/main/taskCommands.ts`, `packages/sdk/src/cli/commands/session/init.ts`, `packages/sdk/src/cli/commands/session/associate.ts` |
-| Hooks-mux | `packages/agent-mux/hooks/cli/src/cli/commands/invoke.ts`, `packages/agent-mux/hooks/cli/src/cli/bootstrap-runtime.ts`, `packages/agent-mux/hooks/core/src/types/event.ts`, `packages/agent-mux/hooks/core/src/normalizer/runner.ts` |
+| Hooks-mux | `packages/adapters/hooks/cli/src/cli/commands/invoke.ts`, `packages/adapters/hooks/cli/src/cli/bootstrap-runtime.ts`, `packages/adapters/hooks/core/src/types/event.ts`, `packages/adapters/hooks/core/src/normalizer/runner.ts` |
 | Transport-mux | `packages/transport-mux/src/index.ts`, `packages/transport-mux/tests/e2e/http-roundtrip.test.ts`, `packages/transport-mux/tests/runtime.test.ts` |

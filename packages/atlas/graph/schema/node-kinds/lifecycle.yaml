@@ -478,7 +478,7 @@ nodeKinds:
 
     issue which is then projected onto a derived board. Sourced from
 
-    packages/agent-mux/core/src/automation.ts (AutomationRule,
+    packages/adapters/core/src/automation.ts (AutomationRule,
 
     TimerAutomationTrigger, WebhookAutomationTrigger).
 
@@ -1210,7 +1210,7 @@ nodeKinds:
 - id: node:activity-entry
   name: ActivityEntry
   origin: derived
-  originContext: catalog pass 52 / agent-mux KanbanActivityEntry (packages/agent-mux/core/src/kanban.ts) — kanban-level audit/activity-feed entry (issue moved, decomposition added, run dispatched, etc.)
+  originContext: catalog pass 52 / agent-mux KanbanActivityEntry (packages/adapters/core/src/kanban.ts) — kanban-level audit/activity-feed entry (issue moved, decomposition added, run dispatched, etc.)
   prefix: activity-entry
   cluster: 6-lifecycle
   purpose: an entry in the kanban-level activity feed (issue moved to In-Progress, PR linked, decomposition added, run dispatched). Distinct from RunJournalEvent (run-level effect events) and Span (observability traces) — ActivityEntry is the user-visible audit trail
@@ -1262,7 +1262,7 @@ nodeKinds:
 - id: node:issue-dispatch-state
   name: IssueDispatchState
   origin: derived
-  originContext: catalog pass 52 / agent-mux KanbanIssueDispatchState (packages/agent-mux/core/src/kanban.ts) — readiness of an issue for dispatch to an agent
+  originContext: catalog pass 52 / agent-mux KanbanIssueDispatchState (packages/adapters/core/src/kanban.ts) — readiness of an issue for dispatch to an agent
   prefix: issue-dispatch-state
   cluster: 6-lifecycle
   purpose: records whether an Issue is currently dispatchable to an agent (acceptance criteria + dependencies satisfied; workspace ready) and the currently dispatched RunAttempt(s) if any. Bridges Issue (catalog pass 19) + RunAttempt (catalog pass 18) + AcceptanceCriterion (catalog pass 32)

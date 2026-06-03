@@ -31,7 +31,7 @@
  *   packages/agent-core/src/session.ts,
  *   packages/agent-core/src/agenticTools/config/state.ts,
  *   packages/tula/platform/src/harness/agenticTools/config/state.ts, and
- *   packages/agent-mux/cli/src/index.ts.
+ *   packages/adapters/cli/src/index.ts.
  * - docs/here-be-dragons.md already contains the contract table for the issue-listed
  *   AZURE_OPENAI_*, AMUX_*, and BABYSITTER_* coupling, so the implementation should
  *   update that documentation only when the live hazard is actually removed.
@@ -254,8 +254,8 @@ export const readIssueContextTask = defineTask('issue-584.read-issue-context', (
         'packages/agent-core/src/session.ts',
         'packages/agent-core/src/agenticTools/config/state.ts',
         'packages/tula/platform/src/harness/agenticTools/config/state.ts',
-        'packages/agent-mux/cli/src/index.ts',
-        'packages/agent-mux/observability/src/logger.ts',
+        'packages/adapters/cli/src/index.ts',
+        'packages/adapters/observability/src/logger.ts',
         'package.json',
         'Return JSON: { title, labels, rawIssue, comments, isPullRequest, affectedFiles, envContractTable, mutationEvidence, readerEvidence, verificationScripts, acceptanceCriteria, risks, relatedIssues, priorPlanningPrs }.',
       ],

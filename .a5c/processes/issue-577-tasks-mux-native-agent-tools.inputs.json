@@ -82,8 +82,8 @@
     "npm run build:sdk",
     "npm run test --workspace=@a5c-ai/agent-comm-mux",
     "npm run build --workspace=@a5c-ai/agent-comm-mux",
-    "npm run test --workspace=@a5c-ai/agent-mux-adapters",
-    "npm run build --workspace=@a5c-ai/agent-mux-adapters",
+    "npm run test --workspace=@a5c-ai/adapters-codecs",
+    "npm run build --workspace=@a5c-ai/adapters-codecs",
     "npm run test:architecture",
     "npm run verify:metadata",
     "git diff --check"

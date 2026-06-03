@@ -112,7 +112,7 @@ const verifyTask = defineTask('issue-439.verify', (args, taskCtx) => ({
     command: [
       'set -euo pipefail',
       'node -e "const p=require(\'./package.json\'); if (p.devDependencies[\'@anthropic-ai/claude-agent-sdk\'] !== \'0.3.152\') throw new Error(\'root devDependency not 0.3.152\')"',
-      'node -e "const p=require(\'./packages/agent-mux/adapters/package.json\'); if (p.dependencies[\'@anthropic-ai/claude-agent-sdk\'] !== \'0.3.152\') throw new Error(\'adapter dependency not 0.3.152\')"',
+      'node -e "const p=require(\'./packages/adapters/adapters/package.json\'); if (p.dependencies[\'@anthropic-ai/claude-agent-sdk\'] !== \'0.3.152\') throw new Error(\'adapter dependency not 0.3.152\')"',
       'rg -n \'versionRange: ">=0\\.3\\.152"|releaseNotesUrl: "https://github.com/anthropics/claude-agent-sdk-typescript/releases/tag/v0\\.3\\.152"\' packages/atlas/graph/agent-stack/versions/claude-agent-sdk-current.yaml',
       'rg -n "MessageDisplay|reloadSkills|sessionTitle|hookSpecificOutput" packages/hooks-mux packages/sdk packages/agent-catalog docs -g "*.ts" -g "*.md"',
       'npm run verify:metadata',
@@ -139,7 +139,7 @@ const readArtifactsTask = defineTask('issue-439.read-artifacts', (args, taskCtx)
     command: [
       'set -euo pipefail',
       'git status --short',
-      'git diff -- package.json package-lock.json packages/agent-mux/adapters/package.json packages/agent-mux/adapters/package-lock.json packages/atlas/graph/agent-stack/versions/claude-agent-sdk-current.yaml packages/hooks-mux packages/sdk packages/agent-catalog docs .a5c/processes/issue-439-claude-agent-sdk-0-3-152.js',
+      'git diff -- package.json package-lock.json packages/adapters/adapters/package.json packages/adapters/adapters/package-lock.json packages/atlas/graph/agent-stack/versions/claude-agent-sdk-current.yaml packages/hooks-mux packages/sdk packages/agent-catalog docs .a5c/processes/issue-439-claude-agent-sdk-0-3-152.js',
     ].join('\n'),
     expectedExitCode: 0,
     timeout: 30000,
@@ -186,7 +186,7 @@ const publishTask = defineTask('issue-439.publish', (args, taskCtx) => ({
   shell: {
     command: [
       'set -euo pipefail',
-      'git add package.json package-lock.json packages/agent-mux/adapters/package.json',
+      'git add package.json package-lock.json packages/adapters/adapters/package.json',
       'git add packages/atlas/graph/agent-stack/versions/claude-agent-sdk-current.yaml',
       'git add packages/hooks-mux packages/sdk packages/agent-catalog docs',
       'git add -f .a5c/processes/issue-439-claude-agent-sdk-0-3-152.js',

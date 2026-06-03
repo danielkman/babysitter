@@ -173,7 +173,7 @@
   "notes": [
     "Built Atlas first with npm run build:sdk.",
     "Used packages/atlas/dist/catalog/sdk.js listPluginTargetDescriptors() and scripts/sync-external-plugin-repos.mjs buildTargetsFromCatalog() logic to inspect catalog targets.",
-    "Scanned packages/agent-mux/adapters/src for npm install -g commands and excluded @a5c-ai/* plugin packages.",
+    "Scanned packages/adapters/adapters/src for npm install -g commands and excluded @a5c-ai/* plugin packages.",
     "Checked npm latest for npm packages, PyPI for hermes-agent, GitHub releases for release bodies, and Cursor official changelog for Cursor's non-npm marker.",
     "Atlas build:index completed after edits with existing parseErrors: 1."
   ]

@@ -1,6 +1,6 @@
 # Config Manager, Auth Manager, and Agent Configuration
 
-**Specification v1.0** | `@a5c-ai/agent-mux`
+**Specification v1.0** | `@a5c-ai/adapters`
 
 > **SCOPE EXTENSION:** hermes-agent (`@NousResearch/hermes-agent`) is included as a 10th supported agent per explicit project requirements from the project owner. It extends the original scope document's 9 built-in agents. All hermes-specific content in this spec is marked with this same scope extension note.
 

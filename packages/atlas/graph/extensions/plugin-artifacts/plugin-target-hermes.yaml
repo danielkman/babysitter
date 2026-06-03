@@ -44,7 +44,7 @@ attributes:
     - "hermes"
   capabilities:
     - HeadlessPrompt
-  adapterModule: "@a5c-ai/agent-mux-adapters/hermes-adapter"
+  adapterModule: "@a5c-ai/adapters-codecs/hermes-adapter"
   externalRepo: "a5c-ai/babysitter-hermes"
   externalPackageName: "@a5c-ai/babysitter-hermes"
   generatedSourceDir: "hermes"

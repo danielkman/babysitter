@@ -4,7 +4,7 @@ id: path:agent-mux-cli
 attributes:
   pathId: path:agent-mux-cli
   displayName: "agent-mux CLI workspace"
-  path: "packages/agent-mux/cli"
+  path: "packages/adapters/cli"
   pathKind: source-of-truth-dir
   ownerKind: PackageSurface
   ownerId: package:a5c-ai-agent-mux-cli
@@ -19,7 +19,7 @@ id: path:agent-mux-gateway
 attributes:
   pathId: path:agent-mux-gateway
   displayName: "agent-mux gateway workspace"
-  path: "packages/agent-mux/gateway"
+  path: "packages/adapters/gateway"
   pathKind: source-of-truth-dir
   ownerKind: PackageSurface
   ownerId: package:a5c-ai-agent-mux-gateway
@@ -34,7 +34,7 @@ id: path:agent-mux-tui
 attributes:
   pathId: path:agent-mux-tui
   displayName: "agent-mux TUI workspace"
-  path: "packages/agent-mux/tui"
+  path: "packages/adapters/tui"
   pathKind: source-of-truth-dir
   ownerKind: PackageSurface
   ownerId: package:a5c-ai-agent-mux-tui
@@ -49,7 +49,7 @@ id: path:agent-mux-ui
 attributes:
   pathId: path:agent-mux-ui
   displayName: "agent-mux UI shared workspace"
-  path: "packages/agent-mux/ui"
+  path: "packages/adapters/ui"
   pathKind: source-of-truth-dir
   ownerKind: PackageSurface
   ownerId: package:a5c-ai-agent-mux-ui
@@ -64,7 +64,7 @@ id: path:agent-mux-webui
 attributes:
   pathId: path:agent-mux-webui
   displayName: "agent-mux Web UI workspace"
-  path: "packages/agent-mux/webui"
+  path: "packages/adapters/webui"
   pathKind: source-of-truth-dir
   ownerKind: PackageSurface
   ownerId: package:a5c-ai-agent-mux-webui
@@ -79,7 +79,7 @@ id: path:agent-mux-harness-mock
 attributes:
   pathId: path:agent-mux-harness-mock
   displayName: "agent-mux harness mock workspace"
-  path: "packages/agent-mux/harness-mock"
+  path: "packages/adapters/harness-mock"
   pathKind: source-of-truth-dir
   ownerKind: PackageSurface
   ownerId: package:a5c-ai-agent-mux-harness-mock
@@ -94,7 +94,7 @@ id: path:agent-mux-observability
 attributes:
   pathId: path:agent-mux-observability
   displayName: "agent-mux observability workspace"
-  path: "packages/agent-mux/observability"
+  path: "packages/adapters/observability"
   pathKind: source-of-truth-dir
   ownerKind: PackageSurface
   ownerId: package:a5c-ai-agent-mux-observability
@@ -109,7 +109,7 @@ id: path:agent-mux-sdk
 attributes:
   pathId: path:agent-mux-sdk
   displayName: "agent-mux umbrella SDK workspace"
-  path: "packages/agent-mux/sdk"
+  path: "packages/adapters/sdk"
   pathKind: source-of-truth-dir
   ownerKind: PackageSurface
   ownerId: package:a5c-ai-agent-mux
@@ -117,14 +117,14 @@ attributes:
   scope: project
   evaluationContext: project
   expansion: literal
-  notes: Umbrella @a5c-ai/agent-mux re-export with amux bin.
+  notes: Umbrella @a5c-ai/adapters re-export with amux bin.
 ---
 nodeKind: PathDescriptor
 id: path:agent-mux-adapters
 attributes:
   pathId: path:agent-mux-adapters
   displayName: "agent-mux adapters workspace"
-  path: "packages/agent-mux/adapters"
+  path: "packages/adapters/adapters"
   pathKind: source-of-truth-dir
   ownerKind: PackageSurface
   ownerId: package:a5c-ai-agent-mux-adapters

@@ -5,8 +5,8 @@ attributes:
   displayName: "agent-mux-remote adapter"
   repoUrl: https://github.com/a5c-ai/babysitter
   ref: main
-  path: packages/agent-mux/adapters/src/agent-mux-remote-adapter.ts
+  path: packages/adapters/adapters/src/agent-mux-remote-adapter.ts
   packageManager: npm
-  packageName: "@a5c-ai/agent-mux"
+  packageName: "@a5c-ai/adapters"
   kind: file-in-package
 edges: {}

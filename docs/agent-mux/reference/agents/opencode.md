@@ -64,7 +64,7 @@ amux run opencode-http --prompt "Add error handling to this function"
 ### Programmatic Examples
 
 ```ts
-import { createClient } from '@a5c-ai/agent-mux';
+import { createClient } from '@a5c-ai/adapters';
 const client = createClient();
 
 // Subprocess adapter

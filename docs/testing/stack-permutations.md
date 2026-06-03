@@ -15,10 +15,10 @@ The test strategy must treat the stack as modular. A valid E2E does not need eve
 | Core Babysitter SDK | `packages/sdk`, `babysitter run:*`, `task:*`, `hook:*`, `plugin:*` | Event-sourced runs, task effects, process state, generic plugin registry, SDK harness install commands | Model session UI, agent-mux adapter registry, provider transport implementation |
 | SDK harness setup | `babysitter harness:install`, `babysitter harness:install-plugin` | Installing external harness CLIs where supported and installing Babysitter harness plugins | `agent-platform` runtime behavior |
 | Babysitter-agent runtime | `packages/tula/platform` runtime CLI | Runtime orchestration UX, model-backed planning/execution, tula-core path, agent-mux bridge for external harness invocation | Harness plugin installation and setup commands |
-| Agent-mux core | `packages/agent-mux/core`, `@a5c-ai/agent-mux` | Adapter registry, `createClient().run`, sessions, workspaces, plugin manager, runtime hooks, provider/model config | Babysitter run journal ownership |
-| Agent-mux adapters | `packages/agent-mux/adapters` | Per-agent spawn/programmatic adapters, capabilities, session parsing, adapter plugin APIs when supported | Generic Babysitter process orchestration |
+| Agent-mux core | `packages/adapters/core`, `@a5c-ai/adapters` | Adapter registry, `createClient().run`, sessions, workspaces, plugin manager, runtime hooks, provider/model config | Babysitter run journal ownership |
+| Agent-mux adapters | `packages/adapters/adapters` | Per-agent spawn/programmatic adapters, capabilities, session parsing, adapter plugin APIs when supported | Generic Babysitter process orchestration |
 | Transport-mux | `packages/transport-mux` | Harness-facing provider protocol routes, local proxy runtime lifecycle, proxy auth, runtime env injection, passthrough forwarding, streaming/non-streaming response shape, cancellation, timeout, and metrics/cache visibility | Installing harnesses/plugins, normalizing hooks, owning Babysitter journals, or proving agent-mux adapter/session semantics without a consumer |
-| Hooks-mux | `packages/agent-mux/hooks/*` | Normalizing raw hook payloads and merge/policy behavior across harnesses | Agent-mux runtime hook dispatch and SDK stop-hook iteration policy |
+| Hooks-mux | `packages/adapters/hooks/*` | Normalizing raw hook payloads and merge/policy behavior across harnesses | Agent-mux runtime hook dispatch and SDK stop-hook iteration policy |
 | Agent-core | `packages/tula/core` | Programmatic model session backend and tool-call loop used by internal/runtime paths | External harness plugin installation |
 | Agent-plugins-mux | `packages/extension-mux` | Plugin target discovery and plugin target contracts | Runtime session execution |
 

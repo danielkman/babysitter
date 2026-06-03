@@ -25,10 +25,10 @@ The long-term target is one repository coverage artifact with package-level sect
 - `@a5c-ai/babysitter-sdk`,
 - `@a5c-ai/tula-platform`,
 - `@a5c-ai/tula-core`,
-- `@a5c-ai/agent-mux-transport`,
-- the `@a5c-ai/agent-mux` package family,
+- `@a5c-ai/adapters-transport`,
+- the `@a5c-ai/adapters` package family,
 - the hooks-mux package family,
-- `@a5c-ai/agent-mux-extensions`,
+- `@a5c-ai/adapters-extensions`,
 - `@a5c-ai/cloud`,
 - docs/generator checks.
 

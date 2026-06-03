@@ -84,7 +84,7 @@ attributes:
   displayName: "Supports glob path filters in trigger queries"
   description: |
     Trigger queries accept glob patterns over changed-file paths
-    (`path:packages/agent-mux/**`). `**` matches any depth, `*` matches
+    (`path:packages/adapters/**`). `**` matches any depth, `*` matches
     a single segment, `?` matches a single character; backslashes are
     normalized to forward slashes before matching.
     Source: packages/triggers-mux/src/query.ts:20 (globToRegExp),

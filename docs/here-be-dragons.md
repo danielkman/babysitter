@@ -13,22 +13,22 @@ Files/modules that concentrate the most danger across multiple categories.
 | File | Categories | Top Risk |
 |------|-----------|----------|
 | `packages/tula/core/src/session.ts` | coupling, caveat | 8 env vars read with complex fallback chain, 900s timeout unexplained *(model default + anthropic conversion now logged)* |
-| `packages/agent-mux/core/src/provider-resolver.ts` | coupling | 6-level region chain, 5-level model chain *(model source + Google→Vertex now logged)* |
+| `packages/adapters/core/src/provider-resolver.ts` | coupling | 6-level region chain, 5-level model chain *(model source + Google→Vertex now logged)* |
 | `packages/tula/platform/src/harness/internal/createRun/orchestration/effects.ts` | hazard, coupling, caveat | Double-cast type assertions, process.env mutations *(retry loop now logged)* |
 | `packages/tula/platform/src/harness/piWrapper/moduleSupport.ts` | coupling, caveat | Azure env mutations *(URL parse + import error now logged)* |
-| `packages/agent-mux/core/src/spawn-runner.ts` | hazard | 8+ PTY kill/write failures *(4 now logged in spawn-runner)* |
+| `packages/adapters/core/src/spawn-runner.ts` | hazard | 8+ PTY kill/write failures *(4 now logged in spawn-runner)* |
 | `packages/tula/core/src/agenticTools/shared/process.ts` | caveat, hazard | Ripgrep path cached at module load |
-| `packages/agent-mux/webui/src/lib/global-registry.ts` | coupling | globalThis shared mutable state, duplicated in observer-dashboard |
+| `packages/adapters/webui/src/lib/global-registry.ts` | coupling | globalThis shared mutable state, duplicated in observer-dashboard |
 | `packages/tula/platform/src/harness/internal/createRun/planProcess/phase.ts` | hazard | 3-layer recovery chain invisible without verbose *(code block extraction now rejects non-process blocks)* |
 | ~~`packages/sdk/src/storage/journal.ts`~~ | ~~fallback~~ | ~~Atomicity abandoned~~ → now throws on ENOENT. Queue errors logged. |
-| ~~`packages/agent-mux/core/src/kanban.ts`~~ | ~~hazard~~ | ~~2518 lines, 6+ sealed switch statements, stringly-typed status values~~ -> status/workflow mappings now use typed tables with coverage tests. |
+| ~~`packages/adapters/core/src/kanban.ts`~~ | ~~hazard~~ | ~~2518 lines, 6+ sealed switch statements, stringly-typed status values~~ -> status/workflow mappings now use typed tables with coverage tests. |
 
 ---
 
 ## Critical Dragons
 
 ### process.env mutation couples modules through ambient state
-**Files:** `packages/agent-mux/observability/src/logger.ts`, `packages/agent-mux/observability/src/logger-simple.ts`, `packages/agent-mux/observability/src/index.ts`
+**Files:** `packages/adapters/observability/src/logger.ts`, `packages/adapters/observability/src/logger-simple.ts`, `packages/adapters/observability/src/index.ts`
 
 **FIXED for package writers:** Pi Azure defaults now return an overlay instead of writing `AZURE_OPENAI_*`; agent-core and agent-platform config helpers delegate to explicit scoped runtime config state; agent-mux CLI and TUI logging setup reconfigure observability without writing `AMUX_OBSERVABILITY_MODE` into `process.env`.
 
@@ -37,7 +37,7 @@ Files/modules that concentrate the most danger across multiple categories.
 **Tracked separately:** #584 is the focused implementation issue for replacing these ambient in-process writes with an explicit env/config contract. Keep #601 changes from duplicating that larger refactor.
 
 ### ~~globalThis shared mutable state with duplicate definitions~~
-**Files:** `packages/agent-mux/webui/src/lib/global-registry.ts`, `packages/observer-dashboard/src/lib/global-registry.ts`
+**Files:** `packages/adapters/webui/src/lib/global-registry.ts`, `packages/observer-dashboard/src/lib/global-registry.ts`
 
 **FIXED:** Extracted `createGlobalRegistry<TMap>` factory. All three copies (webui, gateway, observer-dashboard) now use the same factory with domain-specific type maps. Factory is canonical source, copies marked.
 
@@ -96,9 +96,9 @@ Files/modules that concentrate the most danger across multiple categories.
 **FIXED:** Shell argv construction is centralized in `@a5c-ai/tula-runtime` through `buildShellInvocation()`. Runtime background spawning, tula-core session execution, and core/platform bash tools all use the shared contract.
 
 ### ~~Kanban status — 6+ sealed switch statements~~
-**File:** `packages/agent-mux/core/src/kanban.ts` (2518 lines)
+**File:** `packages/adapters/core/src/kanban.ts` (2518 lines)
 
-**FIXED:** #586 replaced the repeated status/workflow switch pattern with typed mapping tables and focused coverage in `packages/agent-mux/core/tests/kanban.test.ts`. Adding a new status or workflow state now has a single mapping contract and tests that enumerate the supported values.
+**FIXED:** #586 replaced the repeated status/workflow switch pattern with typed mapping tables and focused coverage in `packages/adapters/core/tests/kanban.test.ts`. Adding a new status or workflow state now has a single mapping contract and tests that enumerate the supported values.
 
 ### ~~Process definition extraction — any code block as fallback~~
 **File:** `packages/tula/platform/src/harness/internal/createRun/planProcess/recovery.ts:33-106`
@@ -181,7 +181,7 @@ The timeout sets an abort signal but doesn't guarantee the request stops. Fetch 
 
 ### ~~Unexplained skipped tests~~
 
-**FIXED:** `packages/agent-mux/ui/src/screens/SessionDetailScreen.test.tsx` now runs the realtime flow and empty-state tests instead of unconditionally skipping them.
+**FIXED:** `packages/adapters/ui/src/screens/SessionDetailScreen.test.tsx` now runs the realtime flow and empty-state tests instead of unconditionally skipping them.
 
 ### Duplicated utility patterns (no shared module)
 
@@ -194,7 +194,7 @@ The timeout sets an abort signal but doesn't guarantee the request stops. Fetch 
 - **Re-export shims**: `agent-core/src/agenticTools/background/state.ts` re-exports from `agent-runtime` for backward compat (documented, but still fragile circular bridge)
 - **Deprecated-but-active**: 7 deprecated exports in `agent-core/src/types.ts` still consumed downstream. `SessionCreateArgs` deprecated in `agent-platform` but re-exported indefinitely
 - ~~**Duplicate global registry**~~: extracted `createGlobalRegistry` factory, all three copies now thin wrappers
-- ~~**`noImplicitAny: false`** in `packages/agent-mux/gateway/tsconfig.json`~~ — **FIXED:** set to `true` along with `useUnknownInCatchVariables`
+- ~~**`noImplicitAny: false`** in `packages/adapters/gateway/tsconfig.json`~~ — **FIXED:** set to `true` along with `useUnknownInCatchVariables`
 - **`skipLibCheck: true`** in root `tsconfig.json` — dependency type incompatibilities invisible
 - **E2E gaps**: No end-to-end coverage for babysitter orchestration loop, hook-mux lifecycle, or trigger dispatching. Heavy reliance on unit tests
 

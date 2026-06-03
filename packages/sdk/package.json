@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "@a5c-ai/atlas": "5.0.0",
-    "@a5c-ai/agent-mux": "^5.0.0",
+    "@a5c-ai/adapters": "^5.0.0",
     "@modelcontextprotocol/sdk": "^1.12.1",
     "@sinclair/typebox": "^0.34.48",
     "fs-extra": "^11.2.0",
@@ -54,15 +54,15 @@
     "puppeteer": "^24.0.0"
   },
   "peerDependencies": {
-    "@a5c-ai/agent-mux-tasks": "^5.0.0"
+    "@a5c-ai/adapters-tasks": "^5.0.0"
   },
   "peerDependenciesMeta": {
-    "@a5c-ai/agent-mux-tasks": {
+    "@a5c-ai/adapters-tasks": {
       "optional": true
     }
   },
   "devDependencies": {
-    "@a5c-ai/agent-mux-tasks": "5.0.0",
+    "@a5c-ai/adapters-tasks": "5.0.0",
     "@eslint/js": "^9.39.4",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^20.11.30",

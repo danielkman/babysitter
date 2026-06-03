@@ -1,9 +1,9 @@
 nodeKind: PackageSurface
 id: package:a5c-ai-agent-comm-mux
 attributes:
-  packageId: "@a5c-ai/agent-mux-comm"
-  packageName: "@a5c-ai/agent-mux-comm"
-  workspacePath: packages/agent-mux/core
+  packageId: "@a5c-ai/adapters-comm"
+  packageName: "@a5c-ai/adapters-comm"
+  workspacePath: packages/adapters/core
   moduleType: typescript
   surfaceKinds:
     - host-detection-consumer

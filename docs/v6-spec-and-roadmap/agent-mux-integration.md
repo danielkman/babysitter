@@ -4,7 +4,7 @@
 
 ## Integration Overview
 
-`agent-mux` is already part of this monorepo under `packages/agent-mux/*`. The V6 task is not to speculate about a future migration from a separate checkout. The V6 task is to describe how the dispatch layer, orchestration layer, hook normalization layer, and plugin packaging surfaces fit together now.
+`agent-mux` is already part of this monorepo under `packages/adapters/*`. The V6 task is not to speculate about a future migration from a separate checkout. The V6 task is to describe how the dispatch layer, orchestration layer, hook normalization layer, and plugin packaging surfaces fit together now.
 
 ## Current Repository Reality
 
@@ -12,31 +12,31 @@ The integrated `agent-mux` package family includes:
 
 ### Core Infrastructure
 
-- **`@a5c-ai/agent-mux-comm`** - Core types, client, and stream engine
-- **`@a5c-ai/agent-mux-adapters`** - Built-in harness adapters
-- **`@a5c-ai/agent-mux-cli`** - `amux` command-line interface
-- **`@a5c-ai/agent-mux`** - Main SDK package and dispatch surface
-- **`@a5c-ai/agent-mux-gateway`** - Gateway services for remote and browser-facing surfaces
+- **`@a5c-ai/adapters-comm`** - Core types, client, and stream engine
+- **`@a5c-ai/adapters-codecs`** - Built-in harness adapters
+- **`@a5c-ai/adapters-cli`** - `amux` command-line interface
+- **`@a5c-ai/adapters`** - Main SDK package and dispatch surface
+- **`@a5c-ai/adapters-gateway`** - Gateway services for remote and browser-facing surfaces
 
 ### User Interfaces
 
-- **`@a5c-ai/agent-mux-ui`** - Shared UI foundation
-- **`@a5c-ai/agent-mux-webui`** - Browser interface
-- **`@a5c-ai/agent-mux-tui`** - Terminal interface
+- **`@a5c-ai/tula-ui`** - Shared UI foundation
+- **`@a5c-ai/tula-webui`** - Browser interface
+- **`@a5c-ai/tula-tui`** - Terminal interface
 
 ### Platform-Specific Applications
 
-- **`@a5c-ai/agent-mux-mobile-ios-app`**
-- **`@a5c-ai/agent-mux-mobile-android-app`**
-- **`@a5c-ai/agent-mux-tv-androidtv-app`**
-- **`@a5c-ai/agent-mux-tv-appletv-app`**
-- **`@a5c-ai/agent-mux-watch-watchos-app`**
-- **`@a5c-ai/agent-mux-watch-wearos-app`**
+- **`@a5c-ai/tula-mobile-ios-app`**
+- **`@a5c-ai/tula-mobile-android-app`**
+- **`@a5c-ai/tula-tv-androidtv-app`**
+- **`@a5c-ai/tula-tv-appletv-app`**
+- **`@a5c-ai/tula-watch-watchos-app`**
+- **`@a5c-ai/tula-watch-wearos-app`**
 
 ### Supporting Services
 
-- **`@a5c-ai/agent-mux-observability`**
-- **`@a5c-ai/agent-mux-harness-mock`**
+- **`@a5c-ai/adapters-observability`**
+- **`@a5c-ai/adapters-harness-mock`**
 - **`@a5c-ai/amux-proxy`**
 
 ## How Agent-Mux Fits Into The Stack
@@ -69,8 +69,8 @@ V6 does not currently commit to forcing agent-mux into a new package hierarchy j
 The monorepo root includes:
 
 - `packages/*`
-- `packages/agent-mux/*`
-- `packages/agent-mux/hooks/*`
+- `packages/adapters/*`
+- `packages/adapters/hooks/*`
 
 That workspace layout is already evidence that agent-mux is part of the repo's current operating model.
 
@@ -87,7 +87,7 @@ The plugin and hook story spans multiple packages:
 
 - `plugins/babysitter-unified/` is the canonical plugin authoring surface.
 - `packages/extension-mux` is the compiler for harness-specific outputs.
-- `packages/agent-mux/hooks/*` normalizes hook contracts across harnesses.
+- `packages/adapters/hooks/*` normalizes hook contracts across harnesses.
 - per-harness plugin bundles remain the real installation surfaces users consume.
 
 For V6, this package set is the concrete delivery path for metaplugins on legacy non-Babysitter agents. The metaplugin itself is the higher-order capability being expressed across plugin and hook surfaces; `extension-mux` only compiles the concrete outputs that carry it. The intended examples are memory systems, governance or policy engines, and discipline-enforcement layers. The `babysitter-unified` plugin family fits here as a first-party unified plugin source and deployment surface, not as the definition of metaplugins.
@@ -111,7 +111,7 @@ For the current integrated story, read:
 1. [Unified Stack Architecture](unified-stack-architecture.md)
 2. [Package Specifications](package-specs.md)
 3. [docs/agent-mux/README](https://github.com/a5c-ai/babysitter/blob/main/docs/agent-mux/README.md)
-4. `packages/agent-mux/README.md`
+4. `packages/adapters/README.md`
 
 ---
 

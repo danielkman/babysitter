@@ -209,7 +209,7 @@ During process execution, the internal harness can **delegate tasks to any disco
 
 ## Runtime Package Builds
 
-For the core runtime chain (`@a5c-ai/babysitter-sdk`, `@a5c-ai/agent-mux`, `@a5c-ai/tula-core`, `@a5c-ai/tula-platform`), use the shared workspace entrypoint from a fresh checkout:
+For the core runtime chain (`@a5c-ai/babysitter-sdk`, `@a5c-ai/adapters`, `@a5c-ai/tula-core`, `@a5c-ai/tula-platform`), use the shared workspace entrypoint from a fresh checkout:
 
 ```bash
 npm ci
@@ -225,7 +225,7 @@ npm run build --workspace=@a5c-ai/tula-core
 npm run build --workspace=@a5c-ai/tula-platform
 ```
 
-Those package-local builds now use `tsc --build` project references where the runtime packages are owned in this workspace, and they explicitly bootstrap the `@a5c-ai/agent-mux` SDK chain through the root runtime scripts. Fresh-checkout validation no longer assumes prebuilt upstream `dist/` artifacts.
+Those package-local builds now use `tsc --build` project references where the runtime packages are owned in this workspace, and they explicitly bootstrap the `@a5c-ai/adapters` SDK chain through the root runtime scripts. Fresh-checkout validation no longer assumes prebuilt upstream `dist/` artifacts.
 
 `@a5c-ai/agent-catalog` is the internal ontology and discovery data-plane package consumed by SDK, agent-mux, hooks-mux, plugin tooling, and the catalog UI. It ships graph, evidence, and package-doc assets for workspace consumers, with its package-level contract documented in [`packages/agent-catalog/README.md`](packages/agent-catalog/README.md) and [`packages/agent-catalog/docs/ontology-evidence.md`](packages/agent-catalog/docs/ontology-evidence.md). Its validation path is `npm run ci:test --workspace=@a5c-ai/agent-catalog` rather than the central publish workflows.
 

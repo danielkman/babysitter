@@ -28,6 +28,6 @@
     "selectedShape": "flat phase list",
     "reason": "Issue #631 is defined integration work with known target files and risks; no competing bug hypotheses are needed.",
     "dependencyCaveat": "Issue #630 responder-type work is being implemented in parallel. The process starts with a dependency/reuse audit and adapts to the landed surface before implementation.",
-    "preferredIntegrationSeam": "Use current @a5c-ai/agent-mux createClient()/AgentMuxClient.run()/await RunHandle unless a stable amuxBridge/getAmuxClient seam exists on the execution branch."
+    "preferredIntegrationSeam": "Use current @a5c-ai/adapters createClient()/AgentMuxClient.run()/await RunHandle unless a stable amuxBridge/getAmuxClient seam exists on the execution branch."
   }
 }

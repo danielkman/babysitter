@@ -2,7 +2,7 @@
 
 > Archived design document. Preserved for historical context; not part of the current normative `reference/` contract.
 
-**Specification v1.0** | `@a5c-ai/agent-mux-cli`
+**Specification v1.0** | `@a5c-ai/adapters-cli`
 
 ---
 
@@ -479,12 +479,12 @@ A future enhancement could add `--observe` to `amux launch` that tees the harnes
 
 ### 9.1 Package Location
 
-The `launch` command is implemented in `packages/cli/src/commands/launch.ts` as part of the existing `@a5c-ai/agent-mux-cli` package. It reuses:
+The `launch` command is implemented in `packages/cli/src/commands/launch.ts` as part of the existing `@a5c-ai/adapters-cli` package. It reuses:
 
 - `AdapterRegistry` for harness lookup and capability checking
 - `BaseAgentAdapter.detectInstallation()` for binary discovery
 - `BaseAgentAdapter.detectAuth()` for auth validation
-- Provider resolution from `@a5c-ai/agent-mux-comm` (new module: `provider-config.ts`)
+- Provider resolution from `@a5c-ai/adapters-comm` (new module: `provider-config.ts`)
 
 ### 9.2 Proxy Process Management
 

@@ -7,7 +7,7 @@ read it in two ways: **live** (during `client.run`) or **retroactively**
 ## Live: per-run budget meter
 
 ```ts
-import { createClient } from '@a5c-ai/agent-mux';
+import { createClient } from '@a5c-ai/adapters';
 
 const client = createClient();
 const handle = client.run({ agent: 'claude-code', prompt: '…' });
@@ -30,7 +30,7 @@ The final total is also available as `(await handle.done).cost`.
 same events the live stream produced. Fold them with the exported helper:
 
 ```ts
-import { createClient, sumCost } from '@a5c-ai/agent-mux';
+import { createClient, sumCost } from '@a5c-ai/adapters';
 
 const sessions = createClient().sessions('claude-code');
 const { events } = await sessions.read(sessionId);
@@ -42,7 +42,7 @@ console.log(`$${totals.totalUsd.toFixed(4)} · ${totals.totalTokens} tok`);
 `sumCostAsync` works directly on `handle.events()`:
 
 ```ts
-import { sumCostAsync } from '@a5c-ai/agent-mux';
+import { sumCostAsync } from '@a5c-ai/adapters';
 const totals = await sumCostAsync(handle.events());
 ```
 
@@ -53,7 +53,7 @@ want every tool result, every thinking delta, etc., without writing the
 switch yourself:
 
 ```ts
-import { filterEvents } from '@a5c-ai/agent-mux';
+import { filterEvents } from '@a5c-ai/adapters';
 
 for (const tool of filterEvents(events, 'tool_result')) {
   // tool.toolName, tool.output, tool.durationMs are all typed

@@ -69,7 +69,7 @@ interface CacheEntry {
 
 const CACHE_TTL_MS = 60_000;
 const DEFAULT_TIMEOUT_MS = 5_000;
-const AGENT_MUX_PACKAGE = "@a5c-ai/agent-mux";
+const AGENT_MUX_PACKAGE = "@a5c-ai/adapters";
 const UNAVAILABLE_RESULT: ExternalAgentDiscovery = {
   available: false,
   agents: [],

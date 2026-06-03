@@ -44,8 +44,8 @@
     "packages/hooks-mux/cli/src",
     "packages/hooks-mux/adapter-claude/src",
     "packages/tula/platform/src",
-    "packages/agent-mux/launch/src",
-    "packages/agent-mux/adapters/src",
+    "packages/adapters/launch/src",
+    "packages/adapters/adapters/src",
     "packages/agent-catalog/src",
     "packages/atlas/graph"
   ],

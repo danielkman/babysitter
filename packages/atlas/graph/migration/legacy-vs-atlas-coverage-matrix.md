@@ -127,7 +127,7 @@ catalog-faithful (codegen-ready).
 | `agent-mux/webui` | browser app | PackageSurface + PathDescriptor (catalog pass 96-new) | GREEN |
 | `agent-mux/harness-mock` | mock harness emulator | PackageSurface + PathDescriptor (catalog pass 96-new) | GREEN |
 | `agent-mux/observability` | logger + telemetry library | PackageSurface + PathDescriptor (catalog pass 96-new) | GREEN |
-| `agent-mux/sdk` (umbrella @a5c-ai/agent-mux) | re-export + amux bin | PackageSurface + PathDescriptor (catalog pass 96-new) | GREEN |
+| `agent-mux/sdk` (umbrella @a5c-ai/adapters) | re-export + amux bin | PackageSurface + PathDescriptor (catalog pass 96-new) | GREEN |
 | `agent-mux/adapters` | per-harness adapters bundle | PackageSurface + PathDescriptor (catalog pass 96-new); adapter behavior on AgentRuntimeImpl | GREEN |
 | `extension-mux` | PluginTarget×17, schema/transform/emit | PluginTargetDescriptor + PackageSurface | GREEN |
 | `hooks-mux/core` | HookMapping records, MergePolicy, DecisionVerb | HookMapping, HookSurface, MergePolicy, DecisionVerb | GREEN |

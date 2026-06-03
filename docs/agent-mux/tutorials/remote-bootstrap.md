@@ -10,7 +10,7 @@ credentials, and establishing a session channel.
 ```bash
 # On the remote machine
 curl -fsSL https://nodejs.org/dist/v22.x/node-v22.x-linux-x64.tar.xz | tar -xJ
-npm i -g @a5c-ai/agent-mux-cli
+npm i -g @a5c-ai/adapters-cli
 ```
 
 Or use the built-in bootstrap command, which copies an install script over
@@ -37,7 +37,7 @@ setup would need. Options:
 ## 3. Running against the remote
 
 ```ts
-import { AgentMuxClient } from '@a5c-ai/agent-mux';
+import { AgentMuxClient } from '@a5c-ai/adapters';
 
 const client = new AgentMuxClient();
 const handle = await client.run({

@@ -4,8 +4,8 @@ The agent-mux family has pervasive naming inconsistencies across 42 packages, 8 
 
 ## Target Convention
 
-- **Package name**: `@a5c-ai/agent-mux-<feature>` (e.g., `@a5c-ai/agent-mux-transport`)
-- **Directory**: `packages/agent-mux/{feature}/` (all under agent-mux umbrella)
+- **Package name**: `@a5c-ai/adapters-<feature>` (e.g., `@a5c-ai/adapters-transport`)
+- **Directory**: `packages/adapters/{feature}/` (all under agent-mux umbrella)
 - **Binary**: `agent-mux-{feature}` (e.g., `agent-mux-hooks`)
 - **Env vars**: `AGENT_MUX_*` (no `AMUX_*`)
 - **Code identifiers**: `agentMux*` camelCase (no `amux*`)

@@ -19,17 +19,17 @@ Make npm package names and directory names match graph mux names.
 | Aspect | Current | Target |
 |--------|---------|--------|
 | Graph mux | `mux:extension-mux` | — |
-| npm name | `@a5c-ai/agent-mux-extensions` | `@a5c-ai/agent-mux-extensions` |
+| npm name | `@a5c-ai/adapters-extensions` | `@a5c-ai/adapters-extensions` |
 | Directory | `packages/extension-mux/` | `packages/extension-mux/` |
 | Binary | (none) | (none) |
 
 **Tasks:**
 - [ ] Rename directory `packages/extension-mux/` → `packages/extension-mux/`
-- [ ] Update `package.json` name to `@a5c-ai/agent-mux-extensions`
+- [ ] Update `package.json` name to `@a5c-ai/adapters-extensions`
 - [ ] Update all workspace references in root `package.json`
 - [ ] Update all import paths across the monorepo
 - [ ] Update CI workflows referencing the old name
-- [ ] Publish `@a5c-ai/agent-mux-extensions` and deprecate `@a5c-ai/agent-mux-extensions` on npm
+- [ ] Publish `@a5c-ai/adapters-extensions` and deprecate `@a5c-ai/adapters-extensions` on npm
 - [ ] Update graph YAML to reference new package name in SourceRef nodes
 
 ### 1.2 tasks-mux → tasks-mux
@@ -37,18 +37,18 @@ Make npm package names and directory names match graph mux names.
 | Aspect | Current | Target |
 |--------|---------|--------|
 | Graph mux | `mux:tasks-mux` | — |
-| npm name | `@a5c-ai/agent-mux-tasks` | `@a5c-ai/agent-mux-tasks` |
+| npm name | `@a5c-ai/adapters-tasks` | `@a5c-ai/adapters-tasks` |
 | Directory | `packages/tasks-mux/` | `packages/tasks-mux/` |
 | Binary | `tasks-mux` | `tasks-mux` |
 
 **Tasks:**
 - [ ] Rename directory `packages/tasks-mux/` → `packages/tasks-mux/`
-- [ ] Update `package.json` name to `@a5c-ai/agent-mux-tasks`
+- [ ] Update `package.json` name to `@a5c-ai/adapters-tasks`
 - [ ] Update binary name in package.json bin field
 - [ ] Update all workspace references
 - [ ] Update all import paths across the monorepo
 - [ ] Update CI workflows
-- [ ] Publish `@a5c-ai/agent-mux-tasks` and deprecate `@a5c-ai/agent-mux-tasks`
+- [ ] Publish `@a5c-ai/adapters-tasks` and deprecate `@a5c-ai/adapters-tasks`
 - [ ] Update graph YAML SourceRef nodes
 
 ### 1.3 agent-mux decomposition — align sub-packages to graph muxes
@@ -64,14 +64,14 @@ Currently these are split differently:
 - `agent-mux-adapters` = part of agent-config-mux
 
 **Tasks:**
-- [ ] Extract `agent-launch-mux` from `agent-mux-cli/src/commands/launch.ts` into `packages/agent-mux/launch/`
-  - npm: `@a5c-ai/agent-mux-launch`
+- [ ] Extract `agent-launch-mux` from `agent-mux-cli/src/commands/launch.ts` into `packages/adapters/launch/`
+  - npm: `@a5c-ai/adapters-launch`
   - Owns: InvocationOptions, SpawnArgs, process lifecycle, signal propagation, retry
-- [ ] Extract `agent-config-mux` from `agent-mux-cli/src/commands/install*.ts` + `agent-mux-adapters/` into `packages/agent-mux/config/`
-  - npm: `@a5c-ai/agent-mux-config`
+- [ ] Extract `agent-config-mux` from `agent-mux-cli/src/commands/install*.ts` + `agent-mux-adapters/` into `packages/adapters/config/`
+  - npm: `@a5c-ai/adapters-config`
   - Owns: install, uninstall, update, detect, auth verification per adapter
 - [ ] Rename `agent-comm-mux` to `agent-comm-mux`
-  - npm: `@a5c-ai/agent-mux-comm`
+  - npm: `@a5c-ai/adapters-comm`
   - Owns: event streaming, client, canonical event schema
 - [ ] Keep `agent-mux-cli` as the composition CLI (`amux`) that wires the 3 muxes together
 - [ ] Keep `agent-mux-gateway`, `agent-mux-tui`, `agent-mux-ui`, `agent-mux-webui` as presentation packages (they consume muxes)
@@ -110,7 +110,7 @@ Currently scattered across:
 - `agent-comm-mux/` (tool call events)
 
 **Tasks:**
-- [ ] Create `packages/tool-mux/` with npm name `@a5c-ai/agent-mux-tools`
+- [ ] Create `packages/tool-mux/` with npm name `@a5c-ai/adapters-tools`
 - [ ] Define `ToolDescriptor` interface (from graph node kind)
 - [ ] Implement tool schema translation: MCP ↔ OpenAI function calling ↔ Anthropic tools ↔ Google functionDeclarations
 - [ ] Implement `ToolDispatchPolicy` (from graph): routing rules for which tool server handles which tool
@@ -125,7 +125,7 @@ Graph defines this as a mux but there's no formal schema.
 - [ ] Define canonical event types in TypeScript: `AgentEvent`, `ToolCallEvent`, `MessageEvent`, `SessionEvent`, `ErrorEvent`
 - [ ] Create JSON Schema for each event type
 - [ ] Validate adapter output against schema in tests
-- [ ] Publish schema as part of `@a5c-ai/agent-mux-comm` package
+- [ ] Publish schema as part of `@a5c-ai/adapters-comm` package
 
 ---
 

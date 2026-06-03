@@ -1,6 +1,6 @@
 # Adapter Contract, BaseAgentAdapter, and AdapterRegistry
 
-**Specification v1.0** | `@a5c-ai/agent-mux`
+**Specification v1.0** | `@a5c-ai/adapters`
 
 > **Note:** hermes-agent is included as a 10th supported agent per project requirements, extending the original scope's 9 agents. All ten built-in agents (claude, codex, gemini, copilot, cursor, opencode, pi, omp, openclaw, hermes) share the same adapter contract.
 
@@ -544,7 +544,7 @@ interface AgentAdapterInfo {
 
   /**
    * Whether this adapter was registered as a built-in (from
-   * @a5c-ai/agent-mux-adapters) or as a plugin adapter via register().
+   * @a5c-ai/adapters-codecs) or as a plugin adapter via register().
    */
   source: 'built-in' | 'plugin';
 }
@@ -937,7 +937,7 @@ This section describes the complete lifecycle of an adapter from registration th
 
 Adapters are registered in two ways:
 
-1. **Built-in adapters.** When `@a5c-ai/agent-mux-adapters` is imported (or `@a5c-ai/agent-mux` is imported, which re-exports it), all ten built-in adapter instances are created and registered with the `AdapterRegistry`. This happens synchronously during module initialization. Built-in adapters are marked with `source: 'built-in'`.
+1. **Built-in adapters.** When `@a5c-ai/adapters-codecs` is imported (or `@a5c-ai/adapters` is imported, which re-exports it), all ten built-in adapter instances are created and registered with the `AdapterRegistry`. This happens synchronously during module initialization. Built-in adapters are marked with `source: 'built-in'`.
 
 2. **Plugin adapters.** Third-party adapters are registered by calling `mux.adapters.register(adapter)` at any time after the client is created. Plugin adapters are marked with `source: 'plugin'`. See Section 8 for details.
 
@@ -1006,8 +1006,8 @@ Third-party developers can add support for agents not included in the ten built-
 ### 8.1 Registration API
 
 ```typescript
-import { createClient, BaseAgentAdapter } from '@a5c-ai/agent-mux';
-import type { AgentAdapter, RunOptions, SpawnArgs, ParseContext, AgentEvent } from '@a5c-ai/agent-mux';
+import { createClient, BaseAgentAdapter } from '@a5c-ai/adapters';
+import type { AgentAdapter, RunOptions, SpawnArgs, ParseContext, AgentEvent } from '@a5c-ai/adapters';
 
 // Option A: Extend BaseAgentAdapter for utilities and hooks
 class MyAgentAdapter extends BaseAgentAdapter {
@@ -1074,11 +1074,11 @@ Plugin adapters distributed as npm packages should follow this convention:
 
 - Package name: `agent-mux-adapter-<agent-name>` (e.g., `agent-mux-adapter-aider`).
 - Default export: an `AgentAdapter` instance or a factory function `() => AgentAdapter`.
-- Peer dependency: `@a5c-ai/agent-mux-comm` (to get type definitions).
+- Peer dependency: `@a5c-ai/adapters-comm` (to get type definitions).
 
 ```typescript
 // agent-mux-adapter-aider/src/index.ts
-import { BaseAgentAdapter } from '@a5c-ai/agent-mux-comm';
+import { BaseAgentAdapter } from '@a5c-ai/adapters-comm';
 
 class AiderAdapter extends BaseAgentAdapter {
   // ... implementation
@@ -1322,4 +1322,4 @@ readonly hostEnvSignals = [
 
 ### Built-in adapter count
 
-`@a5c-ai/agent-mux-adapters` now ships 11 adapters. The 11th is `agent-mux-remote`; see `docs/12-built-in-adapters.md`.
+`@a5c-ai/adapters-codecs` now ships 11 adapters. The 11th is `agent-mux-remote`; see `docs/12-built-in-adapters.md`.

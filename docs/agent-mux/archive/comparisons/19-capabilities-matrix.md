@@ -79,7 +79,7 @@ this matrix can be treated as fully enforced runtime behavior for those paths.
 ## How this is derived
 
 Each adapter declares `AgentCapabilities` (see
-`packages/agent-mux/core/src/capabilities.ts`)
+`packages/adapters/core/src/capabilities.ts`)
 and `ModelCapabilities[]`. The matrix above is a human-readable summary;
 treat the declared capability objects as the source of truth for runtime
 feature gating:

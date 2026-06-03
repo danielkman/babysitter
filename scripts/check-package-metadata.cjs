@@ -18,33 +18,33 @@ const OLD_AGENT_RUNTIME_PACKAGE = ['@a5c-ai', 'agent-runtime'].join('/');
 const TOP_LEVEL_AGENT_MUX_PACKAGE_MOVES = [
   {
     oldPath: 'packages/transport-mux',
-    newPath: 'packages/agent-mux/transport',
-    oldName: '@a5c-ai/agent-mux-transport',
-    newName: '@a5c-ai/agent-mux-transport',
+    newPath: 'packages/adapters/transport',
+    oldName: '@a5c-ai/adapters-transport',
+    newName: '@a5c-ai/adapters-transport',
   },
   {
     oldPath: 'packages/extension-mux',
-    newPath: 'packages/agent-mux/extensions',
-    oldName: '@a5c-ai/agent-mux-extensions',
-    newName: '@a5c-ai/agent-mux-extensions',
+    newPath: 'packages/adapters/extensions',
+    oldName: '@a5c-ai/adapters-extensions',
+    newName: '@a5c-ai/adapters-extensions',
   },
   {
     oldPath: 'packages/triggers-mux',
-    newPath: 'packages/agent-mux/triggers',
-    oldName: '@a5c-ai/agent-mux-triggers',
-    newName: '@a5c-ai/agent-mux-triggers',
+    newPath: 'packages/adapters/triggers',
+    oldName: '@a5c-ai/adapters-triggers',
+    newName: '@a5c-ai/adapters-triggers',
   },
   {
     oldPath: 'packages/tasks-mux',
-    newPath: 'packages/agent-mux/tasks',
-    oldName: '@a5c-ai/agent-mux-tasks',
-    newName: '@a5c-ai/agent-mux-tasks',
+    newPath: 'packages/adapters/tasks',
+    oldName: '@a5c-ai/adapters-tasks',
+    newName: '@a5c-ai/adapters-tasks',
   },
   {
     oldPath: 'packages/tool-mux',
-    newPath: 'packages/agent-mux/tools',
-    oldName: '@a5c-ai/agent-mux-tools',
-    newName: '@a5c-ai/agent-mux-tools',
+    newPath: 'packages/adapters/tools',
+    oldName: '@a5c-ai/adapters-tools',
+    newName: '@a5c-ai/adapters-tools',
   },
 ];
 
@@ -438,8 +438,8 @@ function verifyTopLevelAgentMuxPackageMoves() {
       fail(`package.json workspaces must not include stale ${move.oldPath}`);
     }
 
-    if (!workspaceEntries.has('packages/agent-mux/*') && !workspaceEntries.has(move.newPath)) {
-      fail(`package.json workspaces must include ${move.newPath} or packages/agent-mux/*`);
+    if (!workspaceEntries.has('packages/adapters/*') && !workspaceEntries.has(move.newPath)) {
+      fail(`package.json workspaces must include ${move.newPath} or packages/adapters/*`);
     }
 
     if (rootReferences.has(move.oldPath)) {

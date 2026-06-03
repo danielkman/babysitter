@@ -70,7 +70,7 @@
     "packages/tula/platform/src/harness/piWrapper.ts",
     "packages/agent-core/src/agenticTools/tools/execution.ts",
     "packages/tula/platform/src/harness/agenticTools/tools/execution.ts",
-    "packages/agent-mux/ui/src/screens/SessionDetailScreen.test.tsx",
+    "packages/adapters/ui/src/screens/SessionDetailScreen.test.tsx",
     "tsconfig.json",
     ".a5c/processes/issue-601-remaining-dragons-plan.mjs",
     ".a5c/processes/issue-601-remaining-dragons-plan.inputs.json"
@@ -78,14 +78,14 @@
   "verificationCommands": [
     "npm run test --workspace=@a5c-ai/agent-core",
     "npm run test --workspace=@a5c-ai/tula-platform",
-    "npm run test:realtime --workspace=@a5c-ai/agent-mux-ui",
+    "npm run test:realtime --workspace=@a5c-ai/tula-ui",
     "npm run build:runtime",
     "npm run test:agent-mux",
     "npm run verify:metadata",
     "git diff --check"
   ],
   "staticGuards": [
-    "No unexplained it.skip entries remain in packages/agent-mux/ui/src/screens/SessionDetailScreen.test.tsx.",
+    "No unexplained it.skip entries remain in packages/adapters/ui/src/screens/SessionDetailScreen.test.tsx.",
     "Any deferred residual stream has an explicit follow-up acceptance criterion.",
     "Docs updates reflect only work actually fixed or explicitly split."
   ],

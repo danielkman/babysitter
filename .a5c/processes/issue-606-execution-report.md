@@ -58,7 +58,7 @@ The current `tasks-mux` package still exposes human breakpoint-oriented responde
 | Agent-platform tasks-mux routing | `packages/tula/platform/src/harness/internal/createRun/orchestration/__tests__/tasksMuxRouting.test.ts` | Blocked by #633. |
 | External task validation | `packages/tula/platform/src/harness/internal/createRun/planProcess/__tests__/externalTaskValidation.test.ts` | Blocked by #605 and #635. |
 | Mocked e2e external agent dispatch | `packages/tula/platform/src/harness/__tests__/e2e-tasks-mux-external-agent.test.ts` | Blocked by #630, #631, #633, and #635. |
-| Live-stack external agent scenario contract | `packages/agent-mux/cli/tests/live-stack/tasks-mux-external-agent-scenario.test.ts` and `.github/workflows/live-stack.yml` | Blocked by #633 and live-stack availability gates. |
+| Live-stack external agent scenario contract | `packages/adapters/cli/tests/live-stack/tasks-mux-external-agent-scenario.test.ts` and `.github/workflows/live-stack.yml` | Blocked by #633 and live-stack availability gates. |
 
 ## Decision
 

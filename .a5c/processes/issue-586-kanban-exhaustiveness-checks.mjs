@@ -100,7 +100,7 @@ const authorRegressionTestsTask = defineTask(
           'Follow TDD: edit tests before production code.',
           'Use the issue context as the acceptance spec.',
           'Do not broaden the issue into a kanban.ts split or unrelated cleanup.',
-          'Prefer packages/agent-mux/core/tests/kanban.test.ts unless research identifies a closer existing test surface.',
+          'Prefer packages/adapters/core/tests/kanban.test.ts unless research identifies a closer existing test surface.',
           'Add tests that enumerate every current KanbanIssueStatus and KanbanWorkflowState mapping.',
           'Cover that backlog/ready map to todo, in-progress/blocked map to in-progress, review maps to review, done maps to done, and workflow-state-to-status preserves backlog when appropriate.',
           'Cover move evaluation enough to prove the centralized mappings still drive WIP, blocked flow, acceptance, and nextStatus behavior.',
@@ -134,7 +134,7 @@ const implementExhaustivenessTask = defineTask(
         role: 'senior TypeScript maintainer',
         task: 'Implement the narrow kanban exhaustiveness guardrails for issue #586.',
         instructions: [
-          'Keep edits scoped to packages/agent-mux/core/src/kanban.ts and focused kanban tests unless research proves another live-path file is necessary.',
+          'Keep edits scoped to packages/adapters/core/src/kanban.ts and focused kanban tests unless research proves another live-path file is necessary.',
           'Prefer exhaustive mapping tables with `satisfies Record<...>` or a local `assertNever` helper over broad control-flow rewrites.',
           'Remove the broad default behavior from `resolveKanbanWorkflowState`; every KanbanIssueStatus member must be handled deliberately.',
           'Make workflow-state labels, allowed transitions, and workflow-state-to-status mapping exhaustive for KanbanWorkflowState.',
@@ -254,10 +254,10 @@ export async function process(inputs, ctx) {
     triageComment: inputs?.triageComment,
     relatedIssues: inputs?.relatedIssues ?? [],
   };
-  const targetFiles = inputs?.targetFiles ?? ['packages/agent-mux/core/src/kanban.ts'];
-  const testFiles = inputs?.testFiles ?? ['packages/agent-mux/core/tests/kanban.test.ts'];
+  const targetFiles = inputs?.targetFiles ?? ['packages/adapters/core/src/kanban.ts'];
+  const testFiles = inputs?.testFiles ?? ['packages/adapters/core/tests/kanban.test.ts'];
   const qualityCommands = inputs?.qualityCommands ?? [
-    'npm run test --workspace=@a5c-ai/agent-comm-mux -- packages/agent-mux/core/tests/kanban.test.ts',
+    'npm run test --workspace=@a5c-ai/agent-comm-mux -- packages/adapters/core/tests/kanban.test.ts',
     'npm run build --workspace=@a5c-ai/agent-comm-mux',
     'npm run test:agent-mux',
   ];

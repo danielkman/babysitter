@@ -6,7 +6,7 @@
   "targetVersion": "0.132.1",
   "stalePackage": "@factory/droid-cli",
   "qualityCommands": [
-    "npm exec -- vitest run --config vitest.config.ts packages/agent-mux/adapters/tests/droid-adapter.test.ts",
+    "npm exec -- vitest run --config vitest.config.ts packages/adapters/adapters/tests/droid-adapter.test.ts",
     "npm run verify:metadata"
   ]
 }

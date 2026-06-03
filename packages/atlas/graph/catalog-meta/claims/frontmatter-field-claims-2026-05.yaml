@@ -50,7 +50,7 @@ attributes:
   subjectId: package:a5c-ai-agent-mux-harness-mock
   subjectKind: PackageSurface
   attribute: surfaceKinds
-  value: '@a5c-ai/agent-mux-harness-mock is modeled as a test-fixture, bin-entrypoint, and harness-emulator package surface.'
+  value: '@a5c-ai/adapters-harness-mock is modeled as a test-fixture, bin-entrypoint, and harness-emulator package surface.'
   statement: The harness-mock package surface is grounded in its package.json package metadata and mock-harness binary entrypoint.
   evidenceSourceIds:
     - evidence:agent-mux-harness-mock-package-source

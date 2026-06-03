@@ -7,7 +7,7 @@ and export through the SDK or `agent-mux` CLI.
 ## Listing sessions
 
 ```ts
-import { AgentMuxClient } from '@a5c-ai/agent-mux';
+import { AgentMuxClient } from '@a5c-ai/adapters';
 
 const client = new AgentMuxClient();
 const sessions = await client.listSessions({ agent: 'claude' });

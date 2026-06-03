@@ -48,25 +48,25 @@ Read:
 
 Work mainly in:
 
-- `packages/agent-mux/core`
-- `packages/agent-mux/adapters`
-- `packages/agent-mux/cli`
-- `packages/agent-mux/sdk`
-- `packages/agent-mux/gateway`
+- `packages/adapters/core`
+- `packages/adapters/adapters`
+- `packages/adapters/cli`
+- `packages/adapters/sdk`
+- `packages/adapters/gateway`
 
 ## If You Need To Change Hook Behavior
 
 Read:
 
-- `packages/agent-mux/hooks/README.md`
-- `packages/agent-mux/hooks/ARCHITECTURE.md`
+- `packages/adapters/hooks/README.md`
+- `packages/adapters/hooks/ARCHITECTURE.md`
 - [Agent-Mux Integration](agent-mux-integration.md)
 
 Work mainly in:
 
-- `packages/agent-mux/hooks/core`
-- `packages/agent-mux/hooks/cli`
-- `packages/agent-mux/hooks/adapter-*`
+- `packages/adapters/hooks/core`
+- `packages/adapters/hooks/cli`
+- `packages/adapters/hooks/adapter-*`
 - `plugins/babysitter-unified/hooks/`
 
 ## If You Need To Change Plugin Packaging
@@ -100,17 +100,17 @@ Work mainly in:
 
 Read:
 
-- `packages/agent-mux/README.md`
-- package README files under `packages/agent-mux/*`
+- `packages/adapters/README.md`
+- package README files under `packages/adapters/*`
 
 Work mainly in:
 
-- `packages/agent-mux/ui`
-- `packages/agent-mux/webui`
-- `packages/agent-mux/tui`
-- `packages/agent-mux/mobile-*`
-- `packages/agent-mux/tv-*`
-- `packages/agent-mux/watch-*`
+- `packages/adapters/ui`
+- `packages/adapters/webui`
+- `packages/adapters/tui`
+- `packages/adapters/mobile-*`
+- `packages/adapters/tv-*`
+- `packages/adapters/watch-*`
 - `docs-site/` or `packages/atlas/webui` where relevant
 
 ## Source-Of-Truth Map
@@ -121,8 +121,8 @@ Use this rule of thumb:
 |---|---|---|
 | V6 architecture scope | `docs/v6-spec-and-roadmap/` | package READMEs, adversarial analyses |
 | Orchestration runtime behavior | `packages/sdk`, `packages/babysitter`, `packages/tula/platform` | V6 docs, CLI docs |
-| Harness dispatch behavior | `packages/agent-mux/*` and `docs/agent-mux/` | V6 integration docs |
-| Hook normalization | `packages/agent-mux/hooks/*` | per-harness plugin docs |
+| Harness dispatch behavior | `packages/adapters/*` and `docs/agent-mux/` | V6 integration docs |
+| Hook normalization | `packages/adapters/hooks/*` | per-harness plugin docs |
 | Unified plugin packaging | `packages/extension-mux`, `plugins/babysitter-unified/` | install READMEs for concrete bundles |
 | Breakpoint routing | `packages/tasks-mux` | SDK integration docs |
 

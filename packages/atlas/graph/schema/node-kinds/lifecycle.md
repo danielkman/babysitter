@@ -784,7 +784,7 @@ and routes it onto a target board. AutomationRule sits between an external signa
 directly — it always emits a canonical issue which is then projected onto a derived
 board.
 
-Sourced from `packages/agent-mux/core/src/automation.ts` (`AutomationRule`,
+Sourced from `packages/adapters/core/src/automation.ts` (`AutomationRule`,
 `TimerAutomationTrigger`, `WebhookAutomationTrigger`,
 `AutomationTaskTemplate`, `AutomationRouting`) and the kanban service in
 `packages/kanban/src/lib/services/automation-rule-service.ts`.
@@ -1222,7 +1222,7 @@ from.
 ## catalog pass 52 — ActivityEntry and IssueDispatchState NodeKinds
 
 catalog pass 52 promotes two kanban-level lifecycle entities extracted from
-`packages/agent-mux/core/src/kanban.ts` (real production source) into
+`packages/adapters/core/src/kanban.ts` (real production source) into
 first-class NodeKinds.
 
 ### ActivityEntry

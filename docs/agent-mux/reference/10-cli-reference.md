@@ -1,6 +1,6 @@
 # CLI Reference (`amux`)
 
-**Specification v1.0** | `@a5c-ai/agent-mux-cli`
+**Specification v1.0** | `@a5c-ai/adapters-cli`
 
 > **SCOPE EXTENSION:** hermes-agent (`@NousResearch/hermes-agent`) is included as a 10th supported agent per explicit project requirements from the project owner. It extends the original scope document's 9 built-in agents. All hermes-specific content in this spec is marked with this same scope extension note.
 
@@ -8,7 +8,7 @@
 
 ## 1. Overview
 
-The `amux` binary is the CLI surface of the `@a5c-ai/agent-mux` project. It exposes every capability of the SDK -- running agents, inspecting adapters, managing sessions, configuring agents, handling authentication, working with plugins, and tracking costs -- through a single command-line interface.
+The `amux` binary is the CLI surface of the `@a5c-ai/adapters` project. It exposes every capability of the SDK -- running agents, inspecting adapters, managing sessions, configuring agents, handling authentication, working with plugins, and tracking costs -- through a single command-line interface.
 
 The CLI and SDK are co-equal surfaces that share the same core layer and behave identically. Every CLI command maps to a specific SDK method. This specification defines the CLI completely and precisely: a developer should be able to implement the binary from this document alone.
 
@@ -16,24 +16,24 @@ The CLI and SDK are co-equal surfaces that share the same core layer and behave 
 
 | Field | Value |
 |---|---|
-| npm package | `@a5c-ai/agent-mux-cli` |
+| npm package | `@a5c-ai/adapters-cli` |
 | Binary name | `amux` |
 | Language | TypeScript, strict mode |
 | Runtime | Node.js 20.9.0 or later |
 | License | MIT |
 
-The binary is installed as part of `@a5c-ai/agent-mux` (the convenience meta-package) or standalone via `@a5c-ai/agent-mux-cli`. It depends on `@a5c-ai/agent-mux-comm` and `@a5c-ai/agent-mux-adapters`.
+The binary is installed as part of `@a5c-ai/adapters` (the convenience meta-package) or standalone via `@a5c-ai/adapters-cli`. It depends on `@a5c-ai/adapters-comm` and `@a5c-ai/adapters-codecs`.
 
 ```bash
 # Via meta-package
-npm install -g @a5c-ai/agent-mux
+npm install -g @a5c-ai/adapters
 
 # Standalone CLI
-npm install -g @a5c-ai/agent-mux-cli
+npm install -g @a5c-ai/adapters-cli
 
 # Zero-install
-npx @a5c-ai/agent-mux
-npx @a5c-ai/agent-mux run claude "hello"
+npx @a5c-ai/adapters
+npx @a5c-ai/adapters run claude "hello"
 ```
 
 ### 1.2 Cross-References
@@ -86,7 +86,7 @@ Global flags are accepted by every command. They are parsed before command-speci
 | `--config-dir` | -- | `string` | `~/.agent-mux/` | Override the global configuration directory. Equivalent to `createClient({ configDir })`. |
 | `--project-dir` | -- | `string` | `.agent-mux/` | Override the project-local configuration directory. Equivalent to `createClient({ projectConfigDir })`. |
 | `--no-color` | -- | `boolean` | `false` | Disable colored output. Also activated when the `NO_COLOR` environment variable is set to any non-empty value, or when stdout is not a TTY. |
-| `--version` | `-V` | `boolean` | -- | Print the `@a5c-ai/agent-mux-cli` version and exit. |
+| `--version` | `-V` | `boolean` | -- | Print the `@a5c-ai/adapters-cli` version and exit. |
 | `--help` | `-h` | `boolean` | -- | Print help for the current command and exit. Available on every command and subcommand. |
 | `--completions` | -- | `string` | -- | Generate shell completion script: `bash`, `zsh`, `fish`, `powershell`. See Section 22. |
 
@@ -1030,7 +1030,7 @@ Display the full content of a session.
 
 This command is not part of the current public CLI surface.
 
-`@a5c-ai/agent-mux-comm` does not currently expose a truthful live session-watch API. Earlier
+`@a5c-ai/adapters-comm` does not currently expose a truthful live session-watch API. Earlier
 drafts described `mux.sessions.watch()`, but that contract was removed rather than shipping
 synthetic `AgentEvent` payloads derived from arbitrary session-file changes.
 
@@ -1862,7 +1862,7 @@ Quick reference of all commands and their SDK method mappings.
 | `amux agent` | `list` / `add` / `remove` / `where` / `agents` | File-convention (copy into `.{agent}/agents/`) |
 | `amux hooks` | `discover` / `list` / `add` / `remove` / `set` / `handle` | `HookConfigManager` (core) |
 | `amux doctor` | -- | Capability / auth / runtime diagnostics |
-| `amux tui` | -- | Launch interactive Ink UI (`@a5c-ai/agent-mux-tui`) |
+| `amux tui` | -- | Launch interactive Ink UI (`@a5c-ai/tula-tui`) |
 | `amux init` | -- | `createClient()` + directory creation |
 
 ---
@@ -1884,7 +1884,7 @@ amux plugin --help
 amux mcp --help
 ```
 
-`--version` prints the package version of `@a5c-ai/agent-mux-cli` and exits with code 0.
+`--version` prints the package version of `@a5c-ai/adapters-cli` and exits with code 0.
 
 `--help` prints the usage summary for the command or subcommand and exits with code 0. Help text includes a brief description, syntax, available flags, and examples.
 
@@ -1948,7 +1948,7 @@ Calls `client.detectHost()` and prints `HostHarnessInfo { agent, confidence, sou
 Four-step bootstrap over the chosen invocation mode:
 
 1. Probe `amux --version` on target.
-2. If missing or `update`/`--force`: `npm install -g @a5c-ai/agent-mux-cli` (or `npm update -g`).
+2. If missing or `update`/`--force`: `npm install -g @a5c-ai/adapters-cli` (or `npm update -g`).
 3. `amux install <harness>` (or `amux update <harness>`) on target.
 4. Verify with `amux detect --all --json`.
 

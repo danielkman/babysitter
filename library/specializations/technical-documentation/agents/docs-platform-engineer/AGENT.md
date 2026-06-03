@@ -335,7 +335,7 @@ plugins: [
     '@docusaurus/plugin-content-docs',
     {
       id: 'cli',
-      path: '../packages/agent-mux/cli/docs',
+      path: '../packages/adapters/cli/docs',
       routeBasePath: 'cli',
       sidebarPath: require.resolve('./sidebars-cli.js'),
     },

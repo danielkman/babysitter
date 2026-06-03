@@ -75,51 +75,51 @@
   "installPackages": [
     {
       "packageName": "@anthropic-ai/claude-code",
-      "sourceLine": "packages/agent-mux/adapters/src/claude-remote-control-adapter.ts:      { platform: 'all', type: 'npm', command: 'npm install -g @anthropic-ai/claude-code' },"
+      "sourceLine": "packages/adapters/adapters/src/claude-remote-control-adapter.ts:      { platform: 'all', type: 'npm', command: 'npm install -g @anthropic-ai/claude-code' },"
     },
     {
       "packageName": "@anthropic-ai/claude-agent-sdk",
-      "sourceLine": "packages/agent-mux/adapters/src/claude-agent-sdk-adapter.ts:      { platform: 'all', type: 'npm', command: 'npm install -g @anthropic-ai/claude-agent-sdk' },"
+      "sourceLine": "packages/adapters/adapters/src/claude-agent-sdk-adapter.ts:      { platform: 'all', type: 'npm', command: 'npm install -g @anthropic-ai/claude-agent-sdk' },"
     },
     {
       "packageName": "@pi-ai/sdk",
-      "sourceLine": "packages/agent-mux/adapters/src/pi-sdk-adapter.ts:      { platform: 'all', type: 'npm', command: 'npm install -g @pi-ai/sdk' },"
+      "sourceLine": "packages/adapters/adapters/src/pi-sdk-adapter.ts:      { platform: 'all', type: 'npm', command: 'npm install -g @pi-ai/sdk' },"
     },
     {
       "packageName": "openai",
-      "sourceLine": "packages/agent-mux/adapters/src/codex-sdk-adapter.ts:      { platform: 'all', type: 'npm', command: 'npm install -g openai' },"
+      "sourceLine": "packages/adapters/adapters/src/codex-sdk-adapter.ts:      { platform: 'all', type: 'npm', command: 'npm install -g openai' },"
     },
     {
       "packageName": "@qwen-code/qwen-code",
-      "sourceLine": "packages/agent-mux/adapters/src/qwen-adapter.ts:      { platform: 'all', type: 'npm', command: 'npm install -g @qwen-code/qwen-code' },"
+      "sourceLine": "packages/adapters/adapters/src/qwen-adapter.ts:      { platform: 'all', type: 'npm', command: 'npm install -g @qwen-code/qwen-code' },"
     },
     {
       "packageName": "@openai/codex",
-      "sourceLine": "packages/agent-mux/adapters/src/codex-websocket-adapter.ts:      { platform: 'all', type: 'npm', command: 'npm install -g @openai/codex' },"
+      "sourceLine": "packages/adapters/adapters/src/codex-websocket-adapter.ts:      { platform: 'all', type: 'npm', command: 'npm install -g @openai/codex' },"
     },
     {
       "packageName": "@openai/codex",
-      "sourceLine": "packages/agent-mux/adapters/src/codex-websocket-adapter.ts:          command: 'npm install -g @openai/codex',"
+      "sourceLine": "packages/adapters/adapters/src/codex-websocket-adapter.ts:          command: 'npm install -g @openai/codex',"
     },
     {
       "packageName": "opencode-ai",
-      "sourceLine": "packages/agent-mux/adapters/src/opencode-http-adapter.ts:      { platform: 'all', type: 'npm', command: 'npm install -g opencode-ai' },"
+      "sourceLine": "packages/adapters/adapters/src/opencode-http-adapter.ts:      { platform: 'all', type: 'npm', command: 'npm install -g opencode-ai' },"
     },
     {
       "packageName": "@factory/cli",
-      "sourceLine": "packages/agent-mux/adapters/src/droid-adapter.ts:      { platform: 'all', type: 'npm', command: 'npm install -g @factory/cli' },"
+      "sourceLine": "packages/adapters/adapters/src/droid-adapter.ts:      { platform: 'all', type: 'npm', command: 'npm install -g @factory/cli' },"
     },
     {
       "packageName": "@factory/cli",
-      "sourceLine": "packages/agent-mux/adapters/src/droid-adapter.ts:        { step: 2, description: 'Install Droid CLI', command: 'npm install -g @factory/cli' },"
+      "sourceLine": "packages/adapters/adapters/src/droid-adapter.ts:        { step: 2, description: 'Install Droid CLI', command: 'npm install -g @factory/cli' },"
     },
     {
       "packageName": "@ampcode/cli",
-      "sourceLine": "packages/agent-mux/adapters/src/amp-adapter.ts:        command: 'npm install -g @ampcode/cli',"
+      "sourceLine": "packages/adapters/adapters/src/amp-adapter.ts:        command: 'npm install -g @ampcode/cli',"
     },
     {
       "packageName": "@ampcode/cli",
-      "sourceLine": "packages/agent-mux/adapters/src/amp-adapter.ts:          command: 'npm install -g @ampcode/cli',"
+      "sourceLine": "packages/adapters/adapters/src/amp-adapter.ts:          command: 'npm install -g @ampcode/cli',"
     }
   ],
   "npmLatest": [

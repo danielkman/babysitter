@@ -1,6 +1,6 @@
 # Invocation Modes
 
-**Specification v1.0** | `@a5c-ai/agent-mux`
+**Specification v1.0** | `@a5c-ai/adapters`
 
 ---
 
@@ -117,7 +117,7 @@ The spawn loop calls `buildInvocationCommand()` once per attempt, after retry bu
 `amux remote install|update <host>` ( `packages/cli/src/commands/remote.ts`) composes a four-step self-install pipeline through `buildInvocationCommand()`:
 
 1. **Probe** — `amux --version` on the target. Skipped steps if already installed (unless `--force` or subcommand is `update`).
-2. **Install amux** — `npm install -g @a5c-ai/agent-mux-cli` (or `npm update` for the update verb).
+2. **Install amux** — `npm install -g @a5c-ai/adapters-cli` (or `npm update` for the update verb).
 3. **Install harness** — `amux install <harness> [--force]` (or `amux update <harness>`).
 4. **Verify** — `amux detect --all --json`.
 

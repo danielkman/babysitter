@@ -12,8 +12,8 @@ The current stack has one strong center and several supporting seams:
 
 - `@a5c-ai/babysitter-sdk` remains the orchestration core.
 - `@a5c-ai/babysitter` and `@a5c-ai/tula-platform` provide the operational CLI and runtime surfaces.
-- `packages/agent-mux/*` provide the dispatch layer for harness-facing agent execution.
-- `@a5c-ai/agent-mux-hooks-cli`, `@a5c-ai/agent-mux-extensions`, and `@a5c-ai/agent-mux-tasks` are focused support subsystems that normalize hooks, compile plugins, and route human approvals.
+- `packages/adapters/*` provide the dispatch layer for harness-facing agent execution.
+- `@a5c-ai/adapters-hooks-cli`, `@a5c-ai/adapters-extensions`, and `@a5c-ai/adapters-tasks` are focused support subsystems that normalize hooks, compile plugins, and route human approvals.
 - `plugins/babysitter-unified/` is the canonical plugin source, while per-harness plugin bundles remain the user-installable outputs.
 
 This is a unified executable stack with explicit package families, not a promise that every family must become its own larger platform.
@@ -65,13 +65,13 @@ This layer owns runs, replay, task definitions, journal/state handling, hooks di
 
 Owned primarily by:
 
-- `packages/agent-mux/core`
-- `packages/agent-mux/adapters`
-- `packages/agent-mux/cli`
-- `packages/agent-mux/sdk`
-- `packages/agent-mux/gateway`
-- `packages/agent-mux/harness-mock`
-- `packages/agent-mux/observability`
+- `packages/adapters/core`
+- `packages/adapters/adapters`
+- `packages/adapters/cli`
+- `packages/adapters/sdk`
+- `packages/adapters/gateway`
+- `packages/adapters/harness-mock`
+- `packages/adapters/observability`
 
 This layer knows how to talk to different harnesses and normalize them into a shared agent-running contract. It is complementary to Babysitter rather than a replacement for it: Babysitter orchestrates process execution; agent-mux dispatches and normalizes harness interaction.
 
@@ -79,7 +79,7 @@ This layer knows how to talk to different harnesses and normalize them into a sh
 
 Owned primarily by:
 
-- `packages/agent-mux/hooks/*`
+- `packages/adapters/hooks/*`
 - `packages/extension-mux`
 - `packages/tasks-mux`
 
@@ -107,12 +107,12 @@ The important distinction is:
 
 Owned primarily by:
 
-- `packages/agent-mux/tui`
-- `packages/agent-mux/webui`
-- `packages/agent-mux/ui`
-- `packages/agent-mux/mobile-*`
-- `packages/agent-mux/tv-*`
-- `packages/agent-mux/watch-*`
+- `packages/adapters/tui`
+- `packages/adapters/webui`
+- `packages/adapters/ui`
+- `packages/adapters/mobile-*`
+- `packages/adapters/tv-*`
+- `packages/adapters/watch-*`
 - `docs/`, `docs-site/`
 
 These packages are consumers of the orchestration and dispatch layers. They are not the architectural center of V6, but they are part of the stack and need coherent ownership boundaries.
@@ -122,22 +122,22 @@ These packages are consumers of the orchestration and dispatch layers. They are 
 | Family | Primary paths | What it owns now | What it does not imply |
 |---|---|---|---|
 | Orchestration core | `packages/sdk`, `packages/babysitter`, `packages/tula/platform` | Run lifecycle, replay, storage, task dispatch, CLI/runtime surfaces | A future forced split into many more top-level runtime packages |
-| Dispatch family | `packages/agent-mux/*` | Harness invocation, adapter normalization, gateway, shared interaction contracts | Replacement of Babysitter orchestration |
-| Support mux family | `packages/agent-mux/hooks/*`, `packages/extension-mux`, `packages/tasks-mux` | Hook normalization, bundle compilation, human approval routing | A formal "platform layer" that already has independent product boundaries |
+| Dispatch family | `packages/adapters/*` | Harness invocation, adapter normalization, gateway, shared interaction contracts | Replacement of Babysitter orchestration |
+| Support mux family | `packages/adapters/hooks/*`, `packages/extension-mux`, `packages/tasks-mux` | Hook normalization, bundle compilation, human approval routing | A formal "platform layer" that already has independent product boundaries |
 | Distribution surfaces | `plugins/babysitter-unified`, `plugins/babysitter-*` | Canonical plugin authoring plus harness-specific installable outputs | One single bundle format with no compatibility constraints |
-| User surfaces | `packages/agent-mux/ui`, `packages/agent-mux/webui`, `packages/agent-mux/tui`, `docs-site/` | Human-facing interaction, visualization, docs, and operator surfaces | Ownership of orchestration semantics |
+| User surfaces | `packages/adapters/ui`, `packages/adapters/webui`, `packages/adapters/tui`, `docs-site/` | Human-facing interaction, visualization, docs, and operator surfaces | Ownership of orchestration semantics |
 
 ## Operational Path Through The Stack
 
 The end-to-end diagram above is the shape. The live execution narrative is:
 
 1. A concrete harness installs or loads a plugin bundle under `plugins/babysitter-*`.
-2. Those bundles are compiled from `plugins/babysitter-unified/` by `packages/extension-mux`, with `packages/agent-mux/hooks/*` normalizing hook behavior where the harness model requires it.
+2. Those bundles are compiled from `plugins/babysitter-unified/` by `packages/extension-mux`, with `packages/adapters/hooks/*` normalizing hook behavior where the harness model requires it.
 3. The installed bundle reaches the operational runtime in `packages/babysitter` and `packages/tula/platform`.
 4. That runtime delegates the core orchestration work to `packages/sdk`, which owns run directories, journal/state replay, effect requests, process-library binding, and workflow execution.
 5. When a workflow requires a reusable process, the runtime reaches into `library/` or project-local `.a5c/processes/`.
 6. When a workflow requires human approval routing, `packages/tasks-mux` handles that concern as a distinct subsystem instead of burying it inside generic hook language.
-7. When the system needs adapter-level dispatch or richer interaction surfaces, `packages/agent-mux/*` carries that responsibility without changing the orchestration center of gravity.
+7. When the system needs adapter-level dispatch or richer interaction surfaces, `packages/adapters/*` carries that responsibility without changing the orchestration center of gravity.
 
 ## Integration Contracts That Matter
 

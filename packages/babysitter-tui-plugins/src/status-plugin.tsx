@@ -10,7 +10,7 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { Box, Text } from 'ink';
-import { definePlugin, type TuiViewProps } from '@a5c-ai/agent-mux-tui/plugin';
+import { definePlugin, type TuiViewProps } from '@a5c-ai/tula-tui/plugin';
 import { scanRuns, resolveRunsDir, loadRunJournal, extractEffects } from './data.js';
 import type { RunSummary, EffectSummary } from './types.js';
 

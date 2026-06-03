@@ -1,6 +1,6 @@
 # Process Lifecycle, Safety, and Cross-Platform Support
 
-**Specification v1.0** | `@a5c-ai/agent-mux`
+**Specification v1.0** | `@a5c-ai/adapters`
 
 > **SCOPE EXTENSION:** hermes-agent (`@NousResearch/hermes-agent`) is included as a 10th supported agent per explicit project requirements from the project owner. It extends the original scope document's 9 built-in agents. All hermes-specific content in this spec is marked with this same scope extension note.
 
@@ -8,7 +8,7 @@
 
 ## 1. Overview
 
-This specification is the authoritative reference for subprocess management, process safety guarantees, and cross-platform support in `@a5c-ai/agent-mux`. It consolidates and deepens the process-lifecycle material introduced in `03-run-handle-and-interaction.md` (sections 6–12), adds the full per-agent cross-platform compatibility matrix from scope §23, and specifies platform-specific path resolution, shell invocation, PTY backend selection, and resource cleanup in detail.
+This specification is the authoritative reference for subprocess management, process safety guarantees, and cross-platform support in `@a5c-ai/adapters`. It consolidates and deepens the process-lifecycle material introduced in `03-run-handle-and-interaction.md` (sections 6–12), adds the full per-agent cross-platform compatibility matrix from scope §23, and specifies platform-specific path resolution, shell invocation, PTY backend selection, and resource cleanup in detail.
 
 All ten built-in agents (claude, codex, gemini, copilot, cursor, opencode, pi, omp, openclaw, hermes) share the same process lifecycle contract. Differences in platform support, PTY requirements, and shell invocation are documented per-agent in the tables below.
 

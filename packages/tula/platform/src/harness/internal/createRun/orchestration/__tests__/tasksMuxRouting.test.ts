@@ -14,7 +14,7 @@ const childProcessMock = vi.hoisted(() => ({
   execSync: vi.fn(),
 }));
 
-vi.mock("@a5c-ai/agent-mux-tasks", () => ({
+vi.mock("@a5c-ai/adapters-tasks", () => ({
   routeTask: taskMuxMock.routeTask,
   AgentMuxResponderBackend: class {
     submitBreakpoint = taskMuxMock.submitBreakpoint;

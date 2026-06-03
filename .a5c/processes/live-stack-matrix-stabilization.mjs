@@ -144,11 +144,11 @@ const fixTask = defineTask('fix', async (args) => ({
     instruction: `Iteration ${args.iteration}: Implement ALL fixes. Sorted by cell impact.
 
 Code fixes:
-- Launch code: packages/agent-mux/launch/src/launch.ts
+- Launch code: packages/adapters/launch/src/launch.ts
 - Atlas graph: packages/atlas/graph/
 - Workflow: .github/workflows/live-stack.yml
-- Translations: packages/agent-mux/adapters/src/translations/
-- Test runner: packages/agent-mux/cli/tests/live-stack/primary-live-runner.ts
+- Translations: packages/adapters/adapters/src/translations/
+- Test runner: packages/adapters/cli/tests/live-stack/primary-live-runner.ts
 
 Prompt fixes (for #563 model behavior, #487 mini):
 - Simplify the test prompt to focus on file creation

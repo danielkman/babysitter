@@ -1,9 +1,9 @@
 nodeKind: PackageSurface
 id: package:a5c-ai-agent-mux-cli
 attributes:
-  packageId: "@a5c-ai/agent-mux-cli"
-  packageName: "@a5c-ai/agent-mux-cli"
-  workspacePath: packages/agent-mux/cli
+  packageId: "@a5c-ai/adapters-cli"
+  packageName: "@a5c-ai/adapters-cli"
+  workspacePath: packages/adapters/cli
   moduleType: typescript
   surfaceKinds:
     - cli

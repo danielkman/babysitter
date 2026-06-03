@@ -23,10 +23,10 @@
  * - Existing backend contract: packages/tasks-mux/src/backend.ts exposes BreakpointBackend, SubmitBreakpointParams, WaitForAnswerOptions, and BreakpointWaitResult.
  * - Existing backend registry: packages/tasks-mux/src/backends/index.ts registers git-native, github-issues, and server; agent-mux is absent.
  * - Existing types: packages/tasks-mux/src/types.ts has BreakpointRouting/BackendConfig schemas but no ResponderType or agent backend config on staging.
- * - Existing agent-mux seam: packages/agent-mux/core/src/client.ts exports createClient(); AgentMuxClient.run() returns a thenable RunHandle.
- * - Existing run result surface: packages/agent-mux/core/src/run-handle.ts exposes RunResult.text, cost, tokenUsage, exitReason, and error.
+ * - Existing agent-mux seam: packages/adapters/core/src/client.ts exports createClient(); AgentMuxClient.run() returns a thenable RunHandle.
+ * - Existing run result surface: packages/adapters/core/src/run-handle.ts exposes RunResult.text, cost, tokenUsage, exitReason, and error.
  * - No local .a5c/process-library directory exists; matching methodologies were found in /home/runner/.a5c/process-library/babysitter-repo/library.
- * - The issue body mentions amuxBridge/getAmuxClient, but repo search on staging did not find that seam. Prefer current @a5c-ai/agent-mux API unless #630/#604 descendants add a stable bridge before execution.
+ * - The issue body mentions amuxBridge/getAmuxClient, but repo search on staging did not find that seam. Prefer current @a5c-ai/adapters API unless #630/#604 descendants add a stable bridge before execution.
  *
  * Repo-specific authoring note:
  * - This process uses agent tasks instead of kind: 'shell' subtasks per docs/agent-reference/process-authoring.md.
@@ -52,9 +52,9 @@ const phase0ReuseAuditTask = defineTask('issue-631.phase0-reuse-audit', (args, t
         'Read the issue and comments for the current implementation constraints.',
         'Render a section named exactly: Reuse-audit findings (REVIEW BEFORE PROCEEDING).',
         'Check whether dependency issue #630 has landed on this branch by inspecting tasks-mux responder type/config changes.',
-        'Scan these surfaces: packages/tasks-mux/src/backend.ts, packages/tasks-mux/src/types.ts, packages/tasks-mux/src/backends/index.ts, packages/tasks-mux/src/index.ts, packages/tasks-mux/package.json, packages/agent-mux/core/src/client.ts, packages/agent-mux/core/src/run-handle.ts, docs/agent-mux-babysitter-integrations/tasks-mux-routing.md.',
+        'Scan these surfaces: packages/tasks-mux/src/backend.ts, packages/tasks-mux/src/types.ts, packages/tasks-mux/src/backends/index.ts, packages/tasks-mux/src/index.ts, packages/tasks-mux/package.json, packages/adapters/core/src/client.ts, packages/adapters/core/src/run-handle.ts, docs/agent-mux-babysitter-integrations/tasks-mux-routing.md.',
         'Search for amuxBridge/getAmuxClient. If absent, plan against createClient()/AgentMuxClient.run()/await RunHandle.',
-        'Identify dependency-direction risk before adding @a5c-ai/agent-mux to @a5c-ai/tasks-mux.',
+        'Identify dependency-direction risk before adding @a5c-ai/adapters to @a5c-ai/tasks-mux.',
         'Return JSON with: findings, dependencyState, availableIntegrationSeams, selectedSeam, affectedFiles, risks, blockerIfAny.',
       ],
       context: args,
@@ -148,7 +148,7 @@ const phase3WiringTask = defineTask('issue-631.phase3-registry-and-exports', (ar
         'Register backendFactories.set("agent-mux", ...) in packages/tasks-mux/src/backends/index.ts.',
         'Export AgentMuxResponderBackend and any config/error types from backends/index.ts and package root if consistent with existing backend exports.',
         'Update BackendConfigSchema only if a direct backend config type is required; keep discriminated unions backward compatible.',
-        'Add @a5c-ai/agent-mux dependency to packages/tasks-mux/package.json only after confirming no workspace dependency cycle; otherwise use a dynamic import/injected factory seam and document why.',
+        'Add @a5c-ai/adapters dependency to packages/tasks-mux/package.json only after confirming no workspace dependency cycle; otherwise use a dynamic import/injected factory seam and document why.',
         'Keep package exports stable; do not change CLI behavior unless tests prove it is required.',
         'Return JSON with: changedFiles, dependencyDecision, exportedSymbols, registryBehavior, compatibilityNotes.',
       ],

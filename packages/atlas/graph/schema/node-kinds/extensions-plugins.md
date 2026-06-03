@@ -797,8 +797,8 @@ The 9 imported targets in `graph/extensions/plugin-artifacts/`:
 ## Planning / board surfaces (issue-first product model)
 
 The following NodeKinds extend cluster 7 with the board-first, issue-first product
-model surveyed from `packages/agent-mux/webui` (KanbanLayout, dashboard/backlog-overview,
-PairDevicePage) and `packages/agent-mux/ui/src/session-flow` (transcript→lane projection,
+model surveyed from `packages/adapters/webui` (KanbanLayout, dashboard/backlog-overview,
+PairDevicePage) and `packages/adapters/ui/src/session-flow` (transcript→lane projection,
 file-attention, per-segment cost). Each is a derived/projected entity above `Issue` and
 `Session` — the canonical store-of-record stays in those NodeKinds; these wrap them for
 UI consumption and queryability.
@@ -1034,7 +1034,7 @@ points at `subagent:babysitter-define-task` instead of the
 ## catalog pass 52 — Kanban TaskTag and Label NodeKinds
 
 catalog pass 52 extracts canonical kanban entities from agent-mux's
-`packages/agent-mux/core/src/kanban.ts` (real production source).
+`packages/adapters/core/src/kanban.ts` (real production source).
 
 ### TaskTag
 

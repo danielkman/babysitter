@@ -2,7 +2,7 @@
  * Harness installation and discovery via agent-mux delegation.
  *
  * Instead of maintaining per-harness install logic in babysitter, we delegate
- * to @a5c-ai/agent-mux which already has comprehensive adapter detection,
+ * to @a5c-ai/adapters which already has comprehensive adapter detection,
  * installation, and update support for all known harness CLIs.
  */
 
@@ -102,7 +102,7 @@ function requireAmux(): { createClient: (opts: Record<string, unknown>) => Agent
     return _agentMuxOverride;
   }
   // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment
-  const mod: { createClient: (opts: Record<string, unknown>) => AgentMuxClientLike } = require("@a5c-ai/agent-mux");
+  const mod: { createClient: (opts: Record<string, unknown>) => AgentMuxClientLike } = require("@a5c-ai/adapters");
   return mod;
 }
 

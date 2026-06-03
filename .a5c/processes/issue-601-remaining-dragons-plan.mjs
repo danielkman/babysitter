@@ -43,8 +43,8 @@ const readIssueContextTask = defineTask('issue-601.read-context', (args, taskCtx
       '  packages/tula/platform/src/harness/piWrapper.ts \\',
       '  packages/tula/platform/src/harness/piWrapper/moduleSupport.ts \\',
       '  packages/tula/platform/src/harness/agenticTools/config/state.ts \\',
-      '  packages/agent-mux/cli/src/index.ts \\',
-      '  packages/agent-mux/ui/src/screens/SessionDetailScreen.test.tsx \\',
+      '  packages/adapters/cli/src/index.ts \\',
+      '  packages/adapters/ui/src/screens/SessionDetailScreen.test.tsx \\',
       '  tsconfig.json; do',
       '  if [ -f "$path" ]; then',
       '    printf "%s\\n" "--- $path ---"',
@@ -302,12 +302,12 @@ export async function process(inputs, ctx) {
   const verificationCommands = inputs?.verificationCommands ?? [
     'npm run test --workspace=@a5c-ai/agent-core',
     'npm run test --workspace=@a5c-ai/tula-platform',
-    'npm run test:realtime --workspace=@a5c-ai/agent-mux-ui',
+    'npm run test:realtime --workspace=@a5c-ai/tula-ui',
     'npm run build:runtime',
     'npm run test:agent-mux',
     'npm run verify:metadata',
     'git diff --check',
-    'if rg -n "it\\.skip\\(" packages/agent-mux/ui/src/screens/SessionDetailScreen.test.tsx; then echo "Unexplained SessionDetailScreen skipped tests remain" >&2; exit 1; fi',
+    'if rg -n "it\\.skip\\(" packages/adapters/ui/src/screens/SessionDetailScreen.test.tsx; then echo "Unexplained SessionDetailScreen skipped tests remain" >&2; exit 1; fi',
   ];
 
   const context = await ctx.task(readIssueContextTask, {

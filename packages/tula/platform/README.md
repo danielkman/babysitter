@@ -39,7 +39,7 @@ From the repo root, run:
 npm run build --workspace=@a5c-ai/tula-platform
 ```
 
-This package now builds with `tsc --build` project references for workspace-owned TypeScript packages, and it explicitly invokes the root `build:runtime:agent-platform-deps` entrypoint to prepare the runtime chain, including the `@a5c-ai/agent-mux` SDK surface. A fresh-checkout build no longer requires prebuilt upstream `dist/` output.
+This package now builds with `tsc --build` project references for workspace-owned TypeScript packages, and it explicitly invokes the root `build:runtime:agent-platform-deps` entrypoint to prepare the runtime chain, including the `@a5c-ai/adapters` SDK surface. A fresh-checkout build no longer requires prebuilt upstream `dist/` output.
 
 For the release/CI runtime chain, use the shared root entrypoint:
 

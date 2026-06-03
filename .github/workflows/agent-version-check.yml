@@ -44,7 +44,7 @@ jobs:
           fetch-depth: 0
           token: ${{ steps.a5c-token.outputs.a5c_token || github.token }}
 
-      - uses: a5c-ai/babysitter/packages/agent-mux/triggers@staging
+      - uses: a5c-ai/babysitter/packages/adapters/triggers@staging
         with:
           harness: codex
           provider: foundry
@@ -89,7 +89,7 @@ jobs:
 
             Also check adapter source for additional install commands:
             ```
-            grep -r 'npm install -g' packages/agent-mux/adapters/src/ | grep -v node_modules | grep -v test
+            grep -r 'npm install -g' packages/adapters/adapters/src/ | grep -v node_modules | grep -v test
             ```
             Merge both lists. EXCLUDE all @a5c-ai/* packages.
 

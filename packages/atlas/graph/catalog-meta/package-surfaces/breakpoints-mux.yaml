@@ -1,8 +1,8 @@
 nodeKind: PackageSurface
 id: package:a5c-ai-tasks-mux
 attributes:
-  packageId: "@a5c-ai/agent-mux-tasks"
-  packageName: "@a5c-ai/agent-mux-tasks"
+  packageId: "@a5c-ai/adapters-tasks"
+  packageName: "@a5c-ai/adapters-tasks"
   workspacePath: packages/tasks-mux
   moduleType: typescript
   surfaceKinds:

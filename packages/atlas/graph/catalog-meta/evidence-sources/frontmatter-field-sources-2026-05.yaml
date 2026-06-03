@@ -43,9 +43,9 @@ attributes:
   displayName: agent-mux harness-mock package source
   kindLabel: file
   trustLevel: trust-level:repo
-  sourceUrl: https://github.com/a5c-ai/babysitter/blob/main/packages/agent-mux/harness-mock/package.json
-  filePath: packages/agent-mux/harness-mock/package.json
-  sourcePathOrUrl: packages/agent-mux/harness-mock/package.json
+  sourceUrl: https://github.com/a5c-ai/babysitter/blob/main/packages/adapters/harness-mock/package.json
+  filePath: packages/adapters/harness-mock/package.json
+  sourcePathOrUrl: packages/adapters/harness-mock/package.json
   locator: package name, version, mock-harness bin, and workspace package surface
   capturedAt: '2026-05-05T00:00:00Z'
   observedAt: '2026-05-05T00:00:00Z'
@@ -63,9 +63,9 @@ attributes:
   displayName: agent-mux harness-mock scenario source
   kindLabel: file
   trustLevel: trust-level:repo
-  sourceUrl: https://github.com/a5c-ai/babysitter/blob/main/packages/agent-mux/harness-mock/src/scenarios/interactive.ts
-  filePath: packages/agent-mux/harness-mock/src/scenarios/interactive.ts
-  sourcePathOrUrl: packages/agent-mux/harness-mock/src/scenarios/interactive.ts; packages/agent-mux/harness-mock/src/scenarios/errors.ts; packages/agent-mux/harness-mock/src/scenarios/hooks.ts
+  sourceUrl: https://github.com/a5c-ai/babysitter/blob/main/packages/adapters/harness-mock/src/scenarios/interactive.ts
+  filePath: packages/adapters/harness-mock/src/scenarios/interactive.ts
+  sourcePathOrUrl: packages/adapters/harness-mock/src/scenarios/interactive.ts; packages/adapters/harness-mock/src/scenarios/errors.ts; packages/adapters/harness-mock/src/scenarios/hooks.ts
   locator: INTERACTION_SCENARIOS plus error and runtime-hook scenario fixtures
   capturedAt: '2026-05-05T00:00:00Z'
   observedAt: '2026-05-05T00:00:00Z'

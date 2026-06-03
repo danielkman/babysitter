@@ -1,11 +1,11 @@
 # Getting Started
 
-This walkthrough installs `@a5c-ai/agent-mux`, verifies your environment, and runs your first agent.
+This walkthrough installs `@a5c-ai/adapters`, verifies your environment, and runs your first agent.
 
 ## 1. Install
 
 ```bash
-npm install -g @a5c-ai/agent-mux
+npm install -g @a5c-ai/adapters
 ```
 
 Verify:
@@ -49,7 +49,7 @@ agent-mux run claude --prompt "Say hello from agent-mux"
 Or programmatically:
 
 ```ts
-import { createClient } from '@a5c-ai/agent-mux';
+import { createClient } from '@a5c-ai/adapters';
 
 const client = createClient();
 const handle = await client.run({

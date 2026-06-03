@@ -18,7 +18,7 @@ A reasoning worker used to perform subjective work such as planning, review, dra
 
 ### Agent-Mux
 
-The dispatch layer for local CLI-based coding agents. In this repo it lives under `packages/agent-mux/*` and includes core types, adapters, CLI, SDK, gateway, observability, mock harnesses, and multiple UI surfaces.
+The dispatch layer for local CLI-based coding agents. In this repo it lives under `packages/adapters/*` and includes core types, adapters, CLI, SDK, gateway, observability, mock harnesses, and multiple UI surfaces.
 
 ### Agent-Plugins-Mux
 
@@ -74,7 +74,7 @@ The environment in which an agent run executes, such as local, docker, ssh, or k
 
 ### Metaplugin
 
-A higher-order capability abstraction that extends an agent by composing one or more plugin and hook surfaces into a single concern. A metaplugin is not the same thing as a concrete per-harness plugin bundle, and it is not the same thing as `@a5c-ai/agent-mux-extensions`, which only compiles and distributes concrete plugin outputs. Typical metaplugin categories include memory systems, governance or policy engines, and discipline-enforcement layers. On legacy non-Babysitter agents, a metaplugin is delivered through the underlying plugin and hook bundles emitted by `extension-mux`.
+A higher-order capability abstraction that extends an agent by composing one or more plugin and hook surfaces into a single concern. A metaplugin is not the same thing as a concrete per-harness plugin bundle, and it is not the same thing as `@a5c-ai/adapters-extensions`, which only compiles and distributes concrete plugin outputs. Typical metaplugin categories include memory systems, governance or policy engines, and discipline-enforcement layers. On legacy non-Babysitter agents, a metaplugin is delivered through the underlying plugin and hook bundles emitted by `extension-mux`.
 
 ### Per-Harness Plugin Bundle
 
@@ -110,14 +110,14 @@ The current architecture program for the stack. V6 is a documentation and valida
 
 ### Working Surface
 
-The actual surface a developer changes to implement a feature or fix: for example `packages/sdk`, `packages/agent-mux/adapters`, `packages/agent-mux/hooks/core`, or `plugins/babysitter-unified`. V6 prefers identifying the real working surface before proposing extra package layers.
+The actual surface a developer changes to implement a feature or fix: for example `packages/sdk`, `packages/adapters/adapters`, `packages/adapters/hooks/core`, or `plugins/babysitter-unified`. V6 prefers identifying the real working surface before proposing extra package layers.
 
 ## Naming Rule
 
 When a term can refer to both a concept and a package, prefer these patterns:
 
 - Use lowercase prose for the concept: "the orchestration runtime", "the unified plugin".
-- Use exact package or path names for code ownership: `@a5c-ai/babysitter-sdk`, `packages/agent-mux/core`, `plugins/babysitter-unified`.
+- Use exact package or path names for code ownership: `@a5c-ai/babysitter-sdk`, `packages/adapters/core`, `plugins/babysitter-unified`.
 - Treat speculative layer names such as "platform" or "application layer" as deferred vocabulary unless a V6 document explicitly marks them as normative.
 
 ---

@@ -297,7 +297,7 @@ export const traceLiveStackCreateRuntimeTask = defineTask('issue-368.trace-runti
         JSON.stringify(args.inputs?.targetFiles ?? [], null, 2),
         'Trace the workflow matrix entries for claude-code, codex, and pi in BP/create interactive and bridged-hooks lanes.',
         'Trace buildPrimaryLiveStackCommands, fixture setup, buildPrompt, resolveLaunchMaxTurns, execute command sequencing, validateAgentBehavior, process-creation verification, and Odyssey artifact verification.',
-        'Inspect packages/agent-mux/cli/tests/live-stack/fixtures/create-process-skeleton.mjs and the focused tests in primary-live-runner.test.ts and pipeline-scenario.test.ts.',
+        'Inspect packages/adapters/cli/tests/live-stack/fixtures/create-process-skeleton.mjs and the focused tests in primary-live-runner.test.ts and pipeline-scenario.test.ts.',
         'Identify exactly which requirements make the process definition too complex and which checks are needed to prove create-mode behavior still exists.',
         'Return JSON: { runtimeCallPaths, liveExecutionFiles, testFiles, skeletonComplexity, promptComplexity, verificationSurface, existingCoverage, gaps, outOfScope }.',
       ],
@@ -354,7 +354,7 @@ export const authorCreateModeRegressionTestsTask = defineTask('issue-368.author-
       instructions: [
         'Edit the repository directly.',
         'Preserve unrelated local changes.',
-        'Use existing Vitest patterns in packages/agent-mux/cli/tests/live-stack/primary-live-runner.test.ts and pipeline-scenario.test.ts.',
+        'Use existing Vitest patterns in packages/adapters/cli/tests/live-stack/primary-live-runner.test.ts and pipeline-scenario.test.ts.',
         'Author tests that fail on the current create-mode complexity and pass only when the skeleton/prompt/validation surface is simplified for claude-code and pi.',
         'Cover at minimum: fewer fill points in create-process-skeleton.mjs, prompt instructions that separate create/verify/run steps, import/export validation for odyssey-live-test.mjs, no dependency on summarize-translate-test.mjs in create mode, and pi/claude create-mode turn budget behavior if strategy requires it.',
         'Do not weaken existing assertions that create mode actually creates odyssey-live-test.mjs and produces a valid Odyssey artifact.',

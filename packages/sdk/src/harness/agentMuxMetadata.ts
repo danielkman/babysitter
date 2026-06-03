@@ -3,7 +3,7 @@ import { resolveRunsDir } from "../config";
 import { STATIC_FALLBACK_METADATA } from "./agentMuxFallbackMetadata";
 
 /**
- * Resolves adapter metadata from @a5c-ai/agent-mux when available.
+ * Resolves adapter metadata from @a5c-ai/adapters when available.
  *
  * Some environments used by validation and CI can load the babysitter SDK but
  * cannot load the full agent-mux runtime graph. In those cases we fall back to
@@ -60,7 +60,7 @@ function mapHarnessName(name: string): string {
 }
 
 // ---------------------------------------------------------------------------
-// Internal types for the dynamic require from @a5c-ai/agent-mux
+// Internal types for the dynamic require from @a5c-ai/adapters
 // ---------------------------------------------------------------------------
 
 /** Minimal type for the adapter registry returned by createClient(). */
@@ -111,7 +111,7 @@ function getCache(): Map<string, AmuxAdapterMetadata> {
 /**
  * Get metadata for a harness from agent-mux's adapter registry.
  *
- * @a5c-ai/agent-mux is a hard dependency — this function throws if it is
+ * @a5c-ai/adapters is a hard dependency — this function throws if it is
  * missing, broken, or does not contain the requested adapter.
  *
  * Results are cached for the lifetime of the process.
@@ -126,7 +126,7 @@ function hasNodeSqliteBuiltin(): boolean {
 function requireAmux(): Record<string, unknown> {
   if (_agentMuxOverride) return _agentMuxOverride;
   // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment
-  const mod: Record<string, unknown> = require("@a5c-ai/agent-mux");
+  const mod: Record<string, unknown> = require("@a5c-ai/adapters");
   return mod;
 }
 
@@ -225,7 +225,7 @@ export function getAmuxAdapterMetadata(harnessName: string): AmuxAdapterMetadata
   const adapter = client.adapters.get(agentMuxName);
   if (!adapter) {
     throw new Error(
-      `@a5c-ai/agent-mux does not have an adapter named "${agentMuxName}" ` +
+      `@a5c-ai/adapters does not have an adapter named "${agentMuxName}" ` +
       `(requested harness: "${harnessName}"). Available adapters may need updating.`,
     );
   }
@@ -233,8 +233,8 @@ export function getAmuxAdapterMetadata(harnessName: string): AmuxAdapterMetadata
   const caps = adapter.capabilities;
   if (!caps) {
     throw new Error(
-      `@a5c-ai/agent-mux adapter "${agentMuxName}" has no capabilities defined. ` +
-      `Ensure @a5c-ai/agent-mux is up to date.`,
+      `@a5c-ai/adapters adapter "${agentMuxName}" has no capabilities defined. ` +
+      `Ensure @a5c-ai/adapters is up to date.`,
     );
   }
 

@@ -53,7 +53,7 @@ agent-mux-harness-mock --agent claude --list
 agent-mux-harness-mock --agent claude --scenario tool-call
 ```
 
-Interactive approval scenarios under `packages/agent-mux/harness-mock` now model real gating semantics rather than timer-only replay:
+Interactive approval scenarios under `packages/adapters/harness-mock` now model real gating semantics rather than timer-only replay:
 
 - `interactive:yolo` auto-approves and then emits the post-approval output.
 - `interactive:prompt` waits for stdin before it emits the post-approval output and exits.

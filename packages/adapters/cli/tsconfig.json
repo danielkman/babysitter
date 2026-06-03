@@ -1,0 +1,28 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "@a5c-ai/adapters-config": [
+        "../config/src/index.ts"
+      ],
+      "@a5c-ai/adapters-launch": [
+        "../launch/src/index.ts"
+      ],
+      "@a5c-ai/adapters-transport": [
+        "../transport/src/index.ts"
+      ]
+    }
+  },
+  "include": ["src"],
+  "references": [
+    { "path": "../core" },
+    { "path": "../adapters" },
+    { "path": "../config" },
+    { "path": "../gateway" },
+    { "path": "../launch" },
+    { "path": "../transport" }
+  ]
+}

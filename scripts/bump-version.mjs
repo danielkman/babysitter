@@ -97,96 +97,96 @@ const updateLockVersion = (path, version) => {
   }
   if (data.packages && data.packages[""]) {
     data.packages[""].version = version;
-    if (data.packages[""].dependencies?.["@a5c-ai/agent-mux"]) {
-      data.packages[""].dependencies["@a5c-ai/agent-mux"] = `^${version}`;
+    if (data.packages[""].dependencies?.["@a5c-ai/adapters"]) {
+      data.packages[""].dependencies["@a5c-ai/adapters"] = `^${version}`;
     }
   }
   const lockUpdates = {
-    "packages/agent-mux/adapters": {
+    "packages/adapters/adapters": {
       version,
-      dependencies: { "@a5c-ai/agent-mux-comm": version }
+      dependencies: { "@a5c-ai/adapters-comm": version }
     },
-    "packages/agent-mux/cli": {
-      version,
-      dependencies: {
-        "@a5c-ai/agent-mux-adapters": version,
-        "@a5c-ai/agent-mux-comm": version,
-        "@a5c-ai/agent-mux-gateway": version,
-        "@a5c-ai/agent-mux-observability": version
-      }
-    },
-    "packages/agent-mux/core": {
-      version,
-      dependencies: { "@a5c-ai/agent-mux-observability": version }
-    },
-    "packages/agent-mux/gateway": {
+    "packages/adapters/cli": {
       version,
       dependencies: {
-        "@a5c-ai/agent-mux-adapters": version,
-        "@a5c-ai/agent-mux-comm": version
+        "@a5c-ai/adapters-codecs": version,
+        "@a5c-ai/adapters-comm": version,
+        "@a5c-ai/adapters-gateway": version,
+        "@a5c-ai/adapters-observability": version
       }
     },
-    "packages/agent-mux/harness-mock": {
+    "packages/adapters/core": {
       version,
-      dependencies: { "@a5c-ai/agent-mux-comm": version }
+      dependencies: { "@a5c-ai/adapters-observability": version }
     },
-    "packages/agent-mux/mobile-android-app": {
-      version,
-      dependencies: { "@a5c-ai/agent-mux-ui": version }
-    },
-    "packages/agent-mux/mobile-ios-app": {
-      version,
-      dependencies: { "@a5c-ai/agent-mux-ui": version }
-    },
-    "packages/agent-mux/observability": {
-      version
-    },
-    "packages/agent-mux/sdk": {
+    "packages/adapters/gateway": {
       version,
       dependencies: {
-        "@a5c-ai/agent-mux-adapters": version,
-        "@a5c-ai/agent-mux-cli": version,
-        "@a5c-ai/agent-mux-comm": version
+        "@a5c-ai/adapters-codecs": version,
+        "@a5c-ai/adapters-comm": version
       }
     },
-    "packages/agent-mux/tui": {
+    "packages/adapters/harness-mock": {
+      version,
+      dependencies: { "@a5c-ai/adapters-comm": version }
+    },
+    "packages/adapters/mobile-android-app": {
+      version,
+      dependencies: { "@a5c-ai/tula-ui": version }
+    },
+    "packages/adapters/mobile-ios-app": {
+      version,
+      dependencies: { "@a5c-ai/tula-ui": version }
+    },
+    "packages/adapters/observability": {
+      version
+    },
+    "packages/adapters/sdk": {
       version,
       dependencies: {
-        "@a5c-ai/agent-mux": version,
-        "@a5c-ai/agent-mux-observability": version
+        "@a5c-ai/adapters-codecs": version,
+        "@a5c-ai/adapters-cli": version,
+        "@a5c-ai/adapters-comm": version
       }
     },
-    "packages/agent-mux/tv-androidtv-app": {
-      version
-    },
-    "packages/agent-mux/tv-appletv-app": {
-      version
-    },
-    "packages/agent-mux/ui": {
+    "packages/adapters/tui": {
       version,
-      dependencies: { "@a5c-ai/agent-mux-comm": version }
+      dependencies: {
+        "@a5c-ai/adapters": version,
+        "@a5c-ai/adapters-observability": version
+      }
     },
-    "packages/agent-mux/watch-watchos-app": {
+    "packages/adapters/tv-androidtv-app": {
       version
     },
-    "packages/agent-mux/watch-wearos-app": {
+    "packages/adapters/tv-appletv-app": {
       version
     },
-    "packages/agent-mux/webui": {
+    "packages/adapters/ui": {
       version,
-      dependencies: { "@a5c-ai/agent-mux-ui": version }
+      dependencies: { "@a5c-ai/adapters-comm": version }
     },
-    "packages/agent-mux/transport": {
+    "packages/adapters/watch-watchos-app": {
+      version
+    },
+    "packages/adapters/watch-wearos-app": {
+      version
+    },
+    "packages/adapters/webui": {
       version,
-      dependencies: { "@a5c-ai/agent-mux-comm": version }
+      dependencies: { "@a5c-ai/tula-ui": version }
     },
-    "packages/agent-mux/triggers": {
+    "packages/adapters/transport": {
+      version,
+      dependencies: { "@a5c-ai/adapters-comm": version }
+    },
+    "packages/adapters/triggers": {
       version
     },
     "packages/tula/core": {
       version,
       dependencies: {
-        "@a5c-ai/agent-mux": version,
+        "@a5c-ai/adapters": version,
         "@a5c-ai/tula-runtime": version,
         "@a5c-ai/babysitter-sdk": version
       }
@@ -195,7 +195,7 @@ const updateLockVersion = (path, version) => {
       version,
       dependencies: {
         "@a5c-ai/babysitter-sdk": version,
-        "@a5c-ai/agent-mux-comm": version
+        "@a5c-ai/adapters-comm": version
       }
     },
     "packages/omni": {
@@ -204,25 +204,25 @@ const updateLockVersion = (path, version) => {
         "@a5c-ai/tula-core": version,
         "@a5c-ai/tula-runtime": version,
         "@a5c-ai/tula-platform": version,
-        "@a5c-ai/agent-mux": version,
+        "@a5c-ai/adapters": version,
         "@a5c-ai/babysitter-sdk": version
       }
     },
-    "packages/agent-mux/tools": {
+    "packages/adapters/tools": {
       version,
       dependencies: {
-        "@a5c-ai/agent-mux-transport": version
+        "@a5c-ai/adapters-transport": version
       }
     },
-    "packages/agent-mux/tasks": {
+    "packages/adapters/tasks": {
       version
     },
     "packages/babysitter-tui-plugins": {
       version,
       dependencies: {
         "@a5c-ai/babysitter-sdk": version,
-        "@a5c-ai/agent-mux-tui": version,
-        "@a5c-ai/agent-mux": version
+        "@a5c-ai/tula-tui": version,
+        "@a5c-ai/adapters": version
       }
     },
     "packages/cloud": {
@@ -255,52 +255,52 @@ const workspaceManifestPaths = [
   "packages/tula/core/package.json",
   "packages/tula/runtime/package.json",
   "packages/omni/package.json",
-  "packages/agent-mux/tools/package.json",
+  "packages/adapters/tools/package.json",
   "packages/sdk/package.json",
   "packages/babysitter/package.json",
   "packages/tula/platform/package.json",
-  "packages/agent-mux/extensions/package.json",
-  "packages/agent-mux/tasks/package.json",
+  "packages/adapters/extensions/package.json",
+  "packages/adapters/tasks/package.json",
   "packages/babysitter-tui-plugins/package.json",
   "packages/cloud/package.json",
   "packages/observer-dashboard/package.json",
-  "packages/agent-mux/hooks/core/package.json",
-  "packages/agent-mux/hooks/cli/package.json",
-  "packages/agent-mux/hooks/adapter-claude/package.json",
-  "packages/agent-mux/hooks/adapter-codex/package.json",
-  "packages/agent-mux/hooks/adapter-gemini/package.json",
-  "packages/agent-mux/hooks/adapter-copilot/package.json",
-  "packages/agent-mux/hooks/adapter-cursor/package.json",
-  "packages/agent-mux/hooks/adapter-pi/package.json",
-  "packages/agent-mux/hooks/adapter-oh-my-pi/package.json",
-  "packages/agent-mux/hooks/adapter-opencode/package.json",
-  "packages/agent-mux/hooks/adapter-openclaw/package.json",
-  "packages/agent-mux/hooks/adapter-hermes/package.json",
+  "packages/adapters/hooks/core/package.json",
+  "packages/adapters/hooks/cli/package.json",
+  "packages/adapters/hooks/adapter-claude/package.json",
+  "packages/adapters/hooks/adapter-codex/package.json",
+  "packages/adapters/hooks/adapter-gemini/package.json",
+  "packages/adapters/hooks/adapter-copilot/package.json",
+  "packages/adapters/hooks/adapter-cursor/package.json",
+  "packages/adapters/hooks/adapter-pi/package.json",
+  "packages/adapters/hooks/adapter-oh-my-pi/package.json",
+  "packages/adapters/hooks/adapter-opencode/package.json",
+  "packages/adapters/hooks/adapter-openclaw/package.json",
+  "packages/adapters/hooks/adapter-hermes/package.json",
   "packages/kradle/core/package.json",
 ];
 
 const agentMuxManifestPaths = [
-  "packages/agent-mux/adapters/package.json",
-  "packages/agent-mux/cli/package.json",
-  "packages/agent-mux/core/package.json",
-  "packages/agent-mux/gateway/package.json",
-  "packages/agent-mux/harness-mock/package.json",
-  "packages/agent-mux/mobile-android-app/package.json",
-  "packages/agent-mux/mobile-ios-app/package.json",
-  "packages/agent-mux/observability/package.json",
-  "packages/agent-mux/sdk/package.json",
-  "packages/agent-mux/tui/package.json",
-  "packages/agent-mux/tv-androidtv-app/package.json",
-  "packages/agent-mux/tv-appletv-app/package.json",
-  "packages/agent-mux/ui/package.json",
-  "packages/agent-mux/watch-watchos-app/package.json",
-  "packages/agent-mux/watch-wearos-app/package.json",
-  "packages/agent-mux/webui/package.json",
-  "packages/agent-mux/config/package.json",
-  "packages/agent-mux/launch/package.json",
-  "packages/agent-mux/transport/package.json",
-  "packages/agent-mux/tools/package.json",
-  "packages/agent-mux/triggers/package.json",
+  "packages/adapters/adapters/package.json",
+  "packages/adapters/cli/package.json",
+  "packages/adapters/core/package.json",
+  "packages/adapters/gateway/package.json",
+  "packages/adapters/harness-mock/package.json",
+  "packages/adapters/mobile-android-app/package.json",
+  "packages/adapters/mobile-ios-app/package.json",
+  "packages/adapters/observability/package.json",
+  "packages/adapters/sdk/package.json",
+  "packages/adapters/tui/package.json",
+  "packages/adapters/tv-androidtv-app/package.json",
+  "packages/adapters/tv-appletv-app/package.json",
+  "packages/adapters/ui/package.json",
+  "packages/adapters/watch-watchos-app/package.json",
+  "packages/adapters/watch-wearos-app/package.json",
+  "packages/adapters/webui/package.json",
+  "packages/adapters/config/package.json",
+  "packages/adapters/launch/package.json",
+  "packages/adapters/transport/package.json",
+  "packages/adapters/tools/package.json",
+  "packages/adapters/triggers/package.json",
 ];
 
 const pluginPackageManifestPaths = [
@@ -371,54 +371,54 @@ for (const path of [
   "packages/tula/core/package.json",
   "packages/sdk/package.json",
   "packages/tula/platform/package.json",
-  "packages/agent-mux/adapters/package.json",
-  "packages/agent-mux/cli/package.json",
-  "packages/agent-mux/core/package.json",
-  "packages/agent-mux/gateway/package.json",
-  "packages/agent-mux/harness-mock/package.json",
-  "packages/agent-mux/mobile-android-app/package.json",
-  "packages/agent-mux/mobile-ios-app/package.json",
-  "packages/agent-mux/sdk/package.json",
-  "packages/agent-mux/tui/package.json",
-  "packages/agent-mux/webui/package.json",
-  "packages/agent-mux/ui/package.json",
-  "packages/agent-mux/webui/package.json",
-  "packages/agent-mux/transport/package.json",
+  "packages/adapters/adapters/package.json",
+  "packages/adapters/cli/package.json",
+  "packages/adapters/core/package.json",
+  "packages/adapters/gateway/package.json",
+  "packages/adapters/harness-mock/package.json",
+  "packages/adapters/mobile-android-app/package.json",
+  "packages/adapters/mobile-ios-app/package.json",
+  "packages/adapters/sdk/package.json",
+  "packages/adapters/tui/package.json",
+  "packages/adapters/webui/package.json",
+  "packages/adapters/ui/package.json",
+  "packages/adapters/webui/package.json",
+  "packages/adapters/transport/package.json",
   "packages/tula/runtime/package.json",
   "packages/omni/package.json",
-  "packages/agent-mux/tools/package.json",
-  "packages/agent-mux/launch/package.json",
-  "packages/agent-mux/config/package.json",
+  "packages/adapters/tools/package.json",
+  "packages/adapters/launch/package.json",
+  "packages/adapters/config/package.json",
   "packages/babysitter-tui-plugins/package.json",
 ]) {
   syncDependencyVersion(path, "@a5c-ai/tula-core", newVersion);
   syncDependencyVersion(path, "@a5c-ai/tula-runtime", newVersion);
   syncDependencyVersion(path, "@a5c-ai/tula-platform", newVersion);
-  syncDependencyVersion(path, "@a5c-ai/agent-mux", newAgentMuxVersion);
-  syncDependencyVersion(path, "@a5c-ai/agent-mux-adapters", newAgentMuxVersion);
-  syncDependencyVersion(path, "@a5c-ai/agent-mux-cli", newAgentMuxVersion);
-  syncDependencyVersion(path, "@a5c-ai/agent-mux-comm", newAgentMuxVersion);
-  syncDependencyVersion(path, "@a5c-ai/agent-mux-gateway", newAgentMuxVersion);
-  syncDependencyVersion(path, "@a5c-ai/agent-mux-observability", newAgentMuxVersion);
-  syncDependencyVersion(path, "@a5c-ai/agent-mux-tui", newAgentMuxVersion);
-  syncDependencyVersion(path, "@a5c-ai/agent-mux-ui", newAgentMuxVersion);
-  syncDependencyVersion(path, "@a5c-ai/agent-mux-webui", newAgentMuxVersion);
-  syncDependencyVersion(path, "@a5c-ai/agent-mux-transport", newAgentMuxVersion);
+  syncDependencyVersion(path, "@a5c-ai/adapters", newAgentMuxVersion);
+  syncDependencyVersion(path, "@a5c-ai/adapters-codecs", newAgentMuxVersion);
+  syncDependencyVersion(path, "@a5c-ai/adapters-cli", newAgentMuxVersion);
+  syncDependencyVersion(path, "@a5c-ai/adapters-comm", newAgentMuxVersion);
+  syncDependencyVersion(path, "@a5c-ai/adapters-gateway", newAgentMuxVersion);
+  syncDependencyVersion(path, "@a5c-ai/adapters-observability", newAgentMuxVersion);
+  syncDependencyVersion(path, "@a5c-ai/tula-tui", newAgentMuxVersion);
+  syncDependencyVersion(path, "@a5c-ai/tula-ui", newAgentMuxVersion);
+  syncDependencyVersion(path, "@a5c-ai/tula-webui", newAgentMuxVersion);
+  syncDependencyVersion(path, "@a5c-ai/adapters-transport", newAgentMuxVersion);
 }
 
 for (const path of [
-  "packages/agent-mux/hooks/cli/package.json",
-  "packages/agent-mux/hooks/adapter-claude/package.json",
-  "packages/agent-mux/hooks/adapter-codex/package.json",
-  "packages/agent-mux/hooks/adapter-gemini/package.json",
-  "packages/agent-mux/hooks/adapter-copilot/package.json",
-  "packages/agent-mux/hooks/adapter-cursor/package.json",
-  "packages/agent-mux/hooks/adapter-pi/package.json",
-  "packages/agent-mux/hooks/adapter-oh-my-pi/package.json",
-  "packages/agent-mux/hooks/adapter-opencode/package.json",
-  "packages/agent-mux/hooks/adapter-openclaw/package.json",
+  "packages/adapters/hooks/cli/package.json",
+  "packages/adapters/hooks/adapter-claude/package.json",
+  "packages/adapters/hooks/adapter-codex/package.json",
+  "packages/adapters/hooks/adapter-gemini/package.json",
+  "packages/adapters/hooks/adapter-copilot/package.json",
+  "packages/adapters/hooks/adapter-cursor/package.json",
+  "packages/adapters/hooks/adapter-pi/package.json",
+  "packages/adapters/hooks/adapter-oh-my-pi/package.json",
+  "packages/adapters/hooks/adapter-opencode/package.json",
+  "packages/adapters/hooks/adapter-openclaw/package.json",
 ]) {
-  syncDependencyVersion(path, "@a5c-ai/agent-mux-hooks-core", newVersion);
+  syncDependencyVersion(path, "@a5c-ai/adapters-hooks-core", newVersion);
 }
 
 for (const path of versionsJsonPaths) {

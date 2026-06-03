@@ -2,19 +2,19 @@
 
 ## Summary
 
-This design proposal covers adding `kanban` and `workspaces` views to `packages/agent-mux/tui` as a thin presentation and command layer over existing `packages/kanban` and `packages/agent-mux/core` seams.
+This design proposal covers adding `kanban` and `workspaces` views to `packages/adapters/tui` as a thin presentation and command layer over existing `packages/kanban` and `packages/adapters/core` seams.
 
 The key architectural decision is simple:
 
-- `packages/agent-mux/tui` owns Ink rendering, navigation, and action invocation
+- `packages/adapters/tui` owns Ink rendering, navigation, and action invocation
 - `packages/kanban` remains the owner of backlog policy and workspace/worktree lifecycle
-- `packages/agent-mux/core` remains the shared type contract
+- `packages/adapters/core` remains the shared type contract
 
 ## Why this direction
 
 The repository already has the hard parts:
 
-- shared kanban/workspace types in `packages/agent-mux/core/src/kanban.ts`
+- shared kanban/workspace types in `packages/adapters/core/src/kanban.ts`
 - backlog policy and issue mutation logic in `packages/kanban/src/lib/services/backlog-query-service.ts`
 - worktree-aware workspace lifecycle logic in `packages/kanban/src/lib/workspace-lifecycle.ts`
 - MCP tool surfaces in `packages/kanban/src/mcp/tools/backlog.ts` and `packages/kanban/src/mcp/tools/workspaces.ts`
@@ -27,7 +27,7 @@ Duplicating those behaviors in the TUI would create:
 
 ## Proposed package seams
 
-### `packages/agent-mux/tui`
+### `packages/adapters/tui`
 
 Add:
 
@@ -37,7 +37,7 @@ Add:
 - command-palette and hotkey integration
 - view-contract and feature tests
 
-### `packages/agent-mux/core`
+### `packages/adapters/core`
 
 Only add or refine shared types here when the TUI needs a stable contract that does not yet exist.
 
@@ -82,7 +82,7 @@ It should expose:
 
 ## CI and publish implications
 
-This feature touches both `@a5c-ai/agent-mux-tui` and the shared kanban/workspace release-critical surfaces.
+This feature touches both `@a5c-ai/tula-tui` and the shared kanban/workspace release-critical surfaces.
 
 That means implementation needs to remain compatible with:
 
@@ -96,7 +96,7 @@ It also means the TUI package should ship its new `specs/` directory if the READ
 
 The canonical planning artifacts for this proposal are:
 
-- `packages/agent-mux/tui/specs/kanban-workspaces-spec.md`
-- `packages/agent-mux/tui/specs/kanban-workspaces-subtasks.md`
+- `packages/adapters/tui/specs/kanban-workspaces-spec.md`
+- `packages/adapters/tui/specs/kanban-workspaces-subtasks.md`
 - `.a5c/processes/agent-mux-tui-kanban-workspaces-planning.js`
 - `.a5c/processes/specs/agent-mux-tui-kanban-workspaces-planning-request.md`

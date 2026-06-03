@@ -33,7 +33,7 @@
     "packages/agent-core/src/deferredToolRegistry.ts",
     "packages/tula/platform/src/harness/internal/createRun/orchestration",
     "packages/tula/platform/src/mcp/client",
-    "packages/agent-mux/core/src/plugin-manager.ts",
+    "packages/adapters/core/src/plugin-manager.ts",
     "plugins/babysitter"
   ],
   "verificationCommands": [

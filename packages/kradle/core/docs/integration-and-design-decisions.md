@@ -9,7 +9,7 @@ architectural trade-offs, and system nuances for the Kradle project.
 
 ### 1.1 Agent-Mux Dependency
 
-#### What Kradle Imports from @a5c-ai/agent-mux
+#### What Kradle Imports from @a5c-ai/adapters
 
 Kradle does not import agent-mux as an npm dependency. Instead, it communicates
 with the agent-mux gateway over HTTP. The integration surface lives entirely

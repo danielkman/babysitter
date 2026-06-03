@@ -1,8 +1,8 @@
 # Public TypeScript types exposed by
-# @a5c-ai/agent-mux-observability for log + telemetry instrumentation.
-# Source: packages/agent-mux/observability/src/types.ts (single canonical
+# @a5c-ai/adapters-observability for log + telemetry instrumentation.
+# Source: packages/adapters/observability/src/types.ts (single canonical
 # types module re-exported by index.ts and index-simple.ts).
-# Wired via @a5c-ai/agent-mux-observability PackageSurface
+# Wired via @a5c-ai/adapters-observability PackageSurface
 # `has_payload_schema` edge (activates the W97b widening of source to
 # PackageSurface).
 nodeKind: SharedContextSpec
@@ -11,12 +11,12 @@ attributes:
   displayName: "LogLevel (string union)"
   contextKind: "type-alias"
   typescriptInterface: "LogLevel"
-  producerIface: "@a5c-ai/agent-mux-observability Logger.level"
+  producerIface: "@a5c-ai/adapters-observability Logger.level"
   consumerIfaces:
-    - "@a5c-ai/agent-mux-observability logger.ts (createLogger level filter)"
+    - "@a5c-ai/adapters-observability logger.ts (createLogger level filter)"
   fieldSchema:
     - "value:enum<trace|debug|info|warn|error|fatal>:required:Severity ladder"
-  sourceCitation: "packages/agent-mux/observability/src/types.ts:8"
+  sourceCitation: "packages/adapters/observability/src/types.ts:8"
 edges: {}
 ---
 nodeKind: SharedContextSpec
@@ -25,7 +25,7 @@ attributes:
   displayName: "CostInfo"
   contextKind: "logging-payload"
   typescriptInterface: "CostInfo"
-  producerIface: "@a5c-ai/agent-mux adapters / runs (emit run-complete cost)"
+  producerIface: "@a5c-ai/adapters adapters / runs (emit run-complete cost)"
   consumerIfaces:
     - "Logger.runComplete / runError"
     - "Telemetry.recordRunComplete / recordRunError"
@@ -34,7 +34,7 @@ attributes:
     - "inputTokens:int:optional:Input tokens consumed"
     - "outputTokens:int:optional:Output tokens produced"
     - "thinkingTokens:int:optional:Reasoning/thinking tokens (where applicable)"
-  sourceCitation: "packages/agent-mux/observability/src/types.ts:13-18"
+  sourceCitation: "packages/adapters/observability/src/types.ts:13-18"
 edges: {}
 ---
 nodeKind: SharedContextSpec
@@ -43,10 +43,10 @@ attributes:
   displayName: "LogContext"
   contextKind: "logging-payload"
   typescriptInterface: "LogContext"
-  producerIface: "@a5c-ai/agent-mux callers of Logger.{trace,debug,info,warn,error,fatal,child}"
+  producerIface: "@a5c-ai/adapters callers of Logger.{trace,debug,info,warn,error,fatal,child}"
   consumerIfaces:
-    - "@a5c-ai/agent-mux-observability logger.ts (pino bindings)"
-    - "@a5c-ai/agent-mux-observability telemetry.ts (span attributes)"
+    - "@a5c-ai/adapters-observability logger.ts (pino bindings)"
+    - "@a5c-ai/adapters-observability telemetry.ts (span attributes)"
   fieldSchema:
     - "runId:string:optional:Correlate logs across a single run"
     - "agent:string:optional:Agent name (claude, codex, gemini, ...)"
@@ -59,7 +59,7 @@ attributes:
     - "cost:ref<CostInfo>:optional:Cost info"
     - "error:object:optional:{ code?, message?, stack?, recoverable?, name? }"
     - "<extras>:unknown:optional:Open-ended metadata bag"
-  sourceCitation: "packages/agent-mux/observability/src/types.ts:23-52"
+  sourceCitation: "packages/adapters/observability/src/types.ts:23-52"
 edges: {}
 ---
 nodeKind: SharedContextSpec
@@ -68,9 +68,9 @@ attributes:
   displayName: "Logger (interface)"
   contextKind: "interface-contract"
   typescriptInterface: "Logger"
-  producerIface: "@a5c-ai/agent-mux-observability createLogger (logger.ts) / createSimpleLogger (logger-simple.ts)"
+  producerIface: "@a5c-ai/adapters-observability createLogger (logger.ts) / createSimpleLogger (logger-simple.ts)"
   consumerIfaces:
-    - "all @a5c-ai/agent-mux-* runtime callers (cli, gateway, core, adapters)"
+    - "all @a5c-ai/adapters-* runtime callers (cli, gateway, core, adapters)"
   fieldSchema:
     - "level:string:required:Active level"
     - "trace|debug|info|warn|error|fatal:fn(msg|obj,msg?):required:Standard severity emitters"
@@ -81,7 +81,7 @@ attributes:
     - "toolCallStart|toolCallComplete:fn(...):required:Tool-call helpers"
     - "session:fn(message,LogContext&{action?}):required:Session lifecycle helper"
     - "perf|auth|config:fn(...):optional:Extended helpers"
-  sourceCitation: "packages/agent-mux/observability/src/types.ts:57-97"
+  sourceCitation: "packages/adapters/observability/src/types.ts:57-97"
 edges: {}
 ---
 nodeKind: SharedContextSpec
@@ -90,10 +90,10 @@ attributes:
   displayName: "Telemetry (interface)"
   contextKind: "interface-contract"
   typescriptInterface: "Telemetry"
-  producerIface: "@a5c-ai/agent-mux-observability createTelemetry (telemetry.ts) / createSimpleTelemetry (telemetry-simple.ts)"
+  producerIface: "@a5c-ai/adapters-observability createTelemetry (telemetry.ts) / createSimpleTelemetry (telemetry-simple.ts)"
   consumerIfaces:
-    - "@a5c-ai/agent-mux-comm runs / dispatcher (span emitters)"
-    - "@a5c-ai/agent-mux-gateway server.ts (active-runs gauge)"
+    - "@a5c-ai/adapters-comm runs / dispatcher (span emitters)"
+    - "@a5c-ai/adapters-gateway server.ts (active-runs gauge)"
   fieldSchema:
     - "recordRunStart:fn(agent,model?):required:Counter inc"
     - "recordRunComplete:fn(agent,model?,duration,cost?):required:Counter+histogram"
@@ -105,5 +105,5 @@ attributes:
     - "initialize:fn():optional:Init hook"
     - "shutdown:fn()->Promise<void>:optional:Flush + close"
     - "setActiveRuns:fn(count):optional:Active-runs gauge"
-  sourceCitation: "packages/agent-mux/observability/src/types.ts:102-141"
+  sourceCitation: "packages/adapters/observability/src/types.ts:102-141"
 edges: {}

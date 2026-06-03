@@ -21,14 +21,14 @@ const MIN_SIZE = 10000;
 const packageDirs = [
   'packages/sdk', 'packages/babysitter', 'packages/tula/platform',
   'packages/tula/core', 'packages/atlas',
-  'packages/agent-mux/transport', 'packages/agent-mux/extensions', 'packages/agent-mux/tasks',
-  'packages/agent-mux/triggers', 'packages/cloud', 'packages/observer-dashboard',
+  'packages/adapters/transport', 'packages/adapters/extensions', 'packages/adapters/tasks',
+  'packages/adapters/triggers', 'packages/cloud', 'packages/observer-dashboard',
   'packages/babysitter-tui-plugins',
-  'packages/agent-mux/core', 'packages/agent-mux/cli', 'packages/agent-mux/adapters',
-  'packages/agent-mux/gateway', 'packages/agent-mux/tui', 'packages/agent-mux/ui',
-  'packages/agent-mux/webui', 'packages/agent-mux',
-  'packages/agent-mux/observability',
-  'packages/agent-mux/hooks/core', 'packages/agent-mux/hooks/cli',
+  'packages/adapters/core', 'packages/adapters/cli', 'packages/adapters/adapters',
+  'packages/adapters/gateway', 'packages/adapters/tui', 'packages/adapters/ui',
+  'packages/adapters/webui', 'packages/agent-mux',
+  'packages/adapters/observability',
+  'packages/adapters/hooks/core', 'packages/adapters/hooks/cli',
   'packages/kradle/core',
 ];
 

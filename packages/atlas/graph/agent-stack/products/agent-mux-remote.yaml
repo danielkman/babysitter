@@ -3,7 +3,7 @@ id: agent:agent-mux-remote
 attributes:
   displayName: "agent-mux-remote"
   vendor: "a5c-ai"
-  homepageUrl: "https://www.npmjs.com/package/@a5c-ai/agent-mux"
+  homepageUrl: "https://www.npmjs.com/package/@a5c-ai/adapters"
   primarySurface: sdk
   supportTier: catalog-backed
   productKind: transport-bridge

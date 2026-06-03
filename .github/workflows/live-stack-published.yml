@@ -204,19 +204,19 @@ jobs:
           echo "Installing published packages with tag: @${NPM_TAG}"
 
           # Install the agent-mux CLI (includes transport-mux, atlas catalog, etc.)
-          npm install -g @a5c-ai/agent-mux@${NPM_TAG}
+          npm install -g @a5c-ai/adapters@${NPM_TAG}
 
           # Install the babysitter SDK CLI
           npm install -g @a5c-ai/babysitter-sdk@${NPM_TAG}
 
           # Install hooks-mux CLI
-          npm install -g @a5c-ai/agent-mux-hooks-cli@${NPM_TAG}
+          npm install -g @a5c-ai/adapters-hooks-cli@${NPM_TAG}
 
           # Install node-pty for interactive modes
           npm install -g node-pty || echo "node-pty install failed (optional)"
 
           # Install test runner deps in the repo checkout
-          cd packages/agent-mux/cli
+          cd packages/adapters/cli
           npm install --legacy-peer-deps 2>/dev/null || true
 
           # Verify installations

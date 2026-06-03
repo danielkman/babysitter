@@ -117,10 +117,10 @@ const investigateFailuresTask = defineTask('investigate-failures', async (args, 
 For each failure pattern from the harvest:
 
 1. **Read the code** that handles the failing agent/mode combination:
-   - Launch code: packages/agent-mux/launch/src/launch.ts
+   - Launch code: packages/adapters/launch/src/launch.ts
    - Provider translations: packages/atlas/graph/extensions/provider-translations/
    - Launch behavior: packages/atlas/graph/extensions/plugin-artifacts/plugin-target-{agent}.yaml
-   - Test runner: packages/agent-mux/cli/tests/live-stack/primary-live-runner.ts
+   - Test runner: packages/adapters/cli/tests/live-stack/primary-live-runner.ts
 
 2. **Check if there's an existing open issue** for this failure pattern.
 

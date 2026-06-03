@@ -1,13 +1,13 @@
 ---
 title: Agent Mux Tutorials
-description: Task-oriented walkthroughs for using @a5c-ai/agent-mux without treating the API reference as a tutorial.
+description: Task-oriented walkthroughs for using @a5c-ai/adapters without treating the API reference as a tutorial.
 last_updated: 2026-04-27
 category: landing
 ---
 
 # Agent Mux Tutorials
 
-Use these guides when you want to accomplish a concrete `@a5c-ai/agent-mux` task and do not need the full normative reference first.
+Use these guides when you want to accomplish a concrete `@a5c-ai/adapters` task and do not need the full normative reference first.
 
 ## Audience
 

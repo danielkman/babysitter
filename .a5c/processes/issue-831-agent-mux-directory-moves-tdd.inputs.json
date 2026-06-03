@@ -25,115 +25,115 @@
   "packageMoves": [
     {
       "from": "packages/transport-mux",
-      "to": "packages/agent-mux/transport",
+      "to": "packages/adapters/transport",
       "currentPackage": "@a5c-ai/transport-mux",
-      "targetPackage": "@a5c-ai/agent-mux-transport"
+      "targetPackage": "@a5c-ai/adapters-transport"
     },
     {
       "from": "packages/extension-mux",
-      "to": "packages/agent-mux/extensions",
+      "to": "packages/adapters/extensions",
       "currentPackage": "@a5c-ai/extension-mux",
-      "targetPackage": "@a5c-ai/agent-mux-extensions"
+      "targetPackage": "@a5c-ai/adapters-extensions"
     },
     {
       "from": "packages/triggers-mux",
-      "to": "packages/agent-mux/triggers",
+      "to": "packages/adapters/triggers",
       "currentPackage": "@a5c-ai/triggers-mux",
-      "targetPackage": "@a5c-ai/agent-mux-triggers"
+      "targetPackage": "@a5c-ai/adapters-triggers"
     },
     {
       "from": "packages/tasks-mux",
-      "to": "packages/agent-mux/tasks",
+      "to": "packages/adapters/tasks",
       "currentPackage": "@a5c-ai/tasks-mux",
-      "targetPackage": "@a5c-ai/agent-mux-tasks"
+      "targetPackage": "@a5c-ai/adapters-tasks"
     },
     {
       "from": "packages/tool-mux",
-      "to": "packages/agent-mux/tools",
+      "to": "packages/adapters/tools",
       "currentPackage": "@a5c-ai/tool-mux",
-      "targetPackage": "@a5c-ai/agent-mux-tools"
+      "targetPackage": "@a5c-ai/adapters-tools"
     },
     {
       "from": "packages/hooks-mux/core",
-      "to": "packages/agent-mux/hooks/core",
+      "to": "packages/adapters/hooks/core",
       "currentPackage": "@a5c-ai/hooks-mux-core",
-      "targetPackage": "@a5c-ai/agent-mux-hooks-core"
+      "targetPackage": "@a5c-ai/adapters-hooks-core"
     },
     {
       "from": "packages/hooks-mux/cli",
-      "to": "packages/agent-mux/hooks/cli",
+      "to": "packages/adapters/hooks/cli",
       "currentPackage": "@a5c-ai/hooks-mux-cli",
-      "targetPackage": "@a5c-ai/agent-mux-hooks-cli"
+      "targetPackage": "@a5c-ai/adapters-hooks-cli"
     },
     {
       "from": "packages/hooks-mux/adapter-claude",
-      "to": "packages/agent-mux/hooks/adapter-claude",
+      "to": "packages/adapters/hooks/adapter-claude",
       "currentPackage": "@a5c-ai/hooks-mux-adapter-claude",
-      "targetPackage": "@a5c-ai/agent-mux-hooks-adapter-claude"
+      "targetPackage": "@a5c-ai/adapters-hooks-claude"
     },
     {
       "from": "packages/hooks-mux/adapter-codex",
-      "to": "packages/agent-mux/hooks/adapter-codex",
+      "to": "packages/adapters/hooks/adapter-codex",
       "currentPackage": "@a5c-ai/hooks-mux-adapter-codex",
-      "targetPackage": "@a5c-ai/agent-mux-hooks-adapter-codex"
+      "targetPackage": "@a5c-ai/adapters-hooks-codex"
     },
     {
       "from": "packages/hooks-mux/adapter-copilot",
-      "to": "packages/agent-mux/hooks/adapter-copilot",
+      "to": "packages/adapters/hooks/adapter-copilot",
       "currentPackage": "@a5c-ai/hooks-mux-adapter-copilot",
-      "targetPackage": "@a5c-ai/agent-mux-hooks-adapter-copilot"
+      "targetPackage": "@a5c-ai/adapters-hooks-copilot"
     },
     {
       "from": "packages/hooks-mux/adapter-cursor",
-      "to": "packages/agent-mux/hooks/adapter-cursor",
+      "to": "packages/adapters/hooks/adapter-cursor",
       "currentPackage": "@a5c-ai/hooks-mux-adapter-cursor",
-      "targetPackage": "@a5c-ai/agent-mux-hooks-adapter-cursor"
+      "targetPackage": "@a5c-ai/adapters-hooks-cursor"
     },
     {
       "from": "packages/hooks-mux/adapter-gemini",
-      "to": "packages/agent-mux/hooks/adapter-gemini",
+      "to": "packages/adapters/hooks/adapter-gemini",
       "currentPackage": "@a5c-ai/hooks-mux-adapter-gemini",
-      "targetPackage": "@a5c-ai/agent-mux-hooks-adapter-gemini"
+      "targetPackage": "@a5c-ai/adapters-hooks-gemini"
     },
     {
       "from": "packages/hooks-mux/adapter-hermes",
-      "to": "packages/agent-mux/hooks/adapter-hermes",
+      "to": "packages/adapters/hooks/adapter-hermes",
       "currentPackage": "@a5c-ai/hooks-mux-adapter-hermes",
-      "targetPackage": "@a5c-ai/agent-mux-hooks-adapter-hermes"
+      "targetPackage": "@a5c-ai/adapters-hooks-hermes"
     },
     {
       "from": "packages/hooks-mux/adapter-oh-my-pi",
-      "to": "packages/agent-mux/hooks/adapter-oh-my-pi",
+      "to": "packages/adapters/hooks/adapter-oh-my-pi",
       "currentPackage": "@a5c-ai/hooks-mux-adapter-oh-my-pi",
-      "targetPackage": "@a5c-ai/agent-mux-hooks-adapter-oh-my-pi"
+      "targetPackage": "@a5c-ai/adapters-hooks-oh-my-pi"
     },
     {
       "from": "packages/hooks-mux/adapter-openclaw",
-      "to": "packages/agent-mux/hooks/adapter-openclaw",
+      "to": "packages/adapters/hooks/adapter-openclaw",
       "currentPackage": "@a5c-ai/hooks-mux-adapter-openclaw",
-      "targetPackage": "@a5c-ai/agent-mux-hooks-adapter-openclaw"
+      "targetPackage": "@a5c-ai/adapters-hooks-openclaw"
     },
     {
       "from": "packages/hooks-mux/adapter-opencode",
-      "to": "packages/agent-mux/hooks/adapter-opencode",
+      "to": "packages/adapters/hooks/adapter-opencode",
       "currentPackage": "@a5c-ai/hooks-mux-adapter-opencode",
-      "targetPackage": "@a5c-ai/agent-mux-hooks-adapter-opencode"
+      "targetPackage": "@a5c-ai/adapters-hooks-opencode"
     },
     {
       "from": "packages/hooks-mux/adapter-pi",
-      "to": "packages/agent-mux/hooks/adapter-pi",
+      "to": "packages/adapters/hooks/adapter-pi",
       "currentPackage": "@a5c-ai/hooks-mux-adapter-pi",
-      "targetPackage": "@a5c-ai/agent-mux-hooks-adapter-pi"
+      "targetPackage": "@a5c-ai/adapters-hooks-pi"
     }
   ],
   "legacyDirectoryMoves": [
     {
-      "from": "packages/agent-mux/amux-proxy",
-      "to": "packages/agent-mux/transport-proxy"
+      "from": "packages/adapters/amux-proxy",
+      "to": "packages/adapters/transport-proxy"
     },
     {
-      "from": "packages/agent-mux/meta/config/amux",
-      "to": "packages/agent-mux/meta/config/agent-mux"
+      "from": "packages/adapters/meta/config/amux",
+      "to": "packages/adapters/meta/config/agent-mux"
     }
   ],
   "verificationCommands": [
@@ -152,19 +152,19 @@
     "npm run docs:links",
     "rg -n \"packages/(transport-mux|extension-mux|triggers-mux|tasks-mux|tool-mux|hooks-mux)\" package.json tsconfig.json package-lock.json .github docs packages --glob '!**/node_modules/**' --glob '!**/dist/**'",
     "rg -n \"@a5c-ai/(transport-mux|extension-mux|triggers-mux|tasks-mux|tool-mux|hooks-mux-)\" package.json package-lock.json packages docs .github --glob '!**/node_modules/**' --glob '!**/dist/**'",
-    "test -d packages/agent-mux/transport && test -d packages/agent-mux/extensions && test -d packages/agent-mux/triggers && test -d packages/agent-mux/tasks && test -d packages/agent-mux/tools && test -d packages/agent-mux/hooks && test -d packages/agent-mux/transport-proxy && test -d packages/agent-mux/meta/config/agent-mux"
+    "test -d packages/adapters/transport && test -d packages/adapters/extensions && test -d packages/adapters/triggers && test -d packages/adapters/tasks && test -d packages/adapters/tools && test -d packages/adapters/hooks && test -d packages/adapters/transport-proxy && test -d packages/adapters/meta/config/agent-mux"
   ],
   "phaseSpecs": [
     {
       "id": "phase-1-top-level-package-moves",
       "title": "Move five top-level mux packages",
       "scope": [
-        "Move packages/transport-mux to packages/agent-mux/transport.",
-        "Move packages/extension-mux to packages/agent-mux/extensions.",
-        "Move packages/triggers-mux to packages/agent-mux/triggers.",
-        "Move packages/tasks-mux to packages/agent-mux/tasks.",
-        "Move packages/tool-mux to packages/agent-mux/tools.",
-        "Rename moved package names to @a5c-ai/agent-mux-transport, @a5c-ai/agent-mux-extensions, @a5c-ai/agent-mux-triggers, @a5c-ai/agent-mux-tasks, and @a5c-ai/agent-mux-tools when required by the referenced package-renames doc."
+        "Move packages/transport-mux to packages/adapters/transport.",
+        "Move packages/extension-mux to packages/adapters/extensions.",
+        "Move packages/triggers-mux to packages/adapters/triggers.",
+        "Move packages/tasks-mux to packages/adapters/tasks.",
+        "Move packages/tool-mux to packages/adapters/tools.",
+        "Rename moved package names to @a5c-ai/adapters-transport, @a5c-ai/adapters-extensions, @a5c-ai/adapters-triggers, @a5c-ai/adapters-tasks, and @a5c-ai/adapters-tools when required by the referenced package-renames doc."
       ],
       "acceptance": [
         "Old top-level directories are absent and target directories are present.",
@@ -181,11 +181,11 @@
       "verification": [
         "npm run verify:metadata",
         "npm run build:agent-mux",
-        "npm run build --workspace=@a5c-ai/agent-mux-transport",
-        "npm run build --workspace=@a5c-ai/agent-mux-extensions",
-        "npm run build --workspace=@a5c-ai/agent-mux-triggers",
-        "npm run build --workspace=@a5c-ai/agent-mux-tasks",
-        "npm run build --workspace=@a5c-ai/agent-mux-tools",
+        "npm run build --workspace=@a5c-ai/adapters-transport",
+        "npm run build --workspace=@a5c-ai/adapters-extensions",
+        "npm run build --workspace=@a5c-ai/adapters-triggers",
+        "npm run build --workspace=@a5c-ai/adapters-tasks",
+        "npm run build --workspace=@a5c-ai/adapters-tools",
         "rg -n \"packages/(transport-mux|extension-mux|triggers-mux|tasks-mux|tool-mux)\" package.json tsconfig.json package-lock.json packages .github docs --glob '!**/node_modules/**' --glob '!**/dist/**'"
       ]
     },
@@ -193,14 +193,14 @@
       "id": "phase-2-hooks-mux-move",
       "title": "Move hooks-mux umbrella under agent-mux/hooks",
       "scope": [
-        "Move packages/hooks-mux to packages/agent-mux/hooks.",
+        "Move packages/hooks-mux to packages/adapters/hooks.",
         "Preserve all 12 hooks-mux subpackages as agent-mux hooks subpackages.",
-        "Rename hooks package names to @a5c-ai/agent-mux-hooks-* when required by the referenced package-renames doc.",
+        "Rename hooks package names to @a5c-ai/adapters-hooks-* when required by the referenced package-renames doc.",
         "Update hooks build/test/lint helper scripts and workspace references."
       ],
       "acceptance": [
-        "packages/hooks-mux is absent and packages/agent-mux/hooks contains all 12 expected subpackages.",
-        "Root workspace entries and package-lock resolve hooks packages from packages/agent-mux/hooks/*.",
+        "packages/hooks-mux is absent and packages/adapters/hooks contains all 12 expected subpackages.",
+        "Root workspace entries and package-lock resolve hooks packages from packages/adapters/hooks/*.",
         "scripts/hooks-mux-build.cjs and package scripts operate on the new paths or are intentionally renamed with compatibility preserved where required.",
         "Hooks discovery and agent-catalog contract tests pass with the new layout.",
         "No source import or metadata reference still depends on packages/hooks-mux except explicitly documented historical references."
@@ -256,8 +256,8 @@
       "id": "phase-4-legacy-agent-mux-directory-renames",
       "title": "Rename legacy amux directories",
       "scope": [
-        "Move packages/agent-mux/amux-proxy to packages/agent-mux/transport-proxy.",
-        "Move packages/agent-mux/meta/config/amux to packages/agent-mux/meta/config/agent-mux.",
+        "Move packages/adapters/amux-proxy to packages/adapters/transport-proxy.",
+        "Move packages/adapters/meta/config/amux to packages/adapters/meta/config/agent-mux.",
         "Update Python package path references, README/docs, Docker files, package metadata, workflows, atlas graph, and tests affected by those directory moves.",
         "Avoid broad code identifier or environment variable cleanup unless directly required for these directory renames."
       ],
@@ -265,18 +265,18 @@
         "Legacy amux directory paths are absent and new target paths are present.",
         "Proxy tests and docs refer to transport-proxy path terminology where path-specific.",
         "Config fixture paths refer to agent-mux, not amux, where path-specific.",
-        "No active reference to packages/agent-mux/amux-proxy or packages/agent-mux/meta/config/amux remains."
+        "No active reference to packages/adapters/amux-proxy or packages/adapters/meta/config/amux remains."
       ],
       "testFocus": [
         "Add a filesystem/path contract test for legacy directory renames.",
-        "Add a stale-reference scan for packages/agent-mux/amux-proxy and packages/agent-mux/meta/config/amux.",
+        "Add a stale-reference scan for packages/adapters/amux-proxy and packages/adapters/meta/config/amux.",
         "Run proxy and metadata tests that fail before the directory rename and pass afterward."
       ],
       "verification": [
         "npm run verify:metadata",
-        "pytest packages/agent-mux/transport-proxy/tests",
-        "rg -n \"packages/agent-mux/(amux-proxy|meta/config/amux)|amux-proxy\" packages docs .github package.json package-lock.json --glob '!**/node_modules/**' --glob '!**/dist/**'",
-        "test -d packages/agent-mux/transport-proxy && test -d packages/agent-mux/meta/config/agent-mux"
+        "pytest packages/adapters/transport-proxy/tests",
+        "rg -n \"packages/adapters/(amux-proxy|meta/config/amux)|amux-proxy\" packages docs .github package.json package-lock.json --glob '!**/node_modules/**' --glob '!**/dist/**'",
+        "test -d packages/adapters/transport-proxy && test -d packages/adapters/meta/config/agent-mux"
       ]
     },
     {

@@ -307,7 +307,7 @@ New prefixes registered for the catalog meta-shape registry (cluster 15):
 | `MetaAttribute` | `meta-attribute` | catalog-provenance |
 | `MetaEnum` | `meta-enum` | catalog-provenance |
 
-New prefixes registered for the planning / board surfaces (board-first, issue-first product model surveyed from `packages/agent-mux/webui` and `packages/agent-mux/ui/src/session-flow`):
+New prefixes registered for the planning / board surfaces (board-first, issue-first product model surveyed from `packages/adapters/webui` and `packages/adapters/ui/src/session-flow`):
 
 | NodeKind | Prefix | Cluster |
 |---|---|---|
@@ -343,7 +343,7 @@ current prefix registration (ChildSession as first-class lifecycle entity):
 | `ChildSession` | `child-session` | 6-lifecycle |
 
 current prefix registration (kanban entities extracted from
-agent-mux's `packages/agent-mux/core/src/kanban.ts`):
+agent-mux's `packages/adapters/core/src/kanban.ts`):
 
 | NodeKind | Prefix | Cluster |
 |---|---|---|

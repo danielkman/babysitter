@@ -20,7 +20,7 @@ attributes:
     - "2:usage-error:missing <agent>"
   description: |
     List recorded sessions for an agent. Source:
-    packages/agent-mux/cli/src/commands/sessions.ts:86-129.
+    packages/adapters/cli/src/commands/sessions.ts:86-129.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-sessions-show
@@ -39,7 +39,7 @@ attributes:
     - "8:session-not-found:SESSION_NOT_FOUND"
   description: |
     Render one session via client.sessions.export() (default markdown).
-    Source: packages/agent-mux/cli/src/commands/sessions.ts:131-147.
+    Source: packages/adapters/cli/src/commands/sessions.ts:131-147.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-sessions-search
@@ -59,7 +59,7 @@ attributes:
     - "2:usage-error:missing <query>"
   description: |
     Full-text search across session histories. Source:
-    packages/agent-mux/cli/src/commands/sessions.ts:149-185.
+    packages/adapters/cli/src/commands/sessions.ts:149-185.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-sessions-export
@@ -78,7 +78,7 @@ attributes:
     - "8:session-not-found:SESSION_NOT_FOUND"
   description: |
     Export one session to stdout in chosen format. Source:
-    packages/agent-mux/cli/src/commands/sessions.ts:187-203.
+    packages/adapters/cli/src/commands/sessions.ts:187-203.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-sessions-cost
@@ -94,7 +94,7 @@ attributes:
     - "1:general-error:internal error"
   description: |
     Print accumulated session cost across agents. Source:
-    packages/agent-mux/cli/src/commands/sessions.ts:205-227.
+    packages/adapters/cli/src/commands/sessions.ts:205-227.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-config-get
@@ -112,7 +112,7 @@ attributes:
     - "7:config-error:CONFIG_ERROR / CONFIG_LOCK_ERROR"
   description: |
     Read a config field (or the whole agent config if no field). Source:
-    packages/agent-mux/cli/src/commands/config.ts:97-121.
+    packages/adapters/cli/src/commands/config.ts:97-121.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-config-set
@@ -130,7 +130,7 @@ attributes:
     - "7:config-error:CONFIG_ERROR / CONFIG_LOCK_ERROR"
   description: |
     Write one config field for an agent (parses JSON-shaped values).
-    Source: packages/agent-mux/cli/src/commands/config.ts:123-152.
+    Source: packages/adapters/cli/src/commands/config.ts:123-152.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-config-schema
@@ -147,7 +147,7 @@ attributes:
     - "2:usage-error:missing <agent>"
   description: |
     Print the JSON schema describing an agent's config fields. Source:
-    packages/agent-mux/cli/src/commands/config.ts:154-167.
+    packages/adapters/cli/src/commands/config.ts:154-167.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-config-validate
@@ -164,7 +164,7 @@ attributes:
     - "2:usage-error:missing <agent>"
   description: |
     Validate the on-disk config for an agent against its schema. Source:
-    packages/agent-mux/cli/src/commands/config.ts:169-191.
+    packages/adapters/cli/src/commands/config.ts:169-191.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-config-reload
@@ -181,7 +181,7 @@ attributes:
     - "7:config-error:CONFIG_ERROR / CONFIG_LOCK_ERROR"
   description: |
     Reload config files for an agent (or all if no <agent>). Source:
-    packages/agent-mux/cli/src/commands/config.ts:193-212.
+    packages/adapters/cli/src/commands/config.ts:193-212.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-profiles-list
@@ -198,7 +198,7 @@ attributes:
     - "1:general-error:internal error"
   description: |
     List saved RunOptions profiles. Default subcommand. Source:
-    packages/agent-mux/cli/src/commands/profiles.ts:90-118.
+    packages/adapters/cli/src/commands/profiles.ts:90-118.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-profiles-show
@@ -216,7 +216,7 @@ attributes:
     - "9:profile-not-found:PROFILE_NOT_FOUND"
   description: |
     Print one profile by name. Source:
-    packages/agent-mux/cli/src/commands/profiles.ts:120-133.
+    packages/adapters/cli/src/commands/profiles.ts:120-133.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-profiles-set
@@ -237,7 +237,7 @@ attributes:
   description: |
     Save a profile from passthrough run flags (everything not in the
     reserved global flag set is captured). Source:
-    packages/agent-mux/cli/src/commands/profiles.ts:135-168.
+    packages/adapters/cli/src/commands/profiles.ts:135-168.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-profiles-delete
@@ -256,7 +256,7 @@ attributes:
     - "9:profile-not-found:PROFILE_NOT_FOUND"
   description: |
     Delete a profile by name. Source:
-    packages/agent-mux/cli/src/commands/profiles.ts:170-187.
+    packages/adapters/cli/src/commands/profiles.ts:170-187.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-profiles-apply
@@ -274,4 +274,4 @@ attributes:
     - "9:profile-not-found:PROFILE_NOT_FOUND"
   description: |
     Resolve a profile to its effective RunOptions and print as JSON.
-    Source: packages/agent-mux/cli/src/commands/profiles.ts:189-202.
+    Source: packages/adapters/cli/src/commands/profiles.ts:189-202.

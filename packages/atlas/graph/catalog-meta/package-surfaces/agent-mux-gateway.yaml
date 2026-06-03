@@ -1,9 +1,9 @@
 nodeKind: PackageSurface
 id: package:a5c-ai-agent-mux-gateway
 attributes:
-  packageId: "@a5c-ai/agent-mux-gateway"
-  packageName: "@a5c-ai/agent-mux-gateway"
-  workspacePath: packages/agent-mux/gateway
+  packageId: "@a5c-ai/adapters-gateway"
+  packageName: "@a5c-ai/adapters-gateway"
+  workspacePath: packages/adapters/gateway
   moduleType: typescript
   surfaceKinds:
     - http-gateway

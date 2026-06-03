@@ -1,7 +1,7 @@
 /**
  * Harness-specific prompt context factories.
  *
- * @deprecated Adapters now derive their config from @a5c-ai/agent-mux metadata
+ * @deprecated Adapters now derive their config from @a5c-ai/adapters metadata
  * via agentMuxMetadata.ts and derivePromptContext.ts. These factory functions are
  * retained for backward compatibility with prompts/context.ts re-exports.
  * New code should use createPromptContextForHarness() directly.

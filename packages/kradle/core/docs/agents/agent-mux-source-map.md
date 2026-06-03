@@ -55,64 +55,64 @@ Agent orchestration implications:
 ### Workspace and packages
 
 - `package.json`
-  - Declares `packages/agent-mux/*` workspaces.
+  - Declares `packages/adapters/*` workspaces.
   - Defines build/test scripts such as `build:agent-mux`, `test:agent-mux`, and web UI scripts.
-- `packages/agent-mux/README.md`
+- `packages/adapters/README.md`
   - High-level Agent Mux entrypoint.
-- `packages/agent-mux/core/`
+- `packages/adapters/core/`
   - Agent/session domain contracts.
   - Important files:
-    - `packages/agent-mux/core/src/types.ts`
-    - `packages/agent-mux/core/src/session-manager.ts`
-    - `packages/agent-mux/core/src/workspace-service.ts` if present in this branch; otherwise follow imports from `@a5c-ai/agent-mux-comm`.
-- `packages/agent-mux/gateway/`
+    - `packages/adapters/core/src/types.ts`
+    - `packages/adapters/core/src/session-manager.ts`
+    - `packages/adapters/core/src/workspace-service.ts` if present in this branch; otherwise follow imports from `@a5c-ai/adapters-comm`.
+- `packages/adapters/gateway/`
   - HTTP/WebSocket gateway and server-side run/session orchestration.
   - Important files:
-    - `packages/agent-mux/gateway/src/server.ts`
-    - `packages/agent-mux/gateway/src/runs/manager.ts`
-    - `packages/agent-mux/gateway/src/runs/types.ts`
-    - `packages/agent-mux/gateway/src/runs/session-runtime.ts`
-    - `packages/agent-mux/gateway/src/runs/event-log.ts`
-    - `packages/agent-mux/gateway/src/fanout/client-conn.ts`
-    - `packages/agent-mux/gateway/src/fanout/subscriber.ts`
-    - `packages/agent-mux/gateway/src/protocol/v1.ts`
-    - `packages/agent-mux/gateway/src/protocol/frames.ts`
-    - `packages/agent-mux/gateway/src/builtin-adapters.ts`
-- `packages/agent-mux/gateway/src/kanban/`
+    - `packages/adapters/gateway/src/server.ts`
+    - `packages/adapters/gateway/src/runs/manager.ts`
+    - `packages/adapters/gateway/src/runs/types.ts`
+    - `packages/adapters/gateway/src/runs/session-runtime.ts`
+    - `packages/adapters/gateway/src/runs/event-log.ts`
+    - `packages/adapters/gateway/src/fanout/client-conn.ts`
+    - `packages/adapters/gateway/src/fanout/subscriber.ts`
+    - `packages/adapters/gateway/src/protocol/v1.ts`
+    - `packages/adapters/gateway/src/protocol/frames.ts`
+    - `packages/adapters/gateway/src/builtin-adapters.ts`
+- `packages/adapters/gateway/src/kanban/`
   - Project, issue, workspace, automation, and dispatch surfaces closest to Kradle's git-workspace domain.
   - Important files:
-    - `packages/agent-mux/gateway/src/kanban/routes.ts`
-    - `packages/agent-mux/gateway/src/kanban/lib/services/automation-rule-service.ts`
-    - `packages/agent-mux/gateway/src/kanban/lib/services/automation-webhook-service.ts`
-    - `packages/agent-mux/gateway/src/kanban/lib/services/dispatch-context-label-service.ts`
-    - `packages/agent-mux/gateway/src/kanban/lib/services/run-query-service.ts`
-    - `packages/agent-mux/gateway/src/kanban/lib/services/backlog-query-service.ts`
-    - `packages/agent-mux/gateway/src/kanban/lib/review-service.ts`
-    - `packages/agent-mux/gateway/src/kanban/lib/workspace-lifecycle.ts`
-- `packages/agent-mux/webui/`
+    - `packages/adapters/gateway/src/kanban/routes.ts`
+    - `packages/adapters/gateway/src/kanban/lib/services/automation-rule-service.ts`
+    - `packages/adapters/gateway/src/kanban/lib/services/automation-webhook-service.ts`
+    - `packages/adapters/gateway/src/kanban/lib/services/dispatch-context-label-service.ts`
+    - `packages/adapters/gateway/src/kanban/lib/services/run-query-service.ts`
+    - `packages/adapters/gateway/src/kanban/lib/services/backlog-query-service.ts`
+    - `packages/adapters/gateway/src/kanban/lib/review-service.ts`
+    - `packages/adapters/gateway/src/kanban/lib/workspace-lifecycle.ts`
+- `packages/adapters/webui/`
   - Product UI examples for sessions, dispatches, projects, issues, automations, workspaces, and inboxes.
   - Important files:
-    - `packages/agent-mux/webui/src/router.tsx`
-    - `packages/agent-mux/webui/src/pages/SessionDetailPage.tsx`
-    - `packages/agent-mux/webui/src/pages/RunPage.tsx`
-    - `packages/agent-mux/webui/src/pages/AgentsPage.tsx`
-    - `packages/agent-mux/webui/src/pages/NewRunPage.tsx`
-    - `packages/agent-mux/webui/src/pages/HookInboxPage.tsx`
-    - `packages/agent-mux/webui/src/routes/AutomationsPage.tsx`
-    - `packages/agent-mux/webui/src/routes/ProjectsPage.tsx`
-    - `packages/agent-mux/webui/src/hooks/use-event-stream.ts`
-    - `packages/agent-mux/webui/src/hooks/use-run-detail.ts`
-    - `packages/agent-mux/webui/src/hooks/use-reviews.ts`
-- `packages/agent-mux/cli/`
+    - `packages/adapters/webui/src/router.tsx`
+    - `packages/adapters/webui/src/pages/SessionDetailPage.tsx`
+    - `packages/adapters/webui/src/pages/RunPage.tsx`
+    - `packages/adapters/webui/src/pages/AgentsPage.tsx`
+    - `packages/adapters/webui/src/pages/NewRunPage.tsx`
+    - `packages/adapters/webui/src/pages/HookInboxPage.tsx`
+    - `packages/adapters/webui/src/routes/AutomationsPage.tsx`
+    - `packages/adapters/webui/src/routes/ProjectsPage.tsx`
+    - `packages/adapters/webui/src/hooks/use-event-stream.ts`
+    - `packages/adapters/webui/src/hooks/use-run-detail.ts`
+    - `packages/adapters/webui/src/hooks/use-reviews.ts`
+- `packages/adapters/cli/`
   - CLI flows for starting/listing/inspecting agent runs; useful as a non-UI fallback for Kradle operations.
-- `packages/agent-mux/adapters/`
+- `packages/adapters/adapters/`
   - Adapter layer for concrete agent runtimes.
-- `packages/agent-mux/observability/`
+- `packages/adapters/observability/`
   - Observability surfaces that can inform Kradle run tracking.
 
 ## Researched Agent Mux route matrix
 
-Current Babysitter `staging` exposes these Agent Mux Web UI routes from `packages/agent-mux/webui/src/router.tsx`. Kradle should translate them into repository-centered pages instead of importing the route tree wholesale.
+Current Babysitter `staging` exposes these Agent Mux Web UI routes from `packages/adapters/webui/src/router.tsx`. Kradle should translate them into repository-centered pages instead of importing the route tree wholesale.
 
 | Agent Mux route | Source component | Kradle usage |
 | --- | --- | --- |
@@ -145,7 +145,7 @@ Current Babysitter `staging` exposes these Agent Mux Web UI routes from `package
 
 ## Researched Agent Mux gateway endpoint matrix
 
-Current `packages/agent-mux/gateway/src/kanban/routes.ts` provides the closest server contracts to reuse or adapt.
+Current `packages/adapters/gateway/src/kanban/routes.ts` provides the closest server contracts to reuse or adapt.
 
 | Endpoint/action | Agent Mux purpose | Kradle equivalent |
 | --- | --- | --- |
@@ -181,21 +181,21 @@ Current `packages/agent-mux/gateway/src/kanban/routes.ts` provides the closest s
 
 | Source file | Product lesson for Kradle |
 | --- | --- |
-| `packages/agent-mux/webui/src/shell/CommandPalette.tsx` | Global actions must be generated from authorized route/resource actions. |
-| `packages/agent-mux/webui/src/shell/Sidebar.tsx` | Navigation badges should count active sessions, running dispatches, and pending hooks/approvals from live store state. |
-| `packages/agent-mux/webui/src/shell/TopBar.tsx` | Top context should distinguish session chat, dispatch handoff, workspace, automations, and connectivity. |
-| `packages/agent-mux/webui/src/pages/KanbanPages.tsx` | Board/list/issue/workspace/dispatch pages can share one work graph but still expose route-specific focus. |
-| `packages/agent-mux/webui/src/components/dashboard/backlog-overview.tsx` | Repository issue board is the association hub for issues, sessions, workspaces, PRs, review artifacts, and dispatch labels. |
-| `packages/agent-mux/webui/src/components/runs/run-realtime-execution-panel.tsx` | Dispatch rows need live event buffers and session observability, not static logs only. |
-| `packages/agent-mux/webui/src/components/sessions/session-workspace-shell.tsx` | Chat, workspace, runtime, and observability should live in a viewport-contained shell. |
-| `packages/agent-mux/webui/src/components/sessions/session-conversation-surface.tsx` | Continuation, transcript, tags, costs, approval mode, files, and runtime hints are part of the session contract. |
-| `packages/agent-mux/webui/src/components/sessions/session-observability-panel.tsx` | Run events should be normalized into timeline, artifacts, runtime links, editor links, and cost summaries. |
-| `packages/agent-mux/webui/src/components/workspaces/workspace-provisioning-page.tsx` | Workspace creation must be guided by ownership source: project, issue, or host/repository. |
-| `packages/agent-mux/webui/src/components/workspaces/workspace-detail-shell.tsx` | Workspace detail owns sessions/runs/issues/reviews/rebase state, not just filesystem path. |
-| `packages/agent-mux/webui/src/components/workspaces/workspace-runtime-panel.tsx` | Runtime preview/dev server/terminal surfaces need explicit health and unavailable states. |
-| `packages/agent-mux/webui/src/components/automations/automations-page.tsx` | Trigger rules need source metadata, priority, lifecycle, target options, summaries, and webhook forms. |
-| `packages/agent-mux/webui/src/components/review/review-panel.tsx` | Review artifacts require queue state, decision, provider integration, comments, anchors, and write-back lifecycle. |
-| `packages/agent-mux/webui/src/components/shared/execution-context-panel.tsx` | Context must be inspectable as source, command, cwd, prompt/input, environment, and artifact provenance. |
+| `packages/adapters/webui/src/shell/CommandPalette.tsx` | Global actions must be generated from authorized route/resource actions. |
+| `packages/adapters/webui/src/shell/Sidebar.tsx` | Navigation badges should count active sessions, running dispatches, and pending hooks/approvals from live store state. |
+| `packages/adapters/webui/src/shell/TopBar.tsx` | Top context should distinguish session chat, dispatch handoff, workspace, automations, and connectivity. |
+| `packages/adapters/webui/src/pages/KanbanPages.tsx` | Board/list/issue/workspace/dispatch pages can share one work graph but still expose route-specific focus. |
+| `packages/adapters/webui/src/components/dashboard/backlog-overview.tsx` | Repository issue board is the association hub for issues, sessions, workspaces, PRs, review artifacts, and dispatch labels. |
+| `packages/adapters/webui/src/components/runs/run-realtime-execution-panel.tsx` | Dispatch rows need live event buffers and session observability, not static logs only. |
+| `packages/adapters/webui/src/components/sessions/session-workspace-shell.tsx` | Chat, workspace, runtime, and observability should live in a viewport-contained shell. |
+| `packages/adapters/webui/src/components/sessions/session-conversation-surface.tsx` | Continuation, transcript, tags, costs, approval mode, files, and runtime hints are part of the session contract. |
+| `packages/adapters/webui/src/components/sessions/session-observability-panel.tsx` | Run events should be normalized into timeline, artifacts, runtime links, editor links, and cost summaries. |
+| `packages/adapters/webui/src/components/workspaces/workspace-provisioning-page.tsx` | Workspace creation must be guided by ownership source: project, issue, or host/repository. |
+| `packages/adapters/webui/src/components/workspaces/workspace-detail-shell.tsx` | Workspace detail owns sessions/runs/issues/reviews/rebase state, not just filesystem path. |
+| `packages/adapters/webui/src/components/workspaces/workspace-runtime-panel.tsx` | Runtime preview/dev server/terminal surfaces need explicit health and unavailable states. |
+| `packages/adapters/webui/src/components/automations/automations-page.tsx` | Trigger rules need source metadata, priority, lifecycle, target options, summaries, and webhook forms. |
+| `packages/adapters/webui/src/components/review/review-panel.tsx` | Review artifacts require queue state, decision, provider integration, comments, anchors, and write-back lifecycle. |
+| `packages/adapters/webui/src/components/shared/execution-context-panel.tsx` | Context must be inspectable as source, command, cwd, prompt/input, environment, and artifact provenance. |
 
 ## Kradle paths to extend later
 
@@ -268,43 +268,43 @@ Agent Mux has normalized adapter and configuration concepts that should inform K
 
 ### Adapter capabilities and run options
 
-- `packages/agent-mux/core/src/capabilities.ts`
+- `packages/adapters/core/src/capabilities.ts`
   - Defines normalized adapter capabilities: resume/fork, multi-turn, streaming, native tools, MCP, parallel tool calls, approval modes, runtime hooks, thinking, structured output, skills, AGENTS.md, subagent dispatch, parallel execution, stdin injection, multimodal input, plugins, and plugin formats.
-- `packages/agent-mux/core/src/run-options.ts`
+- `packages/adapters/core/src/run-options.ts`
   - Defines launch-time options including prompts, cwd/workspace, model/provider, approval/tool options, invocation mode, MCP servers, and execution constraints.
-- `packages/agent-mux/core/src/config-types.ts`
+- `packages/adapters/core/src/config-types.ts`
   - Defines unified agent config: model, provider, temperature, max tokens, allowed/denied commands, approval mode, MCP servers, skills, agents doc, env, and native agent config.
 
 ### MCP/plugin/skill management
 
-- `packages/agent-mux/core/src/plugin-types.ts`
+- `packages/adapters/core/src/plugin-types.ts`
   - Defines installed plugins, plugin listings/details, install options, search/browse options, and supported agent/plugin formats.
-- `packages/agent-mux/core/src/plugin-manager.ts`
-- `packages/agent-mux/core/src/plugin-manager-impl.ts`
+- `packages/adapters/core/src/plugin-manager.ts`
+- `packages/adapters/core/src/plugin-manager-impl.ts`
   - Defines the manager surface for listing/installing/updating plugins by agent.
-- `packages/agent-mux/adapters/src/mcp-plugins.ts`
+- `packages/adapters/adapters/src/mcp-plugins.ts`
   - Shared MCP-server plugin helper for adapters that store MCP servers under `mcpServers`.
-- `packages/agent-mux/skills/integrate-harness/SKILL.md`
+- `packages/adapters/skills/integrate-harness/SKILL.md`
   - Adapter checklist shows required capability audit, config schema, hook/plugin wiring, MCP support, session parsing, and tests.
 
 ### Claude Code and runtime hooks
 
-- `packages/agent-mux/adapters/src/claude-adapter.ts`
+- `packages/adapters/adapters/src/claude-adapter.ts`
   - Claude adapter surface for config, MCP plugin handling, spawn args, auth/session parsing, and capabilities.
-- `packages/agent-mux/adapters/src/claude-code/runtime-hooks/`
+- `packages/adapters/adapters/src/claude-code/runtime-hooks/`
   - Runtime hook config and socket server for surfacing hook/tool lifecycle events into Agent Mux.
 
 ### Trigger and work management
 
-- `packages/agent-mux/core/src/automation.ts`
+- `packages/adapters/core/src/automation.ts`
   - Automation rule model with timer/webhook triggers, target routing, task templates, lifecycle state, source metadata, and execution records.
-- `packages/agent-mux/core/src/kanban.ts`
+- `packages/adapters/core/src/kanban.ts`
   - Work-management model: projects, issues, board columns/swimlanes, dependencies, decomposition, dispatch readiness, context labels, issue-workspace links, issue-session links, repository lifecycle, CI gates, review artifacts, workspace inventory, and workspace actions.
-- `packages/agent-mux/gateway/src/kanban/lib/services/automation-rule-service.ts`
+- `packages/adapters/gateway/src/kanban/lib/services/automation-rule-service.ts`
   - Rule lifecycle/query/create/update/delete and execution summary behavior.
-- `packages/agent-mux/gateway/src/kanban/lib/services/automation-webhook-service.ts`
+- `packages/adapters/gateway/src/kanban/lib/services/automation-webhook-service.ts`
   - Incoming webhook materialization and delivery/execution behavior.
-- `packages/agent-mux/gateway/src/kanban/lib/services/backlog-query-service.ts`
+- `packages/adapters/gateway/src/kanban/lib/services/backlog-query-service.ts`
   - Issue creation/move/update, repository linking, dispatch context labels, workspace links, session links, child issues, and PR creation.
-- `packages/agent-mux/gateway/src/kanban/lib/workspace-lifecycle.ts`
+- `packages/adapters/gateway/src/kanban/lib/workspace-lifecycle.ts`
   - Workspace inventory and lifecycle actions such as pin, archive, cleanup, recover, notes, and rebase actions.

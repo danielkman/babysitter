@@ -11,8 +11,8 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { Box, Text } from 'ink';
-import { definePlugin, type TuiViewProps } from '@a5c-ai/agent-mux-tui/plugin';
-import type { AgentEvent } from '@a5c-ai/agent-mux';
+import { definePlugin, type TuiViewProps } from '@a5c-ai/tula-tui/plugin';
+import type { AgentEvent } from '@a5c-ai/adapters';
 import { scanRuns, scanRunCosts, resolveRunsDir } from './data.js';
 import type { RunSummary } from './types.js';
 

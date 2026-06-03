@@ -27,7 +27,7 @@ Alternatively, run `qwen` interactively and use the built-in OAuth flow.
 ## Example
 
 ```ts
-import { createClient } from '@a5c-ai/agent-mux';
+import { createClient } from '@a5c-ai/adapters';
 
 const client = createClient();
 const run = client.run({

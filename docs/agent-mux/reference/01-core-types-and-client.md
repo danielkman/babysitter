@@ -1,6 +1,6 @@
 # Core Types, Client, and Package Identity
 
-**Specification v1.0** | `@a5c-ai/agent-mux-comm`
+**Specification v1.0** | `@a5c-ai/adapters-comm`
 
 ---
 
@@ -11,14 +11,14 @@
 | Field | Value |
 |---|---|
 | npm scope | `@a5c-ai` |
-| Core runtime package | `@a5c-ai/agent-mux-comm` |
-| Convenience meta-package | `@a5c-ai/agent-mux` |
+| Core runtime package | `@a5c-ai/adapters-comm` |
+| Convenience meta-package | `@a5c-ai/adapters` |
 | CLI binary | `amux` |
 | Language | TypeScript, strict mode |
 | Runtime | Node.js 20.9.0 or later (first LTS release of v20) |
 | Module system | ESM package (`"type": "module"`); `import`, `require`, and `default` export-map conditions all resolve to the same ESM build |
 | License | MIT |
-| Canonical package doc | `packages/agent-mux/core/README.md` |
+| Canonical package doc | `packages/adapters/core/README.md` |
 | Reference mirror | `docs/agent-mux/reference/01-core-types-and-client.md` |
 
 ### 1.2 Package Structure
@@ -29,53 +29,53 @@ dependency story must match the published package graph.
 
 | Package | Purpose | Runtime dependencies |
 |---|---|---|
-| `@a5c-ai/agent-mux-comm` | `AgentMuxClient`, normalized events, type definitions, provider/hook/workspace helpers, and stream/runtime primitives | `@a5c-ai/atlas`, `@a5c-ai/agent-mux-observability` |
-| `@a5c-ai/agent-mux-adapters` | All built-in adapter implementations (claude, codex, gemini, copilot, cursor, opencode, pi, omp, openclaw, hermes) | `@a5c-ai/agent-mux-comm` |
-| `@a5c-ai/agent-mux-cli` | CLI binary (`amux`) | `@a5c-ai/agent-mux-comm`, `@a5c-ai/agent-mux-adapters` |
-| `@a5c-ai/agent-mux` | Convenience meta-package: re-exports core + adapters + cli | All three above |
+| `@a5c-ai/adapters-comm` | `AgentMuxClient`, normalized events, type definitions, provider/hook/workspace helpers, and stream/runtime primitives | `@a5c-ai/atlas`, `@a5c-ai/adapters-observability` |
+| `@a5c-ai/adapters-codecs` | All built-in adapter implementations (claude, codex, gemini, copilot, cursor, opencode, pi, omp, openclaw, hermes) | `@a5c-ai/adapters-comm` |
+| `@a5c-ai/adapters-cli` | CLI binary (`amux`) | `@a5c-ai/adapters-comm`, `@a5c-ai/adapters-codecs` |
+| `@a5c-ai/adapters` | Convenience meta-package: re-exports core + adapters + cli | All three above |
 
 ### 1.3 Installation
 
 ```bash
 # Core runtime only
-npm install @a5c-ai/agent-mux-comm
+npm install @a5c-ai/adapters-comm
 
 # SDK/runtime with built-in adapters
-npm install @a5c-ai/agent-mux-comm @a5c-ai/agent-mux-adapters
+npm install @a5c-ai/adapters-comm @a5c-ai/adapters-codecs
 
 # SDK + CLI (everything)
-npm install @a5c-ai/agent-mux
+npm install @a5c-ai/adapters
 
 # Zero-install CLI via npx
-npx @a5c-ai/agent-mux
+npx @a5c-ai/adapters
 ```
 
 Import the package as ESM:
 
 ```typescript
-import { createClient } from '@a5c-ai/agent-mux-comm';
-import { classifyTool } from '@a5c-ai/agent-mux-comm/browser';
-import { buildKanbanProjectBoard } from '@a5c-ai/agent-mux-comm/kanban';
-import type { AutomationRule } from '@a5c-ai/agent-mux-comm/automation';
+import { createClient } from '@a5c-ai/adapters-comm';
+import { classifyTool } from '@a5c-ai/adapters-comm/browser';
+import { buildKanbanProjectBoard } from '@a5c-ai/adapters-comm/kanban';
+import type { AutomationRule } from '@a5c-ai/adapters-comm/automation';
 ```
 
 There is no separate CommonJS build. CommonJS callers should use dynamic import
-(`await import('@a5c-ai/agent-mux-comm')`) rather than assuming a CJS shim.
+(`await import('@a5c-ai/adapters-comm')`) rather than assuming a CJS shim.
 
 The core package's two runtime dependencies are intentional parts of the current
 architecture:
 
 - `@a5c-ai/atlas/catalog` supplies the harness image catalog plus host-detection
   rules and metadata used by invocation and host helpers.
-- `@a5c-ai/agent-mux-observability` supplies the structured logging and telemetry
+- `@a5c-ai/adapters-observability` supplies the structured logging and telemetry
   primitives used by the client, auth/session flows, and run-handle implementation.
 
 The documented public subpath surface is:
 
-- `@a5c-ai/agent-mux-comm`
-- `@a5c-ai/agent-mux-comm/browser`
-- `@a5c-ai/agent-mux-comm/kanban`
-- `@a5c-ai/agent-mux-comm/automation`
+- `@a5c-ai/adapters-comm`
+- `@a5c-ai/adapters-comm/browser`
+- `@a5c-ai/adapters-comm/kanban`
+- `@a5c-ai/adapters-comm/automation`
 
 Package release verification should keep these subpaths aligned with the
 published `dist/index.*`, `dist/browser.*`, `dist/kanban.*`, and
@@ -141,7 +141,7 @@ An **Adapter** is agent-mux's internal representation of a specific agent. Each 
 - **Authentication**: how to detect authentication state and provide setup guidance.
 - **Plugins**: (where supported) how to list, install, search, and remove plugins.
 
-Adapters implement the `AgentAdapter` interface and extend `BaseAgentAdapter`. Built-in adapters are registered automatically when `@a5c-ai/agent-mux-adapters` is loaded. Custom adapters are registered via `mux.adapters.register()`.
+Adapters implement the `AgentAdapter` interface and extend `BaseAgentAdapter`. Built-in adapters are registered automatically when `@a5c-ai/adapters-codecs` is loaded. Custom adapters are registered via `mux.adapters.register()`.
 
 ### 2.3 Run
 
@@ -802,7 +802,7 @@ Missing parent directories are created recursively using `mkdir -p` semantics (N
 The `createClient()` function is the sole entry point for creating an `AgentMuxClient` instance. It is a synchronous factory that validates options and returns the client immediately. No I/O is performed during construction.
 
 ```typescript
-import { createClient } from '@a5c-ai/agent-mux';
+import { createClient } from '@a5c-ai/adapters';
 
 function createClient(options?: ClientOptions): AgentMuxClient;
 ```
@@ -1284,7 +1284,7 @@ The `AgentMuxClient` itself is stateless between runs; it holds only resolved co
 #### Basic run with async iteration
 
 ```typescript
-import { createClient } from '@a5c-ai/agent-mux';
+import { createClient } from '@a5c-ai/adapters';
 
 const mux = createClient({ defaultAgent: 'claude' });
 
@@ -1303,7 +1303,7 @@ for await (const event of run) {
 #### Awaiting the final result
 
 ```typescript
-import { createClient } from '@a5c-ai/agent-mux';
+import { createClient } from '@a5c-ai/adapters';
 
 const mux = createClient();
 
@@ -1323,7 +1323,7 @@ console.log(result.text);
 #### Using profiles
 
 ```typescript
-import { createClient } from '@a5c-ai/agent-mux';
+import { createClient } from '@a5c-ai/adapters';
 
 const mux = createClient();
 
@@ -1345,7 +1345,7 @@ const result = await mux.run({
 #### Event-based consumption
 
 ```typescript
-import { createClient } from '@a5c-ai/agent-mux';
+import { createClient } from '@a5c-ai/adapters';
 
 const mux = createClient();
 
@@ -1378,7 +1378,7 @@ console.log(`\nRun ${result.runId} completed.`);
 #### Checking capabilities before running
 
 ```typescript
-import { createClient, CapabilityError } from '@a5c-ai/agent-mux';
+import { createClient, CapabilityError } from '@a5c-ai/adapters';
 
 const mux = createClient();
 
@@ -1401,7 +1401,7 @@ if (caps.supportsThinking) {
 #### Querying installed agents
 
 ```typescript
-import { createClient } from '@a5c-ai/agent-mux';
+import { createClient } from '@a5c-ai/adapters';
 
 const mux = createClient();
 
@@ -1422,7 +1422,7 @@ for (const info of installed) {
 #### Concurrent runs across agents
 
 ```typescript
-import { createClient } from '@a5c-ai/agent-mux';
+import { createClient } from '@a5c-ai/adapters';
 
 const mux = createClient();
 
@@ -1446,7 +1446,7 @@ console.log(`Codex cost: $${codexResult.cost?.totalUsd.toFixed(4)}`);
 #### Custom config and project directories
 
 ```typescript
-import { createClient } from '@a5c-ai/agent-mux';
+import { createClient } from '@a5c-ai/adapters';
 
 const mux = createClient({
   configDir: '/opt/agent-mux/config',
@@ -1589,4 +1589,4 @@ The adapters package exports an 11th built-in adapter, `agent-mux-remote`, for n
 
 ### Package layout
 
-The meta package `@a5c-ai/agent-mux` re-exports `core` and `adapters` (`packages/agent-mux/src/index.ts`). The CLI ships as a separate binary in `@a5c-ai/agent-mux-cli`. A fifth workspace, `@a5c-ai/agent-mux-harness-mock`, is test-only and is not part of the runtime meta-package. See `docs/14-harness-mock.md`.
+The meta package `@a5c-ai/adapters` re-exports `core` and `adapters` (`packages/adapters/src/index.ts`). The CLI ships as a separate binary in `@a5c-ai/adapters-cli`. A fifth workspace, `@a5c-ai/adapters-harness-mock`, is test-only and is not part of the runtime meta-package. See `docs/14-harness-mock.md`.

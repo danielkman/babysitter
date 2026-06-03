@@ -1,14 +1,14 @@
 # Harness Mock
 
-Canonical package documentation lives in `packages/agent-mux/harness-mock/README.md`.
-This page is the repository reference mirror for `@a5c-ai/agent-mux-harness-mock`
+Canonical package documentation lives in `packages/adapters/harness-mock/README.md`.
+This page is the repository reference mirror for `@a5c-ai/adapters-harness-mock`
 and should stay aligned with that README and the exported surface from
-`packages/agent-mux/harness-mock/src/index.ts`.
+`packages/adapters/harness-mock/src/index.ts`.
 
 ## Package Location
 
-- Package path: `packages/agent-mux/harness-mock/`
-- NPM package: `@a5c-ai/agent-mux-harness-mock`
+- Package path: `packages/adapters/harness-mock/`
+- NPM package: `@a5c-ai/adapters-harness-mock`
 - CLI binary: `mock-harness`
 
 ## CLI
@@ -88,7 +88,7 @@ import {
   AGENT_SCENARIOS,
   MockProcess,
   SUBPROCESS_SCENARIO_EXPECTATIONS,
-} from '@a5c-ai/agent-mux-harness-mock';
+} from '@a5c-ai/adapters-harness-mock';
 
 const scenario = AGENT_SCENARIOS['opencode:tool-call'];
 const proc = new MockProcess(scenario);
@@ -109,7 +109,7 @@ import {
   adapterMocks,
   createProgrammaticMockBuilder,
   createRemoteMockBuilder,
-} from '@a5c-ai/agent-mux-harness-mock';
+} from '@a5c-ai/adapters-harness-mock';
 
 const presetSdk = ClaudeAgentSdkMock.basicSuccess();
 const presetRemote = OpenCodeHttpMock.basicSuccess();
@@ -142,7 +142,7 @@ an in-process event emitter.
 - `MockProcess` replays scripted output in-process. It does not execute a real harness binary.
 - `HttpServerMock`, `WebSocketServerMock`, and `MockServer` bind local ports and are heavier than pure fixture replay.
 - Probe helpers such as `probeHarness` and `probeAllHarnesses` execute real harness binaries and are intended for drift checks, not hermetic unit tests.
-- The package documents the current exported surface from `packages/agent-mux/harness-mock/`; older v1-era source-path references are obsolete.
+- The package documents the current exported surface from `packages/adapters/harness-mock/`; older v1-era source-path references are obsolete.
 
 ## Probe Coverage
 
@@ -183,12 +183,12 @@ Each `HarnessBehaviorProfile` now carries:
 - `availability` and `probeNotes`
 
 Checked-in offline baseline contracts live at
-`packages/agent-mux/harness-mock/tests/fixtures/probes/baseline-profiles.json`.
+`packages/adapters/harness-mock/tests/fixtures/probes/baseline-profiles.json`.
 
 CI vs local/manual:
 
 - CI-safe: fixture coverage checks, contract-shape validation, the node-based
-  offline probe tests in `packages/agent-mux/harness-mock/tests/probe-offline.test.ts`,
+  offline probe tests in `packages/adapters/harness-mock/tests/probe-offline.test.ts`,
   and the offline-only SDK contract profiles for `claude-agent-sdk`,
   `codex-sdk`, and `pi-sdk`
 - Local/manual: authenticated vendor CLI probes and transport startup probes for

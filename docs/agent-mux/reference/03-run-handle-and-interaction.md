@@ -1,6 +1,6 @@
 # RunHandle, InteractionChannel, and Run Lifecycle
 
-**Specification v1.0** | `@a5c-ai/agent-mux`
+**Specification v1.0** | `@a5c-ai/adapters`
 
 > **Note:** hermes-agent is included as a 10th supported agent per project requirements, extending the original scope's 9 agents. All ten built-in agents (claude, codex, gemini, copilot, cursor, opencode, pi, omp, openclaw, hermes) share the same `RunHandle` contract.
 
@@ -981,7 +981,7 @@ Key differences from pipe-mode spawn:
 
 ### 7.3 node-pty Dependency
 
-`node-pty` is a native module with platform-specific compilation requirements. It is an optional peer dependency of `@a5c-ai/agent-mux-comm`:
+`node-pty` is a native module with platform-specific compilation requirements. It is an optional peer dependency of `@a5c-ai/adapters-comm`:
 
 ```json
 {
@@ -1303,7 +1303,7 @@ If an agent produces no output and exits with code 0:
 ### 13.1 Simple Await Pattern
 
 ```typescript
-import { createClient } from '@a5c-ai/agent-mux';
+import { createClient } from '@a5c-ai/adapters';
 
 const mux = createClient();
 
@@ -1321,7 +1321,7 @@ console.log(result.cost);        // { inputCost: 0.003, outputCost: 0.012, total
 ### 13.2 Async Iterator Pattern
 
 ```typescript
-import { createClient } from '@a5c-ai/agent-mux';
+import { createClient } from '@a5c-ai/adapters';
 
 const mux = createClient();
 
@@ -1357,7 +1357,7 @@ console.log(`\nCompleted in ${result.durationMs}ms`);
 ### 13.3 EventEmitter Pattern
 
 ```typescript
-import { createClient } from '@a5c-ai/agent-mux';
+import { createClient } from '@a5c-ai/adapters';
 
 const mux = createClient();
 
@@ -1391,7 +1391,7 @@ const result = await handle;
 ### 13.4 Interactive UI with InteractionChannel
 
 ```typescript
-import { createClient } from '@a5c-ai/agent-mux';
+import { createClient } from '@a5c-ai/adapters';
 import * as readline from 'node:readline/promises';
 
 const mux = createClient({ approvalMode: 'prompt' });
@@ -1444,7 +1444,7 @@ console.log(`\nDone: ${result.exitReason}`);
 ### 13.5 Concurrent Runs
 
 ```typescript
-import { createClient } from '@a5c-ai/agent-mux';
+import { createClient } from '@a5c-ai/adapters';
 
 const mux = createClient({ approvalMode: 'yolo' });
 
@@ -1466,7 +1466,7 @@ for (const result of runs) {
 ### 13.6 Abort with Timeout
 
 ```typescript
-import { createClient } from '@a5c-ai/agent-mux';
+import { createClient } from '@a5c-ai/adapters';
 
 const mux = createClient();
 
@@ -1495,7 +1495,7 @@ if (result.exitReason === 'aborted') {
 ### 13.7 Pause and Resume
 
 ```typescript
-import { createClient } from '@a5c-ai/agent-mux';
+import { createClient } from '@a5c-ai/adapters';
 
 const mux = createClient();
 
@@ -1526,7 +1526,7 @@ for await (const event of handle) {
 ### 13.8 Hermes Agent Usage
 
 ```typescript
-import { createClient } from '@a5c-ai/agent-mux';
+import { createClient } from '@a5c-ai/adapters';
 
 const mux = createClient();
 
@@ -1545,7 +1545,7 @@ console.log(`Tokens: ${result.tokenUsage?.totalTokens}`);
 ### 13.9 Chained EventEmitter
 
 ```typescript
-import { createClient } from '@a5c-ai/agent-mux';
+import { createClient } from '@a5c-ai/adapters';
 
 const mux = createClient();
 
@@ -1564,7 +1564,7 @@ await handle;
 ### 13.10 Collecting All Events
 
 ```typescript
-import { createClient } from '@a5c-ai/agent-mux';
+import { createClient } from '@a5c-ai/adapters';
 
 const mux = createClient();
 
@@ -1586,7 +1586,7 @@ console.log(`Total cost: $${result.cost?.totalCost.toFixed(4)}`);
 ### 13.11 Follow-Up with continue()
 
 ```typescript
-import { createClient } from '@a5c-ai/agent-mux';
+import { createClient } from '@a5c-ai/adapters';
 
 const mux = createClient();
 
@@ -1616,7 +1616,7 @@ console.log(result.text);
 ### 13.12 Batch Approval
 
 ```typescript
-import { createClient } from '@a5c-ai/agent-mux';
+import { createClient } from '@a5c-ai/adapters';
 
 const mux = createClient({ approvalMode: 'prompt' });
 

@@ -9,13 +9,13 @@ category: landing
 
 This section has three tracks:
 
-- [Reference](reference/README.md) — the canonical API and behavior contract for `@a5c-ai/agent-mux`
+- [Reference](reference/README.md) — the canonical API and behavior contract for `@a5c-ai/adapters`
 - [Tutorials](tutorials/README.md) — task-oriented walkthroughs and usage guides
 - [Archive](archive/README.md) — historical comparisons, design proposals, research, and superseded planning material
 
 ## Source of truth
 
-`reference/` is the normative source of truth for current `@a5c-ai/agent-mux` behavior.
+`reference/` is the normative source of truth for current `@a5c-ai/adapters` behavior.
 
 If a tutorial or archived document conflicts with a reference page, the reference page wins.
 

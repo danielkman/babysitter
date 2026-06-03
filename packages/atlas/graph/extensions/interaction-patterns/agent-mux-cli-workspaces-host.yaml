@@ -13,7 +13,7 @@ attributes:
     - "1:general-error:internal error"
   description: |
     List managed workspaces (default subcommand). Source:
-    packages/agent-mux/cli/src/commands/workspaces.ts:54-72.
+    packages/adapters/cli/src/commands/workspaces.ts:54-72.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-workspaces-create
@@ -35,7 +35,7 @@ attributes:
     - "2:usage-error:missing name or --repo"
   description: |
     Create a new workspace (worktree or symlink) over one or more repos.
-    Source: packages/agent-mux/cli/src/commands/workspaces.ts:73-99.
+    Source: packages/adapters/cli/src/commands/workspaces.ts:73-99.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-workspaces-archive
@@ -52,7 +52,7 @@ attributes:
     - "2:usage-error:missing identifier"
   description: |
     Archive a workspace by id/name. Source:
-    packages/agent-mux/cli/src/commands/workspaces.ts:100-110.
+    packages/adapters/cli/src/commands/workspaces.ts:100-110.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-workspaces-cleanup
@@ -69,7 +69,7 @@ attributes:
     - "2:usage-error:missing identifier"
   description: |
     Clean transient files from a workspace. Source:
-    packages/agent-mux/cli/src/commands/workspaces.ts:111-122.
+    packages/adapters/cli/src/commands/workspaces.ts:111-122.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-workspaces-recover
@@ -86,7 +86,7 @@ attributes:
     - "2:usage-error:missing identifier"
   description: |
     Recover an archived/broken workspace. Source:
-    packages/agent-mux/cli/src/commands/workspaces.ts:123-134.
+    packages/adapters/cli/src/commands/workspaces.ts:123-134.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-workspaces-delete
@@ -104,7 +104,7 @@ attributes:
     - "2:usage-error:missing identifier"
   description: |
     Delete a workspace from the registry (and on-disk if --force).
-    Source: packages/agent-mux/cli/src/commands/workspaces.ts:135-147.
+    Source: packages/adapters/cli/src/commands/workspaces.ts:135-147.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-workspaces-sync-sessions
@@ -121,7 +121,7 @@ attributes:
   description: |
     Reconcile workspace session bindings against a JSON-encoded list of
     sessions on positional 0. Source:
-    packages/agent-mux/cli/src/commands/workspaces.ts:148-155.
+    packages/adapters/cli/src/commands/workspaces.ts:148-155.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-launch
@@ -168,7 +168,7 @@ attributes:
     Resolve a launch plan (provider/transport/proxy), optionally start the
     transport-mux runtime, then spawn the harness with stdin/stdout
     passthrough and signal forwarding. Source:
-    packages/agent-mux/cli/src/commands/launch.ts:268-580.
+    packages/adapters/cli/src/commands/launch.ts:268-580.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-detect-host
@@ -183,7 +183,7 @@ attributes:
     - "0:success:detected (or no host) — always succeeds"
   description: |
     Detect which agent harness is running this CLI. Source:
-    packages/agent-mux/cli/src/commands/detect-host.ts:13-39.
+    packages/adapters/cli/src/commands/detect-host.ts:13-39.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-doctor
@@ -199,7 +199,7 @@ attributes:
   description: |
     Aggregate Node, per-adapter install/auth/config-file, and hook
     registry state into a copy/paste-ready bug-report. Source:
-    packages/agent-mux/cli/src/commands/doctor.ts:136-150.
+    packages/adapters/cli/src/commands/doctor.ts:136-150.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-tui
@@ -215,10 +215,10 @@ attributes:
     - "--no-user-plugins:0:skip discovering external user plugins"
   subcommandExitCodes:
     - "0:success:TUI exited normally"
-    - "1:general-error:@a5c-ai/agent-mux-tui not installed"
+    - "1:general-error:@a5c-ai/tula-tui not installed"
   description: |
     Launch the Ink-based agent-mux TUI with built-in plus user plugins.
-    Source: packages/agent-mux/cli/src/commands/tui.ts:6-77.
+    Source: packages/adapters/cli/src/commands/tui.ts:6-77.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-remote-install
@@ -245,7 +245,7 @@ attributes:
   description: |
     Install amux + harness on a remote host via ssh/docker/k8s/local.
     Probes, installs amux, installs harness, verifies. Source:
-    packages/agent-mux/cli/src/commands/remote.ts:121-234.
+    packages/adapters/cli/src/commands/remote.ts:121-234.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-remote-update
@@ -270,4 +270,4 @@ attributes:
     - "2:usage-error:VALIDATION_ERROR (bad mode / missing host or image)"
   description: |
     Update amux + harness on a remote host (npm update -g + amux update).
-    Source: packages/agent-mux/cli/src/commands/remote.ts:121-234.
+    Source: packages/adapters/cli/src/commands/remote.ts:121-234.

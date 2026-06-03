@@ -112,7 +112,7 @@ npm install -D @semantic-release/exec
 {
   "packages": {
     "packages/sdk": { "package-name": "@scope/sdk", "release-type": "node" },
-    "packages/agent-mux/cli": { "package-name": "@scope/cli", "release-type": "node" }
+    "packages/adapters/cli": { "package-name": "@scope/cli", "release-type": "node" }
   },
   "separate-pull-requests": true
 }

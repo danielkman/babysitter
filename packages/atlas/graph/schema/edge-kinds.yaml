@@ -1945,7 +1945,7 @@ edgeKinds:
 - id: edge:exposed-by
   name: exposed_by
   origin: universal
-  description: an APIEndpoint is exposed by an HTTPServerExtension or PackageSurface (catalog pass 97b widened target to allow PackageSurface for npm-published HTTP gateway packages such as @a5c-ai/agent-mux-gateway)
+  description: an APIEndpoint is exposed by an HTTPServerExtension or PackageSurface (catalog pass 97b widened target to allow PackageSurface for npm-published HTTP gateway packages such as @a5c-ai/adapters-gateway)
   source:
   - APIEndpoint
   target:
@@ -3463,7 +3463,7 @@ edgeKinds:
     a graph edge so the schema can be enumerated.
     Catalog pass 97b widened source to also accept `PackageSurface` so
     npm-published packages that define wire-protocol frame shapes (e.g.
-    @a5c-ai/agent-mux-gateway protocol v1 frames) can declare their
+    @a5c-ai/adapters-gateway protocol v1 frames) can declare their
     payload schemas directly.
   source:
   - OperationalTrigger

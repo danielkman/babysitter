@@ -14,7 +14,7 @@ attributes:
     - "5:auth-error:AUTH_ERROR"
   description: |
     Print authentication state for one agent (or all if no <agent>).
-    Source: packages/agent-mux/cli/src/commands/auth.ts:55-101.
+    Source: packages/adapters/cli/src/commands/auth.ts:55-101.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-auth-setup
@@ -32,7 +32,7 @@ attributes:
     - "5:auth-error:AUTH_ERROR"
   description: |
     Print auth setup guidance (steps, env vars, docs URL) for an agent.
-    Source: packages/agent-mux/cli/src/commands/auth.ts:103-138.
+    Source: packages/adapters/cli/src/commands/auth.ts:103-138.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-plugin-list
@@ -50,7 +50,7 @@ attributes:
     - "6:capability-error:agent does not support plugins"
   description: |
     List plugins via the agent-native plugin command. Source:
-    packages/agent-mux/cli/src/commands/plugin.ts:12-99.
+    packages/adapters/cli/src/commands/plugin.ts:12-99.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-plugin-install
@@ -68,7 +68,7 @@ attributes:
     - "6:capability-error:agent does not support plugins"
   description: |
     Install a plugin via the agent-native plugin command. Source:
-    packages/agent-mux/cli/src/commands/plugin.ts:12-99.
+    packages/adapters/cli/src/commands/plugin.ts:12-99.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-plugin-enable
@@ -86,7 +86,7 @@ attributes:
     - "6:capability-error:agent does not support plugins"
   description: |
     Enable a plugin via the agent-native plugin command. Source:
-    packages/agent-mux/cli/src/commands/plugin.ts:12-99.
+    packages/adapters/cli/src/commands/plugin.ts:12-99.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-plugin-disable
@@ -104,7 +104,7 @@ attributes:
     - "6:capability-error:agent does not support plugins"
   description: |
     Disable a plugin via the agent-native plugin command. Source:
-    packages/agent-mux/cli/src/commands/plugin.ts:12-99.
+    packages/adapters/cli/src/commands/plugin.ts:12-99.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-plugin-marketplace
@@ -122,7 +122,7 @@ attributes:
     - "6:capability-error:agent does not support plugins"
   description: |
     Open / query the agent-native plugin marketplace. Source:
-    packages/agent-mux/cli/src/commands/plugin.ts:12-99.
+    packages/adapters/cli/src/commands/plugin.ts:12-99.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-mcp-list
@@ -141,7 +141,7 @@ attributes:
   description: |
     List installed MCP servers for an agent (filters plugins by
     format=mcp-server). Source:
-    packages/agent-mux/cli/src/commands/mcp.ts:50-74.
+    packages/adapters/cli/src/commands/mcp.ts:50-74.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-mcp-install
@@ -159,7 +159,7 @@ attributes:
     - "1:general-error:install threw / missing <server>"
   description: |
     Install an MCP server via client.plugins.install. Source:
-    packages/agent-mux/cli/src/commands/mcp.ts:75-84.
+    packages/adapters/cli/src/commands/mcp.ts:75-84.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-mcp-uninstall
@@ -176,7 +176,7 @@ attributes:
     - "1:general-error:uninstall threw / missing <server>"
   description: |
     Uninstall an MCP server via client.plugins.uninstall. Source:
-    packages/agent-mux/cli/src/commands/mcp.ts:85-94.
+    packages/adapters/cli/src/commands/mcp.ts:85-94.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-skill-list
@@ -194,7 +194,7 @@ attributes:
     - "2:usage-error:missing/unknown <agent>"
   description: |
     List installed skill folders for an agent. Source:
-    packages/agent-mux/cli/src/commands/skill.ts:124-145.
+    packages/adapters/cli/src/commands/skill.ts:124-145.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-skill-add
@@ -215,7 +215,7 @@ attributes:
     - "2:usage-error:missing source/agent"
   description: |
     Copy a skill folder into the agent's skills directory. Source:
-    packages/agent-mux/cli/src/commands/skill.ts:147-176.
+    packages/adapters/cli/src/commands/skill.ts:147-176.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-skill-remove
@@ -234,7 +234,7 @@ attributes:
     - "2:usage-error:missing skill name/agent"
   description: |
     Remove a skill folder by name. Source:
-    packages/agent-mux/cli/src/commands/skill.ts:178-197.
+    packages/adapters/cli/src/commands/skill.ts:178-197.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-skill-where
@@ -250,7 +250,7 @@ attributes:
     - "2:usage-error:unknown agent"
   description: |
     Print global/project skill directory paths for an agent. Source:
-    packages/agent-mux/cli/src/commands/skill.ts:113-122.
+    packages/adapters/cli/src/commands/skill.ts:113-122.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-skill-agents
@@ -265,7 +265,7 @@ attributes:
     - "0:success:agents printed"
   description: |
     List harnesses with known skill conventions. Source:
-    packages/agent-mux/cli/src/commands/skill.ts:91-96.
+    packages/adapters/cli/src/commands/skill.ts:91-96.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-agent-list
@@ -283,7 +283,7 @@ attributes:
     - "2:usage-error:missing/unknown <agent>"
   description: |
     List installed custom sub-agent files/folders for a harness. Source:
-    packages/agent-mux/cli/src/commands/agent.ts:143-151.
+    packages/adapters/cli/src/commands/agent.ts:143-151.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-agent-add
@@ -304,7 +304,7 @@ attributes:
     - "2:usage-error:missing source/agent"
   description: |
     Copy a sub-agent file or folder into a harness's agents directory.
-    Source: packages/agent-mux/cli/src/commands/agent.ts:153-183.
+    Source: packages/adapters/cli/src/commands/agent.ts:153-183.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-agent-remove
@@ -323,7 +323,7 @@ attributes:
     - "2:usage-error:missing name/agent"
   description: |
     Remove a sub-agent file or folder by name. Source:
-    packages/agent-mux/cli/src/commands/agent.ts:185-204.
+    packages/adapters/cli/src/commands/agent.ts:185-204.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-agent-where
@@ -339,7 +339,7 @@ attributes:
     - "2:usage-error:unknown agent"
   description: |
     Print global/project sub-agent directory paths. Source:
-    packages/agent-mux/cli/src/commands/agent.ts:132-141.
+    packages/adapters/cli/src/commands/agent.ts:132-141.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-agent-agents
@@ -354,4 +354,4 @@ attributes:
     - "0:success:harness list printed"
   description: |
     List harnesses with known sub-agent conventions. Source:
-    packages/agent-mux/cli/src/commands/agent.ts:110-115.
+    packages/adapters/cli/src/commands/agent.ts:110-115.

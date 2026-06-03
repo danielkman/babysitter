@@ -21,7 +21,7 @@ attributes:
     agent-mux is a multi-surface UI suite. Each presentation is its own
     package (tui, cli, webui, mobile-{ios,android}, tv-{androidtv,appletv},
     watch-{watchos,wearos}). All surfaces share the agent-mux ui package
-    (`@a5c-ai/agent-mux-ui`) for client + protocol + session-flow projection.
+    (`@a5c-ai/tula-ui`) for client + protocol + session-flow projection.
 edges:
   realizes:
     - target: layer:11-presentation

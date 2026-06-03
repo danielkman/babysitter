@@ -1480,13 +1480,13 @@ Total `supports_interaction_primitive` edges added: **54**
 
 ### Adapter sources read
 
-- `packages/agent-mux/adapters/src/omp-adapter.ts` (L1-150)
-- `packages/agent-mux/adapters/src/openclaw-adapter.ts` (L1-150)
-- `packages/agent-mux/adapters/src/hermes-adapter.ts` (L1-150)
-- `packages/agent-mux/adapters/src/pi-adapter.ts` (L1-150)
-- `packages/agent-mux/adapters/src/qwen-adapter.ts` (L1-150)
-- `packages/agent-mux/adapters/src/amp-adapter.ts` (L1-150)
-- `packages/agent-mux/adapters/src/droid-adapter.ts` (L1-150)
+- `packages/adapters/adapters/src/omp-adapter.ts` (L1-150)
+- `packages/adapters/adapters/src/openclaw-adapter.ts` (L1-150)
+- `packages/adapters/adapters/src/hermes-adapter.ts` (L1-150)
+- `packages/adapters/adapters/src/pi-adapter.ts` (L1-150)
+- `packages/adapters/adapters/src/qwen-adapter.ts` (L1-150)
+- `packages/adapters/adapters/src/amp-adapter.ts` (L1-150)
+- `packages/adapters/adapters/src/droid-adapter.ts` (L1-150)
 
 All adapter source is read-only for this pass; no agent-mux source edits.
 
@@ -1807,7 +1807,7 @@ distinction so future authors don't repeat the catalog pass 50 mistake.
 
 ### Source
 
-Real production source: `packages/agent-mux/core/src/kanban.ts` (2518
+Real production source: `packages/adapters/core/src/kanban.ts` (2518
 lines) — the canonical kanban schema for the agent-mux project.
 catalog pass 52 extracts four entities into first-class catalog NodeKinds,
 mirroring the kanban interfaces:
@@ -4523,7 +4523,7 @@ migration verdict from GREEN → **COMPLETE**.
   ordered-rule modeller for "signals present AND absentSignals absent").
 - New optional attribute `absentSignals: list<string>` — drives the
   legacy `HooksMuxDetectionRule.absentSignals` consumer in
-  `packages/agent-mux/hooks/core/src/discovery/detector.ts:46` and
+  `packages/adapters/hooks/core/src/discovery/detector.ts:46` and
   `packages/agent-catalog/src/models.ts:438`.
 
 **Data authored** — 10 `DiscoverySignal[scope=hooks-mux]` rows under
@@ -4766,9 +4766,9 @@ NodeKind. **Result: 0 new anti-patterns.**
 
 
 
-## Catalog pass 94 — @a5c-ai/agent-mux-triggers package surface modeled (2026-05-04)
+## Catalog pass 94 — @a5c-ai/adapters-triggers package surface modeled (2026-05-04)
 
-Catalog pass 94 catalogs `packages/triggers-mux/` (`@a5c-ai/agent-mux-triggers` v0.4.9) into atlas
+Catalog pass 94 catalogs `packages/triggers-mux/` (`@a5c-ai/adapters-triggers` v0.4.9) into atlas
 as `OperationalTrigger` records, capturing all four `TriggerBackend`
 variants plus the reusable composite GitHub Action.
 
@@ -4788,7 +4788,7 @@ variants plus the reusable composite GitHub Action.
   exit 0 (matched) / 78 (skip) / non-zero (error); GH Action wraps
   this with harness/plugin install + pre-run/amux/post-run.
 - Key integration points: GitHub Actions composite, agent-mux CLI
-  (`packages/agent-mux/sdk/dist/bin/amux.js`), babysitter platform
+  (`packages/adapters/sdk/dist/bin/amux.js`), babysitter platform
   (workspace consumer).
 
 ### Schema delta
@@ -4852,9 +4852,9 @@ dangling / parse 0 / 0 / 0.
 - Dead-EdgeKinds 11 (≤ 13 cap honored).
 
 
-## Catalog pass 95 - @a5c-ai/agent-mux-triggers package deep-decomposition (catalog pass 95, 2026-05-04)
+## Catalog pass 95 - @a5c-ai/adapters-triggers package deep-decomposition (catalog pass 95, 2026-05-04)
 
-catalog pass 95 deepens catalog pass 94 trigger modeling so the @a5c-ai/agent-mux-triggers package
+catalog pass 95 deepens catalog pass 94 trigger modeling so the @a5c-ai/adapters-triggers package
 can be regenerated from the atlas graph alone. catalog pass 94 had compressed seven
 decomposable surfaces into string attributes on five OperationalTrigger
 records; catalog pass 95 promotes each surface to first-class records with edges.
@@ -4944,7 +4944,7 @@ this expectation here. No allowlist change needed.
 
 ### Codegen-readiness verdict for the triggers package
 
-GREEN -- given atlas alone, the @a5c-ai/agent-mux-triggers package can be
+GREEN -- given atlas alone, the @a5c-ai/adapters-triggers package can be
 regenerated: package.json from PackageSurface + exposes_subcommand,
 action.yml from the 5 OperationalTriggers + 19 FrontmatterFields + 9
 GithubActionSteps, src/types.ts from the 2 SharedContextSpec field
@@ -5008,7 +5008,7 @@ Top-level mux + catalog packages:
 1. `agent-catalog` — graph + SDK projection layer (already PackageSurface).
 2. `agent-mux` — multi-subpackage tree (9 subpackages with package.json):
    `core`, `cli`, `gateway`, `tui`, `ui`, `webui`, `harness-mock`,
-   `observability`, `sdk` (umbrella @a5c-ai/agent-mux), `adapters`.
+   `observability`, `sdk` (umbrella @a5c-ai/adapters), `adapters`.
    Plus 3 non-published dirs (`amux-proxy`, `meta`, `processes`).
 3. `extension-mux` — single package (already PackageSurface).
 4. `hooks-mux` — single core package (already PackageSurface) + 9 adapter
@@ -5029,7 +5029,7 @@ Top-level mux + catalog packages:
 | agent-mux/webui | 1 (PackageSurface missing) | YES post-catalog pass 96 |
 | agent-mux/harness-mock | 1 (PackageSurface missing) | YES post-catalog pass 96 |
 | agent-mux/observability | 1 (PackageSurface missing) | YES post-catalog pass 96 |
-| agent-mux/sdk (@a5c-ai/agent-mux umbrella) | 1 (PackageSurface missing) | YES post-catalog pass 96 |
+| agent-mux/sdk (@a5c-ai/adapters umbrella) | 1 (PackageSurface missing) | YES post-catalog pass 96 |
 | agent-mux/adapters | 1 (PackageSurface missing) | YES post-catalog pass 96 |
 | extension-mux | 0 | YES — PluginTargetDescriptor×17, schema/transform/emit modeled |
 | hooks-mux core | 0 | YES — HookMapping/HookSurface/MergePolicy/DecisionVerb covered |
@@ -5127,7 +5127,7 @@ mux subpackage has a graph record.
 
 - Edited only `C:/work/v6/graph/`.
 - Trust Chain remains OUT OF SCOPE (11 dead EdgeKinds preserved).
-- Every value cites its `packages/agent-mux/<sub>/package.json` source
+- Every value cites its `packages/adapters/<sub>/package.json` source
   in a YAML comment.
 - No new NodeKinds (all concepts reused PackageSurface + PathDescriptor).
 - No new EdgeKinds (reused `references_path`).
@@ -5146,12 +5146,12 @@ following the catalog pass 96 pattern.
 Authored 74 `InteractionPrimitive[kind=cli-subcommand]` records under
 `graph/extensions/interaction-patterns/agent-mux-cli-subcommands.yaml`,
 covering every leaf subcommand of `amux` (per
-`packages/agent-mux/cli/src/commands/*.ts` + `commands/gateway/*.ts`).
+`packages/adapters/cli/src/commands/*.ts` + `commands/gateway/*.ts`).
 Wired each as `exposes_subcommand` from
 `package:a5c-ai-agent-mux-cli` (catalog pass 96). Each record carries
 `parentBin: amux`, `subcommandVerb`, per-subcommand `flags` list
 (`<flag>:<arity>:<purpose>`), and `subcommandExitCodes` distilled from
-`packages/agent-mux/cli/src/exit-codes.ts:10-27` plus
+`packages/adapters/cli/src/exit-codes.ts:10-27` plus
 `errorCodeToExitCode` mappings. Description embeds source-file:line
 citation in the catalog pass 95 style.
 
@@ -5176,7 +5176,7 @@ tasks-mux, hooks-mux/core) into 40 graph records.
 
 - 3 InteractionPrimitive[kind=tui-command] (agent-mux/tui:
   command-palette, prompt-input, model-picker)
-- 5 SharedContextSpec for @a5c-ai/agent-mux-observability public types
+- 5 SharedContextSpec for @a5c-ai/adapters-observability public types
   (LogLevel, CostInfo, LogContext, Logger, Telemetry)
 - 4 InteractionPrimitive[kind=mock-scenario] for the four
   `interactive:*` harness-mock approval scenarios + 5 SharedContextSpec
@@ -5188,7 +5188,7 @@ tasks-mux, hooks-mux/core) into 40 graph records.
   `tasks-mux` top-level CLI groups + 2 APIEndpoint for the MCP
   HTTP transport (`/mcp`, `/healthz`) + 6 SharedContextSpec for the
   zod-validated wire schemas / BreakpointBackend interface
-- 8 SharedContextSpec for @a5c-ai/agent-mux-hooks-core (UnifiedHookEvent,
+- 8 SharedContextSpec for @a5c-ai/adapters-hooks-core (UnifiedHookEvent,
   UnifiedExecutionContext, UnifiedHookResult, MergedExecutionResult,
   PhaseMapping, SessionState, DetectedHarness, PropagationOptions)
 

@@ -1,6 +1,6 @@
 # agent-mux archive: comparisons
 
-These documents compare `@a5c-ai/agent-mux` with other systems or analyze parity gaps.
+These documents compare `@a5c-ai/adapters` with other systems or analyze parity gaps.
 
 They are historical and non-normative.
 

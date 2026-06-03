@@ -10,9 +10,9 @@ Tula core programmatic session wrapper and agentic tool surface for Babysitter r
 
 ## Package role
 
-`@a5c-ai/tula-core` sits between `@a5c-ai/tula-platform`, `@a5c-ai/agent-mux`, and `@a5c-ai/babysitter-sdk`:
+`@a5c-ai/tula-core` sits between `@a5c-ai/tula-platform`, `@a5c-ai/adapters`, and `@a5c-ai/babysitter-sdk`:
 
-- `createAgentCoreSession()` wraps an `@a5c-ai/agent-mux` client for in-process prompt execution.
+- `createAgentCoreSession()` wraps an `@a5c-ai/adapters` client for in-process prompt execution.
 - `createAgentCoreToolDefinitions()` assembles the built-in Babysitter-flavored tool surface that host runtimes can inject into planning, resume, or delegated-task flows.
 - `@a5c-ai/tula-platform` re-exports these APIs from `src/harness/index.ts`, uses `createAgentCoreSession()` for direct `tula-core` harness invocation in `src/harness/invoker.ts`, and injects tool definitions into plan-process and resume-run flows.
 - `@a5c-ai/babysitter-sdk` still owns run directories, journals, task/effect lifecycle, and config defaults. `tula-core` does not replace the SDK orchestration layer.
@@ -57,7 +57,7 @@ import {
 
 Key exports:
 
-- `createAgentCoreSession(options)` / `AgentCoreSessionHandle`: programmatic session API backed by `@a5c-ai/agent-mux`.
+- `createAgentCoreSession(options)` / `AgentCoreSessionHandle`: programmatic session API backed by `@a5c-ai/adapters`.
 - `createAgentCoreToolDefinitions(options)` / `disposeAgentCoreToolDefinitions(definitions)`: built-in tool-definition assembly and teardown.
 - `DeferredToolRegistry`: lazy registry for searchable/fetchable external tool schemas.
 - `AGENT_CORE_TOOL_NAMES`: canonical bundled tool name list.
@@ -67,7 +67,7 @@ Key exports:
 
 ## Session API
 
-`createAgentCoreSession()` returns an `AgentCoreSessionHandle` that wraps a shared `@a5c-ai/agent-mux` client with built-in adapters registered once per process.
+`createAgentCoreSession()` returns an `AgentCoreSessionHandle` that wraps a shared `@a5c-ai/adapters` client with built-in adapters registered once per process.
 
 Core handle methods:
 
@@ -273,7 +273,7 @@ Current downstream integration boundaries in this repo:
   - uses `createAgentCoreSession()` for the direct `tula-core` harness path in `src/harness/invoker.ts`
   - injects `createAgentCoreToolDefinitions()` into plan-process and delegated-task flows in `src/harness/internal/createRun/planProcess/*`
   - uses both session and tool-definition APIs in `src/cli/commands/harness/resumeRun.ts` to inspect and resume existing runs
-- `@a5c-ai/agent-mux`
+- `@a5c-ai/adapters`
   - provides the actual client, built-in adapters, session continuation, approval mode, and backend selection that tula-core forwards into
 - `@a5c-ai/babysitter-sdk`
   - provides config defaults/env wiring used by the `config` tool and remains the owner of orchestration/run-state semantics outside this package

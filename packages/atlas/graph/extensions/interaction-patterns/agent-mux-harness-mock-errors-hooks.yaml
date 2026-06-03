@@ -1,10 +1,10 @@
 # error and runtime-hook scenarios from
-# @a5c-ai/agent-mux-harness-mock. Promotes the `error:*` (5) and
+# @a5c-ai/adapters-harness-mock. Promotes the `error:*` (5) and
 # `runtimeHook*` (3) deterministic fixtures to InteractionPrimitive
 # records (kind=mock-scenario) so test plans can be regenerated from
 # the v6 graph alone.
-# Source: packages/agent-mux/harness-mock/src/scenarios/{errors,hooks}.ts.
-# Wired via @a5c-ai/agent-mux-harness-mock PackageSurface
+# Source: packages/adapters/harness-mock/src/scenarios/{errors,hooks}.ts.
+# Wired via @a5c-ai/adapters-harness-mock PackageSurface
 # `exposes_subcommand` edge.
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-harness-mock-error-rate-limit
@@ -16,7 +16,7 @@ attributes:
     Mock claude-code session that emits a Rate-limit error stdout chunk and
     HTTP 429 stderr chunk, exits with code 1. Expected mapped code:
     RATE_LIMITED.
-    Source: packages/agent-mux/harness-mock/src/scenarios/errors.ts:25-36
+    Source: packages/adapters/harness-mock/src/scenarios/errors.ts:25-36
     (rateLimitClaude; ERROR_SCENARIOS['rate-limit']).
 ---
 nodeKind: InteractionPrimitive
@@ -28,7 +28,7 @@ attributes:
   description: |
     Mock codex session that emits "Missing OPENAI_API_KEY" + "auth:
     unauthorized" and exits with code 1. Expected mapped code: AUTH_ERROR.
-    Source: packages/agent-mux/harness-mock/src/scenarios/errors.ts:38-49
+    Source: packages/adapters/harness-mock/src/scenarios/errors.ts:38-49
     (authRequiredCodex; ERROR_SCENARIOS['auth-required']).
 ---
 nodeKind: InteractionPrimitive
@@ -40,7 +40,7 @@ attributes:
   description: |
     Mock claude-code session that crashes after 80ms with SIGTERM, emits
     'segfault' on stderr; exitCode 1. Expected mapped code: AGENT_CRASH.
-    Source: packages/agent-mux/harness-mock/src/scenarios/errors.ts:51-61
+    Source: packages/adapters/harness-mock/src/scenarios/errors.ts:51-61
     (crashClaude; ERROR_SCENARIOS.crash).
 ---
 nodeKind: InteractionPrimitive
@@ -53,7 +53,7 @@ attributes:
     Mock gemini session that hangs (process.hang=true) emitting only
     "Working..." Expected mapped code: TIMEOUT (driven by onTimeout, not
     process exit).
-    Source: packages/agent-mux/harness-mock/src/scenarios/errors.ts:63-73
+    Source: packages/adapters/harness-mock/src/scenarios/errors.ts:63-73
     (timeoutGemini; ERROR_SCENARIOS.timeout).
 ---
 nodeKind: InteractionPrimitive
@@ -66,7 +66,7 @@ attributes:
     Mock claude-code session killed with SIGKILL after 60ms, exitCode 137,
     stderr "FATAL ERROR: Reached heap limit". Expected mapped code:
     AGENT_CRASH.
-    Source: packages/agent-mux/harness-mock/src/scenarios/errors.ts:75-85
+    Source: packages/adapters/harness-mock/src/scenarios/errors.ts:75-85
     (oomClaude; ERROR_SCENARIOS.oom).
 ---
 nodeKind: InteractionPrimitive
@@ -79,7 +79,7 @@ attributes:
     Drives the claude-code preToolUse runtime hook with decision='allow' on
     a Bash tool call ('echo ok'); session emits init / tool_call /
     tool_result / result(success) wire chunks; exitCode 0.
-    Source: packages/agent-mux/harness-mock/src/scenarios/hooks.ts:72-93
+    Source: packages/adapters/harness-mock/src/scenarios/hooks.ts:72-93
     (RUNTIME_HOOK_SCENARIOS.runtimeHookAllowBash).
 ---
 nodeKind: InteractionPrimitive
@@ -92,7 +92,7 @@ attributes:
     Drives the claude-code preToolUse runtime hook with decision='deny' on
     a Write tool call (path='blocked.txt'); errorMessage='Runtime hook
     denied Write'.
-    Source: packages/agent-mux/harness-mock/src/scenarios/hooks.ts:95-116
+    Source: packages/adapters/harness-mock/src/scenarios/hooks.ts:95-116
     (RUNTIME_HOOK_SCENARIOS.runtimeHookDenyWrite).
 ---
 nodeKind: InteractionPrimitive
@@ -105,5 +105,5 @@ attributes:
     Drives the claude-code preToolUse runtime hook with decision='timeout'
     on a Bash 'sleep 1' tool call; process.hang=true so the hook timeout
     branch fires.
-    Source: packages/agent-mux/harness-mock/src/scenarios/hooks.ts:118-136
+    Source: packages/adapters/harness-mock/src/scenarios/hooks.ts:118-136
     (RUNTIME_HOOK_SCENARIOS.runtimeHookTimeout).

@@ -65,7 +65,7 @@ attributes:
     Run an agent with a prompt. Resolves agent + prompt from positionals/flags/stdin,
     optionally swaps in a mock harness, calls client.run() and streams events
     (text deltas in plain mode, JSONL in --json mode). Source:
-    packages/agent-mux/cli/src/commands/run.ts:188-313.
+    packages/adapters/cli/src/commands/run.ts:188-313.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-install
@@ -88,7 +88,7 @@ attributes:
   description: |
     Install one agent CLI (or `--all`). Dispatches to adapter.install(),
     rendering result.method (npm/brew/manual/already-installed). Source:
-    packages/agent-mux/cli/src/commands/install.ts:60-195.
+    packages/adapters/cli/src/commands/install.ts:60-195.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-update
@@ -108,7 +108,7 @@ attributes:
     - "3:agent-not-found:UNKNOWN_AGENT"
   description: |
     Update one agent CLI (or `--all`). Dispatches to adapter.update().
-    Source: packages/agent-mux/cli/src/commands/install.ts:201-262.
+    Source: packages/adapters/cli/src/commands/install.ts:201-262.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-detect
@@ -128,7 +128,7 @@ attributes:
   description: |
     Report installed version/path/notes for one agent (or `--all`). Calls
     adapter.detectInstallation(). Source:
-    packages/agent-mux/cli/src/commands/install.ts:268-401.
+    packages/adapters/cli/src/commands/install.ts:268-401.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-uninstall
@@ -146,7 +146,7 @@ attributes:
     - "3:agent-not-found:UNKNOWN_AGENT"
   description: |
     Uninstall an agent CLI binary by reversing its npm/brew install method.
-    Source: packages/agent-mux/cli/src/commands/install.ts:407-473.
+    Source: packages/adapters/cli/src/commands/install.ts:407-473.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-adapters-list
@@ -162,7 +162,7 @@ attributes:
     - "1:general-error:internal error"
   description: |
     List registered adapters (default subcommand when none given).
-    Source: packages/agent-mux/cli/src/commands/adapters.ts:58-78.
+    Source: packages/adapters/cli/src/commands/adapters.ts:58-78.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-adapters-detect
@@ -180,7 +180,7 @@ attributes:
   description: |
     Detect whether the named adapter is installed (delegates to
     AdapterRegistry.detect). Source:
-    packages/agent-mux/cli/src/commands/adapters.ts:80-107.
+    packages/adapters/cli/src/commands/adapters.ts:80-107.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-adapters-info
@@ -197,7 +197,7 @@ attributes:
     - "2:usage-error:missing <agent>"
   description: |
     Print the capability table for an adapter. Source:
-    packages/agent-mux/cli/src/commands/adapters.ts:109-127.
+    packages/adapters/cli/src/commands/adapters.ts:109-127.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-models-list
@@ -214,7 +214,7 @@ attributes:
     - "2:usage-error:missing <agent>"
   description: |
     Print the model catalog for an agent. Source:
-    packages/agent-mux/cli/src/commands/models.ts:111-142.
+    packages/adapters/cli/src/commands/models.ts:111-142.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-models-info
@@ -232,7 +232,7 @@ attributes:
     - "3:agent-not-found:AGENT_NOT_FOUND when modelId unknown"
   description: |
     Print details for one model (alias: `amux models get`). Source:
-    packages/agent-mux/cli/src/commands/models.ts:144-168.
+    packages/adapters/cli/src/commands/models.ts:144-168.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-models-refresh
@@ -249,7 +249,7 @@ attributes:
     - "2:usage-error:missing <agent>"
   description: |
     Refresh the cached model list for an agent. Source:
-    packages/agent-mux/cli/src/commands/models.ts:170-185.
+    packages/adapters/cli/src/commands/models.ts:170-185.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-models-current
@@ -266,7 +266,7 @@ attributes:
     - "2:usage-error:missing <agent>"
   description: |
     Print the currently configured/effective model for an agent. Source:
-    packages/agent-mux/cli/src/commands/models.ts:187-220.
+    packages/adapters/cli/src/commands/models.ts:187-220.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-cli-models-set
@@ -284,4 +284,4 @@ attributes:
     - "2:usage-error:missing <agent>/<model> or VALIDATION_ERROR from validate()"
   description: |
     Persist a model (and optional provider) selection for an agent.
-    Source: packages/agent-mux/cli/src/commands/models.ts:222-261.
+    Source: packages/adapters/cli/src/commands/models.ts:222-261.

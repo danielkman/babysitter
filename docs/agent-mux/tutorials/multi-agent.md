@@ -5,7 +5,7 @@ agent-mux lets you fan out a prompt to multiple adapters and merge the result st
 ## Parallel dispatch
 
 ```ts
-import { createClient } from '@a5c-ai/agent-mux';
+import { createClient } from '@a5c-ai/adapters';
 
 const client = createClient();
 

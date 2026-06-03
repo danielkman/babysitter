@@ -10,7 +10,7 @@ attributes:
     external signal (clock or HTTP delivery) and a `Run` / kanban issue:
     it does NOT mutate the board directly — it always emits a canonical
     issue which is then projected onto a derived board. Sourced from
-    packages/agent-mux/core/src/automation.ts (AutomationRule,
+    packages/adapters/core/src/automation.ts (AutomationRule,
     TimerAutomationTrigger, WebhookAutomationTrigger).
   status: canonical
 edges:

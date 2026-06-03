@@ -9,7 +9,7 @@ attributes:
     into a single overlay; consumers fire view-switch or command-run via
     `onPick`. Supports incremental query, cursor up/down, enter to confirm,
     escape to cancel.
-    Source: packages/agent-mux/tui/src/command-palette.tsx:6-130.
+    Source: packages/adapters/tui/src/command-palette.tsx:6-130.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-tui-prompt-input
@@ -22,7 +22,7 @@ attributes:
     text, paste-blob, and file-attachment segments; supports up/down history
     recall, shift+tab cycling, escape to cancel, and a configurable large
     paste threshold (default 80 chars) that compresses paste segments.
-    Source: packages/agent-mux/tui/src/prompt-input.tsx:5-200.
+    Source: packages/adapters/tui/src/prompt-input.tsx:5-200.
 ---
 nodeKind: InteractionPrimitive
 id: interaction-primitive:agent-mux-tui-model-picker
@@ -35,4 +35,4 @@ attributes:
     the active model on a session. Same up/down cursor + enter/escape grammar
     as the command palette; filtered by a case-insensitive substring match
     on either agent or modelId.
-    Source: packages/agent-mux/tui/src/model-picker.tsx:5-95.
+    Source: packages/adapters/tui/src/model-picker.tsx:5-95.

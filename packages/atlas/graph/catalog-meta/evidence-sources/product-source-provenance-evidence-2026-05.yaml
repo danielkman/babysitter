@@ -29,8 +29,8 @@ id: evidence:source-provenance-openclaw-adapter-source
 attributes:
   displayName: OpenClaw adapter source
   kindLabel: file
-  sourceUrl: https://github.com/a5c-ai/babysitter/blob/main/packages/agent-mux/adapters/src/openclaw-adapter.ts
-  filePath: packages/agent-mux/adapters/src/openclaw-adapter.ts
+  sourceUrl: https://github.com/a5c-ai/babysitter/blob/main/packages/adapters/adapters/src/openclaw-adapter.ts
+  filePath: packages/adapters/adapters/src/openclaw-adapter.ts
   trustLevel: trust-level:repo
   observedAt: '2026-05-04T00:00:00Z'
   observedBy: a5c-ai-catalog

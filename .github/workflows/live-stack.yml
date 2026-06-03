@@ -88,7 +88,7 @@ jobs:
         uses: actions/cache@v5
         with:
           path: |
-            packages/agent-mux/webui/node_modules/.vite
+            packages/adapters/webui/node_modules/.vite
             packages/atlas/webui/.next/cache
             packages/kradle/web/.next/cache
           key: framework-${{ runner.os }}-${{ github.ref_name }}-${{ github.sha }}
@@ -372,11 +372,11 @@ jobs:
         run: |
           mkdir -p "$HOME/.local/bin"
           for pair in \
-            "agent-mux:packages/agent-mux/sdk/dist/bin/agent-mux.js" \
+            "agent-mux:packages/adapters/sdk/dist/bin/agent-mux.js" \
             "agent-platform:packages/tula/dist/cli/main.js" \
             "tula:packages/tula/dist/cli/main.js" \
             "babysitter:packages/sdk/dist/cli/main.js" \
-            "agent-mux-hooks:packages/agent-mux/hooks/cli/dist/cli/main.js"
+            "agent-mux-hooks:packages/adapters/hooks/cli/dist/cli/main.js"
           do
             name="${pair%%:*}"
             script="${pair#*:}"
@@ -427,7 +427,7 @@ jobs:
           LIVE_STACK_TEST_TIMEOUT_MS: '4860000'
           LIVE_STACK_COMMAND_TIMEOUT_MS: '4800000'
           LIVE_STACK_BABYSITTER_BIN: ${{ github.workspace }}/packages/sdk/dist/cli/main.js
-          LIVE_STACK_AGENT_MUX_BIN: ${{ github.workspace }}/packages/agent-mux/cli/dist/index.js
+          LIVE_STACK_AGENT_MUX_BIN: ${{ github.workspace }}/packages/adapters/cli/dist/index.js
           LIVE_STACK_AGENT_PLATFORM_BIN: ${{ github.workspace }}/packages/tula/dist/cli/main.js
           LIVE_STACK_TULA_BIN: ${{ github.workspace }}/packages/tula/dist/cli/main.js
           AZURE_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}

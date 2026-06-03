@@ -30,15 +30,15 @@
 | `packages/tula/platform/src/harness/amux/amuxHarnessMap.ts` | `packages/tula/platform/src/harness/agent-mux/harnessMap.ts` |
 | `packages/tula/platform/src/harness/amux/amuxStdinReader.ts` | `packages/tula/platform/src/harness/agent-mux/stdinReader.ts` |
 | `packages/tula/platform/src/harness/amux/amuxTypes.ts` | `packages/tula/platform/src/harness/agent-mux/types.ts` |
-| `packages/agent-mux/amux-proxy/` | `packages/agent-mux/transport-proxy/` |
-| `packages/agent-mux/meta/config/amux/` | `packages/agent-mux/meta/config/agent-mux/` |
+| `packages/adapters/amux-proxy/` | `packages/adapters/transport-proxy/` |
+| `packages/adapters/meta/config/amux/` | `packages/adapters/meta/config/agent-mux/` |
 
 ## Mobile/App Package References
 
 Java/Kotlin packages use `ai.a5c.amux` as the Android package namespace. These need to become `ai.a5c.agentmux`:
-- `packages/agent-mux/mobile-android-app/`
-- `packages/agent-mux/tv-androidtv-app/`
-- `packages/agent-mux/watch-wearos-app/`
+- `packages/adapters/mobile-android-app/`
+- `packages/adapters/tv-androidtv-app/`
+- `packages/adapters/watch-wearos-app/`
 
 ## Test File References
 

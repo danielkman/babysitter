@@ -32,7 +32,7 @@ const readContextTask = defineTask('issue-444.read-context', (args, taskCtx) => 
       'printf "\\n--- process references ---\\n"',
       'rg -n "agent-version-update|graph-update|release notes|assimilation|Atlas graph" /home/runner/.a5c/process-library/babysitter-repo/library .a5c/processes -g "*.js" -g "*.mjs" -g "*.md" | head -260',
       'printf "\\n--- OMP graph and catalog surface ---\\n"',
-      'rg -n "agentVersion:omp:ge-15-5-6|omp-15-5-6|PI_CODEX_WEBSOCKET_MAX_IDLE_REUSE_MS|@oh-my-pi/pi-coding-agent|URL and directory selectors|stale response frames" packages/atlas/graph packages/agent-catalog packages/agent-mux/adapters docs/agent-mux/reference -g "*.yaml" -g "*.ts" -g "*.md" | head -800',
+      'rg -n "agentVersion:omp:ge-15-5-6|omp-15-5-6|PI_CODEX_WEBSOCKET_MAX_IDLE_REUSE_MS|@oh-my-pi/pi-coding-agent|URL and directory selectors|stale response frames" packages/atlas/graph packages/agent-catalog packages/adapters/adapters docs/agent-mux/reference -g "*.yaml" -g "*.ts" -g "*.md" | head -800',
     ].join('\n'),
     expectedExitCode: 0,
     timeout: 120000,

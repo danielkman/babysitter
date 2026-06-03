@@ -22,7 +22,7 @@ function requireAmux(): { createClient: (options: Record<string, unknown>) => Ag
     return agentMuxOverride;
   }
   // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment
-  const mod: { createClient: (options: Record<string, unknown>) => AgentMuxClient } = require("@a5c-ai/agent-mux");
+  const mod: { createClient: (options: Record<string, unknown>) => AgentMuxClient } = require("@a5c-ai/adapters");
   return mod;
 }
 

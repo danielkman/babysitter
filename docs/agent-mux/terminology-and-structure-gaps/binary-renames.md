@@ -4,15 +4,15 @@
 
 | Current Binary | Package | Target Binary | Notes |
 |---------------|---------|--------------|-------|
-| `amux` | `@a5c-ai/agent-mux` (sdk) | `agent-mux` | Main CLI entry point |
-| `amux` | `@a5c-ai/agent-mux-cli` (cli) | `agent-mux` | Duplicate — merge with sdk or differentiate |
-| `amux-proxy` | `@a5c-ai/agent-mux-transport` | `agent-mux-transport-proxy` | Proxy server binary |
-| `amux-tui` | `@a5c-ai/agent-mux-tui` | `agent-mux-tui` | Already close, just drop "amux" prefix |
-| `a5c-hooks-mux` | `@a5c-ai/agent-mux-hooks-cli` | `agent-mux-hooks` | Completely inconsistent currently |
-| `extension-mux` | `@a5c-ai/agent-mux-extensions` | `agent-mux-extensions` | Add agent-mux prefix |
-| `triggers-mux` | `@a5c-ai/agent-mux-triggers` | `agent-mux-triggers` | Add agent-mux prefix |
-| `tasks-mux` | `@a5c-ai/agent-mux-tasks` | `agent-mux-tasks` | Add agent-mux prefix |
-| `mock-harness` | `@a5c-ai/agent-mux-harness-mock` | `agent-mux-harness-mock` | Add agent-mux prefix |
+| `amux` | `@a5c-ai/adapters` (sdk) | `agent-mux` | Main CLI entry point |
+| `amux` | `@a5c-ai/adapters-cli` (cli) | `agent-mux` | Duplicate — merge with sdk or differentiate |
+| `amux-proxy` | `@a5c-ai/adapters-transport` | `agent-mux-transport-proxy` | Proxy server binary |
+| `amux-tui` | `@a5c-ai/tula-tui` | `agent-mux-tui` | Already close, just drop "amux" prefix |
+| `a5c-hooks-mux` | `@a5c-ai/adapters-hooks-cli` | `agent-mux-hooks` | Completely inconsistent currently |
+| `extension-mux` | `@a5c-ai/adapters-extensions` | `agent-mux-extensions` | Add agent-mux prefix |
+| `triggers-mux` | `@a5c-ai/adapters-triggers` | `agent-mux-triggers` | Add agent-mux prefix |
+| `tasks-mux` | `@a5c-ai/adapters-tasks` | `agent-mux-tasks` | Add agent-mux prefix |
+| `mock-harness` | `@a5c-ai/adapters-harness-mock` | `agent-mux-harness-mock` | Add agent-mux prefix |
 
 ## Backward Compatibility
 

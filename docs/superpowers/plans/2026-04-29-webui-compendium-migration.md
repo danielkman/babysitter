@@ -10,7 +10,7 @@
 
 **Spec:** `docs/superpowers/specs/2026-04-29-webui-compendium-migration-design.md`
 
-**Working directory:** `packages/agent-mux/webui`
+**Working directory:** `packages/adapters/webui`
 
 ---
 
@@ -324,7 +324,7 @@ In `src/shell/TopBar.tsx`, replace the class names:
 
 ```tsx
 import React from 'react';
-import { useConnection } from '@a5c-ai/agent-mux-ui';
+import { useConnection } from '@a5c-ai/tula-ui';
 import { Button } from '@a5c-ai/compendium';
 import { titleForPath } from './navigation.js';
 
@@ -741,7 +741,7 @@ In `src/providers/NotificationProvider.tsx`, replace the custom notification log
 ```tsx
 import React from 'react';
 import { useGatewayAuth } from './GatewayProvider.js';
-import { useHookRequests } from '@a5c-ai/agent-mux-ui';
+import { useHookRequests } from '@a5c-ai/tula-ui';
 import { useToasts } from '@a5c-ai/compendium';
 
 function NotificationBridge(): null {
@@ -787,7 +787,7 @@ git add -A && git commit -m "refactor(webui): replace custom notifications with 
 Remove all deprecated dependencies from package.json now that nothing imports them.
 
 **Files:**
-- Modify: `packages/agent-mux/webui/package.json`
+- Modify: `packages/adapters/webui/package.json`
 
 - [ ] **Step 1: Remove dependencies**
 

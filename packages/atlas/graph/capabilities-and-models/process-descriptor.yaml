@@ -39,10 +39,10 @@ attributes:
   category: "catalog"
   description: "Brownfield workflow for model catalog and model configuration management inside agent-mux."
   paths:
-    - "packages/agent-mux/processes/model-catalog.js"
+    - "packages/adapters/processes/model-catalog.js"
   inputs: []
   outputs: []
-  ownerPackage: "@a5c-ai/agent-mux-comm"
+  ownerPackage: "@a5c-ai/adapters-comm"
   executionKinds:
     - "babysitter-process"
   evidenceRefs:

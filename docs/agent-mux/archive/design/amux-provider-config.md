@@ -2,7 +2,7 @@
 
 > Archived design document. Preserved for historical context; not part of the current normative `reference/` contract.
 
-**Specification v1.0** | `@a5c-ai/agent-mux`
+**Specification v1.0** | `@a5c-ai/adapters`
 
 ---
 
@@ -365,7 +365,7 @@ function buildOpenCodeConfig(resolved: ProviderConfig, proxyUrl?: string): strin
 ### 5.1 SDK Surface
 
 ```typescript
-import { resolveProvider, translateForHarness } from '@a5c-ai/agent-mux-comm';
+import { resolveProvider, translateForHarness } from '@a5c-ai/adapters-comm';
 
 // Resolve from mixed sources
 const config: ProviderConfig = resolveProvider({

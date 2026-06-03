@@ -6,17 +6,17 @@ const path = require('node:path');
 const repoRoot = path.resolve(__dirname, '..');
 const packages = [
   'packages/atlas',
-  'packages/agent-mux/observability',
-  'packages/agent-mux/core',
-  'packages/agent-mux/adapters',
-  'packages/agent-mux/harness-mock',
-  'packages/agent-mux/ui',
-  'packages/agent-mux/gateway',
-  'packages/agent-mux/transport',
-  'packages/agent-mux/cli',
-  'packages/agent-mux/sdk',
-  'packages/agent-mux/tui',
-  'packages/agent-mux/webui',
+  'packages/adapters/observability',
+  'packages/adapters/core',
+  'packages/adapters/adapters',
+  'packages/adapters/harness-mock',
+  'packages/adapters/ui',
+  'packages/adapters/gateway',
+  'packages/adapters/transport',
+  'packages/adapters/cli',
+  'packages/adapters/sdk',
+  'packages/adapters/tui',
+  'packages/adapters/webui',
 ];
 
 function parseCliArgs(argv = process.argv.slice(2)) {
@@ -78,8 +78,8 @@ function collectTestFiles(rootDir, fsImpl = fs, root = repoRoot) {
 }
 
 function getTestRoots(pkg) {
-  if (pkg === 'packages/agent-mux/sdk') {
-    return ['packages/agent-mux/tests', `${pkg}/tests`, `${pkg}/src`];
+  if (pkg === 'packages/adapters/sdk') {
+    return ['packages/adapters/tests', `${pkg}/tests`, `${pkg}/src`];
   }
 
   return [

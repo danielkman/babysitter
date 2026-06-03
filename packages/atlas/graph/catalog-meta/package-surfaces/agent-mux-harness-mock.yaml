@@ -1,9 +1,9 @@
 nodeKind: PackageSurface
 id: package:a5c-ai-agent-mux-harness-mock
 attributes:
-  packageId: "@a5c-ai/agent-mux-harness-mock"
-  packageName: "@a5c-ai/agent-mux-harness-mock"
-  workspacePath: packages/agent-mux/harness-mock
+  packageId: "@a5c-ai/adapters-harness-mock"
+  packageName: "@a5c-ai/adapters-harness-mock"
+  workspacePath: packages/adapters/harness-mock
   moduleType: typescript
   surfaceKinds:
     - test-fixture

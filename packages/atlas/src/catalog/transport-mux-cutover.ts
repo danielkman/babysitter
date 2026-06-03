@@ -66,7 +66,7 @@ function evaluateTransportMuxCutover(): boolean {
     "packages/transport-mux/architecture.md",
     "packages/transport-mux/package.json",
     "packages/transport-mux/src/index.ts",
-    "packages/agent-mux/cli/src/commands/launch.ts",
+    "packages/adapters/cli/src/commands/launch.ts",
   ];
   if (!requiredFiles.every(repoFileExists)) {
     return false;
@@ -84,9 +84,9 @@ function evaluateTransportMuxCutover(): boolean {
     scripts?: Record<string, string>;
   };
   const packageEntrypoint = readRepoFile("packages/transport-mux/src/index.ts");
-  const launchCommand = readRepoFile("packages/agent-mux/cli/src/commands/launch.ts");
+  const launchCommand = readRepoFile("packages/adapters/cli/src/commands/launch.ts");
 
-  const legacyPythonTests = countFiles("packages/agent-mux/amux-proxy/tests", ".py");
+  const legacyPythonTests = countFiles("packages/adapters/amux-proxy/tests", ".py");
   const jsContractTests =
     countFiles("packages/transport-mux/tests", ".ts") +
     countFiles("packages/transport-mux/tests/transports", ".ts") +
@@ -112,13 +112,13 @@ function evaluateTransportMuxCutover(): boolean {
   const scorecard = [
     legacyPythonTests === 0 ||
       migrationDoc.includes(
-        "Historical archive: legacy Python tests under `packages/agent-mux/amux-proxy/tests` remain available as reference material for the still-active historical runtime path.",
+        "Historical archive: legacy Python tests under `packages/adapters/amux-proxy/tests` remain available as reference material for the still-active historical runtime path.",
       ),
     packageJson.private !== true &&
       Array.isArray(packageJson.files) &&
       packageJson.publishConfig?.access === "public",
     Boolean(packageJson.scripts?.["scorecard:migration"]) && jsContractTests > 0,
-    launchCommand.includes("@a5c-ai/agent-mux-transport") && packageEntrypoint.includes("export * from './runtime.js';"),
+    launchCommand.includes("@a5c-ai/adapters-transport") && packageEntrypoint.includes("export * from './runtime.js';"),
     docsHonestyChecks.every(Boolean),
   ];
 

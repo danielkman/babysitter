@@ -89,7 +89,7 @@ const implementDroidAssimilationTask = defineTask('issue-324.implement-droid-ass
 const verifyNoStalePackageTask = defineTask('issue-324.verify-no-stale-package', ({ stalePackage }) => ({
   kind: 'shell',
   title: 'Verify stale package references are gone from live Droid surfaces',
-  command: `if rg -n "${stalePackage}" packages/agent-mux/adapters/src/droid-adapter.ts packages/agent-mux/adapters/tests/droid-adapter.test.ts docs/agent-mux/reference/agents/droid.md; then exit 1; fi`,
+  command: `if rg -n "${stalePackage}" packages/adapters/adapters/src/droid-adapter.ts packages/adapters/adapters/tests/droid-adapter.test.ts docs/agent-mux/reference/agents/droid.md; then exit 1; fi`,
   expectedExitCode: 0,
   labels: ['verification', 'grep'],
 }));
@@ -98,7 +98,7 @@ const verifyCanonicalPackageTask = defineTask('issue-324.verify-canonical-packag
   kind: 'shell',
   title: 'Verify canonical Droid package metadata',
   command: [
-    `rg -n "${targetPackage}" packages/agent-mux/adapters/src/droid-adapter.ts packages/agent-mux/adapters/tests/droid-adapter.test.ts docs/agent-mux/reference/agents/droid.md packages/atlas/graph/agent-stack/versions/droid-current.yaml`,
+    `rg -n "${targetPackage}" packages/adapters/adapters/src/droid-adapter.ts packages/adapters/adapters/tests/droid-adapter.test.ts docs/agent-mux/reference/agents/droid.md packages/atlas/graph/agent-stack/versions/droid-current.yaml`,
     `rg -n ">=${targetVersion}|${targetVersion}" packages/atlas/graph/agent-stack/versions/droid-current.yaml`,
   ].join('\n'),
   expectedExitCode: 0,
@@ -116,7 +116,7 @@ const runQualityCommandTask = defineTask('issue-324.run-quality-command', ({ com
 const summarizeDiffTask = defineTask('issue-324.summarize-diff', () => ({
   kind: 'shell',
   title: 'Summarize final diff',
-  command: 'git diff -- packages/agent-mux/adapters/src/droid-adapter.ts packages/agent-mux/adapters/tests/droid-adapter.test.ts docs/agent-mux/reference/agents/droid.md packages/atlas/graph/agent-stack/versions/droid-current.yaml',
+  command: 'git diff -- packages/adapters/adapters/src/droid-adapter.ts packages/adapters/adapters/tests/droid-adapter.test.ts docs/agent-mux/reference/agents/droid.md packages/atlas/graph/agent-stack/versions/droid-current.yaml',
   expectedExitCode: 0,
   labels: ['git', 'review'],
 }));
@@ -127,7 +127,7 @@ export async function process(inputs, ctx) {
   const targetVersion = inputs?.targetVersion ?? '0.132.1';
   const stalePackage = inputs?.stalePackage ?? '@factory/droid-cli';
   const qualityCommands = inputs?.qualityCommands ?? [
-    'npm exec -- vitest run --config vitest.config.ts packages/agent-mux/adapters/tests/droid-adapter.test.ts',
+    'npm exec -- vitest run --config vitest.config.ts packages/adapters/adapters/tests/droid-adapter.test.ts',
     'npm run verify:metadata',
   ];
 

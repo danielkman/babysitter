@@ -1,21 +1,21 @@
 # Directory Moves
 
-5 top-level mux packages + 12 hooks-mux packages need to move under the `packages/agent-mux/` umbrella.
+5 top-level mux packages + 12 hooks-mux packages need to move under the `packages/adapters/` umbrella.
 
 ## Phase 1: Move Top-Level Mux Packages
 
 ```bash
-git mv packages/transport-mux packages/agent-mux/transport
-git mv packages/extension-mux packages/agent-mux/extensions
-git mv packages/triggers-mux packages/agent-mux/triggers
-git mv packages/tasks-mux packages/agent-mux/tasks
-git mv packages/tool-mux packages/agent-mux/tools
+git mv packages/transport-mux packages/adapters/transport
+git mv packages/extension-mux packages/adapters/extensions
+git mv packages/triggers-mux packages/adapters/triggers
+git mv packages/tasks-mux packages/adapters/tasks
+git mv packages/tool-mux packages/adapters/tools
 ```
 
 ## Phase 2: Move Hooks-Mux Under Agent-Mux
 
 ```bash
-git mv packages/agent-mux/hooks packages/agent-mux/hooks
+git mv packages/adapters/hooks packages/adapters/hooks
 ```
 
 This moves all 12 hooks-mux subpackages at once since they're already structured under a parent directory.
@@ -33,8 +33,8 @@ After directory moves, update:
 ## Phase 4: Rename Legacy Directories
 
 ```bash
-git mv packages/agent-mux/amux-proxy packages/agent-mux/transport-proxy
-git mv packages/agent-mux/meta/config/amux packages/agent-mux/meta/config/agent-mux
+git mv packages/adapters/amux-proxy packages/adapters/transport-proxy
+git mv packages/adapters/meta/config/amux packages/adapters/meta/config/agent-mux
 ```
 
 ## Impact Summary

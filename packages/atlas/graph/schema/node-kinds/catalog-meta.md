@@ -337,7 +337,7 @@ particular agent harness is the active host or installed on the machine.
 Sourced from the legacy agent-catalog ontology
 (`packages/agent-catalog/graph/schema/ontology-schema.yaml :: DiscoverySignal`)
 and the runtime probe in
-`packages/agent-mux/core/src/host-detection.ts`.
+`packages/adapters/core/src/host-detection.ts`.
 
 ### Attributes
 
@@ -363,7 +363,7 @@ and the runtime probe in
 | `detects` | `AgentVersion` \| `AgentProduct` | N:1 | The target this signal detects. |
 | `signals_via` | `PathDescriptor` | N:N | When the signal targets a known typed path (binary on PATH, file-presence probe). |
 | `applies_to` | `AgentProduct` | N:N | Used by every imported example to bind the signal to its target agent. (Existing `applies_to` edge — extended to accept `DiscoverySignal` source and `AgentProduct` target.) |
-| `sourced_from` | `SourceRef` | N:1 | Source-of-truth for the signal recipe (typically `packages/agent-mux/core/src/host-detection.ts`). |
+| `sourced_from` | `SourceRef` | N:1 | Source-of-truth for the signal recipe (typically `packages/adapters/core/src/host-detection.ts`). |
 
 ### Evidence
 

@@ -21,7 +21,7 @@ Use this document as the evidence checklist for tests described in [Primary Flow
 | `taskId` / `stepId` | Babysitter process runtime | `task:list`, task definition refs | Names process step semantics independently of generated effect ID |
 | `UnifiedHookEvent.execution.sessionId` | Hooks-mux | Normalized hook event JSON | Joins native hook event to agent or Babysitter session |
 | `UnifiedHookEvent.execution.toolCallId` | Hooks-mux/native harness | Tool hook payloads and normalized event | Joins tool call ready/result pairs and handler decisions |
-| `event.seq` | Agent-mux gateway event log | `packages/agent-mux/gateway/src/runs/event-log.ts` event entries | Orders session events and detects gaps/truncation |
+| `event.seq` | Agent-mux gateway event log | `packages/adapters/gateway/src/runs/event-log.ts` event entries | Orders session events and detects gaps/truncation |
 | Transport request/trace ID | Transport-mux | Proxy request logs, trace query/headers, upstream metadata | Joins provider request/stream to agent-mux launch/session |
 
 ## Environment And Hook Context

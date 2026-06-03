@@ -34,13 +34,13 @@
   "consumerSurfaces": [
     "packages/sdk/src/harness",
     "packages/sdk/src/prompts",
-    "packages/agent-mux/adapters/src",
+    "packages/adapters/adapters/src",
     "packages/hooks-mux/adapter-*",
     "packages/hooks-mux/cli/src",
     "packages/tula/platform/vitest.config.ts",
-    "packages/agent-mux/webui/vite.config.ts",
-    "packages/agent-mux/webui/vitest.config.ts",
-    "packages/agent-mux/webui/tests/vite-config.test.ts",
+    "packages/adapters/webui/vite.config.ts",
+    "packages/adapters/webui/vitest.config.ts",
+    "packages/adapters/webui/tests/vite-config.test.ts",
     "consumer mocks and package.json dependencies that mention @a5c-ai/agent-catalog"
   ],
   "metadataSurfaces": [
@@ -59,7 +59,7 @@
     "npm run build:sdk",
     "npm run test:sdk",
     "npm run verify:metadata",
-    "npm exec --yes --package=vitest -- vitest run --config vitest.config.ts \"packages/atlas/src/catalog/*.test.ts\" \"packages/sdk/src/harness/amuxFallbackMetadata.contract.test.ts\" \"packages/hooks-mux/core/src/discovery/__tests__/detector.contract.test.ts\" \"packages/agent-mux/core/tests/host-detection.contract.test.ts\" \"packages/agent-mux/core/tests/invocation.contract.test.ts\" \"packages/extension-mux/src/__tests__/targets.contract.test.ts\"",
+    "npm exec --yes --package=vitest -- vitest run --config vitest.config.ts \"packages/atlas/src/catalog/*.test.ts\" \"packages/sdk/src/harness/amuxFallbackMetadata.contract.test.ts\" \"packages/hooks-mux/core/src/discovery/__tests__/detector.contract.test.ts\" \"packages/adapters/core/tests/host-detection.contract.test.ts\" \"packages/adapters/core/tests/invocation.contract.test.ts\" \"packages/extension-mux/src/__tests__/targets.contract.test.ts\"",
     "rg -n \"@a5c-ai/agent-catalog|packages/agent-catalog\" package.json package-lock.json tsconfig.json .github packages --glob '!**/node_modules/**' --glob '!**/dist/**'",
     "test ! -d packages/agent-catalog",
     "git diff --check"

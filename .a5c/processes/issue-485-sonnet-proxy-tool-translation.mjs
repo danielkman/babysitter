@@ -44,7 +44,7 @@ const readContextTask = defineTask('issue-485.read-context', (args, taskCtx) => 
       'printf "\\n--- server translation hotspots ---\\n"',
       'rg -n "tool_use|tool_result|tool_calls|function_call|CompletionResult|complete\\(|streamCompletion|openai|anthropic" packages/transport-mux/src packages/transport-mux/tests -S',
       'printf "\\n--- recent transport history ---\\n"',
-      'git log --oneline -30 -- packages/transport-mux packages/agent-mux/cli/tests/live-stack packages/agent-mux/launch',
+      'git log --oneline -30 -- packages/transport-mux packages/adapters/cli/tests/live-stack packages/adapters/launch',
     ].join('\n'),
     expectedExitCode: 0,
     timeout: 180000,
