@@ -1,2 +1,2 @@
-// Components will be added in subsequent tasks
-export {};
+export * from './ChatMessages.js';
+export * from './chatStyles.js';
