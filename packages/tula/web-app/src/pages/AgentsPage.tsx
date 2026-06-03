@@ -1,8 +1,14 @@
+import { useNavigate } from 'react-router-dom-v6';
+import { AgentDirectory } from '@a5c-ai/tula-ui/agent';
+
 export function AgentsPage() {
+  const navigate = useNavigate();
   return (
-    <div>
-      <h1>Agents</h1>
-      <p>Registered agents and their current status will appear here.</p>
-    </div>
+    <AgentDirectory
+      org="default"
+      profiles={[]}
+      onNavigate={(path) => navigate(path)}
+      newHref="/agents/new"
+    />
   );
 }

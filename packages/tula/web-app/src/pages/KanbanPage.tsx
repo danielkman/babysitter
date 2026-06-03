@@ -1,8 +1,10 @@
+import { KanbanBoard } from '@a5c-ai/tula-ui/kanban';
+
 export function KanbanPage() {
   return (
     <div>
-      <h1>Kanban</h1>
-      <p>Task board for tracking work items across agent runs.</p>
+      <h2 style={{ margin: '0 0 1rem' }}>Kanban</h2>
+      <KanbanBoard org="default" initialIssues={[]} />
     </div>
   );
 }
