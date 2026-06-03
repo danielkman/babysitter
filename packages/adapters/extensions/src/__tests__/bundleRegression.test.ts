@@ -183,4 +183,44 @@ describe('bundle regression coverage', () => {
       readFile(path.join(OMP_HARNESS_DIR, 'extensions-index.ts')),
     );
   });
+
+  it('verifies all relative imports in generated extension files resolve to actual output files', () => {
+    const tempDir = createTempDir('mux-import-resolution-');
+    tempDirs.push(tempDir);
+
+    const targets = ['pi', 'oh-my-pi'] as const;
+    const RELATIVE_IMPORT_RE = /from\s+["'](\.[^"']+)["']/g;
+
+    for (const target of targets) {
+      const result = compile({
+        source: UNIFIED_PLUGIN_DIR,
+        target,
+        output: path.join(tempDir, target),
+      });
+      expect(result.status, `${target} compilation failed`).not.toBe('error');
+
+      const extensionsDir = path.join(result.outputDir, 'extensions');
+      if (!fs.existsSync(extensionsDir)) continue;
+
+      for (const file of fs.readdirSync(extensionsDir)) {
+        if (!file.endsWith('.ts') && !file.endsWith('.js')) continue;
+        const filePath = path.join(extensionsDir, file);
+        const content = readFile(filePath);
+
+        for (const match of content.matchAll(RELATIVE_IMPORT_RE)) {
+          const importSpecifier = match[1];
+          const candidates = [
+            path.resolve(extensionsDir, importSpecifier),
+            path.resolve(extensionsDir, importSpecifier.replace(/\.js$/, '.ts')),
+            path.resolve(extensionsDir, importSpecifier.replace(/\.js$/, '.tsx')),
+          ];
+          const resolved = candidates.some((c) => fs.existsSync(c));
+          expect(
+            resolved,
+            `${target}/extensions/${file}: import "${importSpecifier}" does not resolve to any file. Candidates checked: ${candidates.map((c) => path.relative(result.outputDir, c)).join(', ')}`,
+          ).toBe(true);
+        }
+      }
+    }
+  });
 });
