@@ -6,6 +6,7 @@
   "plugins": [
     {
       "name": "babysitter",
+      "version": "5.0.1-staging.28347f861706",
       "source": {
         "source": "local",
         "path": "./plugins/babysitter-unified"
