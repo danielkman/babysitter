@@ -134,3 +134,14 @@ export { KeyboardShortcuts } from './shell/keyboard-shortcuts.jsx';
 export { CommandPalette, CommandPaletteWrapper } from './shell/command-palette.jsx';
 export { GlobalSearch } from './shell/global-search.jsx';
 export { ConfirmDialog } from './shell/confirm-dialog.jsx';
+
+// ── Re-exports from @a5c-ai/tula-ui shared components ───────────────────────
+// NOTE: These are additive — existing kradle exports above are preserved for
+// backward compatibility with pages that import from them directly.
+export { ConfirmDialog as TulaConfirmDialog, Pagination as TulaPagination } from '@a5c-ai/tula-ui/primitives';
+export { KanbanBoard, KanbanCard as TulaKanbanCard, KanbanColumn as TulaKanbanColumn, KanbanFilters as TulaKanbanFilters } from '@a5c-ai/tula-ui/kanban';
+export { SessionShell as TulaSessionShell, SessionCost as TulaSessionCost, SessionTabs } from '@a5c-ai/tula-ui/session';
+export { AgentDirectory as TulaAgentDirectory, AgentProfileCard as TulaAgentProfileCard, DispatchButton as TulaDispatchButton, ApprovalActions } from '@a5c-ai/tula-ui/agent';
+export { WorkspacePanel as TulaWorkspacePanel } from '@a5c-ai/tula-ui/workspace';
+export { ToolInspector, ActivityFeed as TulaActivityFeed } from '@a5c-ai/tula-ui/observability';
+export { MemorySearchForm as TulaMemorySearchForm, MemoryOntologyEditor as TulaMemoryOntologyEditor } from '@a5c-ai/tula-ui/memory';
