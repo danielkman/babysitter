@@ -840,6 +840,7 @@ function supportedHooksForTarget(targetId: string): Record<string, string> {
 
 // Known babysitter plugin targets (subset of Atlas PluginTargets)
 const BABYSITTER_PLUGIN_TARGETS = new Set([
+  "plugin-target:antigravity-cli",
   "plugin-target:claude-code", "plugin-target:codex", "plugin-target:cursor",
   "plugin-target:gemini-cli", "plugin-target:copilot-cli", "plugin-target:pi",
   "plugin-target:omp", "plugin-target:opencode", "plugin-target:openclaw",

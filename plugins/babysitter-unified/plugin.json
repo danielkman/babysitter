@@ -127,6 +127,14 @@
     ]
   },
   "targets": {
+    "antigravity-cli": {
+      "templateVars": {
+        "targetDir": "antigravity"
+      },
+      "extraFileSets": [
+        "readme"
+      ]
+    },
     "claude-code": {
       "extraFileSets": [
         "readme"
