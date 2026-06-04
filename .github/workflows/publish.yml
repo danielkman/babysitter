@@ -2123,12 +2123,13 @@ jobs:
 
       - name: Download build artifacts
         uses: actions/download-artifact@v8
+        continue-on-error: true
         with:
           name: build-all-dist
           path: /tmp
 
       - name: Extract build artifacts
-        run: tar xzf /tmp/build-all-dist.tar.gz
+        run: test -f /tmp/build-all-dist.tar.gz && tar xzf /tmp/build-all-dist.tar.gz || echo "No build artifacts — kradle Dockerfiles build from source"
 
       - name: Check deployment configuration
         id: config
