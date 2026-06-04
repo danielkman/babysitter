@@ -24,6 +24,7 @@ function toCommandFormat(format: string): 'markdown' | 'toml' | 'none' {
 
 function toHookRegistrationFormat(format: string | null | undefined) {
   if (
+    format === 'antigravity' ||
     format === 'claude-code' ||
     format === 'codex' ||
     format === 'cursor' ||

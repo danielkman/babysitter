@@ -5,6 +5,7 @@ export { BaseHarnessOutputAdapter } from './base.js';
 
 import { listPluginTargetDescriptors } from '@a5c-ai/atlas/catalog';
 import type { HarnessOutputAdapter } from './interface.js';
+import { AntigravityAdapter } from './antigravity.js';
 import { ClaudeCodeAdapter } from './claude-code.js';
 import { CodexAdapter } from './codex.js';
 import { CursorAdapter } from './cursor.js';
@@ -17,6 +18,7 @@ import { PiAdapter } from './pi.js';
 import { OhMyPiAdapter } from './oh-my-pi.js';
 
 // Re-export individual adapter classes
+export { AntigravityAdapter } from './antigravity.js';
 export { ClaudeCodeAdapter } from './claude-code.js';
 export { CodexAdapter } from './codex.js';
 export { CursorAdapter } from './cursor.js';
@@ -29,6 +31,7 @@ export { PiAdapter } from './pi.js';
 export { OhMyPiAdapter } from './oh-my-pi.js';
 
 // Re-export hook/manifest generators for backward compatibility
+export { generateAntigravityHooksJson, generateAntigravityManifest, generateAntigravitySkillMd } from './antigravity.js';
 export { generateClaudeCodeHooksJson, generateClaudeCodeManifest } from './claude-code.js';
 export { generateCodexHooksJson, generateCodexManifest } from './codex.js';
 export { generateCursorHooksJson, generateCursorManifest } from './cursor.js';
@@ -43,6 +46,7 @@ export { generateOhMyPiManifest } from './oh-my-pi.js';
 // Map hookRegistrationFormat → adapter constructor.
 // The adapter receives its targetId from the catalog at construction time.
 const ADAPTER_CLASS_BY_FORMAT: Record<string, new (targetName: string) => HarnessOutputAdapter> = {
+  'antigravity': AntigravityAdapter,
   'claude-code': ClaudeCodeAdapter,
   'codex': CodexAdapter,
   'cursor': CursorAdapter,

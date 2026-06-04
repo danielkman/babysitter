@@ -196,7 +196,7 @@ export interface VerifyResult {
 // Derived from Atlas PluginTarget.hookRegistrationFormat — no hardcoded list.
 export type HookRegistrationFormat = string;
 
-export type AdapterFamily = 'shell-hook' | 'programmatic';
+export type AdapterFamily = 'shell-hook' | 'programmatic' | 'workflow-hook';
 export type DistributionModel = 'marketplace' | 'npm-cli' | 'both';
 
 export interface InstallLayoutMetadata {
