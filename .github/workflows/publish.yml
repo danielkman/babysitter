@@ -2177,6 +2177,13 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Build kradle packages for Docker context
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts 2>/dev/null || npm install --ignore-scripts
+          npm install --no-save --ignore-scripts @rollup/rollup-linux-x64-gnu @rolldown/binding-linux-x64-gnu 2>/dev/null || true
+          cd packages/kradle/core && npm run build
+
       - name: Build and push kradle-controller image
         env:
           IMAGE_TAG: ${{ github.sha }}
