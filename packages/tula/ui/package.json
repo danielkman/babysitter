@@ -99,8 +99,8 @@
     },
     "./primitives": {
       "import": {
-        "types": "./dist/components/Primitives/index.d.ts",
-        "default": "./dist/components/Primitives/index.js"
+        "types": "./dist/components/primitives/index.d.ts",
+        "default": "./dist/components/primitives/index.js"
       }
     }
   },
