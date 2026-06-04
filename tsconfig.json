@@ -45,5 +45,5 @@
     { "path": "packages/adapters/hooks/adapter-opencode" },
     { "path": "packages/adapters/hooks/adapter-pi" }
   ],
-  "files": []
+  "files": ["vitest.setup.ts"]
 }
