@@ -45,7 +45,7 @@
   },
   "scripts": {
     "build": "tsc --build && tsc --emitDeclarationOnly --declarationMap false -p tsconfig.json",
-    "test": "vitest run --root ../../.. --config vitest.config.ts packages/adapters/gateway/tests/builtin-adapters.test.ts packages/adapters/gateway/tests/e2e.test.ts packages/adapters/gateway/tests/event-log.test.ts packages/adapters/gateway/tests/manager.test.ts packages/adapters/gateway/tests/protocol.test.ts packages/adapters/gateway/tests/server.test.ts packages/adapters/gateway/tests/session-runtime.test.ts packages/adapters/gateway/tests/tokens.test.ts packages/adapters/gateway/tests/webhook-out.test.ts",
+    "test": "vitest run tests/builtin-adapters.test.ts tests/e2e.test.ts tests/event-log.test.ts tests/manager.test.ts tests/protocol.test.ts tests/server.test.ts tests/session-runtime.test.ts tests/tokens.test.ts tests/webhook-out.test.ts",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
