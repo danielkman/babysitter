@@ -1,6 +1,19 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitest/config';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const rootDir = path.resolve(__dirname, '../..');
+
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@a5c-ai/agent-catalog': path.resolve(rootDir, 'packages/atlas/src/catalog/index.ts'),
+      '@a5c-ai/atlas/catalog': path.resolve(rootDir, 'packages/atlas/src/catalog/index.ts'),
+      'next/server': path.resolve(rootDir, 'test-shims/next-server.ts'),
+      'react-native': path.resolve(rootDir, 'test-shims/react-native.ts'),
+    },
+  },
   test: {
     include: [
       'packages/adapters/*/src/**/*.test.{ts,tsx}',

@@ -104,7 +104,10 @@ function resolveTestSelection(pkg, extraArgs, root = repoRoot, fsImpl = fs) {
 
 function buildVitestCommand(testFiles, forwardedArgs = [], pkgDir = '') {
   const localConfig = pkgDir ? path.join(pkgDir, 'vitest.config.ts') : '';
-  const configPath = localConfig && fs.existsSync(localConfig) ? localConfig : 'vitest.config.ts';
+  const adaptersConfig = path.join('packages', 'adapters', 'vitest.config.ts');
+  const configPath = (localConfig && fs.existsSync(localConfig)) ? localConfig
+    : fs.existsSync(adaptersConfig) ? adaptersConfig
+    : 'vitest.config.ts';
   const args = [
     `npx vitest run --config ${configPath}`,
     ...testFiles.map(quote),
