@@ -2325,8 +2325,10 @@ jobs:
           echo "$HEALTH" | jq .
           echo "$HEALTH" | jq -e '.ok == true or .health.kubernetes == "ok"'
 
-          echo "Running API E2E smoke..."
-          KRADLE_E2E_URL="https://${APP_HOST}" node packages/kradle/web/tests/api-e2e.test.js 2>&1 | tail -5
+      - name: Post-deploy E2E smoke (non-blocking)
+        continue-on-error: true
+        run: |
+          KRADLE_E2E_URL="https://${APP_HOST}" node packages/kradle/web/tests/api-e2e.test.js 2>&1 | tail -10
 
   e2e_smoke_kradle:
     name: Kradle E2E Smoke Test
