@@ -6,13 +6,13 @@ import { describe, expect, it } from "vitest";
 import { verifyCloudRelease } from "../scripts/verify-release.mjs";
 
 const baseManifest = {
-  name: "@a5c-ai/cloud",
+  name: "@a5c-ai/kradle-installer",
   publishConfig: {
     access: "public",
   },
   files: ["dist", "README.md", "SPEC.md", "LICENSE"],
   bin: {
-    cloud: "./dist/cli.js",
+    "kradle-install": "./dist/cli.js",
   },
   exports: {
     ".": {
@@ -50,7 +50,7 @@ const basePackEntries = [
 ];
 
 function withPackageRoot(run: (packageRoot: string) => void): void {
-  const packageRoot = fs.mkdtempSync(path.join(os.tmpdir(), "cloud-release-"));
+  const packageRoot = fs.mkdtempSync(path.join(os.tmpdir(), "kradle-installer-release-"));
   fs.mkdirSync(path.join(packageRoot, "dist"), { recursive: true });
   fs.writeFileSync(path.join(packageRoot, "dist", "index.js"), "export {};");
   fs.writeFileSync(path.join(packageRoot, "dist", "index.d.ts"), "export {};");
@@ -58,7 +58,7 @@ function withPackageRoot(run: (packageRoot: string) => void): void {
   fs.writeFileSync(path.join(packageRoot, "dist", "cli.d.ts"), "export {};");
   fs.writeFileSync(
     path.join(packageRoot, "README.md"),
-    "# @a5c-ai/cloud\n\nSee the [package spec](./SPEC.md).\n",
+    "# @a5c-ai/kradle-installer\n\nSee the [package spec](./SPEC.md).\n",
   );
   fs.writeFileSync(path.join(packageRoot, "SPEC.md"), "# Spec\n");
   fs.writeFileSync(path.join(packageRoot, "LICENSE"), "MIT License\n");
@@ -71,7 +71,7 @@ function withPackageRoot(run: (packageRoot: string) => void): void {
 }
 
 describe("verifyCloudRelease", () => {
-  it("accepts the expected cloud release contract", () => {
+  it("accepts the expected kradle-installer release contract", () => {
     withPackageRoot((packageRoot) => {
       expect(() =>
         verifyCloudRelease({
@@ -133,7 +133,7 @@ describe("verifyCloudRelease", () => {
 
   it("fails when README stops linking the local package spec", () => {
     withPackageRoot((packageRoot) => {
-      fs.writeFileSync(path.join(packageRoot, "README.md"), "# @a5c-ai/cloud\n\nNo spec link.\n");
+      fs.writeFileSync(path.join(packageRoot, "README.md"), "# @a5c-ai/kradle-installer\n\nNo spec link.\n");
 
       expect(() =>
         verifyCloudRelease({

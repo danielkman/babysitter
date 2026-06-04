@@ -80,8 +80,8 @@ export function verifyCloudRelease({ packageRoot, manifest, packEntries }) {
     "packages/kradle/installer/package.json prepublishOnly must build, test, and verify the release surface",
   );
   expect(
-    manifest.bin?.cloud === "./dist/cli.js",
-    "packages/kradle/installer/package.json bin.cloud must point to ./dist/cli.js",
+    manifest.bin?.['kradle-install'] === "./dist/cli.js",
+    "packages/kradle/installer/package.json bin['kradle-install'] must point to ./dist/cli.js",
   );
   expect(
     rootExport.types === "./dist/index.d.ts" && rootExport.default === "./dist/index.js",
