@@ -1,11 +1,13 @@
 {
   "name": "babysitter",
+      "version": "5.0.1-staging.28347f861706",
   "interface": {
     "displayName": "Babysitter"
   },
   "plugins": [
     {
       "name": "babysitter",
+      "version": "5.0.1-staging.28347f861706",
       "source": {
         "source": "git-subdir",
         "url": "https://github.com/a5c-ai/babysitter-codex.git",
