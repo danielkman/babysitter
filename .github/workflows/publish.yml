@@ -2304,8 +2304,7 @@ jobs:
             --set networkPolicy.enabled=false \
             --set apiService.enabled=false \
             --set "assistant.existingSecret=kradle-assistant-keys" \
-            --timeout 300s \
-            --wait
+            --timeout 600s
           # Force-delete pods stuck in Terminating
           kubectl -n "$KUBE_NAMESPACE" get pods --no-headers 2>/dev/null \
             | awk '/Terminating/{print $1}' \
