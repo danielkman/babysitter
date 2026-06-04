@@ -106,7 +106,7 @@ Runtime tests must declare which entry path they exercise:
 | --- | --- | --- | --- |
 | Adapters session | `adapters run <agent>` or `createClient().run` | Mock adapter, Claude, Codex, Gemini, Cursor, OpenCode, adapters `babysitter` adapter where registered | Session start/end, event ordering, provider/model config, runtime hooks, capability-gated plugin events |
 | Babysitter-agent internal runtime | `agent-platform call/create-run --harness genty-core` | genty-core backend with mocked or live model provider | Run creation, planning, task posting, terminal state, redacted model trace |
-| Babysitter-agent external-harness bridge | `agent-platform call/invoke --harness <external>` | Harness names mapped in `amuxHarnessMap`; excludes `pi` and `genty-core` | Adapters mapped events, session ID, result, selected harness, no install commands |
+| Babysitter-agent external-harness bridge | `agent-platform call/invoke --harness <external>` | Harness names mapped in `adapterHarnessMap`; excludes `pi` and `genty-core` | Adapters mapped events, session ID, result, selected harness, no install commands |
 | Transport runtime | transport-adapter around genty-core or adapters-launched external harness traffic | Local route fixture, genty-core stream, external harness stream | Route/codec contract, proxy auth, env injection, launch proxy decision, framing, reconnect, cancellation, timeout, backpressure, metrics/cache artifact |
 
 Do not fold plugin setup into the agent-platform runtime assertions. If a runtime job needs an installed external harness or plugin, that is a precondition supplied by a setup job and recorded separately.

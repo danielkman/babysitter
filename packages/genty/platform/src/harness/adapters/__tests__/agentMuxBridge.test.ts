@@ -3,15 +3,15 @@ import { invokeViaAgentMux } from "../agentMuxBridge";
 import type {
   AgentMuxClient,
   AgentMuxRunHandle,
-  AmuxAgentEvent,
-  AmuxInteractionChannel,
+  AdapterAgentEvent,
+  AdapterInteractionChannel,
 } from "../agentMuxTypes";
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-function makeEvent(overrides: Partial<AmuxAgentEvent> = {}): AmuxAgentEvent {
+function makeEvent(overrides: Partial<AdapterAgentEvent> = {}): AdapterAgentEvent {
   return {
     type: "text_delta",
     runId: "run-001",
@@ -22,21 +22,21 @@ function makeEvent(overrides: Partial<AmuxAgentEvent> = {}): AmuxAgentEvent {
 }
 
 async function* asyncIterableFrom(
-  events: AmuxAgentEvent[],
-): AsyncGenerator<AmuxAgentEvent> {
+  events: AdapterAgentEvent[],
+): AsyncGenerator<AdapterAgentEvent> {
   for (const event of events) {
     yield event;
   }
 }
 
-function createMockInteractions(): AmuxInteractionChannel {
+function createMockInteractions(): AdapterInteractionChannel {
   return {
     respond: vi.fn().mockResolvedValue(undefined),
   };
 }
 
 function createMockClient(
-  events: AmuxAgentEvent[],
+  events: AdapterAgentEvent[],
   handleOverrides: Partial<AgentMuxRunHandle> = {},
 ): AgentMuxClient {
   return {
@@ -99,7 +99,7 @@ describe("invokeViaAgentMux", () => {
   });
 
   it("accumulates text deltas into lastMessage", async () => {
-    const events: AmuxAgentEvent[] = [
+    const events: AdapterAgentEvent[] = [
       makeEvent({ type: "text_delta", text: "Hello " }),
       makeEvent({ type: "text_delta", text: "world!" }),
     ];
@@ -113,7 +113,7 @@ describe("invokeViaAgentMux", () => {
   });
 
   it("accumulates cost from cost events", async () => {
-    const events: AmuxAgentEvent[] = [
+    const events: AdapterAgentEvent[] = [
       makeEvent({ type: "cost", totalCost: 0.03 }),
       makeEvent({ type: "cost", totalCost: 0.07 }),
     ];
@@ -126,7 +126,7 @@ describe("invokeViaAgentMux", () => {
   });
 
   it("marks result as failed when error events are present", async () => {
-    const events: AmuxAgentEvent[] = [
+    const events: AdapterAgentEvent[] = [
       makeEvent({ type: "error", message: "boom" }),
     ];
     const client = createMockClient(events, { exitCode: 1 });
@@ -139,7 +139,7 @@ describe("invokeViaAgentMux", () => {
   });
 
   it("marks result as failed on crash events even with exitCode 0", async () => {
-    const events: AmuxAgentEvent[] = [
+    const events: AdapterAgentEvent[] = [
       makeEvent({ type: "crash", message: "segfault" }),
     ];
     const client = createMockClient(events, { exitCode: 0 });
@@ -160,7 +160,7 @@ describe("invokeViaAgentMux", () => {
   });
 
   it("collects all mapped events", async () => {
-    const events: AmuxAgentEvent[] = [
+    const events: AdapterAgentEvent[] = [
       makeEvent({ type: "session_start" }),
       makeEvent({ type: "text_delta", text: "hi" }),
       makeEvent({ type: "session_end" }),
@@ -177,7 +177,7 @@ describe("invokeViaAgentMux", () => {
   });
 
   it("invokes onEvent callback for each mapped event", async () => {
-    const events: AmuxAgentEvent[] = [
+    const events: AdapterAgentEvent[] = [
       makeEvent({ type: "session_start" }),
       makeEvent({ type: "text_delta", text: "yo" }),
     ];

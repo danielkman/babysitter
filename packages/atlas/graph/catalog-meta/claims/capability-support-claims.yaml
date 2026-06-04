@@ -5,7 +5,7 @@ nodeKind: Claim
 id: claim:repo-sdk-fallback
 attributes:
   claimId: repo-sdk-fallback
-  statement: "The babysitter-sdk amuxFallbackMetadata module provides fallback metadata for all known CLI harnesses."
+  statement: "The babysitter-sdk adapterFallbackMetadata module provides fallback metadata for all known CLI harnesses."
   subjectKind: AgentVersion
   subjectId: "agentVersion:codex:ge-0-119-0"
   confidence: high

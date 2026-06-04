@@ -14,9 +14,9 @@ import { mapHarnessToAmuxAdapter, hasAmuxAdapter } from "@a5c-ai/genty-platform/
 
 /**
  * Shape of a single JSONL event line emitted in adapters-events format.
- * Matches the AmuxAgentEvent interface so adapters can consume it.
+ * Matches the AdapterAgentEvent interface so adapters can consume it.
  */
-interface AmuxJsonlEvent {
+interface AdapterJsonlEvent {
   type: string;
   runId: string;
   agent: string;
@@ -48,7 +48,7 @@ export function formatResultAsAmuxEvents(
   const now = new Date().toISOString();
   const lines: string[] = [];
 
-  const emit = (event: AmuxJsonlEvent): void => {
+  const emit = (event: AdapterJsonlEvent): void => {
     lines.push(JSON.stringify(event));
   };
 

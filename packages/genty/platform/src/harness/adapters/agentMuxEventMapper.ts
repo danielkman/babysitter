@@ -11,7 +11,7 @@
  * @module harnes./adapters/agentMuxEventMapper
  */
 
-import type { AmuxAgentEvent } from "./agentMuxTypes";
+import type { AdapterAgentEvent } from "./agentMuxTypes";
 
 // ---------------------------------------------------------------------------
 // Babysitter internal event type
@@ -84,7 +84,7 @@ const KNOWN_EVENT_TYPES: ReadonlySet<string> = new Set(
  * @param event - The raw adapters event.
  * @returns The mapped BabysitterEvent, or null to drop.
  */
-export function mapAmuxEvent(event: AmuxAgentEvent): BabysitterEvent | null {
+export function mapAmuxEvent(event: AdapterAgentEvent): BabysitterEvent | null {
   if (!event || !event.type) {
     return null;
   }

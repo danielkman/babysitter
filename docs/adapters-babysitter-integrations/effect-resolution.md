@@ -2,7 +2,7 @@
 
 ## Summary
 
-When a process dispatches an `agent` task with `external: true`, the effect resolution pipeline must route through adapters instead of the internal agent-core session. Most of the infrastructure already exists in agent-platform's amuxBridge.
+When a process dispatches an `agent` task with `external: true`, the effect resolution pipeline must route through adapters instead of the internal agent-core session. Most of the infrastructure already exists in agent-platform's adapterBridge.
 
 ## Current Pipeline
 
@@ -47,8 +47,8 @@ async function resolveExternalAgentEffect(
     : agentDef.prompt?.instructions?.join("\n") ?? action.taskDef?.title ?? "";
 
   // Check adapters availability
-  const amuxClient = await getAmuxClient();
-  if (!amuxClient) {
+  const adapterClient = await getAmuxClient();
+  if (!adapterClient) {
     if (agentDef.fallbackToInternal) {
       process.stderr.write(`[babysitter] adapters not available, falling back to internal for ${adapter}\n`);
       return resolveInternalAgentEffect(action, args);
@@ -56,8 +56,8 @@ async function resolveExternalAgentEffect(
     return { status: "error", error: `adapters not available — cannot dispatch to ${adapter}` };
   }
 
-  // Dispatch via amuxBridge (already exists)
-  const result = await invokeViaAgentMux(amuxClient, adapter, {
+  // Dispatch via adapterBridge (already exists)
+  const result = await invokeViaAgentMux(adapterClient, adapter, {
     prompt,
     model: agentDef.model ?? args.model,
     workspace: args.workspace,
@@ -122,14 +122,14 @@ if (action.kind === "agent" && action.taskDef?.agent?.external) {
 ### Modified Files
 - `packages/genty/platform/src/harness/internal/createRun/orchestration/effects.ts` — add external agent routing
 - `packages/genty/platform/src/harness/internal/createRun/orchestration/index.ts` — add external agent handling in CLI path
-- `packages/genty/platform/src/harness/adapters/amuxBridge.ts` — may need minor adjustments for SDK-driven dispatch
+- `packages/genty/platform/src/harness/adapters/adapterBridge.ts` — may need minor adjustments for SDK-driven dispatch
 
 ## Existing Infrastructure Reused
 
-The amuxBridge in agent-platform already handles:
-- Harness → adapter name mapping (`amuxHarnessMap.ts`)
-- Adapters client lifecycle (`amuxClientFactory.ts`)
-- Event streaming and mapping (`amuxEventMapper.ts`)
+The adapterBridge in agent-platform already handles:
+- Harness → adapter name mapping (`adapterHarnessMap.ts`)
+- Adapters client lifecycle (`adapterClientFactory.ts`)
+- Event streaming and mapping (`adapterEventMapper.ts`)
 - Cost tracking from adapters events
 - Session ID management
 

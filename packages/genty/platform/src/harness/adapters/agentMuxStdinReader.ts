@@ -22,7 +22,7 @@ import * as readline from "node:readline";
  *   - `approval_response` -- response to an `approval_request` event
  *   - `input_response`    -- response to an `input_required` event
  */
-export interface AmuxInteractionEvent {
+export interface AdapterInteractionEvent {
   /** Event type discriminator. */
   type: string;
   /** Interaction ID this response corresponds to. */
@@ -46,14 +46,14 @@ export interface AmuxInteractionEvent {
  *
  * The iterable ends when stdin is closed (EOF).
  */
-export function createAmuxStdinReader(): AsyncIterable<AmuxInteractionEvent> {
+export function createAmuxStdinReader(): AsyncIterable<AdapterInteractionEvent> {
   const rl = readline.createInterface({
     input: process.stdin,
     crlfDelay: Infinity,
   });
 
   // Build an AsyncGenerator so callers can `for await ... of` the stream.
-  async function* generate(): AsyncGenerator<AmuxInteractionEvent> {
+  async function* generate(): AsyncGenerator<AdapterInteractionEvent> {
     for await (const line of rl) {
       const trimmed = line.trim();
       if (!trimmed) continue;
@@ -89,9 +89,9 @@ export function createAmuxStdinReader(): AsyncIterable<AmuxInteractionEvent> {
  * the stream ends. Returns `null` if the stream ends without a match.
  */
 export async function waitForInteractionResponse(
-  reader: AsyncIterable<AmuxInteractionEvent>,
+  reader: AsyncIterable<AdapterInteractionEvent>,
   interactionId: string,
-): Promise<AmuxInteractionEvent | null> {
+): Promise<AdapterInteractionEvent | null> {
   for await (const event of reader) {
     if (event.id === interactionId) {
       return event;

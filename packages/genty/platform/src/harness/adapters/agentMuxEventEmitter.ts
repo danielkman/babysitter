@@ -3,13 +3,13 @@
  *
  * Used when `--output-format adapters-events` is passed to `invoke` or
  * `call`. Each event is a single JSON line matching the
- * {@link AmuxAgentEvent} shape so the adapters babysitter adapter's
+ * {@link AdapterAgentEvent} shape so the adapters babysitter adapter's
  * `parseEvent()` can consume it directly.
  *
  * @module harness/adapters/agentMuxEventEmitter
  */
 
-import type { AmuxAgentEvent } from "./agentMuxTypes";
+import type { AdapterAgentEvent } from "./agentMuxTypes";
 
 /**
  * Stateful emitter that writes adapters compatible JSONL events to stdout.
@@ -18,7 +18,7 @@ import type { AmuxAgentEvent } from "./agentMuxTypes";
  * auto-stamps every event with `runId`, `agent`, and `timestamp` so callers
  * only need to supply the event-specific fields.
  */
-export class AmuxEventEmitter {
+export class AdapterEventEmitter {
   constructor(
     private readonly runId: string,
     private readonly agent: string = "babysitter",
@@ -32,8 +32,8 @@ export class AmuxEventEmitter {
    * Base fields (`runId`, `agent`, `timestamp`) are merged automatically.
    * Any field in `event` overrides the base fields.
    */
-  emit(event: Partial<AmuxAgentEvent>): void {
-    const full: AmuxAgentEvent = {
+  emit(event: Partial<AdapterAgentEvent>): void {
+    const full: AdapterAgentEvent = {
       type: "unknown",
       runId: this.runId,
       agent: this.agent,

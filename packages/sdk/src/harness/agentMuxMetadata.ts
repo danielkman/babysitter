@@ -14,7 +14,7 @@ import { STATIC_FALLBACK_METADATA } from "./agentMuxFallbackMetadata";
 /**
  * Subset of adapters AgentCapabilities relevant to babysitter orchestration.
  */
-export interface AmuxCapabilitiesSubset {
+export interface AdapterCapabilitiesSubset {
   supportsSkills: boolean;
   supportsThinking: boolean;
   supportsMCP: boolean;
@@ -33,13 +33,13 @@ export interface AmuxCapabilitiesSubset {
 /**
  * Metadata resolved from an adapters adapter instance.
  */
-export interface AmuxAdapterMetadata {
+export interface AdapterAdapterMetadata {
   /** The agent name in adapters (e.g. 'claude', 'codex', 'gemini'). */
   name: string;
   /** Env vars that indicate this harness is active. */
   hostEnvSignals: readonly string[];
   /** Subset of capabilities relevant to babysitter. */
-  capabilities: AmuxCapabilitiesSubset;
+  capabilities: AdapterCapabilitiesSubset;
   /** Session directory (resolved). */
   sessionDir: string;
 }
@@ -64,20 +64,20 @@ function mapHarnessName(name: string): string {
 // ---------------------------------------------------------------------------
 
 /** Minimal type for the adapter registry returned by createClient(). */
-interface AmuxAdapterRegistry {
-  get(agent: string): AmuxRawAdapter | undefined;
+interface AdapterAdapterRegistry {
+  get(agent: string): AdapterRawAdapter | undefined;
 }
 
 /** Minimal adapter shape we read from adapters. */
-interface AmuxRawAdapter {
+interface AdapterRawAdapter {
   agent?: string;
   hostEnvSignals?: readonly string[];
-  capabilities?: AmuxRawCapabilities;
+  capabilities?: AdapterRawCapabilities;
   sessionDir?: (cwd?: string) => string;
 }
 
 /** Minimal capabilities shape. */
-interface AmuxRawCapabilities {
+interface AdapterRawCapabilities {
   supportsSkills?: boolean;
   supportsThinking?: boolean;
   supportsMCP?: boolean;
@@ -92,16 +92,16 @@ interface AmuxRawCapabilities {
 
 /** Minimal client shape. */
 interface AgentMuxClient {
-  adapters: AmuxAdapterRegistry;
+  adapters: AdapterAdapterRegistry;
 }
 
 // ---------------------------------------------------------------------------
 // Cached metadata lookup
 // ---------------------------------------------------------------------------
 
-let _metadataCache: Map<string, AmuxAdapterMetadata> | undefined;
+let _metadataCache: Map<string, AdapterAdapterMetadata> | undefined;
 
-function getCache(): Map<string, AmuxAdapterMetadata> {
+function getCache(): Map<string, AdapterAdapterMetadata> {
   if (!_metadataCache) {
     _metadataCache = new Map();
   }
@@ -139,7 +139,7 @@ export function _setAmuxModuleForTesting(mod: Record<string, unknown> | undefine
   _agentMuxOverride = mod;
 }
 
-function cloneMetadata(metadata: AmuxAdapterMetadata): AmuxAdapterMetadata {
+function cloneMetadata(metadata: AdapterAdapterMetadata): AdapterAdapterMetadata {
   return {
     ...metadata,
     hostEnvSignals: [...metadata.hostEnvSignals],
@@ -147,7 +147,7 @@ function cloneMetadata(metadata: AmuxAdapterMetadata): AmuxAdapterMetadata {
   };
 }
 
-function getFallbackAdapterMetadata(harnessName: string, agentMuxName: string): AmuxAdapterMetadata {
+function getFallbackAdapterMetadata(harnessName: string, agentMuxName: string): AdapterAdapterMetadata {
   const fallback = STATIC_FALLBACK_METADATA[agentMuxName];
   if (!fallback) {
     throw new Error(
@@ -171,7 +171,7 @@ function shouldUseFallbackMetadata(error: unknown): boolean {
   );
 }
 
-export function getAmuxAdapterMetadata(harnessName: string): AmuxAdapterMetadata {
+export function getAmuxAdapterMetadata(harnessName: string): AdapterAdapterMetadata {
   const cache = getCache();
   const agentMuxName = mapHarnessName(harnessName);
 
@@ -252,7 +252,7 @@ export function getAmuxAdapterMetadata(harnessName: string): AmuxAdapterMetadata
     Object.values(runtimeHooks).some((v: unknown) => v !== "none")
   );
 
-  const metadata: AmuxAdapterMetadata = {
+  const metadata: AdapterAdapterMetadata = {
     name: adapter.agent ?? agentMuxName,
     hostEnvSignals: adapter.hostEnvSignals ?? [],
     capabilities: {

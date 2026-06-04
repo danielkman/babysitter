@@ -30,9 +30,9 @@ Files/modules that concentrate the most danger across multiple categories.
 ### process.env mutation couples modules through ambient state
 **Files:** `packages/adapters/observability/src/logger.ts`, `packages/adapters/observability/src/logger-simple.ts`, `packages/adapters/observability/src/index.ts`
 
-**FIXED for package writers:** Pi Azure defaults now return an overlay instead of writing `AZURE_OPENAI_*`; agent-core and agent-platform config helpers delegate to explicit scoped runtime config state; adapters CLI and TUI logging setup reconfigure observability without writing `AMUX_OBSERVABILITY_MODE` into `process.env`.
+**FIXED for package writers:** Pi Azure defaults now return an overlay instead of writing `AZURE_OPENAI_*`; agent-core and agent-platform config helpers delegate to explicit scoped runtime config state; adapters CLI and TUI logging setup reconfigure observability without writing `ADAPTER_OBSERVABILITY_MODE` into `process.env`.
 
-**Remaining caveat:** observability defaults still read `AMUX_LOG_LEVEL`, `AMUX_LOG_FILE`, `AMUX_LOG_PRETTY`, and `AMUX_OBSERVABILITY_MODE` from ambient env at module/runtime boundaries. Keep future changes on explicit config surfaces rather than adding new in-process env writers.
+**Remaining caveat:** observability defaults still read `ADAPTER_LOG_LEVEL`, `ADAPTER_LOG_FILE`, `ADAPTER_LOG_PRETTY`, and `ADAPTER_OBSERVABILITY_MODE` from ambient env at module/runtime boundaries. Keep future changes on explicit config surfaces rather than adding new in-process env writers.
 
 **Tracked separately:** #584 is the focused implementation issue for replacing these ambient in-process writes with an explicit env/config contract. Keep #601 changes from duplicating that larger refactor.
 
@@ -69,7 +69,7 @@ Files/modules that concentrate the most danger across multiple categories.
 | `piWrapper/moduleSupport.ts` | `AZURE_OPENAI_DEPLOYMENT_NAME_MAP` | Pi module | Conditional write |
 | `agent-core/config/state.ts` | Any key via `setConfigValue("global")` | All process.env readers | Permanent mutation |
 | `agent-platform/config/state.ts` | Any key via `setConfigValue("global")` | Platform tool/config readers | Permanent mutation |
-| `adapters/cli/index.ts` | `AMUX_LOG_LEVEL`, `AMUX_LOG_FILE` | `observability/logger.ts` | Startup coupling |
+| `adapters/cli/index.ts` | `ADAPTER_LOG_LEVEL`, `ADAPTER_LOG_FILE` | `observability/logger.ts` | Startup coupling |
 
 ### Cross-package internal imports (fragile)
 

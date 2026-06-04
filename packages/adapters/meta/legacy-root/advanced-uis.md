@@ -466,8 +466,8 @@ Transports are thin — each exports `createWebSocket(url, token)` returning a u
 **Files:**
 - `packages/ui/src/codegen/swift-types.ts` (new — `ts-morph`-driven generator)
 - `packages/ui/src/codegen/kotlin-types.ts` (new)
-- `packages/ui/build/schema/swift/AmuxProtocol.swift` (new — generated, committed)
-- `packages/ui/build/schema/kotlin/AmuxProtocol.kt` (new — generated, committed)
+- `packages/ui/build/schema/swift/AdapterProtocol.swift` (new — generated, committed)
+- `packages/ui/build/schema/kotlin/AdapterProtocol.kt` (new — generated, committed)
 - `packages/ui/package.json` (modify — add `codegen` script)
 
 **Notes:** Parse `protocol/v1.ts` with `ts-morph`. Emit `Codable` Swift structs and `@Serializable` Kotlin data classes. Discriminated unions → Swift enums with associated values / Kotlin sealed classes. Preserve names. Output committed to the repo with drift detection; native watch/TV builds consume the committed files without needing a TS toolchain.
@@ -515,7 +515,7 @@ Transports are thin — each exports `createWebSocket(url, token)` returning a u
 - `packages/webui/src/pages/HookInboxPage.tsx`
 - `packages/webui/src/pages/SettingsPage.tsx`
 
-**Notes:** Each page imports the ui screen and wraps it in web-specific chrome. `LoginPage` validates the token by connecting and calling `agents.list`; on success, stores in `localStorage.amuxToken` with an in-UI warning about the tradeoff. HomePage is a dashboard with three panels: active runs, recent sessions, agents.
+**Notes:** Each page imports the ui screen and wraps it in web-specific chrome. `LoginPage` validates the token by connecting and calling `agents.list`; on success, stores in `localStorage.adapterToken` with an in-UI warning about the tradeoff. HomePage is a dashboard with three panels: active runs, recent sessions, agents.
 
 **Done when:** Full login flow works against a real gateway. Deep links (`/runs/:runId`, `/sessions/:agent/:sessionId`) open the right page preselected. Unauthenticated access redirects to `/login`.
 
@@ -780,7 +780,7 @@ iOS app registers for silent push (`content-available: 1`). On delivery, `PushHa
 **Spec:** 26 · **Depends on:** T3.11
 
 **Files:**
-- `packages/mobile-android-app/android/app/src/main/java/ai/a5c/adapters/AmuxFirebaseMessagingService.kt`
+- `packages/mobile-android-app/android/app/src/main/java/ai/a5c/adapters/AdapterFirebaseMessagingService.kt`
 - `packages/mobile-android-app/src/native/push.ts`
 - `packages/mobile-android-app/src/providers/NotificationProvider.tsx`
 
@@ -835,7 +835,7 @@ Goal: receive a hook request on the wrist, see tool name and one-line preview, t
 - `packages/watch-watchos-app/AgentMuxWatchApp/Transport/WatchPhoneChannel.swift`
 - `packages/watch-watchos-app/AgentMuxWatchApp/Transport/TransportRouter.swift`
 - `packages/watch-watchos-app/AgentMuxWatchApp/Transport/DirectGatewayClient.swift` (stub)
-- `packages/watch-watchos-app/AgentMuxWatchApp/Generated/AmuxProtocol.swift` (copy of T2.9 output)
+- `packages/watch-watchos-app/AgentMuxWatchApp/Generated/AdapterProtocol.swift` (copy of T2.9 output)
 
 **Notes:** `WatchPhoneChannel` conforms to `WCSessionDelegate`. Decodes incoming `WatchInboundMessage` via `JSONDecoder` against the generated protocol types. Outgoing: `sendMessage` when reachable, `transferUserInfo` when not. `TransportRouter` picks phone vs direct-WS based on `WCSession.isReachable` + user setting.
 
@@ -983,7 +983,7 @@ Goal: receive a hook request on the wrist, see tool name and one-line preview, t
 - `packages/watch-wearos-app/app/build.gradle.kts`
 - `packages/watch-wearos-app/app/src/main/AndroidManifest.xml`
 - `packages/watch-wearos-app/app/src/main/kotlin/ai/a5c/adapters/wear/MainActivity.kt`
-- `packages/watch-wearos-app/app/src/main/kotlin/ai/a5c/adapters/wear/AmuxWearApp.kt`
+- `packages/watch-wearos-app/app/src/main/kotlin/ai/a5c/adapters/wear/AdapterWearApp.kt`
 - `packages/watch-wearos-app/package.json` (marker)
 
 **Notes:** Kotlin 2.x, AGP latest, Jetpack Compose for Wear, target Wear OS 4+.
@@ -1000,7 +1000,7 @@ Goal: receive a hook request on the wrist, see tool name and one-line preview, t
 - `packages/watch-wearos-app/app/src/main/kotlin/ai/a5c/adapters/wear/transport/PhoneChannel.kt`
 - `packages/watch-wearos-app/app/src/main/kotlin/ai/a5c/adapters/wear/transport/TransportRouter.kt`
 - `packages/watch-wearos-app/app/src/main/kotlin/ai/a5c/adapters/wear/transport/DirectGatewayClient.kt` (stub)
-- `packages/watch-wearos-app/app/src/main/kotlin/ai/a5c/adapters/wear/generated/AmuxProtocol.kt` (copy of T2.9 output)
+- `packages/watch-wearos-app/app/src/main/kotlin/ai/a5c/adapters/wear/generated/AdapterProtocol.kt` (copy of T2.9 output)
 
 **Notes:** `MessageClient` for low-latency messages, `DataClient` for state snapshots at `/adapters/state`. Router defaults to phone; falls back after 10s unreachable.
 
@@ -1136,7 +1136,7 @@ Goal: open the adapters dashboard on a TV, see live runs stream with 24pt+ typog
 
 **Files:**
 - `packages/tv-appletv-app/src/providers/TokenStoreProvider.tsx`
-- `packages/tv-appletv-app/ios/AmuxTV/AmuxTV.entitlements`
+- `packages/tv-appletv-app/ios/AdapterTV/AdapterTV.entitlements`
 
 **Notes:** Same `group.ai.a5c.adapters` access group as iOS and watchOS. Token written by iOS phone app is readable by tvOS app with no extra pairing step.
 

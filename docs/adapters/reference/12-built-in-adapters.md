@@ -1243,6 +1243,6 @@ Key fields:
 
 Runtime configuration is supplied via `RunOptions.env`:
 
-- `AMUX_REMOTE_AGENT` — the harness to invoke on the remote side (default `claude`).
+- `ADAPTER_REMOTE_AGENT` — the harness to invoke on the remote side (default `claude`).
 
 Structured JSONL events produced by the nested `adapters run` are passed through unchanged.

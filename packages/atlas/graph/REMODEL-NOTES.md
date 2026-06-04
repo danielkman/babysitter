@@ -4283,7 +4283,7 @@ breaking them.
 - `adapters/core/src/invocation.ts` — `getHarnessImages`, `lookupHarnessImage`
 - `hooks-adapter/core/src/discovery/detector.ts` — `getHooksMuxDetectionRules`
 - `extensions-adapter/src/targets/index.ts` — `listPluginTargetDescriptors`, `getPluginTargetDescriptor`, `getHookNameMap` (adapter generator critical)
-- `sdk/src/harness/discovery.ts` + `amuxFallbackMetadata.ts` — `getFallbackHarnessMetadata`, agent-version listings
+- `sdk/src/harness/discovery.ts` + `adapterFallbackMetadata.ts` — `getFallbackHarnessMetadata`, agent-version listings
 - `catalog/src/app/api/...` — `listCatalogAgents`, `listProcessDescriptors`, etc.
 
 ### Per-bucket gap count
@@ -4570,7 +4570,7 @@ The adapter spec is now frozen with a field-by-field source map:
 booleans, `evidenceIds` — each tied to a specific atlas NodeKind +
 attribute. Adapter ownership: `packages/agent-catalog/src/data.ts`
 (consumer side); ~30 LOC of reads against the atlas graph; pinning test
-already lives at `sdk/src/harness/amuxFallbackMetadata.contract.test.ts`.
+already lives at `sdk/src/harness/adapterFallbackMetadata.contract.test.ts`.
 
 ### Migration docs updated
 

@@ -52,7 +52,7 @@ function HelpView({ client }: TuiViewProps) {
       <Text dimColor>· In Sessions view, press `d` to inspect a session and export it.</Text>
       <Text dimColor>· In Kanban, press `w` to jump to the linked workspace; in Workspaces, press `g` to jump back to the linked issue.</Text>
       <Text dimColor>· In Logs, metrics summarize the full buffered stream; the filter only narrows visible rows.</Text>
-      <Text dimColor>· Set AMUX_TUI_COST_ALERT=&quot;1,5,10&quot; to get cost crossing alerts.</Text>
+      <Text dimColor>· Set ADAPTER_TUI_COST_ALERT=&quot;1,5,10&quot; to get cost crossing alerts.</Text>
     </Box>
   );
 }

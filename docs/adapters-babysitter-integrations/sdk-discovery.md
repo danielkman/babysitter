@@ -22,8 +22,8 @@ interface ExternalAgentInfo {
 interface ExternalAgentDiscovery {
   available: boolean;                 // is adapters installed?
   agents: ExternalAgentInfo[];        // discovered agents
-  defaultProvider: string | null;     // AMUX_PROVIDER env
-  defaultModel: string | null;        // AMUX_MODEL env
+  defaultProvider: string | null;     // ADAPTER_PROVIDER env
+  defaultModel: string | null;        // ADAPTER_MODEL env
 }
 
 export async function discoverExternalAgents(

@@ -54,7 +54,7 @@ agent-platform imports adapters as a library. No CLI subprocess.
 import { AgentMuxClient } from '@adapters/core';
 
 // In agent-platform startup:
-const amuxClient = new AgentMuxClient({
+const adapterClient = new AgentMuxClient({
   defaultAgent: undefined,  // babysitter chooses per invocation
   approvalMode: 'prompt',   // babysitter governance wraps this
   stream: true,             // always stream events
@@ -79,7 +79,7 @@ const result = await invokeHarness('claude-code', {
 
 **After:**
 ```typescript
-// harness/amuxBridge.ts
+// harness/adapterBridge.ts
 import { AgentMuxClient, RunHandle, AgentEvent } from '@adapters/core';
 
 export async function invokeViaAgentMux(
@@ -293,7 +293,7 @@ adapters event stream
 ## 5. Files to Remove After Migration
 
 ```
-src/harness/invoker.ts                    → replaced by amuxBridge.ts
+src/harness/invoker.ts                    → replaced by adapterBridge.ts
 src/harness/invoker/launch.ts             → replaced by adapters SpawnArgs
 src/harness/invoker/processControl.ts     → replaced by adapters ProcessTracker
 src/harness/types.ts (partial)            → HARNESS_CLI_MAP, HarnessInvokeOptions removed
@@ -303,9 +303,9 @@ src/dashboard/                            → replaced by adapters-tui plugins
 ## 6. Files to Create
 
 ```
-src/harness/amuxBridge.ts                 → AgentMuxClient wrapper
-src/harness/amuxEventMapper.ts            → AgentEvent → babysitter event mapping
-src/harness/amuxInteractionBridge.ts      → InteractionChannel → governance bridge
+src/harness/adapterBridge.ts                 → AgentMuxClient wrapper
+src/harness/adapterEventMapper.ts            → AgentEvent → babysitter event mapping
+src/harness/adapterInteractionBridge.ts      → InteractionChannel → governance bridge
 ```
 
 ## 7. Files Unchanged

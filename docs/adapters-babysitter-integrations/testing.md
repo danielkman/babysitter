@@ -25,7 +25,7 @@ unit tests only validate task definition shape, validation, and serialization.
 ### 2. Agent-Platform Unit Tests
 
 **Effect resolution tests** (`packages/genty/platform/src/harness/internal/createRun/orchestration/__tests__/externalAgentEffect.test.ts`):
-- External agent effect routes to amuxBridge
+- External agent effect routes to adapterBridge
 - Returns error when adapters not available and `fallbackType` is not set
 - Falls back to internal when adapters not available and `fallbackType: "internal"` is set
 - Adapter not installed → clear error message with install hint
@@ -105,6 +105,6 @@ const mockAmuxClient = {
 |------|--------|
 | SDK discovery | 90% — all paths including fallback and timeout |
 | Task types | 100% — type safety is critical |
-| Effect resolution | 85% — mock amuxBridge, cover error paths |
+| Effect resolution | 85% — mock adapterBridge, cover error paths |
 | Validation | 80% — cover external task acceptance |
 | E2E | 1 happy path + 1 fallback path |

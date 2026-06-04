@@ -5,7 +5,7 @@
  * Pi remains direct; agent-core/internal route through create-run orchestration.
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import type { AgentMuxClient, AgentMuxRunHandle, AmuxAgentEvent, AmuxInteractionChannel } from "../agentMuxTypes";
+import type { AgentMuxClient, AgentMuxRunHandle, AdapterAgentEvent, AdapterInteractionChannel } from "../agentMuxTypes";
 
 // ---------------------------------------------------------------------------
 // Mock modules before importing the code under test
@@ -99,7 +99,7 @@ import { createAgentCoreSession } from "@a5c-ai/genty-core";
 // ---------------------------------------------------------------------------
 
 function createMockAgentMuxClient(output = "adapters-output"): AgentMuxClient {
-  async function* emptyStream(): AsyncGenerator<AmuxAgentEvent> {
+  async function* emptyStream(): AsyncGenerator<AdapterAgentEvent> {
     yield {
       type: "text_delta",
       runId: "run-1",
@@ -108,7 +108,7 @@ function createMockAgentMuxClient(output = "adapters-output"): AgentMuxClient {
       text: output,
     };
   }
-  const interactions: AmuxInteractionChannel = {
+  const interactions: AdapterInteractionChannel = {
     respond: vi.fn().mockResolvedValue(undefined),
   };
   const handle: AgentMuxRunHandle = {

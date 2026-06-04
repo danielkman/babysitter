@@ -39,7 +39,7 @@ const srcRoot = path.resolve(scriptDir, '..');
 const packageRoot = path.resolve(srcRoot, '..');
 const repoRoot = path.resolve(packageRoot, '..', '..', '..');
 const protocolPath = path.join(srcRoot, 'protocol', 'v1.ts');
-const outputPath = path.join(packageRoot, 'build', 'schema', 'kotlin', 'AmuxProtocol.kt');
+const outputPath = path.join(packageRoot, 'build', 'schema', 'kotlin', 'AdapterProtocol.kt');
 
 async function main(): Promise<void> {
   const project = new Project({ tsConfigFilePath: path.join(repoRoot, 'tsconfig.json') });

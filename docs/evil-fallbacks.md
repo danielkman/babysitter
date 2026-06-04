@@ -155,13 +155,13 @@ Now logs tool name and error message before converting to result object.
 ### High
 
 **Provider resolution — 5-level model fallback** — `packages/adapters/core/src/provider-resolver.ts:94-96` **(logged)**
-Now logs which source was selected (input/AMUX_MODEL/profile/defaults-file/provider-default) at debug level.
+Now logs which source was selected (input/ADAPTER_MODEL/profile/defaults-file/provider-default) at debug level.
 
 **Credential cascade — silent switching** — `packages/adapters/core/src/provider-resolver.ts:34-49`
-API key resolved from: direct input → AMUX_API_KEY → GOOGLE_API_KEY → GEMINI_API_KEY → provider envKey. No indication which credential is active.
+API key resolved from: direct input → ADAPTER_API_KEY → GOOGLE_API_KEY → GEMINI_API_KEY → provider envKey. No indication which credential is active.
 
 **Region resolution — 6+ env vars** — `packages/adapters/core/src/provider-resolver.ts:113-114`
-`AMUX_REGION ?? GOOGLE_CLOUD_LOCATION ?? VERTEXAI_LOCATION ?? AWS_REGION ?? AWS_REGION_NAME ?? params.region`. Wrong region = wrong datacenter, no log.
+`ADAPTER_REGION ?? GOOGLE_CLOUD_LOCATION ?? VERTEXAI_LOCATION ?? AWS_REGION ?? AWS_REGION_NAME ?? params.region`. Wrong region = wrong datacenter, no log.
 
 ~~**Auth detection — `void e;` suppression**~~ **(logged)** — `packages/adapters/cli/src/commands/doctor.ts:63-69`
 Auth detection errors become `{ status: 'unauthenticated' }`. `void e;` explicitly suppresses the error.
@@ -266,7 +266,7 @@ Parse errors are counted internally but the count is not returned or logged. Cal
 
 ### Critical
 
-**Graph catalog resolution silently falls back to hardcoded metadata** — `packages/sdk/src/harness/amuxFallbackMetadata.ts:179-220` **(logged)**
+**Graph catalog resolution silently falls back to hardcoded metadata** — `packages/sdk/src/harness/adapterFallbackMetadata.ts:179-220` **(logged)**
 `buildStaticFallbackMetadata()` catches ALL errors and returns `LOCAL_FALLBACK_METADATA`. If catalog loading fails or returns all-false capabilities (schema mismatch), silently uses hardcoded local fallback. No indication which metadata is active.
 
 ### High
@@ -285,10 +285,10 @@ Invalid log level silently reverts to fallback. User thinks they set "debug" but
 
 ### Medium
 
-**Legacy session directory remapping** — `packages/sdk/src/harness/amuxFallbackMetadata.ts:8-11`
+**Legacy session directory remapping** — `packages/sdk/src/harness/adapterFallbackMetadata.ts:8-11`
 `resolveFallbackSessionDir()` silently remaps `LEGACY_REPO_RUNS_DIR` to default. Users with old config don't know they're using a different path.
 
-**Host signal map — empty on error** — `packages/sdk/src/harness/amuxFallbackMetadata.ts:189-191`
+**Host signal map — empty on error** — `packages/sdk/src/harness/adapterFallbackMetadata.ts:189-191`
 If `hostSignalMap[name]` is undefined, silently falls back to empty array. Harness detection becomes impossible.
 
 ---
@@ -303,7 +303,7 @@ If `hostSignalMap[name]` is undefined, silently falls back to empty array. Harne
 **Azure model synthesis returns undefined silently** — `packages/genty/platform/src/harness/piWrapper/moduleSupport.ts:146-175`
 `synthesizeAzureModelEntry()` returns `undefined` at multiple points without logging. Model resolution fails silently.
 
-**Non-JSON stdin lines silently discarded** — `packages/genty/platform/src/harness/adapters/amuxStdinReader.ts:64-66`
+**Non-JSON stdin lines silently discarded** — `packages/genty/platform/src/harness/adapters/adapterStdinReader.ts:64-66`
 `catch { continue; }` on JSON.parse. Invalid interaction events vanish. Downstream code may wait forever for a response that was malformed and discarded.
 
 **Pi module import — generic error hides real cause** — `packages/genty/platform/src/harness/piWrapper/moduleSupport.ts:86-96`
@@ -420,7 +420,7 @@ Three `fs.rm().catch(() => {})` calls. Filesystem leaks accumulate.
 Auth detection failure now logged with agent name before marking 'unknown'.
 
 **Remote agent fallback → 'claude'** — `packages/adapters/adapters/src/adapters-remote-adapter.ts:112`
-`env['AMUX_REMOTE_AGENT'] ?? process.env['AMUX_REMOTE_AGENT'] ?? 'claude'`. Silent default.
+`env['ADAPTER_REMOTE_AGENT'] ?? process.env['ADAPTER_REMOTE_AGENT'] ?? 'claude'`. Silent default.
 
 **Binary resolution fallbacks** — `packages/adapters/launch/src/bridge-hooks.ts:41-46`
 `env['BABYSITTER_BIN'] || 'babysitter'`, `env['HOOKS_MUX_BIN'] || 'a5c-hooks-adapter'`. Wrong tool version possible.

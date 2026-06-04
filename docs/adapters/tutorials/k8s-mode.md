@@ -60,7 +60,7 @@ await client.run({
   agent: 'adapters-remote',
   prompt: 'Hello',
   invocationMode: { kind: 'k8s', namespace: 'agents', pod: 'adapters-0' },
-  env: { AMUX_REMOTE_AGENT: 'claude' },
+  env: { ADAPTER_REMOTE_AGENT: 'claude' },
 });
 ```
 

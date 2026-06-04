@@ -45,9 +45,9 @@ export interface AgentMuxRunOptions {
  */
 export interface AgentMuxRunHandle {
   /** Async-iterable stream of normalised agent events. */
-  events: AsyncIterable<AmuxAgentEvent>;
+  events: AsyncIterable<AdapterAgentEvent>;
   /** Channel for responding to interactive requests (approvals, inputs). */
-  interactions: AmuxInteractionChannel;
+  interactions: AdapterInteractionChannel;
   /** Session ID allocated or resumed by adapters. */
   sessionId?: string;
   /** Process exit code (set after the event stream ends). */
@@ -67,7 +67,7 @@ export interface AgentMuxRunHandle {
  * `string` (ISO-8601) for backward compat with babysitter event mappers. The
  * bridge and tests rely on structural compatibility only.
  */
-export interface AmuxAgentEvent {
+export interface AdapterAgentEvent {
   /** Event type discriminator. */
   type: string;
   /** Run identifier assigned by adapters. */
@@ -90,7 +90,7 @@ export interface AmuxAgentEvent {
  * Simplified from the real MuxInteractionChannel — agent-platform
  * only uses the basic respond-by-ID pattern.
  */
-export interface AmuxInteractionChannel {
+export interface AdapterInteractionChannel {
   /** Respond to an interactive request by its ID. */
   respond(id: string, response: unknown): Promise<void>;
 }
@@ -116,7 +116,7 @@ export interface AgentMuxClient {
 // ---------------------------------------------------------------------------
 
 /** Metadata about an adapters adapter. Re-uses canonical AdapterRegistry. */
-export interface AmuxAdapterInfo {
+export interface AdapterAdapterInfo {
   /** Adapter identifier (e.g. "claude", "codex"). */
   agent: string;
   /** Human-readable display name. */
@@ -124,7 +124,7 @@ export interface AmuxAdapterInfo {
 }
 
 /** Result of checking whether an adapter's CLI is installed. */
-export interface AmuxAdapterInstallationCheck {
+export interface AdapterAdapterInstallationCheck {
   /** Whether the CLI binary is found on PATH. */
   installed: boolean;
   /** Detected version, if available. */
@@ -132,7 +132,7 @@ export interface AmuxAdapterInstallationCheck {
 }
 
 /** Result of checking adapter authentication state. */
-export interface AmuxAuthCheck {
+export interface AdapterAuthCheck {
   /** Auth state discriminator. */
   state: "authenticated" | "unauthenticated" | "unknown";
 }
@@ -145,10 +145,10 @@ export interface AmuxAuthCheck {
  */
 export interface AgentMuxClientWithDiscovery extends AgentMuxClient {
   adapters: {
-    list(): AmuxAdapterInfo[];
-    detectInstallation(agent: string): Promise<AmuxAdapterInstallationCheck>;
+    list(): AdapterAdapterInfo[];
+    detectInstallation(agent: string): Promise<AdapterAdapterInstallationCheck>;
   };
   auth: {
-    check(agent: string): Promise<AmuxAuthCheck>;
+    check(agent: string): Promise<AdapterAuthCheck>;
   };
 }

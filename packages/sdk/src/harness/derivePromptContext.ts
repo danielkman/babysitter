@@ -5,7 +5,7 @@
  * with a single derivation function that reads capabilities from adapters.
  */
 
-import type { AmuxAdapterMetadata } from "./agentMuxMetadata";
+import type { AdapterAdapterMetadata } from "./agentMuxMetadata";
 import type { AdapterConfig } from "./BaseAdapter";
 import { HarnessCapability as Cap } from "./types";
 
@@ -16,7 +16,7 @@ import { HarnessCapability as Cap } from "./types";
 /**
  * Derive the prompt capabilities list from adapters metadata.
  */
-export function derivePromptCapabilities(metadata: AmuxAdapterMetadata): string[] {
+export function derivePromptCapabilities(metadata: AdapterAdapterMetadata): string[] {
   const caps: string[] = [];
 
   if (metadata.capabilities.hasRuntimeHooks) {
@@ -52,7 +52,7 @@ export function derivePromptCapabilities(metadata: AmuxAdapterMetadata): string[
 /**
  * Derive babysitter HarnessCapability[] from adapters capabilities.
  */
-export function deriveHarnessCapabilities(metadata: AmuxAdapterMetadata): Cap[] {
+export function deriveHarnessCapabilities(metadata: AdapterAdapterMetadata): Cap[] {
   const caps: Cap[] = [];
 
   if (metadata.capabilities.hasStopHook) {
@@ -81,7 +81,7 @@ export function deriveHarnessCapabilities(metadata: AmuxAdapterMetadata): Cap[] 
  * Always includes AGENT_SESSION_ID as a universal activation signal.
  */
 export function deriveActivationEnvVars(
-  metadata: AmuxAdapterMetadata,
+  metadata: AdapterAdapterMetadata,
   extraVars?: string[],
 ): string[] {
   const vars = new Set<string>(["AGENT_SESSION_ID"]);
@@ -153,7 +153,7 @@ export interface DeriveConfigOptions {
  * Derive a full AdapterConfig from adapters metadata + per-adapter overrides.
  */
 export function deriveAdapterConfig(
-  metadata: AmuxAdapterMetadata,
+  metadata: AdapterAdapterMetadata,
   opts: DeriveConfigOptions,
 ): AdapterConfig {
   const hookDriven = opts.hookDriven ?? metadata.capabilities.hasStopHook;

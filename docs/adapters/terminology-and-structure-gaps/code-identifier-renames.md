@@ -6,30 +6,30 @@
 
 | Current Pattern | Target Pattern | Occurrences | Key Files |
 |----------------|---------------|-------------|-----------|
-| `amuxBridge` | `agentMuxBridge` | 50+ | `agent-platform/src/harness/adapters/amuxBridge.ts` |
-| `amuxClient` | `agentMuxClient` | 40+ | `agent-platform/src/harness/adapters/amuxClientFactory.ts` |
-| `amuxEventMapper` | `agentMuxEventMapper` | 20+ | `agent-platform/src/harness/adapters/amuxEventMapper.ts` |
-| `amuxHarnessMap` | `agentMuxHarnessMap` | 15+ | `agent-platform/src/harness/adapters/amuxHarnessMap.ts` |
-| `amuxStdinReader` | `agentMuxStdinReader` | 10+ | `agent-platform/src/harness/adapters/amuxStdinReader.ts` |
-| `isAmuxAvailable` | `isAgentMuxAvailable` | 10+ | `agent-platform/src/harness/adapters/amuxClientFactory.ts` |
+| `adapterBridge` | `agentMuxBridge` | 50+ | `agent-platform/src/harness/adapters/adapterBridge.ts` |
+| `adapterClient` | `agentMuxClient` | 40+ | `agent-platform/src/harness/adapters/adapterClientFactory.ts` |
+| `adapterEventMapper` | `agentMuxEventMapper` | 20+ | `agent-platform/src/harness/adapters/adapterEventMapper.ts` |
+| `adapterHarnessMap` | `agentMuxHarnessMap` | 15+ | `agent-platform/src/harness/adapters/adapterHarnessMap.ts` |
+| `adapterStdinReader` | `agentMuxStdinReader` | 10+ | `agent-platform/src/harness/adapters/adapterStdinReader.ts` |
+| `isAmuxAvailable` | `isAgentMuxAvailable` | 10+ | `agent-platform/src/harness/adapters/adapterClientFactory.ts` |
 | `getAmuxClient` | `getAgentMuxClient` | 15+ | Multiple files |
 | `invokeViaAgentMux` | `invokeViaAgentMux` (keep) | 5+ | Already correct pattern |
-| `AmuxBridgeResult` | `AgentMuxBridgeResult` | 5+ | Type definitions |
-| `AmuxRunOptions` | `AgentMuxRunOptions` | 5+ | Type definitions |
+| `AdapterBridgeResult` | `AgentMuxBridgeResult` | 5+ | Type definitions |
+| `AdapterRunOptions` | `AgentMuxRunOptions` | 5+ | Type definitions |
 | `mapAmuxEvent` | `mapAgentMuxEvent` | 5+ | Event mapping |
-| `amuxProvider` | `agentMuxProvider` | 20+ | Provider resolution |
+| `adapterProvider` | `agentMuxProvider` | 20+ | Provider resolution |
 
 ## File/Directory Renames
 
 | Current Path | Target Path |
 |-------------|------------|
 | `packages/genty/platform/src/harness/adapters/` | `packages/genty/platform/src/harness/adapters/` |
-| `packages/genty/platform/src/harness/adapters/amuxBridge.ts` | `packages/genty/platform/src/harness/adapters/bridge.ts` |
-| `packages/genty/platform/src/harness/adapters/amuxClientFactory.ts` | `packages/genty/platform/src/harness/adapters/clientFactory.ts` |
-| `packages/genty/platform/src/harness/adapters/amuxEventMapper.ts` | `packages/genty/platform/src/harness/adapters/eventMapper.ts` |
-| `packages/genty/platform/src/harness/adapters/amuxHarnessMap.ts` | `packages/genty/platform/src/harness/adapters/harnessMap.ts` |
-| `packages/genty/platform/src/harness/adapters/amuxStdinReader.ts` | `packages/genty/platform/src/harness/adapters/stdinReader.ts` |
-| `packages/genty/platform/src/harness/adapters/amuxTypes.ts` | `packages/genty/platform/src/harness/adapters/types.ts` |
+| `packages/genty/platform/src/harness/adapters/adapterBridge.ts` | `packages/genty/platform/src/harness/adapters/bridge.ts` |
+| `packages/genty/platform/src/harness/adapters/adapterClientFactory.ts` | `packages/genty/platform/src/harness/adapters/clientFactory.ts` |
+| `packages/genty/platform/src/harness/adapters/adapterEventMapper.ts` | `packages/genty/platform/src/harness/adapters/eventMapper.ts` |
+| `packages/genty/platform/src/harness/adapters/adapterHarnessMap.ts` | `packages/genty/platform/src/harness/adapters/harnessMap.ts` |
+| `packages/genty/platform/src/harness/adapters/adapterStdinReader.ts` | `packages/genty/platform/src/harness/adapters/stdinReader.ts` |
+| `packages/genty/platform/src/harness/adapters/adapterTypes.ts` | `packages/genty/platform/src/harness/adapters/types.ts` |
 | `packages/adapters/adapters-proxy/` | `packages/adapters/transport-proxy/` |
 | `packages/adapters/meta/config/adapters/` | `packages/adapters/meta/config/adapters/` |
 
@@ -43,7 +43,7 @@ Java/Kotlin packages use `ai.a5c.adapters` as the Android package namespace. The
 ## Test File References
 
 Many test files reference `adapters` in:
-- Mock objects: `mockAmuxClient`, `amuxMockAdapter`
+- Mock objects: `mockAmuxClient`, `adapterMockAdapter`
 - Test descriptions: "adapters bridge should..."
 - Fixture file names: `adapters-e2e-roundtrip.test.ts`
 

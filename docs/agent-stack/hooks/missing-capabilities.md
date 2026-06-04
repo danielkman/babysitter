@@ -27,7 +27,7 @@ Claude Code supports 5 hook handler types. hooks-adapter core now models and dis
 ### Remaining integration work
 
 **agent-platform:**
-- `src/harness/adapters/amuxBridge.ts` already forwards opaque hook config to adapters. Live `mcp_tool`, `prompt`, and `agent` execution still needs platform wiring that supplies hooks-adapter executor seams from the unified tool registry/model/agent invocation surfaces.
+- `src/harness/adapters/adapterBridge.ts` already forwards opaque hook config to adapters. Live `mcp_tool`, `prompt`, and `agent` execution still needs platform wiring that supplies hooks-adapter executor seams from the unified tool registry/model/agent invocation surfaces.
 
 ## 2. Decision Types (3 missing)
 

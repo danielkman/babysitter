@@ -50,7 +50,7 @@ await client.run({
   agent: 'adapters-remote',
   prompt: 'Hello',
   invocationMode: { kind: 'docker', image: 'my/adapters:latest' },
-  env: { AMUX_REMOTE_AGENT: 'claude' },
+  env: { ADAPTER_REMOTE_AGENT: 'claude' },
 });
 ```
 

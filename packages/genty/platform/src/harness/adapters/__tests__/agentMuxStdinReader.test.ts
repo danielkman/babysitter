@@ -10,7 +10,7 @@ import * as readline from "node:readline";
 // for the module-level createAmuxStdinReader is fragile.
 // Instead, we test the core parsing behavior via a helper.
 
-interface AmuxInteractionEvent {
+interface AdapterInteractionEvent {
   type: string;
   id: string;
   response: unknown;
@@ -21,7 +21,7 @@ interface AmuxInteractionEvent {
  * Parse a single line into an interaction event (mirrors the logic
  * inside createAmuxStdinReader).
  */
-function parseLine(line: string): AmuxInteractionEvent | null {
+function parseLine(line: string): AdapterInteractionEvent | null {
   const trimmed = line.trim();
   if (!trimmed) return null;
 
@@ -47,7 +47,7 @@ function parseLine(line: string): AmuxInteractionEvent | null {
 /**
  * Simulate the async-iterable reader over a set of input lines.
  */
-async function readFromLines(lines: string[]): Promise<AmuxInteractionEvent[]> {
+async function readFromLines(lines: string[]): Promise<AdapterInteractionEvent[]> {
   const stream = new Readable({
     read() {
       for (const line of lines) {
@@ -62,7 +62,7 @@ async function readFromLines(lines: string[]): Promise<AmuxInteractionEvent[]> {
     crlfDelay: Infinity,
   });
 
-  const results: AmuxInteractionEvent[] = [];
+  const results: AdapterInteractionEvent[] = [];
   for await (const line of rl) {
     const event = parseLine(line);
     if (event) results.push(event);

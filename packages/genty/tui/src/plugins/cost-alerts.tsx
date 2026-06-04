@@ -25,7 +25,7 @@ export function makeCostAlerter(
 export default definePlugin({
   name: 'builtin:cost-alerts',
   register(ctx) {
-    const thresholds = parseThresholds(process.env.AMUX_TUI_COST_ALERT);
+    const thresholds = parseThresholds(process.env.ADAPTER_TUI_COST_ALERT);
     if (thresholds.length === 0) return;
     let total = 0;
     const alert = makeCostAlerter(thresholds, (message) =>

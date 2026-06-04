@@ -30,7 +30,7 @@ import {
  * Options that extend the standard HarnessInvokeOptions with fields
  * specific to the adapters bridge.
  */
-export interface AmuxBridgeOptions extends HarnessInvokeOptions {
+export interface AdapterBridgeOptions extends HarnessInvokeOptions {
   /** Session ID for session resumption via adapters. */
   sessionId?: string;
   /** Whether to suppress interactive prompts (yolo mode). */
@@ -67,7 +67,7 @@ export interface AgentMuxBridgeResult extends HarnessInvokeResult {
  * stream consumption. Useful for live governance checks, cost tracking,
  * and webhook forwarding without waiting for the full run to complete.
  */
-export type AmuxEventCallback = (event: BabysitterEvent) => void | Promise<void>;
+export type AdapterEventCallback = (event: BabysitterEvent) => void | Promise<void>;
 
 // ---------------------------------------------------------------------------
 // Bridge implementation
@@ -96,8 +96,8 @@ export type AmuxEventCallback = (event: BabysitterEvent) => void | Promise<void>
 export async function invokeViaAgentMux(
   client: AgentMuxClient,
   harness: string,
-  options: AmuxBridgeOptions,
-  onEvent?: AmuxEventCallback,
+  options: AdapterBridgeOptions,
+  onEvent?: AdapterEventCallback,
 ): Promise<AgentMuxBridgeResult> {
   const adapterName = mapHarnessToAmuxAdapter(harness);
   const startTime = Date.now();

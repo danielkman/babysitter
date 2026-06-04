@@ -23,13 +23,13 @@ export interface ExternalAgentDiscoveryOptions {
 
 type AuthStatus = "authenticated" | "unauthenticated" | "expired" | "unknown" | string;
 
-interface AmuxAdapterInfo {
+interface AdapterAdapterInfo {
   agent?: string;
   name?: string;
   displayName?: string;
 }
 
-interface AmuxInstalledInfo {
+interface AdapterInstalledInfo {
   agent?: string;
   name?: string;
   installed?: boolean;
@@ -37,28 +37,28 @@ interface AmuxInstalledInfo {
   activeModel?: string | null;
 }
 
-interface AmuxModelInfo {
+interface AdapterModelInfo {
   modelId?: string;
   id?: string;
   name?: string;
 }
 
-interface AmuxAdapterRegistry {
-  list?(): AmuxAdapterInfo[];
-  installed?(): Promise<AmuxInstalledInfo[]>;
+interface AdapterAdapterRegistry {
+  list?(): AdapterAdapterInfo[];
+  installed?(): Promise<AdapterInstalledInfo[]>;
   capabilities?(agent: string): unknown;
 }
 
-interface AmuxModelRegistry {
-  defaultModel?(agent: string): AmuxModelInfo | string | null;
+interface AdapterModelRegistry {
+  defaultModel?(agent: string): AdapterModelInfo | string | null;
 }
 
 interface AgentMuxClientLike {
-  adapters?: AmuxAdapterRegistry;
-  models?: AmuxModelRegistry;
+  adapters?: AdapterAdapterRegistry;
+  models?: AdapterModelRegistry;
 }
 
-interface AmuxModuleLike {
+interface AdapterModuleLike {
   createClient?(options?: Record<string, unknown>): AgentMuxClientLike;
 }
 
@@ -78,7 +78,7 @@ const UNAVAILABLE_RESULT: ExternalAgentDiscovery = {
 };
 
 let cacheEntry: CacheEntry | null = null;
-let moduleOverride: AmuxModuleLike | null | undefined;
+let moduleOverride: AdapterModuleLike | null | undefined;
 
 export async function discoverExternalAgents(
   options: ExternalAgentDiscoveryOptions = {},
@@ -121,11 +121,11 @@ async function discoverViaModule(
     const adapterInfos = adapterRegistry.list();
     const installedInfos = await adapterRegistry.installed();
     const installedByAgent = new Map(
-      installedInfos.map((info: AmuxInstalledInfo) => [normalizeAgentName(info), info]),
+      installedInfos.map((info: AdapterInstalledInfo) => [normalizeAgentName(info), info]),
     );
 
     const agents = adapterInfos
-      .map((info: AmuxAdapterInfo) => normalizeModuleAgent(info, installedByAgent.get(normalizeAgentName(info)), adapterRegistry))
+      .map((info: AdapterAdapterInfo) => normalizeModuleAgent(info, installedByAgent.get(normalizeAgentName(info)), adapterRegistry))
       .filter((agent): agent is ExternalAgentInfo => agent !== null)
       .sort((a: ExternalAgentInfo, b: ExternalAgentInfo) => a.name.localeCompare(b.name));
 
@@ -140,22 +140,22 @@ async function discoverViaModule(
   }
 }
 
-async function loadAmuxModule(): Promise<AmuxModuleLike | null> {
+async function loadAmuxModule(): Promise<AdapterModuleLike | null> {
   if (moduleOverride !== undefined) {
     return moduleOverride;
   }
 
   try {
-    return await import(AGENT_MUX_PACKAGE) as AmuxModuleLike;
+    return await import(AGENT_MUX_PACKAGE) as AdapterModuleLike;
   } catch {
     return null;
   }
 }
 
 function normalizeModuleAgent(
-  info: AmuxAdapterInfo,
-  installedInfo: AmuxInstalledInfo | undefined,
-  adapters: AmuxAdapterRegistry,
+  info: AdapterAdapterInfo,
+  installedInfo: AdapterInstalledInfo | undefined,
+  adapters: AdapterAdapterRegistry,
 ): ExternalAgentInfo | null {
   const name = normalizeAgentName(info);
   if (!name) {
@@ -173,7 +173,7 @@ function normalizeModuleAgent(
   };
 }
 
-function readCapabilities(adapters: AmuxAdapterRegistry, agent: string): unknown {
+function readCapabilities(adapters: AdapterAdapterRegistry, agent: string): unknown {
   if (typeof adapters.capabilities !== "function") {
     return [];
   }
@@ -286,7 +286,7 @@ function defaultProvider(): string | null {
   return nonEmptyString(process.env.AGENT_MUX_PROVIDER);
 }
 
-function defaultModel(client: AgentMuxClientLike, installedInfos: AmuxInstalledInfo[]): string | null {
+function defaultModel(client: AgentMuxClientLike, installedInfos: AdapterInstalledInfo[]): string | null {
   const envDefault = defaultModelFromEnv();
   if (envDefault) {
     return envDefault;
@@ -379,7 +379,7 @@ function cloneDiscovery(value: ExternalAgentDiscovery): ExternalAgentDiscovery {
 }
 
 export function _setExternalAgentDiscoveryModuleForTesting(
-  mod: AmuxModuleLike | null | undefined,
+  mod: AdapterModuleLike | null | undefined,
 ): void {
   moduleOverride = mod;
 }

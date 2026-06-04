@@ -74,13 +74,13 @@ export { assessRun, discoverRuns } from "./internal/createRun/resumeState";
 export { normalizeBuiltInHarnessName } from "./builtInHarness";
 export {
   invokeViaAgentMux,
-  type AmuxBridgeOptions,
+  type AdapterBridgeOptions,
   type AgentMuxBridgeResult,
-  type AmuxEventCallback,
+  type AdapterEventCallback,
   type AgentMuxClient,
   type AgentMuxRunHandle,
-  type AmuxAgentEvent,
-  type AmuxInteractionChannel,
+  type AdapterAgentEvent,
+  type AdapterInteractionChannel,
 } from "./adapters";
 
 export {

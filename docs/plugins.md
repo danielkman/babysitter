@@ -51,7 +51,7 @@ External agent responder effects are different. A process can mark an agent task
 This keeps the plugin contract small:
 
 - Host-resolvable effects stay with the current host agent.
-- External agent responder effects route through tasks-adapter, adapters, and the `amuxBridge` integration.
+- External agent responder effects route through tasks-adapter, adapters, and the `adapterBridge` integration.
 - Fallback to the internal agent path must be explicit, using the current fallback field documented in the agent-reference docs.
 
 For task shape, fallback behavior, and troubleshooting, see [Process Authoring Policy](agent-reference/process-authoring.md#agent-task-responders) and [Command Surfaces](agent-reference/command-surfaces.md#external-agent-dispatch).

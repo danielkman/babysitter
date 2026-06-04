@@ -529,7 +529,7 @@ const addDragonAnnotationsTask = defineTask('add-dragon-annotations', (args) => 
         '- Keep to 1-2 lines maximum',
         '- Explain the WHY, not the WHAT',
         '- Include the blast radius ("changes here affect X, Y, Z")',
-        '- For coupling: name both sides ("coupled to session.ts:resolveEndpoint via process.env.AMUX_PROVIDER")',
+        '- For coupling: name both sides ("coupled to session.ts:resolveEndpoint via process.env.ADAPTER_PROVIDER")',
         '- For timing: explain the ordering constraint ("must run after X initializes the registry")',
         '',
         'DO NOT:',

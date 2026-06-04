@@ -115,7 +115,7 @@ Process running in claude-code plugin:
     ↓
   Instead of delegating to host, resolves internally:
     - Checks adapters availability
-    - Calls amuxBridge.invokeViaAgentMux("codex", { prompt, model })
+    - Calls adapterBridge.invokeViaAgentMux("codex", { prompt, model })
     - Journals result + cost
     ↓
   Returns to host with external effect already resolved

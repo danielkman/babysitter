@@ -61,8 +61,8 @@ New backend that wraps adapters:
 class AgentMuxResponderBackend implements BreakpointBackend {
   async submitBreakpoint(params: SubmitBreakpointParams): Promise<Breakpoint> {
     // Route to adapters adapter
-    const amuxClient = await getAmuxClient();
-    const handle = await amuxClient.run({
+    const adapterClient = await getAmuxClient();
+    const handle = await adapterClient.run({
       agent: params.routing.targetAdapter,
       prompt: params.question,
       model: params.routing.model,
@@ -190,11 +190,11 @@ Instead of the current direct dispatch, effects flow through tasks-adapter:
 
 ```
 Current:
-  SDK effect → agent-platform resolveEffect → amuxBridge (direct)
+  SDK effect → agent-platform resolveEffect → adapterBridge (direct)
 
 New:
   SDK effect → tasks-adapter.submitTask(effect) → tasks-adapter.routeTask()
-    → type=agent  → AgentMuxResponderBackend → amuxBridge
+    → type=agent  → AgentMuxResponderBackend → adapterBridge
     → type=human  → BreakpointBackend (existing)
     → type=tracker → ExternalTrackerBackend (new)
     → type=internal → agent-core session (existing)

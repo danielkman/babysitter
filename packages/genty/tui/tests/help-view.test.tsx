@@ -45,7 +45,7 @@ describe('help-view', () => {
     expect(f).toContain('claude-code');
     expect(f).toContain('codex');
     expect(f).toContain('metrics summarize the full buffered stream');
-    expect(f).toContain('AMUX_TUI_COST_ALERT');
+    expect(f).toContain('ADAPTER_TUI_COST_ALERT');
     expect(f).not.toContain('runs');
   });
 });

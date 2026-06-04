@@ -11,12 +11,12 @@
 export type {
   AgentMuxRunOptions,
   AgentMuxRunHandle,
-  AmuxAgentEvent,
-  AmuxInteractionChannel,
+  AdapterAgentEvent,
+  AdapterInteractionChannel,
   AgentMuxClient,
-  AmuxAdapterInfo,
-  AmuxAdapterInstallationCheck,
-  AmuxAuthCheck,
+  AdapterAdapterInfo,
+  AdapterAdapterInstallationCheck,
+  AdapterAuthCheck,
   AgentMuxClientWithDiscovery,
 } from "./agentMuxTypes";
 
@@ -39,9 +39,9 @@ export {
 
 export {
   invokeViaAgentMux,
-  type AmuxBridgeOptions,
+  type AdapterBridgeOptions,
   type AgentMuxBridgeResult,
-  type AmuxEventCallback,
+  type AdapterEventCallback,
 } from "./agentMuxBridge";
 
 export {
@@ -50,10 +50,10 @@ export {
   _resetAgentMuxClientCache,
 } from "./agentMuxClientFactory";
 
-export { AmuxEventEmitter } from "./agentMuxEventEmitter";
+export { AdapterEventEmitter } from "./agentMuxEventEmitter";
 
 export {
   createAmuxStdinReader,
   waitForInteractionResponse,
-  type AmuxInteractionEvent,
+  type AdapterInteractionEvent,
 } from "./agentMuxStdinReader";

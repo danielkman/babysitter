@@ -1,10 +1,10 @@
 /**
- * Tests for AmuxEventEmitter — verifies that each emit method produces
+ * Tests for AdapterEventEmitter — verifies that each emit method produces
  * valid JSONL matching the event types that the adapters babysitter
  * adapter's parseEvent() expects.
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { AmuxEventEmitter } from "../agentMuxEventEmitter";
+import { AdapterEventEmitter } from "../agentMuxEventEmitter";
 
 // Capture stdout writes
 let stdoutWrites: string[];
@@ -35,12 +35,12 @@ function allEvents(): Record<string, unknown>[] {
   return stdoutWrites.map((line) => JSON.parse(line.trim()) as Record<string, unknown>);
 }
 
-describe("AmuxEventEmitter", () => {
+describe("AdapterEventEmitter", () => {
   const RUN_ID = "test-run-001";
   const AGENT = "babysitter";
 
   it("emit() produces valid JSONL with base fields", () => {
-    const emitter = new AmuxEventEmitter(RUN_ID, AGENT);
+    const emitter = new AdapterEventEmitter(RUN_ID, AGENT);
     emitter.emit({ type: "test_event", customField: 42 });
 
     const event = lastEvent();
@@ -52,14 +52,14 @@ describe("AmuxEventEmitter", () => {
   });
 
   it("emit() defaults agent to 'babysitter'", () => {
-    const emitter = new AmuxEventEmitter(RUN_ID);
+    const emitter = new AdapterEventEmitter(RUN_ID);
     emitter.emit({ type: "test" });
 
     expect(lastEvent()["agent"]).toBe("babysitter");
   });
 
   it("emit() outputs one line per call (JSONL)", () => {
-    const emitter = new AmuxEventEmitter(RUN_ID);
+    const emitter = new AdapterEventEmitter(RUN_ID);
     emitter.emit({ type: "a" });
     emitter.emit({ type: "b" });
 
@@ -72,7 +72,7 @@ describe("AmuxEventEmitter", () => {
 
   describe("sessionStart", () => {
     it("emits session_start with sessionId", () => {
-      const emitter = new AmuxEventEmitter(RUN_ID);
+      const emitter = new AdapterEventEmitter(RUN_ID);
       emitter.sessionStart("session-42");
 
       const event = lastEvent();
@@ -82,7 +82,7 @@ describe("AmuxEventEmitter", () => {
     });
 
     it("defaults sessionId to runId", () => {
-      const emitter = new AmuxEventEmitter(RUN_ID);
+      const emitter = new AdapterEventEmitter(RUN_ID);
       emitter.sessionStart();
 
       expect(lastEvent()["sessionId"]).toBe(RUN_ID);
@@ -91,7 +91,7 @@ describe("AmuxEventEmitter", () => {
 
   describe("sessionEnd", () => {
     it("emits session_end with exitReason", () => {
-      const emitter = new AmuxEventEmitter(RUN_ID);
+      const emitter = new AdapterEventEmitter(RUN_ID);
       emitter.sessionEnd("completed", 5);
 
       const event = lastEvent();
@@ -102,7 +102,7 @@ describe("AmuxEventEmitter", () => {
     });
 
     it("defaults turnCount to 0", () => {
-      const emitter = new AmuxEventEmitter(RUN_ID);
+      const emitter = new AdapterEventEmitter(RUN_ID);
       emitter.sessionEnd("error");
 
       expect(lastEvent()["turnCount"]).toBe(0);
@@ -111,7 +111,7 @@ describe("AmuxEventEmitter", () => {
 
   describe("textDelta", () => {
     it("emits text_delta with text and delta fields", () => {
-      const emitter = new AmuxEventEmitter(RUN_ID);
+      const emitter = new AdapterEventEmitter(RUN_ID);
       emitter.textDelta("Hello world");
 
       const event = lastEvent();
@@ -123,7 +123,7 @@ describe("AmuxEventEmitter", () => {
 
   describe("toolCallStart", () => {
     it("emits tool_call_start with all fields", () => {
-      const emitter = new AmuxEventEmitter(RUN_ID);
+      const emitter = new AdapterEventEmitter(RUN_ID);
       emitter.toolCallStart("tc-1", "read_file", { path: "/foo" });
 
       const event = lastEvent();
@@ -134,7 +134,7 @@ describe("AmuxEventEmitter", () => {
     });
 
     it("defaults input to empty object", () => {
-      const emitter = new AmuxEventEmitter(RUN_ID);
+      const emitter = new AdapterEventEmitter(RUN_ID);
       emitter.toolCallStart("tc-2", "list_files");
 
       expect(lastEvent()["input"]).toEqual({});
@@ -143,7 +143,7 @@ describe("AmuxEventEmitter", () => {
 
   describe("toolResult", () => {
     it("emits tool_result with output", () => {
-      const emitter = new AmuxEventEmitter(RUN_ID);
+      const emitter = new AdapterEventEmitter(RUN_ID);
       emitter.toolResult("tc-1", "read_file", "file contents here");
 
       const event = lastEvent();
@@ -156,7 +156,7 @@ describe("AmuxEventEmitter", () => {
 
   describe("cost", () => {
     it("emits cost event with token and cost data", () => {
-      const emitter = new AmuxEventEmitter(RUN_ID);
+      const emitter = new AdapterEventEmitter(RUN_ID);
       emitter.cost(1000, 500, 0.05);
 
       const event = lastEvent();
@@ -175,7 +175,7 @@ describe("AmuxEventEmitter", () => {
 
   describe("turnStart / turnEnd", () => {
     it("emits turn_start with iteration and turnIndex", () => {
-      const emitter = new AmuxEventEmitter(RUN_ID);
+      const emitter = new AdapterEventEmitter(RUN_ID);
       emitter.turnStart(3);
 
       const event = lastEvent();
@@ -185,7 +185,7 @@ describe("AmuxEventEmitter", () => {
     });
 
     it("emits turn_end with iteration and turnIndex", () => {
-      const emitter = new AmuxEventEmitter(RUN_ID);
+      const emitter = new AdapterEventEmitter(RUN_ID);
       emitter.turnEnd(3);
 
       const event = lastEvent();
@@ -197,7 +197,7 @@ describe("AmuxEventEmitter", () => {
 
   describe("error", () => {
     it("emits error event with message and code", () => {
-      const emitter = new AmuxEventEmitter(RUN_ID);
+      const emitter = new AdapterEventEmitter(RUN_ID);
       emitter.error("Something broke", "TIMEOUT");
 
       const event = lastEvent();
@@ -208,7 +208,7 @@ describe("AmuxEventEmitter", () => {
     });
 
     it("defaults code to INTERNAL", () => {
-      const emitter = new AmuxEventEmitter(RUN_ID);
+      const emitter = new AdapterEventEmitter(RUN_ID);
       emitter.error("oops");
 
       expect(lastEvent()["code"]).toBe("INTERNAL");
@@ -217,7 +217,7 @@ describe("AmuxEventEmitter", () => {
 
   describe("approvalRequest", () => {
     it("emits approval_request with id and description", () => {
-      const emitter = new AmuxEventEmitter(RUN_ID);
+      const emitter = new AdapterEventEmitter(RUN_ID);
       emitter.approvalRequest("bp-1", "Allow file write to /etc/hosts");
 
       const event = lastEvent();
@@ -229,7 +229,7 @@ describe("AmuxEventEmitter", () => {
 
   describe("session bookending", () => {
     it("sessionStart and sessionEnd bracket a complete session", () => {
-      const emitter = new AmuxEventEmitter(RUN_ID);
+      const emitter = new AdapterEventEmitter(RUN_ID);
 
       emitter.sessionStart();
       emitter.textDelta("doing work");
@@ -256,7 +256,7 @@ describe("AmuxEventEmitter", () => {
 
   describe("adapters adapter compatibility", () => {
     it("session_start is parseable by adapter", () => {
-      const emitter = new AmuxEventEmitter(RUN_ID);
+      const emitter = new AdapterEventEmitter(RUN_ID);
       emitter.sessionStart("s-1");
 
       const event = lastEvent();
@@ -267,7 +267,7 @@ describe("AmuxEventEmitter", () => {
     });
 
     it("text_delta has fields adapter expects", () => {
-      const emitter = new AmuxEventEmitter(RUN_ID);
+      const emitter = new AdapterEventEmitter(RUN_ID);
       emitter.textDelta("hello");
 
       const event = lastEvent();
@@ -277,7 +277,7 @@ describe("AmuxEventEmitter", () => {
     });
 
     it("tool_call_start has fields adapter expects", () => {
-      const emitter = new AmuxEventEmitter(RUN_ID);
+      const emitter = new AdapterEventEmitter(RUN_ID);
       emitter.toolCallStart("tc-1", "edit", { file: "x.ts" });
 
       const event = lastEvent();
@@ -288,7 +288,7 @@ describe("AmuxEventEmitter", () => {
     });
 
     it("tool_result has fields adapter expects", () => {
-      const emitter = new AmuxEventEmitter(RUN_ID);
+      const emitter = new AdapterEventEmitter(RUN_ID);
       emitter.toolResult("tc-1", "edit", "done");
 
       const event = lastEvent();
@@ -299,7 +299,7 @@ describe("AmuxEventEmitter", () => {
     });
 
     it("error has fields adapter expects", () => {
-      const emitter = new AmuxEventEmitter(RUN_ID);
+      const emitter = new AdapterEventEmitter(RUN_ID);
       emitter.error("fail");
 
       const event = lastEvent();
@@ -309,7 +309,7 @@ describe("AmuxEventEmitter", () => {
     });
 
     it("cost has fields adapter expects", () => {
-      const emitter = new AmuxEventEmitter(RUN_ID);
+      const emitter = new AdapterEventEmitter(RUN_ID);
       emitter.cost(100, 200, 0.03);
 
       const event = lastEvent();
@@ -318,7 +318,7 @@ describe("AmuxEventEmitter", () => {
     });
 
     it("turn_start/turn_end have fields adapter expects", () => {
-      const emitter = new AmuxEventEmitter(RUN_ID);
+      const emitter = new AdapterEventEmitter(RUN_ID);
       emitter.turnStart(2);
 
       let event = lastEvent();
@@ -332,7 +332,7 @@ describe("AmuxEventEmitter", () => {
     });
 
     it("session_end has fields adapter expects", () => {
-      const emitter = new AmuxEventEmitter(RUN_ID);
+      const emitter = new AdapterEventEmitter(RUN_ID);
       emitter.sessionEnd("completed", 3);
 
       const event = lastEvent();
@@ -344,7 +344,7 @@ describe("AmuxEventEmitter", () => {
     it("events with type + runId pass the adapter fast-path", () => {
       // The adapter's parseEvent() has a fast-path:
       //   if (obj['type'] && obj['runId']) return obj as AgentEvent
-      const emitter = new AmuxEventEmitter(RUN_ID);
+      const emitter = new AdapterEventEmitter(RUN_ID);
       emitter.textDelta("test");
 
       const event = lastEvent();

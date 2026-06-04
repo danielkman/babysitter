@@ -16,8 +16,8 @@ import { formatResultAsAmuxEvents } from "../agentMuxEventsFormatter";
 import type {
   AgentMuxClient,
   AgentMuxRunHandle,
-  AmuxAgentEvent,
-  AmuxInteractionChannel,
+  AdapterAgentEvent,
+  AdapterInteractionChannel,
 } from "@a5c-ai/genty-platform/harness";
 
 // ---------------------------------------------------------------------------
@@ -29,21 +29,21 @@ function ts(): string {
 }
 
 async function* asyncIterableFrom(
-  events: AmuxAgentEvent[],
-): AsyncGenerator<AmuxAgentEvent> {
+  events: AdapterAgentEvent[],
+): AsyncGenerator<AdapterAgentEvent> {
   for (const event of events) {
     yield event;
   }
 }
 
-function createMockInteractions(): AmuxInteractionChannel {
+function createMockInteractions(): AdapterInteractionChannel {
   return {
     respond: vi.fn().mockResolvedValue(undefined),
   };
 }
 
 function createMockClient(
-  events: AmuxAgentEvent[],
+  events: AdapterAgentEvent[],
   handleOverrides: Partial<AgentMuxRunHandle> = {},
 ): AgentMuxClient {
   return {
@@ -65,7 +65,7 @@ function createMockClient(
 describe("E2E: genty <-> adapters round-trip", () => {
   it("full invocation round-trip with text, tool use, and cost", async () => {
     // Simulate a Claude run with text deltas, tool use, and cost events
-    const mockEvents: AmuxAgentEvent[] = [
+    const mockEvents: AdapterAgentEvent[] = [
       { type: "session_start", runId: "run-1", agent: "claude", timestamp: ts(), sessionId: "sess-1" },
       { type: "text_delta", runId: "run-1", agent: "claude", timestamp: ts(), text: "I will fix " },
       { type: "text_delta", runId: "run-1", agent: "claude", timestamp: ts(), text: "the bug." },
@@ -143,7 +143,7 @@ describe("E2E: genty <-> adapters round-trip", () => {
   });
 
   it("error handling round-trip", async () => {
-    const mockEvents: AmuxAgentEvent[] = [
+    const mockEvents: AdapterAgentEvent[] = [
       { type: "session_start", runId: "run-2", agent: "claude", timestamp: ts() },
       { type: "error", runId: "run-2", agent: "claude", timestamp: ts(), message: "API rate limited", code: "rate_limit" },
       { type: "session_end", runId: "run-2", agent: "claude", timestamp: ts(), exitReason: "error" },
@@ -173,7 +173,7 @@ describe("E2E: genty <-> adapters round-trip", () => {
   it("approval interaction events are collected", async () => {
     const respondFn = vi.fn().mockResolvedValue(undefined);
 
-    const mockEvents: AmuxAgentEvent[] = [
+    const mockEvents: AdapterAgentEvent[] = [
       { type: "session_start", runId: "run-3", agent: "claude", timestamp: ts() },
       { type: "approval_request", runId: "run-3", agent: "claude", timestamp: ts(), interactionId: "int-1", description: "Allow file write?" },
       { type: "text_delta", runId: "run-3", agent: "claude", timestamp: ts(), text: "Done." },
@@ -233,7 +233,7 @@ describe("E2E: genty <-> adapters round-trip", () => {
   });
 
   it("onEvent callback fires for every mapped event during the round-trip", async () => {
-    const mockEvents: AmuxAgentEvent[] = [
+    const mockEvents: AdapterAgentEvent[] = [
       { type: "session_start", runId: "run-cb", agent: "claude", timestamp: ts() },
       { type: "text_delta", runId: "run-cb", agent: "claude", timestamp: ts(), text: "streaming " },
       { type: "text_delta", runId: "run-cb", agent: "claude", timestamp: ts(), text: "output" },
@@ -265,7 +265,7 @@ describe("E2E: genty <-> adapters round-trip", () => {
   });
 
   it("multiple cost events accumulate correctly across the round-trip", async () => {
-    const mockEvents: AmuxAgentEvent[] = [
+    const mockEvents: AdapterAgentEvent[] = [
       { type: "session_start", runId: "run-mc", agent: "claude", timestamp: ts() },
       { type: "cost", runId: "run-mc", agent: "claude", timestamp: ts(), inputTokens: 500, outputTokens: 200, totalCost: 0.01 },
       { type: "text_delta", runId: "run-mc", agent: "claude", timestamp: ts(), text: "first turn" },
@@ -300,7 +300,7 @@ describe("E2E: genty <-> adapters round-trip", () => {
   });
 
   it("unknown event types pass through as 'unknown' kind", async () => {
-    const mockEvents: AmuxAgentEvent[] = [
+    const mockEvents: AdapterAgentEvent[] = [
       { type: "session_start", runId: "run-u", agent: "claude", timestamp: ts() },
       { type: "custom_debug_event", runId: "run-u", agent: "claude", timestamp: ts(), detail: "some debug info" },
       { type: "session_end", runId: "run-u", agent: "claude", timestamp: ts() },
@@ -317,7 +317,7 @@ describe("E2E: genty <-> adapters round-trip", () => {
   });
 
   it("gemini-cli harness name maps to gemini adapter in JSONL output", async () => {
-    const mockEvents: AmuxAgentEvent[] = [
+    const mockEvents: AdapterAgentEvent[] = [
       { type: "session_start", runId: "run-g", agent: "gemini", timestamp: ts() },
       { type: "text_delta", runId: "run-g", agent: "gemini", timestamp: ts(), text: "Gemini says hi" },
       { type: "session_end", runId: "run-g", agent: "gemini", timestamp: ts() },
@@ -337,7 +337,7 @@ describe("E2E: genty <-> adapters round-trip", () => {
   });
 
   it("crash event marks result as failed even with exitCode 0 and produces error JSONL", async () => {
-    const mockEvents: AmuxAgentEvent[] = [
+    const mockEvents: AdapterAgentEvent[] = [
       { type: "session_start", runId: "run-crash", agent: "claude", timestamp: ts() },
       { type: "text_delta", runId: "run-crash", agent: "claude", timestamp: ts(), text: "partial" },
       { type: "crash", runId: "run-crash", agent: "claude", timestamp: ts(), message: "segfault in adapter" },

@@ -7,9 +7,9 @@ import {
   isErrorEvent,
   isSessionLifecycleEvent,
 } from "../agentMuxEventMapper";
-import type { AmuxAgentEvent } from "../agentMuxTypes";
+import type { AdapterAgentEvent } from "../agentMuxTypes";
 
-function makeEvent(overrides: Partial<AmuxAgentEvent> = {}): AmuxAgentEvent {
+function makeEvent(overrides: Partial<AdapterAgentEvent> = {}): AdapterAgentEvent {
   return {
     type: "text_delta",
     runId: "run-001",
@@ -60,13 +60,13 @@ describe("mapAmuxEvent", () => {
   });
 
   it("returns null for null or undefined input", () => {
-    expect(mapAmuxEvent(null as unknown as AmuxAgentEvent)).toBeNull();
-    expect(mapAmuxEvent(undefined as unknown as AmuxAgentEvent)).toBeNull();
+    expect(mapAmuxEvent(null as unknown as AdapterAgentEvent)).toBeNull();
+    expect(mapAmuxEvent(undefined as unknown as AdapterAgentEvent)).toBeNull();
   });
 
   it("returns null for event with no type", () => {
     expect(
-      mapAmuxEvent({ runId: "r", agent: "a", timestamp: "t" } as unknown as AmuxAgentEvent),
+      mapAmuxEvent({ runId: "r", agent: "a", timestamp: "t" } as unknown as AdapterAgentEvent),
     ).toBeNull();
   });
 
@@ -93,13 +93,13 @@ describe("mapAmuxEvent", () => {
   });
 
   it("defaults agent to 'unknown' when missing", () => {
-    const event = { type: "text_delta", runId: "r", timestamp: "t" } as AmuxAgentEvent;
+    const event = { type: "text_delta", runId: "r", timestamp: "t" } as AdapterAgentEvent;
     const result = mapAmuxEvent(event);
     expect(result!.agent).toBe("unknown");
   });
 
   it("defaults runId to empty string when missing", () => {
-    const event = { type: "text_delta", agent: "a", timestamp: "t" } as AmuxAgentEvent;
+    const event = { type: "text_delta", agent: "a", timestamp: "t" } as AdapterAgentEvent;
     const result = mapAmuxEvent(event);
     expect(result!.runId).toBe("");
   });

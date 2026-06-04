@@ -93,7 +93,7 @@ implemented and now resolves data on the atlas graph.
 into two outputs keyed by `applies_to` agent target. No data backfill
 needed.
 
-## 5. `HarnessFallbackMetadata` (driver: `sdk/src/harness/amuxFallbackMetadata.ts`) — SPEC FIXED (catalog pass 92, path-b)
+## 5. `HarnessFallbackMetadata` (driver: `sdk/src/harness/adapterFallbackMetadata.ts`) — SPEC FIXED (catalog pass 92, path-b)
 
 **Decision (catalog pass 92):** keep atlas normalized; adapter lives in
 `packages/agent-catalog/src/data.ts :: buildFallbackMetadata`. The legacy
@@ -130,7 +130,7 @@ removing any work. Adapter is the right home; this section is the spec.
 **Adapter ownership:** `packages/agent-catalog/src/data.ts ::
 buildFallbackMetadata`. Migration: replace the existing legacy-graph reads
 with atlas-graph reads using the table above. Tests:
-`sdk/src/harness/amuxFallbackMetadata.contract.test.ts` already pins the
+`sdk/src/harness/adapterFallbackMetadata.contract.test.ts` already pins the
 shape — no test changes required.
 
 **Why not author bundled atlas records (path-a):** legacy itself does not

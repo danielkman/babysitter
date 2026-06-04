@@ -1,10 +1,10 @@
 nodeKind: EvidenceSource
 id: evidence:repo-sdk-fallback
 attributes:
-  displayName: "babysitter-sdk amuxFallbackMetadata"
+  displayName: "babysitter-sdk adapterFallbackMetadata"
   kindLabel: file
-  sourceUrl: "https://github.com/a5c-ai/babysitter/blob/main/packages/sdk/src/harness/amuxFallbackMetadata.ts"
-  filePath: "packages/sdk/src/harness/amuxFallbackMetadata.ts"
+  sourceUrl: "https://github.com/a5c-ai/babysitter/blob/main/packages/sdk/src/harness/adapterFallbackMetadata.ts"
+  filePath: "packages/sdk/src/harness/adapterFallbackMetadata.ts"
   trustLevel: trust-level:repo
   observedAt: "2026-04-23T00:00:00Z"
   observedBy: a5c-ai-team

@@ -10,8 +10,8 @@ const packageRoot = path.resolve(__dirname, '..');
 
 describe('generated native protocol files', () => {
   it('commits generated swift and kotlin protocol outputs', async () => {
-    const swift = await fs.readFile(path.join(packageRoot, 'build/schema/swift/AmuxProtocol.swift'), 'utf8');
-    const kotlin = await fs.readFile(path.join(packageRoot, 'build/schema/kotlin/AmuxProtocol.kt'), 'utf8');
+    const swift = await fs.readFile(path.join(packageRoot, 'build/schema/swift/AdapterProtocol.swift'), 'utf8');
+    const kotlin = await fs.readFile(path.join(packageRoot, 'build/schema/kotlin/AdapterProtocol.kt'), 'utf8');
     expect(swift).toContain('struct AuthFrame');
     expect(swift).toContain('enum ClientFrame');
     expect(kotlin).toContain('data class AuthFrame');

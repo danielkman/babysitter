@@ -8,27 +8,27 @@ import { App, builtinPlugins, defaultExternalPluginsDir, loadExternalPlugins } f
 import { runWithArgs } from './runtime.js';
 
 function builtInAdaptersDisabled(): boolean {
-  const value = process.env.AMUX_TUI_NO_BUILTIN_ADAPTERS;
+  const value = process.env.ADAPTER_TUI_NO_BUILTIN_ADAPTERS;
   return value === '1' || value === 'true';
 }
 
 function chatAutoPromptDisabled(): boolean {
-  const value = process.env.AMUX_TUI_NO_AUTO_PROMPT;
+  const value = process.env.ADAPTER_TUI_NO_AUTO_PROMPT;
   return value === '1' || value === 'true';
 }
 
 function initialViewId(): string | undefined {
-  const value = process.env.AMUX_TUI_INITIAL_VIEW;
+  const value = process.env.ADAPTER_TUI_INITIAL_VIEW;
   return value && value.trim() ? value.trim() : undefined;
 }
 
 export function configureLoggingFromEnv(): void {
-  const logLevel = process.env.AMUX_LOG_LEVEL?.trim();
-  const logFile = process.env.AMUX_LOG_FILE?.trim();
+  const logLevel = process.env.ADAPTER_LOG_LEVEL?.trim();
+  const logFile = process.env.ADAPTER_LOG_FILE?.trim();
   if (!logFile) {
     return;
   }
-  if (!process.env.AMUX_OBSERVABILITY_MODE) {
+  if (!process.env.ADAPTER_OBSERVABILITY_MODE) {
     setObservabilityMode('full');
   }
   reconfigureLogger({

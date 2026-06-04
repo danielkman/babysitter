@@ -58,7 +58,7 @@ agent routing hint: `agent.responderType: "agent"` plus a required `adapter`.
 During orchestration, tasks-adapter chooses the responder backend. Internal
 responders continue through the normal agent-core path, human responders use the
 breakpoint path, and agent responders route to `AgentMuxResponderBackend`, which
-uses adapters and the lower-level `amuxBridge` integration.
+uses adapters and the lower-level `adapterBridge` integration.
 
 The command surfaces involved are split by responsibility:
 
@@ -81,7 +81,7 @@ Troubleshooting common external agent failures:
 | Fallback is disabled | Do not silently switch to an internal agent. The failed external responder is part of the task result. |
 
 Older design docs may still say `agent.external: true`,
-`fallbackToInternal`, or direct `amuxBridge` dispatch. The current contributor
+`fallbackToInternal`, or direct `adapterBridge` dispatch. The current contributor
 surface should describe the tasks-adapter responder route and use
 `responderType: "agent"` in new examples.
 

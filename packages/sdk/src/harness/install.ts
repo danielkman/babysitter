@@ -62,14 +62,14 @@ const HARNESS_PLUGIN_INSTALLERS: Readonly<Record<string, HarnessPluginInstaller>
 // Lazy client accessor
 // ---------------------------------------------------------------------------
 
-type AmuxAdapterInfo = { agent: string; displayName: string; cliCommand: string };
-type AmuxInstalledInfo = {
+type AdapterAdapterInfo = { agent: string; displayName: string; cliCommand: string };
+type AdapterInstalledInfo = {
   agent: string;
   installed: boolean;
   cliPath: string | null;
   version: string | null;
 };
-type AmuxInstallResult = {
+type AdapterInstallResult = {
   ok: boolean;
   method: string;
   command: string;
@@ -78,18 +78,18 @@ type AmuxInstallResult = {
   stdout?: string;
   stderr?: string;
 };
-interface AmuxAdapterHandle {
-  install?(opts?: { force?: boolean; dryRun?: boolean; version?: string }): Promise<AmuxInstallResult>;
+interface AdapterAdapterHandle {
+  install?(opts?: { force?: boolean; dryRun?: boolean; version?: string }): Promise<AdapterInstallResult>;
   detectInstallation?(): Promise<{ installed: boolean; version?: string; path?: string }>;
 }
-interface AmuxAdapterRegistry {
-  list(): AmuxAdapterInfo[];
-  detect(agent: string): Promise<AmuxInstalledInfo | null>;
-  get(agent: string): AmuxAdapterHandle | undefined;
-  installed(): Promise<AmuxInstalledInfo[]>;
+interface AdapterAdapterRegistry {
+  list(): AdapterAdapterInfo[];
+  detect(agent: string): Promise<AdapterInstalledInfo | null>;
+  get(agent: string): AdapterAdapterHandle | undefined;
+  installed(): Promise<AdapterInstalledInfo[]>;
 }
 interface AgentMuxClientLike {
-  adapters: AmuxAdapterRegistry;
+  adapters: AdapterAdapterRegistry;
 }
 
 let _clientPromise: Promise<AgentMuxClientLike> | null = null;

@@ -1,6 +1,6 @@
 import { listFallbackHarnessMetadata as listCatalogFallbackHarnessMetadata, getHostSignalMap } from "@a5c-ai/atlas/catalog";
 import { resolveRunsDir } from "../config";
-import type { AmuxAdapterMetadata } from "./agentMuxMetadata";
+import type { AdapterAdapterMetadata } from "./agentMuxMetadata";
 
 const LEGACY_REPO_RUNS_DIR = ".a5c/runs";
 const DEFAULT_SESSION_DIR = resolveRunsDir();
@@ -11,7 +11,7 @@ function resolveFallbackSessionDir(sessionDir: string): string {
     : sessionDir;
 }
 
-const LOCAL_FALLBACK_METADATA: Record<string, AmuxAdapterMetadata> = {
+const LOCAL_FALLBACK_METADATA: Record<string, AdapterAdapterMetadata> = {
   claude: {
     name: "claude",
     hostEnvSignals: ["CLAUDE_ENV_FILE"],
@@ -176,7 +176,7 @@ const LOCAL_FALLBACK_METADATA: Record<string, AmuxAdapterMetadata> = {
   },
 };
 
-function buildStaticFallbackMetadata(): Record<string, AmuxAdapterMetadata> {
+function buildStaticFallbackMetadata(): Record<string, AdapterAdapterMetadata> {
   try {
     let hostSignalMap: Record<string, string[]> = {};
     try { hostSignalMap = getHostSignalMap(); } catch (e) { process.stderr.write(`[babysitter] getHostSignalMap failed: ${e instanceof Error ? e.message : String(e)}\n`); }
@@ -199,7 +199,7 @@ function buildStaticFallbackMetadata(): Record<string, AmuxAdapterMetadata> {
     // Merge: use catalog data for host signals and session dir, but prefer
     // LOCAL_FALLBACK_METADATA for capabilities when catalog returns all-false
     // (graph schema mismatch between supports edges and capability lookups).
-    const merged: Record<string, AmuxAdapterMetadata> = { ...LOCAL_FALLBACK_METADATA };
+    const merged: Record<string, AdapterAdapterMetadata> = { ...LOCAL_FALLBACK_METADATA };
     for (const [name, catalogEntry] of Object.entries(catalogMetadata)) {
       const local = LOCAL_FALLBACK_METADATA[name];
       if (local) {
@@ -221,4 +221,4 @@ function buildStaticFallbackMetadata(): Record<string, AmuxAdapterMetadata> {
   }
 }
 
-export const STATIC_FALLBACK_METADATA: Record<string, AmuxAdapterMetadata> = buildStaticFallbackMetadata();
+export const STATIC_FALLBACK_METADATA: Record<string, AdapterAdapterMetadata> = buildStaticFallbackMetadata();

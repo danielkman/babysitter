@@ -15,7 +15,7 @@ Four modes are supported:
 | `local` | `SpawnArgs` unchanged | Default. |
 | `docker` | `docker run --rm -i ...` | Mounts `cwd` as `/workspace` by default. |
 | `ssh` | `ssh [opts] host -- 'cd <cwd> && K=V ... cmd args'` | `BatchMode=yes` set to avoid prompts. |
-| `k8s` | `kubectl [--context C] [-n NS] exec -i <pod> -- env ... cmd args` | Pod from `AMUX_K8S_POD` or the agent name. |
+| `k8s` | `kubectl [--context C] [-n NS] exec -i <pod> -- env ... cmd args` | Pod from `ADAPTER_K8S_POD` or the agent name. |
 
 Source: `packages/core/src/invocation.ts`, `packages/core/src/spawn-invocation.ts`.
 
@@ -98,7 +98,7 @@ Dispatch rules (verbatim from `spawn-invocation.ts`):
 - **local** — identity transform; env is merged but otherwise returned as-is.
 - **docker** — `docker run --rm -i -v <cwd>:<workdir> -w <workdir> [-v ...]* [--network N] [-e K=V]* <image> <cmd> <args...>`. `baseEnv` + `DockerInvocation.env` are folded into `-e` flags.
 - **ssh** — `ssh [-p N] [-i key] -o BatchMode=yes <host> -- 'cd <remoteDir> && K=V ... cmd args'`. Arguments and env values are shell-quoted.
-- **k8s** — `kubectl [--context C] [-n NS] exec -i <pod> -- env K=V ... cmd args`. Pod name comes from `process.env.AMUX_K8S_POD` if set, otherwise falls back to the agent name.
+- **k8s** — `kubectl [--context C] [-n NS] exec -i <pod> -- env K=V ... cmd args`. Pod name comes from `process.env.ADAPTER_K8S_POD` if set, otherwise falls back to the agent name.
 
 ## 5. `RunOptions.invocation`
 
@@ -142,6 +142,6 @@ Invocation mode for remote is picked by `--mode ssh|docker|k8s|local` (default `
 
     The pod name is generated as `adapters-<agent>-<ts>-<seq>-<rand>`. `--rm` handles the happy-path teardown; additionally the invocation carries a `cleanup` hook (`K8sCleanup`) with `kubectl delete pod <name> --grace-period=0 --ignore-not-found=true` which `spawn-runner` fires detached on every exit path (completion, abort, crash) as a safety net in case the local `kubectl` was killed before `--rm` could finish.
 
-  - **Existing pod** (`pod` provided, or `ephemeral: false`, or legacy `AMUX_K8S_POD` env var): `kubectl [--context C] [-n NS] exec -i <pod> -- env K=V... <cmd> <args...>`. No cleanup hook is attached.
+  - **Existing pod** (`pod` provided, or `ephemeral: false`, or legacy `ADAPTER_K8S_POD` env var): `kubectl [--context C] [-n NS] exec -i <pod> -- env K=V... <cmd> <args...>`. No cleanup hook is attached.
 
   `resources.cpu`, `resources.memory`, `serviceAccount`, and `podStartupTimeoutMs` are consumed only by the ephemeral path.

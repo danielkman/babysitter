@@ -211,7 +211,7 @@ function verifyGentyCoreDependents() {
     'packages/genty/platform/src/harness/internal/createRun/orchestration/internalTools.ts',
     'packages/genty/platform/src/harness/internal/createRun/__tests__/createRun.test.ts',
     'packages/genty/platform/src/harness/internal/createRun/__tests__/utils.test.ts',
-    'packages/genty/platform/src/harness/adapters/__tests__/amuxInvokerWiring.test.ts',
+    'packages/genty/platform/src/harness/adapters/__tests__/adapterInvokerWiring.test.ts',
     'packages/genty/cli/src/index.ts',
     'packages/genty/cli/src/cli/commands/harness/resumeRun.ts',
   ];

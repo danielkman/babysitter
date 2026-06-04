@@ -13,6 +13,11 @@ function trimSlash(value) {
   return String(value || '').replace(/\/+$/, '');
 }
 
+/** Extract just the origin (scheme + host + port) from a URL, stripping any path like the org name. */
+function giteaOrigin(value) {
+  try { return new URL(value).origin; } catch { return trimSlash(value); }
+}
+
 function redactSecretText(value) {
   return String(value || '')
     .replace(/([a-z][a-z0-9+.-]*:\/\/)([^:@/\s]+):([^@/\s]+)@/gi, '$1[redacted]:[redacted]@')
@@ -77,12 +82,18 @@ async function kubernetesProbe({ env, execFileImpl, timeoutMs }) {
 }
 
 function assistantProbe(env) {
-  const key = env.ANTHROPIC_API_KEY || env.KRADLE_ASSISTANT_API_KEY || '';
+  const provider = env.KRADLE_ASSISTANT_PROVIDER || 'anthropic';
+  const key = env.ANTHROPIC_API_KEY || env.KRADLE_ASSISTANT_API_KEY || env.OPENAI_API_KEY || env.AZURE_API_KEY || env.GOOGLE_API_KEY || '';
   if (!key) return { status: 'not configured', reason: 'missing-key' };
-  if (/^sk-ant-[A-Za-z0-9_-]{12,}$/.test(key) || /^sk-[A-Za-z0-9_-]{12,}$/.test(key)) {
-    return { status: 'ok', reason: 'valid-format' };
+  if (provider === 'anthropic') {
+    if (/^sk-ant-[A-Za-z0-9_-]{12,}$/.test(key) || /^sk-[A-Za-z0-9_-]{12,}$/.test(key)) {
+      return { status: 'ok', reason: 'valid-format', provider };
+    }
+    return { status: 'error', reason: 'invalid-format', provider };
   }
-  return { status: 'error', reason: 'invalid-format' };
+  // For openai, azure, google — accept any non-empty key
+  if (key.length >= 8) return { status: 'ok', reason: 'valid-format', provider };
+  return { status: 'error', reason: 'invalid-format', provider };
 }
 
 function eventTransportProbe(eventBus) {
@@ -104,7 +115,7 @@ export async function collectKradleHealthProbes(options = {}) {
   const fetchImpl = options.fetchImpl || globalThis.fetch;
   const execFileImpl = options.execFileImpl || execFileAsync;
   const eventBus = options.eventBus || globalEventBus;
-  const giteaUrl = env.KRADLE_GITEA_HTTP_URL ? `${trimSlash(env.KRADLE_GITEA_HTTP_URL)}/api/v1/version` : '';
+  const giteaUrl = env.KRADLE_GITEA_HTTP_URL ? `${giteaOrigin(env.KRADLE_GITEA_HTTP_URL)}/api/v1/version` : '';
   const agentMuxBase = env.AGENT_MUX_URL || env.AGENT_GATEWAY_URL || '';
   const agentMuxUrl = agentMuxBase ? `${trimSlash(agentMuxBase)}/healthz` : '';
   const controllerUrl = env.KRADLE_CONTROLLER_URL ? `${trimSlash(env.KRADLE_CONTROLLER_URL)}/healthz` : '';
