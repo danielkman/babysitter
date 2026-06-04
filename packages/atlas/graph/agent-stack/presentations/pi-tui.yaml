@@ -17,4 +17,4 @@ attributes:
     - "Ctrl+C: cancel"
 edges:
   bundled_with:
-    - agent-platform-impl:pi.platform@current
+    - genty-platform-impl:pi.platform@current

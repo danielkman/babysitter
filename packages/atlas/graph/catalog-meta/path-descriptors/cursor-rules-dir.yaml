@@ -6,7 +6,7 @@ attributes:
   path: ".cursor/rules/"
   pathKind: plugin-scope
   ownerKind: AgentRuntimeImpl
-  ownerId: agent-runtime-impl:cursor.runtime@current
+  ownerId: genty-runtime-impl:cursor.runtime@current
   platform: cross-platform
   scope: project
   evaluationContext: project
@@ -14,4 +14,4 @@ attributes:
 
 edges:
   owned_by:
-    - target: agent-runtime-impl:cursor.runtime@current
+    - target: genty-runtime-impl:cursor.runtime@current

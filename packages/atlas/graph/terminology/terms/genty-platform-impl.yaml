@@ -1,7 +1,7 @@
 nodeKind: Term
-id: term:agent-platform-impl
+id: term:genty-platform-impl
 attributes:
-  canonicalDefinitionId: definition:agent-platform-impl.canonical
+  canonicalDefinitionId: definition:genty-platform-impl.canonical
   displayName: "AgentPlatformImpl"
   kind: concept
   references:

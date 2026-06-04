@@ -1,14 +1,14 @@
 nodeKind: PathDescriptor
-id: path:agent-catalog-graph
+id: path:atlas-catalog-graph
 attributes:
-  pathId: path:agent-catalog-graph
+  pathId: path:atlas-catalog-graph
   displayName: "Atlas catalog graph source-of-truth"
   path: "packages/atlas/graph"
   pathKind: source-of-truth-dir
   ownerKind: PackageSurface
-  ownerId: package:a5c-ai-agent-catalog
+  ownerId: package:a5c-ai-atlas-catalog
   platform: repo
   scope: project
   evaluationContext: project
   expansion: literal
-  notes: Authoritative YAML graph source for agent-catalog.
+  notes: Authoritative YAML graph source for atlas-catalog.

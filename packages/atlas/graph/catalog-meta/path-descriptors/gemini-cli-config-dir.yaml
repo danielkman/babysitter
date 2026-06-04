@@ -6,7 +6,7 @@ attributes:
   path: "~/.gemini/"
   pathKind: settings-file
   ownerKind: AgentRuntimeImpl
-  ownerId: agent-runtime-impl:gemini-cli.runtime@current
+  ownerId: genty-runtime-impl:gemini-cli.runtime@current
   platform: cross-platform
   scope: user
   evaluationContext: user
@@ -14,4 +14,4 @@ attributes:
 
 edges:
   owned_by:
-    - target: agent-runtime-impl:gemini-cli.runtime@current
+    - target: genty-runtime-impl:gemini-cli.runtime@current

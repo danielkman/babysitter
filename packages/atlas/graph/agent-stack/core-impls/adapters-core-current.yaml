@@ -1,5 +1,5 @@
 nodeKind: AgentCoreImpl
-id: agent-core-impl:adapters.core@current
+id: genty-core-impl:adapters.core@current
 attributes:
   displayName: "adapters Core (current) — bridge to remote agent loop"
   agentVersionId: agent-version:adapters@current
@@ -34,7 +34,7 @@ attributes:
     bundled presentations.
 edges:
   realizes:
-    - target: layer:4-agent-core
+    - target: layer:4-genty-core
   composes:
     - target: agent:adapters
       role: core

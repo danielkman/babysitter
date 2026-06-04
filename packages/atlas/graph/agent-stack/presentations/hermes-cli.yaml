@@ -17,4 +17,4 @@ attributes:
     - "Ctrl+C: interrupt"
 edges:
   bundled_with:
-    - agent-platform-impl:hermes.platform@current
+    - genty-platform-impl:hermes.platform@current

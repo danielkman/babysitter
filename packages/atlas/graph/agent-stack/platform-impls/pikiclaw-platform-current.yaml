@@ -1,5 +1,5 @@
 nodeKind: AgentPlatformImpl
-id: agent-platform-impl:pikiclaw.platform@current
+id: genty-platform-impl:pikiclaw.platform@current
 attributes:
   displayName: "PikiClaw Platform (current)"
   agentVersionId: agent-version:pikiclaw@current
@@ -23,7 +23,7 @@ attributes:
     - mcp-channel
 edges:
   realizes:
-    - target: layer:6-agent-platform
+    - target: layer:6-genty-platform
   composes:
     - target: agent:pikiclaw
       role: platform

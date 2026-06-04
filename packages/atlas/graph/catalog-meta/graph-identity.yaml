@@ -1,5 +1,5 @@
 nodeKind: Definition
-id: graph:agent-catalog
+id: graph:atlas-catalog
 attributes:
   displayName: "Agent Catalog Knowledge Graph"
   description: |

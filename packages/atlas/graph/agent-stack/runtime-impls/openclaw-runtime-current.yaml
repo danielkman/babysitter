@@ -1,5 +1,5 @@
 nodeKind: AgentRuntimeImpl
-id: agent-runtime-impl:openclaw.runtime@current
+id: genty-runtime-impl:openclaw.runtime@current
 attributes:
   displayName: OpenClaw Runtime (current)
   agentVersionId: agentVersion:openclaw:ge-2026-5-27
@@ -54,7 +54,7 @@ attributes:
   supportsStreaming: true
 edges:
   realizes:
-    - target: layer:5-agent-runtime
+    - target: layer:5-genty-runtime
   composes:
   - target: agent:openclaw
     role: runtime

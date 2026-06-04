@@ -30,7 +30,7 @@ documents: []
 
 ## Evidence
 - ai.google.dev/gemini-api/docs/models
-- packages/agent-catalog/graph/nodes/hooks-and-plugins/
+- packages/atlas-catalog/graph/nodes/hooks-and-plugins/
 
 ## Propagation status
 - Level 1: open

@@ -12,11 +12,11 @@ edges:
   version_of:
     - agent:adapters-remote
   composed_of:
-    - target: agent-core-impl:adapters-remote.core@current
+    - target: genty-core-impl:adapters-remote.core@current
       role: core
-    - target: agent-runtime-impl:adapters-remote.runtime@current
+    - target: genty-runtime-impl:adapters-remote.runtime@current
       role: runtime
-    - target: agent-platform-impl:adapters-remote.platform@current
+    - target: genty-platform-impl:adapters-remote.platform@current
       role: platform
     - target: agent-ui-impl:adapters-remote.ui@current
       role: ui

@@ -6,7 +6,7 @@ attributes:
   path: ".claude/settings.json"
   pathKind: settings-file
   ownerKind: AgentRuntimeImpl
-  ownerId: agent-runtime-impl:claude-code.runtime@1.x
+  ownerId: genty-runtime-impl:claude-code.runtime@1.x
   platform: cross-platform
   scope: project
   evaluationContext: project
@@ -16,4 +16,4 @@ attributes:
 
 edges:
   owned_by:
-    - target: agent-runtime-impl:claude-code.runtime@1.x
+    - target: genty-runtime-impl:claude-code.runtime@1.x

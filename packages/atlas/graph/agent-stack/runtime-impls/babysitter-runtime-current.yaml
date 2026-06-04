@@ -1,5 +1,5 @@
 nodeKind: AgentRuntimeImpl
-id: agent-runtime-impl:babysitter.runtime@current
+id: genty-runtime-impl:babysitter.runtime@current
 attributes:
   displayName: "babysitter Runtime (current) — task-effect dispatcher + harness adapters"
   agentVersionId: agent-version:babysitter@current
@@ -40,7 +40,7 @@ attributes:
     gating.
 edges:
   realizes:
-    - target: layer:5-agent-runtime
+    - target: layer:5-genty-runtime
   composes:
     - target: agent:babysitter
       role: runtime

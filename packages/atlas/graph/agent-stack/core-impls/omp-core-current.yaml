@@ -1,5 +1,5 @@
 nodeKind: AgentCoreImpl
-id: agent-core-impl:omp.core@current
+id: genty-core-impl:omp.core@current
 attributes:
   displayName: OMP Core (current)
   agentVersionId: agentVersion:omp:ge-15-5-9
@@ -39,7 +39,7 @@ attributes:
   thinkingChannelHandling: passthrough
 edges:
   realizes:
-    - target: layer:4-agent-core
+    - target: layer:4-genty-core
   composes:
   - target: agent:omp
     role: core
