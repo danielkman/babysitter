@@ -1,4 +1,4 @@
-package ai.a5c.amux.wear.ui
+package ai.a5c.adapter.wear.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.Text
-import ai.a5c.amux.wear.state.WearHookRequest
+import ai.a5c.adapter.wear.state.WearHookRequest
 
 @Composable
 fun HookApprovalScreen(request: WearHookRequest, onAllow: () -> Unit = {}, onDeny: () -> Unit = {}) {

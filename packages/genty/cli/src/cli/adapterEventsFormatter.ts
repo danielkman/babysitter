@@ -6,7 +6,7 @@
  * outputs one JSON object per line to stdout so adapters's babysitter
  * adapter can parse our output as a normalised event stream.
  *
- * @module cli/agentMuxEventsFormatter
+ * @module cli/adapterEventsFormatter
  */
 
 import type { HarnessInvokeResult } from "@a5c-ai/genty-platform/harness";

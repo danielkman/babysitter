@@ -6,8 +6,8 @@ import {
   isInteractiveEvent,
   isErrorEvent,
   isSessionLifecycleEvent,
-} from "../agentMuxEventMapper";
-import type { AdapterAgentEvent } from "../agentMuxTypes";
+} from "../adapterEventMapper";
+import type { AdapterAgentEvent } from "../adapterTypes";
 
 function makeEvent(overrides: Partial<AdapterAgentEvent> = {}): AdapterAgentEvent {
   return {

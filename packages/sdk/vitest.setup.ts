@@ -9,7 +9,7 @@ import { beforeAll, afterAll } from "vitest";
 import {
   _setAmuxModuleForTesting,
   clearAmuxMetadataCache,
-} from "./src/harness/agentMuxMetadata";
+} from "./src/harness/adapterMetadata";
 
 const ADAPTERS: Record<string, unknown> = {
   claude: {

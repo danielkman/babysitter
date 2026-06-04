@@ -7,7 +7,7 @@
 import { appendFileSync } from "node:fs";
 import { HarnessCapability as Cap } from "../types";
 import { BaseHarnessAdapter, type AdapterConfig } from "../BaseAdapter";
-import { getAmuxAdapterMetadata } from "../agentMuxMetadata";
+import { getAmuxAdapterMetadata } from "../adapterMetadata";
 import { deriveAdapterConfig } from "../derivePromptContext";
 
 // ---------------------------------------------------------------------------

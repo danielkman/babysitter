@@ -6,10 +6,10 @@
  * {@link AdapterAgentEvent} shape so the adapters babysitter adapter's
  * `parseEvent()` can consume it directly.
  *
- * @module harness/adapters/agentMuxEventEmitter
+ * @module harness/adapters/adapterEventEmitter
  */
 
-import type { AdapterAgentEvent } from "./agentMuxTypes";
+import type { AdapterAgentEvent } from "./adapterTypes";
 
 /**
  * Stateful emitter that writes adapters compatible JSONL events to stdout.

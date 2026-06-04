@@ -1,6 +1,6 @@
 import { builtinModules } from "node:module";
 import { resolveRunsDir } from "../config";
-import { STATIC_FALLBACK_METADATA } from "./agentMuxFallbackMetadata";
+import { STATIC_FALLBACK_METADATA } from "./adapterFallbackMetadata";
 
 /**
  * Resolves adapter metadata from @a5c-ai/adapters when available.

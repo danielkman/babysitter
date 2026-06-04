@@ -8,10 +8,10 @@
  *   - Webhook forwarding
  *   - Stop-hook orchestration loop
  *
- * @module harnes./adapters/agentMuxEventMapper
+ * @module harnes./adapters/adapterEventMapper
  */
 
-import type { AdapterAgentEvent } from "./agentMuxTypes";
+import type { AdapterAgentEvent } from "./adapterTypes";
 
 // ---------------------------------------------------------------------------
 // Babysitter internal event type

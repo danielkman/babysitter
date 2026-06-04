@@ -6,7 +6,7 @@ import { normalizeBuiltInHarnessName } from "../builtInHarness";
  * Pi is intentionally excluded -- it uses agent-core directly rather than
  * the adapters subprocess model.
  *
- * @module harness/adapters/agentMuxHarnessMap
+ * @module harness/adapters/adapterHarnessMap
  */
 
 /**

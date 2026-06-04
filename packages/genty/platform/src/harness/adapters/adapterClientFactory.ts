@@ -6,7 +6,7 @@
  */
 
 import { builtinModules } from "node:module";
-import type { AgentMuxClient } from "./agentMuxTypes";
+import type { AgentMuxClient } from "./adapterTypes";
 
 let cachedClient: AgentMuxClient | null = null;
 let agentMuxOverride:

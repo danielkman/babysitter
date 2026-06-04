@@ -1,4 +1,4 @@
-package ai.a5c.amux.wear.state
+package ai.a5c.adapter.wear.state
 
 data class WearRunProjection(
   val runId: String,

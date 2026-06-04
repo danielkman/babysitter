@@ -5,7 +5,7 @@
  * that agent-platform consumes, without requiring TypeScript to resolve the
  * full @a5c-ai/adapters package during agent-platform compilation.
  *
- * @module harness/adapters/agentMuxTypes
+ * @module harness/adapters/adapterTypes
  */
 
 // ---------------------------------------------------------------------------

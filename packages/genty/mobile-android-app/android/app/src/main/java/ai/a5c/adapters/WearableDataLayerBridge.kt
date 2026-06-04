@@ -1,4 +1,4 @@
-package ai.a5c.amux
+package ai.a5c.adapter
 
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise

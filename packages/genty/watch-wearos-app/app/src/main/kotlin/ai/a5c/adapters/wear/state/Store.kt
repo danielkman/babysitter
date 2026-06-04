@@ -1,4 +1,4 @@
-package ai.a5c.amux.wear.state
+package ai.a5c.adapter.wear.state
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -6,7 +6,7 @@
 
 import { HarnessCapability as Cap } from "../types";
 import { BaseHarnessAdapter, type AdapterConfig } from "../BaseAdapter";
-import { getAmuxAdapterMetadata } from "../agentMuxMetadata";
+import { getAmuxAdapterMetadata } from "../adapterMetadata";
 import { deriveAdapterConfig } from "../derivePromptContext";
 
 function buildConfig(): AdapterConfig {

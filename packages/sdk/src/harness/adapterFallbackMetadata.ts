@@ -1,6 +1,6 @@
 import { listFallbackHarnessMetadata as listCatalogFallbackHarnessMetadata, getHostSignalMap } from "@a5c-ai/atlas/catalog";
 import { resolveRunsDir } from "../config";
-import type { AdapterAdapterMetadata } from "./agentMuxMetadata";
+import type { AdapterAdapterMetadata } from "./adapterMetadata";
 
 const LEGACY_REPO_RUNS_DIR = ".a5c/runs";
 const DEFAULT_SESSION_DIR = resolveRunsDir();

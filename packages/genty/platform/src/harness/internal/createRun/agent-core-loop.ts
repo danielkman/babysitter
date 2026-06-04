@@ -15,7 +15,7 @@ import type {
   AgentCorePromptResult,
   AgentCoreSessionOptions,
 } from "../../types";
-import { mapHarnessToAmuxAdapter, hasAmuxAdapter } from "../../adapters/agentMuxHarnessMap";
+import { mapHarnessToAmuxAdapter, hasAmuxAdapter } from "../../adapters/adapterHarnessMap";
 import { normalizeBuiltInHarnessName } from "../../builtInHarness";
 import type { DelegationConfig } from "./utils";
 

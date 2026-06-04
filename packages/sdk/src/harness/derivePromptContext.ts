@@ -5,7 +5,7 @@
  * with a single derivation function that reads capabilities from adapters.
  */
 
-import type { AdapterAdapterMetadata } from "./agentMuxMetadata";
+import type { AdapterAdapterMetadata } from "./adapterMetadata";
 import type { AdapterConfig } from "./BaseAdapter";
 import { HarnessCapability as Cap } from "./types";
 

@@ -1,5 +1,5 @@
-package ai.a5c.amux.wear
+package ai.a5c.adapter.wear
 
 import android.app.Application
 
-class AmuxWearApp : Application()
+class AdapterWearApp : Application()

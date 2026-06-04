@@ -10,7 +10,7 @@ import { invokeHarness, detectCallerHarness, discoverHarnesses, normalizeBuiltIn
 import { handleDaemonRun, handleDaemonStart, handleDaemonStatus, handleDaemonStop } from "./commands/daemon";
 import { handleMcpServe } from "./commands/mcpServe";
 import { handleSessionHistory } from "./commands/session/history";
-import { formatResultAsAmuxEvents } from "./agentMuxEventsFormatter";
+import { formatResultAsAmuxEvents } from "./adapterEventsFormatter";
 
 type HarnessRunPromptKind =
   | "forever"

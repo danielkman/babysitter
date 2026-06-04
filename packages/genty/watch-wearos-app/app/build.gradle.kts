@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-  namespace = "ai.a5c.amux.wear"
+  namespace = "ai.a5c.adapter.wear"
   compileSdk = 35
 
   defaultConfig {
-    applicationId = "ai.a5c.amux.wear"
+    applicationId = "ai.a5c.adapter.wear"
     minSdk = 30
     targetSdk = 35
     versionCode = 1

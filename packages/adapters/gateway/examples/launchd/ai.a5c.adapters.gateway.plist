@@ -3,15 +3,15 @@
 <plist version="1.0">
   <dict>
     <key>Label</key>
-    <string>ai.a5c.amux.gateway</string>
+    <string>ai.a5c.adapter.gateway</string>
     <key>ProgramArguments</key>
     <array>
       <string>/usr/bin/env</string>
-      <string>amux</string>
+      <string>adapter</string>
       <string>gateway</string>
       <string>serve</string>
       <string>--config</string>
-      <string>/Users/you/.amux/gateway/config.yml</string>
+      <string>/Users/you/.adapter/gateway/config.yml</string>
     </array>
     <key>RunAtLoad</key>
     <true/>

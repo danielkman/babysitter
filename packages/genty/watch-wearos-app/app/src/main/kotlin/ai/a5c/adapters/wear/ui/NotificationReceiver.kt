@@ -1,4 +1,4 @@
-package ai.a5c.amux.wear.ui
+package ai.a5c.adapter.wear.ui
 
 import android.content.BroadcastReceiver
 import android.content.Context

@@ -1,4 +1,4 @@
-package ai.a5c.amux.wear.ui.rows
+package ai.a5c.adapter.wear.ui.rows
 
 import androidx.compose.runtime.Composable
 import androidx.wear.compose.material.Text

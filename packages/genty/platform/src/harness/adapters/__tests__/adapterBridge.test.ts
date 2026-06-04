@@ -1,11 +1,11 @@
 import { describe, it, expect, vi } from "vitest";
-import { invokeViaAgentMux } from "../agentMuxBridge";
+import { invokeViaAgentMux } from "../adapterBridge";
 import type {
   AgentMuxClient,
   AgentMuxRunHandle,
   AdapterAgentEvent,
   AdapterInteractionChannel,
-} from "../agentMuxTypes";
+} from "../adapterTypes";
 
 // ---------------------------------------------------------------------------
 // Helpers

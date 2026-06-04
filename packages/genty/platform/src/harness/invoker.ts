@@ -23,9 +23,9 @@ import {
   trackChild,
   untrackChild,
 } from "./invoker/processControl";
-import { getAgentMuxClient } from "./adapters/agentMuxClientFactory";
-import { hasAmuxAdapter } from "./adapters/agentMuxHarnessMap";
-import { invokeViaAgentMux } from "./adapters/agentMuxBridge";
+import { getAgentMuxClient } from "./adapters/adapterClientFactory";
+import { hasAmuxAdapter } from "./adapters/adapterHarnessMap";
+import { invokeViaAgentMux } from "./adapters/adapterBridge";
 import { normalizeBuiltInHarnessName } from "./builtInHarness";
 
 // ---------------------------------------------------------------------------

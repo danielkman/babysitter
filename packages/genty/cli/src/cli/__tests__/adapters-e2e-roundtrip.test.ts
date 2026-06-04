@@ -12,7 +12,7 @@
 
 import { describe, it, expect, vi } from "vitest";
 import { invokeViaAgentMux } from "@a5c-ai/genty-platform/harness";
-import { formatResultAsAmuxEvents } from "../agentMuxEventsFormatter";
+import { formatResultAsAmuxEvents } from "../adapterEventsFormatter";
 import type {
   AgentMuxClient,
   AgentMuxRunHandle,

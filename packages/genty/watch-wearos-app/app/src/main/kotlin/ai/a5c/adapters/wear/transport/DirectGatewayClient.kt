@@ -1,4 +1,4 @@
-package ai.a5c.amux.wear.transport
+package ai.a5c.adapter.wear.transport
 
 class DirectGatewayClient {
   private var active = false

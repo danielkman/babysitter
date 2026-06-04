@@ -4,7 +4,7 @@ import {
   isAgentMuxAvailable,
   _resetAgentMuxClientCache,
   _setAmuxModuleForTesting,
-} from "../agentMuxClientFactory";
+} from "../adapterClientFactory";
 
 beforeEach(() => {
   _resetAgentMuxClientCache();

@@ -5,19 +5,19 @@
  * Pi remains direct; agent-core/internal route through create-run orchestration.
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import type { AgentMuxClient, AgentMuxRunHandle, AdapterAgentEvent, AdapterInteractionChannel } from "../agentMuxTypes";
+import type { AgentMuxClient, AgentMuxRunHandle, AdapterAgentEvent, AdapterInteractionChannel } from "../adapterTypes";
 
 // ---------------------------------------------------------------------------
 // Mock modules before importing the code under test
 // ---------------------------------------------------------------------------
 
 // Mock the agentMuxClientFactory
-vi.mock("../agentMuxClientFactory", () => ({
+vi.mock("../adapterClientFactory", () => ({
   getAgentMuxClient: vi.fn().mockResolvedValue(null),
 }));
 
 // Mock the agentMuxBridge
-vi.mock("../agentMuxBridge", () => ({
+vi.mock("../adapterBridge", () => ({
   invokeViaAgentMux: vi.fn(),
 }));
 
@@ -89,8 +89,8 @@ vi.mock("../../invoker/launch", () => ({
 }));
 
 import { invokeHarness } from "../../invoker";
-import { getAgentMuxClient } from "../agentMuxClientFactory";
-import { invokeViaAgentMux } from "../agentMuxBridge";
+import { getAgentMuxClient } from "../adapterClientFactory";
+import { invokeViaAgentMux } from "../adapterBridge";
 import { handleHarnessCreateRun } from "../../internal/createRun";
 import { createAgentCoreSession } from "@a5c-ai/genty-core";
 

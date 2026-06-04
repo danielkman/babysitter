@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="ai.a5c.amux.androidtv">
+  package="ai.a5c.adapter.androidtv">
   <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
 
   <application

@@ -6,21 +6,21 @@
  * client is injected so agent-platform never imports @adapters/core
  * directly -- it only depends on the interfaces defined in agentMuxTypes.ts.
  *
- * @module harnes./adapters/agentMuxBridge
+ * @module harnes./adapters/adapterBridge
  */
 
 import type { HarnessInvokeOptions, HarnessInvokeResult } from "../types";
 import type {
   AgentMuxClient,
   AgentMuxRunHandle,
-} from "./agentMuxTypes";
-import { mapHarnessToAmuxAdapter } from "./agentMuxHarnessMap";
+} from "./adapterTypes";
+import { mapHarnessToAmuxAdapter } from "./adapterHarnessMap";
 import {
   mapAmuxEvent,
   isCostEvent,
   isErrorEvent,
   type BabysitterEvent,
-} from "./agentMuxEventMapper";
+} from "./adapterEventMapper";
 
 // ---------------------------------------------------------------------------
 // Bridge options

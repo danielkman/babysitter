@@ -1,4 +1,4 @@
-package ai.a5c.amux.wear.ui
+package ai.a5c.adapter.wear.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -11,8 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.ScalingLazyColumn
 import androidx.wear.compose.material.Text
-import ai.a5c.amux.wear.state.WearRunProjection
-import ai.a5c.amux.wear.state.WearStore
+import ai.a5c.adapter.wear.state.WearRunProjection
+import ai.a5c.adapter.wear.state.WearStore
 
 @Composable
 fun RunsListScreen(store: WearStore, onSelect: (WearRunProjection) -> Unit = {}) {

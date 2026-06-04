@@ -1,4 +1,4 @@
-package ai.a5c.amux
+package ai.a5c.adapter
 
 import androidx.biometric.BiometricManager
 import com.facebook.react.bridge.Promise

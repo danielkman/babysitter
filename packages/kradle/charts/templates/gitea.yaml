@@ -10,6 +10,7 @@ stringData:
   username: {{ .Values.gitea.admin.username | quote }}
   password: {{ .Values.gitea.admin.password | quote }}
 ---
+{{- if ne (.Values.gitea.persistence.type | default "pvc") "emptyDir" }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -24,6 +25,7 @@ spec:
   {{- if .Values.gitea.persistence.storageClassName }}
   storageClassName: {{ .Values.gitea.persistence.storageClassName | quote }}
   {{- end }}
+{{- end }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -81,8 +83,12 @@ spec:
               mountPath: /data
       volumes:
         - name: data
+          {{- if eq (.Values.gitea.persistence.type | default "pvc") "emptyDir" }}
+          emptyDir: {}
+          {{- else }}
           persistentVolumeClaim:
             claimName: {{ include "kradle.fullname" . }}-gitea-data
+          {{- end }}
 ---
 apiVersion: v1
 kind: Service

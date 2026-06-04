@@ -18,13 +18,13 @@ export type {
   AdapterAdapterInstallationCheck,
   AdapterAuthCheck,
   AgentMuxClientWithDiscovery,
-} from "./agentMuxTypes";
+} from "./adapterTypes";
 
 export {
   HARNESS_TO_AGENT_MUX_ADAPTER,
   mapHarnessToAmuxAdapter,
   hasAmuxAdapter,
-} from "./agentMuxHarnessMap";
+} from "./adapterHarnessMap";
 
 export {
   mapAmuxEvent,
@@ -35,25 +35,25 @@ export {
   isSessionLifecycleEvent,
   type BabysitterEvent,
   type BabysitterEventKind,
-} from "./agentMuxEventMapper";
+} from "./adapterEventMapper";
 
 export {
   invokeViaAgentMux,
   type AdapterBridgeOptions,
   type AgentMuxBridgeResult,
   type AdapterEventCallback,
-} from "./agentMuxBridge";
+} from "./adapterBridge";
 
 export {
   getAgentMuxClient,
   isAgentMuxAvailable,
   _resetAgentMuxClientCache,
-} from "./agentMuxClientFactory";
+} from "./adapterClientFactory";
 
-export { AdapterEventEmitter } from "./agentMuxEventEmitter";
+export { AdapterEventEmitter } from "./adapterEventEmitter";
 
 export {
   createAmuxStdinReader,
   waitForInteractionResponse,
   type AdapterInteractionEvent,
-} from "./agentMuxStdinReader";
+} from "./adapterStdinReader";
