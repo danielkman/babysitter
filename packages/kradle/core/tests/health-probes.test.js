@@ -28,9 +28,9 @@ test('collectKradleHealthProbes runs deep dependency probes without leaking secr
   });
 
   assert.deepEqual(requestedUrls.sort(), [
+    'https://adapter.internal/healthz',
     'https://controller.internal/healthz',
     'https://gitea.internal/api/v1/version',
-    'https://adapter.internal/healthz',
   ]);
   assert.equal(result.kubernetes.status, 'ok');
   assert.equal(result.gitea.status, 'ok');
