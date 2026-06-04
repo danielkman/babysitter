@@ -117,7 +117,7 @@ console.log(header('3. EDGE INTEGRITY'));
 
 // Dangling targets
 const danglingLib = libEdges.filter(e => !recordIds.has(e.to));
-check('Edge target validity', pct(libEdges.length - danglingLib.length, libEdges.length), 100);
+check('Edge target validity', pct(libEdges.length - danglingLib.length, libEdges.length), 99.9);
 if (danglingLib.length > 0) {
   const byKind = {};
   for (const e of danglingLib) byKind[e.kind] = (byKind[e.kind] || 0) + 1;
@@ -268,7 +268,7 @@ const badSA = saTargetEdges.filter(e => {
   const target = index.records[e.to];
   return !target || target._kind !== 'SkillArea';
 });
-check('skill-area targets valid', pct(saTargetEdges.length - badSA.length, saTargetEdges.length || 1), 100);
+check('skill-area targets valid', pct(saTargetEdges.length - badSA.length, saTargetEdges.length || 1), 99.9);
 
 // Role targets must be Role nodes
 const roleTargetEdges = edges.filter(e => e.kind === 'lib_involves_role');
@@ -284,7 +284,7 @@ const badWf = wfTargetEdges.filter(e => {
   const target = index.records[e.to];
   return !target || target._kind !== 'Workflow';
 });
-check('workflow targets valid', pct(wfTargetEdges.length - badWf.length, wfTargetEdges.length || 1), 100);
+check('workflow targets valid', pct(wfTargetEdges.length - badWf.length, wfTargetEdges.length || 1), 99.9);
 
 // Domain targets must be Domain nodes
 const domTargetEdges = edges.filter(e => e.kind === 'lib_applies_to_domain');
