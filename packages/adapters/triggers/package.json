@@ -60,9 +60,9 @@
     "test": "npm run test:unit && npm run test:e2e",
     "prepublishOnly": "npm run verify:release",
     "verify:release": "npm run build && npm run test:unit && npm run test:e2e && npm run test:coverage",
-    "test:unit": "vitest run --root ../../.. --config vitest.config.ts packages/adapters/triggers/tests/action-helpers.test.ts packages/adapters/triggers/tests/action-metadata.test.ts packages/adapters/triggers/tests/backend-modules.test.ts packages/adapters/triggers/tests/backends.test.ts packages/adapters/triggers/tests/cli.test.ts packages/adapters/triggers/tests/enrich.test.ts packages/adapters/triggers/tests/query.test.ts packages/adapters/triggers/tests/readme-examples.test.ts packages/adapters/triggers/src",
-    "test:e2e": "npm run build && vitest run --root ../../.. --config vitest.config.ts packages/adapters/triggers/tests/action.test.ts packages/adapters/triggers/tests/dist-cli.smoke.test.ts",
-    "test:coverage": "vitest run --root ../../.. --config vitest.config.ts --coverage --coverage.include=packages/adapters/triggers/src/**/*.ts packages/adapters/triggers/tests/action-helpers.test.ts packages/adapters/triggers/tests/action-metadata.test.ts packages/adapters/triggers/tests/action.test.ts packages/adapters/triggers/tests/backend-modules.test.ts packages/adapters/triggers/tests/backends.test.ts packages/adapters/triggers/tests/cli.test.ts packages/adapters/triggers/tests/enrich.test.ts packages/adapters/triggers/tests/query.test.ts packages/adapters/triggers/tests/readme-examples.test.ts packages/adapters/triggers/src"
+    "test:unit": "vitest run --config vitest.config.ts tests",
+    "test:e2e": "npm run build && vitest run tests/action.test.ts tests/dist-cli.smoke.test.ts",
+    "test:coverage": "vitest run --config vitest.config.ts --coverage --coverage.include=src/**/*.ts tests src"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.4"
