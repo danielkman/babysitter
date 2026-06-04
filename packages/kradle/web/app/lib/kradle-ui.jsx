@@ -56,6 +56,14 @@ export const orgNavigationGroups = [
     ]
   },
   {
+    title: 'Quality',
+    items: [
+      ['/evals', 'Evaluations', 'Agent evaluation suites and runs'],
+      ['/datasets', 'Datasets', 'Structured datasets for training and eval'],
+      ['/guardrails', 'Guardrails', 'Safety rules and event monitoring']
+    ]
+  },
+  {
     title: 'ML',
     items: [
       ['/models', 'Models', 'Browse and deploy models'],

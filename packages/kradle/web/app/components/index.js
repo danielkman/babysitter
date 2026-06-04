@@ -125,6 +125,22 @@ export { AssistantTabs } from './assistant/assistant-tabs.jsx';
 // ── Artifacts ───────────────────────────────────────────────────────────────
 export { ArtifactRegistryManager } from './artifact-registry.jsx';
 
+// ── Evals ───────────────────────────────────────────────────────────────────
+export { EvalSuiteManager } from './eval/eval-suite-manager.jsx';
+export { EvalCaseEditor } from './eval/eval-case-editor.jsx';
+export { EvalRunResults } from './eval/eval-run-results.jsx';
+export { EvalComparison } from './eval/eval-comparison.jsx';
+
+// ── Datasets ────────────────────────────────────────────────────────────────
+export { DatasetManager } from './dataset/dataset-manager.jsx';
+export { DatasetUpload } from './dataset/dataset-upload.jsx';
+export { DatasetViewer } from './dataset/dataset-viewer.jsx';
+
+// ── Guardrails ──────────────────────────────────────────────────────────────
+export { GuardrailManager } from './guardrail/guardrail-manager.jsx';
+export { GuardrailRuleEditor } from './guardrail/guardrail-rule-editor.jsx';
+export { GuardrailEvents } from './guardrail/guardrail-events.jsx';
+
 // ── Shell / Chrome ──────────────────────────────────────────────────────────
 export { KradleLoadingView, KradleControllerRecovery, KRADLE_LOADING_MESSAGES } from './shell/kradle-loading.jsx';
 export { ThemeRuntime, readStoredTheme, resolveKradleTheme, applyTheme, storeTheme, THEME_STORAGE_KEY, THEME_CHANGED_EVENT } from './shell/theme-runtime.jsx';

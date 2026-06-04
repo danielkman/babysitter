@@ -123,6 +123,18 @@ export const KRADLE_RESOURCES = [
   { kind: 'JitsiMeetingTemplate', plural: 'jitsimeetingtemplates', namespaced: true, storage: 'etcd' },
   { kind: 'JitsiMeeting', plural: 'jitsimeetings', namespaced: true, storage: 'postgres' },
   { kind: 'JitsiRecording', plural: 'jitsirecordings', namespaced: true, storage: 'postgres' },
+  // Eval resources
+  { kind: 'EvalSuite', plural: 'evalsuites', namespaced: true, storage: 'etcd' },
+  { kind: 'EvalCase', plural: 'evalcases', namespaced: true, storage: 'postgres' },
+  { kind: 'EvalRun', plural: 'evalruns', namespaced: true, storage: 'postgres' },
+  { kind: 'EvalResult', plural: 'evalresults', namespaced: true, storage: 'postgres' },
+  // Dataset resources
+  { kind: 'Dataset', plural: 'datasets', namespaced: true, storage: 'etcd' },
+  { kind: 'DatasetVersion', plural: 'datasetversions', namespaced: true, storage: 'postgres' },
+  { kind: 'DatasetRecord', plural: 'datasetrecords', namespaced: true, storage: 'postgres' },
+  // Guardrail resources
+  { kind: 'Guardrail', plural: 'guardrails', namespaced: true, storage: 'etcd' },
+  { kind: 'GuardrailEvent', plural: 'guardrailevents', namespaced: true, storage: 'postgres' },
   // Core Kubernetes resources (group: '' — no API group prefix for kubectl).
   // These are excluded from snapshot discovery (storage: 'core') but are
   // available for list/get/delete via findResourceDefinition.
