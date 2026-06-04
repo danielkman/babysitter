@@ -2109,7 +2109,7 @@ jobs:
   deploy_kradle:
     name: Deploy Kradle To AKS
     needs:
-      - validate_kradle
+      - lint
     runs-on: ubuntu-latest-l
     environment:
       name: kradle-${{ github.ref_name == 'main' && 'production' || github.ref_name }}
