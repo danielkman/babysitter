@@ -66,6 +66,43 @@ test('collectKradleHealthProbes returns partial structured failures for unconfig
   assert.match(result.kubernetes.error, /kubectl missing/);
 });
 
+test('collectKradleHealthProbes strips org path from KRADLE_GITEA_HTTP_URL for health probe', async () => {
+  const requestedUrls = [];
+  await collectKradleHealthProbes({
+    env: {
+      KRADLE_GITEA_HTTP_URL: 'http://kradle-kradle-gitea-http.kradle-staging.svc.cluster.local:3000/kradle',
+      KRADLE_KUBECTL: 'kubectl-test',
+    },
+    fetchImpl: async (url) => {
+      requestedUrls.push(String(url));
+      return { ok: true, status: 200 };
+    },
+    execFileImpl: async () => ({ stdout: 'ok', stderr: '' }),
+    eventBus: { status: () => ({ transport: 'memory', status: 'ok', durable: false }) },
+    timeoutMs: 25,
+  });
+  assert.ok(
+    requestedUrls.includes('http://kradle-kradle-gitea-http.kradle-staging.svc.cluster.local:3000/api/v1/version'),
+    `Expected Gitea health URL to strip /kradle path, got: ${requestedUrls.join(', ')}`
+  );
+});
+
+test('collectKradleHealthProbes detects assistant with OpenAI provider and key', async () => {
+  const result = await collectKradleHealthProbes({
+    env: {
+      KRADLE_ASSISTANT_PROVIDER: 'openai',
+      OPENAI_API_KEY: 'AcuYB8hqWE1TtQerO0RN4SDk0BKI0tLZ',
+      KRADLE_KUBECTL: 'kubectl-test',
+    },
+    fetchImpl: async () => ({ ok: true, status: 200 }),
+    execFileImpl: async () => ({ stdout: 'ok', stderr: '' }),
+    eventBus: { status: () => ({ transport: 'memory', status: 'ok', durable: false }) },
+    timeoutMs: 25,
+  });
+  assert.equal(result.assistant.status, 'ok');
+  assert.equal(result.assistant.provider, 'openai');
+});
+
 test('collectKradleHealthProbes redacts dependency URL credentials and event transport errors', async () => {
   const result = await collectKradleHealthProbes({
     env: {
