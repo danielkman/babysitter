@@ -75,10 +75,10 @@ Status: Current. This inventory implements roadmap slice 0, "Inventory and namin
 | `@a5c-ai/tasks-adapter` | `lint` | No-model | static-check | Mux maintainers | `test-logs/tasks-mux-lint.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
 | `@a5c-ai/tasks-adapter` | `test` | No-model | unit-or-integration | Mux maintainers | `test-logs/tasks-mux-test.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
 | `@a5c-ai/tasks-adapter` | `test:packaged-surface-parity` | No-model | unit-or-integration | Mux maintainers | `test-logs/tasks-mux-test-packaged-surface-parity.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
-| `@a5c-ai/cloud` | `prepublishOnly` | No-model release gate | release-gate | Cloud maintainers | `release-logs/cloud-prepublishonly.log` | publish.yml validate and publish gates |
-| `@a5c-ai/cloud` | `test` | No-model | unit-or-integration | Cloud maintainers | `test-logs/cloud-test.log` | ci.yml test; publish.yml validate_cloud; publish.yml validate/deploy |
-| `@a5c-ai/cloud` | `test:coverage` | No-model | coverage | Cloud maintainers | `coverage/cloud-test-coverage` | ci.yml test; publish.yml validate_cloud; publish.yml validate/deploy |
-| `@a5c-ai/cloud` | `verify:release` | No-model release gate | release-gate | Cloud maintainers | `release-logs/cloud-verify-release.log` | publish.yml validate and publish gates |
+| `@a5c-ai/kradle-installer` | `prepublishOnly` | No-model release gate | release-gate | Cloud maintainers | `release-logs/cloud-prepublishonly.log` | publish.yml validate and publish gates |
+| `@a5c-ai/kradle-installer` | `test` | No-model | unit-or-integration | Cloud maintainers | `test-logs/cloud-test.log` | ci.yml test; publish.yml validate_cloud; publish.yml validate/deploy |
+| `@a5c-ai/kradle-installer` | `test:coverage` | No-model | coverage | Cloud maintainers | `coverage/cloud-test-coverage` | ci.yml test; publish.yml validate_cloud; publish.yml validate/deploy |
+| `@a5c-ai/kradle-installer` | `verify:release` | No-model release gate | release-gate | Cloud maintainers | `release-logs/cloud-verify-release.log` | publish.yml validate and publish gates |
 | `@a5c-ai/hooks-adapter-claude` | `lint` | No-model | static-check | Hooks-mux maintainers | `test-logs/hooks-mux-adapter-claude-lint.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
 | `@a5c-ai/hooks-adapter-claude` | `test` | No-model | unit-or-integration | Hooks-mux maintainers | `test-logs/hooks-mux-adapter-claude-test.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |
 | `@a5c-ai/hooks-adapter-codex` | `lint` | No-model | static-check | Hooks-mux maintainers | `test-logs/hooks-mux-adapter-codex-lint.log` | ci.yml test/workspace-coverage; publish.yml validate_mux |

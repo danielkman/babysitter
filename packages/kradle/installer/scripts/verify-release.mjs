@@ -44,12 +44,12 @@ export function verifyCloudRelease({ packageRoot, manifest, packEntries }) {
   const readme = fs.readFileSync(path.join(packageRoot, "README.md"), "utf8");
 
   expect(
-    manifest.name === "@a5c-ai/cloud",
-    "packages/cloud/package.json name must stay @a5c-ai/cloud",
+    manifest.name === "@a5c-ai/kradle-installer",
+    "packages/kradle/installer/package.json name must stay @a5c-ai/kradle-installer",
   );
   expect(
     manifest.publishConfig?.access === "public",
-    "packages/cloud/package.json publishConfig.access must stay public",
+    "packages/kradle/installer/package.json publishConfig.access must stay public",
   );
   expect(
     Array.isArray(manifest.files) &&
@@ -57,43 +57,43 @@ export function verifyCloudRelease({ packageRoot, manifest, packEntries }) {
       manifest.files.includes("README.md") &&
       manifest.files.includes("SPEC.md") &&
       manifest.files.includes("LICENSE"),
-    "packages/cloud/package.json files must keep dist, README.md, SPEC.md, and LICENSE",
+    "packages/kradle/installer/package.json files must keep dist, README.md, SPEC.md, and LICENSE",
   );
   expect(
     scripts.build === "npm exec --yes --package=typescript --package=@types/node -- tsc --build && npm exec --yes --package=typescript --package=@types/node -- tsc --emitDeclarationOnly --declarationMap false -p tsconfig.json",
-    "packages/cloud/package.json build must stay on the local TypeScript compile path",
+    "packages/kradle/installer/package.json build must stay on the local TypeScript compile path",
   );
   expect(
     scripts.test === "npm exec --yes --package=vitest -- vitest run --config vitest.config.ts",
-    "packages/cloud/package.json test must stay on the package-local Vitest command",
+    "packages/kradle/installer/package.json test must stay on the package-local Vitest command",
   );
   expect(
     scripts["test:coverage"] === "npm exec --yes --package=vitest -- vitest run --config vitest.config.ts --coverage",
-    "packages/cloud/package.json test:coverage must run the package-local coverage command",
+    "packages/kradle/installer/package.json test:coverage must run the package-local coverage command",
   );
   expect(
     scripts["verify:release"] === "node ./scripts/verify-release.mjs",
-    "packages/cloud/package.json verify:release must point at the package-local release verifier",
+    "packages/kradle/installer/package.json verify:release must point at the package-local release verifier",
   );
   expect(
     scripts.prepublishOnly === "npm run build && npm run test && npm run verify:release",
-    "packages/cloud/package.json prepublishOnly must build, test, and verify the release surface",
+    "packages/kradle/installer/package.json prepublishOnly must build, test, and verify the release surface",
   );
   expect(
     manifest.bin?.cloud === "./dist/cli.js",
-    "packages/cloud/package.json bin.cloud must point to ./dist/cli.js",
+    "packages/kradle/installer/package.json bin.cloud must point to ./dist/cli.js",
   );
   expect(
     rootExport.types === "./dist/index.d.ts" && rootExport.default === "./dist/index.js",
-    "packages/cloud/package.json root export must keep dist/index.*",
+    "packages/kradle/installer/package.json root export must keep dist/index.*",
   );
   expect(
     cliExport.types === "./dist/cli.d.ts" && cliExport.default === "./dist/cli.js",
-    "packages/cloud/package.json ./cli export must keep dist/cli.*",
+    "packages/kradle/installer/package.json ./cli export must keep dist/cli.*",
   );
   expect(
     readme.includes("(./SPEC.md)"),
-    "packages/cloud/README.md must keep linking ./SPEC.md",
+    "packages/kradle/installer/README.md must keep linking ./SPEC.md",
   );
 
   for (const relativePath of REQUIRED_BUILD_PATHS) {

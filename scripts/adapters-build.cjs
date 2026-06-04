@@ -102,9 +102,11 @@ function resolveTestSelection(pkg, extraArgs, root = repoRoot, fsImpl = fs) {
   };
 }
 
-function buildVitestCommand(testFiles, forwardedArgs = []) {
+function buildVitestCommand(testFiles, forwardedArgs = [], pkgDir = '') {
+  const localConfig = pkgDir ? path.join(pkgDir, 'vitest.config.ts') : '';
+  const configPath = localConfig && fs.existsSync(localConfig) ? localConfig : 'vitest.config.ts';
   const args = [
-    'npx vitest run --config vitest.config.ts',
+    `npx vitest run --config ${configPath}`,
     ...testFiles.map(quote),
     ...forwardedArgs.map(quote),
   ];
@@ -149,7 +151,7 @@ function run(argv = process.argv.slice(2), options = {}) {
     if (mode === 'test') {
       // `test <pkg> -- <file> [vitest args...]` opts into an explicit focused target.
       const { testFiles, forwardedArgs } = resolveTestSelection(pkg, extraArgs, root, fsImpl);
-      const vitestCommand = buildVitestCommand(testFiles, forwardedArgs);
+      const vitestCommand = buildVitestCommand(testFiles, forwardedArgs, dir);
 
       if (testFiles.length === 0) {
         log(`\n=== ${pkg} (${mode}) skipped: no test files ===`);

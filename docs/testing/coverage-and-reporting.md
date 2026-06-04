@@ -29,7 +29,7 @@ The long-term target is one repository coverage artifact with package-level sect
 - the `@a5c-ai/adapters` package family,
 - the hooks-mux package family,
 - `@a5c-ai/extensions-adapter`,
-- `@a5c-ai/cloud`,
+- `@a5c-ai/kradle-installer`,
 - docs/generator checks.
 
 Vitest coverage should remain package-local during execution, then a dedicated reporting job can merge summaries. Playwright traces and model-backed artifacts should be linked from the same summary but should not be converted into misleading line coverage.
