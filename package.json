@@ -27,6 +27,7 @@
     "packages/adapters/hooks/adapter-oh-my-pi",
     "packages/adapters/hooks/adapter-opencode",
     "packages/adapters/hooks/adapter-openclaw",
+    "packages/adapters/hooks/adapter-antigravity",
     "packages/adapters/hooks/adapter-hermes",
     "packages/kradle/core",
     "packages/kradle/sdk",

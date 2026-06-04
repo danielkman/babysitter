@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "@a5c-ai/hooks-adapter-claude": "5.1.0",
+    "@a5c-ai/hooks-adapter-antigravity": "5.1.0",
     "@a5c-ai/hooks-adapter-codex": "5.1.0",
     "@a5c-ai/hooks-adapter-copilot": "5.1.0",
     "@a5c-ai/hooks-adapter-cursor": "5.1.0",
