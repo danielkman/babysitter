@@ -1,0 +1,7 @@
+nodeKind: PackageSurface
+id: package-surface:hooks-adapter-opencode
+attributes:
+  packageId: "@a5c-ai/hooks-adapter-opencode"
+  packageName: "@a5c-ai/hooks-adapter-opencode"
+  displayName: "hooks-adapter-opencode"
+  status: active

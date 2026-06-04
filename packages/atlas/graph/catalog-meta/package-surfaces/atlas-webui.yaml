@@ -1,0 +1,7 @@
+nodeKind: PackageSurface
+id: package-surface:atlas-webui
+attributes:
+  packageId: "@a5c-ai/atlas-webui"
+  packageName: "@a5c-ai/atlas-webui"
+  displayName: "atlas-webui"
+  status: active

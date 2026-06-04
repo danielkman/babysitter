@@ -1,0 +1,7 @@
+nodeKind: PackageSurface
+id: package-surface:hooks-adapter-copilot
+attributes:
+  packageId: "@a5c-ai/hooks-adapter-copilot"
+  packageName: "@a5c-ai/hooks-adapter-copilot"
+  displayName: "hooks-adapter-copilot"
+  status: active

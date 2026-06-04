@@ -1,0 +1,7 @@
+nodeKind: PackageSurface
+id: package-surface:genty-tv-androidtv-app
+attributes:
+  packageId: "@a5c-ai/genty-tv-androidtv-app"
+  packageName: "@a5c-ai/genty-tv-androidtv-app"
+  displayName: "genty-tv-androidtv-app"
+  status: active

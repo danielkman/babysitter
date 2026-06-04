@@ -1,13 +1,13 @@
 nodeKind: PackageSurface
-id: package:a5c-ai-observer-dashboard
+id: package:a5c-ai-kradle-installer
 attributes:
-  packageId: "@a5c-ai/observer-dashboard"
-  packageName: "@a5c-ai/observer-dashboard"
-  workspacePath: packages/observer-dashboard
+  packageId: "@a5c-ai/kradle-installer"
+  packageName: "@a5c-ai/kradle-installer"
+  workspacePath: packages/kradle/installer
   moduleType: nextjs
   surfaceKinds:
     - ui-consumer
-    - observability-surface
+    - api-surface
   sourceOfTruthRole: application
   publishedTo: none
   versionPolicy: semver

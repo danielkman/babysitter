@@ -1,0 +1,7 @@
+nodeKind: PackageSurface
+id: package-surface:genty-mobile-android-app
+attributes:
+  packageId: "@a5c-ai/genty-mobile-android-app"
+  packageName: "@a5c-ai/genty-mobile-android-app"
+  displayName: "genty-mobile-android-app"
+  status: active

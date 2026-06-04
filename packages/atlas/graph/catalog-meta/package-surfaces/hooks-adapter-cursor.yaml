@@ -1,0 +1,7 @@
+nodeKind: PackageSurface
+id: package-surface:hooks-adapter-cursor
+attributes:
+  packageId: "@a5c-ai/hooks-adapter-cursor"
+  packageName: "@a5c-ai/hooks-adapter-cursor"
+  displayName: "hooks-adapter-cursor"
+  status: active

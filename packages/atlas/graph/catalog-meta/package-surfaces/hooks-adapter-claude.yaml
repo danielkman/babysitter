@@ -1,0 +1,7 @@
+nodeKind: PackageSurface
+id: package-surface:hooks-adapter-claude
+attributes:
+  packageId: "@a5c-ai/hooks-adapter-claude"
+  packageName: "@a5c-ai/hooks-adapter-claude"
+  displayName: "hooks-adapter-claude"
+  status: active

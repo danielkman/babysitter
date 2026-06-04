@@ -1,0 +1,7 @@
+nodeKind: PackageSurface
+id: package-surface:kradle-jitsi-agent-sidecar
+attributes:
+  packageId: "@a5c-ai/kradle-jitsi-agent-sidecar"
+  packageName: "@a5c-ai/kradle-jitsi-agent-sidecar"
+  displayName: "kradle-jitsi-agent-sidecar"
+  status: active

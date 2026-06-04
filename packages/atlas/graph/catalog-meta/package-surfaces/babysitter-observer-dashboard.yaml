@@ -1,0 +1,7 @@
+nodeKind: PackageSurface
+id: package-surface:babysitter-observer-dashboard
+attributes:
+  packageId: "@a5c-ai/babysitter-observer-dashboard"
+  packageName: "@a5c-ai/babysitter-observer-dashboard"
+  displayName: "babysitter-observer-dashboard"
+  status: active

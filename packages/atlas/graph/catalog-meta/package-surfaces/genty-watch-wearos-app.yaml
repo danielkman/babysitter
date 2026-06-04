@@ -1,0 +1,7 @@
+nodeKind: PackageSurface
+id: package-surface:genty-watch-wearos-app
+attributes:
+  packageId: "@a5c-ai/genty-watch-wearos-app"
+  packageName: "@a5c-ai/genty-watch-wearos-app"
+  displayName: "genty-watch-wearos-app"
+  status: active

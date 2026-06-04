@@ -473,7 +473,7 @@ A `Adapter` is treated as `ExtensionInterface` (a5c-flavored contract) plus impl
 | `@a5c-ai/babysitter-sdk` | a5c/01-component-map.md, 05-sdk.md | `ProcessDescriptor` | ✅ | |
 | `@a5c-ai/babysitter` (top-level npm) | a5c/01-component-map.md | `ProcessDescriptor` | ✅ | |
 | `@a5c-ai/genty-tui-plugins` | a5c/01-component-map.md | `ProcessDescriptor` | ✅ | |
-| `@a5c-ai/cloud` | a5c/01-component-map.md | `ProcessDescriptor` | ✅ | |
+| `@a5c-ai/kradle-installer` | a5c/01-component-map.md | `ProcessDescriptor` | ✅ | |
 | `@a5c-ai/observer-dashboard` | a5c/01-component-map.md | `ProcessDescriptor` | ✅ | |
 | `@a5c-ai/kanban` | a5c/01-component-map.md | `ProcessDescriptor` | ✅ | |
 | Adapter list (~20 adapters under `adapters/adapters/src/`) | a5c/01-component-map.md | one `ProcessDescriptor` each; some without `AgentProduct` flagged via Claim | ✅ | |

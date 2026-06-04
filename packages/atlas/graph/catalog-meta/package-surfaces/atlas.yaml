@@ -1,0 +1,7 @@
+nodeKind: PackageSurface
+id: package-surface:atlas
+attributes:
+  packageId: "@a5c-ai/atlas"
+  packageName: "@a5c-ai/atlas"
+  displayName: "atlas"
+  status: active

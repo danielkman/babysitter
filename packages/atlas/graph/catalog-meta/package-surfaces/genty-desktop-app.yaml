@@ -1,0 +1,7 @@
+nodeKind: PackageSurface
+id: package-surface:genty-desktop-app
+attributes:
+  packageId: "@a5c-ai/genty-desktop-app"
+  packageName: "@a5c-ai/genty-desktop-app"
+  displayName: "genty-desktop-app"
+  status: active

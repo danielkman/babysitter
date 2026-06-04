@@ -1,0 +1,7 @@
+nodeKind: PackageSurface
+id: package-surface:hooks-adapter-oh-my-pi
+attributes:
+  packageId: "@a5c-ai/hooks-adapter-oh-my-pi"
+  packageName: "@a5c-ai/hooks-adapter-oh-my-pi"
+  displayName: "hooks-adapter-oh-my-pi"
+  status: active

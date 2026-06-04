@@ -1,0 +1,7 @@
+nodeKind: PackageSurface
+id: package-surface:hooks-adapter-cli
+attributes:
+  packageId: "@a5c-ai/hooks-adapter-cli"
+  packageName: "@a5c-ai/hooks-adapter-cli"
+  displayName: "hooks-adapter-cli"
+  status: active

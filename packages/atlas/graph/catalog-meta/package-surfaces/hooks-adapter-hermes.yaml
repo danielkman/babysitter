@@ -1,0 +1,7 @@
+nodeKind: PackageSurface
+id: package-surface:hooks-adapter-hermes
+attributes:
+  packageId: "@a5c-ai/hooks-adapter-hermes"
+  packageName: "@a5c-ai/hooks-adapter-hermes"
+  displayName: "hooks-adapter-hermes"
+  status: active

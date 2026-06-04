@@ -1,0 +1,7 @@
+nodeKind: PackageSurface
+id: package-surface:genty-tui-plugins
+attributes:
+  packageId: "@a5c-ai/genty-tui-plugins"
+  packageName: "@a5c-ai/genty-tui-plugins"
+  displayName: "genty-tui-plugins"
+  status: active
