@@ -215,3 +215,31 @@ Full 147-gap matrix from the adversarial backlog analysis. Sorted by Final Statu
 | M3 | 11 | Integration |
 | M4 | 12 | Polish and UX |
 | M5 | 16 | Ecosystem + long-tail |
+
+## Pi Parity Gaps (added 2026-06-04)
+
+| Gap ID | Title | Category | Orig Status | Final Status | Orig Effort | Remaining | Milestone | Priority |
+|--------|-------|----------|-------------|--------------|-------------|-----------|-----------|----------|
+| GAP-PI-001 | Print/JSON Mode (`genty -p`) | modes | -- | OPEN | M | M | M1 | High |
+| GAP-PI-002 | RPC Mode (JSON over stdin/stdout) | modes | -- | OPEN | L | L | M2 | High |
+| GAP-PI-003 | Native AGENTS.md Loading | context-engineering | -- | IN_PROGRESS | M | S | M1 | High |
+| GAP-PI-004 | SYSTEM.md Per-Project Prompt | context-engineering | -- | OPEN | M | M | M1 | High |
+| GAP-PI-005 | Dynamic Context Extensions (RAG, history filter) | context-engineering | -- | OPEN | L | L | M3 | Medium |
+| GAP-PI-006 | Extension API (TypeScript modules) | extensibility | -- | OPEN | XL | XL | M2 | Critical |
+| GAP-PI-007 | Installable Extension Packages | extensibility | -- | OPEN | L | L | M3 | High |
+| GAP-PI-008 | Tree-Structured Session History | session-management | -- | OPEN | XL | XL | M3 | Medium |
+| GAP-PI-009 | Session Export/Share | session-management | -- | OPEN | M | M | M4 | Medium |
+| GAP-PI-010 | Mid-Session Model Switch | model-support | -- | OPEN | M | M | M2 | Medium |
+| GAP-PI-011 | Steering (mid-execution messages) | agent-interaction | -- | OPEN | L | L | M3 | High |
+
+## Trust Enforcement Gaps (added 2026-06-04)
+
+| Gap ID | Title | Category | Orig Status | Final Status | Orig Effort | Remaining | Milestone | Priority |
+|--------|-------|----------|-------------|--------------|-------------|-----------|-----------|----------|
+| GAP-TRUST-001 | Tool Call Signing | trust-enforcement | -- | OPEN | L | L | M1 | Critical |
+| GAP-TRUST-002 | Gateway Signature Forwarding | trust-enforcement | -- | OPEN | M | M | M2 | Critical |
+| GAP-TRUST-003 | Model Response Signing | trust-enforcement | -- | OPEN | L | L | M1 | Critical |
+| GAP-TRUST-004 | Agent Request Signing | trust-enforcement | -- | OPEN | L | L | M1 | Critical |
+| GAP-TRUST-005 | Permission as Signed Evidence | trust-enforcement | -- | OPEN | XL | XL | M2 | Critical |
+| GAP-TRUST-006 | Prompt Signing (initial + follow-ups) | trust-enforcement | -- | OPEN | M | M | M1 | Critical |
+| GAP-TRUST-007 | End-to-End Trust Chain Verification | trust-enforcement | -- | OPEN | L | L | M3 | Critical |

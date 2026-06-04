@@ -6,12 +6,19 @@
 
 | Metric | Value |
 |--------|-------|
-| **Total gaps analyzed** | 147 |
-| **CLOSED** | 69 (47%) |
-| **IN_PROGRESS** | 49 (33%) |
-| **OPEN** | 22 (15%) |
-| **NEEDS_RESPEC** | 7 (5%) |
-| **Actionable (non-CLOSED)** | 78 |
+| **Total gaps analyzed** | 165 |
+| **CLOSED** | 69 (42%) |
+| **IN_PROGRESS** | 50 (30%) |
+| **OPEN** | 39 (24%) |
+| **NEEDS_RESPEC** | 7 (4%) |
+| **Actionable (non-CLOSED)** | 96 |
+
+### New gap categories (2026-06-04)
+
+| Category | Gaps | Priority | Source |
+|----------|------|----------|--------|
+| **Trust Enforcement** | 7 | All Critical | Beyond Pi — signed evidence chain |
+| **Pi Parity** | 11 | 1 Critical, 6 High, 4 Medium | [pi.dev](https://pi.dev/) feature parity |
 
 ### The backlog was massively stale
 
@@ -49,6 +56,40 @@
 | M3 | Integration | 11 | Cross-track features work |
 | M4 | Polish and UX | 12 | Rich rendering and interaction |
 | M5 | Ecosystem + long-tail | 16 | Backlog closed |
+
+### Trust Enforcement (new track, Critical priority)
+
+Trust enforcement is the genty stack's differentiator beyond Pi. Every action produces cryptographically signed evidence. Trust is proven, not assumed.
+
+| Gap ID | What | Package |
+|--------|------|---------|
+| GAP-TRUST-001 | Tool results always signed | `@a5c-ai/genty-core` + `@a5c-ai/tools-adapter` |
+| GAP-TRUST-002 | Gateway tools forward upstream signatures | `@a5c-ai/tools-adapter` |
+| GAP-TRUST-003 | Model responses always signed | `@a5c-ai/adapters-codecs` + `@a5c-ai/comm-adapter` |
+| GAP-TRUST-004 | Agent requests always signed (attribution) | `@a5c-ai/genty-platform` + `@a5c-ai/genty-core` |
+| GAP-TRUST-005 | Permissions are signed evidence (tools verify proof) | `@a5c-ai/babysitter-sdk` + `@a5c-ai/genty-platform` |
+| GAP-TRUST-006 | Initial prompt + follow-ups signed | `@a5c-ai/genty-platform` + `@a5c-ai/genty-runtime` |
+| GAP-TRUST-007 | End-to-end chain verification | `@a5c-ai/genty-core` + `@a5c-ai/babysitter-sdk` |
+
+Full design: [genty-stack-roadmap.md](genty-stack-roadmap.md#7-trust-enforcement--gap-new-beyond-pi)
+
+### Pi Parity Gaps (new, 11 gaps)
+
+| Gap ID | What | Package |
+|--------|------|---------|
+| GAP-PI-001 | Print/JSON mode (`genty -p`) | `@a5c-ai/genty` |
+| GAP-PI-002 | RPC mode (JSON over stdin/stdout) | `@a5c-ai/genty-runtime` |
+| GAP-PI-003 | Native AGENTS.md loading | `@a5c-ai/genty-platform` |
+| GAP-PI-004 | SYSTEM.md per-project prompt | `@a5c-ai/genty-platform` |
+| GAP-PI-005 | Dynamic context (RAG, history filter) | `@a5c-ai/genty-platform` |
+| GAP-PI-006 | Extension API (TypeScript modules) | `@a5c-ai/genty-core` + `@a5c-ai/genty-platform` |
+| GAP-PI-007 | Installable extension packages | `@a5c-ai/genty-platform` |
+| GAP-PI-008 | Tree-structured session history | `@a5c-ai/genty-runtime` |
+| GAP-PI-009 | Session export/share | `@a5c-ai/genty-runtime` |
+| GAP-PI-010 | Mid-session model switch | `@a5c-ai/genty-platform` |
+| GAP-PI-011 | Steering (mid-execution messages) | `@a5c-ai/genty-platform` |
+
+Full design: [genty-stack-roadmap.md](genty-stack-roadmap.md)
 
 ---
 

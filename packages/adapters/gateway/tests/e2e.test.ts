@@ -7,8 +7,8 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import { createGateway, MemoryTokenStore } from '../src/index.js';
 import type { GatewayRunClient } from '../src/config.js';
-import { GatewayClient } from '../../ui/src/client/GatewayClient.js';
-import { createWebSocket as createNodeWebSocket } from '../../ui/src/client/transports/ws-node.js';
+import { GatewayClient } from '../../../genty/ui/src/client/GatewayClient.js';
+import { createWebSocket as createNodeWebSocket } from '../../../genty/ui/src/client/transports/ws-node.js';
 
 interface FakeActiveRun {
   handle: RunHandleImpl;
