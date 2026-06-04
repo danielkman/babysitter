@@ -100,7 +100,7 @@ export function verifyAgentMuxCoreRelease({ packageRoot, manifest, packEntries }
     'packages/adapters/core/package.json build must stay on the package-local TypeScript compile path'
   );
   expect(
-    scripts.test === 'vitest run --root ../../.. --config vitest.config.ts packages/adapters/core',
+    scripts.test === 'vitest run src tests',
     'packages/adapters/core/package.json test must stay on the package-local Vitest command'
   );
   expect(
