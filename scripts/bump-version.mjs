@@ -102,7 +102,7 @@ const updateLockVersion = (path, version) => {
     }
   }
   const lockUpdates = {
-    "packages/adapters/adapters": {
+    "packages/adapters/codecs": {
       version,
       dependencies: { "@a5c-ai/comm-adapter": version }
     },
@@ -280,7 +280,7 @@ const workspaceManifestPaths = [
 ];
 
 const agentMuxManifestPaths = [
-  "packages/adapters/adapters/package.json",
+  "packages/adapters/codecs/package.json",
   "packages/adapters/cli/package.json",
   "packages/adapters/core/package.json",
   "packages/adapters/gateway/package.json",
@@ -371,7 +371,7 @@ for (const path of [
   "packages/genty/core/package.json",
   "packages/sdk/package.json",
   "packages/genty/platform/package.json",
-  "packages/adapters/adapters/package.json",
+  "packages/adapters/codecs/package.json",
   "packages/adapters/cli/package.json",
   "packages/adapters/core/package.json",
   "packages/adapters/gateway/package.json",

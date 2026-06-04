@@ -319,7 +319,7 @@ jobs:
           set -euo pipefail
           node scripts/adapters-build.cjs test packages/adapters/observability 2>&1 | tee artifacts/adapter-logs/adapters-observability-tests.log
           node scripts/adapters-build.cjs test packages/adapters/core 2>&1 | tee artifacts/adapter-logs/agent-comm-adapter-tests.log
-          node scripts/adapters-build.cjs test packages/adapters/adapters 2>&1 | tee artifacts/adapter-logs/adapters-adapters-tests.log
+          node scripts/adapters-build.cjs test packages/adapters/codecs 2>&1 | tee artifacts/adapter-logs/adapters-adapters-tests.log
           node scripts/adapters-build.cjs test packages/adapters/harness-mock 2>&1 | tee artifacts/adapter-logs/adapters-harness-mock-tests.log
           node scripts/adapters-build.cjs test packages/adapters/gateway 2>&1 | tee artifacts/adapter-logs/adapters-gateway-tests.log
           node scripts/adapters-build.cjs test packages/adapters/cli 2>&1 | tee artifacts/adapter-logs/adapters-cli-tests.log
@@ -2312,6 +2312,67 @@ jobs:
           kubectl -n "$KUBE_NAMESPACE" get pods --no-headers 2>/dev/null \
             | awk '/Terminating/{print $1}' \
             | xargs -r kubectl -n "$KUBE_NAMESPACE" delete --force --grace-period=0 2>/dev/null || true
+
+  e2e_smoke_kradle:
+    name: Kradle E2E Smoke Test
+    needs:
+      - deploy_kradle
+    runs-on: ubuntu-latest-l
+    if: ${{ github.ref_name != 'develop' }}
+    steps:
+      - name: Resolve target host
+        run: |
+          case "${GITHUB_REF_NAME}" in
+            main)    HOST=kradle.a5c.ai ;;
+            staging) HOST=kradle-staging.a5c.ai ;;
+            *)       echo "Unsupported branch" >&2; exit 1 ;;
+          esac
+          echo "APP_HOST=$HOST" >> "$GITHUB_ENV"
+
+      - name: Wait for deployment to become reachable
+        run: |
+          for i in $(seq 1 12); do
+            if curl -sf --max-time 10 "https://${APP_HOST}/login" >/dev/null 2>&1; then
+              echo "Kradle is reachable at https://${APP_HOST}"
+              exit 0
+            fi
+            echo "Attempt $i: waiting for https://${APP_HOST} ..."
+            sleep 10
+          done
+          echo "::warning::Kradle not reachable after 2 minutes -- smoke test may fail"
+
+      - name: E2E smoke: login page returns HTML
+        run: |
+          STATUS=$(curl -sf -o /dev/null -w '%{http_code}' "https://${APP_HOST}/login")
+          echo "Login page status: $STATUS"
+          [ "$STATUS" -lt 500 ] || { echo "::error::Login page returned $STATUS"; exit 1; }
+
+      - name: E2E smoke: snapshot health endpoint
+        run: |
+          RESPONSE=$(curl -sf --max-time 15 "https://${APP_HOST}/api/orgs/default/snapshot" || true)
+          if [ -n "$RESPONSE" ]; then
+            echo "$RESPONSE" | jq -e '.health' && echo "Health probe returned structured data"
+          else
+            echo "::warning::Snapshot endpoint did not return data (may require auth)"
+          fi
+
+      - name: E2E smoke: resource list endpoint
+        run: |
+          STATUS=$(curl -sf -o /dev/null -w '%{http_code}' --max-time 15 "https://${APP_HOST}/api/orgs/default/resources?kind=AgentStack" || echo "000")
+          echo "Resource list status: $STATUS"
+          [ "$STATUS" -lt 500 ] || { echo "::error::Resource list returned $STATUS"; exit 1; }
+
+      - name: E2E smoke: search endpoint
+        run: |
+          STATUS=$(curl -sf -o /dev/null -w '%{http_code}' --max-time 15 "https://${APP_HOST}/api/orgs/default/search?q=test" || echo "000")
+          echo "Search endpoint status: $STATUS"
+          [ "$STATUS" -lt 500 ] || { echo "::error::Search endpoint returned $STATUS"; exit 1; }
+
+      - name: E2E smoke: tools catalog
+        run: |
+          STATUS=$(curl -sf -o /dev/null -w '%{http_code}' --max-time 15 "https://${APP_HOST}/api/orgs/default/agents/tools/catalog" || echo "000")
+          echo "Tools catalog status: $STATUS"
+          [ "$STATUS" -lt 500 ] || { echo "::error::Tools catalog returned $STATUS"; exit 1; }
 
   deploy_staging_cloud:
     name: Deploy Cloud

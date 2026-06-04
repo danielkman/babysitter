@@ -8,7 +8,7 @@ const packages = [
   'packages/atlas',
   'packages/adapters/observability',
   'packages/adapters/core',
-  'packages/adapters/adapters',
+  'packages/adapters/codecs',
   'packages/adapters/harness-mock',
   'packages/adapters/ui',
   'packages/adapters/gateway',

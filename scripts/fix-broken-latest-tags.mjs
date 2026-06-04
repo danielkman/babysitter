@@ -24,7 +24,7 @@ const packageDirs = [
   'packages/adapters/transport', 'packages/adapters/extensions', 'packages/adapters/tasks',
   'packages/adapters/triggers', 'packages/kradle/installer', 'packages/observer-dashboard',
   'packages/genty/tui-plugins',
-  'packages/adapters/core', 'packages/adapters/cli', 'packages/adapters/adapters',
+  'packages/adapters/core', 'packages/adapters/cli', 'packages/adapters/codecs',
   'packages/adapters/gateway', 'packages/adapters/tui', 'packages/adapters/ui',
   'packages/adapters/webui', 'packages/adapters',
   'packages/adapters/observability',

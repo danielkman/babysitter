@@ -89,7 +89,7 @@ jobs:
 
             Also check adapter source for additional install commands:
             ```
-            grep -r 'npm install -g' packages/adapters/adapters/src/ | grep -v node_modules | grep -v test
+            grep -r 'npm install -g' packages/adapters/codecs/src/ | grep -v node_modules | grep -v test
             ```
             Merge both lists. EXCLUDE all @a5c-ai/* packages.
 
