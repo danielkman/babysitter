@@ -2313,6 +2313,21 @@ jobs:
             | awk '/Terminating/{print $1}' \
             | xargs -r kubectl -n "$KUBE_NAMESPACE" delete --force --grace-period=0 2>/dev/null || true
 
+      - name: Post-deploy health verification
+        run: |
+          set -euo pipefail
+          echo "Waiting for pods to be ready..."
+          kubectl -n "$KUBE_NAMESPACE" rollout status deployment/kradle-kradle-api --timeout=120s
+          kubectl -n "$KUBE_NAMESPACE" rollout status deployment/kradle-kradle-web --timeout=120s
+
+          echo "Running health check..."
+          HEALTH=$(kubectl -n "$KUBE_NAMESPACE" exec deploy/kradle-kradle-web -- wget -qO- "http://kradle-kradle-api:80/healthz?quick=1")
+          echo "$HEALTH" | jq .
+          echo "$HEALTH" | jq -e '.ok == true or .health.kubernetes == "ok"'
+
+          echo "Running API E2E smoke..."
+          KRADLE_E2E_URL="https://${APP_HOST}" node packages/kradle/web/tests/api-e2e.test.js 2>&1 | tail -5
+
   e2e_smoke_kradle:
     name: Kradle E2E Smoke Test
     needs:

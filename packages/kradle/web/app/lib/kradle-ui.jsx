@@ -293,6 +293,12 @@ export async function getSignedInUser() {
   }
 }
 
+export function featureRequires(model, service) {
+  const health = model?.controller?.health || {};
+  const configured = health[service]?.status === 'ok' || health[service]?.status === 'not configured';
+  return { available: health[service]?.status === 'ok', configured, service };
+}
+
 export function StatusPill({ children, tone = 'good' }) {
   return <span className={`pill ${tone}`}>{children}</span>;
 }

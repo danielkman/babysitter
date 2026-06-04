@@ -192,3 +192,14 @@ Track weekly:
 | 4 | Controller persistence gaps (memory, sync, model routes) | Controllers execute, not just plan |
 | 5 | E2E in CI pipeline | Failing features block deploys |
 | 6-8 | Tier 2-3 features online | Git ops, assistant working |
+
+---
+
+## Phase Scores (as of 2026-06-04)
+
+| Phase | Score | Details |
+|-------|-------|---------|
+| Phase 0 | 4/6 green | kubernetes, gitea (after deploy), eventTransport, assistant (after deploy) ok; agentMux, agentGateway not configured |
+| Phase 1 | 11/11 | All controller methods that produce resources now persist them |
+| Phase 2 | 14/14 tests | 14 API E2E tests passing against staging, 8 core flows covered |
+| Phase 3 | 3/3 gates | Post-deploy health verification, featureRequires helper, controller-contract test added |
