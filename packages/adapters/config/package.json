@@ -58,7 +58,7 @@
       "L6"
     ],
     "muxes": [
-      "agent-config-mux"
+      "agent-config-adapter"
     ]
   }
 }

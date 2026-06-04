@@ -6,8 +6,8 @@ These files are non-normative.
 
 ## Plans
 
-- [2026-04-19 provider-mux launcher](plans/2026-04-19-provider-mux-launcher.md)
-- [2026-04-19 provider-mux tech debt](plans/2026-04-19-provider-mux-tech-debt.md)
+- [2026-04-19 provider-adapter launcher](plans/2026-04-19-provider-adapter-launcher.md)
+- [2026-04-19 provider-adapter tech debt](plans/2026-04-19-provider-adapter-tech-debt.md)
 
 ## Specs
 

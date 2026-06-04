@@ -1,11 +1,11 @@
 ---
-title: Agent Mux Reference
+title: Agent Adapter Reference
 description: Normative API and behavior reference for @a5c-ai/adapters, ordered by how users encounter the package.
 last_updated: 2026-04-27
 category: landing
 ---
 
-# Agent Mux Reference
+# Agent Adapter Reference
 
 This directory is the canonical contract for current `@a5c-ai/adapters` behavior.
 

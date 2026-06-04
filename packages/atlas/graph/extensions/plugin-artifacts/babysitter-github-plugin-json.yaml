@@ -27,7 +27,7 @@ attributes:
   pathPattern: "hooks.json"
   installerSurface: "hooks.json"
   scriptVariants:
-    - "shell-via-hooks-mux-cli"
+    - "shell-via-hooks-adapter-cli"
   contextFiles:
     - plugins/babysitter-github/hooks.json
 edges:

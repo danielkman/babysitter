@@ -4,7 +4,7 @@ id: experiment:stop-hook-control-interactive
 attributes:
   displayName: "Stop Hook Control — Interactive Mode"
   description: |
-    Validates that hooks-mux correctly fires turn.stop hooks for all
+    Validates that hooks-adapter correctly fires turn.stop hooks for all
     supported adapters in interactive mode (stdin payload), and that
     the deny decision propagates for adapters with blockCapability
     while being degraded for adapters without it.
@@ -36,7 +36,7 @@ id: experiment:stop-hook-control-noninteractive
 attributes:
   displayName: "Stop Hook Control — Non-Interactive Mode"
   description: |
-    Validates that hooks-mux can receive stop events in non-interactive
+    Validates that hooks-adapter can receive stop events in non-interactive
     mode (--event-json flag, suitable for CI/batch invocation) and still
     correctly normalizes to turn.stop phase.
 
@@ -49,11 +49,11 @@ edges:
     - claim:stop-hook-claude-noninteractive-fires
 ---
 nodeKind: EvidenceSource
-id: evidence:hooks-mux-stop-hook-test-suite
+id: evidence:hooks-adapter-stop-hook-test-suite
 attributes:
-  displayName: "hooks-mux stop-hook control test suite"
+  displayName: "hooks-adapter stop-hook control test suite"
   description: |
-    Vitest integration test suite that invokes hooks-mux CLI with stop
+    Vitest integration test suite that invokes hooks-adapter CLI with stop
     events for each adapter, verifying phase normalization and decision
     propagation. Located at packages/atlas/tests/claims/stop-hook-control.test.ts.
   sourceUrl: "packages/atlas/tests/claims/stop-hook-control.test.ts"

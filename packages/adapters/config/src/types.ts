@@ -1,5 +1,5 @@
 /**
- * Shared types for the agent-config-mux package.
+ * Shared types for the agent-config-adapter package.
  *
  * Re-exports core types that consumers of this package commonly need,
  * plus any config-specific interfaces.

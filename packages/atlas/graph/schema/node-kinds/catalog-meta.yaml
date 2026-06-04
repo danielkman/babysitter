@@ -1059,7 +1059,7 @@ nodeKinds:
     all: null
     all-present-with-absences>: null
     required: true
-    notes: 'all-present-with-absences = all of `signals` present AND all of `absentSignals` absent (used by hooks-mux ordered-rule detector for the codex-without-claude-env case).'
+    notes: 'all-present-with-absences = all of `signals` present AND all of `absentSignals` absent (used by hooks-adapter ordered-rule detector for the codex-without-claude-env case).'
   - name: confidence
     type: enum<low
     medium: null
@@ -1071,9 +1071,9 @@ nodeKinds:
     shell: null
     process: null
     host-detection: null
-    hooks-mux>: null
+    hooks-adapter>: null
     required: true
-    notes: v6 retains the legacy lexical scopes plus 'host-detection' (adapters/core/src/host-detection.ts) and 'hooks-mux' (hooks-mux/core/src/discovery/detector.ts ordered-rule auto-detection).
+    notes: v6 retains the legacy lexical scopes plus 'host-detection' (adapters/core/src/host-detection.ts) and 'hooks-adapter' (hooks-adapter/core/src/discovery/detector.ts ordered-rule auto-detection).
   - name: signals
     type: list<string>
     required: true
@@ -1081,7 +1081,7 @@ nodeKinds:
   - name: absentSignals
     type: list<string>
     required: false
-    notes: Env-var names whose ABSENCE is required for the rule to match. Used by hooks-mux ordered-rule detector (e.g. codex-without-claude-env disambiguates from claude when OPENAI_API_KEY is set but CLAUDE_PLUGIN_ROOT/CLAUDE_ENV_FILE are not). Consumed by `HooksMuxDetectionRule.absentSignals` in packages/agent-catalog/src/models.ts and packages/adapters/hooks/core/src/discovery/detector.ts.
+    notes: Env-var names whose ABSENCE is required for the rule to match. Used by hooks-adapter ordered-rule detector (e.g. codex-without-claude-env disambiguates from claude when OPENAI_API_KEY is set but CLAUDE_PLUGIN_ROOT/CLAUDE_ENV_FILE are not). Consumed by `HooksMuxDetectionRule.absentSignals` in packages/agent-catalog/src/models.ts and packages/adapters/hooks/core/src/discovery/detector.ts.
   - name: argvMatches
     type: list<string>
     required: false
@@ -1089,7 +1089,7 @@ nodeKinds:
   - name: consumer
     type: string
     required: false
-    notes: Subsystem that consumes the signal (e.g. agent-comm-mux).
+    notes: Subsystem that consumes the signal (e.g. agent-comm-adapter).
   - name: metadataFields
     type: list<map<string
     any>>: null

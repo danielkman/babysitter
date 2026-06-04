@@ -381,7 +381,7 @@ canonicalizations:
 
 ### Purpose
 
-A **`MergePolicy`** is a named conflict-resolution policy applied by hooks-mux when
+A **`MergePolicy`** is a named conflict-resolution policy applied by hooks-adapter when
 fanning out a single hook event across multiple registered handlers (plugins, settings
 layers, capability profiles). It reifies the rules that produce a `HookMergeDiagnostic`:
 which decision verb wins, how `persistEnv` / `unsetEnv` / `contextVars` /
@@ -397,12 +397,12 @@ and `MergedExecutionResult` types).
 |---|---|---|---|
 | `id` | id | yes | E.g. `merge-policy:most-restrictive`. |
 | `displayName` | string | yes | Human-readable label. |
-| `decisionRule` | enum | yes | `most-restrictive-wins` \| `last-writer-wins`. hooks-mux default is `most-restrictive-wins` (deny<ask<allow<continue<noop). |
+| `decisionRule` | enum | yes | `most-restrictive-wins` \| `last-writer-wins`. hooks-adapter default is `most-restrictive-wins` (deny<ask<allow<continue<noop). |
 | `envMergeRule` | enum | yes | `deep-merge` \| `last-writer-wins` \| `fail-on-conflict` \| `protected-prefixes` \| `namespace-required`. |
 | `protectedPrefixes` | list<string> | conditional | Required when `envMergeRule = protected-prefixes`. |
 | `namespaceRequired` | bool | conditional | Required when `envMergeRule = namespace-required`. |
 | `systemMessageStrategy` | enum | yes | `concatenate` \| `keep-first`. |
-| `arraysMergeRule` | enum | yes | `replace` \| `concatenate`. hooks-mux's `deepMerge` replaces arrays. |
+| `arraysMergeRule` | enum | yes | `replace` \| `concatenate`. hooks-adapter's `deepMerge` replaces arrays. |
 | `stopReasonRule` | enum | optional | How Stop hook stopReason strings collapse. |
 | `description` | markdown | yes | What the policy does. |
 

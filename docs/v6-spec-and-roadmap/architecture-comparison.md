@@ -60,10 +60,10 @@ Monolithic Package Structure
 
 ```
 Layered Architecture
-├── Infrastructure Layer (Dispatch/Mux)
+├── Infrastructure Layer (Dispatch/Adapter)
 │   ├── @a5c-ai/adapters (unchanged)
-│   ├── @a5c-ai/hooks-adapter-cli (evolved from hooks-mux)
-│   └── @a5c-ai/extensions-adapter (evolved from extension-mux)
+│   ├── @a5c-ai/hooks-adapter-cli (evolved from hooks-adapter)
+│   └── @a5c-ai/extensions-adapter (evolved from extensions-adapter)
 ├── Runtime Layer (Engine)
 │   └── @a5c-ai/genty-runtime (filesystem-free core)
 ├── Platform Layer (Persistence + Plugins)
@@ -252,14 +252,14 @@ This comparison is intentionally qualitative. Broad bundle, memory, and latency 
 
 ### Current Integration Patterns
 
-**Agent-Mux Integration**: Direct integration with monolithic interface
-**Hook Integration**: Via hooks-mux with limited extensibility
+**Agent-Adapter Integration**: Direct integration with monolithic interface
+**Hook Integration**: Via hooks-adapter with limited extensibility
 **MCP Integration**: Built-in MCP client functionality
 
 ### V6 Integration Patterns
 
-**Agent-Mux Integration**: Layered integration with clear protocol boundaries
-**Hook Integration**: Via hooks-mux with meta-plugin composition over concrete hook and plugin surfaces
+**Agent-Adapter Integration**: Layered integration with clear protocol boundaries
+**Hook Integration**: Via hooks-adapter with meta-plugin composition over concrete hook and plugin surfaces
 **MCP Integration**: Plugin-based MCP integration with replaceable implementations
 
 ## Summary

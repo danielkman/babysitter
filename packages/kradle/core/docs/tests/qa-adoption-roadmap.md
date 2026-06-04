@@ -86,7 +86,7 @@ Exit criteria:
 Add:
 
 - org memory fixtures;
-- fake Agent Mux;
+- fake Agent Adapter;
 - fake memory Git repo;
 - dispatch with memory snapshot tests;
 - summary-only `.a5c` import tests;

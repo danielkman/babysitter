@@ -3,7 +3,7 @@ id: package:a5c-ai-triggers
 attributes:
   packageId: "@a5c-ai/triggers-adapter"
   packageName: "@a5c-ai/triggers-adapter"
-  workspacePath: packages/triggers-mux
+  workspacePath: packages/triggers-adapter
   moduleType: typescript
   surfaceKinds:
     - cli

@@ -2,9 +2,9 @@
 
 ## Overview
 
-The live-stack workflow validates end-to-end harness compatibility by running real agent/model combinations through the transport-mux proxy. Each scenario installs a harness adapter, configures a model provider, and executes a babysitter process to confirm that the full pipeline — from agent CLI through transport-mux translation to model API and back — works correctly.
+The live-stack workflow validates end-to-end harness compatibility by running real agent/model combinations through the transport-adapter proxy. Each scenario installs a harness adapter, configures a model provider, and executes a babysitter process to confirm that the full pipeline — from agent CLI through transport-adapter translation to model API and back — works correctly.
 
-These tests catch integration regressions that unit tests and mocked pipelines cannot: mismatched streaming formats, incorrect provider translations, broken harness adapters, and transport-mux proxy routing failures.
+These tests catch integration regressions that unit tests and mocked pipelines cannot: mismatched streaming formats, incorrect provider translations, broken harness adapters, and transport-adapter proxy routing failures.
 
 ## Push Defaults
 
@@ -43,7 +43,7 @@ The `os` input allows cross-platform testing on macOS or Windows runners. When r
 Trigger a manual dispatch in the following situations:
 
 - **After adding a new harness adapter** — run the new agent against at least one model/mode combination to confirm it integrates correctly.
-- **After changing transport-mux proxy logic** — run a broad sweep to verify no existing translations broke.
+- **After changing transport-adapter proxy logic** — run a broad sweep to verify no existing translations broke.
 - **After modifying provider translations** — target the affected provider across multiple agents.
 - **Before releases (full matrix)** — run all agents against all providers to establish a complete compatibility baseline.
 - **When investigating a specific harness failure** — isolate the failing combination for faster iteration.
@@ -108,9 +108,9 @@ Each entry in the array defines one scenario:
 | Mode | Description |
 |------|-------------|
 | `ni` | Non-interactive — agent runs to completion with no user input |
-| `bridged-interactive` | Interactive prompts bridged through transport-mux |
+| `bridged-interactive` | Interactive prompts bridged through transport-adapter |
 | `interactive` | Native interactive mode (BP install only) |
-| `bridged-hooks` | Hook events bridged through transport-mux (BP install only) |
+| `bridged-hooks` | Hook events bridged through transport-adapter (BP install only) |
 
 ### Install
 
@@ -242,7 +242,7 @@ The **Live Stack Report** job runs after all scenarios complete. It generates a 
 | Runtime | Execution duration |
 | Status | Pass/fail result |
 
-Failed scenarios include expandable details with error logs, transport-mux traces, and the last agent output before failure. Look for these when triaging:
+Failed scenarios include expandable details with error logs, transport-adapter traces, and the last agent output before failure. Look for these when triaging:
 
 - **Transport errors** — usually indicate a proxy routing or translation issue.
 - **Timeout failures** — may indicate a hung agent or unresponsive model endpoint.

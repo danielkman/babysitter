@@ -35,7 +35,7 @@ Required checks:
 2. Kradle resolves default memory branch to commit.
 3. Context assembler runs allowed memory queries.
 4. Run detail stores `AgentMemorySnapshot` and selected context.
-5. Agent Mux launch receives prompt content plus memory tool descriptors.
+5. Agent Adapter launch receives prompt content plus memory tool descriptors.
 
 ## Dispatch with memory from two days ago
 

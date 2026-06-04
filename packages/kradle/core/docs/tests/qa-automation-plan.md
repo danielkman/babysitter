@@ -14,7 +14,7 @@ The QA plan covers:
 - identity, RBAC, secrets, config, and policy;
 - deployments and KubeVela/OAM integration;
 - packaging, Helm chart, Docker image, install, smoke, and upgrade;
-- future agents, Agent Mux integration, company brain memory, `.a5c` run imports, triggers, tools, skills, subagents, and orchestration.
+- future agents, Agent Adapter integration, company brain memory, `.a5c` run imports, triggers, tools, skills, subagents, and orchestration.
 
 ## Test pyramid
 
@@ -59,12 +59,12 @@ A feature is not done until:
 ### Phase 3: add API/controller contract tests
 
 - Add table-driven tests for org-scoped API routes, resource apply/list/delete, watch, and errors.
-- Add fake Kubernetes/Gitea/NATS/Agent Mux adapters.
+- Add fake Kubernetes/Gitea/NATS/Agent Adapter adapters.
 - Add no-secret response tests.
 
 ### Phase 4: add agent/company-brain tests
 
-- Add fixtures for org memory, `.a5c` run imports, historical memory refs, and Agent Mux session binding.
+- Add fixtures for org memory, `.a5c` run imports, historical memory refs, and Agent Adapter session binding.
 - Add cross-org denial and redaction tests.
 - Add browser E2E for dispatch with memory and import review.
 
@@ -84,7 +84,7 @@ A feature is not done until:
 | CI/runners | platform/runtime | lifecycle E2E, isolation, ServiceAccount/RBAC tests. |
 | Security | security/platform | auth/RBAC/secret/no-leak tests. |
 | Packaging | release/platform | package/chart/install/smoke tests. |
-| Agents/memory | agents/platform | dispatch, context, memory, Agent Mux, import, trigger tests. |
+| Agents/memory | agents/platform | dispatch, context, memory, Agent Adapter, import, trigger tests. |
 
 ## Reporting
 

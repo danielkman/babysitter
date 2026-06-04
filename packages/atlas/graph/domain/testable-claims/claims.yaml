@@ -227,7 +227,7 @@ attributes:
   displayName: "No hooks in turn loop"
   description: |
     When hooks are unavailable, orchestrator drives loop in-turn — if
-    the hooks-mux is not configured or not reachable, the orchestration
+    the hooks-adapter is not configured or not reachable, the orchestration
     falls back to a synchronous in-turn loop without hook callbacks.
   testStatus: passing
   testType: integration

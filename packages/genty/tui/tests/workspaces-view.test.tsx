@@ -95,7 +95,7 @@ function makeInventory() {
             issueTitle: 'Implement the workspaces view',
             projectId: 'adapters',
             projectKey: 'AMTUI',
-            projectName: 'Agent Mux TUI',
+            projectName: 'Agent Adapter TUI',
             linkedAt: '2026-04-27T06:30:00.000Z',
             source: 'created-from-issue',
           },

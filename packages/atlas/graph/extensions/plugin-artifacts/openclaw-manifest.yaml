@@ -10,7 +10,7 @@ attributes:
   scriptVariants:
     - event-hooks
   contextFiles:
-    - packages/extension-mux/src/targets/openclaw.ts
+    - packages/extensions-adapter/src/targets/openclaw.ts
 edges:
   emits_artifact:
     - target: plugin-target:openclaw

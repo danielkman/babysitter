@@ -1,4 +1,4 @@
-# SDK-Level Agent-Mux Discovery
+# SDK-Level Agent-Adapter Discovery
 
 ## Summary
 

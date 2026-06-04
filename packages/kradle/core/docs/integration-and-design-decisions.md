@@ -7,7 +7,7 @@ architectural trade-offs, and system nuances for the Kradle project.
 
 ## 1. External Dependencies & Integration Points
 
-### 1.1 Agent-Mux Dependency
+### 1.1 Agent-Adapter Dependency
 
 #### What Kradle Imports from @a5c-ai/adapters
 
@@ -44,7 +44,7 @@ SSE streaming uses a persistent HTTP connection with:
 - Graceful abort via returned `{ abort }` handle
 - Buffer-based SSE parsing (splits on `\n\n`, extracts `data:` lines)
 
-#### What Works WITHOUT Agent-Mux
+#### What Works WITHOUT Agent-Adapter
 
 The following subsystems are fully operational without adapters:
 
@@ -61,7 +61,7 @@ The following subsystems are fully operational without adapters:
 11. **Notification System** -- Resource-change notifications via event bus
 12. **MCP Server** -- All 14 tools operational; `kradle_dispatch_agent` returns error status
 
-#### What REQUIRES Agent-Mux
+#### What REQUIRES Agent-Adapter
 
 The following operations fail gracefully (return null/error) without a running gateway:
 
@@ -99,7 +99,7 @@ Helm values.yaml:
 
 The web container does NOT communicate with adapters directly. All agent
 operations route through the API container's `/api/agents/*` endpoints, which
-delegate to the mux client instance.
+delegate to the adapter client instance.
 
 #### Runtime Availability Check
 
@@ -113,11 +113,11 @@ propagating into the resource reconciliation loops.
 
 ---
 
-### 1.2 Transport-Mux Dependency
+### 1.2 Transport-Adapter Dependency
 
-#### How Transport-Mux Handles Protocol Translation
+#### How Transport-Adapter Handles Protocol Translation
 
-Transport-mux is an external component (not bundled with kradle) that provides
+Transport-adapter is an external component (not bundled with kradle) that provides
 protocol translation between different agent communication channels:
 
 - **stdio** -- stdin/stdout JSON-RPC for local CLI agents
@@ -125,7 +125,7 @@ protocol translation between different agent communication channels:
 - **websocket** -- bidirectional streaming for persistent connections
 - **unix** -- Unix domain socket for same-host agents
 
-The transport-mux runtime sits between the adapters gateway and the actual
+The transport-adapter runtime sits between the adapters gateway and the actual
 agent process, handling message framing, connection lifecycle, and protocol
 negotiation.
 
@@ -166,20 +166,20 @@ It does NOT:
 - Open actual TCP/WebSocket connections
 - Start stdio processes
 - Perform health checks (despite modeling healthCheck in spec)
-- Activate the transport-mux runtime component
-- Signal transport-mux to register a new binding
+- Activate the transport-adapter runtime component
+- Signal transport-adapter to register a new binding
 
-The intent is that transport-mux watches AgentTransportBinding resources via
+The intent is that transport-adapter watches AgentTransportBinding resources via
 Kubernetes watch and self-reconciles. Kradle's role is to persist the desired
 state and present it in the UI.
 
 ---
 
-### 1.3 Hooks-Mux Dependency
+### 1.3 Hooks-Adapter Dependency
 
-#### What Hooks-Mux Provides
+#### What Hooks-Adapter Provides
 
-The hooks-mux system (external to kradle) provides lifecycle event dispatching
+The hooks-adapter system (external to kradle) provides lifecycle event dispatching
 for agent runs:
 
 - `RUN_CREATED` -- Agent dispatch initiated
@@ -219,18 +219,18 @@ The event bus is limited to **resource-change events only**. It does not model:
 
 Kradle has a `WebhookBus` class (`core/src/hooks-events.js`) that handles
 outbound webhook delivery for resource events, but it is NOT connected to
-hooks-mux lifecycle events. Specifically:
+hooks-adapter lifecycle events. Specifically:
 
 - `WebhookBus.deliver()` creates `WebhookDelivery` resources for webhook subscribers
-- It does NOT receive or forward agent-lifecycle events from hooks-mux
+- It does NOT receive or forward agent-lifecycle events from hooks-adapter
 - `AgentTriggerRule` resources define event-to-stack routing but the trigger
   evaluation is purely resource-driven (no real-time hook stream)
 - `AgentTriggerExecution` records are created by the trigger controller but
-  the trigger is evaluated on resource watch events, not on hooks-mux push
+  the trigger is evaluated on resource watch events, not on hooks-adapter push
 
 The missing integration:
-1. No hooks-mux webhook receiver endpoint in kradle's HTTP server
-2. No translation layer from hooks-mux event format to kradle event bus
+1. No hooks-adapter webhook receiver endpoint in kradle's HTTP server
+2. No translation layer from hooks-adapter event format to kradle event bus
 3. No lifecycle event emission when AgentDispatchRun status changes
 4. No step-level event tracking (only run-level status)
 
@@ -495,11 +495,11 @@ Exposed via stdio (`kradle mcp`):
 
 ---
 
-### 2.2 What Agent-Mux Owns
+### 2.2 What Agent-Adapter Owns
 
 #### Actual Agent Spawning and Management
 
-Agent-mux is responsible for:
+Adapters is responsible for:
 - Instantiating agent processes (Claude, Codex, Gemini, etc.)
 - Managing process lifecycle (start, monitor, terminate)
 - Resource isolation between concurrent agent sessions
@@ -514,7 +514,7 @@ Agent-mux is responsible for:
 
 #### Adapter Registry
 
-Agent-mux maintains the runtime adapter registry:
+Adapters maintains the runtime adapter registry:
 - Claude adapter (Anthropic API)
 - Codex adapter (OpenAI API)
 - Gemini adapter (Google API)
@@ -1186,13 +1186,13 @@ dispatch architecture.
 
 **Previous state:**
 Created `AgentSession` resources with `spec.agentMuxSessionId`. Status depended
-on mux client responses; if mux was unavailable, status stayed `Pending`.
+on adapter client responses; if adapter was unavailable, status stayed `Pending`.
 
 **Resolution:**
 Agent pods now POST directly to the Kradle callback endpoint
 (`POST /api/orgs/{org}/agents/runs/{name}/callback`) on completion.
 `persistSessionEvent()` applies the result to `AgentSession` and `AgentDispatchRun`
-in a single atomic update. No polling or mux webhook receiver needed.
+in a single atomic update. No polling or adapter webhook receiver needed.
 
 ---
 
@@ -1204,11 +1204,11 @@ once and discarded (no caching of adapter capabilities).
 
 **What it should do:**
 Cache adapter capabilities with TTL, invalidate on adapter CRD changes.
-Reduces mux API calls during frequent stack reconciliation cycles.
+Reduces adapter API calls during frequent stack reconciliation cycles.
 
 **What blocks it:**
-No cache layer between mux client and stack controller. Low priority since
-mux is usually fast and capabilities rarely change.
+No cache layer between adapter client and stack controller. Low priority since
+adapter is usually fast and capabilities rarely change.
 
 **Estimated effort:** 0.5 day (add to snapshot cache pattern)
 
@@ -1320,7 +1320,7 @@ in-cluster object store reference that the pod can fetch at startup.
 
 **Previous state:**
 `KradleWorkspace` spec defined volume mounts. `launchSession()` passed
-`workspace.mountPath` to mux. Assumed workspace was pre-provisioned.
+`workspace.mountPath` to adapter. Assumed workspace was pre-provisioned.
 
 **Resolution:**
 The dispatch flow now verifies workspace phase before Job creation.

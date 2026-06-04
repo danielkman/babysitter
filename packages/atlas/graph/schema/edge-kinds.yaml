@@ -1117,9 +1117,9 @@ edgeKinds:
 - id: edge:bridges-protocol-type
   name: bridges_protocol_type
   origin: a5c
-  description: a Mux bridges a universal protocol-type at a stack Layer position
+  description: a Adapter bridges a universal protocol-type at a stack Layer position
   source:
-  - Mux
+  - Adapter
   target:
   - Layer
   cardinality: N:1
@@ -1178,9 +1178,9 @@ edgeKinds:
 - id: edge:bridges-for
   name: bridges_for
   origin: a5c
-  description: a Mux bridges native impls of specific AgentVersion / ModelVersion / Provider records into the canonical surface
+  description: a Adapter bridges native impls of specific AgentVersion / ModelVersion / Provider records into the canonical surface
   source:
-  - Mux
+  - Adapter
   target:
   - AgentVersion
   - ModelVersion
@@ -1196,7 +1196,7 @@ edgeKinds:
   - ModelVersion
   - Provider
   target:
-  - Mux
+  - Adapter
   cardinality: N:N
   inverse: bridges_for
 - id: edge:tests-claim
@@ -1461,7 +1461,7 @@ edgeKinds:
 - id: edge:merge-policy-orders-decision-verb
   name: merge_policy_orders_decision_verb
   origin: a5c
-  originContext: Derived from hooks-mux MergePolicy decisionRule ordering semantics.
+  originContext: Derived from hooks-adapter MergePolicy decisionRule ordering semantics.
   description: a hook merge policy orders a canonical decision verb in its conflict-resolution lattice
   source: [MergePolicy]
   target: [DecisionVerb]
@@ -2428,7 +2428,7 @@ edgeKinds:
 - id: edge:uses-merge-policy
   name: uses_merge_policy
   origin: a5c
-  description: a HookSurface uses a named MergePolicy when fanning a single hook event across multiple registered handlers (hooks-mux conflict-resolution rule)
+  description: a HookSurface uses a named MergePolicy when fanning a single hook event across multiple registered handlers (hooks-adapter conflict-resolution rule)
   source:
   - HookSurface
   target:

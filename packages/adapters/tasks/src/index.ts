@@ -221,7 +221,7 @@ export type {
 export { ServerBreakpointBackend, ServerBackendError } from "./backends/server.js";
 export type { ServerBreakpointBackendConfig } from "./backends/server.js";
 
-// ── Agent Mux Backend ──────────────────────────────────────────────
+// ── Agent Adapter Backend ──────────────────────────────────────────────
 export {
   AgentMuxResponderBackend,
   AgentMuxResponderBackendError,

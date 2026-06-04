@@ -28,7 +28,7 @@ attributes:
   examples:
     - NIST AI RMF-style govern/map/measure/manage controls for agentic systems.
     - OWASP agentic-risk mitigations for goal hijacking, memory poisoning, tool misuse, and cascading failures.
-    - Babysitter plugin governance, hooks-mux merge policies, permission gates, and policy-controlled task effects.
+    - Babysitter plugin governance, hooks-adapter merge policies, permission gates, and policy-controlled task effects.
     - Audit trails, evidence registers, compliance frameworks, secret-handling policies, and review gates.
   fitNotes: |
     Use this layer for controls and accountability. The same control can be

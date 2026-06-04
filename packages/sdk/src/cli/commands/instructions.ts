@@ -51,7 +51,7 @@ export interface InstructionsCommandArgs {
 
 type ResolvedInstructionsHarness = {
   harness: string;
-  source: "explicit" | "caller" | "hooks-mux" | "fallback";
+  source: "explicit" | "caller" | "hooks-adapter" | "fallback";
   warnings: string[];
   evidence: string[];
 };
@@ -197,7 +197,7 @@ function resolveInstructionsHarness(
   if (hooksMuxCaller) {
     return {
       harness: hooksMuxCaller.name,
-      source: "hooks-mux",
+      source: "hooks-adapter",
       warnings: [],
       evidence: hooksMuxCaller.matchedEnvVars,
     };

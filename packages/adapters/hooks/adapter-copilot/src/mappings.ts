@@ -33,7 +33,7 @@ function hookMappingToPhaseMapping(mapping: HookMappingDescriptor): PhaseMapping
 function buildFromCatalog(): PhaseMapping[] {
   const mappings = listHookMappingsByAdapterFamily('copilot');
   if (mappings.length === 0) {
-    throw new Error('hooks-mux adapter-copilot: catalog unavailable or returned no mappings for family "copilot"');
+    throw new Error('hooks-adapter adapter-copilot: catalog unavailable or returned no mappings for family "copilot"');
   }
   const phaseMappings = mappings
     .map(hookMappingToPhaseMapping)

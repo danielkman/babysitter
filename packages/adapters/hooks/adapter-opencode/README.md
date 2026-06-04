@@ -1,6 +1,6 @@
 # @a5c-ai/hooks-adapter-opencode
 
-OpenCode harness adapter for hooks-mux.
+OpenCode harness adapter for hooks-adapter.
 
 ## Install
 
@@ -20,7 +20,7 @@ import {
 } from "@a5c-ai/hooks-adapter-opencode";
 ```
 
-The package exposes OpenCode-specific normalization, phase mappings, session utilities, and an in-process configured engine for hooks-mux integrations.
+The package exposes OpenCode-specific normalization, phase mappings, session utilities, and an in-process configured engine for hooks-adapter integrations.
 
 See [`packages/adapters/hooks/README.md`](../README.md) for the workspace overview and `packages/adapters/hooks/docs/adapter-integration-guide.md` for end-to-end integration guidance.
 

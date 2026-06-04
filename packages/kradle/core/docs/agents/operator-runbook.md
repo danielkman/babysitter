@@ -30,7 +30,7 @@ When agents are implemented, enable in this order:
 
 1. Install/upgrade CRDs for agent config resources.
 2. Enable `agents.enabled=true` in Helm values.
-3. Configure Agent Mux gateway URL and credentials through `existingSecret`.
+3. Configure Agent Adapter gateway URL and credentials through `existingSecret`.
 4. Configure default untrusted runner pool.
 5. Configure default agent runtime ServiceAccount.
 6. Enable permission review without auto-dispatch.
@@ -47,10 +47,10 @@ Operator should verify:
 - Kubernetes API reachable from controller pod;
 - Kradle CRDs installed;
 - native RBAC allows controller to manage intended resources;
-- Agent Mux gateway reachable from controller namespace;
+- Agent Adapter gateway reachable from controller namespace;
 - runner pools exist and trust tiers are correct;
 - Secret/ConfigMap grant management feature gate configured;
-- NetworkPolicy allows only required Agent Mux/MCP egress;
+- NetworkPolicy allows only required Agent Adapter/MCP egress;
 - `/api/controller` reports healthy controller model;
 - `/api/watch/orgs/[org]/repositories` streams events.
 
@@ -65,7 +65,7 @@ Default install should be safe:
 - no privileged secrets on forks;
 - untrusted runner pool default;
 - no broad Secret read for web pod;
-- Agent Mux gateway optional/degraded if absent.
+- Agent Adapter gateway optional/degraded if absent.
 
 ## Common operations
 
@@ -107,8 +107,8 @@ Default install should be safe:
 | --- | --- | --- |
 | stack not ready | stack conditions | fix adapter, ServiceAccount, grant, MCP, or skill dependency. |
 | dispatch denied | permission review response | add least-privilege role/grant or change runner/source. |
-| Agent Mux launch fails | attempt status and adapter rejection | update launch options or adapter configuration. |
-| session stuck pending | Agent Mux gateway and session binding | retry binding or inspect gateway logs. |
+| Agent Adapter launch fails | attempt status and adapter rejection | update launch options or adapter configuration. |
+| session stuck pending | Agent Adapter gateway and session binding | retry binding or inspect gateway logs. |
 | no watch updates | `/api/watch/orgs/<org>/<resource>` | check Kubernetes watch/RBAC/network. |
 | Secret grant missing | capability requirements | create scoped `AgentSecretGrant`. |
 | fork run gets privileged pool | trigger/runner trust policy | force untrusted pool and audit policy violation. |
@@ -123,13 +123,13 @@ To disable safely:
 3. Wait for active dispatches or cancel them.
 4. Disable write-back actions.
 5. Keep read-only run/artifact/audit views available.
-6. Disable Agent Mux gateway integration.
+6. Disable Agent Adapter gateway integration.
 7. Leave CRDs installed until retained records are exported or pruned.
 
 Emergency disable:
 
 - set `agents.enabled=false` or feature gates false;
-- revoke Agent Mux gateway secret;
+- revoke Agent Adapter gateway secret;
 - revoke privileged `AgentSecretGrant` and `AgentRoleBinding` resources;
 - scale agent controllers down if necessary;
 - preserve audit and run records.
@@ -140,7 +140,7 @@ Emergency disable:
 - queued dispatches;
 - failed dispatches;
 - pending approvals;
-- Agent Mux launch failures;
+- Agent Adapter launch failures;
 - permission review denials;
 - RBAC drift;
 - missing grants;
@@ -156,7 +156,7 @@ A safe support bundle should include:
 - permission review response;
 - conditions from ServiceAccount/RoleBinding/SecretGrant/ConfigGrant resources;
 - event timeline;
-- Agent Mux run/session IDs;
+- Agent Adapter run/session IDs;
 - audit records;
 - chart values with Secret values redacted.
 

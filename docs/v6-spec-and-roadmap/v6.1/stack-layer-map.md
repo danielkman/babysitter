@@ -29,10 +29,10 @@ The atlas graph defines 14 stack layers (`stack-layers` cluster). Each layer rep
 | Packages | `@a5c-ai/transport-adapter` (proxy), `@a5c-ai/adapters-cli` (provider config) |
 | Node Kinds | Provider, ModelProviderProduct, ModelProviderVersion (compute + capabilities-and-models) |
 | Graph Cluster | compute |
-| Maturity | Partial — provider routing implemented in transport-mux proxy |
-| Spec Coverage | v6.0 package-specs.md mentions transport-mux |
+| Maturity | Partial — provider routing implemented in transport-adapter proxy |
+| Spec Coverage | v6.0 package-specs.md mentions transport-adapter |
 
-**Gap:** Provider concepts are split between transport-mux (proxy) and adapters-cli (provider translation). No unified provider abstraction package.
+**Gap:** Provider concepts are split between transport-adapter (proxy) and adapters-cli (provider translation). No unified provider abstraction package.
 
 ---
 
@@ -45,7 +45,7 @@ The atlas graph defines 14 stack layers (`stack-layers` cluster). Each layer rep
 | Node Kinds | TransportProxy, TransportClient, ModelTransportProtocol, TransportProtocol (compute + capabilities-and-models) |
 | Graph Cluster | compute |
 | Maturity | Implemented — HTTP proxy with codec translation |
-| Spec Coverage | transport-mux README (marked deferred for full codec refactor) |
+| Spec Coverage | transport-adapter README (marked deferred for full codec refactor) |
 
 **Gap:** Codec capabilities (tool schema translation, cost normalization) are planned but not fully implemented. The v6.0 plan had a codec architecture refactor that was started but not completed.
 
@@ -62,7 +62,7 @@ The atlas graph defines 14 stack layers (`stack-layers` cluster). Each layer rep
 | Maturity | **Mature** — Dual implementation path (unified + harness-neutral) |
 | Spec Coverage | v6.0 unified-stack-architecture.md, v6-architecture-specification.md |
 
-**Note:** Two packages implement this layer for different concerns: `genty-core` (unified babysitter loop) and `agent-comm-mux` (harness-neutral dispatch). This is intentional per v6.0 spec.
+**Note:** Two packages implement this layer for different concerns: `genty-core` (unified babysitter loop) and `agent-comm-adapter` (harness-neutral dispatch). This is intentional per v6.0 spec.
 
 ---
 
@@ -74,7 +74,7 @@ The atlas graph defines 14 stack layers (`stack-layers` cluster). Each layer rep
 | Packages | `@a5c-ai/genty-platform`, `@a5c-ai/comm-adapter` |
 | Node Kinds | AgentRuntimeImpl (agent-stack) |
 | Graph Cluster | agent-stack |
-| Maturity | **Mature** — agent-platform hosts the unified runtime; agent-comm-mux hosts harness dispatch |
+| Maturity | **Mature** — agent-platform hosts the unified runtime; agent-comm-adapter hosts harness dispatch |
 | Spec Coverage | v6.0 unified-stack-architecture.md |
 
 ---
@@ -90,7 +90,7 @@ The atlas graph defines 14 stack layers (`stack-layers` cluster). Each layer rep
 | Maturity | Partial — plugin compiler mature; deeper platform (team agents, marketplace identity) deferred |
 | Spec Coverage | v6.0 plugin-ecosystem.md |
 
-**Gap:** AgentPlatformImpl is defined in graph but has no standalone implementation package. Platform concerns are scattered across agent-platform, extension-mux, and agent-catalog.
+**Gap:** AgentPlatformImpl is defined in graph but has no standalone implementation package. Platform concerns are scattered across agent-platform, extensions-adapter, and agent-catalog.
 
 ---
 
@@ -130,7 +130,7 @@ The atlas graph defines 14 stack layers (`stack-layers` cluster). Each layer rep
 | Packages | `@a5c-ai/tasks-adapter` (approval gates) |
 | Node Kinds | Sandbox, PermissionMode (lifecycle + security) |
 | Graph Cluster | lifecycle, security |
-| Maturity | Partial — tasks-mux handles human approval; filesystem/network policy enforcement deferred |
+| Maturity | Partial — tasks-adapter handles human approval; filesystem/network policy enforcement deferred |
 | Spec Coverage | v6.0 security-architecture.md |
 
 **Gap:** Sandbox as a policy enforcement layer (filesystem restrictions, network controls, resource limits) is aspirational. Only human approval gates are implemented.

@@ -84,7 +84,7 @@ The renames and restructuring are plumbing. This document defines the **capabili
 **Graph node kind:** `AgentPlatformImpl`
 **Graph attributes:** defineTask + plugin/skill registry
 
-**Current reality:** `extension-mux` (plugin compiler) + `agent-catalog` (metadata) + agent-platform platform module
+**Current reality:** `extensions-adapter` (plugin compiler) + `agent-catalog` (metadata) + agent-platform platform module
 
 **What it should be:**
 
@@ -115,7 +115,7 @@ The renames and restructuring are plumbing. This document defines the **capabili
 - **Team governance:** Approval chains, escalation paths, authority delegation
 
 ### Distribution
-- **Cross-harness compilation:** Single plugin → Claude Code + Codex + Gemini + Copilot + Cursor + Pi + OMP + OpenCode + OpenClaw + Hermes (current: extension-mux does this)
+- **Cross-harness compilation:** Single plugin → Claude Code + Codex + Gemini + Copilot + Cursor + Pi + OMP + OpenCode + OpenClaw + Hermes (current: extensions-adapter does this)
 - **Package publishing:** Automated npm publish with staging/production tags
 - **Install verification:** Post-install health check per harness
 - **Telemetry:** Plugin usage analytics, error rates, user satisfaction
@@ -163,7 +163,7 @@ The v6.1-graph-alignment.mjs process should be extended with:
 | New Phase | Capabilities | Depends On |
 |-----------|-------------|------------|
 | Phase 6: Core loop upgrade | Multi-strategy loop, subagent orchestration, context management | Phase 1.3 (adapters decomposition) |
-| Phase 7: Runtime hardening | Token budgets, cost tracking, health monitoring, graceful shutdown | Phase 3.1 (lifecycle), Phase 2.1 (tool-mux) |
-| Phase 8: Platform maturation | Skill routing, process recommendation, plugin sandboxing | Phase 1.1 (extension-mux), Phase 1.2 (tasks-mux) |
+| Phase 7: Runtime hardening | Token budgets, cost tracking, health monitoring, graceful shutdown | Phase 3.1 (lifecycle), Phase 2.1 (tools-adapter) |
+| Phase 8: Platform maturation | Skill routing, process recommendation, plugin sandboxing | Phase 1.1 (extensions-adapter), Phase 1.2 (tasks-adapter) |
 | Phase 9: Execution modes | Docker, SSH, K8s execution | Phase 3.1 (9-state lifecycle) |
 | Phase 10: Team agents | Group chat, delegation, coordination | Phase 6 (core loop) |

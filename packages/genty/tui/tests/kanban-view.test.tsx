@@ -28,7 +28,7 @@ function makeOverview() {
         {
           id: 'project-1',
           key: 'ACA',
-          name: 'Agent Mux TUI',
+          name: 'Agent Adapter TUI',
           issueIds: ['issue-1'],
           labels: [],
           assignees: [],
@@ -111,7 +111,7 @@ function makeOverview() {
         {
           projectId: 'project-1',
           projectKey: 'ACA',
-          projectName: 'Agent Mux TUI',
+          projectName: 'Agent Adapter TUI',
           generatedAt: '2026-04-27T00:00:00.000Z',
           columns: [
             { id: 'todo', name: 'Todo', issueIds: [], issueCount: 0, isOverLimit: false },
@@ -255,7 +255,7 @@ describe('kanban-view', () => {
     await flush();
     rerender(<View client={client} kanban={controlPlane} active={true} eventStream={stream} emit={() => {}} />);
     const frame = lastFrame() ?? '';
-    expect(frame).toContain('ACA Agent Mux TUI');
+    expect(frame).toContain('ACA Agent Adapter TUI');
     expect(frame).toContain('ACA-398');
     expect(frame).toContain('Implement kanban view');
     expect(frame).toContain('aca-398');

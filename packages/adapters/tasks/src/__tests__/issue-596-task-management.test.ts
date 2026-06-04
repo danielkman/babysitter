@@ -38,7 +38,7 @@ let breakpointsDir: string;
 
 describe("issue #596 task-management primitives", () => {
   beforeEach(async () => {
-    tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "tasks-mux-596-"));
+    tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "tasks-adapter-596-"));
     breakpointsDir = path.join(tmpDir, ".breakpoints");
   });
 

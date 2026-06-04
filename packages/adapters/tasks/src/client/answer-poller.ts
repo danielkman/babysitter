@@ -219,7 +219,7 @@ export class AnswerPoller {
       const breakpoint = await this.client!.getBreakpoint(breakpointId);
       return this.breakpointToResult(breakpoint, startTime);
     } catch (e) {
-      process.stderr.write(`[tasks-mux] breakpoint final state fetch failed: ${e instanceof Error ? e.message : String(e)}, returning expired\n`);
+      process.stderr.write(`[tasks-adapter] breakpoint final state fetch failed: ${e instanceof Error ? e.message : String(e)}, returning expired\n`);
       // If we can't even fetch the breakpoint, return a minimal result
       return {
         answered: false,

@@ -873,7 +873,7 @@ describe("handleHookRun stop", () => {
     ]);
   });
 
-  it("continues for tasks-mux routed agent effects but exits for externally waiting routes", async () => {
+  it("continues for tasks-adapter routed agent effects but exits for externally waiting routes", async () => {
     process.env.BABYSITTER_HOOK_BACKOFF_BASE = "0.001";
     process.env.BABYSITTER_HOOK_BACKOFF_CAP = "0.001";
     const runsDir = path.join(tmpDir, "runs");
@@ -904,7 +904,7 @@ describe("handleHookRun stop", () => {
     });
     expect(routedAgentEvents.find((event) => event.type === "COST_TRACKED")?.data).toMatchObject({
       effectId: "routed-agent",
-      source: "tasks-mux:adapters",
+      source: "tasks-adapter:adapters",
       costUsd: 0.001,
     });
 
@@ -1062,7 +1062,7 @@ describe("handleHookRun stop", () => {
 });
 
 describe("handleHookRun session-start", () => {
-  it("initializes session state from stdin session_id (env file writing moved to hooks-mux)", async () => {
+  it("initializes session state from stdin session_id (env file writing moved to hooks-adapter)", async () => {
     const code = await callWithStdin(
       JSON.stringify({ session_id: "my-session-42" }),
       {
@@ -1073,7 +1073,7 @@ describe("handleHookRun session-start", () => {
       },
     );
     expect(code).toBe(0);
-    // Session state file should be created (env file writing is now handled by hooks-mux)
+    // Session state file should be created (env file writing is now handled by hooks-adapter)
     const sessionPath = getSessionFilePath(stateDir, "my-session-42");
     const stat = await fs.stat(sessionPath).catch(() => null);
     expect(stat).not.toBeNull();

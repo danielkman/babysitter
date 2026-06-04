@@ -16,7 +16,7 @@ How the babysitter orchestration system works across coding agent harnesses, fro
 
 ## System Overview
 
-The babysitter plugin installs into any supported coding agent (Claude Code, Codex, Pi, Gemini CLI, etc.) and provides orchestrated process execution. Three "mux" layers compensate for the differences between harnesses:
+The babysitter plugin installs into any supported coding agent (Claude Code, Codex, Pi, Gemini CLI, etc.) and provides orchestrated process execution. Three "adapter" layers compensate for the differences between harnesses:
 
 ```mermaid
 graph TB
@@ -27,12 +27,12 @@ graph TB
 
     subgraph "Harness Layer"
         HARNESS["Coding Agent<br/>(Claude Code, Codex, Pi, ...)"]
-        HARNESS -->|"native hooks"| HM["hooks-mux"]
-        HARNESS -->|"API calls"| TM["transport-mux"]
+        HARNESS -->|"native hooks"| HM["hooks-adapter"]
+        HARNESS -->|"API calls"| TM["transport-adapter"]
         HARNESS -->|"skill invocation"| SDK["babysitter SDK"]
     end
 
-    subgraph "Mux Layer"
+    subgraph "Adapter Layer"
         HM -->|"canonical events"| SDK
         TM -->|"normalized protocol"| UPSTREAM["Any Provider<br/>(Anthropic, OpenAI, Google, Azure)"]
         AM["adapters"] -->|"launch + proxy"| HARNESS
@@ -47,19 +47,19 @@ graph TB
 
 Each layer solves a specific interoperability problem:
 
-| Mux | Problem | Solution |
+| Adapter | Problem | Solution |
 |-----|---------|----------|
-| **hooks-mux** | Each harness has different hook event names, payloads, output formats | Normalizes native events to canonical phases, runs unified handlers, renders results back to harness format |
-| **transport-mux** | Harnesses speak different API protocols (Anthropic, OpenAI, Google) | HTTP proxy translates between the harness's native protocol and any upstream provider |
+| **hooks-adapter** | Each harness has different hook event names, payloads, output formats | Normalizes native events to canonical phases, runs unified handlers, renders results back to harness format |
+| **transport-adapter** | Harnesses speak different API protocols (Anthropic, OpenAI, Google) | HTTP proxy translates between the harness's native protocol and any upstream provider |
 | **adapters** | Harnesses have different CLI surfaces, capabilities, plugin loading | Unified `adapters launch` resolves provider config, starts proxy if needed, spawns harness with correct args |
 
 ---
 
 ## The Three Muxes
 
-### hooks-mux: Hook Surface Normalization
+### hooks-adapter: Hook Surface Normalization
 
-Each harness fires lifecycle hooks differently. hooks-mux normalizes them into a canonical interface:
+Each harness fires lifecycle hooks differently. hooks-adapter normalizes them into a canonical interface:
 
 ```mermaid
 graph LR
@@ -70,7 +70,7 @@ graph LR
         GC["Gemini CLI<br/>shell hooks"]
     end
 
-    subgraph "hooks-mux"
+    subgraph "hooks-adapter"
         AC["adapter-claude<br/>normalizer.ts"]
         AX["adapter-codex<br/>normalizer.ts"]
         AP["adapter-pi<br/>normalizer.ts"]
@@ -94,9 +94,9 @@ graph LR
 
 Each adapter maps native event names → canonical phases via `mappings.ts` sourced from the atlas graph.
 
-### transport-mux: Provider Protocol Bridge
+### transport-adapter: Provider Protocol Bridge
 
-When a harness needs to talk to a provider it doesn't support natively, transport-mux runs as a local HTTP proxy:
+When a harness needs to talk to a provider it doesn't support natively, transport-adapter runs as a local HTTP proxy:
 
 ```mermaid
 graph LR
@@ -104,7 +104,7 @@ graph LR
         CC["Claude Code"]
     end
 
-    subgraph "transport-mux proxy"
+    subgraph "transport-adapter proxy"
         SERVER["HTTP Server<br/>/v1/messages"]
         DECODE["Decode Anthropic request<br/>Extract messages, tools, rawContent"]
         ENGINE["Completion Engine"]
@@ -128,7 +128,7 @@ graph LR
 - `createOpenAICompletionEngine()` — Foundry/Azure path. Handles `input_schema → parameters` tool normalization, streaming `delta.tool_calls` accumulation, `tool_result → role:"tool"` message translation.
 - `createGoogleCompletionEngine()` — Vertex/Gemini path. Handles `functionCall/functionResponse` translation, `thoughtSignature` server-side store for multi-turn preservation.
 
-**When proxy is needed:** Determined by `translateForHarness()` — if the harness adapter declares `proxyRequired: true` for a given provider, transport-mux bridges the gap.
+**When proxy is needed:** Determined by `translateForHarness()` — if the harness adapter declares `proxyRequired: true` for a given provider, transport-adapter bridges the gap.
 
 ### adapters: Unified Launch Surface
 
@@ -139,7 +139,7 @@ sequenceDiagram
     participant U as User / CI
     participant AM as adapters launch
     participant CAT as agent-catalog
-    participant TM as transport-mux
+    participant TM as transport-adapter
     participant H as Harness
 
     U->>AM: adapters launch claude foundry --model gpt-5.5
@@ -157,11 +157,11 @@ sequenceDiagram
 
 ## Plugin Generation
 
-`npm run generate:plugins` compiles unified plugin source into harness-specific distributions via the `extension-mux` compiler:
+`npm run generate:plugins` compiles unified plugin source into harness-specific distributions via the `extensions-adapter` compiler:
 
 ```mermaid
 graph TB
-    UPF["Unified Plugin Source<br/>(skills, hooks, commands)"] --> COMPILER["extension-mux compiler"]
+    UPF["Unified Plugin Source<br/>(skills, hooks, commands)"] --> COMPILER["extensions-adapter compiler"]
 
     COMPILER --> CC_OUT["artifacts/generated-plugins/claude-code/<br/>plugin.json + hooks.json + *.sh scripts"]
     COMPILER --> CX_OUT["artifacts/generated-plugins/codex/<br/>.codex-plugin/plugin.json + hooks.json + shell hooks"]
@@ -173,7 +173,7 @@ graph TB
 
 | Harness | Plugin Format | Hook Mechanism |
 |---------|---------------|----------------|
-| Claude Code | `plugin.json` + `hooks/hooks.json` + shell scripts | Shell hooks: `babysitter-proxied-session-start.sh` → `a5c-hooks-mux invoke --adapter claude` |
+| Claude Code | `plugin.json` + `hooks/hooks.json` + shell scripts | Shell hooks: `babysitter-proxied-session-start.sh` → `a5c-hooks-adapter invoke --adapter claude` |
 | Codex | `.codex-plugin/plugin.json` + `hooks/hooks.json` + shell scripts | Shell hooks via hooks.json (auto-detected at `./hooks/hooks.json`) |
 | Pi | `package.json` with `pi.extensions` | In-process programmatic hooks |
 | Gemini CLI | Gemini-native hook config | Shell hooks via adapter |
@@ -197,7 +197,7 @@ The harness runs interactively with native hook support. Hooks drive the orchest
 sequenceDiagram
     participant U as User
     participant CC as Claude Code (interactive)
-    participant HM as hooks-mux
+    participant HM as hooks-adapter
     participant SDK as babysitter SDK
 
     U->>CC: /babysitter:call "build a REST API"
@@ -304,7 +304,7 @@ sequenceDiagram
     participant AM as adapters launch
     participant PTY as node-pty
     participant CC as Claude Code (interactive, TTY)
-    participant HM as hooks-mux (native)
+    participant HM as hooks-adapter (native)
 
     AM->>PTY: spawn("claude", ["--bare", ...])
     PTY-->>AM: onData: ANSI welcome screen
@@ -422,9 +422,9 @@ sequenceDiagram
     participant U as User
     participant CC as Claude Code
     participant PLUGIN as babysitter plugin (installed)
-    participant HM as hooks-mux (claude adapter)
+    participant HM as hooks-adapter (claude adapter)
     participant SDK as babysitter CLI
-    participant TM as transport-mux (if proxying)
+    participant TM as transport-adapter (if proxying)
     participant LLM as Upstream LLM
 
     U->>CC: /babysitter:call "implement user auth"
@@ -448,7 +448,7 @@ sequenceDiagram
     
     Note over CC: Turn ends
     CC->>PLUGIN: Stop hook fires (native)
-    PLUGIN->>HM: a5c-hooks-mux invoke --adapter claude
+    PLUGIN->>HM: a5c-hooks-adapter invoke --adapter claude
     HM->>SDK: babysitter hook:run --hook-type stop
     SDK-->>HM: { decision: "block", systemMessage: "Continue..." }
     HM-->>PLUGIN: { block: true }
@@ -467,7 +467,7 @@ sequenceDiagram
     participant AM as adapters launch
     participant CX as Codex (exec mode)
     participant SDK as babysitter CLI
-    participant TM as transport-mux (if proxying)
+    participant TM as transport-adapter (if proxying)
 
     AM->>CX: spawn("codex", ["exec", "$babysitter:yolo implement auth"])
     
@@ -495,7 +495,7 @@ sequenceDiagram
     participant AM as adapters launch
     participant PI as Pi (--prompt mode)
     participant SDK as babysitter CLI
-    participant TM as transport-mux proxy
+    participant TM as transport-adapter proxy
 
     Note over AM: Pi needs proxy (doesn't speak Foundry natively)
     AM->>TM: startTransportMuxRuntime()
@@ -516,7 +516,7 @@ sequenceDiagram
 
 ## Provider Path Details
 
-When a harness speaks a different protocol than the upstream provider, transport-mux bridges the gap:
+When a harness speaks a different protocol than the upstream provider, transport-adapter bridges the gap:
 
 ```mermaid
 graph TB
@@ -526,7 +526,7 @@ graph TB
         OAI2["OpenAI<br/>(Pi via models.json)"]
     end
 
-    subgraph "transport-mux"
+    subgraph "transport-adapter"
         P1["Proxy: Anthropic → OpenAI"]
         P2["Proxy: Anthropic → Google"]
         P3["Pass-through (no proxy needed)"]

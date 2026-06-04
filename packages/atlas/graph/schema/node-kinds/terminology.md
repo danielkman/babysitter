@@ -16,7 +16,7 @@ queries.
 The cluster exists because two vendors using the same word for different concepts
 is the rule, not the exception. The schema records the divergence as data —
 separate `Term`s tied by `synonym_of` with `inContext` — instead of forcing a
-single definition. Querying `Term`s with `kind=mux` produces the mux glossary;
+single definition. Querying `Term`s with `kind=adapter` produces the adapter glossary;
 querying `Term`s used in `Layer` 6 produces the layer-6 glossary; querying
 `Term.deprecatedAt is set` produces the deprecation queue.
 
@@ -51,7 +51,7 @@ A named term in the ontology.
 |---|---|---|---|
 | `id` | id | yes | `term:<slug>`, e.g. `term:invocation`, `term:run`, `term:agent-platform`. |
 | `displayName` | string | yes | The canonical spelling. |
-| `kind` | enum<concept,role,layer,primitive,mux,extension-shape,hook,capability,lifecycle-state,protocol,format,tool,operation> | yes | The term-kind classifier. Collapsed from former TermKind NodeKind (remodel 2026-04-29). |
+| `kind` | enum<concept,role,layer,primitive,adapter,extension-shape,hook,capability,lifecycle-state,protocol,format,tool,operation> | yes | The term-kind classifier. Collapsed from former TermKind NodeKind (remodel 2026-04-29). |
 | `canonicalDefinitionId` | ref<`Definition`> | yes | The default definition. |
 | `usageContexts` | list<ref<`Domain` \| `Layer` \| NodeKind \| `AgentProduct`>> | no | Where the term is used. |
 | `firstUseEvidenceId` | ref<`EvidenceSource`> | no | First-known use citation. |
@@ -192,7 +192,7 @@ abbreviations) SHOULD reference the term's `firstUseEvidenceId`.
 ---
 
 > **Remodel 2026-04-29:** the former `TermKind` NodeKind was collapsed into the
-> `Term.kind` enum attribute (values: `concept`, `role`, `layer`, `primitive`, `mux`,
+> `Term.kind` enum attribute (values: `concept`, `role`, `layer`, `primitive`, `adapter`,
 > `extension-shape`, `hook`, `capability`, `lifecycle-state`, `protocol`, `format`,
 > `tool`, `operation`). The `classifies` edge and the standalone `term-kind:*`
 > example files were removed.
@@ -301,9 +301,9 @@ abbreviations) SHOULD reference the term's `firstUseEvidenceId`.
   displayName: "Lifecycle state"
   kind: lifecycle-state
   description: A named state in a state machine governing a NodeKind.
-- id: term-kind:mux
-  displayName: "Mux"
-  kind: mux
+- id: term-kind:adapter
+  displayName: "Adapter"
+  kind: adapter
   description: A multiplexer or switching primitive bridging two surfaces.
 - id: term-kind:extension-shape
   displayName: "Extension shape"

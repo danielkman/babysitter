@@ -88,8 +88,8 @@ function addIdentityResources(resources, { definitionName = 'aria-reviewer', per
   };
 }
 
-test('Successful dispatch with Agent Mux available', async () => {
-  // Use a mux client with a mock resource gateway so job submission succeeds
+test('Successful dispatch with Agent Adapter available', async () => {
+  // Use a adapter client with a mock resource gateway so job submission succeeds
   const gw = createMockResourceGateway();
   const muxClient = createAgentMuxClient({ resourceGateway: gw });
   const resources = buildValidResources('dispatch-stack');
@@ -187,7 +187,7 @@ test('Non-Jitsi stack with meetingRef is rejected before job creation', async ()
   assert.equal(gw.applied.length, 0);
 });
 
-test('Dispatch with Agent Mux unavailable (no resource gateway)', async () => {
+test('Dispatch with Agent Adapter unavailable (no resource gateway)', async () => {
   // When no resourceGateway is provided, job submission throws
   const muxClient = createAgentMuxClient({});
   const resources = buildValidResources('dispatch-stack');

@@ -36,8 +36,8 @@ import {
 
 const GITHUB_API_BASE = "https://api.github.com";
 const GITHUB_API_VERSION = "2022-11-28";
-const ISSUE_PAYLOAD_MARKER = "tasks-mux:issue:v1";
-const ANSWER_PAYLOAD_MARKER = "tasks-mux:answer:v1";
+const ISSUE_PAYLOAD_MARKER = "tasks-adapter:issue:v1";
+const ANSWER_PAYLOAD_MARKER = "tasks-adapter:answer:v1";
 
 interface GitHubIssue {
   number: number;
@@ -59,7 +59,7 @@ interface GitHubComment {
 
 interface GitHubIssuePayloadV1 {
   version: 1;
-  schema: "tasks-mux:issue";
+  schema: "tasks-adapter:issue";
   text: string;
   context: BreakpointContext;
   routing: BreakpointRouting;
@@ -70,7 +70,7 @@ interface GitHubIssuePayloadV1 {
 
 interface GitHubAnswerPayloadV1 {
   version: 1;
-  schema: "tasks-mux:answer";
+  schema: "tasks-adapter:answer";
   text: string;
   confidence?: number;
   references?: string[];
@@ -125,7 +125,7 @@ function extractPayloadBlock<T>(
 function parseIssuePayload(raw: unknown): GitHubIssuePayloadV1 | null {
   if (!raw || typeof raw !== "object") return null;
   const payload = raw as Partial<GitHubIssuePayloadV1>;
-  if (payload.version !== 1 || payload.schema !== "tasks-mux:issue") {
+  if (payload.version !== 1 || payload.schema !== "tasks-adapter:issue") {
     return null;
   }
   if (typeof payload.text !== "string") return null;
@@ -139,7 +139,7 @@ function parseIssuePayload(raw: unknown): GitHubIssuePayloadV1 | null {
   }
   return {
     version: 1,
-    schema: "tasks-mux:issue",
+    schema: "tasks-adapter:issue",
     text: payload.text,
     context: contextParse.data,
     routing: routingParse.data,
@@ -152,7 +152,7 @@ function parseIssuePayload(raw: unknown): GitHubIssuePayloadV1 | null {
 function parseAnswerPayload(raw: unknown): ParsedAnswer | null {
   if (!raw || typeof raw !== "object") return null;
   const payload = raw as Partial<GitHubAnswerPayloadV1>;
-  if (payload.version !== 1 || payload.schema !== "tasks-mux:answer") {
+  if (payload.version !== 1 || payload.schema !== "tasks-adapter:answer") {
     return null;
   }
   if (typeof payload.text !== "string") return null;
@@ -649,7 +649,7 @@ export class GitHubIssuesBackend implements BreakpointBackend {
     parts.push(`\n---\n*Project: ${params.projectId ?? "unknown"} | Repo: ${params.repoId ?? "unknown"}*`);
     const payload: GitHubIssuePayloadV1 = {
       version: 1,
-      schema: "tasks-mux:issue",
+      schema: "tasks-adapter:issue",
       text: params.text,
       context: {
         description: context.description,
@@ -921,7 +921,7 @@ export class GitHubIssuesBackend implements BreakpointBackend {
     const breakpointId = `gh-${issueNumber}`;
     const payload: GitHubAnswerPayloadV1 = {
       version: 1,
-      schema: "tasks-mux:answer",
+      schema: "tasks-adapter:answer",
       text: answer.text,
       confidence: answer.confidence,
       references: answer.references,

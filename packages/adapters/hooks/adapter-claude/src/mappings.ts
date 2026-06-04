@@ -28,7 +28,7 @@ function asCanonicalPhase(value: string, nativeName: string): PhaseMapping['cano
   if (CANONICAL_PHASE_SET.has(value)) {
     return value as PhaseMapping['canonicalPhase'];
   }
-  throw new Error(`hooks-mux adapter-claude: unknown canonical phase "${value}" for ${nativeName}`);
+  throw new Error(`hooks-adapter adapter-claude: unknown canonical phase "${value}" for ${nativeName}`);
 }
 
 function asPhaseScope(value: string | undefined, nativeName: string): PhaseMapping['scope'] {
@@ -36,7 +36,7 @@ function asPhaseScope(value: string | undefined, nativeName: string): PhaseMappi
   if (LIFECYCLE_SCOPE_SET.has(scope) || scope === 'gateway') {
     return scope as PhaseMapping['scope'];
   }
-  throw new Error(`hooks-mux adapter-claude: unknown lifecycle scope "${scope}" for ${nativeName}`);
+  throw new Error(`hooks-adapter adapter-claude: unknown lifecycle scope "${scope}" for ${nativeName}`);
 }
 
 function hookMappingToPhaseMapping(mapping: HookMappingDescriptor): PhaseMapping | null {
@@ -54,7 +54,7 @@ function hookMappingToPhaseMapping(mapping: HookMappingDescriptor): PhaseMapping
 function buildFromCatalog(): PhaseMapping[] {
   const mappings = listHookMappingsByAdapterFamily('claude');
   if (mappings.length === 0) {
-    throw new Error('hooks-mux adapter-claude: catalog unavailable or returned no mappings for family "claude"');
+    throw new Error('hooks-adapter adapter-claude: catalog unavailable or returned no mappings for family "claude"');
   }
   const phaseMappings = mappings
     .map(hookMappingToPhaseMapping)

@@ -289,7 +289,7 @@ For adapters to parse babysitter output, babysitter-harness must support outputt
 # Standard babysitter output (existing)
 agent-platform invoke --harness claude-code --prompt "..." --json
 
-# Agent-mux compatible output (new)
+# Adapters compatible output (new)
 agent-platform invoke --harness claude-code --prompt "..." --json --output-format adapters-events
 ```
 

@@ -102,7 +102,7 @@ Every resource follows the Kubernetes object model:
 | 34 | AgentTransportBinding | agenttransportbindings | `organizationRef`, `adapterRef`, `endpoint`, `protocol` | Connection configuration for an adapter instance with endpoint, protocol, auth, health check, and reconnect policy |
 | 35 | AgentProviderConfig | agentproviderconfigs | `organizationRef`, `provider`, `authType` | Model provider configuration with API base, auth type, default model, model translations, and rate limits |
 | 36 | KradleProject | kradleprojects | `organizationRef`, `displayName` | Org project grouping issues, linked repositories, kanban board config, default workflow, and backend sync refs |
-| 37 | AgentGatewayConfig | agentgatewayconfigs | `organizationRef`, `gatewayUrl` | Runtime Agent Mux gateway connection settings with URL, auth, reconnect policy, and feature flags |
+| 37 | AgentGatewayConfig | agentgatewayconfigs | `organizationRef`, `gatewayUrl` | Runtime Agent Adapter gateway connection settings with URL, auth, reconnect policy, and feature flags |
 | 38 | AgentMemoryRepository | agentmemoryrepositories | `organizationRef`, `repositoryRef`, `defaultBranch`, `layoutProfile` | Org-level Git repository pointer for shared agent memory with layout profile and index policy |
 | 39 | AgentMemorySource | agentmemorysources | `organizationRef`, `repositoryRef`, `appliesTo`, `include` | Read policy for memory paths and kinds per repository, team, stack, or trigger |
 | 40 | AgentMemoryOntology | agentmemoryontologies | `organizationRef`, `memoryRepository`, `ontologyPath` | Ontology policy pointer with required fields, edge kinds, and controlled vocabulary |
@@ -152,7 +152,7 @@ Every resource follows the Kubernetes object model:
 |---|------|--------|---------------------|---------|
 | 53 | AgentDispatchRun | agentdispatchruns | `organizationRef`, `repository`, `sourceRefs`, `agentStack`, `taskKind` | Logical CI-like run visible beside Pipeline/Job records with queue, status, workspace, and cost |
 | 54 | AgentDispatchAttempt | agentdispatchattempts | `organizationRef`, `agentDispatchRun`, `attemptReason`, `agentStackSnapshot` | Concrete execution attempt with reason, stack snapshot, and runtime state |
-| 55 | AgentSession | agentsessions | `organizationRef`, `agentMuxSessionId`, `dispatchRun` | Kradle projection of Agent Mux chat/session with lifecycle state |
+| 55 | AgentSession | agentsessions | `organizationRef`, `agentMuxSessionId`, `dispatchRun` | Kradle projection of Agent Adapter chat/session with lifecycle state |
 | 56 | AgentContextBundle | agentcontextbundles | `organizationRef`, `dispatchRun`, `digest`, `sources` | Immutable prompt/context snapshot with digest, provenance, and redaction manifest |
 | 57 | KradleArtifact | kradleartifacts | `organizationRef`, `dispatchRun`, `kind`, `digest` | Durable agent output with kind, digest, and retention policy |
 | 58 | AgentApproval | agentapprovals | `organizationRef`, `dispatchRun`, `action`, `requestedBy` | Human gate for tools, secrets, write-back, and release actions |

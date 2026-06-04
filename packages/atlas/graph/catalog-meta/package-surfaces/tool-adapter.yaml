@@ -1,0 +1,13 @@
+nodeKind: PackageSurface
+id: package:a5c-ai-tools-adapter
+attributes:
+  packageId: "@a5c-ai/tools-adapter"
+  packageName: "@a5c-ai/tools-adapter"
+  workspacePath: packages/tools-adapter
+  moduleType: typescript
+  surfaceKinds:
+    - tool-registry
+    - mcp-tool-routing
+  sourceOfTruthRole: wrapper-over-graph
+  publishedTo: npm
+  versionPolicy: semver

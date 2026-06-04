@@ -15,7 +15,7 @@ function getRoutePaths(app: ReturnType<typeof createTransportMuxApp>) {
   return app.routes.map((route) => route.path);
 }
 
-describe('transport-mux server', () => {
+describe('transport-adapter server', () => {
   it('mounts health endpoint', () => {
     const app = createTransportMuxApp({
       config: createProxyConfig({

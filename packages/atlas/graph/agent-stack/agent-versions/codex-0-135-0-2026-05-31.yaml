@@ -16,7 +16,7 @@ attributes:
   summary: "Codex CLI release adding richer doctor diagnostics, remote status details, Vim mode improvements, named permission profiles, bundled zsh helper discovery, SDK sandbox presets, and non-interactive installers."
   assimilationNotes:
     - "`codex doctor` reports richer environment, Git, terminal, app-server, and thread inventory diagnostics; support/debug surfaces can expose more structured diagnostics."
-    - "`/status` shows remote connection details and server version for remote transport sessions, affecting transport-mux status parsing."
+    - "`/status` shows remote connection details and server version for remote transport sessions, affecting transport-adapter status parsing."
     - "`/permissions` now understands named permission profiles and displays custom profiles; permission profile projection should be checked."
     - "Vim mode gained text-object editing, improved word/line-end behavior, and configurable interrupt-turn binding; TUI control translation may need new keybinding expectations."
     - "The Python SDK exposes friendly Sandbox presets for thread and turn APIs."

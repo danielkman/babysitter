@@ -208,10 +208,10 @@ describe('CLI Commands', () => {
       }
     });
 
-    it('writes default info logs to ~/.a5c/logs/hooks/hooks-mux.log', async () => {
+    it('writes default info logs to ~/.a5c/logs/hooks/hooks-adapter.log', async () => {
       const { invokeCommand } = await import('../cli/commands/invoke');
       const stdout = captureStdout();
-      const tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), 'hooks-mux-home-'));
+      const tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), 'hooks-adapter-home-'));
       process.env.HOME = tmpHome;
 
       try {
@@ -225,7 +225,7 @@ describe('CLI Commands', () => {
 
         await new Promise((resolve) => setTimeout(resolve, 0));
 
-        const logPath = path.join(tmpHome, '.a5c', 'logs', 'hooks', 'hooks-mux.log');
+        const logPath = path.join(tmpHome, '.a5c', 'logs', 'hooks', 'hooks-adapter.log');
         const contents = fs.readFileSync(logPath, 'utf8');
         expect(contents).toContain('"command":"invoke"');
         expect(contents).toContain('"msg":"invoke started"');
@@ -240,7 +240,7 @@ describe('CLI Commands', () => {
     it('writes debug logs when A5C_LOGGING_HOOKS_LEVEL=debug', async () => {
       const { invokeCommand } = await import('../cli/commands/invoke');
       const stdout = captureStdout();
-      const tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), 'hooks-mux-home-debug-'));
+      const tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), 'hooks-adapter-home-debug-'));
       process.env.HOME = tmpHome;
       process.env.A5C_LOGGING_HOOKS_LEVEL = 'debug';
 
@@ -255,7 +255,7 @@ describe('CLI Commands', () => {
 
         await new Promise((resolve) => setTimeout(resolve, 0));
 
-        const logPath = path.join(tmpHome, '.a5c', 'logs', 'hooks', 'hooks-mux.log');
+        const logPath = path.join(tmpHome, '.a5c', 'logs', 'hooks', 'hooks-adapter.log');
         const contents = fs.readFileSync(logPath, 'utf8');
         expect(contents).toContain('"level":"debug"');
         expect(contents).toContain('"msg":"stdin parsed"');

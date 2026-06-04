@@ -97,7 +97,7 @@ nodeKinds:
   origin: a5c
   prefix: merge-policy
   cluster: 5-communication-primitives
-  purpose: 'A named conflict-resolution policy applied by hooks-mux when fanning out
+  purpose: 'A named conflict-resolution policy applied by hooks-adapter when fanning out
 
     a single hook event across multiple registered handlers (plugins,
 
@@ -127,7 +127,7 @@ nodeKinds:
     type: enum<most-restrictive-wins,last-writer-wins>
     required: true
     evidence: vendor-doc-or-better
-    notes: How the decision verb (deny<ask<allow<continue<noop) is collapsed. hooks-mux uses most-restrictive-wins; the lowest-rank verb across all handlers wins.
+    notes: How the decision verb (deny<ask<allow<continue<noop) is collapsed. hooks-adapter uses most-restrictive-wins; the lowest-rank verb across all handlers wins.
   - name: envMergeRule
     type: enum<deep-merge,last-writer-wins,fail-on-conflict,protected-prefixes,namespace-required>
     required: true
@@ -149,7 +149,7 @@ nodeKinds:
   - name: arraysMergeRule
     type: enum<replace,concatenate>
     required: true
-    notes: How list-valued fields are merged. hooks-mux's deepMerge replaces arrays rather than concatenating.
+    notes: How list-valued fields are merged. hooks-adapter's deepMerge replaces arrays rather than concatenating.
   - name: stopReasonRule
     type: enum<first-non-empty,last-writer-wins,concatenate>
     required: false

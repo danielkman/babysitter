@@ -7,7 +7,7 @@ attributes:
   references:
     - "NodeKind:MergePolicy"
   description: |
-    A named conflict-resolution policy applied by hooks-mux when fanning out
+    A named conflict-resolution policy applied by hooks-adapter when fanning out
 edges:
   applies_to:
     - target: domain:software-engineering

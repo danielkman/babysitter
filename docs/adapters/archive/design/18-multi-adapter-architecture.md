@@ -266,10 +266,10 @@ Claude now spans multiple distinct integration surfaces that should not be colla
 
 - `claude` CLI can provide a **persistent structured subprocess transport** through `--print --input-format stream-json --output-format stream-json`, with stdin carrying later user turns and stdout carrying structured events.
 - `claude-agent-sdk` is a **programmatic persistent transport** with direct callback integration.
-- `claude-remote-control` is the **server-managed Claude surface for Claude.ai / Claude app clients**. Agent-mux can launch and observe the bridge honestly, but it does not advertise local stdin-driven chat semantics for it.
+- `claude-remote-control` is the **server-managed Claude surface for Claude.ai / Claude app clients**. Adapters can launch and observe the bridge honestly, but it does not advertise local stdin-driven chat semantics for it.
 - Claude channels are **MCP-mediated push/reply integrations into a running Claude host session**, not a standalone replacement for the CLI or SDK transports.
 
-Agent-mux should model these surfaces honestly and only advertise the transport semantics each one actually supports.
+Adapters should model these surfaces honestly and only advertise the transport semantics each one actually supports.
 
 ## Trade-offs
 

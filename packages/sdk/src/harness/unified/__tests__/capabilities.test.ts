@@ -1,5 +1,5 @@
 /**
- * Tests for capability mapping between hooks-mux and SDK.
+ * Tests for capability mapping between hooks-adapter and SDK.
  *
  * Covers:
  *   - deriveCapabilitiesFromProxy with various adapter profiles

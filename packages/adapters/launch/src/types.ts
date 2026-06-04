@@ -1,5 +1,5 @@
 /**
- * Shared types for the agent-launch-mux package.
+ * Shared types for the agent-launch-adapter package.
  */
 
 import type { TransportId } from '@a5c-ai/comm-adapter';

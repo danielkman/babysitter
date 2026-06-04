@@ -43,7 +43,7 @@ Work mainly in:
 Read:
 
 - [docs/adapters/README](https://github.com/a5c-ai/babysitter/blob/main/docs/adapters/README.md)
-- [Agent-Mux Integration](adapters-integration.md)
+- [Agent-Adapter Integration](adapters-integration.md)
 - [Unified Stack Architecture](unified-stack-architecture.md)
 
 Work mainly in:
@@ -60,7 +60,7 @@ Read:
 
 - `packages/adapters/hooks/README.md`
 - `packages/adapters/hooks/ARCHITECTURE.md`
-- [Agent-Mux Integration](adapters-integration.md)
+- [Agent-Adapter Integration](adapters-integration.md)
 
 Work mainly in:
 
@@ -73,13 +73,13 @@ Work mainly in:
 
 Read:
 
-- `packages/extension-mux/unified_plugin_system_spec.md`
+- `packages/extensions-adapter/unified_plugin_system_spec.md`
 - `plugins/babysitter-unified/README.template.md`
 - per-harness plugin README files under `plugins/babysitter-unified/per-harness/`
 
 Work mainly in:
 
-- `packages/extension-mux`
+- `packages/extensions-adapter`
 - `plugins/babysitter-unified`
 - concrete bundles under `plugins/babysitter-*`
 
@@ -87,12 +87,12 @@ Work mainly in:
 
 Read:
 
-- `packages/tasks-mux/specs/architecture.md`
+- `packages/tasks-adapter/specs/architecture.md`
 - [Testing Framework](testing-framework.md)
 
 Work mainly in:
 
-- `packages/tasks-mux`
+- `packages/tasks-adapter`
 - `packages/sdk` breakpoint integration
 - related hook and plugin surfaces if the transport changes
 
@@ -123,8 +123,8 @@ Use this rule of thumb:
 | Orchestration runtime behavior | `packages/sdk`, `packages/babysitter`, `packages/genty/platform` | V6 docs, CLI docs |
 | Harness dispatch behavior | `packages/adapters/*` and `docs/adapters/` | V6 integration docs |
 | Hook normalization | `packages/adapters/hooks/*` | per-harness plugin docs |
-| Unified plugin packaging | `packages/extension-mux`, `plugins/babysitter-unified/` | install READMEs for concrete bundles |
-| Breakpoint routing | `packages/tasks-mux` | SDK integration docs |
+| Unified plugin packaging | `packages/extensions-adapter`, `plugins/babysitter-unified/` | install READMEs for concrete bundles |
+| Breakpoint routing | `packages/tasks-adapter` | SDK integration docs |
 
 ## Practical Rules
 

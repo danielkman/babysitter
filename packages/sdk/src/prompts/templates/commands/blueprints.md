@@ -62,6 +62,6 @@ The old `plugin:*` commands remain available as deprecated aliases for one relea
 
 ## Agent Plugins Are Separate
 
-Do not rename or reinterpret agent harness plugins while handling blueprints. `CLAUDE_PLUGIN_ROOT`, `PI_PLUGIN_ROOT`, `.claude/plugins/`, hooks-mux, extension-mux, and agent plugin manifests stay plugin-specific.
+Do not rename or reinterpret agent harness plugins while handling blueprints. `CLAUDE_PLUGIN_ROOT`, `PI_PLUGIN_ROOT`, `.claude/plugins/`, hooks-adapter, extensions-adapter, and agent plugin manifests stay plugin-specific.
 
 {{#additionalInstructions}}Additional instructions: {{additionalInstructions}}{{/additionalInstructions}}

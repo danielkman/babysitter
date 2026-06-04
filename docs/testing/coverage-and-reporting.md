@@ -27,7 +27,7 @@ The long-term target is one repository coverage artifact with package-level sect
 - `@a5c-ai/genty-core`,
 - `@a5c-ai/transport-adapter`,
 - the `@a5c-ai/adapters` package family,
-- the hooks-mux package family,
+- the hooks-adapter package family,
 - `@a5c-ai/extensions-adapter`,
 - `@a5c-ai/kradle-installer`,
 - docs/generator checks.
@@ -80,13 +80,13 @@ Scenario coverage is separate from line coverage. It tracks whether critical use
 | --- | --- | --- |
 | Codex SDK setup | Dry-run harness/plugin installer JSON | Capability-gated live setup or documented skip; do not claim adapters plugin-manager support unless adapter capability allows it |
 | Claude Code SDK setup | Dry-run harness/plugin installer JSON | Live setup artifact plus installed plugin manifest where selected |
-| Agent-mux adapter/session protocol | Fixture transcript through adapter tests | Live Codex/Claude session event comparison via `adapters run` or SDK `createClient().run` |
-| Transport-mux route/runtime bridge | Local route matrix, env injection, launch-plan proxy decisions, fixture stream, passthrough, metrics/cache, and cancellation tests | Live agent-core stream through transport plus adapters-launched external harness proxy stream with redacted launch/env/metrics artifacts |
+| Adapters adapter/session protocol | Fixture transcript through adapter tests | Live Codex/Claude session event comparison via `adapters run` or SDK `createClient().run` |
+| Transport-adapter route/runtime bridge | Local route matrix, env injection, launch-plan proxy decisions, fixture stream, passthrough, metrics/cache, and cancellation tests | Live agent-core stream through transport plus adapters-launched external harness proxy stream with redacted launch/env/metrics artifacts |
 | Babysitter-agent runtime orchestration | Mock planner/executor run journal | Bounded model-backed process run with no installer commands |
 | Babysitter plugin through adapters | Mock plugin command and hook events | Capability-gated `adapters run` session where `/babysitter:call` creates and completes a Babysitter run |
-| Hooks mux normalization | Raw hook fixture normalizer tests | Redacted live hook payload replay |
+| Hooks adapter normalization | Raw hook fixture normalizer tests | Redacted live hook payload replay |
 
-Transport-mux scenario coverage should be reported as separate checklist rows, not collapsed into generic mux coverage:
+Transport-adapter scenario coverage should be reported as separate checklist rows, not collapsed into generic adapter coverage:
 
 - supported route/codec matrix for every exposed transport,
 - runtime env injection and proxy auth,

@@ -1,4 +1,4 @@
-# transport-mux migration backlog
+# transport-adapter migration backlog
 
 ## Current status
 
@@ -41,7 +41,7 @@ The package is aligned only when every row below stays green.
 | Public package policy | `packages/adapters/transport/package.json` plus `npm run scorecard:migration`. | The package is publishable, metadata-complete, and aligned with the public docs map. | Green: package metadata describes a public artifact with an auditable publish surface. |
 | Workspace seam health | `npm run build` and `npm run test` under `@a5c-ai/transport-adapter`. | Published consumers can still build against the seam confidently. | Green: the runtime seam compiles and tests cleanly. |
 | Launcher/runtime seam | `packages/adapters/cli/src/commands/launch.ts` and `packages/adapters/transport/src/index.ts`. | The launcher imports the runtime seam that the published package actually ships. | Green: workspace integration and package exports describe the same runtime truth. |
-| Docs honesty | `packages/adapters/transport/README.md`, `packages/adapters/transport/architecture.md`, and this file. | Operators can tell, from package docs alone, that `transport-mux` is part of the public runtime chain. | Green: docs describe one active runtime seam and its remaining migration boundaries. |
+| Docs honesty | `packages/adapters/transport/README.md`, `packages/adapters/transport/architecture.md`, and this file. | Operators can tell, from package docs alone, that `transport-adapter` is part of the public runtime chain. | Green: docs describe one active runtime seam and its remaining migration boundaries. |
 | Historical references | `packages/adapters/adapters-proxy/tests` and related legacy assets. | Legacy references remain inspectable without overriding the current release-owner package truth. | Green: historical assets stay explicit while public package claims stay current. |
 
 The scorecard exists to keep the convergence explicit: if any future change breaks publishability, docs truth, or runtime ownership alignment, this document should go red again.
@@ -78,9 +78,9 @@ Keep the assertions below true while this package remains in the public runtime 
 
 - legacy `adapters-proxy` package/container surfaces are either kept as the clearer operational reference or explicitly marked historical.
 - operators are not asked to infer that the container, package, and launcher truth is something other than the current package contract.
-- legacy ops endpoints are an explicit retained surface during convergence: `transport-mux` keeps `GET /metrics` and `GET /cache/stats` instead of silently dropping them at cutover.
+- legacy ops endpoints are an explicit retained surface during convergence: `transport-adapter` keeps `GET /metrics` and `GET /cache/stats` instead of silently dropping them at cutover.
 - `POST /v1/count_tokens` is also an explicit convergence surface: it should use provider-backed counting and the `{ "count": number }` response contract instead of placeholder local heuristics.
-- until `transport-mux` owns a real response cache, `/cache/stats` must continue returning `{ "enabled": false }` explicitly so operators can distinguish "no cache implementation" from "missing endpoint".
+- until `transport-adapter` owns a real response cache, `/cache/stats` must continue returning `{ "enabled": false }` explicitly so operators can distinguish "no cache implementation" from "missing endpoint".
 - `/metrics` must continue exposing local request/error/token counters. Engine-backed requests contribute normalized token usage; passthrough requests contribute request/error counts even when upstream token usage cannot be normalized.
 
 ## Historical references that remain

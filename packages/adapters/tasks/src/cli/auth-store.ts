@@ -5,7 +5,7 @@ import { AuthTokenSchema, type AuthToken } from "../auth/index.js";
 
 // ── Constants ─────────────────────────────────────────────────────────────
 
-const BMUX_DIR = ".tasks-mux";
+const BMUX_DIR = ".tasks-adapter";
 const AUTH_FILE = "auth.json";
 const CONFIG_FILE = "config.json";
 const KEYS_DIR = "keys";
@@ -18,28 +18,28 @@ export interface BmuxClientConfig {
 // ── Path helpers ─────────────────────────────────────────────────────────
 
 /**
- * Get the path to the tasks-mux config directory (~/.tasks-mux).
+ * Get the path to the tasks-adapter config directory (~/.tasks-adapter).
  */
 export function getBmuxDir(): string {
   return join(homedir(), BMUX_DIR);
 }
 
 /**
- * Get the path to the auth state file (~/.tasks-mux/auth.json).
+ * Get the path to the auth state file (~/.tasks-adapter/auth.json).
  */
 export function getAuthStorePath(): string {
   return join(getBmuxDir(), AUTH_FILE);
 }
 
 /**
- * Get the path to the client config file (~/.tasks-mux/config.json).
+ * Get the path to the client config file (~/.tasks-adapter/config.json).
  */
 export function getClientConfigPath(): string {
   return join(getBmuxDir(), CONFIG_FILE);
 }
 
 /**
- * Get the path to the SSH keys directory (~/.tasks-mux/keys).
+ * Get the path to the SSH keys directory (~/.tasks-adapter/keys).
  */
 export function getKeysDir(): string {
   return join(getBmuxDir(), KEYS_DIR);
@@ -48,7 +48,7 @@ export function getKeysDir(): string {
 // ── Generic client config ───────────────────────────────────────────────
 
 /**
- * Load CLI/MCP client configuration from ~/.tasks-mux/config.json.
+ * Load CLI/MCP client configuration from ~/.tasks-adapter/config.json.
  */
 export function loadClientConfig(): BmuxClientConfig {
   const filePath = getClientConfigPath();
@@ -76,7 +76,7 @@ export function loadClientConfig(): BmuxClientConfig {
 }
 
 /**
- * Save or update CLI/MCP client configuration in ~/.tasks-mux/config.json.
+ * Save or update CLI/MCP client configuration in ~/.tasks-adapter/config.json.
  */
 export function saveClientConfig(next: BmuxClientConfig): void {
   const dir = getBmuxDir();
@@ -119,7 +119,7 @@ export function saveClientConfig(next: BmuxClientConfig): void {
 // ── Auth state persistence ───────────────────────────────────────────────
 
 /**
- * Load the stored authentication state from ~/.tasks-mux/auth.json.
+ * Load the stored authentication state from ~/.tasks-adapter/auth.json.
  * Returns null if no auth file exists or the contents are invalid.
  */
 export function loadAuthState(): AuthToken | null {
@@ -145,7 +145,7 @@ export function loadAuthState(): AuthToken | null {
 }
 
 /**
- * Save authentication state to ~/.tasks-mux/auth.json.
+ * Save authentication state to ~/.tasks-adapter/auth.json.
  * Creates the directory if it does not exist.
  * Sets file permissions to 0600 (owner read/write only).
  */
@@ -161,7 +161,7 @@ export function saveAuthState(state: AuthToken): void {
 }
 
 /**
- * Clear the stored authentication state by removing ~/.tasks-mux/auth.json.
+ * Clear the stored authentication state by removing ~/.tasks-adapter/auth.json.
  */
 export function clearAuthState(): void {
   const filePath = getAuthStorePath();

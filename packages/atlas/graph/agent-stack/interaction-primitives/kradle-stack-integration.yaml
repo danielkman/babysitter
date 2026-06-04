@@ -10,9 +10,9 @@
 # primitives to form the full dispatch→execute→merge flow.
 ---
 nodeKind: OrchestrationPrimitive
-id: orch-primitive:kradle-to-mux-handoff
+id: orch-primitive:kradle-to-adapter-handoff
 attributes:
-  displayName: "Kradle→Agent Mux Handoff"
+  displayName: "Kradle→Agent Adapter Handoff"
   description: |
     After Kradle assembles context and provisions a workspace, it hands
     off to adapters for the actual agent session. Kradle creates the

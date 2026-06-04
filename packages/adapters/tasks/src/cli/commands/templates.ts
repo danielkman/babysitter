@@ -21,7 +21,7 @@ function templatesPath(opts: GlobalOpts): string {
   return path.join(resolveConfigRoot({
     repoRoot: opts.repoRoot,
     configRoot: opts.configRoot,
-  }), "tasks-mux", "templates.json");
+  }), "tasks-adapter", "templates.json");
 }
 
 async function readTemplates(filePath: string): Promise<TemplateRecord[]> {

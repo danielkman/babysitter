@@ -47,7 +47,7 @@ function hookMappingToPhaseMapping(mapping: HookMappingDescriptor): PhaseMapping
 function buildFromCatalog(): { plugin: PhaseMapping[]; gateway: PhaseMapping[] } {
   const mappings = listHookMappingsByAdapterFamily('openclaw');
   if (mappings.length === 0) {
-    throw new Error('hooks-mux adapter-openclaw: catalog unavailable or returned no mappings for family "openclaw"');
+    throw new Error('hooks-adapter adapter-openclaw: catalog unavailable or returned no mappings for family "openclaw"');
   }
   const phaseMappings = mappings
     .map(hookMappingToPhaseMapping)

@@ -93,7 +93,7 @@ export function createDelegationTools(options: AgenticToolOptions): CustomToolDe
       options,
       "create_todo",
       "Create Todo",
-      "Create a todo through the host task router. Hosts with tasks-mux support should route this through tasks-mux.",
+      "Create a todo through the host task router. Hosts with tasks-adapter support should route this through tasks-adapter.",
       Type.Object({
         title: Type.String({ description: "Short todo title" }),
         description: Type.Optional(Type.String({ description: "Optional todo details" })),
@@ -104,7 +104,7 @@ export function createDelegationTools(options: AgenticToolOptions): CustomToolDe
       options,
       "assign_task",
       "Assign Task",
-      "Assign a task through the host task router. Hosts with tasks-mux support should route this through tasks-mux.",
+      "Assign a task through the host task router. Hosts with tasks-adapter support should route this through tasks-adapter.",
       Type.Object({
         title: Type.String({ description: "Task title" }),
         instructions: Type.Optional(Type.String({ description: "Task instructions or acceptance notes" })),

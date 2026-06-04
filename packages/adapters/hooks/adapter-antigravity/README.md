@@ -1,6 +1,6 @@
 # @a5c-ai/hooks-adapter-antigravity
 
-Google Antigravity CLI harness adapter for the hooks-mux system.
+Google Antigravity CLI harness adapter for the hooks-adapter system.
 
 Normalizes Antigravity's workflow-driven hook events into the unified babysitter hook protocol, enabling lifecycle hooks, session tracking, and plugin integration for the Antigravity CLI agent.
 

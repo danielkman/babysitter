@@ -34,7 +34,7 @@ This matrix maps Kradle product areas to required automated test coverage. It co
 | Web UI shell and navigation | Recommended | Recommended | Required | Required | Recommended | Recommended |
 | Advanced YAML/resource panels | Required | Required | Required | Recommended | Required | Recommended |
 | Agent stacks and capabilities | Future | Future | Future | Future | Future | Future |
-| Agent dispatch and Agent Mux | Future | Future | Future | Future | Future | Future |
+| Agent dispatch and Agent Adapter | Future | Future | Future | Future | Future | Future |
 | Agent triggers | Future | Future | Future | Future | Future | Future |
 | Agent workspaces and sessions | Future | Future | Future | Future | Future | Future |
 | Company brain memory | Future | Future | Future | Future | Future | Future |
@@ -60,13 +60,13 @@ This matrix maps Kradle product areas to required automated test coverage. It co
 | Future suite | Product areas |
 | --- | --- |
 | `test:unit` | resource model, route helpers, redaction, context assembly, ref resolution, validators. |
-| `test:integration` | API controller, controller fakes, memory import, Gitea/K8s/Agent Mux fakes. |
+| `test:integration` | API controller, controller fakes, memory import, Gitea/K8s/Agent Adapter fakes. |
 | `test:api` | org-scoped endpoints, stable errors, resource actions, watch filters. |
 | `test:browser` | org navigation, repository flows, deployments, run detail, agent/memory flows. |
 | `test:coverage` | coverage thresholds and untested-file reporting. |
 | `test:security` | auth/RBAC/no-secret/cross-org/secret-grant checks. |
 | `test:charts` | Helm render, CRD examples, kubeconform, APIService/RBAC. |
-| `test:agents` | agent dispatch, context, memory, Agent Mux, imports, triggers. |
+| `test:agents` | agent dispatch, context, memory, Agent Adapter, imports, triggers. |
 | `test:live` | real cluster/Gitea/Argo/KubeVela/NATS/ARC/Object storage. |
 
 ## Required negative coverage

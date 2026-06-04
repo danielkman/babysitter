@@ -17,7 +17,7 @@ describe('diffTarget', () => {
   });
 
   it('returns match when compiled output matches the existing target directory', () => {
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'mux-diff-match-'));
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'adapter-diff-match-'));
     tempDirs.push(tempDir);
 
     const existingDir = path.join(tempDir, 'existing');
@@ -45,7 +45,7 @@ describe('diffTarget', () => {
   });
 
   it('returns differences when the existing target directory drifts from compiled output', () => {
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'mux-diff-drift-'));
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'adapter-diff-drift-'));
     tempDirs.push(tempDir);
 
     const existingDir = path.join(tempDir, 'existing');
@@ -87,7 +87,7 @@ describe('diffTarget', () => {
   });
 
   it('ignores content drift for files marked as ignored existing files', () => {
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'mux-diff-ignored-'));
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'adapter-diff-ignored-'));
     tempDirs.push(tempDir);
 
     const existingDir = path.join(tempDir, 'existing');

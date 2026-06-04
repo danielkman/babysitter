@@ -5,14 +5,14 @@ import { HttpServerMock, createScriptableTransportBuilder } from '../../../harne
 import { createProxyConfig } from '../../src/config.js';
 import { startProxyServer, type RunningProxyServer } from '../../src/server.js';
 
-describe('transport-mux e2e http roundtrip', () => {
+describe('transport-adapter e2e http roundtrip', () => {
   let upstream: HttpServerMock;
   let server: RunningProxyServer;
 
   beforeEach(async () => {
     upstream = new HttpServerMock(
       createScriptableTransportBuilder()
-        .name('transport-mux-upstream')
+        .name('transport-adapter-upstream')
         .http({ port: 19085 })
         .onRequest('/v1/chat/completions', {
           status: 200,

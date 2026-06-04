@@ -15,8 +15,8 @@ These gates define what must be true before a new test lane, workflow, or model-
 | Determinism | No-model tests | No provider secrets, fixed fixtures, repeatable locally, stable timeout budget | Block PR until deterministic |
 | Credential guard | Model-backed tests | Explicit secret detection before setup, clear skip reason, no fallback to fake success | Block staging/release if selected job cannot prove setup |
 | Artifact redaction | All E2E tests | Secret scan over logs/artifacts, redacted paths, no raw token files | Fail job and suppress unsafe upload |
-| Protocol compatibility | Mux tests | Mock and live event streams satisfy the same schema/version | Open compatibility issue before promotion |
-| Transport-mux seam evidence | Transport-mux tests | Route matrix, runtime env injection, proxy auth, launch proxy decision, stream transcript, metrics/cache artifact, and invalid-combination boundaries are explicit | Block transport-mux coverage promotion until the missing seam has a direct artifact |
+| Protocol compatibility | Adapter tests | Mock and live event streams satisfy the same schema/version | Open compatibility issue before promotion |
+| Transport-adapter seam evidence | Transport-adapter tests | Route matrix, runtime env injection, proxy auth, launch proxy decision, stream transcript, metrics/cache artifact, and invalid-combination boundaries are explicit | Block transport-adapter coverage promotion until the missing seam has a direct artifact |
 | Runtime completeness | Babysitter-agent E2E | Run creation, session binding, effect emission, task post, terminal state | Block runtime release gate |
 | Cost and flake budget | Model-backed tests | Retry policy, duration budget, provider rate-limit classification | Keep scheduled/manual until stable |
 | Documentation parity | All lanes | Docs name command, owner, trigger, artifacts, skip/failure semantics | Block workflow merge |
@@ -29,8 +29,8 @@ Every implementation phase should answer these questions before it is accepted:
 - Which secret or credential path could leak into logs?
 - Which mock assumption could diverge from live Codex or Claude Code behavior?
 - Which package boundary is only tested indirectly?
-- Did transport-mux traffic actually use proxy routes and injected env, or did the harness call the provider directly?
-- Is this test accidentally proving plugin install, harness install, hooks, or Babysitter journal behavior with transport-mux evidence only?
+- Did transport-adapter traffic actually use proxy routes and injected env, or did the harness call the provider directly?
+- Is this test accidentally proving plugin install, harness install, hooks, or Babysitter journal behavior with transport-adapter evidence only?
 - Which failure would be misclassified as provider flake instead of product regression?
 - Which CI trigger would run too often, too late, or not at all?
 - Which artifact proves the claim to a reviewer who did not watch the run?
@@ -43,7 +43,7 @@ A test can move from scheduled to staging preflight when:
 
 - it has stable credential gating,
 - it emits redacted artifacts,
-- transport-mux bridge tests include launch-plan JSON, redacted proxy config/env diff, route or stream transcript, metrics/cache snapshot, and provider/harness version metadata when they claim proxy coverage,
+- transport-adapter bridge tests include launch-plan JSON, redacted proxy config/env diff, route or stream transcript, metrics/cache snapshot, and provider/harness version metadata when they claim proxy coverage,
 - it adds unique evidence not already covered by no-model tests,
 - it has an owner for failures,
 - it has a bounded runtime and retry policy.

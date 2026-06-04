@@ -17,7 +17,7 @@ import {
 } from "./data";
 import { atlas } from "../index";
 import { getCatalogGraph, listGraphNodes, listRelationshipsByRelation } from "./atlas-bridge";
-import { effectiveTransportMuxClaimStatus, shouldSurfaceTransportProtocol } from "./transport-mux-cutover";
+import { effectiveTransportMuxClaimStatus, shouldSurfaceTransportProtocol } from "./transport-adapter-cutover";
 import type {
   AdapterModelRecord,
   AgentCapabilitySupportMatrix,

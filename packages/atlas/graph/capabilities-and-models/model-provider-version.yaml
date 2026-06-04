@@ -86,8 +86,8 @@ attributes:
   envSignals: []
   regionConstraints: []
   evidenceRefs:
-    - "repo-transport-mux-readme"
-    - "repo-transport-mux-architecture"
+    - "repo-transport-adapter-readme"
+    - "repo-transport-adapter-architecture"
 ---
 nodeKind: ModelProviderVersion
 id: providerVersion:vertex:ge-0-0-0
@@ -100,8 +100,8 @@ attributes:
   envSignals: []
   regionConstraints: []
   evidenceRefs:
-    - "repo-transport-mux-readme"
-    - "repo-transport-mux-architecture"
+    - "repo-transport-adapter-readme"
+    - "repo-transport-adapter-architecture"
 ---
 nodeKind: ModelProviderVersion
 id: providerVersion:foundry:ge-0-0-0
@@ -114,8 +114,8 @@ attributes:
   envSignals: []
   regionConstraints: []
   evidenceRefs:
-    - "repo-transport-mux-readme"
-    - "repo-transport-mux-architecture"
+    - "repo-transport-adapter-readme"
+    - "repo-transport-adapter-architecture"
 ---
 nodeKind: ModelProviderVersion
 id: providerVersion:together-ai:serverless-2026-05

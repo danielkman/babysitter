@@ -150,7 +150,7 @@ Now logs tool name and error message before converting to result object.
 
 ---
 
-## Agent Mux Family (packages/adapters, agent-launch-mux, triggers-mux, tool-mux)
+## Agent Adapter Family (packages/adapters, agent-launch-adapter, triggers-adapter, tools-adapter)
 
 ### High
 
@@ -166,7 +166,7 @@ API key resolved from: direct input → AMUX_API_KEY → GOOGLE_API_KEY → GEMI
 ~~**Auth detection — `void e;` suppression**~~ **(logged)** — `packages/adapters/cli/src/commands/doctor.ts:63-69`
 Auth detection errors become `{ status: 'unauthenticated' }`. `void e;` explicitly suppresses the error.
 
-~~**GitHub API failures — empty result**~~ **(logged)** — `packages/triggers-mux/src/enrich.ts:61-96`
+~~**GitHub API failures — empty result**~~ **(logged)** — `packages/triggers-adapter/src/enrich.ts:61-96`
 Missing token, rate limits, HTTP errors all return `[]`. No distinction from "no changes."
 
 ### Medium
@@ -180,7 +180,7 @@ Project-level file silently shadows global-level. No indication which is active.
 **Unknown provider → 'custom'** — `packages/adapters/core/src/provider-resolver.ts:25`
 Unknown provider IDs silently become 'custom' with no warning.
 
-**Trigger backend detection → 'github'** — `packages/triggers-mux/src/enrich.ts:9-12`
+**Trigger backend detection → 'github'** — `packages/triggers-adapter/src/enrich.ts:9-12`
 Unknown backends silently default to 'github'.
 
 **Adapter registration — skip on error** — `packages/adapters/cli/src/bootstrap.ts:73-85`
@@ -192,7 +192,7 @@ Command execution timeout/error → `{ supportsPlugins: false }`. No distinction
 **Gateway shutdown — void suppression** — `packages/adapters/cli/src/commands/gateway/serve.ts:75-76`
 `process.once('SIGINT', () => void finish())`. Shutdown errors completely suppressed. Could leave zombie processes.
 
-**Git enrichment — empty changes** — `packages/triggers-mux/src/enrich.ts:30-42`
+**Git enrichment — empty changes** — `packages/triggers-adapter/src/enrich.ts:30-42`
 Git command failures return `[]`. "No changes" indistinguishable from "git failed."
 
 ---
@@ -320,37 +320,37 @@ All errors from these operations are completely invisible.
 
 ---
 
-## Transport, Tasks, Extension, Cloud (packages/transport-mux, tasks-mux, extension-mux, cloud)
+## Transport, Tasks, Extension, Cloud (packages/transport-adapter, tasks-adapter, extensions-adapter, cloud)
 
 ### Critical
 
-~~**Tool call arguments JSON parse → empty object**~~ — `packages/transport-mux/src/server.ts:1304` **(hardened)**
+~~**Tool call arguments JSON parse → empty object**~~ — `packages/transport-adapter/src/server.ts:1304` **(hardened)**
 `try { input = JSON.parse(tc.arguments); } catch { input = {}; }`. Malformed tool call arguments silently become `{}` — tool executes with garbage input.
 
-~~**Hook bash execution → `{}\n`**~~ — `packages/extension-mux/src/transformHelpers.ts:110,123-125` **(hardened)**
+~~**Hook bash execution → `{}\n`**~~ — `packages/extensions-adapter/src/transformHelpers.ts:110,123-125` **(hardened)**
 Shell script execution catch returns `{}\n`. Caller thinks hook succeeded with empty result. Completely masks bash failures.
 
-**Gemini CLI spawn errors → "not found"** — `packages/extension-mux/src/transformHelpers.ts:272-275` **(logged)**
+**Gemini CLI spawn errors → "not found"** — `packages/extensions-adapter/src/transformHelpers.ts:272-275` **(logged)**
 Any spawn error (permissions, system issues) treated same as "CLI not found." Wrong fallback message.
 
-**Extension uninstall — double empty catch with destructive fallback** — `packages/extension-mux/src/transformHelpers.ts:290,295` **(logged)**
+**Extension uninstall — double empty catch with destructive fallback** — `packages/extensions-adapter/src/transformHelpers.ts:290,295` **(logged)**
 Uninstall failures fall through to `fs.rmSync({ recursive: true, force: true })` without verification.
 
-**Breakpoint answer poller — fabricated "expired" result** — `packages/tasks-mux/src/client/answer-poller.ts:220` **(logged)**
+**Breakpoint answer poller — fabricated "expired" result** — `packages/tasks-adapter/src/client/answer-poller.ts:220` **(logged)**
 Any error fetching final breakpoint state → returns hardcoded minimal "expired" result. Misleads consumers.
 
-**Response body nested catch** — `packages/tasks-mux/src/backends/server.ts:244` **(logged)**
+**Response body nested catch** — `packages/tasks-adapter/src/backends/server.ts:244` **(logged)**
 If response isn't JSON AND reading text fails, body becomes `undefined`. Error reporting becomes lossy.
 
 ### High
 
-~~**Hook execution best-effort**~~ — `packages/extension-mux/src/transformHelpers.ts:247-254` **(hardened)**
+~~**Hook execution best-effort**~~ — `packages/extensions-adapter/src/transformHelpers.ts:247-254` **(hardened)**
 `try { execFileSync("bash", [...]); } catch { /* best-effort */ }`. Hook failures completely invisible.
 
-**File overwrite on read error** — `packages/extension-mux/src/installSharedGenerator.ts:77-84` **(logged)**
+**File overwrite on read error** — `packages/extensions-adapter/src/installSharedGenerator.ts:77-84` **(logged)**
 Read errors (permissions, corrupt file) treated as "doesn't exist." May overwrite with wrong content.
 
-**chmod failure ignored** — `packages/extension-mux/src/installSharedGenerator.ts:131-133`, `packages/cloud/src/sdk/providers.ts:128-130` **(logged)**
+**chmod failure ignored** — `packages/extensions-adapter/src/installSharedGenerator.ts:131-133`, `packages/cloud/src/sdk/providers.ts:128-130` **(logged)**
 File permission changes fail silently. Scripts won't be executable; provider secrets may be world-readable.
 
 **Cloud agent spawn — JSON/raw conflation** — `packages/cloud/src/sdk/agents.ts:96-110` **(logged)**
@@ -359,7 +359,7 @@ JSON parse failure converts structured output into "raw output" mode. Caller can
 **Kubernetes resource parse → empty array** — `packages/cloud/src/sdk/deploy.ts:103-107` **(logged)**
 Invalid K8s response → `[]`. "No resources" indistinguishable from "API returned garbage."
 
-**Response body read → undefined** — `packages/tasks-mux/src/client/server-client.ts:329`
+**Response body read → undefined** — `packages/tasks-adapter/src/client/server-client.ts:329`
 `.catch(() => undefined)` on response text. Error details lost in ServerError constructor.
 
 ### Medium
@@ -370,18 +370,18 @@ Invalid K8s response → `[]`. "No resources" indistinguishable from "API return
 **Atlas catalog frontmatter parse → empty** — `packages/atlas/src/catalog/discovery.ts:267-275`
 YAML parse errors → `{ frontmatter: {}, content }`. Missing metadata without indication.
 
-**Tasks-mux config → undefined** — `packages/tasks-mux/src/config.ts:115-124`
+**Tasks-adapter config → undefined** — `packages/tasks-adapter/src/config.ts:115-124`
 File read, JSON parse, and validation errors all collapse to `undefined`. Missing config silently accepted.
 
-**Proxy auth token → random UUID** — `packages/transport-mux/src/bin/adapters-proxy.ts:27`
+**Proxy auth token → random UUID** — `packages/transport-adapter/src/bin/adapters-proxy.ts:27`
 `process.env.ADAPTERS_PROXY_AUTH_TOKEN || randomUUID()`. Silent fallback to random token if env not set.
 
-**Extension env var cascades** — `packages/extension-mux/src/transformHelpers.ts:108,117-118`
+**Extension env var cascades** — `packages/extensions-adapter/src/transformHelpers.ts:108,117-118`
 `process.env.${pluginRootEnvVar} || process.env.PLUGIN_ROOT || path.resolve(...)`. No log of which path taken.
 
 ---
 
-## Agent Mux Subpackages (adapters, gateway, launch, core, config, tui, ui, webui, mobile)
+## Agent Adapter Subpackages (adapters, gateway, launch, core, config, tui, ui, webui, mobile)
 
 ### Critical
 
@@ -423,7 +423,7 @@ Auth detection failure now logged with agent name before marking 'unknown'.
 `env['AMUX_REMOTE_AGENT'] ?? process.env['AMUX_REMOTE_AGENT'] ?? 'claude'`. Silent default.
 
 **Binary resolution fallbacks** — `packages/adapters/launch/src/bridge-hooks.ts:41-46`
-`env['BABYSITTER_BIN'] || 'babysitter'`, `env['HOOKS_MUX_BIN'] || 'a5c-hooks-mux'`. Wrong tool version possible.
+`env['BABYSITTER_BIN'] || 'babysitter'`, `env['HOOKS_MUX_BIN'] || 'a5c-hooks-adapter'`. Wrong tool version possible.
 
 **Bridge hook .cmd shim parsing** — `packages/adapters/launch/src/bridge-hooks.ts:109,121`
 `catch { /* not found */ }` × 2. Falls back to `shell: true` which changes execution semantics.

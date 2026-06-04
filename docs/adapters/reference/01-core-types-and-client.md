@@ -141,11 +141,11 @@ An **Adapter** is adapters's internal representation of a specific agent. Each a
 - **Authentication**: how to detect authentication state and provide setup guidance.
 - **Plugins**: (where supported) how to list, install, search, and remove plugins.
 
-Adapters implement the `AgentAdapter` interface and extend `BaseAgentAdapter`. Built-in adapters are registered automatically when `@a5c-ai/adapters-codecs` is loaded. Custom adapters are registered via `mux.adapters.register()`.
+Adapters implement the `AgentAdapter` interface and extend `BaseAgentAdapter`. Built-in adapters are registered automatically when `@a5c-ai/adapters-codecs` is loaded. Custom adapters are registered via `adapter.adapters.register()`.
 
 ### 2.3 Run
 
-A **Run** is a single invocation of an agent. When `mux.run(options)` is called, adapters:
+A **Run** is a single invocation of an agent. When `adapter.run(options)` is called, adapters:
 
 1. Resolves the target adapter from `options.agent`.
 2. Validates `options` against the adapter's capabilities (throwing `CapabilityError` if unsatisfied).
@@ -427,12 +427,12 @@ class CapabilityError extends AgentMuxError {
 
 **When thrown from the client:**
 
-- `mux.run()` with `thinkingEffort` set when the selected model has `supportsThinking: false`.
-- `mux.run()` with `stream: true` when the adapter has `supportsTextStreaming: false`.
-- `mux.run()` with `mcpServers` set when the adapter has `supportsMCP: false`.
-- `mux.run()` with `skills` set when the adapter has `supportsSkills: false`.
-- `mux.run()` with `outputFormat: 'json'` when the adapter has `supportsJsonMode: false`.
-- `mux.plugins.list()`, `.install()`, `.uninstall()`, `.update()`, `.updateAll()`, `.search()`, `.browse()`, or `.info()` on an agent where `supportsPlugins` is `false`.
+- `adapter.run()` with `thinkingEffort` set when the selected model has `supportsThinking: false`.
+- `adapter.run()` with `stream: true` when the adapter has `supportsTextStreaming: false`.
+- `adapter.run()` with `mcpServers` set when the adapter has `supportsMCP: false`.
+- `adapter.run()` with `skills` set when the adapter has `supportsSkills: false`.
+- `adapter.run()` with `outputFormat: 'json'` when the adapter has `supportsJsonMode: false`.
+- `adapter.plugins.list()`, `.install()`, `.uninstall()`, `.update()`, `.updateAll()`, `.search()`, `.browse()`, or `.info()` on an agent where `supportsPlugins` is `false`.
 
 ### 3.3 ValidationError
 
@@ -468,14 +468,14 @@ interface ValidationFieldError {
 **When thrown from the client:**
 
 - `createClient()` with invalid option values (e.g., negative `timeout`).
-- `mux.run()` with `temperature` outside `[0.0, 2.0]`.
-- `mux.run()` with `topP` outside `[0.0, 1.0]`.
-- `mux.run()` with `topK` less than `1`.
-- `mux.run()` with `maxTokens` or `maxOutputTokens` less than `1`.
-- `mux.run()` with `thinkingBudgetTokens` less than `1024` or greater than the model's `maxThinkingTokens`.
-- `mux.run()` with empty `prompt`.
-- `mux.config.set()` or `mux.config.setField()` with values that fail the agent's config schema.
-- `mux.profiles` methods with invalid profile data.
+- `adapter.run()` with `temperature` outside `[0.0, 2.0]`.
+- `adapter.run()` with `topP` outside `[0.0, 1.0]`.
+- `adapter.run()` with `topK` less than `1`.
+- `adapter.run()` with `maxTokens` or `maxOutputTokens` less than `1`.
+- `adapter.run()` with `thinkingBudgetTokens` less than `1024` or greater than the model's `maxThinkingTokens`.
+- `adapter.run()` with empty `prompt`.
+- `adapter.config.set()` or `adapter.config.setField()` with values that fail the agent's config schema.
+- `adapter.profiles` methods with invalid profile data.
 
 ### 3.4 AuthError
 
@@ -504,7 +504,7 @@ class AuthError extends AgentMuxError {
 
 **When thrown from the client:**
 
-- `mux.run()` when `mux.auth.check(agent)` returns a status other than `'authenticated'` and the agent's adapter reports that authentication is required to operate. Note: not all agents require auth checks before spawning; some report auth errors only after the subprocess starts, in which case an `auth_error` event is emitted instead.
+- `adapter.run()` when `adapter.auth.check(agent)` returns a status other than `'authenticated'` and the agent's adapter reports that authentication is required to operate. Note: not all agents require auth checks before spawning; some report auth errors only after the subprocess starts, in which case an `auth_error` event is emitted instead.
 
 ---
 
@@ -597,7 +597,7 @@ interface GlobalConfig {
 
 **File format**: UTF-8 encoded JSON. No BOM. Trailing newline permitted. Comments are not supported (strict JSON).
 
-**Missing file behavior**: If `config.json` does not exist, adapters uses built-in defaults. The file is never auto-created; it is only written when the user explicitly calls `mux.config` write methods or `adapters config set`.
+**Missing file behavior**: If `config.json` does not exist, adapters uses built-in defaults. The file is never auto-created; it is only written when the user explicitly calls `adapter.config` write methods or `adapters config set`.
 
 **Corrupt file behavior**: If `config.json` exists but cannot be parsed as valid JSON, adapters throws a `ConfigError` with code `CONFIG_ERROR`, message identifying the parse error location, and `recoverable: false`. The client does not fall back to defaults when a config file exists but is corrupt -- this is treated as an explicit error to avoid silent misconfiguration.
 
@@ -639,7 +639,7 @@ interface AuthHintEntry {
 | `version` | `1` | Yes | -- | Schema version. Always `1` in v1. |
 | `agents` | `Record<AgentName, AuthHintEntry>` | Yes | `{}` | Map of agent names to cached auth hints. |
 
-**Security note**: This file is a read-only cache of heuristic auth state. It does **not** contain credentials, tokens, API keys, or any secret material. It caches only the result of auth detection (status, method, identity display name) to avoid expensive re-checks on every run. Entries are invalidated based on `expiresAt` or when `mux.auth.check()` is called explicitly.
+**Security note**: This file is a read-only cache of heuristic auth state. It does **not** contain credentials, tokens, API keys, or any secret material. It caches only the result of auth detection (status, method, identity display name) to avoid expensive re-checks on every run. Entries are invalidated based on `expiresAt` or when `adapter.auth.check()` is called explicitly.
 
 **File permissions**: On POSIX systems (macOS, Linux), this file is created with mode `0600` (owner read/write only). On Windows, file permissions rely on the default user ACL.
 
@@ -787,7 +787,7 @@ Note: Hermes uses YAML for its native configuration (`cli-config.yaml`) while al
 
 ### 4.4 Directory Creation Behavior
 
-- **Global directory** (`~/.adapters/`): Created lazily on first write operation (e.g., `mux.config.set()`, `mux.auth.check()` caching a hint). Read operations do not create the directory; they return defaults when the directory is absent.
+- **Global directory** (`~/.adapters/`): Created lazily on first write operation (e.g., `adapter.config.set()`, `adapter.auth.check()` caching a hint). Read operations do not create the directory; they return defaults when the directory is absent.
 - **Project directory** (`.adapters/`): Created explicitly by `adapters init` or lazily on first run (when a `run-index.jsonl` entry must be appended). The `createClient()` call itself does not create any directories.
 - **Subdirectories** (`profiles/`): Created lazily when the first profile is written.
 
@@ -947,7 +947,7 @@ interface RetryPolicy {
 
 Multiple `AgentMuxClient` instances can coexist in the same Node.js process. Each instance maintains its own resolved configuration, adapter registry, and internal state. Shared file system resources (config files, `run-index.jsonl`) are accessed safely:
 
-- **Config reads**: snapshot-based; the file is read once and cached. Call `mux.config.reload()` to refresh.
+- **Config reads**: snapshot-based; the file is read once and cached. Call `adapter.config.reload()` to refresh.
 - **Config writes**: use advisory file locking via `proper-lockfile` (or platform-native locking). If a lock cannot be acquired within 5000ms, a `ConfigLockError` is thrown (code: `CONFIG_LOCK_ERROR`, `recoverable: true`).
 - **Run index appends**: append-only, atomic at the OS level (see Section 4.2.3).
 
@@ -955,7 +955,7 @@ Multiple `AgentMuxClient` instances can coexist in the same Node.js process. Eac
 
 When the client resolves a configuration value (e.g., `defaultAgent`), the following precedence applies (highest to lowest):
 
-1. **`RunOptions`** -- per-run override (e.g., `mux.run({ agent: 'codex' })`).
+1. **`RunOptions`** -- per-run override (e.g., `adapter.run({ agent: 'codex' })`).
 2. **`ClientOptions`** -- passed to `createClient()`.
 3. **Project `config.json`** -- `.adapters/config.json`.
 4. **Global `config.json`** -- `~/.adapters/config.json`.
@@ -1025,7 +1025,7 @@ interface AgentMuxClient {
 
 Each property on `AgentMuxClient` is a **namespace sub-client** -- a focused interface for a specific domain. Sub-clients share the parent client's resolved configuration and adapter registry.
 
-#### 5.3.1 `mux.adapters` -- AdapterRegistry
+#### 5.3.1 `adapter.adapters` -- AdapterRegistry
 
 ```typescript
 interface AdapterRegistry {
@@ -1148,7 +1148,7 @@ interface InstallMethod {
 }
 ```
 
-#### 5.3.2 `mux.profiles` -- ProfileManager
+#### 5.3.2 `adapter.profiles` -- ProfileManager
 
 ```typescript
 interface ProfileManager {
@@ -1214,7 +1214,7 @@ interface ProfileInfo {
 }
 ```
 
-### 5.4 `mux.run()` -- Starting a Run
+### 5.4 `adapter.run()` -- Starting a Run
 
 ```typescript
 run(options: RunOptions): RunHandle;
@@ -1243,7 +1243,7 @@ Returns a `RunHandle` immediately, before any agent output is produced. The `Run
 - An EventEmitter with typed `on`/`off`/`once` methods.
 - A `PromiseLike<RunResult>` for `await`-based consumption.
 
-> **Forward reference**: `RunHandle` and `RunResult` are fully defined in `03-run-handle-and-interaction.md` (scope Section 7). This spec covers only the client-side contract for creating and returning a `RunHandle` via `mux.run()`.
+> **Forward reference**: `RunHandle` and `RunResult` are fully defined in `03-run-handle-and-interaction.md` (scope Section 7). This spec covers only the client-side contract for creating and returning a `RunHandle` via `adapter.run()`.
 
 #### 5.4.3 Throws
 
@@ -1254,7 +1254,7 @@ Returns a `RunHandle` immediately, before any agent output is produced. The `Run
 - `AgentMuxError` (code: `AGENT_NOT_FOUND`) -- if no adapter is registered for the agent name.
 - `AgentMuxError` (code: `PROFILE_NOT_FOUND`) -- if `options.profile` references a nonexistent profile.
 
-Note: These errors are thrown synchronously from `mux.run()`. Errors that occur after the subprocess starts (crashes, rate limits, auth failures from the agent itself) are emitted as events on the `RunHandle` and/or cause the `RunResult` promise to reject.
+Note: These errors are thrown synchronously from `adapter.run()`. Errors that occur after the subprocess starts (crashes, rate limits, auth failures from the agent itself) are emitted as events on the `RunHandle` and/or cause the `RunResult` promise to reject.
 
 #### 5.4.4 Behavioral Description
 
@@ -1271,7 +1271,7 @@ Note: These errors are thrown synchronously from `mux.run()`. Errors that occur 
 
 #### 5.4.5 Concurrency Safety
 
-Multiple calls to `mux.run()` can execute concurrently. Each run:
+Multiple calls to `adapter.run()` can execute concurrently. Each run:
 - Gets its own subprocess with independent stdio pipes.
 - Gets its own temporary directory for ephemeral harness state (cleaned up on run completion).
 - Appends to `run-index.jsonl` atomically (see Section 4.2.3).
@@ -1286,9 +1286,9 @@ The `AgentMuxClient` itself is stateless between runs; it holds only resolved co
 ```typescript
 import { createClient } from '@a5c-ai/adapters';
 
-const mux = createClient({ defaultAgent: 'claude' });
+const adapter = createClient({ defaultAgent: 'claude' });
 
-const run = mux.run({
+const run = adapter.run({
   agent: 'claude',
   prompt: 'Explain the factory pattern in TypeScript',
 });
@@ -1305,9 +1305,9 @@ for await (const event of run) {
 ```typescript
 import { createClient } from '@a5c-ai/adapters';
 
-const mux = createClient();
+const adapter = createClient();
 
-const result = await mux.run({
+const result = await adapter.run({
   agent: 'codex',
   prompt: 'Refactor the auth module',
   model: 'o4-mini',
@@ -1325,10 +1325,10 @@ console.log(result.text);
 ```typescript
 import { createClient } from '@a5c-ai/adapters';
 
-const mux = createClient();
+const adapter = createClient();
 
 // Set up a profile
-await mux.profiles.set('fast', {
+await adapter.profiles.set('fast', {
   agent: 'gemini',
   thinkingEffort: 'low',
   timeout: 30_000,
@@ -1336,7 +1336,7 @@ await mux.profiles.set('fast', {
 });
 
 // Use the profile in a run
-const result = await mux.run({
+const result = await adapter.run({
   profile: 'fast',
   prompt: 'Add error handling to the API routes',
 });
@@ -1347,9 +1347,9 @@ const result = await mux.run({
 ```typescript
 import { createClient } from '@a5c-ai/adapters';
 
-const mux = createClient();
+const adapter = createClient();
 
-const run = mux.run({
+const run = adapter.run({
   agent: 'claude',
   prompt: 'Build a REST API for the user model',
   stream: true,
@@ -1380,18 +1380,18 @@ console.log(`\nRun ${result.runId} completed.`);
 ```typescript
 import { createClient, CapabilityError } from '@a5c-ai/adapters';
 
-const mux = createClient();
+const adapter = createClient();
 
-const caps = mux.adapters.capabilities('hermes');
+const caps = adapter.adapters.capabilities('hermes');
 
 if (caps.supportsThinking) {
-  const result = await mux.run({
+  const result = await adapter.run({
     agent: 'hermes',
     prompt: 'Analyze the security implications of this code',
     thinkingEffort: 'high',
   });
 } else {
-  const result = await mux.run({
+  const result = await adapter.run({
     agent: 'hermes',
     prompt: 'Analyze the security implications of this code',
   });
@@ -1403,9 +1403,9 @@ if (caps.supportsThinking) {
 ```typescript
 import { createClient } from '@a5c-ai/adapters';
 
-const mux = createClient();
+const adapter = createClient();
 
-const installed = await mux.adapters.installed();
+const installed = await adapter.adapters.installed();
 
 for (const info of installed) {
   if (info.installed) {
@@ -1413,7 +1413,7 @@ for (const info of installed) {
       `${info.agent} v${info.version} at ${info.cliPath} — auth: ${info.authState}`
     );
   } else {
-    const methods = mux.adapters.installInstructions(info.agent);
+    const methods = adapter.adapters.installInstructions(info.agent);
     console.log(`${info.agent} not installed. Install with: ${methods[0]?.command}`);
   }
 }
@@ -1424,15 +1424,15 @@ for (const info of installed) {
 ```typescript
 import { createClient } from '@a5c-ai/adapters';
 
-const mux = createClient();
+const adapter = createClient();
 
 const [claudeResult, codexResult] = await Promise.all([
-  mux.run({
+  adapter.run({
     agent: 'claude',
     prompt: 'Write unit tests for the auth module',
     tags: ['testing'],
   }),
-  mux.run({
+  adapter.run({
     agent: 'codex',
     prompt: 'Write integration tests for the API routes',
     tags: ['testing'],
@@ -1448,13 +1448,13 @@ console.log(`Codex cost: $${codexResult.cost?.totalUsd.toFixed(4)}`);
 ```typescript
 import { createClient } from '@a5c-ai/adapters';
 
-const mux = createClient({
+const adapter = createClient({
   configDir: '/opt/adapters/config',
   projectConfigDir: '/workspace/my-project/.adapters',
   debug: true,
 });
 
-const run = mux.run({
+const run = adapter.run({
   agent: 'opencode',
   prompt: 'Lint and fix all TypeScript files',
 });

@@ -1,11 +1,11 @@
 ---
-title: Agent Mux Archive
+title: Agent Adapter Archive
 description: Historical comparisons, research, and superseded design material preserved for traceability and context.
 last_updated: 2026-04-27
 category: landing
 ---
 
-# Agent Mux Archive
+# Agent Adapter Archive
 
 This directory preserves material that is useful for context but is not the source of truth for current package behavior.
 

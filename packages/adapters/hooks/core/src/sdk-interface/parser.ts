@@ -32,8 +32,8 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 // ---------------------------------------------------------------------------
 
 /**
- * Parse the JSON output from a5c-hooks-mux invoke stdout.
- * Used by SDK harness adapters to consume hooks-mux results.
+ * Parse the JSON output from a5c-hooks-adapter invoke stdout.
+ * Used by SDK harness adapters to consume hooks-adapter results.
  *
  * @throws {HookOutputParseError} on malformed JSON or missing required fields.
  */
@@ -91,7 +91,7 @@ function normalizeHookResult(result: unknown): UnifiedHookResult {
 }
 
 /**
- * Parse a hooks-mux normalized event (e.g., from a file or pipe).
+ * Parse a hooks-adapter normalized event (e.g., from a file or pipe).
  *
  * @throws {HookOutputParseError} on malformed JSON or missing required fields.
  */

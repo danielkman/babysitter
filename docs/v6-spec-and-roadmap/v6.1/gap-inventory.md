@@ -22,14 +22,14 @@ Complete inventory of gaps between the Atlas graph (source of truth) and the cur
 
 | ID | Severity | Gap | Description |
 |----|----------|-----|-------------|
-| G-L2-01 | S2 | Provider abstraction fragmented | Provider concepts are split: transport-mux owns the proxy, adapters-cli owns provider translation, agent-catalog owns provider metadata. No unified provider interface. |
+| G-L2-01 | S2 | Provider abstraction fragmented | Provider concepts are split: transport-adapter owns the proxy, adapters-cli owns provider translation, agent-catalog owns provider metadata. No unified provider interface. |
 | G-L2-02 | S2 | ProviderTranslation in extensions cluster | ProviderTranslation records describe how to route provider X through transport Y, but they're in `extensions` rather than a dedicated provider cluster. |
 
 ### L3: Transport — Codec Architecture Incomplete
 
 | ID | Severity | Gap | Description |
 |----|----------|-----|-------------|
-| G-L3-01 | S2 | Codec refactor deferred | The transport-mux codec architecture (TransportCodec interface, per-protocol codecs, tool schema translation) was planned in v6.0 but only partially implemented. |
+| G-L3-01 | S2 | Codec refactor deferred | The transport-adapter codec architecture (TransportCodec interface, per-protocol codecs, tool schema translation) was planned in v6.0 but only partially implemented. |
 | G-L3-02 | S2 | Codex websocket bypass | Codex CLI uses websockets that bypass OPENAI_BASE_URL proxy (#200). Transport layer can't intercept all connection types. |
 | G-L3-03 | S3 | TransportRuntime in extensions | TransportRuntime node kind is in `extensions` cluster, should be in `compute`. |
 
@@ -37,7 +37,7 @@ Complete inventory of gaps between the Atlas graph (source of truth) and the cur
 
 | ID | Severity | Gap | Description |
 |----|----------|-----|-------------|
-| G-L45-01 | S3 | Dual implementation paths | Two packages (agent-core, agent-comm-mux) both implement L4 concerns. Intentional per v6.0 but increases cognitive load. |
+| G-L45-01 | S3 | Dual implementation paths | Two packages (agent-core, agent-comm-adapter) both implement L4 concerns. Intentional per v6.0 but increases cognitive load. |
 | G-L45-02 | S4 | CapabilityProfile not runtime | Graph defines CapabilityProfile as a swappable bundle; no runtime mechanism to swap capability profiles at launch time. |
 
 ### L6: Agent-Platform — Plugin Compiler Mature, Platform Deferred
@@ -66,7 +66,7 @@ Complete inventory of gaps between the Atlas graph (source of truth) and the cur
 
 | ID | Severity | Gap | Description |
 |----|----------|-----|-------------|
-| G-L9-01 | S4 | No filesystem policy enforcement | Graph defines Sandbox and FilesystemSafetyInvariant; only human approval gates (tasks-mux) are implemented. |
+| G-L9-01 | S4 | No filesystem policy enforcement | Graph defines Sandbox and FilesystemSafetyInvariant; only human approval gates (tasks-adapter) are implemented. |
 | G-L9-02 | S4 | No network policy enforcement | No network-level sandboxing for agent-driven HTTP requests. |
 | G-L9-03 | S4 | No resource limit enforcement | No CPU/memory/time budgets for effect execution beyond timeouts. |
 
@@ -95,7 +95,7 @@ Complete inventory of gaps between the Atlas graph (source of truth) and the cur
 
 | ID | Severity | Gap | Description |
 |----|----------|-----|-------------|
-| G-L14-01 | S2 | No unified governance API | Governance concerns are in agent-platform (module), tasks-mux (approval), atlas (evidence/claims). No unified governance interface. |
+| G-L14-01 | S2 | No unified governance API | Governance concerns are in agent-platform (module), tasks-adapter (approval), atlas (evidence/claims). No unified governance interface. |
 | G-L14-02 | S4 | NIST/OWASP frameworks aspirational | Graph references compliance frameworks; no implementation maps controls to these frameworks. |
 | G-L14-03 | S3 | TrustLevel has 5 records, no runtime | Graph defines 5 trust levels; no runtime mechanism to evaluate or enforce trust decisions. |
 
@@ -115,4 +115,4 @@ Complete inventory of gaps between the Atlas graph (source of truth) and the cur
 | G-X-01 | S2 | Graph clusters don't match layers | Some node kinds are in "extensions" or "domain" clusters rather than their architectural layer cluster. Makes graph navigation harder. |
 | G-X-02 | S3 | No layer tags on packages | Package.json files don't reference which atlas layer(s) they implement. |
 | G-X-03 | S2 | Windows support gaps | npm spawn, tar paths, TTY detection — multiple packages have Windows-specific issues that surface as CI failures. |
-| G-X-04 | S2 | hooks-mux-cli version inconsistency | Adapter sub-packages have inconsistent staging version hashes, blocking clean installs. |
+| G-X-04 | S2 | hooks-adapter-cli version inconsistency | Adapter sub-packages have inconsistent staging version hashes, blocking clean installs. |

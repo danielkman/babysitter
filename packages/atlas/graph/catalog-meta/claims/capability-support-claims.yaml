@@ -102,10 +102,10 @@ edges:
     - evidence:web-codex-cli-features
 ---
 nodeKind: Claim
-id: claim:repo-transport-mux-readme
+id: claim:repo-transport-adapter-readme
 attributes:
-  claimId: repo-transport-mux-readme
-  statement: "The transport-mux package README documents the transport abstraction layer for multi-runtime agent communication."
+  claimId: repo-transport-adapter-readme
+  statement: "The transport-adapter package README documents the transport abstraction layer for multi-runtime agent communication."
   subjectKind: AgentVersion
   subjectId: "agentVersion:codex:ge-0-119-0"
   confidence: high
@@ -113,9 +113,9 @@ attributes:
   provenanceKind: repo-observation
   evidenceStrength: corroborated
   evidenceIds:
-    - repo-transport-mux-readme
-    - repo-transport-mux-architecture
+    - repo-transport-adapter-readme
+    - repo-transport-adapter-architecture
   unresolvedGaps: []
 edges:
   sourced_from:
-    - evidence:repo-transport-mux-readme
+    - evidence:repo-transport-adapter-readme

@@ -6,7 +6,7 @@ Per-harness setup instructions for integrating `@a5c-ai/hooks-adapter-cli` with 
 
 ## Overview
 
-The hooks-mux system normalizes hook execution across agent harnesses. Each harness has a dedicated adapter package (`@a5c-ai/hooks-adapter-<name>`) that translates between harness-native hook contracts and the canonical event model.
+The hooks-adapter system normalizes hook execution across agent harnesses. Each harness has a dedicated adapter package (`@a5c-ai/hooks-adapter-<name>`) that translates between harness-native hook contracts and the canonical event model.
 
 To use the proxy with any harness:
 
@@ -135,8 +135,8 @@ npx -y @a5c-ai/hooks-adapter-cli invoke --adapter codex
 ```
 
 Codex does not provide native downstream env injection. If handlers persist env that later
-commands need, run those commands through `a5c-hooks-mux exec --session-id "$AGENT_SESSION_ID" -- ...`.
-Prefer a single `hooks-mux` registration per Codex hook event and let the mux handle fan-out,
+commands need, run those commands through `a5c-hooks-adapter exec --session-id "$AGENT_SESSION_ID" -- ...`.
+Prefer a single `hooks-adapter` registration per Codex hook event and let the adapter handle fan-out,
 because Codex can launch multiple matching native hooks concurrently.
 
 ### Capabilities
@@ -153,10 +153,10 @@ because Codex can launch multiple matching native hooks concurrently.
 
 ### Notes
 
-- Treat `a5c-hooks-mux doctor --adapter codex` as the authoritative capability/diagnostic view for Codex's experimental and lossy behavior
-- Env persistence is `wrapper_only`; downstream commands only see persisted env when launched through `a5c-hooks-mux exec`
+- Treat `a5c-hooks-adapter doctor --adapter codex` as the authoritative capability/diagnostic view for Codex's experimental and lossy behavior
+- Env persistence is `wrapper_only`; downstream commands only see persisted env when launched through `a5c-hooks-adapter exec`
 - tool interception is bash-only; coverage is incomplete
-- multiple matching hooks can launch concurrently; prefer a single mux registration per event
+- multiple matching hooks can launch concurrently; prefer a single adapter registration per event
 - many parsed output fields currently fail open
 
 ---

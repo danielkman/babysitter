@@ -315,13 +315,13 @@ edges:
 nodeKind: StackProfile
 id: stack-profile:coding-agent-platform
 attributes:
-  displayName: "Coding Agent Platform Stack (Claude Code, hooks-mux, Git, Docker, TypeScript)"
+  displayName: "Coding Agent Platform Stack (Claude Code, hooks-adapter, Git, Docker, TypeScript)"
   description: |
     A developer tooling stack for building and operating AI-powered coding
     agents that autonomously navigate codebases, write code, run tests,
     and submit pull requests. Claude Code (or similar agentic coding CLIs)
     provides the core agent loop with tool use, file editing, and terminal
-    access. hooks-mux intercepts and orchestrates tool calls for custom
+    access. hooks-adapter intercepts and orchestrates tool calls for custom
     validation, logging, and policy enforcement.
 
     Git provides version control with branching strategies for agent-authored

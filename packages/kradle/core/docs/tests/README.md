@@ -33,7 +33,7 @@ Kradle already has these executable gates:
 - [Fixtures and test data](./fixtures-test-data.md) defines deterministic org/repo/memory/.a5c fixtures and data policy.
 - [Security and compliance tests](./security-compliance-tests.md) defines auth, RBAC, secret, supply-chain, and audit checks.
 - [Observability and reliability tests](./observability-reliability-tests.md) defines metrics, events, logs, watches, retries, and failure injection.
-- [Agent QA plan](./agent-qa-plan.md) defines tests for agent dispatch, Agent Mux sessions, company brain memory, triggers, tools, subagents, and run imports.
+- [Agent QA plan](./agent-qa-plan.md) defines tests for agent dispatch, Agent Adapter sessions, company brain memory, triggers, tools, subagents, and run imports.
 
 ## Quality principles
 

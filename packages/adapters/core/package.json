@@ -3,7 +3,7 @@
   "version": "5.1.0",
   "type": "module",
   "license": "MIT",
-  "description": "Agent communication mux — event streaming, hooks, sessions",
+  "description": "Agent communication adapter — event streaming, hooks, sessions",
   "author": "a5c-ai",
   "homepage": "https://github.com/a5c-ai/babysitter/tree/main/packages/adapters/core#readme",
   "repository": {
@@ -101,7 +101,7 @@
       "L5"
     ],
     "muxes": [
-      "agent-comm-mux"
+      "agent-comm-adapter"
     ]
   }
 }

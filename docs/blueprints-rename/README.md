@@ -1,13 +1,13 @@
 # Babysitter Plugins → Blueprints Rename
 
-"Babysitter plugins" (managed by babysitter-sdk CLI, stored in marketplace) should be renamed to "blueprints" to distinguish them from agent plugins (the unified/generated hooks-mux plugins installed into agents).
+"Babysitter plugins" (managed by babysitter-sdk CLI, stored in marketplace) should be renamed to "blueprints" to distinguish them from agent plugins (the unified/generated hooks-adapter plugins installed into agents).
 
 ## Distinction
 
 | Concept | Current Name | New Name | Examples |
 |---------|-------------|----------|---------|
 | Babysitter marketplace installables | "plugins" | **blueprints** | `plugins/a5c/marketplace/*.json`, `babysitter blueprints:install`, process libraries, skills |
-| Agent harness plugins | "plugins" (keep) | **plugins** (keep) | hooks-mux generated plugins, Claude Code extensions, `.claude/plugins/` |
+| Agent harness plugins | "plugins" (keep) | **plugins** (keep) | hooks-adapter generated plugins, Claude Code extensions, `.claude/plugins/` |
 
 ## What Changes
 
@@ -52,10 +52,10 @@ plugins/a5c/babysitter/ → blueprints/a5c/babysitter/
 
 ## What Does NOT Change
 
-- Agent plugins (hooks-mux/extension-mux generated) stay as "plugins"
+- Agent plugins (hooks-adapter/extensions-adapter generated) stay as "plugins"
 - `CLAUDE_PLUGIN_ROOT`, `PI_PLUGIN_ROOT` env vars stay
 - `.claude/plugins/` directory stays
-- `packages/extension-mux/` (generates agent plugins) stays as "plugins"
+- `packages/extensions-adapter/` (generates agent plugins) stays as "plugins"
 - `install.md` in agent plugin packages stays
 - `plugin.json` manifest for agent plugins stays
 

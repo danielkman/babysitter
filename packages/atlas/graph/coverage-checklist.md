@@ -80,26 +80,26 @@ Schema references use NodeKind names defined in `./schema/node-kinds/README.md` 
 | Compute path / Surfacing path framing | universal/00-overview.md, 02-stack.md | derivable from `Layer.position` (1–11) + `Layer.path` enum (`compute`, `surfacing`) | ✅ | |
 | End-to-end run flow (13-step composition) | universal/02-stack.md §How the layers compose | derivable diagram; not stored as a node — each step is an edge already (`InteractionPattern` `composes` primitives, `AgentVersion` `bound_to` `ModelVersion` etc.) | ✅ | derived view per design principle |
 
-### Mux family (a5c-flavored — the 9 muxes)
+### Adapter family (a5c-flavored — the 9 muxes)
 
-A `Mux` is treated as `ExtensionInterface` (a5c-flavored contract) plus implementation attached to the relevant top-level `Layer`. Each mux has a `Term` `kind=mux`.
+A `Adapter` is treated as `ExtensionInterface` (a5c-flavored contract) plus implementation attached to the relevant top-level `Layer`. Each adapter has a `Term` `kind=adapter`.
 
 | Concept | Source | Schema mapping | Status | Notes |
 |---|---|---|---|---|
-| Mux concept (a5c-coinage) | a5c/00-overview.md, 02-muxes.md | `Term` `term:mux` `kind=concept`; `Synonym` of industry `adapter`/`gateway`/`bridge` | ✅ | |
-| transport-mux (#1) | a5c/02-muxes.md §1 | `ExtensionInterface` `iface:transport-mux`; `ProcessDescriptor` `pkg:@a5c-ai/transport-adapter` | ✅ | |
-| agent-launch-mux (#2) | a5c/02-muxes.md §2 | `ExtensionInterface` `iface:agent-launch-mux`; realized in `adapters/core` + adapters | ✅ | |
-| agent-comm-mux (#3) | a5c/02-muxes.md §3 | `ExtensionInterface` `iface:agent-comm-mux` | ✅ | |
-| session-storage-mux (#4) | a5c/02-muxes.md §4 | `ExtensionInterface` `iface:session-storage-mux` | ✅ | |
-| agent-config-mux (#5) | a5c/02-muxes.md §5 | `ExtensionInterface` `iface:agent-config-mux` | ✅ | |
-| hooks-mux (#6) | a5c/02-muxes.md §6 | `ExtensionInterface` `iface:hooks-mux`; `ProcessDescriptor` `pkg:@a5c-ai/hooks-adapter-cli` | ✅ | |
-| extension-mux (#7) | a5c/02-muxes.md §7 | `ExtensionInterface` `iface:extension-mux`; `ProcessDescriptor` `pkg:@a5c-ai/extensions-adapter` | ✅ | |
-| tool-mux (#8) | a5c/02-muxes.md §8 | `ExtensionInterface` `iface:tool-mux` | ✅ | |
-| tasks-mux (#9) | a5c/02-muxes.md §9 | `ExtensionInterface` `iface:tasks-mux`; `ProcessDescriptor` `pkg:@a5c-ai/tasks-adapter` | ✅ | |
-| Mux native side / canonical side framing | a5c/02-muxes.md preamble | attributes `nativeProtocols` and `canonicalProtocol` on `ExtensionInterface` (kind=mux) | ✅ | |
-| "What is not a mux" rejected list (identity, secrets, memory, trust, policy, blueprints, install, events, observability) | a5c/02-muxes.md §What is not a mux | each captured as `Term` with note + `replaces` to corresponding `ExtensionInterface` (or `OutOfScopeReason`) | ✅ | |
-| Mux bridging concerns (per-mux: spawn args, env-vars, signal propagation, etc.) | a5c/02-muxes.md (each section) | attributes on `ExtensionInterface` (kind=mux) `bridgingConcerns[]` | ✅ | |
-| Invocation lifecycle (9 states) — captured under tasks-mux/launch-mux | a5c/02-muxes.md §2; a5c/05-sdk.md | see Lifecycle section below | ✅ | |
+| Adapter concept (a5c-coinage) | a5c/00-overview.md, 02-muxes.md | `Term` `term:adapter` `kind=concept`; `Synonym` of industry `adapter`/`gateway`/`bridge` | ✅ | |
+| transport-adapter (#1) | a5c/02-muxes.md §1 | `ExtensionInterface` `iface:transport-adapter`; `ProcessDescriptor` `pkg:@a5c-ai/transport-adapter` | ✅ | |
+| agent-launch-adapter (#2) | a5c/02-muxes.md §2 | `ExtensionInterface` `iface:agent-launch-adapter`; realized in `adapters/core` + adapters | ✅ | |
+| agent-comm-adapter (#3) | a5c/02-muxes.md §3 | `ExtensionInterface` `iface:agent-comm-adapter` | ✅ | |
+| session-storage-adapter (#4) | a5c/02-muxes.md §4 | `ExtensionInterface` `iface:session-storage-adapter` | ✅ | |
+| agent-config-adapter (#5) | a5c/02-muxes.md §5 | `ExtensionInterface` `iface:agent-config-adapter` | ✅ | |
+| hooks-adapter (#6) | a5c/02-muxes.md §6 | `ExtensionInterface` `iface:hooks-adapter`; `ProcessDescriptor` `pkg:@a5c-ai/hooks-adapter-cli` | ✅ | |
+| extensions-adapter (#7) | a5c/02-muxes.md §7 | `ExtensionInterface` `iface:extensions-adapter`; `ProcessDescriptor` `pkg:@a5c-ai/extensions-adapter` | ✅ | |
+| tools-adapter (#8) | a5c/02-muxes.md §8 | `ExtensionInterface` `iface:tools-adapter` | ✅ | |
+| tasks-adapter (#9) | a5c/02-muxes.md §9 | `ExtensionInterface` `iface:tasks-adapter`; `ProcessDescriptor` `pkg:@a5c-ai/tasks-adapter` | ✅ | |
+| Adapter native side / canonical side framing | a5c/02-muxes.md preamble | attributes `nativeProtocols` and `canonicalProtocol` on `ExtensionInterface` (kind=adapter) | ✅ | |
+| "What is not a adapter" rejected list (identity, secrets, memory, trust, policy, blueprints, install, events, observability) | a5c/02-muxes.md §What is not a adapter | each captured as `Term` with note + `replaces` to corresponding `ExtensionInterface` (or `OutOfScopeReason`) | ✅ | |
+| Adapter bridging concerns (per-adapter: spawn args, env-vars, signal propagation, etc.) | a5c/02-muxes.md (each section) | attributes on `ExtensionInterface` (kind=adapter) `bridgingConcerns[]` | ✅ | |
+| Invocation lifecycle (9 states) — captured under tasks-adapter/launch-adapter | a5c/02-muxes.md §2; a5c/05-sdk.md | see Lifecycle section below | ✅ | |
 | Hook merge policies (most-restrictive-wins, single-writer-only, concat, keep-first, union, key-wise) | a5c/02-muxes.md §6, universal/06-channels-sessions-hooks.md §3.4 | enum on `Hook.mergePolicy`; per-policy `Term` | ✅ | |
 | DECISION_PRECEDENCE (deny < ask < allow < continue < noop) | a5c/02-muxes.md §6, a5c/04-reliability.md | ordered enum `DecisionVerb` with rank attribute; orthogonal `block` flag declared as separate attribute (not part of enum) | ✅ | |
 | Hook error policies (`fail-open`, `fail-on-conflict`, `fail-closed-bootstrap-only`) | a5c/02-muxes.md §6 | enum `Hook.errorPolicy` | ✅ | |
@@ -165,7 +165,7 @@ A `Mux` is treated as `ExtensionInterface` (a5c-flavored contract) plus implemen
 | Phase / PhaseChange / PhaseChangeCheck | universal/01-terminology.md §Phase, a5c/04-reliability.md | `Phase` and `PhaseTransition` NodeKinds (cluster 6) | ✅ | |
 | Common phase machines (intake→plan→execute→review→done; triage→reproduce→diagnose→fix→verify→done; read→analyze→propose→answer→done) | a5c/04-reliability.md | `StateMachine` instances `sm:general-dev`, `sm:debug`, `sm:research` | ✅ | |
 | Phase machines in the wild (process library + repo overrides) | a5c/04-reliability.md §Phase machines in the wild | edge `Run.phaseMachine` resolved from process library; `Claim` records repo-override invariants | ✅ | |
-| Decision-Point (universal) | universal/01-terminology.md §Decision-Point, a5c/02-muxes.md §9 | `Term` `term:decision-point` `kind=concept`; surfaced as `Phase` gate or as `tasks-mux` Decision (legacy=Breakpoint) | ✅ | |
+| Decision-Point (universal) | universal/01-terminology.md §Decision-Point, a5c/02-muxes.md §9 | `Term` `term:decision-point` `kind=concept`; surfaced as `Phase` gate or as `tasks-adapter` Decision (legacy=Breakpoint) | ✅ | |
 
 ### Hooks (canonical taxonomy)
 
@@ -178,7 +178,7 @@ A `Mux` is treated as `ExtensionInterface` (a5c-flavored contract) plus implemen
 | Per-product native hook names | universal/06-channels-sessions-hooks.md §3.1, a5c/02-muxes.md §6 | `HookMapping` edge `AgentVersion → HookSurface` with `nativeName` attribute | ✅ | claude, codex, gemini, copilot, cursor, opencode, pi/omp/openclaw/hermes |
 | Hook delivery families (`shell-hook`, `in-process`, `observer`) | universal/01-terminology.md, 06-channels-sessions-hooks.md §3.2 | `HookFamily` NodeKind (cluster 5) with three values | ✅ | |
 | Hook semantics: blocking vs non-blocking | universal/06-channels-sessions-hooks.md §3.3 | attribute `Hook.blocking: boolean` | ✅ | |
-| Hook merge concerns | universal/06-channels-sessions-hooks.md §3.4 | covered above (mux family) | ✅ | |
+| Hook merge concerns | universal/06-channels-sessions-hooks.md §3.4 | covered above (adapter family) | ✅ | |
 | Hook support level (`supported`, `degraded`, `unsupported`) | universal/06-channels-sessions-hooks.md §3.5 | attribute on `HookMapping.supportLevel` | ✅ | |
 | Run-event hooks (SDK) — `on-run-start`, `on-iteration-start`, `on-iteration-end`, `on-task-start`, `on-task-complete`, `on-breakpoint`, `on-step-dispatch`, `on-run-complete`, `on-run-fail`, `on-score`, `post-planning`, `pre-branch`, `pre-commit` | a5c/05-sdk.md §Hook integration | `HookSurface` instances `origin=sdk-run-event` | ✅ | |
 
@@ -244,7 +244,7 @@ A `Mux` is treated as `ExtensionInterface` (a5c-flavored contract) plus implemen
 | Streaming tool output (some MCP tools stream; most CLIs don't) | a5c/02-muxes.md §8 | `Capability` `cap:streams-output` per tool | ✅ | |
 | Error envelope mapping | a5c/02-muxes.md §8 | attribute `ToolDescriptor.errorEnvelopeShape` | ✅ | |
 | Secret redaction in tool args/output | a5c/02-muxes.md §8 | invariant in `iface:secrets-interface`; recorded as Claim on `ToolDescriptor` | ✅ | |
-| Attestation envelope (Trust Chain link for tool call) | a5c/02-muxes.md §8, a5c/08-trust-chain.md | edge `ToolDescriptor.signedBy iface:trust-interface`; per-mux signing point | ✅ | tool-mux signs (input + output + sandbox-profile-used) |
+| Attestation envelope (Trust Chain link for tool call) | a5c/02-muxes.md §8, a5c/08-trust-chain.md | edge `ToolDescriptor.signedBy iface:trust-interface`; per-adapter signing point | ✅ | tools-adapter signs (input + output + sandbox-profile-used) |
 | Tool Provider / Tool Server / MCP Server terminology | universal/05-plugins-and-extensions.md §9, universal/01-terminology.md | `Term`s with `synonym_of` and `replaces`: MCP Server (preferred); Tool Provider (generic synonym); Tool Server (deprecated, a5c-flavored coinage) | ✅ | |
 
 ### Plugins / extensions
@@ -275,7 +275,7 @@ A `Mux` is treated as `ExtensionInterface` (a5c-flavored contract) plus implemen
 | Portable Extension manifest fields (name, version, implements, hooks, hookFilePattern, hookConfig, targets, content/{skills,subagents,toolServers}) | a5c/07-extensions.md | attribute schema on `PortableExtension` | ✅ | |
 | `implements:` extension-interface declaration | a5c/07-extensions.md | edge `PortableExtension implements ExtensionInterface` | ✅ | |
 | Hook proxy command resolution (`Stop: proxy` → `npx @a5c-ai/hooks-adapter-cli`) | a5c/07-extensions.md, 02-muxes.md §7 | attribute `PortableExtension.hookProxyCommand` | ✅ | |
-| A5c-specific extension lifecycle (resolution+interface parsing, compilation through extension-mux, registration with resolver, hook proxying) | a5c/07-extensions.md | recorded on `PortableExtension.lifecycle` | ✅ | |
+| A5c-specific extension lifecycle (resolution+interface parsing, compilation through extensions-adapter, registration with resolver, hook proxying) | a5c/07-extensions.md | recorded on `PortableExtension.lifecycle` | ✅ | |
 | Old vocabulary mapping (agent-native plugin / agent plugin / uniplugin / metaplugin / babysitter plugin / Agent-Recipe / harness extension / skill-directory plugin / MCP server install) | a5c/07-extensions.md | `Term.replaces` chain to canonical shapes | ✅ | |
 
 ### Blueprints
@@ -304,7 +304,7 @@ A `Mux` is treated as `ExtensionInterface` (a5c-flavored contract) plus implemen
 | Concept | Source | Schema mapping | Status | Notes |
 |---|---|---|---|---|
 | Trust Chain (composed) | universal/00-overview.md, 07-cross-cutting.md §2, a5c/08-trust-chain.md | (removed) | 🚫 | Out-of-scope-for-ontology: Trust Chain (cross-stack signing) is not in the ontology / Phase 1 scope; defer to a separate trust-and-signing initiative if pursued. |
-| Per-mux signing points (transport-mux, agent-launch-mux, agent-comm-mux, hooks-mux, tool-mux, tasks-mux) | a5c/08-trust-chain.md | (removed) | 🚫 | Out-of-scope-for-ontology: Trust Chain (cross-stack signing) is not in the ontology / Phase 1 scope; defer to a separate trust-and-signing initiative if pursued. |
+| Per-adapter signing points (transport-adapter, agent-launch-adapter, agent-comm-adapter, hooks-adapter, tools-adapter, tasks-adapter) | a5c/08-trust-chain.md | (removed) | 🚫 | Out-of-scope-for-ontology: Trust Chain (cross-stack signing) is not in the ontology / Phase 1 scope; defer to a separate trust-and-signing initiative if pursued. |
 | Authority (catalog node) | universal/01-terminology.md, a5c/00-overview.md, 08-trust-chain.md | (removed) | 🚫 | Out-of-scope-for-ontology: Trust Chain (cross-stack signing) is not in the ontology / Phase 1 scope; defer to a separate trust-and-signing initiative if pursued. Replaced by opaque-string principal ids on `Claim.claimedBy`, `EvidenceSource.observedBy`, `OpenQuestion.owner`, `Gap.owner`. |
 | Attestation envelope | a5c/08-trust-chain.md, universal/07-cross-cutting.md | (removed) | 🚫 | Out-of-scope-for-ontology: Trust Chain (cross-stack signing) is not in the ontology / Phase 1 scope; defer to a separate trust-and-signing initiative if pursued. |
 | ProvenBreakpointAnswer (live primitive) | a5c/02-muxes.md §9, 08-trust-chain.md | (removed) | 🚫 | Out-of-scope-for-ontology: Trust Chain (cross-stack signing) is not in the ontology / Phase 1 scope; defer to a separate trust-and-signing initiative if pursued. |
@@ -312,7 +312,7 @@ A `Mux` is treated as `ExtensionInterface` (a5c-flavored contract) plus implemen
 | TrustLevel (`official-web`, `vendor-doc`, `community`, `synthetic`) | universal/07-cross-cutting.md §1.3 | `TrustLevel` NodeKind (cluster 12) with four enum instances; grades evidence quality (NOT chain-signing) | ✅ | Kept — evidence-quality grading, distinct from Trust Chain. |
 | evidencePolicy gates (vendorBackedEvidence, reviewOwnerPattern, maxFreshnessWindowDays=45, reachability checks) | universal/07-cross-cutting.md §1.3 | `EvidencePolicy` NodeKind (cluster 13) with attributes | ✅ | |
 | End-to-end chain example (provider response → transport-proxy → tool call → sandbox attestation → hook → decision → answer → run journal → completion) | a5c/08-trust-chain.md | (removed) | 🚫 | Out-of-scope-for-ontology: Trust Chain (cross-stack signing) is not in the ontology / Phase 1 scope; defer to a separate trust-and-signing initiative if pursued. |
-| Trust Chain deferred items (per-instance signing-key issuance, transport-proxy + transport-mux signing, tool-call attestation envelope, hook-delivery signing, run completion attestation, end-to-end CLI) | a5c/08-trust-chain.md §What's deferred | (removed) | 🚫 | Out-of-scope-for-ontology: Trust Chain (cross-stack signing) is not in the ontology / Phase 1 scope; defer to a separate trust-and-signing initiative if pursued. |
+| Trust Chain deferred items (per-instance signing-key issuance, transport-proxy + transport-adapter signing, tool-call attestation envelope, hook-delivery signing, run completion attestation, end-to-end CLI) | a5c/08-trust-chain.md §What's deferred | (removed) | 🚫 | Out-of-scope-for-ontology: Trust Chain (cross-stack signing) is not in the ontology / Phase 1 scope; defer to a separate trust-and-signing initiative if pursued. |
 
 ### Catalog ontology (the schema describing itself)
 
@@ -395,16 +395,16 @@ A `Mux` is treated as `ExtensionInterface` (a5c-flavored contract) plus implemen
 | Standards deliberately not adopted (LangChain, AutoGen, vendor SDKs as canonical) | universal/04-protocols.md §12 | each as `OutOfScopeReason` in Out-of-Scope section below | ✅ | |
 | Protocol gaps (no thinking/reasoning channel standard, no cost/usage envelope standard, no fork/resume standard, no thinking-streaming standard, no industry hook event standard, no cross-protocol tool-call streaming, no industry plugin format, signal propagation brittle, process-lifecycle Unix-vs-Windows differences, no resume/fork uniformity, format fidelity loss, no task-dependency representation, no comment-sync semantics, no unified auth envelope, no agent-instance authority assertion) | universal/04-protocols.md (Gaps subsections) | each as `OpenQuestion` `oq:gap-<topic>`; recorded as `Claim.gap=true` | ⏳ | |
 
-### Tasks-mux taxonomy
+### Tasks-adapter taxonomy
 
 | Concept | Source | Schema mapping | Status | Notes |
 |---|---|---|---|---|
 | Task kinds bridged: `decision` (renamed from breakpoint), `task`, `external-task` | a5c/02-muxes.md §9 | enum `TaskKind` on `Effect`/`Decision` carrier; `Term` `term:breakpoint` `replaces` `term:decision` `inContext=sdk-legacy` | ✅ | |
 | Cross-cutting axes (actor: human/agent/system; mode: sync/deferred; backend; dependencies DAG) | a5c/02-muxes.md §9 | attributes on `Decision`/`Task` records | ✅ | |
-| Tasks-mux lifecycle (`open → assigned → in-progress → answered/done → closed`) | a5c/02-muxes.md §9 | `StateMachine` over Decision | ✅ | |
+| Tasks-adapter lifecycle (`open → assigned → in-progress → answered/done → closed`) | a5c/02-muxes.md §9 | `StateMachine` over Decision | ✅ | |
 | Live decision schema (BreakpointStrategy, Urgency, InteractionKind, BreakpointContext sections/artifacts/links, BreakpointRouting, ResponderProfile, BreakpointAnswer with Rating and DecisionMemory, ProvenBreakpointAnswer) | a5c/02-muxes.md §9 | sub-attribute schema on `Decision`; `ProvenBreakpointAnswer` is `Attestation` | ✅ | |
 | Auto-approval pattern DSL (glob decision IDs, attribute predicates, AND combinator, consecutive-approval escalation, named pattern presets) | a5c/02-muxes.md §9 | attribute `Decision.autoApprovalPattern`; evaluated by `iface:governance-interface` | ✅ | |
-| Tasks-mux backends (auth/, backends/, harness/, mcp/, client/) | a5c/02-muxes.md §9 | per-backend `NativeExtension implements iface:tasks-mux` | ✅ | |
+| Tasks-adapter backends (auth/, backends/, harness/, mcp/, client/) | a5c/02-muxes.md §9 | per-backend `NativeExtension implements iface:tasks-adapter` | ✅ | |
 | Task-completion attestations (planned) | a5c/02-muxes.md §9, a5c/08-trust-chain.md | `OpenQuestion` `oq:task-completion-attestation` | ⏳ | |
 
 ### Babysitter SDK process library / processes
@@ -498,7 +498,7 @@ The following are first-class `Term` nodes (cluster 14) with anchors to the corr
 | Agent (umbrella) | universal/01-terminology.md, 02-stack.md | concept | `AgentProduct` | ✅ |
 | Comm-Mode | universal/01-terminology.md, 06-channels-sessions-hooks.md | concept (deprecated) | `replaces` `Agent Host Transport` | ✅ |
 | Transport-Mode | a5c/02-muxes.md (retired drafts) | concept (deprecated) | `replaces` `Agent Host Transport` | ✅ |
-| Mux | a5c/02-muxes.md | mux | `ExtensionInterface` | ✅ |
+| Adapter | a5c/02-muxes.md | adapter | `ExtensionInterface` | ✅ |
 | Skill | universal/05-plugins-and-extensions.md | extension-shape | `Skill` | ✅ |
 | Subagent | universal/05-plugins-and-extensions.md | extension-shape | `Subagent` | ✅ |
 | Native Plugin / Native Extension | universal/05-plugins-and-extensions.md, a5c/07-extensions.md | extension-shape | `NativeExtension` | ✅ |
@@ -601,7 +601,7 @@ OpenQuestion entries that need data or decision before a claim can be made. Each
 | Benchmark-run primitives at SDK layer | tbd (defer to Phase 2) | Phase 1 | Deferred — depends on `iface:reflection-interface` benchmark surface landing in `@a5c-ai/babysitter-sdk`. Dependency: `Benchmark`/`TestSet`/`EvalRun`/`EvalResult` NodeKinds already modeled (cluster 11); only the SDK-side `ctx.benchmark.run()` primitive is pending. Owner: SDK team. |
 | Task-completion attestation envelope shape | tbd | Phase 1 | 🚫 Out-of-scope: Trust Chain (cross-stack signing) is not in the ontology / Phase 1 scope; defer to a separate trust-and-signing initiative if pursued. |
 | Per-instance signing-key issuance pipeline | tbd | Phase 1 | 🚫 Out-of-scope: Trust Chain (cross-stack signing) is not in the ontology / Phase 1 scope; defer to a separate trust-and-signing initiative if pursued. |
-| transport-proxy + transport-mux signing wire-up | tbd | Phase 1 | 🚫 Out-of-scope: Trust Chain (cross-stack signing) is not in the ontology / Phase 1 scope; defer to a separate trust-and-signing initiative if pursued. |
+| transport-proxy + transport-adapter signing wire-up | tbd | Phase 1 | 🚫 Out-of-scope: Trust Chain (cross-stack signing) is not in the ontology / Phase 1 scope; defer to a separate trust-and-signing initiative if pursued. |
 | Tool-call attestation envelope finalization | tbd | Phase 1 | 🚫 Out-of-scope: Trust Chain (cross-stack signing) is not in the ontology / Phase 1 scope; defer to a separate trust-and-signing initiative if pursued. |
 | Hook-delivery signing envelope spec | tbd | Phase 1 | 🚫 Out-of-scope: Trust Chain (cross-stack signing) is not in the ontology / Phase 1 scope; defer to a separate trust-and-signing initiative if pursued. |
 | Run completion attestation under named Authority | tbd | Phase 1 | 🚫 Out-of-scope: Trust Chain (cross-stack signing) is not in the ontology / Phase 1 scope; defer to a separate trust-and-signing initiative if pursued. |
@@ -615,7 +615,7 @@ OpenQuestion entries that need data or decision before a claim can be made. Each
 | Cross-platform signal propagation (docker/ssh/k8s) reliability | tbd | Phase 1 | Resolved (per-execution-mode, no industry standard): captured per-`Execution.signalPropagation` (enum<best-effort,reliable,degraded,unsupported>). Local/docker=reliable; ssh=best-effort (TTY-dependent); k8s=reliable+grace-period; cloud=degraded. Recorded as gap-of-record. Closed. |
 | Platform-specific process-lifecycle (Unix pgroups vs Windows Job Objects) standardization | tbd | Phase 1 | Resolved (per-execution-mode, no industry standard): captured per-`Execution.processLifecycleModel` (enum<unix-pgroup,windows-job-object,docker-stop,k8s-grace,ssh-tty,direct>). Unix uses process-groups; Windows uses Job Objects; docker translates SIGTERM through PID-1; k8s honours `terminationGracePeriodSeconds`. Recorded as gap-of-record. Closed. |
 | Standard for fidelity-preserving session-format round-trip | tbd | Phase 1 | Resolved (per-product, no industry standard): captured per-`SessionStorageFormat` enum (jsonl,sqlite,json,jsonl-tree) and per-`AgentRuntimeImpl.sessionFilePathConvention`. Round-trip fidelity is per-format (e.g. Claude jsonl preserves tool_use blocks; Cursor SQLite tables omit ephemeral state). Recorded as gap-of-record. Closed. |
-| Cross-backend task-dependency representation | tbd | Phase 1 | Resolved: covered by `Decision.dependencies[]` DAG attribute already in tasks-mux taxonomy (see row "Cross-cutting axes (actor: human/agent/system; mode: sync/deferred; backend; dependencies DAG)"). Per-backend translation lives on each `NativeExtension` that implements `iface:tasks-mux`. Closed. |
+| Cross-backend task-dependency representation | tbd | Phase 1 | Resolved: covered by `Decision.dependencies[]` DAG attribute already in tasks-adapter taxonomy (see row "Cross-cutting axes (actor: human/agent/system; mode: sync/deferred; backend; dependencies DAG)"). Per-backend translation lives on each `NativeExtension` that implements `iface:tasks-adapter`. Closed. |
 | Bidirectional comment-sync semantics across task backends | tbd | Phase 1 | Resolved (per-backend, no industry standard): captured per-`TaskBackendProtocol`-implementing `NativeExtension` via `commentSyncMode` claim (enum<read-only,write-only,bidirectional-best-effort,bidirectional-strict,none>). GitHub Issues, Linear, and Jira all support bidirectional-best-effort; CLI/email/webhook backends are write-only or read-only. Recorded as gap-of-record. Closed. |
 | Unified auth envelope across providers | tbd | Phase 1 | Resolved (per-platform, no universal spec): captured per-`AgentPlatformImpl.platformIdentityStrategy` and per-`Provider.authMethods` (enum<api-key,oauth,browser-login,service-account,iam,device-code>). MCP server auth captured separately via `ToolServer.authProfile` referencing OAuth Resource Server classification (RFC 6749 §1.4 + RFC 8707 — see `capability:mcp-oauth-resource-server`). No universal envelope exists; recorded as gap-of-record. Closed. |
 | Standard for "agent-instance authority assertion" | tbd | Phase 1 | Resolved (per-impl, no industry standard): captured per-`Authority.assertionMethod` (enum<oidc-jwt,jws-detached,mtls-cert,api-key-bearer,sigstore-cosign,none>) referencing the chosen Trust Chain primitive. Live primitive today is `ProvenBreakpointAnswer` (HMAC-signed). Universal building blocks (HMAC/JWS/Sigstore/SLSA/mTLS/x509/GPG/OIDC) are catalogued; chain-composition is a5c-flavored. Recorded as gap-of-record. Closed. |

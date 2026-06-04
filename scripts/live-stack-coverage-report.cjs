@@ -10,8 +10,8 @@ const requireEvidence = process.env.LIVE_STACK_REQUIRE_EVIDENCE === '1';
 const coveredLayers = listEnv('LIVE_STACK_COVERAGE_LAYERS', [
   'adapters',
   'plugin',
-  'transport-mux',
-  'hooks-mux',
+  'transport-adapter',
+  'hooks-adapter',
   'babysitter-sdk',
   'foundry-openai',
 ]);
@@ -20,9 +20,9 @@ const requiredArtifacts = listEnv('LIVE_STACK_EXPECTED_ARTIFACTS', [
   'plugin-command-transcript',
   'babysitter-run-summary',
   'babysitter-task-bundle',
-  'hooks-mux-normalized-event',
-  'hooks-mux-handler-result',
-  'transport-mux-trace',
+  'hooks-adapter-normalized-event',
+  'hooks-adapter-handler-result',
+  'transport-adapter-trace',
   'provider-trace-redacted',
 ]);
 

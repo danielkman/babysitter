@@ -1,4 +1,4 @@
-# Breakpoints Mux Skill
+# Breakpoints Adapter Skill
 
 ## When to Use
 

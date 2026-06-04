@@ -20,13 +20,13 @@ This is especially relevant for:
 
 ```bash
 # Run npm test with session context restored
-a5c-hooks-mux exec --session-id "$AGENT_SESSION_ID" -- npm test
+a5c-hooks-adapter exec --session-id "$AGENT_SESSION_ID" -- npm test
 
 # Run a custom script with session env
-a5c-hooks-mux exec --session-id "$AGENT_SESSION_ID" -- node scripts/deploy.js
+a5c-hooks-adapter exec --session-id "$AGENT_SESSION_ID" -- node scripts/deploy.js
 
 # Run a shell command
-a5c-hooks-mux exec --session-id "$AGENT_SESSION_ID" -- bash -c "echo $MY_PLUGIN_VAR"
+a5c-hooks-adapter exec --session-id "$AGENT_SESSION_ID" -- bash -c "echo $MY_PLUGIN_VAR"
 ```
 
 ---
@@ -85,7 +85,7 @@ Since Gemini's env persistence is `wrapper_only`, downstream tool processes will
 npm run migrate
 
 # Use:
-a5c-hooks-mux exec --session-id "$AGENT_SESSION_ID" -- npm run migrate
+a5c-hooks-adapter exec --session-id "$AGENT_SESSION_ID" -- npm run migrate
 ```
 
 ---
@@ -118,7 +118,7 @@ exports.handler = async function(event) {
 };
 ```
 
-Note: Tool mutation is only supported on adapters with `supportsToolInputMutation: true`. Check the adapter capabilities with `a5c-hooks-mux doctor`.
+Note: Tool mutation is only supported on adapters with `supportsToolInputMutation: true`. Check the adapter capabilities with `a5c-hooks-adapter doctor`.
 
 ---
 
@@ -128,10 +128,10 @@ To verify that session context is being properly injected:
 
 ```bash
 # Check what env would be materialized
-a5c-hooks-mux show-session --session-id "$AGENT_SESSION_ID" --json
+a5c-hooks-adapter show-session --session-id "$AGENT_SESSION_ID" --json
 
 # Test exec with a simple env dump
-a5c-hooks-mux exec --session-id "$AGENT_SESSION_ID" -- env | grep MY_PLUGIN
+a5c-hooks-adapter exec --session-id "$AGENT_SESSION_ID" -- env | grep MY_PLUGIN
 ```
 
 ---

@@ -1,5 +1,5 @@
 /**
- * Typed error for malformed or invalid hooks-mux output.
+ * Typed error for malformed or invalid hooks-adapter output.
  */
 export class HookOutputParseError extends Error {
   public readonly code: string;

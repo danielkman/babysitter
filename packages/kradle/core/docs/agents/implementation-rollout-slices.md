@@ -57,7 +57,7 @@ Tests:
 
 - `npm run ui:validate`;
 - route render tests if available;
-- no Agent Mux dependency.
+- no Agent Adapter dependency.
 
 ## Slice 3: RBAC and permission review MVP
 
@@ -84,7 +84,7 @@ Tests:
 Deliverables:
 
 - implement stack CRUD through typed routes or generic apply wrappers;
-- query Agent Mux capabilities if configured;
+- query Agent Adapter capabilities if configured;
 - compute `AgentCapabilityRequirement`;
 - update stack readiness conditions.
 
@@ -105,7 +105,7 @@ Deliverables:
 - add `AgentDispatchRun`, `AgentDispatchAttempt`, `AgentContextBundle` creation;
 - add manual dispatch API;
 - add dispatch composer in repository Code page;
-- create runs before Agent Mux launch.
+- create runs before Agent Adapter launch.
 
 UI impact:
 
@@ -117,19 +117,19 @@ Tests:
 - manual dispatch creates run/attempt/context/permission snapshot;
 - denied permission blocks run creation or creates rejected execution as designed.
 
-## Slice 6: Agent Mux session binding
+## Slice 6: Agent Adapter session binding
 
 Deliverables:
 
 - add `src/adapters-client.js`;
-- launch Agent Mux run/session;
+- launch Agent Adapter run/session;
 - bind IDs to attempts;
 - stream events into run detail;
 - embed transcript/observability panels.
 
 UI impact:
 
-- run detail becomes CI check page + Agent Mux chat.
+- run detail becomes CI check page + Agent Adapter chat.
 
 Tests:
 
@@ -189,7 +189,7 @@ Deliverables:
 
 UI impact:
 
-- issue/session/workspace associations behave like Agent Mux kanban, but inside Kradle repository hierarchy.
+- issue/session/workspace associations behave like Agent Adapter kanban, but inside Kradle repository hierarchy.
 
 Tests:
 
@@ -206,7 +206,7 @@ Deliverables:
 - metrics;
 - audit exports;
 - chart values finalized;
-- network policy for Agent Mux/MCP;
+- network policy for Agent Adapter/MCP;
 - scale/performance tuning;
 - e2e suite in CI.
 

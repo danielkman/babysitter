@@ -1,12 +1,12 @@
-# Agent Mux adapter contract spec
+# Agent Adapter adapter contract spec
 
 ## Purpose
 
-Kradle should integrate Agent Mux without copying its whole UI or owning adapter internals. This document defines the boundary between Kradle controllers and Agent Mux gateway/session/runtime capabilities.
+Kradle should integrate Agent Adapter without copying its whole UI or owning adapter internals. This document defines the boundary between Kradle controllers and Agent Adapter gateway/session/runtime capabilities.
 
 ## Ownership split
 
-| Concern | Kradle | Agent Mux |
+| Concern | Kradle | Agent Adapter |
 | --- | --- | --- |
 | Repository graph | source of truth | receives context only |
 | Agent stack policy | source of truth | validates adapter-specific launch options |
@@ -28,7 +28,7 @@ Responsibilities:
 - discover adapter capabilities;
 - validate launch options before dispatch;
 - launch a run/session;
-- bind Agent Mux run/session IDs to `AgentDispatchAttempt`;
+- bind Agent Adapter run/session IDs to `AgentDispatchAttempt`;
 - subscribe to events/transcript updates;
 - submit continuation messages;
 - cancel, retry, resume, or fork where supported;
@@ -102,7 +102,7 @@ Kradle sends only admitted, redacted launch options:
 }
 ```
 
-Secret values are never in the request body unless the Agent Mux deployment mode explicitly requires value materialization inside a trusted server-side process; even then values must not pass through browser/UI APIs.
+Secret values are never in the request body unless the Agent Adapter deployment mode explicitly requires value materialization inside a trusted server-side process; even then values must not pass through browser/UI APIs.
 
 ## Launch response contract
 
@@ -120,9 +120,9 @@ Kradle persists these IDs in `AgentDispatchAttempt.status` and renders links int
 
 ## Event normalization
 
-Agent Mux events should map into Kradle event types:
+Agent Adapter events should map into Kradle event types:
 
-| Agent Mux event | Kradle projection |
+| Agent Adapter event | Kradle projection |
 | --- | --- |
 | run queued/started | attempt phase, queue timing |
 | session created | `AgentSession` link and `AgentMuxSessionBound=True` |
@@ -148,15 +148,15 @@ Agent Mux events should map into Kradle event types:
 
 ## Security requirements
 
-- Agent Mux receives only resources admitted by Kradle policy.
-- Kradle stores Agent Mux IDs but does not treat Agent Mux storage as repository source of truth.
+- Agent Adapter receives only resources admitted by Kradle policy.
+- Kradle stores Agent Adapter IDs but does not treat Agent Adapter storage as repository source of truth.
 - Continuation messages must run permission review if they request new tools, files, secrets, configs, or write-back targets.
-- Agent Mux transcript must not expose Secret values.
-- Agent Mux approval prompts must map back to `AgentApproval` for audit when they affect Kradle-owned actions.
+- Agent Adapter transcript must not expose Secret values.
+- Agent Adapter approval prompts must map back to `AgentApproval` for audit when they affect Kradle-owned actions.
 
 ## UI embedding
 
-Kradle should embed Agent Mux primitives as panels:
+Kradle should embed Agent Adapter primitives as panels:
 
 - transcript/conversation panel;
 - event/observability timeline;

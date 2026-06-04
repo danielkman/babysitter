@@ -2,7 +2,7 @@
  * ServerBreakpointBackend -- BreakpointBackend implementation backed by the
  * breakpoints-pro HTTP server.
  *
- * Bridges tasks-mux naming (Breakpoint / Responder) to the server's
+ * Bridges tasks-adapter naming (Breakpoint / Responder) to the server's
  * internal naming (Question / Expert) by translating HTTP payloads.
  * Communicates exclusively via fetch(), so it can run in any environment.
  */
@@ -252,7 +252,7 @@ export class ServerBreakpointBackend implements BreakpointBackend {
       try {
         responseBody = await response.json();
       } catch (e) {
-        process.stderr.write(`[tasks-mux] response body read failed: ${e instanceof Error ? e.message : String(e)}\n`);
+        process.stderr.write(`[tasks-adapter] response body read failed: ${e instanceof Error ? e.message : String(e)}\n`);
         responseBody = await response.text().catch(() => undefined);
       }
       throw new ServerBackendError(

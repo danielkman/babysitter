@@ -55,7 +55,7 @@ nodeKinds:
   - name: portability
     type: enum<portable,native,hybrid>
     required: false
-    notes: 'How this Plugin is delivered. `portable` = single source compiled to many products via extension-mux; `native` = built directly for one host''s plugin format; `hybrid` = ships portable source plus pre-compiled native artifacts (catalog pass 21 hygiene 2026-05-01: collapsed PortableExtension NodeKind into this enum).'
+    notes: 'How this Plugin is delivered. `portable` = single source compiled to many products via extensions-adapter; `native` = built directly for one host''s plugin format; `hybrid` = ships portable source plus pre-compiled native artifacts (catalog pass 21 hygiene 2026-05-01: collapsed PortableExtension NodeKind into this enum).'
   incomingEdges: []
   outgoingEdges:
   - installs_into
@@ -253,7 +253,7 @@ nodeKinds:
   origin: a5c
   prefix: hook-merge-diagnostic
   cluster: 7-extensions
-  purpose: a record produced by hooks-mux when merging hook surfaces from multiple sources (plugins, settings, profiles)
+  purpose: a record produced by hooks-adapter when merging hook surfaces from multiple sources (plugins, settings, profiles)
   attributes:
   - name: id
     type: id
@@ -840,10 +840,10 @@ nodeKinds:
   invariants:
   - implementers carry interfaceVersion claim evidence-bound to release notes (V-11.3)
   examples: []
-- id: node:mux
-  name: Mux
+- id: node:adapter
+  name: Adapter
   origin: a5c
-  prefix: mux
+  prefix: adapter
   cluster: 7-extensions
   purpose: a5c\'s realization of a protocol-type bridge — N-to-1 / 1-to-N translator between concrete impls of the same universal protocol-type and a single canonical impl. Driven by Catalog data.
   attributes:
@@ -856,7 +856,7 @@ nodeKinds:
   - name: protocolType
     type: enum<llm-wire,spawn,event-stream,session-storage,admin,hook,extension-manifest,tool,task>
     required: true
-    notes: The universal protocol-type the mux bridges. See wiki/legacy/universal/04-protocols.md.
+    notes: The universal protocol-type the adapter bridges. See wiki/legacy/universal/04-protocols.md.
   - name: nativeSide
     type: list<string>
     required: true
@@ -864,18 +864,18 @@ nodeKinds:
   - name: canonicalSide
     type: string
     required: true
-    notes: One canonical impl exposed by the mux.
+    notes: One canonical impl exposed by the adapter.
   - name: position
     type: string
     required: true
-    notes: Stack-layer position this mux occupies (e.g. "between Transport-Client and Provider").
+    notes: Stack-layer position this adapter occupies (e.g. "between Transport-Client and Provider").
   - name: bridgingConcerns
     type: list<markdown>
     required: false
   - name: catalogInputNodeKinds
     type: list<string>
     required: false
-    notes: NodeKinds the mux is driven by (used at generation time).
+    notes: NodeKinds the adapter is driven by (used at generation time).
   - name: trustChainParticipation
     type: enum<live,planned,none>
     required: false
@@ -949,7 +949,7 @@ nodeKinds:
   origin: universal
   prefix: plugin-target
   cluster: 7-extensions
-  purpose: 'Per-agent target spec used by the extension-mux / extension-mux to know
+  purpose: 'Per-agent target spec used by the extensions-adapter / extensions-adapter to know
 
     how to compile a portable Plugin (portability=portable|hybrid) into a
 
@@ -982,7 +982,7 @@ nodeKinds:
   - name: adapterName
     type: string
     required: false
-    notes: Internal adapter id used by extension-mux (e.g. claude-code, codex, omp); legacy required, v6 optional pending evidence.
+    notes: Internal adapter id used by extensions-adapter (e.g. claude-code, codex, omp); legacy required, v6 optional pending evidence.
   - name: adapterFamily
     type: enum<claude-code-native
     shell-hook: null
@@ -1208,7 +1208,7 @@ nodeKinds:
       Catalog pass 18 introduced the operator-issued lifecycle set. Catalog pass 94
       (Catalog pass 94) extended the enum to cover `webhook-event` and `vcs-event` — the
       VCS / generic-webhook normalization triggers exposed by
-      `@a5c-ai/triggers-adapter` (packages/triggers-mux/src/types.ts:1, TriggerBackend
+      `@a5c-ai/triggers-adapter` (packages/triggers-adapter/src/types.ts:1, TriggerBackend
       union: github | gitlab | bitbucket | generic-webhook).
   - name: effect
     type: string
@@ -1232,7 +1232,7 @@ nodeKinds:
     type: enum<github,gitlab,bitbucket,generic-webhook>
     required: false
     notes: |
-      Catalog pass 94 — TriggerBackend union from packages/triggers-mux/src/types.ts:1.
+      Catalog pass 94 — TriggerBackend union from packages/triggers-adapter/src/types.ts:1.
       Identifies which VCS / webhook payload taxonomy this trigger
       normalizes against.
   - name: eventTaxonomy
@@ -1243,22 +1243,22 @@ nodeKinds:
       backend is known to handle (e.g. `issue_comment`, `pull_request`,
       `push`, `merge_request`, `pullrequest:created`). Open-ended; the
       normalizer accepts arbitrary strings via env / payload fallback
-      (packages/triggers-mux/src/enrich.ts:99).
+      (packages/triggers-adapter/src/enrich.ts:99).
   - name: dispatchModel
     type: enum<normalize-and-evaluate,direct-cli,reusable-action>
     required: false
     notes: |
       Catalog pass 94 — captures how the trigger is fired:
       `normalize-and-evaluate` (CLI: enrich → evaluate → exit-code 0 or 78,
-      packages/triggers-mux/src/cli.ts:50), `direct-cli` (manual adapters-triggers
+      packages/triggers-adapter/src/cli.ts:50), `direct-cli` (manual adapters-triggers
       invocation), `reusable-action` (GitHub Action composite at
-      packages/triggers-mux/action.yml).
+      packages/triggers-adapter/action.yml).
   - name: payloadShape
     type: string
     required: false
     notes: |
       Catalog pass 94 — TypeScript interface name in
-      packages/triggers-mux/src/types.ts that defines the normalized payload
+      packages/triggers-adapter/src/types.ts that defines the normalized payload
       this trigger emits. Always `NormalizedTriggerEvent` for the four
       backend triggers (types.ts:11).
   - name: queryDsl
@@ -1266,7 +1266,7 @@ nodeKinds:
     required: false
     notes: |
       Catalog pass 94 — the trigger query DSL accepted by
-      `parseQuery` (packages/triggers-mux/src/query.ts:75). `key-colon-value`
+      `parseQuery` (packages/triggers-adapter/src/query.ts:75). `key-colon-value`
       = `event:issue_comment text:@develop-this`; `json-object` = JSON
       `TriggerQuery`; `expression-clause` = `text ~ '@x' && event == 'pull_request'`.
   - name: cliEntrypoint
@@ -1274,27 +1274,27 @@ nodeKinds:
     required: false
     notes: |
       Catalog pass 94 — bin entry that fires the trigger
-      (packages/triggers-mux/package.json:28 — `adapters-triggers` →
+      (packages/triggers-adapter/package.json:28 — `adapters-triggers` →
       `./dist/cli.js`).
   - name: enrichmentSources
     type: list<enum<workflow-event-payload,github-rest-api,local-git-show,git-diff-unified>>
     required: false
     notes: |
       Catalog pass 94 — channels the enricher draws from
-      (packages/triggers-mux/src/enrich.ts: readPayload, enrichGithubFromApi,
+      (packages/triggers-adapter/src/enrich.ts: readPayload, enrichGithubFromApi,
       enrichWithLocalGit, enrichDiffsWithLocalGit).
   - name: sourceCitation
     type: string
     required: false
     notes: |
       Catalog pass 94 — verbatim file:line citation into
-      `packages/triggers-mux/` for traceability of every value above.
+      `packages/triggers-adapter/` for traceability of every value above.
   - name: exitCodeSemantics
     type: list<string>
     required: false
     notes: |
       Catalog pass 95 — `<code>:<symbol>:<meaning>` triples for the trigger's
-      process-exit contract. For adapters-triggers (packages/triggers-mux/src/cli.ts:65):
+      process-exit contract. For adapters-triggers (packages/triggers-adapter/src/cli.ts:65):
       `0:matched:trigger query matched, downstream pipeline runs`,
       `78:skip:trigger query did not match (action.yml:165 treats 78 as soft-skip)`,
       `1:error:invalid args / unhandled exception`.
@@ -1313,7 +1313,7 @@ nodeKinds:
   name: GithubActionStep
   origin: a5c
   originContext: |
-    Catalog pass 95 — the seven steps in `packages/triggers-mux/action.yml` (composite GitHub
+    Catalog pass 95 — the seven steps in `packages/triggers-adapter/action.yml` (composite GitHub
     Action) carry per-step name, shell, run-script, conditional `if:`, env-var
     bag, and ordering. The existing `WorkflowDefinition` NodeKind models
     repo-versioned WORKFLOW.md (Symphony §5 issue-tracker binding) — an
@@ -1395,7 +1395,7 @@ nodeKinds:
   origin: a5c
   originContext: |
     Catalog pass 95 — the trigger query DSL implemented by
-    `packages/triggers-mux/src/query.ts` has a small but real production-rule
+    `packages/triggers-adapter/src/query.ts` has a small but real production-rule
     grammar (compact-key-value, JSON-object, expression-clause, glob,
     contains-operator, equals-operator). For codegen of a parser the
     productions need to be enumerated rather than collapsed into a
@@ -1444,7 +1444,7 @@ nodeKinds:
   - name: parserEntrypoint
     type: string
     required: false
-    notes: Function name + file path implementing the parser (e.g. `parseQuery (packages/triggers-mux/src/query.ts:75)`).
+    notes: Function name + file path implementing the parser (e.g. `parseQuery (packages/triggers-adapter/src/query.ts:75)`).
   - name: sourceCitation
     type: string
     required: false
@@ -2678,7 +2678,7 @@ nodeKinds:
       and outputs (which carry the same valueType / required / default /
       description metadata payload as skill frontmatter) can be modeled
       as FrontmatterField rather than as opaque string attributes on the
-      OperationalTrigger record. Source: packages/triggers-mux/action.yml
+      OperationalTrigger record. Source: packages/triggers-adapter/action.yml
       (16 inputs + 3 outputs).
       catalog pass 99 widened further to include `cursor-rule` (for `.mdc`
       Cursor rule frontmatter — `description` / `globs` / `alwaysApply`)

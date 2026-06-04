@@ -14,7 +14,7 @@ This matrix maps product requirements to resources, controllers, UI surfaces, do
 | Assemble prompt/context | `AgentContextBundle`, context labels | context bundle service | dispatch composer, run detail | context spec | redaction tests |
 | Dispatch manually from repo | `AgentDispatchRun`, `AgentDispatchAttempt` | dispatch API/controller | Code/Runs pages | MVP, API, repo integration | API + UI tests |
 | Show CI-like run | dispatch run/attempt/session | dispatch controller, watch API | `/agents/runs`, repo Runs | UI flow, repository integration | UI validation |
-| Bind Agent Mux session | attempt/session | Agent Mux client | run detail chat panel | adapter contract | gateway fallback tests |
+| Bind Agent Adapter session | attempt/session | Agent Adapter client | run detail chat panel | adapter contract | gateway fallback tests |
 | Manage tools/MCP/skills | tool/MCP/skill resources | stack/capability controllers | `/agents/tools`, `/mcp`, `/skills` | tools spec | capability tests |
 | Run subagents | `AgentSubagent`, attempts/artifacts | dispatch/subagent controller | run detail subagent tree | subagent spec | child permission tests |
 | Produce artifacts | artifacts/review artifacts | artifact service | run/PR/issue/pipeline pages | artifacts spec | digest tests |
@@ -36,7 +36,7 @@ This matrix maps product requirements to resources, controllers, UI surfaces, do
 | `src/agent-stack-controller.js` | stack spec, tools spec, RBAC spec |
 | `src/agent-context-bundles.js` | context assembly spec |
 | `src/agent-dispatch-controller.js` | controller reconciliation, adapter contract, MVP |
-| `src/adapters-client.js` | Agent Mux adapter contract |
+| `src/adapters-client.js` | Agent Adapter adapter contract |
 | `src/agent-trigger-controller.js` | CI spec, controller reconciliation |
 | `src/agent-workspace-controller.js` | workspace lifecycle spec |
 | `src/agent-approval-controller.js` | artifacts/write-back spec |

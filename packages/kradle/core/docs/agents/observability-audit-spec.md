@@ -8,7 +8,7 @@ It is grounded in current Kradle behavior: `src/controller-ui.js` already expose
 
 ## Observability principles
 
-- Every run is traceable from source event to trigger execution to dispatch run to Agent Mux session to artifacts/write-back.
+- Every run is traceable from source event to trigger execution to dispatch run to Agent Adapter session to artifacts/write-back.
 - Every privileged decision has an audit event.
 - User-facing run pages should explain queueing, execution, approvals, and failures without requiring raw logs first.
 - Metrics should be repository-, stack-, runner-, and trigger-scoped.
@@ -43,10 +43,10 @@ These IDs should appear in events, logs, audit records, and UI details.
 | `AgentDispatchQueued` | dispatch controller | run list, pipeline page |
 | `AgentRunnerAssigned` | dispatch controller | run detail |
 | `AgentMuxLaunchRequested` | dispatch controller | run detail |
-| `AgentMuxSessionBound` | Agent Mux client | run/session page |
-| `AgentToolCallStarted` | Agent Mux event projection | observability timeline |
-| `AgentToolCallApprovalRequested` | Agent Mux/client | approval inbox, run detail |
-| `AgentSubagentStarted` | Agent Mux event projection | subagent tree |
+| `AgentMuxSessionBound` | Agent Adapter client | run/session page |
+| `AgentToolCallStarted` | Agent Adapter event projection | observability timeline |
+| `AgentToolCallApprovalRequested` | Agent Adapter/client | approval inbox, run detail |
+| `AgentSubagentStarted` | Agent Adapter event projection | subagent tree |
 | `AgentArtifactProduced` | dispatch controller | run detail, PR/issue page |
 | `AgentWriteBackRequested` | approval/write-back controller | approval inbox |
 | `AgentWriteBackApplied` | approval/write-back controller | run detail, source page |
@@ -60,7 +60,7 @@ These IDs should appear in events, logs, audit records, and UI details.
 - active dispatches;
 - queued dispatches;
 - pending approvals;
-- running Agent Mux sessions;
+- running Agent Adapter sessions;
 - failed dispatches by reason;
 - average queue wait;
 - average run duration;
@@ -87,7 +87,7 @@ These IDs should appear in events, logs, audit records, and UI details.
 - runner ServiceAccount denials;
 - cost by pool/repository.
 
-### Agent Mux metrics
+### Agent Adapter metrics
 
 - launch latency;
 - session bind latency;
@@ -172,7 +172,7 @@ Trace spans should cover:
 - trigger evaluation;
 - dispatch creation;
 - runner placement;
-- Agent Mux launch;
+- Agent Adapter launch;
 - event stream reconciliation;
 - artifact persistence;
 - approval/write-back.
@@ -214,7 +214,7 @@ Run detail must show:
 
 Recommended alert conditions:
 
-- Agent Mux gateway unavailable;
+- Agent Adapter gateway unavailable;
 - dispatch queue wait p95 over threshold;
 - approval backlog over threshold;
 - repeated adapter launch rejection;
@@ -229,7 +229,7 @@ Recommended alert conditions:
 - A user can follow a failed CI-triggered agent run from source event through dispatch, session, artifacts, approval, and write-back.
 - Every privileged grant/approval/write-back has an audit record.
 - Missing permission warnings appear in metrics and UI.
-- Agent Mux stream disconnects produce visible stale/reconnect state.
+- Agent Adapter stream disconnects produce visible stale/reconnect state.
 - No log/audit/UI surface contains Secret values.
 
 ## Memory observability
@@ -256,10 +256,10 @@ Every agent, memory, deployment, and repository audit event should include:
 - actor user/group/service account;
 - repository/deployment refs when applicable;
 - memory repository and resolved commit when memory is used;
-- session ID and run ID when Agent Mux or Babysitter participates;
+- session ID and run ID when Agent Adapter or Babysitter participates;
 - journal digest when `.a5c` run memory is imported;
 - cross-org sharing policy ID when a cross-org ref is admitted.
 
 ## Org memory sequence audit coverage
 
-Each sequence in `org-memory-controller-sequence-spec.md` should emit audit records for preflight, admission decision, Git ref resolution, memory query, context snapshot, Agent Mux launch, memory import collection, redaction, validation, review, merge, and cross-org denial. Audit records must include org, namespace, source refs, resolved commit, and digest fields where applicable.
+Each sequence in `org-memory-controller-sequence-spec.md` should emit audit records for preflight, admission decision, Git ref resolution, memory query, context snapshot, Agent Adapter launch, memory import collection, redaction, validation, review, merge, and cross-org denial. Audit records must include org, namespace, source refs, resolved commit, and digest fields where applicable.

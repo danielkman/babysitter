@@ -1,14 +1,14 @@
 /**
  * Tool hook bridge implementations.
  *
- * The bridge contract keeps tool-mux independent from a concrete hooks-mux
- * package instance while allowing callers to pass a hooks-mux-compatible engine.
+ * The bridge contract keeps tools-adapter independent from a concrete hooks-adapter
+ * package instance while allowing callers to pass a hooks-adapter-compatible engine.
  */
 
 import type { ToolCallContext, ToolCallResult, ToolDescriptor } from './types.js';
 
 /* ------------------------------------------------------------------ */
-/*  Hook result (mirrors hooks-mux UnifiedHookResult subset)           */
+/*  Hook result (mirrors hooks-adapter UnifiedHookResult subset)           */
 /* ------------------------------------------------------------------ */
 
 export interface ToolHookResult {
@@ -108,7 +108,7 @@ export interface HooksMuxToolEvent {
 
 /**
  * A bridge that does nothing — hooks are allowed to be absent.
- * Swap this out for a real hooks-mux adapter when integrating.
+ * Swap this out for a real hooks-adapter adapter when integrating.
  */
 export class NoopToolHookBridge implements ToolHookBridge {
   async beforeToolUse(
@@ -138,7 +138,7 @@ export class HooksMuxToolHookBridge implements ToolHookBridge {
 
   constructor(options: HooksMuxToolHookBridgeOptions) {
     this.engine = options.engine;
-    this.adapter = options.adapter ?? 'tool-mux';
+    this.adapter = options.adapter ?? 'tools-adapter';
     this.env = {
       input: options.env?.input ?? {},
       persisted: options.env?.persisted ?? {},

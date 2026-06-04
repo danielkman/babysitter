@@ -16,7 +16,7 @@ export interface ContextFragment {
 }
 
 /**
- * Tracks the state of a hooks-mux session.
+ * Tracks the state of a hooks-adapter session.
  *
  * Spec section 15.3.
  */

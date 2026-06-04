@@ -44,7 +44,7 @@ attributes:
   cluster: 5-communication
   prefix: hook-surface
   origin: universal
-  purpose: a concrete hook event name (PreToolUse, PhaseChange, ...) — the canonical surface dispatched by hooks-mux
+  purpose: a concrete hook event name (PreToolUse, PhaseChange, ...) — the canonical surface dispatched by hooks-adapter
   exampleCount: 0
   invariants:
   - family value within enum (V-7.3)
@@ -65,7 +65,7 @@ attributes:
   cluster: 5-communication
   prefix: merge-policy
   origin: a5c
-  purpose: named conflict-resolution policy applied by hooks-mux when fanning a single hook event across multiple registered handlers
+  purpose: named conflict-resolution policy applied by hooks-adapter when fanning a single hook event across multiple registered handlers
   exampleCount: 0
   invariants:
   - 'id starts with merge-policy:'
@@ -110,7 +110,7 @@ attributes:
   cluster: 7-extensions
   prefix: hook-merge-diagnostic
   origin: a5c
-  purpose: a record produced by hooks-mux when merging hook surfaces from multiple sources (plugins, settings, profiles)
+  purpose: a record produced by hooks-adapter when merging hook surfaces from multiple sources (plugins, settings, profiles)
   exampleCount: 0
   invariants:
   - sources list is non-empty
@@ -506,7 +506,7 @@ attributes:
   - meta-node-kind:merge-policy
   cardinality: N:1
   origin: a5c
-  description: a HookSurface uses a named MergePolicy when fanning a single hook event across multiple registered handlers (hooks-mux conflict-resolution rule)
+  description: a HookSurface uses a named MergePolicy when fanning a single hook event across multiple registered handlers (hooks-adapter conflict-resolution rule)
 edges:
   source_of_meta_edge:
   - target: meta-node-kind:hook-surface

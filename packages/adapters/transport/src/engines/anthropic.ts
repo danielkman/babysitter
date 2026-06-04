@@ -104,7 +104,7 @@ export function createAnthropicCompletionEngine(options: AnthropicCompletionEngi
       if (tools) body.tools = tools;
 
       const url = buildUrl(apiBase);
-      console.error(`[transport-mux] Anthropic engine: POST ${url}`);
+      console.error(`[transport-adapter] Anthropic engine: POST ${url}`);
       const response = await fetch(url, {
         method: 'POST',
         headers: buildHeaders(options.apiKey),
@@ -113,7 +113,7 @@ export function createAnthropicCompletionEngine(options: AnthropicCompletionEngi
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`[transport-mux] Anthropic API error ${response.status}: ${errorText.slice(0, 500)}`);
+        console.error(`[transport-adapter] Anthropic API error ${response.status}: ${errorText.slice(0, 500)}`);
         throw new Error(`Anthropic API error ${response.status}: ${errorText}`);
       }
 
@@ -161,17 +161,17 @@ export function createAnthropicCompletionEngine(options: AnthropicCompletionEngi
       if (tools) body.tools = tools;
 
       const url = buildUrl(apiBase);
-      console.error(`[transport-mux] Anthropic engine stream: POST ${url}`);
+      console.error(`[transport-adapter] Anthropic engine stream: POST ${url}`);
       const response = await fetch(url, {
         method: 'POST',
         headers: buildHeaders(options.apiKey),
         body: JSON.stringify(body),
       });
 
-      console.error(`[transport-mux] Anthropic engine stream response: ${response.status} ${response.statusText}`);
+      console.error(`[transport-adapter] Anthropic engine stream response: ${response.status} ${response.statusText}`);
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`[transport-mux] Anthropic API error ${response.status}: ${errorText.slice(0, 500)}`);
+        console.error(`[transport-adapter] Anthropic API error ${response.status}: ${errorText.slice(0, 500)}`);
         throw new Error(`Anthropic API error ${response.status}: ${errorText}`);
       }
 

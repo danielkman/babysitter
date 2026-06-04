@@ -7,7 +7,7 @@ export const AGENT_MEMORY_CONTROLLER_BOUNDARY = {
   scope: 'Company Brain memory management — search, snapshots, redaction, imports, time-travel',
   owns: ['memory search', 'snapshot pinning', 'redaction scanning', 'import lifecycle', 'ontology validation'],
   delegatesTo: ['resource-model'],
-  mustNotOwn: ['git operations', 'secret values', 'Agent Mux sessions']
+  mustNotOwn: ['git operations', 'secret values', 'Agent Adapter sessions']
 };
 
 // Redaction patterns (same as agent-context-bundles)

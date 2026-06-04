@@ -80,7 +80,7 @@ async function enrichGithubFromApi(event: NormalizedTriggerEvent, options: Enric
 
   const response = await fetchImpl(endpoint, { headers });
   if (!response.ok) {
-    process.stderr.write(`[triggers-mux] GitHub API ${response.status}: ${endpoint}\n`);
+    process.stderr.write(`[triggers-adapter] GitHub API ${response.status}: ${endpoint}\n`);
     return [];
   }
   const payload = await response.json() as unknown;

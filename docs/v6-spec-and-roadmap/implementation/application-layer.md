@@ -29,8 +29,8 @@ The application layer applies the earlier seam work to user-facing capabilities 
 - Clarify thin-layer ambitions as internal-boundary work inside the existing package, not as a new top-level deliverable
 - Integrate capability slices through current plugin, SDK, and process-library surfaces
 
-**Agent-Mux Integration**
-- Integrate adapters packages from repository unification → [Agent-Mux Integration](../adapters-integration.md)
+**Agent-Adapter Integration**
+- Integrate adapters packages from repository unification → [Agent-Adapter Integration](../adapters-integration.md)
 - Maintain API compatibility during transition period
 - Consolidate UI components (web, mobile, TUI) with unified architecture
 - Preserve platform-specific applications with updated integration
@@ -49,7 +49,7 @@ Terms such as `agent-platform`, `agent-platform-meta-plugins`, and a re-scoped `
 
 **Capability Integration Testing**: Validate only the slices actually selected for this phase through current plugin and runtime surfaces
 
-**Compatibility Validation**: Agent-mux and existing Babysitter workflows remain operational during any transition
+**Compatibility Validation**: Adapters and existing Babysitter workflows remain operational during any transition
 
 **Performance Testing**: Overhead and resource usage claims must use measured baselines → [Testing Framework](../testing-framework.md)
 
@@ -60,7 +60,7 @@ Terms such as `agent-platform`, `agent-platform-meta-plugins`, and a re-scoped `
 - Candidate application-layer slices documented against current package and plugin seams
 - One validated application-layer slice, if this phase moves beyond documentation and decision framing
 - Integration test coverage for the slices actually shipped in this phase
-- Agent-mux integration preserved with compatibility notes where behavior changes
+- Adapters integration preserved with compatibility notes where behavior changes
 - Evidence for whether any later extraction is justified
 
 ## Success Criteria
@@ -77,4 +77,4 @@ This phase does not create a replacement `@a5c-ai/genty-platform`, does not assu
 
 ---
 
-**Related Documents**: [Platform Layer](platform-layer.md) | [Agent-Mux Integration](../adapters-integration.md) | [Security Architecture](../security-architecture.md)
+**Related Documents**: [Platform Layer](platform-layer.md) | [Agent-Adapter Integration](../adapters-integration.md) | [Security Architecture](../security-architecture.md)

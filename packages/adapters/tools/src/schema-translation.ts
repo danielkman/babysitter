@@ -2,8 +2,8 @@
  * Schema-translation layer.
  *
  * Re-exports the format-level conversion helpers from `@a5c-ai/transport-adapter`
- * and adds thin adapters between `NormalizedToolDefinition` (transport-mux
- * canonical form) and `ToolDescriptor` (tool-mux lifecycle form).
+ * and adds thin adapters between `NormalizedToolDefinition` (transport-adapter
+ * canonical form) and `ToolDescriptor` (tools-adapter lifecycle form).
  */
 
 import type { CodecCapabilities, NormalizedToolDefinition } from '@a5c-ai/transport-adapter';
@@ -12,7 +12,7 @@ import { convertTools } from '@a5c-ai/transport-adapter';
 import type { ToolDescriptor, ToolSource } from './types.js';
 
 /* ------------------------------------------------------------------ */
-/*  Re-exports from transport-mux                                      */
+/*  Re-exports from transport-adapter                                      */
 /* ------------------------------------------------------------------ */
 
 export { convertTools };
@@ -26,7 +26,7 @@ type ToolSchemaFormat = CodecCapabilities['toolSchemaFormat'];
 
 /**
  * Lift a `NormalizedToolDefinition` (format-agnostic shape produced by
- * transport-mux codecs) into a full `ToolDescriptor` by attaching a
+ * transport-adapter codecs) into a full `ToolDescriptor` by attaching a
  * source tag and optional metadata.
  */
 export function toToolDescriptor(
@@ -47,7 +47,7 @@ export function toToolDescriptor(
 
 /**
  * Strip lifecycle metadata from a `ToolDescriptor`, returning the
- * minimal `NormalizedToolDefinition` understood by transport-mux.
+ * minimal `NormalizedToolDefinition` understood by transport-adapter.
  */
 export function fromToolDescriptor(descriptor: ToolDescriptor): NormalizedToolDefinition {
   return {

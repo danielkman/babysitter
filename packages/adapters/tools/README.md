@@ -4,8 +4,8 @@ Tool lifecycle layer for the babysitter monorepo. Provides:
 
 - **ToolRegistry** — in-memory, Map-backed registry for tool descriptors and servers
 - **ToolDispatcher** — policy-driven resolution of tool-to-server mapping with glob matching and before/after hook integration
-- **Schema translation** — adapters between `ToolDescriptor` and `NormalizedToolDefinition` (transport-mux), plus `translateTools` for provider-specific wire formats
-- **ToolHookBridge** — interface (and no-op implementation) bridging tool dispatch to hooks-mux PreToolUse/PostToolUse lifecycle
+- **Schema translation** — adapters between `ToolDescriptor` and `NormalizedToolDefinition` (transport-adapter), plus `translateTools` for provider-specific wire formats
+- **ToolHookBridge** — interface (and no-op implementation) bridging tool dispatch to hooks-adapter PreToolUse/PostToolUse lifecycle
 
 ## Installation
 

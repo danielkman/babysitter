@@ -111,7 +111,7 @@ JWT claims follow the Jitsi JWT spec:
    a. Creates AgentDispatchRun as normal
    b. Detects meetingRef → calls Jitsi Meeting Controller for JWT
    c. Injects JITSI_ROOM_URL, JITSI_JWT, JITSI_ROOM_ID into Job env
-5. Agent Mux Client creates K8s Job with Jitsi sidecar container
+5. Agent Adapter Client creates K8s Job with Jitsi sidecar container
 6. Sidecar connects to Jitsi room via headless client
 7. Agent main container receives meeting audio/text via local socket
 8. Agent processes and responds through the socket → sidecar sends to Jitsi
@@ -125,7 +125,7 @@ JWT claims follow the Jitsi JWT spec:
 |--------|------------------|
 | Agent Stack | New `jitsiCapability` field + `jitsiMeetingProviderRef` |
 | Agent Dispatch | Inject Jitsi env vars when meeting-aware stack |
-| Agent Mux Client | Add Jitsi sidecar container spec to Job manifest |
+| Agent Adapter Client | Add Jitsi sidecar container spec to Job manifest |
 | Event Bus | New event types: `meeting-created`, `participant-joined`, `participant-left`, `recording-started` |
 | External Sync | JitsiSyncController follows sync-controller pattern |
 | Approval Controller | Optional approval gate for agent meeting participation |

@@ -7,5 +7,5 @@ Use them for historical context, not as the source of truth for current behavior
 - [Multi-Adapter Architecture Design](18-multi-adapter-architecture.md)
 - [TUI Kanban + Workspaces Design](20-tui-kanban-workspaces.md)
 - [Unified Harness Launcher](launcher.md)
-- [Transport Protocol Bridge](provider-mux.md)
+- [Transport Protocol Bridge](provider-adapter.md)
 - [Provider & Model Configuration](adapters-provider-config.md)

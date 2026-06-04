@@ -5,7 +5,7 @@ A universal hooks proxy system that normalizes lifecycle hooks across multiple A
 <!-- docs-status:start -->
 > Status: Public package family.
 > Canonical docs home: [Package and Plugin Docs Map](../../docs/package-and-plugin-map.md).
-> Use this README as the canonical family entrypoint for hooks-mux packages and adapters.
+> Use this README as the canonical family entrypoint for hooks-adapter packages and adapters.
 <!-- docs-status:end -->
 
 ## Packages
@@ -13,7 +13,7 @@ A universal hooks proxy system that normalizes lifecycle hooks across multiple A
 | Package | Description |
 |---------|-------------|
 | `@a5c-ai/hooks-adapter-core` | Canonical schemas, types, session store, and merge engine |
-| `@a5c-ai/hooks-adapter-cli` | CLI entrypoint (`a5c-hooks-mux`) |
+| `@a5c-ai/hooks-adapter-cli` | CLI entrypoint (`a5c-hooks-adapter`) |
 | `@a5c-ai/hooks-adapter-claude` | Claude Code harness adapter |
 | `@a5c-ai/hooks-adapter-codex` | Codex harness adapter |
 | `@a5c-ai/hooks-adapter-gemini` | Gemini CLI harness adapter |
@@ -31,10 +31,10 @@ A universal hooks proxy system that normalizes lifecycle hooks across multiple A
 npm install -g @a5c-ai/hooks-adapter-cli
 
 # Run diagnostics
-a5c-hooks-mux doctor
+a5c-hooks-adapter doctor
 
 # Proxy a hook event through the canonical pipeline
-a5c-hooks-mux proxy --adapter claude --hook-type stop
+a5c-hooks-adapter proxy --adapter claude --hook-type stop
 ```
 
 ## Documentation

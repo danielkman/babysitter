@@ -682,9 +682,9 @@ edges:
 nodeKind: TestableClaim
 id: claim:adapters-bridges-transport
 attributes:
-  displayName: "Agent-mux bridges to remote agents via transport"
+  displayName: "Adapters bridges to remote agents via transport"
   description: |
-    Agent-mux (agent:adapters) has used_by edges from multiple
+    Adapters (agent:adapters) has used_by edges from multiple
     transport protocols (anthropic, openai-chat, openai-responses),
     confirming its multi-transport bridging capability.
   testStatus: passing
@@ -784,9 +784,9 @@ edges:
 nodeKind: TestableClaim
 id: claim:adapters-remote-has-source-ref
 attributes:
-  displayName: "Agent-mux-remote has source reference"
+  displayName: "Adapters-remote has source reference"
   description: |
-    Agent-mux-remote (agent:adapters-remote) has a source_of edge
+    Adapters-remote (agent:adapters-remote) has a source_of edge
     pointing to it, confirming proper source provenance tracking.
   testStatus: passing
   testType: unit

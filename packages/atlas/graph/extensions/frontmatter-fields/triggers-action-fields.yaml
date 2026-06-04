@@ -1,6 +1,6 @@
-# packages/triggers-mux/action.yml inputs (25) + outputs (3) decomposed into
+# packages/triggers-adapter/action.yml inputs (25) + outputs (3) decomposed into
 # per-field FrontmatterField records.
-# Source: packages/triggers-mux/action.yml (lines 9-120 inputs, 121-131 outputs).
+# Source: packages/triggers-adapter/action.yml (lines 9-120 inputs, 121-131 outputs).
 nodeKind: FrontmatterField
 id: frontmatter-field:triggers-action-input-command
 attributes:
@@ -132,7 +132,7 @@ attributes:
   required: "no"
   defaultValue: "true"
   appliesTo: github-action-input
-  description: "Start transport-mux proxy if the harness doesn't support the provider natively."
+  description: "Start transport-adapter proxy if the harness doesn't support the provider natively."
 ---
 nodeKind: FrontmatterField
 id: frontmatter-field:triggers-action-input-proxy-log-level

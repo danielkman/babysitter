@@ -8,7 +8,7 @@ attributes:
   pathPattern: "hooks.json"
   installerSurface: "hooks.json"
   scriptVariants:
-    - "shell-via-hooks-mux-cli"
+    - "shell-via-hooks-adapter-cli"
   contextFiles:
     - plugins/babysitter-unified/per-harness/codex/hooks/hooks.json
     - packages/adapters/extensions/src/targets/adapters/codex.ts

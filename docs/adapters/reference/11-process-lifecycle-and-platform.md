@@ -39,7 +39,7 @@ All ten built-in agents (claude, codex, gemini, copilot, cursor, opencode, pi, o
 
 ## 2. Subprocess Spawn Sequence
 
-When `mux.run()` is called, the stream engine executes the following spawn sequence. Each step is numbered for reference in error-handling sections. This sequence is a simplified summary; the authoritative step-by-step is in `03-run-handle-and-interaction.md` §6.1. The ordering below groups steps by concern for readability — the critical constraint is that Step 5 (ProcessTracker registration) must happen synchronously after spawn and before any `await`.
+When `adapter.run()` is called, the stream engine executes the following spawn sequence. Each step is numbered for reference in error-handling sections. This sequence is a simplified summary; the authoritative step-by-step is in `03-run-handle-and-interaction.md` §6.1. The ordering below groups steps by concern for readability — the critical constraint is that Step 5 (ProcessTracker registration) must happen synchronously after spawn and before any `await`.
 
 ```
 Step 1  Validate RunOptions against agent capabilities
@@ -230,7 +230,7 @@ t=G+100ms   Final check — process guaranteed dead
 
 **Per-run override:** `RunOptions.gracePeriodMs` (spec-level extension defined in `03-run-handle-and-interaction.md` §6.2). Also configurable at the global config level via `gracePeriodMs`.
 
-**Signal choice rationale (abort vs. killAll):** `abort()` sends SIGTERM (a graceful termination request), because the consumer is explicitly ending a single run and the agent should have a chance to clean up. `killAll()` sends SIGINT (the interrupt signal), because it implements scope §22's requirement ("On SIGTERM: SIGINT first, SIGKILL after grace period") — when the Node.js process itself receives SIGTERM (or SIGINT, or encounters a fatal error), it forwards SIGINT to child processes as the first phase of shutdown. The choice of SIGINT (not SIGTERM) for the forwarded signal intentionally differentiates the signal received by children from the signal received by the parent, making it possible for agents that trap both signals to distinguish between "the mux process is shutting down" (SIGINT) and "this specific run is being aborted" (SIGTERM).
+**Signal choice rationale (abort vs. killAll):** `abort()` sends SIGTERM (a graceful termination request), because the consumer is explicitly ending a single run and the agent should have a chance to clean up. `killAll()` sends SIGINT (the interrupt signal), because it implements scope §22's requirement ("On SIGTERM: SIGINT first, SIGKILL after grace period") — when the Node.js process itself receives SIGTERM (or SIGINT, or encounters a fatal error), it forwards SIGINT to child processes as the first phase of shutdown. The choice of SIGINT (not SIGTERM) for the forwarded signal intentionally differentiates the signal received by children from the signal received by the parent, making it possible for agents that trap both signals to distinguish between "the adapter process is shutting down" (SIGINT) and "this specific run is being aborted" (SIGTERM).
 
 ### 4.2 Interrupt (SIGINT)
 
@@ -305,7 +305,7 @@ The omp agent has partial Windows support:
 - **Native Windows:** Not supported. `AdapterRegistry.installed()` returns `false` for hermes on native Windows (`process.platform === 'win32'` without WSL detection).
 - **WSL2:** Supported. The hermes adapter detects WSL2 by checking for `/proc/version` containing `microsoft` (case-insensitive) or the presence of `WSL_DISTRO_NAME` in the environment.
 - **`supportedPlatforms`:** `['darwin', 'linux']` — the adapter does not list `'win32'`. On WSL2, `process.platform` reports `'linux'`, so the adapter is available.
-- **Error on native Windows:** If a consumer attempts `mux.run({ agent: 'hermes' })` on native Windows, the `AdapterRegistry.detect()` method returns `installed: false`, and `mux.run()` throws `AgentMuxError` with code `AGENT_NOT_INSTALLED` and a message suggesting WSL2 installation.
+- **Error on native Windows:** If a consumer attempts `adapter.run({ agent: 'hermes' })` on native Windows, the `AdapterRegistry.detect()` method returns `installed: false`, and `adapter.run()` throws `AgentMuxError` with code `AGENT_NOT_INSTALLED` and a message suggesting WSL2 installation.
 
 ### 5.4 Platform Detection
 
@@ -654,7 +654,7 @@ On Windows, `cmd.exe` is the default. If an adapter requires PowerShell, it shou
 ### 10.1 Temp Directory Lifecycle
 
 ```
-mux.run() called
+adapter.run() called
     │
     ├── Step 2: mkdir(os.tmpdir()/adapters-<runId>/, { mode: 0o700 })
     │           Creates: stdin-buffer.txt, harness-state.json
@@ -992,14 +992,14 @@ Process lifecycle errors and their codes:
 
 | Error condition | ErrorCode | Thrown by | Defined in |
 |---|---|---|---|
-| Agent CLI not found | `AGENT_NOT_FOUND` | `mux.run()` | `01-core-types-and-client.md` §3.1; scope §14 (AdapterRegistry) |
+| Agent CLI not found | `AGENT_NOT_FOUND` | `adapter.run()` | `01-core-types-and-client.md` §3.1; scope §14 (AdapterRegistry) |
 | Agent not installed on platform | `AGENT_NOT_INSTALLED` | `AdapterRegistry.detect()` | `01-core-types-and-client.md` §3.1; scope §14 (AdapterRegistry) |
 | PTY required but node-pty missing | `PTY_NOT_AVAILABLE` | Stream engine, Step 4 | Spec-level addition (this spec + `03-run-handle-and-interaction.md` §7.3) |
 | Subprocess spawn failure | `SPAWN_ERROR` | Stream engine, Step 4 | `01-core-types-and-client.md` §3.1; scope §22 (process lifecycle) |
 | Run timeout exceeded | `TIMEOUT` | Stream engine, timer | `01-core-types-and-client.md` §3.1; scope §22 (process lifecycle) |
 | Config file lock acquisition failure | `CONFIG_LOCK_ERROR` | `ConfigManager` writes | `01-core-types-and-client.md` §3.1; scope §17 (ConfigManager) |
-| Invalid run ID format | `VALIDATION_ERROR` | `mux.run()`, Step 1 | `01-core-types-and-client.md` §3.1; scope §6 (RunOptions) |
-| Unsupported capability for agent | `CAPABILITY_ERROR` | `mux.run()`, Step 1 | `01-core-types-and-client.md` §3.1; scope §11 (capabilities) |
+| Invalid run ID format | `VALIDATION_ERROR` | `adapter.run()`, Step 1 | `01-core-types-and-client.md` §3.1; scope §6 (RunOptions) |
+| Unsupported capability for agent | `CAPABILITY_ERROR` | `adapter.run()`, Step 1 | `01-core-types-and-client.md` §3.1; scope §11 (capabilities) |
 
 > **Note:** `AGENT_NOT_INSTALLED` is defined in the canonical `ErrorCode` union in `01-core-types-and-client.md` §3.1. `PTY_NOT_AVAILABLE` is a **spec-level addition** not present in scope's `ErrorCode` list; it is referenced in `03-run-handle-and-interaction.md` §7.3 and defined here.
 
@@ -1009,7 +1009,7 @@ Process lifecycle errors and their codes:
 
 ### 18.1 Graceful Shutdown Guarantee
 
-When `mux.run()` returns a `RunHandle`, the following guarantee holds:
+When `adapter.run()` returns a `RunHandle`, the following guarantee holds:
 
 > **If the Node.js process exits normally (via `process.exit()`, end of event loop, or SIGTERM/SIGINT), all active subprocesses will be terminated before the Node.js process exits.**
 

@@ -132,7 +132,7 @@ id: knowledge-domain:kradle-agent-run-history
 attributes:
   displayName: "Kradle Agent Run History"
   description: |
-    Curated operational memory from agent runs, Babysitter journals, Agent Mux
+    Curated operational memory from agent runs, Babysitter journals, Agent Adapter
     sessions, retrospectives, and task artifacts that can be imported into org
     memory after review and redaction.
   trustLevel: verified

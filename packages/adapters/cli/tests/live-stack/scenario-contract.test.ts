@@ -32,8 +32,8 @@ describe('live stack scenario contract primitives', () => {
       'cp fixtures/summarize-translate-test.mjs .a5c/processes/',
       'adapters launch claude',
     ]);
-    expect(scenario.layers).toContain('transport-mux route');
-    expect(scenario.layers).toContain('hooks-mux normalization');
+    expect(scenario.layers).toContain('transport-adapter route');
+    expect(scenario.layers).toContain('hooks-adapter normalization');
     expect(scenario.requiredTraceIds).toContain('transportTraceId');
     expect(scenario.requiredTraceIds).toContain('hookMuxEventId');
     expect(scenario.expectedArtifacts).toContain('provider-trace-redacted');
@@ -76,9 +76,9 @@ describe('live stack scenario contract primitives', () => {
       LIVE_STACK_MODEL: 'gpt-5.5',
       LIVE_STACK_CREDENTIAL_MODE: 'github-org-secrets-and-vars',
       LIVE_STACK_REQUIRED_ENV: 'AZURE_API_KEY,AGENT_MUX_API_BASE',
-      LIVE_STACK_LAYERS: 'adapters install,adapters invocation,transport-mux route,provider/model trace',
+      LIVE_STACK_LAYERS: 'adapters install,adapters invocation,transport-adapter route,provider/model trace',
       LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId',
-      LIVE_STACK_EXPECTED_ARTIFACTS: 'adapters-events,transport-mux-trace,provider-trace-redacted',
+      LIVE_STACK_EXPECTED_ARTIFACTS: 'adapters-events,transport-adapter-trace,provider-trace-redacted',
     });
 
     expect(scenario.agent.installMode).toBe('vanilla');
@@ -104,7 +104,7 @@ describe('live stack scenario contract primitives', () => {
       LIVE_STACK_REQUIRED_ENV: 'AZURE_API_KEY,AGENT_MUX_API_BASE',
       LIVE_STACK_LAYERS: 'adapters install,adapters invocation,agent-platform runtime,provider/model trace',
       LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId',
-      LIVE_STACK_EXPECTED_ARTIFACTS: 'adapters-events,transport-mux-trace,provider-trace-redacted',
+      LIVE_STACK_EXPECTED_ARTIFACTS: 'adapters-events,transport-adapter-trace,provider-trace-redacted',
     });
 
     expect(scenario.agent.agent).toBe('agent-platform');
@@ -127,9 +127,9 @@ describe('live stack scenario contract primitives', () => {
       LIVE_STACK_MODEL: 'gemini-3.1-pro-preview',
       LIVE_STACK_CREDENTIAL_MODE: 'github-org-secrets-and-vars',
       LIVE_STACK_REQUIRED_ENV: 'GOOGLE_API_KEY',
-      LIVE_STACK_LAYERS: 'adapters install,adapters invocation,transport-mux route,provider/model trace',
+      LIVE_STACK_LAYERS: 'adapters install,adapters invocation,transport-adapter route,provider/model trace',
       LIVE_STACK_REQUIRED_TRACE_IDS: 'agentMuxRunId,agentMuxSessionId,transportTraceId',
-      LIVE_STACK_EXPECTED_ARTIFACTS: 'adapters-events,transport-mux-trace,provider-trace-redacted',
+      LIVE_STACK_EXPECTED_ARTIFACTS: 'adapters-events,transport-adapter-trace,provider-trace-redacted',
     });
 
     expect(scenario.model.provider).toBe('google');
@@ -146,7 +146,7 @@ describe('live stack scenario contract primitives', () => {
     expect(scenario.agent.babysitterHarness).toBe('genty');
     expect(scenario.agent.setupCommands).toEqual(['genty call']);
     expect(scenario.model.requiredEnv).toEqual(['LIVE_STACK_EXTERNAL_AGENT', 'AZURE_API_KEY', 'AGENT_MUX_API_BASE']);
-    expect(scenario.layers).toContain('tasks-mux responder routing');
+    expect(scenario.layers).toContain('tasks-adapter responder routing');
     expect(scenario.layers).toContain('adapters claude-code adapter');
     expect(scenario.expectedArtifacts).toContain('external-agent-cost-event');
   });

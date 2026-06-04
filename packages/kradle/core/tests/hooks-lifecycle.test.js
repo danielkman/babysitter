@@ -258,7 +258,7 @@ describe('agent-dispatch-controller — lifecycleEmitter wiring', () => {
       emitSessionEnded() {},
     };
 
-    // Mock mux client that returns no resource gateway (no job submission)
+    // Mock adapter client that returns no resource gateway (no job submission)
     const mockMuxClient = {
       isAvailable() { return false; },
       createAgentJob() { throw new Error('no resource gateway'); },

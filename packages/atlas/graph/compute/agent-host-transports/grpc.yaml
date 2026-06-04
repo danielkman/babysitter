@@ -6,7 +6,7 @@ attributes:
   description: |
     gRPC bidirectional streaming between agent host and agent process —
     HTTP/2 framed, protobuf-encoded. Used by hosted-agent backends and
-    mux gateways that need fan-in/fan-out across many concurrent
+    adapter gateways that need fan-in/fan-out across many concurrent
     invocations with backpressure. Distinct from `http` (REST/SSE) and
     `ws` (WebSocket framing).
   inboundMessageFormat: |

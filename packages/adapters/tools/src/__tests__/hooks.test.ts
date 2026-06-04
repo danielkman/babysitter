@@ -126,7 +126,7 @@ describe('Custom ToolHookBridge', () => {
 });
 
 describe('HooksMuxToolHookBridge', () => {
-  it('maps beforeToolUse to a hooks-mux PreToolUse event', async () => {
+  it('maps beforeToolUse to a hooks-adapter PreToolUse event', async () => {
     const events: unknown[] = [];
     const bridge = new HooksMuxToolHookBridge({
       adapter: 'codex',
@@ -168,7 +168,7 @@ describe('HooksMuxToolHookBridge', () => {
     });
   });
 
-  it('maps afterToolUse to a hooks-mux PostToolUse event with result payload', async () => {
+  it('maps afterToolUse to a hooks-adapter PostToolUse event with result payload', async () => {
     const events: unknown[] = [];
     const bridge = new HooksMuxToolHookBridge({
       engine: {
@@ -196,7 +196,7 @@ describe('HooksMuxToolHookBridge', () => {
     });
   });
 
-  it('normalizes hooks-mux block decisions to tool-mux deny decisions', async () => {
+  it('normalizes hooks-adapter block decisions to tools-adapter deny decisions', async () => {
     const bridge = new HooksMuxToolHookBridge({
       engine: {
         async processNormalizedEvent() {

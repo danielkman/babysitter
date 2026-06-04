@@ -144,7 +144,7 @@ export class AgentMuxResponderBackend implements BreakpointBackend {
       cwd: this.config.cwd,
       timeout: timeoutMs,
       collectEvents: this.config.collectEvents ?? true,
-      tags: [...new Set([...(this.config.tags ?? []), "tasks-mux", "breakpoint", breakpointId])],
+      tags: [...new Set([...(this.config.tags ?? []), "tasks-adapter", "breakpoint", breakpointId])],
       approvalMode: this.config.approvalMode,
       nonInteractive: this.config.nonInteractive ?? true,
     };
@@ -288,7 +288,7 @@ export class AgentMuxResponderBackend implements BreakpointBackend {
         id: agent,
         type: "agent",
         name: agent,
-        title: "Agent mux responder",
+        title: "Agent adapter responder",
         capabilities: ["text", "code", "automation", agent],
         domains: [],
         tags: ["adapters", agent],
@@ -333,7 +333,7 @@ export class AgentMuxResponderBackend implements BreakpointBackend {
             void handle.abort();
             reject(new AgentMuxResponderBackendError(
               "TIMEOUT",
-              `Agent-mux run timed out after ${timeoutMs}ms.`,
+              `Adapters run timed out after ${timeoutMs}ms.`,
             ));
           }, timeoutMs);
         }),
@@ -352,20 +352,20 @@ export class AgentMuxResponderBackend implements BreakpointBackend {
     if (result.exitReason === "timeout" || result.exitReason === "inactivity") {
       throw new AgentMuxResponderBackendError(
         "TIMEOUT",
-        `Agent-mux run timed out for agent "${result.agent}".`,
+        `Adapters run timed out for agent "${result.agent}".`,
       );
     }
     if (result.exitReason === "aborted") {
       throw new AgentMuxResponderBackendError(
         "ABORTED",
-        `Agent-mux run was aborted for agent "${result.agent}".`,
+        `Adapters run was aborted for agent "${result.agent}".`,
       );
     }
 
     const reason = result.error?.message ?? result.exitReason;
     throw new AgentMuxResponderBackendError(
       result.error?.code ?? "RUN_FAILED",
-      `Agent-mux run failed for agent "${result.agent}": ${reason}`,
+      `Adapters run failed for agent "${result.agent}": ${reason}`,
       result.error,
     );
   }
@@ -379,28 +379,28 @@ export class AgentMuxResponderBackend implements BreakpointBackend {
     if (code === "UNKNOWN_AGENT" || code === "AGENT_NOT_FOUND" || code === "AGENT_NOT_INSTALLED") {
       return new AgentMuxResponderBackendError(
         code,
-        `Agent-mux adapter is not installed or unknown for agent "${agent}": ${message}`,
+        `Adapters adapter is not installed or unknown for agent "${agent}": ${message}`,
         err,
       );
     }
     if (code === "AUTH_ERROR") {
       return new AgentMuxResponderBackendError(
         code,
-        `Agent-mux authentication failed for agent "${agent}": ${message}`,
+        `Adapters authentication failed for agent "${agent}": ${message}`,
         err,
       );
     }
     if (code === "TIMEOUT" || code === "INACTIVITY_TIMEOUT") {
       return new AgentMuxResponderBackendError(
         "TIMEOUT",
-        `Agent-mux run timed out for agent "${agent}": ${message}`,
+        `Adapters run timed out for agent "${agent}": ${message}`,
         err,
       );
     }
 
     return new AgentMuxResponderBackendError(
       code,
-      `Agent-mux run could not start for agent "${agent}": ${message}`,
+      `Adapters run could not start for agent "${agent}": ${message}`,
       err,
     );
   }

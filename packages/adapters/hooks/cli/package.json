@@ -1,14 +1,14 @@
 {
   "name": "@a5c-ai/hooks-adapter-cli",
   "version": "5.1.0",
-  "description": "CLI entrypoint for the hooks-mux system",
+  "description": "CLI entrypoint for the hooks-adapter system",
   "license": "MIT",
   "type": "commonjs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
     "adapters-hooks": "dist/cli/main.js",
-    "a5c-hooks-mux": "dist/cli/a5c-hooks-mux.js"
+    "a5c-hooks-adapter": "dist/cli/a5c-hooks-adapter.js"
   },
   "publishConfig": {
     "access": "public"
@@ -59,7 +59,7 @@
       "cross-cutting"
     ],
     "muxes": [
-      "hooks-mux"
+      "hooks-adapter"
     ]
   }
 }

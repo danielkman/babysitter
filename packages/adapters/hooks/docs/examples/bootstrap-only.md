@@ -48,7 +48,7 @@ Or use the dedicated bootstrap command:
 
 For Claude, the dedicated `bootstrap` command is supported specifically as a native
 `SessionStart` hook target. Claude sends the same stdin payload to this command, so
-`hooks-mux bootstrap --adapter claude` resolves the native Claude `session_id` the
+`hooks-adapter bootstrap --adapter claude` resolves the native Claude `session_id` the
 same way `invoke --bootstrap-only` does.
 
 ---
@@ -87,10 +87,10 @@ After a bootstrap hook has run, verify with:
 
 ```bash
 # Check the session was created
-a5c-hooks-mux show-session --session-id "$AGENT_SESSION_ID"
+a5c-hooks-adapter show-session --session-id "$AGENT_SESSION_ID"
 
 # Run doctor to check session store health
-a5c-hooks-mux doctor --json
+a5c-hooks-adapter doctor --json
 ```
 
 ---

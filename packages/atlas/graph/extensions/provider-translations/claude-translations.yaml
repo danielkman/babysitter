@@ -80,7 +80,7 @@ attributes:
     ANTHROPIC_API_KEY: ""
   envMapping: []
   args: []
-  notes: Azure AI Foundry routed through transport-mux proxy exposing Anthropic transport.
+  notes: Azure AI Foundry routed through transport-adapter proxy exposing Anthropic transport.
 edges:
   translates_for:
     - target: agent:claude-code
@@ -132,7 +132,7 @@ attributes:
   args: []
   notes: >
     Default fallback for unsupported providers on Claude Code.
-    Routes through transport-mux proxy exposing Anthropic transport.
+    Routes through transport-adapter proxy exposing Anthropic transport.
 edges:
   translates_for:
     - target: agent:claude-code

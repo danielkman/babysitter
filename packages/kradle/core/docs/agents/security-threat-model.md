@@ -10,8 +10,8 @@ Agent orchestration expands Kradle from CI and repository management into autono
 | --- | --- |
 | User/browser to Kradle API | forged UI actions, stale permissions, hidden local state |
 | Kradle API to Kubernetes API | RBAC bypass, privilege escalation, admission gaps |
-| Kradle controllers to Agent Mux | overbroad launch options, secret leakage, session confusion |
-| Agent Mux to tool/runtime | tool abuse, command injection, MCP abuse |
+| Kradle controllers to Agent Adapter | overbroad launch options, secret leakage, session confusion |
+| Agent Adapter to tool/runtime | tool abuse, command injection, MCP abuse |
 | Runner/workspace to repository | untrusted code exfiltration, cross-run contamination |
 | Trigger source to dispatch | label/comment prompt injection, webhook replay, dedupe bypass |
 | Secret/ConfigMap grant to dispatch | credential overexposure, stale grants, rotation mismatch |
@@ -95,7 +95,7 @@ Mitigations:
 - Tool approval policies gate privileged invocations.
 - Runtime events stream tool calls into audit/observability.
 
-### Agent Mux session confusion
+### Agent Adapter session confusion
 
 Threat:
 
@@ -153,7 +153,7 @@ Every dispatch should preserve:
 - runtime and runner ServiceAccounts;
 - Secret/ConfigMap grant names and key names only;
 - tool/MCP/skill/subagent availability;
-- Agent Mux run/session IDs;
+- Agent Adapter run/session IDs;
 - approvals and write-back decisions;
 - artifacts and digests.
 

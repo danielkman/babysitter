@@ -1278,7 +1278,7 @@ attributes:
   subjectKind: "AgentVersion"
   subjectId: "agentVersion:openclaw:ge-2026-5-27"
   versionRange: ">=0.0.0"
-  notes: "OpenClaw has mapped hook names in plugins-mux but current fallback metadata still marks runtime hooks and stop hooks unsupported."
+  notes: "OpenClaw has mapped hook names in plugins-adapter but current fallback metadata still marks runtime hooks and stop hooks unsupported."
   evidenceRefs:
     - "repo-sdk-fallback"
     - "repo-hooks-detector"
@@ -1298,7 +1298,7 @@ attributes:
   subjectKind: "AgentVersion"
   subjectId: "agentVersion:openclaw:ge-2026-5-27"
   versionRange: ">=0.0.0"
-  notes: "OpenClaw has mapped hook names in plugins-mux but current fallback metadata still marks runtime hooks and stop hooks unsupported."
+  notes: "OpenClaw has mapped hook names in plugins-adapter but current fallback metadata still marks runtime hooks and stop hooks unsupported."
   evidenceRefs:
     - "repo-sdk-fallback"
     - "repo-hooks-detector"
@@ -1318,7 +1318,7 @@ attributes:
   subjectKind: "AgentVersion"
   subjectId: "agentVersion:openclaw:ge-2026-5-27"
   versionRange: ">=0.0.0"
-  notes: "OpenClaw has mapped hook names in plugins-mux but current fallback metadata still marks runtime hooks and stop hooks unsupported."
+  notes: "OpenClaw has mapped hook names in plugins-adapter but current fallback metadata still marks runtime hooks and stop hooks unsupported."
   evidenceRefs:
     - "repo-sdk-fallback"
     - "repo-hooks-detector"
@@ -1338,7 +1338,7 @@ attributes:
   subjectKind: "AgentVersion"
   subjectId: "agentVersion:openclaw:ge-2026-5-27"
   versionRange: ">=0.0.0"
-  notes: "OpenClaw has mapped hook names in plugins-mux but current fallback metadata still marks runtime hooks and stop hooks unsupported."
+  notes: "OpenClaw has mapped hook names in plugins-adapter but current fallback metadata still marks runtime hooks and stop hooks unsupported."
   evidenceRefs:
     - "repo-sdk-fallback"
     - "repo-hooks-detector"
@@ -1358,7 +1358,7 @@ attributes:
   subjectKind: "AgentVersion"
   subjectId: "agentVersion:openclaw:ge-2026-5-27"
   versionRange: ">=0.0.0"
-  notes: "OpenClaw has mapped hook names in plugins-mux but current fallback metadata still marks runtime hooks and stop hooks unsupported."
+  notes: "OpenClaw has mapped hook names in plugins-adapter but current fallback metadata still marks runtime hooks and stop hooks unsupported."
   evidenceRefs:
     - "repo-sdk-fallback"
     - "repo-hooks-detector"
@@ -1376,7 +1376,7 @@ attributes:
   subjectKind: "AgentVersion"
   subjectId: "agentVersion:openclaw:ge-2026-5-27"
   versionRange: ">=0.0.0"
-  notes: "OpenClaw has mapped hook names in plugins-mux but current fallback metadata still marks runtime hooks and stop hooks unsupported."
+  notes: "OpenClaw has mapped hook names in plugins-adapter but current fallback metadata still marks runtime hooks and stop hooks unsupported."
   evidenceRefs:
     - "repo-sdk-fallback"
     - "repo-hooks-detector"
@@ -1883,9 +1883,9 @@ attributes:
   versionRange: ">=0.0.0"
   notes: "adapters-proxy protocol/provider bridge"
   evidenceRefs:
-    - "repo-transport-mux-readme"
-    - "repo-transport-mux-architecture"
-    - "repo-transport-mux-migration"
+    - "repo-transport-adapter-readme"
+    - "repo-transport-adapter-architecture"
+    - "repo-transport-adapter-migration"
 edges:
   evidences_capability:
     - target: capability:streaming
@@ -1901,9 +1901,9 @@ attributes:
   versionRange: ">=0.0.0"
   notes: "adapters-proxy protocol/provider bridge"
   evidenceRefs:
-    - "repo-transport-mux-readme"
-    - "repo-transport-mux-architecture"
-    - "repo-transport-mux-migration"
+    - "repo-transport-adapter-readme"
+    - "repo-transport-adapter-architecture"
+    - "repo-transport-adapter-migration"
 edges:
   evidences_capability:
     - target: capability:proxy-transport-emulation
@@ -1919,9 +1919,9 @@ attributes:
   versionRange: ">=0.0.0"
   notes: "adapters-proxy protocol/provider bridge"
   evidenceRefs:
-    - "repo-transport-mux-readme"
-    - "repo-transport-mux-architecture"
-    - "repo-transport-mux-migration"
+    - "repo-transport-adapter-readme"
+    - "repo-transport-adapter-architecture"
+    - "repo-transport-adapter-migration"
 edges:
   evidences_capability:
     - target: capability:model-discovery
@@ -1937,9 +1937,9 @@ attributes:
   versionRange: ">=0.0.0"
   notes: "adapters-proxy protocol/provider bridge"
   evidenceRefs:
-    - "repo-transport-mux-readme"
-    - "repo-transport-mux-architecture"
-    - "repo-transport-mux-migration"
+    - "repo-transport-adapter-readme"
+    - "repo-transport-adapter-architecture"
+    - "repo-transport-adapter-migration"
 edges:
   evidences_capability:
     - target: capability:token-counting
@@ -1955,9 +1955,9 @@ attributes:
   versionRange: ">=0.0.0"
   notes: "adapters-proxy protocol/provider bridge"
   evidenceRefs:
-    - "repo-transport-mux-readme"
-    - "repo-transport-mux-architecture"
-    - "repo-transport-mux-migration"
+    - "repo-transport-adapter-readme"
+    - "repo-transport-adapter-architecture"
+    - "repo-transport-adapter-migration"
 edges:
   evidences_capability:
     - target: capability:tool-calling

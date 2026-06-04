@@ -63,7 +63,7 @@ attributes:
   args: []
   notes: >
     Default fallback for unsupported providers on Gemini CLI.
-    Routes through transport-mux proxy exposing Google transport.
+    Routes through transport-adapter proxy exposing Google transport.
 edges:
   translates_for:
     - target: agent:gemini-cli

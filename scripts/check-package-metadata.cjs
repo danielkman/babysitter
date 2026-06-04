@@ -17,31 +17,31 @@ const OLD_AGENT_RUNTIME_SURFACE = ['packages', 'agent-runtime'].join('/');
 const OLD_AGENT_RUNTIME_PACKAGE = ['@a5c-ai', 'agent-runtime'].join('/');
 const TOP_LEVEL_AGENT_MUX_PACKAGE_MOVES = [
   {
-    oldPath: 'packages/transport-mux',
+    oldPath: 'packages/transport-adapter',
     newPath: 'packages/adapters/transport',
     oldName: '@a5c-ai/transport-adapter',
     newName: '@a5c-ai/transport-adapter',
   },
   {
-    oldPath: 'packages/extension-mux',
+    oldPath: 'packages/extensions-adapter',
     newPath: 'packages/adapters/extensions',
     oldName: '@a5c-ai/extensions-adapter',
     newName: '@a5c-ai/extensions-adapter',
   },
   {
-    oldPath: 'packages/triggers-mux',
+    oldPath: 'packages/triggers-adapter',
     newPath: 'packages/adapters/triggers',
     oldName: '@a5c-ai/triggers-adapter',
     newName: '@a5c-ai/triggers-adapter',
   },
   {
-    oldPath: 'packages/tasks-mux',
+    oldPath: 'packages/tasks-adapter',
     newPath: 'packages/adapters/tasks',
     oldName: '@a5c-ai/tasks-adapter',
     newName: '@a5c-ai/tasks-adapter',
   },
   {
-    oldPath: 'packages/tool-mux',
+    oldPath: 'packages/tools-adapter',
     newPath: 'packages/adapters/tools',
     oldName: '@a5c-ai/tools-adapter',
     newName: '@a5c-ai/tools-adapter',

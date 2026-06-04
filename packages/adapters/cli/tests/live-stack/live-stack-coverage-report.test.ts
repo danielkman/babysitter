@@ -28,7 +28,7 @@ describe('scripts/live-stack-coverage-report.cjs', () => {
         status: 'failed',
         missingArtifacts: [
           'adapters-events',
-          'transport-mux-trace',
+          'transport-adapter-trace',
           'provider-trace-redacted',
         ],
       });
@@ -79,7 +79,7 @@ function runCoverageReport({
       LIVE_STACK_SCENARIO_ID: scenarioId,
       LIVE_STACK_INSTALL_MODE: 'vanilla',
       LIVE_STACK_ARTIFACTS_DIR: artifactsDir,
-      LIVE_STACK_EXPECTED_ARTIFACTS: 'adapters-events,transport-mux-trace,provider-trace-redacted',
+      LIVE_STACK_EXPECTED_ARTIFACTS: 'adapters-events,transport-adapter-trace,provider-trace-redacted',
       LIVE_STACK_REQUIRE_EVIDENCE: '1',
     },
   });

@@ -1,7 +1,7 @@
 /**
  * RunHandle interface, RunResult, TokenUsageSummary, and RunError for @a5c-ai/adapters.
  *
- * RunHandle is the single object returned by mux.run(). It simultaneously
+ * RunHandle is the single object returned by adapter.run(). It simultaneously
  * implements AsyncIterable<AgentEvent>, EventEmitter-like typed subscriptions,
  * and Promise<RunResult> (thenable).
  */
@@ -136,7 +136,7 @@ export interface RunResult {
 /**
  * The runtime handle for a single agent invocation.
  *
- * Returned synchronously by `mux.run()`. The subprocess is spawned
+ * Returned synchronously by `adapter.run()`. The subprocess is spawned
  * immediately upon construction; events begin flowing before the consumer
  * attaches any listener or iterator.
  *

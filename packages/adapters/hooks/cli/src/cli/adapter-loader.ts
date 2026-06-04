@@ -95,12 +95,12 @@ export function loadAdapter(adapterName: string): LoadedAdapter {
     const detected = detectHarness();
     if (!detected) {
       process.stderr.write(
-        '[hooks-mux] auto-detection failed: no harness signals found in environment\n',
+        '[hooks-adapter] auto-detection failed: no harness signals found in environment\n',
       );
       process.exit(1);
     }
     process.stderr.write(
-      `[hooks-mux] auto-detected adapter="${detected.adapter}" ` +
+      `[hooks-adapter] auto-detected adapter="${detected.adapter}" ` +
       `confidence=${detected.confidence} evidence=[${detected.evidence.join(', ')}]\n`,
     );
     adapterName = detected.adapter;

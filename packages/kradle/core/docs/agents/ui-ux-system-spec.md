@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Agent UX in Kradle must be more than screens. Every visible affordance should map to a resource, API contract, controller behavior, policy check, and event stream. This document defines how the Agent Mux-inspired UI primitives affect the app, agent stack model, custom resources, aggregated resources, and controllers.
+Agent UX in Kradle must be more than screens. Every visible affordance should map to a resource, API contract, controller behavior, policy check, and event stream. This document defines how the Agent Adapter-inspired UI primitives affect the app, agent stack model, custom resources, aggregated resources, and controllers.
 
 ## Design principle
 
@@ -43,15 +43,15 @@ Repository pages must embed agent affordances inline:
 - `/orgs/[org]/repositories/[repo]/hooks`: incoming webhook triggers and delivery replay.
 - `/orgs/[org]/repositories/[repo]/settings/agents`: repository-scoped stack permissions, trigger rules, MCP/skill allow-lists, runner policy, ServiceAccount selection, Secret grants, ConfigMap grants, and native role bindings.
 
-## Agent Mux route-to-Kradle route mapping
+## Agent Adapter route-to-Kradle route mapping
 
-Kradle should keep GitHub-like repository navigation as the primary frame and use Agent Mux patterns inside that frame. Agent Mux standalone routes become either global operations pages or embedded repository tabs.
+Kradle should keep GitHub-like repository navigation as the primary frame and use Agent Adapter patterns inside that frame. Agent Adapter standalone routes become either global operations pages or embedded repository tabs.
 
-| Agent Mux route | Kradle route/surface | Backing resources | Controller/watch impact |
+| Agent Adapter route | Kradle route/surface | Backing resources | Controller/watch impact |
 | --- | --- | --- | --- |
 | `/agents` | `/agents` and `/agents/stacks` | `AgentStack`, adapter capability projections | Stack controller resolves capabilities, readiness, and warnings. |
-| `/sessions`, `/sessions/new` | `/agents/sessions`, dispatch composer in repo/PR/issue pages | `AgentSession`, `AgentDispatchRun` draft | Dispatch controller creates runs; Agent Mux adapter opens or resumes sessions. |
-| `/sessions/pending/:runId` | `/agents/runs/:runId?handoff=pending` | `AgentDispatchAttempt.status.agentMuxRunId` | Attempt waits for Agent Mux session binding and emits `SessionBindingPending`. |
+| `/sessions`, `/sessions/new` | `/agents/sessions`, dispatch composer in repo/PR/issue pages | `AgentSession`, `AgentDispatchRun` draft | Dispatch controller creates runs; Agent Adapter adapter opens or resumes sessions. |
+| `/sessions/pending/:runId` | `/agents/runs/:runId?handoff=pending` | `AgentDispatchAttempt.status.agentMuxRunId` | Attempt waits for Agent Adapter session binding and emits `SessionBindingPending`. |
 | `/dispatches`, `/dispatches/:runId` | `/agents/runs`, `/orgs/[org]/repositories/[repo]/agents/[run]`, `/orgs/[org]/repositories/[repo]/runs/[run]` | `AgentDispatchRun`, `AgentDispatchAttempt`, `AgentApproval` | Dispatch controller reconciles CI-like run status, event cursor, approvals, and artifacts. |
 | `/projects`, `/projects/:projectId/board`, `/projects/:projectId/list` | `/orgs/[org]/repositories/[repo]/issues`, `/orgs/[org]/repositories/[repo]/workspaces`, org project board if added | `WorkItem`, `WorkItemWorkspaceLink`, `WorkItemSessionLink` | Work graph controller maintains board/list projections and association edges. |
 | `/projects/:projectId/issues/new`, `/issues/:issueId` | `/orgs/[org]/repositories/[repo]/issues/[issue]` and issue create drawer | `Issue`, `WorkItem`, `AgentContextLabel` | Issue controller exposes agent dispatch readiness and context labels. |
@@ -73,16 +73,16 @@ Repository navigation should be consistent with GitHub mental models:
 
 ## Component primitive matrix
 
-These Agent Mux primitives should be treated as product capabilities, not copied as isolated UI widgets.
+These Agent Adapter primitives should be treated as product capabilities, not copied as isolated UI widgets.
 
-| Agent Mux primitive | Kradle capability | Backing resource/action | Required controller behavior |
+| Agent Adapter primitive | Kradle capability | Backing resource/action | Required controller behavior |
 | --- | --- | --- | --- |
 | Command palette | Universal jump-to and quick actions for runs, sessions, workspaces, approvals, rules | `AgentActionSuggestion` aggregated from resources | Authorize every command server-side; palette only renders admitted actions. |
 | Sidebar/topbar status pills | Live operational counters and connection health | watch summaries for runs/sessions/approvals/workspaces | Stream counters from controllers; show reconnect/stale states explicitly. |
 | Project board/list | Issue-session-workspace management | `WorkItem`, `WorkItemWorkspaceLink`, `WorkItemSessionLink` | Maintain board state, WIP policy, child issues, and association graph. |
 | Issue detail | Dispatch-ready work item hub | issue, context labels, linked sessions/workspaces/runs | Assemble context bundle preview and expose safe dispatch/write-back actions. |
-| Dispatch queue | CI-like operational run list | `AgentDispatchRun`, `AgentDispatchAttempt`, `AgentApproval` | Reconcile Agent Mux event streams, approvals, retries, cancellation, and artifacts. |
-| Dispatch detail | Run timeline plus chat handoff | dispatch attempt, Agent Mux run/session IDs | Bind pending session, redirect legacy run paths, and preserve run breadcrumbs. |
+| Dispatch queue | CI-like operational run list | `AgentDispatchRun`, `AgentDispatchAttempt`, `AgentApproval` | Reconcile Agent Adapter event streams, approvals, retries, cancellation, and artifacts. |
+| Dispatch detail | Run timeline plus chat handoff | dispatch attempt, Agent Adapter run/session IDs | Bind pending session, redirect legacy run paths, and preserve run breadcrumbs. |
 | Session conversation surface | Durable chat for an agent run | `AgentSession`, `AgentDispatchAttempt` | Proxy transcript, continuation, tool approvals, and reconnect events. |
 | Session observability panel | Task/subagent/tool/runtime narrative | attempt event stream, subagent events, artifacts | Normalize events into timeline, cost, artifact shortcuts, and source links. |
 | Workspace provisioning | Guided git worktree creation from issue/project/host | `AgentWorkspace`, `AgentWorkspacePolicy` | Enforce policy, create workspace, set ownership, and link to work item/session. |
@@ -92,9 +92,9 @@ These Agent Mux primitives should be treated as product capabilities, not copied
 | Execution context panel | Prompt/context transparency | `AgentContextBundle`, `AgentContextLabel`, attachments | Display provenance, redactions, prompt hash, and label-injected prompt fragments. |
 | Breakpoint/approval panels | Human gates during execution | `AgentApproval` | Block continuation until decision; audit actor, reason, and policy source. |
 
-## Screen state requirements from Agent Mux research
+## Screen state requirements from Agent Adapter research
 
-Kradle pages must preserve the operational states that make Agent Mux useful:
+Kradle pages must preserve the operational states that make Agent Adapter useful:
 
 - `SessionBindingPending`: dispatch has a run ID but no durable chat session yet; show pending handoff and retry/recover controls.
 - `LegacyRunRedirect`: old run links resolve to the canonical dispatch page without losing breadcrumbs.
@@ -114,8 +114,8 @@ Kradle pages must preserve the operational states that make Agent Mux useful:
 | Stack builder | Form/YAML for base agent, model, prompt, tools, MCP, skills, subagents | `AgentStack`, `AgentToolProfile`, `AgentMcpServer`, `AgentSkill`, `AgentSubagent` | Validate adapter capabilities and policy; update stack status. |
 | Trigger rule builder | Event source, matcher, dry-run preview, lifecycle controls | `AgentTriggerRule`, `WebhookDelivery`, sample event | Evaluate dry-run, persist rule, update execution summaries. |
 | Dispatch composer | Prompt, context labels, files/logs/artifacts, selected stack | `AgentContextBundle`, `AgentDispatchRun` draft | Assemble/redact context, compute digest, require approval if needed. |
-| CI-like agent run row | Status, queue, runner, source, duration, artifacts | `AgentDispatchRun`, `AgentDispatchAttempt` | Reconcile Agent Mux run/session state into Kradle run status. |
-| Chat/session panel | Transcript, continuation box, tool activity | Agent Mux session ID on `AgentDispatchAttempt` | Proxy/subscribe to Agent Mux events; submit continuation/cancel/resume. |
+| CI-like agent run row | Status, queue, runner, source, duration, artifacts | `AgentDispatchRun`, `AgentDispatchAttempt` | Reconcile Agent Adapter run/session state into Kradle run status. |
+| Chat/session panel | Transcript, continuation box, tool activity | Agent Adapter session ID on `AgentDispatchAttempt` | Proxy/subscribe to Agent Adapter events; submit continuation/cancel/resume. |
 | Subagent tree | Child lanes with role, status, findings, artifacts | `AgentSubagent` snapshot plus attempt subevents | Record subagent start/complete/fail events and outputs. |
 | Workspace shell | branch, git status, runtime preview, terminal/dev server, notes | `AgentWorkspace`, `WorkItemWorkspaceLink` | Inventory workspace, surface runtime state, run lifecycle actions. |
 | Review artifact panel | Diff, comments, decision, execution targets | `AgentReviewArtifact` or `Review` extension | Persist artifact, gate write-back, link to PR/issue/workspace/session. |
@@ -154,7 +154,7 @@ These resources should support YAML transparency in the UI: view YAML, copy `kub
 - `AgentDispatchRun`: logical dispatch visible like a pipeline run.
 - `AgentDispatchAttempt`: concrete attempt/retry/resume/continuation.
 - `AgentContextBundle`: materialized redacted context with digest and source refs.
-- `AgentSession`: projection of Agent Mux session and transcript state.
+- `AgentSession`: projection of Agent Adapter session and transcript state.
 - `AgentWorkspace`: inventory/projection of active/idle/archived/missing workspaces.
 - `AgentApproval`: pending/completed human gates.
 - `AgentReviewArtifact`: agent-produced diff/comment/decision artifact.
@@ -172,7 +172,7 @@ Watches `AgentStack`, `AgentSubagent`, `AgentToolProfile`, `AgentMcpServer`, and
 Responsibilities:
 
 - resolve stack references;
-- validate Agent Mux adapter capability compatibility;
+- validate Agent Adapter adapter capability compatibility;
 - validate tool/MCP/skill/subagent policy;
 - compute effective launch profile;
 - update status with valid/warning/invalid and actionable reasons.
@@ -197,9 +197,9 @@ Watches `AgentDispatchRun` and `AgentDispatchAttempt`.
 
 Responsibilities:
 
-- place attempt on runner pool or external Agent Mux gateway;
-- start Agent Mux run/session;
-- persist Agent Mux IDs;
+- place attempt on runner pool or external Agent Adapter gateway;
+- start Agent Adapter run/session;
+- persist Agent Adapter IDs;
 - stream status/events into Kradle resources;
 - handle cancel/retry/resume/fork/continue;
 - collect artifacts and subagent outputs;
@@ -241,7 +241,7 @@ Responsibilities:
 - block dispatch when missing permissions cannot be safely approved;
 - never expose Secret values in UI, logs, events, or prompt previews.
 
-### Agent Mux gateway adapter
+### Agent Adapter gateway adapter
 
 Internal module, not a user-facing controller by itself.
 
@@ -251,7 +251,7 @@ Responsibilities:
 - launch sessions/runs;
 - stream transcript/events;
 - submit continuation, cancel, resume, fork, and approval input when supported;
-- normalize Agent Mux runtime state into Kradle `AgentSession`, `AgentDispatchAttempt`, and event projections.
+- normalize Agent Adapter runtime state into Kradle `AgentSession`, `AgentDispatchAttempt`, and event projections.
 
 ## UI state rules
 
@@ -311,7 +311,7 @@ Required UI states:
 
 Reads:
 
-- `AgentDispatchRun`, attempts, Agent Mux session, context bundle, approvals, artifacts, workspace, source refs.
+- `AgentDispatchRun`, attempts, Agent Adapter session, context bundle, approvals, artifacts, workspace, source refs.
 
 Writes:
 
@@ -380,7 +380,7 @@ These can later map to Kubernetes-style resource paths or aggregated API endpoin
 - Every agent UI surface documents which resource(s) it reads, writes, and watches.
 - Stack settings affect launch behavior only through persisted stack/tool/MCP/skill/subagent resources.
 - Trigger settings affect dispatch only through `AgentTriggerRule` and recorded trigger executions.
-- Dispatches appear beside pipeline runs and can open linked Agent Mux chat/session.
+- Dispatches appear beside pipeline runs and can open linked Agent Adapter chat/session.
 - Workspace/session links are visible from issue, PR, pipeline, run, workspace, and session pages.
 - Privileged agent actions require `AgentApproval` or explicit repository policy.
 - Native Kubernetes RBAC remains authoritative for users, agents, and runners; Kradle syncs and projects it instead of replacing it.

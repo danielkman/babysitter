@@ -90,7 +90,7 @@ artifacts.
 
 ## Docs
 
-- [Agent Mux docs](../../../docs/adapters/README.md)
+- [Agent Adapter docs](../../../docs/adapters/README.md)
 - [Reference mirror](../../../docs/adapters/reference/01-core-types-and-client.md)
 - [Package family entrypoint](../README.md)
 

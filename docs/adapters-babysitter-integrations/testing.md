@@ -1,4 +1,4 @@
-# Test Strategy — Agent-Mux Babysitter Integration
+# Test Strategy — Agent-Adapter Babysitter Integration
 
 ## Test Layers
 
@@ -19,7 +19,7 @@
 - `humanTask()` emits `breakpoint.responderType: "human"`
 - `autoTask()` emits `agent.responderType: "auto"`
 
-Runtime effect-routing tests are part of the tasks-mux follow-up work. The SDK
+Runtime effect-routing tests are part of the tasks-adapter follow-up work. The SDK
 unit tests only validate task definition shape, validation, and serialization.
 
 ### 2. Agent-Platform Unit Tests

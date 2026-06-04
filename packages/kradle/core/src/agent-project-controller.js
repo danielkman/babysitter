@@ -6,7 +6,7 @@ export const AGENT_PROJECT_CONTROLLER_BOUNDARY = {
   scope: 'KradleProject lifecycle: validation, workflow column definitions, board state management, issue assignment tracking',
   owns: ['project validation', 'workflow columns', 'board state', 'default column resolution', 'issue assignment tracking'],
   delegatesTo: ['resource-model'],
-  mustNotOwn: ['issue content', 'PR lifecycle', 'dispatch execution', 'Agent Mux sessions']
+  mustNotOwn: ['issue content', 'PR lifecycle', 'dispatch execution', 'Agent Adapter sessions']
 };
 
 const VALID_BOARD_STATES = ['active', 'archived'];

@@ -17,7 +17,7 @@ nodeKinds:
     type: string
     required: true
   - name: kind
-    type: enum<concept,role,layer,primitive,mux,extension-shape,hook,capability,lifecycle-state,protocol,format,tool,operation>
+    type: enum<concept,role,layer,primitive,adapter,extension-shape,hook,capability,lifecycle-state,protocol,format,tool,operation>
     required: true
     notes: Collapsed from former TermKind NodeKind (remodel 2026-04-29). Values are bare enum strings, not refs.
   - name: canonicalDefinitionId

@@ -76,7 +76,7 @@ describe('resolveLaunchPlan', () => {
     expect(plan.env['GOOGLE_GENAI_USE_VERTEXAI']).toBe('True');
   });
 
-  it('claude + vertex Gemini uses transport-mux with Google proxy settings', () => {
+  it('claude + vertex Gemini uses transport-adapter with Google proxy settings', () => {
     const plan = resolveLaunchPlan({
       harness: 'claude',
       provider: 'vertex',

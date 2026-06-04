@@ -34,7 +34,7 @@ Current commands to preserve:
 | rbac | role escalation attempted | no native binding apply; condition false; audit event. |
 | secret/config | Secret key deleted | dependent stacks blocked; active runs marked stale. |
 | trigger | duplicate failed check | second execution coalesces. |
-| dispatch | Agent Mux unavailable | attempt remains queued/starting with retry condition. |
+| dispatch | Agent Adapter unavailable | attempt remains queued/starting with retry condition. |
 | dispatch | launch option rejected | attempt failed with adapter rejection reason. |
 | workspace | missing worktree path | workspace missing state and recover/archive actions. |
 | approval | artifact digest changed | approval decision rejected. |
@@ -44,7 +44,7 @@ Current commands to preserve:
 | Route | Scenario | Expected proof |
 | --- | --- | --- |
 | `POST /api/agents/permissions/review` | missing Secret grant | `decision=denied`, reason includes missing grant, no secret value. |
-| `POST /api/agents/runs` | valid manual dispatch | creates run + attempt before Agent Mux launch. |
+| `POST /api/agents/runs` | valid manual dispatch | creates run + attempt before Agent Adapter launch. |
 | `POST /api/agents/runs` | denied RBAC | returns `403 POLICY_DENIED`. |
 | `POST /api/agents/rules/:rule/dry-run` | matching CI event | returns prompt/context/dedupe/permission preview. |
 | `POST /api/agents/approvals/:approval/decision` | valid approver | approval updated and write-back accepted. |
@@ -108,7 +108,7 @@ Current commands to preserve:
 | Scenario | Expected proof |
 | --- | --- |
 | Agent CRDs in chart | `package:check` includes required CRDs and examples. |
-| Helm values include feature gates | values validation covers Agent Mux URL, default ServiceAccount, grants. |
+| Helm values include feature gates | values validation covers Agent Adapter URL, default ServiceAccount, grants. |
 | Examples stay valid | examples use known kinds and required fields. |
 | Docs stay linked | `validate:docs` sees all agent docs in README index. |
 
@@ -190,4 +190,4 @@ The deterministic fixture set for org memory is defined in [Org memory E2E fixtu
 
 ## QA matrix reference
 
-Product-wide test coverage expectations live in `docs/tests/product-test-matrix.md`. Agent-specific rows in this matrix should be treated as future required coverage once agent resources, Agent Mux integration, company brain memory, and `.a5c` imports move from docs to implementation.
+Product-wide test coverage expectations live in `docs/tests/product-test-matrix.md`. Agent-specific rows in this matrix should be treated as future required coverage once agent resources, Agent Adapter integration, company brain memory, and `.a5c` imports move from docs to implementation.

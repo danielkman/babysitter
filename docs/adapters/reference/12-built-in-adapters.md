@@ -1152,7 +1152,7 @@ const version = await detectVersionFromCli(adapter.cliCommand);
 - **Copilot:** Runs `gh copilot --version` (not `copilot --version`).
 - **hermes:** Runs `hermes --version`; output is Python-formatted (e.g., `hermes-agent 0.1.0`).
 
-The detected version is compared against `minVersion`. If the installed version is below `minVersion`, `AdapterRegistry.detect()` returns an `InstalledAgentInfo` with `meetsMinVersion: false` and `mux.run()` emits a `debug` warning.
+The detected version is compared against `minVersion`. If the installed version is below `minVersion`, `AdapterRegistry.detect()` returns an `InstalledAgentInfo` with `meetsMinVersion: false` and `adapter.run()` emits a `debug` warning.
 
 ---
 
@@ -1175,7 +1175,7 @@ registry.register(new OpenClawAdapter());
 registry.register(new HermesAdapter());
 ```
 
-Plugin adapters registered via `mux.adapters.register()` are added after built-in adapters and extend the `AgentName` union at runtime.
+Plugin adapters registered via `adapter.adapters.register()` are added after built-in adapters and extend the `AgentName` union at runtime.
 
 ---
 

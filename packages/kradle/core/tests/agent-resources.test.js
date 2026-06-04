@@ -100,7 +100,7 @@ function minimalSpecForKind(kind) {
     AgentTransportBinding: { organizationRef: 'default', adapterRef: 'claude-code', endpoint: 'https://agent.example.test', protocol: 'https' },
     AgentProviderConfig: { organizationRef: 'default', provider: 'anthropic', authType: 'api-key' },
     KradleProject: { organizationRef: 'default', displayName: 'Platform' },
-    AgentGatewayConfig: { organizationRef: 'default', gatewayUrl: 'https://mux.example.test' },
+    AgentGatewayConfig: { organizationRef: 'default', gatewayUrl: 'https://adapter.example.test' },
     AgentSessionTranscript: { organizationRef: 'default', sessionRef: 'sess-123', messages: [{ role: 'user', content: 'hello' }] },
     AgentSessionAttachment: { organizationRef: 'default', sessionRef: 'sess-123', sourceType: 'upload', digest: 'sha256:abc' },
     KradleWorkspaceRuntime: { organizationRef: 'default', workspaceRef: 'ws-1', status: 'running' },

@@ -1,6 +1,6 @@
 # Session Context Propagation
 
-Deep dive on how the hooks-mux manages session state, context variables, and environment propagation across hook invocations and downstream tool execution.
+Deep dive on how the hooks-adapter manages session state, context variables, and environment propagation across hook invocations and downstream tool execution.
 
 ---
 
@@ -113,7 +113,7 @@ No native env injection. The proxy wraps commands to inject environment.
 Use the `exec` command to wrap downstream commands:
 
 ```bash
-a5c-hooks-mux exec --session-id "$AGENT_SESSION_ID" -- npm test
+a5c-hooks-adapter exec --session-id "$AGENT_SESSION_ID" -- npm test
 ```
 
 This loads the session state, materializes persisted env into the subprocess environment, and then executes the target command.
@@ -132,7 +132,7 @@ For harnesses without native env persistence, use `exec` to inject session conte
 
 ```bash
 # Basic usage
-a5c-hooks-mux exec --session-id "$AGENT_SESSION_ID" -- npm test
+a5c-hooks-adapter exec --session-id "$AGENT_SESSION_ID" -- npm test
 
 # The proxy:
 # 1. Loads session state for the given session ID
@@ -265,7 +265,7 @@ The proxy emits structured diagnostics for every hook execution, including:
 Enable JSONL trace files for full execution traces:
 
 ```bash
-AGENT_HOOKS_TRACE_FILE=./hooks-trace.jsonl a5c-hooks-mux invoke --adapter claude --native-event SessionStart
+AGENT_HOOKS_TRACE_FILE=./hooks-trace.jsonl a5c-hooks-adapter invoke --adapter claude --native-event SessionStart
 ```
 
 ---
@@ -274,7 +274,7 @@ AGENT_HOOKS_TRACE_FILE=./hooks-trace.jsonl a5c-hooks-mux invoke --adapter claude
 
 ### Session state not propagating
 
-1. Check the adapter's env persistence mode: `a5c-hooks-mux doctor --adapter <name>`
+1. Check the adapter's env persistence mode: `a5c-hooks-adapter doctor --adapter <name>`
 2. If mode is `wrapper_only` or `none`, use the `exec` wrapper for downstream commands
 3. Verify `AGENT_SESSION_ID` is available in the environment
 
@@ -283,13 +283,13 @@ AGENT_HOOKS_TRACE_FILE=./hooks-trace.jsonl a5c-hooks-mux invoke --adapter claude
 Run the doctor to identify stale sessions:
 
 ```bash
-a5c-hooks-mux doctor --stale-threshold 24
+a5c-hooks-adapter doctor --stale-threshold 24
 ```
 
 Clear individual sessions:
 
 ```bash
-a5c-hooks-mux clear-session --session-id <id>
+a5c-hooks-adapter clear-session --session-id <id>
 ```
 
 ### Context conflicts between plugins

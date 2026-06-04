@@ -1,10 +1,10 @@
 /**
- * Subprocess bridge to hooks-mux.
+ * Subprocess bridge to hooks-adapter.
  *
- * Spawns `a5c-hooks-mux` (or a custom binary from AGENT_HOOKS_PROXY_PATH)
+ * Spawns `a5c-hooks-adapter` (or a custom binary from AGENT_HOOKS_PROXY_PATH)
  * as a child process.  Communication is via JSON on stdin/stdout.
  *
- * The unified adapter imports NO hooks-mux packages directly — all
+ * The unified adapter imports NO hooks-adapter packages directly — all
  * communication is through this subprocess interface plus env vars.
  */
 
@@ -47,7 +47,7 @@ export interface InvokeResult {
 // ---------------------------------------------------------------------------
 
 function resolveHooksProxyBinary(): string {
-  return process.env.AGENT_HOOKS_PROXY_PATH || "a5c-hooks-mux";
+  return process.env.AGENT_HOOKS_PROXY_PATH || "a5c-hooks-adapter";
 }
 
 const IS_WINDOWS = process.platform === "win32";
@@ -57,7 +57,7 @@ const IS_WINDOWS = process.platform === "win32";
 // ---------------------------------------------------------------------------
 
 /**
- * Check whether the hooks-mux binary is available on PATH (or at the
+ * Check whether the hooks-adapter binary is available on PATH (or at the
  * configured `AGENT_HOOKS_PROXY_PATH`).
  *
  * Returns `true` when `<binary> --version` exits with code 0.
@@ -82,7 +82,7 @@ export async function isHooksProxyAvailable(): Promise<boolean> {
 // ---------------------------------------------------------------------------
 
 /**
- * Invoke hooks-mux CLI as a subprocess.
+ * Invoke hooks-adapter CLI as a subprocess.
  *
  * Sends the normalised event on stdin, reads the result from stdout.
  * Resolves with an `InvokeResult` regardless of exit code — callers
@@ -131,7 +131,7 @@ export async function invokeHooksProxy(
       child.kill("SIGTERM");
       reject(
         new Error(
-          `hooks-mux subprocess timed out after ${timeoutMs}ms`,
+          `hooks-adapter subprocess timed out after ${timeoutMs}ms`,
         ),
       );
     }, timeoutMs);

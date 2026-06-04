@@ -31,7 +31,7 @@ describe('bundle regression coverage', () => {
   });
 
   it('exercises verifyOutput against semantic bundle references, including marketplace and programmatic surfaces', () => {
-    const tempDir = createTempDir('mux-verify-output-');
+    const tempDir = createTempDir('adapter-verify-output-');
     tempDirs.push(tempDir);
 
     const codexResult = compile({
@@ -71,7 +71,7 @@ describe('bundle regression coverage', () => {
   });
 
   it('flags broken verify references even when files still exist and JSON remains valid', () => {
-    const tempDir = createTempDir('mux-verify-regression-');
+    const tempDir = createTempDir('adapter-verify-regression-');
     tempDirs.push(tempDir);
 
     const result = compile({
@@ -101,7 +101,7 @@ describe('bundle regression coverage', () => {
   });
 
   it('reproduces harness-authored README surfaces from the unified source', () => {
-    const tempDir = createTempDir('mux-readme-regression-');
+    const tempDir = createTempDir('adapter-readme-regression-');
     tempDirs.push(tempDir);
 
     const claudeResult = compile({
@@ -132,7 +132,7 @@ describe('bundle regression coverage', () => {
   });
 
   it('reproduces README and install surfaces for npm and programmatic targets', () => {
-    const tempDir = createTempDir('mux-surface-regression-');
+    const tempDir = createTempDir('adapter-surface-regression-');
     tempDirs.push(tempDir);
 
     const piResult = compile({
@@ -185,7 +185,7 @@ describe('bundle regression coverage', () => {
   });
 
   it('verifies all relative imports in generated extension files resolve to actual output files', () => {
-    const tempDir = createTempDir('mux-import-resolution-');
+    const tempDir = createTempDir('adapter-import-resolution-');
     tempDirs.push(tempDir);
 
     const targets = ['pi', 'oh-my-pi'] as const;

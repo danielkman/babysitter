@@ -9,7 +9,7 @@
 | Merge gate | main/staging merge | full `npm run check`, package/chart validation, UI build. |
 | Nightly gate | schedule | live-ish integration, browser full suite, security scans, performance smoke. |
 | Release gate | tag/release | Docker build, Helm package, smoke install, upgrade/rollback plan, SBOM/signing if enabled. |
-| Staging gate | deployment | real cluster smoke, webhooks, runners, Gitea, Argo/KubeVela, Agent Mux if enabled. |
+| Staging gate | deployment | real cluster smoke, webhooks, runners, Gitea, Argo/KubeVela, Agent Adapter if enabled. |
 
 ## Current required local gate
 

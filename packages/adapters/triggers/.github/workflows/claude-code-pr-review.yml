@@ -21,7 +21,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: a5c-ai/babysitter/packages/triggers-mux@main
+      - uses: a5c-ai/babysitter/packages/triggers-adapter@main
         with:
           harness: claude
           provider: foundry

@@ -1,7 +1,7 @@
 import type { AdapterCapabilities } from '../types/adapter';
 
 /**
- * Execution context variables that hooks-mux injects into subprocess
+ * Execution context variables that hooks-adapter injects into subprocess
  * environments. Used by hook handler scripts and SDK adapters to access
  * the current session context without parsing stdin.
  */
@@ -62,7 +62,7 @@ export function readExecutionContext(
 }
 
 /**
- * Check if the current process was invoked by hooks-mux
+ * Check if the current process was invoked by hooks-adapter
  * (i.e., has the AGENT_SESSION_ID env var set).
  */
 export function isInHooksProxyContext(

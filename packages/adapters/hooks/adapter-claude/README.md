@@ -1,6 +1,6 @@
 # @a5c-ai/hooks-adapter-claude
 
-Claude Code harness adapter for hooks-mux.
+Claude Code harness adapter for hooks-adapter.
 
 ## Install
 
@@ -20,7 +20,7 @@ import {
 } from "@a5c-ai/hooks-adapter-claude";
 ```
 
-The package exposes Claude-specific normalization, phase mappings, rendering helpers, and session-resolution utilities for the hooks-mux execution pipeline.
+The package exposes Claude-specific normalization, phase mappings, rendering helpers, and session-resolution utilities for the hooks-adapter execution pipeline.
 
 See [`packages/adapters/hooks/README.md`](../README.md) for the workspace overview and `packages/adapters/hooks/docs/adapter-integration-guide.md` for end-to-end integration guidance.
 

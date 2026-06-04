@@ -1,6 +1,6 @@
 # @a5c-ai/hooks-adapter-oh-my-pi
 
-oh-my-pi harness adapter for hooks-mux.
+oh-my-pi harness adapter for hooks-adapter.
 
 ## Install
 
@@ -20,7 +20,7 @@ import {
 } from "@a5c-ai/hooks-adapter-oh-my-pi";
 ```
 
-The package exposes oh-my-pi-specific normalization, phase mappings, session helpers, and an in-process configured engine for hooks-mux integrations.
+The package exposes oh-my-pi-specific normalization, phase mappings, session helpers, and an in-process configured engine for hooks-adapter integrations.
 
 See [`packages/adapters/hooks/README.md`](../README.md) for the workspace overview and `packages/adapters/hooks/docs/adapter-integration-guide.md` for end-to-end integration guidance.
 

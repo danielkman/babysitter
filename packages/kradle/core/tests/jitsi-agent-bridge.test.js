@@ -83,7 +83,7 @@ test('Jitsi agent bridge can resolve meetings from resources and keeps generated
   assert.equal(run.spec.meetingContext.role, 'participant');
 });
 
-test('Jitsi agent bridge builds sidecar specs and Agent Mux injects them only for meeting runs', () => {
+test('Jitsi agent bridge builds sidecar specs and Agent Adapter injects them only for meeting runs', () => {
   const bridge = createJitsiAgentBridge({
     sidecarImage: 'ghcr.io/a5c-ai/jitsi-agent-sidecar:test',
   });

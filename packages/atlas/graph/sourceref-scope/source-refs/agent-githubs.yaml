@@ -129,8 +129,8 @@ edges: {}
 nodeKind: SourceRef
 id: source-ref:adapters-github
 attributes:
-  description: "Agent Mux (GitHub)"
-  displayName: "Agent Mux (GitHub)"
+  description: "Agent Adapter (GitHub)"
+  displayName: "Agent Adapter (GitHub)"
   repoUrl: https://github.com/a5c-ai/adapters
   ref: main
   path: "."
@@ -282,8 +282,8 @@ edges: {}
 nodeKind: SourceRef
 id: source-ref:adapters-github
 attributes:
-  description: "Agent Mux (GitHub)"
-  displayName: "Agent Mux (GitHub)"
+  description: "Agent Adapter (GitHub)"
+  displayName: "Agent Adapter (GitHub)"
   repoUrl: https://github.com/a5c-ai/adapters
   ref: main
   path: "."

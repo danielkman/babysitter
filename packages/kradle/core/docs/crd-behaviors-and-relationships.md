@@ -1282,7 +1282,7 @@ details, authentication, health check, and reconnect policy.
 **Relationships:**
 - Belongs to: Organization
 - References: AgentAdapter
-- Used by: Agent Mux client for session establishment
+- Used by: Agent Adapter client for session establishment
 
 ---
 
@@ -1313,7 +1313,7 @@ default model, model translation mappings, and rate limits.
 **Relationships:**
 - Belongs to: Organization
 - Referenced by: AgentStack (provider configuration)
-- Used by: Agent Mux for model API calls
+- Used by: Agent Adapter for model API calls
 
 ---
 
@@ -1326,12 +1326,12 @@ default model, model translation mappings, and rate limits.
 | Plural | agentgatewayconfigs |
 | Namespace | org-scoped |
 
-**Purpose:** Runtime Agent Mux gateway connection settings with URL, auth configuration,
+**Purpose:** Runtime Agent Adapter gateway connection settings with URL, auth configuration,
 reconnect policy, and feature flags.
 
 **Required Spec Fields:**
 - `organizationRef` — owning organization
-- `gatewayUrl` — Agent Mux gateway URL
+- `gatewayUrl` — Agent Adapter gateway URL
 
 **Optional Spec Fields:**
 - `auth` — gateway authentication config
@@ -1341,7 +1341,7 @@ reconnect policy, and feature flags.
 
 **Relationships:**
 - Belongs to: Organization
-- Used by: Agent Mux client (`createAgentMuxClient()`)
+- Used by: Agent Adapter client (`createAgentMuxClient()`)
 - Controls: how the dispatch controller connects to the agent runtime
 
 ---
@@ -1499,7 +1499,7 @@ cost tracking, and memory snapshot reference.
 **Lifecycle Phases:**
 - `Pending` — created, workspace being provisioned
 - `AwaitingApproval` — permission review requires approval
-- `Queued` — ready but Agent Mux not available
+- `Queued` — ready but Agent Adapter not available
 - `Running` — session launched, executing
 - `Succeeded` — completed successfully
 - `Failed` — execution failed
@@ -1552,7 +1552,7 @@ the pod and the run transitions to `Failed` (deadline-exceeded).
 | Namespace | org-scoped |
 
 **Purpose:** Concrete execution attempt with reason, stack snapshot, runtime state,
-and Agent Mux binding. One run may have multiple attempts (retries).
+and Agent Adapter binding. One run may have multiple attempts (retries).
 
 **Required Spec Fields:**
 - `organizationRef` — owning organization
@@ -1566,8 +1566,8 @@ and Agent Mux binding. One run may have multiple attempts (retries).
 **Status Fields:**
 - `permissionSnapshot` — captured permission review result
 - `queueEnteredAt` — when attempt entered queue
-- `agentMuxRunId` — Agent Mux run identifier
-- `agentMuxSessionId` — Agent Mux session identifier
+- `agentMuxRunId` — Agent Adapter run identifier
+- `agentMuxSessionId` — Agent Adapter session identifier
 - `startedAt` — when execution began
 
 **Relationships:**
@@ -1586,12 +1586,12 @@ and Agent Mux binding. One run may have multiple attempts (retries).
 | Plural | agentsessions |
 | Namespace | org-scoped |
 
-**Purpose:** Kradle projection of an Agent Mux chat/session with lifecycle state.
+**Purpose:** Kradle projection of an Agent Adapter chat/session with lifecycle state.
 Represents a live or completed interaction between an agent and the system.
 
 **Required Spec Fields:**
 - `organizationRef` — owning organization
-- `agentMuxSessionId` �� external Agent Mux session identifier
+- `agentMuxSessionId` �� external Agent Adapter session identifier
 - `dispatchRun` — reference to the parent AgentDispatchRun
 
 **Lifecycle:**
@@ -1856,13 +1856,13 @@ cost-per-turn tracking. Stores the full conversation history.
 
 **Reconciliation:**
 - Created by `agentMuxClient.reconcileTranscript()`
-- Updated as SSE events stream in from Agent Mux
+- Updated as SSE events stream in from Agent Adapter
 - Referenced by AgentDispatchRun.status.transcriptRef
 
 **Relationships:**
 - Belongs to: AgentSession
 - Contains: full conversation history
-- Updated via: SSE event streaming from Agent Mux
+- Updated via: SSE event streaming from Agent Adapter
 
 ---
 
@@ -3305,7 +3305,7 @@ The complete lifecycle of an agent dispatch run:
 
 #### Phase 5: Session Launch
 
-11. **Agent Mux Client Check**: `agentMuxClient.isAvailable()`
+11. **Agent Adapter Client Check**: `agentMuxClient.isAvailable()`
     - If unavailable: phase=Queued, condition `AgentMuxBound: False (Unavailable)`
 
 12. **Launch Session**: `agentMuxClient.launchSession({ stack, contextBundle, permissionSnapshot })`
@@ -3314,7 +3314,7 @@ The complete lifecycle of an agent dispatch run:
     - Run phase → Running, attempt.status.startedAt
 
 13. **SSE Subscription**: `agentMuxClient.subscribeToEvents(runId, handler)`
-    - Streams real-time events from Agent Mux
+    - Streams real-time events from Agent Adapter
     - Events collected in array for transcript reconciliation
     - Run status: `sseSubscription: { runId, active: true }`
 

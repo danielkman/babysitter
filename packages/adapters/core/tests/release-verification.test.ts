@@ -83,7 +83,7 @@ const basePackEntries = [
 ];
 
 function withPackageRoot(run: (packageRoot: string) => void): void {
-  const packageRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'agent-comm-mux-release-'));
+  const packageRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'agent-comm-adapter-release-'));
   fs.mkdirSync(path.join(packageRoot, 'dist'), { recursive: true });
   fs.writeFileSync(path.join(packageRoot, 'dist', 'index.js'), 'export {};');
   fs.writeFileSync(path.join(packageRoot, 'dist', 'index.d.ts'), 'export {};');

@@ -1,6 +1,6 @@
 # Agent Layer Gaps — Full Agent Stack
 
-Comprehensive inventory of missing capabilities, stub implementations, and architectural weaknesses across agent-core (L4), agent-runtime (L5), agent-platform (L6), tasks-mux, tool-mux, transport-mux, and babysitter-sdk.
+Comprehensive inventory of missing capabilities, stub implementations, and architectural weaknesses across agent-core (L4), agent-runtime (L5), agent-platform (L6), tasks-adapter, tools-adapter, transport-adapter, and babysitter-sdk.
 
 ---
 
@@ -137,16 +137,16 @@ Comprehensive inventory of missing capabilities, stub implementations, and archi
 
 ---
 
-## tasks-mux (Human-in-the-Loop & Task System) — 51 gaps
+## tasks-adapter (Human-in-the-Loop & Task System) — 51 gaps
 
 ### Critical (blocks agent stack integration)
 
 | Gap | File | Description |
 |-----|------|-------------|
-| Not wired into agent stack | `agent-core/tools/delegation.ts:86-98` | `task` tool uses generic `taskHandler` callback, NOT tasks-mux. Breakpoints, responders, routing all disconnected from agent execution. |
-| MCP tools not auto-discovered | `agent-platform/mcp/client/toolRegistry.ts` | Marked "NOT INTEGRATED YET". tasks-mux MCP server has 8 tools but agent harness doesn't know they exist. |
-| Breakpoint delegation disconnected | `agent-platform/breakpoints/delegation.ts:1-8` | Marked "NOT INTEGRATED YET". Webhook routing exists but not connected to tasks-mux backends. |
-| Native agent-core tools wrapping tasks-mux are partial | — | tasks-mux now exposes MCP tools such as `create_todo`, `assign_task`, `search_tasks`, `add_comment`, `bulk_update_tasks`, `task_stats`, `export_tasks`, and `escalate`; direct agent-core tool wrapping and auto-discovery remain separate integration work. |
+| Not wired into agent stack | `agent-core/tools/delegation.ts:86-98` | `task` tool uses generic `taskHandler` callback, NOT tasks-adapter. Breakpoints, responders, routing all disconnected from agent execution. |
+| MCP tools not auto-discovered | `agent-platform/mcp/client/toolRegistry.ts` | Marked "NOT INTEGRATED YET". tasks-adapter MCP server has 8 tools but agent harness doesn't know they exist. |
+| Breakpoint delegation disconnected | `agent-platform/breakpoints/delegation.ts:1-8` | Marked "NOT INTEGRATED YET". Webhook routing exists but not connected to tasks-adapter backends. |
+| Native agent-core tools wrapping tasks-adapter are partial | — | tasks-adapter now exposes MCP tools such as `create_todo`, `assign_task`, `search_tasks`, `add_comment`, `bulk_update_tasks`, `task_stats`, `export_tasks`, and `escalate`; direct agent-core tool wrapping and auto-discovery remain separate integration work. |
 | Approval chains not integrated | `agent-platform/breakpoints/approvalChains.ts` | Sequential/quorum approvals defined but never invoked during orchestration. |
 
 ### High (major task management gaps)
@@ -159,7 +159,7 @@ Comprehensive inventory of missing capabilities, stub implementations, and archi
 | Bulk operations are partially implemented | Git-native now supports bulk cancel/close/reassign/transition/approve with per-item results. External backend parity remains capability-gated. |
 | No subagent spawning via task system | Agent-to-agent delegation doesn't route through responder discovery/matching. |
 | No escalation chains | No fallback responders when initial responder times out. |
-| MCP tools are partially implemented | tasks-mux exposes native task tools including `create_todo`, `assign_task`, `search_tasks`, `add_comment`, `bulk_update_tasks`, `task_stats`, `export_tasks`, and `escalate`; cancellation remains covered by breakpoint APIs rather than a dedicated native-task alias. |
+| MCP tools are partially implemented | tasks-adapter exposes native task tools including `create_todo`, `assign_task`, `search_tasks`, `add_comment`, `bulk_update_tasks`, `task_stats`, `export_tasks`, and `escalate`; cancellation remains covered by breakpoint APIs rather than a dedicated native-task alias. |
 | Interactive forms are schema-only | Breakpoint schema includes form definitions/submissions, but no full conditional form UX or file review flow exists yet. |
 
 ### Medium
@@ -174,43 +174,43 @@ Comprehensive inventory of missing capabilities, stub implementations, and archi
 | No offline queue | Server backend has no local fallback if server is down. |
 | State machine validation is partially implemented | Shared transition validation rejects invalid terminal-state changes and git-native uses it for lifecycle transitions. |
 | Audit log is partially implemented | Git-native appends audit entries for core task-management mutations. Cross-backend audit parity remains follow-up work. |
-| CLI commands are partially implemented | `tasks-mux tasks search|assign|close|comment|stats|export` cover local git-native task-management operations. Dedicated approve/templates/rules commands remain follow-up work. |
+| CLI commands are partially implemented | `tasks-adapter tasks search|assign|close|comment|stats|export` cover local git-native task-management operations. Dedicated approve/templates/rules commands remain follow-up work. |
 | Only 3 backends | git-native, server, github-issues. Missing: database, S3, Slack, Linear/Jira. |
 | No schema migration | Can't upgrade breakpoint format across versions. |
 | Responder matching not integrated | `responder-matcher.ts` exists but only used in CLI, not in agent routing decisions. |
 
 ---
 
-## tool-mux (Unified Tool Dispatch) — NOT INTEGRATED
+## tools-adapter (Unified Tool Dispatch) — NOT INTEGRATED
 
-tool-mux provides ToolRegistry, ToolDispatcher (policy-driven routing), McpBridge, and schema translation for all providers (Anthropic, OpenAI, Google, Bedrock). None of it is wired into the agent stack.
+tools-adapter provides ToolRegistry, ToolDispatcher (policy-driven routing), McpBridge, and schema translation for all providers (Anthropic, OpenAI, Google, Bedrock). None of it is wired into the agent stack.
 
 ### Critical
 
 | Gap | Description |
 |-----|-------------|
-| Not used by agent-core | agent-core has DeferredToolRegistry (custom two-tier registry). tool-mux's ToolDispatcher would provide unified dispatch policy across builtin, MCP, and plugin tools. |
-| Not used by agent-platform | agent-platform has McpToolRegistry + McpToolExecutor (separate from tool-mux). No unified tool dispatch mechanism. |
-| 3 registries, no unification | DeferredToolRegistry (L4) + McpToolRegistry (L6) + ToolRegistry (tool-mux). Should be one system. |
-| Hook bridge is no-op | `ToolHookBridge` is `NoopToolHookBridge`. PreToolUse/PostToolUse hooks never fire. No hooks-mux integration. |
+| Not used by agent-core | agent-core has DeferredToolRegistry (custom two-tier registry). tools-adapter's ToolDispatcher would provide unified dispatch policy across builtin, MCP, and plugin tools. |
+| Not used by agent-platform | agent-platform has McpToolRegistry + McpToolExecutor (separate from tools-adapter). No unified tool dispatch mechanism. |
+| 3 registries, no unification | DeferredToolRegistry (L4) + McpToolRegistry (L6) + ToolRegistry (tools-adapter). Should be one system. |
+| Hook bridge is no-op | `ToolHookBridge` is `NoopToolHookBridge`. PreToolUse/PostToolUse hooks never fire. No hooks-adapter integration. |
 | McpBridge is declarative-only | Registers MCP tool definitions but no runtime server lifecycle management. |
 | No dynamic routing | Policy rules are static. No context-aware routing (by runId, sessionId, caller, cost). |
-| No plugin tool type | DeferredToolRegistry handles plugins but tool-mux doesn't. |
+| No plugin tool type | DeferredToolRegistry handles plugins but tools-adapter doesn't. |
 
 ### Where it should plug in
 
 ```
-agent-core tool_search/tool_fetch → tool-mux ToolRegistry (replaces DeferredToolRegistry)
-agent-core code_executor → tool-mux ToolDispatcher.dispatch() (policy routing)
-agent-platform MCP tools → tool-mux McpBridge (unified registration)
-hooks-mux PreToolUse/PostToolUse → tool-mux ToolHookBridge (permission/audit)
+agent-core tool_search/tool_fetch → tools-adapter ToolRegistry (replaces DeferredToolRegistry)
+agent-core code_executor → tools-adapter ToolDispatcher.dispatch() (policy routing)
+agent-platform MCP tools → tools-adapter McpBridge (unified registration)
+hooks-adapter PreToolUse/PostToolUse → tools-adapter ToolHookBridge (permission/audit)
 ```
 
 ---
 
-## transport-mux (Protocol Translation) — PARTIALLY INTEGRATED
+## transport-adapter (Protocol Translation) — PARTIALLY INTEGRATED
 
-transport-mux provides protocol translation (Anthropic↔OpenAI↔Google↔Bedrock↔Azure↔Vertex), codec system, completion engines with streaming, and an HTTP proxy runtime. Used by adapters launcher but disconnected from the rest of the agent stack.
+transport-adapter provides protocol translation (Anthropic↔OpenAI↔Google↔Bedrock↔Azure↔Vertex), codec system, completion engines with streaming, and an HTTP proxy runtime. Used by adapters launcher but disconnected from the rest of the agent stack.
 
 ### Gaps
 
@@ -225,10 +225,10 @@ transport-mux provides protocol translation (Anthropic↔OpenAI↔Google↔Bedro
 ### Where it should plug in
 
 ```
-adapters launcher → transport-mux proxy (DONE — this works)
-transport-mux cost records → SDK journal appendEvent (MISSING — cost feedback loop)
-transport-mux request traces → L5 telemetry spans (MISSING — distributed tracing)
-transport-mux tool normalization → tool-mux schema translation (MISSING — should share)
+adapters launcher → transport-adapter proxy (DONE — this works)
+transport-adapter cost records → SDK journal appendEvent (MISSING — cost feedback loop)
+transport-adapter request traces → L5 telemetry spans (MISSING — distributed tracing)
+transport-adapter tool normalization → tools-adapter schema translation (MISSING — should share)
 ```
 
 ---
@@ -241,27 +241,27 @@ SDK provides the effect journal, replay engine, task system (defineTask/ctx.task
 
 | Gap | Description |
 |-----|-------------|
-| SDK MCP server orphaned | `createBabysitterMcpServer()` exposes task/run/session tools but never registered in tool-mux McpBridge or L6 MCP client. |
-| SDK tasks ≠ tasks-mux | SDK has `defineTask()` / `ctx.task()`. tasks-mux has `BreakpointBackend`. Two separate task systems that don't know about each other. |
+| SDK MCP server orphaned | `createBabysitterMcpServer()` exposes task/run/session tools but never registered in tools-adapter McpBridge or L6 MCP client. |
+| SDK tasks ≠ tasks-adapter | SDK has `defineTask()` / `ctx.task()`. tasks-adapter has `BreakpointBackend`. Two separate task systems that don't know about each other. |
 | No subagent effect type | Journal tracks effects but has no entry type for cross-agent dispatch. adapters launches happen outside the journal. |
 | Effect execution scattered | SDK journals effects but actual execution is hardcoded per-type across agent-platform (file, code, web) and adapters (harness launch). No unified effect executor. |
 | No tool metadata in tasks | SDK tasks have descriptions but no JSON Schema parameters. agent-core's tool_fetch needs schemas for discovery. |
-| Hooks disconnected | SDK has hooks/runtime.ts but no connection to hooks-mux lifecycle events. |
+| Hooks disconnected | SDK has hooks/runtime.ts but no connection to hooks-adapter lifecycle events. |
 | Plugin registry parallel | SDK has plugin registry, agent-platform has separate plugin system. |
 
 ### Where it should plug in
 
 ```
-SDK MCP server → tool-mux McpBridge → agent-core tool discovery (MISSING)
-SDK defineTask → tasks-mux BreakpointBackend (MISSING — for human-in-the-loop tasks)
+SDK MCP server → tools-adapter McpBridge → agent-core tool discovery (MISSING)
+SDK defineTask → tasks-adapter BreakpointBackend (MISSING — for human-in-the-loop tasks)
 SDK effect journal → subagent effect type → adapters adapter dispatch (MISSING)
-SDK hooks → hooks-mux lifecycle events (MISSING)
-SDK effect execution → unified executor → tool-mux dispatch (MISSING)
+SDK hooks → hooks-adapter lifecycle events (MISSING)
+SDK effect execution → unified executor → tools-adapter dispatch (MISSING)
 ```
 
 ---
 
-## genty → Agent-Mux Cross-Agent Dispatch (NOT IMPLEMENTED)
+## genty → Agent-Adapter Cross-Agent Dispatch (NOT IMPLEMENTED)
 
 genty should be able to dispatch subtasks to external agents supported by adapters (claude-code, codex, gemini-cli, copilot, etc.) through the runtime. This enables an genty orchestration to delegate specialist work to the best available agent.
 
@@ -274,9 +274,9 @@ Current:
 Needed:
   genty → agent-platform effect dispatch
     → SDK "subagent" effect type (journaled)
-    → tasks-mux routes to responder (adapters adapter)
+    → tasks-adapter routes to responder (adapters adapter)
     → adapters adapter launches target agent (claude-code, codex, etc.)
-    → result posted back through tasks-mux → SDK journal
+    → result posted back through tasks-adapter → SDK journal
     → orchestration continues with result
 ```
 
@@ -286,7 +286,7 @@ Needed:
 |-----|-------------|
 | No subagent effect type in SDK | Need `kind: "subagent"` with `{ targetAgent, prompt, model, timeout }` |
 | No adapters adapter selection in genty | genty doesn't know about adapters's adapter registry |
-| No tasks-mux routing for subagent dispatch | tasks-mux routes to human responders, not to adapters adapters |
+| No tasks-adapter routing for subagent dispatch | tasks-adapter routes to human responders, not to adapters adapters |
 | No result collection from external agents | adapters launch returns stdout/stderr but no structured task result |
 | No cross-agent session context | Dispatched agent doesn't see parent's context, files, or journal |
 
@@ -294,7 +294,7 @@ Needed:
 
 ## External Issue Tracker Integration (MISSING)
 
-tasks-mux should support pluggable external issue tracker backends for subtask tracking, syncing breakpoints bidirectionally with the team's project management tools.
+tasks-adapter should support pluggable external issue tracker backends for subtask tracking, syncing breakpoints bidirectionally with the team's project management tools.
 
 ### Current State
 
@@ -335,20 +335,20 @@ Only `GitHubIssuesBackend` exists. Basic mapping of breakpoints to GitHub issues
 | Session state fragmented | L5↔L6 | Runtime has session types, platform has session management — not integrated |
 | Telemetry isolated | L5 | In-memory only, never exported to L6 or external systems |
 | Resource limits advisory | L5→L6 | Budgets exist in L5, capability routing in L6 — neither enforced at spawn time |
-| tasks-mux isolated from agent stack | L4↔tasks-mux | Agent tools (task, ask) don't route through tasks-mux. Breakpoints, responder discovery, routing all disconnected. |
-| Breakpoint delegation disconnected | L6↔tasks-mux | agent-platform breakpoint system and tasks-mux backends are parallel implementations, not integrated |
-| MCP tools not registered | L6↔tasks-mux | tasks-mux MCP server has 8 tools but agent harness doesn't discover or register them |
-| Approval chains orphaned | L6↔tasks-mux | Sequential/quorum approval logic in L6 is not wired to tasks-mux routing/answering |
-| 3 separate tool registries | L4↔tool-mux↔L6 | DeferredToolRegistry (L4) + McpToolRegistry (L6) + ToolRegistry (tool-mux) — should be unified |
-| tool-mux dispatch not used | tool-mux↔L4 | ToolDispatcher exists with policy-driven routing but agent-core hardcodes tool execution |
-| tool-mux hooks stubbed | tool-mux↔hooks-mux | ToolHookBridge is NoopToolHookBridge. PreToolUse/PostToolUse never fire. |
+| tasks-adapter isolated from agent stack | L4↔tasks-adapter | Agent tools (task, ask) don't route through tasks-adapter. Breakpoints, responder discovery, routing all disconnected. |
+| Breakpoint delegation disconnected | L6↔tasks-adapter | agent-platform breakpoint system and tasks-adapter backends are parallel implementations, not integrated |
+| MCP tools not registered | L6↔tasks-adapter | tasks-adapter MCP server has 8 tools but agent harness doesn't discover or register them |
+| Approval chains orphaned | L6↔tasks-adapter | Sequential/quorum approval logic in L6 is not wired to tasks-adapter routing/answering |
+| 3 separate tool registries | L4↔tools-adapter↔L6 | DeferredToolRegistry (L4) + McpToolRegistry (L6) + ToolRegistry (tools-adapter) — should be unified |
+| tools-adapter dispatch not used | tools-adapter↔L4 | ToolDispatcher exists with policy-driven routing but agent-core hardcodes tool execution |
+| tools-adapter hooks stubbed | tools-adapter↔hooks-adapter | ToolHookBridge is NoopToolHookBridge. PreToolUse/PostToolUse never fire. |
 | No subagent effect type | SDK↔adapters | SDK journal has no effect type for cross-agent dispatch. adapters launches happen outside journal. |
-| SDK MCP server disconnected | SDK↔tool-mux↔L6 | SDK's `createBabysitterMcpServer()` never registered in tool-mux McpBridge or L6 MCP client |
-| SDK tasks ≠ tasks-mux | SDK↔tasks-mux | SDK has its own task system (defineTask, ctx.task). tasks-mux has BreakpointBackend. Neither knows about the other. |
-| transport-mux cost feedback missing | transport-mux↔SDK | Proxy extracts cost records but never feeds them back to SDK journal or L6 cost tracking |
-| transport-mux session-unaware | transport-mux↔L5 | Proxy is stateless. No runId/sessionId tracking for distributed observability. |
-| No cross-agent task dispatch | tasks-mux↔adapters | genty can't dispatch subtasks to external agents (claude-code, codex, etc.) via adapters adapters |
-| No external issue tracker sync | tasks-mux↔external | Only GitHub Issues backend. No Jira, Linear, or generic REST backend for pluggable subtask tracking. |
+| SDK MCP server disconnected | SDK↔tools-adapter↔L6 | SDK's `createBabysitterMcpServer()` never registered in tools-adapter McpBridge or L6 MCP client |
+| SDK tasks ≠ tasks-adapter | SDK↔tasks-adapter | SDK has its own task system (defineTask, ctx.task). tasks-adapter has BreakpointBackend. Neither knows about the other. |
+| transport-adapter cost feedback missing | transport-adapter↔SDK | Proxy extracts cost records but never feeds them back to SDK journal or L6 cost tracking |
+| transport-adapter session-unaware | transport-adapter↔L5 | Proxy is stateless. No runId/sessionId tracking for distributed observability. |
+| No cross-agent task dispatch | tasks-adapter↔adapters | genty can't dispatch subtasks to external agents (claude-code, codex, etc.) via adapters adapters |
+| No external issue tracker sync | tasks-adapter↔external | Only GitHub Issues backend. No Jira, Linear, or generic REST backend for pluggable subtask tracking. |
 
 ---
 
@@ -357,30 +357,30 @@ Only `GitHubIssuesBackend` exists. Basic mapping of breakpoints to GitHub issues
 **P0 — Unblock production agent use:**
 1. Streaming responses in agent-core session
 2. Multi-turn conversation history
-3. Unify tool registries: tool-mux ToolDispatcher replaces DeferredToolRegistry + McpToolRegistry
-4. Wire tasks-mux into agent stack (native tools: todo, task, ask, approve, assign)
-5. Wire MCP into agent-platform orchestration (connect tool-mux McpBridge)
+3. Unify tool registries: tools-adapter ToolDispatcher replaces DeferredToolRegistry + McpToolRegistry
+4. Wire tasks-adapter into agent stack (native tools: todo, task, ask, approve, assign)
+5. Wire MCP into agent-platform orchestration (connect tools-adapter McpBridge)
 6. Complete ConcurrentEffects coverage beyond grouped agent-platform dispatch
-7. Token usage tracking end-to-end (L4 → transport-mux → SDK journal → L6 cost)
+7. Token usage tracking end-to-end (L4 → transport-adapter → SDK journal → L6 cost)
 
 **P1 — Unblock platform features:**
 1. Subagent effect type in SDK journal + genty → adapters adapter dispatch
 2. Structured output / JSON mode hardening in agent-core (full schema validator coverage and streaming coordination)
 3. Vision/multimodal input follow-through (#575 streaming responses, #588 image-bearing `ToolResult`)
-4. Wire breakpoint delegation → tasks-mux backends
-5. Wire approval chains → tasks-mux routing
-6. Cost budget enforcement in orchestration (transport-mux cost feedback → SDK)
+4. Wire breakpoint delegation → tasks-adapter backends
+5. Wire approval chains → tasks-adapter routing
+6. Cost budget enforcement in orchestration (transport-adapter cost feedback → SDK)
 7. Background effects (non-blocking dispatch)
-8. tasks-mux search/filter API + priorities + dependencies
+8. tasks-adapter search/filter API + priorities + dependencies
 
 **P2 — Integration & hardening:**
 1. External issue tracker backends (Jira, Linear, generic REST) with bidirectional sync
-2. genty cross-agent dispatch: tasks-mux routes subtasks to adapters adapters
+2. genty cross-agent dispatch: tasks-adapter routes subtasks to adapters adapters
 3. K8s executor implementation
 4. Crash recovery + persistent queue in daemon
 5. Process isolation/sandboxing
-6. Distributed tracing (transport-mux → L5 telemetry → OTLP export)
+6. Distributed tracing (transport-adapter → L5 telemetry → OTLP export)
 7. Tool cancellation via AbortSignal
-8. tasks-mux notifications, escalation chains, backend plugin system
-9. SDK hooks → hooks-mux lifecycle wiring
-10. tool-mux hook bridge → hooks-mux PreToolUse/PostToolUse
+8. tasks-adapter notifications, escalation chains, backend plugin system
+9. SDK hooks → hooks-adapter lifecycle wiring
+10. tools-adapter hook bridge → hooks-adapter PreToolUse/PostToolUse

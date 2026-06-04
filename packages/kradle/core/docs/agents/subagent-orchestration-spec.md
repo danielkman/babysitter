@@ -12,7 +12,7 @@ Subagents may run in two modes:
 
 | Mode | Description | Owner |
 | --- | --- | --- |
-| native Agent Mux subagent | adapter supports child-agent dispatch inside one session | Agent Mux executes; Kradle projects telemetry |
+| native Agent Adapter subagent | adapter supports child-agent dispatch inside one session | Agent Adapter executes; Kradle projects telemetry |
 | Kradle-emulated child attempt | Kradle creates child `AgentDispatchAttempt` or linked run | Kradle schedules and links child execution |
 
 Kradle chooses mode based on adapter capabilities and stack policy.
@@ -149,4 +149,4 @@ Audit records must include:
 - Subagents cannot silently receive broader permissions than parent.
 - Each child context slice and output artifact is digest-addressed.
 - Failed or partial child work is visible in run detail.
-- Native Agent Mux subagents and Kradle-emulated child attempts project into the same UI model.
+- Native Agent Adapter subagents and Kradle-emulated child attempts project into the same UI model.

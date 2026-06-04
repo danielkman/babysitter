@@ -1,4 +1,4 @@
-# Agent Mux Parent
+# Agent Adapter Parent
 
 This directory is the unified parent for all content migrated from the former
 `adapters` standalone repository.

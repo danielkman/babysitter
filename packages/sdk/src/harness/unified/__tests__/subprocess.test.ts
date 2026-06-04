@@ -1,5 +1,5 @@
 /**
- * Tests for the hooks-mux subprocess bridge.
+ * Tests for the hooks-adapter subprocess bridge.
  *
  * Covers argument building (pure function, no actual spawn) and
  * the availability check with a mocked child process.
@@ -106,7 +106,7 @@ describe("isHooksProxyAvailable", () => {
 
   it("resolves to false when pointed at a nonexistent binary", async () => {
     process.env.AGENT_HOOKS_PROXY_PATH =
-      "/nonexistent/path/to/a5c-hooks-mux-not-here";
+      "/nonexistent/path/to/a5c-hooks-adapter-not-here";
     // Dynamic import to pick up env change
     const { isHooksProxyAvailable } = await import("../subprocess");
     const available = await isHooksProxyAvailable();

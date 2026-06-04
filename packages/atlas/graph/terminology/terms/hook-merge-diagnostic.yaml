@@ -7,7 +7,7 @@ attributes:
   references:
     - "NodeKind:HookMergeDiagnostic"
   description: |
-    A record produced by hooks-mux when merging hook surfaces from multiple sources (plugins, settings, profiles)
+    A record produced by hooks-adapter when merging hook surfaces from multiple sources (plugins, settings, profiles)
 edges:
   applies_to:
     - target: domain:software-engineering

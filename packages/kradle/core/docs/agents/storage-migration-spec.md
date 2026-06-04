@@ -12,7 +12,7 @@ This document defines how agent resources should be stored, indexed, migrated, a
 | Execution metadata | dispatch runs, attempts, sessions, workspaces, approvals, trigger executions, capability requirements | aggregated API/Postgres | high-cardinality, frequently updated, query-heavy. |
 | Blob/artifact data | context bundles, logs, patches, transcripts, subagent outputs, review artifacts | object storage + metadata in Postgres | potentially large, immutable or append-heavy. |
 | Native Kubernetes objects | ServiceAccounts, Roles, RoleBindings, Secrets, ConfigMaps | Kubernetes API | authoritative enforcement objects. |
-| External runtime state | Agent Mux sessions/runs/events | Agent Mux storage/gateway | adapter-specific execution details. |
+| External runtime state | Agent Adapter sessions/runs/events | Agent Adapter storage/gateway | adapter-specific execution details. |
 
 ## Resource lifecycle
 
@@ -68,7 +68,7 @@ Every `AgentDispatchAttempt` must snapshot:
 - runtime ServiceAccount and runner ServiceAccount;
 - Secret/ConfigMap grant names, key names, and metadata versions;
 - runner pool and workspace policy;
-- Agent Mux launch options after redaction.
+- Agent Adapter launch options after redaction.
 
 Snapshots protect retries from silently changing due to later stack or secret edits. Retry/resume may intentionally create a new snapshot.
 
@@ -117,7 +117,7 @@ Default retention knobs should be chart values later:
 
 - Config resources are eventually reconciled into readiness conditions.
 - Dispatch creation requires current permission review and stack status, but final launch uses immutable attempt snapshot.
-- Agent Mux session state may lag; Kradle run status should expose `AgentMuxSessionBound` and stream cursor.
+- Agent Adapter session state may lag; Kradle run status should expose `AgentMuxSessionBound` and stream cursor.
 - Watch reconnect should resume from current list state if event cursor is unavailable.
 
 ## Query requirements for UI

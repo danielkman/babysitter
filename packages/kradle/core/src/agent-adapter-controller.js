@@ -6,7 +6,7 @@ export const AGENT_ADAPTER_CONTROLLER_BOUNDARY = {
   scope: 'AgentAdapter lifecycle: validation, capabilities matrix, transport enumeration, real health checks',
   owns: ['adapter validation', 'capabilities matrix', 'transport enumeration', 'health checks'],
   delegatesTo: ['resource-model'],
-  mustNotOwn: ['secret values', 'dispatch execution', 'Agent Mux sessions']
+  mustNotOwn: ['secret values', 'dispatch execution', 'Agent Adapter sessions']
 };
 
 const HEALTH_CHECK_TIMEOUT_MS = 3000;

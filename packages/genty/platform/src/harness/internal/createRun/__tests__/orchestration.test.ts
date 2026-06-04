@@ -120,7 +120,7 @@ describe("subscribeVerbosePiEvents", () => {
   });
 });
 
-describe("resolveEffect tasks-mux routing", () => {
+describe("resolveEffect tasks-adapter routing", () => {
   beforeEach(() => {
     taskMuxMock.routeTask.mockReset();
     taskMuxMock.submitBreakpoint.mockReset();
@@ -128,7 +128,7 @@ describe("resolveEffect tasks-mux routing", () => {
     childProcessMock.execSync.mockReset();
   });
 
-  it("delegates routable agent effects through tasks-mux AgentMuxResponderBackend", async () => {
+  it("delegates routable agent effects through tasks-adapter AgentMuxResponderBackend", async () => {
     taskMuxMock.routeTask.mockReturnValue({
       responderType: "agent",
       route: "adapters",
@@ -284,7 +284,7 @@ describe("resolveEffect tasks-mux routing", () => {
     expect(result.error?.message).toBe("auth failed");
   });
 
-  it("delegates legacy CLI resolveAndPostEffect agent routing through tasks-mux", async () => {
+  it("delegates legacy CLI resolveAndPostEffect agent routing through tasks-adapter", async () => {
     taskMuxMock.routeTask.mockReturnValue({
       responderType: "agent",
       route: "adapters",

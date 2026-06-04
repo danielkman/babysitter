@@ -133,7 +133,7 @@ describe('TraceWriter', () => {
   let tmpDir: string;
 
   beforeEach(async () => {
-    tmpDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'hooks-mux-trace-'));
+    tmpDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'hooks-adapter-trace-'));
   });
 
   afterEach(async () => {

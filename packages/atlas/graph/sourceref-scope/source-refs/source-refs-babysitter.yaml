@@ -49,7 +49,7 @@ attributes:
   kind: git-path
 ---
 nodeKind: SourceRef
-id: source-ref:agent-platform-mux-reference
+id: source-ref:agent-platform-adapter-reference
 attributes:
   description: Babysitter adapters reference docs (invocation modes, hooks, runtime semantics)
   displayName: a5c-ai/babysitter — docs/adapters/reference
@@ -69,17 +69,17 @@ attributes:
   kind: git-path
 ---
 nodeKind: SourceRef
-id: source-ref:packages-tool-mux
+id: source-ref:packages-tools-adapter
 attributes:
   description: '@a5c-ai/tools-adapter — unified tool-descriptor registry + MCP tool routing'
-  displayName: a5c-ai/babysitter — packages/tool-mux
+  displayName: a5c-ai/babysitter — packages/tools-adapter
   repoUrl: https://github.com/a5c-ai/babysitter
   ref: main
-  path: packages/tool-mux
+  path: packages/tools-adapter
   kind: git-path
 ---
 nodeKind: SourceRef
-id: source-ref:packages-agent-launch-mux
+id: source-ref:packages-agent-launch-adapter
 attributes:
   description: '@a5c-ai/launch-adapter — agent session launcher (spawn / attach / reconnect)'
   displayName: a5c-ai/babysitter — packages/adapters/launch
@@ -89,7 +89,7 @@ attributes:
   kind: git-path
 ---
 nodeKind: SourceRef
-id: source-ref:packages-agent-config-mux
+id: source-ref:packages-agent-config-adapter
 attributes:
   description: '@a5c-ai/config-adapter — agent configuration discovery + merging'
   displayName: a5c-ai/babysitter — packages/adapters/config

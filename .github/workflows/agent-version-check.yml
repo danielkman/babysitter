@@ -125,7 +125,7 @@ jobs:
               API/transport changes, new tool capabilities, new supported models
             - Which parts of our system are likely affected based on what changed
               (be specific: "new --foo flag means launchBehavior needs updating",
-              "switched from REST to WebSocket means transport-mux proxy affected")
+              "switched from REST to WebSocket means transport-adapter proxy affected")
             - Whether the new version changes install method or package name
             - Any migration steps mentioned in the release notes
 

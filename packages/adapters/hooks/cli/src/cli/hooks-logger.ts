@@ -20,7 +20,7 @@ const LOG_LEVELS: Record<HooksLogLevel, number> = {
 };
 
 const LOG_LEVEL_ENV = 'A5C_LOGGING_HOOKS_LEVEL';
-const LOG_FILE_NAME = 'hooks-mux.log';
+const LOG_FILE_NAME = 'hooks-adapter.log';
 
 function resolveHomeDir(): string {
   const envHome = process.env.HOME?.trim();

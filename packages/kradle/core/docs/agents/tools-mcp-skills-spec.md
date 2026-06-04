@@ -154,7 +154,7 @@ At dispatch launch:
 2. Re-run permission review.
 3. Materialize only admitted launch options.
 4. Snapshot dependency graph digest.
-5. Send admitted tool/MCP/skill configuration to Agent Mux.
+5. Send admitted tool/MCP/skill configuration to Agent Adapter.
 6. Record tool/MCP/skill versions in attempt status.
 
 ## Security rules
@@ -175,7 +175,7 @@ At dispatch launch:
 
 ## Company brain memory tools
 
-Memory tools are normal tool capabilities and require the same stack admission, permission review, audit, and Agent Mux launch gating as other tools.
+Memory tools are normal tool capabilities and require the same stack admission, permission review, audit, and Agent Adapter launch gating as other tools.
 
 | Tool | Purpose | Required grant |
 | --- | --- | --- |

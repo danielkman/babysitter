@@ -6,7 +6,7 @@ This document defines the smallest coherent implementation that proves Kradle ag
 
 ## MVP goal
 
-A repository admin can define one read-only/diagnostic agent stack, review its Kubernetes-native permissions, manually dispatch it from a repository Code or Runs page, and see a CI-like `AgentDispatchRun` with context preview, permission snapshot, Agent Mux session binding when configured, and no write-back unless explicitly approved in a later slice.
+A repository admin can define one read-only/diagnostic agent stack, review its Kubernetes-native permissions, manually dispatch it from a repository Code or Runs page, and see a CI-like `AgentDispatchRun` with context preview, permission snapshot, Agent Adapter session binding when configured, and no write-back unless explicitly approved in a later slice.
 
 ## Included user flow
 
@@ -14,16 +14,16 @@ A repository admin can define one read-only/diagnostic agent stack, review its K
    - `AgentServiceAccount`;
    - `AgentRoleBinding` using read-only role template;
    - `AgentToolProfile` with read-only filesystem and no broad network;
-   - optional `AgentMcpServer` if Agent Mux capability lookup requires it;
+   - optional `AgentMcpServer` if Agent Adapter capability lookup requires it;
    - `AgentStack` for diagnostic/readonly work.
 2. Admin runs permission review and sees `Ready=True` or exact blockers.
 3. User opens `/orgs/[org]/repositories/[repo]/code` or `/orgs/[org]/repositories/[repo]/runs`.
 4. User opens dispatch composer.
 5. Kradle assembles `AgentContextBundle` preview and permission review.
 6. User confirms dispatch.
-7. Kradle creates `AgentDispatchRun` and `AgentDispatchAttempt` before Agent Mux launch.
+7. Kradle creates `AgentDispatchRun` and `AgentDispatchAttempt` before Agent Adapter launch.
 8. Run appears in `/agents/runs` and repository Runs page.
-9. If Agent Mux is configured, Kradle launches and binds session/run IDs.
+9. If Agent Adapter is configured, Kradle launches and binds session/run IDs.
 10. Run detail shows queued/running/completed/failed state, context digest, permission snapshot, event timeline, and linked session placeholder or chat panel.
 
 ## Included resources
@@ -43,7 +43,7 @@ Execution:
 - `AgentDispatchRun`;
 - `AgentDispatchAttempt`;
 - `AgentCapabilityRequirement`;
-- optional `AgentSession` projection if Agent Mux binds successfully;
+- optional `AgentSession` projection if Agent Adapter binds successfully;
 - optional `AgentArtifact` for diagnosis summary.
 
 ## Included routes
@@ -102,7 +102,7 @@ API:
 
 ### Manual dispatch
 
-- Dispatch creates run and attempt before Agent Mux launch.
+- Dispatch creates run and attempt before Agent Adapter launch.
 - Context bundle digest is attached to the attempt.
 - Permission snapshot digest is attached to the attempt.
 - Denied dispatch returns actionable policy/RBAC/grant reason.
@@ -111,10 +111,10 @@ API:
 
 - Code page shows dispatch entry point and disabled/missing-permission states.
 - Runs page shows agent dispatch rows beside pipeline rows.
-- Run detail shows source breadcrumbs, status, context, permission, and Agent Mux binding state.
+- Run detail shows source breadcrumbs, status, context, permission, and Agent Adapter binding state.
 - Empty states are server-projected through controller UI model.
 
-### Agent Mux
+### Agent Adapter
 
 - If gateway is unavailable, run remains failed/degraded with clear condition and Kradle stays usable.
 - If gateway is configured, run/session IDs are stored exactly once.
@@ -127,7 +127,7 @@ Required minimum tests:
 - resource schema test for `AgentStack` and `AgentDispatchRun`;
 - permission review missing grant test;
 - manual dispatch creates run/attempt/context test;
-- Agent Mux unavailable fallback test;
+- Agent Adapter unavailable fallback test;
 - UI validation for Code dispatch entry and run detail empty/pending states;
 - package validation for CRDs/examples.
 
@@ -137,7 +137,7 @@ Required minimum tests:
 - No automatic writes to PRs, branches, checks, issues, or releases.
 - No untrusted fork privileged ServiceAccount or Secret access.
 - No UI-only permission checks for enabled actions.
-- No Agent Mux state as source of truth for Kradle repository resources.
+- No Agent Adapter state as source of truth for Kradle repository resources.
 
 ## Org memory MVP slice
 

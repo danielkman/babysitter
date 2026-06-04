@@ -25,12 +25,12 @@ flowchart TD
   H[Harness surfaces<br/>Codex, Claude Code, Cursor, Gemini, Copilot, Pi, OpenCode]
   U[Unified plugin source<br/>plugins/babysitter-unified]
   P[Per-harness plugin bundles<br/>plugins/babysitter-*]
-  HM[hooks-mux<br/>canonical hook model]
+  HM[hooks-adapter<br/>canonical hook model]
   CLI[babysitter CLI and runtime<br/>@a5c-ai/babysitter<br/>@a5c-ai/genty-platform]
   SDK[babysitter-sdk<br/>runs, replay, storage, tasks]
   LIB[Process library and project processes<br/>library/, .a5c/processes, ~/.a5c]
-  BP[tasks-mux<br/>human approval routing]
-  APM[extension-mux<br/>plugin compilation]
+  BP[tasks-adapter<br/>human approval routing]
+  APM[extensions-adapter<br/>plugin compilation]
   ADAPTERS[adapters packages<br/>core, adapters, cli, sdk, gateway]
   UI[User surfaces<br/>TUI, web UI, mobile, docs]
 
@@ -80,16 +80,16 @@ This layer knows how to talk to different harnesses and normalize them into a sh
 Owned primarily by:
 
 - `packages/adapters/hooks/*`
-- `packages/extension-mux`
-- `packages/tasks-mux`
+- `packages/extensions-adapter`
+- `packages/tasks-adapter`
 
 These packages solve cross-cutting problems:
 
-- `hooks-mux` normalizes hook events and adapter wiring.
-- `extension-mux` compiles one canonical plugin description into harness-specific outputs.
-- `tasks-mux` routes human approvals and structured breakpoint responses.
+- `hooks-adapter` normalizes hook events and adapter wiring.
+- `extensions-adapter` compiles one canonical plugin description into harness-specific outputs.
+- `tasks-adapter` routes human approvals and structured breakpoint responses.
 
-This support layer is part of the delivery path for metaplugins on legacy non-Babysitter agents, but it is not the metaplugin abstraction itself. Metaplugins sit one level higher: they package reusable capability concerns across plugin and hook surfaces. `extension-mux` emits the concrete bundles those concerns need, while unified plugin sources such as `plugins/babysitter-unified/` provide one first-party authoring surface for that delivery.
+This support layer is part of the delivery path for metaplugins on legacy non-Babysitter agents, but it is not the metaplugin abstraction itself. Metaplugins sit one level higher: they package reusable capability concerns across plugin and hook surfaces. `extensions-adapter` emits the concrete bundles those concerns need, while unified plugin sources such as `plugins/babysitter-unified/` provide one first-party authoring surface for that delivery.
 
 ### 4. Distribution And Installation Surfaces
 
@@ -123,7 +123,7 @@ These packages are consumers of the orchestration and dispatch layers. They are 
 |---|---|---|---|
 | Orchestration core | `packages/sdk`, `packages/babysitter`, `packages/genty/platform` | Run lifecycle, replay, storage, task dispatch, CLI/runtime surfaces | A future forced split into many more top-level runtime packages |
 | Dispatch family | `packages/adapters/*` | Harness invocation, adapter normalization, gateway, shared interaction contracts | Replacement of Babysitter orchestration |
-| Support mux family | `packages/adapters/hooks/*`, `packages/extension-mux`, `packages/tasks-mux` | Hook normalization, bundle compilation, human approval routing | A formal "platform layer" that already has independent product boundaries |
+| Support adapter family | `packages/adapters/hooks/*`, `packages/extensions-adapter`, `packages/tasks-adapter` | Hook normalization, bundle compilation, human approval routing | A formal "platform layer" that already has independent product boundaries |
 | Distribution surfaces | `plugins/babysitter-unified`, `plugins/babysitter-*` | Canonical plugin authoring plus harness-specific installable outputs | One single bundle format with no compatibility constraints |
 | User surfaces | `packages/adapters/ui`, `packages/adapters/webui`, `packages/adapters/tui`, `docs-site/` | Human-facing interaction, visualization, docs, and operator surfaces | Ownership of orchestration semantics |
 
@@ -132,20 +132,20 @@ These packages are consumers of the orchestration and dispatch layers. They are 
 The end-to-end diagram above is the shape. The live execution narrative is:
 
 1. A concrete harness installs or loads a plugin bundle under `plugins/babysitter-*`.
-2. Those bundles are compiled from `plugins/babysitter-unified/` by `packages/extension-mux`, with `packages/adapters/hooks/*` normalizing hook behavior where the harness model requires it.
+2. Those bundles are compiled from `plugins/babysitter-unified/` by `packages/extensions-adapter`, with `packages/adapters/hooks/*` normalizing hook behavior where the harness model requires it.
 3. The installed bundle reaches the operational runtime in `packages/babysitter` and `packages/genty/platform`.
 4. That runtime delegates the core orchestration work to `packages/sdk`, which owns run directories, journal/state replay, effect requests, process-library binding, and workflow execution.
 5. When a workflow requires a reusable process, the runtime reaches into `library/` or project-local `.a5c/processes/`.
-6. When a workflow requires human approval routing, `packages/tasks-mux` handles that concern as a distinct subsystem instead of burying it inside generic hook language.
+6. When a workflow requires human approval routing, `packages/tasks-adapter` handles that concern as a distinct subsystem instead of burying it inside generic hook language.
 7. When the system needs adapter-level dispatch or richer interaction surfaces, `packages/adapters/*` carries that responsibility without changing the orchestration center of gravity.
 
 ## Integration Contracts That Matter
 
 ### Babysitter ↔ Harnesses
 
-Harnesses are reached through plugin bundles, lifecycle hooks, and session binding behavior. This is where `plugins/*`, `hooks-mux`, and harness-specific install surfaces matter.
+Harnesses are reached through plugin bundles, lifecycle hooks, and session binding behavior. This is where `plugins/*`, `hooks-adapter`, and harness-specific install surfaces matter.
 
-### Babysitter ↔ Agent-Mux
+### Babysitter ↔ Agent-Adapter
 
 The key boundary is orchestration versus dispatch:
 
@@ -158,7 +158,7 @@ The unified plugin is the authoring source. Per-harness bundles are the compatib
 
 ### Orchestration ↔ Human Approval
 
-Breakpoint routing is a distinct concern. `tasks-mux` should be discussed as a supporting subsystem for approvals rather than folded into generic hook or session language.
+Breakpoint routing is a distinct concern. `tasks-adapter` should be discussed as a supporting subsystem for approvals rather than folded into generic hook or session language.
 
 ### V6 ↔ Validation
 
@@ -170,19 +170,19 @@ That command matters because V6 is supposed to promote real seams with active ch
 
 ## What Is Normative Now
 
-- The monorepo already contains Babysitter, adapters, hooks-mux, extension-mux, and tasks-mux.
+- The monorepo already contains Babysitter, adapters, hooks-adapter, extensions-adapter, and tasks-adapter.
 - `packages/sdk` is still the main center of gravity.
 - adapters is already integrated as repo content, workspace packages, and documentation.
 - Unified plugin authoring coexists with per-harness plugin bundles.
-- Metaplugins are a current capability-layer concept over plugin and hook surfaces, with `extension-mux` serving as the concrete bundle compiler for legacy non-Babysitter agents.
+- Metaplugins are a current capability-layer concept over plugin and hook surfaces, with `extensions-adapter` serving as the concrete bundle compiler for legacy non-Babysitter agents.
 - `npm run verify:v6:seams` is the active repo validation cue for the first executable V6 seam contract.
 
 ## What Is Deferred
 
 - Any forced rename from current packages into a new runtime/platform/application stack.
-- Any claim that the mux support packages must become a larger formal platform before their current seams are proven.
+- Any claim that the adapter support packages must become a larger formal platform before their current seams are proven.
 - Any architectural story that assumes remote, distributed, or strongly isolated plugin execution by default.
-- Any claim that documented placeholder seams such as `packages/transport-mux` are already cut over into the active runtime.
+- Any claim that documented placeholder seams such as `packages/transport-adapter` are already cut over into the active runtime.
 
 ## Validation And Honesty Cues
 
@@ -190,7 +190,7 @@ When a section in this document makes a structural claim, check it against three
 
 - **Repo paths**: the relevant package or plugin directory must already exist.
 - **Validation commands**: the claim should connect to active checks such as `npm run verify:v6:seams` and, when broader package-boundary honesty matters, `npm run test:architecture`.
-- **Placeholder docs**: if a seam is still aspirational, its docs should say so explicitly, as `packages/transport-mux/README.md` and `packages/transport-mux/architecture.md` currently do.
+- **Placeholder docs**: if a seam is still aspirational, its docs should say so explicitly, as `packages/transport-adapter/README.md` and `packages/transport-adapter/architecture.md` currently do.
 
 ## Reading Rule
 
@@ -204,4 +204,4 @@ If the answer is only "vocabulary", it is not yet architecture.
 
 ---
 
-**Related Documents**: [System Overview](system-overview.md) | [Package Specifications](package-specs.md) | [Agent-Mux Integration](adapters-integration.md)
+**Related Documents**: [System Overview](system-overview.md) | [Package Specifications](package-specs.md) | [Agent-Adapter Integration](adapters-integration.md)

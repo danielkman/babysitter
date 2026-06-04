@@ -4,23 +4,23 @@
 
 ## Purpose
 
-This glossary defines the canonical terms used across the V6 documents. It exists to keep the unified Babysitter, adapters, and mux-support packages described with one vocabulary.
+This glossary defines the canonical terms used across the V6 documents. It exists to keep the unified Babysitter, adapters, and adapter-support packages described with one vocabulary.
 
 ## Terms
 
 ### Adapter
 
-A harness-specific implementation that translates one external tool's behavior into a shared contract. In `adapters`, adapters normalize spawn args, sessions, auth, and event parsing. In `hooks-mux`, adapters normalize hook payloads across harnesses.
+A harness-specific implementation that translates one external tool's behavior into a shared contract. In `adapters`, adapters normalize spawn args, sessions, auth, and event parsing. In `hooks-adapter`, adapters normalize hook payloads across harnesses.
 
 ### Agent
 
 A reasoning worker used to perform subjective work such as planning, review, drafting, or analysis. In Babysitter task definitions, this is distinct from deterministic `shell` work.
 
-### Agent-Mux
+### Agent-Adapter
 
 The dispatch layer for local CLI-based coding agents. In this repo it lives under `packages/adapters/*` and includes core types, adapters, CLI, SDK, gateway, observability, mock harnesses, and multiple UI surfaces.
 
-### Agent-Plugins-Mux
+### Agent-Plugins-Adapter
 
 The cross-harness plugin compiler. It turns one canonical plugin definition into harness-specific plugin bundles, rather than maintaining each bundle by hand.
 
@@ -44,7 +44,7 @@ The architectural center of gravity for the current stack. `@a5c-ai/babysitter-s
 
 A human approval or clarification gate emitted by a process. In Babysitter, breakpoints are part of the effect model and should not be confused with debugger breakpoints.
 
-### Breakpoints-Mux
+### Breakpoints-Adapter
 
 The serverless breakpoint routing subsystem. It multiplexes breakpoint questions and answers across backends and can add cryptographic proof to responses.
 
@@ -62,9 +62,9 @@ An external coding environment or CLI such as Codex, Claude Code, Cursor, Gemini
 
 ### Hook
 
-A harness lifecycle callback such as session start, stop, prompt submission, or tool interception. Hooks are normalized by `hooks-mux` and then routed into plugin or orchestration behavior.
+A harness lifecycle callback such as session start, stop, prompt submission, or tool interception. Hooks are normalized by `hooks-adapter` and then routed into plugin or orchestration behavior.
 
-### Hooks-Mux
+### Hooks-Adapter
 
 The hook normalization layer. It provides canonical schemas, a merge engine, CLI tools, and per-harness adapters so one hook model can be projected across different harnesses.
 
@@ -74,7 +74,7 @@ The environment in which an agent run executes, such as local, docker, ssh, or k
 
 ### Metaplugin
 
-A higher-order capability abstraction that extends an agent by composing one or more plugin and hook surfaces into a single concern. A metaplugin is not the same thing as a concrete per-harness plugin bundle, and it is not the same thing as `@a5c-ai/extensions-adapter`, which only compiles and distributes concrete plugin outputs. Typical metaplugin categories include memory systems, governance or policy engines, and discipline-enforcement layers. On legacy non-Babysitter agents, a metaplugin is delivered through the underlying plugin and hook bundles emitted by `extension-mux`.
+A higher-order capability abstraction that extends an agent by composing one or more plugin and hook surfaces into a single concern. A metaplugin is not the same thing as a concrete per-harness plugin bundle, and it is not the same thing as `@a5c-ai/extensions-adapter`, which only compiles and distributes concrete plugin outputs. Typical metaplugin categories include memory systems, governance or policy engines, and discipline-enforcement layers. On legacy non-Babysitter agents, a metaplugin is delivered through the underlying plugin and hook bundles emitted by `extensions-adapter`.
 
 ### Per-Harness Plugin Bundle
 

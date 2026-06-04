@@ -13,7 +13,7 @@ attributes:
   argvMatches:
     - oh-my-pi
     - omp
-  consumer: agent-comm-mux
+  consumer: agent-comm-adapter
   metadataFields:
     - { key: session_id, envVars: [OMP_SESSION_ID] }
     - { key: run_id,     envVars: [OMP_RUN_ID] }

@@ -65,9 +65,9 @@ The Phase 1 schema must be rich enough to derive each of the following. None are
 - **Output:** `tools/wiki/generators/out/adapters/<agent-slug>.ts` — a TypeScript scaffold with imports, an interface declaration, and stubbed methods per capability.
 - **Invariants:** scaffold compiles under the project's tsconfig; method names map deterministically to capability slugs.
 
-### OpenAPI for tasks-mux backend
+### OpenAPI for tasks-adapter backend
 
-- **Inputs:** the tasks-mux schema subset of the catalog (NodeKinds prefixed `tasks-mux:`).
+- **Inputs:** the tasks-adapter schema subset of the catalog (NodeKinds prefixed `tasks-adapter:`).
 - **Output:** `tools/wiki/generators/out/openapi.yaml`.
 - **Invariants:** every endpoint listed in the schema appears in the spec; every schema component is referenced by at least one endpoint.
 

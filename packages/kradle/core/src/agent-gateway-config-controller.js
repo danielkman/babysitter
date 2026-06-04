@@ -7,7 +7,7 @@ export const AGENT_GATEWAY_CONFIG_CONTROLLER_BOUNDARY = {
   scope: 'AgentGatewayConfig lifecycle: validation, endpoint resolution, feature flags, connection pool, TLS config ref',
   owns: ['gateway config validation', 'endpoint URL', 'feature flags', 'connection pool defaults', 'TLS config ref'],
   delegatesTo: ['resource-model'],
-  mustNotOwn: ['secret values', 'dispatch execution', 'Agent Mux sessions', 'adapter implementation']
+  mustNotOwn: ['secret values', 'dispatch execution', 'Agent Adapter sessions', 'adapter implementation']
 };
 
 const DEFAULT_FEATURE_FLAGS = Object.freeze({
@@ -49,7 +49,7 @@ export function validateAgentGatewayConfig(resource) {
 
   // Validate endpoint URL
   if (!spec.endpointUrl) {
-    errors.push('spec.endpointUrl is required; provide the Agent Mux gateway endpoint URL');
+    errors.push('spec.endpointUrl is required; provide the Agent Adapter gateway endpoint URL');
   } else {
     // Basic URL validation: must start with http:// or https:// or ws:// or wss://
     const validProtocols = ['http://', 'https://', 'ws://', 'wss://'];

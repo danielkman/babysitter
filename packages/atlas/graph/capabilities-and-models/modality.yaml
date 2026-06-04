@@ -69,7 +69,7 @@ attributes:
   mediaType: "application/json"
   semanticCategory: "json"
   evidenceRefs:
-    - "repo-transport-mux-architecture"
+    - "repo-transport-adapter-architecture"
 ---
 nodeKind: Modality
 id: modality:stream-events
@@ -80,5 +80,5 @@ attributes:
   mediaType: "text/plain"
   semanticCategory: "stream-events"
   evidenceRefs:
-    - "repo-transport-mux-readme"
-    - "repo-transport-mux-architecture"
+    - "repo-transport-adapter-readme"
+    - "repo-transport-adapter-architecture"

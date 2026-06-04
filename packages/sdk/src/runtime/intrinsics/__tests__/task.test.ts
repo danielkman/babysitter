@@ -17,7 +17,7 @@ afterEach(async () => {
 });
 
 describe("task intrinsic responder routing metadata", () => {
-  it("preserves agent responder metadata on waiting effects for tasks-mux routing", async () => {
+  it("preserves agent responder metadata on waiting effects for tasks-adapter routing", async () => {
     const processPath = path.join(tmpRoot, "process.mjs");
     await fs.writeFile(
       processPath,

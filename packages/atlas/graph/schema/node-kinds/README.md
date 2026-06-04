@@ -47,7 +47,7 @@ For the meta-schema (how a node-kind file is structured), see
 | `LaunchConfig` | named spawn recipe |
 | `SessionModel` | the persistence/control-plane/structured-transport triple |
 | `AgentTeam` | named multi-agent team (set of `AgentVersion`s with role assignments + cooperation policy) |
-| `Mux` | reified multiplexer entity (adapters, hooks-mux, plugins-mux, …) modeled as a first-class node so policies and decisions are queryable |
+| `Adapter` | reified multiplexer entity (adapters, hooks-adapter, plugins-adapter, …) modeled as a first-class node so policies and decisions are queryable |
 | `MemoryHierarchy` | layered memory model declared by an `AgentRuntimeImpl` (working / session / cross-session / cross-project tiers) |
 | `BackgroundConsolidation` | scheduled compaction/summarization job that runs over a `Session` or `MemoryHierarchy` to reduce state |
 | `ConsolidationLock` | mutual-exclusion record for an in-flight `BackgroundConsolidation` so concurrent runs do not double-write |
@@ -77,7 +77,7 @@ For the meta-schema (how a node-kind file is structured), see
 | `Channel` | brokered communication surface (carries `kind` enum: mcp-channel / a2a-channel / chat-channel / mailbox-channel / http-sse-channel — collapsed from former ChannelKind NodeKind) |
 | `HookSurface` | a concrete hook event name (PreToolUse, PhaseChange, etc.); carries `family` enum: shell-hook / in-process / observer (collapsed from former HookFamily NodeKind) |
 | `HookMapping` | per-(agent, canonical-hook) mapping recording the agent's native event name, version range, payload shape, and delivery |
-| `MergePolicy` | named conflict-resolution policy applied by hooks-mux when fanning out one hook event across many handlers (decision precedence + env-merge rule + system-message strategy) |
+| `MergePolicy` | named conflict-resolution policy applied by hooks-adapter when fanning out one hook event across many handlers (decision precedence + env-merge rule + system-message strategy) |
 | `ProtocolMessage` | a single message at the LLM-protocol layer (Anthropic Messages, OpenAI Responses, …) — distinct from `JournalEvent` (orchestration layer) |
 | `JournalEvent` | orchestration-layer event emitted by `AgentRuntimeImpl` / `AgentPlatformImpl` during a run lifecycle — distinct from `ProtocolMessage` (LLM-protocol layer) |
 | `Workflow` | a named, declaratively-composed multi-step process orchestrated by an agent runtime (workflows are reusable across runs and may compose `Run`s and `Effect`s) |
@@ -123,7 +123,7 @@ For the meta-schema (how a node-kind file is structured), see
 | `Blueprint` | markdown bundle agent reads to install/configure projects (a5c-flavored). Marketplaces a blueprint is published in are recorded via `sourced_from` to a `SourceRef` with `kind: git-marketplace` (the former dedicated `Marketplace` NodeKind was folded into `SourceRef` in the 2026-04-29 remodel). |
 | `ExtensionInterface` | a contract an extension fulfills (a5c-flavored: reliability-interface, memory-interface, …) |
 | `PluginArtifact` | a single deliverable file (manifest, command, hook script, MCP config, container image, …) emitted by a `PluginTarget` / `AgentVersion` |
-| `PluginTarget` | per-agent target spec used by the extension-mux / extension-mux to compile a `Plugin` / `PortableExtension` into a `NativeExtension` (manifest format, command format, install layout, package metadata, distribution model) |
+| `PluginTarget` | per-agent target spec used by the extensions-adapter / extensions-adapter to compile a `Plugin` / `PortableExtension` into a `NativeExtension` (manifest format, command format, install layout, package metadata, distribution model) |
 | `LSPServer` | language server bundled in a plugin (Claude Code `.lsp.json`) |
 | `BackgroundMonitor` | long-running monitor bundled in a plugin (Claude Code `monitors/monitors.json`) |
 | `BinaryProvider` | `bin/` executables added to `PATH` on install |
@@ -138,7 +138,7 @@ For the meta-schema (how a node-kind file is structured), see
 | `InteractionPrimitiveCategory` | enum partitioning `InteractionPrimitive`s (slash-command / mention / steering / queueing / confirmation / output-mode / mode-switch / fork) |
 | `HarnessHardeningGuidance` | catalog-meta record describing a recommended harness hardening (sandbox, permission default, auth flow) — referenced from a `HarnessHardening` term |
 | `CapacityCascadeSignal` | structured event signaling capacity exhaustion in one runtime that should cascade to upstream throttling |
-| `HookMergeDiagnostic` | per-event record of how the hooks-mux resolved a multi-handler conflict (decision precedence chain, dropped handlers, env-merge winners) |
+| `HookMergeDiagnostic` | per-event record of how the hooks-adapter resolved a multi-handler conflict (decision precedence chain, dropped handlers, env-merge winners) |
 
 ### Cluster 8 — Capability descriptors
 
@@ -226,7 +226,7 @@ For the meta-schema (how a node-kind file is structured), see
 | `Synonym` | a term that means the same as another in a stated context |
 | `Acronym` | abbreviation expanding to a term |
 
-`Term` carries: `displayName`, `kind` (enum: concept / role / layer / primitive / mux / extension-shape / hook / capability / lifecycle-state / protocol / format / tool / operation — collapsed from former TermKind NodeKind), `canonicalDefinition` (ref
+`Term` carries: `displayName`, `kind` (enum: concept / role / layer / primitive / adapter / extension-shape / hook / capability / lifecycle-state / protocol / format / tool / operation — collapsed from former TermKind NodeKind), `canonicalDefinition` (ref
 `Definition`), `usageContexts` (list of refs to `Domain` | `Layer` | `AgentProduct`),
 `firstUseEvidence` (`EvidenceSource`).
 
@@ -235,7 +235,7 @@ Edges from `Term`: `defined_in_context_of` → `Domain` | `Layer` | NodeKind;
 `subsumes` → `Term` (broader/narrower); `references` → NodeKind | `Capability`
 (anchors terms to actual schema entities).
 
-This makes the glossary derivable: querying `Term`s with `kind=mux` produces the mux
+This makes the glossary derivable: querying `Term`s with `kind=adapter` produces the adapter
 glossary; querying `Term`s used in `Layer` 6 produces the layer-6 glossary.
 
 ### Cluster 15 — Catalog provenance (cross-cutting)

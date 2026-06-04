@@ -127,7 +127,7 @@ const geminiScenarios: HarnessScenario[] = [
   ]),
   scenario('gemini', 'gemini:tool-call', [
     stdoutChunk(geminiText('Calling a tool.'), 5),
-    stdoutChunk(geminiToolCall({ id: 'g1', name: 'search', input: { q: 'agent mux' } }), 10),
+    stdoutChunk(geminiToolCall({ id: 'g1', name: 'search', input: { q: 'agent adapter' } }), 10),
     stdoutChunk(geminiToolResult('g1', 'search results'), 10),
   ]),
   scenario('gemini', 'gemini:error', [

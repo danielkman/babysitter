@@ -15,10 +15,10 @@ Comprehensive gap analysis across all kradle packages. Last updated: 2026-05-30.
 
 ## Quick Summary
 
-The UI layer is functionally complete — 10 resource pages with full CRUD, 300 structural tests, 10 component subdirectories, all navigation flows connected. But the product is a **control plane without a data plane**: the web console can create and manage CRD resources, but most controllers stop at "plan" without "apply" because the backing infrastructure (Gitea, Agent Mux, real K8s reconciliation) is either not deployed or not configured on staging.
+The UI layer is functionally complete — 10 resource pages with full CRUD, 300 structural tests, 10 component subdirectories, all navigation flows connected. But the product is a **control plane without a data plane**: the web console can create and manage CRD resources, but most controllers stop at "plan" without "apply" because the backing infrastructure (Gitea, Agent Adapter, real K8s reconciliation) is either not deployed or not configured on staging.
 
 **Staging health as of 2026-05-30:**
 - Kubernetes: Connected
 - Gitea: Error
-- Agent Mux Gateway: Not configured
+- Agent Adapter Gateway: Not configured
 - Assistant API key: Not configured

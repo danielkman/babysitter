@@ -1,4 +1,4 @@
-# Agent-Mux Terminology & Structure Gaps
+# Agent-Adapter Terminology & Structure Gaps
 
 The adapters family has pervasive naming inconsistencies across 42 packages, 8 binaries, and 3,500+ source references. This directory documents every gap and the target naming convention.
 

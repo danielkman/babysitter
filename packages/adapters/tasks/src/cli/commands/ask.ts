@@ -203,7 +203,7 @@ export function createAskCommand(): Command {
             if (browserSession) {
               console.log(`\nBrowser session: ${browserSession.url}`);
             }
-            console.log(`\nUse "tasks-mux breakpoints poll ${breakpoint.id}" to wait for answers.`);
+            console.log(`\nUse "tasks-adapter breakpoints poll ${breakpoint.id}" to wait for answers.`);
           }
         }
       } catch (error) {

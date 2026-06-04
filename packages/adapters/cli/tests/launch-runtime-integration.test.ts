@@ -75,7 +75,7 @@ vi.mock('@a5c-ai/comm-adapter', () => ({
   })),
 }));
 
-describe('launchCommand transport-mux integration', () => {
+describe('launchCommand transport-adapter integration', () => {
   beforeEach(() => {
     vi.resetModules();
     execSyncMock.mockReset();
@@ -87,7 +87,7 @@ describe('launchCommand transport-mux integration', () => {
     vi.restoreAllMocks();
   });
 
-  it('starts the transport-mux runtime and passes its env through to the harness', async () => {
+  it('starts the transport-adapter runtime and passes its env through to the harness', async () => {
     const runtimeStop = vi.fn(async () => {});
     startTransportMuxRuntimeMock.mockResolvedValue({
       url: 'http://127.0.0.1:4010',

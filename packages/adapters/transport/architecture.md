@@ -1,4 +1,4 @@
-# transport-mux architecture
+# transport-adapter architecture
 
 ## Objective
 
@@ -173,8 +173,8 @@ but never raw protocol-specific payloads across the layer boundary.
 
 1. `adapters` resolves canonical provider config.
 2. `translate-for-harness.ts` decides the exposed protocol expected by the harness.
-3. `launch.ts` starts the `transport-mux` runtime when a proxy bridge is needed.
-4. `transport-mux` boots the protocol codec and provider adapter implied by that config.
+3. `launch.ts` starts the `transport-adapter` runtime when a proxy bridge is needed.
+4. `transport-adapter` boots the protocol codec and provider adapter implied by that config.
 
 ### Data plane
 
@@ -235,7 +235,7 @@ The server contract should continue to mount the following routes.
 `GET /metrics` and `GET /cache/stats` are retained as part of the cutover contract rather than silently dropped. The current JS runtime must preserve the legacy route shapes:
 
 - `/metrics` returns in-process request/error/token counters with the historical keys: `total_input_tokens`, `total_output_tokens`, `total_requests`, `total_errors`, `uptime_seconds`, and `avg_tokens_per_request`.
-- `/cache/stats` returns legacy cache visibility. Until `transport-mux` owns a real response cache, the route returns `{ "enabled": false }` explicitly instead of disappearing.
+- `/cache/stats` returns legacy cache visibility. Until `transport-adapter` owns a real response cache, the route returns `{ "enabled": false }` explicitly instead of disappearing.
 - For engine-backed completions, `/metrics` records normalized usage from the completion result or terminal stream event.
 - For passthrough responses, `/metrics` still records successful request counts and error counts, but token totals remain `0` because upstream provider usage is not normalized at the proxy boundary today.
 

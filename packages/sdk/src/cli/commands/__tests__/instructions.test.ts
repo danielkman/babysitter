@@ -200,7 +200,7 @@ describe("handleInstructionsCommand — automatic harness resolution", () => {
     expect(payload.warnings).toEqual([]);
   });
 
-  it("detects codex from hooks-mux style discovery when SDK caller discovery misses", async () => {
+  it("detects codex from hooks-adapter style discovery when SDK caller discovery misses", async () => {
     process.env.OPENAI_API_KEY = "sk-test";
 
     const code = await handleInstructionsCommand(
@@ -210,7 +210,7 @@ describe("handleInstructionsCommand — automatic harness resolution", () => {
 
     const payload = JSON.parse(stdoutOutput);
     expect(payload.harness).toBe("codex");
-    expect(payload.harnessSource).toBe("hooks-mux");
+    expect(payload.harnessSource).toBe("hooks-adapter");
     expect(payload.discoveryEvidence).toContain("OPENAI_API_KEY");
     expect(payload.warnings).toEqual([]);
   });

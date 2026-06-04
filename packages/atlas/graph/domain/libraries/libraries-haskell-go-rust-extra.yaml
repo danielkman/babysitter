@@ -175,13 +175,13 @@ edges:
     - target: skill-area:cli-tooling
 ---
 nodeKind: Library
-id: library:mux
+id: library:adapter
 attributes:
-  displayName: "Gorilla Mux (mux)"
+  displayName: "Gorilla Adapter (adapter)"
   belongsToLanguageId: language:go
   category: http-server
   description: |
-    The gorilla/mux package — a powerful Go HTTP request router with
+    The gorilla/adapter package — a powerful Go HTTP request router with
     regex-based route matching, named parameters, subrouters, and
     middleware chaining via http.Handler composition.
 edges:

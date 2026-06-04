@@ -92,7 +92,7 @@ test('controller deployment assets build and publish the runnable controller', (
   assert.ok(chartValues.includes('auth:'), 'chart values include auth configuration');
   assert.ok(chartValues.includes('github:') && chartValues.includes('sso:'), 'chart values expose GitHub and SSO configuration');
   assert.ok(chartValues.includes('assistant:') && chartValues.includes('anthropic-api-key'), 'chart values expose assistant secret references');
-  assert.ok(chartValues.includes('agentMux:') && chartValues.includes('gatewayUrl'), 'chart values expose Agent Mux endpoint configuration');
+  assert.ok(chartValues.includes('agentMux:') && chartValues.includes('gatewayUrl'), 'chart values expose Agent Adapter endpoint configuration');
   assert.ok(chartValues.includes('token:') && chartValues.includes('existingSecret: ""'), 'chart values expose Gitea token secret reference');
   assert.ok(chartValues.includes('mode: auto') && chartValues.includes('policyReporter:'), 'chart values expose Kyverno auto-discovery modes and policy reporter settings');
   assert.ok(chartRbac.includes('"*"') && chartRbac.includes('policies.kyverno.io') && chartRbac.includes('policyreports'), 'RBAC covers all Kradle resources via wildcard and Kyverno read/write surfaces');
@@ -105,7 +105,7 @@ test('controller deployment assets build and publish the runnable controller', (
   assert.ok(chartDeployment.includes('readinessProbe:') && chartDeployment.includes('path: /login'), 'web deployment has an HTTP readiness probe');
   assert.ok(chartDeployment.includes('KRADLE_AUTH_DELEGATED_LOCAL_DEVELOPMENT') && chartDeployment.includes('KRADLE_AUTH_DELEGATED_LOCAL_GROUPS'), 'workloads can opt into local delegated development login');
   assert.ok(chartDeployment.includes('ANTHROPIC_API_KEY') && chartDeployment.includes('KRADLE_ASSISTANT_API_KEY'), 'web workload can receive assistant API key references');
-  assert.ok(chartDeployment.includes('KRADLE_GITEA_TOKEN') && chartDeployment.includes('AGENT_MUX_URL') && chartDeployment.includes('AGENT_GATEWAY_URL'), 'workloads can receive Gitea token and Agent Mux endpoint configuration');
+  assert.ok(chartDeployment.includes('KRADLE_GITEA_TOKEN') && chartDeployment.includes('AGENT_MUX_URL') && chartDeployment.includes('AGENT_GATEWAY_URL'), 'workloads can receive Gitea token and Agent Adapter endpoint configuration');
   assert.ok(chartRbac.includes('core.oam.dev') && chartRbac.includes('applications') && chartRbac.includes('create'), 'delivery resources can be composed through Kradle');
   assert.ok(chartValues.includes('localDevelopment:') && chartValues.includes('enabled: false'), 'local delegated development login is off by default');
   for (const token of ['command: ["node", "bin/kradle-server.mjs"]', '--port=3080', 'app.kubernetes.io/component: controllers']) {
@@ -253,7 +253,7 @@ test('controller healthz returns deep dependency and event transport probe detai
     healthProbeOptions: {
       env: {
         KRADLE_GITEA_HTTP_URL: 'https://gitea.internal',
-        AGENT_MUX_URL: 'https://mux.internal',
+        AGENT_MUX_URL: 'https://adapter.internal',
         KRADLE_CONTROLLER_URL: 'https://controller.internal',
         ANTHROPIC_API_KEY: 'sk-ant-api03-test-health-key',
         KRADLE_KUBECTL: 'kubectl-test',

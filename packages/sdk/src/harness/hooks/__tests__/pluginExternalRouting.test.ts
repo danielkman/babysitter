@@ -16,8 +16,8 @@ function evalTasksMux(code: string): unknown {
   return JSON.parse(result.trim());
 }
 
-describe("plugin tasks-mux external routing classification", () => {
-  it("keeps agent responder effects inside tasks-mux so plugin mode can resolve them internally", () => {
+describe("plugin tasks-adapter external routing classification", () => {
+  it("keeps agent responder effects inside tasks-adapter so plugin mode can resolve them internally", () => {
     const result = evalTasksMux(`
       const d = m.routeTask(
         { kind: "agent", agent: { responderType: "agent", adapter: "codex", prompt: { task: "review" } } },

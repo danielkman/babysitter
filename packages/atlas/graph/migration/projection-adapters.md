@@ -1,10 +1,10 @@
 # Projection adapters — required for legacy `agent-catalog` SDK on atlas graph
 
 This is the codegen team's checklist. Each adapter projects a atlas graph subset
-into the shape the legacy SDK accessor returns, so downstream mux generators
+into the shape the legacy SDK accessor returns, so downstream adapter generators
 can swap the underlying graph without rewriting templates.
 
-## 1. `PluginTargetDescriptor` (driver: `extension-mux`)
+## 1. `PluginTargetDescriptor` (driver: `extensions-adapter`)
 
 **Legacy shape (per `packages/agent-catalog/src/models.ts:467`):** flat record
 with `targetId`, `displayName`, `adapterName`, `pluginRootEnvVar`,
@@ -45,7 +45,7 @@ hooks/mcp), `description`.
 **Recommendation:** populate the 10+ flat fields directly on the atlas
 PluginTarget nodes (preserves atlas's normalized shape for everything else,
 but treats codegen-template tokens as first-class node attributes).
-Without this, the mux generator cannot emit working adapter scripts.
+Without this, the adapter generator cannot emit working adapter scripts.
 
 ## 2. `HarnessImageEntry` (driver: `adapters/core/invocation.ts`)
 
@@ -63,20 +63,20 @@ contains PluginArtifact rows but none have `artifactKind: container-image`.
 add a new NodeKind `HarnessImage`. Since legacy already overloads
 PluginArtifact for this, simplest is to mirror the legacy convention.
 
-## 3. `HooksMuxDetectionRule` (driver: `hooks-mux/core/discovery/detector.ts`) — CLOSED (catalog pass 92)
+## 3. `HooksMuxDetectionRule` (driver: `hooks-adapter/core/discovery/detector.ts`) — CLOSED (catalog pass 92)
 
 **Legacy shape:** `{ adapter, confidence, signals[], absentSignals?[] }`.
 
-**atlas source:** 10 DiscoverySignal rows with `scope: hooks-mux` under
-`graph/extensions/discovery-signals/*-hooks-mux*.yaml` (catalog pass 92, verbatim from
+**atlas source:** 10 DiscoverySignal rows with `scope: hooks-adapter` under
+`graph/extensions/discovery-signals/*-hooks-adapter*.yaml` (catalog pass 92, verbatim from
 legacy `discovery-signals-hooks.yaml`). Schema additions in catalog pass 92:
-`scope` enum gained `hooks-mux`; `matchMode` enum gained
+`scope` enum gained `hooks-adapter`; `matchMode` enum gained
 `all-present-with-absences`; new `absentSignals` field on
 `DiscoverySignal`.
 
 **Adapter (consumer-side, trivial):**
 `buildHooksMuxDetectionRules` in `packages/agent-catalog/src/data.ts` reads
-`listNodesByKind("DiscoverySignal").filter(n => n.scope === "hooks-mux")`
+`listNodesByKind("DiscoverySignal").filter(n => n.scope === "hooks-adapter")`
 and maps `{ adapter ← key, confidence, signals, absentSignals }` — already
 implemented and now resolves data on the atlas graph.
 

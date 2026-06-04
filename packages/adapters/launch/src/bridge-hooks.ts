@@ -2,7 +2,7 @@
  * Bridge hook emulation for non-interactive mode.
  *
  * When --bridge-hooks is set, emulates lifecycle hooks by invoking
- * hooks-mux, which reads the harness's hook configuration (settings.json,
+ * hooks-adapter, which reads the harness's hook configuration (settings.json,
  * hooks.json, etc.), resolves ALL registered handlers from ALL installed
  * plugins, and executes them through the proper chain.
  */
@@ -42,7 +42,7 @@ function resolveBabysitterBin(env: Record<string, string>): string {
 }
 
 function resolveHooksMuxBin(env: Record<string, string>): string {
-  return env['HOOKS_MUX_BIN'] || 'a5c-hooks-mux';
+  return env['HOOKS_MUX_BIN'] || 'a5c-hooks-adapter';
 }
 
 /** Map adapters agent name to the babysitter SDK harness name. */
@@ -55,7 +55,7 @@ function harnessToSdkHarness(harness: string): string {
   return map[harness] ?? harness;
 }
 
-/** Map harness name to the hooks-mux adapter name. */
+/** Map harness name to the hooks-adapter adapter name. */
 function harnessToAdapter(harness: string): string {
   const map: Record<string, string> = {
     'claude-code': 'claude',
@@ -189,13 +189,13 @@ export class BridgeHookEmulator {
   }
 
   /**
-   * Invoke a hook event through hooks-mux with explicit handler commands.
+   * Invoke a hook event through hooks-adapter with explicit handler commands.
    *
    * The bridge emulator passes handler commands directly via --handler flags,
    * since there's no harness runtime to read the hook config from. The
    * handlers are the same scripts that the plugin.json defines for each event.
    *
-   * Falls back to direct babysitter CLI if hooks-mux is not available.
+   * Falls back to direct babysitter CLI if hooks-adapter is not available.
    */
   private async invokeHookEvent(nativeEvent: string): Promise<string> {
     const hookType = nativeEvent === 'SessionStart' ? 'session-start'
@@ -219,7 +219,7 @@ export class BridgeHookEmulator {
       babysitterCmd.push('--runs-dir', this.ctx.runsDir);
     }
     // Prepend critical env vars to handler command so they reach babysitter
-    // through the hooks-mux subprocess chain (env may not propagate).
+    // through the hooks-adapter subprocess chain (env may not propagate).
     const envParts: string[] = [];
     if (this.ctx.sessionId) envParts.push(`AGENT_SESSION_ID=${this.ctx.sessionId}`);
     if (this.ctx.env['LIVE_STACK_TRACE_ID']) envParts.push(`LIVE_STACK_TRACE_ID=${this.ctx.env['LIVE_STACK_TRACE_ID']}`);
@@ -254,12 +254,12 @@ export class BridgeHookEmulator {
         stdin: JSON.stringify({ event: nativeEvent }),
       });
       if (this.ctx.verbose) {
-        console.error(`[bridge-hooks] hooks-mux invoke succeeded for ${nativeEvent}`);
+        console.error(`[bridge-hooks] hooks-adapter invoke succeeded for ${nativeEvent}`);
       }
       return result;
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      console.error(`[bridge-hooks] hooks-mux invoke FAILED (${nativeEvent}): ${msg}`);
+      console.error(`[bridge-hooks] hooks-adapter invoke FAILED (${nativeEvent}): ${msg}`);
 
       // Fallback: direct babysitter hook:run
       console.error(`[bridge-hooks] falling back to: ${this.babysitterBin} ${babysitterCmd.slice(1).join(' ')}`);
@@ -278,7 +278,7 @@ export class BridgeHookEmulator {
   /**
    * Emulate the session-start lifecycle hook.
    *
-   * Invokes hooks-mux with the SessionStart event, which reads the
+   * Invokes hooks-adapter with the SessionStart event, which reads the
    * harness's hook configuration and runs all registered session-start
    * handlers from all installed plugins.
    */
@@ -318,7 +318,7 @@ export class BridgeHookEmulator {
   /**
    * Emulate the stop lifecycle hook.
    *
-   * Invokes hooks-mux with the Stop event, then queries run status.
+   * Invokes hooks-adapter with the Stop event, then queries run status.
    */
   async emulateStop(runId?: string): Promise<StopResult> {
     const effectiveRunId = runId ?? this.runId;
@@ -337,7 +337,7 @@ export class BridgeHookEmulator {
 
     if (level === 'unsupported' || level === 'emulated' || level === undefined) {
       try {
-        // Invoke the Stop hook through hooks-mux (all plugins)
+        // Invoke the Stop hook through hooks-adapter (all plugins)
         try {
           await this.invokeHookEvent('Stop');
         } catch {

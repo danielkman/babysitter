@@ -196,7 +196,7 @@ export async function handler(event: UnifiedHookEvent): Promise<UnifiedHookResul
 ### Via CLI Arguments
 
 ```bash
-a5c-hooks-mux invoke --adapter claude --native-event PreToolUse --handler ./my-handler.js:handler
+a5c-hooks-adapter invoke --adapter claude --native-event PreToolUse --handler ./my-handler.js:handler
 ```
 
 ### Via Handler Registry
@@ -246,7 +246,7 @@ registerHandler({
 
 ## Programmatic Usage (In-Process Harnesses)
 
-For in-process harnesses (Pi, Oh-My-Pi, OpenCode, OpenClaw), the hooks-mux provides a programmatic engine that runs handlers in-process without spawning shell subprocesses.
+For in-process harnesses (Pi, Oh-My-Pi, OpenCode, OpenClaw), the hooks-adapter provides a programmatic engine that runs handlers in-process without spawning shell subprocesses.
 
 ### Creating an Engine
 
@@ -348,7 +348,7 @@ engine.use(loggingMiddleware);
 
 ### Comparison: CLI vs Programmatic
 
-| Feature | CLI (`a5c-hooks-mux invoke`) | Programmatic (`createHooksEngine`) |
+| Feature | CLI (`a5c-hooks-adapter invoke`) | Programmatic (`createHooksEngine`) |
 |---------|------|-------------|
 | Handler type | Shell commands (child processes) | In-process functions |
 | Input format | stdin JSON | Direct function arguments |

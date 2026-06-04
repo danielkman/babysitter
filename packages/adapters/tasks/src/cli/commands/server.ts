@@ -14,7 +14,7 @@ export function createServerCommand(): Command {
 
   cmd
     .command("start")
-    .description("Start the tasks-mux MCP server (stdio)")
+    .description("Start the tasks-adapter MCP server (stdio)")
     .action(async (_opts, command: Command) => {
       const allOpts: GlobalOpts = command.optsWithGlobals();
       const jsonMode = allOpts.json === true;
@@ -34,7 +34,7 @@ export function createServerCommand(): Command {
         const { startBreakpointMcpServer } = await import("../../mcp/index.js");
 
         if (!jsonMode) {
-          console.error("Starting tasks-mux MCP server on stdio...");
+          console.error("Starting tasks-adapter MCP server on stdio...");
         }
 
         await startBreakpointMcpServer();

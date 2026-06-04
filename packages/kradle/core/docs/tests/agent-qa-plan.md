@@ -6,7 +6,7 @@ Agent QA covers future agent orchestration functionality:
 
 - agent stacks, tools, MCP servers, skills, subagents;
 - triggers from CI, webhooks, issues, PRs, labels, mentions, schedules, and manual UI;
-- Agent Mux run/session/chat integration;
+- Agent Adapter run/session/chat integration;
 - dispatches displayed as CI-like runs;
 - context assembly, labels, memory, redaction, and snapshots;
 - company brain memory and `.a5c` run imports;
@@ -20,9 +20,9 @@ Agent QA covers future agent orchestration functionality:
 | Stack schema | stack/tool/MCP/skill/subagent resource validation and readiness conditions. |
 | Permission review | RBAC, secret/config grants, memory grants, missing capability explanations. |
 | Context assembly | prompt layers, source provenance, labels, redaction, digest snapshots. |
-| Dispatch lifecycle | create run/attempt, Agent Mux handoff, event stream, cancel/resume/retry. |
+| Dispatch lifecycle | create run/attempt, Agent Adapter handoff, event stream, cancel/resume/retry. |
 | Trigger rules | dry-run, dedupe, coalesce, branch/source filters, trusted/untrusted refs. |
-| Agent Mux adapter | launch payload, capability discovery, session binding, transcript events. |
+| Agent Adapter adapter | launch payload, capability discovery, session binding, transcript events. |
 | Memory | query, historical refs, tool access, snapshot reuse, stale warnings. |
 | Run import | `MEMORY.md`, sessions, `.a5c` journals/tasks/artifacts, redaction, PR review. |
 | Write-back | patch/comment/check/review artifacts, approval, idempotency, rollback. |
@@ -35,7 +35,7 @@ Agent QA covers future agent orchestration functionality:
 - agent on fork tries to access trusted secrets;
 - trigger label tries to grant permission;
 - context label tries to hide instructions from preview;
-- Agent Mux session ID belongs to another org/run;
+- Agent Adapter session ID belongs to another org/run;
 - memory tool reads outside pinned snapshot;
 - `.a5c` import contains secret-like content;
 - write-back tries to mutate unapproved target;
@@ -58,6 +58,6 @@ Agent functionality is not production-ready until:
 - unit/integration/API tests cover resource and controller logic;
 - browser tests cover the primary user journeys;
 - cross-org and no-secret negative tests pass;
-- Agent Mux fake/session tests pass;
+- Agent Adapter fake/session tests pass;
 - memory snapshot and import fixtures pass;
 - audit/events can explain every dispatch and write-back.

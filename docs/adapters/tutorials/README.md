@@ -1,11 +1,11 @@
 ---
-title: Agent Mux Tutorials
+title: Agent Adapter Tutorials
 description: Task-oriented walkthroughs for using @a5c-ai/adapters without treating the API reference as a tutorial.
 last_updated: 2026-04-27
 category: landing
 ---
 
-# Agent Mux Tutorials
+# Agent Adapter Tutorials
 
 Use these guides when you want to accomplish a concrete `@a5c-ai/adapters` task and do not need the full normative reference first.
 
@@ -17,7 +17,7 @@ Use these guides when you want to accomplish a concrete `@a5c-ai/adapters` task 
 
 ## Usage Rule
 
-Tutorials explain workflows. They do not override the canonical contract in [Agent Mux Reference](../reference/README.md).
+Tutorials explain workflows. They do not override the canonical contract in [Agent Adapter Reference](../reference/README.md).
 
 ## Suggested Path
 

@@ -44,7 +44,7 @@ const nativeContextParams = {
 };
 
 export const createTodoDescription =
-  "Create a todo routed through tasks-mux. The todo is stored as a task-like breakpoint so existing responder backends, routing, and audit trails remain the source of truth.";
+  "Create a todo routed through tasks-adapter. The todo is stored as a task-like breakpoint so existing responder backends, routing, and audit trails remain the source of truth.";
 
 export const createTodoParams = {
   title: z.string().min(1).describe("Short todo title."),
@@ -56,7 +56,7 @@ export const createTodoParams = {
 };
 
 export const createTaskDescription =
-  "Create a task routed through tasks-mux. This is an alias-friendly task surface backed by the same breakpoint storage as assign_task.";
+  "Create a task routed through tasks-adapter. This is an alias-friendly task surface backed by the same breakpoint storage as assign_task.";
 
 export const createTaskParams = {
   title: z.string().min(1).describe("Task title."),
@@ -68,7 +68,7 @@ export const createTaskParams = {
 };
 
 export const assignTaskDescription =
-  "Assign a task through tasks-mux responder routing. Use this instead of direct agent delegation when the work should be visible to the task router.";
+  "Assign a task through tasks-adapter responder routing. Use this instead of direct agent delegation when the work should be visible to the task router.";
 
 export const assignTaskParams = {
   taskId: z.string().min(1).optional().describe("Existing task or breakpoint id to assign. If omitted, creates a new task."),
@@ -82,7 +82,7 @@ export const assignTaskParams = {
 };
 
 export const searchTasksDescription =
-  "Search task-like breakpoints currently visible to tasks-mux. This is read-only and uses the configured BreakpointBackend.";
+  "Search task-like breakpoints currently visible to tasks-adapter. This is read-only and uses the configured BreakpointBackend.";
 
 export const searchTasksParams = {
   query: z.string().optional(),
@@ -170,7 +170,7 @@ export const exportTasksParams = {
 };
 
 export const escalateDescription =
-  "Escalate an existing task or create a high-urgency intervention through tasks-mux routing.";
+  "Escalate an existing task or create a high-urgency intervention through tasks-adapter routing.";
 
 export const escalateParams = {
   taskId: z.string().min(1).optional().describe("Existing task or breakpoint id to escalate."),
@@ -193,7 +193,7 @@ export const cancelBreakpointParams = {
 };
 
 export const escalateBreakpointDescription =
-  "Escalate an existing breakpoint through tasks-mux routing and lifecycle state.";
+  "Escalate an existing breakpoint through tasks-adapter routing and lifecycle state.";
 
 export const escalateBreakpointParams = {
   breakpointId: z.string().min(1).describe("Existing breakpoint id to escalate."),

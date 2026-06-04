@@ -1,7 +1,7 @@
 /**
  * Verifies that resolveSessionIdDetailed() returns process.env.AGENT_SESSION_ID.
  *
- * Env-file parsing was removed during harness unification -- hooks-mux now
+ * Env-file parsing was removed during harness unification -- hooks-adapter now
  * handles session ID propagation via AGENT_SESSION_ID.
  */
 

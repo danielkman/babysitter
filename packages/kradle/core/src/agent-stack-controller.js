@@ -6,7 +6,7 @@ export const AGENT_STACK_CONTROLLER_BOUNDARY = {
   scope: 'Stack readiness reconciliation with capability resolution and condition management',
   owns: ['capability resolution', 'stack conditions', 'readiness computation', 'mcp health checks'],
   delegatesTo: ['agent-permission-review', 'resource-model'],
-  mustNotOwn: ['secret values', 'dispatch execution', 'Agent Mux sessions']
+  mustNotOwn: ['secret values', 'dispatch execution', 'Agent Adapter sessions']
 };
 
 const MCP_HEALTH_TIMEOUT_MS = 3000;

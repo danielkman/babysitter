@@ -78,7 +78,7 @@ describe('translateForClaude', () => {
       expect(result.env['GOOGLE_CLOUD_LOCATION']).toBe('us-central1');
     });
 
-    it('routes Gemini models on Vertex through transport-mux', () => {
+    it('routes Gemini models on Vertex through transport-adapter', () => {
       const result = translateForClaude(makeConfig({ provider: 'vertex', model: 'gemini-3.1-pro-preview', auth: { type: 'adc', apiKey: 'google-key' } }));
       expect(result.env).toEqual({ ANTHROPIC_API_KEY: '' });
       expect(result.proxyRequired).toBe(true);
@@ -87,7 +87,7 @@ describe('translateForClaude', () => {
   });
 
   describe('foundry provider', () => {
-    it('routes Foundry through transport-mux with Claude-facing Anthropic transport', () => {
+    it('routes Foundry through transport-adapter with Claude-facing Anthropic transport', () => {
       const result = translateForClaude(makeConfig({ provider: 'foundry', model: 'gpt-5.5', auth: { type: 'api_key', apiKey: 'az-key' } }));
       expect(result.env).toEqual({ ANTHROPIC_API_KEY: '' });
       expect(result.proxyRequired).toBe(true);

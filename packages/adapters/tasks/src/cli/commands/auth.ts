@@ -130,12 +130,12 @@ function createLoginCommand(): Command {
 }
 
 function createServerConfigCommand(): Command {
-  const cmd = new Command("server").description("Manage the saved tasks-mux server URL");
+  const cmd = new Command("server").description("Manage the saved tasks-adapter server URL");
 
   cmd
     .command("set")
-    .argument("<url>", "Breakpoints-mux server URL")
-    .description("Save a default server URL in ~/.tasks-mux/config.json")
+    .argument("<url>", "Breakpoints-adapter server URL")
+    .description("Save a default server URL in ~/.tasks-adapter/config.json")
     .action((url: string, _opts: Record<string, unknown>, command: Command) => {
       const allOpts: GlobalOpts = command.optsWithGlobals();
       const jsonMode = allOpts.json === true;
@@ -148,10 +148,10 @@ function createServerConfigCommand(): Command {
             status: "saved",
             key: "serverUrl",
             value: resolveServerUrl(url),
-            source: "~/.tasks-mux/config.json",
+            source: "~/.tasks-adapter/config.json",
           }));
         } else {
-          console.log(`Saved default server URL to ~/.tasks-mux/config.json: ${resolveServerUrl(url)}`);
+          console.log(`Saved default server URL to ~/.tasks-adapter/config.json: ${resolveServerUrl(url)}`);
         }
       } catch (error) {
         printError(error, jsonMode);
@@ -161,7 +161,7 @@ function createServerConfigCommand(): Command {
 
   cmd
     .command("clear")
-    .description("Remove the saved default server URL from ~/.tasks-mux/config.json")
+    .description("Remove the saved default server URL from ~/.tasks-adapter/config.json")
     .action((_opts, command: Command) => {
       const allOpts: GlobalOpts = command.optsWithGlobals();
       const jsonMode = allOpts.json === true;
@@ -170,9 +170,9 @@ function createServerConfigCommand(): Command {
         saveClientConfig({ serverUrl: "" });
 
         if (jsonMode) {
-          console.log(JSON.stringify({ status: "cleared", key: "serverUrl", source: "~/.tasks-mux/config.json" }));
+          console.log(JSON.stringify({ status: "cleared", key: "serverUrl", source: "~/.tasks-adapter/config.json" }));
         } else {
-          console.log("Cleared saved default server URL from ~/.tasks-mux/config.json");
+          console.log("Cleared saved default server URL from ~/.tasks-adapter/config.json");
         }
       } catch (error) {
         printError(error, jsonMode);
@@ -189,7 +189,7 @@ function createTokenCommand(): Command {
   cmd
     .command("set")
     .argument("<token>", "Bearer token value")
-    .description("Save a bearer token in ~/.tasks-mux/config.json")
+    .description("Save a bearer token in ~/.tasks-adapter/config.json")
     .action((token: string, _opts: Record<string, unknown>, command: Command) => {
       const allOpts: GlobalOpts = command.optsWithGlobals();
       const jsonMode = allOpts.json === true;
@@ -201,9 +201,9 @@ function createTokenCommand(): Command {
         });
 
         if (jsonMode) {
-          console.log(JSON.stringify({ status: "saved", source: "~/.tasks-mux/config.json" }));
+          console.log(JSON.stringify({ status: "saved", source: "~/.tasks-adapter/config.json" }));
         } else {
-          console.log("Saved bearer token to ~/.tasks-mux/config.json");
+          console.log("Saved bearer token to ~/.tasks-adapter/config.json");
         }
       } catch (error) {
         printError(error, jsonMode);
@@ -213,7 +213,7 @@ function createTokenCommand(): Command {
 
   cmd
     .command("clear")
-    .description("Remove the saved bearer token from ~/.tasks-mux/config.json")
+    .description("Remove the saved bearer token from ~/.tasks-adapter/config.json")
     .action((_opts, command: Command) => {
       const allOpts: GlobalOpts = command.optsWithGlobals();
       const jsonMode = allOpts.json === true;
@@ -222,9 +222,9 @@ function createTokenCommand(): Command {
         saveClientConfig({ authToken: "" });
 
         if (jsonMode) {
-          console.log(JSON.stringify({ status: "cleared", source: "~/.tasks-mux/config.json" }));
+          console.log(JSON.stringify({ status: "cleared", source: "~/.tasks-adapter/config.json" }));
         } else {
-          console.log("Cleared saved bearer token from ~/.tasks-mux/config.json");
+          console.log("Cleared saved bearer token from ~/.tasks-adapter/config.json");
         }
       } catch (error) {
         printError(error, jsonMode);
@@ -279,7 +279,7 @@ function createStatusCommand(): Command {
           if (jsonMode) {
             console.log(JSON.stringify({ authenticated: false }));
           } else {
-            console.log("Not authenticated. Use `tasks-mux auth login`, `tasks-mux auth token set`, or BMUX_AUTH_TOKEN.");
+            console.log("Not authenticated. Use `tasks-adapter auth login`, `tasks-adapter auth token set`, or BMUX_AUTH_TOKEN.");
           }
           return;
         }
@@ -301,9 +301,9 @@ function createStatusCommand(): Command {
             : process.env.AUTH_TOKEN
               ? "AUTH_TOKEN"
               : config.authToken
-                ? "~/.tasks-mux/config.json"
+                ? "~/.tasks-adapter/config.json"
                 : auth
-                  ? "~/.tasks-mux/auth.json"
+                  ? "~/.tasks-adapter/auth.json"
                   : "unknown";
 
         if (jsonMode) {
@@ -346,7 +346,7 @@ function createKeygenCommand(): Command {
       try {
         const keyPair: SSHKeyPair = generateSSHKeyPair();
 
-        // Save private key to ~/.tasks-mux/keys/{fingerprint}.pem
+        // Save private key to ~/.tasks-adapter/keys/{fingerprint}.pem
         const keysDir = getKeysDir();
         mkdirSync(keysDir, { recursive: true });
 
@@ -400,7 +400,7 @@ function createKeyPushCommand(): Command {
         const keyFiles = listKeyFiles(keysDir);
 
         if (keyFiles.length === 0) {
-          throw new Error("No keys found. Run `tasks-mux auth keygen` first.");
+          throw new Error("No keys found. Run `tasks-adapter auth keygen` first.");
         }
 
         // Find the key to push
@@ -475,7 +475,7 @@ function createKeysCommand(): Command {
           if (jsonMode) {
             console.log(JSON.stringify([]));
           } else {
-            console.log("No keys found. Run `tasks-mux auth keygen` to generate a key pair.");
+            console.log("No keys found. Run `tasks-adapter auth keygen` to generate a key pair.");
           }
           return;
         }

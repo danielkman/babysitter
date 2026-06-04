@@ -83,4 +83,4 @@ attributes:
     - amp
   notes: >
     Default fallback for the generic OpenAI translation.
-    Routes through transport-mux proxy exposing OpenAI Chat transport.
+    Routes through transport-adapter proxy exposing OpenAI Chat transport.

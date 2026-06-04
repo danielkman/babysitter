@@ -65,7 +65,7 @@ describe("CLI Auth Store", () => {
     it("returns path under homedir", async () => {
       const { getBmuxDir } = await importAuthStore();
       const dir = getBmuxDir();
-      expect(dir).toBe(join(testHomeDir, ".tasks-mux"));
+      expect(dir).toBe(join(testHomeDir, ".tasks-adapter"));
     });
   });
 
@@ -73,7 +73,7 @@ describe("CLI Auth Store", () => {
     it("returns auth.json path", async () => {
       const { getAuthStorePath } = await importAuthStore();
       const path = getAuthStorePath();
-      expect(path).toBe(join(testHomeDir, ".tasks-mux", "auth.json"));
+      expect(path).toBe(join(testHomeDir, ".tasks-adapter", "auth.json"));
     });
   });
 
@@ -81,7 +81,7 @@ describe("CLI Auth Store", () => {
     it("returns config.json path", async () => {
       const { getClientConfigPath } = await importAuthStore();
       const path = getClientConfigPath();
-      expect(path).toBe(join(testHomeDir, ".tasks-mux", "config.json"));
+      expect(path).toBe(join(testHomeDir, ".tasks-adapter", "config.json"));
     });
   });
 
@@ -89,7 +89,7 @@ describe("CLI Auth Store", () => {
     it("returns keys directory path", async () => {
       const { getKeysDir } = await importAuthStore();
       const dir = getKeysDir();
-      expect(dir).toBe(join(testHomeDir, ".tasks-mux", "keys"));
+      expect(dir).toBe(join(testHomeDir, ".tasks-adapter", "keys"));
     });
   });
 
@@ -107,7 +107,7 @@ describe("CLI Auth Store", () => {
       expect(loaded!.user.login).toBe("testuser");
     });
 
-    it("creates .tasks-mux directory if it does not exist", async () => {
+    it("creates .tasks-adapter directory if it does not exist", async () => {
       const { saveAuthState, getBmuxDir } = await importAuthStore();
       const token = validAuthToken();
 

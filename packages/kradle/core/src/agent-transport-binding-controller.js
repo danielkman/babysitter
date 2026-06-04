@@ -7,7 +7,7 @@ export const AGENT_TRANSPORT_BINDING_CONTROLLER_BOUNDARY = {
   scope: 'AgentTransportBinding lifecycle: validation, connection status tracking, reconnect policy enforcement',
   owns: ['binding validation', 'connection status tracking', 'reconnect policy enforcement'],
   delegatesTo: ['resource-model', 'agent-adapter-controller'],
-  mustNotOwn: ['secret values', 'dispatch execution', 'Agent Mux sessions', 'adapter implementation']
+  mustNotOwn: ['secret values', 'dispatch execution', 'Agent Adapter sessions', 'adapter implementation']
 };
 
 const VALID_PROTOCOLS = ['stdio', 'http', 'websocket', 'unix'];

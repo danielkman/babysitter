@@ -72,7 +72,7 @@ Built-in browser enables closed-loop visual feedback: agent writes code → code
 
 | Sero Feature | Our Equivalent |
 |---|---|
-| Multi-provider LLM | adapters/core — 25+ providers, transport-mux proxy |
+| Multi-provider LLM | adapters/core — 25+ providers, transport-adapter proxy |
 | Plugin system | genty/platform/plugins — sandbox, permissions, marketplace |
 | Memory/persistence | sdk/profiles + sdk/session — user+project profiles, session state |
 | Subagent framework | genty/core/subagent — 3 invocation modes, oversight |

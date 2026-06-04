@@ -105,7 +105,7 @@ nodes:
     edges:
       source_of:
         - target: agent:babysitter
-  - id: source-ref:agent-platform-mux-reference
+  - id: source-ref:agent-platform-adapter-reference
     kind: SourceRef
     edges:
       source_of:
@@ -115,17 +115,17 @@ nodes:
     edges:
       source_of:
         - target: agent:babysitter-sdk
-  - id: source-ref:packages-tool-mux
+  - id: source-ref:packages-tools-adapter
     kind: SourceRef
     edges:
       source_of:
         - target: agent:adapters
-  - id: source-ref:packages-agent-launch-mux
+  - id: source-ref:packages-agent-launch-adapter
     kind: SourceRef
     edges:
       source_of:
         - target: agent:adapters
-  - id: source-ref:packages-agent-config-mux
+  - id: source-ref:packages-agent-config-adapter
     kind: SourceRef
     edges:
       source_of:

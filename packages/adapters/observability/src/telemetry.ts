@@ -43,7 +43,7 @@ export interface TelemetryConfig {
 }
 
 /**
- * Agent-mux specific metrics.
+ * Adapters specific metrics.
  */
 export interface AgentMuxMetrics {
   /** Counter for total agent runs */

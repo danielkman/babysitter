@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { createProxyConfig, createProxyProcessEnv, readProxyConfigFromEnv, validateProxyConfig } from '../src/config.js';
 
-describe('transport-mux config', () => {
+describe('transport-adapter config', () => {
   afterEach(() => {
     vi.unstubAllEnvs();
   });

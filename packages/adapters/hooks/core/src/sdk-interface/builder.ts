@@ -7,7 +7,7 @@ import type { SupportLevel } from '../types/lifecycle';
 // ---------------------------------------------------------------------------
 
 /**
- * Build a UnifiedHookEvent for sending to hooks-mux stdin.
+ * Build a UnifiedHookEvent for sending to hooks-adapter stdin.
  * Used by in-process adapters or test harnesses.
  */
 export class HookEventBuilder {

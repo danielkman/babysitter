@@ -1,5 +1,5 @@
 /**
- * Canonical lifecycle phases covering all hook events in the unified hooks-mux system.
+ * Canonical lifecycle phases covering all hook events in the unified hooks-adapter system.
  */
 export const CANONICAL_PHASES = [
   // Session lifecycle

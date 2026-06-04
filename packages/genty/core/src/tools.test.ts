@@ -332,12 +332,12 @@ describe("agent-core tools", () => {
     }
 
     const result = await createTodo.execute("call-create-todo", {
-      title: "Review tasks-mux routing",
+      title: "Review tasks-adapter routing",
       responderType: "human",
     });
 
     expect(taskHandler).toHaveBeenCalledWith({
-      title: "Review tasks-mux routing",
+      title: "Review tasks-adapter routing",
       responderType: "human",
       tool: "create_todo",
       action: "create_todo",
@@ -345,7 +345,7 @@ describe("agent-core tools", () => {
     expect(JSON.parse(getText(result))).toEqual({
       routed: true,
       params: {
-        title: "Review tasks-mux routing",
+        title: "Review tasks-adapter routing",
         responderType: "human",
         tool: "create_todo",
         action: "create_todo",

@@ -1,0 +1,16 @@
+nodeKind: PackageSurface
+id: package:a5c-ai-agent-comm-adapter
+attributes:
+  packageId: "@a5c-ai/comm-adapter"
+  packageName: "@a5c-ai/comm-adapter"
+  workspacePath: packages/adapters/core
+  moduleType: typescript
+  surfaceKinds:
+    - host-detection-consumer
+    - invocation-consumer
+  sourceOfTruthRole: wrapper-over-graph
+  publishedTo: npm
+  versionPolicy: semver
+edges:
+  references_path:
+    - target: path:adapters-hooks-global

@@ -1,4 +1,4 @@
-# Agent-Mux Repository Integration
+# Agent-Adapter Repository Integration
 
 → [Documentation Index](README.md) | Related: [Unified Stack Architecture](unified-stack-architecture.md) | [Package Specifications](package-specs.md)
 
@@ -39,15 +39,15 @@ The integrated `adapters` package family includes:
 - **`@a5c-ai/adapters-harness-mock`**
 - **`@a5c-ai/adapters-proxy`**
 
-## How Agent-Mux Fits Into The Stack
+## How Agent-Adapter Fits Into The Stack
 
-Agent-mux is the dispatch layer, not the orchestration core.
+Adapters is the dispatch layer, not the orchestration core.
 
 - Babysitter owns runs, replay, effect lifecycles, process execution, and CLI orchestration.
 - adapters owns harness-facing adapter behavior, normalized event streams, invocation modes, and agent-running APIs.
-- `hooks-mux` normalizes hook payloads across harnesses.
-- `extension-mux` compiles the unified plugin authoring surface into harness-specific bundles.
-- `tasks-mux` handles routed human approval and response flows when those are needed.
+- `hooks-adapter` normalizes hook payloads across harnesses.
+- `extensions-adapter` compiles the unified plugin authoring surface into harness-specific bundles.
+- `tasks-adapter` handles routed human approval and response flows when those are needed.
 
 This means the integration is already a package-and-boundary question inside one repository, not a cross-repo migration plan.
 
@@ -86,11 +86,11 @@ The main integration seam is:
 The plugin and hook story spans multiple packages:
 
 - `plugins/babysitter-unified/` is the canonical plugin authoring surface.
-- `packages/extension-mux` is the compiler for harness-specific outputs.
+- `packages/extensions-adapter` is the compiler for harness-specific outputs.
 - `packages/adapters/hooks/*` normalizes hook contracts across harnesses.
 - per-harness plugin bundles remain the real installation surfaces users consume.
 
-For V6, this package set is the concrete delivery path for metaplugins on legacy non-Babysitter agents. The metaplugin itself is the higher-order capability being expressed across plugin and hook surfaces; `extension-mux` only compiles the concrete outputs that carry it. The intended examples are memory systems, governance or policy engines, and discipline-enforcement layers. The `babysitter-unified` plugin family fits here as a first-party unified plugin source and deployment surface, not as the definition of metaplugins.
+For V6, this package set is the concrete delivery path for metaplugins on legacy non-Babysitter agents. The metaplugin itself is the higher-order capability being expressed across plugin and hook surfaces; `extensions-adapter` only compiles the concrete outputs that carry it. The intended examples are memory systems, governance or policy engines, and discipline-enforcement layers. The `babysitter-unified` plugin family fits here as a first-party unified plugin source and deployment surface, not as the definition of metaplugins.
 
 ### 4. UI And Surface Consumption
 

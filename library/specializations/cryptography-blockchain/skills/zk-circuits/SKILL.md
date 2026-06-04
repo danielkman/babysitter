@@ -123,21 +123,21 @@ template MerkleProof(levels) {
     signal input pathIndices[levels];
 
     component hashers[levels];
-    component mux[levels];
+    component adapter[levels];
 
     signal levelHashes[levels + 1];
     levelHashes[0] <== leaf;
 
     for (var i = 0; i < levels; i++) {
         hashers[i] = Poseidon(2);
-        mux[i] = Mux1();
+        adapter[i] = Mux1();
 
-        mux[i].c[0] <== levelHashes[i];
-        mux[i].c[1] <== pathElements[i];
-        mux[i].s <== pathIndices[i];
+        adapter[i].c[0] <== levelHashes[i];
+        adapter[i].c[1] <== pathElements[i];
+        adapter[i].s <== pathIndices[i];
 
-        hashers[i].inputs[0] <== mux[i].out;
-        hashers[i].inputs[1] <== levelHashes[i] + pathElements[i] - mux[i].out;
+        hashers[i].inputs[0] <== adapter[i].out;
+        hashers[i].inputs[1] <== levelHashes[i] + pathElements[i] - adapter[i].out;
 
         levelHashes[i + 1] <== hashers[i].out;
     }

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Agent workspaces connect repository state, issue/PR work, Agent Mux sessions, runtime previews, and write-back artifacts. This document defines workspace lifecycle and associations in Kradle while preserving repository-native navigation.
+Agent workspaces connect repository state, issue/PR work, Agent Adapter sessions, runtime previews, and write-back artifacts. This document defines workspace lifecycle and associations in Kradle while preserving repository-native navigation.
 
 ## Workspace resource model
 

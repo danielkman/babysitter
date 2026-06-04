@@ -960,7 +960,7 @@ function openAiResponsesStreamResponse(
           }
         } catch (streamError: unknown) {
           const errorMsg = streamError instanceof Error ? streamError.message : String(streamError);
-          console.error(`[transport-mux] SSE stream error: ${errorMsg}`);
+          console.error(`[transport-adapter] SSE stream error: ${errorMsg}`);
           controller.enqueue(
             encoder.encode(
               encodeSseChunk('event: error\ndata: ', {
@@ -1187,7 +1187,7 @@ async function handleOpenAiResponsesWebSocketMessage(
   } catch (error: unknown) {
     metrics.recordError();
     const errMsg = error instanceof Error ? error.message : String(error);
-    console.error(`[transport-mux] WebSocket completion error: ${errMsg}`);
+    console.error(`[transport-adapter] WebSocket completion error: ${errMsg}`);
     ws.send(JSON.stringify({
       type: 'error',
       error: { message: error instanceof Error ? error.message : String(error) },
@@ -1399,7 +1399,7 @@ function anthropicResponse(result: CompletionResult, config: ProxyConfig) {
   if (result.toolCalls) {
     for (const tc of result.toolCalls) {
       let input: unknown;
-      try { input = JSON.parse(tc.arguments); } catch (e) { process.stderr.write(`[transport-mux] tool call arguments parse failed for ${tc.name}: ${e instanceof Error ? e.message : String(e)}\n`); input = { _parseError: true, _rawArguments: tc.arguments }; }
+      try { input = JSON.parse(tc.arguments); } catch (e) { process.stderr.write(`[transport-adapter] tool call arguments parse failed for ${tc.name}: ${e instanceof Error ? e.message : String(e)}\n`); input = { _parseError: true, _rawArguments: tc.arguments }; }
       const block: Record<string, unknown> = { type: 'tool_use', id: tc.id, name: tc.name, input };
       if (tc.metadata) Object.assign(block, tc.metadata);
       content.push(block);
@@ -1557,7 +1557,7 @@ export function createTransportMuxApp({ config, completionEngine, costFeedbackSi
       // Gemini CLI sends the API key as a ?key= query parameter
       const queryKey = c.req.query('key');
       if (!queryKey || queryKey !== config.authToken) {
-        console.error(`[transport-mux] AUTH REJECT: path=${c.req.path} queryKey=${queryKey ? queryKey.slice(0,8) + '...' : 'null'} expectedToken=${config.authToken?.slice(0,8)}... headers: x-api-key=${c.req.header('x-api-key')?.slice(0,8) ?? 'null'} auth=${c.req.header('authorization')?.slice(0,20) ?? 'null'}`);
+        console.error(`[transport-adapter] AUTH REJECT: path=${c.req.path} queryKey=${queryKey ? queryKey.slice(0,8) + '...' : 'null'} expectedToken=${config.authToken?.slice(0,8)}... headers: x-api-key=${c.req.header('x-api-key')?.slice(0,8) ?? 'null'} auth=${c.req.header('authorization')?.slice(0,20) ?? 'null'}`);
         return c.json({ error: { message: 'Unauthorized' } }, 401);
       }
     }
@@ -1629,7 +1629,7 @@ export function createTransportMuxApp({ config, completionEngine, costFeedbackSi
   });
 
   app.post('/v1/responses', async (c) => {
-    console.error(`[transport-mux] POST /v1/responses (HTTP SSE)`);
+    console.error(`[transport-adapter] POST /v1/responses (HTTP SSE)`);
     const plan = await createExecutionPlan(c.req.raw, 'openai-responses', { thoughtSignatureStore });
     if (plan instanceof Response) {
       return plan;
@@ -1816,15 +1816,15 @@ export async function startProxyServer(
   const webSocketServer = new WebSocketServer({ noServer: true });
   server.on('upgrade', (req, socket, head) => {
     const url = new URL(req.url ?? '/', `http://${config.host}:${config.port}`);
-    console.error(`[transport-mux] WebSocket upgrade: ${url.pathname} transport=${config.exposedTransport}`);
+    console.error(`[transport-adapter] WebSocket upgrade: ${url.pathname} transport=${config.exposedTransport}`);
     if (url.pathname !== '/v1/responses' || config.exposedTransport !== 'openai-responses') {
-      console.error(`[transport-mux] WebSocket rejected: wrong path or transport`);
+      console.error(`[transport-adapter] WebSocket rejected: wrong path or transport`);
       socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
       socket.destroy();
       return;
     }
     if (!isAuthorizedUpgrade(req, config.authToken)) {
-      console.error(`[transport-mux] WebSocket rejected: unauthorized`);
+      console.error(`[transport-adapter] WebSocket rejected: unauthorized`);
       socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
       socket.destroy();
       return;

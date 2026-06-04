@@ -128,7 +128,7 @@ if (action.kind === "agent" && action.taskDef?.agent?.external) {
 
 The amuxBridge in agent-platform already handles:
 - Harness → adapter name mapping (`amuxHarnessMap.ts`)
-- Agent-mux client lifecycle (`amuxClientFactory.ts`)
+- Adapters client lifecycle (`amuxClientFactory.ts`)
 - Event streaming and mapping (`amuxEventMapper.ts`)
 - Cost tracking from adapters events
 - Session ID management

@@ -37,7 +37,7 @@
   },
   "bin": {
     "adapters-tasks": "./dist/cli/index.js",
-    "tasks-mux": "./dist/cli/tasks-mux.js"
+    "tasks-adapter": "./dist/cli/tasks-adapter.js"
   },
   "files": [
     "dist",
@@ -90,7 +90,7 @@
       "L14"
     ],
     "muxes": [
-      "tasks-mux"
+      "tasks-adapter"
     ]
   }
 }

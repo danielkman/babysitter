@@ -30,7 +30,7 @@ export interface SSHKeyInfo {
  * Options for constructing an AuthClient.
  */
 export interface AuthClientOptions {
-  /** Base URL of the BMUX server (defaults to https://tasks-mux.a5c.ai/api/v1). */
+  /** Base URL of the BMUX server (defaults to https://tasks-adapter.a5c.ai/api/v1). */
   serverUrl?: string;
   /** Static access token. */
   token?: string;

@@ -61,7 +61,7 @@ Required screens:
 | `/orgs/[org]` | shows Agents and Memory attention cards. |
 | `/orgs/[org]/repositories/[repo]/code` | manual dispatch button with memory preview. |
 | `/orgs/[org]/repositories/[repo]/runs` | shows agent dispatch rows beside pipeline rows. |
-| `/orgs/[org]/agents/runs/[run]` | shows run timeline, Agent Mux session placeholder/link, context bundle, memory snapshot. |
+| `/orgs/[org]/agents/runs/[run]` | shows run timeline, Agent Adapter session placeholder/link, context bundle, memory snapshot. |
 | `/orgs/[org]/agents/memory` | shows memory repo health, current commit, ontology status, imports. |
 | `/orgs/[org]/agents/memory/search` | can query selected graph/Markdown sources. |
 | `/orgs/[org]/agents/memory/imports/[import]` | review summarized import, redaction, validation, PR/merge state. |

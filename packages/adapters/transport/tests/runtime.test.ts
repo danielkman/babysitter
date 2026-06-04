@@ -4,11 +4,11 @@ import { HttpServerMock, createScriptableTransportBuilder } from '../../harness-
 
 import { applyTransportMuxToHarnessEnv, startTransportMuxRuntime, type TransportMuxRuntime } from '../src/runtime.js';
 
-describe('transport-mux runtime', () => {
+describe('transport-adapter runtime', () => {
   it('starts a runtime and applies openai harness env from the running listener', async () => {
     const upstream = new HttpServerMock(
       createScriptableTransportBuilder()
-        .name('transport-mux-runtime-upstream')
+        .name('transport-adapter-runtime-upstream')
         .http({ port: 19086 })
         .onRequest('/v1/chat/completions', {
           status: 200,

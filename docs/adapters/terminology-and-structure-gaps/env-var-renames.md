@@ -33,4 +33,4 @@ Log deprecation warning when old var is used.
 ## CI/CD Updates
 
 All `.github/workflows/*.yml` files that set `AMUX_*` env vars need updating.
-All `action.yml` and pipeline templates (Azure, GitLab, etc.) in `packages/triggers-mux/` need updating.
+All `action.yml` and pipeline templates (Azure, GitLab, etc.) in `packages/triggers-adapter/` need updating.

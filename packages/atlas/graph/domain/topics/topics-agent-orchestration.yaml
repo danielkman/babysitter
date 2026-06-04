@@ -134,7 +134,7 @@ attributes:
     Each adapter translates between the unified AgentAdapter interface and
     the native CLI of its target agent, handling spawn arguments, event
     parsing (JSONL/SSE/streaming), session management, thinking
-    normalization, and platform-specific behavior. The hooks-mux layer
+    normalization, and platform-specific behavior. The hooks-adapter layer
     normalizes hook events across harnesses.
 edges:
   applies_to:
@@ -151,7 +151,7 @@ attributes:
     PreToolUse hooks for approval and input mutation, PostToolUse hooks for
     side-effects and logging, Stop hooks for driving orchestration loops
     (the babysitter harness pattern), SessionStart hooks for context
-    injection, and the hooks-mux fan-out/merge architecture that
+    injection, and the hooks-adapter fan-out/merge architecture that
     aggregates results from multiple hook sources into a single decision.
 edges:
   applies_to:

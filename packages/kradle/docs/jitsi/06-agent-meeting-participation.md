@@ -107,7 +107,7 @@ async function createManualDispatch({ agentStack, meetingRef, ...rest }) {
 }
 ```
 
-### Agent Mux Client Changes
+### Agent Adapter Client Changes
 
 In `adapters-client.js`, add Jitsi sidecar to Job spec:
 

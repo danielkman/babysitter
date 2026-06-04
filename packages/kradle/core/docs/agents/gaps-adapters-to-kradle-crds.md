@@ -1,4 +1,4 @@
-# Gaps: Agent Mux Experiences → Kradle CRDs & UI
+# Gaps: Agent Adapter Experiences → Kradle CRDs & UI
 
 Status: Draft for review
 Date: 2026-05-11
@@ -53,7 +53,7 @@ Stack builder should let users pick adapter type, configure transport, test conn
 - **Approval mode toggle** — yolo/prompt/deny per session
 
 ### What kradle has
-- `AgentSession` resource (metadata only — mux session ID, dispatch run ref)
+- `AgentSession` resource (metadata only — adapter session ID, dispatch run ref)
 - Basic `/agents/runs` list page (table of dispatch runs)
 - No chat interface, no session detail, no flow visualization
 
@@ -217,7 +217,7 @@ Stack builder should let users pick adapter type, configure transport, test conn
 
 | CRD | Purpose |
 |-----|---------|
-| **AgentGatewayConfig** (config) | Runtime Agent Mux gateway connection settings — URL, auth, reconnect policy, feature flags |
+| **AgentGatewayConfig** (config) | Runtime Agent Adapter gateway connection settings — URL, auth, reconnect policy, feature flags |
 
 ---
 
@@ -267,7 +267,7 @@ The kradle web console will need a tool rendering system when session detail vie
 2. **AgentTransportBinding** — connection config for adapter instance
 3. **AgentProviderConfig** — model provider (Anthropic, OpenAI, etc.)
 4. **AgentProject** — project grouping with board config
-5. **AgentGatewayConfig** — runtime Agent Mux gateway settings
+5. **AgentGatewayConfig** — runtime Agent Adapter gateway settings
 
 ### AGGREGATED_KINDS (postgres) — 3 new
 6. **AgentSessionTranscript** — durable chat transcript with pagination

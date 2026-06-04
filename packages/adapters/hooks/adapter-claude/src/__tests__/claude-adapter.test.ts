@@ -336,12 +336,12 @@ describe('normalizeClaude', () => {
         task_id: 'task-1',
         task_kind: 'agent',
         task_title: 'Implement hook',
-        task_labels: ['hooks-mux'],
+        task_labels: ['hooks-adapter'],
       }).payload).toMatchObject({
         taskId: 'task-1',
         taskKind: 'agent',
         taskTitle: 'Implement hook',
-        taskLabels: ['hooks-mux'],
+        taskLabels: ['hooks-adapter'],
       });
 
       expect(normalizeClaude('TaskCompleted', {

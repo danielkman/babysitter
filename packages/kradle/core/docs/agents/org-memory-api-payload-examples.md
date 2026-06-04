@@ -196,7 +196,7 @@ Response excerpt:
     "agentStack": "claude-code-ci-repair"
   },
   "attempts": [
-    { "name": "ada-01hx-1", "phase": "Running", "agentMuxSessionId": "mux-session-123" }
+    { "name": "ada-01hx-1", "phase": "Running", "agentMuxSessionId": "adapter-session-123" }
   ],
   "contextBundle": {
     "name": "acb-01hx",

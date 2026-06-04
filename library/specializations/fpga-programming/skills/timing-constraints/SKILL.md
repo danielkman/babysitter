@@ -146,7 +146,7 @@ set_false_path -from [get_clocks clk_b] -to [get_clocks clk_a]
 set_false_path -from [get_cells -hier -filter {NAME =~ *cdc_src_reg*}] \
                -to [get_cells -hier -filter {NAME =~ *cdc_dst_sync_reg[0]*}]
 
-# Mutually exclusive clock mux paths
+# Mutually exclusive clock adapter paths
 set_false_path -from [get_clocks clk_mux_a] -to [get_clocks clk_mux_b]
 set_false_path -from [get_clocks clk_mux_b] -to [get_clocks clk_mux_a]
 
@@ -189,7 +189,7 @@ set_clock_groups -asynchronous \
   -group [get_clocks clk_125mhz] \
   -group [get_clocks gt_refclk]
 
-# Physically exclusive clocks (mux-selected)
+# Physically exclusive clocks (adapter-selected)
 set_clock_groups -physically_exclusive \
   -group [get_clocks clk_mux_a] \
   -group [get_clocks clk_mux_b]

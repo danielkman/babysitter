@@ -247,7 +247,7 @@ attributes:
   description: |
     Transport adapter configuration for agent communication within Kradle.
     Defines how the platform communicates with agent runtimes — via the
-    Agent Mux bridge, direct process spawning, or remote API calls.
+    Agent Adapter bridge, direct process spawning, or remote API calls.
     Each adapter type has its own configuration shape for timeouts,
     retry policies, and protocol negotiation.
 edges:

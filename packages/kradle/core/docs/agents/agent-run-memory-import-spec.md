@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Kradle should support importing durable agent-run memory into the org company brain. This includes `MEMORY.md`, Agent Mux/Babysitter session summaries, curated `.a5c` run journals, task results, artifact manifests, retrospectives, and selected process notes. The import path turns operational run state into governed org memory without dumping entire workspaces or leaking secrets.
+Kradle should support importing durable agent-run memory into the org company brain. This includes `MEMORY.md`, Agent Adapter/Babysitter session summaries, curated `.a5c` run journals, task results, artifact manifests, retrospectives, and selected process notes. The import path turns operational run state into governed org memory without dumping entire workspaces or leaking secrets.
 
 ## Source model
 
@@ -13,7 +13,7 @@ Kradle should support importing durable agent-run memory into the org company br
 | journal events | `.a5c/runs/<run>/journal/*.json` | `babysitter/runs/<run>/journal/*.yaml` | curated/redacted. |
 | task records | `.a5c/runs/<run>/tasks/*/{task,result,output}.json` | `babysitter/runs/<run>/tasks/*.yaml` | summaries by default. |
 | artifacts | `.a5c/artifacts/*` or run artifact refs | `babysitter/runs/<run>/artifacts/manifest.yaml` | digest/manifest only by default. |
-| sessions | Agent Mux/Babysitter session transcript or summary | `babysitter/sessions/<date>/<session>.md` | summary by default. |
+| sessions | Agent Adapter/Babysitter session transcript or summary | `babysitter/sessions/<date>/<session>.md` | summary by default. |
 | retrospectives | run review output | `babysitter/retrospectives/<run>.md` | yes when approved. |
 
 Raw transcripts, raw logs, raw artifacts, and raw workspace files require explicit retention policy and reviewer approval.
@@ -252,5 +252,5 @@ The memory import review panel should show:
 - source digest, redaction digest, validation report digest, and target branch;
 - generated file tree and diff summary;
 - secret-scan and prompt-injection scan summaries;
-- linked Agent Dispatch Run, Agent Mux session, Babysitter run, artifacts, and retrospective;
+- linked Agent Dispatch Run, Agent Adapter session, Babysitter run, artifacts, and retrospective;
 - actions: approve, request changes, reject, merge, rerun validation, lower retention tier.

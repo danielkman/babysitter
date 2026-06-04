@@ -229,7 +229,7 @@ approvalPolicy:
   requireWriteBackApproval: true
 ```
 
-`status` must include queue times, attempt refs, Agent Mux IDs, source breadcrumbs, artifacts, approvals, cost, event cursor, permission snapshot digest, and terminal reason.
+`status` must include queue times, attempt refs, Agent Adapter IDs, source breadcrumbs, artifacts, approvals, cost, event cursor, permission snapshot digest, and terminal reason.
 
 ### `AgentDispatchAttempt.spec`
 

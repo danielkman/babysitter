@@ -248,9 +248,9 @@ async function isHostDelegableEffect(
     const taskDef = await readTaskDefinition(runDir, record.effectId);
     if (!taskDef) return record.kind !== "breakpoint";
     fallbackDelegable = inferHostDelegableFromTaskDef(taskDef, record.kind);
-    const mux = await importOptionalModule("@a5c-ai/tasks-adapter") as TasksMuxModuleLike;
-    const routeTask = mux.routeTask;
-    const isHostDelegableRoute = mux.isHostDelegableRoute;
+    const adapter = await importOptionalModule("@a5c-ai/tasks-adapter") as TasksMuxModuleLike;
+    const routeTask = adapter.routeTask;
+    const isHostDelegableRoute = adapter.isHostDelegableRoute;
     if (typeof routeTask !== "function" || typeof isHostDelegableRoute !== "function") {
       return fallbackDelegable;
     }

@@ -19,7 +19,7 @@ Current E2E tests validate chart package surface and minikube dry-run command pl
 
 | Scenario | Steps | Assertions |
 | --- | --- | --- |
-| Manual agent dispatch | repo code -> dispatch agent -> run detail | dispatch run, attempt, Agent Mux session, context bundle. |
+| Manual agent dispatch | repo code -> dispatch agent -> run detail | dispatch run, attempt, Agent Adapter session, context bundle. |
 | Dispatch with memory | select memory source -> preview -> dispatch | memory snapshot commit, selected records, digests, redaction. |
 | Historical memory | choose `refAt` -> dispatch -> retry | retry stays pinned, stale warning shown. |
 | Import run memory | run detail -> import `.a5c` summary -> approve | redacted import, validation report, memory PR/commit. |
@@ -37,7 +37,7 @@ Nightly/staging suites should eventually run against a real cluster with:
 - NATS/webhook queue;
 - Argo CD/KubeVela;
 - ARC or runner abstraction;
-- Agent Mux gateway/runtime when enabled.
+- Agent Adapter gateway/runtime when enabled.
 
 ## E2E artifacts
 

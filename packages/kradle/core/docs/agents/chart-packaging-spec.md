@@ -91,11 +91,11 @@ Current deployments already set auth-related env vars. Agent additions should in
 
 ### NetworkPolicy
 
-Agent Mux gateway and MCP traffic should be explicit egress rules, not broad outbound allow. The UI should surface when network policy blocks an MCP server or Agent Mux gateway.
+Agent Adapter gateway and MCP traffic should be explicit egress rules, not broad outbound allow. The UI should surface when network policy blocks an MCP server or Agent Adapter gateway.
 
 ### Secrets
 
-Agent Mux gateway credentials should use `existingSecret` by default. The chart must not render provider secrets from plaintext values except for local-dev/demo modes.
+Agent Adapter gateway credentials should use `existingSecret` by default. The chart must not render provider secrets from plaintext values except for local-dev/demo modes.
 
 ## Examples
 
@@ -124,5 +124,5 @@ When implementation starts, update `scripts/validate-package.mjs` to check:
 
 - Agent features should be disabled by default until a vertical slice is implemented.
 - Installing the chart with `agents.enabled=false` should behave exactly as today.
-- Enabling agents without Agent Mux gateway configured should show degraded readiness, not crash the whole app.
+- Enabling agents without Agent Adapter gateway configured should show degraded readiness, not crash the whole app.
 - Missing RBAC permissions should disable agent actions but keep repository browsing available.

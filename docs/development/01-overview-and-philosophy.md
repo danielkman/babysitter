@@ -23,8 +23,8 @@ graph TB
     subgraph "Runtime Layer"
         ADAPTERS["Adapters<br/>(thin wrappers, data from graph)"]
         LAUNCH["Launch<br/>(adapters launch)"]
-        PROXY["Proxy<br/>(transport-mux)"]
-        HOOKS["Hooks<br/>(hooks-mux)"]
+        PROXY["Proxy<br/>(transport-adapter)"]
+        HOOKS["Hooks<br/>(hooks-adapter)"]
     end
 
     SOURCES --> ATLAS
@@ -81,11 +81,11 @@ graph TB
 
     subgraph "Orchestration"
         SDK["Babysitter SDK<br/>(run lifecycle)"]
-        HOOKS["Hooks-Mux<br/>(lifecycle normalization)"]
+        HOOKS["Hooks-Adapter<br/>(lifecycle normalization)"]
     end
 
     subgraph "Transport"
-        PROXY["Transport-Mux<br/>(protocol bridge)"]
+        PROXY["Transport-Adapter<br/>(protocol bridge)"]
         ENGINES["Completion Engines<br/>(OpenAI, Google)"]
     end
 
@@ -128,12 +128,12 @@ graph TB
 | `packages/adapters/cli` | `adapters` CLI: launch, install, run |
 | `packages/adapters/adapters` | Per-harness thin wrappers (data from graph) |
 | `packages/adapters/core` | Provider resolver, workspace service |
-| `packages/transport-mux` | HTTP proxy: protocol translation between harness ↔ provider |
+| `packages/transport-adapter` | HTTP proxy: protocol translation between harness ↔ provider |
 | `packages/adapters/hooks` | Hook normalization: native events → canonical phases |
 | `packages/sdk` | Babysitter SDK: run lifecycle, session binding, MCP tools |
-| `packages/triggers-mux` | GitHub Action: trigger evaluation + agent dispatch |
+| `packages/triggers-adapter` | GitHub Action: trigger evaluation + agent dispatch |
 | `packages/kradle` | Kubernetes operator + web UI for cloud deployment |
-| `packages/extension-mux` | Plugin generator: unified source → per-harness distributions |
+| `packages/extensions-adapter` | Plugin generator: unified source → per-harness distributions |
 | `packages/genty/platform` | Standalone babysitter agent (internal harness) |
 
 ## Development Workflow

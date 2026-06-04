@@ -13,9 +13,9 @@
 |----------|-------|---------|----------|
 | Adapter self-identity defaults | 38 | adapters/adapters | High |
 | Adapter self-registration calls | 10 | adapters/adapters | High |
-| hooks-mux adapter defaults + fallbacks | 40 | hooks-mux/adapter-* | High |
+| hooks-adapter adapter defaults + fallbacks | 40 | hooks-adapter/adapter-* | High |
 | Dispatch switches (translate/launch/tui) | 11 | adapters/adapters + cli | Medium |
-| Adapter class→format maps | 9 | extension-mux | Medium |
+| Adapter class→format maps | 9 | extensions-adapter | Medium |
 | SDK prompt context factory names | 9 | sdk/harness | Medium |
 | CLI paths/capabilities | 5 | adapters/cli | Medium |
 | Model/host-detection registries | 6 | adapters/core | Medium |
@@ -52,9 +52,9 @@ registerAdapterFactory('claude', () => new ClaudeAdapter());
 
 **Fix:** Read the adapter name from the catalog or from the `adapterModule` field that already exists in Atlas. The barrel import in index.ts triggers registrations.
 
-### H3 — hooks-mux adapter defaults + fallbacks (40 refs)
+### H3 — hooks-adapter adapter defaults + fallbacks (40 refs)
 
-Each hooks-mux adapter has:
+Each hooks-adapter adapter has:
 - `createAdapter(name = 'claude')` — default name literal
 - `ADAPTER_NAME = 'codex'` — const in normalizers
 - `_adapterName = 'claude'` — mutable default
@@ -62,7 +62,7 @@ Each hooks-mux adapter has:
 
 **Files:** All 9 adapter-*/src/ packages (adapter.ts, normalizer.ts, mappings.ts, integration.ts)
 
-**Fix:** Remove ALL defaults. The adapter-loader in hooks-mux-cli MUST pass the name from the catalog. If catalog is unavailable, fail explicitly rather than silently using a wrong default.
+**Fix:** Remove ALL defaults. The adapter-loader in hooks-adapter-cli MUST pass the name from the catalog. If catalog is unavailable, fail explicitly rather than silently using a wrong default.
 
 **Atlas data needed:** Already available — `adapterName` on PluginTarget.
 
@@ -95,7 +95,7 @@ case 'gemini': ...
 
 **Fix:** Launch config comes from catalog. Each agent's launch behavior is an Atlas attribute (`launchMode: 'cli-spawn' | 'sdk-connect' | 'websocket'`).
 
-### M3 — extension-mux adapter class→format maps (9 refs)
+### M3 — extensions-adapter adapter class→format maps (9 refs)
 
 ```typescript
 const ADAPTER_CLASS_BY_FORMAT = {
@@ -105,7 +105,7 @@ const ADAPTER_CLASS_BY_FORMAT = {
 };
 ```
 
-**File:** packages/extension-mux/src/targets/adapters/index.ts
+**File:** packages/extensions-adapter/src/targets/adapters/index.ts
 
 **Fix:** Self-registration pattern. Each adapter class registers itself by hookRegistrationFormat at import time. The index.ts barrel import triggers all registrations.
 
@@ -185,8 +185,8 @@ per-agent.ts, probe.ts, types.ts, scenarios.ts, hooks.ts, errors.ts, interactive
 | P6: Scripts/CI (sync-external, docs freshness, architecture) | ✅ |
 | Prompt contexts (capabilityCollector, compose, criticalRules, runCreation, taskKinds) | ✅ |
 | Provider support matrix | ✅ |
-| hooks-mux adapter capabilities → Atlas (11 fields) | ✅ |
-| hooks-mux phase mappings → Atlas (4 fields on HookMapping) | ✅ |
+| hooks-adapter adapter capabilities → Atlas (11 fields) | ✅ |
+| hooks-adapter phase mappings → Atlas (4 fields on HookMapping) | ✅ |
 | Pattern C: self-registering adapters adapters | ✅ |
 | 329 harness name literals → parameterized | ✅ |
 | agent-catalog: pure Atlas wrapper (no graph/, evidence/, assets.ts) | ✅ |

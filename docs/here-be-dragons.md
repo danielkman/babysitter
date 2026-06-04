@@ -76,8 +76,8 @@ Files/modules that concentrate the most danger across multiple categories.
 | Importer | Imports From (internal path) | Risk |
 |----------|----------------------------|------|
 | `genty` tests | `sdk/src/storage` (createRunDir, appendEvent) | SDK refactor breaks genty |
-| `hooks-mux/core` tests | `adapter-claude/src/mappings`, `adapter-codex/src/mappings` | Adapter restructure breaks core |
-| `hooks-mux/adapter-codex` tests | `cli/src/cli/stdin`, `cli/src/cli/adapter-loader` | CLI module changes break adapter tests |
+| `hooks-adapter/core` tests | `adapter-claude/src/mappings`, `adapter-codex/src/mappings` | Adapter restructure breaks core |
+| `hooks-adapter/adapter-codex` tests | `cli/src/cli/stdin`, `cli/src/cli/adapter-loader` | CLI module changes break adapter tests |
 
 ### Circular dependency (via re-export shim)
 
@@ -176,7 +176,7 @@ The timeout sets an abort signal but doesn't guarantee the request stops. Fetch 
 | Explicit `any` type annotations | 207 | Acceptable — concentrated in adapters/serialization, not business logic |
 | Commented-out code blocks | 20+ files | Low accumulation — comments often explain why removed |
 | Skipped/conditional tests | 20+ suites | Mostly justified; unexplained `SessionDetailScreen` skips fixed |
-| E2E/integration tests | 6 files | Gap: no E2E for orchestration, hook-mux lifecycle, or trigger dispatch |
+| E2E/integration tests | 6 files | Gap: no E2E for orchestration, hook-adapter lifecycle, or trigger dispatch |
 | Pre-release packages (0.1.0) | 5 | atlas, atlas/webui, kradle/cli, kradle/sdk, compendium |
 
 ### ~~Unexplained skipped tests~~
@@ -196,7 +196,7 @@ The timeout sets an abort signal but doesn't guarantee the request stops. Fetch 
 - ~~**Duplicate global registry**~~: extracted `createGlobalRegistry` factory, all three copies now thin wrappers
 - ~~**`noImplicitAny: false`** in `packages/adapters/gateway/tsconfig.json`~~ — **FIXED:** set to `true` along with `useUnknownInCatchVariables`
 - **`skipLibCheck: true`** in root `tsconfig.json` — dependency type incompatibilities invisible
-- **E2E gaps**: No end-to-end coverage for babysitter orchestration loop, hook-mux lifecycle, or trigger dispatching. Heavy reliance on unit tests
+- **E2E gaps**: No end-to-end coverage for babysitter orchestration loop, hook-adapter lifecycle, or trigger dispatching. Heavy reliance on unit tests
 
 ### #601 disposition
 

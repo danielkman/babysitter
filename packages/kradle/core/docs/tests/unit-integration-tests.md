@@ -23,7 +23,7 @@
 | Runner + fake Kubernetes | ServiceAccount selection, untrusted fork policy, job lifecycle. |
 | Hook queue + fake delivery | signing, retry, replay, failure status. |
 | Memory import + fake Git repo | read `.a5c`, redact, normalize, validate, open PR. |
-| Agent dispatch + fake Agent Mux | launch, session binding, events, cancel/resume. |
+| Agent dispatch + fake Agent Adapter | launch, session binding, events, cancel/resume. |
 
 ## Required negative tests
 

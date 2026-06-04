@@ -19,7 +19,7 @@ export function createProgram(): Command {
   program
     .name("adapters-tasks")
     .version("5.0.0")
-    .description("CLI for Breakpoints Mux - route breakpoints to domain responders")
+    .description("CLI for Breakpoints Adapter - route breakpoints to domain responders")
     .option(
       "--server-url <url>",
       `Server URL (defaults to ${DEFAULT_BMUX_SERVER_URL})`,

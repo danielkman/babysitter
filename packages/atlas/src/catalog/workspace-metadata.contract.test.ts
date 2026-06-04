@@ -18,7 +18,7 @@ const METADATA_FILES = [
   "scripts/check-architecture-boundaries.cjs",
   "scripts/fix-broken-latest-tags.mjs",
   "scripts/generate-plugins.mjs",
-  "scripts/hooks-mux-build.cjs",
+  "scripts/hooks-adapter-build.cjs",
   "scripts/sync-external-plugin-repos.mjs",
   "packages/atlas/graph/catalog-meta/package-surfaces/agent-catalog.yaml",
   "packages/atlas/graph/catalog-meta/ci-surfaces/agent-catalog.yaml",

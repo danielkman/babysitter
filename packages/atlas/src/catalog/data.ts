@@ -46,7 +46,7 @@ import {
   effectiveTransportMuxUnresolvedGaps,
   shouldSurfaceCapabilitySupport,
   shouldSurfaceTransportRuntime,
-} from "./transport-mux-cutover";
+} from "./transport-adapter-cutover";
 import type {
   AgentCatalog,
   AgentVersion,
@@ -687,7 +687,7 @@ function buildCapabilityAssertions(): CapabilityAssertion[] {
 
 function buildHookDetectionRules(): HooksMuxDetectionRule[] {
   return listNodesByKind("DiscoverySignal")
-    .filter((node) => valueAsString(node.scope) === "hooks-mux")
+    .filter((node) => valueAsString(node.scope) === "hooks-adapter")
     .map((node) => ({
       adapter: valueAsString(node.key),
       confidence: (valueAsString(node.confidence) as HooksMuxDetectionRule["confidence"]) || "low",

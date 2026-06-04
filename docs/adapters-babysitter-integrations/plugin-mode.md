@@ -2,7 +2,7 @@
 
 ## Summary
 
-When babysitter runs as a plugin inside another agent (claude-code, codex, gemini-cli, copilot), the SDK operates in "plugin mode" — effects are delegated to the host agent, capabilities are discovered via environment variables, and the hook lifecycle is driven by hooks-mux.
+When babysitter runs as a plugin inside another agent (claude-code, codex, gemini-cli, copilot), the SDK operates in "plugin mode" — effects are delegated to the host agent, capabilities are discovered via environment variables, and the hook lifecycle is driven by hooks-adapter.
 
 This document covers gaps in the plugin integration surface and what's needed to enable cross-agent dispatch from within plugin mode.
 
@@ -11,13 +11,13 @@ This document covers gaps in the plugin integration surface and what's needed to
 ```
 Host Agent (claude-code, codex, etc.)
   ↓ turn.stop hook fires
-hooks-mux adapter (per-agent normalizer)
+hooks-adapter adapter (per-agent normalizer)
   ↓ injects AGENT_CAPABILITIES_JSON + AGENT_SESSION_ID
 Babysitter SDK (unified adapter)
   ↓ runs process iteration
   ↓ ctx.task() creates effects → throws EffectRequestedError
   ↓ stop-hook handler: {"decision": "block", "pendingEffects": [...]}
-hooks-mux renders response back to host
+hooks-adapter renders response back to host
   ↓
 Host agent resolves effects (file edits, bash, etc.)
   ↓ calls babysitter MCP server task_post
@@ -51,7 +51,7 @@ SDK journals resolution → next iteration
 
 **Implementation:**
 - Extend `AGENT_CAPABILITIES_JSON` to include optional `hostTools` inventory
-- hooks-mux adapters populate this from reliable host agent tool descriptors when available
+- hooks-adapter adapters populate this from reliable host agent tool descriptors when available
 - SDK's promptContext includes available host tools and renders them separately from external agent dispatch guidance
 
 **Files affected:**
@@ -74,10 +74,10 @@ SDK journals resolution → next iteration
 
 **Current:** Each plugin instance is isolated. Babysitter plugin in claude-code can't coordinate with babysitter plugin in codex running in a different session.
 
-**Needed (future):** Shared task queue across plugin instances via tasks-mux. When babysitter in claude-code creates a breakpoint, a babysitter instance in codex could pick it up.
+**Needed (future):** Shared task queue across plugin instances via tasks-adapter. When babysitter in claude-code creates a breakpoint, a babysitter instance in codex could pick it up.
 
 **Files affected:**
-- `packages/tasks-mux/src/backend.ts` — backend needs multi-session support
+- `packages/tasks-adapter/src/backend.ts` — backend needs multi-session support
 - `packages/sdk/src/harness/hooks/stopHookHandler.ts` — check for cross-session tasks
 
 ### 5. Subprocess support in plugin mode

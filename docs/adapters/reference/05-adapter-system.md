@@ -14,7 +14,7 @@ This specification defines the adapter system: the primary extension and abstrac
 2. **`BaseAgentAdapter`** -- an abstract class that provides shared utilities and hook points, reducing boilerplate for adapter authors.
 3. **`AdapterRegistry`** -- the runtime registry that manages adapter instances, provides discovery and detection, and enables plugin-based extensibility.
 
-Every agent interaction in adapters flows through an adapter. When `mux.run(options)` is called, the system resolves the adapter from the registry, calls `buildSpawnArgs()` to construct the subprocess invocation, spawns the process, feeds each output line through `parseEvent()` to produce normalized `AgentEvent` values, and invokes lifecycle hooks on completion or failure.
+Every agent interaction in adapters flows through an adapter. When `adapter.run(options)` is called, the system resolves the adapter from the registry, calls `buildSpawnArgs()` to construct the subprocess invocation, spawns the process, feeds each output line through `parseEvent()` to produce normalized `AgentEvent` values, and invokes lifecycle hooks on completion or failure.
 
 ### 1.1 Cross-References
 
@@ -39,7 +39,7 @@ Every agent interaction in adapters flows through an adapter. When `mux.run(opti
 1. **One adapter per agent.** The registry holds exactly one adapter per `AgentName`. Registration with a name that already exists replaces the previous adapter (with safeguards; see Section 8.1).
 2. **Adapters are stateless.** An adapter instance does not hold per-run state. All run-specific state lives in the `RunHandle` and the stream engine. A single adapter instance serves all concurrent runs for that agent.
 3. **Fail loudly, recover gracefully.** Adapter methods that encounter errors throw typed exceptions. The run engine catches these and emits appropriate error events rather than silently dropping output.
-4. **Plugin adapters are first-class.** Third-party adapters registered via `mux.adapters.register()` have identical capabilities and lifecycle to built-in adapters. There is no privileged internal API.
+4. **Plugin adapters are first-class.** Third-party adapters registered via `adapter.adapters.register()` have identical capabilities and lifecycle to built-in adapters. There is no privileged internal API.
 
 ---
 
@@ -743,14 +743,14 @@ abstract class BaseAgentAdapter implements AgentAdapter {
 
 ## 5. AdapterRegistry Interface
 
-The `AdapterRegistry` is accessed via `mux.adapters` on the `AgentMuxClient`. It manages the set of available adapters, provides synchronous metadata queries, async detection of installed agents, and the registration API for plugin adapters.
+The `AdapterRegistry` is accessed via `adapter.adapters` on the `AgentMuxClient`. It manages the set of available adapters, provides synchronous metadata queries, async detection of installed agents, and the registration API for plugin adapters.
 
 ```typescript
 /**
  * Registry of agent adapters. Manages discovery, detection, capability
  * queries, and plugin adapter registration.
  *
- * Accessed via mux.adapters on AgentMuxClient.
+ * Accessed via adapter.adapters on AgentMuxClient.
  *
  * @see AgentMuxClient in 01-core-types-and-client.md, Section 5.
  */
@@ -842,7 +842,7 @@ interface AdapterRegistry {
    * If the agent has active runs (RunHandles that have not completed),
    * the adapter remains functional for those runs -- unregistration
    * only prevents new runs from being started with this agent.
-   * Subsequent calls to mux.run() with this agent name will throw
+   * Subsequent calls to adapter.run() with this agent name will throw
    * AgentMuxError with code 'UNKNOWN_AGENT'.
    *
    * @param agent - The agent name to unregister.
@@ -939,7 +939,7 @@ Adapters are registered in two ways:
 
 1. **Built-in adapters.** When `@a5c-ai/adapters-codecs` is imported (or `@a5c-ai/adapters` is imported, which re-exports it), all ten built-in adapter instances are created and registered with the `AdapterRegistry`. This happens synchronously during module initialization. Built-in adapters are marked with `source: 'built-in'`.
 
-2. **Plugin adapters.** Third-party adapters are registered by calling `mux.adapters.register(adapter)` at any time after the client is created. Plugin adapters are marked with `source: 'plugin'`. See Section 8 for details.
+2. **Plugin adapters.** Third-party adapters are registered by calling `adapter.adapters.register(adapter)` at any time after the client is created. Plugin adapters are marked with `source: 'plugin'`. See Section 8 for details.
 
 Registration is synchronous and validates the adapter's shape (all required fields and methods present, correct types). No filesystem or network access occurs during registration.
 
@@ -947,9 +947,9 @@ Registration is synchronous and validates the adapter's shape (all required fiel
 
 Detection determines whether an agent's CLI binary is installed, what version it is, and its auth state. Detection is triggered by:
 
-- `mux.adapters.detect(agent)` -- single agent.
-- `mux.adapters.installed()` -- all registered agents in parallel.
-- Implicitly before `mux.run()` if the agent has not been detected yet in this client lifetime.
+- `adapter.adapters.detect(agent)` -- single agent.
+- `adapter.adapters.installed()` -- all registered agents in parallel.
+- Implicitly before `adapter.run()` if the agent has not been detected yet in this client lifetime.
 
 Detection sequence for a single agent:
 
@@ -964,7 +964,7 @@ Detection results are cached for 30 seconds. Calling `detect()` within the cache
 
 ### 7.3 Spawn
 
-When `mux.run(options)` is called:
+When `adapter.run(options)` is called:
 
 1. **Resolve adapter.** Look up the adapter for `options.agent` in the registry. Throw `AgentMuxError` with code `'UNKNOWN_AGENT'` if not found.
 2. **Validate capabilities.** Check that `options` do not request capabilities the agent lacks (e.g., `thinkingEffort` on an agent where `supportsThinking` is false). Throw `CapabilityError` on mismatch.
@@ -1060,12 +1060,12 @@ const bareAdapter: AgentAdapter = {
 };
 
 // Register with the client
-const mux = createClient();
-mux.adapters.register(new MyAgentAdapter());
-mux.adapters.register(bareAdapter);
+const adapter = createClient();
+adapter.adapters.register(new MyAgentAdapter());
+adapter.adapters.register(bareAdapter);
 
 // Now usable like any built-in agent
-const handle = mux.run({ agent: 'my-agent', prompt: 'Hello' });
+const handle = adapter.run({ agent: 'my-agent', prompt: 'Hello' });
 ```
 
 ### 8.2 npm Package Convention
@@ -1091,8 +1091,8 @@ export default new AiderAdapter();
 // Consumer code
 import aiderAdapter from 'adapters-adapter-aider';
 
-const mux = createClient();
-mux.adapters.register(aiderAdapter);
+const adapter = createClient();
+adapter.adapters.register(aiderAdapter);
 ```
 
 ### 8.3 Name Collision Rules
@@ -1165,7 +1165,7 @@ When `unregister()` is called for an agent that has one or more active (in-progr
 
 - The adapter instance is removed from the registry's lookup map immediately.
 - Active `RunHandle` instances retain a direct reference to the adapter instance. They continue to function normally -- `parseEvent()` is still called for each line, hooks still fire on exit.
-- New calls to `mux.run()` with the unregistered agent name fail with `AgentMuxError` code `'UNKNOWN_AGENT'`.
+- New calls to `adapter.run()` with the unregistered agent name fail with `AgentMuxError` code `'UNKNOWN_AGENT'`.
 - The adapter instance is garbage-collected only after all `RunHandle` references to it are released (i.e., all active runs complete).
 
 This design avoids the complexity of "pending unregister" states. The registry is a lookup table, not a lifecycle manager.
@@ -1212,7 +1212,7 @@ An adapter may declare an empty `models` array. This is valid for agents where t
 - `capabilities()` still works normally.
 - `ModelRegistry.models(agent)` returns an empty array.
 - `ModelRegistry.defaultModel(agent)` returns null.
-- `mux.run()` with no `model` specified and no `defaultModelId` on the adapter: the agent is invoked without a model flag, relying on the agent's own default model selection.
+- `adapter.run()` with no `model` specified and no `defaultModelId` on the adapter: the agent is invoked without a model flag, relying on the agent's own default model selection.
 
 ### 10.7 hermes Adapter Specifics
 

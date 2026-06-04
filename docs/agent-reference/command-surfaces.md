@@ -55,7 +55,7 @@ Use it for human-invoked orchestration sessions and runtime services:
 
 External agent tasks start as normal `ctx.task()` effects. The difference is the
 agent routing hint: `agent.responderType: "agent"` plus a required `adapter`.
-During orchestration, tasks-mux chooses the responder backend. Internal
+During orchestration, tasks-adapter chooses the responder backend. Internal
 responders continue through the normal agent-core path, human responders use the
 breakpoint path, and agent responders route to `AgentMuxResponderBackend`, which
 uses adapters and the lower-level `amuxBridge` integration.
@@ -82,7 +82,7 @@ Troubleshooting common external agent failures:
 
 Older design docs may still say `agent.external: true`,
 `fallbackToInternal`, or direct `amuxBridge` dispatch. The current contributor
-surface should describe the tasks-mux responder route and use
+surface should describe the tasks-adapter responder route and use
 `responderType: "agent"` in new examples.
 
 ## Runs Directory Defaults

@@ -169,7 +169,7 @@ jobs:
             - Pricing tier (if available)
             - Whether it's available through Azure/Bedrock/Vertex (cross-provider)
             - What needs to change in our graph (new ModelVersion node, new edges, etc.)
-            - Whether our transport-mux proxy supports the required API format
+            - Whether our transport-adapter proxy supports the required API format
 
             STEP 6: If graph YAML changes are needed:
             - Update or create model records in capabilities-and-models/

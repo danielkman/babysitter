@@ -614,7 +614,7 @@ describe('invoke — full CLI pipeline (e2e)', { timeout: 30000 }, () => {
           task_id: 'task-1',
           task_kind: 'agent',
           task_title: 'Implement hook',
-          task_labels: ['hooks-mux'],
+          task_labels: ['hooks-adapter'],
         },
       },
       {

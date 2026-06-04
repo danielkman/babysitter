@@ -1,0 +1,15 @@
+nodeKind: PackageSurface
+id: package:a5c-ai-extensions-adapter
+attributes:
+  packageId: "@a5c-ai/extensions-adapter"
+  packageName: "@a5c-ai/extensions-adapter"
+  workspacePath: packages/extensions-adapter
+  moduleType: typescript
+  surfaceKinds:
+    - plugin-consumer
+  sourceOfTruthRole: wrapper-over-graph
+  publishedTo: npm
+  versionPolicy: semver
+edges:
+  references_path:
+    - target: path:adapters-hooks-project

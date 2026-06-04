@@ -10,31 +10,31 @@
 
 This specification defines the `PluginManager` interface and the complete plugin ecosystem for adapters. The plugin system provides a unified interface for discovering, installing, updating, and removing plugins across all supported agents, despite each agent having a fundamentally different native plugin architecture.
 
-The `PluginManager` is accessed via `mux.plugins` on the `AgentMuxClient`:
+The `PluginManager` is accessed via `adapter.plugins` on the `AgentMuxClient`:
 
 ```typescript
-const mux = createClient();
+const adapter = createClient();
 
 // List installed plugins for an agent:
-const plugins = await mux.plugins.list('openclaw');
+const plugins = await adapter.plugins.list('openclaw');
 
 // Install a plugin:
-const installed = await mux.plugins.install('opencode', 'opencode-tokenscope');
+const installed = await adapter.plugins.install('opencode', 'opencode-tokenscope');
 
 // Search across registries:
-const results = await mux.plugins.search('web browser', { agents: ['openclaw'] });
+const results = await adapter.plugins.search('web browser', { agents: ['openclaw'] });
 
 // Browse by category:
-const browsed = await mux.plugins.browse({ category: 'coding', sortBy: 'downloads' });
+const browsed = await adapter.plugins.browse({ category: 'coding', sortBy: 'downloads' });
 
 // Get detailed info:
-const detail = await mux.plugins.info('@openclaw/browser-skill', 'openclaw');
+const detail = await adapter.plugins.info('@openclaw/browser-skill', 'openclaw');
 
 // Update all plugins for an agent:
-const updated = await mux.plugins.updateAll('omp');
+const updated = await adapter.plugins.updateAll('omp');
 
 // Uninstall:
-await mux.plugins.uninstall('pi', '@mariozechner/pi-subagents');
+await adapter.plugins.uninstall('pi', '@mariozechner/pi-subagents');
 ```
 
 ### 1.1 Design Principles
@@ -78,7 +78,7 @@ await mux.plugins.uninstall('pi', '@mariozechner/pi-subagents');
 
 ## 2. PluginManager Interface
 
-The `PluginManager` is the unified entry point for all plugin operations across agents. It is accessible as `mux.plugins` and provides nine methods covering the complete plugin lifecycle: listing, installing, uninstalling, updating, searching, browsing, and inspecting plugins.
+The `PluginManager` is the unified entry point for all plugin operations across agents. It is accessible as `adapter.plugins` and provides nine methods covering the complete plugin lifecycle: listing, installing, uninstalling, updating, searching, browsing, and inspecting plugins.
 
 Every method accepts an `AgentName` parameter (or infers one from context) and delegates to the corresponding adapter. All methods are async and capability-gated.
 
@@ -118,7 +118,7 @@ interface PluginManager {
    *
    * @example
    * ```typescript
-   * const plugins = await mux.plugins.list('openclaw');
+   * const plugins = await adapter.plugins.list('openclaw');
    * for (const p of plugins) {
    *   console.log(`${p.name}@${p.version} [${p.format}] enabled=${p.enabled}`);
    * }
@@ -155,7 +155,7 @@ interface PluginManager {
    *
    * @example
    * ```typescript
-   * const plugin = await mux.plugins.install('opencode', 'opencode-tokenscope', {
+   * const plugin = await adapter.plugins.install('opencode', 'opencode-tokenscope', {
    *   version: '1.2.0',
    *   global: true,
    * });
@@ -187,7 +187,7 @@ interface PluginManager {
    *
    * @example
    * ```typescript
-   * await mux.plugins.uninstall('openclaw', '@openclaw/browser-skill');
+   * await adapter.plugins.uninstall('openclaw', '@openclaw/browser-skill');
    * ```
    */
   uninstall(agent: AgentName, pluginId: string): Promise<void>;
@@ -212,7 +212,7 @@ interface PluginManager {
    *
    * @example
    * ```typescript
-   * const updated = await mux.plugins.update('omp', '@oh-my-pi/web-tools');
+   * const updated = await adapter.plugins.update('omp', '@oh-my-pi/web-tools');
    * console.log(`Updated to ${updated.version}`);
    * ```
    */
@@ -239,7 +239,7 @@ interface PluginManager {
    *
    * @example
    * ```typescript
-   * const all = await mux.plugins.updateAll('openclaw');
+   * const all = await adapter.plugins.updateAll('openclaw');
    * console.log(`${all.length} plugins now installed`);
    * ```
    */
@@ -272,7 +272,7 @@ interface PluginManager {
    *
    * @example
    * ```typescript
-   * const results = await mux.plugins.search('web browser', {
+   * const results = await adapter.plugins.search('web browser', {
    *   agents: ['openclaw', 'opencode'],
    *   format: 'npm-package',
    *   limit: 20,
@@ -297,7 +297,7 @@ interface PluginManager {
    *
    * @example
    * ```typescript
-   * const popular = await mux.plugins.browse({
+   * const popular = await adapter.plugins.browse({
    *   agents: ['opencode'],
    *   category: 'coding',
    *   sortBy: 'downloads',
@@ -327,7 +327,7 @@ interface PluginManager {
    *
    * @example
    * ```typescript
-   * const detail = await mux.plugins.info('@openclaw/browser-skill', 'openclaw');
+   * const detail = await adapter.plugins.info('@openclaw/browser-skill', 'openclaw');
    * console.log(detail.readme);
    * console.log(`Versions: ${detail.versions.join(', ')}`);
    * ```
@@ -1219,7 +1219,7 @@ Plugins follow a five-stage lifecycle. Not all agents support every stage explic
 
 ### 14.1 Install
 
-Triggered by `mux.plugins.install(agent, pluginId, options)`. The adapter:
+Triggered by `adapter.plugins.install(agent, pluginId, options)`. The adapter:
 
 1. Resolves the plugin from the registry (or local path).
 2. Downloads/copies the plugin files to the agent's plugin directory.
@@ -1245,7 +1245,7 @@ For agents that support explicit enable/disable, the adapter toggles the `enable
 
 ### 14.3 Update
 
-Triggered by `mux.plugins.update(agent, pluginId)` or `mux.plugins.updateAll(agent)`. The adapter:
+Triggered by `adapter.plugins.update(agent, pluginId)` or `adapter.plugins.updateAll(agent)`. The adapter:
 
 1. Checks the registry for a newer version.
 2. If a newer version exists, performs the update (typically `npm update` for npm-packages, re-download for skill-files).
@@ -1264,7 +1264,7 @@ The `PluginManager` does not expose explicit `enable()` / `disable()` methods in
 
 ### 14.5 Uninstall
 
-Triggered by `mux.plugins.uninstall(agent, pluginId)`. The adapter:
+Triggered by `adapter.plugins.uninstall(agent, pluginId)`. The adapter:
 
 1. Removes the plugin files from the agent's plugin directory.
 2. For npm-packages: runs `npm uninstall`.
@@ -1450,8 +1450,8 @@ All errors thrown by the `PluginManager` use error codes from the canonical `Err
 
 | Error Code | When Thrown | Recoverable | Example |
 |---|---|---|---|
-| `AGENT_NOT_FOUND` | The `agent` parameter is not registered in the `AdapterRegistry`. | No | `mux.plugins.list('nonexistent')` |
-| `CAPABILITY_ERROR` | The agent does not support plugins (`supportsPlugins: false`). | No | `mux.plugins.list('codex')` |
+| `AGENT_NOT_FOUND` | The `agent` parameter is not registered in the `AdapterRegistry`. | No | `adapter.plugins.list('nonexistent')` |
+| `CAPABILITY_ERROR` | The agent does not support plugins (`supportsPlugins: false`). | No | `adapter.plugins.list('codex')` |
 | `PLUGIN_ERROR` | The underlying adapter operation failed. | Depends | Plugin not found, install failed, network error, registry unreachable |
 | `VALIDATION_ERROR` | Input parameters are invalid. | No | Empty `pluginId`, malformed version string |
 | `INTERNAL` | An adapter declares `supportsPlugins: true` but does not implement the required method. | No | Bug in adapter implementation |
@@ -1494,7 +1494,7 @@ try {
 
 > **SCOPE EXTENSION:** This section is specific to hermes-agent.
 
-Hermes has a unique self-improving capability: after completing certain tasks, it can automatically generate skill files and save them to `~/.hermes/skills/auto/` for future reuse. These auto-generated skills appear in `mux.plugins.list('hermes')` alongside manually installed skills.
+Hermes has a unique self-improving capability: after completing certain tasks, it can automatically generate skill files and save them to `~/.hermes/skills/auto/` for future reuse. These auto-generated skills appear in `adapter.plugins.list('hermes')` alongside manually installed skills.
 
 **Identification:** Auto-generated skills are distinguished by:
 - `InstalledPlugin.description` is prefixed with `[auto-generated]`
@@ -1503,9 +1503,9 @@ Hermes has a unique self-improving capability: after completing certain tasks, i
 
 **Lifecycle:**
 - Auto-generated skills are created by Hermes, not by the user or `PluginManager`.
-- They can be uninstalled via `mux.plugins.uninstall('hermes', pluginId)`.
+- They can be uninstalled via `adapter.plugins.uninstall('hermes', pluginId)`.
 - They cannot be updated (they have no registry source).
-- They are listed by `mux.plugins.list('hermes')` with the same `InstalledPlugin` shape.
+- They are listed by `adapter.plugins.list('hermes')` with the same `InstalledPlugin` shape.
 
 **CLI representation:**
 
@@ -1527,9 +1527,9 @@ Some plugins work with multiple agents (e.g., an npm-package skill that works wi
 Consumers should check compatibility before installing:
 
 ```typescript
-const detail = await mux.plugins.info('opencode-tokenscope');
+const detail = await adapter.plugins.info('opencode-tokenscope');
 if (detail.agents.includes('pi')) {
-  await mux.plugins.install('pi', 'opencode-tokenscope');
+  await adapter.plugins.install('pi', 'opencode-tokenscope');
 }
 ```
 
@@ -1596,7 +1596,7 @@ Skill files contain instructions and tool definitions that are loaded into the a
 **Recommendation:**
 - Only install skill files from trusted registries (agentskills.io, npm with verified publishers).
 - Review skill file contents before installation.
-- Use `mux.plugins.info()` to inspect a plugin's metadata before installing.
+- Use `adapter.plugins.info()` to inspect a plugin's metadata before installing.
 
 ### 18.5 Channel Plugin Security (OpenClaw)
 

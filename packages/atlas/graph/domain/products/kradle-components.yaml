@@ -173,7 +173,7 @@ attributes:
     Handles manual and automated dispatch of AI coding agents. Creates
     AgentDispatchRun resources, performs permission review against org
     policies, assembles context bundles, and launches agent sessions as
-    Kubernetes Jobs via the Agent Mux client. Tracks attempt lifecycle
+    Kubernetes Jobs via the Agent Adapter client. Tracks attempt lifecycle
     (Pending, PermissionReview, ContextBundle, Running, Completed/Failed)
     and streams session output back through SSE.
 edges:
@@ -335,25 +335,25 @@ edges:
 nodeKind: StackPart
 id: stack-part:kradle-adapters-client
 attributes:
-  displayName: "Kradle Agent Mux Client"
+  displayName: "Kradle Agent Adapter Client"
   category: api
   description: |
     Zero-dependency HTTP/SSE adapter connecting Kradle's dispatch
-    controller to the Agent Mux gateway. Handles session creation,
+    controller to the Agent Adapter gateway. Handles session creation,
     transcript streaming, tool approval relay, and session lifecycle
     management without requiring external npm dependencies. Translates
-    between Kradle's Kubernetes-native resource model and Agent Mux's
+    between Kradle's Kubernetes-native resource model and Agent Adapter's
     transport protocol.
 edges:
   realizes:
     - target: layer:3-transport
-      notes: "Agent Mux transport client"
+      notes: "Agent Adapter transport client"
   part_of:
     - target: platform:kradle
-      notes: "Kradle Agent Mux client component"
+      notes: "Kradle Agent Adapter client component"
   implemented_by:
     - target: agent:adapters
-      notes: "Communicates with Agent Mux gateway"
+      notes: "Communicates with Agent Adapter gateway"
 
 # ---------------------------------------------------------------------------
 # 5. Kradle Presentation Surfaces
@@ -969,7 +969,7 @@ edges:
 nodeKind: TestableClaim
 id: claim:kradle-integrates-with-adapters
 attributes:
-  displayName: "Kradle integrates with Agent Mux"
+  displayName: "Kradle integrates with Agent Adapter"
   description: |
     Verifies that platform:kradle has an integrates_with edge pointing
     to agent:adapters, confirming the agent dispatch integration

@@ -2,7 +2,7 @@
 
 ## Summary
 
-Extend the `agent` task kind with `responderType` routing metadata so tasks-mux can route work to an internal responder, human, external agent, tracker, or automatic choice. This supersedes the older #603 `external: true` proposal.
+Extend the `agent` task kind with `responderType` routing metadata so tasks-adapter can route work to an internal responder, human, external agent, tracker, or automatic choice. This supersedes the older #603 `external: true` proposal.
 
 ## Task Definition API
 
@@ -23,7 +23,7 @@ const reviewTask = defineTask("review", (args) => ({
   agent: {
     name: "Code Reviewer",
     prompt: "Review the changes in the working directory...",
-    responderType: "agent",   // tasks-mux routes to adapters
+    responderType: "agent",   // tasks-adapter routes to adapters
     adapter: "claude-code",   // NEW — which adapters adapter
     model: "claude-sonnet-4-6", // optional — model override
     provider: "anthropic",    // optional — provider override
@@ -93,7 +93,7 @@ const reviewTask = externalAgentTask("review", {
 When the task kind is `"agent"` and `agent.responderType` is `"agent"`:
 - Validate that `agent.adapter` is set
 - Preserve valid routing metadata on the task definition
-- Leave effect routing to the tasks-mux work tracked by #630/#620
+- Leave effect routing to the tasks-adapter work tracked by #630/#620
 
 ## Files to Modify
 
@@ -108,7 +108,7 @@ When the task kind is `"agent"` and `agent.responderType` is `"agent"`:
 In SDK task definition validation:
 - Accept typed `agent.responderType`
 - Validate `adapter` is a non-empty string when `agent.responderType === "agent"`
-- Leave adapter availability checks to the tasks-mux/runtime routing work
+- Leave adapter availability checks to the tasks-adapter/runtime routing work
 
 ## Process Template Update
 

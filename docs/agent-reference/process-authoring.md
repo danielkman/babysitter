@@ -40,7 +40,7 @@ export const summarizeTask = defineTask("summarize-docs", () => ({
 Use an external agent responder only when the work benefits from another
 adapters adapter: for example, tool-heavy code editing, browser or shell access,
 a specialist harness, or an isolated conversation context. The current
-tasks-mux routing model uses `responderType: "agent"` plus an `adapter` routing
+tasks-adapter routing model uses `responderType: "agent"` plus an `adapter` routing
 hint on the agent task.
 
 ```javascript
@@ -74,7 +74,7 @@ responders.
 Some design notes and older planning artifacts refer to
 `agent.external: true` and `fallbackToInternal`. Treat those as legacy
 terminology for the same authoring intent; new contributor examples should use
-`responderType: "agent"` and `fallbackType: "internal"` so tasks-mux can route
+`responderType: "agent"` and `fallbackType: "internal"` so tasks-adapter can route
 the effect consistently.
 
 ## `babysitter:call` Override For This Repo

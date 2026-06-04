@@ -90,4 +90,4 @@ The marketplace manifest still uses the existing `plugins` object field for comp
 
 ## Agent Plugins Stay Separate
 
-Agent harness plugins are still called plugins. Do not rename `CLAUDE_PLUGIN_ROOT`, `PI_PLUGIN_ROOT`, `.claude/plugins/`, `packages/adapters/hooks/`, or `packages/extension-mux/` when working on blueprints.
+Agent harness plugins are still called plugins. Do not rename `CLAUDE_PLUGIN_ROOT`, `PI_PLUGIN_ROOT`, `.claude/plugins/`, `packages/adapters/hooks/`, or `packages/extensions-adapter/` when working on blueprints.

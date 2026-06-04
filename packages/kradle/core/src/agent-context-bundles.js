@@ -6,7 +6,7 @@ export const AGENT_CONTEXT_BUNDLES_BOUNDARY = {
   scope: 'Context assembly, redaction, and digest computation for agent dispatch',
   owns: ['prompt layer collection', 'redaction patterns', 'size enforcement', 'digest computation'],
   delegatesTo: ['resource-model'],
-  mustNotOwn: ['secret values', 'runtime execution', 'Agent Mux sessions']
+  mustNotOwn: ['secret values', 'runtime execution', 'Agent Adapter sessions']
 };
 
 const PROMPT_LAYER_MAX = 64 * 1024;  // 64 KiB

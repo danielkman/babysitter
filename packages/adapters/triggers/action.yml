@@ -1,4 +1,4 @@
-name: Agent Mux
+name: Agent Adapter
 description: Run any coding agent from GitHub Actions — supports all harnesses (Claude Code, Codex, Pi, Gemini CLI, Copilot CLI, etc.) with trigger evaluation, provider proxy, babysitter plugin, and bridge modes.
 author: a5c-ai
 
@@ -41,7 +41,7 @@ inputs:
 
   # ── Provider / proxy ─────────────────────────────────────────────────
   with-proxy:
-    description: Start transport-mux proxy if the harness doesn't support the provider natively.
+    description: Start transport-adapter proxy if the harness doesn't support the provider natively.
     required: false
     default: 'true'
   proxy-log-level:

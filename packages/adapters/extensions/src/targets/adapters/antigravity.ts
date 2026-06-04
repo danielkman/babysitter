@@ -170,7 +170,7 @@ export function generateAntigravityMcpConfig(manifest: A5cPluginManifest): strin
  * Generate hooks.json for Antigravity CLI.
  *
  * While Antigravity is workflow-driven, it still supports a hooks.json
- * registration file for compatibility with the hooks-mux pipeline.
+ * registration file for compatibility with the hooks-adapter pipeline.
  */
 export function generateAntigravityHooksJson(
   manifest: A5cPluginManifest,

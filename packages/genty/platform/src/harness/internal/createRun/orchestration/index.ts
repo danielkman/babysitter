@@ -247,7 +247,7 @@ async function resolveViaTasksMuxForCli(
     return undefined;
   }
 
-  let mux: {
+  let adapter: {
     routeTask?: (task: unknown, context?: unknown) => {
       responderType: string;
       responder?: { adapter?: string; model?: string; id?: string };
@@ -261,16 +261,16 @@ async function resolveViaTasksMuxForCli(
     };
   };
   try {
-    mux = await importOptionalModule("@a5c-ai/tasks-adapter") as typeof mux;
+    adapter = await importOptionalModule("@a5c-ai/tasks-adapter") as typeof adapter;
   } catch {
     return undefined;
   }
 
-  if (typeof mux.routeTask !== "function") {
+  if (typeof adapter.routeTask !== "function") {
     return undefined;
   }
 
-  const decision = mux.routeTask(action.taskDef);
+  const decision = adapter.routeTask(action.taskDef);
   if (decision.responderType === "internal" || decision.responderType === "human") {
     if (decision.responderType === "human") {
       return JSON.stringify(buildCliBreakpointValue(action));
@@ -281,7 +281,7 @@ async function resolveViaTasksMuxForCli(
     if (!decision.unavailable) return undefined;
     return JSON.stringify({
       success: false,
-      routedThrough: "tasks-mux",
+      routedThrough: "tasks-adapter",
       responderType: "tracker",
       error: decision.reason ?? "ExternalTrackerBackend unavailable",
     });
@@ -290,15 +290,15 @@ async function resolveViaTasksMuxForCli(
     return undefined;
   }
   const fallbackToInternal = shouldFallbackExternalAgentToInternal(action.taskDef);
-  if (typeof mux.AgentMuxResponderBackend !== "function") {
+  if (typeof adapter.AgentMuxResponderBackend !== "function") {
     if (fallbackToInternal) return undefined;
-    throw new Error("tasks-mux AgentMuxResponderBackend is unavailable");
+    throw new Error("tasks-adapter AgentMuxResponderBackend is unavailable");
   }
 
   const prompt = buildCliAgentPrompt(action.taskDef);
   let breakpoint: { answers: Array<{ text: string; responderId: string; responderName: string }> };
   try {
-    const backend = new mux.AgentMuxResponderBackend({
+    const backend = new adapter.AgentMuxResponderBackend({
       adapter: decision.responder?.adapter ?? decision.responder?.id,
       model: decision.responder?.model ?? model,
       cwd: workspace,

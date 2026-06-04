@@ -4,16 +4,16 @@
 
 Kradle needs a general agent orchestration layer, not only a UI integration. Users should be able to define a reusable agent stack such as "Claude Code reviewer with filesystem tools, repo MCP tools, two subagents, release-runbook skills, prompt context labels, and strict approval policy", then connect it to CI failures, issue/PR triggers, incoming webhooks, schedules, or manual repository actions.
 
-The result should look and behave like a CI run in Kradle: queued on runner capacity, tied to repo/ref/source event, visible beside pipelines/jobs, streamable in real time, artifact-producing, cancellable, approval-gated, and auditable. It should also expose the Agent Mux chat/session so humans can continue the run, inspect transcript/tool activity, manage subagents, and recover the workspace.
+The result should look and behave like a CI run in Kradle: queued on runner capacity, tied to repo/ref/source event, visible beside pipelines/jobs, streamable in real time, artifact-producing, cancellable, approval-gated, and auditable. It should also expose the Agent Adapter chat/session so humans can continue the run, inspect transcript/tool activity, manage subagents, and recover the workspace.
 
 ## Core user flows
 
 ### Define an agent stack
 
 1. Platform admin or repo maintainer creates an `AgentStack`.
-2. They select a base runtime: `claude-code`, `codex`, `gemini`, `opencode`, `babysitter`, or an external Agent Mux adapter.
+2. They select a base runtime: `claude-code`, `codex`, `gemini`, `opencode`, `babysitter`, or an external Agent Adapter adapter.
 3. They configure model/provider, approval mode, allowed/denied tools, sandbox, workspace policy, secrets policy, MCP servers, skills, subagents, and default prompt.
-4. Kradle validates the definition against adapter capabilities from Agent Mux.
+4. Kradle validates the definition against adapter capabilities from Agent Adapter.
 5. The stack becomes selectable by dispatch rules and manual repository actions.
 
 ### Define Claude Code subagents
@@ -43,8 +43,8 @@ The result should look and behave like a CI run in Kradle: queued on runner capa
 
 1. Kradle creates an `AgentDispatchRun` and one `AgentDispatchAttempt`.
 2. The run appears next to `Pipeline` and `Job` records for the repo/ref/PR.
-3. The run shows queue state, runner pool, workspace, source trigger, agent stack, task kind, phase, cost/tokens, artifacts, approvals, and linked Agent Mux session.
-4. Opening the run shows CI-style metadata plus the live Agent Mux chat/transcript.
+3. The run shows queue state, runner pool, workspace, source trigger, agent stack, task kind, phase, cost/tokens, artifacts, approvals, and linked Agent Adapter session.
+4. Opening the run shows CI-style metadata plus the live Agent Adapter chat/transcript.
 5. Agent output can produce artifacts: diagnosis, patch, branch proposal, review comments, subagent reports, release report, or rerun request.
 6. Privileged write-back requires approval before comments, PR updates, pushes, review submissions, check reruns, or release actions.
 
@@ -68,7 +68,7 @@ Important fields:
 
 - `spec.displayName`;
 - `spec.baseAgent`: `claude-code`, `codex`, `gemini`, `opencode`, `babysitter`, `adapters-remote`, external;
-- `spec.adapter`: Agent Mux adapter ID or gateway route;
+- `spec.adapter`: Agent Adapter adapter ID or gateway route;
 - `spec.model` and `spec.provider`;
 - `spec.prompt`: default system/developer/task framing;
 - `spec.agentsDocRef`: `AGENTS.md` or equivalent instruction source;
@@ -304,7 +304,7 @@ Important fields:
 
 ### `WorkItemSessionLink` and `WorkItemWorkspaceLink`
 
-Generalized links from Agent Mux kanban issue/session/workspace associations.
+Generalized links from Agent Adapter kanban issue/session/workspace associations.
 
 Important fields:
 
@@ -324,7 +324,7 @@ Every declarative agent resource needs `status.conditions` so the UI and control
 
 | Condition | True means | False examples |
 | --- | --- | --- |
-| `CapabilitiesResolved` | Agent Mux adapter capabilities were fetched and normalized. | adapter unavailable, unsupported base agent, stale capability schema. |
+| `CapabilitiesResolved` | Agent Adapter adapter capabilities were fetched and normalized. | adapter unavailable, unsupported base agent, stale capability schema. |
 | `ToolsAdmitted` | Native tool profile is compatible with repo/org policy. | denied shell command, filesystem scope too broad, network policy missing. |
 | `McpHealthy` | Referenced MCP servers are reachable or explicitly allowed to be lazy. | failed probe, secret ref missing, server not allowed for repo. |
 | `SkillsValidated` | Skill sources were found, compatible, and prompt fragments passed policy. | missing skill, invalid package, required tool not admitted. |
@@ -355,7 +355,7 @@ Every declarative agent resource needs `status.conditions` so the UI and control
 | `ContextAssembled` | Context bundle snapshot exists with digest and provenance. | source object missing, artifact fetch failed, redaction error. |
 | `WorkspaceResolved` | Workspace was selected/provisioned and policy-admitted. | workspace missing, rebase blocked, untrusted ref requires isolated workspace. |
 | `RunnerAssigned` | Execution host/pool accepted the attempt. | no capacity, forbidden runner, queue timeout. |
-| `AgentMuxSessionBound` | Agent Mux run/session IDs are attached. | gateway unavailable, pending handoff, launch failed. |
+| `AgentMuxSessionBound` | Agent Adapter run/session IDs are attached. | gateway unavailable, pending handoff, launch failed. |
 | `ApprovalSatisfied` | Required human gates are resolved for current phase. | waiting on tool/write-back/secret/network/release approval. |
 | `ArtifactsIndexed` | Produced outputs are durable and linked. | missing patch, review artifact parse failed, upload failed. |
 
@@ -369,7 +369,7 @@ Every declarative agent resource needs `status.conditions` so the UI and control
 6. Select or provision workspace using `AgentWorkspacePolicy`.
 7. Select runner/execution host, verify runner ServiceAccount, and enforce untrusted/fork isolation.
 8. Create `AgentDispatchRun` and initial `AgentDispatchAttempt`.
-9. Launch through Agent Mux and bind run/session IDs when available.
+9. Launch through Agent Adapter and bind run/session IDs when available.
 10. Stream events into status, artifacts, approvals, and work item/session/workspace links.
 
 ## Trigger management requirements
@@ -405,17 +405,17 @@ Before dispatch, Kradle must validate:
 - streamable through watch/SSE;
 - has attempts, artifacts, logs/events, queue timing, runner placement, and status;
 - can be cancelled, retried, resumed, or continued when the adapter supports it;
-- links to Agent Mux chat/session for transcript and continuation;
+- links to Agent Adapter chat/session for transcript and continuation;
 - posts back to checks/PR/issues only through explicit write-back policy.
 
-## Agent Mux boundary
+## Agent Adapter boundary
 
 Kradle should not reimplement adapter internals. It should:
 
 - store desired stack/tool/trigger policy;
-- validate against Agent Mux adapter capabilities;
-- launch through Agent Mux gateway/client;
-- subscribe to Agent Mux run/session events;
-- link Agent Mux session IDs to Kradle work items and dispatch attempts;
-- surface Agent Mux chat and runtime state inside Kradle pages;
+- validate against Agent Adapter adapter capabilities;
+- launch through Agent Adapter gateway/client;
+- subscribe to Agent Adapter run/session events;
+- link Agent Adapter session IDs to Kradle work items and dispatch attempts;
+- surface Agent Adapter chat and runtime state inside Kradle pages;
 - keep repository, trigger, approval, runner, and audit state in Kradle.

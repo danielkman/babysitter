@@ -291,7 +291,7 @@ This matches the resolution order defined in `02-run-options-and-profiles.md`, S
 1. The CLI calls `createClient()` with global flag overrides.
 2. Resolves the initial prompt from `--prompt`, positional args, or stdin.
 3. Constructs `RunOptions` from flags, profile, and config.
-4. Calls `mux.run(options)` to obtain a `RunHandle`.
+4. Calls `adapter.run(options)` to obtain a `RunHandle`.
 5. By default, the initial prompt is delivered to stdin-capable harnesses over stdin so the harness stays interactive. When `--prompt` and `--non-interactive` are both set, adapters instead uses the harness's one-shot prompt flag/path.
 6. Consumes events from the `RunHandle`:
    - **Human mode**: prints text deltas to stdout, tool calls and thinking to stderr.
@@ -310,9 +310,9 @@ This matches the resolution order defined in `02-run-options-and-profiles.md`, S
 
 | CLI | SDK |
 |---|---|
-| `adapters run claude "hello"` | `mux.run({ agent: 'claude', prompt: 'hello' })` |
-| `adapters run --profile fast "hello"` | `mux.run({ profile: 'fast', prompt: 'hello' })` |
-| `adapters run -a gemini --yolo "fix tests"` | `mux.run({ agent: 'gemini', prompt: 'fix tests', approvalMode: 'yolo' })` |
+| `adapters run claude "hello"` | `adapter.run({ agent: 'claude', prompt: 'hello' })` |
+| `adapters run --profile fast "hello"` | `adapter.run({ profile: 'fast', prompt: 'hello' })` |
+| `adapters run -a gemini --yolo "fix tests"` | `adapter.run({ agent: 'gemini', prompt: 'fix tests', approvalMode: 'yolo' })` |
 
 ### 6.7 Examples
 
@@ -571,7 +571,7 @@ adapters install <agent> [flags...]
    a. Checks prerequisites (`InstallMethod.prerequisiteCheck`) if defined. Prints a warning if the prerequisite is not met.
    b. Prints the install command to stdout.
    c. Unless `--dry-run`: prompts for confirmation (unless `--yes`), then executes the command as a child process, streaming stdout/stderr to the terminal.
-5. After installation, runs `mux.adapters.detect(agent)` to verify the install succeeded and prints the detected version.
+5. After installation, runs `adapter.adapters.detect(agent)` to verify the install succeeded and prints the detected version.
 
 ### 7.4 Install Methods per Agent
 
@@ -595,8 +595,8 @@ adapters install <agent> [flags...]
 
 | CLI | SDK |
 |---|---|
-| `adapters install claude` | `mux.adapters.installInstructions('claude', process.platform)` |
-| `adapters install --dry-run gemini` | `mux.adapters.installInstructions('gemini', process.platform)` (display only) |
+| `adapters install claude` | `adapter.adapters.installInstructions('claude', process.platform)` |
+| `adapters install --dry-run gemini` | `adapter.adapters.installInstructions('gemini', process.platform)` (display only) |
 
 ### 7.6 Examples
 
@@ -650,7 +650,7 @@ Lists all registered adapters with their installation status, version, and authe
 | Auth | `authenticated`, `unauthenticated`, `expired`, `unknown`, or `--`. |
 | Path | Absolute path to CLI binary, or `--`. |
 
-**API mapping:** `mux.adapters.list()` combined with `mux.adapters.installed()` for the installed/version/auth columns.
+**API mapping:** `adapter.adapters.list()` combined with `adapter.adapters.installed()` for the installed/version/auth columns.
 
 ### 8.3 `adapters adapters detect <agent>`
 
@@ -675,7 +675,7 @@ Auth:      authenticated
 Model:     claude-sonnet-4-20250514
 ```
 
-**API mapping:** `mux.adapters.detect('claude')` returns `InstalledAgentInfo`.
+**API mapping:** `adapter.adapters.detect('claude')` returns `InstalledAgentInfo`.
 
 ### 8.4 Error Behavior
 
@@ -712,8 +712,8 @@ adapters capabilities <agent> [flags...]
 
 | CLI | SDK |
 |---|---|
-| `adapters capabilities claude` | `mux.adapters.capabilities('claude')` |
-| `adapters capabilities claude --model claude-sonnet-4-20250514` | `mux.adapters.capabilities('claude')` + `mux.models.model('claude', 'claude-sonnet-4-20250514')` |
+| `adapters capabilities claude` | `adapter.adapters.capabilities('claude')` |
+| `adapters capabilities claude --model claude-sonnet-4-20250514` | `adapter.adapters.capabilities('claude')` + `adapter.models.model('claude', 'claude-sonnet-4-20250514')` |
 
 ### 9.4 Error Behavior
 
@@ -759,7 +759,7 @@ List all models available for an agent.
 | Source | `bundled` or `remote`. |
 | Default | Whether this is the adapter's default model. |
 
-**API mapping:** `mux.models.catalog('claude')` returns the per-adapter model catalog with default-entry metadata.
+**API mapping:** `adapter.models.catalog('claude')` returns the per-adapter model catalog with default-entry metadata.
 
 ### 10.3 `adapters models get <agent> <model-id>`
 
@@ -773,25 +773,25 @@ Show detailed capabilities for a single model.
 
 **Output (human mode):** Key-value display showing all `ModelCapabilities` fields.
 
-**API mapping:** `mux.models.model('claude', 'claude-sonnet-4-20250514')` returns `ModelCapabilities | null`.
+**API mapping:** `adapter.models.model('claude', 'claude-sonnet-4-20250514')` returns `ModelCapabilities | null`.
 
 ### 10.4 `adapters models refresh <agent>`
 
 Refresh the model list from the agent's remote source (where applicable).
 
-**API mapping:** `mux.models.refresh('claude')`.
+**API mapping:** `adapter.models.refresh('claude')`.
 
 ### 10.5 `adapters models current <agent>`
 
 Show the configured model, adapter default, and effective model selection for an agent.
 
-**API mapping:** `mux.config.getModelSelection('claude')` plus `mux.models.model(...)` for effective-model details.
+**API mapping:** `adapter.config.getModelSelection('claude')` plus `adapter.models.model(...)` for effective-model details.
 
 ### 10.6 `adapters models set <agent> <model-id>`
 
 Validate and persist the configured model for an agent. Optional `--provider` records the selected provider for configurable/local-provider adapters.
 
-**API mapping:** `mux.models.validate('claude', 'sonnet')` followed by `mux.config.setModelSelection('claude', { model, provider })`.
+**API mapping:** `adapter.models.validate('claude', 'sonnet')` followed by `adapter.config.setModelSelection('claude', { model, provider })`.
 
 ### 10.7 Error Behavior
 
@@ -1012,7 +1012,7 @@ List sessions for an agent.
 | Date | Session start date. |
 | Summary | First line of the prompt (truncated). |
 
-**API mapping:** `mux.sessions.list('claude', { since, until, model, tags, limit, sort })` returns `SessionSummary[]`.
+**API mapping:** `adapter.sessions.list('claude', { since, until, model, tags, limit, sort })` returns `SessionSummary[]`.
 
 ### 12.3 `adapters sessions show <agent> <session-id>`
 
@@ -1024,14 +1024,14 @@ Display the full content of a session.
 |---|---|---|---|
 | `--format` | `string` | `markdown` | Output format: `json`, `jsonl`, `markdown`. |
 
-**API mapping:** `mux.sessions.export('claude', 'abc123', 'markdown')`.
+**API mapping:** `adapter.sessions.export('claude', 'abc123', 'markdown')`.
 
 ### 12.4 `adapters sessions tail <agent> [session-id]`
 
 This command is not part of the current public CLI surface.
 
 `@a5c-ai/comm-adapter` does not currently expose a truthful live session-watch API. Earlier
-drafts described `mux.sessions.watch()`, but that contract was removed rather than shipping
+drafts described `adapter.sessions.watch()`, but that contract was removed rather than shipping
 synthetic `AgentEvent` payloads derived from arbitrary session-file changes.
 
 ### 12.5 `adapters sessions search <query>`
@@ -1047,7 +1047,7 @@ Full-text search across sessions.
 | `--until` | `string` | -- | Search sessions before this time. |
 | `--json` | `boolean` | `false` | Output as JSON array. |
 
-**API mapping:** `mux.sessions.search({ text: query, agent, since, until })` returns `SessionSummary[]`.
+**API mapping:** `adapter.sessions.search({ text: query, agent, since, until })` returns `SessionSummary[]`.
 
 ### 12.6 `adapters sessions export <agent> <session-id>`
 
@@ -1061,7 +1061,7 @@ Export a session to a file or stdout.
 
 **Output:** The exported session content is written to stdout. Redirect to a file as needed.
 
-**API mapping:** `mux.sessions.export('claude', 'abc123', 'json')` returns `string`.
+**API mapping:** `adapter.sessions.export('claude', 'abc123', 'json')` returns `string`.
 
 ### 12.7 `adapters sessions diff <agent>:<id> <agent>:<id>`
 
@@ -1074,7 +1074,7 @@ adapters sessions diff claude:abc123 claude:def456
 adapters sessions diff claude:abc123 gemini:xyz789
 ```
 
-**API mapping:** `mux.sessions.diff({ agent: 'claude', sessionId: 'abc123' }, { agent: 'gemini', sessionId: 'xyz789' })` returns `SessionDiff`.
+**API mapping:** `adapter.sessions.diff({ agent: 'claude', sessionId: 'abc123' }, { agent: 'gemini', sessionId: 'xyz789' })` returns `SessionDiff`.
 
 ### 12.8 `adapters sessions resume <agent> <session-id>`
 
@@ -1082,7 +1082,7 @@ Resume a session by starting a new interactive run that continues from the speci
 
 **Behavior:** Equivalent to `adapters run <agent> --session <session-id> --interactive`. Enters REPL mode (see Section 13).
 
-**API mapping:** `mux.run({ agent, sessionId, ... })` with interactive REPL loop.
+**API mapping:** `adapter.run({ agent, sessionId, ... })` with interactive REPL loop.
 
 ### 12.9 `adapters sessions fork <agent> <session-id>`
 
@@ -1090,7 +1090,7 @@ Fork a session and enter an interactive run on the new branch.
 
 **Behavior:** Equivalent to `adapters run <agent> --fork <session-id> --interactive`. Enters REPL mode.
 
-**API mapping:** `mux.run({ agent, forkSessionId: sessionId, ... })` with interactive REPL loop.
+**API mapping:** `adapter.run({ agent, forkSessionId: sessionId, ... })` with interactive REPL loop.
 
 ### 12.10 Error Behavior
 
@@ -1235,8 +1235,8 @@ Total         65    $1.83      $4.95     $6.78
 
 | CLI | SDK |
 |---|---|
-| `adapters cost report --agent claude --since 30d` | `mux.sessions.totalCost({ agent: 'claude', since: '30d' })` |
-| `adapters cost report --group-by model` | `mux.sessions.totalCost({ groupBy: 'model' })` |
+| `adapters cost report --agent claude --since 30d` | `adapter.sessions.totalCost({ agent: 'claude', since: '30d' })` |
+| `adapters cost report --group-by model` | `adapter.sessions.totalCost({ groupBy: 'model' })` |
 
 ---
 
@@ -1272,9 +1272,9 @@ Read configuration for an agent. If `field` is omitted, prints the full merged c
 
 | CLI | SDK |
 |---|---|
-| `adapters config get claude` | `mux.config.get('claude')` |
-| `adapters config get claude model` | `mux.config.getField('claude', 'model')` |
-| `adapters config get claude permissions.allow` | `mux.config.getField('claude', 'permissions.allow')` |
+| `adapters config get claude` | `adapter.config.get('claude')` |
+| `adapters config get claude model` | `adapter.config.getField('claude', 'model')` |
+| `adapters config get claude permissions.allow` | `adapter.config.getField('claude', 'permissions.allow')` |
 
 ### 16.3 `adapters config set <agent> <field> <value>`
 
@@ -1282,7 +1282,7 @@ Write a single field to the agent's native config file.
 
 `<value>` is parsed as JSON if it starts with `{`, `[`, `"`, or is a number/boolean literal. Otherwise it is treated as a plain string.
 
-**API mapping:** `mux.config.setField('claude', 'model', 'claude-sonnet-4-20250514')`.
+**API mapping:** `adapter.config.setField('claude', 'model', 'claude-sonnet-4-20250514')`.
 
 **Error behavior:**
 - Unknown agent: exit code 3 (`AGENT_NOT_FOUND`).
@@ -1294,25 +1294,25 @@ Write a single field to the agent's native config file.
 
 Print the configuration schema for an agent, showing all recognized fields, their types, defaults, and valid ranges.
 
-**API mapping:** `mux.config.schema('claude')` returns `AgentConfigSchema`.
+**API mapping:** `adapter.config.schema('claude')` returns `AgentConfigSchema`.
 
 ### 16.5 `adapters config validate <agent>`
 
 Validate the current config file(s) for an agent against the schema. Prints validation results: field-level errors and warnings.
 
-**API mapping:** `mux.config.validate('claude', mux.config.get('claude'))` returns `ValidationResult`.
+**API mapping:** `adapter.config.validate('claude', adapter.config.get('claude'))` returns `ValidationResult`.
 
 ### 16.6 `adapters config mcp list <agent>`
 
 List MCP servers configured for an agent.
 
-**API mapping:** `mux.config.getMcpServers('claude')` returns `McpServerConfig[]`.
+**API mapping:** `adapter.config.getMcpServers('claude')` returns `McpServerConfig[]`.
 
 ### 16.7 `adapters config mcp add <agent>`
 
 Add an MCP server to the agent's config. The CLI prompts for server name, command, args, and environment variables interactively. In non-interactive mode (piped stdin), reads a JSON `McpServerConfig` from stdin.
 
-**API mapping:** `mux.config.addMcpServer('claude', serverConfig)`.
+**API mapping:** `adapter.config.addMcpServer('claude', serverConfig)`.
 
 **Error behavior:**
 - Agent does not support MCP: exit code 6 (`CAPABILITY_ERROR`).
@@ -1322,7 +1322,7 @@ Add an MCP server to the agent's config. The CLI prompts for server name, comman
 
 Remove an MCP server from the agent's config by name.
 
-**API mapping:** `mux.config.removeMcpServer('claude', 'my-server')`.
+**API mapping:** `adapter.config.removeMcpServer('claude', 'my-server')`.
 
 ### 16.9 `adapters config reload [agent]`
 
@@ -1332,7 +1332,7 @@ Invalidate the config cache and re-read from disk. If `agent` is omitted, reload
 
 This is useful when external processes (the agent's own CLI, manual editing) have modified config files since the last read.
 
-**API mapping:** `mux.config.reload('claude')` or `mux.config.reload()`.
+**API mapping:** `adapter.config.reload('claude')` or `adapter.config.reload()`.
 
 ### 16.10 Examples
 
@@ -1398,13 +1398,13 @@ List all available profiles from both global and project directories.
 | Agent | Default agent in profile, or `--`. |
 | Model | Default model in profile, or `--`. |
 
-**API mapping:** `mux.profiles.list({ scope })` returns `ProfileEntry[]`.
+**API mapping:** `adapter.profiles.list({ scope })` returns `ProfileEntry[]`.
 
 ### 17.3 `adapters profiles show <name>`
 
 Display the resolved contents of a profile (merged global + project).
 
-**API mapping:** `mux.profiles.show(name)` returns `ResolvedProfile`.
+**API mapping:** `adapter.profiles.show(name)` returns `ResolvedProfile`.
 
 ### 17.4 `adapters profiles set <name> [run-flags...]`
 
@@ -1424,7 +1424,7 @@ These flags correspond to `RunOptions` fields that are per-run ephemeral and exc
 |---|---|---|---|
 | `--scope` | `string` | Auto | Target scope: `global` or `project`. Defaults to `project` if a project directory exists, otherwise `global`. |
 
-**API mapping:** `mux.profiles.set(name, profileData, { scope })`.
+**API mapping:** `adapter.profiles.set(name, profileData, { scope })`.
 
 **Examples:**
 
@@ -1449,13 +1449,13 @@ Delete a profile.
 |---|---|---|---|
 | `--scope` | `string` | Both | Scope to delete from: `global`, `project`. If omitted, deletes from both. |
 
-**API mapping:** `mux.profiles.delete(name, { scope })`.
+**API mapping:** `adapter.profiles.delete(name, { scope })`.
 
 ### 17.6 `adapters profiles apply <name>`
 
 Resolve a profile and print the resulting `RunOptions` values. Does not start a run. Useful for previewing what a profile produces.
 
-**API mapping:** `mux.profiles.apply(name)` returns `Partial<RunOptions>`.
+**API mapping:** `adapter.profiles.apply(name)` returns `Partial<RunOptions>`.
 
 ### 17.7 Error Behavior
 
@@ -1508,8 +1508,8 @@ Checked:  2025-01-15T10:30:00Z
 
 | CLI | SDK |
 |---|---|
-| `adapters auth check claude` | `mux.auth.check('claude')` returns `AuthState` |
-| `adapters auth check` | `mux.auth.checkAll()` returns `Record<AgentName, AuthState>` |
+| `adapters auth check claude` | `adapter.auth.check('claude')` returns `AuthState` |
+| `adapters auth check` | `adapter.auth.checkAll()` returns `Record<AgentName, AuthState>` |
 
 ### 18.3 `adapters auth setup <agent>`
 
@@ -1522,7 +1522,7 @@ Print setup guidance for authenticating with an agent. Does not perform authenti
 - Documentation links.
 - Platform-specific notes.
 
-**API mapping:** `mux.auth.getSetupGuidance('claude')` returns `AuthSetupGuidance`.
+**API mapping:** `adapter.auth.getSetupGuidance('claude')` returns `AuthSetupGuidance`.
 
 ### 18.4 Error Behavior
 
@@ -1817,47 +1817,47 @@ Quick reference of all commands and their SDK method mappings.
 
 | Command | Subcommand | SDK Method |
 |---|---|---|
-| `adapters run` | -- | `mux.run()` |
-| `adapters install` | -- | `mux.adapters.installInstructions()` |
-| `adapters adapters` | `list` | `mux.adapters.list()` + `mux.adapters.installed()` |
-| `adapters adapters` | `detect` | `mux.adapters.detect()` |
-| `adapters capabilities` | -- | `mux.adapters.capabilities()` + `mux.models.model()` |
-| `adapters models` | `list` | `mux.models.catalog()` |
-| `adapters models` | `get` | `mux.models.model()` |
-| `adapters models` | `refresh` | `mux.models.refresh()` |
-| `adapters models` | `current` | `mux.config.getModelSelection()` + `mux.models.model()` |
-| `adapters models` | `set` | `mux.models.validate()` + `mux.config.setModelSelection()` |
+| `adapters run` | -- | `adapter.run()` |
+| `adapters install` | -- | `adapter.adapters.installInstructions()` |
+| `adapters adapters` | `list` | `adapter.adapters.list()` + `adapter.adapters.installed()` |
+| `adapters adapters` | `detect` | `adapter.adapters.detect()` |
+| `adapters capabilities` | -- | `adapter.adapters.capabilities()` + `adapter.models.model()` |
+| `adapters models` | `list` | `adapter.models.catalog()` |
+| `adapters models` | `get` | `adapter.models.model()` |
+| `adapters models` | `refresh` | `adapter.models.refresh()` |
+| `adapters models` | `current` | `adapter.config.getModelSelection()` + `adapter.models.model()` |
+| `adapters models` | `set` | `adapter.models.validate()` + `adapter.config.setModelSelection()` |
 | `adapters plugin` | `list` | Native CLI delegation |
 | `adapters plugin` | `install` | Native CLI delegation |
 | `adapters plugin` | `uninstall` | Native CLI delegation |
 | `adapters plugin` | `update` | Native CLI delegation |
 | `adapters plugin` | `marketplace` | Native CLI delegation |
-| `adapters mcp` | `list` | `mux.mcp.list()` |
-| `adapters mcp` | `install` | `mux.mcp.install()` |
-| `adapters mcp` | `uninstall` | `mux.mcp.uninstall()` |
-| `adapters sessions` | `list` | `mux.sessions.list()` |
-| `adapters sessions` | `show` | `mux.sessions.export()` |
-| `adapters sessions` | `search` | `mux.sessions.search()` |
-| `adapters sessions` | `export` | `mux.sessions.export()` |
-| `adapters sessions` | `diff` | `mux.sessions.diff()` |
-| `adapters sessions` | `resume` | `mux.run({ sessionId })` |
-| `adapters sessions` | `fork` | `mux.run({ forkSessionId })` |
-| `adapters cost` | `report` | `mux.sessions.totalCost()` |
-| `adapters config` | `get` | `mux.config.get()` / `mux.config.getField()` |
-| `adapters config` | `set` | `mux.config.setField()` |
-| `adapters config` | `schema` | `mux.config.schema()` |
-| `adapters config` | `validate` | `mux.config.validate()` |
-| `adapters config` | `mcp list` | `mux.config.getMcpServers()` |
-| `adapters config` | `mcp add` | `mux.config.addMcpServer()` |
-| `adapters config` | `mcp remove` | `mux.config.removeMcpServer()` |
-| `adapters config` | `reload` | `mux.config.reload()` |
-| `adapters profiles` | `list` | `mux.profiles.list()` |
-| `adapters profiles` | `show` | `mux.profiles.show()` |
-| `adapters profiles` | `set` | `mux.profiles.set()` |
-| `adapters profiles` | `delete` | `mux.profiles.delete()` |
-| `adapters profiles` | `apply` | `mux.profiles.apply()` |
-| `adapters auth` | `check` | `mux.auth.check()` / `mux.auth.checkAll()` |
-| `adapters auth` | `setup` | `mux.auth.getSetupGuidance()` |
+| `adapters mcp` | `list` | `adapter.mcp.list()` |
+| `adapters mcp` | `install` | `adapter.mcp.install()` |
+| `adapters mcp` | `uninstall` | `adapter.mcp.uninstall()` |
+| `adapters sessions` | `list` | `adapter.sessions.list()` |
+| `adapters sessions` | `show` | `adapter.sessions.export()` |
+| `adapters sessions` | `search` | `adapter.sessions.search()` |
+| `adapters sessions` | `export` | `adapter.sessions.export()` |
+| `adapters sessions` | `diff` | `adapter.sessions.diff()` |
+| `adapters sessions` | `resume` | `adapter.run({ sessionId })` |
+| `adapters sessions` | `fork` | `adapter.run({ forkSessionId })` |
+| `adapters cost` | `report` | `adapter.sessions.totalCost()` |
+| `adapters config` | `get` | `adapter.config.get()` / `adapter.config.getField()` |
+| `adapters config` | `set` | `adapter.config.setField()` |
+| `adapters config` | `schema` | `adapter.config.schema()` |
+| `adapters config` | `validate` | `adapter.config.validate()` |
+| `adapters config` | `mcp list` | `adapter.config.getMcpServers()` |
+| `adapters config` | `mcp add` | `adapter.config.addMcpServer()` |
+| `adapters config` | `mcp remove` | `adapter.config.removeMcpServer()` |
+| `adapters config` | `reload` | `adapter.config.reload()` |
+| `adapters profiles` | `list` | `adapter.profiles.list()` |
+| `adapters profiles` | `show` | `adapter.profiles.show()` |
+| `adapters profiles` | `set` | `adapter.profiles.set()` |
+| `adapters profiles` | `delete` | `adapter.profiles.delete()` |
+| `adapters profiles` | `apply` | `adapter.profiles.apply()` |
+| `adapters auth` | `check` | `adapter.auth.check()` / `adapter.auth.checkAll()` |
+| `adapters auth` | `setup` | `adapter.auth.getSetupGuidance()` |
 | `adapters skill` | `list` / `add` / `remove` / `where` / `agents` | File-convention (copy into `.{agent}/skills/`) |
 | `adapters agent` | `list` / `add` / `remove` / `where` / `agents` | File-convention (copy into `.{agent}/agents/`) |
 | `adapters hooks` | `discover` / `list` / `add` / `remove` / `set` / `handle` | `HookConfigManager` (core) |

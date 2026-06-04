@@ -1,4 +1,4 @@
-# Agent Mux TUI Kanban + Workspaces Specification
+# Agent Adapter TUI Kanban + Workspaces Specification
 
 ## Purpose
 

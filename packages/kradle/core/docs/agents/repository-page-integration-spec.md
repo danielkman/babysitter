@@ -240,7 +240,7 @@ When permissions are missing:
 
 - Agent entry points appear in existing repository hierarchy, not only global `/agents` pages.
 - Repository pages consume server-projected agent affordances.
-- Dispatch rows in pipelines feel like CI runs while linking to Agent Mux chat.
+- Dispatch rows in pipelines feel like CI runs while linking to Agent Adapter chat.
 - Denied actions explain policy/RBAC/Secret/ConfigMap blockers.
 - Settings page lets users manage repository-scoped stacks, triggers, ServiceAccounts, grants, and runner policy without hand-writing YAML for common paths.
 

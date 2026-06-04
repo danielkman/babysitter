@@ -12,7 +12,7 @@ describe('triggers action metadata', () => {
     const action = parse(await readFile(actionPath, 'utf8')) as any;
     const serializedSteps = JSON.stringify(action.runs.steps);
 
-    expect(action.name).toBe('Agent Mux');
+    expect(action.name).toBe('Agent Adapter');
     expect(action.inputs['trigger-query']).toBeDefined();
     expect(action.inputs['pre-run']).toBeDefined();
     expect(action.inputs['post-run']).toBeDefined();

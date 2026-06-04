@@ -45,7 +45,7 @@ npx @a5c-ai/extensions-adapter compile --target all --output dist/
 2. **Claude Code is the superset**: The UPF format is based on Claude Code's `plugin.json` because it has the richest component model.
 3. **Deterministic output**: Same input always produces identical output.
 4. **Lossless where possible, explicit degradation where not**: When a target does not support a component, the compiler emits a diagnostic rather than silently dropping it.
-5. **hooks-mux is a dependency, not internalized**: Hook execution routing goes through the hooks-mux subsystem. The compiler generates the shell/Node.js/PowerShell wrapper scripts that call into hooks-mux.
+5. **hooks-adapter is a dependency, not internalized**: Hook execution routing goes through the hooks-adapter subsystem. The compiler generates the shell/Node.js/PowerShell wrapper scripts that call into hooks-adapter.
 
 ---
 
@@ -56,7 +56,7 @@ npx @a5c-ai/extensions-adapter compile --target all --output dist/
 ```
 my-plugin/
   a5c-plugin.json          # Unified manifest (required)
-  versions.json            # SDK + hooks-mux version pins (required)
+  versions.json            # SDK + hooks-adapter version pins (required)
   commands/                # Slash commands (*.md files)
     call.md
     yolo.md
@@ -175,7 +175,7 @@ This is the canonical manifest. It extends Claude Code's `plugin.json` with cros
 
   // ── Hook Configuration ────────────────────────────────────────
   "hookConfig": {                                  // object, optional.
-    "proxyAdapter": true,                          // boolean. Use hooks-mux for all hooks.
+    "proxyAdapter": true,                          // boolean. Use hooks-adapter for all hooks.
     "matchers": {                                   // Per-hook matchers.
       "PreToolUse": "Bash"                          // Claude Code: matcher for PreToolUse.
     }
@@ -222,7 +222,7 @@ interface A5cPluginManifest {
 
   // ── Hook Configuration ────────────────────────────────────────
   hookConfig?: {
-    proxyAdapter?: boolean;                         // Use hooks-mux for all hooks
+    proxyAdapter?: boolean;                         // Use hooks-adapter for all hooks
     matchers?: Record<string, string>;              // Per-hook matchers (e.g., PreToolUse: "Bash")
   };
 }
@@ -352,7 +352,7 @@ interface TargetOverride {
 
 ### 2.3 `versions.json` Schema
 
-Pinned dependency versions for SDK and hooks-mux. Used by hook scripts to install the correct versions at runtime.
+Pinned dependency versions for SDK and hooks-adapter. Used by hook scripts to install the correct versions at runtime.
 
 ```json
 {
@@ -509,7 +509,7 @@ The UPF defines a superset of hook names. Not all targets support all hooks.
 
 #### 3.3.2 The `babysitter-proxied-*` Hook Script Pattern
 
-All hook-capable targets use the same pattern: a **wrapper script** that ensures the SDK and hooks-mux are installed, then delegates to hooks-mux with the correct adapter name.
+All hook-capable targets use the same pattern: a **wrapper script** that ensures the SDK and hooks-adapter are installed, then delegates to hooks-adapter with the correct adapter name.
 
 The wrapper scripts follow a template with three variants:
 
@@ -518,22 +518,22 @@ The wrapper scripts follow a template with three variants:
 ```bash
 #!/bin/bash
 # Unified {{HOOK_TITLE}} Hook for {{HARNESS_DISPLAY_NAME}}
-# Routes through hooks-mux for all hook execution.
+# Routes through hooks-adapter for all hook execution.
 
 set -euo pipefail
 
 PLUGIN_ROOT="${{{PLUGIN_ROOT_ENV_VAR}}:-$(cd "$(dirname "$0")/.." && pwd)}"
 SDK_MARKER_FILE="${PLUGIN_ROOT}/.babysitter-install-attempted"
-PROXY_MARKER_FILE="${PLUGIN_ROOT}/.hooks-mux-install-attempted"
+PROXY_MARKER_FILE="${PLUGIN_ROOT}/.hooks-adapter-install-attempted"
 
 GLOBAL_ROOT="${BABYSITTER_GLOBAL_STATE_DIR:-$HOME/.a5c}"
 LOG_DIR="${BABYSITTER_LOG_DIR:-${GLOBAL_ROOT}/logs}"
 LOG_FILE="$LOG_DIR/babysitter-{{HOOK_TYPE}}-hook.log"
 mkdir -p "$LOG_DIR" 2>/dev/null
 
-# ... (logging helper, SDK install, hooks-mux install) ...
+# ... (logging helper, SDK install, hooks-adapter install) ...
 
-# Delegate to hooks-mux
+# Delegate to hooks-adapter
 RESULT=$($PROXY invoke \
   --adapter {{ADAPTER_NAME}} \
   --handler "babysitter hook:run --harness unified --hook-type {{HOOK_TYPE}} --plugin-root ${PLUGIN_ROOT} --json" \
@@ -545,7 +545,7 @@ RESULT=$($PROXY invoke \
 
 | Variable | Description | Examples |
 |----------|-------------|---------|
-| `{{ADAPTER_NAME}}` | hooks-mux adapter name | `claude`, `codex`, `gemini`, `copilot`, `cursor`, `opencode`, `openclaw` |
+| `{{ADAPTER_NAME}}` | hooks-adapter adapter name | `claude`, `codex`, `gemini`, `copilot`, `cursor`, `opencode`, `openclaw` |
 | `{{HOOK_TYPE}}` | Babysitter hook type | `session-start`, `stop`, `user-prompt-submit`, `pre-tool-use` |
 | `{{PLUGIN_ROOT_ENV_VAR}}` | Env var for plugin root | `CLAUDE_PLUGIN_ROOT`, `COPILOT_PLUGIN_DIR`, `GEMINI_EXTENSION_PATH`, `CURSOR_PLUGIN_ROOT`, `OPENCODE_PLUGIN_ROOT` |
 | `{{HARNESS_DISPLAY_NAME}}` | Human-readable harness name | `Claude Code`, `GitHub Copilot CLI`, `Gemini CLI`, `Cursor`, `OpenCode` |
@@ -1903,10 +1903,10 @@ This is the full template. Variables in `{{DOUBLE_BRACES}}` are substituted by t
 ```bash
 #!/bin/bash
 # Unified {{HOOK_TITLE}} Hook for {{HARNESS_DISPLAY_NAME}}
-# Routes through hooks-mux for all hook execution.
+# Routes through hooks-adapter for all hook execution.
 #
-# Ensures the babysitter SDK CLI and hooks-mux are installed (from versions.json
-# sdkVersion), then delegates to the TypeScript handler via hooks-mux.
+# Ensures the babysitter SDK CLI and hooks-adapter are installed (from versions.json
+# sdkVersion), then delegates to the TypeScript handler via hooks-adapter.
 #
 # Protocol:
 #   Input:  JSON via stdin (contains session_id, cwd, etc.)
@@ -1919,7 +1919,7 @@ set -euo pipefail
 
 PLUGIN_ROOT="${{{PLUGIN_ROOT_ENV_VAR}}:-$(cd "$(dirname "$0")/.." && pwd)}"
 SDK_MARKER_FILE="${PLUGIN_ROOT}/.babysitter-install-attempted"
-PROXY_MARKER_FILE="${PLUGIN_ROOT}/.hooks-mux-install-attempted"
+PROXY_MARKER_FILE="${PLUGIN_ROOT}/.hooks-adapter-install-attempted"
 
 GLOBAL_ROOT="${BABYSITTER_GLOBAL_STATE_DIR:-$HOME/.a5c}"
 LOG_DIR="${BABYSITTER_LOG_DIR:-${GLOBAL_ROOT}/logs}"
@@ -1978,7 +1978,7 @@ if ! command -v babysitter &>/dev/null || ! babysitter --version &>/dev/null; th
   export -f babysitter
 fi
 
-# --- hooks-mux install/upgrade ---
+# --- hooks-adapter install/upgrade ---
 install_hooks_proxy() {
   local target_version="$1"
   if npm i -g "@a5c-ai/hooks-adapter-cli@${target_version}" --loglevel=error 2>/dev/null; then
@@ -1993,14 +1993,14 @@ install_hooks_proxy() {
 }
 
 NEEDS_PROXY_INSTALL=false
-if command -v a5c-hooks-mux &>/dev/null; then
-  PROXY_VERSION=$(a5c-hooks-mux --version 2>/dev/null || echo "unknown")
+if command -v a5c-hooks-adapter &>/dev/null; then
+  PROXY_VERSION=$(a5c-hooks-adapter --version 2>/dev/null || echo "unknown")
   if [ "$PROXY_VERSION" != "$SDK_VERSION" ]; then
     NEEDS_PROXY_INSTALL=true
   fi
-elif [ -f "$HOME/.local/bin/a5c-hooks-mux" ]; then
+elif [ -f "$HOME/.local/bin/a5c-hooks-adapter" ]; then
   export PATH="$HOME/.local/bin:$PATH"
-  PROXY_VERSION=$(a5c-hooks-mux --version 2>/dev/null || echo "unknown")
+  PROXY_VERSION=$(a5c-hooks-adapter --version 2>/dev/null || echo "unknown")
   if [ "$PROXY_VERSION" != "$SDK_VERSION" ]; then
     NEEDS_PROXY_INSTALL=true
   fi
@@ -2014,10 +2014,10 @@ if [ "$NEEDS_PROXY_INSTALL" = true ] && [ ! -f "$PROXY_MARKER_FILE" ]; then
 fi
 
 PROXY=""
-if command -v a5c-hooks-mux &>/dev/null; then
-  PROXY="a5c-hooks-mux"
-elif [ -f "$HOME/.local/bin/a5c-hooks-mux" ]; then
-  PROXY="$HOME/.local/bin/a5c-hooks-mux"
+if command -v a5c-hooks-adapter &>/dev/null; then
+  PROXY="a5c-hooks-adapter"
+elif [ -f "$HOME/.local/bin/a5c-hooks-adapter" ]; then
+  PROXY="$HOME/.local/bin/a5c-hooks-adapter"
 fi
 
 if [ -z "$PROXY" ]; then
@@ -2042,9 +2042,9 @@ printf '%s\n' "$RESULT"
 exit $EXIT_CODE
 ```
 
-### 6.2 hooks-mux Adapter Names
+### 6.2 hooks-adapter Adapter Names
 
-Each target uses a specific adapter name when calling hooks-mux:
+Each target uses a specific adapter name when calling hooks-adapter:
 
 | Target | Adapter Name |
 |--------|-------------|
@@ -2058,12 +2058,12 @@ Each target uses a specific adapter name when calling hooks-mux:
 | Pi | `pi` (adapter exists but hooks not supported by Pi) |
 | oh-my-pi | `oh-my-pi` |
 
-These correspond to the hooks-mux adapter packages:
+These correspond to the hooks-adapter adapter packages:
 `packages/adapters/hooks/adapter-claude/`, `packages/adapters/hooks/adapter-codex/`, etc.
 
 ### 6.3 AdapterCapabilities Interface
 
-Each hooks-mux adapter declares its capabilities via the `AdapterCapabilities` interface:
+Each hooks-adapter adapter declares its capabilities via the `AdapterCapabilities` interface:
 
 ```typescript
 interface AdapterCapabilities {
@@ -2588,9 +2588,9 @@ openclaw        runtime-adapter  yes    yes (md)  yes     no      no
 
 ---
 
-## Appendix B: hooks-mux Adapter Packages
+## Appendix B: hooks-adapter Adapter Packages
 
-The hooks-mux subsystem has per-adapter packages that normalize hook I/O across harnesses:
+The hooks-adapter subsystem has per-adapter packages that normalize hook I/O across harnesses:
 
 | Adapter Package | Harness | Family |
 |----------------|---------|--------|
@@ -2733,7 +2733,7 @@ The UPF manifest contains two version-related fields that can potentially confli
 | Field | Location | Purpose |
 |-------|----------|---------|
 | `version` | `a5c-plugin.json` | Plugin version (used in emitted manifests) |
-| `sdkVersion` | `versions.json` | SDK/hooks-mux version pin (used at runtime) |
+| `sdkVersion` | `versions.json` | SDK/hooks-adapter version pin (used at runtime) |
 
 Additionally, target overrides can specify dependency versions:
 
@@ -2769,7 +2769,7 @@ If a target override specifies an explicit dependency version for `@a5c-ai/babys
 
 **Scenario 3: Hook script version drift**
 
-Hook scripts read `versions.json` at runtime to determine which SDK/hooks-mux version to install. If a compiled plugin's `versions.json` is manually edited after compilation:
+Hook scripts read `versions.json` at runtime to determine which SDK/hooks-adapter version to install. If a compiled plugin's `versions.json` is manually edited after compilation:
 
 - **Resolution:** This is a runtime concern, not a compile-time one. The compiler always copies the source `versions.json` as-is. The `bump-version.mjs` script ensures all versions stay in sync during releases.
 

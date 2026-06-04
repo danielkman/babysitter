@@ -29,7 +29,7 @@ If the published package is already installed locally or globally, use the bin d
 
 ```bash
 adapters-tasks --help
-adapters-tasks auth server set https://tasks-mux.a5c.ai
+adapters-tasks auth server set https://tasks-adapter.a5c.ai
 adapters-tasks auth login
 ```
 

@@ -75,7 +75,7 @@ Rules:
 - `explicit-ref` resolves a branch, tag, or SHA.
 - `ref-at-time` resolves the latest approved commit at or before a timestamp.
 - `snapshot-tag` resolves a Kradle-created stable snapshot tag.
-- Ambiguous or missing refs block dispatch before Agent Mux launch.
+- Ambiguous or missing refs block dispatch before Agent Adapter launch.
 
 ## Assembly flow
 
@@ -146,7 +146,7 @@ memory:
 
 ## Memory tools
 
-After Kradle permission review, Agent Mux can expose:
+After Kradle permission review, Agent Adapter can expose:
 
 - `memory.graph.search`: search graph records by text, kind, edge, owner, or association.
 - `memory.record.read`: read graph or Markdown records by ID/path at the pinned commit.

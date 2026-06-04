@@ -1,12 +1,12 @@
 /**
- * Shared helpers for hooks-mux CLI e2e tests.
+ * Shared helpers for hooks-adapter CLI e2e tests.
  */
 import { spawn } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 
-/** Root of the hooks-mux/cli package. */
+/** Root of the hooks-adapter/cli package. */
 export const CLI_PKG_DIR = path.resolve(__dirname, '..', '..', '..');
 
 /** Path to the compiled CLI entry point. */
@@ -46,7 +46,7 @@ export interface CliResult {
 }
 
 /**
- * Spawn the hooks-mux CLI as a real child process.
+ * Spawn the hooks-adapter CLI as a real child process.
  */
 export function runCli(
   args: string[],

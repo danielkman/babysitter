@@ -1,5 +1,5 @@
 /**
- * Structured diagnostic logger for hooks-mux execution.
+ * Structured diagnostic logger for hooks-adapter execution.
  *
  * Outputs to stderr with structured fields per spec section 23:
  * adapter, canonical phase, native event name, session ID quality,

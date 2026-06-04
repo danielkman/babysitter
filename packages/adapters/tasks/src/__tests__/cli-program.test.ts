@@ -46,7 +46,7 @@ describe("CLI Program", () => {
       const program = createProgram();
 
       expect(program).toBeDefined();
-      expect(program.name()).toBe("tasks-mux");
+      expect(program.name()).toBe("tasks-adapter");
     });
 
     it("sets version to 5.0.0", async () => {
@@ -60,7 +60,7 @@ describe("CLI Program", () => {
       const { createProgram } = await importProgram();
       const program = createProgram();
 
-      expect(program.description()).toContain("Breakpoints Mux");
+      expect(program.description()).toContain("Breakpoints Adapter");
     });
 
     it("registers ask subcommand", async () => {
@@ -226,7 +226,7 @@ describe("CLI Program", () => {
 
   describe("tasks command", () => {
     it("bulk reassign reports backend per-item success and failure results", async () => {
-      const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "tasks-mux-cli-"));
+      const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "tasks-adapter-cli-"));
       const breakpointsDir = path.join(tmpDir, ".breakpoints");
       try {
         const backend = new GitNativeBackend({ breakpointsDir });
@@ -241,7 +241,7 @@ describe("CLI Program", () => {
         const program = createProgram();
         await program.parseAsync([
           "node",
-          "tasks-mux",
+          "tasks-adapter",
           "--json",
           "tasks",
           "--breakpoints-dir",

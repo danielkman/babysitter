@@ -1,6 +1,6 @@
 # @a5c-ai/hooks-adapter-cli
 
-CLI entrypoint for hooks-mux.
+CLI entrypoint for hooks-adapter.
 
 ## Install
 

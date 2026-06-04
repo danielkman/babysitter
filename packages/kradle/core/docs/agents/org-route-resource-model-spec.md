@@ -19,7 +19,7 @@ Preferred UI routes:
 | `/orgs/[org]/repositories/[repo]/runs` | CI and agent dispatch rows. |
 | `/orgs/[org]/deployments` | deployment/environment inventory. |
 | `/orgs/[org]/agents` | agent dashboard. |
-| `/orgs/[org]/agents/runs/[run]` | dispatch detail and Agent Mux session. |
+| `/orgs/[org]/agents/runs/[run]` | dispatch detail and Agent Adapter session. |
 | `/orgs/[org]/agents/memory` | company brain memory. |
 | `/orgs/[org]/settings` | org RBAC, namespace, policies, billing/cost if applicable. |
 

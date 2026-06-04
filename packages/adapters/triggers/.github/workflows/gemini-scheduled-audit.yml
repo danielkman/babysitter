@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: a5c-ai/babysitter/packages/triggers-mux@main
+      - uses: a5c-ai/babysitter/packages/triggers-adapter@main
         with:
           harness: gemini
           provider: google

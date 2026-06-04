@@ -2,12 +2,12 @@
 
 catalog pass 90 audit. Source of truth for the migration team: which fields of the
 legacy graph at `packages/agent-catalog/graph/` (consumed by the babysitter
-monorepo's mux generators) are carried by the atlas graph at
+monorepo's adapter generators) are carried by the atlas graph at
 `C:/work/v6/graph/` and which need adapter logic / backfill.
 
 The legacy SDK (`packages/agent-catalog/src/sdk.ts`) exposes the canonical
 projection accessors. Each row below corresponds to one accessor and the
-mux/sdk consumer that calls it.
+adapter/sdk consumer that calls it.
 
 ## Inventory snapshot
 
@@ -26,10 +26,10 @@ mux/sdk consumer that calls it.
 
 | Consumer (file) | Legacy SDK accessor | NodeKinds touched | atlas coverage | Bucket |
 | --- | --- | --- | --- | --- |
-| `adapters/core/src/host-detection.ts` | `getHostSignalMap`, `getHostMetadataFields`, `getHostDetectionRules` | `DiscoverySignal` (scope=host-detection) | covered — atlas has 10 host-env DiscoverySignals under `extensions/discovery-signals/` with `metadataFields` + `consumer: agent-comm-mux` | (e) shape |
+| `adapters/core/src/host-detection.ts` | `getHostSignalMap`, `getHostMetadataFields`, `getHostDetectionRules` | `DiscoverySignal` (scope=host-detection) | covered — atlas has 10 host-env DiscoverySignals under `extensions/discovery-signals/` with `metadataFields` + `consumer: agent-comm-adapter` | (e) shape |
 | `adapters/core/src/invocation.ts` | `getHarnessImages`, `lookupHarnessImage` | `PluginArtifact` filtered to `artifactKind=container-image` | partial — atlas has `PluginArtifact` instances but no `artifactKind=container-image` rows; legacy projection synthesizes `HarnessImageEntry` from artifact path + installerSurface | (a) missing data |
-| `hooks-mux/core/src/discovery/detector.ts` | `getHooksMuxDetectionRules` | `DiscoverySignal` (scope=hooks-mux) | **closed (catalog pass 92)** — 10 atlas DiscoverySignal rows scoped `hooks-mux` under `extensions/discovery-signals/*-hooks-mux*.yaml` (verbatim from legacy `discovery-signals-hooks.yaml`); schema gained `hooks-mux` scope, `all-present-with-absences` matchMode, and `absentSignals` field | covered |
-| `extension-mux/src/targets/index.ts` | `listPluginTargetDescriptors`, `getPluginTargetDescriptor`, `getHookNameMap` | `PluginTarget`, `HookMapping` | shape-divergent — atlas PluginTargets have `manifestPath`, `installLayout` (object with concrete keys: manifest/commands/agents/skills/hooks/mcp), `distribution` array, `adapterFamily`, `description`. Legacy descriptor needs: `targetId`, `adapterName`, `pluginRootEnvVar`, `pluginRootEnvVarForExtension`, `manifestFormat` (string token like "plugin.json + openclaw.plugin.json"), `commandFormat`, `skillHandling`, `hookRegistrationFormat`, `scriptVariants`, `distribution` (string), `distributionModel`, `marketplacePath`, `npmPublishable`, `installLayout.{harnessHomeRelative, pluginsDirRelative, marketplacePathRelative}`, `packageMetadata.{moduleType, binScriptExt, installLifecycle, activationMessage, extraPackageFiles, extraScripts, peerDependencyPackage, emitCjsWrappers}`, `componentSupport.{agents, context}` | (b) missing fields (8+ field-level) + (e) shape divergence |
+| `hooks-adapter/core/src/discovery/detector.ts` | `getHooksMuxDetectionRules` | `DiscoverySignal` (scope=hooks-adapter) | **closed (catalog pass 92)** — 10 atlas DiscoverySignal rows scoped `hooks-adapter` under `extensions/discovery-signals/*-hooks-adapter*.yaml` (verbatim from legacy `discovery-signals-hooks.yaml`); schema gained `hooks-adapter` scope, `all-present-with-absences` matchMode, and `absentSignals` field | covered |
+| `extensions-adapter/src/targets/index.ts` | `listPluginTargetDescriptors`, `getPluginTargetDescriptor`, `getHookNameMap` | `PluginTarget`, `HookMapping` | shape-divergent — atlas PluginTargets have `manifestPath`, `installLayout` (object with concrete keys: manifest/commands/agents/skills/hooks/mcp), `distribution` array, `adapterFamily`, `description`. Legacy descriptor needs: `targetId`, `adapterName`, `pluginRootEnvVar`, `pluginRootEnvVarForExtension`, `manifestFormat` (string token like "plugin.json + openclaw.plugin.json"), `commandFormat`, `skillHandling`, `hookRegistrationFormat`, `scriptVariants`, `distribution` (string), `distributionModel`, `marketplacePath`, `npmPublishable`, `installLayout.{harnessHomeRelative, pluginsDirRelative, marketplacePathRelative}`, `packageMetadata.{moduleType, binScriptExt, installLifecycle, activationMessage, extraPackageFiles, extraScripts, peerDependencyPackage, emitCjsWrappers}`, `componentSupport.{agents, context}` | (b) missing fields (8+ field-level) + (e) shape divergence |
 | `sdk/src/harness/discovery.ts` + `amuxFallbackMetadata.ts` | `getFallbackHarnessMetadata`, `listFallbackHarnessMetadata`, `listAgentVersions`, `getAgentVersion` | `AgentVersion`, HarnessFallbackMetadata projection | **consumer-adapter-required (catalog pass 92, path-b)** — atlas keeps the data normalized across AgentVersion + DiscoverySignal[host-detection] + SessionModel + Capability; the bundle is rebuilt by `agent-catalog/src/data.ts :: buildFallbackMetadata` (already a projection in legacy too — it never loaded a bundled record). Adapter spec frozen in `migration/projection-adapters.md` § 5. | covered (via consumer adapter) |
 | `adapters/core/tests/invocation.contract.test.ts` | (consumes harnessImages above) | — | — | — |
 | `catalog/src/app/api/...` | `listCatalogAgents`, `searchCatalogDiscovery` (process catalog) | `ProcessDescriptor`, `PackageSurface`, `PathDescriptor`, agent listings | covered for ProcessDescriptor (atlas has 24 records under `extensions/process-descriptors/`); agents covered as AgentVersion | (e) shape minor |
@@ -38,19 +38,19 @@ mux/sdk consumer that calls it.
 
 | Bucket | Count | Detail |
 | --- | --- | --- |
-| (a) missing data | 0 (catalog pass 92: closed hooks-mux DiscoverySignal rows; catalog pass 91 closed container-image) |
-| (b) missing fields | 0 (catalog pass 92: closed `absentSignals` on DiscoverySignal + scope `hooks-mux` enum; catalog pass 91 closed PluginTarget 10-field set) |
+| (a) missing data | 0 (catalog pass 92: closed hooks-adapter DiscoverySignal rows; catalog pass 91 closed container-image) |
+| (b) missing fields | 0 (catalog pass 92: closed `absentSignals` on DiscoverySignal + scope `hooks-adapter` enum; catalog pass 91 closed PluginTarget 10-field set) |
 | (c) missing edge kind/instance | 0 | every legacy edge kind has a atlas analogue (legacy `targets_plugin_surface` → atlas `hosted_by`/`composes`) |
 | (d) id-pattern divergence | high (~26 NodeKinds) | legacy uses `pluginTarget:codex`, `path:.a5c-runs`, `agentVersion:claude-code-1` etc.; atlas uses `plugin-target:codex`, `agent:claude-code`, `agent-version:claude-code@1.x`. Every NodeKind ID prefix differs (camelCase + `:` legacy vs kebab-case + `:` atlas, plus `@semver` suffix on versions). |
 | (e) shape divergence | 4 | PluginTarget projection (flat-vs-nested), HarnessFallbackMetadata bundle vs AgentRuntimeImpl/CoreImpl/PlatformImpl normalization, host-metadata-field embedding (legacy `Record<agent, HostMetadataField[]>` vs atlas per-DiscoverySignal `metadataFields`), HooksMuxDetectionRule bundle |
 
 ## Migration-readiness verdict: **COMPLETE** (after catalog pass 92)
 
-catalog pass 92 closed the two catalog pass 91 residuals: (1) hooks-mux-scope DiscoverySignal
+catalog pass 92 closed the two catalog pass 91 residuals: (1) hooks-adapter-scope DiscoverySignal
 rows + `absentSignals` field/scope-enum extension; (2) HarnessFallbackMetadata
 adapter spec frozen (path-b: keep atlas normalized, adapter lives in
 `agent-catalog/src/data.ts`). All five projection consumers
-(`adapters`, `hooks-mux`, `extension-mux`, `sdk/harness/*`, catalog API)
+(`adapters`, `hooks-adapter`, `extensions-adapter`, `sdk/harness/*`, catalog API)
 now resolve against the atlas graph either directly (consumers 1–4) or via a
 trivial spec'd adapter (consumer 5). No data/schema gap remains.
 
@@ -72,17 +72,17 @@ graph). Codegen will not break for *missing* concepts. It will break for:
    `getPluginTargetDescriptor('codex')`) will not match because atlas stores
    `plugin-target:codex` while legacy expects `pluginTarget:codex`. Aliases
    needed.
-2. **PluginTarget shape divergence** — extension-mux relies on 8+ flat
+2. **PluginTarget shape divergence** — extensions-adapter relies on 8+ flat
    string-token fields (`manifestFormat: "plugin.json + openclaw.plugin.json"`,
    `commandFormat: "markdown-commands"`, `packageMetadata.binScriptExt: ".js"`,
    etc.) that are not on the atlas PluginTarget node. These drive code-generation
-   templates per harness — without them, the mux generator can't emit the
+   templates per harness — without them, the adapter generator can't emit the
    correct adapter scripts.
 3. **container-image PluginArtifact rows missing** — `getHarnessImages()`
    returns empty for atlas, so `--mode docker` invocations lose their default
    image lookup.
-4. **HooksMuxDetectionRule scope='hooks-mux' missing** — `detectHarness()`
-   in hooks-mux/core would have nothing to scan.
+4. **HooksMuxDetectionRule scope='hooks-adapter' missing** — `detectHarness()`
+   in hooks-adapter/core would have nothing to scan.
 5. **HostMetadataField embedding** — atlas puts these on DiscoverySignal as
    `metadataFields`, legacy expects a separate
    `getHostMetadataFields(): Record<agent, HostMetadataField[]>` accessor —
@@ -91,13 +91,13 @@ graph). Codegen will not break for *missing* concepts. It will break for:
 ## Top 5 blockers (catalog pass 90 → catalog pass 91 status)
 
 1. `PluginTarget` field-set: 8 fields + 2 nested objects (`packageMetadata`,
-   `componentSupport`) that drive every per-harness mux template. — **CLOSED catalog pass 91**
+   `componentSupport`) that drive every per-harness adapter template. — **CLOSED catalog pass 91**
    (17/17 atlas PluginTarget records carry the 10 codegen fields; 9 verbatim
    from legacy, 8 by-analogy with source comments).
 2. `PluginArtifact[artifactKind=container-image]` rows for harness images
    (default container per harness). — **CLOSED catalog pass 91** (9/9 rows; 4 new:
    pi, omp, opencode, openclaw; image refs verbatim from legacy).
-3. `DiscoverySignal[scope=hooks-mux]` rows + `absentSignals` field. —
+3. `DiscoverySignal[scope=hooks-adapter]` rows + `absentSignals` field. —
    **OPEN** (out of catalog pass 91 scope; catalog pass 92 candidate).
 4. id-alias map for ~26 NodeKinds (kebab-case migration + `@semver` suffix). —
    **CLOSED catalog pass 91** (177 alias rows across 18 NodeKinds in
@@ -113,7 +113,7 @@ See `projection-adapters.md` for the per-projection adapter checklist and
 ## Internal-concept coverage (catalog pass 96, 2026-05-04)
 
 Beyond the user-facing migration above, catalog pass 96 deep-audited the babysitter
-monorepo's mux ecosystem to verify per-package internal concepts are
+monorepo's adapter ecosystem to verify per-package internal concepts are
 catalog-faithful (codegen-ready).
 
 | Package | Internal concepts | atlas NodeKind(s) used | Status |
@@ -129,10 +129,10 @@ catalog-faithful (codegen-ready).
 | `adapters/observability` | logger + telemetry library | PackageSurface + PathDescriptor (catalog pass 96-new) | GREEN |
 | `adapters/sdk` (umbrella @a5c-ai/adapters) | re-export + adapters bin | PackageSurface + PathDescriptor (catalog pass 96-new) | GREEN |
 | `adapters/adapters` | per-harness adapters bundle | PackageSurface + PathDescriptor (catalog pass 96-new); adapter behavior on AgentRuntimeImpl | GREEN |
-| `extension-mux` | PluginTarget×17, schema/transform/emit | PluginTargetDescriptor + PackageSurface | GREEN |
-| `hooks-mux/core` | HookMapping records, MergePolicy, DecisionVerb | HookMapping, HookSurface, MergePolicy, DecisionVerb | GREEN |
-| `tasks-mux` | Zod-defined breakpoint types | BreakpointStrategy, ResponderProfile, BreakpointAnswer, DecisionMemory, HumanCheckpoint | GREEN |
-| `transport-mux` | 8 SUPPORTED_TRANSPORTS | ModelTransportProtocol×8 (existing) | GREEN |
+| `extensions-adapter` | PluginTarget×17, schema/transform/emit | PluginTargetDescriptor + PackageSurface | GREEN |
+| `hooks-adapter/core` | HookMapping records, MergePolicy, DecisionVerb | HookMapping, HookSurface, MergePolicy, DecisionVerb | GREEN |
+| `tasks-adapter` | Zod-defined breakpoint types | BreakpointStrategy, ResponderProfile, BreakpointAnswer, DecisionMemory, HumanCheckpoint | GREEN |
+| `transport-adapter` | 8 SUPPORTED_TRANSPORTS | ModelTransportProtocol×8 (existing) | GREEN |
 
 Out-of-scope dirs (no `package.json`): `adapters/adapters-proxy`,
 `adapters/meta`, `adapters/processes` — non-published source directories
@@ -144,7 +144,7 @@ project from existing NodeKinds.
 
 ## catalog pass 98 deep-decomposition update (2026-05-04)
 
-catalog pass 98 promoted the catalog pass 97c group-level tasks-mux records to leaf-level,
+catalog pass 98 promoted the catalog pass 97c group-level tasks-adapter records to leaf-level,
 authored outbound-client APIEndpoints, promoted harness-mock error +
 runtime-hook fixtures to InteractionPrimitive[mock-scenario], and added
 PackageSurface command-group enrichment for babysitter-sdk and
@@ -152,7 +152,7 @@ agent-platform.
 
 | Package | catalog pass 98 delta |
 | --- | --- |
-| `tasks-mux` | 17 leaf CLI subcommand records authored (auth login/logout/status/keygen/key-push/keys/server set/server clear/token set/token clear; breakpoints pending/answer/status/poll; responders list/show; server start) + 8 outbound-client APIEndpoint records (POST/GET/DELETE under /api/v1/{questions,experts,...}). |
+| `tasks-adapter` | 17 leaf CLI subcommand records authored (auth login/logout/status/keygen/key-push/keys/server set/server clear/token set/token clear; breakpoints pending/answer/status/poll; responders list/show; server start) + 8 outbound-client APIEndpoint records (POST/GET/DELETE under /api/v1/{questions,experts,...}). |
 | `adapters/harness-mock` | 5 `error:*` + 3 `runtimeHook*` scenarios promoted from data fixtures to InteractionPrimitive[mock-scenario]. |
 | `babysitter-sdk` | PackageSurface enriched with bins (babysitter, babysitter-sdk, babysitter-mcp-server) + 12 top-level CLI command-group records spanning run:/task:/session:/plugin:/skill:/process-library:/profile:/instructions:/compression:/breakpoint:/hook:/mcp-server. |
 | `agent-platform` | PackageSurface enriched with bin (babysitter-harness) + harness-runtime command-set primitive (HARNESS_RUNTIME_COMMANDS literal). |
@@ -173,8 +173,8 @@ left as graph-visible placeholders rather than silent gaps:
 | adapters/adapters per-harness dispatch | deferred-work:adapters-adapters-per-harness-dispatch | abandoned (wrapper-over-graph per catalog pass 96) |
 | agent-catalog public library functions | deferred-work:agent-catalog-library-functions | abandoned (projection-over-graph) |
 | adapters/ui + webui React components | deferred-work:adapters-ui-webui-react-components | abandoned (presentation-only per catalog pass 97c) |
-| transport-mux runtime.ts programmatic API | deferred-work:transport-mux-runtime-programmatic-api | abandoned (wrapper-over-graph) |
-| hooks-mux internal helpers | deferred-work:hooks-mux-internals-helpers | abandoned (private code) |
+| transport-adapter runtime.ts programmatic API | deferred-work:transport-adapter-runtime-programmatic-api | abandoned (wrapper-over-graph) |
+| hooks-adapter internal helpers | deferred-work:hooks-adapter-internals-helpers | abandoned (private code) |
 
 ## Wave-99 update — closing W98 status:open DeferredNodes
 

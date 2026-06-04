@@ -14,7 +14,7 @@ attributes:
     - CLAUDE_PROJECT_DIR
   argvMatches:
     - claude-code
-  consumer: agent-comm-mux
+  consumer: agent-comm-adapter
   metadataFields:
     - { key: session_id, envVars: [CLAUDE_CODE_SESSION_ID] }
     - { key: env_file,   envVars: [CLAUDE_ENV_FILE] }

@@ -112,16 +112,16 @@ On Code/Issue/PR/Pipeline pages:
 3. User chooses stack, task kind, context labels, paths/artifacts/logs, workspace mode.
 4. UI calls permission review and context preview.
 5. User confirms.
-6. API creates `AgentDispatchRun` and `AgentDispatchAttempt` before Agent Mux launch.
+6. API creates `AgentDispatchRun` and `AgentDispatchAttempt` before Agent Adapter launch.
 7. UI navigates to run detail or keeps an inline status chip.
 
 ## Run detail flow
 
-Layout should feel like a CI check page plus Agent Mux chat:
+Layout should feel like a CI check page plus Agent Adapter chat:
 
 - Header: repository, source object, branch/SHA, stack, runner, ServiceAccounts, phase, approvals.
 - Left: source context, logs/artifacts/files/context labels.
-- Center: Agent Mux transcript and continuation composer.
+- Center: Agent Adapter transcript and continuation composer.
 - Right: attempts, event timeline, tools, MCP, skills, subagents, Secret/Config grants, approvals, artifacts.
 - Footer: cancel/retry/resume/fork/continue controls when admitted.
 
@@ -130,7 +130,7 @@ States:
 - queued;
 - runner waiting;
 - permission snapshot pending;
-- Agent Mux session binding pending;
+- Agent Adapter session binding pending;
 - stream disconnected/reconnecting;
 - waiting for approval;
 - workspace missing/rebase conflict;

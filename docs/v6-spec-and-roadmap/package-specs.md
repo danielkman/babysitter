@@ -152,7 +152,7 @@ The following spec patterns are explicitly rejected for the current V6 stage:
 - broad claims of plugin isolation or governance enforcement without implementation evidence,
 - marketplace-governance promises such as certification, revenue sharing, dispute handling, takedown programs, or automatic rollback without executable support,
 - describing metaplugins as unavailable until a future standalone package exists,
-- equating metaplugins with `extension-mux` or with any single concrete unified plugin bundle,
+- equating metaplugins with `extensions-adapter` or with any single concrete unified plugin bundle,
 - dependency graphs that imply committed packages without migration sequencing,
 - package lists that obscure which items are real versus hypothetical.
 

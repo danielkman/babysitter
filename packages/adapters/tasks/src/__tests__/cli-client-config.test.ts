@@ -23,7 +23,7 @@ vi.mock("../cli/auth-store.js", () => ({
 const mockGetUser = vi.fn().mockResolvedValue({ login: "testuser", name: "Test" });
 
 vi.mock("../client/index.js", () => ({
-  DEFAULT_BMUX_SERVER_URL: "https://tasks-mux.a5c.ai/api/v1",
+  DEFAULT_BMUX_SERVER_URL: "https://tasks-adapter.a5c.ai/api/v1",
   AuthClient: vi.fn().mockImplementation(function () { return {
     getUser: mockGetUser,
   }; }),
@@ -92,7 +92,7 @@ describe("CLI Client Config", () => {
     it("falls back to DEFAULT_BMUX_SERVER_URL", async () => {
       const { resolveServerUrl } = await importClientConfig();
       const url = resolveServerUrl();
-      expect(url).toBe("https://tasks-mux.a5c.ai/api/v1");
+      expect(url).toBe("https://tasks-adapter.a5c.ai/api/v1");
     });
 
     it("strips trailing slashes", async () => {

@@ -742,7 +742,7 @@ describe("Gemini CLI findHookDispatcherPath", () => {
     expect(result).toBeNull();
   });
 
-  it("returns null even when GEMINI_EXTENSION_PATH is set (hooks-mux handles dispatch)", async () => {
+  it("returns null even when GEMINI_EXTENSION_PATH is set (hooks-adapter handles dispatch)", async () => {
     const hookDir = path.join(tmpDir, "hooks");
     await fs.mkdir(hookDir, { recursive: true });
     await fs.writeFile(path.join(hookDir, "after-agent.sh"), "#!/bin/bash\n");
@@ -753,7 +753,7 @@ describe("Gemini CLI findHookDispatcherPath", () => {
     expect(result).toBeNull();
   });
 
-  it("returns null when BABYSITTER_EXTENSION_PATH is set (hooks-mux handles dispatch)", async () => {
+  it("returns null when BABYSITTER_EXTENSION_PATH is set (hooks-adapter handles dispatch)", async () => {
     const hookDir = path.join(tmpDir, "hooks");
     await fs.mkdir(hookDir, { recursive: true });
     await fs.writeFile(path.join(hookDir, "after-agent.sh"), "#!/bin/bash\n");

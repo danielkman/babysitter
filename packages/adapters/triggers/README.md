@@ -180,4 +180,4 @@ See [`.github/workflows/`](./.github/workflows/) for complete examples:
 |--------|-------------|
 | `matched` | Whether the trigger query matched (`true`/`false`) |
 | `event` | Path to the enriched event JSON file |
-| `exit-code` | Agent-mux exit code (empty if trigger didn't match) |
+| `exit-code` | Adapters exit code (empty if trigger didn't match) |

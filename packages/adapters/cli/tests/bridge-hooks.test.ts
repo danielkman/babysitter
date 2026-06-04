@@ -34,7 +34,7 @@ const spawnMock = vi.fn(() => makeFakeChild());
 
 /**
  * spawnSync mock — the bridge-hooks `execCommand` helper uses spawnSync
- * (not execFileSync) to invoke hooks-mux / babysitter CLI.
+ * (not execFileSync) to invoke hooks-adapter / babysitter CLI.
  * Returns { status, stdout, stderr } matching the real spawnSync shape.
  */
 const spawnSyncMock = vi.fn<(...args: any[]) => { status: number; stdout: string; stderr: string }>(() => ({
@@ -151,7 +151,7 @@ describe('BridgeHookEmulator', () => {
   // -----------------------------------------------------------------------
 
   describe('emulateSessionStart()', () => {
-    it('calls hooks-mux invoke for session-start when hook is unsupported', async () => {
+    it('calls hooks-adapter invoke for session-start when hook is unsupported', async () => {
       getHookSupportMock.mockReturnValue({ sessionStart: 'unsupported' });
       spawnSyncMock.mockReturnValue({ status: 0, stdout: '{"runId":"run-abc"}', stderr: '' });
 
@@ -164,10 +164,10 @@ describe('BridgeHookEmulator', () => {
 
       // On Windows, execCommand resolves .cmd shims: the bin becomes
       // process.execPath (node) and the .js entry point is prepended to args.
-      // Check the flattened args list for the expected hooks-mux or babysitter tokens.
+      // Check the flattened args list for the expected hooks-adapter or babysitter tokens.
       const [bin, args] = spawnSyncMock.mock.calls[0]!;
       const allTokens = [bin, ...args];
-      const isHooksMux = allTokens.some((t: string) => t === 'a5c-hooks-mux' || t.includes('hooks-mux'));
+      const isHooksMux = allTokens.some((t: string) => t === 'a5c-hooks-adapter' || t.includes('hooks-adapter'));
       const isBabysitter = allTokens.some((t: string) => t === 'babysitter' || t.includes('babysitter'));
       expect(isHooksMux || isBabysitter).toBe(true);
       if (isHooksMux) {
@@ -196,7 +196,7 @@ describe('BridgeHookEmulator', () => {
       spawnSyncMock.mockReturnValue({ status: 0, stdout: '{}', stderr: '' });
 
       const emulator = await createEmulator({
-        env: { HOOKS_MUX_BIN: '/usr/local/bin/my-hooks-mux' },
+        env: { HOOKS_MUX_BIN: '/usr/local/bin/my-hooks-adapter' },
       });
       await emulator.emulateSessionStart();
 
@@ -206,7 +206,7 @@ describe('BridgeHookEmulator', () => {
       // (either as the binary or within the args if node resolved).
       const [bin, args] = spawnSyncMock.mock.calls[0]!;
       const allTokens = [bin, ...(args || [])];
-      const usesCustomBin = allTokens.some((t: string) => t.includes('my-hooks-mux'));
+      const usesCustomBin = allTokens.some((t: string) => t.includes('my-hooks-adapter'));
       const usesBabysitter = allTokens.some((t: string) => t === 'babysitter' || t.includes('babysitter'));
       expect(usesCustomBin || usesBabysitter).toBe(true);
     });
@@ -216,10 +216,10 @@ describe('BridgeHookEmulator', () => {
       const os = await import('node:os');
       const path = await import('node:path');
       const originalPlatform = Object.getOwnPropertyDescriptor(process, 'platform');
-      const shimDir = await fs.mkdtemp(path.join(os.tmpdir(), 'hooks-mux-shim-'));
-      const hooksMuxMain = path.join(shimDir, 'node_modules', '@a5c-ai', 'hooks-mux-cli', 'dist', 'cli', 'main.js');
+      const shimDir = await fs.mkdtemp(path.join(os.tmpdir(), 'hooks-adapter-shim-'));
+      const hooksMuxMain = path.join(shimDir, 'node_modules', '@a5c-ai', 'hooks-adapter-cli', 'dist', 'cli', 'main.js');
       await fs.mkdir(path.dirname(hooksMuxMain), { recursive: true });
-      await fs.writeFile(path.join(shimDir, 'a5c-hooks-mux.cmd'), `@"%~dp0\\node.exe" "${hooksMuxMain}" %*\n`);
+      await fs.writeFile(path.join(shimDir, 'a5c-hooks-adapter.cmd'), `@"%~dp0\\node.exe" "${hooksMuxMain}" %*\n`);
 
       try {
         Object.defineProperty(process, 'platform', { value: 'win32' });
@@ -278,7 +278,7 @@ describe('BridgeHookEmulator', () => {
   describe('emulateStop()', () => {
     it('returns shouldContinue=true when run has pending effects', async () => {
       getHookSupportMock.mockReturnValue({ sessionStart: 'unsupported', stop: 'unsupported' });
-      // hooks-mux invoke calls return JSON; run:status returns pending state
+      // hooks-adapter invoke calls return JSON; run:status returns pending state
       const runStatus = JSON.stringify({
         state: 'running',
         needsMoreIterations: false,
@@ -381,7 +381,7 @@ describe('BridgeHookEmulator', () => {
   // -----------------------------------------------------------------------
 
   describe('emulateSessionEnd()', () => {
-    it('calls hooks-mux invoke or babysitter hook:run for session-end', async () => {
+    it('calls hooks-adapter invoke or babysitter hook:run for session-end', async () => {
       getHookSupportMock.mockReturnValue({ sessionEnd: 'unsupported' });
       spawnSyncMock.mockReturnValue({ status: 0, stdout: '{}', stderr: '' });
 
@@ -391,7 +391,7 @@ describe('BridgeHookEmulator', () => {
       expect(spawnSyncMock).toHaveBeenCalled();
       const [bin, args] = spawnSyncMock.mock.calls[0]!;
       const allTokens = [bin, ...args];
-      const isHooksMux = allTokens.some((t: string) => t === 'a5c-hooks-mux' || t.includes('hooks-mux'));
+      const isHooksMux = allTokens.some((t: string) => t === 'a5c-hooks-adapter' || t.includes('hooks-adapter'));
       if (isHooksMux) {
         expect(args).toContain('invoke');
         expect(args).toContain('--native-event');
@@ -578,7 +578,7 @@ describe('bridge flag validation in launch command', () => {
     // Give time for the async session-start to fire and spawn to happen
     await new Promise(r => setTimeout(r, 200));
 
-    // spawnSyncMock should have been called for session-start (via hooks-mux or babysitter)
+    // spawnSyncMock should have been called for session-start (via hooks-adapter or babysitter)
     expect(spawnSyncMock).toHaveBeenCalled();
     const calls = spawnSyncMock.mock.calls;
     const sessionStartCall = calls.find((c: any[]) =>

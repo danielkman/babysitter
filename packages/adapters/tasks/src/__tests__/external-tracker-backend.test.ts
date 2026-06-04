@@ -154,7 +154,7 @@ describe("ExternalTrackerBackend generic REST sync", () => {
         urls.push(`${init?.method ?? "GET"} ${String(url)}`);
         if (String(url).endsWith("/comments")) {
           const body = JSON.parse(String(init?.body)) as { body: string };
-          expect(body.body).toContain("tasks-mux:tracker-answer:v1");
+          expect(body.body).toContain("tasks-adapter:tracker-answer:v1");
           expect(body.body).toContain("Looks good");
           return okResponse({
             id: "comment-1",

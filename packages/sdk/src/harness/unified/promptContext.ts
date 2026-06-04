@@ -2,7 +2,7 @@
  * PromptContext factory for the unified adapter.
  *
  * When `AGENT_CAPABILITIES_JSON` is set, the context is derived from the
- * proxy capabilities advertised by hooks-mux.  Otherwise a sensible
+ * proxy capabilities advertised by hooks-adapter.  Otherwise a sensible
  * default context is returned.
  */
 
@@ -56,7 +56,7 @@ export function createUnifiedContext(
       hookDriven: false,
       interactiveToolName: "",
       sessionEnvVars:
-        "AGENT_SESSION_ID (hooks-mux convention)",
+        "AGENT_SESSION_ID (hooks-adapter convention)",
       resumeFlags: "",
       cliSetupSnippet: createDefaultCliSetupSnippet(),
       iterateFlags: "",

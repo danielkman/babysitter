@@ -18,7 +18,7 @@ image: node:22
 definitions:
   steps:
     - step: &adapters-trigger
-        name: Agent Mux Trigger
+        name: Agent Adapter Trigger
         caches:
           - node
         script:

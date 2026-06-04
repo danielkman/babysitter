@@ -10,9 +10,9 @@ Source of truth: [`package.json`](../../package.json).
 npm run build:sdk
 npm run test:sdk
 npm run verify:metadata
-npm run build:hooks-mux
-npm run test:hooks-mux
-npm run lint:hooks-mux
+npm run build:hooks-adapter
+npm run test:hooks-adapter
+npm run lint:hooks-adapter
 ```
 
 ## Core Packages
@@ -26,7 +26,7 @@ npm run lint:hooks-mux
 | `packages/genty/tui-plugins` | `@a5c-ai/genty-tui-plugins` | TUI panels for status, cost, and governance |
 | `packages/atlas` | `@a5c-ai/atlas` | Atlas catalog graph SDK, CLI, and data |
 | `packages/atlas/webui` | `@a5c-ai/atlas-webui` | Atlas graph explorer (Next.js) |
-| `packages/adapters/hooks/*` | `hooks-mux workspace packages` | Hook normalization, CLI, and harness adapters |
+| `packages/adapters/hooks/*` | `hooks-adapter workspace packages` | Hook normalization, CLI, and harness adapters |
 
 ## Key Entry Points
 

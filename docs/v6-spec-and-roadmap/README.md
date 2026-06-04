@@ -61,7 +61,7 @@ Use these as constraints:
 Core planning documents:
 
 - [System Overview](system-overview.md) - current system boundaries and ecosystem position
-- [Glossary](glossary.md) - canonical terminology for the unified Babysitter, adapters, and mux-support stack
+- [Glossary](glossary.md) - canonical terminology for the unified Babysitter, adapters, and adapter-support stack
 - [Unified Stack Architecture](unified-stack-architecture.md) - how the current monorepo stack fits together end to end
 - [Stack Guide](stack-guide.md) - where to start reading and which package/docs own which concerns
 - [Current State Analysis](current-state.md) - repository reality and pain points
@@ -72,7 +72,7 @@ Core planning documents:
 
 Supporting modules:
 
-- [Agent-Mux Integration](adapters-integration.md)
+- [Agent-Adapter Integration](adapters-integration.md)
 - [Performance & Documentation](performance-docs.md)
 - [Testing Framework](testing-framework.md)
 - [Security Architecture](security-architecture.md)

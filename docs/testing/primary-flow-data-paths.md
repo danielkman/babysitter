@@ -1,6 +1,6 @@
 ---
 title: Primary Flow Data Paths
-description: Data-path map for the primary adapters, agent-platform, SDK run, hooks-mux, and transport-mux flows covered by the rebuilt E2E strategy.
+description: Data-path map for the primary adapters, agent-platform, SDK run, hooks-adapter, and transport-adapter flows covered by the rebuilt E2E strategy.
 last_updated: 2026-05-07
 ---
 
@@ -14,11 +14,11 @@ The primary configuration has two valid runtime paths and one shared hook/trace 
 
 | Path | Primary target | What it proves | What it must not claim |
 | --- | --- | --- | --- |
-| Agent-mux plugin path | Claude Code first; Codex only when capability-gated plugin support is available | A real external harness session can be launched through `adapters`, the Babysitter plugin can run a `/babysitter:call`-style session command, and the resulting Babysitter run reaches a terminal state | It does not prove `agent-platform` runtime orchestration and does not use `agent-platform create-run` |
+| Adapters plugin path | Claude Code first; Codex only when capability-gated plugin support is available | A real external harness session can be launched through `adapters`, the Babysitter plugin can run a `/babysitter:call`-style session command, and the resulting Babysitter run reaches a terminal state | It does not prove `agent-platform` runtime orchestration and does not use `agent-platform create-run` |
 | Babysitter-agent runtime path | `agent-platform call` / `agent-platform create-run` with `agent-core` internal backend, plus external-harness bridge where selected | The runtime can understand intent, create or reuse a process, create and bind a Babysitter SDK run, iterate effects, resolve tasks, and complete | It does not install external harness plugins; `babysitter harness:install` belongs to SDK setup, not this path |
-| Hooks and transport layer | `hooks-mux` and `transport-mux` alongside either runtime path | Native hook payloads normalize into `UnifiedHookEvent`, handlers receive traceable env/stdin, and provider traffic can be proxied/recorded where configured | Hooks-mux does not own adapters sessions; transport-mux does not own Babysitter run state |
+| Hooks and transport layer | `hooks-adapter` and `transport-adapter` alongside either runtime path | Native hook payloads normalize into `UnifiedHookEvent`, handlers receive traceable env/stdin, and provider traffic can be proxied/recorded where configured | Hooks-adapter does not own adapters sessions; transport-adapter does not own Babysitter run state |
 
-## Flow A: Agent-Mux Plugin Session To Babysitter Run
+## Flow A: Agent-Adapter Plugin Session To Babysitter Run
 
 This is the primary plugin E2E for Claude Code. Codex uses the same shape only after an explicit capability gate proves plugin install/support for the Codex adapter.
 
@@ -31,7 +31,7 @@ operator / CI
   -> external harness process (Claude Code primary)
   -> Babysitter plugin command inside the harness session
   -> Babysitter SDK run creation / iteration
-  -> hooks-mux native hook normalization and stop-hook evidence
+  -> hooks-adapter native hook normalization and stop-hook evidence
   -> terminal Babysitter run state and adapters event log evidence
 ```
 
@@ -40,12 +40,12 @@ operator / CI
 | Step | Boundary | Data passed | Required evidence |
 | --- | --- | --- | --- |
 | 1 | SDK setup CLI | Harness name and plugin target via `babysitter harness:install` and `babysitter harness:install-plugin` | Install JSON or log, installed plugin path, marketplace/registry entry, idempotency result |
-| 2 | Agent-mux invocation | Agent name, prompt, `--session`, `--run-id`, cwd/env/model flags from `packages/adapters/cli/src/commands/run.ts` | `adapters` run ID, selected adapter, cwd, model, prompt digest, session mode |
-| 3 | Agent-mux gateway/runtime | Session runtime and event log under `packages/adapters/gateway/src/runs/session-runtime.ts` and `packages/adapters/gateway/src/runs/event-log.ts` | Event-log file or API events with monotonic `seq`, `source`, `ts`, event type, `runId` |
+| 2 | Adapters invocation | Agent name, prompt, `--session`, `--run-id`, cwd/env/model flags from `packages/adapters/cli/src/commands/run.ts` | `adapters` run ID, selected adapter, cwd, model, prompt digest, session mode |
+| 3 | Adapters gateway/runtime | Session runtime and event log under `packages/adapters/gateway/src/runs/session-runtime.ts` and `packages/adapters/gateway/src/runs/event-log.ts` | Event-log file or API events with monotonic `seq`, `source`, `ts`, event type, `runId` |
 | 4 | External harness | Native harness session ID, native hook payloads, tool calls, stop/session events | Harness transcript/session ID, native hook payload fixture or redacted live artifact |
 | 5 | Babysitter plugin command | `/babysitter:call` or equivalent Babysitter-enabled session command posted in the harness | Assistant/tool transcript showing command, plugin dispatch evidence, created Babysitter `runId` |
 | 6 | SDK run loop | `run:create`, `run:iterate`, pending effects, `task:post`, terminal completion | `.a5c/runs/<runId>/`, journal/events, `tasks/<effectId>/result.json`, terminal status |
-| 7 | Hook bridge | `hooks-mux` normalizes session/tool/stop hooks and injects `AGENT_*` env | `UnifiedHookEvent`, handler stdin/stdout, `AGENT_SESSION_ID`, stop-hook result |
+| 7 | Hook bridge | `hooks-adapter` normalizes session/tool/stop hooks and injects `AGENT_*` env | `UnifiedHookEvent`, handler stdin/stdout, `AGENT_SESSION_ID`, stop-hook result |
 
 ### Assertions
 
@@ -120,14 +120,14 @@ babysitter run:create
 | `babysitter task:list <runDir> --pending` | SDK CLI/runtime | Pending task index | `effectId`, `taskId`, `stepId`, `kind`, `taskDefRef` |
 | `babysitter task:post <runDir> <effectId> --status ok --value <file>` | SDK CLI/runtime | Task result, stdout/stderr refs, effect resolution journal event | `effectId`, `resultRef`, status |
 
-## Flow D: Hooks-Mux Native Hook Path
+## Flow D: Hooks-Adapter Native Hook Path
 
-Hooks-mux is the canonical hook-normalization and handler fan-out layer.
+Hooks-adapter is the canonical hook-normalization and handler fan-out layer.
 
 ```text
 native harness hook payload on stdin
-  -> `a5c-hooks-mux bootstrap` or `a5c-hooks-mux invoke`
-  -> adapter loader (the matching hooks-mux adapter package for the selected harness)
+  -> `a5c-hooks-adapter bootstrap` or `a5c-hooks-adapter invoke`
+  -> adapter loader (the matching hooks-adapter adapter package for the selected harness)
   -> adapter normalizer
   -> `UnifiedHookEvent`
   -> handler plan + child-process handlers
@@ -155,23 +155,23 @@ native harness hook payload on stdin
 - Stop-hook tests assert recursion guard/stop behavior explicitly.
 - Handler env contains `AGENT_SESSION_ID` and `AGENT_ADAPTER`; sensitive provider keys are redacted from artifacts.
 
-## Flow E: Transport-Mux Assisted Agent-Mux Launch
+## Flow E: Transport-Adapter Assisted Agent-Adapter Launch
 
-Transport-mux belongs to provider/proxy transport, not Babysitter run state. The primary E2E use is to prove that an adapters launch can route provider traffic through a configured transport proxy and still complete a model-backed session.
+Transport-adapter belongs to provider/proxy transport, not Babysitter run state. The primary E2E use is to prove that an adapters launch can route provider traffic through a configured transport proxy and still complete a model-backed session.
 
 ```text
 adapters launch/run
-  -> launch decision: native provider vs transport-mux proxy
-  -> transport-mux HTTP/SSE route
+  -> launch decision: native provider vs transport-adapter proxy
+  -> transport-adapter HTTP/SSE route
   -> upstream provider or mock transport
   -> streamed/non-streamed response
   -> adapters session event log
-  -> optional hooks-mux events from harness runtime
+  -> optional hooks-adapter events from harness runtime
 ```
 
 ### Assertions
 
-- Agent-mux launch evidence includes `proxyNeeded`/`proxyReason` or equivalent launch decision metadata.
+- Adapters launch evidence includes `proxyNeeded`/`proxyReason` or equivalent launch decision metadata.
 - Transport evidence includes route, upstream target, status code, stream completion/cancellation, timeout behavior, and redacted auth metadata.
 - The transport trace is correlated to an adapters `runId` or session ID.
 - The transport test does not claim Babysitter completion unless a Babysitter run ID and terminal SDK state are also present.
@@ -181,21 +181,21 @@ adapters launch/run
 | ID | Flow | Lane | Minimum proof |
 | --- | --- | --- | --- |
 | PF-1 | SDK run/session loop | No-model | Create run, list pending task, post result, complete run, inspect journal |
-| PF-2 | Hooks-mux Claude fixture | No-model | Session/tool/stop hook fixtures normalize and render; handler env contains trace IDs |
-| PF-3 | Hooks-mux Codex fixture | No-model | Session/tool aliases normalize, lossy/native support levels match mapping, handler env is present |
-| PF-4 | Agent-mux mock session | No-model | `runId`, session event log, ordered events, terminal session output |
-| PF-5 | Transport-mux mock route | No-model | Proxy route roundtrip, stream and non-stream artifacts, timeout/cancel fixture |
+| PF-2 | Hooks-adapter Claude fixture | No-model | Session/tool/stop hook fixtures normalize and render; handler env contains trace IDs |
+| PF-3 | Hooks-adapter Codex fixture | No-model | Session/tool aliases normalize, lossy/native support levels match mapping, handler env is present |
+| PF-4 | Adapters mock session | No-model | `runId`, session event log, ordered events, terminal session output |
+| PF-5 | Transport-adapter mock route | No-model | Proxy route roundtrip, stream and non-stream artifacts, timeout/cancel fixture |
 | PF-6 | Babysitter-agent internal | Model-backed or controlled fake model | `agent-platform call/create-run`, `agent-core` backend, SDK run terminal state |
-| PF-7 | Agent-mux + Claude + Babysitter plugin | Model-backed | Harness/plugin installed, `/babysitter:call`, adapters session log, SDK run terminal state, stop hook evidence |
-| PF-8 | Agent-mux + Codex + Babysitter plugin | Capability-gated model-backed | Same as PF-7 only after plugin support is proven; otherwise skip evidence must cite capability gate |
-| PF-9 | Agent-mux + transport-mux live stream | Model-backed | Launch decision, proxy trace, streamed response, adapters session completion |
+| PF-7 | Adapters + Claude + Babysitter plugin | Model-backed | Harness/plugin installed, `/babysitter:call`, adapters session log, SDK run terminal state, stop hook evidence |
+| PF-8 | Adapters + Codex + Babysitter plugin | Capability-gated model-backed | Same as PF-7 only after plugin support is proven; otherwise skip evidence must cite capability gate |
+| PF-9 | Adapters + transport-adapter live stream | Model-backed | Launch decision, proxy trace, streamed response, adapters session completion |
 
 ## Source Map
 
 | Area | Source files to inspect first |
 | --- | --- |
-| Agent-mux CLI and sessions | `packages/adapters/cli/src/commands/run.ts`, `packages/adapters/cli/src/commands/launch.ts`, `packages/adapters/gateway/src/runs/session-runtime.ts`, `packages/adapters/gateway/src/runs/event-log.ts` |
+| Adapters CLI and sessions | `packages/adapters/cli/src/commands/run.ts`, `packages/adapters/cli/src/commands/launch.ts`, `packages/adapters/gateway/src/runs/session-runtime.ts`, `packages/adapters/gateway/src/runs/event-log.ts` |
 | Babysitter-agent runtime | `packages/genty/platform/src/cli/dispatch.ts`, `packages/genty/platform/src/cli/commands/harness/createRun.ts`, `packages/genty/platform/src/harness/internal/createRun/index.ts`, `packages/genty/platform/src/harness/internal/createRun/orchestration/effects.ts` |
 | SDK run/session loop | `packages/sdk/src/cli/main/runCreate.ts`, `packages/sdk/src/cli/main/taskCommands.ts`, `packages/sdk/src/cli/commands/session/init.ts`, `packages/sdk/src/cli/commands/session/associate.ts` |
-| Hooks-mux | `packages/adapters/hooks/cli/src/cli/commands/invoke.ts`, `packages/adapters/hooks/cli/src/cli/bootstrap-runtime.ts`, `packages/adapters/hooks/core/src/types/event.ts`, `packages/adapters/hooks/core/src/normalizer/runner.ts` |
-| Transport-mux | `packages/transport-mux/src/index.ts`, `packages/transport-mux/tests/e2e/http-roundtrip.test.ts`, `packages/transport-mux/tests/runtime.test.ts` |
+| Hooks-adapter | `packages/adapters/hooks/cli/src/cli/commands/invoke.ts`, `packages/adapters/hooks/cli/src/cli/bootstrap-runtime.ts`, `packages/adapters/hooks/core/src/types/event.ts`, `packages/adapters/hooks/core/src/normalizer/runner.ts` |
+| Transport-adapter | `packages/transport-adapter/src/index.ts`, `packages/transport-adapter/tests/e2e/http-roundtrip.test.ts`, `packages/transport-adapter/tests/runtime.test.ts` |

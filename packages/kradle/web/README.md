@@ -198,5 +198,5 @@ The Playwright suite lives in `packages/kradle/web/e2e`, matching
 | `KRADLE_E2E_ORG` | Organization slug for org-scoped tests. Defaults to `default`. |
 | `KRADLE_E2E_AUTH_STATE` | Optional Playwright storage state JSON for signed staging sessions. |
 | `KRADLE_E2E_ENABLE_MUTATING_STAGING` | Set to `1` to run shared-staging CRUD tests. Tests use `issue-609-e2e` names and exact cleanup only. |
-| `KRADLE_E2E_ENABLE_SERVICE_FLOWS` | Set to `1` after #608-backed assistant, playground, and Agent Mux services are configured. |
+| `KRADLE_E2E_ENABLE_SERVICE_FLOWS` | Set to `1` after #608-backed assistant, playground, and Agent Adapter services are configured. |
 | `KRADLE_E2E_ENABLE_MUTATING_LOCAL` | Optional local override for CRUD tests when running against a local dev server. |

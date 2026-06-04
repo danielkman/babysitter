@@ -1,7 +1,7 @@
 /**
  * Testable claims: stop-hook control across agent products.
  *
- * Verifies that hooks-mux can fire turn.stop hooks and that the
+ * Verifies that hooks-adapter can fire turn.stop hooks and that the
  * deny decision propagates correctly for adapters that support blocking.
  *
  * Tests both interactive (stdin payload) and non-interactive (--event-json) modes.
@@ -12,7 +12,7 @@ import * as path from 'node:path';
 import * as fs from 'node:fs';
 
 const ROOT = path.resolve(__dirname, '..', '..', '..', '..');
-const HOOKS_MUX_CLI = path.join(ROOT, 'packages', 'hooks-mux', 'cli');
+const HOOKS_MUX_CLI = path.join(ROOT, 'packages', 'hooks-adapter', 'cli');
 
 // Adapters and their stop-hook characteristics
 const ADAPTERS = [
@@ -55,7 +55,7 @@ function runHooksMux(args: string[], opts?: { stdin?: string; env?: Record<strin
 
 describe.skipIf(!cliExists())('stop-hook control across agent products', { timeout: 60_000 }, () => {
   beforeAll(() => {
-    // Ensure hooks-mux CLI is built
+    // Ensure hooks-adapter CLI is built
     try {
       execSync('npm run build', { cwd: HOOKS_MUX_CLI, stdio: 'pipe', timeout: 30_000 });
     } catch {

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://anthropic.com/bpx/responder-profile.schema.json",
   "title": "ResponderProfile",
-  "description": "Schema for a responder profile used by the Breakpoints Mux system.",
+  "description": "Schema for a responder profile used by the Breakpoints Adapter system.",
   "type": "object",
   "required": ["id", "name", "title", "domains", "tags", "availability", "responseTimeSla"],
   "additionalProperties": false,
@@ -64,7 +64,7 @@
     "adapter": {
       "type": "string",
       "minLength": 1,
-      "description": "Agent-mux adapter name for agent responders."
+      "description": "Adapters adapter name for agent responders."
     },
     "model": {
       "type": "string",

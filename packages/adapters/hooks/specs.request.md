@@ -15,7 +15,7 @@ Build a small, focused product that unifies hook execution across agent harnesse
 The product has two forms:
 
 1. `@a5c-ai/hooks-adapter-cli` — npm library
-2. `a5c-hooks-mux` — CLI entrypoint
+2. `a5c-hooks-adapter` — CLI entrypoint
 
 The system must:
 
@@ -152,7 +152,7 @@ Explicitly non-v1 targets:
 
 ```text
 native harness hook
-    -> a5c-hooks-mux invoke
+    -> a5c-hooks-adapter invoke
         -> adapter parses stdin/env/native metadata
         -> lifecycle event normalized
         -> session context resolved/loaded
@@ -168,7 +168,7 @@ For downstream command execution:
 
 ```text
 wrapped tool command
-    -> a5c-hooks-mux exec
+    -> a5c-hooks-adapter exec
         -> resolve session context
         -> materialize environment/context for subprocess
         -> spawn target command
@@ -531,13 +531,13 @@ Allow a session-start native hook to exist purely to initialize shared session c
 The proxy must support a no-op bootstrap mode such as:
 
 ```bash
-a5c-hooks-mux invoke --adapter claude --bootstrap-only
+a5c-hooks-adapter invoke --adapter claude --bootstrap-only
 ```
 
 or
 
 ```bash
-a5c-hooks-mux bootstrap --adapter claude
+a5c-hooks-adapter bootstrap --adapter claude
 ```
 
 This mode must:
@@ -811,7 +811,7 @@ docs must not contradict them.
 Primary entrypoint for native hook commands.
 
 ```bash
-a5c-hooks-mux invoke \
+a5c-hooks-adapter invoke \
   --adapter <adapter> \
   [--handler <command...>] \
   [--registry <path>] \
@@ -836,7 +836,7 @@ Behavior:
 Run a command with restored session context.
 
 ```bash
-a5c-hooks-mux exec \
+a5c-hooks-adapter exec \
   --session-id <id> \
   -- <command...>
 ```
@@ -853,7 +853,7 @@ Behavior:
 Dedicated no-op context bootstrap.
 
 ```bash
-a5c-hooks-mux bootstrap --adapter <adapter>
+a5c-hooks-adapter bootstrap --adapter <adapter>
 ```
 
 ### 18.4 `show-session`

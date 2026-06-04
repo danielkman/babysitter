@@ -48,7 +48,7 @@ function printValue(value: unknown): void {
 }
 
 export function createRulesCommand(): Command {
-  const cmd = new Command("rules").description("Manage tasks-mux routing rules");
+  const cmd = new Command("rules").description("Manage tasks-adapter routing rules");
 
   cmd
     .command("list")

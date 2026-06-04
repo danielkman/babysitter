@@ -17,17 +17,17 @@ This specification defines two manager interfaces and their supporting types:
 Both managers are accessed from the `AgentMuxClient`:
 
 ```typescript
-const mux = createClient();
+const adapter = createClient();
 
 // Configuration operations:
-const config = mux.config.get('claude');
-await mux.config.set('codex', { model: 'o4-mini' });
-const servers = mux.config.getMcpServers('gemini');
+const config = adapter.config.get('claude');
+await adapter.config.set('codex', { model: 'o4-mini' });
+const servers = adapter.config.getMcpServers('gemini');
 
 // Authentication operations:
-const authState = await mux.auth.check('claude');
-const allAuth = await mux.auth.checkAll();
-const guidance = mux.auth.getSetupGuidance('hermes');
+const authState = await adapter.auth.check('claude');
+const allAuth = await adapter.auth.checkAll();
+const guidance = adapter.auth.getSetupGuidance('hermes');
 ```
 
 ### 1.1 Design Principles
@@ -69,7 +69,7 @@ const guidance = mux.auth.getSetupGuidance('hermes');
  * the agent's adapter. It provides field-level access, schema introspection,
  * validation, and MCP server management.
  *
- * Accessed via `mux.config`.
+ * Accessed via `adapter.config`.
  */
 interface ConfigManager {
   /**
@@ -247,7 +247,7 @@ interface ConfigManager {
    * Returns the ProfileManager instance.
    *
    * Convenience accessor that returns the same ProfileManager available
-   * at `mux.profiles`. Provided here so that config-related code can
+   * at `adapter.profiles`. Provided here so that config-related code can
    * access profiles without a separate import.
    *
    * @returns The ProfileManager instance.
@@ -699,7 +699,7 @@ Each agent stores its configuration in a native format at agent-specific filesys
  * config files, and environment variables to determine auth status.
  * It never writes credentials, prompts users, or modifies auth state.
  *
- * Accessed via `mux.auth`.
+ * Accessed via `adapter.auth`.
  */
 interface AuthManager {
   /**
@@ -1244,7 +1244,7 @@ ConfigManager is a thin orchestration layer. The actual file I/O is performed by
 
 ### 17.3 ProfileManager Relationship
 
-`ConfigManager.profiles()` returns the same `ProfileManager` instance available at `mux.profiles`. Profiles are adapters's own named `RunOptions` presets (stored in `~/.adapters/profiles/` and `.adapters/profiles/`). They are distinct from agent-native configuration: profiles control how adapters invokes an agent, while `AgentConfig` represents the agent's own persisted settings. See `02-run-options-and-profiles.md`, Section 10 for the full `ProfileManager` specification.
+`ConfigManager.profiles()` returns the same `ProfileManager` instance available at `adapter.profiles`. Profiles are adapters's own named `RunOptions` presets (stored in `~/.adapters/profiles/` and `.adapters/profiles/`). They are distinct from agent-native configuration: profiles control how adapters invokes an agent, while `AgentConfig` represents the agent's own persisted settings. See `02-run-options-and-profiles.md`, Section 10 for the full `ProfileManager` specification.
 
 ---
 
@@ -1265,7 +1265,7 @@ All types defined in this specification, listed alphabetically:
 | `ConfigField` | `interface` | 5 | Single config field descriptor. |
 | `ConfigManager` | `interface` | 2 | Config read/write/validate API. |
 | `McpServerConfig` | `interface` | `02-run-options-and-profiles.md`, Section 4 | MCP server connection config (defined externally, used here). |
-| `ProfileManager` | `interface` | `02-run-options-and-profiles.md`, Section 10 | Named RunOptions presets (defined externally). Accessible via `ConfigManager.profiles()` and `mux.profiles`. |
+| `ProfileManager` | `interface` | `02-run-options-and-profiles.md`, Section 10 | Named RunOptions presets (defined externally). Accessible via `ConfigManager.profiles()` and `adapter.profiles`. |
 | `ConfigValidationError` | `interface` | 6 | Single field validation error. Named to avoid collision with the throwable `ValidationError` class in `01-core-types-and-client.md`. |
 | `ConfigValidationWarning` | `interface` | 6 | Non-fatal validation warning. |
 | `ValidationResult` | `interface` | 6 | Config validation result (contains `ConfigValidationError[]` and `ConfigValidationWarning[]`). |

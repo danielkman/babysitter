@@ -13,11 +13,11 @@ This spec adds the missing permission layer for agent dispatch: service account 
 - Separate identity (`ServiceAccount`), authorization (`RoleBinding`), secret access (`AgentSecretGrant`), and non-secret config access (`AgentConfigGrant`).
 - Treat tool, MCP, skill, model, and subagent requirements as typed dependencies that can be validated before dispatch.
 - Fail closed for missing or stale grants, but explain the exact missing ServiceAccount, role, Secret key, ConfigMap key, repository, ref, and trigger source.
-- Never pass broad cluster credentials into Agent Mux; pass only admitted scoped references or projected mounts for the selected attempt.
+- Never pass broad cluster credentials into Agent Adapter; pass only admitted scoped references or projected mounts for the selected attempt.
 
 ## Non-goals
 
-- Do not store Secret values in Kradle resources, events, prompt previews, audit logs, or Agent Mux transcripts.
+- Do not store Secret values in Kradle resources, events, prompt previews, audit logs, or Agent Adapter transcripts.
 - Do not replace Kubernetes RBAC with a Kradle-only ACL system.
 - Do not allow label/comment-triggered dispatches to grant themselves new roles or secrets.
 - Do not let a tool or skill imply secret access through prompt text; every dependency must be declared and admitted.
@@ -360,7 +360,7 @@ Audit records should link to source repository, trigger, dispatch run, stack gen
 | ConfigMap value is sensitive by policy | show key metadata only; do not render values. |
 | RoleBinding apply succeeds but later drifts | mark dependent stacks not ready and block new attempts requiring that role. |
 | Secret deleted while dispatch is running | running attempt continues only if already mounted; retries require fresh review. |
-| Agent Mux launch rejects secret/config reference | mark attempt failed with adapter rejection and keep Kradle permission snapshot. |
+| Agent Adapter launch rejects secret/config reference | mark attempt failed with adapter rejection and keep Kradle permission snapshot. |
 | User loses permission while editing grant form | server rejects save and UI refreshes permission review. |
 ## Dispatch-time enforcement
 
@@ -369,7 +369,7 @@ At dispatch creation:
 1. Snapshot the selected stack, runtime ServiceAccount, runner ServiceAccount, tool/MCP/skill/subagent requirements, SecretGrants, ConfigGrants, RoleBindings, and ConfigMaps/Secret metadata.
 2. Refuse untrusted/forked refs from receiving privileged secrets unless policy explicitly allows a safe read-only grant.
 3. Create `AgentApproval` when policy allows a secret/config/tool but requires human approval for this source.
-4. Launch Agent Mux with only admitted secret/config references, never with the full cluster credential set.
+4. Launch Agent Adapter with only admitted secret/config references, never with the full cluster credential set.
 5. Record the exact secret/config names and key hashes in the audit snapshot, not secret values.
 
 ## Acceptance criteria

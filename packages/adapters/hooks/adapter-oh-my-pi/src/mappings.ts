@@ -38,7 +38,7 @@ function hookMappingToPhaseMapping(mapping: HookMappingDescriptor): PhaseMapping
 function buildFromCatalog(): PhaseMapping[] {
   const mappings = listHookMappingsByAdapterFamily('oh-my-pi');
   if (mappings.length === 0) {
-    throw new Error('hooks-mux adapter-oh-my-pi: catalog unavailable or returned no mappings for family "oh-my-pi"');
+    throw new Error('hooks-adapter adapter-oh-my-pi: catalog unavailable or returned no mappings for family "oh-my-pi"');
   }
   const phaseMappings = mappings
     .map(hookMappingToPhaseMapping)

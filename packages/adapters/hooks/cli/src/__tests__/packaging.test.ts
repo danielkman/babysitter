@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 
 import { KNOWN_ADAPTERS } from '../cli/adapter-loader';
 
-describe('hooks-mux CLI packaging', () => {
+describe('hooks-adapter CLI packaging', () => {
   it('declares built-in adapter packages as runtime dependencies', () => {
     const packageJsonPath = path.resolve(__dirname, '..', '..', 'package.json');
     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8')) as {

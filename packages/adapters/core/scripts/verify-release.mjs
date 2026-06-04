@@ -158,7 +158,7 @@ function main() {
     packEntries,
   });
 
-  console.log('agent-comm-mux release verification passed');
+  console.log('agent-comm-adapter release verification passed');
 }
 
 if (process.argv[1] === __filename) {

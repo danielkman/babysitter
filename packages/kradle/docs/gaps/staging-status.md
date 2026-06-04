@@ -8,7 +8,7 @@ Current state of `kradle-staging.a5c.ai` as of 2026-05-30.
 |-----------|--------|------------|
 | Kubernetes | Connected | CRD read/write operations work via kubectl |
 | Gitea | **Error** | `KRADLE_GITEA_HTTP_URL` points to a Gitea instance that is not responding |
-| Agent Mux Gateway | **Not configured** | `AGENT_MUX_URL` / `AGENT_GATEWAY_URL` not set in deployment |
+| Agent Adapter Gateway | **Not configured** | `AGENT_MUX_URL` / `AGENT_GATEWAY_URL` not set in deployment |
 | Assistant | **Not configured** | `ANTHROPIC_API_KEY` / `KRADLE_ASSISTANT_API_KEY` not set |
 
 ## What Works on Staging
@@ -47,7 +47,7 @@ Without a working Gitea backend:
 **Fix:** Either deploy Gitea via the Helm chart (`gitea.enabled: true` in values.yaml) or fix the existing Gitea deployment and verify `KRADLE_GITEA_HTTP_URL` + `KRADLE_GITEA_TOKEN` are correct.
 
 ### Agent Dispatch
-Without the Agent Mux Gateway:
+Without the Agent Adapter Gateway:
 - DispatchButton creates an `AgentDispatchRun` CRD resource ✓
 - But `agentMuxClient.submitAgentJob()` has no gateway to submit to
 - No K8s Jobs are created → no agent containers start
@@ -63,5 +63,5 @@ Without the Agent Mux Gateway:
 - Set `externalDependencies.nats.eventTransport.enabled=true` and `externalDependencies.nats.url` in Helm to use the broker-backed transport path
 
 ### Health Checks
-- Snapshot health now runs bounded probes for Kubernetes `kubectl cluster-info`, Gitea `/api/v1/version`, Agent Mux/Gateway `/healthz`, Kradle Controller `/healthz`, and assistant key presence/format
+- Snapshot health now runs bounded probes for Kubernetes `kubectl cluster-info`, Gitea `/api/v1/version`, Agent Adapter/Gateway `/healthz`, Kradle Controller `/healthz`, and assistant key presence/format
 - Missing backing services are reported as `not configured`; failures are structured without leaking secret values

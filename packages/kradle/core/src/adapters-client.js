@@ -6,7 +6,7 @@ import { createResource } from './resource-model.js';
 
 export const AGENT_MUX_CLIENT_BOUNDARY = {
   role: 'adapters-client',
-  scope: 'HTTP/SSE adapter for Agent Mux gateway — capabilities, sessions, events, transcripts, K8s Job dispatch',
+  scope: 'HTTP/SSE adapter for Agent Adapter gateway — capabilities, sessions, events, transcripts, K8s Job dispatch',
   owns: ['gateway HTTP calls', 'SSE event streaming', 'transcript reconciliation', 'K8s Job manifest generation', 'Job lifecycle management'],
   delegatesTo: ['resource-model', 'kubernetes-resource-gateway'],
   mustNotOwn: ['secret values', 'permission review', 'resource persistence']

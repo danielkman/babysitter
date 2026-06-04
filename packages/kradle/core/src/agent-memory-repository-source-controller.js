@@ -12,7 +12,7 @@ export const AGENT_MEMORY_REPOSITORY_CONTROLLER_BOUNDARY = {
   scope: 'AgentMemoryRepository lifecycle: validation, repo URL resolution, retention policy defaults',
   owns: ['memory repository validation', 'repo URL', 'retention policy defaults'],
   delegatesTo: ['resource-model'],
-  mustNotOwn: ['git operations', 'secret values', 'Agent Mux sessions', 'memory search']
+  mustNotOwn: ['git operations', 'secret values', 'Agent Adapter sessions', 'memory search']
 };
 
 export const AGENT_MEMORY_SOURCE_CONTROLLER_BOUNDARY = {
@@ -20,7 +20,7 @@ export const AGENT_MEMORY_SOURCE_CONTROLLER_BOUNDARY = {
   scope: 'AgentMemorySource lifecycle: validation, read policy, included/excluded paths, access control',
   owns: ['memory source validation', 'read policy defaults', 'included paths', 'excluded paths'],
   delegatesTo: ['resource-model'],
-  mustNotOwn: ['git operations', 'secret values', 'Agent Mux sessions', 'memory search']
+  mustNotOwn: ['git operations', 'secret values', 'Agent Adapter sessions', 'memory search']
 };
 
 // ---------------------------------------------------------------------------

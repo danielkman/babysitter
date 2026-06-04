@@ -2,7 +2,7 @@
  * `adapters launch` command implementation.
  *
  * Resolves a launch plan for a given harness+provider combination,
- * optionally starts the transport-mux runtime, then exec-forks the harness with
+ * optionally starts the transport-adapter runtime, then exec-forks the harness with
  * stdin/stdout passthrough and proper signal forwarding.
  */
 
@@ -1009,7 +1009,7 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
       }
 
       // Gemini CLI: set GOOGLE_API_KEY to proxy token and GOOGLE_GEMINI_BASE_URL
-      // to the proxy URL so gemini-cli connects through the transport-mux.
+      // to the proxy URL so gemini-cli connects through the transport-adapter.
       // Note: GOOGLE_GEMINI_BASE_URL is the env var Gemini CLI reads for custom
       // API endpoints (see https://geminicli.com/docs/reference/configuration/).
       // The previously-used GOOGLE_AI_STUDIO_API_ENDPOINT was never recognised.

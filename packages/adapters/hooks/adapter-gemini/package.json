@@ -1,7 +1,7 @@
 {
   "name": "@a5c-ai/hooks-adapter-gemini",
   "version": "5.1.0",
-  "description": "Gemini CLI harness adapter for the hooks-mux system",
+  "description": "Gemini CLI harness adapter for the hooks-adapter system",
   "license": "MIT",
   "type": "commonjs",
   "main": "dist/index.js",

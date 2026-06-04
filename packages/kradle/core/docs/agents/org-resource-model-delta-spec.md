@@ -42,7 +42,7 @@ Agent resources should follow the same storage split and naming style.
 | --- | --- | --- | --- |
 | `AgentDispatchRun` | agents | `organizationRef`, `repository`, `agentStack`, `sourceRefs` | CI-like agent run. |
 | `AgentDispatchAttempt` | agents | `organizationRef`, `agentDispatchRun`, `attemptReason` | retry/fork attempt. |
-| `AgentSession` | agents | `organizationRef`, `agentMuxSessionId`, `dispatchRun` | Agent Mux session projection. |
+| `AgentSession` | agents | `organizationRef`, `agentMuxSessionId`, `dispatchRun` | Agent Adapter session projection. |
 | `AgentWorkspace` | agents | `organizationRef`, `repository`, `workspacePath` | worktree/runtime state. |
 | `AgentApproval` | agents | `organizationRef`, `dispatchRun`, `action` | human approval state. |
 | `AgentContextBundle` | agents | `organizationRef`, `dispatchRun`, `digest` | immutable context snapshot. |

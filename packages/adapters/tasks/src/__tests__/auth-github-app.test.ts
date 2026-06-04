@@ -110,7 +110,7 @@ describe("GitHubAppClient", () => {
 
       expect(result.prUrl).toBe("https://github.com/org/repo/pull/42");
       expect(result.prNumber).toBe(42);
-      expect(result.branch).toContain("tasks-mux/add-key-tal-");
+      expect(result.branch).toContain("tasks-adapter/add-key-tal-");
     });
 
     it("should get the default branch SHA", async () => {

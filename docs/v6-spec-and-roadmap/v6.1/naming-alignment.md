@@ -23,7 +23,7 @@ The graph has distinct layers (Core, Runtime, Platform, Interaction, Presentatio
 
 | Package | Graph Layer | Role |
 |---------|-------------|------|
-| `agent-comm-mux` | L4 Agent-Core, L5 Agent-Runtime | Core types + runtime utilities |
+| `agent-comm-adapter` | L4 Agent-Core, L5 Agent-Runtime | Core types + runtime utilities |
 | `adapters-adapters` | L5 Agent-Runtime | Harness adapter implementations |
 | `adapters-cli` | L10 Interaction | CLI entry point |
 | `adapters-gateway` | L6 Agent-Platform | Remote API surface |
@@ -35,34 +35,34 @@ The `adapters` prefix implies "agent multiplexing" but most packages don't multi
 
 **Recommendation:** Accept as-is for v6.1. The `adapters` prefix is an organizational grouping, not an architectural claim. Future packages should use layer-aligned names when the concern is clearly in one layer.
 
-### 3. "hooks-mux" vs Graph Concepts
+### 3. "hooks-adapter" vs Graph Concepts
 
-The graph defines `HookSurface`, `HookMapping`, `Channel` (channels-hooks cluster) but the implementation uses "hooks-mux":
+The graph defines `HookSurface`, `HookMapping`, `Channel` (channels-hooks cluster) but the implementation uses "hooks-adapter":
 
 | Graph Concept | Package | Mismatch |
 |---------------|---------|----------|
-| HookSurface | `@a5c-ai/hooks-adapter-core` | "mux" implies multiplexing; graph says "surface" |
+| HookSurface | `@a5c-ai/hooks-adapter-core` | "adapter" implies multiplexing; graph says "surface" |
 | HookMapping | `@a5c-ai/hooks-adapter-*` | Graph uses "mapping" not "adapter" |
 | Channel | (no dedicated package) | Graph concept has no implementation |
 
-**Recommendation:** The hooks-mux naming is stable and understood. "Channel" from the graph maps to the event routing in hooks-mux-core but isn't surfaced as a first-class concept in the API.
+**Recommendation:** The hooks-adapter naming is stable and understood. "Channel" from the graph maps to the event routing in hooks-adapter-core but isn't surfaced as a first-class concept in the API.
 
-### 4. "transport-mux" vs Layer 3
+### 4. "transport-adapter" vs Layer 3
 
-The graph layer is "Transport" but the package is `transport-mux`. The "mux" suffix is consistent with hooks-mux and adapters but the graph doesn't use "mux" anywhere.
+The graph layer is "Transport" but the package is `transport-adapter`. The "adapter" suffix is consistent with hooks-adapter and adapters but the graph doesn't use "adapter" anywhere.
 
-**Recommendation:** Accept. The `-mux` suffix is a codebase convention for packages that bridge multiple implementations.
+**Recommendation:** Accept. The `-adapter` suffix is a codebase convention for packages that bridge multiple implementations.
 
-### 5. "tasks-mux" vs Layer 9 (Sandbox)
+### 5. "tasks-adapter" vs Layer 9 (Sandbox)
 
-The graph layer is "Sandbox" with `HumanCheckpoint`, `BreakpointStrategy`, `BreakpointAnswer` node kinds. The package is named `tasks-mux`.
+The graph layer is "Sandbox" with `HumanCheckpoint`, `BreakpointStrategy`, `BreakpointAnswer` node kinds. The package is named `tasks-adapter`.
 
 | Graph Concept | Package | Alignment |
 |---------------|---------|-----------|
-| HumanCheckpoint | tasks-mux | Good — breakpoints ARE checkpoints |
-| Sandbox (layer) | tasks-mux | Partial — breakpoints are one aspect of sandbox |
+| HumanCheckpoint | tasks-adapter | Good — breakpoints ARE checkpoints |
+| Sandbox (layer) | tasks-adapter | Partial — breakpoints are one aspect of sandbox |
 
-**Recommendation:** `tasks-mux` correctly names what it does (breakpoint multiplexing). It's a subset of the Sandbox layer, not the full layer implementation. Future sandbox packages (filesystem policy, network policy) should not be under `tasks-mux`.
+**Recommendation:** `tasks-adapter` correctly names what it does (breakpoint multiplexing). It's a subset of the Sandbox layer, not the full layer implementation. Future sandbox packages (filesystem policy, network policy) should not be under `tasks-adapter`.
 
 ### 6. Graph Node Kinds Without Package Representation
 
@@ -78,7 +78,7 @@ These graph node kinds in the agent-stack cluster have no corresponding package:
 ## Naming Convention Guidelines for v6.1
 
 1. **New packages** should use the graph layer name when the package implements exactly one layer
-2. **Cross-layer packages** may use domain-specific names (e.g., `tasks-mux` spans L9 + L14)
-3. **The `-mux` suffix** means "multiplexes across implementations" (multiple harnesses, multiple transports, etc.)
+2. **Cross-layer packages** may use domain-specific names (e.g., `tasks-adapter` spans L9 + L14)
+3. **The `-adapter` suffix** means "multiplexes across implementations" (multiple harnesses, multiple transports, etc.)
 4. **Graph node kinds** are the canonical vocabulary — package READMEs should reference their node kinds
 5. **"babysitter"** is the product name; **layer names** are the architecture vocabulary

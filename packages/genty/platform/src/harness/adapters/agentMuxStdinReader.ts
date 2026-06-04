@@ -2,7 +2,7 @@
  * Read adapters interaction responses from stdin.
  *
  * When agent-platform runs under adapters with `--output-format adapters-events`,
- * the mux adapter may write JSONL interaction events to stdin (e.g.
+ * the adapter adapter may write JSONL interaction events to stdin (e.g.
  * `approval_response`, `input_response`). This module provides an
  * async-iterable reader that parses those events.
  *

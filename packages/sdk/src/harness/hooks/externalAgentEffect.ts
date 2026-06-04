@@ -62,9 +62,9 @@ export async function resolveExternalAgentEffectsForRun(args: {
     return { attempted: 0, resolved: [] };
   }
 
-  let mux: TasksMuxModule;
+  let adapter: TasksMuxModule;
   try {
-    mux = await import("@a5c-ai/tasks-adapter") as unknown as TasksMuxModule;
+    adapter = await import("@a5c-ai/tasks-adapter") as unknown as TasksMuxModule;
   } catch {
     return { attempted: 0, resolved: [] };
   }
@@ -72,14 +72,14 @@ export async function resolveExternalAgentEffectsForRun(args: {
   const resolved: ExternalAgentEffectResolution[] = [];
   for (const record of pending) {
     const taskDef = await readTaskDefinition(args.runDir, record.effectId);
-    if (!taskDef || !isExternalAgentTask(taskDef, mux)) {
+    if (!taskDef || !isExternalAgentTask(taskDef, adapter)) {
       continue;
     }
     resolved.push(await resolveOneExternalAgentEffect({
       runDir: args.runDir,
       record,
       taskDef,
-      mux,
+      adapter,
       workspace: args.workspace,
       model: args.model,
       log: args.log,
@@ -89,7 +89,7 @@ export async function resolveExternalAgentEffectsForRun(args: {
   return { attempted: resolved.length, resolved };
 }
 
-function isExternalAgentTask(taskDef: JsonRecord, mux: TasksMuxModule): boolean {
+function isExternalAgentTask(taskDef: JsonRecord, adapter: TasksMuxModule): boolean {
   if (taskDef.kind !== "agent") {
     return false;
   }
@@ -100,9 +100,9 @@ function isExternalAgentTask(taskDef: JsonRecord, mux: TasksMuxModule): boolean 
   if (agent?.responderType === "agent") {
     return true;
   }
-  if (typeof mux.routeTask === "function") {
+  if (typeof adapter.routeTask === "function") {
     try {
-      return mux.routeTask(taskDef)?.responderType === "agent";
+      return adapter.routeTask(taskDef)?.responderType === "agent";
     } catch {
       return false;
     }
@@ -114,19 +114,19 @@ async function resolveOneExternalAgentEffect(args: {
   runDir: string;
   record: EffectRecord;
   taskDef: JsonRecord;
-  mux: TasksMuxModule;
+  adapter: TasksMuxModule;
   workspace?: string;
   model?: string;
   log?: HookLogger;
 }): Promise<ExternalAgentEffectResolution> {
   const startedAt = new Date().toISOString();
   try {
-    if (typeof args.mux.AgentMuxResponderBackend !== "function") {
-      throw new Error("tasks-mux AgentMuxResponderBackend is unavailable");
+    if (typeof args.adapter.AgentMuxResponderBackend !== "function") {
+      throw new Error("tasks-adapter AgentMuxResponderBackend is unavailable");
     }
 
-    const decision = typeof args.mux.routeTask === "function"
-      ? args.mux.routeTask(args.taskDef)
+    const decision = typeof args.adapter.routeTask === "function"
+      ? args.adapter.routeTask(args.taskDef)
       : undefined;
     const agent = asRecord(args.taskDef.agent);
     const adapter = asString(decision?.responder?.adapter)
@@ -137,7 +137,7 @@ async function resolveOneExternalAgentEffect(args: {
       throw new Error(`External agent effect ${args.record.effectId} is missing agent.adapter`);
     }
 
-    const backend = new args.mux.AgentMuxResponderBackend({
+    const backend = new args.adapter.AgentMuxResponderBackend({
       adapter,
       model: asString(decision?.responder?.model) ?? asString(agent?.model) ?? args.model,
       cwd: args.workspace,
@@ -175,7 +175,7 @@ async function resolveOneExternalAgentEffect(args: {
         stdout: answerText,
         startedAt,
         finishedAt,
-        metadata: agentMux ? { routedThrough: "tasks-mux", agentMux } : { routedThrough: "tasks-mux" },
+        metadata: agentMux ? { routedThrough: "tasks-adapter", agentMux } : { routedThrough: "tasks-adapter" },
       },
     });
     await appendAgentMuxCostEvent({
@@ -185,7 +185,7 @@ async function resolveOneExternalAgentEffect(args: {
       model: asString(agentMux?.model) ?? asString(agent?.model) ?? args.model ?? "unknown",
       agentMux,
     });
-    args.log?.info(`Resolved external agent effect ${args.record.effectId} through tasks-mux`);
+    args.log?.info(`Resolved external agent effect ${args.record.effectId} through tasks-adapter`);
     return { effectId: args.record.effectId, status: "ok", resultRef: artifacts.resultRef };
   } catch (error) {
     const finishedAt = new Date().toISOString();
@@ -202,10 +202,10 @@ async function resolveOneExternalAgentEffect(args: {
         stderr: message,
         startedAt,
         finishedAt,
-        metadata: { routedThrough: "tasks-mux" },
+        metadata: { routedThrough: "tasks-adapter" },
       },
     });
-    args.log?.warn(`External agent effect ${args.record.effectId} failed through tasks-mux: ${message}`);
+    args.log?.warn(`External agent effect ${args.record.effectId} failed through tasks-adapter: ${message}`);
     return { effectId: args.record.effectId, status: "error", resultRef: artifacts.resultRef, error: message };
   }
 }
@@ -264,8 +264,8 @@ async function appendAgentMuxCostEvent(args: {
     effectId: args.effectId,
     taskId: args.taskId,
     taskKind: "agent",
-    source: "tasks-mux:adapters",
-    idempotencyKey: `tasks-mux:adapters:${args.effectId}`,
+    source: "tasks-adapter:adapters",
+    idempotencyKey: `tasks-adapter:adapters:${args.effectId}`,
     durationMs: firstNumber(args.agentMux.durationMs),
     costUsd,
   });

@@ -39,7 +39,7 @@ const jsContractTests =
 
 const docsHonestyChecks = [
   {
-    name: 'README marks transport-mux as the published runtime seam',
+    name: 'README marks transport-adapter as the published runtime seam',
     ok: containsAll(readmeDoc, [
       'published transport/proxy runtime seam',
       'used by the adapters launcher',
@@ -69,8 +69,8 @@ const docsHonestyChecks = [
   {
     name: 'architecture.md still documents the intended launch/runtime seam',
     ok: containsAll(architectureDoc, [
-      '`launch.ts` starts the `transport-mux` runtime',
-      '`transport-mux` boots the protocol codec and provider adapter implied by that config.',
+      '`launch.ts` starts the `transport-adapter` runtime',
+      '`transport-adapter` boots the protocol codec and provider adapter implied by that config.',
     ]),
   },
 ];
@@ -88,9 +88,9 @@ const scorecard = [
         ? 'green'
         : 'red',
     evidence: legacyPythonTests > 0
-      ? `${legacyPythonTests} legacy Python tests remain, and migration.md marks them as reference material rather than packaged output from transport-mux`
+      ? `${legacyPythonTests} legacy Python tests remain, and migration.md marks them as reference material rather than packaged output from transport-adapter`
       : 'No legacy Python contract tests remain under packages/adapters/adapters-proxy/tests',
-    retireWhen: 'Legacy tests are either removed entirely or explicitly separated from transport-mux package-artifact claims.',
+    retireWhen: 'Legacy tests are either removed entirely or explicitly separated from transport-adapter package-artifact claims.',
   },
   {
     gate: 'Public package metadata is coherent',
@@ -126,8 +126,8 @@ const scorecard = [
     evidence:
       launchCommand.includes('@a5c-ai/transport-adapter') &&
       packageEntrypoint.includes("export * from './runtime.js';")
-        ? 'launch.ts imports transport-mux directly and the package entrypoint exports the runtime seam'
-        : 'launch.ts still bypasses the transport-mux runtime surface or the package entrypoint does not export it',
+        ? 'launch.ts imports transport-adapter directly and the package entrypoint exports the runtime seam'
+        : 'launch.ts still bypasses the transport-adapter runtime surface or the package entrypoint does not export it',
     retireWhen: 'The seam is retired or replaced with an explicit runtime-ownership policy change.',
   },
   {
@@ -135,7 +135,7 @@ const scorecard = [
     status: docsHonestyFailures.length === 0 ? 'green' : 'red',
     evidence:
       docsHonestyFailures.length === 0
-        ? 'README.md, architecture.md, and migration.md agree that transport-mux is the active published runtime seam.'
+        ? 'README.md, architecture.md, and migration.md agree that transport-adapter is the active published runtime seam.'
         : `Docs drift detected: ${docsHonestyFailures.join('; ')}.`,
     retireWhen: 'Docs and metadata are updated together when runtime ownership changes.',
   },
@@ -143,7 +143,7 @@ const scorecard = [
 
 const allGreen = scorecard.every((item) => item.status === 'green');
 
-console.log('# transport-mux migration scorecard');
+console.log('# transport-adapter migration scorecard');
 console.log('');
 console.log('| Gate | Status | Evidence | Retire when |');
 console.log('| --- | --- | --- | --- |');

@@ -8,7 +8,7 @@ This document is the short entry point for the full agent orchestration spec set
 
 Kradle agents are repository-native work executors. They should feel like a CI run plus a durable chat/session: queued on runner capacity, scoped to a repository/ref/source object, governed by Kubernetes-native RBAC and grants, observable in real time, artifact-producing, approval-gated, and linked back to Code, Issues, Pull Requests, Runs, Hooks, Workspaces, Inbox, and Settings.
 
-Agent Mux provides adapter/session/chat/runtime capabilities. Kradle owns the repository graph, resource model, policy, triggers, RBAC, secret/config grants, context assembly, dispatch run state, approvals, artifacts, audit, and UI hierarchy.
+Agent Adapter provides adapter/session/chat/runtime capabilities. Kradle owns the repository graph, resource model, policy, triggers, RBAC, secret/config grants, context assembly, dispatch run state, approvals, artifacts, audit, and UI hierarchy.
 
 ## Big picture flow
 
@@ -18,7 +18,7 @@ Repository/PR/Issue/Pipeline/Webhook/manual action
   -> context assembly and redaction
   -> permission review
   -> AgentDispatchRun and AgentDispatchAttempt
-  -> Agent Mux launch/session binding
+  -> Agent Adapter launch/session binding
   -> event/transcript/artifact reconciliation
   -> approvals and optional write-back
   -> repository page projections and audit
@@ -43,9 +43,9 @@ The MVP is intentionally narrow:
 1. Define one read-only/diagnostic stack.
 2. Validate Kubernetes-native ServiceAccount/RBAC/Secret/Config access.
 3. Dispatch manually from Code or Runs.
-4. Create `AgentDispatchRun`, `AgentDispatchAttempt`, context bundle, and permission snapshot before Agent Mux launch.
+4. Create `AgentDispatchRun`, `AgentDispatchAttempt`, context bundle, and permission snapshot before Agent Adapter launch.
 5. Show the run beside CI runs and in `/agents/runs`.
-6. Bind Agent Mux session if configured; otherwise show a clear degraded state.
+6. Bind Agent Adapter session if configured; otherwise show a clear degraded state.
 
 Deferred from MVP: auto triggers, write-back, branch pushes, full workspace lifecycle, subagent execution, retention jobs, and production MCP management.
 
@@ -68,7 +68,7 @@ Typed agent APIs and pages should wrap these seams, not bypass them.
 - Labels/comments/context labels cannot grant permissions.
 - Untrusted/forked refs cannot use privileged ServiceAccounts or secrets.
 - Agent output cannot write back without policy and approval.
-- Agent Mux is not source of truth for Kradle repository objects.
+- Agent Adapter is not source of truth for Kradle repository objects.
 - Every visible UI action maps to resource/action/controller/watch state.
 
 ## Where to read next
@@ -85,4 +85,4 @@ Typed agent APIs and pages should wrap these seams, not bypass them.
 
 Kradle should include an org-level company brain as a first-class context source. The company brain is a managed internal Git repository containing Atlas-style YAML graph records, Markdown files with YAML frontmatter, ontology definitions, and free-form Markdown notes searchable with grep. Dispatches can read current memory or a historical memory ref, and every selected memory item is captured in `AgentContextBundle` through `AgentMemorySnapshot` and `AgentMemoryQuery` records.
 
-This layer belongs to Kradle's repository and policy plane: Kradle owns memory repository configuration, RBAC, path/kind grants, ref resolution, context digests, update approvals, validation, and audit. Agent Mux may execute memory tools inside a session only after Kradle admits those capabilities.
+This layer belongs to Kradle's repository and policy plane: Kradle owns memory repository configuration, RBAC, path/kind grants, ref resolution, context digests, update approvals, validation, and audit. Agent Adapter may execute memory tools inside a session only after Kradle admits those capabilities.

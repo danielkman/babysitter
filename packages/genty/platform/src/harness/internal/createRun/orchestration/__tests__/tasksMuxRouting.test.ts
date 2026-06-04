@@ -30,7 +30,7 @@ vi.mock("node:child_process", async (importOriginal) => {
   };
 });
 
-describe("issue #606 tasks-mux effect routing", () => {
+describe("issue #606 tasks-adapter effect routing", () => {
   beforeEach(() => {
     taskMuxMock.routeTask.mockReset();
     taskMuxMock.submitBreakpoint.mockReset();
@@ -38,7 +38,7 @@ describe("issue #606 tasks-mux effect routing", () => {
     childProcessMock.execSync.mockReset();
   });
 
-  it("routes standalone agent effects through tasks-mux AgentMuxResponderBackend", async () => {
+  it("routes standalone agent effects through tasks-adapter AgentMuxResponderBackend", async () => {
     taskMuxMock.routeTask.mockReturnValue({
       responderType: "agent",
       route: "adapters",
@@ -82,7 +82,7 @@ describe("issue #606 tasks-mux effect routing", () => {
     });
   });
 
-  it("returns explicit tasks-mux tracker unavailability instead of internal dispatch", async () => {
+  it("returns explicit tasks-adapter tracker unavailability instead of internal dispatch", async () => {
     taskMuxMock.routeTask.mockReturnValue({
       responderType: "tracker",
       route: "external-tracker",
@@ -111,7 +111,7 @@ describe("issue #606 tasks-mux effect routing", () => {
       status: "ok",
       value: {
         success: false,
-        routedThrough: "tasks-mux",
+        routedThrough: "tasks-adapter",
         responderType: "tracker",
         error: "ExternalTrackerBackend unavailable for linear",
       },
@@ -119,7 +119,7 @@ describe("issue #606 tasks-mux effect routing", () => {
     expect(taskMuxMock.submitBreakpoint).not.toHaveBeenCalled();
   });
 
-  it("routes legacy CLI effect posting through tasks-mux", async () => {
+  it("routes legacy CLI effect posting through tasks-adapter", async () => {
     taskMuxMock.routeTask.mockReturnValue({
       responderType: "agent",
       route: "adapters",

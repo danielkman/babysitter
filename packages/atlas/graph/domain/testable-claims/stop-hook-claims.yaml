@@ -4,7 +4,7 @@ id: claim:stop-hook-claude-interactive-fires
 attributes:
   displayName: "Claude Code stop hook fires in interactive mode"
   description: |
-    When Claude Code reaches end-of-turn in interactive mode, the hooks-mux
+    When Claude Code reaches end-of-turn in interactive mode, the hooks-adapter
     adapter normalizes the native "Stop" event to canonical phase turn.stop
     and invokes registered handlers with the stop payload.
   testStatus: pending
@@ -24,7 +24,7 @@ id: claim:stop-hook-claude-interactive-blocks
 attributes:
   displayName: "Claude Code stop hook can block (deny) at end-of-turn"
   description: |
-    A hooks-mux handler returning decision: deny at turn.stop propagates the
+    A hooks-adapter handler returning decision: deny at turn.stop propagates the
     deny decision in the output for Claude Code, since the Claude adapter
     supports the blockCapability. This allows hooks to prevent the agent
     from stopping (e.g., to enforce a review step before turn completion).
@@ -45,7 +45,7 @@ id: claim:stop-hook-codex-interactive-fires
 attributes:
   displayName: "Codex stop hook fires in interactive mode"
   description: |
-    When Codex reaches end-of-turn, the hooks-mux codex adapter normalizes
+    When Codex reaches end-of-turn, the hooks-adapter codex adapter normalizes
     the native "on-stop" event to turn.stop and invokes handlers.
   testStatus: pending
   testType: integration
@@ -83,7 +83,7 @@ id: claim:stop-hook-gemini-interactive-fires
 attributes:
   displayName: "Gemini CLI stop hook fires in interactive mode"
   description: |
-    When Gemini CLI reaches end-of-turn, the hooks-mux gemini adapter
+    When Gemini CLI reaches end-of-turn, the hooks-adapter gemini adapter
     normalizes the native "post-response" event to turn.stop and invokes
     handlers.
   testStatus: pending
@@ -119,7 +119,7 @@ id: claim:stop-hook-cursor-interactive-fires
 attributes:
   displayName: "Cursor stop hook fires in interactive mode"
   description: |
-    When Cursor reaches end-of-turn, the hooks-mux cursor adapter normalizes
+    When Cursor reaches end-of-turn, the hooks-adapter cursor adapter normalizes
     the native "stop" event to turn.stop and invokes handlers.
   testStatus: pending
   testType: integration
@@ -157,7 +157,7 @@ id: claim:stop-hook-copilot-interactive-fires
 attributes:
   displayName: "GitHub Copilot CLI stop hook fires in interactive mode"
   description: |
-    When GitHub Copilot CLI reaches end-of-turn, the hooks-mux copilot
+    When GitHub Copilot CLI reaches end-of-turn, the hooks-adapter copilot
     adapter normalizes the native "stop" event to turn.stop and invokes
     handlers.
   testStatus: pending
@@ -193,7 +193,7 @@ id: claim:stop-hook-codex-noninteractive-fires
 attributes:
   displayName: "Codex stop hook fires in non-interactive mode"
   description: |
-    The hooks-mux codex adapter can receive stop events via --event-json
+    The hooks-adapter codex adapter can receive stop events via --event-json
     (non-interactive/CI mode) and still normalizes to turn.stop.
   testStatus: pending
   testType: integration
@@ -210,7 +210,7 @@ id: claim:stop-hook-claude-noninteractive-fires
 attributes:
   displayName: "Claude Code stop hook fires in non-interactive mode"
   description: |
-    The hooks-mux claude adapter can receive stop events via --event-json
+    The hooks-adapter claude adapter can receive stop events via --event-json
     (non-interactive/CI mode) and still normalizes to turn.stop.
   testStatus: pending
   testType: integration

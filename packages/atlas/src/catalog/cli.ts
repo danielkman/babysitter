@@ -1,7 +1,7 @@
 import { atlas } from "../index";
 import { AGENT_CATALOG, GRAPH_DOCUMENT } from "./data";
 import { getNodeById, listGraphEdges, listGraphNodes, listOutgoingTargets } from "./atlas-bridge";
-import { effectiveTransportMuxClaimStatus } from "./transport-mux-cutover";
+import { effectiveTransportMuxClaimStatus } from "./transport-adapter-cutover";
 import type { GraphNode, GraphRelationship } from "./models";
 
 export interface CliCatalogRow {

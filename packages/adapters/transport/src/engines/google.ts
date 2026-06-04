@@ -2,7 +2,7 @@
  * Google (Gemini / Vertex AI) completion engine.
  *
  * Moved from packages/adapters/cli/src/commands/launch-completion-engine.ts
- * so that the engine lives alongside the transport-mux runtime.
+ * so that the engine lives alongside the transport-adapter runtime.
  */
 
 import type {

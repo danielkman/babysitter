@@ -1,4 +1,4 @@
-# Agent Mux TUI Kanban + Workspaces Design
+# Agent Adapter TUI Kanban + Workspaces Design
 
 ## Summary
 

@@ -99,8 +99,8 @@ jobs:
                 'bridged-hooks': {id:'bridged-hooks', interactive:'false', bridge_interactive:'true', bridge_hooks:'true'},
               };
               const installModes = {
-                'vanilla': {id:'vanilla', required_trace_ids:'agentMuxRunId,agentMuxSessionId,transportTraceId', expected_artifacts:'adapters-events,transport-mux-trace,provider-trace-redacted'},
-                'bp': {id:'babysitter-plugin', required_trace_ids:'agentMuxRunId,agentMuxSessionId,transportTraceId', expected_artifacts:'adapters-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted'},
+                'vanilla': {id:'vanilla', required_trace_ids:'agentMuxRunId,agentMuxSessionId,transportTraceId', expected_artifacts:'adapters-events,transport-adapter-trace,provider-trace-redacted'},
+                'bp': {id:'babysitter-plugin', required_trace_ids:'agentMuxRunId,agentMuxSessionId,transportTraceId', expected_artifacts:'adapters-events,plugin-command-transcript,transport-adapter-trace,provider-trace-redacted'},
               };
               function miniBpSupported(entry) {
                 if (entry.install !== 'bp') return true;
@@ -147,7 +147,7 @@ jobs:
             # Default: claude+codex+pi vanilla NI with gpt-5.5
             node -e "
               const foundry = {provider:'foundry-openai', adapters_provider:'foundry', model:'gpt-5.5', required_env:'AZURE_API_KEY,AGENT_MUX_API_BASE'};
-              const vanillaInstall = {id:'vanilla', required_trace_ids:'agentMuxRunId,agentMuxSessionId,transportTraceId', expected_artifacts:'adapters-events,transport-mux-trace,provider-trace-redacted'};
+              const vanillaInstall = {id:'vanilla', required_trace_ids:'agentMuxRunId,agentMuxSessionId,transportTraceId', expected_artifacts:'adapters-events,transport-adapter-trace,provider-trace-redacted'};
               const ni = {id:'non-interactive', interactive:'false', bridge_interactive:'false', bridge_hooks:'false'};
               function scenario(agent, adapters_agent, m) {
                 return {id:'live.adapters.'+agent+'.'+m.provider+'.'+m.model, agent_path:'adapters', agent, adapters_agent, integration_type:'third-party-plugin', provider:m.provider, adapters_provider:m.adapters_provider, model:m.model, required_env:m.required_env, live:true, process_mode:'predefined'};
@@ -203,13 +203,13 @@ jobs:
           set -euo pipefail
           echo "Installing published packages with tag: @${NPM_TAG}"
 
-          # Install the adapters CLI (includes transport-mux, atlas catalog, etc.)
+          # Install the adapters CLI (includes transport-adapter, atlas catalog, etc.)
           npm install -g @a5c-ai/adapters@${NPM_TAG}
 
           # Install the babysitter SDK CLI
           npm install -g @a5c-ai/babysitter-sdk@${NPM_TAG}
 
-          # Install hooks-mux CLI
+          # Install hooks-adapter CLI
           npm install -g @a5c-ai/hooks-adapter-cli@${NPM_TAG}
 
           # Install node-pty for interactive modes

@@ -7,7 +7,7 @@ export const AGENT_SESSION_TRANSCRIPT_CONTROLLER_BOUNDARY = {
   scope: 'AgentSessionTranscript lifecycle: validation, message indexing, pagination, role/tool filtering',
   owns: ['transcript validation', 'message indexing', 'pagination', 'role filter', 'tool name filter'],
   delegatesTo: ['resource-model'],
-  mustNotOwn: ['session lifecycle', 'dispatch execution', 'Agent Mux sessions', 'secret values']
+  mustNotOwn: ['session lifecycle', 'dispatch execution', 'Agent Adapter sessions', 'secret values']
 };
 
 const VALID_ROLES = ['user', 'assistant', 'tool', 'system'];

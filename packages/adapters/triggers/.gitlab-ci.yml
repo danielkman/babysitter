@@ -1,10 +1,10 @@
-# GitLab CI template for triggers-mux — run coding agents from GitLab pipelines.
+# GitLab CI template for triggers-adapter — run coding agents from GitLab pipelines.
 #
 # Usage in your .gitlab-ci.yml:
 #   include:
 #     - project: 'a5c-ai/babysitter'
 #       ref: staging
-#       file: 'packages/triggers-mux/.gitlab-ci.yml'
+#       file: 'packages/triggers-adapter/.gitlab-ci.yml'
 #
 #   agent-review:
 #     extends: .adapters-trigger
@@ -41,12 +41,12 @@
         if [ "$AGENT_INCLUDE_DIFF" = "true" ]; then
           DIFF_ARGS="--include-diff"
         fi
-        triggers-mux enrich \
+        triggers-adapter enrich \
           --backend gitlab \
           --token "$CI_JOB_TOKEN" \
           $DIFF_ARGS \
           --output "$EVENT_FILE"
-        if ! triggers-mux evaluate \
+        if ! triggers-adapter evaluate \
           --backend gitlab \
           --query "$AGENT_TRIGGER_QUERY" \
           --token "$CI_JOB_TOKEN" \

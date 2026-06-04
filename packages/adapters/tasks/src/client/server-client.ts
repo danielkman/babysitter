@@ -38,10 +38,10 @@ export interface ServerClientOptions {
   defaultHeaders?: Record<string, string>;
 }
 
-export const DEFAULT_BMUX_SERVER_URL = "https://tasks-mux.a5c.ai/api/v1";
+export const DEFAULT_BMUX_SERVER_URL = "https://tasks-adapter.a5c.ai/api/v1";
 
 /**
- * API path helpers for the tasks-mux server.
+ * API path helpers for the tasks-adapter server.
  */
 const API_PATHS = {
   BREAKPOINTS: "/breakpoints",
@@ -57,7 +57,7 @@ const API_PATHS = {
 } as const;
 
 /**
- * HTTP client for communicating with the Breakpoints Mux server.
+ * HTTP client for communicating with the Breakpoints Adapter server.
  */
 export class ServerClient {
   public readonly baseUrl: string;

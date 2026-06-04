@@ -48,13 +48,13 @@ const HOOKS_MUX_ADAPTER_TO_HARNESS: Readonly<Record<string, string>> = {
 export interface HooksMuxCallerHarnessResult {
   /** Normalized babysitter harness identifier. */
   name: string;
-  /** Original hooks-mux adapter identifier. */
+  /** Original hooks-adapter adapter identifier. */
   sourceAdapter: string;
-  /** Environment variable names that matched the hooks-mux rule. */
+  /** Environment variable names that matched the hooks-adapter rule. */
   matchedEnvVars: string[];
   /** Capabilities advertised by the normalized harness. */
   capabilities: HarnessCapability[];
-  /** Detection confidence from hooks-mux rules. */
+  /** Detection confidence from hooks-adapter rules. */
   confidence: "high" | "medium" | "low";
 }
 
@@ -212,11 +212,11 @@ export function detectCallerHarness(): CallerHarnessResult | null {
 }
 
 /**
- * Detect the active caller harness using hooks-mux style discovery rules.
+ * Detect the active caller harness using hooks-adapter style discovery rules.
  *
- * This mirrors hooks-mux environment-based detection, but normalizes the
+ * This mirrors hooks-adapter environment-based detection, but normalizes the
  * adapter name back to babysitter's harness identifiers so SDK command
- * surfaces can reuse the result without depending on hooks-mux packages.
+ * surfaces can reuse the result without depending on hooks-adapter packages.
  */
 export function detectCallerHarnessViaHooksMux(
   env: Record<string, string | undefined> = process.env,

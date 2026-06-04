@@ -2,7 +2,7 @@
  * OpenAI-compatible completion engine.
  *
  * Moved from packages/adapters/cli/src/commands/launch-completion-engine.ts
- * so that the engine lives alongside the transport-mux runtime.
+ * so that the engine lives alongside the transport-adapter runtime.
  */
 
 import type {
@@ -101,7 +101,7 @@ function buildBody(messages: Array<Record<string, unknown>>, model: string, stre
   if (openAiTools) {
     body.tools = openAiTools;
   } else if (tools && tools.length > 0) {
-    console.error(`[transport-mux] WARNING: ${tools.length} tools received but normalization returned empty. Raw tool[0] keys: ${Object.keys(tools[0] as Record<string, unknown>).join(',')}`);
+    console.error(`[transport-adapter] WARNING: ${tools.length} tools received but normalization returned empty. Raw tool[0] keys: ${Object.keys(tools[0] as Record<string, unknown>).join(',')}`);
   }
   const openAiToolChoice = normalizeOpenAiToolChoice(toolChoice);
   if (openAiToolChoice !== undefined) body.tool_choice = openAiToolChoice;
@@ -158,7 +158,7 @@ export function createOpenAICompletionEngine(options: {
     async complete(request: CompletionRequest): Promise<CompletionResult> {
       const messages = translateMessagesToOpenAi(request.messages);
       const url = buildUrl(options.apiBase, options.targetModel);
-      console.error(`[transport-mux] OpenAI engine: POST ${url.replace(/api-key=[^&]+/, 'api-key=***')}`);
+      console.error(`[transport-adapter] OpenAI engine: POST ${url.replace(/api-key=[^&]+/, 'api-key=***')}`);
       const response = await fetch(
         url,
         {
@@ -170,7 +170,7 @@ export function createOpenAICompletionEngine(options: {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`[transport-mux] OpenAI API error ${response.status}: ${errorText.slice(0, 500)}`);
+        console.error(`[transport-adapter] OpenAI API error ${response.status}: ${errorText.slice(0, 500)}`);
         throw new Error(`OpenAI API error ${response.status}: ${errorText}`);
       }
 
@@ -211,7 +211,7 @@ export function createOpenAICompletionEngine(options: {
       const messages = translateMessagesToOpenAi(request.messages);
       const url = buildUrl(options.apiBase, options.targetModel);
       const bodyStr = buildBody(messages, options.targetModel, true, request.tools, request.toolChoice);
-      console.error(`[transport-mux] OpenAI engine stream: POST ${url.replace(/api-key=[^&]+/, 'api-key=***')} (${messages.length} msgs, ${request.tools?.length ?? 0} tools, body ${bodyStr.length} bytes)`);
+      console.error(`[transport-adapter] OpenAI engine stream: POST ${url.replace(/api-key=[^&]+/, 'api-key=***')} (${messages.length} msgs, ${request.tools?.length ?? 0} tools, body ${bodyStr.length} bytes)`);
       const response = await fetch(
         url,
         {
@@ -221,10 +221,10 @@ export function createOpenAICompletionEngine(options: {
         },
       );
 
-      console.error(`[transport-mux] OpenAI engine stream response: ${response.status} ${response.statusText}`);
+      console.error(`[transport-adapter] OpenAI engine stream response: ${response.status} ${response.statusText}`);
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`[transport-mux] OpenAI API error ${response.status}: ${errorText.slice(0, 500)}`);
+        console.error(`[transport-adapter] OpenAI API error ${response.status}: ${errorText.slice(0, 500)}`);
         throw new Error(`OpenAI API error ${response.status}: ${errorText}`);
       }
 
@@ -256,7 +256,7 @@ export function createOpenAICompletionEngine(options: {
           try {
             chunkCount++;
             if (chunkCount === 1) {
-              console.error(`[transport-mux] First stream chunk: ${payload.slice(0, 300)}`);
+              console.error(`[transport-adapter] First stream chunk: ${payload.slice(0, 300)}`);
             }
             const chunk = JSON.parse(payload) as {
               choices: Array<{
@@ -308,7 +308,7 @@ export function createOpenAICompletionEngine(options: {
         }
       }
 
-      console.error(`[transport-mux] OpenAI stream ended without finish_reason (${chunkCount} chunks received)`);
+      console.error(`[transport-adapter] OpenAI stream ended without finish_reason (${chunkCount} chunks received)`);
       yield { type: 'done' };
     },
   };

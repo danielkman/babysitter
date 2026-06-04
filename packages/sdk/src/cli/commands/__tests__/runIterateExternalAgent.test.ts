@@ -68,7 +68,7 @@ describe("runIterate external agent routing", () => {
     await fs.rm(tmpRoot, { recursive: true, force: true });
   });
 
-  it("resolves tasks-mux routed agent effects before returning pending work to the CLI caller", async () => {
+  it("resolves tasks-adapter routed agent effects before returning pending work to the CLI caller", async () => {
     const entryFile = path.join(tmpRoot, "processes", "external-agent.mjs");
     await fs.mkdir(path.dirname(entryFile), { recursive: true });
     await fs.writeFile(entryFile, `
@@ -117,7 +117,7 @@ export async function process(_inputs, ctx) {
       status: "ok",
     });
     expect(events.find((event) => event.type === "COST_TRACKED")?.data).toMatchObject({
-      source: "tasks-mux:adapters",
+      source: "tasks-adapter:adapters",
       inputTokens: 10,
       outputTokens: 5,
       costUsd: 0.001,

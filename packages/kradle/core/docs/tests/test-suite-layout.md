@@ -109,7 +109,7 @@ Recommended owners:
 | `runtime-*` | runners, pipelines, jobs, Gitea, hooks. |
 | `deploy-*` | Argo CD, KubeVela, chart/install. |
 | `security-*` | auth, RBAC, secrets, policy, audit. |
-| `agents-*` | agent stacks, Agent Mux, memory, triggers, imports. |
+| `agents-*` | agent stacks, Agent Adapter, memory, triggers, imports. |
 
 ## Review checklist
 

@@ -18,7 +18,7 @@
         "../packages/adapters/hooks/core/README.md",
         "../packages/adapters/hooks/cli/README.md"
       ],
-      "note": "Use this family README for the hooks-mux package set and adapter lineup."
+      "note": "Use this family README for the hooks-adapter package set and adapter lineup."
     },
     {
       "surface": "plugins",
@@ -89,7 +89,7 @@
     {
       "surface": "packages/adapters/config",
       "packageName": "@a5c-ai/config-adapter",
-      "description": "Agent config mux — install, auth, host detection, adapter configuration",
+      "description": "Agent config adapter — install, auth, host detection, adapter configuration",
       "hasReadme": false,
       "status": "Public family package",
       "canonicalHome": "../packages/adapters/README.md",
@@ -113,7 +113,7 @@
     {
       "surface": "packages/adapters/launch",
       "packageName": "@a5c-ai/launch-adapter",
-      "description": "Agent launch mux — spawn/lifecycle, PTY bridge, signal handling",
+      "description": "Agent launch adapter — spawn/lifecycle, PTY bridge, signal handling",
       "hasReadme": false,
       "status": "Public family package",
       "canonicalHome": "../packages/adapters/README.md",
@@ -296,7 +296,7 @@
       "status": "Public package",
       "canonicalHome": "../packages/adapters/tools/README.md",
       "supporting": [],
-      "note": "New package from tool-mux build (#215)."
+      "note": "New package from tools-adapter build (#215)."
     },
     {
       "surface": "packages/adapters/tasks",
@@ -351,12 +351,12 @@
       "note": "Internal-only support package for the TUI surface. This map is the explicit documentation home until the workspace gets a README."
     },
     {
-      "surface": "packages/breakpoints-mux",
-      "packageName": "@a5c-ai/breakpoints-mux",
+      "surface": "packages/breakpoints-adapter",
+      "packageName": "@a5c-ai/breakpoints-adapter",
       "description": "Serverless breakpoint multiplexing system with pluggable backends and cryptographic signing.",
       "hasReadme": true,
       "status": "Public package",
-      "canonicalHome": "../packages/breakpoints-mux/README.md",
+      "canonicalHome": "../packages/breakpoints-adapter/README.md",
       "supporting": [],
       "note": "README is the canonical package-level contract."
     },
@@ -373,7 +373,7 @@
     {
       "surface": "packages/adapters/hooks/adapter-claude",
       "packageName": "@a5c-ai/hooks-adapter-claude",
-      "description": "Claude Code harness adapter for the hooks-mux system",
+      "description": "Claude Code harness adapter for the hooks-adapter system",
       "hasReadme": true,
       "status": "Public family package",
       "canonicalHome": "../packages/adapters/hooks/adapter-claude/README.md",
@@ -385,7 +385,7 @@
     {
       "surface": "packages/adapters/hooks/adapter-codex",
       "packageName": "@a5c-ai/hooks-adapter-codex",
-      "description": "Codex harness adapter for the hooks-mux system",
+      "description": "Codex harness adapter for the hooks-adapter system",
       "hasReadme": true,
       "status": "Public family package",
       "canonicalHome": "../packages/adapters/hooks/adapter-codex/README.md",
@@ -397,7 +397,7 @@
     {
       "surface": "packages/adapters/hooks/adapter-copilot",
       "packageName": "@a5c-ai/hooks-adapter-copilot",
-      "description": "GitHub Copilot harness adapter for the hooks-mux system",
+      "description": "GitHub Copilot harness adapter for the hooks-adapter system",
       "hasReadme": true,
       "status": "Public family package",
       "canonicalHome": "../packages/adapters/hooks/adapter-copilot/README.md",
@@ -409,7 +409,7 @@
     {
       "surface": "packages/adapters/hooks/adapter-cursor",
       "packageName": "@a5c-ai/hooks-adapter-cursor",
-      "description": "Cursor harness adapter for the hooks-mux system",
+      "description": "Cursor harness adapter for the hooks-adapter system",
       "hasReadme": true,
       "status": "Public family package",
       "canonicalHome": "../packages/adapters/hooks/adapter-cursor/README.md",
@@ -421,7 +421,7 @@
     {
       "surface": "packages/adapters/hooks/adapter-gemini",
       "packageName": "@a5c-ai/hooks-adapter-gemini",
-      "description": "Gemini CLI harness adapter for the hooks-mux system",
+      "description": "Gemini CLI harness adapter for the hooks-adapter system",
       "hasReadme": true,
       "status": "Public family package",
       "canonicalHome": "../packages/adapters/hooks/adapter-gemini/README.md",
@@ -433,7 +433,7 @@
     {
       "surface": "packages/adapters/hooks/adapter-oh-my-pi",
       "packageName": "@a5c-ai/hooks-adapter-oh-my-pi",
-      "description": "oh-my-pi harness adapter for the hooks-mux system",
+      "description": "oh-my-pi harness adapter for the hooks-adapter system",
       "hasReadme": true,
       "status": "Public family package",
       "canonicalHome": "../packages/adapters/hooks/adapter-oh-my-pi/README.md",
@@ -445,7 +445,7 @@
     {
       "surface": "packages/adapters/hooks/adapter-hermes",
       "packageName": "@a5c-ai/hooks-adapter-hermes",
-      "description": "Hermes harness adapter for the hooks-mux system",
+      "description": "Hermes harness adapter for the hooks-adapter system",
       "hasReadme": true,
       "status": "Public family package",
       "canonicalHome": "../packages/adapters/hooks/adapter-hermes/README.md",
@@ -457,7 +457,7 @@
     {
       "surface": "packages/adapters/hooks/adapter-openclaw",
       "packageName": "@a5c-ai/hooks-adapter-openclaw",
-      "description": "OpenClaw harness adapter for the hooks-mux system",
+      "description": "OpenClaw harness adapter for the hooks-adapter system",
       "hasReadme": true,
       "status": "Public family package",
       "canonicalHome": "../packages/adapters/hooks/adapter-openclaw/README.md",
@@ -469,7 +469,7 @@
     {
       "surface": "packages/adapters/hooks/adapter-opencode",
       "packageName": "@a5c-ai/hooks-adapter-opencode",
-      "description": "OpenCode harness adapter for the hooks-mux system",
+      "description": "OpenCode harness adapter for the hooks-adapter system",
       "hasReadme": true,
       "status": "Public family package",
       "canonicalHome": "../packages/adapters/hooks/adapter-opencode/README.md",
@@ -481,7 +481,7 @@
     {
       "surface": "packages/adapters/hooks/adapter-pi",
       "packageName": "@a5c-ai/hooks-adapter-pi",
-      "description": "Pi harness adapter for the hooks-mux system",
+      "description": "Pi harness adapter for the hooks-adapter system",
       "hasReadme": true,
       "status": "Public family package",
       "canonicalHome": "../packages/adapters/hooks/adapter-pi/README.md",
@@ -493,7 +493,7 @@
     {
       "surface": "packages/adapters/hooks/cli",
       "packageName": "@a5c-ai/hooks-adapter-cli",
-      "description": "CLI entrypoint for the hooks-mux system",
+      "description": "CLI entrypoint for the hooks-adapter system",
       "hasReadme": true,
       "status": "Public family package",
       "canonicalHome": "../packages/adapters/hooks/cli/README.md",
@@ -505,7 +505,7 @@
     {
       "surface": "packages/adapters/hooks/core",
       "packageName": "@a5c-ai/hooks-adapter-core",
-      "description": "Canonical schemas, types, session store, and merge engine for the hooks-mux system",
+      "description": "Canonical schemas, types, session store, and merge engine for the hooks-adapter system",
       "hasReadme": true,
       "status": "Public family package",
       "canonicalHome": "../packages/adapters/hooks/core/README.md",
@@ -719,7 +719,7 @@
     {
       "surface": "packages/adapters/hooks/adapter-antigravity",
       "packageName": "@a5c-ai/hooks-adapter-antigravity",
-      "description": "Google Antigravity CLI harness adapter for the hooks-mux system",
+      "description": "Google Antigravity CLI harness adapter for the hooks-adapter system",
       "hasReadme": true,
       "status": "Public family package",
       "canonicalHome": "../packages/adapters/hooks/adapter-antigravity/README.md",

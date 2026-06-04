@@ -170,7 +170,7 @@ fs.writeFileSync(p.join(dest,"inputs.json"),JSON.stringify({traceId,outputDir:p.
 
   // All scenarios use `adapters launch` which handles provider resolution, proxy
   // setup, and harness-specific args. babysitter-plugin hooks fire from INSIDE
-  // the harness (hooks-mux is installed into harness settings) — they don't
+  // the harness (hooks-adapter is installed into harness settings) — they don't
   // need adapters run's RuntimeHooks system.
   const executionCommand = commandExecution(
     commandEnv,
@@ -751,10 +751,10 @@ async function findHookMuxEvidence(cwd: string, startedAtMs: number, needle: str
         const stat = await fs.stat(filePath);
         if (stat.mtimeMs < startedAtMs - 60_000) continue;
         const content = await fs.readFile(filePath, 'utf8');
-        if (!content.includes(needle) && !content.includes('hooks-mux')) continue;
-        const eventId = firstMatch(content, /(?:eventId|hookMuxEventId)["'=:\s]+([A-Za-z0-9_.:-]+)/) ?? `hooks-mux-${entry.name.replace(/\W+/g, '-')}`;
-        await fs.writeFile(path.join(artifactsDir, 'hooks-mux-normalized-event.json'), JSON.stringify(redactLiveStackArtifact({ eventId, filePath, contentTail: content.slice(-4000) }), null, 2));
-        await fs.writeFile(path.join(artifactsDir, 'hooks-mux-handler-result.json'), JSON.stringify(redactLiveStackArtifact({ eventId, observed: true }), null, 2));
+        if (!content.includes(needle) && !content.includes('hooks-adapter')) continue;
+        const eventId = firstMatch(content, /(?:eventId|hookMuxEventId)["'=:\s]+([A-Za-z0-9_.:-]+)/) ?? `hooks-adapter-${entry.name.replace(/\W+/g, '-')}`;
+        await fs.writeFile(path.join(artifactsDir, 'hooks-adapter-normalized-event.json'), JSON.stringify(redactLiveStackArtifact({ eventId, filePath, contentTail: content.slice(-4000) }), null, 2));
+        await fs.writeFile(path.join(artifactsDir, 'hooks-adapter-handler-result.json'), JSON.stringify(redactLiveStackArtifact({ eventId, observed: true }), null, 2));
         return eventId;
       } catch {
         continue;
@@ -783,7 +783,7 @@ async function writeExpectedArtifacts(
   const artifactFiles = Object.fromEntries(scenario.expectedArtifacts.map((name) => [name, path.join(artifactsDir, `${name}.json`)]));
   await writeJsonIfMissing(artifactFiles['adapters-events'], { scenarioId: scenario.scenarioId, agentMuxRunId: captured.agentMuxRunId, agentMuxSessionId: captured.agentMuxSessionId, commandCount: commandResults.length });
   await writeJsonIfMissing(artifactFiles['plugin-command-transcript'], { scenarioId: scenario.scenarioId, commandResults });
-  await writeJsonIfMissing(artifactFiles['transport-mux-trace'], { scenarioId: scenario.scenarioId, transportTraceId: captured.transportTraceId, provider: scenario.model.provider, model: scenario.model.model });
+  await writeJsonIfMissing(artifactFiles['transport-adapter-trace'], { scenarioId: scenario.scenarioId, transportTraceId: captured.transportTraceId, provider: scenario.model.provider, model: scenario.model.model });
   await writeJsonIfMissing(artifactFiles['provider-trace-redacted'], { scenarioId: scenario.scenarioId, provider: scenario.model.provider, model: scenario.model.model, transportTraceId: captured.transportTraceId, status: 'command-completed' });
   return artifactFiles;
 }
@@ -861,8 +861,8 @@ async function validateAgentBehavior(
   }
 
   // --- proxy-communication: verify proxy received API requests ---
-  const proxyRequests = (output.match(/\[transport-mux\] (?:POST|GET|OpenAI engine(?:\s+stream)?:\s+POST) /g) || []).length;
-  const proxyErrors = (output.match(/\[transport-mux\] (?:SSE stream error|AUTH REJECT)/g) || []).length;
+  const proxyRequests = (output.match(/\[transport-adapter\] (?:POST|GET|OpenAI engine(?:\s+stream)?:\s+POST) /g) || []).length;
+  const proxyErrors = (output.match(/\[transport-adapter\] (?:SSE stream error|AUTH REJECT)/g) || []).length;
   if (proxyRequests > 0) {
     entries.push({ name: 'proxy-communication', status: 'passed', detail: `proxy handled ${proxyRequests} request(s)${proxyErrors > 0 ? ` (${proxyErrors} error(s))` : ''}` });
   } else if (output.includes('[adapters launch]') && output.includes('proxy:')) {
@@ -934,13 +934,13 @@ async function validateAgentBehavior(
     }
   }
 
-  // --- babysitter-plugin/genty: stop hooks, hooks-mux session, run completion, completion proof ---
+  // --- babysitter-plugin/genty: stop hooks, hooks-adapter session, run completion, completion proof ---
   // All checks run in both TTY-backed and non-TTY modes.
   // stop-hooks is a warning (not failure) only when no TTY-backed invocation is used.
   const isInteractiveInvocation = env['LIVE_STACK_INTERACTIVE'] === 'true' || env['LIVE_STACK_BRIDGE_INTERACTIVE'] === 'true';
   const isBridgeHooksMode = env['LIVE_STACK_BRIDGE_HOOKS'] === 'true';
   if (isBabysitterPlugin || scenario.agent.agent === 'genty') {
-    // stop-hooks: check for hooks-mux log files in all possible locations
+    // stop-hooks: check for hooks-adapter log files in all possible locations
     const homeDir = process.env['HOME'] ?? process.env['USERPROFILE'] ?? '/tmp';
     const hooksLogCandidates = [
       path.join(cwd, '.a5c', 'logs', 'hooks'),
@@ -974,7 +974,7 @@ async function validateAgentBehavior(
         console.error(`[hooks-log-search] os.homedir=${osHome}: ${e instanceof Error ? e.code ?? e.message : 'error'}`);
       }
     }
-    // hooks-mux-session: check hooks-mux session logs and run journal for stop hook events
+    // hooks-adapter-session: check hooks-adapter session logs and run journal for stop hook events
     // (run this before stop-hooks so journal evidence is available for both checks)
     let hasSessionLogs = hooksLogsFound;
     let hasStopHookInJournal = false;
@@ -1002,31 +1002,31 @@ async function validateAgentBehavior(
       }
     } catch { /* no runs dir */ }
 
-    // stop-hooks and hooks-mux-session: verify hooks evidence.
+    // stop-hooks and hooks-adapter-session: verify hooks evidence.
     // Hooks are required when the harness drives iterations (interactive/bridged-hooks).
     // When agent-platform drives the loop internally (NI with bridge-hooks),
     // hooks are desirable but the run completing is the primary signal.
     // We defer the hooks verdict until after run-completion is known.
     const deferredHooksEntries: VerificationEntry[] = [];
     if (hooksLogsFound) {
-      deferredHooksEntries.push({ name: 'stop-hooks', status: 'passed', detail: 'hooks-mux log files found' });
+      deferredHooksEntries.push({ name: 'stop-hooks', status: 'passed', detail: 'hooks-adapter log files found' });
     } else if (hasStopHookInJournal) {
       deferredHooksEntries.push({ name: 'stop-hooks', status: 'passed', detail: 'stop hook event found in run journal (no log files on disk)' });
     } else if (!isInteractiveInvocation && !isBridgeHooksMode) {
-      deferredHooksEntries.push({ name: 'stop-hooks', status: 'passed', detail: 'no hooks-mux logs (expected in non-interactive mode — hooks require TTY session)' });
+      deferredHooksEntries.push({ name: 'stop-hooks', status: 'passed', detail: 'no hooks-adapter logs (expected in non-interactive mode — hooks require TTY session)' });
     } else {
-      deferredHooksEntries.push({ name: 'stop-hooks', status: 'failed', detail: 'no hooks-mux log files found (deferred — may pass if run completed)' });
+      deferredHooksEntries.push({ name: 'stop-hooks', status: 'failed', detail: 'no hooks-adapter log files found (deferred — may pass if run completed)' });
     }
 
     if (hasSessionLogs || hasStopHookInJournal) {
       const parts = [];
-      if (hasSessionLogs) parts.push('hooks-mux log files found');
+      if (hasSessionLogs) parts.push('hooks-adapter log files found');
       if (hasStopHookInJournal) parts.push('stop hook event in run journal');
-      deferredHooksEntries.push({ name: 'hooks-mux-session', status: 'passed', detail: parts.join('; ') });
+      deferredHooksEntries.push({ name: 'hooks-adapter-session', status: 'passed', detail: parts.join('; ') });
     } else if (!isInteractiveInvocation && !isBridgeHooksMode) {
-      deferredHooksEntries.push({ name: 'hooks-mux-session', status: 'passed', detail: 'no hooks-mux evidence (expected in non-interactive — hooks require TTY)' });
+      deferredHooksEntries.push({ name: 'hooks-adapter-session', status: 'passed', detail: 'no hooks-adapter evidence (expected in non-interactive — hooks require TTY)' });
     } else {
-      deferredHooksEntries.push({ name: 'hooks-mux-session', status: 'failed', detail: 'no hooks-mux logs or stop hook events (deferred — may pass if run completed)' });
+      deferredHooksEntries.push({ name: 'hooks-adapter-session', status: 'failed', detail: 'no hooks-adapter logs or stop hook events (deferred — may pass if run completed)' });
     }
 
     // babysitter-run-completion: check .a5c/runs/ exists and has at least one run with a journal
@@ -1067,7 +1067,7 @@ async function validateAgentBehavior(
     if (!runCompleted && processMode === 'create') {
       const fileCreated = entries.some(e => e.name === 'file-creation' && e.status === 'passed');
       const processCreated = entries.some(e => e.name === 'process-creation' && e.status === 'passed');
-      const hooksActive = deferredHooksEntries.some(e => e.name === 'hooks-mux-session' && e.status === 'passed');
+      const hooksActive = deferredHooksEntries.some(e => e.name === 'hooks-adapter-session' && e.status === 'passed');
       if (fileCreated && processCreated && hooksActive) {
         runCompleted = true;
         runCompletionDetail = 'no SDK run created, but process+artifact+hooks all succeeded (create mode)';

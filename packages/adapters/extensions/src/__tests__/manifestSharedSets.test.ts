@@ -23,7 +23,7 @@ function createManifest(overrides: Partial<A5cPluginManifest> = {}): A5cPluginMa
 
 describe('shared manifest sets', () => {
   it('resolves extra file sets with target template vars before inline overrides', () => {
-    const sourceDir = fs.mkdtempSync(path.join(os.tmpdir(), 'mux-extra-files-'));
+    const sourceDir = fs.mkdtempSync(path.join(os.tmpdir(), 'adapter-extra-files-'));
     fs.mkdirSync(path.join(sourceDir, 'per-harness', 'github'), { recursive: true });
     fs.writeFileSync(path.join(sourceDir, 'per-harness', 'github', 'README.md'), 'shared readme\n');
     fs.writeFileSync(path.join(sourceDir, 'per-harness', 'github', 'babysit-SKILL.md'), 'shared skill\n');

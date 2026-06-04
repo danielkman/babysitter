@@ -35,7 +35,7 @@ function hookMappingToPhaseMapping(mapping: HookMappingDescriptor): PhaseMapping
 function buildFromCatalog(): PhaseMapping[] {
   const mappings = listHookMappingsByAdapterFamily('cursor');
   if (mappings.length === 0) {
-    throw new Error('hooks-mux adapter-cursor: catalog unavailable or returned no mappings for family "cursor"');
+    throw new Error('hooks-adapter adapter-cursor: catalog unavailable or returned no mappings for family "cursor"');
   }
   const phaseMappings = mappings
     .map(hookMappingToPhaseMapping)

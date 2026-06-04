@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// CLI for extension-mux compiler
+// CLI for extensions-adapter compiler
 
 import * as path from 'path';
 import * as process from 'process';
@@ -23,14 +23,14 @@ const defaultIo: CliIo = {
 
 function showUsage(io: CliIo) {
   io.stdout(`
-extension-mux - Cross-harness plugin compiler for AI coding agents
+extensions-adapter - Cross-harness plugin compiler for AI coding agents
 
 Usage:
-  extension-mux compile --target <name|all> --output <dir> [options]
-  extension-mux validate [options]
-  extension-mux diff --target <name> --existing <dir> [options]
-  extension-mux init --name <name> [options]
-  extension-mux list-targets [options]
+  extensions-adapter compile --target <name|all> --output <dir> [options]
+  extensions-adapter validate [options]
+  extensions-adapter diff --target <name> --existing <dir> [options]
+  extensions-adapter init --name <name> [options]
+  extensions-adapter list-targets [options]
 
 Commands:
   compile        Compile UPF source to target format(s)

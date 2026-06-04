@@ -35,7 +35,7 @@ nodeKind: ProcessDescriptor
 id: process:adapters/model-catalog
 attributes:
   processId: "adapters/model-catalog"
-  displayName: "Agent Mux Model Catalog"
+  displayName: "Agent Adapter Model Catalog"
   category: "catalog"
   description: "Brownfield workflow for model catalog and model configuration management inside adapters."
   paths:

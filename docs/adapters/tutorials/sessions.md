@@ -1,6 +1,6 @@
 # Sessions
 
-Agent-mux persists every run as a **session**: a JSONL file written by the
+Adapters persists every run as a **session**: a JSONL file written by the
 underlying CLI (Claude, Codex, Gemini, …) that you can list, resume, inspect,
 and export through the SDK or `adapters` CLI.
 

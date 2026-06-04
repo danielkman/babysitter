@@ -83,7 +83,7 @@ The main unresolved product choice is retention: how much `.a5c` journal detail 
 
 ## Vertical slice acceptance target
 
-The first code milestone should follow `docs/agents/org-memory-vertical-slice-spec.md` exactly. Success means a single-org manual dispatch can consume company brain memory, show the memory snapshot in run detail, import a summary-only Babysitter/Agent Mux run into the same org memory repo, and prove cross-org memory denial.
+The first code milestone should follow `docs/agents/org-memory-vertical-slice-spec.md` exactly. Success means a single-org manual dispatch can consume company brain memory, show the memory snapshot in run detail, import a summary-only Babysitter/Agent Adapter run into the same org memory repo, and prove cross-org memory denial.
 
 Anything beyond that is a later slice unless it directly enables the vertical path.
 
@@ -98,10 +98,10 @@ The QA strategy in `docs/tests` is intentionally broader than current implementa
 - Add browser automation framework and route smoke tests.
 - Add coverage reporting and thresholds.
 - Split current Node tests into unit, integration, API, and E2E directories as suites grow.
-- Add deterministic fixtures under `tests/fixtures` for org, repository, memory, `.a5c`, Agent Mux, webhooks, runners, and deployments.
+- Add deterministic fixtures under `tests/fixtures` for org, repository, memory, `.a5c`, Agent Adapter, webhooks, runners, and deployments.
 - Add security/no-secret scans over API responses, browser traces, memory imports, and artifacts.
 - Add org-scoped agent/company-brain vertical-slice tests.
-- Add live/staging gates for Gitea, Argo CD, KubeVela, NATS, ARC, object storage, and Agent Mux.
+- Add live/staging gates for Gitea, Argo CD, KubeVela, NATS, ARC, object storage, and Agent Adapter.
 - Add release artifacts for coverage, browser traces, rendered manifests, and SBOM/signing when release gates mature.
 
 ## QA adoption roadmap gaps
@@ -146,7 +146,7 @@ Additional provider work now documented but not implemented:
 
 ----
 
-[ ] - add tools mux to enforce external tool use granular permissions beyond adapters support for sanboxing and policy enforcement.
+[ ] - add tools adapter to enforce external tool use granular permissions beyond adapters support for sanboxing and policy enforcement.
 
 ## External provider implementation-ready gaps
 

@@ -6,7 +6,7 @@ function envForSignals(signals: readonly string[]): Record<string, string> {
   return Object.fromEntries(signals.map((signal) => [signal, `${signal.toLowerCase()}-value`]));
 }
 
-describe('hooks-mux catalog detection contract', () => {
+describe('hooks-adapter catalog detection contract', () => {
   it('honors every graph-backed discovery rule exported by agent-catalog', () => {
     for (const rule of getHooksMuxDetectionRules()) {
       const signal = rule.signals[0];

@@ -4,11 +4,11 @@
 
 This document converts the agent orchestration specs into a concrete Kradle implementation plan. It is intentionally docs-only: it names the files, resources, controllers, API routes, UI routes, chart surfaces, tests, and rollout order that should be touched when implementation starts.
 
-The target experience is repository-native and GitHub-like: agents appear inside Code, Issues, Pull Requests, Actions/Runs, Workspaces, Inbox, and Settings. Agent Mux provides adapter/session/chat/runtime primitives; Kradle owns the resource graph, repository context, trigger policy, runner placement, approvals, audit, and UI projections.
+The target experience is repository-native and GitHub-like: agents appear inside Code, Issues, Pull Requests, Actions/Runs, Workspaces, Inbox, and Settings. Agent Adapter provides adapter/session/chat/runtime primitives; Kradle owns the resource graph, repository context, trigger policy, runner placement, approvals, audit, and UI projections.
 
 ## Implementation boundaries
 
-| Layer | Kradle owns | Agent Mux owns |
+| Layer | Kradle owns | Agent Adapter owns |
 | --- | --- | --- |
 | Product graph | repositories, issues, PRs, pipelines, jobs, workspaces, approvals, artifacts, audit | adapter-specific session/run internals |
 | Declarative config | `AgentStack`, tools, MCP servers, skills, subagents, trigger rules, context labels, workspace policy | adapter capability manifests and launch option validation |
@@ -36,11 +36,11 @@ The target experience is repository-native and GitHub-like: agents appear inside
   - Add agent dashboard cards, repository route view models, operational counters, and validation checks.
   - Project dispatches beside existing `Pipeline` and `Job` resources.
 - New `src/agent-stack-controller.js`
-  - Resolve Agent Mux capabilities, MCP health, skill validation, subagent compatibility, and policy admission.
+  - Resolve Agent Adapter capabilities, MCP health, skill validation, subagent compatibility, and policy admission.
 - New `src/agent-trigger-controller.js`
   - Normalize events, evaluate trigger rules, dry-run payloads, dedupe, coalesce, and create dispatch runs.
 - New `src/agent-dispatch-controller.js`
-  - Create attempts, call Agent Mux, bind session/run IDs, reconcile event streams, artifacts, and final status.
+  - Create attempts, call Agent Adapter, bind session/run IDs, reconcile event streams, artifacts, and final status.
 - New `src/agent-workspace-controller.js`
   - Provision/link/recover/archive/cleanup/rebase workspaces and maintain issue/session/workspace associations.
 - New `src/agent-approval-controller.js`
@@ -52,7 +52,7 @@ The target experience is repository-native and GitHub-like: agents appear inside
 - New `src/agent-permission-review.js`
   - Produce a deterministic permission review for stack save, trigger dry-run, dispatch creation, and launch attempts.
 - New `src/adapters-client.js`
-  - Thin adapter around Agent Mux gateway/client for capability lookup, launch, stream, continue, cancel, retry, fork, resume, and approval forwarding.
+  - Thin adapter around Agent Adapter gateway/client for capability lookup, launch, stream, continue, cancel, retry, fork, resume, and approval forwarding.
 
 ### UI app routes
 
@@ -63,7 +63,7 @@ The target experience is repository-native and GitHub-like: agents appear inside
 - `apps/web/app/agents/runs/page.jsx`
   - Cross-repository CI-like dispatch queue.
 - `apps/web/app/agents/runs/[run]/page.jsx`
-  - Dispatch detail with Agent Mux chat/session and observability panels.
+  - Dispatch detail with Agent Adapter chat/session and observability panels.
 - `apps/web/app/agents/rules/page.jsx`
   - Trigger rule lifecycle, dry-run, delivery replay, execution summaries.
 - `apps/web/app/agents/workspaces/page.jsx`
@@ -123,9 +123,9 @@ API handlers should delegate to controller modules. They should not mutate hidde
 - `charts/kradle/templates/crds.yaml`
   - Add CRDs for low-cardinality config resources first, including `AgentServiceAccount`, `AgentRoleBinding`, `AgentSecretGrant`, and `AgentConfigGrant`.
 - `charts/kradle/values.yaml`
-  - Add Agent Mux gateway URL, execution mode, default runner pool, default agent ServiceAccount, Secret/ConfigMap grant feature gates, retention, and feature gates.
+  - Add Agent Adapter gateway URL, execution mode, default runner pool, default agent ServiceAccount, Secret/ConfigMap grant feature gates, retention, and feature gates.
 - `charts/kradle/templates/deployment.yaml`
-  - Add environment for Agent Mux gateway, secrets policy, stream retention, and runner integration.
+  - Add environment for Agent Adapter gateway, secrets policy, stream retention, and runner integration.
 - `examples/`
   - Add minimal `AgentStack`, `AgentTriggerRule`, `AgentContextLabel`, and manual dispatch examples.
 - `dist/`
@@ -149,7 +149,7 @@ Use these companion docs before writing code:
 - [Acceptance test matrix](./acceptance-test-matrix.md) for implementation gates.
 - [Storage and migration spec](./storage-migration-spec.md) for persistence, indexing, snapshots, retention, and migrations.
 - [Chart and packaging spec](./chart-packaging-spec.md) for Helm values, CRDs, RBAC, deployments, examples, and package validation.
-- [Agent Mux adapter contract](./adapters-adapter-contract.md) for capability discovery, launch, event normalization, and UI embedding.
+- [Agent Adapter adapter contract](./adapters-adapter-contract.md) for capability discovery, launch, event normalization, and UI embedding.
 - [Implementation rollout slices](./implementation-rollout-slices.md) for incremental delivery order.
 - [Context assembly and prompt safety spec](./context-assembly-spec.md) for prompt/source/redaction/digest handling.
 - [Observability and audit spec](./observability-audit-spec.md) for events, metrics, traces, audit records, and alerts.
@@ -187,8 +187,8 @@ Use these companion docs before writing code:
 | Kind | Storage | Why aggregated |
 | --- | --- | --- |
 | `AgentDispatchRun` | postgres | high-cardinality run state, source refs, artifacts, approvals, event cursor |
-| `AgentDispatchAttempt` | postgres | retry/resume/fork attempts and Agent Mux session/run binding |
-| `AgentSession` | postgres projection | durable session metadata linked to Agent Mux session IDs |
+| `AgentDispatchAttempt` | postgres | retry/resume/fork attempts and Agent Adapter session/run binding |
+| `AgentSession` | postgres projection | durable session metadata linked to Agent Adapter session IDs |
 | `AgentWorkspace` | postgres projection | git worktree/runtime inventory and lifecycle state |
 | `AgentApproval` | postgres | human-gate decisions and audit trail |
 | `AgentContextBundle` | postgres/object storage | immutable context snapshot, prompt hash, attachment manifest |
@@ -207,7 +207,7 @@ WebhookDelivery / CI event / issue or PR event / manual UI action
   -> AgentDispatchRun
   -> AgentDispatchAttempt
   -> adapters-client
-  -> Agent Mux run/session
+  -> Agent Adapter run/session
   -> stream/event reconciliation
   -> AgentApproval / AgentArtifact / AgentWorkspace / WorkItem links
   -> repository UI projections and write-back actions
@@ -222,7 +222,7 @@ Controllers should be restart-safe. Every external side effect needs an idempote
 1. User opens `/orgs/[org]/repositories/[repo]/code`.
 2. User selects files/folder/ref and clicks `Dispatch agent`.
 3. UI shows stack, context labels, workspace policy, prompt preview, and write-back policy.
-4. Kradle creates `AgentDispatchRun` and `AgentDispatchAttempt` before Agent Mux launch.
+4. Kradle creates `AgentDispatchRun` and `AgentDispatchAttempt` before Agent Adapter launch.
 5. Run appears in repository pipelines and `/agents/runs`.
 6. Detail page shows pending handoff, then chat/session once bound.
 
@@ -246,7 +246,7 @@ Controllers should be restart-safe. Every external side effect needs an idempote
 ### Subagent orchestration
 
 1. Parent `AgentStack` declares allowed subagents and concurrency limits.
-2. Agent Mux reports whether adapter supports subagent dispatch or Kradle emulates it as child dispatch attempts.
+2. Agent Adapter reports whether adapter supports subagent dispatch or Kradle emulates it as child dispatch attempts.
 3. UI shows subagent lanes with status, context slice, output contract, artifacts, and parent decision impact.
 4. Child output is immutable and linked to the parent attempt.
 
@@ -261,9 +261,9 @@ Controllers should be restart-safe. Every external side effect needs an idempote
 
 1. Add resource definitions, schemas, examples, and chart CRDs for config resources, including native RBAC/service-account/secret/config grant resources.
 2. Add read-only UI projections and empty states in repository routes.
-3. Add stack registry with Agent Mux capability validation and native RBAC/Secret/ConfigMap readiness checks.
+3. Add stack registry with Agent Adapter capability validation and native RBAC/Secret/ConfigMap readiness checks.
 4. Add manual dispatch from repository code page and dispatch run list/detail.
-5. Add Agent Mux session binding, chat, event stream, and observability panel.
+5. Add Agent Adapter session binding, chat, event stream, and observability panel.
 6. Add approvals, write-back gates, service-account binding, Secret grants, ConfigMap grants, and role-binding management.
 7. Add trigger rules, dry-run, webhook deliveries, CI failure matching, and dedupe/coalescing.
 8. Add workspace provisioning/recovery/rebase lifecycle and issue/session/workspace association graph.
@@ -282,7 +282,7 @@ Controllers should be restart-safe. Every external side effect needs an idempote
 
 - A repository admin can create a Claude Code `AgentStack` with tools, MCP servers, skills, subagents, runtime ServiceAccount, runner ServiceAccount, Secret grants, ConfigMap grants, runner policy, and approval mode.
 - A user can manually dispatch it from a repository page and see a CI-like run.
-- The run binds to Agent Mux chat/session and streams events without losing source breadcrumbs.
+- The run binds to Agent Adapter chat/session and streams events without losing source breadcrumbs.
 - Pending approvals block privileged actions and can be decided from the run page or approval inbox.
 - Workspace/session/run associations are visible from the source issue/PR/code/pipeline page and from global agent pages.
 - Every UI action maps to a resource/action/controller/watch path documented in these specs.
@@ -297,7 +297,7 @@ When implementation begins, add memory after the basic dispatch/context slice bu
 3. Add memory ref resolution and query actions to `src/api-controller.js`.
 4. Extend context assembly to add memory source manifests to `AgentContextBundle`.
 5. Expose `/agents/memory` and repository settings associations in `src/controller-ui.js`.
-6. Gate Agent Mux memory tools through stack capability and permission review.
+6. Gate Agent Adapter memory tools through stack capability and permission review.
 7. Add validators for graph YAML, Markdown frontmatter, free-form path policy, ontology, indexes, and secret scans.
 
 ## Org-scoped resource implementation prerequisites

@@ -695,7 +695,7 @@ in the YAML edge descriptions.
 | `enforces_invariant` | AgentRuntimeImpl (Harness-analog) enforces a FilesystemSafetyInvariant **(flagged: also a candidate Sandbox/SafetyPolicy ownership)** | `AgentRuntimeImpl` | `FilesystemSafetyInvariant` | N:N | `invariant_enforced_by` |
 | `installed_via` | AgentVersion is installed via one or more InstallMethods **(flagged: dual representation with `AgentVersion.installMethods` attribute)** | `AgentVersion` | `InstallMethod` | N:N | `install_method_for` |
 | `has_launch_contract` | AgentRuntimeImpl (Harness-analog) declares its LaunchContract spawn shape | `AgentRuntimeImpl` | `LaunchContract` | N:1 | `launch_contract_for` |
-| `uses_merge_policy` | HookSurface uses a MergePolicy (hooks-mux conflict-resolution) | `HookSurface` | `MergePolicy` | N:1 | `merge_policy_used_by` |
+| `uses_merge_policy` | HookSurface uses a MergePolicy (hooks-adapter conflict-resolution) | `HookSurface` | `MergePolicy` | N:1 | `merge_policy_used_by` |
 | `exposes_intervention_point` | Phase exposes one or more OperatorInterventionPoints | `Phase` | `OperatorInterventionPoint` | N:N | `intervention_point_exposed_by` |
 | `has_transition` | Phase declares an outgoing PhaseTransition | `Phase` | `PhaseTransition` | 1:N | `transition_of` |
 | `performs_reconciliation` | Run performs a Reconciliation pass | `Run` | `Reconciliation` | 1:N | `reconciliation_performed_by` |

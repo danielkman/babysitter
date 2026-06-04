@@ -10,7 +10,7 @@ attributes:
   scriptVariants:
     - event-hooks
   contextFiles:
-    - packages/extension-mux/src/targets/opencode.ts
+    - packages/extensions-adapter/src/targets/opencode.ts
 edges:
   emits_artifact:
     - target: plugin-target:opencode

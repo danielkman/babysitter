@@ -6,15 +6,15 @@
  * journal inspection, continuation building) in the SDK.
  *
  * This adapter is the DEFAULT fallback when no harness-specific adapter
- * is detected.  It imports NO hooks-mux packages — all communication
+ * is detected.  It imports NO hooks-adapter packages — all communication
  * is via subprocess stdin/stdout and environment variables.
  *
  * Key env vars:
  * - AGENT_UNIFIED_ADAPTER=1        — force-enable the adapter
- * - AGENT_SESSION_ID               — session identifier (hooks-mux convention)
+ * - AGENT_SESSION_ID               — session identifier (hooks-adapter convention)
  * - AGENT_CAPABILITIES_JSON        — JSON-serialised proxy capabilities
- * - AGENT_HOOKS_PROXY_PATH         — custom path to the hooks-mux binary
- * - AGENT_SESSION_ID               — session ID (from hooks-mux)
+ * - AGENT_HOOKS_PROXY_PATH         — custom path to the hooks-adapter binary
+ * - AGENT_SESSION_ID               — session ID (from hooks-adapter)
  */
 
 import * as path from "node:path";
@@ -99,12 +99,12 @@ export function createUnifiedAdapter(): HarnessAdapter {
 
     getMissingSessionIdHint(): string {
       return (
-        "Set AGENT_SESSION_ID (hooks-mux convention) or pass --session-id explicitly."
+        "Set AGENT_SESSION_ID (hooks-adapter convention) or pass --session-id explicitly."
       );
     },
 
     supportsHookType(_hookType: string): boolean {
-      // The unified adapter supports all hook types — hooks-mux
+      // The unified adapter supports all hook types — hooks-adapter
       // handles the actual dispatch to the underlying harness.
       return true;
     },
@@ -238,7 +238,7 @@ export function createUnifiedAdapter(): HarnessAdapter {
 
     findHookDispatcherPath(_startCwd: string): string | null {
       // The unified adapter does not ship its own hook dispatcher —
-      // hooks-mux is the dispatcher.
+      // hooks-adapter is the dispatcher.
       return null;
     },
 

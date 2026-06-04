@@ -24,8 +24,8 @@ describe('Codex docs parity', () => {
 
     expect(codexSection).toContain('**Env persistence:** Wrapper only');
     expect(codexSection).toContain('| Env persistence | Wrapper only |');
-    expect(codexSection).toContain('a5c-hooks-mux exec --session-id "$AGENT_SESSION_ID" -- ...');
-    expect(codexSection).toContain('single `hooks-mux` registration per Codex hook event');
+    expect(codexSection).toContain('a5c-hooks-adapter exec --session-id "$AGENT_SESSION_ID" -- ...');
+    expect(codexSection).toContain('single `hooks-adapter` registration per Codex hook event');
 
     for (const note of caps.notes ?? []) {
       expect(codexSection).toContain(note);

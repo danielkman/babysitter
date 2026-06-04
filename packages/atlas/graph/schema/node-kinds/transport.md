@@ -391,7 +391,7 @@ Distinct from `AgentHostTransport` (the agent's own host) and
 
 ```yaml
 - id: transport-proxy:adapters-proxy
-  displayName: "Agent-Mux Proxy"
+  displayName: "Agent-Adapter Proxy"
   kinds: [routing, observability]
   bridges:
     - model-transport:anthropic-messages

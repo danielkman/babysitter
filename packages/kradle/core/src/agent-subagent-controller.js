@@ -5,7 +5,7 @@ export const AGENT_SUBAGENT_CONTROLLER_BOUNDARY = {
   scope: 'Subagent dispatch orchestration with tool scoping, role-based routing, and supervision protocol',
   owns: ['subagent validation', 'dispatch record creation', 'tool scope resolution', 'task routing', 'supervision config'],
   delegatesTo: ['resource-model'],
-  mustNotOwn: ['secret values', 'Agent Mux sessions', 'parent session lifecycle']
+  mustNotOwn: ['secret values', 'Agent Adapter sessions', 'parent session lifecycle']
 };
 
 const DEFAULT_SUPERVISION = {

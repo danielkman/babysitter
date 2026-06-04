@@ -8,7 +8,7 @@
  *   3. Returns 0 on success, 0 on graceful no-op (no session ID)
  *
  * CLAUDE_ENV_FILE writing and hookSpecificOutput are now handled by
- * hooks-mux, not the SDK session-start handler.
+ * hooks-adapter, not the SDK session-start handler.
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";

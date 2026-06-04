@@ -71,8 +71,8 @@ Use a layout manager (like `react-mosaic` or `allotment`) for resizable panes.
 | **Agent marketplace / process library** | Plugin system but no marketplace |
 | **CI/CD integration (GitHub Actions, workflows)** | Nothing — local-only |
 | **Governance layer (authority chains, mandates)** | Basic plugin permissions only |
-| **Transport-mux (multi-provider proxy routing)** | Basic provider support |
-| **Hooks-mux (cross-harness hook normalization)** | Plugin hooks only |
+| **Transport-adapter (multi-provider proxy routing)** | Basic provider support |
+| **Hooks-adapter (cross-harness hook normalization)** | Plugin hooks only |
 
 ## Priority Fixes
 

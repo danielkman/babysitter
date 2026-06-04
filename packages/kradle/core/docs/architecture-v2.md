@@ -552,7 +552,7 @@ if (!resourceNs || resourceNs !== orgNs) {
 Source: `packages/kradle/core/src/agent-dispatch-controller.js`
 
 Agents are dispatched as Kubernetes `batch/v1` Jobs (not subprocesses or direct
-Agent Mux HTTP calls). Each dispatch creates a Job manifest via `createAgentJob()`,
+Agent Adapter HTTP calls). Each dispatch creates a Job manifest via `createAgentJob()`,
 submits it to Kubernetes via `submitAgentJob()`, and waits for the agent pod to
 POST its result to the callback endpoint.
 
@@ -1137,7 +1137,7 @@ Every controller exports a frozen boundary object. This serves as both documenta
 | KradleKubernetesReconciler | `kubernetes-controller.js` | Resource reconciliation | repo status, identity projection, hosting intent, policy sync | HTTP routes, pages, API DTOs |
 | KubernetesResourceGateway | `kubernetes-resource-gateway.js` | API port delegation | resource definitions, CRUD delegation, namespace scoping | HTTP routes, page flows, reconciliation |
 | KradleApiController | `api-controller.js` | HTTP facade | validation, DTOs, errors, workflow affordances, UI snapshots | kubectl execution, reconciliation loops |
-| AgentStackController | `agent-stack-controller.js` | Stack readiness | capability resolution, conditions, readiness, MCP health | secrets, dispatch execution, Mux sessions |
+| AgentStackController | `agent-stack-controller.js` | Stack readiness | capability resolution, conditions, readiness, MCP health | secrets, dispatch execution, Adapter sessions |
 | AgentDispatchController | `agent-dispatch-controller.js` | Dispatch orchestration | dispatch creation, attempt lifecycle, session binding, workspace | secrets, UI rendering |
 | AgentWorkspaceController | `agent-workspace-controller.js` | Workspace provisioning | workspace creation, PVC gen, git specs, mount specs, reuse, codespace | git execution, K8s API, secrets |
 | AgentTriggerController | `agent-trigger-controller.js` | Event routing | normalization, rule matching, trigger records, dispatch initiation | event sourcing, webhook delivery |

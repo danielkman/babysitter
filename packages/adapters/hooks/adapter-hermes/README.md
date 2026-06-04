@@ -1,6 +1,6 @@
 # @a5c-ai/hooks-adapter-hermes
 
-Hermes harness adapter for hooks-mux.
+Hermes harness adapter for hooks-adapter.
 
 ## Install
 
@@ -20,7 +20,7 @@ import {
 } from "@a5c-ai/hooks-adapter-hermes";
 ```
 
-The package exposes Hermes-specific normalization, phase mappings, rendering helpers, and session-resolution utilities for the hooks-mux execution pipeline.
+The package exposes Hermes-specific normalization, phase mappings, rendering helpers, and session-resolution utilities for the hooks-adapter execution pipeline.
 
 Hermes has a single `onEvent` native hook that is non-blocking and post-direction only. It cannot block or deny tool calls.
 

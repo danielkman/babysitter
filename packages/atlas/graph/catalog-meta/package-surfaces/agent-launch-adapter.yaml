@@ -1,0 +1,12 @@
+nodeKind: PackageSurface
+id: package:a5c-ai-agent-launch-adapter
+attributes:
+  packageId: "@a5c-ai/launch-adapter"
+  packageName: "@a5c-ai/launch-adapter"
+  workspacePath: packages/adapters/launch
+  moduleType: typescript
+  surfaceKinds:
+    - session-launcher
+  sourceOfTruthRole: wrapper-over-graph
+  publishedTo: npm
+  versionPolicy: semver

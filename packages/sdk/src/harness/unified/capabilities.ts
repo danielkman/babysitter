@@ -1,9 +1,9 @@
 /**
- * Map hooks-mux AdapterCapabilities to SDK HarnessCapability flags.
+ * Map hooks-adapter AdapterCapabilities to SDK HarnessCapability flags.
  *
- * The unified adapter does NOT import hooks-mux packages.  It reads
+ * The unified adapter does NOT import hooks-adapter packages.  It reads
  * the JSON-serialised capabilities from the `AGENT_CAPABILITIES_JSON`
- * environment variable (set by hooks-mux) and derives SDK-level
+ * environment variable (set by hooks-adapter) and derives SDK-level
  * capability flags from the structure.
  */
 
@@ -15,7 +15,7 @@ import {
 } from "../../prompts/contextShared";
 
 // ---------------------------------------------------------------------------
-// Proxy capability shape (inferred from hooks-mux AdapterCapabilities)
+// Proxy capability shape (inferred from hooks-adapter AdapterCapabilities)
 // ---------------------------------------------------------------------------
 
 export interface ProxyCapabilities {
@@ -64,14 +64,14 @@ export interface HostToolDescriptor {
 // ---------------------------------------------------------------------------
 
 /**
- * Derive SDK HarnessCapability flags from hooks-mux AdapterCapabilities.
+ * Derive SDK HarnessCapability flags from hooks-adapter AdapterCapabilities.
  */
 export function deriveCapabilitiesFromProxy(
   proxy: ProxyCapabilities,
 ): HarnessCapability[] {
   const caps: HarnessCapability[] = [];
 
-  // Always has these since it goes through hooks-mux
+  // Always has these since it goes through hooks-adapter
   caps.push(HarnessCapability.Programmatic);
   caps.push(HarnessCapability.SessionBinding);
   caps.push(HarnessCapability.HeadlessPrompt);
@@ -94,7 +94,7 @@ export function deriveCapabilitiesFromProxy(
  * Build a PromptContext from proxy capabilities.
  *
  * This tells the SDK how to compose prompts for the underlying harness
- * that is fronted by hooks-mux.
+ * that is fronted by hooks-adapter.
  */
 export function buildPromptContextFromProxy(
   proxy: ProxyCapabilities,
@@ -125,7 +125,7 @@ export function buildPromptContextFromProxy(
       hookDriven: isShellHook && proxy.supportsBlock,
       interactiveToolName: proxy.supportsAsk ? "question tool" : "",
       sessionEnvVars:
-        "AGENT_SESSION_ID (hooks-mux convention)",
+        "AGENT_SESSION_ID (hooks-adapter convention)",
       resumeFlags: "",
       cliSetupSnippet: createDefaultCliSetupSnippet(),
       iterateFlags: "",

@@ -21,7 +21,7 @@ export interface BreakpointMuxProviderOptions {
 }
 
 /**
- * Maps a babysitter ProcessContext.breakpoint() call to a tasks-mux
+ * Maps a babysitter ProcessContext.breakpoint() call to a tasks-adapter
  * backend call, handling routing, context assembly, and result mapping.
  */
 export class BreakpointMuxInteractionProvider {

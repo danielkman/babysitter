@@ -131,7 +131,7 @@ export async function verifyBreakpointResult(
     ) {
       return {
         verified: false,
-        reason: "tasks-mux not installed",
+        reason: "tasks-adapter not installed",
       };
     }
 

@@ -15,8 +15,8 @@ edges:
     - target: skill-area:backend-api-design
   alternative_to:
     - library:fiber
-    - library:gorilla-mux
-    - library:mux
+    - library:gorilla-adapter
+    - library:adapter
 ---
 nodeKind: Library
 id: library:fiber
@@ -34,9 +34,9 @@ edges:
     - target: skill-area:backend-api-design
 ---
 nodeKind: Library
-id: library:gorilla-mux
+id: library:gorilla-adapter
 attributes:
-  displayName: "Gorilla Mux"
+  displayName: "Gorilla Adapter"
   belongsToLanguageId: language:go
   category: http-server
   description: |

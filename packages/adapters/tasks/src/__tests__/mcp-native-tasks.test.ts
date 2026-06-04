@@ -143,7 +143,7 @@ describe("native task MCP handlers", () => {
 
     const result = await handleCreateTodo({
       title: "Write release notes",
-      description: "Summarize merged tasks-mux work",
+      description: "Summarize merged tasks-adapter work",
       tags: ["release"],
       domain: "docs",
       responderType: "human",

@@ -1120,7 +1120,7 @@ attributes:
     3. Context bundle assembly: Kradle checks out the repository at the
        specified branch, injects CLAUDE.md and relevant memory snapshots
        from the company brain, and prepares the agent workspace container.
-    4. Agent-mux launch: The dispatch controller creates a Kubernetes Job
+    4. Adapters launch: The dispatch controller creates a Kubernetes Job
        running the adapters container with the selected coding agent
        (Claude Code, Codex, etc.). The session streams output back via SSE.
     5. Completion: On agent completion, results are collected — files

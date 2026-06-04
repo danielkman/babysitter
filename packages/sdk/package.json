@@ -84,7 +84,7 @@
       "L13"
     ],
     "muxes": [
-      "session-storage-mux"
+      "session-storage-adapter"
     ]
   }
 }

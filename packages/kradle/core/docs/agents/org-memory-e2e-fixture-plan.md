@@ -155,7 +155,7 @@ Required resources:
 ## Out of scope for fixture
 
 - External GitHub API calls.
-- Real Agent Mux runtime execution.
+- Real Agent Adapter runtime execution.
 - Raw artifact byte retention.
 - Cross-org sharing policy allow path.
 - Vector search.

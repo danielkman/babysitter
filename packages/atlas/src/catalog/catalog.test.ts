@@ -120,7 +120,7 @@ describe("agent-catalog graph-backed ontology", () => {
     expect(getFallbackHarnessMetadata("agent-platform")).toBeUndefined();
   });
 
-  it("exposes hooks-mux detection rules from discovery-signal nodes", () => {
+  it("exposes hooks-adapter detection rules from discovery-signal nodes", () => {
     const rules = getHooksMuxDetectionRules();
     expect(rules.find((rule) => rule.adapter === "codex" && rule.confidence === "medium")).toBeDefined();
   });
@@ -238,7 +238,7 @@ describe("agent-catalog graph-backed ontology", () => {
     expect(claims.get("web-codex-image-input")?.provenanceKind).toBe("vendor-inference");
     expect(claims.get("web-codex-image-input")?.evidenceStrength).toBe("inferred");
     expect(claims.get("web-codex-image-input")?.unresolvedGaps.length).toBeGreaterThan(0);
-    expect(claims.get("repo-transport-mux-readme")?.status).toBe("provisional");
+    expect(claims.get("repo-transport-adapter-readme")?.status).toBe("provisional");
   });
 
   it("records Claude Code current version with platform, UI, and runtime impl nodes", () => {
@@ -570,21 +570,21 @@ describe("agent-catalog graph-backed ontology", () => {
     }
   });
 
-  it("downgrades transport-mux document claims and runtime capability surfacing when the cutover gate is red", async () => {
+  it("downgrades transport-adapter document claims and runtime capability surfacing when the cutover gate is red", async () => {
     const previousOverride = process.env.A5C_AGENT_CATALOG_TRANSPORT_MUX_CUTOVER;
     process.env.A5C_AGENT_CATALOG_TRANSPORT_MUX_CUTOVER = "red";
     vi.resetModules();
 
     try {
       const catalog = await import("./index");
-      const transportMuxClaim = catalog.listOntologyClaims().find((claim) => claim.claimId === "repo-transport-mux-readme");
+      const transportMuxClaim = catalog.listOntologyClaims().find((claim) => claim.claimId === "repo-transport-adapter-readme");
       const agentMuxProxyAssertions = catalog
         .getCapabilitySupportAssertions()
         .filter((assertion) => assertion.subjectId === "transportRuntime:adapters-proxy");
 
       expect(transportMuxClaim?.status).toBe("provisional");
       expect(transportMuxClaim?.unresolvedGaps).toContain(
-        "transport-mux document-backed runtime claims stay provisional until packages/transport-mux scorecard:migration is green.",
+        "transport-adapter document-backed runtime claims stay provisional until packages/transport-adapter scorecard:migration is green.",
       );
       expect(agentMuxProxyAssertions).toHaveLength(0);
     } finally {

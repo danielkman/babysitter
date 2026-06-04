@@ -211,7 +211,7 @@ describe("GitHubIssuesBackend durability and parity", () => {
     backend.setToken("token");
     const breakpoint = await backend.submitBreakpoint(params);
 
-    expect(capturedBody).toContain("tasks-mux:issue:v1");
+    expect(capturedBody).toContain("tasks-adapter:issue:v1");
     expect(breakpoint.context).toMatchObject({
       description: params.context.description,
       codeSnippets: params.context.codeSnippets,
@@ -286,7 +286,7 @@ describe("GitHubIssuesBackend durability and parity", () => {
   it("maps structured answer payloads with responder metadata", async () => {
     const answerPayload = {
       version: 1,
-      schema: "tasks-mux:answer",
+      schema: "tasks-adapter:answer",
       text: "Resolved answer",
       confidence: 91,
       references: ["ref-1"],
@@ -294,7 +294,7 @@ describe("GitHubIssuesBackend durability and parity", () => {
       responderName: "Agent Nine",
       breakpointId: "gh-88",
     };
-    const commentBody = `## Answer\n\nResolved answer\n\n<!-- tasks-mux:answer:v1\n${JSON.stringify(
+    const commentBody = `## Answer\n\nResolved answer\n\n<!-- tasks-adapter:answer:v1\n${JSON.stringify(
       answerPayload,
       null,
       2,
@@ -327,7 +327,7 @@ describe("parseAnswerFromComment()", () => {
   it("extracts structured answer payloads", () => {
     const payload = {
       version: 1,
-      schema: "tasks-mux:answer",
+      schema: "tasks-adapter:answer",
       text: "Payload answer",
       confidence: 88,
       references: ["ref-a", "ref-b"],
@@ -335,7 +335,7 @@ describe("parseAnswerFromComment()", () => {
       responderName: "Responder One",
       breakpointId: "gh-900",
     };
-    const body = `## Answer\n\nPayload answer\n\n<!-- tasks-mux:answer:v1\n${JSON.stringify(
+    const body = `## Answer\n\nPayload answer\n\n<!-- tasks-adapter:answer:v1\n${JSON.stringify(
       payload,
       null,
       2,

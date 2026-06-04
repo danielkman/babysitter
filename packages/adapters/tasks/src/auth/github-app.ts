@@ -60,7 +60,7 @@ export class GitHubAppClient {
    */
   async createKeyPR(opts: CreateKeyPROpts): Promise<CreateKeyPRResult> {
     const octokit = await this.createInstallationOctokit(opts.installationId);
-    const branch = `tasks-mux/add-key-${opts.userId}-${Date.now()}`;
+    const branch = `tasks-adapter/add-key-${opts.userId}-${Date.now()}`;
 
     // Get the default branch ref
     const { data: repo } = await octokit.repos.get({

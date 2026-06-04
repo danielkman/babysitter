@@ -1,15 +1,15 @@
 /**
- * End-to-end integration tests for the SDK unified adapter + hooks-mux.
+ * End-to-end integration tests for the SDK unified adapter + hooks-adapter.
  *
  * These tests verify the FULL round-trip:
  *   1. SDK unified adapter builds a hook event
- *   2. Spawns `a5c-hooks-mux invoke` as a subprocess
- *   3. hooks-mux normalises the event, runs a handler, merges results
+ *   2. Spawns `a5c-hooks-adapter invoke` as a subprocess
+ *   3. hooks-adapter normalises the event, runs a handler, merges results
  *   4. SDK parses the result from stdout
  *   5. SDK reads AGENT_CAPABILITIES_JSON from env
  *
  * Prerequisites:
- *   - hooks-mux CLI must be built (`node scripts/hooks-mux-build.cjs build`)
+ *   - hooks-adapter CLI must be built (`node scripts/hooks-adapter-build.cjs build`)
  *   - Tests skip gracefully if dist is not available
  */
 
@@ -38,7 +38,7 @@ const REPO_ROOT = path.resolve(__dirname, "..", "..", "..", "..", "..", "..");
 const HOOKS_PROXY_CLI_DIR = path.join(
   REPO_ROOT,
   "packages",
-  "hooks-mux",
+  "hooks-adapter",
   "cli",
 );
 
@@ -47,7 +47,7 @@ const CLI_ENTRY = path.join(HOOKS_PROXY_CLI_DIR, "dist", "cli", "main.js");
 const CLAUDE_ADAPTER_ENTRY = path.join(
   REPO_ROOT,
   "packages",
-  "hooks-mux",
+  "hooks-adapter",
   "adapter-claude",
   "dist",
   "index.js",
@@ -101,7 +101,7 @@ async function createTempContext(): Promise<TempContext> {
 }
 
 // ---------------------------------------------------------------------------
-// Handler script helpers (adapted from hooks-mux e2e helpers)
+// Handler script helpers (adapted from hooks-adapter e2e helpers)
 // ---------------------------------------------------------------------------
 
 /**
@@ -111,7 +111,7 @@ let launcherCounter = 0;
 
 /**
  * Launcher scripts directory scoped to the CLI package so the handler
- * path does not contain a Windows drive-letter colon (which hooks-mux
+ * path does not contain a Windows drive-letter colon (which hooks-adapter
  * parseHandlerArgs would split on).
  */
 async function writeHandlerScript(
@@ -122,7 +122,7 @@ async function writeHandlerScript(
   const scriptPath = path.join(tmpRoot, `${name}.js`);
   await fs.promises.writeFile(scriptPath, jsCode, "utf-8");
 
-  // Write a launcher under the hooks-mux CLI dir so the relative path
+  // Write a launcher under the hooks-adapter CLI dir so the relative path
   // avoids the Windows drive-letter colon issue.
   const tmpBasename = path.basename(tmpRoot);
   const launcherDir = path.join(
@@ -241,7 +241,7 @@ function runCli(
 // ---------------------------------------------------------------------------
 
 describe.skipIf(!DIST_AVAILABLE)(
-  "SDK unified adapter <-> hooks-mux E2E",
+  "SDK unified adapter <-> hooks-adapter E2E",
   { timeout: 30_000 },
   () => {
     let ctx: TempContext;

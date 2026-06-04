@@ -11,7 +11,7 @@ Required signals:
 - webhook queue depth and delivery status;
 - runner queue/wait/runtime metrics;
 - memory query latency and import validation status;
-- Agent Mux session binding and event stream status;
+- Agent Adapter session binding and event stream status;
 - audit event counts by action/outcome.
 
 ## Reliability tests
@@ -25,7 +25,7 @@ Required signals:
 | webhook receiver fails | retry and replay available. |
 | watch disconnects | UI reconnects and resumes from list state. |
 | memory repo unavailable | required-memory dispatch blocks, optional memory warns. |
-| Agent Mux unavailable | dispatch shows pending/failed handoff and retry/recover action. |
+| Agent Adapter unavailable | dispatch shows pending/failed handoff and retry/recover action. |
 | redaction failure | memory import blocks and no content leaks. |
 
 ## Chaos and load

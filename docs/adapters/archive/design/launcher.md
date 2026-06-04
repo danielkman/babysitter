@@ -25,7 +25,7 @@ The key differentiation:
 | Concept | Spec |
 |---|---|
 | Provider/model configuration | `docs/adapters-provider-config.md` |
-| `adapters-proxy` bridge package | `docs/provider-mux.md` |
+| `adapters-proxy` bridge package | `docs/provider-adapter.md` |
 | Adapter system | `05-adapter-system.md` |
 | Built-in adapters | `12-built-in-adapters.md` |
 | CLI reference | `10-cli-reference.md` |
@@ -210,7 +210,7 @@ When `adapters launch <harness> [provider] [flags]` is invoked, the following re
    - target_provider: provider config (model, api_key, region, project, etc.)
    - exposed_transport: T_harness (what the harness expects to speak)
    - port: resolved port
-3. Spawn adapters-proxy process (see docs/provider-mux.md §5)
+3. Spawn adapters-proxy process (see docs/provider-adapter.md §5)
 4. Wait for proxy health check (GET /health → 200)
 5. Record proxy URL as PROXY_BASE_URL = http://127.0.0.1:<port>
 6. If proxy fails to start within 15s → error + cleanup

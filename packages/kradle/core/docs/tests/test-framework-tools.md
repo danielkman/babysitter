@@ -33,7 +33,7 @@ Existing tools:
 
 - Prefer fast built-in Node tests for pure logic and contracts.
 - Use browser automation only for routes and interactions that cannot be validated below the browser layer.
-- Use deterministic fakes for Kubernetes, Gitea, Agent Mux, NATS, Argo CD, and object storage in PR gates.
+- Use deterministic fakes for Kubernetes, Gitea, Agent Adapter, NATS, Argo CD, and object storage in PR gates.
 - Use live integration only in nightly/staging or explicit release gates.
 - Keep tests runnable on Windows and Linux.
 - Store fixtures in repo; avoid network calls in deterministic CI unless the suite is explicitly live.
@@ -69,7 +69,7 @@ Required fakes/mocks:
 | Postgres | aggregated resources and migrations, preferably in-memory or isolated test DB. |
 | Object storage | artifact put/get by digest. |
 | NATS/webhook queue | enqueue, deliver, retry, replay. |
-| Agent Mux | create run/session, stream events, accept chat continuation, cancel/resume. |
+| Agent Adapter | create run/session, stream events, accept chat continuation, cancel/resume. |
 | Memory Git repo | resolve refs, read files, grep, write branch/PR, merge, diff. |
 | Argo CD/KubeVela | Application status, sync plan, rollout state. |
 

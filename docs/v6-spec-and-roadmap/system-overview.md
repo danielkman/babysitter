@@ -14,7 +14,7 @@ The repository currently works as a monorepo with a strong operational center:
 - `packages/babysitter` exposes the primary CLI package.
 - `packages/genty/platform` provides the agent runtime layer and operational orchestration support.
 - `packages/adapters/*` provide harness dispatch, adapter normalization, gateway, and user-facing agent interaction surfaces.
-- `packages/adapters/hooks/*`, `packages/extension-mux`, and `packages/tasks-mux` provide focused cross-harness support rather than a separate speculative platform tier.
+- `packages/adapters/hooks/*`, `packages/extensions-adapter`, and `packages/tasks-adapter` provide focused cross-harness support rather than a separate speculative platform tier.
 - `plugins/*` packages encode real harness-specific integration, packaging, install, and manifest constraints.
 
 This means V6 begins from a working but tightly coupled system, not from a clean-slate layered platform.
@@ -25,7 +25,7 @@ The easiest way to read the repo is by package family:
 
 - **Orchestration core**: `packages/sdk`, `packages/babysitter`, and `packages/genty/platform` own runs, replay, effect dispatch, CLI surfaces, and runtime orchestration behavior.
 - **Dispatch family**: `packages/adapters/*` owns harness-facing invocation, adapter normalization, gateway delivery, and shared user-facing agent interaction contracts.
-- **Support mux family**: `packages/adapters/hooks/*`, `packages/extension-mux`, and `packages/tasks-mux` own hook normalization, plugin compilation, and human approval routing.
+- **Support adapter family**: `packages/adapters/hooks/*`, `packages/extensions-adapter`, and `packages/tasks-adapter` own hook normalization, plugin compilation, and human approval routing.
 - **Distribution surfaces**: `plugins/babysitter-unified/` is the canonical authoring surface, while `plugins/babysitter-*` remain the concrete installable compatibility bundles.
 - **Workflow content**: `library/`, project-local `.a5c/processes/`, and `~/.a5c` hold reusable processes, local process definitions, and active operational state.
 
@@ -34,10 +34,10 @@ The easiest way to read the repo is by package family:
 From an operator perspective, the live execution path is:
 
 1. A harness surface such as Codex, Claude Code, Cursor, Gemini, Copilot, Pi, or OpenCode loads a concrete plugin bundle from `plugins/babysitter-*`.
-2. That bundle is produced from the unified source in `plugins/babysitter-unified/` with help from `packages/extension-mux` and, where relevant, `packages/adapters/hooks/*`.
+2. That bundle is produced from the unified source in `plugins/babysitter-unified/` with help from `packages/extensions-adapter` and, where relevant, `packages/adapters/hooks/*`.
 3. The harness integration reaches the operational CLI/runtime surface in `packages/babysitter` and `packages/genty/platform`.
 4. The CLI/runtime delegates run creation, replay, task lifecycle, journal/state handling, and process-library access to `packages/sdk`.
-5. The SDK executes workflows from `library/` or project-local `.a5c/processes/`, while `packages/tasks-mux` handles structured human approval routing when a process needs it.
+5. The SDK executes workflows from `library/` or project-local `.a5c/processes/`, while `packages/tasks-adapter` handles structured human approval routing when a process needs it.
 6. Where agent dispatch or richer user-facing interaction is required, the runtime integrates with `packages/adapters/*` rather than replacing the orchestration core.
 
 ## What The System Must Continue To Do
@@ -92,7 +92,7 @@ That command is the operational cue for whether the current V6 seam contract is 
 Two rules keep the overview grounded:
 
 - Prefer validation-backed seams over vocabulary-backed seams. If the repo does not have a package, command, or decision record for a concept, it is not yet a committed V6 boundary.
-- Describe placeholders honestly. For example, `packages/transport-mux` is currently documented as a placeholder seam with design and migration docs, not as an already-cut-over runtime.
+- Describe placeholders honestly. For example, `packages/transport-adapter` is currently documented as a placeholder seam with design and migration docs, not as an already-cut-over runtime.
 
 ## Architectural Reading Rule
 

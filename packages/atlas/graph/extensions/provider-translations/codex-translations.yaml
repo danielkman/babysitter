@@ -108,7 +108,7 @@ attributes:
   args: []
   notes: >
     Default fallback for unsupported providers on Codex.
-    Routes through transport-mux proxy exposing OpenAI Responses transport;
+    Routes through transport-adapter proxy exposing OpenAI Responses transport;
     launcher must pass the proxy URL as `-c openai_base_url=...` in addition
     to legacy OPENAI_BASE_URL env wiring.
 edges:

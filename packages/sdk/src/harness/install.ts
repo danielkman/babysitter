@@ -205,7 +205,7 @@ export async function installHarnessViaAmux(
       success: false,
       status: "unsupported",
       installer: "adapters",
-      warning: `Agent-mux adapter "${agentMuxName}" does not support install().`,
+      warning: `Adapters adapter "${agentMuxName}" does not support install().`,
     };
   }
 

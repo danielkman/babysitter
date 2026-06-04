@@ -1,5 +1,5 @@
 /**
- * Base error for handler failures within the hooks-mux normalizer/runner.
+ * Base error for handler failures within the hooks-adapter normalizer/runner.
  */
 export class HandlerError extends Error {
   public readonly handlerSource: string;

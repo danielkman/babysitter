@@ -1,0 +1,12 @@
+nodeKind: PackageSurface
+id: package:a5c-ai-agent-config-adapter
+attributes:
+  packageId: "@a5c-ai/config-adapter"
+  packageName: "@a5c-ai/config-adapter"
+  workspacePath: packages/adapters/config
+  moduleType: typescript
+  surfaceKinds:
+    - config-discovery
+  sourceOfTruthRole: wrapper-over-graph
+  publishedTo: npm
+  versionPolicy: semver

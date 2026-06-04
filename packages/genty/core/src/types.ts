@@ -136,7 +136,7 @@ export interface AgentCoreSessionOptions extends AgentCoreStructuredOutputOption
    * directory.
    */
   agentDir?: string;
-  /** Agent-mux adapter/backend name forwarded as `agent`. */
+  /** Adapters adapter/backend name forwarded as `agent`. */
   backend?: string;
 }
 
@@ -266,9 +266,9 @@ export interface AgentCoreToolOptions {
   cache?: ToolExecutionContext["cache"];
   /** Optional externally managed registry. When provided, the caller owns disposal. */
   backgroundRegistry?: BackgroundProcessRegistry;
-  /** Canonical unified registry from tool-mux. */
+  /** Canonical unified registry from tools-adapter. */
   toolRegistry?: UnifiedToolRegistryLike;
-  /** Canonical dispatcher from tool-mux used by code_executor nested tool calls. */
+  /** Canonical dispatcher from tools-adapter used by code_executor nested tool calls. */
   toolDispatcher?: UnifiedToolDispatcherLike;
   /** @deprecated Use toolRegistry from @a5c-ai/tools-adapter. */
   deferredToolRegistry?: DeferredToolRegistry;

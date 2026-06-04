@@ -259,7 +259,7 @@ function ChatPanel({ messages = [] }: ChatPanelProps): JSX.Element {
         ) : (
           <div style={{ textAlign: 'center', padding: '32px 16px', color: 'var(--text-muted)' }}>
             <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 8 }}>No transcript available</div>
-            <div style={{ fontSize: 13 }}>Session transcript available when Agent Mux is connected and the session has exchanged messages.</div>
+            <div style={{ fontSize: 13 }}>Session transcript available when Agent Adapter is connected and the session has exchanged messages.</div>
           </div>
         )}
       </div>

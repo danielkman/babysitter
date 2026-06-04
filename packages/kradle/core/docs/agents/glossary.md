@@ -9,10 +9,10 @@ This glossary standardizes terms used across the agent orchestration docs.
 | Term | Meaning |
 | --- | --- |
 | Agent stack | Reusable definition of an agent, model, prompt, tools, MCP servers, skills, subagents, permissions, runner, workspace, and write-back policy. |
-| Agent Mux | External/embedded execution layer that owns adapter-specific run/session/chat/runtime behavior. |
+| Agent Adapter | External/embedded execution layer that owns adapter-specific run/session/chat/runtime behavior. |
 | AgentDispatchRun | Logical CI-like agent run visible in Kradle. |
 | AgentDispatchAttempt | Concrete execution attempt for a run, including retry/resume/fork attempts. |
-| AgentSession | Kradle projection of an Agent Mux chat/session linked to a dispatch attempt. |
+| AgentSession | Kradle projection of an Agent Adapter chat/session linked to a dispatch attempt. |
 | AgentContextBundle | Durable, redacted, digest-addressed prompt/context snapshot for a dispatch. |
 | Context label | Reviewed prompt fragment with provenance and source restrictions. |
 | Capability requirement | Computed dependency from a stack/tool/MCP/skill/subagent to roles, secrets, configs, or adapter capabilities. |
@@ -31,7 +31,7 @@ This glossary standardizes terms used across the agent orchestration docs.
 | Trust tier | Source/execution trust classification such as trusted branch or untrusted fork. |
 | Permission snapshot | Immutable digest of roles/grants/identity decisions used for an attempt. |
 | Context digest | Immutable digest of assembled/redacted context bundle. |
-| Adapter capability | Agent Mux-reported support for sessions, tools, MCP, skills, subagents, approvals, actions, and streaming. |
+| Adapter capability | Agent Adapter-reported support for sessions, tools, MCP, skills, subagents, approvals, actions, and streaming. |
 | Native RBAC | Kubernetes ServiceAccounts, Roles, ClusterRoles, RoleBindings, ClusterRoleBindings, and access reviews. |
 
 ## Naming conventions
@@ -41,7 +41,7 @@ This glossary standardizes terms used across the agent orchestration docs.
 - `status` describes observed/reconciled state.
 - Condition types use stable machine-readable enums.
 - Secret/config references include namespace/name/key metadata only, never values.
-- Agent Mux IDs are stored in status, not treated as Kradle resource names.
+- Agent Adapter IDs are stored in status, not treated as Kradle resource names.
 
 ## Avoid these terms
 

@@ -14,7 +14,7 @@ The pipeline should add new testing lanes in stages. No-model tests protect ever
 
 The current implementation is consolidated in `.github/workflows/publish.yml`. That workflow owns the live-stack scenario and OS matrix directly under `live_stack_e2e`, exports each selected scenario through `LIVE_STACK_*` environment variables, runs `npm run test:e2e:live-stack:pipeline`, and writes the per-scenario coverage artifact with `npm run coverage:e2e:live-stack`. Test code executes exactly one pipeline-selected scenario when `LIVE_STACK_REQUIRE_EVIDENCE=1`; it must not enumerate the scenario matrix or run a code-side matrix runner.
 
-`Publish` now also owns two deterministic matrices before live-stack publish preflight. `agent_mux_hooks_mux_e2e` covers the no-Babysitter-SDK path `adapters hooks -> hooks-mux invoke` for `claude-code`, `codex`, and `pi`; the matrix supplies agent, adapter, hook event, payload, and expected canonical phase. `no_model_mock_matrix` is a stack E2E matrix: GitHub chooses the runtime (`adapters-mocks` or local real-agent CLI shim), agent (`claude`, `codex`, `pi`, `gemini`), and hook mode (`none` or `hooks-mux`); the test installs/verifies the agent path, launches it with an adapters profile, routes the model call through a local transport-mux mock model, and optionally proves hooks-mux normalization. Both jobs are dependencies of `Prepare Publish`, so package publish/deploy cannot start until these matrices pass.
+`Publish` now also owns two deterministic matrices before live-stack publish preflight. `agent_mux_hooks_mux_e2e` covers the no-Babysitter-SDK path `adapters hooks -> hooks-adapter invoke` for `claude-code`, `codex`, and `pi`; the matrix supplies agent, adapter, hook event, payload, and expected canonical phase. `no_model_mock_matrix` is a stack E2E matrix: GitHub chooses the runtime (`adapters-mocks` or local real-agent CLI shim), agent (`claude`, `codex`, `pi`, `gemini`), and hook mode (`none` or `hooks-adapter`); the test installs/verifies the agent path, launches it with an adapters profile, routes the model call through a local transport-adapter mock model, and optionally proves hooks-adapter normalization. Both jobs are dependencies of `Prepare Publish`, so package publish/deploy cannot start until these matrices pass.
 
 `Publish` now also owns the branch-aware publish/deploy topology for `develop`, `staging`, and `main`: validation and live-stack jobs precede `Prepare Publish`; package publishes, docs deploy, Atlas WebUI deploy, cloud deploy, release tagging, and external plugin sync depend on that prepared publish ref/version.
 
@@ -45,7 +45,7 @@ Model-backed jobs must use explicit `if:` guards before setup:
 | Provider or harness | Required signals |
 | --- | --- |
 | Codex | OpenAI credential configured for CI and Codex runtime install available |
-| Claude Code | Foundry/OpenAI credential configured for CI, Claude Code runtime install available, and transport-mux proxy path enabled |
+| Claude Code | Foundry/OpenAI credential configured for CI, Claude Code runtime install available, and transport-adapter proxy path enabled |
 | Agent-core provider | Backend-specific credential and selected backend metadata |
 | Cloud/provider variants | Environment-specific credentials, region/project metadata, and rate-limit budget |
 
@@ -57,7 +57,7 @@ Staging and release should be ordered like this:
 
 1. Build and no-model tests.
 2. Package and generated artifact checks.
-3. Model-backed runtime smoke, transport-mux bridge smoke, and capability-gated plugin/session smoke.
+3. Model-backed runtime smoke, transport-adapter bridge smoke, and capability-gated plugin/session smoke.
 4. Publish or deploy jobs.
 5. Post-publish verification or external sync jobs.
 
@@ -70,9 +70,9 @@ Every E2E job should upload:
 - command transcript,
 - redacted harness discovery JSON,
 - redacted event logs,
-- transport-mux launch-plan JSON when proxy launch is under test,
+- transport-adapter launch-plan JSON when proxy launch is under test,
 - redacted proxy config and env injection diff,
-- route transcripts, streaming event transcripts, metrics snapshots, and cache stats for transport-mux lanes,
+- route transcripts, streaming event transcripts, metrics snapshots, and cache stats for transport-adapter lanes,
 - run IDs and session IDs,
 - coverage output when collected,
 - provider/harness version metadata,
@@ -85,7 +85,7 @@ Artifacts must never include raw API keys, token files, home-directory credentia
 | Workflow | Inputs | Outputs | Required artifacts | Downstream consumers |
 | --- | --- | --- | --- | --- |
 | Optional `testing-no-model.yml` | `scope`, `changed_packages`, `coverage_mode` | `no_model_status`, `coverage_artifact`, `junit_artifact` | Vitest logs, Playwright traces on failure, package coverage summaries | Future extraction for `ci.yml` and `publish.yml` |
-| Optional `testing-model-backed.yml` | `provider`, `agent`, `backend`, `path`, `prompt_fixture`, `required` | `model_backed_status`, `skip_reason`, `run_artifact` | Separate artifacts per path: setup JSON, adapters session events, transport-mux launch/env/metrics evidence, agent-platform run proof, stop-hook evidence | Future extraction from `publish.yml` live-stack jobs or scheduled workflow |
+| Optional `testing-model-backed.yml` | `provider`, `agent`, `backend`, `path`, `prompt_fixture`, `required` | `model_backed_status`, `skip_reason`, `run_artifact` | Separate artifacts per path: setup JSON, adapters session events, transport-adapter launch/env/metrics evidence, agent-platform run proof, stop-hook evidence | Future extraction from `publish.yml` live-stack jobs or scheduled workflow |
 | Optional `testing-coverage-report.yml` | `coverage_artifacts`, `playwright_artifacts`, `model_backed_artifacts` | `coverage_summary`, `scenario_summary` | Merged markdown summary, raw coverage JSON, trace index | Future PR summaries and release candidate notes |
 
 Required workflows should expose explicit failure/skip outputs. A publish workflow must depend on `*_status == success`; a scheduled workflow may record `skip_reason` without failing when credentials are intentionally absent.
@@ -96,12 +96,12 @@ Stable required-check names prevent branch protection churn:
 
 - `testing / no-model contracts`
 - `testing / no-model runtime`
-- `testing / no-model transport-mux`
+- `testing / no-model transport-adapter`
 - `testing / no-model ui`
 - `testing / model-backed codex`
 - `testing / model-backed claude-code`
 - `testing / model-backed agent-platform`
-- `testing / model-backed transport-mux bridge`
+- `testing / model-backed transport-adapter bridge`
 - `testing / coverage summary`
 
 Only no-model checks should be required for ordinary PRs at first. Model-backed checks should become required only on `staging` and release branches after their quarantine period ends.
@@ -119,12 +119,12 @@ Package owners may initially wire these bundles as workflow steps that call exis
 | Proposed command | Lane | Contents |
 | --- | --- | --- |
 | `npm run test:no-model` | No-model | Package unit, contract, mock harness, CLI smoke, docs/generator checks |
-| `npm run test:no-model:mux` | No-model | Agent-mux, transport-mux route/runtime/env/launch-plan, hooks-mux, gateway, and fixture compatibility checks |
+| `npm run test:no-model:adapter` | No-model | Adapters, transport-adapter route/runtime/env/launch-plan, hooks-adapter, gateway, and fixture compatibility checks |
 | `npm run test:no-model:harness-setup` | No-model | `harness:list`, install dry-runs, plugin install dry-runs, discovery fixtures |
 | `npm run test:model-backed` | Model-backed | All selected live provider/harness tests with credential gates |
 | `npm run test:model-backed:adapters-plugin` | Model-backed | Capability-gated `adapters run` plugin/session tests with Babysitter plugin preconditions |
-| `npm run test:model-backed:runtime` | Model-backed | Agent-core, transport-mux bridge, adapters session smoke, and agent-platform runtime smoke; agent-platform jobs do not run installers |
-| `npm run test:model-backed:transport-mux` | Model-backed | Agent-core stream through transport-mux plus adapters-launched external harness proxy smoke with credential gates |
+| `npm run test:model-backed:runtime` | Model-backed | Agent-core, transport-adapter bridge, adapters session smoke, and agent-platform runtime smoke; agent-platform jobs do not run installers |
+| `npm run test:model-backed:transport-adapter` | Model-backed | Agent-core stream through transport-adapter plus adapters-launched external harness proxy smoke with credential gates |
 | `npm run coverage:repo` | No-model plus reports | Merge package coverage and scenario summaries into one artifact |
 
 Initial workflow implementation can call package-local commands directly. These bundle names become useful once at least two packages share a lane.

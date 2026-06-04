@@ -83,7 +83,7 @@ Pi's hooks system lets extensions intercept the agent loop at precise points:
 Real uses: plan mode (intercept tool calls, show user, wait for approval), git checkpointing (auto-commit before file mutations), custom compaction triggers.
 
 **What this means for us:**
-We already have hooks-mux with PreToolUse/PostToolUse/Stop/SessionStart/SessionEnd events. But our hooks are primarily for cross-harness normalization — making different CLI agents behave consistently. Sero's hooks are about **composing agent behavior from interceptors.**
+We already have hooks-adapter with PreToolUse/PostToolUse/Stop/SessionStart/SessionEnd events. But our hooks are primarily for cross-harness normalization — making different CLI agents behave consistently. Sero's hooks are about **composing agent behavior from interceptors.**
 
 **What to build:**
 - Expose hooks to agent-created plugins (not just installed harness plugins)

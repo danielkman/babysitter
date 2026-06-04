@@ -1,6 +1,6 @@
 # @a5c-ai/hooks-adapter-core
 
-Canonical schemas, types, session store, merge engine, and programmatic runtime for hooks-mux.
+Canonical schemas, types, session store, merge engine, and programmatic runtime for hooks-adapter.
 
 ## Install
 

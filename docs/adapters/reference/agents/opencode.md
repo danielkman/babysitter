@@ -2,11 +2,11 @@
 
 Adapters for the **OpenCode** multi-provider AI coding agent from [anomalyco/opencode](https://github.com/anomalyco/opencode).
 
-⚠️ **Important**: This is **not** the same as the deprecated `opencode-ai/opencode` GitHub project (now `charmbracelet/crush`). Agent-mux supports the `anomalyco/opencode` implementation, whose canonical npm package is `opencode-ai`.
+⚠️ **Important**: This is **not** the same as the deprecated `opencode-ai/opencode` GitHub project (now `charmbracelet/crush`). Adapters supports the `anomalyco/opencode` implementation, whose canonical npm package is `opencode-ai`.
 
 ## Adapter Variants
 
-Agent-mux provides two OpenCode adapters:
+Adapters provides two OpenCode adapters:
 
 - **`opencode`** (subprocess) — Default CLI-based integration
 - **`opencode-http`** (remote) — HTTP server with SSE streaming for enhanced performance

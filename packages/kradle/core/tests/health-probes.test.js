@@ -7,7 +7,7 @@ test('collectKradleHealthProbes runs deep dependency probes without leaking secr
   const result = await collectKradleHealthProbes({
     env: {
       KRADLE_GITEA_HTTP_URL: 'https://gitea.internal/',
-      AGENT_MUX_URL: 'https://mux.internal',
+      AGENT_MUX_URL: 'https://adapter.internal',
       KRADLE_CONTROLLER_URL: 'https://controller.internal',
       ANTHROPIC_API_KEY: 'sk-ant-api03-redacted-test-key',
       KRADLE_KUBECTL: 'kubectl-test',
@@ -30,7 +30,7 @@ test('collectKradleHealthProbes runs deep dependency probes without leaking secr
   assert.deepEqual(requestedUrls.sort(), [
     'https://controller.internal/healthz',
     'https://gitea.internal/api/v1/version',
-    'https://mux.internal/healthz',
+    'https://adapter.internal/healthz',
   ]);
   assert.equal(result.kubernetes.status, 'ok');
   assert.equal(result.gitea.status, 'ok');

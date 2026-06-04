@@ -38,7 +38,7 @@ const EXCLUDED_NATIVE_HOOKS = new Set(['shell.env']);
 function buildFromCatalog(): PhaseMapping[] {
   const mappings = listHookMappingsByAdapterFamily('opencode');
   if (mappings.length === 0) {
-    throw new Error('hooks-mux adapter-opencode: catalog unavailable or returned no mappings for family "opencode"');
+    throw new Error('hooks-adapter adapter-opencode: catalog unavailable or returned no mappings for family "opencode"');
   }
   const phaseMappings = mappings
     .map(hookMappingToPhaseMapping)

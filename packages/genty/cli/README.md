@@ -9,7 +9,7 @@ genty is the unified agent product that composes every layer of the babysitter a
 | L4 | `@a5c-ai/genty-core` | Loop, subagent, context, synthesis interfaces |
 | L5 | `@a5c-ai/genty-runtime` | Daemon, session, cost, observability, telemetry |
 | L6 | `@a5c-ai/genty-platform` | Harness integration, governance, interaction, storage |
-| Mux | `@a5c-ai/adapters` | Agent multiplexer |
+| Adapter | `@a5c-ai/adapters` | Agent multiplexer |
 | TUI | `@a5c-ai/genty-tui-plugins` | TUI plugins for cost, governance, status |
 
 genty re-exports the full public API from all layers and owns the single `genty` CLI binary implementation.

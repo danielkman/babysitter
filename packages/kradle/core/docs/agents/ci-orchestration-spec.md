@@ -93,7 +93,7 @@ Required context bundle fields:
 
 ## Runner and execution requirements
 
-- Agent dispatch attempts must schedule through `RunnerPool` policy or an explicitly configured external Agent Mux gateway.
+- Agent dispatch attempts must schedule through `RunnerPool` policy or an explicitly configured external Agent Adapter gateway.
 - Fork PRs and untrusted refs must use untrusted pools and receive no privileged secrets.
 - Trusted agents may receive scoped secrets only through runner policy and only for approved task kinds.
 - Runner pods must use a policy-selected Kubernetes ServiceAccount, and untrusted/forked refs must not receive privileged ServiceAccounts.
@@ -101,7 +101,7 @@ Required context bundle fields:
 - Tool, MCP, skill, and model-provider Secret/ConfigMap requirements must be shown in the run context snapshot.
 - Agent workspaces must be isolated per dispatch attempt and bound to repository/ref/pipeline identity.
 - Long-running sessions must publish queue, start, heartbeat, token/cost, subagent, artifact, approval, and terminal events.
-- Cancelling an `AgentDispatchRun` must cancel the active Agent Mux run/session and mark the current attempt cancelled.
+- Cancelling an `AgentDispatchRun` must cancel the active Agent Adapter run/session and mark the current attempt cancelled.
 - Rerun-from-step or rerun-after-fix must create new `Pipeline` resources or external workflow attempts and link them to the agent dispatch.
 
 ## Approval and write-back requirements
@@ -113,13 +113,13 @@ Required context bundle fields:
 
 ## Chat and run view requirements
 
-The run detail page should feel like a CI check page plus an Agent Mux transcript.
+The run detail page should feel like a CI check page plus an Agent Adapter transcript.
 
 Recommended layout:
 
 - Header: repository, source object, task kind, status, agent stack, runner pool, runtime ServiceAccount, runner ServiceAccount, linked check, branch/SHA, approval state.
 - Left panel: PR/check context, failed step, changed files, labels, context labels, logs, artifacts.
-- Center panel: Agent Mux transcript and live event stream.
+- Center panel: Agent Adapter transcript and live event stream.
 - Right panel: attempts, queue timing, runner pod/job, ServiceAccounts, native RBAC, tools/actions, MCP servers, skills, Secret/ConfigMap grants, subagents, approvals, artifacts, write-back controls.
 - Footer/composer: continuation prompt, attach more context, approve/reject action, cancel/retry/resume/fork when supported.
 
@@ -127,7 +127,7 @@ Recommended layout:
 
 - Metrics: queued dispatches, wait latency, duration, cancellation count, approval wait time, token/cost estimate, subagent count, write-back count, failed dispatches, dedupe drops.
 - Events: trigger matched, dispatch skipped, context assembled, approval requested, run queued, run started, subagent started/completed, artifact produced, write-back requested, write-back completed.
-- Logs: Agent Mux gateway calls, runner scheduling decisions, ServiceAccount selection, RBAC admission decisions, Secret/ConfigMap grant decisions, context redaction decisions, webhook/CI event correlation IDs, MCP health checks.
+- Logs: Agent Adapter gateway calls, runner scheduling decisions, ServiceAccount selection, RBAC admission decisions, Secret/ConfigMap grant decisions, context redaction decisions, webhook/CI event correlation IDs, MCP health checks.
 
 ## Acceptance criteria
 

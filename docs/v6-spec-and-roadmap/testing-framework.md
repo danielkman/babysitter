@@ -19,10 +19,10 @@ The current repository provides these concrete validation commands and workflow 
 | Surface | Commands / workflow | What it proves today |
 | --- | --- | --- |
 | SDK correctness | `npm run lint --workspace=@a5c-ai/babysitter-sdk`, `npm run build:sdk`, `npm run test:sdk` | TypeScript linting, buildability, and SDK test coverage for the current package surface |
-| Hooks mux | `npm run build:hooks-mux`, `npm run test:hooks-mux` | Build and test coverage for the current hooks-mux packages |
-| Agent mux | `npm run build:adapters`, `npm run test:adapters` | Build and test coverage for the current adapters packages |
-| Agent plugins mux | `npm run build --workspace=@a5c-ai/extensions-adapter`, `npm run test --workspace=@a5c-ai/extensions-adapter` | Build and test coverage for the current compiler package |
-| Breakpoints mux | `npm run build --workspace=@a5c-ai/tasks-adapter`, `npm run typecheck --workspace=@a5c-ai/tasks-adapter`, `npm run test --workspace=@a5c-ai/tasks-adapter` | Build, typecheck, and test coverage for the current breakpoints workspace |
+| Hooks adapter | `npm run build:hooks-adapter`, `npm run test:hooks-adapter` | Build and test coverage for the current hooks-adapter packages |
+| Agent adapter | `npm run build:adapters`, `npm run test:adapters` | Build and test coverage for the current adapters packages |
+| Agent plugins adapter | `npm run build --workspace=@a5c-ai/extensions-adapter`, `npm run test --workspace=@a5c-ai/extensions-adapter` | Build and test coverage for the current compiler package |
+| Breakpoints adapter | `npm run build --workspace=@a5c-ai/tasks-adapter`, `npm run typecheck --workspace=@a5c-ai/tasks-adapter`, `npm run test --workspace=@a5c-ai/tasks-adapter` | Build, typecheck, and test coverage for the current breakpoints workspace |
 | Architecture boundaries | `npm run test:architecture` | Enforces the `@a5c-ai/genty-platform` seam contract and repo package-family dependency rules for the current orchestration, dispatch, support, consumer, and distribution surfaces |
 | Plugin packaging checks | `npm run validate:ci --prefix plugins/<plugin>` for first-class plugins | Packaged-install and integration validation for the listed plugin packages |
 | Metadata checks | `npm run verify:metadata` | Repository/package metadata consistency checks only |
@@ -47,7 +47,7 @@ The nearest concrete validations available now are:
 
 - SDK/package tests for the current runtime and CLI surface,
 - `npm run test:architecture` for the current seam contract and documented package-family dependency boundaries,
-- hooks-mux and adapters build/test commands for the current integration seams,
+- hooks-adapter and adapters build/test commands for the current integration seams,
 - plugin `validate:ci` checks for packaged plugin behavior,
 - docs QA and metadata checks for publication hygiene.
 

@@ -19,7 +19,7 @@ Agent implementation should add focused controllers and keep UI/API handlers thi
 | `agent-rbac-controller` | users, teams, RepositoryPermission, AgentServiceAccount, AgentRoleBinding, native RBAC | native ServiceAccounts/Roles/RoleBindings, status | Sync Kubernetes identity/RBAC intent. |
 | `agent-secret-config-controller` | Secret, ConfigMap, grants, capabilities | grant status, requirement status | Validate secret/config access and drift. |
 | `agent-trigger-controller` | WebhookDelivery, Pipeline, Job, Issue, PullRequest, AgentTriggerRule | AgentTriggerExecution, AgentDispatchRun | Match events and create runs. |
-| `agent-dispatch-controller` | AgentDispatchRun, AgentDispatchAttempt | attempts, sessions, artifacts, approvals, status | Launch/reconcile Agent Mux runs. |
+| `agent-dispatch-controller` | AgentDispatchRun, AgentDispatchAttempt | attempts, sessions, artifacts, approvals, status | Launch/reconcile Agent Adapter runs. |
 | `agent-workspace-controller` | AgentWorkspacePolicy, AgentWorkspace, work-item links | workspace status, links | Manage worktrees/runtime state. |
 | `agent-approval-controller` | AgentApproval, artifacts, write-back requests | approval status, repository/PR/check writes | Gate privileged actions. |
 | `agent-ui-projection-controller` | all agent resources | controller-ui model additions | Build efficient route view models. |
@@ -29,7 +29,7 @@ Agent implementation should add focused controllers and keep UI/API handlers thi
 - Reconcile by desired resource state and observed external state, not by UI events.
 - Use `metadata.generation` and `status.observedGeneration` to avoid stale status updates.
 - Every external side effect needs an idempotency key.
-- Controllers must tolerate restart, duplicate events, partial Agent Mux outages, and Kubernetes watch reconnects.
+- Controllers must tolerate restart, duplicate events, partial Agent Adapter outages, and Kubernetes watch reconnects.
 - Conditions should explain every blocked UI action.
 - Secret values must never be copied into status, audit events, logs, or prompt previews.
 
@@ -40,7 +40,7 @@ Agent implementation should add focused controllers and keep UI/API handlers thi
 | Trigger execution | source event UID + rule generation + dedupe key |
 | Dispatch run creation | trigger execution UID or manual dispatch request UID |
 | Attempt creation | dispatch run UID + attempt number + reason |
-| Agent Mux launch | attempt UID + stack snapshot digest + context digest |
+| Agent Adapter launch | attempt UID + stack snapshot digest + context digest |
 | Workspace provision | workspace policy + repo + ref + work item + attempt UID |
 | Approval request | attempt UID + action type + target + artifact digest |
 | Write-back | approval UID + artifact digest + target object |
@@ -53,12 +53,12 @@ Inputs:
 
 - `AgentStack`, `AgentToolProfile`, `AgentMcpServer`, `AgentSkill`, `AgentSubagent`, `AgentContextLabel`.
 - `AgentServiceAccount`, `AgentRoleBinding`, `AgentSecretGrant`, `AgentConfigGrant`.
-- Agent Mux capability manifests.
+- Agent Adapter capability manifests.
 
 Reconcile steps:
 
 1. Load stack and referenced config resources.
-2. Query Agent Mux capabilities for adapter/model/session/tool support.
+2. Query Agent Adapter capabilities for adapter/model/session/tool support.
 3. Compute `AgentCapabilityRequirement` for tools, MCP, skills, subagents, model provider, and runtime.
 4. Call permission review for ServiceAccount/RBAC/Secret/Config access.
 5. Probe MCP health where required.
@@ -143,21 +143,21 @@ Outputs:
 Inputs:
 
 - `AgentDispatchRun`, `AgentDispatchAttempt`, `AgentContextBundle`, permission snapshots.
-- Agent Mux gateway/client.
+- Agent Adapter gateway/client.
 
 Reconcile steps:
 
 1. Create initial or retry attempt.
 2. Materialize immutable stack/context/permission snapshots.
 3. Select runner/external gateway and workspace.
-4. Launch Agent Mux run/session with admitted tools, secrets, configs, and runtime identity references.
-5. Persist Agent Mux run/session IDs.
+4. Launch Agent Adapter run/session with admitted tools, secrets, configs, and runtime identity references.
+5. Persist Agent Adapter run/session IDs.
 6. Reconcile event stream into status, artifact, approval, cost, and subagent records.
 7. Transition run to terminal state or waiting state.
 
 Failure handling:
 
-- Agent Mux unavailable: retry with backoff while attempt remains queued/starting.
+- Agent Adapter unavailable: retry with backoff while attempt remains queued/starting.
 - Session binding pending: set `AgentMuxSessionBound=False` with pending reason.
 - Adapter rejects launch options: fail attempt and keep permission snapshot for diagnosis.
 

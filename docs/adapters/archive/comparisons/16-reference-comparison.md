@@ -186,7 +186,7 @@ Following the detailed adapter-level analysis above, this section examines the b
 - **Framework Level** (LangChain, CrewAI, Haystack): Provide high-level orchestration abstractions
 - **Harness Level** (adapters): **Unique positioning** - abstracts heterogeneous native CLI tools
 
-**Insight**: Agent-mux occupies a distinct layer that others don't address - the gap between raw harnesses and high-level frameworks.
+**Insight**: Adapters occupies a distinct layer that others don't address - the gap between raw harnesses and high-level frameworks.
 
 #### 2. Economic models in the ecosystem
 
@@ -203,11 +203,11 @@ Following the detailed adapter-level analysis above, this section examines the b
 - **Span-level tracing**: Langfuse, Arize Phoenix, OpenTelemetry integrations
 - **Cost-first monitoring**: TokenBudget, Tokscale, ai-usage (from original survey)
 
-**Gap identified**: Agent-mux lacks a real-time dashboard component for live monitoring across harnesses.
+**Gap identified**: Adapters lacks a real-time dashboard component for live monitoring across harnesses.
 
 ### Competitive positioning analysis
 
-#### Agent-mux unique strengths confirmed
+#### Adapters unique strengths confirmed
 
 1. **Multi-harness abstraction at CLI level**: No competitor operates at this specific layer
 2. **Native session file integration**: Reading `~/.claude/projects`, `~/.codex/sessions` etc. directly
@@ -223,7 +223,7 @@ Following the detailed adapter-level analysis above, this section examines the b
 
 ##### 2. Advanced workflow orchestration  
 **Evidence**: LangGraph (44k+ stars) graph-based workflows, CrewAI multi-agent collaboration
-**Gap**: Agent-mux focuses on single-agent runs; limited multi-step orchestration
+**Gap**: Adapters focuses on single-agent runs; limited multi-step orchestration
 **Recommendation**: Consider graph-based workflow support for complex multi-harness processes
 
 ##### 3. Enterprise observability features
@@ -234,7 +234,7 @@ Following the detailed adapter-level analysis above, this section examines the b
 ##### 4. Cost optimization intelligence
 **Evidence**: All cost-tracking tools show usage but no optimization recommendations
 **Gap**: Industry-wide - everyone tracks costs but none provide optimization suggestions
-**Opportunity**: Agent-mux could be first to provide cost optimization recommendations
+**Opportunity**: Adapters could be first to provide cost optimization recommendations
 
 ##### 5. Agent marketplace integration
 **Evidence**: Existing plugin/skill ecosystems around specific harnesses
@@ -245,17 +245,17 @@ Following the detailed adapter-level analysis above, this section examines the b
 
 #### Session management patterns
 **From research**: OpenAI Agents SDK automatic context preservation, MassGen memory isolation, Pipecat Flows state management
-**Agent-mux approach**: Native session file reading + resume/fork capabilities  
-**Assessment**: Agent-mux approach is more integrated but could benefit from automatic memory management patterns
+**Adapters approach**: Native session file reading + resume/fork capabilities  
+**Assessment**: Adapters approach is more integrated but could benefit from automatic memory management patterns
 
 #### Event streaming normalization
 **From research**: Most tools either work at API level (losing CLI-specific events) or single-harness (no normalization needed)
-**Agent-mux approach**: Unified `AgentEvent` stream across all adapters
+**Adapters approach**: Unified `AgentEvent` stream across all adapters
 **Assessment**: This remains a unique and valuable architectural choice
 
 #### Cost attribution granularity  
 **From research**: ai-usage and ccusage parse session JSONL for cache-creation vs cache-read tokens
-**Current gap** (confirmed from original analysis): Agent-mux only emits cost from terminal `result` event
+**Current gap** (confirmed from original analysis): Adapters only emits cost from terminal `result` event
 **Implementation path**: Already identified in original analysis as actionable gap #3
 
 ### Recommendations for evolution
@@ -279,6 +279,6 @@ Following the detailed adapter-level analysis above, this section examines the b
 
 The extended research confirms that adapters occupies a unique and valuable position in the AI tooling ecosystem. While the original adapter-level analysis identified specific implementation gaps, this broader survey reveals strategic opportunities for differentiation and growth.
 
-Key insight: **No competitor operates at the harness abstraction level that adapters has carved out**. The closest competitors (Tokscale, claude-view) either focus on monitoring or single-harness scenarios. Agent-mux's multi-harness CLI abstraction with unified event streams remains architecturally unique.
+Key insight: **No competitor operates at the harness abstraction level that adapters has carved out**. The closest competitors (Tokscale, claude-view) either focus on monitoring or single-harness scenarios. Adapters's multi-harness CLI abstraction with unified event streams remains architecturally unique.
 
 The opportunity areas identified (real-time monitoring, workflow orchestration, advanced observability) represent natural evolution paths rather than competitive catch-up, positioning adapters to lead rather than follow in this space.

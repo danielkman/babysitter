@@ -1608,7 +1608,7 @@ When fallback activates, a `stream_fallback` event is emitted once per capabilit
 
 #### `stream: true`
 
-Requires text streaming. If the adapter has `supportsTextStreaming: false`, `mux.run()` throws `CapabilityError` synchronously before spawning the subprocess.
+Requires text streaming. If the adapter has `supportsTextStreaming: false`, `adapter.run()` throws `CapabilityError` synchronously before spawning the subprocess.
 
 Tool call and thinking streaming still fall back silently (same as `'auto'`), because these are supplementary capabilities that should not block the run.
 
@@ -1821,7 +1821,7 @@ Each built-in adapter emits a subset of the 67 event types based on the agent's 
 When an adapter does not support a category, it simply never emits those events. Consumers should not assume any event type will be present. The recommended pattern is:
 
 ```typescript
-const handle = mux.run({ agent: 'copilot', prompt: 'Hello' });
+const handle = adapter.run({ agent: 'copilot', prompt: 'Hello' });
 
 for await (const event of handle) {
   switch (event.type) {

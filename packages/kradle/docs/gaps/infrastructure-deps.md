@@ -14,7 +14,7 @@ What kradle needs to run, what breaks when each piece is missing.
 | Service | Env Var(s) | What Breaks | What Still Works |
 |---------|-----------|-------------|-----------------|
 | Gitea | `KRADLE_GITEA_HTTP_URL`, `KRADLE_GITEA_TOKEN` | Code browser shows placeholders, clone URLs are templates, PRs are CRD-only, no real git operations | Dashboard, resource CRUD, agent config, inference config |
-| Agent Mux Gateway | `AGENT_MUX_URL` or `AGENT_GATEWAY_URL` | Dispatch creates CRDs but no K8s Jobs execute, no sessions/transcripts | Stack/rule/approval CRUD, everything except running agents |
+| Agent Adapter Gateway | `AGENT_MUX_URL` or `AGENT_GATEWAY_URL` | Dispatch creates CRDs but no K8s Jobs execute, no sessions/transcripts | Stack/rule/approval CRUD, everything except running agents |
 | Anthropic API | `ANTHROPIC_API_KEY` or `KRADLE_ASSISTANT_API_KEY` | Assistant chat, playground, cost tracking all non-functional | Everything else |
 | Atlas Knowledge Graph | `ATLAS_BASE_URL` (default: `https://atlas.a5c.ai`) | Stack builder graph nodes show empty (no layer/tool browsing from Atlas) | Manual stack creation still works |
 | Kradle Controller API | `KRADLE_CONTROLLER_URL` | Web falls back to direct kubectl (slower, no caching) | Still functional, just slower |

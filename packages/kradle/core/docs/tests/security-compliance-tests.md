@@ -51,7 +51,7 @@ Release gates should eventually include:
 ## Agent-specific security
 
 - Memory records are untrusted prompt content.
-- Tool calls are admitted by Kradle, not Agent Mux alone.
+- Tool calls are admitted by Kradle, not Agent Adapter alone.
 - Historical memory runs cannot read current memory without refresh/approval.
 - Agent write-back requires artifact digest and approval.
 - `.a5c` imports are redacted and validated before entering company brain.

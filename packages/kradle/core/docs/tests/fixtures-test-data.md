@@ -20,7 +20,7 @@
 | deployment/OAM set | environment, promotion, rollback. |
 | company brain memory repo | graph/Markdown/frontmatter/search fixtures. |
 | `.a5c` run fixture | Babysitter run import and redaction. |
-| Agent Mux session fixture | session binding, transcript summary, events. |
+| Agent Adapter session fixture | session binding, transcript summary, events. |
 
 ## Directory proposal
 

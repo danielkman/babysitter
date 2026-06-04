@@ -35,7 +35,7 @@ The capability system serves two primary roles:
 
 ## 2. AgentCapabilities Interface
 
-The `AgentCapabilities` interface is the structured manifest of what an agent adapter can do. Every adapter -- built-in or plugin -- exposes a `capabilities` property of this type. Consumers access it via `mux.adapters.capabilities(agent)` or directly from the adapter instance.
+The `AgentCapabilities` interface is the structured manifest of what an agent adapter can do. Every adapter -- built-in or plugin -- exposes a `capabilities` property of this type. Consumers access it via `adapter.adapters.capabilities(agent)` or directly from the adapter instance.
 
 ```typescript
 interface AgentCapabilities {
@@ -215,7 +215,7 @@ Capabilities are accessed in two ways:
 
 1. **Via AdapterRegistry** (the standard consumer path):
    ```typescript
-   const caps = mux.adapters.capabilities('claude')
+   const caps = adapter.adapters.capabilities('claude')
    if (caps.supportsThinking) {
      // safe to pass thinkingEffort
    }
@@ -223,7 +223,7 @@ Capabilities are accessed in two ways:
 
 2. **Via the adapter instance** (for adapter authors and internal use):
    ```typescript
-   const adapter = mux.adapters.get('claude')
+   const adapter = adapter.adapters.get('claude')
    const caps = adapter.capabilities
    ```
 
@@ -316,7 +316,7 @@ interface InstallMethod {
 
 ## 4. ModelRegistry Interface
 
-The `ModelRegistry` provides per-agent model introspection. It is accessible via `mux.models` and exposes methods to list models, query individual model capabilities, validate model identifiers, estimate costs, and refresh model data.
+The `ModelRegistry` provides per-agent model introspection. It is accessible via `adapter.models` and exposes methods to list models, query individual model capabilities, validate model identifiers, estimate costs, and refresh model data.
 
 Model data is sourced from two tiers:
 

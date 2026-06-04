@@ -7,7 +7,7 @@
   "types": "dist/index.d.ts",
   "bin": {
     "adapters-extensions": "./dist/cli.js",
-    "extension-mux": "./dist/extension-mux.js"
+    "extensions-adapter": "./dist/extensions-adapter.js"
   },
   "scripts": {
     "build": "tsc",
@@ -63,7 +63,7 @@
       "L6"
     ],
     "muxes": [
-      "extension-mux"
+      "extensions-adapter"
     ]
   }
 }

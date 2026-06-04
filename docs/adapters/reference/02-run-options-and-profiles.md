@@ -34,11 +34,11 @@ All ten built-in agents are covered: claude, codex, gemini, copilot, cursor, ope
 
 ## 2. RunOptions Interface
 
-`RunOptions` is the single configuration object passed to `mux.run()`. It controls every aspect of an agent invocation: which agent and model to use, how to prompt it, how to handle streaming, thinking, sessions, approval, execution context, retry behavior, and metadata.
+`RunOptions` is the single configuration object passed to `adapter.run()`. It controls every aspect of an agent invocation: which agent and model to use, how to prompt it, how to handle streaming, thinking, sessions, approval, execution context, retry behavior, and metadata.
 
 ```typescript
 /**
- * Complete parameter set for a single agent invocation via `mux.run()`.
+ * Complete parameter set for a single agent invocation via `adapter.run()`.
  *
  * Fields fall into three categories:
  * - **Universal**: supported by all agents (may be ignored by agents that lack the feature).
@@ -52,7 +52,7 @@ interface RunOptions {
    * The agent to invoke.
    *
    * Must be a registered agent name: one of the ten built-in agents or
-   * a plugin adapter registered via `mux.adapters.register()`.
+   * a plugin adapter registered via `adapter.adapters.register()`.
    *
    * @throws {AgentMuxError} code `AGENT_NOT_FOUND` if no adapter is registered for this name.
    * @throws {AgentMuxError} code `AGENT_NOT_INSTALLED` if the adapter exists but the CLI binary
@@ -117,7 +117,7 @@ interface RunOptions {
   /**
    * Model ID to use for this run.
    *
-   * Must be a model ID recognized by the target agent. Use `mux.models.validate()`
+   * Must be a model ID recognized by the target agent. Use `adapter.models.validate()`
    * to check ahead of time. If not specified, the agent's default model is used.
    *
    * Resolution order:
@@ -1067,7 +1067,7 @@ When an unsupported approval mode is requested for copilot, the adapter silently
 
 ## 10. ProfileManager API
 
-The `ProfileManager` provides CRUD operations for named `RunOptions` presets. Accessed via `mux.profiles` or `mux.config.profiles()`.
+The `ProfileManager` provides CRUD operations for named `RunOptions` presets. Accessed via `adapter.profiles` or `adapter.config.profiles()`.
 
 ```typescript
 /**
@@ -1354,7 +1354,7 @@ The following `RunOptions` fields must not appear in a `ProfileData` object. If 
 
 ## 11. Profile Resolution Order
 
-When `mux.run()` is called, `RunOptions` are resolved through a five-level cascade. Each level overrides the one below it, at the individual field level (not wholesale replacement).
+When `adapter.run()` is called, `RunOptions` are resolved through a five-level cascade. Each level overrides the one below it, at the individual field level (not wholesale replacement).
 
 ### 11.1 Resolution Cascade
 
@@ -1372,7 +1372,7 @@ Priority (highest to lowest):
 ```typescript
 /**
  * Pseudocode for RunOptions resolution.
- * Executed inside mux.run() before validation and capability gating.
+ * Executed inside adapter.run() before validation and capability gating.
  */
 function resolveRunOptions(
   perCall: RunOptions,
@@ -1438,7 +1438,7 @@ function resolveRunOptions(
 
 ```typescript
 // Per-call RunOptions
-mux.run({
+adapter.run({
   agent: 'claude',       // overrides profile's "codex"
   prompt: 'Fix the bug',
   profile: 'fast',       // applies the "fast" profile
@@ -1688,7 +1688,7 @@ The `agent` field has a special resolution path: it can come from the per-call `
 
 Model validation (checking that the specified `model` is known to the target agent) occurs after option resolution but before capability gating. If the model is unknown:
 
-- The adapter's `mux.models.validate()` returns `{ valid: false }`.
+- The adapter's `adapter.models.validate()` returns `{ valid: false }`.
 - adapters emits a `debug` event with a warning but does not throw. The model string is passed through to the agent CLI, which may accept it (e.g., for newly released models not yet in the bundled model list).
 
 ---

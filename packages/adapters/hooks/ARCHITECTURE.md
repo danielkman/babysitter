@@ -1,8 +1,8 @@
-# hooks-mux Architecture
+# hooks-adapter Architecture
 
 ## 1. System Overview
 
-`hooks-mux` is a hooks normalization and context-propagation runtime. It sits between native harness hook invocations (Claude Code, Codex, Gemini, Copilot, Cursor, Pi, oh-my-pi, OpenCode, OpenClaw) and the handlers that act on them.
+`hooks-adapter` is a hooks normalization and context-propagation runtime. It sits between native harness hook invocations (Claude Code, Codex, Gemini, Copilot, Cursor, Pi, oh-my-pi, OpenCode, OpenClaw) and the handlers that act on them.
 
 Its responsibilities:
 

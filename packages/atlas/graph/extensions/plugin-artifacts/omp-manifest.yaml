@@ -8,7 +8,7 @@ attributes:
   pathPattern: "package.json"
   installerSurface: "state-only"
   contextFiles:
-    - packages/extension-mux/src/targets/oh-my-pi.ts
+    - packages/extensions-adapter/src/targets/oh-my-pi.ts
 edges:
   emits_artifact:
     - target: plugin-target:omp

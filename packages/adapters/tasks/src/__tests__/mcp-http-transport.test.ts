@@ -509,7 +509,7 @@ describe("MCP HTTP Transport", () => {
       const body = await response.json();
       expect(body.jsonrpc).toBe("2.0");
       expect(body.result).toBeDefined();
-      expect(body.result.serverInfo.name).toBe("tasks-mux");
+      expect(body.result.serverInfo.name).toBe("tasks-adapter");
     });
 
     it("returns session ID header in stateful mode", async () => {

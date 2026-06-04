@@ -62,7 +62,7 @@
       "L8"
     ],
     "muxes": [
-      "agent-launch-mux"
+      "agent-launch-adapter"
     ]
   }
 }

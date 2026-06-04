@@ -298,7 +298,7 @@ describe('createAgentMuxClient — createAgentJob transport env vars', () => {
   it('injects AGENT_MUX_TRANSPORT=http and AGENT_MUX_TRANSPORT_ENDPOINT when binding found', () => {
     const client = createAgentMuxClient();
     const bindings = [
-      { spec: { adapterRef: 'claude-code', protocol: 'http', endpoint: 'http://mux.internal:9090' } },
+      { spec: { adapterRef: 'claude-code', protocol: 'http', endpoint: 'http://adapter.internal:9090' } },
     ];
     const { jobManifest } = client.createAgentJob({
       adapter: 'claude-code',
@@ -312,7 +312,7 @@ describe('createAgentMuxClient — createAgentJob transport env vars', () => {
     const codec = env.find(e => e.name === 'TRANSPORT_MUX_CODEC');
     assert.equal(transport.value, 'http');
     assert.ok(endpoint, 'AGENT_MUX_TRANSPORT_ENDPOINT must be set for non-stdio');
-    assert.equal(endpoint.value, 'http://mux.internal:9090');
+    assert.equal(endpoint.value, 'http://adapter.internal:9090');
     assert.equal(codec.value, 'anthropic');
   });
 

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document defines the controller and API sequences for org-scoped company brain memory. It ties together `Organization`, namespace binding, memory repository bootstrap, memory context query, historical refs, Agent Mux dispatch, `.a5c` import, and memory update review.
+This document defines the controller and API sequences for org-scoped company brain memory. It ties together `Organization`, namespace binding, memory repository bootstrap, memory context query, historical refs, Agent Adapter dispatch, `.a5c` import, and memory update review.
 
 ## Sequence principles
 
@@ -10,7 +10,7 @@ This document defines the controller and API sequences for org-scoped company br
 - Use the org namespace for all ServiceAccount, Secret, ConfigMap, runner, and workspace side effects.
 - Resolve Git refs to commits before context assembly or memory import review.
 - Store digests for every selected memory source, generated import file, validation report, and update patch.
-- Keep Agent Mux execution behind Kradle admission; Agent Mux never decides org access.
+- Keep Agent Adapter execution behind Kradle admission; Agent Adapter never decides org access.
 - Treat company brain memory as untrusted context until redacted and rendered with provenance.
 
 ## Org bootstrap sequence
@@ -64,7 +64,7 @@ user opens /orgs/[org]/repositories/[repo]/code
   -> AgentMemorySnapshot and AgentMemoryQuery are created
   -> AgentContextBundle stores memory snapshot digests
   -> AgentDispatchRun and AgentDispatchAttempt are created
-  -> Agent Mux launch receives admitted tool/session options
+  -> Agent Adapter launch receives admitted tool/session options
   -> run detail streams events and shows memory provenance
 ```
 
@@ -97,8 +97,8 @@ Blocking cases:
 ## Agent memory tool call sequence
 
 ```text
-agent calls memory.docs.grep through Agent Mux
-  -> Agent Mux forwards tool request to Kradle memory tool gateway
+agent calls memory.docs.grep through Agent Adapter
+  -> Agent Adapter forwards tool request to Kradle memory tool gateway
   -> gateway resolves dispatch attempt and AgentMemorySnapshot
   -> gateway checks tool grant and snapshot path/kind scope
   -> memory query runs against pinned commit

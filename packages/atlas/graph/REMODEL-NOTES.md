@@ -34,7 +34,7 @@ Pure tagged-enum NodeKinds whose values fit better as enum attributes on a paren
 - **Confidence**: **high** — tiny fixed enum, semantic value of nodes is zero.
 - **Action**: **Execute now.**
 
-### A.4 `TermKind` (concept, role, layer, primitive, mux, extension-shape, hook, capability, lifecycle-state, protocol, format, tool, operation)
+### A.4 `TermKind` (concept, role, layer, primitive, adapter, extension-shape, hook, capability, lifecycle-state, protocol, format, tool, operation)
 
 - **Current**: NodeKind + `Term.kind: ref<TermKind>` attribute + `classifies` edge. 13 example files.
 - **Remodel**: `Term.kind: enum<...>` (string enum directly). Drop NodeKind, drop `classifies` edge.
@@ -3086,26 +3086,26 @@ These 23 are the irreducible floor for the current schema + scope. Reducing furt
 
 User reported `wiki/legacy/a5c` and parts of `wiki/legacy/universal` not fully reflected. Audit identified three high-impact gaps; this pass addresses them.
 
-### Gap 1 — `Mux` NodeKind missing entirely
+### Gap 1 — `Adapter` NodeKind missing entirely
 
-`wiki/legacy/a5c/02-muxes.md` defines 9 muxes — a5c\'s realization of protocol-type bridges. Zero Mux records existed in the graph.
+`wiki/legacy/a5c/02-muxes.md` defines 9 muxes — a5c\'s realization of protocol-type bridges. Zero Adapter records existed in the graph.
 
 **Schema** (`schema/node-kinds/extensions.yaml`):
-- `Mux` NodeKind: id, displayName, protocolType (enum<llm-wire, spawn, event-stream, session-storage, admin, hook, extension-manifest, tool, task>), nativeSide, canonicalSide, position, bridgingConcerns, catalogInputNodeKinds, trustChainParticipation, description.
-- 2 EdgeKinds: `bridges_protocol_type` (Mux→Layer), `bridged_by_mux` (Layer→Mux, inverse).
+- `Adapter` NodeKind: id, displayName, protocolType (enum<llm-wire, spawn, event-stream, session-storage, admin, hook, extension-manifest, tool, task>), nativeSide, canonicalSide, position, bridgingConcerns, catalogInputNodeKinds, trustChainParticipation, description.
+- 2 EdgeKinds: `bridges_protocol_type` (Adapter→Layer), `bridged_by_mux` (Layer→Adapter, inverse).
 
 **Instances** (`graph/extensions/muxes/canonical-muxes.yaml`) — all 9 muxes wired to their Layer position:
-- transport-mux (llm-wire) → layer:3-transport
-- agent-launch-mux (spawn) → layer:8-execution
-- agent-comm-mux (event-stream) → layer:6-agent-platform
-- session-storage-mux (session-storage) → layer:6-agent-platform
-- agent-config-mux (admin) → layer:6-agent-platform
-- hooks-mux (hook) → layer:5-agent-runtime
-- extension-mux (extension-manifest) → layer:6-agent-platform
-- tool-mux (tool) → layer:5-agent-runtime
-- tasks-mux (task) → layer:6-agent-platform
+- transport-adapter (llm-wire) → layer:3-transport
+- agent-launch-adapter (spawn) → layer:8-execution
+- agent-comm-adapter (event-stream) → layer:6-agent-platform
+- session-storage-adapter (session-storage) → layer:6-agent-platform
+- agent-config-adapter (admin) → layer:6-agent-platform
+- hooks-adapter (hook) → layer:5-agent-runtime
+- extensions-adapter (extension-manifest) → layer:6-agent-platform
+- tools-adapter (tool) → layer:5-agent-runtime
+- tasks-adapter (task) → layer:6-agent-platform
 
-Each carries the full bridging-concerns list, native-side enumeration, canonical-side description, and trustChainParticipation enum (live for tasks-mux via ProvenBreakpointAnswer; planned for transport/launch/comm/hooks/tool; none for session-storage/config/extension).
+Each carries the full bridging-concerns list, native-side enumeration, canonical-side description, and trustChainParticipation enum (live for tasks-adapter via ProvenBreakpointAnswer; planned for transport/launch/comm/hooks/tool; none for session-storage/config/extension).
 
 ### Gap 2 — Missing AgentHostTransport values
 
@@ -3137,7 +3137,7 @@ All wired with `realizes: layer:10-interaction` + `in_category: <category>` per 
 
 | Metric | Pre | Post | Delta |
 | --- | --- | --- | --- |
-| examples scanned | 1690 | 1694 | +4 (Mux bundle + 2 host-transports + slash-commands-extended) |
+| examples scanned | 1690 | 1694 | +4 (Adapter bundle + 2 host-transports + slash-commands-extended) |
 | examples passed | 1274 | **1276** | +2 |
 | structural issues | 0 | 0 | unchanged |
 | dangling refs | 0 | 0 | unchanged |
@@ -3145,7 +3145,7 @@ All wired with `realizes: layer:10-interaction` + `in_category: <category>` per 
 | reference-data examples | 216 | 216 | unchanged |
 | **dead EdgeKinds** | **23** | **25** | +2 (`produced_test_run` + `test_run_of` from catalog pass 74 still un-instanced; offset is internal accounting noise) |
 
-`bridges_protocol_type` + `bridged_by_mux` activated immediately by the 9 Mux instances.
+`bridges_protocol_type` + `bridged_by_mux` activated immediately by the 9 Adapter instances.
 
 ### Cumulative session totals (Catalog passes 63–75)
 
@@ -3155,7 +3155,7 @@ All wired with `realizes: layer:10-interaction` + `in_category: <category>` per 
 | orphan examples | 236 | **0** | **−236** |
 | dead EdgeKinds | 254 | **25** | **−229** (90% reduction) |
 
-## catalog pass 76 (2026-05-04) — Continued legacy reflection: canonical hooks + Mux↔AgentVersion wiring
+## catalog pass 76 (2026-05-04) — Continued legacy reflection: canonical hooks + Adapter↔AgentVersion wiring
 
 Continued addressing the wiki/legacy/a5c + wiki/legacy/universal gap from catalog pass 75. This pass landed three additions before encountering an out-of-band regression (separate user-driven deletion of ~57 ProcessDescriptor / Generator / DerivedArtifact / CatalogVersion / ProcessLibrary records), which dominated the validator delta below. The catalog pass 76 intentional changes are:
 
@@ -3163,23 +3163,23 @@ Continued addressing the wiki/legacy/a5c + wiki/legacy/universal gap from catalo
 
 `wiki/legacy/universal/06-channels-sessions-hooks.md §3.0` declares the canonical 14-hook set: SessionStart · Stop · UserPromptSubmit · PreToolUse · PostToolUse · AfterAgent · SessionEnd · SessionIdle · ShellEnv · BeforePromptBuild · SubagentStop · Notification · PreCompact · BeforeProviderRequest. Catalog had 9; missing 5: AfterAgent, SessionIdle (canonical, distinct from per-product opencode/claude variants), ShellEnv (canonical), BeforePromptBuild, BeforeProviderRequest. Authored in `graph/channels-hooks/hook-surfaces/canonical/missing-canonical-hooks.yaml` with full payloadSchema, direction, blocking, and family attributes per existing canonical conventions. All 5 wired via `exposes` from `agent-runtime-impl:claude-code.runtime@1.x`.
 
-### Addition 2 — `bridges_for` edge: Mux ↔ AgentVersion / Provider / ModelVersion
+### Addition 2 — `bridges_for` edge: Adapter ↔ AgentVersion / Provider / ModelVersion
 
-catalog pass 75's Mux records pointed only at their Layer position. They didn\'t encode WHICH agent products / providers / models each mux actually bridges. Authored `edge:bridges-for` (Mux→AgentVersion/ModelVersion/Provider, N:N) and `edge:bridged-by` (inverse). Wired all 9 muxes:
+catalog pass 75's Adapter records pointed only at their Layer position. They didn\'t encode WHICH agent products / providers / models each adapter actually bridges. Authored `edge:bridges-for` (Adapter→AgentVersion/ModelVersion/Provider, N:N) and `edge:bridged-by` (inverse). Wired all 9 muxes:
 
-- transport-mux → 5 providers (anthropic, openai, google, gcp-vertex, aws-bedrock)
-- agent-launch-mux → 13 agent-versions (claude-code, codex, cursor, gemini-cli, opencode, copilot-cli, pi, omp, openclaw, hermes, qwen, droid, amp)
-- agent-comm-mux → 10 agent-versions
-- session-storage-mux → 5 agent-versions (file-format coverage)
-- agent-config-mux → 5 agent-versions
-- hooks-mux → 6 agent-versions (per `wiki/legacy/a5c/02-muxes.md §6` matrix)
-- extension-mux → 10 agent-versions
-- tool-mux → 5 agent-versions
-- tasks-mux → 2 agent-versions (claude-code, babysitter — narrowest because tasks-mux owns ProvenBreakpointAnswer Trust Chain entry)
+- transport-adapter → 5 providers (anthropic, openai, google, gcp-vertex, aws-bedrock)
+- agent-launch-adapter → 13 agent-versions (claude-code, codex, cursor, gemini-cli, opencode, copilot-cli, pi, omp, openclaw, hermes, qwen, droid, amp)
+- agent-comm-adapter → 10 agent-versions
+- session-storage-adapter → 5 agent-versions (file-format coverage)
+- agent-config-adapter → 5 agent-versions
+- hooks-adapter → 6 agent-versions (per `wiki/legacy/a5c/02-muxes.md §6` matrix)
+- extensions-adapter → 10 agent-versions
+- tools-adapter → 5 agent-versions
+- tasks-adapter → 2 agent-versions (claude-code, babysitter — narrowest because tasks-adapter owns ProvenBreakpointAnswer Trust Chain entry)
 
-### Addition 3 — Mux narrative descriptions cite legacy source
+### Addition 3 — Adapter narrative descriptions cite legacy source
 
-Each Mux description now includes the legacy-doc-derived bridging-concerns enumeration verbatim (where applicable) so the catalog reflects the canonical knowledge base rather than just shape.
+Each Adapter description now includes the legacy-doc-derived bridging-concerns enumeration verbatim (where applicable) so the catalog reflects the canonical knowledge base rather than just shape.
 
 ### Out-of-band regression (separate from catalog pass 76)
 
@@ -3209,8 +3209,8 @@ This invalidated my catalog pass 71/catalog pass 75 surfaces_process wirings on 
 ### catalog pass 76 intentional additions only (excluding regression)
 
 - 5 new HookSurface records (canonical) — wired.
-- 2 new EdgeKinds (`bridges_for` + `bridged_by`) activated via 9 mux wirings.
-- ~60 new Mux→AgentVersion/Provider edge instances.
+- 2 new EdgeKinds (`bridges_for` + `bridged_by`) activated via 9 adapter wirings.
+- ~60 new Adapter→AgentVersion/Provider edge instances.
 
 ### Constraints honored
 
@@ -3257,7 +3257,7 @@ The catalog pass 76 out-of-band deletion of ~57 records left 15 records orphaned
 
 ## catalog pass 78 (2026-05-04) — Live decision/breakpoint schema (catalog pass 75 deferred item)
 
-`wiki/legacy/a5c/02-muxes.md §9` documents the live decision schema carried by every Breakpoint (the canonical `decision` carrier in tasks-mux): `BreakpointStrategy`, `Urgency`, `InteractionKind`, `BreakpointContext`, `BreakpointRouting`, `ResponderProfile`, `BreakpointAnswer` + `BreakpointAnswerRating` + `DecisionMemory`, `ProvenBreakpointAnswer`. Catalog had `HumanCheckpoint` with only `kind` + `blockingPolicy`. This pass authors the rich schema (minus `ProvenBreakpointAnswer` — Trust Chain OUT OF SCOPE).
+`wiki/legacy/a5c/02-muxes.md §9` documents the live decision schema carried by every Breakpoint (the canonical `decision` carrier in tasks-adapter): `BreakpointStrategy`, `Urgency`, `InteractionKind`, `BreakpointContext`, `BreakpointRouting`, `ResponderProfile`, `BreakpointAnswer` + `BreakpointAnswerRating` + `DecisionMemory`, `ProvenBreakpointAnswer`. Catalog had `HumanCheckpoint` with only `kind` + `blockingPolicy`. This pass authors the rich schema (minus `ProvenBreakpointAnswer` — Trust Chain OUT OF SCOPE).
 
 ### Schema additions
 
@@ -3352,12 +3352,12 @@ Each capability wired with at least one supporter:
 
 | Item | Status |
 | --- | --- |
-| `Mux` NodeKind + 9 muxes | ✓ catalog pass 75 |
+| `Adapter` NodeKind + 9 muxes | ✓ catalog pass 75 |
 | AgentHostTransport stdio-pty / grpc | ✓ catalog pass 75 |
 | Claude Code slash commands (33 missing) | ✓ catalog pass 75 |
 | Live decision/breakpoint schema | ✓ catalog pass 78 |
 | 5 missing canonical HookSurfaces | ✓ catalog pass 76 |
-| Mux ↔ AgentVersion `bridges_for` wiring | ✓ catalog pass 76 |
+| Adapter ↔ AgentVersion `bridges_for` wiring | ✓ catalog pass 76 |
 | **Capability-flag exhaustive coverage** | **✓ catalog pass 79** |
 | **Gemini native tool_call hooks** | **✓ catalog pass 79** |
 | `trust-interface` (14th extension interface) | OUT OF SCOPE per project policy (Trust Chain) |
@@ -4262,7 +4262,7 @@ into `graph/lifecycle/lifecycle-stubs/a5c-deferred-spec.yaml`.
 Goal: assess whether the atlas graph at `C:/work/v6/graph/` can
 **replace** the legacy graph at
 `C:/Users/tmusk/IdeaProjects/babysitter/packages/agent-catalog/graph/` for the
-babysitter monorepo's downstream codegen consumers (mux generators), without
+babysitter monorepo's downstream codegen consumers (adapter generators), without
 breaking them.
 
 ### Inventory
@@ -4277,12 +4277,12 @@ breaking them.
 | HookSurface records | 14 | 28 |
 | HookMapping records | 37 | 38 |
 
-### Top consumers identified (mux + sdk codegen)
+### Top consumers identified (adapter + sdk codegen)
 
 - `adapters/core/src/host-detection.ts` — `getHostSignalMap`, `getHostMetadataFields`, `getHostDetectionRules`
 - `adapters/core/src/invocation.ts` — `getHarnessImages`, `lookupHarnessImage`
-- `hooks-mux/core/src/discovery/detector.ts` — `getHooksMuxDetectionRules`
-- `extension-mux/src/targets/index.ts` — `listPluginTargetDescriptors`, `getPluginTargetDescriptor`, `getHookNameMap` (mux generator critical)
+- `hooks-adapter/core/src/discovery/detector.ts` — `getHooksMuxDetectionRules`
+- `extensions-adapter/src/targets/index.ts` — `listPluginTargetDescriptors`, `getPluginTargetDescriptor`, `getHookNameMap` (adapter generator critical)
 - `sdk/src/harness/discovery.ts` + `amuxFallbackMetadata.ts` — `getFallbackHarnessMetadata`, agent-version listings
 - `catalog/src/app/api/...` — `listCatalogAgents`, `listProcessDescriptors`, etc.
 
@@ -4290,7 +4290,7 @@ breaking them.
 
 | Bucket | Count | Detail |
 | --- | --- | --- |
-| (a) missing data | 2 | container-image PluginArtifacts; hooks-mux-scope DiscoverySignals |
+| (a) missing data | 2 | container-image PluginArtifacts; hooks-adapter-scope DiscoverySignals |
 | (b) missing field | ~10 | PluginTarget flat tokens (`manifestFormat`, `commandFormat`, `skillHandling`, `hookRegistrationFormat`, `scriptVariants`, `distributionModel`, `marketplacePath`, `npmPublishable`, nested `packageMetadata.*`, `componentSupport.*`); DiscoverySignal `absentSignals` |
 | (c) missing edge kind | 0 | every legacy edge has a atlas analogue |
 | (d) id-pattern divergence | high (~26 NodeKinds) | legacy camelCase + `:` vs atlas kebab-case + `:` plus `@semver` suffix on versions |
@@ -4311,15 +4311,15 @@ codegen — no concept is wholly missing. Cutover blocks on field-level
 backfill (~10 PluginTarget fields), 2 small data backfills, an id-alias
 shim, and a re-bundling adapter for HarnessFallbackMetadata. None of these
 are graph-design issues; they are migration mechanics. Verdict is yellow
-because shipping the cutover today would break extension-mux templates
+because shipping the cutover today would break extensions-adapter templates
 and `--mode docker` invocations.
 
 ### Top 3 blockers
 
-1. **PluginTarget field-set backfill** — extension-mux mux generator
+1. **PluginTarget field-set backfill** — extensions-adapter adapter generator
    relies on 10+ flat string-token fields (e.g. `manifestFormat: "plugin.json
    + openclaw.plugin.json"`, `packageMetadata.binScriptExt: ".js"`) that drive
-   per-harness adapter templates. Without them, the mux generator emits
+   per-harness adapter templates. Without them, the adapter generator emits
    broken adapters.
 2. **`PluginArtifact[artifactKind=container-image]` rows missing** — breaks
    `getHarnessImages()` / `--mode docker` default image lookup.
@@ -4361,18 +4361,18 @@ and `--mode docker` invocations.
 
 catalog pass 91 closes the three blockers catalog pass 90 identified as preventing atlas from
 replacing the legacy `packages/agent-catalog/graph/` (consumed by
-`adapters/core`, `extension-mux`, `hooks-mux/core`).
+`adapters/core`, `extensions-adapter`, `hooks-adapter/core`).
 
 ### Blocker #1: PluginTarget codegen field-set — CLOSED
 
 The 17 atlas `PluginTarget` records under
 `graph/extensions/plugin-artifacts/plugin-target-*.yaml` now all carry the
-10 codegen-template fields the legacy mux generators consume:
+10 codegen-template fields the legacy adapter generators consume:
 
 `manifestFormat`, `commandFormat`, `skillHandling`, `hookRegistrationFormat`,
 `scriptVariants`, `distributionModel`, `marketplacePath`, `npmPublishable`,
 `packageMetadata.*`, `componentSupport.*` (plus `adapterName` carried for
-mux-internal lookup).
+adapter-internal lookup).
 
 - 9 records sourced verbatim from
   `packages/agent-catalog/graph/nodes/hooks-and-plugins/plugin-targets.yaml`
@@ -4445,7 +4445,7 @@ scope. The flat shim is consumable directly by
 
 `capabilitySupport:` (100 records), `claim:` (73), `evidence:` (89), and
 `discovery:` (20) prefixes are intentionally not enumerated — none are
-referenced by mux-generator codegen per the catalog pass 90
+referenced by adapter-generator codegen per the catalog pass 90
 `projection-adapters.md` audit.
 
 ### Validator delta (post-catalog pass 90 → post-catalog pass 91)
@@ -4465,16 +4465,16 @@ referenced by mux-generator codegen per the catalog pass 90
 The 3 blockers catalog pass 90 flagged as preventing atlas from replacing the legacy
 graph are closed. atlas PluginTarget records now carry the legacy codegen
 field-set verbatim; harness image lookup has parity; the alias shim
-covers every record consumed by `extension-mux`,
-`adapters/core`, and `hooks-mux/core`.
+covers every record consumed by `extensions-adapter`,
+`adapters/core`, and `hooks-adapter/core`.
 
 Residual amber items (NOT atlas-replacement blockers; tracked for
 future passes):
 
-- **HooksMuxDetectionRule (`DiscoverySignal[scope=hooks-mux]` +
+- **HooksMuxDetectionRule (`DiscoverySignal[scope=hooks-adapter]` +
   `absentSignals` field)** — was catalog pass 90 blocker #4 (out of catalog pass 91 scope by the
   user's prompt; catalog pass 91 was scoped to the top-3). `detectHarness()` in
-  `hooks-mux/core` still has no atlas instances to scan.
+  `hooks-adapter/core` still has no atlas instances to scan.
 - **HarnessFallbackMetadata re-bundle adapter** — was catalog pass 90 blocker #5,
   same scope note. Legacy `getFallbackHarnessMetadata()` still expects a
   per-harness rollup that atlas normalizes onto separate
@@ -4513,12 +4513,12 @@ schema/data gaps in atlas.
 catalog pass 92 closes the two amber residuals catalog pass 91 left open and drives the atlas
 migration verdict from GREEN → **COMPLETE**.
 
-### Residual #1 — hooks-mux DiscoverySignal rows + `absentSignals` field — CLOSED
+### Residual #1 — hooks-adapter DiscoverySignal rows + `absentSignals` field — CLOSED
 
 **Schema deltas** (`schema/node-kinds/catalog-meta.yaml`,
 `node:discovery-signal`):
 
-- `scope` enum gained `hooks-mux` (alongside `host-detection` from catalog pass 90).
+- `scope` enum gained `hooks-adapter` (alongside `host-detection` from catalog pass 90).
 - `matchMode` enum gained `all-present-with-absences` (the legacy
   ordered-rule modeller for "signals present AND absentSignals absent").
 - New optional attribute `absentSignals: list<string>` — drives the
@@ -4526,23 +4526,23 @@ migration verdict from GREEN → **COMPLETE**.
   `packages/adapters/hooks/core/src/discovery/detector.ts:46` and
   `packages/agent-catalog/src/models.ts:438`.
 
-**Data authored** — 10 `DiscoverySignal[scope=hooks-mux]` rows under
+**Data authored** — 10 `DiscoverySignal[scope=hooks-adapter]` rows under
 `graph/extensions/discovery-signals/`, **verbatim copy** from legacy
 `packages/agent-catalog/graph/nodes/runtime-semantics/discovery-signals-hooks.yaml`
 (preserved `signals`, `absentSignals`, `matchMode`, `confidence`):
 
 | File | adapter key | match | confidence |
 | --- | --- | --- | --- |
-| claude-hooks-mux.yaml | claude | all | high |
-| codex-hooks-mux.yaml | codex | all | high |
-| codex-hooks-mux-fallback.yaml | codex | all-present-with-absences | medium |
-| gemini-hooks-mux.yaml | gemini | all | high |
-| copilot-hooks-mux.yaml | copilot | all | high |
-| cursor-hooks-mux.yaml | cursor | all | medium |
-| pi-hooks-mux.yaml | pi | all | high |
-| omp-hooks-mux.yaml | oh-my-pi | all | high |
-| opencode-hooks-mux.yaml | opencode | all | high |
-| openclaw-hooks-mux.yaml | openclaw | all | medium |
+| claude-hooks-adapter.yaml | claude | all | high |
+| codex-hooks-adapter.yaml | codex | all | high |
+| codex-hooks-adapter-fallback.yaml | codex | all-present-with-absences | medium |
+| gemini-hooks-adapter.yaml | gemini | all | high |
+| copilot-hooks-adapter.yaml | copilot | all | high |
+| cursor-hooks-adapter.yaml | cursor | all | medium |
+| pi-hooks-adapter.yaml | pi | all | high |
+| omp-hooks-adapter.yaml | oh-my-pi | all | high |
+| opencode-hooks-adapter.yaml | opencode | all | high |
+| openclaw-hooks-adapter.yaml | openclaw | all | medium |
 
 **Edges wired** — 10 `applies_to` edges from each new DiscoverySignal to
 its corresponding `AgentProduct` (`agent:claude-code`, `agent:codex`,
@@ -4574,7 +4574,7 @@ already lives at `sdk/src/harness/amuxFallbackMetadata.contract.test.ts`.
 
 ### Migration docs updated
 
-- `migration/legacy-vs-atlas-coverage-matrix.md`: hooks-mux row → covered;
+- `migration/legacy-vs-atlas-coverage-matrix.md`: hooks-adapter row → covered;
   HarnessFallbackMetadata row → "consumer-adapter-required (path-b)";
   bucket totals (a)=0, (b)=0; verdict **COMPLETE**.
 - `migration/projection-adapters.md`: § 3 (HooksMuxDetectionRule) marked
@@ -4585,7 +4585,7 @@ already lives at `sdk/src/harness/amuxFallbackMetadata.contract.test.ts`.
 
 | Metric | Post catalog pass 91 | Post catalog pass 92 | Delta |
 | --- | --- | --- | --- |
-| examples scanned | 1755 | 1765 | +10 (10 new hooks-mux DiscoverySignal records) |
+| examples scanned | 1755 | 1765 | +10 (10 new hooks-adapter DiscoverySignal records) |
 | structural issues | 0 | 0 | unchanged |
 | dangling refs | 0 | 0 | unchanged |
 | parse errors | 0 | 0 | unchanged |
@@ -4596,7 +4596,7 @@ already lives at `sdk/src/harness/amuxFallbackMetadata.contract.test.ts`.
 ### Migration-readiness verdict — **COMPLETE**
 
 All five legacy `agent-catalog` SDK consumers (adapters,
-extension-mux, hooks-mux, sdk/harness/*, catalog API) now resolve
+extensions-adapter, hooks-adapter, sdk/harness/*, catalog API) now resolve
 against the atlas graph: four directly via existing accessors with the atlas
 field-set in place, one (HarnessFallbackMetadata) via a thin frozen
 adapter spec. No graph data/schema gap remains; only the consumer-side
@@ -4605,9 +4605,9 @@ mechanical not design.
 
 ### Files touched (catalog pass 92)
 
-- `schema/node-kinds/catalog-meta.yaml` (DiscoverySignal: +scope `hooks-mux`,
+- `schema/node-kinds/catalog-meta.yaml` (DiscoverySignal: +scope `hooks-adapter`,
   +matchMode `all-present-with-absences`, +`absentSignals` field)
-- `graph/extensions/discovery-signals/{claude,codex,codex-fallback,gemini,copilot,cursor,pi,omp,opencode,openclaw}-hooks-mux*.yaml`
+- `graph/extensions/discovery-signals/{claude,codex,codex-fallback,gemini,copilot,cursor,pi,omp,opencode,openclaw}-hooks-adapter*.yaml`
   (10 new files)
 - `migration/legacy-vs-atlas-coverage-matrix.md` (verdict GREEN → COMPLETE)
 - `migration/projection-adapters.md` (§ 3 CLOSED, § 5 path-b spec)
@@ -4768,19 +4768,19 @@ NodeKind. **Result: 0 new anti-patterns.**
 
 ## Catalog pass 94 — @a5c-ai/triggers-adapter package surface modeled (2026-05-04)
 
-Catalog pass 94 catalogs `packages/triggers-mux/` (`@a5c-ai/triggers-adapter` v0.4.9) into atlas
+Catalog pass 94 catalogs `packages/triggers-adapter/` (`@a5c-ai/triggers-adapter` v0.4.9) into atlas
 as `OperationalTrigger` records, capturing all four `TriggerBackend`
 variants plus the reusable composite GitHub Action.
 
 ### Package surface inventory
 
 - 4 backends: github, gitlab, bitbucket, generic-webhook
-  (packages/triggers-mux/src/types.ts:1 TriggerBackend union).
+  (packages/triggers-adapter/src/types.ts:1 TriggerBackend union).
 - 5 source modules: action.ts, enrich.ts, query.ts, cli.ts, index.ts +
   6 backend modules (github, gitlab, bitbucket, generic-webhook,
   utils, index).
 - 1 CLI binary (`adapters-triggers` → ./dist/cli.js).
-- 1 reusable GitHub Action composite (`packages/triggers-mux/action.yml`
+- 1 reusable GitHub Action composite (`packages/triggers-adapter/action.yml`
   with 16 inputs / 3 outputs / 7 steps).
 - Dispatch model (1 line): enricher reads payload (workflow event JSON
   or local) → normalizer per backend → optional REST/git diff
@@ -4843,7 +4843,7 @@ dangling / parse 0 / 0 / 0.
 
 - Edited only `C:/work/v6/graph/`.
 - Trust Chain remains OUT OF SCOPE.
-- Every value cites `packages/triggers-mux/` source (file:line in
+- Every value cites `packages/triggers-adapter/` source (file:line in
   `sourceCitation` attribute or in YAML comment).
 - No new NodeKinds; no new EdgeKinds (re-used `OperationalTrigger`,
   `Capability`, `PackageSurface`, plus existing `supports` /
@@ -4863,13 +4863,13 @@ records; catalog pass 95 promotes each surface to first-class records with edges
 
 | # | Surface | NodeKind | Records | Source |
 | - | --- | --- | --- | --- |
-| 1 | action.yml inputs (16) + outputs (3) | FrontmatterField (extended appliesTo enum) | 19 | packages/triggers-mux/action.yml:9-75 |
-| 2 | action.yml runs.steps[] | GithubActionStep (new, tight) | 9 | packages/triggers-mux/action.yml:80-232 |
-| 3 | TriggerQuery DSL grammar | Grammar (new, cross-cutting) | 1 | packages/triggers-mux/src/query.ts:20-100 |
-| 4 | Per-backend REST endpoints | APIEndpoint (reused) | 2 | packages/triggers-mux/src/enrich.ts:61-96 |
-| 5 | NormalizedTriggerEvent + TriggerChange payload schemas | SharedContextSpec (extended w/ fieldSchema, typescriptInterface) | 2 | packages/triggers-mux/src/types.ts:3-28 |
-| 6 | Exit-code semantics (0/78/non-zero) | exitCodeSemantics attribute on OperationalTrigger | 5 records carry it | packages/triggers-mux/src/cli.ts:65 + action.yml:165,217-220 |
-| 7 | adapters-triggers CLI subcommands | InteractionPrimitive (kind=cli-subcommand, new attrs parentBin/subcommandVerb/flags/subcommandExitCodes) | 3 (enrich, evaluate, --help) | packages/triggers-mux/src/cli.ts:18-69 |
+| 1 | action.yml inputs (16) + outputs (3) | FrontmatterField (extended appliesTo enum) | 19 | packages/triggers-adapter/action.yml:9-75 |
+| 2 | action.yml runs.steps[] | GithubActionStep (new, tight) | 9 | packages/triggers-adapter/action.yml:80-232 |
+| 3 | TriggerQuery DSL grammar | Grammar (new, cross-cutting) | 1 | packages/triggers-adapter/src/query.ts:20-100 |
+| 4 | Per-backend REST endpoints | APIEndpoint (reused) | 2 | packages/triggers-adapter/src/enrich.ts:61-96 |
+| 5 | NormalizedTriggerEvent + TriggerChange payload schemas | SharedContextSpec (extended w/ fieldSchema, typescriptInterface) | 2 | packages/triggers-adapter/src/types.ts:3-28 |
+| 6 | Exit-code semantics (0/78/non-zero) | exitCodeSemantics attribute on OperationalTrigger | 5 records carry it | packages/triggers-adapter/src/cli.ts:65 + action.yml:165,217-220 |
+| 7 | adapters-triggers CLI subcommands | InteractionPrimitive (kind=cli-subcommand, new attrs parentBin/subcommandVerb/flags/subcommandExitCodes) | 3 (enrich, evaluate, --help) | packages/triggers-adapter/src/cli.ts:18-69 |
 
 Total: 36 new graph records (19+9+1+2+2+3) + catalog pass 94 5 OperationalTrigger
 records updated with new edges and exitCodeSemantics.
@@ -4974,7 +4974,7 @@ which are stylistic, not behavioral.
 
 - Edited only C:/work/v6/graph/.
 - Trust Chain remains OUT OF SCOPE.
-- No fabrication: every value cited verbatim from packages/triggers-mux/ source.
+- No fabrication: every value cited verbatim from packages/triggers-adapter/ source.
 - No regressions: structural / dangling / parse / orphan all 0;
   dead-EdgeKinds unchanged at 11; dead-NodeKinds steady at 1
   (expected zero-instance deferred work item).
@@ -4996,25 +4996,25 @@ which are stylistic, not behavioral.
 
 ## Catalog pass 96 — adapters subpackage deep audit (catalog pass 96, 2026-05-04)
 
-catalog pass 96 deepens per-package coverage of the babysitter monorepo's mux
+catalog pass 96 deepens per-package coverage of the babysitter monorepo's adapter
 ecosystem. catalog pass 90/catalog pass 91/catalog pass 92 audited the user-facing surfaces; catalog pass 94/catalog pass 95 deep-dove
-on triggers; catalog pass 96 walks each `packages/*-mux` and `adapters/*` subpackage
+on triggers; catalog pass 96 walks each `packages/*-adapter` and `adapters/*` subpackage
 and verifies catalog-faithful coverage of internal concepts so any of them
 can be regenerated from the atlas graph.
 
 ### Packages discovered (full set)
 
-Top-level mux + catalog packages:
+Top-level adapter + catalog packages:
 1. `agent-catalog` — graph + SDK projection layer (already PackageSurface).
 2. `adapters` — multi-subpackage tree (9 subpackages with package.json):
    `core`, `cli`, `gateway`, `tui`, `ui`, `webui`, `harness-mock`,
    `observability`, `sdk` (umbrella @a5c-ai/adapters), `adapters`.
    Plus 3 non-published dirs (`adapters-proxy`, `meta`, `processes`).
-3. `extension-mux` — single package (already PackageSurface).
-4. `hooks-mux` — single core package (already PackageSurface) + 9 adapter
+3. `extensions-adapter` — single package (already PackageSurface).
+4. `hooks-adapter` — single core package (already PackageSurface) + 9 adapter
    subdirs (claude/codex/copilot/cursor/gemini/oh-my-pi/openclaw/opencode/pi).
-5. `tasks-mux` — single package (already PackageSurface).
-6. `transport-mux` — single package (already PackageSurface).
+5. `tasks-adapter` — single package (already PackageSurface).
+6. `transport-adapter` — single package (already PackageSurface).
 
 ### Per-package gap count + codegen-readiness verdict
 
@@ -5031,10 +5031,10 @@ Top-level mux + catalog packages:
 | adapters/observability | 1 (PackageSurface missing) | YES post-catalog pass 96 |
 | adapters/sdk (@a5c-ai/adapters umbrella) | 1 (PackageSurface missing) | YES post-catalog pass 96 |
 | adapters/adapters | 1 (PackageSurface missing) | YES post-catalog pass 96 |
-| extension-mux | 0 | YES — PluginTargetDescriptor×17, schema/transform/emit modeled |
-| hooks-mux core | 0 | YES — HookMapping/HookSurface/MergePolicy/DecisionVerb covered |
-| tasks-mux | 0 | YES — BreakpointStrategy/ResponderProfile/HumanCheckpoint/DecisionMemory covered |
-| transport-mux | 0 | YES — all 8 SUPPORTED_TRANSPORTS covered as ModelTransportProtocol |
+| extensions-adapter | 0 | YES — PluginTargetDescriptor×17, schema/transform/emit modeled |
+| hooks-adapter core | 0 | YES — HookMapping/HookSurface/MergePolicy/DecisionVerb covered |
+| tasks-adapter | 0 | YES — BreakpointStrategy/ResponderProfile/HumanCheckpoint/DecisionMemory covered |
+| transport-adapter | 0 | YES — all 8 SUPPORTED_TRANSPORTS covered as ModelTransportProtocol |
 
 ### Schema delta
 
@@ -5080,17 +5080,17 @@ the package and path nodes report non-orphan after the catalog pass.
   `adapters/core/src/builtin-hooks.ts` are runtime-bundled defaults, not
   user-facing extension surfaces — out of scope for graph (not
   installable, not configurable, not catalog-driven).
-- **transport-mux SUPPORTED_TRANSPORTS**: All 8 (anthropic, openai-chat,
+- **transport-adapter SUPPORTED_TRANSPORTS**: All 8 (anthropic, openai-chat,
   openai-responses, google, bedrock-converse, azure-foundry,
   vertex-native, passthrough) cover-mapped to existing
   `model-transport:*` records (anthropic-messages, openai-chat-completions,
   openai-responses, gemini-generate-content, bedrock-converse,
   azure-foundry, vertex-anthropic-messages, passthrough). No new records.
-- **tasks-mux Zod schemas**: BreakpointStrategy, ResponderProfile,
+- **tasks-adapter Zod schemas**: BreakpointStrategy, ResponderProfile,
   BreakpointAnswer, DecisionMemory, HumanCheckpoint, BreakpointStatus are
   fully modeled as atlas NodeKinds. Internal-only types (BreakpointContext,
   BreakpointRouting) are payload shapes — out of scope.
-- **extension-mux internals**: schema.ts, transform.ts,
+- **extensions-adapter internals**: schema.ts, transform.ts,
   emit.ts, manifestGenerators.ts, resolve.ts are codegen pipeline modules.
   The catalog already exposes `PluginTargetDescriptor×17` which drives
   these files; the pipeline itself is wrapper-over-graph.
@@ -5110,7 +5110,7 @@ the package and path nodes report non-orphan after the catalog pass.
 ### Migration coverage matrix update summary
 
 `migration/legacy-vs-atlas-coverage-matrix.md` gets an "internal-concept
-coverage" section enumerating per-mux gap closure. User-facing migration
+coverage" section enumerating per-adapter gap closure. User-facing migration
 remains GREEN. The 9 missing PackageSurface records were the *only*
 internal-concept gaps surfaced by the deep audit; all other muxes are
 already codegen-ready against the atlas graph.
@@ -5121,7 +5121,7 @@ Catalog passes 63–96: orphans 236→0, dead NodeKinds → 1 (deferred work ite
 informational), dead EdgeKinds 254→11 (Trust Chain OUT OF SCOPE),
 structural / dangling / parse 0 / 0 / 0. PackageSurface coverage now
 accurate against the babysitter monorepo workspace tree; every published
-mux subpackage has a graph record.
+adapter subpackage has a graph record.
 
 ### Constraints honored
 
@@ -5168,11 +5168,11 @@ citation in the catalog pass 95 style.
 - No regressions in islands/dead-edges (still 1 dead NodeKind, 11 dead
   EdgeKinds — Trust Chain, out-of-scope).
 
-## catalog pass 97c — remaining mux surface decomposition
+## catalog pass 97c — remaining adapter surface decomposition
 
-Decomposed the 6 mux PackageSurfaces from catalog pass 96 (adapters/tui,
-adapters/observability, adapters/harness-mock, transport-mux,
-tasks-mux, hooks-mux/core) into 40 graph records.
+Decomposed the 6 adapter PackageSurfaces from catalog pass 96 (adapters/tui,
+adapters/observability, adapters/harness-mock, transport-adapter,
+tasks-adapter, hooks-adapter/core) into 40 graph records.
 
 - 3 InteractionPrimitive[kind=tui-command] (adapters/tui:
   command-palette, prompt-input, model-picker)
@@ -5183,9 +5183,9 @@ tasks-mux, hooks-mux/core) into 40 graph records.
   for harness-mock fixture-config schemas (HarnessScenario,
   StdinInteraction, HttpServerConfig, WebSocketConfig, MockEvent)
 - 1 InteractionPrimitive[kind=cli-subcommand] for the `adapters-proxy` bin
-  (transport-mux ModelTransportProtocol records left untouched per spec)
+  (transport-adapter ModelTransportProtocol records left untouched per spec)
 - 6 InteractionPrimitive[kind=cli-subcommand] for the
-  `tasks-mux` top-level CLI groups + 2 APIEndpoint for the MCP
+  `tasks-adapter` top-level CLI groups + 2 APIEndpoint for the MCP
   HTTP transport (`/mcp`, `/healthz`) + 6 SharedContextSpec for the
   zod-validated wire schemas / BreakpointBackend interface
 - 8 SharedContextSpec for @a5c-ai/hooks-adapter-core (UnifiedHookEvent,
@@ -5201,7 +5201,7 @@ the adapters-tui and adapters-harness-mock PackageSurface
 `exposes_subcommand` source already accepted PackageSurface (catalog pass 95/97a);
 `exposes_endpoint` and `has_payload_schema` source unions already
 accepted PackageSurface (catalog pass 97b) — all three were activated against the
-new mux surfaces.
+new adapter surfaces.
 
 Validator: examples 2490 / structural 0 / dangling 0 / parse 0 /
 orphan 0 / dead-NodeKinds 1 / dead-EdgeKinds 11 (Trust Chain
@@ -5228,11 +5228,11 @@ itself with n=0).
 
 | Item (source catalog pass) | Outcome | Records / deferred work item |
 | --- | --- | --- |
-| tasks-mux deep leaf-subcommand enumeration (catalog pass 97c) | authored | 17 InteractionPrimitive[cli-subcommand] under graph/extensions/interaction-patterns/tasks-mux-cli-leaves.yaml |
-| tasks-mux backends/server.ts client model (catalog pass 97c) | authored | 8 APIEndpoint with [direction: outbound-client] flag in description |
+| tasks-adapter deep leaf-subcommand enumeration (catalog pass 97c) | authored | 17 InteractionPrimitive[cli-subcommand] under graph/extensions/interaction-patterns/tasks-adapter-cli-leaves.yaml |
+| tasks-adapter backends/server.ts client model (catalog pass 97c) | authored | 8 APIEndpoint with [direction: outbound-client] flag in description |
 | harness-mock error + runtime-hook scenarios (catalog pass 97c) | authored | 8 InteractionPrimitive[mock-scenario]: 5 error:* + 3 runtimeHook* |
-| transport-mux runtime.ts programmatic API (catalog pass 97c) | structured-deferral | deferred-work:transport-mux-runtime-programmatic-api (status: abandoned, wrapper-over-graph evidence) |
-| hooks-mux internals helpers (catalog pass 97c) | structured-deferral | deferred-work:hooks-mux-internals-helpers (status: abandoned, private-helpers evidence) |
+| transport-adapter runtime.ts programmatic API (catalog pass 97c) | structured-deferral | deferred-work:transport-adapter-runtime-programmatic-api (status: abandoned, wrapper-over-graph evidence) |
+| hooks-adapter internals helpers (catalog pass 97c) | structured-deferral | deferred-work:hooks-adapter-internals-helpers (status: abandoned, private-helpers evidence) |
 | adapters/adapters per-harness dispatch (catalog pass 97 explicit list) | structured-deferral | deferred-work:adapters-adapters-per-harness-dispatch (status: abandoned, wrapper-over-graph per catalog pass 96) |
 | adapters/sdk umbrella (catalog pass 97 list) | confirmed wrapper | existing PackageSurface accurate |
 | adapters/ui + webui (catalog pass 97 list) | structured-deferral | deferred-work:adapters-ui-webui-react-components (status: abandoned, presentation-only) |
@@ -5247,18 +5247,18 @@ itself with n=0).
 
 ### Records authored
 
-- 17 InteractionPrimitive[cli-subcommand] (tasks-mux leaves)
+- 17 InteractionPrimitive[cli-subcommand] (tasks-adapter leaves)
 - 13 InteractionPrimitive[cli-subcommand] (babysitter-sdk + agent CLI groups)
 - 8 InteractionPrimitive[mock-scenario] (harness-mock error + runtime-hook)
-- 8 APIEndpoint (tasks-mux outbound-client)
+- 8 APIEndpoint (tasks-adapter outbound-client)
 - 14 deferred work item (5 status open + 9 status abandoned with not-applicable / wrapper-over-graph evidence)
 
 **Total: 60 new graph records.**
 
 ### Edges wired
 
-- exposes_subcommand: 17 (tasks-mux leaves) + 8 (harness-mock) + 12 (babysitter-sdk) + 1 (agent-platform) = 38 new
-- exposes_endpoint: 8 (tasks-mux outbound-client)
+- exposes_subcommand: 17 (tasks-adapter leaves) + 8 (harness-mock) + 12 (babysitter-sdk) + 1 (agent-platform) = 38 new
+- exposes_endpoint: 8 (tasks-adapter outbound-client)
 - exposed_by: 8 (APIEndpoint to PackageSurface)
 
 ### Schema delta
@@ -5286,8 +5286,8 @@ evidence in the `reason` and `resolutionNotes` attributes):
 - deferred-work:adapters-adapters-per-harness-dispatch
 - deferred-work:agent-catalog-library-functions
 - deferred-work:adapters-ui-webui-react-components
-- deferred-work:transport-mux-runtime-programmatic-api
-- deferred-work:hooks-mux-internals-helpers
+- deferred-work:transport-adapter-runtime-programmatic-api
+- deferred-work:hooks-adapter-internals-helpers
 
 ### Validator one-liner
 
@@ -5346,12 +5346,12 @@ catalog pass but cheap to unblock individually.
 
 ### Files touched (catalog pass 98)
 
-- graph/extensions/interaction-patterns/tasks-mux-cli-leaves.yaml (new)
+- graph/extensions/interaction-patterns/tasks-adapter-cli-leaves.yaml (new)
 - graph/extensions/interaction-patterns/adapters-harness-mock-errors-hooks.yaml (new)
 - graph/extensions/interaction-patterns/babysitter-sdk-cli.yaml (new)
-- graph/extensions/api-endpoints/tasks-mux-server-client.yaml (new)
+- graph/extensions/api-endpoints/tasks-adapter-server-client.yaml (new)
 - concrete graph records replacing deferred work (new - 14 deferred work records)
-- graph/catalog-meta/package-surfaces/tasks-mux.yaml (extended exposes_subcommand + exposes_endpoint)
+- graph/catalog-meta/package-surfaces/tasks-adapter.yaml (extended exposes_subcommand + exposes_endpoint)
 - graph/catalog-meta/package-surfaces/adapters-harness-mock.yaml (extended exposes_subcommand)
 - graph/catalog-meta/package-surfaces/babysitter-sdk.yaml (rewritten with bins + 12 subcommand groups)
 - graph/catalog-meta/package-surfac../platform.yaml (rewritten with babysitter-harness bin)
@@ -5561,8 +5561,8 @@ activated 20 times across 3 vendors — well above the ≥1 minimum.
 | deferred-node:adapters-adapters-per-harness-dispatch | abandoned | abandoned |
 | deferred-node:agent-catalog-library-functions | abandoned | abandoned |
 | deferred-node:adapters-ui-webui-react-components | abandoned | abandoned |
-| deferred-node:transport-mux-runtime-programmatic-api | abandoned | abandoned |
-| deferred-node:hooks-mux-internals-helpers | abandoned | abandoned |
+| deferred-node:transport-adapter-runtime-programmatic-api | abandoned | abandoned |
+| deferred-node:hooks-adapter-internals-helpers | abandoned | abandoned |
 
 **Final tally: 0 status:open, 6 status:resolved, 8 status:abandoned, 14 total.** Target met.
 
@@ -6007,7 +6007,7 @@ Beat the <50 target. Bucket distribution of the residual 44:
 - 39 only_yaml: NodeKinds with no markdown spec at all in
   `schema/node-kinds/*.md` — e.g. `JournalEvent`, `Workflow`,
   `BreakpointStrategy`, `MemoryHierarchy`, `PluginMarketplace`,
-  `OutputStyle`, `OutputModeChange`, `ProactiveSurface`, `Mux`,
+  `OutputStyle`, `OutputModeChange`, `ProactiveSurface`, `Adapter`,
   `MCPRoot`/`MCPPrompt`/`MCPResource`/`MCPSampling`, `Quota`-adjacent
   internals, etc. Closing this bucket is a documentation-authoring task
   (write per-NodeKind spec sections) rather than a validator wave; it
@@ -6078,7 +6078,7 @@ per-cluster spec files with stub sections.
 39 NodeKind rows added across 7 cluster sections in
 `schema/node-kinds/README.md`:
 
-- Cluster 3 (Agent stack) +6: `AgentTeam`, `Mux`, `MemoryHierarchy`,
+- Cluster 3 (Agent stack) +6: `AgentTeam`, `Adapter`, `MemoryHierarchy`,
   `BackgroundConsolidation`, `ConsolidationLock`, `DecisionMemory`
 - Cluster 4 (Surfacing) +5: `OutputStyle`, `OutputModeChange`,
   `ProactiveSurface`, `ResponderProfile`,

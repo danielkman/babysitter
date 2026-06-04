@@ -44,7 +44,7 @@ export { ToolDispatcher } from './dispatch.js';
 export type { ToolExecutor, ToolDispatcherOptions } from './dispatch.js';
 
 /* ------------------------------------------------------------------ */
-/*  Schema translation (re-exports from transport-mux + adapters)      */
+/*  Schema translation (re-exports from transport-adapter + adapters)      */
 /* ------------------------------------------------------------------ */
 
 export {

@@ -117,15 +117,15 @@ jobs:
           set -euo pipefail
           npm run test --workspace=@a5c-ai/tasks-adapter 2>&1 | tee artifacts/test-logs/adapters-tasks-tests.log
 
-      - name: Build hooks-mux
+      - name: Build hooks-adapter
         run: |
           set -euo pipefail
-          npm run build:hooks-mux 2>&1 | tee artifacts/test-logs/hooks-mux-build.log
+          npm run build:hooks-adapter 2>&1 | tee artifacts/test-logs/hooks-adapter-build.log
 
       - name: Hooks-proxy unit tests
         run: |
           set -euo pipefail
-          npm run test:hooks-mux 2>&1 | tee artifacts/test-logs/hooks-mux-tests.log
+          npm run test:hooks-adapter 2>&1 | tee artifacts/test-logs/hooks-adapter-tests.log
 
       - name: Build adapters packages
         run: |
@@ -162,10 +162,10 @@ jobs:
           set -euo pipefail
           npm run verify:release --workspace=@a5c-ai/genty-tui 2>&1 | tee artifacts/test-logs/adapters-tui-release.log
 
-      - name: agent-comm-mux release verification
+      - name: agent-comm-adapter release verification
         run: |
           set -euo pipefail
-          npm run verify:release --workspace=@a5c-ai/comm-adapter 2>&1 | tee artifacts/test-logs/agent-comm-mux-release.log
+          npm run verify:release --workspace=@a5c-ai/comm-adapter 2>&1 | tee artifacts/test-logs/agent-comm-adapter-release.log
 
       - name: Build realtime flow surfaces
         run: |
@@ -292,14 +292,14 @@ jobs:
       - name: Build atlas catalog foundation
         run: npm run build --workspace=@a5c-ai/atlas
 
-      - name: Validate transport-mux workspace QA surface
+      - name: Validate transport-adapter workspace QA surface
         run: |
           set -euo pipefail
-          npm run build --workspace=@a5c-ai/transport-adapter 2>&1 | tee artifacts/workspace-coverage-logs/transport-mux-build.log
-          npm run lint --workspace=@a5c-ai/transport-adapter 2>&1 | tee artifacts/workspace-coverage-logs/transport-mux-lint.log
-          npm run typecheck --workspace=@a5c-ai/transport-adapter 2>&1 | tee artifacts/workspace-coverage-logs/transport-mux-typecheck.log
-          npm run test --workspace=@a5c-ai/transport-adapter 2>&1 | tee artifacts/workspace-coverage-logs/transport-mux-test.log
-          npm run scorecard:migration --workspace=@a5c-ai/transport-adapter 2>&1 | tee artifacts/workspace-coverage-logs/transport-mux-scorecard.log
+          npm run build --workspace=@a5c-ai/transport-adapter 2>&1 | tee artifacts/workspace-coverage-logs/transport-adapter-build.log
+          npm run lint --workspace=@a5c-ai/transport-adapter 2>&1 | tee artifacts/workspace-coverage-logs/transport-adapter-lint.log
+          npm run typecheck --workspace=@a5c-ai/transport-adapter 2>&1 | tee artifacts/workspace-coverage-logs/transport-adapter-typecheck.log
+          npm run test --workspace=@a5c-ai/transport-adapter 2>&1 | tee artifacts/workspace-coverage-logs/transport-adapter-test.log
+          npm run scorecard:migration --workspace=@a5c-ai/transport-adapter 2>&1 | tee artifacts/workspace-coverage-logs/transport-adapter-scorecard.log
 
       - name: Validate cloud deployment workspace QA surface
         run: |

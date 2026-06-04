@@ -96,7 +96,7 @@ export interface ExternalTrackerAdapter {
 
 type JsonRecord = Record<string, unknown>;
 
-const TRACKER_ANSWER_MARKER = "tasks-mux:tracker-answer:v1";
+const TRACKER_ANSWER_MARKER = "tasks-adapter:tracker-answer:v1";
 const SECRET_KEYS = [
   "token",
   "authorization",
@@ -199,7 +199,7 @@ export function redactExternalTrackerSecrets<T>(value: T): T {
 function buildAnswerBlock(answer: SubmitAnswerParams): string {
   const payload = {
     version: 1,
-    schema: "tasks-mux:tracker-answer",
+    schema: "tasks-adapter:tracker-answer",
     responderId: answer.responderId,
     responderName: answer.responderName,
     text: answer.text,

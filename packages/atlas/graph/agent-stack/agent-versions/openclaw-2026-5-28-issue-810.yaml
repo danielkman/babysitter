@@ -48,7 +48,7 @@ attributes:
         - WhatsApp
         - Telegram
         - Microsoft Teams
-      notes: "Transport-mux and channel mappings should preserve canonical session keys and delivery context across outbound plugin hooks."
+      notes: "Transport-adapter and channel mappings should preserve canonical session keys and delivery context across outbound plugin hooks."
     providerCatalog:
       claudeOpus48: true
       falKreaImageSchemas: true

@@ -8,9 +8,9 @@
 
 ## 1. Overview
 
-This specification defines the complete runtime interface for agent invocations: the `RunHandle` returned by `mux.run()`, the `RunResult` it resolves to, the `InteractionChannel` for building interactive UIs, the run state machine, subprocess lifecycle management, and all platform-specific behaviors.
+This specification defines the complete runtime interface for agent invocations: the `RunHandle` returned by `adapter.run()`, the `RunResult` it resolves to, the `InteractionChannel` for building interactive UIs, the run state machine, subprocess lifecycle management, and all platform-specific behaviors.
 
-A `RunHandle` is the single object a consumer interacts with after calling `mux.run()`. It simultaneously implements three consumption patterns:
+A `RunHandle` is the single object a consumer interacts with after calling `adapter.run()`. It simultaneously implements three consumption patterns:
 
 1. **AsyncIterable** -- consume events with `for await...of`.
 2. **EventEmitter** -- subscribe to typed events with `on`/`off`/`once`.
@@ -42,7 +42,7 @@ All three patterns can be used on the same handle concurrently. This tri-modal d
 /**
  * The runtime handle for a single agent invocation.
  *
- * Returned synchronously by `mux.run()`. The subprocess is spawned
+ * Returned synchronously by `adapter.run()`. The subprocess is spawned
  * immediately upon construction; events begin flowing before the consumer
  * attaches any listener or iterator.
  *
@@ -149,7 +149,7 @@ interface RunHandle extends AsyncIterable<AgentEvent> {
   // ── Promise / thenable contract ───────────────────────────────────────
 
   /**
-   * Makes `RunHandle` a thenable, enabling `await mux.run(options)`.
+   * Makes `RunHandle` a thenable, enabling `await adapter.run(options)`.
    *
    * Resolves with `RunResult` when the run reaches a terminal state
    * (completed, aborted, timed-out). Never rejects -- errors are
@@ -815,7 +815,7 @@ Every state transition emits a corresponding event on the `RunHandle`:
 
 ### 6.1 Spawn Sequence
 
-When `mux.run(options)` is called:
+When `adapter.run(options)` is called:
 
 1. **Option resolution**: Profile defaults are merged with explicit options. Capability validation runs. Model is resolved.
 2. **Temp dir creation**: A unique temporary directory is created under `os.tmpdir()/adapters-<runId>/` for this run's ephemeral state (see Section 9).
@@ -994,7 +994,7 @@ Key differences from pipe-mode spawn:
 }
 ```
 
-If `requiresPty` is true for the selected agent and `node-pty` is not installed, `mux.run()` throws:
+If `requiresPty` is true for the selected agent and `node-pty` is not installed, `adapter.run()` throws:
 
 ```typescript
 throw new AgentMuxError(
@@ -1174,7 +1174,7 @@ Multiple `RunHandle` instances can exist simultaneously, each driving a separate
 A single `RunHandle` supports concurrent access from multiple consumers:
 
 ```typescript
-const handle = mux.run({ agent: 'claude', prompt: 'refactor this' });
+const handle = adapter.run({ agent: 'claude', prompt: 'refactor this' });
 
 // Consumer 1: async iteration
 (async () => {
@@ -1209,7 +1209,7 @@ No consumer blocks or interferes with another.
 Both operations are fully supported on the same handle:
 
 ```typescript
-const handle = mux.run({ agent: 'claude', prompt: 'hello' });
+const handle = adapter.run({ agent: 'claude', prompt: 'hello' });
 
 // Start iterating
 const events: AgentEvent[] = [];
@@ -1225,7 +1225,7 @@ const result = await handle;
 If the consumer `await`s the handle first and then tries to iterate:
 
 ```typescript
-const handle = mux.run({ agent: 'claude', prompt: 'hello' });
+const handle = adapter.run({ agent: 'claude', prompt: 'hello' });
 const result = await handle;
 
 // Iterating after completion: yields all buffered events (if within high-water mark),
@@ -1305,10 +1305,10 @@ If an agent produces no output and exits with code 0:
 ```typescript
 import { createClient } from '@a5c-ai/adapters';
 
-const mux = createClient();
+const adapter = createClient();
 
 // Simplest usage: await the result directly.
-const result = await mux.run({
+const result = await adapter.run({
   agent: 'claude',
   prompt: 'What is the capital of France?',
 });
@@ -1323,9 +1323,9 @@ console.log(result.cost);        // { inputCost: 0.003, outputCost: 0.012, total
 ```typescript
 import { createClient } from '@a5c-ai/adapters';
 
-const mux = createClient();
+const adapter = createClient();
 
-const handle = mux.run({
+const handle = adapter.run({
   agent: 'codex',
   prompt: 'Refactor the auth module to use JWT',
   model: 'o4-mini',
@@ -1359,9 +1359,9 @@ console.log(`\nCompleted in ${result.durationMs}ms`);
 ```typescript
 import { createClient } from '@a5c-ai/adapters';
 
-const mux = createClient();
+const adapter = createClient();
 
-const handle = mux.run({
+const handle = adapter.run({
   agent: 'gemini',
   prompt: 'Generate a REST API for user management',
 });
@@ -1394,9 +1394,9 @@ const result = await handle;
 import { createClient } from '@a5c-ai/adapters';
 import * as readline from 'node:readline/promises';
 
-const mux = createClient({ approvalMode: 'prompt' });
+const adapter = createClient({ approvalMode: 'prompt' });
 
-const handle = mux.run({
+const handle = adapter.run({
   agent: 'claude',
   prompt: 'Refactor the database layer',
 });
@@ -1446,13 +1446,13 @@ console.log(`\nDone: ${result.exitReason}`);
 ```typescript
 import { createClient } from '@a5c-ai/adapters';
 
-const mux = createClient({ approvalMode: 'yolo' });
+const adapter = createClient({ approvalMode: 'yolo' });
 
 // Launch three agents concurrently.
 const runs = await Promise.all([
-  mux.run({ agent: 'claude', prompt: 'Write unit tests for auth.ts' }),
-  mux.run({ agent: 'codex', prompt: 'Write unit tests for db.ts' }),
-  mux.run({ agent: 'gemini', prompt: 'Write unit tests for api.ts' }),
+  adapter.run({ agent: 'claude', prompt: 'Write unit tests for auth.ts' }),
+  adapter.run({ agent: 'codex', prompt: 'Write unit tests for db.ts' }),
+  adapter.run({ agent: 'gemini', prompt: 'Write unit tests for api.ts' }),
 ]);
 
 for (const result of runs) {
@@ -1468,9 +1468,9 @@ for (const result of runs) {
 ```typescript
 import { createClient } from '@a5c-ai/adapters';
 
-const mux = createClient();
+const adapter = createClient();
 
-const handle = mux.run({
+const handle = adapter.run({
   agent: 'openclaw',
   prompt: 'Analyze the entire codebase',
   timeout: 60_000, // 1 minute
@@ -1497,9 +1497,9 @@ if (result.exitReason === 'aborted') {
 ```typescript
 import { createClient } from '@a5c-ai/adapters';
 
-const mux = createClient();
+const adapter = createClient();
 
-const handle = mux.run({
+const handle = adapter.run({
   agent: 'claude',
   prompt: 'Generate a comprehensive test suite',
 });
@@ -1528,11 +1528,11 @@ for await (const event of handle) {
 ```typescript
 import { createClient } from '@a5c-ai/adapters';
 
-const mux = createClient();
+const adapter = createClient();
 
 // Hermes agent: NousResearch Hermes agent, the 10th built-in agent.
 // Requires Python >= 3.11 and installation via pip/uv.
-const result = await mux.run({
+const result = await adapter.run({
   agent: 'hermes',
   prompt: 'Explain the architecture of this project',
   model: 'hermes-3-llama-3.1-70b',
@@ -1547,10 +1547,10 @@ console.log(`Tokens: ${result.tokenUsage?.totalTokens}`);
 ```typescript
 import { createClient } from '@a5c-ai/adapters';
 
-const mux = createClient();
+const adapter = createClient();
 
 // Method chaining on event registration.
-const handle = mux.run({ agent: 'pi', prompt: 'Optimize the build pipeline' });
+const handle = adapter.run({ agent: 'pi', prompt: 'Optimize the build pipeline' });
 
 handle
   .on('text_delta', (e) => process.stdout.write(e.delta))
@@ -1566,9 +1566,9 @@ await handle;
 ```typescript
 import { createClient } from '@a5c-ai/adapters';
 
-const mux = createClient();
+const adapter = createClient();
 
-const result = await mux.run({
+const result = await adapter.run({
   agent: 'opencode',
   prompt: 'Add input validation to all API endpoints',
   collectEvents: true,  // Capture all events in RunResult.events
@@ -1588,9 +1588,9 @@ console.log(`Total cost: $${result.cost?.totalCost.toFixed(4)}`);
 ```typescript
 import { createClient } from '@a5c-ai/adapters';
 
-const mux = createClient();
+const adapter = createClient();
 
-const handle = mux.run({
+const handle = adapter.run({
   agent: 'claude',
   prompt: 'List the files in the src directory',
 });
@@ -1618,9 +1618,9 @@ console.log(result.text);
 ```typescript
 import { createClient } from '@a5c-ai/adapters';
 
-const mux = createClient({ approvalMode: 'prompt' });
+const adapter = createClient({ approvalMode: 'prompt' });
 
-const handle = mux.run({
+const handle = adapter.run({
   agent: 'omp',
   prompt: 'Rename all test files from .test.ts to .spec.ts',
 });

@@ -4,7 +4,7 @@
 
 `adapters-proxy` is designed to be spawned on-demand by `adapters launch --with-proxy-if-needed` and shut down when the harness exits. It can also run as a persistent service.
 
-Full documentation: [docs/provider-mux.md](../../docs/provider-mux.md)
+Full documentation: [docs/provider-adapter.md](../../docs/provider-adapter.md)
 
 ---
 

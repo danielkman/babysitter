@@ -255,7 +255,7 @@ edges:
     - target: capability:supports-local-models
       versionRange: ">=2.1.156"
       level: partial
-      notes: Claude Code routes inference through Anthropic / Bedrock / Vertex by default; local-model routing is via transport-mux + a Local Model Source provider configured in settings.
+      notes: Claude Code routes inference through Anthropic / Bedrock / Vertex by default; local-model routing is via transport-adapter + a Local Model Source provider configured in settings.
     - target: capability:supports-agent-teams
       versionRange: ">=2.1.156"
       level: full

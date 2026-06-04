@@ -16,16 +16,16 @@ Rationale:
 
 - Kradle is a forge/control-plane; agent dispatch is part of repository workflow.
 
-### Kradle owns policy and graph; Agent Mux owns adapter/session runtime
+### Kradle owns policy and graph; Agent Adapter owns adapter/session runtime
 
 Decision:
 
 - Kradle owns resources, triggers, RBAC, grants, context bundles, dispatch runs, approvals, artifacts, workspaces, and audit.
-- Agent Mux owns adapter-specific launch/session/chat/runtime details.
+- Agent Adapter owns adapter-specific launch/session/chat/runtime details.
 
 Rationale:
 
-- Keeps repository source of truth in Kradle while reusing Agent Mux execution primitives.
+- Keeps repository source of truth in Kradle while reusing Agent Adapter execution primitives.
 
 ### Kubernetes RBAC remains authoritative
 
@@ -51,7 +51,7 @@ Rationale:
 
 Decision:
 
-- `AgentDispatchRun` should appear beside `Pipeline` and `Job` records while exposing Agent Mux chat/session.
+- `AgentDispatchRun` should appear beside `Pipeline` and `Job` records while exposing Agent Adapter chat/session.
 
 Rationale:
 
@@ -79,11 +79,11 @@ Default recommendation:
 
 - Keep config resources CRD-backed; for MVP, execution resources may be represented by lightweight resources if existing infrastructure requires it, but design should not assume etcd for high-volume history.
 
-### Agent Mux deployment mode
+### Agent Adapter deployment mode
 
 Question:
 
-- Is Agent Mux embedded in Kradle controller/web process, sidecar, separate service, or external gateway?
+- Is Agent Adapter embedded in Kradle controller/web process, sidecar, separate service, or external gateway?
 
 Default recommendation:
 
@@ -93,7 +93,7 @@ Default recommendation:
 
 Question:
 
-- Does Agent Mux receive secret references only, or does a trusted server-side process materialize values before launch?
+- Does Agent Adapter receive secret references only, or does a trusted server-side process materialize values before launch?
 
 Default recommendation:
 
@@ -119,11 +119,11 @@ Default recommendation:
 
 - Embed a minimal panel first if route scaffolding cost is high; add sub-route when typed pages are introduced.
 
-### UI component reuse from Agent Mux
+### UI component reuse from Agent Adapter
 
 Question:
 
-- Copy, wrap, or depend on Agent Mux web UI primitives?
+- Copy, wrap, or depend on Agent Adapter web UI primitives?
 
 Default recommendation:
 
@@ -152,8 +152,8 @@ Default recommendation:
 ## Questions to revisit after MVP
 
 - Multi-tenant namespace strategy for agent resources.
-- Whether subagents are native Agent Mux only or Kradle-emulated by default.
-- Whether Agent Mux transcripts are retained in Kradle object storage or linked externally.
+- Whether subagents are native Agent Adapter only or Kradle-emulated by default.
+- Whether Agent Adapter transcripts are retained in Kradle object storage or linked externally.
 - How much of MCP server management belongs in global Agents pages versus repository settings.
 - Whether to add generated OpenAPI schemas for typed agent routes.
 - How to expose cost controls and quotas by team/repository/stack.

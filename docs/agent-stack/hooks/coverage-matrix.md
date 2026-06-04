@@ -4,14 +4,14 @@
 
 ## Legend
 - **atlas**: Event defined in atlas graph schema
-- **hooks-mux**: Canonical phase exists in hooks-mux core
+- **hooks-adapter**: Canonical phase exists in hooks-adapter core
 - **adapters runtime**: Native runtime hook registration/dispatch exists
 - **SDK**: SDK-emitted harness hook exists where SDK owns the source
 - **agent-core**: Session event type exists
 
 ## Full Matrix
 
-| # | Event | Canonical Phase | atlas | hooks-mux | adapters runtime | SDK | Status |
+| # | Event | Canonical Phase | atlas | hooks-adapter | adapters runtime | SDK | Status |
 |---|-------|----------------|-------|-----------|---------------|-----|--------|
 | 1 | SessionStart | session.start | ✅ | ✅ | ✅ | ✅ | **DONE** |
 | 2 | Setup | session.setup | ✅ | ✅ | ✅ | ❌ | **PARTIAL** |
@@ -53,4 +53,4 @@
 | BLOCKED | 1 | 3% |
 | atlas covered | 30 | 100% |
 
-`PARTIAL` means hooks-mux and the native adapters runtime bridge can represent/dispatch the event, but a separate SDK-owned emission point is still absent or only applies where a concrete runtime source exists. `BLOCKED` means the canonical contract exists, but the stack does not yet have a real lifecycle boundary to emit the event.
+`PARTIAL` means hooks-adapter and the native adapters runtime bridge can represent/dispatch the event, but a separate SDK-owned emission point is still absent or only applies where a concrete runtime source exists. `BLOCKED` means the canonical contract exists, but the stack does not yet have a real lifecycle boundary to emit the event.

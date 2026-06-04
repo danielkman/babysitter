@@ -123,4 +123,4 @@ When the user asks you to keep watching:
 3. help draft and submit answers
 4. return to polling until the user stops
 
-For terminal-first workflows, `tasks-mux responder-loop --responder <responderId> --once` is the package CLI equivalent of a single poll cycle.
+For terminal-first workflows, `tasks-adapter responder-loop --responder <responderId> --once` is the package CLI equivalent of a single poll cycle.

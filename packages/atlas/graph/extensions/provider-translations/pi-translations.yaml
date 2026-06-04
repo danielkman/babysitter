@@ -46,7 +46,7 @@ attributes:
   notes: >
     Pi's Azure/Foundry provider uses the Responses API path which isn't
     supported by all Azure AI Services deployments. Route through the
-    transport-mux proxy which exposes standard Chat Completions.
+    transport-adapter proxy which exposes standard Chat Completions.
 edges:
   translates_for:
     - target: agent:pi
@@ -152,7 +152,7 @@ attributes:
   args: []
   notes: >
     Default fallback for unsupported providers on Pi.
-    Routes through transport-mux proxy exposing OpenAI Chat transport.
+    Routes through transport-adapter proxy exposing OpenAI Chat transport.
     For Codex Responses proxy integrations, Pi 0.76.0 uses the session-id
     cache-affinity header name rather than proxy-incompatible session_id.
 edges:

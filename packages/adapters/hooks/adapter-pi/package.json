@@ -1,7 +1,7 @@
 {
   "name": "@a5c-ai/hooks-adapter-pi",
   "version": "5.1.0",
-  "description": "Pi harness adapter for the hooks-mux system",
+  "description": "Pi harness adapter for the hooks-adapter system",
   "license": "MIT",
   "type": "commonjs",
   "main": "dist/index.js",

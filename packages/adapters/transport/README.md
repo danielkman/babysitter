@@ -1,6 +1,6 @@
-# transport-mux
+# transport-adapter
 
-`transport-mux` is the published transport/proxy runtime seam used by the adapters launcher and related runtime consumers.
+`transport-adapter` is the published transport/proxy runtime seam used by the adapters launcher and related runtime consumers.
 
 <!-- docs-status:start -->
 > Status: Public family package.

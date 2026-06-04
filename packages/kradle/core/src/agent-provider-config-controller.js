@@ -7,7 +7,7 @@ export const AGENT_PROVIDER_CONFIG_CONTROLLER_BOUNDARY = {
   scope: 'AgentProviderConfig lifecycle: validation, endpoint resolution, credential ref validation, feature flags',
   owns: ['provider config validation', 'endpoint resolution', 'credential ref validation', 'feature flag defaults', 'rate limit defaults'],
   delegatesTo: ['resource-model'],
-  mustNotOwn: ['secret values', 'dispatch execution', 'Agent Mux sessions', 'adapter implementation']
+  mustNotOwn: ['secret values', 'dispatch execution', 'Agent Adapter sessions', 'adapter implementation']
 };
 
 const VALID_PROVIDER_TYPES = ['anthropic', 'openai', 'azure-openai', 'google-vertex', 'foundry', 'custom', 'kserve'];

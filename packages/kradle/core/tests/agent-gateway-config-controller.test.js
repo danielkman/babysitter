@@ -11,7 +11,7 @@ import {
 // Acceptance criteria: Slice 1.2e — Agent Gateway Config Controller
 //
 // An AgentGatewayConfig defines runtime gateway settings and feature flags
-// for connecting to the Agent Mux gateway. It specifies the gateway name,
+// for connecting to the Agent Adapter gateway. It specifies the gateway name,
 // org reference, endpoint URL, feature flags, connection pool settings,
 // and TLS configuration reference.
 // ---------------------------------------------------------------------------

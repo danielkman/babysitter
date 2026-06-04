@@ -1,4 +1,4 @@
-# Agent Mux source map for Kradle integration
+# Agent Adapter source map for Kradle integration
 
 Research source: local `C:\Users\tmusk\IdeaProjects\babysitter` checkout on `staging`, the public Babysitter GitHub URL provided in the request, and Kradle's local CI/docs surfaces. This is an implementation source map, not an ontology mapping.
 
@@ -50,7 +50,7 @@ Agent orchestration implications:
 - `docs/user-stories.md`
   - PR review and CI status, live log streaming, similar-run failure search, runner pool configuration, and inbox triage are existing product expectations.
 
-## Babysitter / Agent Mux paths
+## Babysitter / Agent Adapter paths
 
 ### Workspace and packages
 
@@ -58,7 +58,7 @@ Agent orchestration implications:
   - Declares `packages/adapters/*` workspaces.
   - Defines build/test scripts such as `build:adapters`, `test:adapters`, and web UI scripts.
 - `packages/adapters/README.md`
-  - High-level Agent Mux entrypoint.
+  - High-level Agent Adapter entrypoint.
 - `packages/adapters/core/`
   - Agent/session domain contracts.
   - Important files:
@@ -110,18 +110,18 @@ Agent orchestration implications:
 - `packages/adapters/observability/`
   - Observability surfaces that can inform Kradle run tracking.
 
-## Researched Agent Mux route matrix
+## Researched Agent Adapter route matrix
 
-Current Babysitter `staging` exposes these Agent Mux Web UI routes from `packages/adapters/webui/src/router.tsx`. Kradle should translate them into repository-centered pages instead of importing the route tree wholesale.
+Current Babysitter `staging` exposes these Agent Adapter Web UI routes from `packages/adapters/webui/src/router.tsx`. Kradle should translate them into repository-centered pages instead of importing the route tree wholesale.
 
-| Agent Mux route | Source component | Kradle usage |
+| Agent Adapter route | Source component | Kradle usage |
 | --- | --- | --- |
 | `/` -> `/projects` | router redirect | Kradle home remains repository/org dashboard; agent summary can be a dashboard card. |
 | `/agents` | `AgentsPage` | Global stack/adapter inventory and readiness summary. |
 | `/sessions` | `SessionsPage` | Cross-repo session list, mostly secondary to dispatch/run pages. |
 | `/sessions/new` | `NewRunPage` | Dispatch composer embedded in Code, Issues, PRs, and Pipelines. |
 | `/sessions/pending/:runId` | `SessionPendingPage` | Pending handoff state for `AgentDispatchRun`. |
-| `/dispatches/:runId` | `DispatchDetailPage` | Canonical CI-like dispatch run detail with Agent Mux chat. |
+| `/dispatches/:runId` | `DispatchDetailPage` | Canonical CI-like dispatch run detail with Agent Adapter chat. |
 | `/runs/:runId` | `LegacyDispatchRouteRedirect` | Compatibility redirect only. |
 | `/sessions/:sessionId` | `SessionDetailPage` | Chat/session tab inside dispatch/workspace pages. |
 | `/sessions/:agent/:sessionId` | `LegacySessionRouteRedirect` | Compatibility redirect only. |
@@ -143,11 +143,11 @@ Current Babysitter `staging` exposes these Agent Mux Web UI routes from `package
 | `/settings` | `KanbanSettingsPage` | Global policy/settings; repository settings stay under repo navigation. |
 | `/legacy-home`, `/legacy-workspaces`, `/legacy-inbox`, `/legacy-settings` | legacy pages | Do not model as Kradle product surface. |
 
-## Researched Agent Mux gateway endpoint matrix
+## Researched Agent Adapter gateway endpoint matrix
 
 Current `packages/adapters/gateway/src/kanban/routes.ts` provides the closest server contracts to reuse or adapt.
 
-| Endpoint/action | Agent Mux purpose | Kradle equivalent |
+| Endpoint/action | Agent Adapter purpose | Kradle equivalent |
 | --- | --- | --- |
 | `GET /api/backlog` | Load project, issue, workspace, session, PR, review, and board graph | Read repository work graph aggregated projection. |
 | `POST /api/backlog` `move-issue` | Move work item across workflow states | Patch `WorkItem.status.workflowState`. |
@@ -172,7 +172,7 @@ Current `packages/adapters/gateway/src/kanban/routes.ts` provides the closest se
 | Workspace actions `provision`, `pin`, `unpin`, `archive`, `cleanup`, `recover`, `notes-save`, `rebase-*` | Git workspace lifecycle | Workspace controller action requests with policy admission. |
 | `GET /api/digest` | Dashboard digest | Agent operations summary aggregated resource. |
 | `GET /api/runs`, `GET /api/runs/:runId` | Run list/detail | `AgentDispatchRun` and attempts. |
-| `GET /api/runs/:runId/events` | Run event timeline | Watch/SSE projection from Agent Mux event cursor. |
+| `GET /api/runs/:runId/events` | Run event timeline | Watch/SSE projection from Agent Adapter event cursor. |
 | `GET /api/runs/:runId/tasks/:effectId` | Task/effect detail | Tool/subagent/task event detail. |
 | `POST /api/runs/:runId/tasks/:effectId/approve` | Approve pending effect | `AgentApproval` decision subresource. |
 | `GET /api/stream` | Server-sent updates | Kradle watch stream for runs, sessions, workspaces, rules, approvals. |
@@ -209,11 +209,11 @@ Current `packages/adapters/gateway/src/kanban/routes.ts` provides the closest se
 - `src/kubernetes-resource-gateway.js`
   - Persist CRD-backed or aggregated resource operations.
 - `src/kubernetes-controller.js`
-  - Add reconciliation loops from Kradle resources to Agent Mux gateway calls.
+  - Add reconciliation loops from Kradle resources to Agent Adapter gateway calls.
 - `src/controller-client.js` and `src/controller-ui.js`
   - Add UI model projections for failed-check agent actions, run summaries, active sessions, trigger rules, context labels, approvals, and chat transcript state.
 - `src/http-server.js`
-  - Add server endpoints if the local server needs direct Agent Mux proxying outside Next route handlers.
+  - Add server endpoints if the local server needs direct Agent Adapter proxying outside Next route handlers.
 
 ### Existing product surfaces
 
@@ -258,13 +258,13 @@ Current `packages/adapters/gateway/src/kanban/routes.ts` provides the closest se
 - `charts/kradle/crds/`
   - Add CRDs for low-cardinality agent configuration resources when implementation begins.
 - `charts/kradle/templates/`
-  - Add Agent Mux gateway deployment/config or references to an external gateway.
+  - Add Agent Adapter gateway deployment/config or references to an external gateway.
 - `docs/components/runners-ci.md`, `docs/components/hooks-events.md`, `docs/components/web-ui.md`
   - Later cross-link after implementation starts.
 
 ## Agent stack, tools, and trigger source map
 
-Agent Mux has normalized adapter and configuration concepts that should inform Kradle's future `AgentStack` resources.
+Agent Adapter has normalized adapter and configuration concepts that should inform Kradle's future `AgentStack` resources.
 
 ### Adapter capabilities and run options
 
@@ -292,7 +292,7 @@ Agent Mux has normalized adapter and configuration concepts that should inform K
 - `packages/adapters/adapters/src/claude-adapter.ts`
   - Claude adapter surface for config, MCP plugin handling, spawn args, auth/session parsing, and capabilities.
 - `packages/adapters/adapters/src/claude-code/runtime-hooks/`
-  - Runtime hook config and socket server for surfacing hook/tool lifecycle events into Agent Mux.
+  - Runtime hook config and socket server for surfacing hook/tool lifecycle events into Agent Adapter.
 
 ### Trigger and work management
 

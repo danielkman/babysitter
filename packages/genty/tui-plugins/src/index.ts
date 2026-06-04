@@ -1,7 +1,7 @@
 /**
  * @a5c-ai/genty-tui-plugins
  *
- * Agent-mux TUI plugins for babysitter orchestration visibility.
+ * Adapters TUI plugins for babysitter orchestration visibility.
  *
  * Three plugins:
  * - babysitter:status  -- Run status, effects, iteration tracking

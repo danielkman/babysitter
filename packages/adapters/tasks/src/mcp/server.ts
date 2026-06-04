@@ -118,11 +118,11 @@ function toCompatShape(shape: Record<string, unknown>): ZodRawShapeCompat {
 }
 
 /**
- * Create a tasks-mux MCP server with breakpoint, responder, and native task tools registered.
+ * Create a tasks-adapter MCP server with breakpoint, responder, and native task tools registered.
  */
 export function createBreakpointMcpServer(): McpServer {
   const server = new McpServer({
-    name: "tasks-mux",
+    name: "tasks-adapter",
     version: "0.1.0",
   }, {
     capabilities: {
@@ -454,7 +454,7 @@ export function createBreakpointMcpServer(): McpServer {
 }
 
 /**
- * Start the tasks-mux MCP server on stdio transport.
+ * Start the tasks-adapter MCP server on stdio transport.
  */
 export async function startBreakpointMcpServer(): Promise<void> {
   const server = createBreakpointMcpServer();
@@ -463,7 +463,7 @@ export async function startBreakpointMcpServer(): Promise<void> {
 }
 
 /**
- * Start the tasks-mux MCP server on HTTP transport with Streamable HTTP.
+ * Start the tasks-adapter MCP server on HTTP transport with Streamable HTTP.
  *
  * The HTTP server provides:
  * - POST/GET/DELETE /mcp -- MCP Streamable HTTP transport

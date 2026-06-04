@@ -315,7 +315,7 @@ describe("appendCostEventOnce", () => {
         effectId: "effect-1",
         taskId: "task-1",
         taskKind: "agent",
-        source: "transport-mux",
+        source: "transport-adapter",
         idempotencyKey: "transport:run-1:effect-1",
         provider: "anthropic",
         model: "claude-sonnet-4-6",
@@ -330,7 +330,7 @@ describe("appendCostEventOnce", () => {
       const second = await appendCostEventOnce(runDir, {
         runId: "run-1",
         effectId: "effect-1",
-        source: "transport-mux",
+        source: "transport-adapter",
         idempotencyKey: "transport:run-1:effect-1",
         provider: "anthropic",
         model: "claude-sonnet-4-6",

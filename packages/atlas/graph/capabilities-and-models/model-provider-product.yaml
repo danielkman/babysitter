@@ -89,8 +89,8 @@ attributes:
   apiFamilies: []
   authKinds: []
   evidenceRefs:
-    - "repo-transport-mux-readme"
-    - "repo-transport-mux-architecture"
+    - "repo-transport-adapter-readme"
+    - "repo-transport-adapter-architecture"
 ---
 nodeKind: ModelProviderProduct
 id: provider:vertex
@@ -103,8 +103,8 @@ attributes:
   apiFamilies: []
   authKinds: []
   evidenceRefs:
-    - "repo-transport-mux-readme"
-    - "repo-transport-mux-architecture"
+    - "repo-transport-adapter-readme"
+    - "repo-transport-adapter-architecture"
 ---
 nodeKind: ModelProviderProduct
 id: provider:foundry
@@ -117,8 +117,8 @@ attributes:
   apiFamilies: []
   authKinds: []
   evidenceRefs:
-    - "repo-transport-mux-readme"
-    - "repo-transport-mux-architecture"
+    - "repo-transport-adapter-readme"
+    - "repo-transport-adapter-architecture"
 ---
 nodeKind: ModelProviderProduct
 id: provider:cloudflare-ai

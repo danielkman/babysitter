@@ -43,4 +43,4 @@ When `babysitter-plugin: true`, the action:
 4. Copies process file to `.a5c/processes/`
 5. Launches with bridge flags
 
-See [triggers README](../../packages/triggers-mux/README.md) for full input reference and examples.
+See [triggers README](../../packages/triggers-adapter/README.md) for full input reference and examples.

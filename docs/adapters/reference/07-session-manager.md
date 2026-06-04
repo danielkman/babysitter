@@ -46,13 +46,13 @@ The session subsystem addresses four primary concerns:
 ### 1.3 Access Point
 
 ```typescript
-const mux = createClient();
+const adapter = createClient();
 
 // All session operations via the sessions namespace:
-const sessions = await mux.sessions.list('claude');
-const session  = await mux.sessions.get('claude', 'abc123');
-const results  = await mux.sessions.search({ text: 'refactor auth' });
-const cost     = await mux.sessions.totalCost({ agent: 'claude' });
+const sessions = await adapter.sessions.list('claude');
+const session  = await adapter.sessions.get('claude', 'abc123');
+const results  = await adapter.sessions.search({ text: 'refactor auth' });
+const cost     = await adapter.sessions.totalCost({ agent: 'claude' });
 ```
 
 ---
@@ -755,7 +755,7 @@ Examples:
 
 ```typescript
 // Pure function, no I/O, no validation of session existence.
-const unifiedId = mux.sessions.resolveUnifiedId('claude', 'a1b2c3d4');
+const unifiedId = adapter.sessions.resolveUnifiedId('claude', 'a1b2c3d4');
 // => 'claude:a1b2c3d4'
 ```
 
@@ -764,10 +764,10 @@ The unified ID is constructed by joining the agent name and native session ID wi
 ### 5.3 resolveNativeId()
 
 ```typescript
-const result = mux.sessions.resolveNativeId('claude:a1b2c3d4');
+const result = adapter.sessions.resolveNativeId('claude:a1b2c3d4');
 // => { agent: 'claude', nativeSessionId: 'a1b2c3d4' }
 
-const invalid = mux.sessions.resolveNativeId('not-a-valid-id');
+const invalid = adapter.sessions.resolveNativeId('not-a-valid-id');
 // => null
 ```
 
@@ -783,7 +783,7 @@ Parsing rules:
 ### 6.1 list()
 
 ```typescript
-const recent = await mux.sessions.list('claude', {
+const recent = await adapter.sessions.list('claude', {
   since: new Date('2025-01-01'),
   sort: 'cost',
   sortDirection: 'desc',
@@ -809,7 +809,7 @@ const recent = await mux.sessions.list('claude', {
 ### 6.2 get()
 
 ```typescript
-const session = await mux.sessions.get('opencode', 'abc-def-123');
+const session = await adapter.sessions.get('opencode', 'abc-def-123');
 console.log(session.messages.length); // Full message history
 console.log(session.cost?.totalUsd);  // Aggregated cost
 ```
@@ -829,7 +829,7 @@ console.log(session.cost?.totalUsd);  // Aggregated cost
 ### 6.3 search()
 
 ```typescript
-const results = await mux.sessions.search({
+const results = await adapter.sessions.search({
   text: 'refactor authentication middleware',
   since: new Date('2025-01-01'),
   limit: 10,
@@ -850,7 +850,7 @@ const results = await mux.sessions.search({
 ### 6.4 totalCost()
 
 ```typescript
-const cost = await mux.sessions.totalCost({
+const cost = await adapter.sessions.totalCost({
   since: new Date('2025-03-01'),
   groupBy: 'agent',
 });
@@ -868,13 +868,13 @@ console.log(cost.breakdowns?.['claude'].totalUsd); // Claude-only cost
 
 **Cost data sources (in priority order):**
 1. Native session cost records (most accurate -- reported by the agent itself).
-2. Agent-mux run index entries (captures cost events emitted during runs).
+2. Adapters run index entries (captures cost events emitted during runs).
 3. Model registry estimation (fallback: `estimateCost(agent, model, inputTokens, outputTokens)` from the `ModelRegistry`).
 
 ### 6.5 export()
 
 ```typescript
-const markdown = await mux.sessions.export('claude', 'abc123', 'markdown');
+const markdown = await adapter.sessions.export('claude', 'abc123', 'markdown');
 // Write to file, pipe to stdout, etc.
 ```
 
@@ -895,7 +895,7 @@ const markdown = await mux.sessions.export('claude', 'abc123', 'markdown');
 ### 6.6 diff()
 
 ```typescript
-const d = await mux.sessions.diff(
+const d = await adapter.sessions.diff(
   { agent: 'claude', sessionId: 'original' },
   { agent: 'claude', sessionId: 'forked' },
 );
@@ -932,7 +932,7 @@ event semantics instead of reusing `AgentEvent` opportunistically.
 ### 6.8 resolveUnifiedId()
 
 ```typescript
-const id = mux.sessions.resolveUnifiedId('hermes', '550e8400-e29b-41d4-a716-446655440000');
+const id = adapter.sessions.resolveUnifiedId('hermes', '550e8400-e29b-41d4-a716-446655440000');
 // => 'hermes:550e8400-e29b-41d4-a716-446655440000'
 ```
 
@@ -941,10 +941,10 @@ Pure synchronous function. Concatenates `agent + ':' + nativeSessionId`. No I/O,
 ### 6.9 resolveNativeId()
 
 ```typescript
-const parsed = mux.sessions.resolveNativeId('hermes:550e8400-e29b-41d4-a716-446655440000');
+const parsed = adapter.sessions.resolveNativeId('hermes:550e8400-e29b-41d4-a716-446655440000');
 // => { agent: 'hermes', nativeSessionId: '550e8400-e29b-41d4-a716-446655440000' }
 
-const bad = mux.sessions.resolveNativeId('unknown-agent:123');
+const bad = adapter.sessions.resolveNativeId('unknown-agent:123');
 // => null (agent not registered)
 ```
 
@@ -1060,7 +1060,7 @@ parseSessionFile(filePath: string): Promise<Session>;
 listSessionFiles(cwd?: string): Promise<string[]>;
 ```
 
-The `SessionManager` is the public API; adapters are the parsing engine. Consumers interact exclusively with `SessionManager` via `mux.sessions`. The adapter methods are not exposed on the public API surface.
+The `SessionManager` is the public API; adapters are the parsing engine. Consumers interact exclusively with `SessionManager` via `adapter.sessions`. The adapter methods are not exposed on the public API surface.
 
 ### 10.1 Adapter Session Persistence Mapping
 

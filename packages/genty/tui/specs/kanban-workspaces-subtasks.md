@@ -1,4 +1,4 @@
-# Agent Mux TUI Kanban + Workspaces Backlog Decomposition
+# Agent Adapter TUI Kanban + Workspaces Backlog Decomposition
 
 ## Status Target
 

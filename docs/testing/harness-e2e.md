@@ -9,9 +9,9 @@ last_updated: 2026-05-07
 This document covers harness setup and plugin-enabled sessions. It intentionally separates two different integration types:
 
 1. **SDK harness/plugin setup integration** uses `babysitter harness:install` and `babysitter harness:install-plugin`.
-2. **Agent-mux plugin/session E2E** starts an agent session through `adapters` and verifies plugin behavior inside that session.
+2. **Adapters plugin/session E2E** starts an agent session through `adapters` and verifies plugin behavior inside that session.
 
-`agent-platform` runtime E2E is a third path and is covered in [Agent Mux And Runtime E2E](./adapters-and-runtime-e2e.md). It must not require `harness:install` or `harness:install-plugin` steps.
+`agent-platform` runtime E2E is a third path and is covered in [Agent Adapter And Runtime E2E](./adapters-and-runtime-e2e.md). It must not require `harness:install` or `harness:install-plugin` steps.
 
 ## Path A: SDK Harness And Plugin Setup
 
@@ -36,7 +36,7 @@ babysitter list --json
 
 The SDK installer path may delegate harness CLI install to adapters adapter install support internally, but the public test claim remains installer coverage.
 
-## Path B: Agent-Mux Plugin And Session E2E
+## Path B: Agent-Adapter Plugin And Session E2E
 
 This path tests a real or mocked agent session controlled by `adapters`. It should use `adapters run <agent>` or `createClient().run({ agent })`, not `agent-platform call`.
 

@@ -1,26 +1,26 @@
-# Mux Architecture — Graph vs Packages Deep Dive
+# Adapter Architecture — Graph vs Packages Deep Dive
 
-The Atlas graph defines **9 canonical muxes** as the bridging abstractions of the a5c agent stack. Each mux normalizes one concern across all supported agent products. This document maps each graph mux to its implementing package(s) and identifies concrete gaps.
+The Atlas graph defines **9 canonical muxes** as the bridging abstractions of the a5c agent stack. Each adapter normalizes one concern across all supported agent products. This document maps each graph adapter to its implementing package(s) and identifies concrete gaps.
 
 ## The 9 Canonical Muxes (from `extensions/muxes/canonical-muxes.yaml`)
 
-| Graph Mux | Protocol Type | Canonical Side | Package(s) |
+| Graph Adapter | Protocol Type | Canonical Side | Package(s) |
 |-----------|--------------|----------------|------------|
-| `agent-launch-mux` | spawn | InvocationOptions → SpawnArgs → lifecycle | `adapters-cli` (launch.ts) |
-| `agent-comm-mux` | event-stream | Harness-specific events → canonical shape | `agent-comm-mux` (client.ts) |
-| `agent-config-mux` | config | Per-agent config/auth/install → unified ops | `adapters-cli` (install.ts), `adapters-adapters` |
-| `hooks-mux` | lifecycle-hook | Native hook names → canonical taxonomy | `hooks-mux-cli`, `hooks-mux-core`, `hooks-mux-adapter-*` |
-| `transport-mux` | inference | Wire protocols → canonical request/response | `transport-mux` |
-| `extension-mux` | plugin | Portable Extension → per-agent native formats | `extension-mux` |
-| `session-storage-mux` | storage | Session files at rest | `babysitter-sdk` (session module) |
-| `tasks-mux` | approval | Trust chain for breakpoint answers | `tasks-mux` |
-| `tool-mux` | tool-dispatch | Tool calls across MCP, CLI, hooks | No dedicated package |
+| `agent-launch-adapter` | spawn | InvocationOptions → SpawnArgs → lifecycle | `adapters-cli` (launch.ts) |
+| `agent-comm-adapter` | event-stream | Harness-specific events → canonical shape | `agent-comm-adapter` (client.ts) |
+| `agent-config-adapter` | config | Per-agent config/auth/install → unified ops | `adapters-cli` (install.ts), `adapters-adapters` |
+| `hooks-adapter` | lifecycle-hook | Native hook names → canonical taxonomy | `hooks-adapter-cli`, `hooks-adapter-core`, `hooks-adapter-adapter-*` |
+| `transport-adapter` | inference | Wire protocols → canonical request/response | `transport-adapter` |
+| `extensions-adapter` | plugin | Portable Extension → per-agent native formats | `extensions-adapter` |
+| `session-storage-adapter` | storage | Session files at rest | `babysitter-sdk` (session module) |
+| `tasks-adapter` | approval | Trust chain for breakpoint answers | `tasks-adapter` |
+| `tools-adapter` | tool-dispatch | Tool calls across MCP, CLI, hooks | No dedicated package |
 
 ---
 
-## Mux-to-Package Detailed Mapping
+## Adapter-to-Package Detailed Mapping
 
-### 1. agent-launch-mux → `adapters-cli/src/commands/launch.ts`
+### 1. agent-launch-adapter → `adapters-cli/src/commands/launch.ts`
 
 **Graph description:** Spawns and supervises Invocations across all supported agent products. Owns the 9-state Invocation lifecycle (spawned → running → paused → interrupted → aborted | timed-out | completed | crashed | killed).
 
@@ -54,12 +54,12 @@ The Atlas graph defines **9 canonical muxes** as the bridging abstractions of th
 
 ---
 
-### 2. agent-comm-mux → `agent-comm-mux/src/client.ts`
+### 2. agent-comm-adapter → `agent-comm-adapter/src/client.ts`
 
 **Graph description:** Bridges every in-flight event shape. Channels are absorbed here because the underlying primitive is a structured communication channel between two participants.
 
 **Implementation reality:**
-- `AgentMuxClient` in agent-comm-mux handles event streaming
+- `AgentMuxClient` in agent-comm-adapter handles event streaming
 - Events are normalized to a common shape across harnesses
 - Session-flow projections in adapters-ui consume these events
 
@@ -71,7 +71,7 @@ The Atlas graph defines **9 canonical muxes** as the bridging abstractions of th
 
 ---
 
-### 3. agent-config-mux → `adapters-cli` + `adapters-adapters`
+### 3. agent-config-adapter → `adapters-cli` + `adapters-adapters`
 
 **Graph description:** Wraps each agent's idiosyncratic config/auth/install conventions into one set of operations callable from orchestrator or user.
 
@@ -89,13 +89,13 @@ The Atlas graph defines **9 canonical muxes** as the bridging abstractions of th
 
 ---
 
-### 4. hooks-mux → `hooks-mux-cli` + `hooks-mux-core` + `hooks-mux-adapter-*`
+### 4. hooks-adapter → `hooks-adapter-cli` + `hooks-adapter-core` + `hooks-adapter-adapter-*`
 
 **Graph description:** Bridges per-product native hook names to the canonical hook taxonomy + applies per-axis merge policies.
 
 **Implementation reality:**
-- hooks-mux-core: canonical hook taxonomy, merge policies
-- hooks-mux-cli: CLI binary (`a5c-hooks-mux invoke`)
+- hooks-adapter-core: canonical hook taxonomy, merge policies
+- hooks-adapter-cli: CLI binary (`a5c-hooks-adapter invoke`)
 - 10 adapter packages: claude, codex, gemini, copilot, cursor, pi, oh-my-pi, opencode, openclaw, hermes
 
 **Gaps:**
@@ -108,7 +108,7 @@ The Atlas graph defines **9 canonical muxes** as the bridging abstractions of th
 
 ---
 
-### 5. transport-mux → `transport-mux`
+### 5. transport-adapter → `transport-adapter`
 
 **Graph description:** Bridges between concrete LLM wire protocols and one canonical inference request/response shape. Adding a new native impl is a Catalog edit.
 
@@ -127,7 +127,7 @@ The Atlas graph defines **9 canonical muxes** as the bridging abstractions of th
 
 ---
 
-### 6. extension-mux → `extension-mux`
+### 6. extensions-adapter → `extensions-adapter`
 
 **Graph description:** Compiles one Portable Extension manifest into per-agent native formats via per-target generators.
 
@@ -139,12 +139,12 @@ The Atlas graph defines **9 canonical muxes** as the bridging abstractions of th
 **Gaps:**
 | ID | Severity | Gap |
 |----|----------|-----|
-| M-EXTENSION-01 | S3 | Graph uses "extension-mux"; package is "extension-mux" — naming mismatch |
+| M-EXTENSION-01 | S3 | Graph uses "extensions-adapter"; package is "extensions-adapter" — naming mismatch |
 | M-EXTENSION-02 | S3 | "Portable Extension" concept exists in graph but API is "plugin manifest" in code |
 
 ---
 
-### 7. session-storage-mux → `babysitter-sdk` (session module)
+### 7. session-storage-adapter → `babysitter-sdk` (session module)
 
 **Graph description:** Unified abstraction for reading and writing session files at rest.
 
@@ -158,35 +158,35 @@ The Atlas graph defines **9 canonical muxes** as the bridging abstractions of th
 |----|----------|-----|
 | M-SESSION-01 | S2 | No session storage backend abstraction — filesystem only |
 | M-SESSION-02 | S2 | Session resume writes to wrong path (#138) |
-| M-SESSION-03 | S3 | Graph concept is "mux" (multiple backends); implementation is single-backend |
+| M-SESSION-03 | S3 | Graph concept is "adapter" (multiple backends); implementation is single-backend |
 
 ---
 
-### 8. tasks-mux → `tasks-mux`
+### 8. tasks-adapter → `tasks-adapter`
 
 **Graph description:** The lone live Trust Chain primitive — ProvenBreakpointAnswer signs decision answers with the named Authority of the responder. Bridges every backend (Linear, GitHub, Slack, etc.)
 
 **Implementation reality:**
-- tasks-mux: pluggable backends, cryptographic signing
+- tasks-adapter: pluggable backends, cryptographic signing
 - Server-backed breakpoint routing
 - MCP integration for remote approval
 
 **Gaps:**
 | ID | Severity | Gap |
 |----|----------|-----|
-| M-TASKS-01 | S3 | Graph name "tasks-mux" ≠ package name "tasks-mux" |
+| M-TASKS-01 | S3 | Graph name "tasks-adapter" ≠ package name "tasks-adapter" |
 | M-TASKS-02 | S4 | Linear, Slack backends mentioned in graph — not implemented |
 
 ---
 
-### 9. tool-mux → **No dedicated package**
+### 9. tools-adapter → **No dedicated package**
 
-**Graph description:** CLI→MCP gateway, CLI→MCP gateway, and tool-level hooks layered on hooks-mux PreToolUse / PostToolUse.
+**Graph description:** CLI→MCP gateway, CLI→MCP gateway, and tool-level hooks layered on hooks-adapter PreToolUse / PostToolUse.
 
 **Implementation reality:**
-- Tool dispatch is embedded in agent-comm-mux and agent-platform
+- Tool dispatch is embedded in agent-comm-adapter and agent-platform
 - MCP tool serving is in babysitter-sdk (mcp module)
-- No unified tool-mux abstraction
+- No unified tools-adapter abstraction
 
 **Gaps:**
 | ID | Severity | Gap |
@@ -199,7 +199,7 @@ The Atlas graph defines **9 canonical muxes** as the bridging abstractions of th
 
 ## Agent Stack Implementation Layers (L4-L6)
 
-### agent-core vs agent-comm-mux vs agent-platform
+### agent-core vs agent-comm-adapter vs agent-platform
 
 The graph defines three implementation node kinds for the agent stack:
 
@@ -207,26 +207,26 @@ The graph defines three implementation node kinds for the agent stack:
 |-----------|-------|---------|------|
 | AgentCoreImpl | L4 | `agent-core` | Unified agent loop (babysitter-native) |
 | AgentRuntimeImpl | L5 | `agent-platform` | Host process, CLI, seam contracts |
-| AgentPlatformImpl | L6 | `extension-mux` + `agent-catalog` | Extensions, distribution, ecosystem |
+| AgentPlatformImpl | L6 | `extensions-adapter` + `agent-catalog` | Extensions, distribution, ecosystem |
 
-But `agent-comm-mux` also implements L4-L5 concerns (event dispatch, session management, adapter registry) without being an "AgentCoreImpl" in the graph.
+But `agent-comm-adapter` also implements L4-L5 concerns (event dispatch, session management, adapter registry) without being an "AgentCoreImpl" in the graph.
 
-**Gap:** `agent-comm-mux` is the de facto agent core for harness-mediated scenarios but isn't represented as an AgentCoreImpl in the graph. The graph has `agent:adapters` as an AgentProduct but its internal decomposition (core/cli/adapters/gateway/tui/ui) isn't modeled.
+**Gap:** `agent-comm-adapter` is the de facto agent core for harness-mediated scenarios but isn't represented as an AgentCoreImpl in the graph. The graph has `agent:adapters` as an AgentProduct but its internal decomposition (core/cli/adapters/gateway/tui/ui) isn't modeled.
 
 ### Package Decomposition vs Graph Model
 
-| adapters Package | Graph Mux | Graph Layer | Notes |
+| adapters Package | Graph Adapter | Graph Layer | Notes |
 |-------------------|-----------|-------------|-------|
-| agent-comm-mux | agent-comm-mux | L4-L5 | Event streaming, client, types |
-| adapters-cli | agent-launch-mux + agent-config-mux | L5-L10 | Launch, install, detect |
-| adapters-adapters | (part of agent-config-mux) | L5 | Per-harness adapters |
-| adapters-gateway | (no direct mux) | L6 | Remote API surface |
-| adapters-tui | (no direct mux) | L11 | TUI presentation |
-| adapters-ui | (no direct mux) | L11 | Shared UI |
-| adapters-webui | (no direct mux) | L11 | Web presentation |
-| adapters-observability | (no direct mux) | Cross-cutting | Logging, telemetry |
+| agent-comm-adapter | agent-comm-adapter | L4-L5 | Event streaming, client, types |
+| adapters-cli | agent-launch-adapter + agent-config-adapter | L5-L10 | Launch, install, detect |
+| adapters-adapters | (part of agent-config-adapter) | L5 | Per-harness adapters |
+| adapters-gateway | (no direct adapter) | L6 | Remote API surface |
+| adapters-tui | (no direct adapter) | L11 | TUI presentation |
+| adapters-ui | (no direct adapter) | L11 | Shared UI |
+| adapters-webui | (no direct adapter) | L11 | Web presentation |
+| adapters-observability | (no direct adapter) | Cross-cutting | Logging, telemetry |
 
-**Gap:** 4 of 7 adapters packages have no corresponding mux in the graph. They implement presentation (L11) and observability concerns that the mux model doesn't cover.
+**Gap:** 4 of 7 adapters packages have no corresponding adapter in the graph. They implement presentation (L11) and observability concerns that the adapter model doesn't cover.
 
 ---
 
@@ -234,10 +234,10 @@ But `agent-comm-mux` also implements L4-L5 concerns (event dispatch, session man
 
 | Priority | Gap | Impact |
 |----------|-----|--------|
-| P0 | tool-mux has no package (M-TOOL-01) | Tool dispatch is fragmented |
-| P1 | agent-launch-mux lifecycle is 2-state not 9-state (M-LAUNCH-01) | No pause/resume/retry for agent invocations |
-| P1 | transport-mux codec incomplete (M-TRANSPORT-01) | Tool schemas dropped, cost tracking missing |
-| P1 | agent-comm-mux event schema not formalized (M-COMM-02) | Each adapter emits different shapes |
-| P2 | agent-comm-mux not represented in graph (decomposition gap) | Graph doesn't reflect reality |
-| P2 | extension-mux ≠ extension-mux naming (M-EXTENSION-01) | Confusing for contributors |
-| P2 | tasks-mux ≠ tasks-mux naming (M-TASKS-01) | Confusing for contributors |
+| P0 | tools-adapter has no package (M-TOOL-01) | Tool dispatch is fragmented |
+| P1 | agent-launch-adapter lifecycle is 2-state not 9-state (M-LAUNCH-01) | No pause/resume/retry for agent invocations |
+| P1 | transport-adapter codec incomplete (M-TRANSPORT-01) | Tool schemas dropped, cost tracking missing |
+| P1 | agent-comm-adapter event schema not formalized (M-COMM-02) | Each adapter emits different shapes |
+| P2 | agent-comm-adapter not represented in graph (decomposition gap) | Graph doesn't reflect reality |
+| P2 | extensions-adapter ≠ extensions-adapter naming (M-EXTENSION-01) | Confusing for contributors |
+| P2 | tasks-adapter ≠ tasks-adapter naming (M-TASKS-01) | Confusing for contributors |

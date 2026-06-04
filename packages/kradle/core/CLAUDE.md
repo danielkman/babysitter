@@ -102,7 +102,7 @@ The CLI provides an MCP server (`kradle mcp`) that exposes 19 tools, 3 prompts, 
 
 ## Agent Dispatch: K8s Job Architecture
 
-Agents are dispatched as Kubernetes `batch/v1` Jobs (not subprocesses or Agent Mux HTTP calls).
+Agents are dispatched as Kubernetes `batch/v1` Jobs (not subprocesses or Agent Adapter HTTP calls).
 The dispatch flow:
 
 1. `resolveStack(agentStack, resources)` — translates AgentStack CRD to execution config
@@ -154,7 +154,7 @@ The dispatch flow:
 - Supports tool definitions passed through to model calls
 - **Key exports:** `createAssistantRuntime`, `ASSISTANT_RUNTIME_BOUNDARY`, `defaultAssistantConfig`, `defaultSystemPrompt`, `callModel`
 
-## Agent Mux Integration
+## Agent Adapter Integration
 
 - AgentStack, AgentDispatchRun, AgentTriggerRule, AgentSession, AgentMemory and 7+ more resource kinds fully implemented
 - Agent adapter, transport binding, provider config, project, gateway, session transcript controllers

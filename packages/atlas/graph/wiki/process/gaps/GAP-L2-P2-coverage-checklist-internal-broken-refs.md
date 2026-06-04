@@ -22,7 +22,7 @@ documents: []
 ## Current state
 Beyond `PathDescriptor` (its own gap), coverage-checklist mentions:
 - `OntologySchema` — used in row "Catalog / Ontology" but not in v6 nodeKinds (it IS in repo schema, line 23-30)
-- `Mux` (as schema element) — coverage-checklist treats `ExtensionInterface` `kind=mux` as the mapping, but no `kind` attribute is declared on ExtensionInterface
+- `Adapter` (as schema element) — coverage-checklist treats `ExtensionInterface` `kind=adapter` as the mapping, but no `kind` attribute is declared on ExtensionInterface
 - `ProcessLibrary` — referenced row 406 ("modeled as `ProcessLibrary`") but no such NodeKind in v6 ontology-schema.yaml; only `ProcessDescriptor`
 - `SharedContextSpec` — coverage row 139 ("structured Claim attached to ... as a `SharedContextSpec`") — no such named claim shape
 - `RunJournalEvent` — row 154 ("enum `RunJournalEvent`") — but enums in v6 are not first-class schema elements

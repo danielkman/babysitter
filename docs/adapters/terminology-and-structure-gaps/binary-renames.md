@@ -8,10 +8,10 @@
 | `adapters` | `@a5c-ai/adapters-cli` (cli) | `adapters` | Duplicate — merge with sdk or differentiate |
 | `adapters-proxy` | `@a5c-ai/transport-adapter` | `adapters-transport-proxy` | Proxy server binary |
 | `adapters-tui` | `@a5c-ai/genty-tui` | `adapters-tui` | Already close, just drop "adapters" prefix |
-| `a5c-hooks-mux` | `@a5c-ai/hooks-adapter-cli` | `adapters-hooks` | Completely inconsistent currently |
-| `extension-mux` | `@a5c-ai/extensions-adapter` | `adapters-extensions` | Add adapters prefix |
-| `triggers-mux` | `@a5c-ai/triggers-adapter` | `adapters-triggers` | Add adapters prefix |
-| `tasks-mux` | `@a5c-ai/tasks-adapter` | `adapters-tasks` | Add adapters prefix |
+| `a5c-hooks-adapter` | `@a5c-ai/hooks-adapter-cli` | `adapters-hooks` | Completely inconsistent currently |
+| `extensions-adapter` | `@a5c-ai/extensions-adapter` | `adapters-extensions` | Add adapters prefix |
+| `triggers-adapter` | `@a5c-ai/triggers-adapter` | `adapters-triggers` | Add adapters prefix |
+| `tasks-adapter` | `@a5c-ai/tasks-adapter` | `adapters-tasks` | Add adapters prefix |
 | `mock-harness` | `@a5c-ai/adapters-harness-mock` | `adapters-harness-mock` | Add adapters prefix |
 
 ## Backward Compatibility

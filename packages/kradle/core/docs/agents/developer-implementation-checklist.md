@@ -104,7 +104,7 @@ Tasks:
 
 - CRUD stacks through controller resources;
 - compute capability requirements;
-- query Agent Mux capabilities if configured;
+- query Agent Adapter capabilities if configured;
 - set readiness conditions;
 - build stack builder UI.
 
@@ -129,7 +129,7 @@ Tasks:
 
 - assemble/redact context;
 - create `AgentContextBundle`;
-- create `AgentDispatchRun` and `AgentDispatchAttempt` before Agent Mux launch;
+- create `AgentDispatchRun` and `AgentDispatchAttempt` before Agent Adapter launch;
 - add dispatch composer;
 - show queued/pending run rows.
 
@@ -140,18 +140,18 @@ npm test -- --test-name-pattern dispatch
 npm run ui:validate
 ```
 
-## Slice 6: Agent Mux binding
+## Slice 6: Agent Adapter binding
 
 Files:
 
 - `src/adapters-client.js`
 - `src/agent-dispatch-controller.js`
 - `apps/web/app/agents/runs/[run]/page.jsx`
-- Agent Mux embed components.
+- Agent Adapter embed components.
 
 Tasks:
 
-- launch through Agent Mux;
+- launch through Agent Adapter;
 - bind run/session IDs;
 - stream events;
 - embed transcript and observability timeline;
@@ -279,7 +279,7 @@ Stop implementation and fix docs/design first if:
 - a UI action cannot map to a resource/controller/API path;
 - a Secret value would need to pass through browser or status;
 - a label/comment could escalate permissions;
-- Agent Mux would become source of truth for Kradle repository objects;
+- Agent Adapter would become source of truth for Kradle repository objects;
 - generic resource/watch APIs would be bypassed without a typed wrapper rationale.
 
 ## Org memory implementation checklist
@@ -306,7 +306,7 @@ Stop implementation and fix docs/design first if:
 - Implement org and memory resource definitions before UI pages.
 - Add memory dashboard empty state before query/import actions.
 - Add manual dispatch memory preview before trigger automation.
-- Add `AgentMemorySnapshot` creation before Agent Mux launch.
+- Add `AgentMemorySnapshot` creation before Agent Adapter launch.
 - Add summary-only `AgentRunMemoryImport` before curated/full journal modes.
 - Add cross-org negative tests before enabling multi-org demo data.
 - Keep raw `.a5c` artifacts out of memory by default.

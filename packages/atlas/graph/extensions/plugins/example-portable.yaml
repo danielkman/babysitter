@@ -7,7 +7,7 @@ attributes:
   installFormats: [npm, marketplace]
   description: |
     A portable extension demonstrating cross-host packaging: a single
-    source compiled to both Claude Code and Codex via the extension-mux.
+    source compiled to both Claude Code and Codex via the extensions-adapter.
     Bundles the React TDD skill and the code-reviewer subagent.
 edges:
   installs_into:

@@ -93,7 +93,7 @@
       "L3"
     ],
     "muxes": [
-      "transport-mux"
+      "transport-adapter"
     ]
   }
 }

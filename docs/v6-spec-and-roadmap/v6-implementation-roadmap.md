@@ -189,8 +189,8 @@ Current V6-facing commands that can be cited today are:
 - `npm run lint --workspace=@a5c-ai/babysitter-sdk`
 - `npm run build:sdk`
 - `npm run test:sdk`
-- `npm run build:hooks-mux`
-- `npm run test:hooks-mux`
+- `npm run build:hooks-adapter`
+- `npm run test:hooks-adapter`
 - `npm run build:adapters`
 - `npm run test:adapters`
 - `npm run build --workspace=@a5c-ai/tasks-adapter`

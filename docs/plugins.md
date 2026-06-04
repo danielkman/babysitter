@@ -46,12 +46,12 @@ The `hookSupport` and `bridgeCapabilities` attributes in the atlas graph agent v
 
 When Babysitter runs inside a host agent plugin, most effects are host-resolvable: the host agent can edit files, run approved tools, answer breakpoints, and post task results back to the run.
 
-External agent responder effects are different. A process can mark an agent task with `responderType: "agent"` and an adapters `adapter`; tasks-mux then resolves that effect through adapters instead of handing it back to the host as ordinary tool work.
+External agent responder effects are different. A process can mark an agent task with `responderType: "agent"` and an adapters `adapter`; tasks-adapter then resolves that effect through adapters instead of handing it back to the host as ordinary tool work.
 
 This keeps the plugin contract small:
 
 - Host-resolvable effects stay with the current host agent.
-- External agent responder effects route through tasks-mux, adapters, and the `amuxBridge` integration.
+- External agent responder effects route through tasks-adapter, adapters, and the `amuxBridge` integration.
 - Fallback to the internal agent path must be explicit, using the current fallback field documented in the agent-reference docs.
 
 For task shape, fallback behavior, and troubleshooting, see [Process Authoring Policy](agent-reference/process-authoring.md#agent-task-responders) and [Command Surfaces](agent-reference/command-surfaces.md#external-agent-dispatch).
@@ -64,7 +64,7 @@ The blueprints rename does not change agent harness plugin concepts. These names
 - `PI_PLUGIN_ROOT`
 - `.claude/plugins/`
 - `packages/adapters/hooks/`
-- `packages/extension-mux/`
+- `packages/extensions-adapter/`
 - Agent plugin `plugin.json` manifests
 - Agent plugin `install.md` files
 
