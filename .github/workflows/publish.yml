@@ -135,7 +135,13 @@ jobs:
           run_bg npm run build --workspace=@a5c-ai/triggers-adapter
           run_bg npm run build:observer
           run_bg npm run build:cloud
-          run_bg bash -lc 'cd packages/kradle/core && npm run build && npm run build --workspace=@a5c-ai/tula-ui --prefix ../../.. && cd ../web && npm run build'
+          run_bg bash -lc '
+            set -euo pipefail
+            npm run build --workspace=@a5c-ai/kradle
+            npm run build --workspace=@a5c-ai/comm-adapter
+            npm run build --workspace=@a5c-ai/tula-ui
+            npm run build --workspace=@a5c-ai/kradle-web
+          '
 
           # adapters critical path (sequential — each depends on previous)
           npm run build --workspace=@a5c-ai/adapters-observability
