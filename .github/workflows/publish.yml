@@ -1344,6 +1344,7 @@ jobs:
         run: |
           set -euo pipefail
           npm run build --workspace=@a5c-ai/atlas
+          npm run build --workspace=@a5c-ai/tasks-adapter
           npm run build --workspace=@a5c-ai/adapters-observability
           npm run build --workspace=@a5c-ai/comm-adapter
           npm run build --workspace=@a5c-ai/adapters-codecs
@@ -1351,6 +1352,7 @@ jobs:
           npm run build --workspace=@a5c-ai/transport-adapter
           npm run build --workspace=@a5c-ai/adapters-cli
           npm run build --workspace=@a5c-ai/adapters
+          npm run build:sdk
           npm run build:local --workspace=@a5c-ai/genty-tui
 
       - name: Publish adapters TUI
