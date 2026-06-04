@@ -101,7 +101,7 @@ jobs:
           set -euo pipefail
           # Use root build scripts that know the current package layout
           npm run build:sdk || true
-          npm run build:hooks-mux || true
+          npm run build:hooks-adapter || true
           npm run build:adapters-extensions || true
           npm run build:adapters || true
           npm run build:runtime || true
@@ -173,7 +173,9 @@ jobs:
               };
               const models = {
                 'foundry-gpt55': {provider:'foundry-openai', adapters_provider:'foundry', model:'gpt-5.5', required_env:'AZURE_API_KEY,AGENT_MUX_API_BASE'},
+                'google-gemini35flash': {provider:'google', adapters_provider:'google', model:'gemini-3.5-flash', required_env:'GOOGLE_API_KEY'},
                 'google-gemini31': {provider:'google', adapters_provider:'google', model:'gemini-3.5-flash', required_env:'GOOGLE_API_KEY'},
+                'google-gemini31pro': {provider:'google', adapters_provider:'google', model:'gemini-3.1-pro-preview', required_env:'GOOGLE_API_KEY'},
                 'anthropic-sonnet46': {provider:'anthropic', adapters_provider:'anthropic', model:'claude-sonnet-4-6', required_env:'ANTHROPIC_API_KEY'},
                 'foundry-deepseek': {provider:'foundry-openai', adapters_provider:'foundry', model:'DeepSeek-V4-Pro', required_env:'AZURE_API_KEY,AGENT_MUX_API_BASE'},
                 'foundry-gpt54mini': {provider:'foundry-openai', adapters_provider:'foundry', model:'gpt-5.4-mini', required_env:'AZURE_API_KEY,AGENT_MUX_API_BASE'},
@@ -185,8 +187,8 @@ jobs:
                 'bridged-hooks': {id:'bridged-hooks', interactive:'false', bridge_interactive:'true', bridge_hooks:'true'},
               };
               const installModes = {
-                'vanilla': {id:'vanilla', required_trace_ids:'agentMuxRunId,agentMuxSessionId,transportTraceId', expected_artifacts:'adapters-events,transport-mux-trace,provider-trace-redacted'},
-                'bp': {id:'babysitter-plugin', required_trace_ids:'agentMuxRunId,agentMuxSessionId,transportTraceId', expected_artifacts:'adapters-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted'},
+                'vanilla': {id:'vanilla', required_trace_ids:'agentMuxRunId,agentMuxSessionId,transportTraceId', expected_artifacts:'adapters-events,transport-adapter-trace,provider-trace-redacted'},
+                'bp': {id:'babysitter-plugin', required_trace_ids:'agentMuxRunId,agentMuxSessionId,transportTraceId', expected_artifacts:'adapters-events,plugin-command-transcript,transport-adapter-trace,provider-trace-redacted'},
               };
               function modelFor(entry) {
                 const selected = models[entry.model];
@@ -231,14 +233,14 @@ jobs:
             "
           else
             # --- Push trigger: compact default ---
-            # Claude Code (foundry-gpt55), Codex (google-gemini31), Pi (foundry-deepseek), Antigravity (google-gemini31)
-            # vanilla + BP, live
+            # Claude Code (foundry-gpt55), Codex (google-gemini31pro), Pi (foundry-deepseek), Antigravity (google-gemini31pro)
+            # vanilla + BP, live — push defaults use gemini-3.1-pro-preview (Primary Full Tests use gemini-3.5-flash)
             node -e "
               const foundry = {provider:'foundry-openai', adapters_provider:'foundry', model:'gpt-5.5', required_env:'AZURE_API_KEY,AGENT_MUX_API_BASE'};
-              const google = {provider:'google', adapters_provider:'google', model:'gemini-3.5-flash', required_env:'GOOGLE_API_KEY'};
+              const google = {provider:'google', adapters_provider:'google', model:'gemini-3.1-pro-preview', required_env:'GOOGLE_API_KEY'};
               const deepseek = {provider:'foundry-openai', adapters_provider:'foundry', model:'DeepSeek-V4-Pro', required_env:'AZURE_API_KEY,AGENT_MUX_API_BASE'};
-              const vanillaInstall = {id:'vanilla', required_trace_ids:'agentMuxRunId,agentMuxSessionId,transportTraceId', expected_artifacts:'adapters-events,transport-mux-trace,provider-trace-redacted'};
-              const bpInstall = {id:'babysitter-plugin', required_trace_ids:'agentMuxRunId,agentMuxSessionId,transportTraceId', expected_artifacts:'adapters-events,plugin-command-transcript,transport-mux-trace,provider-trace-redacted'};
+              const vanillaInstall = {id:'vanilla', required_trace_ids:'agentMuxRunId,agentMuxSessionId,transportTraceId', expected_artifacts:'adapters-events,transport-adapter-trace,provider-trace-redacted'};
+              const bpInstall = {id:'babysitter-plugin', required_trace_ids:'agentMuxRunId,agentMuxSessionId,transportTraceId', expected_artifacts:'adapters-events,plugin-command-transcript,transport-adapter-trace,provider-trace-redacted'};
 
               const ni = {id:'non-interactive', interactive:'false', bridge_interactive:'false', bridge_hooks:'false'};
               const bridgedInt = {id:'bridged-interactive', interactive:'false', bridge_interactive:'true', bridge_hooks:'false'};
@@ -643,7 +645,7 @@ jobs:
           done
 
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "## Agent-Mux Matrix" >> "$GITHUB_STEP_SUMMARY"
+          echo "## Agent-Adapter Matrix" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "| OS | Agent | Provider | Model | Mode | Runtime | Status | Detail |" >> "$GITHUB_STEP_SUMMARY"
           echo "|----|-------|----------|-------|------|---------|--------|--------|" >> "$GITHUB_STEP_SUMMARY"
@@ -701,7 +703,7 @@ jobs:
           echo "| Matrix | Passed | Failed | Total |" >> "$GITHUB_STEP_SUMMARY"
           echo "|--------|--------|--------|-------|" >> "$GITHUB_STEP_SUMMARY"
           echo "| Babysitter-Plugin | ${bp_pass} | ${bp_fail} | $((bp_pass + bp_fail)) |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Agent-Mux | ${van_pass} | ${van_fail} | $((van_pass + van_fail)) |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Agent-Adapter | ${van_pass} | ${van_fail} | $((van_pass + van_fail)) |" >> "$GITHUB_STEP_SUMMARY"
           echo "| **Total** | **${total_pass}** | **${total_fail}** | **${total}** |" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
 
