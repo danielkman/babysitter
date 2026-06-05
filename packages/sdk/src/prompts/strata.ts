@@ -83,6 +83,7 @@ export const PART_STRATA_MAP: Record<string, StratumTaggedPart> = {
   renderDependencies: tagPart('renderDependencies', 'runtime', parts.renderDependencies, 45),
   renderRecovery: tagPart('renderRecovery', 'runtime', parts.renderRecovery, 45),
   renderQuickReference: tagPart('renderQuickReference', 'runtime', parts.renderQuickReference, 50),
+  renderLongTermMemory: tagPart('renderLongTermMemory', 'runtime', parts.renderLongTermMemory, 48),
 
   // ── Turn-local stratum ───────────────────────────────────────────────
   renderIntentFidelityChecks: tagPart('renderIntentFidelityChecks', 'turnLocal', parts.renderIntentFidelityChecks, 55),
