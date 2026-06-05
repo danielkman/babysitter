@@ -1146,17 +1146,7 @@ async function validateAgentBehavior(
     });
 
     for (const he of deferredHooksEntries) {
-      if (he.status === 'failed' && he.detail.includes('deferred')) {
-        if (isBridgeHooksMode) {
-          entries.push(he);
-        } else if (runCompleted || completionProofFound) {
-          entries.push({ ...he, status: 'passed', detail: `${he.detail} — upgraded: run completed, hooks optional in interactive mode` });
-        } else {
-          entries.push(he);
-        }
-      } else {
-        entries.push(he);
-      }
+      entries.push(he);
     }
 
   }
