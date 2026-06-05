@@ -6,7 +6,7 @@ import { javascript } from '@codemirror/lang-javascript';
 import { yaml } from '@codemirror/lang-yaml';
 import { EditorView } from '@codemirror/view';
 
-const krateEditorTheme = EditorView.theme({
+const kradleEditorTheme = EditorView.theme({
   '&': {
     backgroundColor: 'rgba(1, 6, 13, .72)',
     color: '#d9f8ff',
@@ -35,7 +35,7 @@ const krateEditorTheme = EditorView.theme({
 export function CodeEditor({ value, language = 'yaml', label = 'CodeMirror resource editor', compact = false }) {
   const extensions = useMemo(() => [
     language === 'javascript' ? javascript({ jsx: true }) : yaml(),
-    krateEditorTheme,
+    kradleEditorTheme,
     EditorView.lineWrapping
   ], [language]);
 

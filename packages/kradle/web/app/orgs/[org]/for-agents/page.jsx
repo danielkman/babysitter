@@ -6,31 +6,31 @@ import { PageFrame } from '../../../lib/page-frame.jsx';
 export const metadata = { title: 'For Agents | Kradle' };
 
 const MCP_TOOLS = [
-  { name: 'krate_snapshot', description: 'Get full organization runtime snapshot', params: '—' },
-  { name: 'krate_list_resources', description: 'List resources of a given kind', params: 'kind' },
-  { name: 'krate_get_resource', description: 'Get a single resource by kind and name', params: 'kind, name' },
-  { name: 'krate_apply_resource', description: 'Create or update a resource', params: 'resource (object)' },
-  { name: 'krate_delete_resource', description: 'Delete a resource by kind and name', params: 'kind, name' },
-  { name: 'krate_search', description: 'Search resources by query string', params: 'query' },
-  { name: 'krate_list_stacks', description: 'List agent stack configurations', params: '—' },
-  { name: 'krate_create_stack', description: 'Create an AgentStack resource', params: 'name, org, spec' },
-  { name: 'krate_dispatch_agent', description: 'Dispatch an agent run from a stack', params: 'stackRef, input' },
-  { name: 'krate_list_secrets', description: 'List AgentSecretGrant resources', params: 'org' },
-  { name: 'krate_create_secret', description: 'Create an AgentSecretGrant', params: 'name, org, agentRef, secretRef' },
-  { name: 'krate_sync_external', description: 'Trigger external backend sync', params: 'bindingName, kind, localName' },
-  { name: 'krate_resolve_conflict', description: 'Resolve an external sync conflict', params: 'conflictName, strategy' },
-  { name: 'krate_audit_query', description: 'Query audit events with filters', params: 'org, action, since, until' },
-  { name: 'krate_model_catalog', description: 'List unified model catalog (internal + external)', params: 'org' },
-  { name: 'krate_list_model_routes', description: 'List model routing rules', params: '—' },
-  { name: 'krate_create_model_route', description: 'Create a model route for internal or external models', params: 'name, org, modelName, routeType' },
-  { name: 'krate_list_virtual_models', description: 'List virtual model abstractions', params: '—' },
-  { name: 'krate_create_virtual_model', description: 'Create a programmable virtual model with routing rules and hooks', params: 'name, org, modelName, routes' },
+  { name: 'kradle_snapshot', description: 'Get full organization runtime snapshot', params: '—' },
+  { name: 'kradle_list_resources', description: 'List resources of a given kind', params: 'kind' },
+  { name: 'kradle_get_resource', description: 'Get a single resource by kind and name', params: 'kind, name' },
+  { name: 'kradle_apply_resource', description: 'Create or update a resource', params: 'resource (object)' },
+  { name: 'kradle_delete_resource', description: 'Delete a resource by kind and name', params: 'kind, name' },
+  { name: 'kradle_search', description: 'Search resources by query string', params: 'query' },
+  { name: 'kradle_list_stacks', description: 'List agent stack configurations', params: '—' },
+  { name: 'kradle_create_stack', description: 'Create an AgentStack resource', params: 'name, org, spec' },
+  { name: 'kradle_dispatch_agent', description: 'Dispatch an agent run from a stack', params: 'stackRef, input' },
+  { name: 'kradle_list_secrets', description: 'List AgentSecretGrant resources', params: 'org' },
+  { name: 'kradle_create_secret', description: 'Create an AgentSecretGrant', params: 'name, org, agentRef, secretRef' },
+  { name: 'kradle_sync_external', description: 'Trigger external backend sync', params: 'bindingName, kind, localName' },
+  { name: 'kradle_resolve_conflict', description: 'Resolve an external sync conflict', params: 'conflictName, strategy' },
+  { name: 'kradle_audit_query', description: 'Query audit events with filters', params: 'org, action, since, until' },
+  { name: 'kradle_model_catalog', description: 'List unified model catalog (internal + external)', params: 'org' },
+  { name: 'kradle_list_model_routes', description: 'List model routing rules', params: '—' },
+  { name: 'kradle_create_model_route', description: 'Create a model route for internal or external models', params: 'name, org, modelName, routeType' },
+  { name: 'kradle_list_virtual_models', description: 'List virtual model abstractions', params: '—' },
+  { name: 'kradle_create_virtual_model', description: 'Create a programmable virtual model with routing rules and hooks', params: 'name, org, modelName, routes' },
 ];
 
 const MCP_PROMPTS = [
-  { name: 'krate_workspace_setup', description: 'Guide for setting up a new kradle workspace' },
-  { name: 'krate_stack_config', description: 'Help configuring an agent stack' },
-  { name: 'krate_troubleshoot', description: 'Diagnose common kradle issues' },
+  { name: 'kradle_workspace_setup', description: 'Guide for setting up a new kradle workspace' },
+  { name: 'kradle_stack_config', description: 'Help configuring an agent stack' },
+  { name: 'kradle_troubleshoot', description: 'Diagnose common kradle issues' },
 ];
 
 const MCP_RESOURCES = [

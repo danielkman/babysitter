@@ -45,7 +45,7 @@ function loadJitsiExternalApi() {
     if (!existing) {
       script.src = JITSI_EXTERNAL_API_SRC;
       script.async = true;
-      script.dataset.krateJitsiExternalApi = 'true';
+      script.dataset.kradleJitsiExternalApi = 'true';
       document.head.appendChild(script);
     }
   });

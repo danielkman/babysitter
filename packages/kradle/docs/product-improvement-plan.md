@@ -170,7 +170,7 @@ test('snapshot includes all agent view kinds', () => {
 ### 4.2 Post-deploy gates
 - Health check returns ok for all configured services
 - E2E Playwright suite passes
-- No new "Unsupported Krate resource" errors in controller logs
+- No new "Unsupported Kradle resource" errors in controller logs
 - SSE endpoint emits real events (not just heartbeats)
 
 ### 4.3 Weekly product metrics

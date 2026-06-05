@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { PlaygroundPanel } from './inference-playground-panel.jsx';
 
 /* ───────────── keyframes ───────────── */
-const KEYFRAMES_ID = '__krate-playground-keyframes';
+const KEYFRAMES_ID = '__kradle-playground-keyframes';
 function ensureKeyframes() {
   if (typeof document === 'undefined') return;
   if (document.getElementById(KEYFRAMES_ID)) return;

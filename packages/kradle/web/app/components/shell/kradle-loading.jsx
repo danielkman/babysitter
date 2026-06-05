@@ -44,16 +44,16 @@ export function KradleLoadingView({
   const { dots, phase, shownProgress } = useKradleLoadingProgress();
 
   return (
-    <section className={`krateLoadingView ${fullPage ? 'fullPage' : ''}`} aria-live="polite" aria-busy="true">
-      <div className="krateLoadingLogo" aria-hidden="true">K</div>
-      <div className="krateLoadingText">
+    <section className={`kradleLoadingView ${fullPage ? 'fullPage' : ''}`} aria-live="polite" aria-busy="true">
+      <div className="kradleLoadingLogo" aria-hidden="true">K</div>
+      <div className="kradleLoadingText">
         <h2>{title}</h2>
         <p>{subtitle}</p>
       </div>
-      <div className="krateLoadingBar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow={shownProgress}>
+      <div className="kradleLoadingBar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow={shownProgress}>
         <span style={{ width: `${shownProgress}%` }} />
       </div>
-      <p className="krateLoadingPhase">{phase}{dots}</p>
+      <p className="kradleLoadingPhase">{phase}{dots}</p>
       <small>{shownProgress}% · {detail}</small>
     </section>
   );
@@ -128,14 +128,14 @@ export function KradleControllerRecovery({ org = 'default', pollMs = 2500 }) {
   if (recovered) return null;
 
   return (
-    <div className="krateRecoveryOverlay">
+    <div className="kradleRecoveryOverlay">
       <KradleLoadingView
         title="Reconnecting Kradle workspace"
         subtitle=""
         detail={detail}
         fullPage={false}
       />
-      <p className="krateRecoveryHint">This overlay will close as soon as the controller responds with workspace data.</p>
+      <p className="kradleRecoveryHint">This overlay will close as soon as the controller responds with workspace data.</p>
     </div>
   );
 }

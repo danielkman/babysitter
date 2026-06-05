@@ -168,7 +168,7 @@ function issueHref(org, name, { repo = null, project = null } = {}) {
 }
 
 function refsFrom(issue, scope, fallback) {
-  const singular = scope === 'repository' ? ['repository', 'repoRef', 'repositoryRef'] : ['project', 'projectRef', 'krateProject', 'krateProjectRef'];
+  const singular = scope === 'repository' ? ['repository', 'repoRef', 'repositoryRef'] : ['project', 'projectRef', 'kradleProject', 'kradleProjectRef'];
   const plural = scope === 'repository' ? ['repositories', 'repositoryRefs'] : ['projects', 'projectRefs'];
   return unique([fallback, ...singular.map((key) => issue.spec?.[key]), ...plural.flatMap((key) => issue.spec?.[key] || []), issue.metadata?.annotations?.[`kradle.a5c.ai/${plural[0]}`], issue.metadata?.labels?.[`kradle.a5c.ai/${scope}`]]);
 }

@@ -179,7 +179,7 @@ export function renderMarkdown(text) {
 export function isApiKeyError(content) {
   if (!content) return false;
   const lower = content.toLowerCase();
-  return lower.includes('api key not configured') || lower.includes('anthropic_api_key') || lower.includes('krate_assistant_api_key');
+  return lower.includes('api key not configured') || lower.includes('anthropic_api_key') || lower.includes('kradle_assistant_api_key');
 }
 
 export function ApiKeyMessage() {
