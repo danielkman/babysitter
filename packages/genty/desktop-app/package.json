@@ -9,6 +9,7 @@
     "dev": "electron .",
     "build": "tsc && electron-builder",
     "build:renderer": "vite build",
+    "clean": "rm -rf dist release",
     "package": "electron-builder --dir"
   },
   "dependencies": {
