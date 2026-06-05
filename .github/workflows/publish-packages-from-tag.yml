@@ -76,7 +76,7 @@ jobs:
             echo "Building @a5c-ai/genty-web-app without rebuilding @a5c-ai/genty-ui"
             npm run clean --workspace=@a5c-ai/genty-web-app
             (
-              cd packages/adapters/webui
+              cd packages/genty/web-app
               npx --no-install vite build
               npx --no-install tsc --build
               npx --no-install tsc --emitDeclarationOnly --declarationMap false -p tsconfig.json
