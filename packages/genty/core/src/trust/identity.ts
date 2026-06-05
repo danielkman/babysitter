@@ -1,4 +1,4 @@
-import { generateKeyPair } from './signing.js';
+import { createKeyPair } from './signing.js';
 import type { AgentIdentity, ToolIdentity } from './types.js';
 
 export function createAgentIdentity(agentId: string, sessionId: string): AgentIdentity {
@@ -6,7 +6,7 @@ export function createAgentIdentity(agentId: string, sessionId: string): AgentId
     kind: 'agent',
     agentId,
     sessionId,
-    keyPair: generateKeyPair(),
+    keyPair: createKeyPair(),
   };
 }
 
@@ -14,6 +14,6 @@ export function createToolIdentity(toolName: string): ToolIdentity {
   return {
     kind: 'tool',
     toolName,
-    keyPair: generateKeyPair(),
+    keyPair: createKeyPair(),
   };
 }

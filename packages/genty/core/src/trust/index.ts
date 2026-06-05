@@ -1,4 +1,4 @@
-export { generateKeyPair, signPayload, verifySignature } from './signing.js';
+export { createKeyPair, signPayload, verifySignature } from './signing.js';
 export { createAgentIdentity, createToolIdentity } from './identity.js';
 export type {
   SignedEnvelope,

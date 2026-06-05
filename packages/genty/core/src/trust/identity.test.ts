@@ -9,14 +9,14 @@ describe('trust/identity', () => {
     expect(id.agentId).toBe('claude');
     expect(id.sessionId).toBe('session-123');
     expect(id.keyPair.publicKey).toContain('BEGIN PUBLIC KEY');
-    expect(id.keyPair.fingerprint).toHaveLength(16);
+    expect(id.keyPair.fingerprint).toHaveLength(64);
   });
 
   it('creates a tool identity', () => {
     const id = createToolIdentity('Bash');
     expect(id.kind).toBe('tool');
     expect(id.toolName).toBe('Bash');
-    expect(id.keyPair.fingerprint).toHaveLength(16);
+    expect(id.keyPair.fingerprint).toHaveLength(64);
   });
 
   it('agent identity can sign and verify', () => {
