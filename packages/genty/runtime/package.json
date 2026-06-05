@@ -37,7 +37,25 @@
       "require": "./dist/telemetry/index.js",
       "default": "./dist/telemetry/index.js"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./rpc": {
+      "import": {
+        "types": "./src/rpc/index.ts",
+        "default": "./src/rpc/index.ts"
+      }
+    },
+    "./session/tree": {
+      "import": {
+        "types": "./src/session/tree.ts",
+        "default": "./src/session/tree.ts"
+      }
+    },
+    "./session/export": {
+      "import": {
+        "types": "./src/session/export.ts",
+        "default": "./src/session/export.ts"
+      }
+    }
   },
   "typesVersions": {
     "*": {

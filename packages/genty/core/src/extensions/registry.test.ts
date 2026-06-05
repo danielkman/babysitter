@@ -17,7 +17,7 @@ describe('ExtensionRegistry', () => {
         name: 'greet',
         description: 'Say hello',
         inputSchema: { type: 'object', properties: { name: { type: 'string' } } },
-        handler: async (input) => `Hello ${input.name}`,
+        handler: async (input: Record<string, unknown>) => `Hello ${input.name}`,
       });
     });
 
@@ -102,7 +102,7 @@ describe('ExtensionRegistry', () => {
     await registry.activate(makeExtension('ctx-ext', (ctx) => {
       ctx.injectContext({
         id: 'rag',
-        provide: async (turn) => ({
+        provide: async (turn: { sessionId: string; turnNumber: number; messageHistory: unknown[]; pendingTools: string[] }) => ({
           messages: [{ role: 'system', content: `Turn ${turn.turnNumber} context` }],
         }),
       });

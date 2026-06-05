@@ -1,5 +1,5 @@
 import { execSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { homedir } from 'node:os';
 import type { ExtensionManifest, ExtensionSource } from '@a5c-ai/genty-core/extensions';
@@ -74,7 +74,6 @@ export function listInstalled(): InstalledExtension[] {
   const dir = getExtensionsDir();
   if (!existsSync(dir)) return [];
 
-  const { readdirSync } = require('node:fs');
   const entries: InstalledExtension[] = [];
 
   for (const entry of readdirSync(dir, { withFileTypes: true })) {

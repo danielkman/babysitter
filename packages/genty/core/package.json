@@ -12,7 +12,19 @@
       "require": "./dist/index.js",
       "default": "./dist/index.js"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./trust": {
+      "import": {
+        "types": "./src/trust/index.ts",
+        "default": "./src/trust/index.ts"
+      }
+    },
+    "./extensions": {
+      "import": {
+        "types": "./src/extensions/index.ts",
+        "default": "./src/extensions/index.ts"
+      }
+    }
   },
   "files": [
     "dist/",

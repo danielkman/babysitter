@@ -121,3 +121,27 @@ export {
   applyVoteSynthesis,
   applyRankSynthesis,
 } from "./synthesis";
+
+// Trust enforcement primitives
+export {
+  createKeyPair, signPayload, verifySignature,
+  createAgentIdentity, createToolIdentity,
+  signModelResponse, verifyModelResponse,
+  signAgentRequest, verifyAgentRequest, signPrompt, verifyPrompt, hashContent,
+  signToolResult, verifyToolResult, signPermissionEvidence, verifyPermissionEvidence, isPermissionValid,
+  verifyTrustChain,
+} from "./trust";
+export type {
+  SignedEnvelope, IdentityKeyPair, AgentIdentity, ToolIdentity, DelegationChainLink,
+  ModelResponsePayload, AgentRequestPayload, PromptPayload,
+  ToolResultPayload, PermissionEvidencePayload, TrustChainLink, ChainVerificationResult,
+} from "./trust";
+
+// Extension API
+export { ExtensionRegistry } from "./extensions";
+export type {
+  GentyExtension, ExtensionContext, ExtensionToolDefinition, ExtensionPermission,
+  CommandHandler, KeyHandler, EventHandler, ExtensionEventType, ExtensionEvent,
+  StatusBarItem, ContextProvider, TurnContext, ContextInjection,
+  ExtensionManifest, ExtensionSource,
+} from "./extensions";

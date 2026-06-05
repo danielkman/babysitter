@@ -5,7 +5,7 @@ export interface DynamicContextPipeline {
   addProvider(provider: ContextProvider): void;
   removeProvider(id: string): void;
   collectInjections(turnCtx: TurnContext): Promise<ContextInjection[]>;
-  applyInjections(injections: ContextInjection[], messages: unknown[]): unknown[];
+  applyInjections(injections: ContextInjection[], messages: Array<{ role: string; content: string }>): Array<{ role: string; content: string }>;
 }
 
 export function createDynamicContextPipeline(): DynamicContextPipeline {
@@ -36,16 +36,13 @@ export function createDynamicContextPipeline(): DynamicContextPipeline {
       return results;
     },
 
-    applyInjections(injections: ContextInjection[], messages: unknown[]): unknown[] {
+    applyInjections(injections: ContextInjection[], messages: Array<{ role: string; content: string }>): Array<{ role: string; content: string }> {
       const result = [...messages];
       let systemAppend = '';
 
       for (const injection of injections) {
         if (injection.messages) {
-          // Inject messages before the latest user message
-          const lastUserIdx = result.findLastIndex(
-            (m: any) => m.role === 'user'
-          );
+          const lastUserIdx = result.findLastIndex((m) => m.role === 'user');
           if (lastUserIdx >= 0) {
             result.splice(lastUserIdx, 0, ...injection.messages);
           } else {
@@ -58,7 +55,7 @@ export function createDynamicContextPipeline(): DynamicContextPipeline {
       }
 
       if (systemAppend && result.length > 0) {
-        const first = result[0] as any;
+        const first = result[0];
         if (first.role === 'system') {
           result[0] = { ...first, content: first.content + systemAppend };
         }
