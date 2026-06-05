@@ -190,12 +190,20 @@ runs:
           copilot-cli) AGENT_MUX_AGENT="copilot" ;;
           cursor-cli) AGENT_MUX_AGENT="cursor" ;;
         esac
-        # Remove stale global bin entries that cause EEXIST on npm install -g
+        # Remove stale global bin entries and lib dirs that cause EEXIST on npm install -g
         NODE_BIN="$(dirname "$(which node)")"
+        NODE_LIB="$(dirname "$NODE_BIN")/lib/node_modules"
         for bin in codex claude gemini pi copilot cursor hermes opencode antigravity; do
-          rm -f "$NODE_BIN/$bin" 2>/dev/null || true
+          rm -rf "$NODE_BIN/$bin" 2>/dev/null || true
         done
-        adapters install "$AGENT_MUX_AGENT" --force || true
+        rm -rf "$NODE_LIB/@openai/codex" 2>/dev/null || true
+        if ! adapters install "$AGENT_MUX_AGENT" 2>/dev/null; then
+          echo "adapters install failed, trying direct npm install"
+          case "$AGENT_MUX_AGENT" in
+            codex) npm install -g --force @openai/codex 2>/dev/null || true ;;
+            *) true ;;
+          esac
+        fi
 
     - name: Install babysitter plugin
       if: ${{ inputs.babysitter-plugin == 'true' }}
