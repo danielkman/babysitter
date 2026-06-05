@@ -76,6 +76,8 @@ export async function executeAgentCliCommand(parsed: HarnessParsedArgs): Promise
   }
 
   switch (parsed.command) {
+    case "print":
+      return (await import("./commands/print.js")).handlePrint(parsed);
     case "discover":
     case "list":
       return await handleHarnessDiscover(parsed);

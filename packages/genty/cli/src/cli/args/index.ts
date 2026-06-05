@@ -40,6 +40,14 @@ function normalizeInitialCommand(parsed: HarnessParsedArgs) {
 }
 
 export function parseHarnessArgs(argv: string[]): HarnessParsedArgs {
+  // Handle -p "query" shorthand before normal parsing
+  if (argv[0] === '-p' && argv.length >= 2) {
+    const parsed = createDefaultParsedArgs('print');
+    parsed.prompt = argv.slice(1).join(' ');
+    parsed.interactive = false;
+    return parsed;
+  }
+
   const [initialCommand, ...rest] = argv;
   const parsed = createDefaultParsedArgs(initialCommand);
   normalizeInitialCommand(parsed);
