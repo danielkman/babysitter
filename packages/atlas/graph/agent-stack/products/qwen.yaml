@@ -19,3 +19,4 @@ edges:
   has_version:
     - agent-version:qwen@current
     - agentVersion:qwen:0-17-0
+    - agentVersion:qwen:0-17-1

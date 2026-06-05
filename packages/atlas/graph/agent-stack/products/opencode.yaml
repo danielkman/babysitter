@@ -16,3 +16,4 @@ edges:
   has_version:
     - agentVersion:opencode:ge-0-0-0
     - agentVersion:opencode:1-15-13
+    - agentVersion:opencode:1-16-0

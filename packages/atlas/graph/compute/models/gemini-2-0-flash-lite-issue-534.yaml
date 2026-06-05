@@ -30,8 +30,8 @@ attributes:
     - kind: text
       direction: output
   releaseDate: '2025-02-25'
-  lifecycleStatus: deprecated
-  lifecycleStatusChangedAt: '2026-05-29'
+  lifecycleStatus: shut-down
+  lifecycleStatusChangedAt: '2026-06-01'
   deprecationDate: '2026-05-29'
   eolDate: '2026-06-01'
   knowledgeCutoffDate: '2024-08-01'

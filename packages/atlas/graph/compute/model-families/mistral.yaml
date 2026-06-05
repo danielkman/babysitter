@@ -15,3 +15,5 @@ edges:
     - model:codestral-22b@current
     - model:codestral-25-08@current
     - model:codestral-25-01@current
+    - model:mistral-small-4@current
+    - model:pixtral-large@current

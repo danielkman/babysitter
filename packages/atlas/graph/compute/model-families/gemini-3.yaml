@@ -14,3 +14,5 @@ edges:
     - model:gemini-3-1-deep-think@current
     - model:gemini-3-1-flash-lite@current
     - model:gemini-3-5-flash@current
+    - model:gemini-3-1-flash-live@current
+    - model:gemini-3-1-flash-tts@current

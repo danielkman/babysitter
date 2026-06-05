@@ -16,6 +16,7 @@ attributes:
 edges:
   has_version:
     - agentVersion:antigravity:2-0-11
+    - agentVersion:antigravity:1-0-5
   composed_of:
     - target: language:go
       role: core

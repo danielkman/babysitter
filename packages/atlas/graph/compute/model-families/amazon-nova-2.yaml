@@ -17,3 +17,4 @@ edges:
   has_version:
     - model:amazon-nova-2-lite@current
     - model:amazon-nova-2-sonic@current
+    - model:amazon-nova-2-omni@current

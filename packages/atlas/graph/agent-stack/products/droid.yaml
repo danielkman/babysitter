@@ -16,3 +16,4 @@ edges:
   has_version:
     - agent-version:droid@current
     - agentVersion:droid:0-137-1
+    - agentVersion:droid:0-141-0

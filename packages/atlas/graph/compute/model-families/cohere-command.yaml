@@ -10,3 +10,5 @@ edges:
   has_version:
     - model:command-a-plus-05-2026@current
     - model:command-r-plus@current
+    - model:command-a-reasoning@current
+    - model:command-a-vision@current

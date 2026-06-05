@@ -30,6 +30,7 @@ edges:
     - agentVersion:codex:ge-0-119-0
     - agent-version:codex@0.135.0
     - agent-version:codex@0.136.0
+    - agent-version:codex@0.137.0
   composed_of:
     - target: language:rust
       role: core

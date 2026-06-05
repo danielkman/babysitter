@@ -30,6 +30,7 @@ edges:
   has_version:
     - agentVersion:pi:ge-0-75-5
     - agentVersion:pi:0-78-0
+    - agentVersion:pi:0-78-1
   composed_of:
     - target: language:typescript
       role: core

@@ -18,6 +18,7 @@ edges:
     - agent-version:codex-sdk@current
     - agentVersion:codex-sdk:6-39-1
     - agentVersion:codex-sdk:6-40-0
+    - agentVersion:codex-sdk:6-42-0
   sourced_from:
     - source-ref:openai-node-npm
     - source-ref:openai-node-github

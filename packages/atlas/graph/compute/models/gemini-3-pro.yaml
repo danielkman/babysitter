@@ -33,8 +33,10 @@ attributes:
     - kind: text
       direction: output
   releaseDate: '2025-11-18'
-  lifecycleStatus: ga
-  lifecycleStatusChangedAt: '2025-11-18'
+  lifecycleStatus: shut-down
+  lifecycleStatusChangedAt: '2026-06-01'
+  deprecationDate: '2026-06-01'
+  eolDate: '2026-06-01'
   knowledgeCutoffDate: '2025-01-01'
   modelCardUrl: https://deepmind.google/models/gemini/
   supportsFineTuning: false

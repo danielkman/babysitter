@@ -28,8 +28,10 @@ attributes:
     - kind: text
       direction: output
   releaseDate: '2025-02-05'
-  lifecycleStatus: ga
-  lifecycleStatusChangedAt: '2025-02-05'
+  lifecycleStatus: shut-down
+  lifecycleStatusChangedAt: '2026-06-01'
+  deprecationDate: '2026-06-01'
+  eolDate: '2026-06-01'
   knowledgeCutoffDate: '2024-08-01'
   safetyTier: google-deepmind-asl-2
   modelCardUrl: https://ai.google.dev/gemini-api/docs/models/gemini
