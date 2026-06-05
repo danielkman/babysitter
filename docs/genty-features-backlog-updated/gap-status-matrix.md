@@ -76,16 +76,16 @@ Full 147-gap matrix from the adversarial backlog analysis. Sorted by Final Statu
 | GAP-UX-007 | Rich Breakpoint Interaction | user-experience | Partial | CLOSED | -- | -- | -- | -- |
 | GAP-UX-014 | Operator Mode Selection | user-experience | Partial | CLOSED | -- | -- | -- | -- |
 | GAP-ECO-001 | CC Plugin Compatibility Layer | ecosystem | Missing | IN_PROGRESS | L | M | M3 | Critical |
-| GAP-PERF-001 | Prompt Caching (Ephemeral) | performance | Missing | IN_PROGRESS | S | S | M0 | Critical |
+| GAP-PERF-001 | Prompt Caching (Ephemeral) | performance | Missing | CLOSED | S | -- | -- | -- |
 | GAP-PERF-002 | Session Compaction | performance | Partial | IN_PROGRESS | L | M | M1 | Critical |
-| GAP-SUBOBS-001 | Streaming Output Capture from Invoked Harnesses | subagent-observability | Missing | IN_PROGRESS | M | S | M0 | Critical |
+| GAP-SUBOBS-001 | Streaming Output Capture from Invoked Harnesses | subagent-observability | Missing | CLOSED | M | -- | -- | -- |
 | GAP-AGENT-001 | Sub-Harness Invocation with Isolation | agent-delegation | Partial | IN_PROGRESS | M | S | M0 | High |
 | GAP-AGENT-003 | Process Orchestration with Effect Routing | agent-delegation | Partial | IN_PROGRESS | L | L | M3 | High |
 | GAP-AGENT-006 | Cross-Run State Sharing | agent-delegation | Missing | IN_PROGRESS | M | S | M0 | High |
 | GAP-ECO-003 | Plugin Trust, Provenance, and Blocklist | ecosystem | Missing | IN_PROGRESS | S | S | M0 | High |
-| GAP-HADAPT-003 | Cost-Based Routing Policies | harness-adaptation | Missing | IN_PROGRESS | S | S | M0 | High |
+| GAP-HADAPT-003 | Cost-Based Routing Policies | harness-adaptation | Missing | CLOSED | S | -- | -- | -- |
 | GAP-JSON-004 | JSON Session Management API | json-interaction | Missing | IN_PROGRESS | S | S | M0 | High |
-| GAP-MCPC-003 | Channel Permission Relay (Breakpoint Approval via Channels) | mcp-channels | Missing | IN_PROGRESS | S | S | M0 | High |
+| GAP-MCPC-003 | Channel Permission Relay (Breakpoint Approval via Channels) | mcp-channels | Missing | CLOSED | S | -- | -- | -- |
 | GAP-OBS-NEW-001 | Embedded SDK Dashboard Webhook and Alert System | observer-integration | Missing | IN_PROGRESS | S | S | M0 | High |
 | GAP-PAR-001 | Concurrent Effect Execution | parallelization | Partial | IN_PROGRESS | M | M | M1 | High |
 | GAP-PAR-003 | Multi-Harness Parallel Dispatch | parallelization | Partial | IN_PROGRESS | L | L | M1 | High |
@@ -95,7 +95,7 @@ Full 147-gap matrix from the adversarial backlog analysis. Sorted by Final Statu
 | GAP-REMOTE-003 | Remote Sessions (WebSocket) | remote-integration | Missing | IN_PROGRESS | L | M | M2 | High |
 | GAP-REMOTE-007 | Host Contract Layer | remote-integration | Missing | IN_PROGRESS | M | M | M0 | High |
 | GAP-SEC-002 | Trust Classes for Plugins | security | Missing | IN_PROGRESS | S | S | M0 | High |
-| GAP-STATE-001 | Long-Term Memory Extraction | state-continuity | Missing | IN_PROGRESS | S | S | M0 | High |
+| GAP-STATE-001 | Long-Term Memory Extraction | state-continuity | Missing | CLOSED | S | -- | -- | -- |
 | GAP-SUBOBS-002 | Subagent Progress Tracking | subagent-observability | Missing | IN_PROGRESS | M | S | M1 | High |
 | GAP-TOOLS-023 | Multi-Step Workflow Composition Within Effects | tools-capabilities | Partial | IN_PROGRESS | L | L | M4 | High |
 | GAP-USER-017 | Plugin Management Integration | user-experience | Partial | IN_PROGRESS | M | S | M2 | High |
@@ -162,13 +162,13 @@ Full 147-gap matrix from the adversarial backlog analysis. Sorted by Final Statu
 
 | Status | Count | % |
 |--------|-------|---|
-| CLOSED | 87 | 53% |
-| IN_PROGRESS | 49 | 30% |
+| CLOSED | 92 | 56% |
+| IN_PROGRESS | 44 | 27% |
 | OPEN | 22 | 13% |
 | NEEDS_RESPEC | 7 | 4% |
 | **Total** | **165** | **100%** |
 
-*Updated 2026-06-05: 18 Pi Parity + Trust gaps closed (was 69 closed / 147 total).*
+*Updated 2026-06-05: 23 gaps closed today (18 Pi/Trust + 5 M0 quick wins). Was 69/147.*
 
 ### By Category
 
@@ -207,13 +207,13 @@ Full 147-gap matrix from the adversarial backlog analysis. Sorted by Final Statu
 
 | Priority | Count |
 |----------|-------|
-| Critical | 4 |
-| High | 22 |
+| Critical | 2 |
+| High | 19 |
 | Medium | 39 |
 | Low | 6 |
-| **Total** | **71** |
+| **Total** | **66** |
 
-*Updated 2026-06-05: 7 Critical trust gaps closed, reduced non-CLOSED from 78 to 71 (net: also closed 7 High Pi parity gaps).*
+*Updated 2026-06-05: 23 gaps closed today. Critical: 4→2 (PERF-001+SUBOBS-001 closed). High: 29→19.*
 
 ### By Milestone
 
