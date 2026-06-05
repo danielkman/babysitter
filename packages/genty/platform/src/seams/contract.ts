@@ -115,6 +115,7 @@ export const babysitterAgentSeamContracts = [
       "plugins",
       "extensions",
       "context",
+      "trust",
     ],
     packageExports: [
       "./skills",
