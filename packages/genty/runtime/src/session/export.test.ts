@@ -11,8 +11,8 @@ describe('session/export', () => {
     expect(html).toContain('<!DOCTYPE html>');
     expect(html).toContain('What is 2+2?');
     expect(html).toContain('The answer is 4.');
-    expect(html).toContain('class="user"');
-    expect(html).toContain('class="assistant"');
+    expect(html).toContain('class="message user"');
+    expect(html).toContain('class="message assistant"');
   });
 
   it('escapes HTML in content', () => {

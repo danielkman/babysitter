@@ -23,6 +23,9 @@ export default {
       'packages/adapters/*/src/**/*.contract.test.{ts,tsx}',
       'packages/adapters/*/tests/**/*.test.{ts,tsx}',
       'packages/adapters/*/tests/**/*.contract.test.{ts,tsx}',
+      'packages/genty/*/src/**/*.test.{ts,tsx}',
+      'packages/genty/*/src/**/*.contract.test.{ts,tsx}',
+      'packages/genty/*/tests/**/*.test.{ts,tsx}',
     ],
     exclude: [
       '**/node_modules/**',
@@ -33,7 +36,7 @@ export default {
     environment: 'node',
     coverage: {
       provider: 'v8',
-      include: ['packages/*/src/**/*.ts', 'packages/adapters/*/src/**/*.ts'],
+      include: ['packages/*/src/**/*.ts', 'packages/adapters/*/src/**/*.ts', 'packages/genty/*/src/**/*.ts'],
       exclude: [
         'packages/*/src/**/*.test.ts',
         'packages/*/src/**/*.contract.test.ts',

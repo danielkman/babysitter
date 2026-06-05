@@ -38,6 +38,7 @@ export function formatAgentHelp(_surface: "agent" | "human"): string {
   ${commandName} contrib [--prompt <text>] [--harness <name>] [--workspace <dir>] [--model <model>] [--max-iterations <n>] [--json] [--verbose]
   ${commandName} anycli --service <name> [--scope <scopes>] [--mcp] [--auth-file <path>] [--transport <type>] [--prompt <text>] [--workspace <dir>] [--json] [--verbose]
   ${commandName} session-history --session-id <id> --state-dir <dir> [--run-id <id>] [--json]
+  ${commandName} session-export <tree-path> [html|markdown] [<output-path>]  (export session tree)
   ${commandName} jsonl:interactive
   ${commandName} daemon:start [--workspace <dir>] [--daemon-dir <dir>] [--config-path <path>] [--foreground] [--json]
   ${commandName} daemon:stop [--daemon-dir <dir>] [--grace-period-ms <n>] [--json]
@@ -51,6 +52,7 @@ export function formatAgentHelp(_surface: "agent" | "human"): string {
   ${commandName} list [--json]
   ${commandName} invoke <name> --prompt <text> [--workspace <dir>] [--model <model>] [--timeout <ms>] [--json]
   ${commandName} tui [--run-id <id>] [--verbosity minimal|normal|verbose] [--workspace <dir>] [--json]
+  ${commandName} rpc [--workspace <dir>] [--model <model>]                (JSON-RPC over stdin/stdout)
   ${commandName} version
 
 Install or update harness CLIs and plugins with the main babysitter CLI:
@@ -78,6 +80,11 @@ export async function executeAgentCliCommand(parsed: HarnessParsedArgs): Promise
   switch (parsed.command) {
     case "print":
       return (await import("./commands/print.js")).handlePrint(parsed);
+    case "rpc":
+      return (await import("./commands/rpc.js")).handleRpc({
+        workspace: parsed.workspace,
+        model: parsed.model,
+      });
     case "discover":
     case "list":
       return await handleHarnessDiscover(parsed);
@@ -140,6 +147,13 @@ export async function executeAgentCliCommand(parsed: HarnessParsedArgs): Promise
         stateDir: parsed.stateDir ?? "",
         json: parsed.json,
         runId: parsed.runIdOverride,
+      });
+    case "session-export":
+      return (await import("./commands/session/export.js")).handleSessionExport({
+        treePath: parsed.positional?.[0] ?? "",
+        format: (parsed.positional?.[1] as "html" | "markdown") ?? "html",
+        output: parsed.positional?.[2],
+        json: parsed.json,
       });
     case "jsonl:interactive":
       return await handleJsonlInteractive({ runsDir: parsed.runsDir });
