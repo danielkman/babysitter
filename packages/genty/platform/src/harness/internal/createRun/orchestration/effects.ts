@@ -11,6 +11,7 @@ import {
   resolveHookDecisionResult,
 } from "./hookDecisionEffects";
 export { readProcessFileFingerprint } from "./effectsHelpers";
+import { enhanceWorkerSessionOptions } from "./workerSessionEnhancer";
 import {
   evaluateApprovalChain,
   type ApprovalChainDefinition,
@@ -147,6 +148,7 @@ interface EffectResolverOptions {
   verbose?: boolean;
   outputMode?: "cli" | "json" | "tui" | "adapters-events";
   mcp?: McpRoutingOptions;
+  gentyContext?: import("../../../gentySessionContext").GentySessionContext;
 }
 
 export interface PostEffectOverlayArgs {
@@ -937,11 +939,15 @@ async function invokeSubprocessEffect(
           let workerSession: AgentCoreSessionHandle | null = null;
           let workerSessionFactory: (() => AgentCoreSessionHandle) | undefined;
           if (childAction.kind === "shell" || isInternalHarness(effectiveHarness)) {
-            const createWorkerSession = () => createAgentCoreSession(buildPiWorkerSessionOptions({
+            const baseOpts = buildPiWorkerSessionOptions({
               action: childAction,
               workspace: options.workspace,
               model: childModel,
-            }));
+            });
+            const enhancedOpts = options.gentyContext
+              ? enhanceWorkerSessionOptions(baseOpts, options.gentyContext)
+              : baseOpts;
+            const createWorkerSession = () => createAgentCoreSession(enhancedOpts);
             workerSession = createWorkerSession();
             workerSessionFactory = createWorkerSession;
           }
@@ -962,6 +968,7 @@ async function invokeSubprocessEffect(
                 maxIterations,
                 verbose: options.verbose,
                 outputMode: options.outputMode,
+                gentyContext: options.gentyContext,
               },
               workerSession,
               discovered,
