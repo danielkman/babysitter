@@ -19,7 +19,7 @@ export function LoginPage({ error = null } = {}) {
   const errorMessage = error ? (AUTH_ERROR_MESSAGES[error] || 'An authentication error occurred. Please try again.') : null;
   return <main id="main-content" className="loginMain" aria-labelledby="login-title">
     <section className="loginCard" aria-label="Kradle sign in">
-      <a className="loginBrand" href="/login" aria-label="a5c.ai Kradle sign in"><span className="brandSigil">K</span><span className="brandWordmark"><strong>Kr<span>ate</span></strong><em>a5c.ai</em></span></a>
+      <a className="loginBrand" href="/login" aria-label="a5c.ai Kradle sign in"><span className="brandSigil">K</span><span className="brandWordmark"><strong>Kra<span>dle</span></strong><em>a5c.ai</em></span></a>
       <span className="eyebrow">account</span>
       <h1 id="login-title">Sign in to Kradle</h1>
       <p className="lede">Use an administrator-configured sign-in method to continue.</p>

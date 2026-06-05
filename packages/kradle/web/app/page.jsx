@@ -10,7 +10,7 @@ export default async function Page() {
   // Try to read user's last-used org from cookie
   try {
     const cookieStore = await cookies();
-    const lastOrg = cookieStore.get('krate_last_org')?.value;
+    const lastOrg = cookieStore.get('kradle_last_org')?.value || cookieStore.get('krate_last_org')?.value;
     if (lastOrg && /^[a-z0-9][-a-z0-9]*$/.test(lastOrg)) {
       org = lastOrg;
     }
@@ -20,7 +20,7 @@ export default async function Page() {
 
   // Fall back to env vars, then 'default'
   if (!org) {
-    org = process.env.KRATE_ADMIN_ORG || process.env.KRADLE_ORG || 'default';
+    org = process.env.KRADLE_ORG || 'default';
   }
 
   redirect('/orgs/' + org);
