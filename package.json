@@ -113,13 +113,13 @@
     "docs:clear": "docusaurus clear docs-site",
     "sync:external-plugins": "node scripts/sync-external-plugin-repos.mjs",
     "validate:edges": "node packages/atlas/scripts/validate-edges.mjs",
-    "test:e2e:live-stack:primary": "vitest run --config vitest.config.ts packages/adapters/cli/tests/live-stack/primary-live-runner.test.ts",
-    "test:e2e:live-stack:framework": "vitest run --config vitest.config.ts packages/adapters/cli/tests/live-stack/scenario-contract.test.ts",
+    "test:e2e:live-stack:primary": "vitest run --config packages/adapters/cli/vitest.config.ts packages/adapters/cli/tests/live-stack/primary-live-runner.test.ts",
+    "test:e2e:live-stack:framework": "vitest run --config packages/adapters/cli/vitest.config.ts packages/adapters/cli/tests/live-stack/scenario-contract.test.ts",
     "test:e2e:live-stack": "npm run test:e2e:live-stack:framework && npm run test:e2e:live-stack:primary",
     "coverage:e2e:live-stack": "node scripts/live-stack-coverage-report.cjs",
-    "test:e2e:live-stack:pipeline": "vitest run --config vitest.config.ts packages/adapters/cli/tests/live-stack/pipeline-scenario.test.ts",
-    "test:e2e:adapters-hooks-adapter": "vitest run --config vitest.config.ts packages/adapters/cli/tests/e2e/adapters-hooks-adapter.pipeline.test.ts",
-    "test:e2e:adapters-no-model-stack": "vitest run --config vitest.config.ts packages/adapters/cli/tests/e2e/adapters-no-model-stack.pipeline.test.ts"
+    "test:e2e:live-stack:pipeline": "vitest run --config packages/adapters/cli/vitest.config.ts packages/adapters/cli/tests/live-stack/pipeline-scenario.test.ts",
+    "test:e2e:adapters-hooks-adapter": "vitest run --config packages/adapters/cli/vitest.config.ts packages/adapters/cli/tests/e2e/adapters-hooks-adapter.pipeline.test.ts",
+    "test:e2e:adapters-no-model-stack": "vitest run --config packages/adapters/cli/vitest.config.ts packages/adapters/cli/tests/e2e/adapters-no-model-stack.pipeline.test.ts"
   },
   "devDependencies": {
     "@anthropic-ai/claude-agent-sdk": "0.3.152",
