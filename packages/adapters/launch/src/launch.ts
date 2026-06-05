@@ -1032,7 +1032,9 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
         plan.env['AGENT_MUX_API_BASE'] = `${proxyRuntime.url}/v1`;
         plan.env['AGENT_MUX_API_KEY'] = proxyRuntime.authToken ?? 'proxy-token';
         plan.env['AGENT_MUX_MODEL'] = plan.proxy?.targetModel ?? plan.model ?? '';
-        // Clear Azure env vars to prevent agent-core from using Azure mode
+        // Clear Azure/foundry env vars so agent-core uses generic OpenAI path
+        // (sends Authorization: Bearer, which the proxy accepts)
+        delete plan.env['AGENT_MUX_PROVIDER'];
         delete plan.env['AZURE_API_KEY'];
         delete plan.env['AZURE_OPENAI_API_KEY'];
         delete plan.env['AZURE_OPENAI_PROJECT_NAME'];
