@@ -162,7 +162,8 @@ function deriveCodec(provider) {
  * @param {{ gateway?: string, enabled?: boolean, resourceGateway?: object }} options
  */
 export function createAgentMuxClient(options = {}) {
-  const { gateway = '', enabled = false, resourceGateway = null } = options;
+  const envGateway = process.env.AGENT_MUX_URL || process.env.AGENT_GATEWAY_URL || '';
+  const { gateway = envGateway, enabled = !!envGateway, resourceGateway = null } = options;
 
   return {
     role: 'adapters-client',
