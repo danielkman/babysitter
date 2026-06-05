@@ -1243,7 +1243,27 @@ export function getPluginTargetDescriptor(targetIdOrAdapterName: string): Plugin
 
 export function getLaunchBehavior(harnessName: string): LaunchBehaviorDescriptor | undefined {
   const target = getPluginTargetDescriptor(harnessName);
-  return target?.launchBehavior;
+  if (target?.launchBehavior) return target.launchBehavior;
+  const graph = getSdkState().graph;
+  const node = graph.nodes.find(
+    (n) => n.kind === "PluginTarget" && (valueAsString(n.adapterName) === harnessName || n.id === `plugin-target:${harnessName}`),
+  );
+  if (!node?.launchBehavior || typeof node.launchBehavior !== "object") return undefined;
+  const lb = node.launchBehavior as GraphNode;
+  return {
+    promptDelivery: (valueAsString(lb.promptDelivery) as "cli-flag" | "exec-subcommand" | "stdin") || "stdin",
+    promptFlag: valueAsString(lb.promptFlag) || null,
+    promptExtraFlags: stringArray(lb.promptExtraFlags),
+    execSubcommand: valueAsString(lb.execSubcommand) || null,
+    resumeDelivery: (valueAsString(lb.resumeDelivery) as "flag" | "subcommand" | null) || null,
+    resumeFlag: valueAsString(lb.resumeFlag) || null,
+    resumeSubcommand: valueAsString(lb.resumeSubcommand) || null,
+    sessionIdFlag: valueAsString(lb.sessionIdFlag) || null,
+    maxTurnsFlag: valueAsString(lb.maxTurnsFlag) || null,
+    stdinBehavior: (valueAsString(lb.stdinBehavior) as "close-after-prompt" | "keep-open") || "close-after-prompt",
+    selfExits: lb.selfExits === true || lb.selfExits === "true",
+    needsIdleKill: lb.needsIdleKill === true || lb.needsIdleKill === "true",
+  };
 }
 
 export function listHookMappingsByAdapterFamily(adapterFamily: string): HookMappingDescriptor[] {
