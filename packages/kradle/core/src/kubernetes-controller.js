@@ -838,17 +838,16 @@ function discoverKyverno({ kubectl, namespace, timeoutMs, env, discoveredPluralS
   return discovery;
 }
 function organizationNamespaces(organizations = [], bindings = [], fallbackNamespace = KRADLE_PLATFORM_NAMESPACE) {
-  const namespaces = [...new Set([
+  const namespaces = new Set([
     ...organizations.map((org) => org.spec?.namespaceName || org.metadata?.labels?.[KRADLE_ORG_NAMESPACE_LABEL]).filter(Boolean),
     ...bindings.map((binding) => binding.spec?.namespace || binding.metadata?.labels?.[KRADLE_ORG_NAMESPACE_LABEL]).filter(Boolean)
-  ])];
-  if (namespaces.length) return namespaces;
-  const fallbackOrgs = new Set();
+  ]);
   const adminOrg = process.env.KRADLE_ADMIN_ORG;
   const defaultOrg = process.env.KRADLE_ORG || 'default';
-  if (adminOrg) fallbackOrgs.add(orgNamespaceName(adminOrg));
-  fallbackOrgs.add(orgNamespaceName(defaultOrg));
-  return fallbackOrgs.size ? [...fallbackOrgs] : [fallbackNamespace];
+  if (adminOrg) namespaces.add(orgNamespaceName(adminOrg));
+  namespaces.add(orgNamespaceName(defaultOrg));
+  namespaces.add(fallbackNamespace);
+  return [...namespaces];
 }
 
 function shouldListSnapshotDefinition(definition, discoveredPluralSet) {

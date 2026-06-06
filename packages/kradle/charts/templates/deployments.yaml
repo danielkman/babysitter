@@ -51,6 +51,8 @@ spec:
               value: "3080"
             - name: KRADLE_NAMESPACE
               value: {{ .Release.Namespace | quote }}
+            - name: KRADLE_ORG
+              value: {{ .Values.admin.org | quote }}
             - name: KRADLE_ADMIN_ORG
               value: {{ .Values.admin.org | quote }}
             - name: KRADLE_ADMIN_USERNAME
@@ -219,6 +221,8 @@ spec:
               value: "3080"
             - name: KRADLE_NAMESPACE
               value: {{ .Release.Namespace | quote }}
+            - name: KRADLE_ORG
+              value: {{ .Values.admin.org | quote }}
             - name: KRADLE_ADMIN_ORG
               value: {{ .Values.admin.org | quote }}
             - name: KRADLE_ADMIN_USERNAME
@@ -384,6 +388,8 @@ spec:
               value: "3000"
             - name: HOSTNAME
               value: "0.0.0.0"
+            - name: KRADLE_ORG
+              value: {{ .Values.admin.org | quote }}
             - name: KRADLE_ADMIN_ORG
               value: {{ .Values.admin.org | quote }}
             - name: KRADLE_ADMIN_USERNAME
