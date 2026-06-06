@@ -197,9 +197,16 @@ async function invokeHarnessDirect(
   const streaming = options.streaming;
 
   return new Promise<HarnessInvokeResult>((resolve, reject) => {
-    const childEnv = options.env
-      ? { ...process.env, ...options.env }
-      : process.env;
+    let childEnv: NodeJS.ProcessEnv;
+    if (options.isolated) {
+      const minimal: Record<string, string> = {};
+      for (const key of ['PATH', 'HOME', 'NODE_PATH', 'SYSTEMROOT', 'COMSPEC']) {
+        if (process.env[key]) minimal[key] = process.env[key]!;
+      }
+      childEnv = options.env ? { ...minimal, ...options.env } : minimal;
+    } else {
+      childEnv = options.env ? { ...process.env, ...options.env } : process.env;
+    }
 
     let trackedPid: number | undefined;
     try {

@@ -117,6 +117,8 @@ export interface HarnessInvokeOptions {
   streaming?: StreamingOutputOptions;
   /** AbortSignal to cancel the invocation and kill the child process. */
   signal?: AbortSignal;
+  /** When true, run the child process with a minimal environment (only PATH, HOME, NODE_PATH + explicit env overrides). */
+  isolated?: boolean;
 }
 
 /** Result returned after a harness CLI invocation completes. */
