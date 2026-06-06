@@ -396,6 +396,25 @@ jobs:
 
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
+      - name: Install Antigravity CLI (if needed)
+        if: contains(toJSON(matrix), 'antigravity')
+        run: |
+          if command -v antigravity &>/dev/null; then
+            echo "antigravity already installed: $(antigravity --version 2>&1 || true)"
+          else
+            echo "Installing antigravity-cli via go install"
+            go install github.com/google-antigravity/antigravity-cli@latest 2>/dev/null && echo "Installed via go" || {
+              echo "go install failed, trying npm"
+              npm install -g antigravity-cli 2>/dev/null || echo "antigravity install failed (will skip in tests)"
+            }
+            # Symlink to local bin if installed via go
+            GOBIN="${GOPATH:-$HOME/go}/bin"
+            if [ -f "$GOBIN/antigravity-cli" ] && [ ! -f "$HOME/.local/bin/antigravity" ]; then
+              ln -sf "$GOBIN/antigravity-cli" "$HOME/.local/bin/antigravity"
+            fi
+          fi
+          which antigravity && antigravity --version 2>&1 || echo "WARNING: antigravity not available"
+
       - name: Remove agent skill directories from workspace (vanilla only)
         if: matrix.install_mode.id == 'vanilla'
         run: |

@@ -1013,16 +1013,16 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
       // Note: GOOGLE_GEMINI_BASE_URL is the env var Gemini CLI reads for custom
       // API endpoints (see https://geminicli.com/docs/reference/configuration/).
       // The previously-used GOOGLE_AI_STUDIO_API_ENDPOINT was never recognised.
-      if (plan.harness === 'gemini') {
+      if (plan.harness === 'gemini' || plan.harness === 'antigravity') {
         plan.env['GOOGLE_API_KEY'] = proxyRuntime.authToken ?? 'proxy-token';
         plan.env['GEMINI_API_KEY'] = proxyRuntime.authToken ?? 'proxy-token';
         const proxyOrigin = new URL(proxyRuntime.url).origin;
         plan.env['GOOGLE_GEMINI_BASE_URL'] = proxyOrigin;
-        plan.env['GEMINI_CLI_TRUST_WORKSPACE'] = '1';
+        if (plan.harness === 'gemini') plan.env['GEMINI_CLI_TRUST_WORKSPACE'] = '1';
         plan.env['GOOGLE_GENAI_USE_VERTEXAI'] = 'false';
         plan.env['GOOGLE_CLOUD_PROJECT'] = '';
         plan.env['GOOGLE_CLOUD_LOCATION'] = '';
-        console.error(`[adapters launch] Gemini proxy: GOOGLE_API_KEY=${(plan.env['GOOGLE_API_KEY'] ?? '').slice(0, 8)}..., endpoint=${proxyOrigin}`);
+        console.error(`[adapters launch] ${plan.harness} proxy: GOOGLE_API_KEY=${(plan.env['GOOGLE_API_KEY'] ?? '').slice(0, 8)}..., endpoint=${proxyOrigin}`);
       }
 
       // Genty (agent-core): set AGENT_MUX_* env vars to route through the proxy.
