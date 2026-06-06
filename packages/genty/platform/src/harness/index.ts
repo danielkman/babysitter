@@ -106,3 +106,42 @@ export {
   type ProcessOptions,
   type ProfileLike,
 } from "./profileOrchestration";
+
+// Effect routing (GAP-AGENT-003)
+export {
+  EffectRouter,
+  evaluateCondition,
+  type RoutingRule,
+  type RoutingResult,
+  type RoutingContext,
+} from "./effectRouting";
+
+// WebSocket session (GAP-REMOTE-003)
+export {
+  WebSocketSession,
+  type WebSocketSessionConfig,
+  type WsMessage,
+  type WsMessageType,
+  type WsMessageCallback,
+  type WebSocketLike,
+  type WebSocketFactory,
+} from "./websocketSession";
+
+// Parallel file operations (GAP-PAR-005)
+export {
+  readFilesParallel,
+  writeFilesParallel,
+  globParallel,
+  type FileReadResult,
+  type FileReadError,
+  type FileReadOutcome,
+  type FileWriteEntry,
+  type FileWriteResult,
+} from "./parallelFileOps";
+
+// Streaming parallelism (GAP-PAR-006)
+export {
+  StreamMerger,
+  StreamFanout,
+  type FanoutCallback,
+} from "./streamingParallelism";

@@ -75,3 +75,12 @@ export {
   type FailureSeverity,
   type TriageReport,
 } from './failureTriage';
+
+// Analytics and feature flags (GAP-OBS-006)
+export {
+  FeatureFlagStore,
+  AnalyticsCollector,
+  type FeatureFlag,
+  type FeatureFlagContext,
+  type AnalyticsEvent,
+} from './analytics';

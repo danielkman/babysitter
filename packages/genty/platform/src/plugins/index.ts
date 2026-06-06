@@ -48,3 +48,18 @@ export {
   type PluginInfo,
   type TrustLevel,
 } from './management';
+
+// CC Plugin Compatibility (GAP-ECO-001)
+export {
+  CcCompatibilityLayer,
+  type CcPluginManifest,
+  type CcSkill,
+  type CcHook,
+  type CcCommand,
+  type CcMcpServer,
+  type GentyExtension,
+  type GentyExtensionCommand,
+  type GentyExtensionEvent,
+  type GentyMcpConfig,
+  type CompatibilityReport,
+} from './ccCompatibility';

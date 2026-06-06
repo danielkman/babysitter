@@ -28,3 +28,17 @@ export {
   type RiskLevel,
   type ApprovalAction,
 } from './permissionApprovalUi';
+
+// Typed effect interaction patterns (GAP-UX-010)
+export {
+  BUILT_IN_PATTERNS,
+  getPatternForEffect,
+  validateEffectInput,
+  formatEffectSummary,
+  type EffectInteractionPattern,
+  type EffectLike,
+  type SchemaField,
+  type RenderHints,
+  type ValidationResult,
+  type ValidationError,
+} from './typedEffectPatterns';
