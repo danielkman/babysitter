@@ -414,20 +414,13 @@ jobs:
               fi
             done
           fi
-          # Antigravity requires OAuth but CI has no browser. Seed its keyring
-          # with a valid Google API key token so it skips the OAuth gate.
-          # The proxy handles actual model routing at the transport layer.
-          mkdir -p "$HOME/.config/antigravity"
-          cat > "$HOME/.config/antigravity/credentials.json" <<CRED
-          {"access_token":"${GOOGLE_API_KEY}","token_type":"Bearer","expiry":"2099-01-01T00:00:00Z","refresh_token":"ci-managed"}
-          CRED
-          # Also try the keyring file path used by Go keyring packages
-          mkdir -p "$HOME/.local/share/keyrings"
-          # Set env vars that might bypass auth
+          # Debug: trace what files agy reads during auth to find credential store
+          timeout 35 strace -f -e trace=openat -o /tmp/agy-strace.log agy --print "hello" 2>/dev/null || true
+          echo "=== Files agy opened (auth/config related) ==="
+          grep -oP '(?<=openat\(AT_FDCWD, ")[^"]+' /tmp/agy-strace.log 2>/dev/null | grep -iE "config|token|credential|keyring|auth|secret|antigravity|agy|oauth|\.json" | sort -u | head -30
+          echo "=== Files agy looked for but missing ==="
+          grep ENOENT /tmp/agy-strace.log 2>/dev/null | grep -oP '(?<=openat\(AT_FDCWD, ")[^"]+' | grep -iE "config|token|credential|keyring|auth|secret|antigravity|agy" | sort -u | head -20
           echo "GEMINI_API_KEY=${GOOGLE_API_KEY}" >> "$GITHUB_ENV"
-          echo "GOOGLE_API_KEY=${GOOGLE_API_KEY}" >> "$GITHUB_ENV"
-          echo "AGY_API_KEY=${GOOGLE_API_KEY}" >> "$GITHUB_ENV"
-          echo "ANTIGRAVITY_API_KEY=${GOOGLE_API_KEY}" >> "$GITHUB_ENV"
           which agy && agy --version 2>&1 || echo "WARNING: agy (antigravity) not available"
 
       - name: Remove agent skill directories from workspace (vanilla only)
