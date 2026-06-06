@@ -98,13 +98,13 @@ Full 147-gap matrix from the adversarial backlog analysis. Sorted by Final Statu
 | GAP-STATE-001 | Long-Term Memory Extraction | state-continuity | Missing | CLOSED | S | -- | -- | -- |
 | GAP-SUBOBS-002 | Subagent Progress Tracking | subagent-observability | Missing | CLOSED | M | -- | -- | -- |
 | GAP-TOOLS-023 | Multi-Step Workflow Composition Within Effects | tools-capabilities | Partial | IN_PROGRESS | L | L | M4 | High |
-| GAP-USER-017 | Plugin Management Integration | user-experience | Partial | IN_PROGRESS | M | S | M2 | High |
-| GAP-UX-001c | Permission and Breakpoint Approval UI | user-experience | Partial | IN_PROGRESS | M | S | M4 | High |
-| GAP-AGENT-004 | Built-in Process Templates | agent-delegation | Partial | IN_PROGRESS | M | S | M2 | Medium |
+| GAP-USER-017 | Plugin Management Integration | user-experience | Partial | CLOSED | M | -- | -- | -- |
+| GAP-UX-001c | Permission and Breakpoint Approval UI | user-experience | Partial | CLOSED | M | -- | -- | -- |
+| GAP-AGENT-004 | Built-in Process Templates | agent-delegation | Partial | CLOSED | M | -- | -- | -- |
 | GAP-ECO-004 | Plugin Auto-Update and Versioning | ecosystem | Missing | CLOSED | S | -- | -- | -- |
 | GAP-ECO-005 | Plugin Validation and Diagnostics | ecosystem | Missing | CLOSED | S | -- | -- | -- |
 | GAP-ROUTE-002 | Effect Priority and Scheduling | effect-routing | Missing | CLOSED | S | -- | -- | -- |
-| GAP-ROUTE-003 | Effect Result Caching and Deduplication | effect-routing | Partial | IN_PROGRESS | M | S | M2 | Medium |
+| GAP-ROUTE-003 | Effect Result Caching and Deduplication | effect-routing | Partial | CLOSED | M | -- | -- | -- |
 | GAP-HADAPT-005 | Harness Health Monitoring and Circuit Breaker | harness-adaptation | Missing | CLOSED | S | -- | -- | -- |
 | GAP-OBS-003 | Prompt Plan Observability | observability | Partial | CLOSED | S | -- | -- | -- |
 | GAP-OBS-005 | Context Introspection | observability | Partial | CLOSED | S | -- | -- | -- |
@@ -112,15 +112,15 @@ Full 147-gap matrix from the adversarial backlog analysis. Sorted by Final Statu
 | GAP-PAR-005 | Parallel File Operations | parallelization | Partial | IN_PROGRESS | M | M | M3 | Medium |
 | GAP-PAR-006 | Streaming Parallelism | parallelization | Partial | IN_PROGRESS | M | M | M3 | Medium |
 | GAP-PERF-007 | Aggressive Parallelism | performance | Partial | IN_PROGRESS | M | M | M3 | Medium |
-| GAP-PROF-001 | Auto-Configure Orchestration from User Profile | profile-orchestration | Missing | IN_PROGRESS | M | S | M2 | Medium |
+| GAP-PROF-001 | Auto-Configure Orchestration from User Profile | profile-orchestration | Missing | CLOSED | M | -- | -- | -- |
 | GAP-PROMPT-004 | Prompt Inspection Tooling | prompt-engineering | Partial | CLOSED | S | -- | -- | -- |
 | GAP-PROMPT-006 | Instructions Loaded Hook | prompt-engineering | Missing | CLOSED | S | -- | -- | -- |
 | GAP-PROMPT-007 | Context Compression Families | prompt-engineering | Partial | IN_PROGRESS | L | L | M3 | Medium |
 | GAP-SUBOBS-004 | Subagent Health and Timeout Monitoring | subagent-observability | Missing | CLOSED | M | -- | -- | -- |
-| GAP-TOOLS-026 | Structured User Interaction from Within Effects | tools-capabilities | Partial | IN_PROGRESS | M | S | M2 | Medium |
+| GAP-TOOLS-026 | Structured User Interaction from Within Effects | tools-capabilities | Partial | CLOSED | M | -- | -- | -- |
 | GAP-TOOLS-031 | MCP Resource Browsing and Reading | tools-capabilities | Missing | CLOSED | S | -- | -- | -- |
-| GAP-UX-008 | Resume Dashboard | user-experience | Partial | IN_PROGRESS | M | S | M4 | Medium |
-| GAP-UX-009 | Failure Triage View | user-experience | Partial | IN_PROGRESS | M | S | M4 | Medium |
+| GAP-UX-008 | Resume Dashboard | user-experience | Partial | CLOSED | M | -- | -- | -- |
+| GAP-UX-009 | Failure Triage View | user-experience | Partial | CLOSED | M | -- | -- | -- |
 | GAP-UX-010 | Typed Effect Interaction Patterns | user-experience | Partial | IN_PROGRESS | M | M | M4 | Medium |
 | GAP-UX-011 | Command Discoverability | user-experience | Partial | CLOSED | S | -- | -- | -- |
 | GAP-TOOLS-028 | Sleep/Delay Effect Enhancement | tools-capabilities | Partial | CLOSED | S | -- | -- | -- |
@@ -162,13 +162,13 @@ Full 147-gap matrix from the adversarial backlog analysis. Sorted by Final Statu
 
 | Status | Count | % |
 |--------|-------|---|
-| CLOSED | 118 | 72% |
-| IN_PROGRESS | 18 | 11% |
+| CLOSED | 126 | 76% |
+| IN_PROGRESS | 10 | 6% |
 | OPEN | 22 | 13% |
 | NEEDS_RESPEC | 7 | 4% |
 | **Total** | **165** | **100%** |
 
-*Updated 2026-06-06: 49 gaps closed across 2 days. M0, M1, and M2 (S-effort) milestones cleared. Was 69/147.*
+*Updated 2026-06-06: 57 gaps closed across 2 days. M0, M1, M2 fully cleared. Was 69/147.*
 
 ### By Category
 
@@ -208,12 +208,12 @@ Full 147-gap matrix from the adversarial backlog analysis. Sorted by Final Statu
 | Priority | Count |
 |----------|-------|
 | Critical | 1 |
-| High | 7 |
-| Medium | 26 |
+| High | 5 |
+| Medium | 20 |
 | Low | 5 |
-| **Total** | **39** |
+| **Total** | **31** |
 
-*Updated 2026-06-06: 49 gaps closed. Critical: 1 remaining (ECO-001). M0+M1+M2 (S-effort) cleared.*
+*Updated 2026-06-06: 57 gaps closed. Only 10 IN_PROGRESS remain. M0+M1+M2 fully cleared.*
 
 ### By Milestone
 
