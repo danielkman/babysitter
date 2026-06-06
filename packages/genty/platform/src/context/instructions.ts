@@ -60,6 +60,36 @@ export function loadInstructions(cwd: string): LoadedInstructions {
   return { agentInstructions, systemPrompt, systemPromptMode, sources };
 }
 
+export interface InstructionsLoadedEvent {
+  sources: string[];
+  agentInstructions: string[];
+  systemPrompt?: string;
+  systemPromptMode: 'replace' | 'append' | 'none';
+}
+
+export async function loadInstructionsWithHook(
+  cwd: string,
+  emitEvent?: (event: InstructionsLoadedEvent) => Promise<void> | void,
+): Promise<LoadedInstructions> {
+  const result = loadInstructions(cwd);
+  if (emitEvent) {
+    const mutableEvent: InstructionsLoadedEvent = {
+      sources: [...result.sources],
+      agentInstructions: [...result.agentInstructions],
+      systemPrompt: result.systemPrompt,
+      systemPromptMode: result.systemPromptMode,
+    };
+    await emitEvent(mutableEvent);
+    return {
+      agentInstructions: mutableEvent.agentInstructions,
+      systemPrompt: mutableEvent.systemPrompt,
+      systemPromptMode: mutableEvent.systemPromptMode,
+      sources: mutableEvent.sources,
+    };
+  }
+  return result;
+}
+
 function collectParentPaths(cwd: string): string[] {
   const paths: string[] = [];
   let current = resolve(cwd);

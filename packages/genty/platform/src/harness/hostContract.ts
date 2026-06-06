@@ -211,3 +211,42 @@ export function buildManifestFromDiscovery(
     limits: {},
   };
 }
+
+export interface NegotiationResult {
+  granted: HarnessCapability[];
+  missing: HarnessCapability[];
+}
+
+export function negotiateCapabilities(
+  requested: HarnessCapability[],
+  available: HarnessCapability[],
+): NegotiationResult {
+  const availableSet = new Set(available);
+  const granted: HarnessCapability[] = [];
+  const missing: HarnessCapability[] = [];
+  for (const cap of requested) {
+    if (availableSet.has(cap)) granted.push(cap);
+    else missing.push(cap);
+  }
+  return { granted, missing };
+}
+
+export function createMinimalHostContract(): HostCapabilityManifest {
+  return {
+    harnessName: 'minimal-test-host',
+    capabilities: [Cap.Programmatic],
+    supportedModels: [],
+    communication: {
+      protocol: 'stdio',
+      supportsStreaming: false,
+      supportsJsonMode: true,
+    },
+    lifecycle: {
+      supportsSessionBinding: false,
+      supportsStopHook: false,
+      supportsGracefulShutdown: false,
+      supportsHealthCheck: false,
+    },
+    limits: {},
+  };
+}

@@ -80,6 +80,9 @@ export {
 } from './strata';
 export type { CacheControlType, CacheHintedBlock } from './strata';
 
+export { inspectPrompt } from './inspector';
+export type { InspectionResult, PartInspection, StratumSummary } from './inspector';
+
 // GAP-PROMPT-002: Capability collection
 export {
   collectCapabilities,

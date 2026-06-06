@@ -37,3 +37,4 @@ export { renderContinuityOverlay } from './continuityOverlay';
 export { renderPriorityLadder } from './priorityLadder';
 export { renderRootCauseGuardrail } from './rootCauseGuardrail';
 export { renderLongTermMemory } from './longTermMemory';
+export { renderSafetyReversibility } from './safetyReversibility';
