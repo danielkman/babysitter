@@ -121,6 +121,7 @@ const CLI_COMMAND_MAP: Record<string, string> = {
   'copilot': 'gh copilot',
   'cursor': 'cursor-agent',
   'genty': 'genty yolo',
+  'antigravity': 'agy',
 };
 
 function resolveCliCommand(harness: string): { command: string; prefixArgs: string[] } {

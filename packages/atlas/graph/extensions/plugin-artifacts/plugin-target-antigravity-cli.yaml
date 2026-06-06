@@ -31,7 +31,7 @@ attributes:
   componentSupport:
     agents: unsupported
     context: native
-  cliCommand: "antigravity"
+  cliCommand: "agy"
   callerEnvVars:
     - "ANTIGRAVITY_SESSION_ID"
     - "ANTIGRAVITY_CWD"

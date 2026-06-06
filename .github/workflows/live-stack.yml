@@ -401,21 +401,21 @@ jobs:
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
         run: |
-          if command -v antigravity &>/dev/null; then
-            echo "antigravity already installed: $(antigravity --version 2>&1 || true)"
+          if command -v agy &>/dev/null; then
+            echo "antigravity already installed: $(agy --version 2>&1 || true)"
           else
             echo "Installing antigravity-cli via official installer"
             curl -fsSL https://antigravity.google/cli/install.sh | bash 2>&1 || echo "curl installer failed"
-            # Add to PATH
+            # The installer puts the binary as 'agy' in ~/.local/bin
             for dir in "$HOME/.local/bin" "$HOME/bin" "$HOME/.antigravity/bin"; do
-              if [ -f "$dir/antigravity" ]; then
+              if [ -f "$dir/agy" ]; then
                 echo "$dir" >> "$GITHUB_PATH"
                 export PATH="$dir:$PATH"
                 break
               fi
             done
           fi
-          which antigravity && antigravity --version 2>&1 || echo "WARNING: antigravity not available"
+          which agy && agy --version 2>&1 || echo "WARNING: agy (antigravity) not available"
 
       - name: Remove agent skill directories from workspace (vanilla only)
         if: matrix.install_mode.id == 'vanilla'
