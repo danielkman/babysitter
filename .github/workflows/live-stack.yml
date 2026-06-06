@@ -414,10 +414,20 @@ jobs:
               fi
             done
           fi
-          # Antigravity uses OAuth by default. Set GEMINI_API_KEY to bypass OAuth
-          # and use API key auth instead. The proxy will replace this key with the
-          # real credentials at the transport layer.
+          # Antigravity requires OAuth but CI has no browser. Seed its keyring
+          # with a valid Google API key token so it skips the OAuth gate.
+          # The proxy handles actual model routing at the transport layer.
+          mkdir -p "$HOME/.config/antigravity"
+          cat > "$HOME/.config/antigravity/credentials.json" <<CRED
+          {"access_token":"${GOOGLE_API_KEY}","token_type":"Bearer","expiry":"2099-01-01T00:00:00Z","refresh_token":"ci-managed"}
+          CRED
+          # Also try the keyring file path used by Go keyring packages
+          mkdir -p "$HOME/.local/share/keyrings"
+          # Set env vars that might bypass auth
           echo "GEMINI_API_KEY=${GOOGLE_API_KEY}" >> "$GITHUB_ENV"
+          echo "GOOGLE_API_KEY=${GOOGLE_API_KEY}" >> "$GITHUB_ENV"
+          echo "AGY_API_KEY=${GOOGLE_API_KEY}" >> "$GITHUB_ENV"
+          echo "ANTIGRAVITY_API_KEY=${GOOGLE_API_KEY}" >> "$GITHUB_ENV"
           which agy && agy --version 2>&1 || echo "WARNING: agy (antigravity) not available"
 
       - name: Remove agent skill directories from workspace (vanilla only)
