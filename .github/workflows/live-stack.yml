@@ -414,15 +414,10 @@ jobs:
               fi
             done
           fi
-          # Pre-seed antigravity auth — write a fake OAuth token so it skips browser login.
-          # The proxy handles actual model API auth; agy just needs to pass its own auth gate.
-          mkdir -p "$HOME/.config/antigravity" "$HOME/.antigravity"
-          # Try ADC credentials — some Google Go SDKs respect this
-          ADC_PATH="$HOME/.config/gcloud/application_default_credentials.json"
-          mkdir -p "$(dirname "$ADC_PATH")"
-          echo '{"type":"authorized_user","client_id":"1071006060591-tmhssin2h21lcre235vtolojh4g403ep.apps.googleusercontent.com","client_secret":"proxy-managed","refresh_token":"proxy-managed","universe_domain":"googleapis.com"}' > "$ADC_PATH"
-          export GOOGLE_APPLICATION_CREDENTIALS="$ADC_PATH"
-          echo "GOOGLE_APPLICATION_CREDENTIALS=$ADC_PATH" >> "$GITHUB_ENV"
+          # Antigravity uses OAuth by default. Set GEMINI_API_KEY to bypass OAuth
+          # and use API key auth instead. The proxy will replace this key with the
+          # real credentials at the transport layer.
+          echo "GEMINI_API_KEY=${GOOGLE_API_KEY}" >> "$GITHUB_ENV"
           which agy && agy --version 2>&1 || echo "WARNING: agy (antigravity) not available"
 
       - name: Remove agent skill directories from workspace (vanilla only)
