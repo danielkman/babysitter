@@ -102,6 +102,12 @@
         "types": "./dist/components/primitives/index.d.ts",
         "default": "./dist/components/primitives/index.js"
       }
+    },
+    "./rendering": {
+      "import": {
+        "types": "./dist/components/Rendering/index.d.ts",
+        "default": "./dist/components/Rendering/index.js"
+      }
     }
   },
   "files": [
