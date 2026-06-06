@@ -6,8 +6,8 @@ import { createInviteResource, createTeamResource, createAuthProviderResources, 
 import { createResource, clone } from './resource-model.js';
 import { RunnerScheduler } from './runners-ci.js';
 
-const DEFAULT_ORG = 'default';
-const DEFAULT_NAMESPACE = 'kradle-org-default';
+const DEFAULT_ORG = process.env.KRADLE_ORG || process.env.KRADLE_ADMIN_ORG || 'default';
+const DEFAULT_NAMESPACE = `kradle-org-${DEFAULT_ORG}`;
 
 export function createDefaultKradleUsers() {
   return {
