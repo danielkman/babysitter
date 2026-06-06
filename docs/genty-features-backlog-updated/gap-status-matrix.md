@@ -124,14 +124,14 @@ Full 147-gap matrix from the adversarial backlog analysis. Sorted by Final Statu
 | GAP-UX-010 | Typed Effect Interaction Patterns | user-experience | Partial | CLOSED | M | -- | -- | -- |
 | GAP-UX-011 | Command Discoverability | user-experience | Partial | CLOSED | S | -- | -- | -- |
 | GAP-TOOLS-028 | Sleep/Delay Effect Enhancement | tools-capabilities | Partial | CLOSED | S | -- | -- | -- |
-| GAP-AGENT-005 | Cross-Run Communication | agent-delegation | Missing | OPEN | L | L | M3 | High |
-| GAP-ECO-002 | CC Marketplace Protocol Support | ecosystem | Missing | OPEN | L | L | M2 | High |
+| GAP-AGENT-005 | Cross-Run Communication | agent-delegation | Missing | CLOSED | L | -- | -- | -- |
+| GAP-ECO-002 | CC Marketplace Protocol Support | ecosystem | Missing | CLOSED | L | -- | -- | -- |
 | GAP-TOOLS-012 | LSP Integration for Code-Aware Routing | tools-capabilities | Missing | OPEN | L | L | M5 | High |
-| GAP-TOOLS-017 | Git Worktree Isolation for Parallel Effect Execution | tools-capabilities | Missing | OPEN | L | L | M3 | High |
-| GAP-OBS-007 | Audit Export | observability | Missing | OPEN | M | M | M3 | Medium |
-| GAP-OBS-008 | Agent Progress Summarization | observability | Missing | OPEN | M | M | M3 | Medium |
+| GAP-TOOLS-017 | Git Worktree Isolation for Parallel Effect Execution | tools-capabilities | Missing | CLOSED | L | -- | -- | -- |
+| GAP-OBS-007 | Audit Export | observability | Missing | CLOSED | M | -- | -- | -- |
+| GAP-OBS-008 | Agent Progress Summarization | observability | Missing | CLOSED | M | -- | -- | -- |
 | GAP-PAR-010 | Fork-Join Process Pattern | parallelization | Missing | OPEN | L | L | M5 | Medium |
-| GAP-PROC-003 | Process Versioning and Migration | process-composition | Missing | OPEN | L | L | M2 | Medium |
+| GAP-PROC-003 | Process Versioning and Migration | process-composition | Missing | CLOSED | L | -- | -- | -- |
 | GAP-RUN-001 | Run Comparison and Diffing | run-lifecycle | Missing | OPEN | M | M | M5 | Medium |
 | GAP-RUN-003 | Run Forking and Branching | run-lifecycle | Missing | OPEN | L | L | M5 | Medium |
 | GAP-SEC-006 | OAuth Integration | security | Missing | OPEN | L | L | M5 | Medium |
@@ -141,10 +141,10 @@ Full 147-gap matrix from the adversarial backlog analysis. Sorted by Final Statu
 | GAP-STATE-006 | Session Rewind and History | state-continuity | Missing | OPEN | L | L | M5 | Medium |
 | GAP-TOOLS-029 | Structured Output Tool | tools-capabilities | Missing | OPEN | M | M | M5 | Medium |
 | GAP-TOOLS-032 | MCP Authentication | tools-capabilities | Missing | OPEN | L | L | M5 | Medium |
-| GAP-BRK-003 | Breakpoint Analytics and SLA Tracking | breakpoint-workflows | Missing | OPEN | S | S | M5 | Low |
+| GAP-BRK-003 | Breakpoint Analytics and SLA Tracking | breakpoint-workflows | Missing | CLOSED | S | -- | -- | -- |
 | GAP-RUN-002 | Run Archival and Restore | run-lifecycle | Missing | OPEN | M | M | M5 | Low |
 | GAP-SESSION-005 | Session Sharing and Collaboration | session-management | Missing | OPEN | L | L | M5 | Low |
-| GAP-TOOLS-007 | JS/TS REPL Tool | tools-capabilities | Missing | OPEN | S | S | M5 | Low |
+| GAP-TOOLS-007 | JS/TS REPL Tool | tools-capabilities | Missing | CLOSED | S | -- | -- | -- |
 | GAP-TOOLS-037 | Fetch Content Processing | tools-capabilities | Missing | OPEN | M | M | M5 | Low |
 | GAP-UX-001 | Ink/React Terminal Rendering Foundation | user-experience | Missing | NEEDS_RESPEC | L | L | M4 | High |
 | GAP-UX-001a | Effect Tree Visualization | user-experience | Missing | NEEDS_RESPEC | M | M | M4 | High |
@@ -162,13 +162,13 @@ Full 147-gap matrix from the adversarial backlog analysis. Sorted by Final Statu
 
 | Status | Count | % |
 |--------|-------|---|
-| CLOSED | 136 | 82% |
+| CLOSED | 144 | 87% |
 | IN_PROGRESS | 0 | 0% |
-| OPEN | 22 | 13% |
+| OPEN | 14 | 8% |
 | NEEDS_RESPEC | 7 | 4% |
 | **Total** | **165** | **100%** |
 
-*Updated 2026-06-06: 67 gaps closed across 2 days. ALL IN_PROGRESS gaps cleared. Was 69/147.*
+*Updated 2026-06-06: 75 gaps closed across 2 days. 144/165 (87%). Only 14 OPEN (M5 long-tail) + 7 NEEDS_RESPEC remain.*
 
 ### By Category
 
@@ -208,12 +208,12 @@ Full 147-gap matrix from the adversarial backlog analysis. Sorted by Final Statu
 | Priority | Count |
 |----------|-------|
 | Critical | 0 |
-| High | 4 |
-| Medium | 16 |
-| Low | 5 |
-| **Total** | **25** |
+| High | 1 |
+| Medium | 11 |
+| Low | 3 |
+| **Total** | **21** |
 
-*Updated 2026-06-06: 67 gaps closed. Zero IN_PROGRESS. Zero Critical. Only OPEN + NEEDS_RESPEC remain (M5 long-tail).*
+*Updated 2026-06-06: 75 gaps closed in 2 days. 144/165 (87%). Remaining 21 are M5 long-tail + UX NEEDS_RESPEC.*
 
 ### By Milestone
 
