@@ -280,23 +280,26 @@ jobs:
               const claudeCreate = scenario('claude-code','claude',foundry,'create');
               const codexCreate = scenario('codex','codex',google,'create');
               const piCreate = scenario('pi','pi',deepseek,'create');
+              const hermesCreate = scenario('hermes','hermes',foundry,'create');
               const antigravityCreate = scenario('antigravity','antigravity',google,'create');
               const gentyBp = {...gentyScenario};
 
-              // BP Interactive: claude+codex+pi+antigravity (create) + genty (predefined, native babysitter)
+              // BP Interactive: claude+codex+pi+hermes+antigravity (create) + genty (predefined, native babysitter)
               const bpInt = [
                 {scenario: claudeCreate, interaction_mode: interactive, install_mode: bpInstall},
                 {scenario: codexCreate, interaction_mode: interactive, install_mode: bpInstall},
                 {scenario: piCreate, interaction_mode: interactive, install_mode: bpInstall},
+                {scenario: hermesCreate, interaction_mode: interactive, install_mode: bpInstall},
                 {scenario: antigravityCreate, interaction_mode: interactive, install_mode: bpInstall},
                 {scenario: gentyBp, interaction_mode: interactive, install_mode: bpInstall},
               ];
 
-              // BP Bridged-hooks: claude+codex+pi+antigravity (create) + genty (predefined, native babysitter)
+              // BP Bridged-hooks: claude+codex+pi+hermes+antigravity (create) + genty (predefined, native babysitter)
               const bpBridged = [
                 {scenario: claudeCreate, interaction_mode: bridgedHooks, install_mode: bpInstall},
                 {scenario: codexCreate, interaction_mode: bridgedHooks, install_mode: bpInstall},
                 {scenario: piCreate, interaction_mode: bridgedHooks, install_mode: bpInstall},
+                {scenario: hermesCreate, interaction_mode: bridgedHooks, install_mode: bpInstall},
                 {scenario: antigravityCreate, interaction_mode: bridgedHooks, install_mode: bpInstall},
                 {scenario: gentyBp, interaction_mode: bridgedHooks, install_mode: bpInstall},
               ];

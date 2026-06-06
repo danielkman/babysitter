@@ -5,6 +5,7 @@ export { createCodexAdapter } from "./codex";
 export { createCursorAdapter } from "./cursor";
 export { createGeminiCliAdapter } from "./gemini-cli";
 export { createGithubCopilotAdapter, setBabysitterSessionIdInCopilotEnvFile } from "./github-copilot";
+export { createHermesAdapter } from "./hermes";
 export { createOpenCodeAdapter } from "./opencode";
 export { createOpenClawAdapter } from "./openclaw";
 export { createOhMyPiAdapter } from "./oh-my-pi";

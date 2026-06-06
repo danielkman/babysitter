@@ -14,6 +14,7 @@ export { HarnessCapability } from "./types";
 export { createClaudeCodeAdapter } from "./adapters/claude-code";
 export { createCodexAdapter } from "./adapters/codex";
 export { createGeminiCliAdapter } from "./adapters/gemini-cli";
+export { createHermesAdapter } from "./adapters/hermes";
 export { createCursorAdapter } from "./adapters/cursor";
 export { createGithubCopilotAdapter } from "./adapters/github-copilot";
 export { createPiAdapter } from "./adapters/pi";

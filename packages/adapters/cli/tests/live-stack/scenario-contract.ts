@@ -3,8 +3,8 @@ export type AgentMuxProviderId = 'foundry' | 'anthropic' | 'vertex' | 'google';
 export type LiveStackAgentPath = 'adapters' | 'agent-platform' | 'genty';
 export type LiveStackIntegrationType = 'third-party-plugin' | 'runtime-cli';
 export type LiveStackInstallMode = 'babysitter-plugin' | 'vanilla';
-export type LiveStackAgentId = 'claude-code' | 'codex' | 'gemini-cli' | 'pi' | 'agent-platform' | 'genty' | 'internal';
-export type LiveStackAgentMuxAgentId = 'claude' | 'codex' | 'gemini' | 'pi' | 'babysitter' | 'genty';
+export type LiveStackAgentId = 'claude-code' | 'codex' | 'gemini-cli' | 'pi' | 'hermes' | 'agent-platform' | 'genty' | 'internal' | 'antigravity';
+export type LiveStackAgentMuxAgentId = 'claude' | 'codex' | 'gemini' | 'pi' | 'hermes' | 'babysitter' | 'genty' | 'antigravity';
 
 export interface LiveStackModelEntry {
   readonly provider: LiveStackProvider;
@@ -251,6 +251,8 @@ function agentMuxAgentFor(agent: LiveStackAgentId): LiveStackAgentMuxAgentId {
       return 'gemini';
     case 'codex':
     case 'pi':
+    case 'hermes':
+    case 'antigravity':
       return agent;
     case 'agent-platform':
       return 'babysitter';
