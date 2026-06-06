@@ -47,7 +47,7 @@ describe('evaluateExpression', () => {
 
   it('does not have access to Node.js globals', () => {
     const result = evaluateExpression('typeof require');
-    expect(result.output).toBe('"undefined"');
+    expect(result.output).toBe('undefined');
   });
 
   it('uses provided sandbox context', () => {
