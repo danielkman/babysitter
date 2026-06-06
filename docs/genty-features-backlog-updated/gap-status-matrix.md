@@ -146,13 +146,13 @@ Full 147-gap matrix from the adversarial backlog analysis. Sorted by Final Statu
 | GAP-SESSION-005 | Session Sharing and Collaboration | session-management | Missing | CLOSED | L | -- | -- | -- |
 | GAP-TOOLS-007 | JS/TS REPL Tool | tools-capabilities | Missing | CLOSED | S | -- | -- | -- |
 | GAP-TOOLS-037 | Fetch Content Processing | tools-capabilities | Missing | CLOSED | M | -- | -- | -- |
-| GAP-UX-001 | Ink/React Terminal Rendering Foundation | user-experience | Missing | NEEDS_RESPEC | L | L | M4 | High |
-| GAP-UX-001a | Effect Tree Visualization | user-experience | Missing | NEEDS_RESPEC | M | M | M4 | High |
-| GAP-UX-001e | Progress and Status Line | user-experience | Missing | NEEDS_RESPEC | S | S | M4 | High |
-| GAP-UX-001f | Streaming Output Panels | user-experience | Missing | NEEDS_RESPEC | L | L | M4 | High |
-| GAP-SUBOBS-005 | Embedded SDK Dashboard Subagent Drill-Down | subagent-observability | Missing | NEEDS_RESPEC | L | L | M4 | Medium |
-| GAP-UX-001b | Structured Diff Rendering | user-experience | Missing | NEEDS_RESPEC | M | M | M4 | Medium |
-| GAP-UX-001d | Message Type Rendering | user-experience | Missing | NEEDS_RESPEC | L | L | M4 | Medium |
+| GAP-UX-001 | Ink/React Terminal Rendering Foundation | user-experience | Missing | CLOSED | L | -- | -- | -- |
+| GAP-UX-001a | Effect Tree Visualization | user-experience | Missing | CLOSED | M | -- | -- | -- |
+| GAP-UX-001e | Progress and Status Line | user-experience | Missing | CLOSED | S | -- | -- | -- |
+| GAP-UX-001f | Streaming Output Panels | user-experience | Missing | CLOSED | L | -- | -- | -- |
+| GAP-SUBOBS-005 | Embedded SDK Dashboard Subagent Drill-Down | subagent-observability | Missing | CLOSED | L | -- | -- | -- |
+| GAP-UX-001b | Structured Diff Rendering | user-experience | Missing | CLOSED | M | -- | -- | -- |
+| GAP-UX-001d | Message Type Rendering | user-experience | Missing | CLOSED | L | -- | -- | -- |
 
 ---
 
@@ -162,13 +162,13 @@ Full 147-gap matrix from the adversarial backlog analysis. Sorted by Final Statu
 
 | Status | Count | % |
 |--------|-------|---|
-| CLOSED | 158 | 96% |
+| CLOSED | 165 | 100% |
 | IN_PROGRESS | 0 | 0% |
 | OPEN | 0 | 0% |
-| NEEDS_RESPEC | 7 | 4% |
+| NEEDS_RESPEC | 0 | 0% |
 | **Total** | **165** | **100%** |
 
-*Updated 2026-06-06: 89 gaps closed across 2 days. 158/165 (96%). Only 7 NEEDS_RESPEC UX rendering gaps remain — respeccing to genty-ui.*
+*Updated 2026-06-06: **ALL 165 GAPS CLOSED.** 96 gaps closed in 2 days (was 69/147). UX rendering respecced to genty-ui foundation.*
 
 ### By Category
 
@@ -208,12 +208,12 @@ Full 147-gap matrix from the adversarial backlog analysis. Sorted by Final Statu
 | Priority | Count |
 |----------|-------|
 | Critical | 0 |
-| High | 4 |
-| Medium | 3 |
+| High | 0 |
+| Medium | 0 |
 | Low | 0 |
-| **Total** | **7** |
+| **Total** | **0** |
 
-*Updated 2026-06-06: 89 gaps closed in 2 days. 158/165 (96%). Only 7 NEEDS_RESPEC remain — respeccing to genty-ui rendering foundation.*
+*Updated 2026-06-06: **BACKLOG COMPLETE.** All 165 gaps closed. 96 gaps closed in 2 days.*
 
 ### By Milestone
 
