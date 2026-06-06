@@ -18,11 +18,11 @@ attributes:
   displayName: Antigravity CLI dangerous bypass launch
   env: {}
   commArgs:
-    - --yolo
+    - --dangerously-skip-permissions
   description: |-
-    Antigravity CLI launch recipe for `--yolo`, which auto-approves all tool
-    calls without user confirmation. Inherited from Gemini CLI's approval
-    bypass pattern. Intended for CI/test environments where interactive
-    approval is not possible.
+    Antigravity CLI launch recipe for `--dangerously-skip-permissions`,
+    which auto-approves all tool permission requests without prompting.
+    Intended for CI/test environments where interactive approval is
+    not possible.
 edges:
   requires_capability: []
