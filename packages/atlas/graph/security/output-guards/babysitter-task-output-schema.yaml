@@ -10,8 +10,8 @@ attributes:
   description: |
     Per-task structural guard. The babysitter SDK accepts an
     `outputSchema` on agent task definitions (see
-    packages/sdk/src/tasks/types.ts:46 and
-    packages/sdk/src/prompts/templates/task-kinds.md). At result-posting
+    packages/babysitter-sdk/src/tasks/types.ts:46 and
+    packages/babysitter-sdk/src/prompts/templates/task-kinds.md). At result-posting
     time the SDK validates the task result against the per-task JSON
     schema and rejects shape-mismatched results, surfacing a structured
     error on the journal as part of EFFECT_RESOLVED with status=error.

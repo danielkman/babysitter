@@ -113,7 +113,7 @@ attributes:
     - defineTask function present (defineTask returns descriptor)
     - ULID/monotonicFactory pattern found (run:create generates ULID)
     - task:post/taskPost pattern found (task:post writes result)
-    Verified on Windows 11, Node.js, against packages/sdk/src.
+    Verified on Windows 11, Node.js, against packages/babysitter-sdk/src.
 edges:
   tests_claim:
     - claim:babysitter-run-iterate-idempotent
@@ -180,7 +180,7 @@ attributes:
     - approved.*false pattern found (breakpoint rejection ok status)
     - no.hooks|hookStatus pattern found (no hooks in turn loop)
     - defineTask present in source (process ESM loading)
-    Verified against packages/sdk/src on Windows 11.
+    Verified against packages/babysitter-sdk/src on Windows 11.
 edges:
   tests_claim:
     - claim:breakpoint-rejection-ok-status

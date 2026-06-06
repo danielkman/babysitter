@@ -9,7 +9,7 @@ attributes:
   description: |
     Stable task identifier (kebab-case dotted-namespace recommended).
     Required when the spec uses `id`; mutually exclusive with `name`.
-    Source: packages/sdk/src/tasks/defineTask.ts (DefineTaskObjectSpec.id).
+    Source: packages/babysitter-sdk/src/tasks/defineTask.ts (DefineTaskObjectSpec.id).
 ---
 nodeKind: FrontmatterField
 id: frontmatter-field:task-schema-name
@@ -21,7 +21,7 @@ attributes:
   appliesTo: task-schema
   description: |
     Alternate identifier accepted in the object form when `id` is omitted.
-    Source: packages/sdk/src/tasks/defineTask.ts (DefineTaskObjectSpec.name).
+    Source: packages/babysitter-sdk/src/tasks/defineTask.ts (DefineTaskObjectSpec.name).
 ---
 nodeKind: FrontmatterField
 id: frontmatter-field:task-schema-kind
@@ -34,7 +34,7 @@ attributes:
   description: |
     TaskKind discriminator. Known values: node | breakpoint |
     orchestrator_task | sleep | subprocess; custom strings also accepted.
-    Source: packages/sdk/src/tasks/types.ts (KnownTaskKind / TaskKind).
+    Source: packages/babysitter-sdk/src/tasks/types.ts (KnownTaskKind / TaskKind).
 ---
 nodeKind: FrontmatterField
 id: frontmatter-field:task-schema-title
@@ -45,7 +45,7 @@ attributes:
   required: "no"
   appliesTo: task-schema
   description: |
-    Human-readable title surfaced in UI. Source: packages/sdk/src/tasks/types.ts (TaskDef.title).
+    Human-readable title surfaced in UI. Source: packages/babysitter-sdk/src/tasks/types.ts (TaskDef.title).
 ---
 nodeKind: FrontmatterField
 id: frontmatter-field:task-schema-description
@@ -56,7 +56,7 @@ attributes:
   required: "no"
   appliesTo: task-schema
   description: |
-    Free-form description. Source: packages/sdk/src/tasks/defineTask.ts (DefineTaskOptions.description) + TaskDef.description.
+    Free-form description. Source: packages/babysitter-sdk/src/tasks/defineTask.ts (DefineTaskOptions.description) + TaskDef.description.
 ---
 nodeKind: FrontmatterField
 id: frontmatter-field:task-schema-labels
@@ -67,7 +67,7 @@ attributes:
   required: "no"
   appliesTo: task-schema
   description: |
-    Free-form tag list propagated to invocations. Source: packages/sdk/src/tasks/defineTask.ts (DefineTaskOptions.labels) + TaskDef.labels.
+    Free-form tag list propagated to invocations. Source: packages/babysitter-sdk/src/tasks/defineTask.ts (DefineTaskOptions.labels) + TaskDef.labels.
 ---
 nodeKind: FrontmatterField
 id: frontmatter-field:task-schema-source
@@ -78,7 +78,7 @@ attributes:
   required: "no"
   appliesTo: task-schema
   description: |
-    Source-of-truth path for the task definition (origin file). Source: packages/sdk/src/tasks/defineTask.ts (DefineTaskOptions.source).
+    Source-of-truth path for the task definition (origin file). Source: packages/babysitter-sdk/src/tasks/defineTask.ts (DefineTaskOptions.source).
 ---
 nodeKind: FrontmatterField
 id: frontmatter-field:task-schema-inputs
@@ -91,7 +91,7 @@ attributes:
   description: |
     Optional input schema (JSON-schema-shaped object). Stored as metadata
     for tooling but not enforced at runtime in the object form. Source:
-    packages/sdk/src/tasks/defineTask.ts (DefineTaskObjectSpec.inputs).
+    packages/babysitter-sdk/src/tasks/defineTask.ts (DefineTaskObjectSpec.inputs).
 ---
 nodeKind: FrontmatterField
 id: frontmatter-field:task-schema-outputs
@@ -103,7 +103,7 @@ attributes:
   appliesTo: task-schema
   description: |
     Optional output schema (JSON-schema-shaped object). Source:
-    packages/sdk/src/tasks/defineTask.ts (DefineTaskObjectSpec.outputs).
+    packages/babysitter-sdk/src/tasks/defineTask.ts (DefineTaskObjectSpec.outputs).
 ---
 nodeKind: FrontmatterField
 id: frontmatter-field:task-schema-io
@@ -116,7 +116,7 @@ attributes:
   description: |
     TaskIOHints carrying inputJsonPath / outputJsonPath / stdoutPath /
     stderrPath for effect IO redirection. Source:
-    packages/sdk/src/tasks/types.ts (TaskIOHints).
+    packages/babysitter-sdk/src/tasks/types.ts (TaskIOHints).
 ---
 nodeKind: FrontmatterField
 id: frontmatter-field:task-schema-metadata
@@ -128,7 +128,7 @@ attributes:
   appliesTo: task-schema
   description: |
     Free-form JsonRecord propagated to the journal. Source:
-    packages/sdk/src/tasks/types.ts (TaskDef.metadata).
+    packages/babysitter-sdk/src/tasks/types.ts (TaskDef.metadata).
 ---
 nodeKind: FrontmatterField
 id: frontmatter-field:task-schema-execution
@@ -140,7 +140,7 @@ attributes:
   appliesTo: task-schema
   description: |
     EffectExecutionHints (harness, model, permissions) — internal hints
-    plugins may honor. Source: packages/sdk/src/tasks/types.ts (EffectExecutionHints).
+    plugins may honor. Source: packages/babysitter-sdk/src/tasks/types.ts (EffectExecutionHints).
 ---
 nodeKind: FrontmatterField
 id: frontmatter-field:task-schema-node
@@ -152,7 +152,7 @@ attributes:
   appliesTo: task-schema
   description: |
     NodeTaskOptions (entry / args / env / cwd / timeoutMs) for kind=node.
-    Source: packages/sdk/src/tasks/types.ts (NodeTaskOptions).
+    Source: packages/babysitter-sdk/src/tasks/types.ts (NodeTaskOptions).
 ---
 nodeKind: FrontmatterField
 id: frontmatter-field:task-schema-breakpoint
@@ -164,7 +164,7 @@ attributes:
   appliesTo: task-schema
   description: |
     BreakpointTaskOptions (payload, confirmationRequired) for kind=breakpoint. Source:
-    packages/sdk/src/tasks/types.ts (BreakpointTaskOptions).
+    packages/babysitter-sdk/src/tasks/types.ts (BreakpointTaskOptions).
 ---
 nodeKind: FrontmatterField
 id: frontmatter-field:task-schema-sleep
@@ -176,7 +176,7 @@ attributes:
   appliesTo: task-schema
   description: |
     SleepTaskOptions (iso, targetEpochMs) for kind=sleep. Source:
-    packages/sdk/src/tasks/types.ts (SleepTaskOptions).
+    packages/babysitter-sdk/src/tasks/types.ts (SleepTaskOptions).
 ---
 nodeKind: FrontmatterField
 id: frontmatter-field:task-schema-subprocess
@@ -189,4 +189,4 @@ attributes:
   description: |
     SubprocessTaskOptions (processPath, exportName, prompt, harness, model,
     inputSchema, outputSchema, etc.) for kind=subprocess. Source:
-    packages/sdk/src/tasks/types.ts (SubprocessTaskOptions).
+    packages/babysitter-sdk/src/tasks/types.ts (SubprocessTaskOptions).

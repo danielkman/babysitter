@@ -41,7 +41,7 @@ attributes:
   threadingContract: "sync_turn() must be non-blocking; backend latency in daemon threads."
   singleProviderRule: "Only one external memory provider active at a time."
   ourEquivalent: |
-    packages/sdk/src/ provides memoryExtraction and crossRunState for durable
+    packages/babysitter-sdk/src/ provides memoryExtraction and crossRunState for durable
     memory across babysitter runs. CLAUDE.md/MEMORY.md file conventions match
     Hermes' file-based memory. Atlas graph provides structured organizational
     knowledge that Hermes lacks. Hermes' rich lifecycle hooks (prefetch,

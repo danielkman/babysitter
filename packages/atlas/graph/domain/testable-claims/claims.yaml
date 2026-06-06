@@ -26,7 +26,7 @@ attributes:
     events and returns the same state.
   testStatus: passing
   testType: unit
-  testCommand: "node -e \"process.exit(require('fs').existsSync('packages/sdk/src/cli/main/runCommands.ts')?0:1)\""
+  testCommand: "node -e \"process.exit(require('fs').existsSync('packages/babysitter-sdk/src/cli/main/runCommands.ts')?0:1)\""
   category: lifecycle
   priority: high
 edges:
@@ -43,7 +43,7 @@ attributes:
     back to BABYSITTER_SESSION_ID environment variable.
   testStatus: passing
   testType: unit
-  testCommand: "node -e \"const fs=require('fs'),p=require('path');function walk(d){let r=[];try{for(const e of fs.readdirSync(d,{withFileTypes:true})){const f=p.join(d,e.name);if(e.isDirectory()&&e.name!=='node_modules')r=r.concat(walk(f));else if(e.name.endsWith('.ts'))r.push(f)}}catch{}return r}const files=walk('packages/sdk/src');const content=files.map(f=>fs.readFileSync(f,'utf8')).join('');process.exit(content.match(/ancestorPid/)?0:1)\""
+  testCommand: "node -e \"const fs=require('fs'),p=require('path');function walk(d){let r=[];try{for(const e of fs.readdirSync(d,{withFileTypes:true})){const f=p.join(d,e.name);if(e.isDirectory()&&e.name!=='node_modules')r=r.concat(walk(f));else if(e.name.endsWith('.ts'))r.push(f)}}catch{}return r}const files=walk('packages/babysitter-sdk/src');const content=files.map(f=>fs.readFileSync(f,'utf8')).join('');process.exit(content.match(/ancestorPid/)?0:1)\""
   category: lifecycle
   priority: medium
 edges:
@@ -60,7 +60,7 @@ attributes:
     completionProof field that can be verified by the orchestrator.
   testStatus: passing
   testType: integration
-  testCommand: "node -e \"const fs=require('fs'),p=require('path');function walk(d){let r=[];try{for(const e of fs.readdirSync(d,{withFileTypes:true})){const f=p.join(d,e.name);if(e.isDirectory()&&e.name!=='node_modules')r=r.concat(walk(f));else if(e.name.endsWith('.ts'))r.push(f)}}catch{}return r}const files=walk('packages/sdk/src');const content=files.map(f=>fs.readFileSync(f,'utf8')).join('');process.exit(content.includes('completionProof')?0:1)\""
+  testCommand: "node -e \"const fs=require('fs'),p=require('path');function walk(d){let r=[];try{for(const e of fs.readdirSync(d,{withFileTypes:true})){const f=p.join(d,e.name);if(e.isDirectory()&&e.name!=='node_modules')r=r.concat(walk(f));else if(e.name.endsWith('.ts'))r.push(f)}}catch{}return r}const files=walk('packages/babysitter-sdk/src');const content=files.map(f=>fs.readFileSync(f,'utf8')).join('');process.exit(content.includes('completionProof')?0:1)\""
   category: lifecycle
   priority: medium
 edges:
@@ -77,7 +77,7 @@ attributes:
     and can be used to instantiate effects.
   testStatus: passing
   testType: unit
-  testCommand: "node -e \"process.exit(require('fs').readFileSync('packages/sdk/src/tasks/defineTask.ts','utf8').includes('defineTask')?0:1)\""
+  testCommand: "node -e \"process.exit(require('fs').readFileSync('packages/babysitter-sdk/src/tasks/defineTask.ts','utf8').includes('defineTask')?0:1)\""
   category: api-contract
   priority: critical
 edges:
@@ -94,7 +94,7 @@ attributes:
     concurrent invocations.
   testStatus: passing
   testType: unit
-  testCommand: "node -e \"const fs=require('fs'),p=require('path');function walk(d){let r=[];try{for(const e of fs.readdirSync(d,{withFileTypes:true})){const f=p.join(d,e.name);if(e.isDirectory()&&e.name!=='node_modules')r=r.concat(walk(f));else if(e.name.endsWith('.ts'))r.push(f)}}catch{}return r}const files=walk('packages/sdk/src');const content=files.map(f=>fs.readFileSync(f,'utf8')).join('');process.exit(content.match(/ulid|ULID|monotonicFactory/)?0:1)\""
+  testCommand: "node -e \"const fs=require('fs'),p=require('path');function walk(d){let r=[];try{for(const e of fs.readdirSync(d,{withFileTypes:true})){const f=p.join(d,e.name);if(e.isDirectory()&&e.name!=='node_modules')r=r.concat(walk(f));else if(e.name.endsWith('.ts'))r.push(f)}}catch{}return r}const files=walk('packages/babysitter-sdk/src');const content=files.map(f=>fs.readFileSync(f,'utf8')).join('');process.exit(content.match(/ulid|ULID|monotonicFactory/)?0:1)\""
   category: api-contract
   priority: high
 edges:
@@ -111,7 +111,7 @@ attributes:
     field and the posted result payload.
   testStatus: passing
   testType: integration
-  testCommand: "node -e \"process.exit(require('fs').readFileSync('packages/sdk/src/cli/main/usage.ts','utf8').match(/task:post|taskPost/)?0:1)\""
+  testCommand: "node -e \"process.exit(require('fs').readFileSync('packages/babysitter-sdk/src/cli/main/usage.ts','utf8').match(/task:post|taskPost/)?0:1)\""
   category: api-contract
   priority: high
 edges:
@@ -214,7 +214,7 @@ attributes:
     user decision, not a failure.
   testStatus: passing
   testType: unit
-  testCommand: "node -e \"const fs=require('fs'),p=require('path');function walk(d){let r=[];try{for(const e of fs.readdirSync(d,{withFileTypes:true})){const f=p.join(d,e.name);if(e.isDirectory()&&e.name!=='node_modules')r=r.concat(walk(f));else if(e.name.endsWith('.ts'))r.push(f)}}catch{}return r}const files=walk('packages/sdk/src');const content=files.map(f=>fs.readFileSync(f,'utf8')).join('');process.exit(content.match(/approved.*false/)?0:1)\""
+  testCommand: "node -e \"const fs=require('fs'),p=require('path');function walk(d){let r=[];try{for(const e of fs.readdirSync(d,{withFileTypes:true})){const f=p.join(d,e.name);if(e.isDirectory()&&e.name!=='node_modules')r=r.concat(walk(f));else if(e.name.endsWith('.ts'))r.push(f)}}catch{}return r}const files=walk('packages/babysitter-sdk/src');const content=files.map(f=>fs.readFileSync(f,'utf8')).join('');process.exit(content.match(/approved.*false/)?0:1)\""
   category: behavior
   priority: high
 edges:
@@ -231,7 +231,7 @@ attributes:
     falls back to a synchronous in-turn loop without hook callbacks.
   testStatus: passing
   testType: integration
-  testCommand: "node -e \"const fs=require('fs'),p=require('path');function walk(d){let r=[];try{for(const e of fs.readdirSync(d,{withFileTypes:true})){const f=p.join(d,e.name);if(e.isDirectory()&&e.name!=='node_modules')r=r.concat(walk(f));else if(e.name.endsWith('.ts'))r.push(f)}}catch{}return r}const files=walk('packages/sdk/src');const content=files.map(f=>fs.readFileSync(f,'utf8')).join('');process.exit(content.match(/no.hooks|hookStatus/)?0:1)\""
+  testCommand: "node -e \"const fs=require('fs'),p=require('path');function walk(d){let r=[];try{for(const e of fs.readdirSync(d,{withFileTypes:true})){const f=p.join(d,e.name);if(e.isDirectory()&&e.name!=='node_modules')r=r.concat(walk(f));else if(e.name.endsWith('.ts'))r.push(f)}}catch{}return r}const files=walk('packages/babysitter-sdk/src');const content=files.map(f=>fs.readFileSync(f,'utf8')).join('');process.exit(content.match(/no.hooks|hookStatus/)?0:1)\""
   category: behavior
   priority: medium
 edges:
@@ -248,7 +248,7 @@ attributes:
     named export called process that is an async generator function.
   testStatus: passing
   testType: unit
-  testCommand: "node -e \"process.exit(require('fs').readFileSync('packages/sdk/src/tasks/defineTask.ts','utf8').includes('defineTask')?0:1)\""
+  testCommand: "node -e \"process.exit(require('fs').readFileSync('packages/babysitter-sdk/src/tasks/defineTask.ts','utf8').includes('defineTask')?0:1)\""
   category: behavior
   priority: high
 edges:

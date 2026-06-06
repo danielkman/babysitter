@@ -256,7 +256,7 @@ const workspaceManifestPaths = [
   "packages/genty/runtime/package.json",
   "packages/omni/package.json",
   "packages/adapters/tools/package.json",
-  "packages/sdk/package.json",
+  "packages/babysitter-sdk/package.json",
   "packages/babysitter/package.json",
   "packages/genty/platform/package.json",
   "packages/adapters/extensions/package.json",
@@ -369,7 +369,7 @@ for (const path of [
 for (const path of [
   "package.json",
   "packages/genty/core/package.json",
-  "packages/sdk/package.json",
+  "packages/babysitter-sdk/package.json",
   "packages/genty/platform/package.json",
   "packages/adapters/codecs/package.json",
   "packages/adapters/cli/package.json",

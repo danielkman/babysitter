@@ -2783,8 +2783,8 @@ nodeKinds:
     EFFECT_REQUESTED/RESOLVED/CANCELLED/PROGRESS, COST_TRACKED, STOP_HOOK_INVOKED,
     COMPRESSION_APPLIED) are orchestration-layer events distinct from
     `ProtocolMessage` (which is core↔model). Cited from
-    packages/sdk/src/runtime/replay/effectIndex.ts:13 (the SupportedEventType
-    union) and packages/sdk/src/storage/types.ts (JournalEvent shape).
+    packages/babysitter-sdk/src/runtime/replay/effectIndex.ts:13 (the SupportedEventType
+    union) and packages/babysitter-sdk/src/storage/types.ts (JournalEvent shape).
   prefix: journal-event
   cluster: 7-extensions
   purpose: |

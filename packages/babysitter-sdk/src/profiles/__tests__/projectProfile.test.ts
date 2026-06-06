@@ -775,7 +775,7 @@ describe("renderProjectProfileMarkdown", () => {
         pattern: "monorepo",
         dataFlow: "event-driven",
         modules: [
-          { name: "sdk", path: "packages/sdk", description: "Core SDK" },
+          { name: "sdk", path: "packages/babysitter-sdk", description: "Core SDK" },
         ],
         entryPoints: ["src/index.ts"],
       },
@@ -786,7 +786,7 @@ describe("renderProjectProfileMarkdown", () => {
     expect(md).toContain("**Data flow:** event-driven");
     expect(md).toContain("### Modules");
     expect(md).toContain("sdk");
-    expect(md).toContain("`packages/sdk`");
+    expect(md).toContain("`packages/babysitter-sdk`");
     expect(md).toContain("**Entry points:**");
     expect(md).toContain("`src/index.ts`");
   });

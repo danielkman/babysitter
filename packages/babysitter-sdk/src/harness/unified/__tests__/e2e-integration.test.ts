@@ -31,7 +31,7 @@ import { HarnessCapability } from "../../types";
 // Paths
 // ---------------------------------------------------------------------------
 
-/** Repo root (packages/sdk/src/harness/unified/__tests__ -> root). */
+/** Repo root (packages/babysitter-sdk/src/harness/unified/__tests__ -> root). */
 const REPO_ROOT = path.resolve(__dirname, "..", "..", "..", "..", "..", "..");
 
 /** Hooks-proxy CLI package directory. */

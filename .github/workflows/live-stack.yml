@@ -388,7 +388,7 @@ jobs:
             "adapters:packages/adapters/sdk/dist/bin/adapters.js" \
             "agent-platform:packages/genty/cli/dist/cli/main.js" \
             "genty:packages/genty/cli/dist/cli/main.js" \
-            "babysitter:packages/sdk/dist/cli/main.js" \
+            "babysitter:packages/babysitter-sdk/dist/cli/main.js" \
             "adapters-hooks:packages/adapters/hooks/cli/dist/cli/main.js"
           do
             name="${pair%%:*}"
@@ -462,7 +462,7 @@ jobs:
           LIVE_STACK_REQUIRE_EVIDENCE: '1'
           LIVE_STACK_TEST_TIMEOUT_MS: '4860000'
           LIVE_STACK_COMMAND_TIMEOUT_MS: '4800000'
-          LIVE_STACK_BABYSITTER_BIN: ${{ github.workspace }}/packages/sdk/dist/cli/main.js
+          LIVE_STACK_BABYSITTER_BIN: ${{ github.workspace }}/packages/babysitter-sdk/dist/cli/main.js
           LIVE_STACK_AGENT_MUX_BIN: ${{ github.workspace }}/packages/adapters/cli/dist/index.js
           LIVE_STACK_AGENT_PLATFORM_BIN: ${{ github.workspace }}/packages/genty/cli/dist/cli/main.js
           LIVE_STACK_GENTY_BIN: ${{ github.workspace }}/packages/genty/cli/dist/cli/main.js

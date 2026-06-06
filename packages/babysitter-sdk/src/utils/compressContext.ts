@@ -78,8 +78,8 @@ async function loadEngine(): Promise<CompressionEngine> {
   // In both ts-node (tests via vitest) and compiled CJS (dist/), __dirname
   // points to the directory containing the current JS file. The .mjs lives
   // in the same directory as the compiled output mirrors src/, so:
-  //   tests  (vitest/ts-node) → __dirname = <root>/packages/sdk/src/utils
-  //   built  (node dist/)     → __dirname = <root>/packages/sdk/dist/utils
+  //   tests  (vitest/ts-node) → __dirname = <root>/packages/babysitter-sdk/src/utils
+  //   built  (node dist/)     → __dirname = <root>/packages/babysitter-sdk/dist/utils
   //
   // For the built case we also need to copy the .mjs to dist/utils/ — but
   // because the task spec says "no npm install needed" and tests run from

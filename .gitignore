@@ -46,7 +46,7 @@ _ci_artifacts/**
 .a5c/processes/index.js
 e2e-tests/fixtures/todo-app/**
 **/.a5c/runs/**
-packages/sdk/test-fixtures/cli/.a5c/logs/hooks.log
+packages/babysitter-sdk/test-fixtures/cli/.a5c/logs/hooks.log
 e2e-tests/fixtures/todo-app-nextjs/
 e2e-tests/fixtures/*/**
 **/node_modules/**
@@ -88,8 +88,8 @@ plugins/babysitter-gemini/.babysitter-install-attempted
 *.tsbuildinfo
 tsconfig.tsbuildinfo
 
-packages/sdk/**/*.d.ts
-packages/sdk/src/**/*.js
+packages/babysitter-sdk/**/*.d.ts
+packages/babysitter-sdk/src/**/*.js
 legacy/
 .claude/skills/welcome/SKILL.md
 tmp-e2e-artifact*/**

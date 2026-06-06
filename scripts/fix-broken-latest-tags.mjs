@@ -19,7 +19,7 @@ const MIN_FILES = 5;
 const MIN_SIZE = 10000;
 
 const packageDirs = [
-  'packages/sdk', 'packages/babysitter', 'packages/genty/platform',
+  'packages/babysitter-sdk', 'packages/babysitter', 'packages/genty/platform',
   'packages/genty/core', 'packages/atlas',
   'packages/adapters/transport', 'packages/adapters/extensions', 'packages/adapters/tasks',
   'packages/adapters/triggers', 'packages/kradle/installer', 'packages/observer-dashboard',

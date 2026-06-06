@@ -64,8 +64,8 @@ function verifyMetapackageShimResolvesSdkCli() {
 }
 
 function main() {
-  assertFile("packages/sdk/dist/cli/main.js");
-  assertFile("packages/sdk/dist/cli/mcpServeEntry.js");
+  assertFile("packages/babysitter-sdk/dist/cli/main.js");
+  assertFile("packages/babysitter-sdk/dist/cli/mcpServeEntry.js");
   verifySdkPackIncludesCli();
   verifyMetapackageShimResolvesSdkCli();
   console.log("[verify-package-health] SDK package health checks passed.");

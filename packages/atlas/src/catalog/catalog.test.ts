@@ -563,7 +563,7 @@ describe("agent-catalog graph-backed ontology", () => {
   });
 
   it("exposes targeted provenance and evidence helpers without full-snapshot callers", () => {
-    expect(getOntologyEvidenceSource("repo-sdk-fallback")?.sourcePathOrUrl).toContain("packages/sdk/src/harness");
+    expect(getOntologyEvidenceSource("repo-sdk-fallback")?.sourcePathOrUrl).toContain("packages/babysitter-sdk/src/harness");
     expect(getOntologyClaim("repo-sdk-fallback")?.statement).toContain("fallback metadata");
 
     const subjectId = "agentVersion:codex:ge-0-119-0";

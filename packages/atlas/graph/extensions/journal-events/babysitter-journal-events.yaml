@@ -11,7 +11,7 @@ attributes:
   payloadSchema:
     runId: string
     createdAt: iso-timestamp
-  sourceCitation: "packages/sdk/src/runtime/replay/effectIndex.ts:94 + packages/sdk/src/cli/main/runCreate.ts"
+  sourceCitation: "packages/babysitter-sdk/src/runtime/replay/effectIndex.ts:94 + packages/babysitter-sdk/src/cli/main/runCreate.ts"
 edges:
   journal_event_emitted_by:
     - target: agent-runtime-impl:a5c.runtime@current
@@ -28,7 +28,7 @@ attributes:
   payloadSchema:
     runId: string
     completedAt: iso-timestamp
-  sourceCitation: "packages/sdk/src/runtime/replay/effectIndex.ts:13,95 + packages/sdk/src/harness/__tests__/harness.test.ts:474"
+  sourceCitation: "packages/babysitter-sdk/src/runtime/replay/effectIndex.ts:13,95 + packages/babysitter-sdk/src/harness/__tests__/harness.test.ts:474"
 edges:
   journal_event_emitted_by:
     - target: agent-runtime-impl:a5c.runtime@current
@@ -45,7 +45,7 @@ attributes:
   payloadSchema:
     runId: string
     error: object
-  sourceCitation: "packages/sdk/src/runtime/replay/effectIndex.ts:13,96 + packages/sdk/src/runtime/exceptions.ts (RunFailedError)"
+  sourceCitation: "packages/babysitter-sdk/src/runtime/replay/effectIndex.ts:13,96 + packages/babysitter-sdk/src/runtime/exceptions.ts (RunFailedError)"
 edges:
   journal_event_emitted_by:
     - target: agent-runtime-impl:a5c.runtime@current
@@ -70,7 +70,7 @@ attributes:
     labels: list<string>
     taskDefRef: string
     inputsRef: string
-  sourceCitation: "packages/sdk/src/runtime/replay/effectIndex.ts:15-26,98 (EffectRequestedPayload)"
+  sourceCitation: "packages/babysitter-sdk/src/runtime/replay/effectIndex.ts:15-26,98 (EffectRequestedPayload)"
 edges:
   journal_event_emitted_by:
     - target: agent-runtime-impl:a5c.runtime@current
@@ -91,7 +91,7 @@ attributes:
     error: object
     stdoutRef: string
     stderrRef: string
-  sourceCitation: "packages/sdk/src/runtime/replay/effectIndex.ts:28-35,101 (EffectResolvedPayload)"
+  sourceCitation: "packages/babysitter-sdk/src/runtime/replay/effectIndex.ts:28-35,101 (EffectResolvedPayload)"
 edges:
   journal_event_emitted_by:
     - target: agent-platform-impl:a5c.platform@current
@@ -108,7 +108,7 @@ attributes:
   payloadSchema:
     effectId: string
     reason: string
-  sourceCitation: "packages/sdk/src/runtime/replay/effectIndex.ts:37-40,104 (EffectCancelledPayload)"
+  sourceCitation: "packages/babysitter-sdk/src/runtime/replay/effectIndex.ts:37-40,104 (EffectCancelledPayload)"
 edges:
   journal_event_emitted_by:
     - target: agent-platform-impl:a5c.platform@current
@@ -128,7 +128,7 @@ attributes:
     progressLabel: string
     currentStep: string
     progressEta: string
-  sourceCitation: "packages/sdk/src/runtime/replay/effectIndex.ts:53-59,107 (EffectProgressPayload)"
+  sourceCitation: "packages/babysitter-sdk/src/runtime/replay/effectIndex.ts:53-59,107 (EffectProgressPayload)"
 edges:
   journal_event_emitted_by:
     - target: agent-platform-impl:a5c.platform@current
@@ -151,7 +151,7 @@ attributes:
     costUsd: number
     model: string
     taskKind: string
-  sourceCitation: "packages/sdk/src/runtime/replay/effectIndex.ts:42-51,110 (CostTrackedPayload)"
+  sourceCitation: "packages/babysitter-sdk/src/runtime/replay/effectIndex.ts:42-51,110 (CostTrackedPayload)"
 edges:
   journal_event_emitted_by:
     - target: agent-platform-impl:a5c.platform@current
@@ -168,7 +168,7 @@ attributes:
   payloadSchema:
     eventType: string
     reason: string
-  sourceCitation: "packages/sdk/src/harness/hooks/utils.ts:128 + packages/sdk/src/runtime/__tests__/effectIndex.test.ts:106"
+  sourceCitation: "packages/babysitter-sdk/src/harness/hooks/utils.ts:128 + packages/babysitter-sdk/src/runtime/__tests__/effectIndex.test.ts:106"
 edges:
   journal_event_emitted_by:
     - target: agent-platform-impl:a5c.platform@current
@@ -186,7 +186,7 @@ attributes:
     inputTokens: int
     outputTokens: int
     cacheReadInputTokens: int
-  sourceCitation: "packages/sdk/src/cli/commands/tokensStats.ts:42,121"
+  sourceCitation: "packages/babysitter-sdk/src/cli/commands/tokensStats.ts:42,121"
 edges:
   journal_event_emitted_by:
     - target: agent-platform-impl:a5c.platform@current
@@ -203,7 +203,7 @@ attributes:
   payloadSchema:
     taskId: string
     runId: string
-  sourceCitation: "packages/sdk/src/cli/commands/hooks/log.ts:33"
+  sourceCitation: "packages/babysitter-sdk/src/cli/commands/hooks/log.ts:33"
 edges:
   journal_event_emitted_by:
     - target: agent-runtime-impl:a5c.runtime@current
@@ -220,7 +220,7 @@ attributes:
   payloadSchema:
     taskId: string
     status: enum<ok,error,cancelled>
-  sourceCitation: "packages/sdk/src/cli/commands/hooks/log.ts:34"
+  sourceCitation: "packages/babysitter-sdk/src/cli/commands/hooks/log.ts:34"
 edges:
   journal_event_emitted_by:
     - target: agent-runtime-impl:a5c.runtime@current
@@ -237,7 +237,7 @@ attributes:
   payloadSchema:
     stepId: string
     taskId: string
-  sourceCitation: "packages/sdk/src/cli/commands/hooks/log.ts:35"
+  sourceCitation: "packages/babysitter-sdk/src/cli/commands/hooks/log.ts:35"
 edges:
   journal_event_emitted_by:
     - target: agent-runtime-impl:a5c.runtime@current

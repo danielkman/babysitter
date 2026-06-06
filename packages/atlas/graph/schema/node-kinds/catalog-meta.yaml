@@ -927,9 +927,9 @@ nodeKinds:
 
     ({type, recordedAt, data, checksum}). Sourced from
 
-    packages/sdk/src/storage/journal.ts (appendEvent, JournalEvent) and
+    packages/babysitter-sdk/src/storage/journal.ts (appendEvent, JournalEvent) and
 
-    packages/sdk/src/runtime tests; the canonical event taxonomy is
+    packages/babysitter-sdk/src/runtime tests; the canonical event taxonomy is
 
     drawn from observed eventType literals across the runtime.
 

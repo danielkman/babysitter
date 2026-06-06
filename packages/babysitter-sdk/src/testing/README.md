@@ -1,6 +1,6 @@
 # Testing Utilities
 
-The helpers in `packages/sdk/src/testing` provide a deterministic harness for exercising runs without the real orchestrator. They cover three pillars:
+The helpers in `packages/babysitter-sdk/src/testing` provide a deterministic harness for exercising runs without the real orchestrator. They cover three pillars:
 
 1. Seed clocks/ULIDs so every journal file, state snapshot, and effect invocation key is reproducible.
 2. Spin up disposable run directories that already contain a `RUN_CREATED` event and cleaned-up tmp roots.
@@ -128,12 +128,12 @@ npm run test --workspace=@a5c-ai/babysitter-sdk
 
 The current verification surface for these APIs lives in:
 
-- `packages/sdk/src/testing/__tests__/runHarness.test.ts`
-- `packages/sdk/src/testing/__tests__/parallelHarness.test.ts`
-- `packages/sdk/src/runtime/__tests__/deterministicHarness.test.ts`
+- `packages/babysitter-sdk/src/testing/__tests__/runHarness.test.ts`
+- `packages/babysitter-sdk/src/testing/__tests__/parallelHarness.test.ts`
+- `packages/babysitter-sdk/src/runtime/__tests__/deterministicHarness.test.ts`
 
 5. **Respect redaction + platform notes.**
    - Keep examples redacted unless explicitly describing the `BABYSITTER_ALLOW_SECRET_LOGS` guard (sdk.md §12.4).
    - Mention that CLI output uses POSIX-style paths even on Windows; tests here should normalize separators to match the docs.
 
-Following this workflow ensures the SDK docs, README quickstart, and CLI walkthrough stay consistent with the deterministic harness delivered in `packages/sdk`.
+Following this workflow ensures the SDK docs, README quickstart, and CLI walkthrough stay consistent with the deterministic harness delivered in `packages/babysitter-sdk`.

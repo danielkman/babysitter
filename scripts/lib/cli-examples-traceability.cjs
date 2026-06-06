@@ -21,9 +21,9 @@ const SDK_SCRIPT_KEYS = [
 ];
 
 const SDK_TEST_PATHS = [
-  "packages/sdk/src/testing/__tests__/runHarness.test.ts",
-  "packages/sdk/src/testing/__tests__/parallelHarness.test.ts",
-  "packages/sdk/src/runtime/__tests__/deterministicHarness.test.ts",
+  "packages/babysitter-sdk/src/testing/__tests__/runHarness.test.ts",
+  "packages/babysitter-sdk/src/testing/__tests__/parallelHarness.test.ts",
+  "packages/babysitter-sdk/src/runtime/__tests__/deterministicHarness.test.ts",
 ];
 
 function readJson(filePath) {
@@ -62,7 +62,7 @@ function buildTraceabilityModel(repoRoot) {
   const generatedAt = new Date().toISOString().slice(0, 10);
   const docsSurface = {
     cliExamples: "docs/cli-examples.md",
-    testingReadme: "packages/sdk/src/testing/README.md",
+    testingReadme: "packages/babysitter-sdk/src/testing/README.md",
     sdkReference: "library/reference/sdk.md",
     generatedIndex: "docs/generated/cli-examples-verification.md",
   };
@@ -77,8 +77,8 @@ function buildTraceabilityModel(repoRoot) {
     {
       step: "Build the SDK CLI used by the smoke harness",
       command: "npm run build --workspace=@a5c-ai/babysitter-sdk",
-      implementation: "packages/sdk/package.json#scripts.build",
-      artifact: "packages/sdk/dist/",
+      implementation: "packages/babysitter-sdk/package.json#scripts.build",
+      artifact: "packages/babysitter-sdk/dist/",
     },
     {
       step: "Generate repo docs artifacts, including this traceability index",
@@ -90,7 +90,7 @@ function buildTraceabilityModel(repoRoot) {
       step: "Run the real CLI smoke harness",
       command: "npm run docs:examples:smoke",
       implementation: "package.json#scripts.docs:examples:smoke",
-      artifact: "packages/sdk/test-fixtures/cli/runs/smoke/",
+      artifact: "packages/babysitter-sdk/test-fixtures/cli/runs/smoke/",
     },
     {
       step: "Validate fenced code samples and command references in staged docs",
@@ -110,8 +110,8 @@ function buildTraceabilityModel(repoRoot) {
     {
       surface: "CLI walkthrough command flow in docs/cli-examples.md",
       command: "npm run docs:examples:smoke",
-      implementation: "packages/sdk/scripts/smoke-cli.js",
-      evidence: "packages/sdk/test-fixtures/cli/runs/smoke/",
+      implementation: "packages/babysitter-sdk/scripts/smoke-cli.js",
+      evidence: "packages/babysitter-sdk/test-fixtures/cli/runs/smoke/",
     },
     {
       surface: "Repo-published command references and fenced examples",
@@ -128,7 +128,7 @@ function buildTraceabilityModel(repoRoot) {
     {
       surface: "Deterministic SDK harness APIs referenced from docs",
       command: "npm run test --workspace=@a5c-ai/babysitter-sdk",
-      implementation: "packages/sdk/package.json#scripts.test",
+      implementation: "packages/babysitter-sdk/package.json#scripts.test",
       evidence: SDK_TEST_PATHS.join(", "),
     },
     {
@@ -141,13 +141,13 @@ function buildTraceabilityModel(repoRoot) {
 
   const sourceFiles = [
     "package.json",
-    "packages/sdk/package.json",
-    "packages/sdk/scripts/smoke-cli.js",
+    "packages/babysitter-sdk/package.json",
+    "packages/babysitter-sdk/scripts/smoke-cli.js",
     "scripts/docs-code-samples-check.cjs",
     "scripts/docs-style-check.cjs",
     "scripts/docs-freshness-report.cjs",
     "docs/cli-examples.md",
-    "packages/sdk/src/testing/README.md",
+    "packages/babysitter-sdk/src/testing/README.md",
     "library/reference/sdk.md",
   ];
 
@@ -162,8 +162,8 @@ function buildTraceabilityModel(repoRoot) {
     sourceFiles,
     smokeHarness: {
       command: "npm run smoke:cli --workspace=@a5c-ai/babysitter-sdk",
-      implementation: "packages/sdk/scripts/smoke-cli.js",
-      defaultRunsDir: "packages/sdk/test-fixtures/cli/runs/smoke",
+      implementation: "packages/babysitter-sdk/scripts/smoke-cli.js",
+      defaultRunsDir: "packages/babysitter-sdk/test-fixtures/cli/runs/smoke",
       supportedFlags: ["--runs-dir", "--cli", "--keep"],
     },
     notes: [

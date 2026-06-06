@@ -15,11 +15,11 @@ attributes:
     the bridged session is PID-scoped to the orchestrator's run.
 
     Source citations:
-      - packages/sdk/src/cli/main/usage.ts (`run:create --harness <name>`
+      - packages/babysitter-sdk/src/cli/main/usage.ts (`run:create --harness <name>`
         and `create-run` argv shapes).
-      - packages/sdk/src/cli/main/runCreate.ts (session-id resolution via
+      - packages/babysitter-sdk/src/cli/main/runCreate.ts (session-id resolution via
         `--session-id` / `AGENT_SESSION_ID` env / PID-scoped fallback).
-      - packages/sdk/src/cli/commands/instructions.ts (harness env file +
+      - packages/babysitter-sdk/src/cli/commands/instructions.ts (harness env file +
         AGENT_SESSION_ID marker).
 edges:
   requires_capability:

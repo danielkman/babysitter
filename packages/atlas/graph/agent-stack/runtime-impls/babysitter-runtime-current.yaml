@@ -35,8 +35,8 @@ attributes:
     codex, cursor, opencode, gemini-cli) are spawned as subprocesses for
     kind: 'agent' tasks; their working directories are isolated per task.
     Babysitter exposes a built-in MCP server (see
-    packages/sdk/src/cli/mcpServeEntry.ts) for tools, and uses its own
-    breakpoint policy engine (packages/sdk/src/breakpoints/) for approval
+    packages/babysitter-sdk/src/cli/mcpServeEntry.ts) for tools, and uses its own
+    breakpoint policy engine (packages/babysitter-sdk/src/breakpoints/) for approval
     gating.
 edges:
   realizes:

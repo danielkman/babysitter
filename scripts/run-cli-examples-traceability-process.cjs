@@ -6,10 +6,10 @@ const { spawnSync } = require("node:child_process");
 
 const {
   createRun,
-} = require("../packages/sdk/dist/index.js");
+} = require("../packages/babysitter-sdk/dist/index.js");
 const {
   runToCompletionWithFakeRunner,
-} = require("../packages/sdk/dist/testing/index.js");
+} = require("../packages/babysitter-sdk/dist/testing/index.js");
 
 async function main() {
   const repoRoot = path.resolve(__dirname, "..");

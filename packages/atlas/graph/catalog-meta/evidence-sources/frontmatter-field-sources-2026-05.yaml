@@ -23,9 +23,9 @@ attributes:
   displayName: Babysitter defineTask task schema source
   kindLabel: file
   trustLevel: trust-level:repo
-  sourceUrl: https://github.com/a5c-ai/babysitter/blob/main/packages/sdk/src/tasks/defineTask.ts
-  filePath: packages/sdk/src/tasks/defineTask.ts
-  sourcePathOrUrl: packages/sdk/src/tasks/defineTask.ts; packages/sdk/src/tasks/types.ts
+  sourceUrl: https://github.com/a5c-ai/babysitter/blob/main/packages/babysitter-sdk/src/tasks/defineTask.ts
+  filePath: packages/babysitter-sdk/src/tasks/defineTask.ts
+  sourcePathOrUrl: packages/babysitter-sdk/src/tasks/defineTask.ts; packages/babysitter-sdk/src/tasks/types.ts
   locator: DefineTaskOptions, DefineTaskObjectSpec, TaskDef, TaskIOHints, EffectExecutionHints, task kind option types
   capturedAt: '2026-05-05T00:00:00Z'
   observedAt: '2026-05-05T00:00:00Z'

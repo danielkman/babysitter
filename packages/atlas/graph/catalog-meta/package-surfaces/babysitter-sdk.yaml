@@ -7,7 +7,7 @@ attributes:
   description: "Core SDK providing storage and run-registry primitives for event-sourced babysitter workflows. Includes the babysitter CLI, MCP server, and programmatic API for defining tasks, managing runs, sessions, plugins, skills, and process libraries."
   role: "core-sdk"
   whenToUse: "Depend on this when building babysitter processes, defining tasks via defineTask, or programmatically managing runs, sessions, breakpoints, and hooks."
-  workspacePath: packages/sdk
+  workspacePath: packages/babysitter-sdk
   moduleType: typescript
   surfaceKinds:
     - sdk-consumer
@@ -17,7 +17,7 @@ attributes:
   sourceOfTruthRole: wrapper-over-graph
   publishedTo: npm
   versionPolicy: semver
-  # Source: packages/sdk/package.json bins (babysitter-sdk, babysitter,
+  # Source: packages/babysitter-sdk/package.json bins (babysitter-sdk, babysitter,
   # babysitter-mcp-server) + main/program.ts CORE_VALID_COMMANDS.
 edges:
   has_payload_schema:

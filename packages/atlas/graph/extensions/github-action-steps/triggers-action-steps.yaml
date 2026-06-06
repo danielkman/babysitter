@@ -91,7 +91,7 @@ attributes:
     set -euo pipefail
     REPO_ROOT=$(cd "$ACTION_ROOT/../.." && pwd)
     cd "$INPUT_WORKING_DIRECTORY"
-    npm install -g @a5c-ai/babysitter-sdk || npm install -g "$REPO_ROOT/packages/sdk"
+    npm install -g @a5c-ai/babysitter-sdk || npm install -g "$REPO_ROOT/packages/babysitter-sdk"
     babysitter harness:install-plugin "$INPUT_HARNESS" --workspace "$INPUT_WORKING_DIRECTORY"
     if [ -n "$INPUT_PROCESS_FILE" ]; then
       mkdir -p .a5c/processes

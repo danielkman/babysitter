@@ -17,12 +17,12 @@ attributes:
     the AgentCoreImpl/AgentRuntimeImpl `supports` edges, not duplicated here.
 
     Source citations:
-      - packages/sdk/src/runtime/replay/effectIndex.ts (journal event types
+      - packages/babysitter-sdk/src/runtime/replay/effectIndex.ts (journal event types
         EFFECT_REQUESTED / EFFECT_RESOLVED / EFFECT_PROGRESS / EFFECT_CANCELLED
         / RUN_CREATED / RUN_COMPLETED / RUN_FAILED / COST_TRACKED).
-      - packages/sdk/src/cli/main/usage.ts (--interactive / --non-interactive
+      - packages/babysitter-sdk/src/cli/main/usage.ts (--interactive / --non-interactive
         / yolo CLI flags).
-      - packages/sdk/src/cli/commands/instructions.ts (PID-scoped AGENT_SESSION_ID
+      - packages/babysitter-sdk/src/cli/commands/instructions.ts (PID-scoped AGENT_SESSION_ID
         marker semantics).
       - packages/adapters (multi-harness mediation runtime).
   overrides:
