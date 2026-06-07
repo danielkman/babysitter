@@ -14,6 +14,7 @@ import { GithubCopilotAdapter } from './github-copilot.js';
 import { HermesAdapter } from './hermes.js';
 import { OpenCodeAdapter } from './opencode.js';
 import { OpenClawAdapter } from './openclaw.js';
+import { GentyAdapter } from './genty.js';
 import { PiAdapter } from './pi.js';
 import { OhMyPiAdapter } from './oh-my-pi.js';
 
@@ -22,6 +23,7 @@ export { AntigravityAdapter } from './antigravity.js';
 export { ClaudeCodeAdapter } from './claude-code.js';
 export { CodexAdapter } from './codex.js';
 export { CursorAdapter } from './cursor.js';
+export { GentyAdapter } from './genty.js';
 export { GeminiAdapter } from './gemini.js';
 export { GithubCopilotAdapter } from './github-copilot.js';
 export { HermesAdapter } from './hermes.js';
@@ -40,6 +42,7 @@ export { generateGeminiHooksJson, generateGeminiManifest } from './gemini.js';
 export { generateGithubCopilotHooksJson, generateGithubCopilotManifest } from './github-copilot.js';
 export { generateOpenCodeHooksJson, generateOpenCodeManifest } from './opencode.js';
 export { generateOpenClawHooksJson, generateOpenClawManifest, generateOpenClawPackageManifest } from './openclaw.js';
+export { generateGentyManifest } from './genty.js';
 export { generatePiManifest } from './pi.js';
 export { generateOhMyPiManifest } from './oh-my-pi.js';
 
@@ -58,6 +61,7 @@ const ADAPTER_CLASS_BY_FORMAT: Record<string, new (targetName: string) => Harnes
 };
 
 const ADAPTER_CLASS_BY_TARGET: Record<string, new (targetName: string) => HarnessOutputAdapter> = {
+  'genty': GentyAdapter,
   'pi': PiAdapter,
   'oh-my-pi': OhMyPiAdapter,
 };

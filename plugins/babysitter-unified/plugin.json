@@ -92,6 +92,9 @@
     },
     "openclaw-surface": {
       "commands/babysit.md": "file:per-harness/{{targetDir}}/babysit-command.md"
+    },
+    "genty-extension": {
+      "extensions/index.ts": "file:per-harness/genty/extensions-index.ts"
     }
   },
   "harnessInstallSurfaceExportSets": {
@@ -359,6 +362,14 @@
         "openclaw-surface",
         "pi-extension",
         "readme"
+      ]
+    },
+    "genty": {
+      "npmPackageName": "@a5c-ai/babysitter-genty",
+      "extraFileSets": [
+        "readme",
+        "agents-file",
+        "genty-extension"
       ]
     }
   },

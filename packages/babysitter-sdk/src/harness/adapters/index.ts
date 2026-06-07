@@ -4,6 +4,7 @@ export { resolveSessionIdDetailed, __resolveCurrentSessionIdFromEnvForTests, set
 export { createCodexAdapter } from "./codex";
 export { createCursorAdapter } from "./cursor";
 export { createGeminiCliAdapter } from "./gemini-cli";
+export { createGentyAdapter } from "./genty";
 export { createGithubCopilotAdapter, setBabysitterSessionIdInCopilotEnvFile } from "./github-copilot";
 export { createHermesAdapter } from "./hermes";
 export { createOpenCodeAdapter } from "./opencode";

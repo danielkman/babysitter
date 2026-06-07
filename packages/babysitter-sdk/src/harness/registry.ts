@@ -15,6 +15,7 @@ import {
 import type { SessionResolutionDetails } from "./adapters/claude-code";
 import { createCodexAdapter } from "./adapters/codex";
 import { createGeminiCliAdapter } from "./adapters/gemini-cli";
+import { createGentyAdapter } from "./adapters/genty";
 import { createHermesAdapter } from "./adapters/hermes";
 import { createPiAdapter } from "./adapters/pi";
 import { createOhMyPiAdapter } from "./adapters/oh-my-pi";
@@ -88,6 +89,7 @@ export const PI_DISCOVERY_SPEC: HarnessSpec = specFor("pi");
 export const CODEX_DISCOVERY_SPEC: HarnessSpec = specFor("codex");
 export const CURSOR_DISCOVERY_SPEC: HarnessSpec = specFor("cursor");
 export const GEMINI_CLI_DISCOVERY_SPEC: HarnessSpec = specFor("gemini-cli");
+export const GENTY_DISCOVERY_SPEC: HarnessSpec = specFor("genty");
 export const GITHUB_COPILOT_DISCOVERY_SPEC: HarnessSpec = specFor("github-copilot");
 export const OH_MY_PI_DISCOVERY_SPEC: HarnessSpec = specFor("oh-my-pi");
 export const OPENCODE_DISCOVERY_SPEC: HarnessSpec = specFor("opencode");
@@ -115,6 +117,11 @@ const HARNESS_REGISTRY: readonly HarnessRegistryEntry[] = [
     name: "oh-my-pi",
     adapterFactory: createOhMyPiAdapter,
     discoverySpec: OH_MY_PI_DISCOVERY_SPEC,
+  },
+  {
+    name: "genty",
+    adapterFactory: createGentyAdapter,
+    discoverySpec: GENTY_DISCOVERY_SPEC,
   },
   {
     name: "pi",
@@ -175,6 +182,7 @@ const harnessRegistryByName = new Map(
 export const KNOWN_HARNESSES: readonly HarnessSpec[] = [
   CLAUDE_CODE_DISCOVERY_SPEC,
   CODEX_DISCOVERY_SPEC,
+  GENTY_DISCOVERY_SPEC,
   PI_DISCOVERY_SPEC,
   OH_MY_PI_DISCOVERY_SPEC,
   GEMINI_CLI_DISCOVERY_SPEC,

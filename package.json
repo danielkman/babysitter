@@ -29,6 +29,7 @@
     "packages/adapters/hooks/adapter-openclaw",
     "packages/adapters/hooks/adapter-antigravity",
     "packages/adapters/hooks/adapter-hermes",
+    "packages/adapters/hooks/adapter-genty",
     "packages/kradle/core",
     "packages/kradle/sdk",
     "packages/kradle/cli",
