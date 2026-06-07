@@ -90,6 +90,7 @@ export interface ParsedArgs {
   costRunId?: string;
   positional?: string[];
   workspace?: string;
+  tag?: string;
   model?: string;
   interactive?: boolean;
   retrospectAll?: boolean;
