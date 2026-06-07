@@ -42,7 +42,7 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps --prefer-offline
+        run: npm install --legacy-peer-deps --prefer-offline --force
 
       - name: Build lint dependencies
         run: |
