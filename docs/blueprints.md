@@ -41,7 +41,7 @@ babysitter blueprints:add-marketplace \
   --global
 
 # See what is available
-babysitter blueprints:list-blueprints --marketplace-name babysitter --global
+babysitter blueprints:list --marketplace-name babysitter --global
 
 # Install a blueprint
 babysitter blueprints:install testing-suite --global
@@ -61,7 +61,7 @@ All commands accept `--json` for machine-readable output and `--global|--project
 | --- | --- |
 | `blueprints:add-marketplace` | Clone a marketplace repository. |
 | `blueprints:update-marketplace` | Pull the latest marketplace changes. |
-| `blueprints:list-blueprints` | List available blueprints in a marketplace. |
+| `blueprints:list` | List available blueprints in a marketplace. |
 | `blueprints:install` | Read install instructions for a blueprint. |
 | `blueprints:update` | Resolve migration instructions for an installed blueprint. |
 | `blueprints:configure` | Read configuration instructions for a blueprint. |
