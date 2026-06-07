@@ -1,6 +1,7 @@
 import { loadCompressionConfig } from "@a5c-ai/babysitter-sdk";
-// NOTE: loadCompressionConfig reads .a5c/compression.json from disk,
-// which is a genuine SDK runtime concern.
+// NOTE: loadCompressionConfig reads .a5c/compression.json from disk.
+// This is a configuration-reading function shared between genty and
+// the SDK runtime. It remains as an SDK import.
 
 export function loadCompressionConfigSafe(cwd: string) {
   try {

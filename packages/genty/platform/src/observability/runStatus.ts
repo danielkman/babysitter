@@ -9,6 +9,9 @@
 import { promises as fs } from "node:fs";
 import * as path from "node:path";
 import { loadJournal, readRunMetadata } from "@a5c-ai/babysitter-sdk";
+// TODO(orchestration-migration): loadJournal should route through
+// JournalProvider.loadEvents(); readRunMetadata through
+// OrchestrationProvider.getRunStatus().
 import type { JsonRecord } from "../types";
 import { computeRunHealthFromEvents } from "./health";
 import type { RunHealthSnapshot } from "./types";

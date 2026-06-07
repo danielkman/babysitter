@@ -6,6 +6,8 @@
  */
 
 import { loadJournal } from "@a5c-ai/babysitter-sdk";
+// TODO(orchestration-migration): loadJournal should route through
+// JournalProvider.loadEvents().
 import type { JournalEvent } from "../types";
 import type {
   PhaseTimeline,

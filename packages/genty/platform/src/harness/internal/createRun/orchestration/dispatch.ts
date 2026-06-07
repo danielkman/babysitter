@@ -1,4 +1,4 @@
-import { getEffectiveConcurrency } from "@a5c-ai/babysitter-sdk";
+import { getEffectiveConcurrency } from "../../../../utils/concurrency";
 import type { EffectAction } from "../../../../types";
 import type { HarnessDiscoveryResult, ResolveEffectResult } from "../utils";
 import { HarnessCapability } from "../../../types";

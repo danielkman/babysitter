@@ -11,4 +11,12 @@ export type {
   PolicyEngine,
 } from "../types";
 
-export { isStatefulRule } from "@a5c-ai/babysitter-sdk";
+/**
+ * Type guard for stateful policy rules (rules with a shouldMatch method).
+ * Ported from @a5c-ai/babysitter-sdk/runtime/policy/types.
+ */
+export function isStatefulRule(
+  rule: import("../types").PolicyRule,
+): rule is import("../types").StatefulPolicyRule {
+  return typeof (rule as import("../types").StatefulPolicyRule).shouldMatch === "function";
+}

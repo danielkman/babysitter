@@ -3,8 +3,9 @@ import {
   buildEffectIndex,
   commitEffectResult,
 } from "@a5c-ai/babysitter-sdk";
-// NOTE: buildEffectIndex, commitEffectResult are effect-orchestration
-// SDK functions for managing the effect lifecycle on disk.
+// TODO(orchestration-migration): buildEffectIndex, commitEffectResult
+// should be routed through OrchestrationProvider once the provider
+// interface supports the full call signatures.
 import { DEFAULT_COMPACTION_CONFIG } from "../../../../compression/compaction";
 import { enhanceWorkerSessionOptions } from "./workerSessionEnhancer";
 import { computeEffectCosts } from "../../../../cost/effectCost";

@@ -5,6 +5,9 @@ import {
   densityFilterText,
   estimateTokens,
 } from "@a5c-ai/babysitter-sdk";
+// NOTE: detectCallerHarness, loadCompressionConfig are harness/config
+// infrastructure; densityFilterText, estimateTokens are compression
+// utilities. All shared between genty and the SDK runtime.
 import type { CompressionConfig } from "../../../types";
 import type { HarnessDiscoveryResult } from "../../types";
 import type { HarnessPromptContext } from "./prompts";

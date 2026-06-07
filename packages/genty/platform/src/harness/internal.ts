@@ -15,6 +15,8 @@ import {
   normalizeSessionStateDir,
   createInternalContext,
 } from "@a5c-ai/babysitter-sdk";
+// NOTE: These adapter/session SDK functions are harness-infrastructure
+// concerns shared between genty and the SDK runtime.
 import type { PromptContext } from "../types";
 import type {
   HarnessAdapter,

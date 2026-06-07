@@ -20,6 +20,11 @@ import {
   serializeAndWriteTaskResult,
   withRunLock,
 } from "@a5c-ai/babysitter-sdk";
+// TODO(orchestration-migration): appendEvent, loadJournal should route
+// through JournalProvider; readTaskDefinition, readTaskResult,
+// serializeAndWriteTaskResult through OrchestrationProvider;
+// addRule, readRules, removeRule, evaluateAutoApproval through
+// GovernanceProvider; withRunLock through a locking abstraction.
 import { ok, fail, pathExists, buildBaseEffectMap } from "./utils";
 import type { BaseEffectInfo } from "./utils";
 import type { ApiResult } from "./runs";

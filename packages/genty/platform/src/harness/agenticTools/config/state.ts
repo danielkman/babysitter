@@ -1,4 +1,7 @@
 import { createScopedRuntimeConfigState } from "@a5c-ai/babysitter-sdk";
+// TODO(orchestration-migration): createScopedRuntimeConfigState is deeply
+// coupled to the SDK config system. Define a local config state factory
+// when decoupling the SDK dependency.
 import type { RuntimeConfigValueType } from "../../../types";
 
 const EXTENDED_CONFIG_KEYS: ReadonlySet<string> = new Set([

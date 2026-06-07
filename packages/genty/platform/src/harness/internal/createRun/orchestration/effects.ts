@@ -51,8 +51,9 @@ import {
   createRun,
   orchestrateIteration,
 } from "@a5c-ai/babysitter-sdk";
-// NOTE: commitEffectResult, createRun, orchestrateIteration are core
-// run-lifecycle SDK functions that manage orchestration state on disk.
+// TODO(orchestration-migration): commitEffectResult, createRun,
+// orchestrateIteration should be routed through OrchestrationProvider
+// once the provider interface supports the full call signatures.
 import {
   BOLD,
   DEFAULT_EFFECT_RETRY_CONFIG,

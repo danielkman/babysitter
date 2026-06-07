@@ -6,6 +6,8 @@
  */
 
 import { appendEvent } from "@a5c-ai/babysitter-sdk";
+// TODO(orchestration-migration): appendEvent should route through
+// JournalProvider.appendEvent().
 import type { AppendEventResult, JournalEvent } from "../types";
 import type {
   CostEventData,

@@ -8,7 +8,14 @@
  *    instead of scattering @a5c-ai/babysitter-sdk imports throughout the tree.
  *
  * When the SDK coupling is fully removed (phase 6+), category-2 types will be
- * replaced with locally-defined equivalents.
+ * replaced with locally-defined equivalents or mapped to orchestration
+ * provider interface types (see orchestration/interfaces.ts).
+ *
+ * Migration mapping (category-2 -> orchestration interfaces):
+ *   JournalEvent      -> orchestration/interfaces.ts RunEvent
+ *   EffectAction       -> orchestration/interfaces.ts PendingEffect
+ *   IterationResult    -> orchestration/interfaces.ts IterationResult
+ *   CreateRunOptions   -> orchestration/interfaces.ts CreateRunOptions
  */
 
 // ── Generic JSON (locally owned) ─────────────────────────────────────────

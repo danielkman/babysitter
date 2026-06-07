@@ -30,9 +30,10 @@ import {
   emitProgress,
   discoverHarnesses,
 } from "./utils";
-import { DEFAULTS, getAdapterByName, resolveRunsDir } from "@a5c-ai/babysitter-sdk";
-// NOTE: DEFAULTS (maxIterations etc.), getAdapterByName, resolveRunsDir
-// remain as SDK imports — they are run-lifecycle infrastructure.
+import { getAdapterByName, resolveRunsDir } from "@a5c-ai/babysitter-sdk";
+// NOTE: getAdapterByName, resolveRunsDir remain as SDK imports — they are
+// harness-infrastructure concerns shared between genty and the SDK runtime.
+import { ORCHESTRATION_DEFAULTS } from "../../../utils/defaults";
 import { getProcessOutputDir, runPlanProcessPhase } from "./planProcess";
 import { runOrchestrationPhase } from "./orchestration";
 import { normalizeBuiltInHarnessName } from "../../builtInHarness";
@@ -58,7 +59,7 @@ export async function handleHarnessCreateRun(
     processPath: providedProcessPath,
     workspace,
     model,
-    maxIterations = DEFAULTS.maxIterations,
+    maxIterations = ORCHESTRATION_DEFAULTS.maxIterations,
     runsDir: requestedRunsDir,
     json,
     verbose,

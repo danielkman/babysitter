@@ -1,7 +1,8 @@
 import * as path from "node:path";
 import { discoverExternalAgents } from "@a5c-ai/babysitter-sdk";
-// NOTE: discoverExternalAgents is an external-agents SDK function
-// for discovering agents available in a workspace.
+// TODO(orchestration-migration): discoverExternalAgents should route
+// through ExternalAgentProvider once the provider is wired into
+// the plan-process phase.
 import { buildProcessDefinitionSystemPrompt, buildProcessDefinitionUserPrompt } from "../prompts";
 import {
   DIM,

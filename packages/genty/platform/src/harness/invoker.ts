@@ -9,6 +9,8 @@
 
 import { spawn } from "node:child_process";
 import { checkCliAvailable } from "@a5c-ai/babysitter-sdk";
+// NOTE: checkCliAvailable is harness infrastructure shared between
+// genty and the SDK runtime. It remains as an SDK import.
 import { BabysitterRuntimeError, ErrorCategory } from "../utils/errors";
 import type { HarnessInvokeOptions, HarnessInvokeResult } from "./types";
 import {

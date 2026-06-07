@@ -9,6 +9,9 @@ import {
   renderBreakpointHandling,
   renderResultsPosting,
 } from "@a5c-ai/babysitter-sdk";
+// TODO(orchestration-migration): process prompt catalog functions should
+// route through ProcessDefinitionProvider once prompt catalog support is
+// added to the orchestration interfaces.
 
 export interface HarnessPromptContext {
   platform: string;

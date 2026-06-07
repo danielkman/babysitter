@@ -15,6 +15,11 @@ import {
   resolveExistingRunDir,
   resolveRunsDir,
 } from "@a5c-ai/babysitter-sdk";
+// TODO(orchestration-migration): createRun, commitEffectResult,
+// orchestrateIteration should route through OrchestrationProvider;
+// loadJournal through JournalProvider; readRunMetadata through
+// OrchestrationProvider.getRunStatus(); resolveExistingRunDir,
+// resolveRunsDir through OrchestrationProvider.resolveRunsDir().
 import type {
   EffectAction,
   IterationResult,
