@@ -27,7 +27,7 @@
     "src/harness/deferredToolRegistry.ts"
   ],
   "references": [
-    { "path": "../../sdk" },
+    { "path": "../../babysitter-sdk" },
     { "path": "../core" },
     { "path": "../runtime" }
   ]

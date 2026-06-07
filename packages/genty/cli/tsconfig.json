@@ -51,7 +51,7 @@
   ],
   "references": [
     {
-      "path": "../../sdk"
+      "path": "../../babysitter-sdk"
     },
     {
       "path": "../core"
