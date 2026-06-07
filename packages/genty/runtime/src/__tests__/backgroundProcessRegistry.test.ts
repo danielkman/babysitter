@@ -2,7 +2,7 @@ import { EventEmitter } from "node:events";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { BackgroundProcessRegistry } from "../backgroundProcessRegistry";
 
-vi.mock("@a5c-ai/babysitter-sdk", () => ({
+vi.mock("../utils/ulid", () => ({
   nextUlid: (() => {
     let count = 0;
     return () => `01BACKGROUNDTEST${++count}`;

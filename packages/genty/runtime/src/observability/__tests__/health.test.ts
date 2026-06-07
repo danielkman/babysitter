@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { computeRunHealthFromEvents } from "../health";
-import type { JournalEvent } from "@a5c-ai/babysitter-sdk";
+import type { JournalEvent } from "../../types/sdk";
 
 function event(
   seq: number,

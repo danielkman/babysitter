@@ -1,3 +1,7 @@
+// TODO(sdk-removal): renderCommandTemplate and renderTemplateString are SDK
+// prompt-infrastructure functions. They should move to @a5c-ai/genty-platform
+// when the prompt composition layer is migrated. PromptContext is re-exported
+// from genty-platform types.
 import {
   renderCommandTemplate as renderSdkCommandTemplate,
   renderTemplateString,

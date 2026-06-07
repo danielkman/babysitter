@@ -10,53 +10,13 @@ vi.mock("node:child_process", () => ({
   spawn: vi.fn(),
 }));
 
-vi.mock("@a5c-ai/babysitter-sdk", () => ({
-  nextUlid: vi.fn(() => `background-task-id-${++backgroundTaskCounter}`),
-  createScopedRuntimeConfigState: vi.fn(() => ({
-    get: vi.fn(() => undefined),
-    set: vi.fn(),
-    reset: vi.fn(),
-    snapshot: vi.fn(() => ({})),
-  })),
-  CONFIG_ENV_VARS: {
-    RUNS_DIR: "BABYSITTER_RUNS_DIR",
-    MAX_ITERATIONS: "BABYSITTER_MAX_ITERATIONS",
-    QUALITY_THRESHOLD: "BABYSITTER_QUALITY_THRESHOLD",
-    TIMEOUT: "BABYSITTER_TIMEOUT",
-    LOG_LEVEL: "BABYSITTER_LOG_LEVEL",
-    ALLOW_SECRET_LOGS: "BABYSITTER_ALLOW_SECRET_LOGS",
-    HOOK_TIMEOUT: "BABYSITTER_HOOK_TIMEOUT",
-    NODE_TASK_TIMEOUT: "BABYSITTER_NODE_TASK_TIMEOUT",
-  },
-  DEFAULTS: {
-    runsDir: ".a5c/runs",
-    maxIterations: 5,
-    qualityThreshold: 0.8,
-    timeout: 60_000,
-    logLevel: "info",
-    allowSecretLogs: false,
-    hookTimeout: 30_000,
-    nodeTaskTimeout: 30_000,
-    clockStepMs: 1,
-    clockStartMs: 0,
-    layoutVersion: "test",
-    largeResultPreviewLimit: 1000,
-  },
-  getConfig: vi.fn(() => ({
-    runsDir: ".a5c/runs",
-    maxIterations: 5,
-    qualityThreshold: 0.8,
-    timeout: 60_000,
-    logLevel: "info",
-    allowSecretLogs: false,
-    hookTimeout: 30_000,
-    nodeTaskTimeout: 30_000,
-    clockStepMs: 1,
-    clockStartMs: 0,
-    layoutVersion: "test",
-    largeResultPreviewLimit: 1000,
-  })),
-}));
+// Mock the genty-runtime ulid module used by BackgroundProcessRegistry.
+vi.mock("@a5c-ai/genty-runtime", async () => {
+  const actual = await vi.importActual("@a5c-ai/genty-runtime");
+  return {
+    ...(actual as Record<string, unknown>),
+  };
+});
 
 import * as childProcess from "node:child_process";
 

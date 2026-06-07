@@ -1,4 +1,4 @@
-import { resolveRunsDir } from "@a5c-ai/babysitter-sdk";
+import { resolveRunsDir } from "./runsDir";
 import type { HarnessParsedArgs } from "./types";
 import { BOOLEAN_FLAGS, FLAG_PARSERS } from "./argFlags";
 import { applyPositionalArgs } from "./argPositionals";

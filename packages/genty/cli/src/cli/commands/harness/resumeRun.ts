@@ -8,7 +8,7 @@ import * as path from "node:path";
 import { Type } from "@sinclair/typebox";
 import { createAgentCoreSession, AgentCoreSessionHandle } from "@a5c-ai/genty-core";
 import { createAgentCoreToolDefinitions } from "@a5c-ai/genty-core";
-import { resolveExistingRunDir, resolveRunsDir } from "@a5c-ai/babysitter-sdk";
+import { resolveExistingRunDir, resolveRunsDir } from "../../args/runsDir";
 import type { AgentCoreSessionEvent } from "@a5c-ai/genty-platform/harness";
 import { handleHarnessCreateRun } from "./createRun";
 import {

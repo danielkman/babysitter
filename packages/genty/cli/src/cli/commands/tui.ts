@@ -10,6 +10,10 @@
 
 import * as path from "node:path";
 import { promises as fs } from "node:fs";
+// TODO(sdk-removal): These SDK storage functions should move to
+// @a5c-ai/genty-platform/storage once the storage layer is migrated.
+// They are deeply-integrated replay/journal infrastructure (buildEffectIndex
+// reconstructs the full effect graph from journal events).
 import {
   readRunMetadata,
   loadJournal,

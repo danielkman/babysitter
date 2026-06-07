@@ -6,7 +6,7 @@
  */
 
 import * as childProcess from "node:child_process";
-import { nextUlid } from "@a5c-ai/babysitter-sdk";
+import { nextUlid } from "./utils/ulid";
 import type { ExecutionPolicy } from "./execution";
 import {
   normalizeResourceLimits,

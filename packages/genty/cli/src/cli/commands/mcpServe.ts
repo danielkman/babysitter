@@ -4,6 +4,8 @@
  * stdout is reserved for MCP protocol messages; all logging goes to stderr.
  */
 
+// TODO(sdk-removal): createBabysitterMcpServer is SDK-owned MCP infrastructure.
+// Move to @a5c-ai/genty-platform/mcp when the MCP server factory is migrated.
 import { createBabysitterMcpServer } from "@a5c-ai/babysitter-sdk";
 import { createWebSocketTransport } from "@a5c-ai/genty-platform/mcp/transport";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
