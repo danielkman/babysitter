@@ -124,7 +124,6 @@
     "@agentsh/secure-sandbox": "^0.1.7",
     "@earendil-works/pi-coding-agent": "^0.75.5",
     "@modelcontextprotocol/sdk": "^1.12.1",
-    "@rolldown/binding-win32-x64-msvc": "^1.1.0",
     "@sinclair/typebox": "^0.34.48",
     "ws": "^8.20.0",
     "zod": "^4.0.0"
