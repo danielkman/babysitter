@@ -5,9 +5,7 @@
  * execution, verification, and completion phases with duration metrics.
  */
 
-import { loadJournal } from "@a5c-ai/babysitter-sdk";
-// TODO(orchestration-migration): loadJournal should route through
-// JournalProvider.loadEvents().
+import { loadJournalEvents } from "../orchestration/global";
 import type { JournalEvent } from "../types";
 import type {
   PhaseTimeline,
@@ -204,6 +202,6 @@ function buildIterations(events: JournalEvent[]): IterationTimeline[] {
 }
 
 export async function buildPhaseTimeline(runDir: string): Promise<PhaseTimeline> {
-  const events = await loadJournal(runDir);
+  const events = await loadJournalEvents(runDir);
   return buildPhaseTimelineFromEvents(events);
 }

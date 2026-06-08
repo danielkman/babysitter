@@ -1,6 +1,4 @@
-import { resolveSessionIdWithMarker } from "@a5c-ai/babysitter-sdk";
-// TODO(orchestration-migration): resolveSessionIdWithMarker should route
-// through SessionProvider.resolveSessionId().
+import { getGlobalRegistry } from "../orchestration/global";
 
 /**
  * Mapping of harness identifiers to their native session environment variables.
@@ -22,7 +20,7 @@ export const HARNESS_ENV_VARS: Record<string, string[]> = {
  * Precedence:
  *   1. Harness-native env vars (Pi / oh-my-pi)
  *   2. AGENT_SESSION_ID
- *   3. PID-scoped marker for the given harness (fallback only)
+ *   3. SessionProvider.resolveSessionId() (provider-backed discovery)
  *
  * External harness session discovery is delegated to adapters.
  */
@@ -31,6 +29,22 @@ export function resolveAmbientSessionId(harness?: string): string | undefined {
     return process.env.AGENT_SESSION_ID;
   }
 
+  // Check harness-native env vars first.
   const envVars = HARNESS_ENV_VARS[harness] || [];
-  return resolveSessionIdWithMarker(harness, {}, envVars);
+  for (const envVar of envVars) {
+    const value = process.env[envVar];
+    if (value) return value;
+  }
+
+  // Fall back to the generic env var.
+  if (process.env.AGENT_SESSION_ID) {
+    return process.env.AGENT_SESSION_ID;
+  }
+
+  // Ask the session provider for a marker-based session ID.
+  try {
+    return getGlobalRegistry().getSession().resolveSessionId();
+  } catch {
+    return undefined;
+  }
 }

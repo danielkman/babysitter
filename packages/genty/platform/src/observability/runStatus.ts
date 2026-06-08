@@ -8,10 +8,8 @@
 
 import { promises as fs } from "node:fs";
 import * as path from "node:path";
-import { loadJournal, readRunMetadata } from "@a5c-ai/babysitter-sdk";
-// TODO(orchestration-migration): loadJournal should route through
-// JournalProvider.loadEvents(); readRunMetadata through
-// OrchestrationProvider.getRunStatus().
+import { loadJournalEvents } from "../orchestration/global";
+import { readRunMetadata } from "../storage/runFiles";
 import type { JsonRecord } from "../types";
 import { computeRunHealthFromEvents } from "./health";
 import type { RunHealthSnapshot } from "./types";
@@ -26,7 +24,7 @@ import type { RunHealthSnapshot } from "./types";
 export async function getRunHealthSnapshot(
   runDir: string,
 ): Promise<RunHealthSnapshot> {
-  const events = await loadJournal(runDir);
+  const events = await loadJournalEvents(runDir);
   return computeRunHealthFromEvents(events);
 }
 
@@ -63,7 +61,7 @@ export async function getOrchestrationStatus(
 ): Promise<OrchestrationStatus> {
   const [metadata, events] = await Promise.all([
     readRunMetadata(runDir),
-    loadJournal(runDir),
+    loadJournalEvents(runDir),
   ]);
 
   const health = computeRunHealthFromEvents(events);
@@ -119,7 +117,7 @@ export interface PendingWorkItem {
 export async function getPendingWorkItems(
   runDir: string,
 ): Promise<PendingWorkItem[]> {
-  const events = await loadJournal(runDir);
+  const events = await loadJournalEvents(runDir);
   const now = Date.now();
 
   // Track requested and resolved effect IDs

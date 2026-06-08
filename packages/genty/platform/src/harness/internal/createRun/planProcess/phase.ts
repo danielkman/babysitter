@@ -1,8 +1,5 @@
 import * as path from "node:path";
-import { discoverExternalAgents } from "@a5c-ai/babysitter-sdk";
-// TODO(orchestration-migration): discoverExternalAgents should route
-// through ExternalAgentProvider once the provider is wired into
-// the plan-process phase.
+import { getGlobalRegistry } from "../../../../orchestration/global";
 import { buildProcessDefinitionSystemPrompt, buildProcessDefinitionUserPrompt } from "../prompts";
 import {
   DIM,
@@ -73,10 +70,24 @@ export async function runPlanProcessPhase(args: import("./phaseTypes").RunPlanPr
     })),
   );
   const workspaceAssessment = await assessWorkspaceForExternalAuthoring(args.workspace);
-  const externalAgents = await discoverExternalAgents({
-    cwd: args.workspace,
-    timeout: 5000,
-  });
+  let externalAgents: import("../../../../types").ExternalAgentDiscovery;
+  try {
+    const agents = await getGlobalRegistry().getAgentDiscovery().discoverAgents(args.workspace ?? process.cwd());
+    externalAgents = {
+      available: agents.length > 0,
+      agents: agents.map((a) => ({
+        name: a.name,
+        displayName: a.description ?? a.name,
+        installed: true,
+        authenticated: true,
+        capabilities: [],
+      })),
+      defaultProvider: null,
+      defaultModel: null,
+    };
+  } catch {
+    externalAgents = { available: false, agents: [], defaultProvider: null, defaultModel: null };
+  }
   const promptContext = {
     ...args.promptContext,
     externalAgents,

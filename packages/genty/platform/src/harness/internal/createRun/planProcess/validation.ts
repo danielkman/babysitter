@@ -1,10 +1,8 @@
 import * as path from "node:path";
 import { promises as fs } from "node:fs";
 import { pathToFileURL } from "node:url";
-import { discoverExternalAgents, resetGlobalTaskRegistry } from "@a5c-ai/babysitter-sdk";
-// TODO(orchestration-migration): discoverExternalAgents should route
-// through ExternalAgentProvider; resetGlobalTaskRegistry through
-// ProcessDefinitionProvider.validateProcess().
+import { resetGlobalTaskRegistry } from "@a5c-ai/babysitter-sdk";
+import { getGlobalRegistry } from "../../../../orchestration/global";
 import {
   BabysitterRuntimeError,
   ErrorCategory,
@@ -27,7 +25,19 @@ import {
 } from "./validationSource";
 
 let processValidationImportNonce = 0;
-let discoverExternalAgentsForValidation: typeof discoverExternalAgents = discoverExternalAgents;
+
+type DiscoverExternalAgentsFn = (opts: { cwd?: string; timeout?: number }) => Promise<{ available: boolean }>;
+
+async function discoverExternalAgentsViaProvider(opts: { cwd?: string; timeout?: number }): Promise<{ available: boolean }> {
+  try {
+    const agents = await getGlobalRegistry().getAgentDiscovery().discoverAgents(opts.cwd ?? process.cwd());
+    return { available: agents.length > 0 };
+  } catch {
+    return { available: false };
+  }
+}
+
+let discoverExternalAgentsForValidation: DiscoverExternalAgentsFn = discoverExternalAgentsViaProvider;
 
 const dynamicImportModule: (specifier: string) => Promise<Record<string, unknown>> = (() => {
   if (process.env.VITEST) {
@@ -313,7 +323,7 @@ export async function validateProcessExport(filePath: string): Promise<void> {
 }
 
 export function _setDiscoverExternalAgentsForValidationTesting(
-  fn?: typeof discoverExternalAgents,
+  fn?: DiscoverExternalAgentsFn,
 ): void {
-  discoverExternalAgentsForValidation = fn ?? discoverExternalAgents;
+  discoverExternalAgentsForValidation = fn ?? discoverExternalAgentsViaProvider;
 }

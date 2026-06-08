@@ -1,10 +1,7 @@
 import { promises as fs } from "node:fs";
 import * as path from "node:path";
-import { loadJournal, readRunMetadata, readStateCache } from "@a5c-ai/babysitter-sdk";
-// TODO(orchestration-migration): loadJournal should route through
-// JournalProvider.loadEvents(); readRunMetadata through
-// OrchestrationProvider.getRunStatus(); readStateCache should be
-// defined locally or exposed via provider.
+import { loadJournalEvents } from "../../../orchestration/global";
+import { readRunMetadata, readStateCache } from "../../../storage/runFiles";
 
 export interface RunSummary {
   runId: string;
@@ -51,7 +48,7 @@ export async function discoverRuns(runsDir: string): Promise<RunSummary[]> {
       if (!stat.isDirectory()) continue;
 
       const metadata = await readRunMetadata(runDir);
-      const journal = await loadJournal(runDir);
+      const journal = await loadJournalEvents(runDir);
       const stateCache = await readStateCache(runDir);
 
       const pendingEffects = stateCache?.pendingEffectsByKind ?? {};
@@ -87,7 +84,7 @@ export async function assessRun(runDir: string): Promise<{
   lastEvent: { type: string; recordedAt: string } | null;
 }> {
   const metadata = await readRunMetadata(runDir);
-  const journal = await loadJournal(runDir);
+  const journal = await loadJournalEvents(runDir);
   const stateCache = await readStateCache(runDir);
 
   const pendingEffects = stateCache?.pendingEffectsByKind ?? {};

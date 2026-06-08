@@ -6,20 +6,12 @@
  */
 
 import { promises as fs } from "fs";
+import * as path from "path";
 import {
-  commitEffectResult,
-  createRun,
-  loadJournal,
   orchestrateIteration,
-  readRunMetadata,
-  resolveExistingRunDir,
-  resolveRunsDir,
 } from "@a5c-ai/babysitter-sdk";
-// TODO(orchestration-migration): createRun, commitEffectResult,
-// orchestrateIteration should route through OrchestrationProvider;
-// loadJournal through JournalProvider; readRunMetadata through
-// OrchestrationProvider.getRunStatus(); resolveExistingRunDir,
-// resolveRunsDir through OrchestrationProvider.resolveRunsDir().
+import { getGlobalRegistry, loadJournalEvents } from "../orchestration/global";
+import { readRunMetadata } from "../storage/runFiles";
 import type {
   EffectAction,
   IterationResult,
@@ -123,16 +115,14 @@ export async function apiCreateRun(
     }
     const { importPath, exportName } = parseEntrypoint(input.entrypoint);
 
-    const result = await createRun({
-      runsDir: input.runsDir ?? resolveRunsDir(),
-      process: {
-        processId: input.processId,
-        importPath,
-        exportName,
-      },
-      inputs: input.inputs,
-      prompt: input.prompt,
+    const orch = getGlobalRegistry().getOrchestration();
+    const result = await orch.createRun({
+      processId: input.processId,
+      entrypoint: input.entrypoint,
+      prompt: input.prompt ?? "",
       harness: input.harness,
+      inputs: input.inputs as Record<string, unknown> | undefined,
+      runsDir: input.runsDir ?? orch.resolveRunsDir(),
     });
 
     return ok({ runId: result.runId, runDir: result.runDir });
@@ -201,24 +191,25 @@ export async function apiCommitEffect(
       return fail("INVALID_INPUT", "error is required when status is 'error'");
     }
 
-    const commitResult = await commitEffectResult({
+    const handle = {
+      runId: input.runDir.split(/[\\/]/).pop() ?? "",
       runDir: input.runDir,
-      effectId: input.effectId,
-      result: {
+      processId: "",
+      status: "running" as const,
+    };
+    await getGlobalRegistry().getOrchestration().postEffectResult(
+      handle,
+      input.effectId,
+      {
         status: input.result.status,
         value: input.result.status === "ok" ? input.result.value : undefined,
         error: input.result.status === "error" ? input.result.error : undefined,
-        stdout: input.result.stdout,
-        stderr: input.result.stderr,
-        stdoutRef: input.result.stdoutRef,
-        stderrRef: input.result.stderrRef,
         startedAt: input.result.startedAt,
         finishedAt: input.result.finishedAt,
-        metadata: input.result.metadata,
       },
-    });
+    );
 
-    return ok({ resultRef: commitResult.resultRef });
+    return ok({ resultRef: `tasks/${input.effectId}/result.json` });
   } catch (error) {
     const classified = classifyError(error);
     return fail(classified.code, classified.message);
@@ -229,14 +220,14 @@ export async function apiRunStatus(
   input: { runId: string; runsDir?: string },
 ): Promise<ApiResult<RunStatusOutput>> {
   try {
-    const runDir = resolveExistingRunDir(input.runId, { override: input.runsDir ?? resolveRunsDir() });
+    const runDir = path.join(input.runsDir ?? getGlobalRegistry().getOrchestration().resolveRunsDir(), input.runId);
 
     if (!(await pathExists(runDir))) {
       return fail("RUN_NOT_FOUND", `Run not found: ${input.runId}`);
     }
 
     const metadata = await readRunMetadata(runDir);
-    const events = await loadJournal(runDir);
+    const events = await loadJournalEvents(runDir);
 
     const state = deriveRunState(events);
     const pendingEffects = derivePendingEffects(events);
@@ -261,13 +252,13 @@ export async function apiRunEvents(
       return fail("INVALID_INPUT", "limit must be a non-negative number");
     }
 
-    const runDir = resolveExistingRunDir(input.runId, { override: input.runsDir ?? resolveRunsDir() });
+    const runDir = path.join(input.runsDir ?? getGlobalRegistry().getOrchestration().resolveRunsDir(), input.runId);
 
     if (!(await pathExists(runDir))) {
       return fail("RUN_NOT_FOUND", `Run not found: ${input.runId}`);
     }
 
-    let events = await loadJournal(runDir);
+    let events = await loadJournalEvents(runDir);
 
     if (input.filterType) {
       events = events.filter((e) => e.type === input.filterType);

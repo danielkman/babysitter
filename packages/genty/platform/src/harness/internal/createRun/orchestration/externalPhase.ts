@@ -1,11 +1,8 @@
 import * as path from "node:path";
 import {
   buildEffectIndex,
-  commitEffectResult,
 } from "@a5c-ai/babysitter-sdk";
-// TODO(orchestration-migration): buildEffectIndex, commitEffectResult
-// should be routed through OrchestrationProvider once the provider
-// interface supports the full call signatures.
+import { getGlobalRegistry } from "../../../../orchestration/global";
 import { DEFAULT_COMPACTION_CONFIG } from "../../../../compression/compaction";
 import { enhanceWorkerSessionOptions } from "./workerSessionEnhancer";
 import { computeEffectCosts } from "../../../../cost/effectCost";
@@ -195,20 +192,23 @@ export async function runExternalOrchestrationPhase(args: RunOrchestrationPhaseA
             shutdownPiSession,
           }),
           commitAction: async ({ action, result: effectResult, startedAt, finishedAt }) => {
-            await commitEffectResult({
+            const runHandle = {
+              runId: state.runId ?? "",
               runDir: state.runDir!,
-              effectId: action.effectId,
-              invocationKey: action.invocationKey,
-              result: {
+              processId: "",
+              status: "running" as const,
+            };
+            await getGlobalRegistry().getOrchestration().postEffectResult(
+              runHandle,
+              action.effectId,
+              {
                 status: effectResult.status,
                 value: effectResult.value,
                 error: effectResult.error,
-                stdout: effectResult.stdout,
-                stderr: effectResult.stderr,
                 startedAt,
                 finishedAt,
               },
-            });
+            );
             const stateDir = state.sessionBound?.stateFile
               ? path.dirname(state.sessionBound.stateFile)
               : undefined;

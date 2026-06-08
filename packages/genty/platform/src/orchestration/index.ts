@@ -44,3 +44,4 @@ export type {
 
 export type { OrchestrationRegistry } from "./registry";
 export { createOrchestrationRegistry } from "./registry";
+export { getGlobalRegistry, setGlobalRegistry, resetGlobalRegistry } from "./global";

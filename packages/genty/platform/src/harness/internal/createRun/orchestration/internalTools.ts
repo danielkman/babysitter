@@ -2,13 +2,10 @@ import { Type } from "@sinclair/typebox";
 import { createAgentCoreToolDefinitions } from "@a5c-ai/genty-core";
 import { buildBreakpointEffectResult } from "./internalToolsHelpers";
 import {
-  commitEffectResult,
   createPromptContextFromCatalog,
   composeProcessCreatePrompt,
 } from "@a5c-ai/babysitter-sdk";
-// TODO(orchestration-migration): commitEffectResult should route through
-// OrchestrationProvider; createPromptContextFromCatalog and
-// composeProcessCreatePrompt through ProcessDefinitionProvider.
+import { getGlobalRegistry } from "../../../../orchestration/global";
 import {
   BabysitterRuntimeError,
   ErrorCategory,
@@ -270,20 +267,23 @@ function createTaskPostResultTool(args: {
         );
       }
       const finishedAt = new Date().toISOString();
-      await commitEffectResult({
-        runDir: args.state.runDir,
-        effectId: action.effectId,
-        invocationKey: action.invocationKey,
-        result: {
+      const runHandle = {
+        runId: args.state.runId ?? "",
+        runDir: args.state.runDir!,
+        processId: "",
+        status: "running" as const,
+      };
+      await getGlobalRegistry().getOrchestration().postEffectResult(
+        runHandle,
+        action.effectId,
+        {
           status: effectResult.status,
           value: effectResult.value,
           error: effectResult.error,
-          stdout: effectResult.stdout,
-          stderr: effectResult.stderr,
           startedAt,
           finishedAt,
         },
-      });
+      );
       args.state.pendingActions.delete(effectId);
       args.state.pendingEffectResults.delete(effectId);
       if (action.kind === "breakpoint") {

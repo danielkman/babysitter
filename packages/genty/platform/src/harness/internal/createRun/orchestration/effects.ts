@@ -47,13 +47,9 @@ import {
 import { getAdapterByName } from "../../../";
 import type { StreamingOutputOptions } from "../../../types";
 import {
-  commitEffectResult,
-  createRun,
   orchestrateIteration,
 } from "@a5c-ai/babysitter-sdk";
-// TODO(orchestration-migration): commitEffectResult, createRun,
-// orchestrateIteration should be routed through OrchestrationProvider
-// once the provider interface supports the full call signatures.
+import { getGlobalRegistry } from "../../../../orchestration/global";
 import {
   BOLD,
   DEFAULT_EFFECT_RETRY_CONFIG,
@@ -937,27 +933,13 @@ async function invokeSubprocessEffect(
   const maxIterations = spec.maxIterations ?? options.maxIterations ?? 65_000;
   const childPrompt = spec.prompt ?? action.taskDef?.title ?? `Run subprocess ${spec.processId}`;
 
-  const childRun = await createRun({
-    runsDir: options.runsDir,
+  const childRun = await getGlobalRegistry().getOrchestration().createRun({
+    processId: spec.processId,
+    entrypoint: spec.processPath,
+    prompt: spec.prompt ?? childPrompt,
     harness: childHarness,
-    process: {
-      processId: spec.processId,
-      importPath: spec.processPath,
-      ...(spec.exportName ? { exportName: spec.exportName } : {}),
-    },
-    prompt: spec.prompt,
-    inputs: spec.inputs,
-    inputSchema: spec.inputSchema,
-    outputSchema: spec.outputSchema,
-    metadata: spec.metadata,
-    nested: {
-      parentRunId: options.runId,
-      parentEffectId: action.effectId,
-      parentInvocationKey: action.invocationKey,
-      ...(spec.shareSession && options.sessionId ? { sessionId: options.sessionId } : {}),
-      shareSession: spec.shareSession,
-      skipRunStartHook: true,
-    },
+    inputs: spec.inputs as Record<string, unknown> | undefined,
+    runsDir: options.runsDir,
   });
 
   emitAmuxEvent(
@@ -1032,20 +1014,23 @@ async function invokeSubprocessEffect(
           }
         },
         commitAction: async ({ action: childAction, result: childEffectResult, startedAt, finishedAt }) => {
-          await commitEffectResult({
+          const childHandle = {
+            runId: childRun.runId,
             runDir: childRun.runDir,
-            effectId: childAction.effectId,
-            invocationKey: childAction.invocationKey,
-            result: {
+            processId: childRun.processId,
+            status: "running" as const,
+          };
+          await getGlobalRegistry().getOrchestration().postEffectResult(
+            childHandle,
+            childAction.effectId,
+            {
               status: childEffectResult.status,
               value: childEffectResult.value,
               error: childEffectResult.error,
-              stdout: childEffectResult.stdout,
-              stderr: childEffectResult.stderr,
               startedAt,
               finishedAt,
             },
-          });
+          );
         },
       });
       continue;

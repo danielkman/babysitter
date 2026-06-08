@@ -8,9 +8,6 @@ import {
   createPromptContextFromCatalog,
   composeProcessCreatePrompt,
 } from "@a5c-ai/babysitter-sdk";
-// TODO(orchestration-migration): createPromptContextFromCatalog,
-// composeProcessCreatePrompt should be routed through a ProcessDefinitionProvider
-// once prompt catalog support is added to the orchestration interfaces.
 import {
   buildPiWorkerSessionOptions,
   createAgentCoreSession,

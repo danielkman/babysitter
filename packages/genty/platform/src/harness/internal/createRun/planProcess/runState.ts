@@ -2,10 +2,8 @@ import * as path from "node:path";
 import { existsSync, readFileSync } from "node:fs";
 import { WorkspaceService } from "@a5c-ai/comm-adapter";
 import { getAdapterByName } from "../../../";
-import { createRun, getSessionMarkerPath, readSessionMarker } from "@a5c-ai/babysitter-sdk";
-// TODO(orchestration-migration): createRun should route through
-// OrchestrationProvider.createRun(); session marker functions through
-// SessionProvider.
+import { getSessionMarkerPath, readSessionMarker } from "@a5c-ai/babysitter-sdk";
+import { getGlobalRegistry } from "../../../../orchestration/global";
 import { updateSessionContext } from "../../../../session/context";
 import {
   BabysitterRuntimeError,
@@ -97,16 +95,14 @@ export async function ensureRunAndMaybeBindFromProcessDefinition(
   const selectedHarnessName = normalizeBuiltInHarnessName(args.selectedHarnessName);
 
   if (!runId || !runDir) {
-    const created = await createRun({
-      runsDir: args.runsDir,
-      harness: selectedHarnessName,
-      process: {
-        processId,
-        importPath: path.resolve(args.processPath),
-      },
+    const created = await getGlobalRegistry().getOrchestration().createRun({
+      processId,
+      entrypoint: path.resolve(args.processPath),
       prompt: args.prompt,
+      harness: selectedHarnessName,
       inputs: args.prompt ? { prompt: args.prompt } : undefined,
-      ...(args.interactive === false ? { metadata: { nonInteractive: true } } : {}),
+      runsDir: args.runsDir,
+      nonInteractive: args.interactive === false ? true : undefined,
     });
     runId = created.runId;
     runDir = created.runDir;

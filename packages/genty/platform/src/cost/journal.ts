@@ -5,9 +5,7 @@
  * extract cost events from a journal, and compute aggregated cost statistics.
  */
 
-import { appendEvent } from "@a5c-ai/babysitter-sdk";
-// TODO(orchestration-migration): appendEvent should route through
-// JournalProvider.appendEvent().
+import { appendJournalEvent } from "../orchestration/global";
 import type { AppendEventResult, JournalEvent } from "../types";
 import type {
   CostEventData,
@@ -59,11 +57,16 @@ export async function appendCostEvent(
   // index signature that CostEventData's interface lacks.
   const eventRecord: Record<string, unknown> = { ...enriched };
 
-  return appendEvent({
-    runDir,
-    eventType: COST_TRACKED_EVENT_TYPE,
-    event: eventRecord,
-  });
+  await appendJournalEvent(runDir, COST_TRACKED_EVENT_TYPE, eventRecord);
+  // Return a minimal AppendEventResult for backward compat.
+  return {
+    seq: 0,
+    ulid: "",
+    filename: "",
+    checksum: "",
+    path: runDir,
+    recordedAt: enriched.timestamp!,
+  } as AppendEventResult;
 }
 
 /**

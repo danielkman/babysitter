@@ -9,22 +9,15 @@
 import * as crypto from "node:crypto";
 import {
   addRule,
-  appendEvent,
   callHook,
   evaluateAutoApproval as evaluateAutoApprovalCore,
-  loadJournal,
   readRules,
-  readTaskDefinition,
-  readTaskResult,
   removeRule,
   serializeAndWriteTaskResult,
   withRunLock,
 } from "@a5c-ai/babysitter-sdk";
-// TODO(orchestration-migration): appendEvent, loadJournal should route
-// through JournalProvider; readTaskDefinition, readTaskResult,
-// serializeAndWriteTaskResult through OrchestrationProvider;
-// addRule, readRules, removeRule, evaluateAutoApproval through
-// GovernanceProvider; withRunLock through a locking abstraction.
+import { loadJournalEvents, appendJournalEvent } from "../orchestration/global";
+import { readTaskDefinition, readTaskResult } from "../storage/runFiles";
 import { ok, fail, pathExists, buildBaseEffectMap } from "./utils";
 import type { BaseEffectInfo } from "./utils";
 import type { ApiResult } from "./runs";
@@ -118,7 +111,7 @@ export async function apiListBreakpoints(
     if (!(await pathExists(input.runDir))) {
       return fail("RUN_NOT_FOUND", `Run directory not found: ${input.runDir}`);
     }
-    const events = await loadJournal(input.runDir);
+    const events = await loadJournalEvents(input.runDir);
     const effectMap = buildBaseEffectMap(events);
     const breakpoints: BreakpointSummary[] = [];
     for (const info of effectMap.values()) {
@@ -163,7 +156,7 @@ export async function apiShowBreakpoint(
     if (!(await pathExists(input.runDir))) {
       return fail("RUN_NOT_FOUND", `Run directory not found: ${input.runDir}`);
     }
-    const events = await loadJournal(input.runDir);
+    const events = await loadJournalEvents(input.runDir);
     const effectMap = buildBaseEffectMap(events);
     const info = effectMap.get(input.effectId);
     if (!info) {
@@ -232,7 +225,7 @@ export async function apiRespondToBreakpoint(
       return fail("RUN_NOT_FOUND", `Run directory not found: ${input.runDir}`);
     }
     return await withRunLock(input.runDir, "api:respondToBreakpoint", async () => {
-      const events = await loadJournal(input.runDir);
+      const events = await loadJournalEvents(input.runDir);
       const effectMap = buildBaseEffectMap(events);
       const info = effectMap.get(input.effectId);
       if (!info) {
@@ -264,14 +257,10 @@ export async function apiRespondToBreakpoint(
           result: breakpointResult,
         },
       });
-      await appendEvent({
-        runDir: input.runDir,
-        eventType: "EFFECT_RESOLVED",
-        event: {
-          effectId: input.effectId,
-          status: "ok",
-          resultRef,
-        },
+      await appendJournalEvent(input.runDir, "EFFECT_RESOLVED", {
+        effectId: input.effectId,
+        status: "ok",
+        resultRef,
       });
       // GAP-SEC-003: Fire on-permission-denied hook when breakpoint is denied
       if (!input.approved) {

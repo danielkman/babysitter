@@ -6,10 +6,8 @@
  */
 
 import * as crypto from "node:crypto";
-import { resolveExistingRunDir, resolveRunsDir } from "@a5c-ai/babysitter-sdk";
-// TODO(orchestration-migration): resolveExistingRunDir and resolveRunsDir
-// should route through OrchestrationProvider.resolveRunsDir() once the
-// provider interface supports path-resolution methods.
+import * as path from "node:path";
+import { getGlobalRegistry } from "../orchestration/global";
 import { createJournalWatcher, type JournalWatcher } from "../storage/journalWatcher";
 import { ok, fail, pathExists } from "./utils";
 import type { ApiResult } from "./runs";
@@ -57,7 +55,7 @@ export async function apiSubscribeRunEvents(
     if (typeof input.runsDir === "string" && input.runsDir.trim().length === 0) {
       return fail("INVALID_INPUT", "runsDir must be a non-empty string");
     }
-    const runDir = resolveExistingRunDir(input.runId, { override: input.runsDir ?? resolveRunsDir() });
+    const runDir = path.join(input.runsDir ?? getGlobalRegistry().getOrchestration().resolveRunsDir(), input.runId);
     if (!(await pathExists(runDir))) {
       return fail("RUN_NOT_FOUND", `Run not found: ${input.runId}`);
     }

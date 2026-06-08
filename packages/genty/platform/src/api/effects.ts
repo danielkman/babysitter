@@ -6,17 +6,11 @@
  */
 
 import {
-  appendEvent,
-  loadJournal,
-  readTaskDefinition,
-  readTaskResult,
   serializeAndWriteTaskResult,
   withRunLock,
 } from "@a5c-ai/babysitter-sdk";
-// TODO(orchestration-migration): appendEvent, loadJournal should route
-// through JournalProvider; readTaskDefinition, readTaskResult,
-// serializeAndWriteTaskResult through OrchestrationProvider;
-// withRunLock through a locking abstraction.
+import { loadJournalEvents, appendJournalEvent } from "../orchestration/global";
+import { readTaskDefinition, readTaskResult } from "../storage/runFiles";
 import { ok, fail, pathExists, buildBaseEffectMap } from "./utils";
 import type { ApiResult } from "./runs";
 import type { JournalEvent, JsonRecord } from "../types";
@@ -83,7 +77,7 @@ export async function apiListEffects(
     if (!(await pathExists(input.runDir))) {
       return fail("RUN_NOT_FOUND", `Run directory not found: ${input.runDir}`);
     }
-    const events = await loadJournal(input.runDir);
+    const events = await loadJournalEvents(input.runDir);
     const effectMap = buildEffectInfoMap(events);
     let effects = Array.from(effectMap.values());
     // Apply filters
@@ -138,7 +132,7 @@ export async function apiShowEffect(
     if (!(await pathExists(input.runDir))) {
       return fail("RUN_NOT_FOUND", `Run directory not found: ${input.runDir}`);
     }
-    const events = await loadJournal(input.runDir);
+    const events = await loadJournalEvents(input.runDir);
     const effectMap = buildEffectInfoMap(events);
     const info = effectMap.get(input.effectId);
     if (!info) {
@@ -198,7 +192,7 @@ export async function apiCancelEffect(
       return fail("RUN_NOT_FOUND", `Run directory not found: ${input.runDir}`);
     }
     return await withRunLock(input.runDir, "api:cancelEffect", async () => {
-      const events = await loadJournal(input.runDir);
+      const events = await loadJournalEvents(input.runDir);
       const effectMap = buildEffectInfoMap(events);
       const info = effectMap.get(input.effectId);
       if (!info) {
@@ -226,13 +220,9 @@ export async function apiCancelEffect(
           metadata: { cancelled: true, reason: input.reason },
         },
       });
-      await appendEvent({
-        runDir: input.runDir,
-        eventType: "EFFECT_CANCELLED",
-        event: {
-          effectId: input.effectId,
-          reason: input.reason,
-        },
+      await appendJournalEvent(input.runDir, "EFFECT_CANCELLED", {
+        effectId: input.effectId,
+        reason: input.reason,
       });
       return ok({ resultRef });
     });
@@ -261,7 +251,7 @@ export async function apiBatchCommitEffects(
     // Acquire lock once for the entire batch to ensure atomicity
     return await withRunLock(input.runDir, "api:batchCommitEffects", async () => {
       // Load journal once for the entire batch
-      let events = await loadJournal(input.runDir);
+      let events = await loadJournalEvents(input.runDir);
       const results: BatchCommitEffectResult[] = [];
       for (const entry of input.effects) {
         try {
@@ -313,21 +303,17 @@ export async function apiBatchCommitEffects(
             invocationKey,
             payload: resultPayload,
           });
-          await appendEvent({
-            runDir: input.runDir,
-            eventType: "EFFECT_RESOLVED",
-            event: {
-              effectId: entry.effectId,
-              status: entry.result.status,
-              resultRef,
-              stdoutRef: stdoutRef ?? undefined,
-              stderrRef: stderrRef ?? undefined,
-              startedAt: resultPayload.startedAt,
-              finishedAt: resultPayload.finishedAt,
-            },
+          await appendJournalEvent(input.runDir, "EFFECT_RESOLVED", {
+            effectId: entry.effectId,
+            status: entry.result.status,
+            resultRef,
+            stdoutRef: stdoutRef ?? undefined,
+            stderrRef: stderrRef ?? undefined,
+            startedAt: resultPayload.startedAt,
+            finishedAt: resultPayload.finishedAt,
           });
           // Reload journal so subsequent effects in the batch see this resolution
-          events = await loadJournal(input.runDir);
+          events = await loadJournalEvents(input.runDir);
           results.push({
             effectId: entry.effectId,
             ok: true,
