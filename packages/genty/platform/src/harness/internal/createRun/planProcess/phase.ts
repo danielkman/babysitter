@@ -95,14 +95,15 @@ export async function runPlanProcessPhase(args: import("./phaseTypes").RunPlanPr
   writeVerboseData("phasePlanProcess workspace assessment", workspaceAssessment);
   writeVerboseData("phasePlanProcess external agents", externalAgents);
   const resolvedBackend = resolveAgentCoreBackendForHarness(args.selectedHarnessName);
-  // genty-core's createAgentCoreSession is a text-only completion session: it does
-  // not forward customTools/toolsMode and has no tool-calling loop (see #936). So any
-  // genty-core backend must use the raw-text process-authoring path, where the model
-  // emits the process definition as a fenced code block instead of calling
-  // babysitter_report_process_definition (which it can never reach — 0 tools in-flight).
-  const isGentyCoreBackend =
-    !resolvedBackend || resolvedBackend === "genty" || resolvedBackend === "agent-core";
-  const isRawTextSession = isGentyCoreBackend;
+  // The genty harness runs through genty-core's createAgentCoreSession, a text-only
+  // completion session that does not forward customTools/toolsMode and has no
+  // tool-calling loop (see #936). It must use the raw-text process-authoring path,
+  // where the model emits the process definition as a fenced code block instead of
+  // calling babysitter_report_process_definition (which it can never reach — 0 tools
+  // in-flight). The agent-core / internal default-orchestration harness keeps the
+  // tool path (it routes through the PI wrapper as exercised by the harness-policy
+  // tests); only the standalone `genty` backend is forced to raw text here.
+  const isRawTextSession = !resolvedBackend || resolvedBackend === "genty";
 
   let processDefinitionSystemPrompt: string;
   let basePlanProcessPrompt: string;
