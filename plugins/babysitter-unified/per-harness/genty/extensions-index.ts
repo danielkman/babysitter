@@ -100,6 +100,15 @@ const babysitterExtension: GentyExtension = {
       });
     }
 
+    // Wire orchestration providers from the babysitter-genty package
+    try {
+      const { register } = require('@a5c-ai/babysitter-genty/register');
+      register();
+      ctx.log("info", "Babysitter orchestration providers registered");
+    } catch {
+      // babysitter-genty not installed — orchestration providers not available
+    }
+
     ctx.log("info", "Babysitter extension activated");
   },
 };
