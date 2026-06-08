@@ -1,12 +1,6 @@
-// TODO(sdk-removal): renderCommandTemplate and renderTemplateString are SDK
-// prompt-infrastructure functions. They should move to @a5c-ai/genty-platform
-// when the prompt composition layer is migrated. PromptContext is re-exported
-// from genty-platform types.
-import {
-  renderCommandTemplate as renderSdkCommandTemplate,
-  renderTemplateString,
-  type PromptContext,
-} from "@a5c-ai/babysitter-sdk";
+import { readFileSync } from "node:fs";
+import * as path from "node:path";
+import { renderTemplateString, type TemplateContext } from "./templateRenderer";
 
 export type HarnessCommandTemplateName =
   | "anycli"
@@ -19,7 +13,7 @@ export type HarnessCommandTemplateName =
   | "retrospect"
   | "user-install";
 
-const COMMAND_TEMPLATE_CONTEXT: PromptContext = {
+const COMMAND_TEMPLATE_CONTEXT: TemplateContext = {
   harness: "harness-command-template",
   harnessLabel: "Harness Command Template",
   interactive: undefined,
@@ -246,6 +240,18 @@ Include execution results prominently before the phase summary.
 {{/mcpMode}}
 `;
 
+/**
+ * Resolve the filesystem path to an SDK command template .md file.
+ * Uses require.resolve to locate the SDK dist, then navigates to the
+ * templates/commands/ subdirectory.
+ */
+function resolveSdkTemplatePath(templateName: string): string {
+  // require.resolve finds the SDK's dist/index.js; go up to dist/, then into prompts/templates/commands/
+  const sdkEntry = require.resolve("@a5c-ai/babysitter-sdk");
+  const sdkDist = path.dirname(sdkEntry);
+  return path.join(sdkDist, "prompts", "templates", "commands", `${templateName}.md`);
+}
+
 function renderAnycliTemplate(extras?: Record<string, string>): string {
   return renderTemplateString(ANYCLI_TEMPLATE, COMMAND_TEMPLATE_CONTEXT, extras);
 }
@@ -257,5 +263,7 @@ export function renderCommandTemplate(
   if (templateName === "anycli") {
     return renderAnycliTemplate(extras);
   }
-  return renderSdkCommandTemplate(templateName, extras);
+  const templatePath = resolveSdkTemplatePath(templateName);
+  const raw = readFileSync(templatePath, "utf8");
+  return renderTemplateString(raw, COMMAND_TEMPLATE_CONTEXT, extras);
 }

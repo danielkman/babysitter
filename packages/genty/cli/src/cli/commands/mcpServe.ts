@@ -4,9 +4,7 @@
  * stdout is reserved for MCP protocol messages; all logging goes to stderr.
  */
 
-// TODO(sdk-removal): createBabysitterMcpServer is SDK-owned MCP infrastructure.
-// Move to @a5c-ai/genty-platform/mcp when the MCP server factory is migrated.
-import { createBabysitterMcpServer } from "@a5c-ai/babysitter-sdk";
+import { createGentyMcpServer } from "../../mcp/server";
 import { createWebSocketTransport } from "@a5c-ai/genty-platform/mcp/transport";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 
@@ -41,7 +39,7 @@ export async function handleMcpServe(args: {
 
     // Each new WebSocket connection gets its own McpServer instance
     wsTransport.onconnection = (connectionTransport) => {
-      const server = createBabysitterMcpServer();
+      const server = createGentyMcpServer();
       void server.connect(connectionTransport);
     };
 
@@ -65,7 +63,7 @@ export async function handleMcpServe(args: {
   }
 
   // Default: stdio transport
-  const server = createBabysitterMcpServer();
+  const server = createGentyMcpServer();
   const transport = new StdioServerTransport();
   await server.connect(transport);
 

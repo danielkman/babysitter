@@ -10,16 +10,59 @@
 
 import * as path from "node:path";
 import { promises as fs } from "node:fs";
-// TODO(sdk-removal): These SDK storage functions should move to
-// @a5c-ai/genty-platform/storage once the storage layer is migrated.
-// They are deeply-integrated replay/journal infrastructure (buildEffectIndex
-// reconstructs the full effect graph from journal events).
-import {
-  readRunMetadata,
-  loadJournal,
-  getRunDir,
-  buildEffectIndex,
-} from "@a5c-ai/babysitter-sdk";
+import { readRunMetadata } from "@a5c-ai/genty-platform/storage";
+import { loadJournalEvents } from "@a5c-ai/genty-platform/orchestration";
+
+function getRunDir(runsRoot: string, runId: string): string {
+  return path.join(runsRoot, runId);
+}
+
+/**
+ * Lightweight effect summary extracted from journal events.
+ * Replaces the SDK's full EffectIndex for TUI display purposes.
+ */
+interface EffectSummary {
+  effectId: string;
+  kind: string;
+  status: "pending" | "completed" | "running";
+  title: string;
+}
+
+/**
+ * Build a flat effect list from journal events for JSON display.
+ * This replaces the SDK's `buildEffectIndex` with a purpose-built
+ * lightweight version that only extracts what the TUI JSON mode needs.
+ */
+function buildEffectSummaries(events: Array<{ type: string; data: Record<string, unknown> }>): EffectSummary[] {
+  const requested = new Map<string, { kind: string; taskId?: string }>();
+  const resolved = new Set<string>();
+
+  for (const event of events) {
+    if (event.type === "EFFECT_REQUESTED") {
+      const effectId = event.data.effectId as string | undefined;
+      if (effectId) {
+        requested.set(effectId, {
+          kind: (event.data.kind as string) ?? "unknown",
+          taskId: event.data.taskId as string | undefined,
+        });
+      }
+    } else if (event.type === "EFFECT_RESOLVED" || event.type === "EFFECT_CANCELLED") {
+      const effectId = event.data.effectId as string | undefined;
+      if (effectId) resolved.add(effectId);
+    }
+  }
+
+  const summaries: EffectSummary[] = [];
+  for (const [effectId, info] of requested) {
+    summaries.push({
+      effectId,
+      kind: info.kind,
+      status: resolved.has(effectId) ? "completed" : "pending",
+      title: info.taskId ?? effectId,
+    });
+  }
+  return summaries;
+}
 
 interface TuiArgs {
   runsDir: string;
@@ -69,9 +112,9 @@ async function scanRunsForJson(runsDir: string): Promise<RunSummary[]> {
 
     try {
       const metadata = await readRunMetadata(runDir);
-      let journal: Array<{ type: string; recordedAt: string; seq: number }> = [];
+      let journal: Array<{ type: string; recordedAt: string; seq: number; data: Record<string, unknown> }> = [];
       try {
-        journal = await loadJournal(runDir);
+        journal = await loadJournalEvents(runDir) as Array<{ type: string; recordedAt: string; seq: number; data: Record<string, unknown> }>;
       } catch {
         // Journal may not exist yet
       }
@@ -112,8 +155,7 @@ async function handleJsonMode(args: TuiArgs): Promise<number> {
     const runDir = getRunDir(args.runsDir, runIdArg);
     try {
       const metadata = await readRunMetadata(runDir);
-      const journal = await loadJournal(runDir);
-      const index = await buildEffectIndex({ runDir, events: journal });
+      const journal = await loadJournalEvents(runDir);
 
       const lastLifecycleType = [...journal].reverse().find(
         (e) => e.type === "RUN_COMPLETED" || e.type === "RUN_FAILED"
@@ -127,14 +169,9 @@ async function handleJsonMode(args: TuiArgs): Promise<number> {
       else if (pendingCount > 0) state = "waiting";
       else state = "created";
 
-      const allEffects = index.listEffects();
-      const effects = allEffects.map((rec) => ({
-        effectId: rec.effectId,
-        kind: rec.kind ?? "unknown",
-        status: rec.status === "resolved_ok" || rec.status === "resolved_error"
-          ? "completed" : rec.status === "requested" ? "pending" : "running",
-        title: rec.taskId ?? rec.effectId,
-      }));
+      const effects = buildEffectSummaries(
+        journal as Array<{ type: string; data: Record<string, unknown> }>,
+      );
 
       console.log(JSON.stringify({
         runId: runIdArg,

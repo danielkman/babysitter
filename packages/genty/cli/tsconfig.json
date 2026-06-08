@@ -36,8 +36,14 @@
       "@a5c-ai/genty-platform/mcp/transport": [
         "../platform/src/mcp/transport/index.ts"
       ],
+      "@a5c-ai/genty-platform/orchestration": [
+        "../platform/src/orchestration/index.ts"
+      ],
       "@a5c-ai/genty-platform/session": [
         "../platform/src/session/index.ts"
+      ],
+      "@a5c-ai/genty-platform/storage": [
+        "../platform/src/storage/index.ts"
       ]
     }
   },
