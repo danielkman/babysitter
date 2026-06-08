@@ -145,3 +145,27 @@ export type {
   StatusBarItem, ContextProvider, TurnContext, ContextInjection,
   ExtensionManifest, ExtensionSource,
 } from "./extensions";
+
+// Microagents — isolated subprocess agents with structured I/O
+export type {
+  JSONSchema as MicroagentJSONSchema,
+  IsolationMode,
+  MicroagentManifest,
+  MicroagentInvocation,
+  MicroagentResult,
+  ValidationResult as MicroagentValidationResult,
+  MicroagentRegistryFilter,
+} from "./microagents";
+export {
+  MicroagentRegistry,
+  MicroagentRunner,
+  validateInput as validateMicroagentInput,
+  validateOutput as validateMicroagentOutput,
+  validateAgainstSchema as validateMicroagentSchema,
+  builtInManifests,
+  formatConverterManifest,
+  systemIntegratorManifest,
+  codeAnalyzerManifest,
+  schemaGeneratorManifest,
+  diffApplierManifest,
+} from "./microagents";
