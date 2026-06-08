@@ -47,6 +47,8 @@
     "packages/genty/watch-wearos-app"
   ],
   "scripts": {
+    "prepare": "git config core.hooksPath .githooks || true",
+    "guard:packages": "node ./scripts/guard-package-integrity.cjs",
     "check:library-syntax": "node ./scripts/validate-library-js-syntax.cjs",
     "verify:metadata": "node ./scripts/check-package-metadata.cjs",
     "validate:processes": "node ./scripts/validate-process.mjs",
