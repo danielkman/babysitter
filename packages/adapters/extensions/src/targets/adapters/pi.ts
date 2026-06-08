@@ -108,7 +108,10 @@ export function generatePiManifest(manifest: ResolvedManifest, targetName = 'pi'
       'skills/',
       'commands/',
       'scripts/',
-      'hooks/',
+      // hooks/ only when the plugin actually ships hooks (hook-free plugins
+      // like atlas emit no hooks/ dir, and verify rejects listed-but-missing
+      // publishable paths).
+      ...(manifest.hooks && Object.keys(manifest.hooks).length > 0 ? ['hooks/'] : []),
     ],
     author: typeof manifest.author === 'string' ? manifest.author : manifest.author.name,
     license: manifest.license,

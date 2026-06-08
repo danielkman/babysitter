@@ -106,6 +106,11 @@ export function generateOhMyPiManifest(manifest: ResolvedManifest, targetName = 
       'skills/',
       'commands/',
       'scripts/',
+      // hooks/ only when the plugin actually ships hooks (hook-free plugins
+      // like atlas emit no hooks/ dir, and verify rejects listed-but-missing
+      // publishable paths). Hooked plugins (babysitter) emit a hooks/ dir that
+      // must be published.
+      ...(manifest.hooks && Object.keys(manifest.hooks).length > 0 ? ['hooks/'] : []),
     ],
     author: typeof manifest.author === 'string' ? manifest.author : manifest.author.name,
     license: manifest.license,
