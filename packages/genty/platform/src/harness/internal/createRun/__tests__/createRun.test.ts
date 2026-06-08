@@ -247,10 +247,28 @@ vi.mock("node:fs", async () => {
   };
 });
 
-// The orchestration provider migration means production code now calls
-// getGlobalRegistry().getOrchestration().createRun() instead of the SDK's
-// createRun directly.  See the beforeEach block below where we register
-// a mock orchestration provider via vi.importActual.
+// Shared registry that survives vi.mock module isolation — both the test
+// and production code (effects.ts, externalPhase.ts) see this instance.
+import { createOrchestrationRegistry, type OrchestrationRegistry } from "../../../../orchestration/registry";
+const __sharedRegistry = { current: createOrchestrationRegistry() as OrchestrationRegistry };
+
+vi.mock("../../../../orchestration/global", () => ({
+  getGlobalRegistry: () => __sharedRegistry.current,
+  setGlobalRegistry: (r: unknown) => { __sharedRegistry.current = r as OrchestrationRegistry; },
+  resetGlobalRegistry: () => {
+    __sharedRegistry.current = createOrchestrationRegistry();
+  },
+  loadJournalEvents: async (runDir: string) => {
+    try {
+      return await __sharedRegistry.current.getJournal().loadEvents(runDir);
+    } catch { return []; }
+  },
+  appendJournalEvent: async (runDir: string, type: string, data: Record<string, unknown>) => {
+    try {
+      await __sharedRegistry.current.getJournal().appendEvent(runDir, { type, timestamp: new Date().toISOString(), data });
+    } catch { /* no provider */ }
+  },
+}));
 
 import { handleHarnessCreateRun, selectHarness } from "..";
 import { ensureRunAndMaybeBindFromProcessDefinition } from "../planProcess/runState";
@@ -266,8 +284,6 @@ import { invokeHarness } from "../../../invoker";
 import { createAgentCoreSession } from "@a5c-ai/genty-core";
 import { getSessionContext } from "../../../../session/context";
 import { getSessionHistory } from "../../../../session/history";
-// getGlobalRegistry and resetGlobalRegistry are mocked above — the import
-// here is resolved to the vi.mock factory, ensuring the same __sharedRegistry.
 import {
   getGlobalRegistry,
   resetGlobalRegistry,
@@ -4253,14 +4269,7 @@ describe("handleHarnessCreateRun", () => {
       );
     });
 
-    // TODO: These 3 external orchestration dispatch tests are skipped because
-    // vi.mock("node:fs") causes vitest to fork the module graph, giving the
-    // production code (externalPhase.ts) a separate singleton of
-    // orchestration/global.ts from the test.  The registered mock provider
-    // is unreachable, so postEffectResult throws "No orchestration provider
-    // registered".  Fix by refactoring the fs mock to vi.spyOn or by
-    // introducing a vitest setup file that registers the provider globally.
-    it.skip("dispatches explicit parallel groups concurrently for capable external harnesses", async () => {
+    it("dispatches explicit parallel groups concurrently for capable external harnesses", async () => {
       (discoverHarnesses as Mock).mockResolvedValue([
         makeDiscoveryResult({ name: "claude-code", capabilities: [HarnessCapability.ConcurrentEffects] }),
       ]);
@@ -4322,15 +4331,19 @@ describe("handleHarnessCreateRun", () => {
       expect(maxActive).toBe(2);
       expect(commitEffectResult).toHaveBeenNthCalledWith(
         1,
-        expect.objectContaining({ effectId: "eff-1" }),
+        expect.anything(),
+        "eff-1",
+        expect.anything(),
       );
       expect(commitEffectResult).toHaveBeenNthCalledWith(
         2,
-        expect.objectContaining({ effectId: "eff-2" }),
+        expect.anything(),
+        "eff-2",
+        expect.anything(),
       );
     });
 
-    it.skip("keeps explicit parallel groups sequential for external harnesses without concurrent-effects", async () => {
+    it("keeps explicit parallel groups sequential for external harnesses without concurrent-effects", async () => {
       (discoverHarnesses as Mock).mockResolvedValue([
         makeDiscoveryResult({ name: "claude-code", capabilities: [] }),
       ]);
@@ -4388,15 +4401,19 @@ describe("handleHarnessCreateRun", () => {
       expect(maxActive).toBe(1);
       expect(commitEffectResult).toHaveBeenNthCalledWith(
         1,
-        expect.objectContaining({ effectId: "eff-1" }),
+        expect.anything(),
+        "eff-1",
+        expect.anything(),
       );
       expect(commitEffectResult).toHaveBeenNthCalledWith(
         2,
-        expect.objectContaining({ effectId: "eff-2" }),
+        expect.anything(),
+        "eff-2",
+        expect.anything(),
       );
     });
 
-    it.skip("commits sibling successes when a parallel sibling fails", async () => {
+    it("commits sibling successes when a parallel sibling fails", async () => {
       (discoverHarnesses as Mock).mockResolvedValue([
         makeDiscoveryResult({ name: "claude-code", capabilities: [HarnessCapability.ConcurrentEffects] }),
       ]);
@@ -4449,17 +4466,15 @@ describe("handleHarnessCreateRun", () => {
       expect(code).toBe(1);
       expect(commitEffectResult).toHaveBeenNthCalledWith(
         1,
-        expect.objectContaining({
-          effectId: "eff-ok",
-          result: expect.objectContaining({ status: "ok" }),
-        }),
+        expect.anything(),
+        "eff-ok",
+        expect.objectContaining({ status: "ok" }),
       );
       expect(commitEffectResult).toHaveBeenNthCalledWith(
         2,
-        expect.objectContaining({
-          effectId: "eff-error",
-          result: expect.objectContaining({ status: "error" }),
-        }),
+        expect.anything(),
+        "eff-error",
+        expect.objectContaining({ status: "error" }),
       );
     });
 
