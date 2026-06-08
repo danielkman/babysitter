@@ -21,6 +21,7 @@ import type {
   ProcessDefinitionProvider,
   RunEvent,
 } from "./interfaces";
+import { createDefaultOrchestrationProvider } from "./defaultOrchestrationProvider";
 
 function createDefaultFilesystemJournal(): JournalProvider {
   return {
@@ -128,9 +129,11 @@ export function createOrchestrationRegistry(): OrchestrationRegistry {
   const orchestration = new ProviderMap<OrchestrationProvider>("orchestration");
   const journal = new ProviderMap<JournalProvider>("journal");
 
-  // Register a default filesystem journal so API functions work without
+  // Register defaults so API functions and the genty runtime work without
   // explicit provider registration (CLI tools, tests, standalone scripts).
+  // The plugin's register.ts can still override these with named providers.
   journal.register("fs", createDefaultFilesystemJournal());
+  orchestration.register("babysitter", createDefaultOrchestrationProvider());
   const governance = new ProviderMap<GovernanceProvider>("governance");
   const agentDiscovery = new ProviderMap<ExternalAgentProvider>("agentDiscovery");
   const session = new ProviderMap<SessionProvider>("session");
