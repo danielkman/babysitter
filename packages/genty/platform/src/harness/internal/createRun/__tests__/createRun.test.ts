@@ -566,9 +566,13 @@ describe("handleHarnessCreateRun", () => {
     // Register a mock orchestration provider that delegates to the existing
     // SDK mocks (createRun, commitEffectResult) so pre-existing test setup
     // and assertions continue to work after the provider migration.
+    // Register under "babysitter" to OVERRIDE the registry's pre-registered
+    // default babysitter provider (#936) — getOrchestration() is first-wins,
+    // so registering as a different name would leave the real default provider
+    // in front, which runs a real orchestration loop and OOMs the test worker.
     resetGlobalRegistry();
-    getGlobalRegistry().registerOrchestration("test-mock", {
-      name: "test-mock",
+    getGlobalRegistry().registerOrchestration("babysitter", {
+      name: "babysitter",
       createRun: async (opts: Record<string, unknown>) => (createRun as Mock)(opts),
       iterateRun: async () => ({
         iteration: 0,
