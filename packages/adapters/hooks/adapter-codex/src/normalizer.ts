@@ -1,5 +1,6 @@
 import { normalizeEvent, type UnifiedHookEvent, type NormalizeOptions } from '@a5c-ai/hooks-adapter-core';
 import { CODEX_PHASE_MAPPINGS } from './mappings';
+import { resolveSessionId } from './session-resolver';
 
 /** The default adapter identifier used in all normalized events. */
 export const ADAPTER_NAME = 'codex';
@@ -122,7 +123,12 @@ export function normalizeCodexEvent(
   // Enrich env with Codex-specific fields extracted from stdin
   const enrichedEnv = { ...env };
 
-  const sessionId = extractSessionId(parsed);
+  // Resolve the session id from the stdin payload AND the environment. Codex
+  // frequently invokes hooks with empty stdin (issue #940), so we must fall
+  // back to the Codex-native env vars (CODEX_THREAD_ID / CODEX_SESSION_ID, plus
+  // AGENT_SESSION_ID / BABYSITTER_SESSION_ID) rather than relying on the stdin
+  // payload alone — otherwise the run/session can never be bound.
+  const sessionId = resolveSessionId(parsed, env);
   if (sessionId && !enrichedEnv['HOOKS_PROXY_SESSION_ID']) {
     enrichedEnv['HOOKS_PROXY_SESSION_ID'] = sessionId;
   }

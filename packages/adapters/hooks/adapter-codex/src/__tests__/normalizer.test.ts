@@ -197,5 +197,25 @@ describe('normalizeCodexEvent', () => {
       const event = normalizeCodexEvent('SessionStart', SESSION_START_PAYLOAD, env);
       expect(event.execution.sessionId).toBe('explicit-session');
     });
+
+    // Issue #940: Codex fires hooks with empty/0-byte stdin, so the session id
+    // must be resolved from the Codex-native env vars rather than stdin alone.
+    it('resolves sessionId from CODEX_THREAD_ID when stdin is empty', () => {
+      const env = { ...BASE_ENV, CODEX_THREAD_ID: 'thread-from-env' };
+      const event = normalizeCodexEvent('Stop', EMPTY_PAYLOAD, env);
+      expect(event.execution.sessionId).toBe('thread-from-env');
+    });
+
+    it('resolves sessionId from CODEX_SESSION_ID when stdin is null', () => {
+      const env = { ...BASE_ENV, CODEX_SESSION_ID: 'session-from-env' };
+      const event = normalizeCodexEvent('Stop', null, env);
+      expect(event.execution.sessionId).toBe('session-from-env');
+    });
+
+    it('still prefers the native stdin session_id over Codex env vars', () => {
+      const env = { ...BASE_ENV, CODEX_THREAD_ID: 'thread-from-env' };
+      const event = normalizeCodexEvent('SessionStart', SESSION_START_PAYLOAD, env);
+      expect(event.execution.sessionId).toBe('codex-sess-abc123');
+    });
   });
 });

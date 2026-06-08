@@ -26,6 +26,38 @@ describe('resolveSessionId', () => {
     expect(result).toBe('codex-thread-id');
   });
 
+  // Issue #940: Codex invokes hooks with empty stdin, so the session must be
+  // resolvable from the Codex-native env vars alone.
+  it('falls back to CODEX_SESSION_ID when stdin is empty and no thread id', () => {
+    const result = resolveSessionId(
+      {},
+      { CODEX_SESSION_ID: 'codex-session-id' },
+    );
+    expect(result).toBe('codex-session-id');
+  });
+
+  it('prefers CODEX_THREAD_ID over CODEX_SESSION_ID', () => {
+    const result = resolveSessionId(
+      {},
+      { CODEX_THREAD_ID: 'thread', CODEX_SESSION_ID: 'session' },
+    );
+    expect(result).toBe('thread');
+  });
+
+  it('falls back to BABYSITTER_SESSION_ID before Codex-native env vars', () => {
+    const result = resolveSessionId(
+      {},
+      { BABYSITTER_SESSION_ID: 'bsy-id', CODEX_THREAD_ID: 'thread' },
+    );
+    expect(result).toBe('bsy-id');
+  });
+
+  it('resolves from env vars with empty stdin payload (issue #940)', () => {
+    // The core #940 scenario: 0-byte hook stdin, session id only in env.
+    expect(resolveSessionId({}, { CODEX_THREAD_ID: 't1' })).toBe('t1');
+    expect(resolveSessionId({}, { CODEX_SESSION_ID: 's1' })).toBe('s1');
+  });
+
   it('returns null when no session ID is available', () => {
     expect(resolveSessionId({}, {})).toBeNull();
   });

@@ -8,8 +8,11 @@
  *   1. Explicit --session-id CLI flag (handled upstream)
  *   2. Explicit AGENT_SESSION_ID env var
  *   3. Native session_id from stdin payload
- *   4. CODEX_THREAD_ID env var (Codex-specific)
- *   5. null (no session; caller decides fallback)
+ *   4. BABYSITTER_SESSION_ID env var (cross-harness)
+ *   5. CODEX_THREAD_ID / CODEX_SESSION_ID env vars (Codex-native; auto-injected
+ *      by the Codex CLI into every hook, so they are available even when the
+ *      hook stdin payload is empty — see issue #940)
+ *   6. null (no session; caller decides fallback)
  */
 
 /**
@@ -35,10 +38,21 @@ export function resolveSessionId(
     return native;
   }
 
-  // Priority 3: Codex-specific env var
+  // Priority 3: cross-harness babysitter session id
+  const babysitterSessionId = env['BABYSITTER_SESSION_ID'];
+  if (typeof babysitterSessionId === 'string' && babysitterSessionId.length > 0) {
+    return babysitterSessionId;
+  }
+
+  // Priority 4: Codex-native env vars (auto-injected by the Codex CLI into every
+  // hook invocation, so they resolve the session even when stdin is empty — #940)
   const codexThreadId = env['CODEX_THREAD_ID'];
   if (typeof codexThreadId === 'string' && codexThreadId.length > 0) {
     return codexThreadId;
+  }
+  const codexSessionId = env['CODEX_SESSION_ID'];
+  if (typeof codexSessionId === 'string' && codexSessionId.length > 0) {
+    return codexSessionId;
   }
 
   return null;
