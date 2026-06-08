@@ -124,20 +124,28 @@ describe("OrchestrationRegistry", () => {
   // ── Journal provider ────────────────────────────────────────────────
 
   describe("journal provider", () => {
-    it("can register and retrieve", () => {
+    it("can register and retrieve by name", () => {
       const provider = stubJournalProvider();
-      registry.registerJournal("fs", provider);
-      expect(registry.getJournal("fs")).toBe(provider);
+      registry.registerJournal("custom", provider);
+      expect(registry.getJournal("custom")).toBe(provider);
     });
 
-    it("throws when no provider registered", () => {
-      expect(() => registry.getJournal()).toThrow(/no journal provider registered/i);
+    it("provides a default filesystem journal when none explicitly registered", () => {
+      // The registry pre-registers an "fs" filesystem journal so API
+      // functions (CLI, tests, standalone scripts) work without explicit
+      // provider registration. Journal access is genty-native and never
+      // throws for a missing provider.
+      const journal = registry.getJournal();
+      expect(journal).toBeDefined();
+      expect(typeof journal.loadEvents).toBe("function");
+      expect(typeof journal.appendEvent).toBe("function");
     });
 
-    it("returns first when name omitted", () => {
+    it("keeps the default fs journal first when name omitted", () => {
       const provider = stubJournalProvider();
       registry.registerJournal("default", provider);
-      expect(registry.getJournal()).toBe(provider);
+      // "fs" is pre-registered, so it remains the first-wins provider.
+      expect(registry.getJournal()).toBe(registry.getJournal("fs"));
     });
   });
 

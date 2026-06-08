@@ -10,15 +10,15 @@ import {
 } from "../runStatus";
 import type { OrchestrationStatus, PendingWorkItem } from "../runStatus";
 
-// Mock storage modules
-vi.mock("@a5c-ai/babysitter-sdk", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@a5c-ai/babysitter-sdk")>();
-  return {
-    ...actual,
-    loadJournal: vi.fn(),
-    readRunMetadata: vi.fn(),
-  };
-});
+// Mock the journal + run-metadata sources that runStatus actually uses
+// after the orchestration-provider migration.
+vi.mock("../../orchestration/global", () => ({
+  loadJournalEvents: vi.fn(),
+}));
+
+vi.mock("../../storage/runFiles", () => ({
+  readRunMetadata: vi.fn(),
+}));
 
 vi.mock("node:fs", () => ({
   promises: {
@@ -26,10 +26,11 @@ vi.mock("node:fs", () => ({
   },
 }));
 
-import { loadJournal, readRunMetadata } from "@a5c-ai/babysitter-sdk";
+import { loadJournalEvents } from "../../orchestration/global";
+import { readRunMetadata } from "../../storage/runFiles";
 import { promises as fsMock } from "node:fs";
 
-const mockLoadJournal = vi.mocked(loadJournal);
+const mockLoadJournal = vi.mocked(loadJournalEvents);
 const mockReadRunMetadata = vi.mocked(readRunMetadata);
 const mockReadFile = vi.mocked(fsMock.readFile);
 
