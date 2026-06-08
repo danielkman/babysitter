@@ -19,8 +19,65 @@ import {
   handleJsonlInteractive,
   SUPPORTED_METHODS,
 } from "../jsonlInteractive";
+import {
+  getGlobalRegistry,
+  resetGlobalRegistry,
+} from "@a5c-ai/genty-platform/orchestration";
+import type {
+  OrchestrationProvider,
+  CreateRunOptions,
+  RunHandle,
+} from "@a5c-ai/genty-platform/orchestration";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
+
+/**
+ * Filesystem-backed mock orchestration provider so run.create / effect.commit
+ * dispatches resolve against the shared platform registry singleton (these
+ * route through getGlobalRegistry().getOrchestration() after the provider
+ * migration). Mirrors the helper in platform's api/__tests__/runs.test.ts.
+ */
+function parseEntrypoint(entrypoint: string): { importPath: string; exportName: string | undefined } {
+  const hashIndex = entrypoint.lastIndexOf("#");
+  if (hashIndex <= 0) return { importPath: entrypoint, exportName: undefined };
+  return { importPath: entrypoint.slice(0, hashIndex), exportName: entrypoint.slice(hashIndex + 1) || undefined };
+}
+
+function createMockOrchestrationProvider(defaultRunsDir: string): OrchestrationProvider {
+  const knownEffects = new Set<string>();
+  return {
+    name: "test-mock",
+    async createRun(opts: CreateRunOptions): Promise<RunHandle> {
+      const runsDir = opts.runsDir ?? defaultRunsDir;
+      const runId = `run-${crypto.randomUUID().slice(0, 8)}`;
+      const runDir = path.join(runsDir, runId);
+      await fs.mkdir(path.join(runDir, "journal"), { recursive: true });
+      const { importPath, exportName } = parseEntrypoint(opts.entrypoint);
+      await fs.writeFile(
+        path.join(runDir, "run.json"),
+        JSON.stringify({ runId, processId: opts.processId, entrypoint: { importPath, exportName }, createdAt: new Date().toISOString(), layoutVersion: "1" }, null, 2),
+      );
+      return { runId, runDir, processId: opts.processId, status: "pending" };
+    },
+    async iterateRun() {
+      return { iteration: 0, status: "none" as const, action: "none", reason: "mock", pendingEffects: [] };
+    },
+    async postEffectResult(handle: RunHandle, effectId: string) {
+      if (!knownEffects.has(effectId)) {
+        try {
+          await fs.access(path.join(handle.runDir, "tasks", effectId));
+          knownEffects.add(effectId);
+        } catch {
+          throw new Error(`Unknown effectId "${effectId}"`);
+        }
+      }
+    },
+    async getRunStatus(handle: RunHandle) { return handle; },
+    async getRunEvents() { return []; },
+    async getPendingEffects() { return []; },
+    resolveRunsDir() { return defaultRunsDir; },
+  };
+}
 
 function tmpDir(): string {
   return path.join(os.tmpdir(), `gap-json-004-${crypto.randomUUID()}`);
@@ -116,9 +173,16 @@ beforeEach(async () => {
   testBase = tmpDir();
   await fs.mkdir(testBase, { recursive: true });
   vi.spyOn(console, "error").mockImplementation(() => {});
+
+  // Register a mock orchestration provider so run.create / effect.commit
+  // dispatches can call getGlobalRegistry().getOrchestration() without throwing.
+  const defaultRunsDir = path.join(testBase, "default-runs");
+  await fs.mkdir(defaultRunsDir, { recursive: true });
+  getGlobalRegistry().registerOrchestration("test-mock", createMockOrchestrationProvider(defaultRunsDir));
 });
 
 afterEach(async () => {
+  resetGlobalRegistry();
   vi.restoreAllMocks();
   try {
     await fs.rm(testBase, { recursive: true, force: true });

@@ -2,15 +2,43 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { promises as fs } from "node:fs";
 import * as path from "node:path";
 import * as os from "node:os";
+import * as crypto from "node:crypto";
 import { createBabysitterAgentCli } from "../../main";
-import { createRunDir, appendEvent } from "../../../../../sdk/src/storage";
-import { nextUlid } from "../../../../../sdk/src/storage/ulids";
+
+// Local fixture scaffolding — writes run.json + journal/NNNNNN.ULID.json in the
+// format read by the default filesystem journal provider and storage/runFiles,
+// so the test stays decoupled from @a5c-ai/babysitter-sdk.
+function nextUlid(): string {
+  return crypto.randomUUID().replace(/-/g, "").slice(0, 26).toUpperCase();
+}
+
+async function writeJournalEvent(
+  runDir: string,
+  seq: number,
+  type: string,
+  data: Record<string, unknown> = {},
+): Promise<void> {
+  const journalDir = path.join(runDir, "journal");
+  await fs.mkdir(journalDir, { recursive: true });
+  const ulid = nextUlid();
+  const seqStr = seq.toString().padStart(6, "0");
+  const payload = {
+    type,
+    recordedAt: new Date().toISOString(),
+    data,
+    checksum: crypto.createHash("sha256").update(type).digest("hex"),
+  };
+  await fs.writeFile(
+    path.join(journalDir, `${seqStr}.${ulid}.json`),
+    JSON.stringify(payload, null, 2),
+  );
+}
 
 describe("GAP-UX-001 TUI Command", () => {
   let testDir: string;
 
   beforeEach(async () => {
-    testDir = path.join(os.tmpdir(), `tui-cmd-${Date.now()}`);
+    testDir = path.join(os.tmpdir(), `tui-cmd-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`);
     await fs.mkdir(testDir, { recursive: true });
   });
 
@@ -20,50 +48,48 @@ describe("GAP-UX-001 TUI Command", () => {
 
   async function createTestRun(state: "completed" | "waiting" | "failed" = "waiting") {
     const runId = nextUlid();
-    const result = await createRunDir({
-      runsRoot: testDir,
-      runId,
-      request: "test-request",
-      processId: "test-process",
-    });
+    const runDir = path.join(testDir, runId);
+    await fs.mkdir(runDir, { recursive: true });
+    await fs.writeFile(
+      path.join(runDir, "run.json"),
+      JSON.stringify(
+        {
+          runId,
+          request: "test-request",
+          processId: "test-process",
+          entrypoint: { importPath: "test.js", exportName: "process" },
+          createdAt: new Date().toISOString(),
+          layoutVersion: "1",
+        },
+        null,
+        2,
+      ),
+    );
 
-    await appendEvent({
-      runDir: result.runDir,
-      eventType: "RUN_CREATED",
-      event: { processId: "test-process", entrypoint: "test.js#process" },
+    await writeJournalEvent(runDir, 1, "RUN_CREATED", {
+      processId: "test-process",
+      entrypoint: "test.js#process",
     });
 
     if (state === "completed") {
-      await appendEvent({
-        runDir: result.runDir,
-        eventType: "RUN_COMPLETED",
-        event: { result: { status: "ok" } },
-      });
+      await writeJournalEvent(runDir, 2, "RUN_COMPLETED", { result: { status: "ok" } });
     } else if (state === "failed") {
-      await appendEvent({
-        runDir: result.runDir,
-        eventType: "RUN_FAILED",
-        event: { error: "test error" },
-      });
+      await writeJournalEvent(runDir, 2, "RUN_FAILED", { error: "test error" });
     } else {
-      await appendEvent({
-        runDir: result.runDir,
-        eventType: "EFFECT_REQUESTED",
-        event: {
-          effectId: `eff-${runId.slice(-4)}`,
-          invocationKey: `test:S000001:task-1`,
-          invocationHash: "abc123",
-          stepId: "S000001",
-          taskId: "task-1",
-          kind: "agent",
-          label: "work",
-          taskDefRef: `tasks/eff-${runId.slice(-4)}/task.json`,
-          labels: ["work"],
-        },
+      await writeJournalEvent(runDir, 2, "EFFECT_REQUESTED", {
+        effectId: `eff-${runId.slice(-4)}`,
+        invocationKey: `test:S000001:task-1`,
+        invocationHash: "abc123",
+        stepId: "S000001",
+        taskId: "task-1",
+        kind: "agent",
+        label: "work",
+        taskDefRef: `tasks/eff-${runId.slice(-4)}/task.json`,
+        labels: ["work"],
       });
     }
 
-    return { runId, runDir: result.runDir };
+    return { runId, runDir };
   }
 
   describe("command registration", () => {
