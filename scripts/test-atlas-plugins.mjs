@@ -13,7 +13,7 @@
 // Exit code is non-zero if any assertion in the requested suite(s) fails.
 
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -45,6 +45,28 @@ class Runner {
       ok = false;
       reason = err && err.message ? err.message : String(err);
     }
+    this._report(label, ok, reason);
+  }
+
+  /**
+   * Async variant of `assert` for assertions that must `await` (e.g. dynamic
+   * `import()` of an ESM process module). Same pass/fail semantics.
+   */
+  async assertAsync(label, fn) {
+    let ok = false;
+    let reason = '';
+    try {
+      const result = await fn();
+      ok = result === true || result === undefined;
+      if (!ok && typeof result === 'string') reason = result;
+    } catch (err) {
+      ok = false;
+      reason = err && err.message ? err.message : String(err);
+    }
+    this._report(label, ok, reason);
+  }
+
+  _report(label, ok, reason) {
     if (ok) {
       this.passed += 1;
       console.log(`PASS: ${label}`);
@@ -500,12 +522,86 @@ function runGeneratedSuite(r) {
 // Registers zero assertions today so `--suite processes` exits 0.
 // ---------------------------------------------------------------------------
 
-function runProcessesSuite(_r) {
-  // Intentionally empty stub. Implement testContract.processes[] here:
-  //   - the four process modules exist
-  //   - each module imports cleanly, default-exports a function, exports a named process function
-  //   - each commands/*.md references a process name mapping to an existing module filename
-  //   - each module uses defineTask and contains no kind:'shell' task
+async function runProcessesSuite(r) {
+  const processesDir = join(PLUGIN_DIR, 'processes');
+  const commandsDir = join(PLUGIN_DIR, 'commands');
+
+  // The four spec'd atlas process module filenames (spec.json processes[].module,
+  // SPEC §3.x), keyed by process name.
+  const REQUIRED_PROCESSES = [
+    'atlas-systems-discovery',
+    'atlas-process-mining',
+    'atlas-data-mining',
+    'atlas-collect-nuances',
+  ];
+
+  // 1. The four process modules exist:
+  //    atlas-systems-discovery.mjs, atlas-process-mining.mjs,
+  //    atlas-data-mining.mjs, atlas-collect-nuances.mjs
+  r.assert('processes: the four process modules exist (atlas-systems-discovery / atlas-process-mining / atlas-data-mining / atlas-collect-nuances)', () => {
+    for (const name of REQUIRED_PROCESSES) {
+      const modPath = join(processesDir, `${name}.mjs`);
+      if (!existsSync(modPath)) throw new Error(`missing process module: processes/${name}.mjs`);
+    }
+    return true;
+  });
+
+  // 2. Each module imports cleanly (dynamic import()), default-exports a function,
+  //    AND exports a named `process` binding that is a function.
+  for (const name of REQUIRED_PROCESSES) {
+    // eslint-disable-next-line no-await-in-loop
+    await r.assertAsync(`processes: ${name}.mjs imports cleanly, default-exports a function, and exports a named "process" function`, async () => {
+      const modPath = join(processesDir, `${name}.mjs`);
+      if (!existsSync(modPath)) throw new Error(`missing process module: processes/${name}.mjs`);
+      const mod = await import(pathToFileURL(modPath).href);
+      if (typeof mod.default !== 'function') {
+        throw new Error(`processes/${name}.mjs default export is ${typeof mod.default}, expected a function`);
+      }
+      if (typeof mod.process !== 'function') {
+        throw new Error(`processes/${name}.mjs named export "process" is ${typeof mod.process}, expected a function`);
+      }
+      return true;
+    });
+  }
+
+  // 3. Each commands/*.md references a process name that maps to an existing
+  //    module filename (no command points at a missing process).
+  r.assert('processes: each commands/*.md references a process name mapping to an existing module filename', () => {
+    if (!existsSync(commandsDir) || !statSync(commandsDir).isDirectory()) {
+      throw new Error(`missing commands dir: ${commandsDir}`);
+    }
+    const cmdFiles = readdirSync(commandsDir).filter((f) => f.endsWith('.md'));
+    if (cmdFiles.length === 0) throw new Error('no command *.md files found to inspect');
+    for (const cmdFile of cmdFiles) {
+      const content = readFileSync(join(commandsDir, cmdFile), 'utf8');
+      const matches = content.match(/atlas-[a-z][a-z-]*/g);
+      if (!matches || matches.length === 0) {
+        throw new Error(`${cmdFile}: names no atlas process`);
+      }
+      const referencesExisting = matches.some((procName) => existsSync(join(processesDir, `${procName}.mjs`)));
+      if (!referencesExisting) {
+        throw new Error(`${cmdFile}: atlas process name(s) ${JSON.stringify(matches)} do not map to any module under processes/`);
+      }
+    }
+    return true;
+  });
+
+  // 4. Each module uses `defineTask` and contains no `kind: 'shell'` task
+  //    (repo override).
+  r.assert('processes: each module uses defineTask and contains no kind:\'shell\' task', () => {
+    for (const name of REQUIRED_PROCESSES) {
+      const modPath = join(processesDir, `${name}.mjs`);
+      if (!existsSync(modPath)) throw new Error(`missing process module: processes/${name}.mjs`);
+      const src = readFileSync(modPath, 'utf8');
+      if (!/\bdefineTask\b/.test(src)) {
+        throw new Error(`processes/${name}.mjs does not use defineTask`);
+      }
+      if (/kind:\s*['"]shell['"]/.test(src)) {
+        throw new Error(`processes/${name}.mjs contains a kind:'shell' task (repo override forbids shell subtasks)`);
+      }
+    }
+    return true;
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -532,7 +628,7 @@ function parseArgs(argv) {
   return { suite };
 }
 
-function main() {
+async function main() {
   const { suite } = parseArgs(process.argv.slice(2));
   if (!suite) {
     console.error('Usage: node scripts/test-atlas-plugins.mjs --suite <source|generated|processes|all>');
@@ -554,7 +650,8 @@ function main() {
   const r = new Runner();
   for (const name of toRun) {
     console.log(`\n=== suite: ${name} ===`);
-    SUITES[name](r);
+    // eslint-disable-next-line no-await-in-loop
+    await SUITES[name](r);
   }
 
   console.log(`\n${r.passed} passed, ${r.failed} failed`);
