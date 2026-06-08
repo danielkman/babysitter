@@ -77,44 +77,10 @@ export const TARGET_REGISTRY: Record<string, TargetProfile> = Object.fromEntries
 
 export const HOOK_NAME_MAP: Record<string, Record<string, string>> = getHookNameMap();
 
-// Fallback profiles for targets that are not (yet) in the Atlas catalog but are
-// required by the spec (e.g. genty). These are intentionally NOT added to
-// TARGET_REGISTRY / getAllTargets so the catalog contract stays exact; they are
-// only resolvable on demand via getTargetProfile.
-const FALLBACK_TARGET_PROFILES: Record<string, TargetProfile> = {
-  genty: {
-    name: 'genty',
-    displayName: 'Genty',
-    adapterName: 'genty',
-    pluginRootEnvVar: null,
-    supportedHooks: new Map<string, string>(),
-    commandFormat: 'markdown',
-    skillHandling: 'native',
-    manifestFormat: 'package.json',
-    hookRegistrationFormat: null,
-    hookRegistrationOutputPath: null,
-    hookRegistrationAliasPaths: [],
-    harnessManifestPath: null,
-    requiredSurfaceFile: 'AGENTS.md',
-    scriptVariants: [],
-    npmPublishable: true,
-    adapterFamily: 'programmatic',
-    distribution: 'npm-cli',
-    pluginRootEnvVarForExtension: 'GENTY_PLUGIN_ROOT',
-    // genty packages are ESM and expose CommonJS bin entrypoints (bin/cli.cjs);
-    // keep the emitted bin script extension aligned with the genty package.json
-    // bin target so output verification passes.
-    packageMetadata: {
-      moduleType: 'module',
-      binScriptExt: '.cjs',
-    },
-  },
-};
-
 export function getTargetProfile(name: string): TargetProfile | null {
   const descriptor = getPluginTargetDescriptor(canonicalTargetName(name));
   if (descriptor) return toTargetProfile(descriptor);
-  return FALLBACK_TARGET_PROFILES[name] ?? null;
+  return null;
 }
 
 export function requireTargetProfile(name: string): TargetProfile {
