@@ -33,7 +33,8 @@ export const systemIntegratorManifest: MicroagentManifest = {
   },
   isolation: "subprocess",
   runtime: {
-    entrypoint: "dist/microagents/builtin/system-integrator.entrypoint.js",
+    entrypoint: "dist/microagents/scripts/system-integrator.entrypoint.js",
+    processes: ["dist/microagents/processes/system-integrator.process.mjs"],
     timeout: 30_000,
   },
   tags: ["integration", "api"],

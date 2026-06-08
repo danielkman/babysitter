@@ -48,7 +48,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "npm run build:runtime:genty-core-deps --prefix ../../.. && tsc --build --force tsconfig.json",
+    "build": "npm run build:runtime:genty-core-deps --prefix ../../.. && tsc --build --force tsconfig.json && node -e \"const fs=require('fs'),p=require('path'),s=p.join(__dirname,'src','microagents','processes'),d=p.join(__dirname,'dist','microagents','processes');fs.mkdirSync(d,{recursive:true});fs.readdirSync(s).filter(f=>f.endsWith('.mjs')).forEach(f=>fs.copyFileSync(p.join(s,f),p.join(d,f)))\"",
     "clean": "rimraf dist tsconfig.tsbuildinfo",
     "test": "vitest run --config vitest.config.ts"
   },

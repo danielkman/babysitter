@@ -48,8 +48,9 @@ export const codeAnalyzerManifest: MicroagentManifest = {
   },
   isolation: "subprocess",
   runtime: {
-    entrypoint: "dist/microagents/builtin/code-analyzer.entrypoint.js",
+    entrypoint: "dist/microagents/scripts/code-analyzer.entrypoint.js",
     skills: ["code-review"],
+    processes: ["dist/microagents/processes/code-analyzer.process.mjs"],
     timeout: 60_000,
   },
   tags: ["analysis", "quality"],

@@ -55,7 +55,8 @@ export const diffApplierManifest: MicroagentManifest = {
   },
   isolation: "subprocess",
   runtime: {
-    entrypoint: "dist/microagents/builtin/diff-applier.entrypoint.js",
+    entrypoint: "dist/microagents/scripts/diff-applier.entrypoint.js",
+    processes: ["dist/microagents/processes/diff-applier.process.mjs"],
     timeout: 15_000,
   },
   tags: ["diff", "utility"],

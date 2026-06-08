@@ -40,7 +40,8 @@ export const schemaGeneratorManifest: MicroagentManifest = {
   },
   isolation: "subprocess",
   runtime: {
-    entrypoint: "dist/microagents/builtin/schema-generator.entrypoint.js",
+    entrypoint: "dist/microagents/scripts/schema-generator.entrypoint.js",
+    processes: ["dist/microagents/processes/schema-generator.process.mjs"],
     timeout: 15_000,
   },
   tags: ["schema", "utility"],

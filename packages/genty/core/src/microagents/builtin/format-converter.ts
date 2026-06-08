@@ -38,7 +38,8 @@ export const formatConverterManifest: MicroagentManifest = {
   },
   isolation: "subprocess",
   runtime: {
-    entrypoint: "dist/microagents/builtin/format-converter.entrypoint.js",
+    entrypoint: "dist/microagents/scripts/format-converter.entrypoint.js",
+    processes: ["dist/microagents/processes/format-converter.process.mjs"],
     timeout: 10_000,
   },
   tags: ["converter", "utility"],
