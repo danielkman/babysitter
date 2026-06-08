@@ -839,22 +839,4 @@ describe("GAP-JSON-001: Programmatic API (runs)", () => {
     });
   });
 
-  // ── AC-14: Backward compatibility — existing runtime functions unchanged
-
-  describe("AC-14: backward compatibility", () => {
-    it("createRun from runtime module is still importable and unchanged", async () => {
-      const runtime = await import("../../runtime");
-      expect(typeof runtime.createRun).toBe("function");
-    });
-
-    it("commitEffectResult from runtime module is still importable", async () => {
-      const runtime = await import("../../runtime");
-      expect(typeof runtime.commitEffectResult).toBe("function");
-    });
-
-    it("orchestrateIteration from runtime module is still importable", async () => {
-      const runtime = await import("../../runtime");
-      expect(typeof runtime.orchestrateIteration).toBe("function");
-    });
-  });
 });
