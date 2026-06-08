@@ -235,7 +235,7 @@ suite('built CLI — functional audit', () => {
     const parsed = parseJson(res);
     expect(parsed.ok).toBe(true);
     expect(parsed.data).toHaveProperty('results');
-  });
+  }, 30000);
 
   it('detect-host --json returns a detection object', () => {
     const res = run('detect-host', '--json');

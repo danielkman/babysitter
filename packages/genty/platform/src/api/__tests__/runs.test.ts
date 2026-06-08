@@ -20,6 +20,11 @@ import {
   apiRunEvents,
 } from "../runs";
 import type { ApiResult } from "../runs";
+import {
+  getGlobalRegistry,
+  resetGlobalRegistry,
+} from "../../orchestration/global";
+import type { OrchestrationProvider, CreateRunOptions, RunHandle } from "../../orchestration/interfaces";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -85,6 +90,96 @@ async function appendJournalEvent(
   );
 }
 
+/**
+ * Helper to parse an entrypoint string into importPath/exportName
+ * (mirrors the logic in runs.ts for the mock provider).
+ */
+function parseEntrypoint(entrypoint: string): { importPath: string; exportName: string | undefined } {
+  const hashIndex = entrypoint.lastIndexOf("#");
+  if (hashIndex <= 0) {
+    return { importPath: entrypoint, exportName: undefined };
+  }
+  return {
+    importPath: entrypoint.slice(0, hashIndex),
+    exportName: entrypoint.slice(hashIndex + 1) || undefined,
+  };
+}
+
+/**
+ * Build a mock OrchestrationProvider that creates real run directories
+ * so that entrypoint-parsing tests can verify run.json contents.
+ */
+function createMockOrchestrationProvider(defaultRunsDir: string): OrchestrationProvider {
+  // Track known effectIds for UNKNOWN_EFFECT detection
+  const knownEffects = new Set<string>();
+
+  return {
+    name: "test-mock",
+
+    async createRun(opts: CreateRunOptions): Promise<RunHandle> {
+      const runsDir = opts.runsDir ?? defaultRunsDir;
+      const runId = `run-${crypto.randomUUID().slice(0, 8)}`;
+      const runDir = path.join(runsDir, runId);
+      const journalDir = path.join(runDir, "journal");
+      await fs.mkdir(journalDir, { recursive: true });
+
+      const { importPath, exportName } = parseEntrypoint(opts.entrypoint);
+      const metadata = {
+        runId,
+        processId: opts.processId,
+        entrypoint: { importPath, exportName },
+        createdAt: new Date().toISOString(),
+        layoutVersion: "1",
+      };
+      await fs.writeFile(
+        path.join(runDir, "run.json"),
+        JSON.stringify(metadata, null, 2),
+      );
+
+      return { runId, runDir, processId: opts.processId, status: "pending" };
+    },
+
+    async iterateRun() {
+      return {
+        iteration: 0,
+        status: "none" as const,
+        action: "none",
+        reason: "mock",
+        pendingEffects: [],
+      };
+    },
+
+    async postEffectResult(_handle: RunHandle, effectId: string) {
+      if (!knownEffects.has(effectId)) {
+        // Check if the effectId was scaffolded in the run's tasks directory
+        const taskDir = path.join(_handle.runDir, "tasks", effectId);
+        try {
+          await fs.access(taskDir);
+          knownEffects.add(effectId);
+        } catch {
+          throw new Error(`Unknown effectId "${effectId}"`);
+        }
+      }
+    },
+
+    async getRunStatus(handle: RunHandle) {
+      return handle;
+    },
+
+    async getRunEvents() {
+      return [];
+    },
+
+    async getPendingEffects() {
+      return [];
+    },
+
+    resolveRunsDir() {
+      return defaultRunsDir;
+    },
+  };
+}
+
 // ── Test Suite ────────────────────────────────────────────────────────────────
 
 describe("GAP-JSON-001: Programmatic API (runs)", () => {
@@ -93,9 +188,19 @@ describe("GAP-JSON-001: Programmatic API (runs)", () => {
   beforeEach(async () => {
     testDir = tmpDir();
     await fs.mkdir(testDir, { recursive: true });
+
+    // Register a mock orchestration provider so apiCreateRun / apiCommitEffect
+    // can call getGlobalRegistry().getOrchestration() without throwing.
+    const defaultRunsDir = path.join(testDir, "default-runs");
+    await fs.mkdir(defaultRunsDir, { recursive: true });
+    getGlobalRegistry().registerOrchestration(
+      "test-mock",
+      createMockOrchestrationProvider(defaultRunsDir),
+    );
   });
 
   afterEach(async () => {
+    resetGlobalRegistry();
     await fs.rm(testDir, { recursive: true, force: true }).catch(() => {});
   });
 
