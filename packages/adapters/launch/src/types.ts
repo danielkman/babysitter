@@ -50,6 +50,8 @@ export interface LaunchPlan {
   command: string;
   args: string[];
   env: Record<string, string>;
+  /** Initial prompt text, when the launch flow carries one (e.g. hermes win-patch pre-feed). */
+  prompt?: string;
 }
 
 // ---------------------------------------------------------------------------

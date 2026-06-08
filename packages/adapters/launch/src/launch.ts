@@ -109,6 +109,8 @@ export interface LaunchPlan {
   command: string;
   args: string[];
   env: Record<string, string>;
+  /** Initial prompt text, when the launch flow carries one (e.g. hermes win-patch pre-feed). */
+  prompt?: string;
 }
 
 export const PROMPT_ARTIFACT_MONITOR_TIMEOUT_MS = process.platform === 'win32' ? 2_700_000 : 900_000;
