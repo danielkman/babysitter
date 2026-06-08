@@ -1,6 +1,7 @@
 # `@a5c-ai/kip-sdk` — SPEC (v1)
 
-> Status: **Draft v4 (final — round-4 adversarial findings resolved)**, spec-only. Illustrative
+> Status: **Draft v5 (round-5 adversarial findings resolved — C5-1 compositional backdating, M5-1
+> SEC-corollary scope, M5-2 revocation impossibility, m5-1..m5-5)**, spec-only. Illustrative
 > TypeScript interfaces are normative for *shape*,
 > not implementation. `MUST`/`SHOULD`/`MAY` are RFC-2119 keywords. Companion: `PRIOR-ART.md`
 > (research brief). This SPEC **resolves** the hard problems and tensions enumerated there; it does
@@ -93,6 +94,30 @@
 > offset, integer-seconds, LF-only UTF-8 no-encoding-header message, no `gpgsig`, identical sentinel
 > author==committer, deterministic parents); INV-12 asserts byte-identical regenerated commit objects and
 > names the required git env normalization.
+>
+> **v5 headline fix — anti-backdating made EVICTION-SAFE by per-key CHAIN-COMPLETENESS gating (C5-1), SEC
+> corollary scoped honestly (M5-1), revocation impossibility stated (M5-2).** Round 4's two fixes were
+> individually sound but *mutually undermining*: C4-1's partial-replication/eviction can remove the very
+> higher-stamped same-key fact that C4-2's involuntary per-key monotonicity rule reads, so a holder of a
+> *registered* key could backdate a fully-trusted fact onto a victim replica whose durable subset lacks
+> that key's higher facts (late registration + disk-pressure eviction, both in-spec/default). v5 closes
+> this at the root by **reusing machinery already in the spec**: per-key trust is **gated on per-key
+> `(wall,counter)` chain completeness** — the exact contiguity rule §4c/m4-1 already defines for
+> pin-completeness. A fact `F` from key `K` projects **trusted** only over `K`'s complete gap-free chain
+> up to `F`; an evicted/withheld/unreplicated earlier same-key fact yields a gap, so `F` projects
+> **`pending`** (not trusted, not rejected) until the chain completes — an evicted higher honest fact can
+> therefore **never silently flip a lower backdate to trusted**. A registered key's **entire emission** is
+> made **`key-chain-durable`** (never eviction-eligible, §3.5a), so the evidence the rule reads is always
+> retained; an unregistered key's facts may be evicted but have no trusted same-key fact to defeat and
+> still `pending`-on-gap. Per-key trust is thus a function of `K`'s **complete durable chain** —
+> replica-independent once complete, **monotone and eviction-safe** (INV-16/INV-19). INV-16 is amended:
+> "no higher same-key fact" → "no higher same-key fact **in the complete durable chain**." The SEC
+> corollary is reworded from "not regressed" to **"preserved on the complete durable subset"** (M5-1) and
+> the value-neutrality premise's C5-1 exception is pinned. §8.1 states the **revocation impossibility**
+> plainly (M5-2): no set-pure mode both stops a compromised key's sub-`effectiveFrom` backdate *and*
+> preserves honest concurrent sub-`effectiveFrom` work — an explicit tradeoff, not a defect. A **global
+> aggregate `quarantinePoolBytes` budget** (m5-1) bounds the multi-key flood; the `kip:revoked-concurrent`
+> recovery path is mechanized as a **`re-attest` fact** (m5-3).
 
 ---
 
@@ -169,7 +194,7 @@ substrate, agents are clients). It provides:
 | **Author-HLC** | The fact's own author-stamped, signed `hlc` (§4.1). The **only** time axis `proj` ever reads — for `orderKey`, valid-time geometry, *and* authorization/revocation/plausibility decisions. Set-resident ⇒ identical on every replica. |
 | **INGEST-GATE** | The **signature-validity-only** admission predicate (well-formed ∧ Ed25519 signature verifies). Decides set *membership* only; a pure function of the fact's bytes ⇒ identical on every honest replica; **never** decides a projected value, and **never** consults drift, key-registration, authority, or revocation (C2-1, C3-1, M3-4). §3.2. |
 | **PROJ-demotion** | All trust decisions — key-registration, namespace-authorization, revocation, *and* author-HLC causal plausibility (anti-backdating) — made **inside `proj`**, keyed on **author-HLC** over the admitted set. Set-pure ⇒ convergent. A demoted fact is `untrusted`/`quarantined`, never dropped, and re-evaluated monotonically as facts arrive. §3.6, §8.1. |
-| **Causal plausibility** | A set-pure anti-backdating rule (replaces the v2-draft receiver-clock drift gate, C3-1/C3-3/M3-1; C4-2 makes its PRIMARY form involuntary): a fact `F` from key `K` projects `untrusted-anachronistic` if `S` holds a **higher-author-HLC, non-ancestor** fact from the **same** `K` (per-key monotonicity — reads `K`'s *involuntary* footprint, not forgeable by omitting `causedBy`, C4-2). A *secondary* tightening rule additionally requires `F`'s author-HLC to dominate its *declared* `causedBy` closure over `S`. Compared only to set-resident author-HLCs, never to any receiver clock. §3.6, §8.1, §4b.1. |
+| **Causal plausibility** | A set-pure anti-backdating rule (replaces the v2-draft receiver-clock drift gate, C3-1/C3-3/M3-1; C4-2 makes its PRIMARY form involuntary; C5-1 makes it eviction-safe): a fact `F` from key `K` projects **trusted** only over `K`'s **complete gap-free `(wall,counter)` chain** up to `F` (else **`pending`**, reusing the §4c/m4-1 pin-completeness contiguity rule, C5-1), and once complete is demoted `untrusted-anachronistic` if `S` holds a **higher-author-HLC, non-ancestor** fact from the **same** `K` **in that complete chain** (per-key monotonicity — reads `K`'s *involuntary* footprint, not forgeable by omitting `causedBy`, C4-2; not defeatable by evicting `K`'s higher facts, since a registered key's chain is `key-chain-durable`, §3.5a, C5-1). A *secondary* tightening rule additionally requires `F`'s author-HLC to dominate its *declared* `causedBy` closure over `S`. Compared only to set-resident author-HLCs, never to any receiver clock. §3.6, §8.1, §4b.1. |
 | **Authority** | A key (Ed25519) authorized, by a signed chain rooted in the tenant root key, to write a given EID **namespace** and/or perform scoped ops (excise, revoke), **as of an author-HLC interval**. Key-registration, namespace authority, and revocation are **all** proj decisions keyed on author-HLC; **only** signature validity is an ingest-gate predicate. §2.4, §8. |
 
 ---
@@ -314,7 +339,7 @@ interface FactAnnotation {
 is built deterministically from **exactly** these fields, in this order, and the `factCID` is the
 content hash of that payload:
 
-`[ v, type, target, value?, validFrom, validTo, hlc, causedBy?, supersedes?, author,
+`[ v, type, target, value?, validFrom, validTo, hlc, causedBy?, supersedes?, reAttests?, author,
   publicKeyFingerprint, replicaId ]`
 
 — i.e. every author/replica-distinguishing field (`publicKeyFingerprint`, `replicaId`, the schema
@@ -368,7 +393,7 @@ objects/                             # content-addressed: blobs, trees, commits 
 /ontology/nodes/<kind>@<ver>.json            # schema as data, versioned
 /ontology/edges/<kind>@<ver>.json
 /upcasters/<factType>@<from>-<to>.json       # declarative upcaster descriptors (HP-8)
-/manifest.json                               # repo format version, hash algo, clock epoch, GENESIS tenant root key set, shard depth, ε_causal (proj-time causal slack), regenBoundaryRule, quarantineTtlMs + quarantineKeyCapBytes (retention bounds, §3.5a) — IMMUTABLE post-genesis (m2-5)
+/manifest.json                               # repo format version, hash algo, clock epoch, GENESIS tenant root key set, shard depth, ε_causal (proj-time causal slack), regenBoundaryRule, quarantineTtlMs + quarantineKeyCapBytes + quarantinePoolBytes (per-key + GLOBAL aggregate retention bounds, §3.5a/m5-1) — IMMUTABLE post-genesis (m2-5)
 .gitattributes                               # binds /heads/** AND /manifest.json to the regenerate/reject-not-merge merge driver (below)
 ```
 
@@ -704,42 +729,103 @@ so every replica computes the *same class* for the same fact:
 ```ts
 type RetentionClass =
   | "durable"             // trusted (registered, in-namespace, non-revoked, plausible) — NEVER evicted
-  | "quarantined-ttl"     // signature-valid but proj-demoted (unregistered / untrusted / anachronistic):
+  | "key-chain-durable"   // a KEY's OWN emission (a fact authored by registered key K, including its
+                          //   own quarantined/anachronistic facts) — NEVER evicted, because K's complete
+                          //   (wall,counter) chain is the substrate the per-key anti-backdating rule reads
+                          //   (C5-1). Pinned the moment K acquires a set-resident KeyAuthorization.
+  | "quarantined-ttl"     // signature-valid but proj-demoted, from an UNREGISTERED key:
                           //   stored under a BOUNDED ttl/byte-cap; eviction-eligible under pressure
   | "evicted";            // bytes reclaimed; re-fetchable on demand if it later becomes durable
 ```
 
 - A **`durable`** fact (trusted author) is **never evicted**: its bytes are pinned in durable history.
-- A **`quarantined-ttl`** fact (signature-valid but `proj`-demoted `untrusted`/`quarantined`, e.g. from an
-  **unregistered** key) is stored under a **bounded TTL and a per-key byte-cap** (manifest parameters
-  `quarantineTtlMs`, `quarantineKeyCapBytes`). When the cap/TTL is exceeded or disk pressure hits, its
-  **bytes** become **`evicted`** — reclaimed by excision/gc of the now-unreachable blob. Eviction removes
-  bytes, **not** logical membership semantics: an evicted unregistered fact contributes **nothing** to
-  `/heads` whether stored or evicted (it projected `quarantined`, which never covers a cell), so dropping
-  its bytes **cannot change `proj`** of any *trusted* fact. If a registration for its key later arrives,
-  the fact's `RetentionClass` flips to `durable` and it is **re-fetched on demand** (content-addressed;
-  any peer that still holds it serves the blob) so no honest late-registered fact is lost.
+- A **`key-chain-durable`** fact is **any fact authored by a key `K` that holds a set-resident
+  `KeyAuthorization`** (registered at *some* author-HLC), **whether or not that individual fact projects
+  trusted** — including `K`'s pre-registration, anachronistic, or out-of-namespace facts. **It is NEVER
+  eviction-eligible (C5-1 root fix).** Rationale: the per-key anti-backdating rule (§3.6) and the per-key
+  chain-completeness gate it now requires both read `K`'s **own complete `(wall,counter)` chain** in `S`;
+  if any of `K`'s facts could be evicted, an evicted *higher*-stamped honest fact would silently stop
+  contradicting a *lower*-stamped backdate from `K`, flipping the backdate from `pending`/`demoted` to
+  `trusted` (the C5-1 attack). By pinning a registered key's **entire emission** non-evictable, the
+  monotonicity evidence is retained, so per-key trust is a function of `K`'s **complete durable chain**,
+  not of a replica-chosen subset. This pool is **authenticated and quota-bounded** (per registered key,
+  §8.1) — bounded, not unbounded (m5-4). The class is pinned the instant `K` acquires a set-resident
+  `KeyAuthorization`; before that, `K`'s facts are `quarantined-ttl` (next bullet) and an eviction of a
+  pre-registration fact instead forces **`pending`** trust on later same-key facts via the
+  completeness gate (§3.6) — either branch is safe (retained-and-readable, or evicted-and-gap-forces-pending),
+  never silently-trusted-backdate.
+- A **`quarantined-ttl`** fact (signature-valid, from an **unregistered** key — no set-resident
+  `KeyAuthorization` for its signing key at *any* author-HLC) is stored under a **bounded TTL and a
+  per-key byte-cap** (manifest parameters `quarantineTtlMs`, `quarantineKeyCapBytes`) **and a GLOBAL
+  aggregate byte budget** (next paragraph, m5-1). When a cap/TTL/budget is exceeded or disk pressure
+  hits, its **bytes** become **`evicted`** — reclaimed by excision/gc of the now-unreachable blob.
+  Eviction removes bytes, **not** logical membership: an evicted unregistered fact contributes
+  **nothing** to `/heads` whether stored or evicted (it projected `quarantined`, which never covers a
+  cell), so dropping its bytes **cannot change `proj`** of any *trusted* fact. **It also cannot silently
+  flip a same-key backdate to trusted**, because (i) the authoring key is unregistered, so it has no
+  *trusted* same-key fact whose monotonicity check could be defeated, and (ii) any later evaluation of a
+  same-key fact across an evicted predecessor finds a `(wall,counter)` gap and projects **`pending`**,
+  not trusted (§3.6 completeness gate). If a registration for the key later arrives, **all** of the key's
+  facts flip to `key-chain-durable` and are **re-fetched on demand** (content-addressed; any peer that
+  still holds them serves the blob) so no honest late-registered fact — or its chain — is lost.
+- **Aggregate quarantine ceiling — the unlimited-identity defense (m5-1).** A per-key cap alone is **not**
+  a global bound: an attacker mints `N` fresh unregistered keys and consumes `N × quarantineKeyCapBytes`,
+  i.e. unbounded again. The retention policy therefore enforces a **manifest-pinned GLOBAL
+  `quarantinePoolBytes` budget across ALL unregistered keys**, reclaimed by **LRU/TTL eviction over the
+  whole `quarantined-ttl` pool** (oldest/least-recently-touched bytes first), independent of key count.
+  The **TTL is the time-ceiling** (a fact is droppable after `quarantineTtlMs` regardless of key) and
+  **`quarantinePoolBytes` is the space-ceiling** (the pool never exceeds it regardless of `#keys`); the
+  per-key `quarantineKeyCapBytes` is a *fairness* sub-limit so one key cannot monopolize the pool, **not**
+  the aggregate bound. With both, an `N`-key flood cannot refill the pool faster than TTL/LRU drains it.
 - **Eviction is local and policy-driven, so two replicas may hold different SUBSETS** of the
   `quarantined-ttl` facts (one evicted, one not). This is a **partial-replication** model. It is sound
-  precisely because evicted facts are non-durable and project nothing: see the **per-shared-subset SEC
-  restatement** in §4b.4.
+  precisely because (i) evicted facts are non-durable and project nothing, **and** (ii) a registered
+  key's own chain is `key-chain-durable` (never evicted) so the per-key anti-backdating evidence is
+  **never** the thing evicted (C5-1): the only evictable facts belong to *unregistered* keys, whose
+  same-key trust is gated to `pending` across any gap. See the **per-shared-subset SEC restatement** in
+  §4b.4.
 
 **Why this bounds the C4-1 attack while preserving v3's convergence.** The unlimited-identity vector is
 **unregistered keys** (registration is proj-time, so a fresh keypair's facts are admitted logically). v4
 makes their **bytes** the bounded resource: an unregistered key's flood is `quarantined-ttl`, capped
-per-key, and evicted under pressure — it can never force unbounded durable growth, and it never affects
-`/heads` (those facts project `quarantined`). Registered honest authors are `durable` and converge
-exactly as in v3. The quota is moved to **transport**, so **membership purity is preserved AND
-availability is bounded**. Excision/revocation still demote-not-delete in `proj` (§4.5/§8.1); **retention
-eviction** is the new, separate, *byte-reclaiming* path for non-durable facts — the missing
-back-pressure the v3 model lacked.
+per-key, **bounded in aggregate by the global `quarantinePoolBytes` budget (m5-1)**, and evicted under
+pressure — it can never force unbounded durable growth, and it never affects `/heads` (those facts
+project `quarantined`). Registered honest authors are `durable`/`key-chain-durable` and converge exactly
+as in v3. The quota is moved to **transport**, so **membership purity is preserved AND availability is
+bounded**. Excision/revocation still demote-not-delete in `proj` (§4.5/§8.1); **retention eviction** is
+the new, separate, *byte-reclaiming* path for non-durable facts — the missing back-pressure the v3 model
+lacked.
+
+**Why eviction is anti-backdating-safe (C5-1).** The per-key anti-backdating rule (§3.6) reads `K`'s own
+same-key facts in `S`. Eviction must never remove that evidence under a *trusted* fact, or a victim
+replica could project a same-key backdate as trusted. Two complementary mechanisms close this at the
+root, with **no new machinery** — both reuse the per-key `(wall,counter)` contiguity rule already defined
+for pins (§4c/m4-1):
+- For a **registered** key, *all* its facts are `key-chain-durable` (never evicted), so `K`'s complete
+  `(wall,counter)` chain is always retained on any replica that holds *any* trusted fact of `K`. The
+  monotonicity evidence cannot be evicted away.
+- For an **unregistered** key, its facts are `quarantined-ttl` and evictable, **but** the key has no
+  trusted same-key fact to defeat; and §3.6 now gates per-key trust on **chain completeness**: a fact `F`
+  from `K` projects **trusted** only over a gap-free `(wall,counter)` chain of `K` up to `F`'s
+  author-HLC. If an earlier same-key fact is evicted/withheld/unreplicated, the gap forces `F`
+  **`pending`** (not trusted, not rejected) until the chain is complete. So an evicted higher fact can
+  never *silently* flip a lower backdate to trusted — the gap makes the dependent projection `pending`.
+Per-key trust is therefore a function of `K`'s **complete-for-`K` durable chain**, which is
+**replica-independent once complete** — eviction-safe and monotone (it only ever *adds* trust as the
+chain completes, never removes it).
 
 **What this does NOT do (honest bound).** A replica that *chooses* a permissive policy (store everything)
 is still exposed to disk growth — admission control is a **MAY**, the *mechanism* not a mandate; the spec
 makes it expressible and pins the set-pure `RetentionClass`, leaving the policy aggressiveness to N4
 ops. It also does not bound an attacker who obtains a *registered* key (that is the insider threat, bounded
-instead by per-key quota and revocation). The guarantee is: **no UNREGISTERED key can force unbounded
-DURABLE growth on any replica that applies the default retention policy.**
+instead by per-key quota + revocation §8.1, **and — for backdating — by the per-key chain-completeness
+gate, which demotes any backdate that violates `K`'s own retained chain**, C5-1). The residual that
+remains is precise: a registered key can still self-date a *lone* fact at an author-HLC **below all of its
+own existing facts** only if that fact begins a fresh contiguous chain segment with no lower same-key fact
+(genuine first-emission), exactly the acknowledged §3.6 residual — not a fact that contradicts a retained
+higher same-key fact. The guarantees are: **(a) no UNREGISTERED key can force unbounded DURABLE growth on
+a replica applying the default retention policy; (b) no eviction or partial replication can flip a
+same-key backdate from `pending`/`demoted` to `trusted` (C5-1).**
 
 ### 3.6 Content-addressing vs stable identity (the dual-id scheme)
 
@@ -822,23 +908,49 @@ in author-HLC space). Concretely:
   key could backdate freely by simply omitting `causedBy` (vacuous ancestry ⇒ no demotion). v4 makes the
   primary anti-backdating bound **per-key author-HLC monotonicity**, which reads the author's *involuntary*
   footprint in `S` and is **not** author-forgeable:
-  - **PRIMARY — per-key HLC monotonicity (set-pure, involuntary).** Every key `K`'s own facts form a
-    per-key sequence in `S`. A fact `F` from key `K` is demoted `untrusted-anachronistic` iff `S` contains
-    another admitted fact `F'` from the **same key `K`** with `author-HLC(F') > author-HLC(F)` **and** `F`
-    is **not** a causal ancestor of `F'` (via the set-resident `causedBy` closure). Rationale: `K` already
-    *emitted* a later-stamped fact, so a newly-appearing **lower**-stamped, non-ancestor fact from `K` is
-    implausible (a backdate). `K` **cannot un-emit** its higher-stamped facts, so the bound reads only
-    `K`'s involuntary same-key facts in `S` — it is **set-pure** (reads same-key author-HLCs in `S`) and
-    **not evadable by omitting an optional field**. This is the per-author generalization of the
-    revocation causal-cutoff (§8.1).
+  - **PRIMARY — per-key HLC monotonicity, GATED ON PER-KEY CHAIN COMPLETENESS (set-pure, involuntary,
+    eviction-safe — C4-2 primary + C5-1 root fix).** Every key `K`'s own facts form a per-key
+    `(wall,counter)` sequence in `S` (gap-free by construction at the author, §4b.1/§4c m4-1). A fact `F`
+    from key `K` is evaluated as follows:
+    - **(i) Chain-completeness gate (C5-1).** `F` may project **trusted** only if the replica holds the
+      **complete, gap-free `(wall,counter)` chain of `K`'s facts up to `F`'s author-HLC** — the *exact*
+      per-key contiguity rule already defined for pin-completeness (§4c/m4-1, INV-14). If any earlier
+      same-key fact below `F` is **missing / evicted / not-yet-replicated** (a `(wall,counter)` gap in
+      `K`'s chain below `F`), `F` projects **`pending`** — *not* trusted, *not* rejected — exactly like a
+      `pin-incomplete` read, and is **re-evaluated monotonically** as the missing chain links arrive. This
+      makes per-key trust a function of `K`'s **complete-for-`K` durable chain**, which is
+      **replica-independent once complete**: an evicted or withheld higher honest fact from `K` can
+      **never silently flip a backdated lower fact to trusted**, because the very gap that hides the higher
+      fact also leaves the chain incomplete, so the backdate is `pending` (not trusted) until the chain —
+      including that higher fact — is present, at which point the monotonicity rule (ii) demotes it. The
+      gate reads only **local-chain contiguity** (locally decidable, §4c m4-1), so it stays set-pure.
+    - **(ii) Monotonicity demotion (involuntary).** Once the chain is complete up to `F`, `F` is demoted
+      `untrusted-anachronistic` iff `S` contains another admitted fact `F'` from the **same key `K`** with
+      `author-HLC(F') > author-HLC(F)` **and** `F` is **not** a causal ancestor of `F'` (via the
+      set-resident `causedBy` closure). Rationale: `K` already *emitted* a later-stamped fact, so a
+      lower-stamped, non-ancestor fact from `K` is a backdate. `K` **cannot un-emit** its higher-stamped
+      facts, so the bound reads only `K`'s involuntary same-key facts — **set-pure** and **not evadable by
+      omitting an optional field**. This is the per-author generalization of the revocation causal-cutoff
+      (§8.1).
+    - **Retention coupling (why the gate is enforceable, C5-1).** A registered key's facts are
+      **`key-chain-durable`** (never evicted, §3.5a), so the chain the gate reads is always retained where
+      `K` has any trusted fact; an unregistered key's facts are evictable but have no trusted same-key
+      fact to defeat, and any gap forces `pending` per (i). Either way the gate cannot be defeated by
+      eviction or selective non-replication.
     - **Precise bound — what it does and does NOT prevent.** It bounds backdating **relative to the key's
-      own observed activity**: a key that has emitted higher-stamped facts cannot insert a trusted
-      lower-stamped non-ancestor fact. It does **NOT** stop a key that has emitted **nothing else** (or
-      nothing higher) from self-dating freely — there is no higher same-key fact to contradict it. **This
-      residual is acknowledged and acceptable**: such a fact has **no conflicting same-key history to
-      poison**; it stands alone and is resolved against other authors' facts by the ordinary set-pure
-      `orderKey` like any honest late fact. The over-strong v3 claim ("the only defense that distinguishes
-      a malicious backdate from an honest late fact") is **retracted** (§8.1).
+      own observed activity over `K`'s complete durable chain**: a key whose chain contains a higher-stamped
+      non-ancestor fact cannot insert a *trusted* lower-stamped fact (it is demoted), and a replica that has
+      not yet completed `K`'s chain projects the candidate **`pending`**, never trusted. It does **NOT**
+      stop a key that has emitted **nothing higher in its chain** from self-dating a genuine first-emission
+      fact — there is no higher same-key fact to contradict it. **This residual is acknowledged and
+      acceptable**: such a fact has **no conflicting same-key history to poison**; it stands alone and is
+      resolved against other authors' facts by the ordinary set-pure `orderKey` like any honest late fact.
+      **The C5-1 closure (chain-completeness gate + `key-chain-durable` retention) removes the *eviction*
+      route to this residual**: "no higher same-key fact" must now mean "no higher same-key fact **in the
+      complete durable chain**," not merely "no higher same-key fact in *this replica's* possibly-evicted
+      subset" — an evicted/withheld higher fact yields a chain gap and forces `pending`, never a silent
+      trusted backdate. The over-strong v3 claim ("the only defense that distinguishes a malicious backdate
+      from an honest late fact") is **retracted** (§8.1).
   - **SECONDARY — voluntary `causedBy` closure (tightening only).** The v3 rule is retained as a
     *secondary* check that only **tightens** the net: if `F` *does* declare `causedBy`, `F`'s author-HLC
     must also dominate the author-HLC of every fact in its declared `causedBy` closure over `S`. Declaring
@@ -882,7 +994,9 @@ the Noms pitfall (content == identity) and T-1, and closes C-5 by binding identi
 
 ```ts
 type FactId = string;          // = CID of the canonical SIGNED fact payload (content-addressed, M-4)
-type FactType = "assert" | "retract" | "supersede" | "revoke-key" | "excision";
+type FactType = "assert" | "retract" | "supersede" | "revoke-key" | "excision" | "re-attest";
+//   re-attest (m5-3): a trusted-key re-assertion of a kip:revoked-concurrent casualty's content, naming
+//   the demoted fact via reAttests; projects the content as a trusted assert under the NEW key (§8.1).
 type Target =
   | { kind: "node-prop"; eid: EID; nodeKind: NodeKind; prop: PropKey }
   | { kind: "edge"; eid: EID; edgeKind: EdgeKind; from: EID; to: EID }
@@ -911,6 +1025,8 @@ interface Fact {
                                //   is enforced set-purely in proj (§4b.1, INV-15).
   // supersession metadata (only when type==="supersede"), pins the LLM/heuristic decision to its inputs:
   supersedes?: { inputCids: FactId[]; retract: FactId[]; assert?: PropValue }; // keyed by inputCids (C-3)
+  reAttests?: FactId;          // present ONLY when type==="re-attest" (m5-3): the kip:revoked-concurrent
+                               //   fact whose honest CONTENT this fact re-asserts under a trusted key (§8.1)
   provenance: Provenance;      // signed (§2.4); hlc above is the signed ordering field
 }
 ```
@@ -1181,10 +1297,13 @@ forward-poisoning: a replica that stamps a far-ahead `wall` would win all `lww-h
 receiver's wall clock and delivery timing, so honest replicas could admit permanently-different sets
 (C3-1), and it dropped honest offline-authored facts (C3-2). kip therefore polices drift **inside
 `proj` with set-resident causal rules, never at the gate and never against any receiver clock**. The
-**primary** rule (C4-2) is **per-key author-HLC monotonicity**, which reads the author's *involuntary*
-footprint in `S` and is not author-forgeable: a fact `F` from key `K` is demoted if `S` holds a
-**higher-author-HLC, non-ancestor** fact from the **same** `K` (§3.6) — `K` cannot un-emit its own
-later-stamped facts. A **secondary** rule (tightening only) demotes `F` if its author-HLC fails to
+**primary** rule (C4-2) is **per-key author-HLC monotonicity, gated on per-key chain completeness**
+(C5-1), which reads the author's *involuntary* footprint in `S` and is not author-forgeable: a fact `F`
+from key `K` projects **trusted** only over a gap-free `(wall,counter)` chain of `K` up to `F` (else
+`pending`, §3.6/§4c m4-1), and is demoted if `S` holds a **higher-author-HLC, non-ancestor** fact from
+the **same** `K` (§3.6) — `K` cannot un-emit its own later-stamped facts, and (since a registered key's
+chain is `key-chain-durable`, never evicted, §3.5a) eviction cannot remove that evidence under a trusted
+fact. A **secondary** rule (tightening only) demotes `F` if its author-HLC fails to
 dominate the author-HLC of every fact in its *declared* `causedBy` closure over `S`; this reads an
 author-controlled field, so it is a lower bound on real causality and is never relied on alone. A
 **well-formedness** rule demotes a fact with a forward (`> child`) or cyclic `causedBy` edge (§3.6, M4-2).
@@ -1294,19 +1413,38 @@ the C-3/C2-2 fix.
 > deterministic projections**, regardless of delivery order, batching, `rxFrom`, commit-order,
 > wall-clock-at-read, or which replica authored which fact.
 >
-> **Corollary — SEC under PARTIAL REPLICATION (admission control & retention, C4-1).** When replicas
-> apply admission-control/retention policies (§3.5a) they may hold *different subsets* of the
-> signature-valid universe (some `quarantined-ttl` facts evicted on one replica, kept on another). SEC is
-> then stated **per-shared-subset**: **for any two replicas A and B, on the INTERSECTION `S_A ∩ S_B` of
-> what they both currently store, `proj` agrees** — i.e. every cell whose covering facts are all in
-> `S_A ∩ S_B` projects byte-identically on A and B. This holds because (i) `proj` is a pure function of
-> the held set and reads no policy, and (ii) **eviction only ever removes `quarantined-ttl` (non-durable,
-> `proj`-`quarantined`) facts**, which contribute **nothing** to any cell's `/heads` value — so a fact
-> present on A but evicted on B cannot make a *trusted* cell differ. Equivalently: **all `durable`
-> (trusted-authored) facts converge fully** (they are never evicted, so the durable subset behaves exactly
-> as the full-replication theorem above), and only non-durable bytes may differ — which never changes a
-> projected value. Membership purity (signature-only) is preserved; availability is bounded; the SEC core
-> is **not** regressed.
+> **Corollary — SEC under PARTIAL REPLICATION (admission control & retention, C4-1; value-neutrality
+> exception pinned, M5-1/C5-1).** When replicas apply admission-control/retention policies (§3.5a) they may
+> hold *different subsets* of the signature-valid universe (some `quarantined-ttl` facts evicted on one
+> replica, kept on another). SEC is then stated **per-shared-subset**: **for any two replicas A and B, on
+> the INTERSECTION `S_A ∩ S_B` of what they both currently store, AND restricted to cells whose covering
+> facts' authoring keys are chain-complete on both, `proj` agrees** — every such cell projects
+> byte-identically on A and B. This holds because (i) `proj` is a pure function of the held set and reads
+> no policy; (ii) eviction only ever removes `quarantined-ttl` facts (an **unregistered** key's facts —
+> a registered key's entire chain is `key-chain-durable`, never evicted, §3.5a), which contribute
+> **nothing** to any cell's `/heads` value; and (iii) per-key trust is gated on **chain completeness**
+> (§3.6/C5-1), so wherever a replica's durable subset is *not* complete for a covering key, that cell
+> projects `pending` **on that replica**, not a divergent trusted value — divergence is surfaced as
+> `pending`, never as two different trusted heads. Equivalently: **all `durable`/`key-chain-durable`
+> (trusted-authored, and registered-key chain) facts converge fully** (never evicted, so that subset
+> behaves exactly as the full-replication theorem above), and only *unregistered* non-durable bytes may
+> differ.
+>
+> **Value-neutrality exception (M5-1/C5-1 — pinned, no longer over-claimed).** v3's SEC was: equal
+> *received* sets ⇒ byte-identical heads, full stop. v4-final's SEC is **strictly weaker**: equal
+> *complete durable* subsets ⇒ identical heads on that subset, and held subsets may legitimately differ on
+> everything else. The earlier draft claimed "the SEC core is **not** regressed"; that is **retracted** as
+> over-stated. The honest statement: **the SEC core is PRESERVED ON THE COMPLETE DURABLE SUBSET; full-
+> universe byte-identity is RELAXED to per-shared-subset — a deliberate, weaker guarantee that is the
+> price of bounded storage.** The premise "evicting a `quarantined-ttl` fact is value-neutral" holds
+> **only** for facts **outside any key's relied-upon completeness chain**. The C5-1 case where it would
+> *not* be value-neutral — evicting a **pre-registration same-key** fact that is the
+> monotonicity-contradicting evidence for a *later* same-key fact, thereby flipping that later fact
+> demoted↔trusted — is closed by the chain-completeness gate: the eviction produces a `(wall,counter)`
+> gap, so the later fact projects **`pending`**, never a silently-flipped trusted value. With the C5-1 fix
+> in force, eviction is value-neutral for every fact a replica may evict (only unregistered-key facts, and
+> only with `pending`-on-gap semantics for any dependent same-key fact). Membership purity (signature-only)
+> is preserved; availability is bounded; convergence is guaranteed **on the complete durable subset**.
 
 *Proof.*
 1. **The admitted set converges — admission is a pure function of the fact's bytes (C3-1, M3-4, M3-5).**
@@ -1374,12 +1512,20 @@ gate created — partitions longer than ε would lose data; it is gone). Converg
 fact-sets equalize. Any fact that is still *causally implausible* given the currently-received facts is
 **quarantined** (projected `untrusted-anachronistic`) and **re-evaluated as more facts arrive** — so its
 *logical membership* is never lost while it can still be cleared. **Retention of its BYTES, however, is
-bounded (§3.5a, m4-2):** a quarantined fact from a **trusted (registered) key** is `durable` (never
-evicted, so an honest transient anachronism that clears later is always recoverable locally); a
-quarantined fact from an **unregistered** key is `quarantined-ttl` — kept under a bounded TTL/byte-cap and
-**eviction-eligible** thereafter (re-fetchable on demand if it later becomes durable). So a
-permanently-partitioned *unregistered* author's never-clearing quarantine has a **storage ceiling** rather
-than unbounded indefinite growth, while honest registered authors are never evicted. No coordinator, no
+bounded (§3.5a, m4-2/m5-4):** a quarantined fact from a **trusted (registered) key** is
+`key-chain-durable` (never evicted, so an honest transient anachronism that clears later is always
+recoverable locally, **and** so the key's `(wall,counter)` chain — the C5-1 anti-backdating evidence — is
+retained); a quarantined fact from an **unregistered** key is `quarantined-ttl` — kept under a bounded
+TTL + per-key byte-cap + **global `quarantinePoolBytes` aggregate budget** (m5-1) and **eviction-eligible**
+thereafter (re-fetchable on demand if it later becomes durable). So a permanently-partitioned
+*unregistered* author's never-clearing quarantine has a **storage ceiling** (TTL/LRU over a fixed global
+pool) rather than unbounded indefinite growth, while honest registered authors are never evicted. **Honest
+bound (m5-4):** for a **registered** key, the quarantine is **not "bounded" in the absolute sense — it is
+"bounded per registered key by quota"** (the `key-chain-durable` pool is authenticated and per-key
+quota-limited, §8.1, not TTL-evicted). v4 deliberately trades the m4-2 unbounded *unregistered* quarantine
+for a *bounded-per-registered-key* `durable` pool — the correct safety choice (never silently lose honest
+data, and never evict the anti-backdating chain), stated explicitly rather than claimed as unconditionally
+"bounded." No coordinator, no
 quorum, no global lock (T-2 resolved toward *coordinator-free*).
 
 ### 4b.5 Branch-per-agent vs trunk (decision)
@@ -1778,8 +1924,9 @@ interface KeyRevocation {                    // type:"revoke-key" fact; demotes,
   the **default** so this loss is opt-in, and (b) **surfaces** causally-demoted-but-pre-`effectiveFrom`
   honest-concurrent facts with a **DISTINCT** projected status **`kip:revoked-concurrent`** — *not* the
   generic `untrusted`/`untrusted-anachronistic` bucket — so a reader/operator can SEE them in `recall`
-  and **re-adjudicate** an honest casualty via a `resolve`-scoped re-assert, rather than the value
-  silently vanishing from `/heads` (N5). Facts demoted by author-HLC ≥ `effectiveFrom` carry the ordinary
+  and **re-adjudicate** an honest casualty via a **`re-attest` fact signed by a currently-trusted key**
+  (m5-3, defined below — *not* a `resolve`-scoped re-assert, which adjudicates `kip:conflict`, not a
+  revocation casualty), rather than the value silently vanishing from `/heads` (N5). Facts demoted by author-HLC ≥ `effectiveFrom` carry the ordinary
   `untrusted` status; only the concurrent-honest casualties of mode (2)(b) carry `kip:revoked-concurrent`.
   Both modes compare only **set-resident** quantities (author-HLCs and the signed `causedBy` closure, all
   in `S`), made identically on every replica, so the demotion is **byte-identical across replicas**
@@ -1801,12 +1948,17 @@ interface KeyRevocation {                    // type:"revoke-key" fact; demotes,
   `effectiveFrom` (C3-3). v4 removes every clock from the defense and decides backdating **inside
   `proj`** by set-resident rules, with the **involuntary per-key rule** as the load-bearing primary
   (C4-2):
-  1. **PRIMARY — per-key author-HLC monotonicity (§3.6, §4b.1, C4-2).** A fact `F` from key `K` is
-     demoted `untrusted-anachronistic` iff `S` holds a **higher-author-HLC, non-ancestor** fact from the
-     **same** `K`. This reads `K`'s *involuntary* same-key footprint in `S` (not the voluntary `causedBy`
-     field), so it is **not evadable by omitting `causedBy`** — the C4-2 root fix. A genuine backdate is
-     exposed by the higher-stamped facts `K` itself emitted; an honest late fact with no higher same-key
-     fact passes (C3-2).
+  1. **PRIMARY — per-key author-HLC monotonicity, GATED ON CHAIN COMPLETENESS (§3.6, §4b.1, C4-2 +
+     C5-1).** A fact `F` from key `K` projects **trusted** only over a **complete, gap-free
+     `(wall,counter)` chain of `K` up to `F`** (the §4c/m4-1 contiguity rule, reused); if a lower same-key
+     fact is missing/evicted/unreplicated, `F` is **`pending`** (not trusted, not rejected) until the chain
+     completes (C5-1). Once complete, `F` is demoted `untrusted-anachronistic` iff `S` holds a
+     **higher-author-HLC, non-ancestor** fact from the **same** `K`. This reads `K`'s *involuntary* same-key
+     footprint in `S` (not the voluntary `causedBy` field), so it is **not evadable by omitting
+     `causedBy`** (C4-2) **nor by inducing the victim to evict/withhold `K`'s higher facts** — eviction
+     yields a chain gap ⇒ `pending`, and a registered key's chain is `key-chain-durable` (never evicted,
+     §3.5a), so the evidence is retained (C5-1). A genuine backdate is exposed by the higher-stamped facts
+     `K` itself emitted; an honest late fact with no higher same-key fact passes (C3-2).
   2. **SECONDARY (tightening) — voluntary `causedBy` plausibility (§3.6, §4b.1).** When `F` declares
      `causedBy`, its author-HLC must also dominate its declared ancestry's author-HLCs. This only
      tightens; it reads an author-controlled field and is never relied on alone.
@@ -1818,15 +1970,60 @@ interface KeyRevocation {                    // type:"revoke-key" fact; demotes,
   All rules compare only set-resident author-HLCs and set-resident ancestry; **no receiver clock, no
   `rxFrom`, no membership decision** is involved. Membership (signature only) and proj (value + trust)
   never share a clock space, and `proj` never reads `rxFrom`.
-  **Precise bound (the over-strong v3 claim is RETRACTED, C4-2).** The deleted v3 claim was "this is the
-  *only* defense that distinguishes a malicious backdate from an honest late fact." The honest precise
-  bound is: anti-backdating for a registered, non-revoked key holds **relative to that key's own observed
-  activity in `S`** — a key that has emitted higher-stamped facts cannot insert a trusted lower-stamped
-  non-ancestor fact (primary rule). A key that has emitted **nothing higher** can still self-date freely;
-  this residual is **acknowledged and acceptable** because such a fact has no conflicting same-key history
-  to poison and is resolved against other authors by ordinary `orderKey`. The defense is therefore a
-  *real, set-pure, non-forgeable bound*, not a complete prohibition — stated precisely rather than
-  over-claimed.
+  **Precise bound (the over-strong v3 claim is RETRACTED, C4-2; the eviction route is CLOSED, C5-1).** The
+  deleted v3 claim was "this is the *only* defense that distinguishes a malicious backdate from an honest
+  late fact." The honest precise bound is: anti-backdating for a registered, non-revoked key holds
+  **relative to that key's own observed activity in `K`'s complete durable chain** — a key whose retained
+  chain contains a higher-stamped non-ancestor fact cannot insert a *trusted* lower-stamped fact (primary
+  rule), and a replica missing part of `K`'s chain projects the candidate **`pending`**, never trusted
+  (completeness gate). A key that has emitted **nothing higher in its chain** can still self-date a genuine
+  first-emission fact freely; this residual is **acknowledged and acceptable** because such a fact has no
+  conflicting same-key history to poison and is resolved against other authors by ordinary `orderKey`.
+  **Crucially, this residual is NOT attacker-reachable by eviction/partial replication (C5-1):** the
+  per-key chain-completeness gate + `key-chain-durable` retention (§3.5a) make per-key trust a function of
+  `K`'s **complete durable chain** — replica-independent once complete — so an evicted/withheld higher
+  honest fact yields a chain gap and forces `pending`, never a silent trusted backdate. The defense is
+  therefore a *real, set-pure, non-forgeable, eviction-safe bound*, not a complete prohibition — stated
+  precisely rather than over-claimed.
+
+  **Anti-backdating is preserved under eviction & partial replication (INV-18(c)/INV-19).** The per-key
+  trust decision is **monotone** (a fact moves `pending → trusted/demoted` exactly once as `K`'s chain
+  completes, and `key-chain-durable` retention guarantees the chain is never un-completed by eviction) and
+  **eviction-safe** (no eviction of any fact can flip a same-key backdate from `pending`/`demoted` to
+  `trusted`). This is the invariant the C5-1 fix establishes and INV-18(c)/INV-19 test.
+
+  **Impossibility (revocation, stated honestly — M5-2).** No **set-pure** revocation mode can
+  *simultaneously* (a) demote a **compromised** key's **sub-`effectiveFrom` backdates** and (b) **preserve
+  that key's honest concurrent sub-`effectiveFrom` work** — because both are "past-stamped,
+  non-ancestor-of-the-revocation" facts and are therefore **set-indistinguishable** to any rule that reads
+  only the set (the only set-resident discriminator is causal-ancestry-of-the-revocation, which by
+  definition cannot contain facts the revoker had not yet observed). The two modes are the two horns of
+  this impossibility, shipped as an **explicit, honest tradeoff, not a defect**:
+  - **`ordinary-cutoff` chooses (b):** it preserves honest concurrent pre-`T` work, and **lets a
+    compromised key's backdate below `effectiveFrom` through** — *mitigated*, not eliminated, by the C5-1
+    per-key chain-completeness rule, which still demotes any such backdate that contradicts `K`'s **own
+    retained chain** (a backdate is only trusted if it is a genuine lone first-emission below the key's
+    chain — see the residual above).
+  - **`causal-cutoff` chooses (a):** it demotes every non-ancestor (catching the sub-`effectiveFrom`
+    backdate) and therefore **demotes honest concurrent work too**, surfacing those casualties as the
+    distinct status **`kip:revoked-concurrent`** for human re-adjudication.
+  The C5-1 per-key rule helps **only if** the compromised key *also* emitted higher-stamped honest facts
+  in its retained chain; for a lone backdate below the key's chain, no set-pure mode separates the two
+  cases. The choice between modes is **intrinsic to set-purity, not a missing feature** — a reader should
+  not hunt for a mode that achieves both halves; there is none.
+
+  **Re-adjudicating a `kip:revoked-concurrent` casualty — the `re-attest` mechanism (m5-3).** A
+  `kip:revoked-concurrent` fact's content was honest but its **signing key is revoked**, so it cannot be
+  un-demoted in place (the key is no longer trusted) and a `resolve`-scoped `supersede` over `inputCids`
+  (which adjudicates `kip:conflict`, §3.4/M3-1) is the **wrong** primitive — there is no contradiction to
+  resolve, only a demoted-by-revocation value to **restore under a trusted key**. kip therefore defines a
+  **`re-attest` fact** (`type:"assert"` carrying `reAttests: FactId` = the demoted fact's CID, signed by a
+  **currently-trusted, non-revoked key** holding `write` scope for the namespace): `proj` projects the
+  re-attested **content** as a normal trusted assert from the new key (ordered by the new key's
+  author-HLC), so the honest value re-enters `/heads` with fresh, valid provenance while the original
+  demoted fact stays verifiable in history (N5). `re-attest` is set-pure (it reads only `reAttests` + the
+  new key's authorization in `S`) and convergent. The earlier cross-reference to a "`resolve`-scoped
+  re-assert" is **corrected** to this `re-attest` primitive throughout (§8.1 mode (2), INV-17).
 
 ### 8.2 Tenancy & scoping
 
@@ -1883,10 +2080,20 @@ creates, and its bound:
   (never evicted). A replica applying the default retention policy therefore admits the flood *logically*
   (preserving convergence and late-registration races) but bounds the **bytes**, and the flood never
   affects `/heads` (those facts project `quarantined`). The quota lives at **transport**, out of `proj`.
+- **Aggregate bound (the unlimited-identity defense, m5-1).** A per-key byte cap alone is **not** a global
+  bound — `N` fresh keys give `N × quarantineKeyCapBytes`. The default policy therefore caps the
+  **aggregate** `quarantined-ttl` pool by a manifest-pinned **global `quarantinePoolBytes` budget** with
+  LRU/TTL eviction across **all** unregistered keys (§3.5a), so an `N`-key flood cannot multiply the
+  ceiling or refill faster than TTL/LRU drains.
 - **Residual / honest bound.** This bounds the **unregistered-key** (unlimited-identity) vector only.
   An attacker with a **registered** key is the insider threat, bounded instead by per-key quota (§3.5a) +
-  revocation (§8.1). A replica that *opts out* of retention (stores everything) re-exposes itself —
-  admission control is a **MAY** mechanism, not a mandate.
+  revocation (§8.1) + **the per-key chain-completeness anti-backdating gate (C5-1), which demotes/`pending`s
+  any backdate that contradicts the key's own retained chain — so a registered insider cannot silently
+  backdate a trusted fact onto a victim replica by inducing eviction/non-replication of its higher facts.**
+  A replica that *opts out* of retention (stores everything) re-exposes itself to *disk growth* —
+  admission control is a **MAY** mechanism, not a mandate — but note opting out does **not** re-open C5-1
+  (the completeness gate and `key-chain-durable` retention are part of `proj`/the default retention model,
+  not the optional aggressiveness knob).
 - **`withScope` is advisory (m4-5).** The client-side `withScope` write guard (§3.6/§8.2) is the *only*
   thing stopping an **honest** client from authoring out-of-scope/excess facts; an attacker simply does
   not run it. It is **not** a DoS control — the authoritative cross-replica bound is the set-pure proj
@@ -2001,14 +2208,22 @@ Determinism is the testing strategy. The conformance suite asserts (each INV upd
   trusted), never silently trusted. The suite feeds (a) a forward `causedBy` edge, (b) a `causedBy` cycle,
   and (c) a dangling `causedBy`, and asserts each demotes/pends rather than projecting trusted, on every
   replica identically. Acyclicity guarantees the closure walk terminates.
-- **INV-16 (per-key anti-backdating from INVOLUNTARY footprint — C4-2).** A signature-valid fact `F` from
-  key `K` is demoted `untrusted-anachronistic` iff `S` holds a higher-author-HLC, non-ancestor fact from
-  the **same** `K` — **independent of whether `F` declares `causedBy`**. The suite authors a registered,
-  non-revoked key's higher-stamped fact, then a `causedBy`-LESS backdated fact from the same key, and
-  asserts the backdate is **demoted** (the C4-2 regression test the v3 suite lacked: it must NOT project
-  trusted). It also asserts a lone self-dated fact from a key with **no higher** same-key fact projects
-  trusted (the acknowledged acceptable residual, §3.6), and that the demotion is byte-identical across
-  replicas.
+- **INV-16 (per-key anti-backdating from INVOLUNTARY footprint, GATED ON CHAIN COMPLETENESS — C4-2 +
+  C5-1, m5-5).** A signature-valid fact `F` from key `K` projects **trusted** only over a complete gap-free
+  `(wall,counter)` chain of `K` up to `F` (else `pending`), and once complete is demoted
+  `untrusted-anachronistic` iff `S` holds a higher-author-HLC, non-ancestor fact from the **same** `K` IN
+  THE COMPLETE DURABLE CHAIN — **independent of whether `F` declares `causedBy`**. The suite asserts:
+  - **(C4-2)** authors a registered, non-revoked key's higher-stamped fact, then a `causedBy`-LESS
+    backdated fact from the same key, and asserts the backdate is **demoted** (NOT trusted).
+  - **(genuine residual)** a lone self-dated fact from a key that **genuinely emitted nothing higher in its
+    chain** projects trusted (the acknowledged acceptable residual, §3.6).
+  - **(C5-1 eviction case — m5-5)** the INV's "no higher same-key fact" antecedent is "no higher same-key
+    fact **IN THE COMPLETE DURABLE CHAIN**." The suite distinguishes "key emitted nothing higher (genuine)"
+    from "a higher same-key fact exists but is **missing/evicted/unreplicated** on this replica": in the
+    latter case the backdate must project **`pending`** (chain gap), **NOT trusted**, and must flip to
+    **demoted** once the higher fact (and the intervening chain) arrives. A build that projects the
+    eviction-route backdate **trusted** (the C5-1 vulnerability) **fails**.
+  - the decision is byte-identical across replicas with complete chains.
 - **INV-17 (revocation intent & honest-concurrent surfacing — M4-1).** `ordinary-cutoff` revocation
   demotes **only** facts with author-HLC ≥ `effectiveFrom` and **preserves** honest concurrent
   pre-`effectiveFrom` facts as trusted; `causal-cutoff` additionally demotes non-ancestor facts but
@@ -2016,17 +2231,44 @@ Determinism is the testing strategy. The conformance suite asserts (each INV upd
   via `recall`/`provenanceOf`), never the generic `untrusted` bucket. The suite authors honest concurrent
   pre-`T` facts during a revocation's propagation window and asserts: under `ordinary-cutoff` they stay
   trusted; under `causal-cutoff` they are demoted **and** carry `kip:revoked-concurrent` (re-adjudicable
-  via a `resolve`-scoped re-assert), not silently dropped from `/heads`.
-- **INV-18 (admission-control / retention resource bound + partial-replication SEC — C4-1).** An
-  unregistered key's flood of distinct signature-valid facts is admitted **logically** (INV-13 still
-  holds) but its facts compute `RetentionClass = quarantined-ttl` and are eviction-eligible under the
-  per-key cap/TTL, while a registered-key fact computes `durable` and is **never** evicted. The suite
-  floods from a fresh unregistered key and asserts: (a) trusted heads are **unchanged** (the flood
-  projects `quarantined`, affecting no cell); (b) durable bytes are bounded (evicting the flood does not
-  change any trusted projection); (c) **per-shared-subset SEC** — two replicas with different evicted
-  subsets agree on `proj` over `S_A ∩ S_B`, and fully on the `durable` subset (§4b.4 corollary);
-  (d) `RetentionClass` is computed identically on every replica (set-pure). A build that lets a
-  non-durable eviction change a trusted head, or that has no retention bound, **fails**.
+  via a **`re-attest` fact signed by a currently-trusted, non-revoked key**, m5-3 — NOT a `resolve`-scoped
+  re-assert), not silently dropped from `/heads`. The suite further asserts a `re-attest` (`reAttests` =
+  the demoted fact's CID) from a trusted key **restores** the honest content to a trusted head under the
+  new key's provenance, while the original demoted fact stays verifiable in history; a `resolve`-scoped
+  `supersede` over the same `inputCids` does **not** restore it (wrong primitive — there is no conflict to
+  adjudicate).
+- **INV-18 (admission-control / retention resource bound + partial-replication SEC — C4-1, m5-1/m5-2,
+  C5-1).** An unregistered key's flood of distinct signature-valid facts is admitted **logically** (INV-13
+  still holds) but its facts compute `RetentionClass = quarantined-ttl` and are eviction-eligible under the
+  per-key cap/TTL **and the global aggregate budget**, while a registered-key fact (and its whole chain)
+  computes `durable`/`key-chain-durable` and is **never** evicted. The suite floods from a fresh
+  unregistered key and asserts:
+  - **(a)** trusted heads are **unchanged** (the flood projects `quarantined`, affecting no cell);
+  - **(b)** durable bytes are bounded **under the default retention policy** (the named antecedent, m5-2 —
+    a permissive opt-out replica is *not* claimed bounded; INV-18(b) is NOT an unconditional guarantee).
+    The suite additionally floods from **`N` distinct fresh unregistered keys** and asserts the
+    **aggregate** `quarantined-ttl` pool never exceeds the global `quarantinePoolBytes` budget (m5-1) — a
+    build whose only ceiling is per-key (so `N` keys ⇒ `N×` bytes) **fails**;
+  - **(c)** **per-shared-subset SEC + the C5-1 regression test** — two replicas with different evicted
+    subsets agree on `proj` over the *complete-durable* part of `S_A ∩ S_B`, and fully on the
+    `durable`/`key-chain-durable` subset (§4b.4 corollary); **and** evicting a **pre-registration same-key**
+    fact does **NOT** flip a later same-key fact from demoted to trusted — it instead yields a chain gap so
+    the later fact projects **`pending`** (a build that flips it to trusted — the C5-1 hole — **fails**);
+  - **(d)** `RetentionClass` is computed identically on every replica (set-pure), and a **registered key's
+    entire chain is `key-chain-durable`** (a build that evicts any fact of a registered key, removing the
+    anti-backdating chain, **fails**).
+  A build that lets a non-durable eviction change a trusted head, or that has no aggregate retention bound,
+  **fails**.
+- **INV-19 (anti-backdating preserved under eviction & partial replication — C5-1).** Per-key trust is
+  **monotone and eviction-safe**: the suite (1) authors `K`'s higher honest fact `F'` and a lower
+  backdate `F` from the same registered `K`; (2) on a victim replica, induces eviction/non-replication of
+  `F'`; (3) asserts the victim projects `F` **`pending`** (chain gap), **never trusted** — i.e. eviction
+  did **not** flip `F` to trusted; (4) delivers `F'` (and the intervening chain) and asserts `F` flips to
+  **demoted** (`untrusted-anachronistic`), and that this transition happens **at most once** and never
+  reverses. It also asserts a registered key's facts are **never** eviction-eligible
+  (`key-chain-durable`), so step (2)'s eviction is only reproducible for an *unregistered* key — for which
+  the `pending`-on-gap outcome of step (3) is the safe result regardless. A build in which any eviction or
+  selective non-replication flips a same-key backdate from `pending`/`demoted` to `trusted` **fails**.
 
 Determinism (author-stamped HLC, fixed reducer seeds, fixed replicaIds, content-addressed everything,
 **`rxFrom` excluded from every convergent path**) makes all of these reproducible. The accelerator
