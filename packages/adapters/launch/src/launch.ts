@@ -1143,6 +1143,13 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
       const { join } = await import('node:path');
       const patchDir = join(launchCwd, '.hermes-win-patch');
       mkdirSync(patchDir, { recursive: true });
+      // Write the prompt to a file so the sitecustomize.py can pre-feed it
+      // into prompt_toolkit's input without relying on stdin piping.
+      const promptText = plan.prompt ?? '';
+      if (promptText) {
+        writeFileSync(join(patchDir, 'initial-prompt.txt'), promptText + '\n');
+        plan.env['HERMES_WIN_PROMPT_FILE'] = join(patchDir, 'initial-prompt.txt');
+      }
       writeFileSync(join(patchDir, 'sitecustomize.py'), [
         'import sys, os',
         'if sys.platform == "win32":',
@@ -1164,15 +1171,23 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
         '            except Exception:',
         '                from prompt_toolkit.input.posixlike import PosixPipeInput',
         '                inp = PosixPipeInput()',
-        '                import threading',
-        '                def _bridge():',
-        '                    try:',
-        '                        while True:',
-        '                            data = sys.stdin.buffer.read(1)',
-        '                            if not data: break',
-        '                            inp.feed(data.decode("utf-8", errors="replace"))',
-        '                    except: pass',
-        '                threading.Thread(target=_bridge, daemon=True).start()',
+        '                # Pre-feed prompt from file if available (avoids stdin pipe issues)',
+        '                pf = os.environ.get("HERMES_WIN_PROMPT_FILE", "")',
+        '                if pf and os.path.exists(pf):',
+        '                    with open(pf, "r") as f: prompt_data = f.read()',
+        '                    inp.feed(prompt_data)',
+        '                    os.unlink(pf)',
+        '                else:',
+        '                    # Fall back to stdin bridge thread',
+        '                    import threading',
+        '                    def _bridge():',
+        '                        try:',
+        '                            while True:',
+        '                                data = sys.stdin.buffer.read(1)',
+        '                                if not data: break',
+        '                                inp.feed(data.decode("utf-8", errors="replace"))',
+        '                        except: pass',
+        '                    threading.Thread(target=_bridge, daemon=True).start()',
         '                return inp',
         '        _pid.create_input = _safe_input',
         '        import prompt_toolkit.input',
@@ -1828,10 +1843,10 @@ export async function launchCommand(client: AgentMuxClient, args: ParsedArgs): P
       });
       (child as any).__bridgeExitPromise = exitPromise;
     }
-  } else if (process.platform === 'win32' && plan.harness === 'hermes') {
-    // Hermes on Windows: always use ConPTY. prompt_toolkit's Win32Input needs a
-    // real console. The stdin bridge (PosixPipeInput) hangs on Windows.
-    // ConPTY is slow but functional — BP/Resume completes in ~67 min.
+  } else if (process.platform === 'win32' && plan.harness === 'hermes' && !plan.env['HERMES_WIN_PROMPT_FILE']) {
+    // Hermes on Windows without file-based prompt: fall back to ConPTY.
+    // When HERMES_WIN_PROMPT_FILE is set, the sitecustomize.py patch pre-feeds
+    // the prompt via PosixPipeInput.feed() — no ConPTY needed.
     try {
       const nodePty: any = await import('node-pty');
       const resolved = await resolveSpawnCommand(plan.command, plan.args);
