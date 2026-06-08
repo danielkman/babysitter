@@ -126,6 +126,23 @@ try {
   );
 }
 
+// --- Check 4: architecture-boundary classification ---
+// New repo packages must be classified in check-architecture-boundaries.cjs
+// (same "new package not registered" class as the lockfile/metadata gaps).
+try {
+  execFileSync('node', ['./scripts/check-architecture-boundaries.cjs'], {
+    cwd: repoRoot,
+    stdio: 'pipe',
+  });
+} catch (err) {
+  const msg = (err.stdout || err.stderr || '').toString().trim();
+  failures.push(
+    'Architecture boundary check failed:\n' +
+      (msg ? `    ${msg.split('\n').join('\n    ')}` : `    ${err.message}`) +
+      '\n  Fix: classify the new package in scripts/check-architecture-boundaries.cjs.',
+  );
+}
+
 if (failures.length) {
   console.error('\n✖ package-integrity guard failed:\n');
   for (const f of failures) console.error(`• ${f}\n`);
@@ -135,4 +152,6 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('✓ package-integrity guard passed (lockfile sync, native bindings, metadata).');
+console.log(
+  '✓ package-integrity guard passed (lockfile sync, native bindings, metadata, arch boundaries).',
+);

@@ -51,6 +51,7 @@ const packageFamilies = {
     "@a5c-ai/hooks-adapter-copilot",
     "@a5c-ai/hooks-adapter-cursor",
     "@a5c-ai/hooks-adapter-gemini",
+    "@a5c-ai/hooks-adapter-genty",
     "@a5c-ai/hooks-adapter-hermes",
     "@a5c-ai/hooks-adapter-antigravity",
     "@a5c-ai/hooks-adapter-oh-my-pi",
