@@ -83,6 +83,7 @@ export function buildExternalProcessDefinitionPrompt(args: {
     "- Any task passed to `ctx.task(...)` must be a DefinedTask created via `defineTask(...)`; never pass plain object task definitions or ad-hoc task objects.",
     "- Include quality gates and verification/refinement steps that fit the request.",
     "- For this request, a good default is a process that plans the game scope, scaffolds the project, implements the game loop and UI, and verifies the result with runnable checks.",
+    "- CRITICAL: The output file is a .mjs (ESM JavaScript) module. It must pass `node --check`. NEVER use shell syntax (heredocs like `cat > file <<'EOF'`, pipe operators, bash variables). All file content must be expressed as JavaScript strings, arrays joined with '\\n', or String.raw tagged templates.",
     "- Keep the module syntactically valid ESM. If you embed HTML/CSS/JS asset contents inside the process source, avoid raw nested template literals; prefer arrays joined with \"\\n\", String.raw, or escaped inner backticks and \\${...} sequences.",
     "- Default every task to the internal agent-core worker. If task-level harness routing is needed, only use `task.metadata.harness` for explicit overrides to installed harness names from this list: "
       + `${installedHarnessList}.`,
@@ -191,6 +192,7 @@ export function buildInternalProcessConformancePrompt(args: {
     "- Define at least one `agent` task for the main work. Use shell tasks only for concrete runnable commands.",
     "- Every task returned from `defineTask(...)` must include a top-level `kind` field.",
     "- Any task passed to `ctx.task(...)` must be a DefinedTask created via `defineTask(...)`; do not pass plain object task definitions or ad-hoc task objects.",
+    "- CRITICAL: The output is a .mjs (ESM JavaScript) module. NEVER use shell syntax (heredocs like `cat > file <<'EOF'`, pipe operators, bash variables). All file content must be JavaScript strings.",
     "- The rewritten module must be syntactically valid ESM and pass `node --check`.",
     "- If the process writes HTML/CSS/JS assets, do not embed raw nested template literals inside outer template literals; prefer arrays joined with \"\\n\", String.raw, or escaped inner backticks and \\${...} sequences.",
     "- Inside the named `process(inputs, ctx)` export, do not reference Node's global process object as `process.*`; use `globalThis.process` or an imported alias like `nodeProcess` instead.",

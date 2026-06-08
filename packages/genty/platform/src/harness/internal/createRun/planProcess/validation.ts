@@ -60,6 +60,29 @@ async function ensureSdkResolvable(workspaceDir: string): Promise<void> {
 
 export async function validateProcessExport(filePath: string): Promise<void> {
   const source = await fs.readFile(path.resolve(filePath), "utf8");
+
+  const shellPatterns = [
+    { pattern: /<<['"]?EOF/m, name: "heredoc (<<EOF)" },
+    { pattern: /^cat\s+>/m, name: "shell cat redirect" },
+    { pattern: /^\s*#!\s*\/bin\/(ba)?sh/m, name: "shell shebang" },
+  ];
+  for (const { pattern, name } of shellPatterns) {
+    if (pattern.test(source)) {
+      throw new BabysitterRuntimeError(
+        "InvalidProcessSyntaxError",
+        `Process file at ${filePath} contains shell syntax (${name}). The file must be valid ESM JavaScript, not a shell script.`,
+        {
+          category: ErrorCategory.Validation,
+          nextSteps: [
+            "Rewrite shell commands as JavaScript — use fs.writeFileSync for file creation, child_process.execSync for commands",
+            "Express file contents as JavaScript strings or arrays joined with '\\n'",
+            "The .mjs file must pass node --check as valid ESM",
+          ],
+        },
+      );
+    }
+  }
+
   const syntaxCheck = await execShellEffect(process.execPath, ["--check", path.resolve(filePath)]);
   if (syntaxCheck.exitCode !== 0) {
     const diagnostic = [syntaxCheck.stdout, syntaxCheck.stderr]
