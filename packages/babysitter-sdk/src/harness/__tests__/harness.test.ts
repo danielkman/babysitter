@@ -284,7 +284,9 @@ describe("PiAdapter", () => {
 
     process.env.PI_SESSION_ID = "pi-session";
     expect(adapter.isActive()).toBe(true);
-    expect(adapter.supportsHookType?.("stop")).toBe(false);
+    // Pi now supports the stop hook: the `agent_end` lifecycle event invokes
+    // the proxied stop hook each turn (issue #948).
+    expect(adapter.supportsHookType?.("stop")).toBe(true);
   });
 });
 

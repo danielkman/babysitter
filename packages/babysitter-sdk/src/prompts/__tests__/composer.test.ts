@@ -105,9 +105,11 @@ describe('context factories', () => {
       expect(ctx.harness).toBe('pi');
     });
 
-    it('sets loopControlTerm to "skill-driven"', () => {
+    it('sets loopControlTerm to "stop-hook"', () => {
+      // Pi drives the babysitter loop via the `agent_end` lifecycle event
+      // (proxied stop hook), so it now advertises stop-hook continuation.
       const ctx = createPromptContextFromCatalog('pi');
-      expect(ctx.loopControlTerm).toBe('skill-driven');
+      expect(ctx.loopControlTerm).toBe('stop-hook');
     });
 
     it('sets pluginRootVar to ${PI_PLUGIN_ROOT}', () => {
@@ -125,9 +127,10 @@ describe('context factories', () => {
       expect(ctx.hasIntentFidelityChecks).toBe(false);
     });
 
-    it('sets hookDriven to false', () => {
+    it('sets hookDriven to true', () => {
+      // The `agent_end` event invokes the proxied stop hook each turn.
       const ctx = createPromptContextFromCatalog('pi');
-      expect(ctx.hookDriven).toBe(false);
+      expect(ctx.hookDriven).toBe(true);
     });
   });
 
@@ -188,12 +191,13 @@ describe('composeBabysitSkillPrompt', () => {
     expect(output).toContain('--harness pi');
   });
 
-  it('contains "skill-driven" for PI context', () => {
+  it('contains "stop-hook" for PI context', () => {
+    // Pi is now stop-hook-driven (agent_end -> proxied stop hook).
     const output = composeBabysitSkillPrompt(createPromptContextFromCatalog('pi'));
-    expect(output).toContain('skill-driven');
+    expect(output).toContain('stop-hook');
   });
 
-  it('does NOT contain non-hook-driven caveat for PI context (uses skill-driven)', () => {
+  it('does NOT contain non-hook-driven caveat for PI context (stop-hook-driven)', () => {
     const output = composeBabysitSkillPrompt(createPromptContextFromCatalog('pi'));
     expect(output).not.toContain('Non-hook-driven continuation');
   });
@@ -518,9 +522,13 @@ describe('individual parts', () => {
       expect(result).toContain('stop-hook');
     });
 
-    it('renders no loop-control section for PI', () => {
+    it('uses stop-hook loop language for PI (agent_end-driven)', () => {
+      // Pi now drives the loop via the `agent_end` lifecycle event (proxied
+      // stop hook), so it renders the stop-hook loop-control section.
       const result = renderLoopControl(createPromptContextFromCatalog('pi'));
-      expect(result).toBe('');
+      expect(result).toContain('STOP after every phase');
+      expect(result).toContain('stop-hook');
+      expect(result).not.toContain('in-turn');
     });
   });
 });
