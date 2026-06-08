@@ -1,8 +1,11 @@
 # `@a5c-ai/kip-sdk` — SPEC (v1)
 
-> Status: **Draft v5 (round-5 adversarial findings resolved — C5-1 compositional backdating, M5-1
-> SEC-corollary scope, M5-2 revocation impossibility, m5-1..m5-5)**, spec-only. Illustrative
-> TypeScript interfaces are normative for *shape*,
+> Status: **Ship-quality v6 (round-6 adversarial findings resolved — M6-1 `key-chain-durable` vs
+> per-key-quota contradiction closed via cap-bounded retention + on-demand re-fetch; m6-1 per-`(replicaId,
+> key)` chain disambiguation; m6-2 INV-19 non-reversal under the cap; m6-3 re-fetch liveness residual
+> stated; builds on v5: C5-1 compositional backdating, M5-1 SEC-corollary scope, M5-2 revocation
+> impossibility, m5-1..m5-5)** — 0 CRITICAL across six audits, convergence core unchanged. Spec-only.
+> Illustrative TypeScript interfaces are normative for *shape*,
 > not implementation. `MUST`/`SHOULD`/`MAY` are RFC-2119 keywords. Companion: `PRIOR-ART.md`
 > (research brief). This SPEC **resolves** the hard problems and tensions enumerated there; it does
 > not re-derive them. Cross-references like *(HP-4)* point at PRIOR-ART §3 hard problems and *(T-2)*
@@ -106,10 +109,12 @@
 > pin-completeness. A fact `F` from key `K` projects **trusted** only over `K`'s complete gap-free chain
 > up to `F`; an evicted/withheld/unreplicated earlier same-key fact yields a gap, so `F` projects
 > **`pending`** (not trusted, not rejected) until the chain completes — an evicted higher honest fact can
-> therefore **never silently flip a lower backdate to trusted**. A registered key's **entire emission** is
-> made **`key-chain-durable`** (never eviction-eligible, §3.5a), so the evidence the rule reads is always
-> retained; an unregistered key's facts may be evicted but have no trusted same-key fact to defeat and
-> still `pending`-on-gap. Per-key trust is thus a function of `K`'s **complete durable chain** —
+> therefore **never silently flip a lower backdate to trusted**. A registered key's emission is made
+> **`key-chain-durable`** (preferentially retained, §3.5a; the v5 draft made it *never*-evictable, which
+> the v6 fix below corrects to a **cap-bounded** retention with on-demand re-fetch — see the v6 headline,
+> M6-1), so the evidence the rule reads is normally retained and always completable; an unregistered key's
+> facts may be evicted but have no trusted same-key fact to defeat and still `pending`-on-gap. Per-key
+> trust is thus a function of `K`'s **complete chain** —
 > replica-independent once complete, **monotone and eviction-safe** (INV-16/INV-19). INV-16 is amended:
 > "no higher same-key fact" → "no higher same-key fact **in the complete durable chain**." The SEC
 > corollary is reworded from "not regressed" to **"preserved on the complete durable subset"** (M5-1) and
@@ -118,6 +123,31 @@
 > preserves honest concurrent sub-`effectiveFrom` work — an explicit tradeoff, not a defect. A **global
 > aggregate `quarantinePoolBytes` budget** (m5-1) bounds the multi-key flood; the `kip:revoked-concurrent`
 > recovery path is mechanized as a **`re-attest` fact** (m5-3).
+>
+> **v6 headline fix — DECOUPLE backdating-safety from chain RETENTION; the registered-key durable pool is
+> CAP-BOUNDED with on-demand re-fetch (M6-1), closing the last internal contradiction.** The v5 C5-1 fix
+> used two mechanisms: **(i)** a per-key **chain-completeness gate** (a `(wall,counter)` gap ⇒ `pending`,
+> never a silent trusted backdate) and **(ii)** `key-chain-durable` retention (a registered key's chain is
+> never evicted). Mechanism (i) alone is the **safety** property; (ii) was a **liveness** aid that
+> over-reached into "never evict a registered key's *entire emission*," which (a) reopened the C4-1
+> unbounded-durable-storage residual for a registered/compromised key and (b) **contradicted** the spec's
+> own "bounded per registered key by quota" claim — a quota that can never evict is not a bound. v6 makes
+> `key-chain-durable` **bounded by a per-key `keyChainDurableCapBytes`** (manifest-pinned): a registered
+> key's chain is **preferentially retained up to its cap**; past the cap, the *oldest* chain links may be
+> evicted. **Safety is unaffected** — the completeness gate (i) makes any resulting `(wall,counter)` gap
+> project **`pending`** (never a silent trusted backdate), so an evicted-then-needed link is simply
+> **re-fetched on demand** (content-addressed, the mechanism the spec already uses for late registration);
+> dependent same-key facts stay `pending` until the link is re-fetched or the chain otherwise completes.
+> This makes "bounded per registered key by quota" **true**, removes the INV-18(d) contradiction, and
+> leaves the convergence core untouched. INV-18(d) is amended ("retained UP TO the cap; an evicted link
+> forces dependent facts `pending`, never trusted"); INV-19's non-reversal is preserved by **pinning the
+> completed-chain frontier** (a link that has completed a chain for a non-`pending` dependent is retained
+> while that dependent is non-`pending`), so `pending → demoted/trusted` still happens at most once. The
+> per-key chain is disambiguated as **per-key** (an author key may emit from multiple replicas), with
+> `(wall,counter)` contiguity decided **per-`(replicaId,key)`** (matching the §4c/m4-1 rule it reuses) and
+> the monotonicity demotion key-wide (m6-1). The honest **re-fetch liveness residual** (a pre-registration
+> chain link LRU-dropped from *every* replica leaves dependent facts permanently `pending` — safe, never a
+> wrong trusted value) is stated plainly (m6-3); INV-19 holds under cap-bounded retention (m6-2).
 
 ---
 
@@ -194,7 +224,7 @@ substrate, agents are clients). It provides:
 | **Author-HLC** | The fact's own author-stamped, signed `hlc` (§4.1). The **only** time axis `proj` ever reads — for `orderKey`, valid-time geometry, *and* authorization/revocation/plausibility decisions. Set-resident ⇒ identical on every replica. |
 | **INGEST-GATE** | The **signature-validity-only** admission predicate (well-formed ∧ Ed25519 signature verifies). Decides set *membership* only; a pure function of the fact's bytes ⇒ identical on every honest replica; **never** decides a projected value, and **never** consults drift, key-registration, authority, or revocation (C2-1, C3-1, M3-4). §3.2. |
 | **PROJ-demotion** | All trust decisions — key-registration, namespace-authorization, revocation, *and* author-HLC causal plausibility (anti-backdating) — made **inside `proj`**, keyed on **author-HLC** over the admitted set. Set-pure ⇒ convergent. A demoted fact is `untrusted`/`quarantined`, never dropped, and re-evaluated monotonically as facts arrive. §3.6, §8.1. |
-| **Causal plausibility** | A set-pure anti-backdating rule (replaces the v2-draft receiver-clock drift gate, C3-1/C3-3/M3-1; C4-2 makes its PRIMARY form involuntary; C5-1 makes it eviction-safe): a fact `F` from key `K` projects **trusted** only over `K`'s **complete gap-free `(wall,counter)` chain** up to `F` (else **`pending`**, reusing the §4c/m4-1 pin-completeness contiguity rule, C5-1), and once complete is demoted `untrusted-anachronistic` if `S` holds a **higher-author-HLC, non-ancestor** fact from the **same** `K` **in that complete chain** (per-key monotonicity — reads `K`'s *involuntary* footprint, not forgeable by omitting `causedBy`, C4-2; not defeatable by evicting `K`'s higher facts, since a registered key's chain is `key-chain-durable`, §3.5a, C5-1). A *secondary* tightening rule additionally requires `F`'s author-HLC to dominate its *declared* `causedBy` closure over `S`. Compared only to set-resident author-HLCs, never to any receiver clock. §3.6, §8.1, §4b.1. |
+| **Causal plausibility** | A set-pure anti-backdating rule (replaces the v2-draft receiver-clock drift gate, C3-1/C3-3/M3-1; C4-2 makes its PRIMARY form involuntary; C5-1 makes it eviction-safe): a fact `F` from key `K` projects **trusted** only over `K`'s **complete gap-free `(wall,counter)` chain** up to `F` (else **`pending`**, reusing the §4c/m4-1 pin-completeness contiguity rule, C5-1), and once complete is demoted `untrusted-anachronistic` if `S` holds a **higher-author-HLC, non-ancestor** fact from the **same** `K` **in that complete chain** (per-key monotonicity — reads `K`'s *involuntary* footprint, not forgeable by omitting `causedBy`, C4-2; not defeatable by evicting `K`'s higher facts — an evicted link yields a `(wall,counter)` gap ⇒ `pending`, and a registered key's chain is `key-chain-durable`, cap-bounded with on-demand re-fetch, §3.5a, C5-1/M6-1; contiguity decided per-`(replicaId,key)`, demotion key-wide, m6-1). A *secondary* tightening rule additionally requires `F`'s author-HLC to dominate its *declared* `causedBy` closure over `S`. Compared only to set-resident author-HLCs, never to any receiver clock. §3.6, §8.1, §4b.1. |
 | **Authority** | A key (Ed25519) authorized, by a signed chain rooted in the tenant root key, to write a given EID **namespace** and/or perform scoped ops (excise, revoke), **as of an author-HLC interval**. Key-registration, namespace authority, and revocation are **all** proj decisions keyed on author-HLC; **only** signature validity is an ingest-gate predicate. §2.4, §8. |
 
 ---
@@ -393,7 +423,7 @@ objects/                             # content-addressed: blobs, trees, commits 
 /ontology/nodes/<kind>@<ver>.json            # schema as data, versioned
 /ontology/edges/<kind>@<ver>.json
 /upcasters/<factType>@<from>-<to>.json       # declarative upcaster descriptors (HP-8)
-/manifest.json                               # repo format version, hash algo, clock epoch, GENESIS tenant root key set, shard depth, ε_causal (proj-time causal slack), regenBoundaryRule, quarantineTtlMs + quarantineKeyCapBytes + quarantinePoolBytes (per-key + GLOBAL aggregate retention bounds, §3.5a/m5-1) — IMMUTABLE post-genesis (m2-5)
+/manifest.json                               # repo format version, hash algo, clock epoch, GENESIS tenant root key set, shard depth, ε_causal (proj-time causal slack), regenBoundaryRule, quarantineTtlMs + quarantineKeyCapBytes + quarantinePoolBytes (per-key + GLOBAL aggregate retention bounds, §3.5a/m5-1) + keyChainDurableCapBytes (per-registered-key chain cap, §3.5a/M6-1) — IMMUTABLE post-genesis (m2-5)
 .gitattributes                               # binds /heads/** AND /manifest.json to the regenerate/reject-not-merge merge driver (below)
 ```
 
@@ -717,9 +747,11 @@ second touch the first.)
    - **Per-key quota** keyed on the signing-key fingerprint (bytes/facts per key per epoch);
    - **Capability token / proof-of-deposit / proof-of-work** presented with the push;
    - **Trusted-author allowlist** = the **set-resident** registered-key set (a key with a genesis-rooted
-     `KeyAuthorization ≤ the fact's author-HLC`, §8.1), **tenant-scoped**. Facts from registered
-     in-namespace keys are **always durably stored** (never quota-dropped) — honest authors are never
-     starved.
+     `KeyAuthorization ≤ the fact's author-HLC`, §8.1), **tenant-scoped**. A registered key's **trusted**
+     (in-namespace, non-revoked, plausible) facts are `durable` and **always durably stored** (never
+     evicted) — honest authors are never starved. A registered key's **untrusted/anachronistic** facts
+     (which still anchor its `(wall,counter)` chain) are `key-chain-durable` — preferentially retained up
+     to `keyChainDurableCapBytes`, not unconditionally (M6-1, next).
 
 **Retention model (set-pure eligibility, transport-local enforcement).** `proj` computes, as a pure
 function of `S`, a per-fact **`RetentionClass`** that the transport layer reads to decide eviction. It is
@@ -730,9 +762,13 @@ so every replica computes the *same class* for the same fact:
 type RetentionClass =
   | "durable"             // trusted (registered, in-namespace, non-revoked, plausible) — NEVER evicted
   | "key-chain-durable"   // a KEY's OWN emission (a fact authored by registered key K, including its
-                          //   own quarantined/anachronistic facts) — NEVER evicted, because K's complete
-                          //   (wall,counter) chain is the substrate the per-key anti-backdating rule reads
-                          //   (C5-1). Pinned the moment K acquires a set-resident KeyAuthorization.
+                          //   own quarantined/anachronistic facts) — PREFERENTIALLY retained up to a
+                          //   per-key keyChainDurableCapBytes cap, because K's complete (wall,counter)
+                          //   chain is the substrate the per-key anti-backdating rule reads (C5-1).
+                          //   Past the cap, oldest chain links may be evicted; an evicted-then-needed
+                          //   link is re-fetched on demand, and dependent same-key facts stay `pending`
+                          //   (via the completeness gate, §3.6) until re-fetch — SAFE, never trusted
+                          //   silently (M6-1). Pinned the moment K acquires a set-resident KeyAuthorization.
   | "quarantined-ttl"     // signature-valid but proj-demoted, from an UNREGISTERED key:
                           //   stored under a BOUNDED ttl/byte-cap; eviction-eligible under pressure
   | "evicted";            // bytes reclaimed; re-fetchable on demand if it later becomes durable
@@ -741,19 +777,37 @@ type RetentionClass =
 - A **`durable`** fact (trusted author) is **never evicted**: its bytes are pinned in durable history.
 - A **`key-chain-durable`** fact is **any fact authored by a key `K` that holds a set-resident
   `KeyAuthorization`** (registered at *some* author-HLC), **whether or not that individual fact projects
-  trusted** — including `K`'s pre-registration, anachronistic, or out-of-namespace facts. **It is NEVER
-  eviction-eligible (C5-1 root fix).** Rationale: the per-key anti-backdating rule (§3.6) and the per-key
-  chain-completeness gate it now requires both read `K`'s **own complete `(wall,counter)` chain** in `S`;
-  if any of `K`'s facts could be evicted, an evicted *higher*-stamped honest fact would silently stop
-  contradicting a *lower*-stamped backdate from `K`, flipping the backdate from `pending`/`demoted` to
-  `trusted` (the C5-1 attack). By pinning a registered key's **entire emission** non-evictable, the
-  monotonicity evidence is retained, so per-key trust is a function of `K`'s **complete durable chain**,
-  not of a replica-chosen subset. This pool is **authenticated and quota-bounded** (per registered key,
-  §8.1) — bounded, not unbounded (m5-4). The class is pinned the instant `K` acquires a set-resident
-  `KeyAuthorization`; before that, `K`'s facts are `quarantined-ttl` (next bullet) and an eviction of a
-  pre-registration fact instead forces **`pending`** trust on later same-key facts via the
-  completeness gate (§3.6) — either branch is safe (retained-and-readable, or evicted-and-gap-forces-pending),
-  never silently-trusted-backdate.
+  trusted** — including `K`'s pre-registration, anachronistic, or out-of-namespace facts. **It is
+  PREFERENTIALLY RETAINED up to a per-key `keyChainDurableCapBytes` cap (manifest-pinned); past the cap,
+  the OLDEST chain links may be evicted (M6-1 — bounded, not "never-evict").** Rationale: the per-key
+  anti-backdating rule (§3.6) and the per-key chain-completeness gate it now requires both read `K`'s
+  **own complete `(wall,counter)` chain** in `S`; the chain must be *available* for honest registered
+  facts to leave `pending`. **The safety, however, does NOT require never-evicting it** — it rests on the
+  **chain-completeness gate alone** (§3.6 step (i)): an evicted higher-stamped honest fact leaves a
+  `(wall,counter)` gap, and a gap projects **`pending`** (never a silent trusted backdate). The cap
+  therefore buys *liveness* (keep the working set local so completion is reachable without re-fetch), not
+  *safety*. **When a chain link is evicted past the cap and a dependent same-key fact later needs it, the
+  link is re-fetched ON DEMAND** (content-addressed; any peer that still holds the blob serves it — the
+  same mechanism §3.5a already uses for late registration); until it is re-fetched (or the chain otherwise
+  completes), every dependent same-key fact projects **`pending`** (not trusted, not rejected). So per-key
+  trust is a function of `K`'s **complete chain** — replica-independent once complete — and a replica that
+  has evicted part of `K`'s chain simply reads dependent facts `pending`, never a divergent trusted value.
+  This pool is therefore **authenticated and genuinely quota-bounded** (per registered key by
+  `keyChainDurableCapBytes`, §8.1) — bounded, not unbounded (m5-4, M6-1 contradiction closed). The class
+  is pinned the instant `K` acquires a set-resident `KeyAuthorization`; before that, `K`'s facts are
+  `quarantined-ttl` (next bullet) and an eviction of a pre-registration fact instead forces **`pending`**
+  trust on later same-key facts via the completeness gate (§3.6) — either branch is safe
+  (retained-and-readable, re-fetched-on-demand, or evicted-and-gap-forces-pending), never
+  silently-trusted-backdate.
+  - **Completed-chain-frontier pinning (keeps INV-19 non-reversal true under the cap — m6-2).** Eviction
+    past `keyChainDurableCapBytes` follows the **frontier of completed-chain evidence**, not the whole
+    emission: a chain link that has **completed `K`'s chain for a currently non-`pending` (trusted or
+    demoted) dependent fact** is **pinned (not re-evictable) for as long as that dependent is non-`pending`**.
+    Only *historical* links not currently backing a non-`pending` dependent are eviction-eligible. This
+    bounds bytes (only the completion frontier is pinned, not every historical link) while guaranteeing a
+    fact that has already left `pending` never re-opens its gap, so the `pending → trusted/demoted`
+    transition is **monotone (at most once, never reverses)** even under cap-bounded retention with
+    on-demand re-fetch (INV-19).
 - A **`quarantined-ttl`** fact (signature-valid, from an **unregistered** key — no set-resident
   `KeyAuthorization` for its signing key at *any* author-HLC) is stored under a **bounded TTL and a
   per-key byte-cap** (manifest parameters `quarantineTtlMs`, `quarantineKeyCapBytes`) **and a GLOBAL
@@ -778,12 +832,15 @@ type RetentionClass =
   per-key `quarantineKeyCapBytes` is a *fairness* sub-limit so one key cannot monopolize the pool, **not**
   the aggregate bound. With both, an `N`-key flood cannot refill the pool faster than TTL/LRU drains it.
 - **Eviction is local and policy-driven, so two replicas may hold different SUBSETS** of the
-  `quarantined-ttl` facts (one evicted, one not). This is a **partial-replication** model. It is sound
-  precisely because (i) evicted facts are non-durable and project nothing, **and** (ii) a registered
-  key's own chain is `key-chain-durable` (never evicted) so the per-key anti-backdating evidence is
-  **never** the thing evicted (C5-1): the only evictable facts belong to *unregistered* keys, whose
-  same-key trust is gated to `pending` across any gap. See the **per-shared-subset SEC restatement** in
-  §4b.4.
+  `quarantined-ttl` facts (one evicted, one not) — and, past the cap, of a registered key's
+  `key-chain-durable` chain too. This is a **partial-replication** model. It is sound precisely because
+  (i) evicted facts are non-durable-or-not-currently-load-bearing and project nothing trusted, **and**
+  (ii) per-key trust is gated on **chain completeness** (§3.6 step (i)), so wherever a replica's held
+  subset is *not* complete for a covering key — whether because an unregistered key's fact, or a
+  cap-evicted registered chain link, is missing — that key's dependent facts project **`pending`**, never
+  a divergent *trusted* value. An evicted registered-chain link is re-fetched on demand so the chain can
+  complete; until then the dependent reads `pending` (safe). See the **per-shared-subset SEC restatement**
+  in §4b.4.
 
 **Why this bounds the C4-1 attack while preserving v3's convergence.** The unlimited-identity vector is
 **unregistered keys** (registration is proj-time, so a fresh keypair's facts are admitted logically). v4
@@ -796,14 +853,22 @@ bounded**. Excision/revocation still demote-not-delete in `proj` (§4.5/§8.1); 
 the new, separate, *byte-reclaiming* path for non-durable facts — the missing back-pressure the v3 model
 lacked.
 
-**Why eviction is anti-backdating-safe (C5-1).** The per-key anti-backdating rule (§3.6) reads `K`'s own
-same-key facts in `S`. Eviction must never remove that evidence under a *trusted* fact, or a victim
-replica could project a same-key backdate as trusted. Two complementary mechanisms close this at the
-root, with **no new machinery** — both reuse the per-key `(wall,counter)` contiguity rule already defined
-for pins (§4c/m4-1):
-- For a **registered** key, *all* its facts are `key-chain-durable` (never evicted), so `K`'s complete
-  `(wall,counter)` chain is always retained on any replica that holds *any* trusted fact of `K`. The
-  monotonicity evidence cannot be evicted away.
+**Why eviction is anti-backdating-safe (C5-1) — safety rests on the gate, not on retention (M6-1).** The
+per-key anti-backdating rule (§3.6) reads `K`'s own same-key facts in `S`. The **safety** property (no
+eviction ever flips a same-key backdate to *trusted*) is closed by the **chain-completeness gate alone**:
+any absent same-key fact — evicted, withheld, never-replicated, or cap-evicted — leaves a `(wall,counter)`
+gap, and a gap projects **`pending`**, never trusted. `key-chain-durable` retention (cap-bounded, M6-1) is
+a **liveness** aid layered on top — it keeps the chain local so honest registered facts complete without
+re-fetch — *not* a safety requirement; even fully relaxed, safety survives via the gate, at the cost of a
+dependent fact sitting `pending` until re-fetch. Both readings reuse the per-key `(wall,counter)`
+contiguity rule already defined for pins (§4c/m4-1), with **no new machinery**:
+- For a **registered** key, its facts are `key-chain-durable` — **preferentially retained up to
+  `keyChainDurableCapBytes`**, so `K`'s complete `(wall,counter)` chain is normally available locally and
+  honest registered facts project trusted without re-fetch. **Safety does not depend on this retention**:
+  if a chain link is evicted past the cap, the completeness gate (§3.6 step (i)) makes the resulting gap
+  project **`pending`**, never a silent trusted backdate; the link is re-fetched on demand to complete the
+  chain. The monotonicity evidence therefore cannot be *silently* evicted away into a trusted backdate —
+  the worst case is a dependent fact stuck `pending` until re-fetch (M6-1).
 - For an **unregistered** key, its facts are `quarantined-ttl` and evictable, **but** the key has no
   trusted same-key fact to defeat; and §3.6 now gates per-key trust on **chain completeness**: a fact `F`
   from `K` projects **trusted** only over a gap-free `(wall,counter)` chain of `K` up to `F`'s
@@ -818,14 +883,28 @@ chain completes, never removes it).
 is still exposed to disk growth — admission control is a **MAY**, the *mechanism* not a mandate; the spec
 makes it expressible and pins the set-pure `RetentionClass`, leaving the policy aggressiveness to N4
 ops. It also does not bound an attacker who obtains a *registered* key (that is the insider threat, bounded
-instead by per-key quota + revocation §8.1, **and — for backdating — by the per-key chain-completeness
-gate, which demotes any backdate that violates `K`'s own retained chain**, C5-1). The residual that
-remains is precise: a registered key can still self-date a *lone* fact at an author-HLC **below all of its
-own existing facts** only if that fact begins a fresh contiguous chain segment with no lower same-key fact
-(genuine first-emission), exactly the acknowledged §3.6 residual — not a fact that contradicts a retained
-higher same-key fact. The guarantees are: **(a) no UNREGISTERED key can force unbounded DURABLE growth on
-a replica applying the default retention policy; (b) no eviction or partial replication can flip a
-same-key backdate from `pending`/`demoted` to `trusted` (C5-1).**
+**now genuinely by the per-key `keyChainDurableCapBytes` cap (M6-1)** + revocation §8.1, **and — for
+backdating — by the per-key chain-completeness gate, which `pending`s/demotes any backdate that violates
+`K`'s own chain**, C5-1). The residual that remains is precise: a registered key can still self-date a
+*lone* fact at an author-HLC **below all of its own existing facts** only if that fact begins a fresh
+contiguous chain segment with no lower same-key fact (genuine first-emission), exactly the acknowledged
+§3.6 residual — not a fact that contradicts a higher same-key fact in its chain. The guarantees are:
+**(a) no UNREGISTERED key can force unbounded DURABLE growth on a replica applying the default retention
+policy; (b) no eviction or partial replication can flip a same-key backdate from `pending`/`demoted` to
+`trusted` (C5-1); (c) a REGISTERED key's durable chain is now bounded by `keyChainDurableCapBytes`, so a
+registered/compromised key can no longer force unbounded non-evictable durable bytes (M6-1).**
+
+**Re-fetch liveness residual — stated honestly (m6-3).** Cap-bounded retention plus on-demand re-fetch
+introduces one narrow, *safe* liveness cliff. A key registered *after* its pre-registration facts have
+already aged out of **every** replica's `quarantined-ttl` pool (the global `quarantinePoolBytes` LRU can
+drain a blob on all replicas under correlated pressure) — or a `key-chain-durable` chain link evicted past
+the cap on every replica that ever held it — leaves **no peer to re-fetch from**, so the chain **cannot
+complete**, and every dependent same-key fact stays **`pending` permanently**. This is **safe** (it never
+yields a wrong *trusted* value — `pending` is a labeled not-yet-known, §3.6) but it is a genuine, honest
+**liveness loss**, not a bug. **Mitigation:** `key-chain-durable` chains are preferentially retained up to
+`keyChainDurableCapBytes`, and operators **size the cap (and `quarantineTtlMs`) to the working set** and
+**register keys before their pre-registration facts' `quarantineTtlMs` elapses**, so the working chain is
+retained somewhere and re-fetch succeeds. This residual is listed as an accepted non-core bound in §8.3b/§9.
 
 ### 3.6 Content-addressing vs stable identity (the dual-id scheme)
 
@@ -924,6 +1003,18 @@ in author-HLC space). Concretely:
       fact also leaves the chain incomplete, so the backdate is `pending` (not trusted) until the chain —
       including that higher fact — is present, at which point the monotonicity rule (ii) demotes it. The
       gate reads only **local-chain contiguity** (locally decidable, §4c m4-1), so it stays set-pure.
+      - **What "`K`'s chain" means — per-key, contiguity per-`(replicaId,key)` (DISAMBIGUATED, m6-1).** An
+        author key `K` MAY emit from **multiple `replicaId`s** (a shared service key, or a key rotated
+        onto two agents), so "`K`'s chain" is **per-key across all replicaIds `K` used**, ordered by `K`'s
+        global emission in **author-HLC** order. There is no single `(wall,counter)` sequence spanning two
+        replicas; the gate therefore decides **`(wall,counter)` contiguity per-`(replicaId, key)`** —
+        exactly the §4c/m4-1 rule — requiring, for **each** `(replicaId, key)` pair `K` used at or below
+        `F`'s author-HLC, an unbroken `(wall,counter)` chain from that pair's genesis up to its frontier.
+        Completeness is the **union** over all of `K`'s `(replicaId,key)` chains (a gap on *any* of `K`'s
+        replicas ⇒ `pending`); the monotonicity demotion (ii) is **key-wide** (it compares author-HLCs
+        across **all** of `K`'s facts regardless of replica). So *completeness* is
+        per-`(replicaId,key)`-union-wide and *demotion* is key-wide. A build that checks only a single
+        `replicaId`'s chain and misses a gap on `K`'s other replica is non-conformant (INV-19).
     - **(ii) Monotonicity demotion (involuntary).** Once the chain is complete up to `F`, `F` is demoted
       `untrusted-anachronistic` iff `S` contains another admitted fact `F'` from the **same key `K`** with
       `author-HLC(F') > author-HLC(F)` **and** `F` is **not** a causal ancestor of `F'` (via the
@@ -932,11 +1023,15 @@ in author-HLC space). Concretely:
       facts, so the bound reads only `K`'s involuntary same-key facts — **set-pure** and **not evadable by
       omitting an optional field**. This is the per-author generalization of the revocation causal-cutoff
       (§8.1).
-    - **Retention coupling (why the gate is enforceable, C5-1).** A registered key's facts are
-      **`key-chain-durable`** (never evicted, §3.5a), so the chain the gate reads is always retained where
-      `K` has any trusted fact; an unregistered key's facts are evictable but have no trusted same-key
-      fact to defeat, and any gap forces `pending` per (i). Either way the gate cannot be defeated by
-      eviction or selective non-replication.
+    - **Retention coupling (liveness, not safety — cap-bounded, M6-1).** A registered key's facts are
+      **`key-chain-durable`** — preferentially retained up to `keyChainDurableCapBytes` (§3.5a), so the
+      chain the gate reads is normally available locally and honest registered facts complete *without*
+      re-fetch. This retention is a **liveness** aid: **safety is closed by gate (i) alone** — any absent
+      link (including one evicted past the cap) leaves a gap ⇒ `pending`, never a silent trusted backdate.
+      An evicted link is **re-fetched on demand** (content-addressed, §3.5a) to complete the chain; until
+      then dependents read `pending`. An unregistered key's facts are evictable but have no trusted
+      same-key fact to defeat, and any gap forces `pending` per (i). Either way the gate cannot be defeated
+      by eviction or selective non-replication.
     - **Precise bound — what it does and does NOT prevent.** It bounds backdating **relative to the key's
       own observed activity over `K`'s complete durable chain**: a key whose chain contains a higher-stamped
       non-ancestor fact cannot insert a *trusted* lower-stamped fact (it is demoted), and a replica that has
@@ -1301,9 +1396,11 @@ receiver's wall clock and delivery timing, so honest replicas could admit perman
 (C5-1), which reads the author's *involuntary* footprint in `S` and is not author-forgeable: a fact `F`
 from key `K` projects **trusted** only over a gap-free `(wall,counter)` chain of `K` up to `F` (else
 `pending`, §3.6/§4c m4-1), and is demoted if `S` holds a **higher-author-HLC, non-ancestor** fact from
-the **same** `K` (§3.6) — `K` cannot un-emit its own later-stamped facts, and (since a registered key's
-chain is `key-chain-durable`, never evicted, §3.5a) eviction cannot remove that evidence under a trusted
-fact. A **secondary** rule (tightening only) demotes `F` if its author-HLC fails to
+the **same** `K` (§3.6) — `K` cannot un-emit its own later-stamped facts, and **safety holds via the
+completeness gate alone**: an evicted/cap-evicted link yields a `(wall,counter)` gap ⇒ `pending`, never a
+silent trusted backdate (a registered key's chain is `key-chain-durable`, cap-bounded with on-demand
+re-fetch, §3.5a/M6-1 — a *liveness* aid, not the safety mechanism). A **secondary** rule (tightening only)
+demotes `F` if its author-HLC fails to
 dominate the author-HLC of every fact in its *declared* `causedBy` closure over `S`; this reads an
 author-controlled field, so it is a lower bound on real causality and is never relied on alone. A
 **well-formedness** rule demotes a fact with a forward (`> child`) or cyclic `causedBy` edge (§3.6, M4-2).
@@ -1420,15 +1517,16 @@ the C-3/C2-2 fix.
 > the INTERSECTION `S_A ∩ S_B` of what they both currently store, AND restricted to cells whose covering
 > facts' authoring keys are chain-complete on both, `proj` agrees** — every such cell projects
 > byte-identically on A and B. This holds because (i) `proj` is a pure function of the held set and reads
-> no policy; (ii) eviction only ever removes `quarantined-ttl` facts (an **unregistered** key's facts —
-> a registered key's entire chain is `key-chain-durable`, never evicted, §3.5a), which contribute
-> **nothing** to any cell's `/heads` value; and (iii) per-key trust is gated on **chain completeness**
-> (§3.6/C5-1), so wherever a replica's durable subset is *not* complete for a covering key, that cell
-> projects `pending` **on that replica**, not a divergent trusted value — divergence is surfaced as
-> `pending`, never as two different trusted heads. Equivalently: **all `durable`/`key-chain-durable`
-> (trusted-authored, and registered-key chain) facts converge fully** (never evicted, so that subset
-> behaves exactly as the full-replication theorem above), and only *unregistered* non-durable bytes may
-> differ.
+> no policy; (ii) eviction only ever removes facts that contribute **nothing trusted** to any cell's
+> `/heads` value — `quarantined-ttl` facts (an **unregistered** key's facts), or `key-chain-durable`
+> chain links beyond `keyChainDurableCapBytes` that are not currently backing a non-`pending` dependent
+> (M6-1); and (iii) per-key trust is gated on **chain completeness** (§3.6/C5-1), so wherever a replica's
+> held subset is *not* complete for a covering key — whether an unregistered fact or a cap-evicted
+> registered link is missing — that cell projects `pending` **on that replica**, not a divergent trusted
+> value (the link is re-fetched on demand to complete the chain). Divergence is surfaced as `pending`,
+> never as two different trusted heads. Equivalently: **every cell whose covering keys are chain-complete
+> on both replicas converges byte-identically**; only not-yet-complete cells read `pending`, and only
+> unregistered or cap-evicted non-load-bearing bytes may differ.
 >
 > **Value-neutrality exception (M5-1/C5-1 — pinned, no longer over-claimed).** v3's SEC was: equal
 > *received* sets ⇒ byte-identical heads, full stop. v4-final's SEC is **strictly weaker**: equal
@@ -1441,10 +1539,16 @@ the C-3/C2-2 fix.
 > *not* be value-neutral — evicting a **pre-registration same-key** fact that is the
 > monotonicity-contradicting evidence for a *later* same-key fact, thereby flipping that later fact
 > demoted↔trusted — is closed by the chain-completeness gate: the eviction produces a `(wall,counter)`
-> gap, so the later fact projects **`pending`**, never a silently-flipped trusted value. With the C5-1 fix
-> in force, eviction is value-neutral for every fact a replica may evict (only unregistered-key facts, and
-> only with `pending`-on-gap semantics for any dependent same-key fact). Membership purity (signature-only)
-> is preserved; availability is bounded; convergence is guaranteed **on the complete durable subset**.
+> gap, so the later fact projects **`pending`**, never a silently-flipped trusted value. The **same**
+> reasoning extends to cap-evicted `key-chain-durable` links under M6-1: a registered chain link evicted
+> past `keyChainDurableCapBytes` produces a gap ⇒ dependents `pending`, never a flipped trusted value, and
+> is re-fetched on demand. With the C5-1 fix in force, eviction is value-neutral for every fact a replica
+> may evict (unregistered-key facts and cap-evicted registered links), always with `pending`-on-gap
+> semantics for any dependent same-key fact. **INV-19 holds under cap-bounded retention (m6-2):** trust is
+> preserved once the chain is complete OR re-fetched, `pending` otherwise — the M6-1 cap does **not**
+> contradict the monotone `pending → trusted/demoted` guarantee, because the completed-chain frontier is
+> pinned while any non-`pending` dependent relies on it (§3.5a). Membership purity (signature-only) is
+> preserved; availability is bounded; convergence is guaranteed **on the complete durable subset**.
 
 *Proof.*
 1. **The admitted set converges — admission is a pure function of the fact's bytes (C3-1, M3-4, M3-5).**
@@ -1512,20 +1616,25 @@ gate created — partitions longer than ε would lose data; it is gone). Converg
 fact-sets equalize. Any fact that is still *causally implausible* given the currently-received facts is
 **quarantined** (projected `untrusted-anachronistic`) and **re-evaluated as more facts arrive** — so its
 *logical membership* is never lost while it can still be cleared. **Retention of its BYTES, however, is
-bounded (§3.5a, m4-2/m5-4):** a quarantined fact from a **trusted (registered) key** is
-`key-chain-durable` (never evicted, so an honest transient anachronism that clears later is always
-recoverable locally, **and** so the key's `(wall,counter)` chain — the C5-1 anti-backdating evidence — is
-retained); a quarantined fact from an **unregistered** key is `quarantined-ttl` — kept under a bounded
-TTL + per-key byte-cap + **global `quarantinePoolBytes` aggregate budget** (m5-1) and **eviction-eligible**
-thereafter (re-fetchable on demand if it later becomes durable). So a permanently-partitioned
-*unregistered* author's never-clearing quarantine has a **storage ceiling** (TTL/LRU over a fixed global
-pool) rather than unbounded indefinite growth, while honest registered authors are never evicted. **Honest
-bound (m5-4):** for a **registered** key, the quarantine is **not "bounded" in the absolute sense — it is
-"bounded per registered key by quota"** (the `key-chain-durable` pool is authenticated and per-key
-quota-limited, §8.1, not TTL-evicted). v4 deliberately trades the m4-2 unbounded *unregistered* quarantine
-for a *bounded-per-registered-key* `durable` pool — the correct safety choice (never silently lose honest
-data, and never evict the anti-backdating chain), stated explicitly rather than claimed as unconditionally
-"bounded." No coordinator, no
+bounded (§3.5a, m4-2/m5-4/M6-1):** a quarantined fact from a **trusted (registered) key** is
+`key-chain-durable` — **preferentially retained up to `keyChainDurableCapBytes`**, so an honest transient
+anachronism that clears later is normally recoverable locally and the key's `(wall,counter)` chain — the
+C5-1 anti-backdating evidence — is normally retained; past the cap the oldest chain links may be evicted
+and **re-fetched on demand** (dependents read `pending` until then — safe). A quarantined fact from an
+**unregistered** key is `quarantined-ttl` — kept under a bounded TTL + per-key byte-cap + **global
+`quarantinePoolBytes` aggregate budget** (m5-1) and **eviction-eligible** thereafter (re-fetchable on
+demand if it later becomes durable). So a permanently-partitioned *unregistered* author's never-clearing
+quarantine has a **storage ceiling** (TTL/LRU over a fixed global pool) rather than unbounded indefinite
+growth. **Honest bound (m5-4 / M6-1 — now genuinely bounded):** for a **registered** key, the durable
+chain is **"bounded per registered key by quota" — and this is now *true*, not aspirational**, because
+`keyChainDurableCapBytes` is an actual eviction cap (M6-1), not a never-evict promise. A registered or
+compromised key therefore can **no longer** force unbounded non-evictable durable bytes; the only cost of
+the cap is the **re-fetch liveness residual** (§3.5a/m6-3): if an evicted chain link is unavailable on
+every peer, dependent same-key facts stay `pending` (never wrong-trusted). v4/v6 deliberately trades the
+m4-2 unbounded *unregistered* quarantine and the (former) unbounded *registered* `key-chain-durable` pool
+for a *cap-bounded-per-registered-key* pool with on-demand re-fetch — the correct safety choice (never
+silently lose-into-trusted honest data, never silently trust a backdate), stated explicitly rather than
+claimed as unconditionally "bounded." No coordinator, no
 quorum, no global lock (T-2 resolved toward *coordinator-free*).
 
 ### 4b.5 Branch-per-agent vs trunk (decision)
@@ -1956,9 +2065,11 @@ interface KeyRevocation {                    // type:"revoke-key" fact; demotes,
      **higher-author-HLC, non-ancestor** fact from the **same** `K`. This reads `K`'s *involuntary* same-key
      footprint in `S` (not the voluntary `causedBy` field), so it is **not evadable by omitting
      `causedBy`** (C4-2) **nor by inducing the victim to evict/withhold `K`'s higher facts** — eviction
-     yields a chain gap ⇒ `pending`, and a registered key's chain is `key-chain-durable` (never evicted,
-     §3.5a), so the evidence is retained (C5-1). A genuine backdate is exposed by the higher-stamped facts
-     `K` itself emitted; an honest late fact with no higher same-key fact passes (C3-2).
+     yields a chain gap ⇒ `pending` (the completeness gate is the *safety* mechanism), and a registered
+     key's chain is `key-chain-durable` (preferentially retained up to `keyChainDurableCapBytes`, with
+     cap-evicted links re-fetched on demand, §3.5a/M6-1), so the evidence is normally retained and always
+     completable (C5-1). A genuine backdate is exposed by the higher-stamped facts `K` itself emitted; an
+     honest late fact with no higher same-key fact passes (C3-2).
   2. **SECONDARY (tightening) — voluntary `causedBy` plausibility (§3.6, §4b.1).** When `F` declares
      `causedBy`, its author-HLC must also dominate its declared ancestry's author-HLCs. This only
      tightens; it reads an author-controlled field and is never relied on alone.
@@ -1980,17 +2091,21 @@ interface KeyRevocation {                    // type:"revoke-key" fact; demotes,
   first-emission fact freely; this residual is **acknowledged and acceptable** because such a fact has no
   conflicting same-key history to poison and is resolved against other authors by ordinary `orderKey`.
   **Crucially, this residual is NOT attacker-reachable by eviction/partial replication (C5-1):** the
-  per-key chain-completeness gate + `key-chain-durable` retention (§3.5a) make per-key trust a function of
-  `K`'s **complete durable chain** — replica-independent once complete — so an evicted/withheld higher
-  honest fact yields a chain gap and forces `pending`, never a silent trusted backdate. The defense is
+  per-key chain-completeness gate (the *safety* mechanism) makes per-key trust a function of `K`'s
+  **complete chain** — replica-independent once complete — so an evicted/withheld/cap-evicted higher honest
+  fact yields a chain gap and forces `pending`, never a silent trusted backdate. `key-chain-durable`
+  retention (cap-bounded up to `keyChainDurableCapBytes` with on-demand re-fetch, §3.5a/M6-1) is the
+  *liveness* aid that keeps the chain completable; safety does **not** depend on it. The defense is
   therefore a *real, set-pure, non-forgeable, eviction-safe bound*, not a complete prohibition — stated
   precisely rather than over-claimed.
 
   **Anti-backdating is preserved under eviction & partial replication (INV-18(c)/INV-19).** The per-key
   trust decision is **monotone** (a fact moves `pending → trusted/demoted` exactly once as `K`'s chain
-  completes, and `key-chain-durable` retention guarantees the chain is never un-completed by eviction) and
-  **eviction-safe** (no eviction of any fact can flip a same-key backdate from `pending`/`demoted` to
-  `trusted`). This is the invariant the C5-1 fix establishes and INV-18(c)/INV-19 test.
+  completes; under cap-bounded retention the **completed-chain frontier is pinned** while any non-`pending`
+  dependent relies on it, §3.5a/m6-2, so the chain is never *silently* un-completed — the transition never
+  reverses) and **eviction-safe** (no eviction of any fact can flip a same-key backdate from
+  `pending`/`demoted` to `trusted`). This is the invariant the C5-1 fix establishes and INV-18(c)/INV-19
+  test.
 
   **Impossibility (revocation, stated honestly — M5-2).** No **set-pure** revocation mode can
   *simultaneously* (a) demote a **compromised** key's **sub-`effectiveFrom` backdates** and (b) **preserve
@@ -2076,8 +2191,10 @@ creates, and its bound:
 - **Bound (the C4-1 fix — §3.5a).** Membership purity is **not** the place to fix this (a membership gate
   re-opens C3-1/M3-4 divergence). Instead, **durable STORAGE is the bounded resource**, via the
   transport-layer admission-control & retention policy (§3.5a): unregistered-key facts are
-  `quarantined-ttl` (per-key byte-cap + TTL, eviction-eligible), registered-key facts are `durable`
-  (never evicted). A replica applying the default retention policy therefore admits the flood *logically*
+  `quarantined-ttl` (per-key byte-cap + TTL, eviction-eligible), a registered key's **trusted** facts are
+  `durable` (never evicted) and its chain-anchoring untrusted facts are `key-chain-durable` (cap-bounded
+  per `keyChainDurableCapBytes` with on-demand re-fetch, M6-1). A replica applying the default retention
+  policy therefore admits the flood *logically*
   (preserving convergence and late-registration races) but bounds the **bytes**, and the flood never
   affects `/heads` (those facts project `quarantined`). The quota lives at **transport**, out of `proj`.
 - **Aggregate bound (the unlimited-identity defense, m5-1).** A per-key byte cap alone is **not** a global
@@ -2085,15 +2202,26 @@ creates, and its bound:
   **aggregate** `quarantined-ttl` pool by a manifest-pinned **global `quarantinePoolBytes` budget** with
   LRU/TTL eviction across **all** unregistered keys (§3.5a), so an `N`-key flood cannot multiply the
   ceiling or refill faster than TTL/LRU drains.
-- **Residual / honest bound.** This bounds the **unregistered-key** (unlimited-identity) vector only.
-  An attacker with a **registered** key is the insider threat, bounded instead by per-key quota (§3.5a) +
-  revocation (§8.1) + **the per-key chain-completeness anti-backdating gate (C5-1), which demotes/`pending`s
-  any backdate that contradicts the key's own retained chain — so a registered insider cannot silently
-  backdate a trusted fact onto a victim replica by inducing eviction/non-replication of its higher facts.**
-  A replica that *opts out* of retention (stores everything) re-exposes itself to *disk growth* —
-  admission control is a **MAY** mechanism, not a mandate — but note opting out does **not** re-open C5-1
-  (the completeness gate and `key-chain-durable` retention are part of `proj`/the default retention model,
-  not the optional aggressiveness knob).
+- **Residual / honest bound (registered-key DoS now genuinely bounded — M6-1).** This bounds the
+  **unregistered-key** (unlimited-identity) vector via the global pool. An attacker with a **registered**
+  key is the insider threat, bounded by **(i)** the per-registered-key `keyChainDurableCapBytes` cap on the
+  `key-chain-durable` pool — **a real eviction cap (M6-1)**: past the cap the oldest chain links are
+  evicted (re-fetched on demand if later needed), so a registered or **compromised-registered** key can
+  **no longer** force unbounded non-evictable durable bytes on every replica (the former "never-evict /
+  never-quota-drop" wording was an internal contradiction with the "bounded by per-key quota" claim and is
+  retracted; the cap makes the quota *true* and enforceable); **(ii)** revocation (§8.1); and **(iii)** the
+  per-key chain-completeness anti-backdating gate (C5-1), which `pending`s/demotes any backdate that
+  contradicts the key's own chain — so a registered insider cannot silently backdate a trusted fact onto a
+  victim by inducing eviction/non-replication of its higher facts. A replica that *opts out* of retention
+  (stores everything) re-exposes itself to *disk growth* — admission control is a **MAY** mechanism, not a
+  mandate — but opting out does **not** re-open C5-1 (the completeness gate is the safety mechanism and is
+  part of `proj`, independent of the retention aggressiveness knob).
+- **Accepted residual — re-fetch liveness cliff (m6-3).** The cost of the M6-1 cap is a narrow, *safe*
+  liveness residual: a pre-registration chain link (or a cap-evicted `key-chain-durable` link) that has
+  aged out of **every** replica leaves no peer to re-fetch from, so the chain cannot complete and dependent
+  same-key facts stay **`pending` permanently** — never a wrong *trusted* value, but a permanent liveness
+  loss for that key. Mitigation (operational): size `keyChainDurableCapBytes`/`quarantineTtlMs` to the
+  working set and register keys before their pre-registration facts age out. Listed honestly in §9.
 - **`withScope` is advisory (m4-5).** The client-side `withScope` write guard (§3.6/§8.2) is the *only*
   thing stopping an **honest** client from authoring out-of-scope/excess facts; an attacker simply does
   not run it. It is **not** a DoS control — the authoritative cross-replica bound is the set-pure proj
@@ -2240,9 +2368,10 @@ Determinism is the testing strategy. The conformance suite asserts (each INV upd
 - **INV-18 (admission-control / retention resource bound + partial-replication SEC — C4-1, m5-1/m5-2,
   C5-1).** An unregistered key's flood of distinct signature-valid facts is admitted **logically** (INV-13
   still holds) but its facts compute `RetentionClass = quarantined-ttl` and are eviction-eligible under the
-  per-key cap/TTL **and the global aggregate budget**, while a registered-key fact (and its whole chain)
-  computes `durable`/`key-chain-durable` and is **never** evicted. The suite floods from a fresh
-  unregistered key and asserts:
+  per-key cap/TTL **and the global aggregate budget**, while a registered key's **trusted** facts compute
+  `durable` (never evicted) and its chain-anchoring facts compute `key-chain-durable` (preferentially
+  retained up to `keyChainDurableCapBytes`, cap-bounded with on-demand re-fetch, M6-1). The suite floods
+  from a fresh unregistered key and asserts:
   - **(a)** trusted heads are **unchanged** (the flood projects `quarantined`, affecting no cell);
   - **(b)** durable bytes are bounded **under the default retention policy** (the named antecedent, m5-2 —
     a permissive opt-out replica is *not* claimed bounded; INV-18(b) is NOT an unconditional guarantee).
@@ -2255,20 +2384,33 @@ Determinism is the testing strategy. The conformance suite asserts (each INV upd
     fact does **NOT** flip a later same-key fact from demoted to trusted — it instead yields a chain gap so
     the later fact projects **`pending`** (a build that flips it to trusted — the C5-1 hole — **fails**);
   - **(d)** `RetentionClass` is computed identically on every replica (set-pure), and a **registered key's
-    entire chain is `key-chain-durable`** (a build that evicts any fact of a registered key, removing the
-    anti-backdating chain, **fails**).
-  A build that lets a non-durable eviction change a trusted head, or that has no aggregate retention bound,
-  **fails**.
-- **INV-19 (anti-backdating preserved under eviction & partial replication — C5-1).** Per-key trust is
-  **monotone and eviction-safe**: the suite (1) authors `K`'s higher honest fact `F'` and a lower
-  backdate `F` from the same registered `K`; (2) on a victim replica, induces eviction/non-replication of
-  `F'`; (3) asserts the victim projects `F` **`pending`** (chain gap), **never trusted** — i.e. eviction
-  did **not** flip `F` to trusted; (4) delivers `F'` (and the intervening chain) and asserts `F` flips to
-  **demoted** (`untrusted-anachronistic`), and that this transition happens **at most once** and never
-  reverses. It also asserts a registered key's facts are **never** eviction-eligible
-  (`key-chain-durable`), so step (2)'s eviction is only reproducible for an *unregistered* key — for which
-  the `pending`-on-gap outcome of step (3) is the safe result regardless. A build in which any eviction or
-  selective non-replication flips a same-key backdate from `pending`/`demoted` to `trusted` **fails**.
+    chain is `key-chain-durable` — preferentially retained UP TO `keyChainDurableCapBytes`, NOT
+    never-evicted (M6-1)**. The suite asserts: (d1) within the cap, a registered key's chain links are
+    retained and its honest facts project trusted without re-fetch; (d2) **past the cap, the oldest
+    non-load-bearing links MAY be evicted, and an evicted link forces dependent same-key facts `pending`
+    (never trusted) until re-fetch** — a build that instead flips a dependent to trusted across a cap-evicted
+    gap (the C5-1 hole) **fails**, and a build whose registered-key durable pool is **unbounded** (no cap
+    enforced, the old never-evict contradiction) **also fails**; (d3) a link backing a currently
+    non-`pending` dependent is **pinned** (completed-chain frontier, m6-2) so INV-19's non-reversal holds.
+    The contiguity check is per-`(replicaId,key)`, completeness is the union over `K`'s replicas, and the
+    monotonicity demotion is key-wide (m6-1).
+  A build that lets a non-durable eviction change a trusted head, that has no aggregate retention bound, or
+  that leaves the registered-key durable pool unbounded, **fails**.
+- **INV-19 (anti-backdating preserved under eviction & partial replication — C5-1; holds under
+  cap-bounded retention — M6-1/m6-2).** Per-key trust is **monotone and eviction-safe**: the suite (1)
+  authors `K`'s higher honest fact `F'` and a lower backdate `F` from the same registered `K`; (2) on a
+  victim replica, induces eviction/non-replication of `F'` (whether `F'` is an unregistered-key fact **or**
+  a registered chain link evicted **past `keyChainDurableCapBytes`** — both reproducible under M6-1); (3)
+  asserts the victim projects `F` **`pending`** (chain gap), **never trusted** — i.e. eviction did **not**
+  flip `F` to trusted; (4) **re-fetches/delivers `F'`** (and the intervening chain) and asserts `F` flips
+  to **demoted** (`untrusted-anachronistic`), and that this transition happens **at most once** and never
+  reverses — **non-reversal holds under cap-bounded retention because the completed-chain frontier is
+  pinned** (a link backing a non-`pending` dependent is not re-evictable, m6-2), so `F'` cannot be silently
+  re-evicted to re-open the gap. The contiguity gap of step (3) is detected **per-`(replicaId,key)`** and
+  must be caught even when `F'` was authored on a **different replica** than the dependent's other chain
+  links (m6-1). A build in which any eviction or selective non-replication flips a same-key backdate from
+  `pending`/`demoted` to `trusted`, or in which the `pending → demoted/trusted` transition reverses under
+  cap-bounded retention, **fails**.
 
 Determinism (author-stamped HLC, fixed reducer seeds, fixed replicaIds, content-addressed everything,
 **`rxFrom` excluded from every convergent path**) makes all of these reproducible. The accelerator
@@ -2277,6 +2419,34 @@ Determinism (author-stamped HLC, fixed reducer seeds, fixed replicaIds, content-
 ---
 
 ## 9. Open questions (non-core — explicitly deferred)
+
+**Accepted residual bounds (honest, intrinsic to set-purity — NOT bugs, NOT unresolved CRITICALs).**
+These are stated plainly throughout the spec and are the irreducible floor of a coordinator-free,
+set-pure, bounded-storage design. They never yield a wrong *trusted* value; the worst case is a
+labeled `pending` or a self-dated lone first-emission. They are accepted, not open:
+
+- **R1 — lone-first-emission self-dating (§3.6/§8.1).** A key that has emitted **nothing higher in its
+  chain** can self-date a genuine first-emission fact freely (no conflicting same-key history to poison;
+  resolved against other authors by ordinary `orderKey`). The irreducible floor of any set-pure
+  anti-backdating rule. **NOT eviction-reachable** (the C5-1 gate closes the eviction route).
+- **R2 — ordinary-cutoff sub-`effectiveFrom` backdate (§8.1, M5-2 impossibility).** No set-pure
+  revocation mode both demotes a compromised key's sub-`effectiveFrom` backdates **and** preserves that
+  key's honest concurrent sub-`effectiveFrom` work — they are set-indistinguishable. `ordinary-cutoff`
+  lets the backdate through (mitigated, not eliminated, by R1's per-key chain rule); `causal-cutoff`
+  catches it but demotes honest concurrent work (surfaced as `kip:revoked-concurrent` for re-attest).
+  An explicit, stated **impossibility**, not a missing feature.
+- **R3 — re-fetch liveness cliff (§3.5a/§8.3b, m6-3/M6-1).** Under cap-bounded `key-chain-durable`
+  retention, a pre-registration or cap-evicted chain link that has aged out of **every** replica is
+  unreconstructible, so dependent same-key facts stay **`pending` permanently** — **safe** (never a wrong
+  trusted value), but a permanent liveness loss. Mitigation: size `keyChainDurableCapBytes`/
+  `quarantineTtlMs` to the working set; register keys before pre-registration facts age out.
+- **R4 — accelerator (embedding/ANN) non-determinism (§5.3, INV-5).** ANN/embedding projections are
+  **best-effort, recall-equivalent, NOT byte-identical** across replicas — explicitly excluded from the
+  convergence (byte-identity) guarantee. Deterministic projections (heads/graph/salience-with-fixed-weights)
+  are byte-identical; accelerators are not, by design (N2).
+
+These four are the only honestly-accepted residuals; none hides a CRITICAL (verified in the round-6
+adversarial audit). The genuinely deferred (ops/context-layer) questions follow.
 
 These are out of the *core* and belong to the context layer or to ops tuning; the core is complete
 without resolving them:
