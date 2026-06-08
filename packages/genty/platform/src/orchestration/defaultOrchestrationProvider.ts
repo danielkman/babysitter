@@ -15,12 +15,6 @@ import { execFileSync } from "node:child_process";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as os from "node:os";
-import {
-  resolveRunsDir,
-  createRun,
-  loadJournal,
-  readRunMetadata,
-} from "@a5c-ai/babysitter-sdk";
 import type {
   OrchestrationProvider,
   RunHandle,
@@ -30,6 +24,21 @@ import type {
   RunEvent,
   PendingEffect,
 } from "./interfaces";
+
+// The babysitter-sdk runtime is loaded lazily (sync require, on first method
+// call) so that merely registering this default provider — done in
+// createOrchestrationRegistry, which is imported very widely via global.ts —
+// does NOT eagerly pull the heavy SDK and its transitive atlas index into every
+// module/test worker (which caused OOM in CI test workers). See #936.
+type SdkRuntime = typeof import("@a5c-ai/babysitter-sdk");
+let _sdk: SdkRuntime | undefined;
+function sdk(): SdkRuntime {
+  if (!_sdk) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    _sdk = require("@a5c-ai/babysitter-sdk") as SdkRuntime;
+  }
+  return _sdk;
+}
 
 function resolveBabysitterBin(): string {
   try {
@@ -56,6 +65,7 @@ export class DefaultOrchestrationProvider implements OrchestrationProvider {
   readonly name = "babysitter";
 
   async createRun(opts: CreateRunOptions): Promise<RunHandle> {
+    const { resolveRunsDir, createRun } = sdk();
     const runsDir = opts.runsDir ?? resolveRunsDir();
     // Split "path#exportName" on the LAST '#' so directory paths containing '#'
     // (e.g. /a/my#project/proc.js#process) keep their '#' in the import path.
@@ -140,6 +150,7 @@ export class DefaultOrchestrationProvider implements OrchestrationProvider {
   }
 
   async getRunStatus(handle: RunHandle): Promise<RunHandle> {
+    const { readRunMetadata, loadJournal } = sdk();
     const metadata = await readRunMetadata(handle.runDir);
     const events = await loadJournal(handle.runDir);
     let status: RunHandle["status"] = "pending";
@@ -158,6 +169,7 @@ export class DefaultOrchestrationProvider implements OrchestrationProvider {
   }
 
   async getRunEvents(handle: RunHandle, opts?: { limit?: number; reverse?: boolean }): Promise<RunEvent[]> {
+    const { loadJournal } = sdk();
     const events = await loadJournal(handle.runDir);
     let mapped: RunEvent[] = events.map((e) => ({
       type: e.type,
@@ -182,7 +194,7 @@ export class DefaultOrchestrationProvider implements OrchestrationProvider {
   }
 
   resolveRunsDir(opts?: { cwd?: string }): string {
-    return resolveRunsDir({ cwd: opts?.cwd });
+    return sdk().resolveRunsDir({ cwd: opts?.cwd });
   }
 }
 
