@@ -174,6 +174,24 @@ const LOCAL_FALLBACK_METADATA: Record<string, AdapterAdapterMetadata> = {
     },
     sessionDir: DEFAULT_SESSION_DIR,
   },
+  genty: {
+    name: "genty",
+    hostEnvSignals: ["AGENT_SESSION_ID", "GENTY_PLUGIN_ROOT"],
+    capabilities: {
+      supportsSkills: true,
+      supportsThinking: true,
+      supportsMCP: true,
+      requiresToolApproval: false,
+      supportsInteractiveMode: false,
+      supportsStdinInjection: false,
+      supportsSubagentDispatch: true,
+      supportsParallelExecution: true,
+      supportsImageInput: false,
+      hasRuntimeHooks: false,
+      hasStopHook: false,
+    },
+    sessionDir: DEFAULT_SESSION_DIR,
+  },
 };
 
 function buildStaticFallbackMetadata(): Record<string, AdapterAdapterMetadata> {
