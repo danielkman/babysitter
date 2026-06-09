@@ -2,7 +2,7 @@ import * as crypto from "node:crypto";
 import { promises as fs } from "node:fs";
 import * as path from "node:path";
 import { createRun } from "../../runtime/createRun";
-import { loadJournal } from "../../storage/journal";
+import { appendEvent, loadJournal } from "../../storage/journal";
 import { writeFileAtomic } from "../../storage/atomic";
 import { rebuildStateCache } from "../../runtime/replay/stateCache";
 import type { IterationMetadata } from "../../runtime/types";
@@ -494,6 +494,99 @@ export async function handleRunRecoverProcessError(parsed: ParsedArgs): Promise<
     console.log(`[run:recover-process-error] recovered runDir=${runDir} backupDir=${backupDir}`);
   }
   return 0;
+}
+
+const TERMINAL_EVENT_TYPES = new Set(["RUN_COMPLETED", "RUN_FAILED", "RUN_HALTED"]);
+
+/**
+ * run:halt — operator-driven seal of a divergent run.
+ *
+ * Writes a synthetic terminal event (RUN_COMPLETED or RUN_FAILED) with the
+ * correct seq + ulid, copies the completionProof from run.json, records the
+ * --reason for audit (manual_seal_reason), and rebuilds the state cache so the
+ * run reaches a clean terminal state without hand-crafting journal files.
+ * See issue #880.
+ */
+export async function handleRunHalt(parsed: ParsedArgs): Promise<number> {
+  if (!parsed.runDirArg) {
+    console.error(USAGE);
+    return 1;
+  }
+  const runDir = resolveRunDir(parsed.runsDir, parsed.runDirArg);
+  const reason = parsed.haltReason ?? "manual_halt";
+  const finalStatus = parsed.haltFinalStatus ?? "completed";
+  const eventType = finalStatus === "completed" ? "RUN_COMPLETED" : "RUN_FAILED";
+  logVerbose("run:halt", parsed, { runDir, reason, finalStatus, dryRun: parsed.dryRun, json: parsed.json });
+
+  const metadata = await readRunMetadataSafe(runDir, "run:halt");
+  if (!metadata) return 1;
+  const completionProof = typeof metadata.completionProof === "string" ? metadata.completionProof : null;
+
+  // Detect whether the run is already sealed (audit only — halting is a
+  // deliberate operator override, so an existing terminal event does not block).
+  let alreadyTerminal: string | null = null;
+  try {
+    const events = await loadJournal(runDir);
+    for (let i = events.length - 1; i >= 0; i -= 1) {
+      if (TERMINAL_EVENT_TYPES.has(events[i].type)) {
+        alreadyTerminal = events[i].type;
+        break;
+      }
+    }
+  } catch {
+    // No/again-unreadable journal — proceed; appendEvent will create it.
+  }
+
+  if (parsed.dryRun) {
+    const plan = { dryRun: true, runDir, plan: "halt_run", eventType, finalStatus, reason, completionProof, alreadyTerminal };
+    if (parsed.json) {
+      console.log(JSON.stringify(plan, null, 2));
+    } else {
+      console.log(`[run:halt] dry-run runDir=${runDir} eventType=${eventType} reason=${reason}` + (alreadyTerminal ? ` (already ${alreadyTerminal})` : ""));
+    }
+    return 0;
+  }
+
+  try {
+    const eventData: JsonRecord = { manual_seal_reason: reason, completionProof };
+    if (finalStatus === "failed") {
+      eventData.error = { name: "ManualHalt", message: reason };
+    }
+    const appended = await appendEvent({ runDir, eventType, event: eventData });
+    const snapshot = await rebuildStateCache(runDir, { reason: "manual_halt" });
+    const metadataOut: IterationMetadata = {
+      pendingEffectsByKind: snapshot.pendingEffectsByKind,
+      stateVersion: snapshot.stateVersion,
+      journalHead: snapshot.journalHead ?? null,
+      stateRebuilt: true,
+      stateRebuildReason: snapshot.rebuildReason ?? undefined,
+    };
+    const formatted = formatIterationMetadata(metadataOut);
+    const summary = {
+      runDir,
+      halted: true,
+      finalStatus,
+      reason,
+      completionProof,
+      alreadyTerminal,
+      event: { seq: appended.seq, ulid: appended.ulid, type: eventType, recordedAt: appended.recordedAt },
+      metadata: formatted.jsonMetadata ?? null,
+    };
+    if (parsed.json) {
+      console.log(JSON.stringify(summary, null, 2));
+    } else {
+      const suffix = formatted.textParts.length ? ` ${formatted.textParts.join(" ")}` : "";
+      console.log(`[run:halt] halted runDir=${runDir} finalStatus=${finalStatus} seq=${appended.seq} reason=${reason}${suffix}`);
+    }
+    return 0;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`[run:halt] ${message}`);
+    if (parsed.json) {
+      console.log(JSON.stringify({ error: "HALT_FAILED", message }, null, 2));
+    }
+    return 1;
+  }
 }
 
 interface ParsedPatch {

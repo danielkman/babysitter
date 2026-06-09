@@ -1204,6 +1204,105 @@ describe("run lifecycle inspection commands", () => {
   });
 
 
+  describe("run:halt (issue #880)", () => {
+    async function createRunWithProof(runId: string, proof: string) {
+      const runDir = await createRunSkeleton(runId);
+      const metadata = await readRunMetadata(runDir);
+      await runFilesModule.writeRunMetadata(runDir, { ...metadata, completionProof: proof });
+      return runDir;
+    }
+
+    it("seals a run as completed with a synthetic RUN_COMPLETED event", async () => {
+      const runDir = await createRunWithProof("run-halt-completed", "proof-abc123");
+
+      const exitCode = await cli.run([
+        "run:halt", runDir, "--reason", "operator seal after divergence", "--final-status", "completed", "--json",
+      ]);
+
+      expect(exitCode).toBe(0);
+      const payload = readLastJson(logSpy);
+      expect(payload).toMatchObject({
+        runDir,
+        halted: true,
+        finalStatus: "completed",
+        reason: "operator seal after divergence",
+        completionProof: "proof-abc123",
+        event: expect.objectContaining({ type: "RUN_COMPLETED" }),
+      });
+
+      const events = await loadJournal(runDir);
+      const terminal = events.find((e) => e.type === "RUN_COMPLETED");
+      expect(terminal).toBeDefined();
+      expect(terminal?.data).toMatchObject({
+        manual_seal_reason: "operator seal after divergence",
+        completionProof: "proof-abc123",
+      });
+    });
+
+    it("seals a run as failed with a RUN_FAILED event carrying the reason", async () => {
+      const runDir = await createRunWithProof("run-halt-failed", "proof-xyz");
+
+      const exitCode = await cli.run([
+        "run:halt", runDir, "--reason", "user rejected breakpoint", "--final-status", "failed", "--json",
+      ]);
+
+      expect(exitCode).toBe(0);
+      const payload = readLastJson(logSpy);
+      expect(payload).toMatchObject({ halted: true, finalStatus: "failed" });
+
+      const events = await loadJournal(runDir);
+      const terminal = events.find((e) => e.type === "RUN_FAILED");
+      expect(terminal).toBeDefined();
+      expect(terminal?.data).toMatchObject({
+        manual_seal_reason: "user rejected breakpoint",
+        error: { name: "ManualHalt", message: "user rejected breakpoint" },
+      });
+    });
+
+    it("defaults to completed status and 'manual_halt' reason", async () => {
+      const runDir = await createRunSkeleton("run-halt-defaults");
+
+      const exitCode = await cli.run(["run:halt", runDir, "--json"]);
+
+      expect(exitCode).toBe(0);
+      const payload = readLastJson(logSpy);
+      expect(payload).toMatchObject({ finalStatus: "completed", reason: "manual_halt", completionProof: null });
+      const events = await loadJournal(runDir);
+      expect(events.some((e) => e.type === "RUN_COMPLETED")).toBe(true);
+    });
+
+    it("does not append any event on --dry-run", async () => {
+      const runDir = await createRunSkeleton("run-halt-dry");
+      const before = (await loadJournal(runDir)).length;
+
+      const exitCode = await cli.run(["run:halt", runDir, "--reason", "preview", "--dry-run", "--json"]);
+
+      expect(exitCode).toBe(0);
+      const payload = readLastJson(logSpy);
+      expect(payload).toMatchObject({ dryRun: true, plan: "halt_run", eventType: "RUN_COMPLETED", reason: "preview" });
+      const after = (await loadJournal(runDir)).length;
+      expect(after).toBe(before);
+    });
+
+    it("rejects an invalid --final-status value", async () => {
+      const runDir = await createRunSkeleton("run-halt-badstatus");
+      const exitCode = await cli.run(["run:halt", runDir, "--final-status", "bogus", "--json"]);
+      expect(exitCode).toBe(1);
+    });
+
+    it("flags an already-terminal run while still sealing (operator override)", async () => {
+      const runDir = await createRunSkeleton("run-halt-already");
+      await appendEvent({ runDir, eventType: "RUN_COMPLETED", event: { outputRef: "state/output.json" } });
+
+      const exitCode = await cli.run(["run:halt", runDir, "--reason", "force re-seal", "--json"]);
+
+      expect(exitCode).toBe(0);
+      const payload = readLastJson(logSpy);
+      expect(payload).toMatchObject({ halted: true, alreadyTerminal: "RUN_COMPLETED" });
+    });
+  });
+
+
   describe("run:repair-journal", () => {
     it("skips 0-byte corrupt journal files and reports droppedCorrupt count", async () => {
       const runDir = await createRunSkeleton("run-repair-empty");

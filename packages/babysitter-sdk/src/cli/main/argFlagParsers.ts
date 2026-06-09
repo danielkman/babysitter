@@ -76,6 +76,14 @@ export const FLAG_PARSERS: Record<string, FlagParser> = {
     parsed.patchEffect = expectFlagValue(args, index + 1, "--patch-effect");
     return index + 1;
   },
+  "--final-status": (parsed, args, index) => {
+    const value = expectFlagValue(args, index + 1, "--final-status").toLowerCase();
+    if (value !== "completed" && value !== "failed") {
+      throw new Error(`--final-status must be "completed" or "failed" (received: ${value})`);
+    }
+    parsed.haltFinalStatus = value;
+    return index + 1;
+  },
   "--status": (parsed, args, index) => {
     parsed.taskStatus = parseStatus(expectFlagValue(args, index + 1, "--status"));
     return index + 1;
@@ -336,7 +344,10 @@ export const FLAG_PARSERS: Record<string, FlagParser> = {
     return index + 1;
   },
   "--reason": (parsed, args, index) => {
-    parsed.cancelReason = expectFlagValue(args, index + 1, "--reason");
+    const value = expectFlagValue(args, index + 1, "--reason");
+    // Shared by task:cancel (cancelReason) and run:halt (haltReason).
+    parsed.cancelReason = value;
+    parsed.haltReason = value;
     return index + 1;
   },
   "--action": (parsed, args, index) => {

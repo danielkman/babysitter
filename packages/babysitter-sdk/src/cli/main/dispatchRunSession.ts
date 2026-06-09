@@ -42,6 +42,7 @@ import {
   handleRunRebuildState,
   handleRunRecoverProcessError,
   handleRunRepairJournal,
+  handleRunHalt,
   handleRunStatus,
 } from "./runCommands";
 import {
@@ -71,6 +72,8 @@ async function executeRunTaskCommand(parsed: ParsedArgs): Promise<number | undef
       return await handleRunRepairJournal(parsed);
     case "run:recover-process-error":
       return await handleRunRecoverProcessError(parsed);
+    case "run:halt":
+      return await handleRunHalt(parsed);
     case "run:status":
       return await handleRunStatus(parsed);
     case "run:iterate":

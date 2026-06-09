@@ -106,6 +106,8 @@ export interface ParsedArgs {
   breakpointExpert?: string;
   cancelReason?: string;
   patchEffect?: string;
+  haltReason?: string;
+  haltFinalStatus?: "completed" | "failed";
   verbosity?: string;
   tuiFlag?: boolean;
   daemonDir?: string;
