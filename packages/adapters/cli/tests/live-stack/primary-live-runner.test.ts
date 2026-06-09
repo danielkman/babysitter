@@ -4,7 +4,7 @@ import * as path from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-import { buildPrimaryLiveStackCommands, executeChildProcessCommand, runPrimaryLiveStackScenario } from './primary-live-runner';
+import { buildPrimaryLiveStackCommands, buildPrompt, executeChildProcessCommand, runPrimaryLiveStackScenario } from './primary-live-runner';
 import type { LiveStackScenario } from './scenario-contract';
 import { liveStackScenarioFromEnv, primaryLiveStackScenario } from './scenario-contract';
 
@@ -1259,5 +1259,34 @@ describe('primary live stack runner contract', () => {
     expect(result.status).toBe('passed');
     expect(result.missingTraceIds).toEqual([]);
     expect(result.artifactPath).toBeDefined();
+  });
+});
+
+describe('buildPrompt — BP-mode invocation hardening (issue #947)', () => {
+  // gpt-5.4-mini case — the model that ignored the command prefix in #947.
+  const gptMiniCase = CLAUDE_LIVE_MODEL_CASES[4];
+  const bpClaude = claudeScenarioFor(gptMiniCase, 'babysitter-plugin');
+
+  it('keeps the babysitter command token at the very start (native command recognition must not break)', () => {
+    for (const mode of ['predefined', 'create', 'resume'] as const) {
+      const prompt = buildPrompt(bpClaude, 'trace-947', { LIVE_STACK_PROCESS_MODE: mode });
+      // The slash command MUST be the first token, else the harness won't treat
+      // it as a command — so the directive is appended, never prepended.
+      expect(prompt.startsWith('/babysitter:')).toBe(true);
+    }
+  });
+
+  it('appends an unmissable orchestration directive in every BP process mode', () => {
+    for (const mode of ['predefined', 'create', 'resume'] as const) {
+      const prompt = buildPrompt(bpClaude, 'trace-947', { LIVE_STACK_PROCESS_MODE: mode });
+      expect(prompt).toContain('ORCHESTRATION REQUIRED');
+      expect(prompt).toContain('.a5c/runs/');
+    }
+  });
+
+  it('does not add the orchestration directive to vanilla (non-BP) prompts', () => {
+    const vanilla = claudeScenarioFor(gptMiniCase, 'vanilla');
+    const prompt = buildPrompt(vanilla, 'trace-947', {});
+    expect(prompt).not.toContain('ORCHESTRATION REQUIRED');
   });
 });

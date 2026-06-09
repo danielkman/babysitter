@@ -575,7 +575,7 @@ function withWorkspaceBinOnPath(env: Record<string, string | undefined>, cwd: st
   return [workspaceBin, env['PATH'] ?? process.env['PATH'] ?? ''].filter(Boolean).join(delimiter);
 }
 
-function buildPrompt(scenario: LiveStackScenario, traceId: string, env: Record<string, string | undefined>): string {
+export function buildPrompt(scenario: LiveStackScenario, traceId: string, env: Record<string, string | undefined>): string {
   const coreTask = scenario.agent.installMode === 'babysitter-plugin'
     ? `Write a concise 6-section summary of Homer's Odyssey, then add one Greek translation sentence after each section. Combine the English and Greek versions into one markdown document and save the entire result in a single file write to .a5c-live-test/${traceId}-odyssey.md`
     : `Write a concise 6-section summary of Homer's Odyssey, then add one Greek translation sentence after each section. Combine the English and Greek versions into one markdown document and save the entire result in a single file write to .a5c-live-test/${traceId}-odyssey.md. The .a5c-live-test directory already exists.`;
@@ -590,6 +590,18 @@ function buildPrompt(scenario: LiveStackScenario, traceId: string, env: Record<s
 
   if (scenario.agent.installMode === 'babysitter-plugin') {
     const processMode = env['LIVE_STACK_PROCESS_MODE'] ?? 'predefined';
+    // #947: weaker models (e.g. gpt-5.4-mini) ignore the command prefix and do
+    // the task directly, so the babysitter run lifecycle never executes and no
+    // .a5c/runs/ is created. Append an unmissable orchestration directive AFTER
+    // the command (never before — the slash/$-command must stay at message
+    // start for native command recognition). Benign for models that already
+    // orchestrate; a hard nudge for those that skip it.
+    const orchestrationDirective =
+      ' === ORCHESTRATION REQUIRED === You MUST execute this through the babysitter run lifecycle' +
+      ' (create/resolve a run, iterate, post effects, return the completion proof). Do NOT produce' +
+      ' the output directly: writing the result file without an active .a5c/runs/<runId>/ run is a' +
+      ' FAILURE. Invoke the babysitter command/skill first and drive it to completion.';
+    const wrapBp = (command: string): string => `${command}${orchestrationDirective}`;
     if (processMode === 'create') {
       const createInstructions = [
         'CREATE odyssey-live-test.mjs: read .a5c/processes/odyssey-live-test.skeleton.mjs, then write your completed process to .a5c/processes/odyssey-live-test.mjs.',
@@ -602,21 +614,21 @@ function buildPrompt(scenario: LiveStackScenario, traceId: string, env: Record<s
         '',
         `RUN the process: ${coreTask}. Use only .a5c/processes/odyssey-live-test.mjs, the process you created.`,
       ].join('\n');
-      if (scenario.agent.agent === 'codex') return `$babysitter:yolo ${createInstructions}`;
-      if (scenario.agent.agent === 'claude-code') return `/babysitter:yolo ${createInstructions}`;
-      return `/yolo ${createInstructions}`;
+      if (scenario.agent.agent === 'codex') return wrapBp(`$babysitter:yolo ${createInstructions}`);
+      if (scenario.agent.agent === 'claude-code') return wrapBp(`/babysitter:yolo ${createInstructions}`);
+      return wrapBp(`/yolo ${createInstructions}`);
     }
     if (processMode === 'resume') {
       const resumeRunId = env['LIVE_STACK_RESUME_RUN_ID'] ?? `resume-${traceId}`;
       const resumeInstructions = `Resume babysitter run ${resumeRunId}. The process is at .a5c/processes/summarize-translate-test.mjs. After completion, ensure the output is at .a5c-live-test/${traceId}-odyssey.md.`;
-      if (scenario.agent.agent === 'claude-code') return `/babysitter:resume ${resumeInstructions}`;
-      if (scenario.agent.agent === 'codex') return `$babysitter:resume ${resumeInstructions}`;
-      return `/resume ${resumeInstructions}`;
+      if (scenario.agent.agent === 'claude-code') return wrapBp(`/babysitter:resume ${resumeInstructions}`);
+      if (scenario.agent.agent === 'codex') return wrapBp(`$babysitter:resume ${resumeInstructions}`);
+      return wrapBp(`/resume ${resumeInstructions}`);
     }
     const processHint = 'A process definition is available at .a5c/processes/summarize-translate-test.mjs';
-    if (scenario.agent.agent === 'claude-code') return `/babysitter:yolo ${coreTask}. ${processHint}`;
-    if (scenario.agent.agent === 'codex') return `$babysitter:yolo ${coreTask}. ${processHint}`;
-    return `/yolo ${coreTask}. ${processHint}`;
+    if (scenario.agent.agent === 'claude-code') return wrapBp(`/babysitter:yolo ${coreTask}. ${processHint}`);
+    if (scenario.agent.agent === 'codex') return wrapBp(`$babysitter:yolo ${coreTask}. ${processHint}`);
+    return wrapBp(`/yolo ${coreTask}. ${processHint}`);
   }
 
   return coreTask;
