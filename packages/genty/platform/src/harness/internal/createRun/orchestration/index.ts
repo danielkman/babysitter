@@ -29,6 +29,11 @@ import {
   createApprovalAskUserQuestion,
   createAskUserQuestionResponse,
 } from "../utils";
+// #949: cross-harness dispatch (agent/skill) and task auto-execution (shell/node)
+// are gated behind BABYSITTER_CROSS_SUBAGENTS / BABYSITTER_EXECUTE_TASKS (default
+// OFF). Defense-in-depth: the gate must live at this execution seam, not only at
+// the entrypoint env mutation in handleHarnessCreateRun.
+import { crossSubagentsEnabled, executeTasksEnabled } from "@a5c-ai/babysitter-sdk";
 
 async function importOptionalModule(specifier: string): Promise<unknown> {
   return import(specifier);
@@ -178,6 +183,18 @@ export async function resolveAndPostEffect(
   model?: string,
   babysitterBin = "babysitter",
 ): Promise<void> {
+  // #949: gate at the execution seam. Cross-harness dispatch (agent/skill) and
+  // task auto-execution (shell/node) only run when their flags are ON. When OFF,
+  // do NOT execute and do NOT post — leave the effect pending so the next
+  // iteration re-emits it (mirrors resolveEffect's pending contract). genty's
+  // autonomous entrypoint (handleHarnessCreateRun) opts these flags ON.
+  if ((action.kind === "agent" || action.kind === "skill") && !crossSubagentsEnabled()) {
+    return;
+  }
+  if ((action.kind === "shell" || action.kind === "node" || action.kind === "orchestrator_task") && !executeTasksEnabled()) {
+    return;
+  }
+
   const { execFileSync, execSync } = await import("node:child_process");
   const { createAgentCoreSession } = await import("../utils");
   const babysitterParts = babysitterBin.split(" ");

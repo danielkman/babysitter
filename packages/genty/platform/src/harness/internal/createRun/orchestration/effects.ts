@@ -246,7 +246,7 @@ export async function resolveEffect(
   // genty's autonomous entrypoint (handleHarnessCreateRun) opts this flag ON so
   // standalone runs still dispatch. "breakpoint" effects are human-input, not
   // cross-subagent dispatch, so they are not gated here.
-  if (kind === "agent" && !crossSubagentsEnabled()) {
+  if ((kind === "agent" || kind === "skill") && !crossSubagentsEnabled()) {
     return { status: "pending", value: { emitted: true, kind } };
   }
 

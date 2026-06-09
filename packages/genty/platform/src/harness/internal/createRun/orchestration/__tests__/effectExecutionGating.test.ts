@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { EffectAction } from "../../../../../types";
 import { resolveEffect } from "../effects";
+import { resolveAndPostEffect } from "../index";
 
 /**
  * #949 — genty/platform resolveEffect auto-exec / auto-dispatch must be gated:
@@ -23,6 +24,13 @@ const invokeAgentHarness = vi.fn(async () => ({ status: "ok", value: "agent ran"
 const invokePromptEffect = vi.fn(async () => ({ status: "ok", value: "node ran" }));
 const routeTask = vi.fn();
 const submitBreakpoint = vi.fn();
+// resolveAndPostEffect (index.ts) seam: shell -> execSync, agent/skill ->
+// createAgentCoreSession().prompt, result posted via execFileSync (task:post).
+const execSync = vi.fn(() => "cli shell ran");
+const execFileSync = vi.fn(() => "{}");
+const sessionPrompt = vi.fn(async () => ({ output: "cli agent ran" }));
+const sessionDispose = vi.fn();
+const createAgentCoreSession = vi.fn(() => ({ prompt: sessionPrompt, dispose: sessionDispose }));
 
 vi.mock("../../planProcess", async (importOriginal) => {
   const actual = await importOriginal<Record<string, unknown>>();
@@ -50,6 +58,23 @@ vi.mock("@a5c-ai/tasks-adapter", () => ({
     submitBreakpoint = (...args: unknown[]) => submitBreakpoint(...(args as []));
   },
 }));
+
+vi.mock("node:child_process", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("node:child_process")>();
+  return {
+    ...actual,
+    execSync: (...args: unknown[]) => execSync(...(args as [])),
+    execFileSync: (...args: unknown[]) => execFileSync(...(args as [])),
+  };
+});
+
+vi.mock("../../utils", async (importOriginal) => {
+  const actual = await importOriginal<Record<string, unknown>>();
+  return {
+    ...actual,
+    createAgentCoreSession: (...args: unknown[]) => createAgentCoreSession(...(args as [])),
+  };
+});
 
 const ENV_KEYS = ["BABYSITTER_EXECUTE_TASKS", "BABYSITTER_CROSS_SUBAGENTS"] as const;
 
@@ -88,6 +113,19 @@ function agentAction(): EffectAction {
   } as unknown as EffectAction;
 }
 
+function skillAction(): EffectAction {
+  return {
+    effectId: "eff-skill",
+    invocationKey: "key-skill",
+    kind: "skill",
+    taskDef: {
+      kind: "skill",
+      title: "Dispatch a skill",
+      agent: { responderType: "agent", adapter: "codex", prompt: { task: "review" } },
+    },
+  } as unknown as EffectAction;
+}
+
 describe("#949 genty resolveEffect env-gated execution", () => {
   let saved: Record<string, string | undefined>;
 
@@ -100,6 +138,11 @@ describe("#949 genty resolveEffect env-gated execution", () => {
     execShellEffect.mockClear();
     invokeAgentHarness.mockClear();
     invokePromptEffect.mockClear();
+    execSync.mockClear();
+    execFileSync.mockClear();
+    sessionPrompt.mockClear();
+    sessionDispose.mockClear();
+    createAgentCoreSession.mockClear();
     routeTask.mockReset();
     submitBreakpoint.mockReset();
     routeTask.mockReturnValue({
@@ -175,6 +218,108 @@ describe("#949 genty resolveEffect env-gated execution", () => {
       expect(routeTask).toHaveBeenCalledTimes(1);
       expect(submitBreakpoint).toHaveBeenCalledTimes(1);
       expect(result.status).toBe("ok");
+    });
+  });
+
+  describe("skill effects (BABYSITTER_CROSS_SUBAGENTS)", () => {
+    it("does NOT dispatch the skill when the flag is unset (emits/pending)", async () => {
+      delete process.env.BABYSITTER_CROSS_SUBAGENTS;
+      const result = await resolveEffect(skillAction(), "genty", { workspace: "/repo" });
+
+      // A skill effect must be gated exactly like agent: no cross-harness route,
+      // no harness fallback, no catch-all invokePromptEffect execution.
+      expect(routeTask).not.toHaveBeenCalled();
+      expect(submitBreakpoint).not.toHaveBeenCalled();
+      expect(invokeAgentHarness).not.toHaveBeenCalled();
+      expect(invokePromptEffect).not.toHaveBeenCalled();
+      expect(result.status).toBe("pending");
+    });
+
+    it("dispatches the skill when BABYSITTER_CROSS_SUBAGENTS=1", async () => {
+      process.env.BABYSITTER_CROSS_SUBAGENTS = "1";
+      const result = await resolveEffect(skillAction(), "genty", { workspace: "/repo" });
+
+      // With the flag ON the skill falls through to the catch-all dispatch path.
+      expect(result.status).not.toBe("pending");
+      expect(invokePromptEffect).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  // GAP 2 — resolveAndPostEffect (index.ts) is a SECOND, separately-exported
+  // dispatcher used by runCliOrchestration. It must honor the same flags at its
+  // own execution seam (defense-in-depth), not rely on the entrypoint env mutation.
+  describe("resolveAndPostEffect env-gated execution", () => {
+    function cliShellAction() {
+      return {
+        effectId: "eff-cli-shell",
+        invocationKey: "key-cli-shell",
+        kind: "shell" as const,
+        taskDef: { kind: "shell", title: "Run a shell command", shell: { command: "echo hi" } },
+      };
+    }
+    function cliAgentAction() {
+      return {
+        effectId: "eff-cli-agent",
+        invocationKey: "key-cli-agent",
+        kind: "agent" as const,
+        taskDef: { kind: "agent", title: "Dispatch an agent", agent: { prompt: "do it" } },
+      };
+    }
+    function cliSkillAction() {
+      return {
+        effectId: "eff-cli-skill",
+        invocationKey: "key-cli-skill",
+        kind: "skill" as const,
+        taskDef: { kind: "skill", title: "Dispatch a skill", agent: { prompt: "do it" } },
+      };
+    }
+
+    it("does NOT execute shell when BABYSITTER_EXECUTE_TASKS is unset (no exec, no post)", async () => {
+      delete process.env.BABYSITTER_EXECUTE_TASKS;
+      await resolveAndPostEffect(cliShellAction(), "/runs/eff", "/repo");
+
+      expect(execSync).not.toHaveBeenCalled();
+      // Pending => effect is not posted back.
+      expect(execFileSync).not.toHaveBeenCalled();
+    });
+
+    it("executes shell when BABYSITTER_EXECUTE_TASKS=1 (exec + post)", async () => {
+      process.env.BABYSITTER_EXECUTE_TASKS = "1";
+      await resolveAndPostEffect(cliShellAction(), "/repo", "/repo");
+
+      expect(execSync).toHaveBeenCalledTimes(1);
+      // Posted back via task:post (execFileSync).
+      expect(execFileSync).toHaveBeenCalledTimes(1);
+    });
+
+    it("does NOT dispatch agent when BABYSITTER_CROSS_SUBAGENTS is unset (no session, no post)", async () => {
+      delete process.env.BABYSITTER_CROSS_SUBAGENTS;
+      await resolveAndPostEffect(cliAgentAction(), "/runs/eff", "/repo");
+
+      expect(routeTask).not.toHaveBeenCalled();
+      expect(createAgentCoreSession).not.toHaveBeenCalled();
+      expect(sessionPrompt).not.toHaveBeenCalled();
+      expect(execFileSync).not.toHaveBeenCalled();
+    });
+
+    it("does NOT dispatch skill when BABYSITTER_CROSS_SUBAGENTS is unset (no session, no post)", async () => {
+      delete process.env.BABYSITTER_CROSS_SUBAGENTS;
+      await resolveAndPostEffect(cliSkillAction(), "/runs/eff", "/repo");
+
+      expect(createAgentCoreSession).not.toHaveBeenCalled();
+      expect(sessionPrompt).not.toHaveBeenCalled();
+      expect(execFileSync).not.toHaveBeenCalled();
+    });
+
+    it("dispatches agent when BABYSITTER_CROSS_SUBAGENTS=1 (session + post)", async () => {
+      process.env.BABYSITTER_CROSS_SUBAGENTS = "1";
+      // Force the internal-session path (not tasks-mux) so createAgentCoreSession runs.
+      routeTask.mockReturnValue({ responderType: "internal" });
+      await resolveAndPostEffect(cliAgentAction(), "/repo", "/repo");
+
+      expect(createAgentCoreSession).toHaveBeenCalledTimes(1);
+      expect(sessionPrompt).toHaveBeenCalledTimes(1);
+      expect(execFileSync).toHaveBeenCalledTimes(1);
     });
   });
 });
