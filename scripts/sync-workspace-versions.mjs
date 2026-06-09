@@ -17,9 +17,11 @@ const packageJsonPaths = new Set(['package.json']);
 const localPackageNames = new Set();
 const pluginManifestPaths = [
   'plugins/babysitter-unified/plugin.json',
+  'plugins/atlas-unified/plugin.json',
 ];
 const versionsJsonPaths = [
   'plugins/babysitter-unified/versions.json',
+  'plugins/atlas-unified/versions.json',
 ];
 const dependencyFields = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies'];
 const skipDirs = new Set(['.git', '.a5c', 'node_modules', 'dist', 'build', 'coverage', 'artifacts', 'generated', 'examples']);

@@ -55,8 +55,21 @@ jobs:
           npm install --no-save @rollup/rollup-linux-x64-gnu @rolldown/binding-linux-x64-gnu @tailwindcss/oxide-linux-x64-gnu lightningcss-linux-x64-gnu @next/swc-linux-x64-gnu @unrs/resolver-binding-linux-x64-gnu 2>/dev/null || true
 
       - name: Generate atlas plugin bundles
+        env:
+          SYNC_BRANCH: ${{ inputs.branch || github.ref_name }}
         run: |
           set -euo pipefail
+          # Pin generated atlas plugins to the SAME version the monorepo publish ships
+          # (so @a5c-ai/atlas-github's @a5c-ai/babysitter-sdk dep resolves to a published version).
+          BASE_VERSION=$(node -p "require('./package.json').version.split('-')[0]")
+          TARGET_VERSION="$BASE_VERSION"
+          if [ "${SYNC_BRANCH}" = "staging" ]; then
+            IFS='.' read -r MAJOR MINOR PATCH <<< "$BASE_VERSION"
+            NEXT_PATCH=$((PATCH + 1))
+            SHORT_SHA=$(git rev-parse --short=12 HEAD)
+            TARGET_VERSION="${MAJOR}.${MINOR}.${NEXT_PATCH}-staging.${SHORT_SHA}"
+          fi
+          node scripts/sync-workspace-versions.mjs --version "$TARGET_VERSION"
           npm run build --workspace=@a5c-ai/atlas
           npm run build --workspace=@a5c-ai/extensions-adapter
           node scripts/generate-atlas-plugins.mjs --output artifacts/generated-atlas-plugins
