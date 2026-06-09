@@ -52,6 +52,16 @@ export { runOrchestrationPhase } from "./orchestration";
 export async function handleHarnessCreateRun(
   parsed: HarnessCreateRunArgs,
 ): Promise<number> {
+  // #949: genty IS the execution harness when run standalone via this
+  // autonomous entrypoint. The BABYSITTER_EXECUTE_TASKS / BABYSITTER_CROSS_SUBAGENTS
+  // gates default OFF (emit-only) for plugin/host contexts, but genty's own
+  // autonomous runtime MUST auto-execute shell/node and dispatch agents. Opt the
+  // flags ON here (without clobbering an explicit caller override) so standalone
+  // genty behaves exactly as before. This is the seam that keeps genty-autonomous
+  // tests green.
+  process.env.BABYSITTER_EXECUTE_TASKS ??= "1";
+  process.env.BABYSITTER_CROSS_SUBAGENTS ??= "1";
+
   const {
     prompt: initialPrompt,
     harness: preferredHarness,

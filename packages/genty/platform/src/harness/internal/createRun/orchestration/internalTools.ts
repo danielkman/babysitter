@@ -12,6 +12,7 @@ import {
   ErrorCategory,
   askUserQuestionViaTool,
   formatToolResult,
+  assertResolvedStatus,
   type AskUserQuestionRequest,
   type OrchestrationState,
   type ToolResultShape,
@@ -278,7 +279,7 @@ function createTaskPostResultTool(args: {
         runHandle,
         action.effectId,
         {
-          status: effectResult.status,
+          status: assertResolvedStatus(effectResult.status),
           value: effectResult.value,
           error: effectResult.error,
           startedAt,

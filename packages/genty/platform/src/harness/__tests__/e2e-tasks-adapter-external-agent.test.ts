@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { resolveEffect } from "../internal/createRun/orchestration/effects";
 
 const taskMuxMock = vi.hoisted(() => ({
@@ -16,6 +16,20 @@ vi.mock("@a5c-ai/tasks-adapter", () => ({
 }));
 
 describe("issue #606 mocked tasks-adapter external agent e2e", () => {
+  // Agent dispatch is gated behind BABYSITTER_CROSS_SUBAGENTS (#949); genty's
+  // autonomous entrypoint opts it ON. Mirror that for this dispatch-path test.
+  let savedCross: string | undefined;
+
+  beforeEach(() => {
+    savedCross = process.env.BABYSITTER_CROSS_SUBAGENTS;
+    process.env.BABYSITTER_CROSS_SUBAGENTS = "1";
+  });
+
+  afterEach(() => {
+    if (savedCross !== undefined) process.env.BABYSITTER_CROSS_SUBAGENTS = savedCross;
+    else delete process.env.BABYSITTER_CROSS_SUBAGENTS;
+  });
+
   it("dispatches a process-defined agent responder task through mock tasks-adapter and returns the answer", async () => {
     taskMuxMock.routeTask.mockReturnValue({
       responderType: "agent",

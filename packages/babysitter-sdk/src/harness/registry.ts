@@ -195,7 +195,23 @@ export const KNOWN_HARNESSES: readonly HarnessSpec[] = [
 ];
 
 function createKnownAdapters(): HarnessAdapter[] {
-  return HARNESS_REGISTRY.map((entry) => entry.adapterFactory());
+  // #949: adapter factories resolve metadata eagerly in their constructors. A
+  // single failing factory (e.g. genty when @a5c-ai/adapters ships no genty
+  // adapter) must NOT abort building the whole registry. Skip the failing
+  // adapter (logged to stderr) and continue — this is an intentional, narrow
+  // graceful-degradation so detection of other harnesses still works.
+  const adapters: HarnessAdapter[] = [];
+  for (const entry of HARNESS_REGISTRY) {
+    try {
+      adapters.push(entry.adapterFactory());
+    } catch (error) {
+      process.stderr.write(
+        `[registry] Skipping adapter "${entry.name}" — factory failed: ` +
+        `${error instanceof Error ? error.message : String(error)}\n`,
+      );
+    }
+  }
+  return adapters;
 }
 
 export function getHarnessDiscoverySpec(name: string): HarnessSpec | null {

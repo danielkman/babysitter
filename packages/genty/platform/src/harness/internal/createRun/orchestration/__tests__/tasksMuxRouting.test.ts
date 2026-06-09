@@ -1,7 +1,7 @@
 import { mkdtemp, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import * as path from "node:path";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { resolveEffect } from "../effects";
 import { resolveAndPostEffect } from "../index";
 
@@ -31,11 +31,30 @@ vi.mock("node:child_process", async (importOriginal) => {
 });
 
 describe("issue #606 tasks-adapter effect routing", () => {
+  // These tests exercise genty's autonomous dispatch behavior. resolveEffect's
+  // agent/skill dispatch is gated behind BABYSITTER_CROSS_SUBAGENTS and shell/node
+  // execution behind BABYSITTER_EXECUTE_TASKS (#949). genty's autonomous
+  // entrypoint (handleHarnessCreateRun) opts these ON; mirror that here so the
+  // dispatch path under test runs.
+  let savedCross: string | undefined;
+  let savedExec: string | undefined;
+
   beforeEach(() => {
+    savedCross = process.env.BABYSITTER_CROSS_SUBAGENTS;
+    savedExec = process.env.BABYSITTER_EXECUTE_TASKS;
+    process.env.BABYSITTER_CROSS_SUBAGENTS = "1";
+    process.env.BABYSITTER_EXECUTE_TASKS = "1";
     taskMuxMock.routeTask.mockReset();
     taskMuxMock.submitBreakpoint.mockReset();
     childProcessMock.execFileSync.mockReset();
     childProcessMock.execSync.mockReset();
+  });
+
+  afterEach(() => {
+    if (savedCross !== undefined) process.env.BABYSITTER_CROSS_SUBAGENTS = savedCross;
+    else delete process.env.BABYSITTER_CROSS_SUBAGENTS;
+    if (savedExec !== undefined) process.env.BABYSITTER_EXECUTE_TASKS = savedExec;
+    else delete process.env.BABYSITTER_EXECUTE_TASKS;
   });
 
   it("routes standalone agent effects through tasks-adapter AgentMuxResponderBackend", async () => {

@@ -24,6 +24,7 @@ import {
   type EffectAction,
   type OrchestrationState,
   type ResolveEffectResult,
+  assertResolvedStatus,
 } from "../utils";
 import { MAX_PROCESS_ERROR_RECOVERIES } from "./constants";
 
@@ -203,7 +204,7 @@ export async function runExternalOrchestrationPhase(args: RunOrchestrationPhaseA
               runHandle,
               action.effectId,
               {
-                status: effectResult.status,
+                status: assertResolvedStatus(effectResult.status),
                 value: effectResult.value,
                 error: effectResult.error,
                 startedAt,
@@ -240,7 +241,7 @@ export async function runExternalOrchestrationPhase(args: RunOrchestrationPhaseA
                 taskId: action.taskId,
                 kind: action.kind,
                 title: action.taskDef?.title,
-                status: effectResult.status,
+                status: assertResolvedStatus(effectResult.status),
               },
             });
             if (overlays.budgetEnforcement?.paused) {

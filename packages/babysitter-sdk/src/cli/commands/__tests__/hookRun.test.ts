@@ -164,6 +164,7 @@ afterEach(async () => {
   process.stderr.write = originalStderrWrite;
   delete process.env.BABYSITTER_HOOK_BACKOFF_BASE;
   delete process.env.BABYSITTER_HOOK_BACKOFF_CAP;
+  delete process.env.BABYSITTER_CROSS_SUBAGENTS;
   vi.useRealTimers();
   vi.restoreAllMocks();
   try {
@@ -874,6 +875,9 @@ describe("handleHookRun stop", () => {
   });
 
   it("continues for tasks-adapter routed agent effects but exits for externally waiting routes", async () => {
+    // Cross-subagent dispatch (auto-resolving tasks-adapter routed agent
+    // effects in the stop hook) is gated behind BABYSITTER_CROSS_SUBAGENTS (#949).
+    process.env.BABYSITTER_CROSS_SUBAGENTS = "1";
     process.env.BABYSITTER_HOOK_BACKOFF_BASE = "0.001";
     process.env.BABYSITTER_HOOK_BACKOFF_CAP = "0.001";
     const runsDir = path.join(tmpDir, "runs");
@@ -931,6 +935,8 @@ describe("handleHookRun stop", () => {
   });
 
   it("resolves external agent effects internally and leaves host-resolvable effects pending", async () => {
+    // Cross-subagent dispatch is gated behind BABYSITTER_CROSS_SUBAGENTS (#949).
+    process.env.BABYSITTER_CROSS_SUBAGENTS = "1";
     process.env.BABYSITTER_HOOK_BACKOFF_BASE = "0.001";
     process.env.BABYSITTER_HOOK_BACKOFF_CAP = "0.001";
     const runId = "mixed-external-agent-run";

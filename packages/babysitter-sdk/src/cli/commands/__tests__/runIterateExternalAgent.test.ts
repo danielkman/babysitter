@@ -56,22 +56,7 @@ vi.mock("@a5c-ai/tasks-adapter", () => {
   return { AgentMuxResponderBackend, routeTask };
 });
 
-describe("runIterate external agent routing", () => {
-  let tmpRoot: string;
-
-  beforeEach(async () => {
-    tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), "sdk-run-iterate-external-agent-"));
-  });
-
-  afterEach(async () => {
-    vi.restoreAllMocks();
-    await fs.rm(tmpRoot, { recursive: true, force: true });
-  });
-
-  it("resolves tasks-adapter routed agent effects before returning pending work to the CLI caller", async () => {
-    const entryFile = path.join(tmpRoot, "processes", "external-agent.mjs");
-    await fs.mkdir(path.dirname(entryFile), { recursive: true });
-    await fs.writeFile(entryFile, `
+const EXTERNAL_AGENT_PROCESS = `
 const externalAgentTask = {
   id: "external-agent",
   build() {
@@ -91,9 +76,29 @@ const externalAgentTask = {
 export async function process(_inputs, ctx) {
   return await ctx.task(externalAgentTask, {}, { key: "external-agent" });
 }
-`);
+`;
 
-    const run = await createRun({
+describe("runIterate external agent routing", () => {
+  let tmpRoot: string;
+  let savedCrossSubagents: string | undefined;
+
+  beforeEach(async () => {
+    tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), "sdk-run-iterate-external-agent-"));
+    savedCrossSubagents = process.env.BABYSITTER_CROSS_SUBAGENTS;
+  });
+
+  afterEach(async () => {
+    vi.restoreAllMocks();
+    if (savedCrossSubagents !== undefined) process.env.BABYSITTER_CROSS_SUBAGENTS = savedCrossSubagents;
+    else delete process.env.BABYSITTER_CROSS_SUBAGENTS;
+    await fs.rm(tmpRoot, { recursive: true, force: true });
+  });
+
+  async function makeExternalAgentRun() {
+    const entryFile = path.join(tmpRoot, "processes", "external-agent.mjs");
+    await fs.mkdir(path.dirname(entryFile), { recursive: true });
+    await fs.writeFile(entryFile, EXTERNAL_AGENT_PROCESS);
+    return await createRun({
       runsDir: tmpRoot,
       process: {
         processId: "ci/external-agent",
@@ -101,6 +106,11 @@ export async function process(_inputs, ctx) {
         exportName: "process",
       },
     });
+  }
+
+  it("with BABYSITTER_CROSS_SUBAGENTS=1, resolves tasks-adapter routed agent effects before returning pending work", async () => {
+    process.env.BABYSITTER_CROSS_SUBAGENTS = "1";
+    const run = await makeExternalAgentRun();
 
     const first = await runIterate({ runDir: run.runDir, json: true });
 
@@ -127,5 +137,26 @@ export async function process(_inputs, ctx) {
     expect(second.status).toBe("completed");
     const output = JSON.parse(await fs.readFile(path.join(run.runDir, "state", "output.json"), "utf8"));
     expect(output).toBe("adapters answer for External agent");
+  });
+
+  it("with BABYSITTER_CROSS_SUBAGENTS unset (default OFF), leaves the agent effect PENDING and does NOT dispatch tasks-adapter", async () => {
+    delete process.env.BABYSITTER_CROSS_SUBAGENTS;
+    const run = await makeExternalAgentRun();
+
+    const first = await runIterate({ runDir: run.runDir, json: true });
+
+    // Default OFF must EMIT the effect: the run stays waiting and the agent
+    // effect is surfaced as pending work rather than auto-resolved.
+    expect(first.status).toBe("waiting");
+    expect(first.reason).not.toBe("external-agent-effects-resolved");
+    expect(Array.isArray(first.nextActions)).toBe(true);
+    expect(first.nextActions).toEqual(
+      expect.arrayContaining([expect.objectContaining({ kind: "agent" })]),
+    );
+
+    // No tasks-adapter dispatch occurred: the effect was not resolved.
+    const events = await loadJournal(run.runDir);
+    expect(events.find((event) => event.type === "EFFECT_RESOLVED")).toBeUndefined();
+    expect(events.find((event) => event.type === "COST_TRACKED")).toBeUndefined();
   });
 });

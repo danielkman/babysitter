@@ -19,7 +19,7 @@ import type { JsonRecord } from "../../storage/types";
 import { resolveCompletionProof } from "../completionProof";
 import { groupActionsByParallelGroup } from "../../tasks/grouping";
 import { classifyWaitingActions } from "../../runtime/asyncEffects";
-import { resolveProjectRootForRun } from "../../config";
+import { resolveProjectRootForRun, crossSubagentsEnabled } from "../../config";
 import { hashProcessCodeFile } from "../../runtime/processCodeHash";
 import {
   detectIterationCount,
@@ -135,7 +135,7 @@ export async function runIterate(options: RunIterateOptions): Promise<RunIterate
     ...(subprocessSupport ? { subprocessSupport } : {}),
   });
 
-  if (iterationResult.status === "waiting") {
+  if (iterationResult.status === "waiting" && crossSubagentsEnabled()) {
     const externalResolution = await resolveExternalAgentEffectsForRun({
       runDir,
       workspace: projectRoot,

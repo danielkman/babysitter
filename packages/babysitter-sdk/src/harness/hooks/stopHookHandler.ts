@@ -1,6 +1,6 @@
 /** Shared stop-hook handler: common 9-step sequence for ALL stop hooks. */
 import * as path from "node:path";
-import { resolveRunsDir } from "../../config";
+import { resolveRunsDir, crossSubagentsEnabled } from "../../config";
 import {
   getSessionFilePath,
   readSessionFile,
@@ -486,7 +486,7 @@ export async function handleStopHookCommon(
     return makeExit(log, options.useDetailedRunState ? 1 : 0, "run_state_unknown", { sessionId: activeSessionId, filePath, state, prompt, resolvedPluginRoot, runsDir });
   }
 
-  if (runState === "waiting") {
+  if (runState === "waiting" && crossSubagentsEnabled()) {
     const externalResolution = await resolveExternalAgentEffectsForStopHook({
       runDir: runEventDir,
       workspace: process.cwd(),

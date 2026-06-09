@@ -71,6 +71,18 @@ export const ENV_VAR_CONTRACTS = {
       scope: "external-input",
       description: "Overrides node task timeout at process startup.",
     },
+    crossSubagents: {
+      name: "BABYSITTER_CROSS_SUBAGENTS",
+      valueType: "boolean",
+      scope: "external-input",
+      description: "Enables cross-harness agent/skill auto-dispatch (default OFF).",
+    },
+    executeTasks: {
+      name: "BABYSITTER_EXECUTE_TASKS",
+      valueType: "boolean",
+      scope: "external-input",
+      description: "Enables shell/node task auto-execution (default OFF).",
+    },
   },
   azureOpenAi: {
     apiKey: {

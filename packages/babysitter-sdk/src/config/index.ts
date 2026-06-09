@@ -59,6 +59,13 @@ export {
 } from "./runs";
 
 export {
+  CROSS_SUBAGENTS_ENV_VAR,
+  EXECUTE_TASKS_ENV_VAR,
+  crossSubagentsEnabled,
+  executeTasksEnabled,
+} from "./executionPolicy";
+
+export {
   ENV_VAR_CONTRACTS,
   configKeyToEnvVar,
   createScopedRuntimeConfigState,

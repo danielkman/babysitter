@@ -65,6 +65,13 @@ export async function dispatchEffectActions(
     if (!commit) {
       continue;
     }
+    // #949: a "pending" result means resolveEffect EMITTED the effect rather than
+    // executing it (auto-exec/dispatch gated OFF). Do NOT commit a resolved
+    // result for it — leave the effect pending so the host (or a later iteration
+    // with the flags enabled) performs it.
+    if (commit.result.status === "pending") {
+      continue;
+    }
     await options.commitAction(commit);
     if (commit.result.status === "ok") {
       ok += 1;

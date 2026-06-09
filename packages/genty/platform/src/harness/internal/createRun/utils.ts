@@ -112,12 +112,32 @@ export interface OrchestrationFinishReport {
 }
 
 export type ResolveEffectResult = {
-  status: "ok" | "error";
+  status: "ok" | "error" | "pending";
   value?: unknown;
   error?: unknown;
   stdout?: string;
   stderr?: string;
 };
+
+/**
+ * Narrows a resolved effect status to the posted ("ok" | "error") union.
+ *
+ * #949: a "pending" status means resolveEffect EMITTED the effect (auto-exec /
+ * dispatch gated OFF) rather than executing it; such an effect must never be
+ * committed as a resolved result (the dispatch driver filters it first). This is
+ * an explicit invariant guard — not a silent fallback — so a programming error
+ * that lets "pending" reach a commit path fails loudly instead of corrupting the
+ * journal.
+ */
+export function assertResolvedStatus(status: ResolveEffectResult["status"]): "ok" | "error" {
+  if (status === "pending") {
+    throw new Error(
+      "Cannot post a 'pending' effect result: emitted (gated-off) effects must " +
+      "remain pending, not be recorded as resolved.",
+    );
+  }
+  return status;
+}
 
 export interface OrchestrationState {
   runId?: string;

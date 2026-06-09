@@ -121,11 +121,29 @@ describe("subscribeVerbosePiEvents", () => {
 });
 
 describe("resolveEffect tasks-adapter routing", () => {
+  // resolveEffect's agent dispatch is gated behind BABYSITTER_CROSS_SUBAGENTS and
+  // shell/node execution behind BABYSITTER_EXECUTE_TASKS (#949). These tests
+  // exercise the dispatch path, which genty's autonomous entrypoint opts ON;
+  // mirror that here.
+  let savedCross: string | undefined;
+  let savedExec: string | undefined;
+
   beforeEach(() => {
+    savedCross = process.env.BABYSITTER_CROSS_SUBAGENTS;
+    savedExec = process.env.BABYSITTER_EXECUTE_TASKS;
+    process.env.BABYSITTER_CROSS_SUBAGENTS = "1";
+    process.env.BABYSITTER_EXECUTE_TASKS = "1";
     taskMuxMock.routeTask.mockReset();
     taskMuxMock.submitBreakpoint.mockReset();
     childProcessMock.execFileSync.mockReset();
     childProcessMock.execSync.mockReset();
+  });
+
+  afterEach(() => {
+    if (savedCross !== undefined) process.env.BABYSITTER_CROSS_SUBAGENTS = savedCross;
+    else delete process.env.BABYSITTER_CROSS_SUBAGENTS;
+    if (savedExec !== undefined) process.env.BABYSITTER_EXECUTE_TASKS = savedExec;
+    else delete process.env.BABYSITTER_EXECUTE_TASKS;
   });
 
   it("delegates routable agent effects through tasks-adapter AgentMuxResponderBackend", async () => {

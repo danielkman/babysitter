@@ -224,6 +224,20 @@ export function getAmuxAdapterMetadata(harnessName: string): AdapterAdapterMetad
 
   const adapter = client.adapters.get(agentMuxName);
   if (!adapter) {
+    // #949: the live @a5c-ai/adapters module loads fine but the build it ships
+    // simply does not carry the requested adapter (e.g. "genty"). Rather than
+    // hard-throw — which aborts the entire adapter registry construction — fall
+    // back to the static metadata when we have it. This is an intentional,
+    // narrow graceful-degradation (logged to stderr), not a silent fallback.
+    if (STATIC_FALLBACK_METADATA[agentMuxName]) {
+      process.stderr.write(
+        `[adapterMetadata] @a5c-ai/adapters has no adapter named "${agentMuxName}" ` +
+        `(requested harness: "${harnessName}"); using static fallback metadata.\n`,
+      );
+      const fallback = getFallbackAdapterMetadata(harnessName, agentMuxName);
+      cache.set(agentMuxName, fallback);
+      return fallback;
+    }
     throw new Error(
       `@a5c-ai/adapters does not have an adapter named "${agentMuxName}" ` +
       `(requested harness: "${harnessName}"). Available adapters may need updating.`,

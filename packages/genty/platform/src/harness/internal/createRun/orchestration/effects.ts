@@ -49,6 +49,8 @@ import type { StreamingOutputOptions } from "../../../types";
 // SDK-owned: orchestration iteration loop is the core SDK runtime engine
 import {
   orchestrateIteration,
+  crossSubagentsEnabled,
+  executeTasksEnabled,
 } from "@a5c-ai/babysitter-sdk";
 import { getGlobalRegistry } from "../../../../orchestration/global";
 import { createMicroagentSystem } from "../../../../microagents";
@@ -75,6 +77,7 @@ import {
   type HarnessDiscoveryResult,
   type IterationResult,
   type ResolveEffectResult,
+  assertResolvedStatus,
 } from "../utils";
 import {
   buildAgentPrompt,
@@ -237,6 +240,16 @@ export async function resolveEffect(
     return resolveMcpEffect(action, options);
   }
 
+  // #949: cross-harness agent/skill dispatch is gated behind
+  // BABYSITTER_CROSS_SUBAGENTS (default OFF). When disabled, EMIT the agent
+  // effect as pending instead of routing it through tasks-adapter / a harness.
+  // genty's autonomous entrypoint (handleHarnessCreateRun) opts this flag ON so
+  // standalone runs still dispatch. "breakpoint" effects are human-input, not
+  // cross-subagent dispatch, so they are not gated here.
+  if (kind === "agent" && !crossSubagentsEnabled()) {
+    return { status: "pending", value: { emitted: true, kind } };
+  }
+
   const tasksMuxResult = await resolveViaTasksMuxIfRoutable(
     action,
     options,
@@ -246,6 +259,13 @@ export async function resolveEffect(
   );
   if (tasksMuxResult) {
     return tasksMuxResult;
+  }
+
+  // #949: shell/node task auto-execution is gated behind BABYSITTER_EXECUTE_TASKS
+  // (default OFF). When disabled, EMIT the effect as pending instead of running
+  // it. genty's autonomous entrypoint opts this flag ON.
+  if ((kind === "node" || kind === "orchestrator_task" || kind === "shell") && !executeTasksEnabled()) {
+    return { status: "pending", value: { emitted: true, kind } };
   }
 
   if (kind === "node" || kind === "orchestrator_task") {
@@ -1074,7 +1094,7 @@ async function invokeSubprocessEffect(
             childHandle,
             childAction.effectId,
             {
-              status: childEffectResult.status,
+              status: assertResolvedStatus(childEffectResult.status),
               value: childEffectResult.value,
               error: childEffectResult.error,
               startedAt,
