@@ -226,6 +226,14 @@ substrate, agents are clients). It provides:
 | **PROJ-demotion** | All trust decisions — key-registration, namespace-authorization, revocation, *and* author-HLC causal plausibility (anti-backdating) — made **inside `proj`**, keyed on **author-HLC** over the admitted set. Set-pure ⇒ convergent. A demoted fact is `untrusted`/`quarantined`, never dropped, and re-evaluated monotonically as facts arrive. §3.6, §8.1. |
 | **Causal plausibility** | A set-pure anti-backdating rule (replaces the v2-draft receiver-clock drift gate, C3-1/C3-3/M3-1; C4-2 makes its PRIMARY form involuntary; C5-1 makes it eviction-safe): a fact `F` from key `K` projects **trusted** only over `K`'s **complete gap-free `(wall,counter)` chain** up to `F` (else **`pending`**, reusing the §4c/m4-1 pin-completeness contiguity rule, C5-1), and once complete is demoted `untrusted-anachronistic` if `S` holds a **higher-author-HLC, non-ancestor** fact from the **same** `K` **in that complete chain** (per-key monotonicity — reads `K`'s *involuntary* footprint, not forgeable by omitting `causedBy`, C4-2; not defeatable by evicting `K`'s higher facts — an evicted link yields a `(wall,counter)` gap ⇒ `pending`, and a registered key's chain is `key-chain-durable`, cap-bounded with on-demand re-fetch, §3.5a, C5-1/M6-1; contiguity decided per-`(replicaId,key)`, demotion key-wide, m6-1). A *secondary* tightening rule additionally requires `F`'s author-HLC to dominate its *declared* `causedBy` closure over `S`. Compared only to set-resident author-HLCs, never to any receiver clock. §3.6, §8.1, §4b.1. |
 | **Authority** | A key (Ed25519) authorized, by a signed chain rooted in the tenant root key, to write a given EID **namespace** and/or perform scoped ops (excise, revoke), **as of an author-HLC interval**. Key-registration, namespace authority, and revocation are **all** proj decisions keyed on author-HLC; **only** signature validity is an ingest-gate predicate. §2.4, §8. |
+| **Functionality / Microagent** | A genty microagent (`IsolationMode` `subprocess`/`worker`/`container`) with a declared `inputSchema`/`outputSchema`, invoked as a `MicroagentInvocation` and returning a `MicroagentResult`. The patent's "functionality" (an isolated, single-purpose executable bound to a relation). A **client** of kip, never the substrate: its output is wrapped as signed facts, never written to the graph directly (§5b.1). |
+| **Functionality descriptor** | A `MicroagentManifest` (`name`, `version`, `description`, `inputSchema`, `outputSchema`, `isolation`, `runtime{entrypoint, skills, tools, scripts, processes, model, timeout, env}`, `tags`, `builtIn`). Advisory **selection** metadata only — it ranks *which* microagent to dispatch; it **never** gates fact membership (only the Ed25519 signature does, C2-1). §5b.1. |
+| **Contextual relation** | An `EdgeKind` whose ontology definition references one or more bound microagent functionalities (`FunctionalityBinding`). The edge declares source/target `NodeKind`s matching the functionality's input/output types; the microagent realizes the hop. The relation is both a navigation edge and a unit of computation (patent). §5b.1. |
+| **Query graph / Segment match** | A **contextual query** (known seed instance + desired target `NodeKind` + linkage expression) compiles to a small **query graph** that is matched against a **segment** — an ordered path of contextual `EdgeKind`s over the ontology graph — via discovery traversal (§5.1/§5.2). Compilation is a **pure read over `proj`**; only execution emits facts. Multiple matching segments surface as a typed choice, never silently picked (N5). §5b.1. |
+| **Learner microagent** | A microagent that proposes graph edits (candidate `NodeKind`/`EdgeKind`/instance facts) by running the **knowledge-autoencoding loop** (encode → decode → loss → propose) and emits the converged result as **signed `kip:learn` facts** naming inputs + achieved loss. It is a client that *proposes*; `proj` decides what becomes effective (§3.4/C-3). §5b.2. |
+| **Reconstruction loss** | A model-relative, **accelerator-class** (non-deterministic, §5.3) distance between a raw artifact and the artifact reconstructed by a decode microagent from candidate graph facts. Used **only** as a convergence/search signal; it is never a `proj` input. The *achieved* loss value is recorded inside a signed `kip:learn` fact for audit, not re-computed in `proj`. §5b.2. |
+| **Knowledge autoencoding** | The agentic loop `raw → ENCODE → candidate graph facts → DECODE → reconstructed raw → loss → LEARNER proposes edits`, iterated until `loss < threshold` **or** a budget cap (no unbounded loops). The *search* is accelerator-class; the *output* is a deterministic set of signed facts. §5b.2. |
+| **Miner / Discoverer / Ingestor microagents** | The three microagent **families** realizing the patent `data-resource → objects-of-interest → query → acquire` pipeline: **Miner** pulls candidate instances from external sources; **Discoverer** expands a query (recall + bounded traversal, §5.1/§5.2) to find contextually related instances; **Ingestor** normalizes a raw resource into episodic facts (§2.3). All emit **signed** facts with source provenance; dedup by EID (= patent node-merge). §5b.3. |
 
 ---
 
@@ -1855,6 +1863,307 @@ incomparable vectors.
 
 ---
 
+## 5b. Active knowledge — contextual functionalities, microagents & knowledge autoencoding
+
+§§1–5 specify a **passive** substrate: facts go in, `proj` folds them into a graph, retrieval reads
+the fold. This section adds an **active** layer adapted from the contextual-relation map of patent
+US9311402 (mechanisms extracted and re-grounded in kip; not its wording). The active layer lets
+relations *carry computation*, lets the system *answer by traversal-and-execution*, and lets it
+*learn new graph structure* — all while leaving the convergence core (§3.2 gate, §3.4 `proj`, §4b.4)
+**byte-for-byte unchanged**.
+
+The single load-bearing rule for the whole section:
+
+> **INV-A1 (microagents are clients, never the substrate).** A microagent MUST NOT write to the
+> graph. Every value it produces enters kip **only** as a signed, append-only fact authored by the
+> orchestrator (§4.1, §6). The graph remains `proj(factSet)`; the active layer can change *what facts
+> exist*, never *how facts fold*. A microagent that mutates state directly is non-conformant.
+
+This is the Letta pitfall (N2) restated for executable relations: binding an executable to an edge
+tempts the executable to write the resulting edge/node itself. It MUST NOT. It returns a result; the
+orchestrator wraps that result as signed `assert` facts; the edge/node appears **only** via `proj`.
+
+### 5b.1 Contextual-relation functionalities (patent-derived)
+
+**The map is the ontology graph (already facts).** The patent's "type map" — a directed graph whose
+vertices are instance *types* and whose edges express how one type can reach another — is exactly
+kip's per-tenant **ontology/schema graph** (§2.2): each type is a `NodeKindDef`, each typed
+reachability an `EdgeKindDef`, all stored as facts under `/ontology` and therefore versioned and
+as-of-queryable like any other graph state. The active layer adds **no new store** — only new *kinds
+of facts* the existing `proj` already knows how to fold.
+
+**A contextual relation carries one or more functionalities.** An `EdgeKind` MAY declare a
+`FunctionalityBinding`: a reference to a microagent (by `MicroagentManifest.name` + `version`) whose
+`inputSchema`/`outputSchema` are compatible with the edge's source/target `NodeKind`s. The edge is
+then both a navigation hop *and* a unit of computation: traversing it MAY be realized by **dispatching
+the bound microagent** rather than by reading a pre-existing adjacency.
+
+```ts
+// Normative for SHAPE (cf. §6). All identifiers (MicroagentManifest, MicroagentInvocation,
+// MicroagentResult, IsolationMode) are the genty-core types; do not invent fields.
+
+/** Binds a contextual functionality (microagent) to an EdgeKind in the ontology. */
+interface FunctionalityBinding {
+  edgeKind: EdgeKind;                 // the contextual relation this realizes
+  microagentName: string;            // MicroagentManifest.name (registered descriptor)
+  version: string;                   // MicroagentManifest.version (semver)
+  /** Source/target NodeKinds the hop connects; MUST be compatible with the manifest schemas. */
+  sourceKind: NodeKind;
+  targetKind: NodeKind;
+  /** Optional guard: EdgeKinds whose instances MUST be present (projected) before this hop may fire
+   *  (patent "conditional relation"). Evaluated as a PURE READ over proj — never against sync state. */
+  requires?: EdgeKind[];
+  /** Cardinality the hop produces, for DSL `?`/`/` expectation checking. */
+  cardinality: "one" | "many";
+}
+
+/** A contextual query: a known seed instance + a desired target type + a linkage expression. */
+interface ContextualQuery {
+  seed: EID;                          // a concrete instance of a known NodeKind the caller already has
+  target: NodeKind;                   // the type of instance the caller wants
+  /** Ordered/partial linkage; if omitted, segment matching discovers a path (see Segment). */
+  via?: EdgeKind[];
+  /** Deterministic filters over PROJECTED PropCell values (Unknown cells excluded, never defaulted). */
+  filters?: ReadonlyArray<{ prop: PropKey; op: "=" | ">" | "<" | ">=" | "<="; value: PropValue }>;
+  asOf?: AsOf;                        // compiled & matched against this fact-set frontier (default: now)
+}
+
+/** A matched segment of the ontology graph: the ordered chain of contextual EdgeKinds connecting
+ *  the seed's NodeKind to `target`. Produced by a PURE READ over proj (no dispatch yet). */
+interface Segment {
+  steps: FunctionalityBinding[];      // ordered; steps[i].targetKind feeds steps[i+1].sourceKind
+  /** All segments that satisfied the query; >1 ⇒ a typed choice, NEVER an arbitrary pick (N5). */
+  alternatives: number;
+}
+
+/** The patent's "answer graph": the requested + intermediate instances and the relation edges that
+ *  produced them, expressed PURELY as derived_from provenance over the emitted facts. It is a READ
+ *  view (recall over the derived facts), never a separately-authored authoritative artifact. */
+interface AnswerGraph {
+  result: EID[];                      // requested-type instances (the answer)
+  intermediates: EID[];              // every in-between instance materialized along the chain
+  /** Every node/edge above is linked back to `seed` and to its asserting factId via derived_from. */
+  derivedFrom: ReadonlyArray<{ eid: EID; factId: FactId; producedBy: MicroagentInvocation }>;
+}
+```
+
+**Execution = ordered dispatch, results land as signed facts.** Running a contextual query is a
+two-phase operation with a hard determinism boundary:
+
+1. **Compile + match (pure read over `proj`).** The `ContextualQuery` is compiled into a query graph
+   and matched against the ontology to produce a `Segment`. Path/guard/filter resolution reads **only**
+   the deterministic projection of `/ontology` and existing facts at `asOf` — never replica-local sync
+   state or a wall clock. Two replicas at the same `asOf` MUST compile the same segment(s). If more than
+   one segment satisfies the linkage, the result set surfaces all as a **typed choice** (or is ranked
+   by `MicroagentManifest.tags` deterministically); kip never hash-tiebreaks contradictory plans
+   (mirrors `kip:conflict`, N5). **Inheritance** (patent inherence) is resolved here: discovery
+   traversal walks `is_a` subtype `EdgeKind`s so a relation defined on a parent `NodeKind` is reachable
+   from a child — and that resolution is a pure function of the ontology facts, never an ambient
+   in-code class hierarchy.
+2. **Execute (the only side effect: signed facts).** The orchestrator owns the loop. For each step it
+   builds a `MicroagentInvocation` whose `input` is the prior step's output (or the seed), enforces any
+   `requires` guard as a pure `proj` read (a *pending* guard fact ⇒ the hop is **not yet available**,
+   never fabricated), dispatches the bound microagent, and **validates `MicroagentResult.output`
+   against the manifest `outputSchema`** before minting anything. A non-zero `exitCode` or a validation
+   failure emits **no fact** — the cell stays `Unknown` (no fallback, N5; a fabricated plausible output
+   is the banned fallback). On success the orchestrator authors signed `assert` facts for the
+   intermediate/result instances, each with `provenance.source` naming the `MicroagentInvocation`, and
+   signed `derived_from` edge facts linking them back to the seed. The union of those `derived_from`
+   facts, read back via `proj`, **is** the `AnswerGraph`.
+
+**Intermediates and dedup are free (patent node-merge).** Every hop's output is persisted as ordinary
+signed facts, so intermediates are reusable: re-running the same hop on the same input is an idempotent
+no-op because byte-identical facts share a `factCID` and merge by set-union (INV-7). Identical instances
+resolve to the **same namespaced EID** (identity anchored by `IdentityPolicy`, §3.6) — the patent's
+"recognize duplicates and merge into a single node." Semantic same-as is **never** an in-place rewrite:
+it is a signed `same_as`/`supersede` fact all replicas fold identically; genuinely contradictory
+concurrent merges surface as `kip:conflict`, never a hash-chosen winner.
+
+**The map is dynamic — and that, too, is facts.** New types/relations/functionalities are introduced
+by emitting **signed schema facts** (a `NodeKindDef`/`EdgeKindDef` assert) and **microagent-registration
+facts** (the `MicroagentManifest` recorded as a fact). A microagent MUST NOT write `/ontology` directly:
+it *proposes* a schema fact; `proj` applies it as-of `validFrom` via upcasters; an instance that does
+not conform **quarantines** (visible-but-untrusted) rather than being silently dropped.
+
+**Functionality descriptor = `MicroagentManifest`.** The patent's publisher/health/docs/tags/help
+metadata maps onto manifest fields: publisher → `builtIn`/provenance, health probe → a `runtime.scripts`
+self-check + `outputSchema` validation, docs/tags/help → `description`/`tags`. **Crucially, none of
+these gate fact membership** — only the Ed25519 signature does (C2-1). Manifest metadata is *advisory
+selection* (it ranks dispatch, like a confidence score); emitted facts are admitted or quarantined on
+signature validity alone.
+
+**A kip-flavored query DSL (client-layer sugar).** kip's core stays DSL-free (N3); the DSL lives in
+the microagent/client layer and **compiles to the `ContextualQuery` above**, i.e. to pure reads plus
+signed-fact-emitting dispatches — never to a direct-write escape hatch.
+
+```text
+person:tal -> employed_by ? = name>"A"
+# seed = person:tal; -> hop the employed_by EdgeKind (dispatch its bound microagent);
+# ? expect a LIST (recall returns all matching projected org instances);
+# = filter on the projected `name` PropCell (>"A"); Unknown segments excluded, never defaulted.
+# Result: an AnswerGraph (derived_from subgraph), not a flat value.
+```
+
+| Token | Meaning |
+|---|---|
+| `->` | forward hop along an `EdgeKind` (dispatch its bound microagent; output feeds the next step) |
+| `~` | back-step along the `EdgeKind`'s declared inverse (proj-materialized reciprocal adjacency) |
+| `?` | expect a **list** — `recall` returns all matching projected instances (`NodeView[]`) |
+| `/` | expect a **single** — **error/conflict** if the projected result set is not singular (never silently pick one, N5) |
+| `=` / `>` / `<` / `>=` / `<=` | deterministic comparison filters over **projected** scalar `PropCell` values (Unknown ⇒ excluded) |
+
+> **Decision (D-5b.1): an `EdgeKind` MAY carry executable functionalities, but traversal results
+> enter kip only as orchestrator-authored signed facts.** A contextual hop dispatches a microagent
+> whose validated output the orchestrator commits as `assert` + `derived_from` facts; the projected
+> edge/node materializes solely through `proj` over those facts. This buys executable, computed
+> relations (REST/SQL/search/transform hops) without giving up `proj`-purity or convergence.
+>
+> **Rejected alternative — let the bound microagent write the edge/node directly into the graph.**
+> Tempting (one fewer hop) but fatal: it makes the graph an authoritative store written by an
+> unsigned, replica-local actor, bypassing the signature-only ingest gate (§3.2), letting two
+> replicas' graphs diverge by execution order, and re-introducing the Letta substrate-coupling
+> pitfall (N2). Rejected. The microagent is a pure client; the substrate is facts.
+
+### 5b.2 Knowledge autoencoding via microagents
+
+**Goal.** Learn graph structure from a raw artifact (markdown, image, transcript, …) by an
+**autoencoder-shaped loop**: encode the artifact into candidate graph facts, decode those facts back
+into a reconstructed artifact, measure the **reconstruction loss**, and have a **learner** propose
+graph edits — iterating until the loss is small enough or a budget is spent.
+
+```text
+   raw ──ENCODE──▶ candidate graph facts ──DECODE──▶ reconstructed raw
+                              ▲                              │
+                              └────── LEARNER proposes ◀──── loss(raw, reconstructed)
+                 (iterate until loss < threshold OR budget cap — never unbounded)
+```
+
+```ts
+/** All three are genty microagents (MicroagentManifest descriptors); shapes shown for the loop. */
+interface EncodeAgent {  // raw → candidate facts
+  // input:  { rawRef: BlobRef; ontologyAsOf: AsOf }
+  // output: { candidateFacts: AssertInput[] }   // PROPOSED facts, not yet committed
+}
+interface DecodeAgent {  // candidate facts → reconstructed raw
+  // input:  { candidateFacts: AssertInput[]; rawKind: string }
+  // output: { reconstructed: BlobRef }
+}
+
+/** Reconstruction loss — ACCELERATOR-class (non-deterministic, model-relative; §5.3). NOT a proj input. */
+type LossMetric = (rawRef: BlobRef, reconstructed: BlobRef) => Promise<number>; // 0 = perfect; lower is better
+
+/** Bounded loop state owned by the orchestrator (the learner is the proposing microagent). */
+interface LearnerLoopState {
+  iteration: number;
+  bestLoss: number;
+  candidate: AssertInput[];        // best candidate fact set so far
+  threshold: number;               // converge when bestLoss < threshold
+  budget: { maxIterations: number; maxWallMs: number; maxInvocations: number };
+}
+
+/** Convergence criterion — a TOTAL predicate, so the loop ALWAYS terminates (no unbounded loops). */
+function converged(s: LearnerLoopState): "accept" | "exhausted" | "continue" {
+  if (s.bestLoss < s.threshold) return "accept";        // good enough
+  if (s.iteration >= s.budget.maxIterations) return "exhausted"; // budget cap — STOP, do not loop forever
+  return "continue";
+}
+```
+
+**Determinism boundary (the whole point).** Encode/decode/loss/embedding/search are
+**accelerator-class** (§5.3): they are non-deterministic, model-relative, and MUST NOT run inside
+`proj`. What crosses the boundary into the substrate is the **learner's accepted output**, recorded as
+**deterministic signed facts**. Concretely, mirroring the §3.4 / C-3 supersession pattern:
+
+- While iterating, candidate facts are held **in memory** (or emitted as `quarantined`/untrusted
+  proposals); the loop reads loss but commits nothing authoritative.
+- On `"accept"`, the orchestrator authors a single signed **`kip:learn` fact** that *names its inputs*
+  (`rawRef` CID, encode/decode/loss `MicroagentManifest` name+version, `ontologyAsOf`) and *records the
+  achieved loss value* and the accepted `AssertInput[]`, then commits those facts. Replicas **fold the
+  recorded result**; they **never re-run the learner inside `proj`**. The learned graph is thus
+  byte-identical on every replica even though the *search that found it* was not.
+- On `"exhausted"`, **no `accept` fact is authored** — the loop emits a typed `kip:learn-exhausted`
+  marker (auditable), and the cells stay `Unknown`. There is no "best-effort accept" fallback (N5).
+
+This is exactly the §3.4 rule that an LLM/embedding-driven decision is *recorded as a fact* so all
+replicas converge on the recorded decision rather than re-deriving it non-deterministically.
+
+**Reversibility & audit.** A learned fact set is ordinary substrate: it is revertible via `tombstone`
+(§4.5) and fully auditable via `provenanceOf` — the `kip:learn` fact's provenance names the artifact,
+the agents+versions, and the loss achieved, so any later reviewer can re-examine (or re-run) the
+derivation out-of-band.
+
+**Residuals stated plainly.** Loss is **model-relative**: a low loss means "this graph reconstructs the
+artifact *under this decode model*," not "this graph is true." A different decode/loss model may rank
+differently — which is why loss never enters `proj` and the *achieved value + model identity* are
+recorded in the fact for honest comparison. Convergence to `loss < threshold` is **not** a truth
+guarantee; it is a recorded, reproducible-from-the-fact claim about a specific encode/decode pair.
+
+> **Decision (D-5b.2): the autoencoding search is accelerator-class; only the accepted, loss-stamped
+> fact set is substrate.** The learner loop runs outside `proj` under a hard budget cap; its accepted
+> output is committed as a signed `kip:learn` fact that records inputs + achieved loss, so replicas
+> fold the *result* and never re-execute the loop.
+>
+> **Rejected alternative — make `proj` re-run encode/decode to recompute the learned graph (or its
+> loss) on demand.** This would embed a non-deterministic, model-versioned, possibly-network-bound
+> computation inside the pure projection, instantly breaking byte-identical determinism (§5.3) and
+> letting replicas with different model builds diverge. Rejected: `proj` reads recorded facts only.
+
+### 5b.3 Microagents for mining, discovery & data ingestion
+
+The patent's acquisition pipeline — `data-resource → objects-of-interest → query → acquire` — maps
+onto three microagent **families**. All are clients (INV-A1); all emit **signed** facts with source
+provenance; all dedup by EID (patent node-merge); none mutate the graph.
+
+- **Miner** — *pull candidate instances from external sources.* Given a `data-resource` reference
+  (API, file, feed), a Miner extracts candidate objects-of-interest and emits them as signed `assert`
+  facts (often `quarantined`/untrusted until trusted, §8.1). It surfaces *candidates*; it never
+  asserts truth, and it fails loudly rather than fabricating (N5).
+- **Discoverer** — *expand a query to contextually related instances.* A Discoverer runs the
+  hybrid-retrieval expand step (vector recall → **bounded** graph traversal, §5.1/§5.2) to find
+  instances contextually linked to a seed, then emits `derived_from` facts recording *why* each was
+  surfaced. Traversal is **bounded** (no unbounded crawl) and reads are pure over `proj`.
+- **Ingestor** — *normalize a raw resource into episodic facts.* An Ingestor turns a raw artifact into
+  **episodic** facts (§2.3) with source provenance; later **episodic→semantic consolidation** links
+  the distilled semantic instances back to their episodes via `derived_from` (it is itself a learner
+  pass, §5b.2). An **RDF/RDFS** import/export adapter is a specialization of Ingestor: it translates
+  triples/vocabularies into signed `NodeKind`/`EdgeKind` + instance facts (and projects heads back out
+  as RDF). Unsigned/unverifiable external data is **rejected**; triples that violate the current
+  ontology **quarantine** rather than being coerced.
+
+```ts
+/** Family-agnostic shape: every family is a MicroagentManifest whose output the orchestrator
+ *  wraps as signed facts. The orchestrator — never the agent — calls assertFact (§6). */
+interface AcquisitionResult {
+  /** Proposed facts (assert/retract), each to be signed & committed by the orchestrator. */
+  proposed: AssertInput[];
+  /** Source provenance recorded on every emitted fact (data-resource id, fetch time, agent id+ver). */
+  source: Provenance;
+  /** EIDs the agent believes are duplicates of existing instances (patent node-merge) — emitted as
+   *  signed `same_as` facts, NEVER an in-place rewrite; contradictions surface as kip:conflict. */
+  sameAs?: ReadonlyArray<{ candidate: EID; existing: EID }>;
+}
+```
+
+| Family | Patent pipeline stage | kip primitive it uses |
+|---|---|---|
+| **Miner** | data-resource → objects-of-interest | signed `assert` facts (often `quarantined`, §8.1); EID dedup (§3.6) |
+| **Discoverer** | query → contextually related instances | `recall` hybrid pipeline + bounded `query` traversal (§5.1/§5.2); `derived_from` provenance |
+| **Ingestor** | acquire / normalize a raw resource | episodic `assert` facts (§2.3); `derived_from` for episodic→semantic consolidation |
+| **RDF adapter** (Ingestor specialization) | external semantic-web exchange | `NodeKindDef`/`EdgeKindDef` + instance `assert` facts; heads projected back out as RDF |
+| **Learner** (§5b.2) | grow the map & functionality DB | signed `kip:learn` + schema-proposal + microagent-registration facts; `proj` decides effectiveness |
+
+> **Decision (D-5b.3): acquisition is a family of clients that emit signed, source-provenanced facts;
+> kip provides the recall/traversal/dedup primitives, not the crawlers.** Mining, discovery, and
+> ingestion are realized as microagents whose outputs the orchestrator commits as facts (quarantined
+> until trusted, deduped by EID), keeping kip a substrate, not an ETL engine (N1/N2).
+>
+> **Rejected alternative — a built-in ingestion daemon that writes "trusted" graph state on import.**
+> This would make an unsigned external boundary an authoritative writer (breaking §3.2) and bake
+> source-specific ETL into the core (N1/N2/N4). Rejected: ingestion is a client; trust is a proj
+> demotion keyed on signature + authority, not an import flag.
+
+---
+
 ## 6. SDK surface (minimal, composable, illustrative)
 
 The core is deliberately small. Everything else (context assembly, LLM extraction, embedding) is a
@@ -1902,7 +2211,14 @@ interface Repo {
   excise(factId: FactId, reason: string): Promise<ExcisionMarker>; // PHYSICAL erasure; requires `excise` scope (§4.5, m-11)
   revokeKey(keyFpr: string, effectiveFrom: HlcStamp, reason: string, mode?: "ordinary-cutoff" | "causal-cutoff"): Promise<FactId>; // effectiveFrom is AUTHOR-HLC, compared to each fact's author-HLC in proj (C-6, M2-5) — NOT rxFrom. mode default "ordinary-cutoff" (M4-1): causal-cutoff is opt-in for key COMPROMISE and surfaces honest-concurrent casualties as kip:revoked-concurrent.
   fsck(): Promise<FsckReport>;                       // verify heads == proj(facts); verify all FACT signatures + author-HLC authority chain. Does NOT check commit signatures (transport, M2-2).
+
+  // --- active knowledge (§5b) — thin clients that COMPILE TO FACTS (like putNode/putEdge) ---
+  registerFunctionality(edgeKind: EdgeKind, manifest: MicroagentManifest): Promise<FactId>; // → signed microagent-registration + EdgeKind binding facts; descriptor is advisory selection only, NOT a gate (§5b.1)
+  runContextualQuery(q: ContextualQuery): Promise<AnswerGraph>;                              // compile+match = PURE READ over proj; execute = dispatch bound microagents; emits signed assert + derived_from facts; AnswerGraph is the derived_from subgraph read back (§5b.1). Multiple segments ⇒ typed choice, never auto-picked (N5).
+  learn(rawRef: BlobRef, opts: LearnOptions): Promise<{ facts: FactId[]; loss: number; status: "accept" | "exhausted" }>; // runs the autoencoding loop OUTSIDE proj under a budget cap; on accept, commits a signed kip:learn fact naming inputs + achieved loss; on exhausted, commits NO accept fact (§5b.2)
 }
+
+interface LearnOptions { threshold: number; maxIterations: number; maxWallMs: number; maxInvocations: number; asOf?: AsOf; }
 
 interface SyncReport { received: number; sent: number; merged: number; conflicts: Conflict[]; tip: CID; }
 ```
@@ -1918,6 +2234,16 @@ Design notes:
 - **`sync` and `merge` are first-class**, returning typed `conflicts` (never auto-picked).
 - **Durability** is explicit: `assertFact` returns `pending` until the commit publishes (m-9).
 - **Determinism**: every read takes an optional `asOf`; default is `now` (current local frontier).
+- **Active-layer seams are clients, the substrate is facts (§5b, INV-A1).** `registerFunctionality`,
+  `runContextualQuery`, and `learn` are **thin clients** in exactly the sense `putNode`/`putEdge` are:
+  they ultimately call `assertFact`, so the *only* way they change state is by appending signed facts.
+  A microagent (a bound functionality, an encode/decode/learner, a Miner/Discoverer/Ingestor) **never**
+  touches the graph directly. `runContextualQuery` compiles + matches as a **pure read over `proj`** and
+  emits its results — the `AnswerGraph` — as signed `assert` + `derived_from` facts. `learn` runs the
+  accelerator-class autoencoding loop **outside `proj`** under a hard budget cap and, on convergence,
+  records a signed `kip:learn` fact naming its inputs + achieved loss, so replicas **fold the recorded
+  result and never re-run the loop** (§3.4/C-3). The ingest gate, `proj` purity, and convergence (§3.2,
+  §3.4, §4b.4) are therefore untouched by the active layer.
 
 ---
 
