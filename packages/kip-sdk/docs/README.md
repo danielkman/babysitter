@@ -76,6 +76,7 @@ These five invariants run through every document; nothing in the set may contrad
 |---|---|---|
 | [25-context-enablement-seams.md](./25-context-enablement-seams.md) | pin/asOf/recall/subscribe/provenance seams the context layer consumes (kip provides seams, not the layer — N1). | §4c |
 | [26-retrieval.md](./26-retrieval.md) | Hybrid vector→graph→RRF pipeline, typed as-of traversal, derived/incremental indexing, salience projection. | §5 |
+| [28-stack-integration.md](./28-stack-integration.md) | How kip integrates with the rest of the stack (babysitter-sdk, genty, adapters, atlas, kradle): what kip consumes/provides, the seams used, data flow, and ALREADY-IN-SPEC / GROUNDED-NEW / SPECULATIVE status per point. | SPEC + real packages |
 | [40-sdk-api-surface.md](./40-sdk-api-surface.md) | The Kip/Repo interface: lifecycle, facts, reads, distribution, provenance/ops, and the §5b active-layer seams. Illustrative-normative shapes. | §6 |
 
 ### Active knowledge
@@ -115,7 +116,9 @@ These five invariants run through every document; nothing in the set may contrad
    taxonomy that runs through every layer.
 9. **[25-context-enablement-seams.md](./25-context-enablement-seams.md)** →
    **[26-retrieval.md](./26-retrieval.md)** → **[40-sdk-api-surface.md](./40-sdk-api-surface.md)** —
-   the read/consumption surface.
+   the read/consumption surface. Then
+   **[28-stack-integration.md](./28-stack-integration.md)** — how the rest of the stack
+   (babysitter-sdk, genty, adapters, atlas, kradle) produces, consumes, and clients these seams.
 10. **[30-active-knowledge-overview.md](./30-active-knowledge-overview.md)** →
     **[31-contextual-functionalities.md](./31-contextual-functionalities.md)** →
     **[32-knowledge-autoencoding.md](./32-knowledge-autoencoding.md)** →

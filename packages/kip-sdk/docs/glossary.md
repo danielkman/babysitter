@@ -197,6 +197,59 @@ by EID. The set is **open**. (§5b.3; see
 revocation, §8.1), plus `kip:learn`/`kip:learn-exhausted` (§5b.2). All visible and queryable — the
 machinery of N5 (no silent fallback).
 
+## Cross-stack terms (external components referenced by kip)
+
+> These are **external** entities from other a5c packages, not kip types. They appear in kip docs
+> either as a model/naming **analogy** or as a real **integration** seam. See
+> [stack integration](./28-stack-integration.md) for the full per-component treatment.
+
+**`AtlasRecord` / `Edge`** — The node/edge shapes of `packages/atlas` (`packages/atlas/src/types.ts`):
+`AtlasRecord` = `{ id, _kind, _file, _cluster, [key]: unknown }`; `Edge` = `{ from, to, kind,
+attributes? }` — **flat and non-temporal**. kip's `NodeView`/`EdgeView` deliberately **mirror** these
+(`../SPEC.md:246`) but every field is the *fold of facts*, and kip **adds** bitemporality + provenance
+that atlas lacks. atlas `getNeighbors(id,depth)` (bounded BFS) is the "lineage" kip's `TraversalSpec`
+makes as-of-valid (`../SPEC.md:1790`). External component referenced by **analogy + ingestion**, not a
+kip type. (See [data model §1](./21-data-model.md), [stack integration](./28-stack-integration.md).)
+
+**`AgentMemoryOntology`** — A real kradle CRD kind (`packages/kradle/core/src/resource-model.js:70`,
+validated by `validateOntology`) declaring `nodeKinds`/`edgeKinds`/required fields. kip's per-tenant
+mutable ontology is **modeled on it** (`../SPEC.md:293` "cf. kradle `AgentMemoryOntology`"), but kip
+stores schema **as facts** rather than a Git CRD pointer. External component referenced **by analogy
+only — no code dependency**. (See [data model §3](./21-data-model.md).)
+
+**`parseJournalForImport` / kradle snapshot** — `parseJournalForImport`
+(`packages/kradle/core/src/agent-memory-import.js:32`) parses a babysitter `.a5c` journal into a
+**summary-only** payload; the kradle `AgentMemorySnapshot` (`resource-model.js:72`) pins a **commit CID
++ digests**. kip cites both **by analogy** (`../SPEC.md:352`, `:1677`): kip's episodic import is
+summary-only "à la `parseJournalForImport`", and kip's `pin()` is frontier-addressed (drops commit
+CIDs) so it survives excision where a commit-pin dangles. External components referenced **by analogy
+only**. (See [context-enablement seams](./25-context-enablement-seams.md), [stack integration](./28-stack-integration.md).)
+
+**`MicroagentManifest` (genty-core)** — The descriptor of a kip "functionality" (see the
+**Functionality descriptor** entry under *Active knowledge (§5b)* above). It is the real
+`@a5c-ai/genty-core` type (`packages/genty/core/src/microagents/types.ts:36`), reused verbatim by kip
+(`../SPEC.md:1914`, "do not invent fields"). The genty-platform `MicroagentDispatcher` /
+`createMicroagentSystem` (`packages/genty/platform/src/microagents/`) are the **real dispatch path** kip
+reuses (GROUNDED-NEW). External component referenced by **direct contract reuse**.
+
+**babysitter run journal (`JournalEvent` / `RunMetadata` / `StoredTaskResult`)** — The episodic unit kip
+ingests from `@a5c-ai/babysitter-sdk` (`packages/babysitter-sdk/src/storage/types.ts`), read via
+`loadJournal`. An ordered, ULID-sequenced log
+(`RUN_CREATED → EFFECT_REQUESTED/EFFECT_RESOLVED* → RUN_COMPLETED|HALTED|FAILED`). Ingested
+**summary-only** as episodic facts (`../SPEC.md:352`). External component referenced by **ingestion**.
+
+**`UnifiedHookEvent` / hooks-mux** — The canonical harness hook event of `packages/adapters/hooks/core`
+(`types/event.ts`): `{ version:'a5c.hooks.v1', adapter, phase, supportLevel, payload, env, … }` with a
+`UnifiedExecutionContext` (`sessionId`/`turnId`/`adapter`/`model`/`toolName`). A candidate episodic
+source for kip (hook event → episodic `event`/`observation` fact, session/turn as episode keys).
+External component referenced as a **GROUNDED-NEW ingest channel**.
+
+**extension-mux** — The plugin compiler of `packages/adapters/extensions` (`compile`/`compileAll`,
+`HarnessOutputAdapter.generateMcpConfig`/`generateProgrammaticExtension`) that ships a skill/command/MCP
+bundle to every harness target. The path that would **distribute the kip client** (e.g. a kip MCP server
+or `/skill:kip-recall`) across harnesses — the same path atlas already feeds. External component
+referenced as a **GROUNDED-NEW distribution channel** for kip's client, not a kip type.
+
 ---
 
 > For the hard problems (HP-*) and design tensions (T-*) these terms resolve, see
