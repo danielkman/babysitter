@@ -10,6 +10,11 @@ export const MAX_CONSECUTIVE_STALLS = 5;
 export const MAX_CONSECUTIVE_PROCESS_ERROR_STALLS = 5;
 // Total process-error recoveries allowed across the entire run lifetime
 export const MAX_PROCESS_ERROR_RECOVERIES = 5;
+// #936: Max times the host may post the SAME delegated effect as a failure
+// before failing the run fast. A delegated agent/skill effect that keeps
+// failing must NOT be retried thousands of times until the orchestration
+// timeout — surface the real agent error and fail promptly.
+export const MAX_DELEGATED_EFFECT_FAILURES = 2;
 
 export const EFFECT_RETRY_DELAYS_OVERRIDE = process.env.VITEST
   ? [0, 0, 0]

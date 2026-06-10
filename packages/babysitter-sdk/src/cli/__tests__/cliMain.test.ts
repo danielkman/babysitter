@@ -512,6 +512,50 @@ describe("CLI main entry", () => {
     await fs.rm(tmpDir, { recursive: true, force: true });
   });
 
+  it("#936: tolerates a non-JSON --error file (wraps as structured error, no cryptic SyntaxError)", async () => {
+    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "cli-task-post-nonjson-error-"));
+    const errorPath = path.join(tmpDir, "error.txt");
+    // A bare, NON-JSON error string — exactly what String(new Error("Effect failed"))
+    // produces. Pre-fix this threw `Unexpected token 'E', "Error: Effect failed"
+    // is not valid JSON` categorized as an internal "please report as a bug".
+    await fs.writeFile(errorPath, "Error: Effect failed", "utf8");
+    buildEffectIndexMock.mockResolvedValue(mockEffectIndex([nodeEffectRecord("ef-nonjson")]));
+    commitEffectResultMock.mockResolvedValue({
+      resultRef: "tasks/ef-nonjson/result.json",
+      startedAt: "2026-01-20T00:00:00.000Z",
+      finishedAt: "2026-01-20T00:00:01.000Z",
+    });
+
+    const cli = createBabysitterCli();
+    const exitCode = await cli.run([
+      "task:post",
+      "runs/demo",
+      "ef-nonjson",
+      "--status",
+      "error",
+      "--error",
+      errorPath,
+      "--runs-dir",
+      ".",
+    ]);
+
+    // Exit 1 is the expected status for an error post — NOT a thrown SyntaxError.
+    expect(exitCode).toBe(1);
+    expect(commitEffectResultMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        effectId: "ef-nonjson",
+        result: expect.objectContaining({
+          status: "error",
+          // The bare string is wrapped structurally; the leading "Error: " is
+          // stripped so the surfaced message is the underlying failure.
+          error: { name: "Error", message: "Effect failed" },
+        }),
+      }),
+    );
+
+    await fs.rm(tmpDir, { recursive: true, force: true });
+  });
+
   it("supports --effect-id flag form for task:post", async () => {
     buildEffectIndexMock.mockResolvedValue(mockEffectIndex([nodeEffectRecord("ef-flag")]));
 

@@ -74,6 +74,38 @@ async function readJsonFile(runDir: string, filename?: string): Promise<unknown>
   return trimmed.length ? (JSON.parse(trimmed) as unknown) : undefined;
 }
 
+/**
+ * Read the `--error` file for `task:post --status error`.
+ *
+ * #936: callers (notably genty's in-process DefaultOrchestrationProvider) may
+ * write a bare, NON-JSON error string (e.g. `Error: Effect failed`) into this
+ * file. JSON.parsing it unguarded produced the cryptic
+ *   `Unexpected token 'E', "Error: Effect failed" is not valid JSON`
+ * SyntaxError categorized as an internal "please report as a bug" failure, and
+ * — because the post then exited non-zero — spun the orchestration loop to its
+ * 80-minute timeout. Here we tolerate a plain-text error: if the file is not
+ * valid JSON, wrap it as a structured `{ name, message }` error payload so the
+ * failure surfaces the real message and the run can fail promptly. Valid JSON
+ * (a structured error) still round-trips unchanged.
+ */
+async function readErrorFile(runDir: string, filename?: string): Promise<unknown> {
+  if (!filename) return undefined;
+  const raw = filename === "-"
+    ? await readStdinUtf8()
+    : await fs.readFile(resolveMaybeRunRelative(runDir, filename)!, "utf8");
+  const trimmed = raw.trim();
+  if (!trimmed.length) return undefined;
+  try {
+    return JSON.parse(trimmed) as unknown;
+  } catch {
+    // Not JSON — treat the file contents as the error message itself. Strip a
+    // leading "Error: " prefix (the result of String(new Error(message))) so
+    // the surfaced message is the underlying failure, not doubled.
+    const message = trimmed.replace(/^Error:\s*/, "");
+    return { name: "Error", message };
+  }
+}
+
 function readInlineJson(raw?: string): unknown {
   if (!raw) return undefined;
   const trimmed = raw.trim();
@@ -147,7 +179,7 @@ export async function handleTaskPost(parsed: ParsedArgs): Promise<number> {
   const stderr = parsed.stderrFile ? await readTextFile(runDir, parsed.stderrFile) : undefined;
   const errorPayload =
     parsed.taskStatus === "error"
-      ? (await readJsonFile(runDir, parsed.errorPath)) ?? { name: "Error", message: "Task reported failure" }
+      ? (await readErrorFile(runDir, parsed.errorPath)) ?? { name: "Error", message: "Task reported failure" }
       : undefined;
   const value =
     parsed.taskStatus === "ok"

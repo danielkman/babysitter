@@ -29,6 +29,7 @@ import {
   MAX_CONSECUTIVE_PROCESS_ERROR_STALLS,
   MAX_CONSECUTIVE_STALLS,
   MAX_CONSECUTIVE_TIMEOUTS,
+  MAX_DELEGATED_EFFECT_FAILURES,
 } from "./constants";
 import { readProcessFileFingerprint } from "./effects";
 import { createOrchestrationTools } from "./internalTools";
@@ -452,6 +453,26 @@ export async function runInternalOrchestrationPhase(
     let consecutiveTimeouts = 0;
     let consecutiveStalls = 0;
     let consecutiveProcessErrorStalls = 0;
+    // #936: bound repeated delegated-effect failures. A delegated agent/skill/
+    // shell effect that keeps failing (e.g. the worker session can't reach a
+    // model, so runDelegatedHarnessTask returns success:false every time) must
+    // fail the run fast — it must be impossible to re-post the same failing
+    // effect thousands of times and spin to the orchestration timeout.
+    const delegatedFailureCounts = new Map<string, number>();
+    const recordDelegatedEffectFailure = (effectId: string, message: string): void => {
+      const next = (delegatedFailureCounts.get(effectId) ?? 0) + 1;
+      delegatedFailureCounts.set(effectId, next);
+      writeVerbose(
+        `[phaseOrchestration host] delegated effect ${effectId} failure ${next}/${MAX_DELEGATED_EFFECT_FAILURES}: ${message.slice(0, 200)}`,
+      );
+      if (next >= MAX_DELEGATED_EFFECT_FAILURES) {
+        throw new BabysitterRuntimeError(
+          "DelegatedEffectFailed",
+          `Delegated effect ${effectId} failed ${next} times and is not making progress; aborting the run. Underlying failure: ${message}`,
+          { category: ErrorCategory.External },
+        );
+      }
+    };
     while (state.iteration < args.maxIterations) {
       const observed = await syncStateFromRunArtifacts();
       const terminal = ensureTerminalResult();
@@ -510,9 +531,10 @@ export async function runInternalOrchestrationPhase(
               await invokeTool(taskPostTool, 'babysitter_task_post_result', {
                 effectId,
                 status: 'error',
-                valueText: msg,
+                error: msg,
               });
               effectsResolved++;
+              recordDelegatedEffectFailure(effectId, msg);
             }
           } else {
             // Build the agent prompt exactly as the SDK effect resolver does so
@@ -536,9 +558,10 @@ export async function runInternalOrchestrationPhase(
                 await invokeTool(taskPostTool, 'babysitter_task_post_result', {
                   effectId,
                   status: 'error',
-                  valueText: delegated.output,
+                  error: delegated.output,
                 });
                 effectsResolved++;
+                recordDelegatedEffectFailure(effectId, delegated.output);
                 continue;
               }
               // Bug #936: propagate the AGENT'S RESULT (delegated.output), not the
@@ -560,9 +583,10 @@ export async function runInternalOrchestrationPhase(
               await invokeTool(taskPostTool, 'babysitter_task_post_result', {
                 effectId,
                 status: 'error',
-                valueText: msg,
+                error: msg,
               });
               effectsResolved++;
+              recordDelegatedEffectFailure(effectId, msg);
             }
           }
         }

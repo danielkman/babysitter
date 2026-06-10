@@ -61,6 +61,76 @@ function execBabysitterCli(args: string[], cwd?: string): string {
   });
 }
 
+/**
+ * Run a babysitter CLI command tolerating a controlled non-zero exit. Returns
+ * the captured stdout regardless of exit code, and the exit code, so callers
+ * can distinguish a genuine spawn/command failure from an expected non-zero
+ * status (e.g. `task:post --status error` returns exit 1 by design once it has
+ * successfully committed the error result). See #936.
+ */
+function execBabysitterCliTolerant(args: string[], cwd?: string): { stdout: string; code: number } {
+  const bin = resolveBabysitterBin();
+  const isNodeScript = bin.endsWith(".js");
+  const command = isNodeScript ? process.execPath : bin;
+  const fullArgs = isNodeScript ? [bin, ...args] : args;
+  try {
+    const stdout = execFileSync(command, fullArgs, {
+      cwd,
+      encoding: "utf8",
+      timeout: 120_000,
+      env: { ...process.env, FORCE_COLOR: "0" },
+    });
+    return { stdout, code: 0 };
+  } catch (err) {
+    const e = err as { status?: number; stdout?: string | Buffer; stderr?: string | Buffer };
+    if (typeof e.status === "number") {
+      const stdout = typeof e.stdout === "string" ? e.stdout : e.stdout?.toString("utf8") ?? "";
+      return { stdout, code: e.status };
+    }
+    throw err;
+  }
+}
+
+/**
+ * Serialize an arbitrary effect error into a structured `{ name, message, stack }`
+ * payload suitable for `task:post --error <file>` (which JSON-parses the file).
+ * See #936.
+ */
+function serializeEffectError(error: unknown): { name: string; message: string; stack?: string } {
+  if (error instanceof Error) {
+    return { name: error.name || "Error", message: error.message, ...(error.stack ? { stack: error.stack } : {}) };
+  }
+  if (error && typeof error === "object") {
+    const record = error as Record<string, unknown>;
+    const message = typeof record.message === "string" ? record.message : JSON.stringify(error);
+    const name = typeof record.name === "string" ? record.name : "Error";
+    return { name, message };
+  }
+  return { name: "Error", message: String(error) };
+}
+
+/**
+ * Parse the committed status from `task:post --json` output. Returns the
+ * `status` field ("ok" | "error") when the command emitted a parseable result,
+ * or undefined when it did not (a genuine failure). See #936.
+ */
+function parsePostStatus(stdout: string): string | undefined {
+  const trimmed = stdout.trim();
+  if (!trimmed) return undefined;
+  // The JSON line may be preceded by warnings; scan lines for a JSON object.
+  for (const line of trimmed.split(/\r?\n/).reverse()) {
+    const candidate = line.trim();
+    if (!candidate.startsWith("{")) continue;
+    try {
+      const parsed = JSON.parse(candidate) as { status?: unknown };
+      if (typeof parsed.status === "string") return parsed.status;
+    } catch {
+      // Not the JSON line; keep scanning.
+    }
+  }
+  return undefined;
+}
+
 export class DefaultOrchestrationProvider implements OrchestrationProvider {
   readonly name = "babysitter";
 
@@ -128,20 +198,41 @@ export class DefaultOrchestrationProvider implements OrchestrationProvider {
     // CLI signature: task:post <runDir> <effectId> --status <ok|error>
     //   ok    → --value-inline <json>
     //   error → --error <file>
-    const args = ["task:post", handle.runDir, effectId, "--status", result.status];
+    const args = ["task:post", handle.runDir, effectId, "--status", result.status, "--json"];
     let errorFile: string | undefined;
     if (result.status === "ok") {
       args.push("--value-inline", JSON.stringify(result.value ?? null));
     } else if (result.error !== undefined) {
       errorFile = path.join(
         os.tmpdir(),
-        `genty-effect-error-${effectId}-${Date.now()}.txt`,
+        `genty-effect-error-${effectId}-${Date.now()}.json`,
       );
-      fs.writeFileSync(errorFile, String(result.error));
+      // #936: the CLI `task:post --error <file>` JSON-parses this file. Writing
+      // a bare String(error) (e.g. "Error: Effect failed") produced a cryptic
+      // non-JSON SyntaxError downstream that spun the orchestration loop. Always
+      // emit a structured JSON error payload so the real failure surfaces and
+      // the run can reach a terminal failure promptly.
+      fs.writeFileSync(errorFile, JSON.stringify(serializeEffectError(result.error)));
       args.push("--error", errorFile);
     }
     try {
-      execBabysitterCli(args);
+      if (result.status === "error") {
+        // #936: `task:post --status error` returns exit 1 BY DESIGN once it has
+        // committed the error result. Tolerate that controlled exit code and
+        // confirm the commit via the emitted JSON — otherwise execFileSync would
+        // throw on every error post, which the in-process loop swallowed and
+        // spun on. A genuine spawn/command failure (no parseable JSON committed)
+        // still surfaces as a thrown error.
+        const { stdout, code } = execBabysitterCliTolerant(args);
+        const committed = parsePostStatus(stdout);
+        if (committed !== "error" && code !== 0) {
+          throw new Error(
+            `task:post --status error failed for effect ${effectId} (exit ${code}): ${stdout.trim() || "no output"}`,
+          );
+        }
+      } else {
+        execBabysitterCli(args);
+      }
     } finally {
       if (errorFile) {
         try { fs.unlinkSync(errorFile); } catch { /* best effort */ }
