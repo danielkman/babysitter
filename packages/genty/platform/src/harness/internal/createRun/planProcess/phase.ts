@@ -21,7 +21,6 @@ import {
 import { waitForProcessFile } from "./paths";
 import {
   assessWorkspaceForExternalAuthoring,
-  buildExternalProcessDefinitionPrompt,
   buildInternalProcessConformancePrompt,
 } from "./prompts";
 import {
@@ -95,82 +94,25 @@ export async function runPlanProcessPhase(args: import("./phaseTypes").RunPlanPr
   writeVerboseData("phasePlanProcess workspace assessment", workspaceAssessment);
   writeVerboseData("phasePlanProcess external agents", externalAgents);
   const resolvedBackend = resolveAgentCoreBackendForHarness(args.selectedHarnessName);
-  // The genty harness runs through genty-core's createAgentCoreSession, a text-only
-  // completion session that does not forward customTools/toolsMode and has no
-  // tool-calling loop (see #936). It must use the raw-text process-authoring path,
-  // where the model emits the process definition as a fenced code block instead of
-  // calling babysitter_report_process_definition (which it can never reach — 0 tools
-  // in-flight). The agent-core / internal default-orchestration harness keeps the
-  // tool path (it routes through the PI wrapper as exercised by the harness-policy
-  // tests); only the standalone `genty` backend is forced to raw text here.
-  const isRawTextSession = !resolvedBackend || resolvedBackend === "genty";
-
-  let processDefinitionSystemPrompt: string;
-  let basePlanProcessPrompt: string;
-
-  if (isRawTextSession) {
-    // Raw agent-core session: no tool calling. Instruct the model to output
-    // the process definition as a code block in its response text.
-    processDefinitionSystemPrompt = [
-      "You are a babysitter process author. Output a SINGLE fenced code block (```javascript ... ```).",
-      "No explanations, no markdown headers, no commentary — ONLY the code block.",
-      "",
-      "The code block must be a complete ESM module following this exact pattern:",
-      "",
-      "```javascript",
-      'import { defineTask } from "@a5c-ai/babysitter-sdk";',
-      'import { writeFile, mkdir } from "node:fs/promises";',
-      'import { dirname } from "node:path";',
-      "",
-      'const mainTask = defineTask("main-task", (args) => ({',
-      '  kind: "agent",',
-      '  title: "Describe what the agent should do",',
-      '  agent: { name: "Main Agent", prompt: "Detailed instructions for the agent" },',
-      "}));",
-      "",
-      "export async function process(inputs, ctx) {",
-      "  const result = await ctx.task(mainTask, { prompt: inputs.prompt });",
-      "  // result is a plain text string returned by the agent",
-      '  const outputPath = "path/to/output.md";',
-      "  await mkdir(dirname(outputPath), { recursive: true });",
-      "  await writeFile(outputPath, String(result));",
-      '  return { status: "completed", outputPath };',
-      "}",
-      "```",
-      "",
-      "Rules:",
-      '- ALWAYS use defineTask("id", (args) => ({ ... })) — the positional form with a string ID and a function.',
-      "- Agent tasks return PLAIN TEXT strings. Use String(result) when writing to a file.",
-      "- For file creation: always use writeFile + mkdir as shown above.",
-      "- Use EXACTLY ONE agent task. Put ALL instructions into a single task prompt. Do NOT split into multiple tasks.",
-      "- Do NOT use `node` kind effects. Only use `agent` kind.",
-      '- The agent prompt MUST be a plain string, not an object. Use agent: { name: "...", prompt: "..." }.',
-    ].join("\n");
-    basePlanProcessPrompt = buildExternalProcessDefinitionPrompt({
-      prompt: args.prompt,
-      outputDir: args.outputDir,
-      workspace: args.workspace,
-      promptContext,
-      workspaceAssessment,
+  // genty-core's createAgentCoreSession is now genuinely tool-capable (#936): it
+  // forwards customTools/toolsMode and runs a real tool-call loop. The model
+  // authors the process by calling babysitter_report_process_definition through
+  // that loop. recovery.ts remains a safety net invoked on failure below.
+  const processDefinitionSystemPrompt = await buildProcessDefinitionSystemPrompt(
+    args.outputDir,
+    promptContext,
+    args.interactive,
+  );
+  const basePlanProcessPrompt = buildProcessDefinitionUserPrompt(
+    args.prompt,
+    args.outputDir,
+    {
+      interactive: args.interactive,
+      workspaceAssessment: workspaceAssessment.kind,
+      workspaceEntries: workspaceAssessment.entries,
       preferAgentOnlyTasks: args.invocationCommand === "call",
-    });
-  } else {
-    processDefinitionSystemPrompt = await buildProcessDefinitionSystemPrompt(
-      args.outputDir,
-      promptContext,
-      args.interactive,
-    );
-    basePlanProcessPrompt = buildProcessDefinitionUserPrompt(
-      args.prompt,
-      args.outputDir,
-      {
-        interactive: args.interactive,
-        workspaceAssessment: workspaceAssessment.kind,
-        workspaceEntries: workspaceAssessment.entries,
-        preferAgentOnlyTasks: args.invocationCommand === "call",
-      },
-    );
-  }
+    },
+  );
 
   const intentPrompt = buildUnderstandIntentPrompt({
     prompt: args.prompt,
@@ -187,10 +129,10 @@ export async function runPlanProcessPhase(args: import("./phaseTypes").RunPlanPr
     workspace: args.workspace,
     model: args.model,
     backend: resolvedBackend,
-    thinkingLevel: isRawTextSession ? undefined : "low",
-    toolsMode: isRawTextSession ? undefined : planProcessToolsMode,
-    customTools: isRawTextSession ? undefined : mergedCustomTools,
-    uiContext: isRawTextSession ? undefined : interactiveUiContext,
+    thinkingLevel: "low",
+    toolsMode: planProcessToolsMode,
+    customTools: mergedCustomTools,
+    uiContext: interactiveUiContext,
     systemPrompt: processDefinitionSystemPrompt,
     isolated: true,
     ephemeral: true,
@@ -271,7 +213,7 @@ export async function runPlanProcessPhase(args: import("./phaseTypes").RunPlanPr
           { category: ErrorCategory.External },
         );
       }
-      writeVerbose("[phasePlanProcess recovery] proceeding with the reported process file after a late PI prompt failure");
+      writeVerbose("[phasePlanProcess recovery] proceeding with the reported process file after a late prompt failure");
     } else {
       writeVerboseData("phasePlanProcess agent output", result.output);
     }

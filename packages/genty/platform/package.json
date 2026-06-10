@@ -132,7 +132,6 @@
     "@a5c-ai/tasks-adapter": "5.1.0",
     "@a5c-ai/tools-adapter": "5.1.0",
     "@agentsh/secure-sandbox": "^0.1.7",
-    "@earendil-works/pi-coding-agent": "^0.75.5",
     "@modelcontextprotocol/sdk": "^1.12.1",
     "@sinclair/typebox": "^0.34.48",
     "ws": "^8.20.0",

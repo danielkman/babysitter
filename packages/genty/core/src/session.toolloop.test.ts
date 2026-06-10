@@ -151,9 +151,11 @@ describe("AgentCoreSessionHandle tool-calling loop", () => {
     });
     mockFetch.mockResolvedValueOnce({ ok: true, body: openAiFinalText("It is sunny in Paris.") });
 
-    const execute = vi.fn(async (): Promise<ToolResult> => ({
-      content: [{ type: "text", text: "sunny" }],
-    }));
+    const execute = vi.fn(
+      async (_toolCallId: string, _params: Record<string, unknown>): Promise<ToolResult> => ({
+        content: [{ type: "text", text: "sunny" }],
+      }),
+    );
     const session = createAgentCoreSession({
       model: "gpt-5.5",
       customTools: [makeTool("get_weather", execute)],

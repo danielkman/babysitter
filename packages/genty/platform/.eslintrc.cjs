@@ -34,8 +34,7 @@ module.exports = {
         "src/harness/internal/createRun/orchestration/internalPhase.ts",
         "src/harness/internal/createRun/output.ts",
         "src/harness/internal/createRun/planProcess/phase.ts",
-        "src/harness/internal/createRun/prompts.ts",
-        "src/harness/piWrapper.ts"
+        "src/harness/internal/createRun/prompts.ts"
       ],
       rules: {
         "max-lines": [

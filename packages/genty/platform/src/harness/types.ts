@@ -178,8 +178,7 @@ export interface AgentCoreSessionOptions {
 }
 
 /**
- * Event emitted by a Pi session during prompt execution.
- * Mirrors the AgentSessionEvent union from `@earendil-works/pi-coding-agent`.
+ * Event emitted by an agent-core session during prompt execution.
  */
 export interface AgentCoreSessionEvent {
   type: string;
