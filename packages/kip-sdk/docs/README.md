@@ -92,7 +92,8 @@ These five invariants run through every document; nothing in the set may contrad
 |---|---|---|
 | [50-security-trust-tenancy.md](./50-security-trust-tenancy.md) | Root-of-trust/scoped-authority/revocation, tenancy & scoping, privacy/redaction/erasure, auditability, DoS/resource-exhaustion threat model. | §8.1–§8.3b |
 | [70-decision-records-adr.md](./70-decision-records-adr.md) | Distill the spec's key decisions into ADR-format records (context / decision / consequences / rejected alternatives). No new decisions. | all D-*/C-*/M-* across the spec |
-| [80-roadmap-and-milestones.md](./80-roadmap-and-milestones.md) | Pre-dev implementation roadmap: milestone ordering (substrate → proj → sync → retrieval → active layer), dependencies, what each milestone delivers. Planning only. | synthesis (arch + requirements) |
+| [80-roadmap-and-milestones.md](./80-roadmap-and-milestones.md) | Pre-dev implementation roadmap: milestone ordering (substrate → proj → sync → retrieval → active layer), dependencies, what each milestone delivers. Planning only. Drills down into [81](./81-roadmap-epics-and-tasks.md) for the epic/task/subtask WBS. | synthesis (arch + requirements) |
+| [81-roadmap-epics-and-tasks.md](./81-roadmap-epics-and-tasks.md) | The detailed dependency-ordered WBS behind [80](./80-roadmap-and-milestones.md): 13 epics → 76 tasks → 193 subtasks, each with Implements (FR/NFR) / Exit criteria (INV) / Depends-on edges, plus a task-level mermaid dependency graph. | synthesis (SPEC + docs/10,11,60,80) |
 | [90-open-questions.md](./90-open-questions.md) | The explicitly-deferred non-core questions; faithful restatement with §-cites. | §9 |
 
 ---

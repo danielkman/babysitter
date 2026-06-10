@@ -7,6 +7,29 @@
 > [!IMPORTANT]
 > **This document is a DERIVED planning view, not a new specification.** It introduces **no** new scope, requirements, or guarantees. Every milestone implements pre-existing spec sections, and every exit criterion is an INV the spec already defines (§8.4 / [conformance](./60-conformance-and-testability.md)). Where a milestone says "deliver X," X is the spec's X. The milestone *ordering* is a synthesized dependency claim; it does not change what is built, only a plausible build sequence. Sequence may be adjusted; the **dependency edges** (what must exist before what) are the load-bearing part.
 
+> [!TIP]
+> **Looking for the detailed work-breakdown?** This page is the **high-level milestone view** (M0 → M9). The full **epic / task / subtask / dependency WBS** — 13 epics → 76 tasks → 193 subtasks, each task carrying its `Implements` (FR/NFR), `Exit criteria` (INV-\*/INV-A\*), and `Depends on` (task ids), plus a task-level mermaid dependency graph — lives in **[81-roadmap-epics-and-tasks.md](./81-roadmap-epics-and-tasks.md)**. Each milestone below maps to one or more epics in that document; see the [milestone → epic map](#milestone--epic-map).
+
+### Milestone → epic map
+
+Each milestone M0–M9 is realized by the epic(s) below in the detailed WBS ([81-roadmap-epics-and-tasks.md](./81-roadmap-epics-and-tasks.md)). The dependency ordering is consistent between the two views.
+
+| Milestone | Realizing epic(s) in [81](./81-roadmap-epics-and-tasks.md) |
+|---|---|
+| **M0** substrate + envelope + gate | E1 |
+| **M1** proj + heads + reducers | E2 |
+| **M2** bitemporality + as-of | E3 |
+| **M3** sync + convergence + regeneration | E4 |
+| **M4** retrieval + indexing | E5 |
+| **M5** contextual functionalities | E6 |
+| **M6** knowledge autoencoding | E7 |
+| **M7** acquisition families | E8 |
+| **M8** security / tenancy / DoS hardening | E9, E10 |
+| **M9** conformance suite | E12 |
+| *(cross-cutting / operational)* | E11 (SDK surface), E13 (tooling & ops) |
+
+> E11 (the public SDK surface) and E13 (CLI / fsck / packing-GC / observability) thread across the milestones rather than mapping to a single one: E11 assembles the capabilities each milestone delivers into the normative API shapes, and E13 packages operational tooling over them.
+
 ---
 
 ## Dependency graph
