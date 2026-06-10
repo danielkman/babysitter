@@ -11,6 +11,9 @@ import type {
   AgentCoreSessionEvent,
   AgentCoreSessionOptions,
   AgentCoreStructuredOutputOptions,
+  CustomToolDefinition,
+  ToolExecutionContext,
+  ToolResult,
 } from "./types";
 import { estimateTokens } from "./context/token-estimator";
 import type { TokenEstimatorContext } from "./context/types";
@@ -21,6 +24,9 @@ const DEFAULT_TIMEOUT_MS = 900_000;
 const DEFAULT_MAX_HISTORY_TURNS = 20;
 const DEFAULT_OUTPUT_SCHEMA_NAME = "agent_core_response";
 const MAX_BASE64_IMAGE_BYTES = 20 * 1024 * 1024;
+// Safeguard against runaway tool-calling loops (e.g. a tool that always
+// triggers another tool call). Each model turn counts as one iteration.
+const MAX_TOOL_LOOP_ITERATIONS = 50;
 
 export type AgentCoreEventListener = (event: AgentCoreSessionEvent) => void;
 
@@ -29,6 +35,30 @@ type ProviderMessageContent = string | NormalizedContentPart[];
 interface ProviderMessage {
   role: string;
   content: ProviderMessageContent;
+}
+
+/** A model-emitted tool call, normalized across providers. */
+interface NormalizedToolCall {
+  id: string;
+  name: string;
+  arguments: Record<string, unknown>;
+  /** Raw argument JSON string as streamed (used to faithfully echo back the assistant turn). */
+  rawArguments: string;
+}
+
+/**
+ * Provider-shaped message used inside the tool-calling loop. Unlike
+ * `ProviderMessage`, `content` is whatever each provider's chat API expects
+ * (already shaped for OpenAI or Anthropic) so multi-turn tool exchanges can be
+ * appended verbatim.
+ */
+interface RawProviderMessage {
+  role: string;
+  content: unknown;
+  /** OpenAI assistant tool-call array (only on assistant tool-call turns). */
+  tool_calls?: unknown;
+  /** OpenAI tool-result message linkage. */
+  tool_call_id?: string;
 }
 
 type NormalizedContentPart =
@@ -46,11 +76,12 @@ interface NormalizedStructuredOutput {
 interface NormalizedCompletionRequest {
   messages: ProviderMessage[];
   structuredOutput?: NormalizedStructuredOutput;
+  customTools?: CustomToolDefinition[];
 }
 
 type CompletionUsage = NonNullable<AgentCorePromptResult["usage"]>;
 
-type CompletionStreamResult = { text: string; usage?: CompletionUsage };
+type CompletionStreamResult = { text: string; usage?: CompletionUsage; toolCalls?: NormalizedToolCall[] };
 
 function buildSystemPrompt(options: AgentCoreSessionOptions): string | undefined {
   const segments: string[] = [];
@@ -177,7 +208,12 @@ function buildNormalizedRequest(
   messages.push({ role: "user", content: normalizePromptInput(input) });
 
   const structuredOutput = normalizeStructuredOutput(promptOptions);
-  return structuredOutput ? { messages, structuredOutput } : { messages };
+  const customTools = sessionOptions.customTools?.length ? sessionOptions.customTools : undefined;
+  return {
+    messages,
+    ...(structuredOutput ? { structuredOutput } : {}),
+    ...(customTools ? { customTools } : {}),
+  };
 }
 
 function mergeFollowUps(input: AgentCorePromptInput, followUps: string[]): AgentCorePromptInput {
@@ -507,12 +543,49 @@ function matchesJsonSchemaType(value: unknown, type: string): boolean {
   }
 }
 
+function buildOpenAiTools(customTools: CustomToolDefinition[] | undefined): Record<string, unknown> {
+  if (!customTools?.length) {
+    return {};
+  }
+  return {
+    tools: customTools.map((tool) => ({
+      type: "function",
+      function: {
+        name: tool.name,
+        description: tool.description,
+        parameters: tool.parameters,
+      },
+    })),
+    tool_choice: "auto",
+  };
+}
+
+function buildAnthropicTools(customTools: CustomToolDefinition[] | undefined): Record<string, unknown> {
+  if (!customTools?.length) {
+    return {};
+  }
+  return {
+    tools: customTools.map((tool) => ({
+      name: tool.name,
+      description: tool.description,
+      input_schema: tool.parameters,
+    })),
+  };
+}
+
 async function callCompletionApi(
   endpoint: ResolvedEndpoint,
   request: NormalizedCompletionRequest,
   timeout: number,
   onDelta: (delta: string) => void,
   onController?: (controller: AbortController | undefined) => void,
+  /**
+   * Extra provider-shaped turns appended after the base messages. Used by the
+   * tool-calling loop to feed prior assistant tool-call turns and tool results
+   * back to the model. Already shaped for the active provider.
+   */
+  extraRawMessages: RawProviderMessage[] = [],
+  externalSignal?: AbortSignal,
 ): Promise<CompletionStreamResult> {
   const controller = new AbortController();
   onController?.(controller);
@@ -520,6 +593,14 @@ async function callCompletionApi(
   const timer = setTimeout(() => {
     controller.abort(new Error(`Request timed out after ${Math.round((Date.now() - startTime) / 1000)}s (limit: ${Math.round(timeout / 1000)}s)`));
   }, timeout);
+  const onExternalAbort = () => controller.abort(externalSignal?.reason);
+  if (externalSignal) {
+    if (externalSignal.aborted) {
+      controller.abort(externalSignal.reason);
+    } else {
+      externalSignal.addEventListener("abort", onExternalAbort, { once: true });
+    }
+  }
 
   try {
     let url: string;
@@ -534,32 +615,37 @@ async function callCompletionApi(
       const nonSystemMsgs = request.messages.filter(m => m.role !== "system");
       const structuredPrompt = buildAnthropicStructuredOutputPrompt(request.structuredOutput);
       const system = [...systemPrompts, structuredPrompt].filter(Boolean).join("\n\n");
+      const baseMessages = nonSystemMsgs.map(m => ({ role: m.role, content: toAnthropicContent(m.content) }));
+      const extra = extraRawMessages.map((m) => ({ role: m.role, content: m.content }));
       body = JSON.stringify({
         model: endpoint.model,
         max_tokens: 16384,
         stream: true,
         ...(system ? { system } : {}),
-        messages: nonSystemMsgs.map(m => ({ role: m.role, content: toAnthropicContent(m.content) })),
+        ...buildAnthropicTools(request.customTools),
+        messages: [...baseMessages, ...extra],
       });
     } else if (endpoint.isAzure) {
       url = `${endpoint.apiBase}/deployments/${endpoint.model}/chat/completions?api-version=2025-04-01-preview`;
       headers["api-key"] = endpoint.apiKey;
       body = JSON.stringify({
         model: endpoint.model,
-        messages: request.messages.map(toOpenAiMessage),
+        messages: [...request.messages.map(toOpenAiMessage), ...extraRawMessages.map(toOpenAiRawMessage)],
         max_completion_tokens: 16384,
         stream: true,
         ...buildOpenAiResponseFormat(request.structuredOutput),
+        ...buildOpenAiTools(request.customTools),
       });
     } else {
       url = `${endpoint.apiBase}/chat/completions`;
       headers["Authorization"] = `Bearer ${endpoint.apiKey}`;
       body = JSON.stringify({
         model: endpoint.model,
-        messages: request.messages.map(toOpenAiMessage),
+        messages: [...request.messages.map(toOpenAiMessage), ...extraRawMessages.map(toOpenAiRawMessage)],
         max_completion_tokens: 16384,
         stream: true,
         ...buildOpenAiResponseFormat(request.structuredOutput),
+        ...buildOpenAiTools(request.customTools),
       });
     }
 
@@ -580,8 +666,22 @@ async function callCompletionApi(
       : readOpenAiStream(response, onDelta, endpoint);
   } finally {
     clearTimeout(timer);
+    if (externalSignal) {
+      externalSignal.removeEventListener("abort", onExternalAbort);
+    }
     onController?.(undefined);
   }
+}
+
+function toOpenAiRawMessage(message: RawProviderMessage): Record<string, unknown> {
+  const result: Record<string, unknown> = { role: message.role, content: message.content };
+  if (message.tool_calls !== undefined) {
+    result["tool_calls"] = message.tool_calls;
+  }
+  if (message.tool_call_id !== undefined) {
+    result["tool_call_id"] = message.tool_call_id;
+  }
+  return result;
 }
 
 async function readOpenAiStream(
@@ -596,13 +696,30 @@ async function readOpenAiStream(
   const chunks: string[] = [];
   let usage: CompletionUsage | undefined;
   let buffer = "";
+  // Accumulated tool calls keyed by streamed index. name arrives once; arguments
+  // arrive as string chunks that must be concatenated in order.
+  const toolCallAccumulator = new Map<number, { id: string; name: string; arguments: string }>();
+
+  const finalize = (): CompletionStreamResult => {
+    const toolCalls = collectOpenAiToolCalls(toolCallAccumulator);
+    return toolCalls.length > 0
+      ? { text: chunks.join(""), usage, toolCalls }
+      : { text: chunks.join(""), usage };
+  };
 
   const handlePayload = (payload: string): boolean => {
     if (payload === "[DONE]") return true;
 
     let chunk: {
       choices?: Array<{
-        delta?: { content?: string | null };
+        delta?: {
+          content?: string | null;
+          tool_calls?: Array<{
+            index?: number;
+            id?: string;
+            function?: { name?: string; arguments?: string };
+          }>;
+        };
         finish_reason?: string | null;
       }>;
       usage?: { prompt_tokens?: number; completion_tokens?: number; total_tokens?: number };
@@ -619,6 +736,17 @@ async function readOpenAiStream(
     if (delta) {
       chunks.push(delta);
       onDelta(delta);
+    }
+    const deltaToolCalls = choice?.delta?.tool_calls;
+    if (deltaToolCalls) {
+      for (const call of deltaToolCalls) {
+        const index = call.index ?? 0;
+        const existing = toolCallAccumulator.get(index) ?? { id: "", name: "", arguments: "" };
+        if (call.id) existing.id = call.id;
+        if (call.function?.name) existing.name = call.function.name;
+        if (call.function?.arguments) existing.arguments += call.function.arguments;
+        toolCallAccumulator.set(index, existing);
+      }
     }
     if (chunk.usage) {
       const inputTokens = chunk.usage.prompt_tokens ?? 0;
@@ -647,7 +775,7 @@ async function readOpenAiStream(
       if (!trimmed || !trimmed.startsWith("data:")) continue;
       const complete = handlePayload(trimmed.slice(5).trim());
       if (complete) {
-        return { text: chunks.join(""), usage };
+        return finalize();
       }
     }
   }
@@ -660,7 +788,43 @@ async function readOpenAiStream(
     if (complete) break;
   }
 
-  return { text: chunks.join(""), usage };
+  return finalize();
+}
+
+function collectOpenAiToolCalls(
+  accumulator: Map<number, { id: string; name: string; arguments: string }>,
+): NormalizedToolCall[] {
+  const indices = [...accumulator.keys()].sort((a, b) => a - b);
+  const toolCalls: NormalizedToolCall[] = [];
+  for (const index of indices) {
+    const entry = accumulator.get(index)!;
+    if (!entry.name) continue;
+    toolCalls.push({
+      id: entry.id,
+      name: entry.name,
+      arguments: parseToolArguments(entry.arguments, entry.name),
+      rawArguments: entry.arguments || "{}",
+    });
+  }
+  return toolCalls;
+}
+
+function parseToolArguments(raw: string, toolName: string): Record<string, unknown> {
+  const trimmed = raw.trim();
+  if (!trimmed) {
+    return {};
+  }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(trimmed);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    throw new Error(`Failed to parse tool-call arguments for '${toolName}': ${message}`);
+  }
+  if (!isPlainObject(parsed)) {
+    throw new Error(`Tool-call arguments for '${toolName}' must be a JSON object`);
+  }
+  return parsed;
 }
 
 async function readAnthropicStream(
@@ -676,6 +840,9 @@ async function readAnthropicStream(
   let usage: CompletionUsage | undefined;
   let buffer = "";
   let done = false;
+  // tool_use content blocks keyed by their content-block index. partial_json
+  // arrives in input_json_delta events and must be concatenated in order.
+  const toolUseBlocks = new Map<number, { id: string; name: string; partialJson: string }>();
 
   const handlePayload = (payload: string): void => {
     if (payload === "[DONE]") {
@@ -692,6 +859,15 @@ async function readAnthropicStream(
     }
 
     const type = event.type;
+    if (type === "content_block_start") {
+      const index = typeof event["index"] === "number" ? (event["index"] as number) : 0;
+      const block = event["content_block"] as { type?: string; id?: string; name?: string } | undefined;
+      if (block?.type === "tool_use") {
+        toolUseBlocks.set(index, { id: block.id ?? "", name: block.name ?? "", partialJson: "" });
+      }
+      return;
+    }
+
     if (type === "message_start") {
       const message = event.message as { usage?: { input_tokens?: number } } | undefined;
       if (message?.usage) {
@@ -709,10 +885,16 @@ async function readAnthropicStream(
     }
 
     if (type === "content_block_delta") {
-      const delta = event.delta as { type?: string; text?: string } | undefined;
+      const delta = event.delta as { type?: string; text?: string; partial_json?: string } | undefined;
       if (delta?.type === "text_delta" && delta.text) {
         chunks.push(delta.text);
         onDelta(delta.text);
+      } else if (delta?.type === "input_json_delta" && typeof delta.partial_json === "string") {
+        const index = typeof event["index"] === "number" ? (event["index"] as number) : 0;
+        const block = toolUseBlocks.get(index);
+        if (block) {
+          block.partialJson += delta.partial_json;
+        }
       }
       return;
     }
@@ -763,7 +945,104 @@ async function readAnthropicStream(
     handlePayload(trimmed.slice(5).trim());
   }
 
-  return { text: chunks.join(""), usage };
+  const toolCalls = collectAnthropicToolCalls(toolUseBlocks);
+  return toolCalls.length > 0
+    ? { text: chunks.join(""), usage, toolCalls }
+    : { text: chunks.join(""), usage };
+}
+
+function collectAnthropicToolCalls(
+  blocks: Map<number, { id: string; name: string; partialJson: string }>,
+): NormalizedToolCall[] {
+  const indices = [...blocks.keys()].sort((a, b) => a - b);
+  const toolCalls: NormalizedToolCall[] = [];
+  for (const index of indices) {
+    const block = blocks.get(index)!;
+    if (!block.name) continue;
+    toolCalls.push({
+      id: block.id,
+      name: block.name,
+      arguments: parseToolArguments(block.partialJson, block.name),
+      rawArguments: block.partialJson || "{}",
+    });
+  }
+  return toolCalls;
+}
+
+function mergeUsage(
+  base: CompletionUsage | undefined,
+  next: CompletionUsage | undefined,
+): CompletionUsage | undefined {
+  if (!next) return base;
+  if (!base) return next;
+  return {
+    inputTokens: base.inputTokens + next.inputTokens,
+    outputTokens: base.outputTokens + next.outputTokens,
+    totalTokens: base.totalTokens + next.totalTokens,
+    provider: next.provider ?? base.provider,
+    model: next.model ?? base.model,
+  };
+}
+
+function toolResultText(result: ToolResult): string {
+  if (!result || !Array.isArray(result.content)) {
+    throw new Error("Tool execute() must return a ToolResult with a content array");
+  }
+  return result.content
+    .filter((part) => part && part.type === "text" && typeof part.text === "string")
+    .map((part) => part.text)
+    .join("\n");
+}
+
+/** Build the assistant tool-call turn in the active provider's message shape. */
+function buildAssistantToolCallMessage(
+  endpoint: ResolvedEndpoint,
+  text: string,
+  toolCalls: NormalizedToolCall[],
+): RawProviderMessage {
+  if (endpoint.isAnthropic) {
+    const content: Array<Record<string, unknown>> = [];
+    if (text) {
+      content.push({ type: "text", text });
+    }
+    for (const call of toolCalls) {
+      content.push({ type: "tool_use", id: call.id, name: call.name, input: call.arguments });
+    }
+    return { role: "assistant", content };
+  }
+  return {
+    role: "assistant",
+    content: text || null,
+    tool_calls: toolCalls.map((call) => ({
+      id: call.id,
+      type: "function",
+      function: { name: call.name, arguments: call.rawArguments },
+    })),
+  };
+}
+
+/** Build the tool-result turn(s) in the active provider's message shape. */
+function buildToolResultMessages(
+  endpoint: ResolvedEndpoint,
+  results: Array<{ toolCall: NormalizedToolCall; text: string }>,
+): RawProviderMessage[] {
+  if (endpoint.isAnthropic) {
+    return [
+      {
+        role: "user",
+        content: results.map(({ toolCall, text }) => ({
+          type: "tool_result",
+          tool_use_id: toolCall.id,
+          content: text,
+        })),
+      },
+    ];
+  }
+  return results.map(({ toolCall, text }) => ({
+    role: "tool",
+    tool_call_id: toolCall.id,
+    content: text,
+  }));
 }
 
 export class AgentCoreSessionHandle {
@@ -820,20 +1099,10 @@ export class AgentCoreSessionHandle {
       const providerLabel = endpoint.isAnthropic ? "anthropic" : endpoint.isAzure ? "azure/foundry" : "openai";
       process.stderr.write(`[agent-core] ${providerLabel} → ${endpoint.apiBase} model=${endpoint.model} timeout=${Math.round(effectiveTimeout / 1000)}s\n`);
 
-      const result = await callCompletionApi(
-        endpoint,
-        request,
-        effectiveTimeout,
-        (delta) => {
-          this.emit({ type: "text_delta", delta });
-        },
-        (controller) => {
-          this.activeAbortController = controller;
-        },
-      );
+      const result = await this.runCompletionLoop(endpoint, request, effectiveTimeout, promptText);
       const structuredResult = applyStructuredOutputResult<TParsed>(result.text, request.structuredOutput);
 
-      this.appendSuccessfulTurn(promptText, result.text);
+      this.appendTurnEntries(result.historyEntries);
       this.emit({ type: "session_end", sessionId });
 
       return {
@@ -857,6 +1126,99 @@ export class AgentCoreSessionHandle {
       };
     } finally {
       this.isActive = false;
+    }
+  }
+
+  /**
+   * Drives one prompt to completion. When the session has no `customTools`,
+   * this is a single model call (plain-text / structured-output path). When
+   * tools are present it runs a tool-calling loop: each model turn that emits
+   * tool calls invokes the matching `execute()` and feeds results back, under a
+   * single timeout budget shared across the whole loop, until the model emits
+   * plain text (no tool calls) or the iteration safeguard trips.
+   */
+  private async runCompletionLoop(
+    endpoint: ResolvedEndpoint,
+    request: NormalizedCompletionRequest,
+    effectiveTimeout: number,
+    promptText: string,
+  ): Promise<{ text: string; usage?: CompletionUsage; historyEntries: AgentCoreHistoryEntry[] }> {
+    // Single shared budget for the entire loop (all model calls + tool runs).
+    const loopController = new AbortController();
+    this.activeAbortController = loopController;
+    const loopStart = Date.now();
+    const loopTimer = setTimeout(() => {
+      loopController.abort(
+        new Error(`Request timed out after ${Math.round((Date.now() - loopStart) / 1000)}s (limit: ${Math.round(effectiveTimeout / 1000)}s)`),
+      );
+    }, effectiveTimeout);
+
+    const historyEntries: AgentCoreHistoryEntry[] = [{ role: "user", content: promptText }];
+    const extraRawMessages: RawProviderMessage[] = [];
+    const customTools = request.customTools;
+    let aggregatedUsage: CompletionUsage | undefined;
+
+    try {
+      for (let iteration = 0; iteration < MAX_TOOL_LOOP_ITERATIONS; iteration += 1) {
+        const remaining = effectiveTimeout - (Date.now() - loopStart);
+        if (remaining <= 0) {
+          throw new Error(`Request timed out after ${Math.round((Date.now() - loopStart) / 1000)}s (limit: ${Math.round(effectiveTimeout / 1000)}s)`);
+        }
+
+        const result = await callCompletionApi(
+          endpoint,
+          request,
+          remaining,
+          (delta) => {
+            this.emit({ type: "text_delta", delta });
+          },
+          undefined,
+          extraRawMessages,
+          loopController.signal,
+        );
+        aggregatedUsage = mergeUsage(aggregatedUsage, result.usage);
+
+        const toolCalls = result.toolCalls;
+        if (!customTools?.length || !toolCalls?.length) {
+          if (result.text) {
+            historyEntries.push({ role: "assistant", content: result.text });
+          }
+          return { text: result.text, usage: aggregatedUsage, historyEntries };
+        }
+
+        // Echo the assistant tool-call turn back into provider history.
+        extraRawMessages.push(buildAssistantToolCallMessage(endpoint, result.text, toolCalls));
+        if (result.text) {
+          historyEntries.push({ role: "assistant", content: result.text });
+        }
+
+        const toolResults: Array<{ toolCall: NormalizedToolCall; text: string }> = [];
+        for (const toolCall of toolCalls) {
+          this.emit({ type: "tool_use", name: toolCall.name, toolCallId: toolCall.id });
+          const definition = customTools.find((tool) => tool.name === toolCall.name);
+          if (!definition) {
+            throw new Error(`Model requested unknown tool '${toolCall.name}'`);
+          }
+          const toolContext: ToolExecutionContext = {
+            signal: loopController.signal,
+            limits: { timeoutMs: remaining },
+          };
+          const rawResult = await definition.execute(toolCall.id, toolCall.arguments, undefined, toolContext);
+          const resolved: ToolResult = rawResult as ToolResult;
+          const text = toolResultText(resolved);
+          this.emit({ type: "tool_result", toolCallId: toolCall.id });
+          historyEntries.push({ role: "assistant", content: `[tool ${toolCall.name}] ${text}` });
+          toolResults.push({ toolCall, text });
+        }
+
+        // Feed tool results back as the next user turn.
+        extraRawMessages.push(...buildToolResultMessages(endpoint, toolResults));
+      }
+
+      throw new Error(`Tool-calling loop exceeded ${MAX_TOOL_LOOP_ITERATIONS} iterations without producing a final response`);
+    } finally {
+      clearTimeout(loopTimer);
+      this.activeAbortController = undefined;
     }
   }
 
@@ -956,9 +1318,8 @@ export class AgentCoreSessionHandle {
     return this.isActive;
   }
 
-  private appendSuccessfulTurn(userContent: string, assistantContent: string): void {
-    this.history.push({ role: "user", content: userContent });
-    this.history.push({ role: "assistant", content: assistantContent });
+  private appendTurnEntries(entries: AgentCoreHistoryEntry[]): void {
+    this.history.push(...entries);
     this.history = this.limitHistoryByTurns(this.history);
   }
 

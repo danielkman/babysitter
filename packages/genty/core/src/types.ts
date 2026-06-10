@@ -92,17 +92,20 @@ export interface AgentCoreSessionOptions extends AgentCoreStructuredOutputOption
   /** Translated to adapters `thinkingEffort`. */
   thinkingLevel?: "minimal" | "low" | "medium" | "high" | "xhigh";
   /**
-   * @deprecated Ignored by the adapters-backed agent-core runtime.
-   * Use adapters-specific configuration, or the PI wrapper in
-   * `@a5c-ai/genty-platform`, if you still need tool-surface control.
+   * Reserved tool-surface mode hint. The agent-core completion runtime forwards
+   * whatever `customTools` are supplied; this flag is advisory for hosts that
+   * curate the tool list themselves.
    */
   toolsMode?: "default" | "coding" | "readonly";
   /**
-   * @deprecated Ignored by the adapters-backed agent-core runtime.
-   * Use `createAgentCoreToolDefinitions()` in the host integration or the PI
-   * wrapper in `@a5c-ai/genty-platform` for custom tool injection.
+   * Custom tool definitions exposed to the model via the provider's native
+   * tool-calling API. When present, agent-core runs a tool-calling loop:
+   * each tool call invokes the matching definition's `execute()` and the
+   * resulting `ToolResult` is fed back to the model until it emits plain text.
+   * When empty/omitted, no tools are sent and the plain-text/structured-output
+   * path is preserved.
    */
-  customTools?: unknown[];
+  customTools?: CustomToolDefinition[];
   /** Enables interactive approval mode when a host UI context is present. */
   uiContext?: unknown;
   /** Base system prompt text forwarded to adapters. */
